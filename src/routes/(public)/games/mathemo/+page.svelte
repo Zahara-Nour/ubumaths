@@ -20,7 +20,8 @@
 	import { confetti } from '@neoconfetti/svelte';
 	import { reducedMotion } from './reduced-motion.svelte';
 	import { game } from './game.svelte';
-	import type { Difficulty } from './types';
+	import type { GradeCode } from '$lib/types/grades';
+	import { MATHEMO_GRADES, GRADE_LABELS } from './types';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -29,11 +30,8 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import type { PageData } from './$types';
 
-	// All available difficulty levels (French grade levels)
-	const difficulties: Difficulty[] = ['6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Tale'];
-
 	// Create items array for Select component (Bits UI format)
-	const difficultyItems = difficulties.map((d) => ({ value: d, label: d }));
+	const difficultyItems = MATHEMO_GRADES.map((g) => ({ value: g, label: GRADE_LABELS[g] || g }));
 
 	// ===== Server Data =====
 	let { data }: { data: PageData } = $props();
@@ -299,7 +297,7 @@
 	$effect(() => {
 		if (selectedDifficulty !== game.difficulty && !gameOver) {
 			const attempts = canSaveScore ? 6 : game.maxAttempts;
-			game.startNewGame(selectedDifficulty as Difficulty, attempts);
+			game.startNewGame(selectedDifficulty as GradeCode, attempts);
 		}
 	});
 

@@ -7,10 +7,13 @@
  * - Feedback calculation (exact/close/missing)
  * - localStorage persistence
  * - Adjustable difficulty and attempts
+ *
+ * Uses the math dictionary as word source instead of a hardcoded word list.
  */
 import { browser } from '$app/environment';
-import type { GameState, Difficulty, FeedbackType } from './types';
-import { getAllowedWords, getRandomWord, normalizeString } from './words';
+import type { GradeCode } from '$lib/types/grades';
+import type { GameState, FeedbackType } from './types';
+import MATH_DICTIONARY, { getTermsForLevel } from '$lib/data/math-dictionary-fr';
 
 /** localStorage key for game state persistence */
 const STORAGE_KEY = 'mathemo_state';
@@ -25,13 +28,47 @@ const MAX_ATTEMPTS = 10;
 const DEFAULT_ATTEMPTS = 6;
 
 /**
+ * Normalize string by removing accents and converting to lowercase.
+ * Allows players to type without accents.
+ */
+function normalizeString(str: string): string {
+	return str
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase();
+}
+
+/** Pre-computed set of all single-word terms (normalized) for fast validation */
+const allWordsNormalized = new Set(
+	MATH_DICTIONARY.filter((t) => !t.term.includes(' ')).map((t) => normalizeString(t.term))
+);
+
+/**
+ * Get single-word terms for a given grade level.
+ * Returns normalized term strings (without accents) for the game.
+ */
+function getWordsForLevel(level: GradeCode): string[] {
+	return getTermsForLevel(level)
+		.filter((t) => !t.term.includes(' '))
+		.map((t) => normalizeString(t.term));
+}
+
+/**
+ * Get a random word for a given grade level.
+ */
+function getRandomWord(level: GradeCode): string {
+	const words = getWordsForLevel(level);
+	return words[Math.floor(Math.random() * words.length)];
+}
+
+/**
  * Main game class using Svelte 5 runes for reactivity
  * Singleton instance exported at bottom of file
  */
 class MathemoGame {
 	// ===== Reactive State (Svelte 5 Runes) =====
 
-	/** Target word to guess (randomly selected from difficulty level) */
+	/** Target word to guess (normalized, without accents) */
 	answer = $state('');
 
 	/** Array of all guesses entered so far (includes empty strings for future rows) */
@@ -46,8 +83,8 @@ class MathemoGame {
 	/** Current maximum attempts allowed (adjustable 3-10) */
 	maxAttempts = $state(DEFAULT_ATTEMPTS);
 
-	/** Current difficulty level (grade level) */
-	difficulty = $state<Difficulty>('6ème');
+	/** Current difficulty level (GradeCode) */
+	difficulty = $state<GradeCode>('6');
 
 	/** Current row being edited (0-indexed) */
 	currentRow = $state(0);
@@ -62,7 +99,7 @@ class MathemoGame {
 
 		// If no saved game exists, start a new one
 		if (!this.answer) {
-			this.startNewGame('6ème', DEFAULT_ATTEMPTS);
+			this.startNewGame('6', DEFAULT_ATTEMPTS);
 		}
 	}
 
@@ -70,22 +107,16 @@ class MathemoGame {
 
 	/**
 	 * Start a new game with specified difficulty and max attempts
-	 * @param difficulty - Grade level (6ème through Tale)
+	 * @param difficulty - GradeCode (e.g., '6', '5', '4', '3', '2', '1_SPE', 'T_SPE')
 	 * @param maxAttempts - Number of attempts allowed (3-10)
 	 */
-	startNewGame(difficulty: Difficulty, maxAttempts: number = DEFAULT_ATTEMPTS) {
+	startNewGame(difficulty: GradeCode, maxAttempts: number = DEFAULT_ATTEMPTS) {
 		this.difficulty = difficulty;
-		// Clamp attempts to valid range
 		this.maxAttempts = Math.max(MIN_ATTEMPTS, Math.min(MAX_ATTEMPTS, maxAttempts));
-		// Select random word from difficulty level
 		this.answer = getRandomWord(difficulty);
-		// Initialize empty guesses array
 		this.guesses = Array(this.maxAttempts).fill('');
-		// Clear previous feedback
 		this.answers = [];
-		// Reset correct letters tracking
 		this.correctLetters = Array(this.answer.length).fill('');
-		// Start at first row
 		this.currentRow = 0;
 
 		this.saveToLocalStorage();
@@ -93,29 +124,18 @@ class MathemoGame {
 
 	// ===== Guess Management =====
 
-	/**
-	 * Get the current guess being typed (may be incomplete)
-	 * @returns Current row's guess string
-	 */
 	getCurrentGuess(): string {
 		return this.guesses[this.currentRow] || '';
 	}
 
-	/**
-	 * Update current guess with a key press (letter or backspace)
-	 * Restricts typing to target word length
-	 * @param key - Letter to add or 'backspace' to delete
-	 */
 	updateGuess(key: string) {
 		if (this.isGameOver()) return;
 
 		const guess = this.getCurrentGuess();
 
 		if (key === 'backspace') {
-			// Remove last character
 			this.guesses[this.currentRow] = guess.slice(0, -1);
 		} else if (guess.length < this.answer.length) {
-			// Add letter if not at max length
 			this.guesses[this.currentRow] += key.toLowerCase();
 		}
 
@@ -124,9 +144,7 @@ class MathemoGame {
 
 	/**
 	 * Submit current guess for validation and feedback
-	 * Validates word against ALL difficulty levels (permissive)
-	 * Accepts words shorter than target, rejects longer words
-	 * @returns true if valid and submitted, false if invalid
+	 * Validates word against all terms in the dictionary (permissive)
 	 */
 	enterGuess(): boolean {
 		if (this.isGameOver()) return false;
@@ -134,23 +152,12 @@ class MathemoGame {
 		const guess = this.getCurrentGuess();
 		const letters = guess.split('');
 
-		// Must have at least one letter
-		if (letters.length === 0) {
-			return false;
-		}
+		if (letters.length === 0) return false;
+		if (letters.length > this.answer.length) return false;
 
-		// Reject words longer than the target (shorter words are OK)
-		if (letters.length > this.answer.length) {
-			return false;
-		}
-
-		// Validate with accent normalization across ALL difficulty levels
+		// Validate with accent normalization against entire dictionary
 		const normalizedGuess = normalizeString(guess);
-		const isValid = this.isValidWord(normalizedGuess);
-
-		if (!isValid) {
-			return false; // Word not in dictionary
-		}
+		if (!allWordsNormalized.has(normalizedGuess)) return false;
 
 		// Pad shorter words with empty strings for feedback calculation
 		const paddedLetters = [...letters];
@@ -158,7 +165,6 @@ class MathemoGame {
 			paddedLetters.push('');
 		}
 
-		// Calculate and store feedback
 		const answer = this.calculateFeedback(paddedLetters);
 		this.answers.push(answer);
 		this.currentRow++;
@@ -167,49 +173,22 @@ class MathemoGame {
 		return true;
 	}
 
-	// ===== Validation =====
-
-	/**
-	 * Check if a word is valid in ANY difficulty level
-	 * Uses accent normalization so "algebre" matches "algèbre"
-	 * @param normalizedGuess - Guess with accents removed and lowercased
-	 * @returns true if word exists in any difficulty level
-	 */
-	private isValidWord(normalizedGuess: string): boolean {
-		const difficulties: Difficulty[] = ['6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Tale'];
-
-		// Check each difficulty level until word is found
-		for (const diff of difficulties) {
-			const words = getAllowedWords(diff);
-			const found = Array.from(words).some((word) => normalizeString(word) === normalizedGuess);
-			if (found) return true;
-		}
-
-		return false;
-	}
-
 	// ===== Feedback Calculation =====
 
-	/**
-	 * Calculate feedback for a guess using Wordle algorithm
-	 * Two-pass approach ensures correct handling of duplicate letters
-	 * @param letters - Padded guess letters (empty strings for missing letters)
-	 * @returns Feedback string: 'x' (exact), 'c' (close), '_' (missing)
-	 */
 	private calculateFeedback(letters: string[]): string {
 		const available = Array.from(this.answer);
 		const feedback: FeedbackType[] = Array(this.answer.length).fill('_');
 
-		// FIRST PASS: Find exact matches (correct letter in correct position)
+		// FIRST PASS: Find exact matches
 		for (let i = 0; i < this.answer.length; i++) {
 			if (normalizeString(letters[i]) === normalizeString(available[i])) {
 				feedback[i] = 'x';
-				available[i] = ' '; // Mark as used
+				available[i] = ' ';
 				this.correctLetters[i] = letters[i];
 			}
 		}
 
-		// SECOND PASS: Find close matches (correct letter in wrong position)
+		// SECOND PASS: Find close matches
 		for (let i = 0; i < this.answer.length; i++) {
 			if (feedback[i] === '_') {
 				const index = available.findIndex(
@@ -217,7 +196,7 @@ class MathemoGame {
 				);
 				if (index !== -1) {
 					feedback[i] = 'c';
-					available[index] = ' '; // Mark as used
+					available[index] = ' ';
 				}
 			}
 		}
@@ -227,61 +206,33 @@ class MathemoGame {
 
 	// ===== Game State Checks =====
 
-	/**
-	 * Check if player has won (all letters exact matches)
-	 * @returns true if last guess was completely correct
-	 */
 	hasWon(): boolean {
 		const lastAnswer = this.answers[this.answers.length - 1];
 		return lastAnswer === 'x'.repeat(this.answer.length);
 	}
 
-	/**
-	 * Check if player has lost (used all attempts without winning)
-	 * @returns true if no attempts remain and hasn't won
-	 */
 	hasLost(): boolean {
 		return this.currentRow >= this.maxAttempts && !this.hasWon();
 	}
 
-	/**
-	 * Check if game is over (either won or lost)
-	 * @returns true if game has ended
-	 */
 	isGameOver(): boolean {
 		return this.hasWon() || this.hasLost();
 	}
 
 	// ===== Attempt Adjustment =====
 
-	/**
-	 * Adjust maximum attempts by +1 or -1
-	 * Cannot reduce below current row or outside 3-10 range
-	 * @param delta - Amount to change (+1 or -1)
-	 */
 	adjustAttempts(delta: number) {
 		if (this.isGameOver()) return;
 
 		const newAttempts = this.maxAttempts + delta;
-
-		// Enforce min/max bounds
-		if (newAttempts < MIN_ATTEMPTS || newAttempts > MAX_ATTEMPTS) {
-			return;
-		}
-
-		// Can't reduce attempts below current progress
-		if (newAttempts < this.currentRow) {
-			return;
-		}
+		if (newAttempts < MIN_ATTEMPTS || newAttempts > MAX_ATTEMPTS) return;
+		if (newAttempts < this.currentRow) return;
 
 		this.maxAttempts = newAttempts;
 
-		// Adjust guesses array to match new size
 		if (delta > 0) {
-			// Add empty rows
 			this.guesses.push(...Array(delta).fill(''));
 		} else {
-			// Remove rows from end
 			this.guesses = this.guesses.slice(0, newAttempts);
 		}
 
@@ -290,10 +241,6 @@ class MathemoGame {
 
 	// ===== VIP Power Methods =====
 
-	/**
-	 * Reveal a random unrevealed letter from the answer
-	 * @returns Index of the revealed letter, or -1 if all already revealed
-	 */
 	revealRandomLetter(): number {
 		const unrevealed: number[] = [];
 		for (let i = 0; i < this.answer.length; i++) {
@@ -309,18 +256,10 @@ class MathemoGame {
 		return idx;
 	}
 
-	/**
-	 * Reveal up to 2 random unrevealed vowels from the answer
-	 * @returns Array of indices revealed
-	 */
 	revealVowels(): number[] {
 		const vowels = new Set(['a', 'e', 'i', 'o', 'u', 'y']);
-		const normalizedAnswer = this.answer
-			.normalize('NFD')
-			.replace(/[\u0300-\u036f]/g, '')
-			.toLowerCase();
+		const normalizedAnswer = normalizeString(this.answer);
 
-		// Find vowel positions not yet revealed
 		const unrevealedVowels: number[] = [];
 		for (let i = 0; i < normalizedAnswer.length; i++) {
 			if (vowels.has(normalizedAnswer[i]) && !this.correctLetters[i]) {
@@ -328,7 +267,6 @@ class MathemoGame {
 			}
 		}
 
-		// Pick up to 2 random
 		const revealed: number[] = [];
 		const count = Math.min(2, unrevealedVowels.length);
 		const shuffled = [...unrevealedVowels].sort(() => Math.random() - 0.5);
@@ -342,11 +280,6 @@ class MathemoGame {
 		return revealed;
 	}
 
-	/**
-	 * Undo the last submitted guess
-	 * Removes last feedback, resets current row, clears the guess
-	 * @returns true if undo was performed, false if nothing to undo
-	 */
 	undoLastGuess(): boolean {
 		if (this.currentRow === 0) return false;
 		if (this.isGameOver()) return false;
@@ -360,18 +293,10 @@ class MathemoGame {
 
 	// ===== Utility Methods =====
 
-	/**
-	 * Get the target word length
-	 * @returns Number of letters in answer
-	 */
 	getSize(): number {
 		return this.answer.length;
 	}
 
-	/**
-	 * Get game completion data for API submission
-	 * Should be called after game ends (win or loss)
-	 */
 	getCompletionData(): {
 		word_length: number;
 		attempts_used: number;
@@ -391,10 +316,6 @@ class MathemoGame {
 
 	// ===== Persistence (localStorage) =====
 
-	/**
-	 * Save current game state to localStorage
-	 * Called automatically after state changes
-	 */
 	private saveToLocalStorage() {
 		if (!browser) return;
 
@@ -411,10 +332,6 @@ class MathemoGame {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 	}
 
-	/**
-	 * Load game state from localStorage on initialization
-	 * Restores in-progress games after page refresh
-	 */
 	private loadFromLocalStorage() {
 		if (!browser) return;
 
@@ -424,7 +341,6 @@ class MathemoGame {
 
 			const state: GameState = JSON.parse(saved);
 
-			// Restore all state properties
 			this.answer = state.answer;
 			this.guesses = state.guesses;
 			this.answers = state.answers;
@@ -437,9 +353,6 @@ class MathemoGame {
 		}
 	}
 
-	/**
-	 * Clear saved game from localStorage (used when starting fresh)
-	 */
 	clearSaved() {
 		if (!browser) return;
 		localStorage.removeItem(STORAGE_KEY);
