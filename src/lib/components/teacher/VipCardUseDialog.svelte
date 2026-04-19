@@ -8,7 +8,7 @@
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import Wheel from '$lib/components/Wheel.svelte';
-	import { Target, ArrowLeft, Check } from 'lucide-svelte';
+	import { Target, ArrowLeft } from 'lucide-svelte';
 
 	let {
 		open = $bindable(false),
@@ -133,9 +133,10 @@
 		wheelWinner = student;
 	}
 
-	async function handleApproveWinner() {
-		if (!wheelWinner) return;
-		await handleUseCard(wheelWinner.id);
+	async function handleApproveWinner(student?: { id: string; firstname: string }) {
+		const target = student || wheelWinner;
+		if (!target) return;
+		await handleUseCard(target.id);
 		wheelWinner = null;
 		showWheel = false;
 	}
@@ -196,17 +197,19 @@
 			{:else if showWheel}
 				<!-- Wheel view -->
 				<div class="flex w-full flex-col items-center gap-4 py-4">
-					<Wheel {students} onWinner={handleWheelWinner} showConfetti={true} confettiZIndex={100} />
+					<Wheel
+						{students}
+						onWinner={handleWheelWinner}
+						onWinnerClick={handleApproveWinner}
+						onSpinStart={() => (wheelWinner = null)}
+						showConfetti={true}
+						confettiZIndex={100}
+					/>
 
-					{#if wheelWinner}
-						<Button onclick={handleApproveWinner} disabled={isUsing} class="mt-2" size="lg">
-							<Check class="mr-2 h-5 w-5" />
-							{#if isUsing}
-								Utilisation en cours...
-							{:else}
-								Approuver — utiliser la carte de {wheelWinner.firstname}
-							{/if}
-						</Button>
+					{#if wheelWinner && !isUsing}
+						<p class="text-sm text-muted-foreground">Cliquez sur le nom pour approuver</p>
+					{:else if isUsing}
+						<p class="text-sm text-muted-foreground">Utilisation en cours...</p>
 					{/if}
 				</div>
 			{:else}

@@ -155,6 +155,9 @@
 		/** Called when a winner is selected (after spin completes) */
 		onWinner?: (student: Student) => void;
 
+		/** Called when the winner's name is clicked on the wheel */
+		onWinnerClick?: (student: Student) => void;
+
 		/** Called when spin animation starts */
 		onSpinStart?: () => void;
 
@@ -176,6 +179,7 @@
 		gidouilleReward,
 		onRewardGiven,
 		onWinner,
+		onWinnerClick,
 		onSpinStart,
 		onSpinEnd
 	}: Props = $props();
@@ -598,7 +602,12 @@
 					dominant-baseline="middle"
 					transform-origin="50% 50%"
 					transform="rotate({((i + 0.5) * 360) / wheelData().length})"
-					class="wheel-text-transition"
+					class="wheel-text-transition {highlightedIndex === i && onWinnerClick
+						? 'winner-clickable'
+						: ''}"
+					onclick={highlightedIndex === i && onWinnerClick
+						? () => onWinnerClick(students[i])
+						: undefined}
 				>
 					{name}
 				</text>
@@ -652,6 +661,10 @@
 			fill 0.5s ease,
 			opacity 0.5s ease,
 			stroke 0.5s ease;
+	}
+
+	.winner-clickable {
+		cursor: pointer;
 	}
 
 	.center-button {
