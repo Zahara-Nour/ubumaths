@@ -24,9 +24,13 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-3xl px-4 py-8">
-	<!-- Page Header -->
-	<div class="mb-8 text-center">
-		<h1 class="mb-4 text-4xl font-bold text-primary sm:text-5xl">2048</h1>
+	<!-- Banner -->
+	<div class="mb-8 overflow-hidden rounded-xl">
+		<img
+			src="/images/banner-2048.webp"
+			alt="2048 - Un plateau de jeu coloré sur un chemin doré enchanteur"
+			class="h-40 w-full object-cover sm:h-52 md:h-64"
+		/>
 	</div>
 
 	<!-- Game Component -->
