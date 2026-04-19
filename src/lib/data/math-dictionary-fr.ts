@@ -9,10 +9,13 @@ import { GRADES } from '$lib/types/grades';
 export interface MathTerm {
 	term: string;
 	tags: string[];
-	definition: string;
+	/** Definition of the term. Required for principal terms, omitted for derived terms. */
+	definition?: string;
 	image?: string;
 	level: GradeCode;
 	synonyms?: string[];
+	/** For derived terms (verbs, adjectives): points to the principal term (substantive). */
+	derivedFrom?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -135,6 +138,157 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definition:
 			'Chaque element d\'un produit. Ex : dans $4 \\times 3$, les facteurs sont $4$ et $3$.',
 		level: 'CE2'
+	},
+	{
+		term: 'additionner',
+		tags: ['transversal', 'operations'],
+		level: 'CP',
+		derivedFrom: 'addition'
+	},
+	{
+		term: 'calculer',
+		tags: ['transversal'],
+		level: 'CP',
+		derivedFrom: 'calcul'
+	},
+	{
+		term: 'compter',
+		tags: ['transversal'],
+		level: 'CP',
+		derivedFrom: 'calcul'
+	},
+	{
+		term: 'soustraire',
+		tags: ['transversal', 'operations'],
+		level: 'CP',
+		derivedFrom: 'soustraction'
+	},
+	{
+		term: 'multiplier',
+		tags: ['transversal', 'operations'],
+		level: 'CE1',
+		derivedFrom: 'multiplication'
+	},
+	{
+		term: 'diviser',
+		tags: ['transversal', 'operations'],
+		level: 'CE2',
+		derivedFrom: 'division'
+	},
+	{
+		term: 'ordonner',
+		tags: ['transversal'],
+		level: 'CM1',
+		derivedFrom: 'ordre de grandeur'
+	},
+	{
+		term: 'calculatrice',
+		tags: ['transversal'],
+		definition: 'Machine servant a effectuer des calculs.',
+		level: 'CE1'
+	},
+	{
+		term: 'convention',
+		tags: ['transversal'],
+		definition: 'Regle adoptee par accord. Ex : convention de signes.',
+		level: '4'
+	},
+	{
+		term: 'egalite',
+		tags: ['transversal'],
+		definition: 'Relation entre deux expressions ayant la meme valeur. Symbole : $=$.',
+		level: 'CP'
+	},
+	{
+		term: 'formule',
+		tags: ['transversal'],
+		definition: 'Egalite exprimant une relation entre des grandeurs. Ex : $A = L \\times l$.',
+		level: 'CE2'
+	},
+	{
+		term: 'geometrie',
+		tags: ['geometrie'],
+		definition: 'Branche des mathematiques etudiant les figures et l\'espace.',
+		level: 'CP'
+	},
+	{
+		term: 'inferieur',
+		tags: ['transversal'],
+		definition: 'Plus petit que. Symbole : $<$ ou $\\leq$.',
+		level: 'CE1'
+	},
+	{
+		term: 'infini',
+		tags: ['transversal'],
+		definition: 'Concept designant ce qui est sans fin. Symbole : $\\infty$.',
+		level: '4'
+	},
+	{
+		term: 'mathematiques',
+		tags: ['transversal'],
+		definition: 'Science des nombres, des formes et des structures.',
+		level: 'CP'
+	},
+	{
+		term: 'maths',
+		tags: ['transversal'],
+		definition: 'Abreviation de mathematiques.',
+		level: 'CP',
+		derivedFrom: 'mathematiques'
+	},
+	{
+		term: 'moins',
+		tags: ['transversal', 'operations'],
+		definition: 'Symbole $-$ de la soustraction ou du signe negatif.',
+		level: 'CP'
+	},
+	{
+		term: 'operation',
+		tags: ['transversal', 'operations'],
+		definition: 'Processus de calcul : addition, soustraction, multiplication, division.',
+		level: 'CP'
+	},
+	{
+		term: 'ordre',
+		tags: ['transversal'],
+		definition: 'Relation de comparaison entre nombres ($<$, $>$, $=$).',
+		level: 'CE1'
+	},
+	{
+		term: 'particulier',
+		tags: ['transversal'],
+		definition: 'Cas special. Ex : triangle particulier (equilateral, isocele, rectangle).',
+		level: '6'
+	},
+	{
+		term: 'plus',
+		tags: ['transversal', 'operations'],
+		definition: 'Symbole $+$ de l\'addition ou du signe positif.',
+		level: 'CP'
+	},
+	{
+		term: 'probleme',
+		tags: ['transversal'],
+		definition: 'Situation necessitant un raisonnement mathematique pour etre resolue.',
+		level: 'CP'
+	},
+	{
+		term: 'schema',
+		tags: ['transversal'],
+		definition: 'Dessin simplifie representant une situation mathematique.',
+		level: 'CE2'
+	},
+	{
+		term: 'superieur',
+		tags: ['transversal'],
+		definition: 'Plus grand que. Symbole : $>$ ou $\\geq$.',
+		level: 'CE1'
+	},
+	{
+		term: 'valeur',
+		tags: ['transversal'],
+		definition: 'Nombre attribue a une variable ou a une expression.',
+		level: 'CE1'
 	},
 
 	// =========================================================================
@@ -295,6 +449,72 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definition: 'Le quart d\'un nombre est ce nombre divise par $4$.',
 		level: 'CE1'
 	},
+	{
+		term: 'quadruple',
+		tags: ['entiers', 'operations'],
+		definition: 'Le quadruple d\'un nombre est ce nombre multiplie par $4$.',
+		level: 'CE1'
+	},
+	{
+		term: 'tiers',
+		tags: ['entiers', 'operations', 'fractions'],
+		definition: 'Le tiers d\'un nombre est ce nombre divise par $3$.',
+		level: 'CE1'
+	},
+	{
+		term: 'arithmetique',
+		tags: ['entiers', 'arithmetique'],
+		definition: 'Etude des proprietes des nombres entiers (divisibilite, premiers, etc.).',
+		level: '6'
+	},
+	{
+		term: 'decomposition',
+		tags: ['entiers', 'arithmetique'],
+		definition: 'Ecriture d\'un nombre comme produit de facteurs. Ex : $60 = 2^2 \\times 3 \\times 5$.',
+		level: '4'
+	},
+	{
+		term: 'decomposer',
+		tags: ['entiers', 'arithmetique'],
+		level: '4',
+		derivedFrom: 'decomposition en facteurs premiers'
+	},
+	{
+		term: 'diviseur',
+		tags: ['entiers', 'arithmetique', 'divisibilite'],
+		definition: 'Nombre qui divise exactement un autre nombre.',
+		level: 'CM1'
+	},
+	{
+		term: 'entier',
+		tags: ['entiers'],
+		definition: 'Nombre sans partie decimale.',
+		level: 'CP'
+	},
+	{
+		term: 'euclide',
+		tags: ['entiers', 'arithmetique'],
+		definition: 'Mathematicien grec. Associe a la division euclidienne et l\'algorithme d\'Euclide.',
+		level: '6'
+	},
+	{
+		term: 'euclidienne',
+		tags: ['entiers', 'arithmetique'],
+		level: '6',
+		derivedFrom: 'division euclidienne'
+	},
+	{
+		term: 'numeration',
+		tags: ['entiers', 'numeration'],
+		definition: 'Systeme de representation des nombres (decimal, binaire, etc.).',
+		level: 'CP'
+	},
+	{
+		term: 'premier',
+		tags: ['entiers', 'arithmetique'],
+		definition: 'Se dit d\'un nombre n\'ayant que deux diviseurs : $1$ et lui-meme.',
+		level: '5'
+	},
 
 	// =========================================================================
 	// DECIMAUX
@@ -362,6 +582,24 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definition:
 			'Valeur approchee d\'un nombre obtenue en tronquant puis ajustant le dernier chiffre conserve. Ex : $3{,}14$ arrondi au dixieme est $3{,}1$.',
 		level: 'CM2'
+	},
+	{
+		term: 'arrondir',
+		tags: ['decimaux'],
+		level: 'CM2',
+		derivedFrom: 'arrondi'
+	},
+	{
+		term: 'decimal',
+		tags: ['decimaux'],
+		level: 'CM1',
+		derivedFrom: 'nombre decimal'
+	},
+	{
+		term: 'decimale',
+		tags: ['decimaux'],
+		level: 'CM1',
+		derivedFrom: 'nombre decimal'
 	},
 	{
 		term: 'troncature',
@@ -451,6 +689,24 @@ const MATH_DICTIONARY: MathTerm[] = [
 			'L\'inverse d\'un nombre $a \\neq 0$ est $\\frac{1}{a}$. Ex : l\'inverse de $3$ est $\\frac{1}{3}$.',
 		level: '4'
 	},
+	{
+		term: 'fractionnaire',
+		tags: ['fractions'],
+		level: 'CM1',
+		derivedFrom: 'fraction'
+	},
+	{
+		term: 'simplification',
+		tags: ['fractions', 'calcul-litteral'],
+		definition: 'Action de simplifier une fraction ou une expression.',
+		level: '5'
+	},
+	{
+		term: 'simplifier',
+		tags: ['fractions', 'arithmetique'],
+		level: '5',
+		derivedFrom: 'simplifier une fraction'
+	},
 
 	// =========================================================================
 	// RELATIFS
@@ -502,6 +758,24 @@ const MATH_DICTIONARY: MathTerm[] = [
 			'La distance a zero d\'un nombre est sa valeur absolue.',
 		level: '5',
 		synonyms: ['valeur absolue']
+	},
+	{
+		term: 'irrationnel',
+		tags: ['relatifs'],
+		level: '3',
+		derivedFrom: 'nombre relatif'
+	},
+	{
+		term: 'rationnel',
+		tags: ['relatifs'],
+		level: '4',
+		derivedFrom: 'nombre relatif'
+	},
+	{
+		term: 'relatif',
+		tags: ['relatifs'],
+		level: '5',
+		derivedFrom: 'nombre relatif'
 	},
 
 	// =========================================================================
@@ -634,6 +908,55 @@ const MATH_DICTIONARY: MathTerm[] = [
 			'Remplacer une variable par une valeur numerique. Ex : si $x = 3$, alors $2x + 1 = 7$.',
 		level: '5'
 	},
+	{
+		term: 'algebre',
+		tags: ['calcul-litteral'],
+		definition: 'Branche des mathematiques utilisant des lettres pour representer des nombres.',
+		level: '4'
+	},
+	{
+		term: 'algebrique',
+		tags: ['calcul-litteral'],
+		level: '4',
+		derivedFrom: 'algebre'
+	},
+	{
+		term: 'developpement',
+		tags: ['calcul-litteral'],
+		definition: 'Action de transformer un produit en somme par distributivite.',
+		level: '4'
+	},
+	{
+		term: 'factorisation',
+		tags: ['calcul-litteral'],
+		definition: 'Action de transformer une somme en produit.',
+		level: '3'
+	},
+	{
+		term: 'inegalite',
+		tags: ['calcul-litteral'],
+		definition: 'Relation d\'ordre entre deux expressions : $<$, $>$, $\\leq$, $\\geq$.',
+		level: '4'
+	},
+	{
+		term: 'litteral',
+		tags: ['calcul-litteral'],
+		level: '5',
+		derivedFrom: 'expression litterale'
+	},
+	{
+		term: 'resoudre',
+		tags: ['calcul-litteral', 'equations'],
+		level: '4',
+		derivedFrom: 'solution (equation)'
+	},
+	{
+		term: 'solution',
+		tags: ['calcul-litteral', 'equations'],
+		definition: 'Valeur qui verifie une equation ou un probleme.',
+		level: '4',
+		derivedFrom: 'solution (equation)'
+	},
 
 	// =========================================================================
 	// GRANDEURS ET MESURES
@@ -693,6 +1016,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		level: 'CE1'
 	},
 	{
+		term: 'grandeur',
+		tags: ['grandeurs'],
+		definition:
+			'Ce qui peut etre mesure : longueur, masse, duree, aire, volume, etc.',
+		level: 'CE1'
+	},
+	{
 		term: 'vitesse',
 		tags: ['grandeurs', 'proportionnalite'],
 		definition:
@@ -721,6 +1051,114 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'angle obtus',
 		tags: ['grandeurs', 'geometrie'],
 		definition: 'Angle mesurant entre $90°$ et $180°$.',
+		level: 'CM1'
+	},
+	{
+		term: 'centimetre',
+		tags: ['grandeurs'],
+		definition: 'Unite de longueur. $1\\,\\text{cm} = 0{,}01\\,\\text{m}$.',
+		level: 'CE1'
+	},
+	{
+		term: 'construction',
+		tags: ['geometrie'],
+		definition: 'Realisation d\'une figure geometrique a l\'aide d\'instruments.',
+		level: 'CE1'
+	},
+	{
+		term: 'construire',
+		tags: ['geometrie'],
+		level: 'CE1',
+		derivedFrom: 'construction'
+	},
+	{
+		term: 'convertir',
+		tags: ['grandeurs'],
+		level: 'CE2',
+		derivedFrom: 'conversion'
+	},
+	{
+		term: 'decametre',
+		tags: ['grandeurs'],
+		definition: 'Unite de longueur. $1\\,\\text{dam} = 10\\,\\text{m}$.',
+		level: 'CE2'
+	},
+	{
+		term: 'decimetre',
+		tags: ['grandeurs'],
+		definition: 'Unite de longueur. $1\\,\\text{dm} = 0{,}1\\,\\text{m}$.',
+		level: 'CE1'
+	},
+	{
+		term: 'distance',
+		tags: ['geometrie', 'grandeurs'],
+		definition: 'Longueur du plus court chemin entre deux points.',
+		level: 'CE1'
+	},
+	{
+		term: 'gradue',
+		tags: ['grandeurs'],
+		definition: 'Muni d\'une graduation. Ex : droite graduee, regle graduee.',
+		level: 'CE1'
+	},
+	{
+		term: 'graduer',
+		tags: ['grandeurs'],
+		level: '6',
+		derivedFrom: 'gradue'
+	},
+	{
+		term: 'hauteur',
+		tags: ['grandeurs', 'geometrie'],
+		definition: 'Dimension verticale d\'un objet ou d\'une figure.',
+		level: 'CE1'
+	},
+	{
+		term: 'hectometre',
+		tags: ['grandeurs'],
+		definition: 'Unite de longueur. $1\\,\\text{hm} = 100\\,\\text{m}$.',
+		level: 'CE2'
+	},
+	{
+		term: 'kilometre',
+		tags: ['grandeurs'],
+		definition: 'Unite de longueur. $1\\,\\text{km} = 1000\\,\\text{m}$.',
+		level: 'CE1'
+	},
+	{
+		term: 'largeur',
+		tags: ['grandeurs', 'geometrie'],
+		definition: 'Plus petite dimension d\'un rectangle.',
+		level: 'CE1'
+	},
+	{
+		term: 'mesure',
+		tags: ['grandeurs'],
+		definition: 'Evaluation d\'une grandeur a l\'aide d\'une unite.',
+		level: 'CE1'
+	},
+	{
+		term: 'mesurer',
+		tags: ['grandeurs'],
+		level: 'CE1',
+		derivedFrom: 'mesure'
+	},
+	{
+		term: 'metre',
+		tags: ['grandeurs'],
+		definition: 'Unite de base du systeme international pour les longueurs.',
+		level: 'CP'
+	},
+	{
+		term: 'millimetre',
+		tags: ['grandeurs'],
+		definition: 'Unite de longueur. $1\\,\\text{mm} = 0{,}001\\,\\text{m}$.',
+		level: 'CE1'
+	},
+	{
+		term: 'surface',
+		tags: ['geometrie', 'grandeurs'],
+		definition: 'Etendue d\'une figure plane. Synonyme d\'aire.',
 		level: 'CM1'
 	},
 
@@ -798,6 +1236,30 @@ const MATH_DICTIONARY: MathTerm[] = [
 			'Nombre par lequel on multiplie pour appliquer une variation. Ex : $+20\\% \\Rightarrow \\times 1{,}2$.',
 		level: '2'
 	},
+	{
+		term: 'proportion',
+		tags: ['proportionnalite'],
+		definition: 'Egalite de deux rapports. Ex : $\\frac{a}{b} = \\frac{c}{d}$.',
+		level: 'CM2'
+	},
+	{
+		term: 'proportionnalite',
+		tags: ['proportionnalite'],
+		definition: 'Relation entre deux grandeurs dont le rapport est constant.',
+		level: 'CM2'
+	},
+	{
+		term: 'rapport',
+		tags: ['proportionnalite'],
+		definition: 'Quotient de deux grandeurs. Ex : rapport $\\frac{a}{b}$.',
+		level: '6'
+	},
+	{
+		term: 'ratio',
+		tags: ['proportionnalite'],
+		definition: 'Rapport entre deux quantites. Synonyme de rapport.',
+		level: '6'
+	},
 
 	// =========================================================================
 	// PUISSANCES
@@ -870,6 +1332,13 @@ const MATH_DICTIONARY: MathTerm[] = [
 		synonyms: ['racine']
 	},
 	{
+		term: 'racine',
+		tags: ['racines-carrees'],
+		definition: 'Racine carree d\'un nombre. $\\sqrt{a}$.',
+		level: '3',
+		derivedFrom: 'racine carree'
+	},
+	{
 		term: 'radical',
 		tags: ['racines-carrees'],
 		definition:
@@ -931,11 +1400,23 @@ const MATH_DICTIONARY: MathTerm[] = [
 		level: '3'
 	},
 	{
+		term: 'croissant',
+		tags: ['fonctions'],
+		level: '3',
+		derivedFrom: 'croissante'
+	},
+	{
 		term: 'decroissante',
 		tags: ['fonctions'],
 		definition:
 			'Une fonction est decroissante sur un intervalle si, quand $x$ augmente, $f(x)$ diminue.',
 		level: '3'
+	},
+	{
+		term: 'decroissant',
+		tags: ['fonctions'],
+		level: '3',
+		derivedFrom: 'decroissante'
 	},
 	{
 		term: 'maximum',
@@ -957,6 +1438,18 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definition:
 			'Ensemble des points $(x, f(x))$ dans un repere. Representation graphique d\'une fonction.',
 		level: '2'
+	},
+	{
+		term: 'courbe',
+		tags: ['fonctions'],
+		definition: 'Ligne representant graphiquement une fonction ou une relation.',
+		level: '3'
+	},
+	{
+		term: 'representer',
+		tags: ['fonctions'],
+		level: '2',
+		derivedFrom: 'courbe representative'
 	},
 	{
 		term: 'abscisse',
@@ -1109,6 +1602,60 @@ const MATH_DICTIONARY: MathTerm[] = [
 			'Fonction $F$ telle que $F\' = f$. Ex : une primitive de $2x$ est $x^2$.',
 		level: 'T_SPE'
 	},
+	{
+		term: 'continu',
+		tags: ['fonctions'],
+		definition: 'Se dit d\'une fonction sans saut ni trou sur un intervalle.',
+		level: 'T_SPE'
+	},
+	{
+		term: 'continuite',
+		tags: ['fonctions'],
+		definition: 'Propriete d\'une fonction continue : pas de rupture dans la courbe.',
+		level: 'T_SPE'
+	},
+	{
+		term: 'deriver',
+		tags: ['fonctions'],
+		level: '1_SPE',
+		derivedFrom: 'derivee'
+	},
+	{
+		term: 'exponentielle',
+		tags: ['fonctions'],
+		definition: 'Fonction $f(x) = e^x$. Seule fonction egale a sa propre derivee.',
+		level: 'T_SPE'
+	},
+	{
+		term: 'integrale',
+		tags: ['fonctions'],
+		definition: 'Outil du calcul integral. $\\int_a^b f(x)\\,dx$ mesure l\'aire sous la courbe.',
+		level: 'T_SPE'
+	},
+	{
+		term: 'integrer',
+		tags: ['fonctions'],
+		level: 'T_SPE',
+		derivedFrom: 'integrale'
+	},
+	{
+		term: 'limite',
+		tags: ['fonctions', 'suites'],
+		definition: 'Valeur vers laquelle tend une suite ou une fonction.',
+		level: 'T_SPE'
+	},
+	{
+		term: 'logarithme',
+		tags: ['fonctions'],
+		definition: 'Fonction reciproque de l\'exponentielle. $\\ln(e^x) = x$.',
+		level: 'T_SPE'
+	},
+	{
+		term: 'coordonnee',
+		tags: ['geometrie', 'fonctions'],
+		definition: 'Nombre repérant la position d\'un point sur un axe ou dans un plan.',
+		level: '5'
+	},
 
 	// =========================================================================
 	// SUITES
@@ -1195,6 +1742,18 @@ const MATH_DICTIONARY: MathTerm[] = [
 			'Relation definissant chaque terme a partir du (ou des) precedent(s). Ex : $u_{n+1} = 2u_n + 1$.',
 		level: '1_SPE',
 		synonyms: ['relation de recurrence']
+	},
+	{
+		term: 'consecutif',
+		tags: ['transversal'],
+		level: '6',
+		derivedFrom: 'suite'
+	},
+	{
+		term: 'serie',
+		tags: ['suites'],
+		definition: 'Somme des termes d\'une suite. $S_n = \\sum_{k=0}^{n} u_k$.',
+		level: 'T_SPE'
 	},
 
 	// =========================================================================
@@ -1285,6 +1844,18 @@ const MATH_DICTIONARY: MathTerm[] = [
 			'Valeur moyenne d\'une variable aleatoire. $E(X) = \\sum x_i \\cdot P(X = x_i)$.',
 		level: '1_SPE'
 	},
+	{
+		term: 'combinaison',
+		tags: ['probabilites'],
+		definition: 'Nombre de facons de choisir $k$ elements parmi $n$ : $\\binom{n}{k}$.',
+		level: 'T_SPE'
+	},
+	{
+		term: 'permutation',
+		tags: ['probabilites'],
+		definition: 'Arrangement ordonne de tous les elements d\'un ensemble.',
+		level: 'T_SPE'
+	},
 
 	// =========================================================================
 	// STATISTIQUES
@@ -1344,6 +1915,18 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definition:
 			'Carre de l\'ecart type. $V = \\frac{\\sum (x_i - \\bar{x})^2}{n}$.',
 		level: '2'
+	},
+	{
+		term: 'statistiques',
+		tags: ['statistiques'],
+		definition: 'Branche des mathematiques traitant de la collecte, l\'analyse et l\'interpretation des donnees.',
+		level: '5'
+	},
+	{
+		term: 'statistique',
+		tags: ['statistiques'],
+		level: '5',
+		derivedFrom: 'statistiques'
 	},
 
 	// =========================================================================
@@ -1610,6 +2193,372 @@ const MATH_DICTIONARY: MathTerm[] = [
 		level: '1_SPE',
 		synonyms: ['produit scalaire']
 	},
+	{
+		term: 'adjacent',
+		tags: ['geometrie'],
+		definition: 'Se dit de deux angles ayant un cote commun.',
+		level: '6'
+	},
+	{
+		term: 'aigu',
+		tags: ['geometrie'],
+		definition: 'Se dit d\'un angle mesurant moins de $90°$.',
+		level: 'CM1'
+	},
+	{
+		term: 'aligne',
+		tags: ['geometrie'],
+		definition: 'Se dit de points situes sur une meme droite.',
+		level: '6'
+	},
+	{
+		term: 'aligner',
+		tags: ['geometrie'],
+		level: '6',
+		derivedFrom: 'aligne'
+	},
+	{
+		term: 'arete',
+		tags: ['geometrie'],
+		definition: 'Segment commun a deux faces d\'un solide.',
+		level: '6'
+	},
+	{
+		term: 'axe',
+		tags: ['geometrie'],
+		definition: 'Droite de reference (axe de symetrie, axe des abscisses, etc.).',
+		level: 'CE2'
+	},
+	{
+		term: 'barycentre',
+		tags: ['geometrie'],
+		definition: 'Point d\'equilibre d\'un systeme de points ponderes.',
+		level: '1_SPE'
+	},
+	{
+		term: 'centre',
+		tags: ['geometrie'],
+		definition: 'Point equidistant de tous les points d\'un cercle ou d\'une sphere.',
+		level: 'CE1'
+	},
+	{
+		term: 'codage',
+		tags: ['geometrie'],
+		definition: 'Symboles places sur une figure pour indiquer des proprietes (longueurs egales, angles droits, etc.).',
+		level: '6'
+	},
+	{
+		term: 'coder',
+		tags: ['geometrie'],
+		level: '6',
+		derivedFrom: 'codage'
+	},
+	{
+		term: 'compas',
+		tags: ['geometrie'],
+		definition: 'Instrument de geometrie servant a tracer des cercles et reporter des longueurs.',
+		level: 'CE1'
+	},
+	{
+		term: 'complementaire',
+		tags: ['geometrie'],
+		level: '5',
+		derivedFrom: 'angle'
+	},
+	{
+		term: 'cone',
+		tags: ['geometrie'],
+		definition: 'Solide ayant une base circulaire et un sommet pointu.',
+		level: '5'
+	},
+	{
+		term: 'cylindre',
+		tags: ['geometrie'],
+		definition: 'Solide ayant deux bases circulaires paralleles et egales.',
+		level: '5'
+	},
+	{
+		term: 'droit',
+		tags: ['geometrie'],
+		definition: 'Se dit d\'un angle mesurant $90°$. Aussi : droite, une ligne infinie.',
+		level: 'CE1'
+	},
+	{
+		term: 'ellipse',
+		tags: ['geometrie'],
+		definition: 'Courbe fermee dont la somme des distances a deux foyers est constante.',
+		level: '2'
+	},
+	{
+		term: 'equerre',
+		tags: ['geometrie'],
+		definition: 'Instrument de geometrie en forme de triangle rectangle.',
+		level: 'CE1'
+	},
+	{
+		term: 'equidistant',
+		tags: ['geometrie'],
+		definition: 'A egale distance de deux points ou objets.',
+		level: '6'
+	},
+	{
+		term: 'equilateral',
+		tags: ['geometrie'],
+		level: '6',
+		derivedFrom: 'triangle'
+	},
+	{
+		term: 'espace',
+		tags: ['geometrie'],
+		definition: 'Ensemble a trois dimensions dans lequel se situent les objets geometriques.',
+		level: 'CM2'
+	},
+	{
+		term: 'extremite',
+		tags: ['geometrie'],
+		definition: 'Point aux bouts d\'un segment.',
+		level: 'CE1'
+	},
+	{
+		term: 'face',
+		tags: ['geometrie'],
+		definition: 'Surface plane delimitant un solide.',
+		level: 'CE2'
+	},
+	{
+		term: 'figure',
+		tags: ['geometrie'],
+		definition: 'Dessin geometrique representant des formes.',
+		level: 'CE1'
+	},
+	{
+		term: 'forme',
+		tags: ['geometrie'],
+		definition: 'Aspect exterieur d\'un objet geometrique.',
+		level: 'CP'
+	},
+	{
+		term: 'hexagone',
+		tags: ['geometrie'],
+		definition: 'Polygone a six cotes.',
+		level: 'CM1'
+	},
+	{
+		term: 'hyperbole',
+		tags: ['geometrie', 'fonctions'],
+		definition: 'Courbe formee de deux branches, representant la fonction inverse ou une conique.',
+		level: '2'
+	},
+	{
+		term: 'hypothenuse',
+		tags: ['geometrie'],
+		definition: 'Variante orthographique de hypotenuse (cote le plus long d\'un triangle rectangle).',
+		level: '4',
+		derivedFrom: 'hypotenuse'
+	},
+	{
+		term: 'isocele',
+		tags: ['geometrie'],
+		level: '6',
+		derivedFrom: 'triangle'
+	},
+	{
+		term: 'obtus',
+		tags: ['geometrie'],
+		definition: 'Se dit d\'un angle mesurant entre $90°$ et $180°$.',
+		level: 'CM1'
+	},
+	{
+		term: 'octogone',
+		tags: ['geometrie'],
+		definition: 'Polygone a huit cotes.',
+		level: 'CM1'
+	},
+	{
+		term: 'origine',
+		tags: ['transversal', 'geometrie'],
+		definition: 'Point de reference sur une droite graduee ou dans un repere.',
+		level: '6'
+	},
+	{
+		term: 'orthogonal',
+		tags: ['geometrie'],
+		level: '5',
+		derivedFrom: 'perpendiculaire'
+	},
+	{
+		term: 'parabole',
+		tags: ['geometrie', 'fonctions'],
+		definition: 'Courbe en U representant une fonction du second degre.',
+		level: '2'
+	},
+	{
+		term: 'patron',
+		tags: ['geometrie'],
+		definition: 'Figure plane qui, une fois pliee, forme un solide.',
+		level: '6'
+	},
+	{
+		term: 'pave',
+		tags: ['geometrie'],
+		definition: 'Solide a six faces rectangulaires (parallelepipede rectangle).',
+		level: '6',
+		synonyms: ['parallelepipede rectangle']
+	},
+	{
+		term: 'pentagone',
+		tags: ['geometrie'],
+		definition: 'Polygone a cinq cotes.',
+		level: 'CM1'
+	},
+	{
+		term: 'perspective',
+		tags: ['geometrie'],
+		definition: 'Representation d\'un objet 3D sur un plan 2D.',
+		level: '6'
+	},
+	{
+		term: 'pi',
+		tags: ['geometrie'],
+		definition: 'Nombre $\\pi \\approx 3{,}14159$. Rapport du perimetre d\'un cercle a son diametre.',
+		level: '6'
+	},
+	{
+		term: 'plan',
+		tags: ['geometrie'],
+		definition: 'Surface plane infinie a deux dimensions.',
+		level: 'CE2'
+	},
+	{
+		term: 'point',
+		tags: ['geometrie'],
+		definition: 'Element geometrique sans dimension, designe par une lettre majuscule.',
+		level: 'CP'
+	},
+	{
+		term: 'prisme',
+		tags: ['geometrie'],
+		definition: 'Solide dont les deux bases sont des polygones egaux et paralleles.',
+		level: '5'
+	},
+	{
+		term: 'pyramide',
+		tags: ['geometrie'],
+		definition: 'Solide dont la base est un polygone et les faces laterales sont des triangles.',
+		level: '5'
+	},
+	{
+		term: 'pythagore',
+		tags: ['geometrie'],
+		definition: 'Mathematicien grec. Associe au theoreme de Pythagore.',
+		level: '4',
+		derivedFrom: 'theoreme de Pythagore'
+	},
+	{
+		term: 'quadrilatere',
+		tags: ['geometrie'],
+		definition: 'Polygone a quatre cotes.',
+		level: 'CE2'
+	},
+	{
+		term: 'quelconque',
+		tags: ['geometrie'],
+		definition: 'Sans propriete particuliere. Ex : triangle quelconque.',
+		level: '6'
+	},
+	{
+		term: 'radian',
+		tags: ['geometrie', 'trigonometrie'],
+		definition: 'Unite de mesure d\'angle. $\\pi\\,\\text{rad} = 180°$.',
+		level: '2'
+	},
+	{
+		term: 'rapporteur',
+		tags: ['geometrie'],
+		definition: 'Instrument de geometrie servant a mesurer des angles.',
+		level: 'CE2'
+	},
+	{
+		term: 'regle',
+		tags: ['geometrie'],
+		definition: 'Instrument de geometrie servant a tracer des droites et mesurer des longueurs.',
+		level: 'CP'
+	},
+	{
+		term: 'secante',
+		tags: ['geometrie'],
+		definition: 'Droite qui coupe une autre droite ou une courbe en un ou plusieurs points.',
+		level: '4'
+	},
+	{
+		term: 'secant',
+		tags: ['geometrie'],
+		level: '4',
+		derivedFrom: 'secante'
+	},
+	{
+		term: 'secteur',
+		tags: ['geometrie'],
+		definition: 'Portion de disque delimitee par deux rayons et un arc de cercle.',
+		level: '6'
+	},
+	{
+		term: 'concave',
+		tags: ['geometrie'],
+		definition: 'Se dit d\'une figure ou d\'une courbe qui presente un creux.',
+		level: '4'
+	},
+	{
+		term: 'convexe',
+		tags: ['geometrie'],
+		definition:
+			'Se dit d\'une figure ou d\'une courbe qui ne presente pas de creux. Un segment joignant deux points de la figure reste a l\'interieur.',
+		level: '4'
+	},
+	{
+		term: 'solide',
+		tags: ['geometrie'],
+		definition: 'Figure geometrique de l\'espace a trois dimensions.',
+		level: 'CE2'
+	},
+	{
+		term: 'sphere',
+		tags: ['geometrie'],
+		definition: 'Ensemble des points de l\'espace situes a une meme distance d\'un centre.',
+		level: '5'
+	},
+	{
+		term: 'spherique',
+		tags: ['geometrie'],
+		level: '5',
+		derivedFrom: 'sphere'
+	},
+	{
+		term: 'symetrie',
+		tags: ['geometrie'],
+		definition: 'Transformation geometrique (axiale ou centrale).',
+		level: '6'
+	},
+	{
+		term: 'symetrique',
+		tags: ['geometrie'],
+		level: '6',
+		derivedFrom: 'symetrie axiale'
+	},
+	{
+		term: 'tangeant',
+		tags: ['geometrie', 'trigonometrie'],
+		definition: 'Variante orthographique de tangente.',
+		level: '3',
+		derivedFrom: 'tangente (trigonometrie)'
+	},
+	{
+		term: 'thales',
+		tags: ['geometrie'],
+		definition: 'Mathematicien grec. Associe au theoreme de Thales.',
+		level: '3',
+		derivedFrom: 'theoreme de Thales'
+	},
 
 	// =========================================================================
 	// LOGIQUE / ENSEMBLES (termes utiles)
@@ -1662,6 +2611,89 @@ const MATH_DICTIONARY: MathTerm[] = [
 		definition:
 			'La contraposee de «si $A$ alors $B$» est «si non $B$ alors non $A$». Elle est toujours equivalente.',
 		level: '2'
+	},
+	{
+		term: 'conjecture',
+		tags: ['logique'],
+		definition: 'Proposition que l\'on suppose vraie mais qui n\'a pas encore ete demontree.',
+		level: '4'
+	},
+	{
+		term: 'conjecturer',
+		tags: ['logique'],
+		level: '4',
+		derivedFrom: 'conjecture'
+	},
+	{
+		term: 'deduire',
+		tags: ['logique'],
+		level: '4',
+		derivedFrom: 'demonstration'
+	},
+	{
+		term: 'demonstration',
+		tags: ['logique'],
+		definition: 'Raisonnement logique prouvant qu\'une proposition est vraie.',
+		level: '4'
+	},
+	{
+		term: 'demontrer',
+		tags: ['logique'],
+		level: '4',
+		derivedFrom: 'demonstration'
+	},
+	{
+		term: 'equivalence',
+		tags: ['logique'],
+		definition: 'Relation logique : $A \\Leftrightarrow B$ signifie que $A$ et $B$ sont simultanement vraies ou fausses.',
+		level: '4'
+	},
+	{
+		term: 'hypothese',
+		tags: ['logique'],
+		definition: 'Condition supposee vraie au depart d\'un raisonnement ou d\'un theoreme.',
+		level: '4'
+	},
+	{
+		term: 'implication',
+		tags: ['logique'],
+		definition: 'Relation logique : si $A$ alors $B$, notee $A \\Rightarrow B$.',
+		level: '4'
+	},
+	{
+		term: 'raisonnement',
+		tags: ['logique'],
+		definition: 'Suite logique d\'arguments menant a une conclusion.',
+		level: '4'
+	},
+	{
+		term: 'synthese',
+		tags: ['logique'],
+		definition: 'Raisonnement partant des hypotheses pour arriver a la conclusion.',
+		level: '4'
+	},
+	{
+		term: 'theoreme',
+		tags: ['logique'],
+		definition: 'Resultat mathematique demontre a partir d\'axiomes ou d\'autres theoremes.',
+		level: '4'
+	},
+	{
+		term: 'propriete',
+		tags: ['logique'],
+		definition:
+			'Caracteristique d\'un objet mathematique qui a ete demontree. Ex : la somme des angles d\'un triangle vaut $180°$.',
+		level: '6'
+	},
+
+	// =========================================================================
+	// DIVERS
+	// =========================================================================
+	{
+		term: 'shisma',
+		tags: ['arithmetique'],
+		definition: 'Petit intervalle musical en theorie des nombres (terme rare).',
+		level: 'T_SPE'
 	}
 ];
 

@@ -43,12 +43,25 @@ describe('math-dictionary-fr', () => {
 		}
 	});
 
-	it('should have non-empty definitions for every term', () => {
+	it('should have non-empty definitions for principal terms', () => {
 		for (const term of MATH_DICTIONARY) {
+			if (term.derivedFrom) continue; // Derived terms don't need definitions
 			expect(
-				term.definition.trim().length,
+				term.definition?.trim().length,
 				`"${term.term}" has empty definition`
 			).toBeGreaterThan(0);
+		}
+	});
+
+	it('should have valid derivedFrom references', () => {
+		const termNames = new Set(MATH_DICTIONARY.map((t) => t.term));
+		for (const term of MATH_DICTIONARY) {
+			if (term.derivedFrom) {
+				expect(
+					termNames.has(term.derivedFrom),
+					`"${term.term}" derives from "${term.derivedFrom}" which does not exist`
+				).toBe(true);
+			}
 		}
 	});
 
