@@ -20,21 +20,10 @@
 	import { confetti } from '@neoconfetti/svelte';
 	import { reducedMotion } from './reduced-motion.svelte';
 	import { game } from './game.svelte';
-	import dancing from '$lib/assets/images/dancing.gif';
 	import type { Difficulty } from './types';
 	import { Button } from '$lib/components/ui/button';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import type { PageData } from './$types';
-
-	// Random congratulations messages for when player wins
-	const congrats = [
-		'Nice !',
-		'Good Job !',
-		'Well Done !',
-		'You nailed it !',
-		'You rock !',
-		'Great !'
-	];
 
 	// All available difficulty levels (French grade levels)
 	const difficulties: Difficulty[] = ['6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Tale'];
@@ -75,9 +64,6 @@
 
 	/** Whether the score has been submitted for this game */
 	let scoreSubmitted = $state(false);
-
-	/** Congrats message (computed once on win, not re-rendered randomly) */
-	let congratsMessage = $state('');
 
 	// ===== Derived Values (Computed from Game State) =====
 
@@ -257,9 +243,6 @@
 
 				// Handle game end
 				if (game.isGameOver()) {
-					if (game.hasWon()) {
-						congratsMessage = congrats[Math.floor(Math.random() * congrats.length)];
-					}
 					if (canSaveScore) {
 						submitScore();
 					}
@@ -459,37 +442,29 @@
 					Rejouer
 				</Button>
 			{:else if won}
-				<!-- Victory -->
-				<div class="flex items-center justify-center gap-8">
-					<div class="flex h-32 w-full justify-center">
-						<img src={dancing} alt="célébration" />
-					</div>
-					<div class="ml-6 flex flex-col items-center">
-						<div class="text-3xl" style="font-family: 'pacifico'">
-							{congratsMessage}
-						</div>
-						<Button onclick={handleRestart} class="my-2">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="24"
-								height="24"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								class="mr-2"
-							>
-								<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-								<path d="M21 3v5h-5" />
-								<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-								<path d="M3 21v-5h5" />
-							</svg>
-							Rejouer
-						</Button>
-					</div>
+				<!-- Victory card -->
+				<div class="w-full max-w-xs overflow-hidden rounded-xl shadow-lg">
+					<img src="/images/victory-mathemo.webp" alt="Victoire" class="w-full" />
 				</div>
+				<Button onclick={handleRestart} class="gap-2">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+						<path d="M21 3v5h-5" />
+						<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+						<path d="M3 21v-5h5" />
+					</svg>
+					Rejouer
+				</Button>
 
 				<!-- Reward display (authenticated students only) -->
 				{#if canSaveScore && rewardData}
