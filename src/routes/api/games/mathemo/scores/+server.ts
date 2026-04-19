@@ -102,13 +102,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const { word_length, attempts_used, max_attempts, won, found_first_try } = validation.data;
 
+		// Calculate score for leaderboard (theoretical_reward × 100)
+		const gameScore = won
+			? Math.round(
+					calculateMathemoTheoreticalReward(word_length, attempts_used, max_attempts) * 100
+				)
+			: 0;
+
 		// Upsert score stats
 		const { data: upsertData, error: upsertError } = await supabase
 			.rpc('upsert_mathemo_score', {
 				p_user_id: user.id,
 				p_word_length: word_length,
 				p_won: won,
-				p_found_first_try: found_first_try
+				p_found_first_try: found_first_try,
+				p_score: gameScore
 			})
 			.maybeSingle();
 

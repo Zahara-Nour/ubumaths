@@ -5193,6 +5193,7 @@ export type Database = {
 					games_played: number;
 					games_won: number;
 					id: string;
+					total_score: number;
 					updated_at: string;
 					user_id: string;
 				};
@@ -5203,6 +5204,7 @@ export type Database = {
 					games_played?: number;
 					games_won?: number;
 					id?: string;
+					total_score?: number;
 					updated_at?: string;
 					user_id: string;
 				};
@@ -5213,6 +5215,7 @@ export type Database = {
 					games_played?: number;
 					games_won?: number;
 					id?: string;
+					total_score?: number;
 					updated_at?: string;
 					user_id?: string;
 				};
@@ -13701,6 +13704,14 @@ export type Database = {
 				}[];
 			};
 			get_match_state: { Args: { p_match_id: string }; Returns: Json };
+			get_mathemo_user_rank: {
+				Args: { p_user_id: string };
+				Returns: {
+					total_players: number;
+					user_rank: number;
+					user_score: number;
+				}[];
+			};
 			get_message_attachments: {
 				Args: { p_message_id: string };
 				Returns: {
@@ -14746,6 +14757,7 @@ export type Database = {
 			upsert_mathemo_score: {
 				Args: {
 					p_found_first_try: boolean;
+					p_score?: number;
 					p_user_id: string;
 					p_won: boolean;
 					p_word_length: number;
@@ -14756,6 +14768,7 @@ export type Database = {
 					games_played: number;
 					games_won: number;
 					is_new_best_length: boolean;
+					total_score: number;
 				}[];
 			};
 			upsert_user_presence: {
