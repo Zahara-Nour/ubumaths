@@ -9,8 +9,12 @@ import { GRADES } from '$lib/types/grades';
 export interface MathTerm {
 	term: string;
 	tags: string[];
-	/** Definition of the term. Required for principal terms, omitted for derived terms. */
+	/** Definition of the term (ubumark). Required for principal terms, omitted for derived terms. */
 	definition?: string;
+	/** Usage example (ubumark). */
+	exemple?: string;
+	/** Historical note about the term or concept (ubumark). */
+	history?: string;
 	image?: string;
 	level: GradeCode;
 	synonyms?: string[];
