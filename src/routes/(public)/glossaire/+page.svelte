@@ -13,14 +13,6 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Search, BookOpen, RotateCcw } from 'lucide-svelte';
 
-	// ===== State =====
-
-	let searchQuery = $state('');
-	let selectedLevel = $state<string>('all');
-	let selectedTags = $state<string[]>([]);
-	let selectedTerm = $state<MathTerm | null>(null);
-	let showTermDialog = $state(false);
-
 	// ===== Constants =====
 
 	const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -35,6 +27,16 @@
 			})
 		)
 	];
+
+	// ===== State =====
+
+	let searchQuery = $state('');
+	let debouncedQuery = $state('');
+	let debounceTimer: ReturnType<typeof setTimeout>;
+	let selectedLevel = $state<string>('all');
+	let selectedTags = $state<string[]>([]);
+	let selectedTerm = $state<MathTerm | null>(null);
+	let showTermDialog = $state(false);
 
 	// ===== Helpers =====
 
@@ -65,8 +67,18 @@
 		}
 	}
 
+	function handleSearchInput(value: string) {
+		searchQuery = value;
+		clearTimeout(debounceTimer);
+		debounceTimer = setTimeout(() => {
+			debouncedQuery = value;
+		}, 200);
+	}
+
 	function resetFilters() {
 		searchQuery = '';
+		debouncedQuery = '';
+		clearTimeout(debounceTimer);
 		selectedLevel = 'all';
 		selectedTags = [];
 	}
@@ -101,9 +113,9 @@
 	let filteredTerms = $derived.by(() => {
 		let terms = [...MATH_DICTIONARY];
 
-		// Search filter
-		if (searchQuery.length > 0) {
-			terms = terms.filter((t) => matchesSearch(t, searchQuery));
+		// Search filter (uses debounced query for performance)
+		if (debouncedQuery.length > 0) {
+			terms = terms.filter((t) => matchesSearch(t, debouncedQuery));
 		}
 
 		// Grade filter
@@ -171,7 +183,8 @@
 		<Input
 			type="text"
 			placeholder="Rechercher un terme..."
-			bind:value={searchQuery}
+			value={searchQuery}
+			oninput={(e) => handleSearchInput(e.currentTarget.value)}
 			class="pl-10"
 		/>
 	</div>
@@ -203,6 +216,7 @@
 					? 'border-primary bg-primary text-primary-foreground'
 					: 'border-border bg-background text-foreground hover:bg-muted'}"
 				onclick={() => toggleTag(tag)}
+				aria-pressed={selectedTags.includes(tag)}
 			>
 				{tag}
 			</button>
@@ -212,7 +226,7 @@
 	<Separator class="mb-4" />
 
 	<!-- Alphabetical index -->
-	{#if !searchQuery}
+	{#if !debouncedQuery}
 		<div class="mb-4 flex flex-wrap justify-center gap-1">
 			{#each ALPHABET as letter (letter)}
 				<button
@@ -223,6 +237,7 @@
 						: 'cursor-default text-muted-foreground/30'}"
 					onclick={() => scrollToLetter(letter)}
 					disabled={!activeLetters.has(letter)}
+					aria-label="Aller à la lettre {letter}"
 				>
 					{letter}
 				</button>
@@ -288,27 +303,31 @@
 				? resolveGradedField(selectedTerm.exemples, readerGrade)
 				: []}
 
+			{@const derivedFrom = selectedTerm.derivedFrom}
+
 			<Dialog.Header>
 				<Dialog.Title class="text-2xl font-bold">{selectedTerm.term}</Dialog.Title>
-				<Dialog.Description>
-					<div class="flex flex-wrap items-center gap-2">
-						<Badge variant="secondary">{GRADES[selectedTerm.grade].displayName}</Badge>
-						{#each selectedTerm.tags as tag (tag)}
-							<Badge variant="outline" class="text-xs">{tag}</Badge>
-						{/each}
-					</div>
+				<Dialog.Description class="sr-only">
+					Définition du terme {selectedTerm.term}
 				</Dialog.Description>
 			</Dialog.Header>
 
+			<div class="flex flex-wrap items-center gap-2 pb-2">
+				<Badge variant="secondary">{GRADES[selectedTerm.grade].displayName}</Badge>
+				{#each selectedTerm.tags as tag (tag)}
+					<Badge variant="outline" class="text-xs">{tag}</Badge>
+				{/each}
+			</div>
+
 			<div class="space-y-4 py-4">
-				{#if selectedTerm.derivedFrom}
+				{#if derivedFrom}
 					<p class="text-muted-foreground italic">
 						Forme dérivée de
 						<button
 							class="font-medium text-primary underline"
-							onclick={() => openTermByName(selectedTerm?.derivedFrom ?? '')}
+							onclick={() => openTermByName(derivedFrom)}
 						>
-							{selectedTerm.derivedFrom}
+							{derivedFrom}
 						</button>
 					</p>
 				{/if}
@@ -316,7 +335,7 @@
 				{#if definitions.length > 0}
 					<div>
 						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Définition</h3>
-						{#each definitions as def, i (i)}
+						{#each definitions as def (def)}
 							<div class="text-sm">
 								<InlineMarkdown content={def} />
 							</div>
@@ -329,7 +348,7 @@
 						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">
 							Exemple{exemples.length > 1 ? 's' : ''}
 						</h3>
-						{#each exemples as ex, i (i)}
+						{#each exemples as ex (ex)}
 							<div class="text-sm">
 								<InlineMarkdown content={ex} />
 							</div>
