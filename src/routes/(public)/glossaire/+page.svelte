@@ -9,14 +9,16 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { Search, ChevronRight, BookOpen, RotateCcw } from 'lucide-svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Search, BookOpen, RotateCcw } from 'lucide-svelte';
 
 	// ===== State =====
 
 	let searchQuery = $state('');
 	let selectedLevel = $state<string>('all');
 	let selectedTags = $state<string[]>([]);
-	let expandedTerm = $state<string | null>(null);
+	let selectedTerm = $state<MathTerm | null>(null);
+	let showTermDialog = $state(false);
 
 	// ===== Constants =====
 
@@ -68,8 +70,14 @@
 		selectedTags = [];
 	}
 
-	function toggleExpand(termName: string) {
-		expandedTerm = expandedTerm === termName ? null : termName;
+	function openTerm(term: MathTerm) {
+		selectedTerm = term;
+		showTermDialog = true;
+	}
+
+	function openTermByName(name: string) {
+		const term = MATH_DICTIONARY.find((t) => t.term === name);
+		if (term) openTerm(term);
 	}
 
 	function scrollToLetter(letter: string) {
@@ -243,83 +251,93 @@
 
 				<!-- Terms in this letter group -->
 				{#each terms as term (term.term)}
-					{@const isExpanded = expandedTerm === term.term}
-					<div class="rounded-lg transition-colors hover:bg-muted/30" data-term={term.term}>
-						<!-- Compact view (always visible) -->
-						<button
-							class="flex w-full items-center gap-2 px-3 py-2.5 text-left"
-							onclick={() => toggleExpand(term.term)}
-						>
-							<ChevronRight
-								class="h-4 w-4 shrink-0 text-muted-foreground transition-transform {isExpanded
-									? 'rotate-90'
-									: ''}"
-							/>
-							<span class="font-medium">{term.term}</span>
+					<button
+						class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted/30"
+						onclick={() => openTerm(term)}
+					>
+						<span class="font-medium">{term.term}</span>
+						{#if term.derivedFrom}
+							<span class="text-xs text-muted-foreground italic">→ {term.derivedFrom}</span>
+						{:else}
 							<div class="hidden flex-wrap gap-1 sm:flex">
 								{#each term.tags.slice(0, 3) as tag (tag)}
 									<Badge variant="outline" class="text-[10px]">{tag}</Badge>
 								{/each}
 							</div>
-							<span class="ml-auto shrink-0 text-xs text-muted-foreground">
-								{GRADES[term.level].displayName}
-							</span>
-						</button>
-
-						<!-- Expanded view -->
-						{#if isExpanded}
-							<div class="space-y-2 px-3 pb-4 pl-9">
-								<!-- Tags on mobile -->
-								<div class="flex flex-wrap gap-1 sm:hidden">
-									{#each term.tags as tag (tag)}
-										<Badge variant="outline" class="text-[10px]">{tag}</Badge>
-									{/each}
-								</div>
-
-								{#if term.derivedFrom}
-									<p class="text-sm text-muted-foreground italic">
-										→ voir <button
-											class="font-medium text-primary underline"
-											onclick={() => {
-												expandedTerm = term.derivedFrom ?? null;
-												// Scroll to the parent term
-												const el = document.querySelector(`[data-term="${term.derivedFrom}"]`);
-												el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-											}}>{term.derivedFrom}</button
-										>
-									</p>
-								{:else}
-									{#if term.definition}
-										<div class="text-sm">
-											<InlineMarkdown content={term.definition} />
-										</div>
-									{/if}
-
-									{#if term.exemple}
-										<div class="text-sm">
-											<span class="font-semibold">Exemple :</span>
-											<InlineMarkdown content={term.exemple} />
-										</div>
-									{/if}
-
-									{#if term.history}
-										<div class="text-sm text-muted-foreground">
-											<span class="font-semibold">Histoire :</span>
-											<InlineMarkdown content={term.history} />
-										</div>
-									{/if}
-
-									{#if term.synonyms && term.synonyms.length > 0}
-										<p class="text-sm text-muted-foreground">
-											Synonymes : {term.synonyms.join(', ')}
-										</p>
-									{/if}
-								{/if}
-							</div>
 						{/if}
-					</div>
+						<span class="ml-auto shrink-0 text-xs text-muted-foreground">
+							{GRADES[term.level].displayName}
+						</span>
+					</button>
 				{/each}
 			{/each}
 		</div>
 	{/if}
 </div>
+
+<!-- Term Detail Dialog -->
+<Dialog.Root bind:open={showTermDialog}>
+	<Dialog.Content class="sm:max-w-md">
+		{#if selectedTerm}
+			<Dialog.Header>
+				<Dialog.Title class="text-2xl font-bold">{selectedTerm.term}</Dialog.Title>
+				<Dialog.Description>
+					<div class="flex flex-wrap items-center gap-2">
+						<Badge variant="secondary">{GRADES[selectedTerm.level].displayName}</Badge>
+						{#each selectedTerm.tags as tag (tag)}
+							<Badge variant="outline" class="text-xs">{tag}</Badge>
+						{/each}
+					</div>
+				</Dialog.Description>
+			</Dialog.Header>
+
+			<div class="space-y-4 py-4">
+				{#if selectedTerm.derivedFrom}
+					<p class="text-muted-foreground italic">
+						Forme dérivée de
+						<button
+							class="font-medium text-primary underline"
+							onclick={() => openTermByName(selectedTerm?.derivedFrom ?? '')}
+						>
+							{selectedTerm.derivedFrom}
+						</button>
+					</p>
+				{/if}
+
+				{#if selectedTerm.definition}
+					<div>
+						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Définition</h3>
+						<div class="text-sm">
+							<InlineMarkdown content={selectedTerm.definition} />
+						</div>
+					</div>
+				{/if}
+
+				{#if selectedTerm.exemple}
+					<div>
+						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Exemple</h3>
+						<div class="text-sm">
+							<InlineMarkdown content={selectedTerm.exemple} />
+						</div>
+					</div>
+				{/if}
+
+				{#if selectedTerm.history}
+					<div>
+						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Histoire</h3>
+						<div class="text-sm">
+							<InlineMarkdown content={selectedTerm.history} />
+						</div>
+					</div>
+				{/if}
+
+				{#if selectedTerm.synonyms && selectedTerm.synonyms.length > 0}
+					<div>
+						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Synonymes</h3>
+						<p class="text-sm">{selectedTerm.synonyms.join(', ')}</p>
+					</div>
+				{/if}
+			</div>
+		{/if}
+	</Dialog.Content>
+</Dialog.Root>
