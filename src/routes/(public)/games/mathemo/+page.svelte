@@ -24,6 +24,7 @@
 	import type { Difficulty } from './types';
 	import { Button } from '$lib/components/ui/button';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import type { PageData } from './$types';
 
 	// Random congratulations messages for when player wins
 	const congrats = [
@@ -41,6 +42,12 @@
 	// Create items array for Select component (Bits UI format)
 	const difficultyItems = difficulties.map((d) => ({ value: d, label: d }));
 
+	// ===== Server Data =====
+	let { data }: { data: PageData } = $props();
+
+	/** Whether scores can be saved (authenticated student) */
+	let canSaveScore = $derived(data.canSaveScore);
+
 	// ===== Local Component State =====
 
 	/** Triggers wiggle animation when invalid word is submitted */
@@ -54,6 +61,23 @@
 
 	/** Track selected difficulty for two-way binding with MySelect */
 	let selectedDifficulty = $state<string>(game.difficulty);
+
+	/** Reward data from API after game completion */
+	let rewardData = $state<{
+		theoretical_reward: number;
+		actual_reward: number;
+		is_first_win_of_day: boolean;
+		week_best_reward: number;
+	} | null>(null);
+
+	/** Milestones unlocked during this game */
+	let unlockedMilestones = $state<{ slug: string; name: string; gidouilles_reward: number }[]>([]);
+
+	/** Whether the score has been submitted for this game */
+	let scoreSubmitted = $state(false);
+
+	/** Congrats message (computed once on win, not re-rendered randomly) */
+	let congratsMessage = $state('');
 
 	// ===== Derived Values (Computed from Game State) =====
 
@@ -126,15 +150,52 @@
 
 	// ===== Effects =====
 
+	// For authenticated students, enforce fixed 6 attempts on init
+	if (data.canSaveScore && game.maxAttempts !== 6 && !game.isGameOver()) {
+		game.startNewGame(game.difficulty, 6);
+	}
+
 	/**
 	 * Watch for difficulty changes and start a new game
 	 * Uses $effect to react to selectedDifficulty changes
 	 */
 	$effect(() => {
 		if (selectedDifficulty !== game.difficulty && !gameOver) {
-			game.startNewGame(selectedDifficulty as Difficulty, game.maxAttempts);
+			const attempts = canSaveScore ? 6 : game.maxAttempts;
+			game.startNewGame(selectedDifficulty as Difficulty, attempts);
 		}
 	});
+
+	/**
+	 * Submit game result to the API and update reward state
+	 */
+	async function submitScore() {
+		if (scoreSubmitted) return;
+		scoreSubmitted = true;
+
+		try {
+			const completionData = game.getCompletionData();
+			const response = await fetch('/api/games/mathemo/scores', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(completionData)
+			});
+
+			if (!response.ok) return;
+
+			const result = await response.json();
+
+			if (result.reward) {
+				rewardData = result.reward;
+			}
+
+			if (result.milestones && result.milestones.length > 0) {
+				unlockedMilestones = result.milestones;
+			}
+		} catch {
+			// Non-blocking: game experience is not affected
+		}
+	}
 
 	// ===== Event Handlers =====
 
@@ -193,6 +254,16 @@
 					animatingRow = null;
 					newlyDiscoveredIndices = [];
 				}, 2500);
+
+				// Handle game end
+				if (game.isGameOver()) {
+					if (game.hasWon()) {
+						congratsMessage = congrats[Math.floor(Math.random() * congrats.length)];
+					}
+					if (canSaveScore) {
+						submitScore();
+					}
+				}
 			}
 		} else if (key === 'backspace') {
 			game.updateGuess('backspace');
@@ -237,8 +308,12 @@
 	 */
 	function handleRestart() {
 		game.clearSaved();
-		game.startNewGame(game.difficulty, game.maxAttempts);
+		const attempts = canSaveScore ? 6 : game.maxAttempts;
+		game.startNewGame(game.difficulty, attempts);
 		badGuess = false;
+		rewardData = null;
+		unlockedMilestones = [];
+		scoreSubmitted = false;
 	}
 </script>
 
@@ -266,27 +341,29 @@
 				/>
 			</div>
 
-			<!-- Attempts Controls -->
-			<div class="flex items-center gap-1 sm:gap-2">
-				<span class="text-xs font-medium sm:text-sm">Tentatives:</span>
-				<Button
-					variant="outline"
-					size="sm"
-					onclick={() => handleAdjustAttempts(-1)}
-					disabled={game.maxAttempts <= 3}
-				>
-					-
-				</Button>
-				<span class="text-lg font-bold">{game.maxAttempts}</span>
-				<Button
-					variant="outline"
-					size="sm"
-					onclick={() => handleAdjustAttempts(1)}
-					disabled={game.maxAttempts >= 10}
-				>
-					+
-				</Button>
-			</div>
+			<!-- Attempts Controls (hidden for authenticated students - fixed at 6) -->
+			{#if !canSaveScore}
+				<div class="flex items-center gap-1 sm:gap-2">
+					<span class="text-xs font-medium sm:text-sm">Tentatives:</span>
+					<Button
+						variant="outline"
+						size="sm"
+						onclick={() => handleAdjustAttempts(-1)}
+						disabled={game.maxAttempts <= 3}
+					>
+						-
+					</Button>
+					<span class="text-lg font-bold">{game.maxAttempts}</span>
+					<Button
+						variant="outline"
+						size="sm"
+						onclick={() => handleAdjustAttempts(1)}
+						disabled={game.maxAttempts >= 10}
+					>
+						+
+					</Button>
+				</div>
+			{/if}
 		</div>
 	{/if}
 
@@ -346,42 +423,74 @@
 	<!-- Controls: Keyboard or End Screen -->
 	<div class="controls">
 		{#if gameOver}
-			<div class="flex items-center justify-center gap-8">
-				{#if lost}
-					<div class="flex flex-col">
-						<p>Le mot mathématique était :</p>
-						<span class="text-3xl font-bold text-primary">{game.answer}</span>
+			<div class="flex flex-col items-center gap-4">
+				<div class="flex items-center justify-center gap-8">
+					{#if lost}
+						<div class="flex flex-col">
+							<p>Le mot mathématique était :</p>
+							<span class="text-3xl font-bold text-primary">{game.answer}</span>
+						</div>
+					{:else if won}
+						<div class="flex h-32 w-full justify-center">
+							<img src={dancing} alt="célébration" />
+						</div>
+					{/if}
+					<div class="ml-6 flex flex-col items-center">
+						<div class="text-3xl" style="font-family: 'pacifico'">
+							{won ? congratsMessage : 'Game Over !'}
+						</div>
+						<Button onclick={handleRestart} class="my-2">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="mr-2"
+							>
+								<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+								<path d="M21 3v5h-5" />
+								<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+								<path d="M3 21v-5h5" />
+							</svg>
+							Rejouer
+						</Button>
 					</div>
-				{:else if won}
-					<div class="flex h-32 w-full justify-center">
-						<img src={dancing} alt="célébration" />
+				</div>
+
+				<!-- Reward display (authenticated students only) -->
+				{#if canSaveScore && won && rewardData}
+					<div class="flex flex-col items-center gap-1 text-sm">
+						{#if rewardData.is_first_win_of_day}
+							<div class="text-xl font-bold text-primary">+1 gidouille</div>
+						{:else}
+							<div class="text-muted-foreground">Gidouille Mathémo déjà gagnée aujourd'hui</div>
+						{/if}
+						<div class="text-muted-foreground">
+							Valeur théorique : {rewardData.theoretical_reward.toFixed(2)}g
+						</div>
+						<div class="text-muted-foreground">
+							Meilleur cette semaine : {rewardData.week_best_reward.toFixed(2)}g
+						</div>
 					</div>
 				{/if}
-				<div class="ml-6 flex flex-col items-center">
-					<div class="text-3xl" style="font-family: 'pacifico'">
-						{won ? congrats[Math.floor(Math.random() * congrats.length)] : 'Game Over !'}
+
+				<!-- Milestones -->
+				{#if unlockedMilestones.length > 0}
+					<div class="flex flex-col items-center gap-1">
+						<div class="text-sm font-semibold">Succès débloqués !</div>
+						{#each unlockedMilestones as milestone (milestone.slug)}
+							<div class="flex items-center gap-2 text-sm">
+								<span>{milestone.name}</span>
+								<span class="font-bold text-primary">+{milestone.gidouilles_reward}g</span>
+							</div>
+						{/each}
 					</div>
-					<Button onclick={handleRestart} class="my-2">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="24"
-							height="24"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							class="mr-2"
-						>
-							<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-							<path d="M21 3v5h-5" />
-							<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-							<path d="M3 21v-5h5" />
-						</svg>
-						Rejouer
-					</Button>
-				</div>
+				{/if}
 			</div>
 		{:else}
 			<div class="keyboard">

@@ -5185,6 +5185,39 @@ export type Database = {
 					}
 				];
 			};
+			mathemo_scores: {
+				Row: {
+					best_word_length: number;
+					created_at: string;
+					first_try_count: number;
+					games_played: number;
+					games_won: number;
+					id: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					best_word_length?: number;
+					created_at?: string;
+					first_try_count?: number;
+					games_played?: number;
+					games_won?: number;
+					id?: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					best_word_length?: number;
+					created_at?: string;
+					first_try_count?: number;
+					games_played?: number;
+					games_won?: number;
+					id?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
 			message_attachments: {
 				Row: {
 					created_at: string | null;
@@ -14709,6 +14742,21 @@ export type Database = {
 					p_url: string;
 				};
 				Returns: number;
+			};
+			upsert_mathemo_score: {
+				Args: {
+					p_found_first_try: boolean;
+					p_user_id: string;
+					p_won: boolean;
+					p_word_length: number;
+				};
+				Returns: {
+					best_word_length: number;
+					first_try_count: number;
+					games_played: number;
+					games_won: number;
+					is_new_best_length: boolean;
+				}[];
 			};
 			upsert_user_presence: {
 				Args: { p_status: string; p_user_id: string };
