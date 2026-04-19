@@ -46,6 +46,8 @@ export function resolveGradedField(field: GradedField, readerGrade: GradeCode): 
 
 export interface MathTerm {
 	term: string;
+	/** Semantic disambiguation for homonyms (e.g., 'géométrie' vs 'puissances' for 'base'). */
+	sense?: string;
 	tags: string[];
 	/** Definitions by grade level (ubumark). Required for principal terms, omitted for derived terms. */
 	definitions?: GradedField;
@@ -579,7 +581,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		grade: 'CM1'
 	},
 	{
-		term: 'diviseur (arithmétique)',
+		term: 'diviseur',
+		sense: 'arithmétique',
 		tags: ['entiers', 'arithmétique', 'divisibilité'],
 		definitions: {
 			items: [
@@ -702,7 +705,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		grade: 'CE2'
 	},
 	{
-		term: 'diviseur (operation)',
+		term: 'diviseur',
+		sense: 'opération',
 		tags: ['entiers', 'operations'],
 		definitions: {
 			items: [
@@ -1355,7 +1359,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		grade: '4'
 	},
 	{
-		term: 'solution (équation)',
+		term: 'solution',
+		sense: 'équation',
 		tags: ['calcul-littéral', 'équations'],
 		definitions: {
 			items: [
@@ -1571,7 +1576,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 		term: 'resoudre',
 		tags: ['calcul-littéral', 'équations'],
 		grade: '4',
-		derivedFrom: 'solution (équation)'
+		derivedFrom: 'solution'
 	},
 	{
 		term: 'solution',
@@ -1580,7 +1585,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 			items: [{ grade: '4', content: 'Valeur qui vérifie une équation ou un problème.' }]
 		},
 		grade: '4',
-		derivedFrom: 'solution (équation)'
+		derivedFrom: 'solution'
 	},
 
 	// =========================================================================
@@ -2769,7 +2774,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		synonyms: ['suite numerique']
 	},
 	{
-		term: 'terme (suite)',
+		term: 'terme',
+		sense: 'suite',
 		tags: ['suites'],
 		definitions: {
 			items: [{ grade: '1_SPE', content: "Élément d'une suite. $u_n$ est le terme de rang $n$." }]
@@ -3425,7 +3431,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		grade: '3'
 	},
 	{
-		term: 'tangente (trigonométrie)',
+		term: 'tangente',
+		sense: 'trigonométrie',
 		tags: ['géométrie', 'trigonométrie'],
 		definitions: {
 			items: [
@@ -3488,7 +3495,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		grade: 'CP'
 	},
 	{
-		term: 'carré (géométrie)',
+		term: 'carré',
+		sense: 'géométrie',
 		tags: ['géométrie'],
 		definitions: { items: [{ grade: 'CP', content: 'Rectangle ayant quatre côtés égaux.' }] },
 		grade: 'CP'
@@ -3563,7 +3571,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		grade: 'CE2'
 	},
 	{
-		term: 'médiane (géométrie)',
+		term: 'médiane',
+		sense: 'géométrie',
 		tags: ['géométrie'],
 		definitions: {
 			items: [
@@ -3598,7 +3607,8 @@ const MATH_DICTIONARY: MathTerm[] = [
 		grade: '6'
 	},
 	{
-		term: 'hauteur (géométrie)',
+		term: 'hauteur',
+		sense: 'géométrie',
 		tags: ['géométrie'],
 		definitions: {
 			items: [
@@ -4184,7 +4194,7 @@ const MATH_DICTIONARY: MathTerm[] = [
 		tags: ['géométrie', 'trigonométrie'],
 		definitions: { items: [{ grade: '6', content: 'Variante orthographique de tangente.' }] },
 		grade: '3',
-		derivedFrom: 'tangente (trigonométrie)'
+		derivedFrom: 'tangente'
 	},
 	{
 		term: 'thales',

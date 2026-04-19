@@ -18,12 +18,12 @@ describe('math-dictionary-fr', () => {
 		expect(MATH_DICTIONARY.length).toBeGreaterThanOrEqual(200);
 	});
 
-	it('should have no duplicate terms', () => {
-		const terms = MATH_DICTIONARY.map((t) => t.term);
-		const unique = new Set(terms);
-		const duplicates = terms.filter((t, i) => terms.indexOf(t) !== i);
+	it('should have no duplicate terms (term + sense)', () => {
+		const keys = MATH_DICTIONARY.map((t) => `${t.term}|${t.sense ?? ''}`);
+		const unique = new Set(keys);
+		const duplicates = keys.filter((k, i) => keys.indexOf(k) !== i);
 		expect(duplicates).toEqual([]);
-		expect(unique.size).toBe(terms.length);
+		expect(unique.size).toBe(keys.length);
 	});
 
 	it('should have valid GradeCode for every term', () => {

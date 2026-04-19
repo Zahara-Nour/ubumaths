@@ -266,12 +266,15 @@
 				</div>
 
 				<!-- Terms in this letter group -->
-				{#each terms as term (term.term)}
+				{#each terms as term (`${term.term}|${term.sense ?? ''}`)}
 					<button
 						class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted/30"
 						onclick={() => openTerm(term)}
 					>
 						<span class="font-medium">{term.term}</span>
+						{#if term.sense}
+							<span class="text-xs text-muted-foreground italic">({term.sense})</span>
+						{/if}
 						{#if term.derivedFrom}
 							<span class="text-xs text-muted-foreground italic">→ {term.derivedFrom}</span>
 						{:else}
@@ -306,7 +309,12 @@
 			{@const derivedFrom = selectedTerm.derivedFrom}
 
 			<Dialog.Header>
-				<Dialog.Title class="text-2xl font-bold">{selectedTerm.term}</Dialog.Title>
+				<Dialog.Title class="text-2xl font-bold">
+					{selectedTerm.term}{#if selectedTerm.sense}<span
+							class="ml-2 text-lg font-normal text-muted-foreground italic"
+							>({selectedTerm.sense})</span
+						>{/if}
+				</Dialog.Title>
 				<Dialog.Description class="sr-only">
 					Définition du terme {selectedTerm.term}
 				</Dialog.Description>
