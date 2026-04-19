@@ -325,7 +325,14 @@
 </svelte:head>
 
 <div class="flex min-h-screen flex-col items-center justify-start gap-2 p-4 pt-4 sm:gap-4 sm:pt-8">
-	<h1 class="text-3xl font-bold sm:text-4xl" style="font-family: 'pacifico'">Mathémo</h1>
+	<!-- Banner -->
+	<div class="w-full max-w-2xl overflow-hidden rounded-xl">
+		<img
+			src="/images/banner-mathemo.webp"
+			alt="Mathémo - Un jeu de vocabulaire mathématique style Wordle"
+			class="h-40 w-full object-cover sm:h-52 md:h-64"
+		/>
+	</div>
 
 	<!-- Controls: Difficulty and Attempts -->
 	{#if !gameOver}
