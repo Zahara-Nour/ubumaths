@@ -428,23 +428,45 @@
 	</div>
 
 	<!-- Controls: Keyboard or End Screen -->
-	<div class="controls">
-		{#if gameOver}
-			<div class="flex flex-col items-center gap-4">
+	{#if gameOver}
+		<div class="flex flex-col items-center gap-4">
+			{#if lost}
+				<!-- Defeat card -->
+				<div class="w-full max-w-xs overflow-hidden rounded-xl shadow-lg">
+					<img src="/images/defeat-mathemo.webp" alt="Défaite" class="w-full" />
+				</div>
+				<div class="flex flex-col items-center gap-1">
+					<p class="text-sm text-muted-foreground">Le mot mathématique était :</p>
+					<span class="text-2xl font-bold text-primary">{game.answer}</span>
+				</div>
+				<Button onclick={handleRestart} class="gap-2">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+						<path d="M21 3v5h-5" />
+						<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+						<path d="M3 21v-5h5" />
+					</svg>
+					Rejouer
+				</Button>
+			{:else if won}
+				<!-- Victory -->
 				<div class="flex items-center justify-center gap-8">
-					{#if lost}
-						<div class="flex flex-col">
-							<p>Le mot mathématique était :</p>
-							<span class="text-3xl font-bold text-primary">{game.answer}</span>
-						</div>
-					{:else if won}
-						<div class="flex h-32 w-full justify-center">
-							<img src={dancing} alt="célébration" />
-						</div>
-					{/if}
+					<div class="flex h-32 w-full justify-center">
+						<img src={dancing} alt="célébration" />
+					</div>
 					<div class="ml-6 flex flex-col items-center">
 						<div class="text-3xl" style="font-family: 'pacifico'">
-							{won ? congratsMessage : 'Game Over !'}
+							{congratsMessage}
 						</div>
 						<Button onclick={handleRestart} class="my-2">
 							<svg
@@ -470,7 +492,7 @@
 				</div>
 
 				<!-- Reward display (authenticated students only) -->
-				{#if canSaveScore && won && rewardData}
+				{#if canSaveScore && rewardData}
 					<div class="flex flex-col items-center gap-1 text-sm">
 						{#if rewardData.is_first_win_of_day}
 							<div class="text-xl font-bold text-primary">+1 gidouille</div>
@@ -498,8 +520,10 @@
 						{/each}
 					</div>
 				{/if}
-			</div>
-		{:else}
+			{/if}
+		</div>
+	{:else}
+		<div class="controls">
 			<div class="keyboard">
 				<button
 					data-key="enter"
@@ -528,8 +552,8 @@
 					</div>
 				{/each}
 			</div>
-		{/if}
-	</div>
+		</div>
+	{/if}
 </div>
 
 {#if won}
