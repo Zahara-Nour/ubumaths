@@ -2,7 +2,8 @@
 	import MATH_DICTIONARY from '$lib/data/math-dictionary-fr';
 	import { GRADES } from '$lib/types/grades';
 	import type { GradeCode } from '$lib/types/grades';
-	import type { MathTerm } from '$lib/data/math-dictionary-fr';
+	import { resolveGradedField, type MathTerm } from '$lib/data/math-dictionary-fr';
+	import { hasAccessToGrade } from '$lib/utils/grades';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Badge } from '$lib/components/ui/badge';
@@ -47,7 +48,7 @@
 	function matchesSearch(term: MathTerm, query: string): boolean {
 		const q = normalizeString(query);
 		if (normalizeString(term.term).includes(q)) return true;
-		if (term.definition && normalizeString(term.definition).includes(q)) return true;
+		if (term.definitions?.items.some((d) => normalizeString(d.content).includes(q))) return true;
 		if (term.synonyms?.some((s) => normalizeString(s).includes(q))) return true;
 		return false;
 	}
@@ -105,10 +106,10 @@
 			terms = terms.filter((t) => matchesSearch(t, searchQuery));
 		}
 
-		// Level filter
+		// Grade filter
 		if (selectedLevel !== 'all') {
-			const maxYear = GRADES[selectedLevel as GradeCode].schoolYear;
-			terms = terms.filter((t) => GRADES[t.level].schoolYear <= maxYear);
+			const readerGrade = selectedLevel as GradeCode;
+			terms = terms.filter((t) => hasAccessToGrade(readerGrade, t.grade));
 		}
 
 		// Tag filter
@@ -266,7 +267,7 @@
 							</div>
 						{/if}
 						<span class="ml-auto shrink-0 text-xs text-muted-foreground">
-							{GRADES[term.level].displayName}
+							{GRADES[term.grade].displayName}
 						</span>
 					</button>
 				{/each}
@@ -279,11 +280,19 @@
 <Dialog.Root bind:open={showTermDialog}>
 	<Dialog.Content class="sm:max-w-md">
 		{#if selectedTerm}
+			{@const readerGrade = (selectedLevel !== 'all' ? selectedLevel : 'T_SPE') as GradeCode}
+			{@const definitions = selectedTerm.definitions
+				? resolveGradedField(selectedTerm.definitions, readerGrade)
+				: []}
+			{@const exemples = selectedTerm.exemples
+				? resolveGradedField(selectedTerm.exemples, readerGrade)
+				: []}
+
 			<Dialog.Header>
 				<Dialog.Title class="text-2xl font-bold">{selectedTerm.term}</Dialog.Title>
 				<Dialog.Description>
 					<div class="flex flex-wrap items-center gap-2">
-						<Badge variant="secondary">{GRADES[selectedTerm.level].displayName}</Badge>
+						<Badge variant="secondary">{GRADES[selectedTerm.grade].displayName}</Badge>
 						{#each selectedTerm.tags as tag (tag)}
 							<Badge variant="outline" class="text-xs">{tag}</Badge>
 						{/each}
@@ -304,21 +313,27 @@
 					</p>
 				{/if}
 
-				{#if selectedTerm.definition}
+				{#if definitions.length > 0}
 					<div>
 						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Définition</h3>
-						<div class="text-sm">
-							<InlineMarkdown content={selectedTerm.definition} />
-						</div>
+						{#each definitions as def, i (i)}
+							<div class="text-sm">
+								<InlineMarkdown content={def} />
+							</div>
+						{/each}
 					</div>
 				{/if}
 
-				{#if selectedTerm.exemple}
+				{#if exemples.length > 0}
 					<div>
-						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">Exemple</h3>
-						<div class="text-sm">
-							<InlineMarkdown content={selectedTerm.exemple} />
-						</div>
+						<h3 class="mb-1 text-sm font-semibold text-muted-foreground">
+							Exemple{exemples.length > 1 ? 's' : ''}
+						</h3>
+						{#each exemples as ex, i (i)}
+							<div class="text-sm">
+								<InlineMarkdown content={ex} />
+							</div>
+						{/each}
 					</div>
 				{/if}
 

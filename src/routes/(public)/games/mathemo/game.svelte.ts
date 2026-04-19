@@ -13,7 +13,7 @@
 import { browser } from '$app/environment';
 import type { GradeCode } from '$lib/types/grades';
 import type { GameState, FeedbackType } from './types';
-import MATH_DICTIONARY, { getTermsForLevel } from '$lib/data/math-dictionary-fr';
+import MATH_DICTIONARY, { getTermsForGrade } from '$lib/data/math-dictionary-fr';
 
 /** localStorage key for game state persistence */
 const STORAGE_KEY = 'mathemo_state';
@@ -48,7 +48,7 @@ const allWordsNormalized = new Set(
  * Returns normalized term strings (without accents) for the game.
  */
 function getWordsForLevel(level: GradeCode): string[] {
-	return getTermsForLevel(level)
+	return getTermsForGrade(level)
 		.filter((t) => !t.term.includes(' '))
 		.map((t) => normalizeString(t.term));
 }
