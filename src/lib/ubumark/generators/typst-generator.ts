@@ -1614,7 +1614,13 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'slant',
 	'double',
 	'cont',
-	'triple'
+	'triple',
+	// Typst number set symbols (blackboard bold)
+	'RR',
+	'NN',
+	'ZZ',
+	'QQ',
+	'CC'
 	// NOTE: dx, dy, dt etc. are NOT protected here because Typst needs "d x" (with space).
 	// Typst treats "dx" as an unknown variable. The implicit multiplication split into "d x"
 	// is the correct Typst rendering for differential notation in integrals.
@@ -1661,36 +1667,50 @@ function addImplicitMultiplicationSpaces(str: string): string {
 	});
 
 	// Protect content block placeholders <<<CONTENT_L>>>...<<<CONTENT_R>>>
-	// These come from \textcolor conversion and should not be split
+	// These come from \textcolor conversion - content inside should not be split
 	protected_ = protected_.replace(/<<<CONTENT_L>>>([\s\S]*?)<<<CONTENT_R>>>/g, (match) => {
 		protections.push(match);
-		return `<<<PROTECT_${protections.length - 1}>>>`;
+		return `__p${protections.length - 1}__`;
+	});
+
+	// Protect ALL remaining <<<PLACEHOLDER>>> sequences (decimal comma, arrows, braces,
+	// and the <<<PROTECT_N>>> markers from above). These contain uppercase letters that would
+	// be incorrectly split. Use a non-uppercase marker (__pN__) to avoid recursive matching.
+	protected_ = protected_.replace(/<<<[A-Z_0-9]+>>>/g, (match) => {
+		protections.push(match);
+		return `__p${protections.length - 1}__`;
 	});
 
 	// Apply implicit multiplication to remaining content
-	// Match 2+ lowercase letters OR uppercase+lowercase sequences (e.g., Delta, Gamma)
-	protected_ = protected_.replace(/([A-Z][a-z]+|[a-z]{2,})/g, (match, _group, offset, fullStr) => {
-		// If followed by '(', it's a function call - preserve entire match
-		const nextChar = fullStr[offset + match.length];
-		if (nextChar === '(') {
-			return match;
+	// Match 2+ lowercase letters, uppercase+lowercase (e.g., Delta, Gamma),
+	// or 2+ uppercase letters (e.g., AB, MI - common in geometry)
+	protected_ = protected_.replace(
+		/([A-Z]{2,}|[A-Z][a-z]+|[a-z]{2,})/g,
+		(match, _group, offset, fullStr) => {
+			// If followed by '(', it's a function call - preserve entire match
+			const nextChar = fullStr[offset + match.length];
+			if (nextChar === '(') {
+				return match;
+			}
+
+			// Check if this is a known symbol
+			if (KNOWN_TYPST_SYMBOLS.has(match)) {
+				return match;
+			}
+
+			// Check if preceded by . which indicates a method/property (e.g., dots.c)
+			if (offset > 0 && fullStr[offset - 1] === '.') {
+				return match;
+			}
+
+			// Split into individual letters with spaces
+			return match.split('').join(' ');
 		}
+	);
 
-		// Check if this is a known symbol
-		if (KNOWN_TYPST_SYMBOLS.has(match)) {
-			return match;
-		}
-
-		// Check if preceded by . which indicates a method/property (e.g., dots.c)
-		if (offset > 0 && fullStr[offset - 1] === '.') {
-			return match;
-		}
-
-		// Split into individual letters with spaces
-		return match.split('').join(' ');
-	});
-
-	// Restore protected content
+	// Restore protected content: __pN__ markers first (which may restore <<<PROTECT_N>>> markers),
+	// then <<<PROTECT_N>>> markers to get the original content
+	protected_ = protected_.replace(/__p(\d+)__/g, (_, idx) => protections[parseInt(idx)]);
 	protected_ = protected_.replace(/<<<PROTECT_(\d+)>>>/g, (_, idx) => protections[parseInt(idx)]);
 
 	return protected_;
@@ -2072,6 +2092,8 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\binom\s*{([^{}]*)}\s*{([^{}]*)}/g, 'binom($1, $2)');
 
 	// 3. Vectors and accents (1 argument) - use balanced brace matching for nested content
+	result = convertLatexOneArgCommand(result, 'overrightarrow', 'arrow');
+	result = convertLatexOneArgCommand(result, 'overleftarrow', 'arrow.l');
 	result = convertLatexOneArgCommand(result, 'vec', 'arrow');
 	result = convertLatexOneArgCommand(result, 'hat', 'hat');
 	result = convertLatexOneArgCommand(result, 'bar', 'macron');
