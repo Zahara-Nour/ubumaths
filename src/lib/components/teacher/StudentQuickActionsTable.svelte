@@ -41,8 +41,8 @@
 	-----------------------------
 	The warning button applies penalties in order of severity:
 
-	Step 1: Remove 1 gidouille (if gidouilles > 0)
-		- Deducts 1 gidouille instantly
+	Step 1: Remove 3 gidouilles (if gidouilles >= 3)
+		- Deducts 3 gidouilles instantly
 		- Sends notification: "Gidouille retirée"
 		- Prevents student from losing cards/warnings first
 
@@ -297,11 +297,11 @@
 		const unusedVipCards = getUnusedVipCards(student.vipCards);
 		const score = getScore(student.warnings);
 
-		// STEP 1: Remove gidouille if > 0 (optimistic UI + debounced API call)
-		if (gidouilles > 0) {
+		// STEP 1: Remove 3 gidouilles if >= 3 (optimistic UI + debounced API call)
+		if (gidouilles >= 3) {
 			debouncedUpdateGidouilles(
 				student.id,
-				-1,
+				-3,
 				student.firstname,
 				'Retiré suite à un avertissement'
 			);
