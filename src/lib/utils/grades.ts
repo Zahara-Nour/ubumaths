@@ -16,6 +16,12 @@ export function getAccessibleGrades(grade: GradeCode): GradeCode[] {
 		return cached;
 	}
 
+	// Validate grade exists
+	if (!GRADES[grade]) {
+		console.warn(`[getAccessibleGrades] Unknown grade: "${grade}", falling back to '6'`);
+		return getAccessibleGrades('6' as GradeCode);
+	}
+
 	const accessible = new Set<GradeCode>();
 	const queue: GradeCode[] = [grade];
 
@@ -29,6 +35,7 @@ export function getAccessibleGrades(grade: GradeCode): GradeCode[] {
 
 		// Add all prerequisites of the current grade
 		const currentInfo = GRADES[current];
+		if (!currentInfo) continue;
 		for (const prereq of currentInfo.prerequisites) {
 			if (!accessible.has(prereq)) {
 				queue.push(prereq);

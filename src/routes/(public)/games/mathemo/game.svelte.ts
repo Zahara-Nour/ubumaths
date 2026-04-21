@@ -6,12 +6,12 @@
  * - Word validation with accent normalization
  * - Feedback calculation (exact/close/missing)
  * - localStorage persistence
- * - Adjustable difficulty and attempts
+ * - Adjustable grade and attempts
  *
  * Uses the math dictionary as word source instead of a hardcoded word list.
  */
 import { browser } from '$app/environment';
-import type { GradeCode } from '$lib/types/grades';
+import { isGradeCode, type GradeCode } from '$lib/types/grades';
 import type { GameState, FeedbackType } from './types';
 import MATH_DICTIONARY, { getTermsForGrade } from '$lib/data/math-dictionary-fr';
 
@@ -83,8 +83,8 @@ class MathemoGame {
 	/** Current maximum attempts allowed (adjustable 3-10) */
 	maxAttempts = $state(DEFAULT_ATTEMPTS);
 
-	/** Current difficulty level (GradeCode) */
-	difficulty = $state<GradeCode>('6');
+	/** Current grade level (GradeCode) */
+	grade = $state<GradeCode>('6');
 
 	/** Current row being edited (0-indexed) */
 	currentRow = $state(0);
@@ -106,14 +106,14 @@ class MathemoGame {
 	// ===== Game Control Methods =====
 
 	/**
-	 * Start a new game with specified difficulty and max attempts
-	 * @param difficulty - GradeCode (e.g., '6', '5', '4', '3', '2', '1_SPE', 'T_SPE')
+	 * Start a new game with specified grade and max attempts
+	 * @param grade - GradeCode (e.g., '6', '5', '4', '3', '2', '1_SPE', 'T_SPE')
 	 * @param maxAttempts - Number of attempts allowed (3-10)
 	 */
-	startNewGame(difficulty: GradeCode, maxAttempts: number = DEFAULT_ATTEMPTS) {
-		this.difficulty = difficulty;
+	startNewGame(grade: GradeCode, maxAttempts: number = DEFAULT_ATTEMPTS) {
+		this.grade = grade;
 		this.maxAttempts = Math.max(MIN_ATTEMPTS, Math.min(MAX_ATTEMPTS, maxAttempts));
-		this.answer = getRandomWord(difficulty);
+		this.answer = getRandomWord(grade);
 		this.guesses = Array(this.maxAttempts).fill('');
 		this.answers = [];
 		this.correctLetters = Array(this.answer.length).fill('');
@@ -325,7 +325,7 @@ class MathemoGame {
 			answers: this.answers,
 			correctLetters: this.correctLetters,
 			maxAttempts: this.maxAttempts,
-			difficulty: this.difficulty,
+			grade: this.grade,
 			currentRow: this.currentRow
 		};
 
@@ -346,7 +346,7 @@ class MathemoGame {
 			this.answers = state.answers;
 			this.correctLetters = state.correctLetters;
 			this.maxAttempts = state.maxAttempts;
-			this.difficulty = state.difficulty;
+			this.grade = isGradeCode(state.grade) ? state.grade : '6';
 			this.currentRow = state.currentRow;
 		} catch (error) {
 			console.error('Failed to load game state:', error);
