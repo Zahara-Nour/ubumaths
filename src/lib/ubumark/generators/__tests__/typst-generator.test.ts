@@ -1437,8 +1437,18 @@ describe('convertLatexToTypstMath - Vectors and Accents', () => {
 		expect(convertLatexToTypstMath('\\vec{x}')).toBe('arrow(x)');
 	});
 
-	it('should convert \\vec{AB} to arrow(AB)', () => {
-		expect(convertLatexToTypstMath('\\vec{AB}')).toBe('arrow(AB)');
+	it('should convert \\vec{AB} to arrow(A B)', () => {
+		expect(convertLatexToTypstMath('\\vec{AB}')).toBe('arrow(A B)');
+	});
+
+	it('should convert \\overrightarrow{MA} to arrow(M A)', () => {
+		expect(convertLatexToTypstMath('\\overrightarrow{MA}')).toBe('arrow(M A)');
+	});
+
+	it('should convert complex overrightarrow expression', () => {
+		expect(
+			convertLatexToTypstMath('\\overrightarrow{MA} = \\overrightarrow{MI} + \\overrightarrow{IA}')
+		).toBe('arrow(M A) = arrow(M I) + arrow(I A)');
 	});
 
 	it('should convert \\hat{x} to hat(x)', () => {
@@ -1461,8 +1471,8 @@ describe('convertLatexToTypstMath - Vectors and Accents', () => {
 		expect(convertLatexToTypstMath('\\ddot{x}')).toBe('diaer(x)');
 	});
 
-	it('should convert \\overline{AB} to overline(AB)', () => {
-		expect(convertLatexToTypstMath('\\overline{AB}')).toBe('overline(AB)');
+	it('should convert \\overline{AB} to overline(A B)', () => {
+		expect(convertLatexToTypstMath('\\overline{AB}')).toBe('overline(A B)');
 	});
 
 	it('should convert \\overline with nested braces like \\overline{R_{n}}', () => {
@@ -1972,7 +1982,7 @@ describe('convertLatexToTypstMath - Operators with spacing', () => {
 
 describe('convertLatexToTypstMath - Brace handling', () => {
 	it('should convert standalone \\{ and \\} to visible Typst brace symbols', () => {
-		expect(convertLatexToTypstMath('\\{ x \\}')).toBe('brace.l x brace.r');
+		expect(convertLatexToTypstMath('\\{ x \\}')).toBe('brace.l  x  brace.r');
 	});
 
 	it('should handle \\{,\\} (escaped braces around comma) as French decimal', () => {
