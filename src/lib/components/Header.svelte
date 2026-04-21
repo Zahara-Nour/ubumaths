@@ -302,7 +302,10 @@
 				<!-- Font size controls -->
 				<div class="flex items-center gap-1">
 					<Button
-						onclick={() => fontSize.decrease()}
+						onclick={(e: MouseEvent) => {
+							fontSize.decrease();
+							(e.currentTarget as HTMLElement).blur();
+						}}
 						disabled={!fontSize.canDecrease}
 						variant="ghost"
 						size="icon-sm"
@@ -313,7 +316,10 @@
 					</Button>
 					<span class="text-sm font-medium">A</span>
 					<Button
-						onclick={() => fontSize.increase()}
+						onclick={(e: MouseEvent) => {
+							fontSize.increase();
+							(e.currentTarget as HTMLElement).blur();
+						}}
 						disabled={!fontSize.canIncrease}
 						variant="ghost"
 						size="icon-sm"
@@ -326,7 +332,10 @@
 
 				<!-- Dark mode toggle -->
 				<Button
-					onclick={() => theme.toggle()}
+					onclick={(e: MouseEvent) => {
+						theme.toggle();
+						(e.currentTarget as HTMLElement).blur();
+					}}
 					variant="ghost"
 					size="icon-sm"
 					aria-label="Basculer le mode sombre"
