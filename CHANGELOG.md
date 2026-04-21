@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.81](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.80...v0.8.81) (2026-04-21)
+
+### ✨ Features
+
+- add public glossary page at /glossaire ([07bf570](https://github.com/Zahara-Nour/ubumaths/commit/07bf570b8d251f6c6a799735e15287a3160836f7))
+- **dictionary:** add exemple and history optional fields to MathTerm ([4a6e98b](https://github.com/Zahara-Nour/ubumaths/commit/4a6e98b8ac64ef17d29fb40513c9797bc3e35e59))
+- **dictionary:** add sense field for homonym disambiguation ([9322625](https://github.com/Zahara-Nour/ubumaths/commit/93226256c3622e100a5a1297b454ca63d80fae1e))
+- **dictionary:** merge mathemo vocabulary into math dictionary ([a7e5d1d](https://github.com/Zahara-Nour/ubumaths/commit/a7e5d1d57cc85037b58a253715c1ae29f5360b88))
+- **mathemo:** add 4 VIP card powers ([be1452e](https://github.com/Zahara-Nour/ubumaths/commit/be1452e81793458d05e69d4796cf9b6ffb059410))
+- **mathemo:** add banner image to game page ([f712718](https://github.com/Zahara-Nour/ubumaths/commit/f71271834c4efadf00c34701fa9e03c5b9aa0266))
+- **mathemo:** add cumulative score leaderboard ([7077faf](https://github.com/Zahara-Nour/ubumaths/commit/7077fafe6303961231bf0a452f0fe880ca3e14a5))
+- **mathemo:** add daily/weekly gidouille rewards and milestones ([e3fdbe3](https://github.com/Zahara-Nour/ubumaths/commit/e3fdbe3f6e3563f35a9f5c387a5368642117e85a))
+- **mathemo:** add defeat image card on game over ([da3fc95](https://github.com/Zahara-Nour/ubumaths/commit/da3fc95764fc39b3842e6714dbdb3e235e2d7196))
+- **mathemo:** add leaderboard link on game page ([460d4ff](https://github.com/Zahara-Nour/ubumaths/commit/460d4ffdd21575f7d7ddaefecd028d748c87d94c))
+- **mathemo:** add victory image card on game win ([5b4461e](https://github.com/Zahara-Nour/ubumaths/commit/5b4461ef0febf133322bc54837010d8c43944c73))
+
+### 🐛 Bug Fixes
+
+- **dictionary:** add proper French accents to all definitions ([7c3a796](https://github.com/Zahara-Nour/ubumaths/commit/7c3a79672e7fca814868923733af6170caf037fc))
+- **dictionary:** add proper French accents to all terms ([b7559b4](https://github.com/Zahara-Nour/ubumaths/commit/b7559b42c718b8f2e906f675c840c16bb41e9ff0))
+- **glossaire:** code review fixes ([53db277](https://github.com/Zahara-Nour/ubumaths/commit/53db2775edd2fe3f96b2020b18f5c749380505ff))
+- **header:** blur navbar buttons after click to prevent focus trap ([8f2a401](https://github.com/Zahara-Nour/ubumaths/commit/8f2a401a4bdfb23e1d68841006b4b69b06090692))
+- **mathemo:** rename difficulty to grade and add grade validation ([db028bd](https://github.com/Zahara-Nour/ubumaths/commit/db028bd39531650a54b7b6b6c3a4a7d7a923de1d))
+- **mathemo:** show dialog on page load when game is already finished ([1e2dbe0](https://github.com/Zahara-Nour/ubumaths/commit/1e2dbe0a5f8798fbecd958c41be8e1512d26c8df))
+- scope gitignore data rule to root directory only ([28000f8](https://github.com/Zahara-Nour/ubumaths/commit/28000f86ad4dffc91e35aba246fc48e2b661eef5))
+
 ### [0.8.80](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.79...v0.8.80) (2026-04-19)
 
 ### ✨ Features
