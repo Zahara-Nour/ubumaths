@@ -49,8 +49,8 @@ export interface GameState {
 	correctLetters: string[];
 	/** Maximum number of attempts allowed (adjustable 3-10) */
 	maxAttempts: number;
-	/** Current difficulty level (GradeCode) */
-	difficulty: GradeCode;
+	/** Current grade level (GradeCode) */
+	grade: GradeCode;
 	/** Current row being edited (0-indexed) */
 	currentRow: number;
 }

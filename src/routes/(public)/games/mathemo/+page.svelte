@@ -2,10 +2,10 @@
   Mathémo - A Wordle-style game for learning French mathematical vocabulary
 
   Features:
-  - 7 difficulty levels (6ème through Tale - French grade levels)
+  - 7 grade levels (6ème through Tale - French grade levels)
   - Adjustable attempts (3-10)
   - Accent normalization (type "algebre" for "algèbre")
-  - Cross-level validation (can submit words from any difficulty)
+  - Cross-level validation (can submit words from any grade)
   - localStorage persistence (resume on page refresh)
   - Physical keyboard + on-screen keyboard support
   - Confetti celebration on win
@@ -31,7 +31,7 @@
 	import type { PageData } from './$types';
 
 	// Create items array for Select component (Bits UI format)
-	const difficultyItems = MATHEMO_GRADES.map((g) => ({ value: g, label: GRADE_LABELS[g] || g }));
+	const gradeItems = MATHEMO_GRADES.map((g) => ({ value: g, label: GRADE_LABELS[g] || g }));
 
 	// ===== Server Data =====
 	let { data }: { data: PageData } = $props();
@@ -50,8 +50,8 @@
 	/** Indices of letters that are newly discovered in the animating row */
 	let newlyDiscoveredIndices = $state<number[]>([]);
 
-	/** Track selected difficulty for two-way binding with MySelect */
-	let selectedDifficulty = $state<string>(game.difficulty);
+	/** Track selected grade for two-way binding with MySelect */
+	let selectedGrade = $state<string>(game.grade);
 
 	/** Reward data from API after game completion */
 	let rewardData = $state<{
@@ -278,7 +278,7 @@
 
 	// For authenticated students, enforce fixed 6 attempts on init
 	if (data.canSaveScore && game.maxAttempts !== 6 && !game.isGameOver()) {
-		game.startNewGame(game.difficulty, 6);
+		game.startNewGame(game.grade, 6);
 	}
 
 	// If loading a finished game from localStorage, show the appropriate dialog
@@ -291,13 +291,13 @@
 	}
 
 	/**
-	 * Watch for difficulty changes and start a new game
-	 * Uses $effect to react to selectedDifficulty changes
+	 * Watch for grade changes and start a new game
+	 * Uses $effect to react to selectedGrade changes
 	 */
 	$effect(() => {
-		if (selectedDifficulty !== game.difficulty && !gameOver) {
+		if (selectedGrade !== game.grade && !gameOver) {
 			const attempts = canSaveScore ? 6 : game.maxAttempts;
-			game.startNewGame(selectedDifficulty as GradeCode, attempts);
+			game.startNewGame(selectedGrade as GradeCode, attempts);
 		}
 	});
 
@@ -452,7 +452,7 @@
 	function handleRestart() {
 		game.clearSaved();
 		const attempts = canSaveScore ? 6 : game.maxAttempts;
-		game.startNewGame(game.difficulty, attempts);
+		game.startNewGame(game.grade, attempts);
 		badGuess = false;
 		rewardData = null;
 		unlockedMilestones = [];
@@ -590,11 +590,11 @@
 			<!-- Difficulty Selector -->
 			{#if !gameOver}
 				<div class="space-y-2">
-					<label for="difficulty" class="text-xs font-medium">Niveau</label>
+					<label for="grade" class="text-xs font-medium">Niveau</label>
 					<MySelect
 						type="single"
-						bind:value={selectedDifficulty}
-						items={difficultyItems}
+						bind:value={selectedGrade}
+						items={gradeItems}
 						placeholder="Sélectionner un niveau"
 					/>
 				</div>
