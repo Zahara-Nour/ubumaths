@@ -1814,6 +1814,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\left\s*\[/g, '[');
 	result = result.replace(/\\right\s*\]/g, ']');
 
+	// Convert \left\| ... \right\| to norm: lr(||...||) for proper sizing
+	// MUST be before \left| to avoid \left\| matching \left\ then |
+	result = result.replace(/\\left\s*\\\|/g, 'lr(||');
+	result = result.replace(/\\right\s*\\\|/g, '||)');
+
 	// Convert \left| ... \right| to abs( ... ) or |...|
 	// Use lr(|...|) for proper sizing in Typst
 	result = result.replace(/\\left\s*\|/g, 'lr(|');
@@ -1849,6 +1854,12 @@ export function convertLatexToTypstMath(latex: string): string {
 	// Fallback: remove any remaining \left or \right (unhandled delimiter cases)
 	result = result.replace(/\\left\s*/g, '');
 	result = result.replace(/\\right\s*/g, '');
+
+	// Convert standalone \| (double bar, norm notation) to || in Typst
+	// Also handle \Vert (LaTeX command for double vertical bar)
+	// Must be AFTER \left\| / \right\| handling above
+	result = result.replace(/\\\|/g, '||');
+	result = result.replace(/\\Vert/g, '||');
 
 	// Remove \big, \Big, \bigg, \Bigg sizing commands (Typst auto-sizes delimiters)
 	// These commands just affect delimiter size in LaTeX, not needed in Typst
