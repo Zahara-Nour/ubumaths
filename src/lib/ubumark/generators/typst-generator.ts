@@ -1674,9 +1674,9 @@ function addImplicitMultiplicationSpaces(str: string): string {
 	});
 
 	// Protect ALL remaining <<<PLACEHOLDER>>> sequences (decimal comma, arrows, braces,
-	// and the <<<PROTECT_N>>> markers from above). These contain uppercase letters that would
-	// be incorrectly split. Use a non-uppercase marker (__pN__) to avoid recursive matching.
-	protected_ = protected_.replace(/<<<[A-Z_0-9]+>>>/g, (match) => {
+	// matrix prefixes, and the <<<PROTECT_N>>> markers from above). These would be
+	// incorrectly split. Use a non-uppercase marker (__pN__) to avoid recursive matching.
+	protected_ = protected_.replace(/<<<[a-zA-Z_0-9]+>>>/g, (match) => {
 		protections.push(match);
 		return `__p${protections.length - 1}__`;
 	});
@@ -1881,6 +1881,39 @@ export function convertLatexToTypstMath(latex: string): string {
 		// Wrap each line in display() for normal size
 		return 'cases(' + lines.map((line: string) => `display(${line})`).join(', ') + ')';
 	});
+
+	// Convert \begin{pmatrix/bmatrix/vmatrix/Vmatrix/matrix} to Typst mat()
+	// LaTeX: \begin{pmatrix} a \\ b \end{pmatrix} -> mat(delim: "(", a; b)
+	// Rows separated by \\, columns by &
+	// Convert matrix environments to Typst mat()
+	// Store mat prefixes in an array and use numeric placeholders to protect from
+	// implicit multiplication (which splits "delim") and bracket conversion ("[" -> "bracket.l")
+	const matrixDelimiters: Record<string, string> = {
+		pmatrix: '"("',
+		bmatrix: '"["',
+		vmatrix: '"|"',
+		Vmatrix: '"||"',
+		matrix: '"none"'
+	};
+	const matPrefixes: string[] = [];
+	for (const [env, delim] of Object.entries(matrixDelimiters)) {
+		const regex = new RegExp(`\\\\begin\\s*\\{${env}\\}([\\s\\S]*?)\\\\end\\s*\\{${env}\\}`, 'g');
+		result = result.replace(regex, (_, content: string) => {
+			const rows = content
+				.split(/\\\\/)
+				.map((row: string) => row.trim())
+				.filter((row: string) => row.length > 0)
+				.map((row: string) =>
+					row
+						.split('&')
+						.map((cell: string) => cell.trim())
+						.join(', ')
+				);
+			const idx = matPrefixes.length;
+			matPrefixes.push(`mat(delim: ${delim}, `);
+			return `<<<mat${idx}>>>${rows.join('; ')})`;
+		});
+	}
 
 	// Convert \sqrt[n]{x} to root(n, x) - MUST be done BEFORE simple \sqrt conversion
 	// Uses balanced brace matching to handle nested braces in the argument
@@ -2365,6 +2398,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	// ========================================================================
 	// Restore placeholder to Typst double prime symbol
 	result = result.replace(/<<<DOUBLE_PRIME>>>/g, 'prime.double');
+
+	// ========================================================================
+	// MATRIX PLACEHOLDER RESTORATION
+	// ========================================================================
+	result = result.replace(/<<<mat(\d+)>>>/g, (_, idx) => matPrefixes[parseInt(idx)]);
 
 	// Final trim: bracket symbol insertions may add leading/trailing spaces
 	result = result.trim();

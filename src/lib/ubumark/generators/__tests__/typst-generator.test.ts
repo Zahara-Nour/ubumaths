@@ -1496,6 +1496,38 @@ describe('convertLatexToTypstMath - Vectors and Accents', () => {
 	});
 });
 
+describe('convertLatexToTypstMath - Matrix environments', () => {
+	it('should convert \\begin{pmatrix} column vector to mat()', () => {
+		expect(convertLatexToTypstMath('\\begin{pmatrix} -2 \\\\ t \\end{pmatrix}')).toBe(
+			'mat(delim: "(", -2; t)'
+		);
+	});
+
+	it('should convert \\begin{pmatrix} 2x2 matrix to mat()', () => {
+		expect(convertLatexToTypstMath('\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}')).toBe(
+			'mat(delim: "(", a, b; c, d)'
+		);
+	});
+
+	it('should convert \\begin{bmatrix} to mat() with bracket delimiter', () => {
+		expect(convertLatexToTypstMath('\\begin{bmatrix} 1 \\\\ 2 \\end{bmatrix}')).toBe(
+			'mat(delim: "[", 1; 2)'
+		);
+	});
+
+	it('should convert \\begin{vmatrix} to mat() with bar delimiter', () => {
+		expect(convertLatexToTypstMath('\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}')).toBe(
+			'mat(delim: "|", a, b; c, d)'
+		);
+	});
+
+	it('should handle vector coordinates with expressions', () => {
+		expect(
+			convertLatexToTypstMath('\\begin{pmatrix} t+6 \\\\ 2t - \\dfrac{1}{2} \\end{pmatrix}')
+		).toBe('mat(delim: "(", t+6; 2t - frac(1, 2))');
+	});
+});
+
 describe('convertLatexToTypstMath - Ellipsis (Dots)', () => {
 	it('should convert \\ldots to ...', () => {
 		expect(convertLatexToTypstMath('\\ldots')).toBe('...');
