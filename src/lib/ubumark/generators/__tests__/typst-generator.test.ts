@@ -1451,6 +1451,10 @@ describe('convertLatexToTypstMath - Vectors and Accents', () => {
 		).toBe('arrow(M A) = arrow(M I) + arrow(I A)');
 	});
 
+	it('should convert \\widehat{A} to hat(A)', () => {
+		expect(convertLatexToTypstMath('\\widehat{A}')).toBe('hat(A)');
+	});
+
 	it('should convert \\hat{x} to hat(x)', () => {
 		expect(convertLatexToTypstMath('\\hat{x}')).toBe('hat(x)');
 	});
