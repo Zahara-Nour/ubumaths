@@ -1145,6 +1145,65 @@ function convertLatexOneArgCommand(str: string, latexCmd: string, typstFunc: str
 }
 
 /**
+ * Convert LaTeX \underbrace{content}_{label} or \overbrace{content}^{label}
+ * to Typst underbrace(content, label) or overbrace(content, label)
+ *
+ * Uses balanced brace matching for nested content.
+ *
+ * @param str - Input string
+ * @param cmd - LaTeX command name ('underbrace' or 'overbrace')
+ * @param labelChar - The character before the label brace ('_' or '^')
+ * @returns String with commands converted
+ */
+function convertUnderbrace(str: string, cmd: string, labelChar: string): string {
+	let result = str;
+	const pattern = new RegExp(`\\\\${cmd}\\s*\\{`, 'g');
+
+	let changed = true;
+	while (changed) {
+		changed = false;
+		pattern.lastIndex = 0;
+
+		let match;
+		while ((match = pattern.exec(result)) !== null) {
+			const startIndex = match.index;
+			const openBraceIndex = match.index + match[0].length - 1;
+
+			// Find matching closing brace for content
+			const closeIndex = findMatchingBrace(result, openBraceIndex);
+			if (closeIndex === -1) continue;
+
+			const content = result.slice(openBraceIndex + 1, closeIndex);
+
+			// Check for label: _{ or ^{ after the closing brace
+			const afterContent = result.slice(closeIndex + 1);
+			const labelMatch = afterContent.match(new RegExp(`^\\s*\\${labelChar}\\s*\\{`));
+
+			let label = '';
+			let endIndex = closeIndex + 1;
+
+			if (labelMatch) {
+				const labelOpenIndex = closeIndex + 1 + labelMatch[0].length - 1;
+				const labelCloseIndex = findMatchingBrace(result, labelOpenIndex);
+				if (labelCloseIndex !== -1) {
+					label = result.slice(labelOpenIndex + 1, labelCloseIndex);
+					endIndex = labelCloseIndex + 1;
+				}
+			}
+
+			const replacement = label ? `${cmd}(${content}, ${label})` : `${cmd}(${content})`;
+			result = result.slice(0, startIndex) + replacement + result.slice(endIndex);
+
+			changed = true;
+			pattern.lastIndex = 0;
+			break;
+		}
+	}
+
+	return result;
+}
+
+/**
  * Convert LaTeX \textcolor{color}{content} to Typst text(fill: color, content)
  *
  * In Typst math mode, colored text/math can be done with:
@@ -1528,6 +1587,8 @@ const KNOWN_TYPST_SYMBOLS = new Set([
 	'frak',
 	'overline',
 	'underline',
+	'underbrace',
+	'overbrace',
 	'hat',
 	'macron',
 	'tilde',
@@ -2134,6 +2195,11 @@ export function convertLatexToTypstMath(latex: string): string {
 
 	// 2. Binomial coefficients (2 arguments)
 	result = result.replace(/\\binom\s*{([^{}]*)}\s*{([^{}]*)}/g, 'binom($1, $2)');
+
+	// 2b. Underbrace/Overbrace: \underbrace{content}_{label} -> underbrace(content, label)
+	// Must be BEFORE subscript/superscript conversion which would consume the _{label}
+	result = convertUnderbrace(result, 'underbrace', '_');
+	result = convertUnderbrace(result, 'overbrace', '^');
 
 	// 3. Vectors and accents (1 argument) - use balanced brace matching for nested content
 	result = convertLatexOneArgCommand(result, 'overrightarrow', 'arrow');

@@ -1516,6 +1516,22 @@ describe('convertLatexToTypstMath - Norm (double bar)', () => {
 	});
 });
 
+describe('convertLatexToTypstMath - Underbrace/Overbrace', () => {
+	it('should convert \\underbrace{content}_{label}', () => {
+		expect(
+			convertLatexToTypstMath('\\underbrace{\\overrightarrow{DC} \\cdot \\overrightarrow{CB}}_{0}')
+		).toBe('underbrace(arrow(D C) dot.c arrow(C B), 0)');
+	});
+
+	it('should convert \\overbrace{content}^{label}', () => {
+		expect(convertLatexToTypstMath('\\overbrace{a + b + c}^{n}')).toBe('overbrace(a + b + c, n)');
+	});
+
+	it('should handle underbrace without label', () => {
+		expect(convertLatexToTypstMath('\\underbrace{x + y}')).toBe('underbrace(x + y)');
+	});
+});
+
 describe('convertLatexToTypstMath - Matrix environments', () => {
 	it('should convert \\begin{pmatrix} column vector to mat()', () => {
 		expect(convertLatexToTypstMath('\\begin{pmatrix} -2 \\\\ t \\end{pmatrix}')).toBe(
