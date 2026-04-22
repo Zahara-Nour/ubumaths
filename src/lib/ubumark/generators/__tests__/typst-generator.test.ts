@@ -1496,6 +1496,26 @@ describe('convertLatexToTypstMath - Vectors and Accents', () => {
 	});
 });
 
+describe('convertLatexToTypstMath - Norm (double bar)', () => {
+	it('should convert standalone \\| pairs to || for norm notation', () => {
+		expect(convertLatexToTypstMath('\\|\\vec{u}\\|')).toBe('||arrow(u)||');
+	});
+
+	it('should convert \\left\\|...\\right\\| to lr(||...||)', () => {
+		expect(convertLatexToTypstMath('\\left\\|\\vec{u}\\right\\|')).toBe('lr(||arrow(u)||)');
+	});
+
+	it('should handle norm of overrightarrow', () => {
+		expect(convertLatexToTypstMath('\\|\\overrightarrow{BC}\\|')).toBe('||arrow(B C)||');
+	});
+
+	it('should handle norm in product expression', () => {
+		expect(
+			convertLatexToTypstMath('\\|\\overrightarrow{BC}\\| \\times \\|\\overrightarrow{BA}\\|')
+		).toBe('||arrow(B C)|| times ||arrow(B A)||');
+	});
+});
+
 describe('convertLatexToTypstMath - Matrix environments', () => {
 	it('should convert \\begin{pmatrix} column vector to mat()', () => {
 		expect(convertLatexToTypstMath('\\begin{pmatrix} -2 \\\\ t \\end{pmatrix}')).toBe(
