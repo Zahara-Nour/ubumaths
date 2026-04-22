@@ -2095,6 +2095,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = convertLatexOneArgCommand(result, 'overrightarrow', 'arrow');
 	result = convertLatexOneArgCommand(result, 'overleftarrow', 'arrow.l');
 	result = convertLatexOneArgCommand(result, 'vec', 'arrow');
+	result = convertLatexOneArgCommand(result, 'widehat', 'hat');
 	result = convertLatexOneArgCommand(result, 'hat', 'hat');
 	result = convertLatexOneArgCommand(result, 'bar', 'macron');
 	result = convertLatexOneArgCommand(result, 'tilde', 'tilde');
