@@ -109,7 +109,7 @@
 				<div>
 					<h3 class="mb-2 text-sm font-semibold">Students Not Yet Activated (Top 10)</h3>
 					<div class="space-y-2">
-						{#each data.pendingStudents.notActivated as student (student.email)}
+						{#each data.pendingStudents.notActivated as student (student.id)}
 							<div
 								class="flex items-center justify-between rounded border border-border bg-muted/50 p-2 text-sm"
 							>
@@ -146,7 +146,7 @@
 				</div>
 				{#if data.integrity.missingNames.length > 0}
 					<div class="space-y-2">
-						{#each data.integrity.missingNames as profile (profile.email)}
+						{#each data.integrity.missingNames as profile (profile.id)}
 							<div
 								class="flex items-center justify-between rounded border border-yellow-200 bg-yellow-50 p-2 text-sm dark:border-yellow-800 dark:bg-yellow-900/20"
 							>
@@ -176,7 +176,7 @@
 				</div>
 				{#if data.integrity.missingSchool.length > 0}
 					<div class="space-y-2">
-						{#each data.integrity.missingSchool as profile (profile.email)}
+						{#each data.integrity.missingSchool as profile (profile.id)}
 							<div
 								class="flex items-center justify-between rounded border border-yellow-200 bg-yellow-50 p-2 text-sm dark:border-yellow-800 dark:bg-yellow-900/20"
 							>
@@ -200,7 +200,7 @@
 				</div>
 				{#if data.integrity.noClasses.length > 0}
 					<div class="space-y-2">
-						{#each data.integrity.noClasses as profile (profile.email)}
+						{#each data.integrity.noClasses as profile (profile.id)}
 							<div
 								class="flex items-center justify-between rounded border border-yellow-200 bg-yellow-50 p-2 text-sm dark:border-yellow-800 dark:bg-yellow-900/20"
 							>
@@ -225,7 +225,7 @@
 		<Card.Content>
 			{#if data.recentSignups.length > 0}
 				<div class="space-y-2">
-					{#each data.recentSignups as signup (signup.email)}
+					{#each data.recentSignups as signup (signup.id)}
 						<div
 							class="flex items-center justify-between rounded border border-border bg-muted/50 p-3 text-sm"
 						>
