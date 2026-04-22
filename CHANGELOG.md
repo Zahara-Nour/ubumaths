@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.82](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.81...v0.8.82) (2026-04-22)
+
+### 🐛 Bug Fixes
+
+- **debug:** use id instead of email as each block key in database debug page ([82b0e8a](https://github.com/Zahara-Nour/ubumaths/commit/82b0e8ac9746b5da1d02d836c3a73267f6ccb5f6))
+- **typst:** add \overrightarrow support and fix uppercase letter splitting ([47008ca](https://github.com/Zahara-Nour/ubumaths/commit/47008cacaeb68c19127c6d08eb21d72ac299c5fd))
+- **typst:** add \widehat LaTeX command support ([1ae3bf2](https://github.com/Zahara-Nour/ubumaths/commit/1ae3bf20d2b7b4ef5c7fce69a0063dfbfd6c93cd))
+- **warnings:** remove 3 gidouilles per warning instead of 1 ([d6c9575](https://github.com/Zahara-Nour/ubumaths/commit/d6c9575b5288deba303b8d1f8d6c2d2aa89c7642))
+
 ### [0.8.81](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.80...v0.8.81) (2026-04-21)
 
 ### ✨ Features
