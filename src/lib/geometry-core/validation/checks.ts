@@ -39,9 +39,6 @@ function getPointPositions(
 	return { positions, error: null };
 }
 
-/**
- * Get the two defining point positions of a line-like element.
- */
 function getLinePoints(figure: Figure, lineId: string): { p1: GeoPoint; p2: GeoPoint } | null {
 	const el = figure.getElementById(lineId);
 	if (!el || !isLineLike(el)) return null;
@@ -81,15 +78,16 @@ export function checkPointAt(
 		return { valid: false, message: `Le point n'existe pas ou n'a pas de position.` };
 	}
 
-	const xOk = Math.abs(geoToNumber(pos.x) - expectedX) < 1e-8;
-	const yOk = Math.abs(geoToNumber(pos.y) - expectedY) < 1e-8;
+	const dx = geoToNumber(pos.x) - expectedX;
+	const dy = geoToNumber(pos.y) - expectedY;
+	const distSq = dx * dx + dy * dy;
 
-	if (xOk && yOk) {
-		return { valid: true, message: `Le point est a la bonne position.` };
+	if (distSq < 1e-16) {
+		return { valid: true, message: `Le point est à la bonne position.` };
 	}
 	return {
 		valid: false,
-		message: `Le point n'est pas a la position attendue (${expectedX}, ${expectedY}).`
+		message: `Le point n'est pas à la position attendue (${expectedX}, ${expectedY}).`
 	};
 }
 
@@ -107,7 +105,6 @@ export function checkCollinear(
 	if (error) return error;
 	const [a, b, c] = positions;
 
-	// Cross product (b-a) x (c-a) = 0
 	const abx = geoSub(b.x, a.x);
 	const aby = geoSub(b.y, a.y);
 	const acx = geoSub(c.x, a.x);
@@ -115,9 +112,9 @@ export function checkCollinear(
 	const cross = geoSub(geoMul(abx, acy), geoMul(aby, acx));
 
 	if (geoIsZero(cross)) {
-		return { valid: true, message: `Les trois points sont alignes.` };
+		return { valid: true, message: `Les trois points sont alignés.` };
 	}
-	return { valid: false, message: `Les trois points ne sont pas alignes.` };
+	return { valid: false, message: `Les trois points ne sont pas alignés.` };
 }
 
 // =============================================================================
@@ -134,18 +131,14 @@ export function checkDistance(
 	if (error) return error;
 	const [a, b] = positions;
 
-	// Compare distance² = expected² to avoid sqrt
 	const dx = geoSub(a.x, b.x);
 	const dy = geoSub(a.y, b.y);
 	const dist2 = geoAdd(geoMul(dx, dx), geoMul(dy, dy));
-	const expected2 = expected * expected;
+	const actual = Math.sqrt(geoToNumber(dist2));
 
-	// Use float comparison since expected is a number
-	const dist2Num = geoToNumber(dist2);
-	if (Math.abs(dist2Num - expected2) < 1e-8) {
+	if (Math.abs(actual - expected) < 1e-8) {
 		return { valid: true, message: `La distance est correcte (${expected}).` };
 	}
-	const actual = Math.sqrt(dist2Num);
 	return {
 		valid: false,
 		message: `La distance est ${actual.toFixed(2)}, attendu ${expected}.`
@@ -167,21 +160,18 @@ export function checkSameDistance(
 	if (error) return error;
 	const [a, b, c, d] = positions;
 
-	// AB² = (bx-ax)² + (by-ay)²
 	const dx1 = geoSub(b.x, a.x);
 	const dy1 = geoSub(b.y, a.y);
 	const dist1sq = geoAdd(geoMul(dx1, dx1), geoMul(dy1, dy1));
 
-	// CD²
 	const dx2 = geoSub(d.x, c.x);
 	const dy2 = geoSub(d.y, c.y);
 	const dist2sq = geoAdd(geoMul(dx2, dx2), geoMul(dy2, dy2));
 
-	// AB² = CD² (exact comparison)
 	if (geoEqual(dist1sq, dist2sq)) {
-		return { valid: true, message: `Les deux distances sont egales.` };
+		return { valid: true, message: `Les deux distances sont égales.` };
 	}
-	return { valid: false, message: `Les deux distances ne sont pas egales.` };
+	return { valid: false, message: `Les deux distances ne sont pas égales.` };
 }
 
 // =============================================================================
@@ -189,16 +179,19 @@ export function checkSameDistance(
 // =============================================================================
 
 export function checkParallel(figure: Figure, line1Id: string, line2Id: string): CheckResult {
+	if (line1Id === line2Id) {
+		return { valid: false, message: `Les deux droites sont identiques.` };
+	}
+
 	const l1 = getLinePoints(figure, line1Id);
 	const l2 = getLinePoints(figure, line2Id);
 	if (!l1 || !l2) {
 		return {
 			valid: false,
-			message: `Un des elements n'est pas une droite, un segment ou une demi-droite.`
+			message: `Un des éléments n'est pas une droite, un segment ou une demi-droite.`
 		};
 	}
 
-	// Cross product of direction vectors = 0
 	const d1x = geoSub(l1.p2.x, l1.p1.x);
 	const d1y = geoSub(l1.p2.y, l1.p1.y);
 	const d2x = geoSub(l2.p2.x, l2.p1.x);
@@ -206,9 +199,9 @@ export function checkParallel(figure: Figure, line1Id: string, line2Id: string):
 	const cross = geoSub(geoMul(d1x, d2y), geoMul(d1y, d2x));
 
 	if (geoIsZero(cross)) {
-		return { valid: true, message: `Les droites sont paralleles.` };
+		return { valid: true, message: `Les droites sont parallèles.` };
 	}
-	return { valid: false, message: `Les droites ne sont pas paralleles.` };
+	return { valid: false, message: `Les droites ne sont pas parallèles.` };
 }
 
 // =============================================================================
@@ -221,11 +214,10 @@ export function checkPerpendicular(figure: Figure, line1Id: string, line2Id: str
 	if (!l1 || !l2) {
 		return {
 			valid: false,
-			message: `Un des elements n'est pas une droite, un segment ou une demi-droite.`
+			message: `Un des éléments n'est pas une droite, un segment ou une demi-droite.`
 		};
 	}
 
-	// Dot product of direction vectors = 0
 	const d1x = geoSub(l1.p2.x, l1.p1.x);
 	const d1y = geoSub(l1.p2.y, l1.p1.y);
 	const d2x = geoSub(l2.p2.x, l2.p1.x);
@@ -263,7 +255,7 @@ export function checkAngle(
 	const lenB = Math.sqrt(vbx * vbx + vby * vby);
 
 	if (lenA < 1e-15 || lenB < 1e-15) {
-		return { valid: false, message: `L'angle n'est pas defini (points confondus).` };
+		return { valid: false, message: `L'angle n'est pas défini (points confondus).` };
 	}
 
 	const cosAngle = Math.max(-1, Math.min(1, dot / (lenA * lenB)));
@@ -290,7 +282,7 @@ export function checkPointOnCircle(figure: Figure, pointId: string, circleId: st
 
 	const el = figure.getElementById(circleId);
 	if (!el || !isCircle(el)) {
-		return { valid: false, message: `L'element n'est pas un cercle.` };
+		return { valid: false, message: `L'élément n'est pas un cercle.` };
 	}
 
 	const centerPos = figure.getPosition(el.centerId);
@@ -298,19 +290,17 @@ export function checkPointOnCircle(figure: Figure, pointId: string, circleId: st
 		return { valid: false, message: `Le centre du cercle n'a pas de position.` };
 	}
 
-	// distance² from point to center
 	const dx = geoSub(pos.x, centerPos.x);
 	const dy = geoSub(pos.y, centerPos.y);
 	const dist2 = geoAdd(geoMul(dx, dx), geoMul(dy, dy));
 
-	// radius²
 	let radius2;
 	if (isCircleByRadius(el)) {
 		radius2 = geoMul(el.radius, el.radius);
 	} else if (isCircleByPoint(el)) {
 		const edgePos = figure.getPosition(el.edgePointId);
 		if (!edgePos) {
-			return { valid: false, message: `Le point de reference du cercle n'a pas de position.` };
+			return { valid: false, message: `Le point de référence du cercle n'a pas de position.` };
 		}
 		const rx = geoSub(edgePos.x, centerPos.x);
 		const ry = geoSub(edgePos.y, centerPos.y);
@@ -319,7 +309,6 @@ export function checkPointOnCircle(figure: Figure, pointId: string, circleId: st
 		return { valid: false, message: `Type de cercle inconnu.` };
 	}
 
-	// Compare distance² = radius² (exact)
 	if (geoEqual(dist2, radius2)) {
 		return { valid: true, message: `Le point est sur le cercle.` };
 	}

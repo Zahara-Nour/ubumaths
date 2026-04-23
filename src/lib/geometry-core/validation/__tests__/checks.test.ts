@@ -190,6 +190,14 @@ describe('checkParallel', () => {
 		expect(checkParallel(f, seg1, seg2).valid).toBe(true);
 	});
 
+	it('invalid for same element (line parallel to itself)', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(5, 0));
+		const seg = f.createSegment(a, b);
+		expect(checkParallel(f, seg, seg).valid).toBe(false);
+	});
+
 	it('invalid for non-parallel segments', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
