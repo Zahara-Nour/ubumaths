@@ -96,6 +96,20 @@ const circleByPointSchema = baseElementSchema.extend({
 	dependsOn: z.tuple([z.string(), z.string()])
 });
 
+const intersectionLLSchema = baseElementSchema.extend({
+	type: z.literal('intersectionLL'),
+	line1Id: z.string().min(1),
+	line2Id: z.string().min(1),
+	dependsOn: z.tuple([z.string(), z.string()])
+});
+
+const reflectedPointSchema = baseElementSchema.extend({
+	type: z.literal('reflectedPoint'),
+	sourceId: z.string().min(1),
+	centerId: z.string().min(1),
+	dependsOn: z.tuple([z.string(), z.string()])
+});
+
 const polygonSchema = baseElementSchema.extend({
 	type: z.literal('polygon'),
 	dependsOn: z.array(z.string().min(1)).min(3, 'Polygon needs at least 3 vertices')
@@ -104,6 +118,8 @@ const polygonSchema = baseElementSchema.extend({
 export const geoElementSchema = z.discriminatedUnion('type', [
 	freePointSchema,
 	midpointSchema,
+	intersectionLLSchema,
+	reflectedPointSchema,
 	segmentSchema,
 	lineSchema,
 	raySchema,

@@ -23,6 +23,7 @@ import {
 	isMidpoint,
 	isIntersectionLL,
 	isReflectedPoint,
+	isPointElement,
 	isLineLike
 } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
@@ -230,6 +231,18 @@ export class Figure {
 		centerId: string,
 		options?: { label?: string; color?: string }
 	): string {
+		if (sourceId === centerId) {
+			throw new Error('createReflectedPoint: sourceId and centerId must be distinct');
+		}
+		const src = this.elements.get(sourceId);
+		const ctr = this.elements.get(centerId);
+		if (!src || !isPointElement(src)) {
+			throw new Error(`createReflectedPoint: "${sourceId}" is not a point element`);
+		}
+		if (!ctr || !isPointElement(ctr)) {
+			throw new Error(`createReflectedPoint: "${centerId}" is not a point element`);
+		}
+
 		const id = this.generateId('refl');
 		const element: GeoReflectedPoint = {
 			type: 'reflectedPoint',
@@ -344,6 +357,8 @@ export class Figure {
 			const center = this.positions.get(el.centerId);
 			if (source && center) {
 				this.positions.set(id, reflectPoint(source, center));
+			} else {
+				this.positions.delete(id);
 			}
 		}
 		// Free points: position stored directly in movePoint/createFreePoint.
