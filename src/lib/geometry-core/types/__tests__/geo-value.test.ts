@@ -16,15 +16,18 @@ describe('GeoValue constructors', () => {
 		expect(v.value).toBe(3.14);
 	});
 
-	it('numeric() accepts 0, negative zero, and Infinity', () => {
+	it('numeric() accepts 0 and negative zero', () => {
 		expect(numeric(0).value).toBe(0);
 		expect(numeric(-0).value).toBe(-0);
-		expect(numeric(Infinity).value).toBe(Infinity);
-		expect(numeric(-Infinity).value).toBe(-Infinity);
 	});
 
 	it('numeric() rejects NaN', () => {
-		expect(() => numeric(NaN)).toThrow('NaN');
+		expect(() => numeric(NaN)).toThrow('finite');
+	});
+
+	it('numeric() rejects Infinity', () => {
+		expect(() => numeric(Infinity)).toThrow('finite');
+		expect(() => numeric(-Infinity)).toThrow('finite');
 	});
 
 	it('exact() works with complex MathNode expressions', () => {

@@ -14,7 +14,7 @@ import type { GeoPoint } from './primitives';
 // Common properties
 // =============================================================================
 
-interface GeoElementBase {
+export interface GeoElementBase {
 	readonly id: string;
 	readonly label?: string;
 	readonly color: string;
@@ -68,7 +68,12 @@ export interface GeoRay extends GeoElementBase {
 // Circle (two construction variants)
 // =============================================================================
 
-/** Circle defined by center point and a fixed radius value. */
+/**
+ * Circle defined by center point and a fixed radius value.
+ * `radius` is a GeoValue (not a point ID) because it may be an exact symbolic
+ * value (e.g. sqrt(2)) not tied to any constructed point. The dependency graph
+ * depends only on `centerId`; `radius` is an intrinsic parameter.
+ */
 export interface GeoCircleByRadius extends GeoElementBase {
 	readonly type: 'circleByRadius';
 	readonly centerId: string;
@@ -87,12 +92,12 @@ export interface GeoCircleByPoint extends GeoElementBase {
 export type GeoCircle = GeoCircleByRadius | GeoCircleByPoint;
 
 // =============================================================================
-// Polygon (minimum 3 vertices)
+// Polygon (minimum 3 vertices, dependsOn IS the vertex list)
 // =============================================================================
 
 export interface GeoPolygon extends GeoElementBase {
 	readonly type: 'polygon';
-	readonly vertexIds: readonly [string, string, string, ...string[]];
+	/** Vertex IDs in order. Also serves as the dependency list. Minimum 3. */
 	readonly dependsOn: readonly [string, string, string, ...string[]];
 }
 
@@ -101,6 +106,7 @@ export interface GeoPolygon extends GeoElementBase {
 // =============================================================================
 
 export type GeoPointElement = GeoFreePoint | GeoMidpoint;
+export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
 
 export type GeoElement =
 	| GeoFreePoint
@@ -140,6 +146,10 @@ export function isLine(el: GeoElement): el is GeoLine {
 
 export function isRay(el: GeoElement): el is GeoRay {
 	return el.type === 'ray';
+}
+
+export function isLineLike(el: GeoElement): el is GeoLineLikeElement {
+	return el.type === 'segment' || el.type === 'line' || el.type === 'ray';
 }
 
 export function isCircle(el: GeoElement): el is GeoCircle {

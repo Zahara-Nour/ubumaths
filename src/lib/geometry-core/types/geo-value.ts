@@ -28,10 +28,10 @@ export function exact(node: MathNode): GeoExact {
 	return { kind: 'exact', node };
 }
 
-/** Create a numeric GeoValue from a JavaScript number. NaN is rejected. */
+/** Create a numeric GeoValue from a finite JavaScript number. NaN and Infinity are rejected. */
 export function numeric(value: number): GeoNumeric {
-	if (Number.isNaN(value)) {
-		throw new Error('GeoNumeric: NaN is not a valid coordinate value');
+	if (!Number.isFinite(value)) {
+		throw new Error('GeoNumeric: only finite numbers are valid coordinate values');
 	}
 	return { kind: 'numeric', value };
 }
