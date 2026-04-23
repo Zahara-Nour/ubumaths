@@ -2,7 +2,7 @@
 
 > Derniere mise a jour : 2026-04-23
 
-## Etat : Phases 1-3D terminees
+## Etat : Phases 1-3E terminees
 
 ## Phase 1 : Fondations (TERMINEE)
 
@@ -131,7 +131,7 @@
 
 - `Construction` renomme en `Figure` (partout)
 - `CONSTRUCTION_STATE_VERSION` renomme en `FIGURE_STATE_VERSION`
-- `isPointElement` inclut intersectionLL et reflectedPoint
+- `isPointElement` inclut tous les types de points dependants (8 types au total)
 
 ## Demo page `/geometry-demo`
 
@@ -144,24 +144,42 @@
 - Pan (espace + drag), zoom (molette), undo/redo (Ctrl+Z/Ctrl+Y)
 - Grille carree, axes visibles
 
+## Phase 3E : Autres elements dependants (TERMINEE)
+
+- `GeoRotatedPoint` — image par rotation (angle GeoValue, exact pour angles remarquables)
+- `GeoTranslatedPoint` — image par translation (vecteur = 2 points, 3 parents distincts)
+- `GeoDilatedPoint` — image par homothetie (facteur GeoValue)
+- `GeoReflectedOverLine` — image par symetrie axiale (droite = 2 points, retourne null si degeneree)
+- Factory methods avec validation : inputs point-like, ids distincts
+- computePosition dispatch pour les 4 types, clear position quand parents absents
+- Schemas Zod mis a jour pour les 4 nouveaux types
+- `isPointElement` mis a jour pour les 4 nouveaux types
+- Tests : 25
+
+### Decisions prises :
+
+- angle et factor sont des GeoValue intrinsiques a l'element (comme radius dans GeoCircleByRadius), pas dans le dependency graph
+- createTranslatedPoint : les 3 ids doivent etre tous distincts
+- createReflectedOverLine : linePoint1Id !== linePoint2Id (guard explicite)
+- createRotatedPoint et createDilatedPoint : sourceId === centerId autorise (mathematiquement valide)
+
 ## Prochaines etapes
 
-- Autres elements dependants : rotatedPoint, translatedPoint, dilatedPoint, reflectedOverLine
 - Validation d'exercices (checks)
 - Nombres dynamiques (distance, angle comme objets)
 - Labels, export LaTeX
 
 ## Resume des tests
 
-| Module                                      | Tests   |
-| ------------------------------------------- | ------- |
-| types/                                      | 64      |
-| viewport/                                   | 8       |
-| compute/                                    | 139     |
-| graph/ (dep-graph + figure + undo)          | 137     |
-| rendering/                                  | 17      |
-| geometry/ (intersections + transformations) | 89      |
-| interaction/                                | 25      |
-| integration/                                | 18      |
-| **Total geometry-core**                     | **497** |
-| grapheur/ (non-regression)                  | 213     |
+| Module                                       | Tests   |
+| -------------------------------------------- | ------- |
+| types/                                       | 64      |
+| viewport/                                    | 8       |
+| compute/                                     | 139     |
+| graph/ (dep-graph + figure + undo + transfo) | 181     |
+| rendering/                                   | 17      |
+| geometry/ (intersections + transformations)  | 89      |
+| interaction/                                 | 25      |
+| integration/                                 | 18      |
+| **Total geometry-core**                      | **522** |
+| grapheur/ (non-regression)                   | 213     |
