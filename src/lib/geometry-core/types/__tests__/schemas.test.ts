@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	geoValueSchema,
 	geoElementSchema,
-	constructionStateSchema,
+	figureStateSchema,
 	serializeGeoValue,
 	deserializeGeoValue
 } from '../schemas';
@@ -197,12 +197,12 @@ describe('geoElementSchema', () => {
 });
 
 // =============================================================================
-// constructionStateSchema
+// figureStateSchema
 // =============================================================================
 
-describe('constructionStateSchema', () => {
+describe('figureStateSchema', () => {
 	it('validates a minimal construction state', () => {
-		const result = constructionStateSchema.safeParse({
+		const result = figureStateSchema.safeParse({
 			version: 1,
 			viewport: { xMin: -10, xMax: 10, yMin: -10, yMax: 10 },
 			elements: []
@@ -211,7 +211,7 @@ describe('constructionStateSchema', () => {
 	});
 
 	it('validates a construction with elements', () => {
-		const result = constructionStateSchema.safeParse({
+		const result = figureStateSchema.safeParse({
 			version: 1,
 			viewport: { xMin: -10, xMax: 10, yMin: -10, yMax: 10 },
 			elements: [
@@ -232,7 +232,7 @@ describe('constructionStateSchema', () => {
 	});
 
 	it('rejects invalid viewport', () => {
-		const result = constructionStateSchema.safeParse({
+		const result = figureStateSchema.safeParse({
 			version: 1,
 			viewport: { xMin: 10, xMax: -10, yMin: -10, yMax: 10 },
 			elements: []
@@ -241,7 +241,7 @@ describe('constructionStateSchema', () => {
 	});
 
 	it('rejects version 0', () => {
-		const result = constructionStateSchema.safeParse({
+		const result = figureStateSchema.safeParse({
 			version: 0,
 			viewport: { xMin: -10, xMax: 10, yMin: -10, yMax: 10 },
 			elements: []

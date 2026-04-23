@@ -6,7 +6,7 @@
  * Points are prioritized over other elements.
  */
 
-import type { Construction } from '../graph/construction';
+import type { Figure } from '../graph/figure';
 import { geoToNumber } from '../compute/to-number';
 
 /**
@@ -14,7 +14,7 @@ import { geoToNumber } from '../compute/to-number';
  * Returns the point ID, or null if none within threshold.
  */
 export function findPointNear(
-	construction: Construction,
+	figure: Figure,
 	mathX: number,
 	mathY: number,
 	threshold: number
@@ -22,10 +22,10 @@ export function findPointNear(
 	let bestId: string | null = null;
 	let bestDist = Infinity;
 
-	for (const el of construction.getAllElements()) {
+	for (const el of figure.getAllElements()) {
 		if (el.type !== 'freePoint' && el.type !== 'midpoint') continue;
 
-		const pos = construction.getPosition(el.id);
+		const pos = figure.getPosition(el.id);
 		if (!pos) continue;
 
 		const dx = geoToNumber(pos.x) - mathX;
@@ -47,13 +47,13 @@ export function findPointNear(
  * Returns the element ID, or null if none within threshold.
  */
 export function findElementNear(
-	construction: Construction,
+	figure: Figure,
 	mathX: number,
 	mathY: number,
 	threshold: number
 ): string | null {
 	// Points first (always prioritized for selection)
-	const pointId = findPointNear(construction, mathX, mathY, threshold);
+	const pointId = findPointNear(figure, mathX, mathY, threshold);
 	if (pointId) return pointId;
 
 	// TODO: segment/line/circle distance testing for Phase 3

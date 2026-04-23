@@ -115,18 +115,18 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 export type GeoElementSerialized = z.infer<typeof geoElementSchema>;
 
 // =============================================================================
-// Construction state schema
+// Figure state schema
 // =============================================================================
 
 export const CONSTRUCTION_STATE_VERSION = 1;
 
-export const constructionStateSchema = z.object({
+export const figureStateSchema = z.object({
 	version: z.number().int().min(1).max(CONSTRUCTION_STATE_VERSION),
 	viewport: viewportSchema,
 	elements: z.array(geoElementSchema).max(500, 'Too many elements (max 500)')
 });
 
-export type ConstructionStateSerialized = z.infer<typeof constructionStateSchema>;
+export type FigureStateSerialized = z.infer<typeof figureStateSchema>;
 
 // =============================================================================
 // Serialization helpers

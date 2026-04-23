@@ -1,12 +1,12 @@
 /**
  * Integration tests for geometry-core Phase 1.
  *
- * Tests the full pipeline: Construction -> compute -> SVG rendering -> serialization.
+ * Tests the full pipeline: Figure -> compute -> SVG rendering -> serialization.
  * Each test exercises multiple modules together, not in isolation.
  */
 
 import { describe, it, expect } from 'vitest';
-import { Construction } from '../graph/construction';
+import { Figure } from '../graph/figure';
 import { createTransformer } from '../viewport/viewport';
 import {
 	pointToSVG,
@@ -23,7 +23,7 @@ import {
 	serializeGeoValue,
 	deserializeGeoValue,
 	geoValueSchema,
-	constructionStateSchema
+	figureStateSchema
 } from '../types/schemas';
 import { number, sqrt, fraction } from '$lib/mathAST';
 
@@ -37,12 +37,12 @@ function pt(x: number, y: number) {
 }
 
 // =============================================================================
-// Pipeline: Construction -> getPosition -> SVG rendering
+// Pipeline: Figure -> getPosition -> SVG rendering
 // =============================================================================
 
 describe('construction -> SVG rendering pipeline', () => {
 	it('triangle: 3 points + 3 segments render correctly', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(pt(0, 0));
 		const b = c.createFreePoint(pt(6, 0));
 		const cc = c.createFreePoint(pt(3, 4));
@@ -76,7 +76,7 @@ describe('construction -> SVG rendering pipeline', () => {
 	});
 
 	it('circle renders with correct center and radius', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const center = c.createFreePoint(pt(0, 0));
 		const circ = c.createCircleByRadius(center, geoFromNumber(5));
 
@@ -90,7 +90,7 @@ describe('construction -> SVG rendering pipeline', () => {
 	});
 
 	it('line extends beyond defining points to viewport edges', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(pt(-1, 0));
 		const b = c.createFreePoint(pt(1, 0));
 		const ln = c.createLine(a, b);
@@ -103,7 +103,7 @@ describe('construction -> SVG rendering pipeline', () => {
 	});
 
 	it('ray extends from origin in one direction only', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const origin = c.createFreePoint(pt(0, 0));
 		const through = c.createFreePoint(pt(5, 5));
 		const ray = c.createRay(origin, through);
@@ -123,7 +123,7 @@ describe('construction -> SVG rendering pipeline', () => {
 
 describe('drag simulation: movePoint -> recompute -> SVG', () => {
 	it('moving a point updates midpoint SVG position', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(pt(0, 0));
 		const b = c.createFreePoint(pt(10, 0));
 		const mid = c.createMidpoint(a, b);
@@ -143,7 +143,7 @@ describe('drag simulation: movePoint -> recompute -> SVG', () => {
 	});
 
 	it('segment follows its endpoints after drag', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(pt(0, 0));
 		const b = c.createFreePoint(pt(4, 0));
 		const seg = c.createSegment(a, b);
@@ -163,7 +163,7 @@ describe('drag simulation: movePoint -> recompute -> SVG', () => {
 	});
 
 	it('circle follows its center after drag', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const center = c.createFreePoint(pt(0, 0));
 		const circ = c.createCircleByRadius(center, geoFromNumber(3));
 
@@ -180,7 +180,7 @@ describe('drag simulation: movePoint -> recompute -> SVG', () => {
 	});
 
 	it('chained midpoints propagate through 3 levels', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(pt(0, 0));
 		const b = c.createFreePoint(pt(8, 0));
 		const mid1 = c.createMidpoint(a, b); // (4, 0)
@@ -216,7 +216,7 @@ describe('drag simulation: movePoint -> recompute -> SVG', () => {
 
 describe('exact computation pipeline', () => {
 	it('midpoint of exact points is exact', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint({ x: geoFromFraction(1, 3), y: exact(number(0)) });
 		const b = c.createFreePoint({ x: geoFromFraction(2, 3), y: exact(number(0)) });
 		const mid = c.createMidpoint(a, b);
@@ -228,7 +228,7 @@ describe('exact computation pipeline', () => {
 	});
 
 	it('midpoint becomes numeric after drag', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(pt(0, 0));
 		const b = c.createFreePoint(pt(10, 0));
 		const mid = c.createMidpoint(a, b);
@@ -285,7 +285,7 @@ describe('exact computation pipeline', () => {
 
 describe('cascade delete integration', () => {
 	it('removing a point removes segments, midpoints, and their SVG is gone', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(pt(0, 0));
 		const b = c.createFreePoint(pt(5, 0));
 		const seg = c.createSegment(a, b);
@@ -313,7 +313,7 @@ describe('cascade delete integration', () => {
 // =============================================================================
 
 describe('serialization', () => {
-	it('constructionStateSchema validates a realistic construction', () => {
+	it('figureStateSchema validates a realistic construction', () => {
 		const state = {
 			version: 1,
 			viewport: { xMin: -10, xMax: 10, yMin: -10, yMax: 10 },
@@ -361,7 +361,7 @@ describe('serialization', () => {
 			]
 		};
 
-		const result = constructionStateSchema.safeParse(state);
+		const result = figureStateSchema.safeParse(state);
 		expect(result.success).toBe(true);
 	});
 
@@ -392,7 +392,7 @@ describe('serialization', () => {
 
 describe('scenario: equilateral triangle exploration', () => {
 	it('builds a triangle, moves a vertex, midpoints follow', () => {
-		const c = new Construction();
+		const c = new Figure();
 
 		// Create equilateral triangle vertices
 		const a = c.createFreePoint(pt(0, 0));
