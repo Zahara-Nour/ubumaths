@@ -4,7 +4,7 @@ import { exact, isExact } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { geoEqual } from '../../compute/compare';
 import { geoFromNumber, geoFromFraction } from '../../compute/geo-arithmetic';
-import { number } from '$lib/mathAST';
+import { number, sqrt } from '$lib/mathAST';
 import type { GeoPoint } from '../../types/primitives';
 
 function pt(x: number, y: number): GeoPoint {
@@ -234,7 +234,8 @@ describe('intersectCC', () => {
 		// Centers at (0,0) and (0,2), both radius sqrt(2)
 		// Radical line: A=0, B=4, C=4 => y=1
 		// Circle 1 at y=1: x²+1=2 => x=±1
-		const r = geoFromNumber(Math.SQRT2);
+		// Use exact sqrt(2), not geoFromNumber(Math.SQRT2) which creates a 17-digit decimal
+		const r = exact(sqrt(number(2)));
 		const result = intersectCC(pt(0, 0), r, pt(0, 2), r);
 		expect(result).not.toBeNull();
 		expect(result!.length).toBe(2);
