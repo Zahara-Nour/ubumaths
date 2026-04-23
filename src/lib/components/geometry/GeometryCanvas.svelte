@@ -48,7 +48,8 @@
 	let hoveredId: string | null = $state(null);
 	let version = $state(0);
 
-	// Local state for pan/zoom (initialized from props)
+	// Local state for pan/zoom. Initialized from props, then diverges.
+	// Pan/zoom modify these directly — prop changes after mount are ignored.
 	let viewCenter = $state({ x: initialCenter.x, y: initialCenter.y });
 	let ppu = $state(initialPpu);
 	let isPanning = $state(false);
@@ -117,6 +118,7 @@
 			if (el?.type === 'freePoint') {
 				draggingId = pointId;
 				svgRef?.setPointerCapture(e.pointerId);
+				e.preventDefault();
 			}
 		}
 	}
@@ -144,6 +146,11 @@
 			const threshold = 15 / ppu;
 			hoveredId = findPointNear(figure, math.x, math.y, threshold);
 		}
+	}
+
+	function onPointerCancel() {
+		isPanning = false;
+		draggingId = null;
 	}
 
 	function onPointerUp(e: PointerEvent) {
@@ -194,7 +201,13 @@
 
 	// ─── Keyboard: space for pan mode ───────────────────────────────
 
+	function isTextInput(e: KeyboardEvent): boolean {
+		const target = e.target as HTMLElement;
+		return target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+	}
+
 	function onKeyDown(e: KeyboardEvent) {
+		if (isTextInput(e)) return;
 		if (e.code === 'Space' && !spaceHeld) {
 			spaceHeld = true;
 			e.preventDefault();
@@ -202,14 +215,21 @@
 	}
 
 	function onKeyUp(e: KeyboardEvent) {
+		if (isTextInput(e)) return;
 		if (e.code === 'Space') {
 			spaceHeld = false;
 			if (isPanning) isPanning = false;
 		}
 	}
+
+	function onWindowBlur() {
+		spaceHeld = false;
+		isPanning = false;
+		draggingId = null;
+	}
 </script>
 
-<svelte:window onkeydown={onKeyDown} onkeyup={onKeyUp} />
+<svelte:window onkeydown={onKeyDown} onkeyup={onKeyUp} onblur={onWindowBlur} />
 
 <svg
 	bind:this={svgRef}
@@ -225,6 +245,7 @@
 	onpointerdown={onPointerDown}
 	onpointermove={onPointerMove}
 	onpointerup={onPointerUp}
+	onpointercancel={onPointerCancel}
 	onwheel={onWheel}
 >
 	<!-- Grid -->
