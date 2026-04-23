@@ -6,7 +6,7 @@ import {
 	geoDiv,
 	geoSqrt,
 	geoOpposite,
-	geoFromInteger,
+	geoFromNumber,
 	geoFromFraction
 } from '../geo-arithmetic';
 import { exact, numeric, isExact, isNumeric } from '../../types/geo-value';
@@ -124,14 +124,14 @@ describe('geoOpposite', () => {
 });
 
 describe('convenience constructors', () => {
-	it('geoFromInteger(5) -> exact MathNode', () => {
-		const result = geoFromInteger(5);
+	it('geoFromNumber(5) -> exact MathNode', () => {
+		const result = geoFromNumber(5);
 		expect(isExact(result)).toBe(true);
 		expect(geoToNumber(result)).toBe(5);
 	});
 
-	it('geoFromInteger(-3) -> exact MathNode', () => {
-		expect(geoToNumber(geoFromInteger(-3))).toBe(-3);
+	it('geoFromNumber(-3) -> exact MathNode', () => {
+		expect(geoToNumber(geoFromNumber(-3))).toBe(-3);
 	});
 
 	it('geoFromFraction(1, 3) -> exact MathNode', () => {
@@ -140,8 +140,9 @@ describe('convenience constructors', () => {
 		expect(geoToNumber(result)).toBeCloseTo(1 / 3, 10);
 	});
 
-	it('geoFromFraction rejects non-integer arguments', () => {
-		expect(() => geoFromFraction(1.5, 2)).toThrow('integers');
-		expect(() => geoFromFraction(1, 2.5)).toThrow('integers');
+	it('geoFromFraction accepts non-integer arguments', () => {
+		const result = geoFromFraction(1.5, 2.5);
+		expect(isExact(result)).toBe(true);
+		expect(geoToNumber(result)).toBeCloseTo(0.6, 10);
 	});
 });

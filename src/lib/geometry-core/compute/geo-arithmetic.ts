@@ -90,15 +90,12 @@ export function geoOpposite(a: GeoValue): GeoValue {
 	return numeric(-a.value);
 }
 
-/** Create an exact GeoValue from an integer. */
-export function geoFromInteger(n: number): GeoValue {
-	return exact(number(String(n)));
+/** Create an exact GeoValue from a number. */
+export function geoFromNumber(n: number): GeoValue {
+	return exact(number(n));
 }
 
-/** Create an exact GeoValue from an integer fraction num/den. Both must be integers. */
+/** Create an exact GeoValue from a fraction num/den. */
 export function geoFromFraction(num: number, den: number): GeoValue {
-	if (!Number.isInteger(num) || !Number.isInteger(den)) {
-		throw new Error('geoFromFraction: numerator and denominator must be integers');
-	}
-	return exact(fraction(number(String(num)), number(String(den))));
+	return exact(fraction(number(num), number(den)));
 }
