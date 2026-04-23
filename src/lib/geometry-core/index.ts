@@ -12,3 +12,6 @@ export * from './viewport';
 
 // Rendering
 export * from './rendering';
+
+// Interaction
+export * from './interaction';
