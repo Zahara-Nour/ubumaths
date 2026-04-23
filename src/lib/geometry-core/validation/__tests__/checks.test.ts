@@ -27,21 +27,18 @@ describe('checkPointAt', () => {
 	it('valid when point is at exact position', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(3, 4));
-		const result = checkPointAt(f, a, 3, 4);
-		expect(result.valid).toBe(true);
+		expect(checkPointAt(f, a, 3, 4).valid).toBe(true);
 	});
 
 	it('invalid when point is at wrong position', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(3, 4));
-		const result = checkPointAt(f, a, 5, 6);
-		expect(result.valid).toBe(false);
+		expect(checkPointAt(f, a, 5, 6).valid).toBe(false);
 	});
 
 	it('invalid for non-existent point', () => {
 		const f = new Figure();
-		const result = checkPointAt(f, 'nope', 0, 0);
-		expect(result.valid).toBe(false);
+		expect(checkPointAt(f, 'nope', 0, 0).valid).toBe(false);
 	});
 
 	it('valid for midpoint at computed position', () => {
@@ -52,11 +49,48 @@ describe('checkPointAt', () => {
 		expect(checkPointAt(f, mid, 3, 0).valid).toBe(true);
 	});
 
-	it('message is in french', () => {
+	it('valid at origin', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		expect(checkPointAt(f, a, 0, 0).valid).toBe(true);
+	});
+
+	it('valid for negative coordinates', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(-7, -3));
+		expect(checkPointAt(f, a, -7, -3).valid).toBe(true);
+	});
+
+	it('invalid when only x is wrong', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(3, 4));
-		const result = checkPointAt(f, a, 3, 4);
-		expect(result.message.length).toBeGreaterThan(0);
+		expect(checkPointAt(f, a, 999, 4).valid).toBe(false);
+	});
+
+	it('invalid when only y is wrong', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(3, 4));
+		expect(checkPointAt(f, a, 3, 999).valid).toBe(false);
+	});
+
+	it('valid for intersection point', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(-5, 0));
+		const b = f.createFreePoint(pt(5, 0));
+		const c = f.createFreePoint(pt(0, -5));
+		const d = f.createFreePoint(pt(0, 5));
+		const seg1 = f.createSegment(a, b);
+		const seg2 = f.createSegment(c, d);
+		const inter = f.createIntersectionLL(seg1, seg2);
+		expect(checkPointAt(f, inter, 0, 0).valid).toBe(true);
+	});
+
+	it('message contains expected position on failure', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const result = checkPointAt(f, a, 5, 7);
+		expect(result.message).toContain('5');
+		expect(result.message).toContain('7');
 	});
 });
 
@@ -65,7 +99,7 @@ describe('checkPointAt', () => {
 // =============================================================================
 
 describe('checkCollinear', () => {
-	it('valid for three aligned points', () => {
+	it('valid for three aligned points on diagonal', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(1, 1));
@@ -104,6 +138,38 @@ describe('checkCollinear', () => {
 		const mid = f.createMidpoint(a, b);
 		expect(checkCollinear(f, a, mid, b).valid).toBe(true);
 	});
+
+	it('valid regardless of point order', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(2, 2));
+		const c = f.createFreePoint(pt(4, 4));
+		expect(checkCollinear(f, c, a, b).valid).toBe(true);
+		expect(checkCollinear(f, b, c, a).valid).toBe(true);
+	});
+
+	it('invalid for non-existent point', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(1, 1));
+		expect(checkCollinear(f, a, b, 'nope').valid).toBe(false);
+	});
+
+	it('valid when two points are the same position', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(3, 3));
+		const b = f.createFreePoint(pt(3, 3));
+		const c = f.createFreePoint(pt(5, 5));
+		expect(checkCollinear(f, a, b, c).valid).toBe(true);
+	});
+
+	it('valid when all three points coincide', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(1, 1));
+		const b = f.createFreePoint(pt(1, 1));
+		const c = f.createFreePoint(pt(1, 1));
+		expect(checkCollinear(f, a, b, c).valid).toBe(true);
+	});
 });
 
 // =============================================================================
@@ -111,7 +177,7 @@ describe('checkCollinear', () => {
 // =============================================================================
 
 describe('checkDistance', () => {
-	it('valid for correct distance', () => {
+	it('valid for correct distance (3-4-5 triangle)', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(3, 4));
@@ -125,7 +191,7 @@ describe('checkDistance', () => {
 		expect(checkDistance(f, a, b, 6).valid).toBe(false);
 	});
 
-	it('valid for distance 0 (same point position)', () => {
+	it('valid for distance 0 (same position)', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(5, 5));
 		const b = f.createFreePoint(pt(5, 5));
@@ -136,8 +202,43 @@ describe('checkDistance', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(1, 1));
-		// distance = sqrt(2), distance² = 2
 		expect(checkDistance(f, a, b, Math.SQRT2).valid).toBe(true);
+	});
+
+	it('valid for horizontal distance', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(7, 0));
+		expect(checkDistance(f, a, b, 7).valid).toBe(true);
+	});
+
+	it('valid for vertical distance', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(0, 11));
+		expect(checkDistance(f, a, b, 11).valid).toBe(true);
+	});
+
+	it('symmetric: distance(A,B) = distance(B,A)', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 4));
+		expect(checkDistance(f, a, b, 5).valid).toBe(true);
+		expect(checkDistance(f, b, a, 5).valid).toBe(true);
+	});
+
+	it('invalid for non-existent point', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		expect(checkDistance(f, a, 'nope', 5).valid).toBe(false);
+	});
+
+	it('message contains actual distance on failure', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 4));
+		const result = checkDistance(f, a, b, 10);
+		expect(result.message).toContain('5');
 	});
 });
 
@@ -169,8 +270,32 @@ describe('checkSameDistance', () => {
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(3, 0));
 		const c = f.createFreePoint(pt(0, 3));
-		// AB = 3, AC = 3
 		expect(checkSameDistance(f, a, b, a, c).valid).toBe(true);
+	});
+
+	it('valid for equilateral triangle sides', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(4, 0));
+		const c = f.createFreePoint({ x: exact(number(2)), y: exact(sqrt(number(12))) });
+		expect(checkSameDistance(f, a, b, b, c).valid).toBe(true);
+		expect(checkSameDistance(f, a, b, a, c).valid).toBe(true);
+	});
+
+	it('valid for zero distances (same position)', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(5, 5));
+		const b = f.createFreePoint(pt(5, 5));
+		const c = f.createFreePoint(pt(3, 3));
+		const d = f.createFreePoint(pt(3, 3));
+		expect(checkSameDistance(f, a, b, c, d).valid).toBe(true);
+	});
+
+	it('invalid for non-existent point', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(1, 0));
+		expect(checkSameDistance(f, a, b, a, 'nope').valid).toBe(false);
 	});
 });
 
@@ -190,7 +315,29 @@ describe('checkParallel', () => {
 		expect(checkParallel(f, seg1, seg2).valid).toBe(true);
 	});
 
-	it('invalid for same element (line parallel to itself)', () => {
+	it('valid for parallel vertical segments', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(0, 5));
+		const c = f.createFreePoint(pt(3, 0));
+		const d = f.createFreePoint(pt(3, 5));
+		const seg1 = f.createSegment(a, b);
+		const seg2 = f.createSegment(c, d);
+		expect(checkParallel(f, seg1, seg2).valid).toBe(true);
+	});
+
+	it('valid for parallel diagonal segments', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(1, 2));
+		const c = f.createFreePoint(pt(5, 0));
+		const d = f.createFreePoint(pt(6, 2));
+		const seg1 = f.createSegment(a, b);
+		const seg2 = f.createSegment(c, d);
+		expect(checkParallel(f, seg1, seg2).valid).toBe(true);
+	});
+
+	it('invalid for same element', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(5, 0));
@@ -220,12 +367,42 @@ describe('checkParallel', () => {
 		expect(checkParallel(f, line1, line2).valid).toBe(true);
 	});
 
+	it('valid for parallel rays', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 0));
+		const c = f.createFreePoint(pt(0, 5));
+		const d = f.createFreePoint(pt(3, 5));
+		const ray1 = f.createRay(a, b);
+		const ray2 = f.createRay(c, d);
+		expect(checkParallel(f, ray1, ray2).valid).toBe(true);
+	});
+
+	it('valid for mixed: segment parallel to line', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(5, 0));
+		const c = f.createFreePoint(pt(0, 3));
+		const d = f.createFreePoint(pt(5, 3));
+		const seg = f.createSegment(a, b);
+		const line = f.createLine(c, d);
+		expect(checkParallel(f, seg, line).valid).toBe(true);
+	});
+
 	it('invalid for non-line-like element', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(5, 0));
 		const seg = f.createSegment(a, b);
 		expect(checkParallel(f, a, seg).valid).toBe(false);
+	});
+
+	it('invalid for non-existent element', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(5, 0));
+		const seg = f.createSegment(a, b);
+		expect(checkParallel(f, seg, 'nope').valid).toBe(false);
 	});
 });
 
@@ -234,7 +411,7 @@ describe('checkParallel', () => {
 // =============================================================================
 
 describe('checkPerpendicular', () => {
-	it('valid for perpendicular segments', () => {
+	it('valid for perpendicular axis-aligned segments', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(5, 0));
@@ -266,6 +443,36 @@ describe('checkPerpendicular', () => {
 		const line2 = f.createLine(c, d);
 		expect(checkPerpendicular(f, line1, line2).valid).toBe(true);
 	});
+
+	it('valid for perpendicular rays', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 0));
+		const c = f.createFreePoint(pt(0, 0));
+		const d = f.createFreePoint(pt(0, 3));
+		const ray1 = f.createRay(a, b);
+		const ray2 = f.createRay(c, d);
+		expect(checkPerpendicular(f, ray1, ray2).valid).toBe(true);
+	});
+
+	it('invalid for parallel segments (not perpendicular)', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(5, 0));
+		const c = f.createFreePoint(pt(0, 3));
+		const d = f.createFreePoint(pt(5, 3));
+		const seg1 = f.createSegment(a, b);
+		const seg2 = f.createSegment(c, d);
+		expect(checkPerpendicular(f, seg1, seg2).valid).toBe(false);
+	});
+
+	it('invalid for non-line-like element', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(5, 0));
+		const seg = f.createSegment(a, b);
+		expect(checkPerpendicular(f, a, seg).valid).toBe(false);
+	});
 });
 
 // =============================================================================
@@ -281,13 +488,20 @@ describe('checkAngle', () => {
 		expect(checkAngle(f, a, v, b, 90).valid).toBe(true);
 	});
 
-	it('valid for 60° angle (equilateral triangle vertex)', () => {
+	it('valid for 60° angle', () => {
 		const f = new Figure();
-		// A=(2,0), V=(0,0), B=(1, sqrt(3)) => |VA|=2, |VB|=2, cos=0.5 => 60°
 		const a = f.createFreePoint(pt(2, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint({ x: exact(number(1)), y: exact(sqrt(number(3))) });
 		expect(checkAngle(f, a, v, b, 60).valid).toBe(true);
+	});
+
+	it('valid for 45° angle', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(1, 0));
+		const v = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(1, 1));
+		expect(checkAngle(f, a, v, b, 45).valid).toBe(true);
 	});
 
 	it('valid for 180° straight line', () => {
@@ -298,12 +512,61 @@ describe('checkAngle', () => {
 		expect(checkAngle(f, a, v, b, 180).valid).toBe(true);
 	});
 
+	it('valid for 0° (same direction)', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(1, 0));
+		const v = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(2, 0));
+		expect(checkAngle(f, a, v, b, 0).valid).toBe(true);
+	});
+
 	it('invalid for wrong angle', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
 		expect(checkAngle(f, a, v, b, 45).valid).toBe(false);
+	});
+
+	it('invalid for coincident points (undefined angle)', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const v = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(1, 0));
+		expect(checkAngle(f, a, v, b, 90).valid).toBe(false);
+	});
+
+	it('symmetric: angle(A,V,B) = angle(B,V,A)', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(1, 0));
+		const v = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(0, 1));
+		expect(checkAngle(f, a, v, b, 90).valid).toBe(true);
+		expect(checkAngle(f, b, v, a, 90).valid).toBe(true);
+	});
+
+	it('invalid for non-existent point', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(1, 0));
+		const v = f.createFreePoint(pt(0, 0));
+		expect(checkAngle(f, a, v, 'nope', 90).valid).toBe(false);
+	});
+
+	it('message contains actual angle on failure', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(1, 0));
+		const v = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(0, 1));
+		const result = checkAngle(f, a, v, b, 45);
+		expect(result.message).toContain('90');
+	});
+
+	it('valid with non-origin vertex', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(6, 5));
+		const v = f.createFreePoint(pt(5, 5));
+		const b = f.createFreePoint(pt(5, 6));
+		expect(checkAngle(f, a, v, b, 90).valid).toBe(true);
 	});
 });
 
@@ -315,7 +578,7 @@ describe('checkPointOnCircle', () => {
 	it('valid when point is on circle (byRadius)', () => {
 		const f = new Figure();
 		const center = f.createFreePoint(pt(0, 0));
-		const p = f.createFreePoint(pt(3, 4)); // distance = 5
+		const p = f.createFreePoint(pt(3, 4));
 		const circ = f.createCircleByRadius(center, geoFromNumber(5));
 		expect(checkPointOnCircle(f, p, circ).valid).toBe(true);
 	});
@@ -323,7 +586,7 @@ describe('checkPointOnCircle', () => {
 	it('invalid when point is not on circle', () => {
 		const f = new Figure();
 		const center = f.createFreePoint(pt(0, 0));
-		const p = f.createFreePoint(pt(1, 1)); // distance = sqrt(2)
+		const p = f.createFreePoint(pt(1, 1));
 		const circ = f.createCircleByRadius(center, geoFromNumber(5));
 		expect(checkPointOnCircle(f, p, circ).valid).toBe(false);
 	});
@@ -333,8 +596,7 @@ describe('checkPointOnCircle', () => {
 		const center = f.createFreePoint(pt(0, 0));
 		const edge = f.createFreePoint(pt(5, 0));
 		const circ = f.createCircleByPoint(center, edge);
-		// Another point at same distance
-		const p = f.createFreePoint(pt(3, 4)); // distance = 5
+		const p = f.createFreePoint(pt(3, 4));
 		expect(checkPointOnCircle(f, p, circ).valid).toBe(true);
 	});
 
@@ -346,11 +608,51 @@ describe('checkPointOnCircle', () => {
 		expect(checkPointOnCircle(f, edge, circ).valid).toBe(true);
 	});
 
+	it('center is on circle only if radius is 0', () => {
+		const f = new Figure();
+		const center = f.createFreePoint(pt(0, 0));
+		const circ = f.createCircleByRadius(center, geoFromNumber(5));
+		expect(checkPointOnCircle(f, center, circ).valid).toBe(false);
+
+		const circ0 = f.createCircleByRadius(center, geoFromNumber(0));
+		expect(checkPointOnCircle(f, center, circ0).valid).toBe(true);
+	});
+
+	it('valid for point on off-center circle', () => {
+		const f = new Figure();
+		const center = f.createFreePoint(pt(3, 4));
+		const p = f.createFreePoint(pt(6, 8));
+		const circ = f.createCircleByRadius(center, geoFromNumber(5));
+		expect(checkPointOnCircle(f, p, circ).valid).toBe(true);
+	});
+
+	it('valid with exact irrational radius', () => {
+		const f = new Figure();
+		const center = f.createFreePoint(pt(0, 0));
+		const edge = f.createFreePoint(pt(1, 1)); // radius = sqrt(2)
+		const circ = f.createCircleByPoint(center, edge);
+		const p = f.createFreePoint({ x: exact(sqrt(number(2))), y: exact(number(0)) });
+		expect(checkPointOnCircle(f, p, circ).valid).toBe(true);
+	});
+
 	it('invalid for non-circle element', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(5, 0));
 		const seg = f.createSegment(a, b);
 		expect(checkPointOnCircle(f, a, seg).valid).toBe(false);
+	});
+
+	it('invalid for non-existent point', () => {
+		const f = new Figure();
+		const center = f.createFreePoint(pt(0, 0));
+		const circ = f.createCircleByRadius(center, geoFromNumber(5));
+		expect(checkPointOnCircle(f, 'nope', circ).valid).toBe(false);
+	});
+
+	it('invalid for non-existent circle', () => {
+		const f = new Figure();
+		const p = f.createFreePoint(pt(3, 4));
+		expect(checkPointOnCircle(f, p, 'nope').valid).toBe(false);
 	});
 });
