@@ -1,149 +1,125 @@
-# Phase 1 — Progression
+# Geometry-core — Progression
 
 > Derniere mise a jour : 2026-04-23
 
-## Etat : Phase 1 TERMINEE
+## Etat : Phases 1-3A terminees
 
-## Phases terminees
+## Phase 1 : Fondations (TERMINEE)
 
 ### Phase 1A : Types fondamentaux
 
-**Fichiers crees :**
-
-- `src/lib/geometry-core/types/geo-value.ts` — GeoValue = exact(MathNode) | numeric(number)
-- `src/lib/geometry-core/types/primitives.ts` — Radians (branded `__brand`), Vec2\<T\>, GeoPoint, NumericPoint, Box
-- `src/lib/geometry-core/types/elements.ts` — GeoElement union (8 types), GeoElementBase exporte, type guards
-- `src/lib/geometry-core/types/index.ts` — barrel
-
-**Decisions prises pendant l'implementation :**
-
-- `numeric()` rejette NaN ET Infinity (seules les valeurs finies sont des coordonnees valides)
-- `GeoFreePoint.position` est un `GeoPoint` (Vec2\<GeoValue\>), pas des x/y plats
-- `GeoCircle` splitte en `GeoCircleByRadius` / `GeoCircleByPoint` (dependances differentes)
-- `GeoPolygon` : `dependsOn` sert aussi de liste de sommets (pas de champ `vertexIds` redondant), minimum 3
-- `GeoElementBase` exporte pour acces generique au dependency graph
-- `GeoLineLikeElement` union + `isLineLike()` pour le rendu
-- `GeoMidpoint` ajoute des la Phase 1 (necessaire pour tester le dependency graph)
-
-**Tests :** 39 (geo-value: 22, primitives: 17)
+- `types/geo-value.ts` — GeoValue = exact(MathNode) | numeric(number)
+- `types/primitives.ts` — Radians (branded), Vec2\<T\>, GeoPoint, NumericPoint, Box
+- `types/elements.ts` — GeoElement union (8 types), GeoElementBase, type guards
+- Tests : 64
 
 ### Phase 1B : Extraction viewport de grapheur/
 
-**Fichiers crees :**
-
-- `src/lib/geometry-core/viewport/types.ts` — Point, Viewport, ViewportMetrics, SampledCurve, LineStyle, viewportSchema
-- `src/lib/geometry-core/viewport/viewport.ts` — copie de grapheur/viewport.ts + `fitViewport()`
-- `src/lib/geometry-core/viewport/index.ts` — barrel
-- `src/lib/geometry-core/rendering/colors.ts` — copie de grapheur/colors.ts
-- `src/lib/geometry-core/rendering/bezier.ts` — copie de grapheur/bezier.ts (import mis a jour)
-- `src/lib/geometry-core/rendering/index.ts` — barrel
-
-**Fichiers modifies (re-exports) :**
-
-- `src/lib/grapheur/viewport.ts` — re-exporte depuis geometry-core
-- `src/lib/grapheur/types.ts` — re-exporte les types partages, garde les types specifiques
-- `src/lib/grapheur/colors.ts` — re-exporte depuis geometry-core
-- `src/lib/grapheur/bezier.ts` — re-exporte depuis geometry-core
-
-**Non-regression :** 213 tests grapheur passent sans modification.
-
-**Decisions prises :**
-
-- `fitViewport()` clamp le padding a >= 0
-- `createMathToSVGTransformer` dans bezier.ts : guard division-by-zero aligne avec `createTransformer`
-
-**Tests :** 8 (fitViewport)
+- `viewport/` — Point, Viewport, CoordinateTransformer, pan/zoom/fit, viewportSchema
+- `rendering/colors.ts`, `rendering/bezier.ts` — extraits de grapheur/
+- grapheur/ transforme en re-exports (213 tests non-regression)
+- Tests : 8
 
 ### Phase 1C : Compute (calcul exact/numerique)
 
-**Fichiers crees :**
-
-- `src/lib/geometry-core/compute/to-number.ts` — geoToNumber (via evaluate mode decimal), vec2ToPoint
-- `src/lib/geometry-core/compute/geo-arithmetic.ts` — geoAdd/Sub/Mul/Div/Sqrt/Opposite + geoFromNumber/geoFromFraction
-- `src/lib/geometry-core/compute/compare.ts` — geoEqual, geoIsZero, geoLessThan, geoApproxEqual
-- `src/lib/geometry-core/compute/index.ts` — barrel
-
-**Decisions prises pendant l'implementation :**
-
-- **isZeroExpression** (normalize) pour egalite/zero, PAS compareNumericNodes. Raison : normalize est le test definitif d'equivalence algebrique, compareNumericNodes a un fallback decimal sans tolerance qui peut donner des faux negatifs. Documente dans compare.ts.
-- **geoSqrt retourne null** pour les inputs negatifs numeriques (coherent avec geoDiv qui retourne null pour division par zero). Pas de throw dans les operations geometriques.
-- **geoLessThan** : strict float, pas de tolerance (suffisant pour ordering/rendu).
-- **geoFromNumber** (renomme de geoFromInteger) : accepte n'importe quel nombre, pas de conversion String() inutile.
-- MathAST factory `number()` accepte directement des `number`, pas besoin de `String()`.
-
-**MathAST API utilisee :**
-
-- Constructeurs : `number()`, `add()`, `subtract()`, `multiply()`, `divide()`, `fraction()`, `sqrt()`, `opposite()`
-- `evaluate(node, {mode:'exact'})` pour simplifier les AST
-- `evaluate(node, {mode:'decimal'})` pour convertir en float
-- `isZeroExpression()` de `$lib/mathAST/normal` pour le test de zero exact
-- `subtract()` de `$lib/mathAST` pour construire a-b avant isZeroExpression
-
-**Tests :** 137 (to-number: 23, geo-arithmetic: 58, compare: 56)
+- `compute/to-number.ts` — geoToNumber via evaluate(mode:'decimal')
+- `compute/geo-arithmetic.ts` — geoAdd/Sub/Mul/Div/Sqrt/Opposite + geoFromNumber/geoFromFraction
+- `compute/compare.ts` — geoEqual (via isZeroExpression), geoIsZero, geoLessThan
+- Tests : 139
 
 ### Phase 1D : Dependency graph
 
-**Fichiers crees :**
+- `graph/dependency-graph.ts` — dirty flags, topo sort (Kahn), cycle detection, cascade delete
+- Tests : 41
 
-- `src/lib/geometry-core/graph/dependency-graph.ts` — DependencyGraph + CycleError
-- `src/lib/geometry-core/graph/__tests__/dependency-graph.test.ts`
+### Phase 1E : Figure (API principale)
 
-**Decisions prises :**
-
-- Cycle detection : seul le self-reference est verifie. Les cycles transitifs sont structurellement impossibles via `addNode` (un nouveau noeud n'a pas d'enfants).
-- Duplicate parent IDs rejetes (corromprait le comptage d'in-degree dans le tri topologique).
-- `markDirty` sur un id inexistant throw (evite les fantomes dans le dirty set).
-- `collectDescendants` utilise un Set pour le dedup O(1) au lieu de `Array.includes` O(n).
-- `getDirtyInOrder` snapshote le dirty set avant iteration (defensif).
-
-**Tests :** 41
-
-### Phase 1E : Construction (API principale)
-
-**Fichiers crees :**
-
-- `src/lib/geometry-core/graph/construction.ts` — Construction class
-- `src/lib/geometry-core/graph/index.ts` — barrel
-
-**Decisions prises :**
-
-- ID counter dans l'instance (pas global) — chaque Construction a son propre compteur
-- `addElement` avec rollback si graph.addNode echoue (pas de state inconsistency)
-- `computePosition` throw si geoDiv retourne null (au lieu de silence)
-- `movePoint` marque le point + descendants dirty, `recompute()` est obligatoire apres
-
-**Tests :** 39
+- `graph/figure.ts` — Figure class (renomme de Construction)
+- Factory : createFreePoint, createMidpoint, createSegment, createLine, createRay, createCircleByRadius, createCircleByPoint
+- movePoint + recompute, cascade remove
+- Tests : 39
 
 ### Phase 1F : Rendu SVG + Schemas
 
-**Fichiers crees :**
+- `rendering/svg-primitives.ts` — pointToSVG, segmentToSVG, lineToSVG, rayToSVG, circleToSVG
+- `types/schemas.ts` — Zod schemas, serialisation GeoValue exact via LaTeX
+- Tests : 42
 
-- `src/lib/geometry-core/rendering/svg-primitives.ts` — pointToSVG, segmentToSVG, lineToSVG, rayToSVG, circleToSVG
-- `src/lib/geometry-core/types/schemas.ts` — Zod schemas + serializeGeoValue/deserializeGeoValue
-- `src/lib/geometry-core/index.ts` — barrel top-level
+### Phase 1G : Finalisation + Integration tests
 
-**Decisions prises :**
+- Barrel top-level, ESLint clean
+- 18 tests d'integration (pipeline complet)
 
-- GeoValue exact serialise en LaTeX (toLatex/parseLatex round-trip)
-- lineToSVG et rayToSVG etendent aux bords du viewport (clip parametrique en espace SVG)
-- circleToSVG gere les deux variantes (byRadius et byPoint)
+## Phase 2 : Interaction (TERMINEE)
 
-**Tests :** 42 (svg-primitives: 17, schemas: 25)
+- `interaction/hit-testing.ts` — findPointNear, findElementNear (O(n) lineaire)
+- `interaction/snap.ts` — snapToGrid (retourne exact), snapToPoint
+- `GeometryCanvas.svelte` — rendu SVG interactif, drag de points libres, grille, hover
+- Demo page `/geometry-demo`
+- Tests : 25
 
-### Phase 1G : Finalisation
+### Decisions prises :
 
-- ESLint clean sur tous les fichiers geometry-core
-- Barrel top-level `index.ts` cree
-- Document de progression mis a jour
+- Pas de rbush (O(n) suffit pour < 200 elements)
+- Snap sur grille desactive par defaut (`snapOnRelease = false`)
+- Pas de distinction "exploration" vs "exercice" — un seul outil avec des options
+- Reactivite via compteur `version` ($state) puisque Figure est une classe plain JS
+
+## Phase 3A : Intersections (TERMINEE)
+
+- `geometry/intersections.ts` — intersectLL, intersectLC, intersectCC
+- Exact quand les inputs sont exacts (via geoAdd/geoSub/geoMul/geoDiv/geoSqrt)
+- intersectCC : comparaison d² vs (r1±r2)² (pas de sqrt), tolerances relatives
+- Tests : 25
+
+### Decisions prises :
+
+- Formules directes, pas MathAST solve() (LL/LC/CC ont des solutions en forme close)
+- geoSqrt garde contre les inputs exacts negatifs (float check avant de construire sqrt node)
+- Tolerances relatives dans intersectCC et intersectLC (pas de seuils absolus)
+- `geoFromNumber(Math.SQRT2)` INTERDIT — utiliser `exact(sqrt(number(2)))` pour les irrationnels
+- `geoFromNumber` cree exact seulement pour les entiers, numeric pour le reste
+
+## Phase 3B : Transformations (TERMINEE)
+
+- `geometry/transformations.ts` — translate, rotate, reflectPoint, reflectOverLine, dilate
+- Rotation exacte pour les angles remarquables (pi/2, pi/3, pi/4, pi/6) via MathAST cos/sin
+- `simplifyExact` exporte de geo-arithmetic.ts (plus de duplication)
+- `reflectOverLine` retourne null pour les droites degenerees
+- Tests : 64
+
+## Demo page `/geometry-demo`
+
+- Triangle equilateral avec 3 midpoints et 3 medianes
+- Droite (AB) etendue aux bords du viewport
+- Demi-droite (C vers M) etendue d'un cote
+- Cercle par point (centre O, point R draggable)
+- Tous les points libres sont draggables, les dependants suivent
+
+## Refactoring
+
+- `Construction` renomme en `Figure` (partout)
+- `CONSTRUCTION_STATE_VERSION` renomme en `FIGURE_STATE_VERSION`
+
+## Prochaines etapes
+
+- Integration des intersections/transformations dans Figure (points dependants : GeoIntersectionLL, GeoRotatedPoint...)
+- Undo/redo delta-based
+- Validation d'exercices (checks)
+- Nombres dynamiques (distance, angle comme objets)
+- Labels, export LaTeX
 
 ## Resume des tests
 
-| Module                            | Tests   |
-| --------------------------------- | ------- |
-| types/                            | 64      |
-| viewport/                         | 8       |
-| compute/                          | 137     |
-| graph/ (dep-graph + construction) | 80      |
-| rendering/                        | 17      |
-| **Total geometry-core**           | **306** |
-| grapheur/ (non-regression)        | 213     |
+| Module                                      | Tests   |
+| ------------------------------------------- | ------- |
+| types/                                      | 64      |
+| viewport/                                   | 8       |
+| compute/                                    | 139     |
+| graph/ (dep-graph + figure)                 | 80      |
+| rendering/                                  | 17      |
+| geometry/ (intersections + transformations) | 89      |
+| interaction/                                | 25      |
+| integration/                                | 18      |
+| **Total geometry-core**                     | **440** |
+| grapheur/ (non-regression)                  | 213     |
