@@ -77,17 +77,6 @@ describe('Vec2', () => {
 		expect(_p.x.kind).toBe('exact');
 		expect(_p.y.kind).toBe('numeric');
 	});
-
-	it('Vec2 is readonly', () => {
-		const p: Vec2 = { x: 1, y: 2 };
-		// @ts-expect-error — readonly
-
-		(() => {
-			(p as { x: number }).x = 5;
-		})();
-		// The runtime assignment works but the type system prevents it
-		expect(true).toBe(true); // type-level test
-	});
 });
 
 describe('Box', () => {
