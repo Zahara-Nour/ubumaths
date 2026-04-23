@@ -55,6 +55,42 @@ export interface GeoReflectedPoint extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
+/** Image of a point by rotation around a center. */
+export interface GeoRotatedPoint extends GeoElementBase {
+	readonly type: 'rotatedPoint';
+	readonly sourceId: string;
+	readonly centerId: string;
+	readonly angle: GeoValue;
+	readonly dependsOn: readonly [string, string];
+}
+
+/** Image of a point by translation defined by a vector (two points). */
+export interface GeoTranslatedPoint extends GeoElementBase {
+	readonly type: 'translatedPoint';
+	readonly sourceId: string;
+	readonly vectorStartId: string;
+	readonly vectorEndId: string;
+	readonly dependsOn: readonly [string, string, string];
+}
+
+/** Image of a point by homothety (dilation) from a center with a factor. */
+export interface GeoDilatedPoint extends GeoElementBase {
+	readonly type: 'dilatedPoint';
+	readonly sourceId: string;
+	readonly centerId: string;
+	readonly factor: GeoValue;
+	readonly dependsOn: readonly [string, string];
+}
+
+/** Image of a point by axial symmetry (reflection over a line defined by two points). */
+export interface GeoReflectedOverLine extends GeoElementBase {
+	readonly type: 'reflectedOverLine';
+	readonly sourceId: string;
+	readonly linePoint1Id: string;
+	readonly linePoint2Id: string;
+	readonly dependsOn: readonly [string, string, string];
+}
+
 // =============================================================================
 // Line-like types
 // =============================================================================
@@ -121,7 +157,15 @@ export interface GeoPolygon extends GeoElementBase {
 // Union type
 // =============================================================================
 
-export type GeoPointElement = GeoFreePoint | GeoMidpoint | GeoIntersectionLL | GeoReflectedPoint;
+export type GeoPointElement =
+	| GeoFreePoint
+	| GeoMidpoint
+	| GeoIntersectionLL
+	| GeoReflectedPoint
+	| GeoRotatedPoint
+	| GeoTranslatedPoint
+	| GeoDilatedPoint
+	| GeoReflectedOverLine;
 export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
 
 export type GeoElement =
@@ -129,6 +173,10 @@ export type GeoElement =
 	| GeoMidpoint
 	| GeoIntersectionLL
 	| GeoReflectedPoint
+	| GeoRotatedPoint
+	| GeoTranslatedPoint
+	| GeoDilatedPoint
+	| GeoReflectedOverLine
 	| GeoSegment
 	| GeoLine
 	| GeoRay
@@ -158,12 +206,32 @@ export function isReflectedPoint(el: GeoElement): el is GeoReflectedPoint {
 	return el.type === 'reflectedPoint';
 }
 
+export function isRotatedPoint(el: GeoElement): el is GeoRotatedPoint {
+	return el.type === 'rotatedPoint';
+}
+
+export function isTranslatedPoint(el: GeoElement): el is GeoTranslatedPoint {
+	return el.type === 'translatedPoint';
+}
+
+export function isDilatedPoint(el: GeoElement): el is GeoDilatedPoint {
+	return el.type === 'dilatedPoint';
+}
+
+export function isReflectedOverLine(el: GeoElement): el is GeoReflectedOverLine {
+	return el.type === 'reflectedOverLine';
+}
+
 export function isPointElement(el: GeoElement): el is GeoPointElement {
 	return (
 		el.type === 'freePoint' ||
 		el.type === 'midpoint' ||
 		el.type === 'intersectionLL' ||
-		el.type === 'reflectedPoint'
+		el.type === 'reflectedPoint' ||
+		el.type === 'rotatedPoint' ||
+		el.type === 'translatedPoint' ||
+		el.type === 'dilatedPoint' ||
+		el.type === 'reflectedOverLine'
 	);
 }
 

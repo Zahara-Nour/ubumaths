@@ -12,6 +12,10 @@ import type {
 	GeoMidpoint,
 	GeoIntersectionLL,
 	GeoReflectedPoint,
+	GeoRotatedPoint,
+	GeoTranslatedPoint,
+	GeoDilatedPoint,
+	GeoReflectedOverLine,
 	GeoSegment,
 	GeoLine,
 	GeoRay,
@@ -23,14 +27,24 @@ import {
 	isMidpoint,
 	isIntersectionLL,
 	isReflectedPoint,
+	isRotatedPoint,
+	isTranslatedPoint,
+	isDilatedPoint,
+	isReflectedOverLine,
 	isPointElement,
 	isLineLike
 } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
-import { geoAdd, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
+import { geoAdd, geoSub, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
 import { intersectLL } from '../geometry/intersections';
-import { reflectPoint } from '../geometry/transformations';
+import {
+	reflectPoint,
+	rotate,
+	translate,
+	dilate,
+	reflectOverLine
+} from '../geometry/transformations';
 
 const DEFAULT_COLOR = '#1e40af';
 
@@ -440,6 +454,132 @@ export class Figure {
 		return id;
 	}
 
+	createRotatedPoint(
+		sourceId: string,
+		centerId: string,
+		angle: GeoValue,
+		options?: { label?: string; color?: string }
+	): string {
+		const src = this.elements.get(sourceId);
+		const ctr = this.elements.get(centerId);
+		if (!src || !isPointElement(src))
+			throw new Error(`createRotatedPoint: "${sourceId}" is not a point element`);
+		if (!ctr || !isPointElement(ctr))
+			throw new Error(`createRotatedPoint: "${centerId}" is not a point element`);
+
+		const id = this.generateId('rot');
+		const element: GeoRotatedPoint = {
+			type: 'rotatedPoint',
+			id,
+			sourceId,
+			centerId,
+			angle,
+			color: options?.color ?? DEFAULT_COLOR,
+			visible: true,
+			label: options?.label,
+			dependsOn: [sourceId, centerId]
+		};
+		this.addElement(id, element, [sourceId, centerId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createTranslatedPoint(
+		sourceId: string,
+		vectorStartId: string,
+		vectorEndId: string,
+		options?: { label?: string; color?: string }
+	): string {
+		const src = this.elements.get(sourceId);
+		const vs = this.elements.get(vectorStartId);
+		const ve = this.elements.get(vectorEndId);
+		if (!src || !isPointElement(src))
+			throw new Error(`createTranslatedPoint: "${sourceId}" is not a point element`);
+		if (!vs || !isPointElement(vs))
+			throw new Error(`createTranslatedPoint: "${vectorStartId}" is not a point element`);
+		if (!ve || !isPointElement(ve))
+			throw new Error(`createTranslatedPoint: "${vectorEndId}" is not a point element`);
+
+		const id = this.generateId('trans');
+		const element: GeoTranslatedPoint = {
+			type: 'translatedPoint',
+			id,
+			sourceId,
+			vectorStartId,
+			vectorEndId,
+			color: options?.color ?? DEFAULT_COLOR,
+			visible: true,
+			label: options?.label,
+			dependsOn: [sourceId, vectorStartId, vectorEndId]
+		};
+		this.addElement(id, element, [sourceId, vectorStartId, vectorEndId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createDilatedPoint(
+		sourceId: string,
+		centerId: string,
+		factor: GeoValue,
+		options?: { label?: string; color?: string }
+	): string {
+		const src = this.elements.get(sourceId);
+		const ctr = this.elements.get(centerId);
+		if (!src || !isPointElement(src))
+			throw new Error(`createDilatedPoint: "${sourceId}" is not a point element`);
+		if (!ctr || !isPointElement(ctr))
+			throw new Error(`createDilatedPoint: "${centerId}" is not a point element`);
+
+		const id = this.generateId('dil');
+		const element: GeoDilatedPoint = {
+			type: 'dilatedPoint',
+			id,
+			sourceId,
+			centerId,
+			factor,
+			color: options?.color ?? DEFAULT_COLOR,
+			visible: true,
+			label: options?.label,
+			dependsOn: [sourceId, centerId]
+		};
+		this.addElement(id, element, [sourceId, centerId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createReflectedOverLine(
+		sourceId: string,
+		linePoint1Id: string,
+		linePoint2Id: string,
+		options?: { label?: string; color?: string }
+	): string {
+		const src = this.elements.get(sourceId);
+		const lp1 = this.elements.get(linePoint1Id);
+		const lp2 = this.elements.get(linePoint2Id);
+		if (!src || !isPointElement(src))
+			throw new Error(`createReflectedOverLine: "${sourceId}" is not a point element`);
+		if (!lp1 || !isPointElement(lp1))
+			throw new Error(`createReflectedOverLine: "${linePoint1Id}" is not a point element`);
+		if (!lp2 || !isPointElement(lp2))
+			throw new Error(`createReflectedOverLine: "${linePoint2Id}" is not a point element`);
+
+		const id = this.generateId('reflL');
+		const element: GeoReflectedOverLine = {
+			type: 'reflectedOverLine',
+			id,
+			sourceId,
+			linePoint1Id,
+			linePoint2Id,
+			color: options?.color ?? DEFAULT_COLOR,
+			visible: true,
+			label: options?.label,
+			dependsOn: [sourceId, linePoint1Id, linePoint2Id]
+		};
+		this.addElement(id, element, [sourceId, linePoint1Id, linePoint2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
 	// ─── Access ─────────────────────────────────────────────────────
 
 	getElementById(id: string): GeoElement | undefined {
@@ -542,6 +682,49 @@ export class Figure {
 			const center = this.positions.get(el.centerId);
 			if (source && center) {
 				this.positions.set(id, reflectPoint(source, center));
+			} else {
+				this.positions.delete(id);
+			}
+		} else if (isRotatedPoint(el)) {
+			const source = this.positions.get(el.sourceId);
+			const center = this.positions.get(el.centerId);
+			if (source && center) {
+				this.positions.set(id, rotate(source, center, el.angle));
+			} else {
+				this.positions.delete(id);
+			}
+		} else if (isTranslatedPoint(el)) {
+			const source = this.positions.get(el.sourceId);
+			const vStart = this.positions.get(el.vectorStartId);
+			const vEnd = this.positions.get(el.vectorEndId);
+			if (source && vStart && vEnd) {
+				const vector: GeoPoint = {
+					x: geoSub(vEnd.x, vStart.x),
+					y: geoSub(vEnd.y, vStart.y)
+				};
+				this.positions.set(id, translate(source, vector));
+			} else {
+				this.positions.delete(id);
+			}
+		} else if (isDilatedPoint(el)) {
+			const source = this.positions.get(el.sourceId);
+			const center = this.positions.get(el.centerId);
+			if (source && center) {
+				this.positions.set(id, dilate(source, center, el.factor));
+			} else {
+				this.positions.delete(id);
+			}
+		} else if (isReflectedOverLine(el)) {
+			const source = this.positions.get(el.sourceId);
+			const lp1 = this.positions.get(el.linePoint1Id);
+			const lp2 = this.positions.get(el.linePoint2Id);
+			if (source && lp1 && lp2) {
+				const result = reflectOverLine(source, lp1, lp2);
+				if (result) {
+					this.positions.set(id, result);
+				} else {
+					this.positions.delete(id); // degenerate line
+				}
 			} else {
 				this.positions.delete(id);
 			}
