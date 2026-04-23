@@ -15,6 +15,8 @@ export type {
 	GeoLineLikeElement,
 	GeoFreePoint,
 	GeoMidpoint,
+	GeoIntersectionLL,
+	GeoReflectedPoint,
 	GeoSegment,
 	GeoLine,
 	GeoRay,
@@ -26,6 +28,8 @@ export type {
 export {
 	isFreePoint,
 	isMidpoint,
+	isIntersectionLL,
+	isReflectedPoint,
 	isPointElement,
 	isSegment,
 	isLine,

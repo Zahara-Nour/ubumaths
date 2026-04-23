@@ -39,6 +39,22 @@ export interface GeoMidpoint extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
+/** Intersection of two line-like elements. Depends on the two line elements. */
+export interface GeoIntersectionLL extends GeoElementBase {
+	readonly type: 'intersectionLL';
+	readonly line1Id: string;
+	readonly line2Id: string;
+	readonly dependsOn: readonly [string, string];
+}
+
+/** Image of a point by central symmetry (reflection through a center). */
+export interface GeoReflectedPoint extends GeoElementBase {
+	readonly type: 'reflectedPoint';
+	readonly sourceId: string;
+	readonly centerId: string;
+	readonly dependsOn: readonly [string, string];
+}
+
 // =============================================================================
 // Line-like types
 // =============================================================================
@@ -105,12 +121,14 @@ export interface GeoPolygon extends GeoElementBase {
 // Union type
 // =============================================================================
 
-export type GeoPointElement = GeoFreePoint | GeoMidpoint;
+export type GeoPointElement = GeoFreePoint | GeoMidpoint | GeoIntersectionLL | GeoReflectedPoint;
 export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
 
 export type GeoElement =
 	| GeoFreePoint
 	| GeoMidpoint
+	| GeoIntersectionLL
+	| GeoReflectedPoint
 	| GeoSegment
 	| GeoLine
 	| GeoRay
@@ -132,8 +150,21 @@ export function isMidpoint(el: GeoElement): el is GeoMidpoint {
 	return el.type === 'midpoint';
 }
 
+export function isIntersectionLL(el: GeoElement): el is GeoIntersectionLL {
+	return el.type === 'intersectionLL';
+}
+
+export function isReflectedPoint(el: GeoElement): el is GeoReflectedPoint {
+	return el.type === 'reflectedPoint';
+}
+
 export function isPointElement(el: GeoElement): el is GeoPointElement {
-	return el.type === 'freePoint' || el.type === 'midpoint';
+	return (
+		el.type === 'freePoint' ||
+		el.type === 'midpoint' ||
+		el.type === 'intersectionLL' ||
+		el.type === 'reflectedPoint'
+	);
 }
 
 export function isSegment(el: GeoElement): el is GeoSegment {
