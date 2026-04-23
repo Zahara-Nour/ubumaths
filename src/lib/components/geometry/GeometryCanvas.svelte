@@ -36,7 +36,7 @@
 		interactive = true,
 		showGrid = true,
 		gridStep = 1,
-		snapOnRelease = true,
+		snapOnRelease = false,
 		pointRadius = 5
 	}: Props = $props();
 
