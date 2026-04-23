@@ -138,18 +138,17 @@ export function intersectCC(
 	center2: GeoPoint,
 	radius2: GeoValue
 ): GeoPoint[] | null {
-	// Distance between centers (numeric for branching)
-	const dx = geoToNumber(geoSub(center2.x, center1.x));
-	const dy = geoToNumber(geoSub(center2.y, center1.y));
-	const d = Math.sqrt(dx * dx + dy * dy);
+	// Distance² between centers (no sqrt needed — compare d² with (r1±r2)²)
+	const dxG = geoSub(center2.x, center1.x);
+	const dyG = geoSub(center2.y, center1.y);
+	const d2 = geoToNumber(geoAdd(geoMul(dxG, dxG), geoMul(dyG, dyG)));
 
 	const r1 = geoToNumber(radius1);
 	const r2 = geoToNumber(radius2);
 
-	// Quick checks (numeric)
-	if (d < 1e-10) return null; // concentric
-	if (d > r1 + r2 + 1e-10) return null; // too far apart
-	if (d < Math.abs(r1 - r2) - 1e-10) return null; // one inside other
+	if (d2 < 1e-20) return null; // concentric (d² ≈ 0)
+	if (d2 > (r1 + r2) ** 2 + 1e-10) return null; // too far apart (d² > (r1+r2)²)
+	if (d2 < (r1 - r2) ** 2 - 1e-10) return null; // one inside other (d² < (r1-r2)²)
 
 	// Radical line: subtracting (x-cx1)^2+(y-cy1)^2=r1^2 from (x-cx2)^2+(y-cy2)^2=r2^2
 	// gives a linear equation: 2*(cx2-cx1)*x + 2*(cy2-cy1)*y = r1^2 - r2^2 + cx2^2 - cx1^2 + cy2^2 - cy1^2
