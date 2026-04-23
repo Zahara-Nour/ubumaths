@@ -8,9 +8,11 @@ export { radians, radiansToDegrees } from './primitives';
 
 // Elements
 export type {
+	GeoElementBase,
 	GeoElement,
 	GeoElementType,
 	GeoPointElement,
+	GeoLineLikeElement,
 	GeoFreePoint,
 	GeoMidpoint,
 	GeoSegment,
@@ -30,6 +32,7 @@ export {
 	isRay,
 	isCircle,
 	isCircleByRadius,
+	isLineLike,
 	isCircleByPoint,
 	isPolygon
 } from './elements';
