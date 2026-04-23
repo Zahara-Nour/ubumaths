@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Construction } from '$lib/geometry-core/graph/construction';
+	import { Figure } from '$lib/geometry-core/graph/figure';
 	import {
 		createTransformer,
 		type CoordinateTransformer
@@ -17,7 +17,7 @@
 	import { numeric } from '$lib/geometry-core/types/geo-value';
 
 	interface Props {
-		construction: Construction;
+		figure: Figure;
 		viewport?: Viewport;
 		width?: number;
 		height?: number;
@@ -29,7 +29,7 @@
 	}
 
 	let {
-		construction,
+		figure,
 		viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 },
 		width = 800,
 		height = 600,
@@ -44,7 +44,7 @@
 	let draggingId: string | null = $state(null);
 	let hoveredId: string | null = $state(null);
 
-	// Reactivity: Construction is a plain class, not reactive.
+	// Reactivity: Figure is a plain class, not reactive.
 	// We increment this counter on every mutation to trigger $derived re-evaluation.
 	let version = $state(0);
 
@@ -65,7 +65,7 @@
 	// version is read to create a reactive dependency, then elements are fetched.
 	let elements = $derived.by(() => {
 		void version;
-		return construction.getAllElements();
+		return figure.getAllElements();
 	});
 	let dims = $derived({ width, height });
 
@@ -85,10 +85,10 @@
 		if (!math) return;
 
 		const threshold = ((viewport.xMax - viewport.xMin) / width) * 15; // 15px in math units
-		const pointId = findPointNear(construction, math.x, math.y, threshold);
+		const pointId = findPointNear(figure, math.x, math.y, threshold);
 
 		if (pointId) {
-			const el = construction.getElementById(pointId);
+			const el = figure.getElementById(pointId);
 			if (el?.type === 'freePoint') {
 				draggingId = pointId;
 				svgRef?.setPointerCapture(e.pointerId);
@@ -102,12 +102,12 @@
 		if (!math) return;
 
 		if (draggingId) {
-			construction.movePoint(draggingId, numeric(math.x), numeric(math.y));
-			construction.recompute();
+			figure.movePoint(draggingId, numeric(math.x), numeric(math.y));
+			figure.recompute();
 			version++;
 		} else {
 			const threshold = ((viewport.xMax - viewport.xMin) / width) * 15;
-			hoveredId = findPointNear(construction, math.x, math.y, threshold);
+			hoveredId = findPointNear(figure, math.x, math.y, threshold);
 		}
 	}
 
@@ -118,8 +118,8 @@
 			const math = getMathCoords(e);
 			if (math) {
 				const snapped = snapToGrid(math.x, math.y, gridStep);
-				construction.movePoint(draggingId, snapped.x, snapped.y);
-				construction.recompute();
+				figure.movePoint(draggingId, snapped.x, snapped.y);
+				figure.recompute();
 				version++;
 			}
 		}
@@ -160,7 +160,7 @@
 	<g class="elements">
 		{#each elements as el (`${el.id}_${version}`)}
 			{#if el.type === 'segment'}
-				{@const svg = segmentToSVG(el.id, construction, transformer)}
+				{@const svg = segmentToSVG(el.id, figure, transformer)}
 				{#if svg}
 					<line
 						x1={svg.x1}
@@ -173,7 +173,7 @@
 					/>
 				{/if}
 			{:else if el.type === 'line'}
-				{@const svg = lineToSVG(el.id, construction, transformer, dims)}
+				{@const svg = lineToSVG(el.id, figure, transformer, dims)}
 				{#if svg}
 					<line
 						x1={svg.x1}
@@ -186,7 +186,7 @@
 					/>
 				{/if}
 			{:else if el.type === 'ray'}
-				{@const svg = rayToSVG(el.id, construction, transformer, dims)}
+				{@const svg = rayToSVG(el.id, figure, transformer, dims)}
 				{#if svg}
 					<line
 						x1={svg.x1}
@@ -199,7 +199,7 @@
 					/>
 				{/if}
 			{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint'}
-				{@const svg = circleToSVG(el.id, construction, transformer)}
+				{@const svg = circleToSVG(el.id, figure, transformer)}
 				{#if svg}
 					<circle
 						cx={svg.cx}
@@ -217,7 +217,7 @@
 		<!-- Points rendered last (on top) -->
 		{#each elements as el (`${el.id}_${version}`)}
 			{#if el.type === 'freePoint' || el.type === 'midpoint'}
-				{@const svg = pointToSVG(el.id, construction, transformer)}
+				{@const svg = pointToSVG(el.id, figure, transformer)}
 				{#if svg}
 					<circle
 						cx={svg.cx}

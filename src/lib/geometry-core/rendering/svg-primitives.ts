@@ -1,12 +1,12 @@
 /**
  * SVG primitive renderers — pure functions converting GeoElements to SVG attributes.
  *
- * Each function takes an element ID, a Construction (for position lookups),
+ * Each function takes an element ID, a Figure (for position lookups),
  * and a CoordinateTransformer. Returns null if the element or its parents
  * cannot be resolved.
  */
 
-import type { Construction } from '../graph/construction';
+import type { Figure } from '../graph/figure';
 import type { CoordinateTransformer } from '../viewport/viewport';
 import { geoToNumber } from '../compute/to-number';
 import {
@@ -45,10 +45,10 @@ interface CircleSVG {
  */
 export function pointToSVG(
 	id: string,
-	construction: Construction,
+	figure: Figure,
 	transformer: CoordinateTransformer
 ): PointSVG | null {
-	const pos = construction.getPosition(id);
+	const pos = figure.getPosition(id);
 	if (!pos) return null;
 
 	const svgPos = transformer.mathToSvg(geoToNumber(pos.x), geoToNumber(pos.y));
@@ -60,15 +60,15 @@ export function pointToSVG(
  */
 export function segmentToSVG(
 	id: string,
-	construction: Construction,
+	figure: Figure,
 	transformer: CoordinateTransformer
 ): LineSVG | null {
-	const el = construction.getElementById(id);
+	const el = figure.getElementById(id);
 	if (!el || el.type !== 'segment') return null;
 
 	const seg = el as GeoSegment;
-	const p1 = construction.getPosition(seg.startId);
-	const p2 = construction.getPosition(seg.endId);
+	const p1 = figure.getPosition(seg.startId);
+	const p2 = figure.getPosition(seg.endId);
 	if (!p1 || !p2) return null;
 
 	const sv1 = transformer.mathToSvg(geoToNumber(p1.x), geoToNumber(p1.y));
@@ -81,16 +81,16 @@ export function segmentToSVG(
  */
 export function lineToSVG(
 	id: string,
-	construction: Construction,
+	figure: Figure,
 	transformer: CoordinateTransformer,
 	dims: { width: number; height: number }
 ): LineSVG | null {
-	const el = construction.getElementById(id);
+	const el = figure.getElementById(id);
 	if (!el || el.type !== 'line') return null;
 
 	const line = el as GeoLine;
-	const p1 = construction.getPosition(line.point1Id);
-	const p2 = construction.getPosition(line.point2Id);
+	const p1 = figure.getPosition(line.point1Id);
+	const p2 = figure.getPosition(line.point2Id);
 	if (!p1 || !p2) return null;
 
 	const x1 = geoToNumber(p1.x);
@@ -106,16 +106,16 @@ export function lineToSVG(
  */
 export function rayToSVG(
 	id: string,
-	construction: Construction,
+	figure: Figure,
 	transformer: CoordinateTransformer,
 	dims: { width: number; height: number }
 ): LineSVG | null {
-	const el = construction.getElementById(id);
+	const el = figure.getElementById(id);
 	if (!el || el.type !== 'ray') return null;
 
 	const ray = el as GeoRay;
-	const origin = construction.getPosition(ray.originId);
-	const through = construction.getPosition(ray.throughId);
+	const origin = figure.getPosition(ray.originId);
+	const through = figure.getPosition(ray.throughId);
 	if (!origin || !through) return null;
 
 	const ox = geoToNumber(origin.x);
@@ -136,27 +136,27 @@ export function rayToSVG(
  */
 export function circleToSVG(
 	id: string,
-	construction: Construction,
+	figure: Figure,
 	transformer: CoordinateTransformer
 ): CircleSVG | null {
-	const el = construction.getElementById(id);
+	const el = figure.getElementById(id);
 	if (!el) return null;
 
 	if (isCircleByRadius(el)) {
-		return circleByRadiusToSVG(el, construction, transformer);
+		return circleByRadiusToSVG(el, figure, transformer);
 	}
 	if (isCircleByPoint(el)) {
-		return circleByPointToSVG(el, construction, transformer);
+		return circleByPointToSVG(el, figure, transformer);
 	}
 	return null;
 }
 
 function circleByRadiusToSVG(
 	circle: GeoCircleByRadius,
-	construction: Construction,
+	figure: Figure,
 	transformer: CoordinateTransformer
 ): CircleSVG | null {
-	const center = construction.getPosition(circle.centerId);
+	const center = figure.getPosition(circle.centerId);
 	if (!center) return null;
 
 	const svgCenter = transformer.mathToSvg(geoToNumber(center.x), geoToNumber(center.y));
@@ -167,11 +167,11 @@ function circleByRadiusToSVG(
 
 function circleByPointToSVG(
 	circle: GeoCircleByPoint,
-	construction: Construction,
+	figure: Figure,
 	transformer: CoordinateTransformer
 ): CircleSVG | null {
-	const center = construction.getPosition(circle.centerId);
-	const edge = construction.getPosition(circle.edgePointId);
+	const center = figure.getPosition(circle.centerId);
+	const edge = figure.getPosition(circle.edgePointId);
 	if (!center || !edge) return null;
 
 	const cx = geoToNumber(center.x);

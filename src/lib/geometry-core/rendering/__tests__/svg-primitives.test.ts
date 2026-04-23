@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { pointToSVG, segmentToSVG, lineToSVG, rayToSVG, circleToSVG } from '../svg-primitives';
-import { Construction } from '../../graph/construction';
+import { Figure } from '../../graph/figure';
 import { createTransformer } from '../../viewport/viewport';
 import { exact } from '../../types/geo-value';
 import { geoFromNumber } from '../../compute/geo-arithmetic';
@@ -20,7 +20,7 @@ function point(x: number, y: number) {
 
 describe('pointToSVG', () => {
 	it('converts a free point at origin to SVG center', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id = c.createFreePoint(point(0, 0));
 		const svg = pointToSVG(id, c, transformer);
 		expect(svg).not.toBeNull();
@@ -30,7 +30,7 @@ describe('pointToSVG', () => {
 	});
 
 	it('converts a point at (10, 10) to top-right', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id = c.createFreePoint(point(10, 10));
 		const svg = pointToSVG(id, c, transformer);
 		expect(svg!.cx).toBeCloseTo(800, 1);
@@ -38,7 +38,7 @@ describe('pointToSVG', () => {
 	});
 
 	it('converts a midpoint', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(10, 0));
 		const mid = c.createMidpoint(a, b);
@@ -50,7 +50,7 @@ describe('pointToSVG', () => {
 	});
 
 	it('returns null for non-point element', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(1, 1));
 		const seg = c.createSegment(a, b);
@@ -58,12 +58,12 @@ describe('pointToSVG', () => {
 	});
 
 	it('returns null for unknown id', () => {
-		const c = new Construction();
+		const c = new Figure();
 		expect(pointToSVG('nope', c, transformer)).toBeNull();
 	});
 
 	it('has a default radius', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id = c.createFreePoint(point(0, 0));
 		const svg = pointToSVG(id, c, transformer);
 		expect(svg!.r).toBeGreaterThan(0);
@@ -76,7 +76,7 @@ describe('pointToSVG', () => {
 
 describe('segmentToSVG', () => {
 	it('converts a segment between two points', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(-5, 0));
 		const b = c.createFreePoint(point(5, 0));
 		const seg = c.createSegment(a, b);
@@ -90,13 +90,13 @@ describe('segmentToSVG', () => {
 	});
 
 	it('returns null for non-segment element', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		expect(segmentToSVG(a, c, transformer)).toBeNull();
 	});
 
 	it('returns null if a parent point has no position', () => {
-		const c = new Construction();
+		const c = new Figure();
 		// Can't easily test this since createSegment requires existing points,
 		// but we test unknown id
 		expect(segmentToSVG('nope', c, transformer)).toBeNull();
@@ -109,7 +109,7 @@ describe('segmentToSVG', () => {
 
 describe('lineToSVG', () => {
 	it('extends a horizontal line to viewport edges', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(-2, 0));
 		const b = c.createFreePoint(point(2, 0));
 		const ln = c.createLine(a, b);
@@ -123,7 +123,7 @@ describe('lineToSVG', () => {
 	});
 
 	it('extends a vertical line to viewport edges', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, -2));
 		const b = c.createFreePoint(point(0, 2));
 		const ln = c.createLine(a, b);
@@ -134,7 +134,7 @@ describe('lineToSVG', () => {
 	});
 
 	it('returns null for non-line element', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		expect(lineToSVG(a, c, transformer, { width: 800, height: 600 })).toBeNull();
 	});
@@ -146,7 +146,7 @@ describe('lineToSVG', () => {
 
 describe('rayToSVG', () => {
 	it('starts at origin, extends in one direction', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const origin = c.createFreePoint(point(0, 0));
 		const through = c.createFreePoint(point(5, 0));
 		const ray = c.createRay(origin, through);
@@ -159,7 +159,7 @@ describe('rayToSVG', () => {
 	});
 
 	it('returns null for non-ray element', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		expect(rayToSVG(a, c, transformer, { width: 800, height: 600 })).toBeNull();
 	});
@@ -171,7 +171,7 @@ describe('rayToSVG', () => {
 
 describe('circleToSVG', () => {
 	it('converts circleByRadius', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const center = c.createFreePoint(point(0, 0));
 		const id = c.createCircleByRadius(center, geoFromNumber(5));
 		const svg = circleToSVG(id, c, transformer);
@@ -183,7 +183,7 @@ describe('circleToSVG', () => {
 	});
 
 	it('converts circleByPoint', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const center = c.createFreePoint(point(0, 0));
 		const edge = c.createFreePoint(point(3, 4));
 		const id = c.createCircleByPoint(center, edge);
@@ -194,7 +194,7 @@ describe('circleToSVG', () => {
 	});
 
 	it('returns null for non-circle element', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		expect(circleToSVG(a, c, transformer)).toBeNull();
 	});

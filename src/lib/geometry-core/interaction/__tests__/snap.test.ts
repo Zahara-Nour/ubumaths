@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { snapToGrid, snapToPoint } from '../snap';
-import { Construction } from '../../graph/construction';
+import { Figure } from '../../graph/figure';
 import { exact, isExact } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { number } from '$lib/mathAST';
@@ -63,7 +63,7 @@ describe('snapToGrid', () => {
 
 describe('snapToPoint', () => {
 	it('snaps to a nearby point', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(pt(3, 4));
 		const result = snapToPoint(c, 3.1, 4.1, 0.5);
 		expect(result).not.toBeNull();
@@ -73,7 +73,7 @@ describe('snapToPoint', () => {
 	});
 
 	it('returns exact position of the snapped point', () => {
-		const c = new Construction();
+		const c = new Figure();
 		c.createFreePoint(pt(3, 4));
 		const result = snapToPoint(c, 3.1, 4.1, 0.5);
 		expect(isExact(result!.position.x)).toBe(true);
@@ -81,18 +81,18 @@ describe('snapToPoint', () => {
 	});
 
 	it('returns null if no point within threshold', () => {
-		const c = new Construction();
+		const c = new Figure();
 		c.createFreePoint(pt(3, 4));
 		expect(snapToPoint(c, 10, 10, 0.5)).toBeNull();
 	});
 
 	it('returns null on empty construction', () => {
-		const c = new Construction();
+		const c = new Figure();
 		expect(snapToPoint(c, 0, 0, 1)).toBeNull();
 	});
 
 	it('snaps to midpoint', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(pt(0, 0));
 		const b = c.createFreePoint(pt(10, 0));
 		const mid = c.createMidpoint(a, b);
@@ -102,7 +102,7 @@ describe('snapToPoint', () => {
 	});
 
 	it('snaps to closest point when multiple in range', () => {
-		const c = new Construction();
+		const c = new Figure();
 		c.createFreePoint(pt(0, 0));
 		const b = c.createFreePoint(pt(2, 0));
 		const result = snapToPoint(c, 1.6, 0, 1);

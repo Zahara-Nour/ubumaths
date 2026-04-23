@@ -1,5 +1,5 @@
 /**
- * Construction - The main API for creating and managing a geometry construction.
+ * Figure - The main API for creating and managing a geometry figure.
  *
  * Wraps the DependencyGraph and a collection of GeoElements.
  * Provides factory methods, position access, movePoint, and recompute.
@@ -23,7 +23,7 @@ import { geoAdd, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
 
 const DEFAULT_COLOR = '#1e40af';
 
-export class Construction {
+export class Figure {
 	private elements = new Map<string, GeoElement>();
 	private positions = new Map<string, GeoPoint>();
 	private graph = new DependencyGraph();

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Construction } from '../construction';
+import { Figure } from '../figure';
 import { exact, numeric, isExact, isNumeric } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { geoEqual } from '../../compute/compare';
@@ -16,7 +16,7 @@ function point(x: number, y: number) {
 
 describe('createFreePoint', () => {
 	it('creates a point and registers it', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id = c.createFreePoint(point(3, 4));
 		expect(c.getElementById(id)).toBeDefined();
 		expect(c.getElementById(id)!.type).toBe('freePoint');
@@ -24,14 +24,14 @@ describe('createFreePoint', () => {
 	});
 
 	it('generates unique ids', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id1 = c.createFreePoint(point(0, 0));
 		const id2 = c.createFreePoint(point(1, 1));
 		expect(id1).not.toBe(id2);
 	});
 
 	it('stores the position as GeoPoint', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id = c.createFreePoint(point(3, 4));
 		const pos = c.getPosition(id);
 		expect(pos).not.toBeNull();
@@ -40,7 +40,7 @@ describe('createFreePoint', () => {
 	});
 
 	it('supports exact values (sqrt, fractions)', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id = c.createFreePoint({
 			x: exact(sqrt(number(2))),
 			y: geoFromFraction(1, 3)
@@ -54,7 +54,7 @@ describe('createFreePoint', () => {
 
 describe('createSegment', () => {
 	it('creates a segment between two points', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(3, 4));
 		const seg = c.createSegment(a, b);
@@ -64,7 +64,7 @@ describe('createSegment', () => {
 	});
 
 	it('throws if parent does not exist', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		expect(() => c.createSegment(a, 'nonexistent')).toThrow();
 	});
@@ -72,7 +72,7 @@ describe('createSegment', () => {
 
 describe('createMidpoint', () => {
 	it('creates a midpoint of two points', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(6, 8));
 		const mid = c.createMidpoint(a, b);
@@ -81,7 +81,7 @@ describe('createMidpoint', () => {
 	});
 
 	it('computes the correct position (exact)', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(6, 8));
 		const mid = c.createMidpoint(a, b);
@@ -92,7 +92,7 @@ describe('createMidpoint', () => {
 	});
 
 	it('midpoint of exact values is exact', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(1, 0));
 		const b = c.createFreePoint(point(0, 1));
 		const mid = c.createMidpoint(a, b);
@@ -106,7 +106,7 @@ describe('createMidpoint', () => {
 
 describe('createLine / createRay', () => {
 	it('creates a line through two points', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(1, 1));
 		const id = c.createLine(a, b);
@@ -114,7 +114,7 @@ describe('createLine / createRay', () => {
 	});
 
 	it('creates a ray from origin through point', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(1, 1));
 		const id = c.createRay(a, b);
@@ -124,14 +124,14 @@ describe('createLine / createRay', () => {
 
 describe('createCircleByRadius / createCircleByPoint', () => {
 	it('creates a circle with fixed radius', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const center = c.createFreePoint(point(0, 0));
 		const id = c.createCircleByRadius(center, geoFromNumber(5));
 		expect(c.getElementById(id)!.type).toBe('circleByRadius');
 	});
 
 	it('creates a circle through a point', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const center = c.createFreePoint(point(0, 0));
 		const edge = c.createFreePoint(point(3, 4));
 		const id = c.createCircleByPoint(center, edge);
@@ -145,19 +145,19 @@ describe('createCircleByRadius / createCircleByPoint', () => {
 
 describe('element access', () => {
 	it('getElementById returns undefined for unknown id', () => {
-		const c = new Construction();
+		const c = new Figure();
 		expect(c.getElementById('nope')).toBeUndefined();
 	});
 
 	it('getAllElements returns all elements', () => {
-		const c = new Construction();
+		const c = new Figure();
 		c.createFreePoint(point(0, 0));
 		c.createFreePoint(point(1, 1));
 		expect(c.getAllElements().length).toBe(2);
 	});
 
 	it('getElementsByType filters correctly', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(1, 1));
 		c.createSegment(a, b);
@@ -169,7 +169,7 @@ describe('element access', () => {
 	});
 
 	it('size is correct', () => {
-		const c = new Construction();
+		const c = new Figure();
 		expect(c.size).toBe(0);
 		const a = c.createFreePoint(point(0, 0));
 		expect(c.size).toBe(1);
@@ -185,7 +185,7 @@ describe('element access', () => {
 
 describe('getPosition', () => {
 	it('returns position of free point', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id = c.createFreePoint(point(7, 11));
 		const pos = c.getPosition(id);
 		expect(pos).not.toBeNull();
@@ -194,7 +194,7 @@ describe('getPosition', () => {
 	});
 
 	it('returns position of midpoint', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(10, 20));
 		const mid = c.createMidpoint(a, b);
@@ -204,7 +204,7 @@ describe('getPosition', () => {
 	});
 
 	it('returns null for non-point elements', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(1, 1));
 		const seg = c.createSegment(a, b);
@@ -212,7 +212,7 @@ describe('getPosition', () => {
 	});
 
 	it('returns null for unknown id', () => {
-		const c = new Construction();
+		const c = new Figure();
 		expect(c.getPosition('nope')).toBeNull();
 	});
 });
@@ -223,7 +223,7 @@ describe('getPosition', () => {
 
 describe('movePoint', () => {
 	it('updates position of a free point', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id = c.createFreePoint(point(0, 0));
 		c.movePoint(id, numeric(5), numeric(10));
 		const pos = c.getPosition(id);
@@ -232,7 +232,7 @@ describe('movePoint', () => {
 	});
 
 	it('moved point becomes numeric', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id = c.createFreePoint(point(0, 0));
 		c.movePoint(id, numeric(5), numeric(10));
 		const pos = c.getPosition(id);
@@ -241,7 +241,7 @@ describe('movePoint', () => {
 	});
 
 	it('can move to exact values (snap)', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const id = c.createFreePoint(point(0, 0));
 		c.movePoint(id, exact(number(3)), exact(number(4)));
 		const pos = c.getPosition(id);
@@ -249,7 +249,7 @@ describe('movePoint', () => {
 	});
 
 	it('throws on non-free-point', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(1, 1));
 		const seg = c.createSegment(a, b);
@@ -257,7 +257,7 @@ describe('movePoint', () => {
 	});
 
 	it('throws on unknown id', () => {
-		const c = new Construction();
+		const c = new Figure();
 		expect(() => c.movePoint('nope', numeric(0), numeric(0))).toThrow();
 	});
 });
@@ -268,7 +268,7 @@ describe('movePoint', () => {
 
 describe('recompute', () => {
 	it('midpoint updates when parent moves', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(10, 0));
 		const mid = c.createMidpoint(a, b);
@@ -283,7 +283,7 @@ describe('recompute', () => {
 	});
 
 	it('midpoint of numeric parents is numeric', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(10, 0));
 		const mid = c.createMidpoint(a, b);
@@ -296,7 +296,7 @@ describe('recompute', () => {
 	});
 
 	it('chain: A -> mid(A,B) recalculates on A move', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(0, 10));
 		const mid = c.createMidpoint(a, b);
@@ -308,7 +308,7 @@ describe('recompute', () => {
 	});
 
 	it('does nothing if no dirty elements', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(3, 4));
 		const b = c.createFreePoint(point(6, 8));
 		c.createMidpoint(a, b);
@@ -324,7 +324,7 @@ describe('recompute', () => {
 
 describe('remove', () => {
 	it('removes a single element', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const removed = c.remove(a);
 		expect(removed).toContain(a);
@@ -332,7 +332,7 @@ describe('remove', () => {
 	});
 
 	it('cascade removes dependants', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(1, 1));
 		const seg = c.createSegment(a, b);
@@ -345,7 +345,7 @@ describe('remove', () => {
 	});
 
 	it('throws on unknown id', () => {
-		const c = new Construction();
+		const c = new Figure();
 		expect(() => c.remove('nope')).toThrow();
 	});
 });
@@ -356,7 +356,7 @@ describe('remove', () => {
 
 describe('integration', () => {
 	it('triangle with midpoints', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(6, 0));
 		const cc = c.createFreePoint(point(3, 6));
@@ -384,7 +384,7 @@ describe('integration', () => {
 	});
 
 	it('remove point cascades through midpoint', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(10, 0));
 		const mid = c.createMidpoint(a, b);
@@ -397,7 +397,7 @@ describe('integration', () => {
 	});
 
 	it('midpoint is stale after movePoint, before recompute', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(10, 0));
 		const mid = c.createMidpoint(a, b);
@@ -414,7 +414,7 @@ describe('integration', () => {
 	});
 
 	it('remove cleans up positions cache', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(3, 4));
 		const b = c.createFreePoint(point(6, 8));
 		const mid = c.createMidpoint(a, b);
@@ -425,7 +425,7 @@ describe('integration', () => {
 	});
 
 	it('chained midpoints: midpoint of midpoints', () => {
-		const c = new Construction();
+		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(8, 0));
 		const d = c.createFreePoint(point(0, 8));
@@ -447,9 +447,9 @@ describe('integration', () => {
 		expect(geoToNumber(c.getPosition(mMid)!.y)).toBe(4);
 	});
 
-	it('each Construction instance has independent IDs', () => {
-		const c1 = new Construction();
-		const c2 = new Construction();
+	it('each Figure instance has independent IDs', () => {
+		const c1 = new Figure();
+		const c2 = new Figure();
 		const id1 = c1.createFreePoint(point(0, 0));
 		const id2 = c2.createFreePoint(point(0, 0));
 		// Both start at 1, so IDs should be the same prefix_1 pattern
