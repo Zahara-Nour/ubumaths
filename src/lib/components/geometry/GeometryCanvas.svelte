@@ -19,7 +19,8 @@
 
 	interface Props {
 		figure: Figure;
-		viewport?: Viewport;
+		center?: { x: number; y: number };
+		pixelsPerUnit?: number;
 		width?: number;
 		height?: number;
 		interactive?: boolean;
@@ -31,7 +32,8 @@
 
 	let {
 		figure,
-		viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 },
+		center = { x: 0, y: 0 },
+		pixelsPerUnit = 40,
 		width = 800,
 		height = 600,
 		interactive = true,
@@ -44,10 +46,16 @@
 	let svgRef: SVGSVGElement | undefined = $state();
 	let draggingId: string | null = $state(null);
 	let hoveredId: string | null = $state(null);
-
-	// Reactivity: Figure is a plain class, not reactive.
-	// We increment this counter on every mutation to trigger $derived re-evaluation.
 	let version = $state(0);
+
+	// Viewport derived from center + pixelsPerUnit + SVG size.
+	// Always isometric: same scale on both axes.
+	let viewport: Viewport = $derived({
+		xMin: center.x - width / (2 * pixelsPerUnit),
+		xMax: center.x + width / (2 * pixelsPerUnit),
+		yMin: center.y - height / (2 * pixelsPerUnit),
+		yMax: center.y + height / (2 * pixelsPerUnit)
+	});
 
 	let transformer: CoordinateTransformer = $derived(createTransformer(viewport, width, height));
 
@@ -62,8 +70,6 @@
 		return { vertical, horizontal };
 	});
 
-	// Re-read elements whenever version changes (after movePoint/recompute).
-	// version is read to create a reactive dependency, then elements are fetched.
 	let elements = $derived.by(() => {
 		void version;
 		return figure.getAllElements();
@@ -85,7 +91,7 @@
 		const math = getMathCoords(e);
 		if (!math) return;
 
-		const threshold = ((viewport.xMax - viewport.xMin) / width) * 15; // 15px in math units
+		const threshold = 15 / pixelsPerUnit; // 15px in math units
 		const pointId = findPointNear(figure, math.x, math.y, threshold);
 
 		if (pointId) {
@@ -107,7 +113,7 @@
 			figure.recompute();
 			version++;
 		} else {
-			const threshold = ((viewport.xMax - viewport.xMin) / width) * 15;
+			const threshold = 15 / pixelsPerUnit;
 			hoveredId = findPointNear(figure, math.x, math.y, threshold);
 		}
 	}

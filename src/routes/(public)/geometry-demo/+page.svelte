@@ -59,12 +59,7 @@
 		le centre de symetrie.
 	</p>
 
-	<GeometryCanvas
-		{figure}
-		viewport={{ xMin: -10, xMax: 10, yMin: -7.5, yMax: 7.5 }}
-		width={800}
-		height={600}
-	/>
+	<GeometryCanvas {figure} center={{ x: 0, y: 0 }} pixelsPerUnit={40} width={800} height={600} />
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{figure.size} elements | geometry-core demo
