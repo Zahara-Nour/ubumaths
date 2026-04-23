@@ -44,9 +44,11 @@
 	let draggingId: string | null = $state(null);
 	let hoveredId: string | null = $state(null);
 
-	let transformer: CoordinateTransformer = $derived(createTransformer(viewport, width, height));
+	// Reactivity: Construction is a plain class, not reactive.
+	// We increment this counter on every mutation to trigger $derived re-evaluation.
+	let version = $state(0);
 
-	// ─── Grid lines ─────────────────────────────────────────────────
+	let transformer: CoordinateTransformer = $derived(createTransformer(viewport, width, height));
 
 	let gridLines = $derived.by(() => {
 		if (!showGrid) return { vertical: [] as number[], horizontal: [] as number[] };
@@ -59,9 +61,12 @@
 		return { vertical, horizontal };
 	});
 
-	// ─── Element rendering data ─────────────────────────────────────
-
-	let elements = $derived(construction.getAllElements());
+	// Re-read elements whenever version changes (after movePoint/recompute).
+	// version is read to create a reactive dependency, then elements are fetched.
+	let elements = $derived.by(() => {
+		void version;
+		return construction.getAllElements();
+	});
 	let dims = $derived({ width, height });
 
 	// ─── Pointer events ─────────────────────────────────────────────
@@ -99,6 +104,7 @@
 		if (draggingId) {
 			construction.movePoint(draggingId, numeric(math.x), numeric(math.y));
 			construction.recompute();
+			version++;
 		} else {
 			const threshold = ((viewport.xMax - viewport.xMin) / width) * 15;
 			hoveredId = findPointNear(construction, math.x, math.y, threshold);
@@ -114,6 +120,7 @@
 				const snapped = snapToGrid(math.x, math.y, gridStep);
 				construction.movePoint(draggingId, snapped.x, snapped.y);
 				construction.recompute();
+				version++;
 			}
 		}
 
@@ -151,7 +158,7 @@
 
 	<!-- Elements -->
 	<g class="elements">
-		{#each elements as el (el.id)}
+		{#each elements as el (`${el.id}_${version}`)}
 			{#if el.type === 'segment'}
 				{@const svg = segmentToSVG(el.id, construction, transformer)}
 				{#if svg}
@@ -208,7 +215,7 @@
 		{/each}
 
 		<!-- Points rendered last (on top) -->
-		{#each elements as el (el.id)}
+		{#each elements as el (`${el.id}_${version}`)}
 			{#if el.type === 'freePoint' || el.type === 'midpoint'}
 				{@const svg = pointToSVG(el.id, construction, transformer)}
 				{#if svg}
