@@ -490,6 +490,11 @@ export class Figure {
 		vectorEndId: string,
 		options?: { label?: string; color?: string }
 	): string {
+		if (sourceId === vectorStartId || sourceId === vectorEndId || vectorStartId === vectorEndId) {
+			throw new Error(
+				'createTranslatedPoint: sourceId, vectorStartId, and vectorEndId must all be distinct'
+			);
+		}
 		const src = this.elements.get(sourceId);
 		const vs = this.elements.get(vectorStartId);
 		const ve = this.elements.get(vectorEndId);
@@ -553,6 +558,9 @@ export class Figure {
 		linePoint2Id: string,
 		options?: { label?: string; color?: string }
 	): string {
+		if (linePoint1Id === linePoint2Id) {
+			throw new Error('createReflectedOverLine: linePoint1Id and linePoint2Id must be distinct');
+		}
 		const src = this.elements.get(sourceId);
 		const lp1 = this.elements.get(linePoint1Id);
 		const lp2 = this.elements.get(linePoint2Id);

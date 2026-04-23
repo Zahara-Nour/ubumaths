@@ -142,6 +142,15 @@ describe('createTranslatedPoint', () => {
 		const seg = f.createSegment(a, b);
 		expect(() => f.createTranslatedPoint(seg, a, b)).toThrow('not a point');
 	});
+
+	it('throws for duplicate IDs', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(1, 0));
+		expect(() => f.createTranslatedPoint(a, a, b)).toThrow('distinct');
+		expect(() => f.createTranslatedPoint(a, b, a)).toThrow('distinct');
+		expect(() => f.createTranslatedPoint(a, b, b)).toThrow('distinct');
+	});
 });
 
 // =============================================================================
@@ -170,6 +179,21 @@ describe('createDilatedPoint', () => {
 		f.recompute();
 		expect(geoToNumber(f.getPosition(dilated)!.x)).toBeCloseTo(2, 8);
 		expect(geoToNumber(f.getPosition(dilated)!.y)).toBeCloseTo(2, 8);
+	});
+
+	it('follows when center is dragged', () => {
+		const f = new Figure();
+		const p = f.createFreePoint(pt(3, 0));
+		const center = f.createFreePoint(pt(0, 0));
+		const dilated = f.createDilatedPoint(p, center, geoFromNumber(2));
+
+		expect(geoToNumber(f.getPosition(dilated)!.x)).toBe(6);
+
+		f.movePoint(center, numeric(1), numeric(0));
+		f.recompute();
+		// center=(1,0), source=(3,0), factor=2 -> 1 + 2*(3-1) = 5
+		expect(geoToNumber(f.getPosition(dilated)!.x)).toBeCloseTo(5, 8);
+		expect(geoToNumber(f.getPosition(dilated)!.y)).toBeCloseTo(0, 8);
 	});
 
 	it('factor -1 = central symmetry', () => {
@@ -262,11 +286,26 @@ describe('createReflectedOverLine', () => {
 		expect(geoToNumber(f.getPosition(reflected)!.y)).toBeCloseTo(0, 8);
 	});
 
-	it('throws for same point as both line endpoints (duplicate parents)', () => {
+	it('throws for same point as both line endpoints', () => {
 		const f = new Figure();
 		const p = f.createFreePoint(pt(3, 4));
 		const l1 = f.createFreePoint(pt(1, 1));
-		expect(() => f.createReflectedOverLine(p, l1, l1)).toThrow();
+		expect(() => f.createReflectedOverLine(p, l1, l1)).toThrow('distinct');
+	});
+
+	it('clears position when line becomes degenerate at runtime', () => {
+		const f = new Figure();
+		const p = f.createFreePoint(pt(3, 4));
+		const l1 = f.createFreePoint(pt(0, 0));
+		const l2 = f.createFreePoint(pt(1, 0));
+		const reflected = f.createReflectedOverLine(p, l1, l2);
+
+		expect(f.getPosition(reflected)).not.toBeNull();
+
+		// Move l2 to coincide with l1 — line becomes degenerate
+		f.movePoint(l2, numeric(0), numeric(0));
+		f.recompute();
+		expect(f.getPosition(reflected)).toBeNull();
 	});
 
 	it('validates point-like inputs', () => {
