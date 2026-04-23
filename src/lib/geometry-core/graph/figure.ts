@@ -34,14 +34,195 @@ import { reflectPoint } from '../geometry/transformations';
 
 const DEFAULT_COLOR = '#1e40af';
 
+interface Delta {
+	added: Map<string, GeoElement>;
+	removed: Map<string, GeoElement>;
+	updated: Map<string, { before: GeoElement; after: GeoElement }>;
+	/** Positions of elements at the time they were removed (for undo of remove). */
+	removedPositions: Map<string, GeoPoint>;
+}
+
+function createEmptyDelta(): Delta {
+	return {
+		added: new Map(),
+		removed: new Map(),
+		updated: new Map(),
+		removedPositions: new Map()
+	};
+}
+
+function invertDelta(delta: Delta): Delta {
+	return {
+		added: delta.removed,
+		removed: delta.added,
+		updated: new Map(
+			[...delta.updated].map(([id, { before, after }]) => [id, { before: after, after: before }])
+		),
+		removedPositions: delta.removedPositions
+	};
+}
+
 export class Figure {
 	private elements = new Map<string, GeoElement>();
 	private positions = new Map<string, GeoPoint>();
 	private graph = new DependencyGraph();
 	private nextId = 1;
 
+	// Undo/redo
+	private undoStack: Delta[] = [];
+	private redoStack: Delta[] = [];
+	private currentTransaction: Delta | null = null;
+
 	private generateId(prefix: string): string {
 		return `${prefix}_${this.nextId++}`;
+	}
+
+	// ─── Transactions ───────────────────────────────────────────────
+
+	beginTransaction(): void {
+		if (this.currentTransaction) {
+			throw new Error('beginTransaction: a transaction is already in progress');
+		}
+		this.currentTransaction = createEmptyDelta();
+	}
+
+	commit(): void {
+		if (!this.currentTransaction) {
+			throw new Error('commit: no transaction in progress');
+		}
+		const delta = this.currentTransaction;
+		this.currentTransaction = null;
+		// Only push non-empty deltas
+		if (delta.added.size > 0 || delta.removed.size > 0 || delta.updated.size > 0) {
+			this.undoStack.push(delta);
+			this.redoStack.length = 0; // new commit clears redo
+		}
+	}
+
+	discard(): void {
+		this.currentTransaction = null;
+	}
+
+	get canUndo(): boolean {
+		return this.undoStack.length > 0;
+	}
+
+	get canRedo(): boolean {
+		return this.redoStack.length > 0;
+	}
+
+	undo(): void {
+		const delta = this.undoStack.pop();
+		if (!delta) return;
+		this.applyDelta(invertDelta(delta));
+		this.redoStack.push(delta);
+	}
+
+	redo(): void {
+		const delta = this.redoStack.pop();
+		if (!delta) return;
+		this.applyDelta(delta);
+		this.undoStack.push(delta);
+	}
+
+	private applyDelta(delta: Delta): void {
+		// 1. Remove elements that were "added" (undo of create)
+		// Remove in reverse order: children first, then parents.
+		// Use removeNode which cascades, but skip already-removed nodes.
+		const toRemove = [...delta.removed.keys()].reverse();
+		for (const id of toRemove) {
+			if (this.elements.has(id) && this.graph.hasNode(id)) {
+				this.graph.removeNode(id);
+			}
+			this.elements.delete(id);
+			this.positions.delete(id);
+		}
+
+		// 2. Re-add elements that were "removed" (undo of delete)
+		// Must be added in dependency order (parents first)
+		const toAdd = [...delta.added.entries()];
+		// Sort: elements with no dependsOn first, then those whose parents are already present
+		const added = new Set<string>();
+		let remaining = toAdd;
+		while (remaining.length > 0) {
+			const next: typeof remaining = [];
+			for (const [id, el] of remaining) {
+				const parentsReady = el.dependsOn.every((pid) => this.elements.has(pid) || added.has(pid));
+				if (parentsReady) {
+					this.elements.set(id, el);
+					this.graph.addNode(id, [...el.dependsOn]);
+					// Restore position: from removedPositions (undo of delete)
+					// or from element itself (redo of create for freePoint)
+					const pos = delta.removedPositions.get(id);
+					if (pos) {
+						this.positions.set(id, pos);
+					} else if (el.type === 'freePoint') {
+						this.positions.set(id, el.position);
+					}
+					added.add(id);
+				} else {
+					next.push([id, el]);
+				}
+			}
+			if (next.length === remaining.length) break; // no progress, avoid infinite loop
+			remaining = next;
+		}
+
+		// 3. Apply updates (undo of movePoint)
+		for (const [id, { after }] of delta.updated) {
+			this.elements.set(id, after);
+			// For free points, restore position from the element
+			if (after.type === 'freePoint') {
+				this.positions.set(id, after.position);
+			}
+		}
+
+		// 4. Recompute all positions (mark everything dirty and recompute)
+		for (const id of this.elements.keys()) {
+			if (this.graph.hasNode(id)) {
+				try {
+					this.graph.markDirty(id);
+				} catch {
+					// ignore if node was just added and has no parents yet
+				}
+			}
+		}
+		const dirtyIds = this.graph.getDirtyInOrder();
+		for (const id of dirtyIds) {
+			this.computePosition(id);
+		}
+	}
+
+	// ─── Recording helpers ──────────────────────────────────────────
+
+	private recordAdd(id: string, element: GeoElement): void {
+		if (!this.currentTransaction) return;
+		this.currentTransaction.added.set(id, element);
+	}
+
+	private recordRemove(id: string, element: GeoElement): void {
+		if (!this.currentTransaction) return;
+		// If it was added in the same transaction, just remove the add
+		if (this.currentTransaction.added.has(id)) {
+			this.currentTransaction.added.delete(id);
+		} else {
+			this.currentTransaction.removed.set(id, element);
+		}
+		// Save position for undo
+		const pos = this.positions.get(id);
+		if (pos) {
+			this.currentTransaction.removedPositions.set(id, pos);
+		}
+	}
+
+	private recordUpdate(id: string, before: GeoElement, after: GeoElement): void {
+		if (!this.currentTransaction) return;
+		const existing = this.currentTransaction.updated.get(id);
+		// Keep the original "before" if already updated in this transaction
+		this.currentTransaction.updated.set(id, {
+			before: existing?.before ?? before,
+			after
+		});
 	}
 
 	// ─── Factory methods ────────────────────────────────────────────
@@ -58,6 +239,7 @@ export class Figure {
 			this.elements.delete(id);
 			throw e;
 		}
+		this.recordAdd(id, element);
 	}
 
 	createFreePoint(position: GeoPoint, options?: { label?: string; color?: string }): string {
@@ -301,6 +483,7 @@ export class Figure {
 
 		const newPosition: GeoPoint = { x, y };
 		const updated: GeoFreePoint = { ...el, position: newPosition };
+		this.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 		this.positions.set(id, newPosition);
 		this.graph.markDirty(id);
@@ -319,8 +502,11 @@ export class Figure {
 		if (!this.elements.has(id)) {
 			throw new Error(`remove: "${id}" does not exist`);
 		}
+		// Record before deleting
 		const removedIds = this.graph.removeNode(id);
 		for (const rid of removedIds) {
+			const el = this.elements.get(rid);
+			if (el) this.recordRemove(rid, el);
 			this.elements.delete(rid);
 			this.positions.delete(rid);
 		}
