@@ -32,8 +32,8 @@
 
 	let {
 		figure,
-		center = { x: 0, y: 0 },
-		pixelsPerUnit = 40,
+		center: initialCenter = { x: 0, y: 0 },
+		pixelsPerUnit: initialPpu = 40,
 		width = 800,
 		height = 600,
 		interactive = true,
@@ -48,13 +48,22 @@
 	let hoveredId: string | null = $state(null);
 	let version = $state(0);
 
+	// Local state for pan/zoom (initialized from props)
+	let viewCenter = $state({ x: initialCenter.x, y: initialCenter.y });
+	let ppu = $state(initialPpu);
+	let isPanning = $state(false);
+	let spaceHeld = $state(false);
+
+	// Zoom limits
+	const MIN_PPU = 5;
+	const MAX_PPU = 200;
+
 	// Viewport derived from center + pixelsPerUnit + SVG size.
-	// Always isometric: same scale on both axes.
 	let viewport: Viewport = $derived({
-		xMin: center.x - width / (2 * pixelsPerUnit),
-		xMax: center.x + width / (2 * pixelsPerUnit),
-		yMin: center.y - height / (2 * pixelsPerUnit),
-		yMax: center.y + height / (2 * pixelsPerUnit)
+		xMin: viewCenter.x - width / (2 * ppu),
+		xMax: viewCenter.x + width / (2 * ppu),
+		yMin: viewCenter.y - height / (2 * ppu),
+		yMax: viewCenter.y + height / (2 * ppu)
 	});
 
 	let transformer: CoordinateTransformer = $derived(createTransformer(viewport, width, height));
@@ -78,7 +87,7 @@
 
 	// ─── Pointer events ─────────────────────────────────────────────
 
-	function getMathCoords(e: PointerEvent): { x: number; y: number } | null {
+	function getMathCoords(e: PointerEvent | WheelEvent): { x: number; y: number } | null {
 		if (!svgRef) return null;
 		const rect = svgRef.getBoundingClientRect();
 		const svgX = e.clientX - rect.left;
@@ -88,10 +97,19 @@
 
 	function onPointerDown(e: PointerEvent) {
 		if (!interactive) return;
+
+		// Middle button or space held = start panning
+		if (e.button === 1 || spaceHeld) {
+			isPanning = true;
+			svgRef?.setPointerCapture(e.pointerId);
+			e.preventDefault();
+			return;
+		}
+
 		const math = getMathCoords(e);
 		if (!math) return;
 
-		const threshold = 15 / pixelsPerUnit; // 15px in math units
+		const threshold = 15 / ppu;
 		const pointId = findPointNear(figure, math.x, math.y, threshold);
 
 		if (pointId) {
@@ -105,6 +123,16 @@
 
 	function onPointerMove(e: PointerEvent) {
 		if (!interactive) return;
+
+		// Panning: move center by pointer delta
+		if (isPanning) {
+			viewCenter = {
+				x: viewCenter.x - e.movementX / ppu,
+				y: viewCenter.y + e.movementY / ppu // y inverted
+			};
+			return;
+		}
+
 		const math = getMathCoords(e);
 		if (!math) return;
 
@@ -113,12 +141,17 @@
 			figure.recompute();
 			version++;
 		} else {
-			const threshold = 15 / pixelsPerUnit;
+			const threshold = 15 / ppu;
 			hoveredId = findPointNear(figure, math.x, math.y, threshold);
 		}
 	}
 
 	function onPointerUp(e: PointerEvent) {
+		if (isPanning) {
+			isPanning = false;
+			return;
+		}
+
 		if (!draggingId) return;
 
 		if (snapOnRelease) {
@@ -133,7 +166,50 @@
 
 		draggingId = null;
 	}
+
+	// ─── Wheel: zoom centered on cursor ─────────────────────────────
+
+	function onWheel(e: WheelEvent) {
+		if (!interactive) return;
+		e.preventDefault();
+
+		const math = getMathCoords(e);
+		if (!math) return;
+
+		// Zoom factor: scroll up = zoom in (more pixels per unit)
+		const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+		const newPpu = Math.max(MIN_PPU, Math.min(MAX_PPU, ppu * factor));
+
+		// Adjust center so the point under the cursor stays fixed
+		// Before: math coords of cursor = viewCenter + (svgPos - svgCenter) / ppu
+		// After: same math point = newCenter + (svgPos - svgCenter) / newPpu
+		// => newCenter = math - (math - viewCenter) * (ppu / newPpu)
+		const ratio = ppu / newPpu;
+		viewCenter = {
+			x: math.x - (math.x - viewCenter.x) * ratio,
+			y: math.y - (math.y - viewCenter.y) * ratio
+		};
+		ppu = newPpu;
+	}
+
+	// ─── Keyboard: space for pan mode ───────────────────────────────
+
+	function onKeyDown(e: KeyboardEvent) {
+		if (e.code === 'Space' && !spaceHeld) {
+			spaceHeld = true;
+			e.preventDefault();
+		}
+	}
+
+	function onKeyUp(e: KeyboardEvent) {
+		if (e.code === 'Space') {
+			spaceHeld = false;
+			if (isPanning) isPanning = false;
+		}
+	}
 </script>
+
+<svelte:window onkeydown={onKeyDown} onkeyup={onKeyUp} />
 
 <svg
 	bind:this={svgRef}
@@ -145,9 +221,11 @@
 	class="geometry-canvas"
 	class:interactive
 	class:dragging={draggingId !== null}
+	class:panning={isPanning || spaceHeld}
 	onpointerdown={onPointerDown}
 	onpointermove={onPointerMove}
 	onpointerup={onPointerUp}
+	onwheel={onWheel}
 >
 	<!-- Grid -->
 	{#if showGrid}
@@ -264,6 +342,14 @@
 	}
 
 	.geometry-canvas.dragging {
+		cursor: grabbing;
+	}
+
+	.geometry-canvas.panning {
+		cursor: grab;
+	}
+
+	.geometry-canvas.panning.dragging {
 		cursor: grabbing;
 	}
 
