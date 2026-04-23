@@ -36,3 +36,19 @@ export {
 	isCircleByPoint,
 	isPolygon
 } from './elements';
+
+// Schemas
+export type {
+	GeoValueSerialized,
+	GeoElementSerialized,
+	ConstructionStateSerialized
+} from './schemas';
+export {
+	geoValueSchema,
+	geoPointSchema,
+	geoElementSchema,
+	constructionStateSchema,
+	CONSTRUCTION_STATE_VERSION,
+	serializeGeoValue,
+	deserializeGeoValue
+} from './schemas';

@@ -17,3 +17,6 @@ export {
 	curveToPolylinePath,
 	createMathToSVGTransformer
 } from './bezier';
+
+// SVG primitives
+export { pointToSVG, segmentToSVG, lineToSVG, rayToSVG, circleToSVG } from './svg-primitives';
