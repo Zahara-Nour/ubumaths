@@ -117,6 +117,7 @@
 			const el = figure.getElementById(pointId);
 			if (el?.type === 'freePoint') {
 				draggingId = pointId;
+				figure.beginTransaction();
 				svgRef?.setPointerCapture(e.pointerId);
 				e.preventDefault();
 			}
@@ -149,6 +150,7 @@
 	}
 
 	function onPointerCancel() {
+		if (draggingId) figure.discard();
 		isPanning = false;
 		draggingId = null;
 	}
@@ -171,6 +173,7 @@
 			}
 		}
 
+		figure.commit();
 		draggingId = null;
 	}
 
@@ -212,6 +215,20 @@
 			spaceHeld = true;
 			e.preventDefault();
 		}
+		// Undo: Ctrl+Z (or Cmd+Z on Mac)
+		if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ' && !e.shiftKey) {
+			e.preventDefault();
+			figure.undo();
+			figure.recompute();
+			version++;
+		}
+		// Redo: Ctrl+Shift+Z or Ctrl+Y
+		if ((e.ctrlKey || e.metaKey) && ((e.code === 'KeyZ' && e.shiftKey) || e.code === 'KeyY')) {
+			e.preventDefault();
+			figure.redo();
+			figure.recompute();
+			version++;
+		}
 	}
 
 	function onKeyUp(e: KeyboardEvent) {
@@ -223,6 +240,7 @@
 	}
 
 	function onWindowBlur() {
+		if (draggingId) figure.discard();
 		spaceHeld = false;
 		isPanning = false;
 		draggingId = null;
