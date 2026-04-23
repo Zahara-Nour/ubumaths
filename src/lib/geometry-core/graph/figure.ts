@@ -10,16 +10,26 @@ import type {
 	GeoElement,
 	GeoFreePoint,
 	GeoMidpoint,
+	GeoIntersectionLL,
+	GeoReflectedPoint,
 	GeoSegment,
 	GeoLine,
 	GeoRay,
 	GeoCircleByRadius,
 	GeoCircleByPoint
 } from '../types/elements';
-import { isFreePoint, isMidpoint } from '../types/elements';
+import {
+	isFreePoint,
+	isMidpoint,
+	isIntersectionLL,
+	isReflectedPoint,
+	isLineLike
+} from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { geoAdd, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
+import { intersectLL } from '../geometry/intersections';
+import { reflectPoint } from '../geometry/transformations';
 
 const DEFAULT_COLOR = '#1e40af';
 
@@ -186,6 +196,56 @@ export class Figure {
 		return id;
 	}
 
+	createIntersectionLL(
+		line1Id: string,
+		line2Id: string,
+		options?: { label?: string; color?: string }
+	): string {
+		// Validate that both elements are line-like
+		const el1 = this.elements.get(line1Id);
+		const el2 = this.elements.get(line2Id);
+		if (!el1 || !isLineLike(el1))
+			throw new Error(`createIntersectionLL: "${line1Id}" is not a line-like element`);
+		if (!el2 || !isLineLike(el2))
+			throw new Error(`createIntersectionLL: "${line2Id}" is not a line-like element`);
+
+		const id = this.generateId('intLL');
+		const element: GeoIntersectionLL = {
+			type: 'intersectionLL',
+			id,
+			line1Id,
+			line2Id,
+			color: options?.color ?? DEFAULT_COLOR,
+			visible: true,
+			label: options?.label,
+			dependsOn: [line1Id, line2Id]
+		};
+		this.addElement(id, element, [line1Id, line2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createReflectedPoint(
+		sourceId: string,
+		centerId: string,
+		options?: { label?: string; color?: string }
+	): string {
+		const id = this.generateId('refl');
+		const element: GeoReflectedPoint = {
+			type: 'reflectedPoint',
+			id,
+			sourceId,
+			centerId,
+			color: options?.color ?? DEFAULT_COLOR,
+			visible: true,
+			label: options?.label,
+			dependsOn: [sourceId, centerId]
+		};
+		this.addElement(id, element, [sourceId, centerId]);
+		this.computePosition(id);
+		return id;
+	}
+
 	// ─── Access ─────────────────────────────────────────────────────
 
 	getElementById(id: string): GeoElement | undefined {
@@ -263,18 +323,67 @@ export class Figure {
 		if (isMidpoint(el)) {
 			const p1 = this.positions.get(el.point1Id);
 			const p2 = this.positions.get(el.point2Id);
-			if (!p1 || !p2) return; // parent not yet computed (should not happen in topo order)
+			if (!p1 || !p2) return;
 
 			const two = geoFromNumber(2);
 			const mx = geoDiv(geoAdd(p1.x, p2.x), two);
 			const my = geoDiv(geoAdd(p1.y, p2.y), two);
-			// Divisor is the constant 2, so null should never happen
 			if (mx === null || my === null) {
 				throw new Error(`computePosition: unexpected null computing midpoint "${id}"`);
 			}
 			this.positions.set(id, { x: mx, y: my });
+		} else if (isIntersectionLL(el)) {
+			const result = this.computeIntersectionLL(el);
+			if (result) {
+				this.positions.set(id, result);
+			} else {
+				this.positions.delete(id); // no intersection (parallel lines)
+			}
+		} else if (isReflectedPoint(el)) {
+			const source = this.positions.get(el.sourceId);
+			const center = this.positions.get(el.centerId);
+			if (source && center) {
+				this.positions.set(id, reflectPoint(source, center));
+			}
 		}
 		// Free points: position stored directly in movePoint/createFreePoint.
 		// Segments, lines, rays, circles: no position to compute.
+	}
+
+	/**
+	 * Get the two defining points of a line-like element.
+	 * Returns their positions, or null if not found.
+	 */
+	private getLineLikePoints(lineId: string): { p1: GeoPoint; p2: GeoPoint } | null {
+		const el = this.elements.get(lineId);
+		if (!el) return null;
+
+		let id1: string;
+		let id2: string;
+
+		if (el.type === 'segment') {
+			id1 = el.startId;
+			id2 = el.endId;
+		} else if (el.type === 'line') {
+			id1 = el.point1Id;
+			id2 = el.point2Id;
+		} else if (el.type === 'ray') {
+			id1 = el.originId;
+			id2 = el.throughId;
+		} else {
+			return null;
+		}
+
+		const p1 = this.positions.get(id1);
+		const p2 = this.positions.get(id2);
+		if (!p1 || !p2) return null;
+		return { p1, p2 };
+	}
+
+	private computeIntersectionLL(el: GeoIntersectionLL): GeoPoint | null {
+		const line1 = this.getLineLikePoints(el.line1Id);
+		const line2 = this.getLineLikePoints(el.line2Id);
+		if (!line1 || !line2) return null;
+		return intersectLL(line1.p1, line1.p2, line2.p1, line2.p2);
 	}
 }
