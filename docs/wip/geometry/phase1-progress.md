@@ -2,7 +2,7 @@
 
 > Derniere mise a jour : 2026-04-23
 
-## Etat : Phases 1A-1D terminees, 1E-1G a faire
+## Etat : Phase 1 TERMINEE
 
 ## Phases terminees
 
@@ -98,31 +98,52 @@
 
 **Tests :** 41
 
-## Phases restantes
-
 ### Phase 1E : Construction (API principale)
 
-- `graph/construction.ts` — Collection d'objets + factory + movePoint + recompute
-- Tests de bout en bout : creer point + segment, deplacer point, cascade
+**Fichiers crees :**
+
+- `src/lib/geometry-core/graph/construction.ts` — Construction class
+- `src/lib/geometry-core/graph/index.ts` — barrel
+
+**Decisions prises :**
+
+- ID counter dans l'instance (pas global) — chaque Construction a son propre compteur
+- `addElement` avec rollback si graph.addNode echoue (pas de state inconsistency)
+- `computePosition` throw si geoDiv retourne null (au lieu de silence)
+- `movePoint` marque le point + descendants dirty, `recompute()` est obligatoire apres
+
+**Tests :** 39
 
 ### Phase 1F : Rendu SVG + Schemas
 
-- `rendering/svg-primitives.ts` — GeoElement -> attributs SVG
-- `types/schemas.ts` — Zod schemas pour serialisation
+**Fichiers crees :**
+
+- `src/lib/geometry-core/rendering/svg-primitives.ts` — pointToSVG, segmentToSVG, lineToSVG, rayToSVG, circleToSVG
+- `src/lib/geometry-core/types/schemas.ts` — Zod schemas + serializeGeoValue/deserializeGeoValue
+- `src/lib/geometry-core/index.ts` — barrel top-level
+
+**Decisions prises :**
+
+- GeoValue exact serialise en LaTeX (toLatex/parseLatex round-trip)
+- lineToSVG et rayToSVG etendent aux bords du viewport (clip parametrique en espace SVG)
+- circleToSVG gere les deux variantes (byRadius et byPoint)
+
+**Tests :** 42 (svg-primitives: 17, schemas: 25)
 
 ### Phase 1G : Finalisation
 
-- Quality checks (eslint, tsc)
-- Barrel top-level `index.ts`
-- Ce document de progression mis a jour
+- ESLint clean sur tous les fichiers geometry-core
+- Barrel top-level `index.ts` cree
+- Document de progression mis a jour
 
 ## Resume des tests
 
-| Module                     | Tests   |
-| -------------------------- | ------- |
-| types/                     | 39      |
-| viewport/                  | 8       |
-| compute/                   | 137     |
-| graph/                     | 41      |
-| **Total geometry-core**    | **225** |
-| grapheur/ (non-regression) | 213     |
+| Module                            | Tests   |
+| --------------------------------- | ------- |
+| types/                            | 64      |
+| viewport/                         | 8       |
+| compute/                          | 137     |
+| graph/ (dep-graph + construction) | 80      |
+| rendering/                        | 17      |
+| **Total geometry-core**           | **306** |
+| grapheur/ (non-regression)        | 213     |
