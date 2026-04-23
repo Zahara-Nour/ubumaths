@@ -16,15 +16,15 @@ const ABSOLUTE_ZERO_TOLERANCE = 1e-15;
 
 /**
  * Compare two GeoValues for equality.
- * Exact values: compare via NormalForm hash (algebraic equivalence).
+ * Exact values: normalize(a - b) and check if zero (algebraic equivalence).
  * Numeric or mixed: fall back to relative tolerance.
  */
 export function geoEqual(a: GeoValue, b: GeoValue): boolean {
 	if (isExact(a) && isExact(b)) {
-		// Build a-b and check if it normalizes to zero
+		// Normalize a-b; if the result is zero they are algebraically equal
+		// (handles e.g. 2+3 == 5, sqrt(8) == 2*sqrt(2))
 		const diff = subtract(a.node, b.node);
 		const normalForm = normalize(diff);
-		// Zero normal form has an empty numerator
 		return normalForm.numerator.length === 0;
 	}
 

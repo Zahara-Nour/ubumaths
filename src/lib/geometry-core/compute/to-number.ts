@@ -22,10 +22,6 @@ export function geoToNumber(v: GeoValue): number {
 	if (result.status === 'value' && typeof result.value === 'number') {
 		return result.value;
 	}
-	// Fallback: try to extract number from the result node
-	if (result.status === 'value' && result.node.type === 'number') {
-		return parseFloat(result.node.value);
-	}
 	return NaN;
 }
 
