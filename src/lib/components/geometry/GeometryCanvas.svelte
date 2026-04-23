@@ -15,6 +15,7 @@
 	import { findPointNear } from '$lib/geometry-core/interaction/hit-testing';
 	import { snapToGrid } from '$lib/geometry-core/interaction/snap';
 	import { numeric } from '$lib/geometry-core/types/geo-value';
+	import { isPointElement } from '$lib/geometry-core/types/elements';
 
 	interface Props {
 		figure: Figure;
@@ -216,7 +217,7 @@
 
 		<!-- Points rendered last (on top) -->
 		{#each elements as el (`${el.id}_${version}`)}
-			{#if el.type === 'freePoint' || el.type === 'midpoint'}
+			{#if isPointElement(el)}
 				{@const svg = pointToSVG(el.id, figure, transformer)}
 				{#if svg}
 					<circle

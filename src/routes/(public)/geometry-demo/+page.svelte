@@ -26,28 +26,37 @@
 	const mBC = figure.createMidpoint(b, c, { label: 'N', color: '#dc2626' });
 	const mCA = figure.createMidpoint(c, a, { label: 'P', color: '#dc2626' });
 
-	figure.createSegment(a, mBC, { color: '#dc2626' });
-	figure.createSegment(b, mCA, { color: '#dc2626' });
+	// Medians
+	const medA = figure.createSegment(a, mBC, { color: '#dc2626' });
+	const medB = figure.createSegment(b, mCA, { color: '#dc2626' });
 	figure.createSegment(c, mAB, { color: '#dc2626' });
 
-	// --- Droite passant par A et B (etendue aux bords du viewport) ---
-	figure.createLine(a, b, { color: '#6366f1' });
+	// --- Intersection of two medians = centroid ---
+	figure.createIntersectionLL(medA, medB, { label: 'G', color: '#f59e0b' });
 
-	// --- Demi-droite de C vers M (milieu AB) ---
+	// --- Droite and demi-droite ---
+	figure.createLine(a, b, { color: '#6366f1' });
 	figure.createRay(c, mAB, { color: '#6366f1' });
 
-	// --- Cercle par point : centre O, passe par un point draggable ---
-	const o = figure.createFreePoint(pt(0, 1), { label: 'O', color: '#059669' });
-	const edgePt = figure.createFreePoint(pt(5, 1), { label: 'R', color: '#059669' });
+	// --- Circle by point ---
+	const o = figure.createFreePoint(pt(-6, 5), { label: 'O', color: '#059669' });
+	const edgePt = figure.createFreePoint(pt(-3, 5), { label: 'R', color: '#059669' });
 	figure.createCircleByPoint(o, edgePt, { color: '#059669' });
+
+	// --- Central symmetry: A' = symmetric of A through centroid G area ---
+	const symCenter = figure.createFreePoint(pt(0, 0), { label: 'S', color: '#9333ea' });
+	figure.createReflectedPoint(a, symCenter, { label: "A'", color: '#9333ea' });
+	figure.createReflectedPoint(b, symCenter, { label: "B'", color: '#9333ea' });
+	figure.createReflectedPoint(c, symCenter, { label: "C'", color: '#9333ea' });
 </script>
 
 <div class="p-4">
 	<h1 class="mb-4 text-2xl font-bold">Geometry Demo</h1>
 	<p class="mb-4 text-muted-foreground">
-		Deplacez les points bleus (A, B, C) pour explorer le triangle. Les milieux (rouges) et medianes
-		suivent automatiquement. La droite violette (AB) et la demi-droite (C vers M) s'etendent.
-		Deplacez R (vert) pour changer le rayon du cercle.
+		Deplacez les points pour explorer la figure. Les elements dependants suivent en temps reel :
+		milieux (rouge), centre de gravite G (jaune, intersection des medianes), symetriques A' B' C'
+		(violet, par rapport au centre S). Deplacez R pour changer le rayon du cercle, S pour deplacer
+		le centre de symetrie.
 	</p>
 
 	<GeometryCanvas
