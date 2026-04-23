@@ -16,5 +16,8 @@ export * from './rendering';
 // Geometry (intersections, transformations, predicates)
 export * from './geometry';
 
+// Validation
+export * from './validation';
+
 // Interaction
 export * from './interaction';
