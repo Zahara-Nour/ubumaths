@@ -189,8 +189,11 @@ describe('circleToSVG', () => {
 		const id = c.createCircleByPoint(center, edge);
 		const svg = circleToSVG(id, c, transformer);
 		expect(svg).not.toBeNull();
-		// radius = distance(center, edge) = 5, in pixels = 5 * 40 = 200
-		expect(svg!.r).toBeCloseTo(200, 1);
+		// Radius is SVG distance between center and edge
+		// svgCenter=(400,300), svgEdge=(520,180), distance = sqrt(120^2+120^2) ≈ 169.7
+		const svgEdge = transformer.mathToSvg(3, 4);
+		const expectedR = Math.sqrt((svgEdge.x - 400) ** 2 + (svgEdge.y - 300) ** 2);
+		expect(svg!.r).toBeCloseTo(expectedR, 1);
 	});
 
 	it('returns null for non-circle element', () => {

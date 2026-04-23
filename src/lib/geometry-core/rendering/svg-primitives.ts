@@ -174,15 +174,11 @@ function circleByPointToSVG(
 	const edge = figure.getPosition(circle.edgePointId);
 	if (!center || !edge) return null;
 
-	const cx = geoToNumber(center.x);
-	const cy = geoToNumber(center.y);
-	const ex = geoToNumber(edge.x);
-	const ey = geoToNumber(edge.y);
-
-	const radiusMath = Math.sqrt((ex - cx) ** 2 + (ey - cy) ** 2);
-	const svgCenter = transformer.mathToSvg(cx, cy);
-	const radiusPx = radiusMath * transformer.scaleX;
-	return { cx: svgCenter.x, cy: svgCenter.y, r: Math.abs(radiusPx) };
+	const svgCenter = transformer.mathToSvg(geoToNumber(center.x), geoToNumber(center.y));
+	const svgEdge = transformer.mathToSvg(geoToNumber(edge.x), geoToNumber(edge.y));
+	// Radius in SVG pixels (distance between SVG center and SVG edge point)
+	const radiusPx = Math.sqrt((svgEdge.x - svgCenter.x) ** 2 + (svgEdge.y - svgCenter.y) ** 2);
+	return { cx: svgCenter.x, cy: svgCenter.y, r: radiusPx };
 }
 
 // =============================================================================
