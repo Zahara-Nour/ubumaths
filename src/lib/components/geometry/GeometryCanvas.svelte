@@ -246,9 +246,9 @@
 
 <style>
 	.geometry-canvas {
-		border: 1px solid hsl(var(--border));
+		border: 1px solid #d1d5db;
 		border-radius: 0.375rem;
-		background: hsl(var(--background));
+		background: #ffffff;
 		touch-action: none;
 		user-select: none;
 	}
@@ -262,13 +262,13 @@
 	}
 
 	.grid-line {
-		stroke: hsl(var(--muted-foreground) / 0.15);
+		stroke: #d1d5db;
 		stroke-width: 0.5;
 	}
 
 	.grid-line.axis {
-		stroke: hsl(var(--muted-foreground) / 0.4);
-		stroke-width: 1;
+		stroke: #6b7280;
+		stroke-width: 1.5;
 	}
 
 	.point.draggable {
@@ -277,13 +277,13 @@
 
 	.point.draggable:hover,
 	.point.hovered {
-		stroke: hsl(var(--primary));
+		stroke: #f59e0b;
 		stroke-width: 2;
 		r: 7;
 	}
 
 	.point.dragging {
-		stroke: hsl(var(--primary));
+		stroke: #f59e0b;
 		stroke-width: 3;
 		r: 8;
 		cursor: grabbing;
