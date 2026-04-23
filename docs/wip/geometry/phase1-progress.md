@@ -2,7 +2,7 @@
 
 > Derniere mise a jour : 2026-04-23
 
-## Etat : Phases 1-3A terminees
+## Etat : Phases 1-3D terminees
 
 ## Phase 1 : Fondations (TERMINEE)
 
@@ -10,7 +10,7 @@
 
 - `types/geo-value.ts` — GeoValue = exact(MathNode) | numeric(number)
 - `types/primitives.ts` — Radians (branded), Vec2\<T\>, GeoPoint, NumericPoint, Box
-- `types/elements.ts` — GeoElement union (8 types), GeoElementBase, type guards
+- `types/elements.ts` — GeoElement union (10 types), GeoElementBase, type guards
 - Tests : 64
 
 ### Phase 1B : Extraction viewport de grapheur/
@@ -23,7 +23,7 @@
 ### Phase 1C : Compute (calcul exact/numerique)
 
 - `compute/to-number.ts` — geoToNumber via evaluate(mode:'decimal')
-- `compute/geo-arithmetic.ts` — geoAdd/Sub/Mul/Div/Sqrt/Opposite + geoFromNumber/geoFromFraction
+- `compute/geo-arithmetic.ts` — geoAdd/Sub/Mul/Div/Sqrt/Opposite + geoFromNumber/geoFromFraction + simplifyExact (exporte)
 - `compute/compare.ts` — geoEqual (via isZeroExpression), geoIsZero, geoLessThan
 - Tests : 139
 
@@ -42,7 +42,7 @@
 ### Phase 1F : Rendu SVG + Schemas
 
 - `rendering/svg-primitives.ts` — pointToSVG, segmentToSVG, lineToSVG, rayToSVG, circleToSVG
-- `types/schemas.ts` — Zod schemas, serialisation GeoValue exact via LaTeX
+- `types/schemas.ts` — Zod schemas (10 types), serialisation GeoValue exact via LaTeX
 - Tests : 42
 
 ### Phase 1G : Finalisation + Integration tests
@@ -76,7 +76,6 @@
 
 - Formules directes, pas MathAST solve() (LL/LC/CC ont des solutions en forme close)
 - geoSqrt garde contre les inputs exacts negatifs (float check avant de construire sqrt node)
-- Tolerances relatives dans intersectCC et intersectLC (pas de seuils absolus)
 - `geoFromNumber(Math.SQRT2)` INTERDIT — utiliser `exact(sqrt(number(2)))` pour les irrationnels
 - `geoFromNumber` cree exact seulement pour les entiers, numeric pour le reste
 
@@ -88,23 +87,66 @@
 - `reflectOverLine` retourne null pour les droites degenerees
 - Tests : 64
 
-## Demo page `/geometry-demo`
+## Phase 3C : Elements dependants dans Figure (TERMINEE)
 
-- Triangle equilateral avec 3 midpoints et 3 medianes
-- Droite (AB) etendue aux bords du viewport
-- Demi-droite (C vers M) etendue d'un cote
-- Cercle par point (centre O, point R draggable)
-- Tous les points libres sont draggables, les dependants suivent
+- `GeoIntersectionLL` — point d'intersection de deux elements line-like, recalcule au drag
+- `GeoReflectedPoint` — image par symetrie centrale, recalcule au drag
+- Factory : `createIntersectionLL`, `createReflectedPoint`
+- Validation : createIntersectionLL verifie line-like, createReflectedPoint verifie point-like + ids distincts
+- Positions supprimees quand parents absents (intersectionLL paralleles, reflectedPoint sans parent)
+- Schemas Zod mis a jour pour les 2 nouveaux types
+- Tests : 33
+
+## Phase 3D : Undo/Redo delta-based (TERMINEE)
+
+- Transaction API dans Figure : `beginTransaction()`, `commit()`, `discard()`
+- `undo()`, `redo()`, `canUndo`, `canRedo`
+- Delta : `{added, removed, updated, removedPositions}` Maps
+- Undo de create : supprime les elements (roots d'abord, cascade explicite)
+- Undo de remove : re-cree les elements en ordre topologique avec positions
+- Undo de movePoint : restaure l'element et la position, recompute les dependants
+- Drag = une transaction (begin au pointerDown, commit au pointerUp)
+- Ctrl+Z / Cmd+Z = undo, Ctrl+Shift+Z / Ctrl+Y = redo
+- Ctrl+Z pendant un drag = annule le drag (pas de corruption d'historique)
+- applyDelta marque seulement les elements affectes dirty (pas toute la figure)
+- Tests : 24
+
+### Decisions prises :
+
+- Undo/redo dans Figure (pas dans le composant) — lie aux donnees, pas a l'UI
+- `invertDelta` avec copie defensive de removedPositions
+- `recordRemove` early return pour add-then-remove dans la meme transaction
+- `discard` annule l'enregistrement mais pas les operations deja effectuees
+
+## Ameliorations du composant GeometryCanvas
+
+- **Viewport isometrique** : API `center` + `pixelsPerUnit` (comme apigeom/DGPad), viewport calcule depuis la taille du SVG. Toujours isometrique.
+- **Pan** : espace + drag ou bouton milieu
+- **Zoom** : molette centre sur le curseur (modifie pixelsPerUnit)
+- **circleByPoint** : rayon calcule en espace SVG (pas juste scaleX)
+- **CSS** : couleurs directes (pas de variables CSS Shadcn)
+- **Accessibilite** : space key ignore sur les inputs, onPointerCancel, onWindowBlur
 
 ## Refactoring
 
 - `Construction` renomme en `Figure` (partout)
 - `CONSTRUCTION_STATE_VERSION` renomme en `FIGURE_STATE_VERSION`
+- `isPointElement` inclut intersectionLL et reflectedPoint
+
+## Demo page `/geometry-demo`
+
+- Triangle equilateral avec 3 midpoints et 3 medianes
+- Centre de gravite G (jaune, intersection des 2 medianes)
+- Symetriques A' B' C' (violet) par rapport au centre draggable S
+- Droite (AB) etendue aux bords du viewport
+- Demi-droite (C vers M) etendue d'un cote
+- Cercle par point (centre O, point R draggable)
+- Pan (espace + drag), zoom (molette), undo/redo (Ctrl+Z/Ctrl+Y)
+- Grille carree, axes visibles
 
 ## Prochaines etapes
 
-- Integration des intersections/transformations dans Figure (points dependants : GeoIntersectionLL, GeoRotatedPoint...)
-- Undo/redo delta-based
+- Autres elements dependants : rotatedPoint, translatedPoint, dilatedPoint, reflectedOverLine
 - Validation d'exercices (checks)
 - Nombres dynamiques (distance, angle comme objets)
 - Labels, export LaTeX
@@ -116,10 +158,10 @@
 | types/                                      | 64      |
 | viewport/                                   | 8       |
 | compute/                                    | 139     |
-| graph/ (dep-graph + figure)                 | 80      |
+| graph/ (dep-graph + figure + undo)          | 137     |
 | rendering/                                  | 17      |
 | geometry/ (intersections + transformations) | 89      |
 | interaction/                                | 25      |
 | integration/                                | 18      |
-| **Total geometry-core**                     | **440** |
+| **Total geometry-core**                     | **497** |
 | grapheur/ (non-regression)                  | 213     |
