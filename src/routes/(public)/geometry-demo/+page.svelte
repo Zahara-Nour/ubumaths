@@ -61,7 +61,7 @@
 
 	<GeometryCanvas
 		{figure}
-		viewport={{ xMin: -10, xMax: 10, yMin: -8, yMax: 10 }}
+		viewport={{ xMin: -10, xMax: 10, yMin: -7.5, yMax: 7.5 }}
 		width={800}
 		height={600}
 	/>
