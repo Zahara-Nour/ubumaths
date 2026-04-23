@@ -110,6 +110,38 @@ const reflectedPointSchema = baseElementSchema.extend({
 	dependsOn: z.tuple([z.string(), z.string()])
 });
 
+const rotatedPointSchema = baseElementSchema.extend({
+	type: z.literal('rotatedPoint'),
+	sourceId: z.string().min(1),
+	centerId: z.string().min(1),
+	angle: geoValueSchema,
+	dependsOn: z.tuple([z.string(), z.string()])
+});
+
+const translatedPointSchema = baseElementSchema.extend({
+	type: z.literal('translatedPoint'),
+	sourceId: z.string().min(1),
+	vectorStartId: z.string().min(1),
+	vectorEndId: z.string().min(1),
+	dependsOn: z.tuple([z.string(), z.string(), z.string()])
+});
+
+const dilatedPointSchema = baseElementSchema.extend({
+	type: z.literal('dilatedPoint'),
+	sourceId: z.string().min(1),
+	centerId: z.string().min(1),
+	factor: geoValueSchema,
+	dependsOn: z.tuple([z.string(), z.string()])
+});
+
+const reflectedOverLineSchema = baseElementSchema.extend({
+	type: z.literal('reflectedOverLine'),
+	sourceId: z.string().min(1),
+	linePoint1Id: z.string().min(1),
+	linePoint2Id: z.string().min(1),
+	dependsOn: z.tuple([z.string(), z.string(), z.string()])
+});
+
 const polygonSchema = baseElementSchema.extend({
 	type: z.literal('polygon'),
 	dependsOn: z.array(z.string().min(1)).min(3, 'Polygon needs at least 3 vertices')
@@ -120,6 +152,10 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	midpointSchema,
 	intersectionLLSchema,
 	reflectedPointSchema,
+	rotatedPointSchema,
+	translatedPointSchema,
+	dilatedPointSchema,
+	reflectedOverLineSchema,
 	segmentSchema,
 	lineSchema,
 	raySchema,
