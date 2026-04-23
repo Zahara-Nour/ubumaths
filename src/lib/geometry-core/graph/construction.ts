@@ -19,43 +19,38 @@ import type {
 import { isFreePoint, isMidpoint } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
-import { geoAdd, geoDiv } from '../compute/geo-arithmetic';
-import { geoFromNumber } from '../compute/geo-arithmetic';
-
-// =============================================================================
-// ID generation
-// =============================================================================
-
-let nextId = 1;
-
-function generateId(prefix: string): string {
-	return `${prefix}_${nextId++}`;
-}
-
-/** Reset ID counter (for testing only). */
-export function _resetIdCounter(): void {
-	nextId = 1;
-}
-
-// =============================================================================
-// Default style
-// =============================================================================
+import { geoAdd, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
 
 const DEFAULT_COLOR = '#1e40af';
-
-// =============================================================================
-// Construction class
-// =============================================================================
 
 export class Construction {
 	private elements = new Map<string, GeoElement>();
 	private positions = new Map<string, GeoPoint>();
 	private graph = new DependencyGraph();
+	private nextId = 1;
+
+	private generateId(prefix: string): string {
+		return `${prefix}_${this.nextId++}`;
+	}
 
 	// ─── Factory methods ────────────────────────────────────────────
 
+	/**
+	 * Add an element to the construction and register it in the graph.
+	 * If graph.addNode fails, the element is rolled back from the maps.
+	 */
+	private addElement(id: string, element: GeoElement, parentIds: readonly string[]): void {
+		this.elements.set(id, element);
+		try {
+			this.graph.addNode(id, parentIds);
+		} catch (e) {
+			this.elements.delete(id);
+			throw e;
+		}
+	}
+
 	createFreePoint(position: GeoPoint, options?: { label?: string; color?: string }): string {
-		const id = generateId('pt');
+		const id = this.generateId('pt');
 		const element: GeoFreePoint = {
 			type: 'freePoint',
 			id,
@@ -65,9 +60,8 @@ export class Construction {
 			label: options?.label,
 			dependsOn: [] as const
 		};
-		this.elements.set(id, element);
+		this.addElement(id, element, []);
 		this.positions.set(id, position);
-		this.graph.addNode(id, []);
 		return id;
 	}
 
@@ -76,7 +70,7 @@ export class Construction {
 		point2Id: string,
 		options?: { label?: string; color?: string }
 	): string {
-		const id = generateId('mid');
+		const id = this.generateId('mid');
 		const element: GeoMidpoint = {
 			type: 'midpoint',
 			id,
@@ -87,8 +81,7 @@ export class Construction {
 			label: options?.label,
 			dependsOn: [point1Id, point2Id]
 		};
-		this.elements.set(id, element);
-		this.graph.addNode(id, [point1Id, point2Id]);
+		this.addElement(id, element, [point1Id, point2Id]);
 		this.computePosition(id);
 		return id;
 	}
@@ -98,7 +91,7 @@ export class Construction {
 		endId: string,
 		options?: { label?: string; color?: string }
 	): string {
-		const id = generateId('seg');
+		const id = this.generateId('seg');
 		const element: GeoSegment = {
 			type: 'segment',
 			id,
@@ -109,8 +102,7 @@ export class Construction {
 			label: options?.label,
 			dependsOn: [startId, endId]
 		};
-		this.elements.set(id, element);
-		this.graph.addNode(id, [startId, endId]);
+		this.addElement(id, element, [startId, endId]);
 		return id;
 	}
 
@@ -119,7 +111,7 @@ export class Construction {
 		point2Id: string,
 		options?: { label?: string; color?: string }
 	): string {
-		const id = generateId('ln');
+		const id = this.generateId('ln');
 		const element: GeoLine = {
 			type: 'line',
 			id,
@@ -130,8 +122,7 @@ export class Construction {
 			label: options?.label,
 			dependsOn: [point1Id, point2Id]
 		};
-		this.elements.set(id, element);
-		this.graph.addNode(id, [point1Id, point2Id]);
+		this.addElement(id, element, [point1Id, point2Id]);
 		return id;
 	}
 
@@ -140,7 +131,7 @@ export class Construction {
 		throughId: string,
 		options?: { label?: string; color?: string }
 	): string {
-		const id = generateId('ray');
+		const id = this.generateId('ray');
 		const element: GeoRay = {
 			type: 'ray',
 			id,
@@ -151,8 +142,7 @@ export class Construction {
 			label: options?.label,
 			dependsOn: [originId, throughId]
 		};
-		this.elements.set(id, element);
-		this.graph.addNode(id, [originId, throughId]);
+		this.addElement(id, element, [originId, throughId]);
 		return id;
 	}
 
@@ -161,7 +151,7 @@ export class Construction {
 		radius: GeoValue,
 		options?: { label?: string; color?: string }
 	): string {
-		const id = generateId('circ');
+		const id = this.generateId('circ');
 		const element: GeoCircleByRadius = {
 			type: 'circleByRadius',
 			id,
@@ -172,8 +162,7 @@ export class Construction {
 			label: options?.label,
 			dependsOn: [centerId]
 		};
-		this.elements.set(id, element);
-		this.graph.addNode(id, [centerId]);
+		this.addElement(id, element, [centerId]);
 		return id;
 	}
 
@@ -182,7 +171,7 @@ export class Construction {
 		edgePointId: string,
 		options?: { label?: string; color?: string }
 	): string {
-		const id = generateId('circ');
+		const id = this.generateId('circ');
 		const element: GeoCircleByPoint = {
 			type: 'circleByPoint',
 			id,
@@ -193,8 +182,7 @@ export class Construction {
 			label: options?.label,
 			dependsOn: [centerId, edgePointId]
 		};
-		this.elements.set(id, element);
-		this.graph.addNode(id, [centerId, edgePointId]);
+		this.addElement(id, element, [centerId, edgePointId]);
 		return id;
 	}
 
@@ -219,7 +207,8 @@ export class Construction {
 	}
 
 	/**
-	 * Get the position of a point element. Returns null for non-point elements.
+	 * Get the cached position of a point element.
+	 * Returns null if the element is not a point type or does not exist.
 	 */
 	getPosition(id: string): GeoPoint | null {
 		return this.positions.get(id) ?? null;
@@ -244,9 +233,7 @@ export class Construction {
 		this.graph.markDirty(id);
 	}
 
-	/**
-	 * Recompute all dirty elements in topological order.
-	 */
+	/** Recompute all dirty elements in topological order. */
 	recompute(): void {
 		const dirtyIds = this.graph.getDirtyInOrder();
 		for (const id of dirtyIds) {
@@ -254,9 +241,7 @@ export class Construction {
 		}
 	}
 
-	/**
-	 * Remove an element and cascade-delete its dependants.
-	 */
+	/** Remove an element and cascade-delete its dependants. */
 	remove(id: string): string[] {
 		if (!this.elements.has(id)) {
 			throw new Error(`remove: "${id}" does not exist`);
@@ -269,7 +254,7 @@ export class Construction {
 		return removedIds;
 	}
 
-	// ─── Internal: compute position for a single element ────────────
+	// ─── Internal ───────────────────────────────────────────────────
 
 	private computePosition(id: string): void {
 		const el = this.elements.get(id);
@@ -278,16 +263,18 @@ export class Construction {
 		if (isMidpoint(el)) {
 			const p1 = this.positions.get(el.point1Id);
 			const p2 = this.positions.get(el.point2Id);
-			if (p1 && p2) {
-				const two = geoFromNumber(2);
-				const mx = geoDiv(geoAdd(p1.x, p2.x), two);
-				const my = geoDiv(geoAdd(p1.y, p2.y), two);
-				if (mx && my) {
-					this.positions.set(id, { x: mx, y: my });
-				}
+			if (!p1 || !p2) return; // parent not yet computed (should not happen in topo order)
+
+			const two = geoFromNumber(2);
+			const mx = geoDiv(geoAdd(p1.x, p2.x), two);
+			const my = geoDiv(geoAdd(p1.y, p2.y), two);
+			// Divisor is the constant 2, so null should never happen
+			if (mx === null || my === null) {
+				throw new Error(`computePosition: unexpected null computing midpoint "${id}"`);
 			}
+			this.positions.set(id, { x: mx, y: my });
 		}
-		// Free points: position is stored directly, no compute needed.
-		// Segments, lines, rays, circles: no position to compute (they reference point ids).
+		// Free points: position stored directly in movePoint/createFreePoint.
+		// Segments, lines, rays, circles: no position to compute.
 	}
 }

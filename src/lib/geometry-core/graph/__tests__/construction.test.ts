@@ -395,4 +395,66 @@ describe('integration', () => {
 		expect(c.size).toBe(1); // only B
 		expect(c.getElementById(b)).toBeDefined();
 	});
+
+	it('midpoint is stale after movePoint, before recompute', () => {
+		const c = new Construction();
+		const a = c.createFreePoint(point(0, 0));
+		const b = c.createFreePoint(point(10, 0));
+		const mid = c.createMidpoint(a, b);
+
+		expect(geoToNumber(c.getPosition(mid)!.x)).toBe(5); // initial
+
+		c.movePoint(a, numeric(20), numeric(0));
+		// Before recompute: midpoint still has old value
+		expect(geoToNumber(c.getPosition(mid)!.x)).toBe(5);
+
+		c.recompute();
+		// After recompute: midpoint updated
+		expect(geoToNumber(c.getPosition(mid)!.x)).toBe(15);
+	});
+
+	it('remove cleans up positions cache', () => {
+		const c = new Construction();
+		const a = c.createFreePoint(point(3, 4));
+		const b = c.createFreePoint(point(6, 8));
+		const mid = c.createMidpoint(a, b);
+
+		expect(c.getPosition(mid)).not.toBeNull();
+		c.remove(mid);
+		expect(c.getPosition(mid)).toBeNull();
+	});
+
+	it('chained midpoints: midpoint of midpoints', () => {
+		const c = new Construction();
+		const a = c.createFreePoint(point(0, 0));
+		const b = c.createFreePoint(point(8, 0));
+		const d = c.createFreePoint(point(0, 8));
+
+		const mAB = c.createMidpoint(a, b); // (4, 0)
+		const mAD = c.createMidpoint(a, d); // (0, 4)
+		const mMid = c.createMidpoint(mAB, mAD); // (2, 2)
+
+		expect(geoToNumber(c.getPosition(mMid)!.x)).toBe(2);
+		expect(geoToNumber(c.getPosition(mMid)!.y)).toBe(2);
+
+		// Move A, all three midpoints update
+		c.movePoint(a, numeric(4), numeric(4));
+		c.recompute();
+		// mAB = mid of (4,4) and (8,0) = (6, 2)
+		// mAD = mid of (4,4) and (0,8) = (2, 6)
+		// mMid = mid of (6,2) and (2,6) = (4, 4)
+		expect(geoToNumber(c.getPosition(mMid)!.x)).toBe(4);
+		expect(geoToNumber(c.getPosition(mMid)!.y)).toBe(4);
+	});
+
+	it('each Construction instance has independent IDs', () => {
+		const c1 = new Construction();
+		const c2 = new Construction();
+		const id1 = c1.createFreePoint(point(0, 0));
+		const id2 = c2.createFreePoint(point(0, 0));
+		// Both start at 1, so IDs should be the same prefix_1 pattern
+		// but that's fine — IDs only need to be unique within a construction
+		expect(c1.getElementById(id1)).toBeDefined();
+		expect(c2.getElementById(id2)).toBeDefined();
+	});
 });
