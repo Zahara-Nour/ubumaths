@@ -118,10 +118,10 @@ export type GeoElementSerialized = z.infer<typeof geoElementSchema>;
 // Figure state schema
 // =============================================================================
 
-export const CONSTRUCTION_STATE_VERSION = 1;
+export const FIGURE_STATE_VERSION = 1;
 
 export const figureStateSchema = z.object({
-	version: z.number().int().min(1).max(CONSTRUCTION_STATE_VERSION),
+	version: z.number().int().min(1).max(FIGURE_STATE_VERSION),
 	viewport: viewportSchema,
 	elements: z.array(geoElementSchema).max(500, 'Too many elements (max 500)')
 });
