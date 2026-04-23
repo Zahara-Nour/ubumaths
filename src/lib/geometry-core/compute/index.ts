@@ -9,7 +9,7 @@ export {
 	geoDiv,
 	geoSqrt,
 	geoOpposite,
-	geoFromInteger,
+	geoFromNumber,
 	geoFromFraction
 } from './geo-arithmetic';
 
