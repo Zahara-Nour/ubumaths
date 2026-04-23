@@ -1,8 +1,23 @@
 /**
  * GeoValue comparison.
  *
- * - Equality and zero: exact via isZeroExpression (normalize, the definitive algebraic test)
- * - Ordering: float comparison (sufficient for rendering/layout)
+ * Equality and zero use MathAST's isZeroExpression (via normalize), NOT compareNumericNodes.
+ *
+ * Why isZeroExpression:
+ * - normalize() converts to canonical polynomial NormalForm and checks empty numerator.
+ *   This is the definitive algebraic equivalence test: sqrt(2)*sqrt(2) - 2 = 0,
+ *   sqrt(8) - 2*sqrt(2) = 0, etc. No float involved, no tolerance needed.
+ *
+ * Why NOT compareNumericNodes:
+ * - It checks if evaluate(mode:'exact') produces the literal NumberNode("0").
+ *   If the exact evaluation doesn't fully simplify (e.g., returns a non-zero float
+ *   like 4.4e-16 for sqrt(2)*sqrt(2) - 2), it falls through to decimal comparison
+ *   WITHOUT tolerance, producing false negatives.
+ * - compareNumericNodes handles transcendentals (sin(0) = 0, cos(pi/3) = 1/2),
+ *   but our geometric predicates are polynomial (cross product, dot product,
+ *   determinant), so normalize is both sufficient and more robust.
+ *
+ * Ordering uses float comparison (sufficient for rendering/layout).
  */
 
 import type { GeoValue } from '../types/geo-value';
