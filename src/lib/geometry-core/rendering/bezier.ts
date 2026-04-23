@@ -403,14 +403,12 @@ export function createMathToSVGTransformer(
 	const mathWidth = mathViewport.xMax - mathViewport.xMin;
 	const mathHeight = mathViewport.yMax - mathViewport.yMin;
 
-	// Scale factors
-	const scaleX = svgWidth / mathWidth;
-	const scaleY = svgHeight / mathHeight;
+	// Scale factors (guard against zero-width/height viewport)
+	const scaleX = mathWidth > 0 ? svgWidth / mathWidth : 1;
+	const scaleY = mathHeight > 0 ? svgHeight / mathHeight : 1;
 
 	return (p: Point): Point => ({
-		// x: scale and translate
 		x: (p.x - mathViewport.xMin) * scaleX,
-		// y: scale, translate, and flip (SVG y increases downward)
 		y: svgHeight - (p.y - mathViewport.yMin) * scaleY
 	});
 }

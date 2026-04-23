@@ -69,6 +69,21 @@ describe('fitViewport', () => {
 		expect(vp.yMax).toBe(101); // max(100) + 1
 	});
 
+	it('clamps negative padding to 0', () => {
+		const vp = fitViewport(
+			[
+				{ x: 0, y: 0 },
+				{ x: 10, y: 10 }
+			],
+			-5
+		);
+		// Negative padding clamped to 0, same as padding=0
+		expect(vp.xMin).toBe(0);
+		expect(vp.xMax).toBe(10);
+		expect(vp.yMin).toBe(0);
+		expect(vp.yMax).toBe(10);
+	});
+
 	it('handles points with same x (vertical line)', () => {
 		const vp = fitViewport([
 			{ x: 5, y: 0 },
