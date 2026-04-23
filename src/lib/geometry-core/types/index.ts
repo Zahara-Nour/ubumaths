@@ -44,7 +44,7 @@ export {
 	geoPointSchema,
 	geoElementSchema,
 	figureStateSchema,
-	CONSTRUCTION_STATE_VERSION,
+	FIGURE_STATE_VERSION,
 	serializeGeoValue,
 	deserializeGeoValue
 } from './schemas';

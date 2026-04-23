@@ -40,7 +40,7 @@ function pt(x: number, y: number) {
 // Pipeline: Figure -> getPosition -> SVG rendering
 // =============================================================================
 
-describe('construction -> SVG rendering pipeline', () => {
+describe('figure -> SVG rendering pipeline', () => {
 	it('triangle: 3 points + 3 segments render correctly', () => {
 		const c = new Figure();
 		const a = c.createFreePoint(pt(0, 0));
