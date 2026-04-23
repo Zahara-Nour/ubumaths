@@ -98,14 +98,18 @@ export function geoOpposite(a: GeoValue): GeoValue {
 }
 
 /**
- * Create an exact GeoValue from a number (typically an integer or simple decimal).
+ * Create a GeoValue from a number.
+ * Integers -> exact (safe for BigInt arithmetic).
+ * Non-integers -> numeric (avoids 17-digit MathNode explosion).
  *
- * WARNING: Do NOT pass irrational floats like Math.SQRT2 or Math.PI.
- * These create 17-digit MathNodes that explode BigInt arithmetic.
- * For irrationals, build the MathNode directly: exact(sqrt(number(2))), exact(piConstant()).
+ * For exact fractions: use geoFromFraction(1, 2).
+ * For exact irrationals: use exact(sqrt(number(2))), exact(piConstant()).
  */
 export function geoFromNumber(n: number): GeoValue {
-	return exact(number(n));
+	if (Number.isInteger(n)) {
+		return exact(number(n));
+	}
+	return numeric(n);
 }
 
 /**

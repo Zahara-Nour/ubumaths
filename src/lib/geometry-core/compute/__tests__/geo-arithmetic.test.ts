@@ -315,8 +315,10 @@ describe('geoFromNumber', () => {
 		expect(geoToNumber(geoFromNumber(-3))).toBe(-3);
 	});
 
-	it('geoFromNumber(1.5) -> exact', () => {
-		expect(geoToNumber(geoFromNumber(1.5))).toBe(1.5);
+	it('geoFromNumber(1.5) -> numeric (non-integer)', () => {
+		const result = geoFromNumber(1.5);
+		expect(isNumeric(result)).toBe(true);
+		expect(geoToNumber(result)).toBe(1.5);
 	});
 });
 
