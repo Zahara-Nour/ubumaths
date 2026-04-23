@@ -1,15 +1,14 @@
 /**
  * GeoValue comparison.
  *
- * Delegates to MathAST's existing comparison functions:
- * - compareNumericNodes: exact first (a-b, evaluate exact, check zero), then decimal
- * - isZeroExpression: normalize and check empty numerator
+ * - Equality and zero: exact via isZeroExpression (normalize, the definitive algebraic test)
+ * - Ordering: float comparison (sufficient for rendering/layout)
  */
 
 import type { GeoValue } from '../types/geo-value';
 import { isExact } from '../types/geo-value';
 import { geoToNumber } from './to-number';
-import { compareNumericNodes } from '$lib/mathAST/eval';
+import { subtract } from '$lib/mathAST';
 import { isZeroExpression } from '$lib/mathAST/normal';
 
 const RELATIVE_TOLERANCE = 1e-12;
@@ -17,19 +16,19 @@ const ABSOLUTE_ZERO_TOLERANCE = 1e-15;
 
 /**
  * Compare two GeoValues for equality.
- * Exact values: uses MathAST compareNumericNodes (exact algebra then decimal fallback).
+ * Exact values: normalize(a - b) and check if zero (definitive algebraic equivalence).
  * Numeric or mixed: relative tolerance.
  */
 export function geoEqual(a: GeoValue, b: GeoValue): boolean {
 	if (isExact(a) && isExact(b)) {
-		return compareNumericNodes(a.node, b.node) === 0;
+		return isZeroExpression(subtract(a.node, b.node));
 	}
 	return geoApproxEqual(geoToNumber(a), geoToNumber(b));
 }
 
 /**
  * Check if a GeoValue is zero.
- * Exact: uses MathAST isZeroExpression (normalize, check empty numerator).
+ * Exact: normalize and check if zero (definitive algebraic test).
  * Numeric: absolute threshold.
  */
 export function geoIsZero(a: GeoValue): boolean {
@@ -41,12 +40,8 @@ export function geoIsZero(a: GeoValue): boolean {
 
 /**
  * Check if a < b (strict ordering via float comparison).
- * For exact values: uses MathAST compareNumericNodes.
  */
 export function geoLessThan(a: GeoValue, b: GeoValue): boolean {
-	if (isExact(a) && isExact(b)) {
-		return compareNumericNodes(a.node, b.node) === -1;
-	}
 	return geoToNumber(a) < geoToNumber(b);
 }
 
