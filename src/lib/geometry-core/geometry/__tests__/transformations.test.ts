@@ -252,6 +252,12 @@ describe('reflectPoint', () => {
 		expect(geoToNumber(result.y)).toBe(4);
 	});
 
+	it('result is numeric when inputs are numeric', () => {
+		const result = reflectPoint(numPt(3, 4), numPt(0, 0));
+		expect(isNumeric(result.x)).toBe(true);
+		expect(isNumeric(result.y)).toBe(true);
+	});
+
 	it('central symmetry = rotation of 180°', () => {
 		const p = pt(5, 2);
 		const center = pt(1, 1);
@@ -277,55 +283,57 @@ describe('reflectPoint', () => {
 
 describe('reflectOverLine', () => {
 	it('reflects over horizontal axis (y=0)', () => {
-		const result = reflectOverLine(pt(3, 4), pt(0, 0), pt(1, 0));
+		const result = reflectOverLine(pt(3, 4), pt(0, 0), pt(1, 0))!;
 		expect(geoToNumber(result.x)).toBe(3);
 		expect(geoToNumber(result.y)).toBe(-4);
 	});
 
 	it('reflects over vertical axis (x=0)', () => {
-		const result = reflectOverLine(pt(3, 4), pt(0, 0), pt(0, 1));
+		const result = reflectOverLine(pt(3, 4), pt(0, 0), pt(0, 1))!;
 		expect(geoToNumber(result.x)).toBe(-3);
 		expect(geoToNumber(result.y)).toBe(4);
 	});
 
 	it('reflects over y=x diagonal', () => {
-		const result = reflectOverLine(pt(3, 1), pt(0, 0), pt(1, 1));
+		const result = reflectOverLine(pt(3, 1), pt(0, 0), pt(1, 1))!;
 		expect(geoToNumber(result.x)).toBeCloseTo(1, 8);
 		expect(geoToNumber(result.y)).toBeCloseTo(3, 8);
 	});
 
 	it('reflects over y=-x diagonal', () => {
-		// (3, 1) reflected over y=-x -> (-1, -3)
-		const result = reflectOverLine(pt(3, 1), pt(0, 0), pt(1, -1));
+		const result = reflectOverLine(pt(3, 1), pt(0, 0), pt(1, -1))!;
 		expect(geoToNumber(result.x)).toBeCloseTo(-1, 8);
 		expect(geoToNumber(result.y)).toBeCloseTo(-3, 8);
 	});
 
 	it('point on the line stays on the line', () => {
-		const result = reflectOverLine(pt(2, 2), pt(0, 0), pt(1, 1));
+		const result = reflectOverLine(pt(2, 2), pt(0, 0), pt(1, 1))!;
 		expect(geoToNumber(result.x)).toBeCloseTo(2, 8);
 		expect(geoToNumber(result.y)).toBeCloseTo(2, 8);
 	});
 
 	it('point on a non-trivial line stays', () => {
-		// Point (2, 3) on line through (0, 1) and (2, 3)
-		const result = reflectOverLine(pt(2, 3), pt(0, 1), pt(2, 3));
+		const result = reflectOverLine(pt(2, 3), pt(0, 1), pt(2, 3))!;
 		expect(geoToNumber(result.x)).toBeCloseTo(2, 8);
 		expect(geoToNumber(result.y)).toBeCloseTo(3, 8);
 	});
 
 	it('result is exact', () => {
-		const result = reflectOverLine(pt(3, 4), pt(0, 0), pt(1, 0));
+		const result = reflectOverLine(pt(3, 4), pt(0, 0), pt(1, 0))!;
 		expect(isExact(result.x)).toBe(true);
 		expect(isExact(result.y)).toBe(true);
+	});
+
+	it('degenerate line (p1 === p2) returns null', () => {
+		expect(reflectOverLine(pt(3, 4), pt(1, 1), pt(1, 1))).toBeNull();
 	});
 
 	it('double reflection returns to original', () => {
 		const p = pt(7, 3);
 		const l1 = pt(1, 0);
 		const l2 = pt(2, 3);
-		const reflected = reflectOverLine(p, l1, l2);
-		const back = reflectOverLine(reflected, l1, l2);
+		const reflected = reflectOverLine(p, l1, l2)!;
+		const back = reflectOverLine(reflected, l1, l2)!;
 		expect(geoToNumber(back.x)).toBeCloseTo(7, 8);
 		expect(geoToNumber(back.y)).toBeCloseTo(3, 8);
 	});
@@ -335,23 +343,19 @@ describe('reflectOverLine', () => {
 		const p = pt(4, 5);
 		const l1 = pt(0, 0);
 		const l2 = pt(1, 0);
-		const reflected = reflectOverLine(p, l1, l2);
+		const reflected = reflectOverLine(p, l1, l2)!;
 		// Line is y=0, so distances are |y| values
 		expect(Math.abs(geoToNumber(reflected.y))).toBeCloseTo(Math.abs(geoToNumber(p.y)), 8);
 	});
 
 	it('reflection over line not through origin', () => {
-		// Reflect (0, 0) over line y=2 (through (0,2) and (1,2))
-		// Result should be (0, 4)
-		const result = reflectOverLine(pt(0, 0), pt(0, 2), pt(1, 2));
+		const result = reflectOverLine(pt(0, 0), pt(0, 2), pt(1, 2))!;
 		expect(geoToNumber(result.x)).toBeCloseTo(0, 8);
 		expect(geoToNumber(result.y)).toBeCloseTo(4, 8);
 	});
 
 	it('reflection over vertical line not at origin', () => {
-		// Reflect (0, 0) over line x=3 (through (3,0) and (3,1))
-		// Result should be (6, 0)
-		const result = reflectOverLine(pt(0, 0), pt(3, 0), pt(3, 1));
+		const result = reflectOverLine(pt(0, 0), pt(3, 0), pt(3, 1))!;
 		expect(geoToNumber(result.x)).toBeCloseTo(6, 8);
 		expect(geoToNumber(result.y)).toBeCloseTo(0, 8);
 	});
@@ -360,8 +364,7 @@ describe('reflectOverLine', () => {
 		const p = pt(5, 7);
 		const l1 = pt(1, 1);
 		const l2 = pt(3, 2);
-		const reflected = reflectOverLine(p, l1, l2);
-		// Midpoint
+		const reflected = reflectOverLine(p, l1, l2)!;
 		const mx = (geoToNumber(p.x) + geoToNumber(reflected.x)) / 2;
 		const my = (geoToNumber(p.y) + geoToNumber(reflected.y)) / 2;
 		// Check midpoint is on the line: (m - l1) x (l2 - l1) = 0
@@ -425,6 +428,12 @@ describe('dilate', () => {
 		expect(isExact(result.y)).toBe(true);
 	});
 
+	it('result is numeric when factor is numeric', () => {
+		const result = dilate(pt(3, 4), pt(0, 0), numeric(2));
+		expect(isNumeric(result.x)).toBe(true);
+		expect(isNumeric(result.y)).toBe(true);
+	});
+
 	it('dilate with exact fraction factor', () => {
 		const result = dilate(pt(9, 6), pt(0, 0), geoFromFraction(1, 3));
 		expect(isExact(result.x)).toBe(true);
@@ -486,7 +495,7 @@ describe('cross-transformation properties', () => {
 		const xAxis2 = pt(1, 0);
 		const yAxis1 = pt(0, 0);
 		const yAxis2 = pt(0, 1);
-		const r1 = reflectOverLine(reflectOverLine(p, xAxis1, xAxis2), yAxis1, yAxis2);
+		const r1 = reflectOverLine(reflectOverLine(p, xAxis1, xAxis2)!, yAxis1, yAxis2)!;
 		const r2 = rotate(p, pt(0, 0), exact(piConstant()));
 		expect(geoToNumber(r1.x)).toBeCloseTo(geoToNumber(r2.x), 8);
 		expect(geoToNumber(r1.y)).toBeCloseTo(geoToNumber(r2.y), 8);

@@ -17,7 +17,7 @@ import type { MathNode } from '$lib/mathAST/types';
  * Simplify a MathNode via exact evaluation.
  * Returns the simplified node.
  */
-function simplifyExact(node: MathNode): MathNode {
+export function simplifyExact(node: MathNode): MathNode {
 	const result = evaluate(node, { mode: 'exact' });
 	if (result.status === 'value') return result.node;
 	return node; // fallback: return unsimplified
