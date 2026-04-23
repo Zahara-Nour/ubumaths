@@ -103,6 +103,10 @@ describe('geoSqrt', () => {
 		expect(isNumeric(result)).toBe(true);
 		expect(geoToNumber(result)).toBeCloseTo(Math.SQRT2, 10);
 	});
+
+	it('geoSqrt(numeric(-1)) throws (NaN not finite)', () => {
+		expect(() => geoSqrt(numeric(-1))).toThrow();
+	});
 });
 
 describe('geoOpposite', () => {
@@ -134,5 +138,10 @@ describe('convenience constructors', () => {
 		const result = geoFromFraction(1, 3);
 		expect(isExact(result)).toBe(true);
 		expect(geoToNumber(result)).toBeCloseTo(1 / 3, 10);
+	});
+
+	it('geoFromFraction rejects non-integer arguments', () => {
+		expect(() => geoFromFraction(1.5, 2)).toThrow('integers');
+		expect(() => geoFromFraction(1, 2.5)).toThrow('integers');
 	});
 });
