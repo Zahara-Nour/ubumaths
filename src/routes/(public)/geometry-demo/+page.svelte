@@ -57,7 +57,7 @@
 		interactive={true}
 		showGrid={true}
 		gridStep={1}
-		snapOnRelease={true}
+		snapOnRelease={false}
 	/>
 
 	<p class="mt-4 text-sm text-muted-foreground">
