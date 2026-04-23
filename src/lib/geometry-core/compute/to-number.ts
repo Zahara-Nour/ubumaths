@@ -1,8 +1,5 @@
 /**
  * GeoValue -> float conversion.
- *
- * This is the ONLY place where exact values lose precision.
- * Used for SVG rendering coordinates.
  */
 
 import type { GeoValue } from '../types/geo-value';
@@ -12,8 +9,8 @@ import { evaluate } from '$lib/mathAST/eval';
 
 /**
  * Convert a GeoValue to a JavaScript number.
- * For exact values, evaluates the MathNode in decimal mode.
- * For numeric values, returns the value directly.
+ * For exact values: evaluates via MathAST (Rational arithmetic internally, float at the end).
+ * For numeric values: returns the value directly.
  */
 export function geoToNumber(v: GeoValue): number {
 	if (v.kind === 'numeric') return v.value;
