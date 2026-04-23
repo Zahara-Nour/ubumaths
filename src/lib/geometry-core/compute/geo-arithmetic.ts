@@ -76,11 +76,14 @@ export function geoDiv(a: GeoValue, b: GeoValue): GeoValue | null {
 	return numeric(geoToNumber(a) / geoToNumber(b));
 }
 
-export function geoSqrt(a: GeoValue): GeoValue {
+/** Square root. Returns null for negative numeric inputs (undefined in real geometry). */
+export function geoSqrt(a: GeoValue): GeoValue | null {
 	if (isExact(a)) {
 		return exact(simplifyExact(sqrt(a.node)));
 	}
-	return numeric(Math.sqrt(a.value));
+	const val = Math.sqrt(a.value);
+	if (!Number.isFinite(val)) return null;
+	return numeric(val);
 }
 
 export function geoOpposite(a: GeoValue): GeoValue {

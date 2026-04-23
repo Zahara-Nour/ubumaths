@@ -241,8 +241,12 @@ describe('geoSqrt', () => {
 		expect(geoToNumber(geoSqrt(numeric(0)))).toBe(0);
 	});
 
-	it('geoSqrt(numeric(-1)) throws (NaN not finite)', () => {
-		expect(() => geoSqrt(numeric(-1))).toThrow();
+	it('geoSqrt(numeric(-1)) returns null (undefined in real geometry)', () => {
+		expect(geoSqrt(numeric(-1))).toBeNull();
+	});
+
+	it('geoSqrt(numeric(-100)) returns null', () => {
+		expect(geoSqrt(numeric(-100))).toBeNull();
 	});
 
 	it('sqrt(a)*sqrt(a) = a (exact round-trip)', () => {
