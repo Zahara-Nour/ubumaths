@@ -12,16 +12,8 @@
 import type { GeoPoint } from '../types/primitives';
 import type { GeoValue } from '../types/geo-value';
 import { exact } from '../types/geo-value';
-import { geoAdd, geoSub, geoMul, geoDiv } from '../compute/geo-arithmetic';
+import { geoAdd, geoSub, geoMul, geoDiv, simplifyExact } from '../compute/geo-arithmetic';
 import { cos, sin } from '$lib/mathAST';
-import { evaluate } from '$lib/mathAST/eval';
-import type { MathNode } from '$lib/mathAST/types';
-
-function simplifyExact(node: MathNode): MathNode {
-	const result = evaluate(node, { mode: 'exact' });
-	if (result.status === 'value') return result.node;
-	return node;
-}
 
 function geoCos(angle: GeoValue): GeoValue {
 	if (angle.kind === 'exact') {
@@ -76,8 +68,13 @@ export function reflectPoint(point: GeoPoint, center: GeoPoint): GeoPoint {
 /**
  * Reflect a point over a line defined by two points (axial symmetry).
  * Projects the point onto the line, then reflects: result = 2*projection - point.
+ * Returns null if the line is degenerate (lineP1 === lineP2).
  */
-export function reflectOverLine(point: GeoPoint, lineP1: GeoPoint, lineP2: GeoPoint): GeoPoint {
+export function reflectOverLine(
+	point: GeoPoint,
+	lineP1: GeoPoint,
+	lineP2: GeoPoint
+): GeoPoint | null {
 	const dx = geoSub(lineP2.x, lineP1.x);
 	const dy = geoSub(lineP2.y, lineP1.y);
 	const fx = geoSub(point.x, lineP1.x);
@@ -87,7 +84,7 @@ export function reflectOverLine(point: GeoPoint, lineP1: GeoPoint, lineP2: GeoPo
 	const dotFD = geoAdd(geoMul(fx, dx), geoMul(fy, dy));
 	const dotDD = geoAdd(geoMul(dx, dx), geoMul(dy, dy));
 	const t = geoDiv(dotFD, dotDD);
-	if (t === null) return point; // degenerate line
+	if (t === null) return null; // degenerate line (lineP1 === lineP2)
 
 	// Projection = lineP1 + t * d
 	const projX = geoAdd(lineP1.x, geoMul(t, dx));
