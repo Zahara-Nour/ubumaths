@@ -90,13 +90,16 @@ export function intersectLC(
 	// Discriminant = b^2 - 4ac
 	const disc = geoSub(geoMul(b, b), geoMul(geoFromNumber(4), geoMul(a, c)));
 
-	// Check discriminant sign via float (for branching)
+	// Check discriminant sign via float (for branching).
+	// Tolerance is relative to b² to handle varying coordinate scales.
 	const discNum = geoToNumber(disc);
-	if (discNum < -1e-10) return null; // no intersection
+	const bNum = geoToNumber(b);
+	const discTol = Math.max(1e-10, 1e-10 * bNum * bNum);
+	if (discNum < -discTol) return null; // no intersection
 
 	const results: GeoPoint[] = [];
 
-	if (Math.abs(discNum) < 1e-10) {
+	if (Math.abs(discNum) < discTol) {
 		// Tangent: one intersection
 		const t = geoDiv(geoOpposite(b), geoMul(geoFromNumber(2), a));
 		if (t === null) return null;
@@ -146,9 +149,14 @@ export function intersectCC(
 	const r1 = geoToNumber(radius1);
 	const r2 = geoToNumber(radius2);
 
-	if (d2 < 1e-20) return null; // concentric (d² ≈ 0)
-	if (d2 > (r1 + r2) ** 2 + 1e-10) return null; // too far apart (d² > (r1+r2)²)
-	if (d2 < (r1 - r2) ** 2 - 1e-10) return null; // one inside other (d² < (r1-r2)²)
+	// Scale-relative tolerances (absolute thresholds fail at extreme scales)
+	const EPS = 1e-10;
+	const sumR2 = (r1 + r2) ** 2;
+	const diffR2 = (r1 - r2) ** 2;
+
+	if (d2 < EPS * EPS) return null; // concentric (d < EPS)
+	if (d2 > sumR2 * (1 + EPS)) return null; // too far apart
+	if (d2 < diffR2 * (1 - EPS)) return null; // one inside other
 
 	// Radical line: subtracting (x-cx1)^2+(y-cy1)^2=r1^2 from (x-cx2)^2+(y-cy2)^2=r2^2
 	// gives a linear equation: 2*(cx2-cx1)*x + 2*(cy2-cy1)*y = r1^2 - r2^2 + cx2^2 - cx1^2 + cy2^2 - cy1^2

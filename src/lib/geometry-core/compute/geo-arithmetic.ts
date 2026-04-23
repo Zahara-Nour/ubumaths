@@ -76,9 +76,13 @@ export function geoDiv(a: GeoValue, b: GeoValue): GeoValue | null {
 	return numeric(geoToNumber(a) / geoToNumber(b));
 }
 
-/** Square root. Returns null for negative numeric inputs (undefined in real geometry). */
+/** Square root. Returns null for negative inputs (undefined in real geometry). */
 export function geoSqrt(a: GeoValue): GeoValue | null {
 	if (isExact(a)) {
+		// Guard: check via float that the value is non-negative before building sqrt node.
+		// Prevents constructing sqrt(negative) MathNode which would propagate silently.
+		const approx = geoToNumber(a);
+		if (approx < -1e-12) return null;
 		return exact(simplifyExact(sqrt(a.node)));
 	}
 	const val = Math.sqrt(a.value);
