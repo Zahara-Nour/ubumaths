@@ -249,6 +249,14 @@ describe('geoSqrt', () => {
 		expect(geoSqrt(numeric(-100))).toBeNull();
 	});
 
+	it('geoSqrt(exact(-4)) returns null (exact negative)', () => {
+		expect(geoSqrt(exact(number('-4')))).toBeNull();
+	});
+
+	it('geoSqrt(exact(-1)) returns null (exact negative)', () => {
+		expect(geoSqrt(exact(number('-1')))).toBeNull();
+	});
+
 	it('sqrt(a)*sqrt(a) = a (exact round-trip)', () => {
 		const a = exact(number('7'));
 		const sa = geoSqrt(a);

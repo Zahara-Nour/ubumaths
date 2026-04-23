@@ -220,6 +220,30 @@ describe('intersectCC', () => {
 		expect(result).toBeNull();
 	});
 
+	it('internal tangency (d = |r1 - r2|) -> 1 point', () => {
+		// Circle 1: center (0,0) radius 5
+		// Circle 2: center (3,0) radius 2 => d=3, r1-r2=3 => internal tangent at (5,0)
+		const result = intersectCC(pt(0, 0), geoFromNumber(5), pt(3, 0), geoFromNumber(2));
+		expect(result).not.toBeNull();
+		expect(result!.length).toBe(1);
+		expect(geoToNumber(result![0].x)).toBeCloseTo(5, 8);
+		expect(geoToNumber(result![0].y)).toBeCloseTo(0, 8);
+	});
+
+	it('centers on y-axis (exercises B-branch of radical line)', () => {
+		// Centers at (0,0) and (0,2), both radius sqrt(2)
+		// Radical line: A=0, B=4, C=4 => y=1
+		// Circle 1 at y=1: x²+1=2 => x=±1
+		const r = geoFromNumber(Math.SQRT2);
+		const result = intersectCC(pt(0, 0), r, pt(0, 2), r);
+		expect(result).not.toBeNull();
+		expect(result!.length).toBe(2);
+		const xs = result!.map((p) => geoToNumber(p.x)).sort((a, b) => a - b);
+		expect(xs[0]).toBeCloseTo(-1, 8);
+		expect(xs[1]).toBeCloseTo(1, 8);
+		result!.forEach((p) => expect(geoToNumber(p.y)).toBeCloseTo(1, 8));
+	});
+
 	it('classic construction: equilateral triangle vertex', () => {
 		// Two circles of radius 6 centered at (0,0) and (6,0)
 		// Intersection gives the vertex of an equilateral triangle
