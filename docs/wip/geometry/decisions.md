@@ -33,14 +33,11 @@ Par ordre de priorite :
 4. **Outil de dessin libre** : type GeoGebra simplifie pour l'eleve
 5. **Librairie commune** : partage du viewport, export, couleurs avec `grapheur/`
 
-### Distinction exploration vs exercice (issue de l'analyse de decembre 2025)
+### Un seul outil, pas deux modes
 
-| Mode                      | Description                                                                                                       | Complexite |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------- |
-| **Exploration**           | Figures avec points draggables, pas de creation d'objets. L'eleve deplace des points pour observer les effets.    | Moyenne    |
-| **Exercice de geometrie** | Toolbox complet, l'eleve construit (point, droite, cercle, perpendiculaire...). Systeme d'evaluation automatique. | Elevee     |
+Il n'y a pas de distinction "exploration" vs "exercice". C'est un seul outil de geometrie dynamique. Les outils de construction (point, droite, cercle...) sont actives ou non selon la configuration de l'exercice. Le drag de points libres est toujours disponible.
 
-L'exploration est un sous-ensemble de l'exercice (drag seulement, pas de creation). Elle peut etre livree plus tot.
+Le snap sur grille au relachement est optionnel et n'est active que si l'exercice le demande.
 
 ### Separation nette avec constructions/
 
