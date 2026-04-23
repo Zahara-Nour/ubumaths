@@ -218,12 +218,22 @@
 		// Undo: Ctrl+Z (or Cmd+Z on Mac)
 		if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ' && !e.shiftKey) {
 			e.preventDefault();
-			figure.undo();
+			if (draggingId) {
+				// Cancel current drag instead of corrupting undo history
+				figure.discard();
+				draggingId = null;
+			} else {
+				figure.undo();
+			}
 			figure.recompute();
 			version++;
 		}
-		// Redo: Ctrl+Shift+Z or Ctrl+Y
-		if ((e.ctrlKey || e.metaKey) && ((e.code === 'KeyZ' && e.shiftKey) || e.code === 'KeyY')) {
+		// Redo: Ctrl+Shift+Z or Ctrl+Y (ignored during drag)
+		if (
+			!draggingId &&
+			(e.ctrlKey || e.metaKey) &&
+			((e.code === 'KeyZ' && e.shiftKey) || e.code === 'KeyY')
+		) {
 			e.preventDefault();
 			figure.redo();
 			figure.recompute();

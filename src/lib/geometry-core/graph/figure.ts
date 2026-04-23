@@ -58,7 +58,7 @@ function invertDelta(delta: Delta): Delta {
 		updated: new Map(
 			[...delta.updated].map(([id, { before, after }]) => [id, { before: after, after: before }])
 		),
-		removedPositions: delta.removedPositions
+		removedPositions: new Map(delta.removedPositions) // defensive copy
 	};
 }
 
@@ -126,22 +126,24 @@ export class Figure {
 	}
 
 	private applyDelta(delta: Delta): void {
-		// 1. Remove elements that were "added" (undo of create)
-		// Remove in reverse order: children first, then parents.
-		// Use removeNode which cascades, but skip already-removed nodes.
-		const toRemove = [...delta.removed.keys()].reverse();
-		for (const id of toRemove) {
-			if (this.elements.has(id) && this.graph.hasNode(id)) {
+		// 1. Remove elements (undo of create).
+		// Only call removeNode on roots (nodes whose parents are not also being removed).
+		const toRemoveSet = new Set(delta.removed.keys());
+		for (const id of toRemoveSet) {
+			if (!this.graph.hasNode(id)) continue; // already cascade-deleted
+			const parents = this.graph.getParents(id);
+			const isRoot = !parents.some((pid) => toRemoveSet.has(pid));
+			if (isRoot) {
 				this.graph.removeNode(id);
 			}
+		}
+		for (const id of toRemoveSet) {
 			this.elements.delete(id);
 			this.positions.delete(id);
 		}
 
-		// 2. Re-add elements that were "removed" (undo of delete)
-		// Must be added in dependency order (parents first)
+		// 2. Re-add elements (undo of delete), in dependency order (parents first).
 		const toAdd = [...delta.added.entries()];
-		// Sort: elements with no dependsOn first, then those whose parents are already present
 		const added = new Set<string>();
 		let remaining = toAdd;
 		while (remaining.length > 0) {
@@ -151,8 +153,6 @@ export class Figure {
 				if (parentsReady) {
 					this.elements.set(id, el);
 					this.graph.addNode(id, [...el.dependsOn]);
-					// Restore position: from removedPositions (undo of delete)
-					// or from element itself (redo of create for freePoint)
 					const pos = delta.removedPositions.get(id);
 					if (pos) {
 						this.positions.set(id, pos);
@@ -164,27 +164,27 @@ export class Figure {
 					next.push([id, el]);
 				}
 			}
-			if (next.length === remaining.length) break; // no progress, avoid infinite loop
+			if (next.length === remaining.length) break;
 			remaining = next;
 		}
 
-		// 3. Apply updates (undo of movePoint)
+		// 3. Apply updates (undo of movePoint).
 		for (const [id, { after }] of delta.updated) {
 			this.elements.set(id, after);
-			// For free points, restore position from the element
 			if (after.type === 'freePoint') {
 				this.positions.set(id, after.position);
 			}
 		}
 
-		// 4. Recompute all positions (mark everything dirty and recompute)
-		for (const id of this.elements.keys()) {
+		// 4. Recompute: mark only affected elements dirty, not the entire figure.
+		for (const [id, el] of delta.added) {
+			if (el.type === 'freePoint' && this.graph.hasNode(id)) {
+				this.graph.markDirty(id);
+			}
+		}
+		for (const id of delta.updated.keys()) {
 			if (this.graph.hasNode(id)) {
-				try {
-					this.graph.markDirty(id);
-				} catch {
-					// ignore if node was just added and has no parents yet
-				}
+				this.graph.markDirty(id);
 			}
 		}
 		const dirtyIds = this.graph.getDirtyInOrder();
@@ -202,13 +202,12 @@ export class Figure {
 
 	private recordRemove(id: string, element: GeoElement): void {
 		if (!this.currentTransaction) return;
-		// If it was added in the same transaction, just remove the add
+		// If it was added in the same transaction, net effect is no-op
 		if (this.currentTransaction.added.has(id)) {
 			this.currentTransaction.added.delete(id);
-		} else {
-			this.currentTransaction.removed.set(id, element);
+			return;
 		}
-		// Save position for undo
+		this.currentTransaction.removed.set(id, element);
 		const pos = this.positions.get(id);
 		if (pos) {
 			this.currentTransaction.removedPositions.set(id, pos);
