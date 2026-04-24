@@ -373,49 +373,49 @@
 		{/if}
 	</div>
 
-	{#if mode === 'edit'}
-		<!-- Split: Editor + Preview -->
-		<div class="flex gap-4">
-			<!-- Editor panel -->
-			<div class="flex min-w-0 flex-1 flex-col">
-				<div
-					class="relative overflow-hidden rounded-md border border-border"
-					style="height: {height}px"
-					bind:this={editorContainer}
-				>
-					{#if isLoading}
-						<div class="flex h-full items-center justify-center">
-							<div class="flex flex-col items-center gap-2">
-								<div
-									class="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent"
-								></div>
-								<span class="text-sm text-muted-foreground">Chargement...</span>
-							</div>
+	<!-- Split: Editor (left) + Preview/Player (right) -->
+	<div class="flex gap-4">
+		<!-- Editor panel (always visible) -->
+		<div class="flex min-w-0 flex-1 flex-col">
+			<div
+				class="relative overflow-hidden rounded-md border border-border"
+				style="height: {height}px"
+				bind:this={editorContainer}
+			>
+				{#if isLoading}
+					<div class="flex h-full items-center justify-center">
+						<div class="flex flex-col items-center gap-2">
+							<div
+								class="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent"
+							></div>
+							<span class="text-sm text-muted-foreground">Chargement...</span>
 						</div>
-					{:else if loadError}
-						<textarea
-							class="h-full w-full resize-none rounded bg-background p-4 font-mono text-sm text-foreground focus:outline-none"
-							bind:value
-							spellcheck="false"
-							autocomplete="off"
-							aria-label="Editeur DSL (mode degrade)"
-						></textarea>
-					{/if}
-				</div>
-
-				{#if validationErrors.length > 0}
-					<div class="mt-1 rounded-md border border-destructive/30 bg-destructive/10 p-2">
-						{#each validationErrors as err, i (i)}
-							<p class="text-xs text-destructive">{err}</p>
-						{/each}
 					</div>
-				{:else if value.trim().length > 0}
-					<p class="mt-1 text-xs text-green-600">Script valide</p>
+				{:else if loadError}
+					<textarea
+						class="h-full w-full resize-none rounded bg-background p-4 font-mono text-sm text-foreground focus:outline-none"
+						bind:value
+						spellcheck="false"
+						autocomplete="off"
+						aria-label="Editeur DSL (mode degrade)"
+					></textarea>
 				{/if}
 			</div>
 
-			<!-- Preview panel -->
-			<div class="flex-shrink-0">
+			{#if validationErrors.length > 0}
+				<div class="mt-1 rounded-md border border-destructive/30 bg-destructive/10 p-2">
+					{#each validationErrors as err, i (i)}
+						<p class="text-xs text-destructive">{err}</p>
+					{/each}
+				</div>
+			{:else if value.trim().length > 0}
+				<p class="mt-1 text-xs text-green-600">Script valide</p>
+			{/if}
+		</div>
+
+		<!-- Right panel: Preview (edit mode) or Player (play mode) -->
+		<div class="flex-shrink-0">
+			{#if mode === 'edit'}
 				<div class="rounded-md border border-border">
 					<GeometryCanvas
 						figure={previewFigure}
@@ -426,21 +426,20 @@
 						externalVersion={previewVersion}
 					/>
 				</div>
-			</div>
+			{:else}
+				{#await import('./ConstructionPlayer.svelte') then module}
+					<module.default
+						script={value}
+						{width}
+						{height}
+						showGrid={true}
+						showControls={true}
+						autoPlay={true}
+					/>
+				{/await}
+			{/if}
 		</div>
-	{:else}
-		<!-- Play mode -->
-		{#await import('./ConstructionPlayer.svelte') then module}
-			<module.default
-				script={value}
-				{width}
-				{height}
-				showGrid={true}
-				showControls={true}
-				autoPlay={true}
-			/>
-		{/await}
-	{/if}
+	</div>
 </div>
 
 <style>
