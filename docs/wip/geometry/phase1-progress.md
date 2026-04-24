@@ -282,28 +282,32 @@
 - Conversion degres → radians pour les rotations
 - Tests : 39
 
+## Phase 5D : DSL Serializer (TERMINEE)
+
+- `dsl/serializer.ts` — Figure → script DSL en ordre topologique
+- Nommage inverse : labels → noms DSL, sinon auto-genere (\_pt1, \_seg2)
+- Round-trip : script → Figure → script → Figure produit le meme resultat
+- Tests : 28 (dont 6 round-trip)
+
 ## Prochaines etapes
 
-- Phase 5D : Serializer (Figure → script)
-- Phase 5C : Interpreter (AST → Figure)
-- Phase 5D : Serializer (Figure → script)
 - Phase 5E : Macros
-- Phase 5F : Boucles et conditionnels
+- Phase 5F : Boucles et conditionnels (deja implementes dans interpreter)
 - Phase 5G : Integration
 
 ## Resume des tests
 
-| Module                                      | Tests   |
-| ------------------------------------------- | ------- |
-| types/                                      | 75      |
-| viewport/ (+ grid)                          | 20      |
-| compute/                                    | 139     |
-| graph/ (dep-graph + figure + undo + marks)  | 260     |
-| rendering/ (svg-primitives + exports)       | 147     |
-| geometry/ (intersections + transformations) | 89      |
-| interaction/                                | 25      |
-| validation/                                 | 71      |
-| dsl/ (tokenizer + parser + interpreter)     | 116     |
-| integration/                                | 18      |
-| **Total geometry-core**                     | **983** |
-| grapheur/ (non-regression)                  | 213     |
+| Module                                      | Tests    |
+| ------------------------------------------- | -------- |
+| types/                                      | 75       |
+| viewport/ (+ grid)                          | 20       |
+| compute/                                    | 139      |
+| graph/ (dep-graph + figure + undo + marks)  | 260      |
+| rendering/ (svg-primitives + exports)       | 147      |
+| geometry/ (intersections + transformations) | 89       |
+| interaction/                                | 25       |
+| validation/                                 | 71       |
+| dsl/ (token+parse+interp+serial)            | 144      |
+| integration/                                | 18       |
+| **Total geometry-core**                     | **1011** |
+| grapheur/ (non-regression)                  | 213      |
