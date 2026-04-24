@@ -178,6 +178,14 @@ const segmentMarkSchema = baseElementSchema.extend({
 	dependsOn: z.tuple([z.string(), z.string()])
 });
 
+const measureSchema = baseElementSchema.extend({
+	type: z.literal('measure'),
+	measureType: z.enum(['distance', 'angle', 'area']),
+	targetIds: z.array(z.string().min(1)).min(2),
+	format: z.enum(['exact', 'approx', 'degrees', 'radians']),
+	dependsOn: z.array(z.string().min(1)).min(2)
+});
+
 const polygonSchema = baseElementSchema.extend({
 	type: z.literal('polygon'),
 	dependsOn: z.array(z.string().min(1)).min(3, 'Polygon needs at least 3 vertices')
@@ -194,6 +202,7 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	reflectedOverLineSchema,
 	angleMarkSchema,
 	segmentMarkSchema,
+	measureSchema,
 	segmentSchema,
 	lineSchema,
 	raySchema,

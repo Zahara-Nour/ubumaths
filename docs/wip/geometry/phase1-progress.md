@@ -2,7 +2,7 @@
 
 > Derniere mise a jour : 2026-04-24
 
-## Etat : Phases 1-3E terminees
+## Etat : Phases 1-4D terminees
 
 ## Phase 1 : Fondations (TERMINEE)
 
@@ -186,24 +186,61 @@
 - checkAngle tolerance 0.5° (pragmatique pour les exercices)
 - checkPointOnCircle supporte circleByRadius et circleByPoint
 
+## Phase 4A : GeoStyle + FigureDefaults (TERMINEE)
+
+- `GeoStyle` interface : color, opacity, strokeWidth, dash, pointShape, pointSize, fillColor, fillOpacity
+- `FigureDefaults` sur le constructeur de Figure (defauts globaux)
+- `resolveStyle()` fusionne style element > element.color > figure defaults > hardcoded
+- 4 formes de points : dot, circle, cross, square
+- Toutes les factory methods acceptent `style?: GeoStyle` dans options
+- Schemas Zod avec validation (opacity 0-1, strokeWidth >= 0, etc.)
+- Tests : 26 (figure-style + schemas)
+
+## Phase 4B : GeoAngleMark (TERMINEE)
+
+- `GeoAngleMark` : type 'angleMark', p1Id, vertexId, p2Id, arcCount (1|2|3), rightAngle
+- `createAngleMark()` avec validation, cascade delete, undo/redo
+- `angleMarkToSVG()` : arcs SVG (rayon fixe 25px) ou carre d'angle droit (14px)
+- Arcs concentriques pour arcCount 2 et 3 (espacement 6px)
+- Tests : 21
+
+## Phase 4C : GeoSegmentMark (TERMINEE)
+
+- `GeoSegmentMark` : type 'segmentMark', startId, endId, markCount (1|2|3)
+- `createSegmentMark()` avec validation, cascade delete, undo/redo
+- `segmentMarkToSVG()` : traits perpendiculaires au milieu du segment (18px, espacement 5px)
+- Position = midpoint (recalcule au drag)
+- Tests : 19
+
+## Phase 4D : GeoMeasure (TERMINEE)
+
+- `GeoMeasure` : type 'measure', measureType (distance|angle|area), targetIds, format (exact|approx|degrees|radians)
+- `createMeasure()` avec validation (2 pts pour distance, 3 pour angle, 3+ pour area)
+- `getMeasureValue()` retourne la valeur calculee, mise a jour au drag
+- Calculs : distance euclidienne, angle via acos (degres), aire via shoelace
+- `measureToSVG()` : texte positionne au milieu (distance), pres du sommet sur bissectrice (angle), centroide (area)
+- Fond semi-transparent derriere le texte
+- Tests : 24
+
 ## Prochaines etapes
 
-- Nombres dynamiques (distance, angle comme objets affichables)
-- Labels, export LaTeX
+- Labels ameliores (halo blanc, labelOffset draggable)
+- Popup de configuration par element (ElementPopover)
+- Export LaTeX
 - Ameliorations techniques (responsive)
 
 ## Resume des tests
 
-| Module                                       | Tests   |
-| -------------------------------------------- | ------- |
-| types/                                       | 64      |
-| viewport/ (+ grid)                           | 20      |
-| compute/                                     | 139     |
-| graph/ (dep-graph + figure + undo + transfo) | 181     |
-| rendering/                                   | 17      |
-| geometry/ (intersections + transformations)  | 89      |
-| interaction/                                 | 25      |
-| validation/                                  | 71      |
-| integration/                                 | 18      |
-| **Total geometry-core**                      | **605** |
-| grapheur/ (non-regression)                   | 213     |
+| Module                                      | Tests   |
+| ------------------------------------------- | ------- |
+| types/                                      | 75      |
+| viewport/ (+ grid)                          | 20      |
+| compute/                                    | 139     |
+| graph/ (dep-graph + figure + undo + marks)  | 260     |
+| rendering/                                  | 17      |
+| geometry/ (intersections + transformations) | 89      |
+| interaction/                                | 25      |
+| validation/                                 | 71      |
+| integration/                                | 18      |
+| **Total geometry-core**                     | **695** |
+| grapheur/ (non-regression)                  | 213     |

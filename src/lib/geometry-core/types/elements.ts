@@ -131,6 +131,15 @@ export interface GeoSegmentMark extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
+/** Dynamic measurement displayed on the figure (distance, angle, area). */
+export interface GeoMeasure extends GeoElementBase {
+	readonly type: 'measure';
+	readonly measureType: 'distance' | 'angle' | 'area';
+	readonly targetIds: readonly string[];
+	readonly format: 'exact' | 'approx' | 'degrees' | 'radians';
+	readonly dependsOn: readonly string[];
+}
+
 // =============================================================================
 // Line-like types
 // =============================================================================
@@ -219,6 +228,7 @@ export type GeoElement =
 	| GeoReflectedOverLine
 	| GeoAngleMark
 	| GeoSegmentMark
+	| GeoMeasure
 	| GeoSegment
 	| GeoLine
 	| GeoRay
@@ -283,6 +293,10 @@ export function isAngleMark(el: GeoElement): el is GeoAngleMark {
 
 export function isSegmentMark(el: GeoElement): el is GeoSegmentMark {
 	return el.type === 'segmentMark';
+}
+
+export function isMeasure(el: GeoElement): el is GeoMeasure {
+	return el.type === 'measure';
 }
 
 export function isSegment(el: GeoElement): el is GeoSegment {

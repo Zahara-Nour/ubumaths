@@ -13,6 +13,7 @@
 		circleToSVG,
 		angleMarkToSVG,
 		segmentMarkToSVG,
+		measureToSVG,
 		resolveStyle
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
@@ -557,6 +558,29 @@
 				{/if}
 			{/if}
 		{/each}
+
+		<!-- Measures (on top of everything) -->
+		{#each elements as el (`${el.id}_meas_${version}`)}
+			{#if el.type === 'measure'}
+				{@const svg = measureToSVG(el.id, figure, transformer)}
+				{@const sty = resolveStyle(el, figure.defaults)}
+				{#if svg}
+					<rect
+						x={svg.x - 4}
+						y={svg.y - 12}
+						width={svg.text.length * 8 + 8}
+						height={16}
+						rx={3}
+						fill="white"
+						fill-opacity="0.85"
+						class="measure-bg"
+					/>
+					<text x={svg.x} y={svg.y} fill={sty.color} opacity={sty.opacity} class="measure-text"
+						>{svg.text}</text
+					>
+				{/if}
+			{/if}
+		{/each}
 	</g>
 </svg>
 
@@ -628,6 +652,16 @@
 	.label {
 		font-size: 14px;
 		font-family: 'KaTeX_Main', serif;
+		pointer-events: none;
+	}
+
+	.measure-text {
+		font-size: 12px;
+		font-family: 'KaTeX_Main', serif;
+		pointer-events: none;
+	}
+
+	.measure-bg {
 		pointer-events: none;
 	}
 </style>

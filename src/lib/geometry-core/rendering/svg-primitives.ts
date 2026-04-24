@@ -14,9 +14,11 @@ import {
 	isCircleByPoint,
 	isAngleMark,
 	isSegmentMark,
+	isMeasure,
 	type GeoElementBase,
 	type GeoAngleMark,
 	type GeoSegmentMark,
+	type GeoMeasure,
 	type GeoSegment,
 	type GeoLine,
 	type GeoRay,
@@ -399,6 +401,100 @@ export function segmentMarkToSVG(
 	}
 
 	return { ticks };
+}
+
+// =============================================================================
+// Measure rendering
+// =============================================================================
+
+const MEASURE_OFFSET_PX = 16;
+
+export interface MeasureSVG {
+	/** Position of the text in SVG coordinates. */
+	x: number;
+	y: number;
+	/** Formatted text to display. */
+	text: string;
+}
+
+/**
+ * Convert a measure element to SVG text attributes.
+ *
+ * Positions the text near the measured feature:
+ * - distance: midpoint of segment, offset perpendicular
+ * - angle: near vertex, on the bisector
+ * - area: centroid of polygon
+ */
+export function measureToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): MeasureSVG | null {
+	const el = figure.getElementById(id);
+	if (!el || !isMeasure(el)) return null;
+
+	const measure = el as GeoMeasure;
+	const value = figure.getMeasureValue(id);
+	if (value === undefined) return null;
+
+	const positions = measure.targetIds.map((tid) => figure.getPosition(tid));
+	if (positions.some((p) => !p)) return null;
+
+	// Format value
+	let text: string;
+	if (measure.format === 'degrees') {
+		text = `${Math.round(value * 10) / 10}°`;
+	} else if (measure.format === 'approx') {
+		text = `${Math.round(value * 100) / 100}`;
+	} else {
+		text = `${Math.round(value * 100) / 100}`;
+	}
+
+	if (measure.measureType === 'distance') {
+		const [a, b] = positions;
+		const svgA = transformer.mathToSvg(geoToNumber(a!.x), geoToNumber(a!.y));
+		const svgB = transformer.mathToSvg(geoToNumber(b!.x), geoToNumber(b!.y));
+		const mx = (svgA.x + svgB.x) / 2;
+		const my = (svgA.y + svgB.y) / 2;
+		// Offset perpendicular to segment
+		const dx = svgB.x - svgA.x;
+		const dy = svgB.y - svgA.y;
+		const len = Math.sqrt(dx * dx + dy * dy);
+		if (len < 1e-6) return { x: mx, y: my, text };
+		const px = -dy / len;
+		const py = dx / len;
+		return { x: mx + px * MEASURE_OFFSET_PX, y: my + py * MEASURE_OFFSET_PX, text };
+	} else if (measure.measureType === 'angle') {
+		const [, v] = positions;
+		const svgV = transformer.mathToSvg(geoToNumber(v!.x), geoToNumber(v!.y));
+		const svgP1 = transformer.mathToSvg(geoToNumber(positions[0]!.x), geoToNumber(positions[0]!.y));
+		const svgP2 = transformer.mathToSvg(geoToNumber(positions[2]!.x), geoToNumber(positions[2]!.y));
+		// Bisector direction
+		const d1x = svgP1.x - svgV.x;
+		const d1y = svgP1.y - svgV.y;
+		const d2x = svgP2.x - svgV.x;
+		const d2y = svgP2.y - svgV.y;
+		const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
+		const len2 = Math.sqrt(d2x * d2x + d2y * d2y);
+		if (len1 < 1e-6 || len2 < 1e-6) return { x: svgV.x, y: svgV.y, text };
+		const bx = d1x / len1 + d2x / len2;
+		const by = d1y / len1 + d2y / len2;
+		const blen = Math.sqrt(bx * bx + by * by);
+		if (blen < 1e-6) return { x: svgV.x + 35, y: svgV.y, text };
+		return { x: svgV.x + (bx / blen) * 40, y: svgV.y + (by / blen) * 40, text };
+	} else {
+		// Area: centroid
+		let cx = 0;
+		let cy = 0;
+		for (const pos of positions) {
+			const svg = transformer.mathToSvg(geoToNumber(pos!.x), geoToNumber(pos!.y));
+			cx += svg.x;
+			cy += svg.y;
+		}
+		cx /= positions.length;
+		cy /= positions.length;
+		return { x: cx, y: cy, text };
+	}
 }
 
 // =============================================================================

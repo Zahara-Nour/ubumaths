@@ -60,6 +60,10 @@
 	figure.createSegmentMark(a, b, { color: '#dc2626', markCount: 1 });
 	figure.createSegmentMark(b, c, { color: '#dc2626', markCount: 2 });
 	figure.createSegmentMark(c, a, { color: '#dc2626', markCount: 3 });
+
+	// --- Measures ---
+	figure.createMeasure('distance', [a, b], { color: '#6366f1' });
+	figure.createMeasure('angle', [b, a, c], { color: '#1e40af' });
 </script>
 
 <div class="p-4">
