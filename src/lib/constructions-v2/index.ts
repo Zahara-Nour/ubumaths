@@ -38,3 +38,7 @@ export {
 
 // Instruments
 export { rulerPosition, compassPosition, applyPosition } from './instruments/positioning';
+
+// Converter
+export { convertXmlToDsl } from './converter';
+export type { DslConversionResult } from './converter';
