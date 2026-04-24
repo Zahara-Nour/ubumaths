@@ -2,7 +2,7 @@
 
 > Derniere mise a jour : 2026-04-24
 
-## Etat : Phases 1-4F + exports + DSL 5A terminees
+## Etat : Phases 1-5G terminees (DSL complet)
 
 ## Phase 1 : Fondations (TERMINEE)
 
@@ -301,9 +301,18 @@
 - Fix : `a` et `de` retires des keywords (conflit avec noms de variables), traites comme identifiants contextuels dans `pour...de...a`
 - Tests : 15
 
+## Phase 5G : DSL Integration (TERMINEE)
+
+- `dsl/index.ts` — API publique : `parseDsl()`, `interpretDsl()`, `serializeDsl()`, `runDsl()`
+- Export depuis `geometry-core/index.ts`
+- Tests integration : triangle, polygone, macros, annotations, round-trip, erreurs, exports
+- Tests : 14
+
 ## Prochaines etapes
 
-- Phase 5G : Integration (API publique, barrel exports)
+- Ameliorations techniques (responsive, touch/mobile)
+- Labels draggables
+- Integration UI (editeur de script dans l'app)
 
 ## Resume des tests
 
@@ -317,7 +326,7 @@
 | geometry/ (intersections + transformations) | 89       |
 | interaction/                                | 25       |
 | validation/                                 | 71       |
-| dsl/ (full pipeline + macros)               | 159      |
+| dsl/ (full pipeline + macros + integ)       | 173      |
 | integration/                                | 18       |
-| **Total geometry-core**                     | **1026** |
+| **Total geometry-core**                     | **1040** |
 | grapheur/ (non-regression)                  | 213      |
