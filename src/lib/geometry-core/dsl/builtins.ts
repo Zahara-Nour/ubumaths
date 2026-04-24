@@ -17,6 +17,7 @@ export type ResolvedArgs = {
 
 export type ResolvedValue =
 	| { type: 'nombre'; value: number }
+	| { type: 'string'; value: string }
 	| { type: 'element'; figureId: string; elementType: SymbolType }
 	| { type: 'tuple'; elements: ResolvedValue[] }
 	| { type: 'geoValue'; value: GeoValue };
@@ -301,15 +302,12 @@ export function executeBuiltin(
 			if (named.has('couleur')) {
 				const cv = named.get('couleur')!;
 				const colorStr =
-					cv.type === 'nombre'
-						? String(cv.value)
-						: ((cv as { type: string; value: string }).value ?? '');
-				style.color = resolveColorName(String(colorStr));
+					cv.type === 'string' ? cv.value : cv.type === 'nombre' ? String(cv.value) : '';
+				style.color = resolveColorName(colorStr);
 			}
 			if (named.has('forme')) {
 				const fv = named.get('forme')!;
-				style.pointShape =
-					fv.type === 'nombre' ? 'dot' : ((fv as { type: string; value: string }).value ?? 'dot');
+				style.pointShape = fv.type === 'string' ? fv.value : 'dot';
 			}
 			if (named.has('tirets')) {
 				style.dash = 'dashed';

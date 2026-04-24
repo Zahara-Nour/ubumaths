@@ -31,6 +31,8 @@ export type TokenType =
 	| 'COLON'
 	| 'COMMA'
 	| 'DOT'
+	// Directives
+	| 'AT_DIRECTIVE'
 	// Structure
 	| 'NEWLINE'
 	| 'INDENT'

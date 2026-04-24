@@ -10,6 +10,7 @@ import type { GeoElement } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
 import type { SymbolTable } from './symbol-table';
+import type { DslProgram, DslStatement, DslExpr, DslDirective } from './types';
 
 export function serialize(figure: Figure, symbols?: SymbolTable): string {
 	const elements = figure.getAllElements();
@@ -193,5 +194,112 @@ function serializeElement(
 
 		default:
 			return null;
+	}
+}
+
+// ─── Program serializer (AST → text, preserves directives) ───
+
+export function serializeProgram(program: DslProgram): string {
+	return program.statements.map(serializeStatement).join('\n');
+}
+
+function serializeStatement(stmt: DslStatement): string {
+	switch (stmt.kind) {
+		case 'directive':
+			return serializeDirective(stmt);
+		case 'assignment':
+			return `${stmt.name} = ${serializeExpr(stmt.value)}`;
+		case 'exprStatement':
+			return serializeExpr(stmt.expr);
+		case 'macroDef': {
+			const params = stmt.params
+				.map((p) => (p.defaultValue ? `${p.name}=${serializeExpr(p.defaultValue)}` : p.name))
+				.join(', ');
+			const body = stmt.body
+				.map(serializeStatement)
+				.map((l) => `    ${l}`)
+				.join('\n');
+			return `macro ${stmt.name}(${params}):\n${body}`;
+		}
+		case 'forRange': {
+			const body = stmt.body
+				.map(serializeStatement)
+				.map((l) => `    ${l}`)
+				.join('\n');
+			return `pour ${stmt.variable} de ${serializeExpr(stmt.from)} a ${serializeExpr(stmt.to)}:\n${body}`;
+		}
+		case 'forIn': {
+			const body = stmt.body
+				.map(serializeStatement)
+				.map((l) => `    ${l}`)
+				.join('\n');
+			return `pour ${stmt.variable} dans ${serializeExpr(stmt.iterable)}:\n${body}`;
+		}
+		case 'if': {
+			const body = stmt.body
+				.map(serializeStatement)
+				.map((l) => `    ${l}`)
+				.join('\n');
+			let result = `si ${serializeExpr(stmt.condition)}:\n${body}`;
+			if (stmt.elseBody) {
+				const elseBody = stmt.elseBody
+					.map(serializeStatement)
+					.map((l) => `    ${l}`)
+					.join('\n');
+				result += `\nsinon:\n${elseBody}`;
+			}
+			return result;
+		}
+		case 'return':
+			return `retourne ${serializeExpr(stmt.value)}`;
+		case 'indexedAssignment':
+			return `${stmt.name}[${serializeExpr(stmt.index)}] = ${serializeExpr(stmt.value)}`;
+		case 'destructuring':
+			return `(${stmt.names.join(', ')}) = ${serializeExpr(stmt.value)}`;
+	}
+}
+
+function serializeDirective(d: DslDirective): string {
+	if (d.args.length === 0 && d.namedArgs.size === 0) {
+		return `@${d.name}`;
+	}
+	const parts: string[] = d.args.map(serializeExpr);
+	for (const [key, value] of d.namedArgs) {
+		parts.push(`${key}=${serializeExpr(value)}`);
+	}
+	return `@${d.name}(${parts.join(', ')})`;
+}
+
+function serializeExpr(expr: DslExpr): string {
+	switch (expr.kind) {
+		case 'number':
+			return fmtNum(expr.value);
+		case 'string':
+			return `"${expr.value}"`;
+		case 'bool':
+			return expr.value ? 'vrai' : 'faux';
+		case 'identifier':
+			return expr.name;
+		case 'indexedAccess':
+			return `${expr.name}[${serializeExpr(expr.index)}]`;
+		case 'propertyAccess':
+			return `${expr.object}.${expr.property}`;
+		case 'binary':
+			return `${serializeExpr(expr.left)} ${expr.op} ${serializeExpr(expr.right)}`;
+		case 'unary': {
+			const sep = expr.op === 'non' ? ' ' : '';
+			return `${expr.op}${sep}${serializeExpr(expr.operand)}`;
+		}
+		case 'call': {
+			const args = expr.args.map(serializeExpr);
+			for (const [key, value] of expr.namedArgs) {
+				args.push(`${key}=${serializeExpr(value)}`);
+			}
+			return `${expr.name}(${args.join(', ')})`;
+		}
+		case 'tuple':
+			return `(${expr.elements.map(serializeExpr).join(', ')})`;
+		case 'list':
+			return `[${expr.elements.map(serializeExpr).join(', ')}]`;
 	}
 }
