@@ -34,6 +34,7 @@
 	// Reactive state owned by this component
 	let tl = $state<TimelineState>(createInitialTimelineState());
 	let figureVersion = $state(0);
+	let currentInstruction = $state<string | null>(null);
 
 	// Plain JS objects (not reactive)
 	const executor = new ConstructionExecutor();
@@ -57,6 +58,7 @@
 			executor.step();
 		}
 		figureVersion++;
+		currentInstruction = executor.currentInstruction;
 	}
 
 	function handleTimelineUpdate(state: TimelineState) {
@@ -79,6 +81,7 @@
 		executor.reset();
 		timeline?.reset();
 		figureVersion++;
+		currentInstruction = null;
 	}
 
 	function handleScrub(progress: number) {
@@ -156,9 +159,9 @@
 			{showGrid}
 		/>
 
-		{#if executor.currentInstruction}
+		{#if currentInstruction}
 			<div class="mt-2 rounded-md bg-muted p-2 text-sm text-muted-foreground">
-				{executor.currentInstruction}
+				{currentInstruction}
 			</div>
 		{/if}
 
