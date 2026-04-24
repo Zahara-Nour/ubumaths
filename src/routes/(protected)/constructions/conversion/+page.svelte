@@ -20,6 +20,7 @@
 	import { JsonEditor, ConstructionPlayer } from '$lib/constructions/components';
 	import { constructionScriptSchema } from '$lib/constructions/schemas';
 	import { convertInstrumenPoche } from '$lib/constructions/converter';
+	import { convertXmlToDsl } from '$lib/constructions-v2/converter';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
 	import {
@@ -54,6 +55,8 @@
 
 	// Conversion state
 	let jsonOutput = $state('');
+	let dslOutput = $state('');
+	let dslWarnings = $state<string[]>([]);
 	let warnings = $state<string[]>([]);
 	let conversionErrors = $state<string[]>([]);
 	let isConverting = $state(false);
@@ -272,13 +275,13 @@
 		warnings = [];
 
 		try {
+			// Convert to JSON (legacy)
 			const result = await convertInstrumenPoche(xmlInput);
 
 			if (result.success && result.script) {
 				jsonOutput = JSON.stringify(result.script, null, 2);
 				warnings = result.warnings;
 
-				// Extract title from script if not set
 				if (!title && result.script.title) {
 					title = result.script.title;
 				}
@@ -292,6 +295,16 @@
 				conversionErrors = result.errors;
 				jsonOutput = '';
 				toaster.error('La conversion a echoue');
+			}
+
+			// Also convert to DSL (new format)
+			const dslResult = await convertXmlToDsl(xmlInput);
+			if (dslResult.success && dslResult.dsl) {
+				dslOutput = dslResult.dsl;
+				dslWarnings = dslResult.warnings;
+			} else {
+				dslOutput = '';
+				dslWarnings = [];
 			}
 		} catch (err) {
 			conversionErrors = [(err as Error).message || 'Erreur de conversion inattendue'];
@@ -551,6 +564,51 @@
 				{/if}
 			</Card.Content>
 		</Card.Root>
+
+		<!-- DSL Output -->
+		{#if dslOutput}
+			<Card.Root class="mt-4">
+				<Card.Header>
+					<Card.Title class="flex items-center gap-2">
+						<Code2 class="h-5 w-5" />
+						Script DSL
+						<Badge variant="default" class="text-xs">Nouveau format</Badge>
+					</Card.Title>
+					<Card.Description>
+						Conversion en DSL (format editable dans l'editeur de constructions)
+					</Card.Description>
+				</Card.Header>
+				<Card.Content class="space-y-4">
+					<div class="overflow-hidden rounded-lg border border-border">
+						<pre
+							class="max-h-[400px] overflow-auto bg-muted p-4 font-mono text-sm">{dslOutput}</pre>
+					</div>
+
+					{#if dslWarnings.length > 0}
+						<div class="rounded-lg bg-amber-50 p-3 dark:bg-amber-950/20">
+							<p class="mb-1 text-sm font-medium text-amber-700 dark:text-amber-400">
+								{dslWarnings.length} avertissement{dslWarnings.length > 1 ? 's' : ''} DSL
+							</p>
+							<ul class="space-y-0.5 text-xs text-amber-600 dark:text-amber-500">
+								{#each dslWarnings as w, i (i)}
+									<li>- {w}</li>
+								{/each}
+							</ul>
+						</div>
+					{/if}
+
+					<Button
+						variant="outline"
+						onclick={() => {
+							navigator.clipboard.writeText(dslOutput);
+							toaster.success('Script DSL copie');
+						}}
+					>
+						Copier le DSL
+					</Button>
+				</Card.Content>
+			</Card.Root>
+		{/if}
 	</div>
 
 	<!-- Metadata Form -->

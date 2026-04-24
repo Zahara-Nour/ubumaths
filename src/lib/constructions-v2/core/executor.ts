@@ -12,6 +12,8 @@ import { SymbolTable } from '$lib/geometry-core/dsl/symbol-table';
 import type { ResolvedArgs, ResolvedValue } from '$lib/geometry-core/dsl/builtins';
 import type { InstrumentType, InstrumentState } from '../types';
 import { createDefaultInstrumentState } from '../types';
+import { rulerPosition, compassPosition } from '../instruments/positioning';
+import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import {
 	DEFAULT_STEP_DURATION,
 	DEFAULT_PAUSE_DURATION,
@@ -67,7 +69,12 @@ export class ConstructionExecutor {
 	/** Execute one step. Returns false when done. */
 	step(): boolean {
 		if (!this.stepper) return false;
-		return this.stepper.step();
+		const sizeBefore = this.stepper.figure.size;
+		const result = this.stepper.step();
+		if (result) {
+			this.autoPositionInstruments(sizeBefore);
+		}
+		return result;
 	}
 
 	/** Execute all remaining steps. */
@@ -184,6 +191,60 @@ export class ConstructionExecutor {
 			case 'pause':
 				// Duration is pre-calculated, no runtime action needed
 				break;
+		}
+	}
+
+	// ─── Auto-positioning ───────────────────────────────────
+
+	private autoPositionInstruments(sizeBefore: number): void {
+		if (!this.stepper) return;
+		const fig = this.stepper.figure;
+		if (fig.size <= sizeBefore) return; // no new element
+
+		// Find the newest element(s)
+		const elements = fig.getAllElements();
+		const newElements = elements.slice(sizeBefore);
+
+		for (const el of newElements) {
+			if (el.type === 'segment') {
+				// Auto-position ruler on segment
+				const rulerState = this._instrumentStates.get('ruler');
+				if (rulerState?.visible) {
+					const p1 = fig.getPosition(el.startId);
+					const p2 = fig.getPosition(el.endId);
+					if (p1 && p2) {
+						const pos = rulerPosition(
+							{ x: geoToNumber(p1.x), y: geoToNumber(p1.y) },
+							{ x: geoToNumber(p2.x), y: geoToNumber(p2.y) }
+						);
+						Object.assign(rulerState, pos);
+					}
+				}
+			} else if (el.type === 'circleByRadius' || el.type === 'circleByPoint') {
+				// Auto-position compass on circle center
+				const compassState = this._instrumentStates.get('compass');
+				if (compassState?.visible) {
+					const center = fig.getPosition(el.centerId);
+					if (center) {
+						let radius = 100;
+						if (el.type === 'circleByRadius') {
+							radius = geoToNumber(el.radius);
+						} else {
+							const edge = fig.getPosition(el.edgePointId);
+							if (edge) {
+								const dx = geoToNumber(edge.x) - geoToNumber(center.x);
+								const dy = geoToNumber(edge.y) - geoToNumber(center.y);
+								radius = Math.sqrt(dx * dx + dy * dy);
+							}
+						}
+						const pos = compassPosition(
+							{ x: geoToNumber(center.x), y: geoToNumber(center.y) },
+							radius
+						);
+						Object.assign(compassState, pos);
+					}
+				}
+			}
 		}
 	}
 
