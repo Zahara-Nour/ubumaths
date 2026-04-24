@@ -9,7 +9,14 @@
 import type { Token, TokenType } from './tokens';
 import { tokenize } from './tokenizer';
 import { DslParseError } from './errors';
-import type { DslProgram, DslStatement, DslExpr, DslParam, DslFunctionCallExpr } from './types';
+import type {
+	DslProgram,
+	DslStatement,
+	DslExpr,
+	DslParam,
+	DslFunctionCallExpr,
+	DslDirective
+} from './types';
 
 export function parse(source: string): DslProgram {
 	const tokens = tokenize(source);
@@ -109,6 +116,9 @@ class Parser {
 
 	private parseStatement(): DslStatement {
 		const t = this.peek();
+
+		// @ directive
+		if (t.type === 'AT_DIRECTIVE') return this.parseDirective();
 
 		// macro name(params):
 		if (this.isKeyword('macro')) return this.parseMacroDef();
@@ -527,6 +537,30 @@ class Parser {
 		}
 
 		throw new DslParseError(`Expression inattendue : ${t.type} '${t.value}'`, t.line, t.col);
+	}
+
+	private parseDirective(): DslDirective {
+		const t = this.advance(); // AT_DIRECTIVE token
+		const name = t.value;
+		const line = t.line;
+		const args: DslExpr[] = [];
+		const namedArgs = new Map<string, DslExpr>();
+
+		// Optional arguments in parentheses
+		if (this.peek().type === 'LPAREN') {
+			this.advance(); // (
+			if (this.peek().type !== 'RPAREN') {
+				this.parseFunctionArg(args, namedArgs);
+				while (this.peek().type === 'COMMA') {
+					this.advance();
+					this.parseFunctionArg(args, namedArgs);
+				}
+			}
+			this.expect('RPAREN', 'directive');
+		}
+
+		this.expectNewline();
+		return { kind: 'directive', name, args, namedArgs, line };
 	}
 
 	private parseFunctionCall(name: string, line: number): DslFunctionCallExpr {

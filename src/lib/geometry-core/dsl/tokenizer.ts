@@ -96,6 +96,18 @@ function tokenizeLine(line: string, startCol: number, lineNum: number, tokens: T
 		// Comment (should already be stripped, but just in case)
 		if (ch === '#') break;
 
+		// @ directive
+		if (ch === '@') {
+			pos++; // skip @
+			if (pos >= line.length || !isIdentStart(line[pos])) {
+				throw new DslTokenizerError("Identifiant attendu apres '@'", lineNum, col);
+			}
+			const start = pos;
+			while (pos < line.length && isIdentPart(line[pos])) pos++;
+			tokens.push({ type: 'AT_DIRECTIVE', value: line.slice(start, pos), line: lineNum, col });
+			continue;
+		}
+
 		// String literal
 		if (ch === '"') {
 			const start = pos;

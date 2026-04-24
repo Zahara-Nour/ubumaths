@@ -182,6 +182,14 @@ export interface DslReturn {
 	readonly line: number;
 }
 
+export interface DslDirective {
+	readonly kind: 'directive';
+	readonly name: string;
+	readonly args: DslExpr[];
+	readonly namedArgs: ReadonlyMap<string, DslExpr>;
+	readonly line: number;
+}
+
 export type DslStatement =
 	| DslAssignment
 	| DslIndexedAssignment
@@ -191,7 +199,8 @@ export type DslStatement =
 	| DslForRange
 	| DslForIn
 	| DslIf
-	| DslReturn;
+	| DslReturn
+	| DslDirective;
 
 // =============================================================================
 // Program

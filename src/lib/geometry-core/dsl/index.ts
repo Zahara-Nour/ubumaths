@@ -9,10 +9,10 @@
  */
 
 // Types
-export type { DslProgram, DslStatement, DslExpr } from './types';
+export type { DslProgram, DslStatement, DslExpr, DslDirective } from './types';
 export type { Token, TokenType } from './tokens';
 export type { SymbolTable, SymbolEntry, SymbolType } from './symbol-table';
-export type { InterpretResult } from './interpreter';
+export type { InterpretResult, DirectiveHandler } from './interpreter';
 
 // Errors
 export { DslParseError } from './errors';
@@ -22,15 +22,19 @@ export { DslTokenizerError } from './tokenizer';
 // Core functions
 export { parse as parseDsl } from './parser';
 export { interpret as interpretDsl } from './interpreter';
-export { serialize as serializeDsl } from './serializer';
+export { serialize as serializeDsl, serializeProgram as serializeDslProgram } from './serializer';
 
 // Convenience: parse + interpret in one call
 import { parse } from './parser';
 import { interpret } from './interpreter';
-import type { InterpretResult } from './interpreter';
+import type { InterpretResult, DirectiveHandler } from './interpreter';
 import type { Figure } from '../graph/figure';
 
-export function runDsl(script: string, figure?: Figure): InterpretResult {
+export function runDsl(
+	script: string,
+	figure?: Figure,
+	onDirective?: DirectiveHandler
+): InterpretResult {
 	const program = parse(script);
-	return interpret(program, figure);
+	return interpret(program, figure, onDirective);
 }

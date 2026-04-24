@@ -24,6 +24,8 @@ import { MacroRegistry } from './macro-registry';
 import { STDLIB_MACROS } from './stdlib';
 import { parse } from './parser';
 
+export type DirectiveHandler = (name: string, args: ResolvedArgs, line: number) => void;
+
 export interface InterpretResult {
 	figure: Figure;
 	symbols: SymbolTable;
@@ -38,12 +40,16 @@ function loadStdlib(macros: MacroRegistry): void {
 	}
 }
 
-export function interpret(program: DslProgram, figure?: Figure): InterpretResult {
+export function interpret(
+	program: DslProgram,
+	figure?: Figure,
+	onDirective?: DirectiveHandler
+): InterpretResult {
 	const fig = figure ?? new Figure();
 	const symbols = new SymbolTable();
 	const macros = new MacroRegistry();
 	loadStdlib(macros);
-	const interpreter = new Interpreter(fig, symbols, macros);
+	const interpreter = new Interpreter(fig, symbols, macros, onDirective);
 	interpreter.executeBlock(program.statements);
 	return { figure: fig, symbols };
 }
@@ -52,7 +58,8 @@ class Interpreter {
 	constructor(
 		private figure: Figure,
 		private symbols: SymbolTable,
-		private macros: MacroRegistry
+		private macros: MacroRegistry,
+		private onDirective?: DirectiveHandler
 	) {}
 
 	executeBlock(statements: DslStatement[]): ResolvedValue | undefined {
@@ -150,6 +157,14 @@ class Interpreter {
 			case 'return': {
 				return this.evaluateExpr(stmt.value, stmt.line);
 			}
+
+			case 'directive': {
+				if (this.onDirective) {
+					const resolvedArgs = this.resolveCallArgs(stmt.args, stmt.namedArgs, stmt.line);
+					this.onDirective(stmt.name, resolvedArgs, stmt.line);
+				}
+				break;
+			}
 		}
 		return undefined;
 	}
@@ -160,8 +175,7 @@ class Interpreter {
 				return { type: 'nombre', value: expr.value };
 
 			case 'string':
-				// Strings are treated as resolved values for named args
-				return { type: 'nombre', value: 0 } as ResolvedValue & { value: string };
+				return { type: 'string', value: expr.value };
 
 			case 'bool':
 				return { type: 'nombre', value: expr.value ? 1 : 0 };
@@ -369,10 +383,18 @@ class Interpreter {
 	}
 
 	private resolveArgs(expr: DslFunctionCallExpr): ResolvedArgs {
-		const positional = expr.args.map((a) => this.evaluateExpr(a, expr.line));
+		return this.resolveCallArgs(expr.args, expr.namedArgs, expr.line);
+	}
+
+	private resolveCallArgs(
+		args: readonly DslExpr[],
+		namedArgs: ReadonlyMap<string, DslExpr>,
+		line: number
+	): ResolvedArgs {
+		const positional = args.map((a) => this.evaluateExpr(a, line));
 		const named = new Map<string, ResolvedValue>();
-		for (const [key, value] of expr.namedArgs) {
-			named.set(key, this.evaluateExpr(value, expr.line));
+		for (const [key, value] of namedArgs) {
+			named.set(key, this.evaluateExpr(value, line));
 		}
 		return { positional, named };
 	}
@@ -396,6 +418,7 @@ class Interpreter {
 
 	private toSymbolEntry(val: ResolvedValue): SymbolEntry {
 		if (val.type === 'nombre') return { type: 'nombre', value: val.value };
+		if (val.type === 'string') return { type: 'nombre', value: 0 }; // strings don't map to symbols
 		if (val.type === 'element') return { type: val.elementType, figureId: val.figureId };
 		if (val.type === 'tuple')
 			return { type: 'liste', list: val.elements.map((e) => this.toSymbolEntry(e)) };
