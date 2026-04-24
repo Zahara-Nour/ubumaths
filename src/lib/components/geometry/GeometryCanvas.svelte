@@ -526,11 +526,16 @@
 						/>
 					{/if}
 					{#if el.label}
+						{@const lx = svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 4)}
+						{@const ly = svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2))}
 						<text
-							x={svg.cx + sty.pointSize + 4}
-							y={svg.cy - sty.pointSize - 2}
+							x={lx}
+							y={ly}
 							class="label"
-							fill={sty.color}>{el.label}</text
+							fill={sty.color}
+							stroke="white"
+							stroke-width="3"
+							paint-order="stroke">{el.label}</text
 						>
 					{/if}
 				{/if}
