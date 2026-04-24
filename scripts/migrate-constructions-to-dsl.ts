@@ -69,11 +69,26 @@ interface Construction {
 	id: string;
 	title: string;
 	format: string;
-	script: { version: number; title?: string; description?: string; steps: OldStep[] };
+	script: {
+		version: number;
+		title?: string;
+		description?: string;
+		canvas?: { width: number; height: number };
+		steps: OldStep[];
+	};
+}
+
+/** Convert pixel coords to math coords (y-flip, scale to units). */
+function toMath(px: number, py: number, canvasW: number, canvasH: number, ppu: number) {
+	return {
+		x: Math.round(((px - canvasW / 2) / ppu) * 100) / 100,
+		y: Math.round(((canvasH / 2 - py) / ppu) * 100) / 100
+	};
 }
 
 /** Convert old JSON steps to DSL text. */
-function convertJsonToDsl(title: string, steps: OldStep[]): string {
+function convertJsonToDsl(title: string, steps: OldStep[], canvasW = 800, canvasH = 600): string {
+	const ppu = 40; // pixels per unit — matches GeometryCanvas default
 	const lines: string[] = [`# ${title}`];
 	const pointNames = new Map<string, string>(); // object id → DSL name
 	const labelTexts = new Set<string>(); // IDs that are labels (skip them)
@@ -130,9 +145,8 @@ function convertJsonToDsl(title: string, steps: OldStep[]): string {
 			switch (obj.kind) {
 				case 'point': {
 					const name = getName(obj.id);
-					const x = obj.x ?? 0;
-					const y = obj.y ?? 0;
-					lines.push(`${name} = point(${x}, ${y})`);
+					const m = toMath(obj.x ?? 0, obj.y ?? 0, canvasW, canvasH, ppu);
+					lines.push(`${name} = point(${m.x}, ${m.y})`);
 					break;
 				}
 				case 'segment': {
@@ -141,8 +155,10 @@ function convertJsonToDsl(title: string, steps: OldStep[]): string {
 					if (obj.from && obj.to) {
 						start = `_s${nameCounter++}a`;
 						end = `_s${nameCounter++}b`;
-						lines.push(`${start} = point(${obj.from.x}, ${obj.from.y})`);
-						lines.push(`${end} = point(${obj.to.x}, ${obj.to.y})`);
+						const mf = toMath(obj.from.x, obj.from.y, canvasW, canvasH, ppu);
+						const mt = toMath(obj.to.x, obj.to.y, canvasW, canvasH, ppu);
+						lines.push(`${start} = point(${mf.x}, ${mf.y})`);
+						lines.push(`${end} = point(${mt.x}, ${mt.y})`);
 					} else {
 						start = getName(obj.startPoint ?? obj.point1);
 						end = getName(obj.endPoint ?? obj.point2);
@@ -156,8 +172,10 @@ function convertJsonToDsl(title: string, steps: OldStep[]): string {
 					if (obj.from && obj.through) {
 						origin = `_r${nameCounter++}o`;
 						through = `_r${nameCounter++}t`;
-						lines.push(`${origin} = point(${obj.from.x}, ${obj.from.y})`);
-						lines.push(`${through} = point(${obj.through.x}, ${obj.through.y})`);
+						const mf = toMath(obj.from.x, obj.from.y, canvasW, canvasH, ppu);
+						const mt = toMath(obj.through.x, obj.through.y, canvasW, canvasH, ppu);
+						lines.push(`${origin} = point(${mf.x}, ${mf.y})`);
+						lines.push(`${through} = point(${mt.x}, ${mt.y})`);
 					} else {
 						origin = getName(obj.point1);
 						through = getName(obj.point2);
@@ -319,7 +337,13 @@ async function main() {
 		console.log(`--- ${row.title} (${row.id.slice(0, 8)}...) ---`);
 
 		try {
-			const dsl = convertJsonToDsl(row.title, row.script.steps ?? []);
+			const canvas = row.script.canvas;
+			const dsl = convertJsonToDsl(
+				row.title,
+				row.script.steps ?? [],
+				canvas?.width ?? 800,
+				canvas?.height ?? 600
+			);
 			const lineCount = dsl.split('\n').length;
 			const nonCommentLines = dsl.split('\n').filter((l) => !l.startsWith('#') && l.trim()).length;
 
