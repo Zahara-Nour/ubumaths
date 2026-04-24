@@ -8,6 +8,7 @@
 
 import type { Figure } from '../graph/figure';
 import { geoToNumber } from '../compute/to-number';
+import { isPointElement } from '../types/elements';
 
 /**
  * Find the closest point (free or dependent) near the given math coordinates.
@@ -23,7 +24,7 @@ export function findPointNear(
 	let bestDist = Infinity;
 
 	for (const el of figure.getAllElements()) {
-		if (el.type !== 'freePoint' && el.type !== 'midpoint') continue;
+		if (!isPointElement(el)) continue;
 
 		const pos = figure.getPosition(el.id);
 		if (!pos) continue;
@@ -42,6 +43,72 @@ export function findPointNear(
 }
 
 /**
+ * Distance from point (px, py) to segment [(x1,y1), (x2,y2)].
+ */
+function distToSegment(
+	px: number,
+	py: number,
+	x1: number,
+	y1: number,
+	x2: number,
+	y2: number
+): number {
+	const dx = x2 - x1;
+	const dy = y2 - y1;
+	const lenSq = dx * dx + dy * dy;
+	if (lenSq < 1e-20) return Math.sqrt((px - x1) ** 2 + (py - y1) ** 2);
+
+	const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lenSq));
+	const projX = x1 + t * dx;
+	const projY = y1 + t * dy;
+	return Math.sqrt((px - projX) ** 2 + (py - projY) ** 2);
+}
+
+/**
+ * Distance from point (px, py) to infinite line through (x1,y1) and (x2,y2).
+ */
+function distToLine(
+	px: number,
+	py: number,
+	x1: number,
+	y1: number,
+	x2: number,
+	y2: number
+): number {
+	const dx = x2 - x1;
+	const dy = y2 - y1;
+	const lenSq = dx * dx + dy * dy;
+	if (lenSq < 1e-20) return Math.sqrt((px - x1) ** 2 + (py - y1) ** 2);
+
+	return Math.abs(dy * (px - x1) - dx * (py - y1)) / Math.sqrt(lenSq);
+}
+
+/**
+ * Distance from point (px, py) to ray from (ox, oy) through (tx, ty).
+ */
+function distToRay(px: number, py: number, ox: number, oy: number, tx: number, ty: number): number {
+	const dx = tx - ox;
+	const dy = ty - oy;
+	const lenSq = dx * dx + dy * dy;
+	if (lenSq < 1e-20) return Math.sqrt((px - ox) ** 2 + (py - oy) ** 2);
+
+	const t = ((px - ox) * dx + (py - oy) * dy) / lenSq;
+	if (t <= 0) return Math.sqrt((px - ox) ** 2 + (py - oy) ** 2);
+
+	const projX = ox + t * dx;
+	const projY = oy + t * dy;
+	return Math.sqrt((px - projX) ** 2 + (py - projY) ** 2);
+}
+
+/**
+ * Distance from point (px, py) to circle with center (cx, cy) and radius r.
+ */
+function distToCircle(px: number, py: number, cx: number, cy: number, r: number): number {
+	const d = Math.sqrt((px - cx) ** 2 + (py - cy) ** 2);
+	return Math.abs(d - r);
+}
+
+/**
  * Find the closest element of any type near the given math coordinates.
  * Points are prioritized: if a point is within threshold, it wins over other elements.
  * Returns the element ID, or null if none within threshold.
@@ -56,6 +123,78 @@ export function findElementNear(
 	const pointId = findPointNear(figure, mathX, mathY, threshold);
 	if (pointId) return pointId;
 
-	// TODO: segment/line/circle distance testing for Phase 3
-	return null;
+	let bestId: string | null = null;
+	let bestDist = Infinity;
+
+	for (const el of figure.getAllElements()) {
+		let dist = Infinity;
+
+		if (el.type === 'segment') {
+			const p1 = figure.getPosition(el.startId);
+			const p2 = figure.getPosition(el.endId);
+			if (p1 && p2) {
+				dist = distToSegment(
+					mathX,
+					mathY,
+					geoToNumber(p1.x),
+					geoToNumber(p1.y),
+					geoToNumber(p2.x),
+					geoToNumber(p2.y)
+				);
+			}
+		} else if (el.type === 'line') {
+			const p1 = figure.getPosition(el.point1Id);
+			const p2 = figure.getPosition(el.point2Id);
+			if (p1 && p2) {
+				dist = distToLine(
+					mathX,
+					mathY,
+					geoToNumber(p1.x),
+					geoToNumber(p1.y),
+					geoToNumber(p2.x),
+					geoToNumber(p2.y)
+				);
+			}
+		} else if (el.type === 'ray') {
+			const origin = figure.getPosition(el.originId);
+			const through = figure.getPosition(el.throughId);
+			if (origin && through) {
+				dist = distToRay(
+					mathX,
+					mathY,
+					geoToNumber(origin.x),
+					geoToNumber(origin.y),
+					geoToNumber(through.x),
+					geoToNumber(through.y)
+				);
+			}
+		} else if (el.type === 'circleByRadius') {
+			const center = figure.getPosition(el.centerId);
+			if (center) {
+				dist = distToCircle(
+					mathX,
+					mathY,
+					geoToNumber(center.x),
+					geoToNumber(center.y),
+					geoToNumber(el.radius)
+				);
+			}
+		} else if (el.type === 'circleByPoint') {
+			const center = figure.getPosition(el.centerId);
+			const edge = figure.getPosition(el.edgePointId);
+			if (center && edge) {
+				const cx = geoToNumber(center.x);
+				const cy = geoToNumber(center.y);
+				const r = Math.sqrt((geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2);
+				dist = distToCircle(mathX, mathY, cx, cy, r);
+			}
+		}
+
+		if (dist <= threshold && dist < bestDist) {
+			bestDist = dist;
+			bestId = el.id;
+		}
+	}
+
+	return bestId;
 }

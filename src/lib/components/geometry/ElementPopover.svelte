@@ -63,7 +63,10 @@
 	let isPoint = $derived(isPointElement(element));
 	let isLine = $derived(isLineLike(element));
 	let isCircleEl = $derived(isCircle(element));
-	let showStroke = $derived(isLine || isCircleEl);
+	let isAngle = $derived(element.type === 'angleMark');
+	let isSegMark = $derived(element.type === 'segmentMark');
+	let showDash = $derived(isLine || isCircleEl);
+	let showStrokeWidth = $derived(isLine || isCircleEl || isAngle || isSegMark);
 	let currentDash = $derived(element.style?.dash ?? 'solid');
 	let currentStrokeWidth = $derived(element.style?.strokeWidth ?? 2);
 	let currentPointShape = $derived(element.style?.pointShape ?? 'dot');
@@ -127,8 +130,8 @@
 		</div>
 	{/if}
 
-	<!-- Stroke (lines, circles) -->
-	{#if showStroke}
+	<!-- Dash style (lines, circles) -->
+	{#if showDash}
 		<div class="popover-row">
 			<span class="popover-label">Trait</span>
 			<div class="shape-buttons">
@@ -149,7 +152,10 @@
 				>
 			</div>
 		</div>
+	{/if}
 
+	<!-- Stroke width (lines, circles, marks) -->
+	{#if showStrokeWidth}
 		<div class="popover-row">
 			<span class="popover-label">Epaisseur</span>
 			<input
