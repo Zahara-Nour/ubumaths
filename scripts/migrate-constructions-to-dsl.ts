@@ -52,6 +52,9 @@ interface OldStep {
 		point2?: string;
 		startPoint?: string;
 		endPoint?: string;
+		from?: { x: number; y: number };
+		to?: { x: number; y: number };
+		through?: { x: number; y: number };
 		style?: Record<string, unknown>;
 		fontSize?: number;
 		p1?: string;
@@ -133,19 +136,32 @@ function convertJsonToDsl(title: string, steps: OldStep[]): string {
 					break;
 				}
 				case 'segment': {
-					const start = getName(obj.startPoint ?? obj.point1);
-					const end = getName(obj.endPoint ?? obj.point2);
-					if (obj.id) {
-						const segName = getName(obj.id);
-						lines.push(`${segName} = segment(${start}, ${end})`);
+					let start: string;
+					let end: string;
+					if (obj.from && obj.to) {
+						start = `_s${nameCounter++}a`;
+						end = `_s${nameCounter++}b`;
+						lines.push(`${start} = point(${obj.from.x}, ${obj.from.y})`);
+						lines.push(`${end} = point(${obj.to.x}, ${obj.to.y})`);
 					} else {
-						lines.push(`segment(${start}, ${end})`);
+						start = getName(obj.startPoint ?? obj.point1);
+						end = getName(obj.endPoint ?? obj.point2);
 					}
+					lines.push(`segment(${start}, ${end})`);
 					break;
 				}
 				case 'ray': {
-					const origin = getName(obj.point1);
-					const through = getName(obj.point2);
+					let origin: string;
+					let through: string;
+					if (obj.from && obj.through) {
+						origin = `_r${nameCounter++}o`;
+						through = `_r${nameCounter++}t`;
+						lines.push(`${origin} = point(${obj.from.x}, ${obj.from.y})`);
+						lines.push(`${through} = point(${obj.through.x}, ${obj.through.y})`);
+					} else {
+						origin = getName(obj.point1);
+						through = getName(obj.point2);
+					}
 					lines.push(`demidroite(${origin}, ${through})`);
 					break;
 				}
@@ -277,11 +293,11 @@ async function main() {
 	console.log(`Mode: ${dryRun ? 'DRY RUN (pas de modifications)' : 'MIGRATION'}`);
 	console.log('');
 
-	// Fetch all JSON constructions
+	// Fetch all constructions that have a JSON script
 	const { data, error } = await supabase
 		.from('constructions')
 		.select('id, title, format, script')
-		.eq('format', 'json')
+		.not('script', 'is', null)
 		.order('created_at');
 
 	if (error) {
