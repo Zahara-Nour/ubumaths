@@ -7,6 +7,7 @@
 	interface Props {
 		figure: Figure;
 		instrumentStates: Map<string, InstrumentState>;
+		figureVersion?: number;
 		width?: number;
 		height?: number;
 		showGrid?: boolean;
@@ -17,6 +18,7 @@
 	let {
 		figure,
 		instrumentStates,
+		figureVersion = 0,
 		width = 800,
 		height = 600,
 		showGrid = true,
@@ -30,7 +32,14 @@
 
 <div class="construction-canvas {className}" style="position: relative; display: inline-block;">
 	<!-- Geometry figure layer -->
-	<GeometryCanvas {figure} {width} {height} {showGrid} {interactive} />
+	<GeometryCanvas
+		{figure}
+		{width}
+		{height}
+		{showGrid}
+		{interactive}
+		externalVersion={figureVersion}
+	/>
 
 	<!-- Instruments overlay -->
 	{#if visibleInstruments.length > 0}

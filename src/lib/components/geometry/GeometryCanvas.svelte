@@ -34,6 +34,8 @@
 		showMinorGrid?: boolean;
 		showGraduations?: boolean;
 		snapOnRelease?: boolean;
+		/** External version counter to trigger re-render when figure changes programmatically. */
+		externalVersion?: number;
 	}
 
 	let {
@@ -46,7 +48,8 @@
 		showGrid = true,
 		showMinorGrid = false,
 		showGraduations = true,
-		snapOnRelease = false
+		snapOnRelease = false,
+		externalVersion = 0
 	}: Props = $props();
 
 	let svgRef: SVGSVGElement | undefined = $state();
@@ -123,6 +126,7 @@
 
 	let elements = $derived.by(() => {
 		void version;
+		void externalVersion;
 		return figure.getAllElements();
 	});
 	let dims = $derived({ width, height });
