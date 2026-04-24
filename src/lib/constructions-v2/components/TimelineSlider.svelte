@@ -1,19 +1,20 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
 	import { formatTime } from '../core/timeline.svelte';
-	import type { SimpleTimeline } from '../core/timeline.svelte';
+	import type { TimelineState } from '../core/timeline.svelte';
 
 	interface Props {
-		timeline: SimpleTimeline;
+		tl: TimelineState;
+		onScrub: (progress: number) => void;
 		class?: string;
 		showTime?: boolean;
 		disabled?: boolean;
 	}
 
-	let { timeline, class: className = '', showTime = true, disabled = false }: Props = $props();
+	let { tl, onScrub, class: className = '', showTime = true, disabled = false }: Props = $props();
 
 	let isDragging = $state(false);
-	let trackEl: HTMLDivElement | undefined = $state();
+	let trackEl = $state<HTMLDivElement | undefined>();
 
 	function handlePointerDown(e: PointerEvent) {
 		if (disabled) return;
@@ -35,23 +36,23 @@
 		if (!trackEl) return;
 		const rect = trackEl.getBoundingClientRect();
 		const progress = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-		timeline.scrubByProgress(progress);
+		onScrub(progress);
 	}
 
 	function handleKeyDown(e: KeyboardEvent) {
 		if (disabled) return;
 		switch (e.key) {
 			case 'ArrowRight':
-				timeline.scrubByProgress(timeline.progress + (e.shiftKey ? 0.1 : 0.01));
+				onScrub(tl.progress + (e.shiftKey ? 0.1 : 0.01));
 				break;
 			case 'ArrowLeft':
-				timeline.scrubByProgress(timeline.progress - (e.shiftKey ? 0.1 : 0.01));
+				onScrub(tl.progress - (e.shiftKey ? 0.1 : 0.01));
 				break;
 			case 'Home':
-				timeline.scrubByProgress(0);
+				onScrub(0);
 				break;
 			case 'End':
-				timeline.scrubByProgress(1);
+				onScrub(1);
 				break;
 		}
 	}
@@ -60,7 +61,7 @@
 <div class={cn('flex items-center gap-2', className)}>
 	{#if showTime}
 		<span class="min-w-[3rem] text-right text-xs text-muted-foreground">
-			{formatTime(timeline.currentTime)}
+			{formatTime(tl.currentTime)}
 		</span>
 	{/if}
 
@@ -74,23 +75,23 @@
 		role="slider"
 		tabindex="0"
 		aria-label="Timeline"
-		aria-valuenow={Math.round(timeline.progress * 100)}
+		aria-valuenow={Math.round(tl.progress * 100)}
 		aria-valuemin={0}
 		aria-valuemax={100}
 	>
 		<div
 			class="absolute top-0 left-0 h-full rounded-full bg-primary transition-[width] duration-75"
-			style:width="{timeline.progress * 100}%"
+			style:width="{tl.progress * 100}%"
 		></div>
 		<div
 			class="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary bg-background shadow-sm"
-			style:left="{timeline.progress * 100}%"
+			style:left="{tl.progress * 100}%"
 		></div>
 	</div>
 
 	{#if showTime}
 		<span class="min-w-[3rem] text-xs text-muted-foreground">
-			{formatTime(timeline.totalDuration)}
+			{formatTime(tl.totalDuration)}
 		</span>
 	{/if}
 </div>
