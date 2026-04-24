@@ -17,6 +17,7 @@ import {
 	lineToSVG,
 	rayToSVG,
 	circleToSVG,
+	arcToSVG,
 	angleMarkToSVG,
 	segmentMarkToSVG,
 	measureToSVG
@@ -135,6 +136,20 @@ export function exportToSVG(
 			: 'fill="none"';
 		lines.push(
 			`  <circle cx="${r(svg.cx)}" cy="${r(svg.cy)}" r="${r(svg.r)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} ${fillAttr} />`
+		);
+	}
+
+	// Pass 2a: arcs
+	for (const el of elements) {
+		if (!el.visible) continue;
+		if (el.type !== 'arcByAngles' && el.type !== 'arcByPoints') continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const svg = arcToSVG(el.id, figure, transformer);
+		if (!svg) continue;
+		const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
+		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
+		lines.push(
+			`  <path d="${svg.path}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} fill="none" />`
 		);
 	}
 

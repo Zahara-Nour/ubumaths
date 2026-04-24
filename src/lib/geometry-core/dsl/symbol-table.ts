@@ -15,6 +15,7 @@ export type SymbolType =
 	| 'angleMark'
 	| 'segmentMark'
 	| 'measure'
+	| 'arc'
 	| 'liste';
 
 export interface SymbolEntry {

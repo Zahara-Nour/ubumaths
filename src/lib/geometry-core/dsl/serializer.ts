@@ -87,6 +87,9 @@ function typePrefix(type: string): string {
 		case 'circleByRadius':
 		case 'circleByPoint':
 			return 'c';
+		case 'arcByAngles':
+		case 'arcByPoints':
+			return 'arc';
 		case 'polygon':
 			return 'poly';
 		case 'angleMark':
@@ -168,6 +171,16 @@ function serializeElement(
 
 		case 'circleByPoint':
 			return `${n.startsWith('_') ? '' : n + ' = '}cercle(${name(idToName, el.centerId)}, passant=${name(idToName, el.edgePointId)})`;
+
+		case 'arcByAngles': {
+			const radius = fmtGeoValue(el.radius);
+			const startDeg = fmtNum((geoToNumber(el.startAngle) * 180) / Math.PI);
+			const endDeg = fmtNum((geoToNumber(el.endAngle) * 180) / Math.PI);
+			return `${n.startsWith('_') ? '' : n + ' = '}arc(${name(idToName, el.centerId)}, rayon=${radius}, debut=${startDeg}, fin=${endDeg})`;
+		}
+
+		case 'arcByPoints':
+			return `${n.startsWith('_') ? '' : n + ' = '}arc(${name(idToName, el.startId)}, ${name(idToName, el.centerId)}, ${name(idToName, el.endId)})`;
 
 		case 'angleMark': {
 			if (el.rightAngle) {

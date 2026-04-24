@@ -24,7 +24,9 @@ import type {
 	GeoSegmentMark,
 	GeoMeasure,
 	GeoCircleByRadius,
-	GeoCircleByPoint
+	GeoCircleByPoint,
+	GeoArcByAngles,
+	GeoArcByPoints
 } from '../types/elements';
 import {
 	isFreePoint,
@@ -618,6 +620,58 @@ export class Figure {
 		};
 		this.addElement(id, element, [sourceId, linePoint1Id, linePoint2Id]);
 		this.computePosition(id);
+		return id;
+	}
+
+	// ─── Arc factories ─────────────────────────────────────────────
+
+	createArcByAngles(
+		centerId: string,
+		radius: GeoValue,
+		startAngle: GeoValue,
+		endAngle: GeoValue,
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('arc');
+		const element: GeoArcByAngles = {
+			type: 'arcByAngles',
+			id,
+			centerId,
+			radius,
+			startAngle,
+			endAngle,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [centerId]
+		};
+		this.addElement(id, element, [centerId]);
+		return id;
+	}
+
+	createArcByPoints(
+		startId: string,
+		centerId: string,
+		endId: string,
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('arc');
+		const element: GeoArcByPoints = {
+			type: 'arcByPoints',
+			id,
+			startId,
+			centerId,
+			endId,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [startId, centerId, endId]
+		};
+		this.addElement(id, element, [startId, centerId, endId]);
 		return id;
 	}
 

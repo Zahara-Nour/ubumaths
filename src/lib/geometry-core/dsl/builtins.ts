@@ -293,6 +293,34 @@ export function executeBuiltin(
 			return { figureId: id, symbolType: 'measure' };
 		}
 
+		case 'arc': {
+			if (pos.length === 3) {
+				// arc(A, O, B) — arc by 3 points (start, center, end)
+				const startId = requireElement(pos[0], 'start', line);
+				const centerId = requireElement(pos[1], 'centre', line);
+				const endId = requireElement(pos[2], 'end', line);
+				const id = figure.createArcByPoints(startId, centerId, endId, { label });
+				return { figureId: id, symbolType: 'arc' };
+			}
+			if (pos.length === 1) {
+				// arc(O, rayon=3, debut=0, fin=90) — arc by angles (degrees in DSL)
+				const centerId = requireElement(pos[0], 'centre', line);
+				if (!named.has('rayon'))
+					throw new DslRuntimeError("arc() avec 1 argument necessite 'rayon'", line);
+				const radius = toGeoValue(named.get('rayon')!, line);
+				const startDeg = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
+				const endDeg = named.has('fin') ? requireNumber(named.get('fin')!, 'fin', line) : 360;
+				const startRad: GeoValue = { kind: 'numeric', value: (startDeg * Math.PI) / 180 };
+				const endRad: GeoValue = { kind: 'numeric', value: (endDeg * Math.PI) / 180 };
+				const id = figure.createArcByAngles(centerId, radius, startRad, endRad, { label });
+				return { figureId: id, symbolType: 'arc' };
+			}
+			throw new DslRuntimeError(
+				'arc() attend soit 3 arguments (A, O, B) soit 1 argument + rayon/debut/fin',
+				line
+			);
+		}
+
 		case 'style': {
 			// style(element, couleur=..., forme=..., tirets=...)
 			if (pos.length < 1)
@@ -335,6 +363,7 @@ export const BUILTIN_NAMES = new Set([
 	'droite',
 	'demidroite',
 	'cercle',
+	'arc',
 	'symetrie',
 	'rotation',
 	'translation',

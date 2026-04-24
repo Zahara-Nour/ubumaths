@@ -167,6 +167,38 @@ export interface GeoRay extends GeoElementBase {
 }
 
 // =============================================================================
+// Arc (two construction variants)
+// =============================================================================
+
+/**
+ * Arc defined by center, radius, and start/end angles (radians internally).
+ * DSL accepts angles in degrees and converts.
+ */
+export interface GeoArcByAngles extends GeoElementBase {
+	readonly type: 'arcByAngles';
+	readonly centerId: string;
+	readonly radius: GeoValue;
+	readonly startAngle: GeoValue; // radians
+	readonly endAngle: GeoValue; // radians
+	readonly dependsOn: readonly [string];
+}
+
+/**
+ * Arc from startPoint to endPoint around center.
+ * Used to trace angles: arc(A, O, B) draws the arc of angle AOB.
+ * The arc goes counterclockwise from OA to OB direction.
+ */
+export interface GeoArcByPoints extends GeoElementBase {
+	readonly type: 'arcByPoints';
+	readonly startId: string;
+	readonly centerId: string;
+	readonly endId: string;
+	readonly dependsOn: readonly [string, string, string];
+}
+
+export type GeoArc = GeoArcByAngles | GeoArcByPoints;
+
+// =============================================================================
 // Circle (two construction variants)
 // =============================================================================
 
@@ -235,6 +267,8 @@ export type GeoElement =
 	| GeoRay
 	| GeoCircleByRadius
 	| GeoCircleByPoint
+	| GeoArcByAngles
+	| GeoArcByPoints
 	| GeoPolygon;
 
 export type GeoElementType = GeoElement['type'];
@@ -330,4 +364,16 @@ export function isCircleByPoint(el: GeoElement): el is GeoCircleByPoint {
 
 export function isPolygon(el: GeoElement): el is GeoPolygon {
 	return el.type === 'polygon';
+}
+
+export function isArc(el: GeoElement): el is GeoArc {
+	return el.type === 'arcByAngles' || el.type === 'arcByPoints';
+}
+
+export function isArcByAngles(el: GeoElement): el is GeoArcByAngles {
+	return el.type === 'arcByAngles';
+}
+
+export function isArcByPoints(el: GeoElement): el is GeoArcByPoints {
+	return el.type === 'arcByPoints';
 }

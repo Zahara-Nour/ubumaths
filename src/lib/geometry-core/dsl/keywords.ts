@@ -10,6 +10,7 @@ export const KEYWORDS = new Set([
 	'droite',
 	'demidroite',
 	'cercle',
+	'arc',
 	'symetrie',
 	'rotation',
 	'translation',
