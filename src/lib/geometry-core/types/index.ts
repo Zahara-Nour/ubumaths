@@ -28,6 +28,7 @@ export type {
 	GeoCircle,
 	GeoAngleMark,
 	GeoSegmentMark,
+	GeoMeasure,
 	GeoCircleByRadius,
 	GeoCircleByPoint,
 	GeoPolygon
@@ -44,6 +45,7 @@ export {
 	isPointElement,
 	isAngleMark,
 	isSegmentMark,
+	isMeasure,
 	isSegment,
 	isLine,
 	isRay,

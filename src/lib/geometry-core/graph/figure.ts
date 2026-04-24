@@ -22,6 +22,7 @@ import type {
 	GeoRay,
 	GeoAngleMark,
 	GeoSegmentMark,
+	GeoMeasure,
 	GeoCircleByRadius,
 	GeoCircleByPoint
 } from '../types/elements';
@@ -36,12 +37,14 @@ import {
 	isReflectedOverLine,
 	isAngleMark,
 	isSegmentMark,
+	isMeasure,
 	isPointElement,
 	isLineLike
 } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { geoAdd, geoSub, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
+import { geoToNumber } from '../compute/to-number';
 import { intersectLL } from '../geometry/intersections';
 import {
 	reflectPoint,
@@ -103,6 +106,7 @@ export class Figure {
 	private graph = new DependencyGraph();
 	private nextId = 1;
 	readonly defaults: FigureDefaults;
+	private measureValues = new Map<string, number>();
 
 	// Undo/redo
 	private undoStack: Delta[] = [];
@@ -674,6 +678,93 @@ export class Figure {
 		return id;
 	}
 
+	createMeasure(
+		measureType: 'distance' | 'angle' | 'area',
+		targetIds: string[],
+		options?: ElementOptions & { format?: 'exact' | 'approx' | 'degrees' | 'radians' }
+	): string {
+		if (measureType === 'distance' && targetIds.length !== 2) {
+			throw new Error('createMeasure: distance requires exactly 2 target points');
+		}
+		if (measureType === 'angle' && targetIds.length !== 3) {
+			throw new Error('createMeasure: angle requires exactly 3 target points');
+		}
+		if (measureType === 'area' && targetIds.length < 3) {
+			throw new Error('createMeasure: area requires at least 3 target points');
+		}
+		for (const tid of targetIds) {
+			const el = this.elements.get(tid);
+			if (!el || !isPointElement(el)) {
+				throw new Error(`createMeasure: "${tid}" is not a point element`);
+			}
+		}
+
+		const id = this.generateId('meas');
+		const element: GeoMeasure = {
+			type: 'measure',
+			id,
+			measureType,
+			targetIds,
+			format: options?.format ?? (measureType === 'angle' ? 'degrees' : 'approx'),
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: targetIds
+		};
+		this.addElement(id, element, targetIds);
+		this.computeMeasureValue(id, element);
+		return id;
+	}
+
+	getMeasureValue(id: string): number | undefined {
+		return this.measureValues.get(id);
+	}
+
+	private computeMeasureValue(id: string, el: GeoMeasure): void {
+		const positions = el.targetIds.map((tid) => this.positions.get(tid));
+		if (positions.some((p) => !p)) {
+			this.measureValues.delete(id);
+			return;
+		}
+
+		if (el.measureType === 'distance') {
+			const [a, b] = positions as [GeoPoint, GeoPoint];
+			const dx = geoToNumber(a.x) - geoToNumber(b.x);
+			const dy = geoToNumber(a.y) - geoToNumber(b.y);
+			this.measureValues.set(id, Math.sqrt(dx * dx + dy * dy));
+		} else if (el.measureType === 'angle') {
+			const [p1, v, p2] = positions as [GeoPoint, GeoPoint, GeoPoint];
+			const vax = geoToNumber(p1.x) - geoToNumber(v.x);
+			const vay = geoToNumber(p1.y) - geoToNumber(v.y);
+			const vbx = geoToNumber(p2.x) - geoToNumber(v.x);
+			const vby = geoToNumber(p2.y) - geoToNumber(v.y);
+			const dot = vax * vbx + vay * vby;
+			const lenA = Math.sqrt(vax * vax + vay * vay);
+			const lenB = Math.sqrt(vbx * vbx + vby * vby);
+			if (lenA < 1e-15 || lenB < 1e-15) {
+				this.measureValues.delete(id);
+				return;
+			}
+			const cosAngle = Math.max(-1, Math.min(1, dot / (lenA * lenB)));
+			const radians = Math.acos(cosAngle);
+			this.measureValues.set(id, (radians * 180) / Math.PI);
+		} else if (el.measureType === 'area') {
+			// Shoelace formula
+			const pts = positions as GeoPoint[];
+			let sum = 0;
+			const n = pts.length;
+			for (let i = 0; i < n; i++) {
+				const xi = geoToNumber(pts[i].x);
+				const yi = geoToNumber(pts[i].y);
+				const xn = geoToNumber(pts[(i + 1) % n].x);
+				const yn = geoToNumber(pts[(i + 1) % n].y);
+				sum += xi * yn - xn * yi;
+			}
+			this.measureValues.set(id, Math.abs(sum) / 2);
+		}
+	}
+
 	// ─── Access ─────────────────────────────────────────────────────
 
 	getElementById(id: string): GeoElement | undefined {
@@ -742,6 +833,7 @@ export class Figure {
 			if (el) this.recordRemove(rid, el);
 			this.elements.delete(rid);
 			this.positions.delete(rid);
+			this.measureValues.delete(rid);
 		}
 		return removedIds;
 	}
@@ -838,6 +930,8 @@ export class Figure {
 			} else {
 				this.positions.delete(id);
 			}
+		} else if (isMeasure(el)) {
+			this.computeMeasureValue(id, el);
 		} else if (isAngleMark(el)) {
 			// Angle mark position = vertex position (for hit-testing and dependency tracking)
 			const vertexPos = this.positions.get(el.vertexId);

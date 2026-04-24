@@ -19,7 +19,7 @@ export {
 } from './bezier';
 
 // SVG primitives
-export type { GeoStyleResolved, AngleMarkSVG, SegmentMarkSVG } from './svg-primitives';
+export type { GeoStyleResolved, AngleMarkSVG, SegmentMarkSVG, MeasureSVG } from './svg-primitives';
 export {
 	resolveStyle,
 	pointToSVG,
@@ -28,5 +28,6 @@ export {
 	rayToSVG,
 	circleToSVG,
 	angleMarkToSVG,
-	segmentMarkToSVG
+	segmentMarkToSVG,
+	measureToSVG
 } from './svg-primitives';
