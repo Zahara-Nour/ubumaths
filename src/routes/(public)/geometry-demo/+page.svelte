@@ -61,6 +61,25 @@
 	figure.createSegmentMark(b, c, { color: '#dc2626', markCount: 2 });
 	figure.createSegmentMark(c, a, { color: '#dc2626', markCount: 3 });
 
+	// --- Arcs ---
+	// Arc by angles (compass-style)
+	const arcCenter = figure.createFreePoint(pt(6, 4), { label: 'K', color: '#0891b2' });
+	figure.createArcByAngles(
+		arcCenter,
+		exact(number(2)),
+		exact(number(Math.PI / 6)),
+		exact(number((5 * Math.PI) / 6)),
+		{ color: '#0891b2' }
+	);
+
+	// Arc by 3 points (angle trace)
+	const arcP = figure.createFreePoint(pt(6, -2), { label: 'P', color: '#ea580c' });
+	const arcQ = figure.createFreePoint(pt(3, -4), { label: 'Q', color: '#ea580c' });
+	const arcR = figure.createFreePoint(pt(6, -5), { label: 'R2', color: '#ea580c' });
+	figure.createSegment(arcQ, arcP, { color: '#ea580c' });
+	figure.createSegment(arcQ, arcR, { color: '#ea580c' });
+	figure.createArcByPoints(arcP, arcQ, arcR, { color: '#ea580c' });
+
 	// --- Measures ---
 	figure.createMeasure('distance', [a, b], { color: '#6366f1' });
 	figure.createMeasure('angle', [b, a, c], { color: '#1e40af' });
@@ -72,7 +91,8 @@
 		Deplacez les points pour explorer la figure. Les elements dependants suivent en temps reel :
 		milieux (rouge), centre de gravite G (jaune, intersection des medianes), symetriques A' B' C'
 		(violet, par rapport au centre S). Deplacez R pour changer le rayon du cercle, S pour deplacer
-		le centre de symetrie.
+		le centre de symetrie. Arcs : K (cyan, arc par angles), P/Q/R2 (orange, arc par 3 points —
+		deplacez P ou R2 pour changer l'angle).
 	</p>
 
 	<GeometryCanvas {figure} center={{ x: 0, y: 0 }} pixelsPerUnit={40} width={800} height={600} />
