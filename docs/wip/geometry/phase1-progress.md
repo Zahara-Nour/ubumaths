@@ -269,9 +269,22 @@
 - Blocs : `macro`, `pour...de...a`, `pour...dans`, `si`/`sinon` avec indentation
 - Tests : 40
 
+## Phase 5C : DSL Interpreter (TERMINEE)
+
+- `dsl/interpreter.ts` — parcourt l'AST et appelle les factory methods de Figure
+- `dsl/symbol-table.ts` — table des symboles typee (nombre, point, segment, etc.) avec scopes
+- `dsl/builtins.ts` — mapping 16 fonctions DSL → Figure API avec surcharge par arguments nommes
+- Points, constructions, cercles (rayon/passant), transformations (symetrie centre/axe, rotation, translation, homothetie)
+- Annotations (marque_angle, angle_droit, marque_segment, mesure)
+- Boucles `pour...de...a` et `pour...dans` avec noms indexes P[i]
+- Conditionnels `si`/`sinon`, accesseurs `A.x`/`A.y`
+- Fonctions math : sqrt, abs, sin, cos, tan, asin, acos, atan (en degres)
+- Conversion degres → radians pour les rotations
+- Tests : 39
+
 ## Prochaines etapes
 
-- Phase 5C : Interpreter (AST → Figure)
+- Phase 5D : Serializer (Figure → script)
 - Phase 5C : Interpreter (AST → Figure)
 - Phase 5D : Serializer (Figure → script)
 - Phase 5E : Macros
@@ -290,7 +303,7 @@
 | geometry/ (intersections + transformations) | 89      |
 | interaction/                                | 25      |
 | validation/                                 | 71      |
-| dsl/ (tokenizer + parser)                   | 77      |
+| dsl/ (tokenizer + parser + interpreter)     | 116     |
 | integration/                                | 18      |
-| **Total geometry-core**                     | **944** |
+| **Total geometry-core**                     | **983** |
 | grapheur/ (non-regression)                  | 213     |
