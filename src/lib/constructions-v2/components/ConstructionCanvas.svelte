@@ -26,8 +26,11 @@
 		class: className = ''
 	}: Props = $props();
 
-	// Convert instrument states to array for rendering
-	let visibleInstruments = $derived([...instrumentStates.values()].filter((s) => s.visible));
+	// Recompute when figureVersion changes (Map reference is stable, $derived needs a hint)
+	let visibleInstruments = $derived.by(() => {
+		void figureVersion;
+		return [...instrumentStates.values()].filter((s) => s.visible);
+	});
 </script>
 
 <div class="construction-canvas {className}" style="position: relative; display: inline-block;">
