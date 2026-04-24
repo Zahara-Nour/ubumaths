@@ -7,8 +7,8 @@
 
 import { parseDsl, createStepper } from '$lib/geometry-core/dsl';
 import type { DslStepper, DirectiveHandler, DslStatement } from '$lib/geometry-core/dsl';
-import type { Figure } from '$lib/geometry-core/graph/figure';
-import type { SymbolTable } from '$lib/geometry-core/dsl/symbol-table';
+import { Figure } from '$lib/geometry-core/graph/figure';
+import { SymbolTable } from '$lib/geometry-core/dsl/symbol-table';
 import type { ResolvedArgs, ResolvedValue } from '$lib/geometry-core/dsl/builtins';
 import type { InstrumentType, InstrumentState } from '../types';
 import { createDefaultInstrumentState } from '../types';
@@ -44,6 +44,7 @@ function resolveNumberArg(val: ResolvedValue): number | undefined {
 
 export class ConstructionExecutor {
 	private stepper: DslStepper | null = null;
+	private _emptyFigure = new Figure();
 	private _stepDurations: number[] = [];
 	private _instrumentStates = new Map<InstrumentType, InstrumentState>();
 	private _currentInstruction: string | null = null;
@@ -89,13 +90,11 @@ export class ConstructionExecutor {
 	// ─── Accessors ───────────────────────────────────────────
 
 	get figure(): Figure {
-		if (!this.stepper) throw new Error('No script loaded');
-		return this.stepper.figure;
+		return this.stepper?.figure ?? this._emptyFigure;
 	}
 
 	get symbols(): SymbolTable {
-		if (!this.stepper) throw new Error('No script loaded');
-		return this.stepper.symbols;
+		return this.stepper?.symbols ?? new SymbolTable();
 	}
 
 	get currentStepIndex(): number {
