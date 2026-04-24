@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ElementPopover from './ElementPopover.svelte';
 	import { Figure } from '$lib/geometry-core/graph/figure';
 	import {
 		createTransformer,
@@ -17,7 +18,7 @@
 		resolveStyle
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-	import { findPointNear } from '$lib/geometry-core/interaction/hit-testing';
+	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
 	import { snapToGrid } from '$lib/geometry-core/interaction/snap';
 	import { numeric } from '$lib/geometry-core/types/geo-value';
 	import { isPointElement } from '$lib/geometry-core/types/elements';
@@ -49,9 +50,15 @@
 	}: Props = $props();
 
 	let svgRef: SVGSVGElement | undefined = $state();
+	let containerRef: HTMLDivElement | undefined = $state();
 	let draggingId: string | null = $state(null);
 	let hoveredId: string | null = $state(null);
 	let version = $state(0);
+
+	// Popover state
+	let popoverElementId: string | null = $state(null);
+	let popoverX = $state(0);
+	let popoverY = $state(0);
 
 	// Local state for pan/zoom. Initialized from props, then diverges.
 	// Pan/zoom modify these directly — prop changes after mount are ignored.
@@ -279,6 +286,34 @@
 		}
 	}
 
+	// ─── Double-click: open popover ─────────────────────────────────
+
+	function onDblClick(e: MouseEvent) {
+		if (!interactive) return;
+		const math = getMathCoords(e as unknown as PointerEvent);
+		if (!math) return;
+
+		const threshold = 15 / ppu;
+		const elementId = findElementNear(figure, math.x, math.y, threshold);
+		if (elementId) {
+			if (!containerRef) return;
+			const rect = containerRef.getBoundingClientRect();
+			popoverX = e.clientX - rect.left + 10;
+			popoverY = e.clientY - rect.top + 10;
+			popoverElementId = elementId;
+		} else {
+			popoverElementId = null;
+		}
+	}
+
+	function closePopover() {
+		popoverElementId = null;
+	}
+
+	let popoverElement = $derived(
+		popoverElementId ? figure.getElementById(popoverElementId) : undefined
+	);
+
 	function formatGrad(n: number): string {
 		// Avoid floating point display artifacts: 0.30000000000000004 -> "0.3"
 		const rounded = Math.round(n * 1e10) / 1e10;
@@ -295,299 +330,317 @@
 
 <svelte:window onkeydown={onKeyDown} onkeyup={onKeyUp} onblur={onWindowBlur} />
 
-<svg
-	bind:this={svgRef}
-	{width}
-	{height}
-	viewBox="0 0 {width} {height}"
-	role="application"
-	aria-label="Figure de geometrie interactive"
-	class="geometry-canvas"
-	class:interactive
-	class:dragging={draggingId !== null}
-	class:panning={isPanning || spaceHeld}
-	onpointerdown={onPointerDown}
-	onpointermove={onPointerMove}
-	onpointerup={onPointerUp}
-	onpointercancel={onPointerCancel}
-	onwheel={onWheel}
+<div
+	bind:this={containerRef}
+	class="geometry-container"
+	style="position: relative; display: inline-block;"
 >
-	<!-- Grid -->
-	{#if showGrid}
-		<g class="grid">
-			<!-- Minor grid (sub-divisions) -->
-			{#if showMinorGrid}
-				{#each gridLines.minorV as x (x)}
-					{@const sv = transformer.mathToSvg(x, 0)}
-					<line x1={sv.x} y1={0} x2={sv.x} y2={height} class="grid-line-minor" />
-				{/each}
-				{#each gridLines.minorH as y (y)}
-					{@const sv = transformer.mathToSvg(0, y)}
-					<line x1={0} y1={sv.y} x2={width} y2={sv.y} class="grid-line-minor" />
-				{/each}
-			{/if}
-			<!-- Major grid -->
-			{#each gridLines.majorV as x (x)}
-				{@const sv = transformer.mathToSvg(x, 0)}
-				<line x1={sv.x} y1={0} x2={sv.x} y2={height} class="grid-line" class:axis={x === 0} />
-			{/each}
-			{#each gridLines.majorH as y (y)}
-				{@const sv = transformer.mathToSvg(0, y)}
-				<line x1={0} y1={sv.y} x2={width} y2={sv.y} class="grid-line" class:axis={y === 0} />
-			{/each}
-			<!-- Graduations on axes -->
-			{#if showGraduations}
-				{@const axisY = transformer.mathToSvg(0, 0).y}
-				{@const axisX = transformer.mathToSvg(0, 0).x}
-				{#each gridLines.majorV as x (x)}
-					{#if x !== 0}
+	<svg
+		bind:this={svgRef}
+		{width}
+		{height}
+		viewBox="0 0 {width} {height}"
+		role="application"
+		aria-label="Figure de geometrie interactive"
+		class="geometry-canvas"
+		class:interactive
+		class:dragging={draggingId !== null}
+		class:panning={isPanning || spaceHeld}
+		onpointerdown={onPointerDown}
+		onpointermove={onPointerMove}
+		onpointerup={onPointerUp}
+		onpointercancel={onPointerCancel}
+		onwheel={onWheel}
+		ondblclick={onDblClick}
+	>
+		<!-- Grid -->
+		{#if showGrid}
+			<g class="grid">
+				<!-- Minor grid (sub-divisions) -->
+				{#if showMinorGrid}
+					{#each gridLines.minorV as x (x)}
 						{@const sv = transformer.mathToSvg(x, 0)}
-						<text
-							x={sv.x}
-							y={Math.min(Math.max(axisY + 16, 14), height - 4)}
-							class="graduation"
-							text-anchor="middle">{formatGrad(x)}</text
-						>
-					{/if}
+						<line x1={sv.x} y1={0} x2={sv.x} y2={height} class="grid-line-minor" />
+					{/each}
+					{#each gridLines.minorH as y (y)}
+						{@const sv = transformer.mathToSvg(0, y)}
+						<line x1={0} y1={sv.y} x2={width} y2={sv.y} class="grid-line-minor" />
+					{/each}
+				{/if}
+				<!-- Major grid -->
+				{#each gridLines.majorV as x (x)}
+					{@const sv = transformer.mathToSvg(x, 0)}
+					<line x1={sv.x} y1={0} x2={sv.x} y2={height} class="grid-line" class:axis={x === 0} />
 				{/each}
 				{#each gridLines.majorH as y (y)}
-					{#if y !== 0}
-						{@const sv = transformer.mathToSvg(0, y)}
-						<text
-							x={Math.min(Math.max(axisX - 6, 20), width - 4)}
-							y={sv.y + 4}
-							class="graduation"
-							text-anchor="end">{formatGrad(y)}</text
-						>
-					{/if}
+					{@const sv = transformer.mathToSvg(0, y)}
+					<line x1={0} y1={sv.y} x2={width} y2={sv.y} class="grid-line" class:axis={y === 0} />
 				{/each}
-			{/if}
-		</g>
-	{/if}
+				<!-- Graduations on axes -->
+				{#if showGraduations}
+					{@const axisY = transformer.mathToSvg(0, 0).y}
+					{@const axisX = transformer.mathToSvg(0, 0).x}
+					{#each gridLines.majorV as x (x)}
+						{#if x !== 0}
+							{@const sv = transformer.mathToSvg(x, 0)}
+							<text
+								x={sv.x}
+								y={Math.min(Math.max(axisY + 16, 14), height - 4)}
+								class="graduation"
+								text-anchor="middle">{formatGrad(x)}</text
+							>
+						{/if}
+					{/each}
+					{#each gridLines.majorH as y (y)}
+						{#if y !== 0}
+							{@const sv = transformer.mathToSvg(0, y)}
+							<text
+								x={Math.min(Math.max(axisX - 6, 20), width - 4)}
+								y={sv.y + 4}
+								class="graduation"
+								text-anchor="end">{formatGrad(y)}</text
+							>
+						{/if}
+					{/each}
+				{/if}
+			</g>
+		{/if}
 
-	<!-- Elements -->
-	<g class="elements">
-		{#each elements as el (`${el.id}_${version}`)}
-			{@const sty = resolveStyle(el, figure.defaults)}
-			{#if el.type === 'segment'}
-				{@const svg = segmentToSVG(el.id, figure, transformer)}
-				{#if svg}
-					<line
-						x1={svg.x1}
-						y1={svg.y1}
-						x2={svg.x2}
-						y2={svg.y2}
-						stroke={sty.color}
-						stroke-width={sty.strokeWidth}
-						stroke-dasharray={sty.dashArray}
-						opacity={sty.opacity}
-						class="segment"
-					/>
-				{/if}
-			{:else if el.type === 'line'}
-				{@const svg = lineToSVG(el.id, figure, transformer, dims)}
-				{#if svg}
-					<line
-						x1={svg.x1}
-						y1={svg.y1}
-						x2={svg.x2}
-						y2={svg.y2}
-						stroke={sty.color}
-						stroke-width={sty.strokeWidth}
-						stroke-dasharray={sty.dashArray}
-						opacity={sty.opacity}
-						class="geo-line"
-					/>
-				{/if}
-			{:else if el.type === 'ray'}
-				{@const svg = rayToSVG(el.id, figure, transformer, dims)}
-				{#if svg}
-					<line
-						x1={svg.x1}
-						y1={svg.y1}
-						x2={svg.x2}
-						y2={svg.y2}
-						stroke={sty.color}
-						stroke-width={sty.strokeWidth}
-						stroke-dasharray={sty.dashArray}
-						opacity={sty.opacity}
-						class="ray"
-					/>
-				{/if}
-			{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint'}
-				{@const svg = circleToSVG(el.id, figure, transformer)}
-				{#if svg}
-					<circle
-						cx={svg.cx}
-						cy={svg.cy}
-						r={svg.r}
-						stroke={sty.color}
-						stroke-width={sty.strokeWidth}
-						stroke-dasharray={sty.dashArray}
-						opacity={sty.opacity}
-						fill={sty.fillColor ?? 'none'}
-						fill-opacity={sty.fillOpacity}
-						class="circle"
-					/>
-				{/if}
-			{/if}
-		{/each}
-
-		<!-- Angle marks (between elements and points) -->
-		{#each elements as el (`${el.id}_angm_${version}`)}
-			{#if el.type === 'angleMark'}
-				{@const svg = angleMarkToSVG(el.id, figure, transformer)}
+		<!-- Elements -->
+		<g class="elements">
+			{#each elements as el (`${el.id}_${version}`)}
 				{@const sty = resolveStyle(el, figure.defaults)}
-				{#if svg}
-					{#each svg.paths as path, i (i)}
-						<path
-							d={path}
+				{#if el.type === 'segment'}
+					{@const svg = segmentToSVG(el.id, figure, transformer)}
+					{#if svg}
+						<line
+							x1={svg.x1}
+							y1={svg.y1}
+							x2={svg.x2}
+							y2={svg.y2}
 							stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
 							opacity={sty.opacity}
-							fill="none"
-							class="angle-mark"
-						/>
-					{/each}
-				{/if}
-			{/if}
-		{/each}
-
-		<!-- Points -->
-		{#each elements as el (`${el.id}_${version}`)}
-			{#if isPointElement(el)}
-				{@const svg = pointToSVG(el.id, figure, transformer)}
-				{@const sty = resolveStyle(el, figure.defaults)}
-				{#if svg}
-					{#if sty.pointShape === 'dot'}
-						<circle
-							cx={svg.cx}
-							cy={svg.cy}
-							r={sty.pointSize}
-							fill={sty.color}
-							opacity={sty.opacity}
-							class="point"
-							class:draggable={interactive && el.type === 'freePoint'}
-							class:hovered={hoveredId === el.id}
-							class:dragging={draggingId === el.id}
-						/>
-					{:else if sty.pointShape === 'circle'}
-						<circle
-							cx={svg.cx}
-							cy={svg.cy}
-							r={sty.pointSize}
-							fill="none"
-							stroke={sty.color}
-							stroke-width={sty.strokeWidth}
-							opacity={sty.opacity}
-							class="point"
-							class:draggable={interactive && el.type === 'freePoint'}
-							class:hovered={hoveredId === el.id}
-							class:dragging={draggingId === el.id}
-						/>
-					{:else if sty.pointShape === 'cross'}
-						<g
-							class="point"
-							class:draggable={interactive && el.type === 'freePoint'}
-							class:hovered={hoveredId === el.id}
-							class:dragging={draggingId === el.id}
-							opacity={sty.opacity}
-						>
-							<line
-								x1={svg.cx - sty.pointSize}
-								y1={svg.cy - sty.pointSize}
-								x2={svg.cx + sty.pointSize}
-								y2={svg.cy + sty.pointSize}
-								stroke={sty.color}
-								stroke-width={sty.strokeWidth}
-							/>
-							<line
-								x1={svg.cx + sty.pointSize}
-								y1={svg.cy - sty.pointSize}
-								x2={svg.cx - sty.pointSize}
-								y2={svg.cy + sty.pointSize}
-								stroke={sty.color}
-								stroke-width={sty.strokeWidth}
-							/>
-						</g>
-					{:else if sty.pointShape === 'square'}
-						<rect
-							x={svg.cx - sty.pointSize}
-							y={svg.cy - sty.pointSize}
-							width={sty.pointSize * 2}
-							height={sty.pointSize * 2}
-							fill={sty.color}
-							opacity={sty.opacity}
-							class="point"
-							class:draggable={interactive && el.type === 'freePoint'}
-							class:hovered={hoveredId === el.id}
-							class:dragging={draggingId === el.id}
+							class="segment"
 						/>
 					{/if}
-					{#if el.label}
-						{@const lx = svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 4)}
-						{@const ly = svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2))}
-						<text
-							x={lx}
-							y={ly}
-							class="label"
-							fill={sty.color}
-							stroke="white"
-							stroke-width="3"
-							paint-order="stroke">{el.label}</text
-						>
-					{/if}
-				{/if}
-			{/if}
-		{/each}
-
-		<!-- Segment marks (on top of points so ticks are visible) -->
-		{#each elements as el (`${el.id}_segm_${version}`)}
-			{#if el.type === 'segmentMark'}
-				{@const svg = segmentMarkToSVG(el.id, figure, transformer)}
-				{@const sty = resolveStyle(el, figure.defaults)}
-				{#if svg}
-					{#each svg.ticks as tick, i (i)}
+				{:else if el.type === 'line'}
+					{@const svg = lineToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
 						<line
-							x1={tick.x1}
-							y1={tick.y1}
-							x2={tick.x2}
-							y2={tick.y2}
+							x1={svg.x1}
+							y1={svg.y1}
+							x2={svg.x2}
+							y2={svg.y2}
 							stroke={sty.color}
 							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
 							opacity={sty.opacity}
-							class="segment-mark"
+							class="geo-line"
 						/>
-					{/each}
+					{/if}
+				{:else if el.type === 'ray'}
+					{@const svg = rayToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						<line
+							x1={svg.x1}
+							y1={svg.y1}
+							x2={svg.x2}
+							y2={svg.y2}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							opacity={sty.opacity}
+							class="ray"
+						/>
+					{/if}
+				{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint'}
+					{@const svg = circleToSVG(el.id, figure, transformer)}
+					{#if svg}
+						<circle
+							cx={svg.cx}
+							cy={svg.cy}
+							r={svg.r}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							opacity={sty.opacity}
+							fill={sty.fillColor ?? 'none'}
+							fill-opacity={sty.fillOpacity}
+							class="circle"
+						/>
+					{/if}
 				{/if}
-			{/if}
-		{/each}
+			{/each}
 
-		<!-- Measures (on top of everything) -->
-		{#each elements as el (`${el.id}_meas_${version}`)}
-			{#if el.type === 'measure'}
-				{@const svg = measureToSVG(el.id, figure, transformer)}
-				{@const sty = resolveStyle(el, figure.defaults)}
-				{#if svg}
-					<rect
-						x={svg.x - 4}
-						y={svg.y - 12}
-						width={svg.text.length * 8 + 8}
-						height={16}
-						rx={3}
-						fill="white"
-						fill-opacity="0.85"
-						class="measure-bg"
-					/>
-					<text x={svg.x} y={svg.y} fill={sty.color} opacity={sty.opacity} class="measure-text"
-						>{svg.text}</text
-					>
+			<!-- Angle marks (between elements and points) -->
+			{#each elements as el (`${el.id}_angm_${version}`)}
+				{#if el.type === 'angleMark'}
+					{@const svg = angleMarkToSVG(el.id, figure, transformer)}
+					{@const sty = resolveStyle(el, figure.defaults)}
+					{#if svg}
+						{#each svg.paths as path, i (i)}
+							<path
+								d={path}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								stroke-dasharray={sty.dashArray}
+								opacity={sty.opacity}
+								fill="none"
+								class="angle-mark"
+							/>
+						{/each}
+					{/if}
 				{/if}
-			{/if}
-		{/each}
-	</g>
-</svg>
+			{/each}
+
+			<!-- Points -->
+			{#each elements as el (`${el.id}_${version}`)}
+				{#if isPointElement(el)}
+					{@const svg = pointToSVG(el.id, figure, transformer)}
+					{@const sty = resolveStyle(el, figure.defaults)}
+					{#if svg}
+						{#if sty.pointShape === 'dot'}
+							<circle
+								cx={svg.cx}
+								cy={svg.cy}
+								r={sty.pointSize}
+								fill={sty.color}
+								opacity={sty.opacity}
+								class="point"
+								class:draggable={interactive && el.type === 'freePoint'}
+								class:hovered={hoveredId === el.id}
+								class:dragging={draggingId === el.id}
+							/>
+						{:else if sty.pointShape === 'circle'}
+							<circle
+								cx={svg.cx}
+								cy={svg.cy}
+								r={sty.pointSize}
+								fill="none"
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								opacity={sty.opacity}
+								class="point"
+								class:draggable={interactive && el.type === 'freePoint'}
+								class:hovered={hoveredId === el.id}
+								class:dragging={draggingId === el.id}
+							/>
+						{:else if sty.pointShape === 'cross'}
+							<g
+								class="point"
+								class:draggable={interactive && el.type === 'freePoint'}
+								class:hovered={hoveredId === el.id}
+								class:dragging={draggingId === el.id}
+								opacity={sty.opacity}
+							>
+								<line
+									x1={svg.cx - sty.pointSize}
+									y1={svg.cy - sty.pointSize}
+									x2={svg.cx + sty.pointSize}
+									y2={svg.cy + sty.pointSize}
+									stroke={sty.color}
+									stroke-width={sty.strokeWidth}
+								/>
+								<line
+									x1={svg.cx + sty.pointSize}
+									y1={svg.cy - sty.pointSize}
+									x2={svg.cx - sty.pointSize}
+									y2={svg.cy + sty.pointSize}
+									stroke={sty.color}
+									stroke-width={sty.strokeWidth}
+								/>
+							</g>
+						{:else if sty.pointShape === 'square'}
+							<rect
+								x={svg.cx - sty.pointSize}
+								y={svg.cy - sty.pointSize}
+								width={sty.pointSize * 2}
+								height={sty.pointSize * 2}
+								fill={sty.color}
+								opacity={sty.opacity}
+								class="point"
+								class:draggable={interactive && el.type === 'freePoint'}
+								class:hovered={hoveredId === el.id}
+								class:dragging={draggingId === el.id}
+							/>
+						{/if}
+						{#if el.label}
+							{@const lx = svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 4)}
+							{@const ly = svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2))}
+							<text
+								x={lx}
+								y={ly}
+								class="label"
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke">{el.label}</text
+							>
+						{/if}
+					{/if}
+				{/if}
+			{/each}
+
+			<!-- Segment marks (on top of points so ticks are visible) -->
+			{#each elements as el (`${el.id}_segm_${version}`)}
+				{#if el.type === 'segmentMark'}
+					{@const svg = segmentMarkToSVG(el.id, figure, transformer)}
+					{@const sty = resolveStyle(el, figure.defaults)}
+					{#if svg}
+						{#each svg.ticks as tick, i (i)}
+							<line
+								x1={tick.x1}
+								y1={tick.y1}
+								x2={tick.x2}
+								y2={tick.y2}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								opacity={sty.opacity}
+								class="segment-mark"
+							/>
+						{/each}
+					{/if}
+				{/if}
+			{/each}
+
+			<!-- Measures (on top of everything) -->
+			{#each elements as el (`${el.id}_meas_${version}`)}
+				{#if el.type === 'measure'}
+					{@const svg = measureToSVG(el.id, figure, transformer)}
+					{@const sty = resolveStyle(el, figure.defaults)}
+					{#if svg}
+						<rect
+							x={svg.x - 4}
+							y={svg.y - 12}
+							width={svg.text.length * 8 + 8}
+							height={16}
+							rx={3}
+							fill="white"
+							fill-opacity="0.85"
+							class="measure-bg"
+						/>
+						<text x={svg.x} y={svg.y} fill={sty.color} opacity={sty.opacity} class="measure-text"
+							>{svg.text}</text
+						>
+					{/if}
+				{/if}
+			{/each}
+		</g>
+	</svg>
+
+	{#if popoverElement}
+		<ElementPopover
+			element={popoverElement}
+			{figure}
+			x={popoverX}
+			y={popoverY}
+			onclose={closePopover}
+			onchange={() => version++}
+		/>
+	{/if}
+</div>
 
 <style>
 	.geometry-canvas {
