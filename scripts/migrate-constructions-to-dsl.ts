@@ -11,9 +11,15 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'https://aqtijumsgfufoztohdua.supabase.co';
-const SUPABASE_KEY =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxdGlqdW1zZ2Z1Zm96dG9oZHVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5NTU0OTYsImV4cCI6MjA3NTUzMTQ5Nn0.8D3EtroL-b7FGote0bf8aG1H7HBhBet73M0Mjp9Ia5E';
+import 'dotenv/config';
+
+const SUPABASE_URL = process.env.PUBLIC_SUPABASE_URL ?? 'https://aqtijumsgfufoztohdua.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_KEY) {
+	console.error('SUPABASE_SERVICE_ROLE_KEY is required in .env');
+	process.exit(1);
+}
 
 const dryRun = process.argv.includes('--dry-run');
 
