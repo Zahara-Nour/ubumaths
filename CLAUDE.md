@@ -23,7 +23,7 @@ pnpm dev -- --port 5175    # TOUJOURS utiliser port 5175 (Claude)
 
 # Quality checks (FICHIERS MODIFIES UNIQUEMENT)
 pnpm format "src/**/*.{ts,svelte}"  # Prettier
-npx tsc --noEmit <fichier.ts>       # TypeScript check sur fichier specifique
+pnpm check:incremental              # TypeScript + Svelte check (incremental, ~30s)
 
 # Tests
 pnpm test:server <path>    # Server tests only (for specific files)
@@ -42,9 +42,10 @@ pnpm release               # Create release (main branch only)
 
 ### INTERDIT (problemes de memoire)
 
-- `pnpm check` / `pnpm check:fast` / `svelte-check` - JAMAIS utiliser
+- `pnpm check` / `pnpm check:fast` / `svelte-check` (sans --incremental) - JAMAIS utiliser
 - `pnpm build` pour verifier - JAMAIS utiliser
 - `pnpm lint` sur tout le projet - JAMAIS utiliser
+- `npx tsc --noEmit <fichier>` - Faux positifs ($lib non resolu, downlevelIteration)
 
 ---
 
@@ -158,7 +159,7 @@ export interface FriendshipWithProfile {
 **INTERDIT aux agents** :
 
 - Lancer `pnpm test:unit` ou des tests en masse pour "comprendre" un bug
-- Lancer `pnpm check`, `pnpm check:fast`, `svelte-check`, `pnpm build`, `pnpm lint` sur tout le projet
+- Lancer `pnpm check`, `pnpm check:fast`, `svelte-check` (sans --incremental), `pnpm build`, `pnpm lint` sur tout le projet
 - Tourner > 5 minutes sans produire de resultat concret
 
 ### Quand utiliser un agent
@@ -235,7 +236,7 @@ export interface FriendshipWithProfile {
 6. **Performance Audit** si requetes DB lourdes
 7. **Quality Checks** a la FIN du plan UNIQUEMENT :
    - ESLint : `npx eslint <fichiers modifies>`
-   - TypeScript : `npx tsc --noEmit <fichiers .ts modifies>`
+   - TypeScript + Svelte : `pnpm check:incremental` (incremental, ~30s)
    - Svelte : utiliser `mcp__svelte__svelte-autofixer` sur chaque fichier .svelte modifie
 8. **Documentation de progression** tout au long de l'implementation pour crash recovery
 
@@ -330,8 +331,8 @@ Pour chaque fichier modifie dans la session :
 # Fichiers .svelte : utiliser le MCP autofixer
 mcp__svelte__svelte-autofixer(code, desired_svelte_version: 5, filename)
 
-# Fichiers .ts : verification TypeScript
-npx tsc --noEmit <fichier.ts>
+# TypeScript + Svelte check (incremental, ~30s, resout $lib et tous les alias)
+pnpm check:incremental
 
 # ESLint sur fichiers modifies
 npx eslint <fichiers modifies>
@@ -346,7 +347,7 @@ npx eslint <fichiers modifies>
 - [ ] Svelte 5 runes only
 - [ ] Tests exist for new code
 
-**INTERDIT** : `pnpm check`, `pnpm check:fast`, `svelte-check`, `pnpm build` pour verifier.
+**INTERDIT** : `pnpm check`, `pnpm check:fast`, `svelte-check` (sans --incremental), `pnpm build`, `npx tsc --noEmit` pour verifier.
 
 ---
 

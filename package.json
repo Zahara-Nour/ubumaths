@@ -13,6 +13,7 @@
 		"check:changed": "bash scripts/check-changed.sh",
 		"check:staged": "bash scripts/check-changed.sh --staged",
 		"check:fast": "svelte-kit sync && tsc --noEmit --incremental",
+		"check:incremental": "bash scripts/check-incremental.sh",
 		"check:safe": "NODE_OPTIONS='--max-old-space-size=8192' svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"format": "prettier --write",
 		"format:all": "prettier --write .",
