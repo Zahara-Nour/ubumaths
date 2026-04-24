@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import type { Component } from 'svelte';
 	import type { PageData } from './$types';
-	import OldConstructionPlayer from '$lib/constructions/components/ConstructionPlayer.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
@@ -16,7 +15,7 @@
 	let DslPlayer = $state<Component | null>(null);
 
 	onMount(async () => {
-		if (data.construction.format === 'dsl') {
+		if (data.construction.dsl_script) {
 			const mod = await import('$lib/constructions-v2/components/ConstructionPlayer.svelte');
 			DslPlayer = mod.default;
 		}
@@ -136,7 +135,7 @@
 	<div class="flex justify-center">
 		<Card.Root class="w-fit overflow-hidden">
 			<Card.Content class="p-4 sm:p-6">
-				{#if data.construction.format === 'dsl' && data.construction.dsl_script}
+				{#if data.construction.dsl_script}
 					{#if DslPlayer}
 						<DslPlayer script={data.construction.dsl_script} showGrid={true} showControls={true} />
 					{:else}
@@ -145,12 +144,11 @@
 						</div>
 					{/if}
 				{:else}
-					<OldConstructionPlayer
-						script={data.construction.script}
-						showGrid={true}
-						showParameters={true}
-						showControls={true}
-					/>
+					<div class="flex h-[400px] w-[600px] items-center justify-center rounded-md border">
+						<p class="text-muted-foreground">
+							Cette construction utilise l'ancien format JSON qui n'est plus supporte.
+						</p>
+					</div>
 				{/if}
 			</Card.Content>
 		</Card.Root>
