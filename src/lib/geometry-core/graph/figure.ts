@@ -790,6 +790,23 @@ export class Figure {
 		this.elements.set(id, updated);
 	}
 
+	updateStyle(id: string, newStyle: Partial<GeoStyle>): void {
+		const el = this.elements.get(id);
+		if (!el) throw new Error(`updateStyle: "${id}" does not exist`);
+		const mergedStyle = { ...el.style, ...newStyle };
+		const updated = { ...el, style: mergedStyle } as GeoElement;
+		this.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+	}
+
+	updateLabel(id: string, label: string): void {
+		const el = this.elements.get(id);
+		if (!el) throw new Error(`updateLabel: "${id}" does not exist`);
+		const updated = { ...el, label } as GeoElement;
+		this.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+	}
+
 	// ─── Access ─────────────────────────────────────────────────────
 
 	getElementById(id: string): GeoElement | undefined {
