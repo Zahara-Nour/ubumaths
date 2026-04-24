@@ -15,6 +15,8 @@ import {
 	isAngleMark,
 	isSegmentMark,
 	isMeasure,
+	isArcByAngles,
+	isArcByPoints,
 	type GeoElementBase,
 	type GeoAngleMark,
 	type GeoSegmentMark,
@@ -23,7 +25,9 @@ import {
 	type GeoLine,
 	type GeoRay,
 	type GeoCircleByRadius,
-	type GeoCircleByPoint
+	type GeoCircleByPoint,
+	type GeoArcByAngles,
+	type GeoArcByPoints
 } from '../types/elements';
 
 // =============================================================================
@@ -220,6 +224,115 @@ function circleByPointToSVG(
 	// Radius in SVG pixels (distance between SVG center and SVG edge point)
 	const radiusPx = Math.sqrt((svgEdge.x - svgCenter.x) ** 2 + (svgEdge.y - svgCenter.y) ** 2);
 	return { cx: svgCenter.x, cy: svgCenter.y, r: radiusPx };
+}
+
+// =============================================================================
+// Arc rendering
+// =============================================================================
+
+export interface ArcSVG {
+	/** SVG path string using the A (arc) command. */
+	path: string;
+}
+
+/**
+ * Convert an arc element to an SVG path string.
+ */
+export function arcToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): ArcSVG | null {
+	const el = figure.getElementById(id);
+	if (!el) return null;
+
+	if (isArcByAngles(el)) {
+		return arcByAnglesToSVG(el, figure, transformer);
+	}
+	if (isArcByPoints(el)) {
+		return arcByPointsToSVG(el, figure, transformer);
+	}
+	return null;
+}
+
+function arcByAnglesToSVG(
+	arc: GeoArcByAngles,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): ArcSVG | null {
+	const center = figure.getPosition(arc.centerId);
+	if (!center) return null;
+
+	const cx = geoToNumber(center.x);
+	const cy = geoToNumber(center.y);
+	const r = geoToNumber(arc.radius);
+	const startAngle = geoToNumber(arc.startAngle);
+	const endAngle = geoToNumber(arc.endAngle);
+
+	return buildArcSVGPath(cx, cy, r, startAngle, endAngle, transformer);
+}
+
+function arcByPointsToSVG(
+	arc: GeoArcByPoints,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): ArcSVG | null {
+	const startPos = figure.getPosition(arc.startId);
+	const centerPos = figure.getPosition(arc.centerId);
+	const endPos = figure.getPosition(arc.endId);
+	if (!startPos || !centerPos || !endPos) return null;
+
+	const cx = geoToNumber(centerPos.x);
+	const cy = geoToNumber(centerPos.y);
+	const sx = geoToNumber(startPos.x);
+	const sy = geoToNumber(startPos.y);
+	const ex = geoToNumber(endPos.x);
+	const ey = geoToNumber(endPos.y);
+
+	const r = Math.sqrt((sx - cx) ** 2 + (sy - cy) ** 2);
+	const startAngle = Math.atan2(sy - cy, sx - cx);
+	const endAngle = Math.atan2(ey - cy, ex - cx);
+
+	return buildArcSVGPath(cx, cy, r, startAngle, endAngle, transformer);
+}
+
+/**
+ * Build an SVG path for an arc. Angles in radians (math convention).
+ * The arc goes counterclockwise from startAngle to endAngle.
+ */
+function buildArcSVGPath(
+	cx: number,
+	cy: number,
+	r: number,
+	startAngle: number,
+	endAngle: number,
+	transformer: CoordinateTransformer
+): ArcSVG | null {
+	if (r < 1e-10) return null;
+
+	// Compute start and end points in math coordinates
+	const sx = cx + r * Math.cos(startAngle);
+	const sy = cy + r * Math.sin(startAngle);
+	const ex = cx + r * Math.cos(endAngle);
+	const ey = cy + r * Math.sin(endAngle);
+
+	// Convert to SVG coordinates
+	const svgStart = transformer.mathToSvg(sx, sy);
+	const svgEnd = transformer.mathToSvg(ex, ey);
+	const rPx = r * transformer.scaleX;
+
+	// Compute sweep: counterclockwise in math = clockwise in SVG (y inverted)
+	let sweep = endAngle - startAngle;
+	// Normalize to [0, 2*PI)
+	while (sweep < 0) sweep += 2 * Math.PI;
+	while (sweep >= 2 * Math.PI) sweep -= 2 * Math.PI;
+
+	const largeArc = sweep > Math.PI ? 1 : 0;
+	// In SVG, y is inverted so counterclockwise in math = clockwise in SVG = sweep-flag 0
+	const sweepFlag = 0;
+
+	const path = `M ${svgStart.x} ${svgStart.y} A ${rPx} ${rPx} 0 ${largeArc} ${sweepFlag} ${svgEnd.x} ${svgEnd.y}`;
+	return { path };
 }
 
 // =============================================================================

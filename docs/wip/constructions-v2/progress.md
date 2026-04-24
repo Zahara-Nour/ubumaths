@@ -1,8 +1,8 @@
 # Constructions-v2 — Progression
 
-> Derniere mise a jour : 2026-04-24
+> Derniere mise a jour : 2026-04-25
 
-## Etat : 7 phases terminees (module complet)
+## Etat : 7 phases terminees + element Arc ajoute
 
 ## Phase 1 : Directives DSL (TERMINEE)
 
@@ -58,6 +58,21 @@
 - Dual parsing : DOMParser (browser) + xml2js (Node.js)
 - Tests : 13
 
+## Phase 8 : Element Arc (TERMINEE)
+
+- `GeoArcByAngles` et `GeoArcByPoints` dans `types/elements.ts`
+- Factory methods `createArcByAngles()` et `createArcByPoints()` dans `figure.ts`
+- `arcToSVG()` dans `svg-primitives.ts` (path SVG avec commande A)
+- DSL builtin `arc` avec 2 variantes :
+  - `arc(O, rayon=3, debut=0, fin=90)` — angles en degres
+  - `arc(A, O, B)` — arc par 3 points (trace d'angle)
+- Serialisation/deserialisation round-trip
+- Schemas Zod (`arcByAnglesSchema`, `arcByPointsSchema`)
+- Rendu dans GeometryCanvas.svelte
+- Export TikZ, Typst, SVG
+- Convertisseurs mis a jour (cercle → arc quand angles disponibles)
+- Tests : 23 (figure, SVG, DSL)
+
 ## Resume des tests
 
 | Module                     | Tests  |
@@ -69,8 +84,9 @@
 | Animator                   | 18     |
 | Positioning                | 8      |
 | Converter                  | 13     |
+| Arc (figure+SVG+DSL)       | 23     |
 | **Total constructions-v2** | **71** |
-| geometry-core (total)      | 1208+  |
+| geometry-core (total)      | 1173+  |
 
 ## Structure finale
 

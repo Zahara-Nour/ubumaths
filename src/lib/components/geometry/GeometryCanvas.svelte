@@ -12,6 +12,7 @@
 		lineToSVG,
 		rayToSVG,
 		circleToSVG,
+		arcToSVG,
 		angleMarkToSVG,
 		segmentMarkToSVG,
 		measureToSVG,
@@ -533,6 +534,26 @@
 							fill={sty.fillColor ?? 'none'}
 							fill-opacity={sty.fillOpacity}
 							class="circle"
+							class:hovered={hoveredId === el.id}
+						/>
+					{/if}
+				{/if}
+			{/each}
+
+			<!-- Arcs (between circles and points) -->
+			{#each elements as el (`${el.id}_arc_${version}`)}
+				{#if el.type === 'arcByAngles' || el.type === 'arcByPoints'}
+					{@const svg = arcToSVG(el.id, figure, transformer)}
+					{@const sty = resolveStyle(el, figure.defaults)}
+					{#if svg}
+						<path
+							d={svg.path}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							opacity={sty.opacity}
+							fill="none"
+							class="arc"
 							class:hovered={hoveredId === el.id}
 						/>
 					{/if}

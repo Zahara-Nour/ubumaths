@@ -238,16 +238,24 @@ function convertJsonToDsl(title: string, steps: OldStep[], canvasW = 800, canvas
 					break;
 				}
 				case 'drawArc': {
-					// Compass arc — create a circle with same center/radius
-					// (DSL doesn't have arcs, full circle is the closest representation)
+					// Compass arc — create a true arc element
 					const center = (act as unknown as { center?: { x: number; y: number } }).center;
 					const radius = act.radius;
+					const startAngle = (act as unknown as { startAngle?: number }).startAngle;
+					const endAngle = (act as unknown as { endAngle?: number }).endAngle;
 					if (center && radius) {
 						const mc = toMath(center.x, center.y, canvasW, canvasH, ppu);
 						const rMath = Math.round((radius / ppu) * 100) / 100;
 						const cp = `_ac${nameCounter++}`;
 						lines.push(`${cp} = point(${mc.x}, ${mc.y})`);
-						lines.push(`cercle(${cp}, rayon=${rMath})`);
+						if (startAngle !== undefined && endAngle !== undefined) {
+							const sDeg = Math.round(startAngle * 100) / 100;
+							const eDeg = Math.round(endAngle * 100) / 100;
+							lines.push(`arc(${cp}, rayon=${rMath}, debut=${sDeg}, fin=${eDeg})`);
+						} else {
+							// No angle info — fall back to full circle
+							lines.push(`cercle(${cp}, rayon=${rMath})`);
+						}
 					}
 					break;
 				}

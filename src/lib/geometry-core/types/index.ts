@@ -31,6 +31,9 @@ export type {
 	GeoMeasure,
 	GeoCircleByRadius,
 	GeoCircleByPoint,
+	GeoArc,
+	GeoArcByAngles,
+	GeoArcByPoints,
 	GeoPolygon
 } from './elements';
 export {
@@ -53,7 +56,10 @@ export {
 	isCircleByRadius,
 	isLineLike,
 	isCircleByPoint,
-	isPolygon
+	isPolygon,
+	isArc,
+	isArcByAngles,
+	isArcByPoints
 } from './elements';
 
 // Schemas

@@ -192,6 +192,23 @@ const measureSchema = baseElementSchema.extend({
 	dependsOn: z.array(z.string().min(1)).min(2)
 });
 
+const arcByAnglesSchema = baseElementSchema.extend({
+	type: z.literal('arcByAngles'),
+	centerId: z.string().min(1),
+	radius: geoValueSchema,
+	startAngle: geoValueSchema,
+	endAngle: geoValueSchema,
+	dependsOn: z.tuple([z.string()])
+});
+
+const arcByPointsSchema = baseElementSchema.extend({
+	type: z.literal('arcByPoints'),
+	startId: z.string().min(1),
+	centerId: z.string().min(1),
+	endId: z.string().min(1),
+	dependsOn: z.tuple([z.string(), z.string(), z.string()])
+});
+
 const polygonSchema = baseElementSchema.extend({
 	type: z.literal('polygon'),
 	dependsOn: z.array(z.string().min(1)).min(3, 'Polygon needs at least 3 vertices')
@@ -214,6 +231,8 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	raySchema,
 	circleByRadiusSchema,
 	circleByPointSchema,
+	arcByAnglesSchema,
+	arcByPointsSchema,
 	polygonSchema
 ]);
 

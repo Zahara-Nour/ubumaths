@@ -180,11 +180,17 @@ export async function convertXmlToDsl(xml: string): Promise<DslConversionResult>
 						// Compass manipulation — skip (handled by animation layer)
 						break;
 					case 'tracer': {
-						// Compass trace = circle or arc
+						// Compass trace = arc (or full circle if no angle specified)
 						if (action.id && action.rayon) {
 							const center = getPointName(action.id);
 							const radius = parseFloat(action.rayon);
-							lines.push(`cercle(${center}, rayon=${radius})`);
+							if (action.angle) {
+								// Arc with angle extent
+								const angle = parseFloat(action.angle);
+								lines.push(`arc(${center}, rayon=${radius}, debut=0, fin=${angle})`);
+							} else {
+								lines.push(`cercle(${center}, rayon=${radius})`);
+							}
 						}
 						break;
 					}

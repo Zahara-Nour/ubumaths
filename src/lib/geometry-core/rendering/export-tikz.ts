@@ -178,6 +178,50 @@ export function exportToTikZ(
 		}
 	}
 
+	// Pass 2a: arcs
+	for (const el of elements) {
+		if (!el.visible) continue;
+		if (el.type !== 'arcByAngles' && el.type !== 'arcByPoints') continue;
+		const opts = styleOptions(el, figure.defaults);
+
+		let cx: number, cy: number, r: number, startDeg: number, endDeg: number;
+
+		if (el.type === 'arcByAngles') {
+			const center = figure.getPosition(el.centerId);
+			if (!center) continue;
+			cx = geoToNumber(center.x);
+			cy = geoToNumber(center.y);
+			r = geoToNumber(el.radius);
+			startDeg = (geoToNumber(el.startAngle) * 180) / Math.PI;
+			endDeg = (geoToNumber(el.endAngle) * 180) / Math.PI;
+		} else {
+			const startPos = figure.getPosition(el.startId);
+			const centerPos = figure.getPosition(el.centerId);
+			const endPos = figure.getPosition(el.endId);
+			if (!startPos || !centerPos || !endPos) continue;
+			cx = geoToNumber(centerPos.x);
+			cy = geoToNumber(centerPos.y);
+			const sx = geoToNumber(startPos.x);
+			const sy = geoToNumber(startPos.y);
+			r = Math.sqrt((sx - cx) ** 2 + (sy - cy) ** 2);
+			startDeg = (Math.atan2(sy - cy, sx - cx) * 180) / Math.PI;
+			endDeg = (Math.atan2(geoToNumber(endPos.y) - cy, geoToNumber(endPos.x) - cx) * 180) / Math.PI;
+		}
+
+		// Normalize sweep counterclockwise
+		let sweep = endDeg - startDeg;
+		while (sweep < 0) sweep += 360;
+		while (sweep >= 360) sweep -= 360;
+		const tikzEnd = Math.round((startDeg + sweep) * 100) / 100;
+		const tikzStart = Math.round(startDeg * 100) / 100;
+
+		const startX = cx + r * Math.cos((tikzStart * Math.PI) / 180);
+		const startY = cy + r * Math.sin((tikzStart * Math.PI) / 180);
+		lines.push(
+			`  \\draw[${opts}] ${coord(startX, startY)} arc (${tikzStart}:${tikzEnd}:${Math.round(r * 1000) / 1000});`
+		);
+	}
+
 	// Pass 2b: polygons
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'polygon') continue;
