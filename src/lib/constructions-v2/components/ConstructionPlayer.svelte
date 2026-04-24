@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { parseDsl } from '$lib/geometry-core/dsl';
 	import { ConstructionExecutor } from '../core/executor';
 	import { SimpleTimeline } from '../core/timeline.svelte';
 	import ConstructionCanvas from './ConstructionCanvas.svelte';
@@ -31,30 +32,29 @@
 	const executor = new ConstructionExecutor();
 	const timeline = new SimpleTimeline({
 		onStepChange(stepIndex) {
-			// Execute steps up to stepIndex
 			executeUpTo(stepIndex);
-		},
-		onComplete() {
-			// Animation finished
 		}
 	});
 
-	let error = $state<string | null>(null);
 	let figureVersion = $state(0);
 
-	// Load script — use tick() to bump version outside the effect's dependency tracking
-	$effect(() => {
+	// Parse script — $derived for pure computation (can fail)
+	let parseResult = $derived.by(() => {
 		try {
-			error = null;
-			executor.load(script);
-			timeline.load(executor.stepDurations);
-			// Don't use figureVersion++ here (read+write causes infinite loop)
-			// The version is bumped by executeUpTo/handleReset on user interaction
-			if (autoPlay) {
-				timeline.play();
-			}
+			parseDsl(script); // validate syntax
+			return { valid: true as const, error: null };
 		} catch (e) {
-			error = e instanceof Error ? e.message : String(e);
+			return { valid: false as const, error: e instanceof Error ? e.message : String(e) };
+		}
+	});
+
+	// Load into executor/timeline — $effect for side effects only
+	$effect(() => {
+		if (!parseResult.valid) return;
+		executor.load(script);
+		timeline.load(executor.stepDurations);
+		if (autoPlay) {
+			timeline.play();
 		}
 	});
 
@@ -79,12 +79,12 @@
 </script>
 
 <div class="construction-player {className}">
-	{#if error}
+	{#if parseResult.error}
 		<div
 			class="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive"
 		>
 			<p class="font-medium">Erreur dans le script</p>
-			<p class="mt-1 font-mono text-xs">{error}</p>
+			<p class="mt-1 font-mono text-xs">{parseResult.error}</p>
 		</div>
 	{:else}
 		{#if title}
