@@ -63,7 +63,13 @@ const baseElementSchema = z.object({
 	label: z.string().optional(),
 	color: z.string().min(1).max(50),
 	visible: z.boolean(),
-	style: geoStyleSchema
+	style: geoStyleSchema,
+	labelOffset: z
+		.object({
+			dx: z.number().finite(),
+			dy: z.number().finite()
+		})
+		.optional()
 });
 
 const freePointSchema = baseElementSchema.extend({

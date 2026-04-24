@@ -32,6 +32,7 @@ export interface GeoStyle {
 export interface GeoElementBase {
 	readonly id: string;
 	readonly label?: string;
+	readonly labelOffset?: { readonly dx: number; readonly dy: number };
 	readonly color: string;
 	readonly visible: boolean;
 	readonly style?: GeoStyle;

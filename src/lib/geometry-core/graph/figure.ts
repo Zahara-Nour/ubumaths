@@ -68,6 +68,7 @@ export interface FigureDefaults {
 
 export interface ElementOptions {
 	label?: string;
+	labelOffset?: { dx: number; dy: number };
 	color?: string;
 	style?: GeoStyle;
 }
@@ -302,6 +303,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [] as const
 		};
@@ -320,6 +322,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [point1Id, point2Id]
 		};
@@ -338,6 +341,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [startId, endId]
 		};
@@ -355,6 +359,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [point1Id, point2Id]
 		};
@@ -372,6 +377,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [originId, throughId]
 		};
@@ -389,6 +395,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [centerId]
 		};
@@ -406,6 +413,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [centerId, edgePointId]
 		};
@@ -431,6 +439,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [line1Id, line2Id]
 		};
@@ -461,6 +470,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [sourceId, centerId]
 		};
@@ -492,6 +502,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [sourceId, centerId]
 		};
@@ -531,6 +542,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [sourceId, vectorStartId, vectorEndId]
 		};
@@ -562,6 +574,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [sourceId, centerId]
 		};
@@ -599,6 +612,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [sourceId, linePoint1Id, linePoint2Id]
 		};
@@ -637,6 +651,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [p1Id, vertexId, p2Id]
 		};
@@ -669,6 +684,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: [startId, endId]
 		};
@@ -709,6 +725,7 @@ export class Figure {
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
 			dependsOn: targetIds
 		};
@@ -763,6 +780,14 @@ export class Figure {
 			}
 			this.measureValues.set(id, Math.abs(sum) / 2);
 		}
+	}
+
+	setLabelOffset(id: string, dx: number, dy: number): void {
+		const el = this.elements.get(id);
+		if (!el) throw new Error(`setLabelOffset: "${id}" does not exist`);
+		const updated = { ...el, labelOffset: { dx, dy } } as GeoElement;
+		this.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
 	}
 
 	// ─── Access ─────────────────────────────────────────────────────
