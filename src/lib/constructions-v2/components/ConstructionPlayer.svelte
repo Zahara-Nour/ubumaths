@@ -42,13 +42,14 @@
 	let error = $state<string | null>(null);
 	let figureVersion = $state(0);
 
-	// Load script
+	// Load script — use tick() to bump version outside the effect's dependency tracking
 	$effect(() => {
 		try {
 			error = null;
 			executor.load(script);
 			timeline.load(executor.stepDurations);
-			figureVersion++;
+			// Don't use figureVersion++ here (read+write causes infinite loop)
+			// The version is bumped by executeUpTo/handleReset on user interaction
 			if (autoPlay) {
 				timeline.play();
 			}
