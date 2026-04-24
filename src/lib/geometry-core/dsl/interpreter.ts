@@ -70,7 +70,7 @@ class Interpreter {
 		return undefined;
 	}
 
-	private executeStatement(stmt: DslStatement): ResolvedValue | undefined {
+	executeStatement(stmt: DslStatement): ResolvedValue | undefined {
 		switch (stmt.kind) {
 			case 'assignment': {
 				const value = this.evaluateExpr(stmt.value, stmt.line);
@@ -436,4 +436,113 @@ class Interpreter {
 		}
 		return { type: 'element', figureId: entry.figureId!, elementType: entry.type };
 	}
+}
+
+// ─── Stepper API ─────────────────────────────────────────────
+
+export interface DslStepper {
+	/** Execute the next statement. Returns false when program is complete. */
+	step(): boolean;
+	/** Index of the last executed step (-1 before first step). */
+	readonly currentIndex: number;
+	/** The next statement to be executed, or undefined if done. */
+	readonly nextStatement: DslStatement | undefined;
+	/** The figure being built. */
+	readonly figure: Figure;
+	/** The symbol table. */
+	readonly symbols: SymbolTable;
+	/** Total number of executable steps. */
+	readonly totalSteps: number;
+	/** All steps (read-only). Control flow (for/if) appears as single atomic entries. */
+	readonly steps: readonly DslStatement[];
+	/** Reset to beginning with a fresh figure. */
+	reset(): void;
+}
+
+/**
+ * Create a step-by-step executor for a DSL program.
+ *
+ * The stepper lazily flattens control flow: macro definitions are
+ * registered upfront, but for/if blocks are expanded only when
+ * the stepper reaches them (so variables are already defined).
+ */
+export function createStepper(
+	program: DslProgram,
+	figure?: Figure,
+	onDirective?: DirectiveHandler
+): DslStepper {
+	let fig = figure ?? new Figure();
+	let symbols = new SymbolTable();
+	let macros = new MacroRegistry();
+	loadStdlib(macros);
+	let interpreter = new Interpreter(fig, symbols, macros, onDirective);
+
+	// Register macros upfront, collect non-macro top-level statements
+	const topLevel = registerMacrosAndCollect(program.statements, macros);
+	let steps: DslStatement[] = [...topLevel];
+	let cursor = -1;
+
+	return {
+		step(): boolean {
+			const nextIndex = cursor + 1;
+			if (nextIndex >= steps.length) return false;
+
+			cursor = nextIndex;
+			interpreter.executeStatement(steps[cursor]);
+			return true;
+		},
+
+		get currentIndex(): number {
+			return cursor;
+		},
+
+		get nextStatement(): DslStatement | undefined {
+			const nextIndex = cursor + 1;
+			if (nextIndex >= steps.length) return undefined;
+			return steps[nextIndex];
+		},
+
+		get figure(): Figure {
+			return fig;
+		},
+
+		get symbols(): SymbolTable {
+			return symbols;
+		},
+
+		get totalSteps(): number {
+			return steps.length;
+		},
+
+		get steps(): readonly DslStatement[] {
+			return steps;
+		},
+
+		reset(): void {
+			fig = new Figure();
+			symbols = new SymbolTable();
+			macros = new MacroRegistry();
+			loadStdlib(macros);
+			interpreter = new Interpreter(fig, symbols, macros, onDirective);
+			const freshTopLevel = registerMacrosAndCollect(program.statements, macros);
+			steps = [...freshTopLevel];
+			cursor = -1;
+		}
+	};
+}
+
+/** Register macro definitions and return non-macro statements. */
+function registerMacrosAndCollect(
+	statements: DslStatement[],
+	macros: MacroRegistry
+): DslStatement[] {
+	const result: DslStatement[] = [];
+	for (const stmt of statements) {
+		if (stmt.kind === 'macroDef') {
+			macros.define(stmt);
+		} else {
+			result.push(stmt);
+		}
+	}
+	return result;
 }
