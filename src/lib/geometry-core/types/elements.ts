@@ -11,6 +11,21 @@ import type { GeoValue } from './geo-value';
 import type { GeoPoint } from './primitives';
 
 // =============================================================================
+// Style
+// =============================================================================
+
+export interface GeoStyle {
+	readonly color?: string;
+	readonly opacity?: number;
+	readonly strokeWidth?: number;
+	readonly dash?: 'solid' | 'dashed' | 'dotted';
+	readonly pointShape?: 'dot' | 'circle' | 'cross' | 'square';
+	readonly pointSize?: number;
+	readonly fillColor?: string;
+	readonly fillOpacity?: number;
+}
+
+// =============================================================================
 // Common properties
 // =============================================================================
 
@@ -19,6 +34,7 @@ export interface GeoElementBase {
 	readonly label?: string;
 	readonly color: string;
 	readonly visible: boolean;
+	readonly style?: GeoStyle;
 	readonly dependsOn: readonly string[];
 }
 
@@ -89,6 +105,30 @@ export interface GeoReflectedOverLine extends GeoElementBase {
 	readonly linePoint1Id: string;
 	readonly linePoint2Id: string;
 	readonly dependsOn: readonly [string, string, string];
+}
+
+// =============================================================================
+// Annotation types
+// =============================================================================
+
+/** Angle mark (arc or right-angle square) at a vertex defined by three points. */
+export interface GeoAngleMark extends GeoElementBase {
+	readonly type: 'angleMark';
+	readonly p1Id: string;
+	readonly vertexId: string;
+	readonly p2Id: string;
+	readonly arcCount: 1 | 2 | 3;
+	readonly rightAngle: boolean;
+	readonly dependsOn: readonly [string, string, string];
+}
+
+/** Tick marks on a segment to indicate equal lengths. */
+export interface GeoSegmentMark extends GeoElementBase {
+	readonly type: 'segmentMark';
+	readonly startId: string;
+	readonly endId: string;
+	readonly markCount: 1 | 2 | 3;
+	readonly dependsOn: readonly [string, string];
 }
 
 // =============================================================================
@@ -177,6 +217,8 @@ export type GeoElement =
 	| GeoTranslatedPoint
 	| GeoDilatedPoint
 	| GeoReflectedOverLine
+	| GeoAngleMark
+	| GeoSegmentMark
 	| GeoSegment
 	| GeoLine
 	| GeoRay
@@ -233,6 +275,14 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'dilatedPoint' ||
 		el.type === 'reflectedOverLine'
 	);
+}
+
+export function isAngleMark(el: GeoElement): el is GeoAngleMark {
+	return el.type === 'angleMark';
+}
+
+export function isSegmentMark(el: GeoElement): el is GeoSegmentMark {
+	return el.type === 'segmentMark';
 }
 
 export function isSegment(el: GeoElement): el is GeoSegment {

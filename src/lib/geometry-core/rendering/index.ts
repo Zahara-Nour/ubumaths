@@ -19,4 +19,14 @@ export {
 } from './bezier';
 
 // SVG primitives
-export { pointToSVG, segmentToSVG, lineToSVG, rayToSVG, circleToSVG } from './svg-primitives';
+export type { GeoStyleResolved, AngleMarkSVG, SegmentMarkSVG } from './svg-primitives';
+export {
+	resolveStyle,
+	pointToSVG,
+	segmentToSVG,
+	lineToSVG,
+	rayToSVG,
+	circleToSVG,
+	angleMarkToSVG,
+	segmentMarkToSVG
+} from './svg-primitives';

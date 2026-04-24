@@ -38,6 +38,23 @@ export const geoPointSchema = z.object({
 });
 
 // =============================================================================
+// Style schema
+// =============================================================================
+
+export const geoStyleSchema = z
+	.object({
+		color: z.string().min(1).max(50).optional(),
+		opacity: z.number().min(0).max(1).optional(),
+		strokeWidth: z.number().min(0).optional(),
+		dash: z.enum(['solid', 'dashed', 'dotted']).optional(),
+		pointShape: z.enum(['dot', 'circle', 'cross', 'square']).optional(),
+		pointSize: z.number().min(0).optional(),
+		fillColor: z.string().min(1).max(50).optional(),
+		fillOpacity: z.number().min(0).max(1).optional()
+	})
+	.optional();
+
+// =============================================================================
 // Element schemas
 // =============================================================================
 
@@ -45,7 +62,8 @@ const baseElementSchema = z.object({
 	id: z.string().min(1),
 	label: z.string().optional(),
 	color: z.string().min(1).max(50),
-	visible: z.boolean()
+	visible: z.boolean(),
+	style: geoStyleSchema
 });
 
 const freePointSchema = baseElementSchema.extend({
@@ -142,6 +160,24 @@ const reflectedOverLineSchema = baseElementSchema.extend({
 	dependsOn: z.tuple([z.string(), z.string(), z.string()])
 });
 
+const angleMarkSchema = baseElementSchema.extend({
+	type: z.literal('angleMark'),
+	p1Id: z.string().min(1),
+	vertexId: z.string().min(1),
+	p2Id: z.string().min(1),
+	arcCount: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+	rightAngle: z.boolean(),
+	dependsOn: z.tuple([z.string(), z.string(), z.string()])
+});
+
+const segmentMarkSchema = baseElementSchema.extend({
+	type: z.literal('segmentMark'),
+	startId: z.string().min(1),
+	endId: z.string().min(1),
+	markCount: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+	dependsOn: z.tuple([z.string(), z.string()])
+});
+
 const polygonSchema = baseElementSchema.extend({
 	type: z.literal('polygon'),
 	dependsOn: z.array(z.string().min(1)).min(3, 'Polygon needs at least 3 vertices')
@@ -156,6 +192,8 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	translatedPointSchema,
 	dilatedPointSchema,
 	reflectedOverLineSchema,
+	angleMarkSchema,
+	segmentMarkSchema,
 	segmentSchema,
 	lineSchema,
 	raySchema,

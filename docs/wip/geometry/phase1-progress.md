@@ -1,6 +1,6 @@
 # Geometry-core — Progression
 
-> Derniere mise a jour : 2026-04-23
+> Derniere mise a jour : 2026-04-24
 
 ## Etat : Phases 1-3E terminees
 
@@ -126,6 +126,7 @@
 - **circleByPoint** : rayon calcule en espace SVG (pas juste scaleX)
 - **CSS** : couleurs directes (pas de variables CSS Shadcn)
 - **Accessibilite** : space key ignore sur les inputs, onPointerCancel, onWindowBlur
+- **Grille adaptative** : pas auto selon zoom (progression 1-2-5), sous-grille optionnelle, graduations sur les axes
 
 ## Refactoring
 
@@ -142,7 +143,7 @@
 - Demi-droite (C vers M) etendue d'un cote
 - Cercle par point (centre O, point R draggable)
 - Pan (espace + drag), zoom (molette), undo/redo (Ctrl+Z/Ctrl+Y)
-- Grille carree, axes visibles
+- Grille adaptative au zoom avec graduations sur les axes
 
 ## Phase 3E : Autres elements dependants (TERMINEE)
 
@@ -163,23 +164,46 @@
 - createReflectedOverLine : linePoint1Id !== linePoint2Id (guard explicite)
 - createRotatedPoint et createDilatedPoint : sourceId === centerId autorise (mathematiquement valide)
 
+## Phase 3F : Validation d'exercices (TERMINEE)
+
+- `validation/checks.ts` — 8 predicats geometriques pour valider les exercices
+- `checkPointAt` — tolerance circulaire (distance² < 1e-16)
+- `checkCollinear` — determinant via produit vectoriel (geoIsZero)
+- `checkDistance` — distance euclidienne (sqrt de distance²)
+- `checkSameDistance` — comparaison distance² exacte (geoEqual, pas de sqrt)
+- `checkParallel` — produit vectoriel nul, rejette elements identiques
+- `checkPerpendicular` — produit scalaire nul
+- `checkAngle` — float acos, tolerance 0.5°
+- `checkPointOnCircle` — distance² vs rayon² (geoEqual)
+- Messages en francais avec accents
+- Tests : 71 (edge cases inclus)
+
+### Decisions prises :
+
+- Comparaison exacte (geoEqual/geoIsZero) quand possible, float seulement pour les angles (acos)
+- checkSameDistance compare distance² (pas de sqrt, exactitude preservee)
+- checkParallel rejette line1Id === line2Id (droites identiques != paralleles)
+- checkAngle tolerance 0.5° (pragmatique pour les exercices)
+- checkPointOnCircle supporte circleByRadius et circleByPoint
+
 ## Prochaines etapes
 
-- Validation d'exercices (checks)
-- Nombres dynamiques (distance, angle comme objets)
+- Nombres dynamiques (distance, angle comme objets affichables)
 - Labels, export LaTeX
+- Ameliorations techniques (responsive)
 
 ## Resume des tests
 
 | Module                                       | Tests   |
 | -------------------------------------------- | ------- |
 | types/                                       | 64      |
-| viewport/                                    | 8       |
+| viewport/ (+ grid)                           | 20      |
 | compute/                                     | 139     |
 | graph/ (dep-graph + figure + undo + transfo) | 181     |
 | rendering/                                   | 17      |
 | geometry/ (intersections + transformations)  | 89      |
 | interaction/                                 | 25      |
+| validation/                                  | 71      |
 | integration/                                 | 18      |
-| **Total geometry-core**                      | **522** |
+| **Total geometry-core**                      | **605** |
 | grapheur/ (non-regression)                   | 213     |

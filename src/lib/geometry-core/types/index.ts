@@ -8,6 +8,7 @@ export { radians, radiansToDegrees } from './primitives';
 
 // Elements
 export type {
+	GeoStyle,
 	GeoElementBase,
 	GeoElement,
 	GeoElementType,
@@ -25,6 +26,8 @@ export type {
 	GeoLine,
 	GeoRay,
 	GeoCircle,
+	GeoAngleMark,
+	GeoSegmentMark,
 	GeoCircleByRadius,
 	GeoCircleByPoint,
 	GeoPolygon
@@ -39,6 +42,8 @@ export {
 	isDilatedPoint,
 	isReflectedOverLine,
 	isPointElement,
+	isAngleMark,
+	isSegmentMark,
 	isSegment,
 	isLine,
 	isRay,
@@ -54,6 +59,7 @@ export type { GeoValueSerialized, GeoElementSerialized, FigureStateSerialized } 
 export {
 	geoValueSchema,
 	geoPointSchema,
+	geoStyleSchema,
 	geoElementSchema,
 	figureStateSchema,
 	FIGURE_STATE_VERSION,
