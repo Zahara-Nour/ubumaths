@@ -63,13 +63,17 @@ export function exportToSVG(
 		lines.push('  <g class="grid">');
 		const startX = Math.ceil(viewport.xMin / major) * major;
 		const startY = Math.ceil(viewport.yMin / major) * major;
-		for (let x = startX; x <= viewport.xMax; x += major) {
+		const nX = Math.round((viewport.xMax - startX) / major);
+		for (let i = 0; i <= nX; i++) {
+			const x = startX + i * major;
 			const sv = transformer.mathToSvg(x, 0);
 			lines.push(
 				`    <line x1="${r(sv.x)}" y1="0" x2="${r(sv.x)}" y2="${height}" stroke="#d1d5db" stroke-width="0.5" />`
 			);
 		}
-		for (let y = startY; y <= viewport.yMax; y += major) {
+		const nY = Math.round((viewport.yMax - startY) / major);
+		for (let i = 0; i <= nY; i++) {
+			const y = startY + i * major;
 			const sv = transformer.mathToSvg(0, y);
 			lines.push(
 				`    <line x1="0" y1="${r(sv.y)}" x2="${width}" y2="${r(sv.y)}" stroke="#d1d5db" stroke-width="0.5" />`
@@ -147,11 +151,12 @@ export function exportToSVG(
 			})
 			.join(' ');
 		const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
+		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
 		const fillAttr = sty.fillColor
 			? `fill="${sty.fillColor}" fill-opacity="${sty.fillOpacity}"`
 			: 'fill="none"';
 		lines.push(
-			`  <polygon points="${pts}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr} ${fillAttr} />`
+			`  <polygon points="${pts}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} ${fillAttr} />`
 		);
 	}
 
@@ -216,7 +221,7 @@ export function exportToSVG(
 			const lx = svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 4);
 			const ly = svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2));
 			lines.push(
-				`  <text x="${r(lx)}" y="${r(ly)}" fill="${sty.color}" stroke="white" stroke-width="3" paint-order="stroke" font-size="14" font-family="KaTeX_Main, serif">${el.label}</text>`
+				`  <text x="${r(lx)}" y="${r(ly)}" fill="${sty.color}" stroke="white" stroke-width="3" paint-order="stroke" font-size="14" font-family="KaTeX_Main, serif">${escapeXml(el.label)}</text>`
 			);
 		}
 	}
@@ -233,7 +238,7 @@ export function exportToSVG(
 				`  <rect x="${r(svg.x - 4)}" y="${r(svg.y - 12)}" width="${svg.text.length * 8 + 8}" height="16" rx="3" fill="white" fill-opacity="0.85" />`
 			);
 			lines.push(
-				`  <text x="${r(svg.x)}" y="${r(svg.y)}" fill="${sty.color}" font-size="12" font-family="KaTeX_Main, serif">${svg.text}</text>`
+				`  <text x="${r(svg.x)}" y="${r(svg.y)}" fill="${sty.color}" font-size="12" font-family="KaTeX_Main, serif">${escapeXml(svg.text)}</text>`
 			);
 		}
 	}
@@ -245,4 +250,9 @@ export function exportToSVG(
 /** Round to 2 decimal places for SVG output. */
 function r(n: number): string {
 	return String(Math.round(n * 100) / 100);
+}
+
+/** Escape XML special characters for text content. */
+function escapeXml(s: string): string {
+	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
