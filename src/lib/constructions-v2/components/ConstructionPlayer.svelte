@@ -40,6 +40,7 @@
 	});
 
 	let error = $state<string | null>(null);
+	let figureVersion = $state(0);
 
 	// Load script
 	$effect(() => {
@@ -47,6 +48,7 @@
 			error = null;
 			executor.load(script);
 			timeline.load(executor.stepDurations);
+			figureVersion++;
 			if (autoPlay) {
 				timeline.play();
 			}
@@ -60,11 +62,13 @@
 		for (let i = 0; i <= stepIndex; i++) {
 			executor.step();
 		}
+		figureVersion++;
 	}
 
 	function handleReset() {
 		executor.reset();
 		timeline.reset();
+		figureVersion++;
 	}
 
 	// Cleanup
@@ -89,6 +93,7 @@
 		<ConstructionCanvas
 			figure={executor.figure}
 			instrumentStates={executor.instrumentStates}
+			{figureVersion}
 			{width}
 			{height}
 			{showGrid}
