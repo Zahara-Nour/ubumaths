@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { parseDsl } from '$lib/geometry-core/dsl';
 	import { ConstructionExecutor } from '../core/executor';
 	import { SimpleTimeline } from '../core/timeline.svelte';
@@ -49,13 +50,18 @@
 	});
 
 	// Load into executor/timeline — $effect for side effects only
+	// untrack prevents writes to timeline's $state from re-triggering this effect
 	$effect(() => {
 		if (!parseResult.valid) return;
-		executor.load(script);
-		timeline.load(executor.stepDurations);
-		if (autoPlay) {
-			timeline.play();
-		}
+		const currentScript = script;
+		const shouldAutoPlay = autoPlay;
+		untrack(() => {
+			executor.load(currentScript);
+			timeline.load(executor.stepDurations);
+			if (shouldAutoPlay) {
+				timeline.play();
+			}
+		});
 	});
 
 	function executeUpTo(stepIndex: number) {
