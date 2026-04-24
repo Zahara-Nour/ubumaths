@@ -2,7 +2,7 @@
 
 > Derniere mise a jour : 2026-04-24
 
-## Etat : Phases 1-4F terminees
+## Etat : Phases 1-4F + exports + DSL 5A terminees
 
 ## Phase 1 : Fondations (TERMINEE)
 
@@ -241,11 +241,32 @@
 - `isPointElement()` etendu a tous les types de points (pas seulement freePoint/midpoint)
 - Escape ou clic exterieur ferme le popover
 
+## Export (TERMINE)
+
+- `exportToTikZ(figure, viewport, options?)` — bloc `\begin{tikzpicture}...\end{tikzpicture}`
+- `exportToTypst(figure, viewport, options?)` — bloc `#cetz.canvas({...})`
+- `exportToSVG(figure, viewport, options?)` — SVG standalone statique
+- Tous les types d'elements : points (4 formes), segments, droites, rayons, cercles, polygones, marques, mesures
+- Options : scale, showGrid, showAxes, showLabels, showMeasures
+- Review fixes : `\degree` → `^{\circ}`, XML escape, polygon support, float accumulation
+- Tests : 130 (TikZ 63, Typst 35, SVG 74)
+
+## Phase 5A : DSL Tokenizer (TERMINEE)
+
+- `dsl/tokens.ts` — types de tokens (NUMBER, IDENTIFIER, KEYWORD, OPERATOR, etc.)
+- `dsl/keywords.ts` — 28 mots-cles francais (point, milieu, segment, droite, cercle, symetrie, rotation, etc.)
+- `dsl/tokenizer.ts` — tokenizer avec indentation Python-like (INDENT/DEDENT via stack)
+- `dsl/types.ts` — types AST complets (DslProgram, DslExpr, DslStatement, 20+ node types)
+- Tests : 37
+
 ## Prochaines etapes
 
-- Export LaTeX
-- Ameliorations techniques (responsive)
-- Labels draggables (repositionner au drag)
+- Phase 5B : Parser (script → AST)
+- Phase 5C : Interpreter (AST → Figure)
+- Phase 5D : Serializer (Figure → script)
+- Phase 5E : Macros
+- Phase 5F : Boucles et conditionnels
+- Phase 5G : Integration
 
 ## Resume des tests
 
@@ -255,10 +276,11 @@
 | viewport/ (+ grid)                          | 20      |
 | compute/                                    | 139     |
 | graph/ (dep-graph + figure + undo + marks)  | 260     |
-| rendering/                                  | 17      |
+| rendering/ (svg-primitives + exports)       | 147     |
 | geometry/ (intersections + transformations) | 89      |
 | interaction/                                | 25      |
 | validation/                                 | 71      |
+| dsl/ (tokenizer)                            | 37      |
 | integration/                                | 18      |
-| **Total geometry-core**                     | **695** |
+| **Total geometry-core**                     | **904** |
 | grapheur/ (non-regression)                  | 213     |
