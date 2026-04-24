@@ -222,16 +222,32 @@ function convertJsonToDsl(title: string, steps: OldStep[], canvasW = 800, canvas
 			const act = step.action;
 			switch (act.kind) {
 				case 'moveTo':
-					// Pencil/instrument movement — skip (animation detail)
+					// Instrument movement — skip (auto-positioned)
 					break;
-				case 'drawLine':
-					// Pencil trace — pixel-level, skip
+				case 'drawLine': {
+					// Pencil trace = visible segment
+					if (act.from && act.to) {
+						const mf = toMath(act.from.x, act.from.y, canvasW, canvasH, ppu);
+						const mt = toMath(act.to.x, act.to.y, canvasW, canvasH, ppu);
+						const p1 = `_dl${nameCounter++}`;
+						const p2 = `_dl${nameCounter++}`;
+						lines.push(`${p1} = point(${mf.x}, ${mf.y})`);
+						lines.push(`${p2} = point(${mt.x}, ${mt.y})`);
+						lines.push(`segment(${p1}, ${p2})`);
+					}
 					break;
+				}
 				case 'drawArc': {
-					// Compass arc trace
-					if (act.createObject?.id) {
-						// Arc drawn by compass — could be part of a circle construction
-						lines.push(`# arc de compas`);
+					// Compass arc — create a circle with same center/radius
+					// (DSL doesn't have arcs, full circle is the closest representation)
+					const center = (act as unknown as { center?: { x: number; y: number } }).center;
+					const radius = act.radius;
+					if (center && radius) {
+						const mc = toMath(center.x, center.y, canvasW, canvasH, ppu);
+						const rMath = Math.round((radius / ppu) * 100) / 100;
+						const cp = `_ac${nameCounter++}`;
+						lines.push(`${cp} = point(${mc.x}, ${mc.y})`);
+						lines.push(`cercle(${cp}, rayon=${rMath})`);
 					}
 					break;
 				}
