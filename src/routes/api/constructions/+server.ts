@@ -29,19 +29,28 @@ const listConstructionsQuerySchema = z.object({
 /**
  * Request body for creating a construction
  */
-const createConstructionSchema = z.object({
-	title: z
-		.string()
-		.min(1, 'Le titre est requis')
-		.max(200, 'Le titre ne doit pas depasser 200 caracteres'),
-	description: z
-		.string()
-		.max(2000, 'La description ne doit pas depasser 2000 caracteres')
-		.optional(),
-	script: constructionScriptSchema,
-	is_public: z.boolean().default(false),
-	tags: z.array(z.string().min(1).max(50)).max(10, 'Maximum 10 tags autorises').optional()
-});
+const createConstructionSchema = z
+	.object({
+		title: z
+			.string()
+			.min(1, 'Le titre est requis')
+			.max(200, 'Le titre ne doit pas depasser 200 caracteres'),
+		description: z
+			.string()
+			.max(2000, 'La description ne doit pas depasser 2000 caracteres')
+			.optional(),
+		format: z.enum(['json', 'dsl']).default('json'),
+		script: constructionScriptSchema.optional(),
+		dsl_script: z.string().max(50000, 'Le script DSL est trop long').optional(),
+		is_public: z.boolean().default(false),
+		tags: z.array(z.string().min(1).max(50)).max(10, 'Maximum 10 tags autorises').optional()
+	})
+	.refine(
+		(data) =>
+			(data.format === 'json' && data.script !== undefined) ||
+			(data.format === 'dsl' && data.dsl_script !== undefined),
+		{ message: 'script requis pour format json, dsl_script requis pour format dsl' }
+	);
 
 // =============================================================================
 // HANDLERS
@@ -78,6 +87,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			id,
 			title,
 			description,
+			format,
 			is_public,
 			created_at,
 			updated_at,
@@ -145,7 +155,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(400, `Validation echouee: ${errorMsg}`);
 	}
 
-	const { title, description, script, is_public, tags } = validation.data;
+	const { title, description, format, script, dsl_script, is_public, tags } = validation.data;
 
 	// Insert construction
 	const { data, error: insertError } = await locals.supabase
@@ -153,7 +163,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.insert({
 			title,
 			description,
-			script,
+			format,
+			script: format === 'json' ? script : null,
+			dsl_script: format === 'dsl' ? dsl_script : null,
 			is_public,
 			tags: tags ?? null,
 			author_id: user.id
