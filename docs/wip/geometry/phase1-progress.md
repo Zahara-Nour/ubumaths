@@ -1,8 +1,8 @@
 # Geometry-core — Progression
 
-> Derniere mise a jour : 2026-04-24
+> Derniere mise a jour : 2026-04-25
 
-## Etat : Phases 1-5G terminees (DSL complet)
+## Etat : Phases 1-5G terminees + element Arc
 
 ## Phase 1 : Fondations (TERMINEE)
 
@@ -142,6 +142,8 @@
 - Droite (AB) etendue aux bords du viewport
 - Demi-droite (C vers M) etendue d'un cote
 - Cercle par point (centre O, point R draggable)
+- Arc par angles (K cyan, rayon 2, 30°-150°)
+- Arc par 3 points (P/Q/R2 orange, interactif — deplacer P ou R2 change l'angle)
 - Pan (espace + drag), zoom (molette), undo/redo (Ctrl+Z/Ctrl+Y)
 - Grille adaptative au zoom avec graduations sur les axes
 
@@ -246,10 +248,21 @@
 - `exportToTikZ(figure, viewport, options?)` — bloc `\begin{tikzpicture}...\end{tikzpicture}`
 - `exportToTypst(figure, viewport, options?)` — bloc `#cetz.canvas({...})`
 - `exportToSVG(figure, viewport, options?)` — SVG standalone statique
-- Tous les types d'elements : points (4 formes), segments, droites, rayons, cercles, polygones, marques, mesures
+- Tous les types d'elements : points (4 formes), segments, droites, rayons, cercles, arcs, polygones, marques, mesures
 - Options : scale, showGrid, showAxes, showLabels, showMeasures
 - Review fixes : `\degree` → `^{\circ}`, XML escape, polygon support, float accumulation
 - Tests : 130 (TikZ 63, Typst 35, SVG 74)
+
+## GeoArc (TERMINE)
+
+- `GeoArcByAngles` : centre, rayon, angles debut/fin (radians en interne, degres dans le DSL)
+- `GeoArcByPoints` : arc de startId a endId autour de centerId (trace d'angle)
+- `createArcByAngles()` et `createArcByPoints()` dans Figure
+- `arcToSVG()` : path SVG avec commande A, gestion large-arc-flag et inversion Y
+- DSL builtin `arc` avec 2 syntaxes : `arc(O, rayon=3, debut=0, fin=90)` et `arc(A, O, B)`
+- Serialisation round-trip, schemas Zod, exports TikZ/Typst/SVG
+- Demo `/geometry-demo` avec 2 arcs interactifs
+- Tests : 23 (figure 8, SVG 6, DSL 9)
 
 ## Phase 5A : DSL Tokenizer (TERMINEE)
 
@@ -339,13 +352,13 @@
 | types/                                      | 75       |
 | viewport/ (+ grid)                          | 20       |
 | compute/                                    | 139      |
-| graph/ (dep-graph + figure + undo + marks)  | 260      |
-| rendering/ (svg-primitives + exports)       | 147      |
+| graph/ (dep-graph + figure + undo + marks)  | 268      |
+| rendering/ (svg-primitives + exports)       | 153      |
 | geometry/ (intersections + transformations) | 89       |
 | interaction/                                | 25       |
 | validation/                                 | 71       |
-| dsl/ (pipeline + macros + stdlib + integ)   | 221      |
+| dsl/ (pipeline + macros + stdlib + integ)   | 230      |
 | integration/                                | 18       |
 | roundtrip edge cases                        | 48       |
-| **Total geometry-core**                     | **1113** |
+| **Total geometry-core**                     | **1173** |
 | grapheur/ (non-regression)                  | 213      |
