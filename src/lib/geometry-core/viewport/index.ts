@@ -10,6 +10,10 @@ export type {
 } from './types';
 export { LINE_STYLES, LINE_WIDTHS, LINE_STYLE_DASHARRAY, viewportSchema } from './types';
 
+// Grid
+export type { GridStep } from './grid';
+export { computeGridStep } from './grid';
+
 // Viewport operations
 export type { CoordinateTransformer } from './viewport';
 export {

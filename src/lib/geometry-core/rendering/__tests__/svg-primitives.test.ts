@@ -62,11 +62,13 @@ describe('pointToSVG', () => {
 		expect(pointToSVG('nope', c, transformer)).toBeNull();
 	});
 
-	it('has a default radius', () => {
+	it('returns cx and cy coordinates', () => {
 		const c = new Figure();
 		const id = c.createFreePoint(point(0, 0));
 		const svg = pointToSVG(id, c, transformer);
-		expect(svg!.r).toBeGreaterThan(0);
+		expect(svg).toBeDefined();
+		expect(typeof svg!.cx).toBe('number');
+		expect(typeof svg!.cy).toBe('number');
 	});
 });
 

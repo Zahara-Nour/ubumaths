@@ -249,3 +249,113 @@ describe('figureStateSchema', () => {
 		expect(result.success).toBe(false);
 	});
 });
+
+// =============================================================================
+// geoStyleSchema (via geoElementSchema)
+// =============================================================================
+
+describe('geoStyleSchema', () => {
+	const baseFreePoint = {
+		type: 'freePoint',
+		id: 'pt_1',
+		color: '#000',
+		visible: true,
+		position: { x: { kind: 'numeric', value: 0 }, y: { kind: 'numeric', value: 0 } },
+		dependsOn: []
+	};
+
+	it('accepts element without style', () => {
+		const result = geoElementSchema.safeParse(baseFreePoint);
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts element with valid style', () => {
+		const result = geoElementSchema.safeParse({
+			...baseFreePoint,
+			style: {
+				color: '#dc2626',
+				opacity: 0.5,
+				strokeWidth: 3,
+				dash: 'dashed',
+				pointShape: 'cross',
+				pointSize: 8,
+				fillColor: '#ff0000',
+				fillOpacity: 0.3
+			}
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts element with partial style', () => {
+		const result = geoElementSchema.safeParse({
+			...baseFreePoint,
+			style: { dash: 'dotted' }
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts element with empty style object', () => {
+		const result = geoElementSchema.safeParse({
+			...baseFreePoint,
+			style: {}
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('rejects opacity > 1', () => {
+		const result = geoElementSchema.safeParse({
+			...baseFreePoint,
+			style: { opacity: 1.5 }
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects opacity < 0', () => {
+		const result = geoElementSchema.safeParse({
+			...baseFreePoint,
+			style: { opacity: -0.1 }
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects negative strokeWidth', () => {
+		const result = geoElementSchema.safeParse({
+			...baseFreePoint,
+			style: { strokeWidth: -1 }
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects invalid dash value', () => {
+		const result = geoElementSchema.safeParse({
+			...baseFreePoint,
+			style: { dash: 'wavy' }
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects invalid pointShape', () => {
+		const result = geoElementSchema.safeParse({
+			...baseFreePoint,
+			style: { pointShape: 'triangle' }
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects fillOpacity > 1', () => {
+		const result = geoElementSchema.safeParse({
+			...baseFreePoint,
+			style: { fillOpacity: 2 }
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('round-trip: element with style survives serialization', () => {
+		const input = {
+			...baseFreePoint,
+			style: { dash: 'dashed', strokeWidth: 3, opacity: 0.7, pointShape: 'square' }
+		};
+		const parsed = geoElementSchema.parse(input);
+		expect(parsed.style).toEqual(input.style);
+	});
+});

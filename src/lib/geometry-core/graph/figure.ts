@@ -8,6 +8,7 @@
 import { DependencyGraph } from './dependency-graph';
 import type {
 	GeoElement,
+	GeoStyle,
 	GeoFreePoint,
 	GeoMidpoint,
 	GeoIntersectionLL,
@@ -19,6 +20,8 @@ import type {
 	GeoSegment,
 	GeoLine,
 	GeoRay,
+	GeoAngleMark,
+	GeoSegmentMark,
 	GeoCircleByRadius,
 	GeoCircleByPoint
 } from '../types/elements';
@@ -31,6 +34,8 @@ import {
 	isTranslatedPoint,
 	isDilatedPoint,
 	isReflectedOverLine,
+	isAngleMark,
+	isSegmentMark,
 	isPointElement,
 	isLineLike
 } from '../types/elements';
@@ -47,6 +52,22 @@ import {
 } from '../geometry/transformations';
 
 const DEFAULT_COLOR = '#1e40af';
+
+export interface FigureDefaults {
+	readonly defaultColor?: string;
+	readonly defaultStrokeWidth?: number;
+	readonly defaultDash?: 'solid' | 'dashed' | 'dotted';
+	readonly defaultPointShape?: 'dot' | 'circle' | 'cross' | 'square';
+	readonly defaultPointSize?: number;
+	readonly defaultOpacity?: number;
+	// Note: fillColor/fillOpacity have no figure-level defaults; set per-element via style.
+}
+
+export interface ElementOptions {
+	label?: string;
+	color?: string;
+	style?: GeoStyle;
+}
 
 interface Delta {
 	added: Map<string, GeoElement>;
@@ -81,11 +102,16 @@ export class Figure {
 	private positions = new Map<string, GeoPoint>();
 	private graph = new DependencyGraph();
 	private nextId = 1;
+	readonly defaults: FigureDefaults;
 
 	// Undo/redo
 	private undoStack: Delta[] = [];
 	private redoStack: Delta[] = [];
 	private currentTransaction: Delta | null = null;
+
+	constructor(defaults?: FigureDefaults) {
+		this.defaults = defaults ?? {};
+	}
 
 	private generateId(prefix: string): string {
 		return `${prefix}_${this.nextId++}`;
@@ -244,6 +270,14 @@ export class Figure {
 	 * Add an element to the construction and register it in the graph.
 	 * If graph.addNode fails, the element is rolled back from the maps.
 	 */
+	private resolveColor(options?: ElementOptions): string {
+		return options?.color ?? this.defaults.defaultColor ?? DEFAULT_COLOR;
+	}
+
+	private resolveStyle(options?: ElementOptions): GeoStyle | undefined {
+		return options?.style;
+	}
+
 	private addElement(id: string, element: GeoElement, parentIds: readonly string[]): void {
 		this.elements.set(id, element);
 		try {
@@ -255,15 +289,16 @@ export class Figure {
 		this.recordAdd(id, element);
 	}
 
-	createFreePoint(position: GeoPoint, options?: { label?: string; color?: string }): string {
+	createFreePoint(position: GeoPoint, options?: ElementOptions): string {
 		const id = this.generateId('pt');
 		const element: GeoFreePoint = {
 			type: 'freePoint',
 			id,
 			position,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [] as const
 		};
 		this.addElement(id, element, []);
@@ -271,20 +306,17 @@ export class Figure {
 		return id;
 	}
 
-	createMidpoint(
-		point1Id: string,
-		point2Id: string,
-		options?: { label?: string; color?: string }
-	): string {
+	createMidpoint(point1Id: string, point2Id: string, options?: ElementOptions): string {
 		const id = this.generateId('mid');
 		const element: GeoMidpoint = {
 			type: 'midpoint',
 			id,
 			point1Id,
 			point2Id,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [point1Id, point2Id]
 		};
 		this.addElement(id, element, [point1Id, point2Id]);
@@ -292,111 +324,92 @@ export class Figure {
 		return id;
 	}
 
-	createSegment(
-		startId: string,
-		endId: string,
-		options?: { label?: string; color?: string }
-	): string {
+	createSegment(startId: string, endId: string, options?: ElementOptions): string {
 		const id = this.generateId('seg');
 		const element: GeoSegment = {
 			type: 'segment',
 			id,
 			startId,
 			endId,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [startId, endId]
 		};
 		this.addElement(id, element, [startId, endId]);
 		return id;
 	}
 
-	createLine(
-		point1Id: string,
-		point2Id: string,
-		options?: { label?: string; color?: string }
-	): string {
+	createLine(point1Id: string, point2Id: string, options?: ElementOptions): string {
 		const id = this.generateId('ln');
 		const element: GeoLine = {
 			type: 'line',
 			id,
 			point1Id,
 			point2Id,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [point1Id, point2Id]
 		};
 		this.addElement(id, element, [point1Id, point2Id]);
 		return id;
 	}
 
-	createRay(
-		originId: string,
-		throughId: string,
-		options?: { label?: string; color?: string }
-	): string {
+	createRay(originId: string, throughId: string, options?: ElementOptions): string {
 		const id = this.generateId('ray');
 		const element: GeoRay = {
 			type: 'ray',
 			id,
 			originId,
 			throughId,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [originId, throughId]
 		};
 		this.addElement(id, element, [originId, throughId]);
 		return id;
 	}
 
-	createCircleByRadius(
-		centerId: string,
-		radius: GeoValue,
-		options?: { label?: string; color?: string }
-	): string {
+	createCircleByRadius(centerId: string, radius: GeoValue, options?: ElementOptions): string {
 		const id = this.generateId('circ');
 		const element: GeoCircleByRadius = {
 			type: 'circleByRadius',
 			id,
 			centerId,
 			radius,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [centerId]
 		};
 		this.addElement(id, element, [centerId]);
 		return id;
 	}
 
-	createCircleByPoint(
-		centerId: string,
-		edgePointId: string,
-		options?: { label?: string; color?: string }
-	): string {
+	createCircleByPoint(centerId: string, edgePointId: string, options?: ElementOptions): string {
 		const id = this.generateId('circ');
 		const element: GeoCircleByPoint = {
 			type: 'circleByPoint',
 			id,
 			centerId,
 			edgePointId,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [centerId, edgePointId]
 		};
 		this.addElement(id, element, [centerId, edgePointId]);
 		return id;
 	}
 
-	createIntersectionLL(
-		line1Id: string,
-		line2Id: string,
-		options?: { label?: string; color?: string }
-	): string {
+	createIntersectionLL(line1Id: string, line2Id: string, options?: ElementOptions): string {
 		// Validate that both elements are line-like
 		const el1 = this.elements.get(line1Id);
 		const el2 = this.elements.get(line2Id);
@@ -411,9 +424,10 @@ export class Figure {
 			id,
 			line1Id,
 			line2Id,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [line1Id, line2Id]
 		};
 		this.addElement(id, element, [line1Id, line2Id]);
@@ -421,11 +435,7 @@ export class Figure {
 		return id;
 	}
 
-	createReflectedPoint(
-		sourceId: string,
-		centerId: string,
-		options?: { label?: string; color?: string }
-	): string {
+	createReflectedPoint(sourceId: string, centerId: string, options?: ElementOptions): string {
 		if (sourceId === centerId) {
 			throw new Error('createReflectedPoint: sourceId and centerId must be distinct');
 		}
@@ -444,9 +454,10 @@ export class Figure {
 			id,
 			sourceId,
 			centerId,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [sourceId, centerId]
 		};
 		this.addElement(id, element, [sourceId, centerId]);
@@ -458,7 +469,7 @@ export class Figure {
 		sourceId: string,
 		centerId: string,
 		angle: GeoValue,
-		options?: { label?: string; color?: string }
+		options?: ElementOptions
 	): string {
 		const src = this.elements.get(sourceId);
 		const ctr = this.elements.get(centerId);
@@ -474,9 +485,10 @@ export class Figure {
 			sourceId,
 			centerId,
 			angle,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [sourceId, centerId]
 		};
 		this.addElement(id, element, [sourceId, centerId]);
@@ -488,7 +500,7 @@ export class Figure {
 		sourceId: string,
 		vectorStartId: string,
 		vectorEndId: string,
-		options?: { label?: string; color?: string }
+		options?: ElementOptions
 	): string {
 		if (sourceId === vectorStartId || sourceId === vectorEndId || vectorStartId === vectorEndId) {
 			throw new Error(
@@ -512,9 +524,10 @@ export class Figure {
 			sourceId,
 			vectorStartId,
 			vectorEndId,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [sourceId, vectorStartId, vectorEndId]
 		};
 		this.addElement(id, element, [sourceId, vectorStartId, vectorEndId]);
@@ -526,7 +539,7 @@ export class Figure {
 		sourceId: string,
 		centerId: string,
 		factor: GeoValue,
-		options?: { label?: string; color?: string }
+		options?: ElementOptions
 	): string {
 		const src = this.elements.get(sourceId);
 		const ctr = this.elements.get(centerId);
@@ -542,9 +555,10 @@ export class Figure {
 			sourceId,
 			centerId,
 			factor,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [sourceId, centerId]
 		};
 		this.addElement(id, element, [sourceId, centerId]);
@@ -556,7 +570,7 @@ export class Figure {
 		sourceId: string,
 		linePoint1Id: string,
 		linePoint2Id: string,
-		options?: { label?: string; color?: string }
+		options?: ElementOptions
 	): string {
 		if (linePoint1Id === linePoint2Id) {
 			throw new Error('createReflectedOverLine: linePoint1Id and linePoint2Id must be distinct');
@@ -578,12 +592,84 @@ export class Figure {
 			sourceId,
 			linePoint1Id,
 			linePoint2Id,
-			color: options?.color ?? DEFAULT_COLOR,
+			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
+			style: this.resolveStyle(options),
 			dependsOn: [sourceId, linePoint1Id, linePoint2Id]
 		};
 		this.addElement(id, element, [sourceId, linePoint1Id, linePoint2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	// ─── Annotation factories ───────────────────────────────────────
+
+	createAngleMark(
+		p1Id: string,
+		vertexId: string,
+		p2Id: string,
+		options?: ElementOptions & { arcCount?: 1 | 2 | 3; rightAngle?: boolean }
+	): string {
+		const p1 = this.elements.get(p1Id);
+		const v = this.elements.get(vertexId);
+		const p2 = this.elements.get(p2Id);
+		if (!p1 || !isPointElement(p1))
+			throw new Error(`createAngleMark: "${p1Id}" is not a point element`);
+		if (!v || !isPointElement(v))
+			throw new Error(`createAngleMark: "${vertexId}" is not a point element`);
+		if (!p2 || !isPointElement(p2))
+			throw new Error(`createAngleMark: "${p2Id}" is not a point element`);
+
+		const id = this.generateId('angM');
+		const element: GeoAngleMark = {
+			type: 'angleMark',
+			id,
+			p1Id,
+			vertexId,
+			p2Id,
+			arcCount: options?.arcCount ?? 1,
+			rightAngle: options?.rightAngle ?? false,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [p1Id, vertexId, p2Id]
+		};
+		this.addElement(id, element, [p1Id, vertexId, p2Id]);
+		// Store vertex position as the mark's position
+		const vertexPos = this.positions.get(vertexId);
+		if (vertexPos) this.positions.set(id, vertexPos);
+		return id;
+	}
+
+	createSegmentMark(
+		startId: string,
+		endId: string,
+		options?: ElementOptions & { markCount?: 1 | 2 | 3 }
+	): string {
+		const s = this.elements.get(startId);
+		const e = this.elements.get(endId);
+		if (!s || !isPointElement(s))
+			throw new Error(`createSegmentMark: "${startId}" is not a point element`);
+		if (!e || !isPointElement(e))
+			throw new Error(`createSegmentMark: "${endId}" is not a point element`);
+
+		const id = this.generateId('segM');
+		const element: GeoSegmentMark = {
+			type: 'segmentMark',
+			id,
+			startId,
+			endId,
+			markCount: options?.markCount ?? 1,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [startId, endId]
+		};
+		this.addElement(id, element, [startId, endId]);
+		// Store midpoint position as the mark's position
 		this.computePosition(id);
 		return id;
 	}
@@ -733,6 +819,30 @@ export class Figure {
 				} else {
 					this.positions.delete(id); // degenerate line
 				}
+			} else {
+				this.positions.delete(id);
+			}
+		} else if (isSegmentMark(el)) {
+			// Segment mark position = midpoint of start and end
+			const p1 = this.positions.get(el.startId);
+			const p2 = this.positions.get(el.endId);
+			if (p1 && p2) {
+				const two = geoFromNumber(2);
+				const mx = geoDiv(geoAdd(p1.x, p2.x), two);
+				const my = geoDiv(geoAdd(p1.y, p2.y), two);
+				if (mx !== null && my !== null) {
+					this.positions.set(id, { x: mx, y: my });
+				} else {
+					this.positions.delete(id);
+				}
+			} else {
+				this.positions.delete(id);
+			}
+		} else if (isAngleMark(el)) {
+			// Angle mark position = vertex position (for hit-testing and dependency tracking)
+			const vertexPos = this.positions.get(el.vertexId);
+			if (vertexPos) {
+				this.positions.set(id, vertexPos);
 			} else {
 				this.positions.delete(id);
 			}
