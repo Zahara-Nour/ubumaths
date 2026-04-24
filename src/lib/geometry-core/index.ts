@@ -21,3 +21,6 @@ export * from './validation';
 
 // Interaction
 export * from './interaction';
+
+// DSL (scripting language)
+export * from './dsl';
