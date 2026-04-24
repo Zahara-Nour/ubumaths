@@ -92,10 +92,10 @@ function convertJsonToDsl(title: string, steps: OldStep[], canvasW = 800, canvas
 	const lines: string[] = [`# ${title}`];
 	const pointNames = new Map<string, string>(); // object id → DSL name
 	const labelTexts = new Set<string>(); // IDs that are labels (skip them)
+	const pointPositions = new Map<string, { x: number; y: number }>(); // name → math coords
 	let nameCounter = 0;
 
 	// Pre-scan: extract point names from label text objects
-	// Pattern: create text with id "label_XX_label" and content = point name
 	for (const step of steps) {
 		if (step.type === 'create' && step.object?.kind === 'text') {
 			const obj = step.object;
@@ -108,6 +108,19 @@ function convertJsonToDsl(title: string, steps: OldStep[], canvasW = 800, canvas
 		}
 	}
 
+	// Pre-scan: index point positions for deduplication
+	for (const step of steps) {
+		if (step.type === 'create' && step.object?.kind === 'point') {
+			const obj = step.object;
+			const name = getName(obj.id);
+			const m = toMath(obj.x ?? 0, obj.y ?? 0, canvasW, canvasH, ppu);
+			pointPositions.set(name, m);
+		}
+	}
+	// Reset pointNames state (getName was called during pre-scan but we'll call it again)
+	// Keep the label-derived names but clear auto-generated ones
+	// Actually, getName already populated pointNames correctly. No reset needed.
+
 	function getName(id: string | undefined): string {
 		if (!id) return `P${++nameCounter}`;
 		if (pointNames.has(id)) return pointNames.get(id)!;
@@ -116,16 +129,41 @@ function convertJsonToDsl(title: string, steps: OldStep[], canvasW = 800, canvas
 		return name;
 	}
 
+	/** Find an existing point within tolerance of given math coords, or create a new one. */
+	function findOrCreatePoint(px: number, py: number): string {
+		const m = toMath(px, py, canvasW, canvasH, ppu);
+		const tolerance = 0.15; // ~6 pixels at ppu=40
+		for (const [name, pos] of pointPositions) {
+			if (Math.abs(pos.x - m.x) < tolerance && Math.abs(pos.y - m.y) < tolerance) {
+				return name;
+			}
+		}
+		// No match — create new point
+		const name = `_p${nameCounter++}`;
+		pointPositions.set(name, m);
+		lines.push(`${name} = point(${m.x}, ${m.y})`);
+		return name;
+	}
+
+	let lastWasPause = false;
+
 	for (const step of steps) {
 		// Direct pause step
 		if (step.type === 'pause' && (step as unknown as { duration: number }).duration) {
-			lines.push(`@pause(${(step as unknown as { duration: number }).duration})`);
+			const dur = (step as unknown as { duration: number }).duration;
+			if (dur >= 200 && !lastWasPause) {
+				lines.push(`@pause(${dur})`);
+				lastWasPause = true;
+			}
 			continue;
 		}
 
 		// Legacy pause
 		if (step.pause) {
-			lines.push(`@pause(${step.pause})`);
+			if (step.pause >= 200 && !lastWasPause) {
+				lines.push(`@pause(${step.pause})`);
+				lastWasPause = true;
+			}
 			continue;
 		}
 
@@ -145,42 +183,41 @@ function convertJsonToDsl(title: string, steps: OldStep[], canvasW = 800, canvas
 			switch (obj.kind) {
 				case 'point': {
 					const name = getName(obj.id);
-					const m = toMath(obj.x ?? 0, obj.y ?? 0, canvasW, canvasH, ppu);
-					lines.push(`${name} = point(${m.x}, ${m.y})`);
+					// Check if already emitted via findOrCreatePoint
+					if (!pointPositions.has(name) || !lines.some((l) => l.startsWith(`${name} = point`))) {
+						const m = toMath(obj.x ?? 0, obj.y ?? 0, canvasW, canvasH, ppu);
+						pointPositions.set(name, m);
+						lines.push(`${name} = point(${m.x}, ${m.y})`);
+					}
+					lastWasPause = false;
 					break;
 				}
 				case 'segment': {
 					let start: string;
 					let end: string;
 					if (obj.from && obj.to) {
-						start = `_s${nameCounter++}a`;
-						end = `_s${nameCounter++}b`;
-						const mf = toMath(obj.from.x, obj.from.y, canvasW, canvasH, ppu);
-						const mt = toMath(obj.to.x, obj.to.y, canvasW, canvasH, ppu);
-						lines.push(`${start} = point(${mf.x}, ${mf.y})`);
-						lines.push(`${end} = point(${mt.x}, ${mt.y})`);
+						start = findOrCreatePoint(obj.from.x, obj.from.y);
+						end = findOrCreatePoint(obj.to.x, obj.to.y);
 					} else {
 						start = getName(obj.startPoint ?? obj.point1);
 						end = getName(obj.endPoint ?? obj.point2);
 					}
 					lines.push(`segment(${start}, ${end})`);
+					lastWasPause = false;
 					break;
 				}
 				case 'ray': {
 					let origin: string;
 					let through: string;
 					if (obj.from && obj.through) {
-						origin = `_r${nameCounter++}o`;
-						through = `_r${nameCounter++}t`;
-						const mf = toMath(obj.from.x, obj.from.y, canvasW, canvasH, ppu);
-						const mt = toMath(obj.through.x, obj.through.y, canvasW, canvasH, ppu);
-						lines.push(`${origin} = point(${mf.x}, ${mf.y})`);
-						lines.push(`${through} = point(${mt.x}, ${mt.y})`);
+						origin = findOrCreatePoint(obj.from.x, obj.from.y);
+						through = findOrCreatePoint(obj.through.x, obj.through.y);
 					} else {
 						origin = getName(obj.point1);
 						through = getName(obj.point2);
 					}
 					lines.push(`demidroite(${origin}, ${through})`);
+					lastWasPause = false;
 					break;
 				}
 				case 'text': {
@@ -227,36 +264,34 @@ function convertJsonToDsl(title: string, steps: OldStep[], canvasW = 800, canvas
 				case 'drawLine': {
 					// Pencil trace = visible segment
 					if (act.from && act.to) {
-						const mf = toMath(act.from.x, act.from.y, canvasW, canvasH, ppu);
-						const mt = toMath(act.to.x, act.to.y, canvasW, canvasH, ppu);
-						const p1 = `_dl${nameCounter++}`;
-						const p2 = `_dl${nameCounter++}`;
-						lines.push(`${p1} = point(${mf.x}, ${mf.y})`);
-						lines.push(`${p2} = point(${mt.x}, ${mt.y})`);
+						const p1 = findOrCreatePoint(act.from.x, act.from.y);
+						const p2 = findOrCreatePoint(act.to.x, act.to.y);
 						lines.push(`segment(${p1}, ${p2})`);
 					}
+					lastWasPause = false;
 					break;
 				}
 				case 'drawArc': {
-					// Compass arc — create a true arc element
+					// Compass arc
 					const center = (act as unknown as { center?: { x: number; y: number } }).center;
 					const radius = act.radius;
 					const startAngle = (act as unknown as { startAngle?: number }).startAngle;
 					const endAngle = (act as unknown as { endAngle?: number }).endAngle;
 					if (center && radius) {
-						const mc = toMath(center.x, center.y, canvasW, canvasH, ppu);
+						const cp = findOrCreatePoint(center.x, center.y);
 						const rMath = Math.round((radius / ppu) * 100) / 100;
-						const cp = `_ac${nameCounter++}`;
-						lines.push(`${cp} = point(${mc.x}, ${mc.y})`);
 						if (startAngle !== undefined && endAngle !== undefined) {
-							const sDeg = Math.round(startAngle * 100) / 100;
-							const eDeg = Math.round(endAngle * 100) / 100;
+							// IEP angles are in degrees, but Y is flipped in math coords
+							// In pixel coords (Y-down), angles go clockwise
+							// In math coords (Y-up), we need to negate angles
+							const sDeg = Math.round(-startAngle * 100) / 100;
+							const eDeg = Math.round(-endAngle * 100) / 100;
 							lines.push(`arc(${cp}, rayon=${rMath}, debut=${sDeg}, fin=${eDeg})`);
 						} else {
-							// No angle info — fall back to full circle
 							lines.push(`cercle(${cp}, rayon=${rMath})`);
 						}
 					}
+					lastWasPause = false;
 					break;
 				}
 				case 'show': {
@@ -267,6 +302,7 @@ function convertJsonToDsl(title: string, steps: OldStep[], canvasW = 800, canvas
 					else if (target === 'pencil') lines.push(`@instrument("crayon")`);
 					else if (target === 'protractor') lines.push(`@instrument("rapporteur")`);
 					else if (target) lines.push(`@montrer("${target}")`);
+					lastWasPause = false;
 					break;
 				}
 				case 'hide': {
