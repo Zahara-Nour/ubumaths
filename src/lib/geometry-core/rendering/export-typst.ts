@@ -1,0 +1,432 @@
+/**
+ * Export a Figure to Typst (cetz) code.
+ *
+ * Produces a #cetz.canvas({...}) block using the cetz drawing library.
+ */
+
+import type { Figure } from '../graph/figure';
+import type { Viewport } from '../viewport/types';
+import { isPointElement } from '../types/elements';
+import { geoToNumber } from '../compute/to-number';
+import { resolveStyle } from './svg-primitives';
+
+export interface TypstExportOptions {
+	scale?: number;
+	showGrid?: boolean;
+	showAxes?: boolean;
+	showLabels?: boolean;
+	showMeasures?: boolean;
+}
+
+const MARK_RADIUS = 0.4;
+const MARK_SPACING = 0.12;
+const RIGHT_ANGLE_SIZE = 0.3;
+const TICK_HALF = 0.15;
+const TICK_SPACING = 0.08;
+
+function c(x: number, y: number): string {
+	const rx = Math.round(x * 1000) / 1000;
+	const ry = Math.round(y * 1000) / 1000;
+	return `(${rx}, ${ry})`;
+}
+
+function hexToTypstColor(hex: string): string {
+	return `rgb("${hex}")`;
+}
+
+function strokeExpr(hex: string, width: number, dash?: string): string {
+	const color = hexToTypstColor(hex);
+	let s = `${color} + ${width}pt`;
+	if (dash === 'dashed') s = `(paint: ${color}, thickness: ${width}pt, dash: "dashed")`;
+	else if (dash === 'dotted') s = `(paint: ${color}, thickness: ${width}pt, dash: "dotted")`;
+	return s;
+}
+
+export function exportToTypst(
+	figure: Figure,
+	viewport: Viewport,
+	options?: TypstExportOptions
+): string {
+	const scale = options?.scale ?? 1;
+	const showGrid = options?.showGrid ?? false;
+	const showAxes = options?.showAxes ?? false;
+	const showLabels = options?.showLabels ?? true;
+	const showMeasures = options?.showMeasures ?? true;
+
+	const lines: string[] = [];
+	const elements = figure.getAllElements();
+
+	// Header
+	lines.push('#import "@preview/cetz:0.3.4"');
+	lines.push('');
+	lines.push(`#cetz.canvas({`);
+	lines.push(`  import cetz.draw: *`);
+	if (scale !== 1) {
+		lines.push(`  scale(x: ${scale}, y: ${scale})`);
+	}
+
+	// Grid
+	if (showGrid) {
+		lines.push(
+			`  grid(${c(viewport.xMin, viewport.yMin)}, ${c(viewport.xMax, viewport.yMax)}, step: 1, stroke: gray + 0.3pt)`
+		);
+	}
+
+	// Axes
+	if (showAxes) {
+		lines.push(
+			`  line(${c(viewport.xMin, 0)}, ${c(viewport.xMax, 0)}, stroke: gray + 1pt, mark: (end: ">"))`
+		);
+		lines.push(
+			`  line(${c(0, viewport.yMin)}, ${c(0, viewport.yMax)}, stroke: gray + 1pt, mark: (end: ">"))`
+		);
+	}
+
+	// Pass 1: segments, lines, rays
+	for (const el of elements) {
+		if (!el.visible) continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const stroke = strokeExpr(
+			sty.color,
+			sty.strokeWidth,
+			sty.dash !== 'solid' ? sty.dash : undefined
+		);
+
+		if (el.type === 'segment') {
+			const p1 = figure.getPosition(el.startId);
+			const p2 = figure.getPosition(el.endId);
+			if (!p1 || !p2) continue;
+			lines.push(
+				`  line(${c(geoToNumber(p1.x), geoToNumber(p1.y))}, ${c(geoToNumber(p2.x), geoToNumber(p2.y))}, stroke: ${stroke})`
+			);
+		} else if (el.type === 'line') {
+			const p1 = figure.getPosition(el.point1Id);
+			const p2 = figure.getPosition(el.point2Id);
+			if (!p1 || !p2) continue;
+			const ext = extendLineToViewport(
+				geoToNumber(p1.x),
+				geoToNumber(p1.y),
+				geoToNumber(p2.x),
+				geoToNumber(p2.y),
+				viewport
+			);
+			if (!ext) continue;
+			lines.push(`  line(${c(ext.x1, ext.y1)}, ${c(ext.x2, ext.y2)}, stroke: ${stroke})`);
+		} else if (el.type === 'ray') {
+			const origin = figure.getPosition(el.originId);
+			const through = figure.getPosition(el.throughId);
+			if (!origin || !through) continue;
+			const ox = geoToNumber(origin.x);
+			const oy = geoToNumber(origin.y);
+			const ext = extendRayToViewport(
+				ox,
+				oy,
+				geoToNumber(through.x),
+				geoToNumber(through.y),
+				viewport
+			);
+			if (!ext) continue;
+			lines.push(`  line(${c(ox, oy)}, ${c(ext.x, ext.y)}, stroke: ${stroke})`);
+		}
+	}
+
+	// Pass 2: circles
+	for (const el of elements) {
+		if (!el.visible) continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const stroke = strokeExpr(
+			sty.color,
+			sty.strokeWidth,
+			sty.dash !== 'solid' ? sty.dash : undefined
+		);
+
+		if (el.type === 'circleByRadius') {
+			const center = figure.getPosition(el.centerId);
+			if (!center) continue;
+			const r = geoToNumber(el.radius);
+			lines.push(
+				`  circle(${c(geoToNumber(center.x), geoToNumber(center.y))}, radius: ${Math.round(r * 1000) / 1000}, stroke: ${stroke}, fill: none)`
+			);
+		} else if (el.type === 'circleByPoint') {
+			const center = figure.getPosition(el.centerId);
+			const edge = figure.getPosition(el.edgePointId);
+			if (!center || !edge) continue;
+			const cx = geoToNumber(center.x);
+			const cy = geoToNumber(center.y);
+			const r = Math.sqrt((geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2);
+			lines.push(
+				`  circle(${c(cx, cy)}, radius: ${Math.round(r * 1000) / 1000}, stroke: ${stroke}, fill: none)`
+			);
+		}
+	}
+
+	// Pass 2b: polygons
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'polygon') continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const stroke = strokeExpr(
+			sty.color,
+			sty.strokeWidth,
+			sty.dash !== 'solid' ? sty.dash : undefined
+		);
+		const verts = el.dependsOn.map((id) => figure.getPosition(id));
+		if (verts.some((p) => !p)) continue;
+		const pts = verts.map((p) => c(geoToNumber(p!.x), geoToNumber(p!.y)));
+		const fillPart = sty.fillColor ? `, fill: ${hexToTypstColor(sty.fillColor)}` : ', fill: none';
+		lines.push(`  line(${pts.join(', ')}, close: true, stroke: ${stroke}${fillPart})`);
+	}
+
+	// Pass 3: angle marks
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'angleMark') continue;
+		const p1 = figure.getPosition(el.p1Id);
+		const v = figure.getPosition(el.vertexId);
+		const p2 = figure.getPosition(el.p2Id);
+		if (!p1 || !v || !p2) continue;
+
+		const vx = geoToNumber(v.x);
+		const vy = geoToNumber(v.y);
+		const d1x = geoToNumber(p1.x) - vx;
+		const d1y = geoToNumber(p1.y) - vy;
+		const d2x = geoToNumber(p2.x) - vx;
+		const d2y = geoToNumber(p2.y) - vy;
+
+		const angle1 = (Math.atan2(d1y, d1x) * 180) / Math.PI;
+		const angle2 = (Math.atan2(d2y, d2x) * 180) / Math.PI;
+		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
+
+		if (el.rightAngle) {
+			const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
+			const len2 = Math.sqrt(d2x * d2x + d2y * d2y);
+			if (len1 < 1e-10 || len2 < 1e-10) continue;
+			const s = RIGHT_ANGLE_SIZE;
+			const u1x = (d1x / len1) * s;
+			const u1y = (d1y / len1) * s;
+			const u2x = (d2x / len2) * s;
+			const u2y = (d2y / len2) * s;
+			lines.push(
+				`  line(${c(vx + u1x, vy + u1y)}, ${c(vx + u1x + u2x, vy + u1y + u2y)}, ${c(vx + u2x, vy + u2y)}, stroke: ${color} + 1pt)`
+			);
+		} else {
+			let sweep = angle2 - angle1;
+			while (sweep > 180) sweep -= 360;
+			while (sweep < -180) sweep += 360;
+			const start = Math.round(angle1 * 100) / 100;
+			const stop = Math.round((angle1 + sweep) * 100) / 100;
+
+			for (let i = 0; i < el.arcCount; i++) {
+				const r = MARK_RADIUS + i * MARK_SPACING;
+				lines.push(
+					`  arc(${c(vx, vy)}, start: ${start}deg, stop: ${stop}deg, radius: ${Math.round(r * 1000) / 1000}, anchor: "origin", stroke: ${color} + 1pt)`
+				);
+			}
+		}
+	}
+
+	// Pass 4: segment marks
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'segmentMark') continue;
+		const p1 = figure.getPosition(el.startId);
+		const p2 = figure.getPosition(el.endId);
+		if (!p1 || !p2) continue;
+
+		const x1 = geoToNumber(p1.x);
+		const y1 = geoToNumber(p1.y);
+		const x2 = geoToNumber(p2.x);
+		const y2 = geoToNumber(p2.y);
+		const mx = (x1 + x2) / 2;
+		const my = (y1 + y2) / 2;
+		const dx = x2 - x1;
+		const dy = y2 - y1;
+		const len = Math.sqrt(dx * dx + dy * dy);
+		if (len < 1e-10) continue;
+		const ux = dx / len;
+		const uy = dy / len;
+		const px = -uy;
+		const py = ux;
+
+		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
+		const totalWidth = (el.markCount - 1) * TICK_SPACING;
+		const startOffset = -totalWidth / 2;
+
+		for (let i = 0; i < el.markCount; i++) {
+			const offset = startOffset + i * TICK_SPACING;
+			const cx = mx + ux * offset;
+			const cy = my + uy * offset;
+			lines.push(
+				`  line(${c(cx + px * TICK_HALF, cy + py * TICK_HALF)}, ${c(cx - px * TICK_HALF, cy - py * TICK_HALF)}, stroke: ${color} + 1.5pt)`
+			);
+		}
+	}
+
+	// Pass 5: points
+	for (const el of elements) {
+		if (!el.visible || !isPointElement(el)) continue;
+		const pos = figure.getPosition(el.id);
+		if (!pos) continue;
+
+		const x = geoToNumber(pos.x);
+		const y = geoToNumber(pos.y);
+		const sty = resolveStyle(el, figure.defaults);
+		const color = hexToTypstColor(sty.color);
+
+		if (sty.pointShape === 'dot') {
+			lines.push(`  circle(${c(x, y)}, radius: 0.08, fill: ${color}, stroke: none)`);
+		} else if (sty.pointShape === 'circle') {
+			lines.push(`  circle(${c(x, y)}, radius: 0.08, fill: none, stroke: ${color} + 1.5pt)`);
+		} else if (sty.pointShape === 'cross') {
+			const s = 0.1;
+			lines.push(`  line(${c(x - s, y - s)}, ${c(x + s, y + s)}, stroke: ${color} + 1.5pt)`);
+			lines.push(`  line(${c(x + s, y - s)}, ${c(x - s, y + s)}, stroke: ${color} + 1.5pt)`);
+		} else if (sty.pointShape === 'square') {
+			const s = 0.07;
+			lines.push(`  rect(${c(x - s, y - s)}, ${c(x + s, y + s)}, fill: ${color}, stroke: none)`);
+		}
+
+		if (showLabels && el.label) {
+			lines.push(`  content(${c(x + 0.2, y + 0.2)}, [$${el.label}$])`);
+		}
+	}
+
+	// Pass 6: measures
+	if (showMeasures) {
+		for (const el of elements) {
+			if (!el.visible || el.type !== 'measure') continue;
+			const value = figure.getMeasureValue(el.id);
+			if (value === undefined) continue;
+
+			const positions = el.targetIds.map((tid) => figure.getPosition(tid));
+			if (positions.some((p) => !p)) continue;
+
+			const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
+
+			let text: string;
+			if (el.format === 'degrees') {
+				text = `${Math.round(value * 10) / 10}°`;
+			} else {
+				text = `${Math.round(value * 100) / 100}`;
+			}
+
+			let mx: number;
+			let my: number;
+
+			if (el.measureType === 'distance') {
+				const [a, b] = positions;
+				mx = (geoToNumber(a!.x) + geoToNumber(b!.x)) / 2;
+				my = (geoToNumber(a!.y) + geoToNumber(b!.y)) / 2;
+				const dx = geoToNumber(b!.x) - geoToNumber(a!.x);
+				const dy = geoToNumber(b!.y) - geoToNumber(a!.y);
+				const len = Math.sqrt(dx * dx + dy * dy);
+				if (len > 1e-10) {
+					mx += (-dy / len) * 0.4;
+					my += (dx / len) * 0.4;
+				}
+			} else if (el.measureType === 'angle') {
+				const vp = positions[1]!;
+				mx = geoToNumber(vp.x);
+				my = geoToNumber(vp.y);
+				const d1x = geoToNumber(positions[0]!.x) - mx;
+				const d1y = geoToNumber(positions[0]!.y) - my;
+				const d2x = geoToNumber(positions[2]!.x) - mx;
+				const d2y = geoToNumber(positions[2]!.y) - my;
+				const l1 = Math.sqrt(d1x * d1x + d1y * d1y);
+				const l2 = Math.sqrt(d2x * d2x + d2y * d2y);
+				if (l1 > 1e-10 && l2 > 1e-10) {
+					const bx = d1x / l1 + d2x / l2;
+					const by = d1y / l1 + d2y / l2;
+					const bl = Math.sqrt(bx * bx + by * by);
+					if (bl > 1e-10) {
+						mx += (bx / bl) * 0.8;
+						my += (by / bl) * 0.8;
+					}
+				}
+			} else {
+				let sx = 0;
+				let sy = 0;
+				for (const p of positions) {
+					sx += geoToNumber(p!.x);
+					sy += geoToNumber(p!.y);
+				}
+				mx = sx / positions.length;
+				my = sy / positions.length;
+			}
+
+			lines.push(`  content(${c(mx, my)}, text(size: 9pt, fill: ${color})[$${text}$])`);
+		}
+	}
+
+	lines.push('})');
+	return lines.join('\n');
+}
+
+// ─── Helpers ────────────────────────────────────────────────
+
+function extendLineToViewport(
+	x1: number,
+	y1: number,
+	x2: number,
+	y2: number,
+	vp: Viewport
+): { x1: number; y1: number; x2: number; y2: number } | null {
+	const dx = x2 - x1;
+	const dy = y2 - y1;
+	if (Math.abs(dx) < 1e-15 && Math.abs(dy) < 1e-15) return null;
+
+	const tValues: number[] = [];
+	if (Math.abs(dx) > 1e-15) {
+		tValues.push((vp.xMin - x1) / dx);
+		tValues.push((vp.xMax - x1) / dx);
+	}
+	if (Math.abs(dy) > 1e-15) {
+		tValues.push((vp.yMin - y1) / dy);
+		tValues.push((vp.yMax - y1) / dy);
+	}
+
+	const validTs = tValues.filter((t) => {
+		const px = x1 + t * dx;
+		const py = y1 + t * dy;
+		return (
+			px >= vp.xMin - 0.01 && px <= vp.xMax + 0.01 && py >= vp.yMin - 0.01 && py <= vp.yMax + 0.01
+		);
+	});
+
+	if (validTs.length < 2) return null;
+	const tMin = Math.min(...validTs);
+	const tMax = Math.max(...validTs);
+	return { x1: x1 + tMin * dx, y1: y1 + tMin * dy, x2: x1 + tMax * dx, y2: y1 + tMax * dy };
+}
+
+function extendRayToViewport(
+	ox: number,
+	oy: number,
+	tx: number,
+	ty: number,
+	vp: Viewport
+): { x: number; y: number } | null {
+	const dx = tx - ox;
+	const dy = ty - oy;
+	if (Math.abs(dx) < 1e-15 && Math.abs(dy) < 1e-15) return null;
+
+	const tValues: number[] = [];
+	if (Math.abs(dx) > 1e-15) {
+		tValues.push((vp.xMin - ox) / dx);
+		tValues.push((vp.xMax - ox) / dx);
+	}
+	if (Math.abs(dy) > 1e-15) {
+		tValues.push((vp.yMin - oy) / dy);
+		tValues.push((vp.yMax - oy) / dy);
+	}
+
+	const validTs = tValues.filter((t) => {
+		if (t <= 0) return false;
+		const px = ox + t * dx;
+		const py = oy + t * dy;
+		return (
+			px >= vp.xMin - 0.01 && px <= vp.xMax + 0.01 && py >= vp.yMin - 0.01 && py <= vp.yMax + 0.01
+		);
+	});
+
+	if (validTs.length === 0) return null;
+	const tMax = Math.max(...validTs);
+	return { x: ox + tMax * dx, y: oy + tMax * dy };
+}
