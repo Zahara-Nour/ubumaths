@@ -65,6 +65,11 @@ class Parser {
 		return t.type === 'KEYWORD' && t.value === value;
 	}
 
+	private isIdentifierWithValue(value: string): boolean {
+		const t = this.peek();
+		return t.type === 'IDENTIFIER' && t.value === value;
+	}
+
 	private skipNewlines(): void {
 		while (this.peek().type === 'NEWLINE') this.advance();
 	}
@@ -241,11 +246,11 @@ class Parser {
 		this.advance(); // pour
 		const variable = this.expect('IDENTIFIER', 'variable de boucle').value;
 
-		if (this.isKeyword('de')) {
-			// pour i de a a b:
+		if (this.isIdentifierWithValue('de')) {
+			// pour i de X a Y:
 			this.advance(); // de
 			const from = this.parseExpr();
-			if (!this.isKeyword('a')) {
+			if (!this.isIdentifierWithValue('a')) {
 				throw new DslParseError(
 					"Attendu 'a' apres l'expression de debut",
 					this.peek().line,

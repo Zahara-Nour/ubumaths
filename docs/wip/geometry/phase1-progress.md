@@ -291,9 +291,19 @@
 
 ## Prochaines etapes
 
-- Phase 5E : Macros
-- Phase 5F : Boucles et conditionnels (deja implementes dans interpreter)
-- Phase 5G : Integration
+## Phase 5E : DSL Macros (TERMINEE)
+
+- `dsl/macro-registry.ts` — registre des macros, detection de recursion (profondeur max 10)
+- Macros avec parametres optionnels (`macro f(a, b=0):`)
+- Retour de valeurs : `retourne (M, d)` avec destructuration `(M, d) = mediatrice(A, B)`
+- Portee lexicale : variables appelantes lisibles, assignations locales
+- Macros composables : macro appelant d'autres macros (cercle_circonscrit → mediatrice)
+- Fix : `a` et `de` retires des keywords (conflit avec noms de variables), traites comme identifiants contextuels dans `pour...de...a`
+- Tests : 15
+
+## Prochaines etapes
+
+- Phase 5G : Integration (API publique, barrel exports)
 
 ## Resume des tests
 
@@ -307,7 +317,7 @@
 | geometry/ (intersections + transformations) | 89       |
 | interaction/                                | 25       |
 | validation/                                 | 71       |
-| dsl/ (token+parse+interp+serial)            | 144      |
+| dsl/ (full pipeline + macros)               | 159      |
 | integration/                                | 18       |
-| **Total geometry-core**                     | **1011** |
+| **Total geometry-core**                     | **1026** |
 | grapheur/ (non-regression)                  | 213      |

@@ -63,8 +63,6 @@ describe('tokenizer — basics', () => {
 			'macro',
 			'retourne',
 			'pour',
-			'de',
-			'a',
 			'dans',
 			'si',
 			'sinon',

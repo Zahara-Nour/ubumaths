@@ -25,8 +25,6 @@ export const KEYWORDS = new Set([
 	'macro',
 	'retourne',
 	'pour',
-	'de',
-	'a',
 	'dans',
 	'si',
 	'sinon',

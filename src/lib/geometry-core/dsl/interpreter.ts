@@ -20,6 +20,7 @@ import {
 	type ResolvedArgs
 } from './builtins';
 import type { DslProgram, DslStatement, DslExpr, DslFunctionCallExpr } from './types';
+import { MacroRegistry } from './macro-registry';
 
 export interface InterpretResult {
 	figure: Figure;
@@ -29,7 +30,8 @@ export interface InterpretResult {
 export function interpret(program: DslProgram, figure?: Figure): InterpretResult {
 	const fig = figure ?? new Figure();
 	const symbols = new SymbolTable();
-	const interpreter = new Interpreter(fig, symbols);
+	const macros = new MacroRegistry();
+	const interpreter = new Interpreter(fig, symbols, macros);
 	interpreter.executeBlock(program.statements);
 	return { figure: fig, symbols };
 }
@@ -37,7 +39,8 @@ export function interpret(program: DslProgram, figure?: Figure): InterpretResult
 class Interpreter {
 	constructor(
 		private figure: Figure,
-		private symbols: SymbolTable
+		private symbols: SymbolTable,
+		private macros: MacroRegistry
 	) {}
 
 	executeBlock(statements: DslStatement[]): ResolvedValue | undefined {
@@ -86,8 +89,7 @@ class Interpreter {
 			}
 
 			case 'macroDef': {
-				// Store macro in symbols — will be handled by macro-registry in Phase 5E
-				// For now, skip
+				this.macros.define(stmt);
 				break;
 			}
 
@@ -279,6 +281,11 @@ class Interpreter {
 			return { type: 'nombre', value: 0 }; // style() returns nothing
 		}
 
+		// Try macro call
+		if (this.macros.has(name)) {
+			return this.executeMacroCall(name, resolvedArgs, line);
+		}
+
 		throw new DslRuntimeError(`Fonction inconnue : "${name}"`, line);
 	}
 
@@ -303,6 +310,49 @@ class Interpreter {
 				return { type: 'nombre', value: (Math.atan(args[0]) * 180) / Math.PI };
 			default:
 				throw new DslRuntimeError(`Fonction math inconnue : "${name}"`, expr.line);
+		}
+	}
+
+	private executeMacroCall(name: string, args: ResolvedArgs, line: number): ResolvedValue {
+		const macro = this.macros.get(name)!;
+		this.macros.enterCall(name, line);
+
+		try {
+			// Create new scope for the macro
+			this.symbols.pushScope();
+
+			// Bind parameters
+			const params = macro.params;
+			for (let i = 0; i < params.length; i++) {
+				const param = params[i];
+				let value: ResolvedValue | undefined;
+
+				if (i < args.positional.length) {
+					value = args.positional[i];
+				} else if (args.named.has(param.name)) {
+					value = args.named.get(param.name)!;
+				} else if (param.defaultValue) {
+					value = this.evaluateExpr(param.defaultValue, line);
+				} else {
+					throw new DslRuntimeError(
+						`Parametre "${param.name}" manquant pour la macro "${name}"`,
+						line
+					);
+				}
+
+				this.symbols.set(param.name, this.toSymbolEntry(value));
+			}
+
+			// Execute body
+			const result = this.executeBlock(macro.body);
+
+			// Pop scope
+			this.symbols.popScope();
+
+			// Return result or empty tuple
+			return result ?? { type: 'nombre', value: 0 };
+		} finally {
+			this.macros.exitCall();
 		}
 	}
 
