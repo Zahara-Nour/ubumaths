@@ -31,3 +31,9 @@ export {
 	segmentMarkToSVG,
 	measureToSVG
 } from './svg-primitives';
+
+// Export formats
+export type { TikZExportOptions } from './export-tikz';
+export { exportToTikZ } from './export-tikz';
+export type { TypstExportOptions } from './export-typst';
+export { exportToTypst } from './export-typst';
