@@ -259,9 +259,19 @@
 - `dsl/types.ts` — types AST complets (DslProgram, DslExpr, DslStatement, 20+ node types)
 - Tests : 37
 
+## Phase 5B : DSL Parser (TERMINEE)
+
+- `dsl/parser.ts` — recursive descent parser avec precedence d'operateurs (9 niveaux)
+- `dsl/errors.ts` — DslParseError, DslRuntimeError avec position ligne:colonne
+- Assignations : simples (`A = point(0, 0)`), indexees (`P[i] = ...`), destructurees (`(M, d) = ...`)
+- Appels de fonctions : arguments positionnels + nommes (`cercle(O, rayon=3)`)
+- Expressions : arithmetique, comparaisons, booleens (`et`, `ou`, `non`)
+- Blocs : `macro`, `pour...de...a`, `pour...dans`, `si`/`sinon` avec indentation
+- Tests : 40
+
 ## Prochaines etapes
 
-- Phase 5B : Parser (script → AST)
+- Phase 5C : Interpreter (AST → Figure)
 - Phase 5C : Interpreter (AST → Figure)
 - Phase 5D : Serializer (Figure → script)
 - Phase 5E : Macros
@@ -280,7 +290,7 @@
 | geometry/ (intersections + transformations) | 89      |
 | interaction/                                | 25      |
 | validation/                                 | 71      |
-| dsl/ (tokenizer)                            | 37      |
+| dsl/ (tokenizer + parser)                   | 77      |
 | integration/                                | 18      |
-| **Total geometry-core**                     | **904** |
+| **Total geometry-core**                     | **944** |
 | grapheur/ (non-regression)                  | 213     |
