@@ -4,7 +4,13 @@
 
 // Core
 export { ConstructionExecutor } from './core/executor';
-export { SimpleTimeline, formatTime, formatPlaybackRate } from './core/timeline.svelte';
+export {
+	Timeline,
+	createInitialTimelineState,
+	formatTime,
+	formatPlaybackRate
+} from './core/timeline.svelte';
+export type { TimelineState, TimelineUpdateFn } from './core/timeline.svelte';
 export { partialSegment, partialCircle, partialArc, interpolate } from './core/animator';
 
 // Types

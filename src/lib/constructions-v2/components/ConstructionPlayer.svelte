@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { parseDsl } from '$lib/geometry-core/dsl';
 	import { ConstructionExecutor } from '../core/executor';
-	import { SimpleTimeline } from '../core/timeline.svelte';
+	import { Timeline, createInitialTimelineState } from '../core/timeline.svelte';
+	import type { TimelineState } from '../core/timeline.svelte';
 	import ConstructionCanvas from './ConstructionCanvas.svelte';
 	import PlayerControls from './PlayerControls.svelte';
 	import TimelineSlider from './TimelineSlider.svelte';
@@ -30,41 +31,27 @@
 		class: className = ''
 	}: Props = $props();
 
-	const executor = new ConstructionExecutor();
-	const timeline = new SimpleTimeline({
-		onStepChange(stepIndex) {
-			executeUpTo(stepIndex);
-		}
-	});
-
+	// Reactive state owned by this component
+	let tl = $state<TimelineState>(createInitialTimelineState());
 	let figureVersion = $state(0);
 
-	// Parse script — $derived for pure computation (can fail)
+	// Plain JS objects (not reactive)
+	const executor = new ConstructionExecutor();
+	let timeline: Timeline | null = null;
+
+	// Parse script — $derived for pure computation
 	let parseResult = $derived.by(() => {
 		try {
-			parseDsl(script); // validate syntax
+			parseDsl(script);
 			return { valid: true as const, error: null };
 		} catch (e) {
 			return { valid: false as const, error: e instanceof Error ? e.message : String(e) };
 		}
 	});
 
-	// Load into executor/timeline — $effect for side effects only
-	// untrack prevents writes to timeline's $state from re-triggering this effect
-	$effect(() => {
-		if (!parseResult.valid) return;
-		const currentScript = script;
-		const shouldAutoPlay = autoPlay;
-		untrack(() => {
-			executor.load(currentScript);
-			timeline.load(executor.stepDurations);
-			if (shouldAutoPlay) {
-				timeline.play();
-			}
-		});
-	});
+	// ─── Event handlers (UI event → handler → update $state → DOM) ───
 
-	function executeUpTo(stepIndex: number) {
+	function handleStepChange(stepIndex: number) {
 		executor.reset();
 		for (let i = 0; i <= stepIndex; i++) {
 			executor.step();
@@ -72,15 +59,78 @@
 		figureVersion++;
 	}
 
+	function handleTimelineUpdate(state: TimelineState) {
+		tl = state;
+	}
+
+	function handleToggle() {
+		timeline?.toggle();
+	}
+
+	function handleStepForward() {
+		timeline?.stepForward();
+	}
+
+	function handleStepBackward() {
+		timeline?.stepBackward();
+	}
+
 	function handleReset() {
 		executor.reset();
-		timeline.reset();
+		timeline?.reset();
 		figureVersion++;
 	}
 
-	// Cleanup
+	function handleScrub(progress: number) {
+		timeline?.scrubByProgress(progress);
+	}
+
+	function handleSetPlaybackRate(rate: number) {
+		timeline?.setPlaybackRate(rate);
+	}
+
+	function handleSpeedUp() {
+		timeline?.speedUp();
+	}
+
+	function handleSlowDown() {
+		timeline?.slowDown();
+	}
+
+	function handleResetSpeed() {
+		timeline?.resetSpeed();
+	}
+
+	function loadScript(scriptText: string) {
+		executor.load(scriptText);
+		timeline?.destroy();
+		timeline = new Timeline(handleTimelineUpdate, handleStepChange);
+		timeline.load(executor.stepDurations);
+	}
+
+	// Initialize on mount
+	onMount(() => {
+		if (parseResult.valid) {
+			loadScript(script);
+			if (autoPlay) {
+				timeline?.play();
+			}
+		}
+	});
+
+	// React to script prop changes after mount
+	let prevScript = script;
 	$effect(() => {
-		return () => timeline.destroy();
+		if (script !== prevScript) {
+			prevScript = script;
+			if (parseResult.valid) {
+				loadScript(script);
+			}
+		}
+	});
+
+	onDestroy(() => {
+		timeline?.destroy();
 	});
 </script>
 
@@ -114,12 +164,25 @@
 
 		{#if showControls}
 			<div class="mt-2 flex items-center gap-2">
-				<PlayerControls {timeline} onReset={handleReset} />
-				<TimelineSlider {timeline} class="flex-1" />
-				<SpeedControl {timeline} mode="compact" />
+				<PlayerControls
+					{tl}
+					onToggle={handleToggle}
+					onStepForward={handleStepForward}
+					onStepBackward={handleStepBackward}
+					onReset={handleReset}
+				/>
+				<TimelineSlider {tl} onScrub={handleScrub} class="flex-1" />
+				<SpeedControl
+					{tl}
+					onSetRate={handleSetPlaybackRate}
+					onSpeedUp={handleSpeedUp}
+					onSlowDown={handleSlowDown}
+					onResetSpeed={handleResetSpeed}
+					mode="compact"
+				/>
 			</div>
 			<div class="mt-1 text-center text-xs text-muted-foreground">
-				Etape {timeline.currentStepIndex + 1} / {timeline.stepCount}
+				Etape {tl.currentStepIndex + 1} / {tl.stepCount}
 			</div>
 		{/if}
 	{/if}
