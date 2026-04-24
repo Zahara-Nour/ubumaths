@@ -169,6 +169,12 @@
 								<div class="flex-1 space-y-1">
 									<Card.Title class="line-clamp-1 text-lg">{construction.title}</Card.Title>
 									<div class="flex items-center gap-2">
+										<Badge
+											variant={construction.format === 'dsl' ? 'default' : 'outline'}
+											class="text-xs"
+										>
+											{construction.format === 'dsl' ? 'DSL' : 'JSON'}
+										</Badge>
 										{#if construction.is_public}
 											<Badge variant="secondary" class="gap-1">
 												<Globe class="h-3 w-3" />

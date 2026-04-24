@@ -1,41 +1,29 @@
 /**
  * Constructions List Page Server
- * ==============================
  * Load user's constructions and public constructions from others
  */
 
 import type { PageServerLoad } from './$types';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 
-/**
- * Construction with author info (from database query)
- */
 export interface ConstructionListItem {
 	id: string;
 	title: string;
 	description: string | null;
+	format: string;
 	is_public: boolean;
 	created_at: string;
 	updated_at: string;
 	author_id: string | null;
-	// Supabase returns array for joins, we pick first element in the client
 	profiles: {
 		firstname: string | null;
 		lastname: string | null;
 	}[];
 }
 
-/**
- * Load constructions for the list page
- */
-export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-	if (!user) {
-		throw redirect(303, '/login');
-	}
+export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
+	const { user } = await parent();
 
-	// Fetch user's constructions and public constructions
-	// RLS policies handle the filtering, but we use OR to combine conditions
 	const { data: constructions, error: constructionsError } = await supabase
 		.from('constructions')
 		.select(
@@ -43,6 +31,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			id,
 			title,
 			description,
+			format,
 			is_public,
 			created_at,
 			updated_at,

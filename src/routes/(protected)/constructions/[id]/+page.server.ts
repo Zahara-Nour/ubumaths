@@ -1,22 +1,19 @@
 /**
  * Construction Player Page Server
- * ================================
  * Load a single construction by ID for the player view
  */
 
 import type { PageServerLoad } from './$types';
-import type { ConstructionScript } from '$lib/constructions';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
 
-/**
- * Construction with author info and script
- */
 export interface ConstructionDetail {
 	id: string;
 	title: string;
 	description: string | null;
-	script: ConstructionScript;
+	format: string;
+	script: unknown;
+	dsl_script: string | null;
 	is_public: boolean;
 	created_at: string;
 	updated_at: string;
@@ -27,18 +24,10 @@ export interface ConstructionDetail {
 	} | null;
 }
 
-/**
- * Load construction for the player page
- */
-export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-	if (!user) {
-		throw redirect(303, '/login');
-	}
-
+export const load: PageServerLoad = async ({ params, parent, locals: { supabase } }) => {
+	const { user } = await parent();
 	const id = validateUuidParam(params.id);
 
-	// Fetch construction with author info
 	const { data: construction, error: constructionError } = await supabase
 		.from('constructions')
 		.select(
@@ -46,7 +35,9 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			id,
 			title,
 			description,
+			format,
 			script,
+			dsl_script,
 			is_public,
 			created_at,
 			updated_at,
@@ -68,7 +59,6 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		throw error(500, 'Erreur lors du chargement de la construction');
 	}
 
-	// Check access: user must be owner OR construction must be public
 	if (construction.author_id !== user.id && !construction.is_public) {
 		throw error(403, 'Acces refuse a cette construction');
 	}

@@ -34,6 +34,7 @@ const updateConstructionSchema = z.object({
 		.max(2000, 'La description ne doit pas depasser 2000 caracteres')
 		.optional(),
 	script: constructionScriptSchema.optional(),
+	dsl_script: z.string().max(50000, 'Le script DSL est trop long').optional(),
 	is_public: z.boolean().optional()
 });
 
