@@ -1,0 +1,159 @@
+/**
+ * Standard library of predefined macros for the geometry DSL.
+ *
+ * These are written as DSL scripts and auto-loaded into the interpreter.
+ * Each macro creates geometric elements using the builtin functions.
+ */
+
+export const STDLIB_MACROS = `
+# ─── Constructions fondamentales ─────────────────────────────
+
+macro mediatrice(A, B):
+    M = milieu(A, B)
+    H = rotation(A, centre=M, angle=90)
+    d = droite(M, H)
+    retourne (M, d)
+
+macro mediane(A, B, C):
+    M = milieu(B, C)
+    s = segment(A, M)
+    retourne (M, s)
+
+macro hauteur(A, B, C):
+    P = translation(A, vecteur=(B, C))
+    Q = rotation(P, centre=A, angle=90)
+    d = droite(A, Q)
+    retourne d
+
+macro perpendiculaire(P, A, B):
+    Q = translation(P, vecteur=(A, B))
+    R = rotation(Q, centre=P, angle=90)
+    d = droite(P, R)
+    retourne d
+
+macro parallele(P, A, B):
+    Q = translation(P, vecteur=(A, B))
+    d = droite(P, Q)
+    retourne d
+
+macro bissectrice(A, V, B):
+    dax = A.x - V.x
+    day = A.y - V.y
+    dbx = B.x - V.x
+    dby = B.y - V.y
+    la = sqrt(dax * dax + day * day)
+    lb = sqrt(dbx * dbx + dby * dby)
+    uax = dax / la
+    uay = day / la
+    ubx = dbx / lb
+    uby = dby / lb
+    mx = V.x + uax + ubx
+    my = V.y + uay + uby
+    M = point(mx, my)
+    d = droite(V, M)
+    retourne d
+
+# ─── Triangles ───────────────────────────────────────────────
+
+macro triangle(A, B, C):
+    segment(A, B)
+    segment(B, C)
+    segment(C, A)
+
+macro triangle_equilateral(A, B):
+    C = rotation(B, centre=A, angle=60)
+    segment(A, B)
+    segment(B, C)
+    segment(C, A)
+    retourne C
+
+macro triangle_isocele(A, B, angle=40):
+    demi = angle / 2
+    M = milieu(A, B)
+    H = rotation(A, centre=M, angle=90)
+    C = rotation(M, centre=A, angle=90 - demi)
+    segment(A, B)
+    segment(A, C)
+    segment(B, C)
+    retourne C
+
+macro triangle_rectangle(A, B, angle=45):
+    C = rotation(B, centre=A, angle=angle)
+    segment(A, B)
+    segment(A, C)
+    segment(B, C)
+    angle_droit(B, A, C)
+    retourne C
+
+# ─── Quadrilateres ───────────────────────────────────────────
+
+macro parallelogramme(A, B, C):
+    D = translation(A, vecteur=(B, C))
+    segment(A, B)
+    segment(B, C)
+    segment(C, D)
+    segment(D, A)
+    retourne D
+
+macro rectangle(A, B, largeur=2):
+    H = rotation(B, centre=A, angle=90)
+    dax = H.x - A.x
+    day = H.y - A.y
+    la = sqrt(dax * dax + day * day)
+    dx = dax / la * largeur
+    dy = day / la * largeur
+    C = point(B.x + dx, B.y + dy)
+    D = point(A.x + dx, A.y + dy)
+    segment(A, B)
+    segment(B, C)
+    segment(C, D)
+    segment(D, A)
+    angle_droit(D, A, B)
+    retourne (C, D)
+
+macro carre(A, B):
+    C = rotation(A, centre=B, angle=90)
+    D = rotation(B, centre=A, angle=-90)
+    segment(A, B)
+    segment(B, C)
+    segment(C, D)
+    segment(D, A)
+    angle_droit(D, A, B)
+    retourne (C, D)
+
+macro losange(A, B, angle=60):
+    C = rotation(A, centre=B, angle=angle)
+    D = translation(C, vecteur=(B, A))
+    segment(A, B)
+    segment(B, C)
+    segment(C, D)
+    segment(D, A)
+    retourne (C, D)
+
+# ─── Polygones ───────────────────────────────────────────────
+
+macro polygone_regulier(centre, rayon, n):
+    P[0] = point(centre.x + rayon, centre.y)
+    pour i de 1 a n - 1:
+        P[i] = rotation(P[0], centre=centre, angle=i * 360 / n)
+    pour i de 0 a n - 1:
+        segment(P[i], P[(i + 1) % n])
+    retourne P
+
+macro etoile(centre, rayon, n, saut=2):
+    P[0] = point(centre.x + rayon, centre.y)
+    pour i de 1 a n - 1:
+        P[i] = rotation(P[0], centre=centre, angle=i * 360 / n)
+    pour i de 0 a n - 1:
+        segment(P[i], P[(i + saut) % n])
+    retourne P
+
+# ─── Cercles remarquables ────────────────────────────────────
+
+macro cercle_circonscrit(A, B, C):
+    (M1, d1) = mediatrice(A, B)
+    (M2, d2) = mediatrice(B, C)
+    O = intersection(d1, d2)
+    c = cercle(O, passant=A)
+    retourne (O, c)
+`;

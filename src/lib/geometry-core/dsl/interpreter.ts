@@ -21,16 +21,28 @@ import {
 } from './builtins';
 import type { DslProgram, DslStatement, DslExpr, DslFunctionCallExpr } from './types';
 import { MacroRegistry } from './macro-registry';
+import { STDLIB_MACROS } from './stdlib';
+import { parse } from './parser';
 
 export interface InterpretResult {
 	figure: Figure;
 	symbols: SymbolTable;
 }
 
+function loadStdlib(macros: MacroRegistry): void {
+	const program = parse(STDLIB_MACROS);
+	for (const stmt of program.statements) {
+		if (stmt.kind === 'macroDef') {
+			macros.define(stmt);
+		}
+	}
+}
+
 export function interpret(program: DslProgram, figure?: Figure): InterpretResult {
 	const fig = figure ?? new Figure();
 	const symbols = new SymbolTable();
 	const macros = new MacroRegistry();
+	loadStdlib(macros);
 	const interpreter = new Interpreter(fig, symbols, macros);
 	interpreter.executeBlock(program.statements);
 	return { figure: fig, symbols };
