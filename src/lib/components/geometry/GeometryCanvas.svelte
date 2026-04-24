@@ -60,6 +60,10 @@
 	let popoverX = $state(0);
 	let popoverY = $state(0);
 
+	// Label drag state
+	let draggingLabelId: string | null = $state(null);
+	let labelDragStart: { mx: number; my: number; dx: number; dy: number } | null = $state(null);
+
 	// Local state for pan/zoom. Initialized from props, then diverges.
 	// Pan/zoom modify these directly — prop changes after mount are ignored.
 	let viewCenter = $state({ x: initialCenter.x, y: initialCenter.y });
@@ -176,6 +180,20 @@
 		const math = getMathCoords(e);
 		if (!math) return;
 
+		if (draggingLabelId && labelDragStart) {
+			const MAX_LABEL_RADIUS = 30; // pixels
+			let dx = labelDragStart.dx + (e.clientX - labelDragStart.mx);
+			let dy = labelDragStart.dy + (e.clientY - labelDragStart.my);
+			const dist = Math.sqrt(dx * dx + dy * dy);
+			if (dist > MAX_LABEL_RADIUS) {
+				dx = (dx / dist) * MAX_LABEL_RADIUS;
+				dy = (dy / dist) * MAX_LABEL_RADIUS;
+			}
+			figure.setLabelOffset(draggingLabelId, dx, dy);
+			version++;
+			return;
+		}
+
 		if (draggingId) {
 			figure.movePoint(draggingId, numeric(math.x), numeric(math.y));
 			figure.recompute();
@@ -190,11 +208,20 @@
 		if (draggingId) figure.discard();
 		isPanning = false;
 		draggingId = null;
+		draggingLabelId = null;
+		labelDragStart = null;
 	}
 
 	function onPointerUp(e: PointerEvent) {
 		if (isPanning) {
 			isPanning = false;
+			return;
+		}
+
+		if (draggingLabelId) {
+			figure.commit();
+			draggingLabelId = null;
+			labelDragStart = null;
 			return;
 		}
 
@@ -323,6 +350,24 @@
 		popoverElementId ? figure.getElementById(popoverElementId) : undefined
 	);
 
+	function onLabelPointerDown(e: PointerEvent, elementId: string) {
+		if (!interactive) return;
+		e.stopPropagation();
+		e.preventDefault();
+
+		const el = figure.getElementById(elementId);
+		if (!el) return;
+
+		const sty = resolveStyle(el, figure.defaults);
+		const currentDx = el.labelOffset?.dx ?? sty.pointSize + 4;
+		const currentDy = el.labelOffset?.dy ?? -(sty.pointSize + 2);
+
+		draggingLabelId = elementId;
+		labelDragStart = { mx: e.clientX, my: e.clientY, dx: currentDx, dy: currentDy };
+		figure.beginTransaction();
+		svgRef?.setPointerCapture(e.pointerId);
+	}
+
 	function formatGrad(n: number): string {
 		// Avoid floating point display artifacts: 0.30000000000000004 -> "0.3"
 		const rounded = Math.round(n * 1e10) / 1e10;
@@ -331,9 +376,12 @@
 
 	function onWindowBlur() {
 		if (draggingId) figure.discard();
+		if (draggingLabelId) figure.discard();
 		spaceHeld = false;
 		isPanning = false;
 		draggingId = null;
+		draggingLabelId = null;
+		labelDragStart = null;
 	}
 </script>
 
@@ -589,10 +637,12 @@
 								x={lx}
 								y={ly}
 								class="label"
+								class:label-dragging={draggingLabelId === el.id}
 								fill={sty.color}
 								stroke="white"
 								stroke-width="3"
-								paint-order="stroke">{el.label}</text
+								paint-order="stroke"
+								onpointerdown={(e) => onLabelPointerDown(e, el.id)}>{el.label}</text
 							>
 						{/if}
 					{/if}
@@ -752,7 +802,15 @@
 	.label {
 		font-size: 14px;
 		font-family: 'KaTeX_Main', serif;
-		pointer-events: none;
+		cursor: grab;
+	}
+
+	.label:hover {
+		filter: brightness(1.3);
+	}
+
+	.label-dragging {
+		cursor: grabbing;
 	}
 
 	.measure-text {
