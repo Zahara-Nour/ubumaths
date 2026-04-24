@@ -308,11 +308,29 @@
 - Tests integration : triangle, polygone, macros, annotations, round-trip, erreurs, exports
 - Tests : 14
 
+## Stdlib macros (TERMINE)
+
+- `dsl/stdlib.ts` — 16 macros predefinies, auto-chargees dans l'interpreteur
+- Constructions : mediatrice, mediane, hauteur, perpendiculaire, parallele, bissectrice
+- Triangles : triangle, triangle_equilateral, triangle_isocele, triangle_rectangle
+- Quadrilateres : parallelogramme, rectangle, carre, losange
+- Polygones : polygone_regulier, etoile
+- Cercles : cercle_circonscrit (composition de mediatrice)
+- Tests : 25
+
+## Labels draggables (TERMINE)
+
+- Drag des labels avec contrainte de 30px autour du point
+- Transaction undo/redo pour le deplacement
+- Curseur grab/grabbing, highlight au hover
+
 ## Prochaines etapes
 
-- Ameliorations techniques (responsive, touch/mobile)
-- Labels draggables
-- Integration UI (editeur de script dans l'app)
+- Reecriture du module constructions/ sur geometry-core
+- Integration UI (editeur de script DSL dans l'app)
+- Exercices (script cible + validation)
+- Responsive + touch/mobile
+- Outils de construction interactifs (toolbar)
 
 ## Resume des tests
 
@@ -326,7 +344,8 @@
 | geometry/ (intersections + transformations) | 89       |
 | interaction/                                | 25       |
 | validation/                                 | 71       |
-| dsl/ (full pipeline + macros + integ)       | 173      |
+| dsl/ (pipeline + macros + stdlib + integ)   | 221      |
 | integration/                                | 18       |
-| **Total geometry-core**                     | **1040** |
+| roundtrip edge cases                        | 48       |
+| **Total geometry-core**                     | **1113** |
 | grapheur/ (non-regression)                  | 213      |
