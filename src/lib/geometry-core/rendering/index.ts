@@ -37,3 +37,5 @@ export type { TikZExportOptions } from './export-tikz';
 export { exportToTikZ } from './export-tikz';
 export type { TypstExportOptions } from './export-typst';
 export { exportToTypst } from './export-typst';
+export type { SVGExportOptions } from './export-svg';
+export { exportToSVG } from './export-svg';
