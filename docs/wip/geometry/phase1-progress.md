@@ -2,7 +2,7 @@
 
 > Derniere mise a jour : 2026-04-24
 
-## Etat : Phases 1-4D terminees
+## Etat : Phases 1-4F terminees
 
 ## Phase 1 : Fondations (TERMINEE)
 
@@ -222,12 +222,30 @@
 - Fond semi-transparent derriere le texte
 - Tests : 24
 
+## Phase 4E : Labels ameliores (TERMINEE)
+
+- `labelOffset?: { dx, dy }` sur `GeoElementBase` pour repositionner les labels
+- Schema Zod avec validation (finite numbers)
+- `Figure.setLabelOffset(id, dx, dy)` avec delta undo
+- Halo blanc via `stroke="white" stroke-width="3" paint-order="stroke"` pour lisibilite
+- Toutes les factories acceptent `labelOffset` dans options
+
+## Phase 4F : ElementPopover + interactions (TERMINEE)
+
+- `ElementPopover.svelte` : popup de configuration au double-clic
+- Contenu adapte au type : couleur (palette 8 couleurs), label, forme de point, style/epaisseur de trait
+- `Figure.updateStyle(id, style)` et `Figure.updateLabel(id, label)` avec delta undo
+- `findElementNear()` : hit-testing sur segments (distance au segment), droites, rayons, cercles (distance au contour)
+- Angle marks et segment marks : detection par `ondblclick` SVG direct avec zone invisible 12px
+- Hover sur tous les elements : epaississement + eclaircissement au survol, curseur pointeur
+- `isPointElement()` etendu a tous les types de points (pas seulement freePoint/midpoint)
+- Escape ou clic exterieur ferme le popover
+
 ## Prochaines etapes
 
-- Labels ameliores (halo blanc, labelOffset draggable)
-- Popup de configuration par element (ElementPopover)
 - Export LaTeX
 - Ameliorations techniques (responsive)
+- Labels draggables (repositionner au drag)
 
 ## Resume des tests
 

@@ -182,7 +182,7 @@
 			version++;
 		} else {
 			const threshold = 15 / ppu;
-			hoveredId = findPointNear(figure, math.x, math.y, threshold);
+			hoveredId = findElementNear(figure, math.x, math.y, threshold);
 		}
 	}
 
@@ -306,6 +306,15 @@
 		}
 	}
 
+	function openPopoverFor(elementId: string, e: MouseEvent) {
+		e.stopPropagation();
+		if (!containerRef) return;
+		const rect = containerRef.getBoundingClientRect();
+		popoverX = e.clientX - rect.left + 10;
+		popoverY = e.clientY - rect.top + 10;
+		popoverElementId = elementId;
+	}
+
 	function closePopover() {
 		popoverElementId = null;
 	}
@@ -423,6 +432,7 @@
 							stroke-dasharray={sty.dashArray}
 							opacity={sty.opacity}
 							class="segment"
+							class:hovered={hoveredId === el.id}
 						/>
 					{/if}
 				{:else if el.type === 'line'}
@@ -438,6 +448,7 @@
 							stroke-dasharray={sty.dashArray}
 							opacity={sty.opacity}
 							class="geo-line"
+							class:hovered={hoveredId === el.id}
 						/>
 					{/if}
 				{:else if el.type === 'ray'}
@@ -453,6 +464,7 @@
 							stroke-dasharray={sty.dashArray}
 							opacity={sty.opacity}
 							class="ray"
+							class:hovered={hoveredId === el.id}
 						/>
 					{/if}
 				{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint'}
@@ -469,6 +481,7 @@
 							fill={sty.fillColor ?? 'none'}
 							fill-opacity={sty.fillOpacity}
 							class="circle"
+							class:hovered={hoveredId === el.id}
 						/>
 					{/if}
 				{/if}
@@ -480,17 +493,20 @@
 					{@const svg = angleMarkToSVG(el.id, figure, transformer)}
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{#if svg}
-						{#each svg.paths as path, i (i)}
-							<path
-								d={path}
-								stroke={sty.color}
-								stroke-width={sty.strokeWidth}
-								stroke-dasharray={sty.dashArray}
-								opacity={sty.opacity}
-								fill="none"
-								class="angle-mark"
-							/>
-						{/each}
+						<g ondblclick={(e) => openPopoverFor(el.id, e)}>
+							{#each svg.paths as path, i (i)}
+								<path d={path} stroke="transparent" stroke-width="12" fill="none" />
+								<path
+									d={path}
+									stroke={sty.color}
+									stroke-width={sty.strokeWidth}
+									stroke-dasharray={sty.dashArray}
+									opacity={sty.opacity}
+									fill="none"
+									class="angle-mark"
+								/>
+							{/each}
+						</g>
 					{/if}
 				{/if}
 			{/each}
@@ -589,18 +605,28 @@
 					{@const svg = segmentMarkToSVG(el.id, figure, transformer)}
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{#if svg}
-						{#each svg.ticks as tick, i (i)}
-							<line
-								x1={tick.x1}
-								y1={tick.y1}
-								x2={tick.x2}
-								y2={tick.y2}
-								stroke={sty.color}
-								stroke-width={sty.strokeWidth}
-								opacity={sty.opacity}
-								class="segment-mark"
-							/>
-						{/each}
+						<g ondblclick={(e) => openPopoverFor(el.id, e)}>
+							{#each svg.ticks as tick, i (i)}
+								<line
+									x1={tick.x1}
+									y1={tick.y1}
+									x2={tick.x2}
+									y2={tick.y2}
+									stroke="transparent"
+									stroke-width="12"
+								/>
+								<line
+									x1={tick.x1}
+									y1={tick.y1}
+									x2={tick.x2}
+									y2={tick.y2}
+									stroke={sty.color}
+									stroke-width={sty.strokeWidth}
+									opacity={sty.opacity}
+									class="segment-mark"
+								/>
+							{/each}
+						</g>
 					{/if}
 				{/if}
 			{/each}
@@ -687,6 +713,22 @@
 		font-family: 'KaTeX_Main', serif;
 		fill: #6b7280;
 		pointer-events: none;
+	}
+
+	.segment.hovered,
+	.geo-line.hovered,
+	.ray.hovered,
+	.circle.hovered {
+		filter: brightness(1.3);
+		stroke-width: 4;
+		cursor: pointer;
+	}
+
+	.angle-mark:hover,
+	.segment-mark:hover {
+		filter: brightness(1.3);
+		stroke-width: 3;
+		cursor: pointer;
 	}
 
 	.point.draggable {
