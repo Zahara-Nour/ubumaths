@@ -3,6 +3,7 @@
 	import { Figure } from '$lib/geometry-core/graph/figure';
 	import { exact, numeric } from '$lib/geometry-core/types/geo-value';
 	import { number, sqrt } from '$lib/mathAST';
+	import { runDsl } from '$lib/geometry-core/dsl';
 
 	function pt(x: number, y: number) {
 		return { x: exact(number(x)), y: exact(number(y)) };
@@ -322,6 +323,18 @@
 		color: '#1e40af',
 		style: { render: 'rough', fillColor: '#bfdbfe', roughFillStyle: 'solid' }
 	});
+
+	// ==========================================================================
+	// courbe() — lines from equations
+	// ==========================================================================
+	const courbeFig = runDsl(
+		`d1 = courbe("y = 2*x + 1", couleur="bleu")
+d2 = courbe("x - 2*y + 4 = 0", couleur="rouge")
+d3 = courbe("y = -2", couleur="vert")
+d4 = courbe("x = 3", couleur="violet")
+d5 = courbe("3*x + y - 6", couleur="orange")
+d6 = courbe("y = -x", couleur="cyan")`
+	).figure;
 </script>
 
 <div class="p-4">
@@ -414,5 +427,32 @@
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{paramsFig.size} elements | parametres rough
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Droites par equation — courbe()</h2>
+	<p class="mb-4 text-muted-foreground">
+		Droites creees via le builtin <code>courbe("equation")</code> du DSL. Les points de support sont
+		caches — seules les droites sont visibles.
+		<br />
+		<strong>Bleu</strong> : y = 2x + 1 |
+		<strong>Rouge</strong> : x - 2y + 4 = 0 |
+		<strong>Vert</strong> : y = -2 (horizontale) |
+		<strong>Violet</strong> : x = 3 (verticale) |
+		<strong>Orange</strong> : 3x + y - 6 (implicite) |
+		<strong>Cyan</strong> : y = -x (par l'origine)
+	</p>
+
+	<GeometryCanvas
+		figure={courbeFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{courbeFig.size} elements | courbe() — droites par equation
 	</p>
 </div>
