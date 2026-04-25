@@ -256,6 +256,171 @@ export function sampleFunctionAdaptive(
 	return { points, discontinuityIndices };
 }
 
+// =============================================================================
+// Derivative-Based Adaptive Sampling
+// =============================================================================
+
+/** Number of probe points for derivative estimation in pass 1. */
+const DERIVATIVE_PROBE_COUNT = 50;
+
+/**
+ * Sample a function with adaptive density based on the derivative.
+ *
+ * Regions where |f'(x)| is large get more sample points (the curve changes
+ * fast there), while flat regions get fewer. This produces smoother curves
+ * with fewer total points than uniform sampling.
+ *
+ * Algorithm:
+ * - Pass 1: Evaluate |f'(x)| at N probe points to estimate density
+ * - Pass 2: Distribute sample points non-uniformly based on density
+ * - Pass 3: Refine around detected discontinuities
+ *
+ * @param evaluator - Function f(x) → y | null
+ * @param derivativeEvaluator - Function f'(x) → y | null
+ * @param viewport - The mathematical viewport bounds
+ * @param numPoints - Target number of sample points (default: 200)
+ * @returns SampledCurve with adaptively distributed points
+ */
+export function sampleWithDerivative(
+	evaluator: (x: number) => number | null,
+	derivativeEvaluator: (x: number) => number | null,
+	viewport: Viewport,
+	numPoints: number = DEFAULT_NUM_POINTS
+): SampledCurve {
+	const n = Math.max(2, Math.floor(numPoints));
+	const viewportWidth = viewport.xMax - viewport.xMin;
+	const viewportHeight = viewport.yMax - viewport.yMin;
+
+	if (viewportWidth <= MIN_VIEWPORT_DIM) {
+		return { points: [], discontinuityIndices: [] };
+	}
+
+	// Pass 1: probe f'(x) at regular intervals to estimate density
+	const probeStep = viewportWidth / (DERIVATIVE_PROBE_COUNT - 1);
+	const densities: number[] = [];
+	let maxAbsDerivative = 0;
+
+	for (let i = 0; i < DERIVATIVE_PROBE_COUNT; i++) {
+		const x = viewport.xMin + i * probeStep;
+		const d = derivativeEvaluator(x);
+		const absD = d !== null && Number.isFinite(d) ? Math.abs(d) : 0;
+		densities.push(absD);
+		if (absD > maxAbsDerivative) maxAbsDerivative = absD;
+	}
+
+	// If derivative is constant or zero everywhere, fall back to uniform
+	if (maxAbsDerivative < 1e-10) {
+		return sampleFunctionAdaptive(evaluator, viewport, n);
+	}
+
+	// Pass 2: compute cumulative density and distribute points
+	// density(x) = 1 + densityFactor * |f'(x)| / maxDerivative
+	// This ensures a minimum density of 1 everywhere (no gaps)
+	const DENSITY_FACTOR = 3; // steep zones get up to 4x more points
+	const cumulativeDensity: number[] = [0];
+
+	for (let i = 1; i < DERIVATIVE_PROBE_COUNT; i++) {
+		const avgDensity =
+			1 + (DENSITY_FACTOR * (densities[i - 1] + densities[i])) / (2 * maxAbsDerivative);
+		cumulativeDensity.push(cumulativeDensity[i - 1] + avgDensity * probeStep);
+	}
+
+	const totalDensity = cumulativeDensity[cumulativeDensity.length - 1];
+
+	// Generate x values distributed according to cumulative density
+	const xValues: number[] = [];
+	for (let i = 0; i < n; i++) {
+		const targetDensity = (i / (n - 1)) * totalDensity;
+
+		// Binary search for the x position corresponding to this cumulative density
+		let lo = 0;
+		let hi = DERIVATIVE_PROBE_COUNT - 2;
+		while (lo < hi) {
+			const mid = (lo + hi) >> 1;
+			if (cumulativeDensity[mid + 1] < targetDensity) {
+				lo = mid + 1;
+			} else {
+				hi = mid;
+			}
+		}
+
+		// Linear interpolation within the probe interval
+		const dRange = cumulativeDensity[lo + 1] - cumulativeDensity[lo];
+		const t = dRange > 0 ? (targetDensity - cumulativeDensity[lo]) / dRange : 0;
+		const x = viewport.xMin + (lo + t) * probeStep;
+		xValues.push(x);
+	}
+
+	// Ensure endpoints are included
+	if (xValues.length > 0) {
+		xValues[0] = viewport.xMin;
+		xValues[xValues.length - 1] = viewport.xMax;
+	}
+
+	// Pass 3: sample at computed x values with discontinuity detection
+	const points: Point[] = [];
+	const discontinuityIndices: number[] = [];
+	let prevY: number | null = null;
+
+	for (const x of xValues) {
+		const y = evaluator(x);
+
+		if (points.length > 0 && isAsymptote(prevY, y, viewportHeight)) {
+			discontinuityIndices.push(points.length);
+		}
+
+		if (y !== null) {
+			points.push({ x, y });
+		}
+
+		prevY = y;
+	}
+
+	// Pass 4: refine near discontinuities (same as sampleFunctionAdaptive)
+	if (discontinuityIndices.length === 0) {
+		return { points, discontinuityIndices };
+	}
+
+	const refinementStep = viewportWidth / n / 10;
+	const allX = new Set(xValues);
+
+	for (const discIdx of discontinuityIndices) {
+		if (discIdx > 0 && discIdx <= points.length) {
+			const point = points[discIdx - 1];
+			if (point) {
+				for (let j = -5; j <= 5; j++) {
+					const rx = point.x + j * refinementStep;
+					if (rx >= viewport.xMin && rx <= viewport.xMax) {
+						allX.add(rx);
+					}
+				}
+			}
+		}
+	}
+
+	// Re-sample with refined points
+	const sortedX = [...allX].sort((a, b) => a - b);
+	const refinedPoints: Point[] = [];
+	const refinedDiscontinuities: number[] = [];
+	prevY = null;
+
+	for (const x of sortedX) {
+		const y = evaluator(x);
+
+		if (refinedPoints.length > 0 && isAsymptote(prevY, y, viewportHeight)) {
+			refinedDiscontinuities.push(refinedPoints.length);
+		}
+
+		if (y !== null) {
+			refinedPoints.push({ x, y });
+		}
+
+		prevY = y;
+	}
+
+	return { points: refinedPoints, discontinuityIndices: refinedDiscontinuities };
+}
+
 /**
  * Generate sample points at specific x coordinates.
  *
