@@ -42,7 +42,22 @@
 - Intervalle par defaut [-10, 10] pour la recherche
 - inflections() calcule f'' a la volee via differentiate + compile
 
-## Prochaines etapes
+## Phase 3 : Migration Grapheur (DONE)
 
-- Phase 3 : Migration Grapheur
-- Phase 4 : Demo + verification
+### Fichiers modifies
+
+- `src/lib/grapheur/analysis.ts` — analyzeFunction/analyzeAllFunctions acceptent un AST optionnel
+
+### Decisions
+
+- Ajout d'un parametre optionnel `ast?: AnalysisASTInfo` a analyzeFunction
+- Quand AST fourni : utilise findCriticalZeros/findCriticalExtrema (exact+numerique)
+- Quand pas d'AST : garde le code numerique existant (retrocompatible)
+- analyzeAllFunctions propage le parametre ast
+- 218 tests Grapheur passent sans modification
+
+## Phase 4 : Demo (DONE)
+
+- Section dans /geometry-demo avec y=x^3-3x + zeros + extrema + inflections
+
+## COMPLETE
