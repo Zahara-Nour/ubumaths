@@ -205,9 +205,15 @@ export function executeBuiltin(
 		label
 	);
 
-	// Apply inline style args (couleur, forme, etc.) to any created element
-	if (result && hasStyleArgs && 'figureId' in result) {
-		applyInlineStyle(figure, result.figureId, named, line);
+	// Apply inline style args (couleur, forme, etc.) to created element(s)
+	if (result && hasStyleArgs) {
+		if ('figureId' in result) {
+			applyInlineStyle(figure, result.figureId, named, line);
+		} else if ('elements' in result) {
+			for (const el of (result as BuiltinMultiResult).elements) {
+				applyInlineStyle(figure, el.figureId, named, line);
+			}
+		}
 	}
 
 	return result;
@@ -582,10 +588,11 @@ function _executeBuiltinInner(
 			}
 
 			// Create non-draggable GeoPointOnCurve for each critical point
-			const elements: BuiltinResult[] = points.map((pt) => {
+			const elements: BuiltinResult[] = points.map((pt, i) => {
+				const ptLabel = label ? (points.length > 1 ? `${label}${i + 1}` : label) : undefined;
 				const ptId = figure.createPointOnCurve(cpFnId, numeric(pt.xNumeric), {
 					draggable: false,
-					label: label ?? undefined
+					label: ptLabel
 				});
 				return { figureId: ptId, symbolType: 'point' as SymbolType };
 			});
