@@ -376,9 +376,21 @@ c2 = courbe("{x^2}/4 + {y^2}/9 - 1 = 0", couleur="rouge")
 c3 = courbe("x^2 - y^2 - 1 = 0", couleur="vert")
 c4 = courbe("x^2 + x*y + y^2 - 1 = 0", couleur="violet")
 c5 = courbe("y^2 - 4*x = 0", couleur="orange")
-P = point_sur(c1, 45, couleur="rouge")
-t = tangente(c1, P, couleur="rouge")
-Z = zeros(c1, couleur="noir")`
+P1 = point_sur(c1, 45, couleur="bleu")
+t1 = tangente(c1, P1, couleur="bleu", trait="tirets")
+P2 = point_sur(c2, 60, couleur="rouge")
+t2 = tangente(c2, P2, couleur="rouge", trait="tirets")
+P3 = point_sur(c3, 0.5, couleur="vert")
+t3 = tangente(c3, P3, couleur="vert", trait="tirets")
+P4 = point_sur(c4, 30, couleur="violet")
+t4 = tangente(c4, P4, couleur="violet", trait="tirets")
+P5 = point_sur(c5, 3, couleur="orange")
+t5 = tangente(c5, P5, couleur="orange", trait="tirets")
+Z1 = zeros(c1, couleur="bleu")
+Z2 = zeros(c2, couleur="rouge")
+Z3 = zeros(c3, couleur="vert")
+Z4 = zeros(c4, couleur="violet")
+Z5 = zeros(c5, couleur="orange")`
 	).figure;
 </script>
 
