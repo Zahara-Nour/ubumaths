@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { RotateCcw, SkipBack, Play, Pause, SkipForward } from 'lucide-svelte';
+	import { RotateCcw, SkipBack, Play, Pause, SkipForward, StepForward } from 'lucide-svelte';
 	import type { TimelineState } from '../core/timeline.svelte';
 
 	interface Props {
 		tl: TimelineState;
 		onToggle: () => void;
 		onStepForward: () => void;
+		onPlayOneStep: () => void;
 		onStepBackward: () => void;
 		onReset: () => void;
 		class?: string;
@@ -16,6 +17,7 @@
 		tl,
 		onToggle,
 		onStepForward,
+		onPlayOneStep,
 		onStepBackward,
 		onReset,
 		class: className = ''
@@ -53,9 +55,19 @@
 		variant="ghost"
 		size="icon"
 		class="h-8 w-8"
+		onclick={onPlayOneStep}
+		disabled={!tl.hasNext}
+		title="Animer l'etape suivante"
+	>
+		<StepForward class="h-4 w-4" />
+	</Button>
+	<Button
+		variant="ghost"
+		size="icon"
+		class="h-8 w-8"
 		onclick={onStepForward}
 		disabled={!tl.hasNext}
-		title="Etape suivante"
+		title="Etape suivante (instantane)"
 	>
 		<SkipForward class="h-4 w-4" />
 	</Button>
