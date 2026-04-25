@@ -123,11 +123,12 @@ export interface GeoReflectedOverLine extends GeoElementBase {
 	readonly dependsOn: readonly [string, string, string];
 }
 
-/** Point constrained to a function curve y=f(x). Draggable along x only. */
+/** Point constrained to a function curve y=f(x). Draggable along x unless draggable=false. */
 export interface GeoPointOnCurve extends GeoElementBase {
 	readonly type: 'pointOnCurve';
 	readonly functionId: string;
 	readonly x0: GeoValue;
+	readonly draggable: boolean;
 	readonly dependsOn: readonly [string];
 }
 

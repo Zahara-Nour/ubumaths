@@ -21,9 +21,15 @@ import {
 	compile
 } from '$lib/mathAST';
 import type { MathNode } from '$lib/mathAST';
-import { extractAffineCombination } from '$lib/mathAST/analysis';
+import {
+	extractAffineCombination,
+	findCriticalZeros,
+	findCriticalExtrema,
+	findCriticalInflections
+} from '$lib/mathAST/analysis';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { differentiate } from '$lib/mathAST/differentiation';
+import { numeric } from '../types/geo-value';
 
 export type ResolvedArgs = {
 	positional: ResolvedValue[];
@@ -58,6 +64,11 @@ export function resolveColorName(name: string): string {
 export interface BuiltinResult {
 	figureId: string;
 	symbolType: SymbolType;
+}
+
+/** Result for builtins that return multiple elements (zeros, extrema, inflections). */
+export interface BuiltinMultiResult {
+	elements: BuiltinResult[];
 }
 
 function requireElement(val: ResolvedValue, name: string, line: number): string {
@@ -178,7 +189,7 @@ export function executeBuiltin(
 	toGeoPoint: (x: ResolvedValue, y: ResolvedValue, line: number) => GeoPoint,
 	line: number,
 	label?: string
-): BuiltinResult | null {
+): BuiltinResult | BuiltinMultiResult | null {
 	const pos = args.positional;
 	const named = args.named;
 	const hasStyleArgs = [...named.keys()].some((k) => STYLE_ARGS.has(k));
@@ -195,7 +206,7 @@ export function executeBuiltin(
 	);
 
 	// Apply inline style args (couleur, forme, etc.) to any created element
-	if (result && hasStyleArgs) {
+	if (result && hasStyleArgs && 'figureId' in result) {
 		applyInlineStyle(figure, result.figureId, named, line);
 	}
 
@@ -211,7 +222,7 @@ function _executeBuiltinInner(
 	toGeoPoint: (x: ResolvedValue, y: ResolvedValue, line: number) => GeoPoint,
 	line: number,
 	label?: string
-): BuiltinResult | null {
+): BuiltinResult | BuiltinMultiResult | null {
 	switch (name) {
 		case 'point': {
 			if (pos.length !== 2) throw new DslRuntimeError('point() attend 2 arguments (x, y)', line);
@@ -517,6 +528,71 @@ function _executeBuiltinInner(
 			return { figureId: ptId, symbolType: 'point' };
 		}
 
+		case 'zeros':
+		case 'extrema':
+		case 'inflections': {
+			if (pos.length !== 1) {
+				throw new DslRuntimeError(`${name}() attend 1 argument (f)`, line);
+			}
+			const cpFnId = requireElement(pos[0], 'fonction', line);
+			const cpFnEl = figure.getElementById(cpFnId);
+			if (!cpFnEl || cpFnEl.type !== 'function') {
+				throw new DslRuntimeError(`${name}(): le premier argument doit etre une courbe`, line);
+			}
+
+			const xMin = -10;
+			const xMax = 10;
+
+			let points: import('$lib/mathAST/analysis').CriticalPoint[];
+
+			if (name === 'zeros') {
+				points = findCriticalZeros(cpFnEl.expression, cpFnEl.compiledFn, 'x', xMin, xMax);
+			} else if (name === 'extrema') {
+				points = findCriticalExtrema(
+					cpFnEl.expression,
+					cpFnEl.derivative,
+					cpFnEl.compiledFn,
+					cpFnEl.compiledDerivative,
+					'x',
+					xMin,
+					xMax
+				);
+			} else {
+				// inflections: need f''
+				let d2, cd2;
+				try {
+					d2 = differentiate(cpFnEl.derivative, { variable: 'x', simplify: true });
+					cd2 = compile(d2);
+				} catch {
+					throw new DslRuntimeError(
+						'inflections(): impossible de calculer la derivee seconde',
+						line
+					);
+				}
+				points = findCriticalInflections(
+					cpFnEl.expression,
+					cpFnEl.derivative,
+					cpFnEl.compiledFn,
+					cpFnEl.compiledDerivative,
+					cd2,
+					'x',
+					xMin,
+					xMax
+				);
+			}
+
+			// Create non-draggable GeoPointOnCurve for each critical point
+			const elements: BuiltinResult[] = points.map((pt) => {
+				const ptId = figure.createPointOnCurve(cpFnId, numeric(pt.xNumeric), {
+					draggable: false,
+					label: label ?? undefined
+				});
+				return { figureId: ptId, symbolType: 'point' as SymbolType };
+			});
+
+			return { elements } as BuiltinMultiResult;
+		}
+
 		default:
 			return null; // Not a builtin — might be a macro
 	}
@@ -543,7 +619,10 @@ export const BUILTIN_NAMES = new Set([
 	'style',
 	'courbe',
 	'point_sur',
-	'tangente'
+	'tangente',
+	'zeros',
+	'extrema',
+	'inflections'
 ]);
 
 /** Math functions that return numbers. */

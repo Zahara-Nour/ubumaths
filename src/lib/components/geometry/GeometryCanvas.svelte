@@ -200,7 +200,7 @@
 				figure.beginTransaction();
 				svgRef?.setPointerCapture(e.pointerId);
 				e.preventDefault();
-			} else if (el?.type === 'pointOnCurve') {
+			} else if (el?.type === 'pointOnCurve' && el.draggable) {
 				draggingId = pointId;
 				figure.beginTransaction();
 				svgRef?.setPointerCapture(e.pointerId);
@@ -908,7 +908,8 @@
 								opacity={sty.opacity}
 								class="point"
 								class:draggable={interactive &&
-									((el.type === 'freePoint' && el.draggable) || el.type === 'pointOnCurve')}
+									((el.type === 'freePoint' && el.draggable) ||
+										(el.type === 'pointOnCurve' && el.draggable))}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
@@ -923,7 +924,8 @@
 								opacity={sty.opacity}
 								class="point"
 								class:draggable={interactive &&
-									((el.type === 'freePoint' && el.draggable) || el.type === 'pointOnCurve')}
+									((el.type === 'freePoint' && el.draggable) ||
+										(el.type === 'pointOnCurve' && el.draggable))}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
@@ -931,7 +933,8 @@
 							<g
 								class="point"
 								class:draggable={interactive &&
-									((el.type === 'freePoint' && el.draggable) || el.type === 'pointOnCurve')}
+									((el.type === 'freePoint' && el.draggable) ||
+										(el.type === 'pointOnCurve' && el.draggable))}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 								opacity={sty.opacity}
@@ -963,7 +966,8 @@
 								opacity={sty.opacity}
 								class="point"
 								class:draggable={interactive &&
-									((el.type === 'freePoint' && el.draggable) || el.type === 'pointOnCurve')}
+									((el.type === 'freePoint' && el.draggable) ||
+										(el.type === 'pointOnCurve' && el.draggable))}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>

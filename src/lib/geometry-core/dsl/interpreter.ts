@@ -17,7 +17,8 @@ import {
 	BUILTIN_NAMES,
 	MATH_FUNCTIONS,
 	type ResolvedValue,
-	type ResolvedArgs
+	type ResolvedArgs,
+	type BuiltinMultiResult
 } from './builtins';
 import type { DslProgram, DslStatement, DslExpr, DslFunctionCallExpr } from './types';
 import { MacroRegistry } from './macro-registry';
@@ -307,6 +308,18 @@ class Interpreter {
 				this._assignmentLabel
 			);
 			if (result) {
+				// Multi-result: builtins like zeros(), extrema(), inflections()
+				if ('elements' in result) {
+					const multi = result as BuiltinMultiResult;
+					return {
+						type: 'tuple',
+						elements: multi.elements.map((el) => ({
+							type: 'element' as const,
+							figureId: el.figureId,
+							elementType: el.symbolType
+						}))
+					};
+				}
 				return { type: 'element', figureId: result.figureId, elementType: result.symbolType };
 			}
 			return { type: 'nombre', value: 0 }; // style() returns nothing
