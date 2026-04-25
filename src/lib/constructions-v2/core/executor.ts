@@ -29,7 +29,9 @@ import {
 	MS_PER_PIXEL,
 	AUTO_PAUSE_BETWEEN_STEPS,
 	INSTRUMENT_RAMP_MS,
-	INSTRUMENT_MOVE_SPEED_FACTOR
+	INSTRUMENT_MOVE_SPEED_FACTOR,
+	COMPASS_RAISE_MS,
+	COMPASS_LOWER_MS
 } from '../constants';
 
 /** French instrument name to InstrumentType mapping. */
@@ -76,10 +78,17 @@ export class ConstructionExecutor {
 		{ x: number; y: number; rotation: number }
 	>();
 	/** Per-step phase ratios, calculated during pre-simulation. */
-	private _stepPhases: { movePhaseEnd: number; pausePhaseStart: number; moveDurationMs: number }[] =
-		[];
+	private _stepPhases: {
+		movePhaseEnd: number;
+		drawPhaseStart: number;
+		drawPhaseEnd: number;
+		pausePhaseStart: number;
+		moveDurationMs: number;
+	}[] = [];
 	/** Current step's move phase end (set during step()). */
 	private _movePhaseEnd = 0;
+	private _drawPhaseStart = 0;
+	private _drawPhaseEnd = 1;
 	/** Current step's pause phase start (set during step()). */
 	private _pausePhaseStart = 1;
 	/** Current step's move duration in ms. */
@@ -144,6 +153,8 @@ export class ConstructionExecutor {
 		this._instrumentMoves.clear();
 		this._lastInstrumentPositions.clear();
 		this._movePhaseEnd = 0;
+		this._drawPhaseStart = 0;
+		this._drawPhaseEnd = 1;
 		this._pausePhaseStart = 1;
 		this._moveDurationMs = 0;
 		this._stepPhases = [];
@@ -200,17 +211,18 @@ export class ConstructionExecutor {
 		return this._instrumentMoves;
 	}
 
-	/** Progress ratio at which instrument movement ends and drawing begins. */
 	get movePhaseEnd(): number {
 		return this._movePhaseEnd;
 	}
-
-	/** Progress ratio at which drawing ends and post-draw pause begins. */
+	get drawPhaseStart(): number {
+		return this._drawPhaseStart;
+	}
+	get drawPhaseEnd(): number {
+		return this._drawPhaseEnd;
+	}
 	get pausePhaseStart(): number {
 		return this._pausePhaseStart;
 	}
-
-	/** Duration of the instrument move phase in ms. */
 	get moveDurationMs(): number {
 		return this._moveDurationMs;
 	}
@@ -384,11 +396,16 @@ export class ConstructionExecutor {
 		// Read pre-calculated phase ratios
 		const stepIdx = this.stepper!.currentIndex;
 		if (stepIdx >= 0 && stepIdx < this._stepPhases.length) {
-			this._movePhaseEnd = this._stepPhases[stepIdx].movePhaseEnd;
-			this._pausePhaseStart = this._stepPhases[stepIdx].pausePhaseStart;
-			this._moveDurationMs = this._stepPhases[stepIdx].moveDurationMs;
+			const ph = this._stepPhases[stepIdx];
+			this._movePhaseEnd = ph.movePhaseEnd;
+			this._drawPhaseStart = ph.drawPhaseStart;
+			this._drawPhaseEnd = ph.drawPhaseEnd;
+			this._pausePhaseStart = ph.pausePhaseStart;
+			this._moveDurationMs = ph.moveDurationMs;
 		} else {
 			this._movePhaseEnd = 0;
+			this._drawPhaseStart = 0;
+			this._drawPhaseEnd = 1;
 			this._pausePhaseStart = 1;
 			this._moveDurationMs = 0;
 		}
@@ -469,7 +486,13 @@ export class ConstructionExecutor {
 				} else {
 					durations.push(0);
 				}
-				this._stepPhases.push({ movePhaseEnd: 0, pausePhaseStart: 1, moveDurationMs: 0 });
+				this._stepPhases.push({
+					movePhaseEnd: 0,
+					drawPhaseStart: 0,
+					drawPhaseEnd: 1,
+					pausePhaseStart: 1,
+					moveDurationMs: 0
+				});
 				tempStepper.step();
 				continue;
 			}
@@ -490,7 +513,13 @@ export class ConstructionExecutor {
 					? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
 					: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
 				durations.push(stepDur);
-				this._stepPhases.push({ movePhaseEnd: 0, pausePhaseStart: 1, moveDurationMs: 0 });
+				this._stepPhases.push({
+					movePhaseEnd: 0,
+					drawPhaseStart: 0,
+					drawPhaseEnd: 1,
+					pausePhaseStart: 1,
+					moveDurationMs: 0
+				});
 				continue;
 			}
 
@@ -590,11 +619,24 @@ export class ConstructionExecutor {
 				instrumentPos[instrumentTarget.type] = { x: instrumentTarget.x, y: instrumentTarget.y };
 			}
 
-			const totalDuration = moveDuration + drawDuration + AUTO_PAUSE_BETWEEN_STEPS;
+			// Add compass raise/lower durations for compass steps
+			const isCompass = instrumentTarget?.type === 'compass';
+			const raiseDuration = isCompass ? COMPASS_RAISE_MS : 0;
+			const lowerDuration = isCompass ? COMPASS_LOWER_MS : 0;
+
+			const totalDuration =
+				moveDuration + raiseDuration + drawDuration + lowerDuration + AUTO_PAUSE_BETWEEN_STEPS;
 			durations.push(totalDuration);
+			const moveEnd = moveDuration / totalDuration;
+			const drawStart = (moveDuration + raiseDuration) / totalDuration;
+			const drawEnd = (moveDuration + raiseDuration + drawDuration) / totalDuration;
+			const pauseStart =
+				(moveDuration + raiseDuration + drawDuration + lowerDuration) / totalDuration;
 			this._stepPhases.push({
-				movePhaseEnd: moveDuration / totalDuration,
-				pausePhaseStart: (moveDuration + drawDuration) / totalDuration,
+				movePhaseEnd: moveEnd,
+				drawPhaseStart: drawStart,
+				drawPhaseEnd: drawEnd,
+				pausePhaseStart: pauseStart,
 				moveDurationMs: moveDuration
 			});
 		}

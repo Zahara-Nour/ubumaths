@@ -52,6 +52,8 @@
 	let autoInstruments = $state(new Set<InstrumentType>());
 	let instrumentMoves = $state(new Map<InstrumentType, InstrumentMove>());
 	let movePhaseEnd = $state(0);
+	let drawPhaseStart = $state(0);
+	let drawPhaseEnd = $state(1);
 	let pausePhaseStart = $state(1);
 	let moveDurationMs = $state(0);
 
@@ -70,6 +72,8 @@
 		autoInstruments,
 		instrumentMoves,
 		movePhaseEnd,
+		drawPhaseStart,
+		drawPhaseEnd,
 		pausePhaseStart,
 		moveDurationMs
 	});
@@ -108,6 +112,8 @@
 			autoInstruments = new Set(executor.autoInstruments);
 			instrumentMoves = new Map(executor.instrumentMoves);
 			movePhaseEnd = executor.movePhaseEnd;
+			drawPhaseStart = executor.drawPhaseStart;
+			drawPhaseEnd = executor.drawPhaseEnd;
 			pausePhaseStart = executor.pausePhaseStart;
 			moveDurationMs = executor.moveDurationMs;
 			syncState();

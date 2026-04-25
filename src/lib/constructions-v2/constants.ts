@@ -29,3 +29,9 @@ export const INSTRUMENT_RAMP_MS = 300;
 /** Speed multiplier for instrument movement relative to drawing speed.
  *  Instruments move this many times faster than the drawing trace. */
 export const INSTRUMENT_MOVE_SPEED_FACTOR = 3;
+
+/** Duration of compass raise animation (before drawing), in ms. */
+export const COMPASS_RAISE_MS = 400;
+
+/** Duration of compass lower animation (after drawing), in ms. */
+export const COMPASS_LOWER_MS = 400;

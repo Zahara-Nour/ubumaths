@@ -59,9 +59,13 @@ export interface DrawAnimationState {
 	autoInstruments: Set<InstrumentType>;
 	/** Movement animations for instruments (from previous position to new position). */
 	instrumentMoves: Map<InstrumentType, InstrumentMove>;
-	/** Progress value (0-1) at which instrument movement ends and drawing begins. */
+	/** Progress value (0-1) at which instrument movement ends. */
 	movePhaseEnd: number;
-	/** Progress value (0-1) at which drawing ends and post-draw pause begins. */
+	/** Progress value (0-1) at which compass raise ends and actual drawing begins. */
+	drawPhaseStart: number;
+	/** Progress value (0-1) at which actual drawing ends and compass lower begins. */
+	drawPhaseEnd: number;
+	/** Progress value (0-1) at which post-draw pause begins. */
 	pausePhaseStart: number;
 	/** Duration of the instrument move phase in ms (for fixed-ramp easing calculation). */
 	moveDurationMs: number;

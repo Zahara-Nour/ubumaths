@@ -1,14 +1,22 @@
 <script lang="ts">
 	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
 	import { createTransformer } from '$lib/geometry-core/viewport/viewport';
-	import { Ruler, Compass, Pencil, Protractor, SetSquare } from '../instruments/components/index';
+	import {
+		Ruler,
+		Compass,
+		CompassRaised,
+		Pencil,
+		Protractor,
+		SetSquare
+	} from '../instruments/components/index';
 	import type { Figure } from '$lib/geometry-core/graph/figure';
 	import type { InstrumentState, DrawAnimationState } from '../types';
 	import {
 		partialSegmentSVG,
 		partialArcSVGPath,
 		partialCircleSVGPath,
-		drawingTipPosition
+		drawingTipPosition,
+		compassDrawAngle
 	} from '../core/render-helpers';
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
 	import { pointToSVG, resolveStyle } from '$lib/geometry-core/rendering/svg-primitives';
@@ -48,13 +56,19 @@
 	let transformer = $derived(createTransformer(viewport, width, height));
 
 	// IDs to hide from GeometryCanvas during animation (drawables + points being animated)
+	// Drawables are unhidden once drawing is complete (raw progress >= drawPhaseEnd),
+	// even if the compass lower phase is still running.
 	let hiddenElementIds = $derived.by(() => {
 		if (!animation || animation.drawProgress >= 1) return undefined;
-		const drawableHidden = animation.animatingIds.size > 0;
+		const p = animation.drawProgress;
+		const dEnd = animation.drawPhaseEnd;
+		const drawableHidden = animation.animatingIds.size > 0 && p < dEnd;
 		const pointsHidden = animation.animatingPointIds.size > 0;
 		if (!drawableHidden && !pointsHidden) return undefined;
 		const ids = new Set<string>();
-		for (const id of animation.animatingIds) ids.add(id);
+		if (drawableHidden) {
+			for (const id of animation.animatingIds) ids.add(id);
+		}
 		for (const id of animation.animatingPointIds) ids.add(id);
 		return ids;
 	});
@@ -89,18 +103,20 @@
 
 	// Phase ratios from animation state
 	let moveEnd = $derived(animation?.movePhaseEnd ?? 0);
+	let drawStart = $derived(animation?.drawPhaseStart ?? 0);
+	let drawEnd = $derived(animation?.drawPhaseEnd ?? 1);
 	let pauseStart = $derived(animation?.pausePhaseStart ?? 1);
 
-	// Adjusted draw progress: 0 during move phase, 0→1 during draw phase, 1 during pause phase.
+	// Adjusted draw progress: 0 before draw phase, 0→1 during draw phase, 1 after.
 	// Eased for smooth acceleration/deceleration.
 	let drawProgress = $derived.by(() => {
 		if (!animation) return 0;
 		const p = animation.drawProgress;
-		if (moveEnd > 0 && p < moveEnd) return 0;
-		if (p >= pauseStart) return 1;
-		const drawRange = pauseStart - moveEnd;
-		if (drawRange <= 0) return p >= moveEnd ? 1 : 0;
-		const raw = (p - moveEnd) / drawRange;
+		if (p < drawStart) return 0;
+		if (p >= drawEnd) return 1;
+		const drawRange = drawEnd - drawStart;
+		if (drawRange <= 0) return p >= drawStart ? 1 : 0;
+		const raw = (p - drawStart) / drawRange;
 		return easeInOut(Math.max(0, Math.min(1, raw)));
 	});
 
@@ -152,6 +168,64 @@
 		const t = pointAnimProgress;
 		if (t <= 0.5) return t * 2 * 1.3; // 0 → 1.3
 		return 1.3 - (t - 0.5) * 2 * 0.3; // 1.3 → 1.0
+	});
+
+	// Compass rotation during draw phase (follows arc/circle trace)
+	let compassRotation = $derived.by(() => {
+		if (!animation || !animation.autoInstruments.has('compass') || drawProgress <= 0) return 0;
+		return compassDrawAngle(animation.animatingIds, figure, drawProgress);
+	});
+
+	// Compass raise/lower animation (from v1 engine)
+	// Raise phase: moveEnd → drawStart (tilt rotateX 0→-75°, crossfade to CompassRaised)
+	// Draw phase: drawStart → drawEnd (CompassRaised rotates with trace)
+	// Lower phase: drawEnd → pauseStart (tilt rotateX -75°→0, crossfade back)
+	const COMPASS_MAX_TILT = -75;
+	const COMPASS_FADE_PORTION = 0.3;
+
+	let compassAnim = $derived.by(() => {
+		if (!animation || !animation.autoInstruments.has('compass')) {
+			return { tilt: 0, compassOpacity: 1, raisedOpacity: 0 };
+		}
+		const p = animation.drawProgress;
+		if (p <= moveEnd || p >= pauseStart) {
+			return { tilt: 0, compassOpacity: 1, raisedOpacity: 0 };
+		}
+
+		const raiseRange = drawStart - moveEnd;
+		const lowerRange = pauseStart - drawEnd;
+
+		if (raiseRange > 0 && p < drawStart) {
+			// Raise phase
+			const rp = (p - moveEnd) / raiseRange;
+			const tilt = rp * COMPASS_MAX_TILT;
+			const fadeThreshold = 1 - COMPASS_FADE_PORTION;
+			let co = 1,
+				ro = 0;
+			if (rp >= fadeThreshold) {
+				const fp = (rp - fadeThreshold) / COMPASS_FADE_PORTION;
+				co = 1 - fp;
+				ro = fp;
+			}
+			return { tilt, compassOpacity: co, raisedOpacity: ro };
+		}
+
+		if (lowerRange > 0 && p >= drawEnd) {
+			// Lower phase
+			const lp = (p - drawEnd) / lowerRange;
+			const tilt = COMPASS_MAX_TILT * (1 - lp);
+			let co = 1,
+				ro = 0;
+			if (lp <= COMPASS_FADE_PORTION) {
+				const fp = lp / COMPASS_FADE_PORTION;
+				co = fp;
+				ro = 1 - fp;
+			}
+			return { tilt, compassOpacity: co, raisedOpacity: ro };
+		}
+
+		// Draw phase
+		return { tilt: COMPASS_MAX_TILT, compassOpacity: 0, raisedOpacity: 1 };
 	});
 
 	// Recompute when figureVersion changes (Map reference is stable, $derived needs a hint)
@@ -339,18 +413,41 @@
 					</g>
 				{:else if state.type === 'compass'}
 					{@const cpos = instrumentPositions['compass']}
+					{@const ca = compassAnim}
 					<g
-						transform="translate({cpos?.x ?? 0}, {cpos?.y ?? 0}) rotate({cpos?.rotation ?? 0})"
-						opacity={state.opacity}
+						transform="translate({cpos?.x ?? 0}, {cpos?.y ?? 0}) rotate({(cpos?.rotation ?? 0) +
+							compassRotation})"
+						style="perspective: 800px;"
 					>
-						<Compass
-							x={0}
-							y={0}
-							rotation={0}
-							opening={(state.compassRadius ?? 100) * PPU}
-							scale={state.scale}
-							visible={true}
-						/>
+						{#if ca.compassOpacity > 0}
+							<g
+								opacity={ca.compassOpacity * state.opacity}
+								style:transform="rotateX({ca.tilt}deg)"
+								style:transform-origin="0 0"
+								style:transform-style="preserve-3d"
+							>
+								<Compass
+									x={0}
+									y={0}
+									rotation={0}
+									opening={(state.compassRadius ?? 100) * PPU}
+									scale={state.scale}
+									visible={true}
+								/>
+							</g>
+						{/if}
+						{#if ca.raisedOpacity > 0}
+							<g opacity={ca.raisedOpacity * state.opacity}>
+								<CompassRaised
+									x={0}
+									y={0}
+									rotation={0}
+									opening={(state.compassRadius ?? 100) * PPU}
+									scale={state.scale}
+									visible={true}
+								/>
+							</g>
+						{/if}
 					</g>
 				{:else if state.type === 'protractor'}
 					{@const ppos = instrumentPositions['protractor']}
