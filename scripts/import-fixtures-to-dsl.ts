@@ -26,34 +26,32 @@ const dryRun = process.argv.includes('--dry-run');
 
 const FIXTURE_TITLES: Record<string, string> = {
 	'0.xml': 'Calcul mental : Ajouter 19',
-	'1.xml': 'Partage d\'un segment en 3 parts egales',
+	'1.xml': "Partage d'un segment en 3 parts egales",
 	'2.xml': 'Calcul mental : Soustraire 99',
-	'3.xml': 'Construction d\'un carre',
+	'3.xml': "Construction d'un carre",
 	'4.xml': 'Texte MathJax',
 	'5.xml': 'Points avec images',
 	'6.xml': 'Parallelogramme par ses diagonales',
-	'7.xml': 'Symetrique d\'un point par rapport a une droite',
+	'7.xml': "Symetrique d'un point par rapport a une droite",
 	'8.xml': 'Marques sur segment'
 };
 
 async function main() {
 	const supabase = createClient(SUPABASE_URL, SUPABASE_KEY!);
 	const fixturesDir = resolve('extern/instrumenpoche-main/devServer/fixtures');
-	const files = readdirSync(fixturesDir).filter((f) => f.endsWith('.xml')).sort();
+	const files = readdirSync(fixturesDir)
+		.filter((f) => f.endsWith('.xml'))
+		.sort();
 
 	console.log(`Mode: ${dryRun ? 'DRY RUN' : 'INSERTION'}`);
 	console.log(`${files.length} fichiers XML a convertir\n`);
 
 	// Get an author_id — use the first admin/teacher profile
-	const { data: profiles } = await supabase
-		.from('profiles')
-		.select('id')
-		.limit(1)
-		.single();
+	const { data: profiles } = await supabase.from('profiles').select('id').limit(1).single();
 
 	const authorId = profiles?.id;
 	if (!authorId) {
-		console.error('Aucun profil trouve en base. Impossible d\'assigner un auteur.');
+		console.error("Aucun profil trouve en base. Impossible d'assigner un auteur.");
 		process.exit(1);
 	}
 	console.log(`Auteur: ${authorId}\n`);
@@ -78,7 +76,7 @@ async function main() {
 		console.log(`  ${lineCount} lignes DSL, ${result.warnings.length} warnings`);
 
 		if (dryRun) {
-			console.log('  (dry run — pas d\'insertion)');
+			console.log("  (dry run — pas d'insertion)");
 			successCount++;
 			continue;
 		}
