@@ -19,7 +19,16 @@ export {
 } from './bezier';
 
 // SVG primitives
-export type { GeoStyleResolved, AngleMarkSVG, SegmentMarkSVG, MeasureSVG } from './svg-primitives';
+export type {
+	GeoStyleResolved,
+	PointSVG,
+	LineSVG,
+	CircleSVG,
+	ArcSVG,
+	AngleMarkSVG,
+	SegmentMarkSVG,
+	MeasureSVG
+} from './svg-primitives';
 export {
 	resolveStyle,
 	pointToSVG,
@@ -31,6 +40,25 @@ export {
 	segmentMarkToSVG,
 	measureToSVG
 } from './svg-primitives';
+
+// Rough.js rendering
+export {
+	seedFromId,
+	styleToRoughOptions,
+	shouldRenderRough,
+	roughLine,
+	roughCircle,
+	roughArc,
+	roughPolygon,
+	roughAngleMark,
+	roughSegmentMark,
+	roughLineHTML,
+	roughCircleHTML,
+	roughArcHTML,
+	roughPolygonHTML,
+	roughAngleMarkHTML,
+	roughSegmentMarkHTML
+} from './rough-geometry';
 
 // Export formats
 export type { TikZExportOptions } from './export-tikz';

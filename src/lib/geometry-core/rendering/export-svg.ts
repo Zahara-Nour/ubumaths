@@ -23,6 +23,19 @@ import {
 	measureToSVG
 } from './svg-primitives';
 import { computeGridStep } from '../viewport/grid';
+import rough from 'roughjs';
+import type { RoughSVG } from 'roughjs/bin/svg';
+import {
+	shouldRenderRough,
+	seedFromId,
+	styleToRoughOptions,
+	roughLine,
+	roughCircle,
+	roughArc,
+	roughPolygon,
+	roughAngleMark,
+	roughSegmentMark
+} from './rough-geometry';
 
 export interface SVGExportOptions {
 	width?: number;
@@ -31,6 +44,8 @@ export interface SVGExportOptions {
 	showAxes?: boolean;
 	showLabels?: boolean;
 	showMeasures?: boolean;
+	/** Rendering mode for export: 'normal' (clean), 'rough' (hand-drawn), 'mixed' (per-element). */
+	renderMode?: 'normal' | 'rough' | 'mixed';
 }
 
 export function exportToSVG(
@@ -45,10 +60,19 @@ export function exportToSVG(
 	const showLabels = options?.showLabels ?? true;
 	const showMeasures = options?.showMeasures ?? true;
 
+	const renderMode = options?.renderMode ?? 'normal';
+
 	const transformer = createTransformer(viewport, width, height);
 	const dims = { width, height };
 	const elements = figure.getAllElements();
 	const lines: string[] = [];
+
+	// Create rough.js instance if needed (requires DOM — client-side only)
+	let rc: RoughSVG | null = null;
+	if (renderMode !== 'normal' && typeof document !== 'undefined') {
+		const tempSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		rc = rough.svg(tempSvg);
+	}
 
 	// SVG header
 	lines.push(
@@ -94,31 +118,63 @@ export function exportToSVG(
 		);
 	}
 
+	// Helper: get rough options for an element
+	function roughOpts(elId: string, sty: ReturnType<typeof resolveStyle>) {
+		return styleToRoughOptions(sty, seedFromId(elId, sty.roughSeed), sty.roughness);
+	}
+
+	// Helper: check if element should render rough
+	function useRough(sty: ReturnType<typeof resolveStyle>, elType: string): boolean {
+		return rc !== null && shouldRenderRough(sty.render, elType, renderMode);
+	}
+
+	// Helper: wrap rough SVGGElement outerHTML with opacity
+	function roughHTML(el: SVGGElement, opacity: number): string {
+		if (opacity < 1) return `  <g opacity="${opacity}">${el.outerHTML}</g>`;
+		return `  ${el.outerHTML}`;
+	}
+
 	// Pass 1: segments, lines, rays
 	for (const el of elements) {
 		if (!el.visible) continue;
 		const sty = resolveStyle(el, figure.defaults);
-		const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
-		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
 
 		if (el.type === 'segment') {
 			const svg = segmentToSVG(el.id, figure, transformer);
 			if (!svg) continue;
-			lines.push(
-				`  <line x1="${r(svg.x1)}" y1="${r(svg.y1)}" x2="${r(svg.x2)}" y2="${r(svg.y2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} />`
-			);
+			if (useRough(sty, el.type)) {
+				lines.push(roughHTML(roughLine(rc!, svg, roughOpts(el.id, sty)), sty.opacity));
+			} else {
+				const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
+				const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
+				lines.push(
+					`  <line x1="${r(svg.x1)}" y1="${r(svg.y1)}" x2="${r(svg.x2)}" y2="${r(svg.y2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} />`
+				);
+			}
 		} else if (el.type === 'line') {
 			const svg = lineToSVG(el.id, figure, transformer, dims);
 			if (!svg) continue;
-			lines.push(
-				`  <line x1="${r(svg.x1)}" y1="${r(svg.y1)}" x2="${r(svg.x2)}" y2="${r(svg.y2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} />`
-			);
+			if (useRough(sty, el.type)) {
+				lines.push(roughHTML(roughLine(rc!, svg, roughOpts(el.id, sty)), sty.opacity));
+			} else {
+				const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
+				const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
+				lines.push(
+					`  <line x1="${r(svg.x1)}" y1="${r(svg.y1)}" x2="${r(svg.x2)}" y2="${r(svg.y2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} />`
+				);
+			}
 		} else if (el.type === 'ray') {
 			const svg = rayToSVG(el.id, figure, transformer, dims);
 			if (!svg) continue;
-			lines.push(
-				`  <line x1="${r(svg.x1)}" y1="${r(svg.y1)}" x2="${r(svg.x2)}" y2="${r(svg.y2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} />`
-			);
+			if (useRough(sty, el.type)) {
+				lines.push(roughHTML(roughLine(rc!, svg, roughOpts(el.id, sty)), sty.opacity));
+			} else {
+				const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
+				const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
+				lines.push(
+					`  <line x1="${r(svg.x1)}" y1="${r(svg.y1)}" x2="${r(svg.x2)}" y2="${r(svg.y2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} />`
+				);
+			}
 		}
 	}
 
@@ -129,14 +185,18 @@ export function exportToSVG(
 		const sty = resolveStyle(el, figure.defaults);
 		const svg = circleToSVG(el.id, figure, transformer);
 		if (!svg) continue;
-		const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
-		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
-		const fillAttr = sty.fillColor
-			? `fill="${sty.fillColor}" fill-opacity="${sty.fillOpacity}"`
-			: 'fill="none"';
-		lines.push(
-			`  <circle cx="${r(svg.cx)}" cy="${r(svg.cy)}" r="${r(svg.r)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} ${fillAttr} />`
-		);
+		if (useRough(sty, el.type)) {
+			lines.push(roughHTML(roughCircle(rc!, svg, roughOpts(el.id, sty)), sty.opacity));
+		} else {
+			const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
+			const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
+			const fillAttr = sty.fillColor
+				? `fill="${sty.fillColor}" fill-opacity="${sty.fillOpacity}"`
+				: 'fill="none"';
+			lines.push(
+				`  <circle cx="${r(svg.cx)}" cy="${r(svg.cy)}" r="${r(svg.r)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} ${fillAttr} />`
+			);
+		}
 	}
 
 	// Pass 2a: arcs
@@ -146,11 +206,15 @@ export function exportToSVG(
 		const sty = resolveStyle(el, figure.defaults);
 		const svg = arcToSVG(el.id, figure, transformer);
 		if (!svg) continue;
-		const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
-		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
-		lines.push(
-			`  <path d="${svg.path}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} fill="none" />`
-		);
+		if (useRough(sty, el.type)) {
+			lines.push(roughHTML(roughArc(rc!, svg.path, roughOpts(el.id, sty)), sty.opacity));
+		} else {
+			const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
+			const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
+			lines.push(
+				`  <path d="${svg.path}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} fill="none" />`
+			);
+		}
 	}
 
 	// Pass 2b: polygons
@@ -159,20 +223,28 @@ export function exportToSVG(
 		const sty = resolveStyle(el, figure.defaults);
 		const verts = el.dependsOn.map((id) => figure.getPosition(id));
 		if (verts.some((p) => !p)) continue;
-		const pts = verts
-			.map((p) => {
+		if (useRough(sty, el.type)) {
+			const points: [number, number][] = verts.map((p) => {
 				const sv = transformer.mathToSvg(geoToNumber(p!.x), geoToNumber(p!.y));
-				return `${r(sv.x)},${r(sv.y)}`;
-			})
-			.join(' ');
-		const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
-		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
-		const fillAttr = sty.fillColor
-			? `fill="${sty.fillColor}" fill-opacity="${sty.fillOpacity}"`
-			: 'fill="none"';
-		lines.push(
-			`  <polygon points="${pts}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} ${fillAttr} />`
-		);
+				return [sv.x, sv.y];
+			});
+			lines.push(roughHTML(roughPolygon(rc!, points, roughOpts(el.id, sty)), sty.opacity));
+		} else {
+			const pts = verts
+				.map((p) => {
+					const sv = transformer.mathToSvg(geoToNumber(p!.x), geoToNumber(p!.y));
+					return `${r(sv.x)},${r(sv.y)}`;
+				})
+				.join(' ');
+			const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
+			const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
+			const fillAttr = sty.fillColor
+				? `fill="${sty.fillColor}" fill-opacity="${sty.fillOpacity}"`
+				: 'fill="none"';
+			lines.push(
+				`  <polygon points="${pts}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} ${fillAttr} />`
+			);
+		}
 	}
 
 	// Pass 3: angle marks
@@ -181,10 +253,14 @@ export function exportToSVG(
 		const sty = resolveStyle(el, figure.defaults);
 		const svg = angleMarkToSVG(el.id, figure, transformer);
 		if (!svg) continue;
-		for (const path of svg.paths) {
-			lines.push(
-				`  <path d="${path}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}" fill="none" />`
-			);
+		if (useRough(sty, el.type)) {
+			lines.push(roughHTML(roughAngleMark(rc!, svg, roughOpts(el.id, sty)), sty.opacity));
+		} else {
+			for (const path of svg.paths) {
+				lines.push(
+					`  <path d="${path}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}" fill="none" />`
+				);
+			}
 		}
 	}
 
@@ -194,10 +270,14 @@ export function exportToSVG(
 		const sty = resolveStyle(el, figure.defaults);
 		const svg = segmentMarkToSVG(el.id, figure, transformer);
 		if (!svg) continue;
-		for (const tick of svg.ticks) {
-			lines.push(
-				`  <line x1="${r(tick.x1)}" y1="${r(tick.y1)}" x2="${r(tick.x2)}" y2="${r(tick.y2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}" />`
-			);
+		if (useRough(sty, el.type)) {
+			lines.push(roughHTML(roughSegmentMark(rc!, svg, roughOpts(el.id, sty)), sty.opacity));
+		} else {
+			for (const tick of svg.ticks) {
+				lines.push(
+					`  <line x1="${r(tick.x1)}" y1="${r(tick.y1)}" x2="${r(tick.x2)}" y2="${r(tick.y2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}" />`
+				);
+			}
 		}
 	}
 

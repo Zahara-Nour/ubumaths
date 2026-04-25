@@ -88,7 +88,7 @@ describe('exportToSVG', () => {
 		const b = f.createFreePoint(pt(1, 0));
 		f.createSegment(a, b, { style: { dash: 'dashed' } });
 		const result = exportToSVG(f, viewport);
-		expect(result).toContain('stroke-dasharray="8 4"');
+		expect(result).toContain('stroke-dasharray="12 8"');
 	});
 
 	it('exports dotted segment', () => {
@@ -97,7 +97,7 @@ describe('exportToSVG', () => {
 		const b = f.createFreePoint(pt(1, 0));
 		f.createSegment(a, b, { style: { dash: 'dotted' } });
 		const result = exportToSVG(f, viewport);
-		expect(result).toContain('stroke-dasharray="2 4"');
+		expect(result).toContain('stroke-dasharray="2 6"');
 	});
 
 	// ─── Lines and rays ───────────────────────────────────────

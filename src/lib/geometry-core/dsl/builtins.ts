@@ -69,7 +69,17 @@ function requireTuple(val: ResolvedValue, name: string, line: number): ResolvedV
 }
 
 /** Style named args (couleur, forme, tirets, pointilles, epaisseur) common to all geometry builtins. */
-const STYLE_ARGS = new Set(['couleur', 'forme', 'trait', 'epaisseur']);
+const STYLE_ARGS = new Set([
+	'couleur',
+	'forme',
+	'trait',
+	'epaisseur',
+	'rendu',
+	'rugosite',
+	'courbure',
+	'motif',
+	'sommets_nets'
+]);
 
 function applyInlineStyle(
 	figure: Figure,
@@ -107,6 +117,38 @@ function applyInlineStyle(
 	}
 	if (named.has('epaisseur')) {
 		style.strokeWidth = requireNumber(named.get('epaisseur')!, 'epaisseur', line);
+	}
+	if (named.has('rendu')) {
+		const rv = named.get('rendu')!;
+		const renduName = rv.type === 'string' ? rv.value : 'normal';
+		const RENDU_MAP: Record<string, string> = {
+			croquis: 'rough',
+			normal: 'normal'
+		};
+		style.render = RENDU_MAP[renduName] ?? renduName;
+	}
+	if (named.has('rugosite')) {
+		style.roughness = requireNumber(named.get('rugosite')!, 'rugosite', line);
+	}
+	if (named.has('courbure')) {
+		style.roughBowing = requireNumber(named.get('courbure')!, 'courbure', line);
+	}
+	if (named.has('motif')) {
+		const mv = named.get('motif')!;
+		const motifName = mv.type === 'string' ? mv.value : 'hachure';
+		const MOTIF_MAP: Record<string, string> = {
+			hachure: 'hachure',
+			plein: 'solid',
+			zigzag: 'zigzag',
+			croise: 'cross-hatch',
+			points: 'dots',
+			tirets: 'dashed'
+		};
+		style.roughFillStyle = MOTIF_MAP[motifName] ?? motifName;
+	}
+	if (named.has('sommets_nets')) {
+		const sv = named.get('sommets_nets')!;
+		style.roughPreserveVertices = sv.type === 'nombre' ? sv.value !== 0 : true;
 	}
 	if (Object.keys(style).length > 0) {
 		figure.updateStyle(elId, style);

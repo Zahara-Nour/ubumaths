@@ -50,7 +50,15 @@ export const geoStyleSchema = z
 		pointShape: z.enum(['dot', 'circle', 'cross', 'square']).optional(),
 		pointSize: z.number().min(0).optional(),
 		fillColor: z.string().min(1).max(50).optional(),
-		fillOpacity: z.number().min(0).max(1).optional()
+		fillOpacity: z.number().min(0).max(1).optional(),
+		render: z.enum(['normal', 'rough']).optional(),
+		roughness: z.number().min(0).max(5).optional(),
+		roughSeed: z.number().int().optional(),
+		roughBowing: z.number().min(0).max(20).optional(),
+		roughFillStyle: z
+			.enum(['hachure', 'solid', 'zigzag', 'cross-hatch', 'dots', 'dashed'])
+			.optional(),
+		roughPreserveVertices: z.boolean().optional()
 	})
 	.optional();
 

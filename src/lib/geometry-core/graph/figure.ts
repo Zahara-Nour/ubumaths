@@ -26,7 +26,8 @@ import type {
 	GeoCircleByRadius,
 	GeoCircleByPoint,
 	GeoArcByAngles,
-	GeoArcByPoints
+	GeoArcByPoints,
+	GeoPolygon
 } from '../types/elements';
 import {
 	isFreePoint,
@@ -66,6 +67,10 @@ export interface FigureDefaults {
 	readonly defaultPointSize?: number;
 	readonly defaultOpacity?: number;
 	// Note: fillColor/fillOpacity have no figure-level defaults; set per-element via style.
+	/** Figure-level rendering mode: 'normal' (clean SVG), 'rough' (hand-drawn), 'mixed' (per-element). */
+	readonly renderMode?: 'normal' | 'rough' | 'mixed';
+	/** Default roughness for rough rendering (0..5, default 1). */
+	readonly defaultRoughness?: number;
 }
 
 export interface ElementOptions {
@@ -745,6 +750,31 @@ export class Figure {
 		this.addElement(id, element, [startId, endId]);
 		// Store midpoint position as the mark's position
 		this.computePosition(id);
+		return id;
+	}
+
+	createPolygon(
+		vertexIds: [string, string, string, ...string[]],
+		options?: ElementOptions
+	): string {
+		for (const vid of vertexIds) {
+			const el = this.elements.get(vid);
+			if (!el || !isPointElement(el)) {
+				throw new Error(`createPolygon: "${vid}" is not a point element`);
+			}
+		}
+		const id = this.generateId('poly');
+		const element: GeoPolygon = {
+			type: 'polygon',
+			id,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: vertexIds
+		};
+		this.addElement(id, element, [...vertexIds]);
 		return id;
 	}
 
