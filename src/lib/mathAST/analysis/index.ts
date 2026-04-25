@@ -99,6 +99,12 @@ export {
 	type RegisterFunctionOptions
 } from './periodicity';
 
+// Quadratic combination analysis (conic extraction)
+export {
+	extractQuadraticCombination,
+	type QuadraticCombinationResult
+} from './quadratic-combination';
+
 // Coefficient extraction utilities
 export {
 	isTargetVariable,
