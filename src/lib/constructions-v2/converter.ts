@@ -377,9 +377,7 @@ export async function convertXmlToDsl(xml: string): Promise<DslConversionResult>
 							// ecarter to target = distance from compas to target
 							const pos = pointPosByIdPx.get(action.cible);
 							if (pos) {
-								compasEcart = Math.sqrt(
-									(compasX - pos.x) ** 2 + (compasY - pos.y) ** 2
-								);
+								compasEcart = Math.sqrt((compasX - pos.x) ** 2 + (compasY - pos.y) ** 2);
 							}
 						}
 						break;
@@ -457,10 +455,7 @@ export async function convertXmlToDsl(xml: string): Promise<DslConversionResult>
 			case 'angle_droit': {
 				if (mouvement === 'creer') {
 					// Try to emit angle_droit if we can find the 3 points
-					if (
-						action.abscisse_sommet !== undefined &&
-						action.ordonnee_sommet !== undefined
-					) {
+					if (action.abscisse_sommet !== undefined && action.ordonnee_sommet !== undefined) {
 						const sx = parseFloat(action.abscisse_sommet);
 						const sy = parseFloat(action.ordonnee_sommet);
 						const vertex = findNearbyPoint(sx, sy);

@@ -32,6 +32,7 @@ Analyser en detail :
 **Fichier** : `src/lib/constructions/types.ts`
 
 Documenter le catalogue complet des types de steps JSON :
+
 - Chaque type de step avec tous ses champs
 - Les types d'objets geometriques (point, segment, arc, cercle, etc.)
 - Les types d'actions (show, hide, moveTo, drawLine, drawArc, etc.)
@@ -42,6 +43,7 @@ Documenter le catalogue complet des types de steps JSON :
 **Fichier** : `src/lib/constructions/engine.ts` (ou similaire — chercher dans `src/lib/constructions/`)
 
 Analyser :
+
 - Comment il recoit le script JSON et prepare l'execution
 - Comment `step()` applique une etape : quel objet geometrique est cree, quel etat d'instrument est modifie
 - Comment le seek/scrub fonctionne : peut-on aller a une etape arbitraire ? Comment l'etat est reconstruit ?
@@ -54,6 +56,7 @@ Analyser :
 **Fichier** : `src/lib/constructions/components/ConstructionPlayer.svelte`
 
 Analyser :
+
 - Les props recues (script JSON, options d'affichage)
 - Le mecanisme de timing/animation : comment les etapes sont jouees dans le temps, quelle est la duree de chaque etape
 - Les controles de lecture : play, pause, step forward/backward, reset, scrub par slider
@@ -75,6 +78,7 @@ Lister tous les composants (Ruler, Compass, etc.) et comment ils sont rendus/pos
 **Fichier** : `src/lib/constructions-v2/converter.ts`
 
 Comparer avec l'ancien convertisseur :
+
 - Est-ce que la machine a etats du crayon est identique ?
 - Est-ce que la machine a etats du compas est identique ?
 - Est-ce que la transformation de coordonnees est correcte ?
@@ -86,6 +90,7 @@ Comparer avec l'ancien convertisseur :
 **Fichier** : `src/lib/constructions-v2/components/ConstructionPlayer.svelte`
 
 Comparer avec l'ancien :
+
 - Le mecanisme de timing est-il equivalent ?
 - Le `handleStepChange` qui fait `reset()` + re-step a chaque changement d'etape : est-ce correct ou faut-il un mecanisme incremental comme dans v1 ?
 - La reactivite Svelte : les variables `$state` sont-elles correctement mises a jour quand l'executor change d'etat ?
@@ -95,6 +100,7 @@ Comparer avec l'ancien :
 **Fichier** : `src/lib/constructions-v2/core/executor.ts`
 
 Comparer avec l'ancien engine :
+
 - Le `step()` produit-il les memes objets geometriques ?
 - Le `reset()` + re-step est-il equivalent au seek de v1 ?
 - Les directives (@instrument, @cacher, @pause, @instruction) sont-elles correctement gerees ?
@@ -104,6 +110,7 @@ Comparer avec l'ancien engine :
 **Fichiers** : `src/lib/geometry-core/dsl/builtins.ts`, `src/lib/geometry-core/dsl/interpreter.ts`
 
 Verifier :
+
 - Est-ce que `arc(center, rayon=r, debut=d, fin=f)` cree bien un arc visible dans la figure ?
 - Est-ce que `segment(A, B)` cree bien un segment visible ?
 - Est-ce que les directives `@instrument`, `@cacher`, `@pause`, `@instruction` sont bien reconnues et executees ?
@@ -134,6 +141,7 @@ Reecrire `src/lib/constructions-v2/components/ConstructionPlayer.svelte` en s'as
 ### 3.3 Tests
 
 Mettre a jour `src/lib/constructions-v2/core/__tests__/converter.test.ts` :
+
 - Tester avec les fixtures XML `extern/instrumenpoche-main/devServer/fixtures/1.xml` et `3.xml`
 - Verifier que le DSL produit est parsable
 - Verifier que le nombre de points/segments/arcs correspond a ce que l'ancien convertisseur produisait
@@ -141,24 +149,24 @@ Mettre a jour `src/lib/constructions-v2/core/__tests__/converter.test.ts` :
 
 ## Fichiers a connaitre
 
-| Fichier | Role |
-|---------|------|
-| `src/lib/constructions/converter.ts` | Ancien convertisseur XML→JSON (REFERENCE) |
-| `src/lib/constructions/types.ts` | Types JSON des steps v1 |
-| `src/lib/constructions/engine.ts` | Ancien moteur d'execution JSON |
-| `src/lib/constructions/components/ConstructionPlayer.svelte` | Ancien player (FONCTIONNE) |
-| `src/lib/constructions/components/` | Anciens composants instruments |
-| `src/lib/constructions-v2/converter.ts` | Nouveau convertisseur XML→DSL (A REECRIRE) |
-| `src/lib/constructions-v2/core/executor.ts` | Nouveau moteur DSL |
-| `src/lib/constructions-v2/components/ConstructionPlayer.svelte` | Nouveau player (A REECRIRE) |
-| `src/lib/constructions-v2/components/ConstructionCanvas.svelte` | Canvas v2 |
-| `src/lib/geometry-core/dsl/builtins.ts` | Builtins DSL (point, segment, arc, etc.) |
-| `src/lib/geometry-core/dsl/interpreter.ts` | Interpreteur/stepper DSL |
-| `src/lib/geometry-core/dsl/parser.ts` | Parseur DSL |
-| `src/lib/components/geometry/GeometryCanvas.svelte` | Canvas geometrique generique |
-| `extern/instrumenpoche-main/devServer/fixtures/*.xml` | Fichiers XML de test |
-| `src/routes/(protected)/constructions/[id]/+page.svelte` | Page de visualisation |
-| `src/routes/(protected)/constructions/conversion/+page.svelte` | Page de conversion |
+| Fichier                                                         | Role                                       |
+| --------------------------------------------------------------- | ------------------------------------------ |
+| `src/lib/constructions/converter.ts`                            | Ancien convertisseur XML→JSON (REFERENCE)  |
+| `src/lib/constructions/types.ts`                                | Types JSON des steps v1                    |
+| `src/lib/constructions/engine.ts`                               | Ancien moteur d'execution JSON             |
+| `src/lib/constructions/components/ConstructionPlayer.svelte`    | Ancien player (FONCTIONNE)                 |
+| `src/lib/constructions/components/`                             | Anciens composants instruments             |
+| `src/lib/constructions-v2/converter.ts`                         | Nouveau convertisseur XML→DSL (A REECRIRE) |
+| `src/lib/constructions-v2/core/executor.ts`                     | Nouveau moteur DSL                         |
+| `src/lib/constructions-v2/components/ConstructionPlayer.svelte` | Nouveau player (A REECRIRE)                |
+| `src/lib/constructions-v2/components/ConstructionCanvas.svelte` | Canvas v2                                  |
+| `src/lib/geometry-core/dsl/builtins.ts`                         | Builtins DSL (point, segment, arc, etc.)   |
+| `src/lib/geometry-core/dsl/interpreter.ts`                      | Interpreteur/stepper DSL                   |
+| `src/lib/geometry-core/dsl/parser.ts`                           | Parseur DSL                                |
+| `src/lib/components/geometry/GeometryCanvas.svelte`             | Canvas geometrique generique               |
+| `extern/instrumenpoche-main/devServer/fixtures/*.xml`           | Fichiers XML de test                       |
+| `src/routes/(protected)/constructions/[id]/+page.svelte`        | Page de visualisation                      |
+| `src/routes/(protected)/constructions/conversion/+page.svelte`  | Page de conversion                         |
 
 ## Resultat attendu
 

@@ -6,7 +6,10 @@ import { resolve } from 'path';
 
 const wrap = (actions: string) => `<INSTRUMENPOCHE version="2">${actions}</INSTRUMENPOCHE>`;
 
-const fixturesDir = resolve(__dirname, '../../../../../extern/instrumenpoche-main/devServer/fixtures');
+const fixturesDir = resolve(
+	__dirname,
+	'../../../../../extern/instrumenpoche-main/devServer/fixtures'
+);
 
 function readFixture(name: string): string {
 	return readFileSync(resolve(fixturesDir, name), 'utf-8');
@@ -161,17 +164,13 @@ describe('converter — text and pauses', () => {
 	});
 
 	it('converts tempo to @pause (ms = tempo * 50)', async () => {
-		const xml = wrap(
-			'<action objet="regle" mouvement="montrer" tempo="10" />'
-		);
+		const xml = wrap('<action objet="regle" mouvement="montrer" tempo="10" />');
 		const result = await convertXmlToDsl(xml);
 		expect(result.dsl).toContain('@pause(500)');
 	});
 
 	it('skips pauses < 200ms', async () => {
-		const xml = wrap(
-			'<action objet="regle" mouvement="montrer" tempo="2" />'
-		);
+		const xml = wrap('<action objet="regle" mouvement="montrer" tempo="2" />');
 		const result = await convertXmlToDsl(xml);
 		expect(result.dsl).not.toContain('@pause(');
 	});
