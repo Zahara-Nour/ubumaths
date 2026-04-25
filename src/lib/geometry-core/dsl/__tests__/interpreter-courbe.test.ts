@@ -165,8 +165,10 @@ describe('courbe — function curves y=f(x)', () => {
 		}
 	});
 
-	it('throws for implicit curve y^2 = x (not linear in y)', () => {
-		expect(() => run('c = courbe("y^2 = x")')).toThrow(DslRuntimeError);
+	it('y^2 = x is now handled as a quadratic curve (parabola)', () => {
+		const { figure } = run('c = courbe("y^2 = x")');
+		const qc = figure.getAllElements().filter((e) => e.type === 'quadraticCurve');
+		expect(qc).toHaveLength(1);
 	});
 });
 
@@ -261,6 +263,76 @@ describe('extrema — find local min/max', () => {
 			expect(geoToNumber(pos.x)).toBeCloseTo(0, 0);
 			expect(geoToNumber(pos.y)).toBeCloseTo(0, 0);
 		}
+	});
+});
+
+// =============================================================================
+// courbe — quadratic curves (conics)
+// =============================================================================
+
+describe('courbe — quadratic curves (conics)', () => {
+	it('creates a quadraticCurve for x^2 + y^2 - 9 = 0 (circle)', () => {
+		const { figure } = run('c = courbe("x^2 + y^2 - 9 = 0")');
+		const qc = figure.getAllElements().filter((e) => e.type === 'quadraticCurve');
+		expect(qc).toHaveLength(1);
+		if (qc[0].type === 'quadraticCurve') {
+			expect(qc[0].conic.type).toBe('circle');
+			expect(qc[0].conic.a).toBeCloseTo(3);
+		}
+	});
+
+	it('creates a quadraticCurve for x^2 - y^2 - 1 = 0 (hyperbola)', () => {
+		const { figure } = run('c = courbe("x^2 - y^2 - 1 = 0")');
+		const qc = figure.getAllElements().filter((e) => e.type === 'quadraticCurve');
+		expect(qc).toHaveLength(1);
+		if (qc[0].type === 'quadraticCurve') {
+			expect(qc[0].conic.type).toBe('hyperbola');
+		}
+	});
+
+	it('creates a quadraticCurve for x^2 + x*y + y^2 - 1 = 0 (general conic)', () => {
+		const { figure } = run('c = courbe("x^2 + x*y + y^2 - 1 = 0")');
+		const qc = figure.getAllElements().filter((e) => e.type === 'quadraticCurve');
+		expect(qc).toHaveLength(1);
+		if (qc[0].type === 'quadraticCurve') {
+			expect(qc[0].conic.type).toBe('ellipse');
+		}
+	});
+
+	it('stores the equation string', () => {
+		const { figure } = run('c = courbe("x^2 + y^2 - 9 = 0")');
+		const qc = figure.getAllElements().find((e) => e.type === 'quadraticCurve');
+		if (qc && qc.type === 'quadraticCurve') {
+			expect(qc.equation).toBe('x^2 + y^2 - 9 = 0');
+		}
+	});
+
+	it('stores numeric coefficients', () => {
+		const { figure } = run('c = courbe("x^2 + y^2 - 9 = 0")');
+		const qc = figure.getAllElements().find((e) => e.type === 'quadraticCurve');
+		if (qc && qc.type === 'quadraticCurve') {
+			// [A, B, C, D, E, F] = [1, 0, 1, 0, 0, -9]
+			expect(qc.coefficients[0]).toBeCloseTo(1); // A
+			expect(qc.coefficients[1]).toBeCloseTo(0); // B
+			expect(qc.coefficients[2]).toBeCloseTo(1); // C
+			expect(qc.coefficients[5]).toBeCloseTo(-9); // F
+		}
+	});
+
+	it('y = x^2 is still handled as GeoFunction (not quadratic curve)', () => {
+		const { figure } = run('c = courbe("y = x^2")');
+		const functions = figure.getAllElements().filter((e) => e.type === 'function');
+		const qc = figure.getAllElements().filter((e) => e.type === 'quadraticCurve');
+		expect(functions).toHaveLength(1);
+		expect(qc).toHaveLength(0);
+	});
+
+	it('throws for non-polynomial implicit curve sin(x) + y^2 = 1', () => {
+		expect(() => run('c = courbe("sin(x) + y^2 = 1")')).toThrow(DslRuntimeError);
+	});
+
+	it('throws for degree 3 curve x^3 + y^3 = 1', () => {
+		expect(() => run('c = courbe("x^3 + y^3 = 1")')).toThrow(DslRuntimeError);
 	});
 });
 

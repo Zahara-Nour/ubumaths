@@ -23,10 +23,12 @@ import {
 import type { MathNode } from '$lib/mathAST';
 import {
 	extractAffineCombination,
+	extractQuadraticCombination,
 	findCriticalZeros,
 	findCriticalExtrema,
 	findCriticalInflections
 } from '$lib/mathAST/analysis';
+import { classifyConic } from '../geometry/conic-classify';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { numeric } from '../types/geo-value';
@@ -701,6 +703,12 @@ function createCurveFromEquation(
 		return createFunctionFromCoefficients(g, h, equation, figure, line, label);
 	}
 
+	// --- Try 3: Quadratic curve (conic section) ---
+	const quadratic = extractQuadraticCombination(F, ['x', 'y']);
+	if (quadratic.isQuadratic) {
+		return createQuadraticCurveFromCoefficients(F, quadratic, equation, figure, line, label);
+	}
+
 	// --- Otherwise: not yet supported ---
 	throw new DslRuntimeError(
 		'courbe(): les courbes implicites F(x,y)=0 ne sont pas encore supportées',
@@ -783,4 +791,52 @@ function createFunctionFromCoefficients(
 	});
 
 	return { figureId: fnId, symbolType: 'courbe' };
+}
+
+/** Create a GeoQuadraticCurve from extracted quadratic coefficients. */
+function createQuadraticCurveFromCoefficients(
+	F: MathNode,
+	quadratic: { coefficients: ReadonlyMap<string, MathNode>; constant: MathNode },
+	equation: string,
+	figure: Figure,
+	line: number,
+	label?: string
+): BuiltinResult {
+	// Evaluate each coefficient to a number
+	const evalCoeff = (key: string): number => {
+		const node = quadratic.coefficients.get(key);
+		if (!node) return 0;
+		try {
+			const fn = compile(node);
+			const val = fn({});
+			return typeof val === 'number' && Number.isFinite(val) ? val : 0;
+		} catch {
+			return 0;
+		}
+	};
+
+	const evalConstant = (): number => {
+		try {
+			const fn = compile(quadratic.constant);
+			const val = fn({});
+			return typeof val === 'number' && Number.isFinite(val) ? val : 0;
+		} catch {
+			return 0;
+		}
+	};
+
+	const A = evalCoeff('x^2');
+	const B = evalCoeff('xy');
+	const C = evalCoeff('y^2');
+	const D = evalCoeff('x');
+	const E = evalCoeff('y');
+	const cst = evalConstant();
+
+	const conic = classifyConic(A, B, C, D, E, cst);
+
+	const qcId = figure.createQuadraticCurve(F, equation, [A, B, C, D, E, cst], conic, {
+		label
+	});
+
+	return { figureId: qcId, symbolType: 'courbe' };
 }
