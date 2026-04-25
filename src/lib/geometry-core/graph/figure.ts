@@ -49,7 +49,17 @@ import type { GeoValue } from '../types/geo-value';
 import { geoValueToMathNode } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { geoAdd, geoSub, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
-import { subtract, multiply } from '$lib/mathAST/factory';
+import type { MathNode } from '$lib/mathAST/types';
+import {
+	subtract,
+	implicitMultiply,
+	add,
+	number as mathNumber,
+	variable,
+	relation
+} from '$lib/mathAST/factory';
+import { toCustom } from '$lib/mathAST/custom-generator';
+import { isZeroExpression } from '$lib/mathAST/normal';
 import { geoToNumber } from '../compute/to-number';
 import { intersectLL } from '../geometry/intersections';
 import {
@@ -954,24 +964,16 @@ export class Figure {
 		// a = y2 - y1, b = x1 - x2, c = x2*y1 - x1*y2
 		const a = subtract(y2, y1);
 		const b = subtract(x1, x2);
-		const c = subtract(multiply(x2, y1), multiply(x1, y2));
+		const c = subtract(implicitMultiply(x2, y1), implicitMultiply(x1, y2));
 
-		const aNum = geoToNumber(p2.y) - geoToNumber(p1.y);
-		const bNum = geoToNumber(p1.x) - geoToNumber(p2.x);
-		const cNum = geoToNumber(p2.x) * geoToNumber(p1.y) - geoToNumber(p1.x) * geoToNumber(p2.y);
+		// Build expression string: a*x + b*y + c = 0 (using exact MathNode)
+		const terms: MathNode[] = [];
+		if (!isZeroExpression(a)) terms.push(implicitMultiply(a, variable('x')));
+		if (!isZeroExpression(b)) terms.push(implicitMultiply(b, variable('y')));
+		if (!isZeroExpression(c)) terms.push(c);
 
-		// Build expression string from numeric values
-		const terms: string[] = [];
-		if (Math.abs(aNum) > 1e-14) terms.push(aNum === 1 ? 'x' : aNum === -1 ? '-x' : `${aNum}*x`);
-		if (Math.abs(bNum) > 1e-14) {
-			const sign = bNum > 0 && terms.length > 0 ? '+' : '';
-			terms.push(bNum === 1 ? `${sign}y` : bNum === -1 ? '-y' : `${sign}${bNum}*y`);
-		}
-		if (Math.abs(cNum) > 1e-14) {
-			const sign = cNum > 0 && terms.length > 0 ? '+' : '';
-			terms.push(`${sign}${cNum}`);
-		}
-		const expression = (terms.length > 0 ? terms.join(' ') : '0') + ' = 0';
+		const lhs = terms.length === 0 ? mathNumber('0') : terms.reduce((acc, t) => add(acc, t));
+		const expression = toCustom(relation('=', lhs, mathNumber('0')));
 
 		return { a, b, c, expression };
 	}
