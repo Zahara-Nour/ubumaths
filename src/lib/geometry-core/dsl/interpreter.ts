@@ -55,6 +55,9 @@ export function interpret(
 }
 
 class Interpreter {
+	/** Label to assign to the next geometry element created (from assignment LHS). */
+	private _assignmentLabel: string | undefined;
+
 	constructor(
 		private figure: Figure,
 		private symbols: SymbolTable,
@@ -73,7 +76,9 @@ class Interpreter {
 	executeStatement(stmt: DslStatement): ResolvedValue | undefined {
 		switch (stmt.kind) {
 			case 'assignment': {
+				this._assignmentLabel = stmt.name;
 				const value = this.evaluateExpr(stmt.value, stmt.line);
+				this._assignmentLabel = undefined;
 				this.symbols.set(stmt.name, this.toSymbolEntry(value));
 				break;
 			}
@@ -292,14 +297,14 @@ class Interpreter {
 
 		// Builtin geometry functions
 		if (BUILTIN_NAMES.has(name)) {
-			// Determine label from assignment context (set by caller)
 			const result = executeBuiltin(
 				name,
 				resolvedArgs,
 				this.figure,
 				(v, l) => this.toGeoValue(v, l),
 				(x, y, l) => this.toGeoPoint(x, y, l),
-				line
+				line,
+				this._assignmentLabel
 			);
 			if (result) {
 				return { type: 'element', figureId: result.figureId, elementType: result.symbolType };

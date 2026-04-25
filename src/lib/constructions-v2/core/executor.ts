@@ -481,9 +481,15 @@ export class ConstructionExecutor {
 			const newElements = fig.getAllElements().slice(sizeBefore);
 
 			const hasDrawable = newElements.some((el) => DRAWABLE_TYPES.has(el.type));
+			const hasPoint = newElements.some(
+				(el) => el.type === 'freePoint' || el.type === 'dependentPoint'
+			);
 			if (!hasDrawable) {
 				const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
-				durations.push(Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)));
+				const stepDur = hasPoint
+					? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
+					: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
+				durations.push(stepDur);
 				this._stepPhases.push({ movePhaseEnd: 0, pausePhaseStart: 1, moveDurationMs: 0 });
 				continue;
 			}
