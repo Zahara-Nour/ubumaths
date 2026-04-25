@@ -23,3 +23,29 @@ Le moins unaire en début d'expression s'accroche au premier nombre au lieu d'en
 ### Workaround actuel
 
 Les fonctions d'analyse gèrent les deux cas. Aucune correction du parser pour l'instant (risque d'effets de bord sur tout le projet).
+
+---
+
+## Slash après exposant non reconnu (parseCustom Pratt)
+
+**Date** : 2026-04-26
+
+Dans le parser Pratt (`parseCustomPratt`), `/` n'est pas reconnu après un exposant `^`. L'opérateur `^` est traité comme postfix dans `parseAtom`, mais le contrôle ne revient pas à `parseAtomWithFraction` pour consommer le `/` qui suit.
+
+### Exemple
+
+| Expression | Résultat                | Attendu            |
+| ---------- | ----------------------- | ------------------ |
+| `2/4`      | `division(2, 4)` ✓      | —                  |
+| `x/4`      | `division(x, 4)` ✓      | —                  |
+| `x^2/4`    | **Erreur de parsing** ✗ | `division(x^2, 4)` |
+| `(x^2)/4`  | `division(x^2, 4)` ✓    | —                  |
+| `{x^2}/4`  | `division(x^2, 4)` ✓    | —                  |
+
+### Cause
+
+`parseAtomWithFraction` appelle `parseAtom` qui consomme `x^2` (le `^` est un postfix dans `parseAtom`). Mais `parseAtom` est appelé dans un contexte où le `^` est traité dans une boucle postfix (`while (CARET || UNDERSCORE || LBRACKET)`) qui se trouve **après** l'appel initial à `parseAtomWithFraction`. Le `/` est donc vu par le parser de niveau supérieur qui ne le reconnaît pas comme opérateur.
+
+### Workaround actuel
+
+Utiliser des accolades `{x^2}/4` ou des parenthèses `(x^2)/4` pour grouper explicitement avant la division.
