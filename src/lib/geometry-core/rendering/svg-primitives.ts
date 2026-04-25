@@ -802,3 +802,64 @@ function extendRayToBounds(
 	const tMax = Math.max(...validTs);
 	return { x: svO.x + tMax * sdx, y: svO.y + tMax * sdy };
 }
+
+// =============================================================================
+// Function curve rendering
+// =============================================================================
+
+import type { GeoFunction } from '../types/elements';
+import type { Viewport } from '../viewport/types';
+import { sampleWithDerivative } from '$lib/grapheur/sampler';
+import { curveToSVGPath } from '../rendering/bezier';
+
+/** Number of sample points for function curve rendering. */
+const FUNCTION_SAMPLE_POINTS = 300;
+
+/**
+ * Convert a GeoFunction to an SVG path string.
+ * Uses adaptive sampling based on the derivative for optimal point distribution.
+ */
+export function functionToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): { path: string } | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'function') return null;
+
+	const fn = el as GeoFunction;
+
+	// Compute viewport in math coordinates
+	const topLeft = transformer.svgToMath(0, 0);
+	const bottomRight = transformer.svgToMath(dims.width, dims.height);
+	const viewport: Viewport = {
+		xMin: topLeft.x,
+		xMax: bottomRight.x,
+		yMin: bottomRight.y, // y is inverted in SVG
+		yMax: topLeft.y
+	};
+
+	// Safe evaluators: return null for NaN/Infinity
+	const evaluator = (x: number): number | null => {
+		const y = fn.compiledFn({ x });
+		return Number.isFinite(y) ? y : null;
+	};
+	const derivativeEvaluator = (x: number): number | null => {
+		const d = fn.compiledDerivative({ x });
+		return Number.isFinite(d) ? d : null;
+	};
+
+	// Adaptive sampling with derivative
+	const curve = sampleWithDerivative(
+		evaluator,
+		derivativeEvaluator,
+		viewport,
+		FUNCTION_SAMPLE_POINTS
+	);
+	if (curve.points.length === 0) return null;
+
+	// Convert to SVG path with Catmull-Rom smoothing
+	const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
+	return path ? { path } : null;
+}

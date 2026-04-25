@@ -35,6 +35,7 @@ export type {
 	GeoArcByAngles,
 	GeoArcByPoints,
 	GeoPolygon,
+	GeoFunction,
 	LineEquation
 } from './elements';
 export {
@@ -60,7 +61,8 @@ export {
 	isPolygon,
 	isArc,
 	isArcByAngles,
-	isArcByPoints
+	isArcByPoints,
+	isFunction
 } from './elements';
 
 // Schemas

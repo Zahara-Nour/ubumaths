@@ -223,6 +223,12 @@ const polygonSchema = baseElementSchema.extend({
 	dependsOn: z.array(z.string().min(1)).min(3, 'Polygon needs at least 3 vertices')
 });
 
+const functionSchema = baseElementSchema.extend({
+	type: z.literal('function'),
+	equation: z.string().min(1),
+	dependsOn: z.tuple([])
+});
+
 export const geoElementSchema = z.discriminatedUnion('type', [
 	freePointSchema,
 	midpointSchema,
@@ -242,7 +248,8 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	circleByPointSchema,
 	arcByAnglesSchema,
 	arcByPointsSchema,
-	polygonSchema
+	polygonSchema,
+	functionSchema
 ]);
 
 export type GeoElementSerialized = z.infer<typeof geoElementSchema>;

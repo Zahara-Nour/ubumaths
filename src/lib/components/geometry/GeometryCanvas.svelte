@@ -17,7 +17,8 @@
 		angleMarkToSVG,
 		segmentMarkToSVG,
 		measureToSVG,
-		resolveStyle
+		resolveStyle,
+		functionToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
 	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
@@ -723,6 +724,33 @@
 								fill-opacity={sty.fillOpacity}
 								class:hovered={hoveredId === el.id}
 							/>
+						{/if}
+					{/if}
+				{:else if el.type === 'function'}
+					{@const svg = functionToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						<path
+							d={svg.path}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							opacity={sty.opacity}
+							fill="none"
+							class="function-curve"
+							class:hovered={hoveredId === el.id}
+						/>
+						{#if el.label}
+							<text
+								x={dims.width - 60}
+								y={20}
+								class="label"
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke">{el.label}</text
+							>
 						{/if}
 					{/if}
 				{/if}

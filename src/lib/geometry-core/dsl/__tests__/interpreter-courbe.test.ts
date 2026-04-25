@@ -92,19 +92,80 @@ describe('courbe — line detection from equation', () => {
 		expect(lines).toHaveLength(1);
 	});
 
-	it('throws for non-linear equation y = x^2', () => {
-		expect(() => run('d = courbe("y = x^2")')).toThrow(DslRuntimeError);
-	});
-
-	it('throws for equation with transcendental: y = sin(x)', () => {
-		expect(() => run('d = courbe("y = sin(x)")')).toThrow(DslRuntimeError);
-	});
-
 	it('throws for degenerate equation 0 = 0', () => {
 		expect(() => run('d = courbe("0 = 0")')).toThrow(DslRuntimeError);
 	});
 
 	it('throws when argument is not a string', () => {
 		expect(() => run('A = point(0,0)\nd = courbe(A)')).toThrow(DslRuntimeError);
+	});
+});
+
+describe('courbe — function curves y=f(x)', () => {
+	it('creates a GeoFunction for y = x^2', () => {
+		const { figure } = run('c = courbe("y = x^2")');
+		const functions = figure.getAllElements().filter((e) => e.type === 'function');
+		expect(functions).toHaveLength(1);
+	});
+
+	it('creates a GeoFunction for y = sin(x)', () => {
+		const { figure } = run('c = courbe("y = sin(x)")');
+		const functions = figure.getAllElements().filter((e) => e.type === 'function');
+		expect(functions).toHaveLength(1);
+	});
+
+	it('creates a GeoFunction for implicit form x^2 - y = 0', () => {
+		const { figure } = run('c = courbe("x^2 - y = 0")');
+		const functions = figure.getAllElements().filter((e) => e.type === 'function');
+		expect(functions).toHaveLength(1);
+	});
+
+	it('stores the equation string', () => {
+		const { figure } = run('c = courbe("y = exp(x)")');
+		const fn = figure.getAllElements().find((e) => e.type === 'function');
+		expect(fn).toBeDefined();
+		if (fn && fn.type === 'function') {
+			expect(fn.equation).toBe('y = exp(x)');
+		}
+	});
+
+	it('compiles a working evaluator', () => {
+		const { figure } = run('c = courbe("y = x^2")');
+		const fn = figure.getAllElements().find((e) => e.type === 'function');
+		if (fn && fn.type === 'function') {
+			expect(fn.compiledFn({ x: 3 })).toBeCloseTo(9);
+			expect(fn.compiledFn({ x: -2 })).toBeCloseTo(4);
+		}
+	});
+
+	it('compiles a working derivative', () => {
+		const { figure } = run('c = courbe("y = x^2")');
+		const fn = figure.getAllElements().find((e) => e.type === 'function');
+		if (fn && fn.type === 'function') {
+			// f(x) = x^2, f'(x) = 2x
+			expect(fn.compiledDerivative({ x: 3 })).toBeCloseTo(6);
+			expect(fn.compiledDerivative({ x: -1 })).toBeCloseTo(-2);
+		}
+	});
+
+	it('handles x*y = 1 as y = 1/x', () => {
+		const { figure } = run('c = courbe("x*y = 1")');
+		const fn = figure.getAllElements().find((e) => e.type === 'function');
+		expect(fn).toBeDefined();
+		if (fn && fn.type === 'function') {
+			expect(fn.compiledFn({ x: 2 })).toBeCloseTo(0.5);
+		}
+	});
+
+	it('handles 2*y - x^2 = 0 as y = x^2/2', () => {
+		const { figure } = run('c = courbe("2*y - x^2 = 0")');
+		const fn = figure.getAllElements().find((e) => e.type === 'function');
+		if (fn && fn.type === 'function') {
+			expect(fn.compiledFn({ x: 4 })).toBeCloseTo(8);
+		}
+	});
+
+	it('throws for implicit curve y^2 = x (not linear in y)', () => {
+		expect(() => run('c = courbe("y^2 = x")')).toThrow(DslRuntimeError);
 	});
 });

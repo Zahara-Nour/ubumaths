@@ -28,6 +28,7 @@ import type {
 	GeoArcByAngles,
 	GeoArcByPoints,
 	GeoPolygon,
+	GeoFunction,
 	type LineEquation
 } from '../types/elements';
 import {
@@ -50,6 +51,7 @@ import { geoValueToMathNode } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { geoAdd, geoSub, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
 import type { MathNode } from '$lib/mathAST/types';
+import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import {
 	subtract,
 	implicitMultiply,
@@ -793,6 +795,34 @@ export class Figure {
 			dependsOn: vertexIds
 		};
 		this.addElement(id, element, [...vertexIds]);
+		return id;
+	}
+
+	createFunction(
+		expression: MathNode,
+		derivative: MathNode,
+		compiledFn: CompiledFn,
+		compiledDerivative: CompiledFn,
+		equation: string,
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('fn');
+		const element: GeoFunction = {
+			type: 'function',
+			id,
+			expression,
+			derivative,
+			compiledFn,
+			compiledDerivative,
+			equation,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [] as const
+		};
+		this.addElement(id, element, []);
 		return id;
 	}
 

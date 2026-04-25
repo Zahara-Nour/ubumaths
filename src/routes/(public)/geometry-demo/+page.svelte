@@ -335,6 +335,17 @@ d4 = courbe("x = 3", couleur="violet")
 d5 = courbe("3*x + y - 6", couleur="orange")
 d6 = courbe("y = -x", couleur="cyan")`
 	).figure;
+
+	// ==========================================================================
+	// courbe() — function curves y=f(x)
+	// ==========================================================================
+	const functionFig = runDsl(
+		`f1 = courbe("y = x^2", couleur="bleu")
+f2 = courbe("y = sin(x)", couleur="rouge")
+f3 = courbe("y = 1/x", couleur="vert")
+f4 = courbe("y = sqrt(x)", couleur="violet")
+f5 = courbe("y = exp(-x^2)", couleur="orange")`
+	).figure;
 </script>
 
 <div class="p-4">
@@ -454,5 +465,31 @@ d6 = courbe("y = -x", couleur="cyan")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{courbeFig.size} elements | courbe() — droites par equation
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Courbes y=f(x) — courbe()</h2>
+	<p class="mb-4 text-muted-foreground">
+		Courbes tracees via <code>courbe("equation")</code> avec echantillonnage adaptatif base sur la
+		derivee et lissage Catmull-Rom.
+		<br />
+		<strong>Bleu</strong> : y = x^2 |
+		<strong>Rouge</strong> : y = sin(x) |
+		<strong>Vert</strong> : y = 1/x (asymptote) |
+		<strong>Violet</strong> : y = sqrt(x) (domaine restreint) |
+		<strong>Orange</strong> : y = exp(-x^2) (gaussienne)
+	</p>
+
+	<GeometryCanvas
+		figure={functionFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{functionFig.size} elements | courbe() — fonctions y=f(x)
 	</p>
 </div>
