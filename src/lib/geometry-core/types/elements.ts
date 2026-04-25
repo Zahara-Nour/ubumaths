@@ -300,6 +300,43 @@ export interface GeoFunction extends GeoElementBase {
 }
 
 // =============================================================================
+// Quadratic curve (conic section, from courbe() builtin)
+// =============================================================================
+
+/** Conic type after classification. */
+export type ConicType = 'circle' | 'ellipse' | 'hyperbola' | 'parabola' | 'degenerate';
+
+/** Classified conic parameters for parametric rendering. */
+export interface ConicParams {
+	readonly type: ConicType;
+	readonly center?: { readonly x: number; readonly y: number };
+	/** Semi-axis a (≥ b for ellipse; transverse for hyperbola; focal param for parabola). */
+	readonly a: number;
+	/** Semi-axis b (≤ a for ellipse; conjugate for hyperbola). */
+	readonly b: number;
+	/** Rotation angle in radians. */
+	readonly rotation: number;
+	/** For parabolas: focal parameter p. */
+	readonly p?: number;
+	/** For parabolas: vertex position. */
+	readonly vertex?: { readonly x: number; readonly y: number };
+}
+
+export interface GeoQuadraticCurve extends GeoElementBase {
+	readonly type: 'quadraticCurve';
+	/** Original F(x,y) as a symbolic MathNode. */
+	readonly expression: MathNode;
+	/** Original equation string as entered by the user. */
+	readonly equation: string;
+	/** Numeric coefficients [A, B, C, D, E, F] of Ax²+Bxy+Cy²+Dx+Ey+F=0. */
+	readonly coefficients: readonly [number, number, number, number, number, number];
+	/** Classified conic parameters for rendering. */
+	readonly conic: ConicParams;
+	/** Autonomous element — no dependencies on other elements. */
+	readonly dependsOn: readonly [];
+}
+
+// =============================================================================
 // Union type
 // =============================================================================
 
@@ -336,6 +373,7 @@ export type GeoElement =
 	| GeoArcByPoints
 	| GeoPolygon
 	| GeoFunction
+	| GeoQuadraticCurve
 	| GeoPointOnCurve
 	| GeoTangentLine;
 
@@ -449,6 +487,10 @@ export function isArcByAngles(el: GeoElement): el is GeoArcByAngles {
 
 export function isArcByPoints(el: GeoElement): el is GeoArcByPoints {
 	return el.type === 'arcByPoints';
+}
+
+export function isQuadraticCurve(el: GeoElement): el is GeoQuadraticCurve {
+	return el.type === 'quadraticCurve';
 }
 
 export function isFunction(el: GeoElement): el is GeoFunction {
