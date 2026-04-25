@@ -44,6 +44,18 @@ export interface GeoStyleResolved {
 	readonly pointSize: number;
 	readonly fillColor?: string;
 	readonly fillOpacity: number;
+	/** Rendering style for this element ('normal' | 'rough'). */
+	readonly render: 'normal' | 'rough';
+	/** Roughness level (0..5, default 1). */
+	readonly roughness: number;
+	/** Explicit seed for deterministic rough rendering. */
+	readonly roughSeed?: number;
+	/** Bowing: how much lines curve (default 1). */
+	readonly roughBowing: number;
+	/** Fill pattern for rough mode. */
+	readonly roughFillStyle: 'hachure' | 'solid' | 'zigzag' | 'cross-hatch' | 'dots' | 'dashed';
+	/** If true, endpoints/vertices are not randomly offset. */
+	readonly roughPreserveVertices: boolean;
 }
 
 const DASH_ARRAYS: Record<'solid' | 'dashed' | 'dotted', string> = {
@@ -63,23 +75,29 @@ export function resolveStyle(element: GeoElementBase, defaults?: FigureDefaults)
 		pointShape: element.style?.pointShape ?? defaults?.defaultPointShape ?? 'dot',
 		pointSize: element.style?.pointSize ?? defaults?.defaultPointSize ?? 5,
 		fillColor: element.style?.fillColor,
-		fillOpacity: element.style?.fillOpacity ?? 0
+		fillOpacity: element.style?.fillOpacity ?? 0,
+		render: element.style?.render ?? 'normal',
+		roughness: element.style?.roughness ?? defaults?.defaultRoughness ?? 1,
+		roughSeed: element.style?.roughSeed,
+		roughBowing: element.style?.roughBowing ?? 1,
+		roughFillStyle: element.style?.roughFillStyle ?? 'hachure',
+		roughPreserveVertices: element.style?.roughPreserveVertices ?? false
 	};
 }
 
-interface PointSVG {
+export interface PointSVG {
 	cx: number;
 	cy: number;
 }
 
-interface LineSVG {
+export interface LineSVG {
 	x1: number;
 	y1: number;
 	x2: number;
 	y2: number;
 }
 
-interface CircleSVG {
+export interface CircleSVG {
 	cx: number;
 	cy: number;
 	r: number;

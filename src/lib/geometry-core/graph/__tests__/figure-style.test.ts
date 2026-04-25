@@ -90,7 +90,13 @@ describe('resolveStyle', () => {
 			pointShape: 'dot',
 			pointSize: 5,
 			fillColor: undefined,
-			fillOpacity: 0
+			fillOpacity: 0,
+			render: 'normal',
+			roughness: 1,
+			roughSeed: undefined,
+			roughBowing: 1,
+			roughFillStyle: 'hachure',
+			roughPreserveVertices: false
 		});
 	});
 
@@ -112,7 +118,7 @@ describe('resolveStyle', () => {
 		const resolved = resolveStyle(el, defaults);
 		expect(resolved.strokeWidth).toBe(4);
 		expect(resolved.dash).toBe('dashed');
-		expect(resolved.dashArray).toBe('8 4');
+		expect(resolved.dashArray).toBe('12 8');
 	});
 
 	it('element style overrides figure defaults', () => {
@@ -127,7 +133,7 @@ describe('resolveStyle', () => {
 		const resolved = resolveStyle(el, defaults);
 		expect(resolved.strokeWidth).toBe(1);
 		expect(resolved.dash).toBe('dotted');
-		expect(resolved.dashArray).toBe('2 4');
+		expect(resolved.dashArray).toBe('2 6');
 	});
 
 	it('priority: element.style > element.color > figureDefaults > hardcoded', () => {
@@ -153,8 +159,8 @@ describe('resolveStyle', () => {
 		const base = { id: 'x', color: '#000', visible: true, dependsOn: [] as const };
 
 		expect(resolveStyle({ ...base, style: { dash: 'solid' } }).dashArray).toBe('');
-		expect(resolveStyle({ ...base, style: { dash: 'dashed' } }).dashArray).toBe('8 4');
-		expect(resolveStyle({ ...base, style: { dash: 'dotted' } }).dashArray).toBe('2 4');
+		expect(resolveStyle({ ...base, style: { dash: 'dashed' } }).dashArray).toBe('12 8');
+		expect(resolveStyle({ ...base, style: { dash: 'dotted' } }).dashArray).toBe('2 6');
 	});
 
 	it('fillColor and fillOpacity resolve correctly', () => {

@@ -320,3 +320,38 @@ describe('interpreter — complex scripts', () => {
 		expect(segments.length).toBe(5); // 3 sides + 2 medians
 	});
 });
+
+describe('interpreter — rough rendering style', () => {
+	it('rendu="croquis" sets render to rough on inline style', () => {
+		const { figure, symbols } = run(
+			'A = point(0, 0)\nB = point(4, 0)\ns = segment(A, B, rendu="croquis")'
+		);
+		const el = figure.getElementById(symbols.get('s')!.figureId!);
+		expect(el?.style?.render).toBe('rough');
+	});
+
+	it('rendu="normal" sets render to normal', () => {
+		const { figure, symbols } = run(
+			'A = point(0, 0)\nB = point(4, 0)\ns = segment(A, B, rendu="normal")'
+		);
+		const el = figure.getElementById(symbols.get('s')!.figureId!);
+		expect(el?.style?.render).toBe('normal');
+	});
+
+	it('rugosite sets roughness on style', () => {
+		const { figure, symbols } = run(
+			'A = point(0, 0)\nB = point(4, 0)\ns = segment(A, B, rendu="croquis", rugosite=2.5)'
+		);
+		const el = figure.getElementById(symbols.get('s')!.figureId!);
+		expect(el?.style?.render).toBe('rough');
+		expect(el?.style?.roughness).toBe(2.5);
+	});
+
+	it('style() function applies rendu', () => {
+		const { figure, symbols } = run(
+			'A = point(0, 0)\nB = point(4, 0)\ns = segment(A, B)\nstyle(s, rendu="croquis")'
+		);
+		const el = figure.getElementById(symbols.get('s')!.figureId!);
+		expect(el?.style?.render).toBe('rough');
+	});
+});

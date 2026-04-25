@@ -23,6 +23,18 @@ export interface GeoStyle {
 	readonly pointSize?: number;
 	readonly fillColor?: string;
 	readonly fillOpacity?: number;
+	/** Rendering style override for mixed mode ('normal' | 'rough'). */
+	readonly render?: 'normal' | 'rough';
+	/** Roughness level for rough rendering (0..5, default 1). */
+	readonly roughness?: number;
+	/** Explicit seed for deterministic rough rendering. */
+	readonly roughSeed?: number;
+	/** Bowing: how much lines curve (0 = straight, higher = more bowed). Default 1. */
+	readonly roughBowing?: number;
+	/** Fill pattern for rough mode. */
+	readonly roughFillStyle?: 'hachure' | 'solid' | 'zigzag' | 'cross-hatch' | 'dots' | 'dashed';
+	/** If true, endpoints/vertices are not randomly offset (cleaner joints). */
+	readonly roughPreserveVertices?: boolean;
 }
 
 // =============================================================================

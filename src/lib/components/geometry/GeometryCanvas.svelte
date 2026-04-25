@@ -24,6 +24,19 @@
 	import { snapToGrid } from '$lib/geometry-core/interaction/snap';
 	import { numeric } from '$lib/geometry-core/types/geo-value';
 	import { isPointElement } from '$lib/geometry-core/types/elements';
+	import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+	import rough from 'roughjs';
+	import {
+		seedFromId,
+		styleToRoughOptions,
+		shouldRenderRough,
+		roughLineHTML,
+		roughCircleHTML,
+		roughArcHTML,
+		roughPolygonHTML,
+		roughAngleMarkHTML,
+		roughSegmentMarkHTML
+	} from '$lib/geometry-core/rendering/rough-geometry';
 
 	interface Props {
 		figure: Figure;
@@ -40,6 +53,8 @@
 		externalVersion?: number;
 		/** Element IDs to exclude from rendering (used for animation overlay). */
 		hiddenElementIds?: Set<string>;
+		/** Rendering mode: 'normal' (clean SVG), 'rough' (hand-drawn), 'mixed' (per-element). */
+		renderMode?: 'normal' | 'rough' | 'mixed';
 	}
 
 	let {
@@ -54,7 +69,8 @@
 		showGraduations = true,
 		snapOnRelease = false,
 		externalVersion = 0,
-		hiddenElementIds
+		hiddenElementIds,
+		renderMode = 'normal'
 	}: Props = $props();
 
 	let svgRef: SVGSVGElement | undefined = $state();
@@ -139,6 +155,17 @@
 		return all;
 	});
 	let dims = $derived({ width, height });
+
+	// ─── Rough.js rendering ─────────────────────────────────────────
+	let rc = $derived(svgRef ? rough.svg(svgRef) : null);
+
+	function getRoughOpts(elId: string, sty: ReturnType<typeof resolveStyle>) {
+		return styleToRoughOptions(sty, seedFromId(elId, sty.roughSeed), sty.roughness);
+	}
+
+	function isRough(sty: ReturnType<typeof resolveStyle>, elType: string): boolean {
+		return shouldRenderRough(sty.render, elType, renderMode);
+	}
 
 	// ─── Pointer events ─────────────────────────────────────────────
 
@@ -483,73 +510,132 @@
 				{#if el.type === 'segment'}
 					{@const svg = segmentToSVG(el.id, figure, transformer)}
 					{#if svg}
-						<line
-							x1={svg.x1}
-							y1={svg.y1}
-							x2={svg.x2}
-							y2={svg.y2}
-							stroke={sty.color}
-							stroke-width={sty.strokeWidth}
-							stroke-dasharray={sty.dashArray}
-							stroke-linecap="round"
-							opacity={sty.opacity}
-							class="segment"
-							class:hovered={hoveredId === el.id}
-						/>
-					{/if}
-				{:else if el.type === 'line'}
-					{@const svg = lineToSVG(el.id, figure, transformer, dims)}
-					{#if svg}
-						<line
-							x1={svg.x1}
-							y1={svg.y1}
-							x2={svg.x2}
-							y2={svg.y2}
-							stroke={sty.color}
-							stroke-width={sty.strokeWidth}
-							stroke-dasharray={sty.dashArray}
-							stroke-linecap="round"
-							opacity={sty.opacity}
-							class="geo-line"
-							class:hovered={hoveredId === el.id}
-						/>
-					{/if}
-				{:else if el.type === 'ray'}
-					{@const svg = rayToSVG(el.id, figure, transformer, dims)}
-					{#if svg}
-						<line
-							x1={svg.x1}
-							y1={svg.y1}
-							x2={svg.x2}
-							y2={svg.y2}
-							stroke={sty.color}
-							stroke-width={sty.strokeWidth}
-							stroke-dasharray={sty.dashArray}
-							opacity={sty.opacity}
-							class="ray"
-							class:hovered={hoveredId === el.id}
-						/>
-					{/if}
-				{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint'}
-					{#if sty.dash !== 'solid'}
-						{@const svg = circleToPathSVG(el.id, figure, transformer)}
-						{#if svg}
-							<path
-								d={svg.path}
+						{#if isRough(sty, el.type) && rc}
+							<line
+								x1={svg.x1}
+								y1={svg.y1}
+								x2={svg.x2}
+								y2={svg.y2}
+								stroke="transparent"
+								stroke-width="12"
+								pointer-events="stroke"
+								class="segment"
+								class:hovered={hoveredId === el.id}
+							/>
+							<g opacity={sty.opacity}>{@html roughLineHTML(rc, svg, getRoughOpts(el.id, sty))}</g>
+						{:else}
+							<line
+								x1={svg.x1}
+								y1={svg.y1}
+								x2={svg.x2}
+								y2={svg.y2}
 								stroke={sty.color}
 								stroke-width={sty.strokeWidth}
 								stroke-dasharray={sty.dashArray}
 								stroke-linecap="round"
 								opacity={sty.opacity}
-								fill={sty.fillColor ?? 'none'}
-								fill-opacity={sty.fillOpacity}
-								class="circle"
+								class="segment"
 								class:hovered={hoveredId === el.id}
 							/>
 						{/if}
-					{:else}
-						{@const svg = circleToSVG(el.id, figure, transformer)}
-						{#if svg}
+					{/if}
+				{:else if el.type === 'line'}
+					{@const svg = lineToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						{#if isRough(sty, el.type) && rc}
+							<line
+								x1={svg.x1}
+								y1={svg.y1}
+								x2={svg.x2}
+								y2={svg.y2}
+								stroke="transparent"
+								stroke-width="12"
+								pointer-events="stroke"
+								class="geo-line"
+								class:hovered={hoveredId === el.id}
+							/>
+							<g opacity={sty.opacity}>{@html roughLineHTML(rc, svg, getRoughOpts(el.id, sty))}</g>
+						{:else}
+							<line
+								x1={svg.x1}
+								y1={svg.y1}
+								x2={svg.x2}
+								y2={svg.y2}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								stroke-dasharray={sty.dashArray}
+								stroke-linecap="round"
+								opacity={sty.opacity}
+								class="geo-line"
+								class:hovered={hoveredId === el.id}
+							/>
+						{/if}
+					{/if}
+				{:else if el.type === 'ray'}
+					{@const svg = rayToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						{#if isRough(sty, el.type) && rc}
+							<line
+								x1={svg.x1}
+								y1={svg.y1}
+								x2={svg.x2}
+								y2={svg.y2}
+								stroke="transparent"
+								stroke-width="12"
+								pointer-events="stroke"
+								class="ray"
+								class:hovered={hoveredId === el.id}
+							/>
+							<g opacity={sty.opacity}>{@html roughLineHTML(rc, svg, getRoughOpts(el.id, sty))}</g>
+						{:else}
+							<line
+								x1={svg.x1}
+								y1={svg.y1}
+								x2={svg.x2}
+								y2={svg.y2}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								stroke-dasharray={sty.dashArray}
+								opacity={sty.opacity}
+								class="ray"
+								class:hovered={hoveredId === el.id}
+							/>
+						{/if}
+					{/if}
+				{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint'}
+					{@const svg = circleToSVG(el.id, figure, transformer)}
+					{#if svg}
+						{#if isRough(sty, el.type) && rc}
+							<circle
+								cx={svg.cx}
+								cy={svg.cy}
+								r={svg.r}
+								stroke="transparent"
+								stroke-width="12"
+								fill="transparent"
+								pointer-events="all"
+								class="circle"
+								class:hovered={hoveredId === el.id}
+							/>
+							<g opacity={sty.opacity}>{@html roughCircleHTML(rc, svg, getRoughOpts(el.id, sty))}</g
+							>
+						{:else if sty.dash !== 'solid'}
+							{@const pathSvg = circleToPathSVG(el.id, figure, transformer)}
+							{#if pathSvg}
+								<path
+									d={pathSvg.path}
+									stroke={sty.color}
+									stroke-width={sty.strokeWidth}
+									stroke-dasharray={sty.dashArray}
+									stroke-linecap="round"
+									opacity={sty.opacity}
+									fill={sty.fillColor ?? 'none'}
+									fill-opacity={sty.fillOpacity}
+									class="circle"
+									class:hovered={hoveredId === el.id}
+								/>
+							{/if}
+						{:else}
 							<circle
 								cx={svg.cx}
 								cy={svg.cy}
@@ -564,6 +650,37 @@
 							/>
 						{/if}
 					{/if}
+				{:else if el.type === 'polygon'}
+					{@const verts = el.dependsOn.map((id) => figure.getPosition(id))}
+					{#if verts.every((p) => p != null)}
+						{@const pts = verts.map((p) => {
+							const sv = transformer.mathToSvg(geoToNumber(p!.x), geoToNumber(p!.y));
+							return [sv.x, sv.y] as [number, number];
+						})}
+						{#if isRough(sty, el.type) && rc}
+							<polygon
+								points={pts.map((p) => `${p[0]},${p[1]}`).join(' ')}
+								stroke="transparent"
+								fill="transparent"
+								pointer-events="all"
+								class:hovered={hoveredId === el.id}
+							/>
+							<g opacity={sty.opacity}
+								>{@html roughPolygonHTML(rc, pts, getRoughOpts(el.id, sty))}</g
+							>
+						{:else}
+							<polygon
+								points={pts.map((p) => `${p[0]},${p[1]}`).join(' ')}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								stroke-dasharray={sty.dashArray}
+								opacity={sty.opacity}
+								fill={sty.fillColor ?? 'none'}
+								fill-opacity={sty.fillOpacity}
+								class:hovered={hoveredId === el.id}
+							/>
+						{/if}
+					{/if}
 				{/if}
 			{/each}
 
@@ -573,17 +690,32 @@
 					{@const svg = arcToSVG(el.id, figure, transformer)}
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{#if svg}
-						<path
-							d={svg.path}
-							stroke={sty.color}
-							stroke-width={sty.strokeWidth}
-							stroke-dasharray={sty.dashArray}
-							stroke-linecap="round"
-							opacity={sty.opacity}
-							fill="none"
-							class="arc"
-							class:hovered={hoveredId === el.id}
-						/>
+						{#if isRough(sty, el.type) && rc}
+							<path
+								d={svg.path}
+								stroke="transparent"
+								stroke-width="12"
+								fill="none"
+								pointer-events="stroke"
+								class="arc"
+								class:hovered={hoveredId === el.id}
+							/>
+							<g opacity={sty.opacity}
+								>{@html roughArcHTML(rc, svg.path, getRoughOpts(el.id, sty))}</g
+							>
+						{:else}
+							<path
+								d={svg.path}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								stroke-dasharray={sty.dashArray}
+								stroke-linecap="round"
+								opacity={sty.opacity}
+								fill="none"
+								class="arc"
+								class:hovered={hoveredId === el.id}
+							/>
+						{/if}
 					{/if}
 				{/if}
 			{/each}
@@ -594,20 +726,31 @@
 					{@const svg = angleMarkToSVG(el.id, figure, transformer)}
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{#if svg}
-						<g ondblclick={(e) => openPopoverFor(el.id, e)}>
-							{#each svg.paths as path, i (i)}
-								<path d={path} stroke="transparent" stroke-width="12" fill="none" />
-								<path
-									d={path}
-									stroke={sty.color}
-									stroke-width={sty.strokeWidth}
-									stroke-dasharray={sty.dashArray}
-									opacity={sty.opacity}
-									fill="none"
-									class="angle-mark"
-								/>
-							{/each}
-						</g>
+						{#if isRough(sty, el.type) && rc}
+							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
+								{#each svg.paths as path, i (i)}
+									<path d={path} stroke="transparent" stroke-width="12" fill="none" />
+								{/each}
+								<g opacity={sty.opacity}
+									>{@html roughAngleMarkHTML(rc, svg, getRoughOpts(el.id, sty))}</g
+								>
+							</g>
+						{:else}
+							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
+								{#each svg.paths as path, i (i)}
+									<path d={path} stroke="transparent" stroke-width="12" fill="none" />
+									<path
+										d={path}
+										stroke={sty.color}
+										stroke-width={sty.strokeWidth}
+										stroke-dasharray={sty.dashArray}
+										opacity={sty.opacity}
+										fill="none"
+										class="angle-mark"
+									/>
+								{/each}
+							</g>
+						{/if}
 					{/if}
 				{/if}
 			{/each}
@@ -708,28 +851,46 @@
 					{@const svg = segmentMarkToSVG(el.id, figure, transformer)}
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{#if svg}
-						<g ondblclick={(e) => openPopoverFor(el.id, e)}>
-							{#each svg.ticks as tick, i (i)}
-								<line
-									x1={tick.x1}
-									y1={tick.y1}
-									x2={tick.x2}
-									y2={tick.y2}
-									stroke="transparent"
-									stroke-width="12"
-								/>
-								<line
-									x1={tick.x1}
-									y1={tick.y1}
-									x2={tick.x2}
-									y2={tick.y2}
-									stroke={sty.color}
-									stroke-width={sty.strokeWidth}
-									opacity={sty.opacity}
-									class="segment-mark"
-								/>
-							{/each}
-						</g>
+						{#if isRough(sty, el.type) && rc}
+							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
+								{#each svg.ticks as tick, i (i)}
+									<line
+										x1={tick.x1}
+										y1={tick.y1}
+										x2={tick.x2}
+										y2={tick.y2}
+										stroke="transparent"
+										stroke-width="12"
+									/>
+								{/each}
+								<g opacity={sty.opacity}
+									>{@html roughSegmentMarkHTML(rc, svg, getRoughOpts(el.id, sty))}</g
+								>
+							</g>
+						{:else}
+							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
+								{#each svg.ticks as tick, i (i)}
+									<line
+										x1={tick.x1}
+										y1={tick.y1}
+										x2={tick.x2}
+										y2={tick.y2}
+										stroke="transparent"
+										stroke-width="12"
+									/>
+									<line
+										x1={tick.x1}
+										y1={tick.y1}
+										x2={tick.x2}
+										y2={tick.y2}
+										stroke={sty.color}
+										stroke-width={sty.strokeWidth}
+										opacity={sty.opacity}
+										class="segment-mark"
+									/>
+								{/each}
+							</g>
+						{/if}
 					{/if}
 				{/if}
 			{/each}
