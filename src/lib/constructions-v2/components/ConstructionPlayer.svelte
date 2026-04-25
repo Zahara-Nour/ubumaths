@@ -3,7 +3,12 @@
 	import { parseDsl } from '$lib/geometry-core/dsl';
 	import { Figure } from '$lib/geometry-core/graph/figure';
 	import { ConstructionExecutor } from '../core/executor';
-	import type { InstrumentState, DrawAnimationState } from '../types';
+	import type {
+		InstrumentType,
+		InstrumentState,
+		InstrumentMove,
+		DrawAnimationState
+	} from '../types';
 	import { Timeline, createInitialTimelineState } from '../core/timeline.svelte';
 	import type { TimelineState } from '../core/timeline.svelte';
 	import ConstructionCanvas from './ConstructionCanvas.svelte';
@@ -43,15 +48,21 @@
 	let currentFigure = $state<Figure>(new Figure());
 	let currentInstrumentStates = $state(new Map<string, InstrumentState>());
 	let animatingIds = $state<string[]>([]);
+	let autoInstruments = $state(new Set<InstrumentType>());
+	let instrumentMoves = $state(new Map<InstrumentType, InstrumentMove>());
 
 	// Pre-compute the Set once when animatingIds changes (not every frame)
 	const EMPTY_IDS = new Set<string>();
 	let animatingIdsSet = $derived(animatingIds.length > 0 ? new Set(animatingIds) : EMPTY_IDS);
 
-	// Derived animation state — only drawProgress changes every RAF frame
+	// Derived animation state — only drawProgress changes every RAF frame.
+	// animatingIds are cleared at progress=1 (element fully drawn, GeometryCanvas takes over).
+	// autoInstruments and instrumentMoves stay until the NEXT step changes them.
 	let animation = $derived<DrawAnimationState>({
 		animatingIds: tl.stepProgress < 1 ? animatingIdsSet : EMPTY_IDS,
-		drawProgress: tl.stepProgress
+		drawProgress: tl.stepProgress,
+		autoInstruments,
+		instrumentMoves
 	});
 
 	// Plain JS objects (not reactive)
@@ -78,12 +89,18 @@
 	}
 
 	function handleStepChange(stepIndex: number) {
-		executor.reset();
-		for (let i = 0; i <= stepIndex; i++) {
-			executor.step();
+		try {
+			executor.reset();
+			for (let i = 0; i <= stepIndex; i++) {
+				executor.step();
+			}
+			animatingIds = executor.lastStepNewElementIds;
+			autoInstruments = new Set(executor.autoInstruments);
+			instrumentMoves = new Map(executor.instrumentMoves);
+			syncState();
+		} catch {
+			// Script may be invalid during editing — ignore runtime errors
 		}
-		animatingIds = executor.lastStepNewElementIds;
-		syncState();
 	}
 
 	function handleTimelineUpdate(state: TimelineState) {
@@ -129,12 +146,17 @@
 		timeline?.resetSpeed();
 	}
 
-	function loadScript(scriptText: string) {
-		executor.load(scriptText);
+	function loadScript(scriptText: string): boolean {
+		try {
+			executor.load(scriptText);
+		} catch {
+			return false;
+		}
 		syncState();
 		timeline?.destroy();
 		timeline = new Timeline(handleTimelineUpdate, handleStepChange);
 		timeline.load(executor.stepDurations);
+		return true;
 	}
 
 	// Reload when script changes. $effect tracks only `script` (prop) and
@@ -143,9 +165,12 @@
 	$effect(() => {
 		if (parseResult.valid) {
 			untrack(() => {
-				loadScript(script);
+				if (!loadScript(script)) return;
 				if (seekToEnd) {
 					timeline?.scrubByProgress(1);
+					// Hide auto-instruments so the final figure shows clean
+					executor.hideAutoInstruments();
+					syncState();
 				} else if (autoPlay) {
 					timeline?.play();
 				}
