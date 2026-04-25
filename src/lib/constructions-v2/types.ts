@@ -37,13 +37,32 @@ export type DirectiveName =
 	| 'cacher'
 	| 'montrer';
 
+/** Start/end positions for instrument movement animation. */
+export interface InstrumentMove {
+	fromX: number;
+	fromY: number;
+	fromRotation: number;
+	toX: number;
+	toY: number;
+	toRotation: number;
+}
+
 /** Animation state for progressive drawing of elements. */
 export interface DrawAnimationState {
 	/** IDs of elements currently being drawn (from the current step). */
 	animatingIds: Set<string>;
 	/** Progress 0-1 within the current step. */
 	drawProgress: number;
+	/** Instrument types auto-shown for this step (hidden when drawProgress >= 1). */
+	autoInstruments: Set<InstrumentType>;
+	/** Movement animations for instruments (from previous position to new position). */
+	instrumentMoves: Map<InstrumentType, InstrumentMove>;
 }
+
+/** Phase breakpoints for segment animation. */
+export const PHASE_INSTRUMENT_MOVE_END = 0.3;
+/** Phase breakpoints for arc/circle animation. */
+export const PHASE_ARC_INSTRUMENT_MOVE_END = 0.2;
 
 /** Drawable element types that should be animated. */
 export const DRAWABLE_TYPES = new Set([

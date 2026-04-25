@@ -8,9 +8,16 @@
 import { parseDsl, createStepper } from '$lib/geometry-core/dsl';
 import type { DslStepper, DirectiveHandler, DslStatement } from '$lib/geometry-core/dsl';
 import { Figure } from '$lib/geometry-core/graph/figure';
+import type { GeoElement } from '$lib/geometry-core/types/elements';
+import {
+	isCircleByRadius,
+	isCircleByPoint,
+	isArcByAngles,
+	isArcByPoints
+} from '$lib/geometry-core/types/elements';
 import { SymbolTable } from '$lib/geometry-core/dsl/symbol-table';
 import type { ResolvedArgs, ResolvedValue } from '$lib/geometry-core/dsl/builtins';
-import type { InstrumentType, InstrumentState } from '../types';
+import type { InstrumentType, InstrumentState, InstrumentMove } from '../types';
 import { createDefaultInstrumentState, DRAWABLE_TYPES } from '../types';
 import { rulerPosition, compassPosition } from '../instruments/positioning';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
@@ -52,6 +59,10 @@ export class ConstructionExecutor {
 	private _currentInstruction: string | null = null;
 	private _speedFactor = 1;
 	private _lastStepNewElementIds: string[] = [];
+	/** Instruments auto-shown for the current step (to hide when step completes). */
+	private _autoInstruments: Set<InstrumentType> = new Set();
+	/** Movement animations for auto-instruments (previous → new position). */
+	private _instrumentMoves = new Map<InstrumentType, InstrumentMove>();
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
@@ -70,16 +81,18 @@ export class ConstructionExecutor {
 	/** Execute one step. Returns false when done. */
 	step(): boolean {
 		if (!this.stepper) return false;
+		// Hide instruments that were auto-shown for the previous step
+		this.hideAutoInstruments();
 		const sizeBefore = this.stepper.figure.size;
 		const result = this.stepper.step();
 		if (result) {
-			this.autoPositionInstruments(sizeBefore);
 			// Track new drawable elements for animation
 			const elements = this.stepper.figure.getAllElements();
 			this._lastStepNewElementIds = elements
 				.slice(sizeBefore)
 				.filter((el) => DRAWABLE_TYPES.has(el.type))
 				.map((el) => el.id);
+			this.autoShowInstruments(sizeBefore);
 		} else {
 			this._lastStepNewElementIds = [];
 		}
@@ -101,6 +114,8 @@ export class ConstructionExecutor {
 		this._speedFactor = 1;
 		this._instrumentStates.clear();
 		this._lastStepNewElementIds = [];
+		this._autoInstruments.clear();
+		this._instrumentMoves.clear();
 		this._stepDurations = this.calculateStepDurations();
 	}
 
@@ -137,6 +152,16 @@ export class ConstructionExecutor {
 	/** IDs of drawable elements created during the last step (segments, arcs, circles). */
 	get lastStepNewElementIds(): string[] {
 		return this._lastStepNewElementIds;
+	}
+
+	/** Instrument types that were auto-shown for the current step. */
+	get autoInstruments(): Set<InstrumentType> {
+		return this._autoInstruments;
+	}
+
+	/** Movement animations for auto-instruments. */
+	get instrumentMoves(): Map<InstrumentType, InstrumentMove> {
+		return this._instrumentMoves;
 	}
 
 	// ─── Directive handling ──────────────────────────────────
@@ -209,58 +234,127 @@ export class ConstructionExecutor {
 		}
 	}
 
-	// ─── Auto-positioning ───────────────────────────────────
+	// ─── Auto instrument management ────────────────────────
 
-	private autoPositionInstruments(sizeBefore: number): void {
+	private ensureInstrument(type: InstrumentType): InstrumentState {
+		if (!this._instrumentStates.has(type)) {
+			this._instrumentStates.set(type, createDefaultInstrumentState(type));
+		}
+		return this._instrumentStates.get(type)!;
+	}
+
+	/** Record a movement animation for an instrument (from current to new position).
+	 *  If the instrument was never visible, it enters from off-screen (below the canvas). */
+	private recordMove(type: InstrumentType, toX: number, toY: number, toRotation: number): void {
+		const current = this._instrumentStates.get(type);
+		let fromX: number, fromY: number, fromRotation: number;
+		if (current && current.visible) {
+			// Instrument was previously visible — slide from last known position
+			fromX = current.x;
+			fromY = current.y;
+			fromRotation = current.rotation;
+		} else {
+			// First appearance or hidden — start from top-left corner (math coords)
+			fromX = -8;
+			fromY = 6;
+			fromRotation = 0;
+		}
+		this._instrumentMoves.set(type, { fromX, fromY, fromRotation, toX, toY, toRotation });
+	}
+
+	/** Auto-show and position instruments for new drawable elements. */
+	private autoShowInstruments(sizeBefore: number): void {
 		if (!this.stepper) return;
 		const fig = this.stepper.figure;
-		if (fig.size <= sizeBefore) return; // no new element
+		if (fig.size <= sizeBefore) return;
 
-		// Find the newest element(s)
 		const elements = fig.getAllElements();
 		const newElements = elements.slice(sizeBefore);
+		this._autoInstruments.clear();
+		this._instrumentMoves.clear();
 
 		for (const el of newElements) {
 			if (el.type === 'segment') {
-				// Auto-position ruler on segment
-				const rulerState = this._instrumentStates.get('ruler');
-				if (rulerState?.visible) {
-					const p1 = fig.getPosition(el.startId);
-					const p2 = fig.getPosition(el.endId);
-					if (p1 && p2) {
-						const pos = rulerPosition(
-							{ x: geoToNumber(p1.x), y: geoToNumber(p1.y) },
-							{ x: geoToNumber(p2.x), y: geoToNumber(p2.y) }
-						);
-						Object.assign(rulerState, pos);
-					}
-				}
-			} else if (el.type === 'circleByRadius' || el.type === 'circleByPoint') {
-				// Auto-position compass on circle center
-				const compassState = this._instrumentStates.get('compass');
-				if (compassState?.visible) {
-					const center = fig.getPosition(el.centerId);
-					if (center) {
-						let radius = 100;
-						if (el.type === 'circleByRadius') {
-							radius = geoToNumber(el.radius);
-						} else {
-							const edge = fig.getPosition(el.edgePointId);
-							if (edge) {
-								const dx = geoToNumber(edge.x) - geoToNumber(center.x);
-								const dy = geoToNumber(edge.y) - geoToNumber(center.y);
-								radius = Math.sqrt(dx * dx + dy * dy);
-							}
-						}
-						const pos = compassPosition(
-							{ x: geoToNumber(center.x), y: geoToNumber(center.y) },
-							radius
-						);
-						Object.assign(compassState, pos);
-					}
-				}
+				const p1 = fig.getPosition(el.startId);
+				const p2 = fig.getPosition(el.endId);
+				if (!p1 || !p2) continue;
+
+				const pos = rulerPosition(
+					{ x: geoToNumber(p1.x), y: geoToNumber(p1.y) },
+					{ x: geoToNumber(p2.x), y: geoToNumber(p2.y) }
+				);
+
+				// Record movement from previous position to new position
+				this.recordMove('ruler', pos.x!, pos.y!, pos.rotation!);
+
+				// Show and position ruler
+				const ruler = this.ensureInstrument('ruler');
+				Object.assign(ruler, pos);
+				this._autoInstruments.add('ruler');
+
+				// Show pencil at start point
+				const pencil = this.ensureInstrument('pencil');
+				pencil.visible = true;
+				pencil.x = geoToNumber(p1.x);
+				pencil.y = geoToNumber(p1.y);
+				this._autoInstruments.add('pencil');
+			} else if (
+				el.type === 'circleByRadius' ||
+				el.type === 'circleByPoint' ||
+				el.type === 'arcByAngles' ||
+				el.type === 'arcByPoints'
+			) {
+				const center = fig.getPosition(el.centerId);
+				if (!center) continue;
+
+				const radius = this.resolveRadius(el, fig);
+
+				// Show and position compass only (no pencil — compass traces directly)
+				const cx = geoToNumber(center.x);
+				const cy = geoToNumber(center.y);
+				const pos = compassPosition({ x: cx, y: cy }, radius);
+
+				this.recordMove('compass', cx, cy, 0);
+
+				const compass = this.ensureInstrument('compass');
+				Object.assign(compass, pos);
+				this._autoInstruments.add('compass');
 			}
 		}
+	}
+
+	private resolveRadius(el: GeoElement, fig: Figure): number {
+		if (isCircleByRadius(el) || isArcByAngles(el)) {
+			return geoToNumber(el.radius);
+		}
+		if (isCircleByPoint(el)) {
+			const center = fig.getPosition(el.centerId);
+			const edge = fig.getPosition(el.edgePointId);
+			if (center && edge) {
+				const dx = geoToNumber(edge.x) - geoToNumber(center.x);
+				const dy = geoToNumber(edge.y) - geoToNumber(center.y);
+				return Math.sqrt(dx * dx + dy * dy);
+			}
+		}
+		if (isArcByPoints(el)) {
+			const center = fig.getPosition(el.centerId);
+			const start = fig.getPosition(el.startId);
+			if (center && start) {
+				const dx = geoToNumber(start.x) - geoToNumber(center.x);
+				const dy = geoToNumber(start.y) - geoToNumber(center.y);
+				return Math.sqrt(dx * dx + dy * dy);
+			}
+		}
+		return 100;
+	}
+
+	/** Hide instruments that were auto-shown for the previous step. */
+	hideAutoInstruments(): void {
+		for (const type of this._autoInstruments) {
+			const state = this._instrumentStates.get(type);
+			if (state) state.visible = false;
+		}
+		this._autoInstruments.clear();
 	}
 
 	// ─── Duration calculation ────────────────────────────────
