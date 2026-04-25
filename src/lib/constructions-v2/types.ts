@@ -37,6 +37,23 @@ export type DirectiveName =
 	| 'cacher'
 	| 'montrer';
 
+/** Animation state for progressive drawing of elements. */
+export interface DrawAnimationState {
+	/** IDs of elements currently being drawn (from the current step). */
+	animatingIds: Set<string>;
+	/** Progress 0-1 within the current step. */
+	drawProgress: number;
+}
+
+/** Drawable element types that should be animated. */
+export const DRAWABLE_TYPES = new Set([
+	'segment',
+	'arcByAngles',
+	'arcByPoints',
+	'circleByRadius',
+	'circleByPoint'
+]);
+
 /** Default instrument state factory. */
 export function createDefaultInstrumentState(type: InstrumentType): InstrumentState {
 	return {

@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onDestroy, untrack } from 'svelte';
 	import { parseDsl } from '$lib/geometry-core/dsl';
+	import { Figure } from '$lib/geometry-core/graph/figure';
 	import { ConstructionExecutor } from '../core/executor';
+	import type { InstrumentState, DrawAnimationState } from '../types';
 	import { Timeline, createInitialTimelineState } from '../core/timeline.svelte';
 	import type { TimelineState } from '../core/timeline.svelte';
 	import ConstructionCanvas from './ConstructionCanvas.svelte';
@@ -35,6 +37,19 @@
 	let tl = $state<TimelineState>(createInitialTimelineState());
 	let figureVersion = $state(0);
 	let currentInstruction = $state<string | null>(null);
+	let currentFigure = $state<Figure>(new Figure());
+	let currentInstrumentStates = $state(new Map<string, InstrumentState>());
+	let animatingIds = $state<string[]>([]);
+
+	// Pre-compute the Set once when animatingIds changes (not every frame)
+	const EMPTY_IDS = new Set<string>();
+	let animatingIdsSet = $derived(animatingIds.length > 0 ? new Set(animatingIds) : EMPTY_IDS);
+
+	// Derived animation state — only drawProgress changes every RAF frame
+	let animation = $derived<DrawAnimationState>({
+		animatingIds: tl.stepProgress < 1 ? animatingIdsSet : EMPTY_IDS,
+		drawProgress: tl.stepProgress
+	});
 
 	// Plain JS objects (not reactive)
 	const executor = new ConstructionExecutor();
@@ -52,13 +67,20 @@
 
 	// ─── Event handlers (UI event → handler → update $state → DOM) ───
 
+	function syncState() {
+		currentFigure = executor.figure;
+		currentInstrumentStates = new Map(executor.instrumentStates);
+		currentInstruction = executor.currentInstruction;
+		figureVersion++;
+	}
+
 	function handleStepChange(stepIndex: number) {
 		executor.reset();
 		for (let i = 0; i <= stepIndex; i++) {
 			executor.step();
 		}
-		figureVersion++;
-		currentInstruction = executor.currentInstruction;
+		animatingIds = executor.lastStepNewElementIds;
+		syncState();
 	}
 
 	function handleTimelineUpdate(state: TimelineState) {
@@ -80,8 +102,8 @@
 	function handleReset() {
 		executor.reset();
 		timeline?.reset();
-		figureVersion++;
-		currentInstruction = null;
+		animatingIds = [];
+		syncState();
 	}
 
 	function handleScrub(progress: number) {
@@ -106,29 +128,23 @@
 
 	function loadScript(scriptText: string) {
 		executor.load(scriptText);
+		syncState();
 		timeline?.destroy();
 		timeline = new Timeline(handleTimelineUpdate, handleStepChange);
 		timeline.load(executor.stepDurations);
 	}
 
-	// Initialize on mount
-	onMount(() => {
-		if (parseResult.valid) {
-			loadScript(script);
-			if (autoPlay) {
-				timeline?.play();
-			}
-		}
-	});
-
-	// React to script prop changes after mount
-	let prevScript = script;
+	// Reload when script changes. $effect tracks only `script` (prop) and
+	// `parseResult` (derived). untrack prevents loadScript's state writes
+	// from being tracked as dependencies (side effect, not reactive derivation).
 	$effect(() => {
-		if (script !== prevScript) {
-			prevScript = script;
-			if (parseResult.valid) {
+		if (parseResult.valid) {
+			untrack(() => {
 				loadScript(script);
-			}
+				if (autoPlay) {
+					timeline?.play();
+				}
+			});
 		}
 	});
 
@@ -151,8 +167,9 @@
 		{/if}
 
 		<ConstructionCanvas
-			figure={executor.figure}
-			instrumentStates={executor.instrumentStates}
+			figure={currentFigure}
+			instrumentStates={currentInstrumentStates}
+			{animation}
 			{figureVersion}
 			{width}
 			{height}
