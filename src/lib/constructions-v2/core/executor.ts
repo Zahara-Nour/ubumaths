@@ -93,6 +93,10 @@ export class ConstructionExecutor {
 	private _pausePhaseStart = 1;
 	/** Current step's move duration in ms. */
 	private _moveDurationMs = 0;
+	/** Last known compass radius (for opening animation). */
+	private _lastCompassRadius = 0;
+	/** Current compass radius. */
+	private _compassCurRadius = 0;
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
@@ -157,6 +161,8 @@ export class ConstructionExecutor {
 		this._drawPhaseEnd = 1;
 		this._pausePhaseStart = 1;
 		this._moveDurationMs = 0;
+		this._lastCompassRadius = 0;
+		this._compassCurRadius = 0;
 		this._stepPhases = [];
 		this._stepDurations = this.calculateStepDurations();
 	}
@@ -225,6 +231,12 @@ export class ConstructionExecutor {
 	}
 	get moveDurationMs(): number {
 		return this._moveDurationMs;
+	}
+	get compassPrevRadius(): number {
+		return this._lastCompassRadius;
+	}
+	get compassCurRadius(): number {
+		return this._compassCurRadius;
 	}
 
 	// ─── Directive handling ──────────────────────────────────
@@ -378,18 +390,26 @@ export class ConstructionExecutor {
 
 				const radius = this.resolveRadius(el, fig);
 
-				// Show and position compass only (no pencil — compass traces directly)
+				// Compute starting angle based on element type
 				const cx = geoToNumber(center.x);
 				const cy = geoToNumber(center.y);
+				const startAngle = this.computeCompassStartAngle(el, fig);
+
+				// Show and position compass (no pencil — compass traces directly)
 				const pos = compassPosition({ x: cx, y: cy }, radius);
 
-				this.recordMove('compass', cx, cy, 0);
+				this.recordMove('compass', cx, cy, startAngle);
+
+				// Track radius for opening animation
+				this._lastCompassRadius = this._compassCurRadius;
+				this._compassCurRadius = radius;
 
 				const compass = this.ensureInstrument('compass');
 				Object.assign(compass, pos);
+				compass.rotation = startAngle;
 				this._autoInstruments.add('compass');
 				// Track last known position for next step's recordMove
-				this._lastInstrumentPositions.set('compass', { x: cx, y: cy, rotation: 0 });
+				this._lastInstrumentPositions.set('compass', { x: cx, y: cy, rotation: startAngle });
 			}
 		}
 
@@ -409,6 +429,44 @@ export class ConstructionExecutor {
 			this._pausePhaseStart = 1;
 			this._moveDurationMs = 0;
 		}
+	}
+
+	/** Compute the starting angle (in degrees) for compass orientation.
+	 *  For circleByPoint: angle from center to edge point.
+	 *  For arcByAngles: start angle from element.
+	 *  For arcByPoints: angle from center to start point.
+	 *  For circleByRadius: 0 (starts from right side). */
+	private computeCompassStartAngle(el: GeoElement, fig: Figure): number {
+		if (isCircleByPoint(el)) {
+			const center = fig.getPosition(el.centerId);
+			const edge = fig.getPosition(el.edgePointId);
+			if (center && edge) {
+				return (
+					Math.atan2(
+						geoToNumber(edge.y) - geoToNumber(center.y),
+						geoToNumber(edge.x) - geoToNumber(center.x)
+					) *
+					(180 / Math.PI)
+				);
+			}
+		}
+		if (isArcByAngles(el)) {
+			return geoToNumber(el.startAngle) * (180 / Math.PI);
+		}
+		if (isArcByPoints(el)) {
+			const center = fig.getPosition(el.centerId);
+			const start = fig.getPosition(el.startId);
+			if (center && start) {
+				return (
+					Math.atan2(
+						geoToNumber(start.y) - geoToNumber(center.y),
+						geoToNumber(start.x) - geoToNumber(center.x)
+					) *
+					(180 / Math.PI)
+				);
+			}
+		}
+		return 0; // circleByRadius starts at angle 0
 	}
 
 	private resolveRadius(el: GeoElement, fig: Figure): number {

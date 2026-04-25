@@ -69,6 +69,10 @@ export interface DrawAnimationState {
 	pausePhaseStart: number;
 	/** Duration of the instrument move phase in ms (for fixed-ramp easing calculation). */
 	moveDurationMs: number;
+	/** Previous compass radius in math units (for opening animation). */
+	compassPrevRadius: number;
+	/** Current compass radius in math units. */
+	compassCurRadius: number;
 }
 
 /** Drawable element types that should be animated. */
