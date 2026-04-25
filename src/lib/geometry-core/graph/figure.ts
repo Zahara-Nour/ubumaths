@@ -29,9 +29,11 @@ import type {
 	GeoArcByPoints,
 	GeoPolygon,
 	GeoFunction,
+	GeoQuadraticCurve,
 	GeoPointOnCurve,
 	GeoTangentLine,
-	type LineEquation
+	type LineEquation,
+	type ConicParams
 } from '../types/elements';
 import {
 	isFreePoint,
@@ -818,6 +820,32 @@ export class Figure {
 			compiledFn,
 			compiledDerivative,
 			equation,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [] as const
+		};
+		this.addElement(id, element, []);
+		return id;
+	}
+
+	createQuadraticCurve(
+		expression: MathNode,
+		equation: string,
+		coefficients: readonly [number, number, number, number, number, number],
+		conic: ConicParams,
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('qc');
+		const element: GeoQuadraticCurve = {
+			type: 'quadraticCurve',
+			id,
+			expression,
+			equation,
+			coefficients,
+			conic,
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
