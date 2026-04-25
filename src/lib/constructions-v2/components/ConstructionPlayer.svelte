@@ -17,6 +17,8 @@
 		width?: number;
 		height?: number;
 		autoPlay?: boolean;
+		/** Seek to end on load (show final figure without animation). */
+		seekToEnd?: boolean;
 		showGrid?: boolean;
 		showControls?: boolean;
 		class?: string;
@@ -28,6 +30,7 @@
 		width = 800,
 		height = 600,
 		autoPlay = false,
+		seekToEnd = false,
 		showGrid = true,
 		showControls = true,
 		class: className = ''
@@ -141,7 +144,9 @@
 		if (parseResult.valid) {
 			untrack(() => {
 				loadScript(script);
-				if (autoPlay) {
+				if (seekToEnd) {
+					timeline?.scrubByProgress(1);
+				} else if (autoPlay) {
 					timeline?.play();
 				}
 			});
