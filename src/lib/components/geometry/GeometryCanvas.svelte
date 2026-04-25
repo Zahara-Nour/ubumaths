@@ -20,13 +20,15 @@
 		resolveStyle,
 		functionToSVG,
 		quadraticCurveToSVG,
-		tangentLineToSVG
+		tangentLineToSVG,
+		tangentToQuadraticToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
 	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
 	import { snapToGrid } from '$lib/geometry-core/interaction/snap';
 	import { numeric } from '$lib/geometry-core/types/geo-value';
 	import { isPointElement } from '$lib/geometry-core/types/elements';
+	import { conicClosestParam } from '$lib/geometry-core/graph/figure';
 	import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 	import rough from 'roughjs';
 	import {
@@ -243,6 +245,12 @@
 			const dragEl = figure.getElementById(draggingId);
 			if (dragEl?.type === 'pointOnCurve') {
 				figure.movePointOnCurve(draggingId, numeric(math.x));
+			} else if (dragEl?.type === 'pointOnQuadraticCurve') {
+				const curveEl = figure.getElementById(dragEl.curveId);
+				if (curveEl?.type === 'quadraticCurve') {
+					const newT = conicClosestParam(curveEl.conic, math.x, math.y);
+					figure.movePointOnQuadraticCurve(draggingId, newT);
+				}
 			} else {
 				figure.movePoint(draggingId, numeric(math.x), numeric(math.y));
 			}
@@ -780,6 +788,23 @@
 								paint-order="stroke">{el.label}</text
 							>
 						{/if}
+					{/if}
+				{:else if el.type === 'tangentToQuadratic'}
+					{@const svg = tangentToQuadraticToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						<line
+							x1={svg.x1}
+							y1={svg.y1}
+							x2={svg.x2}
+							y2={svg.y2}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							stroke-linecap="round"
+							opacity={sty.opacity}
+							class="geo-line"
+							class:hovered={hoveredId === el.id}
+						/>
 					{/if}
 				{:else if el.type === 'function'}
 					{@const svg = functionToSVG(el.id, figure, transformer, dims)}

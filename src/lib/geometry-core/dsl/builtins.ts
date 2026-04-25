@@ -498,6 +498,28 @@ function _executeBuiltinInner(
 			}
 			const tFnId = requireElement(pos[0], 'fonction', line);
 			const tFnEl = figure.getElementById(tFnId);
+
+			if (tFnEl && tFnEl.type === 'quadraticCurve') {
+				// Tangent to quadratic curve
+				if (pos[1].type === 'element') {
+					const ptId = pos[1].figureId;
+					const ptEl = figure.getElementById(ptId);
+					if (!ptEl || ptEl.type !== 'pointOnQuadraticCurve') {
+						throw new DslRuntimeError(
+							'tangente(): le deuxieme argument doit etre un point_sur ou un nombre',
+							line
+						);
+					}
+					const tgId = figure.createTangentToQuadratic(tFnId, { pointOnCurveId: ptId }, { label });
+					return { figureId: tgId, symbolType: 'tangente' };
+				} else {
+					const tVal = requireNumber(pos[1], 'angle', line);
+					const tRad = (tVal * Math.PI) / 180;
+					const tgId = figure.createTangentToQuadratic(tFnId, { t: tRad }, { label });
+					return { figureId: tgId, symbolType: 'tangente' };
+				}
+			}
+
 			if (!tFnEl || tFnEl.type !== 'function') {
 				throw new DslRuntimeError('tangente(): le premier argument doit etre une courbe', line);
 			}
@@ -525,14 +547,23 @@ function _executeBuiltinInner(
 			if (pos.length < 1 || pos.length > 2) {
 				throw new DslRuntimeError('point_sur() attend 1-2 arguments (f, x0?)', line);
 			}
-			const fnId = requireElement(pos[0], 'fonction', line);
-			const fnEl = figure.getElementById(fnId);
-			if (!fnEl || fnEl.type !== 'function') {
+			const psId = requireElement(pos[0], 'fonction', line);
+			const psEl = figure.getElementById(psId);
+
+			if (psEl && psEl.type === 'quadraticCurve') {
+				// point_sur on quadratic curve: parameter in degrees
+				const tDeg = pos.length >= 2 ? requireNumber(pos[1], 'angle', line) : 0;
+				const tRad = (tDeg * Math.PI) / 180;
+				const ptId = figure.createPointOnQuadraticCurve(psId, tRad, { label });
+				return { figureId: ptId, symbolType: 'point' };
+			}
+
+			if (!psEl || psEl.type !== 'function') {
 				throw new DslRuntimeError('point_sur(): le premier argument doit etre une courbe', line);
 			}
 			const x0Val =
 				pos.length >= 2 ? toGeoValue(pos[1], line) : toGeoValue({ type: 'nombre', value: 0 }, line);
-			const ptId = figure.createPointOnCurve(fnId, x0Val, { label });
+			const ptId = figure.createPointOnCurve(psId, x0Val, { label });
 			return { figureId: ptId, symbolType: 'point' };
 		}
 
@@ -544,6 +575,12 @@ function _executeBuiltinInner(
 			}
 			const cpFnId = requireElement(pos[0], 'fonction', line);
 			const cpFnEl = figure.getElementById(cpFnId);
+
+			// zeros() on quadratic curve: solve Ax² + Dx + F = 0 (y=0)
+			if (cpFnEl && cpFnEl.type === 'quadraticCurve' && name === 'zeros') {
+				return createQuadraticZeros(cpFnEl, cpFnId, figure, line, label, named);
+			}
+
 			if (!cpFnEl || cpFnEl.type !== 'function') {
 				throw new DslRuntimeError(`${name}(): le premier argument doit etre une courbe`, line);
 			}
@@ -839,4 +876,57 @@ function createQuadraticCurveFromCoefficients(
 	});
 
 	return { figureId: qcId, symbolType: 'courbe' };
+}
+
+/** Create zero points (y=0 intersections) for a quadratic curve. */
+function createQuadraticZeros(
+	qcEl: { coefficients: readonly [number, number, number, number, number, number] },
+	qcId: string,
+	figure: Figure,
+	line: number,
+	label?: string,
+	named?: Map<string, ResolvedValue>
+): BuiltinMultiResult {
+	const [A, _B, _C, D, _E, F] = qcEl.coefficients;
+	// F(x, 0) = Ax² + Dx + F = 0
+	const results: BuiltinResult[] = [];
+	let xValues: number[] = [];
+
+	if (Math.abs(A) < 1e-12) {
+		// Linear in x: Dx + F = 0
+		if (Math.abs(D) > 1e-12) {
+			xValues = [-F / D];
+		}
+	} else {
+		const disc = D * D - 4 * A * F;
+		if (disc >= 0) {
+			const sqrtDisc = Math.sqrt(disc);
+			xValues = [(-D + sqrtDisc) / (2 * A), (-D - sqrtDisc) / (2 * A)];
+			// Deduplicate if disc ≈ 0
+			if (Math.abs(xValues[0] - xValues[1]) < 1e-10) {
+				xValues = [xValues[0]];
+			}
+		}
+	}
+
+	for (const x of xValues) {
+		// Create a free point at (x, 0) — not on the curve parametrically
+		const ptId = figure.createFreePoint(
+			{ x: numeric(x), y: numeric(0) },
+			{ label: label ? `${label}${results.length + 1}` : undefined, draggable: false }
+		);
+		results.push({ figureId: ptId, symbolType: 'point' });
+	}
+
+	// Apply style from named args if any
+	if (named?.has('couleur')) {
+		const cv = named.get('couleur')!;
+		const colorStr = cv.type === 'string' ? cv.value : '';
+		const color = resolveColorName(colorStr);
+		for (const r of results) {
+			figure.updateStyle(r.figureId, { color });
+		}
+	}
+
+	return { elements: results };
 }
