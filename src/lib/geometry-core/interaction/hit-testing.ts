@@ -25,6 +25,7 @@ export function findPointNear(
 
 	for (const el of figure.getAllElements()) {
 		if (!isPointElement(el)) continue;
+		if (!el.visible) continue;
 
 		const pos = figure.getPosition(el.id);
 		if (!pos) continue;
@@ -127,6 +128,7 @@ export function findElementNear(
 	let bestDist = Infinity;
 
 	for (const el of figure.getAllElements()) {
+		if (!el.visible) continue;
 		let dist = Infinity;
 
 		if (el.type === 'segment') {
@@ -178,6 +180,11 @@ export function findElementNear(
 					geoToNumber(center.y),
 					geoToNumber(el.radius)
 				);
+			}
+		} else if (el.type === 'function') {
+			const y = el.compiledFn({ x: mathX });
+			if (Number.isFinite(y)) {
+				dist = Math.abs(y - mathY);
 			}
 		} else if (el.type === 'circleByPoint') {
 			const center = figure.getPosition(el.centerId);
