@@ -122,8 +122,10 @@ export class Timeline {
 		this.cancelRaf();
 		this._isPlaying = false;
 		const nextIndex = this._currentStepIndex + 1;
+		// Skip over zero-duration steps (directives like @instruction, @cacher)
 		this._currentTime = this.stepTimings[nextIndex].end;
-		this.updateCurrentStep();
+		this._currentStepIndex = nextIndex;
+		this.onStepChange?.(nextIndex);
 		this.emitState();
 	}
 
@@ -146,7 +148,8 @@ export class Timeline {
 		this.cancelRaf();
 		this._isPlaying = false;
 		this._currentTime = this.stepTimings[index].end;
-		this.updateCurrentStep();
+		this._currentStepIndex = index;
+		this.onStepChange?.(index);
 		this.emitState();
 	}
 

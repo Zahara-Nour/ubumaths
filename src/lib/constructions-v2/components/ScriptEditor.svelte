@@ -5,18 +5,15 @@
 	 * Features:
 	 * - DSL syntax highlighting (keywords, directives, comments, strings, numbers)
 	 * - Live validation via parseDsl() with error line highlighting
-	 * - Split panel: editor left, GeometryCanvas preview right
-	 * - Play mode: switch to ConstructionPlayer for animation
+	 * - Split panel: editor left, ConstructionPlayer right (seeked to end)
 	 * - Lazy CodeMirror loading with textarea fallback
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
-	import { parseDsl, runDsl } from '$lib/geometry-core/dsl';
-	import { Figure } from '$lib/geometry-core/graph/figure';
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
+	import { parseDsl } from '$lib/geometry-core/dsl';
+	import ConstructionPlayer from './ConstructionPlayer.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Play, Pencil } from 'lucide-svelte';
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension } from '@codemirror/state';
 
@@ -40,7 +37,6 @@
 	let editor = $state.raw<EditorView | null>(null);
 	let isLoading = $state(true);
 	let loadError = $state<string | null>(null);
-	let mode = $state<'edit' | 'play'>('edit');
 
 	// Validation
 	let validationErrors = $state<string[]>([]);
@@ -48,18 +44,6 @@
 	let validationTimeoutId: number | null = null;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let errorLineEffectType: { of: (value: number[]) => any } | null = null;
-
-	// Preview figure — $derived from value
-	let previewFigure = $derived.by(() => {
-		try {
-			const result = runDsl(value);
-			return result.figure;
-		} catch {
-			return new Figure();
-		}
-	});
-
-	let previewVersion = $state(0);
 
 	function validateScript(script: string): void {
 		try {
@@ -76,7 +60,6 @@
 				updateErrorHighlight(errorLines);
 			}
 		}
-		previewVersion++;
 	}
 
 	function scheduleValidation(content: string): void {
@@ -342,25 +325,8 @@
 
 <div class="script-editor {className}">
 	<!-- Toolbar -->
-	<div class="mb-2 flex items-center gap-2">
-		<Button
-			variant={mode === 'edit' ? 'default' : 'ghost'}
-			size="sm"
-			onclick={() => (mode = 'edit')}
-		>
-			<Pencil class="mr-1 h-3 w-3" />
-			Editer
-		</Button>
-		<Button
-			variant={mode === 'play' ? 'default' : 'ghost'}
-			size="sm"
-			onclick={() => (mode = 'play')}
-			disabled={validationErrors.length > 0}
-		>
-			<Play class="mr-1 h-3 w-3" />
-			Jouer
-		</Button>
-		{#if onSave}
+	{#if onSave}
+		<div class="mb-2 flex items-center gap-2">
 			<div class="flex-1"></div>
 			<Button
 				variant="outline"
@@ -370,8 +336,8 @@
 			>
 				Enregistrer
 			</Button>
-		{/if}
-	</div>
+		</div>
+	{/if}
 
 	<!-- Split: Editor (left) + Preview/Player (right) -->
 	<div class="flex gap-4">
@@ -413,31 +379,16 @@
 			{/if}
 		</div>
 
-		<!-- Right panel: Preview (edit mode) or Player (play mode) -->
+		<!-- Right panel: ConstructionPlayer (seeked to end for instant preview) -->
 		<div class="flex-shrink-0">
-			{#if mode === 'edit'}
-				<div class="rounded-md border border-border">
-					<GeometryCanvas
-						figure={previewFigure}
-						{width}
-						{height}
-						interactive={false}
-						showGrid={true}
-						externalVersion={previewVersion}
-					/>
-				</div>
-			{:else}
-				{#await import('./ConstructionPlayer.svelte') then module}
-					<module.default
-						script={value}
-						{width}
-						{height}
-						showGrid={true}
-						showControls={true}
-						autoPlay={true}
-					/>
-				{/await}
-			{/if}
+			<ConstructionPlayer
+				script={value}
+				{width}
+				{height}
+				showGrid={true}
+				showControls={true}
+				seekToEnd={true}
+			/>
 		</div>
 	</div>
 </div>
