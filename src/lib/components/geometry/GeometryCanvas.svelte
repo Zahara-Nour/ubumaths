@@ -149,10 +149,7 @@
 		void version;
 		void externalVersion;
 		const all = figure.getAllElements();
-		if (hiddenElementIds && hiddenElementIds.size > 0) {
-			return all.filter((el) => !hiddenElementIds.has(el.id));
-		}
-		return all;
+		return all.filter((el) => el.visible && !(hiddenElementIds && hiddenElementIds.has(el.id)));
 	});
 	let dims = $derived({ width, height });
 
@@ -196,7 +193,7 @@
 
 		if (pointId) {
 			const el = figure.getElementById(pointId);
-			if (el?.type === 'freePoint') {
+			if (el?.type === 'freePoint' && el.draggable) {
 				draggingId = pointId;
 				figure.beginTransaction();
 				svgRef?.setPointerCapture(e.pointerId);
@@ -816,7 +813,7 @@
 								fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && el.type === 'freePoint'}
+								class:draggable={interactive && el.type === 'freePoint' && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
@@ -830,14 +827,14 @@
 								stroke-width={sty.strokeWidth}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && el.type === 'freePoint'}
+								class:draggable={interactive && el.type === 'freePoint' && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
 						{:else if sty.pointShape === 'cross'}
 							<g
 								class="point"
-								class:draggable={interactive && el.type === 'freePoint'}
+								class:draggable={interactive && el.type === 'freePoint' && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 								opacity={sty.opacity}
@@ -868,7 +865,7 @@
 								fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && el.type === 'freePoint'}
+								class:draggable={interactive && el.type === 'freePoint' && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>

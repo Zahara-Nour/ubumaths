@@ -27,7 +27,8 @@ import type {
 	GeoCircleByPoint,
 	GeoArcByAngles,
 	GeoArcByPoints,
-	GeoPolygon
+	GeoPolygon,
+	type LineEquation
 } from '../types/elements';
 import {
 	isFreePoint,
@@ -45,8 +46,10 @@ import {
 	isLineLike
 } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
+import { geoValueToMathNode } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { geoAdd, geoSub, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
+import { subtract, multiply } from '$lib/mathAST/factory';
 import { geoToNumber } from '../compute/to-number';
 import { intersectLL } from '../geometry/intersections';
 import {
@@ -79,6 +82,8 @@ export interface ElementOptions {
 	color?: string;
 	style?: GeoStyle;
 	visible?: boolean;
+	draggable?: boolean;
+	equation?: LineEquation;
 }
 
 interface Delta {
@@ -310,6 +315,7 @@ export class Figure {
 			position,
 			color: this.resolveColor(options),
 			visible: options?.visible ?? true,
+			draggable: options?.draggable ?? true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
@@ -369,6 +375,7 @@ export class Figure {
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
+			...(options?.equation && { equation: options.equation }),
 			dependsOn: [point1Id, point2Id]
 		};
 		this.addElement(id, element, [point1Id, point2Id]);
@@ -918,6 +925,55 @@ export class Figure {
 	 */
 	getPosition(id: string): GeoPoint | null {
 		return this.positions.get(id) ?? null;
+	}
+
+	/**
+	 * Get the equation ax + by + c = 0 for a line element.
+	 * If the line was created via courbe(), returns the stored equation.
+	 * Otherwise, computes it dynamically from current point positions.
+	 */
+	getLineEquation(id: string): LineEquation | null {
+		const el = this.elements.get(id);
+		if (!el || el.type !== 'line') return null;
+
+		const line = el as GeoLine;
+
+		// If equation is stored (from courbe()), return it
+		if (line.equation) return line.equation;
+
+		// Compute from current point positions
+		const p1 = this.positions.get(line.point1Id);
+		const p2 = this.positions.get(line.point2Id);
+		if (!p1 || !p2) return null;
+
+		const x1 = geoValueToMathNode(p1.x);
+		const y1 = geoValueToMathNode(p1.y);
+		const x2 = geoValueToMathNode(p2.x);
+		const y2 = geoValueToMathNode(p2.y);
+
+		// a = y2 - y1, b = x1 - x2, c = x2*y1 - x1*y2
+		const a = subtract(y2, y1);
+		const b = subtract(x1, x2);
+		const c = subtract(multiply(x2, y1), multiply(x1, y2));
+
+		const aNum = geoToNumber(p2.y) - geoToNumber(p1.y);
+		const bNum = geoToNumber(p1.x) - geoToNumber(p2.x);
+		const cNum = geoToNumber(p2.x) * geoToNumber(p1.y) - geoToNumber(p1.x) * geoToNumber(p2.y);
+
+		// Build expression string from numeric values
+		const terms: string[] = [];
+		if (Math.abs(aNum) > 1e-14) terms.push(aNum === 1 ? 'x' : aNum === -1 ? '-x' : `${aNum}*x`);
+		if (Math.abs(bNum) > 1e-14) {
+			const sign = bNum > 0 && terms.length > 0 ? '+' : '';
+			terms.push(bNum === 1 ? `${sign}y` : bNum === -1 ? '-y' : `${sign}${bNum}*y`);
+		}
+		if (Math.abs(cNum) > 1e-14) {
+			const sign = cNum > 0 && terms.length > 0 ? '+' : '';
+			terms.push(`${sign}${cNum}`);
+		}
+		const expression = (terms.length > 0 ? terms.join(' ') : '0') + ' = 0';
+
+		return { a, b, c, expression };
 	}
 
 	// ─── Mutation ───────────────────────────────────────────────────
