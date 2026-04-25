@@ -9,6 +9,8 @@
 import type { Figure } from '../graph/figure';
 import { geoToNumber } from '../compute/to-number';
 import { isPointElement } from '../types/elements';
+import type { Viewport } from '../viewport/types';
+import type { ConicParams } from '../types/elements';
 
 /**
  * Find the closest point (free or dependent) near the given math coordinates.
@@ -118,7 +120,8 @@ export function findElementNear(
 	figure: Figure,
 	mathX: number,
 	mathY: number,
-	threshold: number
+	threshold: number,
+	viewport?: Viewport
 ): string | null {
 	// Points first (always prioritized for selection)
 	const pointId = findPointNear(figure, mathX, mathY, threshold);
@@ -209,16 +212,7 @@ export function findElementNear(
 				dist = Math.abs(y - mathY) / Math.sqrt(1 + slope * slope);
 			}
 		} else if (el.type === 'quadraticCurve') {
-			// Distance to implicit curve F(x,y)=0: |F(x,y)| / |∇F(x,y)|
-			const [A, B, C, D, E, F] = el.coefficients;
-			const Fval =
-				A * mathX * mathX + B * mathX * mathY + C * mathY * mathY + D * mathX + E * mathY + F;
-			const dFx = 2 * A * mathX + B * mathY + D;
-			const dFy = B * mathX + 2 * C * mathY + E;
-			const gradNorm = Math.sqrt(dFx * dFx + dFy * dFy);
-			if (gradNorm > 1e-10) {
-				dist = Math.abs(Fval) / gradNorm;
-			}
+			dist = distToQuadraticCurve(mathX, mathY, el.conic, viewport);
 		} else if (el.type === 'circleByPoint') {
 			const center = figure.getPosition(el.centerId);
 			const edge = figure.getPosition(el.edgePointId);
@@ -237,4 +231,72 @@ export function findElementNear(
 	}
 
 	return bestId;
+}
+
+// =============================================================================
+// Quadratic curve (conic) hit-testing via parametric sampling
+// =============================================================================
+
+const CONIC_HIT_SAMPLES = 100;
+
+/** Min distance from (px,py) to a parametrically-sampled conic. */
+function distToQuadraticCurve(
+	px: number,
+	py: number,
+	conic: ConicParams,
+	viewport?: Viewport
+): number {
+	if (conic.type === 'degenerate') return Infinity;
+
+	const cos = Math.cos(conic.rotation);
+	const sin = Math.sin(conic.rotation);
+	const cx = conic.center?.x ?? conic.vertex?.x ?? 0;
+	const cy = conic.center?.y ?? conic.vertex?.y ?? 0;
+
+	let best = Infinity;
+	const n = CONIC_HIT_SAMPLES;
+
+	const check = (lx: number, ly: number) => {
+		const wx = cx + lx * cos - ly * sin;
+		const wy = cy + lx * sin + ly * cos;
+		const d = Math.sqrt((px - wx) ** 2 + (py - wy) ** 2);
+		if (d < best) best = d;
+	};
+
+	switch (conic.type) {
+		case 'circle':
+		case 'ellipse': {
+			for (let i = 0; i <= n; i++) {
+				const t = (2 * Math.PI * i) / n;
+				check(conic.a * Math.cos(t), conic.b * Math.sin(t));
+			}
+			break;
+		}
+		case 'hyperbola': {
+			const diag = viewport
+				? Math.sqrt((viewport.xMax - viewport.xMin) ** 2 + (viewport.yMax - viewport.yMin) ** 2)
+				: 20;
+			const tMax = Math.acosh(Math.max(2, diag / conic.a + 1));
+			for (let i = 0; i <= n; i++) {
+				const t = -tMax + (2 * tMax * i) / n;
+				check(conic.a * Math.cosh(t), conic.b * Math.sinh(t));
+				check(-conic.a * Math.cosh(t), conic.b * Math.sinh(t));
+			}
+			break;
+		}
+		case 'parabola': {
+			const p = conic.p ?? conic.a;
+			const diag = viewport
+				? Math.sqrt((viewport.xMax - viewport.xMin) ** 2 + (viewport.yMax - viewport.yMin) ** 2)
+				: 20;
+			const tMax = Math.sqrt(diag * 2 * p);
+			for (let i = 0; i <= n; i++) {
+				const t = -tMax + (2 * tMax * i) / n;
+				check((t * t) / (4 * p), t);
+			}
+			break;
+		}
+	}
+
+	return best;
 }
