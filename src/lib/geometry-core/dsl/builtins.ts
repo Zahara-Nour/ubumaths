@@ -513,9 +513,11 @@ function _executeBuiltinInner(
 					const tgId = figure.createTangentToQuadratic(tFnId, { pointOnCurveId: ptId }, { label });
 					return { figureId: tgId, symbolType: 'tangente' };
 				} else {
-					const tVal = requireNumber(pos[1], 'angle', line);
-					const tRad = (tVal * Math.PI) / 180;
-					const tgId = figure.createTangentToQuadratic(tFnId, { t: tRad }, { label });
+					const tRaw = requireNumber(pos[1], 'param', line);
+					const conicType = tFnEl.conic.type;
+					const t =
+						conicType === 'circle' || conicType === 'ellipse' ? (tRaw * Math.PI) / 180 : tRaw;
+					const tgId = figure.createTangentToQuadratic(tFnId, { t }, { label });
 					return { figureId: tgId, symbolType: 'tangente' };
 				}
 			}
@@ -551,10 +553,13 @@ function _executeBuiltinInner(
 			const psEl = figure.getElementById(psId);
 
 			if (psEl && psEl.type === 'quadraticCurve') {
-				// point_sur on quadratic curve: parameter in degrees
-				const tDeg = pos.length >= 2 ? requireNumber(pos[1], 'angle', line) : 0;
-				const tRad = (tDeg * Math.PI) / 180;
-				const ptId = figure.createPointOnQuadraticCurve(psId, tRad, { label });
+				// point_sur on quadratic curve
+				// Circle/ellipse: parameter in degrees (converted to radians)
+				// Hyperbola/parabola: raw parameter t (no conversion)
+				const tRaw = pos.length >= 2 ? requireNumber(pos[1], 'param', line) : 0;
+				const conicType = psEl.conic.type;
+				const t = conicType === 'circle' || conicType === 'ellipse' ? (tRaw * Math.PI) / 180 : tRaw;
+				const ptId = figure.createPointOnQuadraticCurve(psId, t, { label });
 				return { figureId: ptId, symbolType: 'point' };
 			}
 
