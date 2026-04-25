@@ -280,7 +280,12 @@
 			const math = getMathCoords(e);
 			if (math) {
 				const snapped = snapToGrid(math.x, math.y, gridStep.major);
-				figure.movePoint(draggingId, snapped.x, snapped.y);
+				const dragEl = figure.getElementById(draggingId);
+				if (dragEl?.type === 'pointOnCurve') {
+					figure.movePointOnCurve(draggingId, snapped.x);
+				} else {
+					figure.movePoint(draggingId, snapped.x, snapped.y);
+				}
 				figure.recompute();
 				version++;
 			}
@@ -902,7 +907,8 @@
 								fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && el.type === 'freePoint' && el.draggable}
+								class:draggable={interactive &&
+									((el.type === 'freePoint' && el.draggable) || el.type === 'pointOnCurve')}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
@@ -916,14 +922,16 @@
 								stroke-width={sty.strokeWidth}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && el.type === 'freePoint' && el.draggable}
+								class:draggable={interactive &&
+									((el.type === 'freePoint' && el.draggable) || el.type === 'pointOnCurve')}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
 						{:else if sty.pointShape === 'cross'}
 							<g
 								class="point"
-								class:draggable={interactive && el.type === 'freePoint' && el.draggable}
+								class:draggable={interactive &&
+									((el.type === 'freePoint' && el.draggable) || el.type === 'pointOnCurve')}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 								opacity={sty.opacity}
@@ -954,7 +962,8 @@
 								fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && el.type === 'freePoint' && el.draggable}
+								class:draggable={interactive &&
+									((el.type === 'freePoint' && el.draggable) || el.type === 'pointOnCurve')}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>

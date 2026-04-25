@@ -494,11 +494,11 @@ function _executeBuiltinInner(
 					);
 				}
 				const tgId = figure.createTangentLine(tFnId, { pointOnCurveId: ptId }, { label });
-				return { figureId: tgId, symbolType: 'tangente' as SymbolType };
+				return { figureId: tgId, symbolType: 'tangente' };
 			} else {
 				const x0Val = toGeoValue(pos[1], line);
 				const tgId = figure.createTangentLine(tFnId, { x0: x0Val }, { label });
-				return { figureId: tgId, symbolType: 'tangente' as SymbolType };
+				return { figureId: tgId, symbolType: 'tangente' };
 			}
 		}
 
@@ -514,7 +514,7 @@ function _executeBuiltinInner(
 			const x0Val =
 				pos.length >= 2 ? toGeoValue(pos[1], line) : toGeoValue({ type: 'nombre', value: 0 }, line);
 			const ptId = figure.createPointOnCurve(fnId, x0Val, { label });
-			return { figureId: ptId, symbolType: 'point' as SymbolType };
+			return { figureId: ptId, symbolType: 'point' };
 		}
 
 		default:
