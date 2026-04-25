@@ -18,6 +18,7 @@ import {
 import {
 	sampleFunction,
 	sampleFunctionAdaptive,
+	sampleWithDerivative,
 	sampleAtPoints,
 	isAsymptote,
 	DEFAULT_NUM_POINTS
@@ -464,6 +465,68 @@ describe('sampler', () => {
 
 			// For continuous function, should be the same
 			expect(adaptive.points.length).toBe(regular.points.length);
+		});
+	});
+
+	describe('sampleWithDerivative', () => {
+		const viewport = { xMin: -5, xMax: 5, yMin: -10, yMax: 10 };
+
+		it('produces a valid SampledCurve', () => {
+			const f = (x: number) => x * x;
+			const fPrime = (x: number) => 2 * x;
+			const curve = sampleWithDerivative(f, fPrime, viewport, 200);
+			expect(curve.points.length).toBeGreaterThan(0);
+			expect(curve.points.length).toBeLessThanOrEqual(500); // bounded
+		});
+
+		it('puts more points where derivative is large', () => {
+			// sin(x) has |f'| = |cos(x)| = 1 near x=0 (steep) and 0 near x=pi/2 (flat)
+			const wideViewport = { xMin: 0, xMax: Math.PI, yMin: -1, yMax: 1 };
+			const f = (x: number) => Math.sin(x);
+			const fPrime = (x: number) => Math.cos(x);
+			const curve = sampleWithDerivative(f, fPrime, wideViewport, 100);
+
+			// Count points in first quarter [0, pi/4] (steep) vs last quarter [3pi/4, pi] (steep too)
+			// vs middle [pi/4, 3pi/4] (flat near peak)
+			const steepPoints = curve.points.filter(
+				(p) => p.x < Math.PI / 4 || p.x > (3 * Math.PI) / 4
+			).length;
+			const flatPoints = curve.points.filter(
+				(p) => p.x >= Math.PI / 4 && p.x <= (3 * Math.PI) / 4
+			).length;
+
+			// Steep zones should have at least as many points as flat zone
+			// (they cover same x-range but need more detail)
+			expect(steepPoints).toBeGreaterThanOrEqual(flatPoints);
+		});
+
+		it('detects discontinuities', () => {
+			const f = (x: number) => (x === 0 ? null : 1 / x);
+			const fPrime = (x: number) => (x === 0 ? null : -1 / (x * x));
+			const curve = sampleWithDerivative(
+				f as (x: number) => number | null,
+				fPrime as (x: number) => number | null,
+				viewport,
+				200
+			);
+			expect(curve.discontinuityIndices.length).toBeGreaterThan(0);
+		});
+
+		it('handles null derivative gracefully (falls back to uniform)', () => {
+			const f = (x: number) => Math.abs(x); // not differentiable at 0
+			const fPrime = (x: number) => (x === 0 ? null : x > 0 ? 1 : -1);
+			const curve = sampleWithDerivative(f, fPrime as (x: number) => number | null, viewport, 100);
+			expect(curve.points.length).toBeGreaterThan(50);
+		});
+
+		it('returns same quality as uniform for constant derivative', () => {
+			// f(x) = 2x + 1, f'(x) = 2 (constant) → uniform distribution
+			const f = (x: number) => 2 * x + 1;
+			const fPrime = () => 2;
+			const curve = sampleWithDerivative(f, fPrime, viewport, 100);
+			const uniformCurve = sampleFunction(f, viewport, 100);
+			// Should have similar number of points
+			expect(Math.abs(curve.points.length - uniformCurve.points.length)).toBeLessThan(20);
 		});
 	});
 
