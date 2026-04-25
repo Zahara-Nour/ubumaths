@@ -184,19 +184,17 @@
 	const COMPASS_FADE_PORTION = 0.3;
 
 	let compassAnim = $derived.by(() => {
-		if (!animation || !animation.autoInstruments.has('compass')) {
-			return { tilt: 0, compassOpacity: 1, raisedOpacity: 0 };
-		}
+		const defaultResult = { tilt: 0, compassOpacity: 1, raisedOpacity: 0 };
+
+		if (!animation || !animation.autoInstruments.has('compass')) return defaultResult;
 		const p = animation.drawProgress;
-		if (p <= moveEnd || p >= pauseStart) {
-			return { tilt: 0, compassOpacity: 1, raisedOpacity: 0 };
-		}
+		if (p <= moveEnd || p >= pauseStart) return defaultResult;
 
 		const raiseRange = drawStart - moveEnd;
 		const lowerRange = pauseStart - drawEnd;
 
 		if (raiseRange > 0 && p < drawStart) {
-			// Raise phase
+			// Raise phase: tilt only (opening already done during move)
 			const rp = (p - moveEnd) / raiseRange;
 			const tilt = rp * COMPASS_MAX_TILT;
 			const fadeThreshold = 1 - COMPASS_FADE_PORTION;
@@ -226,6 +224,17 @@
 
 		// Draw phase
 		return { tilt: COMPASS_MAX_TILT, compassOpacity: 0, raisedOpacity: 1 };
+	});
+
+	// Compass opening in pixels — interpolates during the move phase
+	let compassOpeningPx = $derived.by(() => {
+		if (!animation || !animation.autoInstruments.has('compass')) {
+			return (animation?.compassCurRadius ?? 0) * PPU;
+		}
+		const curPx = animation.compassCurRadius * PPU;
+		const prevPx = animation.compassPrevRadius * PPU;
+		if (prevPx === 0 || instrumentMoveProgress >= 1) return curPx;
+		return prevPx + (curPx - prevPx) * instrumentMoveProgress;
 	});
 
 	// Recompute when figureVersion changes (Map reference is stable, $derived needs a hint)
@@ -430,7 +439,7 @@
 									x={0}
 									y={0}
 									rotation={0}
-									opening={(state.compassRadius ?? 100) * PPU}
+									opening={compassOpeningPx}
 									scale={state.scale}
 									visible={true}
 								/>
@@ -442,7 +451,7 @@
 									x={0}
 									y={0}
 									rotation={0}
-									opening={(state.compassRadius ?? 100) * PPU}
+									opening={compassOpeningPx}
 									scale={state.scale}
 									visible={true}
 								/>

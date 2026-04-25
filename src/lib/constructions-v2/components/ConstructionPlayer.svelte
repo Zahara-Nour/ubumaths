@@ -56,6 +56,8 @@
 	let drawPhaseEnd = $state(1);
 	let pausePhaseStart = $state(1);
 	let moveDurationMs = $state(0);
+	let compassPrevRadius = $state(0);
+	let compassCurRadius = $state(0);
 
 	// Pre-compute Sets once when arrays change (not every frame)
 	const EMPTY_IDS = new Set<string>();
@@ -75,7 +77,9 @@
 		drawPhaseStart,
 		drawPhaseEnd,
 		pausePhaseStart,
-		moveDurationMs
+		moveDurationMs,
+		compassPrevRadius,
+		compassCurRadius
 	});
 
 	// Plain JS objects (not reactive)
@@ -116,6 +120,8 @@
 			drawPhaseEnd = executor.drawPhaseEnd;
 			pausePhaseStart = executor.pausePhaseStart;
 			moveDurationMs = executor.moveDurationMs;
+			compassPrevRadius = executor.compassPrevRadius;
+			compassCurRadius = executor.compassCurRadius;
 			syncState();
 		} catch {
 			// Script may be invalid during editing — ignore runtime errors

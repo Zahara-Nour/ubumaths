@@ -124,7 +124,10 @@ export function partialCircleSVGPath(
 	const el = figure.getElementById(id);
 	if (!el) return null;
 
-	let cx: number, cy: number, r: number;
+	let cx: number,
+		cy: number,
+		r: number,
+		startAngle = 0;
 
 	if (isCircleByRadius(el)) {
 		const center = figure.getPosition(el.centerId);
@@ -141,13 +144,14 @@ export function partialCircleSVGPath(
 		const dx = geoToNumber(edge.x) - cx;
 		const dy = geoToNumber(edge.y) - cy;
 		r = Math.sqrt(dx * dx + dy * dy);
+		startAngle = Math.atan2(dy, dx);
 	} else {
 		return null;
 	}
 
-	const sweepEnd = 2 * Math.PI * Math.max(0, Math.min(1, progress));
-	if (sweepEnd < 1e-6) return null;
-	const path = buildArcPath(cx, cy, r, 0, sweepEnd, transformer);
+	const sweep = 2 * Math.PI * Math.max(0, Math.min(1, progress));
+	if (sweep < 1e-6) return null;
+	const path = buildArcPath(cx, cy, r, startAngle, startAngle + sweep, transformer);
 	if (!path) return null;
 	return { path, style: resolveStyle(el, figure.defaults) };
 }
@@ -226,7 +230,10 @@ function circleTipPosition(
 	figure: Figure,
 	progress: number
 ): { x: number; y: number } | null {
-	let cx: number, cy: number, r: number;
+	let cx: number,
+		cy: number,
+		r: number,
+		startAngle = 0;
 	if (isCircleByRadius(el)) {
 		const center = figure.getPosition(el.centerId);
 		if (!center) return null;
@@ -242,8 +249,9 @@ function circleTipPosition(
 		const dx = geoToNumber(edge.x) - cx;
 		const dy = geoToNumber(edge.y) - cy;
 		r = Math.sqrt(dx * dx + dy * dy);
+		startAngle = Math.atan2(dy, dx);
 	}
-	const angle = 2 * Math.PI * Math.max(0, Math.min(1, progress));
+	const angle = startAngle + 2 * Math.PI * Math.max(0, Math.min(1, progress));
 	return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
 }
 
@@ -252,9 +260,10 @@ function circleTipPosition(
 // =============================================================================
 
 /**
- * Returns the compass rotation angle (in degrees, SVG convention) for the
- * current draw progress. The compass pivots around its fixed point (center)
- * while the drawing tip traces the arc/circle.
+ * Returns the compass rotation delta (in degrees, SVG convention) for the
+ * current draw progress. This is the angle swept SINCE the start of drawing,
+ * not the absolute angle. The initial compass orientation (startAngle) is
+ * already handled by the instrument positioning.
  */
 export function compassDrawAngle(
 	animatingIds: Set<string>,
@@ -268,9 +277,8 @@ export function compassDrawAngle(
 		if (isArcByAngles(el)) {
 			const startAngle = geoToNumber(el.startAngle);
 			const endAngle = geoToNumber(el.endAngle);
-			const angle = startAngle + (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
-			// Convert from math radians to SVG degrees (negate because SVG Y is flipped)
-			return -angle * (180 / Math.PI);
+			const sweep = (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
+			return -sweep * (180 / Math.PI);
 		}
 
 		if (isArcByPoints(el)) {
@@ -280,19 +288,15 @@ export function compassDrawAngle(
 			if (!startPos || !centerPos || !endPos) continue;
 			const cx = geoToNumber(centerPos.x);
 			const cy = geoToNumber(centerPos.y);
-			const sx = geoToNumber(startPos.x);
-			const sy = geoToNumber(startPos.y);
-			const ex = geoToNumber(endPos.x);
-			const ey = geoToNumber(endPos.y);
-			const startAngle = Math.atan2(sy - cy, sx - cx);
-			const endAngle = Math.atan2(ey - cy, ex - cx);
-			const angle = startAngle + (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
-			return -angle * (180 / Math.PI);
+			const startAngle = Math.atan2(geoToNumber(startPos.y) - cy, geoToNumber(startPos.x) - cx);
+			const endAngle = Math.atan2(geoToNumber(endPos.y) - cy, geoToNumber(endPos.x) - cx);
+			const sweep = (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
+			return -sweep * (180 / Math.PI);
 		}
 
 		if (isCircleByRadius(el) || isCircleByPoint(el)) {
-			const angle = 2 * Math.PI * Math.max(0, Math.min(1, progress));
-			return -angle * (180 / Math.PI);
+			const sweep = 2 * Math.PI * Math.max(0, Math.min(1, progress));
+			return -sweep * (180 / Math.PI);
 		}
 	}
 	return 0;
