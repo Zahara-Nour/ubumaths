@@ -114,6 +114,14 @@ export {
 	type LinearForm
 } from './coefficient-utils';
 
+// Critical points analysis (zeros, extrema, inflections)
+export {
+	findCriticalZeros,
+	findCriticalExtrema,
+	findCriticalInflections,
+	type CriticalPoint
+} from './critical-points';
+
 // Domain analysis (re-exported from domain module)
 export * from '../domain';
 
