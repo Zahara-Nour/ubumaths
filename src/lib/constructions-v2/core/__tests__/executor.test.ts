@@ -100,6 +100,61 @@ describe('executor — step durations', () => {
 	});
 });
 
+// ─── Instrument movement consistency ────────────────────────
+
+describe('executor — instrument movement from last position', () => {
+	it('ruler slides from previous segment position, not from default (-8, 6)', () => {
+		const executor = new ConstructionExecutor();
+		// Two segments: first at (0,0)→(3,0), second at (5,0)→(8,0)
+		executor.load(
+			'A = point(0, 0)\nB = point(3, 0)\nsegment(A, B)\nC = point(5, 0)\nD = point(8, 0)\nsegment(C, D)'
+		);
+		// Step through: A, B, segment(A,B), C, D, segment(C,D)
+		executor.step(); // A
+		executor.step(); // B
+		executor.step(); // segment(A,B) — ruler auto-shown
+
+		const move1 = executor.instrumentMoves.get('ruler');
+		expect(move1).toBeDefined();
+		// First appearance: starts from default (-8, 6)
+		expect(move1!.fromX).toBe(-8);
+		expect(move1!.fromY).toBe(6);
+
+		executor.step(); // C — hideAutoInstruments runs, ruler hidden
+		executor.step(); // D
+		executor.step(); // segment(C,D) — ruler auto-shown again
+
+		const move2 = executor.instrumentMoves.get('ruler');
+		expect(move2).toBeDefined();
+		// Second appearance: should start from segment(A,B) ruler position, NOT (-8, 6)
+		expect(move2!.fromX).not.toBe(-8);
+		expect(move2!.fromY).not.toBe(6);
+	});
+
+	it('compass slides from previous arc center, not from default', () => {
+		const executor = new ConstructionExecutor();
+		executor.load(
+			'O1 = point(0, 0)\narc(O1, rayon=2, debut=0, fin=180)\nO2 = point(5, 0)\narc(O2, rayon=1, debut=0, fin=90)'
+		);
+		// Step through: O1, arc1, O2, arc2
+		executor.step(); // O1
+		executor.step(); // arc(O1,...) — compass auto-shown
+
+		const move1 = executor.instrumentMoves.get('compass');
+		expect(move1).toBeDefined();
+		expect(move1!.fromX).toBe(-8); // first appearance
+
+		executor.step(); // O2
+		executor.step(); // arc(O2,...) — compass auto-shown again
+
+		const move2 = executor.instrumentMoves.get('compass');
+		expect(move2).toBeDefined();
+		// Should start from O1 (0,0), not default (-8,6)
+		expect(move2!.fromX).toBe(0);
+		expect(move2!.fromY).toBe(0);
+	});
+});
+
 // ─── Reset ───────────────────────────────────────────────────
 
 describe('executor — reset and re-use', () => {

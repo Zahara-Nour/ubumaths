@@ -49,20 +49,23 @@ export interface InstrumentMove {
 
 /** Animation state for progressive drawing of elements. */
 export interface DrawAnimationState {
-	/** IDs of elements currently being drawn (from the current step). */
+	/** IDs of drawable elements currently being drawn (from the current step). */
 	animatingIds: Set<string>;
+	/** IDs of point elements being created with fade+bump (from the current step). */
+	animatingPointIds: Set<string>;
 	/** Progress 0-1 within the current step. */
 	drawProgress: number;
 	/** Instrument types auto-shown for this step (hidden when drawProgress >= 1). */
 	autoInstruments: Set<InstrumentType>;
 	/** Movement animations for instruments (from previous position to new position). */
 	instrumentMoves: Map<InstrumentType, InstrumentMove>;
+	/** Progress value (0-1) at which instrument movement ends and drawing begins. */
+	movePhaseEnd: number;
+	/** Progress value (0-1) at which drawing ends and post-draw pause begins. */
+	pausePhaseStart: number;
+	/** Duration of the instrument move phase in ms (for fixed-ramp easing calculation). */
+	moveDurationMs: number;
 }
-
-/** Phase breakpoints for segment animation. */
-export const PHASE_INSTRUMENT_MOVE_END = 0.3;
-/** Phase breakpoints for arc/circle animation. */
-export const PHASE_ARC_INSTRUMENT_MOVE_END = 0.2;
 
 /** Drawable element types that should be animated. */
 export const DRAWABLE_TYPES = new Set([

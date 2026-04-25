@@ -6,7 +6,7 @@
  */
 
 import { parseDsl, createStepper } from '$lib/geometry-core/dsl';
-import type { DslStepper, DirectiveHandler, DslStatement } from '$lib/geometry-core/dsl';
+import type { DslStepper, DirectiveHandler } from '$lib/geometry-core/dsl';
 import { Figure } from '$lib/geometry-core/graph/figure';
 import type { GeoElement } from '$lib/geometry-core/types/elements';
 import {
@@ -25,7 +25,11 @@ import {
 	DEFAULT_STEP_DURATION,
 	DEFAULT_PAUSE_DURATION,
 	MIN_STEP_DURATION,
-	MAX_STEP_DURATION
+	MAX_STEP_DURATION,
+	MS_PER_PIXEL,
+	AUTO_PAUSE_BETWEEN_STEPS,
+	INSTRUMENT_RAMP_MS,
+	INSTRUMENT_MOVE_SPEED_FACTOR
 } from '../constants';
 
 /** French instrument name to InstrumentType mapping. */
@@ -53,20 +57,37 @@ function resolveNumberArg(val: ResolvedValue): number | undefined {
 
 export class ConstructionExecutor {
 	private stepper: DslStepper | null = null;
+	private _program: ReturnType<typeof parseDsl> | null = null;
 	private _emptyFigure = new Figure();
 	private _stepDurations: number[] = [];
 	private _instrumentStates = new Map<InstrumentType, InstrumentState>();
 	private _currentInstruction: string | null = null;
 	private _speedFactor = 1;
 	private _lastStepNewElementIds: string[] = [];
+	private _lastStepNewPointIds: string[] = [];
 	/** Instruments auto-shown for the current step (to hide when step completes). */
 	private _autoInstruments: Set<InstrumentType> = new Set();
 	/** Movement animations for auto-instruments (previous → new position). */
 	private _instrumentMoves = new Map<InstrumentType, InstrumentMove>();
+	/** Last known position of each instrument, independent of visibility.
+	 *  Used by recordMove to slide from the correct position even after hideAutoInstruments. */
+	private _lastInstrumentPositions = new Map<
+		InstrumentType,
+		{ x: number; y: number; rotation: number }
+	>();
+	/** Per-step phase ratios, calculated during pre-simulation. */
+	private _stepPhases: { movePhaseEnd: number; pausePhaseStart: number; moveDurationMs: number }[] =
+		[];
+	/** Current step's move phase end (set during step()). */
+	private _movePhaseEnd = 0;
+	/** Current step's pause phase start (set during step()). */
+	private _pausePhaseStart = 1;
+	/** Current step's move duration in ms. */
+	private _moveDurationMs = 0;
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
-		const program = parseDsl(script);
+		this._program = parseDsl(script);
 		this._speedFactor = 1;
 		this._currentInstruction = null;
 		this._instrumentStates.clear();
@@ -74,7 +95,7 @@ export class ConstructionExecutor {
 		const handler: DirectiveHandler = (name, args) => {
 			this.handleDirective(name, args);
 		};
-		this.stepper = createStepper(program, undefined, handler);
+		this.stepper = createStepper(this._program, undefined, handler);
 		this._stepDurations = this.calculateStepDurations();
 	}
 
@@ -86,15 +107,19 @@ export class ConstructionExecutor {
 		const sizeBefore = this.stepper.figure.size;
 		const result = this.stepper.step();
 		if (result) {
-			// Track new drawable elements for animation
+			// Track new elements for animation
 			const elements = this.stepper.figure.getAllElements();
-			this._lastStepNewElementIds = elements
-				.slice(sizeBefore)
+			const newElements = elements.slice(sizeBefore);
+			this._lastStepNewElementIds = newElements
 				.filter((el) => DRAWABLE_TYPES.has(el.type))
+				.map((el) => el.id);
+			this._lastStepNewPointIds = newElements
+				.filter((el) => el.type === 'freePoint' || el.type === 'dependentPoint')
 				.map((el) => el.id);
 			this.autoShowInstruments(sizeBefore);
 		} else {
 			this._lastStepNewElementIds = [];
+			this._lastStepNewPointIds = [];
 		}
 		return result;
 	}
@@ -114,8 +139,14 @@ export class ConstructionExecutor {
 		this._speedFactor = 1;
 		this._instrumentStates.clear();
 		this._lastStepNewElementIds = [];
+		this._lastStepNewPointIds = [];
 		this._autoInstruments.clear();
 		this._instrumentMoves.clear();
+		this._lastInstrumentPositions.clear();
+		this._movePhaseEnd = 0;
+		this._pausePhaseStart = 1;
+		this._moveDurationMs = 0;
+		this._stepPhases = [];
 		this._stepDurations = this.calculateStepDurations();
 	}
 
@@ -154,6 +185,11 @@ export class ConstructionExecutor {
 		return this._lastStepNewElementIds;
 	}
 
+	/** IDs of point elements created during the last step. */
+	get lastStepNewPointIds(): string[] {
+		return this._lastStepNewPointIds;
+	}
+
 	/** Instrument types that were auto-shown for the current step. */
 	get autoInstruments(): Set<InstrumentType> {
 		return this._autoInstruments;
@@ -162,6 +198,21 @@ export class ConstructionExecutor {
 	/** Movement animations for auto-instruments. */
 	get instrumentMoves(): Map<InstrumentType, InstrumentMove> {
 		return this._instrumentMoves;
+	}
+
+	/** Progress ratio at which instrument movement ends and drawing begins. */
+	get movePhaseEnd(): number {
+		return this._movePhaseEnd;
+	}
+
+	/** Progress ratio at which drawing ends and post-draw pause begins. */
+	get pausePhaseStart(): number {
+		return this._pausePhaseStart;
+	}
+
+	/** Duration of the instrument move phase in ms. */
+	get moveDurationMs(): number {
+		return this._moveDurationMs;
 	}
 
 	// ─── Directive handling ──────────────────────────────────
@@ -244,17 +295,17 @@ export class ConstructionExecutor {
 	}
 
 	/** Record a movement animation for an instrument (from current to new position).
-	 *  If the instrument was never visible, it enters from off-screen (below the canvas). */
+	 *  Uses _lastInstrumentPositions (not visibility) so the instrument slides from its
+	 *  true last position even after hideAutoInstruments set visible=false. */
 	private recordMove(type: InstrumentType, toX: number, toY: number, toRotation: number): void {
-		const current = this._instrumentStates.get(type);
+		const lastPos = this._lastInstrumentPositions.get(type);
 		let fromX: number, fromY: number, fromRotation: number;
-		if (current && current.visible) {
-			// Instrument was previously visible — slide from last known position
-			fromX = current.x;
-			fromY = current.y;
-			fromRotation = current.rotation;
+		if (lastPos) {
+			fromX = lastPos.x;
+			fromY = lastPos.y;
+			fromRotation = lastPos.rotation;
 		} else {
-			// First appearance or hidden — start from top-left corner (math coords)
+			// First appearance — start from top-left corner (math coords)
 			fromX = -8;
 			fromY = 6;
 			fromRotation = 0;
@@ -291,6 +342,12 @@ export class ConstructionExecutor {
 				const ruler = this.ensureInstrument('ruler');
 				Object.assign(ruler, pos);
 				this._autoInstruments.add('ruler');
+				// Track last known position for next step's recordMove
+				this._lastInstrumentPositions.set('ruler', {
+					x: pos.x!,
+					y: pos.y!,
+					rotation: pos.rotation!
+				});
 
 				// Show pencil at start point
 				const pencil = this.ensureInstrument('pencil');
@@ -319,7 +376,21 @@ export class ConstructionExecutor {
 				const compass = this.ensureInstrument('compass');
 				Object.assign(compass, pos);
 				this._autoInstruments.add('compass');
+				// Track last known position for next step's recordMove
+				this._lastInstrumentPositions.set('compass', { x: cx, y: cy, rotation: 0 });
 			}
+		}
+
+		// Read pre-calculated phase ratios
+		const stepIdx = this.stepper!.currentIndex;
+		if (stepIdx >= 0 && stepIdx < this._stepPhases.length) {
+			this._movePhaseEnd = this._stepPhases[stepIdx].movePhaseEnd;
+			this._pausePhaseStart = this._stepPhases[stepIdx].pausePhaseStart;
+			this._moveDurationMs = this._stepPhases[stepIdx].moveDurationMs;
+		} else {
+			this._movePhaseEnd = 0;
+			this._pausePhaseStart = 1;
+			this._moveDurationMs = 0;
 		}
 	}
 
@@ -359,34 +430,169 @@ export class ConstructionExecutor {
 
 	// ─── Duration calculation ────────────────────────────────
 
+	/**
+	 * Pre-simulate all steps to calculate durations.
+	 * Each drawable step duration = moveDuration + drawDuration + AUTO_PAUSE.
+	 * Also stores movePhaseEnd/pausePhaseStart ratios per step for the canvas.
+	 */
 	private calculateStepDurations(): number[] {
-		if (!this.stepper) return [];
-		const steps = this.stepper.steps;
-		const durations: number[] = [];
+		if (!this._program) return [];
+		const PPU = 40;
+
+		// Create a temporary stepper to simulate execution
 		let speedFactor = 1;
+		const tempHandler: DirectiveHandler = (name, args) => {
+			if (name === 'vitesse') {
+				const val = args.positional[0];
+				if (val?.type === 'nombre' && val.value > 0) speedFactor = val.value;
+			}
+		};
+		const tempStepper = createStepper(this._program, undefined, tempHandler);
 
-		for (const stmt of steps) {
-			durations.push(this.stepDuration(stmt, speedFactor));
-			if (stmt.kind === 'directive' && stmt.name === 'vitesse') {
-				const arg = stmt.args[0];
-				if (arg?.kind === 'number' && arg.value > 0) {
-					speedFactor = arg.value;
+		const durations: number[] = [];
+		this._stepPhases = [];
+
+		// Track instrument positions for move distance calculation
+		// Default start position: top-left corner in math coords
+		const instrumentPos: Record<string, { x: number; y: number }> = {
+			ruler: { x: -8, y: 6 },
+			compass: { x: -8, y: 6 }
+		};
+		const steps = tempStepper.steps;
+
+		for (let i = 0; i < steps.length; i++) {
+			const stmt = steps[i];
+			if (stmt.kind === 'directive') {
+				if (stmt.name === 'pause') {
+					const arg = stmt.args[0];
+					durations.push(arg?.kind === 'number' ? arg.value : DEFAULT_PAUSE_DURATION);
+				} else {
+					durations.push(0);
 				}
+				this._stepPhases.push({ movePhaseEnd: 0, pausePhaseStart: 1, moveDurationMs: 0 });
+				tempStepper.step();
+				continue;
 			}
-		}
-		return durations;
-	}
 
-	private stepDuration(stmt: DslStatement, speedFactor: number): number {
-		if (stmt.kind === 'directive') {
-			if (stmt.name === 'pause') {
-				const arg = stmt.args[0];
-				return arg?.kind === 'number' ? arg.value : DEFAULT_PAUSE_DURATION;
+			// Geometric step: measure before/after to get distance
+			const sizeBefore = tempStepper.figure.size;
+			tempStepper.step();
+			const fig = tempStepper.figure;
+			const newElements = fig.getAllElements().slice(sizeBefore);
+
+			const hasDrawable = newElements.some((el) => DRAWABLE_TYPES.has(el.type));
+			if (!hasDrawable) {
+				const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
+				durations.push(Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)));
+				this._stepPhases.push({ movePhaseEnd: 0, pausePhaseStart: 1, moveDurationMs: 0 });
+				continue;
 			}
-			return 0; // other directives are instant
+
+			// Calculate draw duration from distance
+			let drawDuration = DEFAULT_STEP_DURATION;
+			let instrumentTarget: { type: string; x: number; y: number } | null = null;
+
+			for (const el of newElements) {
+				if (!DRAWABLE_TYPES.has(el.type)) continue;
+
+				if (el.type === 'segment') {
+					const p1 = fig.getPosition(el.startId);
+					const p2 = fig.getPosition(el.endId);
+					if (p1 && p2) {
+						const x1 = geoToNumber(p1.x),
+							y1 = geoToNumber(p1.y);
+						const x2 = geoToNumber(p2.x),
+							y2 = geoToNumber(p2.y);
+						const distPx = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2) * PPU;
+						drawDuration = Math.round(distPx * MS_PER_PIXEL);
+						instrumentTarget = { type: 'ruler', x: x1, y: y1 };
+					}
+				} else if (isArcByAngles(el)) {
+					const center = fig.getPosition(el.centerId);
+					if (center) {
+						const r = geoToNumber(el.radius);
+						const sweep = Math.abs(geoToNumber(el.endAngle) - geoToNumber(el.startAngle));
+						drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
+						instrumentTarget = {
+							type: 'compass',
+							x: geoToNumber(center.x),
+							y: geoToNumber(center.y)
+						};
+					}
+				} else if (isArcByPoints(el)) {
+					const center = fig.getPosition(el.centerId);
+					const start = fig.getPosition(el.startId);
+					const end = fig.getPosition(el.endId);
+					if (center && start && end) {
+						const cx = geoToNumber(center.x),
+							cy = geoToNumber(center.y);
+						const r = Math.sqrt(
+							(geoToNumber(start.x) - cx) ** 2 + (geoToNumber(start.y) - cy) ** 2
+						);
+						const a1 = Math.atan2(geoToNumber(start.y) - cy, geoToNumber(start.x) - cx);
+						const a2 = Math.atan2(geoToNumber(end.y) - cy, geoToNumber(end.x) - cx);
+						let sweep = a2 - a1;
+						if (sweep < 0) sweep += 2 * Math.PI;
+						drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
+						instrumentTarget = { type: 'compass', x: cx, y: cy };
+					}
+				} else if (isCircleByRadius(el)) {
+					const center = fig.getPosition(el.centerId);
+					if (center) {
+						const r = geoToNumber(el.radius);
+						drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
+						instrumentTarget = {
+							type: 'compass',
+							x: geoToNumber(center.x),
+							y: geoToNumber(center.y)
+						};
+					}
+				} else if (isCircleByPoint(el)) {
+					const center = fig.getPosition(el.centerId);
+					const edge = fig.getPosition(el.edgePointId);
+					if (center && edge) {
+						const cx = geoToNumber(center.x),
+							cy = geoToNumber(center.y);
+						const r = Math.sqrt((geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2);
+						drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
+						instrumentTarget = { type: 'compass', x: cx, y: cy };
+					}
+				}
+				break;
+			}
+
+			drawDuration = Math.max(
+				MIN_STEP_DURATION,
+				Math.min(MAX_STEP_DURATION, Math.round(drawDuration / speedFactor))
+			);
+
+			// Calculate move duration from instrument distance
+			let moveDuration = 0;
+			if (instrumentTarget) {
+				const prev = instrumentPos[instrumentTarget.type] ?? { x: -8, y: 6 };
+				const dx = instrumentTarget.x - prev.x;
+				const dy = instrumentTarget.y - prev.y;
+				const dist = Math.sqrt(dx * dx + dy * dy);
+				const cruiseMs = Math.round(
+					(dist * PPU * MS_PER_PIXEL) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
+				);
+				moveDuration = Math.max(
+					600,
+					cruiseMs <= INSTRUMENT_RAMP_MS ? cruiseMs : cruiseMs + INSTRUMENT_RAMP_MS
+				);
+				// Update instrument position for next step
+				instrumentPos[instrumentTarget.type] = { x: instrumentTarget.x, y: instrumentTarget.y };
+			}
+
+			const totalDuration = moveDuration + drawDuration + AUTO_PAUSE_BETWEEN_STEPS;
+			durations.push(totalDuration);
+			this._stepPhases.push({
+				movePhaseEnd: moveDuration / totalDuration,
+				pausePhaseStart: (moveDuration + drawDuration) / totalDuration,
+				moveDurationMs: moveDuration
+			});
 		}
-		// Geometric step: apply speed factor
-		const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
-		return Math.max(MIN_STEP_DURATION, Math.min(MAX_STEP_DURATION, adjusted));
+
+		return durations;
 	}
 }

@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { partialSegment, partialCircle, partialArc, interpolate } from '../animator';
+import {
+	partialSegment,
+	partialCircle,
+	partialArc,
+	interpolate,
+	easeWithFixedRamp
+} from '../animator';
 
 describe('animator — partialSegment', () => {
 	const p1 = { x: 0, y: 0 };
@@ -93,5 +99,41 @@ describe('animator — interpolate', () => {
 
 	it('progress=0.5 returns midpoint', () => {
 		expect(interpolate(10, 50, 0.5)).toBeCloseTo(30);
+	});
+});
+
+describe('animator — easeWithFixedRamp', () => {
+	it('returns 0 at t=0', () => {
+		expect(easeWithFixedRamp(0, 0.2)).toBeCloseTo(0);
+	});
+
+	it('returns 1 at t=1', () => {
+		expect(easeWithFixedRamp(1, 0.2)).toBeCloseTo(1);
+	});
+
+	it('is monotonically increasing', () => {
+		const rampRatio = 0.15;
+		let prev = 0;
+		for (let t = 0.01; t <= 1; t += 0.01) {
+			const val = easeWithFixedRamp(t, rampRatio);
+			expect(val).toBeGreaterThanOrEqual(prev);
+			prev = val;
+		}
+	});
+
+	it('falls back to easeInOut when rampRatio >= 0.5', () => {
+		for (let t = 0; t <= 1; t += 0.1) {
+			expect(easeWithFixedRamp(t, 0.5)).toBeCloseTo(t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+		}
+	});
+
+	it('has linear cruise phase in the middle', () => {
+		const rampRatio = 0.1;
+		// In cruise phase (between 0.1 and 0.9), should be linear
+		const v1 = easeWithFixedRamp(0.3, rampRatio);
+		const v2 = easeWithFixedRamp(0.5, rampRatio);
+		const v3 = easeWithFixedRamp(0.7, rampRatio);
+		// Equal spacing in t should give equal spacing in output
+		expect(v3 - v2).toBeCloseTo(v2 - v1, 5);
 	});
 });
