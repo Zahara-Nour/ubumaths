@@ -16,6 +16,7 @@ export type SymbolType =
 	| 'segmentMark'
 	| 'measure'
 	| 'arc'
+	| 'courbe'
 	| 'liste';
 
 export interface SymbolEntry {

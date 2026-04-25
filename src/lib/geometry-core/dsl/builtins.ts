@@ -17,11 +17,13 @@ import {
 	divide,
 	opposite,
 	add,
-	number as mathNumber
+	number as mathNumber,
+	compile
 } from '$lib/mathAST';
 import type { MathNode } from '$lib/mathAST';
-import { extractAffineCombination, getPolynomialDegree } from '$lib/mathAST/analysis';
+import { extractAffineCombination } from '$lib/mathAST/analysis';
 import { isZeroExpression } from '$lib/mathAST/normal';
+import { differentiate } from '$lib/mathAST/differentiation';
 
 export type ResolvedArgs = {
 	positional: ResolvedValue[];
@@ -467,8 +469,8 @@ function _executeBuiltinInner(
 					line
 				);
 			}
-			const lineResult = createLineFromEquation(pos[0].value, figure, line, label);
-			return lineResult;
+			const courbeResult = createCurveFromEquation(pos[0].value, figure, line, label);
+			return courbeResult;
 		}
 
 		default:
@@ -509,10 +511,13 @@ const ZERO_NODE = mathNumber('0');
 const ONE_NODE = mathNumber('1');
 
 /**
- * Parse an equation string and create a line if the expression is affine in x and y.
- * Supports: "y = 2*x + 3", "2*x - y + 3 = 0", "x = 3", "2*x - y + 3" (implicit = 0).
+ * Parse an equation string and create the appropriate geometric element.
+ * Detection order:
+ * 1. Affine in x AND y → Line (droite)
+ * 2. Affine in y (degree 1 in y) → Function curve y=f(x)
+ * 3. Otherwise → error (implicit curves not yet supported)
  */
-function createLineFromEquation(
+function createCurveFromEquation(
 	equation: string,
 	figure: Figure,
 	line: number,
@@ -529,65 +534,71 @@ function createLineFromEquation(
 	// Extract F(x,y) such that F = 0
 	let F: MathNode;
 	if (isRelation(parsed) && parsed.relation === '=') {
-		// "left = right" → F = left - right
 		F = subtract(parsed.left, parsed.right);
 	} else {
-		// No "=" → treat expression as F (implicit = 0)
 		F = parsed;
 	}
 
-	// Check polynomial degree in x and y
-	const degX = getPolynomialDegree(F, 'x');
-	const degY = getPolynomialDegree(F, 'y');
+	// --- Try 1: Line (affine in both x and y) ---
+	const affineXY = extractAffineCombination(F, ['x', 'y']);
+	if (affineXY.isAffine) {
+		const a = affineXY.coefficients.get('x')!;
+		const b = affineXY.coefficients.get('y')!;
+		const c = affineXY.constant;
 
-	if ((degX !== null && degX > 1) || (degY !== null && degY > 1)) {
-		throw new DslRuntimeError(
-			`courbe(): les courbes non-linéaires ne sont pas encore supportées (degré x=${degX}, y=${degY})`,
-			line
-		);
-	}
-	if (degX === null || degY === null) {
-		throw new DslRuntimeError(
-			'courbe(): les fonctions transcendantes (sin, cos, exp, ...) ne sont pas encore supportées',
-			line
-		);
-	}
+		if (isZeroExpression(a) && isZeroExpression(b)) {
+			throw new DslRuntimeError(
+				'courbe(): équation dégénérée (0 = 0 ou constante non nulle)',
+				line
+			);
+		}
 
-	// Extract affine coefficients: F = a*x + b*y + c
-	const affine = extractAffineCombination(F, ['x', 'y']);
-	if (!affine.isAffine) {
-		throw new DslRuntimeError(`courbe(): expression non-affine — ${affine.error}`, line);
+		return createLineFromCoefficients(a, b, c, equation, figure, label);
 	}
 
-	const a = affine.coefficients.get('x')!;
-	const b = affine.coefficients.get('y')!;
-	const c = affine.constant;
+	// --- Try 2: y = f(x) (affine in y alone) ---
+	const affineY = extractAffineCombination(F, ['y']);
+	if (affineY.isAffine) {
+		const g = affineY.coefficients.get('y')!; // coefficient of y
+		const h = affineY.constant; // constant term (function of x)
 
-	// Check for degenerate equation (a=0 and b=0)
-	if (isZeroExpression(a) && isZeroExpression(b)) {
-		throw new DslRuntimeError('courbe(): équation dégénérée (0 = 0 ou constante non nulle)', line);
+		if (isZeroExpression(g)) {
+			throw new DslRuntimeError("courbe(): la variable y est absente de l'expression", line);
+		}
+
+		return createFunctionFromCoefficients(g, h, equation, figure, line, label);
 	}
 
-	// Build two exact points on the line
+	// --- Otherwise: not yet supported ---
+	throw new DslRuntimeError(
+		'courbe(): les courbes implicites F(x,y)=0 ne sont pas encore supportées',
+		line
+	);
+}
+
+/** Create a line from affine coefficients ax + by + c = 0. */
+function createLineFromCoefficients(
+	a: MathNode,
+	b: MathNode,
+	c: MathNode,
+	equation: string,
+	figure: Figure,
+	label?: string
+): BuiltinResult {
 	let p1: GeoPoint;
 	let p2: GeoPoint;
 
 	if (!isZeroExpression(b)) {
-		// Non-vertical: y = -(a*x + c) / b
-		// P1 = (0, -c/b)
 		const y1 = divide(opposite(c), b);
-		// P2 = (1, -(a + c) / b)
 		const y2 = divide(opposite(add(a, c)), b);
 		p1 = { x: exact(ZERO_NODE), y: exact(y1) };
 		p2 = { x: exact(ONE_NODE), y: exact(y2) };
 	} else {
-		// Vertical line: x = -c/a
 		const xVal = divide(opposite(c), a);
 		p1 = { x: exact(xVal), y: exact(ZERO_NODE) };
 		p2 = { x: exact(xVal), y: exact(ONE_NODE) };
 	}
 
-	// Create two hidden support points and a line through them
 	const pt1Id = figure.createFreePoint(p1, { visible: false, draggable: false });
 	const pt2Id = figure.createFreePoint(p2, { visible: false, draggable: false });
 	const lineId = figure.createLine(pt1Id, pt2Id, {
@@ -596,4 +607,48 @@ function createLineFromEquation(
 	});
 
 	return { figureId: lineId, symbolType: 'droite' };
+}
+
+/** Create a GeoFunction from y = -h(x)/g(x) where F = g*y + h = 0. */
+function createFunctionFromCoefficients(
+	g: MathNode,
+	h: MathNode,
+	equation: string,
+	figure: Figure,
+	line: number,
+	label?: string
+): BuiltinResult {
+	// f(x) = -h / g. If g = 1, simplify to f(x) = -h.
+	let f: MathNode;
+	if (isZeroExpression(subtract(g, ONE_NODE))) {
+		f = opposite(h);
+	} else {
+		f = divide(opposite(h), g);
+	}
+
+	// Compute f'(x) symbolically
+	let fPrime: MathNode;
+	try {
+		fPrime = differentiate(f, { variable: 'x', simplify: true });
+	} catch {
+		throw new DslRuntimeError(`courbe(): impossible de calculer la dérivée de l'expression`, line);
+	}
+
+	// Compile both f and f' to fast closures
+	let compiledFn, compiledDerivative;
+	try {
+		compiledFn = compile(f);
+		compiledDerivative = compile(fPrime);
+	} catch (e) {
+		throw new DslRuntimeError(
+			`courbe(): impossible de compiler l'expression — ${e instanceof Error ? e.message : ''}`,
+			line
+		);
+	}
+
+	const fnId = figure.createFunction(f, fPrime, compiledFn, compiledDerivative, equation, {
+		label
+	});
+
+	return { figureId: fnId, symbolType: 'courbe' };
 }

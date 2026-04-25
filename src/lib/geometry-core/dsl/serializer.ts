@@ -98,6 +98,8 @@ function typePrefix(type: string): string {
 			return 'sm';
 		case 'measure':
 			return 'mes';
+		case 'function':
+			return 'f';
 		default:
 			return 'el';
 	}
@@ -204,6 +206,9 @@ function serializeElement(
 			const verts = el.dependsOn.map((id) => name(idToName, id)).join(', ');
 			return `# polygone(${verts})`;
 		}
+
+		case 'function':
+			return `courbe("${el.equation}")`;
 
 		default:
 			return null;

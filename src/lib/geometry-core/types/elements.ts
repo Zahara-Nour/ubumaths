@@ -10,6 +10,7 @@
 import type { GeoValue } from './geo-value';
 import type { GeoPoint } from './primitives';
 import type { MathNode } from '$lib/mathAST/types';
+import type { CompiledFn } from '$lib/mathAST/eval/compile';
 
 // =============================================================================
 // Style
@@ -259,6 +260,26 @@ export interface GeoPolygon extends GeoElementBase {
 }
 
 // =============================================================================
+// Function curve (y = f(x), from courbe() builtin)
+// =============================================================================
+
+export interface GeoFunction extends GeoElementBase {
+	readonly type: 'function';
+	/** f(x) as a symbolic MathNode (for exact analysis: derivative, zeros, domain). */
+	readonly expression: MathNode;
+	/** f'(x) as a symbolic MathNode (for adaptive sampling and tangent lines). */
+	readonly derivative: MathNode;
+	/** Compiled closure for fast numerical evaluation of f(x). */
+	readonly compiledFn: CompiledFn;
+	/** Compiled closure for fast numerical evaluation of f'(x). */
+	readonly compiledDerivative: CompiledFn;
+	/** Original equation string as entered by the user (for serialization). */
+	readonly equation: string;
+	/** Autonomous element — no dependencies on other elements. */
+	readonly dependsOn: readonly [];
+}
+
+// =============================================================================
 // Union type
 // =============================================================================
 
@@ -292,7 +313,8 @@ export type GeoElement =
 	| GeoCircleByPoint
 	| GeoArcByAngles
 	| GeoArcByPoints
-	| GeoPolygon;
+	| GeoPolygon
+	| GeoFunction;
 
 export type GeoElementType = GeoElement['type'];
 
@@ -399,4 +421,8 @@ export function isArcByAngles(el: GeoElement): el is GeoArcByAngles {
 
 export function isArcByPoints(el: GeoElement): el is GeoArcByPoints {
 	return el.type === 'arcByPoints';
+}
+
+export function isFunction(el: GeoElement): el is GeoFunction {
+	return el.type === 'function';
 }
