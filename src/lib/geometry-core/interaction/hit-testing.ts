@@ -182,9 +182,12 @@ export function findElementNear(
 				);
 			}
 		} else if (el.type === 'function') {
+			// Perpendicular distance: |f(x) - y| / sqrt(1 + f'(x)²)
 			const y = el.compiledFn({ x: mathX });
 			if (Number.isFinite(y)) {
-				dist = Math.abs(y - mathY);
+				const dy = el.compiledDerivative({ x: mathX });
+				const slope = Number.isFinite(dy) ? dy : 0;
+				dist = Math.abs(y - mathY) / Math.sqrt(1 + slope * slope);
 			}
 		} else if (el.type === 'circleByPoint') {
 			const center = figure.getPosition(el.centerId);
