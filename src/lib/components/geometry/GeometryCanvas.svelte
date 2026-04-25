@@ -203,7 +203,10 @@
 				figure.beginTransaction();
 				svgRef?.setPointerCapture(e.pointerId);
 				e.preventDefault();
-			} else if (el?.type === 'pointOnCurve' && el.draggable) {
+			} else if (
+				(el?.type === 'pointOnCurve' || el?.type === 'pointOnQuadraticCurve') &&
+				el.draggable
+			) {
 				draggingId = pointId;
 				figure.beginTransaction();
 				svgRef?.setPointerCapture(e.pointerId);
@@ -968,7 +971,8 @@
 								class="point"
 								class:draggable={interactive &&
 									((el.type === 'freePoint' && el.draggable) ||
-										(el.type === 'pointOnCurve' && el.draggable))}
+										(el.type === 'pointOnCurve' && el.draggable) ||
+										(el.type === 'pointOnQuadraticCurve' && el.draggable))}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
@@ -984,7 +988,8 @@
 								class="point"
 								class:draggable={interactive &&
 									((el.type === 'freePoint' && el.draggable) ||
-										(el.type === 'pointOnCurve' && el.draggable))}
+										(el.type === 'pointOnCurve' && el.draggable) ||
+										(el.type === 'pointOnQuadraticCurve' && el.draggable))}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
@@ -993,7 +998,8 @@
 								class="point"
 								class:draggable={interactive &&
 									((el.type === 'freePoint' && el.draggable) ||
-										(el.type === 'pointOnCurve' && el.draggable))}
+										(el.type === 'pointOnCurve' && el.draggable) ||
+										(el.type === 'pointOnQuadraticCurve' && el.draggable))}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 								opacity={sty.opacity}
@@ -1026,7 +1032,8 @@
 								class="point"
 								class:draggable={interactive &&
 									((el.type === 'freePoint' && el.draggable) ||
-										(el.type === 'pointOnCurve' && el.draggable))}
+										(el.type === 'pointOnCurve' && el.draggable) ||
+										(el.type === 'pointOnQuadraticCurve' && el.draggable))}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
