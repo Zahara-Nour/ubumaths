@@ -167,6 +167,98 @@ export function extractLinearCombination(
 	};
 }
 
+// =============================================================================
+// Affine Combination (linear + constant term)
+// =============================================================================
+
+/**
+ * Result of affine combination extraction.
+ *
+ * An affine combination has the form: a₁·x₁ + a₂·x₂ + ... + aₙ·xₙ + c
+ * where aᵢ are coefficients and c is a constant term.
+ */
+export interface AffineCombinationResult {
+	readonly coefficients: ReadonlyMap<string, MathNode>;
+	readonly constant: MathNode;
+	readonly variables: readonly string[];
+	readonly isAffine: boolean;
+	readonly error?: string;
+}
+
+/**
+ * Extracts coefficients and constant from an affine combination.
+ *
+ * Like extractLinearCombination, but accepts constant terms.
+ *
+ * @param node - The expression to analyze
+ * @param variables - The variable names to look for
+ * @returns AffineCombinationResult with coefficients map and constant
+ *
+ * @example
+ * const result = extractAffineCombination(parse('2x - 3y + 5'), ['x', 'y']);
+ * result.coefficients.get('x') // → number('2')
+ * result.coefficients.get('y') // → number('-3')
+ * result.constant              // → number('5')
+ */
+export function extractAffineCombination(
+	node: MathNode,
+	variables: readonly string[]
+): AffineCombinationResult {
+	const coefficients = new Map<string, MathNode>(variables.map((v) => [v, ZERO]));
+	let constant: MathNode = ZERO;
+
+	const terms: readonly SignedTerm[] = flattenSumShallow(node);
+
+	for (const { sign, term } of terms) {
+		let actualTerm = term;
+		let actualSign = sign;
+
+		if (isOpposite(term)) {
+			actualTerm = term.operand;
+			actualSign = actualSign === '+' ? '-' : '+';
+		}
+
+		const extracted = extractCoefficientAndVariable(actualTerm, variables);
+
+		if (extracted === null) {
+			// Constant term (no target variables) — accumulate
+			if (!containsAnyVariable(actualTerm, variables)) {
+				const signedConstant = applySign(actualTerm, actualSign);
+				constant = addCoefficients(constant, signedConstant);
+				continue;
+			}
+
+			// Non-linear term (e.g., x*y, x²)
+			return {
+				coefficients,
+				constant,
+				variables,
+				isAffine: false,
+				error: 'Non-linear term detected'
+			};
+		}
+
+		const { coefficient, variableName } = extracted;
+		const signedCoefficient = applySign(coefficient, actualSign);
+		const existing = coefficients.get(variableName)!;
+		coefficients.set(variableName, addCoefficients(existing, signedCoefficient));
+	}
+
+	return {
+		coefficients,
+		constant,
+		variables,
+		isAffine: true
+	};
+}
+
+/**
+ * Checks if an expression is a valid affine combination of the given variables.
+ */
+export function isAffineCombination(node: MathNode, variables: readonly string[]): boolean {
+	return extractAffineCombination(node, variables).isAffine;
+}
+
 /**
  * Checks if an expression is a valid linear combination of the given variables.
  *

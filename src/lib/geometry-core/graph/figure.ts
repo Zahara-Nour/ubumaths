@@ -78,6 +78,7 @@ export interface ElementOptions {
 	labelOffset?: { dx: number; dy: number };
 	color?: string;
 	style?: GeoStyle;
+	visible?: boolean;
 }
 
 interface Delta {
@@ -308,7 +309,7 @@ export class Figure {
 			id,
 			position,
 			color: this.resolveColor(options),
-			visible: true,
+			visible: options?.visible ?? true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),

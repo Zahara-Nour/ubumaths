@@ -13,10 +13,13 @@
 // Linear combination analysis
 export {
 	extractLinearCombination,
+	extractAffineCombination,
 	isLinearCombination,
+	isAffineCombination,
 	getCoefficient,
 	equalLinearCombinations,
-	type LinearCombinationResult
+	type LinearCombinationResult,
+	type AffineCombinationResult
 } from './linear-combination';
 
 // Expression classification
