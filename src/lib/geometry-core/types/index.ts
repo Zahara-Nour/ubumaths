@@ -34,7 +34,8 @@ export type {
 	GeoArc,
 	GeoArcByAngles,
 	GeoArcByPoints,
-	GeoPolygon
+	GeoPolygon,
+	LineEquation
 } from './elements';
 export {
 	isFreePoint,

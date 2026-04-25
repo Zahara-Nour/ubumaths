@@ -9,6 +9,7 @@
 
 import type { GeoValue } from './geo-value';
 import type { GeoPoint } from './primitives';
+import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
 // Style
@@ -58,6 +59,7 @@ export interface GeoElementBase {
 export interface GeoFreePoint extends GeoElementBase {
 	readonly type: 'freePoint';
 	readonly position: GeoPoint;
+	readonly draggable: boolean;
 	readonly dependsOn: readonly [];
 }
 
@@ -164,10 +166,19 @@ export interface GeoSegment extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
+/** Equation ax + by + c = 0 with exact coefficients and original expression string. */
+export interface LineEquation {
+	readonly a: MathNode;
+	readonly b: MathNode;
+	readonly c: MathNode;
+	readonly expression: string;
+}
+
 export interface GeoLine extends GeoElementBase {
 	readonly type: 'line';
 	readonly point1Id: string;
 	readonly point2Id: string;
+	readonly equation?: LineEquation;
 	readonly dependsOn: readonly [string, string];
 }
 

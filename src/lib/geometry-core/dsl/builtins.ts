@@ -588,9 +588,12 @@ function createLineFromEquation(
 	}
 
 	// Create two hidden support points and a line through them
-	const pt1Id = figure.createFreePoint(p1, { visible: false });
-	const pt2Id = figure.createFreePoint(p2, { visible: false });
-	const lineId = figure.createLine(pt1Id, pt2Id, { label });
+	const pt1Id = figure.createFreePoint(p1, { visible: false, draggable: false });
+	const pt2Id = figure.createFreePoint(p2, { visible: false, draggable: false });
+	const lineId = figure.createLine(pt1Id, pt2Id, {
+		label,
+		equation: { a, b, c, expression: equation }
+	});
 
 	return { figureId: lineId, symbolType: 'droite' };
 }

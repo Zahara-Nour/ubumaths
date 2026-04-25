@@ -83,6 +83,7 @@ const baseElementSchema = z.object({
 const freePointSchema = baseElementSchema.extend({
 	type: z.literal('freePoint'),
 	position: geoPointSchema,
+	draggable: z.boolean().default(true),
 	dependsOn: z.tuple([])
 });
 
