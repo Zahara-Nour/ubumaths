@@ -13,6 +13,7 @@ import type { MathNode } from '$lib/mathAST/types';
 import { parseLatexSafe } from '$lib/mathAST/parser';
 import { substitute, getVariables } from '$lib/mathAST/eval/substitute';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
+import { compile } from '$lib/mathAST/eval/compile';
 
 // =============================================================================
 // Types
@@ -196,7 +197,34 @@ export function createEvaluator(
 	ast: MathNode,
 	variables?: VariableBindings
 ): (x: number) => number | null {
-	return (x: number) => evaluateAt(ast, x, variables);
+	// If no extra variables (sliders), use the fast compiled path
+	if (!variables || Object.keys(variables).length === 0) {
+		try {
+			const fn = compile(ast);
+			return (x: number) => {
+				if (!Number.isFinite(x)) return null;
+				const y = fn({ x });
+				return Number.isFinite(y) ? y : null;
+			};
+		} catch {
+			// Fallback to substitute+evaluate for unsupported AST nodes
+			return (x: number) => evaluateAt(ast, x, variables);
+		}
+	}
+
+	// With slider variables: substitute them first, then compile
+	try {
+		const substituted = substitute(ast, variables);
+		const fn = compile(substituted);
+		return (x: number) => {
+			if (!Number.isFinite(x)) return null;
+			const y = fn({ x });
+			return Number.isFinite(y) ? y : null;
+		};
+	} catch {
+		// Fallback to substitute+evaluate for unsupported AST nodes
+		return (x: number) => evaluateAt(ast, x, variables);
+	}
 }
 
 // =============================================================================

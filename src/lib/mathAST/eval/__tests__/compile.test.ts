@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { compile } from '../compile';
+import { compile, createSafeEvaluator } from '../compile';
 import { parseLatex } from '../../parser';
 import { evaluate } from '../evaluate';
 import { substitute } from '../substitute';
@@ -514,5 +514,59 @@ describe('compile — unsupported nodes throw at compile time', () => {
 	it('throws for unknown function name', () => {
 		const f = func('unknownFunc', [variable('x')]);
 		expect(() => compile(f)).toThrow();
+	});
+});
+
+// =============================================================================
+// createSafeEvaluator
+// =============================================================================
+
+describe('createSafeEvaluator', () => {
+	it('evaluates a simple function', () => {
+		const f = createSafeEvaluator(parseLatex('x^2'));
+		expect(f(3)).toBe(9);
+		expect(f(-2)).toBe(4);
+	});
+
+	it('returns null for domain errors (sqrt of negative)', () => {
+		const f = createSafeEvaluator(parseLatex('\\sqrt{x}'));
+		expect(f(4)).toBe(2);
+		expect(f(-1)).toBeNull();
+	});
+
+	it('returns null for division by zero', () => {
+		const f = createSafeEvaluator(parseLatex('\\frac{1}{x}'));
+		expect(f(2)).toBe(0.5);
+		expect(f(0)).toBeNull();
+	});
+
+	it('returns null for ln(0)', () => {
+		const f = createSafeEvaluator(parseLatex('\\ln(x)'));
+		expect(f(1)).toBeCloseTo(0);
+		expect(f(0)).toBeNull();
+	});
+
+	it('returns null for non-finite input', () => {
+		const f = createSafeEvaluator(parseLatex('x'));
+		expect(f(Infinity)).toBeNull();
+		expect(f(NaN)).toBeNull();
+	});
+
+	it('supports custom variable name', () => {
+		const f = createSafeEvaluator(parseLatex('t^2'), 't');
+		expect(f(5)).toBe(25);
+	});
+
+	it('handles transcendental functions', () => {
+		const f = createSafeEvaluator(parseLatex('\\sin(x)'));
+		expect(f(0)).toBeCloseTo(0);
+		expect(f(Math.PI / 2)).toBeCloseTo(1);
+	});
+
+	it('handles 0/0 → null', () => {
+		// x/x at x=0 → 0/0 → NaN → null
+		const f = createSafeEvaluator(parseLatex('\\frac{x}{x}'));
+		expect(f(0)).toBeNull();
+		expect(f(1)).toBeCloseTo(1);
 	});
 });

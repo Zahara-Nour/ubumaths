@@ -217,6 +217,29 @@ function wrapPower(node: FunctionNode, baseFn: CompiledFn): CompiledFn {
 	return (v) => Math.pow(baseFn(v), powerFn(v));
 }
 
+/**
+ * Create a safe evaluator function from a MathNode.
+ * Combines compile() with domain-error handling: returns null instead of
+ * NaN/Infinity for undefined values (sqrt of negative, division by zero, etc.).
+ *
+ * Used by both the Grapheur and geometry-core for curve rendering.
+ *
+ * @param ast - The expression to compile
+ * @param variable - The variable name (default: 'x')
+ * @returns A function that takes a number and returns number | null
+ */
+export function createSafeEvaluator(
+	ast: MathNode,
+	variable: string = 'x'
+): (x: number) => number | null {
+	const fn = compile(ast);
+	return (x: number) => {
+		if (!Number.isFinite(x)) return null;
+		const y = fn({ [variable]: x });
+		return Number.isFinite(y) ? y : null;
+	};
+}
+
 export class CompileError extends Error {
 	constructor(message: string) {
 		super(message);
