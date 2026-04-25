@@ -538,6 +538,19 @@
 								class:hovered={hoveredId === el.id}
 							/>
 						{/if}
+						{#if el.label}
+							{@const lx = (svg.x1 + svg.x2) / 2 + (el.labelOffset?.dx ?? 6)}
+							{@const ly = (svg.y1 + svg.y2) / 2 + (el.labelOffset?.dy ?? -8)}
+							<text
+								x={lx}
+								y={ly}
+								class="label"
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke">{el.label}</text
+							>
+						{/if}
 					{/if}
 				{:else if el.type === 'line'}
 					{@const svg = lineToSVG(el.id, figure, transformer, dims)}
@@ -570,6 +583,27 @@
 								class:hovered={hoveredId === el.id}
 							/>
 						{/if}
+						{#if el.label}
+							{@const t = 0.9}
+							{@const mx = svg.x1 + t * (svg.x2 - svg.x1)}
+							{@const my = svg.y1 + t * (svg.y2 - svg.y1)}
+							{@const dx = svg.x2 - svg.x1}
+							{@const dy = svg.y2 - svg.y1}
+							{@const len = Math.sqrt(dx * dx + dy * dy) || 1}
+							{@const nx = -dy / len}
+							{@const ny = dx / len}
+							{@const sign = ny > 0 ? -1 : 1}
+							{@const offset = 10 + 5 * Math.abs(nx)}
+							<text
+								x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
+								y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
+								class="label"
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke">{el.label}</text
+							>
+						{/if}
 					{/if}
 				{:else if el.type === 'ray'}
 					{@const svg = rayToSVG(el.id, figure, transformer, dims)}
@@ -600,6 +634,19 @@
 								class="ray"
 								class:hovered={hoveredId === el.id}
 							/>
+						{/if}
+						{#if el.label}
+							{@const lx = (svg.x1 + svg.x2) / 2 + (el.labelOffset?.dx ?? 6)}
+							{@const ly = (svg.y1 + svg.y2) / 2 + (el.labelOffset?.dy ?? -8)}
+							<text
+								x={lx}
+								y={ly}
+								class="label"
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke">{el.label}</text
+							>
 						{/if}
 					{/if}
 				{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint'}
