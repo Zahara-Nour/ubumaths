@@ -248,6 +248,57 @@ function circleTipPosition(
 }
 
 // =============================================================================
+// Compass rotation angle during draw phase
+// =============================================================================
+
+/**
+ * Returns the compass rotation angle (in degrees, SVG convention) for the
+ * current draw progress. The compass pivots around its fixed point (center)
+ * while the drawing tip traces the arc/circle.
+ */
+export function compassDrawAngle(
+	animatingIds: Set<string>,
+	figure: Figure,
+	progress: number
+): number {
+	for (const id of animatingIds) {
+		const el = figure.getElementById(id);
+		if (!el) continue;
+
+		if (isArcByAngles(el)) {
+			const startAngle = geoToNumber(el.startAngle);
+			const endAngle = geoToNumber(el.endAngle);
+			const angle = startAngle + (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
+			// Convert from math radians to SVG degrees (negate because SVG Y is flipped)
+			return -angle * (180 / Math.PI);
+		}
+
+		if (isArcByPoints(el)) {
+			const startPos = figure.getPosition(el.startId);
+			const centerPos = figure.getPosition(el.centerId);
+			const endPos = figure.getPosition(el.endId);
+			if (!startPos || !centerPos || !endPos) continue;
+			const cx = geoToNumber(centerPos.x);
+			const cy = geoToNumber(centerPos.y);
+			const sx = geoToNumber(startPos.x);
+			const sy = geoToNumber(startPos.y);
+			const ex = geoToNumber(endPos.x);
+			const ey = geoToNumber(endPos.y);
+			const startAngle = Math.atan2(sy - cy, sx - cx);
+			const endAngle = Math.atan2(ey - cy, ex - cx);
+			const angle = startAngle + (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
+			return -angle * (180 / Math.PI);
+		}
+
+		if (isCircleByRadius(el) || isCircleByPoint(el)) {
+			const angle = 2 * Math.PI * Math.max(0, Math.min(1, progress));
+			return -angle * (180 / Math.PI);
+		}
+	}
+	return 0;
+}
+
+// =============================================================================
 // Internal: build SVG arc path (replicated from svg-primitives.ts)
 // =============================================================================
 
