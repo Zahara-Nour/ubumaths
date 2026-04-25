@@ -27,6 +27,7 @@ import {
 	MIN_STEP_DURATION,
 	MAX_STEP_DURATION,
 	MS_PER_PIXEL,
+	MS_PER_DEGREE,
 	AUTO_PAUSE_BETWEEN_STEPS,
 	INSTRUMENT_RAMP_MS,
 	INSTRUMENT_MOVE_SPEED_FACTOR,
@@ -408,8 +409,9 @@ export class ConstructionExecutor {
 				Object.assign(compass, pos);
 				compass.rotation = startAngle;
 				this._autoInstruments.add('compass');
-				// Track last known position for next step's recordMove
-				this._lastInstrumentPositions.set('compass', { x: cx, y: cy, rotation: startAngle });
+				// Track last known position with END angle (where compass finishes after drawing)
+				const endAngle = this.computeCompassEndAngle(el, fig);
+				this._lastInstrumentPositions.set('compass', { x: cx, y: cy, rotation: endAngle });
 			}
 		}
 
@@ -467,6 +469,56 @@ export class ConstructionExecutor {
 			}
 		}
 		return 0; // circleByRadius starts at angle 0
+	}
+
+	/** Compute the ending angle (in degrees) after compass finishes drawing.
+	 *  For circles: startAngle + 360 (full circle, same as start).
+	 *  For arcByAngles: end angle from element.
+	 *  For arcByPoints: angle from center to end point. */
+	/** Compute start angle from a list of new elements (for pre-simulation). */
+	private computeStartAngleForStep(elements: GeoElement[], fig: Figure): number {
+		for (const el of elements) {
+			if (DRAWABLE_TYPES.has(el.type)) {
+				return this.computeCompassStartAngle(el, fig);
+			}
+		}
+		return 0;
+	}
+
+	/** Compute end angle from a list of new elements (for pre-simulation). */
+	private computeEndAngleForStep(elements: GeoElement[], fig: Figure): number {
+		for (const el of elements) {
+			if (DRAWABLE_TYPES.has(el.type)) {
+				return this.computeCompassEndAngle(el, fig);
+			}
+		}
+		return 0;
+	}
+
+	private computeCompassEndAngle(el: GeoElement, fig: Figure): number {
+		if (isCircleByRadius(el)) {
+			return 0; // full circle ends where it started
+		}
+		if (isCircleByPoint(el)) {
+			return this.computeCompassStartAngle(el, fig); // full circle
+		}
+		if (isArcByAngles(el)) {
+			return geoToNumber(el.endAngle) * (180 / Math.PI);
+		}
+		if (isArcByPoints(el)) {
+			const center = fig.getPosition(el.centerId);
+			const end = fig.getPosition(el.endId);
+			if (center && end) {
+				return (
+					Math.atan2(
+						geoToNumber(end.y) - geoToNumber(center.y),
+						geoToNumber(end.x) - geoToNumber(center.x)
+					) *
+					(180 / Math.PI)
+				);
+			}
+		}
+		return 0;
 	}
 
 	private resolveRadius(el: GeoElement, fig: Figure): number {
@@ -529,9 +581,9 @@ export class ConstructionExecutor {
 
 		// Track instrument positions for move distance calculation
 		// Default start position: top-left corner in math coords
-		const instrumentPos: Record<string, { x: number; y: number }> = {
-			ruler: { x: -8, y: 6 },
-			compass: { x: -8, y: 6 }
+		const instrumentPos: Record<string, { x: number; y: number; rotation: number }> = {
+			ruler: { x: -8, y: 6, rotation: 0 },
+			compass: { x: -8, y: 6, rotation: 0 }
 		};
 		const steps = tempStepper.steps;
 
@@ -659,22 +711,39 @@ export class ConstructionExecutor {
 				Math.min(MAX_STEP_DURATION, Math.round(drawDuration / speedFactor))
 			);
 
-			// Calculate move duration from instrument distance
+			// Calculate move duration from instrument distance + rotation
 			let moveDuration = 0;
 			if (instrumentTarget) {
-				const prev = instrumentPos[instrumentTarget.type] ?? { x: -8, y: 6 };
+				const prev = instrumentPos[instrumentTarget.type] ?? { x: -8, y: 6, rotation: 0 };
 				const dx = instrumentTarget.x - prev.x;
 				const dy = instrumentTarget.y - prev.y;
 				const dist = Math.sqrt(dx * dx + dy * dy);
 				const cruiseMs = Math.round(
 					(dist * PPU * MS_PER_PIXEL) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
 				);
+
+				// Compute start angle for this element (to know the rotation target)
+				const startAngleDeg = this.computeStartAngleForStep(newElements, fig);
+				let rotDelta = startAngleDeg - prev.rotation;
+				while (rotDelta > 180) rotDelta -= 360;
+				while (rotDelta < -180) rotDelta += 360;
+				const rotMs = Math.round(
+					(Math.abs(rotDelta) * MS_PER_DEGREE) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
+				);
+
+				const totalCruiseMs = Math.max(cruiseMs, rotMs);
 				moveDuration = Math.max(
 					600,
-					cruiseMs <= INSTRUMENT_RAMP_MS ? cruiseMs : cruiseMs + INSTRUMENT_RAMP_MS
+					totalCruiseMs <= INSTRUMENT_RAMP_MS ? totalCruiseMs : totalCruiseMs + INSTRUMENT_RAMP_MS
 				);
-				// Update instrument position for next step
-				instrumentPos[instrumentTarget.type] = { x: instrumentTarget.x, y: instrumentTarget.y };
+
+				// Compute end angle for tracking (where compass finishes after drawing)
+				const endAngleDeg = this.computeEndAngleForStep(newElements, fig);
+				instrumentPos[instrumentTarget.type] = {
+					x: instrumentTarget.x,
+					y: instrumentTarget.y,
+					rotation: endAngleDeg
+				};
 			}
 
 			// Add compass raise/lower durations for compass steps

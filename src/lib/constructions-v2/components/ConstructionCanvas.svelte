@@ -141,7 +141,11 @@
 				const t = instrumentMoveProgress;
 				const x = move.fromX + (move.toX - move.fromX) * t;
 				const y = move.fromY + (move.toY - move.fromY) * t;
-				const rot = move.fromRotation + (move.toRotation - move.fromRotation) * t;
+				// Shortest path rotation interpolation
+				let delta = move.toRotation - move.fromRotation;
+				while (delta > 180) delta -= 360;
+				while (delta < -180) delta += 360;
+				const rot = move.fromRotation + delta * t;
 				const svgPos = transformer.mathToSvg(x, y);
 				positions[state.type] = { x: svgPos.x, y: svgPos.y, rotation: -rot };
 			} else {
