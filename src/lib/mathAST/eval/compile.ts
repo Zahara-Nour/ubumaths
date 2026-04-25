@@ -49,7 +49,7 @@ const MATH_FUNCTIONS: Record<string, (...args: number[]) => number> = {
 	arctanh: Math.atanh,
 	exp: Math.exp,
 	ln: Math.log,
-	log: Math.log,
+	log: Math.log10,
 	log10: Math.log10,
 	log2: Math.log2,
 	sqrt: Math.sqrt,

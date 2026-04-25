@@ -1054,7 +1054,8 @@
 	.segment.hovered,
 	.geo-line.hovered,
 	.ray.hovered,
-	.circle.hovered {
+	.circle.hovered,
+	.function-curve.hovered {
 		filter: brightness(1.3);
 		stroke-width: 4;
 		cursor: pointer;
