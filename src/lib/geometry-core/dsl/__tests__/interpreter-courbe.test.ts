@@ -207,3 +207,71 @@ describe('point_sur — point on curve', () => {
 		expect(pts[0].visible).toBe(true);
 	});
 });
+
+// =============================================================================
+// zeros / extrema / inflections
+// =============================================================================
+
+describe('zeros — find zeros of a function', () => {
+	it('finds zeros of y = x^2 - 4', () => {
+		const { figure } = run('f = courbe("y = x^2 - 4")\nZ = zeros(f)');
+		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnCurve');
+		// At least 2 zeros: x = -2 and x = 2
+		expect(pts.length).toBeGreaterThanOrEqual(2);
+	});
+
+	it('zeros are non-draggable', () => {
+		const { figure } = run('f = courbe("y = x^2 - 4")\nZ = zeros(f)');
+		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnCurve');
+		for (const pt of pts) {
+			if (pt.type === 'pointOnCurve') {
+				expect(pt.draggable).toBe(false);
+			}
+		}
+	});
+
+	it('zeros are at correct positions', () => {
+		const { figure } = run('f = courbe("y = x^2 - 4")\nZ = zeros(f)');
+		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnCurve');
+		const ys = pts.map((p) => {
+			const pos = figure.getPosition(p.id);
+			return pos ? geoToNumber(pos.y) : null;
+		});
+		// All y values should be close to 0
+		for (const y of ys) {
+			if (y !== null) expect(Math.abs(y)).toBeLessThan(0.01);
+		}
+	});
+});
+
+describe('extrema — find local min/max', () => {
+	it('finds extrema of y = x^3 - 3*x', () => {
+		const { figure } = run('f = courbe("y = x^3 - 3*x")\nE = extrema(f)');
+		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnCurve');
+		// Should find min at x=1 and max at x=-1
+		expect(pts.length).toBeGreaterThanOrEqual(2);
+	});
+
+	it('finds minimum of y = x^2', () => {
+		const { figure } = run('f = courbe("y = x^2")\nE = extrema(f)');
+		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnCurve');
+		expect(pts.length).toBeGreaterThanOrEqual(1);
+		const pos = figure.getPosition(pts[0].id);
+		if (pos) {
+			expect(geoToNumber(pos.x)).toBeCloseTo(0, 0);
+			expect(geoToNumber(pos.y)).toBeCloseTo(0, 0);
+		}
+	});
+});
+
+describe('inflections — find inflection points', () => {
+	it('finds inflection of y = x^3', () => {
+		const { figure } = run('f = courbe("y = x^3")\nI = inflections(f)');
+		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnCurve');
+		expect(pts.length).toBeGreaterThanOrEqual(1);
+		const pos = figure.getPosition(pts[0].id);
+		if (pos) {
+			expect(geoToNumber(pos.x)).toBeCloseTo(0, 0);
+		}
+	});
+});

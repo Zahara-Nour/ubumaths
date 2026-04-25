@@ -841,6 +841,7 @@ export class Figure {
 			id,
 			functionId,
 			x0,
+			draggable: options?.draggable ?? true,
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,

@@ -227,6 +227,7 @@ const pointOnCurveSchema = baseElementSchema.extend({
 	type: z.literal('pointOnCurve'),
 	functionId: z.string().min(1),
 	x0: geoValueSchema,
+	draggable: z.boolean().default(true),
 	dependsOn: z.tuple([z.string().min(1)])
 });
 
