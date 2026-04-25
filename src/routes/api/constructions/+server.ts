@@ -164,7 +164,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			title,
 			description,
 			format,
-			script: format === 'json' ? script : null,
+			script: format === 'json' ? script : {},
 			dsl_script: format === 'dsl' ? dsl_script : null,
 			is_public,
 			tags: tags ?? null,

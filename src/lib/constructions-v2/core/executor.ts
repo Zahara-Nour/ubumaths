@@ -11,7 +11,7 @@ import { Figure } from '$lib/geometry-core/graph/figure';
 import { SymbolTable } from '$lib/geometry-core/dsl/symbol-table';
 import type { ResolvedArgs, ResolvedValue } from '$lib/geometry-core/dsl/builtins';
 import type { InstrumentType, InstrumentState } from '../types';
-import { createDefaultInstrumentState } from '../types';
+import { createDefaultInstrumentState, DRAWABLE_TYPES } from '../types';
 import { rulerPosition, compassPosition } from '../instruments/positioning';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import {
@@ -51,6 +51,7 @@ export class ConstructionExecutor {
 	private _instrumentStates = new Map<InstrumentType, InstrumentState>();
 	private _currentInstruction: string | null = null;
 	private _speedFactor = 1;
+	private _lastStepNewElementIds: string[] = [];
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
@@ -73,6 +74,14 @@ export class ConstructionExecutor {
 		const result = this.stepper.step();
 		if (result) {
 			this.autoPositionInstruments(sizeBefore);
+			// Track new drawable elements for animation
+			const elements = this.stepper.figure.getAllElements();
+			this._lastStepNewElementIds = elements
+				.slice(sizeBefore)
+				.filter((el) => DRAWABLE_TYPES.has(el.type))
+				.map((el) => el.id);
+		} else {
+			this._lastStepNewElementIds = [];
 		}
 		return result;
 	}
@@ -91,6 +100,7 @@ export class ConstructionExecutor {
 		this._currentInstruction = null;
 		this._speedFactor = 1;
 		this._instrumentStates.clear();
+		this._lastStepNewElementIds = [];
 		this._stepDurations = this.calculateStepDurations();
 	}
 
@@ -122,6 +132,11 @@ export class ConstructionExecutor {
 
 	get currentInstruction(): string | null {
 		return this._currentInstruction;
+	}
+
+	/** IDs of drawable elements created during the last step (segments, arcs, circles). */
+	get lastStepNewElementIds(): string[] {
+		return this._lastStepNewElementIds;
 	}
 
 	// ─── Directive handling ──────────────────────────────────

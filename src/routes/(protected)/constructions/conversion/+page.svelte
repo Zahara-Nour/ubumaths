@@ -79,11 +79,10 @@
 
 	// Derived states
 	let canSave = $derived(
-		isJsonValid &&
+		(isJsonValid || dslOutput.length > 0) &&
 			title.trim().length > 0 &&
 			conversionErrors.length === 0 &&
-			!isSaving &&
-			jsonOutput.length > 0
+			!isSaving
 	);
 
 	let parsedScript = $derived.by(() => {
@@ -326,18 +325,27 @@
 		isSaving = true;
 
 		try {
-			const script = JSON.parse(jsonOutput);
+			// Prefer DSL format if available, fallback to JSON
+			const useDsl = dslOutput.length > 0;
+			const body: Record<string, unknown> = {
+				title: title.trim(),
+				description: description.trim() || undefined,
+				is_public: isPublic,
+				tags: tags.length > 0 ? tags : undefined
+			};
+
+			if (useDsl) {
+				body.format = 'dsl';
+				body.dsl_script = dslOutput;
+			} else {
+				body.format = 'json';
+				body.script = JSON.parse(jsonOutput);
+			}
 
 			const response = await fetch('/api/constructions', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					title: title.trim(),
-					description: description.trim() || undefined,
-					script,
-					is_public: isPublic,
-					tags: tags.length > 0 ? tags : undefined
-				})
+				body: JSON.stringify(body)
 			});
 
 			if (response.ok) {

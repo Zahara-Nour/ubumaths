@@ -37,6 +37,8 @@
 		snapOnRelease?: boolean;
 		/** External version counter to trigger re-render when figure changes programmatically. */
 		externalVersion?: number;
+		/** Element IDs to exclude from rendering (used for animation overlay). */
+		hiddenElementIds?: Set<string>;
 	}
 
 	let {
@@ -50,7 +52,8 @@
 		showMinorGrid = false,
 		showGraduations = true,
 		snapOnRelease = false,
-		externalVersion = 0
+		externalVersion = 0,
+		hiddenElementIds
 	}: Props = $props();
 
 	let svgRef: SVGSVGElement | undefined = $state();
@@ -128,7 +131,11 @@
 	let elements = $derived.by(() => {
 		void version;
 		void externalVersion;
-		return figure.getAllElements();
+		const all = figure.getAllElements();
+		if (hiddenElementIds && hiddenElementIds.size > 0) {
+			return all.filter((el) => !hiddenElementIds.has(el.id));
+		}
+		return all;
 	});
 	let dims = $derived({ width, height });
 
