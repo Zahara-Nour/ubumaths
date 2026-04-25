@@ -181,6 +181,25 @@ export function findElementNear(
 					geoToNumber(el.radius)
 				);
 			}
+		} else if (el.type === 'tangentLine') {
+			// Tangent is a line: get x₀, compute tangent point and slope
+			const fnEl = figure.getElementById(el.functionId);
+			if (fnEl && fnEl.type === 'function') {
+				let x0: number | null = null;
+				if (el.pointOnCurveId) {
+					const pos = figure.getPosition(el.pointOnCurveId);
+					if (pos) x0 = geoToNumber(pos.x);
+				} else if (el.x0 !== undefined) {
+					x0 = geoToNumber(el.x0);
+				}
+				if (x0 !== null) {
+					const y0 = fnEl.compiledFn({ x: x0 });
+					const m = fnEl.compiledDerivative({ x: x0 });
+					if (Number.isFinite(y0) && Number.isFinite(m)) {
+						dist = distToLine(mathX, mathY, x0, y0, x0 + 1, y0 + m);
+					}
+				}
+			}
 		} else if (el.type === 'function') {
 			// Perpendicular distance: |f(x) - y| / sqrt(1 + f'(x)²)
 			const y = el.compiledFn({ x: mathX });

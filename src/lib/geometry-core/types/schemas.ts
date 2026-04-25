@@ -230,6 +230,14 @@ const pointOnCurveSchema = baseElementSchema.extend({
 	dependsOn: z.tuple([z.string().min(1)])
 });
 
+const tangentLineSchema = baseElementSchema.extend({
+	type: z.literal('tangentLine'),
+	functionId: z.string().min(1),
+	pointOnCurveId: z.string().min(1).optional(),
+	x0: geoValueSchema.optional(),
+	dependsOn: z.array(z.string().min(1)).min(1)
+});
+
 const functionSchema = baseElementSchema.extend({
 	type: z.literal('function'),
 	equation: z.string().min(1),
@@ -257,7 +265,8 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	arcByPointsSchema,
 	polygonSchema,
 	functionSchema,
-	pointOnCurveSchema
+	pointOnCurveSchema,
+	tangentLineSchema
 ]);
 
 export type GeoElementSerialized = z.infer<typeof geoElementSchema>;

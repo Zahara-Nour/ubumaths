@@ -473,6 +473,35 @@ function _executeBuiltinInner(
 			return courbeResult;
 		}
 
+		case 'tangente': {
+			if (pos.length !== 2) {
+				throw new DslRuntimeError('tangente() attend 2 arguments (f, P ou x0)', line);
+			}
+			const tFnId = requireElement(pos[0], 'fonction', line);
+			const tFnEl = figure.getElementById(tFnId);
+			if (!tFnEl || tFnEl.type !== 'function') {
+				throw new DslRuntimeError('tangente(): le premier argument doit etre une courbe', line);
+			}
+
+			// Second arg: pointOnCurve (dynamic) or number (fixed x₀)
+			if (pos[1].type === 'element') {
+				const ptId = pos[1].figureId;
+				const ptEl = figure.getElementById(ptId);
+				if (!ptEl || ptEl.type !== 'pointOnCurve') {
+					throw new DslRuntimeError(
+						'tangente(): le deuxieme argument doit etre un point_sur ou un nombre',
+						line
+					);
+				}
+				const tgId = figure.createTangentLine(tFnId, { pointOnCurveId: ptId }, { label });
+				return { figureId: tgId, symbolType: 'tangente' as SymbolType };
+			} else {
+				const x0Val = toGeoValue(pos[1], line);
+				const tgId = figure.createTangentLine(tFnId, { x0: x0Val }, { label });
+				return { figureId: tgId, symbolType: 'tangente' as SymbolType };
+			}
+		}
+
 		case 'point_sur': {
 			if (pos.length < 1 || pos.length > 2) {
 				throw new DslRuntimeError('point_sur() attend 1-2 arguments (f, x0?)', line);
@@ -513,7 +542,8 @@ export const BUILTIN_NAMES = new Set([
 	'mesure',
 	'style',
 	'courbe',
-	'point_sur'
+	'point_sur',
+	'tangente'
 ]);
 
 /** Math functions that return numbers. */

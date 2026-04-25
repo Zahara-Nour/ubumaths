@@ -267,6 +267,17 @@ export interface GeoPolygon extends GeoElementBase {
 	readonly dependsOn: readonly [string, string, string, ...string[]];
 }
 
+/** Tangent line to a function curve at a given x₀. */
+export interface GeoTangentLine extends GeoElementBase {
+	readonly type: 'tangentLine';
+	readonly functionId: string;
+	/** Point on curve that defines x₀ dynamically (mutually exclusive with x0). */
+	readonly pointOnCurveId?: string;
+	/** Fixed x₀ value (mutually exclusive with pointOnCurveId). */
+	readonly x0?: GeoValue;
+	readonly dependsOn: readonly string[];
+}
+
 // =============================================================================
 // Function curve (y = f(x), from courbe() builtin)
 // =============================================================================
@@ -324,7 +335,8 @@ export type GeoElement =
 	| GeoArcByPoints
 	| GeoPolygon
 	| GeoFunction
-	| GeoPointOnCurve;
+	| GeoPointOnCurve
+	| GeoTangentLine;
 
 export type GeoElementType = GeoElement['type'];
 
@@ -440,4 +452,8 @@ export function isArcByPoints(el: GeoElement): el is GeoArcByPoints {
 
 export function isFunction(el: GeoElement): el is GeoFunction {
 	return el.type === 'function';
+}
+
+export function isTangentLine(el: GeoElement): el is GeoTangentLine {
+	return el.type === 'tangentLine';
 }
