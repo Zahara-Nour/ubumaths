@@ -208,6 +208,17 @@ export function findElementNear(
 				const slope = Number.isFinite(dy) ? dy : 0;
 				dist = Math.abs(y - mathY) / Math.sqrt(1 + slope * slope);
 			}
+		} else if (el.type === 'quadraticCurve') {
+			// Distance to implicit curve F(x,y)=0: |F(x,y)| / |∇F(x,y)|
+			const [A, B, C, D, E, F] = el.coefficients;
+			const Fval =
+				A * mathX * mathX + B * mathX * mathY + C * mathY * mathY + D * mathX + E * mathY + F;
+			const dFx = 2 * A * mathX + B * mathY + D;
+			const dFy = B * mathX + 2 * C * mathY + E;
+			const gradNorm = Math.sqrt(dFx * dFx + dFy * dFy);
+			if (gradNorm > 1e-10) {
+				dist = Math.abs(Fval) / gradNorm;
+			}
 		} else if (el.type === 'circleByPoint') {
 			const center = figure.getPosition(el.centerId);
 			const edge = figure.getPosition(el.edgePointId);
