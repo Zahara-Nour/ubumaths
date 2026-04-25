@@ -132,6 +132,16 @@ export interface GeoPointOnCurve extends GeoElementBase {
 	readonly dependsOn: readonly [string];
 }
 
+/** Point constrained to a quadratic curve. Parametrized by angle t (radians). */
+export interface GeoPointOnQuadraticCurve extends GeoElementBase {
+	readonly type: 'pointOnQuadraticCurve';
+	readonly curveId: string;
+	/** Parameter t in radians (angle for ellipse/circle, raw param for hyperbola/parabola). */
+	readonly t: number;
+	readonly draggable: boolean;
+	readonly dependsOn: readonly [string];
+}
+
 // =============================================================================
 // Annotation types
 // =============================================================================
@@ -279,6 +289,17 @@ export interface GeoTangentLine extends GeoElementBase {
 	readonly dependsOn: readonly string[];
 }
 
+/** Tangent line to a quadratic curve at a given point. */
+export interface GeoTangentToQuadratic extends GeoElementBase {
+	readonly type: 'tangentToQuadratic';
+	readonly curveId: string;
+	/** Point on the quadratic curve (dynamic tangent). */
+	readonly pointOnCurveId?: string;
+	/** Fixed parameter t in radians (static tangent). */
+	readonly t?: number;
+	readonly dependsOn: readonly string[];
+}
+
 // =============================================================================
 // Function curve (y = f(x), from courbe() builtin)
 // =============================================================================
@@ -349,7 +370,8 @@ export type GeoPointElement =
 	| GeoTranslatedPoint
 	| GeoDilatedPoint
 	| GeoReflectedOverLine
-	| GeoPointOnCurve;
+	| GeoPointOnCurve
+	| GeoPointOnQuadraticCurve;
 export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
 
 export type GeoElement =
@@ -375,7 +397,9 @@ export type GeoElement =
 	| GeoFunction
 	| GeoQuadraticCurve
 	| GeoPointOnCurve
-	| GeoTangentLine;
+	| GeoPointOnQuadraticCurve
+	| GeoTangentLine
+	| GeoTangentToQuadratic;
 
 export type GeoElementType = GeoElement['type'];
 
@@ -419,6 +443,10 @@ export function isPointOnCurve(el: GeoElement): el is GeoPointOnCurve {
 	return el.type === 'pointOnCurve';
 }
 
+export function isPointOnQuadraticCurve(el: GeoElement): el is GeoPointOnQuadraticCurve {
+	return el.type === 'pointOnQuadraticCurve';
+}
+
 export function isPointElement(el: GeoElement): el is GeoPointElement {
 	return (
 		el.type === 'freePoint' ||
@@ -429,8 +457,13 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'translatedPoint' ||
 		el.type === 'dilatedPoint' ||
 		el.type === 'reflectedOverLine' ||
-		el.type === 'pointOnCurve'
+		el.type === 'pointOnCurve' ||
+		el.type === 'pointOnQuadraticCurve'
 	);
+}
+
+export function isTangentToQuadratic(el: GeoElement): el is GeoTangentToQuadratic {
+	return el.type === 'tangentToQuadratic';
 }
 
 export function isAngleMark(el: GeoElement): el is GeoAngleMark {

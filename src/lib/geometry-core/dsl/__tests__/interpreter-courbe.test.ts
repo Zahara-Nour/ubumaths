@@ -336,6 +336,87 @@ describe('courbe — quadratic curves (conics)', () => {
 	});
 });
 
+// =============================================================================
+// point_sur / tangente / zeros on quadratic curves
+// =============================================================================
+
+describe('point_sur on quadratic curve', () => {
+	it('creates a pointOnQuadraticCurve at angle 0 (default)', () => {
+		const { figure } = run('c = courbe("x^2 + y^2 - 9 = 0")\nP = point_sur(c)');
+		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnQuadraticCurve');
+		expect(pts).toHaveLength(1);
+	});
+
+	it('point at angle 0 on circle r=3 is at (3, 0)', () => {
+		const { figure, symbols } = run('c = courbe("x^2 + y^2 - 9 = 0")\nP = point_sur(c, 0)');
+		const pos = figure.getPosition(symbols.get('P')!.figureId!);
+		expect(pos).toBeDefined();
+		expect(geoToNumber(pos!.x)).toBeCloseTo(3);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(0);
+	});
+
+	it('point at angle 90 on circle r=3 is at (0, 3)', () => {
+		const { figure, symbols } = run('c = courbe("x^2 + y^2 - 9 = 0")\nP = point_sur(c, 90)');
+		const pos = figure.getPosition(symbols.get('P')!.figureId!);
+		expect(pos).toBeDefined();
+		expect(geoToNumber(pos!.x)).toBeCloseTo(0);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(3);
+	});
+});
+
+describe('tangente on quadratic curve', () => {
+	it('creates a tangentToQuadratic with a point', () => {
+		const { figure } = run(
+			'c = courbe("x^2 + y^2 - 9 = 0")\nP = point_sur(c, 0)\nt = tangente(c, P)'
+		);
+		const tgs = figure.getAllElements().filter((e) => e.type === 'tangentToQuadratic');
+		expect(tgs).toHaveLength(1);
+	});
+
+	it('creates a tangentToQuadratic with a fixed angle', () => {
+		const { figure } = run('c = courbe("x^2 + y^2 - 9 = 0")\nt = tangente(c, 45)');
+		const tgs = figure.getAllElements().filter((e) => e.type === 'tangentToQuadratic');
+		expect(tgs).toHaveLength(1);
+	});
+});
+
+describe('zeros on quadratic curve', () => {
+	it('finds zeros of circle x^2 + y^2 - 9 = 0 (two x-intercepts)', () => {
+		const { figure } = run('c = courbe("x^2 + y^2 - 9 = 0")\nZ = zeros(c)');
+		// x² - 9 = 0 → x = ±3
+		const visiblePts = figure.getAllElements().filter((e) => e.type === 'freePoint' && e.visible);
+		expect(visiblePts.length).toBeGreaterThanOrEqual(2);
+	});
+
+	it('zeros are at correct x positions for circle', () => {
+		const { figure } = run('c = courbe("x^2 + y^2 - 9 = 0")\nZ = zeros(c)');
+		const pts = figure
+			.getAllElements()
+			.filter((e) => e.type === 'freePoint' && e.visible && !e.draggable);
+		const xs = pts
+			.map((p) => {
+				const pos = figure.getPosition(p.id);
+				return pos ? geoToNumber(pos.x) : null;
+			})
+			.filter((x): x is number => x !== null)
+			.sort((a, b) => a - b);
+		expect(xs).toHaveLength(2);
+		expect(xs[0]).toBeCloseTo(-3);
+		expect(xs[1]).toBeCloseTo(3);
+	});
+
+	it('zeros y-values are 0', () => {
+		const { figure } = run('c = courbe("x^2 + y^2 - 9 = 0")\nZ = zeros(c)');
+		const pts = figure
+			.getAllElements()
+			.filter((e) => e.type === 'freePoint' && e.visible && !e.draggable);
+		for (const pt of pts) {
+			const pos = figure.getPosition(pt.id);
+			if (pos) expect(geoToNumber(pos.y)).toBeCloseTo(0);
+		}
+	});
+});
+
 describe('inflections — find inflection points', () => {
 	it('finds inflection of y = x^3', () => {
 		const { figure } = run('f = courbe("y = x^3")\nI = inflections(f)');

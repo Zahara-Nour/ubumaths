@@ -31,7 +31,9 @@ import type {
 	GeoFunction,
 	GeoQuadraticCurve,
 	GeoPointOnCurve,
+	GeoPointOnQuadraticCurve,
 	GeoTangentLine,
+	GeoTangentToQuadratic,
 	type LineEquation,
 	type ConicParams
 } from '../types/elements';
@@ -49,7 +51,8 @@ import {
 	isMeasure,
 	isPointElement,
 	isLineLike,
-	isPointOnCurve
+	isPointOnCurve,
+	isPointOnQuadraticCurve
 } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
 import { geoValueToMathNode, numeric } from '../types/geo-value';
@@ -882,6 +885,82 @@ export class Figure {
 		return id;
 	}
 
+	createPointOnQuadraticCurve(curveId: string, t: number, options?: ElementOptions): string {
+		const curveEl = this.elements.get(curveId);
+		if (!curveEl || curveEl.type !== 'quadraticCurve') {
+			throw new Error(`createPointOnQuadraticCurve: "${curveId}" is not a quadraticCurve element`);
+		}
+
+		const id = this.generateId('ptQC');
+		const element: GeoPointOnQuadraticCurve = {
+			type: 'pointOnQuadraticCurve',
+			id,
+			curveId,
+			t,
+			draggable: options?.draggable ?? true,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [curveId]
+		};
+		this.addElement(id, element, [curveId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	movePointOnQuadraticCurve(id: string, newT: number): void {
+		const el = this.elements.get(id);
+		if (!el || !isPointOnQuadraticCurve(el)) {
+			throw new Error(`movePointOnQuadraticCurve: "${id}" is not a pointOnQuadraticCurve`);
+		}
+
+		const updated: GeoPointOnQuadraticCurve = { ...el, t: newT };
+		this.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+		this.graph.markDirty(id);
+	}
+
+	createTangentToQuadratic(
+		curveId: string,
+		anchor: { pointOnCurveId: string } | { t: number },
+		options?: ElementOptions
+	): string {
+		const curveEl = this.elements.get(curveId);
+		if (!curveEl || curveEl.type !== 'quadraticCurve') {
+			throw new Error(`createTangentToQuadratic: "${curveId}" is not a quadraticCurve element`);
+		}
+
+		const id = this.generateId('tgQ');
+		const deps: string[] = [curveId];
+
+		if ('pointOnCurveId' in anchor) {
+			const ptEl = this.elements.get(anchor.pointOnCurveId);
+			if (!ptEl || ptEl.type !== 'pointOnQuadraticCurve') {
+				throw new Error(
+					`createTangentToQuadratic: "${anchor.pointOnCurveId}" is not a pointOnQuadraticCurve`
+				);
+			}
+			deps.push(anchor.pointOnCurveId);
+		}
+
+		const element: GeoTangentToQuadratic = {
+			type: 'tangentToQuadratic',
+			id,
+			curveId,
+			...('pointOnCurveId' in anchor ? { pointOnCurveId: anchor.pointOnCurveId } : { t: anchor.t }),
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps as readonly string[]
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
 	movePointOnCurve(id: string, newX: GeoValue): void {
 		const el = this.elements.get(id);
 		if (!el || !isPointOnCurve(el)) {
@@ -1282,6 +1361,18 @@ export class Figure {
 			} else {
 				this.positions.delete(id);
 			}
+		} else if (isPointOnQuadraticCurve(el)) {
+			const curveEl = this.elements.get(el.curveId);
+			if (curveEl && curveEl.type === 'quadraticCurve') {
+				const pos = conicPointFromParam(curveEl.conic, el.t);
+				if (pos) {
+					this.positions.set(id, { x: numeric(pos.x), y: numeric(pos.y) });
+				} else {
+					this.positions.delete(id);
+				}
+			} else {
+				this.positions.delete(id);
+			}
 		}
 		// Free points: position stored directly in movePoint/createFreePoint.
 		// Segments, lines, rays, circles: no position to compute.
@@ -1323,4 +1414,88 @@ export class Figure {
 		if (!line1 || !line2) return null;
 		return intersectLL(line1.p1, line1.p2, line2.p1, line2.p2);
 	}
+}
+
+// =============================================================================
+// Conic parametric helpers (shared by Figure and rendering)
+// =============================================================================
+
+/** Compute the (x,y) position on a conic at parameter t (radians). */
+export function conicPointFromParam(
+	conic: ConicParams,
+	t: number
+): { x: number; y: number } | null {
+	if (conic.type === 'degenerate') return null;
+
+	const cos = Math.cos(conic.rotation);
+	const sin = Math.sin(conic.rotation);
+	const cx = conic.center?.x ?? conic.vertex?.x ?? 0;
+	const cy = conic.center?.y ?? conic.vertex?.y ?? 0;
+
+	let lx: number, ly: number;
+
+	switch (conic.type) {
+		case 'circle':
+		case 'ellipse':
+			lx = conic.a * Math.cos(t);
+			ly = conic.b * Math.sin(t);
+			break;
+		case 'hyperbola':
+			lx = conic.a * Math.cosh(t);
+			ly = conic.b * Math.sinh(t);
+			break;
+		case 'parabola': {
+			const p = conic.p ?? conic.a;
+			lx = (t * t) / (4 * p);
+			ly = t;
+			break;
+		}
+	}
+
+	return {
+		x: cx + lx * cos - ly * sin,
+		y: cy + lx * sin + ly * cos
+	};
+}
+
+/** Find the parameter t closest to (px, py) on a conic, by sampling. */
+export function conicClosestParam(conic: ConicParams, px: number, py: number): number {
+	const n = 360;
+	let bestT = 0;
+	let bestDist = Infinity;
+
+	const check = (t: number) => {
+		const pt = conicPointFromParam(conic, t);
+		if (!pt) return;
+		const d = (px - pt.x) ** 2 + (py - pt.y) ** 2;
+		if (d < bestDist) {
+			bestDist = d;
+			bestT = t;
+		}
+	};
+
+	switch (conic.type) {
+		case 'circle':
+		case 'ellipse':
+			for (let i = 0; i < n; i++) {
+				check((2 * Math.PI * i) / n);
+			}
+			break;
+		case 'hyperbola': {
+			const tMax = 5;
+			for (let i = 0; i <= n; i++) {
+				check(-tMax + (2 * tMax * i) / n);
+			}
+			break;
+		}
+		case 'parabola': {
+			const tMax = 20;
+			for (let i = 0; i <= n; i++) {
+				check(-tMax + (2 * tMax * i) / n);
+			}
+			break;
+		}
+	}
+
+	return bestT;
 }

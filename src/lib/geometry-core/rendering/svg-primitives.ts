@@ -807,8 +807,14 @@ function extendRayToBounds(
 // Function curve rendering
 // =============================================================================
 
-import type { GeoFunction, GeoQuadraticCurve, GeoTangentLine } from '../types/elements';
+import type {
+	GeoFunction,
+	GeoQuadraticCurve,
+	GeoTangentLine,
+	GeoTangentToQuadratic
+} from '../types/elements';
 import type { ConicParams } from '../types/elements';
+import { conicPointFromParam } from '../graph/figure';
 import type { Viewport, SampledCurve, Point } from '../viewport/types';
 import { sampleWithDerivative } from '$lib/grapheur/sampler';
 import { curveToSVGPath } from '../rendering/bezier';
@@ -902,6 +908,51 @@ export function tangentLineToSVG(
 	// Tangent line: passes through (x₀, y₀) with slope m
 	// Second point: (x₀ + 1, y₀ + m)
 	return extendLineToBounds(x0, y0, x0 + 1, y0 + m, transformer, dims);
+}
+
+/**
+ * Convert a GeoTangentToQuadratic to SVG line attributes.
+ * Tangent at (x₀,y₀) on F(x,y)=0: ∂F/∂x·(x-x₀) + ∂F/∂y·(y-y₀) = 0
+ */
+export function tangentToQuadraticToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): LineSVG | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'tangentToQuadratic') return null;
+
+	const tq = el as GeoTangentToQuadratic;
+	const curveEl = figure.getElementById(tq.curveId);
+	if (!curveEl || curveEl.type !== 'quadraticCurve') return null;
+
+	// Get the point on the curve
+	let x0: number, y0: number;
+	if (tq.pointOnCurveId) {
+		const pos = figure.getPosition(tq.pointOnCurveId);
+		if (!pos) return null;
+		x0 = geoToNumber(pos.x);
+		y0 = geoToNumber(pos.y);
+	} else if (tq.t !== undefined) {
+		const pt = conicPointFromParam(curveEl.conic, tq.t);
+		if (!pt) return null;
+		x0 = pt.x;
+		y0 = pt.y;
+	} else {
+		return null;
+	}
+
+	// Gradient of F = Ax² + Bxy + Cy² + Dx + Ey + F
+	const [A, B, C, D, E, _F] = curveEl.coefficients;
+	const dFx = 2 * A * x0 + B * y0 + D;
+	const dFy = B * x0 + 2 * C * y0 + E;
+
+	// Tangent direction is perpendicular to gradient: (-dFy, dFx)
+	// Second point on tangent: (x0 - dFy, y0 + dFx)
+	if (Math.abs(dFx) < 1e-12 && Math.abs(dFy) < 1e-12) return null;
+
+	return extendLineToBounds(x0, y0, x0 - dFy, y0 + dFx, transformer, dims);
 }
 
 // =============================================================================
