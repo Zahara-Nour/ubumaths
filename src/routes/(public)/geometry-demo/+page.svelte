@@ -356,6 +356,16 @@ P = point_sur(f, 1.5, couleur="rouge")
 t = tangente(f, P, couleur="rouge")
 t2 = tangente(f, -1, couleur="vert", trait="tirets")`
 	).figure;
+
+	// ==========================================================================
+	// zeros / extrema / inflections
+	// ==========================================================================
+	const analysisFig = runDsl(
+		`f = courbe("y = x^3 - 3*x", couleur="bleu")
+Z = zeros(f, couleur="rouge")
+E = extrema(f, couleur="vert")
+I = inflections(f, couleur="violet")`
+	).figure;
 </script>
 
 <div class="p-4">
@@ -523,5 +533,27 @@ t2 = tangente(f, -1, couleur="vert", trait="tirets")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{tangentFig.size} elements | tangente() + point_sur()
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Analyse — zeros(), extrema(), inflections()</h2>
+	<p class="mb-4 text-muted-foreground">
+		Courbe y = x^3 - 3x avec points critiques automatiques.
+		<strong>Rouge</strong> : zeros (x = -sqrt(3), 0, sqrt(3)).
+		<strong>Vert</strong> : extrema (max a x=-1, min a x=1).
+		<strong>Violet</strong> : inflexion a x=0.
+	</p>
+
+	<GeometryCanvas
+		figure={analysisFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{analysisFig.size} elements | zeros + extrema + inflections
 	</p>
 </div>
