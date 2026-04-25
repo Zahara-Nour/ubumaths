@@ -346,6 +346,16 @@ f3 = courbe("y = 1/x", couleur="vert")
 f4 = courbe("y = sqrt(x)", couleur="violet")
 f5 = courbe("y = exp(-x^2)", couleur="orange")`
 	).figure;
+
+	// ==========================================================================
+	// tangente() — tangent lines + draggable points on curves
+	// ==========================================================================
+	const tangentFig = runDsl(
+		`f = courbe("y = x^2", couleur="bleu")
+P = point_sur(f, 1.5, couleur="rouge")
+t = tangente(f, P, couleur="rouge")
+t2 = tangente(f, -1, couleur="vert", trait="tirets")`
+	).figure;
 </script>
 
 <div class="p-4">
@@ -491,5 +501,27 @@ f5 = courbe("y = exp(-x^2)", couleur="orange")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{functionFig.size} elements | courbe() — fonctions y=f(x)
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Tangentes — tangente() + point_sur()</h2>
+	<p class="mb-4 text-muted-foreground">
+		Courbe y = x^2 avec deux tangentes.
+		<strong>Rouge</strong> : tangente dynamique — deplacez le point P sur la courbe pour voir la
+		tangente suivre.
+		<strong>Vert tirets</strong> : tangente fixe a x = -1.
+	</p>
+
+	<GeometryCanvas
+		figure={tangentFig}
+		center={{ x: 0, y: 2 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{tangentFig.size} elements | tangente() + point_sur()
 	</p>
 </div>
