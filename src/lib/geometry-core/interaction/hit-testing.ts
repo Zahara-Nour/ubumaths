@@ -292,7 +292,7 @@ function distToQuadraticCurve(
 			const tMax = Math.sqrt(diag * 2 * p);
 			for (let i = 0; i <= n; i++) {
 				const t = -tMax + (2 * tMax * i) / n;
-				check((t * t) / (4 * p), t);
+				check((t * t) / (2 * p), t);
 			}
 			break;
 		}

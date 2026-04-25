@@ -1113,7 +1113,7 @@ function sampleParabola(conic: ConicParams, viewport: Viewport, n: number): Samp
 		const t = -tMax + (2 * tMax * i) / n;
 		// Standard parabola: y² = 4px → parametric: (t²/(4p), t)
 		// Opens along x-axis from vertex
-		const lx = (t * t) / (4 * p);
+		const lx = (t * t) / (2 * p);
 		const ly = t;
 		points.push(localToWorld(lx, ly, vx, vy, cos, sin));
 	}
