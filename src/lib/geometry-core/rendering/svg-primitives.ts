@@ -807,8 +807,9 @@ function extendRayToBounds(
 // Function curve rendering
 // =============================================================================
 
-import type { GeoFunction, GeoTangentLine } from '../types/elements';
-import type { Viewport } from '../viewport/types';
+import type { GeoFunction, GeoQuadraticCurve, GeoTangentLine } from '../types/elements';
+import type { ConicParams } from '../types/elements';
+import type { Viewport, SampledCurve, Point } from '../viewport/types';
 import { sampleWithDerivative } from '$lib/grapheur/sampler';
 import { curveToSVGPath } from '../rendering/bezier';
 
@@ -901,4 +902,170 @@ export function tangentLineToSVG(
 	// Tangent line: passes through (x₀, y₀) with slope m
 	// Second point: (x₀ + 1, y₀ + m)
 	return extendLineToBounds(x0, y0, x0 + 1, y0 + m, transformer, dims);
+}
+
+// =============================================================================
+// Quadratic curve (conic section) rendering
+// =============================================================================
+
+/** Number of sample points for parametric conic rendering. */
+const CONIC_SAMPLE_POINTS = 200;
+
+/**
+ * Convert a GeoQuadraticCurve to SVG path string(s) via parametric sampling.
+ */
+export function quadraticCurveToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): { paths: string[] } | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'quadraticCurve') return null;
+
+	const qc = el as GeoQuadraticCurve;
+	const conic = qc.conic;
+
+	if (conic.type === 'degenerate') return null;
+
+	const topLeft = transformer.svgToMath(0, 0);
+	const bottomRight = transformer.svgToMath(dims.width, dims.height);
+	const viewport: Viewport = {
+		xMin: topLeft.x,
+		xMax: bottomRight.x,
+		yMin: bottomRight.y,
+		yMax: topLeft.y
+	};
+
+	const paths: string[] = [];
+
+	switch (conic.type) {
+		case 'circle':
+		case 'ellipse': {
+			const curve = sampleEllipse(conic, CONIC_SAMPLE_POINTS);
+			const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
+			if (path) paths.push(path);
+			break;
+		}
+		case 'hyperbola': {
+			// Two branches
+			const [branch1, branch2] = sampleHyperbola(conic, viewport, CONIC_SAMPLE_POINTS);
+			const p1 = curveToSVGPath(branch1, (p) => transformer.mathToSvg(p.x, p.y));
+			const p2 = curveToSVGPath(branch2, (p) => transformer.mathToSvg(p.x, p.y));
+			if (p1) paths.push(p1);
+			if (p2) paths.push(p2);
+			break;
+		}
+		case 'parabola': {
+			const curve = sampleParabola(conic, viewport, CONIC_SAMPLE_POINTS);
+			const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
+			if (path) paths.push(path);
+			break;
+		}
+	}
+
+	return paths.length > 0 ? { paths } : null;
+}
+
+// =============================================================================
+// Parametric sampling helpers
+// =============================================================================
+
+/** Transform a point from local (rotated) to world coordinates. */
+function localToWorld(
+	lx: number,
+	ly: number,
+	cx: number,
+	cy: number,
+	cos: number,
+	sin: number
+): Point {
+	return {
+		x: cx + lx * cos - ly * sin,
+		y: cy + lx * sin + ly * cos
+	};
+}
+
+/** Sample an ellipse (or circle) parametrically. Returns a closed curve. */
+function sampleEllipse(conic: ConicParams, n: number): SampledCurve {
+	const { a, b, rotation } = conic;
+	const cx = conic.center?.x ?? 0;
+	const cy = conic.center?.y ?? 0;
+	const cos = Math.cos(rotation);
+	const sin = Math.sin(rotation);
+
+	const points: Point[] = [];
+	// Sample full circle + close
+	for (let i = 0; i <= n; i++) {
+		const t = (2 * Math.PI * i) / n;
+		const lx = a * Math.cos(t);
+		const ly = b * Math.sin(t);
+		points.push(localToWorld(lx, ly, cx, cy, cos, sin));
+	}
+
+	return { points, discontinuityIndices: [] };
+}
+
+/** Sample both branches of a hyperbola. */
+function sampleHyperbola(
+	conic: ConicParams,
+	viewport: Viewport,
+	n: number
+): [SampledCurve, SampledCurve] {
+	const { a, b, rotation } = conic;
+	const cx = conic.center?.x ?? 0;
+	const cy = conic.center?.y ?? 0;
+	const cos = Math.cos(rotation);
+	const sin = Math.sin(rotation);
+
+	// t range: enough to cover viewport diagonal
+	const diag = Math.sqrt(
+		(viewport.xMax - viewport.xMin) ** 2 + (viewport.yMax - viewport.yMin) ** 2
+	);
+	const tMax = Math.acosh(Math.max(2, diag / a + 1));
+
+	const branch1: Point[] = [];
+	const branch2: Point[] = [];
+
+	for (let i = 0; i <= n; i++) {
+		const t = -tMax + (2 * tMax * i) / n;
+		// Right branch: x = a·cosh(t), y = b·sinh(t)
+		const lx = a * Math.cosh(t);
+		const ly = b * Math.sinh(t);
+		branch1.push(localToWorld(lx, ly, cx, cy, cos, sin));
+		// Left branch: x = -a·cosh(t), y = b·sinh(t)  (or equivalently negate x)
+		branch2.push(localToWorld(-lx, ly, cx, cy, cos, sin));
+	}
+
+	return [
+		{ points: branch1, discontinuityIndices: [] },
+		{ points: branch2, discontinuityIndices: [] }
+	];
+}
+
+/** Sample a parabola parametrically. */
+function sampleParabola(conic: ConicParams, viewport: Viewport, n: number): SampledCurve {
+	const p = conic.p ?? conic.a;
+	const vx = conic.vertex?.x ?? 0;
+	const vy = conic.vertex?.y ?? 0;
+	const cos = Math.cos(conic.rotation);
+	const sin = Math.sin(conic.rotation);
+
+	// t range: cover viewport
+	const diag = Math.sqrt(
+		(viewport.xMax - viewport.xMin) ** 2 + (viewport.yMax - viewport.yMin) ** 2
+	);
+	const tMax = Math.sqrt(diag * 2 * p);
+
+	const points: Point[] = [];
+	for (let i = 0; i <= n; i++) {
+		const t = -tMax + (2 * tMax * i) / n;
+		// Standard parabola: y² = 4px → parametric: (t²/(4p), t)
+		// Opens along x-axis from vertex
+		const lx = (t * t) / (4 * p);
+		const ly = t;
+		points.push(localToWorld(lx, ly, vx, vy, cos, sin));
+	}
+
+	return { points, discontinuityIndices: [] };
 }
