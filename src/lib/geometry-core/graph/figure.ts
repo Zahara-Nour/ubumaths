@@ -29,6 +29,7 @@ import type {
 	GeoArcByPoints,
 	GeoPolygon,
 	GeoFunction,
+	GeoPointOnCurve,
 	type LineEquation
 } from '../types/elements';
 import {
@@ -44,10 +45,11 @@ import {
 	isSegmentMark,
 	isMeasure,
 	isPointElement,
-	isLineLike
+	isLineLike,
+	isPointOnCurve
 } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
-import { geoValueToMathNode } from '../types/geo-value';
+import { geoValueToMathNode, numeric } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { geoAdd, geoSub, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
 import type { MathNode } from '$lib/mathAST/types';
@@ -826,6 +828,44 @@ export class Figure {
 		return id;
 	}
 
+	createPointOnCurve(functionId: string, x0: GeoValue, options?: ElementOptions): string {
+		const fnEl = this.elements.get(functionId);
+		if (!fnEl || fnEl.type !== 'function') {
+			throw new Error(`createPointOnCurve: "${functionId}" is not a function element`);
+		}
+
+		const id = this.generateId('ptC');
+		const element: GeoPointOnCurve = {
+			type: 'pointOnCurve',
+			id,
+			functionId,
+			x0,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [functionId]
+		};
+		this.addElement(id, element, [functionId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	movePointOnCurve(id: string, newX: GeoValue): void {
+		const el = this.elements.get(id);
+		if (!el || !isPointOnCurve(el)) {
+			throw new Error(`movePointOnCurve: "${id}" is not a pointOnCurve`);
+		}
+
+		const updated: GeoPointOnCurve = { ...el, x0: newX };
+		this.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+
+		// Recompute position (y from function)
+		this.graph.markDirty(id);
+	}
+
 	createMeasure(
 		measureType: 'distance' | 'angle' | 'area',
 		targetIds: string[],
@@ -1152,6 +1192,19 @@ export class Figure {
 			const vertexPos = this.positions.get(el.vertexId);
 			if (vertexPos) {
 				this.positions.set(id, vertexPos);
+			} else {
+				this.positions.delete(id);
+			}
+		} else if (isPointOnCurve(el)) {
+			const fnEl = this.elements.get(el.functionId);
+			if (fnEl && fnEl.type === 'function') {
+				const xNum = geoToNumber(el.x0);
+				const yNum = fnEl.compiledFn({ x: xNum });
+				if (Number.isFinite(yNum)) {
+					this.positions.set(id, { x: el.x0, y: numeric(yNum) });
+				} else {
+					this.positions.delete(id);
+				}
 			} else {
 				this.positions.delete(id);
 			}

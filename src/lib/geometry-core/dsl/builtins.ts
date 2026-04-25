@@ -473,6 +473,21 @@ function _executeBuiltinInner(
 			return courbeResult;
 		}
 
+		case 'point_sur': {
+			if (pos.length < 1 || pos.length > 2) {
+				throw new DslRuntimeError('point_sur() attend 1-2 arguments (f, x0?)', line);
+			}
+			const fnId = requireElement(pos[0], 'fonction', line);
+			const fnEl = figure.getElementById(fnId);
+			if (!fnEl || fnEl.type !== 'function') {
+				throw new DslRuntimeError('point_sur(): le premier argument doit etre une courbe', line);
+			}
+			const x0Val =
+				pos.length >= 2 ? toGeoValue(pos[1], line) : toGeoValue({ type: 'nombre', value: 0 }, line);
+			const ptId = figure.createPointOnCurve(fnId, x0Val, { label });
+			return { figureId: ptId, symbolType: 'point' as SymbolType };
+		}
+
 		default:
 			return null; // Not a builtin — might be a macro
 	}
@@ -497,7 +512,8 @@ export const BUILTIN_NAMES = new Set([
 	'marque_segment',
 	'mesure',
 	'style',
-	'courbe'
+	'courbe',
+	'point_sur'
 ]);
 
 /** Math functions that return numbers. */

@@ -169,3 +169,41 @@ describe('courbe — function curves y=f(x)', () => {
 		expect(() => run('c = courbe("y^2 = x")')).toThrow(DslRuntimeError);
 	});
 });
+
+// =============================================================================
+// point_sur — point constrained on curve
+// =============================================================================
+
+describe('point_sur — point on curve', () => {
+	it('creates a pointOnCurve at given x', () => {
+		const { figure } = run('f = courbe("y = x^2")\nP = point_sur(f, 3)');
+		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnCurve');
+		expect(pts).toHaveLength(1);
+	});
+
+	it('computes correct position on the curve', () => {
+		const { figure, symbols } = run('f = courbe("y = x^2")\nP = point_sur(f, 3)');
+		const pos = figure.getPosition(symbols.get('P')!.figureId!);
+		expect(pos).toBeDefined();
+		expect(geoToNumber(pos!.x)).toBeCloseTo(3);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(9); // 3^2
+	});
+
+	it('defaults to x=0 when no x given', () => {
+		const { figure, symbols } = run('f = courbe("y = x^2 + 1")\nP = point_sur(f)');
+		const pos = figure.getPosition(symbols.get('P')!.figureId!);
+		expect(pos).toBeDefined();
+		expect(geoToNumber(pos!.x)).toBeCloseTo(0);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(1); // 0^2 + 1
+	});
+
+	it('throws when first arg is not a function', () => {
+		expect(() => run('A = point(0,0)\nP = point_sur(A, 1)')).toThrow(DslRuntimeError);
+	});
+
+	it('is visible and part of point elements', () => {
+		const { figure } = run('f = courbe("y = x^2")\nP = point_sur(f, 2)');
+		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnCurve');
+		expect(pts[0].visible).toBe(true);
+	});
+});

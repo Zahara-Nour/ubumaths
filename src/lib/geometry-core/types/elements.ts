@@ -123,6 +123,14 @@ export interface GeoReflectedOverLine extends GeoElementBase {
 	readonly dependsOn: readonly [string, string, string];
 }
 
+/** Point constrained to a function curve y=f(x). Draggable along x only. */
+export interface GeoPointOnCurve extends GeoElementBase {
+	readonly type: 'pointOnCurve';
+	readonly functionId: string;
+	readonly x0: GeoValue;
+	readonly dependsOn: readonly [string];
+}
+
 // =============================================================================
 // Annotation types
 // =============================================================================
@@ -291,7 +299,8 @@ export type GeoPointElement =
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
 	| GeoDilatedPoint
-	| GeoReflectedOverLine;
+	| GeoReflectedOverLine
+	| GeoPointOnCurve;
 export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
 
 export type GeoElement =
@@ -314,7 +323,8 @@ export type GeoElement =
 	| GeoArcByAngles
 	| GeoArcByPoints
 	| GeoPolygon
-	| GeoFunction;
+	| GeoFunction
+	| GeoPointOnCurve;
 
 export type GeoElementType = GeoElement['type'];
 
@@ -354,6 +364,10 @@ export function isReflectedOverLine(el: GeoElement): el is GeoReflectedOverLine 
 	return el.type === 'reflectedOverLine';
 }
 
+export function isPointOnCurve(el: GeoElement): el is GeoPointOnCurve {
+	return el.type === 'pointOnCurve';
+}
+
 export function isPointElement(el: GeoElement): el is GeoPointElement {
 	return (
 		el.type === 'freePoint' ||
@@ -363,7 +377,8 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'rotatedPoint' ||
 		el.type === 'translatedPoint' ||
 		el.type === 'dilatedPoint' ||
-		el.type === 'reflectedOverLine'
+		el.type === 'reflectedOverLine' ||
+		el.type === 'pointOnCurve'
 	);
 }
 
