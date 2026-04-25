@@ -20,6 +20,9 @@ import type {
 	ObliqueAsymptote,
 	FunctionAnalysis
 } from './types';
+import type { MathNode } from '$lib/mathAST/types';
+import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
 
 // =============================================================================
 // Constants
@@ -721,15 +724,69 @@ function checkConvergence(values: number[]): number | null {
  * @param functionId - ID of the function being analyzed
  * @returns Complete analysis results
  */
+/** Optional AST info for hybrid exact+numeric analysis. */
+export interface AnalysisASTInfo {
+	expression: MathNode;
+	derivative?: MathNode;
+	compiledFn: CompiledFn;
+	compiledDerivative?: CompiledFn;
+}
+
 export function analyzeFunction(
 	evaluator: (x: number) => number | null,
 	viewport: Viewport,
-	functionId: string
+	functionId: string,
+	ast?: AnalysisASTInfo
 ): FunctionAnalysis {
+	// Use hybrid exact+numeric analysis when AST is available
+	let roots: Root[];
+	let extrema: Extremum[];
+
+	if (ast) {
+		const criticalZeros = findCriticalZeros(
+			ast.expression,
+			ast.compiledFn,
+			'x',
+			viewport.xMin,
+			viewport.xMax
+		);
+		roots = criticalZeros.map((cp) => ({
+			x: cp.xNumeric,
+			functionId,
+			confidence: cp.exact ? 1.0 : 0.9
+		}));
+
+		if (ast.derivative && ast.compiledDerivative) {
+			const criticalExtrema = findCriticalExtrema(
+				ast.expression,
+				ast.derivative,
+				ast.compiledFn,
+				ast.compiledDerivative,
+				'x',
+				viewport.xMin,
+				viewport.xMax
+			);
+			extrema = criticalExtrema
+				.filter((cp) => cp.yNumeric >= viewport.yMin && cp.yNumeric <= viewport.yMax)
+				.map((cp) => ({
+					x: cp.xNumeric,
+					y: cp.yNumeric,
+					type: cp.type as 'min' | 'max',
+					functionId,
+					confidence: cp.exact ? 1.0 : 0.9
+				}));
+		} else {
+			extrema = findExtrema(evaluator, viewport, functionId);
+		}
+	} else {
+		roots = findRoots(evaluator, viewport, functionId);
+		extrema = findExtrema(evaluator, viewport, functionId);
+	}
+
 	return {
 		functionId,
-		roots: findRoots(evaluator, viewport, functionId),
-		extrema: findExtrema(evaluator, viewport, functionId),
+		roots,
+		extrema,
 		verticalAsymptotes: findVerticalAsymptotes(evaluator, viewport, functionId),
 		horizontalAsymptotes: findHorizontalAsymptotes(evaluator, functionId),
 		obliqueAsymptotes: findObliqueAsymptotes(evaluator, functionId)
@@ -744,8 +801,12 @@ export function analyzeFunction(
  * @returns Array of analysis results for each function
  */
 export function analyzeAllFunctions(
-	functions: readonly { id: string; evaluator: (x: number) => number | null }[],
+	functions: readonly {
+		id: string;
+		evaluator: (x: number) => number | null;
+		ast?: AnalysisASTInfo;
+	}[],
 	viewport: Viewport
 ): FunctionAnalysis[] {
-	return functions.map((f) => analyzeFunction(f.evaluator, viewport, f.id));
+	return functions.map((f) => analyzeFunction(f.evaluator, viewport, f.id, f.ast));
 }
