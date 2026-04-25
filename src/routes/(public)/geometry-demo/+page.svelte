@@ -366,6 +366,17 @@ Z = zeros(f, couleur="rouge")
 E = extrema(f, couleur="vert")
 I = inflections(f, couleur="violet")`
 	).figure;
+
+	// ==========================================================================
+	// courbe() — quadratic curves (conics)
+	// ==========================================================================
+	const conicFig = runDsl(
+		`c1 = courbe("x^2 + y^2 - 9 = 0", couleur="bleu")
+c2 = courbe("x^2/4 + y^2/9 - 1 = 0", couleur="rouge")
+c3 = courbe("x^2 - y^2 - 1 = 0", couleur="vert")
+c4 = courbe("x^2 + x*y + y^2 - 1 = 0", couleur="violet")
+c5 = courbe("y^2 - 4*x = 0", couleur="orange")`
+	).figure;
 </script>
 
 <div class="p-4">
@@ -555,5 +566,31 @@ I = inflections(f, couleur="violet")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{analysisFig.size} elements | zeros + extrema + inflections
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Coniques — courbe() quadratique</h2>
+	<p class="mb-4 text-muted-foreground">
+		Courbes implicites de degre 2 : Ax² + Bxy + Cy² + Dx + Ey + F = 0, classifiees et tracees
+		parametriquement.
+		<br />
+		<strong>Bleu</strong> : cercle x²+y²=9 |
+		<strong>Rouge</strong> : ellipse x²/4+y²/9=1 |
+		<strong>Vert</strong> : hyperbole x²-y²=1 |
+		<strong>Violet</strong> : conique generale x²+xy+y²=1 |
+		<strong>Orange</strong> : parabole y²=4x
+	</p>
+
+	<GeometryCanvas
+		figure={conicFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{conicFig.size} elements | courbe() — coniques
 	</p>
 </div>

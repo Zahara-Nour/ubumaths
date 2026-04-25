@@ -19,6 +19,7 @@
 		measureToSVG,
 		resolveStyle,
 		functionToSVG,
+		quadraticCurveToSVG,
 		tangentLineToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
@@ -810,6 +811,39 @@
 								<text
 									x={svgPt.x + (el.labelOffset?.dx ?? sign * nx * offset)}
 									y={svgPt.y + (el.labelOffset?.dy ?? sign * ny * offset)}
+									class="label"
+									fill={sty.color}
+									stroke="white"
+									stroke-width="3"
+									paint-order="stroke">{el.label}</text
+								>
+							{/if}
+						{/if}
+					{/if}
+				{:else if el.type === 'quadraticCurve'}
+					{@const svg = quadraticCurveToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						{#each svg.paths as pathD, i (i)}
+							<path
+								d={pathD}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								stroke-dasharray={sty.dashArray}
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								opacity={sty.opacity}
+								fill="none"
+								class="function-curve"
+								class:hovered={hoveredId === el.id}
+							/>
+						{/each}
+						{#if el.label}
+							{@const center = el.conic.center ?? el.conic.vertex}
+							{#if center}
+								{@const svgPt = transformer.mathToSvg(center.x, center.y)}
+								<text
+									x={svgPt.x + (el.labelOffset?.dx ?? 10)}
+									y={svgPt.y + (el.labelOffset?.dy ?? -10)}
 									class="label"
 									fill={sty.color}
 									stroke="white"
