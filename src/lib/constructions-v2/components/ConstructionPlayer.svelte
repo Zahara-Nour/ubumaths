@@ -140,6 +140,10 @@
 		timeline?.stepForward();
 	}
 
+	function handlePlayOneStep() {
+		timeline?.playOneStep();
+	}
+
 	function handleStepBackward() {
 		timeline?.stepBackward();
 	}
@@ -243,6 +247,7 @@
 					{tl}
 					onToggle={handleToggle}
 					onStepForward={handleStepForward}
+					onPlayOneStep={handlePlayOneStep}
 					onStepBackward={handleStepBackward}
 					onReset={handleReset}
 				/>

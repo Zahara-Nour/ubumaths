@@ -59,6 +59,8 @@ export class Timeline {
 	private _totalDuration = 0;
 	private _playbackRate = 1;
 	private _stepCount = 0;
+	/** If set, auto-pause when currentTime reaches this value (used by playOneStep). */
+	private _stopAtTime: number | null = null;
 
 	private onUpdate: TimelineUpdateFn;
 	private onStepChange?: (stepIndex: number) => void;
@@ -93,6 +95,7 @@ export class Timeline {
 			this._currentTime = 0;
 			this._currentStepIndex = -1;
 		}
+		this._stopAtTime = null;
 		this._isPlaying = true;
 		this.lastFrameTime = performance.now();
 		this.rafId = requestAnimationFrame((t) => this.tick(t));
@@ -126,6 +129,36 @@ export class Timeline {
 		this._currentTime = this.stepTimings[nextIndex].end;
 		this._currentStepIndex = nextIndex;
 		this.onStepChange?.(nextIndex);
+		this.emitState();
+	}
+
+	/** Play the animation for the next step, then auto-pause at its end. */
+	playOneStep(): void {
+		if (this._currentStepIndex + 1 >= this._stepCount) return;
+		// Find the next non-zero-duration step
+		let targetIndex = this._currentStepIndex + 1;
+		while (
+			targetIndex < this._stepCount &&
+			this.stepTimings[targetIndex].end - this.stepTimings[targetIndex].start === 0
+		) {
+			// Skip zero-duration directives
+			this._currentTime = this.stepTimings[targetIndex].end;
+			this._currentStepIndex = targetIndex;
+			this.onStepChange?.(targetIndex);
+			targetIndex++;
+		}
+		if (targetIndex >= this._stepCount) {
+			this.emitState();
+			return;
+		}
+		// Set stop point and start playing
+		this._stopAtTime = this.stepTimings[targetIndex].end;
+		this._currentTime = this.stepTimings[targetIndex].start;
+		this._currentStepIndex = targetIndex;
+		this.onStepChange?.(targetIndex);
+		this._isPlaying = true;
+		this.lastFrameTime = performance.now();
+		this.rafId = requestAnimationFrame((t) => this.tick(t));
 		this.emitState();
 	}
 
@@ -195,11 +228,13 @@ export class Timeline {
 		const deltaMs = (now - this.lastFrameTime) * this._playbackRate;
 		this.lastFrameTime = now;
 
-		this._currentTime = Math.min(this._currentTime + deltaMs, this._totalDuration);
+		const limit = this._stopAtTime ?? this._totalDuration;
+		this._currentTime = Math.min(this._currentTime + deltaMs, limit);
 		this.updateCurrentStep();
 
-		if (this._currentTime >= this._totalDuration) {
+		if (this._currentTime >= limit) {
 			this._isPlaying = false;
+			this._stopAtTime = null;
 			this.emitState();
 			return;
 		}
@@ -226,6 +261,7 @@ export class Timeline {
 
 	private stopInternal(): void {
 		this._isPlaying = false;
+		this._stopAtTime = null;
 		this.cancelRaf();
 		this._currentTime = 0;
 		this._currentStepIndex = -1;
