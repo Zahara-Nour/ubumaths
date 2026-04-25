@@ -885,6 +885,11 @@ export class Figure {
 			if (!ptEl || ptEl.type !== 'pointOnCurve') {
 				throw new Error(`createTangentLine: "${anchor.pointOnCurveId}" is not a pointOnCurve`);
 			}
+			if (ptEl.functionId !== functionId) {
+				throw new Error(
+					`createTangentLine: pointOnCurve "${anchor.pointOnCurveId}" belongs to a different function`
+				);
+			}
 			deps.push(anchor.pointOnCurveId);
 		}
 
