@@ -439,7 +439,7 @@ export type { SimplifyOptions, SimplifyResult, SimplifyStep, SimplifyPhase } fro
 // Evaluation and Substitution
 // =============================================================================
 
-export { substitute, evaluate, compile, CompileError } from './eval';
+export { substitute, evaluate, compile, createSafeEvaluator, CompileError } from './eval';
 export type { CompiledFn } from './eval';
 export { areEquivalent } from './equivalence';
 export type { EvalBindings, EvalOptions, EvalResult } from './eval';
