@@ -48,21 +48,30 @@
 	let currentFigure = $state<Figure>(new Figure());
 	let currentInstrumentStates = $state(new Map<string, InstrumentState>());
 	let animatingIds = $state<string[]>([]);
+	let animatingPointIds = $state<string[]>([]);
 	let autoInstruments = $state(new Set<InstrumentType>());
 	let instrumentMoves = $state(new Map<InstrumentType, InstrumentMove>());
+	let movePhaseEnd = $state(0);
+	let pausePhaseStart = $state(1);
+	let moveDurationMs = $state(0);
 
-	// Pre-compute the Set once when animatingIds changes (not every frame)
+	// Pre-compute Sets once when arrays change (not every frame)
 	const EMPTY_IDS = new Set<string>();
 	let animatingIdsSet = $derived(animatingIds.length > 0 ? new Set(animatingIds) : EMPTY_IDS);
+	let animatingPointIdsSet = $derived(
+		animatingPointIds.length > 0 ? new Set(animatingPointIds) : EMPTY_IDS
+	);
 
 	// Derived animation state — only drawProgress changes every RAF frame.
-	// animatingIds are cleared at progress=1 (element fully drawn, GeometryCanvas takes over).
-	// autoInstruments and instrumentMoves stay until the NEXT step changes them.
 	let animation = $derived<DrawAnimationState>({
 		animatingIds: tl.stepProgress < 1 ? animatingIdsSet : EMPTY_IDS,
+		animatingPointIds: tl.stepProgress < 1 ? animatingPointIdsSet : EMPTY_IDS,
 		drawProgress: tl.stepProgress,
 		autoInstruments,
-		instrumentMoves
+		instrumentMoves,
+		movePhaseEnd,
+		pausePhaseStart,
+		moveDurationMs
 	});
 
 	// Plain JS objects (not reactive)
@@ -95,8 +104,12 @@
 				executor.step();
 			}
 			animatingIds = executor.lastStepNewElementIds;
+			animatingPointIds = executor.lastStepNewPointIds;
 			autoInstruments = new Set(executor.autoInstruments);
 			instrumentMoves = new Map(executor.instrumentMoves);
+			movePhaseEnd = executor.movePhaseEnd;
+			pausePhaseStart = executor.pausePhaseStart;
+			moveDurationMs = executor.moveDurationMs;
 			syncState();
 		} catch {
 			// Script may be invalid during editing — ignore runtime errors

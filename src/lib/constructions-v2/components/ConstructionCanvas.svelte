@@ -4,13 +4,14 @@
 	import { Ruler, Compass, Pencil, Protractor, SetSquare } from '../instruments/components/index';
 	import type { Figure } from '$lib/geometry-core/graph/figure';
 	import type { InstrumentState, DrawAnimationState } from '../types';
-	import { PHASE_INSTRUMENT_MOVE_END } from '../types';
 	import {
 		partialSegmentSVG,
 		partialArcSVGPath,
 		partialCircleSVGPath,
 		drawingTipPosition
 	} from '../core/render-helpers';
+	import { easeInOut, easeWithFixedRamp } from '../core/animator';
+	import { pointToSVG, resolveStyle } from '$lib/geometry-core/rendering/svg-primitives';
 
 	interface Props {
 		figure: Figure;
@@ -46,12 +47,16 @@
 	});
 	let transformer = $derived(createTransformer(viewport, width, height));
 
-	// IDs to hide from GeometryCanvas during animation
+	// IDs to hide from GeometryCanvas during animation (drawables + points being animated)
 	let hiddenElementIds = $derived.by(() => {
-		if (!animation || animation.animatingIds.size === 0 || animation.drawProgress >= 1) {
-			return undefined;
-		}
-		return animation.animatingIds;
+		if (!animation || animation.drawProgress >= 1) return undefined;
+		const drawableHidden = animation.animatingIds.size > 0;
+		const pointsHidden = animation.animatingPointIds.size > 0;
+		if (!drawableHidden && !pointsHidden) return undefined;
+		const ids = new Set<string>();
+		for (const id of animation.animatingIds) ids.add(id);
+		for (const id of animation.animatingPointIds) ids.add(id);
+		return ids;
 	});
 
 	// Pencil tip override during drawing animation (SVG coords)
@@ -71,7 +76,7 @@
 			const seg = partialSegmentSVG(id, figure, transformer, 1);
 			if (seg) {
 				const angle = Math.atan2(seg.y2 - seg.y1, seg.x2 - seg.x1) * (180 / Math.PI);
-				return angle + 45;
+				return angle - 45;
 			}
 		}
 		return 0;
@@ -82,23 +87,33 @@
 		!!animation && animation.animatingIds.size > 0 && animation.drawProgress < 1
 	);
 
-	// Adjusted draw progress: 0 during instrument move phase, then 0→1 during drawing phase
+	// Phase ratios from animation state
+	let moveEnd = $derived(animation?.movePhaseEnd ?? 0);
+	let pauseStart = $derived(animation?.pausePhaseStart ?? 1);
+
+	// Adjusted draw progress: 0 during move phase, 0→1 during draw phase, 1 during pause phase.
+	// Eased for smooth acceleration/deceleration.
 	let drawProgress = $derived.by(() => {
 		if (!animation) return 0;
 		const p = animation.drawProgress;
-		if (animation.instrumentMoves.size > 0 && p < PHASE_INSTRUMENT_MOVE_END) return 0;
-		if (animation.instrumentMoves.size > 0) {
-			return (p - PHASE_INSTRUMENT_MOVE_END) / (1 - PHASE_INSTRUMENT_MOVE_END);
-		}
-		return p;
+		if (moveEnd > 0 && p < moveEnd) return 0;
+		if (p >= pauseStart) return 1;
+		const drawRange = pauseStart - moveEnd;
+		if (drawRange <= 0) return p >= moveEnd ? 1 : 0;
+		const raw = (p - moveEnd) / drawRange;
+		return easeInOut(Math.max(0, Math.min(1, raw)));
 	});
 
-	// Instrument move progress: 0→1 during the move phase
+	// Instrument move progress: 0→1 during the move phase, eased with fixed ramp.
 	let instrumentMoveProgress = $derived.by(() => {
-		if (!animation || animation.instrumentMoves.size === 0) return 1;
+		if (!animation || animation.instrumentMoves.size === 0 || moveEnd <= 0) return 1;
 		const p = animation.drawProgress;
-		if (p >= PHASE_INSTRUMENT_MOVE_END) return 1;
-		return p / PHASE_INSTRUMENT_MOVE_END;
+		if (p >= moveEnd) return 1;
+		const t = p / moveEnd;
+		const moveDurMs = animation.moveDurationMs;
+		if (moveDurMs <= 0) return easeInOut(t);
+		const rampRatio = Math.min(0.5, 300 / moveDurMs);
+		return easeWithFixedRamp(t, rampRatio);
 	});
 
 	// Interpolated instrument positions in SVG coords (reactive — updates every frame)
@@ -121,8 +136,23 @@
 		return positions;
 	});
 
-	// Pre-compute array from Set (only recomputes when animatingIds set changes, not every frame)
+	// Pre-compute arrays from Sets (only recompute when sets change, not every frame)
 	let animatingIdArray = $derived(animation ? [...animation.animatingIds] : ([] as string[]));
+	let animatingPointIdArray = $derived(
+		animation ? [...animation.animatingPointIds] : ([] as string[])
+	);
+
+	// Point animation: fade-in + bump (scale 0 → 1.3 → 1)
+	let pointAnimProgress = $derived.by(() => {
+		if (!animation || animation.animatingPointIds.size === 0) return 1;
+		return easeInOut(animation.drawProgress);
+	});
+	// Bump: overshoot to 1.3 at progress 0.5, settle to 1.0 at progress 1.0
+	let pointScale = $derived.by(() => {
+		const t = pointAnimProgress;
+		if (t <= 0.5) return t * 2 * 1.3; // 0 → 1.3
+		return 1.3 - (t - 0.5) * 2 * 0.3; // 1.3 → 1.0
+	});
 
 	// Recompute when figureVersion changes (Map reference is stable, $derived needs a hint)
 	let visibleInstruments = $derived.by(() => {
@@ -208,7 +238,65 @@
 		</svg>
 	{/if}
 
-	<!-- Instruments overlay — uses instrumentPositions (reactive Map) for animated positions -->
+	<!-- Point animation overlay: fade-in + bump -->
+	{#if animation && animation.animatingPointIds.size > 0 && animation.drawProgress < 1}
+		<svg
+			class="points-overlay"
+			{width}
+			{height}
+			viewBox="0 0 {width} {height}"
+			style="position: absolute; top: 0; left: 0; pointer-events: none;"
+		>
+			{#each animatingPointIdArray as id (id)}
+				{@const pt = pointToSVG(id, figure, transformer)}
+				{@const el = figure.getElementById(id)}
+				{@const sty = el ? resolveStyle(el, figure.defaults) : null}
+				{#if pt && sty}
+					{@const s = pointScale}
+					{@const op = pointAnimProgress}
+					<g transform="translate({pt.cx}, {pt.cy}) scale({s})" opacity={op}>
+						{#if sty.pointShape === 'dot'}
+							<circle r={sty.pointSize} fill={sty.color} />
+						{:else if sty.pointShape === 'circle'}
+							<circle
+								r={sty.pointSize}
+								fill="none"
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+							/>
+						{:else if sty.pointShape === 'cross'}
+							<line
+								x1={-sty.pointSize}
+								y1={-sty.pointSize}
+								x2={sty.pointSize}
+								y2={sty.pointSize}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+							/>
+							<line
+								x1={sty.pointSize}
+								y1={-sty.pointSize}
+								x2={-sty.pointSize}
+								y2={sty.pointSize}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+							/>
+						{:else if sty.pointShape === 'square'}
+							<rect
+								x={-sty.pointSize}
+								y={-sty.pointSize}
+								width={sty.pointSize * 2}
+								height={sty.pointSize * 2}
+								fill={sty.color}
+							/>
+						{/if}
+					</g>
+				{/if}
+			{/each}
+		</svg>
+	{/if}
+
+	<!-- Instruments overlay — uses instrumentPositions (reactive Record) for animated positions -->
 	{#if visibleInstruments.length > 0}
 		<svg
 			class="instruments-overlay"
