@@ -12,6 +12,7 @@
 		lineToSVG,
 		rayToSVG,
 		circleToSVG,
+		circleToPathSVG,
 		arcToSVG,
 		angleMarkToSVG,
 		segmentMarkToSVG,
@@ -490,6 +491,7 @@
 							stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
+							stroke-linecap="round"
 							opacity={sty.opacity}
 							class="segment"
 							class:hovered={hoveredId === el.id}
@@ -506,6 +508,7 @@
 							stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
+							stroke-linecap="round"
 							opacity={sty.opacity}
 							class="geo-line"
 							class:hovered={hoveredId === el.id}
@@ -528,21 +531,38 @@
 						/>
 					{/if}
 				{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint'}
-					{@const svg = circleToSVG(el.id, figure, transformer)}
-					{#if svg}
-						<circle
-							cx={svg.cx}
-							cy={svg.cy}
-							r={svg.r}
-							stroke={sty.color}
-							stroke-width={sty.strokeWidth}
-							stroke-dasharray={sty.dashArray}
-							opacity={sty.opacity}
-							fill={sty.fillColor ?? 'none'}
-							fill-opacity={sty.fillOpacity}
-							class="circle"
-							class:hovered={hoveredId === el.id}
-						/>
+					{#if sty.dash !== 'solid'}
+						{@const svg = circleToPathSVG(el.id, figure, transformer)}
+						{#if svg}
+							<path
+								d={svg.path}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								stroke-dasharray={sty.dashArray}
+								stroke-linecap="round"
+								opacity={sty.opacity}
+								fill={sty.fillColor ?? 'none'}
+								fill-opacity={sty.fillOpacity}
+								class="circle"
+								class:hovered={hoveredId === el.id}
+							/>
+						{/if}
+					{:else}
+						{@const svg = circleToSVG(el.id, figure, transformer)}
+						{#if svg}
+							<circle
+								cx={svg.cx}
+								cy={svg.cy}
+								r={svg.r}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								opacity={sty.opacity}
+								fill={sty.fillColor ?? 'none'}
+								fill-opacity={sty.fillOpacity}
+								class="circle"
+								class:hovered={hoveredId === el.id}
+							/>
+						{/if}
 					{/if}
 				{/if}
 			{/each}
@@ -558,6 +578,7 @@
 							stroke={sty.color}
 							stroke-width={sty.strokeWidth}
 							stroke-dasharray={sty.dashArray}
+							stroke-linecap="round"
 							opacity={sty.opacity}
 							fill="none"
 							class="arc"

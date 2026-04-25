@@ -48,8 +48,8 @@ export interface GeoStyleResolved {
 
 const DASH_ARRAYS: Record<'solid' | 'dashed' | 'dotted', string> = {
 	solid: '',
-	dashed: '8 4',
-	dotted: '2 4'
+	dashed: '12 8',
+	dotted: '2 6'
 };
 
 export function resolveStyle(element: GeoElementBase, defaults?: FigureDefaults): GeoStyleResolved {
@@ -224,6 +224,72 @@ function circleByPointToSVG(
 	// Radius in SVG pixels (distance between SVG center and SVG edge point)
 	const radiusPx = Math.sqrt((svgEdge.x - svgCenter.x) ** 2 + (svgEdge.y - svgCenter.y) ** 2);
 	return { cx: svgCenter.x, cy: svgCenter.y, r: radiusPx };
+}
+
+/**
+ * Convert a circle to an SVG path (two half-arcs).
+ * Used instead of <circle> when stroke-dasharray is needed, so the dash
+ * pattern starts from the edge point (circleByPoint) instead of 3 o'clock.
+ */
+export function circleToPathSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): { path: string; cx: number; cy: number; r: number } | null {
+	const el = figure.getElementById(id);
+	if (!el) return null;
+
+	let cx: number,
+		cy: number,
+		rMath: number,
+		startAngle = 0;
+	if (isCircleByRadius(el)) {
+		const center = figure.getPosition(el.centerId);
+		if (!center) return null;
+		cx = geoToNumber(center.x);
+		cy = geoToNumber(center.y);
+		rMath = geoToNumber(el.radius);
+	} else if (isCircleByPoint(el)) {
+		const center = figure.getPosition(el.centerId);
+		const edge = figure.getPosition(el.edgePointId);
+		if (!center || !edge) return null;
+		cx = geoToNumber(center.x);
+		cy = geoToNumber(center.y);
+		const dx = geoToNumber(edge.x) - cx;
+		const dy = geoToNumber(edge.y) - cy;
+		rMath = Math.sqrt(dx * dx + dy * dy);
+		startAngle = Math.atan2(dy, dx);
+	} else {
+		return null;
+	}
+
+	const rPx = Math.abs(rMath * transformer.scaleX);
+	const svgCenter = transformer.mathToSvg(cx, cy);
+
+	// Build two half-arcs using the same logic as the animation overlay (buildArcPath)
+	// to ensure dash patterns align perfectly.
+	const midAngle = startAngle + Math.PI;
+	const endAngle = startAngle + 2 * Math.PI;
+
+	const svgS = transformer.mathToSvg(
+		cx + rMath * Math.cos(startAngle),
+		cy + rMath * Math.sin(startAngle)
+	);
+	const svgM = transformer.mathToSvg(
+		cx + rMath * Math.cos(midAngle),
+		cy + rMath * Math.sin(midAngle)
+	);
+	const svgE = transformer.mathToSvg(
+		cx + rMath * Math.cos(endAngle),
+		cy + rMath * Math.sin(endAngle)
+	);
+
+	// sweepFlag=0 (counterclockwise in SVG = math positive direction)
+	// Each half is exactly π, so largeArc=0
+	const path =
+		`M ${svgS.x} ${svgS.y} A ${rPx} ${rPx} 0 0 0 ${svgM.x} ${svgM.y}` +
+		` A ${rPx} ${rPx} 0 0 0 ${svgE.x} ${svgE.y}`;
+	return { path, cx: svgCenter.x, cy: svgCenter.y, r: rPx };
 }
 
 // =============================================================================
