@@ -250,7 +250,7 @@
 			version++;
 		} else {
 			const threshold = 15 / ppu;
-			hoveredId = findElementNear(figure, math.x, math.y, threshold);
+			hoveredId = findElementNear(figure, math.x, math.y, threshold, viewport);
 		}
 	}
 
@@ -376,7 +376,7 @@
 		if (!math) return;
 
 		const threshold = 15 / ppu;
-		const elementId = findElementNear(figure, math.x, math.y, threshold);
+		const elementId = findElementNear(figure, math.x, math.y, threshold, viewport);
 		if (elementId) {
 			if (!containerRef) return;
 			const rect = containerRef.getBoundingClientRect();
