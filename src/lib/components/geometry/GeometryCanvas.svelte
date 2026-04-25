@@ -741,16 +741,28 @@
 							class="function-curve"
 							class:hovered={hoveredId === el.id}
 						/>
-						{#if el.label}
-							<text
-								x={dims.width - 60}
-								y={20}
-								class="label"
-								fill={sty.color}
-								stroke="white"
-								stroke-width="3"
-								paint-order="stroke">{el.label}</text
-							>
+						{#if el.label && el.type === 'function'}
+							{@const labelX = viewport.xMin + 0.85 * (viewport.xMax - viewport.xMin)}
+							{@const labelY = el.compiledFn({ x: labelX })}
+							{#if typeof labelY === 'number' && Number.isFinite(labelY)}
+								{@const svgPt = transformer.mathToSvg(labelX, labelY)}
+								{@const slope = el.compiledDerivative({ x: labelX })}
+								{@const s = typeof slope === 'number' && Number.isFinite(slope) ? slope : 0}
+								{@const len = Math.sqrt(1 + s * s)}
+								{@const nx = -s / len}
+								{@const ny = 1 / len}
+								{@const sign = ny > 0 ? -1 : 1}
+								{@const offset = 10 + 5 * Math.abs(nx)}
+								<text
+									x={svgPt.x + (el.labelOffset?.dx ?? sign * nx * offset)}
+									y={svgPt.y + (el.labelOffset?.dy ?? sign * ny * offset)}
+									class="label"
+									fill={sty.color}
+									stroke="white"
+									stroke-width="3"
+									paint-order="stroke">{el.label}</text
+								>
+							{/if}
 						{/if}
 					{/if}
 				{/if}
