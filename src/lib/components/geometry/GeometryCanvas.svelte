@@ -199,6 +199,11 @@
 				figure.beginTransaction();
 				svgRef?.setPointerCapture(e.pointerId);
 				e.preventDefault();
+			} else if (el?.type === 'pointOnCurve') {
+				draggingId = pointId;
+				figure.beginTransaction();
+				svgRef?.setPointerCapture(e.pointerId);
+				e.preventDefault();
 			}
 		}
 	}
@@ -233,7 +238,12 @@
 		}
 
 		if (draggingId) {
-			figure.movePoint(draggingId, numeric(math.x), numeric(math.y));
+			const dragEl = figure.getElementById(draggingId);
+			if (dragEl?.type === 'pointOnCurve') {
+				figure.movePointOnCurve(draggingId, numeric(math.x));
+			} else {
+				figure.movePoint(draggingId, numeric(math.x), numeric(math.y));
+			}
 			figure.recompute();
 			version++;
 		} else {
