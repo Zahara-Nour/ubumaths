@@ -238,7 +238,7 @@
 		</svg>
 	{/if}
 
-	<!-- Point animation overlay: fade-in + bump -->
+	<!-- Point animation overlay: fade-in + bump with labels -->
 	{#if animation && animation.animatingPointIds.size > 0 && animation.drawProgress < 1}
 		<svg
 			class="points-overlay"
@@ -289,6 +289,18 @@
 								height={sty.pointSize * 2}
 								fill={sty.color}
 							/>
+						{/if}
+						{#if el.label}
+							<text
+								x={el.labelOffset?.dx ?? sty.pointSize + 4}
+								y={el.labelOffset?.dy ?? -(sty.pointSize + 2)}
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke"
+								font-size="14"
+								font-family="KaTeX_Main, serif">{el.label}</text
+							>
 						{/if}
 					</g>
 				{/if}

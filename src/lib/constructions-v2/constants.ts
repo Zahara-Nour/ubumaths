@@ -21,7 +21,7 @@ export const MIN_STEP_DURATION = 1000;
 export const MAX_STEP_DURATION = 5000;
 
 /** Automatic pause after drawing, in ms. */
-export const AUTO_PAUSE_BETWEEN_STEPS = 2000;
+export const AUTO_PAUSE_BETWEEN_STEPS = 500;
 
 /** Fixed duration of ease-in / ease-out ramp for instrument movement, in ms. */
 export const INSTRUMENT_RAMP_MS = 300;
