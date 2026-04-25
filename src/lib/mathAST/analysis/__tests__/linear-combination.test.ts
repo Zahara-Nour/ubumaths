@@ -5,11 +5,12 @@
 import { describe, it, expect } from 'vitest';
 import {
 	extractLinearCombination,
+	extractAffineCombination,
 	isLinearCombination,
 	getCoefficient
 } from '../linear-combination';
 import { parseLatex } from '../../parser';
-import { isNumber, isFunction, isDivision, isMathConstant } from '../../guards';
+import { isNumber, isFunction, isDivision, isMathConstant, isOpposite } from '../../guards';
 
 // Helper to parse and extract
 function extract(latex: string, variables: string[]) {
@@ -279,6 +280,124 @@ describe('isLinearCombination', () => {
 		expect(isLinearCombination(parseLatex('xy'), ['x', 'y'])).toBe(false);
 		expect(isLinearCombination(parseLatex('x^2'), ['x'])).toBe(false);
 		expect(isLinearCombination(parseLatex('x + 1'), ['x'])).toBe(false);
+	});
+});
+
+// =============================================================================
+// extractAffineCombination
+// =============================================================================
+
+// Helper for affine extraction
+function extractAffine(latex: string, variables: string[]) {
+	const node = parseLatex(latex);
+	return extractAffineCombination(node, variables);
+}
+
+function getAffineNumericCoeff(latex: string, variable: string, allVars: string[]): number | null {
+	const result = extractAffine(latex, allVars);
+	if (!result.isAffine) return null;
+	const coeff = result.coefficients.get(variable);
+	if (!coeff) return null;
+	if (isNumber(coeff)) return parseFloat(coeff.value);
+	if (isOpposite(coeff) && isNumber(coeff.operand)) return -parseFloat(coeff.operand.value);
+	return null;
+}
+
+function getAffineConstant(latex: string, allVars: string[]): number | null {
+	const result = extractAffine(latex, allVars);
+	if (!result.isAffine) return null;
+	if (!isNumber(result.constant)) return null;
+	return parseFloat(result.constant.value);
+}
+
+describe('extractAffineCombination', () => {
+	describe('with constant term', () => {
+		it('extracts coefficients and constant from 2x + 3y + 5', () => {
+			const result = extractAffine('2x + 3y + 5', ['x', 'y']);
+			expect(result.isAffine).toBe(true);
+			expect(getAffineNumericCoeff('2x + 3y + 5', 'x', ['x', 'y'])).toBe(2);
+			expect(getAffineNumericCoeff('2x + 3y + 5', 'y', ['x', 'y'])).toBe(3);
+			expect(getAffineConstant('2x + 3y + 5', ['x', 'y'])).toBe(5);
+		});
+
+		it('extracts from x - y (no constant)', () => {
+			const result = extractAffine('x - y', ['x', 'y']);
+			expect(result.isAffine).toBe(true);
+			expect(getAffineNumericCoeff('x - y', 'x', ['x', 'y'])).toBe(1);
+			expect(getAffineNumericCoeff('x - y', 'y', ['x', 'y'])).toBe(-1);
+			expect(getAffineConstant('x - y', ['x', 'y'])).toBe(0);
+		});
+
+		it('extracts from pure constant 5 (no variables)', () => {
+			const result = extractAffine('5', ['x', 'y']);
+			expect(result.isAffine).toBe(true);
+			expect(getAffineNumericCoeff('5', 'x', ['x', 'y'])).toBe(0);
+			expect(getAffineNumericCoeff('5', 'y', ['x', 'y'])).toBe(0);
+			expect(getAffineConstant('5', ['x', 'y'])).toBe(5);
+		});
+
+		it('extracts from -3y + 7 (one variable + constant)', () => {
+			const result = extractAffine('-3y + 7', ['x', 'y']);
+			expect(result.isAffine).toBe(true);
+			expect(getAffineNumericCoeff('-3y + 7', 'x', ['x', 'y'])).toBe(0);
+			expect(getAffineNumericCoeff('-3y + 7', 'y', ['x', 'y'])).toBe(-3);
+			expect(getAffineConstant('-3y + 7', ['x', 'y'])).toBe(7);
+		});
+
+		it('handles negative constant: 2x - 1', () => {
+			const result = extractAffine('2x - 1', ['x']);
+			expect(result.isAffine).toBe(true);
+			expect(getAffineNumericCoeff('2x - 1', 'x', ['x'])).toBe(2);
+			expect(getAffineConstant('2x - 1', ['x'])).toBe(-1);
+		});
+
+		it('handles multiple constant terms: x + 3 + 2', () => {
+			const result = extractAffine('x + 3 + 2', ['x']);
+			expect(result.isAffine).toBe(true);
+			expect(getAffineNumericCoeff('x + 3 + 2', 'x', ['x'])).toBe(1);
+			expect(getAffineConstant('x + 3 + 2', ['x'])).toBe(5);
+		});
+	});
+
+	describe('symbolic coefficients with constant', () => {
+		it('extracts symbolic coefficients: sqrt(2)*x + pi*y - 1', () => {
+			const result = extractAffine('\\sqrt{2}x + \\pi \\cdot y - 1', ['x', 'y']);
+			expect(result.isAffine).toBe(true);
+			const coeffX = result.coefficients.get('x');
+			expect(coeffX).toBeDefined();
+			expect(isFunction(coeffX!)).toBe(true);
+			const coeffY = result.coefficients.get('y');
+			expect(coeffY).toBeDefined();
+			expect(isMathConstant(coeffY!)).toBe(true);
+			expect(getAffineConstant('\\sqrt{2}x + \\pi \\cdot y - 1', ['x', 'y'])).toBe(-1);
+		});
+	});
+
+	describe('non-affine expressions', () => {
+		it('rejects x^2 + y', () => {
+			const result = extractAffine('x^2 + y', ['x', 'y']);
+			expect(result.isAffine).toBe(false);
+		});
+
+		it('rejects x*y + 1 (cross term)', () => {
+			const result = extractAffine('xy + 1', ['x', 'y']);
+			expect(result.isAffine).toBe(false);
+		});
+
+		it('rejects sin(x) + y + 1', () => {
+			const result = extractAffine('\\sin(x) + y + 1', ['x', 'y']);
+			expect(result.isAffine).toBe(false);
+		});
+	});
+
+	describe('backward compatibility with linear combination', () => {
+		it('works like extractLinearCombination when no constant term', () => {
+			const result = extractAffine('2x + 3y', ['x', 'y']);
+			expect(result.isAffine).toBe(true);
+			expect(getAffineNumericCoeff('2x + 3y', 'x', ['x', 'y'])).toBe(2);
+			expect(getAffineNumericCoeff('2x + 3y', 'y', ['x', 'y'])).toBe(3);
+			expect(getAffineConstant('2x + 3y', ['x', 'y'])).toBe(0);
+		});
 	});
 });
 

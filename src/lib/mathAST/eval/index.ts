@@ -142,6 +142,9 @@ export type { SubstituteAllOptions } from './substitute';
 
 export { evaluate } from './evaluate';
 
+export { compile, CompileError } from './compile';
+export type { CompiledFn } from './compile';
+
 export { evaluateWithModifiers, evaluateAstWithModifiers } from './evaluate-with-modifiers';
 
 // =============================================================================

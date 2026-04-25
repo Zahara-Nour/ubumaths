@@ -6,9 +6,22 @@
 
 import type { Figure } from '../graph/figure';
 import type { GeoValue } from '../types/geo-value';
+import { exact } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import type { SymbolType } from './symbol-table';
 import { DslRuntimeError } from './errors';
+import {
+	parseCustom,
+	isRelation,
+	subtract,
+	divide,
+	opposite,
+	add,
+	number as mathNumber
+} from '$lib/mathAST';
+import type { MathNode } from '$lib/mathAST';
+import { extractAffineCombination, getPolynomialDegree } from '$lib/mathAST/analysis';
+import { isZeroExpression } from '$lib/mathAST/normal';
 
 export type ResolvedArgs = {
 	positional: ResolvedValue[];
@@ -447,6 +460,17 @@ function _executeBuiltinInner(
 			return null; // style() returns nothing
 		}
 
+		case 'courbe': {
+			if (pos.length !== 1 || pos[0].type !== 'string') {
+				throw new DslRuntimeError(
+					'courbe() attend 1 argument string (ex: courbe("y = 2*x + 3"))',
+					line
+				);
+			}
+			const lineResult = createLineFromEquation(pos[0].value, figure, line, label);
+			return lineResult;
+		}
+
 		default:
 			return null; // Not a builtin — might be a macro
 	}
@@ -470,8 +494,103 @@ export const BUILTIN_NAMES = new Set([
 	'angle_droit',
 	'marque_segment',
 	'mesure',
-	'style'
+	'style',
+	'courbe'
 ]);
 
 /** Math functions that return numbers. */
 export const MATH_FUNCTIONS = new Set(['sqrt', 'abs', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan']);
+
+// =============================================================================
+// courbe() — equation-based curve creation
+// =============================================================================
+
+const ZERO_NODE = mathNumber('0');
+const ONE_NODE = mathNumber('1');
+
+/**
+ * Parse an equation string and create a line if the expression is affine in x and y.
+ * Supports: "y = 2*x + 3", "2*x - y + 3 = 0", "x = 3", "2*x - y + 3" (implicit = 0).
+ */
+function createLineFromEquation(
+	equation: string,
+	figure: Figure,
+	line: number,
+	label?: string
+): BuiltinResult {
+	// Parse the equation string with mathAST
+	let parsed: MathNode;
+	try {
+		parsed = parseCustom(equation);
+	} catch {
+		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${equation}"`, line);
+	}
+
+	// Extract F(x,y) such that F = 0
+	let F: MathNode;
+	if (isRelation(parsed) && parsed.relation === '=') {
+		// "left = right" → F = left - right
+		F = subtract(parsed.left, parsed.right);
+	} else {
+		// No "=" → treat expression as F (implicit = 0)
+		F = parsed;
+	}
+
+	// Check polynomial degree in x and y
+	const degX = getPolynomialDegree(F, 'x');
+	const degY = getPolynomialDegree(F, 'y');
+
+	if ((degX !== null && degX > 1) || (degY !== null && degY > 1)) {
+		throw new DslRuntimeError(
+			`courbe(): les courbes non-linéaires ne sont pas encore supportées (degré x=${degX}, y=${degY})`,
+			line
+		);
+	}
+	if (degX === null || degY === null) {
+		throw new DslRuntimeError(
+			'courbe(): les fonctions transcendantes (sin, cos, exp, ...) ne sont pas encore supportées',
+			line
+		);
+	}
+
+	// Extract affine coefficients: F = a*x + b*y + c
+	const affine = extractAffineCombination(F, ['x', 'y']);
+	if (!affine.isAffine) {
+		throw new DslRuntimeError(`courbe(): expression non-affine — ${affine.error}`, line);
+	}
+
+	const a = affine.coefficients.get('x')!;
+	const b = affine.coefficients.get('y')!;
+	const c = affine.constant;
+
+	// Check for degenerate equation (a=0 and b=0)
+	if (isZeroExpression(a) && isZeroExpression(b)) {
+		throw new DslRuntimeError('courbe(): équation dégénérée (0 = 0 ou constante non nulle)', line);
+	}
+
+	// Build two exact points on the line
+	let p1: GeoPoint;
+	let p2: GeoPoint;
+
+	if (!isZeroExpression(b)) {
+		// Non-vertical: y = -(a*x + c) / b
+		// P1 = (0, -c/b)
+		const y1 = divide(opposite(c), b);
+		// P2 = (1, -(a + c) / b)
+		const y2 = divide(opposite(add(a, c)), b);
+		p1 = { x: exact(ZERO_NODE), y: exact(y1) };
+		p2 = { x: exact(ONE_NODE), y: exact(y2) };
+	} else {
+		// Vertical line: x = -c/a
+		const xVal = divide(opposite(c), a);
+		p1 = { x: exact(xVal), y: exact(ZERO_NODE) };
+		p2 = { x: exact(xVal), y: exact(ONE_NODE) };
+	}
+
+	// Create two hidden support points and a line through them
+	const pt1Id = figure.createFreePoint(p1, { visible: false });
+	const pt2Id = figure.createFreePoint(p2, { visible: false });
+	const lineId = figure.createLine(pt1Id, pt2Id, { label });
+
+	return { figureId: lineId, symbolType: 'droite' };
+}
