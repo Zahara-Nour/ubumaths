@@ -18,7 +18,8 @@
 		segmentMarkToSVG,
 		measureToSVG,
 		resolveStyle,
-		functionToSVG
+		functionToSVG,
+		tangentLineToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
 	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
@@ -734,6 +735,44 @@
 								fill-opacity={sty.fillOpacity}
 								class:hovered={hoveredId === el.id}
 							/>
+						{/if}
+					{/if}
+				{:else if el.type === 'tangentLine'}
+					{@const svg = tangentLineToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						<line
+							x1={svg.x1}
+							y1={svg.y1}
+							x2={svg.x2}
+							y2={svg.y2}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							stroke-linecap="round"
+							opacity={sty.opacity}
+							class="geo-line"
+							class:hovered={hoveredId === el.id}
+						/>
+						{#if el.label}
+							{@const t = 0.9}
+							{@const mx = svg.x1 + t * (svg.x2 - svg.x1)}
+							{@const my = svg.y1 + t * (svg.y2 - svg.y1)}
+							{@const dx = svg.x2 - svg.x1}
+							{@const dy = svg.y2 - svg.y1}
+							{@const len = Math.sqrt(dx * dx + dy * dy) || 1}
+							{@const nx = -dy / len}
+							{@const ny = dx / len}
+							{@const sign = ny > 0 ? -1 : 1}
+							{@const offset = 10 + 5 * Math.abs(nx)}
+							<text
+								x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
+								y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
+								class="label"
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke">{el.label}</text
+							>
 						{/if}
 					{/if}
 				{:else if el.type === 'function'}

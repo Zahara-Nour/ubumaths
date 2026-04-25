@@ -30,6 +30,7 @@ import type {
 	GeoPolygon,
 	GeoFunction,
 	GeoPointOnCurve,
+	GeoTangentLine,
 	type LineEquation
 } from '../types/elements';
 import {
@@ -864,6 +865,45 @@ export class Figure {
 
 		// Recompute position (y from function)
 		this.graph.markDirty(id);
+	}
+
+	createTangentLine(
+		functionId: string,
+		anchor: { pointOnCurveId: string } | { x0: GeoValue },
+		options?: ElementOptions
+	): string {
+		const fnEl = this.elements.get(functionId);
+		if (!fnEl || fnEl.type !== 'function') {
+			throw new Error(`createTangentLine: "${functionId}" is not a function element`);
+		}
+
+		const id = this.generateId('tg');
+		const deps: string[] = [functionId];
+
+		if ('pointOnCurveId' in anchor) {
+			const ptEl = this.elements.get(anchor.pointOnCurveId);
+			if (!ptEl || ptEl.type !== 'pointOnCurve') {
+				throw new Error(`createTangentLine: "${anchor.pointOnCurveId}" is not a pointOnCurve`);
+			}
+			deps.push(anchor.pointOnCurveId);
+		}
+
+		const element: GeoTangentLine = {
+			type: 'tangentLine',
+			id,
+			functionId,
+			...('pointOnCurveId' in anchor
+				? { pointOnCurveId: anchor.pointOnCurveId }
+				: { x0: anchor.x0 }),
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps as readonly string[]
+		};
+		this.addElement(id, element, deps);
+		return id;
 	}
 
 	createMeasure(

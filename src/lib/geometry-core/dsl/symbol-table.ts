@@ -17,6 +17,7 @@ export type SymbolType =
 	| 'measure'
 	| 'arc'
 	| 'courbe'
+	| 'tangente'
 	| 'liste';
 
 export interface SymbolEntry {

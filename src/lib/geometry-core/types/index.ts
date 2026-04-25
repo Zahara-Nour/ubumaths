@@ -37,6 +37,7 @@ export type {
 	GeoPolygon,
 	GeoFunction,
 	GeoPointOnCurve,
+	GeoTangentLine,
 	LineEquation
 } from './elements';
 export {
@@ -64,7 +65,8 @@ export {
 	isArcByAngles,
 	isArcByPoints,
 	isFunction,
-	isPointOnCurve
+	isPointOnCurve,
+	isTangentLine
 } from './elements';
 
 // Schemas

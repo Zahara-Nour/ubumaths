@@ -807,7 +807,7 @@ function extendRayToBounds(
 // Function curve rendering
 // =============================================================================
 
-import type { GeoFunction } from '../types/elements';
+import type { GeoFunction, GeoTangentLine } from '../types/elements';
 import type { Viewport } from '../viewport/types';
 import { sampleWithDerivative } from '$lib/grapheur/sampler';
 import { curveToSVGPath } from '../rendering/bezier';
@@ -862,4 +862,43 @@ export function functionToSVG(
 	// Convert to SVG path with Catmull-Rom smoothing
 	const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
 	return path ? { path } : null;
+}
+
+/**
+ * Convert a GeoTangentLine to SVG line attributes.
+ * Computes the tangent at x₀ using f(x₀) and f'(x₀), then extends to viewport bounds.
+ */
+export function tangentLineToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): LineSVG | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'tangentLine') return null;
+
+	const tl = el as GeoTangentLine;
+	const fnEl = figure.getElementById(tl.functionId);
+	if (!fnEl || fnEl.type !== 'function') return null;
+
+	// Get x₀
+	let x0: number;
+	if (tl.pointOnCurveId) {
+		const pos = figure.getPosition(tl.pointOnCurveId);
+		if (!pos) return null;
+		x0 = geoToNumber(pos.x);
+	} else if (tl.x0 !== undefined) {
+		x0 = geoToNumber(tl.x0);
+	} else {
+		return null;
+	}
+
+	// Compute y₀ and slope m = f'(x₀)
+	const y0 = fnEl.compiledFn({ x: x0 });
+	const m = fnEl.compiledDerivative({ x: x0 });
+	if (!Number.isFinite(y0) || !Number.isFinite(m)) return null;
+
+	// Tangent line: passes through (x₀, y₀) with slope m
+	// Second point: (x₀ + 1, y₀ + m)
+	return extendLineToBounds(x0, y0, x0 + 1, y0 + m, transformer, dims);
 }
