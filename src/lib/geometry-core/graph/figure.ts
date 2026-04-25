@@ -1446,7 +1446,7 @@ export function conicPointFromParam(
 			break;
 		case 'parabola': {
 			const p = conic.p ?? conic.a;
-			lx = (t * t) / (4 * p);
+			lx = (t * t) / (2 * p);
 			ly = t;
 			break;
 		}
