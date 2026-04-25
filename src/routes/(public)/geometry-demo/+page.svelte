@@ -372,7 +372,7 @@ I = inflections(f, couleur="violet")`
 	// ==========================================================================
 	const conicFig = runDsl(
 		`c1 = courbe("x^2 + y^2 - 9 = 0", couleur="bleu")
-c2 = courbe("x^2/4 + y^2/9 - 1 = 0", couleur="rouge")
+c2 = courbe("{x^2}/4 + {y^2}/9 - 1 = 0", couleur="rouge")
 c3 = courbe("x^2 - y^2 - 1 = 0", couleur="vert")
 c4 = courbe("x^2 + x*y + y^2 - 1 = 0", couleur="violet")
 c5 = courbe("y^2 - 4*x = 0", couleur="orange")`
