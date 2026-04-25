@@ -68,6 +68,51 @@ function requireTuple(val: ResolvedValue, name: string, line: number): ResolvedV
 	return val.elements;
 }
 
+/** Style named args (couleur, forme, tirets, pointilles, epaisseur) common to all geometry builtins. */
+const STYLE_ARGS = new Set(['couleur', 'forme', 'trait', 'epaisseur']);
+
+function applyInlineStyle(
+	figure: Figure,
+	elId: string,
+	named: Map<string, ResolvedValue>,
+	line: number
+): void {
+	const style: Record<string, unknown> = {};
+	if (named.has('couleur')) {
+		const cv = named.get('couleur')!;
+		const colorStr = cv.type === 'string' ? cv.value : cv.type === 'nombre' ? String(cv.value) : '';
+		style.color = resolveColorName(colorStr);
+	}
+	if (named.has('forme')) {
+		const fv = named.get('forme')!;
+		const formeName = fv.type === 'string' ? fv.value : 'point';
+		const FORME_MAP: Record<string, string> = {
+			point: 'dot',
+			cercle: 'circle',
+			croix: 'cross',
+			carre: 'square'
+		};
+		style.pointShape = FORME_MAP[formeName] ?? formeName;
+	}
+	if (named.has('trait')) {
+		const tv = named.get('trait')!;
+		const traitName = tv.type === 'string' ? tv.value : 'continu';
+		const TRAIT_MAP: Record<string, string | undefined> = {
+			continu: undefined,
+			tirets: 'dashed',
+			pointilles: 'dotted'
+		};
+		const dash = TRAIT_MAP[traitName];
+		if (dash) style.dash = dash;
+	}
+	if (named.has('epaisseur')) {
+		style.strokeWidth = requireNumber(named.get('epaisseur')!, 'epaisseur', line);
+	}
+	if (Object.keys(style).length > 0) {
+		figure.updateStyle(elId, style);
+	}
+}
+
 export function executeBuiltin(
 	name: string,
 	args: ResolvedArgs,
@@ -79,7 +124,37 @@ export function executeBuiltin(
 ): BuiltinResult | null {
 	const pos = args.positional;
 	const named = args.named;
+	const hasStyleArgs = [...named.keys()].some((k) => STYLE_ARGS.has(k));
 
+	const result = _executeBuiltinInner(
+		name,
+		pos,
+		named,
+		figure,
+		toGeoValue,
+		toGeoPoint,
+		line,
+		label
+	);
+
+	// Apply inline style args (couleur, forme, etc.) to any created element
+	if (result && hasStyleArgs) {
+		applyInlineStyle(figure, result.figureId, named, line);
+	}
+
+	return result;
+}
+
+function _executeBuiltinInner(
+	name: string,
+	pos: ResolvedValue[],
+	named: Map<string, ResolvedValue>,
+	figure: Figure,
+	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
+	toGeoPoint: (x: ResolvedValue, y: ResolvedValue, line: number) => GeoPoint,
+	line: number,
+	label?: string
+): BuiltinResult | null {
 	switch (name) {
 		case 'point': {
 			if (pos.length !== 2) throw new DslRuntimeError('point() attend 2 arguments (x, y)', line);
@@ -326,27 +401,7 @@ export function executeBuiltin(
 			if (pos.length < 1)
 				throw new DslRuntimeError('style() attend au moins 1 argument (element)', line);
 			const elId = requireElement(pos[0], 'element', line);
-			const style: Record<string, unknown> = {};
-			if (named.has('couleur')) {
-				const cv = named.get('couleur')!;
-				const colorStr =
-					cv.type === 'string' ? cv.value : cv.type === 'nombre' ? String(cv.value) : '';
-				style.color = resolveColorName(colorStr);
-			}
-			if (named.has('forme')) {
-				const fv = named.get('forme')!;
-				style.pointShape = fv.type === 'string' ? fv.value : 'dot';
-			}
-			if (named.has('tirets')) {
-				style.dash = 'dashed';
-			}
-			if (named.has('pointilles')) {
-				style.dash = 'dotted';
-			}
-			if (named.has('epaisseur')) {
-				style.strokeWidth = requireNumber(named.get('epaisseur')!, 'epaisseur', line);
-			}
-			figure.updateStyle(elId, style);
+			applyInlineStyle(figure, elId, named, line);
 			return null; // style() returns nothing
 		}
 
