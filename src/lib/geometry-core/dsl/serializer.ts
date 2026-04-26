@@ -99,7 +99,15 @@ function typePrefix(type: string): string {
 		case 'measure':
 			return 'mes';
 		case 'function':
+		case 'quadraticCurve':
+		case 'implicitCurve':
 			return 'f';
+		case 'pointOnCurve':
+		case 'pointOnQuadraticCurve':
+			return 'pt';
+		case 'tangentLine':
+		case 'tangentToQuadratic':
+			return 'tg';
 		case 'vectorByPoints':
 		case 'freeVector':
 			return 'v';
@@ -229,7 +237,47 @@ function serializeElement(
 		}
 
 		case 'function':
-			return `courbe("${el.equation}")`;
+		case 'quadraticCurve':
+		case 'implicitCurve':
+			return `${n.startsWith('_') ? '' : n + ' = '}courbe("${el.equation}")`;
+
+		case 'pointOnCurve':
+			return `${n} = point_sur(${name(idToName, el.functionId)}, ${fmtGeoValue(el.x0)})`;
+
+		case 'pointOnQuadraticCurve': {
+			// Reverse the degree→radian conversion done at creation time for circle/ellipse
+			const curveEl = figure.getElementById(el.curveId);
+			let tDisplay = el.t;
+			if (curveEl && curveEl.type === 'quadraticCurve') {
+				const ct = curveEl.conic.type;
+				if (ct === 'circle' || ct === 'ellipse') {
+					tDisplay = (el.t * 180) / Math.PI;
+				}
+			}
+			return `${n} = point_sur(${name(idToName, el.curveId)}, ${fmtNum(tDisplay)})`;
+		}
+
+		case 'tangentLine':
+			if (el.pointOnCurveId) {
+				return `${n} = tangente(${name(idToName, el.functionId)}, ${name(idToName, el.pointOnCurveId)})`;
+			}
+			return `${n} = tangente(${name(idToName, el.functionId)}, ${fmtGeoValue(el.x0!)})`;
+
+		case 'tangentToQuadratic': {
+			if (el.pointOnCurveId) {
+				return `${n} = tangente(${name(idToName, el.curveId)}, ${name(idToName, el.pointOnCurveId)})`;
+			}
+			// Reverse degree→radian for display
+			const tqCurveEl = figure.getElementById(el.curveId);
+			let tqDisplay = el.t!;
+			if (tqCurveEl && tqCurveEl.type === 'quadraticCurve') {
+				const ct = tqCurveEl.conic.type;
+				if (ct === 'circle' || ct === 'ellipse') {
+					tqDisplay = (el.t! * 180) / Math.PI;
+				}
+			}
+			return `${n} = tangente(${name(idToName, el.curveId)}, ${fmtNum(tqDisplay)})`;
+		}
 
 		default:
 			return null;
