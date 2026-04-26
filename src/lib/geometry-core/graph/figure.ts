@@ -63,6 +63,12 @@ import type { GeoValue } from '../types/geo-value';
 import { geoValueToMathNode, numeric } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { resolveVectorComponents } from './vector-components';
+import {
+	buildInverseAffineMatrix,
+	transformConicCoefficients,
+	type TransformAccessors
+} from '../geometry/affine-transform';
+import { classifyConic } from '../geometry/conic-classify';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import {
@@ -1129,6 +1135,46 @@ export class Figure {
 		return id;
 	}
 
+	createTransformedQuadraticCurve(
+		sourceCoefficients: readonly [number, number, number, number, number, number],
+		transformId: string,
+		options?: ElementOptions
+	): string {
+		const transformEl = this.elements.get(transformId);
+		if (!transformEl || !isTransformation(transformEl)) {
+			throw new Error(`createTransformedQuadraticCurve: "${transformId}" is not a transformation`);
+		}
+
+		const access: TransformAccessors = {
+			getPosition: (id) => this.getPosition(id),
+			getElementById: (id) => this.elements.get(id),
+			getVectorComponents: (id) => this.getVectorComponents(id)
+		};
+		const invMatrix = buildInverseAffineMatrix(transformEl, access);
+		const newCoeffs = transformConicCoefficients(sourceCoefficients, invMatrix);
+		const conic = classifyConic(...newCoeffs);
+
+		const deps = [...new Set([transformId, ...transformEl.dependsOn])];
+		const id = this.generateId('qc');
+		const element: GeoQuadraticCurve = {
+			type: 'quadraticCurve',
+			id,
+			expression: { type: 'number', value: 0 } as MathNode,
+			equation: `transformed`,
+			coefficients: newCoeffs,
+			conic,
+			transformRecipe: { sourceCoefficients, transformId },
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
 	createImplicitCurve(
 		expression: MathNode,
 		compiledFn: CompiledFn,
@@ -1482,9 +1528,32 @@ export class Figure {
 
 	// ─── Internal ───────────────────────────────────────────────────
 
+	private recomputeTransformedConic(id: string, el: GeoQuadraticCurve): void {
+		const recipe = el.transformRecipe!;
+		const transformEl = this.elements.get(recipe.transformId);
+		if (!transformEl || !isTransformation(transformEl)) return;
+
+		const access: TransformAccessors = {
+			getPosition: (pid) => this.getPosition(pid),
+			getElementById: (eid) => this.elements.get(eid),
+			getVectorComponents: (vid) => this.getVectorComponents(vid)
+		};
+		const invMatrix = buildInverseAffineMatrix(transformEl, access);
+		const newCoeffs = transformConicCoefficients(recipe.sourceCoefficients, invMatrix);
+		const newConic = classifyConic(...newCoeffs);
+
+		// Replace element with updated coefficients and conic params
+		this.elements.set(id, { ...el, coefficients: newCoeffs, conic: newConic });
+	}
+
 	private computePosition(id: string): void {
 		const el = this.elements.get(id);
 		if (!el) return;
+
+		// Recompute transformed conic coefficients when transformation moves
+		if (el.type === 'quadraticCurve' && el.transformRecipe) {
+			this.recomputeTransformedConic(id, el);
+		}
 
 		const result = computeElementPosition(el, this.positions, this.elements);
 

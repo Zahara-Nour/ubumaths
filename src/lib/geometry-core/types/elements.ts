@@ -422,8 +422,15 @@ export interface GeoQuadraticCurve extends GeoElementBase {
 	readonly coefficients: readonly [number, number, number, number, number, number];
 	/** Classified conic parameters for rendering. */
 	readonly conic: ConicParams;
-	/** Autonomous element — no dependencies on other elements. */
-	readonly dependsOn: readonly [];
+	/**
+	 * If this conic was created by transforming another conic, stores the recipe
+	 * for reactive recomputation when transformation-defining points move.
+	 */
+	readonly transformRecipe?: {
+		readonly sourceCoefficients: readonly [number, number, number, number, number, number];
+		readonly transformId: string;
+	};
+	readonly dependsOn: readonly string[];
 }
 
 export interface GeoImplicitCurve extends GeoElementBase {
