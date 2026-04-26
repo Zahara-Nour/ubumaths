@@ -16,6 +16,7 @@ import {
 	isReflectedOverLine,
 	isProjectedPoint,
 	isAffinityPoint,
+	isInvertedPoint,
 	isAngleMark,
 	isSegmentMark,
 	isMeasure,
@@ -35,7 +36,8 @@ import {
 	dilate,
 	reflectOverLine,
 	projectOnLine,
-	applyAffinity
+	applyAffinity,
+	invertPoint
 } from '../geometry/transformations';
 import { conicPointFromParam } from './conic-helpers';
 
@@ -160,6 +162,15 @@ export function computeElementPosition(
 		if (source && lp1 && lp2) {
 			const result = applyAffinity(source, lp1, lp2, el.factor);
 			return { position: result ?? null, hasComputablePosition: true };
+		}
+		return { position: null, hasComputablePosition: true };
+	}
+
+	if (isInvertedPoint(el)) {
+		const source = positions.get(el.sourceId);
+		const center = positions.get(el.centerId);
+		if (source && center) {
+			return { position: invertPoint(source, center, el.radius), hasComputablePosition: true };
 		}
 		return { position: null, hasComputablePosition: true };
 	}

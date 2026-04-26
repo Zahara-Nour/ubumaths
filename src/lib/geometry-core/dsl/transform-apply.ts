@@ -102,6 +102,12 @@ export function applyTransformationToPoint(
 				{ label, visible }
 			);
 
+		case 'inversion':
+			return figure.createInvertedPoint(sourcePointId, transform.centerId, transform.radius, {
+				label,
+				visible
+			});
+
 		case 'composition': {
 			// Apply transformations right-to-left: compose(r, t) applies t then r
 			const ids = transform.transformationIds;
@@ -203,6 +209,8 @@ function transformVectorLinear(
 				perpY = dyN - parY;
 			return { dx: numeric(parX + k * perpX), dy: numeric(parY + k * perpY) };
 		}
+		case 'inversion':
+			throw new Error('Inversion is not a linear transformation — cannot transform vectors');
 		case 'homothety':
 			return {
 				dx: geoMul(transform.factor, dx),
@@ -255,6 +263,18 @@ export function applyTransformationToElement(
 		const unsupported: SymbolType[] = ['cercle', 'courbe', 'arc'];
 		if (unsupported.includes(sourceType)) {
 			throw new Error(`La projection ne supporte pas la transformation de type "${sourceType}"`);
+		}
+	}
+
+	// Inversion: only supports point, droite, cercle, courbe — not segment/polygone/arc/vecteur
+	if (containsNonAffineTransform(transformEl, figure, 'inversion')) {
+		const unsupported: SymbolType[] = ['segment', 'polygone', 'arc', 'demidroite', 'vecteur'];
+		if (unsupported.includes(sourceType)) {
+			throw new Error(`L'inversion ne supporte pas la transformation de type "${sourceType}"`);
+		}
+		// For cercle and droite under inversion, use analytical conic output
+		if (sourceType === 'cercle' || sourceType === 'droite') {
+			return invertCircleOrLine(figure, transformEl, sourceEl, sourceType, options);
 		}
 	}
 
@@ -434,6 +454,209 @@ export function applyTransformationToElement(
 	}
 }
 
+// =============================================================================
+// Inversion of circles and lines → conic coefficients
+// =============================================================================
+
+/**
+ * Invert a circle or line under circular inversion, producing a quadratic curve.
+ * Circle → circle or line; Line → circle or line (all represented as conics).
+ */
+function invertCircleOrLine(
+	figure: Figure,
+	transform: GeoTransformation,
+	sourceEl: { type: string; id: string } & Record<string, unknown>,
+	sourceType: SymbolType,
+	options?: { label?: string }
+): TransformResult {
+	// Find the inversion in the transformation chain
+	const inv = findInversion(transform, figure);
+	if (!inv) {
+		throw new Error('invertCircleOrLine: no inversion found in transformation');
+	}
+
+	const oPos = figure.getPosition(inv.centerId);
+	if (!oPos) throw new Error('invertCircleOrLine: inversion center position not found');
+	const ox = geoToNumber(oPos.x),
+		oy = geoToNumber(oPos.y);
+	const r = geoToNumber(inv.radius);
+	const r2 = r * r;
+
+	let coeffs: [number, number, number, number, number, number];
+
+	if (sourceType === 'cercle') {
+		coeffs = invertCircleCoeffs(figure, sourceEl, ox, oy, r2);
+	} else {
+		coeffs = invertLineCoeffs(figure, sourceEl, ox, oy, r2);
+	}
+
+	// Create implicit curve from conic coefficients (reactive via closure)
+	const [A, B, C, D, E, F] = coeffs;
+	const wrappedFn = (vars: Record<string, number>) => {
+		const vx = vars.x ?? 0,
+			vy = vars.y ?? 0;
+		return A * vx * vx + B * vx * vy + C * vy * vy + D * vx + E * vy + F;
+	};
+	const id = figure.createImplicitCurve(mathNumber(0), wrappedFn, `inversion(${sourceType})`, {
+		label: options?.label
+	});
+	return { figureId: id, symbolType: 'courbe' };
+}
+
+/** Find the first GeoInversion in a (possibly composed) transformation. */
+function findInversion(
+	transform: GeoTransformation,
+	figure: Figure
+): (GeoTransformation & { type: 'inversion' }) | null {
+	if (transform.type === 'inversion') return transform;
+	if (transform.type === 'composition') {
+		for (const tId of transform.transformationIds) {
+			const sub = figure.getElementById(tId);
+			if (sub && isTransformation(sub)) {
+				const result = findInversion(sub, figure);
+				if (result) return result;
+			}
+		}
+	}
+	return null;
+}
+
+/**
+ * Compute conic coefficients for the image of a circle under inversion.
+ * Circle: center (cx, cy), radius cr. Inversion center O=(ox, oy), r²=r2.
+ */
+function invertCircleCoeffs(
+	figure: Figure,
+	sourceEl: Record<string, unknown>,
+	ox: number,
+	oy: number,
+	r2: number
+): [number, number, number, number, number, number] {
+	// Get circle center and radius
+	let cx: number, cy: number, cr: number;
+	if (sourceEl.type === 'circleByPoint') {
+		const cPos = figure.getPosition(sourceEl.centerId as string);
+		const ePos = figure.getPosition(sourceEl.edgePointId as string);
+		if (!cPos || !ePos) return [0, 0, 0, 0, 0, 0];
+		cx = geoToNumber(cPos.x);
+		cy = geoToNumber(cPos.y);
+		const edx = geoToNumber(ePos.x) - cx,
+			edy = geoToNumber(ePos.y) - cy;
+		cr = Math.sqrt(edx * edx + edy * edy);
+	} else {
+		const cPos = figure.getPosition(sourceEl.centerId as string);
+		if (!cPos) return [0, 0, 0, 0, 0, 0];
+		cx = geoToNumber(cPos.x);
+		cy = geoToNumber(cPos.y);
+		cr = geoToNumber(sourceEl.radius as GeoValue);
+	}
+
+	// Distance from O to circle center
+	const dx = cx - ox,
+		dy = cy - oy;
+	const d2 = dx * dx + dy * dy;
+	const cr2 = cr * cr;
+
+	// Check if circle passes through O: |d| = cr (within tolerance)
+	if (Math.abs(d2 - cr2) < 1e-10 * Math.max(1, d2, cr2)) {
+		// Circle passes through O → image is a line
+		// The line passes through inv(diametrically opposite point to O)
+		// Line equation: dx*(x - ox) + dy*(y - oy) = r²/2
+		// As conic: 0*x² + 0*xy + 0*y² + dx*x + dy*y + (- dx*ox - dy*oy - r²/2) = 0
+		const scale = r2 / (2 * d2); // normalization
+		return [
+			0,
+			0,
+			0,
+			dx * scale,
+			dy * scale,
+			-(dx * ox + dy * oy) * scale - (r2 / 2) * (r2 / (2 * d2))
+		];
+	}
+
+	// Circle does not pass through O → image is a circle
+	// Use the formula: image circle center = O + r²*d/(d²-cr²), image radius = r²*cr/|d²-cr²|
+	const denom = d2 - cr2;
+	const s = r2 / denom;
+	const newCx = ox + s * dx;
+	const newCy = oy + s * dy;
+	const newCr = Math.abs((r2 * cr) / denom);
+
+	// Circle (x-newCx)² + (y-newCy)² = newCr² → x² + y² - 2*newCx*x - 2*newCy*y + (newCx²+newCy²-newCr²) = 0
+	return [1, 0, 1, -2 * newCx, -2 * newCy, newCx * newCx + newCy * newCy - newCr * newCr];
+}
+
+/**
+ * Compute conic coefficients for the image of a line under inversion.
+ * Line through (p1x,p1y)-(p2x,p2y). Inversion center O=(ox,oy), r²=r2.
+ */
+function invertLineCoeffs(
+	figure: Figure,
+	sourceEl: Record<string, unknown>,
+	ox: number,
+	oy: number,
+	r2: number
+): [number, number, number, number, number, number] {
+	// Get line points
+	let p1Id: string, p2Id: string;
+	if (sourceEl.type === 'line') {
+		p1Id = sourceEl.point1Id as string;
+		p2Id = sourceEl.point2Id as string;
+	} else if (sourceEl.type === 'segment') {
+		p1Id = sourceEl.startId as string;
+		p2Id = sourceEl.endId as string;
+	} else if (sourceEl.type === 'ray') {
+		p1Id = sourceEl.originId as string;
+		p2Id = sourceEl.throughId as string;
+	} else {
+		return [0, 0, 0, 0, 0, 0];
+	}
+
+	const p1 = figure.getPosition(p1Id),
+		p2 = figure.getPosition(p2Id);
+	if (!p1 || !p2) return [0, 0, 0, 0, 0, 0];
+
+	const p1x = geoToNumber(p1.x),
+		p1y = geoToNumber(p1.y);
+	const p2x = geoToNumber(p2.x),
+		p2y = geoToNumber(p2.y);
+
+	// Line direction and normal
+	const ldx = p2x - p1x,
+		ldy = p2y - p1y;
+	// Normal: (ldy, -ldx) or (-ldy, ldx)
+	// Signed distance from O to line: ((p1-O) × d) / |d|
+	const cross = (p1x - ox) * ldy - (p1y - oy) * ldx;
+	const lineLen = Math.sqrt(ldx * ldx + ldy * ldy);
+	const dist = cross / lineLen; // signed distance
+
+	if (Math.abs(dist) < 1e-10) {
+		// Line passes through O → image is the line itself
+		// Line: ldy*(x-p1x) - ldx*(y-p1y) = 0 → ldy*x - ldx*y + (-ldy*p1x + ldx*p1y) = 0
+		return [0, 0, 0, ldy, -ldx, -ldy * p1x + ldx * p1y];
+	}
+
+	// Line does not pass through O → image is a circle through O
+	// Foot of perpendicular from O to line
+	const t = ((ox - p1x) * ldx + (oy - p1y) * ldy) / (ldx * ldx + ldy * ldy);
+	const hx = p1x + t * ldx,
+		hy = p1y + t * ldy;
+	// d = distance from O to line = |OH|
+	const dAbs = Math.abs(dist);
+	// Image of H under inversion: H' = O + r²/|OH|² * (H-O)
+	const ohx = hx - ox,
+		ohy = hy - oy;
+	const oh2 = ohx * ohx + ohy * ohy;
+	const invHx = ox + (r2 / oh2) * ohx;
+	const invHy = oy + (r2 / oh2) * ohy;
+	// Image circle: passes through O, with center at midpoint of O and H'
+	const newCx = (ox + invHx) / 2;
+	const newCy = (oy + invHy) / 2;
+	const newCr = r2 / (2 * dAbs);
+
+	return [1, 0, 1, -2 * newCx, -2 * newCy, newCx * newCx + newCy * newCy - newCr * newCr];
+}
+
 /**
  * Check if a transformation (or any sub-transform in a composition) contains a specific type.
  */
@@ -545,6 +768,24 @@ function buildInverseTransformCoords(
 				if (len2 < 1e-15) return { x, y };
 				const t = ((x - x1) * dx + (y - y1) * dy) / len2;
 				return { x: x1 + t * dx, y: y1 + t * dy };
+			};
+		}
+		case 'inversion': {
+			// Inversion is its own inverse: T⁻¹ = T
+			const invCenterId = transform.centerId;
+			const invR = geoToNumber(transform.radius);
+			const invR2 = invR * invR;
+			return (x, y) => {
+				const cPos = figure.getPosition(invCenterId);
+				if (!cPos) return { x, y };
+				const cx = geoToNumber(cPos.x),
+					cy = geoToNumber(cPos.y);
+				const dx = x - cx,
+					dy = y - cy;
+				const om2 = dx * dx + dy * dy;
+				if (om2 < 1e-30) return { x, y };
+				const scale = invR2 / om2;
+				return { x: cx + scale * dx, y: cy + scale * dy };
 			};
 		}
 		case 'affinity': {

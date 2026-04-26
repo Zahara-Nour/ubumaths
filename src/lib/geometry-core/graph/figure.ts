@@ -50,6 +50,8 @@ import type {
 	type GeoProjectedPoint,
 	type GeoAffinity,
 	type GeoAffinityPoint,
+	type GeoInversion,
+	type GeoInvertedPoint,
 	type LineEquation,
 	type ConicParams
 } from '../types/elements';
@@ -1038,6 +1040,50 @@ export class Figure {
 			dependsOn: [sourcePointId, linePoint1Id, linePoint2Id]
 		};
 		this.addElement(id, element, [sourcePointId, linePoint1Id, linePoint2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createInversion(centerId: string, radius: GeoValue, options?: ElementOptions): string {
+		this.requirePoints('createInversion', centerId);
+		const id = this.generateId('tInv');
+		const element: GeoInversion = {
+			type: 'inversion',
+			id,
+			centerId,
+			radius,
+			color: DEFAULT_COLOR,
+			visible: false,
+			label: options?.label,
+			dependsOn: [centerId]
+		};
+		this.addElement(id, element, [centerId]);
+		return id;
+	}
+
+	createInvertedPoint(
+		sourcePointId: string,
+		centerId: string,
+		radius: GeoValue,
+		options?: ElementOptions
+	): string {
+		this.requirePoints('createInvertedPoint', sourcePointId, centerId);
+		const id = this.generateId('invPt');
+		const deps = [...new Set([sourcePointId, centerId])];
+		const element: GeoInvertedPoint = {
+			type: 'invertedPoint',
+			id,
+			sourceId: sourcePointId,
+			centerId,
+			radius,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps as [string, string]
+		};
+		this.addElement(id, element, deps);
 		this.computePosition(id);
 		return id;
 	}

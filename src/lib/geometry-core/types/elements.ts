@@ -531,6 +531,23 @@ export interface GeoAffinityPoint extends GeoElementBase {
 	readonly dependsOn: readonly [string, string, string];
 }
 
+/** Circular inversion transformation object. NON-AFFINE. */
+export interface GeoInversion extends GeoElementBase {
+	readonly type: 'inversion';
+	readonly centerId: string;
+	readonly radius: GeoValue;
+	readonly dependsOn: readonly [string];
+}
+
+/** Inverted point — image of a point by circular inversion. */
+export interface GeoInvertedPoint extends GeoElementBase {
+	readonly type: 'invertedPoint';
+	readonly sourceId: string;
+	readonly centerId: string;
+	readonly radius: GeoValue;
+	readonly dependsOn: readonly [string, string];
+}
+
 /** Composition of transformations. Applied right-to-left: compose(r, t) applies t then r. */
 export interface GeoComposition extends GeoElementBase {
 	readonly type: 'composition';
@@ -555,6 +572,7 @@ export type GeoTransformation =
 	| GeoHomothety
 	| GeoProjection
 	| GeoAffinity
+	| GeoInversion
 	| GeoComposition;
 
 // =============================================================================
@@ -572,6 +590,7 @@ export type GeoPointElement =
 	| GeoReflectedOverLine
 	| GeoProjectedPoint
 	| GeoAffinityPoint
+	| GeoInvertedPoint
 	| GeoPointOnCurve
 	| GeoPointOnQuadraticCurve;
 export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
@@ -587,6 +606,7 @@ export type GeoElement =
 	| GeoReflectedOverLine
 	| GeoProjectedPoint
 	| GeoAffinityPoint
+	| GeoInvertedPoint
 	| GeoAngleMark
 	| GeoSegmentMark
 	| GeoMeasure
@@ -617,6 +637,7 @@ export type GeoElement =
 	| GeoHomothety
 	| GeoProjection
 	| GeoAffinity
+	| GeoInversion
 	| GeoComposition;
 
 export type GeoElementType = GeoElement['type'];
@@ -677,6 +698,7 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'reflectedOverLine' ||
 		el.type === 'projectedPoint' ||
 		el.type === 'affinityPoint' ||
+		el.type === 'invertedPoint' ||
 		el.type === 'pointOnCurve' ||
 		el.type === 'pointOnQuadraticCurve'
 	);
@@ -831,8 +853,17 @@ export function isTransformation(el: GeoElement): el is GeoTransformation {
 		el.type === 'homothety' ||
 		el.type === 'projection' ||
 		el.type === 'affinity' ||
+		el.type === 'inversion' ||
 		el.type === 'composition'
 	);
+}
+
+export function isInversion(el: GeoElement): el is GeoInversion {
+	return el.type === 'inversion';
+}
+
+export function isInvertedPoint(el: GeoElement): el is GeoInvertedPoint {
+	return el.type === 'invertedPoint';
 }
 
 export function isAffinity(el: GeoElement): el is GeoAffinity {

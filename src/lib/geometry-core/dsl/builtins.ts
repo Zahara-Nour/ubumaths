@@ -604,6 +604,29 @@ function _executeBuiltinInner(
 			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
 		}
 
+		case 'inversion': {
+			const centerId = requireElement(
+				named.get('centre') ?? { type: 'nombre', value: 0 },
+				'centre',
+				line
+			);
+			const radius = toGeoValue(named.get('rayon') ?? { type: 'nombre', value: 1 }, line);
+			// 0 positional args → create transformation object
+			if (pos.length === 0) {
+				const id = figure.createInversion(centerId, radius, { label });
+				return { figureId: id, symbolType: 'transformation' };
+			}
+			// 1+ positional args → direct application
+			const sourceId = requireElement(pos[0], 'source', line);
+			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+			if (sourceEl.elementType === 'point') {
+				const id = figure.createInvertedPoint(sourceId, centerId, radius, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			const tId = figure.createInversion(centerId, radius);
+			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+		}
+
 		case 'affinite': {
 			const axeArg = named.get('axe');
 			if (!axeArg) throw new DslRuntimeError("affinite() necessite 'axe'", line);
@@ -989,6 +1012,7 @@ export const BUILTIN_NAMES = new Set([
 	'similitude',
 	'projection',
 	'affinite',
+	'inversion',
 	'transforme',
 	'compose',
 	'intersection',

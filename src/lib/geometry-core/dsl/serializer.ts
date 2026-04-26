@@ -77,6 +77,7 @@ function isTransformationType(type: string): boolean {
 		type === 'homothety' ||
 		type === 'projection' ||
 		type === 'affinity' ||
+		type === 'inversion' ||
 		type === 'composition'
 	);
 }
@@ -93,6 +94,7 @@ function typePrefix(type: string): string {
 		case 'reflectedOverLine':
 		case 'projectedPoint':
 		case 'affinityPoint':
+		case 'invertedPoint':
 			return 'pt';
 		case 'segment':
 			return 'seg';
@@ -137,6 +139,7 @@ function typePrefix(type: string): string {
 		case 'homothety':
 		case 'projection':
 		case 'affinity':
+		case 'inversion':
 		case 'composition':
 			return 't';
 		default:
@@ -349,6 +352,11 @@ function serializeElement(
 		case 'affinity': {
 			const affFactor = fmtGeoValue(el.factor);
 			return `${n} = affinite(axe=(${name(idToName, el.linePoint1Id)}, ${name(idToName, el.linePoint2Id)}), rapport=${affFactor})`;
+		}
+
+		case 'inversion': {
+			const invRadius = fmtGeoValue(el.radius);
+			return `${n} = inversion(centre=${name(idToName, el.centerId)}, rayon=${invRadius})`;
 		}
 
 		case 'composition': {
