@@ -29,7 +29,7 @@
 	import { snapToGrid } from '$lib/geometry-core/interaction/snap';
 	import { numeric } from '$lib/geometry-core/types/geo-value';
 	import { isPointElement } from '$lib/geometry-core/types/elements';
-	import { conicClosestParam } from '$lib/geometry-core/graph/figure';
+	import { conicClosestParam } from '$lib/geometry-core/graph/conic-helpers';
 	import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 	import rough from 'roughjs';
 	import {
