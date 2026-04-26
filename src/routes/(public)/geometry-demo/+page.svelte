@@ -632,6 +632,51 @@ s = symetrie(centre=O)
 p3 = transforme(s, p)
 style(p3, couleur="vert")`
 	).figure;
+
+	// ==========================================================================
+	// Curve transformations — function, conic, implicit
+	// ==========================================================================
+	const transformCurveFig = runDsl(
+		`O = point(0, 0, couleur="noir")
+f = courbe("y = x^2", couleur="bleu")
+r = rotation(angle=45, centre=O)
+f2 = transforme(r, f)
+style(f2, couleur="rouge")`
+	).figure;
+
+	const transformConicFig = runDsl(
+		`O = point(0, 0, couleur="noir")
+c = courbe("{x^2}/4 + {y^2}/9 - 1 = 0", couleur="bleu")
+
+r = rotation(angle=30, centre=O)
+c2 = transforme(r, c)
+style(c2, couleur="rouge")
+
+A = point(0, 0)
+B = point(3, 1)
+t = translation(vecteur=(A, B))
+c3 = transforme(t, c)
+style(c3, couleur="vert")
+
+h = homothetie(rapport=0.5, centre=O)
+c4 = transforme(h, c)
+style(c4, couleur="violet")`
+	).figure;
+
+	const transformImplicitFig = runDsl(
+		`O = point(0, 0, couleur="noir")
+c = courbe("x^3 + y^3 - 3*x*y = 0", couleur="bleu")
+
+A = point(0, 0)
+B = point(2, 2)
+t = translation(vecteur=(A, B))
+c2 = transforme(t, c)
+style(c2, couleur="rouge")
+
+r = rotation(angle=90, centre=O)
+c3 = transforme(r, c)
+style(c3, couleur="vert")`
+	).figure;
 </script>
 
 <div class="p-4">
@@ -1099,5 +1144,80 @@ style(p3, couleur="vert")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{polygoneFig.size} elements | polygone() + transforme()
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Transformation de courbe — y = x² tourne de 45°</h2>
+	<p class="mb-4 text-muted-foreground">
+		<code>transforme(r, courbe("y = x^2"))</code> cree une courbe implicite F(T⁻¹(x,y)) = 0. Le
+		resultat n'est plus une fonction y=g(x) mais est rendu correctement.
+		<br />
+		<strong>Bleu</strong> : parabole y = x² |
+		<strong>Rouge</strong> : rotation 45° autour de O
+	</p>
+
+	<GeometryCanvas
+		figure={transformCurveFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{transformCurveFig.size} elements | courbe y=f(x) transformee
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">
+		Transformation de coniques — ellipse rotation + translation + homothetie
+	</h2>
+	<p class="mb-4 text-muted-foreground">
+		Les coniques restent des coniques apres transformation affine : les coefficients sont recalcules
+		via la matrice inverse. <code>tangente()</code>, <code>point_sur()</code> et
+		<code>zeros()</code> restent utilisables sur l'image.
+		<br />
+		<strong>Bleu</strong> : ellipse x²/4 + y²/9 = 1 |
+		<strong>Rouge</strong> : rotation 30° |
+		<strong>Vert</strong> : translation (3, 1) |
+		<strong>Violet</strong> : homothetie rapport 0.5
+	</p>
+
+	<GeometryCanvas
+		figure={transformConicFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={35}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{transformConicFig.size} elements | coniques transformees (restent GeoQuadraticCurve)
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Transformation de courbe implicite — folium de Descartes</h2>
+	<p class="mb-4 text-muted-foreground">
+		Courbe implicite F(x,y) = 0 transformee par translation et rotation. Le rendu utilise
+		l'algorithme marching squares sur la courbe composee F(T⁻¹(x,y)) = 0.
+		<br />
+		<strong>Bleu</strong> : folium x³+y³-3xy = 0 |
+		<strong>Rouge</strong> : translation (2, 2) |
+		<strong>Vert</strong> : rotation 90°
+	</p>
+
+	<GeometryCanvas
+		figure={transformImplicitFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={35}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{transformImplicitFig.size} elements | courbe implicite transformee
 	</p>
 </div>
