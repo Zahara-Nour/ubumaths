@@ -495,6 +495,23 @@ export interface GeoHomothety extends GeoElementBase {
 	readonly dependsOn: readonly [string];
 }
 
+/** Orthogonal projection onto a line transformation object. */
+export interface GeoProjection extends GeoElementBase {
+	readonly type: 'projection';
+	readonly linePoint1Id: string;
+	readonly linePoint2Id: string;
+	readonly dependsOn: readonly [string, string];
+}
+
+/** Projected point — image of a point by orthogonal projection onto a line. */
+export interface GeoProjectedPoint extends GeoElementBase {
+	readonly type: 'projectedPoint';
+	readonly sourceId: string;
+	readonly linePoint1Id: string;
+	readonly linePoint2Id: string;
+	readonly dependsOn: readonly [string, string, string];
+}
+
 /** Composition of transformations. Applied right-to-left: compose(r, t) applies t then r. */
 export interface GeoComposition extends GeoElementBase {
 	readonly type: 'composition';
@@ -517,6 +534,7 @@ export type GeoTransformation =
 	| GeoReflectionOverLine
 	| GeoTranslation
 	| GeoHomothety
+	| GeoProjection
 	| GeoComposition;
 
 // =============================================================================
@@ -532,6 +550,7 @@ export type GeoPointElement =
 	| GeoTranslatedPoint
 	| GeoDilatedPoint
 	| GeoReflectedOverLine
+	| GeoProjectedPoint
 	| GeoPointOnCurve
 	| GeoPointOnQuadraticCurve;
 export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
@@ -545,6 +564,7 @@ export type GeoElement =
 	| GeoTranslatedPoint
 	| GeoDilatedPoint
 	| GeoReflectedOverLine
+	| GeoProjectedPoint
 	| GeoAngleMark
 	| GeoSegmentMark
 	| GeoMeasure
@@ -573,6 +593,7 @@ export type GeoElement =
 	| GeoReflectionOverLine
 	| GeoTranslation
 	| GeoHomothety
+	| GeoProjection
 	| GeoComposition;
 
 export type GeoElementType = GeoElement['type'];
@@ -631,6 +652,7 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'translatedPoint' ||
 		el.type === 'dilatedPoint' ||
 		el.type === 'reflectedOverLine' ||
+		el.type === 'projectedPoint' ||
 		el.type === 'pointOnCurve' ||
 		el.type === 'pointOnQuadraticCurve'
 	);
@@ -768,6 +790,14 @@ export function isComposition(el: GeoElement): el is GeoComposition {
 	return el.type === 'composition';
 }
 
+export function isProjection(el: GeoElement): el is GeoProjection {
+	return el.type === 'projection';
+}
+
+export function isProjectedPoint(el: GeoElement): el is GeoProjectedPoint {
+	return el.type === 'projectedPoint';
+}
+
 export function isTransformation(el: GeoElement): el is GeoTransformation {
 	return (
 		el.type === 'rotation' ||
@@ -775,6 +805,7 @@ export function isTransformation(el: GeoElement): el is GeoTransformation {
 		el.type === 'reflectionOverLine' ||
 		el.type === 'translation' ||
 		el.type === 'homothety' ||
+		el.type === 'projection' ||
 		el.type === 'composition'
 	);
 }

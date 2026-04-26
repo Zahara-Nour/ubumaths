@@ -85,6 +85,14 @@ export function applyTransformationToPoint(
 				visible
 			});
 
+		case 'projection':
+			return figure.createProjectedPoint(
+				sourcePointId,
+				transform.linePoint1Id,
+				transform.linePoint2Id,
+				{ label, visible }
+			);
+
 		case 'composition': {
 			// Apply transformations right-to-left: compose(r, t) applies t then r
 			const ids = transform.transformationIds;
@@ -152,6 +160,20 @@ function transformVectorLinear(
 		case 'translation':
 			// Translation has no effect on free vectors
 			return { dx, dy };
+		case 'projection': {
+			// Project vector onto line direction
+			const lp1 = figure.getPosition(transform.linePoint1Id);
+			const lp2 = figure.getPosition(transform.linePoint2Id);
+			if (!lp1 || !lp2) return { dx, dy };
+			const ldx = geoToNumber(lp2.x) - geoToNumber(lp1.x);
+			const ldy = geoToNumber(lp2.y) - geoToNumber(lp1.y);
+			const len2 = ldx * ldx + ldy * ldy;
+			if (len2 < 1e-15) return { dx, dy };
+			const dxN = geoToNumber(dx);
+			const dyN = geoToNumber(dy);
+			const dot = (dxN * ldx + dyN * ldy) / len2;
+			return { dx: numeric(dot * ldx), dy: numeric(dot * ldy) };
+		}
 		case 'homothety':
 			return {
 				dx: geoMul(transform.factor, dx),
@@ -197,6 +219,14 @@ export function applyTransformationToElement(
 	const sourceEl = figure.getElementById(sourceId);
 	if (!sourceEl) {
 		throw new Error(`applyTransformationToElement: element "${sourceId}" introuvable`);
+	}
+
+	// Projection only supports point-based objects (not circles, curves, conics)
+	if (containsNonAffineTransform(transformEl, figure, 'projection')) {
+		const unsupported: SymbolType[] = ['cercle', 'courbe', 'arc'];
+		if (unsupported.includes(sourceType)) {
+			throw new Error(`La projection ne supporte pas la transformation de type "${sourceType}"`);
+		}
 	}
 
 	switch (sourceType) {
@@ -375,6 +405,24 @@ export function applyTransformationToElement(
 	}
 }
 
+/**
+ * Check if a transformation (or any sub-transform in a composition) contains a specific type.
+ */
+function containsNonAffineTransform(
+	transform: GeoTransformation,
+	figure: Figure,
+	type: string
+): boolean {
+	if (transform.type === type) return true;
+	if (transform.type === 'composition') {
+		return transform.transformationIds.some((tId) => {
+			const sub = figure.getElementById(tId);
+			return sub && isTransformation(sub) && containsNonAffineTransform(sub, figure, type);
+		});
+	}
+	return false;
+}
+
 // =============================================================================
 // Curve transformation helpers
 // =============================================================================
@@ -451,6 +499,23 @@ function buildInverseTransformCoords(
 					x: x - (geoToNumber(ve.x) - geoToNumber(vs.x)),
 					y: y - (geoToNumber(ve.y) - geoToNumber(vs.y))
 				};
+			};
+		}
+		case 'projection': {
+			const lp1Id = transform.linePoint1Id,
+				lp2Id = transform.linePoint2Id;
+			return (x, y) => {
+				const lp1 = figure.getPosition(lp1Id),
+					lp2 = figure.getPosition(lp2Id);
+				if (!lp1 || !lp2) return { x, y };
+				const x1 = geoToNumber(lp1.x),
+					y1 = geoToNumber(lp1.y);
+				const dx = geoToNumber(lp2.x) - x1,
+					dy = geoToNumber(lp2.y) - y1;
+				const len2 = dx * dx + dy * dy;
+				if (len2 < 1e-15) return { x, y };
+				const t = ((x - x1) * dx + (y - y1) * dy) / len2;
+				return { x: x1 + t * dx, y: y1 + t * dy };
 			};
 		}
 		case 'homothety': {

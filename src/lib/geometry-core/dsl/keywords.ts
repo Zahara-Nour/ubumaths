@@ -15,6 +15,8 @@ export const KEYWORDS = new Set([
 	'rotation',
 	'translation',
 	'homothetie',
+	'similitude',
+	'projection',
 	'intersection',
 	// Annotations
 	'marque_angle',

@@ -79,6 +79,25 @@ export function buildInverseAffineMatrix(
 			}
 			return [1, 0, -tdx, 0, 1, -tdy];
 		}
+		case 'projection': {
+			const lp1 = access.getPosition(transform.linePoint1Id);
+			const lp2 = access.getPosition(transform.linePoint2Id);
+			if (!lp1 || !lp2) return [1, 0, 0, 0, 1, 0];
+			const x1 = geoToNumber(lp1.x),
+				y1 = geoToNumber(lp1.y);
+			const dx = geoToNumber(lp2.x) - x1,
+				dy = geoToNumber(lp2.y) - y1;
+			const len2 = dx * dx + dy * dy;
+			if (len2 < 1e-15) return [1, 0, 0, 0, 1, 0];
+			// Projection matrix onto line direction (dx, dy):
+			// P = (1/len2) * [[dx², dx*dy], [dx*dy, dy²]] + translation offset
+			const a = (dx * dx) / len2;
+			const b = (dx * dy) / len2;
+			const d = (dy * dy) / len2;
+			const tx = x1 - a * x1 - b * y1;
+			const ty = y1 - b * x1 - d * y1;
+			return [a, b, tx, b, d, ty];
+		}
 		case 'homothety': {
 			const cPos = access.getPosition(transform.centerId);
 			const cx = cPos ? geoToNumber(cPos.x) : 0;

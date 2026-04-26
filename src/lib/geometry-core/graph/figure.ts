@@ -46,6 +46,8 @@ import type {
 	type GeoTranslation,
 	type GeoHomothety,
 	type GeoComposition,
+	type GeoProjection,
+	type GeoProjectedPoint,
 	type LineEquation,
 	type ConicParams
 } from '../types/elements';
@@ -935,6 +937,52 @@ export class Figure {
 			...(sourceBuiltin ? { sourceBuiltin } : {})
 		};
 		this.addElement(id, element, deps);
+		return id;
+	}
+
+	createProjection(linePoint1Id: string, linePoint2Id: string, options?: ElementOptions): string {
+		this.requirePoints('createProjection', linePoint1Id, linePoint2Id);
+		if (linePoint1Id === linePoint2Id) {
+			throw new Error('createProjection: line points must be distinct');
+		}
+		const id = this.generateId('tProj');
+		const element: GeoProjection = {
+			type: 'projection',
+			id,
+			linePoint1Id,
+			linePoint2Id,
+			color: DEFAULT_COLOR,
+			visible: false,
+			label: options?.label,
+			dependsOn: [linePoint1Id, linePoint2Id]
+		};
+		this.addElement(id, element, [linePoint1Id, linePoint2Id]);
+		return id;
+	}
+
+	createProjectedPoint(
+		sourcePointId: string,
+		linePoint1Id: string,
+		linePoint2Id: string,
+		options?: ElementOptions
+	): string {
+		this.requirePoints('createProjectedPoint', sourcePointId, linePoint1Id, linePoint2Id);
+		const id = this.generateId('projPt');
+		const element: GeoProjectedPoint = {
+			type: 'projectedPoint',
+			id,
+			sourceId: sourcePointId,
+			linePoint1Id,
+			linePoint2Id,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [sourcePointId, linePoint1Id, linePoint2Id]
+		};
+		this.addElement(id, element, [sourcePointId, linePoint1Id, linePoint2Id]);
+		this.computePosition(id);
 		return id;
 	}
 

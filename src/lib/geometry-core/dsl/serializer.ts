@@ -75,6 +75,7 @@ function isTransformationType(type: string): boolean {
 		type === 'reflectionOverLine' ||
 		type === 'translation' ||
 		type === 'homothety' ||
+		type === 'projection' ||
 		type === 'composition'
 	);
 }
@@ -89,6 +90,7 @@ function typePrefix(type: string): string {
 		case 'translatedPoint':
 		case 'dilatedPoint':
 		case 'reflectedOverLine':
+		case 'projectedPoint':
 			return 'pt';
 		case 'segment':
 			return 'seg';
@@ -131,6 +133,7 @@ function typePrefix(type: string): string {
 		case 'reflectionOverLine':
 		case 'translation':
 		case 'homothety':
+		case 'projection':
 		case 'composition':
 			return 't';
 		default:
@@ -336,6 +339,9 @@ function serializeElement(
 			const factor = fmtGeoValue(el.factor);
 			return `${n} = homothetie(rapport=${factor}, centre=${name(idToName, el.centerId)})`;
 		}
+
+		case 'projection':
+			return `${n} = projection(axe=(${name(idToName, el.linePoint1Id)}, ${name(idToName, el.linePoint2Id)}))`;
 
 		case 'composition': {
 			if (el.sourceBuiltin?.name === 'similitude') {
