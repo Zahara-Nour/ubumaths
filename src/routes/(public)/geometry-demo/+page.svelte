@@ -610,6 +610,28 @@ style(u2, couleur="rouge")
 c3 = homothetie(c, centre=O, rapport=2)
 style(c3, couleur="vert")`
 	).figure;
+
+	// ==========================================================================
+	// Polygone builtin — polygone(A, B, C, ...) + transformation
+	// ==========================================================================
+	const polygoneFig = runDsl(
+		`A = point(2, 0, couleur="bleu")
+B = point(4, 0, couleur="bleu")
+C = point(5, 2, couleur="bleu")
+D = point(3, 3, couleur="bleu")
+E = point(1, 2, couleur="bleu")
+p = polygone(A, B, C, D, E)
+style(p, couleur="bleu")
+
+O = point(0, 0, couleur="noir")
+r = rotation(angle=72, centre=O)
+p2 = transforme(r, p)
+style(p2, couleur="rouge")
+
+s = symetrie(centre=O)
+p3 = transforme(s, p)
+style(p3, couleur="vert")`
+	).figure;
 </script>
 
 <div class="p-4">
@@ -1053,5 +1075,29 @@ style(c3, couleur="vert")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{directSyntaxFig.size} elements | syntaxe directe sur objets varies
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Polygone — polygone(A, B, C, D, E) + transforme()</h2>
+	<p class="mb-4 text-muted-foreground">
+		Builtin <code>polygone(A, B, C, ...)</code> pour creer des polygones a N sommets. Ici un
+		pentagone transforme par rotation 72° et symetrie centrale. Deplacez les sommets ou le centre O.
+		<br />
+		<strong>Bleu</strong> : pentagone original |
+		<strong>Rouge</strong> : rotation 72° autour de O |
+		<strong>Vert</strong> : symetrie centrale (O)
+	</p>
+
+	<GeometryCanvas
+		figure={polygoneFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{polygoneFig.size} elements | polygone() + transforme()
 	</p>
 </div>
