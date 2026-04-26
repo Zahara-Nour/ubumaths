@@ -19,6 +19,7 @@ export type SymbolType =
 	| 'courbe'
 	| 'tangente'
 	| 'vecteur'
+	| 'transformation'
 	| 'liste';
 
 export interface SymbolEntry {

@@ -32,6 +32,49 @@ import { classifyConic } from '../geometry/conic-classify';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { numeric } from '../types/geo-value';
+import { applyTransformationToElement } from './transform-apply';
+import type { GeoElement } from '../types/elements';
+
+/** Resolve a line-like element's two defining point IDs. */
+function resolveLinePoints(el: GeoElement): { p1: string; p2: string } | null {
+	switch (el.type) {
+		case 'line':
+			return { p1: el.point1Id, p2: el.point2Id };
+		case 'segment':
+			return { p1: el.startId, p2: el.endId };
+		case 'ray':
+			return { p1: el.originId, p2: el.throughId };
+		default:
+			return null;
+	}
+}
+
+/** Resolve axe= argument: either a line-like element or a tuple of 2 points. */
+function resolveAxeArg(
+	axeArg: ResolvedValue,
+	figure: Figure,
+	line: number
+): { p1: string; p2: string } {
+	if (
+		axeArg.type === 'element' &&
+		(axeArg.elementType === 'droite' ||
+			axeArg.elementType === 'segment' ||
+			axeArg.elementType === 'demidroite')
+	) {
+		const lineEl = figure.getElementById(axeArg.figureId!);
+		if (!lineEl) throw new DslRuntimeError(`axe: element introuvable`, line);
+		const pts = resolveLinePoints(lineEl);
+		if (!pts)
+			throw new DslRuntimeError('axe: impossible de resoudre les points de la droite', line);
+		return pts;
+	}
+	const tuple = requireTuple(axeArg, 'axe', line);
+	if (tuple.length !== 2) throw new DslRuntimeError('axe attend un tuple de 2 points', line);
+	return {
+		p1: requireElement(tuple[0], 'axe.1', line),
+		p2: requireElement(tuple[1], 'axe.2', line)
+	};
+}
 import { geoToNumber } from '../compute/to-number';
 
 export type ResolvedArgs = {
@@ -383,88 +426,197 @@ function _executeBuiltinInner(
 		}
 
 		case 'symetrie': {
-			if (pos.length !== 1)
-				throw new DslRuntimeError('symetrie() attend 1 argument positionnel (source)', line);
+			// 0 positional args → create transformation object
+			if (pos.length === 0) {
+				if (named.has('centre')) {
+					const centerId = requireElement(named.get('centre')!, 'centre', line);
+					const id = figure.createReflection(centerId, { label });
+					return { figureId: id, symbolType: 'transformation' };
+				}
+				if (named.has('axe')) {
+					const { p1, p2 } = resolveAxeArg(named.get('axe')!, figure, line);
+					const id = figure.createReflectionOverLine(p1, p2, { label });
+					return { figureId: id, symbolType: 'transformation' };
+				}
+				throw new DslRuntimeError("symetrie() necessite 'centre' ou 'axe'", line);
+			}
+			// 1+ positional args → direct application
 			const sourceId = requireElement(pos[0], 'source', line);
+			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
 			if (named.has('centre')) {
 				const centerId = requireElement(named.get('centre')!, 'centre', line);
-				const id = figure.createReflectedPoint(sourceId, centerId, { label });
-				return { figureId: id, symbolType: 'point' };
+				if (sourceEl.elementType === 'point') {
+					const id = figure.createReflectedPoint(sourceId, centerId, { label });
+					return { figureId: id, symbolType: 'point' };
+				}
+				const tId = figure.createReflection(centerId);
+				return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
 			}
 			if (named.has('axe')) {
-				const tuple = requireTuple(named.get('axe')!, 'axe', line);
-				if (tuple.length !== 2) throw new DslRuntimeError('axe attend un tuple de 2 points', line);
-				const id = figure.createReflectedOverLine(
-					sourceId,
-					requireElement(tuple[0], 'axe.1', line),
-					requireElement(tuple[1], 'axe.2', line),
-					{ label }
-				);
-				return { figureId: id, symbolType: 'point' };
+				const { p1, p2 } = resolveAxeArg(named.get('axe')!, figure, line);
+				if (sourceEl.elementType === 'point') {
+					const id = figure.createReflectedOverLine(sourceId, p1, p2, { label });
+					return { figureId: id, symbolType: 'point' };
+				}
+				const tId = figure.createReflectionOverLine(p1, p2);
+				return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
 			}
 			throw new DslRuntimeError("symetrie() necessite 'centre' ou 'axe'", line);
 		}
 
 		case 'rotation': {
-			if (pos.length !== 1)
-				throw new DslRuntimeError('rotation() attend 1 argument positionnel (source)', line);
-			const sourceId = requireElement(pos[0], 'source', line);
 			const centerId = requireElement(
 				named.get('centre') ?? { type: 'nombre', value: 0 },
 				'centre',
 				line
 			);
-			// DSL angles are in degrees, Figure API expects radians
 			const angleDeg = requireNumber(
 				named.get('angle') ?? { type: 'nombre', value: 0 },
 				'angle',
 				line
 			);
 			const angleRad: GeoValue = { kind: 'numeric', value: (angleDeg * Math.PI) / 180 };
-			const id = figure.createRotatedPoint(sourceId, centerId, angleRad, { label });
-			return { figureId: id, symbolType: 'point' };
+			// 0 positional args → create transformation object
+			if (pos.length === 0) {
+				const id = figure.createRotation(centerId, angleRad, { label });
+				return { figureId: id, symbolType: 'transformation' };
+			}
+			// 1+ positional args → direct application
+			const sourceId = requireElement(pos[0], 'source', line);
+			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+			if (sourceEl.elementType === 'point') {
+				const id = figure.createRotatedPoint(sourceId, centerId, angleRad, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			// Non-point: create temp transformation, delegate
+			const tId = figure.createRotation(centerId, angleRad);
+			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
 		}
 
 		case 'translation': {
-			if (pos.length !== 1)
-				throw new DslRuntimeError('translation() attend 1 argument positionnel (source)', line);
-			const sourceId = requireElement(pos[0], 'source', line);
 			const vecteurArg = named.get('vecteur');
 			if (!vecteurArg) throw new DslRuntimeError('translation() requiert vecteur=...', line);
 
-			// Accept either vecteur=(A,B) tuple or vecteur=v (a vector element)
-			if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
-				// Direct vector reference: the translated point depends on the vector
-				// element itself, so it stays reactive to any future vector changes.
-				const id = figure.createTranslatedPointByVector(sourceId, vecteurArg.figureId!, { label });
-				return { figureId: id, symbolType: 'point' };
+			// 0 positional args → create transformation object
+			if (pos.length === 0) {
+				if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
+					const id = figure.createTranslationByVector(vecteurArg.figureId!, { label });
+					return { figureId: id, symbolType: 'transformation' };
+				}
+				const tuple = requireTuple(vecteurArg, 'vecteur', line);
+				if (tuple.length !== 2)
+					throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
+				const id = figure.createTranslation(
+					requireElement(tuple[0], 'vecteur.1', line),
+					requireElement(tuple[1], 'vecteur.2', line),
+					{ label }
+				);
+				return { figureId: id, symbolType: 'transformation' };
 			}
 
-			// Classic tuple syntax: vecteur=(A, B)
-			const tuple = requireTuple(vecteurArg, 'vecteur', line);
-			if (tuple.length !== 2)
-				throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
-			const id = figure.createTranslatedPoint(
-				sourceId,
-				requireElement(tuple[0], 'vecteur.1', line),
-				requireElement(tuple[1], 'vecteur.2', line),
-				{ label }
-			);
-			return { figureId: id, symbolType: 'point' };
+			// 1+ positional args → direct application
+			const sourceId = requireElement(pos[0], 'source', line);
+			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+			if (sourceEl.elementType === 'point') {
+				if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
+					const id = figure.createTranslatedPointByVector(sourceId, vecteurArg.figureId!, {
+						label
+					});
+					return { figureId: id, symbolType: 'point' };
+				}
+				const tuple = requireTuple(vecteurArg, 'vecteur', line);
+				if (tuple.length !== 2)
+					throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
+				const id = figure.createTranslatedPoint(
+					sourceId,
+					requireElement(tuple[0], 'vecteur.1', line),
+					requireElement(tuple[1], 'vecteur.2', line),
+					{ label }
+				);
+				return { figureId: id, symbolType: 'point' };
+			}
+			// Non-point: create temp transformation, delegate
+			let tId: string;
+			if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
+				tId = figure.createTranslationByVector(vecteurArg.figureId!);
+			} else {
+				const tuple = requireTuple(vecteurArg, 'vecteur', line);
+				if (tuple.length !== 2)
+					throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
+				tId = figure.createTranslation(
+					requireElement(tuple[0], 'vecteur.1', line),
+					requireElement(tuple[1], 'vecteur.2', line)
+				);
+			}
+			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
 		}
 
 		case 'homothetie': {
-			if (pos.length !== 1)
-				throw new DslRuntimeError('homothetie() attend 1 argument positionnel (source)', line);
-			const sourceId = requireElement(pos[0], 'source', line);
 			const centerId = requireElement(
 				named.get('centre') ?? { type: 'nombre', value: 0 },
 				'centre',
 				line
 			);
 			const factor = toGeoValue(named.get('rapport') ?? { type: 'nombre', value: 1 }, line);
-			const id = figure.createDilatedPoint(sourceId, centerId, factor, { label });
-			return { figureId: id, symbolType: 'point' };
+			// 0 positional args → create transformation object
+			if (pos.length === 0) {
+				const id = figure.createHomothety(centerId, factor, { label });
+				return { figureId: id, symbolType: 'transformation' };
+			}
+			// 1+ positional args → direct application
+			const sourceId = requireElement(pos[0], 'source', line);
+			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+			if (sourceEl.elementType === 'point') {
+				const id = figure.createDilatedPoint(sourceId, centerId, factor, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			// Non-point: create temp transformation, delegate
+			const tId = figure.createHomothety(centerId, factor);
+			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+		}
+
+		case 'transforme': {
+			if (pos.length !== 2)
+				throw new DslRuntimeError('transforme() attend 2 arguments (transformation, objet)', line);
+			const transformArg = pos[0];
+			if (transformArg.type !== 'element' || transformArg.elementType !== 'transformation')
+				throw new DslRuntimeError(
+					'transforme(): le premier argument doit etre une transformation',
+					line
+				);
+			const sourceArg = pos[1];
+			if (sourceArg.type !== 'element')
+				throw new DslRuntimeError(
+					'transforme(): le second argument doit etre un element geometrique',
+					line
+				);
+			const result = applyTransformationToElement(
+				figure,
+				transformArg.figureId!,
+				sourceArg.figureId!,
+				sourceArg.elementType!,
+				{ label }
+			);
+			// Record origin for serialization roundtrip
+			figure.recordTransformeOrigin(result.figureId, transformArg.figureId!, sourceArg.figureId!);
+			return result;
+		}
+
+		case 'compose': {
+			if (pos.length < 2)
+				throw new DslRuntimeError('compose() attend au moins 2 transformations', line);
+			const transformIds: string[] = [];
+			for (let i = 0; i < pos.length; i++) {
+				const arg = pos[i];
+				if (arg.type !== 'element' || arg.elementType !== 'transformation')
+					throw new DslRuntimeError(
+						`compose(): l'argument ${i + 1} doit etre une transformation`,
+						line
+					);
+				transformIds.push(arg.figureId!);
+			}
+			const id = figure.createComposition(transformIds, { label });
+			return { figureId: id, symbolType: 'transformation' };
 		}
 
 		case 'intersection': {
@@ -758,6 +910,8 @@ export const BUILTIN_NAMES = new Set([
 	'rotation',
 	'translation',
 	'homothetie',
+	'transforme',
+	'compose',
 	'intersection',
 	'marque_angle',
 	'angle_droit',

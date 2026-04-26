@@ -439,6 +439,71 @@ export interface GeoImplicitCurve extends GeoElementBase {
 }
 
 // =============================================================================
+// Transformation objects (invisible, reusable)
+// =============================================================================
+
+/** Rotation transformation object. Created by rotation(angle=..., centre=...) with 0 positional args. */
+export interface GeoRotation extends GeoElementBase {
+	readonly type: 'rotation';
+	readonly centerId: string;
+	readonly angle: GeoValue;
+	readonly dependsOn: readonly [string];
+}
+
+/** Central symmetry (point reflection) transformation object. */
+export interface GeoReflection extends GeoElementBase {
+	readonly type: 'reflection';
+	readonly centerId: string;
+	readonly dependsOn: readonly [string];
+}
+
+/** Axial symmetry (reflection over a line) transformation object. */
+export interface GeoReflectionOverLine extends GeoElementBase {
+	readonly type: 'reflectionOverLine';
+	readonly linePoint1Id: string;
+	readonly linePoint2Id: string;
+	readonly dependsOn: readonly [string, string];
+}
+
+/**
+ * Translation transformation object.
+ *
+ * Two construction modes (same as GeoTranslatedPoint):
+ * - By two points: vectorStartId + vectorEndId
+ * - By vector element: vectorId
+ */
+export interface GeoTranslation extends GeoElementBase {
+	readonly type: 'translation';
+	readonly vectorStartId: string;
+	readonly vectorEndId: string;
+	readonly vectorId?: string;
+	readonly dependsOn: readonly string[];
+}
+
+/** Homothety (dilation) transformation object. */
+export interface GeoHomothety extends GeoElementBase {
+	readonly type: 'homothety';
+	readonly centerId: string;
+	readonly factor: GeoValue;
+	readonly dependsOn: readonly [string];
+}
+
+/** Composition of transformations. Applied right-to-left: compose(r, t) applies t then r. */
+export interface GeoComposition extends GeoElementBase {
+	readonly type: 'composition';
+	readonly transformationIds: readonly string[];
+	readonly dependsOn: readonly string[];
+}
+
+export type GeoTransformation =
+	| GeoRotation
+	| GeoReflection
+	| GeoReflectionOverLine
+	| GeoTranslation
+	| GeoHomothety
+	| GeoComposition;
+
+// =============================================================================
 // Union type
 // =============================================================================
 
@@ -486,7 +551,13 @@ export type GeoElement =
 	| GeoFreeVector
 	| GeoVectorSum
 	| GeoVectorScaled
-	| GeoVectorNegate;
+	| GeoVectorNegate
+	| GeoRotation
+	| GeoReflection
+	| GeoReflectionOverLine
+	| GeoTranslation
+	| GeoHomothety
+	| GeoComposition;
 
 export type GeoElementType = GeoElement['type'];
 
@@ -653,4 +724,41 @@ export function isVectorScaled(el: GeoElement): el is GeoVectorScaled {
 
 export function isVectorNegate(el: GeoElement): el is GeoVectorNegate {
 	return el.type === 'vectorNegate';
+}
+
+// Transformation object type guards
+
+export function isRotation(el: GeoElement): el is GeoRotation {
+	return el.type === 'rotation';
+}
+
+export function isReflection(el: GeoElement): el is GeoReflection {
+	return el.type === 'reflection';
+}
+
+export function isReflectionOverLine(el: GeoElement): el is GeoReflectionOverLine {
+	return el.type === 'reflectionOverLine';
+}
+
+export function isTranslation(el: GeoElement): el is GeoTranslation {
+	return el.type === 'translation';
+}
+
+export function isHomothety(el: GeoElement): el is GeoHomothety {
+	return el.type === 'homothety';
+}
+
+export function isComposition(el: GeoElement): el is GeoComposition {
+	return el.type === 'composition';
+}
+
+export function isTransformation(el: GeoElement): el is GeoTransformation {
+	return (
+		el.type === 'rotation' ||
+		el.type === 'reflection' ||
+		el.type === 'reflectionOverLine' ||
+		el.type === 'translation' ||
+		el.type === 'homothety' ||
+		el.type === 'composition'
+	);
 }
