@@ -512,6 +512,25 @@ export interface GeoProjectedPoint extends GeoElementBase {
 	readonly dependsOn: readonly [string, string, string];
 }
 
+/** Orthogonal affinity (stretch perpendicular to an axis) transformation object. */
+export interface GeoAffinity extends GeoElementBase {
+	readonly type: 'affinity';
+	readonly linePoint1Id: string;
+	readonly linePoint2Id: string;
+	readonly factor: GeoValue;
+	readonly dependsOn: readonly [string, string];
+}
+
+/** Affinity point — image of a point by orthogonal affinity. */
+export interface GeoAffinityPoint extends GeoElementBase {
+	readonly type: 'affinityPoint';
+	readonly sourceId: string;
+	readonly linePoint1Id: string;
+	readonly linePoint2Id: string;
+	readonly factor: GeoValue;
+	readonly dependsOn: readonly [string, string, string];
+}
+
 /** Composition of transformations. Applied right-to-left: compose(r, t) applies t then r. */
 export interface GeoComposition extends GeoElementBase {
 	readonly type: 'composition';
@@ -535,6 +554,7 @@ export type GeoTransformation =
 	| GeoTranslation
 	| GeoHomothety
 	| GeoProjection
+	| GeoAffinity
 	| GeoComposition;
 
 // =============================================================================
@@ -551,6 +571,7 @@ export type GeoPointElement =
 	| GeoDilatedPoint
 	| GeoReflectedOverLine
 	| GeoProjectedPoint
+	| GeoAffinityPoint
 	| GeoPointOnCurve
 	| GeoPointOnQuadraticCurve;
 export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
@@ -565,6 +586,7 @@ export type GeoElement =
 	| GeoDilatedPoint
 	| GeoReflectedOverLine
 	| GeoProjectedPoint
+	| GeoAffinityPoint
 	| GeoAngleMark
 	| GeoSegmentMark
 	| GeoMeasure
@@ -594,6 +616,7 @@ export type GeoElement =
 	| GeoTranslation
 	| GeoHomothety
 	| GeoProjection
+	| GeoAffinity
 	| GeoComposition;
 
 export type GeoElementType = GeoElement['type'];
@@ -653,6 +676,7 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'dilatedPoint' ||
 		el.type === 'reflectedOverLine' ||
 		el.type === 'projectedPoint' ||
+		el.type === 'affinityPoint' ||
 		el.type === 'pointOnCurve' ||
 		el.type === 'pointOnQuadraticCurve'
 	);
@@ -806,6 +830,15 @@ export function isTransformation(el: GeoElement): el is GeoTransformation {
 		el.type === 'translation' ||
 		el.type === 'homothety' ||
 		el.type === 'projection' ||
+		el.type === 'affinity' ||
 		el.type === 'composition'
 	);
+}
+
+export function isAffinity(el: GeoElement): el is GeoAffinity {
+	return el.type === 'affinity';
+}
+
+export function isAffinityPoint(el: GeoElement): el is GeoAffinityPoint {
+	return el.type === 'affinityPoint';
 }

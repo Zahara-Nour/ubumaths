@@ -48,6 +48,8 @@ import type {
 	type GeoComposition,
 	type GeoProjection,
 	type GeoProjectedPoint,
+	type GeoAffinity,
+	type GeoAffinityPoint,
 	type LineEquation,
 	type ConicParams
 } from '../types/elements';
@@ -974,6 +976,60 @@ export class Figure {
 			sourceId: sourcePointId,
 			linePoint1Id,
 			linePoint2Id,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [sourcePointId, linePoint1Id, linePoint2Id]
+		};
+		this.addElement(id, element, [sourcePointId, linePoint1Id, linePoint2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createAffinity(
+		linePoint1Id: string,
+		linePoint2Id: string,
+		factor: GeoValue,
+		options?: ElementOptions
+	): string {
+		this.requirePoints('createAffinity', linePoint1Id, linePoint2Id);
+		if (linePoint1Id === linePoint2Id) {
+			throw new Error('createAffinity: line points must be distinct');
+		}
+		const id = this.generateId('tAff');
+		const element: GeoAffinity = {
+			type: 'affinity',
+			id,
+			linePoint1Id,
+			linePoint2Id,
+			factor,
+			color: DEFAULT_COLOR,
+			visible: false,
+			label: options?.label,
+			dependsOn: [linePoint1Id, linePoint2Id]
+		};
+		this.addElement(id, element, [linePoint1Id, linePoint2Id]);
+		return id;
+	}
+
+	createAffinityPoint(
+		sourcePointId: string,
+		linePoint1Id: string,
+		linePoint2Id: string,
+		factor: GeoValue,
+		options?: ElementOptions
+	): string {
+		this.requirePoints('createAffinityPoint', sourcePointId, linePoint1Id, linePoint2Id);
+		const id = this.generateId('affPt');
+		const element: GeoAffinityPoint = {
+			type: 'affinityPoint',
+			id,
+			sourceId: sourcePointId,
+			linePoint1Id,
+			linePoint2Id,
+			factor,
 			color: this.resolveColor(options),
 			visible: options?.visible ?? true,
 			label: options?.label,

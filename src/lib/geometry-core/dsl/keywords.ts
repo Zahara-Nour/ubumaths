@@ -17,6 +17,7 @@ export const KEYWORDS = new Set([
 	'homothetie',
 	'similitude',
 	'projection',
+	'affinite',
 	'intersection',
 	// Annotations
 	'marque_angle',
