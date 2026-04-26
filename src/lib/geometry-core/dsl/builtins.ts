@@ -373,24 +373,10 @@ function _executeBuiltinInner(
 
 			// Accept either vecteur=(A,B) tuple or vecteur=v (a vector element)
 			if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
-				// Vector element: look up its start/end points
-				const vecEl = figure.getElementById(vecteurArg.figureId!);
-				if (!vecEl) throw new DslRuntimeError('vecteur reference invalide', line);
-				if (vecEl.type === 'vectorByPoints') {
-					const id = figure.createTranslatedPoint(sourceId, vecEl.startId, vecEl.endId, { label });
-					return { figureId: id, symbolType: 'point' };
-				} else if (vecEl.type === 'freeVector') {
-					// Create two hidden, non-draggable points for the translation.
-					// Note: these are static copies of dx/dy at creation time.
-					// moveFreeVector only changes the anchor, not dx/dy, so this is correct.
-					const anchor = { x: numeric(0), y: numeric(0) };
-					const end = { x: vecEl.dx, y: vecEl.dy };
-					const p1Id = figure.createFreePoint(anchor, { visible: false, draggable: false });
-					const p2Id = figure.createFreePoint(end, { visible: false, draggable: false });
-					const id = figure.createTranslatedPoint(sourceId, p1Id, p2Id, { label });
-					return { figureId: id, symbolType: 'point' };
-				}
-				throw new DslRuntimeError('vecteur invalide', line);
+				// Direct vector reference: the translated point depends on the vector
+				// element itself, so it stays reactive to any future vector changes.
+				const id = figure.createTranslatedPointByVector(sourceId, vecteurArg.figureId!, { label });
+				return { figureId: id, symbolType: 'point' };
 			}
 
 			// Classic tuple syntax: vecteur=(A, B)

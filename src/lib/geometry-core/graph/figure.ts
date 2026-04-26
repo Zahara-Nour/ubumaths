@@ -46,7 +46,8 @@ import {
 	isLineLike,
 	isPointElement,
 	isPointOnCurve,
-	isPointOnQuadraticCurve
+	isPointOnQuadraticCurve,
+	isVector
 } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
 import { geoValueToMathNode, numeric } from '../types/geo-value';
@@ -542,6 +543,50 @@ export class Figure {
 			dependsOn: [sourceId, vectorStartId, vectorEndId]
 		};
 		this.addElement(id, element, [sourceId, vectorStartId, vectorEndId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Create a translated point using a vector element directly.
+	 *
+	 * Unlike createTranslatedPoint (which takes two point IDs as the vector),
+	 * this method references a GeoVector element. The translated point stays
+	 * reactive: if the vector's defining points move (bound vector) or if
+	 * a future operation changes dx/dy (free vector), the translation updates.
+	 */
+	createTranslatedPointByVector(
+		sourceId: string,
+		vectorId: string,
+		options?: ElementOptions
+	): string {
+		const src = this.elements.get(sourceId);
+		if (!src || !isPointElement(src))
+			throw new Error(`createTranslatedPointByVector: "${sourceId}" is not a point element`);
+
+		const vecEl = this.elements.get(vectorId);
+		if (!vecEl || !isVector(vecEl))
+			throw new Error(`createTranslatedPointByVector: "${vectorId}" is not a vector element`);
+
+		// Build dependency list: source + vector + vector's own dependencies
+		const deps = [sourceId, vectorId, ...vecEl.dependsOn];
+
+		const id = this.generateId('trans');
+		const element: GeoTranslatedPoint = {
+			type: 'translatedPoint',
+			id,
+			sourceId,
+			vectorStartId: '',
+			vectorEndId: '',
+			vectorId,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
 		this.computePosition(id);
 		return id;
 	}

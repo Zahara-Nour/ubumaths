@@ -97,12 +97,25 @@ export interface GeoRotatedPoint extends GeoElementBase {
 }
 
 /** Image of a point by translation defined by a vector (two points). */
+/**
+ * Image of a point by translation.
+ *
+ * Two construction modes:
+ * - By two points: vectorStartId + vectorEndId define the displacement (classic).
+ * - By vector element: vectorId references a GeoVector (bound or free).
+ *   The displacement is read from the vector's points (bound) or dx/dy (free).
+ *   This keeps the translated point reactive to vector changes.
+ *
+ * When vectorId is set, vectorStartId/vectorEndId are empty strings (unused).
+ */
 export interface GeoTranslatedPoint extends GeoElementBase {
 	readonly type: 'translatedPoint';
 	readonly sourceId: string;
 	readonly vectorStartId: string;
 	readonly vectorEndId: string;
-	readonly dependsOn: readonly [string, string, string];
+	/** Optional: direct reference to a vector element for reactive translation. */
+	readonly vectorId?: string;
+	readonly dependsOn: readonly string[];
 }
 
 /** Image of a point by homothety (dilation) from a center with a factor. */
