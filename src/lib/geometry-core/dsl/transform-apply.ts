@@ -15,7 +15,10 @@ import type {
 	GeoArcByPoints,
 	GeoArcByAngles,
 	GeoPolygon,
-	GeoVectorByPoints
+	GeoVectorByPoints,
+	GeoFunction,
+	GeoQuadraticCurve,
+	GeoImplicitCurve
 } from '../types/elements';
 import { isTransformation } from '../types/elements';
 import type { SymbolType } from './symbol-table';
@@ -23,6 +26,9 @@ import { geoMul, geoAdd } from '../compute/geo-arithmetic';
 import type { GeoValue } from '../types/geo-value';
 import { numeric } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
+import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import { classifyConic } from '../geometry/conic-classify';
+import { number as mathNumber } from '$lib/mathAST/factory';
 
 export interface TransformResult {
 	figureId: string;
@@ -361,7 +367,289 @@ export function applyTransformationToElement(
 			return { figureId: id, symbolType: 'vecteur' };
 		}
 
+		case 'courbe': {
+			return transformCurve(figure, transformEl, sourceEl, options);
+		}
+
 		default:
 			throw new Error(`transforme() ne supporte pas encore le type "${sourceType}"`);
 	}
+}
+
+// =============================================================================
+// Curve transformation helpers
+// =============================================================================
+
+/**
+ * Build the inverse transformation function: (x, y) → T⁻¹(x, y).
+ * Returns a function that maps output coordinates back to input coordinates.
+ */
+function buildInverseTransformCoords(
+	transform: GeoTransformation,
+	figure: Figure
+): (x: number, y: number) => { x: number; y: number } {
+	switch (transform.type) {
+		case 'rotation': {
+			const cPos = figure.getPosition(transform.centerId);
+			if (!cPos) return (x, y) => ({ x, y });
+			const cx = geoToNumber(cPos.x);
+			const cy = geoToNumber(cPos.y);
+			const angle = -geoToNumber(transform.angle); // inverse = negative angle
+			const cos = Math.cos(angle);
+			const sin = Math.sin(angle);
+			return (x, y) => ({
+				x: cx + (x - cx) * cos - (y - cy) * sin,
+				y: cy + (x - cx) * sin + (y - cy) * cos
+			});
+		}
+		case 'reflection': {
+			// Central symmetry is its own inverse
+			const cPos = figure.getPosition(transform.centerId);
+			if (!cPos) return (x, y) => ({ x, y });
+			const cx = geoToNumber(cPos.x);
+			const cy = geoToNumber(cPos.y);
+			return (x, y) => ({
+				x: 2 * cx - x,
+				y: 2 * cy - y
+			});
+		}
+		case 'reflectionOverLine': {
+			// Axial reflection is its own inverse
+			const lp1 = figure.getPosition(transform.linePoint1Id);
+			const lp2 = figure.getPosition(transform.linePoint2Id);
+			if (!lp1 || !lp2) return (x, y) => ({ x, y });
+			const x1 = geoToNumber(lp1.x),
+				y1 = geoToNumber(lp1.y);
+			const x2 = geoToNumber(lp2.x),
+				y2 = geoToNumber(lp2.y);
+			const dx = x2 - x1,
+				dy = y2 - y1;
+			const len2 = dx * dx + dy * dy;
+			if (len2 < 1e-15) return (x, y) => ({ x, y });
+			return (x, y) => {
+				const t = ((x - x1) * dx + (y - y1) * dy) / len2;
+				const projX = x1 + t * dx;
+				const projY = y1 + t * dy;
+				return { x: 2 * projX - x, y: 2 * projY - y };
+			};
+		}
+		case 'translation': {
+			// Inverse = translate by -vector
+			if (transform.vectorId) {
+				const comp = figure.getVectorComponents(transform.vectorId);
+				if (!comp) return (x, y) => ({ x, y });
+				const tdx = geoToNumber(comp.dx);
+				const tdy = geoToNumber(comp.dy);
+				return (x, y) => ({ x: x - tdx, y: y - tdy });
+			}
+			const vs = figure.getPosition(transform.vectorStartId);
+			const ve = figure.getPosition(transform.vectorEndId);
+			if (!vs || !ve) return (x, y) => ({ x, y });
+			const tdx = geoToNumber(ve.x) - geoToNumber(vs.x);
+			const tdy = geoToNumber(ve.y) - geoToNumber(vs.y);
+			return (x, y) => ({ x: x - tdx, y: y - tdy });
+		}
+		case 'homothety': {
+			const cPos = figure.getPosition(transform.centerId);
+			if (!cPos) return (x, y) => ({ x, y });
+			const cx = geoToNumber(cPos.x);
+			const cy = geoToNumber(cPos.y);
+			const k = geoToNumber(transform.factor);
+			if (Math.abs(k) < 1e-15) return (x, y) => ({ x, y });
+			const invK = 1 / k;
+			return (x, y) => ({
+				x: cx + (x - cx) * invK,
+				y: cy + (y - cy) * invK
+			});
+		}
+		case 'composition': {
+			// Inverse of compose(f1, f2, ..., fn) = compose(fn⁻¹, ..., f2⁻¹, f1⁻¹)
+			// Since compose applies right-to-left, inverse applies left-to-right
+			const inverseFns = transform.transformationIds.map((tId) => {
+				const subEl = figure.getElementById(tId);
+				if (!subEl || !isTransformation(subEl)) return (x: number, y: number) => ({ x, y });
+				return buildInverseTransformCoords(subEl, figure);
+			});
+			return (x, y) => {
+				let cur = { x, y };
+				// Apply in forward order (which is the reverse of the composition order)
+				for (const fn of inverseFns) {
+					cur = fn(cur.x, cur.y);
+				}
+				return cur;
+			};
+		}
+	}
+}
+
+/**
+ * Build the 3x3 affine matrix for the inverse transformation.
+ * Used for conic coefficient transformation.
+ * Matrix format: [[a, b, tx], [c, d, ty], [0, 0, 1]]
+ */
+function buildInverseAffineMatrix(
+	transform: GeoTransformation,
+	figure: Figure
+): [number, number, number, number, number, number] {
+	// Returns [a, b, tx, c, d, ty] where T⁻¹(x,y) = (a*x + b*y + tx, c*x + d*y + ty)
+	switch (transform.type) {
+		case 'rotation': {
+			const cPos = figure.getPosition(transform.centerId);
+			const cx = cPos ? geoToNumber(cPos.x) : 0;
+			const cy = cPos ? geoToNumber(cPos.y) : 0;
+			const angle = -geoToNumber(transform.angle);
+			const cos = Math.cos(angle);
+			const sin = Math.sin(angle);
+			return [cos, -sin, cx - cx * cos + cy * sin, sin, cos, cy - cx * sin - cy * cos];
+		}
+		case 'reflection': {
+			const cPos = figure.getPosition(transform.centerId);
+			const cx = cPos ? geoToNumber(cPos.x) : 0;
+			const cy = cPos ? geoToNumber(cPos.y) : 0;
+			return [-1, 0, 2 * cx, 0, -1, 2 * cy];
+		}
+		case 'reflectionOverLine': {
+			const lp1 = figure.getPosition(transform.linePoint1Id);
+			const lp2 = figure.getPosition(transform.linePoint2Id);
+			if (!lp1 || !lp2) return [1, 0, 0, 0, 1, 0]; // identity
+			const x1 = geoToNumber(lp1.x),
+				y1 = geoToNumber(lp1.y);
+			const dx = geoToNumber(lp2.x) - x1,
+				dy = geoToNumber(lp2.y) - y1;
+			const len2 = dx * dx + dy * dy;
+			if (len2 < 1e-15) return [1, 0, 0, 0, 1, 0];
+			// Reflection matrix: R = (1/L²) * [[dx²-dy², 2dxdy], [2dxdy, dy²-dx²]]
+			const a = (dx * dx - dy * dy) / len2;
+			const b = (2 * dx * dy) / len2;
+			// R(x,y) = R*(x-p1) + p1
+			const tx = x1 - a * x1 - b * y1;
+			const ty = y1 - b * x1 + a * y1;
+			return [a, b, tx, b, -a, ty];
+		}
+		case 'translation': {
+			let tdx = 0,
+				tdy = 0;
+			if (transform.vectorId) {
+				const comp = figure.getVectorComponents(transform.vectorId);
+				if (comp) {
+					tdx = geoToNumber(comp.dx);
+					tdy = geoToNumber(comp.dy);
+				}
+			} else {
+				const vs = figure.getPosition(transform.vectorStartId);
+				const ve = figure.getPosition(transform.vectorEndId);
+				if (vs && ve) {
+					tdx = geoToNumber(ve.x) - geoToNumber(vs.x);
+					tdy = geoToNumber(ve.y) - geoToNumber(vs.y);
+				}
+			}
+			return [1, 0, -tdx, 0, 1, -tdy];
+		}
+		case 'homothety': {
+			const cPos = figure.getPosition(transform.centerId);
+			const cx = cPos ? geoToNumber(cPos.x) : 0;
+			const cy = cPos ? geoToNumber(cPos.y) : 0;
+			const k = geoToNumber(transform.factor);
+			const invK = Math.abs(k) < 1e-15 ? 1 : 1 / k;
+			return [invK, 0, cx * (1 - invK), 0, invK, cy * (1 - invK)];
+		}
+		case 'composition': {
+			// Multiply matrices: T⁻¹ = T_1⁻¹ · T_2⁻¹ · ... · T_n⁻¹ (forward order)
+			let result: [number, number, number, number, number, number] = [1, 0, 0, 0, 1, 0];
+			for (const tId of transform.transformationIds) {
+				const subEl = figure.getElementById(tId);
+				if (!subEl || !isTransformation(subEl)) continue;
+				const m = buildInverseAffineMatrix(subEl, figure);
+				result = multiplyAffine(result, m);
+			}
+			return result;
+		}
+	}
+}
+
+/** Multiply two 2D affine matrices represented as [a,b,tx,c,d,ty]. */
+function multiplyAffine(
+	m1: [number, number, number, number, number, number],
+	m2: [number, number, number, number, number, number]
+): [number, number, number, number, number, number] {
+	const [a1, b1, tx1, c1, d1, ty1] = m1;
+	const [a2, b2, tx2, c2, d2, ty2] = m2;
+	return [
+		a1 * a2 + b1 * c2,
+		a1 * b2 + b1 * d2,
+		a1 * tx2 + b1 * ty2 + tx1,
+		c1 * a2 + d1 * c2,
+		c1 * b2 + d1 * d2,
+		c1 * tx2 + d1 * ty2 + ty1
+	];
+}
+
+/**
+ * Transform the 6 coefficients of a conic Ax²+Bxy+Cy²+Dx+Ey+F=0
+ * under affine transformation T, using T⁻¹.
+ */
+function transformConicCoefficients(
+	coeffs: readonly [number, number, number, number, number, number],
+	invMatrix: [number, number, number, number, number, number]
+): [number, number, number, number, number, number] {
+	const [A, B, C, D, E, F] = coeffs;
+	const [a, b, tx, c, d, ty] = invMatrix;
+	// Substitute x' = a*x + b*y + tx, y' = c*x + d*y + ty into Ax'²+Bx'y'+Cy'²+Dx'+Ey'+F
+	const newA = A * a * a + B * a * c + C * c * c;
+	const newB = 2 * A * a * b + B * (a * d + b * c) + 2 * C * c * d;
+	const newC = A * b * b + B * b * d + C * d * d;
+	const newD = 2 * A * a * tx + B * (a * ty + tx * c) + 2 * C * c * ty + D * a + E * c;
+	const newE = 2 * A * b * tx + B * (b * ty + tx * d) + 2 * C * d * ty + D * b + E * d;
+	const newF = A * tx * tx + B * tx * ty + C * ty * ty + D * tx + E * ty + F;
+	return [newA, newB, newC, newD, newE, newF];
+}
+
+/** Transform a curve element (function, quadratic, implicit). */
+function transformCurve(
+	figure: Figure,
+	transform: GeoTransformation,
+	sourceEl: { type: string; id: string } & Record<string, unknown>,
+	options?: { label?: string }
+): TransformResult {
+	if (sourceEl.type === 'quadraticCurve') {
+		// Conic → Conic (preserves capabilities)
+		const qc = sourceEl as unknown as GeoQuadraticCurve;
+		const invMatrix = buildInverseAffineMatrix(transform, figure);
+		const newCoeffs = transformConicCoefficients(qc.coefficients, invMatrix);
+		const newConic = classifyConic(...newCoeffs);
+		// Build a placeholder expression (the exact symbolic form is not critical)
+		const expr = mathNumber(0); // placeholder
+		const eqStr = `transformed(${qc.equation})`;
+		const id = figure.createQuadraticCurve(expr, eqStr, newCoeffs, newConic, {
+			label: options?.label
+		});
+		return { figureId: id, symbolType: 'courbe' };
+	}
+
+	// GeoFunction or GeoImplicitCurve → GeoImplicitCurve
+	const inverseFn = buildInverseTransformCoords(transform, figure);
+	let wrappedFn: CompiledFn;
+
+	if (sourceEl.type === 'function') {
+		const fn = sourceEl as unknown as GeoFunction;
+		// y = f(x) becomes F(x,y) = y - f(x) = 0, then compose with T⁻¹
+		wrappedFn = (vars: Record<string, number>) => {
+			const inv = inverseFn(vars.x ?? 0, vars.y ?? 0);
+			return inv.y - fn.compiledFn({ x: inv.x });
+		};
+	} else {
+		// implicitCurve: F(x,y) = 0, compose with T⁻¹
+		const ic = sourceEl as unknown as GeoImplicitCurve;
+		wrappedFn = (vars: Record<string, number>) => {
+			const inv = inverseFn(vars.x ?? 0, vars.y ?? 0);
+			return ic.compiledFn({ x: inv.x, y: inv.y });
+		};
+	}
+
+	const origEq = (sourceEl as { equation?: string }).equation ?? '';
+	const expr = mathNumber(0); // placeholder
+	const id = figure.createImplicitCurve(expr, wrappedFn, `transformed(${origEq})`, {
+		label: options?.label
+	});
+	return { figureId: id, symbolType: 'courbe' };
 }
