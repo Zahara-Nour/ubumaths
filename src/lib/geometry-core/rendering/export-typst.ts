@@ -132,19 +132,17 @@ export function exportToTypst(
 		} else if (isVector(el)) {
 			const comp = figure.getVectorComponents(el.id);
 			if (!comp) continue;
-			const pos = figure.getPosition(el.id);
-			const startX =
-				el.type === 'vectorByPoints'
-					? geoToNumber(figure.getPosition(el.startId)?.x ?? comp.dx)
-					: pos
-						? geoToNumber(pos.x)
-						: 0;
-			const startY =
-				el.type === 'vectorByPoints'
-					? geoToNumber(figure.getPosition(el.startId)?.y ?? comp.dy)
-					: pos
-						? geoToNumber(pos.y)
-						: 0;
+			let startX: number, startY: number;
+			if (el.type === 'vectorByPoints') {
+				const p1 = figure.getPosition(el.startId);
+				if (!p1) continue;
+				startX = geoToNumber(p1.x);
+				startY = geoToNumber(p1.y);
+			} else {
+				const pos = figure.getPosition(el.id);
+				startX = pos ? geoToNumber(pos.x) : 0;
+				startY = pos ? geoToNumber(pos.y) : 0;
+			}
 			const endX = startX + geoToNumber(comp.dx);
 			const endY = startY + geoToNumber(comp.dy);
 			lines.push(

@@ -55,7 +55,7 @@ import {
 import type { GeoValue } from '../types/geo-value';
 import { geoValueToMathNode, numeric } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
-import { geoAdd, geoSub, geoMul, geoOpposite } from '../compute/geo-arithmetic';
+import { resolveVectorComponents } from './vector-components';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import {
@@ -409,7 +409,7 @@ export class Figure {
 		if (!v1 || !isVector(v1)) throw new Error(`createVectorSum: "${v1Id}" is not a vector element`);
 		if (!v2 || !isVector(v2)) throw new Error(`createVectorSum: "${v2Id}" is not a vector element`);
 
-		const deps = [v1Id, ...v1.dependsOn, v2Id, ...v2.dependsOn];
+		const deps = [...new Set([v1Id, ...v1.dependsOn, v2Id, ...v2.dependsOn])];
 		const id = this.generateId('vec');
 		const element: GeoVectorSum = {
 			type: 'vectorSum',
@@ -482,40 +482,11 @@ export class Figure {
 	 * Get the displacement (dx, dy) of any vector element.
 	 *
 	 * Works for all vector types: bound, free, sum, scaled, negated.
+	 * Delegates to the shared resolveVectorComponents() helper.
 	 * Returns null if the vector or its dependencies cannot be resolved.
 	 */
 	getVectorComponents(id: string): { dx: GeoValue; dy: GeoValue } | null {
-		const el = this.elements.get(id);
-		if (!el) return null;
-
-		if (el.type === 'vectorByPoints') {
-			const p1 = this.positions.get(el.startId);
-			const p2 = this.positions.get(el.endId);
-			if (!p1 || !p2) return null;
-			return { dx: geoSub(p2.x, p1.x), dy: geoSub(p2.y, p1.y) };
-		}
-		if (el.type === 'freeVector') {
-			return { dx: el.dx, dy: el.dy };
-		}
-		if (el.type === 'vectorSum') {
-			const c1 = this.getVectorComponents(el.vector1Id);
-			const c2 = this.getVectorComponents(el.vector2Id);
-			if (!c1 || !c2) return null;
-			return el.negate
-				? { dx: geoSub(c1.dx, c2.dx), dy: geoSub(c1.dy, c2.dy) }
-				: { dx: geoAdd(c1.dx, c2.dx), dy: geoAdd(c1.dy, c2.dy) };
-		}
-		if (el.type === 'vectorScaled') {
-			const c = this.getVectorComponents(el.vectorId);
-			if (!c) return null;
-			return { dx: geoMul(el.factor, c.dx), dy: geoMul(el.factor, c.dy) };
-		}
-		if (el.type === 'vectorNegate') {
-			const c = this.getVectorComponents(el.vectorId);
-			if (!c) return null;
-			return { dx: geoOpposite(c.dx), dy: geoOpposite(c.dy) };
-		}
-		return null;
+		return resolveVectorComponents(id, this.elements, this.positions);
 	}
 
 	createCircleByRadius(centerId: string, radius: GeoValue, options?: ElementOptions): string {
@@ -704,8 +675,8 @@ export class Figure {
 		if (!vecEl || !isVector(vecEl))
 			throw new Error(`createTranslatedPointByVector: "${vectorId}" is not a vector element`);
 
-		// Build dependency list: source + vector + vector's own dependencies
-		const deps = [sourceId, vectorId, ...vecEl.dependsOn];
+		// Build dependency list: source + vector + vector's own dependencies (deduplicated)
+		const deps = [...new Set([sourceId, vectorId, ...vecEl.dependsOn])];
 
 		const id = this.generateId('trans');
 		const element: GeoTranslatedPoint = {
