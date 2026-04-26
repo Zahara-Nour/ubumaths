@@ -208,6 +208,19 @@ function serializeElement(
 		case 'reflectedOverLine':
 			return `${n} = symetrie(${name(idToName, el.sourceId)}, axe=(${name(idToName, el.linePoint1Id)}, ${name(idToName, el.linePoint2Id)}))`;
 
+		case 'projectedPoint':
+			return `${n} = projection(${name(idToName, el.sourceId)}, axe=(${name(idToName, el.linePoint1Id)}, ${name(idToName, el.linePoint2Id)}))`;
+
+		case 'affinityPoint': {
+			const affPtFactor = fmtGeoValue(el.factor);
+			return `${n} = affinite(${name(idToName, el.sourceId)}, axe=(${name(idToName, el.linePoint1Id)}, ${name(idToName, el.linePoint2Id)}), rapport=${affPtFactor})`;
+		}
+
+		case 'invertedPoint': {
+			const invPtRadius = fmtGeoValue(el.radius);
+			return `${n} = inversion(${name(idToName, el.sourceId)}, centre=${name(idToName, el.centerId)}, rayon=${invPtRadius})`;
+		}
+
 		case 'segment':
 			return `${n.startsWith('_') ? '' : n + ' = '}segment(${name(idToName, el.startId)}, ${name(idToName, el.endId)})`;
 

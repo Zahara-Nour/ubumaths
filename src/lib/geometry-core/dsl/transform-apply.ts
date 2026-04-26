@@ -475,24 +475,23 @@ function invertCircleOrLine(
 		throw new Error('invertCircleOrLine: no inversion found in transformation');
 	}
 
-	const oPos = figure.getPosition(inv.centerId);
-	if (!oPos) throw new Error('invertCircleOrLine: inversion center position not found');
-	const ox = geoToNumber(oPos.x),
-		oy = geoToNumber(oPos.y);
-	const r = geoToNumber(inv.radius);
-	const r2 = r * r;
-
-	let coeffs: [number, number, number, number, number, number];
-
-	if (sourceType === 'cercle') {
-		coeffs = invertCircleCoeffs(figure, sourceEl, ox, oy, r2);
-	} else {
-		coeffs = invertLineCoeffs(figure, sourceEl, ox, oy, r2);
-	}
-
-	// Create implicit curve from conic coefficients (reactive via closure)
-	const [A, B, C, D, E, F] = coeffs;
+	// Reactive closure: recomputes conic coefficients on each evaluation
+	// so the curve updates when inversion center or source points are dragged.
+	const centerId = inv.centerId;
+	const srcType = sourceType;
+	const srcEl = sourceEl;
 	const wrappedFn = (vars: Record<string, number>) => {
+		const curO = figure.getPosition(centerId);
+		if (!curO) return NaN;
+		const curOx = geoToNumber(curO.x),
+			curOy = geoToNumber(curO.y);
+		const curR = geoToNumber(inv.radius);
+		const curR2 = curR * curR;
+		const coeffs =
+			srcType === 'cercle'
+				? invertCircleCoeffs(figure, srcEl, curOx, curOy, curR2)
+				: invertLineCoeffs(figure, srcEl, curOx, curOy, curR2);
+		const [A, B, C, D, E, F] = coeffs;
 		const vx = vars.x ?? 0,
 			vy = vars.y ?? 0;
 		return A * vx * vx + B * vx * vy + C * vy * vy + D * vx + E * vy + F;
