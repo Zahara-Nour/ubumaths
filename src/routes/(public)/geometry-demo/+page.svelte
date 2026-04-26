@@ -663,6 +663,116 @@ c4 = transforme(h, c)
 style(c4, couleur="violet")`
 	).figure;
 
+	// ==========================================================================
+	// Similitude — spiral of triangles
+	// ==========================================================================
+	const similitudeFig = runDsl(
+		`O = point(0, 0, couleur="noir")
+A = point(3, 0, couleur="bleu")
+B = point(4, 0, couleur="bleu")
+C = point(3.5, 1, couleur="bleu")
+segment(A, B, couleur="bleu")
+segment(B, C, couleur="bleu")
+segment(C, A, couleur="bleu")
+
+sim = similitude(centre=O, angle=40, rapport=0.85)
+
+A2 = transforme(sim, A)
+B2 = transforme(sim, B)
+C2 = transforme(sim, C)
+segment(A2, B2, couleur="rouge")
+segment(B2, C2, couleur="rouge")
+segment(C2, A2, couleur="rouge")
+
+A3 = transforme(sim, A2)
+B3 = transforme(sim, B2)
+C3 = transforme(sim, C2)
+segment(A3, B3, couleur="vert")
+segment(B3, C3, couleur="vert")
+segment(C3, A3, couleur="vert")
+
+A4 = transforme(sim, A3)
+B4 = transforme(sim, B3)
+C4 = transforme(sim, C3)
+segment(A4, B4, couleur="violet")
+segment(B4, C4, couleur="violet")
+segment(C4, A4, couleur="violet")
+
+A5 = transforme(sim, A4)
+B5 = transforme(sim, B4)
+C5 = transforme(sim, C4)
+segment(A5, B5, couleur="orange")
+segment(B5, C5, couleur="orange")
+segment(C5, A5, couleur="orange")`
+	).figure;
+
+	// ==========================================================================
+	// Projection — polygon projected onto a line
+	// ==========================================================================
+	const projectionFig = runDsl(
+		`A = point(-3, 0, couleur="noir")
+B = point(5, 0, couleur="noir")
+d = droite(A, B)
+style(d, couleur="noir", trait="tirets")
+
+C = point(0, 3, couleur="bleu")
+D = point(2, 4, couleur="bleu")
+E = point(4, 3, couleur="bleu")
+F = point(3, 1.5, couleur="bleu")
+G = point(1, 1.5, couleur="bleu")
+p = polygone(C, D, E, F, G)
+style(p, couleur="bleu")
+
+proj = projection(axe=d)
+p2 = transforme(proj, p)
+style(p2, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
+	// Affinite — circle to ellipse
+	// ==========================================================================
+	const affiniteFig = runDsl(
+		`A = point(-5, 0, couleur="noir")
+B = point(5, 0, couleur="noir")
+d = droite(A, B)
+style(d, couleur="noir", trait="tirets")
+
+O = point(0, 2, couleur="bleu")
+c = cercle(O, rayon=2, couleur="bleu")
+
+aff = affinite(axe=(A, B), rapport=0.5)
+c2 = transforme(aff, c)
+style(c2, couleur="rouge")
+
+aff2 = affinite(axe=(A, B), rapport=2)
+c3 = transforme(aff2, c)
+style(c3, couleur="vert")`
+	).figure;
+
+	// ==========================================================================
+	// Inversion — circles and lines
+	// ==========================================================================
+	const inversionFig = runDsl(
+		`O = point(0, 0, couleur="noir")
+inv = inversion(centre=O, rayon=3)
+
+A = point(2, 0, couleur="bleu")
+B = point(2, 4, couleur="bleu")
+d = droite(A, B, couleur="bleu")
+d2 = transforme(inv, d)
+style(d2, couleur="rouge")
+
+C = point(-3, 2, couleur="vert")
+c = cercle(C, rayon=1, couleur="vert")
+c2 = transforme(inv, c)
+style(c2, couleur="orange")
+
+D = point(1.5, 0, couleur="violet")
+c3 = cercle(D, rayon=1.5, couleur="violet")
+c4 = transforme(inv, c3)
+style(c4, couleur="cyan")`
+	).figure;
+
 	const transformImplicitFig = runDsl(
 		`O = point(0, 0, couleur="noir")
 c = courbe("x^3 + y^3 - 3*x*y = 0", couleur="bleu")
@@ -1195,6 +1305,97 @@ style(c3, couleur="vert")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{transformConicFig.size} elements | coniques transformees (restent GeoQuadraticCurve)
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Similitude — spirale de triangles</h2>
+	<p class="mb-4 text-muted-foreground">
+		<code>similitude(centre=O, angle=40, rapport=0.85)</code> appliquee 4 fois successivement a un triangle.
+		Chaque iteration tourne de 40° et reduit de 15%. Deplacez O pour changer le centre.
+	</p>
+
+	<GeometryCanvas
+		figure={similitudeFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={50}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{similitudeFig.size} elements | similitude() — spirale de triangles
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Projection orthogonale — polygone sur une droite</h2>
+	<p class="mb-4 text-muted-foreground">
+		<code>projection(axe=d)</code> projette un pentagone sur l'axe Ox. Le resultat est un polygone
+		aplati. Deplacez les sommets pour observer la projection.
+		<br />
+		<strong>Bleu</strong> : pentagone original |
+		<strong>Rouge</strong> : projection sur la droite
+	</p>
+
+	<GeometryCanvas
+		figure={projectionFig}
+		center={{ x: 1, y: 2 }}
+		pixelsPerUnit={60}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{projectionFig.size} elements | projection() — polygone sur droite
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Affinite orthogonale — cercle vers ellipse</h2>
+	<p class="mb-4 text-muted-foreground">
+		<code>affinite(axe=(A,B), rapport=k)</code> etire perpendiculairement a l'axe. Un cercle devient
+		une ellipse. Deplacez O pour observer la deformation.
+		<br />
+		<strong>Bleu</strong> : cercle original |
+		<strong>Rouge</strong> : rapport=0.5 (compression) |
+		<strong>Vert</strong> : rapport=2 (etirement)
+	</p>
+
+	<GeometryCanvas
+		figure={affiniteFig}
+		center={{ x: 0, y: 2 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{affiniteFig.size} elements | affinite() — cercle vers ellipse
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Inversion circulaire — droites et cercles</h2>
+	<p class="mb-4 text-muted-foreground">
+		<code>inversion(centre=O, rayon=3)</code> : transformation non-affine. Une droite ne passant pas
+		par O devient un cercle passant par O. Un cercle passant par O devient une droite.
+		<br />
+		<strong>Bleu</strong> : droite verticale → <strong>Rouge</strong> : cercle image |
+		<strong>Vert</strong> : cercle (ne passe pas par O) → <strong>Orange</strong> : cercle image |
+		<strong>Violet</strong> : cercle (passe par O) → <strong>Cyan</strong> : droite image
+	</p>
+
+	<GeometryCanvas
+		figure={inversionFig}
+		center={{ x: 0, y: 1 }}
+		pixelsPerUnit={35}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{inversionFig.size} elements | inversion() — droites et cercles
 	</p>
 
 	<hr class="my-8" />
