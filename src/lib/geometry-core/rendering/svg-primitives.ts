@@ -814,7 +814,7 @@ import type {
 	GeoTangentToQuadratic
 } from '../types/elements';
 import type { ConicParams } from '../types/elements';
-import { conicPointFromParam } from '../graph/figure';
+import { conicPointFromParam } from '../graph/conic-helpers';
 import type { Viewport, SampledCurve, Point } from '../viewport/types';
 import { sampleWithDerivative } from '$lib/grapheur/sampler';
 import { curveToSVGPath } from '../rendering/bezier';

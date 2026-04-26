@@ -6,7 +6,7 @@
  */
 
 import type { Figure } from '../graph/figure';
-import { conicPointFromParam } from '../graph/figure';
+import { conicPointFromParam } from '../graph/conic-helpers';
 import type { Viewport } from '../viewport/types';
 import type { GeoElement, ConicParams } from '../types/elements';
 import { isPointElement } from '../types/elements';
