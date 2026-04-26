@@ -174,6 +174,25 @@ export function findElementNear(
 					geoToNumber(through.y)
 				);
 			}
+		} else if (el.type === 'vectorByPoints') {
+			const p1 = figure.getPosition(el.startId);
+			const p2 = figure.getPosition(el.endId);
+			if (p1 && p2) {
+				dist = distToSegment(
+					mathX,
+					mathY,
+					geoToNumber(p1.x),
+					geoToNumber(p1.y),
+					geoToNumber(p2.x),
+					geoToNumber(p2.y)
+				);
+			}
+		} else if (el.type === 'freeVector') {
+			const ax = geoToNumber(el.anchorX);
+			const ay = geoToNumber(el.anchorY);
+			const ex = ax + geoToNumber(el.dx);
+			const ey = ay + geoToNumber(el.dy);
+			dist = distToSegment(mathX, mathY, ax, ay, ex, ey);
 		} else if (el.type === 'circleByRadius') {
 			const center = figure.getPosition(el.centerId);
 			if (center) {

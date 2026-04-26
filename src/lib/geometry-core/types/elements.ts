@@ -210,6 +210,30 @@ export interface GeoRay extends GeoElementBase {
 }
 
 // =============================================================================
+// Vectors
+// =============================================================================
+
+/** Bound vector defined by two points (start → end). Depends on both points. */
+export interface GeoVectorByPoints extends GeoElementBase {
+	readonly type: 'vectorByPoints';
+	readonly startId: string;
+	readonly endId: string;
+	readonly dependsOn: readonly [string, string];
+}
+
+/** Free vector with stored components. Draggable as a unit (anchor moves, dx/dy preserved). */
+export interface GeoFreeVector extends GeoElementBase {
+	readonly type: 'freeVector';
+	readonly dx: GeoValue;
+	readonly dy: GeoValue;
+	readonly anchorX: GeoValue;
+	readonly anchorY: GeoValue;
+	readonly dependsOn: readonly [];
+}
+
+export type GeoVector = GeoVectorByPoints | GeoFreeVector;
+
+// =============================================================================
 // Arc (two construction variants)
 // =============================================================================
 
@@ -412,7 +436,9 @@ export type GeoElement =
 	| GeoPointOnCurve
 	| GeoPointOnQuadraticCurve
 	| GeoTangentLine
-	| GeoTangentToQuadratic;
+	| GeoTangentToQuadratic
+	| GeoVectorByPoints
+	| GeoFreeVector;
 
 export type GeoElementType = GeoElement['type'];
 
@@ -549,4 +575,16 @@ export function isImplicitCurve(el: GeoElement): el is GeoImplicitCurve {
 
 export function isTangentLine(el: GeoElement): el is GeoTangentLine {
 	return el.type === 'tangentLine';
+}
+
+export function isVectorByPoints(el: GeoElement): el is GeoVectorByPoints {
+	return el.type === 'vectorByPoints';
+}
+
+export function isFreeVector(el: GeoElement): el is GeoFreeVector {
+	return el.type === 'freeVector';
+}
+
+export function isVector(el: GeoElement): el is GeoVector {
+	return el.type === 'vectorByPoints' || el.type === 'freeVector';
 }

@@ -16,6 +16,7 @@ import {
 	segmentToSVG,
 	lineToSVG,
 	rayToSVG,
+	vectorToSVG,
 	circleToSVG,
 	arcToSVG,
 	angleMarkToSVG,
@@ -34,7 +35,8 @@ import {
 	roughArc,
 	roughPolygon,
 	roughAngleMark,
-	roughSegmentMark
+	roughSegmentMark,
+	roughVectorHTML
 } from './rough-geometry';
 
 export interface SVGExportOptions {
@@ -174,6 +176,19 @@ export function exportToSVG(
 				lines.push(
 					`  <line x1="${r(svg.x1)}" y1="${r(svg.y1)}" x2="${r(svg.x2)}" y2="${r(svg.y2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} />`
 				);
+			}
+		} else if (el.type === 'vectorByPoints' || el.type === 'freeVector') {
+			const svg = vectorToSVG(el.id, figure, transformer);
+			if (!svg) continue;
+			if (useRough(sty, el.type)) {
+				lines.push(roughVectorHTML(rc!, svg, roughOpts(el.id, sty), sty.color));
+			} else {
+				const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
+				const dashAttr = sty.dashArray ? ` stroke-dasharray="${sty.dashArray}"` : '';
+				lines.push(
+					`  <line x1="${r(svg.x1)}" y1="${r(svg.y1)}" x2="${r(svg.shaftX2)}" y2="${r(svg.shaftY2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} />`
+				);
+				lines.push(`  <polygon points="${svg.arrowPoints}" fill="${sty.color}"${opacityAttr} />`);
 			}
 		}
 	}

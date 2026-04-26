@@ -281,6 +281,28 @@ function _executeBuiltinInner(
 			return { figureId: id, symbolType: 'demidroite' };
 		}
 
+		case 'vecteur': {
+			if (pos.length !== 2) throw new DslRuntimeError('vecteur() attend 2 arguments', line);
+			// Detect: vecteur(A, B) (bound) vs vecteur(3, 2) (free)
+			const arg0 = pos[0];
+			const arg1 = pos[1];
+			if (arg0.type === 'nombre' && arg1.type === 'nombre') {
+				// Free vector by components
+				const dx = numeric(requireNumber(arg0, 'dx', line));
+				const dy = numeric(requireNumber(arg1, 'dy', line));
+				const id = figure.createFreeVector(dx, dy, undefined, { label });
+				return { figureId: id, symbolType: 'vecteur' };
+			} else {
+				// Bound vector by two points
+				const id = figure.createVectorByPoints(
+					requireElement(arg0, 'arg1', line),
+					requireElement(arg1, 'arg2', line),
+					{ label }
+				);
+				return { figureId: id, symbolType: 'vecteur' };
+			}
+		}
+
 		case 'cercle': {
 			if (pos.length !== 1)
 				throw new DslRuntimeError('cercle() attend 1 argument positionnel (centre)', line);
@@ -345,11 +367,31 @@ function _executeBuiltinInner(
 			if (pos.length !== 1)
 				throw new DslRuntimeError('translation() attend 1 argument positionnel (source)', line);
 			const sourceId = requireElement(pos[0], 'source', line);
-			const tuple = requireTuple(
-				named.get('vecteur') ?? { type: 'nombre', value: 0 },
-				'vecteur',
-				line
-			);
+			const vecteurArg = named.get('vecteur');
+			if (!vecteurArg) throw new DslRuntimeError('translation() requiert vecteur=...', line);
+
+			// Accept either vecteur=(A,B) tuple or vecteur=v (a vector element)
+			if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
+				// Vector element: look up its start/end points
+				const vecEl = figure.getElementById(vecteurArg.figureId!);
+				if (!vecEl) throw new DslRuntimeError('vecteur reference invalide', line);
+				if (vecEl.type === 'vectorByPoints') {
+					const id = figure.createTranslatedPoint(sourceId, vecEl.startId, vecEl.endId, { label });
+					return { figureId: id, symbolType: 'point' };
+				} else if (vecEl.type === 'freeVector') {
+					// Create two temporary hidden points for the translation
+					const anchor = { x: numeric(0), y: numeric(0) };
+					const end = { x: vecEl.dx, y: vecEl.dy };
+					const p1Id = figure.createFreePoint(anchor, { visible: false });
+					const p2Id = figure.createFreePoint(end, { visible: false });
+					const id = figure.createTranslatedPoint(sourceId, p1Id, p2Id, { label });
+					return { figureId: id, symbolType: 'point' };
+				}
+				throw new DslRuntimeError('vecteur invalide', line);
+			}
+
+			// Classic tuple syntax: vecteur=(A, B)
+			const tuple = requireTuple(vecteurArg, 'vecteur', line);
 			if (tuple.length !== 2)
 				throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
 			const id = figure.createTranslatedPoint(
@@ -656,6 +698,7 @@ export const BUILTIN_NAMES = new Set([
 	'segment',
 	'droite',
 	'demidroite',
+	'vecteur',
 	'cercle',
 	'arc',
 	'symetrie',

@@ -100,6 +100,9 @@ function typePrefix(type: string): string {
 			return 'mes';
 		case 'function':
 			return 'f';
+		case 'vectorByPoints':
+		case 'freeVector':
+			return 'v';
 		default:
 			return 'el';
 	}
@@ -165,6 +168,12 @@ function serializeElement(
 
 		case 'ray':
 			return `${n.startsWith('_') ? '' : n + ' = '}demidroite(${name(idToName, el.originId)}, ${name(idToName, el.throughId)})`;
+
+		case 'vectorByPoints':
+			return `${n.startsWith('_') ? '' : n + ' = '}vecteur(${name(idToName, el.startId)}, ${name(idToName, el.endId)})`;
+
+		case 'freeVector':
+			return `${n.startsWith('_') ? '' : n + ' = '}vecteur(${fmtGeoValue(el.dx)}, ${fmtGeoValue(el.dy)})`;
 
 		case 'circleByRadius': {
 			const radius = fmtGeoValue(el.radius);

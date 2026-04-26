@@ -27,7 +27,8 @@ import {
 	type GeoCircleByRadius,
 	type GeoCircleByPoint,
 	type GeoArcByAngles,
-	type GeoArcByPoints
+	type GeoArcByPoints,
+	isVector
 } from '../types/elements';
 
 // =============================================================================
@@ -192,6 +193,83 @@ export function rayToSVG(
 
 	const svgOrigin = transformer.mathToSvg(ox, oy);
 	return { x1: svgOrigin.x, y1: svgOrigin.y, x2: extended.x, y2: extended.y };
+}
+
+// =============================================================================
+// Vector rendering
+// =============================================================================
+
+export interface VectorSVG extends LineSVG {
+	/** SVG points string for the arrowhead polygon: "x1,y1 x2,y2 x3,y3" */
+	arrowPoints: string;
+	/** Shaft endpoint (shortened so it doesn't poke through the arrowhead) */
+	shaftX2: number;
+	shaftY2: number;
+}
+
+/** Size of the arrowhead in SVG pixels. */
+const ARROW_HEAD_LENGTH = 10;
+/** Half-angle of the arrowhead opening (radians). ~25 degrees. */
+const ARROW_HEAD_ANGLE = Math.PI / 7;
+
+/**
+ * Convert a vector element (bound or free) to SVG attributes including arrowhead.
+ */
+export function vectorToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): VectorSVG | null {
+	const el = figure.getElementById(id);
+	if (!el || !isVector(el)) return null;
+
+	let sx: number, sy: number, ex: number, ey: number;
+
+	if (el.type === 'vectorByPoints') {
+		const p1 = figure.getPosition(el.startId);
+		const p2 = figure.getPosition(el.endId);
+		if (!p1 || !p2) return null;
+		const sv1 = transformer.mathToSvg(geoToNumber(p1.x), geoToNumber(p1.y));
+		const sv2 = transformer.mathToSvg(geoToNumber(p2.x), geoToNumber(p2.y));
+		sx = sv1.x;
+		sy = sv1.y;
+		ex = sv2.x;
+		ey = sv2.y;
+	} else {
+		// freeVector
+		const ax = geoToNumber(el.anchorX);
+		const ay = geoToNumber(el.anchorY);
+		const endX = ax + geoToNumber(el.dx);
+		const endY = ay + geoToNumber(el.dy);
+		const sv1 = transformer.mathToSvg(ax, ay);
+		const sv2 = transformer.mathToSvg(endX, endY);
+		sx = sv1.x;
+		sy = sv1.y;
+		ex = sv2.x;
+		ey = sv2.y;
+	}
+
+	const dx = ex - sx;
+	const dy = ey - sy;
+	const len = Math.sqrt(dx * dx + dy * dy);
+	if (len < 1e-6) return null;
+
+	const angle = Math.atan2(dy, dx);
+
+	// Arrowhead tip is at (ex, ey). Two wing points at ARROW_HEAD_LENGTH back.
+	const wing1x = ex - ARROW_HEAD_LENGTH * Math.cos(angle - ARROW_HEAD_ANGLE);
+	const wing1y = ey - ARROW_HEAD_LENGTH * Math.sin(angle - ARROW_HEAD_ANGLE);
+	const wing2x = ex - ARROW_HEAD_LENGTH * Math.cos(angle + ARROW_HEAD_ANGLE);
+	const wing2y = ey - ARROW_HEAD_LENGTH * Math.sin(angle + ARROW_HEAD_ANGLE);
+
+	// Shaft stops at the base of the arrowhead (midpoint of wings)
+	const shaftX2 = (wing1x + wing2x) / 2;
+	const shaftY2 = (wing1y + wing2y) / 2;
+
+	const r = (v: number) => Math.round(v * 100) / 100;
+	const arrowPoints = `${r(wing1x)},${r(wing1y)} ${r(ex)},${r(ey)} ${r(wing2x)},${r(wing2y)}`;
+
+	return { x1: sx, y1: sy, x2: ex, y2: ey, shaftX2, shaftY2, arrowPoints };
 }
 
 /**

@@ -35,18 +35,21 @@ import type {
 	GeoPointOnQuadraticCurve,
 	GeoTangentLine,
 	GeoTangentToQuadratic,
+	GeoVectorByPoints,
+	GeoFreeVector,
 	type LineEquation,
 	type ConicParams
 } from '../types/elements';
 import {
 	isFreePoint,
+	isFreeVector,
 	isLineLike,
 	isPointElement,
 	isPointOnCurve,
 	isPointOnQuadraticCurve
 } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
-import { geoValueToMathNode } from '../types/geo-value';
+import { geoValueToMathNode, numeric } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
@@ -181,6 +184,8 @@ export class Figure {
 			this.elements.set(id, after);
 			if (after.type === 'freePoint') {
 				this.positions.set(id, after.position);
+			} else if (after.type === 'freeVector') {
+				this.positions.set(id, { x: after.anchorX, y: after.anchorY });
 			}
 		}
 
@@ -315,6 +320,65 @@ export class Figure {
 		};
 		this.addElement(id, element, [originId, throughId]);
 		return id;
+	}
+
+	// ─── Vector factories ───────────────────────────────────────────
+
+	createVectorByPoints(startId: string, endId: string, options?: ElementOptions): string {
+		const id = this.generateId('vec');
+		const element: GeoVectorByPoints = {
+			type: 'vectorByPoints',
+			id,
+			startId,
+			endId,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [startId, endId]
+		};
+		this.addElement(id, element, [startId, endId]);
+		return id;
+	}
+
+	createFreeVector(
+		dx: GeoValue,
+		dy: GeoValue,
+		anchor?: GeoPoint,
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('vec');
+		const anchorX = anchor?.x ?? numeric(0);
+		const anchorY = anchor?.y ?? numeric(0);
+		const element: GeoFreeVector = {
+			type: 'freeVector',
+			id,
+			dx,
+			dy,
+			anchorX,
+			anchorY,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [] as const
+		};
+		this.addElement(id, element, []);
+		this.positions.set(id, { x: anchorX, y: anchorY });
+		return id;
+	}
+
+	moveFreeVector(id: string, newAnchorX: GeoValue, newAnchorY: GeoValue): void {
+		const el = this.elements.get(id);
+		if (!el || !isFreeVector(el)) {
+			throw new Error(`moveFreeVector: "${id}" is not a free vector`);
+		}
+		const updated: GeoFreeVector = { ...el, anchorX: newAnchorX, anchorY: newAnchorY };
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+		this.positions.set(id, { x: newAnchorX, y: newAnchorY });
 	}
 
 	createCircleByRadius(centerId: string, radius: GeoValue, options?: ElementOptions): string {
