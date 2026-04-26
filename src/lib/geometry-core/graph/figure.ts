@@ -40,25 +40,14 @@ import type {
 } from '../types/elements';
 import {
 	isFreePoint,
-	isMidpoint,
-	isIntersectionLL,
-	isReflectedPoint,
-	isRotatedPoint,
-	isTranslatedPoint,
-	isDilatedPoint,
-	isReflectedOverLine,
-	isAngleMark,
-	isSegmentMark,
-	isMeasure,
-	isPointElement,
 	isLineLike,
+	isPointElement,
 	isPointOnCurve,
 	isPointOnQuadraticCurve
 } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
-import { geoValueToMathNode, numeric } from '../types/geo-value';
+import { geoValueToMathNode } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
-import { geoAdd, geoSub, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import {
@@ -71,15 +60,9 @@ import {
 } from '$lib/mathAST/factory';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { isZeroExpression } from '$lib/mathAST/normal';
-import { geoToNumber } from '../compute/to-number';
-import { intersectLL } from '../geometry/intersections';
-import {
-	reflectPoint,
-	rotate,
-	translate,
-	dilate,
-	reflectOverLine
-} from '../geometry/transformations';
+import { UndoManager } from './undo-redo';
+import type { Delta } from './undo-redo';
+import { computeElementPosition } from './compute-position';
 
 const DEFAULT_COLOR = '#1e40af';
 
@@ -90,10 +73,7 @@ export interface FigureDefaults {
 	readonly defaultPointShape?: 'dot' | 'circle' | 'cross' | 'square';
 	readonly defaultPointSize?: number;
 	readonly defaultOpacity?: number;
-	// Note: fillColor/fillOpacity have no figure-level defaults; set per-element via style.
-	/** Figure-level rendering mode: 'normal' (clean SVG), 'rough' (hand-drawn), 'mixed' (per-element). */
 	readonly renderMode?: 'normal' | 'rough' | 'mixed';
-	/** Default roughness for rough rendering (0..5, default 1). */
 	readonly defaultRoughness?: number;
 }
 
@@ -107,34 +87,6 @@ export interface ElementOptions {
 	equation?: LineEquation;
 }
 
-interface Delta {
-	added: Map<string, GeoElement>;
-	removed: Map<string, GeoElement>;
-	updated: Map<string, { before: GeoElement; after: GeoElement }>;
-	/** Positions of elements at the time they were removed (for undo of remove). */
-	removedPositions: Map<string, GeoPoint>;
-}
-
-function createEmptyDelta(): Delta {
-	return {
-		added: new Map(),
-		removed: new Map(),
-		updated: new Map(),
-		removedPositions: new Map()
-	};
-}
-
-function invertDelta(delta: Delta): Delta {
-	return {
-		added: delta.removed,
-		removed: delta.added,
-		updated: new Map(
-			[...delta.updated].map(([id, { before, after }]) => [id, { before: after, after: before }])
-		),
-		removedPositions: new Map(delta.removedPositions) // defensive copy
-	};
-}
-
 export class Figure {
 	private elements = new Map<string, GeoElement>();
 	private positions = new Map<string, GeoPoint>();
@@ -142,11 +94,7 @@ export class Figure {
 	private nextId = 1;
 	readonly defaults: FigureDefaults;
 	private measureValues = new Map<string, number>();
-
-	// Undo/redo
-	private undoStack: Delta[] = [];
-	private redoStack: Delta[] = [];
-	private currentTransaction: Delta | null = null;
+	private undo_manager = new UndoManager();
 
 	constructor(defaults?: FigureDefaults) {
 		this.defaults = defaults ?? {};
@@ -159,57 +107,38 @@ export class Figure {
 	// ─── Transactions ───────────────────────────────────────────────
 
 	beginTransaction(): void {
-		if (this.currentTransaction) {
-			throw new Error('beginTransaction: a transaction is already in progress');
-		}
-		this.currentTransaction = createEmptyDelta();
+		this.undo_manager.beginTransaction();
 	}
 
 	commit(): void {
-		if (!this.currentTransaction) {
-			throw new Error('commit: no transaction in progress');
-		}
-		const delta = this.currentTransaction;
-		this.currentTransaction = null;
-		// Only push non-empty deltas
-		if (delta.added.size > 0 || delta.removed.size > 0 || delta.updated.size > 0) {
-			this.undoStack.push(delta);
-			this.redoStack.length = 0; // new commit clears redo
-		}
+		this.undo_manager.commit();
 	}
 
 	discard(): void {
-		this.currentTransaction = null;
+		this.undo_manager.discard();
 	}
 
 	get canUndo(): boolean {
-		return this.undoStack.length > 0;
+		return this.undo_manager.canUndo;
 	}
 
 	get canRedo(): boolean {
-		return this.redoStack.length > 0;
+		return this.undo_manager.canRedo;
 	}
 
 	undo(): void {
-		const delta = this.undoStack.pop();
-		if (!delta) return;
-		this.applyDelta(invertDelta(delta));
-		this.redoStack.push(delta);
+		this.undo_manager.undo((delta) => this.applyDelta(delta));
 	}
 
 	redo(): void {
-		const delta = this.redoStack.pop();
-		if (!delta) return;
-		this.applyDelta(delta);
-		this.undoStack.push(delta);
+		this.undo_manager.redo((delta) => this.applyDelta(delta));
 	}
 
 	private applyDelta(delta: Delta): void {
 		// 1. Remove elements (undo of create).
-		// Only call removeNode on roots (nodes whose parents are not also being removed).
 		const toRemoveSet = new Set(delta.removed.keys());
 		for (const id of toRemoveSet) {
-			if (!this.graph.hasNode(id)) continue; // already cascade-deleted
+			if (!this.graph.hasNode(id)) continue;
 			const parents = this.graph.getParents(id);
 			const isRoot = !parents.some((pid) => toRemoveSet.has(pid));
 			if (isRoot) {
@@ -221,7 +150,7 @@ export class Figure {
 			this.positions.delete(id);
 		}
 
-		// 2. Re-add elements (undo of delete), in dependency order (parents first).
+		// 2. Re-add elements (undo of delete), in dependency order.
 		const toAdd = [...delta.added.entries()];
 		const added = new Set<string>();
 		let remaining = toAdd;
@@ -255,7 +184,7 @@ export class Figure {
 			}
 		}
 
-		// 4. Recompute: mark only affected elements dirty, not the entire figure.
+		// 4. Recompute affected elements.
 		for (const [id, el] of delta.added) {
 			if (el.type === 'freePoint' && this.graph.hasNode(id)) {
 				this.graph.markDirty(id);
@@ -272,43 +201,8 @@ export class Figure {
 		}
 	}
 
-	// ─── Recording helpers ──────────────────────────────────────────
+	// ─── Factory helpers ────────────────────────────────────────────
 
-	private recordAdd(id: string, element: GeoElement): void {
-		if (!this.currentTransaction) return;
-		this.currentTransaction.added.set(id, element);
-	}
-
-	private recordRemove(id: string, element: GeoElement): void {
-		if (!this.currentTransaction) return;
-		// If it was added in the same transaction, net effect is no-op
-		if (this.currentTransaction.added.has(id)) {
-			this.currentTransaction.added.delete(id);
-			return;
-		}
-		this.currentTransaction.removed.set(id, element);
-		const pos = this.positions.get(id);
-		if (pos) {
-			this.currentTransaction.removedPositions.set(id, pos);
-		}
-	}
-
-	private recordUpdate(id: string, before: GeoElement, after: GeoElement): void {
-		if (!this.currentTransaction) return;
-		const existing = this.currentTransaction.updated.get(id);
-		// Keep the original "before" if already updated in this transaction
-		this.currentTransaction.updated.set(id, {
-			before: existing?.before ?? before,
-			after
-		});
-	}
-
-	// ─── Factory methods ────────────────────────────────────────────
-
-	/**
-	 * Add an element to the construction and register it in the graph.
-	 * If graph.addNode fails, the element is rolled back from the maps.
-	 */
 	private resolveColor(options?: ElementOptions): string {
 		return options?.color ?? this.defaults.defaultColor ?? DEFAULT_COLOR;
 	}
@@ -325,8 +219,10 @@ export class Figure {
 			this.elements.delete(id);
 			throw e;
 		}
-		this.recordAdd(id, element);
+		this.undo_manager.recordAdd(id, element);
 	}
+
+	// ─── Factory methods ────────────────────────────────────────────
 
 	createFreePoint(position: GeoPoint, options?: ElementOptions): string {
 		const id = this.generateId('pt');
@@ -458,7 +354,6 @@ export class Figure {
 	}
 
 	createIntersectionLL(line1Id: string, line2Id: string, options?: ElementOptions): string {
-		// Validate that both elements are line-like
 		const el1 = this.elements.get(line1Id);
 		const el2 = this.elements.get(line2Id);
 		if (!el1 || !isLineLike(el1))
@@ -744,7 +639,6 @@ export class Figure {
 			dependsOn: [p1Id, vertexId, p2Id]
 		};
 		this.addElement(id, element, [p1Id, vertexId, p2Id]);
-		// Store vertex position as the mark's position
 		const vertexPos = this.positions.get(vertexId);
 		if (vertexPos) this.positions.set(id, vertexPos);
 		return id;
@@ -777,7 +671,6 @@ export class Figure {
 			dependsOn: [startId, endId]
 		};
 		this.addElement(id, element, [startId, endId]);
-		// Store midpoint position as the mark's position
 		this.computePosition(id);
 		return id;
 	}
@@ -942,7 +835,7 @@ export class Figure {
 		}
 
 		const updated: GeoPointOnQuadraticCurve = { ...el, t: newT };
-		this.recordUpdate(id, el, updated);
+		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 		this.graph.markDirty(id);
 	}
@@ -993,10 +886,8 @@ export class Figure {
 		}
 
 		const updated: GeoPointOnCurve = { ...el, x0: newX };
-		this.recordUpdate(id, el, updated);
+		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
-
-		// Recompute position (y from function)
 		this.graph.markDirty(id);
 	}
 
@@ -1080,7 +971,7 @@ export class Figure {
 			dependsOn: targetIds
 		};
 		this.addElement(id, element, targetIds);
-		this.computeMeasureValue(id, element);
+		this.computePosition(id);
 		return id;
 	}
 
@@ -1088,55 +979,11 @@ export class Figure {
 		return this.measureValues.get(id);
 	}
 
-	private computeMeasureValue(id: string, el: GeoMeasure): void {
-		const positions = el.targetIds.map((tid) => this.positions.get(tid));
-		if (positions.some((p) => !p)) {
-			this.measureValues.delete(id);
-			return;
-		}
-
-		if (el.measureType === 'distance') {
-			const [a, b] = positions as [GeoPoint, GeoPoint];
-			const dx = geoToNumber(a.x) - geoToNumber(b.x);
-			const dy = geoToNumber(a.y) - geoToNumber(b.y);
-			this.measureValues.set(id, Math.sqrt(dx * dx + dy * dy));
-		} else if (el.measureType === 'angle') {
-			const [p1, v, p2] = positions as [GeoPoint, GeoPoint, GeoPoint];
-			const vax = geoToNumber(p1.x) - geoToNumber(v.x);
-			const vay = geoToNumber(p1.y) - geoToNumber(v.y);
-			const vbx = geoToNumber(p2.x) - geoToNumber(v.x);
-			const vby = geoToNumber(p2.y) - geoToNumber(v.y);
-			const dot = vax * vbx + vay * vby;
-			const lenA = Math.sqrt(vax * vax + vay * vay);
-			const lenB = Math.sqrt(vbx * vbx + vby * vby);
-			if (lenA < 1e-15 || lenB < 1e-15) {
-				this.measureValues.delete(id);
-				return;
-			}
-			const cosAngle = Math.max(-1, Math.min(1, dot / (lenA * lenB)));
-			const radians = Math.acos(cosAngle);
-			this.measureValues.set(id, (radians * 180) / Math.PI);
-		} else if (el.measureType === 'area') {
-			// Shoelace formula
-			const pts = positions as GeoPoint[];
-			let sum = 0;
-			const n = pts.length;
-			for (let i = 0; i < n; i++) {
-				const xi = geoToNumber(pts[i].x);
-				const yi = geoToNumber(pts[i].y);
-				const xn = geoToNumber(pts[(i + 1) % n].x);
-				const yn = geoToNumber(pts[(i + 1) % n].y);
-				sum += xi * yn - xn * yi;
-			}
-			this.measureValues.set(id, Math.abs(sum) / 2);
-		}
-	}
-
 	setLabelOffset(id: string, dx: number, dy: number): void {
 		const el = this.elements.get(id);
 		if (!el) throw new Error(`setLabelOffset: "${id}" does not exist`);
 		const updated = { ...el, labelOffset: { dx, dy } } as GeoElement;
-		this.recordUpdate(id, el, updated);
+		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 	}
 
@@ -1145,7 +992,7 @@ export class Figure {
 		if (!el) throw new Error(`updateStyle: "${id}" does not exist`);
 		const mergedStyle = { ...el.style, ...newStyle };
 		const updated = { ...el, style: mergedStyle } as GeoElement;
-		this.recordUpdate(id, el, updated);
+		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 	}
 
@@ -1153,7 +1000,7 @@ export class Figure {
 		const el = this.elements.get(id);
 		if (!el) throw new Error(`updateLabel: "${id}" does not exist`);
 		const updated = { ...el, label } as GeoElement;
-		this.recordUpdate(id, el, updated);
+		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 	}
 
@@ -1177,29 +1024,17 @@ export class Figure {
 		return this.elements.size;
 	}
 
-	/**
-	 * Get the cached position of a point element.
-	 * Returns null if the element is not a point type or does not exist.
-	 */
 	getPosition(id: string): GeoPoint | null {
 		return this.positions.get(id) ?? null;
 	}
 
-	/**
-	 * Get the equation ax + by + c = 0 for a line element.
-	 * If the line was created via courbe(), returns the stored equation.
-	 * Otherwise, computes it dynamically from current point positions.
-	 */
 	getLineEquation(id: string): LineEquation | null {
 		const el = this.elements.get(id);
 		if (!el || el.type !== 'line') return null;
 
 		const line = el as GeoLine;
-
-		// If equation is stored (from courbe()), return it
 		if (line.equation) return line.equation;
 
-		// Compute from current point positions
 		const p1 = this.positions.get(line.point1Id);
 		const p2 = this.positions.get(line.point2Id);
 		if (!p1 || !p2) return null;
@@ -1209,12 +1044,10 @@ export class Figure {
 		const x2 = geoValueToMathNode(p2.x);
 		const y2 = geoValueToMathNode(p2.y);
 
-		// a = y2 - y1, b = x1 - x2, c = x2*y1 - x1*y2
 		const a = subtract(y2, y1);
 		const b = subtract(x1, x2);
 		const c = subtract(implicitMultiply(x2, y1), implicitMultiply(x1, y2));
 
-		// Build expression string: a*x + b*y + c = 0 (using exact MathNode)
 		const terms: MathNode[] = [];
 		if (!isZeroExpression(a)) terms.push(implicitMultiply(a, variable('x')));
 		if (!isZeroExpression(b)) terms.push(implicitMultiply(b, variable('y')));
@@ -1228,10 +1061,6 @@ export class Figure {
 
 	// ─── Mutation ───────────────────────────────────────────────────
 
-	/**
-	 * Move a free point to new coordinates. Marks dependants dirty.
-	 * Call recompute() after to update dependent elements.
-	 */
 	movePoint(id: string, x: GeoValue, y: GeoValue): void {
 		const el = this.elements.get(id);
 		if (!el || !isFreePoint(el)) {
@@ -1240,13 +1069,12 @@ export class Figure {
 
 		const newPosition: GeoPoint = { x, y };
 		const updated: GeoFreePoint = { ...el, position: newPosition };
-		this.recordUpdate(id, el, updated);
+		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 		this.positions.set(id, newPosition);
 		this.graph.markDirty(id);
 	}
 
-	/** Recompute all dirty elements in topological order. */
 	recompute(): void {
 		const dirtyIds = this.graph.getDirtyInOrder();
 		for (const id of dirtyIds) {
@@ -1254,16 +1082,14 @@ export class Figure {
 		}
 	}
 
-	/** Remove an element and cascade-delete its dependants. */
 	remove(id: string): string[] {
 		if (!this.elements.has(id)) {
 			throw new Error(`remove: "${id}" does not exist`);
 		}
-		// Record before deleting
 		const removedIds = this.graph.removeNode(id);
 		for (const rid of removedIds) {
 			const el = this.elements.get(rid);
-			if (el) this.recordRemove(rid, el);
+			if (el) this.undo_manager.recordRemove(rid, el, this.positions.get(rid));
 			this.elements.delete(rid);
 			this.positions.delete(rid);
 			this.measureValues.delete(rid);
@@ -1277,250 +1103,19 @@ export class Figure {
 		const el = this.elements.get(id);
 		if (!el) return;
 
-		if (isMidpoint(el)) {
-			const p1 = this.positions.get(el.point1Id);
-			const p2 = this.positions.get(el.point2Id);
-			if (!p1 || !p2) return;
+		const result = computeElementPosition(el, this.positions, this.elements);
 
-			const two = geoFromNumber(2);
-			const mx = geoDiv(geoAdd(p1.x, p2.x), two);
-			const my = geoDiv(geoAdd(p1.y, p2.y), two);
-			if (mx === null || my === null) {
-				throw new Error(`computePosition: unexpected null computing midpoint "${id}"`);
-			}
-			this.positions.set(id, { x: mx, y: my });
-		} else if (isIntersectionLL(el)) {
-			const result = this.computeIntersectionLL(el);
-			if (result) {
-				this.positions.set(id, result);
-			} else {
-				this.positions.delete(id); // no intersection (parallel lines)
-			}
-		} else if (isReflectedPoint(el)) {
-			const source = this.positions.get(el.sourceId);
-			const center = this.positions.get(el.centerId);
-			if (source && center) {
-				this.positions.set(id, reflectPoint(source, center));
-			} else {
-				this.positions.delete(id);
-			}
-		} else if (isRotatedPoint(el)) {
-			const source = this.positions.get(el.sourceId);
-			const center = this.positions.get(el.centerId);
-			if (source && center) {
-				this.positions.set(id, rotate(source, center, el.angle));
-			} else {
-				this.positions.delete(id);
-			}
-		} else if (isTranslatedPoint(el)) {
-			const source = this.positions.get(el.sourceId);
-			const vStart = this.positions.get(el.vectorStartId);
-			const vEnd = this.positions.get(el.vectorEndId);
-			if (source && vStart && vEnd) {
-				const vector: GeoPoint = {
-					x: geoSub(vEnd.x, vStart.x),
-					y: geoSub(vEnd.y, vStart.y)
-				};
-				this.positions.set(id, translate(source, vector));
-			} else {
-				this.positions.delete(id);
-			}
-		} else if (isDilatedPoint(el)) {
-			const source = this.positions.get(el.sourceId);
-			const center = this.positions.get(el.centerId);
-			if (source && center) {
-				this.positions.set(id, dilate(source, center, el.factor));
-			} else {
-				this.positions.delete(id);
-			}
-		} else if (isReflectedOverLine(el)) {
-			const source = this.positions.get(el.sourceId);
-			const lp1 = this.positions.get(el.linePoint1Id);
-			const lp2 = this.positions.get(el.linePoint2Id);
-			if (source && lp1 && lp2) {
-				const result = reflectOverLine(source, lp1, lp2);
-				if (result) {
-					this.positions.set(id, result);
-				} else {
-					this.positions.delete(id); // degenerate line
-				}
-			} else {
-				this.positions.delete(id);
-			}
-		} else if (isSegmentMark(el)) {
-			// Segment mark position = midpoint of start and end
-			const p1 = this.positions.get(el.startId);
-			const p2 = this.positions.get(el.endId);
-			if (p1 && p2) {
-				const two = geoFromNumber(2);
-				const mx = geoDiv(geoAdd(p1.x, p2.x), two);
-				const my = geoDiv(geoAdd(p1.y, p2.y), two);
-				if (mx !== null && my !== null) {
-					this.positions.set(id, { x: mx, y: my });
-				} else {
-					this.positions.delete(id);
-				}
-			} else {
-				this.positions.delete(id);
-			}
-		} else if (isMeasure(el)) {
-			this.computeMeasureValue(id, el);
-		} else if (isAngleMark(el)) {
-			// Angle mark position = vertex position (for hit-testing and dependency tracking)
-			const vertexPos = this.positions.get(el.vertexId);
-			if (vertexPos) {
-				this.positions.set(id, vertexPos);
-			} else {
-				this.positions.delete(id);
-			}
-		} else if (isPointOnCurve(el)) {
-			const fnEl = this.elements.get(el.functionId);
-			if (fnEl && fnEl.type === 'function') {
-				const xNum = geoToNumber(el.x0);
-				const yNum = fnEl.compiledFn({ x: xNum });
-				if (Number.isFinite(yNum)) {
-					this.positions.set(id, { x: el.x0, y: numeric(yNum) });
-				} else {
-					this.positions.delete(id);
-				}
-			} else {
-				this.positions.delete(id);
-			}
-		} else if (isPointOnQuadraticCurve(el)) {
-			const curveEl = this.elements.get(el.curveId);
-			if (curveEl && curveEl.type === 'quadraticCurve') {
-				const pos = conicPointFromParam(curveEl.conic, el.t);
-				if (pos) {
-					this.positions.set(id, { x: numeric(pos.x), y: numeric(pos.y) });
-				} else {
-					this.positions.delete(id);
-				}
-			} else {
-				this.positions.delete(id);
-			}
-		}
-		// Free points: position stored directly in movePoint/createFreePoint.
-		// Segments, lines, rays, circles: no position to compute.
-	}
-
-	/**
-	 * Get the two defining points of a line-like element.
-	 * Returns their positions, or null if not found.
-	 */
-	private getLineLikePoints(lineId: string): { p1: GeoPoint; p2: GeoPoint } | null {
-		const el = this.elements.get(lineId);
-		if (!el) return null;
-
-		let id1: string;
-		let id2: string;
-
-		if (el.type === 'segment') {
-			id1 = el.startId;
-			id2 = el.endId;
-		} else if (el.type === 'line') {
-			id1 = el.point1Id;
-			id2 = el.point2Id;
-		} else if (el.type === 'ray') {
-			id1 = el.originId;
-			id2 = el.throughId;
-		} else {
-			return null;
+		if (result.position) {
+			this.positions.set(id, result.position);
+		} else if (result.hasComputablePosition) {
+			// Element should have a position but computation failed (e.g. parallel lines)
+			this.positions.delete(id);
 		}
 
-		const p1 = this.positions.get(id1);
-		const p2 = this.positions.get(id2);
-		if (!p1 || !p2) return null;
-		return { p1, p2 };
-	}
-
-	private computeIntersectionLL(el: GeoIntersectionLL): GeoPoint | null {
-		const line1 = this.getLineLikePoints(el.line1Id);
-		const line2 = this.getLineLikePoints(el.line2Id);
-		if (!line1 || !line2) return null;
-		return intersectLL(line1.p1, line1.p2, line2.p1, line2.p2);
-	}
-}
-
-// =============================================================================
-// Conic parametric helpers (shared by Figure and rendering)
-// =============================================================================
-
-/** Compute the (x,y) position on a conic at parameter t (radians). */
-export function conicPointFromParam(
-	conic: ConicParams,
-	t: number
-): { x: number; y: number } | null {
-	if (conic.type === 'degenerate') return null;
-
-	const cos = Math.cos(conic.rotation);
-	const sin = Math.sin(conic.rotation);
-	const cx = conic.center?.x ?? conic.vertex?.x ?? 0;
-	const cy = conic.center?.y ?? conic.vertex?.y ?? 0;
-
-	let lx: number, ly: number;
-
-	switch (conic.type) {
-		case 'circle':
-		case 'ellipse':
-			lx = conic.a * Math.cos(t);
-			ly = conic.b * Math.sin(t);
-			break;
-		case 'hyperbola':
-			lx = conic.a * Math.cosh(t);
-			ly = conic.b * Math.sinh(t);
-			break;
-		case 'parabola': {
-			const p = conic.p ?? conic.a;
-			lx = (t * t) / (2 * p);
-			ly = t;
-			break;
+		if (result.measureValue !== undefined) {
+			this.measureValues.set(id, result.measureValue);
+		} else if (el.type === 'measure') {
+			this.measureValues.delete(id);
 		}
 	}
-
-	return {
-		x: cx + lx * cos - ly * sin,
-		y: cy + lx * sin + ly * cos
-	};
-}
-
-/** Find the parameter t closest to (px, py) on a conic, by sampling. */
-export function conicClosestParam(conic: ConicParams, px: number, py: number): number {
-	const n = 360;
-	let bestT = 0;
-	let bestDist = Infinity;
-
-	const check = (t: number) => {
-		const pt = conicPointFromParam(conic, t);
-		if (!pt) return;
-		const d = (px - pt.x) ** 2 + (py - pt.y) ** 2;
-		if (d < bestDist) {
-			bestDist = d;
-			bestT = t;
-		}
-	};
-
-	switch (conic.type) {
-		case 'circle':
-		case 'ellipse':
-			for (let i = 0; i < n; i++) {
-				check((2 * Math.PI * i) / n);
-			}
-			break;
-		case 'hyperbola': {
-			const tMax = 5;
-			for (let i = 0; i <= n; i++) {
-				check(-tMax + (2 * tMax * i) / n);
-			}
-			break;
-		}
-		case 'parabola': {
-			const tMax = 20;
-			for (let i = 0; i <= n; i++) {
-				check(-tMax + (2 * tMax * i) / n);
-			}
-			break;
-		}
-	}
-
-	return bestT;
 }
