@@ -334,6 +334,11 @@ class Interpreter {
 		// Resolve arguments
 		const resolvedArgs = this.resolveArgs(expr);
 
+		// User-defined macros take priority over builtins (allows overriding)
+		if (this.macros.has(name)) {
+			return this.executeMacroCall(name, resolvedArgs, line);
+		}
+
 		// Builtin geometry functions
 		if (BUILTIN_NAMES.has(name)) {
 			const result = executeBuiltin(
@@ -365,11 +370,6 @@ class Interpreter {
 				return { type: 'element', figureId: result.figureId, elementType: result.symbolType };
 			}
 			return { type: 'nombre', value: 0 }; // style() returns nothing
-		}
-
-		// Try macro call
-		if (this.macros.has(name)) {
-			return this.executeMacroCall(name, resolvedArgs, line);
 		}
 
 		throw new DslRuntimeError(`Fonction inconnue : "${name}"`, line);

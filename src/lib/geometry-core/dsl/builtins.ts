@@ -425,6 +425,15 @@ function _executeBuiltinInner(
 			throw new DslRuntimeError("cercle() necessite 'rayon' ou 'passant'", line);
 		}
 
+		case 'polygone': {
+			if (pos.length < 3) throw new DslRuntimeError('polygone() attend au moins 3 sommets', line);
+			const vertexIds = pos.map((p, i) => requireElement(p, `sommet ${i + 1}`, line));
+			const id = figure.createPolygon(vertexIds as [string, string, string, ...string[]], {
+				label
+			});
+			return { figureId: id, symbolType: 'polygone' };
+		}
+
 		case 'symetrie': {
 			// 0 positional args → create transformation object
 			if (pos.length === 0) {
@@ -906,6 +915,7 @@ export const BUILTIN_NAMES = new Set([
 	'angle_vecteurs',
 	'cercle',
 	'arc',
+	'polygone',
 	'symetrie',
 	'rotation',
 	'translation',
