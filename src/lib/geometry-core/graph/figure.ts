@@ -900,7 +900,11 @@ export class Figure {
 		return id;
 	}
 
-	createComposition(transformationIds: string[], options?: ElementOptions): string {
+	createComposition(
+		transformationIds: string[],
+		options?: ElementOptions,
+		sourceBuiltin?: GeoComposition['sourceBuiltin']
+	): string {
 		if (transformationIds.length < 2) {
 			throw new Error('createComposition: at least 2 transformations required');
 		}
@@ -927,10 +931,26 @@ export class Figure {
 			color: DEFAULT_COLOR,
 			visible: false,
 			label: options?.label,
-			dependsOn: deps
+			dependsOn: deps,
+			...(sourceBuiltin ? { sourceBuiltin } : {})
 		};
 		this.addElement(id, element, deps);
 		return id;
+	}
+
+	createSimilitude(
+		centerId: string,
+		angle: GeoValue,
+		factor: GeoValue,
+		options?: ElementOptions
+	): string {
+		const rotId = this.createRotation(centerId, angle);
+		const homId = this.createHomothety(centerId, factor);
+		// compose(homothetie, rotation) → apply rotation first, then homothety
+		return this.createComposition([homId, rotId], options, {
+			name: 'similitude',
+			params: { angle, rapport: factor, centerId }
+		});
 	}
 
 	// ─── Arc factories ─────────────────────────────────────────────

@@ -500,6 +500,15 @@ export interface GeoComposition extends GeoElementBase {
 	readonly type: 'composition';
 	readonly transformationIds: readonly string[];
 	readonly dependsOn: readonly string[];
+	/** When this composition was created by a higher-level builtin (e.g. similitude). */
+	readonly sourceBuiltin?: {
+		readonly name: 'similitude';
+		readonly params: {
+			readonly angle: GeoValue;
+			readonly rapport: GeoValue;
+			readonly centerId: string;
+		};
+	};
 }
 
 export type GeoTransformation =
