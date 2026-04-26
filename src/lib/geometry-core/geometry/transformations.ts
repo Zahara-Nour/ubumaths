@@ -13,6 +13,7 @@ import type { GeoPoint } from '../types/primitives';
 import type { GeoValue } from '../types/geo-value';
 import { exact } from '../types/geo-value';
 import { geoAdd, geoSub, geoMul, geoDiv, simplifyExact } from '../compute/geo-arithmetic';
+import { geoToNumber } from '../compute/to-number';
 import { cos, sin } from '$lib/mathAST';
 
 function geoCos(angle: GeoValue): GeoValue {
@@ -142,6 +143,25 @@ export function applyAffinity(
 	return {
 		x: geoAdd(proj.x, geoMul(factor, dx)),
 		y: geoAdd(proj.y, geoMul(factor, dy))
+	};
+}
+
+/**
+ * Invert a point through a circle (circular inversion).
+ * M' = O + r²/OM² * (M - O). Returns NaN coords if M = O.
+ */
+export function invertPoint(point: GeoPoint, center: GeoPoint, radius: GeoValue): GeoPoint {
+	const dxN = geoToNumber(geoSub(point.x, center.x));
+	const dyN = geoToNumber(geoSub(point.y, center.y));
+	const om2 = dxN * dxN + dyN * dyN;
+	if (om2 < 1e-30) {
+		return { x: { kind: 'numeric', value: NaN }, y: { kind: 'numeric', value: NaN } };
+	}
+	const r = geoToNumber(radius);
+	const scale = (r * r) / om2;
+	return {
+		x: geoAdd(center.x, { kind: 'numeric', value: scale * dxN }),
+		y: geoAdd(center.y, { kind: 'numeric', value: scale * dyN })
 	};
 }
 

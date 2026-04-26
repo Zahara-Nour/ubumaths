@@ -131,6 +131,8 @@ export function buildInverseAffineMatrix(
 			const invK = Math.abs(k) < 1e-15 ? 1 : 1 / k;
 			return [invK, 0, cx * (1 - invK), 0, invK, cy * (1 - invK)];
 		}
+		case 'inversion':
+			throw new Error('Inversion is not an affine transformation — no affine matrix available');
 		case 'composition': {
 			let result: AffineMatrix = [1, 0, 0, 0, 1, 0];
 			for (const tId of transform.transformationIds) {
