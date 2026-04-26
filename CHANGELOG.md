@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.84](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.83...v0.8.84) (2026-04-26)
+
+### ✨ Features
+
+- **geometry-core:** add rough.js rendering and TikZ/Typst export for conics ([dba283a](https://github.com/Zahara-Nour/ubumaths/commit/dba283a6c2beb2c352ecad4a564eb5e2d434e73e))
+
 ### [0.8.83](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.82...v0.8.83) (2026-04-25)
 
 ### 📚 Documentation
