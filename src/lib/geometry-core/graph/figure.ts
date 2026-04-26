@@ -228,6 +228,16 @@ export class Figure {
 		this.undo_manager.recordAdd(id, element);
 	}
 
+	/** Validate that all given IDs reference existing point elements. */
+	private requirePoints(caller: string, ...ids: string[]): void {
+		for (const id of ids) {
+			const el = this.elements.get(id);
+			if (!el || !isPointElement(el)) {
+				throw new Error(`${caller}: "${id}" is not a point element`);
+			}
+		}
+	}
+
 	// ─── Factory methods ────────────────────────────────────────────
 
 	createFreePoint(position: GeoPoint, options?: ElementOptions): string {
@@ -269,6 +279,7 @@ export class Figure {
 	}
 
 	createSegment(startId: string, endId: string, options?: ElementOptions): string {
+		this.requirePoints('createSegment', startId, endId);
 		const id = this.generateId('seg');
 		const element: GeoSegment = {
 			type: 'segment',
@@ -287,6 +298,7 @@ export class Figure {
 	}
 
 	createLine(point1Id: string, point2Id: string, options?: ElementOptions): string {
+		this.requirePoints('createLine', point1Id, point2Id);
 		const id = this.generateId('ln');
 		const element: GeoLine = {
 			type: 'line',
@@ -306,6 +318,7 @@ export class Figure {
 	}
 
 	createRay(originId: string, throughId: string, options?: ElementOptions): string {
+		this.requirePoints('createRay', originId, throughId);
 		const id = this.generateId('ray');
 		const element: GeoRay = {
 			type: 'ray',
@@ -326,6 +339,7 @@ export class Figure {
 	// ─── Vector factories ───────────────────────────────────────────
 
 	createVectorByPoints(startId: string, endId: string, options?: ElementOptions): string {
+		this.requirePoints('createVectorByPoints', startId, endId);
 		const id = this.generateId('vec');
 		const element: GeoVectorByPoints = {
 			type: 'vectorByPoints',
