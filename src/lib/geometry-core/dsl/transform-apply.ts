@@ -388,83 +388,88 @@ function buildInverseTransformCoords(
 	transform: GeoTransformation,
 	figure: Figure
 ): (x: number, y: number) => { x: number; y: number } {
+	// Closures read positions at each call (not at creation time) so transformed
+	// curves stay reactive when transformation-defining points move.
 	switch (transform.type) {
 		case 'rotation': {
-			const cPos = figure.getPosition(transform.centerId);
-			if (!cPos) return (x, y) => ({ x, y });
-			const cx = geoToNumber(cPos.x);
-			const cy = geoToNumber(cPos.y);
-			const angle = -geoToNumber(transform.angle); // inverse = negative angle
-			const cos = Math.cos(angle);
-			const sin = Math.sin(angle);
-			return (x, y) => ({
-				x: cx + (x - cx) * cos - (y - cy) * sin,
-				y: cy + (x - cx) * sin + (y - cy) * cos
-			});
+			const centerId = transform.centerId;
+			const negAngle = -geoToNumber(transform.angle);
+			return (x, y) => {
+				const cPos = figure.getPosition(centerId);
+				if (!cPos) return { x, y };
+				const cx = geoToNumber(cPos.x),
+					cy = geoToNumber(cPos.y);
+				const cos = Math.cos(negAngle),
+					sin = Math.sin(negAngle);
+				return {
+					x: cx + (x - cx) * cos - (y - cy) * sin,
+					y: cy + (x - cx) * sin + (y - cy) * cos
+				};
+			};
 		}
 		case 'reflection': {
-			// Central symmetry is its own inverse
-			const cPos = figure.getPosition(transform.centerId);
-			if (!cPos) return (x, y) => ({ x, y });
-			const cx = geoToNumber(cPos.x);
-			const cy = geoToNumber(cPos.y);
-			return (x, y) => ({
-				x: 2 * cx - x,
-				y: 2 * cy - y
-			});
+			const centerId = transform.centerId;
+			return (x, y) => {
+				const cPos = figure.getPosition(centerId);
+				if (!cPos) return { x, y };
+				return {
+					x: 2 * geoToNumber(cPos.x) - x,
+					y: 2 * geoToNumber(cPos.y) - y
+				};
+			};
 		}
 		case 'reflectionOverLine': {
-			// Axial reflection is its own inverse
-			const lp1 = figure.getPosition(transform.linePoint1Id);
-			const lp2 = figure.getPosition(transform.linePoint2Id);
-			if (!lp1 || !lp2) return (x, y) => ({ x, y });
-			const x1 = geoToNumber(lp1.x),
-				y1 = geoToNumber(lp1.y);
-			const x2 = geoToNumber(lp2.x),
-				y2 = geoToNumber(lp2.y);
-			const dx = x2 - x1,
-				dy = y2 - y1;
-			const len2 = dx * dx + dy * dy;
-			if (len2 < 1e-15) return (x, y) => ({ x, y });
+			const lp1Id = transform.linePoint1Id,
+				lp2Id = transform.linePoint2Id;
 			return (x, y) => {
+				const lp1 = figure.getPosition(lp1Id),
+					lp2 = figure.getPosition(lp2Id);
+				if (!lp1 || !lp2) return { x, y };
+				const x1 = geoToNumber(lp1.x),
+					y1 = geoToNumber(lp1.y);
+				const dx = geoToNumber(lp2.x) - x1,
+					dy = geoToNumber(lp2.y) - y1;
+				const len2 = dx * dx + dy * dy;
+				if (len2 < 1e-15) return { x, y };
 				const t = ((x - x1) * dx + (y - y1) * dy) / len2;
-				const projX = x1 + t * dx;
-				const projY = y1 + t * dy;
-				return { x: 2 * projX - x, y: 2 * projY - y };
+				return { x: 2 * (x1 + t * dx) - x, y: 2 * (y1 + t * dy) - y };
 			};
 		}
 		case 'translation': {
-			// Inverse = translate by -vector
-			if (transform.vectorId) {
-				const comp = figure.getVectorComponents(transform.vectorId);
-				if (!comp) return (x, y) => ({ x, y });
-				const tdx = geoToNumber(comp.dx);
-				const tdy = geoToNumber(comp.dy);
-				return (x, y) => ({ x: x - tdx, y: y - tdy });
-			}
-			const vs = figure.getPosition(transform.vectorStartId);
-			const ve = figure.getPosition(transform.vectorEndId);
-			if (!vs || !ve) return (x, y) => ({ x, y });
-			const tdx = geoToNumber(ve.x) - geoToNumber(vs.x);
-			const tdy = geoToNumber(ve.y) - geoToNumber(vs.y);
-			return (x, y) => ({ x: x - tdx, y: y - tdy });
+			const vecId = transform.vectorId;
+			const vsId = transform.vectorStartId,
+				veId = transform.vectorEndId;
+			return (x, y) => {
+				if (vecId) {
+					const comp = figure.getVectorComponents(vecId);
+					if (!comp) return { x, y };
+					return { x: x - geoToNumber(comp.dx), y: y - geoToNumber(comp.dy) };
+				}
+				const vs = figure.getPosition(vsId),
+					ve = figure.getPosition(veId);
+				if (!vs || !ve) return { x, y };
+				return {
+					x: x - (geoToNumber(ve.x) - geoToNumber(vs.x)),
+					y: y - (geoToNumber(ve.y) - geoToNumber(vs.y))
+				};
+			};
 		}
 		case 'homothety': {
-			const cPos = figure.getPosition(transform.centerId);
-			if (!cPos) return (x, y) => ({ x, y });
-			const cx = geoToNumber(cPos.x);
-			const cy = geoToNumber(cPos.y);
+			const centerId = transform.centerId;
 			const k = geoToNumber(transform.factor);
-			if (Math.abs(k) < 1e-15) return (x, y) => ({ x, y });
-			const invK = 1 / k;
-			return (x, y) => ({
-				x: cx + (x - cx) * invK,
-				y: cy + (y - cy) * invK
-			});
+			const invK = Math.abs(k) < 1e-15 ? 1 : 1 / k;
+			return (x, y) => {
+				const cPos = figure.getPosition(centerId);
+				if (!cPos) return { x, y };
+				const cx = geoToNumber(cPos.x),
+					cy = geoToNumber(cPos.y);
+				return {
+					x: cx + (x - cx) * invK,
+					y: cy + (y - cy) * invK
+				};
+			};
 		}
 		case 'composition': {
-			// Inverse of compose(f1, f2, ..., fn) = compose(fn⁻¹, ..., f2⁻¹, f1⁻¹)
-			// Since compose applies right-to-left, inverse applies left-to-right
 			const inverseFns = transform.transformationIds.map((tId) => {
 				const subEl = figure.getElementById(tId);
 				if (!subEl || !isTransformation(subEl)) return (x: number, y: number) => ({ x, y });
@@ -472,7 +477,6 @@ function buildInverseTransformCoords(
 			});
 			return (x, y) => {
 				let cur = { x, y };
-				// Apply in forward order (which is the reverse of the composition order)
 				for (const fn of inverseFns) {
 					cur = fn(cur.x, cur.y);
 				}
