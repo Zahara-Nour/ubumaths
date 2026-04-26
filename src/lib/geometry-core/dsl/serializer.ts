@@ -150,6 +150,9 @@ function serializeElement(
 		}
 
 		case 'translatedPoint':
+			// If constructed via a vector element, serialize as vecteur=vectorName
+			if (el.vectorId)
+				return `${n} = translation(${name(idToName, el.sourceId)}, vecteur=${name(idToName, el.vectorId)})`;
 			return `${n} = translation(${name(idToName, el.sourceId)}, vecteur=(${name(idToName, el.vectorStartId)}, ${name(idToName, el.vectorEndId)}))`;
 
 		case 'dilatedPoint': {

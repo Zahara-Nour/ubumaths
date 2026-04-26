@@ -188,6 +188,73 @@ describe('Figure vector support', () => {
 });
 
 // =============================================================================
+// Translation by vector (reactive dependency)
+// =============================================================================
+
+describe('createTranslatedPointByVector', () => {
+	it('translates a point by a bound vector', () => {
+		const fig = new Figure();
+		const a = fig.createFreePoint({ x: numeric(0), y: numeric(0) });
+		const b = fig.createFreePoint({ x: numeric(3), y: numeric(4) });
+		const v = fig.createVectorByPoints(a, b);
+		const p = fig.createFreePoint({ x: numeric(1), y: numeric(1) });
+		const q = fig.createTranslatedPointByVector(p, v);
+
+		fig.recompute();
+		const pos = fig.getPosition(q);
+		expect(pos).not.toBeNull();
+		expect(geoToNumber(pos!.x)).toBeCloseTo(4);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(5);
+	});
+
+	it('translates a point by a free vector', () => {
+		const fig = new Figure();
+		const v = fig.createFreeVector(numeric(2), numeric(-1));
+		const p = fig.createFreePoint({ x: numeric(5), y: numeric(5) });
+		const q = fig.createTranslatedPointByVector(p, v);
+
+		fig.recompute();
+		const pos = fig.getPosition(q);
+		expect(geoToNumber(pos!.x)).toBeCloseTo(7);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(4);
+	});
+
+	it('is reactive: moving a bound vector endpoint updates the translated point', () => {
+		const fig = new Figure();
+		const a = fig.createFreePoint({ x: numeric(0), y: numeric(0) });
+		const b = fig.createFreePoint({ x: numeric(3), y: numeric(0) });
+		const v = fig.createVectorByPoints(a, b);
+		const p = fig.createFreePoint({ x: numeric(1), y: numeric(1) });
+		const q = fig.createTranslatedPointByVector(p, v);
+
+		fig.recompute();
+		expect(geoToNumber(fig.getPosition(q)!.x)).toBeCloseTo(4);
+
+		// Move B from (3,0) to (5,2) — vector changes from (3,0) to (5,2)
+		fig.movePoint(b, numeric(5), numeric(2));
+		fig.recompute();
+		expect(geoToNumber(fig.getPosition(q)!.x)).toBeCloseTo(6);
+		expect(geoToNumber(fig.getPosition(q)!.y)).toBeCloseTo(3);
+	});
+
+	it('throws for non-point source', () => {
+		const fig = new Figure();
+		const a = fig.createFreePoint({ x: numeric(0), y: numeric(0) });
+		const b = fig.createFreePoint({ x: numeric(1), y: numeric(1) });
+		const v = fig.createVectorByPoints(a, b);
+		const seg = fig.createSegment(a, b);
+		expect(() => fig.createTranslatedPointByVector(seg, v)).toThrow();
+	});
+
+	it('throws for non-vector vectorId', () => {
+		const fig = new Figure();
+		const a = fig.createFreePoint({ x: numeric(0), y: numeric(0) });
+		const b = fig.createFreePoint({ x: numeric(1), y: numeric(1) });
+		expect(() => fig.createTranslatedPointByVector(a, b)).toThrow();
+	});
+});
+
+// =============================================================================
 // Edge case tests
 // =============================================================================
 

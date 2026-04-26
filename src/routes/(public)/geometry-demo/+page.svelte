@@ -394,6 +394,57 @@ Z5 = zeros(c5, couleur="orange")`
 	).figure;
 
 	// ==========================================================================
+	// Vectors — bound and free
+	// ==========================================================================
+	const vectorFig = new Figure();
+
+	// Bound vectors (tied to points)
+	const vA = vectorFig.createFreePoint(pt(-5, -2), { label: 'A', color: '#1e40af' });
+	const vB = vectorFig.createFreePoint(pt(-1, 1), { label: 'B', color: '#1e40af' });
+	const vC = vectorFig.createFreePoint(pt(-5, 2), { label: 'C', color: '#1e40af' });
+	const vD = vectorFig.createFreePoint(pt(-2, 4), { label: 'D', color: '#1e40af' });
+
+	vectorFig.createVectorByPoints(vA, vB, { label: 'u', color: '#dc2626' });
+	vectorFig.createVectorByPoints(vC, vD, { label: 'v', color: '#059669' });
+
+	// Free vectors (by components, draggable as a unit)
+	vectorFig.createFreeVector(numeric(3), numeric(0), npt(1, -3), {
+		label: 'i',
+		color: '#6366f1'
+	});
+	vectorFig.createFreeVector(numeric(0), numeric(2), npt(1, -3), {
+		label: 'j',
+		color: '#9333ea'
+	});
+
+	// Translation by vector: P' = P + vec(AB)
+	const vP = vectorFig.createFreePoint(pt(3, 1), { label: 'P', color: '#ea580c' });
+	const vec = vectorFig.createVectorByPoints(vA, vB, {
+		color: '#dc2626',
+		style: { dash: 'dashed' }
+	});
+	const elVec = vectorFig.getElementById(vec)!;
+	if (elVec.type === 'vectorByPoints') {
+		vectorFig.createTranslatedPoint(vP, elVec.startId, elVec.endId, {
+			label: "P'",
+			color: '#ea580c'
+		});
+	}
+
+	// ==========================================================================
+	// Vectors via DSL
+	// ==========================================================================
+	const vectorDslFig = runDsl(
+		`A = point(-4, -2)
+B = point(0, 1)
+u = vecteur(A, B, couleur="rouge")
+v = vecteur(2, 3, couleur="vert")
+P = point(2, -1, couleur="orange")
+P2 = translation(P, vecteur=u)
+style(P2, couleur="orange")`
+	).figure;
+
+	// ==========================================================================
 	// courbe() — implicit curves F(x,y) = 0 (marching squares)
 	// ==========================================================================
 	const implicitFig = runDsl(
@@ -617,6 +668,55 @@ c4 = courbe("x^2*y - y^3 - x^2 + y = 0", couleur="violet")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{conicFig.size} elements | courbe() — coniques
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Vecteurs — vecteur()</h2>
+	<p class="mb-4 text-muted-foreground">
+		Vecteurs lies (attaches a deux points) et libres (composantes fixes, deplacables en bloc).
+		<br />
+		<strong>Rouge</strong> : vecteur u = AB |
+		<strong>Vert</strong> : vecteur v = CD |
+		<strong>Indigo</strong> : vecteur libre i = (3, 0) |
+		<strong>Violet</strong> : vecteur libre j = (0, 2) |
+		<strong>Orange</strong> : P et sa translation P' par le vecteur AB.
+		<br />
+		Deplacez A ou B pour voir les vecteurs lies et la translation se mettre a jour.
+	</p>
+
+	<GeometryCanvas
+		figure={vectorFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{vectorFig.size} elements | vecteurs lies + libres + translation
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Vecteurs via DSL</h2>
+	<p class="mb-4 text-muted-foreground">
+		Vecteurs crees via le DSL : <code>vecteur(A, B)</code> (lie) et <code>vecteur(2, 3)</code>
+		(libre).
+		<br />
+		Translation par vecteur : <code>translation(P, vecteur=u)</code>.
+	</p>
+
+	<GeometryCanvas
+		figure={vectorDslFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{vectorDslFig.size} elements | vecteurs via DSL
 	</p>
 
 	<hr class="my-8" />

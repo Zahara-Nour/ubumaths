@@ -21,6 +21,7 @@ import {
 	isPointOnQuadraticCurve
 } from '../types/elements';
 import type { GeoPoint } from '../types/primitives';
+import type { GeoValue } from '../types/geo-value';
 import { geoAdd, geoSub, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
 import { geoToNumber } from '../compute/to-number';
 import { numeric } from '../types/geo-value';
@@ -91,9 +92,40 @@ export function computeElementPosition(
 
 	if (isTranslatedPoint(el)) {
 		const source = positions.get(el.sourceId);
+		if (!source) return { position: null, hasComputablePosition: true };
+
+		// Vector-based translation: read displacement from the vector element directly
+		if (el.vectorId) {
+			const vecEl = elements.get(el.vectorId);
+			if (!vecEl) return { position: null, hasComputablePosition: true };
+
+			let dx: GeoValue | null = null;
+			let dy: GeoValue | null = null;
+
+			if (vecEl.type === 'vectorByPoints') {
+				// Bound vector: displacement = endPosition - startPosition
+				const vStart = positions.get(vecEl.startId);
+				const vEnd = positions.get(vecEl.endId);
+				if (vStart && vEnd) {
+					dx = geoSub(vEnd.x, vStart.x);
+					dy = geoSub(vEnd.y, vStart.y);
+				}
+			} else if (vecEl.type === 'freeVector') {
+				// Free vector: displacement stored directly as dx/dy
+				dx = vecEl.dx;
+				dy = vecEl.dy;
+			}
+
+			if (dx !== null && dy !== null) {
+				return { position: translate(source, { x: dx, y: dy }), hasComputablePosition: true };
+			}
+			return { position: null, hasComputablePosition: true };
+		}
+
+		// Classic two-point translation: displacement = endPoint - startPoint
 		const vStart = positions.get(el.vectorStartId);
 		const vEnd = positions.get(el.vectorEndId);
-		if (source && vStart && vEnd) {
+		if (vStart && vEnd) {
 			const vector: GeoPoint = {
 				x: geoSub(vEnd.x, vStart.x),
 				y: geoSub(vEnd.y, vStart.y)
