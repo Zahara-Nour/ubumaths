@@ -84,6 +84,8 @@
 	let svgRef: SVGSVGElement | undefined = $state();
 	let containerRef: HTMLDivElement | undefined = $state();
 	let draggingId: string | null = $state(null);
+	/** Offset from pointer to freeVector anchor at drag start (for smooth drag). */
+	let dragOffset: { dx: number; dy: number } | null = $state(null);
 	let hoveredId: string | null = $state(null);
 	let version = $state(0);
 
@@ -203,6 +205,7 @@
 			const el = figure.getElementById(pointId);
 			if (el?.type === 'freePoint' && el.draggable) {
 				draggingId = pointId;
+				dragOffset = null;
 				figure.beginTransaction();
 				svgRef?.setPointerCapture(e.pointerId);
 				e.preventDefault();
@@ -211,9 +214,25 @@
 				el.draggable
 			) {
 				draggingId = pointId;
+				dragOffset = null;
 				figure.beginTransaction();
 				svgRef?.setPointerCapture(e.pointerId);
 				e.preventDefault();
+			}
+		} else {
+			// No point hit — check for free vector drag
+			const elementId = findElementNear(figure, math.x, math.y, threshold, viewport);
+			if (elementId) {
+				const el = figure.getElementById(elementId);
+				if (el?.type === 'freeVector') {
+					const ax = geoToNumber(el.anchorX);
+					const ay = geoToNumber(el.anchorY);
+					draggingId = elementId;
+					dragOffset = { dx: ax - math.x, dy: ay - math.y };
+					figure.beginTransaction();
+					svgRef?.setPointerCapture(e.pointerId);
+					e.preventDefault();
+				}
 			}
 		}
 	}
@@ -249,7 +268,12 @@
 
 		if (draggingId) {
 			const dragEl = figure.getElementById(draggingId);
-			if (dragEl?.type === 'pointOnCurve') {
+			if (dragEl?.type === 'freeVector') {
+				// Drag free vector: move anchor, preserve components
+				const newAx = math.x + (dragOffset?.dx ?? 0);
+				const newAy = math.y + (dragOffset?.dy ?? 0);
+				figure.moveFreeVector(draggingId, numeric(newAx), numeric(newAy));
+			} else if (dragEl?.type === 'pointOnCurve') {
 				figure.movePointOnCurve(draggingId, numeric(math.x));
 			} else if (dragEl?.type === 'pointOnQuadraticCurve') {
 				const curveEl = figure.getElementById(dragEl.curveId);
@@ -272,6 +296,7 @@
 		if (draggingId) figure.discard();
 		isPanning = false;
 		draggingId = null;
+		dragOffset = null;
 		draggingLabelId = null;
 		labelDragStart = null;
 	}
@@ -296,7 +321,11 @@
 			if (math) {
 				const snapped = snapToGrid(math.x, math.y, gridStep.major);
 				const dragEl = figure.getElementById(draggingId);
-				if (dragEl?.type === 'pointOnCurve') {
+				if (dragEl?.type === 'freeVector') {
+					const snapAx = snapped.x + (dragOffset?.dx ?? 0);
+					const snapAy = snapped.y + (dragOffset?.dy ?? 0);
+					figure.moveFreeVector(draggingId, numeric(snapAx), numeric(snapAy));
+				} else if (dragEl?.type === 'pointOnCurve') {
 					figure.movePointOnCurve(draggingId, snapped.x);
 				} else {
 					figure.movePoint(draggingId, snapped.x, snapped.y);
@@ -308,6 +337,7 @@
 
 		figure.commit();
 		draggingId = null;
+		dragOffset = null;
 	}
 
 	// ─── Wheel: zoom centered on cursor ─────────────────────────────
@@ -355,6 +385,7 @@
 				// Cancel current drag instead of corrupting undo history
 				figure.discard();
 				draggingId = null;
+				dragOffset = null;
 			} else {
 				figure.undo();
 			}
@@ -449,6 +480,7 @@
 		spaceHeld = false;
 		isPanning = false;
 		draggingId = null;
+		dragOffset = null;
 		draggingLabelId = null;
 		labelDragStart = null;
 	}
@@ -1308,11 +1340,16 @@
 	.segment.hovered,
 	.geo-line.hovered,
 	.ray.hovered,
+	.vector.hovered,
 	.circle.hovered,
 	.function-curve.hovered {
 		filter: brightness(1.3);
 		stroke-width: 4;
 		cursor: pointer;
+	}
+
+	.vector.hovered {
+		cursor: grab;
 	}
 
 	.angle-mark:hover,
