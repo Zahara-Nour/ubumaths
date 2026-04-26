@@ -244,7 +244,39 @@ export interface GeoFreeVector extends GeoElementBase {
 	readonly dependsOn: readonly [];
 }
 
-export type GeoVector = GeoVectorByPoints | GeoFreeVector;
+// ─── Derived vector operations (reactive) ───────────────────────────────────
+
+/** Reactive vector sum: w = v1 + v2 (or v1 - v2 when negate=true). */
+export interface GeoVectorSum extends GeoElementBase {
+	readonly type: 'vectorSum';
+	readonly vector1Id: string;
+	readonly vector2Id: string;
+	/** If true, computes v1 - v2 instead of v1 + v2. */
+	readonly negate: boolean;
+	readonly dependsOn: readonly string[];
+}
+
+/** Reactive scaled vector: w = factor * v. */
+export interface GeoVectorScaled extends GeoElementBase {
+	readonly type: 'vectorScaled';
+	readonly vectorId: string;
+	readonly factor: GeoValue;
+	readonly dependsOn: readonly string[];
+}
+
+/** Reactive negated vector: w = -v. */
+export interface GeoVectorNegate extends GeoElementBase {
+	readonly type: 'vectorNegate';
+	readonly vectorId: string;
+	readonly dependsOn: readonly string[];
+}
+
+export type GeoVector =
+	| GeoVectorByPoints
+	| GeoFreeVector
+	| GeoVectorSum
+	| GeoVectorScaled
+	| GeoVectorNegate;
 
 // =============================================================================
 // Arc (two construction variants)
@@ -451,7 +483,10 @@ export type GeoElement =
 	| GeoTangentLine
 	| GeoTangentToQuadratic
 	| GeoVectorByPoints
-	| GeoFreeVector;
+	| GeoFreeVector
+	| GeoVectorSum
+	| GeoVectorScaled
+	| GeoVectorNegate;
 
 export type GeoElementType = GeoElement['type'];
 
@@ -599,5 +634,23 @@ export function isFreeVector(el: GeoElement): el is GeoFreeVector {
 }
 
 export function isVector(el: GeoElement): el is GeoVector {
-	return el.type === 'vectorByPoints' || el.type === 'freeVector';
+	return (
+		el.type === 'vectorByPoints' ||
+		el.type === 'freeVector' ||
+		el.type === 'vectorSum' ||
+		el.type === 'vectorScaled' ||
+		el.type === 'vectorNegate'
+	);
+}
+
+export function isVectorSum(el: GeoElement): el is GeoVectorSum {
+	return el.type === 'vectorSum';
+}
+
+export function isVectorScaled(el: GeoElement): el is GeoVectorScaled {
+	return el.type === 'vectorScaled';
+}
+
+export function isVectorNegate(el: GeoElement): el is GeoVectorNegate {
+	return el.type === 'vectorNegate';
 }

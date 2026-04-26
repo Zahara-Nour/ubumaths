@@ -225,31 +225,36 @@ export function vectorToSVG(
 	const el = figure.getElementById(id);
 	if (!el || !isVector(el)) return null;
 
-	let sx: number, sy: number, ex: number, ey: number;
+	// Get anchor (start) and compute end from components
+	const comp = figure.getVectorComponents(id);
+	if (!comp) return null;
+
+	let anchorX: number, anchorY: number;
 
 	if (el.type === 'vectorByPoints') {
 		const p1 = figure.getPosition(el.startId);
-		const p2 = figure.getPosition(el.endId);
-		if (!p1 || !p2) return null;
-		const sv1 = transformer.mathToSvg(geoToNumber(p1.x), geoToNumber(p1.y));
-		const sv2 = transformer.mathToSvg(geoToNumber(p2.x), geoToNumber(p2.y));
-		sx = sv1.x;
-		sy = sv1.y;
-		ex = sv2.x;
-		ey = sv2.y;
+		if (!p1) return null;
+		anchorX = geoToNumber(p1.x);
+		anchorY = geoToNumber(p1.y);
+	} else if (el.type === 'freeVector') {
+		anchorX = geoToNumber(el.anchorX);
+		anchorY = geoToNumber(el.anchorY);
 	} else {
-		// freeVector
-		const ax = geoToNumber(el.anchorX);
-		const ay = geoToNumber(el.anchorY);
-		const endX = ax + geoToNumber(el.dx);
-		const endY = ay + geoToNumber(el.dy);
-		const sv1 = transformer.mathToSvg(ax, ay);
-		const sv2 = transformer.mathToSvg(endX, endY);
-		sx = sv1.x;
-		sy = sv1.y;
-		ex = sv2.x;
-		ey = sv2.y;
+		// Derived vectors (sum, scaled, negate): anchor at stored position or (0,0)
+		const pos = figure.getPosition(id);
+		anchorX = pos ? geoToNumber(pos.x) : 0;
+		anchorY = pos ? geoToNumber(pos.y) : 0;
 	}
+
+	const endMathX = anchorX + geoToNumber(comp.dx);
+	const endMathY = anchorY + geoToNumber(comp.dy);
+
+	const sv1 = transformer.mathToSvg(anchorX, anchorY);
+	const sv2 = transformer.mathToSvg(endMathX, endMathY);
+	const sx = sv1.x,
+		sy = sv1.y,
+		ex = sv2.x,
+		ey = sv2.y;
 
 	const dx = ex - sx;
 	const dy = ey - sy;

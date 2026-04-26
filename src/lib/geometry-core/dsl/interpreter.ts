@@ -18,12 +18,25 @@ import {
 	MATH_FUNCTIONS,
 	type ResolvedValue,
 	type ResolvedArgs,
-	type BuiltinMultiResult
+	type BuiltinMultiResult,
+	type BuiltinScalarResult
 } from './builtins';
 import type { DslProgram, DslStatement, DslExpr, DslFunctionCallExpr } from './types';
 import { MacroRegistry } from './macro-registry';
 import { STDLIB_MACROS } from './stdlib';
 import { parse } from './parser';
+
+/** Check if a resolved value is a vector element reference. */
+function isVectorValue(val: ResolvedValue): boolean {
+	return val.type === 'element' && val.elementType === 'vecteur';
+}
+
+/** Coerce a ResolvedValue to a number, throwing if not numeric. */
+function coerceToNumber(val: ResolvedValue, line: number): number {
+	if (val.type === 'nombre') return val.value;
+	if (val.type === 'geoValue') return geoToNumber(val.value);
+	throw new DslRuntimeError('Nombre attendu', line);
+}
 
 export type DirectiveHandler = (name: string, args: ResolvedArgs, line: number) => void;
 
@@ -221,8 +234,26 @@ class Interpreter {
 			}
 
 			case 'binary': {
-				const left = this.evaluateToNumber(expr.left, expr.line);
-				const right = this.evaluateToNumber(expr.right, expr.line);
+				const leftVal = this.evaluateExpr(expr.left, expr.line);
+				const rightVal = this.evaluateExpr(expr.right, expr.line);
+
+				// Vector arithmetic: if either operand is a vector, dispatch to vector ops
+				const leftIsVec = isVectorValue(leftVal);
+				const rightIsVec = isVectorValue(rightVal);
+				if (leftIsVec || rightIsVec) {
+					return this.evaluateVectorBinary(
+						expr.op,
+						leftVal,
+						rightVal,
+						leftIsVec,
+						rightIsVec,
+						expr.line
+					);
+				}
+
+				// Scalar arithmetic (existing behavior)
+				const left = coerceToNumber(leftVal, expr.line);
+				const right = coerceToNumber(rightVal, expr.line);
 				switch (expr.op) {
 					case '+':
 						return { type: 'nombre', value: left + right };
@@ -259,7 +290,14 @@ class Interpreter {
 			}
 
 			case 'unary': {
-				const operand = this.evaluateToNumber(expr.operand, expr.line);
+				const operandVal = this.evaluateExpr(expr.operand, expr.line);
+				// Vector negation: -u
+				if (expr.op === '-' && isVectorValue(operandVal)) {
+					const vecId = operandVal.figureId;
+					const id = this.figure.createVectorNegate(vecId);
+					return { type: 'element', figureId: id, elementType: 'vecteur' };
+				}
+				const operand = coerceToNumber(operandVal, expr.line);
 				if (expr.op === '-') return { type: 'nombre', value: -operand };
 				if (expr.op === 'non') return { type: 'nombre', value: operand ? 0 : 1 };
 				throw new DslRuntimeError(`Operateur unaire inconnu : ${expr.op}`, expr.line);
@@ -308,6 +346,10 @@ class Interpreter {
 				this._assignmentLabel
 			);
 			if (result) {
+				// Scalar result: builtins like norme(), produit_scalaire(), angle_vecteurs()
+				if ('scalarValue' in result) {
+					return { type: 'nombre', value: (result as BuiltinScalarResult).scalarValue };
+				}
 				// Multi-result: builtins like zeros(), extrema(), inflections()
 				if ('elements' in result) {
 					const multi = result as BuiltinMultiResult;
@@ -422,6 +464,59 @@ class Interpreter {
 		if (val.type === 'nombre') return val.value;
 		if (val.type === 'geoValue') return geoToNumber(val.value);
 		throw new DslRuntimeError('Nombre attendu', line);
+	}
+
+	/**
+	 * Evaluate a binary expression where at least one operand is a vector.
+	 *
+	 * Supported operations:
+	 * - vector + vector → createVectorSum
+	 * - vector - vector → createVectorSum(negate=true)
+	 * - scalar * vector or vector * scalar → createVectorScaled
+	 * - vector / scalar → createVectorScaled(1/factor)
+	 */
+	private evaluateVectorBinary(
+		op: string,
+		leftVal: ResolvedValue,
+		rightVal: ResolvedValue,
+		leftIsVec: boolean,
+		rightIsVec: boolean,
+		line: number
+	): ResolvedValue {
+		if (op === '+' && leftIsVec && rightIsVec) {
+			const id = this.figure.createVectorSum(leftVal.figureId, rightVal.figureId);
+			return { type: 'element', figureId: id, elementType: 'vecteur' };
+		}
+		if (op === '-' && leftIsVec && rightIsVec) {
+			const id = this.figure.createVectorSum(leftVal.figureId, rightVal.figureId, true);
+			return { type: 'element', figureId: id, elementType: 'vecteur' };
+		}
+		if (op === '*') {
+			if (leftIsVec && !rightIsVec) {
+				// vector * scalar
+				const factor = numeric(coerceToNumber(rightVal, line));
+				const id = this.figure.createVectorScaled(leftVal.figureId, factor);
+				return { type: 'element', figureId: id, elementType: 'vecteur' };
+			}
+			if (!leftIsVec && rightIsVec) {
+				// scalar * vector
+				const factor = numeric(coerceToNumber(leftVal, line));
+				const id = this.figure.createVectorScaled(rightVal.figureId, factor);
+				return { type: 'element', figureId: id, elementType: 'vecteur' };
+			}
+		}
+		if (op === '/' && leftIsVec && !rightIsVec) {
+			// vector / scalar
+			const divisor = coerceToNumber(rightVal, line);
+			if (divisor === 0) throw new DslRuntimeError('Division par zero', line);
+			const factor = numeric(1 / divisor);
+			const id = this.figure.createVectorScaled(leftVal.figureId, factor);
+			return { type: 'element', figureId: id, elementType: 'vecteur' };
+		}
+		throw new DslRuntimeError(
+			`Operation "${op}" non supportee entre ${leftIsVec ? 'vecteur' : 'nombre'} et ${rightIsVec ? 'vecteur' : 'nombre'}`,
+			line
+		);
 	}
 
 	private toGeoValue(val: ResolvedValue, line: number): GeoValue {
