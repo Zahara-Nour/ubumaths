@@ -283,13 +283,14 @@ function _executeBuiltinInner(
 
 		case 'vecteur': {
 			if (pos.length !== 2) throw new DslRuntimeError('vecteur() attend 2 arguments', line);
-			// Detect: vecteur(A, B) (bound) vs vecteur(3, 2) (free)
+			// Detect: vecteur(A, B) (bound) vs vecteur(3, 2) or vecteur(sqrt(2), 3) (free)
 			const arg0 = pos[0];
 			const arg1 = pos[1];
-			if (arg0.type === 'nombre' && arg1.type === 'nombre') {
-				// Free vector by components
-				const dx = numeric(requireNumber(arg0, 'dx', line));
-				const dy = numeric(requireNumber(arg1, 'dy', line));
+			const isNumericLike = (a: ResolvedValue) => a.type === 'nombre' || a.type === 'geoValue';
+			if (isNumericLike(arg0) && isNumericLike(arg1)) {
+				// Free vector by components (supports exact values like sqrt(2))
+				const dx = toGeoValue(arg0, line);
+				const dy = toGeoValue(arg1, line);
 				const id = figure.createFreeVector(dx, dy, undefined, { label });
 				return { figureId: id, symbolType: 'vecteur' };
 			} else {
@@ -379,11 +380,13 @@ function _executeBuiltinInner(
 					const id = figure.createTranslatedPoint(sourceId, vecEl.startId, vecEl.endId, { label });
 					return { figureId: id, symbolType: 'point' };
 				} else if (vecEl.type === 'freeVector') {
-					// Create two temporary hidden points for the translation
+					// Create two hidden, non-draggable points for the translation.
+					// Note: these are static copies of dx/dy at creation time.
+					// moveFreeVector only changes the anchor, not dx/dy, so this is correct.
 					const anchor = { x: numeric(0), y: numeric(0) };
 					const end = { x: vecEl.dx, y: vecEl.dy };
-					const p1Id = figure.createFreePoint(anchor, { visible: false });
-					const p2Id = figure.createFreePoint(end, { visible: false });
+					const p1Id = figure.createFreePoint(anchor, { visible: false, draggable: false });
+					const p2Id = figure.createFreePoint(end, { visible: false, draggable: false });
 					const id = figure.createTranslatedPoint(sourceId, p1Id, p2Id, { label });
 					return { figureId: id, symbolType: 'point' };
 				}
