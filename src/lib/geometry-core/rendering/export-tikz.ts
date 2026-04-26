@@ -151,6 +151,19 @@ export function exportToTikZ(
 			);
 			if (!ext) continue;
 			lines.push(`  \\draw[${opts}] ${coord(ox, oy)} -- ${coord(ext.x, ext.y)};`);
+		} else if (el.type === 'vectorByPoints') {
+			const p1 = figure.getPosition(el.startId);
+			const p2 = figure.getPosition(el.endId);
+			if (!p1 || !p2) continue;
+			const c1 = coord(geoToNumber(p1.x), geoToNumber(p1.y));
+			const c2 = coord(geoToNumber(p2.x), geoToNumber(p2.y));
+			lines.push(`  \\draw[${opts}, ->, >=stealth] ${c1} -- ${c2};`);
+		} else if (el.type === 'freeVector') {
+			const ax = geoToNumber(el.anchorX);
+			const ay = geoToNumber(el.anchorY);
+			const ex = ax + geoToNumber(el.dx);
+			const ey = ay + geoToNumber(el.dy);
+			lines.push(`  \\draw[${opts}, ->, >=stealth] ${coord(ax, ay)} -- ${coord(ex, ey)};`);
 		}
 	}
 

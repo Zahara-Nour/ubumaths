@@ -129,6 +129,21 @@ export function exportToTypst(
 			);
 			if (!ext) continue;
 			lines.push(`  line(${c(ox, oy)}, ${c(ext.x, ext.y)}, stroke: ${stroke})`);
+		} else if (el.type === 'vectorByPoints') {
+			const p1 = figure.getPosition(el.startId);
+			const p2 = figure.getPosition(el.endId);
+			if (!p1 || !p2) continue;
+			lines.push(
+				`  line(${c(geoToNumber(p1.x), geoToNumber(p1.y))}, ${c(geoToNumber(p2.x), geoToNumber(p2.y))}, stroke: ${stroke}, mark: (end: "stealth", fill: ${hexToTypstColor(sty.color)}))`
+			);
+		} else if (el.type === 'freeVector') {
+			const ax = geoToNumber(el.anchorX);
+			const ay = geoToNumber(el.anchorY);
+			const ex = ax + geoToNumber(el.dx);
+			const ey = ay + geoToNumber(el.dy);
+			lines.push(
+				`  line(${c(ax, ay)}, ${c(ex, ey)}, stroke: ${stroke}, mark: (end: "stealth", fill: ${hexToTypstColor(sty.color)}))`
+			);
 		}
 	}
 

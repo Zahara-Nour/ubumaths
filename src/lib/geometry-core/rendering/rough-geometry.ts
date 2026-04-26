@@ -15,7 +15,8 @@ import type {
 	LineSVG,
 	CircleSVG,
 	AngleMarkSVG,
-	SegmentMarkSVG
+	SegmentMarkSVG,
+	VectorSVG
 } from './svg-primitives';
 
 // =============================================================================
@@ -210,4 +211,19 @@ export function roughSegmentMarkHTML(
 	opts: RoughOptions
 ): string {
 	return roughSegmentMark(rc, svg, opts).outerHTML;
+}
+
+export function roughVectorHTML(
+	rc: RoughSVG,
+	svg: VectorSVG,
+	opts: RoughOptions,
+	color: string
+): string {
+	// Shaft line (rough)
+	const shaft = rc.line(svg.x1, svg.y1, svg.shaftX2, svg.shaftY2, opts);
+	// Parse arrow points to get the 3 polygon vertices
+	const parts = svg.arrowPoints.split(' ').map((p) => p.split(',').map(Number) as [number, number]);
+	// Filled arrowhead polygon (rough)
+	const arrow = rc.polygon(parts, { ...opts, fill: color, fillStyle: 'solid' });
+	return shaft.outerHTML + arrow.outerHTML;
 }
