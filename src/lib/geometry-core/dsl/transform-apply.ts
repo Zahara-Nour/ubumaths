@@ -93,6 +93,15 @@ export function applyTransformationToPoint(
 				{ label, visible }
 			);
 
+		case 'affinity':
+			return figure.createAffinityPoint(
+				sourcePointId,
+				transform.linePoint1Id,
+				transform.linePoint2Id,
+				transform.factor,
+				{ label, visible }
+			);
+
 		case 'composition': {
 			// Apply transformations right-to-left: compose(r, t) applies t then r
 			const ids = transform.transformationIds;
@@ -173,6 +182,26 @@ function transformVectorLinear(
 			const dyN = geoToNumber(dy);
 			const dot = (dxN * ldx + dyN * ldy) / len2;
 			return { dx: numeric(dot * ldx), dy: numeric(dot * ldy) };
+		}
+		case 'affinity': {
+			// Affinity: scale the component perpendicular to the axis by factor
+			const alp1 = figure.getPosition(transform.linePoint1Id);
+			const alp2 = figure.getPosition(transform.linePoint2Id);
+			if (!alp1 || !alp2) return { dx, dy };
+			const aldx = geoToNumber(alp2.x) - geoToNumber(alp1.x);
+			const aldy = geoToNumber(alp2.y) - geoToNumber(alp1.y);
+			const alen2 = aldx * aldx + aldy * aldy;
+			if (alen2 < 1e-15) return { dx, dy };
+			const dxN = geoToNumber(dx);
+			const dyN = geoToNumber(dy);
+			const k = geoToNumber(transform.factor);
+			// Decompose into parallel + perpendicular, scale perp by k
+			const parDot = (dxN * aldx + dyN * aldy) / alen2;
+			const parX = parDot * aldx,
+				parY = parDot * aldy;
+			const perpX = dxN - parX,
+				perpY = dyN - parY;
+			return { dx: numeric(parX + k * perpX), dy: numeric(parY + k * perpY) };
 		}
 		case 'homothety':
 			return {
@@ -516,6 +545,28 @@ function buildInverseTransformCoords(
 				if (len2 < 1e-15) return { x, y };
 				const t = ((x - x1) * dx + (y - y1) * dy) / len2;
 				return { x: x1 + t * dx, y: y1 + t * dy };
+			};
+		}
+		case 'affinity': {
+			const alp1Id = transform.linePoint1Id,
+				alp2Id = transform.linePoint2Id;
+			const ak = geoToNumber(transform.factor);
+			const invK = Math.abs(ak) < 1e-15 ? 1 : 1 / ak;
+			return (x, y) => {
+				const alp1 = figure.getPosition(alp1Id),
+					alp2 = figure.getPosition(alp2Id);
+				if (!alp1 || !alp2) return { x, y };
+				const x1 = geoToNumber(alp1.x),
+					y1 = geoToNumber(alp1.y);
+				const adx = geoToNumber(alp2.x) - x1,
+					ady = geoToNumber(alp2.y) - y1;
+				const alen2 = adx * adx + ady * ady;
+				if (alen2 < 1e-15) return { x, y };
+				// Project onto line, then apply inverse affinity
+				const t = ((x - x1) * adx + (y - y1) * ady) / alen2;
+				const hx = x1 + t * adx,
+					hy = y1 + t * ady;
+				return { x: hx + invK * (x - hx), y: hy + invK * (y - hy) };
 			};
 		}
 		case 'homothety': {

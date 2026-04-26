@@ -76,6 +76,7 @@ function isTransformationType(type: string): boolean {
 		type === 'translation' ||
 		type === 'homothety' ||
 		type === 'projection' ||
+		type === 'affinity' ||
 		type === 'composition'
 	);
 }
@@ -91,6 +92,7 @@ function typePrefix(type: string): string {
 		case 'dilatedPoint':
 		case 'reflectedOverLine':
 		case 'projectedPoint':
+		case 'affinityPoint':
 			return 'pt';
 		case 'segment':
 			return 'seg';
@@ -134,6 +136,7 @@ function typePrefix(type: string): string {
 		case 'translation':
 		case 'homothety':
 		case 'projection':
+		case 'affinity':
 		case 'composition':
 			return 't';
 		default:
@@ -342,6 +345,11 @@ function serializeElement(
 
 		case 'projection':
 			return `${n} = projection(axe=(${name(idToName, el.linePoint1Id)}, ${name(idToName, el.linePoint2Id)}))`;
+
+		case 'affinity': {
+			const affFactor = fmtGeoValue(el.factor);
+			return `${n} = affinite(axe=(${name(idToName, el.linePoint1Id)}, ${name(idToName, el.linePoint2Id)}), rapport=${affFactor})`;
+		}
 
 		case 'composition': {
 			if (el.sourceBuiltin?.name === 'similitude') {

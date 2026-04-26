@@ -124,6 +124,28 @@ export function projectOnLine(
 }
 
 /**
+ * Apply orthogonal affinity: stretch perpendicular to axis by factor.
+ * H = projection of point on axis, result = H + factor * (point - H).
+ * Returns null if the axis is degenerate.
+ */
+export function applyAffinity(
+	point: GeoPoint,
+	lineP1: GeoPoint,
+	lineP2: GeoPoint,
+	factor: GeoValue
+): GeoPoint | null {
+	const proj = projectOnLine(point, lineP1, lineP2);
+	if (!proj) return null;
+	// result = proj + factor * (point - proj)
+	const dx = geoSub(point.x, proj.x);
+	const dy = geoSub(point.y, proj.y);
+	return {
+		x: geoAdd(proj.x, geoMul(factor, dx)),
+		y: geoAdd(proj.y, geoMul(factor, dy))
+	};
+}
+
+/**
  * Dilate a point from a center by a scale factor (homothety).
  * result = center + factor * (point - center).
  */

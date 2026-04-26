@@ -98,6 +98,31 @@ export function buildInverseAffineMatrix(
 			const ty = y1 - b * x1 - d * y1;
 			return [a, b, tx, b, d, ty];
 		}
+		case 'affinity': {
+			const alp1 = access.getPosition(transform.linePoint1Id);
+			const alp2 = access.getPosition(transform.linePoint2Id);
+			if (!alp1 || !alp2) return [1, 0, 0, 0, 1, 0];
+			const x1 = geoToNumber(alp1.x),
+				y1 = geoToNumber(alp1.y);
+			const adx = geoToNumber(alp2.x) - x1,
+				ady = geoToNumber(alp2.y) - y1;
+			const alen2 = adx * adx + ady * ady;
+			if (alen2 < 1e-15) return [1, 0, 0, 0, 1, 0];
+			const ak = geoToNumber(transform.factor);
+			const invK = Math.abs(ak) < 1e-15 ? 1 : 1 / ak;
+			// Inverse affinity matrix: I + (1/k - 1) * n⊗n where n is the unit perpendicular
+			// Perpendicular to axis: (-ady, adx) / sqrt(alen2)
+			const nx = -ady / Math.sqrt(alen2),
+				ny = adx / Math.sqrt(alen2);
+			const s = invK - 1; // scale factor for the outer product
+			const a = 1 + s * nx * nx;
+			const b = s * nx * ny;
+			const d = 1 + s * ny * ny;
+			// Translation: M_inv applied to origin offset
+			const tx = x1 - a * x1 - b * y1;
+			const ty = y1 - b * x1 - d * y1;
+			return [a, b, tx, b, d, ty];
+		}
 		case 'homothety': {
 			const cPos = access.getPosition(transform.centerId);
 			const cx = cPos ? geoToNumber(cPos.x) : 0;
