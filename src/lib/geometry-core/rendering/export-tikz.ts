@@ -6,8 +6,9 @@
  */
 
 import type { Figure } from '../graph/figure';
+import { conicPointFromParam } from '../graph/figure';
 import type { Viewport } from '../viewport/types';
-import type { GeoElement } from '../types/elements';
+import type { GeoElement, ConicParams } from '../types/elements';
 import { isPointElement } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { resolveStyle } from './svg-primitives';
@@ -234,6 +235,59 @@ export function exportToTikZ(
 			? `, fill=${hexToTikZColor(sty.fillColor).name}, fill opacity=${sty.fillOpacity}`
 			: '';
 		lines.push(`  \\draw[${opts}${fillPart}] ${pts.join(' -- ')} -- cycle;`);
+	}
+
+	// Pass 2c: quadratic curves (conics)
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'quadraticCurve') continue;
+		const opts = styleOptions(el, figure.defaults);
+		const conic = el.conic;
+		if (conic.type === 'degenerate') continue;
+
+		const paths = sampleConicPaths(conic, viewport);
+		for (const pts of paths) {
+			const tikzPts = pts.map((p) => coord(p.x, p.y));
+			lines.push(`  \\draw[${opts}, smooth] plot coordinates {${tikzPts.join(' ')}};`);
+		}
+	}
+
+	// Pass 2d: tangents to quadratic curves
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'tangentToQuadratic') continue;
+		const opts = styleOptions(el, figure.defaults);
+		const curveEl = figure.getElementById(el.curveId);
+		if (!curveEl || curveEl.type !== 'quadraticCurve') continue;
+
+		let x0: number, y0: number;
+		if (el.pointOnCurveId) {
+			const pos = figure.getPosition(el.pointOnCurveId);
+			if (!pos) continue;
+			x0 = geoToNumber(pos.x);
+			y0 = geoToNumber(pos.y);
+		} else if (el.t !== undefined) {
+			const pt = conicPointFromParam(curveEl.conic, el.t);
+			if (!pt) continue;
+			x0 = pt.x;
+			y0 = pt.y;
+		} else {
+			continue;
+		}
+
+		const [A, B, C, D, E] = curveEl.coefficients;
+		const dFx = 2 * A * x0 + B * y0 + D;
+		const dFy = B * x0 + 2 * C * y0 + E;
+		if (Math.abs(dFx) < 1e-12 && Math.abs(dFy) < 1e-12) continue;
+
+		// Extend tangent to viewport
+		const tDir = { x: -dFy, y: dFx };
+		const len = Math.sqrt(tDir.x ** 2 + tDir.y ** 2);
+		const diag = Math.sqrt(
+			(viewport.xMax - viewport.xMin) ** 2 + (viewport.yMax - viewport.yMin) ** 2
+		);
+		const scale = diag / len;
+		lines.push(
+			`  \\draw[${opts}] ${coord(x0 - tDir.x * scale, y0 - tDir.y * scale)} -- ${coord(x0 + tDir.x * scale, y0 + tDir.y * scale)};`
+		);
 	}
 
 	// Pass 3: angle marks
@@ -507,4 +561,51 @@ function extendRayToViewport(
 	if (validTs.length === 0) return null;
 	const tMax = Math.max(...validTs);
 	return { x: ox + tMax * dx, y: oy + tMax * dy };
+}
+
+/** Sample conic curve as array of point arrays (one per branch). */
+function sampleConicPaths(conic: ConicParams, viewport: Viewport): { x: number; y: number }[][] {
+	const n = 100;
+	const diag = Math.sqrt(
+		(viewport.xMax - viewport.xMin) ** 2 + (viewport.yMax - viewport.yMin) ** 2
+	);
+	const paths: { x: number; y: number }[][] = [];
+
+	const sample = (tMin: number, tMax: number): { x: number; y: number }[] => {
+		const pts: { x: number; y: number }[] = [];
+		for (let i = 0; i <= n; i++) {
+			const t = tMin + ((tMax - tMin) * i) / n;
+			const pt = conicPointFromParam(conic, t);
+			if (pt) pts.push(pt);
+		}
+		return pts;
+	};
+
+	switch (conic.type) {
+		case 'circle':
+		case 'ellipse':
+			paths.push(sample(0, 2 * Math.PI));
+			break;
+		case 'hyperbola': {
+			const tMax = Math.acosh(Math.max(2, diag / conic.a + 1));
+			paths.push(sample(-tMax, tMax));
+			// Second branch: negate x
+			const branch2: { x: number; y: number }[] = [];
+			const cx = conic.center?.x ?? 0;
+			const cy = conic.center?.y ?? 0;
+			for (const pt of paths[0]) {
+				branch2.push({ x: 2 * cx - pt.x, y: 2 * cy - pt.y });
+			}
+			paths.push(branch2);
+			break;
+		}
+		case 'parabola': {
+			const p = conic.p ?? conic.a;
+			const tMax = Math.sqrt(diag * 2 * p);
+			paths.push(sample(-tMax, tMax));
+			break;
+		}
+	}
+
+	return paths;
 }
