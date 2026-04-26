@@ -338,6 +338,12 @@ function serializeElement(
 		}
 
 		case 'composition': {
+			if (el.sourceBuiltin?.name === 'similitude') {
+				const angleDeg = fmtNum((geoToNumber(el.sourceBuiltin.params.angle) * 180) / Math.PI);
+				const rapport = fmtGeoValue(el.sourceBuiltin.params.rapport);
+				const centerName = name(idToName, el.sourceBuiltin.params.centerId);
+				return `${n} = similitude(angle=${angleDeg}, rapport=${rapport}, centre=${centerName})`;
+			}
 			const args = el.transformationIds.map((id) => name(idToName, id)).join(', ');
 			return `${n} = compose(${args})`;
 		}
