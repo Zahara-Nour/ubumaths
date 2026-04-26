@@ -14,6 +14,7 @@ import {
 	isTranslatedPoint,
 	isDilatedPoint,
 	isReflectedOverLine,
+	isProjectedPoint,
 	isAngleMark,
 	isSegmentMark,
 	isMeasure,
@@ -31,7 +32,8 @@ import {
 	rotate,
 	translate,
 	dilate,
-	reflectOverLine
+	reflectOverLine,
+	projectOnLine
 } from '../geometry/transformations';
 import { conicPointFromParam } from './conic-helpers';
 
@@ -133,6 +135,17 @@ export function computeElementPosition(
 		const lp2 = positions.get(el.linePoint2Id);
 		if (source && lp1 && lp2) {
 			const result = reflectOverLine(source, lp1, lp2);
+			return { position: result ?? null, hasComputablePosition: true };
+		}
+		return { position: null, hasComputablePosition: true };
+	}
+
+	if (isProjectedPoint(el)) {
+		const source = positions.get(el.sourceId);
+		const lp1 = positions.get(el.linePoint1Id);
+		const lp2 = positions.get(el.linePoint2Id);
+		if (source && lp1 && lp2) {
+			const result = projectOnLine(source, lp1, lp2);
 			return { position: result ?? null, hasComputablePosition: true };
 		}
 		return { position: null, hasComputablePosition: true };

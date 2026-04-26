@@ -584,6 +584,26 @@ function _executeBuiltinInner(
 			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
 		}
 
+		case 'projection': {
+			const droiteArg = named.get('axe');
+			if (!droiteArg) throw new DslRuntimeError("projection() necessite 'axe'", line);
+			const { p1, p2 } = resolveAxeArg(droiteArg, figure, line);
+			// 0 positional args → create transformation object
+			if (pos.length === 0) {
+				const id = figure.createProjection(p1, p2, { label });
+				return { figureId: id, symbolType: 'transformation' };
+			}
+			// 1+ positional args → direct application
+			const sourceId = requireElement(pos[0], 'source', line);
+			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+			if (sourceEl.elementType === 'point') {
+				const id = figure.createProjectedPoint(sourceId, p1, p2, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			const tId = figure.createProjection(p1, p2);
+			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+		}
+
 		case 'similitude': {
 			const centerId = requireElement(
 				named.get('centre') ?? { type: 'nombre', value: 0 },
@@ -946,6 +966,7 @@ export const BUILTIN_NAMES = new Set([
 	'translation',
 	'homothetie',
 	'similitude',
+	'projection',
 	'transforme',
 	'compose',
 	'intersection',

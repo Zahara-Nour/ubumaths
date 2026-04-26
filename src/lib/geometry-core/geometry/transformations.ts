@@ -98,6 +98,32 @@ export function reflectOverLine(
 }
 
 /**
+ * Project a point orthogonally onto a line defined by two points.
+ * Returns null if the line is degenerate (lineP1 === lineP2).
+ */
+export function projectOnLine(
+	point: GeoPoint,
+	lineP1: GeoPoint,
+	lineP2: GeoPoint
+): GeoPoint | null {
+	const dx = geoSub(lineP2.x, lineP1.x);
+	const dy = geoSub(lineP2.y, lineP1.y);
+	const fx = geoSub(point.x, lineP1.x);
+	const fy = geoSub(point.y, lineP1.y);
+
+	// t = (f · d) / (d · d)
+	const dotFD = geoAdd(geoMul(fx, dx), geoMul(fy, dy));
+	const dotDD = geoAdd(geoMul(dx, dx), geoMul(dy, dy));
+	const t = geoDiv(dotFD, dotDD);
+	if (t === null) return null;
+
+	return {
+		x: geoAdd(lineP1.x, geoMul(t, dx)),
+		y: geoAdd(lineP1.y, geoMul(t, dy))
+	};
+}
+
+/**
  * Dilate a point from a center by a scale factor (homothety).
  * result = center + factor * (point - center).
  */
