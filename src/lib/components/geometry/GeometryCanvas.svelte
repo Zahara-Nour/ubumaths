@@ -11,6 +11,7 @@
 		segmentToSVG,
 		lineToSVG,
 		rayToSVG,
+		vectorToSVG,
 		circleToSVG,
 		circleToPathSVG,
 		arcToSVG,
@@ -41,7 +42,8 @@
 		roughArcHTML,
 		roughPolygonHTML,
 		roughAngleMarkHTML,
-		roughSegmentMarkHTML
+		roughSegmentMarkHTML,
+		roughVectorHTML
 	} from '$lib/geometry-core/rendering/rough-geometry';
 
 	interface Props {
@@ -660,6 +662,72 @@
 								opacity={sty.opacity}
 								class="ray"
 								class:hovered={hoveredId === el.id}
+							/>
+						{/if}
+						{#if el.label}
+							{@const lx = (svg.x1 + svg.x2) / 2 + (el.labelOffset?.dx ?? 6)}
+							{@const ly = (svg.y1 + svg.y2) / 2 + (el.labelOffset?.dy ?? -8)}
+							<text
+								x={lx}
+								y={ly}
+								class="label"
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke">{el.label}</text
+							>
+						{/if}
+					{/if}
+				{:else if el.type === 'vectorByPoints' || el.type === 'freeVector'}
+					{@const svg = vectorToSVG(el.id, figure, transformer)}
+					{#if svg}
+						{#if isRough(sty, el.type) && rc}
+							<!-- Invisible hit area -->
+							<line
+								x1={svg.x1}
+								y1={svg.y1}
+								x2={svg.x2}
+								y2={svg.y2}
+								stroke="transparent"
+								stroke-width="12"
+								pointer-events="stroke"
+								class="vector"
+								class:hovered={hoveredId === el.id}
+							/>
+							<g opacity={sty.opacity}
+								>{@html roughVectorHTML(rc, svg, getRoughOpts(el.id, sty), sty.color)}</g
+							>
+						{:else}
+							<!-- Invisible hit area -->
+							<line
+								x1={svg.x1}
+								y1={svg.y1}
+								x2={svg.x2}
+								y2={svg.y2}
+								stroke="transparent"
+								stroke-width="12"
+								pointer-events="stroke"
+								class="vector"
+								class:hovered={hoveredId === el.id}
+							/>
+							<!-- Shaft -->
+							<line
+								x1={svg.x1}
+								y1={svg.y1}
+								x2={svg.shaftX2}
+								y2={svg.shaftY2}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								stroke-dasharray={sty.dashArray}
+								opacity={sty.opacity}
+								pointer-events="none"
+							/>
+							<!-- Arrowhead -->
+							<polygon
+								points={svg.arrowPoints}
+								fill={sty.color}
+								opacity={sty.opacity}
+								pointer-events="none"
 							/>
 						{/if}
 						{#if el.label}
