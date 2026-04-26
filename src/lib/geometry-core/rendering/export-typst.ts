@@ -5,7 +5,9 @@
  */
 
 import type { Figure } from '../graph/figure';
+import { conicPointFromParam } from '../graph/figure';
 import type { Viewport } from '../viewport/types';
+import type { ConicParams } from '../types/elements';
 import { isPointElement } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { resolveStyle } from './svg-primitives';
@@ -220,6 +222,68 @@ export function exportToTypst(
 		const pts = verts.map((p) => c(geoToNumber(p!.x), geoToNumber(p!.y)));
 		const fillPart = sty.fillColor ? `, fill: ${hexToTypstColor(sty.fillColor)}` : ', fill: none';
 		lines.push(`  line(${pts.join(', ')}, close: true, stroke: ${stroke}${fillPart})`);
+	}
+
+	// Pass 2c: quadratic curves (conics)
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'quadraticCurve') continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const stroke = strokeExpr(
+			sty.color,
+			sty.strokeWidth,
+			sty.dash !== 'solid' ? sty.dash : undefined
+		);
+		const conic = el.conic;
+		if (conic.type === 'degenerate') continue;
+
+		const conicPaths = sampleConicPathsTypst(conic, viewport);
+		for (const pts of conicPaths) {
+			const coords = pts.map((p) => c(p.x, p.y));
+			lines.push(`  line(${coords.join(', ')}, stroke: ${stroke}, fill: none)`);
+		}
+	}
+
+	// Pass 2d: tangents to quadratic curves
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'tangentToQuadratic') continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const stroke = strokeExpr(
+			sty.color,
+			sty.strokeWidth,
+			sty.dash !== 'solid' ? sty.dash : undefined
+		);
+		const curveEl = figure.getElementById(el.curveId);
+		if (!curveEl || curveEl.type !== 'quadraticCurve') continue;
+
+		let x0: number, y0: number;
+		if (el.pointOnCurveId) {
+			const pos = figure.getPosition(el.pointOnCurveId);
+			if (!pos) continue;
+			x0 = geoToNumber(pos.x);
+			y0 = geoToNumber(pos.y);
+		} else if (el.t !== undefined) {
+			const pt = conicPointFromParam(curveEl.conic, el.t);
+			if (!pt) continue;
+			x0 = pt.x;
+			y0 = pt.y;
+		} else {
+			continue;
+		}
+
+		const [A, B, C, D, E] = curveEl.coefficients;
+		const dFx = 2 * A * x0 + B * y0 + D;
+		const dFy = B * x0 + 2 * C * y0 + E;
+		if (Math.abs(dFx) < 1e-12 && Math.abs(dFy) < 1e-12) continue;
+
+		const tDir = { x: -dFy, y: dFx };
+		const len = Math.sqrt(tDir.x ** 2 + tDir.y ** 2);
+		const diag = Math.sqrt(
+			(viewport.xMax - viewport.xMin) ** 2 + (viewport.yMax - viewport.yMin) ** 2
+		);
+		const sc = diag / len;
+		lines.push(
+			`  line(${c(x0 - tDir.x * sc, y0 - tDir.y * sc)}, ${c(x0 + tDir.x * sc, y0 + tDir.y * sc)}, stroke: ${stroke})`
+		);
 	}
 
 	// Pass 3: angle marks
@@ -475,4 +539,53 @@ function extendRayToViewport(
 	if (validTs.length === 0) return null;
 	const tMax = Math.max(...validTs);
 	return { x: ox + tMax * dx, y: oy + tMax * dy };
+}
+
+/** Sample conic curve as array of point arrays (one per branch). */
+function sampleConicPathsTypst(
+	conic: ConicParams,
+	viewport: Viewport
+): { x: number; y: number }[][] {
+	const n = 100;
+	const diag = Math.sqrt(
+		(viewport.xMax - viewport.xMin) ** 2 + (viewport.yMax - viewport.yMin) ** 2
+	);
+	const paths: { x: number; y: number }[][] = [];
+
+	const sample = (tMin: number, tMax: number): { x: number; y: number }[] => {
+		const pts: { x: number; y: number }[] = [];
+		for (let i = 0; i <= n; i++) {
+			const t = tMin + ((tMax - tMin) * i) / n;
+			const pt = conicPointFromParam(conic, t);
+			if (pt) pts.push(pt);
+		}
+		return pts;
+	};
+
+	switch (conic.type) {
+		case 'circle':
+		case 'ellipse':
+			paths.push(sample(0, 2 * Math.PI));
+			break;
+		case 'hyperbola': {
+			const tMax = Math.acosh(Math.max(2, diag / conic.a + 1));
+			paths.push(sample(-tMax, tMax));
+			const branch2: { x: number; y: number }[] = [];
+			const cx = conic.center?.x ?? 0;
+			const cy = conic.center?.y ?? 0;
+			for (const pt of paths[0]) {
+				branch2.push({ x: 2 * cx - pt.x, y: 2 * cy - pt.y });
+			}
+			paths.push(branch2);
+			break;
+		}
+		case 'parabola': {
+			const p = conic.p ?? conic.a;
+			const tMax = Math.sqrt(diag * 2 * p);
+			paths.push(sample(-tMax, tMax));
+			break;
+		}
+	}
+
+	return paths;
 }

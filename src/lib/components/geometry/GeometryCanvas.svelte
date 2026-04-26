@@ -851,20 +851,28 @@
 				{:else if el.type === 'quadraticCurve'}
 					{@const svg = quadraticCurveToSVG(el.id, figure, transformer, dims)}
 					{#if svg}
-						{#each svg.paths as pathD, i (i)}
-							<path
-								d={pathD}
-								stroke={sty.color}
-								stroke-width={sty.strokeWidth}
-								stroke-dasharray={sty.dashArray}
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								opacity={sty.opacity}
-								fill="none"
-								class="function-curve"
-								class:hovered={hoveredId === el.id}
-							/>
-						{/each}
+						{#if isRough(sty, el.type) && rc}
+							{#each svg.paths as pathD, i (i)}
+								<g opacity={sty.opacity}
+									>{@html roughArcHTML(rc, pathD, getRoughOpts(el.id, sty))}</g
+								>
+							{/each}
+						{:else}
+							{#each svg.paths as pathD, i (i)}
+								<path
+									d={pathD}
+									stroke={sty.color}
+									stroke-width={sty.strokeWidth}
+									stroke-dasharray={sty.dashArray}
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									opacity={sty.opacity}
+									fill="none"
+									class="function-curve"
+									class:hovered={hoveredId === el.id}
+								/>
+							{/each}
+						{/if}
 						{#if el.label}
 							{@const center = el.conic.center ?? el.conic.vertex}
 							{#if center}
