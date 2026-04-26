@@ -41,6 +41,10 @@ describe('vectorToSVG', () => {
 		expect(svg!.shaftY2).toBeDefined();
 		expect(svg!.arrowPoints).toBeDefined();
 		expect(svg!.arrowPoints).toContain(',');
+		// arrowVertices should have 3 points (wing1, tip, wing2) with exact coordinates
+		expect(svg!.arrowVertices).toHaveLength(3);
+		expect(svg!.arrowVertices[1][0]).toBeCloseTo(svg!.x2); // tip x = end x
+		expect(svg!.arrowVertices[1][1]).toBeCloseTo(svg!.y2); // tip y = end y
 	});
 
 	it('returns SVG data for a free vector', () => {

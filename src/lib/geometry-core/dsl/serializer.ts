@@ -175,8 +175,17 @@ function serializeElement(
 		case 'vectorByPoints':
 			return `${n.startsWith('_') ? '' : n + ' = '}vecteur(${name(idToName, el.startId)}, ${name(idToName, el.endId)})`;
 
-		case 'freeVector':
-			return `${n.startsWith('_') ? '' : n + ' = '}vecteur(${fmtGeoValue(el.dx)}, ${fmtGeoValue(el.dy)})`;
+		case 'freeVector': {
+			const prefix = n.startsWith('_') ? '' : n + ' = ';
+			const base = `vecteur(${fmtGeoValue(el.dx)}, ${fmtGeoValue(el.dy)}`;
+			// Serialize anchor position when non-default (not at origin)
+			const ax = geoToNumber(el.anchorX);
+			const ay = geoToNumber(el.anchorY);
+			if (Math.abs(ax) > 1e-12 || Math.abs(ay) > 1e-12) {
+				return `${prefix}${base}, ancre=(${fmtNum(ax)}, ${fmtNum(ay)}))`;
+			}
+			return `${prefix}${base})`;
+		}
 
 		case 'circleByRadius': {
 			const radius = fmtGeoValue(el.radius);
