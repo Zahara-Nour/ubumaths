@@ -133,6 +133,57 @@ describe('transforme() — GeoQuadraticCurve → GeoQuadraticCurve', () => {
 	});
 });
 
+describe('transforme() — conic reactivity', () => {
+	it('transformed conic updates when rotation center moves', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'O = point(0, 0)',
+				'c = courbe("x^2 + y^2 - 1 = 0")',
+				'r = rotation(angle=90, centre=O)',
+				'c2 = transforme(r, c)'
+			].join('\n')
+		);
+		// Initially: circle at origin rotated around origin → still at origin
+		let el = figure.getElementById(symbols.get('c2')!.figureId!) as GeoQuadraticCurve;
+		expect(el.conic.center!.x).toBeCloseTo(0);
+		expect(el.conic.center!.y).toBeCloseTo(0);
+
+		// Move O to (2, 0): now circle at origin rotated 90° around (2,0)
+		// Image center: rotate (0,0) around (2,0) by 90° → (2, -2)
+		const oId = symbols.get('O')!.figureId!;
+		figure.movePoint(oId, { kind: 'numeric', value: 2 }, { kind: 'numeric', value: 0 });
+		figure.recompute();
+
+		el = figure.getElementById(symbols.get('c2')!.figureId!) as GeoQuadraticCurve;
+		expect(el.conic.center!.x).toBeCloseTo(2);
+		expect(el.conic.center!.y).toBeCloseTo(-2);
+		expect(el.conic.a).toBeCloseTo(1); // radius preserved
+	});
+
+	it('transformed conic updates when translation vector moves', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(3, 0)',
+				'c = courbe("x^2 + y^2 - 1 = 0")',
+				't = translation(vecteur=(A, B))',
+				'c2 = transforme(t, c)'
+			].join('\n')
+		);
+		let el = figure.getElementById(symbols.get('c2')!.figureId!) as GeoQuadraticCurve;
+		expect(el.conic.center!.x).toBeCloseTo(3);
+
+		// Move B to (5, 2)
+		const bId = symbols.get('B')!.figureId!;
+		figure.movePoint(bId, { kind: 'numeric', value: 5 }, { kind: 'numeric', value: 2 });
+		figure.recompute();
+
+		el = figure.getElementById(symbols.get('c2')!.figureId!) as GeoQuadraticCurve;
+		expect(el.conic.center!.x).toBeCloseTo(5);
+		expect(el.conic.center!.y).toBeCloseTo(2);
+	});
+});
+
 describe('transforme() — GeoImplicitCurve', () => {
 	it('translates an implicit curve', () => {
 		const { figure, symbols } = runDsl(
