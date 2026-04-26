@@ -291,7 +291,15 @@ function _executeBuiltinInner(
 				// Free vector by components (supports exact values like sqrt(2))
 				const dx = toGeoValue(arg0, line);
 				const dy = toGeoValue(arg1, line);
-				const id = figure.createFreeVector(dx, dy, undefined, { label });
+				// Optional anchor: ancre=(x, y)
+				let anchor: { x: GeoValue; y: GeoValue } | undefined;
+				if (named.has('ancre')) {
+					const tuple = requireTuple(named.get('ancre')!, 'ancre', line);
+					if (tuple.length !== 2)
+						throw new DslRuntimeError('ancre attend un tuple de 2 nombres', line);
+					anchor = { x: toGeoValue(tuple[0], line), y: toGeoValue(tuple[1], line) };
+				}
+				const id = figure.createFreeVector(dx, dy, anchor, { label });
 				return { figureId: id, symbolType: 'vecteur' };
 			} else {
 				// Bound vector by two points

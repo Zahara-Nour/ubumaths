@@ -202,6 +202,8 @@ export function rayToSVG(
 export interface VectorSVG extends LineSVG {
 	/** SVG points string for the arrowhead polygon: "x1,y1 x2,y2 x3,y3" */
 	arrowPoints: string;
+	/** Raw arrowhead vertices [wing1, tip, wing2] for rough rendering (avoids string parsing). */
+	arrowVertices: [number, number][];
 	/** Shaft endpoint (shortened so it doesn't poke through the arrowhead) */
 	shaftX2: number;
 	shaftY2: number;
@@ -266,10 +268,16 @@ export function vectorToSVG(
 	const shaftX2 = (wing1x + wing2x) / 2;
 	const shaftY2 = (wing1y + wing2y) / 2;
 
-	const r = (v: number) => Math.round(v * 100) / 100;
-	const arrowPoints = `${r(wing1x)},${r(wing1y)} ${r(ex)},${r(ey)} ${r(wing2x)},${r(wing2y)}`;
+	const arrowVertices: [number, number][] = [
+		[wing1x, wing1y],
+		[ex, ey],
+		[wing2x, wing2y]
+	];
 
-	return { x1: sx, y1: sy, x2: ex, y2: ey, shaftX2, shaftY2, arrowPoints };
+	const r = (v: number) => Math.round(v * 100) / 100;
+	const arrowPoints = arrowVertices.map(([x, y]) => `${r(x)},${r(y)}`).join(' ');
+
+	return { x1: sx, y1: sy, x2: ex, y2: ey, shaftX2, shaftY2, arrowPoints, arrowVertices };
 }
 
 /**

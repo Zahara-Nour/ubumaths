@@ -290,4 +290,45 @@ Q = translation(P, vecteur=v)`;
 			expect(serialized).toContain('translation');
 		});
 	});
+
+	// ─── Anchor serialization ───────────────────────────────────────
+
+	describe('freeVector anchor round-trip', () => {
+		it('serializes anchor when non-default', () => {
+			const script = `v = vecteur(3, 4, ancre=(1, 2))`;
+			const { figure, symbols } = runDsl(script);
+			const el = figure.getElementById(symbols.get('v')!.figureId!)!;
+			expect(el.type).toBe('freeVector');
+			if (el.type === 'freeVector') {
+				expect(geoToNumber(el.anchorX)).toBeCloseTo(1);
+				expect(geoToNumber(el.anchorY)).toBeCloseTo(2);
+			}
+
+			const serialized = serializeDsl(figure, symbols);
+			expect(serialized).toContain('ancre=(1, 2)');
+		});
+
+		it('omits anchor when at origin', () => {
+			const script = `v = vecteur(3, 4)`;
+			const { figure, symbols } = runDsl(script);
+			const serialized = serializeDsl(figure, symbols);
+			expect(serialized).not.toContain('ancre');
+		});
+
+		it('round-trips a free vector with anchor', () => {
+			const script = `v = vecteur(5, -2, ancre=(3, 7))`;
+			const { figure, symbols } = runDsl(script);
+			const serialized = serializeDsl(figure, symbols);
+
+			const { figure: fig2, symbols: sym2 } = runDsl(serialized);
+			const el = fig2.getElementById(sym2.get('v')!.figureId!)!;
+			expect(el.type).toBe('freeVector');
+			if (el.type === 'freeVector') {
+				expect(geoToNumber(el.dx)).toBeCloseTo(5);
+				expect(geoToNumber(el.dy)).toBeCloseTo(-2);
+				expect(geoToNumber(el.anchorX)).toBeCloseTo(3);
+				expect(geoToNumber(el.anchorY)).toBeCloseTo(7);
+			}
+		});
+	});
 });
