@@ -327,12 +327,16 @@ describe('courbe — quadratic curves (conics)', () => {
 		expect(qc).toHaveLength(0);
 	});
 
-	it('throws for non-polynomial implicit curve sin(x) + y^2 = 1', () => {
-		expect(() => run('c = courbe("sin(x) + y^2 = 1")')).toThrow(DslRuntimeError);
+	it('creates implicit curve for non-polynomial sin(x) + y^2 = 1', () => {
+		const { figure } = run('c = courbe("sin(x) + y^2 = 1")');
+		const implicits = figure.getAllElements().filter((e) => e.type === 'implicitCurve');
+		expect(implicits).toHaveLength(1);
 	});
 
-	it('throws for degree 3 curve x^3 + y^3 = 1', () => {
-		expect(() => run('c = courbe("x^3 + y^3 = 1")')).toThrow(DslRuntimeError);
+	it('creates implicit curve for degree 3 curve x^3 + y^3 = 1', () => {
+		const { figure } = run('c = courbe("x^3 + y^3 = 1")');
+		const implicits = figure.getAllElements().filter((e) => e.type === 'implicitCurve');
+		expect(implicits).toHaveLength(1);
 	});
 });
 

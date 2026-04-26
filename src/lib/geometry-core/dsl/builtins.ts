@@ -20,7 +20,7 @@ import {
 	number as mathNumber,
 	compile
 } from '$lib/mathAST';
-import type { MathNode } from '$lib/mathAST';
+import type { MathNode, CompiledFn } from '$lib/mathAST';
 import {
 	extractAffineCombination,
 	extractQuadraticCombination,
@@ -691,7 +691,8 @@ const ONE_NODE = mathNumber('1');
  * Detection order:
  * 1. Affine in x AND y → Line (droite)
  * 2. Affine in y (degree 1 in y) → Function curve y=f(x)
- * 3. Otherwise → error (implicit curves not yet supported)
+ * 3. Quadratic in (x,y) → Conic section (GeoQuadraticCurve)
+ * 4. Otherwise → General implicit curve F(x,y)=0 (marching squares)
  */
 function createCurveFromEquation(
 	equation: string,
@@ -751,11 +752,14 @@ function createCurveFromEquation(
 		return createQuadraticCurveFromCoefficients(F, quadratic, equation, figure, line, label);
 	}
 
-	// --- Otherwise: not yet supported ---
-	throw new DslRuntimeError(
-		'courbe(): les courbes implicites F(x,y)=0 ne sont pas encore supportées',
-		line
-	);
+	// --- Try 4: General implicit curve F(x,y) = 0 ---
+	const compiledFn = compile(F);
+	const testVal = compiledFn({ x: 0, y: 0 });
+	if (isNaN(testVal)) {
+		throw new DslRuntimeError('courbe(): impossible de compiler F(x,y) pour cette équation', line);
+	}
+
+	return createImplicitCurve(F, compiledFn, equation, figure, label);
 }
 
 /** Create a line from affine coefficients ax + by + c = 0. */
@@ -881,6 +885,18 @@ function createQuadraticCurveFromCoefficients(
 	});
 
 	return { figureId: qcId, symbolType: 'courbe' };
+}
+
+/** Create a general implicit curve F(x,y) = 0 rendered via marching squares. */
+function createImplicitCurve(
+	F: MathNode,
+	compiledFn: CompiledFn,
+	equation: string,
+	figure: Figure,
+	label?: string
+): BuiltinResult {
+	const icId = figure.createImplicitCurve(F, compiledFn, equation, { label });
+	return { figureId: icId, symbolType: 'courbe' };
 }
 
 /** Create zero points (y=0 intersections) for a quadratic curve. */

@@ -11,6 +11,7 @@ import { geoToNumber } from '../compute/to-number';
 import { isPointElement } from '../types/elements';
 import type { Viewport } from '../viewport/types';
 import type { ConicParams } from '../types/elements';
+import type { CompiledFn } from '$lib/mathAST/eval/compile';
 
 /**
  * Find the closest point (free or dependent) near the given math coordinates.
@@ -213,6 +214,8 @@ export function findElementNear(
 			}
 		} else if (el.type === 'quadraticCurve') {
 			dist = distToQuadraticCurve(mathX, mathY, el.conic, viewport);
+		} else if (el.type === 'implicitCurve') {
+			dist = distToImplicitCurve(mathX, mathY, el.compiledFn);
 		} else if (el.type === 'circleByPoint') {
 			const center = figure.getPosition(el.centerId);
 			const edge = figure.getPosition(el.edgePointId);
@@ -299,4 +302,31 @@ function distToQuadraticCurve(
 	}
 
 	return best;
+}
+
+// =============================================================================
+// Implicit curve hit-testing via gradient approximation
+// =============================================================================
+
+const GRADIENT_EPS = 1e-6;
+
+/**
+ * Approximate distance from (px, py) to the implicit curve F(x,y) = 0.
+ * Uses |F(p)| / |∇F(p)| which gives the first-order distance estimate.
+ */
+function distToImplicitCurve(px: number, py: number, fn: CompiledFn): number {
+	const f = fn({ x: px, y: py });
+	if (!Number.isFinite(f)) return Infinity;
+
+	// Numerical gradient via central differences
+	const dfdx =
+		(fn({ x: px + GRADIENT_EPS, y: py }) - fn({ x: px - GRADIENT_EPS, y: py })) /
+		(2 * GRADIENT_EPS);
+	const dfdy =
+		(fn({ x: px, y: py + GRADIENT_EPS }) - fn({ x: px, y: py - GRADIENT_EPS })) /
+		(2 * GRADIENT_EPS);
+	const gradNorm = Math.sqrt(dfdx * dfdx + dfdy * dfdy);
+
+	if (gradNorm < 1e-12) return Math.abs(f);
+	return Math.abs(f) / gradNorm;
 }
