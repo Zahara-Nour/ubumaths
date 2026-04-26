@@ -32,6 +32,7 @@ import { classifyConic } from '../geometry/conic-classify';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { numeric } from '../types/geo-value';
+import { geoToNumber } from '../compute/to-number';
 
 export type ResolvedArgs = {
 	positional: ResolvedValue[];
@@ -71,6 +72,11 @@ export interface BuiltinResult {
 /** Result for builtins that return multiple elements (zeros, extrema, inflections). */
 export interface BuiltinMultiResult {
 	elements: BuiltinResult[];
+}
+
+/** Result for builtins that return a scalar number (norme, produit_scalaire, angle_vecteurs). */
+export interface BuiltinScalarResult {
+	scalarValue: number;
 }
 
 function requireElement(val: ResolvedValue, name: string, line: number): string {
@@ -191,7 +197,7 @@ export function executeBuiltin(
 	toGeoPoint: (x: ResolvedValue, y: ResolvedValue, line: number) => GeoPoint,
 	line: number,
 	label?: string
-): BuiltinResult | BuiltinMultiResult | null {
+): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
 	const pos = args.positional;
 	const named = args.named;
 	const hasStyleArgs = [...named.keys()].some((k) => STYLE_ARGS.has(k));
@@ -230,7 +236,7 @@ function _executeBuiltinInner(
 	toGeoPoint: (x: ResolvedValue, y: ResolvedValue, line: number) => GeoPoint,
 	line: number,
 	label?: string
-): BuiltinResult | BuiltinMultiResult | null {
+): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
 	switch (name) {
 		case 'point': {
 			if (pos.length !== 2) throw new DslRuntimeError('point() attend 2 arguments (x, y)', line);
@@ -310,6 +316,53 @@ function _executeBuiltinInner(
 				);
 				return { figureId: id, symbolType: 'vecteur' };
 			}
+		}
+
+		case 'norme': {
+			if (pos.length !== 1) throw new DslRuntimeError('norme() attend 1 argument (vecteur)', line);
+			const nVecId = requireElement(pos[0], 'vecteur', line);
+			const nComp = figure.getVectorComponents(nVecId);
+			if (!nComp)
+				throw new DslRuntimeError('norme(): impossible de calculer les composantes', line);
+			const ndx = geoToNumber(nComp.dx);
+			const ndy = geoToNumber(nComp.dy);
+			return { scalarValue: Math.sqrt(ndx * ndx + ndy * ndy) };
+		}
+
+		case 'produit_scalaire': {
+			if (pos.length !== 2)
+				throw new DslRuntimeError('produit_scalaire() attend 2 arguments (u, v)', line);
+			const psV1 = requireElement(pos[0], 'u', line);
+			const psV2 = requireElement(pos[1], 'v', line);
+			const psC1 = figure.getVectorComponents(psV1);
+			const psC2 = figure.getVectorComponents(psV2);
+			if (!psC1 || !psC2)
+				throw new DslRuntimeError('produit_scalaire(): composantes non resolues', line);
+			const dot =
+				geoToNumber(psC1.dx) * geoToNumber(psC2.dx) + geoToNumber(psC1.dy) * geoToNumber(psC2.dy);
+			return { scalarValue: dot };
+		}
+
+		case 'angle_vecteurs': {
+			if (pos.length !== 2)
+				throw new DslRuntimeError('angle_vecteurs() attend 2 arguments (u, v)', line);
+			const avV1 = requireElement(pos[0], 'u', line);
+			const avV2 = requireElement(pos[1], 'v', line);
+			const avC1 = figure.getVectorComponents(avV1);
+			const avC2 = figure.getVectorComponents(avV2);
+			if (!avC1 || !avC2)
+				throw new DslRuntimeError('angle_vecteurs(): composantes non resolues', line);
+			const ax1 = geoToNumber(avC1.dx),
+				ay1 = geoToNumber(avC1.dy);
+			const ax2 = geoToNumber(avC2.dx),
+				ay2 = geoToNumber(avC2.dy);
+			const dotProd = ax1 * ax2 + ay1 * ay2;
+			const len1 = Math.sqrt(ax1 * ax1 + ay1 * ay1);
+			const len2 = Math.sqrt(ax2 * ax2 + ay2 * ay2);
+			if (len1 < 1e-15 || len2 < 1e-15)
+				throw new DslRuntimeError('angle_vecteurs(): vecteur nul', line);
+			const cosA = Math.max(-1, Math.min(1, dotProd / (len1 * len2)));
+			return { scalarValue: (Math.acos(cosA) * 180) / Math.PI };
 		}
 
 		case 'cercle': {
@@ -696,6 +749,9 @@ export const BUILTIN_NAMES = new Set([
 	'droite',
 	'demidroite',
 	'vecteur',
+	'norme',
+	'produit_scalaire',
+	'angle_vecteurs',
 	'cercle',
 	'arc',
 	'symetrie',

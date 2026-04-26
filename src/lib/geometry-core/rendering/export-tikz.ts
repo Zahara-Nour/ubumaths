@@ -9,7 +9,7 @@ import type { Figure } from '../graph/figure';
 import { conicPointFromParam } from '../graph/conic-helpers';
 import type { Viewport } from '../viewport/types';
 import type { GeoElement, ConicParams } from '../types/elements';
-import { isPointElement } from '../types/elements';
+import { isPointElement, isVector } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { resolveStyle } from './svg-primitives';
 
@@ -151,19 +151,27 @@ export function exportToTikZ(
 			);
 			if (!ext) continue;
 			lines.push(`  \\draw[${opts}] ${coord(ox, oy)} -- ${coord(ext.x, ext.y)};`);
-		} else if (el.type === 'vectorByPoints') {
-			const p1 = figure.getPosition(el.startId);
-			const p2 = figure.getPosition(el.endId);
-			if (!p1 || !p2) continue;
-			const c1 = coord(geoToNumber(p1.x), geoToNumber(p1.y));
-			const c2 = coord(geoToNumber(p2.x), geoToNumber(p2.y));
-			lines.push(`  \\draw[${opts}, ->, >=stealth] ${c1} -- ${c2};`);
-		} else if (el.type === 'freeVector') {
-			const ax = geoToNumber(el.anchorX);
-			const ay = geoToNumber(el.anchorY);
-			const ex = ax + geoToNumber(el.dx);
-			const ey = ay + geoToNumber(el.dy);
-			lines.push(`  \\draw[${opts}, ->, >=stealth] ${coord(ax, ay)} -- ${coord(ex, ey)};`);
+		} else if (isVector(el)) {
+			const comp = figure.getVectorComponents(el.id);
+			if (!comp) continue;
+			const pos = figure.getPosition(el.id);
+			const startX =
+				el.type === 'vectorByPoints'
+					? geoToNumber(figure.getPosition(el.startId)?.x ?? comp.dx)
+					: pos
+						? geoToNumber(pos.x)
+						: 0;
+			const startY =
+				el.type === 'vectorByPoints'
+					? geoToNumber(figure.getPosition(el.startId)?.y ?? comp.dy)
+					: pos
+						? geoToNumber(pos.y)
+						: 0;
+			const endX = startX + geoToNumber(comp.dx);
+			const endY = startY + geoToNumber(comp.dy);
+			lines.push(
+				`  \\draw[${opts}, ->, >=stealth] ${coord(startX, startY)} -- ${coord(endX, endY)};`
+			);
 		}
 	}
 

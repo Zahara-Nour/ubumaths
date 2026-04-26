@@ -110,6 +110,9 @@ function typePrefix(type: string): string {
 			return 'tg';
 		case 'vectorByPoints':
 		case 'freeVector':
+		case 'vectorSum':
+		case 'vectorScaled':
+		case 'vectorNegate':
 			return 'v';
 		default:
 			return 'el';
@@ -194,6 +197,15 @@ function serializeElement(
 			}
 			return `${prefix}${base})`;
 		}
+
+		case 'vectorSum':
+			return `${n} = ${name(idToName, el.vector1Id)} ${el.negate ? '-' : '+'} ${name(idToName, el.vector2Id)}`;
+
+		case 'vectorScaled':
+			return `${n} = ${fmtGeoValue(el.factor)} * ${name(idToName, el.vectorId)}`;
+
+		case 'vectorNegate':
+			return `${n} = -${name(idToName, el.vectorId)}`;
 
 		case 'circleByRadius': {
 			const radius = fmtGeoValue(el.radius);

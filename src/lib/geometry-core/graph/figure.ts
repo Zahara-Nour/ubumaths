@@ -37,6 +37,9 @@ import type {
 	GeoTangentToQuadratic,
 	GeoVectorByPoints,
 	GeoFreeVector,
+	GeoVectorSum,
+	GeoVectorScaled,
+	GeoVectorNegate,
 	type LineEquation,
 	type ConicParams
 } from '../types/elements';
@@ -52,6 +55,7 @@ import {
 import type { GeoValue } from '../types/geo-value';
 import { geoValueToMathNode, numeric } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
+import { geoAdd, geoSub, geoMul, geoOpposite } from '../compute/geo-arithmetic';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import {
@@ -394,6 +398,124 @@ export class Figure {
 		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 		this.positions.set(id, { x: newAnchorX, y: newAnchorY });
+	}
+
+	// ─── Vector operations (reactive) ───────────────��───────────────
+
+	/** Create a reactive vector sum: w = v1 + v2 (or v1 - v2 if negate=true). */
+	createVectorSum(v1Id: string, v2Id: string, negate?: boolean, options?: ElementOptions): string {
+		const v1 = this.elements.get(v1Id);
+		const v2 = this.elements.get(v2Id);
+		if (!v1 || !isVector(v1)) throw new Error(`createVectorSum: "${v1Id}" is not a vector element`);
+		if (!v2 || !isVector(v2)) throw new Error(`createVectorSum: "${v2Id}" is not a vector element`);
+
+		const deps = [v1Id, ...v1.dependsOn, v2Id, ...v2.dependsOn];
+		const id = this.generateId('vec');
+		const element: GeoVectorSum = {
+			type: 'vectorSum',
+			id,
+			vector1Id: v1Id,
+			vector2Id: v2Id,
+			negate: negate ?? false,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.positions.set(id, { x: numeric(0), y: numeric(0) });
+		return id;
+	}
+
+	/** Create a reactive scaled vector: w = factor * v. */
+	createVectorScaled(vectorId: string, factor: GeoValue, options?: ElementOptions): string {
+		const vec = this.elements.get(vectorId);
+		if (!vec || !isVector(vec))
+			throw new Error(`createVectorScaled: "${vectorId}" is not a vector element`);
+
+		const deps = [vectorId, ...vec.dependsOn];
+		const id = this.generateId('vec');
+		const element: GeoVectorScaled = {
+			type: 'vectorScaled',
+			id,
+			vectorId,
+			factor,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.positions.set(id, { x: numeric(0), y: numeric(0) });
+		return id;
+	}
+
+	/** Create a reactive negated vector: w = -v. */
+	createVectorNegate(vectorId: string, options?: ElementOptions): string {
+		const vec = this.elements.get(vectorId);
+		if (!vec || !isVector(vec))
+			throw new Error(`createVectorNegate: "${vectorId}" is not a vector element`);
+
+		const deps = [vectorId, ...vec.dependsOn];
+		const id = this.generateId('vec');
+		const element: GeoVectorNegate = {
+			type: 'vectorNegate',
+			id,
+			vectorId,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.positions.set(id, { x: numeric(0), y: numeric(0) });
+		return id;
+	}
+
+	/**
+	 * Get the displacement (dx, dy) of any vector element.
+	 *
+	 * Works for all vector types: bound, free, sum, scaled, negated.
+	 * Returns null if the vector or its dependencies cannot be resolved.
+	 */
+	getVectorComponents(id: string): { dx: GeoValue; dy: GeoValue } | null {
+		const el = this.elements.get(id);
+		if (!el) return null;
+
+		if (el.type === 'vectorByPoints') {
+			const p1 = this.positions.get(el.startId);
+			const p2 = this.positions.get(el.endId);
+			if (!p1 || !p2) return null;
+			return { dx: geoSub(p2.x, p1.x), dy: geoSub(p2.y, p1.y) };
+		}
+		if (el.type === 'freeVector') {
+			return { dx: el.dx, dy: el.dy };
+		}
+		if (el.type === 'vectorSum') {
+			const c1 = this.getVectorComponents(el.vector1Id);
+			const c2 = this.getVectorComponents(el.vector2Id);
+			if (!c1 || !c2) return null;
+			return el.negate
+				? { dx: geoSub(c1.dx, c2.dx), dy: geoSub(c1.dy, c2.dy) }
+				: { dx: geoAdd(c1.dx, c2.dx), dy: geoAdd(c1.dy, c2.dy) };
+		}
+		if (el.type === 'vectorScaled') {
+			const c = this.getVectorComponents(el.vectorId);
+			if (!c) return null;
+			return { dx: geoMul(el.factor, c.dx), dy: geoMul(el.factor, c.dy) };
+		}
+		if (el.type === 'vectorNegate') {
+			const c = this.getVectorComponents(el.vectorId);
+			if (!c) return null;
+			return { dx: geoOpposite(c.dx), dy: geoOpposite(c.dy) };
+		}
+		return null;
 	}
 
 	createCircleByRadius(centerId: string, radius: GeoValue, options?: ElementOptions): string {

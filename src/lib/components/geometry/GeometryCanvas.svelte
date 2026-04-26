@@ -29,7 +29,7 @@
 	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
 	import { snapToGrid } from '$lib/geometry-core/interaction/snap';
 	import { numeric } from '$lib/geometry-core/types/geo-value';
-	import { isPointElement } from '$lib/geometry-core/types/elements';
+	import { isPointElement, isVector } from '$lib/geometry-core/types/elements';
 	import { conicClosestParam } from '$lib/geometry-core/graph/conic-helpers';
 	import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 	import rough from 'roughjs';
@@ -710,7 +710,7 @@
 							>
 						{/if}
 					{/if}
-				{:else if el.type === 'vectorByPoints' || el.type === 'freeVector'}
+				{:else if isVector(el)}
 					{@const svg = vectorToSVG(el.id, figure, transformer)}
 					{#if svg}
 						{#if isRough(sty, el.type) && rc}

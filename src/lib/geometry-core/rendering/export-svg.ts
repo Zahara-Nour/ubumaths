@@ -8,7 +8,7 @@
 import type { Figure } from '../graph/figure';
 import type { Viewport } from '../viewport/types';
 import { createTransformer } from '../viewport/viewport';
-import { isPointElement } from '../types/elements';
+import { isPointElement, isVector } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import {
 	resolveStyle,
@@ -177,7 +177,7 @@ export function exportToSVG(
 					`  <line x1="${r(svg.x1)}" y1="${r(svg.y1)}" x2="${r(svg.x2)}" y2="${r(svg.y2)}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} />`
 				);
 			}
-		} else if (el.type === 'vectorByPoints' || el.type === 'freeVector') {
+		} else if (isVector(el)) {
 			const svg = vectorToSVG(el.id, figure, transformer);
 			if (!svg) continue;
 			if (useRough(sty, el.type)) {
