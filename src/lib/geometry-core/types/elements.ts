@@ -357,6 +357,18 @@ export interface GeoQuadraticCurve extends GeoElementBase {
 	readonly dependsOn: readonly [];
 }
 
+export interface GeoImplicitCurve extends GeoElementBase {
+	readonly type: 'implicitCurve';
+	/** F(x,y) as a symbolic MathNode. */
+	readonly expression: MathNode;
+	/** Compiled F(x,y) for fast numerical evaluation. */
+	readonly compiledFn: CompiledFn;
+	/** Original equation string as entered by the user. */
+	readonly equation: string;
+	/** Autonomous element — no dependencies on other elements. */
+	readonly dependsOn: readonly [];
+}
+
 // =============================================================================
 // Union type
 // =============================================================================
@@ -396,6 +408,7 @@ export type GeoElement =
 	| GeoPolygon
 	| GeoFunction
 	| GeoQuadraticCurve
+	| GeoImplicitCurve
 	| GeoPointOnCurve
 	| GeoPointOnQuadraticCurve
 	| GeoTangentLine
@@ -528,6 +541,10 @@ export function isQuadraticCurve(el: GeoElement): el is GeoQuadraticCurve {
 
 export function isFunction(el: GeoElement): el is GeoFunction {
 	return el.type === 'function';
+}
+
+export function isImplicitCurve(el: GeoElement): el is GeoImplicitCurve {
+	return el.type === 'implicitCurve';
 }
 
 export function isTangentLine(el: GeoElement): el is GeoTangentLine {

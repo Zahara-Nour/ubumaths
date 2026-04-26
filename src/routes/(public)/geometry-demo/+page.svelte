@@ -392,6 +392,16 @@ Z3 = zeros(c3, couleur="vert")
 Z4 = zeros(c4, couleur="violet")
 Z5 = zeros(c5, couleur="orange")`
 	).figure;
+
+	// ==========================================================================
+	// courbe() — implicit curves F(x,y) = 0 (marching squares)
+	// ==========================================================================
+	const implicitFig = runDsl(
+		`c1 = courbe("x^3 + y^3 - 3*x*y = 0", couleur="bleu")
+c2 = courbe("x^4 + y^4 - 1 = 0", couleur="rouge")
+c3 = courbe("sin(x) + cos(y) - 1 = 0", couleur="vert")
+c4 = courbe("x^2*y - y^3 - x^2 + y = 0", couleur="violet")`
+	).figure;
 </script>
 
 <div class="p-4">
@@ -607,5 +617,30 @@ Z5 = zeros(c5, couleur="orange")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{conicFig.size} elements | courbe() — coniques
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Courbes implicites generales — courbe() marching squares</h2>
+	<p class="mb-4 text-muted-foreground">
+		Courbes implicites F(x,y) = 0 de degre &gt; 2 ou transcendantes, tracees par l'algorithme
+		marching squares (grille 200x200).
+		<br />
+		<strong>Bleu</strong> : folium de Descartes x³+y³-3xy=0 |
+		<strong>Rouge</strong> : x⁴+y⁴-1=0 |
+		<strong>Vert</strong> : sin(x)+cos(y)=1 |
+		<strong>Violet</strong> : x²y-y³-x²+y=0
+	</p>
+
+	<GeometryCanvas
+		figure={implicitFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{implicitFig.size} elements | courbe() — courbes implicites generales
 	</p>
 </div>

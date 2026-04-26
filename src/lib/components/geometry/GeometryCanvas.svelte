@@ -20,6 +20,7 @@
 		resolveStyle,
 		functionToSVG,
 		quadraticCurveToSVG,
+		implicitCurveToSVG,
 		tangentLineToSVG,
 		tangentToQuadraticToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
@@ -887,6 +888,43 @@
 									paint-order="stroke">{el.label}</text
 								>
 							{/if}
+						{/if}
+					{/if}
+				{:else if el.type === 'implicitCurve'}
+					{@const svg = implicitCurveToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						{#if isRough(sty, el.type) && rc}
+							{#each svg.paths as pathD, i (i)}
+								<g opacity={sty.opacity}
+									>{@html roughArcHTML(rc, pathD, getRoughOpts(el.id, sty))}</g
+								>
+							{/each}
+						{:else}
+							{#each svg.paths as pathD, i (i)}
+								<path
+									d={pathD}
+									stroke={sty.color}
+									stroke-width={sty.strokeWidth}
+									stroke-dasharray={sty.dashArray}
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									opacity={sty.opacity}
+									fill="none"
+									class="function-curve"
+									class:hovered={hoveredId === el.id}
+								/>
+							{/each}
+						{/if}
+						{#if el.label}
+							<text
+								x={dims.width / 2 + (el.labelOffset?.dx ?? 10)}
+								y={dims.height / 2 + (el.labelOffset?.dy ?? -10)}
+								class="label"
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke">{el.label}</text
+							>
 						{/if}
 					{/if}
 				{/if}

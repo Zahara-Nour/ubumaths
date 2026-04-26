@@ -818,6 +818,7 @@ import { conicPointFromParam } from '../graph/figure';
 import type { Viewport, SampledCurve, Point } from '../viewport/types';
 import { sampleWithDerivative } from '$lib/grapheur/sampler';
 import { curveToSVGPath } from '../rendering/bezier';
+import { marchingSquares } from './marching-squares';
 
 /** Number of sample points for function curve rendering. */
 const FUNCTION_SAMPLE_POINTS = 300;
@@ -1119,4 +1120,39 @@ function sampleParabola(conic: ConicParams, viewport: Viewport, n: number): Samp
 	}
 
 	return { points, discontinuityIndices: [] };
+}
+
+// =============================================================================
+// Implicit curve rendering (marching squares)
+// =============================================================================
+
+/**
+ * Convert a GeoImplicitCurve to SVG path string(s) via marching squares.
+ */
+export function implicitCurveToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): { paths: string[] } | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'implicitCurve') return null;
+
+	const topLeft = transformer.svgToMath(0, 0);
+	const bottomRight = transformer.svgToMath(dims.width, dims.height);
+	const viewport: Viewport = {
+		xMin: topLeft.x,
+		xMax: bottomRight.x,
+		yMin: bottomRight.y,
+		yMax: topLeft.y
+	};
+
+	const curves = marchingSquares(el.compiledFn, viewport);
+	const paths: string[] = [];
+	for (const curve of curves) {
+		const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
+		if (path) paths.push(path);
+	}
+
+	return paths.length > 0 ? { paths } : null;
 }

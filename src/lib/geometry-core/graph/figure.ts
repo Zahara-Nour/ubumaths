@@ -30,6 +30,7 @@ import type {
 	GeoPolygon,
 	GeoFunction,
 	GeoQuadraticCurve,
+	GeoImplicitCurve,
 	GeoPointOnCurve,
 	GeoPointOnQuadraticCurve,
 	GeoTangentLine,
@@ -849,6 +850,30 @@ export class Figure {
 			equation,
 			coefficients,
 			conic,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [] as const
+		};
+		this.addElement(id, element, []);
+		return id;
+	}
+
+	createImplicitCurve(
+		expression: MathNode,
+		compiledFn: CompiledFn,
+		equation: string,
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('ic');
+		const element: GeoImplicitCurve = {
+			type: 'implicitCurve',
+			id,
+			expression,
+			compiledFn,
+			equation,
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
