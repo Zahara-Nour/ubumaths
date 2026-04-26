@@ -40,6 +40,12 @@ import type {
 	GeoVectorSum,
 	GeoVectorScaled,
 	GeoVectorNegate,
+	type GeoRotation,
+	type GeoReflection,
+	type GeoReflectionOverLine,
+	type GeoTranslation,
+	type GeoHomothety,
+	type GeoComposition,
 	type LineEquation,
 	type ConicParams
 } from '../types/elements';
@@ -50,6 +56,7 @@ import {
 	isPointElement,
 	isPointOnCurve,
 	isPointOnQuadraticCurve,
+	isTransformation,
 	isVector
 } from '../types/elements';
 import type { GeoValue } from '../types/geo-value';
@@ -103,6 +110,7 @@ export class Figure {
 	readonly defaults: FigureDefaults;
 	private measureValues = new Map<string, number>();
 	private undo_manager = new UndoManager();
+	private _transformeOrigins = new Map<string, { transformId: string; sourceId: string }>();
 
 	constructor(defaults?: FigureDefaults) {
 		this.defaults = defaults ?? {};
@@ -571,7 +579,7 @@ export class Figure {
 			sourceId,
 			centerId,
 			color: this.resolveColor(options),
-			visible: true,
+			visible: options?.visible ?? true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
@@ -603,7 +611,7 @@ export class Figure {
 			centerId,
 			angle,
 			color: this.resolveColor(options),
-			visible: true,
+			visible: options?.visible ?? true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
@@ -643,7 +651,7 @@ export class Figure {
 			vectorStartId,
 			vectorEndId,
 			color: this.resolveColor(options),
-			visible: true,
+			visible: options?.visible ?? true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
@@ -687,7 +695,7 @@ export class Figure {
 			vectorEndId: '',
 			vectorId,
 			color: this.resolveColor(options),
-			visible: true,
+			visible: options?.visible ?? true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
@@ -719,7 +727,7 @@ export class Figure {
 			centerId,
 			factor,
 			color: this.resolveColor(options),
-			visible: true,
+			visible: options?.visible ?? true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
@@ -757,7 +765,7 @@ export class Figure {
 			linePoint1Id,
 			linePoint2Id,
 			color: this.resolveColor(options),
-			visible: true,
+			visible: options?.visible ?? true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
@@ -765,6 +773,157 @@ export class Figure {
 		};
 		this.addElement(id, element, [sourceId, linePoint1Id, linePoint2Id]);
 		this.computePosition(id);
+		return id;
+	}
+
+	// ─── Transformation object factories ─────────���────────────────
+
+	createRotation(centerId: string, angle: GeoValue, options?: ElementOptions): string {
+		this.requirePoints('createRotation', centerId);
+		const id = this.generateId('tRot');
+		const element: GeoRotation = {
+			type: 'rotation',
+			id,
+			centerId,
+			angle,
+			color: DEFAULT_COLOR,
+			visible: false,
+			label: options?.label,
+			dependsOn: [centerId]
+		};
+		this.addElement(id, element, [centerId]);
+		return id;
+	}
+
+	createReflection(centerId: string, options?: ElementOptions): string {
+		this.requirePoints('createReflection', centerId);
+		const id = this.generateId('tRefl');
+		const element: GeoReflection = {
+			type: 'reflection',
+			id,
+			centerId,
+			color: DEFAULT_COLOR,
+			visible: false,
+			label: options?.label,
+			dependsOn: [centerId]
+		};
+		this.addElement(id, element, [centerId]);
+		return id;
+	}
+
+	createReflectionOverLine(
+		linePoint1Id: string,
+		linePoint2Id: string,
+		options?: ElementOptions
+	): string {
+		this.requirePoints('createReflectionOverLine', linePoint1Id, linePoint2Id);
+		if (linePoint1Id === linePoint2Id) {
+			throw new Error('createReflectionOverLine: line points must be distinct');
+		}
+		const id = this.generateId('tReflL');
+		const element: GeoReflectionOverLine = {
+			type: 'reflectionOverLine',
+			id,
+			linePoint1Id,
+			linePoint2Id,
+			color: DEFAULT_COLOR,
+			visible: false,
+			label: options?.label,
+			dependsOn: [linePoint1Id, linePoint2Id]
+		};
+		this.addElement(id, element, [linePoint1Id, linePoint2Id]);
+		return id;
+	}
+
+	createTranslation(vectorStartId: string, vectorEndId: string, options?: ElementOptions): string {
+		this.requirePoints('createTranslation', vectorStartId, vectorEndId);
+		if (vectorStartId === vectorEndId) {
+			throw new Error('createTranslation: vector points must be distinct');
+		}
+		const id = this.generateId('tTrans');
+		const element: GeoTranslation = {
+			type: 'translation',
+			id,
+			vectorStartId,
+			vectorEndId,
+			color: DEFAULT_COLOR,
+			visible: false,
+			label: options?.label,
+			dependsOn: [vectorStartId, vectorEndId]
+		};
+		this.addElement(id, element, [vectorStartId, vectorEndId]);
+		return id;
+	}
+
+	createTranslationByVector(vectorId: string, options?: ElementOptions): string {
+		const vecEl = this.elements.get(vectorId);
+		if (!vecEl || !isVector(vecEl)) {
+			throw new Error(`createTranslationByVector: "${vectorId}" is not a vector element`);
+		}
+		const id = this.generateId('tTrans');
+		const deps = [...new Set([vectorId, ...vecEl.dependsOn])];
+		const element: GeoTranslation = {
+			type: 'translation',
+			id,
+			vectorStartId: '',
+			vectorEndId: '',
+			vectorId,
+			color: DEFAULT_COLOR,
+			visible: false,
+			label: options?.label,
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
+	createHomothety(centerId: string, factor: GeoValue, options?: ElementOptions): string {
+		this.requirePoints('createHomothety', centerId);
+		const id = this.generateId('tHom');
+		const element: GeoHomothety = {
+			type: 'homothety',
+			id,
+			centerId,
+			factor,
+			color: DEFAULT_COLOR,
+			visible: false,
+			label: options?.label,
+			dependsOn: [centerId]
+		};
+		this.addElement(id, element, [centerId]);
+		return id;
+	}
+
+	createComposition(transformationIds: string[], options?: ElementOptions): string {
+		if (transformationIds.length < 2) {
+			throw new Error('createComposition: at least 2 transformations required');
+		}
+		for (const tId of transformationIds) {
+			const el = this.elements.get(tId);
+			if (!el || !isTransformation(el)) {
+				throw new Error(`createComposition: "${tId}" is not a transformation`);
+			}
+		}
+		// Collect all dependencies transitively
+		const deps = [
+			...new Set(
+				transformationIds.flatMap((tId) => {
+					const el = this.elements.get(tId)!;
+					return [tId, ...el.dependsOn];
+				})
+			)
+		];
+		const id = this.generateId('tComp');
+		const element: GeoComposition = {
+			type: 'composition',
+			id,
+			transformationIds,
+			color: DEFAULT_COLOR,
+			visible: false,
+			label: options?.label,
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
 		return id;
 	}
 
@@ -1238,6 +1397,14 @@ export class Figure {
 
 	get size(): number {
 		return this.elements.size;
+	}
+
+	recordTransformeOrigin(resultId: string, transformId: string, sourceId: string): void {
+		this._transformeOrigins.set(resultId, { transformId, sourceId });
+	}
+
+	getTransformeOrigin(resultId: string): { transformId: string; sourceId: string } | undefined {
+		return this._transformeOrigins.get(resultId);
 	}
 
 	getPosition(id: string): GeoPoint | null {

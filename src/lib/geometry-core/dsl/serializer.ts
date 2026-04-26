@@ -18,7 +18,8 @@ export function serialize(figure: Figure, symbols?: SymbolTable): string {
 	const lines: string[] = [];
 
 	for (const el of elements) {
-		if (!el.visible) continue;
+		// Skip invisible elements, except transformation objects (which must be serialized)
+		if (!el.visible && !isTransformationType(el.type)) continue;
 		const line = serializeElement(el, figure, idToName);
 		if (line) lines.push(line);
 	}
@@ -65,6 +66,17 @@ function buildNameMap(elements: readonly GeoElement[], symbols?: SymbolTable): M
 	}
 
 	return map;
+}
+
+function isTransformationType(type: string): boolean {
+	return (
+		type === 'rotation' ||
+		type === 'reflection' ||
+		type === 'reflectionOverLine' ||
+		type === 'translation' ||
+		type === 'homothety' ||
+		type === 'composition'
+	);
 }
 
 function typePrefix(type: string): string {
@@ -114,6 +126,13 @@ function typePrefix(type: string): string {
 		case 'vectorScaled':
 		case 'vectorNegate':
 			return 'v';
+		case 'rotation':
+		case 'reflection':
+		case 'reflectionOverLine':
+		case 'translation':
+		case 'homothety':
+		case 'composition':
+			return 't';
 		default:
 			return 'el';
 	}
@@ -138,6 +157,12 @@ function serializeElement(
 	idToName: Map<string, string>
 ): string | null {
 	const n = name(idToName, el.id);
+
+	// Check if this element was created by transforme() — emit transforme(r, source) form
+	const origin = figure.getTransformeOrigin(el.id);
+	if (origin) {
+		return `${n} = transforme(${name(idToName, origin.transformId)}, ${name(idToName, origin.sourceId)})`;
+	}
 
 	switch (el.type) {
 		case 'freePoint': {
@@ -289,6 +314,32 @@ function serializeElement(
 				}
 			}
 			return `${n} = tangente(${name(idToName, el.curveId)}, ${fmtNum(tqDisplay)})`;
+		}
+
+		// Transformation objects
+		case 'rotation': {
+			const angleDeg = fmtNum((geoToNumber(el.angle) * 180) / Math.PI);
+			return `${n} = rotation(angle=${angleDeg}, centre=${name(idToName, el.centerId)})`;
+		}
+
+		case 'reflection':
+			return `${n} = symetrie(centre=${name(idToName, el.centerId)})`;
+
+		case 'reflectionOverLine':
+			return `${n} = symetrie(axe=(${name(idToName, el.linePoint1Id)}, ${name(idToName, el.linePoint2Id)}))`;
+
+		case 'translation':
+			if (el.vectorId) return `${n} = translation(vecteur=${name(idToName, el.vectorId)})`;
+			return `${n} = translation(vecteur=(${name(idToName, el.vectorStartId)}, ${name(idToName, el.vectorEndId)}))`;
+
+		case 'homothety': {
+			const factor = fmtGeoValue(el.factor);
+			return `${n} = homothetie(rapport=${factor}, centre=${name(idToName, el.centerId)})`;
+		}
+
+		case 'composition': {
+			const args = el.transformationIds.map((id) => name(idToName, id)).join(', ');
+			return `${n} = compose(${args})`;
 		}
 
 		default:
