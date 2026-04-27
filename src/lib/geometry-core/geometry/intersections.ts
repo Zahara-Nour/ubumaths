@@ -22,6 +22,11 @@ import {
 } from '../compute/geo-arithmetic';
 import { geoIsZero } from '../compute/compare';
 import { geoToNumber } from '../compute/to-number';
+import type { MathNode } from '$lib/mathAST/types';
+import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import { subtract, add, multiply, number as mathNumber, variable } from '$lib/mathAST/factory';
+import { compile } from '$lib/mathAST/eval/compile';
+import { findRoots } from '$lib/mathAST/analysis/roots';
 
 /**
  * Intersect two lines defined by two points each.
@@ -697,6 +702,98 @@ function factorViaQuadraticInY(
 	if (!p1a || !p1b || !p2a || !p2b) return null;
 
 	return { line1: [p1a, p1b], line2: [p2a, p2b] };
+}
+
+// =============================================================================
+// Function intersections (LF / FF) — hybrid symbolic + numeric
+// =============================================================================
+
+/**
+ * Intersect a line with a function curve y=f(x).
+ *
+ * Strategy:
+ * 1. Compute line equation y = mx + p (or handle vertical x = k)
+ * 2. Build h(x) = f(x) - (mx + p) symbolically
+ * 3. Call findRoots(h, compile(h), 'x', xMin, xMax)
+ * 4. For each root x0, intersection point is (x0, f(x0))
+ * 5. Sort by x ascending for deterministic index ordering
+ *
+ * For vertical lines x = k: single point (k, f(k)) if f(k) is finite.
+ */
+export function intersectLF(
+	lineP1: GeoPoint,
+	lineP2: GeoPoint,
+	fnExpression: MathNode,
+	compiledFn: CompiledFn,
+	xMin: number,
+	xMax: number
+): GeoPoint[] | null {
+	const x1 = geoToNumber(lineP1.x);
+	const y1 = geoToNumber(lineP1.y);
+	const x2 = geoToNumber(lineP2.x);
+	const y2 = geoToNumber(lineP2.y);
+
+	// Vertical line: x = k
+	if (Math.abs(x2 - x1) < 1e-12) {
+		const k = x1;
+		const yVal = compiledFn({ x: k });
+		if (!Number.isFinite(yVal)) return null;
+		return [{ x: numeric(k), y: numeric(yVal) }];
+	}
+
+	// Line y = mx + p
+	const m = (y2 - y1) / (x2 - x1);
+	const p = y1 - m * x1;
+
+	// h(x) = f(x) - (m*x + p)
+	const lineExpr = add(multiply(mathNumber(String(m)), variable('x')), mathNumber(String(p)));
+	const h = subtract(fnExpression, lineExpr);
+	const compiledH = compile(h);
+
+	const roots = findRoots(h, compiledH, 'x', xMin, xMax);
+	if (roots.length === 0) return null;
+
+	const points: GeoPoint[] = roots
+		.map((root) => {
+			const yVal = compiledFn({ x: root.x });
+			if (!Number.isFinite(yVal)) return null;
+			return { x: numeric(root.x), y: numeric(yVal) };
+		})
+		.filter((p): p is GeoPoint => p !== null);
+
+	return points.length === 0 ? null : points;
+}
+
+/**
+ * Intersect two function curves y=f(x) and y=g(x).
+ *
+ * Strategy:
+ * 1. Build h(x) = f(x) - g(x) symbolically
+ * 2. Call findRoots(h, compile(h), 'x', xMin, xMax)
+ * 3. For each root x0, intersection point is (x0, f(x0))
+ */
+export function intersectFF(
+	fn1Expression: MathNode,
+	fn1Compiled: CompiledFn,
+	fn2Expression: MathNode,
+	xMin: number,
+	xMax: number
+): GeoPoint[] | null {
+	const h = subtract(fn1Expression, fn2Expression);
+	const compiledH = compile(h);
+
+	const roots = findRoots(h, compiledH, 'x', xMin, xMax);
+	if (roots.length === 0) return null;
+
+	const points: GeoPoint[] = roots
+		.map((root) => {
+			const yVal = fn1Compiled({ x: root.x });
+			if (!Number.isFinite(yVal)) return null;
+			return { x: numeric(root.x), y: numeric(yVal) };
+		})
+		.filter((p): p is GeoPoint => p !== null);
+
+	return points.length === 0 ? null : points;
 }
 
 /** Remove duplicate points (distance < tolerance) */

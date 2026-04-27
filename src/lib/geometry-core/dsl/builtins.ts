@@ -146,6 +146,10 @@ function requireTuple(val: ResolvedValue, name: string, line: number): ResolvedV
 }
 
 /** Style named args (couleur, forme, tirets, pointilles, epaisseur) common to all geometry builtins. */
+/** Default search window for function analysis (zeros, extrema, inflections, intersections). */
+const FUNCTION_SEARCH_XMIN = -10;
+const FUNCTION_SEARCH_XMAX = 10;
+
 const STYLE_ARGS = new Set([
 	'couleur',
 	'forme',
@@ -739,20 +743,41 @@ function _executeBuiltinInner(
 				return !!el && el.type === 'quadraticCurve';
 			};
 
-			// Detect quadratic curves among 'courbe' elements
+			// Detect quadratic curves and functions among 'courbe' elements
 			const isQuad1 = isCourbeType(type1) && isQuadraticCourbe(id1);
 			const isQuad2 = isCourbeType(type2) && isQuadraticCourbe(id2);
 
-			// Reject non-quadratic courbes used in intersection
-			if (isCourbeType(type1) && !isQuad1) {
+			const isFunctionCourbe = (figureId: string): boolean => {
+				const el = figure.getElementById(figureId);
+				return !!el && el.type === 'function';
+			};
+			const isFunc1 = isCourbeType(type1) && isFunctionCourbe(id1);
+			const isFunc2 = isCourbeType(type2) && isFunctionCourbe(id2);
+
+			// Reject implicit curves (not functions, not conics)
+			if (isCourbeType(type1) && !isQuad1 && !isFunc1) {
 				throw new DslRuntimeError(
-					'intersection(): les courbes non-coniques (fonctions, courbes implicites) ne sont pas supportees',
+					'intersection(): les courbes implicites ne sont pas supportees',
 					line
 				);
 			}
-			if (isCourbeType(type2) && !isQuad2) {
+			if (isCourbeType(type2) && !isQuad2 && !isFunc2) {
 				throw new DslRuntimeError(
-					'intersection(): les courbes non-coniques (fonctions, courbes implicites) ne sont pas supportees',
+					'intersection(): les courbes implicites ne sont pas supportees',
+					line
+				);
+			}
+
+			// Reject unsupported combos: function + circle/conic
+			if ((isFunc1 && isCircleType(type2)) || (isCircleType(type1) && isFunc2)) {
+				throw new DslRuntimeError(
+					'intersection(): combinaison fonction/cercle non supportee',
+					line
+				);
+			}
+			if ((isFunc1 && isQuad2) || (isQuad1 && isFunc2)) {
+				throw new DslRuntimeError(
+					'intersection(): combinaison fonction/conique non supportee',
 					line
 				);
 			}
@@ -762,12 +787,25 @@ function _executeBuiltinInner(
 				(isQuad1 && isQuad2) ||
 				(isQuad1 && isCircleType(type2)) ||
 				(isCircleType(type1) && isQuad2);
-			const maxIndex = isQQ ? 4 : 2;
+			const isLF = (isLineType(type1) && isFunc2) || (isFunc1 && isLineType(type2));
+			const isFF = isFunc1 && isFunc2;
+
+			// Index validation: LF/FF have no max (unbounded), others are bounded
+			let maxIndex: number | null;
+			if (isLF || isFF) {
+				maxIndex = null; // unbounded
+			} else if (isQQ) {
+				maxIndex = 4;
+			} else {
+				maxIndex = 2;
+			}
 
 			let dslIndex = 1;
 			if (pos.length === 3) {
 				dslIndex = requireNumber(pos[2], 'index', line);
-				if (!Number.isInteger(dslIndex) || dslIndex < 1 || dslIndex > maxIndex)
+				if (!Number.isInteger(dslIndex) || dslIndex < 1)
+					throw new DslRuntimeError('intersection(): index doit etre >= 1', line);
+				if (maxIndex !== null && dslIndex > maxIndex)
 					throw new DslRuntimeError(`intersection(): index doit etre entre 1 et ${maxIndex}`, line);
 			}
 
@@ -806,8 +844,43 @@ function _executeBuiltinInner(
 				});
 				return { figureId: id, symbolType: 'point' };
 			}
+			// LF / FL (line + function, swap auto)
+			if (isLineType(type1) && isFunc2) {
+				const id = figure.createIntersectionLF(
+					id1,
+					id2,
+					dslIndex - 1,
+					FUNCTION_SEARCH_XMIN,
+					FUNCTION_SEARCH_XMAX,
+					{ label }
+				);
+				return { figureId: id, symbolType: 'point' };
+			}
+			if (isFunc1 && isLineType(type2)) {
+				const id = figure.createIntersectionLF(
+					id2,
+					id1,
+					dslIndex - 1,
+					FUNCTION_SEARCH_XMIN,
+					FUNCTION_SEARCH_XMAX,
+					{ label }
+				);
+				return { figureId: id, symbolType: 'point' };
+			}
+			// FF (function + function)
+			if (isFF) {
+				const id = figure.createIntersectionFF(
+					id1,
+					id2,
+					dslIndex - 1,
+					FUNCTION_SEARCH_XMIN,
+					FUNCTION_SEARCH_XMAX,
+					{ label }
+				);
+				return { figureId: id, symbolType: 'point' };
+			}
 			throw new DslRuntimeError(
-				'intersection(): combinaison non supportee (attendu: droite/droite, droite/cercle, cercle/cercle, droite/conique, ou conique/conique)',
+				'intersection(): combinaison non supportee (attendu: droite/droite, droite/cercle, cercle/cercle, droite/conique, conique/conique, droite/fonction, ou fonction/fonction)',
 				line
 			);
 		}
@@ -1017,8 +1090,8 @@ function _executeBuiltinInner(
 				throw new DslRuntimeError(`${name}(): le premier argument doit etre une courbe`, line);
 			}
 
-			const xMin = -10;
-			const xMax = 10;
+			const xMin = FUNCTION_SEARCH_XMIN;
+			const xMax = FUNCTION_SEARCH_XMAX;
 
 			let points: import('$lib/mathAST/analysis').CriticalPoint[];
 
