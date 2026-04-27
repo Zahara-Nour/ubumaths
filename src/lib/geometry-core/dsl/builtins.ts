@@ -718,13 +718,49 @@ function _executeBuiltinInner(
 		}
 
 		case 'intersection': {
-			if (pos.length !== 2) throw new DslRuntimeError('intersection() attend 2 arguments', line);
-			const id = figure.createIntersectionLL(
-				requireElement(pos[0], 'arg1', line),
-				requireElement(pos[1], 'arg2', line),
-				{ label }
+			if (pos.length < 2 || pos.length > 3)
+				throw new DslRuntimeError('intersection() attend 2 ou 3 arguments', line);
+
+			const arg1 = pos[0];
+			const arg2 = pos[1];
+			const id1 = requireElement(arg1, 'arg1', line);
+			const id2 = requireElement(arg2, 'arg2', line);
+			const type1 = arg1.type === 'element' ? arg1.elementType : undefined;
+			const type2 = arg2.type === 'element' ? arg2.elementType : undefined;
+
+			const isLineType = (t: string | undefined) =>
+				t === 'droite' || t === 'segment' || t === 'demidroite';
+			const isCircleType = (t: string | undefined) => t === 'cercle';
+
+			// Optional index (1-based in DSL, 0-based internal)
+			let index: 0 | 1 = 0;
+			if (pos.length === 3) {
+				const dslIndex = requireNumber(pos[2], 'index', line);
+				if (dslIndex !== 1 && dslIndex !== 2)
+					throw new DslRuntimeError('intersection(): index doit etre 1 ou 2', line);
+				index = (dslIndex - 1) as 0 | 1;
+			}
+
+			if (isLineType(type1) && isLineType(type2)) {
+				const id = figure.createIntersectionLL(id1, id2, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			if (isLineType(type1) && isCircleType(type2)) {
+				const id = figure.createIntersectionLC(id1, id2, index, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			if (isCircleType(type1) && isLineType(type2)) {
+				const id = figure.createIntersectionLC(id2, id1, index, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			if (isCircleType(type1) && isCircleType(type2)) {
+				const id = figure.createIntersectionCC(id1, id2, index, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			throw new DslRuntimeError(
+				'intersection(): combinaison non supportee (attendu: droite/droite, droite/cercle, ou cercle/cercle)',
+				line
 			);
-			return { figureId: id, symbolType: 'point' };
 		}
 
 		case 'marque_angle': {

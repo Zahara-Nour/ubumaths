@@ -12,6 +12,8 @@ import type {
 	GeoFreePoint,
 	GeoMidpoint,
 	GeoIntersectionLL,
+	GeoIntersectionLC,
+	GeoIntersectionCC,
 	GeoReflectedPoint,
 	GeoRotatedPoint,
 	GeoTranslatedPoint,
@@ -58,6 +60,7 @@ import type {
 import {
 	isFreePoint,
 	isFreeVector,
+	isCircle,
 	isLineLike,
 	isPointElement,
 	isPointOnCurve,
@@ -567,6 +570,70 @@ export class Figure {
 			dependsOn: [line1Id, line2Id]
 		};
 		this.addElement(id, element, [line1Id, line2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createIntersectionLC(
+		lineId: string,
+		circleId: string,
+		index: 0 | 1,
+		options?: ElementOptions
+	): string {
+		const el1 = this.elements.get(lineId);
+		const el2 = this.elements.get(circleId);
+		if (!el1 || !isLineLike(el1))
+			throw new Error(`createIntersectionLC: "${lineId}" is not a line-like element`);
+		if (!el2 || !isCircle(el2))
+			throw new Error(`createIntersectionLC: "${circleId}" is not a circle element`);
+
+		const id = this.generateId('intLC');
+		const element: GeoIntersectionLC = {
+			type: 'intersectionLC',
+			id,
+			lineId,
+			circleId,
+			index,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [lineId, circleId]
+		};
+		this.addElement(id, element, [lineId, circleId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createIntersectionCC(
+		circle1Id: string,
+		circle2Id: string,
+		index: 0 | 1,
+		options?: ElementOptions
+	): string {
+		const el1 = this.elements.get(circle1Id);
+		const el2 = this.elements.get(circle2Id);
+		if (!el1 || !isCircle(el1))
+			throw new Error(`createIntersectionCC: "${circle1Id}" is not a circle element`);
+		if (!el2 || !isCircle(el2))
+			throw new Error(`createIntersectionCC: "${circle2Id}" is not a circle element`);
+
+		const id = this.generateId('intCC');
+		const element: GeoIntersectionCC = {
+			type: 'intersectionCC',
+			id,
+			circle1Id,
+			circle2Id,
+			index,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [circle1Id, circle2Id]
+		};
+		this.addElement(id, element, [circle1Id, circle2Id]);
 		this.computePosition(id);
 		return id;
 	}

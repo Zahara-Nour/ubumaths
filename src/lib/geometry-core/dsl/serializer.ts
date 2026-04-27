@@ -87,6 +87,8 @@ function typePrefix(type: string): string {
 		case 'freePoint':
 		case 'midpoint':
 		case 'intersectionLL':
+		case 'intersectionLC':
+		case 'intersectionCC':
 		case 'reflectedPoint':
 		case 'rotatedPoint':
 		case 'translatedPoint':
@@ -185,6 +187,12 @@ function serializeElement(
 
 		case 'intersectionLL':
 			return `${n} = intersection(${name(idToName, el.line1Id)}, ${name(idToName, el.line2Id)})`;
+
+		case 'intersectionLC':
+			return `${n} = intersection(${name(idToName, el.lineId)}, ${name(idToName, el.circleId)}, ${el.index + 1})`;
+
+		case 'intersectionCC':
+			return `${n} = intersection(${name(idToName, el.circle1Id)}, ${name(idToName, el.circle2Id)}, ${el.index + 1})`;
 
 		case 'reflectedPoint':
 			return `${n} = symetrie(${name(idToName, el.sourceId)}, centre=${name(idToName, el.centerId)})`;
