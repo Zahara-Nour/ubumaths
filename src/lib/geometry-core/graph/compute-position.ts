@@ -11,6 +11,8 @@ import {
 	isIntersectionLL,
 	isIntersectionLC,
 	isIntersectionCC,
+	isIntersectionLQ,
+	isIntersectionQQ,
 	isReflectedPoint,
 	isRotatedPoint,
 	isTranslatedPoint,
@@ -30,7 +32,13 @@ import type { GeoValue } from '../types/geo-value';
 import { geoAdd, geoSub, geoMul, geoDiv, geoSqrt, geoFromNumber } from '../compute/geo-arithmetic';
 import { geoToNumber } from '../compute/to-number';
 import { numeric } from '../types/geo-value';
-import { intersectLL, intersectLC, intersectCC } from '../geometry/intersections';
+import {
+	intersectLL,
+	intersectLC,
+	intersectCC,
+	intersectLQ,
+	intersectQQ
+} from '../geometry/intersections';
 import { resolveVectorComponents } from './vector-components';
 import {
 	reflectPoint,
@@ -90,6 +98,16 @@ export function computeElementPosition(
 
 	if (isIntersectionCC(el)) {
 		const pos = computeIntersectionCCPos(el.circle1Id, el.circle2Id, el.index, positions, elements);
+		return { position: pos, hasComputablePosition: true };
+	}
+
+	if (isIntersectionLQ(el)) {
+		const pos = computeIntersectionLQPos(el.lineId, el.curveId, el.index, positions, elements);
+		return { position: pos, hasComputablePosition: true };
+	}
+
+	if (isIntersectionQQ(el)) {
+		const pos = computeIntersectionQQPos(el.curve1Id, el.curve2Id, el.index, positions, elements);
 		return { position: pos, hasComputablePosition: true };
 	}
 
@@ -333,6 +351,61 @@ function computeIntersectionCCPos(
 	const c2 = getCircleParams(circle2Id, positions, elements);
 	if (!c1 || !c2) return null;
 	const pts = intersectCC(c1.center, c1.radius, c2.center, c2.radius);
+	if (!pts || index >= pts.length) return null;
+	return pts[index];
+}
+
+/**
+ * Get conic coefficients [A,B,C,D,E,F] from a quadraticCurve or circle element.
+ * For circles, converts to conic form: [1, 0, 1, -2cx, -2cy, cx²+cy²-r²].
+ */
+function getConicCoefficients(
+	id: string,
+	positions: ReadonlyMap<string, GeoPoint>,
+	elements: ReadonlyMap<string, GeoElement>
+): readonly [number, number, number, number, number, number] | null {
+	const el = elements.get(id);
+	if (!el) return null;
+
+	if (el.type === 'quadraticCurve') {
+		return el.coefficients;
+	}
+
+	// Convert circle to conic coefficients
+	const circle = getCircleParams(id, positions, elements);
+	if (!circle) return null;
+	const cx = geoToNumber(circle.center.x);
+	const cy = geoToNumber(circle.center.y);
+	const r = geoToNumber(circle.radius);
+	return [1, 0, 1, -2 * cx, -2 * cy, cx * cx + cy * cy - r * r];
+}
+
+function computeIntersectionLQPos(
+	lineId: string,
+	curveId: string,
+	index: 0 | 1,
+	positions: ReadonlyMap<string, GeoPoint>,
+	elements: ReadonlyMap<string, GeoElement>
+): GeoPoint | null {
+	const line = getLineLikePoints(lineId, positions, elements);
+	const coeffs = getConicCoefficients(curveId, positions, elements);
+	if (!line || !coeffs) return null;
+	const pts = intersectLQ(line.p1, line.p2, coeffs);
+	if (!pts || index >= pts.length) return null;
+	return pts[index];
+}
+
+function computeIntersectionQQPos(
+	curve1Id: string,
+	curve2Id: string,
+	index: 0 | 1 | 2 | 3,
+	positions: ReadonlyMap<string, GeoPoint>,
+	elements: ReadonlyMap<string, GeoElement>
+): GeoPoint | null {
+	const coeffs1 = getConicCoefficients(curve1Id, positions, elements);
+	const coeffs2 = getConicCoefficients(curve2Id, positions, elements);
+	if (!coeffs1 || !coeffs2) return null;
+	const pts = intersectQQ(coeffs1, coeffs2);
 	if (!pts || index >= pts.length) return null;
 	return pts[index];
 }

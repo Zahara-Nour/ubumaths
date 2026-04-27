@@ -14,6 +14,8 @@ import type {
 	GeoIntersectionLL,
 	GeoIntersectionLC,
 	GeoIntersectionCC,
+	GeoIntersectionLQ,
+	GeoIntersectionQQ,
 	GeoReflectedPoint,
 	GeoRotatedPoint,
 	GeoTranslatedPoint,
@@ -63,6 +65,7 @@ import {
 	isCircle,
 	isLineLike,
 	isPointElement,
+	isQuadraticCurve,
 	isPointOnCurve,
 	isPointOnQuadraticCurve,
 	isTransformation,
@@ -634,6 +637,77 @@ export class Figure {
 			dependsOn: [circle1Id, circle2Id]
 		};
 		this.addElement(id, element, [circle1Id, circle2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createIntersectionLQ(
+		lineId: string,
+		curveId: string,
+		index: 0 | 1,
+		options?: ElementOptions
+	): string {
+		const el1 = this.elements.get(lineId);
+		const el2 = this.elements.get(curveId);
+		if (!el1 || !isLineLike(el1))
+			throw new Error(`createIntersectionLQ: "${lineId}" is not a line-like element`);
+		if (!el2 || !isQuadraticCurve(el2))
+			throw new Error(`createIntersectionLQ: "${curveId}" is not a quadratic curve element`);
+
+		const id = this.generateId('intLQ');
+		const element: GeoIntersectionLQ = {
+			type: 'intersectionLQ',
+			id,
+			lineId,
+			curveId,
+			index,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [lineId, curveId]
+		};
+		this.addElement(id, element, [lineId, curveId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createIntersectionQQ(
+		curve1Id: string,
+		curve2Id: string,
+		index: 0 | 1 | 2 | 3,
+		options?: ElementOptions
+	): string {
+		const el1 = this.elements.get(curve1Id);
+		const el2 = this.elements.get(curve2Id);
+		// Accept both quadraticCurve and circle elements (circle is converted to conic coefficients at compute time)
+		const isConicLike = (el: GeoElement | undefined): boolean =>
+			!!el && (isQuadraticCurve(el) || isCircle(el));
+		if (!isConicLike(el1))
+			throw new Error(
+				`createIntersectionQQ: "${curve1Id}" is not a quadratic curve or circle element`
+			);
+		if (!isConicLike(el2))
+			throw new Error(
+				`createIntersectionQQ: "${curve2Id}" is not a quadratic curve or circle element`
+			);
+
+		const id = this.generateId('intQQ');
+		const element: GeoIntersectionQQ = {
+			type: 'intersectionQQ',
+			id,
+			curve1Id,
+			curve2Id,
+			index,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [curve1Id, curve2Id]
+		};
+		this.addElement(id, element, [curve1Id, curve2Id]);
 		this.computePosition(id);
 		return id;
 	}
