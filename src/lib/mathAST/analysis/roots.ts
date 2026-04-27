@@ -16,6 +16,7 @@ import type { CompiledFn } from '../eval/compile';
 import { equals, number as mathNumber } from '../factory';
 import { solve } from '../solve';
 import { evaluate } from '../eval/evaluate';
+import { calculateComplexity } from './expression-classify';
 
 // =============================================================================
 // Types
@@ -36,6 +37,9 @@ const NUM_SAMPLES = 200;
 const BISECTION_ITERATIONS = 50;
 const BISECTION_TOLERANCE = 1e-12;
 const DEDUP_TOLERANCE = 1e-8;
+/** Skip symbolic solve() for expressions above this complexity threshold.
+ *  Prevents solve() from hanging on deeply nested ASTs (e.g., from courbe() + intersectLF). */
+const MAX_SOLVE_COMPLEXITY = 30;
 
 // =============================================================================
 // Main export
@@ -69,6 +73,12 @@ function solveExactRoots(
 	xMin: number,
 	xMax: number
 ): RootResult[] {
+	// Skip symbolic solving for overly complex ASTs (e.g., from intersectLF with float coefficients).
+	// solve() can hang on deeply nested expressions with non-integer number nodes.
+	if (calculateComplexity(expression) > MAX_SOLVE_COMPLEXITY) {
+		return [];
+	}
+
 	try {
 		const equation = equals(expression, mathNumber('0')) as RelationNode;
 		const result = solve(equation, { variable });
