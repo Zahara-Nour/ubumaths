@@ -857,6 +857,84 @@ style(T, couleur="cyan")
 style(U, couleur="cyan")`
 	).figure;
 
+	// ==========================================================================
+	// Intersection droite-conique (LQ)
+	// ==========================================================================
+	const intersectionLQFig = runDsl(
+		`A = point(-6, -1)
+B = point(6, 1)
+d = droite(A, B, couleur="bleu", trait="tirets")
+q = courbe("4*x^2 + 9*y^2 - 36 = 0", couleur="vert")
+P = intersection(d, q, 1)
+Q = intersection(d, q, 2)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
+	// Intersection droite-hyperbole (LQ)
+	// ==========================================================================
+	const intersectionLQHyperbolaFig = runDsl(
+		`A = point(-6, -2)
+B = point(6, 2)
+d = droite(A, B, couleur="bleu", trait="tirets")
+q = courbe("x^2 - y^2 - 4 = 0", couleur="orange")
+P = intersection(d, q, 1)
+Q = intersection(d, q, 2)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
+	// Intersection droite-parabole (LQ)
+	// ==========================================================================
+	const intersectionLQParabolaFig = runDsl(
+		`A = point(-4, 3)
+B = point(4, 3)
+d = droite(A, B, couleur="bleu", trait="tirets")
+q = courbe("x^2 - y = 0", couleur="violet")
+P = intersection(d, q, 1)
+Q = intersection(d, q, 2)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
+	// Intersection conique-conique (QQ) — cercle + ellipse
+	// ==========================================================================
+	const intersectionQQFig = runDsl(
+		`O = point(0, 0, couleur="noir")
+c = cercle(O, rayon=2, couleur="bleu")
+q = courbe("4*x^2 + 9*y^2 - 36 = 0", couleur="vert")
+P1 = intersection(c, q, 1)
+P2 = intersection(c, q, 2)
+P3 = intersection(c, q, 3)
+P4 = intersection(c, q, 4)
+style(P1, couleur="rouge")
+style(P2, couleur="rouge")
+style(P3, couleur="rouge")
+style(P4, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
+	// Intersection conique-conique (QQ) — deux ellipses
+	// ==========================================================================
+	const intersectionQQEllipsesFig = runDsl(
+		`q1 = courbe("x^2 + 4*y^2 - 4 = 0", couleur="bleu")
+q2 = courbe("4*x^2 + y^2 - 4 = 0", couleur="vert")
+P1 = intersection(q1, q2, 1)
+P2 = intersection(q1, q2, 2)
+P3 = intersection(q1, q2, 3)
+P4 = intersection(q1, q2, 4)
+style(P1, couleur="rouge")
+style(P2, couleur="rouge")
+style(P3, couleur="rouge")
+style(P4, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
+	// Transformation de courbe implicite
+	// ==========================================================================
 	const transformImplicitFig = runDsl(
 		`O = point(0, 0, couleur="noir")
 c = courbe("x^3 + y^3 - 3*x*y = 0", couleur="bleu")
@@ -1583,6 +1661,106 @@ style(c3, couleur="vert")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{intersectionMixedFig.size} elements | intersections combinees LC + CC
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection droite-conique (LQ)</h2>
+	<p class="mb-4 text-muted-foreground">
+		Droite coupant une ellipse (4x² + 9y² = 36). Deplacez les points A et B pour modifier la droite.
+		Les 2 points d'intersection (rouges) suivent en temps reel.
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionLQFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionLQFig.size} elements | intersection droite-ellipse (LQ)
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection droite-hyperbole (LQ)</h2>
+	<p class="mb-4 text-muted-foreground">
+		Droite coupant une hyperbole (x² - y² = 4). Deplacez A et B. Selon l'angle, la droite peut
+		couper les deux branches, une seule, ou etre parallele a une asymptote (1 seul point).
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionLQHyperbolaFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionLQHyperbolaFig.size} elements | intersection droite-hyperbole (LQ)
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection droite-parabole (LQ)</h2>
+	<p class="mb-4 text-muted-foreground">
+		Droite coupant une parabole (y = x²). Deplacez A et B pour varier le nombre d'intersections : 2
+		points (secante), 1 point (tangente), ou 0 (exterieure).
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionLQParabolaFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionLQParabolaFig.size} elements | intersection droite-parabole (LQ)
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection cercle-ellipse (QQ)</h2>
+	<p class="mb-4 text-muted-foreground">
+		Cercle (bleu, rayon 2) et ellipse (verte, 4x² + 9y² = 36). Deplacez le centre O du cercle pour
+		voir les 4 points d'intersection (rouges) se deplacer.
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionQQFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionQQFig.size} elements | intersection cercle-ellipse (QQ)
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection deux ellipses (QQ)</h2>
+	<p class="mb-4 text-muted-foreground">
+		Deux ellipses perpendiculaires : x² + 4y² = 4 (bleue, horizontale) et 4x² + y² = 4 (verte,
+		verticale). 4 points d'intersection symetriques.
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionQQEllipsesFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={60}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionQQEllipsesFig.size} elements | intersection ellipse-ellipse (QQ)
 	</p>
 
 	<hr class="my-8" />

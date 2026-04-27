@@ -99,6 +99,26 @@ export interface GeoIntersectionCC extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
+/** Intersection of a line-like element and a quadratic curve (conic). Index (0|1) selects which of the 0-2 points.
+ *  Internal index is 0-based; DSL uses 1-based (1 or 2). */
+export interface GeoIntersectionLQ extends GeoElementBase {
+	readonly type: 'intersectionLQ';
+	readonly lineId: string;
+	readonly curveId: string;
+	readonly index: 0 | 1;
+	readonly dependsOn: readonly [string, string];
+}
+
+/** Intersection of two quadratic curves (conics). Index (0|1|2|3) selects which of up to 4 points.
+ *  Internal index is 0-based; DSL uses 1-based (1 to 4). */
+export interface GeoIntersectionQQ extends GeoElementBase {
+	readonly type: 'intersectionQQ';
+	readonly curve1Id: string;
+	readonly curve2Id: string;
+	readonly index: 0 | 1 | 2 | 3;
+	readonly dependsOn: readonly [string, string];
+}
+
 /** Image of a point by central symmetry (reflection through a center). */
 export interface GeoReflectedPoint extends GeoElementBase {
 	readonly type: 'reflectedPoint';
@@ -605,6 +625,8 @@ export type GeoPointElement =
 	| GeoIntersectionLL
 	| GeoIntersectionLC
 	| GeoIntersectionCC
+	| GeoIntersectionLQ
+	| GeoIntersectionQQ
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -623,6 +645,8 @@ export type GeoElement =
 	| GeoIntersectionLL
 	| GeoIntersectionLC
 	| GeoIntersectionCC
+	| GeoIntersectionLQ
+	| GeoIntersectionQQ
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -690,6 +714,14 @@ export function isIntersectionCC(el: GeoElement): el is GeoIntersectionCC {
 	return el.type === 'intersectionCC';
 }
 
+export function isIntersectionLQ(el: GeoElement): el is GeoIntersectionLQ {
+	return el.type === 'intersectionLQ';
+}
+
+export function isIntersectionQQ(el: GeoElement): el is GeoIntersectionQQ {
+	return el.type === 'intersectionQQ';
+}
+
 export function isReflectedPoint(el: GeoElement): el is GeoReflectedPoint {
 	return el.type === 'reflectedPoint';
 }
@@ -725,6 +757,8 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'intersectionLL' ||
 		el.type === 'intersectionLC' ||
 		el.type === 'intersectionCC' ||
+		el.type === 'intersectionLQ' ||
+		el.type === 'intersectionQQ' ||
 		el.type === 'reflectedPoint' ||
 		el.type === 'rotatedPoint' ||
 		el.type === 'translatedPoint' ||

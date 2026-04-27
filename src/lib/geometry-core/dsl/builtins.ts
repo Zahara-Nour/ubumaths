@@ -731,34 +731,83 @@ function _executeBuiltinInner(
 			const isLineType = (t: string | undefined) =>
 				t === 'droite' || t === 'segment' || t === 'demidroite';
 			const isCircleType = (t: string | undefined) => t === 'cercle';
+			const isCourbeType = (t: string | undefined) => t === 'courbe';
 
-			// Optional index (1-based in DSL, 0-based internal)
-			let index: 0 | 1 = 0;
-			if (pos.length === 3) {
-				const dslIndex = requireNumber(pos[2], 'index', line);
-				if (dslIndex !== 1 && dslIndex !== 2)
-					throw new DslRuntimeError('intersection(): index doit etre 1 ou 2', line);
-				index = (dslIndex - 1) as 0 | 1;
+			// Check if a 'courbe' element is actually a quadraticCurve (not GeoFunction/GeoImplicitCurve)
+			const isQuadraticCourbe = (figureId: string): boolean => {
+				const el = figure.getElementById(figureId);
+				return !!el && el.type === 'quadraticCurve';
+			};
+
+			// Detect quadratic curves among 'courbe' elements
+			const isQuad1 = isCourbeType(type1) && isQuadraticCourbe(id1);
+			const isQuad2 = isCourbeType(type2) && isQuadraticCourbe(id2);
+
+			// Reject non-quadratic courbes used in intersection
+			if (isCourbeType(type1) && !isQuad1) {
+				throw new DslRuntimeError(
+					'intersection(): les courbes non-coniques (fonctions, courbes implicites) ne sont pas supportees',
+					line
+				);
+			}
+			if (isCourbeType(type2) && !isQuad2) {
+				throw new DslRuntimeError(
+					'intersection(): les courbes non-coniques (fonctions, courbes implicites) ne sont pas supportees',
+					line
+				);
 			}
 
+			// Determine combination and validate index
+			const isQQ =
+				(isQuad1 && isQuad2) ||
+				(isQuad1 && isCircleType(type2)) ||
+				(isCircleType(type1) && isQuad2);
+			const maxIndex = isQQ ? 4 : 2;
+
+			let dslIndex = 1;
+			if (pos.length === 3) {
+				dslIndex = requireNumber(pos[2], 'index', line);
+				if (!Number.isInteger(dslIndex) || dslIndex < 1 || dslIndex > maxIndex)
+					throw new DslRuntimeError(`intersection(): index doit etre entre 1 et ${maxIndex}`, line);
+			}
+
+			// LL
 			if (isLineType(type1) && isLineType(type2)) {
 				const id = figure.createIntersectionLL(id1, id2, { label });
 				return { figureId: id, symbolType: 'point' };
 			}
+			// LC / CL
 			if (isLineType(type1) && isCircleType(type2)) {
-				const id = figure.createIntersectionLC(id1, id2, index, { label });
+				const id = figure.createIntersectionLC(id1, id2, (dslIndex - 1) as 0 | 1, { label });
 				return { figureId: id, symbolType: 'point' };
 			}
 			if (isCircleType(type1) && isLineType(type2)) {
-				const id = figure.createIntersectionLC(id2, id1, index, { label });
+				const id = figure.createIntersectionLC(id2, id1, (dslIndex - 1) as 0 | 1, { label });
 				return { figureId: id, symbolType: 'point' };
 			}
+			// CC
 			if (isCircleType(type1) && isCircleType(type2)) {
-				const id = figure.createIntersectionCC(id1, id2, index, { label });
+				const id = figure.createIntersectionCC(id1, id2, (dslIndex - 1) as 0 | 1, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			// LQ / QL
+			if (isLineType(type1) && isQuad2) {
+				const id = figure.createIntersectionLQ(id1, id2, (dslIndex - 1) as 0 | 1, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			if (isQuad1 && isLineType(type2)) {
+				const id = figure.createIntersectionLQ(id2, id1, (dslIndex - 1) as 0 | 1, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			// QQ (conic+conic, circle+conic, conic+circle)
+			if (isQQ) {
+				const id = figure.createIntersectionQQ(id1, id2, (dslIndex - 1) as 0 | 1 | 2 | 3, {
+					label
+				});
 				return { figureId: id, symbolType: 'point' };
 			}
 			throw new DslRuntimeError(
-				'intersection(): combinaison non supportee (attendu: droite/droite, droite/cercle, ou cercle/cercle)',
+				'intersection(): combinaison non supportee (attendu: droite/droite, droite/cercle, cercle/cercle, droite/conique, ou conique/conique)',
 				line
 			);
 		}

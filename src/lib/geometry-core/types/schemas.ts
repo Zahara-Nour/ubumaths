@@ -152,6 +152,22 @@ const intersectionCCSchema = baseElementSchema.extend({
 	dependsOn: z.tuple([z.string(), z.string()])
 });
 
+const intersectionLQSchema = baseElementSchema.extend({
+	type: z.literal('intersectionLQ'),
+	lineId: z.string().min(1),
+	curveId: z.string().min(1),
+	index: z.union([z.literal(0), z.literal(1)]),
+	dependsOn: z.tuple([z.string(), z.string()])
+});
+
+const intersectionQQSchema = baseElementSchema.extend({
+	type: z.literal('intersectionQQ'),
+	curve1Id: z.string().min(1),
+	curve2Id: z.string().min(1),
+	index: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
+	dependsOn: z.tuple([z.string(), z.string()])
+});
+
 const reflectedPointSchema = baseElementSchema.extend({
 	type: z.literal('reflectedPoint'),
 	sourceId: z.string().min(1),
@@ -267,6 +283,8 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	intersectionLLSchema,
 	intersectionLCSchema,
 	intersectionCCSchema,
+	intersectionLQSchema,
+	intersectionQQSchema,
 	reflectedPointSchema,
 	rotatedPointSchema,
 	translatedPointSchema,
