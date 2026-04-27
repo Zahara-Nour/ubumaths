@@ -96,6 +96,33 @@ T4 = point_sur(a, 1, couleur="orange")`
 	).figure;
 
 	// ==========================================================================
+	// point_sur(courbe) — point glissant sur fonction y=f(x)
+	// ==========================================================================
+	const curveFig = runDsl(
+		`f = courbe("y = x^2 - 2", couleur="bleu")
+P = point_sur(f, -1.5, couleur="rouge")
+g = courbe("y = sin(x)", couleur="vert")
+Q = point_sur(g, 1, couleur="rouge")
+h = courbe("y = 1/x", couleur="violet")
+R = point_sur(h, 0.5, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
+	// point_sur(conique) — point glissant sur conique
+	// ==========================================================================
+	const conicFig = runDsl(
+		`c1 = courbe("x^2 + y^2 - 9 = 0", couleur="bleu")
+P1 = point_sur(c1, 30, couleur="rouge")
+P2 = point_sur(c1, 150, couleur="rouge")
+c2 = courbe("{x^2}/4 + {y^2}/9 - 1 = 0", couleur="vert")
+P3 = point_sur(c2, 45, couleur="rouge")
+P4 = point_sur(c2, 200, couleur="rouge")
+c3 = courbe("y^2 - 4*x = 0", couleur="violet")
+P5 = point_sur(c3, 2, couleur="rouge")
+P6 = point_sur(c3, -2, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
 	// Tous ensemble — scene combinee
 	// ==========================================================================
 	const combinedFig = runDsl(
@@ -231,6 +258,41 @@ R = point_sur(r, 1.5, couleur="rouge")`
 		figure={arcPointsFig}
 		center={{ x: 0, y: 0 }}
 		pixelsPerUnit={50}
+		width={800}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">point_sur(courbe) — fonctions y=f(x)</h2>
+	<p class="mb-4 text-muted-foreground">
+		Points glissants sur des courbes de fonctions. Le parametre est la coordonnee x.
+		<strong>Bleu</strong> : y = x&sup2; - 2 |
+		<strong>Vert</strong> : y = sin(x) |
+		<strong>Violet</strong> : y = 1/x. Deplacez les points rouges — ils glissent le long de leur courbe.
+	</p>
+	<GeometryCanvas
+		figure={curveFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">point_sur(conique) — cercle, ellipse, parabole</h2>
+	<p class="mb-4 text-muted-foreground">
+		Points glissants sur des coniques. Pour cercle/ellipse le parametre est en degres. Pour la
+		parabole c'est un parametre brut t.
+		<strong>Bleu</strong> : cercle x&sup2;+y&sup2;=9 |
+		<strong>Vert</strong> : ellipse x&sup2;/4+y&sup2;/9=1 |
+		<strong>Violet</strong> : parabole y&sup2;=4x.
+	</p>
+	<GeometryCanvas
+		figure={conicFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
 		width={800}
 		height={500}
 	/>
