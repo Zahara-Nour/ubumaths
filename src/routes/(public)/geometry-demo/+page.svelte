@@ -977,6 +977,56 @@ style(P, couleur="rouge")
 style(Q, couleur="rouge")
 style(R, couleur="rouge")`
 	).figure;
+
+	// ==========================================================================
+	// LF: droite oblique et cubique
+	// ==========================================================================
+	const intersectionLFCubicFig = runDsl(
+		`A = point(-4, -2)
+B = point(4, 2)
+d = droite(A, B, couleur="bleu", trait="tirets")
+f = courbe("y = x^3 - 3*x", couleur="vert")
+P = intersection(d, f, 1)
+Q = intersection(d, f, 2)
+R = intersection(d, f, 3)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")
+style(R, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
+	// LF: droite et exponentielle
+	// ==========================================================================
+	const intersectionLFExpFig = runDsl(
+		`A = point(-5, 2)
+B = point(5, 4)
+d = droite(A, B, couleur="bleu", trait="tirets")
+f = courbe("y = exp(x)", couleur="vert")
+P = intersection(d, f, 1)
+Q = intersection(d, f, 2)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
+	// FF: deux transcendantes sin(x) et cos(x)
+	// ==========================================================================
+	const intersectionFFTrigFig = runDsl(
+		`f = courbe("y = sin(x)", couleur="bleu")
+g = courbe("y = cos(x)", couleur="vert")
+P = intersection(f, g, 1)
+Q = intersection(f, g, 2)
+R = intersection(f, g, 3)
+S = intersection(f, g, 4)
+T = intersection(f, g, 5)
+U = intersection(f, g, 6)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")
+style(R, couleur="rouge")
+style(S, couleur="rouge")
+style(T, couleur="rouge")
+style(U, couleur="rouge")`
+	).figure;
 </script>
 
 <div class="p-4">
@@ -1853,5 +1903,65 @@ style(R, couleur="rouge")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{intersectionFFFig.size} elements | intersection fonction-fonction (FF)
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection droite-cubique (LF)</h2>
+	<p class="mb-4 text-muted-foreground">
+		Droite oblique coupant y = x³ - 3x. Deplacez A et B pour explorer les differentes configurations
+		: 1, 2, ou 3 points d'intersection selon la pente de la droite.
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionLFCubicFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionLFCubicFig.size} elements | intersection droite-cubique
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection droite-exponentielle (LF)</h2>
+	<p class="mb-4 text-muted-foreground">
+		Droite coupant y = eˣ. Selon la position de la droite, il peut y avoir 0, 1 (tangente), ou 2
+		points d'intersection. Deplacez A et B pour explorer.
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionLFExpFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionLFExpFig.size} elements | intersection droite-exponentielle
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection sin(x) et cos(x) (FF)</h2>
+	<p class="mb-4 text-muted-foreground">
+		y = sin(x) et y = cos(x) se croisent aux points ou tan(x) = 1, soit x = π/4 + kπ. 6 points
+		d'intersection detectes dans [-10, 10].
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionFFTrigFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionFFTrigFig.size} elements | intersection sin/cos (FF)
 	</p>
 </div>
