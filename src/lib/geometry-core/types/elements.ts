@@ -120,7 +120,8 @@ export interface GeoIntersectionQQ extends GeoElementBase {
 }
 
 /** Intersection of a line-like element and a function curve y=f(x). Index selects which point (sorted by x).
- *  Internal index is 0-based; DSL uses 1-based. Number of points depends on viewport. */
+ *  Internal index is 0-based; DSL uses 1-based. Number of points depends on search window (currently [-10,10]).
+ *  Reactive when the line moves; static if only the function is involved. */
 export interface GeoIntersectionLF extends GeoElementBase {
 	readonly type: 'intersectionLF';
 	readonly lineId: string;
@@ -132,7 +133,8 @@ export interface GeoIntersectionLF extends GeoElementBase {
 }
 
 /** Intersection of two function curves y=f(x) and y=g(x). Index selects which point (sorted by x).
- *  Internal index is 0-based; DSL uses 1-based. Number of points depends on viewport. */
+ *  Internal index is 0-based; DSL uses 1-based. Number of points depends on search window (currently [-10,10]).
+ *  Static: computed once at creation since GeoFunction has no dependencies. */
 export interface GeoIntersectionFF extends GeoElementBase {
 	readonly type: 'intersectionFF';
 	readonly function1Id: string;

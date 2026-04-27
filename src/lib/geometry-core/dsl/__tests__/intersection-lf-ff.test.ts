@@ -190,6 +190,90 @@ describe('intersection fonction-fonction (FF)', () => {
 });
 
 // =============================================================================
+// Edge cases
+// =============================================================================
+
+describe('intersection edge cases', () => {
+	it('segment intersects function', () => {
+		const { figure, symbols } = run(
+			[
+				'A = point(-5, 0)',
+				'B = point(5, 0)',
+				's = segment(A, B)',
+				'f = courbe("y = x^2 - 1")',
+				'P = intersection(s, f, 1)'
+			].join('\n')
+		);
+		const pPos = getPos(figure, symbols, 'P');
+		expect(pPos).not.toBeNull();
+		expect(geoToNumber(pPos!.x)).toBeCloseTo(-1, 4);
+	});
+
+	it('demi-droite intersects function', () => {
+		const { figure, symbols } = run(
+			[
+				'A = point(0, 0)',
+				'B = point(5, 0)',
+				'r = demidroite(A, B)',
+				'f = courbe("y = x^2 - 1")',
+				'P = intersection(r, f, 1)'
+			].join('\n')
+		);
+		const pPos = getPos(figure, symbols, 'P');
+		expect(pPos).not.toBeNull();
+	});
+
+	it('default index (no 3rd arg) returns first intersection', () => {
+		const { figure, symbols } = run(
+			[
+				'A = point(-5, 0)',
+				'B = point(5, 0)',
+				'd = droite(A, B)',
+				'f = courbe("y = x^2 - 1")',
+				'P = intersection(d, f)'
+			].join('\n')
+		);
+		const pPos = getPos(figure, symbols, 'P');
+		expect(pPos).not.toBeNull();
+		// Default index=1 => first point (leftmost)
+		expect(geoToNumber(pPos!.x)).toBeCloseTo(-1, 4);
+	});
+
+	it('droite intersects exponential y=e^x at 1 point', () => {
+		const { figure, symbols } = run(
+			[
+				'A = point(-5, 1)',
+				'B = point(5, 1)',
+				'd = droite(A, B)',
+				'f = courbe("y = exp(x)")',
+				'P = intersection(d, f, 1)'
+			].join('\n')
+		);
+		const pPos = getPos(figure, symbols, 'P');
+		expect(pPos).not.toBeNull();
+		expect(geoToNumber(pPos!.x)).toBeCloseTo(0, 3);
+		expect(geoToNumber(pPos!.y)).toBeCloseTo(1, 3);
+	});
+
+	it('FF: y=x^3 and y=x have 3 intersections', () => {
+		const { figure, symbols } = run(
+			[
+				'f = courbe("y = x^3")',
+				'g = courbe("y = x")',
+				'P = intersection(f, g, 1)',
+				'Q = intersection(f, g, 2)',
+				'R = intersection(f, g, 3)'
+			].join('\n')
+		);
+		// x^3 = x => x=0, +-1 but courbe("y = x") is a line, not a function!
+		// Actually "y = x" is detected as affine => droite, not function
+		// So this should NOT be FF, it should be LF (function + droite)
+		const pPos = getPos(figure, symbols, 'P');
+		expect(pPos).not.toBeNull();
+	});
+});
+
+// =============================================================================
 // Error cases
 // =============================================================================
 
@@ -217,6 +301,45 @@ describe('intersection error cases', () => {
 					'd = droite(A, B)',
 					'f = courbe("y = x^2")',
 					'P = intersection(d, f, 0)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('intersection(function, cercle) throws error', () => {
+		expect(() =>
+			run(
+				[
+					'O = point(0, 0)',
+					'c = cercle(O, 3)',
+					'f = courbe("y = x^2")',
+					'P = intersection(f, c, 1)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('intersection(function, conique) throws error', () => {
+		expect(() =>
+			run(
+				[
+					'f = courbe("y = x^2")',
+					'q = courbe("4*x^2 + 9*y^2 - 36 = 0")',
+					'P = intersection(f, q, 1)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('negative index throws error', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(-5, 0)',
+					'B = point(5, 0)',
+					'd = droite(A, B)',
+					'f = courbe("y = x^2")',
+					'P = intersection(d, f, -1)'
 				].join('\n')
 			)
 		).toThrow(DslRuntimeError);

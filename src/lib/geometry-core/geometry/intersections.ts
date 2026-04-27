@@ -733,17 +733,29 @@ export function intersectLF(
 	const x2 = geoToNumber(lineP2.x);
 	const y2 = geoToNumber(lineP2.y);
 
-	// Vertical line: x = k
-	if (Math.abs(x2 - x1) < 1e-12) {
-		const k = x1;
+	const dx = x2 - x1;
+	const dy = y2 - y1;
+	const len = Math.sqrt(dx * dx + dy * dy);
+
+	// Vertical or near-vertical line: use relative threshold
+	if (len < 1e-12 || Math.abs(dx) / len < 1e-10) {
+		const k = (x1 + x2) / 2;
 		const yVal = compiledFn({ x: k });
 		if (!Number.isFinite(yVal)) return null;
 		return [{ x: numeric(k), y: numeric(yVal) }];
 	}
 
 	// Line y = mx + p
-	const m = (y2 - y1) / (x2 - x1);
+	const m = dy / dx;
 	const p = y1 - m * x1;
+
+	// Guard against degenerate slope (shouldn't happen after the check above)
+	if (!Number.isFinite(m) || !Number.isFinite(p)) {
+		const k = (x1 + x2) / 2;
+		const yVal = compiledFn({ x: k });
+		if (!Number.isFinite(yVal)) return null;
+		return [{ x: numeric(k), y: numeric(yVal) }];
+	}
 
 	// h(x) = f(x) - (m*x + p)
 	const lineExpr = add(multiply(mathNumber(String(m)), variable('x')), mathNumber(String(p)));
