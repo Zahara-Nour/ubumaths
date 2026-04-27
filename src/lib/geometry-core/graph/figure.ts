@@ -37,6 +37,8 @@ import type {
 	GeoImplicitCurve,
 	GeoPointOnCurve,
 	GeoPointOnQuadraticCurve,
+	GeoIntersectionLF,
+	GeoIntersectionFF,
 	GeoTangentLine,
 	GeoTangentToQuadratic,
 	GeoVectorByPoints,
@@ -66,6 +68,7 @@ import {
 	isLineLike,
 	isPointElement,
 	isQuadraticCurve,
+	isFunction,
 	isPointOnCurve,
 	isPointOnQuadraticCurve,
 	isTransformation,
@@ -708,6 +711,78 @@ export class Figure {
 			dependsOn: [curve1Id, curve2Id]
 		};
 		this.addElement(id, element, [curve1Id, curve2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createIntersectionLF(
+		lineId: string,
+		functionId: string,
+		index: number,
+		xMin: number,
+		xMax: number,
+		options?: ElementOptions
+	): string {
+		const el1 = this.elements.get(lineId);
+		const el2 = this.elements.get(functionId);
+		if (!el1 || !isLineLike(el1))
+			throw new Error(`createIntersectionLF: "${lineId}" is not a line-like element`);
+		if (!el2 || !isFunction(el2))
+			throw new Error(`createIntersectionLF: "${functionId}" is not a function element`);
+
+		const id = this.generateId('intLF');
+		const element: GeoIntersectionLF = {
+			type: 'intersectionLF',
+			id,
+			lineId,
+			functionId,
+			index,
+			xMin,
+			xMax,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [lineId, functionId]
+		};
+		this.addElement(id, element, [lineId, functionId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createIntersectionFF(
+		function1Id: string,
+		function2Id: string,
+		index: number,
+		xMin: number,
+		xMax: number,
+		options?: ElementOptions
+	): string {
+		const el1 = this.elements.get(function1Id);
+		const el2 = this.elements.get(function2Id);
+		if (!el1 || !isFunction(el1))
+			throw new Error(`createIntersectionFF: "${function1Id}" is not a function element`);
+		if (!el2 || !isFunction(el2))
+			throw new Error(`createIntersectionFF: "${function2Id}" is not a function element`);
+
+		const id = this.generateId('intFF');
+		const element: GeoIntersectionFF = {
+			type: 'intersectionFF',
+			id,
+			function1Id,
+			function2Id,
+			index,
+			xMin,
+			xMax,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [function1Id, function2Id]
+		};
+		this.addElement(id, element, [function1Id, function2Id]);
 		this.computePosition(id);
 		return id;
 	}

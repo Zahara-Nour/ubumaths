@@ -128,6 +128,9 @@ export {
 	type CriticalPoint
 } from './critical-points';
 
+// Generic root-finding (used by function intersections)
+export { findRoots, type RootResult } from './roots';
+
 // Domain analysis (re-exported from domain module)
 export * from '../domain';
 

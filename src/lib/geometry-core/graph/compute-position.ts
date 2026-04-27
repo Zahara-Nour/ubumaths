@@ -13,6 +13,8 @@ import {
 	isIntersectionCC,
 	isIntersectionLQ,
 	isIntersectionQQ,
+	isIntersectionLF,
+	isIntersectionFF,
 	isReflectedPoint,
 	isRotatedPoint,
 	isTranslatedPoint,
@@ -37,7 +39,9 @@ import {
 	intersectLC,
 	intersectCC,
 	intersectLQ,
-	intersectQQ
+	intersectQQ,
+	intersectLF,
+	intersectFF
 } from '../geometry/intersections';
 import { resolveVectorComponents } from './vector-components';
 import {
@@ -108,6 +112,31 @@ export function computeElementPosition(
 
 	if (isIntersectionQQ(el)) {
 		const pos = computeIntersectionQQPos(el.curve1Id, el.curve2Id, el.index, positions, elements);
+		return { position: pos, hasComputablePosition: true };
+	}
+
+	if (isIntersectionLF(el)) {
+		const pos = computeIntersectionLFPos(
+			el.lineId,
+			el.functionId,
+			el.index,
+			el.xMin,
+			el.xMax,
+			positions,
+			elements
+		);
+		return { position: pos, hasComputablePosition: true };
+	}
+
+	if (isIntersectionFF(el)) {
+		const pos = computeIntersectionFFPos(
+			el.function1Id,
+			el.function2Id,
+			el.index,
+			el.xMin,
+			el.xMax,
+			elements
+		);
 		return { position: pos, hasComputablePosition: true };
 	}
 
@@ -406,6 +435,39 @@ function computeIntersectionQQPos(
 	const coeffs2 = getConicCoefficients(curve2Id, positions, elements);
 	if (!coeffs1 || !coeffs2) return null;
 	const pts = intersectQQ(coeffs1, coeffs2);
+	if (!pts || index >= pts.length) return null;
+	return pts[index];
+}
+
+function computeIntersectionLFPos(
+	lineId: string,
+	functionId: string,
+	index: number,
+	xMin: number,
+	xMax: number,
+	positions: ReadonlyMap<string, GeoPoint>,
+	elements: ReadonlyMap<string, GeoElement>
+): GeoPoint | null {
+	const line = getLineLikePoints(lineId, positions, elements);
+	const fnEl = elements.get(functionId);
+	if (!line || !fnEl || fnEl.type !== 'function') return null;
+	const pts = intersectLF(line.p1, line.p2, fnEl.expression, fnEl.compiledFn, xMin, xMax);
+	if (!pts || index >= pts.length) return null;
+	return pts[index];
+}
+
+function computeIntersectionFFPos(
+	function1Id: string,
+	function2Id: string,
+	index: number,
+	xMin: number,
+	xMax: number,
+	elements: ReadonlyMap<string, GeoElement>
+): GeoPoint | null {
+	const fn1 = elements.get(function1Id);
+	const fn2 = elements.get(function2Id);
+	if (!fn1 || fn1.type !== 'function' || !fn2 || fn2.type !== 'function') return null;
+	const pts = intersectFF(fn1.expression, fn1.compiledFn, fn2.expression, xMin, xMax);
 	if (!pts || index >= pts.length) return null;
 	return pts[index];
 }

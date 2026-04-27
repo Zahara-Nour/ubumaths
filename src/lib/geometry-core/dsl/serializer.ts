@@ -202,6 +202,12 @@ function serializeElement(
 		case 'intersectionQQ':
 			return `${n} = intersection(${name(idToName, el.curve1Id)}, ${name(idToName, el.curve2Id)}, ${el.index + 1})`;
 
+		case 'intersectionLF':
+			return `${n} = intersection(${name(idToName, el.lineId)}, ${name(idToName, el.functionId)}, ${el.index + 1})`;
+
+		case 'intersectionFF':
+			return `${n} = intersection(${name(idToName, el.function1Id)}, ${name(idToName, el.function2Id)}, ${el.index + 1})`;
+
 		case 'reflectedPoint':
 			return `${n} = symetrie(${name(idToName, el.sourceId)}, centre=${name(idToName, el.centerId)})`;
 

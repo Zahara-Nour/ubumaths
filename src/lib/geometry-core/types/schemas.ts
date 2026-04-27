@@ -168,6 +168,28 @@ const intersectionQQSchema = baseElementSchema.extend({
 	dependsOn: z.tuple([z.string(), z.string()])
 });
 
+const intersectionLFSchema = baseElementSchema.extend({
+	type: z.literal('intersectionLF'),
+	lineId: z.string().min(1),
+	functionId: z.string().min(1),
+	// No upper bound: functions can have arbitrarily many intersections in the window
+	index: z.number().int().min(0),
+	xMin: z.number().finite(),
+	xMax: z.number().finite(),
+	dependsOn: z.tuple([z.string(), z.string()])
+});
+
+const intersectionFFSchema = baseElementSchema.extend({
+	type: z.literal('intersectionFF'),
+	function1Id: z.string().min(1),
+	function2Id: z.string().min(1),
+	// No upper bound: functions can have arbitrarily many intersections in the window
+	index: z.number().int().min(0),
+	xMin: z.number().finite(),
+	xMax: z.number().finite(),
+	dependsOn: z.tuple([z.string(), z.string()])
+});
+
 const reflectedPointSchema = baseElementSchema.extend({
 	type: z.literal('reflectedPoint'),
 	sourceId: z.string().min(1),
@@ -285,6 +307,8 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	intersectionCCSchema,
 	intersectionLQSchema,
 	intersectionQQSchema,
+	intersectionLFSchema,
+	intersectionFFSchema,
 	reflectedPointSchema,
 	rotatedPointSchema,
 	translatedPointSchema,

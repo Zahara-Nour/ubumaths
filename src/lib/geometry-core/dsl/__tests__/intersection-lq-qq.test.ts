@@ -107,18 +107,25 @@ describe('intersection droite-conique (LQ)', () => {
 		).toThrow(DslRuntimeError);
 	});
 
-	it('intersection with non-conic courbe throws error', () => {
-		expect(() =>
-			run(
-				[
-					'A = point(-5, 0)',
-					'B = point(5, 0)',
-					'd = droite(A, B)',
-					'f = courbe("y = sin(x)")',
-					'P = intersection(d, f, 1)'
-				].join('\n')
-			)
-		).toThrow(DslRuntimeError);
+	it('intersection with function courbe works (LF)', () => {
+		// intersection(droite, function) is now supported
+		const { figure, symbols } = run(
+			[
+				'A = point(-5, 0)',
+				'B = point(5, 0)',
+				'd = droite(A, B)',
+				'f = courbe("y = x^2 - 1")',
+				'P = intersection(d, f, 1)',
+				'Q = intersection(d, f, 2)'
+			].join('\n')
+		);
+		const pPos = getPos(figure, symbols, 'P');
+		const qPos = getPos(figure, symbols, 'Q');
+		expect(pPos).not.toBeNull();
+		expect(qPos).not.toBeNull();
+		// y=0 intersects y=x^2-1 at x=-1 and x=1
+		expect(geoToNumber(pPos!.x)).toBeCloseTo(-1, 4);
+		expect(geoToNumber(qPos!.x)).toBeCloseTo(1, 4);
 	});
 
 	it('reactivity: moving line points updates intersection', () => {

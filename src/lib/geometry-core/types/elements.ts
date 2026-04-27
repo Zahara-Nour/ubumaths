@@ -119,6 +119,30 @@ export interface GeoIntersectionQQ extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
+/** Intersection of a line-like element and a function curve y=f(x). Index selects which point (sorted by x).
+ *  Internal index is 0-based; DSL uses 1-based. Number of points depends on viewport. */
+export interface GeoIntersectionLF extends GeoElementBase {
+	readonly type: 'intersectionLF';
+	readonly lineId: string;
+	readonly functionId: string;
+	readonly index: number;
+	readonly xMin: number;
+	readonly xMax: number;
+	readonly dependsOn: readonly [string, string];
+}
+
+/** Intersection of two function curves y=f(x) and y=g(x). Index selects which point (sorted by x).
+ *  Internal index is 0-based; DSL uses 1-based. Number of points depends on viewport. */
+export interface GeoIntersectionFF extends GeoElementBase {
+	readonly type: 'intersectionFF';
+	readonly function1Id: string;
+	readonly function2Id: string;
+	readonly index: number;
+	readonly xMin: number;
+	readonly xMax: number;
+	readonly dependsOn: readonly [string, string];
+}
+
 /** Image of a point by central symmetry (reflection through a center). */
 export interface GeoReflectedPoint extends GeoElementBase {
 	readonly type: 'reflectedPoint';
@@ -627,6 +651,8 @@ export type GeoPointElement =
 	| GeoIntersectionCC
 	| GeoIntersectionLQ
 	| GeoIntersectionQQ
+	| GeoIntersectionLF
+	| GeoIntersectionFF
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -647,6 +673,8 @@ export type GeoElement =
 	| GeoIntersectionCC
 	| GeoIntersectionLQ
 	| GeoIntersectionQQ
+	| GeoIntersectionLF
+	| GeoIntersectionFF
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -722,6 +750,14 @@ export function isIntersectionQQ(el: GeoElement): el is GeoIntersectionQQ {
 	return el.type === 'intersectionQQ';
 }
 
+export function isIntersectionLF(el: GeoElement): el is GeoIntersectionLF {
+	return el.type === 'intersectionLF';
+}
+
+export function isIntersectionFF(el: GeoElement): el is GeoIntersectionFF {
+	return el.type === 'intersectionFF';
+}
+
 export function isReflectedPoint(el: GeoElement): el is GeoReflectedPoint {
 	return el.type === 'reflectedPoint';
 }
@@ -759,6 +795,8 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'intersectionCC' ||
 		el.type === 'intersectionLQ' ||
 		el.type === 'intersectionQQ' ||
+		el.type === 'intersectionLF' ||
+		el.type === 'intersectionFF' ||
 		el.type === 'reflectedPoint' ||
 		el.type === 'rotatedPoint' ||
 		el.type === 'translatedPoint' ||

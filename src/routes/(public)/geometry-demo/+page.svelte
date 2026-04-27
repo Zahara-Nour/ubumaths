@@ -949,6 +949,34 @@ r = rotation(angle=90, centre=O)
 c3 = transforme(r, c)
 style(c3, couleur="vert")`
 	).figure;
+
+	// ==========================================================================
+	// Intersection droite-fonction (LF)
+	// ==========================================================================
+	const intersectionLFFig = runDsl(
+		`A = point(-3, -1)
+B = point(3, 1)
+d = droite(A, B, couleur="bleu", trait="tirets")
+f = courbe("y = x^2 - 2", couleur="vert")
+P = intersection(d, f, 1)
+Q = intersection(d, f, 2)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")`
+	).figure;
+
+	// ==========================================================================
+	// Intersection fonction-fonction (FF)
+	// ==========================================================================
+	const intersectionFFFig = runDsl(
+		`f = courbe("y = sin(x)", couleur="bleu")
+g = courbe("y = x/3", couleur="vert")
+P = intersection(f, g, 1)
+Q = intersection(f, g, 2)
+R = intersection(f, g, 3)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")
+style(R, couleur="rouge")`
+	).figure;
 </script>
 
 <div class="p-4">
@@ -1785,5 +1813,45 @@ style(c3, couleur="vert")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{transformImplicitFig.size} elements | courbe implicite transformee
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection droite-fonction (LF)</h2>
+	<p class="mb-4 text-muted-foreground">
+		Droite coupant une parabole y = x² - 2. Deplacez les points A et B pour modifier la droite. Les
+		2 points d'intersection (rouges) suivent en temps reel.
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionLFFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionLFFig.size} elements | intersection droite-fonction (LF)
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection fonction-fonction (FF)</h2>
+	<p class="mb-4 text-muted-foreground">
+		y = sin(x) et y = x/3. Multiples points d'intersection (rouges) detectes par resolution hybride
+		(symbolique + numerique).
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionFFFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionFFFig.size} elements | intersection fonction-fonction (FF)
 	</p>
 </div>
