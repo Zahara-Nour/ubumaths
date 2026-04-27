@@ -126,6 +126,10 @@ function typePrefix(type: string): string {
 			return 'f';
 		case 'pointOnCurve':
 		case 'pointOnQuadraticCurve':
+		case 'pointOnSegment':
+		case 'pointOnLine':
+		case 'pointOnCircle':
+		case 'pointOnArc':
 			return 'pt';
 		case 'tangentLine':
 		case 'tangentToQuadratic':
@@ -337,6 +341,21 @@ function serializeElement(
 			}
 			return `${n} = point_sur(${name(idToName, el.curveId)}, ${fmtNum(tDisplay)})`;
 		}
+
+		case 'pointOnSegment':
+			return `${n} = point_sur(${name(idToName, el.segmentId)}, ${fmtNum(el.t)})`;
+
+		case 'pointOnLine':
+			return `${n} = point_sur(${name(idToName, el.lineId)}, ${fmtNum(el.t)})`;
+
+		case 'pointOnCircle': {
+			// Reverse radians → degrees for display (same convention as conics)
+			const angleDeg = (el.theta * 180) / Math.PI;
+			return `${n} = point_sur(${name(idToName, el.circleId)}, ${fmtNum(angleDeg)})`;
+		}
+
+		case 'pointOnArc':
+			return `${n} = point_sur(${name(idToName, el.arcId)}, ${fmtNum(el.t)})`;
 
 		case 'tangentLine':
 			if (el.pointOnCurveId) {

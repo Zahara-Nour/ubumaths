@@ -42,5 +42,11 @@
 				LC, CC, LQ, QQ, LF, FF — droites, cercles, coniques, fonctions
 			</p>
 		</a>
+		<a href="/geometry-demo/point-sur" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Points contraints — point_sur()</h2>
+			<p class="text-sm text-muted-foreground">
+				Points sur segment, droite, demidroite, cercle, arc — draggable
+			</p>
+		</a>
 	</div>
 </div>

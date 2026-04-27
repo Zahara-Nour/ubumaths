@@ -221,6 +221,42 @@ export interface GeoPointOnQuadraticCurve extends GeoElementBase {
 	readonly dependsOn: readonly [string];
 }
 
+/** Point constrained to a segment. t ∈ [0,1]: 0=start, 1=end. */
+export interface GeoPointOnSegment extends GeoElementBase {
+	readonly type: 'pointOnSegment';
+	readonly segmentId: string;
+	readonly t: number;
+	readonly draggable: boolean;
+	readonly dependsOn: readonly [string];
+}
+
+/** Point constrained to a line or ray. P = P1 + t*(P2-P1). */
+export interface GeoPointOnLine extends GeoElementBase {
+	readonly type: 'pointOnLine';
+	readonly lineId: string;
+	readonly t: number;
+	readonly draggable: boolean;
+	readonly dependsOn: readonly [string];
+}
+
+/** Point constrained to a circle. θ in radians. */
+export interface GeoPointOnCircle extends GeoElementBase {
+	readonly type: 'pointOnCircle';
+	readonly circleId: string;
+	readonly theta: number;
+	readonly draggable: boolean;
+	readonly dependsOn: readonly [string];
+}
+
+/** Point constrained to an arc. t ∈ [0,1] interpolates from start to end angle. */
+export interface GeoPointOnArc extends GeoElementBase {
+	readonly type: 'pointOnArc';
+	readonly arcId: string;
+	readonly t: number;
+	readonly draggable: boolean;
+	readonly dependsOn: readonly [string];
+}
+
 // =============================================================================
 // Annotation types
 // =============================================================================
@@ -664,7 +700,11 @@ export type GeoPointElement =
 	| GeoAffinityPoint
 	| GeoInvertedPoint
 	| GeoPointOnCurve
-	| GeoPointOnQuadraticCurve;
+	| GeoPointOnQuadraticCurve
+	| GeoPointOnSegment
+	| GeoPointOnLine
+	| GeoPointOnCircle
+	| GeoPointOnArc;
 export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
 
 export type GeoElement =
@@ -701,6 +741,10 @@ export type GeoElement =
 	| GeoImplicitCurve
 	| GeoPointOnCurve
 	| GeoPointOnQuadraticCurve
+	| GeoPointOnSegment
+	| GeoPointOnLine
+	| GeoPointOnCircle
+	| GeoPointOnArc
 	| GeoTangentLine
 	| GeoTangentToQuadratic
 	| GeoVectorByPoints
@@ -788,6 +832,22 @@ export function isPointOnQuadraticCurve(el: GeoElement): el is GeoPointOnQuadrat
 	return el.type === 'pointOnQuadraticCurve';
 }
 
+export function isPointOnSegment(el: GeoElement): el is GeoPointOnSegment {
+	return el.type === 'pointOnSegment';
+}
+
+export function isPointOnLine(el: GeoElement): el is GeoPointOnLine {
+	return el.type === 'pointOnLine';
+}
+
+export function isPointOnCircle(el: GeoElement): el is GeoPointOnCircle {
+	return el.type === 'pointOnCircle';
+}
+
+export function isPointOnArc(el: GeoElement): el is GeoPointOnArc {
+	return el.type === 'pointOnArc';
+}
+
 export function isPointElement(el: GeoElement): el is GeoPointElement {
 	return (
 		el.type === 'freePoint' ||
@@ -808,7 +868,11 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'affinityPoint' ||
 		el.type === 'invertedPoint' ||
 		el.type === 'pointOnCurve' ||
-		el.type === 'pointOnQuadraticCurve'
+		el.type === 'pointOnQuadraticCurve' ||
+		el.type === 'pointOnSegment' ||
+		el.type === 'pointOnLine' ||
+		el.type === 'pointOnCircle' ||
+		el.type === 'pointOnArc'
 	);
 }
 

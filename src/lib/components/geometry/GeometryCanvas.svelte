@@ -29,7 +29,12 @@
 	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
 	import { snapToGrid } from '$lib/geometry-core/interaction/snap';
 	import { numeric } from '$lib/geometry-core/types/geo-value';
-	import { isPointElement, isVector } from '$lib/geometry-core/types/elements';
+	import {
+		isPointElement,
+		isVector,
+		type GeoArcByAngles,
+		type GeoArcByPoints
+	} from '$lib/geometry-core/types/elements';
 	import { conicClosestParam } from '$lib/geometry-core/graph/conic-helpers';
 	import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 	import rough from 'roughjs';
@@ -174,6 +179,73 @@
 		return shouldRenderRough(sty.render, elType, renderMode);
 	}
 
+	// ─── Drag projection helpers ───────────────────────────────────
+
+	function projectOnSegment(
+		mx: number,
+		my: number,
+		x1: number,
+		y1: number,
+		x2: number,
+		y2: number
+	): number {
+		const dx = x2 - x1;
+		const dy = y2 - y1;
+		const lenSq = dx * dx + dy * dy;
+		if (lenSq === 0) return 0;
+		return Math.max(0, Math.min(1, ((mx - x1) * dx + (my - y1) * dy) / lenSq));
+	}
+
+	function projectOnLine(
+		mx: number,
+		my: number,
+		x1: number,
+		y1: number,
+		x2: number,
+		y2: number
+	): number {
+		const dx = x2 - x1;
+		const dy = y2 - y1;
+		const lenSq = dx * dx + dy * dy;
+		if (lenSq === 0) return 0;
+		return ((mx - x1) * dx + (my - y1) * dy) / lenSq;
+	}
+
+	function projectOnArc(
+		fig: Figure,
+		arcEl: GeoArcByAngles | GeoArcByPoints,
+		mx: number,
+		my: number
+	): number {
+		let cx: number, cy: number, startAngle: number, endAngle: number;
+
+		if (arcEl.type === 'arcByAngles') {
+			const centerPos = fig.getPosition(arcEl.centerId);
+			if (!centerPos) return 0.5;
+			cx = geoToNumber(centerPos.x);
+			cy = geoToNumber(centerPos.y);
+			startAngle = geoToNumber(arcEl.startAngle);
+			endAngle = geoToNumber(arcEl.endAngle);
+		} else {
+			const centerPos = fig.getPosition(arcEl.centerId);
+			const startPos = fig.getPosition(arcEl.startId);
+			const endPos = fig.getPosition(arcEl.endId);
+			if (!centerPos || !startPos || !endPos) return 0.5;
+			cx = geoToNumber(centerPos.x);
+			cy = geoToNumber(centerPos.y);
+			startAngle = Math.atan2(geoToNumber(startPos.y) - cy, geoToNumber(startPos.x) - cx);
+			endAngle = Math.atan2(geoToNumber(endPos.y) - cy, geoToNumber(endPos.x) - cx);
+		}
+
+		let sweep = endAngle - startAngle;
+		if (sweep < 0) sweep += 2 * Math.PI;
+		if (sweep === 0) return 0;
+		const angle = Math.atan2(my - cy, mx - cx);
+		let offset = angle - startAngle;
+		offset = ((offset % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+		return Math.max(0, Math.min(1, offset / sweep));
+	}
+
 	// ─── Pointer events ─────────────────────────────────────────────
 
 	function getMathCoords(e: PointerEvent | WheelEvent): { x: number; y: number } | null {
@@ -210,7 +282,12 @@
 				svgRef?.setPointerCapture(e.pointerId);
 				e.preventDefault();
 			} else if (
-				(el?.type === 'pointOnCurve' || el?.type === 'pointOnQuadraticCurve') &&
+				(el?.type === 'pointOnCurve' ||
+					el?.type === 'pointOnQuadraticCurve' ||
+					el?.type === 'pointOnSegment' ||
+					el?.type === 'pointOnLine' ||
+					el?.type === 'pointOnCircle' ||
+					el?.type === 'pointOnArc') &&
 				el.draggable
 			) {
 				draggingId = pointId;
@@ -281,6 +358,59 @@
 					const newT = conicClosestParam(curveEl.conic, math.x, math.y);
 					figure.movePointOnQuadraticCurve(draggingId, newT);
 				}
+			} else if (dragEl?.type === 'pointOnSegment') {
+				const segEl = figure.getElementById(dragEl.segmentId);
+				if (segEl?.type === 'segment') {
+					const p1 = figure.getPosition(segEl.startId);
+					const p2 = figure.getPosition(segEl.endId);
+					if (p1 && p2) {
+						const t = projectOnSegment(
+							math.x,
+							math.y,
+							geoToNumber(p1.x),
+							geoToNumber(p1.y),
+							geoToNumber(p2.x),
+							geoToNumber(p2.y)
+						);
+						figure.movePointOnSegment(draggingId, t);
+					}
+				}
+			} else if (dragEl?.type === 'pointOnLine') {
+				const lineEl = figure.getElementById(dragEl.lineId);
+				if (lineEl && (lineEl.type === 'line' || lineEl.type === 'ray')) {
+					const p1Id = lineEl.type === 'line' ? lineEl.point1Id : lineEl.originId;
+					const p2Id = lineEl.type === 'line' ? lineEl.point2Id : lineEl.throughId;
+					const p1 = figure.getPosition(p1Id);
+					const p2 = figure.getPosition(p2Id);
+					if (p1 && p2) {
+						const t = projectOnLine(
+							math.x,
+							math.y,
+							geoToNumber(p1.x),
+							geoToNumber(p1.y),
+							geoToNumber(p2.x),
+							geoToNumber(p2.y)
+						);
+						figure.movePointOnLine(draggingId, t);
+					}
+				}
+			} else if (dragEl?.type === 'pointOnCircle') {
+				const circEl = figure.getElementById(dragEl.circleId);
+				if (circEl && (circEl.type === 'circleByRadius' || circEl.type === 'circleByPoint')) {
+					const center = figure.getPosition(circEl.centerId);
+					if (center) {
+						const cx = geoToNumber(center.x);
+						const cy = geoToNumber(center.y);
+						const theta = Math.atan2(math.y - cy, math.x - cx);
+						figure.movePointOnCircle(draggingId, theta);
+					}
+				}
+			} else if (dragEl?.type === 'pointOnArc') {
+				const arcEl = figure.getElementById(dragEl.arcId);
+				if (arcEl && (arcEl.type === 'arcByAngles' || arcEl.type === 'arcByPoints')) {
+					const t = projectOnArc(figure, arcEl, math.x, math.y);
+					figure.movePointOnArc(draggingId, t);
+				}
 			} else {
 				figure.movePoint(draggingId, numeric(math.x), numeric(math.y));
 			}
@@ -327,6 +457,13 @@
 					figure.moveFreeVector(draggingId, numeric(snapAx), numeric(snapAy));
 				} else if (dragEl?.type === 'pointOnCurve') {
 					figure.movePointOnCurve(draggingId, snapped.x);
+				} else if (
+					dragEl?.type === 'pointOnSegment' ||
+					dragEl?.type === 'pointOnLine' ||
+					dragEl?.type === 'pointOnCircle' ||
+					dragEl?.type === 'pointOnArc'
+				) {
+					// Constrained points: no snap, keep current position
 				} else {
 					figure.movePoint(draggingId, snapped.x, snapped.y);
 				}
@@ -1115,10 +1252,7 @@
 								fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive &&
-									((el.type === 'freePoint' && el.draggable) ||
-										(el.type === 'pointOnCurve' && el.draggable) ||
-										(el.type === 'pointOnQuadraticCurve' && el.draggable))}
+								class:draggable={interactive && 'draggable' in el && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
@@ -1132,20 +1266,14 @@
 								stroke-width={sty.strokeWidth}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive &&
-									((el.type === 'freePoint' && el.draggable) ||
-										(el.type === 'pointOnCurve' && el.draggable) ||
-										(el.type === 'pointOnQuadraticCurve' && el.draggable))}
+								class:draggable={interactive && 'draggable' in el && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
 						{:else if sty.pointShape === 'cross'}
 							<g
 								class="point"
-								class:draggable={interactive &&
-									((el.type === 'freePoint' && el.draggable) ||
-										(el.type === 'pointOnCurve' && el.draggable) ||
-										(el.type === 'pointOnQuadraticCurve' && el.draggable))}
+								class:draggable={interactive && 'draggable' in el && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 								opacity={sty.opacity}
@@ -1176,10 +1304,7 @@
 								fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive &&
-									((el.type === 'freePoint' && el.draggable) ||
-										(el.type === 'pointOnCurve' && el.draggable) ||
-										(el.type === 'pointOnQuadraticCurve' && el.draggable))}
+								class:draggable={interactive && 'draggable' in el && el.draggable}
 								class:hovered={hoveredId === el.id}
 								class:dragging={draggingId === el.id}
 							/>
