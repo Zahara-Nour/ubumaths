@@ -9,6 +9,8 @@ import type { GeoElement, GeoMeasure } from '../types/elements';
 import {
 	isMidpoint,
 	isIntersectionLL,
+	isIntersectionLC,
+	isIntersectionCC,
 	isReflectedPoint,
 	isRotatedPoint,
 	isTranslatedPoint,
@@ -24,10 +26,11 @@ import {
 	isPointOnQuadraticCurve
 } from '../types/elements';
 import type { GeoPoint } from '../types/primitives';
-import { geoAdd, geoSub, geoDiv, geoFromNumber } from '../compute/geo-arithmetic';
+import type { GeoValue } from '../types/geo-value';
+import { geoAdd, geoSub, geoMul, geoDiv, geoSqrt, geoFromNumber } from '../compute/geo-arithmetic';
 import { geoToNumber } from '../compute/to-number';
 import { numeric } from '../types/geo-value';
-import { intersectLL } from '../geometry/intersections';
+import { intersectLL, intersectLC, intersectCC } from '../geometry/intersections';
 import { resolveVectorComponents } from './vector-components';
 import {
 	reflectPoint,
@@ -77,6 +80,16 @@ export function computeElementPosition(
 
 	if (isIntersectionLL(el)) {
 		const pos = computeIntersectionLL(el.line1Id, el.line2Id, positions, elements);
+		return { position: pos, hasComputablePosition: true };
+	}
+
+	if (isIntersectionLC(el)) {
+		const pos = computeIntersectionLCPos(el.lineId, el.circleId, el.index, positions, elements);
+		return { position: pos, hasComputablePosition: true };
+	}
+
+	if (isIntersectionCC(el)) {
+		const pos = computeIntersectionCCPos(el.circle1Id, el.circle2Id, el.index, positions, elements);
 		return { position: pos, hasComputablePosition: true };
 	}
 
@@ -267,6 +280,61 @@ function computeIntersectionLL(
 	const line2 = getLineLikePoints(line2Id, positions, elements);
 	if (!line1 || !line2) return null;
 	return intersectLL(line1.p1, line1.p2, line2.p1, line2.p2);
+}
+
+function getCircleParams(
+	circleId: string,
+	positions: ReadonlyMap<string, GeoPoint>,
+	elements: ReadonlyMap<string, GeoElement>
+): { center: GeoPoint; radius: GeoValue } | null {
+	const el = elements.get(circleId);
+	if (!el) return null;
+	if (el.type === 'circleByRadius') {
+		const center = positions.get(el.centerId);
+		if (!center) return null;
+		return { center, radius: el.radius };
+	}
+	if (el.type === 'circleByPoint') {
+		const center = positions.get(el.centerId);
+		const edge = positions.get(el.edgePointId);
+		if (!center || !edge) return null;
+		const dx = geoSub(edge.x, center.x);
+		const dy = geoSub(edge.y, center.y);
+		const radius = geoSqrt(geoAdd(geoMul(dx, dx), geoMul(dy, dy)));
+		if (radius === null) return null;
+		return { center, radius };
+	}
+	return null;
+}
+
+function computeIntersectionLCPos(
+	lineId: string,
+	circleId: string,
+	index: 0 | 1,
+	positions: ReadonlyMap<string, GeoPoint>,
+	elements: ReadonlyMap<string, GeoElement>
+): GeoPoint | null {
+	const line = getLineLikePoints(lineId, positions, elements);
+	const circle = getCircleParams(circleId, positions, elements);
+	if (!line || !circle) return null;
+	const pts = intersectLC(line.p1, line.p2, circle.center, circle.radius);
+	if (!pts || index >= pts.length) return null;
+	return pts[index];
+}
+
+function computeIntersectionCCPos(
+	circle1Id: string,
+	circle2Id: string,
+	index: 0 | 1,
+	positions: ReadonlyMap<string, GeoPoint>,
+	elements: ReadonlyMap<string, GeoElement>
+): GeoPoint | null {
+	const c1 = getCircleParams(circle1Id, positions, elements);
+	const c2 = getCircleParams(circle2Id, positions, elements);
+	if (!c1 || !c2) return null;
+	const pts = intersectCC(c1.center, c1.radius, c2.center, c2.radius);
+	if (!pts || index >= pts.length) return null;
+	return pts[index];
 }
 
 function computeMeasureValue(

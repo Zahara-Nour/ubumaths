@@ -79,6 +79,24 @@ export interface GeoIntersectionLL extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
+/** Intersection of a line-like element and a circle. Index selects which of the 0-2 points. */
+export interface GeoIntersectionLC extends GeoElementBase {
+	readonly type: 'intersectionLC';
+	readonly lineId: string;
+	readonly circleId: string;
+	readonly index: 0 | 1;
+	readonly dependsOn: readonly [string, string];
+}
+
+/** Intersection of two circles. Index selects which of the 0-2 points. */
+export interface GeoIntersectionCC extends GeoElementBase {
+	readonly type: 'intersectionCC';
+	readonly circle1Id: string;
+	readonly circle2Id: string;
+	readonly index: 0 | 1;
+	readonly dependsOn: readonly [string, string];
+}
+
 /** Image of a point by central symmetry (reflection through a center). */
 export interface GeoReflectedPoint extends GeoElementBase {
 	readonly type: 'reflectedPoint';
@@ -583,6 +601,8 @@ export type GeoPointElement =
 	| GeoFreePoint
 	| GeoMidpoint
 	| GeoIntersectionLL
+	| GeoIntersectionLC
+	| GeoIntersectionCC
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -599,6 +619,8 @@ export type GeoElement =
 	| GeoFreePoint
 	| GeoMidpoint
 	| GeoIntersectionLL
+	| GeoIntersectionLC
+	| GeoIntersectionCC
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -658,6 +680,14 @@ export function isIntersectionLL(el: GeoElement): el is GeoIntersectionLL {
 	return el.type === 'intersectionLL';
 }
 
+export function isIntersectionLC(el: GeoElement): el is GeoIntersectionLC {
+	return el.type === 'intersectionLC';
+}
+
+export function isIntersectionCC(el: GeoElement): el is GeoIntersectionCC {
+	return el.type === 'intersectionCC';
+}
+
 export function isReflectedPoint(el: GeoElement): el is GeoReflectedPoint {
 	return el.type === 'reflectedPoint';
 }
@@ -691,6 +721,8 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'freePoint' ||
 		el.type === 'midpoint' ||
 		el.type === 'intersectionLL' ||
+		el.type === 'intersectionLC' ||
+		el.type === 'intersectionCC' ||
 		el.type === 'reflectedPoint' ||
 		el.type === 'rotatedPoint' ||
 		el.type === 'translatedPoint' ||
