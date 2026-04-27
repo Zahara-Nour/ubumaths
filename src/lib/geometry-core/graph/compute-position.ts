@@ -27,7 +27,11 @@ import {
 	isSegmentMark,
 	isMeasure,
 	isPointOnCurve,
-	isPointOnQuadraticCurve
+	isPointOnQuadraticCurve,
+	isPointOnSegment,
+	isPointOnLine,
+	isPointOnCircle,
+	isPointOnArc
 } from '../types/elements';
 import type { GeoPoint } from '../types/primitives';
 import type { GeoValue } from '../types/geo-value';
@@ -277,6 +281,113 @@ export function computeElementPosition(
 			if (pos) {
 				return { position: { x: numeric(pos.x), y: numeric(pos.y) }, hasComputablePosition: true };
 			}
+		}
+		return { position: null, hasComputablePosition: true };
+	}
+
+	if (isPointOnSegment(el)) {
+		const segEl = elements.get(el.segmentId);
+		if (segEl && segEl.type === 'segment') {
+			const startPos = positions.get(segEl.startId);
+			const endPos = positions.get(segEl.endId);
+			if (startPos && endPos) {
+				const t = el.t;
+				// P = start + t * (end - start)
+				const x = geoAdd(startPos.x, geoMul(numeric(t), geoSub(endPos.x, startPos.x)));
+				const y = geoAdd(startPos.y, geoMul(numeric(t), geoSub(endPos.y, startPos.y)));
+				return { position: { x, y }, hasComputablePosition: true };
+			}
+		}
+		return { position: null, hasComputablePosition: true };
+	}
+
+	if (isPointOnLine(el)) {
+		const lineEl = elements.get(el.lineId);
+		if (lineEl && (lineEl.type === 'line' || lineEl.type === 'ray')) {
+			const p1Id = lineEl.type === 'line' ? lineEl.point1Id : lineEl.originId;
+			const p2Id = lineEl.type === 'line' ? lineEl.point2Id : lineEl.throughId;
+			const p1 = positions.get(p1Id);
+			const p2 = positions.get(p2Id);
+			if (p1 && p2) {
+				const t = el.t;
+				const x = geoAdd(p1.x, geoMul(numeric(t), geoSub(p2.x, p1.x)));
+				const y = geoAdd(p1.y, geoMul(numeric(t), geoSub(p2.y, p1.y)));
+				return { position: { x, y }, hasComputablePosition: true };
+			}
+		}
+		return { position: null, hasComputablePosition: true };
+	}
+
+	if (isPointOnCircle(el)) {
+		const circEl = elements.get(el.circleId);
+		if (circEl && (circEl.type === 'circleByRadius' || circEl.type === 'circleByPoint')) {
+			const centerPos = positions.get(circEl.centerId);
+			if (centerPos) {
+				let r: number;
+				if (circEl.type === 'circleByRadius') {
+					r = geoToNumber(circEl.radius);
+				} else {
+					const edgePos = positions.get(circEl.edgePointId);
+					if (!edgePos) return { position: null, hasComputablePosition: true };
+					const dx = geoToNumber(edgePos.x) - geoToNumber(centerPos.x);
+					const dy = geoToNumber(edgePos.y) - geoToNumber(centerPos.y);
+					r = Math.sqrt(dx * dx + dy * dy);
+				}
+				const cx = geoToNumber(centerPos.x);
+				const cy = geoToNumber(centerPos.y);
+				const x = cx + r * Math.cos(el.theta);
+				const y = cy + r * Math.sin(el.theta);
+				return { position: { x: numeric(x), y: numeric(y) }, hasComputablePosition: true };
+			}
+		}
+		return { position: null, hasComputablePosition: true };
+	}
+
+	if (isPointOnArc(el)) {
+		const arcEl = elements.get(el.arcId);
+		if (arcEl) {
+			let centerPos: GeoPoint | undefined;
+			let r: number;
+			let startAngle: number;
+			let endAngle: number;
+
+			if (arcEl.type === 'arcByAngles') {
+				centerPos = positions.get(arcEl.centerId);
+				if (!centerPos) return { position: null, hasComputablePosition: true };
+				r = geoToNumber(arcEl.radius);
+				startAngle = geoToNumber(arcEl.startAngle);
+				endAngle = geoToNumber(arcEl.endAngle);
+			} else if (arcEl.type === 'arcByPoints') {
+				centerPos = positions.get(arcEl.centerId);
+				const startPos = positions.get(arcEl.startId);
+				const endPos = positions.get(arcEl.endId);
+				if (!centerPos || !startPos || !endPos)
+					return { position: null, hasComputablePosition: true };
+				const cx = geoToNumber(centerPos.x);
+				const cy = geoToNumber(centerPos.y);
+				const dx1 = geoToNumber(startPos.x) - cx;
+				const dy1 = geoToNumber(startPos.y) - cy;
+				r = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+				startAngle = Math.atan2(dy1, dx1);
+				const dx2 = geoToNumber(endPos.x) - cx;
+				const dy2 = geoToNumber(endPos.y) - cy;
+				endAngle = Math.atan2(dy2, dx2);
+			} else {
+				return { position: null, hasComputablePosition: true };
+			}
+
+			// Normalize sweep to be positive (counterclockwise arc)
+			let sweep = endAngle - startAngle;
+			if (sweep < 0) sweep += 2 * Math.PI;
+			// Degenerate arc (start === end): point stays at startAngle
+			if (sweep === 0) sweep = 2 * Math.PI;
+			const theta = startAngle + el.t * sweep;
+
+			const cx = geoToNumber(centerPos.x);
+			const cy = geoToNumber(centerPos.y);
+			const x = cx + r * Math.cos(theta);
+			const y = cy + r * Math.sin(theta);
+			return { position: { x: numeric(x), y: numeric(y) }, hasComputablePosition: true };
 		}
 		return { position: null, hasComputablePosition: true };
 	}

@@ -37,6 +37,10 @@ import type {
 	GeoImplicitCurve,
 	GeoPointOnCurve,
 	GeoPointOnQuadraticCurve,
+	GeoPointOnSegment,
+	GeoPointOnLine,
+	GeoPointOnCircle,
+	GeoPointOnArc,
 	GeoIntersectionLF,
 	GeoIntersectionFF,
 	GeoTangentLine,
@@ -71,6 +75,10 @@ import {
 	isFunction,
 	isPointOnCurve,
 	isPointOnQuadraticCurve,
+	isPointOnSegment,
+	isPointOnLine,
+	isPointOnCircle,
+	isPointOnArc,
 	isTransformation,
 	isVector
 } from '../types/elements';
@@ -1693,6 +1701,160 @@ export class Figure {
 		}
 
 		const updated: GeoPointOnCurve = { ...el, x0: newX };
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+		this.graph.markDirty(id);
+	}
+
+	createPointOnSegment(segmentId: string, t: number, options?: ElementOptions): string {
+		const segEl = this.elements.get(segmentId);
+		if (!segEl || segEl.type !== 'segment') {
+			throw new Error(`createPointOnSegment: "${segmentId}" is not a segment element`);
+		}
+
+		const id = this.generateId('ptS');
+		const element: GeoPointOnSegment = {
+			type: 'pointOnSegment',
+			id,
+			segmentId,
+			t: Math.max(0, Math.min(1, t)),
+			draggable: options?.draggable ?? true,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [segmentId]
+		};
+		this.addElement(id, element, [segmentId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	movePointOnSegment(id: string, newT: number): void {
+		const el = this.elements.get(id);
+		if (!el || !isPointOnSegment(el)) {
+			throw new Error(`movePointOnSegment: "${id}" is not a pointOnSegment`);
+		}
+
+		const clamped = Math.max(0, Math.min(1, newT));
+		const updated: GeoPointOnSegment = { ...el, t: clamped };
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+		this.graph.markDirty(id);
+	}
+
+	createPointOnLine(lineId: string, t: number, options?: ElementOptions): string {
+		const lineEl = this.elements.get(lineId);
+		if (!lineEl || (lineEl.type !== 'line' && lineEl.type !== 'ray')) {
+			throw new Error(`createPointOnLine: "${lineId}" is not a line or ray element`);
+		}
+
+		const id = this.generateId('ptL');
+		const element: GeoPointOnLine = {
+			type: 'pointOnLine',
+			id,
+			lineId,
+			t: lineEl.type === 'ray' ? Math.max(0, t) : t,
+			draggable: options?.draggable ?? true,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [lineId]
+		};
+		this.addElement(id, element, [lineId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	movePointOnLine(id: string, newT: number): void {
+		const el = this.elements.get(id);
+		if (!el || !isPointOnLine(el)) {
+			throw new Error(`movePointOnLine: "${id}" is not a pointOnLine`);
+		}
+
+		// Clamp t >= 0 if parent is a ray
+		const lineEl = this.elements.get(el.lineId);
+		const clamped = lineEl?.type === 'ray' ? Math.max(0, newT) : newT;
+		const updated: GeoPointOnLine = { ...el, t: clamped };
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+		this.graph.markDirty(id);
+	}
+
+	createPointOnCircle(circleId: string, theta: number, options?: ElementOptions): string {
+		const circEl = this.elements.get(circleId);
+		if (!circEl || (circEl.type !== 'circleByRadius' && circEl.type !== 'circleByPoint')) {
+			throw new Error(`createPointOnCircle: "${circleId}" is not a circle element`);
+		}
+
+		const id = this.generateId('ptCi');
+		const element: GeoPointOnCircle = {
+			type: 'pointOnCircle',
+			id,
+			circleId,
+			theta: ((theta % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI),
+			draggable: options?.draggable ?? true,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [circleId]
+		};
+		this.addElement(id, element, [circleId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	movePointOnCircle(id: string, newTheta: number): void {
+		const el = this.elements.get(id);
+		if (!el || !isPointOnCircle(el)) {
+			throw new Error(`movePointOnCircle: "${id}" is not a pointOnCircle`);
+		}
+
+		const normalized = ((newTheta % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+		const updated: GeoPointOnCircle = { ...el, theta: normalized };
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+		this.graph.markDirty(id);
+	}
+
+	createPointOnArc(arcId: string, t: number, options?: ElementOptions): string {
+		const arcEl = this.elements.get(arcId);
+		if (!arcEl || (arcEl.type !== 'arcByAngles' && arcEl.type !== 'arcByPoints')) {
+			throw new Error(`createPointOnArc: "${arcId}" is not an arc element`);
+		}
+
+		const id = this.generateId('ptA');
+		const element: GeoPointOnArc = {
+			type: 'pointOnArc',
+			id,
+			arcId,
+			t: Math.max(0, Math.min(1, t)),
+			draggable: options?.draggable ?? true,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [arcId]
+		};
+		this.addElement(id, element, [arcId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	movePointOnArc(id: string, newT: number): void {
+		const el = this.elements.get(id);
+		if (!el || !isPointOnArc(el)) {
+			throw new Error(`movePointOnArc: "${id}" is not a pointOnArc`);
+		}
+
+		const clamped = Math.max(0, Math.min(1, newT));
+		const updated: GeoPointOnArc = { ...el, t: clamped };
 		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 		this.graph.markDirty(id);

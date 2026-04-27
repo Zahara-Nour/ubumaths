@@ -1047,15 +1047,40 @@ function _executeBuiltinInner(
 
 		case 'point_sur': {
 			if (pos.length < 1 || pos.length > 2) {
-				throw new DslRuntimeError('point_sur() attend 1-2 arguments (f, x0?)', line);
+				throw new DslRuntimeError('point_sur() attend 1-2 arguments (objet, param?)', line);
 			}
-			const psId = requireElement(pos[0], 'fonction', line);
+			const psId = requireElement(pos[0], 'objet', line);
 			const psEl = figure.getElementById(psId);
+			if (!psEl) {
+				throw new DslRuntimeError('point_sur(): objet introuvable', line);
+			}
 
-			if (psEl && psEl.type === 'quadraticCurve') {
-				// point_sur on quadratic curve
-				// Circle/ellipse: parameter in degrees (converted to radians)
-				// Hyperbola/parabola: raw parameter t (no conversion)
+			if (psEl.type === 'segment') {
+				const t = pos.length >= 2 ? requireNumber(pos[1], 't', line) : 0.5;
+				const ptId = figure.createPointOnSegment(psId, t, { label });
+				return { figureId: ptId, symbolType: 'point' };
+			}
+
+			if (psEl.type === 'line' || psEl.type === 'ray') {
+				const t = pos.length >= 2 ? requireNumber(pos[1], 't', line) : 0;
+				const ptId = figure.createPointOnLine(psId, t, { label });
+				return { figureId: ptId, symbolType: 'point' };
+			}
+
+			if (psEl.type === 'circleByRadius' || psEl.type === 'circleByPoint') {
+				const angleDeg = pos.length >= 2 ? requireNumber(pos[1], 'angle', line) : 0;
+				const theta = (angleDeg * Math.PI) / 180;
+				const ptId = figure.createPointOnCircle(psId, theta, { label });
+				return { figureId: ptId, symbolType: 'point' };
+			}
+
+			if (psEl.type === 'arcByAngles' || psEl.type === 'arcByPoints') {
+				const t = pos.length >= 2 ? requireNumber(pos[1], 't', line) : 0.5;
+				const ptId = figure.createPointOnArc(psId, t, { label });
+				return { figureId: ptId, symbolType: 'point' };
+			}
+
+			if (psEl.type === 'quadraticCurve') {
 				const tRaw = pos.length >= 2 ? requireNumber(pos[1], 'param', line) : 0;
 				const conicType = psEl.conic.type;
 				const t = conicType === 'circle' || conicType === 'ellipse' ? (tRaw * Math.PI) / 180 : tRaw;
@@ -1063,13 +1088,19 @@ function _executeBuiltinInner(
 				return { figureId: ptId, symbolType: 'point' };
 			}
 
-			if (!psEl || psEl.type !== 'function') {
-				throw new DslRuntimeError('point_sur(): le premier argument doit etre une courbe', line);
+			if (psEl.type === 'function') {
+				const x0Val =
+					pos.length >= 2
+						? toGeoValue(pos[1], line)
+						: toGeoValue({ type: 'nombre', value: 0 }, line);
+				const ptId = figure.createPointOnCurve(psId, x0Val, { label });
+				return { figureId: ptId, symbolType: 'point' };
 			}
-			const x0Val =
-				pos.length >= 2 ? toGeoValue(pos[1], line) : toGeoValue({ type: 'nombre', value: 0 }, line);
-			const ptId = figure.createPointOnCurve(psId, x0Val, { label });
-			return { figureId: ptId, symbolType: 'point' };
+
+			throw new DslRuntimeError(
+				'point_sur(): le premier argument doit etre un segment, droite, demidroite, cercle, arc ou courbe',
+				line
+			);
 		}
 
 		case 'zeros':
