@@ -889,10 +889,10 @@ style(Q, couleur="rouge")`
 	// Intersection droite-parabole (LQ)
 	// ==========================================================================
 	const intersectionLQParabolaFig = runDsl(
-		`A = point(-4, 3)
-B = point(4, 3)
+		`A = point(3, -4)
+B = point(3, 4)
 d = droite(A, B, couleur="bleu", trait="tirets")
-q = courbe("x^2 - y = 0", couleur="violet")
+q = courbe("y^2 - x = 0", couleur="violet")
 P = intersection(d, q, 1)
 Q = intersection(d, q, 2)
 style(P, couleur="rouge")
@@ -1707,8 +1707,8 @@ style(c3, couleur="vert")`
 
 	<h2 class="mb-4 text-xl font-bold">Intersection droite-parabole (LQ)</h2>
 	<p class="mb-4 text-muted-foreground">
-		Droite coupant une parabole (y = x²). Deplacez A et B pour varier le nombre d'intersections : 2
-		points (secante), 1 point (tangente), ou 0 (exterieure).
+		Droite coupant une parabole laterale (y² = x). Deplacez A et B pour varier le nombre
+		d'intersections : 2 points (secante), 1 point (tangente), ou 0 (exterieure).
 	</p>
 
 	<GeometryCanvas
