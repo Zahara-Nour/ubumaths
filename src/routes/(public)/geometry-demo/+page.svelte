@@ -773,6 +773,90 @@ c4 = transforme(inv, c3)
 style(c4, couleur="cyan")`
 	).figure;
 
+	// ==========================================================================
+	// Intersection droite-cercle — intersection(d, c, index)
+	// ==========================================================================
+	const intersectionLCFig = runDsl(
+		`O = point(0, 0, couleur="noir")
+A = point(-8, 0)
+B = point(8, 0)
+d = droite(A, B, couleur="bleu", trait="tirets")
+c = cercle(O, rayon=3, couleur="vert")
+P = intersection(d, c, 1)
+Q = intersection(d, c, 2)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")
+segment(O, P, couleur="gris", trait="tirets")
+segment(O, Q, couleur="gris", trait="tirets")`
+	).figure;
+
+	// ==========================================================================
+	// Intersection cercle-cercle — triangle equilateral au compas
+	// ==========================================================================
+	const intersectionCCFig = runDsl(
+		`A = point(-2, 0, couleur="bleu")
+B = point(2, 0, couleur="bleu")
+segment(A, B, couleur="bleu")
+c1 = cercle(A, passant=B, couleur="vert", trait="tirets")
+c2 = cercle(B, passant=A, couleur="orange", trait="tirets")
+P = intersection(c1, c2, 1)
+Q = intersection(c1, c2, 2)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")
+segment(A, P, couleur="rouge")
+segment(B, P, couleur="rouge")
+segment(A, Q, couleur="violet")
+segment(B, Q, couleur="violet")`
+	).figure;
+
+	// ==========================================================================
+	// Intersection — mediatrice a la regle et au compas
+	// ==========================================================================
+	const compassBisectorFig = runDsl(
+		`A = point(-3, 0, couleur="bleu")
+B = point(3, 0, couleur="bleu")
+segment(A, B, couleur="bleu")
+c1 = cercle(A, passant=B, couleur="vert", trait="tirets")
+c2 = cercle(B, passant=A, couleur="orange", trait="tirets")
+P = intersection(c1, c2, 1)
+Q = intersection(c1, c2, 2)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")
+med = droite(P, Q, couleur="rouge")
+M = milieu(A, B)
+style(M, couleur="violet")
+angle_droit(A, M, P)`
+	).figure;
+
+	// ==========================================================================
+	// Intersection mixte — droite + cercle + cercle combinee
+	// ==========================================================================
+	const intersectionMixedFig = runDsl(
+		`O1 = point(-2, 0, couleur="noir")
+O2 = point(2, 0, couleur="noir")
+c1 = cercle(O1, rayon=3, couleur="bleu")
+c2 = cercle(O2, rayon=3, couleur="vert")
+
+P = intersection(c1, c2, 1)
+Q = intersection(c1, c2, 2)
+style(P, couleur="rouge")
+style(Q, couleur="rouge")
+
+d = droite(P, Q, couleur="rouge", trait="tirets")
+
+A = point(-5, -2)
+B = point(5, 2)
+d2 = droite(A, B, couleur="violet", trait="tirets")
+R = intersection(d2, c1, 1)
+S = intersection(d2, c1, 2)
+style(R, couleur="orange")
+style(S, couleur="orange")
+T = intersection(d2, c2, 1)
+U = intersection(d2, c2, 2)
+style(T, couleur="cyan")
+style(U, couleur="cyan")`
+	).figure;
+
 	const transformImplicitFig = runDsl(
 		`O = point(0, 0, couleur="noir")
 c = courbe("x^3 + y^3 - 3*x*y = 0", couleur="bleu")
@@ -1396,6 +1480,109 @@ style(c3, couleur="vert")`
 
 	<p class="mt-4 text-sm text-muted-foreground">
 		{inversionFig.size} elements | inversion() — droites et cercles
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersection droite-cercle — intersection(d, c, index)</h2>
+	<p class="mb-4 text-muted-foreground">
+		<code>intersection(d, c, 1)</code> et <code>intersection(d, c, 2)</code> retournent les 2 points
+		d'intersection d'une droite et d'un cercle. Deplacez la droite (A, B) ou le centre du cercle
+		(O).
+		<br />
+		<strong>Bleu tirets</strong> : droite |
+		<strong>Vert</strong> : cercle |
+		<strong>Rouge</strong> : points d'intersection P et Q
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionLCFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionLCFig.size} elements | intersection droite-cercle
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">
+		Intersection cercle-cercle — triangle equilateral au compas
+	</h2>
+	<p class="mb-4 text-muted-foreground">
+		Construction classique a la regle et au compas : deux cercles de meme rayon centres en A et B
+		s'intersectent en deux points P et Q formant deux triangles equilateraux.
+		<br />
+		<strong>Bleu</strong> : segment AB |
+		<strong>Vert/Orange tirets</strong> : cercles |
+		<strong>Rouge</strong> : triangle ABP |
+		<strong>Violet</strong> : triangle ABQ
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionCCFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={50}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionCCFig.size} elements | intersection cercle-cercle — triangles equilateraux
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Mediatrice a la regle et au compas</h2>
+	<p class="mb-4 text-muted-foreground">
+		Construction de la mediatrice de AB par intersection de deux cercles : les points P et Q
+		definissent la mediatrice, et M est le milieu. Deplacez A ou B pour voir la construction
+		s'adapter.
+		<br />
+		<strong>Bleu</strong> : segment AB |
+		<strong>Vert/Orange tirets</strong> : cercles |
+		<strong>Rouge</strong> : mediatrice PQ |
+		<strong>Violet</strong> : milieu M + angle droit
+	</p>
+
+	<GeometryCanvas
+		figure={compassBisectorFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{compassBisectorFig.size} elements | mediatrice — construction au compas
+	</p>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Intersections combinees — droite + cercle + cercle</h2>
+	<p class="mb-4 text-muted-foreground">
+		Deux cercles secants (bleu et vert) avec leur axe radical (droite rouge tirets passant par P et
+		Q). Une droite oblique (violet) coupe les deux cercles en 4 points supplementaires.
+		<br />
+		<strong>Bleu/Vert</strong> : cercles |
+		<strong>Rouge</strong> : intersections CC (P, Q) + axe radical |
+		<strong>Orange</strong> : intersections droite-cercle bleu |
+		<strong>Cyan</strong> : intersections droite-cercle vert
+	</p>
+
+	<GeometryCanvas
+		figure={intersectionMixedFig}
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={800}
+		height={600}
+	/>
+
+	<p class="mt-4 text-sm text-muted-foreground">
+		{intersectionMixedFig.size} elements | intersections combinees LC + CC
 	</p>
 
 	<hr class="my-8" />
