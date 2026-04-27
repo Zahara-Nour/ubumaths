@@ -79,7 +79,8 @@ export interface GeoIntersectionLL extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
-/** Intersection of a line-like element and a circle. Index selects which of the 0-2 points. */
+/** Intersection of a line-like element and a circle. Index (0|1) selects which of the 0-2 points.
+ *  Internal index is 0-based; DSL uses 1-based (1 or 2). */
 export interface GeoIntersectionLC extends GeoElementBase {
 	readonly type: 'intersectionLC';
 	readonly lineId: string;
@@ -88,7 +89,8 @@ export interface GeoIntersectionLC extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
-/** Intersection of two circles. Index selects which of the 0-2 points. */
+/** Intersection of two circles. Index (0|1) selects which of the 0-2 points.
+ *  Internal index is 0-based; DSL uses 1-based (1 or 2). */
 export interface GeoIntersectionCC extends GeoElementBase {
 	readonly type: 'intersectionCC';
 	readonly circle1Id: string;
