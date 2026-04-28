@@ -314,7 +314,7 @@ function circleByRadiusToSVG(
 	if (!center) return null;
 
 	const svgCenter = transformer.mathToSvg(geoToNumber(center.x), geoToNumber(center.y));
-	const radiusMath = geoToNumber(circle.radius);
+	const radiusMath = figure.resolveParam(circle.radius);
 	const radiusPx = radiusMath * transformer.scaleX;
 	return { cx: svgCenter.x, cy: svgCenter.y, r: Math.abs(radiusPx) };
 }
@@ -357,7 +357,7 @@ export function circleToPathSVG(
 		if (!center) return null;
 		cx = geoToNumber(center.x);
 		cy = geoToNumber(center.y);
-		rMath = geoToNumber(el.radius);
+		rMath = figure.resolveParam(el.radius);
 	} else if (isCircleByPoint(el)) {
 		const center = figure.getPosition(el.centerId);
 		const edge = figure.getPosition(el.edgePointId);
@@ -440,9 +440,9 @@ function arcByAnglesToSVG(
 
 	const cx = geoToNumber(center.x);
 	const cy = geoToNumber(center.y);
-	const r = geoToNumber(arc.radius);
-	const startAngle = geoToNumber(arc.startAngle);
-	const endAngle = geoToNumber(arc.endAngle);
+	const r = figure.resolveParam(arc.radius);
+	const startAngle = figure.resolveParam(arc.startAngle);
+	const endAngle = figure.resolveParam(arc.endAngle);
 
 	return buildArcSVGPath(cx, cy, r, startAngle, endAngle, transformer);
 }

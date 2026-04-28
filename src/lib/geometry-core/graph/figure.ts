@@ -88,6 +88,7 @@ import {
 } from '../types/elements';
 import type { GeoValue, ScalarParam } from '../types/geo-value';
 import { geoValueToMathNode, numeric, isScalarRef } from '../types/geo-value';
+import { geoToNumber } from '../compute/to-number';
 import type { GeoPoint } from '../types/primitives';
 import { resolveVectorComponents } from './vector-components';
 import {
@@ -2033,6 +2034,14 @@ export class Figure {
 
 	getScalarValue(id: string): number | undefined {
 		return this.scalarValues.get(id);
+	}
+
+	/** Resolve a ScalarParam to a number. ScalarRef looks up scalarValues, GeoValue converts directly. */
+	resolveParam(param: ScalarParam): number {
+		if (isScalarRef(param)) {
+			return this.scalarValues.get(param.scalarRef) ?? 0;
+		}
+		return geoToNumber(param);
 	}
 
 	// ─── Scalar factories ───────────────────────────────────────

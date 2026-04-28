@@ -181,7 +181,7 @@ export function exportToTikZ(
 		if (el.type === 'circleByRadius') {
 			const center = figure.getPosition(el.centerId);
 			if (!center) continue;
-			const r = geoToNumber(el.radius);
+			const r = figure.resolveParam(el.radius);
 			lines.push(
 				`  \\draw[${opts}] ${coord(geoToNumber(center.x), geoToNumber(center.y))} circle (${Math.round(r * 1000) / 1000});`
 			);
@@ -211,9 +211,9 @@ export function exportToTikZ(
 			if (!center) continue;
 			cx = geoToNumber(center.x);
 			cy = geoToNumber(center.y);
-			r = geoToNumber(el.radius);
-			startDeg = (geoToNumber(el.startAngle) * 180) / Math.PI;
-			endDeg = (geoToNumber(el.endAngle) * 180) / Math.PI;
+			r = figure.resolveParam(el.radius);
+			startDeg = (figure.resolveParam(el.startAngle) * 180) / Math.PI;
+			endDeg = (figure.resolveParam(el.endAngle) * 180) / Math.PI;
 		} else {
 			const startPos = figure.getPosition(el.startId);
 			const centerPos = figure.getPosition(el.centerId);

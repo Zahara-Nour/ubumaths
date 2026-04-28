@@ -547,7 +547,7 @@ function invertCircleCoeffs(
 		if (!cPos) return [0, 0, 0, 0, 0, 0];
 		cx = geoToNumber(cPos.x);
 		cy = geoToNumber(cPos.y);
-		cr = geoToNumber(sourceEl.radius as GeoValue);
+		cr = figure.resolveParam(sourceEl.radius);
 	}
 
 	// Distance from O to circle center
