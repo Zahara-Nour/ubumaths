@@ -56,11 +56,11 @@ P = intersection(med, d, couleur="vert")
 L = lieu(P, A, couleur="violet")`;
 
 	const rosaceDsl = `O = point(0, 0, couleur="bleu")
-c1 = cercle(O, rayon=3, couleur="bleu")
-A = point_sur(c1, 0, couleur="rouge")
-c2 = cercle(A, rayon=2, couleur="gris")
-P = intersection(c1, c2, choix=1, couleur="vert")
-L = lieu(P, A, couleur="violet")`;
+c = cercle(O, rayon=3, couleur="bleu")
+A = point_sur(c, 0, couleur="rouge")
+P = point(5, 3, couleur="vert")
+B = homothetie(P, centre=A, rapport=0.5, couleur="orange")
+L = lieu(B, A, couleur="violet")`;
 
 	const cissoidDsl = `O = point(0, 0, couleur="bleu")
 c = cercle(O, rayon=2, couleur="bleu")
@@ -210,8 +210,8 @@ L = lieu(C, A, couleur="violet")`;
 
 	<DslDemo
 		dsl={rosaceDsl}
-		title="8. Intersection de deux cercles"
-		description="A sur C1 (rayon 3). C2 centre en A, rayon 2. Le lieu de l'intersection C1/C2 est une rosace."
+		title="8. Homothetie variable"
+		description="A sur le cercle, P fixe. B = homothetie(P, centre=A, rapport=0.5). Deplacez P pour explorer."
 		width={600}
 		height={400}
 	/>
