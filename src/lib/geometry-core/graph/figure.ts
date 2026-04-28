@@ -63,6 +63,8 @@ import type {
 	type GeoInversion,
 	type GeoInvertedPoint,
 	type GeoLocus,
+	type GeoScalar,
+	type GeoSlider,
 	type LineEquation,
 	type ConicParams
 } from '../types/elements';
@@ -81,10 +83,11 @@ import {
 	isPointOnCircle,
 	isPointOnArc,
 	isTransformation,
-	isVector
+	isVector,
+	isSlider
 } from '../types/elements';
-import type { GeoValue } from '../types/geo-value';
-import { geoValueToMathNode, numeric } from '../types/geo-value';
+import type { GeoValue, ScalarParam } from '../types/geo-value';
+import { geoValueToMathNode, numeric, isScalarRef } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { resolveVectorComponents } from './vector-components';
 import {
@@ -140,7 +143,7 @@ export class Figure {
 	private graph = new DependencyGraph();
 	private nextId = 1;
 	readonly defaults: FigureDefaults;
-	private measureValues = new Map<string, number>();
+	private scalarValues = new Map<string, number>();
 	private undo_manager = new UndoManager();
 	private _transformeOrigins = new Map<string, { transformId: string; sourceId: string }>();
 
@@ -529,8 +532,10 @@ export class Figure {
 		return resolveVectorComponents(id, this.elements, this.positions);
 	}
 
-	createCircleByRadius(centerId: string, radius: GeoValue, options?: ElementOptions): string {
+	createCircleByRadius(centerId: string, radius: ScalarParam, options?: ElementOptions): string {
 		const id = this.generateId('circ');
+		const deps: string[] = [centerId];
+		if (isScalarRef(radius)) deps.push(radius.scalarRef);
 		const element: GeoCircleByRadius = {
 			type: 'circleByRadius',
 			id,
@@ -541,9 +546,9 @@ export class Figure {
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
-			dependsOn: [centerId]
+			dependsOn: deps
 		};
-		this.addElement(id, element, [centerId]);
+		this.addElement(id, element, deps);
 		return id;
 	}
 
@@ -832,7 +837,7 @@ export class Figure {
 	createRotatedPoint(
 		sourceId: string,
 		centerId: string,
-		angle: GeoValue,
+		angle: ScalarParam,
 		options?: ElementOptions
 	): string {
 		const src = this.elements.get(sourceId);
@@ -843,6 +848,8 @@ export class Figure {
 			throw new Error(`createRotatedPoint: "${centerId}" is not a point element`);
 
 		const id = this.generateId('rot');
+		const deps: string[] = [sourceId, centerId];
+		if (isScalarRef(angle)) deps.push(angle.scalarRef);
 		const element: GeoRotatedPoint = {
 			type: 'rotatedPoint',
 			id,
@@ -854,9 +861,9 @@ export class Figure {
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
-			dependsOn: [sourceId, centerId]
+			dependsOn: deps
 		};
-		this.addElement(id, element, [sourceId, centerId]);
+		this.addElement(id, element, deps);
 		this.computePosition(id);
 		return id;
 	}
@@ -948,7 +955,7 @@ export class Figure {
 	createDilatedPoint(
 		sourceId: string,
 		centerId: string,
-		factor: GeoValue,
+		factor: ScalarParam,
 		options?: ElementOptions
 	): string {
 		const src = this.elements.get(sourceId);
@@ -959,6 +966,8 @@ export class Figure {
 			throw new Error(`createDilatedPoint: "${centerId}" is not a point element`);
 
 		const id = this.generateId('dil');
+		const deps: string[] = [sourceId, centerId];
+		if (isScalarRef(factor)) deps.push(factor.scalarRef);
 		const element: GeoDilatedPoint = {
 			type: 'dilatedPoint',
 			id,
@@ -970,9 +979,9 @@ export class Figure {
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
-			dependsOn: [sourceId, centerId]
+			dependsOn: deps
 		};
-		this.addElement(id, element, [sourceId, centerId]);
+		this.addElement(id, element, deps);
 		this.computePosition(id);
 		return id;
 	}
@@ -1017,9 +1026,11 @@ export class Figure {
 
 	// ─── Transformation object factories ─────────���────────────────
 
-	createRotation(centerId: string, angle: GeoValue, options?: ElementOptions): string {
+	createRotation(centerId: string, angle: ScalarParam, options?: ElementOptions): string {
 		this.requirePoints('createRotation', centerId);
 		const id = this.generateId('tRot');
+		const deps: string[] = [centerId];
+		if (isScalarRef(angle)) deps.push(angle.scalarRef);
 		const element: GeoRotation = {
 			type: 'rotation',
 			id,
@@ -1028,9 +1039,9 @@ export class Figure {
 			color: DEFAULT_COLOR,
 			visible: false,
 			label: options?.label,
-			dependsOn: [centerId]
+			dependsOn: deps
 		};
-		this.addElement(id, element, [centerId]);
+		this.addElement(id, element, deps);
 		return id;
 	}
 
@@ -1116,9 +1127,11 @@ export class Figure {
 		return id;
 	}
 
-	createHomothety(centerId: string, factor: GeoValue, options?: ElementOptions): string {
+	createHomothety(centerId: string, factor: ScalarParam, options?: ElementOptions): string {
 		this.requirePoints('createHomothety', centerId);
 		const id = this.generateId('tHom');
+		const deps: string[] = [centerId];
+		if (isScalarRef(factor)) deps.push(factor.scalarRef);
 		const element: GeoHomothety = {
 			type: 'homothety',
 			id,
@@ -1127,9 +1140,9 @@ export class Figure {
 			color: DEFAULT_COLOR,
 			visible: false,
 			label: options?.label,
-			dependsOn: [centerId]
+			dependsOn: deps
 		};
-		this.addElement(id, element, [centerId]);
+		this.addElement(id, element, deps);
 		return id;
 	}
 
@@ -1334,12 +1347,16 @@ export class Figure {
 
 	createArcByAngles(
 		centerId: string,
-		radius: GeoValue,
-		startAngle: GeoValue,
-		endAngle: GeoValue,
+		radius: ScalarParam,
+		startAngle: ScalarParam,
+		endAngle: ScalarParam,
 		options?: ElementOptions
 	): string {
 		const id = this.generateId('arc');
+		const deps: string[] = [centerId];
+		if (isScalarRef(radius)) deps.push(radius.scalarRef);
+		if (isScalarRef(startAngle)) deps.push(startAngle.scalarRef);
+		if (isScalarRef(endAngle)) deps.push(endAngle.scalarRef);
 		const element: GeoArcByAngles = {
 			type: 'arcByAngles',
 			id,
@@ -1352,9 +1369,9 @@ export class Figure {
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
-			dependsOn: [centerId]
+			dependsOn: deps
 		};
-		this.addElement(id, element, [centerId]);
+		this.addElement(id, element, deps);
 		return id;
 	}
 
@@ -1993,7 +2010,158 @@ export class Figure {
 	}
 
 	getMeasureValue(id: string): number | undefined {
-		return this.measureValues.get(id);
+		return this.scalarValues.get(id);
+	}
+
+	getScalarValue(id: string): number | undefined {
+		return this.scalarValues.get(id);
+	}
+
+	// ─── Scalar factories ───────────────────────────────────────
+
+	createScalarDistance(point1Id: string, point2Id: string, options?: ElementOptions): string {
+		this.requirePoints('createScalarDistance', point1Id, point2Id);
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'distance',
+			id,
+			targetIds: [point1Id, point2Id],
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [point1Id, point2Id]
+		};
+		this.addElement(id, element, [point1Id, point2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createScalarAngle(
+		p1Id: string,
+		vertexId: string,
+		p2Id: string,
+		options?: ElementOptions
+	): string {
+		this.requirePoints('createScalarAngle', p1Id, vertexId, p2Id);
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'angle',
+			id,
+			targetIds: [p1Id, vertexId, p2Id],
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [p1Id, vertexId, p2Id]
+		};
+		this.addElement(id, element, [p1Id, vertexId, p2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createScalarNorme(vectorId: string, options?: ElementOptions): string {
+		const vecEl = this.elements.get(vectorId);
+		if (!vecEl || !isVector(vecEl)) {
+			throw new Error(`createScalarNorme: "${vectorId}" is not a vector element`);
+		}
+		const id = this.generateId('sca');
+		const deps = [...new Set([vectorId, ...vecEl.dependsOn])];
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'norme',
+			id,
+			targetIds: [vectorId],
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.computePosition(id);
+		return id;
+	}
+
+	createScalarExpression(
+		compute: (scalarValues: ReadonlyMap<string, number>) => number,
+		scalarDeps: string[],
+		options?: ElementOptions
+	): string {
+		// Collect transitive dependencies from scalar deps
+		const allDeps: string[] = [];
+		for (const depId of scalarDeps) {
+			const el = this.elements.get(depId);
+			if (!el) throw new Error(`createScalarExpression: "${depId}" does not exist`);
+			allDeps.push(depId);
+			for (const parentId of el.dependsOn) {
+				if (!allDeps.includes(parentId)) allDeps.push(parentId);
+			}
+		}
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'expression',
+			id,
+			targetIds: [],
+			compute,
+			scalarDeps,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: allDeps
+		};
+		this.addElement(id, element, allDeps);
+		this.computePosition(id);
+		return id;
+	}
+
+	// ─── Slider factories ───────────────────────────────────────
+
+	createSlider(
+		min: number,
+		max: number,
+		value: number,
+		options?: ElementOptions & { step?: number }
+	): string {
+		const clamped = Math.max(min, Math.min(max, value));
+		const id = this.generateId('sli');
+		const element: GeoSlider = {
+			type: 'slider',
+			id,
+			value: clamped,
+			min,
+			max,
+			step: options?.step,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [] as const
+		};
+		this.addElement(id, element, []);
+		this.scalarValues.set(id, clamped);
+		return id;
+	}
+
+	moveSlider(id: string, newValue: number): void {
+		const el = this.elements.get(id);
+		if (!el || !isSlider(el)) {
+			throw new Error(`moveSlider: "${id}" is not a slider`);
+		}
+		let clamped = Math.max(el.min, Math.min(el.max, newValue));
+		if (el.step !== undefined && el.step > 0) {
+			clamped = Math.round(clamped / el.step) * el.step;
+			clamped = Math.max(el.min, Math.min(el.max, clamped));
+		}
+		const updated: GeoSlider = { ...el, value: clamped };
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+		this.scalarValues.set(id, clamped);
+		this.graph.markDirty(id);
 	}
 
 	setLabelOffset(id: string, dx: number, dy: number): void {
@@ -2060,7 +2228,13 @@ export class Figure {
 	computeLocusCurveForElement(id: string, viewport: Viewport): SampledCurve | null {
 		const el = this.elements.get(id);
 		if (!el || el.type !== 'locus') return null;
-		return computeLocusCurve(el as GeoLocus, this.elements, this.positions, viewport);
+		return computeLocusCurve(
+			el as GeoLocus,
+			this.elements,
+			this.positions,
+			viewport,
+			this.scalarValues
+		);
 	}
 
 	getLineEquation(id: string): LineEquation | null {
@@ -2127,7 +2301,7 @@ export class Figure {
 			if (el) this.undo_manager.recordRemove(rid, el, this.positions.get(rid));
 			this.elements.delete(rid);
 			this.positions.delete(rid);
-			this.measureValues.delete(rid);
+			this.scalarValues.delete(rid);
 		}
 		return removedIds;
 	}
@@ -2161,7 +2335,7 @@ export class Figure {
 			this.recomputeTransformedConic(id, el);
 		}
 
-		const result = computeElementPosition(el, this.positions, this.elements);
+		const result = computeElementPosition(el, this.positions, this.elements, this.scalarValues);
 
 		if (result.position) {
 			this.positions.set(id, result.position);
@@ -2170,10 +2344,10 @@ export class Figure {
 			this.positions.delete(id);
 		}
 
-		if (result.measureValue !== undefined) {
-			this.measureValues.set(id, result.measureValue);
-		} else if (el.type === 'measure') {
-			this.measureValues.delete(id);
+		if (result.scalarValue !== undefined) {
+			this.scalarValues.set(id, result.scalarValue);
+		} else if (el.type === 'measure' || el.type === 'scalar' || el.type === 'slider') {
+			this.scalarValues.delete(id);
 		}
 	}
 }

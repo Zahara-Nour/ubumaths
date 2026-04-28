@@ -174,30 +174,31 @@ w = u * v
 
 	describe('norme()', () => {
 		it('computes the norm of a free vector', () => {
-			const { symbols } = runDsl(`
+			const { figure, symbols } = runDsl(`
 u = vecteur(3, 4)
 n = norme(u)
 `);
-			expect(symbols.get('n')!.value).toBeCloseTo(5);
+			expect(symbols.get('n')!.type).toBe('scalar');
+			expect(figure.getScalarValue(symbols.get('n')!.figureId!)).toBeCloseTo(5);
 		});
 
 		it('computes the norm of a bound vector', () => {
-			const { symbols } = runDsl(`
+			const { figure, symbols } = runDsl(`
 A = point(0, 0)
 B = point(5, 0)
 u = vecteur(A, B)
 n = norme(u)
 `);
-			expect(symbols.get('n')!.value).toBeCloseTo(5);
+			expect(figure.getScalarValue(symbols.get('n')!.figureId!)).toBeCloseTo(5);
 		});
 
 		it('computes the norm of a derived vector', () => {
-			const { symbols } = runDsl(`
+			const { figure, symbols } = runDsl(`
 u = vecteur(3, 4)
 v = 2 * u
 n = norme(v)
 `);
-			expect(symbols.get('n')!.value).toBeCloseTo(10);
+			expect(figure.getScalarValue(symbols.get('n')!.figureId!)).toBeCloseTo(10);
 		});
 	});
 
