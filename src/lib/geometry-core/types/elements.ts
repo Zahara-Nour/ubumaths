@@ -257,6 +257,15 @@ export interface GeoPointOnArc extends GeoElementBase {
 	readonly dependsOn: readonly [string];
 }
 
+/** Locus: trajectory of tracerPoint as driverPoint moves along its parent path. */
+export interface GeoLocus extends GeoElementBase {
+	readonly type: 'locus';
+	readonly driverId: string;
+	readonly tracerId: string;
+	readonly numSamples: number;
+	readonly dependsOn: readonly string[];
+}
+
 // =============================================================================
 // Annotation types
 // =============================================================================
@@ -760,7 +769,8 @@ export type GeoElement =
 	| GeoProjection
 	| GeoAffinity
 	| GeoInversion
-	| GeoComposition;
+	| GeoComposition
+	| GeoLocus;
 
 export type GeoElementType = GeoElement['type'];
 
@@ -946,6 +956,10 @@ export function isFunction(el: GeoElement): el is GeoFunction {
 
 export function isImplicitCurve(el: GeoElement): el is GeoImplicitCurve {
 	return el.type === 'implicitCurve';
+}
+
+export function isLocus(el: GeoElement): el is GeoLocus {
+	return el.type === 'locus';
 }
 
 export function isTangentLine(el: GeoElement): el is GeoTangentLine {

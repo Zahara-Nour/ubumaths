@@ -48,5 +48,11 @@
 				Points sur segment, droite, demidroite, cercle, arc — draggable
 			</p>
 		</a>
+		<a href="/geometry-demo/lieu" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Lieu geometrique</h2>
+			<p class="text-sm text-muted-foreground">
+				Trajectoire d'un point quand un autre glisse sur son chemin
+			</p>
+		</a>
 	</div>
 </div>
