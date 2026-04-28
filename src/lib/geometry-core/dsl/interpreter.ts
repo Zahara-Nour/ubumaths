@@ -32,7 +32,9 @@ function isVectorValue(val: ResolvedValue): boolean {
 }
 
 /** Check if a resolved value is a scalar element reference. */
-function isScalarValue(val: ResolvedValue): boolean {
+function isScalarValue(
+	val: ResolvedValue
+): val is ResolvedValue & { type: 'element'; figureId: string } {
 	return val.type === 'element' && (val.elementType === 'scalar' || val.elementType === 'measure');
 }
 
@@ -321,7 +323,7 @@ class Interpreter {
 				}
 				// Scalar negation: -d
 				if (expr.op === '-' && isScalarValue(operandVal)) {
-					const depId = (operandVal as { figureId: string }).figureId;
+					const depId = operandVal.figureId;
 					const id = this.figure.createScalarExpression((sv) => -(sv.get(depId) ?? 0), [depId]);
 					return { type: 'element', figureId: id, elementType: 'scalar' };
 				}
@@ -409,7 +411,7 @@ class Interpreter {
 
 		// If argument is a scalar, create a composed scalar with the math operation
 		if (isScalarValue(argVal)) {
-			const depId = (argVal as { figureId: string }).figureId;
+			const depId = argVal.figureId;
 			const mathOp = SCALAR_MATH_OPS[name];
 			if (!mathOp) throw new DslRuntimeError(`Fonction math inconnue : "${name}"`, expr.line);
 			const id = this.figure.createScalarExpression((sv) => mathOp(sv.get(depId) ?? 0), [depId]);
@@ -576,12 +578,12 @@ class Interpreter {
 		const rightIsScalar = isScalarValue(rightVal);
 
 		const scalarDeps: string[] = [];
-		if (leftIsScalar) scalarDeps.push((leftVal as { figureId: string }).figureId);
-		if (rightIsScalar) scalarDeps.push((rightVal as { figureId: string }).figureId);
+		if (leftIsScalar) scalarDeps.push(leftVal.figureId);
+		if (rightIsScalar) scalarDeps.push(rightVal.figureId);
 
-		const leftId = leftIsScalar ? (leftVal as { figureId: string }).figureId : null;
+		const leftId = leftIsScalar ? leftVal.figureId : null;
 		const leftNum = leftIsScalar ? 0 : coerceToNumber(leftVal, line);
-		const rightId = rightIsScalar ? (rightVal as { figureId: string }).figureId : null;
+		const rightId = rightIsScalar ? rightVal.figureId : null;
 		const rightNum = rightIsScalar ? 0 : coerceToNumber(rightVal, line);
 
 		const applyOp = (l: number, r: number): number => {

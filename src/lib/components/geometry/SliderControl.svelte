@@ -21,20 +21,21 @@
 		onchange(value);
 	}
 
-	const displayValue = $derived(() => {
-		if (step && step >= 1) return String(Math.round(value));
-		if (step) {
-			const decimals = Math.max(0, -Math.floor(Math.log10(step)));
-			return value.toFixed(decimals);
-		}
-		return Number.isInteger(value) ? String(value) : value.toFixed(2);
-	});
+	const displayValue = $derived(
+		step && step >= 1
+			? String(Math.round(value))
+			: step
+				? value.toFixed(Math.max(0, -Math.floor(Math.log10(step))))
+				: Number.isInteger(value)
+					? String(value)
+					: value.toFixed(2)
+	);
 </script>
 
 <div class="slider-row">
 	<span class="slider-label">{label}</span>
 	<input type="range" {min} {max} step={step ?? 'any'} {value} oninput={handleInput} />
-	<span class="slider-value">{displayValue()}</span>
+	<span class="slider-value">{displayValue}</span>
 </div>
 
 <style>
