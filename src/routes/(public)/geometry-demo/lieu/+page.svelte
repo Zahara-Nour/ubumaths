@@ -70,11 +70,11 @@ P = intersection(med, d, couleur="vert")
 L = lieu(P, A, couleur="violet")`
 	).figure;
 
-	const limaconFig = runDsl(
+	const rosaceFig = runDsl(
 		`O = point(0, 0, couleur="bleu")
-c1 = cercle(O, rayon=2, couleur="bleu")
+c1 = cercle(O, rayon=3, couleur="bleu")
 A = point_sur(c1, 0, couleur="rouge")
-c2 = cercle(A, rayon=3, couleur="gris")
+c2 = cercle(A, rayon=2, couleur="gris")
 P = intersection(c1, c2, choix=1, couleur="vert")
 L = lieu(P, A, couleur="violet")`
 	).figure;
@@ -219,11 +219,11 @@ L = lieu(C, A, couleur="violet")`
 	</section>
 
 	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">8. Limacon de Pascal</h3>
+		<h3 class="text-lg font-semibold">8. Intersection de deux cercles</h3>
 		<p class="text-sm text-muted-foreground">
-			A sur C1 (rayon 2). C2 centre en A, rayon 3. Le lieu de l'intersection C1/C2 est un limacon.
+			A sur C1 (rayon 3). C2 centre en A, rayon 2. Le lieu de l'intersection C1/C2 est une rosace.
 		</p>
-		<GeometryCanvas figure={limaconFig} width={600} height={400} />
+		<GeometryCanvas figure={rosaceFig} width={600} height={400} />
 	</section>
 
 	<section class="space-y-2">
