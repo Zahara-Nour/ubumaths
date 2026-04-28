@@ -92,6 +92,20 @@ B = symetrie(M, centre=A, couleur="vert")
 L = lieu(B, A, couleur="violet")`
 	).figure;
 
+	// ── Scalars + Sliders ───────────────────────────────────────
+
+	const limaconFig = runDsl(
+		`K = point(0, 0, couleur="bleu")
+c = cercle(K, rayon=2, couleur="bleu")
+O = point(2, 0, couleur="vert")
+A = point_sur(c, 90, couleur="rouge")
+n = distance(O, A)
+d = slider(min=0, max=8, valeur=3, pas=0.1)
+r = 1 + d/n
+P = homothetie(A, centre=O, rapport=r, couleur="orange")
+L = lieu(P, A, couleur="violet")`
+	).figure;
+
 	const conchoidFig = runDsl(
 		`O = point(0, 3, couleur="bleu")
 A = point(-10, 0, couleur="gris")
@@ -260,6 +274,17 @@ L = lieu(C, A, couleur="violet")`
 			A sur le cercle, P fixe. B = homothetie(P, centre=A, rapport=0.5). Deplacez P pour explorer.
 		</p>
 		<GeometryCanvas figure={homothetieFig} width={600} height={400} />
+	</section>
+
+	<h2 class="mt-8 text-xl font-bold">Scalars + Sliders</h2>
+
+	<section class="space-y-2">
+		<h3 class="text-lg font-semibold">13. Limacon de Pascal (slider)</h3>
+		<p class="text-sm text-muted-foreground">
+			Utilisez le slider pour changer d (0=point, 4=cardioide, &gt;4=convexe). Le lieu trace la
+			famille des limacons.
+		</p>
+		<GeometryCanvas figure={limaconFig} width={600} height={400} interactive />
 	</section>
 
 	<h2 class="mt-8 text-xl font-bold">Cas speciaux</h2>

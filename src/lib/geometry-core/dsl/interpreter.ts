@@ -36,6 +36,18 @@ function isScalarValue(val: ResolvedValue): boolean {
 	return val.type === 'element' && (val.elementType === 'scalar' || val.elementType === 'measure');
 }
 
+/** Math operations that can be applied to scalar values. */
+const SCALAR_MATH_OPS: Record<string, (x: number) => number> = {
+	sqrt: Math.sqrt,
+	abs: Math.abs,
+	sin: (x) => Math.sin((x * Math.PI) / 180),
+	cos: (x) => Math.cos((x * Math.PI) / 180),
+	tan: (x) => Math.tan((x * Math.PI) / 180),
+	asin: (x) => (Math.asin(x) * 180) / Math.PI,
+	acos: (x) => (Math.acos(x) * 180) / Math.PI,
+	atan: (x) => (Math.atan(x) * 180) / Math.PI
+};
+
 /** Coerce a ResolvedValue to a number, throwing if not numeric. */
 function coerceToNumber(val: ResolvedValue, line: number): number {
 	if (val.type === 'nombre') return val.value;
@@ -392,7 +404,22 @@ class Interpreter {
 	}
 
 	private evaluateMathFunction(name: string, expr: DslFunctionCallExpr): ResolvedValue {
-		const args = expr.args.map((a) => this.evaluateToNumber(a, expr.line));
+		// Evaluate the first argument to check if it's a scalar
+		const argVal = this.evaluateExpr(expr.args[0], expr.line);
+
+		// If argument is a scalar, create a composed scalar with the math operation
+		if (isScalarValue(argVal)) {
+			const depId = (argVal as { figureId: string }).figureId;
+			const mathOp = SCALAR_MATH_OPS[name];
+			if (!mathOp) throw new DslRuntimeError(`Fonction math inconnue : "${name}"`, expr.line);
+			const id = this.figure.createScalarExpression((sv) => mathOp(sv.get(depId) ?? 0), [depId]);
+			return { type: 'element', figureId: id, elementType: 'scalar' };
+		}
+
+		// Regular numeric path
+		const arg0 = coerceToNumber(argVal, expr.line);
+		const restArgs = expr.args.slice(1).map((a) => this.evaluateToNumber(a, expr.line));
+		const args = [arg0, ...restArgs];
 		switch (name) {
 			case 'sqrt':
 				return { type: 'nombre', value: Math.sqrt(args[0]) };

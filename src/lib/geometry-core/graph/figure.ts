@@ -1335,8 +1335,8 @@ export class Figure {
 
 	createSimilitude(
 		centerId: string,
-		angle: GeoValue,
-		factor: GeoValue,
+		angle: ScalarParam,
+		factor: ScalarParam,
 		options?: ElementOptions
 	): string {
 		const rotId = this.createRotation(centerId, angle);
@@ -1912,8 +1912,20 @@ export class Figure {
 		}
 
 		const id = this.generateId('loc');
-		// Deduplicate deps (driver === tracer in identity case)
-		const deps = driverId === tracerId ? [driverId] : [driverId, tracerId];
+		// Include transitive deps of the tracer so that scalar/slider changes
+		// mark the locus dirty (e.g. slider controlling a radius in the chain)
+		const depsSet = new Set<string>([driverId, tracerId]);
+		const queue = [...tracerEl.dependsOn];
+		while (queue.length > 0) {
+			const depId = queue.pop()!;
+			if (depsSet.has(depId)) continue;
+			depsSet.add(depId);
+			const depEl = this.elements.get(depId);
+			if (depEl) {
+				for (const parentId of depEl.dependsOn) queue.push(parentId);
+			}
+		}
+		const deps = [...depsSet];
 		const element: GeoLocus = {
 			type: 'locus',
 			id,

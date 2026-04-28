@@ -9,6 +9,7 @@
 import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
+import { serialize } from '../serializer';
 
 function run(script: string) {
 	const program = parse(script);
@@ -273,5 +274,204 @@ describe('DSL: complex scalar expressions', () => {
 		const r = run(['k = slider(min=0, max=10, valeur=4)', 'r = k * 2 + 1'].join('\n'));
 		// 4 * 2 + 1 = 9
 		expect(r.figure.getScalarValue(sym(r, 'r')!.figureId!)).toBeCloseTo(9, 10);
+	});
+});
+
+// =============================================================================
+// H. similitude with scalar params
+// =============================================================================
+
+describe('DSL: similitude with scalar', () => {
+	it('similitude with slider angle and scalar rapport', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'k = slider(min=0, max=360, valeur=90)',
+				'f = slider(min=0, max=5, valeur=2)',
+				'P = similitude(A, centre=O, angle=k, rapport=f)'
+			].join('\n')
+		);
+		// 90deg rotation + factor 2: (1,0) -> (0,1)*2 = (0,2)
+		const pos = r.figure.getPosition(sym(r, 'P')!.figureId!);
+		expect(pos).not.toBeNull();
+		const x = pos!.x.kind === 'numeric' ? pos!.x.value : 999;
+		const y = pos!.y.kind === 'numeric' ? pos!.y.value : 999;
+		expect(x).toBeCloseTo(0, 2);
+		expect(y).toBeCloseTo(2, 2);
+	});
+});
+
+// =============================================================================
+// I. Locus dirty when slider changes
+// =============================================================================
+
+// =============================================================================
+// J. Math functions on scalars
+// =============================================================================
+
+describe('DSL: math functions on scalars', () => {
+	it('sqrt(scalar) creates composed scalar', () => {
+		const r = run(
+			['A = point(0, 0)', 'B = point(9, 0)', 'd = distance(A, B)', 'r = sqrt(d)'].join('\n')
+		);
+		const s = sym(r, 'r');
+		expect(s!.type).toBe('scalar');
+		expect(r.figure.getScalarValue(s!.figureId!)).toBeCloseTo(3, 10);
+	});
+
+	it('abs(scalar) creates composed scalar', () => {
+		const r = run(
+			['A = point(0, 0)', 'B = point(3, 0)', 'd = distance(A, B)', 'r = -d', 'a = abs(r)'].join(
+				'\n'
+			)
+		);
+		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(3, 10);
+	});
+
+	it('sin(scalar) uses degrees', () => {
+		const r = run(
+			[
+				'P = point(1, 0)',
+				'O = point(0, 0)',
+				'Q = point(0, 1)',
+				'a = angle(P, O, Q)',
+				's = sin(a)'
+			].join('\n')
+		);
+		// angle = 90 degrees, sin(90°) = 1
+		expect(r.figure.getScalarValue(sym(r, 's')!.figureId!)).toBeCloseTo(1, 10);
+	});
+
+	it('cos(scalar) uses degrees', () => {
+		const r = run(
+			[
+				'P = point(1, 0)',
+				'O = point(0, 0)',
+				'Q = point(0, 1)',
+				'a = angle(P, O, Q)',
+				'c = cos(a)'
+			].join('\n')
+		);
+		// angle = 90 degrees, cos(90°) = 0
+		expect(r.figure.getScalarValue(sym(r, 'c')!.figureId!)).toBeCloseTo(0, 10);
+	});
+
+	it('composed: sin(angle(P,O,Q)) * distance(A,B)', () => {
+		const r = run(
+			[
+				'P = point(1, 0)',
+				'O = point(0, 0)',
+				'Q = point(0, 1)',
+				'A = point(0, 0)',
+				'B = point(5, 0)',
+				'a = angle(P, O, Q)',
+				'd = distance(A, B)',
+				'r = sin(a) * d'
+			].join('\n')
+		);
+		// sin(90°) * 5 = 1 * 5 = 5
+		expect(r.figure.getScalarValue(sym(r, 'r')!.figureId!)).toBeCloseTo(5, 10);
+	});
+});
+
+describe('DSL: locus dependsOn includes scalar deps', () => {
+	it('locus depends on slider in the tracer chain', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'k = slider(min=1, max=5, valeur=2)',
+				'c = cercle(O, rayon=k)',
+				'A = point_sur(c, 0)',
+				'L = lieu(A, A)'
+			].join('\n')
+		);
+		const locId = sym(r, 'L')!.figureId!;
+		const el = r.figure.getElementById(locId)!;
+		const sliderId = sym(r, 'k')!.figureId!;
+		// Locus should transitively depend on the slider
+		expect(el.dependsOn).toContain(sliderId);
+	});
+});
+
+// =============================================================================
+// K. Serialization roundtrip
+// =============================================================================
+
+describe('DSL: scalar serialization roundtrip', () => {
+	it('roundtrip: distance scalar', () => {
+		const script = ['A = point(0, 0)', 'B = point(3, 4)', 'd = distance(A, B)'].join('\n');
+		const { figure, symbols } = run(script);
+		const text = serialize(figure, symbols);
+		expect(text).toContain('d = distance(A, B)');
+
+		// Re-parse and check
+		const r2 = run(text);
+		expect(r2.figure.getScalarValue(sym(r2, 'd')!.figureId!)).toBeCloseTo(5, 3);
+	});
+
+	it('roundtrip: slider', () => {
+		const script = 'k = slider(min=0, max=10, valeur=3)';
+		const { figure, symbols } = run(script);
+		const text = serialize(figure, symbols);
+		expect(text).toContain('slider(');
+		expect(text).toContain('valeur=3');
+
+		const r2 = run(text);
+		expect(r2.figure.getScalarValue(sym(r2, 'k')!.figureId!)).toBe(3);
+	});
+
+	it('roundtrip: circle with scalar radius', () => {
+		const script = [
+			'A = point(0, 0)',
+			'B = point(3, 0)',
+			'd = distance(A, B)',
+			'O = point(5, 0)',
+			'c = cercle(O, rayon=d)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+		const text = serialize(figure, symbols);
+		expect(text).toContain('rayon=d');
+
+		const r2 = run(text);
+		const circId = sym(r2, 'c')!.figureId!;
+		const el = r2.figure.getElementById(circId)!;
+		expect(el.type).toBe('circleByRadius');
+		expect(el.dependsOn.length).toBeGreaterThan(1);
+	});
+
+	it('roundtrip: homothetie with scalar rapport', () => {
+		const script = [
+			'A = point(0, 0)',
+			'B = point(5, 0)',
+			'd = distance(A, B)',
+			'C = point(1, 0)',
+			'O = point(0, 0)',
+			'P = homothetie(C, centre=O, rapport=d)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+		const text = serialize(figure, symbols);
+		expect(text).toContain('rapport=d');
+	});
+
+	it('roundtrip: angle scalar', () => {
+		const script = [
+			'P = point(1, 0)',
+			'O = point(0, 0)',
+			'Q = point(0, 1)',
+			'a = angle(P, O, Q)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+		const text = serialize(figure, symbols);
+		expect(text).toContain('a = angle(P, O, Q)');
+	});
+
+	it('roundtrip: norme scalar', () => {
+		const script = ['A = point(0, 0)', 'B = point(3, 4)', 'v = vecteur(A, B)', 'n = norme(v)'].join(
+			'\n'
+		);
+		const { figure, symbols } = run(script);
+		const text = serialize(figure, symbols);
+		expect(text).toContain('n = norme(v)');
 	});
 });
