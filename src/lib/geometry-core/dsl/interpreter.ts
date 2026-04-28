@@ -566,11 +566,11 @@ class Interpreter {
 				case '*':
 					return l * r;
 				case '/':
-					return r === 0 ? 0 : l / r;
+					return r === 0 ? NaN : l / r;
 				case '^':
 					return Math.pow(l, r);
 				case '%':
-					return r === 0 ? 0 : ((l % r) + r) % r;
+					return r === 0 ? NaN : ((l % r) + r) % r;
 				default:
 					throw new DslRuntimeError(`Operateur "${op}" non supporte avec scalar`, line);
 			}

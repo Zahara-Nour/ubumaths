@@ -480,3 +480,232 @@ describe('Locus with scalar dependency', () => {
 		expect(maxX).toBeCloseTo(2, 0);
 	});
 });
+
+// =============================================================================
+// G. Undo/redo with sliders
+// =============================================================================
+
+describe('Undo/redo with slider', () => {
+	it('undo slider move restores dependent circle radius', () => {
+		const f = new Figure();
+		const o = f.createFreePoint(pt(0, 0));
+		const s = f.createSlider(0, 10, 3);
+		const c = f.createCircleByRadius(o, { scalarRef: s });
+		const p = f.createPointOnCircle(c, 0);
+
+		// Move slider from 3 to 7
+		f.beginTransaction();
+		f.moveSlider(s, 7);
+		f.recompute();
+		f.commit();
+
+		const pos7 = f.getPosition(p);
+		expect(pos7).not.toBeNull();
+		expect(pos7!.x).toMatchObject({ kind: 'numeric', value: expect.closeTo(7) });
+
+		// Undo → should restore radius 3
+		f.undo();
+		f.recompute();
+
+		expect(f.getScalarValue(s)).toBe(3);
+		const pos3 = f.getPosition(p);
+		expect(pos3).not.toBeNull();
+		expect(pos3!.x).toMatchObject({ kind: 'numeric', value: expect.closeTo(3) });
+	});
+
+	it('redo slider move after undo', () => {
+		const f = new Figure();
+		const o = f.createFreePoint(pt(0, 0));
+		const s = f.createSlider(0, 10, 3);
+		const c = f.createCircleByRadius(o, { scalarRef: s });
+		const p = f.createPointOnCircle(c, 0);
+
+		f.beginTransaction();
+		f.moveSlider(s, 7);
+		f.recompute();
+		f.commit();
+
+		f.undo();
+		f.recompute();
+		expect(f.getScalarValue(s)).toBe(3);
+
+		f.redo();
+		f.recompute();
+		expect(f.getScalarValue(s)).toBe(7);
+		const pos = f.getPosition(p);
+		expect(pos!.x).toMatchObject({ kind: 'numeric', value: expect.closeTo(7) });
+	});
+
+	it('undo delete restores slider and its value', () => {
+		const f = new Figure();
+		const s = f.createSlider(0, 10, 5);
+		expect(f.getScalarValue(s)).toBe(5);
+
+		f.beginTransaction();
+		f.remove(s);
+		f.commit();
+		expect(f.getScalarValue(s)).toBeUndefined();
+
+		f.undo();
+		f.recompute();
+		expect(f.getScalarValue(s)).toBe(5);
+	});
+});
+
+// =============================================================================
+// H. Angle unit consistency
+// =============================================================================
+
+describe('Angle scalar unit consistency', () => {
+	it('angle scalar stores degrees and must be converted for rotation', () => {
+		const f = new Figure();
+		const p1 = f.createFreePoint(pt(1, 0));
+		const o = f.createFreePoint(pt(0, 0));
+		const p2 = f.createFreePoint(pt(0, 1));
+		const a = f.createScalarAngle(p1, o, p2); // 90 degrees
+
+		// Using raw angle scalar as rotation angle is in degrees (wrong unit for rotate)
+		// Rotation expects radians, so direct use gives wrong result.
+		// The DSL handles this by wrapping in a deg→rad conversion scalar.
+		// At Figure API level, the caller must convert manually.
+		const val = f.getScalarValue(a);
+		expect(val).toBeCloseTo(90, 5);
+
+		// Create a conversion scalar: degrees → radians
+		const aRad = f.createScalarExpression((sv) => ((sv.get(a) ?? 0) * Math.PI) / 180, [a]);
+		const source = f.createFreePoint(pt(1, 0));
+		const r = f.createRotatedPoint(source, o, { scalarRef: aRad });
+		const pos = f.getPosition(r);
+		// 90° → π/2 radians: (1,0) → (0,1)
+		expect(pos!.x).toMatchObject({ kind: 'numeric', value: expect.closeTo(0, 5) });
+		expect(pos!.y).toMatchObject({ kind: 'numeric', value: expect.closeTo(1, 5) });
+	});
+});
+
+// =============================================================================
+// I. Division by zero edge cases
+// =============================================================================
+
+describe('Scalar division by zero', () => {
+	it('composed scalar with zero divisor returns non-finite value', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(0, 0)); // same point → distance = 0
+		const d = f.createScalarDistance(a, b);
+		const expr = f.createScalarExpression((sv) => 1 / (sv.get(d) ?? 0), [d]);
+		const val = f.getScalarValue(expr);
+		// Should be Infinity — not 0
+		expect(val === Infinity || val === -Infinity || Number.isNaN(val)).toBe(true);
+	});
+
+	it('circle with non-finite radius from scalar does not crash', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(0, 0));
+		const d = f.createScalarDistance(a, b); // d = 0
+		const expr = f.createScalarExpression(
+			(sv) => 1 / (sv.get(d) ?? 0), // Infinity
+			[d]
+		);
+		const o = f.createFreePoint(pt(5, 0));
+		// Creating circle with Infinity radius should not crash
+		const c = f.createCircleByRadius(o, { scalarRef: expr });
+		expect(f.getElementById(c)).toBeDefined();
+		// Point on circle with non-finite radius: position is null (graceful degradation)
+		const p = f.createPointOnCircle(c, 0);
+		const pos = f.getPosition(p);
+		expect(pos).toBeNull();
+	});
+});
+
+// =============================================================================
+// J. Scalar cascade delete
+// =============================================================================
+
+describe('Scalar cascade delete', () => {
+	it('deleting a point removes dependent scalar', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 4));
+		const d = f.createScalarDistance(a, b);
+		expect(f.getScalarValue(d)).toBeCloseTo(5, 10);
+
+		f.beginTransaction();
+		f.remove(a);
+		f.commit();
+
+		expect(f.getElementById(d)).toBeUndefined();
+		expect(f.getScalarValue(d)).toBeUndefined();
+	});
+
+	it('deleting a scalar removes dependent expression', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 4));
+		const d = f.createScalarDistance(a, b);
+		const expr = f.createScalarExpression((sv) => 2 * (sv.get(d) ?? 0), [d]);
+		expect(f.getScalarValue(expr)).toBeCloseTo(10, 10);
+
+		f.beginTransaction();
+		f.remove(d);
+		f.commit();
+
+		expect(f.getElementById(expr)).toBeUndefined();
+	});
+
+	it('deleting a scalar removes dependent circle', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 0));
+		const d = f.createScalarDistance(a, b);
+		const o = f.createFreePoint(pt(5, 0));
+		const c = f.createCircleByRadius(o, { scalarRef: d });
+
+		f.beginTransaction();
+		f.remove(d);
+		f.commit();
+
+		expect(f.getElementById(c)).toBeUndefined();
+	});
+});
+
+// =============================================================================
+// K. Multiple scalars in expression
+// =============================================================================
+
+describe('Composed scalar with multiple deps', () => {
+	it('expression depending on two scalars', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 0));
+		const c = f.createFreePoint(pt(0, 4));
+		const d1 = f.createScalarDistance(a, b); // 3
+		const d2 = f.createScalarDistance(a, c); // 4
+		const expr = f.createScalarExpression(
+			(sv) => Math.sqrt((sv.get(d1) ?? 0) ** 2 + (sv.get(d2) ?? 0) ** 2),
+			[d1, d2]
+		);
+		// sqrt(9 + 16) = 5
+		expect(f.getScalarValue(expr)).toBeCloseTo(5, 10);
+	});
+
+	it('updates when either dependency changes', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 0));
+		const c = f.createFreePoint(pt(0, 4));
+		const d1 = f.createScalarDistance(a, b); // 3
+		const d2 = f.createScalarDistance(a, c); // 4
+		const expr = f.createScalarExpression((sv) => (sv.get(d1) ?? 0) + (sv.get(d2) ?? 0), [d1, d2]);
+		expect(f.getScalarValue(expr)).toBeCloseTo(7, 10);
+
+		// Move b → distance changes
+		f.beginTransaction();
+		f.movePoint(b, numeric(5), numeric(0));
+		f.recompute();
+		f.commit();
+
+		// d1 = 5, d2 = 4, sum = 9
+		expect(f.getScalarValue(expr)).toBeCloseTo(9, 10);
+	});
+});

@@ -7,7 +7,8 @@
 
 import type { GeoTransformation } from '../types/elements';
 import { isTransformation } from '../types/elements';
-import type { GeoValue } from '../types/geo-value';
+import type { GeoValue, ScalarParam } from '../types/geo-value';
+import { isScalarRef } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { geoToNumber } from '../compute/to-number';
 
@@ -18,6 +19,15 @@ export interface TransformAccessors {
 	getPosition(id: string): GeoPoint | null;
 	getElementById(id: string): { type: string; dependsOn: readonly string[] } | undefined;
 	getVectorComponents(id: string): { dx: GeoValue; dy: GeoValue } | null;
+	getScalarValue?(id: string): number | undefined;
+}
+
+/** Resolve a ScalarParam to a number using the accessor's scalarValues. */
+function resolveParam(param: ScalarParam, access: TransformAccessors): number {
+	if (isScalarRef(param)) {
+		return access.getScalarValue?.(param.scalarRef) ?? 0;
+	}
+	return geoToNumber(param);
 }
 
 /**
@@ -33,7 +43,7 @@ export function buildInverseAffineMatrix(
 			const cPos = access.getPosition(transform.centerId);
 			const cx = cPos ? geoToNumber(cPos.x) : 0;
 			const cy = cPos ? geoToNumber(cPos.y) : 0;
-			const angle = -geoToNumber(transform.angle);
+			const angle = -resolveParam(transform.angle, access);
 			const cos = Math.cos(angle);
 			const sin = Math.sin(angle);
 			return [cos, -sin, cx - cx * cos + cy * sin, sin, cos, cy - cx * sin - cy * cos];
@@ -127,7 +137,7 @@ export function buildInverseAffineMatrix(
 			const cPos = access.getPosition(transform.centerId);
 			const cx = cPos ? geoToNumber(cPos.x) : 0;
 			const cy = cPos ? geoToNumber(cPos.y) : 0;
-			const k = geoToNumber(transform.factor);
+			const k = resolveParam(transform.factor, access);
 			const invK = Math.abs(k) < 1e-15 ? 1 : 1 / k;
 			return [invK, 0, cx * (1 - invK), 0, invK, cy * (1 - invK)];
 		}
