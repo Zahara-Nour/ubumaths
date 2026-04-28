@@ -1,19 +1,15 @@
 <script lang="ts">
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import { runDsl } from '$lib/geometry-core/dsl';
+	import DslDemo from '../DslDemo.svelte';
 
 	// Curve transformation — y = x² rotated 45°
-	const transformCurveFig = runDsl(
-		`O = point(0, 0, couleur="noir")
+	const transformCurveDsl = `O = point(0, 0, couleur="noir")
 f = courbe("y = x^2", couleur="bleu")
 r = rotation(angle=45, centre=O)
 f2 = transforme(r, f)
-style(f2, couleur="rouge")`
-	).figure;
+style(f2, couleur="rouge")`;
 
 	// Conic transformation — ellipse rotation + translation + homothetie
-	const transformConicFig = runDsl(
-		`O = point(0, 0, couleur="noir")
+	const transformConicDsl = `O = point(0, 0, couleur="noir")
 c = courbe("{x^2}/4 + {y^2}/9 - 1 = 0", couleur="bleu")
 
 r = rotation(angle=30, centre=O)
@@ -28,12 +24,10 @@ style(c3, couleur="vert")
 
 h = homothetie(rapport=0.5, centre=O)
 c4 = transforme(h, c)
-style(c4, couleur="violet")`
-	).figure;
+style(c4, couleur="violet")`;
 
 	// Similitude — spiral of triangles
-	const similitudeFig = runDsl(
-		`O = point(0, 0, couleur="noir")
+	const similitudeDsl = `O = point(0, 0, couleur="noir")
 A = point(3, 0, couleur="bleu")
 B = point(4, 0, couleur="bleu")
 C = point(3.5, 1, couleur="bleu")
@@ -69,12 +63,10 @@ B5 = transforme(sim, B4)
 C5 = transforme(sim, C4)
 segment(A5, B5, couleur="orange")
 segment(B5, C5, couleur="orange")
-segment(C5, A5, couleur="orange")`
-	).figure;
+segment(C5, A5, couleur="orange")`;
 
 	// Implicit curve transformation — folium de Descartes
-	const transformImplicitFig = runDsl(
-		`O = point(0, 0, couleur="noir")
+	const transformImplicitDsl = `O = point(0, 0, couleur="noir")
 c = courbe("x^3 + y^3 - 3*x*y = 0", couleur="bleu")
 
 A = point(0, 0)
@@ -85,107 +77,59 @@ style(c2, couleur="rouge")
 
 r = rotation(angle=90, centre=O)
 c3 = transforme(r, c)
-style(c3, couleur="vert")`
-	).figure;
+style(c3, couleur="vert")`;
 </script>
 
-<div class="container mx-auto max-w-4xl p-8">
+<div class="container mx-auto max-w-6xl p-8">
 	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
 		>← Retour aux demos</a
 	>
 
 	<hr class="my-8" />
 
-	<h2 class="mb-4 text-xl font-bold">Transformation de courbe — y = x² tourne de 45°</h2>
-	<p class="mb-4 text-muted-foreground">
-		<code>transforme(r, courbe("y = x^2"))</code> cree une courbe implicite F(T⁻¹(x,y)) = 0. Le
-		resultat n'est plus une fonction y=g(x) mais est rendu correctement.
-		<br />
-		<strong>Bleu</strong> : parabole y = x² |
-		<strong>Rouge</strong> : rotation 45° autour de O
-	</p>
-
-	<GeometryCanvas
-		figure={transformCurveFig}
+	<DslDemo
+		dsl={transformCurveDsl}
+		title="Transformation de courbe — y = x² tourne de 45°"
+		description="transforme(r, courbe('y = x^2')) cree une courbe implicite F(T⁻¹(x,y)) = 0. Le resultat n'est plus une fonction y=g(x) mais est rendu correctement. Bleu : parabole y = x² | Rouge : rotation 45° autour de O"
 		center={{ x: 0, y: 0 }}
 		pixelsPerUnit={40}
-		width={800}
-		height={600}
+		width={700}
+		height={500}
 	/>
-
-	<p class="mt-4 text-sm text-muted-foreground">
-		{transformCurveFig.size} elements | courbe y=f(x) transformee
-	</p>
 
 	<hr class="my-8" />
 
-	<h2 class="mb-4 text-xl font-bold">
-		Transformation de coniques — ellipse rotation + translation + homothetie
-	</h2>
-	<p class="mb-4 text-muted-foreground">
-		Les coniques restent des coniques apres transformation affine : les coefficients sont recalcules
-		via la matrice inverse. <code>tangente()</code>, <code>point_sur()</code> et
-		<code>zeros()</code> restent utilisables sur l'image.
-		<br />
-		<strong>Bleu</strong> : ellipse x²/4 + y²/9 = 1 |
-		<strong>Rouge</strong> : rotation 30° |
-		<strong>Vert</strong> : translation (3, 1) |
-		<strong>Violet</strong> : homothetie rapport 0.5
-	</p>
-
-	<GeometryCanvas
-		figure={transformConicFig}
+	<DslDemo
+		dsl={transformConicDsl}
+		title="Transformation de coniques — ellipse rotation + translation + homothetie"
+		description="Les coniques restent des coniques apres transformation affine : les coefficients sont recalcules via la matrice inverse. tangente(), point_sur() et zeros() restent utilisables sur l'image. Bleu : ellipse x²/4 + y²/9 = 1 | Rouge : rotation 30° | Vert : translation (3, 1) | Violet : homothetie rapport 0.5"
 		center={{ x: 0, y: 0 }}
 		pixelsPerUnit={35}
-		width={800}
-		height={600}
+		width={700}
+		height={500}
 	/>
-
-	<p class="mt-4 text-sm text-muted-foreground">
-		{transformConicFig.size} elements | coniques transformees (restent GeoQuadraticCurve)
-	</p>
 
 	<hr class="my-8" />
 
-	<h2 class="mb-4 text-xl font-bold">Similitude — spirale de triangles</h2>
-	<p class="mb-4 text-muted-foreground">
-		<code>similitude(centre=O, angle=40, rapport=0.85)</code> appliquee 4 fois successivement a un triangle.
-		Chaque iteration tourne de 40° et reduit de 15%. Deplacez O pour changer le centre.
-	</p>
-
-	<GeometryCanvas
-		figure={similitudeFig}
+	<DslDemo
+		dsl={similitudeDsl}
+		title="Similitude — spirale de triangles"
+		description="similitude(centre=O, angle=40, rapport=0.85) appliquee 4 fois successivement a un triangle. Chaque iteration tourne de 40° et reduit de 15%. Deplacez O pour changer le centre."
 		center={{ x: 0, y: 0 }}
 		pixelsPerUnit={50}
-		width={800}
-		height={600}
+		width={700}
+		height={500}
 	/>
-
-	<p class="mt-4 text-sm text-muted-foreground">
-		{similitudeFig.size} elements | similitude() — spirale de triangles
-	</p>
 
 	<hr class="my-8" />
 
-	<h2 class="mb-4 text-xl font-bold">Transformation de courbe implicite — folium de Descartes</h2>
-	<p class="mb-4 text-muted-foreground">
-		Courbe implicite F(x,y) = 0 transformee par translation et rotation. Le rendu utilise
-		l'algorithme marching squares sur la courbe composee F(T⁻¹(x,y)) = 0.
-		<br />
-		<strong>Bleu</strong> : folium x³+y³-3xy = 0 |
-		<strong>Rouge</strong> : translation (2, 2) |
-		<strong>Vert</strong> : rotation 90°
-	</p>
-
-	<GeometryCanvas
-		figure={transformImplicitFig}
+	<DslDemo
+		dsl={transformImplicitDsl}
+		title="Transformation de courbe implicite — folium de Descartes"
+		description="Courbe implicite F(x,y) = 0 transformee par translation et rotation. Le rendu utilise l'algorithme marching squares sur la courbe composee F(T⁻¹(x,y)) = 0. Bleu : folium x³+y³-3xy = 0 | Rouge : translation (2, 2) | Vert : rotation 90°"
 		center={{ x: 0, y: 0 }}
 		pixelsPerUnit={35}
-		width={800}
-		height={600}
+		width={700}
+		height={500}
 	/>
-
-	<p class="mt-4 text-sm text-muted-foreground">
-		{transformImplicitFig.size} elements | courbe implicite transformee
-	</p>
 </div>

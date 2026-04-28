@@ -1,65 +1,51 @@
 <script lang="ts">
-	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
-	import { runDsl } from '$lib/geometry-core/dsl';
+	import DslDemo from '../DslDemo.svelte';
 
 	// ── Cas simples ──────────────────────────────────────────────
 
-	const circleFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const circleDsl = `O = point(0, 0, couleur="bleu")
 c = cercle(O, rayon=3, couleur="bleu")
 A = point_sur(c, 0, couleur="rouge")
 B = symetrie(A, centre=O, couleur="vert")
-L = lieu(B, A, couleur="violet")`
-	).figure;
+L = lieu(B, A, couleur="violet")`;
 
-	const ellipseSimpleFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const ellipseSimpleDsl = `O = point(0, 0, couleur="bleu")
 c = cercle(O, rayon=4, couleur="bleu")
 A = point_sur(c, 0, couleur="rouge")
 P = point(3, 0, couleur="vert")
 M = milieu(A, P, couleur="orange")
-L = lieu(M, A, couleur="violet")`
-	).figure;
+L = lieu(M, A, couleur="violet")`;
 
-	const segmentFig = runDsl(
-		`A = point(0, 0, couleur="bleu")
+	const segmentDsl = `A = point(0, 0, couleur="bleu")
 B = point(8, 0, couleur="bleu")
 s = segment(A, B, couleur="bleu")
 P = point(0, 6, couleur="vert")
 D = point_sur(s, 0.5, couleur="rouge")
 M = milieu(D, P, couleur="orange")
-L = lieu(M, D, couleur="violet")`
-	).figure;
+L = lieu(M, D, couleur="violet")`;
 
-	const parabolaFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const parabolaDsl = `O = point(0, 0, couleur="bleu")
 f = courbe("y = x^2", couleur="bleu")
 A = point_sur(f, 1, couleur="rouge")
 B = symetrie(A, centre=O, couleur="vert")
-L = lieu(B, A, couleur="violet")`
-	).figure;
+L = lieu(B, A, couleur="violet")`;
 
-	const identityFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const identityDsl = `O = point(0, 0, couleur="bleu")
 c = cercle(O, rayon=3, couleur="bleu")
 A = point_sur(c, 0, couleur="rouge")
-L = lieu(A, A, couleur="violet")`
-	).figure;
+L = lieu(A, A, couleur="violet")`;
 
-	const arcFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const arcDsl = `O = point(0, 0, couleur="bleu")
 P = point(4, 0, couleur="bleu")
 Q = point(0, 4, couleur="bleu")
 a = arc(P, O, Q, couleur="bleu")
 A = point_sur(a, 0.5, couleur="rouge")
 B = symetrie(A, centre=O, couleur="vert")
-L = lieu(B, A, couleur="violet")`
-	).figure;
+L = lieu(B, A, couleur="violet")`;
 
 	// ── Constructions classiques ─────────────────────────────────
 
-	const ellipseMedFig = runDsl(
-		`F1 = point(-3, 0, couleur="bleu")
+	const ellipseMedDsl = `F1 = point(-3, 0, couleur="bleu")
 F2 = point(3, 0, couleur="bleu")
 c = cercle(F1, rayon=8, couleur="gris")
 A = point_sur(c, 0, couleur="rouge")
@@ -67,20 +53,16 @@ A = point_sur(c, 0, couleur="rouge")
 style(med, couleur="gris")
 d = droite(F1, A, couleur="gris")
 P = intersection(med, d, couleur="vert")
-L = lieu(P, A, couleur="violet")`
-	).figure;
+L = lieu(P, A, couleur="violet")`;
 
-	const rosaceFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const rosaceDsl = `O = point(0, 0, couleur="bleu")
 c1 = cercle(O, rayon=3, couleur="bleu")
 A = point_sur(c1, 0, couleur="rouge")
 c2 = cercle(A, rayon=2, couleur="gris")
 P = intersection(c1, c2, choix=1, couleur="vert")
-L = lieu(P, A, couleur="violet")`
-	).figure;
+L = lieu(P, A, couleur="violet")`;
 
-	const cissoidFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const cissoidDsl = `O = point(0, 0, couleur="bleu")
 c = cercle(O, rayon=2, couleur="bleu")
 T1 = point(4, -8, couleur="gris")
 T2 = point(4, 8, couleur="gris")
@@ -89,36 +71,9 @@ A = point_sur(c, 0, couleur="rouge")
 l = droite(O, A, couleur="gris")
 M = intersection(l, d, couleur="orange")
 B = symetrie(M, centre=A, couleur="vert")
-L = lieu(B, A, couleur="violet")`
-	).figure;
+L = lieu(B, A, couleur="violet")`;
 
-	// ── Scalars + Sliders ───────────────────────────────────────
-
-	const limaconFig = runDsl(
-		`K = point(0, 0, couleur="bleu")
-c = cercle(K, rayon=2, couleur="bleu")
-O = point(2, 0, couleur="vert")
-A = point_sur(c, 90, couleur="rouge")
-n = distance(O, A)
-d = slider(min=0, max=8, valeur=3, pas=0.1)
-r = 1 + d/n
-P = homothetie(A, centre=O, rapport=r, couleur="orange")
-L = lieu(P, A, couleur="violet")`
-	).figure;
-
-	// Test: epicycloid with slider
-	const epicycloidSliderFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
-c = cercle(O, rayon=3, couleur="bleu")
-A = point_sur(c, 0, couleur="rouge")
-P = point(5, 0, couleur="vert")
-a = slider(min=30, max=300, valeur=120, pas=10)
-B = rotation(P, centre=A, angle=a, couleur="orange")
-L = lieu(B, A, couleur="violet")`
-	).figure;
-
-	const conchoidFig = runDsl(
-		`O = point(0, 3, couleur="bleu")
+	const conchoidDsl = `O = point(0, 3, couleur="bleu")
 A = point(-10, 0, couleur="gris")
 B = point(10, 0, couleur="gris")
 d = droite(A, B, couleur="gris")
@@ -128,54 +83,65 @@ c = cercle(D, rayon=4, couleur="gris")
 P1 = intersection(l, c, choix=1, couleur="vert")
 P2 = intersection(l, c, choix=2, couleur="orange")
 L1 = lieu(P1, D, couleur="violet")
-L2 = lieu(P2, D, couleur="cyan")`
-	).figure;
+L2 = lieu(P2, D, couleur="cyan")`;
 
 	// ── Transformations ──────────────────────────────────────────
 
-	const epicycloidFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const epicycloidDsl = `O = point(0, 0, couleur="bleu")
 c = cercle(O, rayon=3, couleur="bleu")
 A = point_sur(c, 0, couleur="rouge")
 P = point(5, 0, couleur="vert")
 B = rotation(P, centre=A, angle=120, couleur="orange")
-L = lieu(B, A, couleur="violet")`
-	).figure;
+L = lieu(B, A, couleur="violet")`;
 
-	const homothetieFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const homothethieDsl = `O = point(0, 0, couleur="bleu")
 c = cercle(O, rayon=3, couleur="bleu")
 A = point_sur(c, 0, couleur="rouge")
 P = point(5, 3, couleur="vert")
 B = homothetie(P, centre=A, rapport=0.5, couleur="orange")
-L = lieu(B, A, couleur="violet")`
-	).figure;
+L = lieu(B, A, couleur="violet")`;
+
+	// ── Scalars + Sliders ───────────────────────────────────────
+
+	const limaconDsl = `K = point(0, 0, couleur="bleu")
+c = cercle(K, rayon=2, couleur="bleu")
+O = point(2, 0, couleur="vert")
+A = point_sur(c, 90, couleur="rouge")
+n = distance(O, A)
+d = slider(min=0, max=8, valeur=3, pas=0.1)
+r = 1 + d/n
+P = homothetie(A, centre=O, rapport=r, couleur="orange")
+L = lieu(P, A, couleur="violet")`;
+
+	const epicycloidSliderDsl = `O = point(0, 0, couleur="bleu")
+c = cercle(O, rayon=3, couleur="bleu")
+A = point_sur(c, 0, couleur="rouge")
+P = point(5, 0, couleur="vert")
+a = slider(min=30, max=300, valeur=120, pas=10)
+B = rotation(P, centre=A, angle=a, couleur="orange")
+L = lieu(B, A, couleur="violet")`;
 
 	// ── Cas speciaux ─────────────────────────────────────────────
 
-	const asymptoteFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const asymptoteDsl = `O = point(0, 0, couleur="bleu")
 f = courbe("y = 1/x", couleur="bleu")
 A = point_sur(f, 1, couleur="rouge")
 B = symetrie(A, centre=O, couleur="vert")
-L = lieu(B, A, couleur="violet")`
-	).figure;
+L = lieu(B, A, couleur="violet")`;
 
-	const deepChainFig = runDsl(
-		`O = point(0, 0, couleur="bleu")
+	const deepChainDsl = `O = point(0, 0, couleur="bleu")
 c = cercle(O, rayon=3, couleur="bleu")
 A = point_sur(c, 0, couleur="rouge")
 B = rotation(A, centre=O, angle=60, couleur="gris")
 C = symetrie(B, centre=point(2, 0), couleur="vert")
-L = lieu(C, A, couleur="violet")`
-	).figure;
+L = lieu(C, A, couleur="violet")`;
 </script>
 
 <svelte:head>
 	<title>Geometry Demo — Lieu geometrique</title>
 </svelte:head>
 
-<div class="container mx-auto max-w-4xl space-y-8 p-4">
+<div class="container mx-auto max-w-6xl space-y-8 p-4">
 	<h1 class="text-2xl font-bold">Lieu geometrique (Locus)</h1>
 	<p class="text-muted-foreground">
 		Le lieu geometrique trace la trajectoire d'un point B quand un point A (rouge) se deplace le
@@ -184,144 +150,141 @@ L = lieu(C, A, couleur="violet")`
 
 	<h2 class="mt-6 text-xl font-bold">Cas simples</h2>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">1. Symetrie centrale sur cercle</h3>
-		<p class="text-sm text-muted-foreground">
-			A sur le cercle, B = symetrie(A, centre=O). Le lieu de B est le meme cercle.
-		</p>
-		<GeometryCanvas figure={circleFig} width={500} height={400} />
-	</section>
+	<DslDemo
+		dsl={circleDsl}
+		title="1. Symetrie centrale sur cercle"
+		description="A sur le cercle, B = symetrie(A, centre=O). Le lieu de B est le meme cercle."
+		width={500}
+		height={400}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">2. Milieu avec point fixe</h3>
-		<p class="text-sm text-muted-foreground">
-			A sur le cercle de rayon 4, P fixe. M = milieu(A, P). Deplacez P pour deformer l'ellipse.
-		</p>
-		<GeometryCanvas figure={ellipseSimpleFig} width={500} height={400} />
-	</section>
+	<DslDemo
+		dsl={ellipseSimpleDsl}
+		title="2. Milieu avec point fixe"
+		description="A sur le cercle de rayon 4, P fixe. M = milieu(A, P). Deplacez P pour deformer l'ellipse."
+		width={500}
+		height={400}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">3. Driver sur segment</h3>
-		<p class="text-sm text-muted-foreground">
-			D glisse sur [AB], P fixe. M = milieu(D, P). Le lieu de M est un segment.
-		</p>
-		<GeometryCanvas figure={segmentFig} width={500} height={400} />
-	</section>
+	<DslDemo
+		dsl={segmentDsl}
+		title="3. Driver sur segment"
+		description="D glisse sur [AB], P fixe. M = milieu(D, P). Le lieu de M est un segment."
+		width={500}
+		height={400}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">4. Symetrie de y=x&#178;</h3>
-		<p class="text-sm text-muted-foreground">
-			A sur y=x&#178;, B = symetrie(A, centre=O). Le lieu de B est y=-x&#178;.
-		</p>
-		<GeometryCanvas figure={parabolaFig} width={500} height={400} />
-	</section>
+	<DslDemo
+		dsl={parabolaDsl}
+		title="4. Symetrie de y=x²"
+		description="A sur y=x², B = symetrie(A, centre=O). Le lieu de B est y=-x²."
+		width={500}
+		height={400}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">5. Identite : lieu(A, A)</h3>
-		<p class="text-sm text-muted-foreground">
-			Le lieu de A lui-meme retrace le chemin du driver (cercle).
-		</p>
-		<GeometryCanvas figure={identityFig} width={500} height={400} />
-	</section>
+	<DslDemo
+		dsl={identityDsl}
+		title="5. Identite : lieu(A, A)"
+		description="Le lieu de A lui-meme retrace le chemin du driver (cercle)."
+		width={500}
+		height={400}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">6. Driver sur arc</h3>
-		<p class="text-sm text-muted-foreground">
-			A sur l'arc PQ, B = symetrie(A, centre=O). Le lieu est un arc symetrique.
-		</p>
-		<GeometryCanvas figure={arcFig} width={500} height={400} />
-	</section>
+	<DslDemo
+		dsl={arcDsl}
+		title="6. Driver sur arc"
+		description="A sur l'arc PQ, B = symetrie(A, centre=O). Le lieu est un arc symetrique."
+		width={500}
+		height={400}
+	/>
 
 	<h2 class="mt-8 text-xl font-bold">Constructions classiques</h2>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">7. Ellipse via mediatrice</h3>
-		<p class="text-sm text-muted-foreground">
-			F1, F2 foyers. A sur le cercle de rayon 2a centre sur F1. La mediatrice de [AF2] coupe la
-			droite (F1A) en P. Le lieu de P est l'ellipse de foyers F1, F2.
-		</p>
-		<GeometryCanvas figure={ellipseMedFig} width={600} height={400} />
-	</section>
+	<DslDemo
+		dsl={ellipseMedDsl}
+		title="7. Ellipse via mediatrice"
+		description="F1, F2 foyers. A sur le cercle de rayon 2a centre sur F1. La mediatrice de [AF2] coupe la droite (F1A) en P. Le lieu de P est l'ellipse de foyers F1, F2."
+		width={600}
+		height={400}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">8. Intersection de deux cercles</h3>
-		<p class="text-sm text-muted-foreground">
-			A sur C1 (rayon 3). C2 centre en A, rayon 2. Le lieu de l'intersection C1/C2 est une rosace.
-		</p>
-		<GeometryCanvas figure={rosaceFig} width={600} height={400} />
-	</section>
+	<DslDemo
+		dsl={rosaceDsl}
+		title="8. Intersection de deux cercles"
+		description="A sur C1 (rayon 3). C2 centre en A, rayon 2. Le lieu de l'intersection C1/C2 est une rosace."
+		width={600}
+		height={400}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">9. Cissoide de Diocles</h3>
-		<p class="text-sm text-muted-foreground">
-			Cercle C, droite d tangente. A sur C, (OA) coupe d en M. B = symetrie(M, centre=A). Le lieu de
-			B est la cissoide.
-		</p>
-		<GeometryCanvas figure={cissoidFig} width={600} height={500} />
-	</section>
+	<DslDemo
+		dsl={cissoidDsl}
+		title="9. Cissoide de Diocles"
+		description="Cercle C, droite d tangente. A sur C, (OA) coupe d en M. B = symetrie(M, centre=A). Le lieu de B est la cissoide."
+		width={600}
+		height={500}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">10. Conchoide de Nicomede</h3>
-		<p class="text-sm text-muted-foreground">
-			Point fixe O, droite d. D glisse sur d. Deux points a distance fixe de D sur (OD). Deux
-			branches : violette et cyan.
-		</p>
-		<GeometryCanvas figure={conchoidFig} width={600} height={400} />
-	</section>
+	<DslDemo
+		dsl={conchoidDsl}
+		title="10. Conchoide de Nicomede"
+		description="Point fixe O, droite d. D glisse sur d. Deux points a distance fixe de D sur (OD). Deux branches : violette et cyan."
+		width={600}
+		height={400}
+	/>
 
 	<h2 class="mt-8 text-xl font-bold">Transformations</h2>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">11. Rotation autour du driver</h3>
-		<p class="text-sm text-muted-foreground">
-			A sur le cercle, P fixe. B = rotation(P, centre=A, angle=120). Courbe epicycloide. Deplacez P.
-		</p>
-		<GeometryCanvas figure={epicycloidFig} width={600} height={400} />
-	</section>
+	<DslDemo
+		dsl={epicycloidDsl}
+		title="11. Rotation autour du driver"
+		description="A sur le cercle, P fixe. B = rotation(P, centre=A, angle=120). Courbe epicycloide. Deplacez P."
+		width={600}
+		height={400}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">12. Homothetie variable</h3>
-		<p class="text-sm text-muted-foreground">
-			A sur le cercle, P fixe. B = homothetie(P, centre=A, rapport=0.5). Deplacez P pour explorer.
-		</p>
-		<GeometryCanvas figure={homothetieFig} width={600} height={400} />
-	</section>
+	<DslDemo
+		dsl={homothethieDsl}
+		title="12. Homothetie variable"
+		description="A sur le cercle, P fixe. B = homothetie(P, centre=A, rapport=0.5). Deplacez P pour explorer."
+		width={600}
+		height={400}
+	/>
 
 	<h2 class="mt-8 text-xl font-bold">Scalars + Sliders</h2>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">13. Limacon de Pascal</h3>
-		<p class="text-sm text-muted-foreground">
-			Slider d controle la distance fixe. d=0 : point, d=4 (=2a) : cardioide, d&gt;4 : convexe.
-		</p>
-		<GeometryCanvas figure={limaconFig} width={600} height={400} interactive />
-	</section>
+	<DslDemo
+		dsl={limaconDsl}
+		title="13. Limacon de Pascal"
+		description="Slider d controle la distance fixe. d=0 : point, d=4 (=2a) : cardioide, d>4 : convexe."
+		width={600}
+		height={400}
+		interactive={true}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">14. Epicycloide parametrique</h3>
-		<p class="text-sm text-muted-foreground">
-			Slider a controle l'angle de rotation. 120=deltoide, 90=asteroide, 72=5 boucles. Deplacez
-			aussi P (vert).
-		</p>
-		<GeometryCanvas figure={epicycloidSliderFig} width={600} height={400} interactive />
-	</section>
+	<DslDemo
+		dsl={epicycloidSliderDsl}
+		title="14. Epicycloide parametrique"
+		description="Slider a controle l'angle de rotation. 120=deltoide, 90=asteroide, 72=5 boucles. Deplacez aussi P (vert)."
+		width={600}
+		height={400}
+		interactive={true}
+	/>
 
 	<h2 class="mt-8 text-xl font-bold">Cas speciaux</h2>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">16. Discontinuites (y=1/x)</h3>
-		<p class="text-sm text-muted-foreground">
-			A sur y=1/x, B = symetrie(A, centre=O). Discontinuite a l'asymptote x=0.
-		</p>
-		<GeometryCanvas figure={asymptoteFig} width={600} height={400} />
-	</section>
+	<DslDemo
+		dsl={asymptoteDsl}
+		title="16. Discontinuites (y=1/x)"
+		description="A sur y=1/x, B = symetrie(A, centre=O). Discontinuite a l'asymptote x=0."
+		width={600}
+		height={400}
+	/>
 
-	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">17. Chaine profonde</h3>
-		<p class="text-sm text-muted-foreground">
-			A sur le cercle, B = rotation(A, 60), C = symetrie(B, centre=(2,0)). Le lieu de C est un
-			cercle translate.
-		</p>
-		<GeometryCanvas figure={deepChainFig} width={600} height={400} />
-	</section>
+	<DslDemo
+		dsl={deepChainDsl}
+		title="17. Chaine profonde"
+		description="A sur le cercle, B = rotation(A, 60), C = symetrie(B, centre=(2,0)). Le lieu de C est un cercle translate."
+		width={600}
+		height={400}
+	/>
 </div>
