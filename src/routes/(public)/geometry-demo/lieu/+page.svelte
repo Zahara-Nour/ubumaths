@@ -106,6 +106,17 @@ P = homothetie(A, centre=O, rapport=r, couleur="orange")
 L = lieu(P, A, couleur="violet")`
 	).figure;
 
+	// Test: epicycloid with slider
+	const epicycloidSliderFig = runDsl(
+		`O = point(0, 0, couleur="bleu")
+c = cercle(O, rayon=3, couleur="bleu")
+A = point_sur(c, 0, couleur="rouge")
+P = point(5, 0, couleur="vert")
+a = slider(min=30, max=300, valeur=120, pas=10)
+B = rotation(P, centre=A, angle=a, couleur="orange")
+L = lieu(B, A, couleur="violet")`
+	).figure;
+
 	const conchoidFig = runDsl(
 		`O = point(0, 3, couleur="bleu")
 A = point(-10, 0, couleur="gris")
@@ -279,18 +290,26 @@ L = lieu(C, A, couleur="violet")`
 	<h2 class="mt-8 text-xl font-bold">Scalars + Sliders</h2>
 
 	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">13. Limacon de Pascal (slider)</h3>
+		<h3 class="text-lg font-semibold">13. Limacon de Pascal</h3>
 		<p class="text-sm text-muted-foreground">
-			Utilisez le slider pour changer d (0=point, 4=cardioide, &gt;4=convexe). Le lieu trace la
-			famille des limacons.
+			Slider d controle la distance fixe. d=0 : point, d=4 (=2a) : cardioide, d&gt;4 : convexe.
 		</p>
 		<GeometryCanvas figure={limaconFig} width={600} height={400} interactive />
+	</section>
+
+	<section class="space-y-2">
+		<h3 class="text-lg font-semibold">14. Epicycloide parametrique</h3>
+		<p class="text-sm text-muted-foreground">
+			Slider a controle l'angle de rotation. 120=deltoide, 90=asteroide, 72=5 boucles. Deplacez
+			aussi P (vert).
+		</p>
+		<GeometryCanvas figure={epicycloidSliderFig} width={600} height={400} interactive />
 	</section>
 
 	<h2 class="mt-8 text-xl font-bold">Cas speciaux</h2>
 
 	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">13. Discontinuites (y=1/x)</h3>
+		<h3 class="text-lg font-semibold">16. Discontinuites (y=1/x)</h3>
 		<p class="text-sm text-muted-foreground">
 			A sur y=1/x, B = symetrie(A, centre=O). Discontinuite a l'asymptote x=0.
 		</p>
@@ -298,7 +317,7 @@ L = lieu(C, A, couleur="violet")`
 	</section>
 
 	<section class="space-y-2">
-		<h3 class="text-lg font-semibold">14. Chaine profonde</h3>
+		<h3 class="text-lg font-semibold">17. Chaine profonde</h3>
 		<p class="text-sm text-muted-foreground">
 			A sur le cercle, B = rotation(A, 60), C = symetrie(B, centre=(2,0)). Le lieu de C est un
 			cercle translate.
