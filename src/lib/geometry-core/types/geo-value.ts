@@ -51,3 +51,23 @@ export function isNumeric(v: GeoValue): v is GeoNumeric {
 export function geoValueToMathNode(v: GeoValue): MathNode {
 	return v.kind === 'exact' ? v.node : mathNumber(v.value.toString());
 }
+
+// =============================================================================
+// ScalarParam — parameter that can be a fixed GeoValue OR a reference to a scalar
+// =============================================================================
+
+/** Reference to a scalar or slider element whose value is resolved at compute time. */
+export interface ScalarRef {
+	readonly scalarRef: string;
+}
+
+/**
+ * A parameter that can be a fixed GeoValue or a reference to a scalar/slider element.
+ * Used for element parameters that should support dynamic values (radius, angle, factor).
+ */
+export type ScalarParam = GeoValue | ScalarRef;
+
+/** Type guard: is this parameter a reference to a scalar element? */
+export function isScalarRef(param: ScalarParam): param is ScalarRef {
+	return typeof param === 'object' && 'scalarRef' in param;
+}

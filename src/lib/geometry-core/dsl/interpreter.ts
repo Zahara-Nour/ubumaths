@@ -31,6 +31,11 @@ function isVectorValue(val: ResolvedValue): boolean {
 	return val.type === 'element' && val.elementType === 'vecteur';
 }
 
+/** Check if a resolved value is a scalar element reference. */
+function isScalarValue(val: ResolvedValue): boolean {
+	return val.type === 'element' && (val.elementType === 'scalar' || val.elementType === 'measure');
+}
+
 /** Coerce a ResolvedValue to a number, throwing if not numeric. */
 function coerceToNumber(val: ResolvedValue, line: number): number {
 	if (val.type === 'nombre') return val.value;
@@ -251,7 +256,12 @@ class Interpreter {
 					);
 				}
 
-				// Scalar arithmetic (existing behavior)
+				// Scalar arithmetic: if either operand is a scalar, create composed scalar
+				if (isScalarValue(leftVal) || isScalarValue(rightVal)) {
+					return this.evaluateScalarBinary(expr.op, leftVal, rightVal, expr.line);
+				}
+
+				// Number arithmetic (existing behavior)
 				const left = coerceToNumber(leftVal, expr.line);
 				const right = coerceToNumber(rightVal, expr.line);
 				switch (expr.op) {
@@ -296,6 +306,12 @@ class Interpreter {
 					const vecId = operandVal.figureId;
 					const id = this.figure.createVectorNegate(vecId);
 					return { type: 'element', figureId: id, elementType: 'vecteur' };
+				}
+				// Scalar negation: -d
+				if (expr.op === '-' && isScalarValue(operandVal)) {
+					const depId = (operandVal as { figureId: string }).figureId;
+					const id = this.figure.createScalarExpression((sv) => -(sv.get(depId) ?? 0), [depId]);
+					return { type: 'element', figureId: id, elementType: 'scalar' };
 				}
 				const operand = coerceToNumber(operandVal, expr.line);
 				if (expr.op === '-') return { type: 'nombre', value: -operand };
@@ -517,6 +533,57 @@ class Interpreter {
 			`Operation "${op}" non supportee entre ${leftIsVec ? 'vecteur' : 'nombre'} et ${rightIsVec ? 'vecteur' : 'nombre'}`,
 			line
 		);
+	}
+
+	/**
+	 * Create a composed GeoScalar from a binary operation involving at least one scalar.
+	 * The non-scalar operand is resolved to its current numeric value (captured in the closure).
+	 */
+	private evaluateScalarBinary(
+		op: string,
+		leftVal: ResolvedValue,
+		rightVal: ResolvedValue,
+		line: number
+	): ResolvedValue {
+		const leftIsScalar = isScalarValue(leftVal);
+		const rightIsScalar = isScalarValue(rightVal);
+
+		const scalarDeps: string[] = [];
+		if (leftIsScalar) scalarDeps.push((leftVal as { figureId: string }).figureId);
+		if (rightIsScalar) scalarDeps.push((rightVal as { figureId: string }).figureId);
+
+		const leftId = leftIsScalar ? (leftVal as { figureId: string }).figureId : null;
+		const leftNum = leftIsScalar ? 0 : coerceToNumber(leftVal, line);
+		const rightId = rightIsScalar ? (rightVal as { figureId: string }).figureId : null;
+		const rightNum = rightIsScalar ? 0 : coerceToNumber(rightVal, line);
+
+		const applyOp = (l: number, r: number): number => {
+			switch (op) {
+				case '+':
+					return l + r;
+				case '-':
+					return l - r;
+				case '*':
+					return l * r;
+				case '/':
+					return r === 0 ? 0 : l / r;
+				case '^':
+					return Math.pow(l, r);
+				case '%':
+					return r === 0 ? 0 : ((l % r) + r) % r;
+				default:
+					throw new DslRuntimeError(`Operateur "${op}" non supporte avec scalar`, line);
+			}
+		};
+
+		const compute = (sv: ReadonlyMap<string, number>): number => {
+			const l = leftId ? (sv.get(leftId) ?? 0) : leftNum;
+			const r = rightId ? (sv.get(rightId) ?? 0) : rightNum;
+			return applyOp(l, r);
+		};
+
+		const id = this.figure.createScalarExpression(compute, scalarDeps);
+		return { type: 'element', figureId: id, elementType: 'scalar' };
 	}
 
 	private toGeoValue(val: ResolvedValue, line: number): GeoValue {

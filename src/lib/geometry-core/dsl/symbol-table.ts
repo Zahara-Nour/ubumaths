@@ -21,6 +21,7 @@ export type SymbolType =
 	| 'vecteur'
 	| 'transformation'
 	| 'lieu'
+	| 'scalar'
 	| 'liste';
 
 export interface SymbolEntry {

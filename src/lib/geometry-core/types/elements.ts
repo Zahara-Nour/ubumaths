@@ -7,7 +7,7 @@
  * - dependsOn: array of parent element IDs (in GeoElementBase for generic access)
  */
 
-import type { GeoValue } from './geo-value';
+import type { GeoValue, ScalarParam } from './geo-value';
 import type { GeoPoint } from './primitives';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
@@ -158,8 +158,8 @@ export interface GeoRotatedPoint extends GeoElementBase {
 	readonly type: 'rotatedPoint';
 	readonly sourceId: string;
 	readonly centerId: string;
-	readonly angle: GeoValue;
-	readonly dependsOn: readonly [string, string];
+	readonly angle: ScalarParam;
+	readonly dependsOn: readonly string[];
 }
 
 /** Image of a point by translation defined by a vector (two points). */
@@ -189,8 +189,8 @@ export interface GeoDilatedPoint extends GeoElementBase {
 	readonly type: 'dilatedPoint';
 	readonly sourceId: string;
 	readonly centerId: string;
-	readonly factor: GeoValue;
-	readonly dependsOn: readonly [string, string];
+	readonly factor: ScalarParam;
+	readonly dependsOn: readonly string[];
 }
 
 /** Image of a point by axial symmetry (reflection over a line defined by two points). */
@@ -300,6 +300,35 @@ export interface GeoMeasure extends GeoElementBase {
 }
 
 // =============================================================================
+// Scalar types (reactive computed values)
+// =============================================================================
+
+/** Reactive computed scalar value in the dependency graph. */
+export interface GeoScalar extends GeoElementBase {
+	readonly type: 'scalar';
+	readonly scalarKind: 'distance' | 'angle' | 'area' | 'norme' | 'expression';
+	/** Target element IDs for primitive kinds (points for distance/angle/area, vector for norme). */
+	readonly targetIds: readonly string[];
+	/** Computation closure for 'expression' kind: receives scalar values, returns number. */
+	readonly compute?: (scalarValues: ReadonlyMap<string, number>) => number;
+	/** IDs of scalar/slider/measure elements this expression reads (expression kind only). */
+	readonly scalarDeps?: readonly string[];
+	/** Display format when visible on figure. */
+	readonly format?: 'exact' | 'approx' | 'degrees' | 'radians';
+	readonly dependsOn: readonly string[];
+}
+
+/** Slider: a free scalar controlled by the user (no geometric dependencies). */
+export interface GeoSlider extends GeoElementBase {
+	readonly type: 'slider';
+	readonly value: number;
+	readonly min: number;
+	readonly max: number;
+	readonly step?: number;
+	readonly dependsOn: readonly [];
+}
+
+// =============================================================================
 // Line-like types
 // =============================================================================
 
@@ -400,10 +429,10 @@ export type GeoVector =
 export interface GeoArcByAngles extends GeoElementBase {
 	readonly type: 'arcByAngles';
 	readonly centerId: string;
-	readonly radius: GeoValue;
-	readonly startAngle: GeoValue; // radians
-	readonly endAngle: GeoValue; // radians
-	readonly dependsOn: readonly [string];
+	readonly radius: ScalarParam;
+	readonly startAngle: ScalarParam; // radians
+	readonly endAngle: ScalarParam; // radians
+	readonly dependsOn: readonly string[];
 }
 
 /**
@@ -427,15 +456,14 @@ export type GeoArc = GeoArcByAngles | GeoArcByPoints;
 
 /**
  * Circle defined by center point and a fixed radius value.
- * `radius` is a GeoValue (not a point ID) because it may be an exact symbolic
- * value (e.g. sqrt(2)) not tied to any constructed point. The dependency graph
- * depends only on `centerId`; `radius` is an intrinsic parameter.
+ * `radius` is a ScalarParam: either a GeoValue (exact symbolic value like sqrt(2))
+ * or a reference to a scalar/slider element for dynamic radius.
  */
 export interface GeoCircleByRadius extends GeoElementBase {
 	readonly type: 'circleByRadius';
 	readonly centerId: string;
-	readonly radius: GeoValue;
-	readonly dependsOn: readonly [string];
+	readonly radius: ScalarParam;
+	readonly dependsOn: readonly string[];
 }
 
 /** Circle defined by center point and a point on the circle. */
@@ -564,8 +592,8 @@ export interface GeoImplicitCurve extends GeoElementBase {
 export interface GeoRotation extends GeoElementBase {
 	readonly type: 'rotation';
 	readonly centerId: string;
-	readonly angle: GeoValue;
-	readonly dependsOn: readonly [string];
+	readonly angle: ScalarParam;
+	readonly dependsOn: readonly string[];
 }
 
 /** Central symmetry (point reflection) transformation object. */
@@ -602,8 +630,8 @@ export interface GeoTranslation extends GeoElementBase {
 export interface GeoHomothety extends GeoElementBase {
 	readonly type: 'homothety';
 	readonly centerId: string;
-	readonly factor: GeoValue;
-	readonly dependsOn: readonly [string];
+	readonly factor: ScalarParam;
+	readonly dependsOn: readonly string[];
 }
 
 /** Orthogonal projection onto a line transformation object. */
@@ -770,7 +798,9 @@ export type GeoElement =
 	| GeoAffinity
 	| GeoInversion
 	| GeoComposition
-	| GeoLocus;
+	| GeoLocus
+	| GeoScalar
+	| GeoSlider;
 
 export type GeoElementType = GeoElement['type'];
 
@@ -1058,4 +1088,12 @@ export function isAffinity(el: GeoElement): el is GeoAffinity {
 
 export function isAffinityPoint(el: GeoElement): el is GeoAffinityPoint {
 	return el.type === 'affinityPoint';
+}
+
+export function isScalar(el: GeoElement): el is GeoScalar {
+	return el.type === 'scalar';
+}
+
+export function isSlider(el: GeoElement): el is GeoSlider {
+	return el.type === 'slider';
 }

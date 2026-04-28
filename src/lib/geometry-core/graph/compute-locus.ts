@@ -59,7 +59,8 @@ export function computeLocusCurve(
 	locus: GeoLocus,
 	elements: ReadonlyMap<string, GeoElement>,
 	positions: ReadonlyMap<string, GeoPoint>,
-	viewport: Viewport
+	viewport: Viewport,
+	scalarValues?: ReadonlyMap<string, number>
 ): SampledCurve | null {
 	const driverEl = elements.get(locus.driverId);
 	if (!driverEl) return null;
@@ -72,10 +73,11 @@ export function computeLocusCurve(
 	const subGraphIds = findSubGraph(locus.driverId, locus.tracerId, elements);
 	if (subGraphIds.length === 0) return null;
 
-	// 3. Uniform sampling — reuse a single positions map across all samples
+	// 3. Uniform sampling — reuse positions and scalar maps across all samples
 	const N = locus.numSamples;
 	const samples: { t: number; point: Point | null }[] = [];
 	const localPositions = new Map(positions);
+	const localScalarValues = new Map(scalarValues ?? []);
 
 	for (let i = 0; i <= N; i++) {
 		const t = paramInfo.tMin + (i / N) * (paramInfo.tMax - paramInfo.tMin);
@@ -87,7 +89,9 @@ export function computeLocusCurve(
 			subGraphIds,
 			elements,
 			positions,
-			localPositions
+			localPositions,
+			scalarValues,
+			localScalarValues
 		);
 		samples.push({ t, point: pos });
 	}
@@ -101,6 +105,7 @@ export function computeLocusCurve(
 		subGraphIds,
 		elements,
 		positions,
+		scalarValues,
 		viewport
 	);
 
@@ -364,7 +369,9 @@ function sampleAtParameter(
 	subGraphIds: string[],
 	elements: ReadonlyMap<string, GeoElement>,
 	positions: ReadonlyMap<string, GeoPoint>,
-	localPositions?: Map<string, GeoPoint>
+	localPositions?: Map<string, GeoPoint>,
+	baseScalarValues?: ReadonlyMap<string, number>,
+	localScalarValues?: Map<string, number>
 ): Point | null {
 	// Reuse or create local positions map
 	if (!localPositions) {
@@ -381,6 +388,21 @@ function sampleAtParameter(
 		}
 	}
 
+	// Reuse or create local scalar values map
+	if (!localScalarValues) {
+		localScalarValues = new Map(baseScalarValues ?? []);
+	} else {
+		// Reset scalar values for sub-graph nodes only
+		for (const id of subGraphIds) {
+			const baseVal = baseScalarValues?.get(id);
+			if (baseVal !== undefined) {
+				localScalarValues.set(id, baseVal);
+			} else {
+				localScalarValues.delete(id);
+			}
+		}
+	}
+
 	const mutatedDriver = mutateDriver(t);
 
 	// Recompute sub-graph in order — use mutated driver inline, no elements copy
@@ -388,11 +410,15 @@ function sampleAtParameter(
 		const el = id === driverId ? mutatedDriver : elements.get(id);
 		if (!el) continue;
 
-		const result = computeElementPosition(el, localPositions, elements);
+		const result = computeElementPosition(el, localPositions, elements, localScalarValues);
 		if (result.position) {
 			localPositions.set(id, result.position);
 		} else {
 			localPositions.delete(id);
+		}
+		// Store scalar values for intermediate scalars/measures in the sub-graph
+		if (result.scalarValue !== undefined) {
+			localScalarValues.set(id, result.scalarValue);
 		}
 	}
 
@@ -425,6 +451,7 @@ function adaptiveRefine(
 	subGraphIds: string[],
 	elements: ReadonlyMap<string, GeoElement>,
 	positions: ReadonlyMap<string, GeoPoint>,
+	scalarValues: ReadonlyMap<string, number> | undefined,
 	_viewport: Viewport
 ): Sample[] {
 	// Compute average spacing between consecutive valid points
@@ -451,7 +478,8 @@ function adaptiveRefine(
 		mutateDriver,
 		subGraphIds,
 		elements,
-		positions
+		positions,
+		scalarValues
 	);
 }
 
@@ -464,7 +492,8 @@ function refinePass(
 	mutateDriver: (t: number) => GeoElement,
 	subGraphIds: string[],
 	elements: ReadonlyMap<string, GeoElement>,
-	positions: ReadonlyMap<string, GeoPoint>
+	positions: ReadonlyMap<string, GeoPoint>,
+	scalarValues: ReadonlyMap<string, number> | undefined
 ): Sample[] {
 	if (depth >= MAX_REFINE_DEPTH) return samples;
 
@@ -487,7 +516,9 @@ function refinePass(
 					mutateDriver,
 					subGraphIds,
 					elements,
-					positions
+					positions,
+					undefined,
+					scalarValues
 				);
 				result.push({ t: midT, point: midPoint });
 				refined = true;
@@ -502,7 +533,9 @@ function refinePass(
 				mutateDriver,
 				subGraphIds,
 				elements,
-				positions
+				positions,
+				undefined,
+				scalarValues
 			);
 			result.push({ t: midT, point: midPoint });
 			refined = true;
@@ -523,7 +556,8 @@ function refinePass(
 		mutateDriver,
 		subGraphIds,
 		elements,
-		positions
+		positions,
+		scalarValues
 	);
 }
 

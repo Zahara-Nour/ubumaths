@@ -5,7 +5,7 @@
  */
 
 import type { Figure } from '../graph/figure';
-import type { GeoValue } from '../types/geo-value';
+import type { GeoValue, ScalarParam } from '../types/geo-value';
 import { exact } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import type { SymbolType } from './symbol-table';
@@ -274,6 +274,20 @@ export function executeBuiltin(
 	return result;
 }
 
+/** Convert a ResolvedValue to a ScalarParam (for dynamic-capable parameters). */
+function toScalarParam(
+	val: ResolvedValue,
+	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
+	line: number
+): ScalarParam {
+	// Scalar or measure element → scalarRef
+	if (val.type === 'element' && (val.elementType === 'scalar' || val.elementType === 'measure')) {
+		return { scalarRef: val.figureId };
+	}
+	// Otherwise fall through to GeoValue
+	return toGeoValue(val, line);
+}
+
 function _executeBuiltinInner(
 	name: string,
 	pos: ResolvedValue[],
@@ -368,12 +382,8 @@ function _executeBuiltinInner(
 		case 'norme': {
 			if (pos.length !== 1) throw new DslRuntimeError('norme() attend 1 argument (vecteur)', line);
 			const nVecId = requireElement(pos[0], 'vecteur', line);
-			const nComp = figure.getVectorComponents(nVecId);
-			if (!nComp)
-				throw new DslRuntimeError('norme(): impossible de calculer les composantes', line);
-			const ndx = geoToNumber(nComp.dx);
-			const ndy = geoToNumber(nComp.dy);
-			return { scalarValue: Math.sqrt(ndx * ndx + ndy * ndy) };
+			const id = figure.createScalarNorme(nVecId, { label });
+			return { figureId: id, symbolType: 'scalar' };
 		}
 
 		case 'produit_scalaire': {
@@ -417,7 +427,7 @@ function _executeBuiltinInner(
 				throw new DslRuntimeError('cercle() attend 1 argument positionnel (centre)', line);
 			const centerId = requireElement(pos[0], 'centre', line);
 			if (named.has('rayon')) {
-				const radius = toGeoValue(named.get('rayon')!, line);
+				const radius = toScalarParam(named.get('rayon')!, toGeoValue, line);
 				const id = figure.createCircleByRadius(centerId, radius, { label });
 				return { figureId: id, symbolType: 'cercle' };
 			}
@@ -483,12 +493,25 @@ function _executeBuiltinInner(
 				'centre',
 				line
 			);
-			const angleDeg = requireNumber(
-				named.get('angle') ?? { type: 'nombre', value: 0 },
-				'angle',
-				line
-			);
-			const angleRad: GeoValue = { kind: 'numeric', value: (angleDeg * Math.PI) / 180 };
+			const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
+			// Convert angle to radians: scalar → composed scalar (*pi/180), number → GeoValue
+			let angleRad: ScalarParam;
+			if (
+				angleArg.type === 'element' &&
+				(angleArg.elementType === 'scalar' || angleArg.elementType === 'measure')
+			) {
+				// Create a composed scalar that converts degrees to radians
+				const depId = angleArg.figureId;
+				angleRad = {
+					scalarRef: figure.createScalarExpression(
+						(sv) => ((sv.get(depId) ?? 0) * Math.PI) / 180,
+						[depId]
+					)
+				};
+			} else {
+				const angleDeg = requireNumber(angleArg, 'angle', line);
+				angleRad = { kind: 'numeric', value: (angleDeg * Math.PI) / 180 };
+			}
 			// 0 positional args → create transformation object
 			if (pos.length === 0) {
 				const id = figure.createRotation(centerId, angleRad, { label });
@@ -570,7 +593,11 @@ function _executeBuiltinInner(
 				'centre',
 				line
 			);
-			const factor = toGeoValue(named.get('rapport') ?? { type: 'nombre', value: 1 }, line);
+			const factor = toScalarParam(
+				named.get('rapport') ?? { type: 'nombre', value: 1 },
+				toGeoValue,
+				line
+			);
 			// 0 positional args → create transformation object
 			if (pos.length === 0) {
 				const id = figure.createHomothety(centerId, factor, { label });
@@ -944,6 +971,37 @@ function _executeBuiltinInner(
 			return { figureId: id, symbolType: 'measure' };
 		}
 
+		case 'distance': {
+			if (pos.length !== 2)
+				throw new DslRuntimeError('distance() attend 2 arguments (point, point)', line);
+			const pt1Id = requireElement(pos[0], 'point1', line);
+			const pt2Id = requireElement(pos[1], 'point2', line);
+			const id = figure.createScalarDistance(pt1Id, pt2Id, { label });
+			return { figureId: id, symbolType: 'scalar' };
+		}
+
+		case 'angle': {
+			if (pos.length !== 3) throw new DslRuntimeError('angle() attend 3 arguments (P, O, Q)', line);
+			const aP1Id = requireElement(pos[0], 'P1', line);
+			const aVId = requireElement(pos[1], 'vertex', line);
+			const aP2Id = requireElement(pos[2], 'P2', line);
+			const id = figure.createScalarAngle(aP1Id, aVId, aP2Id, { label });
+			return { figureId: id, symbolType: 'scalar' };
+		}
+
+		case 'slider': {
+			const minVal = requireNumber(named.get('min') ?? { type: 'nombre', value: 0 }, 'min', line);
+			const maxVal = requireNumber(named.get('max') ?? { type: 'nombre', value: 10 }, 'max', line);
+			const valeur = requireNumber(
+				named.get('valeur') ?? { type: 'nombre', value: (minVal + maxVal) / 2 },
+				'valeur',
+				line
+			);
+			const step = named.has('pas') ? requireNumber(named.get('pas')!, 'pas', line) : undefined;
+			const id = figure.createSlider(minVal, maxVal, valeur, { label, step });
+			return { figureId: id, symbolType: 'scalar' };
+		}
+
 		case 'arc': {
 			if (pos.length === 3) {
 				// arc(A, O, B) — arc by 3 points (start, center, end)
@@ -1270,7 +1328,10 @@ export const BUILTIN_NAMES = new Set([
 	'zeros',
 	'extrema',
 	'inflections',
-	'lieu'
+	'lieu',
+	'distance',
+	'angle',
+	'slider'
 ]);
 
 /** Math functions that return numbers. */

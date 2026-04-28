@@ -5,7 +5,7 @@
  * and the current positions of its dependencies.
  */
 
-import type { GeoElement, GeoMeasure } from '../types/elements';
+import type { GeoElement, GeoMeasure, GeoScalar } from '../types/elements';
 import {
 	isMidpoint,
 	isIntersectionLL,
@@ -26,6 +26,8 @@ import {
 	isAngleMark,
 	isSegmentMark,
 	isMeasure,
+	isScalar,
+	isSlider,
 	isPointOnCurve,
 	isPointOnQuadraticCurve,
 	isPointOnSegment,
@@ -34,7 +36,8 @@ import {
 	isPointOnArc
 } from '../types/elements';
 import type { GeoPoint } from '../types/primitives';
-import type { GeoValue } from '../types/geo-value';
+import type { GeoValue, ScalarParam } from '../types/geo-value';
+import { isScalarRef } from '../types/geo-value';
 import { geoAdd, geoSub, geoMul, geoDiv, geoSqrt, geoFromNumber } from '../compute/geo-arithmetic';
 import { geoToNumber } from '../compute/to-number';
 import { numeric } from '../types/geo-value';
@@ -64,21 +67,55 @@ export interface ComputePositionResult {
 	position: GeoPoint | null;
 	/** True when this element type should have a position (derived points, marks). */
 	hasComputablePosition: boolean;
-	measureValue?: number | undefined;
+	/** Scalar value for measure, scalar, and slider elements. */
+	scalarValue?: number | undefined;
+}
+
+/**
+ * Resolve a ScalarParam to a numeric value.
+ * If the param is a ScalarRef, looks up the value in scalarValues.
+ * If the param is a GeoValue, converts to number directly.
+ */
+export function resolveScalarParam(
+	param: ScalarParam,
+	scalarValues?: ReadonlyMap<string, number>
+): number {
+	if (isScalarRef(param)) {
+		return scalarValues?.get(param.scalarRef) ?? 0;
+	}
+	return geoToNumber(param);
+}
+
+/**
+ * Resolve a ScalarParam to a GeoValue (for exact arithmetic).
+ * If the param is a ScalarRef, wraps the numeric value from scalarValues.
+ * If the param is already a GeoValue, returns it directly.
+ */
+function resolveScalarParamToGeoValue(
+	param: ScalarParam,
+	scalarValues?: ReadonlyMap<string, number>
+): GeoValue {
+	if (isScalarRef(param)) {
+		const val = scalarValues?.get(param.scalarRef) ?? 0;
+		// Guard against non-finite values from expressions (e.g. division by zero)
+		return numeric(Number.isFinite(val) ? val : 0);
+	}
+	return param;
 }
 
 /**
  * Compute the position of a derived element from its parents' positions.
  *
- * Returns { position, hasComputablePosition, measureValue? }.
+ * Returns { position, hasComputablePosition, scalarValue? }.
  * - position is null when computation failed (parallel lines, missing parents) or element has no position.
  * - hasComputablePosition distinguishes "no position because it's a segment" from "no position because parents are missing".
- * - measureValue is set only for measure elements.
+ * - scalarValue is set for measure, scalar, and slider elements.
  */
 export function computeElementPosition(
 	el: GeoElement,
 	positions: ReadonlyMap<string, GeoPoint>,
-	elements: ReadonlyMap<string, GeoElement>
+	elements: ReadonlyMap<string, GeoElement>,
+	scalarValues?: ReadonlyMap<string, number>
 ): ComputePositionResult {
 	if (isMidpoint(el)) {
 		const p1 = positions.get(el.point1Id);
@@ -100,22 +137,50 @@ export function computeElementPosition(
 	}
 
 	if (isIntersectionLC(el)) {
-		const pos = computeIntersectionLCPos(el.lineId, el.circleId, el.index, positions, elements);
+		const pos = computeIntersectionLCPos(
+			el.lineId,
+			el.circleId,
+			el.index,
+			positions,
+			elements,
+			scalarValues
+		);
 		return { position: pos, hasComputablePosition: true };
 	}
 
 	if (isIntersectionCC(el)) {
-		const pos = computeIntersectionCCPos(el.circle1Id, el.circle2Id, el.index, positions, elements);
+		const pos = computeIntersectionCCPos(
+			el.circle1Id,
+			el.circle2Id,
+			el.index,
+			positions,
+			elements,
+			scalarValues
+		);
 		return { position: pos, hasComputablePosition: true };
 	}
 
 	if (isIntersectionLQ(el)) {
-		const pos = computeIntersectionLQPos(el.lineId, el.curveId, el.index, positions, elements);
+		const pos = computeIntersectionLQPos(
+			el.lineId,
+			el.curveId,
+			el.index,
+			positions,
+			elements,
+			scalarValues
+		);
 		return { position: pos, hasComputablePosition: true };
 	}
 
 	if (isIntersectionQQ(el)) {
-		const pos = computeIntersectionQQPos(el.curve1Id, el.curve2Id, el.index, positions, elements);
+		const pos = computeIntersectionQQPos(
+			el.curve1Id,
+			el.curve2Id,
+			el.index,
+			positions,
+			elements,
+			scalarValues
+		);
 		return { position: pos, hasComputablePosition: true };
 	}
 
@@ -155,8 +220,10 @@ export function computeElementPosition(
 	if (isRotatedPoint(el)) {
 		const source = positions.get(el.sourceId);
 		const center = positions.get(el.centerId);
-		if (source && center)
-			return { position: rotate(source, center, el.angle), hasComputablePosition: true };
+		if (source && center) {
+			const angle = resolveScalarParamToGeoValue(el.angle, scalarValues);
+			return { position: rotate(source, center, angle), hasComputablePosition: true };
+		}
 		return { position: null, hasComputablePosition: true };
 	}
 
@@ -192,8 +259,10 @@ export function computeElementPosition(
 	if (isDilatedPoint(el)) {
 		const source = positions.get(el.sourceId);
 		const center = positions.get(el.centerId);
-		if (source && center)
-			return { position: dilate(source, center, el.factor), hasComputablePosition: true };
+		if (source && center) {
+			const factor = resolveScalarParamToGeoValue(el.factor, scalarValues);
+			return { position: dilate(source, center, factor), hasComputablePosition: true };
+		}
 		return { position: null, hasComputablePosition: true };
 	}
 
@@ -253,8 +322,17 @@ export function computeElementPosition(
 	}
 
 	if (isMeasure(el)) {
-		const measureValue = computeMeasureValue(el, positions);
-		return { position: null, hasComputablePosition: false, measureValue };
+		const scalarValue = computeMeasureValue(el, positions);
+		return { position: null, hasComputablePosition: false, scalarValue };
+	}
+
+	if (isScalar(el)) {
+		const scalarValue = computeScalarValue(el, positions, elements, scalarValues);
+		return { position: null, hasComputablePosition: false, scalarValue };
+	}
+
+	if (isSlider(el)) {
+		return { position: null, hasComputablePosition: false, scalarValue: el.value };
 	}
 
 	if (isAngleMark(el)) {
@@ -325,7 +403,7 @@ export function computeElementPosition(
 			if (centerPos) {
 				let r: number;
 				if (circEl.type === 'circleByRadius') {
-					r = geoToNumber(circEl.radius);
+					r = resolveScalarParam(circEl.radius, scalarValues);
 				} else {
 					const edgePos = positions.get(circEl.edgePointId);
 					if (!edgePos) return { position: null, hasComputablePosition: true };
@@ -354,9 +432,9 @@ export function computeElementPosition(
 			if (arcEl.type === 'arcByAngles') {
 				centerPos = positions.get(arcEl.centerId);
 				if (!centerPos) return { position: null, hasComputablePosition: true };
-				r = geoToNumber(arcEl.radius);
-				startAngle = geoToNumber(arcEl.startAngle);
-				endAngle = geoToNumber(arcEl.endAngle);
+				r = resolveScalarParam(arcEl.radius, scalarValues);
+				startAngle = resolveScalarParam(arcEl.startAngle, scalarValues);
+				endAngle = resolveScalarParam(arcEl.endAngle, scalarValues);
 			} else if (arcEl.type === 'arcByPoints') {
 				centerPos = positions.get(arcEl.centerId);
 				const startPos = positions.get(arcEl.startId);
@@ -443,14 +521,16 @@ function computeIntersectionLL(
 function getCircleParams(
 	circleId: string,
 	positions: ReadonlyMap<string, GeoPoint>,
-	elements: ReadonlyMap<string, GeoElement>
+	elements: ReadonlyMap<string, GeoElement>,
+	scalarValues?: ReadonlyMap<string, number>
 ): { center: GeoPoint; radius: GeoValue } | null {
 	const el = elements.get(circleId);
 	if (!el) return null;
 	if (el.type === 'circleByRadius') {
 		const center = positions.get(el.centerId);
 		if (!center) return null;
-		return { center, radius: el.radius };
+		const radius = resolveScalarParamToGeoValue(el.radius, scalarValues);
+		return { center, radius };
 	}
 	if (el.type === 'circleByPoint') {
 		const center = positions.get(el.centerId);
@@ -470,10 +550,11 @@ function computeIntersectionLCPos(
 	circleId: string,
 	index: 0 | 1,
 	positions: ReadonlyMap<string, GeoPoint>,
-	elements: ReadonlyMap<string, GeoElement>
+	elements: ReadonlyMap<string, GeoElement>,
+	scalarValues?: ReadonlyMap<string, number>
 ): GeoPoint | null {
 	const line = getLineLikePoints(lineId, positions, elements);
-	const circle = getCircleParams(circleId, positions, elements);
+	const circle = getCircleParams(circleId, positions, elements, scalarValues);
 	if (!line || !circle) return null;
 	const pts = intersectLC(line.p1, line.p2, circle.center, circle.radius);
 	if (!pts || index >= pts.length) return null;
@@ -485,10 +566,11 @@ function computeIntersectionCCPos(
 	circle2Id: string,
 	index: 0 | 1,
 	positions: ReadonlyMap<string, GeoPoint>,
-	elements: ReadonlyMap<string, GeoElement>
+	elements: ReadonlyMap<string, GeoElement>,
+	scalarValues?: ReadonlyMap<string, number>
 ): GeoPoint | null {
-	const c1 = getCircleParams(circle1Id, positions, elements);
-	const c2 = getCircleParams(circle2Id, positions, elements);
+	const c1 = getCircleParams(circle1Id, positions, elements, scalarValues);
+	const c2 = getCircleParams(circle2Id, positions, elements, scalarValues);
 	if (!c1 || !c2) return null;
 	const pts = intersectCC(c1.center, c1.radius, c2.center, c2.radius);
 	if (!pts || index >= pts.length) return null;
@@ -502,7 +584,8 @@ function computeIntersectionCCPos(
 function getConicCoefficients(
 	id: string,
 	positions: ReadonlyMap<string, GeoPoint>,
-	elements: ReadonlyMap<string, GeoElement>
+	elements: ReadonlyMap<string, GeoElement>,
+	scalarValues?: ReadonlyMap<string, number>
 ): readonly [number, number, number, number, number, number] | null {
 	const el = elements.get(id);
 	if (!el) return null;
@@ -512,7 +595,7 @@ function getConicCoefficients(
 	}
 
 	// Convert circle to conic coefficients
-	const circle = getCircleParams(id, positions, elements);
+	const circle = getCircleParams(id, positions, elements, scalarValues);
 	if (!circle) return null;
 	const cx = geoToNumber(circle.center.x);
 	const cy = geoToNumber(circle.center.y);
@@ -525,10 +608,11 @@ function computeIntersectionLQPos(
 	curveId: string,
 	index: 0 | 1,
 	positions: ReadonlyMap<string, GeoPoint>,
-	elements: ReadonlyMap<string, GeoElement>
+	elements: ReadonlyMap<string, GeoElement>,
+	scalarValues?: ReadonlyMap<string, number>
 ): GeoPoint | null {
 	const line = getLineLikePoints(lineId, positions, elements);
-	const coeffs = getConicCoefficients(curveId, positions, elements);
+	const coeffs = getConicCoefficients(curveId, positions, elements, scalarValues);
 	if (!line || !coeffs) return null;
 	const pts = intersectLQ(line.p1, line.p2, coeffs);
 	if (!pts || index >= pts.length) return null;
@@ -540,10 +624,11 @@ function computeIntersectionQQPos(
 	curve2Id: string,
 	index: 0 | 1 | 2 | 3,
 	positions: ReadonlyMap<string, GeoPoint>,
-	elements: ReadonlyMap<string, GeoElement>
+	elements: ReadonlyMap<string, GeoElement>,
+	scalarValues?: ReadonlyMap<string, number>
 ): GeoPoint | null {
-	const coeffs1 = getConicCoefficients(curve1Id, positions, elements);
-	const coeffs2 = getConicCoefficients(curve2Id, positions, elements);
+	const coeffs1 = getConicCoefficients(curve1Id, positions, elements, scalarValues);
+	const coeffs2 = getConicCoefficients(curve2Id, positions, elements, scalarValues);
 	if (!coeffs1 || !coeffs2) return null;
 	const pts = intersectQQ(coeffs1, coeffs2);
 	if (!pts || index >= pts.length) return null;
@@ -581,6 +666,73 @@ function computeIntersectionFFPos(
 	const pts = intersectFF(fn1.expression, fn1.compiledFn, fn2.expression, xMin, xMax);
 	if (!pts || index >= pts.length) return null;
 	return pts[index];
+}
+
+function computeScalarValue(
+	el: GeoScalar,
+	positions: ReadonlyMap<string, GeoPoint>,
+	elements: ReadonlyMap<string, GeoElement>,
+	scalarValues?: ReadonlyMap<string, number>
+): number | undefined {
+	switch (el.scalarKind) {
+		case 'distance': {
+			const [aId, bId] = el.targetIds;
+			const a = positions.get(aId);
+			const b = positions.get(bId);
+			if (!a || !b) return undefined;
+			const dx = geoToNumber(a.x) - geoToNumber(b.x);
+			const dy = geoToNumber(a.y) - geoToNumber(b.y);
+			return Math.sqrt(dx * dx + dy * dy);
+		}
+		case 'angle': {
+			const [p1Id, vId, p2Id] = el.targetIds;
+			const p1 = positions.get(p1Id);
+			const v = positions.get(vId);
+			const p2 = positions.get(p2Id);
+			if (!p1 || !v || !p2) return undefined;
+			const vax = geoToNumber(p1.x) - geoToNumber(v.x);
+			const vay = geoToNumber(p1.y) - geoToNumber(v.y);
+			const vbx = geoToNumber(p2.x) - geoToNumber(v.x);
+			const vby = geoToNumber(p2.y) - geoToNumber(v.y);
+			const dot = vax * vbx + vay * vby;
+			const lenA = Math.sqrt(vax * vax + vay * vay);
+			const lenB = Math.sqrt(vbx * vbx + vby * vby);
+			if (lenA < 1e-15 || lenB < 1e-15) return undefined;
+			const cosAngle = Math.max(-1, Math.min(1, dot / (lenA * lenB)));
+			const radians = Math.acos(cosAngle);
+			return (radians * 180) / Math.PI;
+		}
+		case 'area': {
+			const points = el.targetIds.map((tid) => positions.get(tid));
+			if (points.some((p) => !p)) return undefined;
+			let sum = 0;
+			const n = points.length;
+			for (let i = 0; i < n; i++) {
+				const xi = geoToNumber(points[i]!.x);
+				const yi = geoToNumber(points[i]!.y);
+				const xn = geoToNumber(points[(i + 1) % n]!.x);
+				const yn = geoToNumber(points[(i + 1) % n]!.y);
+				sum += xi * yn - xn * yi;
+			}
+			return Math.abs(sum) / 2;
+		}
+		case 'norme': {
+			const vecId = el.targetIds[0];
+			const comp = resolveVectorComponents(vecId, elements, positions);
+			if (!comp) return undefined;
+			const dx = geoToNumber(comp.dx);
+			const dy = geoToNumber(comp.dy);
+			return Math.sqrt(dx * dx + dy * dy);
+		}
+		case 'expression': {
+			if (!el.compute) return undefined;
+			try {
+				return el.compute(scalarValues ?? new Map());
+			} catch {
+				return undefined;
+			}
+		}
+	}
 }
 
 function computeMeasureValue(
