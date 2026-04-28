@@ -188,11 +188,16 @@ export function intersectCC(
 	);
 
 	// Radical line: A*x + B*y = C
-	// Find two points on this line
+	// Find two points on this line.
+	// Use the coefficient with the larger absolute value to avoid
+	// catastrophic cancellation from dividing by near-zero values.
 	let lp1: GeoPoint;
 	let lp2: GeoPoint;
 
-	if (!geoIsZero(A)) {
+	const absA = Math.abs(geoToNumber(A));
+	const absB = Math.abs(geoToNumber(B));
+
+	if (absA >= absB && absA > 0) {
 		// x = (C - B*y) / A
 		// Point 1: y = 0 => x = C/A
 		const x0 = geoDiv(C, A);
@@ -202,18 +207,41 @@ export function intersectCC(
 		const x1 = geoDiv(geoSub(C, B), A);
 		if (x1 === null) return null;
 		lp2 = { x: x1, y: geoFromNumber(1) };
-	} else if (!geoIsZero(B)) {
-		// B*y = C => y = C/B
+	} else if (absB > 0) {
+		// y = (C - A*x) / B
+		// Point 1: x = 0 => y = C/B
 		const y0 = geoDiv(C, B);
 		if (y0 === null) return null;
 		lp1 = { x: geoFromNumber(0), y: y0 };
-		lp2 = { x: geoFromNumber(1), y: y0 };
+		// Point 2: x = 1 => y = (C - A) / B
+		const y1 = geoDiv(geoSub(C, A), B);
+		if (y1 === null) return null;
+		lp2 = { x: geoFromNumber(1), y: y1 };
 	} else {
 		return null; // degenerate
 	}
 
 	// Intersect radical line with circle 1
-	return intersectLC(lp1, lp2, center1, radius1);
+	const pts = intersectLC(lp1, lp2, center1, radius1);
+
+	// Stable ordering: sort by cross product of (center1→center2) × (center1→point).
+	// This gives a consistent "left/right" side regardless of radical line parameterization.
+	if (pts && pts.length === 2) {
+		const ddx = geoToNumber(dxG);
+		const ddy = geoToNumber(dyG);
+		const cross0 =
+			ddx * geoToNumber(geoSub(pts[0].y, cy1)) - ddy * geoToNumber(geoSub(pts[0].x, cx1));
+		const cross1 =
+			ddx * geoToNumber(geoSub(pts[1].y, cy1)) - ddy * geoToNumber(geoSub(pts[1].x, cx1));
+		if (cross0 < cross1) {
+			// swap to ensure pts[0] has larger cross product (consistent "left" side)
+			const tmp = pts[0];
+			pts[0] = pts[1];
+			pts[1] = tmp;
+		}
+	}
+
+	return pts;
 }
 
 // =============================================================================
