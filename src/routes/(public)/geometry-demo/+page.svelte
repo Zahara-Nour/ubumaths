@@ -54,5 +54,11 @@
 				Trajectoire d'un point quand un autre glisse sur son chemin
 			</p>
 		</a>
+		<a href="/geometry-demo/sliders" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Sliders interactifs</h2>
+			<p class="text-sm text-muted-foreground">
+				Parametres dynamiques : rayon, angle, rapport controles par slider
+			</p>
+		</a>
 	</div>
 </div>
