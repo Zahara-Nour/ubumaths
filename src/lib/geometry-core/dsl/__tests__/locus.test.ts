@@ -365,3 +365,181 @@ describe('lieu() — classic constructions', () => {
 		}
 	});
 });
+
+// =============================================================================
+// Edge cases
+// =============================================================================
+
+describe('lieu() — edge cases', () => {
+	it('driver on ray: produces valid curve for t >= 0', () => {
+		const script = [
+			'A = point(0, 0)',
+			'B = point(1, 1)',
+			'r = demidroite(A, B)',
+			'D = point_sur(r, 1)',
+			'P = point(5, 0)',
+			'M = milieu(D, P)',
+			'L = lieu(M, D)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+
+		const locId = getLocusId(symbols, 'L');
+		const curve = getLocusCurve(figure, locId);
+		expect(curve).not.toBeNull();
+		expect(curve!.points.length).toBeGreaterThan(10);
+	});
+
+	it('tracer is intersection that disappears for some driver positions', () => {
+		// Line-circle intersection: as driver moves along the segment,
+		// the line through driver and fixed point may miss the circle
+		const script = [
+			'O = point(0, 0)',
+			'c = cercle(O, rayon=2)',
+			'A = point(0, -5)',
+			'B = point(0, 5)',
+			's = segment(A, B)',
+			'D = point_sur(s, 0.5)',
+			'P = point(3, 0)',
+			'd = droite(D, P)',
+			'I = intersection(d, c, choix=1)',
+			'L = lieu(I, D)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+
+		const locId = getLocusId(symbols, 'L');
+		const curve = getLocusCurve(figure, locId);
+		// Curve exists but may have gaps where intersection disappears
+		expect(curve).not.toBeNull();
+		expect(curve!.points.length).toBeGreaterThan(5);
+	});
+
+	it('driver on circle with radius 0: degenerate locus', () => {
+		const script = [
+			'O = point(0, 0)',
+			'c = cercle(O, rayon=0)',
+			'A = point_sur(c, 0)',
+			'B = symetrie(A, centre=O)',
+			'L = lieu(B, A)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+
+		const locId = getLocusId(symbols, 'L');
+		const curve = getLocusCurve(figure, locId);
+		// All samples collapse to origin
+		if (curve) {
+			for (const pt of curve.points) {
+				expect(pt.x).toBeCloseTo(0, 5);
+				expect(pt.y).toBeCloseTo(0, 5);
+			}
+		}
+	});
+
+	it('two loci sharing the same driver produce independent curves', () => {
+		const script = [
+			'O = point(0, 0)',
+			'c = cercle(O, rayon=3)',
+			'A = point_sur(c, 0)',
+			'P1 = point(2, 0)',
+			'P2 = point(-2, 0)',
+			'M1 = milieu(A, P1)',
+			'M2 = milieu(A, P2)',
+			'L1 = lieu(M1, A)',
+			'L2 = lieu(M2, A)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+
+		const loc1Id = getLocusId(symbols, 'L1');
+		const loc2Id = getLocusId(symbols, 'L2');
+		const curve1 = getLocusCurve(figure, loc1Id);
+		const curve2 = getLocusCurve(figure, loc2Id);
+
+		expect(curve1).not.toBeNull();
+		expect(curve2).not.toBeNull();
+
+		// Centers at (1,0) and (-1,0) respectively
+		const cx1 = curve1!.points.reduce((s, p) => s + p.x, 0) / curve1!.points.length;
+		const cx2 = curve2!.points.reduce((s, p) => s + p.x, 0) / curve2!.points.length;
+		expect(cx1).toBeCloseTo(1, 0);
+		expect(cx2).toBeCloseTo(-1, 0);
+	});
+
+	it('deep dependency chain: driver → rotation → symetrie → tracer', () => {
+		const script = [
+			'O = point(0, 0)',
+			'c = cercle(O, rayon=3)',
+			'A = point_sur(c, 0)',
+			'B = rotation(A, centre=O, angle=45)',
+			'C = symetrie(B, centre=O)',
+			'L = lieu(C, A)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+
+		const locId = getLocusId(symbols, 'L');
+		const curve = getLocusCurve(figure, locId);
+		expect(curve).not.toBeNull();
+
+		// C = -rotation(A, 45) still on circle of radius 3
+		for (const pt of curve!.points) {
+			const dist = Math.sqrt(pt.x ** 2 + pt.y ** 2);
+			expect(dist).toBeCloseTo(3, 1);
+		}
+	});
+
+	it('driver on function with asymptote produces discontinuities', () => {
+		const script = [
+			'O = point(0, 0)',
+			'f = courbe("y = 1/x")',
+			'A = point_sur(f, 1)',
+			'B = symetrie(A, centre=O)',
+			'L = lieu(B, A)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+
+		const locId = getLocusId(symbols, 'L');
+		const curve = getLocusCurve(figure, locId);
+		expect(curve).not.toBeNull();
+		// Should have discontinuities near x=0
+		expect(curve!.discontinuityIndices.length).toBeGreaterThan(0);
+	});
+
+	it('degenerate segment (zero length): all samples at same point', () => {
+		const script = [
+			'A = point(3, 3)',
+			'B = point(3, 3)',
+			's = segment(A, B)',
+			'D = point_sur(s, 0.5)',
+			'P = point(0, 0)',
+			'M = milieu(D, P)',
+			'L = lieu(M, D)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+
+		const locId = getLocusId(symbols, 'L');
+		const curve = getLocusCurve(figure, locId);
+		if (curve) {
+			for (const pt of curve.points) {
+				expect(pt.x).toBeCloseTo(1.5, 3);
+				expect(pt.y).toBeCloseTo(1.5, 3);
+			}
+		}
+	});
+
+	it('rotation with non-right angle produces smooth closed curve', () => {
+		const script = [
+			'O = point(0, 0)',
+			'c = cercle(O, rayon=2)',
+			'A = point_sur(c, 0)',
+			'P = point(4, 0)',
+			'B = rotation(P, centre=A, angle=60)',
+			'L = lieu(B, A)'
+		].join('\n');
+		const { figure, symbols } = run(script);
+
+		const locId = getLocusId(symbols, 'L');
+		const curve = getLocusCurve(figure, locId);
+		expect(curve).not.toBeNull();
+		expect(curve!.points.length).toBeGreaterThan(50);
+		// Closed path (driver on circle)
+		expect(curve!.discontinuityIndices.length).toBe(0);
+	});
+});

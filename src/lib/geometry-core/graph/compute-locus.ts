@@ -178,15 +178,18 @@ function getDriverParamInfo(
 		const lineEl = elements.get(driver.lineId);
 		if (!lineEl) return null;
 
+		let p1Id: string;
+		let p2Id: string;
+		if (lineEl.type === 'line') {
+			p1Id = lineEl.point1Id;
+			p2Id = lineEl.point2Id;
+		} else if (lineEl.type === 'ray') {
+			p1Id = lineEl.originId;
+			p2Id = lineEl.throughId;
+		} else {
+			return null;
+		}
 		const isRay = lineEl.type === 'ray';
-		const p1Id =
-			lineEl.type === 'line'
-				? (lineEl as { point1Id: string }).point1Id
-				: (lineEl as { originId: string }).originId;
-		const p2Id =
-			lineEl.type === 'line'
-				? (lineEl as { point2Id: string }).point2Id
-				: (lineEl as { throughId: string }).throughId;
 		const p1 = positions.get(p1Id);
 		const p2 = positions.get(p2Id);
 		if (!p1 || !p2) return null;
