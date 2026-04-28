@@ -696,8 +696,8 @@ export interface GeoComposition extends GeoElementBase {
 	readonly sourceBuiltin?: {
 		readonly name: 'similitude';
 		readonly params: {
-			readonly angle: GeoValue;
-			readonly rapport: GeoValue;
+			readonly angle: ScalarParam;
+			readonly rapport: ScalarParam;
 			readonly centerId: string;
 		};
 	};

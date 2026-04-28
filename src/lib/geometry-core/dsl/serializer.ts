@@ -7,7 +7,8 @@
 
 import type { Figure } from '../graph/figure';
 import type { GeoElement } from '../types/elements';
-import type { GeoValue } from '../types/geo-value';
+import type { GeoValue, ScalarParam } from '../types/geo-value';
+import { isScalarRef } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
 import type { SymbolTable } from './symbol-table';
 import type { DslProgram, DslStatement, DslExpr, DslDirective } from './types';
@@ -18,8 +19,10 @@ export function serialize(figure: Figure, symbols?: SymbolTable): string {
 	const lines: string[] = [];
 
 	for (const el of elements) {
-		// Skip invisible elements, except transformation objects (which must be serialized)
-		if (!el.visible && !isTransformationType(el.type)) continue;
+		// Skip invisible elements, except transformation objects, named scalars, and sliders
+		if (!el.visible && !isTransformationType(el.type) && !isScalarLikeType(el.type)) continue;
+		// Skip expression scalars (they are implicitly recreated by DSL arithmetic)
+		if (el.type === 'scalar' && el.scalarKind === 'expression') continue;
 		const line = serializeElement(el, figure, idToName);
 		if (line) lines.push(line);
 	}
@@ -170,6 +173,22 @@ function fmtGeoValue(v: GeoValue): string {
 	return fmtNum(geoToNumber(v));
 }
 
+/** Format a ScalarParam: scalar refs become names, GeoValues become numbers. */
+function fmtScalarParam(param: ScalarParam, idToName: Map<string, string>): string {
+	if (isScalarRef(param)) return name(idToName, param.scalarRef);
+	return fmtGeoValue(param);
+}
+
+/** Format a ScalarParam that stores radians, converting back to degrees for DSL. */
+function fmtScalarParamDeg(param: ScalarParam, idToName: Map<string, string>): string {
+	if (isScalarRef(param)) return name(idToName, param.scalarRef);
+	return fmtNum((geoToNumber(param) * 180) / Math.PI);
+}
+
+function isScalarLikeType(type: string): boolean {
+	return type === 'scalar' || type === 'slider';
+}
+
 function serializeElement(
 	el: GeoElement,
 	figure: Figure,
@@ -218,7 +237,7 @@ function serializeElement(
 			return `${n} = symetrie(${name(idToName, el.sourceId)}, centre=${name(idToName, el.centerId)})`;
 
 		case 'rotatedPoint': {
-			const angleDeg = fmtNum((geoToNumber(el.angle) * 180) / Math.PI);
+			const angleDeg = fmtScalarParamDeg(el.angle, idToName);
 			return `${n} = rotation(${name(idToName, el.sourceId)}, centre=${name(idToName, el.centerId)}, angle=${angleDeg})`;
 		}
 
@@ -229,7 +248,7 @@ function serializeElement(
 			return `${n} = translation(${name(idToName, el.sourceId)}, vecteur=(${name(idToName, el.vectorStartId)}, ${name(idToName, el.vectorEndId)}))`;
 
 		case 'dilatedPoint': {
-			const factor = fmtGeoValue(el.factor);
+			const factor = fmtScalarParam(el.factor, idToName);
 			return `${n} = homothetie(${name(idToName, el.sourceId)}, centre=${name(idToName, el.centerId)}, rapport=${factor})`;
 		}
 
@@ -283,7 +302,7 @@ function serializeElement(
 			return `${n} = -${name(idToName, el.vectorId)}`;
 
 		case 'circleByRadius': {
-			const radius = fmtGeoValue(el.radius);
+			const radius = fmtScalarParam(el.radius, idToName);
 			return `${n.startsWith('_') ? '' : n + ' = '}cercle(${name(idToName, el.centerId)}, rayon=${radius})`;
 		}
 
@@ -291,9 +310,9 @@ function serializeElement(
 			return `${n.startsWith('_') ? '' : n + ' = '}cercle(${name(idToName, el.centerId)}, passant=${name(idToName, el.edgePointId)})`;
 
 		case 'arcByAngles': {
-			const radius = fmtGeoValue(el.radius);
-			const startDeg = fmtNum((geoToNumber(el.startAngle) * 180) / Math.PI);
-			const endDeg = fmtNum((geoToNumber(el.endAngle) * 180) / Math.PI);
+			const radius = fmtScalarParam(el.radius, idToName);
+			const startDeg = fmtScalarParamDeg(el.startAngle, idToName);
+			const endDeg = fmtScalarParamDeg(el.endAngle, idToName);
 			return `${n.startsWith('_') ? '' : n + ' = '}arc(${name(idToName, el.centerId)}, rayon=${radius}, debut=${startDeg}, fin=${endDeg})`;
 		}
 
@@ -386,7 +405,7 @@ function serializeElement(
 
 		// Transformation objects
 		case 'rotation': {
-			const angleDeg = fmtNum((geoToNumber(el.angle) * 180) / Math.PI);
+			const angleDeg = fmtScalarParamDeg(el.angle, idToName);
 			return `${n} = rotation(angle=${angleDeg}, centre=${name(idToName, el.centerId)})`;
 		}
 
@@ -401,7 +420,7 @@ function serializeElement(
 			return `${n} = translation(vecteur=(${name(idToName, el.vectorStartId)}, ${name(idToName, el.vectorEndId)}))`;
 
 		case 'homothety': {
-			const factor = fmtGeoValue(el.factor);
+			const factor = fmtScalarParam(el.factor, idToName);
 			return `${n} = homothetie(rapport=${factor}, centre=${name(idToName, el.centerId)})`;
 		}
 
@@ -420,13 +439,41 @@ function serializeElement(
 
 		case 'composition': {
 			if (el.sourceBuiltin?.name === 'similitude') {
-				const angleDeg = fmtNum((geoToNumber(el.sourceBuiltin.params.angle) * 180) / Math.PI);
-				const rapport = fmtGeoValue(el.sourceBuiltin.params.rapport);
+				const angleDeg = fmtScalarParamDeg(el.sourceBuiltin.params.angle, idToName);
+				const rapport = fmtScalarParam(el.sourceBuiltin.params.rapport, idToName);
 				const centerName = name(idToName, el.sourceBuiltin.params.centerId);
 				return `${n} = similitude(angle=${angleDeg}, rapport=${rapport}, centre=${centerName})`;
 			}
 			const args = el.transformationIds.map((id) => name(idToName, id)).join(', ');
 			return `${n} = compose(${args})`;
+		}
+
+		case 'scalar': {
+			switch (el.scalarKind) {
+				case 'distance':
+					return `${n} = distance(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])})`;
+				case 'angle':
+					return `${n} = angle(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])}, ${name(idToName, el.targetIds[2])})`;
+				case 'norme':
+					return `${n} = norme(${name(idToName, el.targetIds[0])})`;
+				case 'area': {
+					const targets = el.targetIds.map((id) => name(idToName, id)).join(', ');
+					return `${n} = mesure(${targets})`;
+				}
+				default:
+					// expression scalars are skipped by the filter above
+					return null;
+			}
+		}
+
+		case 'slider': {
+			const parts = [
+				`min=${fmtNum(el.min)}`,
+				`max=${fmtNum(el.max)}`,
+				`valeur=${fmtNum(el.value)}`
+			];
+			if (el.step !== undefined) parts.push(`pas=${fmtNum(el.step)}`);
+			return `${n} = slider(${parts.join(', ')})`;
 		}
 
 		default:

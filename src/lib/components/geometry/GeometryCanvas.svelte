@@ -1,6 +1,8 @@
 <script lang="ts">
 	import ElementPopover from './ElementPopover.svelte';
+	import SliderControl from './SliderControl.svelte';
 	import { Figure } from '$lib/geometry-core/graph/figure';
+	import type { GeoSlider } from '$lib/geometry-core/types/elements';
 	import {
 		createTransformer,
 		type CoordinateTransformer
@@ -94,6 +96,20 @@
 	let dragOffset: { dx: number; dy: number } | null = $state(null);
 	let hoveredId: string | null = $state(null);
 	let version = $state(0);
+
+	// Slider elements (reactive to version changes)
+	const sliders = $derived.by(() => {
+		void version; // depend on version so sliders update when figure changes
+		return figure.getElementsByType('slider') as GeoSlider[];
+	});
+
+	function handleSliderChange(sliderId: string, newValue: number) {
+		figure.beginTransaction();
+		figure.moveSlider(sliderId, newValue);
+		figure.recompute();
+		figure.commit();
+		version++;
+	}
 
 	// Popover state
 	let popoverElementId: string | null = $state(null);
@@ -1431,6 +1447,21 @@
 		</g>
 	</svg>
 
+	{#if sliders.length > 0}
+		<div class="sliders-panel">
+			{#each sliders as slider (slider.id)}
+				<SliderControl
+					label={slider.label ?? slider.id}
+					value={slider.value}
+					min={slider.min}
+					max={slider.max}
+					step={slider.step}
+					onchange={(v) => handleSliderChange(slider.id, v)}
+				/>
+			{/each}
+		</div>
+	{/if}
+
 	{#if popoverElement}
 		<ElementPopover
 			element={popoverElement}
@@ -1466,6 +1497,13 @@
 
 	.geometry-canvas.panning.dragging {
 		cursor: grabbing;
+	}
+
+	.sliders-panel {
+		border-top: 1px solid #e5e7eb;
+		padding: 0.25rem 0;
+		background: #f9fafb;
+		border-radius: 0 0 0.375rem 0.375rem;
 	}
 
 	.grid-line-minor {

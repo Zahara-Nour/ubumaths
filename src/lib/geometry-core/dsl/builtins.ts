@@ -685,22 +685,38 @@ function _executeBuiltinInner(
 				'centre',
 				line
 			);
-			const angleDeg = requireNumber(
-				named.get('angle') ?? { type: 'nombre', value: 0 },
-				'angle',
+			const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
+			// Convert angle to radians: scalar → composed scalar (*pi/180), number → GeoValue
+			let simAngleRad: ScalarParam;
+			if (
+				angleArg.type === 'element' &&
+				(angleArg.elementType === 'scalar' || angleArg.elementType === 'measure')
+			) {
+				const depId = angleArg.figureId;
+				simAngleRad = {
+					scalarRef: figure.createScalarExpression(
+						(sv) => ((sv.get(depId) ?? 0) * Math.PI) / 180,
+						[depId]
+					)
+				};
+			} else {
+				const angleDeg = requireNumber(angleArg, 'angle', line);
+				simAngleRad = { kind: 'numeric', value: (angleDeg * Math.PI) / 180 };
+			}
+			const simFactor = toScalarParam(
+				named.get('rapport') ?? { type: 'nombre', value: 1 },
+				toGeoValue,
 				line
 			);
-			const angleRad: GeoValue = { kind: 'numeric', value: (angleDeg * Math.PI) / 180 };
-			const factor = toGeoValue(named.get('rapport') ?? { type: 'nombre', value: 1 }, line);
 			// 0 positional args → create transformation object
 			if (pos.length === 0) {
-				const id = figure.createSimilitude(centerId, angleRad, factor, { label });
+				const id = figure.createSimilitude(centerId, simAngleRad, simFactor, { label });
 				return { figureId: id, symbolType: 'transformation' };
 			}
 			// 1+ positional args → direct application
 			const sourceId = requireElement(pos[0], 'source', line);
 			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
-			const tId = figure.createSimilitude(centerId, angleRad, factor);
+			const tId = figure.createSimilitude(centerId, simAngleRad, simFactor);
 			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
 		}
 
