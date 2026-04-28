@@ -200,7 +200,7 @@ export function findElementNear(
 					mathY,
 					geoToNumber(center.x),
 					geoToNumber(center.y),
-					geoToNumber(el.radius)
+					figure.resolveParam(el.radius)
 				);
 			}
 		} else if (el.type === 'tangentLine') {
