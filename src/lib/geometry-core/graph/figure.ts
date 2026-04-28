@@ -218,6 +218,9 @@ export class Figure {
 					} else if (el.type === 'freePoint') {
 						this.positions.set(id, el.position);
 					}
+					if (el.type === 'slider') {
+						this.scalarValues.set(id, el.value);
+					}
 					added.add(id);
 				} else {
 					next.push([id, el]);
@@ -227,13 +230,15 @@ export class Figure {
 			remaining = next;
 		}
 
-		// 3. Apply updates (undo of movePoint).
+		// 3. Apply updates (undo of movePoint / moveSlider).
 		for (const [id, { after }] of delta.updated) {
 			this.elements.set(id, after);
 			if (after.type === 'freePoint') {
 				this.positions.set(id, after.position);
 			} else if (after.type === 'freeVector') {
 				this.positions.set(id, { x: after.anchorX, y: after.anchorY });
+			} else if (after.type === 'slider') {
+				this.scalarValues.set(id, after.value);
 			}
 		}
 
@@ -1562,7 +1567,8 @@ export class Figure {
 		const access: TransformAccessors = {
 			getPosition: (id) => this.getPosition(id),
 			getElementById: (id) => this.elements.get(id),
-			getVectorComponents: (id) => this.getVectorComponents(id)
+			getVectorComponents: (id) => this.getVectorComponents(id),
+			getScalarValue: (id) => this.getScalarValue(id)
 		};
 		const invMatrix = buildInverseAffineMatrix(transformEl, access);
 		const newCoeffs = transformConicCoefficients(sourceCoefficients, invMatrix);
@@ -2316,7 +2322,8 @@ export class Figure {
 		const access: TransformAccessors = {
 			getPosition: (pid) => this.getPosition(pid),
 			getElementById: (eid) => this.elements.get(eid),
-			getVectorComponents: (vid) => this.getVectorComponents(vid)
+			getVectorComponents: (vid) => this.getVectorComponents(vid),
+			getScalarValue: (sid) => this.getScalarValue(sid)
 		};
 		const invMatrix = buildInverseAffineMatrix(transformEl, access);
 		const newCoeffs = transformConicCoefficients(recipe.sourceCoefficients, invMatrix);

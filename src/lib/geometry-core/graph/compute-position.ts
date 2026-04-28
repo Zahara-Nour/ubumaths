@@ -411,6 +411,7 @@ export function computeElementPosition(
 					const dy = geoToNumber(edgePos.y) - geoToNumber(centerPos.y);
 					r = Math.sqrt(dx * dx + dy * dy);
 				}
+				if (!Number.isFinite(r)) return { position: null, hasComputablePosition: true };
 				const cx = geoToNumber(centerPos.x);
 				const cy = geoToNumber(centerPos.y);
 				const x = cx + r * Math.cos(el.theta);

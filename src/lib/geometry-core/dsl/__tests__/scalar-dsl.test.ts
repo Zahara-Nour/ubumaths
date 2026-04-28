@@ -225,3 +225,53 @@ describe('DSL: distance() vs mesure()', () => {
 		expect(el.dependsOn.length).toBeGreaterThan(1);
 	});
 });
+
+// =============================================================================
+// F. DSL scalar division by zero
+// =============================================================================
+
+describe('DSL: scalar division by zero', () => {
+	it('scalar / 0 produces NaN, not 0', () => {
+		const r = run(
+			['A = point(0, 0)', 'B = point(0, 0)', 'd = distance(A, B)', 'r = 3 / d'].join('\n')
+		);
+		const val = r.figure.getScalarValue(sym(r, 'r')!.figureId!);
+		// Should be NaN from the composed scalar, not 0
+		expect(Number.isNaN(val)).toBe(true);
+	});
+});
+
+// =============================================================================
+// G. DSL scalar with multiple operations
+// =============================================================================
+
+describe('DSL: complex scalar expressions', () => {
+	it('chain of operations: (1 + 3/d) * 2', () => {
+		const r = run(
+			['A = point(0, 0)', 'B = point(5, 0)', 'd = distance(A, B)', 'r = (1 + 3/d) * 2'].join('\n')
+		);
+		// (1 + 3/5) * 2 = 1.6 * 2 = 3.2
+		expect(r.figure.getScalarValue(sym(r, 'r')!.figureId!)).toBeCloseTo(3.2, 10);
+	});
+
+	it('scalar * scalar', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(3, 0)',
+				'C = point(0, 4)',
+				'd1 = distance(A, B)',
+				'd2 = distance(A, C)',
+				'p = d1 * d2'
+			].join('\n')
+		);
+		// 3 * 4 = 12
+		expect(r.figure.getScalarValue(sym(r, 'p')!.figureId!)).toBeCloseTo(12, 10);
+	});
+
+	it('slider used in arithmetic expression', () => {
+		const r = run(['k = slider(min=0, max=10, valeur=4)', 'r = k * 2 + 1'].join('\n'));
+		// 4 * 2 + 1 = 9
+		expect(r.figure.getScalarValue(sym(r, 'r')!.figureId!)).toBeCloseTo(9, 10);
+	});
+});
