@@ -131,6 +131,8 @@ function typePrefix(type: string): string {
 		case 'pointOnCircle':
 		case 'pointOnArc':
 			return 'pt';
+		case 'locus':
+			return 'L';
 		case 'tangentLine':
 		case 'tangentToQuadratic':
 			return 'tg';
@@ -356,6 +358,9 @@ function serializeElement(
 
 		case 'pointOnArc':
 			return `${n} = point_sur(${name(idToName, el.arcId)}, ${fmtNum(el.t)})`;
+
+		case 'locus':
+			return `${n} = lieu(${name(idToName, el.tracerId)}, ${name(idToName, el.driverId)})`;
 
 		case 'tangentLine':
 			if (el.pointOnCurveId) {

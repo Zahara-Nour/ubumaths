@@ -1247,3 +1247,32 @@ export function implicitCurveToSVG(
 
 	return paths.length > 0 ? { paths } : null;
 }
+
+/**
+ * Convert a GeoLocus to an SVG path string.
+ * Computes the locus curve on the fly from the figure's elements and positions.
+ */
+export function locusToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): { path: string } | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'locus') return null;
+
+	const topLeft = transformer.svgToMath(0, 0);
+	const bottomRight = transformer.svgToMath(dims.width, dims.height);
+	const viewport: Viewport = {
+		xMin: topLeft.x,
+		xMax: bottomRight.x,
+		yMin: bottomRight.y,
+		yMax: topLeft.y
+	};
+
+	const curve = figure.computeLocusCurveForElement(id, viewport);
+	if (!curve || curve.points.length < 2) return null;
+
+	const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
+	return path ? { path } : null;
+}

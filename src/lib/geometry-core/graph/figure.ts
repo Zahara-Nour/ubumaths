@@ -62,6 +62,7 @@ import type {
 	type GeoAffinityPoint,
 	type GeoInversion,
 	type GeoInvertedPoint,
+	type GeoLocus,
 	type LineEquation,
 	type ConicParams
 } from '../types/elements';
@@ -107,6 +108,8 @@ import { isZeroExpression } from '$lib/mathAST/normal';
 import { UndoManager } from './undo-redo';
 import type { Delta } from './undo-redo';
 import { computeElementPosition } from './compute-position';
+import { computeLocusCurve } from './compute-locus';
+import type { SampledCurve, Viewport } from '../viewport/types';
 
 const DEFAULT_COLOR = '#1e40af';
 
@@ -1860,6 +1863,51 @@ export class Figure {
 		this.graph.markDirty(id);
 	}
 
+	createLocus(
+		driverId: string,
+		tracerId: string,
+		options?: ElementOptions & { numSamples?: number }
+	): string {
+		const driverEl = this.elements.get(driverId);
+		if (!driverEl) {
+			throw new Error(`createLocus: driver "${driverId}" does not exist`);
+		}
+		const isDriverOnPath =
+			isPointOnCurve(driverEl) ||
+			isPointOnQuadraticCurve(driverEl) ||
+			isPointOnSegment(driverEl) ||
+			isPointOnLine(driverEl) ||
+			isPointOnCircle(driverEl) ||
+			isPointOnArc(driverEl);
+		if (!isDriverOnPath) {
+			throw new Error(`createLocus: driver "${driverId}" must be a point_sur`);
+		}
+
+		const tracerEl = this.elements.get(tracerId);
+		if (!tracerEl || !isPointElement(tracerEl)) {
+			throw new Error(`createLocus: tracer "${tracerId}" must be a point element`);
+		}
+
+		const id = this.generateId('loc');
+		// Deduplicate deps (driver === tracer in identity case)
+		const deps = driverId === tracerId ? [driverId] : [driverId, tracerId];
+		const element: GeoLocus = {
+			type: 'locus',
+			id,
+			driverId,
+			tracerId,
+			numSamples: options?.numSamples ?? 200,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
 	createTangentLine(
 		functionId: string,
 		anchor: { pointOnCurveId: string } | { x0: GeoValue },
@@ -2003,6 +2051,16 @@ export class Figure {
 
 	getPosition(id: string): GeoPoint | null {
 		return this.positions.get(id) ?? null;
+	}
+
+	/**
+	 * Compute a locus curve for a given element and viewport.
+	 * Called by the renderer on each draw cycle.
+	 */
+	computeLocusCurveForElement(id: string, viewport: Viewport): SampledCurve | null {
+		const el = this.elements.get(id);
+		if (!el || el.type !== 'locus') return null;
+		return computeLocusCurve(el as GeoLocus, this.elements, this.positions, viewport);
 	}
 
 	getLineEquation(id: string): LineEquation | null {

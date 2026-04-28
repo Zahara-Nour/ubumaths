@@ -1175,6 +1175,60 @@ function _executeBuiltinInner(
 			return { elements } as BuiltinMultiResult;
 		}
 
+		case 'lieu': {
+			if (pos.length !== 2) {
+				throw new DslRuntimeError('lieu() attend 2 arguments (traceur, conducteur)', line);
+			}
+			const tracerId = requireElement(pos[0], 'traceur', line);
+			const driverId = requireElement(pos[1], 'conducteur', line);
+
+			const driverEl = figure.getElementById(driverId);
+			if (!driverEl) {
+				throw new DslRuntimeError(`lieu(): conducteur "${driverId}" introuvable`, line);
+			}
+			const driverOnPath =
+				driverEl.type === 'pointOnCurve' ||
+				driverEl.type === 'pointOnQuadraticCurve' ||
+				driverEl.type === 'pointOnSegment' ||
+				driverEl.type === 'pointOnLine' ||
+				driverEl.type === 'pointOnCircle' ||
+				driverEl.type === 'pointOnArc';
+			if (!driverOnPath) {
+				throw new DslRuntimeError('lieu(): le conducteur doit etre un point_sur', line);
+			}
+
+			const tracerEl = figure.getElementById(tracerId);
+			if (!tracerEl) {
+				throw new DslRuntimeError(`lieu(): traceur "${tracerId}" introuvable`, line);
+			}
+
+			// Verify tracer depends on driver (walk dependsOn chain)
+			const visited = new Set<string>();
+			const queue = [tracerId];
+			let dependsOnDriver = false;
+			while (queue.length > 0) {
+				const id = queue.shift()!;
+				if (id === driverId) {
+					dependsOnDriver = true;
+					break;
+				}
+				if (visited.has(id)) continue;
+				visited.add(id);
+				const el = figure.getElementById(id);
+				if (el) {
+					for (const pid of el.dependsOn) {
+						queue.push(pid);
+					}
+				}
+			}
+			if (!dependsOnDriver) {
+				throw new DslRuntimeError(`lieu(): le traceur ne depend pas du conducteur`, line);
+			}
+
+			const locId = figure.createLocus(driverId, tracerId, { label });
+			return { figureId: locId, symbolType: 'lieu' as SymbolType };
+		}
+
 		default:
 			return null; // Not a builtin — might be a macro
 	}
@@ -1215,7 +1269,8 @@ export const BUILTIN_NAMES = new Set([
 	'tangente',
 	'zeros',
 	'extrema',
-	'inflections'
+	'inflections',
+	'lieu'
 ]);
 
 /** Math functions that return numbers. */

@@ -20,6 +20,7 @@ export type SymbolType =
 	| 'tangente'
 	| 'vecteur'
 	| 'transformation'
+	| 'lieu'
 	| 'liste';
 
 export interface SymbolEntry {
