@@ -23,6 +23,9 @@ macro hauteur(A, B, C):
     P = translation(A, vecteur=(B, C))
     Q = rotation(P, centre=A, angle=90)
     d = droite(A, Q)
+    bc = droite(B, C)
+    F = intersection(d, bc)
+    angle_droit(A, F, B)
     retourne d
 
 macro perpendiculaire(P, A, B):
