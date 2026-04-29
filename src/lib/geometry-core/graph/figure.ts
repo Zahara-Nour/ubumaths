@@ -2089,6 +2089,25 @@ export class Figure {
 		return id;
 	}
 
+	createScalarPolarAngle(centerId: string, pointId: string, options?: ElementOptions): string {
+		this.requirePoints('createScalarPolarAngle', centerId, pointId);
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'polar_angle',
+			id,
+			targetIds: [centerId, pointId],
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [centerId, pointId]
+		};
+		this.addElement(id, element, [centerId, pointId]);
+		this.computePosition(id);
+		return id;
+	}
+
 	createScalarNorme(vectorId: string, options?: ElementOptions): string {
 		const vecEl = this.elements.get(vectorId);
 		if (!vecEl || !isVector(vecEl)) {
