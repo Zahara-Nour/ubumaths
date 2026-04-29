@@ -35,7 +35,7 @@ function isVectorValue(val: ResolvedValue): boolean {
 function isScalarValue(
 	val: ResolvedValue
 ): val is ResolvedValue & { type: 'element'; figureId: string } {
-	return val.type === 'element' && (val.elementType === 'scalar' || val.elementType === 'measure');
+	return val.type === 'element' && val.elementType === 'scalar';
 }
 
 /** Math operations that can be applied to scalar values. */

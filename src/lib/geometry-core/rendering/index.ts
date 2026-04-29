@@ -27,7 +27,7 @@ export type {
 	ArcSVG,
 	AngleMarkSVG,
 	SegmentMarkSVG,
-	MeasureSVG
+	TextSVG
 } from './svg-primitives';
 export {
 	resolveStyle,
@@ -38,7 +38,7 @@ export {
 	circleToSVG,
 	angleMarkToSVG,
 	segmentMarkToSVG,
-	measureToSVG
+	textToSVG
 } from './svg-primitives';
 
 // Rough.js rendering

@@ -21,7 +21,7 @@ import {
 	arcToSVG,
 	angleMarkToSVG,
 	segmentMarkToSVG,
-	measureToSVG
+	textToSVG
 } from './svg-primitives';
 import { computeGridStep } from '../viewport/grid';
 import rough from 'roughjs';
@@ -336,14 +336,13 @@ export function exportToSVG(
 		}
 	}
 
-	// Pass 6: measures
+	// Pass 6: text elements
 	if (showMeasures) {
 		for (const el of elements) {
-			if (!el.visible || el.type !== 'measure') continue;
-			const svg = measureToSVG(el.id, figure, transformer);
+			if (!el.visible || el.type !== 'text') continue;
+			const svg = textToSVG(el.id, figure, transformer);
 			if (!svg) continue;
 			const sty = resolveStyle(el, figure.defaults);
-			// Background
 			lines.push(
 				`  <rect x="${r(svg.x - 4)}" y="${r(svg.y - 12)}" width="${svg.text.length * 8 + 8}" height="16" rx="3" fill="white" fill-opacity="0.85" />`
 			);

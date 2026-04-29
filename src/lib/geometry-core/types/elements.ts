@@ -290,12 +290,23 @@ export interface GeoSegmentMark extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
-/** Dynamic measurement displayed on the figure (distance, angle, area). */
-export interface GeoMeasure extends GeoElementBase {
-	readonly type: 'measure';
-	readonly measureType: 'distance' | 'angle' | 'area';
-	readonly targetIds: readonly string[];
-	readonly format: 'exact' | 'approx' | 'degrees' | 'radians';
+/** Reactive text element displayed on the figure with scalar interpolation. */
+export interface GeoText extends GeoElementBase {
+	readonly type: 'text';
+	/** Template string with scalar interpolation: "d = {d:.2f} cm" */
+	readonly template: string;
+	/** IDs of scalars/sliders referenced in the template */
+	readonly scalarRefs: readonly string[];
+	/** Point element to anchor the text to (optional) */
+	readonly anchorId?: string;
+	/** Offset from anchor point in math coordinates */
+	readonly anchorOffset?: { readonly dx: number; readonly dy: number };
+	/** Free position in math coordinates (when no anchor) */
+	readonly position?: { readonly x: number; readonly y: number };
+	/** Auto-positioning mode (used by mesure() sugar) */
+	readonly autoPosition?: 'midpoint' | 'bisector' | 'centroid';
+	/** Target point IDs for auto-positioning */
+	readonly autoTargetIds?: readonly string[];
 	readonly dependsOn: readonly string[];
 }
 
@@ -771,7 +782,7 @@ export type GeoElement =
 	| GeoInvertedPoint
 	| GeoAngleMark
 	| GeoSegmentMark
-	| GeoMeasure
+	| GeoText
 	| GeoSegment
 	| GeoLine
 	| GeoRay
@@ -935,8 +946,8 @@ export function isSegmentMark(el: GeoElement): el is GeoSegmentMark {
 	return el.type === 'segmentMark';
 }
 
-export function isMeasure(el: GeoElement): el is GeoMeasure {
-	return el.type === 'measure';
+export function isText(el: GeoElement): el is GeoText {
+	return el.type === 'text';
 }
 
 export function isSegment(el: GeoElement): el is GeoSegment {

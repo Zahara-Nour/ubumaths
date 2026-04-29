@@ -26,7 +26,7 @@ import type {
 	GeoRay,
 	GeoAngleMark,
 	GeoSegmentMark,
-	GeoMeasure,
+	GeoText,
 	GeoCircleByRadius,
 	GeoCircleByPoint,
 	GeoArcByAngles,
@@ -136,6 +136,73 @@ export interface ElementOptions {
 	visible?: boolean;
 	draggable?: boolean;
 	equation?: LineEquation;
+}
+
+/**
+ * Resolve a template string by replacing {expr} placeholders with scalar values.
+ * Supports: {id}, {id:.2f}, {id:deg}, simple arithmetic {id*2}, {id+other}
+ */
+function resolveTemplateString(
+	template: string,
+	scalarValues: ReadonlyMap<string, number>
+): string {
+	return template.replace(/\{([^}]+)\}/g, (_match, content: string) => {
+		// Split off format specifier: {expr:format}
+		const colonIdx = content.indexOf(':');
+		let expr: string;
+		let format: string | undefined;
+		if (colonIdx !== -1) {
+			expr = content.slice(0, colonIdx).trim();
+			format = content.slice(colonIdx + 1).trim();
+		} else {
+			expr = content.trim();
+		}
+
+		// Evaluate the expression
+		const value = evaluateSimpleExpr(expr, scalarValues);
+		if (value === undefined || !Number.isFinite(value)) return '?';
+
+		// Format the value
+		return formatScalarValue(value, format);
+	});
+}
+
+function evaluateSimpleExpr(
+	expr: string,
+	scalarValues: ReadonlyMap<string, number>
+): number | undefined {
+	// Try direct lookup first (most common case)
+	const direct = scalarValues.get(expr);
+	if (direct !== undefined) return direct;
+
+	// Simple binary operations: id*N, id+id, id-id, id/N
+	const opMatch = expr.match(/^(\w+)\s*([+\-*/])\s*(.+)$/);
+	if (opMatch) {
+		const [, left, op, right] = opMatch;
+		const leftVal = scalarValues.get(left) ?? parseFloat(left);
+		const rightVal = scalarValues.get(right) ?? parseFloat(right);
+		if (!Number.isFinite(leftVal) || !Number.isFinite(rightVal)) return undefined;
+		switch (op) {
+			case '+':
+				return leftVal + rightVal;
+			case '-':
+				return leftVal - rightVal;
+			case '*':
+				return leftVal * rightVal;
+			case '/':
+				return rightVal !== 0 ? leftVal / rightVal : undefined;
+		}
+	}
+	return undefined;
+}
+
+function formatScalarValue(value: number, format?: string): string {
+	if (!format) return `${Math.round(value * 100) / 100}`;
+	if (format === 'deg') return `${Math.round(value * 10) / 10}°`;
+	if (format === 'rad') return `${Math.round(((value * Math.PI) / 180) * 1000) / 1000}`;
+	const fMatch = format.match(/^\.(\d+)f$/);
+	if (fMatch) return value.toFixed(parseInt(fMatch[1]));
+	return `${Math.round(value * 100) / 100}`;
 }
 
 export class Figure {
@@ -1988,48 +2055,99 @@ export class Figure {
 		return id;
 	}
 
-	createMeasure(
-		measureType: 'distance' | 'angle' | 'area',
-		targetIds: string[],
-		options?: ElementOptions & { format?: 'exact' | 'approx' | 'degrees' | 'radians' }
-	): string {
-		if (measureType === 'distance' && targetIds.length !== 2) {
-			throw new Error('createMeasure: distance requires exactly 2 target points');
+	createScalarArea(pointIds: string[], options?: ElementOptions): string {
+		if (pointIds.length < 3) {
+			throw new Error('createScalarArea: area requires at least 3 target points');
 		}
-		if (measureType === 'angle' && targetIds.length !== 3) {
-			throw new Error('createMeasure: angle requires exactly 3 target points');
-		}
-		if (measureType === 'area' && targetIds.length < 3) {
-			throw new Error('createMeasure: area requires at least 3 target points');
-		}
-		for (const tid of targetIds) {
+		for (const tid of pointIds) {
 			const el = this.elements.get(tid);
 			if (!el || !isPointElement(el)) {
-				throw new Error(`createMeasure: "${tid}" is not a point element`);
+				throw new Error(`createScalarArea: "${tid}" is not a point element`);
 			}
 		}
-
-		const id = this.generateId('meas');
-		const element: GeoMeasure = {
-			type: 'measure',
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'area',
 			id,
-			measureType,
-			targetIds,
-			format: options?.format ?? (measureType === 'angle' ? 'degrees' : 'approx'),
+			targetIds: pointIds,
 			color: this.resolveColor(options),
-			visible: true,
+			visible: options?.visible ?? false,
 			label: options?.label,
-			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
-			dependsOn: targetIds
+			dependsOn: [...pointIds]
 		};
-		this.addElement(id, element, targetIds);
+		this.addElement(id, element, [...pointIds]);
 		this.computePosition(id);
 		return id;
 	}
 
-	getMeasureValue(id: string): number | undefined {
-		return this.scalarValues.get(id);
+	createText(
+		template: string,
+		scalarRefs: string[],
+		positioning: {
+			anchorId?: string;
+			anchorOffset?: { dx: number; dy: number };
+			position?: { x: number; y: number };
+			autoPosition?: 'midpoint' | 'bisector' | 'centroid';
+			autoTargetIds?: string[];
+		},
+		options?: ElementOptions
+	): string {
+		// Collect dependencies: scalar refs + anchor + auto targets
+		const deps: string[] = [];
+		for (const ref of scalarRefs) {
+			const el = this.elements.get(ref);
+			if (!el) throw new Error(`createText: scalar ref "${ref}" does not exist`);
+			deps.push(ref);
+			// Add transitive deps from scalars
+			for (const parentId of el.dependsOn) {
+				if (!deps.includes(parentId)) deps.push(parentId);
+			}
+		}
+		if (positioning.anchorId) {
+			const anchorEl = this.elements.get(positioning.anchorId);
+			if (!anchorEl || !isPointElement(anchorEl)) {
+				throw new Error(`createText: anchor "${positioning.anchorId}" is not a point element`);
+			}
+			if (!deps.includes(positioning.anchorId)) deps.push(positioning.anchorId);
+		}
+		if (positioning.autoTargetIds) {
+			for (const tid of positioning.autoTargetIds) {
+				if (!deps.includes(tid)) deps.push(tid);
+			}
+		}
+
+		const id = this.generateId('txt');
+		const element: GeoText = {
+			type: 'text',
+			id,
+			template,
+			scalarRefs,
+			anchorId: positioning.anchorId,
+			anchorOffset: positioning.anchorOffset,
+			position: positioning.position,
+			autoPosition: positioning.autoPosition,
+			autoTargetIds: positioning.autoTargetIds,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
+	/**
+	 * Resolve a text element's template, replacing {scalarId} with formatted values.
+	 * Supports: {id}, {id:.2f}, {id:deg}, {id*2}, {id+other:.1f}
+	 */
+	resolveTemplate(id: string): string | undefined {
+		const el = this.elements.get(id);
+		if (!el || el.type !== 'text') return undefined;
+		const textEl = el as GeoText;
+		return resolveTemplateString(textEl.template, this.scalarValues);
 	}
 
 	getScalarValue(id: string): number | undefined {
@@ -2435,7 +2553,7 @@ export class Figure {
 
 		if (result.scalarValue !== undefined) {
 			this.scalarValues.set(id, result.scalarValue);
-		} else if (el.type === 'measure' || el.type === 'scalar' || el.type === 'slider') {
+		} else if (el.type === 'scalar' || el.type === 'slider') {
 			this.scalarValues.delete(id);
 		}
 	}

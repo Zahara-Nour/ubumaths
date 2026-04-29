@@ -280,8 +280,8 @@ function toScalarParam(
 	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
 	line: number
 ): ScalarParam {
-	// Scalar or measure element → scalarRef
-	if (val.type === 'element' && (val.elementType === 'scalar' || val.elementType === 'measure')) {
+	// Scalar element → scalarRef
+	if (val.type === 'element' && val.elementType === 'scalar') {
 		return { scalarRef: val.figureId };
 	}
 	// Otherwise fall through to GeoValue
@@ -496,10 +496,7 @@ function _executeBuiltinInner(
 			const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
 			// Convert angle to radians: scalar → composed scalar (*pi/180), number → GeoValue
 			let angleRad: ScalarParam;
-			if (
-				angleArg.type === 'element' &&
-				(angleArg.elementType === 'scalar' || angleArg.elementType === 'measure')
-			) {
+			if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
 				// Create a composed scalar that converts degrees to radians
 				const depId = angleArg.figureId;
 				angleRad = {
@@ -688,10 +685,7 @@ function _executeBuiltinInner(
 			const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
 			// Convert angle to radians: scalar → composed scalar (*pi/180), number → GeoValue
 			let simAngleRad: ScalarParam;
-			if (
-				angleArg.type === 'element' &&
-				(angleArg.elementType === 'scalar' || angleArg.elementType === 'measure')
-			) {
+			if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
 				const depId = angleArg.figureId;
 				simAngleRad = {
 					scalarRef: figure.createScalarExpression(
@@ -972,19 +966,97 @@ function _executeBuiltinInner(
 		case 'mesure': {
 			if (pos.length < 2) throw new DslRuntimeError('mesure() attend au moins 2 arguments', line);
 			const targetIds = pos.map((p, i) => requireElement(p, `arg${i + 1}`, line));
-			const typeStr = named.has('type')
-				? (named.get('type')! as { type: 'nombre'; value: number }).type === 'nombre'
-					? 'distance'
-					: 'distance'
-				: pos.length === 2
-					? 'distance'
-					: pos.length === 3
-						? 'angle'
-						: 'area';
-			const id = figure.createMeasure(typeStr as 'distance' | 'angle' | 'area', targetIds, {
-				label
+
+			// Create the appropriate scalar
+			let scalarId: string;
+			let autoPosition: 'midpoint' | 'bisector' | 'centroid';
+			if (pos.length === 2) {
+				scalarId = figure.createScalarDistance(targetIds[0], targetIds[1]);
+				autoPosition = 'midpoint';
+			} else if (pos.length === 3) {
+				scalarId = figure.createScalarAngle(targetIds[0], targetIds[1], targetIds[2]);
+				autoPosition = 'bisector';
+			} else {
+				scalarId = figure.createScalarArea(targetIds);
+				autoPosition = 'centroid';
+			}
+
+			// Create auto-positioned text displaying the scalar value
+			const format = autoPosition === 'bisector' ? ':deg' : ':.2f';
+			const textId = figure.createText(
+				`{${scalarId}${format}}`,
+				[scalarId],
+				{ autoPosition, autoTargetIds: targetIds },
+				{ label }
+			);
+			return { figureId: textId, symbolType: 'text' };
+		}
+
+		case 'texte': {
+			// texte(x, y, "template") — free position
+			// texte(point, "template", dx=..., dy=...) — anchored
+			if (pos.length < 2) throw new DslRuntimeError('texte() attend au moins 2 arguments', line);
+
+			let template: string;
+			let positioning: {
+				anchorId?: string;
+				anchorOffset?: { dx: number; dy: number };
+				position?: { x: number; y: number };
+			};
+
+			if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
+				// texte(x, y, "template")
+				const x = (pos[0] as { type: 'nombre'; value: number }).value;
+				const y = (pos[1] as { type: 'nombre'; value: number }).value;
+				if (pos[2].type !== 'string')
+					throw new DslRuntimeError('texte(): le 3e argument doit etre une chaine', line);
+				template = (pos[2] as { type: 'string'; value: string }).value;
+				positioning = { position: { x, y } };
+			} else if (pos[0].type === 'element') {
+				// texte(point, "template", dx=..., dy=...)
+				const anchorId = requireElement(pos[0], 'anchor', line);
+				if (pos[1].type !== 'string')
+					throw new DslRuntimeError('texte(): le 2e argument doit etre une chaine', line);
+				template = (pos[1] as { type: 'string'; value: string }).value;
+				const dx = named.has('dx')
+					? (named.get('dx')! as { type: 'nombre'; value: number }).value
+					: undefined;
+				const dy = named.has('dy')
+					? (named.get('dy')! as { type: 'nombre'; value: number }).value
+					: undefined;
+				positioning = {
+					anchorId,
+					anchorOffset:
+						dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
+				};
+			} else {
+				throw new DslRuntimeError(
+					'texte() attend: texte(x, y, "text") ou texte(point, "text", dx=..., dy=...)',
+					line
+				);
+			}
+
+			// Extract scalar references from the template — replace symbolic names with figure IDs
+			const scalarRefs: string[] = [];
+			template = template.replace(/\{(\w+)/g, (_match, refName: string) => {
+				const refSym = symbols.get(refName);
+				if (refSym?.figureId && refSym.type === 'scalar') {
+					scalarRefs.push(refSym.figureId);
+					return `{${refSym.figureId}`;
+				}
+				return `{${refName}`;
 			});
-			return { figureId: id, symbolType: 'measure' };
+
+			const textId = figure.createText(template, scalarRefs, positioning, { label });
+			return { figureId: textId, symbolType: 'text' };
+		}
+
+		case 'aire': {
+			if (pos.length < 3)
+				throw new DslRuntimeError('aire() attend au moins 3 arguments (points)', line);
+			const pointIds = pos.map((p, i) => requireElement(p, `point${i + 1}`, line));
+			const id = figure.createScalarArea(pointIds, { label });
+			return { figureId: id, symbolType: 'scalar' };
 		}
 
 		case 'distance': {
@@ -1363,6 +1435,8 @@ export const BUILTIN_NAMES = new Set([
 	'angle_droit',
 	'marque_segment',
 	'mesure',
+	'texte',
+	'aire',
 	'style',
 	'courbe',
 	'point_sur',

@@ -417,69 +417,72 @@ export function exportToTypst(
 		}
 	}
 
-	// Pass 6: measures
+	// Pass 6: text elements
 	if (showMeasures) {
 		for (const el of elements) {
-			if (!el.visible || el.type !== 'measure') continue;
-			const value = figure.getMeasureValue(el.id);
-			if (value === undefined) continue;
-
-			const positions = el.targetIds.map((tid) => figure.getPosition(tid));
-			if (positions.some((p) => !p)) continue;
+			if (!el.visible || el.type !== 'text') continue;
+			const text = figure.resolveTemplate(el.id);
+			if (text === undefined) continue;
 
 			const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
+			let mx: number | undefined;
+			let my: number | undefined;
 
-			let text: string;
-			if (el.format === 'degrees') {
-				text = `${Math.round(value * 10) / 10}°`;
-			} else {
-				text = `${Math.round(value * 100) / 100}`;
-			}
+			if (el.autoPosition && el.autoTargetIds) {
+				const positions = el.autoTargetIds.map((tid) => figure.getPosition(tid));
+				if (positions.some((p) => !p)) continue;
 
-			let mx: number;
-			let my: number;
-
-			if (el.measureType === 'distance') {
-				const [a, b] = positions;
-				mx = (geoToNumber(a!.x) + geoToNumber(b!.x)) / 2;
-				my = (geoToNumber(a!.y) + geoToNumber(b!.y)) / 2;
-				const dx = geoToNumber(b!.x) - geoToNumber(a!.x);
-				const dy = geoToNumber(b!.y) - geoToNumber(a!.y);
-				const len = Math.sqrt(dx * dx + dy * dy);
-				if (len > 1e-10) {
-					mx += (-dy / len) * 0.4;
-					my += (dx / len) * 0.4;
-				}
-			} else if (el.measureType === 'angle') {
-				const vp = positions[1]!;
-				mx = geoToNumber(vp.x);
-				my = geoToNumber(vp.y);
-				const d1x = geoToNumber(positions[0]!.x) - mx;
-				const d1y = geoToNumber(positions[0]!.y) - my;
-				const d2x = geoToNumber(positions[2]!.x) - mx;
-				const d2y = geoToNumber(positions[2]!.y) - my;
-				const l1 = Math.sqrt(d1x * d1x + d1y * d1y);
-				const l2 = Math.sqrt(d2x * d2x + d2y * d2y);
-				if (l1 > 1e-10 && l2 > 1e-10) {
-					const bx = d1x / l1 + d2x / l2;
-					const by = d1y / l1 + d2y / l2;
-					const bl = Math.sqrt(bx * bx + by * by);
-					if (bl > 1e-10) {
-						mx += (bx / bl) * 0.8;
-						my += (by / bl) * 0.8;
+				if (el.autoPosition === 'midpoint') {
+					const [a, b] = positions;
+					mx = (geoToNumber(a!.x) + geoToNumber(b!.x)) / 2;
+					my = (geoToNumber(a!.y) + geoToNumber(b!.y)) / 2;
+					const dx = geoToNumber(b!.x) - geoToNumber(a!.x);
+					const dy = geoToNumber(b!.y) - geoToNumber(a!.y);
+					const len = Math.sqrt(dx * dx + dy * dy);
+					if (len > 1e-10) {
+						mx += (-dy / len) * 0.4;
+						my += (dx / len) * 0.4;
 					}
+				} else if (el.autoPosition === 'bisector') {
+					const vp = positions[1]!;
+					mx = geoToNumber(vp.x);
+					my = geoToNumber(vp.y);
+					const d1x = geoToNumber(positions[0]!.x) - mx;
+					const d1y = geoToNumber(positions[0]!.y) - my;
+					const d2x = geoToNumber(positions[2]!.x) - mx;
+					const d2y = geoToNumber(positions[2]!.y) - my;
+					const l1 = Math.sqrt(d1x * d1x + d1y * d1y);
+					const l2 = Math.sqrt(d2x * d2x + d2y * d2y);
+					if (l1 > 1e-10 && l2 > 1e-10) {
+						const bx = d1x / l1 + d2x / l2;
+						const by = d1y / l1 + d2y / l2;
+						const bl = Math.sqrt(bx * bx + by * by);
+						if (bl > 1e-10) {
+							mx += (bx / bl) * 0.8;
+							my += (by / bl) * 0.8;
+						}
+					}
+				} else {
+					let sx = 0;
+					let sy = 0;
+					for (const p of positions) {
+						sx += geoToNumber(p!.x);
+						sy += geoToNumber(p!.y);
+					}
+					mx = sx / positions.length;
+					my = sy / positions.length;
 				}
-			} else {
-				let sx = 0;
-				let sy = 0;
-				for (const p of positions) {
-					sx += geoToNumber(p!.x);
-					sy += geoToNumber(p!.y);
-				}
-				mx = sx / positions.length;
-				my = sy / positions.length;
+			} else if (el.anchorId) {
+				const anchorPos = figure.getPosition(el.anchorId);
+				if (!anchorPos) continue;
+				mx = geoToNumber(anchorPos.x) + (el.anchorOffset?.dx ?? 0.5);
+				my = geoToNumber(anchorPos.y) + (el.anchorOffset?.dy ?? 0.5);
+			} else if (el.position) {
+				mx = el.position.x;
+				my = el.position.y;
 			}
 
+			if (mx === undefined || my === undefined) continue;
 			lines.push(`  content(${c(mx, my)}, text(size: 9pt, fill: ${color})[$${text}$])`);
 		}
 	}

@@ -19,7 +19,7 @@
 		arcToSVG,
 		angleMarkToSVG,
 		segmentMarkToSVG,
-		measureToSVG,
+		textToSVG,
 		resolveStyle,
 		functionToSVG,
 		quadraticCurveToSVG,
@@ -1422,10 +1422,10 @@
 				{/if}
 			{/each}
 
-			<!-- Measures (on top of everything) -->
-			{#each elements as el (`${el.id}_meas_${version}`)}
-				{#if el.type === 'measure'}
-					{@const svg = measureToSVG(el.id, figure, transformer)}
+			<!-- Text elements (on top of everything) -->
+			{#each elements as el (`${el.id}_txt_${version}`)}
+				{#if el.type === 'text'}
+					{@const svg = textToSVG(el.id, figure, transformer)}
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{#if svg}
 						<rect
@@ -1436,9 +1436,9 @@
 							rx={3}
 							fill="white"
 							fill-opacity="0.85"
-							class="measure-bg"
+							class="text-bg"
 						/>
-						<text x={svg.x} y={svg.y} fill={sty.color} opacity={sty.opacity} class="measure-text"
+						<text x={svg.x} y={svg.y} fill={sty.color} opacity={sty.opacity} class="geo-text"
 							>{svg.text}</text
 						>
 					{/if}
@@ -1582,13 +1582,13 @@
 		cursor: grabbing;
 	}
 
-	.measure-text {
+	.geo-text {
 		font-size: 12px;
 		font-family: 'KaTeX_Main', serif;
 		pointer-events: none;
 	}
 
-	.measure-bg {
+	.text-bg {
 		pointer-events: none;
 	}
 </style>

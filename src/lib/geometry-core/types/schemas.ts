@@ -247,12 +247,16 @@ const segmentMarkSchema = baseElementSchema.extend({
 	dependsOn: z.tuple([z.string(), z.string()])
 });
 
-const measureSchema = baseElementSchema.extend({
-	type: z.literal('measure'),
-	measureType: z.enum(['distance', 'angle', 'area']),
-	targetIds: z.array(z.string().min(1)).min(2),
-	format: z.enum(['exact', 'approx', 'degrees', 'radians']),
-	dependsOn: z.array(z.string().min(1)).min(2)
+const textSchema = baseElementSchema.extend({
+	type: z.literal('text'),
+	template: z.string(),
+	scalarRefs: z.array(z.string()),
+	anchorId: z.string().min(1).optional(),
+	anchorOffset: z.object({ dx: z.number().finite(), dy: z.number().finite() }).optional(),
+	position: z.object({ x: z.number().finite(), y: z.number().finite() }).optional(),
+	autoPosition: z.enum(['midpoint', 'bisector', 'centroid']).optional(),
+	autoTargetIds: z.array(z.string().min(1)).optional(),
+	dependsOn: z.array(z.string())
 });
 
 const arcByAnglesSchema = baseElementSchema.extend({
@@ -316,7 +320,7 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	reflectedOverLineSchema,
 	angleMarkSchema,
 	segmentMarkSchema,
-	measureSchema,
+	textSchema,
 	segmentSchema,
 	lineSchema,
 	raySchema,

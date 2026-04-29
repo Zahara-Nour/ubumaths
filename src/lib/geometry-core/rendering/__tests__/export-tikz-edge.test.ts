@@ -3,6 +3,7 @@ import { exportToTikZ } from '../export-tikz';
 import { Figure } from '../../graph/figure';
 import { numeric } from '../../types/geo-value';
 import type { Viewport } from '../../viewport/types';
+import { createMesureText } from './test-helpers';
 
 function pt(x: number, y: number) {
 	return { x: numeric(x), y: numeric(y) };
@@ -277,7 +278,7 @@ describe('exportToTikZ — edge cases', () => {
 		const b = f.createFreePoint(pt(2, 0));
 		const c = f.createFreePoint(pt(2, 2));
 		const d = f.createFreePoint(pt(0, 2));
-		f.createMeasure('area', [a, b, c, d]);
+		createMesureText(f, 'area', [a, b, c, d]);
 		const result = exportToTikZ(f, viewport);
 		expect(result).toContain('\\node');
 		expect(result).toContain('4');
@@ -287,7 +288,7 @@ describe('exportToTikZ — edge cases', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(3, 4));
-		f.createMeasure('distance', [a, b]);
+		createMesureText(f, 'distance', [a, b]);
 		const result = exportToTikZ(f, viewport, { showMeasures: false });
 		const measureSpecific = result.split('\n').filter((l) => l.includes('$5$'));
 		expect(measureSpecific.length).toBe(0);
@@ -298,9 +299,9 @@ describe('exportToTikZ — edge cases', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createMeasure('angle', [a, v, b]);
+		createMesureText(f, 'angle', [a, v, b]);
 		const result = exportToTikZ(f, viewport);
-		expect(result).toContain('^{\\circ}');
+		expect(result).toContain('90°');
 	});
 
 	// ─── Options combinations ─────────────────────────────────
@@ -349,8 +350,8 @@ describe('exportToTikZ — edge cases', () => {
 		f.createAngleMark(b, a, c, { color: '#dc2626' });
 		f.createAngleMark(c, b, a, { color: '#dc2626', rightAngle: true });
 		f.createSegmentMark(a, b, { color: '#dc2626', markCount: 2 });
-		f.createMeasure('distance', [a, b], { color: '#6366f1' });
-		f.createMeasure('angle', [b, a, c], { color: '#1e40af' });
+		createMesureText(f, 'distance', [a, b]);
+		createMesureText(f, 'angle', [b, a, c]);
 
 		const result = exportToTikZ(f, viewport, { showGrid: true, showAxes: true });
 

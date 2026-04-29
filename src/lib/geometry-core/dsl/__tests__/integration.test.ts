@@ -75,7 +75,7 @@ describe('DSL integration — runDsl', () => {
 		const marks = figure.getAllElements().filter((e) => e.type === 'angleMark');
 		expect(marks).toHaveLength(2);
 		expect(figure.getAllElements().filter((e) => e.type === 'segmentMark')).toHaveLength(1);
-		expect(figure.getAllElements().filter((e) => e.type === 'measure')).toHaveLength(1);
+		expect(figure.getAllElements().filter((e) => e.type === 'text')).toHaveLength(1);
 	});
 });
 

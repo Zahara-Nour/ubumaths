@@ -3,6 +3,7 @@ import { exportToTypst } from '../export-typst';
 import { Figure } from '../../graph/figure';
 import { numeric } from '../../types/geo-value';
 import type { Viewport } from '../../viewport/types';
+import { createMesureText } from './test-helpers';
 
 function pt(x: number, y: number) {
 	return { x: numeric(x), y: numeric(y) };
@@ -76,7 +77,7 @@ describe('exportToTypst', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(3, 4));
-		f.createMeasure('distance', [a, b]);
+		createMesureText(f, 'distance', [a, b]);
 		const result = exportToTypst(f, viewport);
 		expect(result).toContain('content(');
 		expect(result).toContain('5');

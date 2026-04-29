@@ -3,6 +3,7 @@ import { exportToSVG } from '../export-svg';
 import { Figure } from '../../graph/figure';
 import { numeric } from '../../types/geo-value';
 import type { Viewport } from '../../viewport/types';
+import { createMesureText } from './test-helpers';
 
 function pt(x: number, y: number) {
 	return { x: numeric(x), y: numeric(y) };
@@ -301,7 +302,7 @@ describe('exportToSVG — edge cases', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(3, 4));
-		f.createMeasure('distance', [a, b]);
+		createMesureText(f, 'distance', [a, b]);
 		const result = exportToSVG(f, viewport);
 		// Background rect with fill-opacity
 		expect(result).toContain('fill-opacity="0.85"');
@@ -312,7 +313,7 @@ describe('exportToSVG — edge cases', () => {
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(2, 0));
 		const c = f.createFreePoint(pt(2, 3));
-		f.createMeasure('area', [a, b, c]);
+		createMesureText(f, 'area', [a, b, c]);
 		const result = exportToSVG(f, viewport);
 		expect(result).toContain('3'); // area = 3
 	});
@@ -322,7 +323,7 @@ describe('exportToSVG — edge cases', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createMeasure('angle', [a, v, b]);
+		createMesureText(f, 'angle', [a, v, b]);
 		const result = exportToSVG(f, viewport);
 		expect(result).toContain('90°');
 	});
@@ -410,7 +411,7 @@ describe('exportToSVG — edge cases', () => {
 		f.createCircleByRadius(a, numeric(2));
 		f.createAngleMark(b, a, f.createFreePoint(pt(0, 4)));
 		f.createSegmentMark(a, b);
-		f.createMeasure('distance', [a, b]);
+		createMesureText(f, 'distance', [a, b]);
 
 		const result = exportToSVG(f, viewport, { showGrid: true, showAxes: true });
 
