@@ -112,6 +112,8 @@ class Interpreter {
 				this._assignmentLabel = stmt.name;
 				const value = this.evaluateExpr(stmt.value, stmt.line);
 				this._assignmentLabel = undefined;
+				// Label returned elements (e.g. from macro calls that stripped labels)
+				this.labelElement(value, stmt.name);
 				this.symbols.set(stmt.name, this.toSymbolEntry(value));
 				break;
 			}
@@ -135,6 +137,7 @@ class Interpreter {
 					);
 				}
 				for (let i = 0; i < stmt.names.length; i++) {
+					this.labelElement(value.elements[i], stmt.names[i]);
 					this.symbols.set(stmt.names[i], this.toSymbolEntry(value.elements[i]));
 				}
 				break;
@@ -371,6 +374,7 @@ class Interpreter {
 
 		// Builtin geometry functions
 		if (BUILTIN_NAMES.has(name)) {
+			const inMacro = this.macros.insideMacro;
 			const result = executeBuiltin(
 				name,
 				resolvedArgs,
@@ -378,7 +382,7 @@ class Interpreter {
 				(v, l) => this.toGeoValue(v, l),
 				(x, y, l) => this.toGeoPoint(x, y, l),
 				line,
-				this._assignmentLabel
+				inMacro ? undefined : this._assignmentLabel
 			);
 			if (result) {
 				// Scalar result: builtins like norme(), produit_scalaire(), angle_vecteurs()
@@ -388,6 +392,9 @@ class Interpreter {
 				// Multi-result: builtins like zeros(), extrema(), inflections()
 				if ('elements' in result) {
 					const multi = result as BuiltinMultiResult;
+					if (inMacro) {
+						for (const el of multi.elements) this.figure.hideElement(el.figureId);
+					}
 					return {
 						type: 'tuple',
 						elements: multi.elements.map((el) => ({
@@ -397,6 +404,7 @@ class Interpreter {
 						}))
 					};
 				}
+				if (inMacro) this.figure.hideElement(result.figureId);
 				return { type: 'element', figureId: result.figureId, elementType: result.symbolType };
 			}
 			return { type: 'nombre', value: 0 }; // style() returns nothing
@@ -480,10 +488,32 @@ class Interpreter {
 			// Pop scope
 			this.symbols.popScope();
 
+			// Restore visibility of returned elements (hidden during macro execution)
+			if (result) this.showReturnedElements(result);
+
 			// Return result or empty tuple
 			return result ?? { type: 'nombre', value: 0 };
 		} finally {
 			this.macros.exitCall();
+		}
+	}
+
+	/** Apply label to an element if it doesn't already have one (e.g. returned from macro). */
+	private labelElement(value: ResolvedValue, name: string): void {
+		if (value.type === 'element' && value.figureId) {
+			const el = this.figure.getElementById(value.figureId);
+			if (el && !el.label) {
+				this.figure.updateLabel(value.figureId, name);
+			}
+		}
+	}
+
+	/** Make returned elements visible again after macro execution hid them. */
+	private showReturnedElements(value: ResolvedValue): void {
+		if (value.type === 'element' && value.figureId) {
+			this.figure.showElement(value.figureId);
+		} else if (value.type === 'tuple') {
+			for (const el of value.elements) this.showReturnedElements(el);
 		}
 	}
 
