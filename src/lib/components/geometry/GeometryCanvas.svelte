@@ -1,10 +1,10 @@
 <script lang="ts">
 	import ElementPopover from './ElementPopover.svelte';
 	import SliderControl from './SliderControl.svelte';
-	import InlineRenderer from '$lib/components/markdown/InlineRenderer.svelte';
-	import { parseMarkdown } from '$lib/ubumark';
 	import type { InlineNode } from '$lib/ubumark';
-	import 'mathlive';
+	import { parseMarkdown } from '$lib/ubumark';
+	import { convertLatexToMarkup } from 'mathlive';
+	import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 	import { Figure } from '$lib/geometry-core/graph/figure';
 	import type { GeoSlider } from '$lib/geometry-core/types/elements';
 	import {
@@ -267,7 +267,7 @@
 		return Math.max(0, Math.min(1, offset / sweep));
 	}
 
-	/** Parse ubumark content to inline nodes for InlineRenderer. */
+	/** Parse ubumark content to inline nodes. */
 	function parseInlineNodes(content: string): InlineNode[] {
 		try {
 			const doc = parseMarkdown(content);
@@ -278,6 +278,43 @@
 		} catch {
 			return [{ type: 'text', content, bold: false, italic: false, code: false }];
 		}
+	}
+
+	function escapeHtml(s: string): string {
+		return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	}
+
+	/**
+	 * Convert inline nodes to static HTML string for use with {@html}.
+	 *
+	 * Uses convertLatexToMarkup() for math nodes instead of the <math-span> web
+	 * component. This avoids the flicker caused by web component destruction/recreation
+	 * during drag operations: <math-span> has a heavy lifecycle (Shadow DOM,
+	 * IntersectionObserver, LaTeX parse → render) that causes visible disappearance
+	 * when Svelte recreates the {#each} block on version change.
+	 * convertLatexToMarkup() produces the same visual output as plain HTML, which
+	 * Svelte can insert/replace instantaneously via innerHTML.
+	 */
+	function inlineNodesToHTML(nodes: InlineNode[]): string {
+		return nodes
+			.map((node) => {
+				if (node.type === 'text') {
+					let html = escapeHtml(node.content);
+					if (node.bold) html = `<strong>${html}</strong>`;
+					if (node.italic) html = `<em>${html}</em>`;
+					if (node.code) html = `<code>${html}</code>`;
+					return html;
+				}
+				if (node.type === 'math-inline') {
+					const latex = expressionToLatex(node.expression, node.syntax);
+					return convertLatexToMarkup(latex, { defaultMode: 'inline-math' });
+				}
+				// line-break, link, blank, hashtag, mention, hint-reference, internal-link
+				// — not meaningful in a single-line SVG foreignObject label.
+				// NOTE: if you add a 'link' branch, sanitise node.url (block javascript:/data: URIs).
+				return '';
+			})
+			.join('');
 	}
 
 	// ─── Pointer events ─────────────────────────────────────────────
@@ -1486,7 +1523,15 @@
 				{/if}
 			{/each}
 
-			<!-- Math text elements (foreignObject + math-span) -->
+			<!--
+				Math text elements — uses convertLatexToMarkup() for static HTML rendering
+				instead of the <math-span> web component. This eliminates the flicker that
+				occurred during drag operations: the {#each} key includes `version`, which
+				forces Svelte to destroy/recreate elements on every mutation. Recreating a
+				web component (Shadow DOM + IntersectionObserver + LaTeX parse) is slow
+				enough to cause visible disappearance, while recreating static HTML via
+				{@html} is instantaneous.
+			-->
 			{#each elements as el (`${el.id}_mtxt_${version}`)}
 				{#if el.type === 'mathText'}
 					{@const svg = textToSVG(el.id, figure, transformer)}
@@ -1513,7 +1558,7 @@
 								<div
 									style="display:flex; align-items:center; color:black; font-size:14px; background:rgba(255,255,255,0.92); padding:2px 6px; border-radius:4px; width:fit-content"
 								>
-									<math-span>{svg.text}</math-span>
+									{@html convertLatexToMarkup(svg.text, { defaultMode: 'inline-math' })}
 								</div>
 							</foreignObject>
 						</g>
@@ -1521,7 +1566,12 @@
 				{/if}
 			{/each}
 
-			<!-- Rich text elements (foreignObject + InlineRenderer) -->
+			<!--
+				Rich text elements — same static HTML approach as mathText above.
+				Uses inlineNodesToHTML() instead of the InlineRenderer component to avoid
+				the chain InlineRenderer → MathInline → <math-span> which has the same
+				web component lifecycle overhead.
+			-->
 			{#each elements as el (`${el.id}_rtxt_${version}`)}
 				{#if el.type === 'richText'}
 					{@const svg = textToSVG(el.id, figure, transformer)}
@@ -1549,7 +1599,7 @@
 								<div
 									style="color:black; font-size:14px; background:rgba(255,255,255,0.92); padding:2px 6px; border-radius:4px; width:fit-content"
 								>
-									<InlineRenderer children={inlineNodes} />
+									{@html inlineNodesToHTML(inlineNodes)}
 								</div>
 							</foreignObject>
 						</g>

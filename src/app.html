@@ -11,6 +11,9 @@
 
 		<!-- Mathlive fonts - switchable between KaTeX and Shantell -->
 		<link id="mathlive-fonts-css" rel="stylesheet" href="/mathlive-fonts-katex.css" />
+		<!-- Mathlive static rendering styles (ML__* classes) — needed by convertLatexToMarkup()
+		     output used in GeometryCanvas for flicker-free math text during drag operations -->
+		<link rel="stylesheet" href="/mathlive-static.css" />
 
 		%sveltekit.head%
 	</head>
