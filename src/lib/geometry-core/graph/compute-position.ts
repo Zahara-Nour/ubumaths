@@ -26,6 +26,8 @@ import {
 	isAngleMark,
 	isSegmentMark,
 	isText,
+	isMathText,
+	isRichText,
 	isScalar,
 	isSlider,
 	isPointOnCurve,
@@ -325,7 +327,7 @@ export function computeElementPosition(
 		return { position: null, hasComputablePosition: true };
 	}
 
-	if (isText(el)) {
+	if (isText(el) || isMathText(el) || isRichText(el)) {
 		// Text elements have no position or scalar value — they are display-only
 		return { position: null, hasComputablePosition: false };
 	}

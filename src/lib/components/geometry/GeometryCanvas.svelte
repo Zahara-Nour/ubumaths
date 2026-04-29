@@ -1,6 +1,10 @@
 <script lang="ts">
 	import ElementPopover from './ElementPopover.svelte';
 	import SliderControl from './SliderControl.svelte';
+	import InlineRenderer from '$lib/components/markdown/InlineRenderer.svelte';
+	import { parseMarkdown } from '$lib/ubumark';
+	import type { InlineNode } from '$lib/ubumark';
+	import 'mathlive';
 	import { Figure } from '$lib/geometry-core/graph/figure';
 	import type { GeoSlider } from '$lib/geometry-core/types/elements';
 	import {
@@ -263,6 +267,19 @@
 		return Math.max(0, Math.min(1, offset / sweep));
 	}
 
+	/** Parse ubumark content to inline nodes for InlineRenderer. */
+	function parseInlineNodes(content: string): InlineNode[] {
+		try {
+			const doc = parseMarkdown(content);
+			if (doc.children.length > 0 && doc.children[0].type === 'paragraph') {
+				return doc.children[0].children;
+			}
+			return [{ type: 'text', content, bold: false, italic: false, code: false }];
+		} catch {
+			return [{ type: 'text', content, bold: false, italic: false, code: false }];
+		}
+	}
+
 	// ─── Pointer events ─────────────────────────────────────────────
 
 	function getMathCoords(e: PointerEvent | WheelEvent): { x: number; y: number } | null {
@@ -428,7 +445,10 @@
 					const t = projectOnArc(figure, arcEl, math.x, math.y);
 					figure.movePointOnArc(draggingId, t);
 				}
-			} else if (dragEl?.type === 'text' && dragEl.position) {
+			} else if (
+				(dragEl?.type === 'text' || dragEl?.type === 'mathText' || dragEl?.type === 'richText') &&
+				dragEl.position
+			) {
 				figure.moveText(draggingId, math.x + (dragOffset?.dx ?? 0), math.y + (dragOffset?.dy ?? 0));
 			} else {
 				figure.movePoint(draggingId, numeric(math.x), numeric(math.y));
@@ -1461,6 +1481,77 @@
 							<text x={svg.x} y={svg.y} fill={sty.color} opacity={sty.opacity} class="geo-text"
 								>{svg.text}</text
 							>
+						</g>
+					{/if}
+				{/if}
+			{/each}
+
+			<!-- Math text elements (foreignObject + math-span) -->
+			{#each elements as el (`${el.id}_mtxt_${version}`)}
+				{#if el.type === 'mathText'}
+					{@const svg = textToSVG(el.id, figure, transformer)}
+					{@const isDraggable = !!el.position}
+					{#if svg}
+						<g
+							class:draggable-text={isDraggable}
+							onpointerdown={isDraggable
+								? (e) => {
+										if (e.button !== 0) return;
+										draggingId = el.id;
+										const math = getMathCoords(e);
+										dragOffset = math
+											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
+											: null;
+										figure.beginTransaction();
+										svgRef?.setPointerCapture(e.pointerId);
+										e.preventDefault();
+										e.stopPropagation();
+									}
+								: undefined}
+						>
+							<foreignObject x={svg.x - 4} y={svg.y - 20} width="250" height="32">
+								<div
+									style="display:flex; align-items:center; color:black; font-size:14px; background:rgba(255,255,255,0.92); padding:2px 6px; border-radius:4px; width:fit-content"
+								>
+									<math-span>{svg.text}</math-span>
+								</div>
+							</foreignObject>
+						</g>
+					{/if}
+				{/if}
+			{/each}
+
+			<!-- Rich text elements (foreignObject + InlineRenderer) -->
+			{#each elements as el (`${el.id}_rtxt_${version}`)}
+				{#if el.type === 'richText'}
+					{@const svg = textToSVG(el.id, figure, transformer)}
+					{@const isDraggable = !!el.position}
+					{#if svg}
+						{@const inlineNodes = parseInlineNodes(svg.text)}
+						<g
+							class:draggable-text={isDraggable}
+							onpointerdown={isDraggable
+								? (e) => {
+										if (e.button !== 0) return;
+										draggingId = el.id;
+										const math = getMathCoords(e);
+										dragOffset = math
+											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
+											: null;
+										figure.beginTransaction();
+										svgRef?.setPointerCapture(e.pointerId);
+										e.preventDefault();
+										e.stopPropagation();
+									}
+								: undefined}
+						>
+							<foreignObject x={svg.x - 4} y={svg.y - 20} width="350" height="32">
+								<div
+									style="color:black; font-size:14px; background:rgba(255,255,255,0.92); padding:2px 6px; border-radius:4px; width:fit-content"
+								>
+									<InlineRenderer children={inlineNodes} />
+								</div>
+							</foreignObject>
 						</g>
 					{/if}
 				{/if}

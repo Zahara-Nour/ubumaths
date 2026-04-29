@@ -339,7 +339,8 @@ export function exportToSVG(
 	// Pass 6: text elements
 	if (showMeasures) {
 		for (const el of elements) {
-			if (!el.visible || el.type !== 'text') continue;
+			if (!el.visible || (el.type !== 'text' && el.type !== 'mathText' && el.type !== 'richText'))
+				continue;
 			const svg = textToSVG(el.id, figure, transformer);
 			if (!svg) continue;
 			const sty = resolveStyle(el, figure.defaults);

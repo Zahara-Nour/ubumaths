@@ -1062,6 +1062,106 @@ function _executeBuiltinInner(
 			return { figureId: id, symbolType: 'scalar' };
 		}
 
+		case 'mtexte': {
+			if (pos.length < 2) throw new DslRuntimeError('mtexte() attend au moins 2 arguments', line);
+			let mtTemplate: string;
+			let mtPositioning: {
+				anchorId?: string;
+				anchorOffset?: { dx: number; dy: number };
+				position?: { x: number; y: number };
+			};
+			if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
+				const x = (pos[0] as { type: 'nombre'; value: number }).value;
+				const y = (pos[1] as { type: 'nombre'; value: number }).value;
+				if (pos[2].type !== 'string')
+					throw new DslRuntimeError('mtexte(): le 3e argument doit etre une chaine', line);
+				mtTemplate = (pos[2] as { type: 'string'; value: string }).value;
+				mtPositioning = { position: { x, y } };
+			} else if (pos[0].type === 'element') {
+				const anchorId = requireElement(pos[0], 'anchor', line);
+				if (pos[1].type !== 'string')
+					throw new DslRuntimeError('mtexte(): le 2e argument doit etre une chaine', line);
+				mtTemplate = (pos[1] as { type: 'string'; value: string }).value;
+				const dx = named.has('dx')
+					? (named.get('dx')! as { type: 'nombre'; value: number }).value
+					: undefined;
+				const dy = named.has('dy')
+					? (named.get('dy')! as { type: 'nombre'; value: number }).value
+					: undefined;
+				mtPositioning = {
+					anchorId,
+					anchorOffset:
+						dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
+				};
+			} else {
+				throw new DslRuntimeError(
+					'mtexte() attend: mtexte(x, y, "latex") ou mtexte(point, "latex", dx=..., dy=...)',
+					line
+				);
+			}
+			const mtScalarRefs: string[] = [];
+			mtTemplate = mtTemplate.replace(/\{(\w+)/g, (_match, refName: string) => {
+				const refSym = symbols?.get(refName);
+				if (refSym?.figureId && refSym.type === 'scalar') {
+					mtScalarRefs.push(refSym.figureId);
+					return `{${refSym.figureId}`;
+				}
+				return `{${refName}`;
+			});
+			const mtId = figure.createMathText(mtTemplate, mtScalarRefs, mtPositioning, { label });
+			return { figureId: mtId, symbolType: 'mathText' };
+		}
+
+		case 'rtexte': {
+			if (pos.length < 2) throw new DslRuntimeError('rtexte() attend au moins 2 arguments', line);
+			let rtTemplate: string;
+			let rtPositioning: {
+				anchorId?: string;
+				anchorOffset?: { dx: number; dy: number };
+				position?: { x: number; y: number };
+			};
+			if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
+				const x = (pos[0] as { type: 'nombre'; value: number }).value;
+				const y = (pos[1] as { type: 'nombre'; value: number }).value;
+				if (pos[2].type !== 'string')
+					throw new DslRuntimeError('rtexte(): le 3e argument doit etre une chaine', line);
+				rtTemplate = (pos[2] as { type: 'string'; value: string }).value;
+				rtPositioning = { position: { x, y } };
+			} else if (pos[0].type === 'element') {
+				const anchorId = requireElement(pos[0], 'anchor', line);
+				if (pos[1].type !== 'string')
+					throw new DslRuntimeError('rtexte(): le 2e argument doit etre une chaine', line);
+				rtTemplate = (pos[1] as { type: 'string'; value: string }).value;
+				const dx = named.has('dx')
+					? (named.get('dx')! as { type: 'nombre'; value: number }).value
+					: undefined;
+				const dy = named.has('dy')
+					? (named.get('dy')! as { type: 'nombre'; value: number }).value
+					: undefined;
+				rtPositioning = {
+					anchorId,
+					anchorOffset:
+						dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
+				};
+			} else {
+				throw new DslRuntimeError(
+					'rtexte() attend: rtexte(x, y, "ubumark") ou rtexte(point, "ubumark", dx=..., dy=...)',
+					line
+				);
+			}
+			const rtScalarRefs: string[] = [];
+			rtTemplate = rtTemplate.replace(/\{(\w+)/g, (_match, refName: string) => {
+				const refSym = symbols?.get(refName);
+				if (refSym?.figureId && refSym.type === 'scalar') {
+					rtScalarRefs.push(refSym.figureId);
+					return `{${refSym.figureId}`;
+				}
+				return `{${refName}`;
+			});
+			const rtId = figure.createRichText(rtTemplate, rtScalarRefs, rtPositioning, { label });
+			return { figureId: rtId, symbolType: 'richText' };
+		}
+
 		case 'distance': {
 			if (pos.length !== 2)
 				throw new DslRuntimeError(
@@ -1439,6 +1539,8 @@ export const BUILTIN_NAMES = new Set([
 	'marque_segment',
 	'mesure',
 	'texte',
+	'mtexte',
+	'rtexte',
 	'aire',
 	'style',
 	'courbe',
