@@ -39,4 +39,9 @@ export class MacroRegistry {
 	exitCall(): void {
 		this.callDepth--;
 	}
+
+	/** True when executing inside a macro body (any depth). */
+	get insideMacro(): boolean {
+		return this.callDepth > 0;
+	}
 }

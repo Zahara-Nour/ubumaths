@@ -314,6 +314,37 @@ describe('stdlib — composition', () => {
 		expect(segs).toHaveLength(6); // 3 sides + 3 medians
 	});
 
+	it('macro internal elements are hidden', () => {
+		const { figure } = runDsl(
+			['A = point(0, 0)', 'B = point(6, 0)', 'C = point(2, 5)', 'H = orthocentre(A, B, C)'].join(
+				'\n'
+			)
+		);
+		const visiblePoints = figure
+			.getAllElements()
+			.filter((e) => (e.type === 'freePoint' || e.type === 'intersectionLL') && e.visible);
+		// Only A, B, C, H should be visible — not the internal P, Q points from hauteur()
+		expect(visiblePoints).toHaveLength(4);
+		const labels = visiblePoints.map((e) => e.label).sort();
+		expect(labels).toEqual(['A', 'B', 'C', 'H']);
+	});
+
+	it('macro returned elements have correct labels', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(6, 0)',
+				'C = point(2, 5)',
+				'(O, cc) = cercle_circonscrit(A, B, C)'
+			].join('\n')
+		);
+		const visiblePoints = figure
+			.getAllElements()
+			.filter((e) => (e.type === 'freePoint' || e.type === 'intersectionLL') && e.visible);
+		const labels = visiblePoints.map((e) => e.label).sort();
+		expect(labels).toEqual(['A', 'B', 'C', 'O']);
+	});
+
 	it('triangle with new remarkable elements', () => {
 		const { symbols } = runDsl(
 			[

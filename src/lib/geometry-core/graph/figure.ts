@@ -2251,6 +2251,24 @@ export class Figure {
 		this.elements.set(id, updated);
 	}
 
+	hideElement(id: string): void {
+		const el = this.elements.get(id);
+		if (!el) return;
+		const updated = { ...el, visible: false, label: undefined } as GeoElement;
+		this.elements.set(id, updated);
+	}
+
+	showElement(id: string, label?: string): void {
+		const el = this.elements.get(id);
+		if (!el) return;
+		const updated = {
+			...el,
+			visible: true,
+			...(label !== undefined ? { label } : {})
+		} as GeoElement;
+		this.elements.set(id, updated);
+	}
+
 	updateLabel(id: string, label: string): void {
 		const el = this.elements.get(id);
 		if (!el) throw new Error(`updateLabel: "${id}" does not exist`);
