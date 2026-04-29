@@ -14,7 +14,7 @@ export type SymbolType =
 	| 'polygone'
 	| 'angleMark'
 	| 'segmentMark'
-	| 'measure'
+	| 'text'
 	| 'arc'
 	| 'courbe'
 	| 'tangente'

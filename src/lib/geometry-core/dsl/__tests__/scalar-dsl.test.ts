@@ -262,20 +262,21 @@ describe('DSL: distance() vs mesure()', () => {
 		expect(el!.visible).toBe(false);
 	});
 
-	it('mesure() creates visible measure', () => {
+	it('mesure() creates visible text element', () => {
 		const r = run(['A = point(0, 0)', 'B = point(3, 4)', 'm = mesure(A, B)'].join('\n'));
 		const el = r.figure.getElementById(sym(r, 'm')!.figureId!);
+		expect(el!.type).toBe('text');
 		expect(el!.visible).toBe(true);
 	});
 
-	it('mesure can be used as scalar param', () => {
+	it('distance() can be used as scalar param', () => {
 		const r = run(
 			[
 				'A = point(0, 0)',
 				'B = point(3, 0)',
-				'm = mesure(A, B)',
+				'd = distance(A, B)',
 				'O = point(5, 0)',
-				'c = cercle(O, rayon=m)'
+				'c = cercle(O, rayon=d)'
 			].join('\n')
 		);
 		const circId = sym(r, 'c')!.figureId!;

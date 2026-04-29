@@ -175,9 +175,9 @@ describe('interpreter — annotations', () => {
 		expect(figure.getAllElements().filter((e) => e.type === 'segmentMark')).toHaveLength(1);
 	});
 
-	it('creates distance measure', () => {
+	it('creates distance text via mesure()', () => {
 		const { figure } = run(['A = point(0, 0)', 'B = point(3, 4)', 'mesure(A, B)'].join('\n'));
-		expect(figure.getAllElements().filter((e) => e.type === 'measure')).toHaveLength(1);
+		expect(figure.getAllElements().filter((e) => e.type === 'text')).toHaveLength(1);
 	});
 });
 

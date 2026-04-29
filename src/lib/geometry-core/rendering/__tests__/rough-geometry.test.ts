@@ -67,7 +67,7 @@ describe('shouldRenderRough', () => {
 		});
 
 		it('returns false for measures', () => {
-			expect(shouldRenderRough('normal', 'measure', 'rough')).toBe(false);
+			expect(shouldRenderRough('normal', 'text', 'rough')).toBe(false);
 		});
 	});
 
@@ -79,7 +79,7 @@ describe('shouldRenderRough', () => {
 
 		it('still excludes points even if marked rough', () => {
 			expect(shouldRenderRough('rough', 'freePoint', 'mixed')).toBe(false);
-			expect(shouldRenderRough('rough', 'measure', 'mixed')).toBe(false);
+			expect(shouldRenderRough('rough', 'text', 'mixed')).toBe(false);
 		});
 	});
 });

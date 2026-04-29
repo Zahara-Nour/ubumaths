@@ -18,11 +18,22 @@ export function serialize(figure: Figure, symbols?: SymbolTable): string {
 	const idToName = buildNameMap(elements, symbols);
 	const lines: string[] = [];
 
+	// Collect scalar IDs that are internally created by mesure() sugar —
+	// these are referenced by auto-positioned text elements and should not be serialized separately.
+	const internalScalarIds = new Set<string>();
+	for (const el of elements) {
+		if (el.type === 'text' && el.autoPosition && el.scalarRefs) {
+			for (const ref of el.scalarRefs) internalScalarIds.add(ref);
+		}
+	}
+
 	for (const el of elements) {
 		// Skip invisible elements, except transformation objects, named scalars, and sliders
 		if (!el.visible && !isTransformationType(el.type) && !isScalarLikeType(el.type)) continue;
 		// Skip expression scalars (they are implicitly recreated by DSL arithmetic)
 		if (el.type === 'scalar' && el.scalarKind === 'expression') continue;
+		// Skip scalars that are internally managed by auto-positioned text (mesure() sugar)
+		if (el.type === 'scalar' && internalScalarIds.has(el.id)) continue;
 		const line = serializeElement(el, figure, idToName);
 		if (line) lines.push(line);
 	}
@@ -121,8 +132,8 @@ function typePrefix(type: string): string {
 			return 'am';
 		case 'segmentMark':
 			return 'sm';
-		case 'measure':
-			return 'mes';
+		case 'text':
+			return 'txt';
 		case 'function':
 		case 'quadraticCurve':
 		case 'implicitCurve':
@@ -332,9 +343,23 @@ function serializeElement(
 			return `marque_segment(${name(idToName, el.startId)}, ${name(idToName, el.endId)}${ticksPart})`;
 		}
 
-		case 'measure': {
-			const targets = el.targetIds.map((id) => name(idToName, id)).join(', ');
-			return `mesure(${targets})`;
+		case 'text': {
+			if (el.autoPosition && el.autoTargetIds) {
+				// Auto-positioned text (created by mesure()) — serialize as mesure()
+				const targets = el.autoTargetIds.map((id) => name(idToName, id)).join(', ');
+				return `mesure(${targets})`;
+			}
+			if (el.anchorId) {
+				const anchor = name(idToName, el.anchorId);
+				const offset = el.anchorOffset
+					? `, dx=${el.anchorOffset.dx}, dy=${el.anchorOffset.dy}`
+					: '';
+				return `texte(${anchor}, "${el.template}"${offset})`;
+			}
+			if (el.position) {
+				return `texte(${el.position.x}, ${el.position.y}, "${el.template}")`;
+			}
+			return `texte("${el.template}")`;
 		}
 
 		case 'polygon': {
@@ -461,7 +486,7 @@ function serializeElement(
 					return `${n} = norme(${name(idToName, el.targetIds[0])})`;
 				case 'area': {
 					const targets = el.targetIds.map((id) => name(idToName, id)).join(', ');
-					return `${n} = mesure(${targets})`;
+					return `${n} = aire(${targets})`;
 				}
 				default:
 					// expression scalars are skipped by the filter above

@@ -5,7 +5,7 @@
  * and the current positions of its dependencies.
  */
 
-import type { GeoElement, GeoMeasure, GeoScalar } from '../types/elements';
+import type { GeoElement, GeoScalar } from '../types/elements';
 import {
 	isMidpoint,
 	isIntersectionLL,
@@ -25,7 +25,7 @@ import {
 	isInvertedPoint,
 	isAngleMark,
 	isSegmentMark,
-	isMeasure,
+	isText,
 	isScalar,
 	isSlider,
 	isPointOnCurve,
@@ -325,9 +325,9 @@ export function computeElementPosition(
 		return { position: null, hasComputablePosition: true };
 	}
 
-	if (isMeasure(el)) {
-		const scalarValue = computeMeasureValue(el, positions);
-		return { position: null, hasComputablePosition: false, scalarValue };
+	if (isText(el)) {
+		// Text elements have no position or scalar value — they are display-only
+		return { position: null, hasComputablePosition: false };
 	}
 
 	if (isScalar(el)) {
@@ -785,50 +785,4 @@ function computeScalarValue(
 			}
 		}
 	}
-}
-
-function computeMeasureValue(
-	el: GeoMeasure,
-	positions: ReadonlyMap<string, GeoPoint>
-): number | undefined {
-	const pts = el.targetIds.map((tid) => positions.get(tid));
-	if (pts.some((p) => !p)) return undefined;
-
-	if (el.measureType === 'distance') {
-		const [a, b] = pts as [GeoPoint, GeoPoint];
-		const dx = geoToNumber(a.x) - geoToNumber(b.x);
-		const dy = geoToNumber(a.y) - geoToNumber(b.y);
-		return Math.sqrt(dx * dx + dy * dy);
-	}
-
-	if (el.measureType === 'angle') {
-		const [p1, v, p2] = pts as [GeoPoint, GeoPoint, GeoPoint];
-		const vax = geoToNumber(p1.x) - geoToNumber(v.x);
-		const vay = geoToNumber(p1.y) - geoToNumber(v.y);
-		const vbx = geoToNumber(p2.x) - geoToNumber(v.x);
-		const vby = geoToNumber(p2.y) - geoToNumber(v.y);
-		const dot = vax * vbx + vay * vby;
-		const lenA = Math.sqrt(vax * vax + vay * vay);
-		const lenB = Math.sqrt(vbx * vbx + vby * vby);
-		if (lenA < 1e-15 || lenB < 1e-15) return undefined;
-		const cosAngle = Math.max(-1, Math.min(1, dot / (lenA * lenB)));
-		const radians = Math.acos(cosAngle);
-		return (radians * 180) / Math.PI;
-	}
-
-	if (el.measureType === 'area') {
-		const points = pts as GeoPoint[];
-		let sum = 0;
-		const n = points.length;
-		for (let i = 0; i < n; i++) {
-			const xi = geoToNumber(points[i].x);
-			const yi = geoToNumber(points[i].y);
-			const xn = geoToNumber(points[(i + 1) % n].x);
-			const yn = geoToNumber(points[(i + 1) % n].y);
-			sum += xi * yn - xn * yi;
-		}
-		return Math.abs(sum) / 2;
-	}
-
-	return undefined;
 }

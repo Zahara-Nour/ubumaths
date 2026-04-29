@@ -14,13 +14,13 @@ import {
 	isCircleByPoint,
 	isAngleMark,
 	isSegmentMark,
-	isMeasure,
+	isText,
 	isArcByAngles,
 	isArcByPoints,
 	type GeoElementBase,
 	type GeoAngleMark,
 	type GeoSegmentMark,
-	type GeoMeasure,
+	type GeoText,
 	type GeoSegment,
 	type GeoLine,
 	type GeoRay,
@@ -692,86 +692,85 @@ export function segmentMarkToSVG(
 }
 
 // =============================================================================
-// Measure rendering
+// Text rendering
 // =============================================================================
 
-const MEASURE_OFFSET_PX = 16;
+const TEXT_OFFSET_PX = 16;
 
-export interface MeasureSVG {
+export interface TextSVG {
 	/** Position of the text in SVG coordinates. */
 	x: number;
 	y: number;
-	/** Formatted text to display. */
+	/** Resolved text content to display. */
 	text: string;
 }
 
 /**
- * Convert a measure element to SVG text attributes.
+ * Convert a GeoText element to SVG text attributes.
  *
- * Positions the text near the measured feature:
- * - distance: midpoint of segment, offset perpendicular
- * - angle: near vertex, on the bisector
- * - area: centroid of polygon
+ * Supports three positioning modes:
+ * - Free position: explicit (x, y) math coordinates
+ * - Anchor: offset from an anchor point
+ * - Auto-position: midpoint/bisector/centroid based on target points
  */
-export function measureToSVG(
+export function textToSVG(
 	id: string,
 	figure: Figure,
 	transformer: CoordinateTransformer
-): MeasureSVG | null {
+): TextSVG | null {
 	const el = figure.getElementById(id);
-	if (!el || !isMeasure(el)) return null;
+	if (!el || !isText(el)) return null;
 
-	const measure = el as GeoMeasure;
-	const value = figure.getMeasureValue(id);
-	if (value === undefined) return null;
+	const textEl = el as GeoText;
+	const text = figure.resolveTemplate(id);
+	if (text === undefined) return null;
 
-	const positions = measure.targetIds.map((tid) => figure.getPosition(tid));
-	if (positions.some((p) => !p)) return null;
+	// Mode 1: Auto-positioned (used by mesure() sugar)
+	if (textEl.autoPosition && textEl.autoTargetIds) {
+		const positions = textEl.autoTargetIds.map((tid) => figure.getPosition(tid));
+		if (positions.some((p) => !p)) return null;
 
-	// Format value
-	let text: string;
-	if (measure.format === 'degrees') {
-		text = `${Math.round(value * 10) / 10}°`;
-	} else if (measure.format === 'approx') {
-		text = `${Math.round(value * 100) / 100}`;
-	} else {
-		text = `${Math.round(value * 100) / 100}`;
-	}
+		if (textEl.autoPosition === 'midpoint') {
+			const [a, b] = positions;
+			const svgA = transformer.mathToSvg(geoToNumber(a!.x), geoToNumber(a!.y));
+			const svgB = transformer.mathToSvg(geoToNumber(b!.x), geoToNumber(b!.y));
+			const mx = (svgA.x + svgB.x) / 2;
+			const my = (svgA.y + svgB.y) / 2;
+			const dx = svgB.x - svgA.x;
+			const dy = svgB.y - svgA.y;
+			const len = Math.sqrt(dx * dx + dy * dy);
+			if (len < 1e-6) return { x: mx, y: my, text };
+			const px = -dy / len;
+			const py = dx / len;
+			return { x: mx + px * TEXT_OFFSET_PX, y: my + py * TEXT_OFFSET_PX, text };
+		}
 
-	if (measure.measureType === 'distance') {
-		const [a, b] = positions;
-		const svgA = transformer.mathToSvg(geoToNumber(a!.x), geoToNumber(a!.y));
-		const svgB = transformer.mathToSvg(geoToNumber(b!.x), geoToNumber(b!.y));
-		const mx = (svgA.x + svgB.x) / 2;
-		const my = (svgA.y + svgB.y) / 2;
-		// Offset perpendicular to segment
-		const dx = svgB.x - svgA.x;
-		const dy = svgB.y - svgA.y;
-		const len = Math.sqrt(dx * dx + dy * dy);
-		if (len < 1e-6) return { x: mx, y: my, text };
-		const px = -dy / len;
-		const py = dx / len;
-		return { x: mx + px * MEASURE_OFFSET_PX, y: my + py * MEASURE_OFFSET_PX, text };
-	} else if (measure.measureType === 'angle') {
-		const [, v] = positions;
-		const svgV = transformer.mathToSvg(geoToNumber(v!.x), geoToNumber(v!.y));
-		const svgP1 = transformer.mathToSvg(geoToNumber(positions[0]!.x), geoToNumber(positions[0]!.y));
-		const svgP2 = transformer.mathToSvg(geoToNumber(positions[2]!.x), geoToNumber(positions[2]!.y));
-		// Bisector direction
-		const d1x = svgP1.x - svgV.x;
-		const d1y = svgP1.y - svgV.y;
-		const d2x = svgP2.x - svgV.x;
-		const d2y = svgP2.y - svgV.y;
-		const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
-		const len2 = Math.sqrt(d2x * d2x + d2y * d2y);
-		if (len1 < 1e-6 || len2 < 1e-6) return { x: svgV.x, y: svgV.y, text };
-		const bx = d1x / len1 + d2x / len2;
-		const by = d1y / len1 + d2y / len2;
-		const blen = Math.sqrt(bx * bx + by * by);
-		if (blen < 1e-6) return { x: svgV.x + 35, y: svgV.y, text };
-		return { x: svgV.x + (bx / blen) * 40, y: svgV.y + (by / blen) * 40, text };
-	} else {
-		// Area: centroid
+		if (textEl.autoPosition === 'bisector') {
+			const [, v] = positions;
+			const svgV = transformer.mathToSvg(geoToNumber(v!.x), geoToNumber(v!.y));
+			const svgP1 = transformer.mathToSvg(
+				geoToNumber(positions[0]!.x),
+				geoToNumber(positions[0]!.y)
+			);
+			const svgP2 = transformer.mathToSvg(
+				geoToNumber(positions[2]!.x),
+				geoToNumber(positions[2]!.y)
+			);
+			const d1x = svgP1.x - svgV.x;
+			const d1y = svgP1.y - svgV.y;
+			const d2x = svgP2.x - svgV.x;
+			const d2y = svgP2.y - svgV.y;
+			const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
+			const len2 = Math.sqrt(d2x * d2x + d2y * d2y);
+			if (len1 < 1e-6 || len2 < 1e-6) return { x: svgV.x, y: svgV.y, text };
+			const bx = d1x / len1 + d2x / len2;
+			const by = d1y / len1 + d2y / len2;
+			const blen = Math.sqrt(bx * bx + by * by);
+			if (blen < 1e-6) return { x: svgV.x + 35, y: svgV.y, text };
+			return { x: svgV.x + (bx / blen) * 40, y: svgV.y + (by / blen) * 40, text };
+		}
+
+		// centroid
 		let cx = 0;
 		let cy = 0;
 		for (const pos of positions) {
@@ -783,6 +782,24 @@ export function measureToSVG(
 		cy /= positions.length;
 		return { x: cx, y: cy, text };
 	}
+
+	// Mode 2: Anchored to a point
+	if (textEl.anchorId) {
+		const anchorPos = figure.getPosition(textEl.anchorId);
+		if (!anchorPos) return null;
+		const svgAnchor = transformer.mathToSvg(geoToNumber(anchorPos.x), geoToNumber(anchorPos.y));
+		const dx = (textEl.anchorOffset?.dx ?? 0.5) * transformer.scaleX;
+		const dy = -(textEl.anchorOffset?.dy ?? 0.5) * transformer.scaleY; // negate: math y-up → SVG y-down
+		return { x: svgAnchor.x + dx, y: svgAnchor.y + dy, text };
+	}
+
+	// Mode 3: Free position
+	if (textEl.position) {
+		const svgPos = transformer.mathToSvg(textEl.position.x, textEl.position.y);
+		return { x: svgPos.x, y: svgPos.y, text };
+	}
+
+	return null;
 }
 
 // =============================================================================

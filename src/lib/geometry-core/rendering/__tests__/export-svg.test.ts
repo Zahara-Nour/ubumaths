@@ -3,6 +3,7 @@ import { exportToSVG } from '../export-svg';
 import { Figure } from '../../graph/figure';
 import { numeric } from '../../types/geo-value';
 import type { Viewport } from '../../viewport/types';
+import { createMesureText } from './test-helpers';
 
 function pt(x: number, y: number) {
 	return { x: numeric(x), y: numeric(y) };
@@ -193,7 +194,7 @@ describe('exportToSVG', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(3, 4));
-		f.createMeasure('distance', [a, b]);
+		createMesureText(f, 'distance', [a, b]);
 		const result = exportToSVG(f, viewport);
 		expect(result).toContain('<text');
 		expect(result).toContain('5');
@@ -204,7 +205,7 @@ describe('exportToSVG', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createMeasure('angle', [a, v, b]);
+		createMesureText(f, 'angle', [a, v, b]);
 		const result = exportToSVG(f, viewport);
 		expect(result).toContain('90');
 		expect(result).toContain('°');
@@ -241,7 +242,7 @@ describe('exportToSVG', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(3, 4));
-		f.createMeasure('distance', [a, b]);
+		createMesureText(f, 'distance', [a, b]);
 		const result = exportToSVG(f, viewport, { showMeasures: false });
 		expect(result).not.toContain('>5<');
 	});
@@ -293,7 +294,7 @@ describe('exportToSVG', () => {
 		f.createAngleMark(b, a, c);
 		f.createAngleMark(c, b, a, { rightAngle: true });
 		f.createSegmentMark(a, b, { markCount: 2 });
-		f.createMeasure('distance', [a, b]);
+		createMesureText(f, 'distance', [a, b]);
 		f.createMidpoint(a, b, { label: 'M' });
 
 		const result = exportToSVG(f, viewport, { showGrid: true, showAxes: true });

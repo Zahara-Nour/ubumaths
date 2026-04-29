@@ -459,34 +459,18 @@ describe('ScalarParam: homothety with dynamic factor', () => {
 });
 
 // =============================================================================
-// D. GeoMeasure backward compat
+// D. GeoScalar as circle radius
 // =============================================================================
 
-describe('GeoMeasure backward compat', () => {
-	it('getMeasureValue still works', () => {
-		const f = new Figure();
-		const a = f.createFreePoint(pt(0, 0));
-		const b = f.createFreePoint(pt(3, 4));
-		const m = f.createMeasure('distance', [a, b]);
-		expect(f.getMeasureValue(m)).toBeCloseTo(5, 10);
-	});
-
-	it('getScalarValue also returns measure values', () => {
-		const f = new Figure();
-		const a = f.createFreePoint(pt(0, 0));
-		const b = f.createFreePoint(pt(3, 4));
-		const m = f.createMeasure('distance', [a, b]);
-		expect(f.getScalarValue(m)).toBeCloseTo(5, 10);
-	});
-
-	it('measure can be used as scalarRef for circle radius', () => {
+describe('GeoScalar as circle radius', () => {
+	it('scalar distance can be used as scalarRef for circle radius', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(3, 0));
-		const m = f.createMeasure('distance', [a, b]); // m = 3
+		const d = f.createScalarDistance(a, b); // d = 3
 
 		const o = f.createFreePoint(pt(10, 0));
-		const c = f.createCircleByRadius(o, { scalarRef: m });
+		const c = f.createCircleByRadius(o, { scalarRef: d });
 		const p = f.createPointOnCircle(c, 0);
 		const pos = f.getPosition(p);
 		expect(pos!.x).toMatchObject({ kind: 'numeric', value: expect.closeTo(13) }); // 10 + 3

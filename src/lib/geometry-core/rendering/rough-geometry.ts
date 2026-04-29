@@ -33,7 +33,7 @@ const ALWAYS_NORMAL_TYPES = new Set([
 	'translatedPoint',
 	'dilatedPoint',
 	'reflectedOverLine',
-	'measure'
+	'text'
 ]);
 
 // =============================================================================
