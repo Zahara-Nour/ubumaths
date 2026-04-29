@@ -101,6 +101,14 @@ describe('stdlib — triangle', () => {
 		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
 		expect(segs).toHaveLength(3);
 	});
+
+	it('segments are visible (side-effect elements in macros stay visible)', () => {
+		const { figure } = runDsl(
+			['A = point(0, 0)', 'B = point(4, 0)', 'C = point(2, 3)', 'triangle(A, B, C)'].join('\n')
+		);
+		const visibleSegs = figure.getAllElements().filter((e) => e.type === 'segment' && e.visible);
+		expect(visibleSegs).toHaveLength(3);
+	});
 });
 
 describe('stdlib — triangle_equilateral', () => {

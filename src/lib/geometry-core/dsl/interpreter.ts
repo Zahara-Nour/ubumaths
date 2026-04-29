@@ -109,11 +109,14 @@ class Interpreter {
 	executeStatement(stmt: DslStatement): ResolvedValue | undefined {
 		switch (stmt.kind) {
 			case 'assignment': {
-				this._assignmentLabel = stmt.name;
+				this._assignmentLabel = this.macros.insideMacro ? undefined : stmt.name;
 				const value = this.evaluateExpr(stmt.value, stmt.line);
 				this._assignmentLabel = undefined;
-				// Label returned elements (e.g. from macro calls that stripped labels)
-				this.labelElement(value, stmt.name);
+				if (this.macros.insideMacro) {
+					this.hideResolvedElements(value);
+				} else {
+					this.labelElement(value, stmt.name);
+				}
 				this.symbols.set(stmt.name, this.toSymbolEntry(value));
 				break;
 			}
@@ -126,6 +129,7 @@ class Interpreter {
 			}
 
 			case 'destructuring': {
+				const inMacro = this.macros.insideMacro;
 				const value = this.evaluateExpr(stmt.value, stmt.line);
 				if (value.type !== 'tuple') {
 					throw new DslRuntimeError('La destructuration necessite un tuple', stmt.line);
@@ -137,7 +141,11 @@ class Interpreter {
 					);
 				}
 				for (let i = 0; i < stmt.names.length; i++) {
-					this.labelElement(value.elements[i], stmt.names[i]);
+					if (inMacro) {
+						this.hideResolvedElements(value.elements[i]);
+					} else {
+						this.labelElement(value.elements[i], stmt.names[i]);
+					}
 					this.symbols.set(stmt.names[i], this.toSymbolEntry(value.elements[i]));
 				}
 				break;
@@ -374,7 +382,6 @@ class Interpreter {
 
 		// Builtin geometry functions
 		if (BUILTIN_NAMES.has(name)) {
-			const inMacro = this.macros.insideMacro;
 			const result = executeBuiltin(
 				name,
 				resolvedArgs,
@@ -382,7 +389,7 @@ class Interpreter {
 				(v, l) => this.toGeoValue(v, l),
 				(x, y, l) => this.toGeoPoint(x, y, l),
 				line,
-				inMacro ? undefined : this._assignmentLabel
+				this._assignmentLabel
 			);
 			if (result) {
 				// Scalar result: builtins like norme(), produit_scalaire(), angle_vecteurs()
@@ -392,9 +399,6 @@ class Interpreter {
 				// Multi-result: builtins like zeros(), extrema(), inflections()
 				if ('elements' in result) {
 					const multi = result as BuiltinMultiResult;
-					if (inMacro) {
-						for (const el of multi.elements) this.figure.hideElement(el.figureId);
-					}
 					return {
 						type: 'tuple',
 						elements: multi.elements.map((el) => ({
@@ -404,7 +408,6 @@ class Interpreter {
 						}))
 					};
 				}
-				if (inMacro) this.figure.hideElement(result.figureId);
 				return { type: 'element', figureId: result.figureId, elementType: result.symbolType };
 			}
 			return { type: 'nombre', value: 0 }; // style() returns nothing
@@ -495,6 +498,15 @@ class Interpreter {
 			return result ?? { type: 'nombre', value: 0 };
 		} finally {
 			this.macros.exitCall();
+		}
+	}
+
+	/** Hide elements assigned to internal macro variables (intermediates). */
+	private hideResolvedElements(value: ResolvedValue): void {
+		if (value.type === 'element' && value.figureId) {
+			this.figure.hideElement(value.figureId);
+		} else if (value.type === 'tuple') {
+			for (const el of value.elements) this.hideResolvedElements(el);
 		}
 	}
 
