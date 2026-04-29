@@ -655,3 +655,55 @@ describe('DSL: aire()', () => {
 		expect(r.figure.getScalarValue(rSym!.figureId!)).toBeCloseTo(2, 10);
 	});
 });
+
+// =============================================================================
+// K. mtexte() DSL builtin
+// =============================================================================
+
+describe('DSL: mtexte()', () => {
+	it('mtexte(x, y, "latex") creates mathText', () => {
+		const r = run('mtexte(3, 5, "x^2 + y^2")');
+		const els = r.figure.getAllElements().filter((e) => e.type === 'mathText');
+		expect(els).toHaveLength(1);
+		expect(els[0].position).toEqual({ x: 3, y: 5 });
+	});
+
+	it('mtexte with scalar ref resolves template', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(3, 4)',
+				'd = distance(A, B)',
+				'mtexte(0, 5, "d = {d:.2f}")'
+			].join('\n')
+		);
+		const el = r.figure.getAllElements().find((e) => e.type === 'mathText')!;
+		expect(r.figure.resolveTemplate(el.id)).toBe('d = 5.00');
+	});
+});
+
+// =============================================================================
+// L. rtexte() DSL builtin
+// =============================================================================
+
+describe('DSL: rtexte()', () => {
+	it('rtexte(x, y, "ubumark") creates richText', () => {
+		const r = run('rtexte(3, 5, "**bold** text")');
+		const els = r.figure.getAllElements().filter((e) => e.type === 'richText');
+		expect(els).toHaveLength(1);
+		expect(els[0].position).toEqual({ x: 3, y: 5 });
+	});
+
+	it('rtexte with scalar ref resolves template', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(5, 0)',
+				'd = distance(A, B)',
+				'rtexte(0, 5, "AB = $d = {d}$")'
+			].join('\n')
+		);
+		const el = r.figure.getAllElements().find((e) => e.type === 'richText')!;
+		expect(r.figure.resolveTemplate(el.id)).toBe('AB = $d = 5$');
+	});
+});

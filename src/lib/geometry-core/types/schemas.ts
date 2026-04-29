@@ -259,6 +259,30 @@ const textSchema = baseElementSchema.extend({
 	dependsOn: z.array(z.string())
 });
 
+const mathTextSchema = baseElementSchema.extend({
+	type: z.literal('mathText'),
+	template: z.string(),
+	scalarRefs: z.array(z.string()),
+	anchorId: z.string().min(1).optional(),
+	anchorOffset: z.object({ dx: z.number().finite(), dy: z.number().finite() }).optional(),
+	position: z.object({ x: z.number().finite(), y: z.number().finite() }).optional(),
+	autoPosition: z.enum(['midpoint', 'bisector', 'centroid']).optional(),
+	autoTargetIds: z.array(z.string().min(1)).optional(),
+	dependsOn: z.array(z.string())
+});
+
+const richTextSchema = baseElementSchema.extend({
+	type: z.literal('richText'),
+	template: z.string(),
+	scalarRefs: z.array(z.string()),
+	anchorId: z.string().min(1).optional(),
+	anchorOffset: z.object({ dx: z.number().finite(), dy: z.number().finite() }).optional(),
+	position: z.object({ x: z.number().finite(), y: z.number().finite() }).optional(),
+	autoPosition: z.enum(['midpoint', 'bisector', 'centroid']).optional(),
+	autoTargetIds: z.array(z.string().min(1)).optional(),
+	dependsOn: z.array(z.string())
+});
+
 const arcByAnglesSchema = baseElementSchema.extend({
 	type: z.literal('arcByAngles'),
 	centerId: z.string().min(1),
@@ -321,6 +345,8 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	angleMarkSchema,
 	segmentMarkSchema,
 	textSchema,
+	mathTextSchema,
+	richTextSchema,
 	segmentSchema,
 	lineSchema,
 	raySchema,

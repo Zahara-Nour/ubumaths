@@ -33,7 +33,9 @@ const ALWAYS_NORMAL_TYPES = new Set([
 	'translatedPoint',
 	'dilatedPoint',
 	'reflectedOverLine',
-	'text'
+	'text',
+	'mathText',
+	'richText'
 ]);
 
 // =============================================================================

@@ -47,6 +47,18 @@ polygone(A, B, C)
 s = aire(A, B, C)
 d = s * 2
 c = cercle(A, rayon=s, couleur="gris", trait="tirets")`;
+
+	const mathTextDsl = `A = point(-3, -1, couleur="bleu")
+B = point(3, 1, couleur="bleu")
+segment(A, B)
+d = distance(A, B)
+mtexte(-5, 4, "d = {d:.2f}")`;
+
+	const richTextDsl = `A = point(-3, -1, couleur="bleu")
+B = point(3, 2, couleur="bleu")
+segment(A, B)
+d = distance(A, B)
+rtexte(-5, 4, "**Distance** AB = $d = {d:.2f}$")`;
 </script>
 
 <div class="container mx-auto max-w-6xl space-y-10 p-4">
@@ -105,6 +117,22 @@ c = cercle(A, rayon=s, couleur="gris", trait="tirets")`;
 		dsl={aireScalarDsl}
 		title="Aire comme scalaire composable"
 		description="aire(A, B, C) cree un scalaire reutilisable — ici comme rayon d'un cercle."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={mathTextDsl}
+		title="Texte math (mtexte) — formule LaTeX"
+		description="mtexte() affiche une formule LaTeX rendue par MathLive. Draggable !"
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={richTextDsl}
+		title="Texte riche (rtexte) — gras + math inline"
+		description="rtexte() affiche du texte avec **gras**, *italique* et $math$ via InlineRenderer."
 		width={600}
 		height={400}
 	/>

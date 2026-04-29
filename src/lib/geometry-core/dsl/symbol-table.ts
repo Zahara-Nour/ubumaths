@@ -15,6 +15,8 @@ export type SymbolType =
 	| 'angleMark'
 	| 'segmentMark'
 	| 'text'
+	| 'mathText'
+	| 'richText'
 	| 'arc'
 	| 'courbe'
 	| 'tangente'

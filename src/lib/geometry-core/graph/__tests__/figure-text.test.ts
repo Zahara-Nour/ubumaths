@@ -320,3 +320,79 @@ describe('resolveTemplate', () => {
 		expect(resolved).toBe('3 x 4');
 	});
 });
+
+// =============================================================================
+// F. createMathText
+// =============================================================================
+
+describe('createMathText', () => {
+	it('creates a mathText element', () => {
+		const f = new Figure();
+		const id = f.createMathText('x^2', [], { position: { x: 3, y: 5 } });
+		const el = f.getElementById(id)!;
+		expect(el.type).toBe('mathText');
+		expect(el.visible).toBe(true);
+	});
+
+	it('resolves template with scalar interpolation', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 4));
+		const d = f.createScalarDistance(a, b);
+		const id = f.createMathText('d = {' + d + ':.2f}', [d], { position: { x: 0, y: 0 } });
+		expect(f.resolveTemplate(id)).toBe('d = 5.00');
+	});
+
+	it('is draggable via moveText', () => {
+		const f = new Figure();
+		const id = f.createMathText('x^2', [], { position: { x: 1, y: 2 } });
+		f.beginTransaction();
+		f.moveText(id, 5, 6);
+		f.commit();
+		const el = f.getElementById(id)! as { position: { x: number; y: number } };
+		expect(el.position).toEqual({ x: 5, y: 6 });
+	});
+});
+
+// =============================================================================
+// G. createRichText
+// =============================================================================
+
+describe('createRichText', () => {
+	it('creates a richText element', () => {
+		const f = new Figure();
+		const id = f.createRichText('**bold** $x^2$', [], { position: { x: 3, y: 5 } });
+		const el = f.getElementById(id)!;
+		expect(el.type).toBe('richText');
+		expect(el.visible).toBe(true);
+	});
+
+	it('resolves template with scalar interpolation', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 4));
+		const d = f.createScalarDistance(a, b);
+		const id = f.createRichText('**d** = $d = {' + d + ':.2f}$', [d], {
+			position: { x: 0, y: 0 }
+		});
+		expect(f.resolveTemplate(id)).toBe('**d** = $d = 5.00$');
+	});
+
+	it('is draggable via moveText', () => {
+		const f = new Figure();
+		const id = f.createRichText('text', [], { position: { x: 1, y: 2 } });
+		f.beginTransaction();
+		f.moveText(id, 5, 6);
+		f.commit();
+		const el = f.getElementById(id)! as { position: { x: number; y: number } };
+		expect(el.position).toEqual({ x: 5, y: 6 });
+	});
+
+	it('supports anchor positioning', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(3, 4));
+		const id = f.createRichText('label', [], { anchorId: a, anchorOffset: { dx: 1, dy: 0.5 } });
+		const el = f.getElementById(id)!;
+		expect(el.dependsOn).toContain(a);
+	});
+});

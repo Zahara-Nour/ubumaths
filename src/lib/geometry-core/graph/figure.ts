@@ -27,6 +27,8 @@ import type {
 	GeoAngleMark,
 	GeoSegmentMark,
 	GeoText,
+	GeoMathText,
+	GeoRichText,
 	GeoCircleByRadius,
 	GeoCircleByPoint,
 	GeoArcByAngles,
@@ -2082,6 +2084,34 @@ export class Figure {
 		return id;
 	}
 
+	private _collectTextDeps(
+		scalarRefs: string[],
+		positioning: { anchorId?: string; autoTargetIds?: string[] }
+	): string[] {
+		const deps: string[] = [];
+		for (const ref of scalarRefs) {
+			const el = this.elements.get(ref);
+			if (!el) throw new Error(`scalar ref "${ref}" does not exist`);
+			deps.push(ref);
+			for (const parentId of el.dependsOn) {
+				if (!deps.includes(parentId)) deps.push(parentId);
+			}
+		}
+		if (positioning.anchorId) {
+			const anchorEl = this.elements.get(positioning.anchorId);
+			if (!anchorEl || !isPointElement(anchorEl)) {
+				throw new Error(`anchor "${positioning.anchorId}" is not a point element`);
+			}
+			if (!deps.includes(positioning.anchorId)) deps.push(positioning.anchorId);
+		}
+		if (positioning.autoTargetIds) {
+			for (const tid of positioning.autoTargetIds) {
+				if (!deps.includes(tid)) deps.push(tid);
+			}
+		}
+		return deps;
+	}
+
 	createText(
 		template: string,
 		scalarRefs: string[],
@@ -2094,33 +2124,78 @@ export class Figure {
 		},
 		options?: ElementOptions
 	): string {
-		// Collect dependencies: scalar refs + anchor + auto targets
-		const deps: string[] = [];
-		for (const ref of scalarRefs) {
-			const el = this.elements.get(ref);
-			if (!el) throw new Error(`createText: scalar ref "${ref}" does not exist`);
-			deps.push(ref);
-			// Add transitive deps from scalars
-			for (const parentId of el.dependsOn) {
-				if (!deps.includes(parentId)) deps.push(parentId);
-			}
-		}
-		if (positioning.anchorId) {
-			const anchorEl = this.elements.get(positioning.anchorId);
-			if (!anchorEl || !isPointElement(anchorEl)) {
-				throw new Error(`createText: anchor "${positioning.anchorId}" is not a point element`);
-			}
-			if (!deps.includes(positioning.anchorId)) deps.push(positioning.anchorId);
-		}
-		if (positioning.autoTargetIds) {
-			for (const tid of positioning.autoTargetIds) {
-				if (!deps.includes(tid)) deps.push(tid);
-			}
-		}
-
+		const deps = this._collectTextDeps(scalarRefs, positioning);
 		const id = this.generateId('txt');
 		const element: GeoText = {
 			type: 'text',
+			id,
+			template,
+			scalarRefs,
+			anchorId: positioning.anchorId,
+			anchorOffset: positioning.anchorOffset,
+			position: positioning.position,
+			autoPosition: positioning.autoPosition,
+			autoTargetIds: positioning.autoTargetIds,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
+	createMathText(
+		template: string,
+		scalarRefs: string[],
+		positioning: {
+			anchorId?: string;
+			anchorOffset?: { dx: number; dy: number };
+			position?: { x: number; y: number };
+			autoPosition?: 'midpoint' | 'bisector' | 'centroid';
+			autoTargetIds?: string[];
+		},
+		options?: ElementOptions
+	): string {
+		const deps = this._collectTextDeps(scalarRefs, positioning);
+		const id = this.generateId('mtxt');
+		const element: GeoMathText = {
+			type: 'mathText',
+			id,
+			template,
+			scalarRefs,
+			anchorId: positioning.anchorId,
+			anchorOffset: positioning.anchorOffset,
+			position: positioning.position,
+			autoPosition: positioning.autoPosition,
+			autoTargetIds: positioning.autoTargetIds,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
+	createRichText(
+		template: string,
+		scalarRefs: string[],
+		positioning: {
+			anchorId?: string;
+			anchorOffset?: { dx: number; dy: number };
+			position?: { x: number; y: number };
+			autoPosition?: 'midpoint' | 'bisector' | 'centroid';
+			autoTargetIds?: string[];
+		},
+		options?: ElementOptions
+	): string {
+		const deps = this._collectTextDeps(scalarRefs, positioning);
+		const id = this.generateId('rtxt');
+		const element: GeoRichText = {
+			type: 'richText',
 			id,
 			template,
 			scalarRefs,
@@ -2145,8 +2220,9 @@ export class Figure {
 	 */
 	resolveTemplate(id: string): string | undefined {
 		const el = this.elements.get(id);
-		if (!el || el.type !== 'text') return undefined;
-		const textEl = el as GeoText;
+		if (!el || (el.type !== 'text' && el.type !== 'mathText' && el.type !== 'richText'))
+			return undefined;
+		const textEl = el as GeoText | GeoMathText | GeoRichText;
 		return resolveTemplateString(textEl.template, this.scalarValues);
 	}
 
@@ -2492,14 +2568,14 @@ export class Figure {
 
 	moveText(id: string, x: number, y: number): void {
 		const el = this.elements.get(id);
-		if (!el || el.type !== 'text') {
+		if (!el || (el.type !== 'text' && el.type !== 'mathText' && el.type !== 'richText')) {
 			throw new Error(`moveText: "${id}" is not a text element`);
 		}
-		const textEl = el as GeoText;
+		const textEl = el as GeoText | GeoMathText | GeoRichText;
 		if (!textEl.position) {
 			throw new Error(`moveText: "${id}" is not a free-positioned text`);
 		}
-		const updated: GeoText = { ...textEl, position: { x, y } };
+		const updated: GeoText | GeoMathText | GeoRichText = { ...textEl, position: { x, y } };
 		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 	}

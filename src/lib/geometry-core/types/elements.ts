@@ -310,6 +310,34 @@ export interface GeoText extends GeoElementBase {
 	readonly dependsOn: readonly string[];
 }
 
+/** Math text element rendered via MathLive <math-span> in a foreignObject. */
+export interface GeoMathText extends GeoElementBase {
+	readonly type: 'mathText';
+	/** LaTeX template with scalar interpolation: "$d = {d:.2f}$" */
+	readonly template: string;
+	readonly scalarRefs: readonly string[];
+	readonly anchorId?: string;
+	readonly anchorOffset?: { readonly dx: number; readonly dy: number };
+	readonly position?: { readonly x: number; readonly y: number };
+	readonly autoPosition?: 'midpoint' | 'bisector' | 'centroid';
+	readonly autoTargetIds?: readonly string[];
+	readonly dependsOn: readonly string[];
+}
+
+/** Rich text element rendered via InlineRenderer (bold, italic, math) in a foreignObject. */
+export interface GeoRichText extends GeoElementBase {
+	readonly type: 'richText';
+	/** Ubumark template with scalar interpolation: "**Distance** : $d = {d:.2f}$ cm" */
+	readonly template: string;
+	readonly scalarRefs: readonly string[];
+	readonly anchorId?: string;
+	readonly anchorOffset?: { readonly dx: number; readonly dy: number };
+	readonly position?: { readonly x: number; readonly y: number };
+	readonly autoPosition?: 'midpoint' | 'bisector' | 'centroid';
+	readonly autoTargetIds?: readonly string[];
+	readonly dependsOn: readonly string[];
+}
+
 // =============================================================================
 // Scalar types (reactive computed values)
 // =============================================================================
@@ -783,6 +811,8 @@ export type GeoElement =
 	| GeoAngleMark
 	| GeoSegmentMark
 	| GeoText
+	| GeoMathText
+	| GeoRichText
 	| GeoSegment
 	| GeoLine
 	| GeoRay
@@ -948,6 +978,14 @@ export function isSegmentMark(el: GeoElement): el is GeoSegmentMark {
 
 export function isText(el: GeoElement): el is GeoText {
 	return el.type === 'text';
+}
+
+export function isMathText(el: GeoElement): el is GeoMathText {
+	return el.type === 'mathText';
+}
+
+export function isRichText(el: GeoElement): el is GeoRichText {
+	return el.type === 'richText';
 }
 
 export function isSegment(el: GeoElement): el is GeoSegment {

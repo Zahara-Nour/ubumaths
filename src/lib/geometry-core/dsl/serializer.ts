@@ -134,6 +134,10 @@ function typePrefix(type: string): string {
 			return 'sm';
 		case 'text':
 			return 'txt';
+		case 'mathText':
+			return 'mtxt';
+		case 'richText':
+			return 'rtxt';
 		case 'function':
 		case 'quadraticCurve':
 		case 'implicitCurve':
@@ -360,6 +364,34 @@ function serializeElement(
 				return `texte(${el.position.x}, ${el.position.y}, "${el.template}")`;
 			}
 			return `texte(0, 0, "${el.template}")`;
+		}
+
+		case 'mathText': {
+			if (el.anchorId) {
+				const anchor = name(idToName, el.anchorId);
+				const offset = el.anchorOffset
+					? `, dx=${el.anchorOffset.dx}, dy=${el.anchorOffset.dy}`
+					: '';
+				return `mtexte(${anchor}, "${el.template}"${offset})`;
+			}
+			if (el.position) {
+				return `mtexte(${el.position.x}, ${el.position.y}, "${el.template}")`;
+			}
+			return `mtexte(0, 0, "${el.template}")`;
+		}
+
+		case 'richText': {
+			if (el.anchorId) {
+				const anchor = name(idToName, el.anchorId);
+				const offset = el.anchorOffset
+					? `, dx=${el.anchorOffset.dx}, dy=${el.anchorOffset.dy}`
+					: '';
+				return `rtexte(${anchor}, "${el.template}"${offset})`;
+			}
+			if (el.position) {
+				return `rtexte(${el.position.x}, ${el.position.y}, "${el.template}")`;
+			}
+			return `rtexte(0, 0, "${el.template}")`;
 		}
 
 		case 'polygon': {

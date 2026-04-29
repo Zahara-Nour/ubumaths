@@ -15,12 +15,16 @@ import {
 	isAngleMark,
 	isSegmentMark,
 	isText,
+	isMathText,
+	isRichText,
 	isArcByAngles,
 	isArcByPoints,
 	type GeoElementBase,
 	type GeoAngleMark,
 	type GeoSegmentMark,
 	type GeoText,
+	type GeoMathText,
+	type GeoRichText,
 	type GeoSegment,
 	type GeoLine,
 	type GeoRay,
@@ -719,9 +723,9 @@ export function textToSVG(
 	transformer: CoordinateTransformer
 ): TextSVG | null {
 	const el = figure.getElementById(id);
-	if (!el || !isText(el)) return null;
+	if (!el || (!isText(el) && !isMathText(el) && !isRichText(el))) return null;
 
-	const textEl = el as GeoText;
+	const textEl = el as GeoText | GeoMathText | GeoRichText;
 	const text = figure.resolveTemplate(id);
 	if (text === undefined) return null;
 
