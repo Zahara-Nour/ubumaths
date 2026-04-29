@@ -44,4 +44,9 @@ export class MacroRegistry {
 	get insideMacro(): boolean {
 		return this.callDepth > 0;
 	}
+
+	/** True when inside a nested macro call (depth > 1). */
+	get insideNestedMacro(): boolean {
+		return this.callDepth > 1;
+	}
 }
