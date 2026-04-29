@@ -65,6 +65,7 @@ import type {
 	type GeoInversion,
 	type GeoInvertedPoint,
 	type GeoLocus,
+	type GeoTrace,
 	type GeoScalar,
 	type GeoSlider,
 	type LineEquation,
@@ -115,7 +116,7 @@ import { UndoManager } from './undo-redo';
 import type { Delta } from './undo-redo';
 import { computeElementPosition } from './compute-position';
 import { computeLocusCurve } from './compute-locus';
-import type { SampledCurve, Viewport } from '../viewport/types';
+import type { SampledCurve, Viewport, Point } from '../viewport/types';
 
 const DEFAULT_COLOR = '#1e40af';
 
@@ -207,6 +208,9 @@ function formatScalarValue(value: number, format?: string): string {
 	return `${Math.round(value * 100) / 100}`;
 }
 
+const TRACE_MAX_POINTS = 500;
+const TRACE_EPSILON = 1e-6;
+
 export class Figure {
 	private elements = new Map<string, GeoElement>();
 	private positions = new Map<string, GeoPoint>();
@@ -214,6 +218,7 @@ export class Figure {
 	private nextId = 1;
 	readonly defaults: FigureDefaults;
 	private scalarValues = new Map<string, number>();
+	private tracePoints = new Map<string, Point[]>();
 	private undo_manager = new UndoManager();
 	private _transformeOrigins = new Map<string, { transformId: string; sourceId: string }>();
 
@@ -2013,6 +2018,83 @@ export class Figure {
 		return id;
 	}
 
+	createTrace(trackedPointId: string, options?: ElementOptions): string {
+		const trackedEl = this.elements.get(trackedPointId);
+		if (!trackedEl || !isPointElement(trackedEl)) {
+			throw new Error(`createTrace: "${trackedPointId}" must be a point element`);
+		}
+		const id = this.generateId('tr');
+		// Include transitive deps so that scalar/slider changes mark the trace dirty
+		const depsSet = new Set<string>([trackedPointId]);
+		const queue = [...trackedEl.dependsOn];
+		while (queue.length > 0) {
+			const depId = queue.pop()!;
+			if (depsSet.has(depId)) continue;
+			depsSet.add(depId);
+			const depEl = this.elements.get(depId);
+			if (depEl) {
+				for (const parentId of depEl.dependsOn) queue.push(parentId);
+			}
+		}
+		const deps = [...depsSet];
+		const element: GeoTrace = {
+			type: 'trace',
+			id,
+			trackedPointId,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		// Seed with current position
+		this.accumulateTracePoint(id, trackedPointId);
+		return id;
+	}
+
+	clearTrace(id: string): void {
+		const el = this.elements.get(id);
+		if (!el || el.type !== 'trace') {
+			throw new Error(`clearTrace: "${id}" is not a trace element`);
+		}
+		this.tracePoints.set(id, []);
+	}
+
+	getTracePoints(id: string): readonly Point[] {
+		return this.tracePoints.get(id) ?? [];
+	}
+
+	private accumulateTracePoint(traceId: string, trackedPointId: string): void {
+		const pos = this.positions.get(trackedPointId);
+		if (!pos) return;
+		const x = geoToNumber(pos.x);
+		const y = geoToNumber(pos.y);
+		if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+
+		let points = this.tracePoints.get(traceId);
+		if (!points) {
+			points = [];
+			this.tracePoints.set(traceId, points);
+		}
+
+		// Filter near-duplicates
+		if (points.length > 0) {
+			const last = points[points.length - 1];
+			const dx = x - last.x;
+			const dy = y - last.y;
+			if (dx * dx + dy * dy < TRACE_EPSILON * TRACE_EPSILON) return;
+		}
+
+		points.push({ x, y });
+
+		// Enforce max size — drop oldest
+		if (points.length > TRACE_MAX_POINTS) {
+			points.shift();
+		}
+	}
+
 	createTangentLine(
 		functionId: string,
 		anchor: { pointOnCurveId: string } | { x0: GeoValue },
@@ -2585,6 +2667,13 @@ export class Figure {
 		for (const id of dirtyIds) {
 			this.computePosition(id);
 		}
+		// Accumulate trace points for any dirty trace elements
+		for (const id of dirtyIds) {
+			const el = this.elements.get(id);
+			if (el && el.type === 'trace') {
+				this.accumulateTracePoint(id, el.trackedPointId);
+			}
+		}
 	}
 
 	remove(id: string): string[] {
@@ -2598,6 +2687,7 @@ export class Figure {
 			this.elements.delete(rid);
 			this.positions.delete(rid);
 			this.scalarValues.delete(rid);
+			this.tracePoints.delete(rid);
 		}
 		return removedIds;
 	}

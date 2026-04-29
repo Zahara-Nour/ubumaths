@@ -30,7 +30,8 @@
 		implicitCurveToSVG,
 		tangentLineToSVG,
 		tangentToQuadraticToSVG,
-		locusToSVG
+		locusToSVG,
+		traceToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
 	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
@@ -1266,6 +1267,22 @@
 								paint-order="stroke">{el.label}</text
 							>
 						{/if}
+					{/if}
+				{:else if el.type === 'trace'}
+					{@const svg = traceToSVG(el.id, figure, transformer)}
+					{#if svg}
+						<path
+							d={svg.path}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							opacity={sty.opacity}
+							fill="none"
+							class="function-curve"
+							class:hovered={hoveredId === el.id}
+						/>
 					{/if}
 				{/if}
 			{/each}

@@ -151,6 +151,8 @@ function typePrefix(type: string): string {
 			return 'pt';
 		case 'locus':
 			return 'L';
+		case 'trace':
+			return 'T';
 		case 'tangentLine':
 		case 'tangentToQuadratic':
 			return 'tg';
@@ -437,6 +439,9 @@ function serializeElement(
 
 		case 'locus':
 			return `${n} = lieu(${name(idToName, el.tracerId)}, ${name(idToName, el.driverId)})`;
+
+		case 'trace':
+			return `${n} = trace(${name(idToName, el.trackedPointId)})`;
 
 		case 'tangentLine':
 			if (el.pointOnCurveId) {

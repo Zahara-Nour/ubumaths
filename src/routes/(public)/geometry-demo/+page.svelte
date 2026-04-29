@@ -54,6 +54,12 @@
 				Trajectoire d'un point quand un autre glisse sur son chemin
 			</p>
 		</a>
+		<a href="/geometry-demo/trace" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Trace (lieu progressif)</h2>
+			<p class="text-sm text-muted-foreground">
+				Accumulation progressive des positions d'un point au fil des interactions
+			</p>
+		</a>
 		<a href="/geometry-demo/triangles" class="rounded-lg border p-4 hover:bg-muted">
 			<h2 class="font-bold">Points remarquables du triangle</h2>
 			<p class="text-sm text-muted-foreground">
