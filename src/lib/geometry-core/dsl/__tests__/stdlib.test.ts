@@ -53,9 +53,12 @@ describe('stdlib — mediane', () => {
 describe('stdlib — hauteur', () => {
 	it('creates perpendicular line from A to BC', () => {
 		const { symbols } = runDsl(
-			['A = point(0, 4)', 'B = point(0, 0)', 'C = point(4, 0)', 'd = hauteur(A, B, C)'].join('\n')
+			['A = point(0, 4)', 'B = point(0, 0)', 'C = point(4, 0)', '(F, d) = hauteur(A, B, C)'].join(
+				'\n'
+			)
 		);
 		expect(symbols.get('d')!.type).toBe('droite');
+		expect(symbols.get('F')!.type).toBe('point');
 	});
 });
 
@@ -385,8 +388,8 @@ describe('stdlib — composition', () => {
 				'C = point(2, 5)',
 				'triangle(A, B, C)',
 				'(O, cc) = cercle_circonscrit(A, B, C)',
-				'hA = hauteur(A, B, C)',
-				'hB = hauteur(B, C, A)',
+				'(FA, hA) = hauteur(A, B, C)',
+				'(FB, hB) = hauteur(B, C, A)',
 				'bA = bissectrice(B, A, C)'
 			].join('\n')
 		);

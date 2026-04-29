@@ -23,7 +23,9 @@ macro hauteur(A, B, C):
     P = translation(A, vecteur=(B, C))
     Q = rotation(P, centre=A, angle=90)
     d = droite(A, Q)
-    retourne d
+    bc = droite(B, C)
+    F = intersection(d, bc)
+    retourne (F, d)
 
 macro perpendiculaire(P, A, B):
     Q = translation(P, vecteur=(A, B))
@@ -174,8 +176,8 @@ macro centre_gravite(A, B, C):
     retourne G
 
 macro orthocentre(A, B, C):
-    h1 = hauteur(A, B, C)
-    h2 = hauteur(B, A, C)
+    (F1, h1) = hauteur(A, B, C)
+    (F2, h2) = hauteur(B, A, C)
     H = intersection(h1, h2)
     retourne H
 
