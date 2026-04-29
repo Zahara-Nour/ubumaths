@@ -1221,14 +1221,25 @@ function _executeBuiltinInner(
 					'pente() attend 1 argument (droite, segment ou demidroite)',
 					line
 				);
-			const penteLineId = requireElement(pos[0], 'ligne', line);
+			const penteArg = pos[0];
+			if (
+				penteArg.type !== 'element' ||
+				(penteArg.elementType !== 'droite' &&
+					penteArg.elementType !== 'segment' &&
+					penteArg.elementType !== 'demidroite')
+			)
+				throw new DslRuntimeError('pente() attend une droite, un segment ou une demi-droite', line);
+			const penteLineId = penteArg.figureId;
 			const id = figure.createScalarSlope(penteLineId, { label });
 			return { figureId: id, symbolType: 'scalar' };
 		}
 
 		case 'rayon': {
 			if (pos.length !== 1) throw new DslRuntimeError('rayon() attend 1 argument (cercle)', line);
-			const rayonCircleId = requireElement(pos[0], 'cercle', line);
+			const rayonArg = pos[0];
+			if (rayonArg.type !== 'element' || rayonArg.elementType !== 'cercle')
+				throw new DslRuntimeError('rayon() attend un cercle', line);
+			const rayonCircleId = rayonArg.figureId;
 			const id = figure.createScalarRadius(rayonCircleId, { label });
 			return { figureId: id, symbolType: 'scalar' };
 		}

@@ -11,6 +11,7 @@ import { parse } from '../parser';
 import { interpret } from '../interpreter';
 import { serialize } from '../serializer';
 import { geoToNumber } from '../../compute/to-number';
+import { DslRuntimeError } from '../errors';
 
 function run(script: string) {
 	const program = parse(script);
@@ -836,5 +837,60 @@ describe('DSL: rayon() scalar', () => {
 			['O = point(0, 0)', 'c = cercle(O, rayon=3)', 'r = rayon(c)', 'double_r = r * 2'].join('\n')
 		);
 		expect(r.figure.getScalarValue(sym(r, 'double_r')!.figureId!)).toBeCloseTo(6, 10);
+	});
+
+	it('throws DslRuntimeError on non-circle argument', () => {
+		expect(() =>
+			run(['A = point(0, 0)', 'B = point(1, 0)', 'd = droite(A, B)', 'r = rayon(d)'].join('\n'))
+		).toThrow(DslRuntimeError);
+	});
+});
+
+describe('DSL: pente() additional coverage', () => {
+	it('computes slope of a ray (demidroite)', () => {
+		const r = run(
+			['A = point(0, 0)', 'B = point(2, 6)', 'd = demidroite(A, B)', 's = pente(d)'].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 's')!.figureId!)).toBeCloseTo(3, 10);
+	});
+
+	it('can be used in arithmetic expressions', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 2)',
+				'd = droite(A, B)',
+				's = pente(d)',
+				'double_s = s * 2'
+			].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'double_s')!.figureId!)).toBeCloseTo(1, 10);
+	});
+
+	it('throws DslRuntimeError on non-line argument', () => {
+		expect(() =>
+			run(['O = point(0, 0)', 'c = cercle(O, rayon=3)', 's = pente(c)'].join('\n'))
+		).toThrow(DslRuntimeError);
+	});
+});
+
+describe('DSL: perimetre() additional coverage', () => {
+	it('can be used in arithmetic expressions', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(3, 0)',
+				'C = point(0, 4)',
+				'p = perimetre(A, B, C)',
+				'half_p = p / 2'
+			].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'half_p')!.figureId!)).toBeCloseTo(6, 10);
+	});
+
+	it('throws DslRuntimeError with fewer than 3 points', () => {
+		expect(() =>
+			run(['A = point(0, 0)', 'B = point(1, 0)', 'p = perimetre(A, B)'].join('\n'))
+		).toThrow(DslRuntimeError);
 	});
 });

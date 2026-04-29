@@ -2484,7 +2484,6 @@ export class Figure {
 		if (!circleEl || !isCircle(circleEl))
 			throw new Error('createScalarRadius: circleId must be a circle');
 		const id = this.generateId('sca');
-		const deps = [circleId];
 		const element: GeoScalar = {
 			type: 'scalar',
 			scalarKind: 'radius',
@@ -2494,9 +2493,9 @@ export class Figure {
 			visible: options?.visible ?? false,
 			label: options?.label,
 			style: this.resolveStyle(options),
-			dependsOn: deps
+			dependsOn: [circleId]
 		};
-		this.addElement(id, element, deps);
+		this.addElement(id, element, [circleId]);
 		this.computePosition(id);
 		return id;
 	}
