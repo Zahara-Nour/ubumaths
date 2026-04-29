@@ -690,6 +690,41 @@ function computeScalarValue(
 			const dy = geoToNumber(a.y) - geoToNumber(b.y);
 			return Math.sqrt(dx * dx + dy * dy);
 		}
+		case 'distance_point_line': {
+			const [pointId, lineId] = el.targetIds;
+			const p = positions.get(pointId);
+			const lineEl = elements.get(lineId);
+			if (!p || !lineEl) return undefined;
+			let lp1Id: string, lp2Id: string;
+			if (lineEl.type === 'line') {
+				lp1Id = lineEl.point1Id;
+				lp2Id = lineEl.point2Id;
+			} else if (lineEl.type === 'segment') {
+				lp1Id = lineEl.startId;
+				lp2Id = lineEl.endId;
+			} else if (lineEl.type === 'ray') {
+				lp1Id = lineEl.originId;
+				lp2Id = lineEl.throughId;
+			} else {
+				return undefined;
+			}
+			const a = positions.get(lp1Id);
+			const b = positions.get(lp2Id);
+			if (!a || !b) return undefined;
+			const ax = geoToNumber(a.x),
+				ay = geoToNumber(a.y);
+			const bx = geoToNumber(b.x),
+				by = geoToNumber(b.y);
+			const px = geoToNumber(p.x),
+				py = geoToNumber(p.y);
+			const abx = bx - ax,
+				aby = by - ay;
+			const apx = px - ax,
+				apy = py - ay;
+			const lenAB = Math.sqrt(abx * abx + aby * aby);
+			if (lenAB < 1e-15) return undefined;
+			return Math.abs(abx * apy - aby * apx) / lenAB;
+		}
 		case 'angle': {
 			const [p1Id, vId, p2Id] = el.targetIds;
 			const p1 = positions.get(p1Id);

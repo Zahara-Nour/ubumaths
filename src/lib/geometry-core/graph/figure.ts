@@ -2065,6 +2065,30 @@ export class Figure {
 		return id;
 	}
 
+	createScalarDistancePointLine(pointId: string, lineId: string, options?: ElementOptions): string {
+		this.requirePoints('createScalarDistancePointLine', pointId);
+		const lineEl = this.getElementById(lineId);
+		if (!lineEl || (lineEl.type !== 'line' && lineEl.type !== 'segment' && lineEl.type !== 'ray'))
+			throw new Error('createScalarDistancePointLine: lineId must be a line, segment, or ray');
+		const id = this.generateId('sca');
+		// dependsOn [pointId, lineId]: the line's own defining points are reached
+		// transitively (defining point → line → this scalar) via dirty-propagation.
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'distance_point_line',
+			id,
+			targetIds: [pointId, lineId],
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [pointId, lineId]
+		};
+		this.addElement(id, element, [pointId, lineId]);
+		this.computePosition(id);
+		return id;
+	}
+
 	createScalarAngle(
 		p1Id: string,
 		vertexId: string,

@@ -451,6 +451,7 @@ function serializeElement(
 		case 'scalar': {
 			switch (el.scalarKind) {
 				case 'distance':
+				case 'distance_point_line':
 					return `${n} = distance(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])})`;
 				case 'angle':
 					return `${n} = angle(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])}, ${name(idToName, el.targetIds[2])})`;

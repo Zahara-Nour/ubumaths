@@ -56,6 +56,113 @@ describe('GeoScalar: distance', () => {
 	});
 });
 
+describe('GeoScalar: distance_point_line', () => {
+	it('computes perpendicular distance from point to line', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(4, 0));
+		const line = f.createLine(a, b);
+		const p = f.createFreePoint(pt(2, 3));
+		const d = f.createScalarDistancePointLine(p, line);
+		expect(f.getScalarValue(d)).toBeCloseTo(3, 10);
+	});
+
+	it('returns 0 when point is on the line', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(4, 0));
+		const line = f.createLine(a, b);
+		const p = f.createFreePoint(pt(2, 0));
+		const d = f.createScalarDistancePointLine(p, line);
+		expect(f.getScalarValue(d)).toBeCloseTo(0, 10);
+	});
+
+	it('works with a segment', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(4, 0));
+		const seg = f.createSegment(a, b);
+		const p = f.createFreePoint(pt(2, 5));
+		const d = f.createScalarDistancePointLine(p, seg);
+		expect(f.getScalarValue(d)).toBeCloseTo(5, 10);
+	});
+
+	it('works with a ray', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(4, 0));
+		const ray = f.createRay(a, b);
+		const p = f.createFreePoint(pt(2, 7));
+		const d = f.createScalarDistancePointLine(p, ray);
+		expect(f.getScalarValue(d)).toBeCloseTo(7, 10);
+	});
+
+	it('updates when point moves', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(4, 0));
+		const line = f.createLine(a, b);
+		const p = f.createFreePoint(pt(2, 3));
+		const d = f.createScalarDistancePointLine(p, line);
+		expect(f.getScalarValue(d)).toBeCloseTo(3, 10);
+
+		f.beginTransaction();
+		f.movePoint(p, numeric(2), numeric(6));
+		f.recompute();
+		f.commit();
+		expect(f.getScalarValue(d)).toBeCloseTo(6, 10);
+	});
+
+	it('works with diagonal line', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(1, 1));
+		const line = f.createLine(a, b);
+		const p = f.createFreePoint(pt(1, 0));
+		const d = f.createScalarDistancePointLine(p, line);
+		// Distance from (1,0) to y=x line is 1/sqrt(2)
+		expect(f.getScalarValue(d)).toBeCloseTo(Math.SQRT2 / 2, 10);
+	});
+
+	it('segment: uses infinite-line distance even when foot is outside segment', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(4, 0));
+		const seg = f.createSegment(a, b);
+		// P is beyond the segment end, foot at (6,0) is outside [A,B]
+		const p = f.createFreePoint(pt(6, 3));
+		const d = f.createScalarDistancePointLine(p, seg);
+		// Infinite-line distance = 3 (perpendicular to x-axis)
+		expect(f.getScalarValue(d)).toBeCloseTo(3, 10);
+	});
+
+	it('returns undefined when line defining points coincide', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(2, 3));
+		const b = f.createFreePoint(pt(2, 3));
+		const line = f.createLine(a, b);
+		const p = f.createFreePoint(pt(5, 5));
+		const d = f.createScalarDistancePointLine(p, line);
+		// Degenerate line → undefined
+		expect(f.getScalarValue(d)).toBeUndefined();
+	});
+
+	it('throws when second arg is not a line-like element', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(3, 4));
+		expect(() => f.createScalarDistancePointLine(a, b)).toThrow();
+	});
+
+	it('throws when second arg is a circle', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const c = f.createCircleByRadius(a, numeric(3));
+		const p = f.createFreePoint(pt(5, 0));
+		expect(() => f.createScalarDistancePointLine(p, c)).toThrow();
+	});
+});
+
 describe('GeoScalar: angle', () => {
 	it('computes angle value correctly (90 degrees)', () => {
 		const f = new Figure();
