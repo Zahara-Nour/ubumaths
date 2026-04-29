@@ -54,6 +54,12 @@
 				Trajectoire d'un point quand un autre glisse sur son chemin
 			</p>
 		</a>
+		<a href="/geometry-demo/triangles" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Points remarquables du triangle</h2>
+			<p class="text-sm text-muted-foreground">
+				Centre de gravite, orthocentre, cercles inscrit/circonscrit, droite et cercle d'Euler
+			</p>
+		</a>
 		<a href="/geometry-demo/sliders" class="rounded-lg border p-4 hover:bg-muted">
 			<h2 class="font-bold">Sliders interactifs</h2>
 			<p class="text-sm text-muted-foreground">

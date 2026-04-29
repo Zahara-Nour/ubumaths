@@ -306,7 +306,14 @@ export interface GeoMeasure extends GeoElementBase {
 /** Reactive computed scalar value in the dependency graph. */
 export interface GeoScalar extends GeoElementBase {
 	readonly type: 'scalar';
-	readonly scalarKind: 'distance' | 'angle' | 'polar_angle' | 'area' | 'norme' | 'expression';
+	readonly scalarKind:
+		| 'distance'
+		| 'distance_point_line'
+		| 'angle'
+		| 'polar_angle'
+		| 'area'
+		| 'norme'
+		| 'expression';
 	/** Target element IDs for primitive kinds (points for distance/angle/area, vector for norme). */
 	readonly targetIds: readonly string[];
 	/** Computation closure for 'expression' kind: receives scalar values, returns number. */

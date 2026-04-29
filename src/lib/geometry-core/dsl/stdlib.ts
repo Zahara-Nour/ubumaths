@@ -156,4 +156,42 @@ macro cercle_circonscrit(A, B, C):
     O = intersection(d1, d2)
     c = cercle(O, passant=A)
     retourne (O, c)
+
+macro cercle_inscrit(A, B, C):
+    b1 = bissectrice(A, B, C)
+    b2 = bissectrice(B, C, A)
+    I = intersection(b1, b2)
+    r = distance(I, droite(A, B))
+    c = cercle(I, rayon=r)
+    retourne (I, c)
+
+# ─── Points remarquables du triangle ───────────────────────
+
+macro centre_gravite(A, B, C):
+    M = milieu(B, C)
+    N = milieu(A, C)
+    G = intersection(droite(A, M), droite(B, N))
+    retourne G
+
+macro orthocentre(A, B, C):
+    h1 = hauteur(A, B, C)
+    h2 = hauteur(B, A, C)
+    H = intersection(h1, h2)
+    retourne H
+
+# ─── Droite et cercle d'Euler ───────────────────────────────
+
+macro droite_euler(A, B, C):
+    # Undefined for equilateral triangles (G = H coincide)
+    G = centre_gravite(A, B, C)
+    H = orthocentre(A, B, C)
+    d = droite(G, H)
+    retourne d
+
+macro cercle_euler(A, B, C):
+    M1 = milieu(A, B)
+    M2 = milieu(B, C)
+    M3 = milieu(A, C)
+    (O, c) = cercle_circonscrit(M1, M2, M3)
+    retourne (O, c)
 `;

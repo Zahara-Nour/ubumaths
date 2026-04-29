@@ -314,6 +314,30 @@ describe('stdlib — composition', () => {
 		expect(segs).toHaveLength(6); // 3 sides + 3 medians
 	});
 
+	it('triangle with new remarkable elements', () => {
+		const { symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(6, 0)',
+				'C = point(2, 5)',
+				'triangle(A, B, C)',
+				'(O, cc) = cercle_circonscrit(A, B, C)',
+				'G = centre_gravite(A, B, C)',
+				'H = orthocentre(A, B, C)',
+				'(I, ci) = cercle_inscrit(A, B, C)',
+				'de = droite_euler(A, B, C)',
+				'(Oe, ce) = cercle_euler(A, B, C)'
+			].join('\n')
+		);
+		// All symbols exist
+		expect(symbols.get('G')).toBeDefined();
+		expect(symbols.get('H')).toBeDefined();
+		expect(symbols.get('I')).toBeDefined();
+		expect(symbols.get('de')).toBeDefined();
+		expect(symbols.get('Oe')).toBeDefined();
+		expect(symbols.get('ce')).toBeDefined();
+	});
+
 	it('triangle with all remarkable elements', () => {
 		const { figure } = runDsl(
 			[
@@ -329,5 +353,419 @@ describe('stdlib — composition', () => {
 		);
 		const lines = figure.getAllElements().filter((e) => e.type === 'line');
 		expect(lines.length).toBeGreaterThanOrEqual(3); // mediatrices + hauteurs + bissectrice
+	});
+});
+
+describe('stdlib — distance(point, droite)', () => {
+	it('computes distance from point to line via DSL', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'd = droite(A, B)',
+				'P = point(2, 3)',
+				'r = distance(P, d)'
+			].join('\n')
+		);
+		expect(symbols.get('r')!.type).toBe('scalar');
+		expect(figure.getScalarValue(symbols.get('r')!.figureId)).toBeCloseTo(3, 10);
+	});
+
+	it('works with segment', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				's = segment(A, B)',
+				'P = point(2, 5)',
+				'r = distance(P, s)'
+			].join('\n')
+		);
+		expect(figure.getScalarValue(symbols.get('r')!.figureId)).toBeCloseTo(5, 10);
+	});
+
+	it('point-to-point distance still works', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(3, 4)', 'r = distance(A, B)'].join('\n')
+		);
+		expect(figure.getScalarValue(symbols.get('r')!.figureId)).toBeCloseTo(5, 10);
+	});
+});
+
+describe('stdlib — centre_gravite', () => {
+	it('computes centroid as average of coordinates', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(6, 0)', 'C = point(0, 6)', 'G = centre_gravite(A, B, C)'].join(
+				'\n'
+			)
+		);
+		const g = pos(figure, symbols, 'G');
+		expect(g.x).toBeCloseTo(2, 10);
+		expect(g.y).toBeCloseTo(2, 10);
+	});
+
+	it('returns a point', () => {
+		const { symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(6, 0)', 'C = point(3, 4)', 'G = centre_gravite(A, B, C)'].join(
+				'\n'
+			)
+		);
+		expect(symbols.get('G')!.type).toBe('point');
+	});
+
+	it('is on each median', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(6, 0)', 'C = point(2, 5)', 'G = centre_gravite(A, B, C)'].join(
+				'\n'
+			)
+		);
+		const g = pos(figure, symbols, 'G');
+		const a = pos(figure, symbols, 'A');
+		const b = pos(figure, symbols, 'B');
+		const c = pos(figure, symbols, 'C');
+		const gExpected = { x: (a.x + b.x + c.x) / 3, y: (a.y + b.y + c.y) / 3 };
+		expect(g.x).toBeCloseTo(gExpected.x, 10);
+		expect(g.y).toBeCloseTo(gExpected.y, 10);
+	});
+});
+
+describe('stdlib — orthocentre', () => {
+	it('computes orthocenter of a right triangle at the right-angle vertex', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(4, 0)', 'C = point(0, 3)', 'H = orthocentre(A, B, C)'].join(
+				'\n'
+			)
+		);
+		const h = pos(figure, symbols, 'H');
+		// Right angle at A → orthocenter is at A
+		expect(h.x).toBeCloseTo(0, 5);
+		expect(h.y).toBeCloseTo(0, 5);
+	});
+
+	it('computes orthocenter of a general triangle', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(6, 0)', 'C = point(2, 4)', 'H = orthocentre(A, B, C)'].join(
+				'\n'
+			)
+		);
+		const h = pos(figure, symbols, 'H');
+		// Verify H is on altitude from A to BC
+		const b = pos(figure, symbols, 'B');
+		const c = pos(figure, symbols, 'C');
+		// AH · BC = 0 (AH perpendicular to BC)
+		const ahx = h.x - 0,
+			ahy = h.y - 0;
+		const bcx = c.x - b.x,
+			bcy = c.y - b.y;
+		expect(ahx * bcx + ahy * bcy).toBeCloseTo(0, 5);
+	});
+
+	it('returns a point', () => {
+		const { symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(6, 0)', 'C = point(3, 4)', 'H = orthocentre(A, B, C)'].join(
+				'\n'
+			)
+		);
+		expect(symbols.get('H')!.type).toBe('point');
+	});
+});
+
+describe('stdlib — cercle_inscrit', () => {
+	it('creates incircle for a right triangle', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(3, 0)',
+				'C = point(0, 4)',
+				'(I, c) = cercle_inscrit(A, B, C)'
+			].join('\n')
+		);
+		const i = pos(figure, symbols, 'I');
+		// For 3-4-5 right triangle, inradius = (a+b-c)/2 = (3+4-5)/2 = 1
+		// Incenter at (r, r) = (1, 1)
+		expect(i.x).toBeCloseTo(1, 5);
+		expect(i.y).toBeCloseTo(1, 5);
+		expect(symbols.get('c')!.type).toBe('cercle');
+	});
+
+	it('incenter is equidistant from all 3 sides', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(6, 0)',
+				'C = point(2, 5)',
+				'(I, c) = cercle_inscrit(A, B, C)',
+				'd1 = distance(I, droite(A, B))',
+				'd2 = distance(I, droite(B, C))',
+				'd3 = distance(I, droite(A, C))'
+			].join('\n')
+		);
+		const d1 = figure.getScalarValue(symbols.get('d1')!.figureId);
+		const d2 = figure.getScalarValue(symbols.get('d2')!.figureId);
+		const d3 = figure.getScalarValue(symbols.get('d3')!.figureId);
+		expect(d1).toBeCloseTo(d2!, 5);
+		expect(d2).toBeCloseTo(d3!, 5);
+	});
+});
+
+describe('stdlib — droite_euler', () => {
+	it('Euler line passes through G, H, and O', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(6, 0)',
+				'C = point(2, 5)',
+				'G = centre_gravite(A, B, C)',
+				'H = orthocentre(A, B, C)',
+				'(O, cc) = cercle_circonscrit(A, B, C)',
+				'de = droite_euler(A, B, C)'
+			].join('\n')
+		);
+		const g = pos(figure, symbols, 'G');
+		const h = pos(figure, symbols, 'H');
+		const o = pos(figure, symbols, 'O');
+		// G, H, O must be collinear: det(GH, GO) = 0
+		const ghx = h.x - g.x,
+			ghy = h.y - g.y;
+		const gox = o.x - g.x,
+			goy = o.y - g.y;
+		expect(ghx * goy - ghy * gox).toBeCloseTo(0, 5);
+	});
+
+	it('returns a line', () => {
+		const { symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(6, 0)', 'C = point(2, 5)', 'de = droite_euler(A, B, C)'].join(
+				'\n'
+			)
+		);
+		expect(symbols.get('de')!.type).toBe('droite');
+	});
+});
+
+describe('stdlib — cercle_euler', () => {
+	it('Euler circle passes through the 3 midpoints', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(6, 0)',
+				'C = point(2, 5)',
+				'M1 = milieu(A, B)',
+				'M2 = milieu(B, C)',
+				'M3 = milieu(A, C)',
+				'(Oe, ce) = cercle_euler(A, B, C)'
+			].join('\n')
+		);
+		const oe = pos(figure, symbols, 'Oe');
+		const m1 = pos(figure, symbols, 'M1');
+		const m2 = pos(figure, symbols, 'M2');
+		const m3 = pos(figure, symbols, 'M3');
+		const r1 = dist(oe, m1);
+		const r2 = dist(oe, m2);
+		const r3 = dist(oe, m3);
+		expect(r1).toBeCloseTo(r2, 5);
+		expect(r2).toBeCloseTo(r3, 5);
+	});
+
+	it('returns center and circle', () => {
+		const { symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(6, 0)',
+				'C = point(2, 5)',
+				'(Oe, ce) = cercle_euler(A, B, C)'
+			].join('\n')
+		);
+		expect(symbols.get('Oe')!.type).toBe('point');
+		expect(symbols.get('ce')!.type).toBe('cercle');
+	});
+
+	it('Euler circle radius is half the circumradius', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(6, 0)',
+				'C = point(2, 5)',
+				'(O, cc) = cercle_circonscrit(A, B, C)',
+				'(Oe, ce) = cercle_euler(A, B, C)',
+				'M1 = milieu(A, B)'
+			].join('\n')
+		);
+		const o = pos(figure, symbols, 'O');
+		const a = pos(figure, symbols, 'A');
+		const oe = pos(figure, symbols, 'Oe');
+		const m1 = pos(figure, symbols, 'M1');
+		const R = dist(o, a);
+		const r = dist(oe, m1);
+		expect(r).toBeCloseTo(R / 2, 5);
+	});
+});
+
+// =============================================================================
+// Edge cases — degenerate and special triangles
+// =============================================================================
+
+describe('stdlib — edge cases: equilateral triangle', () => {
+	const equilateral = [
+		'A = point(0, 0)',
+		'B = point(4, 0)',
+		`C = point(2, ${2 * Math.sqrt(3)})`
+	].join('\n');
+
+	it('centre_gravite is at centroid', () => {
+		const { figure, symbols } = runDsl(equilateral + '\nG = centre_gravite(A, B, C)');
+		const g = pos(figure, symbols, 'G');
+		expect(g.x).toBeCloseTo(2, 5);
+		expect(g.y).toBeCloseTo((2 * Math.sqrt(3)) / 3, 5);
+	});
+
+	it('orthocentre coincides with centroid for equilateral', () => {
+		const { figure, symbols } = runDsl(
+			equilateral + '\nG = centre_gravite(A, B, C)\nH = orthocentre(A, B, C)'
+		);
+		const g = pos(figure, symbols, 'G');
+		const h = pos(figure, symbols, 'H');
+		expect(h.x).toBeCloseTo(g.x, 5);
+		expect(h.y).toBeCloseTo(g.y, 5);
+	});
+
+	it('cercle_inscrit center coincides with centroid for equilateral', () => {
+		const { figure, symbols } = runDsl(
+			equilateral + '\nG = centre_gravite(A, B, C)\n(I, c) = cercle_inscrit(A, B, C)'
+		);
+		const g = pos(figure, symbols, 'G');
+		const i = pos(figure, symbols, 'I');
+		expect(i.x).toBeCloseTo(g.x, 5);
+		expect(i.y).toBeCloseTo(g.y, 5);
+	});
+
+	it('cercle_euler radius is half circumradius for equilateral', () => {
+		const { figure, symbols } = runDsl(
+			equilateral +
+				'\n(O, cc) = cercle_circonscrit(A, B, C)\n(Oe, ce) = cercle_euler(A, B, C)\nM1 = milieu(A, B)'
+		);
+		const o = pos(figure, symbols, 'O');
+		const a = pos(figure, symbols, 'A');
+		const oe = pos(figure, symbols, 'Oe');
+		const m1 = pos(figure, symbols, 'M1');
+		expect(dist(oe, m1)).toBeCloseTo(dist(o, a) / 2, 5);
+	});
+});
+
+describe('stdlib — edge cases: isosceles triangle', () => {
+	it('centre_gravite is on axis of symmetry', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(-3, 0)',
+				'B = point(3, 0)',
+				'C = point(0, 5)',
+				'G = centre_gravite(A, B, C)'
+			].join('\n')
+		);
+		const g = pos(figure, symbols, 'G');
+		expect(g.x).toBeCloseTo(0, 10); // on axis of symmetry x=0
+	});
+
+	it('orthocentre is on axis of symmetry', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(-3, 0)', 'B = point(3, 0)', 'C = point(0, 5)', 'H = orthocentre(A, B, C)'].join(
+				'\n'
+			)
+		);
+		const h = pos(figure, symbols, 'H');
+		expect(h.x).toBeCloseTo(0, 5); // on axis of symmetry x=0
+	});
+
+	it('cercle_inscrit center is on axis of symmetry', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(-3, 0)',
+				'B = point(3, 0)',
+				'C = point(0, 5)',
+				'(I, c) = cercle_inscrit(A, B, C)'
+			].join('\n')
+		);
+		const i = pos(figure, symbols, 'I');
+		expect(i.x).toBeCloseTo(0, 5);
+	});
+});
+
+describe('stdlib — edge cases: right triangle', () => {
+	it('orthocentre is at the right-angle vertex (other orientation)', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(5, 0)', 'C = point(5, 3)', 'H = orthocentre(A, B, C)'].join(
+				'\n'
+			)
+		);
+		const h = pos(figure, symbols, 'H');
+		// Right angle at B
+		expect(h.x).toBeCloseTo(5, 5);
+		expect(h.y).toBeCloseTo(0, 5);
+	});
+
+	it('cercle_inscrit of 5-12-13 right triangle', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(5, 0)',
+				'C = point(0, 12)',
+				'(I, c) = cercle_inscrit(A, B, C)'
+			].join('\n')
+		);
+		const i = pos(figure, symbols, 'I');
+		// Inradius = (a+b-c)/2 = (5+12-13)/2 = 2, incenter at (r,r) = (2,2)
+		expect(i.x).toBeCloseTo(2, 5);
+		expect(i.y).toBeCloseTo(2, 5);
+	});
+
+	it('Euler line passes through circumcenter (midpoint of hypotenuse)', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(6, 0)',
+				'C = point(0, 8)',
+				'G = centre_gravite(A, B, C)',
+				'H = orthocentre(A, B, C)',
+				'(O, cc) = cercle_circonscrit(A, B, C)'
+			].join('\n')
+		);
+		const g = pos(figure, symbols, 'G');
+		const h = pos(figure, symbols, 'H');
+		const o = pos(figure, symbols, 'O');
+		// O is midpoint of hypotenuse BC
+		expect(o.x).toBeCloseTo(3, 5);
+		expect(o.y).toBeCloseTo(4, 5);
+		// G, H, O collinear
+		const ghx = h.x - g.x,
+			ghy = h.y - g.y;
+		const gox = o.x - g.x,
+			goy = o.y - g.y;
+		expect(ghx * goy - ghy * gox).toBeCloseTo(0, 5);
+	});
+});
+
+describe('stdlib — edge cases: very flat triangle', () => {
+	it('centre_gravite works with nearly collinear points', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(10, 0)',
+				'C = point(5, 0.01)',
+				'G = centre_gravite(A, B, C)'
+			].join('\n')
+		);
+		const g = pos(figure, symbols, 'G');
+		expect(g.x).toBeCloseTo(5, 3);
+		expect(g.y).toBeCloseTo(0.01 / 3, 3);
+	});
+
+	it('orthocentre is far away for very flat triangle', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(10, 0)', 'C = point(5, 0.1)', 'H = orthocentre(A, B, C)'].join(
+				'\n'
+			)
+		);
+		const h = pos(figure, symbols, 'H');
+		// Orthocenter goes far from the triangle when it's very flat
+		expect(Math.abs(h.y)).toBeGreaterThan(10);
 	});
 });

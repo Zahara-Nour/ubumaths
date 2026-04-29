@@ -989,7 +989,22 @@ function _executeBuiltinInner(
 
 		case 'distance': {
 			if (pos.length !== 2)
-				throw new DslRuntimeError('distance() attend 2 arguments (point, point)', line);
+				throw new DslRuntimeError(
+					'distance() attend 2 arguments (point, point) ou (point, droite)',
+					line
+				);
+			const arg2 = pos[1];
+			const isLineArg =
+				arg2.type === 'element' &&
+				(arg2.elementType === 'droite' ||
+					arg2.elementType === 'segment' ||
+					arg2.elementType === 'demidroite');
+			if (isLineArg) {
+				const ptId = requireElement(pos[0], 'point', line);
+				const lineId = requireElement(pos[1], 'ligne', line);
+				const id = figure.createScalarDistancePointLine(ptId, lineId, { label });
+				return { figureId: id, symbolType: 'scalar' };
+			}
 			const pt1Id = requireElement(pos[0], 'point1', line);
 			const pt2Id = requireElement(pos[1], 'point2', line);
 			const id = figure.createScalarDistance(pt1Id, pt2Id, { label });
