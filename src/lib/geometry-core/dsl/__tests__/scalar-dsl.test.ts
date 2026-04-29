@@ -584,3 +584,74 @@ describe('DSL: scalar serialization roundtrip', () => {
 		expect(text).toContain('n = norme(v)');
 	});
 });
+
+// =============================================================================
+// I. texte() DSL builtin
+// =============================================================================
+
+describe('DSL: texte()', () => {
+	it('texte(x, y, "...") creates free-positioned text', () => {
+		const r = run('A = point(0, 0)\ntexte(3, 5, "hello")');
+		const texts = r.figure.getAllElements().filter((e) => e.type === 'text');
+		expect(texts).toHaveLength(1);
+		expect(texts[0].template).toBe('hello');
+		expect(texts[0].position).toEqual({ x: 3, y: 5 });
+	});
+
+	it('texte(point, "...", dx, dy) creates anchored text', () => {
+		const r = run('A = point(0, 0)\ntexte(A, "label", dx=1, dy=0.5)');
+		const texts = r.figure.getAllElements().filter((e) => e.type === 'text');
+		expect(texts).toHaveLength(1);
+		expect(texts[0].anchorId).toBeDefined();
+		expect(texts[0].anchorOffset).toEqual({ dx: 1, dy: 0.5 });
+	});
+
+	it('texte with scalar reference resolves template', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(3, 4)',
+				'd = distance(A, B)',
+				'texte(A, "AB = {d:.2f}", dx=1, dy=0.5)'
+			].join('\n')
+		);
+		const texts = r.figure.getAllElements().filter((e) => e.type === 'text');
+		expect(texts).toHaveLength(1);
+		// The template should contain the figure ID (not the symbolic name)
+		expect(texts[0].scalarRefs.length).toBe(1);
+		const resolved = r.figure.resolveTemplate(texts[0].id);
+		expect(resolved).toBe('AB = 5.00');
+	});
+});
+
+// =============================================================================
+// J. aire() DSL builtin
+// =============================================================================
+
+describe('DSL: aire()', () => {
+	it('aire(A, B, C) creates area scalar', () => {
+		const r = run(
+			['A = point(0, 0)', 'B = point(4, 0)', 'C = point(0, 3)', 's = aire(A, B, C)'].join('\n')
+		);
+		const s = sym(r, 's');
+		expect(s).toBeDefined();
+		expect(s!.type).toBe('scalar');
+		expect(r.figure.getScalarValue(s!.figureId!)).toBeCloseTo(6, 10);
+	});
+
+	it('aire scalar is composable', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(2, 0)',
+				'C = point(2, 2)',
+				'D = point(0, 2)',
+				's = aire(A, B, C, D)',
+				'r = s / 2'
+			].join('\n')
+		);
+		const rSym = sym(r, 'r');
+		expect(rSym).toBeDefined();
+		expect(r.figure.getScalarValue(rSym!.figureId!)).toBeCloseTo(2, 10);
+	});
+});

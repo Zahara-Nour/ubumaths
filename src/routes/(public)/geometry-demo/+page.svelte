@@ -66,5 +66,11 @@
 				Parametres dynamiques : rayon, angle, rapport controles par slider
 			</p>
 		</a>
+		<a href="/geometry-demo/measurements" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Mesures et texte</h2>
+			<p class="text-sm text-muted-foreground">
+				Distances, angles, aires affichees sur la figure avec mesure() et texte()
+			</p>
+		</a>
 	</div>
 </div>

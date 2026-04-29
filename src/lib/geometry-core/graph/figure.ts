@@ -2490,6 +2490,20 @@ export class Figure {
 		this.graph.markDirty(id);
 	}
 
+	moveText(id: string, x: number, y: number): void {
+		const el = this.elements.get(id);
+		if (!el || el.type !== 'text') {
+			throw new Error(`moveText: "${id}" is not a text element`);
+		}
+		const textEl = el as GeoText;
+		if (!textEl.position) {
+			throw new Error(`moveText: "${id}" is not a free-positioned text`);
+		}
+		const updated: GeoText = { ...textEl, position: { x, y } };
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+	}
+
 	recompute(): void {
 		const dirtyIds = this.graph.getDirtyInOrder();
 		for (const id of dirtyIds) {

@@ -359,7 +359,7 @@ function serializeElement(
 			if (el.position) {
 				return `texte(${el.position.x}, ${el.position.y}, "${el.template}")`;
 			}
-			return `texte("${el.template}")`;
+			return `texte(0, 0, "${el.template}")`;
 		}
 
 		case 'polygon': {

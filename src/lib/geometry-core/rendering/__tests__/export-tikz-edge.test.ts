@@ -301,7 +301,7 @@ describe('exportToTikZ — edge cases', () => {
 		const b = f.createFreePoint(pt(0, 1));
 		createMesureText(f, 'angle', [a, v, b]);
 		const result = exportToTikZ(f, viewport);
-		expect(result).toContain('90°');
+		expect(result).toContain('90^{\\circ}');
 	});
 
 	// ─── Options combinations ─────────────────────────────────
