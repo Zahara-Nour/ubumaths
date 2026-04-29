@@ -23,6 +23,7 @@ export type SymbolType =
 	| 'vecteur'
 	| 'transformation'
 	| 'lieu'
+	| 'trace'
 	| 'scalar'
 	| 'liste';
 

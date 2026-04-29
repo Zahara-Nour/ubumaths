@@ -34,6 +34,7 @@ import { differentiate } from '$lib/mathAST/differentiation';
 import { numeric } from '../types/geo-value';
 import { applyTransformationToElement } from './transform-apply';
 import type { GeoElement } from '../types/elements';
+import { isPointElement } from '../types/elements';
 
 /** Resolve a line-like element's two defining point IDs. */
 function resolveLinePoints(el: GeoElement): { p1: string; p2: string } | null {
@@ -1504,6 +1505,22 @@ function _executeBuiltinInner(
 			return { figureId: locId, symbolType: 'lieu' as SymbolType };
 		}
 
+		case 'trace': {
+			if (pos.length !== 1) {
+				throw new DslRuntimeError('trace() attend 1 argument (point)', line);
+			}
+			const trackedId = requireElement(pos[0], 'point', line);
+			const trackedEl = figure.getElementById(trackedId);
+			if (!trackedEl) {
+				throw new DslRuntimeError(`trace(): point "${trackedId}" introuvable`, line);
+			}
+			if (!isPointElement(trackedEl)) {
+				throw new DslRuntimeError("trace(): l'argument doit etre un point", line);
+			}
+			const trId = figure.createTrace(trackedId, { label });
+			return { figureId: trId, symbolType: 'trace' as SymbolType };
+		}
+
 		default:
 			return null; // Not a builtin — might be a macro
 	}
@@ -1550,6 +1567,7 @@ export const BUILTIN_NAMES = new Set([
 	'extrema',
 	'inflections',
 	'lieu',
+	'trace',
 	'distance',
 	'angle',
 	'slider'

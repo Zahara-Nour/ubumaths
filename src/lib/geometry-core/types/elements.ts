@@ -266,6 +266,13 @@ export interface GeoLocus extends GeoElementBase {
 	readonly dependsOn: readonly string[];
 }
 
+/** Trace: progressive locus that accumulates positions of a tracked point over interactions. */
+export interface GeoTrace extends GeoElementBase {
+	readonly type: 'trace';
+	readonly trackedPointId: string;
+	readonly dependsOn: readonly string[];
+}
+
 // =============================================================================
 // Annotation types
 // =============================================================================
@@ -847,6 +854,7 @@ export type GeoElement =
 	| GeoInversion
 	| GeoComposition
 	| GeoLocus
+	| GeoTrace
 	| GeoScalar
 	| GeoSlider;
 
@@ -1046,6 +1054,10 @@ export function isImplicitCurve(el: GeoElement): el is GeoImplicitCurve {
 
 export function isLocus(el: GeoElement): el is GeoLocus {
 	return el.type === 'locus';
+}
+
+export function isTrace(el: GeoElement): el is GeoTrace {
+	return el.type === 'trace';
 }
 
 export function isTangentLine(el: GeoElement): el is GeoTangentLine {

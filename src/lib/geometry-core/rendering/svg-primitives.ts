@@ -1297,3 +1297,23 @@ export function locusToSVG(
 	const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
 	return path ? { path } : null;
 }
+
+/**
+ * Convert a GeoTrace to an SVG path string.
+ * Uses the accumulated trace points from the figure.
+ */
+export function traceToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): { path: string } | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'trace') return null;
+
+	const points = figure.getTracePoints(id);
+	if (points.length < 2) return null;
+
+	const curve: SampledCurve = { points: points as Point[], discontinuityIndices: [] };
+	const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
+	return path ? { path } : null;
+}
