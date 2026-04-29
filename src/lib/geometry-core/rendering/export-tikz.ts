@@ -497,7 +497,9 @@ export function exportToTikZ(
 			}
 
 			if (mx === undefined || my === undefined) continue;
-			lines.push(`  \\node[${name}, font=\\small] at ${coord(mx, my)} {$${text}$};`);
+			// Escape degree symbol for LaTeX math mode
+			const texText = text.replace(/°/g, '^{\\circ}');
+			lines.push(`  \\node[${name}, font=\\small] at ${coord(mx, my)} {$${texText}$};`);
 		}
 	}
 

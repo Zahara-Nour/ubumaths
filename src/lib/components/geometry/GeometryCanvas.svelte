@@ -428,6 +428,8 @@
 					const t = projectOnArc(figure, arcEl, math.x, math.y);
 					figure.movePointOnArc(draggingId, t);
 				}
+			} else if (dragEl?.type === 'text' && dragEl.position) {
+				figure.moveText(draggingId, math.x + (dragOffset?.dx ?? 0), math.y + (dragOffset?.dy ?? 0));
 			} else {
 				figure.movePoint(draggingId, numeric(math.x), numeric(math.y));
 			}
@@ -1427,20 +1429,39 @@
 				{#if el.type === 'text'}
 					{@const svg = textToSVG(el.id, figure, transformer)}
 					{@const sty = resolveStyle(el, figure.defaults)}
+					{@const isDraggable = !!el.position}
 					{#if svg}
-						<rect
-							x={svg.x - 4}
-							y={svg.y - 12}
-							width={svg.text.length * 8 + 8}
-							height={16}
-							rx={3}
-							fill="white"
-							fill-opacity="0.85"
-							class="text-bg"
-						/>
-						<text x={svg.x} y={svg.y} fill={sty.color} opacity={sty.opacity} class="geo-text"
-							>{svg.text}</text
+						<g
+							class:draggable-text={isDraggable}
+							onpointerdown={isDraggable
+								? (e) => {
+										if (e.button !== 0) return;
+										draggingId = el.id;
+										const math = getMathCoords(e);
+										dragOffset = math
+											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
+											: null;
+										figure.beginTransaction();
+										svgRef?.setPointerCapture(e.pointerId);
+										e.preventDefault();
+										e.stopPropagation();
+									}
+								: undefined}
 						>
+							<rect
+								x={svg.x - 4}
+								y={svg.y - 12}
+								width={svg.text.length * 8 + 8}
+								height={16}
+								rx={3}
+								fill="white"
+								fill-opacity="0.85"
+								class="text-bg"
+							/>
+							<text x={svg.x} y={svg.y} fill={sty.color} opacity={sty.opacity} class="geo-text"
+								>{svg.text}</text
+							>
+						</g>
 					{/if}
 				{/if}
 			{/each}
@@ -1590,5 +1611,17 @@
 
 	.text-bg {
 		pointer-events: none;
+	}
+
+	.draggable-text {
+		cursor: grab;
+	}
+
+	.draggable-text :global(*) {
+		pointer-events: auto;
+	}
+
+	.draggable-text:active {
+		cursor: grabbing;
 	}
 </style>

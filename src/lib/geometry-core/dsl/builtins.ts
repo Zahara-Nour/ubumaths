@@ -8,7 +8,7 @@ import type { Figure } from '../graph/figure';
 import type { GeoValue, ScalarParam } from '../types/geo-value';
 import { exact } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
-import type { SymbolType } from './symbol-table';
+import type { SymbolType, SymbolTable } from './symbol-table';
 import { DslRuntimeError } from './errors';
 import {
 	parseCustom,
@@ -243,7 +243,8 @@ export function executeBuiltin(
 	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
 	toGeoPoint: (x: ResolvedValue, y: ResolvedValue, line: number) => GeoPoint,
 	line: number,
-	label?: string
+	label?: string,
+	symbols?: SymbolTable
 ): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
 	const pos = args.positional;
 	const named = args.named;
@@ -257,7 +258,8 @@ export function executeBuiltin(
 		toGeoValue,
 		toGeoPoint,
 		line,
-		label
+		label,
+		symbols
 	);
 
 	// Apply inline style args (couleur, forme, etc.) to created element(s)
@@ -296,7 +298,8 @@ function _executeBuiltinInner(
 	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
 	toGeoPoint: (x: ResolvedValue, y: ResolvedValue, line: number) => GeoPoint,
 	line: number,
-	label?: string
+	label?: string,
+	symbols?: SymbolTable
 ): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
 	switch (name) {
 		case 'point': {

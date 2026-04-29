@@ -393,7 +393,8 @@ class Interpreter {
 				(v, l) => this.toGeoValue(v, l),
 				(x, y, l) => this.toGeoPoint(x, y, l),
 				line,
-				this._assignmentLabel
+				this._assignmentLabel,
+				this.symbols
 			);
 			if (result) {
 				// Scalar result: builtins like norme(), produit_scalaire(), angle_vecteurs()
