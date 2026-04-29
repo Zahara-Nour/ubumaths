@@ -707,3 +707,134 @@ describe('DSL: rtexte()', () => {
 		expect(r.figure.resolveTemplate(el.id)).toBe('AB = $d = 5$');
 	});
 });
+
+// =============================================================================
+// perimetre(), pente(), rayon()
+// =============================================================================
+
+describe('DSL: perimetre() scalar', () => {
+	it('computes perimeter of a triangle', () => {
+		const r = run(
+			['A = point(0, 0)', 'B = point(3, 0)', 'C = point(0, 4)', 'p = perimetre(A, B, C)'].join('\n')
+		);
+		const s = sym(r, 'p');
+		expect(s).toBeDefined();
+		expect(s!.type).toBe('scalar');
+		// 3 + 4 + 5 = 12
+		expect(r.figure.getScalarValue(s!.figureId!)).toBeCloseTo(12, 10);
+	});
+
+	it('computes perimeter of a square', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(2, 0)',
+				'C = point(2, 2)',
+				'D = point(0, 2)',
+				'p = perimetre(A, B, C, D)'
+			].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'p')!.figureId!)).toBeCloseTo(8, 10);
+	});
+
+	it('serializes as perimetre()', () => {
+		const r = run(
+			['A = point(0, 0)', 'B = point(3, 0)', 'C = point(0, 4)', 'p = perimetre(A, B, C)'].join('\n')
+		);
+		const code = serialize(r.figure);
+		expect(code).toContain('p = perimetre(A, B, C)');
+	});
+
+	it('roundtrips through serialize/parse', () => {
+		const script = [
+			'A = point(0, 0)',
+			'B = point(3, 0)',
+			'C = point(0, 4)',
+			'p = perimetre(A, B, C)'
+		].join('\n');
+		const r1 = run(script);
+		const code = serialize(r1.figure);
+		const r2 = run(code);
+		expect(r2.figure.getScalarValue(sym(r2, 'p')!.figureId!)).toBeCloseTo(12, 10);
+	});
+});
+
+describe('DSL: pente() scalar', () => {
+	it('computes slope of a line', () => {
+		const r = run(
+			['A = point(0, 0)', 'B = point(4, 2)', 'd = droite(A, B)', 's = pente(d)'].join('\n')
+		);
+		const s = sym(r, 's');
+		expect(s).toBeDefined();
+		expect(s!.type).toBe('scalar');
+		expect(r.figure.getScalarValue(s!.figureId!)).toBeCloseTo(0.5, 10);
+	});
+
+	it('computes slope of a segment', () => {
+		const r = run(['A = point(1, 1)', 'B = point(3, 5)', 's = pente(segment(A, B))'].join('\n'));
+		expect(r.figure.getScalarValue(sym(r, 's')!.figureId!)).toBeCloseTo(2, 10);
+	});
+
+	it('returns undefined for vertical line', () => {
+		const r = run(
+			['A = point(2, 0)', 'B = point(2, 5)', 'd = droite(A, B)', 's = pente(d)'].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 's')!.figureId!)).toBeUndefined();
+	});
+
+	it('serializes as pente()', () => {
+		const r = run(
+			['A = point(0, 0)', 'B = point(4, 2)', 'd = droite(A, B)', 's = pente(d)'].join('\n')
+		);
+		const code = serialize(r.figure);
+		expect(code).toContain('s = pente(d)');
+	});
+
+	it('roundtrips through serialize/parse', () => {
+		const script = ['A = point(0, 0)', 'B = point(4, 2)', 'd = droite(A, B)', 's = pente(d)'].join(
+			'\n'
+		);
+		const r1 = run(script);
+		const code = serialize(r1.figure);
+		const r2 = run(code);
+		expect(r2.figure.getScalarValue(sym(r2, 's')!.figureId!)).toBeCloseTo(0.5, 10);
+	});
+});
+
+describe('DSL: rayon() scalar', () => {
+	it('computes radius of a circle by radius', () => {
+		const r = run(['O = point(0, 0)', 'c = cercle(O, rayon=3)', 'r = rayon(c)'].join('\n'));
+		const s = sym(r, 'r');
+		expect(s).toBeDefined();
+		expect(s!.type).toBe('scalar');
+		expect(r.figure.getScalarValue(s!.figureId!)).toBeCloseTo(3, 10);
+	});
+
+	it('computes radius of a circle by point', () => {
+		const r = run(
+			['O = point(0, 0)', 'A = point(5, 0)', 'c = cercle(O, passant=A)', 'r = rayon(c)'].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'r')!.figureId!)).toBeCloseTo(5, 10);
+	});
+
+	it('serializes as rayon()', () => {
+		const r = run(['O = point(0, 0)', 'c = cercle(O, rayon=3)', 'r = rayon(c)'].join('\n'));
+		const code = serialize(r.figure);
+		expect(code).toContain('r = rayon(c)');
+	});
+
+	it('roundtrips through serialize/parse', () => {
+		const script = ['O = point(0, 0)', 'c = cercle(O, rayon=3)', 'r = rayon(c)'].join('\n');
+		const r1 = run(script);
+		const code = serialize(r1.figure);
+		const r2 = run(code);
+		expect(r2.figure.getScalarValue(sym(r2, 'r')!.figureId!)).toBeCloseTo(3, 10);
+	});
+
+	it('can be used in arithmetic expressions', () => {
+		const r = run(
+			['O = point(0, 0)', 'c = cercle(O, rayon=3)', 'r = rayon(c)', 'double_r = r * 2'].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'double_r')!.figureId!)).toBeCloseTo(6, 10);
+	});
+});

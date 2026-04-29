@@ -1207,6 +1207,32 @@ function _executeBuiltinInner(
 			return { figureId: id, symbolType: 'scalar' };
 		}
 
+		case 'perimetre': {
+			if (pos.length < 3)
+				throw new DslRuntimeError('perimetre() attend au moins 3 arguments (points)', line);
+			const perimPointIds = pos.map((p, i) => requireElement(p, `point${i + 1}`, line));
+			const id = figure.createScalarPerimeter(perimPointIds, { label });
+			return { figureId: id, symbolType: 'scalar' };
+		}
+
+		case 'pente': {
+			if (pos.length !== 1)
+				throw new DslRuntimeError(
+					'pente() attend 1 argument (droite, segment ou demidroite)',
+					line
+				);
+			const penteLineId = requireElement(pos[0], 'ligne', line);
+			const id = figure.createScalarSlope(penteLineId, { label });
+			return { figureId: id, symbolType: 'scalar' };
+		}
+
+		case 'rayon': {
+			if (pos.length !== 1) throw new DslRuntimeError('rayon() attend 1 argument (cercle)', line);
+			const rayonCircleId = requireElement(pos[0], 'cercle', line);
+			const id = figure.createScalarRadius(rayonCircleId, { label });
+			return { figureId: id, symbolType: 'scalar' };
+		}
+
 		case 'slider': {
 			const minVal = requireNumber(named.get('min') ?? { type: 'nombre', value: 0 }, 'min', line);
 			const maxVal = requireNumber(named.get('max') ?? { type: 'nombre', value: 10 }, 'max', line);
@@ -1570,6 +1596,9 @@ export const BUILTIN_NAMES = new Set([
 	'trace',
 	'distance',
 	'angle',
+	'perimetre',
+	'pente',
+	'rayon',
 	'slider'
 ]);
 

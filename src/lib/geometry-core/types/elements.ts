@@ -359,6 +359,9 @@ export interface GeoScalar extends GeoElementBase {
 		| 'polar_angle'
 		| 'area'
 		| 'norme'
+		| 'perimeter'
+		| 'slope'
+		| 'radius'
 		| 'expression';
 	/** Target element IDs for primitive kinds (points for distance/angle/area, vector for norme). */
 	readonly targetIds: readonly string[];
