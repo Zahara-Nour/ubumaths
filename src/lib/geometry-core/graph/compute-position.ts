@@ -778,6 +778,49 @@ function computeScalarValue(
 			const dy = geoToNumber(comp.dy);
 			return Math.sqrt(dx * dx + dy * dy);
 		}
+		case 'perimeter': {
+			const pts = el.targetIds.map((tid) => positions.get(tid));
+			if (pts.some((p) => !p)) return undefined;
+			let perimeter = 0;
+			const n = pts.length;
+			for (let i = 0; i < n; i++) {
+				const cur = pts[i]!;
+				const next = pts[(i + 1) % n]!;
+				const pdx = geoToNumber(next.x) - geoToNumber(cur.x);
+				const pdy = geoToNumber(next.y) - geoToNumber(cur.y);
+				perimeter += Math.sqrt(pdx * pdx + pdy * pdy);
+			}
+			return perimeter;
+		}
+		case 'slope': {
+			const lineEl = elements.get(el.targetIds[0]);
+			if (!lineEl) return undefined;
+			let sp1Id: string, sp2Id: string;
+			if (lineEl.type === 'line') {
+				sp1Id = lineEl.point1Id;
+				sp2Id = lineEl.point2Id;
+			} else if (lineEl.type === 'segment') {
+				sp1Id = lineEl.startId;
+				sp2Id = lineEl.endId;
+			} else if (lineEl.type === 'ray') {
+				sp1Id = lineEl.originId;
+				sp2Id = lineEl.throughId;
+			} else {
+				return undefined;
+			}
+			const sa = positions.get(sp1Id);
+			const sb = positions.get(sp2Id);
+			if (!sa || !sb) return undefined;
+			const sdx = geoToNumber(sb.x) - geoToNumber(sa.x);
+			const sdy = geoToNumber(sb.y) - geoToNumber(sa.y);
+			if (Math.abs(sdx) < 1e-15) return undefined; // vertical line, slope undefined
+			return sdy / sdx;
+		}
+		case 'radius': {
+			const circParams = getCircleParams(el.targetIds[0], positions, elements, scalarValues);
+			if (!circParams) return undefined;
+			return geoToNumber(circParams.radius);
+		}
 		case 'expression': {
 			if (!el.compute) return undefined;
 			try {

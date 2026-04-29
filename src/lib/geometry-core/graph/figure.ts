@@ -2431,6 +2431,76 @@ export class Figure {
 		return id;
 	}
 
+	createScalarPerimeter(pointIds: string[], options?: ElementOptions): string {
+		if (pointIds.length < 3) {
+			throw new Error('createScalarPerimeter: perimeter requires at least 3 points');
+		}
+		for (const tid of pointIds) {
+			const el = this.elements.get(tid);
+			if (!el || !isPointElement(el)) {
+				throw new Error(`createScalarPerimeter: "${tid}" is not a point element`);
+			}
+		}
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'perimeter',
+			id,
+			targetIds: pointIds,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [...pointIds]
+		};
+		this.addElement(id, element, [...pointIds]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createScalarSlope(lineId: string, options?: ElementOptions): string {
+		const lineEl = this.getElementById(lineId);
+		if (!lineEl || (lineEl.type !== 'line' && lineEl.type !== 'segment' && lineEl.type !== 'ray'))
+			throw new Error('createScalarSlope: lineId must be a line, segment, or ray');
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'slope',
+			id,
+			targetIds: [lineId],
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [lineId]
+		};
+		this.addElement(id, element, [lineId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createScalarRadius(circleId: string, options?: ElementOptions): string {
+		const circleEl = this.getElementById(circleId);
+		if (!circleEl || !isCircle(circleEl))
+			throw new Error('createScalarRadius: circleId must be a circle');
+		const id = this.generateId('sca');
+		const deps = [circleId];
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'radius',
+			id,
+			targetIds: [circleId],
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.computePosition(id);
+		return id;
+	}
+
 	createScalarExpression(
 		compute: (scalarValues: ReadonlyMap<string, number>) => number,
 		scalarDeps: string[],

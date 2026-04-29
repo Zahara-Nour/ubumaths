@@ -525,6 +525,14 @@ function serializeElement(
 					const targets = el.targetIds.map((id) => name(idToName, id)).join(', ');
 					return `${n} = aire(${targets})`;
 				}
+				case 'perimeter': {
+					const targets = el.targetIds.map((id) => name(idToName, id)).join(', ');
+					return `${n} = perimetre(${targets})`;
+				}
+				case 'slope':
+					return `${n} = pente(${name(idToName, el.targetIds[0])})`;
+				case 'radius':
+					return `${n} = rayon(${name(idToName, el.targetIds[0])})`;
 				default:
 					// expression scalars are skipped by the filter above
 					return null;
