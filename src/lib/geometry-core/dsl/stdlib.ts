@@ -39,19 +39,9 @@ macro parallele(P, A, B):
     retourne d
 
 macro bissectrice(A, V, B):
-    dax = A.x - V.x
-    day = A.y - V.y
-    dbx = B.x - V.x
-    dby = B.y - V.y
-    la = sqrt(dax * dax + day * day)
-    lb = sqrt(dbx * dbx + dby * dby)
-    uax = dax / la
-    uay = day / la
-    ubx = dbx / lb
-    uby = dby / lb
-    mx = V.x + uax + ubx
-    my = V.y + uay + uby
-    M = point(mx, my)
+    c = cercle(V, passant=A)
+    B2 = intersection(c, demidroite(V, B), 2)
+    M = milieu(A, B2)
     d = droite(V, M)
     retourne d
 
