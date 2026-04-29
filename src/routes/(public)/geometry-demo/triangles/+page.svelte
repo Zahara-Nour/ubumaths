@@ -18,12 +18,27 @@ style(G, couleur="orange")`;
 B = point(4, -2, couleur="bleu")
 C = point(1, 4, couleur="bleu")
 triangle(A, B, C)
+# droites support des cotes (pour les angles droits exterieurs)
+dBC = droite(B, C)
+dAC = droite(A, C)
+dAB = droite(A, B)
+style(dBC, couleur="gris", trait="pointilles")
+style(dAC, couleur="gris", trait="pointilles")
+style(dAB, couleur="gris", trait="pointilles")
+# hauteurs
 hA = hauteur(A, B, C)
 hB = hauteur(B, C, A)
 hC = hauteur(C, A, B)
 style(hA, couleur="gris", trait="tirets")
 style(hB, couleur="gris", trait="tirets")
 style(hC, couleur="gris", trait="tirets")
+# pieds des hauteurs + angles droits
+FA = intersection(hA, dBC)
+FB = intersection(hB, dAC)
+FC = intersection(hC, dAB)
+angle_droit(A, FA, B)
+angle_droit(B, FB, A)
+angle_droit(C, FC, A)
 H = orthocentre(A, B, C)
 style(H, couleur="rouge")`;
 
