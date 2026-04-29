@@ -152,7 +152,11 @@ class Interpreter {
 			}
 
 			case 'exprStatement': {
-				this.evaluateExpr(stmt.expr, stmt.line);
+				const exprResult = this.evaluateExpr(stmt.expr, stmt.line);
+				// In nested macros (depth > 1), hide side-effect elements too
+				if (this.macros.insideNestedMacro && exprResult) {
+					this.hideResolvedElements(exprResult);
+				}
 				break;
 			}
 
