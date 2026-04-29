@@ -10,6 +10,7 @@ import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
 import { serialize } from '../serializer';
+import { geoToNumber } from '../../compute/to-number';
 
 function run(script: string) {
 	const program = parse(script);
@@ -36,7 +37,7 @@ describe('DSL: distance() scalar', () => {
 	});
 });
 
-describe('DSL: angle() scalar', () => {
+describe('DSL: angle(P, O, Q) scalar', () => {
 	it('creates a scalar with correct angle value', () => {
 		const r = run(
 			['P = point(1, 0)', 'O = point(0, 0)', 'Q = point(0, 1)', 'a = angle(P, O, Q)'].join('\n')
@@ -45,6 +46,62 @@ describe('DSL: angle() scalar', () => {
 		expect(s).toBeDefined();
 		expect(s!.type).toBe('scalar');
 		expect(r.figure.getScalarValue(s!.figureId!)).toBeCloseTo(90, 3);
+	});
+});
+
+describe('DSL: angle(O, A) polar angle scalar', () => {
+	it('returns 0° for point on positive x-axis', () => {
+		const r = run(['O = point(0, 0)', 'A = point(3, 0)', 'a = angle(O, A)'].join('\n'));
+		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(0, 5);
+	});
+
+	it('returns 90° for point on positive y-axis', () => {
+		const r = run(['O = point(0, 0)', 'A = point(0, 5)', 'a = angle(O, A)'].join('\n'));
+		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(90, 5);
+	});
+
+	it('returns 180° for point on negative x-axis', () => {
+		const r = run(['O = point(0, 0)', 'A = point(-2, 0)', 'a = angle(O, A)'].join('\n'));
+		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(180, 5);
+	});
+
+	it('returns -90° for point on negative y-axis', () => {
+		const r = run(['O = point(0, 0)', 'A = point(0, -1)', 'a = angle(O, A)'].join('\n'));
+		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(-90, 5);
+	});
+
+	it('returns 45° for point at (1, 1)', () => {
+		const r = run(['O = point(0, 0)', 'A = point(1, 1)', 'a = angle(O, A)'].join('\n'));
+		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(45, 5);
+	});
+
+	it('works with non-origin center', () => {
+		const r = run(['O = point(2, 3)', 'A = point(5, 3)', 'a = angle(O, A)'].join('\n'));
+		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(0, 5);
+	});
+
+	it('can be used in scalar arithmetic', () => {
+		const r = run(
+			['O = point(0, 0)', 'A = point(0, 1)', 'theta = angle(O, A)', 'b = 2 * theta'].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'b')!.figureId!)).toBeCloseTo(180, 3);
+	});
+
+	it('can be used as rotation angle', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'P = point(0, 1)',
+				'theta = angle(O, A)',
+				// theta = 0° for (1,0), so rotation of P by 0° gives P itself
+				'R = rotation(P, centre=O, angle=theta)'
+			].join('\n')
+		);
+		const rId = sym(r, 'R')!.figureId!;
+		const pos = r.figure.getPosition(rId)!;
+		expect(geoToNumber(pos.x)).toBeCloseTo(0, 5);
+		expect(geoToNumber(pos.y)).toBeCloseTo(1, 5);
 	});
 });
 
@@ -395,6 +452,47 @@ describe('DSL: locus dependsOn includes scalar deps', () => {
 });
 
 // =============================================================================
+// K-bis. Rosace via polar angle + lieu
+// =============================================================================
+
+describe('DSL: rosace via angle(O, A) + lieu', () => {
+	it('produces a multi-petal locus (not a circle)', () => {
+		// r = 3*cos(3*theta) → 3-petal rosace
+		// A moves on circle of radius 3, theta = polar angle of A
+		// k = cos(3*theta) varies -1..1, B = homothetie(A, O, k) → distance = 3*cos(3*theta)
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'c = cercle(O, rayon=3)',
+				'A = point_sur(c, 0)',
+				'theta = angle(O, A)',
+				'k = cos(3 * theta)',
+				'B = homothetie(A, centre=O, rapport=k)',
+				'L = lieu(B, A)'
+			].join('\n')
+		);
+
+		const locId = sym(r, 'L')!.figureId!;
+		const el = r.figure.getElementById(locId)!;
+		expect(el.type).toBe('locus');
+
+		// Compute the locus curve
+		const curve = r.figure.computeLocusCurveForElement(locId, defaultViewport);
+		expect(curve).not.toBeNull();
+		expect(curve!.points.length).toBeGreaterThan(50);
+
+		// The locus must NOT be a circle: sample points should NOT all be
+		// at the same distance from O. A circle of radius 3 would have all
+		// points at distance 3.
+		const distances = curve!.points.map((p) => Math.sqrt(p.x * p.x + p.y * p.y));
+		const minD = Math.min(...distances);
+		const maxD = Math.max(...distances);
+		// For a rosace, distance from origin varies significantly (0 to 3)
+		expect(maxD - minD).toBeGreaterThan(1);
+	});
+});
+
+// =============================================================================
 // K. Serialization roundtrip
 // =============================================================================
 
@@ -454,7 +552,7 @@ describe('DSL: scalar serialization roundtrip', () => {
 		expect(text).toContain('rapport=d');
 	});
 
-	it('roundtrip: angle scalar', () => {
+	it('roundtrip: angle scalar (3 args)', () => {
 		const script = [
 			'P = point(1, 0)',
 			'O = point(0, 0)',
@@ -464,6 +562,16 @@ describe('DSL: scalar serialization roundtrip', () => {
 		const { figure, symbols } = run(script);
 		const text = serialize(figure, symbols);
 		expect(text).toContain('a = angle(P, O, Q)');
+	});
+
+	it('roundtrip: polar angle scalar (2 args)', () => {
+		const script = ['O = point(0, 0)', 'A = point(1, 1)', 'theta = angle(O, A)'].join('\n');
+		const { figure, symbols } = run(script);
+		const text = serialize(figure, symbols);
+		expect(text).toContain('theta = angle(O, A)');
+
+		const r2 = run(text);
+		expect(r2.figure.getScalarValue(sym(r2, 'theta')!.figureId!)).toBeCloseTo(45, 3);
 	});
 
 	it('roundtrip: norme scalar', () => {

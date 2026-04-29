@@ -997,7 +997,18 @@ function _executeBuiltinInner(
 		}
 
 		case 'angle': {
-			if (pos.length !== 3) throw new DslRuntimeError('angle() attend 3 arguments (P, O, Q)', line);
+			if (pos.length === 2) {
+				// angle(O, A) → polar angle of A relative to O (signed, -180..180 degrees)
+				const centerId = requireElement(pos[0], 'centre', line);
+				const pointId = requireElement(pos[1], 'point', line);
+				const id = figure.createScalarPolarAngle(centerId, pointId, { label });
+				return { figureId: id, symbolType: 'scalar' };
+			}
+			if (pos.length !== 3)
+				throw new DslRuntimeError(
+					'angle() attend 2 arguments (O, A) pour angle polaire ou 3 arguments (P, O, Q) pour angle au sommet',
+					line
+				);
 			const aP1Id = requireElement(pos[0], 'P1', line);
 			const aVId = requireElement(pos[1], 'vertex', line);
 			const aP2Id = requireElement(pos[2], 'P2', line);

@@ -81,7 +81,7 @@ export function resolveScalarParam(
 	scalarValues?: ReadonlyMap<string, number>
 ): number {
 	if (isScalarRef(param)) {
-		return scalarValues?.get(param.scalarRef) ?? 0;
+		return scalarValues?.get(param.scalarRef) ?? NaN;
 	}
 	return geoToNumber(param);
 }
@@ -94,11 +94,13 @@ export function resolveScalarParam(
 function resolveScalarParamToGeoValue(
 	param: ScalarParam,
 	scalarValues?: ReadonlyMap<string, number>
-): GeoValue {
+): GeoValue | null {
 	if (isScalarRef(param)) {
-		const val = scalarValues?.get(param.scalarRef) ?? 0;
-		// Guard against non-finite values from expressions (e.g. division by zero)
-		return numeric(Number.isFinite(val) ? val : 0);
+		const val = scalarValues?.get(param.scalarRef);
+		if (val === undefined || !Number.isFinite(val)) {
+			return null;
+		}
+		return numeric(val);
 	}
 	return param;
 }
@@ -222,6 +224,7 @@ export function computeElementPosition(
 		const center = positions.get(el.centerId);
 		if (source && center) {
 			const angle = resolveScalarParamToGeoValue(el.angle, scalarValues);
+			if (!angle) return { position: null, hasComputablePosition: true };
 			return { position: rotate(source, center, angle), hasComputablePosition: true };
 		}
 		return { position: null, hasComputablePosition: true };
@@ -261,6 +264,7 @@ export function computeElementPosition(
 		const center = positions.get(el.centerId);
 		if (source && center) {
 			const factor = resolveScalarParamToGeoValue(el.factor, scalarValues);
+			if (!factor) return { position: null, hasComputablePosition: true };
 			return { position: dilate(source, center, factor), hasComputablePosition: true };
 		}
 		return { position: null, hasComputablePosition: true };
@@ -531,6 +535,7 @@ function getCircleParams(
 		const center = positions.get(el.centerId);
 		if (!center) return null;
 		const radius = resolveScalarParamToGeoValue(el.radius, scalarValues);
+		if (!radius) return null;
 		return { center, radius };
 	}
 	if (el.type === 'circleByPoint') {
@@ -702,6 +707,17 @@ function computeScalarValue(
 			const cosAngle = Math.max(-1, Math.min(1, dot / (lenA * lenB)));
 			const radians = Math.acos(cosAngle);
 			return (radians * 180) / Math.PI;
+		}
+		case 'polar_angle': {
+			const [centerId, pointId] = el.targetIds;
+			const center = positions.get(centerId);
+			const point = positions.get(pointId);
+			if (!center || !point) return undefined;
+			const dx = geoToNumber(point.x) - geoToNumber(center.x);
+			const dy = geoToNumber(point.y) - geoToNumber(center.y);
+			if (Math.abs(dx) < 1e-15 && Math.abs(dy) < 1e-15) return undefined;
+			const rad = Math.atan2(dy, dx);
+			return (rad * 180) / Math.PI;
 		}
 		case 'area': {
 			const points = el.targetIds.map((tid) => positions.get(tid));

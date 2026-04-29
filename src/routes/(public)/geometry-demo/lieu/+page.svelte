@@ -58,8 +58,9 @@ L = lieu(P, A, couleur="violet")`;
 	const rosaceDsl = `O = point(0, 0, couleur="bleu")
 c = cercle(O, rayon=3, couleur="bleu")
 A = point_sur(c, 0, couleur="rouge")
-P = point(5, 3, couleur="vert")
-B = homothetie(P, centre=A, rapport=0.5, couleur="orange")
+theta = angle(O, A)
+k = cos(3 * theta)
+B = homothetie(A, centre=O, rapport=k, couleur="orange")
 L = lieu(B, A, couleur="violet")`;
 
 	const cissoidDsl = `O = point(0, 0, couleur="bleu")
@@ -210,8 +211,8 @@ L = lieu(C, A, couleur="violet")`;
 
 	<DslDemo
 		dsl={rosaceDsl}
-		title="8. Homothetie variable"
-		description="A sur le cercle, P fixe. B = homothetie(P, centre=A, rapport=0.5). Deplacez P pour explorer."
+		title="8. Rosace r = 3·cos(3θ)"
+		description="A sur le cercle, θ = angle polaire de A. B = homothetie(A, centre=O, rapport=cos(3θ)). Rosace à 3 pétales."
 		width={600}
 		height={400}
 	/>
