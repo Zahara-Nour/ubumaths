@@ -283,6 +283,17 @@ const richTextSchema = baseElementSchema.extend({
 	dependsOn: z.array(z.string())
 });
 
+const imageSchema = baseElementSchema.extend({
+	type: z.literal('image'),
+	url: z.string().min(1),
+	width: z.number().positive(),
+	height: z.number().positive().optional(),
+	anchorId: z.string().min(1).optional(),
+	anchorOffset: z.object({ dx: z.number().finite(), dy: z.number().finite() }).optional(),
+	position: z.object({ x: z.number().finite(), y: z.number().finite() }).optional(),
+	dependsOn: z.array(z.string())
+});
+
 const arcByAnglesSchema = baseElementSchema.extend({
 	type: z.literal('arcByAngles'),
 	centerId: z.string().min(1),
@@ -347,6 +358,7 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	textSchema,
 	mathTextSchema,
 	richTextSchema,
+	imageSchema,
 	segmentSchema,
 	lineSchema,
 	raySchema,

@@ -37,6 +37,23 @@ describe('DSL image() — free position', () => {
 	it('throws on insufficient arguments', () => {
 		expect(() => runDsl('img = image("https://example.com/d.png")')).toThrow();
 	});
+
+	it('accepts relative URLs starting with /', () => {
+		const { figure } = runDsl('img = image("/static/photo.png", 0, 0, largeur=3)');
+		const images = figure.getAllElements().filter((e) => e.type === 'image');
+		expect(images).toHaveLength(1);
+		expect((images[0] as GeoImage).url).toBe('/static/photo.png');
+	});
+
+	it('rejects javascript: URLs', () => {
+		expect(() => runDsl('img = image("javascript:alert(1)", 0, 0, largeur=3)')).toThrow(/URL/);
+	});
+
+	it('rejects data: URLs', () => {
+		expect(() => runDsl('img = image("data:image/png;base64,abc", 0, 0, largeur=3)')).toThrow(
+			/URL/
+		);
+	});
 });
 
 describe('DSL image() — anchored', () => {

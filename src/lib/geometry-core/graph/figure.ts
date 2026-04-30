@@ -2469,7 +2469,7 @@ export class Figure {
 			id,
 			url,
 			width,
-			height: height ?? undefined,
+			height,
 			anchorId: positioning.anchorId,
 			anchorOffset: positioning.anchorOffset,
 			position: positioning.position,

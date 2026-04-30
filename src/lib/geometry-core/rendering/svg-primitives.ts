@@ -28,7 +28,6 @@ import {
 	type GeoText,
 	type GeoMathText,
 	type GeoRichText,
-	type GeoImage,
 	type GeoSegment,
 	type GeoLine,
 	type GeoRay,
@@ -1015,33 +1014,29 @@ export function imageToSVG(
 	const el = figure.getElementById(id);
 	if (!el || !isImage(el)) return null;
 
-	const imgEl = el as GeoImage;
-	const widthPx = imgEl.width * Math.abs(transformer.scaleX);
-	const heightPx =
-		imgEl.height !== undefined ? imgEl.height * Math.abs(transformer.scaleY) : undefined;
+	const widthPx = el.width * Math.abs(transformer.scaleX);
+	const heightPx = el.height !== undefined ? el.height * Math.abs(transformer.scaleY) : undefined;
 
 	// Anchored to a point
-	if (imgEl.anchorId) {
-		const anchorPos = figure.getPosition(imgEl.anchorId);
+	if (el.anchorId) {
+		const anchorPos = figure.getPosition(el.anchorId);
 		if (!anchorPos) return null;
 		const svgAnchor = transformer.mathToSvg(geoToNumber(anchorPos.x), geoToNumber(anchorPos.y));
-		const dx = (imgEl.anchorOffset?.dx ?? 0) * transformer.scaleX;
-		const dy = -(imgEl.anchorOffset?.dy ?? 0) * transformer.scaleY;
+		const dx = (el.anchorOffset?.dx ?? 0) * transformer.scaleX;
+		const dy = -(el.anchorOffset?.dy ?? 0) * transformer.scaleY;
 		return {
 			x: svgAnchor.x + dx,
 			y: svgAnchor.y + dy,
 			width: widthPx,
 			height: heightPx,
-			url: imgEl.url
+			url: el.url
 		};
 	}
 
-	// Free position
-	if (imgEl.position) {
-		const svgPos = transformer.mathToSvg(imgEl.position.x, imgEl.position.y);
-		// Math (x,y) is bottom-left; SVG needs top-left, so shift up by height
-		const yOffset = heightPx ?? widthPx; // fallback to square if no height
-		return { x: svgPos.x, y: svgPos.y - yOffset, width: widthPx, height: heightPx, url: imgEl.url };
+	// Free position — (x,y) in math is the reference point; SVG <image> starts top-left
+	if (el.position) {
+		const svgPos = transformer.mathToSvg(el.position.x, el.position.y);
+		return { x: svgPos.x, y: svgPos.y, width: widthPx, height: heightPx, url: el.url };
 	}
 
 	return null;
