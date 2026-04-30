@@ -11,6 +11,7 @@ import type { Viewport } from '../viewport/types';
 import type { GeoElement, ConicParams } from '../types/elements';
 import { isPointElement, isVector } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
+import { circumcircle } from '../geometry/circumcircle';
 import { resolveStyle } from './svg-primitives';
 
 export interface TikZExportOptions {
@@ -195,6 +196,23 @@ export function exportToTikZ(
 			const dy = geoToNumber(edge.y) - cy;
 			const r = Math.sqrt(dx * dx + dy * dy);
 			lines.push(`  \\draw[${opts}] ${coord(cx, cy)} circle (${Math.round(r * 1000) / 1000});`);
+		} else if (el.type === 'circleBy3Points') {
+			const p1 = figure.getPosition(el.point1Id);
+			const p2 = figure.getPosition(el.point2Id);
+			const p3 = figure.getPosition(el.point3Id);
+			if (!p1 || !p2 || !p3) continue;
+			const cc = circumcircle(
+				geoToNumber(p1.x),
+				geoToNumber(p1.y),
+				geoToNumber(p2.x),
+				geoToNumber(p2.y),
+				geoToNumber(p3.x),
+				geoToNumber(p3.y)
+			);
+			if (!cc) continue;
+			lines.push(
+				`  \\draw[${opts}] ${coord(cc.ux, cc.uy)} circle (${Math.round(cc.r * 1000) / 1000});`
+			);
 		}
 	}
 

@@ -32,7 +32,9 @@
 		tangentToQuadraticToSVG,
 		conicPolarToSVG,
 		locusToSVG,
-		traceToSVG
+		traceToSVG,
+		sectorToSVG,
+		annulusToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
 	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
@@ -991,7 +993,7 @@
 							>
 						{/if}
 					{/if}
-				{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint'}
+				{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint' || el.type === 'circleBy3Points'}
 					{@const svg = circleToSVG(el.id, figure, transformer)}
 					{#if svg}
 						{#if isRough(sty, el.type) && rc}
@@ -1069,6 +1071,34 @@
 								class:hovered={hoveredId === el.id}
 							/>
 						{/if}
+					{/if}
+				{:else if el.type === 'sectorByPoints' || el.type === 'sectorByAngles'}
+					{@const svg = sectorToSVG(el.id, figure, transformer)}
+					{#if svg}
+						<path
+							d={svg.path}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							opacity={sty.opacity}
+							fill={sty.fillColor ?? sty.color}
+							fill-opacity={sty.fillOpacity ?? 0.3}
+							class:hovered={hoveredId === el.id}
+						/>
+					{/if}
+				{:else if el.type === 'annulus'}
+					{@const svg = annulusToSVG(el.id, figure, transformer)}
+					{#if svg}
+						<path
+							d={svg.path}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							opacity={sty.opacity}
+							fill={sty.fillColor ?? sty.color}
+							fill-opacity={sty.fillOpacity ?? 0.3}
+							fill-rule="evenodd"
+							class:hovered={hoveredId === el.id}
+						/>
 					{/if}
 				{:else if el.type === 'tangentLine'}
 					{@const svg = tangentLineToSVG(el.id, figure, transformer, dims)}

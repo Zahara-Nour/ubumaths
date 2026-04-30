@@ -31,8 +31,12 @@ import type {
 	GeoRichText,
 	GeoCircleByRadius,
 	GeoCircleByPoint,
+	GeoCircleBy3Points,
 	GeoArcByAngles,
 	GeoArcByPoints,
+	GeoSectorByPoints,
+	GeoSectorByAngles,
+	GeoAnnulus,
 	GeoPolygon,
 	GeoFunction,
 	GeoQuadraticCurve,
@@ -648,6 +652,30 @@ export class Figure {
 			dependsOn: [centerId, edgePointId]
 		};
 		this.addElement(id, element, [centerId, edgePointId]);
+		return id;
+	}
+
+	createCircleBy3Points(
+		point1Id: string,
+		point2Id: string,
+		point3Id: string,
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('circ');
+		const element: GeoCircleBy3Points = {
+			type: 'circleBy3Points',
+			id,
+			point1Id,
+			point2Id,
+			point3Id,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [point1Id, point2Id, point3Id]
+		};
+		this.addElement(id, element, [point1Id, point2Id, point3Id]);
 		return id;
 	}
 
@@ -1480,6 +1508,97 @@ export class Figure {
 		return id;
 	}
 
+	// ─── Sector factories ─────────────────────────────────────────
+
+	createSectorByPoints(
+		centerId: string,
+		startId: string,
+		endId: string,
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('sec');
+		const element: GeoSectorByPoints = {
+			type: 'sectorByPoints',
+			id,
+			centerId,
+			startId,
+			endId,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: options?.style
+				? { ...options.style }
+				: { fillColor: this.resolveColor(options), fillOpacity: 0.3 },
+			dependsOn: [centerId, startId, endId]
+		};
+		this.addElement(id, element, [centerId, startId, endId]);
+		return id;
+	}
+
+	createSectorByAngles(
+		centerId: string,
+		radius: ScalarParam,
+		startAngle: ScalarParam,
+		endAngle: ScalarParam,
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('sec');
+		const deps: string[] = [centerId];
+		if (isScalarRef(radius)) deps.push(radius.scalarRef);
+		if (isScalarRef(startAngle)) deps.push(startAngle.scalarRef);
+		if (isScalarRef(endAngle)) deps.push(endAngle.scalarRef);
+		const element: GeoSectorByAngles = {
+			type: 'sectorByAngles',
+			id,
+			centerId,
+			radius,
+			startAngle,
+			endAngle,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: options?.style
+				? { ...options.style }
+				: { fillColor: this.resolveColor(options), fillOpacity: 0.3 },
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
+	// ─── Annulus factories ────────────────────────────────────────
+
+	createAnnulus(
+		centerId: string,
+		innerRadius: ScalarParam,
+		outerRadius: ScalarParam,
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('ann');
+		const deps: string[] = [centerId];
+		if (isScalarRef(innerRadius)) deps.push(innerRadius.scalarRef);
+		if (isScalarRef(outerRadius)) deps.push(outerRadius.scalarRef);
+		const element: GeoAnnulus = {
+			type: 'annulus',
+			id,
+			centerId,
+			innerRadius,
+			outerRadius,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: options?.style
+				? { ...options.style }
+				: { fillColor: this.resolveColor(options), fillOpacity: 0.3 },
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
 	// ─── Annotation factories ───────────────────────────────────────
 
 	createAngleMark(
@@ -1917,7 +2036,12 @@ export class Figure {
 
 	createPointOnCircle(circleId: string, theta: number, options?: ElementOptions): string {
 		const circEl = this.elements.get(circleId);
-		if (!circEl || (circEl.type !== 'circleByRadius' && circEl.type !== 'circleByPoint')) {
+		if (
+			!circEl ||
+			(circEl.type !== 'circleByRadius' &&
+				circEl.type !== 'circleByPoint' &&
+				circEl.type !== 'circleBy3Points')
+		) {
 			throw new Error(`createPointOnCircle: "${circleId}" is not a circle element`);
 		}
 
@@ -2526,6 +2650,27 @@ export class Figure {
 			dependsOn: [circleId]
 		};
 		this.addElement(id, element, [circleId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createScalarPower(pointId: string, circleId: string, options?: ElementOptions): string {
+		const circleEl = this.getElementById(circleId);
+		if (!circleEl || !isCircle(circleEl))
+			throw new Error('createScalarPower: circleId must be a circle');
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'power',
+			id,
+			targetIds: [pointId, circleId],
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [pointId, circleId]
+		};
+		this.addElement(id, element, [pointId, circleId]);
 		this.computePosition(id);
 		return id;
 	}
