@@ -1206,6 +1206,58 @@ function _executeBuiltinInner(
 			return { figureId: rtId, symbolType: 'richText' };
 		}
 
+		case 'image': {
+			// image("url", x, y, largeur=W)            — free position
+			// image("url", x, y, largeur=W, hauteur=H) — free position + height
+			// image("url", point, largeur=W, dx=D, dy=E) — anchored
+			if (pos.length < 2) throw new DslRuntimeError('image() attend au moins 2 arguments', line);
+			if (pos[0].type !== 'string')
+				throw new DslRuntimeError('image(): le 1er argument doit etre une URL (chaine)', line);
+			const imgUrl = (pos[0] as { type: 'string'; value: string }).value;
+
+			if (!named.has('largeur'))
+				throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
+			const imgWidth = requireNumber(named.get('largeur')!, 'largeur', line);
+			const imgHeight = named.has('hauteur')
+				? requireNumber(named.get('hauteur')!, 'hauteur', line)
+				: undefined;
+
+			let imgPositioning: {
+				anchorId?: string;
+				anchorOffset?: { dx: number; dy: number };
+				position?: { x: number; y: number };
+			};
+
+			if (pos.length >= 3 && pos[1].type === 'nombre' && pos[2].type === 'nombre') {
+				// image("url", x, y, largeur=W)
+				const x = (pos[1] as { type: 'nombre'; value: number }).value;
+				const y = (pos[2] as { type: 'nombre'; value: number }).value;
+				imgPositioning = { position: { x, y } };
+			} else if (pos[1].type === 'element') {
+				// image("url", point, largeur=W, dx=..., dy=...)
+				const anchorId = requireElement(pos[1], 'anchor', line);
+				const dx = named.has('dx')
+					? (named.get('dx')! as { type: 'nombre'; value: number }).value
+					: undefined;
+				const dy = named.has('dy')
+					? (named.get('dy')! as { type: 'nombre'; value: number }).value
+					: undefined;
+				imgPositioning = {
+					anchorId,
+					anchorOffset:
+						dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
+				};
+			} else {
+				throw new DslRuntimeError(
+					'image() attend: image("url", x, y, largeur=...) ou image("url", point, largeur=..., dx=..., dy=...)',
+					line
+				);
+			}
+
+			const imgId = figure.createImage(imgUrl, imgWidth, imgHeight, imgPositioning, { label });
+			return { figureId: imgId, symbolType: 'image' };
+		}
+
 		case 'distance': {
 			if (pos.length !== 2)
 				throw new DslRuntimeError(
@@ -1849,6 +1901,7 @@ export const BUILTIN_NAMES = new Set([
 	'texte',
 	'mtexte',
 	'rtexte',
+	'image',
 	'aire',
 	'style',
 	'courbe',

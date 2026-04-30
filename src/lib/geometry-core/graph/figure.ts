@@ -29,6 +29,7 @@ import type {
 	GeoText,
 	GeoMathText,
 	GeoRichText,
+	GeoImage,
 	GeoCircleByRadius,
 	GeoCircleByPoint,
 	GeoCircleBy3Points,
@@ -2450,6 +2451,38 @@ export class Figure {
 		return id;
 	}
 
+	createImage(
+		url: string,
+		width: number,
+		height: number | undefined,
+		positioning: {
+			anchorId?: string;
+			anchorOffset?: { dx: number; dy: number };
+			position?: { x: number; y: number };
+		},
+		options?: ElementOptions
+	): string {
+		const deps = this._collectTextDeps([], positioning);
+		const id = this.generateId('img');
+		const element: GeoImage = {
+			type: 'image',
+			id,
+			url,
+			width,
+			height: height ?? undefined,
+			anchorId: positioning.anchorId,
+			anchorOffset: positioning.anchorOffset,
+			position: positioning.position,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
 	/**
 	 * Resolve a text element's template, replacing {scalarId} with formatted values.
 	 * Supports: {id}, {id:.2f}, {id:deg}, {id*2}, {id+other:.1f}
@@ -2902,6 +2935,20 @@ export class Figure {
 			throw new Error(`moveText: "${id}" is not a free-positioned text`);
 		}
 		const updated: GeoText | GeoMathText | GeoRichText = { ...textEl, position: { x, y } };
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+	}
+
+	moveImage(id: string, x: number, y: number): void {
+		const el = this.elements.get(id);
+		if (!el || el.type !== 'image') {
+			throw new Error(`moveImage: "${id}" is not an image element`);
+		}
+		const imgEl = el as GeoImage;
+		if (!imgEl.position) {
+			throw new Error(`moveImage: "${id}" is not a free-positioned image`);
+		}
+		const updated: GeoImage = { ...imgEl, position: { x, y } };
 		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
 	}

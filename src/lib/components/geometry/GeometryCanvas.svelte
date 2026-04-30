@@ -34,7 +34,8 @@
 		locusToSVG,
 		traceToSVG,
 		sectorToSVG,
-		annulusToSVG
+		annulusToSVG,
+		imageToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
 	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
@@ -491,6 +492,12 @@
 				dragEl.position
 			) {
 				figure.moveText(draggingId, math.x + (dragOffset?.dx ?? 0), math.y + (dragOffset?.dy ?? 0));
+			} else if (dragEl?.type === 'image' && dragEl.position) {
+				figure.moveImage(
+					draggingId,
+					math.x + (dragOffset?.dx ?? 0),
+					math.y + (dragOffset?.dy ?? 0)
+				);
 			} else {
 				figure.movePoint(draggingId, numeric(math.x), numeric(math.y));
 			}
@@ -1667,6 +1674,44 @@
 									{@html inlineNodesToHTML(inlineNodes)}
 								</div>
 							</foreignObject>
+						</g>
+					{/if}
+				{/if}
+			{/each}
+
+			<!-- Image elements -->
+			{#each elements as el (`${el.id}_img_${version}`)}
+				{#if el.type === 'image'}
+					{@const svg = imageToSVG(el.id, figure, transformer)}
+					{@const sty = resolveStyle(el, figure.defaults)}
+					{@const isDraggable = !!el.position}
+					{#if svg}
+						<g
+							class:draggable-text={isDraggable}
+							onpointerdown={isDraggable
+								? (e: PointerEvent) => {
+										if (e.button !== 0) return;
+										draggingId = el.id;
+										const math = getMathCoords(e);
+										dragOffset = math
+											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
+											: null;
+										figure.beginTransaction();
+										svgRef?.setPointerCapture(e.pointerId);
+										e.preventDefault();
+										e.stopPropagation();
+									}
+								: undefined}
+						>
+							<image
+								href={svg.url}
+								x={svg.x}
+								y={svg.y}
+								width={svg.width}
+								height={svg.height}
+								opacity={sty.opacity ?? 1}
+								preserveAspectRatio="xMidYMid meet"
+							/>
 						</g>
 					{/if}
 				{/if}

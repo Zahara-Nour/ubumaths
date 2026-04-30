@@ -138,6 +138,8 @@ function typePrefix(type: string): string {
 			return 'mtxt';
 		case 'richText':
 			return 'rtxt';
+		case 'image':
+			return 'img';
 		case 'function':
 		case 'quadraticCurve':
 		case 'implicitCurve':
@@ -396,6 +398,21 @@ function serializeElement(
 				return `rtexte(${el.position.x}, ${el.position.y}, "${el.template}")`;
 			}
 			return `rtexte(0, 0, "${el.template}")`;
+		}
+
+		case 'image': {
+			const heightPart = el.height !== undefined ? `, hauteur=${fmtNum(el.height)}` : '';
+			if (el.anchorId) {
+				const anchor = name(idToName, el.anchorId);
+				const offset = el.anchorOffset
+					? `, dx=${fmtNum(el.anchorOffset.dx)}, dy=${fmtNum(el.anchorOffset.dy)}`
+					: '';
+				return `image("${el.url}", ${anchor}, largeur=${fmtNum(el.width)}${heightPart}${offset})`;
+			}
+			if (el.position) {
+				return `image("${el.url}", ${fmtNum(el.position.x)}, ${fmtNum(el.position.y)}, largeur=${fmtNum(el.width)}${heightPart})`;
+			}
+			return `image("${el.url}", 0, 0, largeur=${fmtNum(el.width)}${heightPart})`;
 		}
 
 		case 'polygon': {

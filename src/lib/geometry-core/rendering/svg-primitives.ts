@@ -19,6 +19,7 @@ import {
 	isText,
 	isMathText,
 	isRichText,
+	isImage,
 	isArcByAngles,
 	isArcByPoints,
 	type GeoElementBase,
@@ -27,6 +28,7 @@ import {
 	type GeoText,
 	type GeoMathText,
 	type GeoRichText,
+	type GeoImage,
 	type GeoSegment,
 	type GeoLine,
 	type GeoRay,
@@ -977,6 +979,69 @@ export function textToSVG(
 	if (textEl.position) {
 		const svgPos = transformer.mathToSvg(textEl.position.x, textEl.position.y);
 		return { x: svgPos.x, y: svgPos.y, text };
+	}
+
+	return null;
+}
+
+// =============================================================================
+// Image rendering
+// =============================================================================
+
+export interface ImageSVG {
+	/** Top-left corner X in SVG coordinates. */
+	x: number;
+	/** Top-left corner Y in SVG coordinates. */
+	y: number;
+	/** Width in SVG pixels. */
+	width: number;
+	/** Height in SVG pixels (undefined = preserve aspect ratio). */
+	height?: number;
+	/** Image URL. */
+	url: string;
+}
+
+/**
+ * Convert a GeoImage element to SVG image attributes.
+ *
+ * Position (x, y) in math coordinates is the bottom-left corner of the image
+ * (math y-up). In SVG (y-down), we convert to the top-left corner.
+ */
+export function imageToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): ImageSVG | null {
+	const el = figure.getElementById(id);
+	if (!el || !isImage(el)) return null;
+
+	const imgEl = el as GeoImage;
+	const widthPx = imgEl.width * Math.abs(transformer.scaleX);
+	const heightPx =
+		imgEl.height !== undefined ? imgEl.height * Math.abs(transformer.scaleY) : undefined;
+
+	// Anchored to a point
+	if (imgEl.anchorId) {
+		const anchorPos = figure.getPosition(imgEl.anchorId);
+		if (!anchorPos) return null;
+		const svgAnchor = transformer.mathToSvg(geoToNumber(anchorPos.x), geoToNumber(anchorPos.y));
+		const dx = (imgEl.anchorOffset?.dx ?? 0) * transformer.scaleX;
+		const dy = -(imgEl.anchorOffset?.dy ?? 0) * transformer.scaleY;
+		return {
+			x: svgAnchor.x + dx,
+			y: svgAnchor.y + dy,
+			width: widthPx,
+			height: heightPx,
+			url: imgEl.url
+		};
+	}
+
+	// Free position
+	if (imgEl.position) {
+		const svgPos = transformer.mathToSvg(imgEl.position.x, imgEl.position.y);
+		// Math (x,y) is bottom-left; SVG needs top-left, so shift up by height
+		const yOffset = heightPx ?? widthPx; // fallback to square if no height
+		return { x: svgPos.x, y: svgPos.y - yOffset, width: widthPx, height: heightPx, url: imgEl.url };
 	}
 
 	return null;
