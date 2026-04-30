@@ -10,6 +10,7 @@ import type { Viewport } from '../viewport/types';
 import type { ConicParams } from '../types/elements';
 import { isPointElement, isVector } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
+import { circumcircle } from '../geometry/circumcircle';
 import { resolveStyle } from './svg-primitives';
 
 export interface TypstExportOptions {
@@ -177,6 +178,23 @@ export function exportToTypst(
 			const r = Math.sqrt((geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2);
 			lines.push(
 				`  circle(${c(cx, cy)}, radius: ${Math.round(r * 1000) / 1000}, stroke: ${stroke}, fill: none)`
+			);
+		} else if (el.type === 'circleBy3Points') {
+			const p1 = figure.getPosition(el.point1Id);
+			const p2 = figure.getPosition(el.point2Id);
+			const p3 = figure.getPosition(el.point3Id);
+			if (!p1 || !p2 || !p3) continue;
+			const cc = circumcircle(
+				geoToNumber(p1.x),
+				geoToNumber(p1.y),
+				geoToNumber(p2.x),
+				geoToNumber(p2.y),
+				geoToNumber(p3.x),
+				geoToNumber(p3.y)
+			);
+			if (!cc) continue;
+			lines.push(
+				`  circle(${c(cc.ux, cc.uy)}, radius: ${Math.round(cc.r * 1000) / 1000}, stroke: ${stroke}, fill: none)`
 			);
 		}
 	}

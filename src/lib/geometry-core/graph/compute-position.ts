@@ -41,6 +41,7 @@ import type { GeoPoint } from '../types/primitives';
 import type { GeoValue, ScalarParam } from '../types/geo-value';
 import { isScalarRef } from '../types/geo-value';
 import { geoAdd, geoSub, geoMul, geoDiv, geoSqrt, geoFromNumber } from '../compute/geo-arithmetic';
+import { circumcircle } from '../geometry/circumcircle';
 import { geoToNumber } from '../compute/to-number';
 import { numeric } from '../types/geo-value';
 import {
@@ -404,26 +405,49 @@ export function computeElementPosition(
 
 	if (isPointOnCircle(el)) {
 		const circEl = elements.get(el.circleId);
-		if (circEl && (circEl.type === 'circleByRadius' || circEl.type === 'circleByPoint')) {
-			const centerPos = positions.get(circEl.centerId);
-			if (centerPos) {
-				let r: number;
+		if (
+			circEl &&
+			(circEl.type === 'circleByRadius' ||
+				circEl.type === 'circleByPoint' ||
+				circEl.type === 'circleBy3Points')
+		) {
+			let cx: number, cy: number, r: number;
+			if (circEl.type === 'circleBy3Points') {
+				const p1 = positions.get(circEl.point1Id);
+				const p2 = positions.get(circEl.point2Id);
+				const p3 = positions.get(circEl.point3Id);
+				if (!p1 || !p2 || !p3) return { position: null, hasComputablePosition: true };
+				const cc = circumcircle(
+					geoToNumber(p1.x),
+					geoToNumber(p1.y),
+					geoToNumber(p2.x),
+					geoToNumber(p2.y),
+					geoToNumber(p3.x),
+					geoToNumber(p3.y)
+				);
+				if (!cc) return { position: null, hasComputablePosition: true };
+				cx = cc.ux;
+				cy = cc.uy;
+				r = cc.r;
+			} else {
+				const centerPos = positions.get(circEl.centerId);
+				if (!centerPos) return { position: null, hasComputablePosition: true };
+				cx = geoToNumber(centerPos.x);
+				cy = geoToNumber(centerPos.y);
 				if (circEl.type === 'circleByRadius') {
 					r = resolveScalarParam(circEl.radius, scalarValues);
 				} else {
 					const edgePos = positions.get(circEl.edgePointId);
 					if (!edgePos) return { position: null, hasComputablePosition: true };
-					const dx = geoToNumber(edgePos.x) - geoToNumber(centerPos.x);
-					const dy = geoToNumber(edgePos.y) - geoToNumber(centerPos.y);
+					const dx = geoToNumber(edgePos.x) - cx;
+					const dy = geoToNumber(edgePos.y) - cy;
 					r = Math.sqrt(dx * dx + dy * dy);
 				}
-				if (!Number.isFinite(r)) return { position: null, hasComputablePosition: true };
-				const cx = geoToNumber(centerPos.x);
-				const cy = geoToNumber(centerPos.y);
-				const x = cx + r * Math.cos(el.theta);
-				const y = cy + r * Math.sin(el.theta);
-				return { position: { x: numeric(x), y: numeric(y) }, hasComputablePosition: true };
 			}
+			if (!Number.isFinite(r)) return { position: null, hasComputablePosition: true };
+			const x = cx + r * Math.cos(el.theta);
+			const y = cy + r * Math.sin(el.theta);
+			return { position: { x: numeric(x), y: numeric(y) }, hasComputablePosition: true };
 		}
 		return { position: null, hasComputablePosition: true };
 	}
@@ -548,6 +572,27 @@ function getCircleParams(
 		const dy = geoSub(edge.y, center.y);
 		const radius = geoSqrt(geoAdd(geoMul(dx, dx), geoMul(dy, dy)));
 		if (radius === null) return null;
+		return { center, radius };
+	}
+	if (el.type === 'circleBy3Points') {
+		const p1 = positions.get(el.point1Id);
+		const p2 = positions.get(el.point2Id);
+		const p3 = positions.get(el.point3Id);
+		if (!p1 || !p2 || !p3) return null;
+		const cc = circumcircle(
+			geoToNumber(p1.x),
+			geoToNumber(p1.y),
+			geoToNumber(p2.x),
+			geoToNumber(p2.y),
+			geoToNumber(p3.x),
+			geoToNumber(p3.y)
+		);
+		if (!cc) return null;
+		const center: GeoPoint = {
+			x: { kind: 'numeric', value: cc.ux },
+			y: { kind: 'numeric', value: cc.uy }
+		};
+		const radius: GeoValue = { kind: 'numeric', value: cc.r };
 		return { center, radius };
 	}
 	return null;
@@ -820,6 +865,17 @@ function computeScalarValue(
 			const circParams = getCircleParams(el.targetIds[0], positions, elements, scalarValues);
 			if (!circParams) return undefined;
 			return geoToNumber(circParams.radius);
+		}
+		case 'power': {
+			const [pointId, circleId] = el.targetIds;
+			const point = positions.get(pointId);
+			const circParams = getCircleParams(circleId, positions, elements, scalarValues);
+			if (!point || !circParams) return undefined;
+			const dx = geoToNumber(point.x) - geoToNumber(circParams.center.x);
+			const dy = geoToNumber(point.y) - geoToNumber(circParams.center.y);
+			const distSq = dx * dx + dy * dy;
+			const r = geoToNumber(circParams.radius);
+			return distSq - r * r;
 		}
 		case 'expression': {
 			if (!el.compute) return undefined;

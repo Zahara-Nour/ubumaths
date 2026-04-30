@@ -18,6 +18,8 @@ export type SymbolType =
 	| 'mathText'
 	| 'richText'
 	| 'arc'
+	| 'secteur'
+	| 'couronne'
 	| 'courbe'
 	| 'tangente'
 	| 'vecteur'

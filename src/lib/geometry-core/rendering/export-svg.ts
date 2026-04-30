@@ -19,6 +19,8 @@ import {
 	vectorToSVG,
 	circleToSVG,
 	arcToSVG,
+	sectorToSVG,
+	annulusToSVG,
 	angleMarkToSVG,
 	segmentMarkToSVG,
 	textToSVG
@@ -196,7 +198,12 @@ export function exportToSVG(
 	// Pass 2: circles
 	for (const el of elements) {
 		if (!el.visible) continue;
-		if (el.type !== 'circleByRadius' && el.type !== 'circleByPoint') continue;
+		if (
+			el.type !== 'circleByRadius' &&
+			el.type !== 'circleByPoint' &&
+			el.type !== 'circleBy3Points'
+		)
+			continue;
 		const sty = resolveStyle(el, figure.defaults);
 		const svg = circleToSVG(el.id, figure, transformer);
 		if (!svg) continue;
@@ -260,6 +267,35 @@ export function exportToSVG(
 				`  <polygon points="${pts}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${dashAttr}${opacityAttr} ${fillAttr} />`
 			);
 		}
+	}
+
+	// Pass 2c: sectors
+	for (const el of elements) {
+		if (!el.visible) continue;
+		if (el.type !== 'sectorByPoints' && el.type !== 'sectorByAngles') continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const svg = sectorToSVG(el.id, figure, transformer);
+		if (!svg) continue;
+		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
+		const fillColor = sty.fillColor ?? sty.color;
+		const fillOpacity = sty.fillOpacity ?? 0.3;
+		lines.push(
+			`  <path d="${svg.path}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${opacityAttr} fill="${fillColor}" fill-opacity="${fillOpacity}" />`
+		);
+	}
+
+	// Pass 2d: annuli
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'annulus') continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const svg = annulusToSVG(el.id, figure, transformer);
+		if (!svg) continue;
+		const opacityAttr = sty.opacity < 1 ? ` opacity="${sty.opacity}"` : '';
+		const fillColor = sty.fillColor ?? sty.color;
+		const fillOpacity = sty.fillOpacity ?? 0.3;
+		lines.push(
+			`  <path d="${svg.path}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}"${opacityAttr} fill="${fillColor}" fill-opacity="${fillOpacity}" fill-rule="evenodd" />`
+		);
 	}
 
 	// Pass 3: angle marks

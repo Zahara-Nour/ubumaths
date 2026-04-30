@@ -140,6 +140,14 @@ macro etoile(centre, rayon, n, saut=2):
         segment(P[i], P[(i + saut) % n])
     retourne P
 
+# ─── Corde ───────────────────────────────────────────────────
+
+macro corde(c, d):
+    P1 = intersection(c, d, 1)
+    P2 = intersection(c, d, 2)
+    s = segment(P1, P2)
+    retourne (P1, P2, s)
+
 # ─── Cercles remarquables ────────────────────────────────────
 
 macro cercle_circonscrit(A, B, C):

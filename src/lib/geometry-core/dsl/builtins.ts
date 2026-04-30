@@ -167,7 +167,9 @@ const STYLE_ARGS = new Set([
 	'rugosite',
 	'courbure',
 	'motif',
-	'sommets_nets'
+	'sommets_nets',
+	'remplissage',
+	'opacite_fond'
 ]);
 
 function applyInlineStyle(
@@ -238,6 +240,14 @@ function applyInlineStyle(
 	if (named.has('sommets_nets')) {
 		const sv = named.get('sommets_nets')!;
 		style.roughPreserveVertices = sv.type === 'nombre' ? sv.value !== 0 : true;
+	}
+	if (named.has('remplissage')) {
+		const fv = named.get('remplissage')!;
+		const fillStr = fv.type === 'string' ? fv.value : fv.type === 'nombre' ? String(fv.value) : '';
+		style.fillColor = resolveColorName(fillStr);
+	}
+	if (named.has('opacite_fond')) {
+		style.fillOpacity = requireNumber(named.get('opacite_fond')!, 'opacite_fond', line);
 	}
 	if (Object.keys(style).length > 0) {
 		figure.updateStyle(elId, style);
@@ -434,8 +444,34 @@ function _executeBuiltinInner(
 		}
 
 		case 'cercle': {
+			if (pos.length === 3) {
+				// cercle(A, B, C) — circle through 3 points
+				const p1Id = requireElement(pos[0], 'point1', line);
+				const p2Id = requireElement(pos[1], 'point2', line);
+				const p3Id = requireElement(pos[2], 'point3', line);
+				// Check collinearity at creation time
+				const pp1 = figure.getPosition(p1Id);
+				const pp2 = figure.getPosition(p2Id);
+				const pp3 = figure.getPosition(p3Id);
+				if (pp1 && pp2 && pp3) {
+					const ax = geoToNumber(pp1.x),
+						ay = geoToNumber(pp1.y);
+					const bx = geoToNumber(pp2.x),
+						by = geoToNumber(pp2.y);
+					const cx = geoToNumber(pp3.x),
+						cy = geoToNumber(pp3.y);
+					const D = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
+					if (Math.abs(D) < 1e-12)
+						throw new DslRuntimeError('cercle(A, B, C): les 3 points sont alignes', line);
+				}
+				const id = figure.createCircleBy3Points(p1Id, p2Id, p3Id, { label });
+				return { figureId: id, symbolType: 'cercle' };
+			}
 			if (pos.length !== 1)
-				throw new DslRuntimeError('cercle() attend 1 argument positionnel (centre)', line);
+				throw new DslRuntimeError(
+					'cercle() attend 1 argument (centre) ou 3 arguments (A, B, C)',
+					line
+				);
 			const centerId = requireElement(pos[0], 'centre', line);
 			if (named.has('rayon')) {
 				const radius = toScalarParam(named.get('rayon')!, toGeoValue, line);
@@ -1292,6 +1328,63 @@ function _executeBuiltinInner(
 			);
 		}
 
+		case 'secteur': {
+			if (pos.length === 3) {
+				// secteur(O, A, B) — sector by center and two points
+				const centerId = requireElement(pos[0], 'centre', line);
+				const startId = requireElement(pos[1], 'start', line);
+				const endId = requireElement(pos[2], 'end', line);
+				const id = figure.createSectorByPoints(centerId, startId, endId, { label });
+				return { figureId: id, symbolType: 'secteur' as SymbolType };
+			}
+			if (pos.length === 1) {
+				// secteur(O, rayon=3, debut=0, fin=90)
+				const centerId = requireElement(pos[0], 'centre', line);
+				if (!named.has('rayon'))
+					throw new DslRuntimeError("secteur() avec 1 argument necessite 'rayon'", line);
+				const radius = toScalarParam(named.get('rayon')!, toGeoValue, line);
+				const startDeg = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
+				const endDeg = named.has('fin') ? requireNumber(named.get('fin')!, 'fin', line) : 360;
+				const startRad: GeoValue = { kind: 'numeric', value: (startDeg * Math.PI) / 180 };
+				const endRad: GeoValue = { kind: 'numeric', value: (endDeg * Math.PI) / 180 };
+				const id = figure.createSectorByAngles(centerId, radius, startRad, endRad, { label });
+				return { figureId: id, symbolType: 'secteur' as SymbolType };
+			}
+			throw new DslRuntimeError(
+				'secteur() attend soit 3 arguments (O, A, B) soit 1 argument + rayon/debut/fin',
+				line
+			);
+		}
+
+		case 'couronne': {
+			if (pos.length !== 1)
+				throw new DslRuntimeError('couronne() attend 1 argument positionnel (centre)', line);
+			const centerId = requireElement(pos[0], 'centre', line);
+			if (!named.has('r1') || !named.has('r2'))
+				throw new DslRuntimeError("couronne() necessite 'r1' et 'r2'", line);
+			const r1 = toScalarParam(named.get('r1')!, toGeoValue, line);
+			const r2 = toScalarParam(named.get('r2')!, toGeoValue, line);
+			// Validate r1 < r2 for numeric values
+			const r1Num = typeof r1 === 'object' && 'scalarRef' in r1 ? null : geoToNumber(r1);
+			const r2Num = typeof r2 === 'object' && 'scalarRef' in r2 ? null : geoToNumber(r2);
+			if (r1Num !== null && r2Num !== null && r1Num >= r2Num)
+				throw new DslRuntimeError('couronne(): r1 doit etre inferieur a r2', line);
+			const id = figure.createAnnulus(centerId, r1, r2, { label });
+			return { figureId: id, symbolType: 'couronne' as SymbolType };
+		}
+
+		case 'puissance': {
+			if (pos.length !== 2)
+				throw new DslRuntimeError('puissance() attend 2 arguments (point, cercle)', line);
+			const pointId = requireElement(pos[0], 'point', line);
+			const circleArg = pos[1];
+			if (circleArg.type !== 'element' || circleArg.elementType !== 'cercle')
+				throw new DslRuntimeError('puissance() attend un cercle comme 2e argument', line);
+			const circleId = circleArg.figureId;
+			const id = figure.createScalarPower(pointId, circleId, { label });
+			return { figureId: id, symbolType: 'scalar' };
+		}
+
 		case 'style': {
 			// style(element, couleur=..., forme=..., tirets=...)
 			if (pos.length < 1)
@@ -1537,7 +1630,11 @@ function _executeBuiltinInner(
 				return { figureId: ptId, symbolType: 'point' };
 			}
 
-			if (psEl.type === 'circleByRadius' || psEl.type === 'circleByPoint') {
+			if (
+				psEl.type === 'circleByRadius' ||
+				psEl.type === 'circleByPoint' ||
+				psEl.type === 'circleBy3Points'
+			) {
 				const angleDeg = pos.length >= 2 ? requireNumber(pos[1], 'angle', line) : 0;
 				const theta = (angleDeg * Math.PI) / 180;
 				const ptId = figure.createPointOnCircle(psId, theta, { label });
@@ -1773,7 +1870,10 @@ export const BUILTIN_NAMES = new Set([
 	'perimetre',
 	'pente',
 	'rayon',
-	'slider'
+	'slider',
+	'secteur',
+	'couronne',
+	'puissance'
 ]);
 
 /** Math functions that return numbers. */

@@ -36,6 +36,12 @@
 				Courbes et coniques transformees, similitude, implicites
 			</p>
 		</a>
+		<a href="/geometry-demo/circles" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Constructions sur les cercles</h2>
+			<p class="text-sm text-muted-foreground">
+				Cercle par 3 points, secteur, couronne, corde, puissance, remplissage
+			</p>
+		</a>
 		<a href="/geometry-demo/intersections" class="rounded-lg border p-4 hover:bg-muted">
 			<h2 class="font-bold">Intersections</h2>
 			<p class="text-sm text-muted-foreground">

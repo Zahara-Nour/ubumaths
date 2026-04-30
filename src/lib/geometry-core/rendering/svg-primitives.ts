@@ -9,9 +9,11 @@
 import type { Figure, FigureDefaults } from '../graph/figure';
 import type { CoordinateTransformer } from '../viewport/viewport';
 import { geoToNumber } from '../compute/to-number';
+import { circumcircle } from '../geometry/circumcircle';
 import {
 	isCircleByRadius,
 	isCircleByPoint,
+	isCircleBy3Points,
 	isAngleMark,
 	isSegmentMark,
 	isText,
@@ -30,6 +32,7 @@ import {
 	type GeoRay,
 	type GeoCircleByRadius,
 	type GeoCircleByPoint,
+	type GeoCircleBy3Points,
 	type GeoArcByAngles,
 	type GeoArcByPoints,
 	isVector
@@ -306,6 +309,9 @@ export function circleToSVG(
 	if (isCircleByPoint(el)) {
 		return circleByPointToSVG(el, figure, transformer);
 	}
+	if (isCircleBy3Points(el)) {
+		return circleBy3PointsToSVG(el, figure, transformer);
+	}
 	return null;
 }
 
@@ -336,6 +342,31 @@ function circleByPointToSVG(
 	const svgEdge = transformer.mathToSvg(geoToNumber(edge.x), geoToNumber(edge.y));
 	// Radius in SVG pixels (distance between SVG center and SVG edge point)
 	const radiusPx = Math.sqrt((svgEdge.x - svgCenter.x) ** 2 + (svgEdge.y - svgCenter.y) ** 2);
+	return { cx: svgCenter.x, cy: svgCenter.y, r: radiusPx };
+}
+
+function circleBy3PointsToSVG(
+	circle: GeoCircleBy3Points,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): CircleSVG | null {
+	const p1 = figure.getPosition(circle.point1Id);
+	const p2 = figure.getPosition(circle.point2Id);
+	const p3 = figure.getPosition(circle.point3Id);
+	if (!p1 || !p2 || !p3) return null;
+
+	const cc = circumcircle(
+		geoToNumber(p1.x),
+		geoToNumber(p1.y),
+		geoToNumber(p2.x),
+		geoToNumber(p2.y),
+		geoToNumber(p3.x),
+		geoToNumber(p3.y)
+	);
+	if (!cc) return null;
+
+	const svgCenter = transformer.mathToSvg(cc.ux, cc.uy);
+	const radiusPx = Math.abs(cc.r * transformer.scaleX);
 	return { cx: svgCenter.x, cy: svgCenter.y, r: radiusPx };
 }
 
@@ -372,6 +403,23 @@ export function circleToPathSVG(
 		const dy = geoToNumber(edge.y) - cy;
 		rMath = Math.sqrt(dx * dx + dy * dy);
 		startAngle = Math.atan2(dy, dx);
+	} else if (isCircleBy3Points(el)) {
+		const p1 = figure.getPosition(el.point1Id);
+		const p2 = figure.getPosition(el.point2Id);
+		const p3 = figure.getPosition(el.point3Id);
+		if (!p1 || !p2 || !p3) return null;
+		const cc = circumcircle(
+			geoToNumber(p1.x),
+			geoToNumber(p1.y),
+			geoToNumber(p2.x),
+			geoToNumber(p2.y),
+			geoToNumber(p3.x),
+			geoToNumber(p3.y)
+		);
+		if (!cc) return null;
+		cx = cc.ux;
+		cy = cc.uy;
+		rMath = cc.r;
 	} else {
 		return null;
 	}
@@ -512,6 +560,134 @@ function buildArcSVGPath(
 
 	const path = `M ${svgStart.x} ${svgStart.y} A ${rPx} ${rPx} 0 ${largeArc} ${sweepFlag} ${svgEnd.x} ${svgEnd.y}`;
 	return { path };
+}
+
+// =============================================================================
+// Sector rendering
+// =============================================================================
+
+export interface SectorSVG {
+	/** SVG path: center → arc start → arc → arc end → center (closed). */
+	path: string;
+}
+
+/**
+ * Convert a sector element to an SVG path string.
+ * The path is: M center L arcStart A ... arcEnd Z (closed for fill).
+ */
+export function sectorToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): SectorSVG | null {
+	const el = figure.getElementById(id);
+	if (!el) return null;
+
+	let cx: number, cy: number, r: number, startAngle: number, endAngle: number;
+
+	if (el.type === 'sectorByPoints') {
+		const centerPos = figure.getPosition(el.centerId);
+		const startPos = figure.getPosition(el.startId);
+		const endPos = figure.getPosition(el.endId);
+		if (!centerPos || !startPos || !endPos) return null;
+		cx = geoToNumber(centerPos.x);
+		cy = geoToNumber(centerPos.y);
+		const sx = geoToNumber(startPos.x);
+		const sy = geoToNumber(startPos.y);
+		const ex = geoToNumber(endPos.x);
+		const ey = geoToNumber(endPos.y);
+		r = Math.sqrt((sx - cx) ** 2 + (sy - cy) ** 2);
+		startAngle = Math.atan2(sy - cy, sx - cx);
+		endAngle = Math.atan2(ey - cy, ex - cx);
+	} else if (el.type === 'sectorByAngles') {
+		const centerPos = figure.getPosition(el.centerId);
+		if (!centerPos) return null;
+		cx = geoToNumber(centerPos.x);
+		cy = geoToNumber(centerPos.y);
+		r = figure.resolveParam(el.radius);
+		startAngle = figure.resolveParam(el.startAngle);
+		endAngle = figure.resolveParam(el.endAngle);
+	} else {
+		return null;
+	}
+
+	if (r < 1e-10) return null;
+
+	const rPx = r * transformer.scaleX;
+	const svgCenter = transformer.mathToSvg(cx, cy);
+	const svgStart = transformer.mathToSvg(
+		cx + r * Math.cos(startAngle),
+		cy + r * Math.sin(startAngle)
+	);
+	const svgEnd = transformer.mathToSvg(cx + r * Math.cos(endAngle), cy + r * Math.sin(endAngle));
+
+	let sweep = endAngle - startAngle;
+	while (sweep < 0) sweep += 2 * Math.PI;
+	while (sweep >= 2 * Math.PI) sweep -= 2 * Math.PI;
+
+	const largeArc = sweep > Math.PI ? 1 : 0;
+	const sweepFlag = 0;
+
+	const path = `M ${svgCenter.x} ${svgCenter.y} L ${svgStart.x} ${svgStart.y} A ${rPx} ${rPx} 0 ${largeArc} ${sweepFlag} ${svgEnd.x} ${svgEnd.y} Z`;
+	return { path };
+}
+
+// =============================================================================
+// Annulus rendering
+// =============================================================================
+
+export interface AnnulusSVG {
+	cx: number;
+	cy: number;
+	innerR: number;
+	outerR: number;
+	/** SVG path with two circles (outer CW, inner CCW) for fill-rule: evenodd. */
+	path: string;
+}
+
+/**
+ * Convert an annulus element to an SVG path.
+ * Two concentric circles drawn in opposite directions with fill-rule: evenodd.
+ */
+export function annulusToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): AnnulusSVG | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'annulus') return null;
+
+	const centerPos = figure.getPosition(el.centerId);
+	if (!centerPos) return null;
+
+	const cx = geoToNumber(centerPos.x);
+	const cy = geoToNumber(centerPos.y);
+	const r1 = figure.resolveParam(el.innerRadius);
+	const r2 = figure.resolveParam(el.outerRadius);
+
+	const svgCenter = transformer.mathToSvg(cx, cy);
+	const r1Px = Math.abs(r1 * transformer.scaleX);
+	const r2Px = Math.abs(r2 * transformer.scaleX);
+
+	// Outer circle (clockwise in SVG = two half-arcs with sweepFlag=1)
+	const outerPath =
+		`M ${svgCenter.x - r2Px} ${svgCenter.y} ` +
+		`A ${r2Px} ${r2Px} 0 1 1 ${svgCenter.x + r2Px} ${svgCenter.y} ` +
+		`A ${r2Px} ${r2Px} 0 1 1 ${svgCenter.x - r2Px} ${svgCenter.y} `;
+
+	// Inner circle (sweepFlag=0 = opposite parity to outer for evenodd fill)
+	const innerPath =
+		`M ${svgCenter.x - r1Px} ${svgCenter.y} ` +
+		`A ${r1Px} ${r1Px} 0 1 0 ${svgCenter.x + r1Px} ${svgCenter.y} ` +
+		`A ${r1Px} ${r1Px} 0 1 0 ${svgCenter.x - r1Px} ${svgCenter.y} `;
+
+	return {
+		cx: svgCenter.x,
+		cy: svgCenter.y,
+		innerR: r1Px,
+		outerR: r2Px,
+		path: outerPath + innerPath
+	};
 }
 
 // =============================================================================

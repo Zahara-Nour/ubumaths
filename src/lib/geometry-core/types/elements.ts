@@ -362,6 +362,7 @@ export interface GeoScalar extends GeoElementBase {
 		| 'perimeter'
 		| 'slope'
 		| 'radius'
+		| 'power'
 		| 'expression';
 	/** Target element IDs for primitive kinds (points for distance/angle/area, vector for norme). */
 	readonly targetIds: readonly string[];
@@ -530,7 +531,54 @@ export interface GeoCircleByPoint extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
-export type GeoCircle = GeoCircleByRadius | GeoCircleByPoint;
+/** Circle defined by 3 points on the circle (circumcircle). */
+export interface GeoCircleBy3Points extends GeoElementBase {
+	readonly type: 'circleBy3Points';
+	readonly point1Id: string;
+	readonly point2Id: string;
+	readonly point3Id: string;
+	readonly dependsOn: readonly [string, string, string];
+}
+
+export type GeoCircle = GeoCircleByRadius | GeoCircleByPoint | GeoCircleBy3Points;
+
+// =============================================================================
+// Sector (circular sector — filled wedge)
+// =============================================================================
+
+/** Sector defined by center and two edge points (counterclockwise from start to end). */
+export interface GeoSectorByPoints extends GeoElementBase {
+	readonly type: 'sectorByPoints';
+	readonly centerId: string;
+	readonly startId: string;
+	readonly endId: string;
+	readonly dependsOn: readonly [string, string, string];
+}
+
+/** Sector defined by center, radius, and start/end angles (radians internally). */
+export interface GeoSectorByAngles extends GeoElementBase {
+	readonly type: 'sectorByAngles';
+	readonly centerId: string;
+	readonly radius: ScalarParam;
+	readonly startAngle: ScalarParam;
+	readonly endAngle: ScalarParam;
+	readonly dependsOn: readonly string[];
+}
+
+export type GeoSector = GeoSectorByPoints | GeoSectorByAngles;
+
+// =============================================================================
+// Annulus (couronne — ring between two concentric circles)
+// =============================================================================
+
+/** Annulus defined by center and two radii. */
+export interface GeoAnnulus extends GeoElementBase {
+	readonly type: 'annulus';
+	readonly centerId: string;
+	readonly innerRadius: ScalarParam;
+	readonly outerRadius: ScalarParam;
+	readonly dependsOn: readonly string[];
+}
 
 // =============================================================================
 // Polygon (minimum 3 vertices, dependsOn IS the vertex list)
@@ -836,8 +884,12 @@ export type GeoElement =
 	| GeoRay
 	| GeoCircleByRadius
 	| GeoCircleByPoint
+	| GeoCircleBy3Points
 	| GeoArcByAngles
 	| GeoArcByPoints
+	| GeoSectorByPoints
+	| GeoSectorByAngles
+	| GeoAnnulus
 	| GeoPolygon
 	| GeoFunction
 	| GeoQuadraticCurve
@@ -1029,7 +1081,13 @@ export function isLineLike(el: GeoElement): el is GeoLineLikeElement {
 }
 
 export function isCircle(el: GeoElement): el is GeoCircle {
-	return el.type === 'circleByRadius' || el.type === 'circleByPoint';
+	return (
+		el.type === 'circleByRadius' || el.type === 'circleByPoint' || el.type === 'circleBy3Points'
+	);
+}
+
+export function isCircleBy3Points(el: GeoElement): el is GeoCircleBy3Points {
+	return el.type === 'circleBy3Points';
 }
 
 export function isCircleByRadius(el: GeoElement): el is GeoCircleByRadius {
@@ -1038,6 +1096,14 @@ export function isCircleByRadius(el: GeoElement): el is GeoCircleByRadius {
 
 export function isCircleByPoint(el: GeoElement): el is GeoCircleByPoint {
 	return el.type === 'circleByPoint';
+}
+
+export function isSector(el: GeoElement): el is GeoSector {
+	return el.type === 'sectorByPoints' || el.type === 'sectorByAngles';
+}
+
+export function isAnnulus(el: GeoElement): el is GeoAnnulus {
+	return el.type === 'annulus';
 }
 
 export function isPolygon(el: GeoElement): el is GeoPolygon {
