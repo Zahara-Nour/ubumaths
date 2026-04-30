@@ -30,6 +30,7 @@
 		implicitCurveToSVG,
 		tangentLineToSVG,
 		tangentToQuadraticToSVG,
+		conicPolarToSVG,
 		locusToSVG,
 		traceToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
@@ -1109,6 +1110,23 @@
 					{/if}
 				{:else if el.type === 'tangentToQuadratic'}
 					{@const svg = tangentToQuadraticToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						<line
+							x1={svg.x1}
+							y1={svg.y1}
+							x2={svg.x2}
+							y2={svg.y2}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							stroke-linecap="round"
+							opacity={sty.opacity}
+							class="geo-line"
+							class:hovered={hoveredId === el.id}
+						/>
+					{/if}
+				{:else if el.type === 'conicPolar'}
+					{@const svg = conicPolarToSVG(el.id, figure, transformer, dims)}
 					{#if svg}
 						<line
 							x1={svg.x1}

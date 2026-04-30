@@ -25,6 +25,7 @@ export type SymbolType =
 	| 'lieu'
 	| 'trace'
 	| 'scalar'
+	| 'polaire'
 	| 'liste';
 
 export interface SymbolEntry {
