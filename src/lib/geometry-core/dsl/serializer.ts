@@ -156,6 +156,8 @@ function typePrefix(type: string): string {
 		case 'tangentLine':
 		case 'tangentToQuadratic':
 			return 'tg';
+		case 'conicPolar':
+			return 'pol';
 		case 'vectorByPoints':
 		case 'freeVector':
 		case 'vectorSum':
@@ -464,6 +466,9 @@ function serializeElement(
 			}
 			return `${n} = tangente(${name(idToName, el.curveId)}, ${fmtNum(tqDisplay)})`;
 		}
+
+		case 'conicPolar':
+			return `${n} = polaire(${name(idToName, el.pointId)}, ${name(idToName, el.curveId)})`;
 
 		// Transformation objects
 		case 'rotation': {

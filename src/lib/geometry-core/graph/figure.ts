@@ -47,6 +47,7 @@ import type {
 	GeoIntersectionFF,
 	GeoTangentLine,
 	GeoTangentToQuadratic,
+	GeoConicPolar,
 	GeoVectorByPoints,
 	GeoFreeVector,
 	GeoVectorSum,
@@ -1784,6 +1785,35 @@ export class Figure {
 			id,
 			curveId,
 			...('pointOnCurveId' in anchor ? { pointOnCurveId: anchor.pointOnCurveId } : { t: anchor.t }),
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps as readonly string[]
+		};
+		this.addElement(id, element, deps);
+		return id;
+	}
+
+	createConicPolar(curveId: string, pointId: string, options?: ElementOptions): string {
+		const curveEl = this.elements.get(curveId);
+		if (!curveEl || curveEl.type !== 'quadraticCurve') {
+			throw new Error(`createConicPolar: "${curveId}" is not a quadraticCurve element`);
+		}
+		const ptEl = this.elements.get(pointId);
+		if (!ptEl || !isPointElement(ptEl)) {
+			throw new Error(`createConicPolar: "${pointId}" is not a point element`);
+		}
+
+		const id = this.generateId('pol');
+		const deps = [curveId, pointId];
+
+		const element: GeoConicPolar = {
+			type: 'conicPolar',
+			id,
+			curveId,
+			pointId,
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,

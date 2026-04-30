@@ -564,6 +564,14 @@ export interface GeoTangentToQuadratic extends GeoElementBase {
 	readonly dependsOn: readonly string[];
 }
 
+/** Polar line of a point with respect to a quadratic curve (conic). */
+export interface GeoConicPolar extends GeoElementBase {
+	readonly type: 'conicPolar';
+	readonly curveId: string;
+	readonly pointId: string;
+	readonly dependsOn: readonly string[];
+}
+
 // =============================================================================
 // Function curve (y = f(x), from courbe() builtin)
 // =============================================================================
@@ -842,6 +850,7 @@ export type GeoElement =
 	| GeoPointOnArc
 	| GeoTangentLine
 	| GeoTangentToQuadratic
+	| GeoConicPolar
 	| GeoVectorByPoints
 	| GeoFreeVector
 	| GeoVectorSum
@@ -977,6 +986,10 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 
 export function isTangentToQuadratic(el: GeoElement): el is GeoTangentToQuadratic {
 	return el.type === 'tangentToQuadratic';
+}
+
+export function isConicPolar(el: GeoElement): el is GeoConicPolar {
+	return el.type === 'conicPolar';
 }
 
 export function isAngleMark(el: GeoElement): el is GeoAngleMark {

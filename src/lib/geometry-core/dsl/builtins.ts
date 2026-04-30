@@ -29,6 +29,13 @@ import {
 	findCriticalInflections
 } from '$lib/mathAST/analysis';
 import { classifyConic } from '../geometry/conic-classify';
+import {
+	asymptoteLines,
+	axisLines as computeAxisLines,
+	directrixLine as computeDirectrixLine,
+	fociPoints as computeFociPoints,
+	eccentricity as computeEccentricity
+} from '../geometry/conic-properties';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { numeric } from '../types/geo-value';
@@ -1358,6 +1365,156 @@ function _executeBuiltinInner(
 			}
 		}
 
+		case 'asymptotes': {
+			if (pos.length !== 1) {
+				throw new DslRuntimeError('asymptotes() attend 1 argument (conique)', line);
+			}
+			const asymCurveId = requireElement(pos[0], 'conique', line);
+			const asymCurveEl = figure.getElementById(asymCurveId);
+			if (!asymCurveEl || asymCurveEl.type !== 'quadraticCurve') {
+				throw new DslRuntimeError("asymptotes(): l'argument doit etre une conique", line);
+			}
+			if (asymCurveEl.conic.type !== 'hyperbola') {
+				throw new DslRuntimeError('asymptotes(): la conique doit etre une hyperbole', line);
+			}
+			const asymLines = asymptoteLines(asymCurveEl.conic);
+			if (!asymLines) {
+				throw new DslRuntimeError('asymptotes(): impossible de calculer les asymptotes', line);
+			}
+			const asymResults: BuiltinResult[] = asymLines.map((al, i) => {
+				const lbl = label ? (asymLines.length > 1 ? `${label}${i + 1}` : label) : undefined;
+				const pt1Id = figure.createFreePoint(
+					{ x: numeric(al.p1.x), y: numeric(al.p1.y) },
+					{ visible: false, draggable: false }
+				);
+				const pt2Id = figure.createFreePoint(
+					{ x: numeric(al.p2.x), y: numeric(al.p2.y) },
+					{ visible: false, draggable: false }
+				);
+				const lineId = figure.createLine(pt1Id, pt2Id, { label: lbl });
+				return { figureId: lineId, symbolType: 'droite' as SymbolType };
+			});
+			return { elements: asymResults } as BuiltinMultiResult;
+		}
+
+		case 'axes': {
+			if (pos.length !== 1) {
+				throw new DslRuntimeError('axes() attend 1 argument (conique)', line);
+			}
+			const axesCurveId = requireElement(pos[0], 'conique', line);
+			const axesCurveEl = figure.getElementById(axesCurveId);
+			if (!axesCurveEl || axesCurveEl.type !== 'quadraticCurve') {
+				throw new DslRuntimeError("axes(): l'argument doit etre une conique", line);
+			}
+			if (axesCurveEl.conic.type === 'circle') {
+				throw new DslRuntimeError("axes(): un cercle a une infinite d'axes de symetrie", line);
+			}
+			const axLines = computeAxisLines(axesCurveEl.conic);
+			if (!axLines || axLines.length === 0) {
+				throw new DslRuntimeError('axes(): impossible de calculer les axes', line);
+			}
+			const axResults: BuiltinResult[] = axLines.map((al, i) => {
+				const lbl = label ? (axLines.length > 1 ? `${label}${i + 1}` : label) : undefined;
+				const pt1Id = figure.createFreePoint(
+					{ x: numeric(al.p1.x), y: numeric(al.p1.y) },
+					{ visible: false, draggable: false }
+				);
+				const pt2Id = figure.createFreePoint(
+					{ x: numeric(al.p2.x), y: numeric(al.p2.y) },
+					{ visible: false, draggable: false }
+				);
+				const lineId = figure.createLine(pt1Id, pt2Id, { label: lbl });
+				return { figureId: lineId, symbolType: 'droite' as SymbolType };
+			});
+			return { elements: axResults } as BuiltinMultiResult;
+		}
+
+		case 'directrice': {
+			if (pos.length !== 1) {
+				throw new DslRuntimeError('directrice() attend 1 argument (conique)', line);
+			}
+			const dirCurveId = requireElement(pos[0], 'conique', line);
+			const dirCurveEl = figure.getElementById(dirCurveId);
+			if (!dirCurveEl || dirCurveEl.type !== 'quadraticCurve') {
+				throw new DslRuntimeError("directrice(): l'argument doit etre une conique", line);
+			}
+			if (dirCurveEl.conic.type !== 'parabola') {
+				throw new DslRuntimeError('directrice(): la conique doit etre une parabole', line);
+			}
+			const dirLine = computeDirectrixLine(dirCurveEl.conic);
+			if (!dirLine) {
+				throw new DslRuntimeError('directrice(): impossible de calculer la directrice', line);
+			}
+			const dPt1Id = figure.createFreePoint(
+				{ x: numeric(dirLine.p1.x), y: numeric(dirLine.p1.y) },
+				{ visible: false, draggable: false }
+			);
+			const dPt2Id = figure.createFreePoint(
+				{ x: numeric(dirLine.p2.x), y: numeric(dirLine.p2.y) },
+				{ visible: false, draggable: false }
+			);
+			const dirLineId = figure.createLine(dPt1Id, dPt2Id, { label });
+			return { figureId: dirLineId, symbolType: 'droite' };
+		}
+
+		case 'foyers': {
+			if (pos.length !== 1) {
+				throw new DslRuntimeError('foyers() attend 1 argument (conique)', line);
+			}
+			const foyersCurveId = requireElement(pos[0], 'conique', line);
+			const foyersCurveEl = figure.getElementById(foyersCurveId);
+			if (!foyersCurveEl || foyersCurveEl.type !== 'quadraticCurve') {
+				throw new DslRuntimeError("foyers(): l'argument doit etre une conique", line);
+			}
+			const foci = computeFociPoints(foyersCurveEl.conic);
+			if (!foci || foci.length === 0) {
+				throw new DslRuntimeError('foyers(): impossible de calculer les foyers', line);
+			}
+			const fociResults: BuiltinResult[] = foci.map((f, i) => {
+				const lbl = label ? (foci.length > 1 ? `${label}${i + 1}` : label) : undefined;
+				const ptId = figure.createFreePoint(
+					{ x: numeric(f.x), y: numeric(f.y) },
+					{ draggable: false, label: lbl }
+				);
+				return { figureId: ptId, symbolType: 'point' as SymbolType };
+			});
+			return { elements: fociResults } as BuiltinMultiResult;
+		}
+
+		case 'excentricite': {
+			if (pos.length !== 1) {
+				throw new DslRuntimeError('excentricite() attend 1 argument (conique)', line);
+			}
+			const eccCurveId = requireElement(pos[0], 'conique', line);
+			const eccCurveEl = figure.getElementById(eccCurveId);
+			if (!eccCurveEl || eccCurveEl.type !== 'quadraticCurve') {
+				throw new DslRuntimeError("excentricite(): l'argument doit etre une conique", line);
+			}
+			const ecc = computeEccentricity(eccCurveEl.conic);
+			if (isNaN(ecc)) {
+				throw new DslRuntimeError('excentricite(): conique degeneree', line);
+			}
+			return { scalarValue: ecc } as BuiltinScalarResult;
+		}
+
+		case 'polaire': {
+			if (pos.length !== 2) {
+				throw new DslRuntimeError('polaire() attend 2 arguments (point, conique)', line);
+			}
+			const polPointId = requireElement(pos[0], 'point', line);
+			const polCurveId = requireElement(pos[1], 'conique', line);
+			const polPointEl = figure.getElementById(polPointId);
+			if (!polPointEl || !isPointElement(polPointEl)) {
+				throw new DslRuntimeError('polaire(): le premier argument doit etre un point', line);
+			}
+			const polCurveEl = figure.getElementById(polCurveId);
+			if (!polCurveEl || polCurveEl.type !== 'quadraticCurve') {
+				throw new DslRuntimeError('polaire(): le deuxieme argument doit etre une conique', line);
+			}
+			const polId = figure.createConicPolar(polCurveId, polPointId, { label });
+			return { figureId: polId, symbolType: 'polaire' };
+		}
+
 		case 'point_sur': {
 			if (pos.length < 1 || pos.length > 2) {
 				throw new DslRuntimeError('point_sur() attend 1-2 arguments (objet, param?)', line);
@@ -1600,6 +1757,12 @@ export const BUILTIN_NAMES = new Set([
 	'courbe',
 	'point_sur',
 	'tangente',
+	'asymptotes',
+	'axes',
+	'directrice',
+	'foyers',
+	'excentricite',
+	'polaire',
 	'zeros',
 	'extrema',
 	'inflections',

@@ -927,6 +927,7 @@ import type {
 } from '../types/elements';
 import type { ConicParams } from '../types/elements';
 import { conicPointFromParam } from '../graph/conic-helpers';
+import { polarLine } from '../geometry/conic-properties';
 import type { Viewport, SampledCurve, Point } from '../viewport/types';
 import { sampleWithDerivative } from '$lib/grapheur/sampler';
 import { curveToSVGPath } from '../rendering/bezier';
@@ -1066,6 +1067,31 @@ export function tangentToQuadraticToSVG(
 	if (Math.abs(dFx) < 1e-12 && Math.abs(dFy) < 1e-12) return null;
 
 	return extendLineToBounds(x0, y0, x0 - dFy, y0 + dFx, transformer, dims);
+}
+
+/**
+ * Polar line of a point P w.r.t. a quadratic curve.
+ * Delegates to polarLine() from conic-properties for the math.
+ */
+export function conicPolarToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): LineSVG | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'conicPolar') return null;
+
+	const curveEl = figure.getElementById(el.curveId);
+	if (!curveEl || curveEl.type !== 'quadraticCurve') return null;
+
+	const pos = figure.getPosition(el.pointId);
+	if (!pos) return null;
+
+	const line = polarLine(curveEl.coefficients, geoToNumber(pos.x), geoToNumber(pos.y));
+	if (!line) return null;
+
+	return extendLineToBounds(line.p1.x, line.p1.y, line.p2.x, line.p2.y, transformer, dims);
 }
 
 // =============================================================================

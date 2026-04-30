@@ -65,6 +65,46 @@ segment(A5, B5, couleur="orange")
 segment(B5, C5, couleur="orange")
 segment(C5, A5, couleur="orange")`;
 
+	// Asymptotes of a hyperbola
+	const asymptotesDsl = `c = courbe("x^2 - 4*y^2 - 4 = 0", couleur="bleu")
+(a1, a2) = asymptotes(c)
+style(a1, couleur="rouge", trait="pointille")
+style(a2, couleur="rouge", trait="pointille")
+(ax1, ax2) = axes(c)
+style(ax1, couleur="vert", trait="tirets")
+style(ax2, couleur="vert", trait="tirets")
+(F1, F2) = foyers(c)
+style(F1, couleur="orange")
+style(F2, couleur="orange")`;
+
+	// Parabola: axis, directrix, focus
+	const parabolaDsl = `c = courbe("y^2 - 4*x = 0", couleur="bleu")
+(a) = axes(c)
+style(a, couleur="vert", trait="tirets")
+d = directrice(c)
+style(d, couleur="rouge", trait="pointille")
+(F) = foyers(c)
+style(F, couleur="orange")
+P = point_sur(c, 2)
+style(P, couleur="violet")
+t = tangente(c, P)
+style(t, couleur="violet", trait="tirets")`;
+
+	// Ellipse: axes, foci, eccentricity
+	const ellipseDsl = `c = courbe("4*x^2 + 9*y^2 - 36 = 0", couleur="bleu")
+(ax1, ax2) = axes(c)
+style(ax1, couleur="vert", trait="tirets")
+style(ax2, couleur="vert", trait="tirets")
+(F1, F2) = foyers(c)
+style(F1, couleur="orange")
+style(F2, couleur="orange")`;
+
+	// Polar line — interactive
+	const polaireDsl = `c = courbe("x^2 + y^2 - 9 = 0", couleur="bleu")
+P = point(5, 2, couleur="rouge")
+p = polaire(P, c)
+style(p, couleur="rouge", trait="tirets")`;
+
 	// Implicit curve transformation — folium de Descartes
 	const transformImplicitDsl = `O = point(0, 0, couleur="noir")
 c = courbe("x^3 + y^3 - 3*x*y = 0", couleur="bleu")
@@ -84,6 +124,54 @@ style(c3, couleur="vert")`;
 	<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
 		>← Retour aux demos</a
 	>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={asymptotesDsl}
+		title="Hyperbole — asymptotes, axes, foyers"
+		description="x² - 4y² = 4 (a=2, b=1). Rouge pointille : asymptotes y = ±x/2. Vert tirets : axes de symetrie. Orange : foyers."
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={parabolaDsl}
+		title="Parabole — axe, directrice, foyer, tangente"
+		description="y² = 4x (p=1). Vert tirets : axe de symetrie. Rouge pointille : directrice. Orange : foyer. Violet : point mobile et sa tangente."
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={ellipseDsl}
+		title="Ellipse — axes, foyers"
+		description="4x² + 9y² = 36 (a=3, b=2). Vert tirets : grand et petit axes. Orange : foyers F1 et F2."
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={polaireDsl}
+		title="Droite polaire — interactive"
+		description="Cercle x² + y² = 9. Deplacez le point P (rouge) pour voir la droite polaire se mettre a jour en temps reel. La polaire d'un point sur le cercle est la tangente en ce point."
+		center={{ x: 0, y: 0 }}
+		pixelsPerUnit={40}
+		width={700}
+		height={500}
+	/>
 
 	<hr class="my-8" />
 
