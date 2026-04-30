@@ -18,7 +18,8 @@ import type {
 	GeoVectorByPoints,
 	GeoFunction,
 	GeoQuadraticCurve,
-	GeoImplicitCurve
+	GeoImplicitCurve,
+	GeoImage
 } from '../types/elements';
 import { isTransformation } from '../types/elements';
 import type { SymbolType } from './symbol-table';
@@ -447,6 +448,81 @@ export function applyTransformationToElement(
 
 		case 'courbe': {
 			return transformCurve(figure, transformEl, sourceEl, options);
+		}
+
+		case 'image': {
+			const img = sourceEl as GeoImage;
+
+			// Scale dimensions for homothety
+			let newWidth = img.width;
+			let newHeight = img.height;
+			if (transformEl.type === 'homothety') {
+				const absFactor = Math.abs(geoToNumber(transformEl.factor));
+				newWidth = img.width * absFactor;
+				if (newHeight !== undefined) newHeight = newHeight * absFactor;
+			}
+
+			// 2-point mode: transform both corner points
+			if (img.point1Id && img.point2Id) {
+				const newP1 = applyTransformationToPoint(figure, transformEl, img.point1Id, {
+					visible: false
+				});
+				const newP2 = applyTransformationToPoint(figure, transformEl, img.point2Id, {
+					visible: false
+				});
+				const id = figure.createImage(
+					img.url,
+					0,
+					undefined,
+					{
+						point1Id: newP1,
+						point2Id: newP2
+					},
+					{ label: options?.label, layer: img.layer }
+				);
+				return { figureId: id, symbolType: 'image' };
+			}
+
+			// Anchored to 1 point: transform the anchor
+			if (img.anchorId) {
+				const newAnchor = applyTransformationToPoint(figure, transformEl, img.anchorId, {
+					visible: false
+				});
+				const id = figure.createImage(
+					img.url,
+					newWidth,
+					newHeight,
+					{
+						anchorId: newAnchor,
+						anchorOffset: img.anchorOffset
+					},
+					{ label: options?.label, layer: img.layer }
+				);
+				return { figureId: id, symbolType: 'image' };
+			}
+
+			// Free position: create a temp point, transform it, anchor to result
+			if (img.position) {
+				const tempPt = figure.createFreePoint(
+					{ x: numeric(img.position.x), y: numeric(img.position.y) },
+					{ visible: false }
+				);
+				const newPt = applyTransformationToPoint(figure, transformEl, tempPt, {
+					visible: false
+				});
+				const id = figure.createImage(
+					img.url,
+					newWidth,
+					newHeight,
+					{
+						anchorId: newPt
+					},
+					{ label: options?.label, layer: img.layer }
+				);
+				return { figureId: id, symbolType: 'image' };
+			}
+
+			throw new Error('transforme(): image has no position or anchor');
 		}
 
 		default:
