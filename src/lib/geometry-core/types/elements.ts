@@ -385,6 +385,10 @@ export interface GeoImage extends GeoElementBase {
 	readonly _srcPoint1Id?: string;
 	/** Internal: source image P2 for reactive 2-point rotation (tracks the untransformed diagonal). */
 	readonly _srcPoint2Id?: string;
+	/** Internal: transformation element ID for reactive visual transform recomputation. */
+	readonly _transformId?: string;
+	/** Internal: source image element ID for chained reactive visual transforms. */
+	readonly _srcImageId?: string;
 	readonly dependsOn: readonly string[];
 }
 

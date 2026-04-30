@@ -22,6 +22,7 @@ import {
 	isImage,
 	isArcByAngles,
 	isArcByPoints,
+	isTransformation,
 	type GeoElementBase,
 	type GeoAngleMark,
 	type GeoSegmentMark,
@@ -36,8 +37,10 @@ import {
 	type GeoCircleBy3Points,
 	type GeoArcByAngles,
 	type GeoArcByPoints,
+	type GeoImage,
 	isVector
 } from '../types/elements';
+import { computeImageVisualTransform } from '../dsl/transform-apply';
 
 // =============================================================================
 // Style resolution
@@ -987,6 +990,34 @@ export function textToSVG(
 // Image rendering
 // =============================================================================
 
+/**
+ * Resolve the visual rotation/flip for an image reactively.
+ * Walks the chain of _transformId/_srcImageId to recompute from current state.
+ */
+function resolveImageVisualTransform(
+	img: GeoImage,
+	figure: Figure
+): { rotation: number; flipped: boolean } {
+	if (img._transformId) {
+		const transformEl = figure.getElementById(img._transformId);
+		if (transformEl && isTransformation(transformEl)) {
+			// Resolve source image's visual transform (recursive for chained transforms)
+			let srcRot = 0,
+				srcFlip = false;
+			if (img._srcImageId) {
+				const srcImg = figure.getElementById(img._srcImageId);
+				if (srcImg && isImage(srcImg)) {
+					const srcVisual = resolveImageVisualTransform(srcImg as GeoImage, figure);
+					srcRot = srcVisual.rotation;
+					srcFlip = srcVisual.flipped;
+				}
+			}
+			return computeImageVisualTransform(srcRot, srcFlip, transformEl, figure);
+		}
+	}
+	return { rotation: img.rotation ?? 0, flipped: img.flipped ?? false };
+}
+
 export interface ImageSVG {
 	/** Top-left corner X in SVG coordinates. */
 	x: number;
@@ -1026,7 +1057,9 @@ export function imageToSVG(
 		const svg1 = transformer.mathToSvg(geoToNumber(p1Pos.x), geoToNumber(p1Pos.y));
 		const svg2 = transformer.mathToSvg(geoToNumber(p2Pos.x), geoToNumber(p2Pos.y));
 
-		const hasTransform = Math.abs(el.rotation ?? 0) > 1e-10 || el.flipped;
+		// Resolve visual transform reactively (handles axis/source point movement)
+		const visual = resolveImageVisualTransform(el, figure);
+		const hasTransform = Math.abs(visual.rotation) > 1e-10 || visual.flipped;
 		if (hasTransform) {
 			const mathDx = geoToNumber(p2Pos.x) - geoToNumber(p1Pos.x);
 			const mathDy = geoToNumber(p2Pos.y) - geoToNumber(p1Pos.y);
@@ -1042,12 +1075,12 @@ export function imageToSVG(
 				w = Math.abs(origW) * Math.abs(transformer.scaleX);
 				h = Math.abs(origH) * Math.abs(transformer.scaleY);
 				const diagAngle = Math.atan2(mathDy, mathDx);
-				const hEff = el.flipped ? -origH : origH;
+				const hEff = visual.flipped ? -origH : origH;
 				const origDiagAngle = Math.atan2(hEff, origW);
 				rotation = diagAngle - origDiagAngle;
 			} else {
 				// Fallback: un-rotate diagonal with static rotation value
-				const rot = el.rotation ?? 0;
+				const rot = visual.rotation;
 				const cos = Math.cos(rot);
 				const sin = Math.sin(rot);
 				const origW = mathDx * cos + mathDy * sin;
@@ -1066,7 +1099,7 @@ export function imageToSVG(
 				height: h,
 				url: el.url,
 				rotation,
-				flipped: el.flipped
+				flipped: visual.flipped
 			};
 		}
 
@@ -1076,10 +1109,13 @@ export function imageToSVG(
 			width: Math.abs(svg2.x - svg1.x),
 			height: Math.abs(svg2.y - svg1.y),
 			url: el.url,
-			rotation: el.rotation,
-			flipped: el.flipped
+			rotation: visual.rotation,
+			flipped: visual.flipped
 		};
 	}
+
+	// Resolve visual transform reactively for non-2-point images
+	const visual = resolveImageVisualTransform(el, figure);
 
 	const widthPx = el.width * Math.abs(transformer.scaleX);
 	const heightPx = el.height !== undefined ? el.height * Math.abs(transformer.scaleY) : undefined;
@@ -1097,8 +1133,8 @@ export function imageToSVG(
 			width: widthPx,
 			height: heightPx,
 			url: el.url,
-			rotation: el.rotation,
-			flipped: el.flipped
+			rotation: visual.rotation,
+			flipped: visual.flipped
 		};
 	}
 
@@ -1112,8 +1148,8 @@ export function imageToSVG(
 			width: widthPx,
 			height: heightPx,
 			url: el.url,
-			rotation: el.rotation,
-			flipped: el.flipped
+			rotation: visual.rotation,
+			flipped: visual.flipped
 		};
 	}
 
