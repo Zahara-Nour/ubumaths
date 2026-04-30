@@ -30,8 +30,9 @@ export function serialize(figure: Figure, symbols?: SymbolTable): string {
 	for (const el of elements) {
 		// Skip invisible elements, except transformation objects, named scalars, and sliders
 		if (!el.visible && !isTransformationType(el.type) && !isScalarLikeType(el.type)) continue;
-		// Skip expression scalars (they are implicitly recreated by DSL arithmetic)
-		if (el.type === 'scalar' && el.scalarKind === 'expression') continue;
+		// Skip expression/coordinate scalars (they are implicitly recreated by DSL)
+		if (el.type === 'scalar' && (el.scalarKind === 'expression' || el.scalarKind === 'coordinate'))
+			continue;
 		// Skip scalars that are internally managed by auto-positioned text (mesure() sugar)
 		if (el.type === 'scalar' && internalScalarIds.has(el.id)) continue;
 		const line = serializeElement(el, figure, idToName);
@@ -206,6 +207,25 @@ function fmtScalarParamDeg(param: ScalarParam, idToName: Map<string, string>): s
 	return fmtNum((geoToNumber(param) * 180) / Math.PI);
 }
 
+/**
+ * Format a ScalarParam, resolving coordinate scalars to `A.x`/`A.y` syntax.
+ */
+function fmtPointScalarParam(
+	param: ScalarParam,
+	idToName: Map<string, string>,
+	figure: Figure
+): string {
+	if (isScalarRef(param)) {
+		const el = figure.getElementById(param.scalarRef);
+		if (el && el.type === 'scalar' && el.scalarKind === 'coordinate') {
+			const pointName = name(idToName, el.targetIds[0]);
+			return `${pointName}.${el.coordinateAxis}`;
+		}
+		return name(idToName, param.scalarRef);
+	}
+	return fmtGeoValue(param);
+}
+
 function isScalarLikeType(type: string): boolean {
 	return type === 'scalar' || type === 'slider';
 }
@@ -227,6 +247,12 @@ function serializeElement(
 		case 'freePoint': {
 			const x = fmtGeoValue(el.position.x);
 			const y = fmtGeoValue(el.position.y);
+			return `${n} = point(${x}, ${y})`;
+		}
+
+		case 'computedPoint': {
+			const x = fmtPointScalarParam(el.xParam, idToName, figure);
+			const y = fmtPointScalarParam(el.yParam, idToName, figure);
 			return `${n} = point(${x}, ${y})`;
 		}
 

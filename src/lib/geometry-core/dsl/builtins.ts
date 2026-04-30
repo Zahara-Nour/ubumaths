@@ -6,7 +6,7 @@
 
 import type { Figure } from '../graph/figure';
 import type { GeoValue, ScalarParam } from '../types/geo-value';
-import { exact } from '../types/geo-value';
+import { exact, isScalarRef } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import type { SymbolType, SymbolTable } from './symbol-table';
 import { DslRuntimeError } from './errors';
@@ -322,9 +322,13 @@ function _executeBuiltinInner(
 	switch (name) {
 		case 'point': {
 			if (pos.length !== 2) throw new DslRuntimeError('point() attend 2 arguments (x, y)', line);
-			const x = toGeoValue(pos[0], line);
-			const y = toGeoValue(pos[1], line);
-			const id = figure.createFreePoint({ x, y }, { label });
+			const xParam = toScalarParam(pos[0], toGeoValue, line);
+			const yParam = toScalarParam(pos[1], toGeoValue, line);
+			if (isScalarRef(xParam) || isScalarRef(yParam)) {
+				const id = figure.createComputedPoint(xParam, yParam, { label });
+				return { figureId: id, symbolType: 'point' };
+			}
+			const id = figure.createFreePoint({ x: xParam, y: yParam }, { label });
 			return { figureId: id, symbolType: 'point' };
 		}
 

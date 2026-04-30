@@ -198,8 +198,10 @@ describe('interpreter — variables and expressions', () => {
 	});
 
 	it('evaluates property access A.x', () => {
-		const { symbols } = run(['A = point(3, 4)', 'x = A.x'].join('\n'));
-		expect(symbols.get('x')!.value).toBeCloseTo(3);
+		const { symbols, figure } = run(['A = point(3, 4)', 'x = A.x'].join('\n'));
+		const entry = symbols.get('x')!;
+		expect(entry.type).toBe('scalar');
+		expect(figure.getScalarValue(entry.figureId!)).toBeCloseTo(3);
 	});
 
 	it('evaluates math function sqrt', () => {
