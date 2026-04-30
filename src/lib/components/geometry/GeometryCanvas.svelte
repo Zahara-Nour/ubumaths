@@ -827,7 +827,7 @@
 								opacity={sty.opacity ?? 1}
 								preserveAspectRatio="xMidYMid meet"
 								transform={imgRot !== 0 || imgSx < 0
-									? `translate(${imgCx},${imgCy}) rotate(${imgRot}) scale(${imgSx},1) translate(${-imgCx},${-imgCy})`
+									? `translate(${imgCx},${imgCy}) rotate(${imgRot}) scale(1,${imgSx}) translate(${-imgCx},${-imgCy})`
 									: undefined}
 							/>
 						</g>
@@ -1761,7 +1761,7 @@
 								opacity={sty.opacity ?? 1}
 								preserveAspectRatio="xMidYMid meet"
 								transform={imgRot2 !== 0 || imgSx2 < 0
-									? `translate(${imgCx2},${imgCy2}) rotate(${imgRot2}) scale(${imgSx2},1) translate(${-imgCx2},${-imgCy2})`
+									? `translate(${imgCx2},${imgCy2}) rotate(${imgRot2}) scale(1,${imgSx2}) translate(${-imgCx2},${-imgCy2})`
 									: undefined}
 							/>
 						</g>
