@@ -559,39 +559,55 @@ export function applyTransformationToElement(
 				return { figureId: id, symbolType: 'image' };
 			}
 
-			// Anchored to 1 point: transform the anchor
+			// Anchored to 1 point: transform the image center, reposition with offset
 			if (img.anchorId) {
-				const newAnchor = applyTransformationToPoint(figure, transformEl, img.anchorId, {
+				const anchorPos = figure.getPosition(img.anchorId);
+				if (!anchorPos) throw new Error('transforme(): image anchor position not found');
+				const ax = geoToNumber(anchorPos.x) + (img.anchorOffset?.dx ?? 0);
+				const ay = geoToNumber(anchorPos.y) + (img.anchorOffset?.dy ?? 0);
+				const imgH = img.height ?? img.width;
+				const centerPt = figure.createFreePoint(
+					{ x: numeric(ax + img.width / 2), y: numeric(ay + imgH / 2) },
+					{ visible: false }
+				);
+				const newCenter = applyTransformationToPoint(figure, transformEl, centerPt, {
 					visible: false
 				});
+				const newH = newHeight ?? newWidth;
 				const id = figure.createImage(
 					img.url,
 					newWidth,
 					newHeight,
 					{
-						anchorId: newAnchor,
-						anchorOffset: img.anchorOffset
+						anchorId: newCenter,
+						anchorOffset: { dx: -newWidth / 2, dy: -newH / 2 }
 					},
 					{ label: options?.label, layer: img.layer, ...visualOpts }
 				);
 				return { figureId: id, symbolType: 'image' };
 			}
 
-			// Free position: create a temp point, transform it, anchor to result
+			// Free position: transform the image center, reposition with offset
 			if (img.position) {
-				const tempPt = figure.createFreePoint(
-					{ x: numeric(img.position.x), y: numeric(img.position.y) },
+				const imgH = img.height ?? img.width;
+				const centerPt = figure.createFreePoint(
+					{
+						x: numeric(img.position.x + img.width / 2),
+						y: numeric(img.position.y + imgH / 2)
+					},
 					{ visible: false }
 				);
-				const newPt = applyTransformationToPoint(figure, transformEl, tempPt, {
+				const newCenter = applyTransformationToPoint(figure, transformEl, centerPt, {
 					visible: false
 				});
+				const newH = newHeight ?? newWidth;
 				const id = figure.createImage(
 					img.url,
 					newWidth,
 					newHeight,
 					{
-						anchorId: newPt
+						anchorId: newCenter,
+						anchorOffset: { dx: -newWidth / 2, dy: -newH / 2 }
 					},
 					{ label: options?.label, layer: img.layer, ...visualOpts }
 				);
