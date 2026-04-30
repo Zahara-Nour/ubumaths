@@ -1025,6 +1025,34 @@ export function imageToSVG(
 		if (!p1Pos || !p2Pos) return null;
 		const svg1 = transformer.mathToSvg(geoToNumber(p1Pos.x), geoToNumber(p1Pos.y));
 		const svg2 = transformer.mathToSvg(geoToNumber(p2Pos.x), geoToNumber(p2Pos.y));
+
+		const rot = el.rotation ?? 0;
+		if (Math.abs(rot) > 1e-10 || el.flipped) {
+			// Rotated 2-point: recover original dimensions from diagonal + rotation angle
+			const dx = svg2.x - svg1.x;
+			const dy = svg2.y - svg1.y;
+			// Un-rotate diagonal to get original axis-aligned dimensions
+			// SVG rotation is negated vs math, so un-rotate by +rot
+			const cos = Math.cos(rot);
+			const sin = Math.sin(rot);
+			const origDx = dx * cos + dy * sin;
+			const origDy = -dx * sin + dy * cos;
+			const w = Math.abs(origDx);
+			const h = Math.abs(origDy);
+			// Center of the two points
+			const cx = (svg1.x + svg2.x) / 2;
+			const cy = (svg1.y + svg2.y) / 2;
+			return {
+				x: cx - w / 2,
+				y: cy - h / 2,
+				width: w,
+				height: h,
+				url: el.url,
+				rotation: el.rotation,
+				flipped: el.flipped
+			};
+		}
+
 		return {
 			x: Math.min(svg1.x, svg2.x),
 			y: Math.min(svg1.y, svg2.y),
