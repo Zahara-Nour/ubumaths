@@ -797,6 +797,10 @@
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{@const isDraggable = !!el.position}
 					{#if svg}
+						{@const imgCx = svg.x + svg.width / 2}
+						{@const imgCy = svg.y + (svg.height ?? svg.width) / 2}
+						{@const imgRot = ((svg.rotation ?? 0) * 180) / Math.PI}
+						{@const imgSx = svg.flipped ? -1 : 1}
 						<g
 							class:draggable-text={isDraggable}
 							onpointerdown={isDraggable
@@ -822,6 +826,9 @@
 								height={svg.height}
 								opacity={sty.opacity ?? 1}
 								preserveAspectRatio="xMidYMid meet"
+								transform={imgRot !== 0 || imgSx < 0
+									? `translate(${imgCx},${imgCy}) rotate(${imgRot}) scale(${imgSx},1) translate(${-imgCx},${-imgCy})`
+									: undefined}
 							/>
 						</g>
 					{/if}
@@ -1724,6 +1731,10 @@
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{@const isDraggable = !!el.position}
 					{#if svg}
+						{@const imgCx2 = svg.x + svg.width / 2}
+						{@const imgCy2 = svg.y + (svg.height ?? svg.width) / 2}
+						{@const imgRot2 = ((svg.rotation ?? 0) * 180) / Math.PI}
+						{@const imgSx2 = svg.flipped ? -1 : 1}
 						<g
 							class:draggable-text={isDraggable}
 							onpointerdown={isDraggable
@@ -1749,6 +1760,9 @@
 								height={svg.height}
 								opacity={sty.opacity ?? 1}
 								preserveAspectRatio="xMidYMid meet"
+								transform={imgRot2 !== 0 || imgSx2 < 0
+									? `translate(${imgCx2},${imgCy2}) rotate(${imgRot2}) scale(${imgSx2},1) translate(${-imgCx2},${-imgCy2})`
+									: undefined}
 							/>
 						</g>
 					{/if}

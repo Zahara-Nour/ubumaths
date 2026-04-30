@@ -574,8 +574,12 @@ function imageToTikZ(el: GeoImage, figure: Figure): string | null {
 	const sty = resolveStyle(el, figure.defaults);
 	const opacityOpt = (sty.opacity ?? 1) < 1 ? `, opacity=${sty.opacity}` : '';
 	const heightOpt = h !== undefined ? `, height=${Math.round(h * 1000) / 1000}cm` : '';
+	const rotDeg = ((el.rotation ?? 0) * 180) / Math.PI;
+	const rotateOpt = Math.abs(rotDeg) > 0.01 ? `, rotate=${Math.round(rotDeg * 100) / 100}` : '';
+	const imgContent = `\\includegraphics[width=${Math.round(w * 1000) / 1000}cm${heightOpt}]{${el.url}}`;
+	const wrappedContent = el.flipped ? `\\reflectbox{${imgContent}}` : imgContent;
 	// Note: URL must be replaced with a local file path for LaTeX compilation
-	return `  \\node[anchor=north west${opacityOpt}] at ${coord(mx!, my!)} {\\includegraphics[width=${Math.round(w * 1000) / 1000}cm${heightOpt}]{${el.url}}};`;
+	return `  \\node[anchor=north west${opacityOpt}${rotateOpt}] at ${coord(mx!, my!)} {${wrappedContent}};`;
 }
 
 // ─── Helpers: clip lines/rays to viewport ───────────────────

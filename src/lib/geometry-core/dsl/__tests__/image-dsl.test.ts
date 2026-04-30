@@ -342,3 +342,165 @@ describe('DSL image() — transformations', () => {
 		expect(images).toHaveLength(2);
 	});
 });
+
+// =============================================================================
+// E2. Visual transforms (rotation/flipped)
+// =============================================================================
+
+describe('DSL image() — visual transforms', () => {
+	it('rotation(90°) sets rotation = PI/2', () => {
+		const { figure } = runDsl(
+			[
+				'img = image("https://example.com/v.png", 2, 0, largeur=3)',
+				'O = point(0, 0)',
+				'r = rotation(centre=O, angle=90)',
+				'img2 = transforme(r, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		expect(img2.rotation).toBeCloseTo(Math.PI / 2, 10);
+		expect(img2.flipped).toBeFalsy();
+	});
+
+	it('symetrie(centre) sets rotation = ±PI', () => {
+		const { figure } = runDsl(
+			[
+				'img = image("https://example.com/v.png", 2, 0, largeur=3)',
+				'O = point(0, 0)',
+				's = symetrie(centre=O)',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		// PI and -PI are equivalent rotations
+		expect(Math.abs(img2.rotation!)).toBeCloseTo(Math.PI, 10);
+		expect(img2.flipped).toBeFalsy();
+	});
+
+	it('symetrie(axe horizontal) sets flipped = true', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'img = image("https://example.com/v.png", 0, 1, largeur=3)',
+				's = symetrie(axe=(A, B))',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		expect(img2.flipped).toBe(true);
+		expect(img2.rotation).toBeCloseTo(0, 10);
+	});
+
+	it('symetrie(axe at 45°) sets flipped and adjusts rotation', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 1)',
+				'img = image("https://example.com/v.png", 2, 0, largeur=3)',
+				's = symetrie(axe=(A, B))',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		expect(img2.flipped).toBe(true);
+		// axis angle = PI/4, currentRotation = 0 → newRotation = 2*(PI/4) - 0 = PI/2
+		expect(img2.rotation).toBeCloseTo(Math.PI / 2, 10);
+	});
+
+	it('homothetie(rapport=-2) sets rotation = ±PI and scales dimensions', () => {
+		const { figure } = runDsl(
+			[
+				'img = image("https://example.com/v.png", 1, 1, largeur=4, hauteur=3)',
+				'O = point(0, 0)',
+				'h = homothetie(centre=O, rapport=-2)',
+				'img2 = transforme(h, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		expect(Math.abs(img2.rotation!)).toBeCloseTo(Math.PI, 10);
+		expect(img2.width).toBe(8);
+		expect(img2.height).toBe(6);
+		expect(img2.flipped).toBeFalsy();
+	});
+
+	it('translation does not change visual transform', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(2, 3)',
+				'v = vecteur(A, B)',
+				't = translation(vecteur=v)',
+				'img = image("https://example.com/v.png", 0, 0, largeur=3)',
+				'img2 = transforme(t, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		expect(img2.rotation).toBeUndefined();
+		expect(img2.flipped).toBeUndefined();
+	});
+
+	it('composition: rotation then axial symmetry accumulates correctly', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'img = image("https://example.com/v.png", 2, 0, largeur=3)',
+				'O = point(0, 0)',
+				'r = rotation(centre=O, angle=90)',
+				's = symetrie(axe=(A, B))',
+				'c = compose(s, r)',
+				'img2 = transforme(c, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		// r applies first: rotation = PI/2, flipped = false
+		// s applies second (axis angle=0): flipped = true, rotation = 2*0 - PI/2 = -PI/2
+		expect(img2.flipped).toBe(true);
+		expect(img2.rotation).toBeCloseTo(-Math.PI / 2, 10);
+	});
+
+	it('serialization includes rotation param', () => {
+		const dsl = 'img = image("https://example.com/v.png", 0, 0, largeur=3, rotation=1.5708)';
+		const { figure } = runDsl(dsl);
+		const serialized = serializeDsl(figure);
+		expect(serialized).toContain('rotation=1.5708');
+	});
+
+	it('serialization includes miroir for flipped images', () => {
+		const dsl = 'img = image("https://example.com/v.png", 0, 0, largeur=3, miroir="vrai")';
+		const { figure } = runDsl(dsl);
+		const serialized = serializeDsl(figure);
+		expect(serialized).toContain('miroir="vrai"');
+	});
+
+	it('roundtrip preserves rotation via direct DSL params', () => {
+		const dsl =
+			'img = image("https://example.com/v.png", 0, 0, largeur=3, rotation=1.5708, miroir="vrai")';
+		const { figure } = runDsl(dsl);
+		const img = figure.getAllElements().find((e) => e.type === 'image') as GeoImage;
+		expect(img.rotation).toBeCloseTo(1.5708, 4);
+		expect(img.flipped).toBe(true);
+		const serialized = serializeDsl(figure);
+		const { figure: figure2 } = runDsl(serialized);
+		const img2 = figure2.getAllElements().find((e) => e.type === 'image') as GeoImage;
+		expect(img2.rotation).toBeCloseTo(1.5708, 4);
+		expect(img2.flipped).toBe(true);
+	});
+
+	it('2-point mode + axial symmetry sets flipped', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(-2, -1)',
+				'B = point(2, 1)',
+				'P1 = point(0, 0)',
+				'P2 = point(1, 0)',
+				'img = image("https://example.com/v.png", A, B)',
+				's = symetrie(axe=(P1, P2))',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		expect(img2.flipped).toBe(true);
+	});
+});

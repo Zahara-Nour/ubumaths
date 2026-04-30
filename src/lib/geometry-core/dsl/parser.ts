@@ -581,8 +581,11 @@ class Parser {
 	}
 
 	private parseFunctionArg(args: DslExpr[], namedArgs: Map<string, DslExpr>): void {
-		// Check for named argument: name=value
-		if (this.peek().type === 'IDENTIFIER' && this.tokens[this.pos + 1]?.type === 'EQUALS') {
+		// Check for named argument: name=value (accept both IDENTIFIER and KEYWORD as param names)
+		if (
+			(this.peek().type === 'IDENTIFIER' || this.peek().type === 'KEYWORD') &&
+			this.tokens[this.pos + 1]?.type === 'EQUALS'
+		) {
 			const name = this.advance().value;
 			this.advance(); // =
 			const value = this.parseExpr();

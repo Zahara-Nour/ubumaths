@@ -24,7 +24,8 @@ import {
 	angleMarkToSVG,
 	segmentMarkToSVG,
 	textToSVG,
-	imageToSVG
+	imageToSVG,
+	type ImageSVG
 } from './svg-primitives';
 import { computeGridStep } from '../viewport/grid';
 import rough from 'roughjs';
@@ -139,6 +140,16 @@ export function exportToSVG(
 		return `  ${el.outerHTML}`;
 	}
 
+	// Helper: build SVG transform attribute for image rotation/flip
+	function imageTransformAttr(svg: ImageSVG): string {
+		const rot = ((svg.rotation ?? 0) * 180) / Math.PI;
+		const sx = svg.flipped ? -1 : 1;
+		if (rot === 0 && sx > 0) return '';
+		const cx = svg.x + svg.width / 2;
+		const cy = svg.y + (svg.height ?? svg.width) / 2;
+		return ` transform="translate(${r(cx)},${r(cy)}) rotate(${r(rot)}) scale(${sx},1) translate(${r(-cx)},${r(-cy)})"`;
+	}
+
 	// Pass 0: background images (couche="fond")
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'image' || el.layer !== 'fond') continue;
@@ -147,7 +158,7 @@ export function exportToSVG(
 		const sty = resolveStyle(el, figure.defaults);
 		const heightAttr = svg.height !== undefined ? ` height="${r(svg.height)}"` : '';
 		lines.push(
-			`  <image href="${escapeXml(svg.url)}" x="${r(svg.x)}" y="${r(svg.y)}" width="${r(svg.width)}"${heightAttr} opacity="${sty.opacity ?? 1}" preserveAspectRatio="xMidYMid meet" />`
+			`  <image href="${escapeXml(svg.url)}" x="${r(svg.x)}" y="${r(svg.y)}" width="${r(svg.width)}"${heightAttr} opacity="${sty.opacity ?? 1}" preserveAspectRatio="xMidYMid meet"${imageTransformAttr(svg)} />`
 		);
 	}
 
@@ -410,7 +421,7 @@ export function exportToSVG(
 		const sty = resolveStyle(el, figure.defaults);
 		const heightAttr = svg.height !== undefined ? ` height="${r(svg.height)}"` : '';
 		lines.push(
-			`  <image href="${escapeXml(svg.url)}" x="${r(svg.x)}" y="${r(svg.y)}" width="${r(svg.width)}"${heightAttr} opacity="${sty.opacity ?? 1}" preserveAspectRatio="xMidYMid meet" />`
+			`  <image href="${escapeXml(svg.url)}" x="${r(svg.x)}" y="${r(svg.y)}" width="${r(svg.width)}"${heightAttr} opacity="${sty.opacity ?? 1}" preserveAspectRatio="xMidYMid meet"${imageTransformAttr(svg)} />`
 		);
 	}
 

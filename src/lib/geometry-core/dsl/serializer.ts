@@ -403,22 +403,25 @@ function serializeElement(
 		case 'image': {
 			const heightPart = el.height !== undefined ? `, hauteur=${fmtNum(el.height)}` : '';
 			const layerPart = el.layer === 'fond' ? `, couche="fond"` : '';
+			const rotPart = el.rotation ? `, rotation=${fmtNum(el.rotation)}` : '';
+			const flipPart = el.flipped ? `, miroir="vrai"` : '';
+			const visualPart = `${rotPart}${flipPart}`;
 			if (el.point1Id && el.point2Id) {
 				const p1 = name(idToName, el.point1Id);
 				const p2 = name(idToName, el.point2Id);
-				return `image("${el.url}", ${p1}, ${p2}${layerPart})`;
+				return `image("${el.url}", ${p1}, ${p2}${layerPart}${visualPart})`;
 			}
 			if (el.anchorId) {
 				const anchor = name(idToName, el.anchorId);
 				const offset = el.anchorOffset
 					? `, dx=${fmtNum(el.anchorOffset.dx)}, dy=${fmtNum(el.anchorOffset.dy)}`
 					: '';
-				return `image("${el.url}", ${anchor}, largeur=${fmtNum(el.width)}${heightPart}${offset}${layerPart})`;
+				return `image("${el.url}", ${anchor}, largeur=${fmtNum(el.width)}${heightPart}${offset}${layerPart}${visualPart})`;
 			}
 			if (el.position) {
-				return `image("${el.url}", ${fmtNum(el.position.x)}, ${fmtNum(el.position.y)}, largeur=${fmtNum(el.width)}${heightPart}${layerPart})`;
+				return `image("${el.url}", ${fmtNum(el.position.x)}, ${fmtNum(el.position.y)}, largeur=${fmtNum(el.width)}${heightPart}${layerPart}${visualPart})`;
 			}
-			return `image("${el.url}", 0, 0, largeur=${fmtNum(el.width)}${heightPart}${layerPart})`;
+			return `image("${el.url}", 0, 0, largeur=${fmtNum(el.width)}${heightPart}${layerPart}${visualPart})`;
 		}
 
 		case 'polygon': {

@@ -557,8 +557,16 @@ function imageToTypst(el: GeoImage, figure: Figure): string | null {
 
 	const rn = (n: number) => Math.round(n * 1000) / 1000;
 	const heightPart = h !== undefined ? `, height: ${rn(h)}cm` : '';
+	const rotDeg = ((el.rotation ?? 0) * 180) / Math.PI;
+	let imgExpr = `image("${el.url}")`;
+	if (el.flipped) {
+		imgExpr = `scale(x: -100%, ${imgExpr})`;
+	}
+	if (Math.abs(rotDeg) > 0.01) {
+		imgExpr = `rotate(${Math.round(rotDeg * 100) / 100}deg, ${imgExpr})`;
+	}
 	// Note: URL must be replaced with a local file path for Typst compilation
-	return `  content(${c(mx!, my!)}, box(width: ${rn(w)}cm${heightPart}, image("${el.url}")))`;
+	return `  content(${c(mx!, my!)}, box(width: ${rn(w)}cm${heightPart}, ${imgExpr}))`;
 }
 
 // ─── Helpers ────────────────────────────────────────────────
