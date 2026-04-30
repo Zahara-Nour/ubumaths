@@ -799,7 +799,7 @@
 					{#if svg}
 						{@const imgCx = svg.x + svg.width / 2}
 						{@const imgCy = svg.y + (svg.height ?? svg.width) / 2}
-						{@const imgRot = ((svg.rotation ?? 0) * 180) / Math.PI}
+						{@const imgRot = (-(svg.rotation ?? 0) * 180) / Math.PI}
 						{@const imgSx = svg.flipped ? -1 : 1}
 						<g
 							class:draggable-text={isDraggable}
@@ -1733,7 +1733,7 @@
 					{#if svg}
 						{@const imgCx2 = svg.x + svg.width / 2}
 						{@const imgCy2 = svg.y + (svg.height ?? svg.width) / 2}
-						{@const imgRot2 = ((svg.rotation ?? 0) * 180) / Math.PI}
+						{@const imgRot2 = (-(svg.rotation ?? 0) * 180) / Math.PI}
 						{@const imgSx2 = svg.flipped ? -1 : 1}
 						<g
 							class:draggable-text={isDraggable}
