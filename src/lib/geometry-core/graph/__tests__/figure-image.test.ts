@@ -154,3 +154,88 @@ describe('moveImage', () => {
 		expect(() => f.moveImage(id, 1, 1)).toThrow(/not a free-positioned/i);
 	});
 });
+
+// =============================================================================
+// D. Layer support
+// =============================================================================
+
+describe('createImage — layer', () => {
+	it('stores layer fond when provided', () => {
+		const f = new Figure();
+		const id = f.createImage(
+			'https://example.com/l.png',
+			5,
+			undefined,
+			{
+				position: { x: 0, y: 0 }
+			},
+			{ layer: 'fond' }
+		);
+		const el = f.getElementById(id)! as GeoImage;
+		expect(el.layer).toBe('fond');
+	});
+
+	it('layer is undefined by default (treated as avant)', () => {
+		const f = new Figure();
+		const id = f.createImage('https://example.com/m.png', 5, undefined, {
+			position: { x: 0, y: 0 }
+		});
+		const el = f.getElementById(id)! as GeoImage;
+		expect(el.layer).toBeUndefined();
+	});
+});
+
+// =============================================================================
+// E. 2-point anchoring
+// =============================================================================
+
+describe('createImage — 2-point mode', () => {
+	it('creates an image anchored to 2 points', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(-3, -2));
+		const b = f.createFreePoint(pt(3, 2));
+		const id = f.createImage('https://example.com/n.png', 0, undefined, {
+			point1Id: a,
+			point2Id: b
+		});
+		const el = f.getElementById(id)! as GeoImage;
+		expect(el.point1Id).toBe(a);
+		expect(el.point2Id).toBe(b);
+	});
+
+	it('has dependsOn containing both points', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(4, 3));
+		const id = f.createImage('https://example.com/o.png', 0, undefined, {
+			point1Id: a,
+			point2Id: b
+		});
+		const el = f.getElementById(id)! as GeoImage;
+		expect(el.dependsOn).toContain(a);
+		expect(el.dependsOn).toContain(b);
+	});
+
+	it('throws if point1Id does not exist', () => {
+		const f = new Figure();
+		const b = f.createFreePoint(pt(0, 0));
+		expect(() =>
+			f.createImage('https://example.com/p.png', 0, undefined, {
+				point1Id: 'nonexistent',
+				point2Id: b
+			})
+		).toThrow();
+	});
+
+	it('is not draggable (no position)', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(4, 3));
+		const id = f.createImage('https://example.com/q.png', 0, undefined, {
+			point1Id: a,
+			point2Id: b
+		});
+		const el = f.getElementById(id)! as GeoImage;
+		expect(el.position).toBeUndefined();
+	});
+});

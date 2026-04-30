@@ -790,6 +790,44 @@
 
 		<!-- Elements -->
 		<g class="elements">
+			<!-- Background images (couche="fond") — rendered behind all constructions -->
+			{#each elements as el (`${el.id}_bgimg_${version}`)}
+				{#if el.type === 'image' && el.layer === 'fond'}
+					{@const svg = imageToSVG(el.id, figure, transformer)}
+					{@const sty = resolveStyle(el, figure.defaults)}
+					{@const isDraggable = !!el.position}
+					{#if svg}
+						<g
+							class:draggable-text={isDraggable}
+							onpointerdown={isDraggable
+								? (e: PointerEvent) => {
+										if (e.button !== 0) return;
+										draggingId = el.id;
+										const math = getMathCoords(e);
+										dragOffset = math
+											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
+											: null;
+										figure.beginTransaction();
+										svgRef?.setPointerCapture(e.pointerId);
+										e.preventDefault();
+										e.stopPropagation();
+									}
+								: undefined}
+						>
+							<image
+								href={svg.url}
+								x={svg.x}
+								y={svg.y}
+								width={svg.width}
+								height={svg.height}
+								opacity={sty.opacity ?? 1}
+								preserveAspectRatio="xMidYMid meet"
+							/>
+						</g>
+					{/if}
+				{/if}
+			{/each}
+
 			{#each elements as el (`${el.id}_${version}`)}
 				{@const sty = resolveStyle(el, figure.defaults)}
 				{#if el.type === 'segment'}
@@ -1679,9 +1717,9 @@
 				{/if}
 			{/each}
 
-			<!-- Image elements -->
+			<!-- Foreground images (default layer) -->
 			{#each elements as el (`${el.id}_img_${version}`)}
-				{#if el.type === 'image'}
+				{#if el.type === 'image' && el.layer !== 'fond'}
 					{@const svg = imageToSVG(el.id, figure, transformer)}
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{@const isDraggable = !!el.position}

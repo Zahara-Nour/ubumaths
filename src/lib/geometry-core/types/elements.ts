@@ -360,6 +360,12 @@ export interface GeoImage extends GeoElementBase {
 	readonly anchorOffset?: { readonly dx: number; readonly dy: number };
 	/** Free position in math coordinates (when no anchor). */
 	readonly position?: { readonly x: number; readonly y: number };
+	/** First corner point for 2-point rectangle mode. */
+	readonly point1Id?: string;
+	/** Second corner point for 2-point rectangle mode. */
+	readonly point2Id?: string;
+	/** Rendering layer: 'fond' = behind constructions, 'avant' (default) = on top. */
+	readonly layer?: 'fond' | 'avant';
 	readonly dependsOn: readonly string[];
 }
 

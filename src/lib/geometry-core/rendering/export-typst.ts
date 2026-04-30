@@ -8,7 +8,7 @@ import type { Figure } from '../graph/figure';
 import { conicPointFromParam } from '../graph/conic-helpers';
 import type { Viewport } from '../viewport/types';
 import type { ConicParams } from '../types/elements';
-import { isPointElement, isVector } from '../types/elements';
+import { isPointElement, isVector, type GeoImage } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { circumcircle } from '../geometry/circumcircle';
 import { resolveStyle } from './svg-primitives';
@@ -83,6 +83,13 @@ export function exportToTypst(
 		lines.push(
 			`  line(${c(0, viewport.yMin)}, ${c(0, viewport.yMax)}, stroke: gray + 1pt, mark: (end: ">"))`
 		);
+	}
+
+	// Pass 0: background images (couche="fond")
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'image' || el.layer !== 'fond') continue;
+		const typst = imageToTypst(el, figure);
+		if (typst) lines.push(typst);
 	}
 
 	// Pass 1: segments, lines, rays
@@ -506,8 +513,52 @@ export function exportToTypst(
 		}
 	}
 
+	// Pass 7: foreground images (layer !== 'fond')
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'image' || el.layer === 'fond') continue;
+		const typst = imageToTypst(el, figure);
+		if (typst) lines.push(typst);
+	}
+
 	lines.push('})');
 	return lines.join('\n');
+}
+
+/** Convert a GeoImage to a Typst cetz content() call. */
+function imageToTypst(el: GeoImage, figure: Figure): string | null {
+	let mx: number | undefined;
+	let my: number | undefined;
+	let w: number;
+	let h: number | undefined;
+
+	if (el.point1Id && el.point2Id) {
+		const p1 = figure.getPosition(el.point1Id);
+		const p2 = figure.getPosition(el.point2Id);
+		if (!p1 || !p2) return null;
+		mx = Math.min(geoToNumber(p1.x), geoToNumber(p2.x));
+		my = Math.max(geoToNumber(p1.y), geoToNumber(p2.y));
+		w = Math.abs(geoToNumber(p2.x) - geoToNumber(p1.x));
+		h = Math.abs(geoToNumber(p2.y) - geoToNumber(p1.y));
+	} else if (el.anchorId) {
+		const pos = figure.getPosition(el.anchorId);
+		if (!pos) return null;
+		mx = geoToNumber(pos.x) + (el.anchorOffset?.dx ?? 0);
+		my = geoToNumber(pos.y) + (el.anchorOffset?.dy ?? 0);
+		w = el.width;
+		h = el.height;
+	} else if (el.position) {
+		mx = el.position.x;
+		my = el.position.y;
+		w = el.width;
+		h = el.height;
+	} else {
+		return null;
+	}
+
+	const rn = (n: number) => Math.round(n * 1000) / 1000;
+	const heightPart = h !== undefined ? `, height: ${rn(h)}cm` : '';
+	// Note: URL must be replaced with a local file path for Typst compilation
+	return `  content(${c(mx!, my!)}, box(width: ${rn(w)}cm${heightPart}, image("${el.url}")))`;
 }
 
 // ─── Helpers ────────────────────────────────────────────────
