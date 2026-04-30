@@ -77,7 +77,7 @@ img = image("/game/monsters/cobra_tete.png", A, B)
 C = point(0, 3, couleur="rouge")
 D = point(0, -3, couleur="rouge")
 d = droite(C, D, couleur="gris", trait="tirets")
-s = symetrie(C, D)
+s = symetrie(axe=d)
 img2 = transforme(s, img)`;
 </script>
 
