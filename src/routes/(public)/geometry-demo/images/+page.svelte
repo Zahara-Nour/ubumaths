@@ -118,19 +118,97 @@ r7 = rotation(centre=O, angle=315)
 transforme(r7, img)
 cercle(O, rayon=3, couleur="gris", trait="tirets")`;
 
-	const homothetieDsl = `A = point(1, 1, couleur="rouge")
+	// ── Translation ──────────────────────────────────────────
+
+	const translation2PointDsl = `A = point(-4, -1, couleur="bleu")
+B = point(-1, 1, couleur="bleu")
+img = image("/game/monsters/griffon_tete.png", A, B)
+U = point(0, 0, couleur="vert")
+V = point(3, 2, couleur="vert")
+v = vecteur(U, V, couleur="vert")
+t = translation(vecteur=v)
+img2 = transforme(t, img)`;
+
+	const translationAnchoredDsl = `A = point(-3, 0, couleur="rouge")
+img = image("/game/monsters/lion_tete.png", A, largeur=2, dx=-1, dy=-1)
+U = point(0, 0, couleur="vert")
+V = point(4, 1, couleur="vert")
+v = vecteur(U, V, couleur="vert")
+t = translation(vecteur=v)
+img2 = transforme(t, img)`;
+
+	const translationFreeDsl = `img = image("/game/monsters/cobra_tete.png", -3, 0, largeur=2, hauteur=2)
+U = point(0, 0, couleur="vert")
+V = point(4, 1, couleur="vert")
+v = vecteur(U, V, couleur="vert")
+t = translation(vecteur=v)
+img2 = transforme(t, img)`;
+
+	// ── Symetrie centrale ────────────────────────────────────
+
+	const symCentrale2PointDsl = `A = point(-4, -1, couleur="bleu")
+B = point(-1, 1, couleur="bleu")
+img = image("/game/monsters/dragon_tete.png", A, B)
+O = point(0, 0, couleur="rouge")
+s = symetrie(centre=O)
+img2 = transforme(s, img)
+segment(A, O, couleur="gris", trait="tirets")`;
+
+	const symCentraleAnchoredDsl = `A = point(-3, 1, couleur="rouge")
+img = image("/game/monsters/griffon_tete.png", A, largeur=2, dx=-1, dy=-1)
+O = point(0, 0, couleur="bleu")
+s = symetrie(centre=O)
+img2 = transforme(s, img)
+segment(A, O, couleur="gris", trait="tirets")`;
+
+	const symCentraleFreeDsl = `img = image("/game/monsters/lion_tete.png", -3, 1, largeur=2, hauteur=2)
+O = point(0, 0, couleur="bleu")
+s = symetrie(centre=O)
+img2 = transforme(s, img)`;
+
+	// ── Homothetie ───────────────────────────────────────────
+
+	const homothetie2PointDsl = `A = point(-3, -1, couleur="bleu")
+B = point(-1, 1, couleur="bleu")
+img = image("/game/monsters/cobra_tete.png", A, B)
+O = point(0, 0, couleur="rouge")
+h = homothetie(centre=O, rapport=1.5)
+img2 = transforme(h, img)
+segment(O, A, couleur="gris", trait="tirets")`;
+
+	const homothetieAnchoredDsl = `A = point(1, 1, couleur="rouge")
 img = image("/game/monsters/lion_tete.png", A, largeur=1.5, dx=-0.75, dy=-0.75)
 O = point(0, 0, couleur="bleu")
 h = homothetie(centre=O, rapport=2)
 img2 = transforme(h, img)
 segment(O, A, couleur="gris", trait="tirets")`;
 
-	const symetrieDsl = `A = point(-2, -1, couleur="bleu")
-B = point(2, 1, couleur="bleu")
+	const homothetieFreeDsl = `img = image("/game/monsters/dragon_tete.png", 1, 1, largeur=1.5, hauteur=1.5)
+O = point(0, 0, couleur="bleu")
+h = homothetie(centre=O, rapport=2)
+img2 = transforme(h, img)`;
+
+	const symetrie2PointDsl = `A = point(-4, -1, couleur="bleu")
+B = point(-1, 1, couleur="bleu")
 img = image("/game/monsters/cobra_tete.png", A, B)
-C = point(0, 3, couleur="rouge")
-D = point(0, -3, couleur="rouge")
-d = droite(C, D, couleur="gris", trait="tirets")
+P1 = point(0, -3, couleur="rouge")
+P2 = point(0, 3, couleur="rouge")
+d = droite(P1, P2, couleur="gris", trait="tirets")
+s = symetrie(axe=d)
+img2 = transforme(s, img)`;
+
+	const symetrieAnchoredDsl = `A = point(-3, 0, couleur="rouge")
+img = image("/game/monsters/lion_tete.png", A, largeur=2, dx=-1, dy=-1)
+P1 = point(0, -3, couleur="rouge")
+P2 = point(0, 3, couleur="rouge")
+d = droite(P1, P2, couleur="gris", trait="tirets")
+s = symetrie(axe=d)
+img2 = transforme(s, img)`;
+
+	const symetrieFreeDsl = `img = image("/game/monsters/dragon_tete.png", -3, 0, largeur=2, hauteur=2)
+P1 = point(0, -3, couleur="rouge")
+P2 = point(0, 3, couleur="rouge")
+d = droite(P1, P2, couleur="gris", trait="tirets")
 s = symetrie(axe=d)
 img2 = transforme(s, img)`;
 </script>
@@ -207,9 +285,11 @@ img2 = transforme(s, img)`;
 		height={400}
 	/>
 
+	<h2 class="mt-8 text-xl font-bold">Rotation</h2>
+
 	<DslDemo
 		dsl={rotationDsl}
-		title="Rotation d'images (2 points)"
+		title="Rotation — image 2 points"
 		description="Image definie par 2 coins draggables. Les rotations preservent les dimensions et l'orientation visuelle."
 		width={600}
 		height={400}
@@ -217,7 +297,7 @@ img2 = transforme(s, img)`;
 
 	<DslDemo
 		dsl={rotationAnchoredDsl}
-		title="Rotation d'images (ancree)"
+		title="Rotation — image ancree"
 		description="Image ancree au point A avec offset de centrage. Le point A tourne sur le cercle, l'image suit et tourne visuellement."
 		width={600}
 		height={400}
@@ -225,24 +305,112 @@ img2 = transforme(s, img)`;
 
 	<DslDemo
 		dsl={rotationFreeDsl}
-		title="Rotation d'images (position libre)"
+		title="Rotation — image libre"
 		description="Image en position libre (x, y). Le centre de l'image est transforme et l'image tourne visuellement."
 		width={600}
 		height={400}
 	/>
 
+	<h2 class="mt-8 text-xl font-bold">Translation</h2>
+
 	<DslDemo
-		dsl={homothetieDsl}
-		title="Homothetie (agrandissement)"
+		dsl={translation2PointDsl}
+		title="Translation — image 2 points"
+		description="Les deux coins sont translatees par le vecteur. Deplacez U ou V pour changer le vecteur."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={translationAnchoredDsl}
+		title="Translation — image ancree"
+		description="L'image ancree au point A est translatee. Deplacez A ou le vecteur."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={translationFreeDsl}
+		title="Translation — image libre"
+		description="L'image libre est translatee. Deplacez l'image ou le vecteur."
+		width={600}
+		height={400}
+	/>
+
+	<h2 class="mt-8 text-xl font-bold">Symetrie centrale</h2>
+
+	<DslDemo
+		dsl={symCentrale2PointDsl}
+		title="Symetrie centrale — image 2 points"
+		description="Les deux coins sont reflechis par rapport au centre O. Equivalent a une rotation de 180°."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={symCentraleAnchoredDsl}
+		title="Symetrie centrale — image ancree"
+		description="L'image ancree est reflechie par rapport a O. Deplacez A ou O."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={symCentraleFreeDsl}
+		title="Symetrie centrale — image libre"
+		description="L'image libre est reflechie par rapport a O."
+		width={600}
+		height={400}
+	/>
+
+	<h2 class="mt-8 text-xl font-bold">Homothetie</h2>
+
+	<DslDemo
+		dsl={homothetie2PointDsl}
+		title="Homothetie — image 2 points"
+		description="Les deux coins sont dilates par rapport a O avec rapport 1.5. L'image grandit et s'eloigne."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={homothetieAnchoredDsl}
+		title="Homothetie — image ancree"
 		description="L'homothetie de rapport 2 deplace l'ancrage et double les dimensions de l'image."
 		width={600}
 		height={400}
 	/>
 
 	<DslDemo
-		dsl={symetrieDsl}
-		title="Symetrie axiale d'une image 2 points"
-		description="Le reflet d'une image 2 points par symetrie axiale transforme les deux coins du rectangle."
+		dsl={homothetieFreeDsl}
+		title="Homothetie — image libre"
+		description="L'image libre est agrandie par rapport a O avec rapport 2."
+		width={600}
+		height={400}
+	/>
+
+	<h2 class="mt-8 text-xl font-bold">Symetrie axiale</h2>
+
+	<DslDemo
+		dsl={symetrie2PointDsl}
+		title="Symetrie axiale — image 2 points"
+		description="Les deux coins A et B sont reflechis par la symetrie. Deplacez A, B ou l'axe pour voir la mise a jour reactive."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={symetrieAnchoredDsl}
+		title="Symetrie axiale — image ancree"
+		description="L'image ancree au point A est reflechie. Deplacez A ou l'axe pour verifier la reactivite."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={symetrieFreeDsl}
+		title="Symetrie axiale — image libre"
+		description="L'image en position libre est reflechie. Deplacez l'image ou l'axe."
 		width={600}
 		height={400}
 	/>
