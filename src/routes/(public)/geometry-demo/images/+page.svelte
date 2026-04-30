@@ -52,6 +52,33 @@ B = point(3, 2, couleur="bleu")
 image("/game/monsters/dragon_tete.png", A, B)
 segment(A, B, couleur="gris", trait="tirets")
 texte(-4, 3, "Deplacez A et B !")`;
+
+	const rotationDsl = `A = point(2, 0, couleur="rouge")
+img = image("/game/monsters/griffon_tete.png", A, largeur=2, dx=-1, dy=-1)
+O = point(0, 0, couleur="bleu")
+r = rotation(centre=O, angle=90)
+img2 = transforme(r, img)
+r2 = rotation(centre=O, angle=180)
+img3 = transforme(r2, img)
+r3 = rotation(centre=O, angle=270)
+img4 = transforme(r3, img)
+cercle(O, rayon=2, couleur="gris", trait="tirets")`;
+
+	const homothetieDsl = `A = point(1, 1, couleur="rouge")
+img = image("/game/monsters/lion_tete.png", A, largeur=1.5, dx=-0.75, dy=-0.75)
+O = point(0, 0, couleur="bleu")
+h = homothetie(centre=O, rapport=2)
+img2 = transforme(h, img)
+segment(O, A, couleur="gris", trait="tirets")`;
+
+	const symetrieDsl = `A = point(-2, -1, couleur="bleu")
+B = point(2, 1, couleur="bleu")
+img = image("/game/monsters/cobra_tete.png", A, B)
+C = point(0, 3, couleur="rouge")
+D = point(0, -3, couleur="rouge")
+d = droite(C, D, couleur="gris", trait="tirets")
+s = symetrie(C, D)
+img2 = transforme(s, img)`;
 </script>
 
 <svelte:head>
@@ -122,6 +149,30 @@ texte(-4, 3, "Deplacez A et B !")`;
 		dsl={twoPointDsl}
 		title="Image entre 2 points"
 		description="image(&quot;url&quot;, A, B) remplit le rectangle defini par les deux points. L'image se redimensionne quand les points bougent."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={rotationDsl}
+		title="Rotation d'images"
+		description="transforme(rotation, image) cree une copie de l'image avec l'ancrage tourne. Ici 4 griffons a 0, 90, 180, 270 degres."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={homothetieDsl}
+		title="Homothetie (agrandissement)"
+		description="L'homothetie de rapport 2 deplace l'ancrage et double les dimensions de l'image."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={symetrieDsl}
+		title="Symetrie axiale d'une image 2 points"
+		description="Le reflet d'une image 2 points par symetrie axiale transforme les deux coins du rectangle."
 		width={600}
 		height={400}
 	/>
