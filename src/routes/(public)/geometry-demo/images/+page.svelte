@@ -53,7 +53,7 @@ image("/game/monsters/dragon_tete.png", A, B)
 segment(A, B, couleur="gris", trait="tirets")
 texte(-4, 3, "Deplacez A et B !")`;
 
-	const rotationDsl = `A = point(2, 0, couleur="rouge")
+	const rotationDsl = `A = point(3, 0, couleur="rouge")
 img = image("/game/monsters/griffon_tete.png", A, largeur=2, dx=-1, dy=-1)
 O = point(0, 0, couleur="bleu")
 r = rotation(centre=O, angle=90)
@@ -62,7 +62,7 @@ r2 = rotation(centre=O, angle=180)
 img3 = transforme(r2, img)
 r3 = rotation(centre=O, angle=270)
 img4 = transforme(r3, img)
-cercle(O, rayon=2, couleur="gris", trait="tirets")`;
+cercle(O, rayon=3, couleur="gris", trait="tirets")`;
 
 	const homothetieDsl = `A = point(1, 1, couleur="rouge")
 img = image("/game/monsters/lion_tete.png", A, largeur=1.5, dx=-0.75, dy=-0.75)
