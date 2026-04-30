@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { runDsl, serializeDsl } from '../index';
 import type { GeoImage } from '../../types/elements';
+import { geoToNumber } from '../../compute/to-number';
 
 // =============================================================================
 // A. DSL parsing — image()
@@ -502,5 +503,73 @@ describe('DSL image() — visual transforms', () => {
 		);
 		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
 		expect(img2.flipped).toBe(true);
+	});
+});
+
+// =============================================================================
+// F. Reactive transforms on free-positioned images
+// =============================================================================
+
+describe('DSL image() — reactive free-position transforms', () => {
+	it('dragging a free image updates the transformed image', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'img = image("https://example.com/r.png", 2, 0, largeur=3)',
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'v = vecteur(A, B)',
+				't = translation(vecteur=v)',
+				'img2 = transforme(t, img)'
+			].join('\n')
+		);
+		const img2Entry = symbols.get('img2')!;
+		const img2El = figure.getElementById(img2Entry.figureId) as GeoImage;
+		const anchorBefore = figure.getPosition(img2El.anchorId!);
+		expect(anchorBefore).toBeDefined();
+		const xBefore = geoToNumber(anchorBefore!.x);
+
+		// Drag the source image
+		const imgEntry = symbols.get('img')!;
+		figure.moveImage(imgEntry.figureId, 5, 0);
+		figure.recompute();
+
+		const anchorAfter = figure.getPosition(img2El.anchorId!);
+		const xAfter = geoToNumber(anchorAfter!.x);
+		// Translation by (1,0): new center should be at 5+1 = 6 (offset by -W/2 for anchor)
+		expect(xAfter).not.toBeCloseTo(xBefore);
+		expect(xAfter - xBefore).toBeCloseTo(3); // moved from 2 to 5 = delta 3
+	});
+
+	it('second transforme() reuses the same _centerPointId', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'img = image("https://example.com/r.png", 2, 0, largeur=3)',
+				'O = point(0, 0)',
+				'r = rotation(centre=O, angle=90)',
+				's = symetrie(centre=O)',
+				'img2 = transforme(r, img)',
+				'img3 = transforme(s, img)'
+			].join('\n')
+		);
+		const imgEl = figure.getElementById(symbols.get('img')!.figureId) as GeoImage;
+		expect(imgEl._centerPointId).toBeDefined();
+		// Both transforms should depend on the same hidden center point
+		// Count free points — only one hidden center should exist for 'img'
+		const allElements = figure.getAllElements();
+		const hiddenFreePoints = allElements.filter(
+			(e) => e.type === 'freePoint' && !e.visible && e.id === imgEl._centerPointId
+		);
+		expect(hiddenFreePoints).toHaveLength(1);
+	});
+
+	it('moveImage without _centerPointId works as before', () => {
+		const { figure, symbols } = runDsl(
+			['img = image("https://example.com/r.png", 2, 0, largeur=3)'].join('\n')
+		);
+		const imgEntry = symbols.get('img')!;
+		figure.moveImage(imgEntry.figureId, 5, 7);
+		const imgEl = figure.getElementById(imgEntry.figureId) as GeoImage;
+		expect(imgEl.position).toEqual({ x: 5, y: 7 });
+		expect(imgEl._centerPointId).toBeUndefined();
 	});
 });

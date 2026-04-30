@@ -3032,6 +3032,19 @@ export class Figure {
 		const updated: GeoImage = { ...imgEl, position: { x, y } };
 		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
+
+		// Propagate to hidden center point so transformed images follow
+		if (imgEl._centerPointId) {
+			this.movePoint(imgEl._centerPointId, numeric(x), numeric(y));
+		}
+	}
+
+	/** Attach a hidden center point to a free-positioned image (used by transforme()). */
+	setImageCenterPoint(imageId: string, centerPointId: string): void {
+		const el = this.elements.get(imageId);
+		if (!el || el.type !== 'image') return;
+		const updated: GeoImage = { ...(el as GeoImage), _centerPointId: centerPointId };
+		this.elements.set(imageId, updated);
 	}
 
 	recompute(): void {

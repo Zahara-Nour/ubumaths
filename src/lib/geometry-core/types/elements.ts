@@ -379,6 +379,8 @@ export interface GeoImage extends GeoElementBase {
 	readonly rotation?: number;
 	/** Whether the image is visually flipped (mirrored), from axial symmetry. */
 	readonly flipped?: boolean;
+	/** Internal: hidden point tracking the center for reactive transforms. Set by transforme(). */
+	readonly _centerPointId?: string;
 	readonly dependsOn: readonly string[];
 }
 
