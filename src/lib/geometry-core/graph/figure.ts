@@ -2496,7 +2496,13 @@ export class Figure {
 			point1Id?: string;
 			point2Id?: string;
 		},
-		options?: ElementOptions & { layer?: 'fond' | 'avant'; rotation?: number; flipped?: boolean }
+		options?: ElementOptions & {
+			layer?: 'fond' | 'avant';
+			rotation?: number;
+			flipped?: boolean;
+			_srcPoint1Id?: string;
+			_srcPoint2Id?: string;
+		}
 	): string {
 		const deps = this._collectTextDeps([], positioning);
 		// For 2-point mode, add both points to deps
@@ -2527,6 +2533,8 @@ export class Figure {
 			layer: options?.layer,
 			rotation: options?.rotation,
 			flipped: options?.flipped,
+			_srcPoint1Id: options?._srcPoint1Id,
+			_srcPoint2Id: options?._srcPoint2Id,
 			color: this.resolveColor(options),
 			visible: options?.visible ?? true,
 			label: options?.label,

@@ -381,6 +381,10 @@ export interface GeoImage extends GeoElementBase {
 	readonly flipped?: boolean;
 	/** Internal: hidden point tracking the center for reactive transforms. Set by transforme(). */
 	readonly _centerPointId?: string;
+	/** Internal: source image P1 for reactive 2-point rotation (tracks the untransformed diagonal). */
+	readonly _srcPoint1Id?: string;
+	/** Internal: source image P2 for reactive 2-point rotation (tracks the untransformed diagonal). */
+	readonly _srcPoint2Id?: string;
 	readonly dependsOn: readonly string[];
 }
 

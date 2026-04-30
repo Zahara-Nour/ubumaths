@@ -540,6 +540,10 @@ export function applyTransformationToElement(
 
 			// 2-point mode: transform both corner points
 			if (img.point1Id && img.point2Id) {
+				// Track the original (untransformed) source points for reactive rotation.
+				// For chained transforms, propagate the root source points.
+				const srcP1Id = img._srcPoint1Id ?? img.point1Id;
+				const srcP2Id = img._srcPoint2Id ?? img.point2Id;
 				const newP1 = applyTransformationToPoint(figure, transformEl, img.point1Id, {
 					visible: false
 				});
@@ -554,7 +558,13 @@ export function applyTransformationToElement(
 						point1Id: newP1,
 						point2Id: newP2
 					},
-					{ label: options?.label, layer: img.layer, ...visualOpts }
+					{
+						label: options?.label,
+						layer: img.layer,
+						...visualOpts,
+						_srcPoint1Id: srcP1Id,
+						_srcPoint2Id: srcP2Id
+					}
 				);
 				return { figureId: id, symbolType: 'image' };
 			}
