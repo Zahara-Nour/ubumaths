@@ -142,7 +142,7 @@ export function exportToSVG(
 
 	// Helper: build SVG transform attribute for image rotation/flip
 	function imageTransformAttr(svg: ImageSVG): string {
-		const rot = ((svg.rotation ?? 0) * 180) / Math.PI;
+		const rot = (-(svg.rotation ?? 0) * 180) / Math.PI;
 		const sx = svg.flipped ? -1 : 1;
 		if (rot === 0 && sx > 0) return '';
 		const cx = svg.x + svg.width / 2;
