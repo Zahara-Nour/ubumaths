@@ -1085,12 +1085,13 @@ export function imageToSVG(
 		};
 	}
 
-	// Free position — (x,y) in math is the reference point; SVG <image> starts top-left
+	// Free position — (x,y) in math is the center; SVG <image> starts top-left
 	if (el.position) {
-		const svgPos = transformer.mathToSvg(el.position.x, el.position.y);
+		const svgCenter = transformer.mathToSvg(el.position.x, el.position.y);
+		const hPx = heightPx ?? widthPx;
 		return {
-			x: svgPos.x,
-			y: svgPos.y,
+			x: svgCenter.x - widthPx / 2,
+			y: svgCenter.y - hPx / 2,
 			width: widthPx,
 			height: heightPx,
 			url: el.url,

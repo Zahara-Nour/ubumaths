@@ -7,7 +7,7 @@ C = point(0, 3, couleur="bleu")
 segment(A, B)
 segment(B, C)
 segment(C, A)
-image("/game/monsters/dragon_tete.png", -2, 0, largeur=3)`;
+image("/game/monsters/dragon_tete.png", -0.5, 1.5, largeur=3)`;
 
 	const anchoredDsl = `A = point(0, 0, couleur="rouge")
 B = point(4, 2, couleur="bleu")
@@ -24,10 +24,10 @@ segment(A, B)
 segment(B, C)
 segment(C, D)
 segment(D, A)
-image("/game/monsters/hydre_tete.png", -3.5, -1.5, largeur=7, hauteur=4)`;
+image("/game/monsters/hydre_tete.png", 0, 0.5, largeur=7, hauteur=4)`;
 
-	const draggableDsl = `image("/game/monsters/cyclope_tete.png", -3, 1, largeur=3)
-image("/game/monsters/jaguar_tete.png", 1, 1, largeur=3)
+	const draggableDsl = `image("/game/monsters/cyclope_tete.png", -1.5, 2.5, largeur=3)
+image("/game/monsters/jaguar_tete.png", 2.5, 2.5, largeur=3)
 A = point(0, -2, couleur="rouge")
 texte(A, "Deplacez les images !", dx=0.5, dy=0.5)`;
 
@@ -38,7 +38,7 @@ P = point_sur(c, 45, couleur="rouge")
 image("/game/monsters/aigle_tete.png", P, largeur=1.5, dx=-0.7, dy=0.3)
 texte(P, "P", dx=0.5, dy=-0.5)`;
 
-	const fondDsl = `image("/game/monsters/hydre_tete.png", -5, -3, largeur=10, hauteur=6, couche="fond")
+	const fondDsl = `image("/game/monsters/hydre_tete.png", 0, 0, largeur=10, hauteur=6, couche="fond")
 A = point(-3, -1, couleur="rouge")
 B = point(3, 1, couleur="rouge")
 segment(A, B, couleur="jaune", epaisseur=3)
@@ -80,7 +80,7 @@ r3 = rotation(centre=O, angle=270)
 img4 = transforme(r3, img)
 cercle(O, rayon=3, couleur="gris", trait="tirets")`;
 
-	const rotationFreeDsl = `img = image("/game/monsters/cobra_tete.png", 2, -1, largeur=2, hauteur=2)
+	const rotationFreeDsl = `img = image("/game/monsters/cobra_tete.png", 3, 0, largeur=2, hauteur=2)
 O = point(0, 0, couleur="bleu")
 r = rotation(centre=O, angle=90)
 img2 = transforme(r, img)
@@ -126,7 +126,7 @@ img2 = transforme(s, img)`;
 	<DslDemo
 		dsl={freePositionDsl}
 		title="Image en position libre"
-		description="image(url, x, y, largeur=W) place une image aux coordonnees (x, y) avec une largeur en unites mathematiques."
+		description="image(url, x, y, largeur=W) place une image centree aux coordonnees (x, y) avec une largeur en unites mathematiques."
 		width={600}
 		height={400}
 	/>

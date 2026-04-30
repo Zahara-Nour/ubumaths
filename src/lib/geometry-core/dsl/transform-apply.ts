@@ -560,6 +560,8 @@ export function applyTransformationToElement(
 			}
 
 			// Anchored to 1 point: transform the image center, reposition with offset
+			// (ax, ay) is the math point at SVG top-left — i.e. math top-left (highest y).
+			// Center = (ax + W/2, ay - H/2) since y goes down from top-left in math.
 			if (img.anchorId) {
 				const anchorPos = figure.getPosition(img.anchorId);
 				if (!anchorPos) throw new Error('transforme(): image anchor position not found');
@@ -567,7 +569,7 @@ export function applyTransformationToElement(
 				const ay = geoToNumber(anchorPos.y) + (img.anchorOffset?.dy ?? 0);
 				const imgH = img.height ?? img.width;
 				const centerPt = figure.createFreePoint(
-					{ x: numeric(ax + img.width / 2), y: numeric(ay + imgH / 2) },
+					{ x: numeric(ax + img.width / 2), y: numeric(ay - imgH / 2) },
 					{ visible: false }
 				);
 				const newCenter = applyTransformationToPoint(figure, transformEl, centerPt, {
@@ -580,21 +582,17 @@ export function applyTransformationToElement(
 					newHeight,
 					{
 						anchorId: newCenter,
-						anchorOffset: { dx: -newWidth / 2, dy: -newH / 2 }
+						anchorOffset: { dx: -newWidth / 2, dy: newH / 2 }
 					},
 					{ label: options?.label, layer: img.layer, ...visualOpts }
 				);
 				return { figureId: id, symbolType: 'image' };
 			}
 
-			// Free position: transform the image center, reposition with offset
+			// Free position: position is the center — transform it directly
 			if (img.position) {
-				const imgH = img.height ?? img.width;
 				const centerPt = figure.createFreePoint(
-					{
-						x: numeric(img.position.x + img.width / 2),
-						y: numeric(img.position.y + imgH / 2)
-					},
+					{ x: numeric(img.position.x), y: numeric(img.position.y) },
 					{ visible: false }
 				);
 				const newCenter = applyTransformationToPoint(figure, transformEl, centerPt, {
@@ -607,7 +605,7 @@ export function applyTransformationToElement(
 					newHeight,
 					{
 						anchorId: newCenter,
-						anchorOffset: { dx: -newWidth / 2, dy: -newH / 2 }
+						anchorOffset: { dx: -newWidth / 2, dy: newH / 2 }
 					},
 					{ label: options?.label, layer: img.layer, ...visualOpts }
 				);
