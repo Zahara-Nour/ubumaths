@@ -17,6 +17,7 @@ export type SymbolType =
 	| 'text'
 	| 'mathText'
 	| 'richText'
+	| 'image'
 	| 'arc'
 	| 'secteur'
 	| 'couronne'

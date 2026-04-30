@@ -23,7 +23,8 @@ import {
 	annulusToSVG,
 	angleMarkToSVG,
 	segmentMarkToSVG,
-	textToSVG
+	textToSVG,
+	imageToSVG
 } from './svg-primitives';
 import { computeGridStep } from '../viewport/grid';
 import rough from 'roughjs';
@@ -387,6 +388,18 @@ export function exportToSVG(
 				`  <text x="${r(svg.x)}" y="${r(svg.y)}" fill="${sty.color}" font-size="12" font-family="KaTeX_Main, serif">${escapeXml(svg.text)}</text>`
 			);
 		}
+	}
+
+	// Pass 7: image elements
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'image') continue;
+		const svg = imageToSVG(el.id, figure, transformer);
+		if (!svg) continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const heightAttr = svg.height !== undefined ? ` height="${r(svg.height)}"` : '';
+		lines.push(
+			`  <image href="${escapeXml(svg.url)}" x="${r(svg.x)}" y="${r(svg.y)}" width="${r(svg.width)}"${heightAttr} opacity="${sty.opacity ?? 1}" preserveAspectRatio="xMidYMid meet" />`
+		);
 	}
 
 	lines.push('</svg>');

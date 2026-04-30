@@ -345,6 +345,24 @@ export interface GeoRichText extends GeoElementBase {
 	readonly dependsOn: readonly string[];
 }
 
+/** Image element displayed on the figure via SVG <image>. */
+export interface GeoImage extends GeoElementBase {
+	readonly type: 'image';
+	/** URL of the image (absolute, e.g. from Supabase storage). */
+	readonly url: string;
+	/** Width in math coordinate units. */
+	readonly width: number;
+	/** Height in math coordinate units. If omitted, aspect ratio is preserved. */
+	readonly height?: number;
+	/** Point element to anchor the image to (optional). */
+	readonly anchorId?: string;
+	/** Offset from anchor point in math coordinates. */
+	readonly anchorOffset?: { readonly dx: number; readonly dy: number };
+	/** Free position in math coordinates (when no anchor). */
+	readonly position?: { readonly x: number; readonly y: number };
+	readonly dependsOn: readonly string[];
+}
+
 // =============================================================================
 // Scalar types (reactive computed values)
 // =============================================================================
@@ -879,6 +897,7 @@ export type GeoElement =
 	| GeoText
 	| GeoMathText
 	| GeoRichText
+	| GeoImage
 	| GeoSegment
 	| GeoLine
 	| GeoRay
@@ -1062,6 +1081,10 @@ export function isMathText(el: GeoElement): el is GeoMathText {
 
 export function isRichText(el: GeoElement): el is GeoRichText {
 	return el.type === 'richText';
+}
+
+export function isImage(el: GeoElement): el is GeoImage {
+	return el.type === 'image';
 }
 
 export function isSegment(el: GeoElement): el is GeoSegment {
