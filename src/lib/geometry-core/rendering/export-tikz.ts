@@ -9,7 +9,7 @@ import type { Figure } from '../graph/figure';
 import { conicPointFromParam } from '../graph/conic-helpers';
 import type { Viewport } from '../viewport/types';
 import type { GeoElement, ConicParams } from '../types/elements';
-import { isPointElement, isVector } from '../types/elements';
+import { isPointElement, isVector, type GeoImage } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { circumcircle } from '../geometry/circumcircle';
 import { resolveStyle } from './svg-primitives';
@@ -106,6 +106,13 @@ export function exportToTikZ(
 	if (showAxes) {
 		lines.push(`  \\draw[gray, ->] ${coord(viewport.xMin, 0)} -- ${coord(viewport.xMax, 0)};`);
 		lines.push(`  \\draw[gray, ->] ${coord(0, viewport.yMin)} -- ${coord(0, viewport.yMax)};`);
+	}
+
+	// Pass 0: background images (couche="fond")
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'image' || el.layer !== 'fond') continue;
+		const tikz = imageToTikZ(el, figure);
+		if (tikz) lines.push(tikz);
 	}
 
 	// Render elements by type: lines first, then circles, then marks, then points on top
@@ -522,8 +529,53 @@ export function exportToTikZ(
 		}
 	}
 
+	// Pass 7: foreground images (layer !== 'fond')
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'image' || el.layer === 'fond') continue;
+		const tikz = imageToTikZ(el, figure);
+		if (tikz) lines.push(tikz);
+	}
+
 	lines.push('\\end{tikzpicture}');
 	return lines.join('\n');
+}
+
+/** Convert a GeoImage to a TikZ \node with \includegraphics. */
+function imageToTikZ(el: GeoImage, figure: Figure): string | null {
+	let mx: number | undefined;
+	let my: number | undefined;
+	let w: number;
+	let h: number | undefined;
+
+	if (el.point1Id && el.point2Id) {
+		const p1 = figure.getPosition(el.point1Id);
+		const p2 = figure.getPosition(el.point2Id);
+		if (!p1 || !p2) return null;
+		mx = Math.min(geoToNumber(p1.x), geoToNumber(p2.x));
+		my = Math.max(geoToNumber(p1.y), geoToNumber(p2.y));
+		w = Math.abs(geoToNumber(p2.x) - geoToNumber(p1.x));
+		h = Math.abs(geoToNumber(p2.y) - geoToNumber(p1.y));
+	} else if (el.anchorId) {
+		const pos = figure.getPosition(el.anchorId);
+		if (!pos) return null;
+		mx = geoToNumber(pos.x) + (el.anchorOffset?.dx ?? 0);
+		my = geoToNumber(pos.y) + (el.anchorOffset?.dy ?? 0);
+		w = el.width;
+		h = el.height;
+	} else if (el.position) {
+		mx = el.position.x;
+		my = el.position.y;
+		w = el.width;
+		h = el.height;
+	} else {
+		return null;
+	}
+
+	const sty = resolveStyle(el, figure.defaults);
+	const opacityOpt = (sty.opacity ?? 1) < 1 ? `, opacity=${sty.opacity}` : '';
+	const heightOpt = h !== undefined ? `, height=${Math.round(h * 1000) / 1000}cm` : '';
+	// Note: URL must be replaced with a local file path for LaTeX compilation
+	return `  \\node[anchor=north west${opacityOpt}] at ${coord(mx!, my!)} {\\includegraphics[width=${Math.round(w * 1000) / 1000}cm${heightOpt}]{${el.url}}};`;
 }
 
 // ─── Helpers: clip lines/rays to viewport ───────────────────

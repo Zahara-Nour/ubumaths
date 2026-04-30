@@ -37,6 +37,21 @@ c = cercle(O, rayon=r, couleur="gris", trait="tirets")
 P = point_sur(c, 45, couleur="rouge")
 image("/game/monsters/aigle_tete.png", P, largeur=1.5, dx=-0.7, dy=0.3)
 texte(P, "P", dx=0.5, dy=-0.5)`;
+
+	const fondDsl = `image("/game/monsters/hydre_tete.png", -5, -3, largeur=10, hauteur=6, couche="fond")
+A = point(-3, -1, couleur="rouge")
+B = point(3, 1, couleur="rouge")
+segment(A, B, couleur="jaune", epaisseur=3)
+mesure(A, B)
+C = point(0, 3, couleur="vert")
+segment(A, C, couleur="jaune", epaisseur=3)
+segment(B, C, couleur="jaune", epaisseur=3)`;
+
+	const twoPointDsl = `A = point(-3, -2, couleur="bleu")
+B = point(3, 2, couleur="bleu")
+image("/game/monsters/dragon_tete.png", A, B)
+segment(A, B, couleur="gris", trait="tirets")
+texte(-4, 3, "Deplacez A et B !")`;
 </script>
 
 <svelte:head>
@@ -91,6 +106,22 @@ texte(P, "P", dx=0.5, dy=-0.5)`;
 		dsl={constructionDsl}
 		title="Image sur un point contraint"
 		description="L'image suit un point_sur(cercle). Combinez avec un slider pour varier le rayon du cercle."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={fondDsl}
+		title="Image de fond (couche=&quot;fond&quot;)"
+		description="Avec couche=&quot;fond&quot;, l'image est rendue derriere toutes les constructions geometriques. Ideal pour les supports visuels."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={twoPointDsl}
+		title="Image entre 2 points"
+		description="image(&quot;url&quot;, A, B) remplit le rectangle defini par les deux points. L'image se redimensionne quand les points bougent."
 		width={600}
 		height={400}
 	/>

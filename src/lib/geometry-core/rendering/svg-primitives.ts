@@ -1014,6 +1014,22 @@ export function imageToSVG(
 	const el = figure.getElementById(id);
 	if (!el || !isImage(el)) return null;
 
+	// 2-point rectangle mode
+	if (el.point1Id && el.point2Id) {
+		const p1Pos = figure.getPosition(el.point1Id);
+		const p2Pos = figure.getPosition(el.point2Id);
+		if (!p1Pos || !p2Pos) return null;
+		const svg1 = transformer.mathToSvg(geoToNumber(p1Pos.x), geoToNumber(p1Pos.y));
+		const svg2 = transformer.mathToSvg(geoToNumber(p2Pos.x), geoToNumber(p2Pos.y));
+		return {
+			x: Math.min(svg1.x, svg2.x),
+			y: Math.min(svg1.y, svg2.y),
+			width: Math.abs(svg2.x - svg1.x),
+			height: Math.abs(svg2.y - svg1.y),
+			url: el.url
+		};
+	}
+
 	const widthPx = el.width * Math.abs(transformer.scaleX);
 	const heightPx = el.height !== undefined ? el.height * Math.abs(transformer.scaleY) : undefined;
 

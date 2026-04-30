@@ -150,3 +150,106 @@ describe('image() serialization', () => {
 		expect(img2.anchorOffset).toEqual(img1.anchorOffset);
 	});
 });
+
+// =============================================================================
+// C. Layer (couche) support
+// =============================================================================
+
+describe('DSL image() — couche', () => {
+	it('creates a fond image', () => {
+		const { figure } = runDsl(
+			'img = image("https://example.com/bg.png", 0, 0, largeur=10, couche="fond")'
+		);
+		const img = figure.getAllElements().find((e) => e.type === 'image') as GeoImage;
+		expect(img.layer).toBe('fond');
+	});
+
+	it('defaults to undefined layer (avant)', () => {
+		const { figure } = runDsl('img = image("https://example.com/fg.png", 0, 0, largeur=5)');
+		const img = figure.getAllElements().find((e) => e.type === 'image') as GeoImage;
+		expect(img.layer).toBeUndefined();
+	});
+
+	it('rejects invalid couche value', () => {
+		expect(() =>
+			runDsl('img = image("https://example.com/x.png", 0, 0, largeur=5, couche="milieu")')
+		).toThrow(/couche/);
+	});
+
+	it('roundtrips couche=fond', () => {
+		const script = 'img = image("https://example.com/bg.png", 0, 0, largeur=10, couche="fond")';
+		const { figure: fig1, symbols: sym1 } = runDsl(script);
+		const serialized = serializeDsl(fig1, sym1);
+		expect(serialized).toContain('couche="fond"');
+		const { figure: fig2 } = runDsl(serialized);
+		const img = fig2.getAllElements().find((e) => e.type === 'image') as GeoImage;
+		expect(img.layer).toBe('fond');
+	});
+
+	it('does not serialize couche when avant (default)', () => {
+		const script = 'img = image("https://example.com/fg.png", 0, 0, largeur=5)';
+		const { figure, symbols } = runDsl(script);
+		const serialized = serializeDsl(figure, symbols);
+		expect(serialized).not.toContain('couche');
+	});
+});
+
+// =============================================================================
+// D. 2-point anchoring
+// =============================================================================
+
+describe('DSL image() — 2-point mode', () => {
+	it('creates an image filling a rectangle between 2 points', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(-3, -2)',
+				'B = point(3, 2)',
+				'img = image("https://example.com/r.png", A, B)'
+			].join('\n')
+		);
+		const img = figure.getAllElements().find((e) => e.type === 'image') as GeoImage;
+		expect(img.point1Id).toBeDefined();
+		expect(img.point2Id).toBeDefined();
+		expect(img.position).toBeUndefined();
+		expect(img.anchorId).toBeUndefined();
+	});
+
+	it('does not require largeur in 2-point mode', () => {
+		expect(() =>
+			runDsl(
+				[
+					'A = point(0, 0)',
+					'B = point(4, 3)',
+					'img = image("https://example.com/s.png", A, B)'
+				].join('\n')
+			)
+		).not.toThrow();
+	});
+
+	it('serializes as image("url", A, B)', () => {
+		const script = [
+			'A = point(0, 0)',
+			'B = point(4, 3)',
+			'img = image("https://example.com/t.png", A, B)'
+		].join('\n');
+		const { figure, symbols } = runDsl(script);
+		const serialized = serializeDsl(figure, symbols);
+		expect(serialized).toContain('image("https://example.com/t.png", A, B)');
+	});
+
+	it('roundtrips 2-point mode', () => {
+		const script = [
+			'A = point(-1, -1)',
+			'B = point(5, 4)',
+			'img = image("https://example.com/u.png", A, B)'
+		].join('\n');
+		const { figure: fig1, symbols: sym1 } = runDsl(script);
+		const serialized = serializeDsl(fig1, sym1);
+		const { figure: fig2 } = runDsl(serialized);
+		const img1 = fig1.getAllElements().find((e) => e.type === 'image') as GeoImage;
+		const img2 = fig2.getAllElements().find((e) => e.type === 'image') as GeoImage;
+		expect(img2.point1Id).toBeDefined();
+		expect(img2.point2Id).toBeDefined();
+		expect(img2.url).toBe(img1.url);
+	});
+});

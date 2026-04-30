@@ -139,6 +139,18 @@ export function exportToSVG(
 		return `  ${el.outerHTML}`;
 	}
 
+	// Pass 0: background images (couche="fond")
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'image' || el.layer !== 'fond') continue;
+		const svg = imageToSVG(el.id, figure, transformer);
+		if (!svg) continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const heightAttr = svg.height !== undefined ? ` height="${r(svg.height)}"` : '';
+		lines.push(
+			`  <image href="${escapeXml(svg.url)}" x="${r(svg.x)}" y="${r(svg.y)}" width="${r(svg.width)}"${heightAttr} opacity="${sty.opacity ?? 1}" preserveAspectRatio="xMidYMid meet" />`
+		);
+	}
+
 	// Pass 1: segments, lines, rays
 	for (const el of elements) {
 		if (!el.visible) continue;
@@ -390,9 +402,9 @@ export function exportToSVG(
 		}
 	}
 
-	// Pass 7: image elements
+	// Pass 7: foreground images (layer !== 'fond')
 	for (const el of elements) {
-		if (!el.visible || el.type !== 'image') continue;
+		if (!el.visible || el.type !== 'image' || el.layer === 'fond') continue;
 		const svg = imageToSVG(el.id, figure, transformer);
 		if (!svg) continue;
 		const sty = resolveStyle(el, figure.defaults);

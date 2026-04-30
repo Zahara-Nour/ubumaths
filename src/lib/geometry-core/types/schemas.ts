@@ -286,11 +286,14 @@ const richTextSchema = baseElementSchema.extend({
 const imageSchema = baseElementSchema.extend({
 	type: z.literal('image'),
 	url: z.string().min(1),
-	width: z.number().positive(),
+	width: z.number().nonnegative(),
 	height: z.number().positive().optional(),
 	anchorId: z.string().min(1).optional(),
 	anchorOffset: z.object({ dx: z.number().finite(), dy: z.number().finite() }).optional(),
 	position: z.object({ x: z.number().finite(), y: z.number().finite() }).optional(),
+	point1Id: z.string().min(1).optional(),
+	point2Id: z.string().min(1).optional(),
+	layer: z.enum(['fond', 'avant']).optional(),
 	dependsOn: z.array(z.string())
 });
 

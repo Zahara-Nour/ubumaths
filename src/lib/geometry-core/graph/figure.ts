@@ -2459,10 +2459,25 @@ export class Figure {
 			anchorId?: string;
 			anchorOffset?: { dx: number; dy: number };
 			position?: { x: number; y: number };
+			point1Id?: string;
+			point2Id?: string;
 		},
-		options?: ElementOptions
+		options?: ElementOptions & { layer?: 'fond' | 'avant' }
 	): string {
 		const deps = this._collectTextDeps([], positioning);
+		// For 2-point mode, add both points to deps
+		if (positioning.point1Id) {
+			const p1El = this.elements.get(positioning.point1Id);
+			if (!p1El || !isPointElement(p1El))
+				throw new Error(`createImage: "${positioning.point1Id}" is not a point element`);
+			if (!deps.includes(positioning.point1Id)) deps.push(positioning.point1Id);
+		}
+		if (positioning.point2Id) {
+			const p2El = this.elements.get(positioning.point2Id);
+			if (!p2El || !isPointElement(p2El))
+				throw new Error(`createImage: "${positioning.point2Id}" is not a point element`);
+			if (!deps.includes(positioning.point2Id)) deps.push(positioning.point2Id);
+		}
 		const id = this.generateId('img');
 		const element: GeoImage = {
 			type: 'image',
@@ -2473,6 +2488,9 @@ export class Figure {
 			anchorId: positioning.anchorId,
 			anchorOffset: positioning.anchorOffset,
 			position: positioning.position,
+			point1Id: positioning.point1Id,
+			point2Id: positioning.point2Id,
+			layer: options?.layer,
 			color: this.resolveColor(options),
 			visible: options?.visible ?? true,
 			label: options?.label,

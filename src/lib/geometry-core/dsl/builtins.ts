@@ -1207,9 +1207,11 @@ function _executeBuiltinInner(
 		}
 
 		case 'image': {
-			// image("url", x, y, largeur=W)            — free position
-			// image("url", x, y, largeur=W, hauteur=H) — free position + height
-			// image("url", point, largeur=W, dx=D, dy=E) — anchored
+			// image("url", x, y, largeur=W)                    — free position
+			// image("url", x, y, largeur=W, hauteur=H)         — free + height
+			// image("url", point, largeur=W, dx=D, dy=E)       — anchored to 1 point
+			// image("url", pointA, pointB)                      — rectangle between 2 points
+			// All modes support couche="fond"|"avant" (default avant)
 			if (pos.length < 2) throw new DslRuntimeError('image() attend au moins 2 arguments', line);
 			if (pos[0].type !== 'string')
 				throw new DslRuntimeError('image(): le 1er argument doit etre une URL (chaine)', line);
@@ -1218,26 +1220,52 @@ function _executeBuiltinInner(
 			if (!/^https?:\/\/|^\//.test(imgUrl))
 				throw new DslRuntimeError('image(): URL doit commencer par http://, https://, ou /', line);
 
-			if (!named.has('largeur'))
-				throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
-			const imgWidth = requireNumber(named.get('largeur')!, 'largeur', line);
-			const imgHeight = named.has('hauteur')
-				? requireNumber(named.get('hauteur')!, 'hauteur', line)
-				: undefined;
+			// Read optional couche param
+			let imgLayer: 'fond' | 'avant' | undefined;
+			if (named.has('couche')) {
+				const cv = named.get('couche')!;
+				const layerStr = cv.type === 'string' ? cv.value : '';
+				if (layerStr !== 'fond' && layerStr !== 'avant')
+					throw new DslRuntimeError('image(): couche doit etre "fond" ou "avant"', line);
+				imgLayer = layerStr;
+			}
 
 			let imgPositioning: {
 				anchorId?: string;
 				anchorOffset?: { dx: number; dy: number };
 				position?: { x: number; y: number };
+				point1Id?: string;
+				point2Id?: string;
 			};
+			let imgWidth: number;
+			let imgHeight: number | undefined;
 
 			if (pos.length >= 3 && pos[1].type === 'nombre' && pos[2].type === 'nombre') {
 				// image("url", x, y, largeur=W)
+				if (!named.has('largeur'))
+					throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
+				imgWidth = requireNumber(named.get('largeur')!, 'largeur', line);
+				imgHeight = named.has('hauteur')
+					? requireNumber(named.get('hauteur')!, 'hauteur', line)
+					: undefined;
 				const x = (pos[1] as { type: 'nombre'; value: number }).value;
 				const y = (pos[2] as { type: 'nombre'; value: number }).value;
 				imgPositioning = { position: { x, y } };
+			} else if (pos.length >= 3 && pos[1].type === 'element' && pos[2].type === 'element') {
+				// image("url", pointA, pointB) — 2-point rectangle mode
+				const point1Id = requireElement(pos[1], 'point1', line);
+				const point2Id = requireElement(pos[2], 'point2', line);
+				imgWidth = 0; // width is computed from points at render time
+				imgHeight = undefined;
+				imgPositioning = { point1Id, point2Id };
 			} else if (pos[1].type === 'element') {
 				// image("url", point, largeur=W, dx=..., dy=...)
+				if (!named.has('largeur'))
+					throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
+				imgWidth = requireNumber(named.get('largeur')!, 'largeur', line);
+				imgHeight = named.has('hauteur')
+					? requireNumber(named.get('hauteur')!, 'hauteur', line)
+					: undefined;
 				const anchorId = requireElement(pos[1], 'anchor', line);
 				const dx = named.has('dx')
 					? (named.get('dx')! as { type: 'nombre'; value: number }).value
@@ -1252,12 +1280,15 @@ function _executeBuiltinInner(
 				};
 			} else {
 				throw new DslRuntimeError(
-					'image() attend: image("url", x, y, largeur=...) ou image("url", point, largeur=..., dx=..., dy=...)',
+					'image() attend: image("url", x, y, largeur=...) ou image("url", point, largeur=...) ou image("url", pointA, pointB)',
 					line
 				);
 			}
 
-			const imgId = figure.createImage(imgUrl, imgWidth, imgHeight, imgPositioning, { label });
+			const imgId = figure.createImage(imgUrl, imgWidth, imgHeight, imgPositioning, {
+				label,
+				layer: imgLayer
+			});
 			return { figureId: imgId, symbolType: 'image' };
 		}
 
