@@ -35,7 +35,8 @@ import {
 	isPointOnSegment,
 	isPointOnLine,
 	isPointOnCircle,
-	isPointOnArc
+	isPointOnArc,
+	isComputedPoint
 } from '../types/elements';
 import type { GeoPoint } from '../types/primitives';
 import type { GeoValue, ScalarParam } from '../types/geo-value';
@@ -122,6 +123,14 @@ export function computeElementPosition(
 	elements: ReadonlyMap<string, GeoElement>,
 	scalarValues?: ReadonlyMap<string, number>
 ): ComputePositionResult {
+	if (isComputedPoint(el)) {
+		const x = resolveScalarParam(el.xParam, scalarValues);
+		const y = resolveScalarParam(el.yParam, scalarValues);
+		if (!Number.isFinite(x) || !Number.isFinite(y))
+			return { position: null, hasComputablePosition: true };
+		return { position: { x: numeric(x), y: numeric(y) }, hasComputablePosition: true };
+	}
+
 	if (isMidpoint(el)) {
 		const p1 = positions.get(el.point1Id);
 		const p2 = positions.get(el.point2Id);
@@ -884,6 +893,11 @@ function computeScalarValue(
 			} catch {
 				return undefined;
 			}
+		}
+		case 'coordinate': {
+			const pos = positions.get(el.targetIds[0]);
+			if (!pos) return undefined;
+			return geoToNumber(el.coordinateAxis === 'x' ? pos.x : pos.y);
 		}
 	}
 }

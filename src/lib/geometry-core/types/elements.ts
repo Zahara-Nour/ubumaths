@@ -64,6 +64,15 @@ export interface GeoFreePoint extends GeoElementBase {
 	readonly dependsOn: readonly [];
 }
 
+/** A point whose coordinates are computed from ScalarParam (reactive or static). */
+export interface GeoComputedPoint extends GeoElementBase {
+	readonly type: 'computedPoint';
+	readonly xParam: ScalarParam;
+	readonly yParam: ScalarParam;
+	readonly draggable: false;
+	readonly dependsOn: readonly string[];
+}
+
 export interface GeoMidpoint extends GeoElementBase {
 	readonly type: 'midpoint';
 	readonly point1Id: string;
@@ -391,13 +400,16 @@ export interface GeoScalar extends GeoElementBase {
 		| 'slope'
 		| 'radius'
 		| 'power'
-		| 'expression';
+		| 'expression'
+		| 'coordinate';
 	/** Target element IDs for primitive kinds (points for distance/angle/area, vector for norme). */
 	readonly targetIds: readonly string[];
 	/** Computation closure for 'expression' kind: receives scalar values, returns number. */
 	readonly compute?: (scalarValues: ReadonlyMap<string, number>) => number;
 	/** IDs of scalar/slider/measure elements this expression reads (expression kind only). */
 	readonly scalarDeps?: readonly string[];
+	/** Which coordinate to extract (coordinate kind only). */
+	readonly coordinateAxis?: 'x' | 'y';
 	/** Display format when visible on figure. */
 	readonly format?: 'exact' | 'approx' | 'degrees' | 'radians';
 	readonly dependsOn: readonly string[];
@@ -860,6 +872,7 @@ export type GeoTransformation =
 
 export type GeoPointElement =
 	| GeoFreePoint
+	| GeoComputedPoint
 	| GeoMidpoint
 	| GeoIntersectionLL
 	| GeoIntersectionLC
@@ -886,6 +899,7 @@ export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
 
 export type GeoElement =
 	| GeoFreePoint
+	| GeoComputedPoint
 	| GeoMidpoint
 	| GeoIntersectionLL
 	| GeoIntersectionLC
@@ -959,6 +973,10 @@ export type GeoElementType = GeoElement['type'];
 
 export function isFreePoint(el: GeoElement): el is GeoFreePoint {
 	return el.type === 'freePoint';
+}
+
+export function isComputedPoint(el: GeoElement): el is GeoComputedPoint {
+	return el.type === 'computedPoint';
 }
 
 export function isMidpoint(el: GeoElement): el is GeoMidpoint {
@@ -1040,6 +1058,7 @@ export function isPointOnArc(el: GeoElement): el is GeoPointOnArc {
 export function isPointElement(el: GeoElement): el is GeoPointElement {
 	return (
 		el.type === 'freePoint' ||
+		el.type === 'computedPoint' ||
 		el.type === 'midpoint' ||
 		el.type === 'intersectionLL' ||
 		el.type === 'intersectionLC' ||

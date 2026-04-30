@@ -255,16 +255,14 @@ class Interpreter {
 				if (!entry || !entry.figureId) {
 					throw new DslRuntimeError(`"${expr.object}" n'est pas un element geometrique`, expr.line);
 				}
-				const pos = this.figure.getPosition(entry.figureId);
-				if (!pos) {
-					throw new DslRuntimeError(`"${expr.object}" n'a pas de position`, expr.line);
+				if (expr.property !== 'x' && expr.property !== 'y') {
+					throw new DslRuntimeError(
+						`Propriete inconnue : "${expr.property}" (attendu x ou y)`,
+						expr.line
+					);
 				}
-				if (expr.property === 'x') return { type: 'nombre', value: geoToNumber(pos.x) };
-				if (expr.property === 'y') return { type: 'nombre', value: geoToNumber(pos.y) };
-				throw new DslRuntimeError(
-					`Propriete inconnue : "${expr.property}" (attendu x ou y)`,
-					expr.line
-				);
+				const scalarId = this.figure.createScalarCoordinate(entry.figureId, expr.property);
+				return { type: 'element', figureId: scalarId, elementType: 'scalar' };
 			}
 
 			case 'binary': {

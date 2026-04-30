@@ -72,6 +72,7 @@ import type {
 	type GeoInvertedPoint,
 	type GeoLocus,
 	type GeoTrace,
+	type GeoComputedPoint,
 	type GeoScalar,
 	type GeoSlider,
 	type LineEquation,
@@ -389,6 +390,39 @@ export class Figure {
 		};
 		this.addElement(id, element, []);
 		this.positions.set(id, position);
+		return id;
+	}
+
+	createComputedPoint(xParam: ScalarParam, yParam: ScalarParam, options?: ElementOptions): string {
+		const id = this.generateId('pt');
+		const deps: string[] = [];
+		for (const param of [xParam, yParam]) {
+			if (isScalarRef(param)) {
+				const depId = param.scalarRef;
+				if (!deps.includes(depId)) deps.push(depId);
+				const el = this.elements.get(depId);
+				if (el) {
+					for (const parentId of el.dependsOn) {
+						if (!deps.includes(parentId)) deps.push(parentId);
+					}
+				}
+			}
+		}
+		const element: GeoComputedPoint = {
+			type: 'computedPoint',
+			id,
+			xParam,
+			yParam,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			draggable: false,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.computePosition(id);
 		return id;
 	}
 
@@ -2529,6 +2563,33 @@ export class Figure {
 
 	// ─── Scalar factories ───────────────────────────────────────
 
+	private coordinateScalarCache = new Map<string, string>();
+
+	createScalarCoordinate(pointId: string, axis: 'x' | 'y', options?: ElementOptions): string {
+		const cacheKey = `${pointId}.${axis}`;
+		const cached = this.coordinateScalarCache.get(cacheKey);
+		if (cached && this.elements.has(cached)) return cached;
+
+		this.requirePoints('createScalarCoordinate', pointId);
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'coordinate',
+			id,
+			targetIds: [pointId],
+			coordinateAxis: axis,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [pointId]
+		};
+		this.addElement(id, element, [pointId]);
+		this.computePosition(id);
+		this.coordinateScalarCache.set(cacheKey, id);
+		return id;
+	}
+
 	createScalarDistance(point1Id: string, point2Id: string, options?: ElementOptions): string {
 		this.requirePoints('createScalarDistance', point1Id, point2Id);
 		const id = this.generateId('sca');
@@ -2733,12 +2794,12 @@ export class Figure {
 		scalarDeps: string[],
 		options?: ElementOptions
 	): string {
-		// Collect transitive dependencies from scalar deps
+		// Collect transitive dependencies from scalar deps (deduplicated)
 		const allDeps: string[] = [];
 		for (const depId of scalarDeps) {
 			const el = this.elements.get(depId);
 			if (!el) throw new Error(`createScalarExpression: "${depId}" does not exist`);
-			allDeps.push(depId);
+			if (!allDeps.includes(depId)) allDeps.push(depId);
 			for (const parentId of el.dependsOn) {
 				if (!allDeps.includes(parentId)) allDeps.push(parentId);
 			}
