@@ -294,6 +294,8 @@ const imageSchema = baseElementSchema.extend({
 	point1Id: z.string().min(1).optional(),
 	point2Id: z.string().min(1).optional(),
 	layer: z.enum(['fond', 'avant']).optional(),
+	rotation: z.number().finite().optional(),
+	flipped: z.boolean().optional(),
 	dependsOn: z.array(z.string())
 });
 

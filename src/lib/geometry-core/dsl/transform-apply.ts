@@ -234,6 +234,67 @@ function transformVectorLinear(
 }
 
 /**
+ * Compute the visual rotation and flip state of an image after a transformation.
+ * Pure function — no side effects, no figure mutation.
+ */
+function computeImageVisualTransform(
+	currentRotation: number,
+	currentFlipped: boolean,
+	transform: GeoTransformation,
+	figure: Figure
+): { rotation: number; flipped: boolean } {
+	switch (transform.type) {
+		case 'rotation': {
+			const angle = geoToNumber(transform.angle);
+			return { rotation: currentRotation + angle, flipped: currentFlipped };
+		}
+		case 'reflection':
+			// Central symmetry = rotation by PI
+			return { rotation: currentRotation + Math.PI, flipped: currentFlipped };
+		case 'reflectionOverLine': {
+			const lp1 = figure.getPosition(transform.linePoint1Id);
+			const lp2 = figure.getPosition(transform.linePoint2Id);
+			if (!lp1 || !lp2) return { rotation: currentRotation, flipped: currentFlipped };
+			const axisAngle = Math.atan2(
+				geoToNumber(lp2.y) - geoToNumber(lp1.y),
+				geoToNumber(lp2.x) - geoToNumber(lp1.x)
+			);
+			return {
+				rotation: 2 * axisAngle - currentRotation,
+				flipped: !currentFlipped
+			};
+		}
+		case 'homothety': {
+			const factor = geoToNumber(transform.factor);
+			if (factor < 0) {
+				return { rotation: currentRotation + Math.PI, flipped: currentFlipped };
+			}
+			return { rotation: currentRotation, flipped: currentFlipped };
+		}
+		case 'translation':
+			return { rotation: currentRotation, flipped: currentFlipped };
+		case 'composition': {
+			// Apply sub-transformations right-to-left (same order as points)
+			let rot = currentRotation;
+			let flip = currentFlipped;
+			const ids = transform.transformationIds;
+			for (let i = ids.length - 1; i >= 0; i--) {
+				const subEl = figure.getElementById(ids[i]);
+				if (subEl && isTransformation(subEl)) {
+					const result = computeImageVisualTransform(rot, flip, subEl, figure);
+					rot = result.rotation;
+					flip = result.flipped;
+				}
+			}
+			return { rotation: rot, flipped: flip };
+		}
+		default:
+			// projection, affinity, inversion — no visual transform on images
+			return { rotation: currentRotation, flipped: currentFlipped };
+	}
+}
+
+/**
  * Apply a transformation to any geometric element.
  * For points, creates a single image point.
  * For compound elements (segments, circles, etc.), creates intermediate invisible
@@ -462,6 +523,21 @@ export function applyTransformationToElement(
 				if (newHeight !== undefined) newHeight = newHeight * absFactor;
 			}
 
+			// Compute visual transform (rotation/flip)
+			const visual = computeImageVisualTransform(
+				img.rotation ?? 0,
+				img.flipped ?? false,
+				transformEl,
+				figure
+			);
+			// Normalize accumulated rotation to (-PI, PI] to avoid floating-point drift
+			const normalizedRot =
+				(((visual.rotation % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
+			const visualOpts =
+				Math.abs(normalizedRot) > 1e-10 || visual.flipped
+					? { rotation: normalizedRot, flipped: visual.flipped }
+					: {};
+
 			// 2-point mode: transform both corner points
 			if (img.point1Id && img.point2Id) {
 				const newP1 = applyTransformationToPoint(figure, transformEl, img.point1Id, {
@@ -478,7 +554,7 @@ export function applyTransformationToElement(
 						point1Id: newP1,
 						point2Id: newP2
 					},
-					{ label: options?.label, layer: img.layer }
+					{ label: options?.label, layer: img.layer, ...visualOpts }
 				);
 				return { figureId: id, symbolType: 'image' };
 			}
@@ -496,7 +572,7 @@ export function applyTransformationToElement(
 						anchorId: newAnchor,
 						anchorOffset: img.anchorOffset
 					},
-					{ label: options?.label, layer: img.layer }
+					{ label: options?.label, layer: img.layer, ...visualOpts }
 				);
 				return { figureId: id, symbolType: 'image' };
 			}
@@ -517,7 +593,7 @@ export function applyTransformationToElement(
 					{
 						anchorId: newPt
 					},
-					{ label: options?.label, layer: img.layer }
+					{ label: options?.label, layer: img.layer, ...visualOpts }
 				);
 				return { figureId: id, symbolType: 'image' };
 			}

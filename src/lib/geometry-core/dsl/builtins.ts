@@ -1285,9 +1285,26 @@ function _executeBuiltinInner(
 				);
 			}
 
+			// Read optional visual transform params (from serialized transformed images)
+			// NOTE: rotation= is in RADIANS (unlike angle= in rotation() which is in degrees).
+			// These are internal serialization params, not intended for direct user input.
+			const imgRotation = named.has('rotation')
+				? requireNumber(named.get('rotation')!, 'rotation', line)
+				: undefined;
+			const imgFlipped = named.has('miroir')
+				? (() => {
+						const v = named.get('miroir')!;
+						if (v.type === 'nombre') return v.value !== 0;
+						if (v.type === 'string') return v.value === 'vrai';
+						return false;
+					})()
+				: undefined;
+
 			const imgId = figure.createImage(imgUrl, imgWidth, imgHeight, imgPositioning, {
 				label,
-				layer: imgLayer
+				layer: imgLayer,
+				rotation: imgRotation,
+				flipped: imgFlipped || undefined
 			});
 			return { figureId: imgId, symbolType: 'image' };
 		}

@@ -366,6 +366,10 @@ export interface GeoImage extends GeoElementBase {
 	readonly point2Id?: string;
 	/** Rendering layer: 'fond' = behind constructions, 'avant' (default) = on top. */
 	readonly layer?: 'fond' | 'avant';
+	/** Visual rotation in radians, accumulated from geometric transforms. */
+	readonly rotation?: number;
+	/** Whether the image is visually flipped (mirrored), from axial symmetry. */
+	readonly flipped?: boolean;
 	readonly dependsOn: readonly string[];
 }
 

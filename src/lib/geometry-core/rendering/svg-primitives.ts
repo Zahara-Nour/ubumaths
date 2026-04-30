@@ -998,6 +998,10 @@ export interface ImageSVG {
 	height?: number;
 	/** Image URL. */
 	url: string;
+	/** Visual rotation in radians (from geometric transforms). */
+	rotation?: number;
+	/** Whether image is visually flipped/mirrored (from axial symmetry). */
+	flipped?: boolean;
 }
 
 /**
@@ -1026,7 +1030,9 @@ export function imageToSVG(
 			y: Math.min(svg1.y, svg2.y),
 			width: Math.abs(svg2.x - svg1.x),
 			height: Math.abs(svg2.y - svg1.y),
-			url: el.url
+			url: el.url,
+			rotation: el.rotation,
+			flipped: el.flipped
 		};
 	}
 
@@ -1045,14 +1051,24 @@ export function imageToSVG(
 			y: svgAnchor.y + dy,
 			width: widthPx,
 			height: heightPx,
-			url: el.url
+			url: el.url,
+			rotation: el.rotation,
+			flipped: el.flipped
 		};
 	}
 
 	// Free position — (x,y) in math is the reference point; SVG <image> starts top-left
 	if (el.position) {
 		const svgPos = transformer.mathToSvg(el.position.x, el.position.y);
-		return { x: svgPos.x, y: svgPos.y, width: widthPx, height: heightPx, url: el.url };
+		return {
+			x: svgPos.x,
+			y: svgPos.y,
+			width: widthPx,
+			height: heightPx,
+			url: el.url,
+			rotation: el.rotation,
+			flipped: el.flipped
+		};
 	}
 
 	return null;
