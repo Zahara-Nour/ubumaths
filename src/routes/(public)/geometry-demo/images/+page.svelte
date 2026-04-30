@@ -53,8 +53,34 @@ image("/game/monsters/dragon_tete.png", A, B)
 segment(A, B, couleur="gris", trait="tirets")
 texte(-4, 3, "Deplacez A et B !")`;
 
-	const rotationDsl = `A = point(3, 0, couleur="rouge")
-img = image("/game/monsters/griffon_tete.png", A, largeur=2, dx=-1, dy=-1)
+	const rotationDsl = `A = point(2, -1, couleur="vert")
+B = point(4, 1, couleur="vert")
+rect = polygone(A, point(B.x, A.y), B, point(A.x, B.y), couleur="vert")
+img = image("/game/monsters/griffon_tete.png", A, B)
+O = point(0, 0, couleur="bleu")
+r = rotation(centre=O, angle=90)
+img2 = transforme(r, img)
+transforme(r, rect)
+r2 = rotation(centre=O, angle=180)
+img3 = transforme(r2, img)
+transforme(r2, rect)
+r3 = rotation(centre=O, angle=270)
+img4 = transforme(r3, img)
+transforme(r3, rect)
+cercle(O, rayon=3, couleur="gris", trait="tirets")`;
+
+	const rotationAnchoredDsl = `A = point(3, 0, couleur="rouge")
+img = image("/game/monsters/lion_tete.png", A, largeur=2, dx=-1, dy=-1)
+O = point(0, 0, couleur="bleu")
+r = rotation(centre=O, angle=90)
+img2 = transforme(r, img)
+r2 = rotation(centre=O, angle=180)
+img3 = transforme(r2, img)
+r3 = rotation(centre=O, angle=270)
+img4 = transforme(r3, img)
+cercle(O, A, couleur="gris", trait="tirets")`;
+
+	const rotationFreeDsl = `img = image("/game/monsters/cobra_tete.png", 2, -1, largeur=2, hauteur=2)
 O = point(0, 0, couleur="bleu")
 r = rotation(centre=O, angle=90)
 img2 = transforme(r, img)
@@ -155,8 +181,24 @@ img2 = transforme(s, img)`;
 
 	<DslDemo
 		dsl={rotationDsl}
-		title="Rotation d'images"
-		description="transforme(rotation, image) cree une copie de l'image avec l'ancrage tourne. Ici 4 griffons a 0, 90, 180, 270 degres."
+		title="Rotation d'images (2 points)"
+		description="Image definie par 2 coins draggables. Les rotations preservent les dimensions et l'orientation visuelle."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={rotationAnchoredDsl}
+		title="Rotation d'images (ancree)"
+		description="Image ancree au point A avec offset de centrage. Le point A tourne sur le cercle, l'image suit et tourne visuellement."
+		width={600}
+		height={400}
+	/>
+
+	<DslDemo
+		dsl={rotationFreeDsl}
+		title="Rotation d'images (position libre)"
+		description="Image en position libre (x, y). Le centre de l'image est transforme et l'image tourne visuellement."
 		width={600}
 		height={400}
 	/>
