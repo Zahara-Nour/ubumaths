@@ -253,3 +253,92 @@ describe('DSL image() — 2-point mode', () => {
 		expect(img2.url).toBe(img1.url);
 	});
 });
+
+// =============================================================================
+// E. Transformations on images
+// =============================================================================
+
+describe('DSL image() — transformations', () => {
+	it('translates a free-positioned image', () => {
+		const { figure } = runDsl(
+			[
+				'img = image("https://example.com/v.png", 0, 0, largeur=3)',
+				'A = point(0, 0)',
+				'B = point(2, 3)',
+				'v = vecteur(A, B)',
+				't = translation(vecteur=v)',
+				'img2 = transforme(t, img)'
+			].join('\n')
+		);
+		const images = figure.getAllElements().filter((e) => e.type === 'image');
+		expect(images).toHaveLength(2);
+		// The transformed image should be anchored to a transformed point
+		const img2 = images[1] as GeoImage;
+		expect(img2.url).toBe('https://example.com/v.png');
+		expect(img2.width).toBe(3);
+		expect(img2.anchorId).toBeDefined();
+	});
+
+	it('rotates an anchored image', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(2, 0)',
+				'img = image("https://example.com/w.png", A, largeur=3)',
+				'O = point(0, 0)',
+				'r = rotation(centre=O, angle=90)',
+				'img2 = transforme(r, img)'
+			].join('\n')
+		);
+		const images = figure.getAllElements().filter((e) => e.type === 'image');
+		expect(images).toHaveLength(2);
+		const img2 = images[1] as GeoImage;
+		expect(img2.url).toBe('https://example.com/w.png');
+		expect(img2.anchorId).toBeDefined();
+	});
+
+	it('scales image dimensions with homothety', () => {
+		const { figure } = runDsl(
+			[
+				'img = image("https://example.com/x.png", 1, 1, largeur=4, hauteur=3)',
+				'O = point(0, 0)',
+				'h = homothetie(centre=O, rapport=2)',
+				'img2 = transforme(h, img)'
+			].join('\n')
+		);
+		const images = figure.getAllElements().filter((e) => e.type === 'image');
+		const img2 = images[1] as GeoImage;
+		expect(img2.width).toBe(8);
+		expect(img2.height).toBe(6);
+	});
+
+	it('transforms a 2-point image', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(-2, -1)',
+				'B = point(2, 1)',
+				'img = image("https://example.com/y.png", A, B)',
+				'O = point(0, 0)',
+				'r = rotation(centre=O, angle=90)',
+				'img2 = transforme(r, img)'
+			].join('\n')
+		);
+		const images = figure.getAllElements().filter((e) => e.type === 'image');
+		expect(images).toHaveLength(2);
+		const img2 = images[1] as GeoImage;
+		expect(img2.point1Id).toBeDefined();
+		expect(img2.point2Id).toBeDefined();
+	});
+
+	it('reflects an image', () => {
+		const { figure } = runDsl(
+			[
+				'img = image("https://example.com/z.png", 2, 0, largeur=3)',
+				'O = point(0, 0)',
+				's = symetrie(centre=O)',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+		const images = figure.getAllElements().filter((e) => e.type === 'image');
+		expect(images).toHaveLength(2);
+	});
+});
