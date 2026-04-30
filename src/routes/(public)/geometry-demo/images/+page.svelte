@@ -78,7 +78,7 @@ r2 = rotation(centre=O, angle=180)
 img3 = transforme(r2, img)
 r3 = rotation(centre=O, angle=270)
 img4 = transforme(r3, img)
-cercle(O, A, couleur="gris", trait="tirets")`;
+cercle(O, rayon=3, couleur="gris", trait="tirets")`;
 
 	const rotationFreeDsl = `img = image("/game/monsters/cobra_tete.png", 2, -1, largeur=2, hauteur=2)
 O = point(0, 0, couleur="bleu")
