@@ -1026,20 +1026,37 @@ export function imageToSVG(
 		const svg1 = transformer.mathToSvg(geoToNumber(p1Pos.x), geoToNumber(p1Pos.y));
 		const svg2 = transformer.mathToSvg(geoToNumber(p2Pos.x), geoToNumber(p2Pos.y));
 
-		const rot = el.rotation ?? 0;
-		if (Math.abs(rot) > 1e-10 || el.flipped) {
-			// Rotated 2-point: recover original dimensions from diagonal + rotation angle
-			const dx = svg2.x - svg1.x;
-			const dy = svg2.y - svg1.y;
-			// Un-rotate diagonal to get original axis-aligned dimensions
-			// SVG rotation is negated vs math, so un-rotate by +rot
-			const cos = Math.cos(rot);
-			const sin = Math.sin(rot);
-			const origDx = dx * cos + dy * sin;
-			const origDy = -dx * sin + dy * cos;
-			const w = Math.abs(origDx);
-			const h = Math.abs(origDy);
-			// Center of the two points
+		const hasTransform = Math.abs(el.rotation ?? 0) > 1e-10 || el.flipped;
+		if (hasTransform) {
+			const mathDx = geoToNumber(p2Pos.x) - geoToNumber(p1Pos.x);
+			const mathDy = geoToNumber(p2Pos.y) - geoToNumber(p1Pos.y);
+			let w: number, h: number, rotation: number;
+
+			// Try reactive mode: look up source points to get current original dimensions
+			const srcP1 = el._srcPoint1Id ? figure.getPosition(el._srcPoint1Id) : null;
+			const srcP2 = el._srcPoint2Id ? figure.getPosition(el._srcPoint2Id) : null;
+			if (srcP1 && srcP2) {
+				// Reactive: compute origW/origH from current source point positions
+				const origW = geoToNumber(srcP2.x) - geoToNumber(srcP1.x);
+				const origH = geoToNumber(srcP2.y) - geoToNumber(srcP1.y);
+				w = Math.abs(origW) * Math.abs(transformer.scaleX);
+				h = Math.abs(origH) * Math.abs(transformer.scaleY);
+				const diagAngle = Math.atan2(mathDy, mathDx);
+				const hEff = el.flipped ? -origH : origH;
+				const origDiagAngle = Math.atan2(hEff, origW);
+				rotation = diagAngle - origDiagAngle;
+			} else {
+				// Fallback: un-rotate diagonal with static rotation value
+				const rot = el.rotation ?? 0;
+				const cos = Math.cos(rot);
+				const sin = Math.sin(rot);
+				const origW = mathDx * cos + mathDy * sin;
+				const origH = -mathDx * sin + mathDy * cos;
+				w = Math.abs(origW) * Math.abs(transformer.scaleX);
+				h = Math.abs(origH) * Math.abs(transformer.scaleY);
+				rotation = rot;
+			}
+
 			const cx = (svg1.x + svg2.x) / 2;
 			const cy = (svg1.y + svg2.y) / 2;
 			return {
@@ -1048,7 +1065,7 @@ export function imageToSVG(
 				width: w,
 				height: h,
 				url: el.url,
-				rotation: el.rotation,
+				rotation,
 				flipped: el.flipped
 			};
 		}

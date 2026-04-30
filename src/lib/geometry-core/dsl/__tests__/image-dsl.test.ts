@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { runDsl, serializeDsl } from '../index';
 import type { GeoImage } from '../../types/elements';
 import { geoToNumber } from '../../compute/to-number';
+import { numeric } from '../../types/geo-value';
+import { createTransformer } from '../../viewport/viewport';
+import { imageToSVG } from '../../rendering/svg-primitives';
 
 // =============================================================================
 // A. DSL parsing — image()
@@ -503,6 +506,207 @@ describe('DSL image() — visual transforms', () => {
 		);
 		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
 		expect(img2.flipped).toBe(true);
+	});
+});
+
+describe('DSL image() — axial symmetry positions', () => {
+	it('2-point image reflected across vertical axis has correct points', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(-4, -1)',
+				'B = point(-1, 1)',
+				'img = image("https://example.com/v.png", A, B)',
+				'P1 = point(0, -3)',
+				'P2 = point(0, 3)',
+				'd = droite(P1, P2)',
+				's = symetrie(axe=d)',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		expect(img2.point1Id).toBeDefined();
+		expect(img2.point2Id).toBeDefined();
+		const p1 = figure.getPosition(img2.point1Id!);
+		const p2 = figure.getPosition(img2.point2Id!);
+		expect(p1).toBeDefined();
+		expect(p2).toBeDefined();
+		// A(-4,-1) reflected across x=0 → (4,-1)
+		expect(geoToNumber(p1!.x)).toBeCloseTo(4);
+		expect(geoToNumber(p1!.y)).toBeCloseTo(-1);
+		// B(-1,1) reflected across x=0 → (1,1)
+		expect(geoToNumber(p2!.x)).toBeCloseTo(1);
+		expect(geoToNumber(p2!.y)).toBeCloseTo(1);
+	});
+
+	it('anchored image reflected across vertical axis has correct center', () => {
+		const { figure } = runDsl(
+			[
+				'A = point(-3, 0)',
+				'img = image("https://example.com/v.png", A, largeur=2, dx=-1, dy=-1)',
+				'P1 = point(0, -3)',
+				'P2 = point(0, 3)',
+				'd = droite(P1, P2)',
+				's = symetrie(axe=d)',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		expect(img2.anchorId).toBeDefined();
+		const anchor = figure.getPosition(img2.anchorId!);
+		expect(anchor).toBeDefined();
+		// Center of img: A(-3,0) + offset(-1,-1) + (W/2, -H/2) = (-3-1+1, 0-1-1) = (-3, -2)
+		// Reflected across x=0: (3, -2)
+		expect(geoToNumber(anchor!.x)).toBeCloseTo(3);
+		expect(geoToNumber(anchor!.y)).toBeCloseTo(-2);
+	});
+
+	it('free image reflected across vertical axis has correct center', () => {
+		const { figure } = runDsl(
+			[
+				'img = image("https://example.com/v.png", -3, 0, largeur=2, hauteur=2)',
+				'P1 = point(0, -3)',
+				'P2 = point(0, 3)',
+				'd = droite(P1, P2)',
+				's = symetrie(axe=d)',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		expect(img2.anchorId).toBeDefined();
+		const anchor = figure.getPosition(img2.anchorId!);
+		expect(anchor).toBeDefined();
+		// Center at (-3, 0), reflected across x=0: (3, 0)
+		expect(geoToNumber(anchor!.x)).toBeCloseTo(3);
+		expect(geoToNumber(anchor!.y)).toBeCloseTo(0);
+	});
+});
+
+// =============================================================================
+// E3. Reactive rotation for 2-point images after axis movement
+// =============================================================================
+
+describe('DSL image() — reactive 2-point symmetry (axis movement)', () => {
+	it('stores _srcPoint1Id and _srcPoint2Id on transformed 2-point image', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(-4, -1)',
+				'B = point(-1, 1)',
+				'img = image("https://example.com/v.png", A, B)',
+				'P1 = point(0, -3)',
+				'P2 = point(0, 3)',
+				'd = droite(P1, P2)',
+				's = symetrie(axe=d)',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+		const img2 = figure.getAllElements().filter((e) => e.type === 'image')[1] as GeoImage;
+		// Should reference the original image's points (A and B)
+		expect(img2._srcPoint1Id).toBe(symbols.get('A')!.figureId);
+		expect(img2._srcPoint2Id).toBe(symbols.get('B')!.figureId);
+	});
+
+	it('imageToSVG returns correct dimensions after axis is moved to diagonal', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(-4, -1)',
+				'B = point(-1, 1)',
+				'img = image("https://example.com/v.png", A, B)',
+				'P1 = point(0, -3)',
+				'P2 = point(0, 3)',
+				'd = droite(P1, P2)',
+				's = symetrie(axe=d)',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+
+		const viewport = { xMin: -6, xMax: 6, yMin: -5, yMax: 5 };
+		const transformer = createTransformer(viewport, 600, 500);
+
+		const img2Entry = symbols.get('img2')!;
+
+		// Initial render with vertical axis: should be 3×2
+		const svg1 = imageToSVG(img2Entry.figureId, figure, transformer);
+		expect(svg1).not.toBeNull();
+		expect(svg1!.width).toBeCloseTo(3 * 50); // 3 math units × 50 px/unit
+		expect(svg1!.height).toBeCloseTo(2 * 50);
+
+		// Now move axis to diagonal (45°): P1→(0,0), P2→(3,3)
+		const p1Entry = symbols.get('P1')!;
+		const p2Entry = symbols.get('P2')!;
+		figure.beginTransaction();
+		figure.movePoint(p1Entry.figureId, numeric(0), numeric(0));
+		figure.movePoint(p2Entry.figureId, numeric(3), numeric(3));
+		figure.recompute();
+		figure.commit();
+
+		// Dimensions should still be 3×2 (original image dimensions don't change)
+		const svg2 = imageToSVG(img2Entry.figureId, figure, transformer);
+		expect(svg2).not.toBeNull();
+		expect(svg2!.width).toBeCloseTo(3 * 50);
+		expect(svg2!.height).toBeCloseTo(2 * 50);
+	});
+
+	it('imageToSVG updates dimensions when source image points are dragged', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(-4, -1)',
+				'B = point(-1, 1)',
+				'img = image("https://example.com/v.png", A, B)',
+				'P1 = point(0, -3)',
+				'P2 = point(0, 3)',
+				'd = droite(P1, P2)',
+				's = symetrie(axe=d)',
+				'img2 = transforme(s, img)'
+			].join('\n')
+		);
+
+		const viewport = { xMin: -8, xMax: 8, yMin: -6, yMax: 6 };
+		const transformer = createTransformer(viewport, 800, 600);
+		const ppu = 50; // 800 / 16 = 50 px/unit
+
+		const img2Entry = symbols.get('img2')!;
+
+		// Initial: A(-4,-1) B(-1,1) → w=3, h=2
+		const svg1 = imageToSVG(img2Entry.figureId, figure, transformer);
+		expect(svg1!.width).toBeCloseTo(3 * ppu);
+		expect(svg1!.height).toBeCloseTo(2 * ppu);
+
+		// Drag B to (-1, 3) → w=3, h=4
+		figure.beginTransaction();
+		figure.movePoint(symbols.get('B')!.figureId, numeric(-1), numeric(3));
+		figure.recompute();
+		figure.commit();
+
+		const svg2 = imageToSVG(img2Entry.figureId, figure, transformer);
+		expect(svg2!.width).toBeCloseTo(3 * ppu);
+		expect(svg2!.height).toBeCloseTo(4 * ppu);
+	});
+
+	it('chained transforms propagate _srcPoint IDs to original', () => {
+		const { figure, symbols } = runDsl(
+			[
+				'A = point(-2, -1)',
+				'B = point(2, 1)',
+				'img = image("https://example.com/v.png", A, B)',
+				'O = point(0, 0)',
+				'P1 = point(1, 0)',
+				'P2 = point(0, 1)',
+				'r = rotation(centre=O, angle=45)',
+				'd = droite(P1, P2)',
+				's = symetrie(axe=d)',
+				'img2 = transforme(r, img)',
+				'img3 = transforme(s, img2)'
+			].join('\n')
+		);
+		const images = figure.getAllElements().filter((e) => e.type === 'image') as GeoImage[];
+		const aId = symbols.get('A')!.figureId;
+		const bId = symbols.get('B')!.figureId;
+		// img2 (rotation) should reference original A, B
+		expect(images[1]._srcPoint1Id).toBe(aId);
+		expect(images[1]._srcPoint2Id).toBe(bId);
+		// img3 (symmetry of img2) should still reference original A, B (not img2's points)
+		expect(images[2]._srcPoint1Id).toBe(aId);
+		expect(images[2]._srcPoint2Id).toBe(bId);
 	});
 });
 
