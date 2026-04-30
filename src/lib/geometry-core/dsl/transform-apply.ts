@@ -236,8 +236,9 @@ function transformVectorLinear(
 /**
  * Compute the visual rotation and flip state of an image after a transformation.
  * Pure function — no side effects, no figure mutation.
+ * Exported for reactive recomputation at render time.
  */
-function computeImageVisualTransform(
+export function computeImageVisualTransform(
 	currentRotation: number,
 	currentFlipped: boolean,
 	transform: GeoTransformation,
@@ -550,6 +551,11 @@ export function applyTransformationToElement(
 				const newP2 = applyTransformationToPoint(figure, transformEl, img.point2Id, {
 					visible: false
 				});
+				// Reactive visual transform refs: store transform + source image IDs
+				const reactiveOpts = {
+					_transformId: transformEl.id,
+					_srcImageId: sourceId
+				};
 				const id = figure.createImage(
 					img.url,
 					0,
@@ -563,11 +569,18 @@ export function applyTransformationToElement(
 						layer: img.layer,
 						...visualOpts,
 						_srcPoint1Id: srcP1Id,
-						_srcPoint2Id: srcP2Id
+						_srcPoint2Id: srcP2Id,
+						...reactiveOpts
 					}
 				);
 				return { figureId: id, symbolType: 'image' };
 			}
+
+			// Reactive visual transform refs: store transform + source image IDs
+			const reactiveOpts = {
+				_transformId: transformEl.id,
+				_srcImageId: sourceId
+			};
 
 			// Anchored to 1 point: transform the image center reactively.
 			// The center = anchor + offset + (W/2, -H/2) where offset is the SVG top-left offset.
@@ -599,7 +612,7 @@ export function applyTransformationToElement(
 						anchorId: newCenter,
 						anchorOffset: { dx: -newWidth / 2, dy: newH / 2 }
 					},
-					{ label: options?.label, layer: img.layer, ...visualOpts }
+					{ label: options?.label, layer: img.layer, ...visualOpts, ...reactiveOpts }
 				);
 				return { figureId: id, symbolType: 'image' };
 			}
@@ -629,7 +642,7 @@ export function applyTransformationToElement(
 						anchorId: newCenter,
 						anchorOffset: { dx: -newWidth / 2, dy: newH / 2 }
 					},
-					{ label: options?.label, layer: img.layer, ...visualOpts }
+					{ label: options?.label, layer: img.layer, ...visualOpts, ...reactiveOpts }
 				);
 				return { figureId: id, symbolType: 'image' };
 			}

@@ -2502,6 +2502,8 @@ export class Figure {
 			flipped?: boolean;
 			_srcPoint1Id?: string;
 			_srcPoint2Id?: string;
+			_transformId?: string;
+			_srcImageId?: string;
 		}
 	): string {
 		const deps = this._collectTextDeps([], positioning);
@@ -2535,6 +2537,8 @@ export class Figure {
 			flipped: options?.flipped,
 			_srcPoint1Id: options?._srcPoint1Id,
 			_srcPoint2Id: options?._srcPoint2Id,
+			_transformId: options?._transformId,
+			_srcImageId: options?._srcImageId,
 			color: this.resolveColor(options),
 			visible: options?.visible ?? true,
 			label: options?.label,
