@@ -84,5 +84,11 @@
 				Distances, angles, aires affichees sur la figure avec mesure() et texte()
 			</p>
 		</a>
+		<a href="/geometry-demo/images" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Images</h2>
+			<p class="text-sm text-muted-foreground">
+				Placement d'images sur les figures : position libre, ancree a un point, deplacable
+			</p>
+		</a>
 	</div>
 </div>

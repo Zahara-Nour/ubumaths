@@ -1214,6 +1214,9 @@ function _executeBuiltinInner(
 			if (pos[0].type !== 'string')
 				throw new DslRuntimeError('image(): le 1er argument doit etre une URL (chaine)', line);
 			const imgUrl = (pos[0] as { type: 'string'; value: string }).value;
+			// Security: only allow http(s) and relative URLs (block javascript:, data:, etc.)
+			if (!/^https?:\/\/|^\//.test(imgUrl))
+				throw new DslRuntimeError('image(): URL doit commencer par http://, https://, ou /', line);
 
 			if (!named.has('largeur'))
 				throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
