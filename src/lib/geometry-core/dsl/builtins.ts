@@ -18,7 +18,8 @@ import {
 	opposite,
 	add,
 	number as mathNumber,
-	compile
+	compile,
+	toCustom
 } from '$lib/mathAST';
 import type { MathNode, CompiledFn } from '$lib/mathAST';
 import {
@@ -1565,6 +1566,52 @@ function _executeBuiltinInner(
 			}
 		}
 
+		case 'derivee': {
+			if (pos.length !== 1) {
+				throw new DslRuntimeError('derivee() attend 1 argument (une fonction)', line);
+			}
+			const dFnId = requireElement(pos[0], 'fonction', line);
+			const dFnEl = figure.getElementById(dFnId);
+			if (!dFnEl || dFnEl.type !== 'function') {
+				throw new DslRuntimeError("derivee(): l'argument doit être une courbe y = f(x)", line);
+			}
+
+			// f' is f.derivative (already symbolically computed at f's creation).
+			// For the new function: expression = f', derivative = f''.
+			let fPrimePrime: MathNode;
+			try {
+				fPrimePrime = differentiate(dFnEl.derivative, { variable: 'x', simplify: true });
+			} catch {
+				throw new DslRuntimeError('derivee(): impossible de calculer la dérivée seconde', line);
+			}
+
+			// Reuse f.compiledDerivative as g's compiledFn: by GeoFunction's invariant,
+			// compiledDerivative === compile(derivative), so calling compile() again would
+			// be redundant.
+			let dCompiledDerivative: CompiledFn;
+			try {
+				dCompiledDerivative = compile(fPrimePrime);
+			} catch (e) {
+				throw new DslRuntimeError(
+					`derivee(): impossible de compiler la dérivée — ${e instanceof Error ? e.message : ''}`,
+					line
+				);
+			}
+
+			const dEquation = `y = ${toCustom(dFnEl.derivative)}`;
+
+			const dFnNewId = figure.createFunction(
+				dFnEl.derivative,
+				fPrimePrime,
+				dFnEl.compiledDerivative,
+				dCompiledDerivative,
+				dEquation,
+				{ label }
+			);
+
+			return { figureId: dFnNewId, symbolType: 'courbe' };
+		}
+
 		case 'asymptotes': {
 			if (pos.length !== 1) {
 				throw new DslRuntimeError('asymptotes() attend 1 argument (conique)', line);
@@ -1962,6 +2009,7 @@ export const BUILTIN_NAMES = new Set([
 	'courbe',
 	'point_sur',
 	'tangente',
+	'derivee',
 	'asymptotes',
 	'axes',
 	'directrice',

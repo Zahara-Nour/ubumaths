@@ -1,0 +1,234 @@
+/**
+ * Integration tests for the derivee() builtin.
+ *
+ * derivee(f) creates a new GeoFunction representing f'(x), where f is itself a
+ * GeoFunction (y = f(x)). The new function is autonomous: at creation time, it
+ * captures f.derivative as its expression and computes f''(x) symbolically.
+ */
+
+import { describe, it, expect } from 'vitest';
+import { parse } from '../parser';
+import { interpret } from '../interpreter';
+import { runDsl, serializeDsl } from '../index';
+import { DslRuntimeError } from '../errors';
+
+function run(script: string) {
+	const program = parse(script);
+	return interpret(program);
+}
+
+describe('derivee — basic cases', () => {
+	it('creates a GeoFunction element', () => {
+		const { figure } = run(
+			`f = courbe("y = x^2")
+g = derivee(f)`
+		);
+		const fns = figure.getAllElements().filter((e) => e.type === 'function');
+		expect(fns).toHaveLength(2);
+	});
+
+	it('polynomial: derivee of y = 3*x^2 + 2*x evaluates to 6*x + 2', () => {
+		const { figure, symbols } = run(
+			`f = courbe("y = 3*x^2 + 2*x")
+g = derivee(f)`
+		);
+		const gId = symbols.get('g')!.figureId!;
+		const g = figure.getElementById(gId);
+		expect(g).toBeDefined();
+		if (g && g.type === 'function') {
+			// g(x) = 6x + 2
+			expect(g.compiledFn({ x: 0 })).toBeCloseTo(2);
+			expect(g.compiledFn({ x: 1 })).toBeCloseTo(8);
+			expect(g.compiledFn({ x: -2 })).toBeCloseTo(-10);
+		}
+	});
+
+	it('sin: derivee of y = sin(x) evaluates to cos(x)', () => {
+		const { figure, symbols } = run(
+			`f = courbe("y = sin(x)")
+g = derivee(f)`
+		);
+		const g = figure.getElementById(symbols.get('g')!.figureId!);
+		if (g && g.type === 'function') {
+			expect(g.compiledFn({ x: 0 })).toBeCloseTo(1);
+			expect(g.compiledFn({ x: Math.PI / 2 })).toBeCloseTo(0);
+			expect(g.compiledFn({ x: Math.PI })).toBeCloseTo(-1);
+		}
+	});
+
+	it('exp: derivee of y = exp(x) evaluates to exp(x)', () => {
+		const { figure, symbols } = run(
+			`f = courbe("y = exp(x)")
+g = derivee(f)`
+		);
+		const g = figure.getElementById(symbols.get('g')!.figureId!);
+		if (g && g.type === 'function') {
+			expect(g.compiledFn({ x: 0 })).toBeCloseTo(1);
+			expect(g.compiledFn({ x: 1 })).toBeCloseTo(Math.E);
+		}
+	});
+
+	it('ln: derivee of y = ln(x) evaluates to 1/x', () => {
+		const { figure, symbols } = run(
+			`f = courbe("y = ln(x)")
+g = derivee(f)`
+		);
+		const g = figure.getElementById(symbols.get('g')!.figureId!);
+		if (g && g.type === 'function') {
+			expect(g.compiledFn({ x: 1 })).toBeCloseTo(1);
+			expect(g.compiledFn({ x: 2 })).toBeCloseTo(0.5);
+			expect(g.compiledFn({ x: 4 })).toBeCloseTo(0.25);
+		}
+	});
+
+	it('chain rule: derivee of y = sin(2*x) evaluates to 2*cos(2*x)', () => {
+		const { figure, symbols } = run(
+			`f = courbe("y = sin(2*x)")
+g = derivee(f)`
+		);
+		const g = figure.getElementById(symbols.get('g')!.figureId!);
+		if (g && g.type === 'function') {
+			expect(g.compiledFn({ x: 0 })).toBeCloseTo(2);
+			expect(g.compiledFn({ x: Math.PI / 4 })).toBeCloseTo(0);
+		}
+	});
+});
+
+describe('derivee — second derivative (recursion)', () => {
+	it("derivee(derivee(f)) yields f''(x) for y = x^3", () => {
+		// f(x) = x^3, f'(x) = 3x^2, f''(x) = 6x
+		const { figure, symbols } = run(
+			`f = courbe("y = x^3")
+g = derivee(f)
+h = derivee(g)`
+		);
+		const h = figure.getElementById(symbols.get('h')!.figureId!);
+		if (h && h.type === 'function') {
+			expect(h.compiledFn({ x: 0 })).toBeCloseTo(0);
+			expect(h.compiledFn({ x: 1 })).toBeCloseTo(6);
+			expect(h.compiledFn({ x: 2 })).toBeCloseTo(12);
+		}
+	});
+
+	it("the derivative field of g is f''(x)", () => {
+		// f(x) = x^4, f'(x) = 4x^3, g = derivee(f). Then g.derivative = 12x^2.
+		const { figure, symbols } = run(
+			`f = courbe("y = x^4")
+g = derivee(f)`
+		);
+		const g = figure.getElementById(symbols.get('g')!.figureId!);
+		if (g && g.type === 'function') {
+			// g.compiledDerivative is f''(x) = 12x^2
+			expect(g.compiledDerivative({ x: 0 })).toBeCloseTo(0);
+			expect(g.compiledDerivative({ x: 1 })).toBeCloseTo(12);
+			expect(g.compiledDerivative({ x: 2 })).toBeCloseTo(48);
+		}
+	});
+});
+
+describe('derivee — additional cases', () => {
+	// Note: y = 5 (constant) and y = 2*x + 3 (affine) are detected as lines by
+	// courbe(), not as GeoFunctions. derivee() rejects them — see "errors" suite.
+
+	it('quadratic: derivee of y = x^2 + 1 evaluates to 2*x', () => {
+		const { figure, symbols } = run(
+			`f = courbe("y = x^2 + 1")
+g = derivee(f)`
+		);
+		const g = figure.getElementById(symbols.get('g')!.figureId!);
+		if (g && g.type === 'function') {
+			expect(g.compiledFn({ x: 0 })).toBeCloseTo(0);
+			expect(g.compiledFn({ x: 3 })).toBeCloseTo(6);
+			expect(g.compiledFn({ x: -2 })).toBeCloseTo(-4);
+		}
+	});
+});
+
+describe('derivee — autonomy', () => {
+	it('the derivee element has no graph dependencies', () => {
+		const { figure, symbols } = run(
+			`f = courbe("y = x^2")
+g = derivee(f)`
+		);
+		const g = figure.getElementById(symbols.get('g')!.figureId!);
+		expect(g).toBeDefined();
+		if (g && g.type === 'function') {
+			// GeoFunction is autonomous by design
+			expect(g.dependsOn).toEqual([]);
+		}
+	});
+
+	it('stores its own equation string starting with "y = "', () => {
+		const { figure, symbols } = run(
+			`f = courbe("y = x^2")
+g = derivee(f)`
+		);
+		const g = figure.getElementById(symbols.get('g')!.figureId!);
+		if (g && g.type === 'function') {
+			expect(g.equation).toMatch(/^y\s*=\s*/);
+		}
+	});
+});
+
+describe('derivee — errors', () => {
+	it('throws when argument is a point', () => {
+		expect(() => run('A = point(0,0)\ng = derivee(A)')).toThrow(DslRuntimeError);
+	});
+
+	it('throws when argument is a quadratic curve (conic)', () => {
+		expect(() => run('c = courbe("x^2 + y^2 = 1")\ng = derivee(c)')).toThrow(DslRuntimeError);
+	});
+
+	it('throws when argument is an implicit curve', () => {
+		expect(() => run('c = courbe("x^3 + y^3 - 3*x*y = 0")\ng = derivee(c)')).toThrow(
+			DslRuntimeError
+		);
+	});
+
+	it('throws when argument is a line', () => {
+		// y = 2*x + 3 is detected as a line, not a function
+		expect(() => run('d = courbe("y = 2*x + 3")\ng = derivee(d)')).toThrow(DslRuntimeError);
+	});
+
+	it('throws when argument is a tangent line', () => {
+		expect(() =>
+			run(`f = courbe("y = x^2")
+t = tangente(f, 1)
+g = derivee(t)`)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('throws with no argument', () => {
+		expect(() => run('g = derivee()')).toThrow(DslRuntimeError);
+	});
+
+	it('throws with too many arguments', () => {
+		expect(() => run('f = courbe("y = x^2")\ng = derivee(f, f)')).toThrow(DslRuntimeError);
+	});
+});
+
+describe('derivee — round-trip serialization', () => {
+	it('serializes as a courbe() call with the derivative expression', () => {
+		const script = `f = courbe("y = x^2")
+g = derivee(f)`;
+		const { figure, symbols } = runDsl(script);
+		const serialized = serializeDsl(figure, symbols);
+		// g should be reserialized as courbe("y = ...") since GeoFunction is autonomous
+		expect(serialized).toContain('g = courbe(');
+	});
+
+	it('reparsed derivative still evaluates correctly', () => {
+		const script = `f = courbe("y = x^3")
+g = derivee(f)`;
+		const { figure, symbols } = runDsl(script);
+		const serialized = serializeDsl(figure, symbols);
+
+		const { figure: fig2, symbols: sym2 } = runDsl(serialized);
+		const g2 = fig2.getElementById(sym2.get('g')!.figureId!);
+		if (g2 && g2.type === 'function') {
+			// (x^3)' = 3x^2
+			expect(g2.compiledFn({ x: 0 })).toBeCloseTo(0);
+			expect(g2.compiledFn({ x: 2 })).toBeCloseTo(12);
+		}
+	});
+});
