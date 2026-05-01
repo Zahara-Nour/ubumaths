@@ -1233,7 +1233,11 @@
 							<path
 								d={p.d}
 								fill={sty.color}
-								fill-opacity={p.sign === 'positive' ? baseFillOpacity : baseFillOpacity * 0.5}
+								fill-opacity={el.signed
+									? p.sign === 'positive'
+										? baseFillOpacity
+										: baseFillOpacity * 0.5
+									: baseFillOpacity}
 								stroke={sty.color}
 								stroke-width={0.5}
 								stroke-opacity={0.5}

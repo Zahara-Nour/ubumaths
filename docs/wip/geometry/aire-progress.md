@@ -14,11 +14,15 @@
 
 **Phase 2 terminée** ✅ — Surcharge du `case 'aire'` dans `builtins.ts` pour
 router vers la branche aire-sous-courbe quand le premier arg est une
-`GeoFunction`. Refactor `singularity-warn` pour préfixe paramétrique.
+`GeoFunction`. Refactor `singularity-warn` pour préfixe paramétrique. Commit
+`6f4caf9c`.
+
+**Phase 3 terminée** ✅ — Couleur verte par défaut (`#22c55e`) côté DSL
+builtin + branche dispatcher Svelte pour `fillOpacity` uniforme quand
+`el.signed === false`.
 
 Phases restantes :
 
-- **Phase 3** — Rendu SVG (branche `fillOpacity` uniforme dans `GeometryCanvas.svelte`).
 - **Phase 4** — Page démo `/geometry-demo/sliders/aire` + doc utilisateur
   `docs/ref/geometry-dsl/aire.md`.
 - **Phase 5** — Quality checks finaux + commit final.
@@ -263,6 +267,94 @@ Suggestions optionnelles déclinées :
   Le dispatcher Svelte doit ignorer le tag quand `signed=false`.
 - La couleur par défaut verte (`#22c55e`) sera appliquée via le style
   par défaut quand `couleur=` n'est pas spécifié — décision §0.
+
+---
+
+## Phase 3 — Rendu SVG + couleur verte par défaut ✅
+
+### Livrables
+
+**Modifiés** :
+
+- `src/lib/geometry-core/dsl/builtins.ts`
+
+  - `case 'aire'` under-curve branch : passe `color: '#22c55e'` à
+    `createIntegralArea` pour la couleur verte par défaut. Si l'utilisateur
+    spécifie `couleur=...`, `applyInlineStyle` set `el.style.color` qui
+    prend précédence dans `resolveStyle` (ordre : `style.color > color > default`).
+  - Commentaire explicite sur le mécanisme d'override.
+
+- `src/lib/components/geometry/GeometryCanvas.svelte`
+  - Dispatcher `el.type === 'integralArea'` : ternaire imbriqué pour
+    `fill-opacity` :
+    - `el.signed === true` (V1 integrale) → `positive` à
+      `baseFillOpacity`, `negative` à `baseFillOpacity * 0.5`.
+    - `el.signed === false` (aire) → `baseFillOpacity` uniforme pour
+      toutes les sous-régions.
+  - `splitOnZeros` et `integralAreaToSVG` inchangés (le tag `sign` reste
+    sur chaque path, juste ignoré côté dispatcher quand non-signé).
+
+**Modifiés (tests)** :
+
+- `src/lib/geometry-core/dsl/__tests__/interpreter-aire-undercurve.test.ts`
+  - C1 : changement de `couleur="vert"` → `couleur="rouge"` (le vert étant
+    désormais le défaut, tester avec une couleur différente est plus
+    informatif).
+  - C3 (NOUVEAU) : `aire(f, 0, 1)` sans couleur → `el.color === '#22c55e'`.
+  - C4 (NOUVEAU) : `couleur="rouge"` → `el.style.color !== '#22c55e'`
+    (override via `applyInlineStyle`).
+  - C5 (NOUVEAU) : sur la même figure, `integrale` reste `#1e40af` (V1
+    default), `aire` est `#22c55e`.
+
+### Comportements implémentés
+
+#### Rendu SVG (validation manuelle Phase 4)
+
+- ✅ `el.signed === true` (V1) : opacité différenciée par signe inchangée.
+- ✅ `el.signed === false` (aire) : opacité uniforme sur toutes les sous-régions.
+- ✅ `splitOnZeros` toujours appelé (donne la découpe géométrique correcte).
+
+#### Couleur par défaut
+
+- ✅ C3 : aire sans `couleur=` → vert (`#22c55e`).
+- ✅ C4 : `couleur="rouge"` override le vert via `el.style.color`.
+- ✅ C5 : integrale reste bleu (`#1e40af`), aire est verte — coexistence
+  visuelle distincte sur la même figure.
+
+### Code review (rien à corriger)
+
+`code-reviewer` consulté — quality score : Good, ready to merge :
+
+- Ternaire imbriqué : lisible pour 2 cas, OK comme tel. `{@const}`
+  envisageable si un 3ème cas apparaît.
+- Constante `AIRE_DEFAULT_COLOR` : à différer (un seul call site
+  actuellement).
+- `el.signed` runtime risk : confirmé safe (le champ est `readonly boolean`
+  non-optionnel, toujours set par la factory via `options?.signed ?? true`).
+- Faux positif sur des typos de commentaires (les `//` sont corrects, le
+  diff dans le prompt était tronqué).
+
+### Tests
+
+- 21 tests sur `interpreter-aire-undercurve.test.ts` (3 nouveaux + 18
+  existants) : tous verts.
+- 20 tests V1 `interpreter-integrale.test.ts` : tous verts inchangés
+  (couleur bleue `#1e40af` vérifiée par C5).
+- Svelte autofixer sur le bloc dispatcher modifié : aucun issue.
+- Régression complète : **2326/2326** tests verts sur tout `geometry-core`
+  (+ 2 skipped pour bench perf manuel V1).
+
+### Détail d'implémentation à noter pour Phase 4
+
+- La page démo `/geometry-demo/sliders/aire` doit montrer la **différence
+  pédagogique** entre `integrale` et `aire` sur la même figure (cas clé
+  du brief). Suggestion : `f = courbe("y = x^3 - x")` avec deux sliders
+  pour les bornes, et afficher `I = integrale(f, a, b)` (bleu) et
+  `A = aire(f, a, b)` (vert) côte à côte avec `mtexte`.
+- La doc utilisateur `docs/ref/geometry-dsl/aire.md` peut largement se
+  calquer sur `docs/ref/geometry-dsl/integrale.md` (vocabulaire,
+  syntaxe, exemples), en mettant en avant la sémantique non-signée et
+  la couleur verte par défaut.
 
 ---
 
