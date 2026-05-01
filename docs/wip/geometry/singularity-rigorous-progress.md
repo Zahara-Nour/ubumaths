@@ -1,6 +1,6 @@
 # Singularity rigorous V2 — progression
 
-**Statut** : Phases 1 et 2 livrées. Phase 3 (quality checks finaux) à venir.
+**Statut** : ✅ TERMINÉ — Phases 0, 1, 2, 3 livrées.
 **Étude amont** : `docs/wip/geometry/singularity-rigorous-study.md`.
 **Brief** : `docs/wip/geometry/prompt-singularity-rigorous-study.md`.
 
@@ -168,13 +168,15 @@ Issues retournées par `code-reviewer` (Sonnet) et adressées :
 
 ---
 
-## Phase 3 — Quality checks finaux (À FAIRE)
+## Phase 3 — Quality checks finaux ✅
 
-| Tâche                                                  | Méthode               |
-| ------------------------------------------------------ | --------------------- |
-| 3.1 `pnpm format` sur fichiers modifiés                | direct                |
-| 3.2 `pnpm check:incremental`                           | direct                |
-| 3.3 `mcp__svelte__svelte-autofixer` si .svelte modifié | direct (a priori non) |
+- ✅ `pnpm format` sur les 6 fichiers modifiés (singularity-warn.ts,
+  builtins.ts, figure.ts, et les 3 fichiers de test) : tous unchanged
+  (Prettier déjà appliqué par les pre-commit hooks lint-staged).
+- ✅ `pnpm check:incremental` : exit 0. Les 9 errors résiduelles affichées
+  dans le summary sont dans `slides/demo` et `extern/` (chemins exclus du
+  script). Aucune erreur dans les fichiers du scope.
+- N/A `mcp__svelte__svelte-autofixer` : aucun fichier `.svelte` modifié.
 
 ---
 
