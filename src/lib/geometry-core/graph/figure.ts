@@ -75,6 +75,7 @@ import type {
 	type GeoComputedPoint,
 	type GeoScalar,
 	type GeoSlider,
+	type GeoIntegralArea,
 	type LineEquation,
 	type ConicParams
 } from '../types/elements';
@@ -109,6 +110,7 @@ import {
 import { classifyConic } from '../geometry/conic-classify';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import { compile } from '$lib/mathAST/eval/compile';
 import {
 	subtract,
 	implicitMultiply,
@@ -119,9 +121,10 @@ import {
 } from '$lib/mathAST/factory';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { isZeroExpression } from '$lib/mathAST/normal';
+import { integrateDefinite, numericIntegrate } from '$lib/mathAST/integration';
 import { UndoManager } from './undo-redo';
 import type { Delta } from './undo-redo';
-import { computeElementPosition } from './compute-position';
+import { computeElementPosition, resolveScalarParam } from './compute-position';
 import { computeLocusCurve } from './compute-locus';
 import type { SampledCurve, Viewport, Point } from '../viewport/types';
 
@@ -2833,6 +2836,144 @@ export class Figure {
 		this.addElement(id, element, allDeps);
 		this.computePosition(id);
 		return id;
+	}
+
+	/**
+	 * Create a paired GeoIntegralArea (visual zone) and GeoScalar (reactive value)
+	 * representing ∫ₐᵇ f(x) dx. Returns both ids; the scalar is what the DSL
+	 * `integrale()` builtin exposes. See `docs/wip/geometry/integrale-study.md`.
+	 */
+	createIntegralArea(
+		functionId: string,
+		lowerBound: ScalarParam,
+		upperBound: ScalarParam,
+		options?: ElementOptions
+	): { areaId: string; scalarId: string } {
+		const fnEl = this.elements.get(functionId);
+		if (!fnEl || fnEl.type !== 'function') {
+			throw new Error(`createIntegralArea: "${functionId}" is not a function element`);
+		}
+
+		const validateBoundRef = (param: ScalarParam, label: string): void => {
+			if (!isScalarRef(param)) return;
+			const refEl = this.elements.get(param.scalarRef);
+			if (!refEl) {
+				throw new Error(
+					`createIntegralArea: ${label} bound ref "${param.scalarRef}" does not exist`
+				);
+			}
+			if (refEl.type !== 'scalar' && refEl.type !== 'slider') {
+				throw new Error(
+					`createIntegralArea: ${label} bound ref "${param.scalarRef}" is not a scalar or slider`
+				);
+			}
+		};
+		validateBoundRef(lowerBound, 'lower');
+		validateBoundRef(upperBound, 'upper');
+
+		// Symbolic integration attempt — only the antiderivative matters here.
+		// Pass allowNumeric: false so integrateDefinite doesn't run a redundant
+		// adaptive-Simpson at creation; we handle the numeric fallback ourselves
+		// in the compute closure below.
+		let antiderivative: MathNode | null = null;
+		let compiledF: CompiledFn | null = null;
+		let integrationStatus: 'exact' | 'approximate' | 'unsupported' = 'unsupported';
+		try {
+			const r = integrateDefinite(fnEl.expression, mathNumber('0'), mathNumber('0'), {
+				allowNumeric: false
+			});
+			integrationStatus = r.status;
+			if (r.status === 'exact' && r.antiderivative) {
+				try {
+					compiledF = compile(r.antiderivative);
+					antiderivative = r.antiderivative;
+				} catch {
+					antiderivative = null;
+					compiledF = null;
+					integrationStatus = 'unsupported';
+				}
+			}
+		} catch {
+			integrationStatus = 'unsupported';
+		}
+
+		const fnExpression = fnEl.expression;
+		const cachedCompiledF = compiledF;
+		const lowerCapture = lowerBound;
+		const upperCapture = upperBound;
+		const compute = (scalarValues: ReadonlyMap<string, number>): number => {
+			const a = resolveScalarParam(lowerCapture, scalarValues);
+			const b = resolveScalarParam(upperCapture, scalarValues);
+			if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN;
+			if (cachedCompiledF) {
+				return cachedCompiledF({ x: b }) - cachedCompiledF({ x: a });
+			}
+			try {
+				return numericIntegrate(fnExpression, 'x', a, b).value;
+			} catch {
+				return NaN;
+			}
+		};
+
+		const deps: string[] = [functionId];
+		const scalarRefDeps: string[] = [];
+		if (isScalarRef(lowerBound)) {
+			deps.push(lowerBound.scalarRef);
+			scalarRefDeps.push(lowerBound.scalarRef);
+		}
+		if (isScalarRef(upperBound) && !deps.includes(upperBound.scalarRef)) {
+			deps.push(upperBound.scalarRef);
+			scalarRefDeps.push(upperBound.scalarRef);
+		}
+
+		const areaId = this.generateId('iar');
+		const scalarId = this.generateId('sca');
+
+		const areaElement: GeoIntegralArea = {
+			type: 'integralArea',
+			id: areaId,
+			functionId,
+			lowerBound,
+			upperBound,
+			antiderivative,
+			compiledF,
+			integrationStatus,
+			_scalarId: scalarId,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+
+		const scalarElement: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'expression',
+			id: scalarId,
+			targetIds: [],
+			compute,
+			scalarDeps: scalarRefDeps,
+			_visualAreaId: areaId,
+			color: this.resolveColor(options),
+			visible: false,
+			label: undefined,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+
+		this.beginTransaction();
+		try {
+			this.addElement(areaId, areaElement, deps);
+			this.addElement(scalarId, scalarElement, deps);
+			this.computePosition(areaId);
+			this.computePosition(scalarId);
+			this.commit();
+		} catch (e) {
+			this.undo_manager.discard();
+			throw e;
+		}
+
+		return { areaId, scalarId };
 	}
 
 	// ─── Slider factories ───────────────────────────────────────

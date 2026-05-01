@@ -422,6 +422,37 @@ export interface GeoScalar extends GeoElementBase {
 	readonly coordinateAxis?: 'x' | 'y';
 	/** Display format when visible on figure. */
 	readonly format?: 'exact' | 'approx' | 'degrees' | 'radians';
+	/** Internal: paired GeoIntegralArea id when this scalar comes from `integrale()`. */
+	readonly _visualAreaId?: string;
+	readonly dependsOn: readonly string[];
+}
+
+// =============================================================================
+// Integral area (visual zone for the integrale() builtin)
+// =============================================================================
+
+/**
+ * Visual zone representing ∫ₐᵇ f(x) dx on a figure.
+ *
+ * Created in pairs with a GeoScalar (option C of the integrale-study).
+ * Stores the antiderivative F(x) and its compiled closure for fast reactive
+ * evaluation when bounds change. When symbolic integration is unavailable,
+ * `antiderivative` and `compiledF` are null and the paired scalar falls
+ * back to numeric integration.
+ */
+export interface GeoIntegralArea extends GeoElementBase {
+	readonly type: 'integralArea';
+	readonly functionId: string;
+	readonly lowerBound: ScalarParam;
+	readonly upperBound: ScalarParam;
+	/** Antiderivative F(x) when symbolic integration succeeded, else null. */
+	readonly antiderivative: MathNode | null;
+	/** Compiled F(x) for fast evaluation. Null when antiderivative is null. */
+	readonly compiledF: CompiledFn | null;
+	/** Outcome of the symbolic integration attempt at creation time. */
+	readonly integrationStatus: 'exact' | 'approximate' | 'unsupported';
+	/** Internal: paired scalar id (the value `integrale()` exposes to the DSL). */
+	readonly _scalarId: string;
 	readonly dependsOn: readonly string[];
 }
 
@@ -973,7 +1004,8 @@ export type GeoElement =
 	| GeoLocus
 	| GeoTrace
 	| GeoScalar
-	| GeoSlider;
+	| GeoSlider
+	| GeoIntegralArea;
 
 export type GeoElementType = GeoElement['type'];
 
