@@ -321,40 +321,39 @@ function shouldWrapForImplicitMul(node: MathNode): boolean {
 }
 
 /**
- * Whether an emitted fragment would start with a token that, when juxtaposed
- * to a left operand, would either be rejected by the parser or — worse — be
- * silently parsed as a different operation. Two failure modes:
+ * Whether an emitted fragment would start with a NUMBER token. The Pratt parser
+ * forbids NUMBER from starting an implicit multiplication (parser-pratt.ts:1214):
+ * `x2`, `(a)2`, `sin(x)2`, `x1/x` all throw on reparse.
  *
- * 1. **Hard reject** — NUMBER cannot start an implicit multiplication
- *    (parser-pratt.ts:1214). `x2`, `(a)2`, `sin(x)2`, `x1/x` all throw.
+ * NUMBER tokens may begin with:
+ * - a digit (`0`–`9`): `2`, `42`
+ * - `.`: decimal without integer part (`.5`)
+ * - `,`: French decimal-comma form (`,5`)
  *
- * 2. **Silent corruption** — when RHS begins with `+` or `-` (from `positive`
- *    or `opposite` nodes), juxtaposition produces text like `x-sin(x)` which
- *    the parser reads as a *subtraction*, not a multiplication. Round-trip
- *    "succeeds" but the AST is semantically different. This case arises in
- *    practice from `differentiate(x*cos(x))` whose product rule yields
- *    `cos(x) + x*(-sin(x))`, the second factor being `opposite(sin(x))`.
- *
- * Triggering characters:
- * - digit (`0`–`9`): start of a NUMBER (`2`, `42`)
- * - `.`: decimal NUMBER without integer part (`.5`)
- * - `,`: French decimal-comma NUMBER (`,5`)
- * - `-`: unary minus emitted by `opposite` node
- * - `+`: unary plus emitted by `positive` node
- *
- * In all these cases, emitting `*` produces a parseable, semantically equivalent
- * output (e.g. `x*-sin(x)` parses as `multiply(x, opposite(sin(x)), 'star')`).
- *
- * **Known limitation** — if the RHS is itself an `addition` or `subtraction`
- * whose left term is `opposite(...)` (e.g. `add(opposite(a), b)`), the emitted
- * `*` only binds the first factor. `multiply(x, add(opposite(a), b), 'implicit')`
- * produces `x*-a+b` which the parser reads as `add(multiply(x, opposite(a)), b)`,
- * not `multiply(x, add(opposite(a), b))`. In practice, `differentiate` never
- * produces this shape (sums are always at the outer level). A future caller that
- * constructs this AST directly would need to wrap the RHS in parentheses.
+ * For these cases, `toCustom` emits an explicit `*` (e.g. `x*1/x`).
  */
-function startsWithAmbiguousLeading(s: string): boolean {
-	return /^[0-9.,+-]/.test(s);
+function startsWithNumberToken(s: string): boolean {
+	return /^[0-9.,]/.test(s);
+}
+
+/**
+ * Whether an emitted fragment begins with a unary sign (`+` or `-`) — i.e. the
+ * output of an `opposite` or `positive` node. Juxtaposing such a RHS to a left
+ * operand produces text like `x-sin(x)` which the parser silently reads as a
+ * *subtraction*, not a multiplication. Round-trip "succeeds" but the AST is
+ * semantically different.
+ *
+ * This case arises in practice from `differentiate(x*cos(x))` whose product
+ * rule yields `cos(x) + x*(-sin(x))` — the second factor is `opposite(sin(x))`.
+ *
+ * For these cases, `toCustom` wraps the RHS in parentheses (`x*(-sin(x))`)
+ * rather than emitting a bare `*` (`x*-sin(x)`). The wrapped form is the
+ * conventional mathematical notation and avoids ambiguity if the RHS is itself
+ * a sum or subtraction (`x*(-a+b)` correctly groups, whereas `x*-a+b` would
+ * leave the `+b` outside the multiplication).
+ */
+function startsWithUnarySign(s: string): boolean {
+	return /^[+-]/.test(s);
 }
 
 // =============================================================================
@@ -463,21 +462,28 @@ export class CustomGenerator {
 				if (wrapLeft) this.emit('{', meta);
 				this.visitWithSpans(node.left);
 				if (wrapLeft) this.emit('}', meta);
-				// Implicit mul safety net (matches generateMultiplication): when RHS
-				// would start with a digit (rejected by parser) or with `+`/`-` (silently
-				// reparsed as a different binary operation), we must emit an explicit `*`.
+				// Implicit mul safety net (matches generateMultiplication). Two regimes:
+				//   A. RHS starts with a NUMBER token → emit explicit `*` (`x*1/x`)
+				//   B. RHS starts with a unary sign  → emit `*` and wrap RHS in `()`
+				//      (`x*(-sin(x))` rather than `x*-sin(x)`)
 				// Peek RHS via a throw-away generator with metadata disabled — otherwise a
 				// colored RHS would be wrapped in `@color{...}` (e.g. `@red{2}`), defeating
 				// the leading-character check.
-				const forceStarForImplicit =
-					node.displayStyle === 'implicit' &&
-					startsWithAmbiguousLeading(new CustomGenerator().generate(node.right));
-				if (forceStarForImplicit) {
+				const rhsPlain =
+					node.displayStyle === 'implicit' ? new CustomGenerator().generate(node.right) : '';
+				const safetyA = node.displayStyle === 'implicit' && startsWithNumberToken(rhsPlain);
+				const safetyB = node.displayStyle === 'implicit' && startsWithUnarySign(rhsPlain);
+				if (safetyA) {
 					this.emit('*', meta);
+					this.visitWithSpans(node.right);
+				} else if (safetyB) {
+					this.emit('*(', meta);
+					this.visitWithSpans(node.right);
+					this.emit(')', meta);
 				} else {
 					this.visitMultiplicationOperatorSpan(node);
+					this.visitWithSpans(node.right);
 				}
-				this.visitWithSpans(node.right);
 				break;
 			}
 
@@ -1113,12 +1119,17 @@ export class CustomGenerator {
 				// Juxtaposition: no operator, but wrap left if it contains `/`
 				// to avoid ambiguity (e.g. `1/2π` → `{1/2}π`)
 				const wrappedLeft = shouldWrapForImplicitMul(node.left) ? `{${left}}` : left;
-				// Safety net: if RHS begins with a character the parser cannot glue
-				// via implicit multiplication (digit → hard reject, `+`/`-` → silent
-				// reparse as binary op), emit explicit `*` to preserve semantics.
-				// Examples: `x*1/x` instead of `x1/x`, `x*-sin(x)` instead of `x-sin(x)`.
-				if (startsWithAmbiguousLeading(right)) {
+				// Safety net A — RHS starts with a NUMBER token: parser would refuse
+				// juxtaposition. Emit explicit `*` (e.g. `x*1/x` instead of `x1/x`).
+				if (startsWithNumberToken(right)) {
 					return `${wrappedLeft}*${right}`;
+				}
+				// Safety net B — RHS starts with a unary sign (`-`/`+`): juxtaposition
+				// would silently reparse as subtraction/addition. Emit `*(...)` to make
+				// the multiplication explicit AND preserve grouping (e.g. `x*(-sin(x))`
+				// instead of `x-sin(x)`, `x*(+2)` instead of `x+2`).
+				if (startsWithUnarySign(right)) {
+					return `${wrappedLeft}*(${right})`;
 				}
 				return `${wrappedLeft}${right}`;
 			}
