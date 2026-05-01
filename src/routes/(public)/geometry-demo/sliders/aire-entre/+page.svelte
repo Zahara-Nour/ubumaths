@@ -4,13 +4,16 @@
 	// Cas pédagogique classique de Terminale spé maths : aire entre y = sin(x)
 	// et y = cos(x) sur [π/4, 5π/4] = 2√2 ≈ 2.828.
 	// Les bornes par défaut (≈ π/4 et ≈ 5π/4) sont les intersections naturelles.
+	// Note: resolveTemplate (figure.ts) traite TOUT {...} comme interpolation de
+	// scalaire — donc on évite \text{...} et \sqrt{2} qui contiennent des accolades.
+	// Pour la racine, on utilise \sqrt 2 (shorthand LaTeX 1-token, accepté par MathLive).
 	const dsl = `f = courbe("y = sin(x)", couleur="bleu")
 g = courbe("y = cos(x)", couleur="vert")
 a = slider(min=-1, max=1.5, valeur=0.7853981633974483, pas=0.05)
 b = slider(min=2, max=5, valeur=3.9269908169872414, pas=0.05)
 E = aire_entre(f, g, a, b, opacite_fond=0.4)
-mtexte(-3, 1.6, "\\text{Aire entre } f \\text{ et } g = {E:.3f}")
-mtexte(-3, 1.2, "\\text{Cible : } 2\\sqrt{2} \\approx 2.828")`;
+mtexte(-3, 1.6, "\\int_a^b |f - g|\\, dx = {E:.3f}")
+mtexte(-3, 1.2, "2\\sqrt 2 \\approx 2.828")`;
 </script>
 
 <svelte:head>
