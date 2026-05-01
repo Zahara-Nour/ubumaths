@@ -27,6 +27,7 @@
 		resolveStyle,
 		functionToSVG,
 		integralAreaToSVG,
+		integralAreaBetweenToSVG,
 		quadraticCurveToSVG,
 		implicitCurveToSVG,
 		tangentLineToSVG,
@@ -1226,7 +1227,9 @@
 						/>
 					{/if}
 				{:else if el.type === 'integralArea'}
-					{@const svg = integralAreaToSVG(el.id, figure, transformer, dims)}
+					{@const svg = el.secondFunctionId
+						? integralAreaBetweenToSVG(el.id, figure, transformer, dims)
+						: integralAreaToSVG(el.id, figure, transformer, dims)}
 					{#if svg}
 						{@const baseFillOpacity = sty.fillOpacity ?? 0.3}
 						{#each svg.paths as p, i (i)}
