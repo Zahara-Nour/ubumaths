@@ -24,11 +24,20 @@ builtin + branche dispatcher Svelte pour `fillOpacity` uniforme quand
 **Phase 4 terminée** ✅ — Page démo `/geometry-demo/sliders/aire`
 montrant la différence pédagogique integrale/aire sur `f = x³ − x` ;
 doc utilisateur DSL `docs/ref/geometry-dsl/aire.md` ; mise à jour de
-`integrale.md` pour pointer vers `aire.md`.
+`integrale.md` pour pointer vers `aire.md`. Commit `e501a9b7` + fix
+LaTeX/positionnement `mtexte` dans la démo (commit `1ea24060`).
 
-Phases restantes :
+**Phase 5 terminée** ✅ — Quality checks finaux passés sur tous les
+fichiers modifiés Phases 1-4 :
 
-- **Phase 5** — Quality checks finaux + commit final.
+- `pnpm check:incremental` (TypeScript + Svelte) : exit 0, 0 erreur
+  sur les fichiers modifiés.
+- `npx eslint` sur les 10 fichiers Phase 1-4 : exit 0, 0 issue.
+- svelte-autofixer déjà passé en Phase 3 sur `GeometryCanvas.svelte`
+  et en Phase 4 sur la démo aire (seule remarque non-bloquante :
+  pattern `resolve()` non adopté par les autres pages démo).
+
+**🎉 Implémentation `aire(f, a, b)` complète. V1 livrée.**
 
 ---
 
@@ -436,9 +445,89 @@ Tout le reste validé :
 
 ---
 
+## Phase 5 — Quality checks finaux ✅
+
+### Vérifications passées
+
+| Check                                                         | Résultat                                                                                                       |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `pnpm check:incremental` (TypeScript + Svelte)                | ✅ exit 0 (0 erreur sur fichiers modifiés ; 9 erreurs pré-existantes filtrées dans `slides/demo` et `extern/`) |
+| `npx eslint <10 fichiers modifiés Phases 1-4>`                | ✅ exit 0                                                                                                      |
+| `mcp__svelte__svelte-autofixer` (GeometryCanvas, demo aire)   | ✅ aucun issue (pattern `resolve()` non-adopté, cohérent V1)                                                   |
+| Régression `pnpm test:server src/lib/geometry-core` (Phase 3) | ✅ **2326/2326** verts (+ 2 perf skipped)                                                                      |
+
+### Récap global des commits livrés
+
+| Phase | Sujet                                            | Commit      |
+| :---: | ------------------------------------------------ | ----------- |
+|   1   | Type extension + factory branch (signed=false)   | `ef6ab0ad`  |
+|   2   | DSL builtin overload `case 'aire'` + warn prefix | `6f4caf9c`  |
+|   3   | SVG dispatcher branch + green default color      | `6ea333eb`  |
+|   4   | Demo page + user doc + integrale.md cross-ref    | `e501a9b7`  |
+|  4'   | Demo LaTeX fix (mtexte syntax + label spacing)   | `1ea24060`  |
+|   5   | Quality checks + final progress doc              | (ce commit) |
+
+### Stats globales
+
+- **Tests ajoutés** : 40 (19 + 18 + 3)
+  - Phase 1 : 19 (`figure-integral-area-unsigned.test.ts`)
+  - Phase 2 : 18 (`interpreter-aire-undercurve.test.ts`)
+  - Phase 3 : 3 nouveaux dans `interpreter-aire-undercurve.test.ts` (C3, C4, C5 couleur)
+- **Régression complète** : 2326/2326 tests verts (+21 vs baseline V1
+  d'`integrale` qui était à 2305 avant ce projet).
+- **Effort réel** : ~5-6 h (cohérent avec l'estimation 9-12 h du study
+  qui prévoyait du tâtonnement ; en pratique le pattern V1 d'`integrale`
+  était assez précis pour permettre une réutilisation directe).
+
+### Limitations V1 connues (à reporter en V2/V3)
+
+Identiques à celles d'`integrale` V1 (cf. `integrale-progress.md`) :
+
+1. Pas de détection rigoureuse des singularités (heuristique
+   `console.warn` seulement). V2 : `mathAST/analysis/continuity`.
+2. Pas de bornes infinies (intégrales impropres).
+3. Pas de builtin `aire_entre(f, g, a, b)` pour l'aire entre courbes. V3.
+4. Pas d'export TikZ/Typst de `GeoIntegralArea` non-signé. V3.
+5. Pas d'affichage de la valeur exacte symbolique (uniquement décimale).
+6. Refactor du code commun `integrale`/`aire` (extraction d'un helper
+   commun) reporté en V3 avec l'ajout d'`aire_entre`.
+7. Singularity warn slider-driven : la vérification utilise les valeurs
+   de bornes au moment de la création, pas re-checked au déplacement
+   du slider (limitation héritée d'`integrale` V1).
+
+---
+
 ## Documents produits
 
 - `docs/wip/geometry/aire-study.md` — étude / spec validée par l'utilisateur
   (5 décisions clés enregistrées).
-- `docs/wip/geometry/aire-progress.md` — ce document, journal de reprise.
+- `docs/wip/geometry/aire-progress.md` — ce document, journal de reprise
+  (5 phases complètes).
 - `docs/ref/geometry-dsl/aire.md` — doc utilisateur DSL.
+
+## Code livré
+
+### Production (geometry-core)
+
+- `src/lib/geometry-core/types/elements.ts` — champ `signed: boolean`
+  ajouté à `GeoIntegralArea`.
+- `src/lib/geometry-core/graph/figure.ts` — `createIntegralArea` étendu
+  avec branche `signed=false` (formule `Σ |F(z_{i+1}) − F(z_i)|`).
+- `src/lib/geometry-core/dsl/builtins.ts` — `case 'aire'` étendu en
+  surcharge (function vs polygon discrimination), couleur verte par défaut.
+- `src/lib/geometry-core/dsl/singularity-warn.ts` — préfixe paramétrique
+  (`'integrale'` ou `'aire'`).
+
+### Production (UI)
+
+- `src/lib/components/geometry/GeometryCanvas.svelte` — dispatcher
+  `integralArea` branché sur `el.signed` pour `fill-opacity` uniforme.
+- `src/routes/(public)/geometry-demo/sliders/aire/+page.svelte` +
+  `+page.ts` — page démo.
+- `src/routes/(public)/geometry-demo/sliders/+page.svelte` — carte
+  d'index.
+
+### Tests (40 nouveaux)
+
+- `src/lib/geometry-core/graph/__tests__/figure-integral-area-unsigned.test.ts`
+- `src/lib/geometry-core/dsl/__tests__/interpreter-aire-undercurve.test.ts`
