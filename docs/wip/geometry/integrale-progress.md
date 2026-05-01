@@ -24,7 +24,11 @@ la cible 16 ms / frame).
 **Phase 5 terminée** ✅ — Page démo `/geometry-demo/sliders/integrale` +
 doc utilisateur `docs/ref/geometry-dsl/integrale.md`.
 
-Reste : Phase 6 (quality checks finaux + commit final).
+**Phase 6 terminée** ✅ — Quality checks finaux : `pnpm check:incremental`
+clean (0 erreur sur les fichiers modifiés), `npx eslint` clean
+(exit 0), svelte-autofixer passé.
+
+**🎉 Implémentation `integrale(f, a, b)` complète. V1 livrée.**
 
 ---
 
@@ -373,25 +377,91 @@ Issues corrigées suite au passage du `code-reviewer` :
 
 ---
 
-## Phase 6 — Quality checks finaux (à venir)
+## Phase 6 — Quality checks finaux ✅
 
-À la fin du plan **uniquement** (CLAUDE.md) :
+### Vérifications passées
 
-- `mcp__svelte__svelte-autofixer` sur chaque `.svelte` modifié
-- `pnpm check:incremental`
-- `npx eslint <fichiers modifiés>`
-- Commit final
+| Check                                               | Résultat                                                                                                                               |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm check:incremental` (TypeScript + Svelte)      | ✅ exit 0 (0 erreur sur les fichiers modifiés ; 9 erreurs pré-existantes filtrées par le script dans `slides/demo` et `extern/`)       |
+| `npx eslint <fichiers modifiés>`                    | ✅ exit 0 sur tous les TS, Svelte et tests modifiés                                                                                    |
+| `mcp__svelte__svelte-autofixer`                     | ✅ sur les pages démo Svelte. Seule remarque : pattern `resolve()` pour les hrefs — convention codebase non adoptée, je reste cohérent |
+| Régression `pnpm test:server src/lib/geometry-core` | ✅ **2286/2286** verts (+ 2 perf skipped)                                                                                              |
+
+### Récap global
+
+| Phase | Sujet                           | Commit      |
+| :---: | ------------------------------- | ----------- |
+|   1   | Type + factory                  | `6e808d0e`  |
+|   2   | DSL builtin + warn singularité  | `acec320e`  |
+|   3   | Compute réactif (tests + bench) | `b26f8eb8`  |
+|   4   | Rendu SVG (splittage par signe) | `4ab8c699`  |
+|   5   | Démo + doc utilisateur          | `42e7dea7`  |
+|   6   | Quality checks finaux           | (ce commit) |
+
+### Stats
+
+- **Tests ajoutés** : 96 (29 + 33 + 20 + 7 + 17)
+  - Phase 1 : 29 (figure-integral-area)
+  - Phase 2 : 53 (33 singularity-warn + 20 interpreter-integrale)
+  - Phase 3 : 7 (figure-integral-reactive) + 2 perf skipped
+  - Phase 4 : 17 (integral-svg)
+- **Régression complète** : 2286/2286 tests verts.
+- **Performance** : symbolique 0.008 ms / éval, numérique 0.4 ms / éval.
+  Largement sous la cible 16 ms / frame.
+
+### Limitations V1 connues (à reporter en V2)
+
+1. Pas de détection rigoureuse des singularités (heuristique
+   `console.warn` seulement). V2 : `mathAST/analysis/continuity`.
+2. `ln`/`sqrt` ratent les dips entre samples de la heuristique
+   singularités. V2 : utiliser `findZero` (sign-change interpolé).
+3. Pas de bornes infinies (intégrales impropres).
+4. Pas de builtin `aire(f, a, b)` ni `aire_sous_courbe` pour l'aire
+   géométrique non-signée. V2.
+5. Pas de builtin `aire_entre(f, g, a, b)` pour l'aire entre courbes. V2.
+6. Pas d'export TikZ/Typst de `GeoIntegralArea`. V2.
+7. Pas d'affichage de la valeur exacte symbolique
+   (uniquement décimale). V2.
 
 ---
 
 ## Documents produits
 
-À ce stade :
+- `docs/wip/geometry/integrale-study.md` — étude / spec validée par
+  l'utilisateur (5 décisions clés enregistrées).
+- `docs/wip/geometry/integrale-progress.md` — ce document, journal de
+  reprise pour les 6 phases.
+- `docs/ref/geometry-dsl/integrale.md` — doc utilisateur DSL (vocabulaire,
+  syntaxe, exemples, sémantique, cas limites V1).
 
-- `docs/wip/geometry/integrale-study.md` (étude / spec, validée
-  utilisateur)
-- `docs/wip/geometry/integrale-progress.md` (ce document)
+## Code livré
 
-À produire en cours / fin de plan :
+### Production (geometry-core)
 
-- `docs/ref/geometry-dsl/integrale.md` (doc utilisateur du DSL — Phase 5)
+- `src/lib/geometry-core/types/elements.ts` — interface `GeoIntegralArea`,
+  champ `_visualAreaId?` sur `GeoScalar`, ajout à l'union.
+- `src/lib/geometry-core/graph/figure.ts` — `createIntegralArea(...)`.
+- `src/lib/geometry-core/dsl/builtins.ts` — `case 'integrale'`,
+  `styleTargetId?` sur `BuiltinResult`.
+- `src/lib/geometry-core/dsl/singularity-warn.ts` — heuristique +
+  3 exports publics.
+- `src/lib/geometry-core/rendering/svg-primitives.ts` — `splitOnZeros`,
+  `integralAreaToSVG`.
+
+### Production (UI)
+
+- `src/lib/components/geometry/GeometryCanvas.svelte` — dispatcher
+  `el.type === 'integralArea'`.
+- `src/routes/(public)/geometry-demo/sliders/integrale/+page.svelte` +
+  `+page.ts` — page démo.
+- `src/routes/(public)/geometry-demo/sliders/+page.svelte` — carte
+  d'index.
+
+### Tests (96 nouveaux)
+
+- `src/lib/geometry-core/graph/__tests__/figure-integral-area.test.ts`
+- `src/lib/geometry-core/graph/__tests__/figure-integral-reactive.test.ts`
+- `src/lib/geometry-core/dsl/__tests__/singularity-warn.test.ts`
+- `src/lib/geometry-core/dsl/__tests__/interpreter-integrale.test.ts`
+- `src/lib/geometry-core/rendering/__tests__/integral-svg.test.ts`
