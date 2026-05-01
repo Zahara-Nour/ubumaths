@@ -11,11 +11,14 @@
 `figure.createIntegralArea()` (commit `6e808d0e`).
 
 **Phase 2 terminée** ✅ — Builtin DSL `case 'integrale'` + module
-`singularity-warn.ts` (heuristique + warn console).
+`singularity-warn.ts` (commit `acec320e`).
 
-Reste : Phases 3 (compute réactif déjà en place via Phase 1, à valider plus
-en profondeur), 4 (rendu SVG splittage par signe), 5 (démo + doc), 6
-(quality + commit final).
+**Phase 3 terminée** ✅ — Tests de consolidation réactivité + bench perf
+(0.008 ms / éval symbolique, 0.4 ms / éval numérique — largement sous
+la cible 16 ms / frame).
+
+Reste : Phases 4 (rendu SVG splittage par signe), 5 (démo + doc),
+6 (quality + commit final).
 
 ---
 
@@ -203,20 +206,55 @@ Issues corrigées suite au passage du `code-reviewer` :
 
 ---
 
-## Phase 3 — Compute réactif (à venir, partiellement déjà en Phase 1)
+## Phase 3 — Compute réactif ✅
 
-### À faire
+### Livrables
 
-- ✓ Compute path déjà fonctionnel via `scalarKind: 'expression'` (Phase 1).
-- Bench perf : 100 évaluations slider drag, vérifier < 16 ms / frame.
-  Probable que le compiledF + closures soient sub-ms ; numericIntegrate
-  fallback à mesurer sur fonctions intégrables (~5 ms typique attendu).
-- Tests `integral-reactive.test.ts` ciblés sur les patterns réactifs
-  (multi-sliders, chaînage, undo après slider).
+**Nouveau** :
 
-### Estimation
+- `src/lib/geometry-core/graph/__tests__/figure-integral-reactive.test.ts`
+  (7 tests + 2 perf tests `describe.skip`).
 
-2-3 h (réduit grâce à Phase 1 qui a déjà fait le gros du compute).
+**Pas de modification de code** : le compute réactif marche déjà depuis
+Phase 1 via le `scalarKind: 'expression'` et la closure `compute` qui lit
+les bornes courantes. Phase 3 est uniquement de la consolidation par tests.
+
+### Comportements vérifiés
+
+- ✅ Deux `integrale` indépendants sur deux sliders distincts : un
+  mouvement ne touche que le scalaire concerné.
+- ✅ Deux `integrale` sur la même fonction avec bornes différentes :
+  computes corrects et indépendants (chaque pair stocke son `compiledF`).
+- ✅ Borne dynamique non-slider : `b = distance(O, P)` ; bouger `P` met
+  à jour le scalaire de l'intégrale.
+- ✅ Undo / redo d'un drag de slider : la valeur du scalaire suit.
+- ✅ Undo de l'intégrale : la pair `area + scalar` disparaît atomiquement,
+  la fonction reste intacte. (NB : le DSL interpreter ne wrappe pas chaque
+  statement en transaction undo, donc seule l'intégrale a un undo unique
+  ; les `f = courbe(...)` etc. ne sont pas sur la pile undo.)
+- ✅ Bornes hors domaine : `ln(x)` avec slider qui descend à -1 → scalaire
+  passe à `NaN`/`undefined` sans crash ; revient à une valeur finie quand
+  la borne revient dans le domaine.
+- ✅ Path numérique réactif : `exp(-x²)` recompute Simpson à chaque tick
+  de slider, valeurs cohérentes (testé à plusieurs valeurs de borne).
+
+### Bench perf
+
+Mesures sur la machine de dev (M1 / Node 20, 1000 itérations après warmup) :
+
+| Path                             | Temps / éval | Cible  | Marge |
+| -------------------------------- | ------------ | ------ | ----- |
+| Symbolique (compiledF cache hit) | 0.008 ms     | < 1 ms | × 125 |
+| Numérique (Simpson adaptatif)    | 0.416 ms     | < 5 ms | × 12  |
+
+Les deux paths sont **largement sous la cible 16 ms / frame** (60 fps).
+Aucune optimisation requise.
+
+### Tests
+
+- 7 tests réactivité (+ 2 perf `describe.skip`).
+- Régression complète : **2269/2269** tests verts sur tout `geometry-core`
+  (+ 2 skipped pour le bench perf manuel).
 
 ---
 
