@@ -51,17 +51,16 @@ const BOUNDARY_TOL = 1e-9;
 // =============================================================================
 
 /**
- * Strip an arbitrary number of leading `opposite(opposite(...))` wrappers from
- * the AST. The `courbe()` builtin parses `y = E` as `--E` (mathematically
- * equivalent but two opposite nodes thick), and `analyzeContinuity()` reasons
- * structurally on the AST: the wrapping confuses limit evaluation and turns
- * removable cases like `sin(x)/x` into spurious `essential` ones. Unwrapping
- * yields the canonical form without changing the math.
+ * Cancel paired `opposite(opposite(...))` wrappers from the AST. The `courbe()`
+ * builtin parses `y = E` as `--E` (mathematically equivalent but two opposite
+ * nodes thick), and `analyzeContinuity()` reasons structurally on the AST: the
+ * wrapping confuses limit evaluation and turns removable cases like
+ * `sin(x)/x` into spurious `essential` ones. This helper restores the canonical
+ * form without changing the math.
  *
- * Note: only handles **paired** opposites (even count). A triple-opposite
- * `---E` would leave one wrapper in place. `courbe()` consistently emits an
- * even count today; if the parser convention changes this helper will need
- * to handle odd cases too.
+ * Pairs only: `--E` → `E`, `----E` → `E`. A single leading `-E` is kept as-is
+ * (it changes the function and must not be unwrapped). An odd-count chain
+ * `---E` cancels down to `-E` for the same reason — never to `E`.
  */
 function unwrapDoubleOpposites(node: MathNode): MathNode {
 	let cur = node;

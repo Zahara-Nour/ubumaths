@@ -188,3 +188,40 @@ Issues retournées par `code-reviewer` (Sonnet) et adressées :
   (brief amont)
 - `src/lib/mathAST/analysis/__tests__/_throwaway-singularity-study.test.ts`
   ✅ supprimé (Phase 1, données capturées dans le study).
+
+---
+
+## Post-livraison : revue des limitations annoncées (2026-05-01)
+
+Re-vérification après livraison des trois limitations mentionnées en
+clôture du study :
+
+### 1. `sign(x)` non détecté — **faux problème**
+
+L'observation initiale (sonde Phase 0) montrait `analyzeContinuity` ne
+retournant aucune discontinuité pour `sign(x)`. La cause réelle n'est
+**pas** dans `findArgumentZeros` du module continuité : le test factory
+existant `continuity.test.ts > sign(x) has jump discontinuity at x=0`
+passe. Le bug est dans `parseCustom('sign(x)')` qui parse `sign` comme
+`s*i*g*n` (multiplication implicite, `i` = nombre complexe imaginaire),
+problème localisé au parser custom et **hors scope singularité**.
+
+Du point de vue DSL : `courbe()` rejette en amont `sign`, `floor`, `abs`
+(soit échec compile à cause du `i` complex, soit échec différentiation).
+La limitation est donc **inatteignable en pratique**. Le jour où
+`courbe()` accepterait ces fonctions piecewise, le module continuité est
+déjà prêt à les classifier (avec l'AST correct). Aucune action.
+
+### 2. Bornes infinies — confirmé hors scope
+
+Vraiment hors scope V2. Mérite sa propre étude Phase 0 si jamais le
+besoin se présente. Probablement 10-20 h d'effort estimé.
+
+### 3. `unwrapDoubleOpposites` — formulation corrigée
+
+Le commentaire initial parlait de « limitation : ne gère que les paires »
+ce qui était trompeur. Le code est correct par conception : un opposé
+simple `-E` ne doit **pas** être supprimé (sinon on change la fonction).
+Une chaîne triple `---E` se simplifie correctement en `-E`, jamais en
+`E`. Le commentaire dans le code a été reformulé pour refléter ça
+(commit séparé doc-only).
