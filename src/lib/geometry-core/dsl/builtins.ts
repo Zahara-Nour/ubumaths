@@ -1162,7 +1162,11 @@ function _executeBuiltinInner(
 					try {
 						aireResult = figure.createIntegralArea(pos[0].figureId, lower.param, upper.param, {
 							label,
-							signed: false
+							signed: false,
+							// Green default (cf. aire-study.md §0 décision 3) to contrast with
+							// integrale's blue on figures showing both. Overridden by applyInlineStyle
+							// when the user passes `couleur=...` (style.color > color in resolveStyle).
+							color: '#22c55e'
 						});
 					} catch (e) {
 						throw new DslRuntimeError(

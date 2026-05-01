@@ -161,7 +161,7 @@ describe('aire() — inline style', () => {
 	it('C1: couleur named arg sets the area color', () => {
 		const { figure } = run(
 			`f = courbe("y = x^2")
-A = aire(f, 0, 1, couleur="vert")`
+A = aire(f, 0, 1, couleur="rouge")`
 		);
 		const area = figure.getAllElements().find((e) => e.type === 'integralArea');
 		expect(area).toBeDefined();
@@ -175,6 +175,47 @@ A = aire(f, 0, 1, opacite_fond=0.5)`
 		);
 		const area = figure.getAllElements().find((e) => e.type === 'integralArea');
 		expect((area as { style?: { fillOpacity?: number } }).style?.fillOpacity).toBe(0.5);
+	});
+
+	it('C3: aire defaults to green (#22c55e) when no couleur is specified', () => {
+		const { figure } = run(
+			`f = courbe("y = x^2")
+A = aire(f, 0, 1)`
+		);
+		const area = figure.getAllElements().find((e) => e.type === 'integralArea');
+		expect((area as { color?: string }).color).toBe('#22c55e');
+	});
+
+	it('C4: explicit couleur overrides the green default (via applyInlineStyle on el.style.color)', () => {
+		// When user passes couleur="rouge", applyInlineStyle sets el.style.color
+		// which takes precedence over el.color in resolveStyle (cf. svg-primitives.ts:82).
+		const { figure } = run(
+			`f = courbe("y = x^2")
+A = aire(f, 0, 1, couleur="rouge")`
+		);
+		const area = figure.getAllElements().find((e) => e.type === 'integralArea') as unknown as {
+			color?: string;
+			style?: { color?: string };
+		};
+		// el.color may still be the green default, but el.style.color must reflect "rouge".
+		expect(area.style?.color).toBeDefined();
+		expect(area.style?.color).not.toBe('#22c55e');
+	});
+
+	it('C5: integrale stays blue (V1 default unchanged), aire is green', () => {
+		const { figure } = run(
+			`f = courbe("y = x^2")
+I = integrale(f, 0, 1)
+A = aire(f, 0, 1)`
+		);
+		const areas = figure.getAllElements().filter((e) => e.type === 'integralArea') as unknown as {
+			signed: boolean;
+			color?: string;
+		}[];
+		const integraleArea = areas.find((a) => a.signed === true);
+		const aireArea = areas.find((a) => a.signed === false);
+		expect(integraleArea?.color).not.toBe('#22c55e'); // not green (default blue or whatever V1 uses)
+		expect(aireArea?.color).toBe('#22c55e');
 	});
 });
 
