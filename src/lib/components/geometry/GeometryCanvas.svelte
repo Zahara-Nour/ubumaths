@@ -1689,7 +1689,7 @@
 									}
 								: undefined}
 						>
-							<foreignObject x={svg.x - 4} y={svg.y - 20} width="250" height="32">
+							<foreignObject x={svg.x - 4} y={svg.y - 36} width="250" height="64">
 								<div
 									style="display:flex; align-items:center; color:black; font-size:14px; background:rgba(255,255,255,0.92); padding:2px 6px; border-radius:4px; width:fit-content"
 								>
