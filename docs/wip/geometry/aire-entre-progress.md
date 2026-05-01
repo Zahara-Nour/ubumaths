@@ -270,4 +270,67 @@ URL : `/geometry-demo/sliders/aire-entre`
 
 ---
 
-## Phase 5 — Quality checks finaux (à venir)
+## Phase 5 — Quality checks finaux (✅ close)
+
+### Vérifications effectuées
+
+| Check                                          | Résultat                                                                                                                        |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm check:incremental` (TypeScript + Svelte) | ✅ Aucune nouvelle erreur (les 9 listées sont pré-existantes hors scope, filtrées par le script via `slides/demo` et `extern/`) |
+| ESLint sur fichiers modifiés                   | ✅ Passé en lint-staged à chaque commit                                                                                         |
+| Svelte autofixer sur `+page.svelte` (nouveau)  | ⚠️ Warning `href` sans `resolve()` — cohérent avec 5+ démos existantes, gardé pour uniformité                                   |
+| Svelte autofixer sur `GeometryCanvas.svelte`   | ⏭️ Skipped (fichier 1955 lignes trop gros pour le MCP en une passe ; modifs textuellement triviales validées par les tests)     |
+| Tests : geometry-core complet                  | ✅ 2393/2395 verts (2 skipped pré-existants), 0 régression                                                                      |
+
+---
+
+## Récapitulatif final — feature `aire_entre(f, g, a, b)`
+
+### 5 commits livrés
+
+| Phase | Commit     | Description                                    | Files | Lignes        |
+| ----- | ---------- | ---------------------------------------------- | ----- | ------------- |
+| 1     | `a2e6a52f` | Type + factory branch                          | 5     | +1171 / -19   |
+| 2     | `4b8c3388` | DSL builtin + dedupe fix                       | 4     | +494 / -15    |
+| 3     | `5763e80c` | SVG renderer + dispatcher + corrections review | 4     | +407 / -2     |
+| 4     | `0a112334` | Démo `/sliders/aire-entre` + doc utilisateur   | 6     | +403 / -4     |
+| 5     | (à faire)  | Doc de progression finalisée + clôture         | 1     | (this commit) |
+
+### Couverture tests
+
+| Niveau                   | Tests verts | Régression |
+| ------------------------ | ----------- | ---------- |
+| Phase 1 (factory)        | 16/16       | 0          |
+| Phase 2 (DSL builtin)    | 21/21       | 0          |
+| Phase 3 (SVG renderer)   | 11/11       | 0          |
+| **Total nouveaux tests** | **48**      | **0**      |
+| Régression geometry-core | 2393/2395   | 0          |
+
+### Documents produits
+
+1. **`docs/wip/geometry/aire-entre-study.md`** — étude de conception complète,
+   décisions tranchées 2026-05-01.
+2. **`docs/wip/geometry/aire-entre-progress.md`** — journal détaillé phase par phase
+   (ce document).
+3. **`docs/ref/geometry-dsl/aire_entre.md`** — doc utilisateur publique.
+4. **`docs/ref/geometry-dsl/aire.md`** (modifié) — note "Prévu en V3" remplacée
+   par lien vers le nouveau builtin.
+
+### Effort réel vs estimé
+
+- **Estimé** : 5-7 h (cf. étude §4).
+- **Réel** : ~5-6 h sur 5 phases avec TDD strict (tests rouges → impl → review →
+  commit). Conforme.
+
+### Points d'extension reportés (V4+)
+
+- Refactor des 3 cases DSL `integrale`/`aire`/`aire_entre` en helper commun
+  `interpretAreaBuiltin(...)` (Q5 reportée).
+- Test E5 dans `integral-svg-between.test.ts` pour discontinuité dans `f` ou `g`
+  (suggestion code review Phase 3, non-bloquant).
+- Logging conditionnel `console.warn` quand une sous-région est entièrement NaN
+  (suggestion code review Phase 3, non-bloquant).
+- Couverture tests numeric fallback en V3 mode (suggestion code review Phase 1).
+- Détection automatique du domaine d'intersection (`aire_entre(f, g)` sans bornes).
+
+**→ Feature complète et stable. Prête pour usage pédagogique en production.**
