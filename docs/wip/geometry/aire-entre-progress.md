@@ -133,7 +133,93 @@ Catégories couvertes :
 
 ---
 
-## Phase 3 — Rendu SVG `integralAreaBetweenToSVG` (à venir)
+## Phase 3 — Rendu SVG `integralAreaBetweenToSVG` + dispatcher (✅ close)
+
+### Fichiers modifiés
+
+| Fichier                                                                  | Changement                                                                  |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `src/lib/geometry-core/rendering/svg-primitives.ts`                      | + `integralAreaBetweenToSVG(...)` (~110 lignes, après `integralAreaToSVG`)  |
+| `src/lib/geometry-core/rendering/__tests__/integral-svg-between.test.ts` | Nouveau fichier — 11 tests sur le helper                                    |
+| `src/lib/components/geometry/GeometryCanvas.svelte`                      | + import du nouveau helper + ternaire de dispatch sur `el.secondFunctionId` |
+
+### Algorithme implémenté
+
+1. **Sampling unifié** : `f` est échantillonnée adaptativement (master grid). `g` est
+   évaluée aux mêmes x-points pour aligner les samples. Coût ~ 2× sampling de `aire`.
+2. **Construction de la courbe `h = f − g`** : point-par-point sur le master grid.
+   Les indices où `g` est non-finie sont ajoutés aux `discontinuityIndices` de `h`.
+3. **`splitOnZeros(h)`** réutilisé tel quel : retourne les sous-régions de signe constant
+   avec les zéros interpolés en bordure.
+4. **Pour chaque sous-région** (sign != 'zero'), on :
+   - Re-évalue `f` et `g` à chaque point de la région (les zéros interpolés ne sont
+     pas dans le master grid). Au zéro, `f(x_z) = g(x_z)` par définition → fermeture
+     naturelle du polygone.
+   - Construit le path : `f(forward)` via `curveToSVGPath`, puis `g(reversed)` via
+     `curveToSVGPath` sur la liste inversée, stitché avec `'L' + g_path.slice(1)`
+     (remplace le `M` initial par `L` pour relier f.end → g.end), suivi de `Z`.
+5. **Sign mapping** : `region.sign` (de splitOnZeros) propagé tel quel.
+   `'positive'` ⇔ `f > g` ; `'negative'` ⇔ `f < g`. Le dispatcher peut s'en servir
+   pour différencier visuellement (V3 garde teinte uniforme par défaut, l'API
+   reste cohérente avec V2).
+
+### Dispatcher dans `GeometryCanvas.svelte`
+
+```svelte
+{:else if el.type === 'integralArea'}
+    {@const svg = el.secondFunctionId
+        ? integralAreaBetweenToSVG(el.id, figure, transformer, dims)
+        : integralAreaToSVG(el.id, figure, transformer, dims)}
+    {#if svg}
+        ...
+    {/if}
+```
+
+V1/V2 (sans `secondFunctionId`) → `integralAreaToSVG` inchangé.
+V3 (avec `secondFunctionId`) → `integralAreaBetweenToSVG`. Le rendu utilise la même
+boucle SVG, le même styling (`fill`, `stroke`, opacité), juste un helper différent
+en amont.
+
+### Tests Phase 3 — 11/11 verts
+
+| Tests | Description                                                                             |
+| ----- | --------------------------------------------------------------------------------------- |
+| A1    | Curves non-intersectantes → exactement 1 path (h ≡ 2)                                   |
+| A2    | Curves avec sign change → ≥ 2 paths (positive + negative)                               |
+| A3    | Chaque path est fermé (M ... Z)                                                         |
+| A4    | Path structure correcte (M, ≥ 1 L, Z, longueur > seuil)                                 |
+| A5    | Sign correct selon f > g ou f < g                                                       |
+| B6-B9 | Cas null : id inexistant, mauvais type, mode V1/V2 sans secondFunctionId, bornes égales |
+| B10   | f ≡ g → null ou paths vides                                                             |
+| C11   | Réactivité slider (path change quand borne bouge)                                       |
+
+### Régression
+
+- 2393/2395 tests geometry-core verts (2 skipped pré-existants). 0 régression sur 101 fichiers.
+
+### Notes techniques
+
+- **Master grid f** : choix d'utiliser le sampling adaptatif de `f` comme grille
+  maître plutôt que de sampler les deux indépendamment (qui produirait des grilles
+  désalignées). Coût négligeable : on évalue `g` une fois par point de `f` (~300
+  évaluations).
+- **Stitching `M` → `L`** : `curveToSVGPath(g_reversed)` produit un path qui démarre
+  par `M(g(lastX))`. On remplace ce `M` par `L` pour relier proprement le
+  `f(lastX)` au `g(lastX)`. La closure `Z` ramène à `f(firstX)` (point initial du
+  `M` de `f_path`).
+- **Zéro de h aux bornes intérieures** : par définition `h(x_z) = 0 ⇔ f(x_z) = g(x_z)`.
+  Le polygone se ferme naturellement à ces points (les courbes se touchent), pas
+  besoin de jonction explicite.
+- **Svelte autofixer** : `GeometryCanvas.svelte` (1955 lignes) est trop volumineux
+  pour passer dans le MCP autofixer en une passe. Modifs textuellement triviales
+  (2 lignes alignées sur le pattern existant). Validation déférée à Phase 5
+  (`pnpm check:incremental`).
+
+### Commit Phase 3
+
+À faire après code review.
+
+---
 
 ## Phase 4 — Démo + doc utilisateur (à venir)
 

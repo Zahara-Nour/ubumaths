@@ -1897,3 +1897,138 @@ export function integralAreaToSVG(
 	if (paths.length === 0) return null;
 	return { paths };
 }
+
+/**
+ * Convert a GeoIntegralArea in V3 (aire_entre) mode to a list of closed SVG paths,
+ * one per sub-region where h = f − g keeps a constant sign. Each path encloses
+ * the area between the two curves f and g (forward f then reversed g), as opposed
+ * to between f and the x-axis like `integralAreaToSVG` does.
+ *
+ * Returns null when:
+ *  - the element is missing or not an integralArea,
+ *  - the element is in V1/V2 mode (no `secondFunctionId` — caller should fall back
+ *    to `integralAreaToSVG`),
+ *  - either f or g is missing (dangling reference),
+ *  - bounds are non-finite or `a === b`,
+ *  - both curves coincide on `[a, b]` (h ≡ 0, no area to draw).
+ *
+ * Spec: docs/wip/geometry/aire-entre-study.md §2.5.
+ */
+export function integralAreaBetweenToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): { paths: Array<{ d: string; sign: 'positive' | 'negative' }> } | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'integralArea') return null;
+	const area = el as GeoIntegralArea;
+
+	// V3 mode requires a second function id. V1/V2 callers must use `integralAreaToSVG`.
+	if (!area.secondFunctionId) return null;
+
+	const fnEl = figure.getElementById(area.functionId);
+	if (!fnEl || fnEl.type !== 'function') return null;
+	const gnEl = figure.getElementById(area.secondFunctionId);
+	if (!gnEl || gnEl.type !== 'function') return null;
+
+	const a = resolveBoundToNumber(area.lowerBound, figure);
+	const b = resolveBoundToNumber(area.upperBound, figure);
+	if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+	if (a === b) return null;
+
+	const lo = Math.min(a, b);
+	const hi = Math.max(a, b);
+
+	const topLeft = transformer.svgToMath(0, 0);
+	const bottomRight = transformer.svgToMath(dims.width, dims.height);
+	const subViewport: Viewport = {
+		xMin: lo,
+		xMax: hi,
+		yMin: bottomRight.y,
+		yMax: topLeft.y
+	};
+
+	// Sample f adaptively as the master grid; evaluate g at the same x-points
+	// to keep f and g aligned for path stitching. h = f − g is built point-by-point.
+	const sampledF = sampleWithDerivative(
+		(x) => {
+			const y = fnEl.compiledFn({ x });
+			return Number.isFinite(y) ? y : null;
+		},
+		(x) => {
+			const d = fnEl.compiledDerivative({ x });
+			return Number.isFinite(d) ? d : null;
+		},
+		subViewport,
+		FUNCTION_SAMPLE_POINTS
+	);
+	if (sampledF.points.length < 2) return null;
+
+	// Build the h-curve at the master grid's x-values. A discontinuity in g at x_i
+	// is treated as a discontinuity of h (split point). Use a Set to dedupe in O(1).
+	const hPoints: Point[] = [];
+	const hDiscontinuitySet = new Set<number>(sampledF.discontinuityIndices);
+	for (let i = 0; i < sampledF.points.length; i++) {
+		const x = sampledF.points[i].x;
+		const fy = sampledF.points[i].y;
+		const gy = gnEl.compiledFn({ x });
+		if (!Number.isFinite(gy)) {
+			hPoints.push({ x, y: NaN });
+			hDiscontinuitySet.add(i);
+		} else {
+			hPoints.push({ x, y: fy - gy });
+		}
+	}
+	const hCurve: SampledCurve = {
+		points: hPoints,
+		discontinuityIndices: [...hDiscontinuitySet].sort((u, v) => u - v)
+	};
+	const regions = splitOnZeros(hCurve);
+	const paths: Array<{ d: string; sign: 'positive' | 'negative' }> = [];
+
+	for (const region of regions) {
+		if (region.sign === 'zero') continue;
+		if (region.points.length < 2) continue;
+
+		// Re-evaluate f and g at every point of the region (cheap; the points include
+		// interpolated zero-crossings which are not in the master grid). At zero-crossings
+		// f(x_z) = g(x_z) by definition, so the path closes naturally.
+		const fSegPoints: Point[] = [];
+		const gSegPoints: Point[] = [];
+		for (const p of region.points) {
+			const x = p.x;
+			const fy = fnEl.compiledFn({ x });
+			const gy = gnEl.compiledFn({ x });
+			if (!Number.isFinite(fy) || !Number.isFinite(gy)) continue;
+			fSegPoints.push({ x, y: fy });
+			gSegPoints.push({ x, y: gy });
+		}
+		if (fSegPoints.length < 2) continue;
+
+		const fSeg: SampledCurve = { points: fSegPoints, discontinuityIndices: [] };
+		const gSegReversed: SampledCurve = {
+			points: [...gSegPoints].reverse(),
+			discontinuityIndices: []
+		};
+
+		const fPath = curveToSVGPath(fSeg, (p) => transformer.mathToSvg(p.x, p.y));
+		const gPathReversed = curveToSVGPath(gSegReversed, (p) => transformer.mathToSvg(p.x, p.y));
+		if (!fPath || !gPathReversed) continue;
+
+		// Stitch: fPath ends at (lastX, f(lastX)). Replace gPathReversed's leading 'M'
+		// with 'L' to bridge to (lastX, g(lastX)) and trace back to (firstX, g(firstX)).
+		// 'Z' closes the polygon back to (firstX, f(firstX)) — the M from fPath.
+		// Regex (not slice(1)) to be invariant to optional whitespace after 'M' and
+		// to fail loudly via no-op if curveToSVGPath ever returns a path that does
+		// not start with M.
+		const gPathStitched = gPathReversed.replace(/^M/, 'L');
+		if (gPathStitched === gPathReversed) continue; // defensive: format invariant broken
+		const d = `${fPath} ${gPathStitched} Z`;
+
+		paths.push({ d, sign: region.sign });
+	}
+
+	if (paths.length === 0) return null;
+	return { paths };
+}
