@@ -294,9 +294,26 @@ describe('resolveTemplate', () => {
 		expect(f.resolveTemplate('nope')).toBeUndefined();
 	});
 
-	it('shows ? for missing scalar reference', () => {
+	it('keeps {...} literal for unknown content (LaTeX-friendly)', () => {
+		// Unknown scalar refs are preserved as-is so LaTeX commands like \text{...},
+		// \sqrt{2}, \frac{a}{b} pass through to the math renderer unchanged.
 		const f = new Figure();
 		const id = f.createText('{nonexistent}', [], { position: { x: 0, y: 0 } });
+		const resolved = f.resolveTemplate(id);
+		expect(resolved).toBe('{nonexistent}');
+	});
+
+	it('shows ? for known scalar with broken value (NaN)', () => {
+		// A scalar that resolves to NaN/∞ is "broken" — '?' signals the issue
+		// (vs unknown content which is preserved as literal LaTeX).
+		const f = new Figure();
+		const a = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(0, 0)); // same point → distance = 0... not NaN
+		// Use an expression scalar that evaluates to NaN to test broken-value path.
+		const broken = f.createScalarExpression(() => NaN, []);
+		void a;
+		void b;
+		const id = f.createText('{' + broken + '}', [broken], { position: { x: 0, y: 0 } });
 		const resolved = f.resolveTemplate(id);
 		expect(resolved).toBe('?');
 	});
