@@ -216,9 +216,10 @@ Non supportées en V1. Les bornes doivent être finies.
 
 ### Aire entre deux courbes
 
-Pour calculer l'aire entre deux courbes (`∫ₐᵇ |f(x) − g(x)| dx`), il
-n'existe pas encore de builtin dédié. **Prévu en V3** sous le nom
-`aire_entre(f, g, a, b)`.
+Pour calculer l'aire entre deux courbes (`∫ₐᵇ |f(x) − g(x)| dx`),
+utiliser le builtin dédié [`aire_entre(f, g, a, b)`](./aire_entre.md).
+Le visuel ferme la zone entre les deux courbes (et non entre une courbe
+et l'axe des x), avec une couleur orange par défaut.
 
 ---
 
