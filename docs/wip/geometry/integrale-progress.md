@@ -21,7 +21,10 @@ la cible 16 ms / frame).
 
 - `integralAreaToSVG`), dispatcher Svelte branché dans `GeometryCanvas`.
 
-Reste : Phases 5 (démo + doc), 6 (quality + commit final).
+**Phase 5 terminée** ✅ — Page démo `/geometry-demo/sliders/integrale` +
+doc utilisateur `docs/ref/geometry-dsl/integrale.md`.
+
+Reste : Phase 6 (quality checks finaux + commit final).
 
 ---
 
@@ -338,7 +341,35 @@ Issues corrigées suite au passage du `code-reviewer` :
 
 ---
 
-## Phase 5 — Démo + doc utilisateur (à venir)
+## Phase 5 — Démo + doc utilisateur ✅
+
+### Livrables
+
+**Nouveaux** :
+
+- `src/routes/(public)/geometry-demo/sliders/integrale/+page.svelte`
+  Démo interactive : `f = courbe("y = x^3 - x")` avec deux sliders pour
+  les bornes `a, b`. Met en valeur le splittage par signe (la courbe
+  change de signe trois fois sur `[-2, 2]`, donc plusieurs sous-régions
+  visibles avec teintes différentes).
+- `src/routes/(public)/geometry-demo/sliders/integrale/+page.ts` :
+  `export const ssr = false;` (cohérent avec les autres démos).
+- `docs/ref/geometry-dsl/integrale.md` : doc utilisateur complète
+  (vocabulaire intégrale vs aire, syntaxe, args nommés, exemples,
+  visuel, sémantique, cas limites V1).
+
+**Modifié** :
+
+- `src/routes/(public)/geometry-demo/sliders/+page.svelte` : ajout d'une
+  carte « Integrale dynamique » dans la grille des démos.
+
+### Vérification manuelle
+
+- HTTP 200 sur `/geometry-demo/sliders/integrale`.
+- HTTP 200 sur `/geometry-demo/sliders` (avec carte ajoutée).
+- L'autofixer Svelte signale uniquement le pattern `resolve()` pour les
+  hrefs — non adopté par les autres pages démo, je reste cohérent.
+- Régression complète : **2286/2286** tests verts.
 
 ---
 
