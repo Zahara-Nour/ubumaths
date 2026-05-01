@@ -221,6 +221,53 @@ en amont.
 
 ---
 
-## Phase 4 — Démo + doc utilisateur (à venir)
+## Phase 4 — Démo + doc utilisateur (✅ close)
+
+### Fichiers ajoutés / modifiés
+
+| Fichier                                                             | Action                                                           |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `src/routes/(public)/geometry-demo/sliders/aire-entre/+page.svelte` | Nouveau — page démo `sin(x)` vs `cos(x)` sur `[π/4, 5π/4] = 2√2` |
+| `src/routes/(public)/geometry-demo/sliders/aire-entre/+page.ts`     | Nouveau — `export const ssr = false;`                            |
+| `src/routes/(public)/geometry-demo/sliders/+page.svelte`            | + carte de navigation vers la nouvelle démo                      |
+| `docs/ref/geometry-dsl/aire_entre.md`                               | Nouveau — doc utilisateur complète                               |
+| `docs/ref/geometry-dsl/aire.md`                                     | Note "Prévu en V3" remplacée par lien vers `aire_entre`          |
+
+### Démo
+
+URL : `/geometry-demo/sliders/aire-entre`
+
+- Cas pédagogique : aire entre `sin(x)` et `cos(x)` sur `[π/4, 5π/4]` = `2√2 ≈ 2.828`.
+- Sliders pour `a` et `b` (initialisés aux intersections naturelles).
+- Affichage `mtexte` de la valeur courante et de la cible 2√2.
+- Section explicative en bas : pourquoi `aire_entre` ≠ `aire(f) − aire(g)`,
+  triade pédagogique bleu/vert/orange.
+
+### Doc utilisateur
+
+`aire_entre.md` couvre :
+
+- Syntaxe (4 args positionnels + args nommés).
+- Couleur orange par défaut (cohérente avec la triade).
+- 6 exemples pédagogiques (cas Terminale, sliders, équivalence avec `aire(f-g)`,
+  cas dégénéré, bornes inversées).
+- Sémantique formelle (`Σ |H(x_{i+1}) − H(x_i)|`).
+- Calcul interne (cache symbolique, fallback Simpson).
+- NaN-on-divergence avec exemple `1/x` vs `sin(x)`.
+- Cas limites V1 (bornes infinies, 3+ courbes, intersections auto).
+- Voir aussi : `aire`, `integrale`, `courbe`, `mesure`, `slider`.
+
+### Notes techniques
+
+- **Svelte autofixer sur `+page.svelte`** : émet un warning sur `href="/..."`
+  sans `resolve()`. Tous les autres pages de démo utilisent ce même pattern
+  (5+ fichiers identiques). Garder l'uniformité du codebase plutôt que de
+  diverger sur 1 fichier.
+
+### Commit Phase 4
+
+À faire après ce commit.
+
+---
 
 ## Phase 5 — Quality checks finaux (à venir)

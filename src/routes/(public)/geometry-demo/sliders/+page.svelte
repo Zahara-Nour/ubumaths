@@ -76,5 +76,12 @@
 				la meme courbe.
 			</p>
 		</a>
+		<a href="/geometry-demo/sliders/aire-entre" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Aire entre deux courbes</h2>
+			<p class="text-sm text-muted-foreground">
+				Aire geometrique entre y = sin(x) et y = cos(x) sur un intervalle reactif. Cas pedagogique
+				classique de Terminale.
+			</p>
+		</a>
 	</div>
 </div>
