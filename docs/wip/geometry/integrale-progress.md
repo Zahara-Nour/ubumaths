@@ -8,11 +8,14 @@
 ## État actuel
 
 **Phase 1 terminée** ✅ — Type `GeoIntegralArea` et factory
-`figure.createIntegralArea()`.
+`figure.createIntegralArea()` (commit `6e808d0e`).
 
-Reste : Phases 2 (DSL builtin + warn singularité), 3 (compute réactif déjà
-en place via Phase 1, à valider plus en profondeur), 4 (rendu SVG splittage
-par signe), 5 (démo + doc), 6 (quality + commit final).
+**Phase 2 terminée** ✅ — Builtin DSL `case 'integrale'` + module
+`singularity-warn.ts` (heuristique + warn console).
+
+Reste : Phases 3 (compute réactif déjà en place via Phase 1, à valider plus
+en profondeur), 4 (rendu SVG splittage par signe), 5 (démo + doc), 6
+(quality + commit final).
 
 ---
 
@@ -109,34 +112,94 @@ Issues corrigées suite au passage du `code-reviewer` :
 
 ---
 
-## Phase 2 — DSL builtin `integrale(...)` + warn singularité (à venir)
+## Phase 2 — DSL builtin `integrale(...)` + warn singularité ✅
 
-### À faire
+### Livrables
 
-- Helper `resolveBoundParam(arg, line)` dans `builtins.ts` :
-  - `arg` est un nombre littéral → `numeric(value)`
-  - `arg` est une référence à un scalaire/slider DSL → `{ scalarRef: id }`
-- `case 'integrale'` dans le switch de `executeBuiltin` (~ligne 1614,
-  juste après `case 'derivee'`) :
-  - Validation : 3 args (f, a, b), f de type `'fonction'`.
-  - Appel `figure.createIntegralArea(fnId, lower, upper, { label, ... })`.
-  - Retourne `{ figureId: scalarId, symbolType: 'scalar' }` (le scalaire
-    exposé au DSL).
-  - Catch des erreurs JS et re-throw en `DslRuntimeError` avec ligne.
-- Heuristique singularité dans un module séparé :
-  - `src/lib/geometry-core/dsl/singularity-warn.ts`
-  - Fonction `warnIfSingularitySuspected(fnExpression, a, b, line?)` qui
-    émet un `console.warn` si l'expression contient `1/g(x)`, `tan(x)`,
-    `ln(g(x))` (avec `g` qui s'annule dans `[a, b]`) ou `sqrt(g(x))` (avec
-    `g(x) < 0` dans `[a, b]`).
-  - Implémentation : parcours AST + zéros approximatifs via évaluation
-    numérique sur 100 points.
-- Tests : `src/lib/geometry-core/dsl/__tests__/integrale.test.ts` et
-  `src/lib/geometry-core/dsl/__tests__/singularity-warn.test.ts`.
+**Modifiés** :
 
-### Estimation
+- `src/lib/geometry-core/dsl/builtins.ts`
+  - Ajout import `warnIfSingularitySuspected` depuis `./singularity-warn`.
+  - Ajout `'integrale'` dans `BUILTIN_NAMES`.
+  - Ajout du champ optionnel `styleTargetId?: string` à `BuiltinResult` :
+    permet à un builtin renvoyant un élément invisible (le scalaire) de
+    rediriger l'application automatique du style inline vers un élément
+    visible (la zone). Modification de la logique d'application de style
+    dans `executeBuiltin` pour respecter `styleTargetId`.
+  - Nouveau `case 'integrale'` (~70 lignes) après `case 'derivee'` :
+    validation des 3 args, helper local `resolveBoundParam` (number →
+    `numeric()`, element scalar/slider → `{ scalarRef }`), appel à
+    `figure.createIntegralArea`, warn singularité, retour
+    `{ figureId: scalarId, symbolType: 'scalar', styleTargetId: areaId }`.
 
-4-5 h.
+**Nouveaux** :
+
+- `src/lib/geometry-core/dsl/singularity-warn.ts` (~240 lignes)
+
+  - Type `SingularityFinding` (`kind`, `description`, `approxLocation?`).
+  - Walker AST `collectCandidates` qui descend dans `division`, `function`,
+    `addition/subtraction/multiplication`, `opposite/positive`,
+    `superscript`, `subscript`, `composition`, `delimiter`. Marque comme
+    candidats les sous-arbres suspects : dénominateurs, args de
+    `tan/ln/log/sqrt`.
+  - Sampling 51 points sur `[a, b]` via `compile()` du sous-arbre.
+  - Détecteurs : `findZero` (sign-change interpolé) pour division,
+    `findTanPole` (shifted-floor sur `(g - π/2)/π`) pour tan, `findFirstWhere`
+    pour ln (g ≤ 0) et sqrt (g < 0). Note : ln/sqrt ratent les dips entre
+    deux samples — V2 utilisera `findZero` pour ces cas (commenté dans le
+    code).
+  - 3 exports publics : `findSingularitiesInRange`, `formatSingularityWarnings`,
+    `warnIfSingularitySuspected`.
+
+- `src/lib/geometry-core/dsl/__tests__/singularity-warn.test.ts` (33 tests)
+- `src/lib/geometry-core/dsl/__tests__/interpreter-integrale.test.ts` (20 tests)
+
+### Comportements implémentés
+
+- ✅ DSL : `integrale(f, a, b)` avec validation stricte (3 args, f de type
+  fonction, bornes nombre|scalar|slider). Erreurs `DslRuntimeError` claires.
+- ✅ Bornes : nombre → `numeric()`, élément scalaire/slider → `{ scalarRef }`.
+- ✅ Style inline : `couleur`, `opacite_fond`, `remplissage`, etc., appliqués
+  à la zone (pas au scalaire) via `styleTargetId`.
+- ✅ Warn singularité émis une seule fois à la création (pas de re-warn sur
+  drag de slider).
+- ✅ Warn message : multi-line agrégé, préfixé `integrale ligne N: ` quand
+  ligne dispo.
+- ✅ Skip silencieux du warn si bornes non-finies (NaN).
+- ✅ Robustesse : pas de crash sur a == b, a > b, NaN-producing expressions,
+  bornes inversées.
+
+### Code review (corrections appliquées)
+
+Issues corrigées suite au passage du `code-reviewer` :
+
+1. **Important** — Walker AST étendu pour couvrir `subscript` et
+   `composition` (forward-compat ; rares en intégrandes mais propres).
+2. **Minor** — Commentaires V2 ajoutés sur `ln`/`sqrt` pour signaler la
+   limite (dip entre samples non détecté).
+3. **Minor** — Commentaire ajouté à l'appel `findTanPole` clarifiant que
+   `ys` = valeurs de l'argument `g`, pas de `tan(g)`.
+4. **Minor** — Commentaire dans `case 'integrale'` documentant que
+   `'x'` est la convention de tout `geometry-core` pour `GeoFunction`.
+5. **Minor** — Test `expect(message).toContain('2')` resserré en
+   `toMatch(/integrale ligne 2:/)`.
+6. **Suggestion** — Test ajouté pour bornes inversées via DSL
+   (`integrale(f, 1, 0)` retourne `-1/3` pour `x²`).
+
+### Tests
+
+- 33 tests sur `singularity-warn.test.ts` : tous verts.
+- 20 tests sur `interpreter-integrale.test.ts` : tous verts.
+- Régression complète : **2262/2262** tests verts sur tout `geometry-core`.
+
+### Détail d'implémentation à noter pour Phase 4
+
+- Le rendu SVG (Phase 4) consommera `area.functionId`, `area.lowerBound`,
+  `area.upperBound` via `resolveScalarParam`, puis `splitOnZeros` sur les
+  samples de la fonction pour produire les paths multi-régions.
+- Les attributs visuels `color`, `style.fillOpacity`, etc., sont déjà
+  posés sur la zone par `applyInlineStyle` quand le DSL passe les args
+  nommés. Le renderer n'a qu'à les lire.
 
 ---
 

@@ -43,6 +43,7 @@ import { numeric } from '../types/geo-value';
 import { applyTransformationToElement } from './transform-apply';
 import type { GeoElement } from '../types/elements';
 import { isPointElement } from '../types/elements';
+import { warnIfSingularitySuspected } from './singularity-warn';
 
 /** Resolve a line-like element's two defining point IDs. */
 function resolveLinePoints(el: GeoElement): { p1: string; p2: string } | null {
@@ -119,6 +120,13 @@ export function resolveColorName(name: string): string {
 export interface BuiltinResult {
 	figureId: string;
 	symbolType: SymbolType;
+	/**
+	 * Optional element id where inline style args (couleur, opacite_fond, ...)
+	 * should be applied instead of `figureId`. Used by builtins like
+	 * `integrale()` that return a scalar (invisible) but have a visible
+	 * companion element (the integral area) that should be styled.
+	 */
+	styleTargetId?: string;
 }
 
 /** Result for builtins that return multiple elements (zeros, extrema, inflections). */
@@ -281,13 +289,17 @@ export function executeBuiltin(
 		symbols
 	);
 
-	// Apply inline style args (couleur, forme, etc.) to created element(s)
+	// Apply inline style args (couleur, forme, etc.) to created element(s).
+	// `styleTargetId` (when set) redirects to a different element than
+	// `figureId` — used by integrale() to style the area instead of the scalar.
 	if (result && hasStyleArgs) {
 		if ('figureId' in result) {
-			applyInlineStyle(figure, result.figureId, named, line);
+			const target = result.styleTargetId ?? result.figureId;
+			applyInlineStyle(figure, target, named, line);
 		} else if ('elements' in result) {
 			for (const el of (result as BuiltinMultiResult).elements) {
-				applyInlineStyle(figure, el.figureId, named, line);
+				const target = el.styleTargetId ?? el.figureId;
+				applyInlineStyle(figure, target, named, line);
 			}
 		}
 	}
@@ -1612,6 +1624,78 @@ function _executeBuiltinInner(
 			return { figureId: dFnNewId, symbolType: 'courbe' };
 		}
 
+		case 'integrale': {
+			if (pos.length !== 3) {
+				throw new DslRuntimeError('integrale() attend 3 arguments (f, a, b)', line);
+			}
+			const intFnId = requireElement(pos[0], 'fonction', line);
+			const intFnEl = figure.getElementById(intFnId);
+			if (!intFnEl || intFnEl.type !== 'function') {
+				throw new DslRuntimeError(
+					'integrale(): le premier argument doit etre une courbe y = f(x)',
+					line
+				);
+			}
+
+			const resolveBoundParam = (
+				arg: ResolvedValue,
+				name: string
+			): { param: ScalarParam; numericValue: number } => {
+				if (arg.type === 'nombre') {
+					return { param: numeric(arg.value), numericValue: arg.value };
+				}
+				if (arg.type === 'element') {
+					const el = figure.getElementById(arg.figureId);
+					if (!el || (el.type !== 'scalar' && el.type !== 'slider')) {
+						throw new DslRuntimeError(
+							`integrale(): la borne ${name} doit etre un nombre ou un curseur/scalaire`,
+							line
+						);
+					}
+					const v = figure.getScalarValue(arg.figureId);
+					return {
+						param: { scalarRef: arg.figureId },
+						numericValue: v ?? NaN
+					};
+				}
+				throw new DslRuntimeError(
+					`integrale(): la borne ${name} doit etre un nombre ou un curseur/scalaire`,
+					line
+				);
+			};
+
+			const lower = resolveBoundParam(pos[1], 'inferieure');
+			const upper = resolveBoundParam(pos[2], 'superieure');
+
+			let intResult: { areaId: string; scalarId: string };
+			try {
+				intResult = figure.createIntegralArea(intFnId, lower.param, upper.param, {
+					label
+				});
+			} catch (e) {
+				throw new DslRuntimeError(
+					`integrale(): ${e instanceof Error ? e.message : String(e)}`,
+					line
+				);
+			}
+
+			// GeoFunction is always y = f(x) by convention in geometry-core
+			// (compiledFn signature is `{x: number} -> number`, see types/elements.ts:708).
+			warnIfSingularitySuspected(
+				intFnEl.expression,
+				'x',
+				lower.numericValue,
+				upper.numericValue,
+				line
+			);
+
+			return {
+				figureId: intResult.scalarId,
+				symbolType: 'scalar',
+				styleTargetId: intResult.areaId
+			};
+		}
+
 		case 'asymptotes': {
 			if (pos.length !== 1) {
 				throw new DslRuntimeError('asymptotes() attend 1 argument (conique)', line);
@@ -2010,6 +2094,7 @@ export const BUILTIN_NAMES = new Set([
 	'point_sur',
 	'tangente',
 	'derivee',
+	'integrale',
 	'asymptotes',
 	'axes',
 	'directrice',
