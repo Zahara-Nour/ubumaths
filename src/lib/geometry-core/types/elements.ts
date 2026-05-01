@@ -432,37 +432,51 @@ export interface GeoScalar extends GeoElementBase {
 // =============================================================================
 
 /**
- * Visual zone representing the area between f and the x-axis on [a, b].
+ * Visual zone representing the area between f and the x-axis on [a, b], or
+ * between two curves f and g on [a, b] when `secondFunctionId` is set.
  *
- * - When `signed = true` (default, used by `integrale()`): the paired scalar
+ * Three modes (V1 + V2 + V3):
+ *
+ * - V1 — `signed = true` (default, used by `integrale()`): the paired scalar
  *   carries the signed integral F(b) − F(a) and the visual splits sub-regions
  *   by sign for two-tone rendering.
- * - When `signed = false` (used by `aire()`): the paired scalar carries the
- *   geometric area Σ |F(z_{i+1}) − F(z_i)| over zeros of f in (a, b), always
- *   ≥ 0; the visual is rendered with a uniform fill regardless of sign.
+ * - V2 — `signed = false`, no `secondFunctionId` (used by `aire()`): the
+ *   paired scalar carries the geometric area Σ |F(z_{i+1}) − F(z_i)| over
+ *   zeros of f in (a, b), always ≥ 0; the visual fills uniformly.
+ * - V3 — `signed = false` + `secondFunctionId` (used by `aire_entre()`):
+ *   the paired scalar carries Σ |H(x_{i+1}) − H(x_i)| where H is the
+ *   antiderivative of h = f − g and x_i are the zeros of h in (a, b),
+ *   always ≥ 0; the visual fills the region between f and g.
  *
  * Created in pairs with a GeoScalar (option C of the integrale-study).
- * Stores the antiderivative F(x) and its compiled closure for fast reactive
- * evaluation when bounds change. When symbolic integration is unavailable,
- * `antiderivative` and `compiledF` are null and the paired scalar falls
- * back to numeric integration.
+ * Stores the antiderivative (of f in V1/V2, of h = f − g in V3) and its
+ * compiled closure for fast reactive evaluation when bounds change. When
+ * symbolic integration is unavailable, `antiderivative` and `compiledF`
+ * are null and the paired scalar falls back to numeric integration.
  */
 export interface GeoIntegralArea extends GeoElementBase {
 	readonly type: 'integralArea';
 	readonly functionId: string;
 	readonly lowerBound: ScalarParam;
 	readonly upperBound: ScalarParam;
-	/** Signed integral (true, integrale) vs unsigned geometric area (false, aire). */
+	/** Signed integral (true, integrale) vs unsigned geometric area (false, aire/aire_entre). */
 	readonly signed: boolean;
-	/** Antiderivative F(x) when symbolic integration succeeded, else null. */
+	/** Antiderivative F(x) (or H(x) of f − g in V3 mode) when symbolic integration succeeded, else null. */
 	readonly antiderivative: MathNode | null;
-	/** Compiled F(x) for fast evaluation. Null when antiderivative is null. */
+	/** Compiled antiderivative for fast evaluation. Null when antiderivative is null. */
 	readonly compiledF: CompiledFn | null;
 	/** Outcome of the symbolic integration attempt at creation time. */
 	readonly integrationStatus: 'exact' | 'approximate' | 'unsupported';
-	/** Internal: paired scalar id (the value `integrale()` exposes to the DSL). */
+	/** Internal: paired scalar id (the value `integrale()` / `aire()` / `aire_entre()` exposes to the DSL). */
 	readonly _scalarId: string;
 	readonly dependsOn: readonly string[];
+	// V3 — aire_entre mode (set by aire_entre() builtin, undefined for V1/V2).
+	/** Second function id for `aire_entre` mode (the visual fills between f and g, not f and the x-axis). */
+	readonly secondFunctionId?: string;
+	/** Cached h = f − g expression (V3 mode only) — used by findRoots and numeric fallback. */
+	readonly differenceExpression?: MathNode;
+	/** Compiled h(x) for fast evaluation (V3 mode only). */
+	readonly compiledDifference?: CompiledFn;
 }
 
 /** Slider: a free scalar controlled by the user (no geometric dependencies). */

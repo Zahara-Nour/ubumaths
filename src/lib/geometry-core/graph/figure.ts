@@ -2868,13 +2868,39 @@ export class Figure {
 			 * resolve to `NaN`; removable / jump interior points are used as
 			 * additional split breakpoints to keep the numeric integrator from
 			 * sampling the singularity. See `docs/wip/geometry/singularity-rigorous-study.md`.
+			 *
+			 * In V3 (aire_entre) mode, this should be the discontinuities of
+			 * `h = f − g`, not of `f` alone — the DSL builtin handles this.
 			 */
 			discontinuities?: readonly Discontinuity[];
+			/**
+			 * Second function id for `aire_entre()` mode (V3). When set:
+			 *  - the visual fills between f and g (not between f and the x-axis),
+			 *  - `signed` is forced to `false` (aire_entre is always ≥ 0),
+			 *  - the antiderivative cached is that of h = f − g (not of f alone),
+			 *  - findRoots and the numeric fallback work on h.
+			 * See `docs/wip/geometry/aire-entre-study.md`.
+			 */
+			secondFunctionId?: string;
 		}
 	): { areaId: string; scalarId: string } {
 		const fnEl = this.elements.get(functionId);
 		if (!fnEl || fnEl.type !== 'function') {
 			throw new Error(`createIntegralArea: "${functionId}" is not a function element`);
+		}
+
+		// V3 (aire_entre) — validate the second function id if present.
+		let secondFnEl: GeoFunction | undefined;
+		let secondFnId: string | undefined;
+		if (options?.secondFunctionId !== undefined) {
+			const candidate = this.elements.get(options.secondFunctionId);
+			if (!candidate || candidate.type !== 'function') {
+				throw new Error(
+					`createIntegralArea: secondFunctionId "${options.secondFunctionId}" is not a function element`
+				);
+			}
+			secondFnEl = candidate;
+			secondFnId = options.secondFunctionId;
 		}
 
 		const validateBoundRef = (param: ScalarParam, label: string): void => {
@@ -2894,17 +2920,38 @@ export class Figure {
 		validateBoundRef(lowerBound, 'lower');
 		validateBoundRef(upperBound, 'upper');
 
-		const signed = options?.signed ?? true;
+		// V3 (aire_entre) forces signed = false (aire entre est toujours ≥ 0).
+		const signed = secondFnEl ? false : (options?.signed ?? true);
+
+		// Build the working expression: f alone in V1/V2, h = f − g in V3.
+		// findRoots, numericIntegrate and the symbolic antiderivative all work
+		// on this expression, transparently to the compute branches below.
+		let differenceExpression: MathNode | undefined;
+		let compiledDifference: CompiledFn | undefined;
+		let workingExpression: MathNode = fnEl.expression;
+		let workingCompiled: CompiledFn = fnEl.compiledFn;
+		if (secondFnEl) {
+			differenceExpression = subtract(fnEl.expression, secondFnEl.expression);
+			try {
+				compiledDifference = compile(differenceExpression);
+			} catch (e) {
+				throw new Error(
+					`createIntegralArea: failed to compile h = f − g — ${e instanceof Error ? e.message : ''}`
+				);
+			}
+			workingExpression = differenceExpression;
+			workingCompiled = compiledDifference;
+		}
 
 		// Symbolic integration attempt — only the antiderivative matters here.
 		// Pass allowNumeric: false so integrateDefinite doesn't run a redundant
 		// adaptive-Simpson at creation; we handle the numeric fallback ourselves
-		// in the compute closure below.
+		// in the compute closure below. In V3 mode, integrates h = f − g.
 		let antiderivative: MathNode | null = null;
 		let compiledF: CompiledFn | null = null;
 		let integrationStatus: 'exact' | 'approximate' | 'unsupported' = 'unsupported';
 		try {
-			const r = integrateDefinite(fnEl.expression, mathNumber('0'), mathNumber('0'), {
+			const r = integrateDefinite(workingExpression, mathNumber('0'), mathNumber('0'), {
 				allowNumeric: false
 			});
 			integrationStatus = r.status;
@@ -2922,8 +2969,8 @@ export class Figure {
 			integrationStatus = 'unsupported';
 		}
 
-		const fnExpression = fnEl.expression;
-		const fnCompiled = fnEl.compiledFn;
+		const fnExpression = workingExpression;
+		const fnCompiled = workingCompiled;
 		const cachedCompiledF = compiledF;
 		const lowerCapture = lowerBound;
 		const upperCapture = upperBound;
@@ -3079,6 +3126,8 @@ export class Figure {
 		};
 
 		const deps: string[] = [functionId];
+		// V3 — aire_entre depends on g as well, for orphan detection on g deletion.
+		if (secondFnId) deps.push(secondFnId);
 		const scalarRefDeps: string[] = [];
 		if (isScalarRef(lowerBound)) {
 			deps.push(lowerBound.scalarRef);
@@ -3107,7 +3156,12 @@ export class Figure {
 			visible: options?.visible ?? true,
 			label: options?.label,
 			style: this.resolveStyle(options),
-			dependsOn: deps
+			dependsOn: deps,
+			...(secondFnId && {
+				secondFunctionId: secondFnId,
+				differenceExpression,
+				compiledDifference
+			})
 		};
 
 		const scalarElement: GeoScalar = {
