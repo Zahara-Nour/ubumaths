@@ -1800,6 +1800,116 @@ function _executeBuiltinInner(
 			};
 		}
 
+		case 'aire_entre': {
+			// V3 — aire géométrique entre deux courbes y = f(x) et y = g(x) sur [a, b].
+			// Délègue à figure.createIntegralArea(..., { secondFunctionId: gId, signed: false }).
+			// Couleur orange par défaut (triade bleu/vert/orange avec integrale/aire).
+			// Spec: docs/wip/geometry/aire-entre-study.md
+			if (pos.length !== 4) {
+				throw new DslRuntimeError('aire_entre() attend 4 arguments (f, g, a, b)', line);
+			}
+
+			const fnId = requireElement(pos[0], 'fonction 1', line);
+			const fnEl = figure.getElementById(fnId);
+			if (!fnEl || fnEl.type !== 'function') {
+				throw new DslRuntimeError(
+					'aire_entre(): le 1er argument doit etre une courbe y = f(x)',
+					line
+				);
+			}
+
+			const gnId = requireElement(pos[1], 'fonction 2', line);
+			const gnEl = figure.getElementById(gnId);
+			if (!gnEl || gnEl.type !== 'function') {
+				throw new DslRuntimeError(
+					'aire_entre(): le 2e argument doit etre une courbe y = g(x)',
+					line
+				);
+			}
+
+			const resolveBoundParam = (
+				arg: ResolvedValue,
+				name: string
+			): { param: ScalarParam; numericValue: number } => {
+				if (arg.type === 'nombre') {
+					return { param: numeric(arg.value), numericValue: arg.value };
+				}
+				if (arg.type === 'element') {
+					const el = figure.getElementById(arg.figureId);
+					if (!el || (el.type !== 'scalar' && el.type !== 'slider')) {
+						throw new DslRuntimeError(
+							`aire_entre(): la borne ${name} doit etre un nombre ou un curseur/scalaire`,
+							line
+						);
+					}
+					const v = figure.getScalarValue(arg.figureId);
+					return {
+						param: { scalarRef: arg.figureId },
+						numericValue: v ?? NaN
+					};
+				}
+				throw new DslRuntimeError(
+					`aire_entre(): la borne ${name} doit etre un nombre ou un curseur/scalaire`,
+					line
+				);
+			};
+
+			const lower = resolveBoundParam(pos[2], 'inferieure');
+			const upper = resolveBoundParam(pos[3], 'superieure');
+
+			// Pre-compute discontinuités of h = f − g once. The compute closure
+			// re-classifies against the live bounds on every slider drag (NaN on
+			// divergence, split-point hints on removable/jump). Fail-open: if
+			// `getAllDiscontinuities` returns null, the factory works without
+			// the cache (no NaN-on-divergence guard) — Q-D validée.
+			const h: MathNode = subtract(fnEl.expression, gnEl.expression);
+			const discontinuities: readonly Discontinuity[] | undefined =
+				getAllDiscontinuities(h, 'x') ?? undefined;
+
+			let result: { areaId: string; scalarId: string };
+			try {
+				result = figure.createIntegralArea(fnId, lower.param, upper.param, {
+					label,
+					secondFunctionId: gnId,
+					// Orange (cf. aire-entre-study.md §0 décision 6) — triade
+					// bleu(integrale) / vert(aire) / orange(aire_entre).
+					color: '#fb923c',
+					discontinuities
+				});
+			} catch (e) {
+				throw new DslRuntimeError(
+					`aire_entre(): ${e instanceof Error ? e.message : String(e)}`,
+					line
+				);
+			}
+
+			// Singularité : 2 appels (sur f et g, pas sur h). Cf §2.8 de l'étude :
+			// si f et g sont régulières alors h l'est par linéarité ; si l'une diverge
+			// l'utilisateur est warned et le compute retourne NaN via le cache de h.
+			warnIfSingularitySuspected(
+				fnEl.expression,
+				'x',
+				lower.numericValue,
+				upper.numericValue,
+				line,
+				'aire_entre'
+			);
+			warnIfSingularitySuspected(
+				gnEl.expression,
+				'x',
+				lower.numericValue,
+				upper.numericValue,
+				line,
+				'aire_entre'
+			);
+
+			return {
+				figureId: result.scalarId,
+				symbolType: 'scalar',
+				styleTargetId: result.areaId
+			};
+		}
+
 		case 'asymptotes': {
 			if (pos.length !== 1) {
 				throw new DslRuntimeError('asymptotes() attend 1 argument (conique)', line);
@@ -2193,6 +2303,7 @@ export const BUILTIN_NAMES = new Set([
 	'rtexte',
 	'image',
 	'aire',
+	'aire_entre',
 	'style',
 	'courbe',
 	'point_sur',

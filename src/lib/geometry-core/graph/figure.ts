@@ -3127,7 +3127,9 @@ export class Figure {
 
 		const deps: string[] = [functionId];
 		// V3 — aire_entre depends on g as well, for orphan detection on g deletion.
-		if (secondFnId) deps.push(secondFnId);
+		// Dedupe when caller passes the same id for f and g (Q-C: aire_entre(f, f) = 0
+		// is mathematically valid and pedagogically useful — autorisé sans warning).
+		if (secondFnId && secondFnId !== functionId) deps.push(secondFnId);
 		const scalarRefDeps: string[] = [];
 		if (isScalarRef(lowerBound)) {
 			deps.push(lowerBound.scalarRef);

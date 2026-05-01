@@ -78,20 +78,58 @@ Catégories couvertes :
 
 ---
 
-## Phase 2 — DSL builtin `case 'aire_entre'` (à venir)
+## Phase 2 — DSL builtin `case 'aire_entre'` (✅ close)
 
-### Plan
+### Fichiers modifiés
 
-1. Lire le pattern de `case 'aire'` (lignes 1119-1216 de builtins.ts).
-2. Ajouter `case 'aire_entre'` adjacent qui :
-   - Valide pos.length === 4
-   - Valide pos[0] et pos[1] sont des GeoFunction
-   - Résout pos[2] et pos[3] comme bornes
-   - Construit `h = subtract(f.expression, g.expression)`
-   - Appelle `getAllDiscontinuities(h, 'x')` → cache
-   - Appelle `figure.createIntegralArea(fId, lower, upper, { secondFunctionId: gId, discontinuities, color: '#fb923c' })`
-   - Appelle `warnIfSingularitySuspected` 2 fois (sur f et g)
-3. Tests : 7 comportements (cf §4 Phase 2 de l'étude).
+| Fichier                                                              | Changement                                                                                         |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `src/lib/geometry-core/dsl/builtins.ts`                              | + `case 'aire_entre'` après `case 'integrale'` (~95 lignes) ; +`'aire_entre'` dans `BUILTIN_NAMES` |
+| `src/lib/geometry-core/graph/figure.ts`                              | Fix bug B4 : dedupe `dependsOn` quand `secondFnId === functionId` (Q-C autorisée)                  |
+| `src/lib/geometry-core/dsl/__tests__/interpreter-aire-entre.test.ts` | Nouveau fichier — 20 tests sur le builtin                                                          |
+
+### Pipeline implémenté
+
+1. Validation `pos.length === 4` ; sinon erreur DSL claire.
+2. Validation `pos[0]` et `pos[1]` sont des `GeoFunction` (sinon `requireElement` ou type-check).
+3. Résolution des bornes `pos[2]` et `pos[3]` (nombres ou refs scalaires/sliders).
+4. Construction `h = subtract(f.expression, g.expression)` puis
+   `getAllDiscontinuities(h, 'x')` (fail-open en cas de null — Q-D validée).
+5. Appel `figure.createIntegralArea(fId, lower, upper, { secondFunctionId: gId, discontinuities, color: '#fb923c' })`.
+6. **2 appels** à `warnIfSingularitySuspected` : sur `f.expression` et `g.expression` (préfixe `'aire_entre'`),
+   pas sur `h` (cf §2.8 de l'étude).
+7. Retourne `{ figureId: scalarId, symbolType: 'scalar', styleTargetId: areaId }`.
+
+### Tests Phase 2 — 20/20 verts
+
+| Tests | Description                                                               |
+| ----- | ------------------------------------------------------------------------- |
+| A1-A2 | Parsing nominal + création GeoIntegralArea V3                             |
+| B1-B4 | Compute correctness (1/12, 2√2, slider drag, f≡f autorisé)                |
+| C1-C4 | Style : couleur orange par défaut, override couleur, opacite_fond, triade |
+| D1-D6 | Validations : args count, arg 1/2 type, bornes type                       |
+| E1-E4 | Singularité : warn déclenché, préfixe `aire_entre`, NaN-on-divergence     |
+
+### Régression
+
+- 1205/1205 tests verts (DSL + figure tests). 0 régression.
+
+### Notes techniques
+
+- **`pi` non exposé dans le DSL** : les tests utilisant des bornes en radians
+  injectent la valeur numérique via interpolation JS du template
+  (cohérent avec `aire-undercurve.test.ts`).
+- **Dedupe `dependsOn`** : quand `secondFnId === functionId` (cas
+  `aire_entre(f, f, ...)`), on ne pousse pas g dans deps pour éviter
+  l'erreur « duplicate parent IDs » du graphe. Comportement conforme
+  à Q-C (autoriser `aire_entre(f, f) = 0`).
+- **Fail-open singularité** : si `getAllDiscontinuities(h)` retourne `null`
+  (analyse échoue silencieusement), le compute fonctionne sans cache —
+  cohérent avec `aire`/`integrale` V1/V2.
+
+### Commit Phase 2
+
+À faire après code review.
 
 ---
 
