@@ -1128,83 +1128,20 @@ function _executeBuiltinInner(
 			if (pos.length === 3 && pos[0].type === 'element') {
 				const candidateEl = figure.getElementById(pos[0].figureId);
 				if (candidateEl && candidateEl.type === 'function') {
-					const aireFnEl = candidateEl;
-
-					const resolveBoundParam = (
-						arg: ResolvedValue,
-						name: string
-					): { param: ScalarParam; numericValue: number } => {
-						if (arg.type === 'nombre') {
-							return { param: numeric(arg.value), numericValue: arg.value };
-						}
-						if (arg.type === 'element') {
-							const el = figure.getElementById(arg.figureId);
-							if (!el || (el.type !== 'scalar' && el.type !== 'slider')) {
-								throw new DslRuntimeError(
-									`aire(): la borne ${name} doit etre un nombre ou un curseur/scalaire`,
-									line
-								);
-							}
-							const v = figure.getScalarValue(arg.figureId);
-							return {
-								param: { scalarRef: arg.figureId },
-								numericValue: v ?? NaN
-							};
-						}
-						throw new DslRuntimeError(
-							`aire(): la borne ${name} doit etre un nombre ou un curseur/scalaire`,
-							line
-						);
-					};
-
-					const lower = resolveBoundParam(pos[1], 'inferieure');
-					const upper = resolveBoundParam(pos[2], 'superieure');
-
-					// V2 : pre-compute the full continuity analysis once, then pass the
-					// list to createIntegralArea so the compute closure can re-classify
-					// against the live bounds on every slider drag (NaN on divergence,
-					// split-point hints on removable/jump). `getAllDiscontinuities`
-					// unwraps the courbe-style `--E` wrapping and swallows any throw.
-					// TODO(perf): `warnIfSingularitySuspected` below re-runs analyzeContinuity
-					// internally — single-digit ms total but a second pass is still wasted.
-					// Refactor to share the analysis result if the cost ever shows up.
-					const aireDiscontinuities: readonly Discontinuity[] | undefined =
-						getAllDiscontinuities(aireFnEl.expression, 'x') ?? undefined;
-
-					let aireResult: { areaId: string; scalarId: string };
-					try {
-						aireResult = figure.createIntegralArea(pos[0].figureId, lower.param, upper.param, {
-							label,
-							signed: false,
-							// Green default (cf. aire-study.md §0 décision 3) to contrast with
-							// integrale's blue on figures showing both. Overridden by applyInlineStyle
-							// when the user passes `couleur=...` (style.color > color in resolveStyle).
-							color: '#22c55e',
-							discontinuities: aireDiscontinuities
-						});
-					} catch (e) {
-						throw new DslRuntimeError(
-							`aire(): ${e instanceof Error ? e.message : String(e)}`,
-							line
-						);
-					}
-
-					// Singularity check uses numeric bound values at creation time only —
-					// slider-driven bounds are not re-checked on drag (same limitation as integrale()).
-					warnIfSingularitySuspected(
-						aireFnEl.expression,
-						'x',
-						lower.numericValue,
-						upper.numericValue,
+					return interpretAreaBuiltin({
+						name: 'aire',
+						f: { id: pos[0].figureId, expression: candidateEl.expression },
+						lowerArg: pos[1],
+						upperArg: pos[2],
+						signed: false,
+						// Green default (cf. aire-study.md §0 décision 3) to contrast with
+						// integrale's blue on figures showing both. Overridden by applyInlineStyle
+						// when the user passes `couleur=...` (style.color > color in resolveStyle).
+						defaultColor: '#22c55e',
 						line,
-						'aire'
-					);
-
-					return {
-						figureId: aireResult.scalarId,
-						symbolType: 'scalar',
-						styleTargetId: aireResult.areaId
-					};
+						label,
+						figure
+					});
 				}
 			}
 
