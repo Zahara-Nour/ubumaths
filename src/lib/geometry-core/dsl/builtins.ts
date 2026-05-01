@@ -1116,6 +1116,81 @@ function _executeBuiltinInner(
 		}
 
 		case 'aire': {
+			// Overload: `aire(f, a, b)` (3 args, first is a GeoFunction) computes the
+			// geometric area between f and the x-axis on [a, b]. Otherwise falls back
+			// to the polygon-area behavior (`aire(P1, P2, ..., Pn)` for n ≥ 3 points).
+			// Note: if 3 args and pos[0] is an element that is NOT a GeoFunction
+			// (e.g. a circle), the code falls through to the polygon branch, which
+			// will then produce an error about "point1". Acceptable for V1.
+			// See `docs/wip/geometry/aire-study.md` §0 décision 2.
+			if (pos.length === 3 && pos[0].type === 'element') {
+				const candidateEl = figure.getElementById(pos[0].figureId);
+				if (candidateEl && candidateEl.type === 'function') {
+					const aireFnEl = candidateEl;
+
+					const resolveBoundParam = (
+						arg: ResolvedValue,
+						name: string
+					): { param: ScalarParam; numericValue: number } => {
+						if (arg.type === 'nombre') {
+							return { param: numeric(arg.value), numericValue: arg.value };
+						}
+						if (arg.type === 'element') {
+							const el = figure.getElementById(arg.figureId);
+							if (!el || (el.type !== 'scalar' && el.type !== 'slider')) {
+								throw new DslRuntimeError(
+									`aire(): la borne ${name} doit etre un nombre ou un curseur/scalaire`,
+									line
+								);
+							}
+							const v = figure.getScalarValue(arg.figureId);
+							return {
+								param: { scalarRef: arg.figureId },
+								numericValue: v ?? NaN
+							};
+						}
+						throw new DslRuntimeError(
+							`aire(): la borne ${name} doit etre un nombre ou un curseur/scalaire`,
+							line
+						);
+					};
+
+					const lower = resolveBoundParam(pos[1], 'inferieure');
+					const upper = resolveBoundParam(pos[2], 'superieure');
+
+					let aireResult: { areaId: string; scalarId: string };
+					try {
+						aireResult = figure.createIntegralArea(pos[0].figureId, lower.param, upper.param, {
+							label,
+							signed: false
+						});
+					} catch (e) {
+						throw new DslRuntimeError(
+							`aire(): ${e instanceof Error ? e.message : String(e)}`,
+							line
+						);
+					}
+
+					// Singularity check uses numeric bound values at creation time only —
+					// slider-driven bounds are not re-checked on drag (same limitation as integrale()).
+					warnIfSingularitySuspected(
+						aireFnEl.expression,
+						'x',
+						lower.numericValue,
+						upper.numericValue,
+						line,
+						'aire'
+					);
+
+					return {
+						figureId: aireResult.scalarId,
+						symbolType: 'scalar',
+						styleTargetId: aireResult.areaId
+					};
+				}
+			}
+
+			// Default: polygon area (≥ 3 points).
 			if (pos.length < 3)
 				throw new DslRuntimeError('aire() attend au moins 3 arguments (points)', line);
 			const pointIds = pos.map((p, i) => requireElement(p, `point${i + 1}`, line));
