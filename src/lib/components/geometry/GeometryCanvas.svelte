@@ -26,6 +26,7 @@
 		textToSVG,
 		resolveStyle,
 		functionToSVG,
+		integralAreaToSVG,
 		quadraticCurveToSVG,
 		implicitCurveToSVG,
 		tangentLineToSVG,
@@ -1223,6 +1224,23 @@
 							class="geo-line"
 							class:hovered={hoveredId === el.id}
 						/>
+					{/if}
+				{:else if el.type === 'integralArea'}
+					{@const svg = integralAreaToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						{@const baseFillOpacity = sty.fillOpacity ?? 0.3}
+						{#each svg.paths as p, i (i)}
+							<path
+								d={p.d}
+								fill={sty.color}
+								fill-opacity={p.sign === 'positive' ? baseFillOpacity : baseFillOpacity * 0.5}
+								stroke={sty.color}
+								stroke-width={0.5}
+								stroke-opacity={0.5}
+								class="integral-area"
+								class:hovered={hoveredId === el.id}
+							/>
+						{/each}
 					{/if}
 				{:else if el.type === 'function'}
 					{@const svg = functionToSVG(el.id, figure, transformer, dims)}

@@ -17,8 +17,11 @@
 (0.008 ms / éval symbolique, 0.4 ms / éval numérique — largement sous
 la cible 16 ms / frame).
 
-Reste : Phases 4 (rendu SVG splittage par signe), 5 (démo + doc),
-6 (quality + commit final).
+**Phase 4 terminée** ✅ — Rendu SVG avec splittage par signe (`splitOnZeros`
+
+- `integralAreaToSVG`), dispatcher Svelte branché dans `GeometryCanvas`.
+
+Reste : Phases 5 (démo + doc), 6 (quality + commit final).
 
 ---
 
@@ -258,9 +261,80 @@ Aucune optimisation requise.
 
 ---
 
-## Phase 4 — Rendu SVG (à venir)
+## Phase 4 — Rendu SVG ✅
 
-Voir `integrale-study.md` §2.8 et §4.
+### Livrables
+
+**Modifiés** :
+
+- `src/lib/geometry-core/rendering/svg-primitives.ts`
+
+  - Imports : `GeoIntegralArea`, `ScalarParam`, `isScalarRef`.
+  - Type exporté `SignedSubRegion` (`points`, `sign: 'positive' | 'negative' | 'zero'`).
+  - Fonction pure exportée `splitOnZeros(curve)` : découpe les samples en
+    sous-régions par signe, avec interpolation linéaire au zéro pour les
+    transitions strictes. Honore les discontinuités du `SampledCurve`.
+  - Fonction exportée `integralAreaToSVG(id, figure, transformer, dims)` :
+    sample la fonction sur `[a, b]`, splitte par signe, génère un path SVG
+    fermé par sous-région avec `curveToSVGPath` (Catmull-Rom) puis fermeture
+    `L(last.x, 0) L(first.x, 0) Z`.
+  - Helper privé `resolveBoundToNumber(param, figure)` : résout
+    `ScalarParam` → number via `figure.getScalarValue` pour les refs.
+
+- `src/lib/components/geometry/GeometryCanvas.svelte`
+  - Import `integralAreaToSVG`.
+  - Nouveau case `el.type === 'integralArea'` (juste avant `'function'`,
+    pour la z-order : zone dessinée sous la courbe).
+  - Itère `svg.paths`, applique `fill-opacity` selon le signe :
+    positive → `sty.fillOpacity ?? 0.3`, negative → moitié de cette valeur
+    (teinte plus claire pour distinguer visuellement les régions négatives).
+  - Stroke subtil (`stroke-width: 0.5`, `stroke-opacity: 0.5`) pour les
+    bords de zone.
+
+**Nouveau** :
+
+- `src/lib/geometry-core/rendering/__tests__/integral-svg.test.ts` (17 tests)
+
+### Comportements implémentés
+
+- ✅ `splitOnZeros` : single-sign curves (positive ou négatif), constant-zero,
+  sign change avec interpolation au zéro, 3-region (- + -), exact-zero
+  sample en milieu, discontinuités, edge cases (empty, single-point).
+- ✅ `integralAreaToSVG` : un path par sous-région avec `sign` ; fermeture
+  `Z` correcte ; null sur bornes invalides, élément absent, mauvais type ;
+  réagit aux changements de slider (path string différent).
+- ✅ Pas de duplicate de point lors d'un `[+, 0, -]` strictement (réutilise
+  le sample exact-zéro comme boundary au lieu d'interpoler).
+- ✅ Sub-viewport en math-coords restreint à `[min(a,b), max(a,b)]` ;
+  bornes inversées rendues correctement (la zone visuelle est la même que
+  pour bornes ordonnées, l'orientation algébrique vit dans le scalaire).
+
+### Code review (corrections appliquées)
+
+Issues corrigées suite au passage du `code-reviewer` :
+
+1. **Important** — Bug correctness : duplicate de zéro lors de l'interpolation
+   quand un sample exact-zéro précède un sample de signe opposé. Corrigé en
+   détectant `Math.abs(prev.y) < ZERO_Y_EPS` et réutilisant `prev` comme
+   boundary au lieu d'interpoler. Test ajouté.
+2. **Important** — Test fragile sur `x³ - x` : remplacement de l'assertion
+   ordre-dépendante par un test sign-agnostic (`Set` des signes présents).
+
+### Tests
+
+- 17 tests sur `integral-svg.test.ts` : tous verts.
+- Régression complète : **2286/2286** tests verts sur tout `geometry-core`
+  (+ 2 skipped pour le bench perf manuel de Phase 3).
+
+### À noter pour Phase 5
+
+- L'autofixer Svelte sera passé sur `GeometryCanvas.svelte` lors des
+  quality checks finaux (Phase 6). Le bloc ajouté est un `{:else if}`
+  standard avec `{#each ... (i)}` et `{@const}` — syntaxe Svelte 5
+  correcte.
+- La page démo (Phase 5) sera placée dans
+  `src/routes/(public)/geometry-demo/sliders/integrale/` pour suivre
+  le pattern des autres démos.
 
 ---
 

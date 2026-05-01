@@ -1271,10 +1271,13 @@ function extendRayToBounds(
 
 import type {
 	GeoFunction,
+	GeoIntegralArea,
 	GeoQuadraticCurve,
 	GeoTangentLine,
 	GeoTangentToQuadratic
 } from '../types/elements';
+import type { ScalarParam } from '../types/geo-value';
+import { isScalarRef } from '../types/geo-value';
 import type { ConicParams } from '../types/elements';
 import { conicPointFromParam } from '../graph/conic-helpers';
 import { polarLine } from '../geometry/conic-properties';
@@ -1692,4 +1695,205 @@ export function traceToSVG(
 	const curve: SampledCurve = { points: points as Point[], discontinuityIndices: [] };
 	const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
 	return path ? { path } : null;
+}
+
+// =============================================================================
+// Integral area rendering
+// =============================================================================
+
+const ZERO_Y_EPS = 1e-12;
+
+/** A sub-region of a sampled curve where y keeps a constant sign. */
+export interface SignedSubRegion {
+	readonly points: readonly Point[];
+	readonly sign: 'positive' | 'negative' | 'zero';
+}
+
+/**
+ * Split a sampled curve into sub-regions where y keeps a constant sign.
+ * Sign changes between consecutive samples are split at the linearly
+ * interpolated zero crossing. Discontinuities break the path without
+ * connecting the new sub-region to the previous one.
+ *
+ * Sub-regions with fewer than 2 points are dropped.
+ */
+export function splitOnZeros(curve: SampledCurve): SignedSubRegion[] {
+	const { points, discontinuityIndices } = curve;
+	if (points.length === 0) return [];
+
+	const discSet = new Set(discontinuityIndices);
+	const regions: SignedSubRegion[] = [];
+	let currentPoints: Point[] = [];
+	let currentSign: 'positive' | 'negative' | 'zero' = 'zero';
+
+	const signOf = (y: number): 'positive' | 'negative' | 'zero' => {
+		if (y > ZERO_Y_EPS) return 'positive';
+		if (y < -ZERO_Y_EPS) return 'negative';
+		return 'zero';
+	};
+
+	const flush = () => {
+		if (currentPoints.length >= 2) {
+			regions.push({ points: currentPoints, sign: currentSign });
+		}
+	};
+
+	for (let i = 0; i < points.length; i++) {
+		const p = points[i];
+
+		if (i === 0) {
+			currentPoints = [p];
+			currentSign = signOf(p.y);
+			continue;
+		}
+
+		// Discontinuity break: end current region, start fresh from this point.
+		if (discSet.has(i)) {
+			flush();
+			currentPoints = [p];
+			currentSign = signOf(p.y);
+			continue;
+		}
+
+		const prev = points[i - 1];
+		const prevSign = currentSign;
+		const newSign = signOf(p.y);
+
+		// Sign change with strict opposite signs: interpolate zero crossing,
+		// close current region at the zero, start new region at the zero.
+		if (
+			(prevSign === 'positive' && newSign === 'negative') ||
+			(prevSign === 'negative' && newSign === 'positive')
+		) {
+			if (Math.abs(prev.y) < ZERO_Y_EPS) {
+				// `prev` is already on the axis (an exact-zero sample landed
+				// here). Reuse it as the boundary instead of interpolating to
+				// avoid a duplicate zero point.
+				flush();
+				currentPoints = [prev, p];
+				currentSign = newSign;
+				continue;
+			}
+			const t = prev.y / (prev.y - p.y);
+			const zx = prev.x + t * (p.x - prev.x);
+			const zPoint: Point = { x: zx, y: 0 };
+			currentPoints.push(zPoint);
+			flush();
+			currentPoints = [zPoint, p];
+			currentSign = newSign;
+			continue;
+		}
+
+		// Transition through zero region (e.g., 'positive' → 'zero' or 'zero' → 'positive').
+		// We absorb 'zero' samples into whichever non-zero region is active.
+		if (prevSign === 'zero' && newSign !== 'zero') {
+			currentPoints.push(p);
+			currentSign = newSign;
+			continue;
+		}
+		if (prevSign !== 'zero' && newSign === 'zero') {
+			// Treat as endpoint of current region; if more samples follow with the
+			// same prevSign, the upcoming iteration will keep extending. If they
+			// follow with the opposite sign, the next iteration will see prev.y=0
+			// and treat it as a regular extension.
+			currentPoints.push(p);
+			continue;
+		}
+
+		// Same sign (including both zero): just extend.
+		currentPoints.push(p);
+	}
+
+	flush();
+	return regions;
+}
+
+/** Resolve a ScalarParam to a JS number using the figure's current scalar values. */
+function resolveBoundToNumber(param: ScalarParam, figure: Figure): number {
+	if (isScalarRef(param)) {
+		return figure.getScalarValue(param.scalarRef) ?? NaN;
+	}
+	return geoToNumber(param);
+}
+
+/**
+ * Convert a GeoIntegralArea to a list of closed SVG paths (one per sub-region
+ * where f keeps a constant sign). Returns null when the element is missing,
+ * not an integral area, or when the geometry cannot be resolved.
+ */
+export function integralAreaToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): { paths: Array<{ d: string; sign: 'positive' | 'negative' }> } | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'integralArea') return null;
+	const area = el as GeoIntegralArea;
+
+	const fnEl = figure.getElementById(area.functionId);
+	if (!fnEl || fnEl.type !== 'function') return null;
+
+	const a = resolveBoundToNumber(area.lowerBound, figure);
+	const b = resolveBoundToNumber(area.upperBound, figure);
+	if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+	if (a === b) return null;
+
+	const lo = Math.min(a, b);
+	const hi = Math.max(a, b);
+
+	const topLeft = transformer.svgToMath(0, 0);
+	const bottomRight = transformer.svgToMath(dims.width, dims.height);
+	const subViewport: Viewport = {
+		xMin: lo,
+		xMax: hi,
+		yMin: bottomRight.y,
+		yMax: topLeft.y
+	};
+
+	const evaluator = (x: number): number | null => {
+		const y = fnEl.compiledFn({ x });
+		return Number.isFinite(y) ? y : null;
+	};
+	const derivativeEvaluator = (x: number): number | null => {
+		const d = fnEl.compiledDerivative({ x });
+		return Number.isFinite(d) ? d : null;
+	};
+
+	const sampled = sampleWithDerivative(
+		evaluator,
+		derivativeEvaluator,
+		subViewport,
+		FUNCTION_SAMPLE_POINTS
+	);
+	if (sampled.points.length < 2) return null;
+
+	const regions = splitOnZeros(sampled);
+	const paths: Array<{ d: string; sign: 'positive' | 'negative' }> = [];
+
+	for (const region of regions) {
+		if (region.sign === 'zero') continue;
+		if (region.points.length < 2) continue;
+
+		const curveSegment: SampledCurve = {
+			points: region.points,
+			discontinuityIndices: []
+		};
+		const curvePath = curveToSVGPath(curveSegment, (p) => transformer.mathToSvg(p.x, p.y));
+		if (!curvePath) continue;
+
+		const first = region.points[0];
+		const last = region.points[region.points.length - 1];
+		const lastAxis = transformer.mathToSvg(last.x, 0);
+		const firstAxis = transformer.mathToSvg(first.x, 0);
+
+		const d =
+			`${curvePath} L${lastAxis.x.toFixed(4)},${lastAxis.y.toFixed(4)} ` +
+			`L${firstAxis.x.toFixed(4)},${firstAxis.y.toFixed(4)} Z`;
+
+		paths.push({ d, sign: region.sign });
+	}
+
+	if (paths.length === 0) return null;
+	return { paths };
 }
