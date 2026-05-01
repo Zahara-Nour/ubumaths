@@ -6,8 +6,8 @@ a = slider(min=-2, max=2, valeur=-1, pas=0.05)
 b = slider(min=-2, max=2, valeur=1, pas=0.05)
 I = integrale(f, a, b, opacite_fond=0.35)
 A = aire(f, a, b, opacite_fond=0.35)
-mtexte(2.5, 2.4, "\\int_a^b f = {I:.3f}\\quad(\\text{integrale signee})")
-mtexte(2.5, 1.7, "\\mathrm{aire}(f, a, b) = {A:.3f}\\quad(\\text{aire geometrique})")`;
+mtexte(2.5, 2.2, "I = \\int_a^b f\\, dx = {I:.3f}")
+mtexte(2.5, 0.8, "A = {A:.3f}")`;
 </script>
 
 <svelte:head>
