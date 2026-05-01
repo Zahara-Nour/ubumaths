@@ -1,13 +1,20 @@
 /**
  * Tests for toCustom safety net on implicit multiplication.
  *
- * Bug: when an implicit multiplication has a RHS that begins with a digit
- * (e.g. `x * 1/x` from differentiating x^x), juxtaposition produces a
- * non-reparseable string (`x1/x`). The parser explicitly forbids NUMBER
- * from starting an implicit multiplication.
+ * Two failure modes are guarded against:
+ *
+ * 1. **Hard reject** — the parser forbids NUMBER from starting an implicit
+ *    multiplication (parser-pratt.ts:1214), so juxtapositions like `x1/x`
+ *    (from `differentiate(x^x)`) throw on reparse.
+ *
+ * 2. **Silent corruption** — when RHS begins with `-` (`opposite` node) or
+ *    `+` (`positive` node), juxtaposition like `x-sin(x)` (from
+ *    `differentiate(x*cos(x))`) reparses as a *subtraction* rather than a
+ *    multiplication. The round-trip "succeeds" but the AST is semantically
+ *    different — a real-world bug for serialized derivatives.
  *
  * Fix (Option C): toCustom emits `*` as a safety net when the RHS of an
- * implicit multiplication begins with a digit / decimal separator.
+ * implicit multiplication begins with a digit, `.`, `,`, `+`, or `-`.
  * AST `displayStyle` is preserved (producers stay naive).
  */
 import { describe, it, expect } from 'vitest';
@@ -96,6 +103,36 @@ describe('toCustom — implicit multiplication safety net', () => {
 		it('greek * number → \\pi*2', () => {
 			const expr = MathAST.multiply(MathAST.piConstant(), MathAST.number('2'), 'implicit');
 			expect(toCustom(expr)).toBe('\\pi*2');
+		});
+
+		it('variable * opposite(number) → x*-2', () => {
+			// Without the safety net, juxtaposition produces `x-2` which the
+			// parser reads as subtraction (silent semantic corruption).
+			const expr = MathAST.multiply(x, MathAST.opposite(MathAST.number('2')), 'implicit');
+			expect(toCustom(expr)).toBe('x*-2');
+		});
+
+		it('variable * opposite(variable) → x*-y', () => {
+			const expr = MathAST.multiply(x, MathAST.opposite(y), 'implicit');
+			expect(toCustom(expr)).toBe('x*-y');
+		});
+
+		it('variable * opposite(sin(x)) → x*-sin(x)', () => {
+			// This case is reachable from `differentiate(x * cos(x))` via the product rule:
+			// (x*cos(x))' = cos(x) + x*(-sin(x)). Without the safety net, the second term
+			// renders as `x-sin(x)` and the whole derivative becomes a 3-term sum after reparse.
+			const expr = MathAST.multiply(x, MathAST.opposite(MathAST.sin(x)), 'implicit');
+			expect(toCustom(expr)).toBe('x*-sin(x)');
+		});
+
+		it('variable * positive(number) → x*+2', () => {
+			const expr = MathAST.multiply(x, MathAST.positive(MathAST.number('2')), 'implicit');
+			expect(toCustom(expr)).toBe('x*+2');
+		});
+
+		it('opposite(variable) * opposite(variable) → -x*-y (LHS keeps unary, RHS triggers safety)', () => {
+			const expr = MathAST.multiply(MathAST.opposite(x), MathAST.opposite(y), 'implicit');
+			expect(toCustom(expr)).toBe('-x*-y');
 		});
 	});
 

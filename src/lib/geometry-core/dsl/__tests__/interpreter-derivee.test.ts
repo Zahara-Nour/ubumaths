@@ -246,6 +246,30 @@ g = derivee(f)`;
 		}
 	});
 
+	it('round-trip preserves x^2*cos(x) derivative (opposite() as RHS of implicit mul)', () => {
+		// (x^2*cos(x))' = 2x*cos(x) + x^2*(-sin(x)). The second term carries
+		// `opposite(sin(x))` as RHS of an implicit multiplication; without the
+		// safety net, it serializes as `x^2-sin(x)` and the whole derivative
+		// becomes a 3-term sum after reparse, silently corrupting the function.
+		// Regression guard for the toCustom implicit-mul safety net (sign variant).
+		const script = `f = courbe("y = x^2 * cos(x)")
+g = derivee(f)`;
+		const { figure, symbols } = runDsl(script);
+		const serialized = serializeDsl(figure, symbols);
+		const { figure: fig2, symbols: sym2 } = runDsl(serialized);
+		const g2 = fig2.getElementById(sym2.get('g')!.figureId!);
+		expect(g2?.type).toBe('function');
+		if (g2 && g2.type === 'function') {
+			// f'(x) = 2x cos(x) - x^2 sin(x)
+			// f'(0) = 0
+			expect(g2.compiledFn({ x: 0 })).toBeCloseTo(0);
+			// f'(π/2) = 2(π/2)·cos(π/2) - (π/2)^2·sin(π/2) = 0 - π^2/4
+			expect(g2.compiledFn({ x: Math.PI / 2 })).toBeCloseTo(-(Math.PI ** 2) / 4);
+			// f'(π) = 2π·cos(π) - π^2·sin(π) = -2π - 0 = -2π
+			expect(g2.compiledFn({ x: Math.PI })).toBeCloseTo(-2 * Math.PI);
+		}
+	});
+
 	it('round-trip preserves x^x derivative (logarithmic differentiation)', () => {
 		// (x^x)' = x^x * (ln(x) + 1). The simplified form contains
 		// `x * 1/x` whose juxtaposition `x1/x` would be unparseable.
