@@ -43,7 +43,8 @@ import { numeric } from '../types/geo-value';
 import { applyTransformationToElement } from './transform-apply';
 import type { GeoElement } from '../types/elements';
 import { isPointElement } from '../types/elements';
-import { warnIfSingularitySuspected } from './singularity-warn';
+import { warnIfSingularitySuspected, getAllDiscontinuities } from './singularity-warn';
+import type { Discontinuity } from '$lib/mathAST/analysis';
 
 /** Resolve a line-like element's two defining point IDs. */
 function resolveLinePoints(el: GeoElement): { p1: string; p2: string } | null {
@@ -1158,6 +1159,17 @@ function _executeBuiltinInner(
 					const lower = resolveBoundParam(pos[1], 'inferieure');
 					const upper = resolveBoundParam(pos[2], 'superieure');
 
+					// V2 : pre-compute the full continuity analysis once, then pass the
+					// list to createIntegralArea so the compute closure can re-classify
+					// against the live bounds on every slider drag (NaN on divergence,
+					// split-point hints on removable/jump). `getAllDiscontinuities`
+					// unwraps the courbe-style `--E` wrapping and swallows any throw.
+					// TODO(perf): `warnIfSingularitySuspected` below re-runs analyzeContinuity
+					// internally — single-digit ms total but a second pass is still wasted.
+					// Refactor to share the analysis result if the cost ever shows up.
+					const aireDiscontinuities: readonly Discontinuity[] | undefined =
+						getAllDiscontinuities(aireFnEl.expression, 'x') ?? undefined;
+
 					let aireResult: { areaId: string; scalarId: string };
 					try {
 						aireResult = figure.createIntegralArea(pos[0].figureId, lower.param, upper.param, {
@@ -1166,7 +1178,8 @@ function _executeBuiltinInner(
 							// Green default (cf. aire-study.md §0 décision 3) to contrast with
 							// integrale's blue on figures showing both. Overridden by applyInlineStyle
 							// when the user passes `couleur=...` (style.color > color in resolveStyle).
-							color: '#22c55e'
+							color: '#22c55e',
+							discontinuities: aireDiscontinuities
 						});
 					} catch (e) {
 						throw new DslRuntimeError(
@@ -1746,10 +1759,22 @@ function _executeBuiltinInner(
 			const lower = resolveBoundParam(pos[1], 'inferieure');
 			const upper = resolveBoundParam(pos[2], 'superieure');
 
+			// V2 : pre-compute the full continuity analysis once, then pass the
+			// list to createIntegralArea so the compute closure can re-classify
+			// against the live bounds on every slider drag (NaN on divergence,
+			// split-point hints on removable/jump). `getAllDiscontinuities`
+			// unwraps the courbe-style `--E` wrapping and swallows any throw.
+			// TODO(perf): `warnIfSingularitySuspected` below re-runs analyzeContinuity
+			// internally — single-digit ms total but a second pass is still wasted.
+			// Refactor to share the analysis result if the cost ever shows up.
+			const intDiscontinuities: readonly Discontinuity[] | undefined =
+				getAllDiscontinuities(intFnEl.expression, 'x') ?? undefined;
+
 			let intResult: { areaId: string; scalarId: string };
 			try {
 				intResult = figure.createIntegralArea(intFnId, lower.param, upper.param, {
-					label
+					label,
+					discontinuities: intDiscontinuities
 				});
 			} catch (e) {
 				throw new DslRuntimeError(

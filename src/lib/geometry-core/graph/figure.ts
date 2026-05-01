@@ -123,6 +123,8 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { integrateDefinite, numericIntegrate } from '$lib/mathAST/integration';
 import { findRoots } from '$lib/mathAST/analysis/roots';
+import type { Discontinuity } from '$lib/mathAST/analysis';
+import { classifyDiscontinuitiesForRange } from '../dsl/singularity-warn';
 import { UndoManager } from './undo-redo';
 import type { Delta } from './undo-redo';
 import { computeElementPosition, resolveScalarParam } from './compute-position';
@@ -2855,7 +2857,20 @@ export class Figure {
 		functionId: string,
 		lowerBound: ScalarParam,
 		upperBound: ScalarParam,
-		options?: ElementOptions & { signed?: boolean }
+		options?: ElementOptions & {
+			signed?: boolean;
+			/**
+			 * Pre-computed list of all discontinuities of the integrand (typically
+			 * `analyzeContinuity(fnExpression, 'x').discontinuities`). When provided,
+			 * the compute closure consults this list on every recompute: divergent
+			 * discontinuities (`infinite`/`essential` interior, or boundary with no
+			 * finite interior limit) inside the current `[a, b]` cause the scalar to
+			 * resolve to `NaN`; removable / jump interior points are used as
+			 * additional split breakpoints to keep the numeric integrator from
+			 * sampling the singularity. See `docs/wip/geometry/singularity-rigorous-study.md`.
+			 */
+			discontinuities?: readonly Discontinuity[];
+		}
 	): { areaId: string; scalarId: string } {
 		const fnEl = this.elements.get(functionId);
 		if (!fnEl || fnEl.type !== 'function') {
@@ -2912,20 +2927,68 @@ export class Figure {
 		const cachedCompiledF = compiledF;
 		const lowerCapture = lowerBound;
 		const upperCapture = upperBound;
+		const cachedDiscs = options?.discontinuities ?? null;
 		const compute = (scalarValues: ReadonlyMap<string, number>): number => {
 			const a = resolveScalarParam(lowerCapture, scalarValues);
 			const b = resolveScalarParam(upperCapture, scalarValues);
 			if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN;
 
+			// Consult cached discontinuities for the current bounds. Divergent
+			// (infinite/essential) → NaN ; interior removable/jump points are kept
+			// to split the numeric integrator and avoid sampling the singularity.
+			const interiorSplitPoints: number[] = [];
+			if (cachedDiscs) {
+				const ranged = classifyDiscontinuitiesForRange(cachedDiscs, a, b);
+				if (ranged) {
+					for (const rd of ranged) {
+						if (rd.causesDivergence) return NaN;
+						if (rd.atBoundary === 'interior') interiorSplitPoints.push(rd.pointValue);
+					}
+				}
+			}
+
 			if (signed) {
 				if (cachedCompiledF) {
+					// `F(b) - F(a)` is exact for a continuous antiderivative on `[a, b]`.
+					// For removable interior points the antiderivative is finite at the
+					// limit value, so this is correct. For interior **jumps** the
+					// antiderivative would have to be discontinuous and the symbolic
+					// integrator (`integrateDefinite`) declines (`status: 'unsupported'`)
+					// — so this branch is unreachable for `floor` / `ceil` / `sign` today.
+					// If a future integrator emits a piecewise antiderivative for a
+					// genuinely discontinuous primitive, add a guard here that falls
+					// through to the numeric path on `interiorSplitPoints.length > 0`.
 					return cachedCompiledF({ x: b }) - cachedCompiledF({ x: a });
 				}
+				// Numeric path. Split around interior removable/jump points so the
+				// adaptive Simpson never samples a singularity. The function may be
+				// undefined at the exact point (e.g. sin(0)/0 = NaN), so we skip a
+				// 1e-9 sliver around each split point — the omitted contribution is
+				// O(eps) for any bounded integrand and far below adaptive-Simpson
+				// tolerance (1e-6).
+				const lo = Math.min(a, b);
+				const hi = Math.max(a, b);
+				const direction = a <= b ? 1 : -1;
+				const innerPts = interiorSplitPoints
+					.filter((p) => p > lo + 1e-9 && p < hi - 1e-9)
+					.sort((x, y) => x - y);
+				const splitEps = 1e-9;
+				let total = 0;
+				let prev = lo;
+				for (const p of innerPts) {
+					try {
+						total += numericIntegrate(fnExpression, 'x', prev, p - splitEps).value;
+					} catch {
+						return NaN;
+					}
+					prev = p + splitEps;
+				}
 				try {
-					return numericIntegrate(fnExpression, 'x', a, b).value;
+					total += numericIntegrate(fnExpression, 'x', prev, hi).value;
 				} catch {
 					return NaN;
 				}
+				return direction * total;
 			}
 
 			// signed = false: aire géométrique = Σ |F(z_{i+1}) − F(z_i)| over zeros of f in (a, b).
@@ -2943,22 +3006,70 @@ export class Figure {
 			} catch {
 				// findRoots failed; fall back to a single subinterval [lo, hi].
 			}
-			const breakpoints = [lo, ...inner, hi];
+			// Interior removable/jump points used as additional split sites. Tracked
+			// separately from the zero breakpoints because the integrand may be
+			// undefined at these exact x-values (e.g. sin(x)/x at 0), so the numeric
+			// path skips a 1e-9 sliver around each. Antiderivative path keeps them
+			// as plain breakpoints (cachedCompiledF is finite at the limit value).
+			const removableInterior = new Set(
+				interiorSplitPoints.filter((p) => p > lo + 1e-7 && p < hi - 1e-7)
+			);
 
 			let area = 0;
 			if (cachedCompiledF) {
-				for (let i = 0; i < breakpoints.length - 1; i++) {
+				const allBreakpoints = Array.from(new Set([lo, ...inner, ...removableInterior, hi])).sort(
+					(x, y) => x - y
+				);
+				for (let i = 0; i < allBreakpoints.length - 1; i++) {
 					area += Math.abs(
-						cachedCompiledF({ x: breakpoints[i + 1] }) - cachedCompiledF({ x: breakpoints[i] })
+						cachedCompiledF({ x: allBreakpoints[i + 1] }) -
+							cachedCompiledF({ x: allBreakpoints[i] })
 					);
 				}
 				return area;
 			}
-			for (let i = 0; i < breakpoints.length - 1; i++) {
+			// Numeric path: keep zero breakpoints (f is genuinely zero there, no
+			// sampling issue) and skip a 1e-9 sliver around each removable point.
+			const splitEps = 1e-9;
+			const sortedZeros = [...inner].sort((x, y) => x - y);
+			let prev = lo;
+			const subintervals: Array<[number, number]> = [];
+			for (const z of sortedZeros) {
+				if (removableInterior.has(z)) {
+					// Zero coincides with a removable point — split with sliver.
+					subintervals.push([prev, z - splitEps]);
+					prev = z + splitEps;
+				} else {
+					subintervals.push([prev, z]);
+					prev = z;
+				}
+			}
+			// Apply slivers for removable points that are not zeros of f. The
+			// `1e-7` matches the zero-detection tolerance used above for
+			// `findRoots`: a removable point within that radius of a zero is
+			// numerically the same point and is already covered by the zero
+			// breakpoint (since f is exactly zero there, so adaptive Simpson
+			// has no sampling problem at the boundary). Tolerance choice is
+			// asymmetric with the `splitEps = 1e-9` sliver radius by design.
+			const removableNotZero = Array.from(removableInterior)
+				.filter((p) => !sortedZeros.some((z) => Math.abs(z - p) < 1e-7))
+				.sort((x, y) => x - y);
+			subintervals.push([prev, hi]);
+			// Re-walk subintervals to apply remaining removable splits.
+			const finalSubintervals: Array<[number, number]> = [];
+			for (const [s, e] of subintervals) {
+				let cursor = s;
+				const interior = removableNotZero.filter((p) => p > s + splitEps && p < e - splitEps);
+				for (const p of interior) {
+					finalSubintervals.push([cursor, p - splitEps]);
+					cursor = p + splitEps;
+				}
+				finalSubintervals.push([cursor, e]);
+			}
+			for (const [s, e] of finalSubintervals) {
+				if (e - s < splitEps * 2) continue;
 				try {
-					area += Math.abs(
-						numericIntegrate(fnExpression, 'x', breakpoints[i], breakpoints[i + 1]).value
-					);
+					area += Math.abs(numericIntegrate(fnExpression, 'x', s, e).value);
 				} catch {
 					// Subinterval failed (e.g. extremely narrow width or non-integrable form).
 					// Skip contribution rather than discarding partial sums from earlier subintervals.
