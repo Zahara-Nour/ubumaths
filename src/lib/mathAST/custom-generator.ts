@@ -320,6 +320,21 @@ function shouldWrapForImplicitMul(node: MathNode): boolean {
 	return false;
 }
 
+/**
+ * Whether an emitted fragment would start with a token that the parser
+ * refuses to glue via implicit multiplication. The Pratt parser explicitly
+ * disallows NUMBER from starting an implicit multiplication (parser-pratt.ts):
+ * `x2`, `(a)2`, `sin(x)2`, `x1/x` would all fail to reparse.
+ *
+ * Numbers in the custom syntax can begin with:
+ * - a digit (`2`, `42`)
+ * - `.` for decimal numbers without integer part (`.5`)
+ * - `,` for the French decimal-comma form (`0,5`, `,5`)
+ */
+function startsWithNumberToken(s: string): boolean {
+	return /^[0-9.,]/.test(s);
+}
+
 // =============================================================================
 // Generator Class
 // =============================================================================
@@ -426,7 +441,19 @@ export class CustomGenerator {
 				if (wrapLeft) this.emit('{', meta);
 				this.visitWithSpans(node.left);
 				if (wrapLeft) this.emit('}', meta);
-				this.visitMultiplicationOperatorSpan(node);
+				// Implicit mul safety net (matches generateMultiplication): when RHS
+				// would start with a digit, the parser cannot reparse juxtaposition,
+				// so we must emit an explicit `*`. Peek RHS via a throw-away generator
+				// with metadata disabled — otherwise a colored RHS would be wrapped in
+				// `@color{...}` (e.g. `@red{2}`), defeating the digit-prefix check.
+				const forceStarForImplicit =
+					node.displayStyle === 'implicit' &&
+					startsWithNumberToken(new CustomGenerator().generate(node.right));
+				if (forceStarForImplicit) {
+					this.emit('*', meta);
+				} else {
+					this.visitMultiplicationOperatorSpan(node);
+				}
 				this.visitWithSpans(node.right);
 				break;
 			}
@@ -1063,6 +1090,12 @@ export class CustomGenerator {
 				// Juxtaposition: no operator, but wrap left if it contains `/`
 				// to avoid ambiguity (e.g. `1/2π` → `{1/2}π`)
 				const wrappedLeft = shouldWrapForImplicitMul(node.left) ? `{${left}}` : left;
+				// Safety net: if RHS begins with a digit, the parser would refuse to
+				// glue it via implicit multiplication. Emit explicit `*` to keep the
+				// output reparseable (e.g. `x*1/x` instead of `x1/x`).
+				if (startsWithNumberToken(right)) {
+					return `${wrappedLeft}*${right}`;
+				}
 				return `${wrappedLeft}${right}`;
 			}
 			case 'dot':
