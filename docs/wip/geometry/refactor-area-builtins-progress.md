@@ -10,8 +10,8 @@
 | -------------------------- | ----------- | ------------------------------------------------------------------------- | -------------------------------------------- |
 | 0 — Étude                  | ✅ Validée  | —                                                                         | (étude rédigée et validée par l'utilisateur) |
 | 1 — Helper isolé           | ✅ Terminée | 16 verts (helper) + 62 existants (integrale 20 / aire 21 / aire_entre 21) | a5447a10                                     |
-| 2 — Migration `integrale`  | ✅ Terminée | 20 V1 verts + 16 helper + 42 autres = 78                                  | (à venir)                                    |
-| 3 — Migration `aire`       | ⏳ À faire  | 21 V2 + tests polygone                                                    | —                                            |
+| 2 — Migration `integrale`  | ✅ Terminée | 20 V1 verts + 16 helper + 42 autres = 78                                  | 5cb4ce4b                                     |
+| 3 — Migration `aire`       | ✅ Terminée | 21 V2 (incluant polygone) + 16 helper + 41 autres = 78                    | (à venir)                                    |
 | 4 — Migration `aire_entre` | ⏳ À faire  | 21 V3                                                                     | —                                            |
 | 5 — Quality checks         | ⏳ À faire  | tous                                                                      | —                                            |
 
@@ -118,12 +118,41 @@ Verdict : **GO Phase 3**. Aucun blocker/major. Findings :
 
 ---
 
-## Prochaines étapes (Phase 3)
+## Phase 3 — détails
 
-Migrer `case 'aire'` (`builtins.ts:1119-1216`). Subtilité : conserver le
-fallthrough silencieux vers la branche polygone si `pos[0]` n'est pas
-une function. Le helper s'occupe uniquement de la branche courbe avec
-`signed: false, defaultColor: '#22c55e'`.
+### Fichiers modifiés
+
+- `src/lib/geometry-core/dsl/builtins.ts` :
+  - `case 'aire'` (lignes 1119-1216, 95 lignes) → 36 lignes (gain 59).
+  - Branche courbe : appel `interpretAreaBuiltin` (signed=false, defaultColor='#22c55e').
+  - Branche polygone : intacte (fallthrough silencieux préservé).
+
+### Code review (Phase 3)
+
+Verdict : **GO Phase 4**. Aucun blocker/major. Findings :
+
+- Nit : commentaire mentionne `applyInlineStyle`/`resolveStyle` (noms
+  internes, sensibles au rename). Non-bloquant.
+- Branche polygone : confirmée byte-for-byte identique avant/après.
+- 5 points de vérification (helper + polygone + couleur + commentaire
+  - imports) tous OK.
+
+### Tests
+
+- Aire V2 (incluant section A polygone) : **21 verts** (0 régression).
+- Helper : **16 verts**.
+- Integrale + aire_entre : **41 verts** (non touchés).
+- **Total : 78/78 verts.**
+
+---
+
+## Prochaines étapes (Phase 4)
+
+Migrer `case 'aire_entre'` (`builtins.ts:~1742-1850` après Phase 3).
+Validation `f` ET `g` (avec messages déjà alignés `'le 1er argument'` /
+`'le 2e argument'`). Appel helper avec `g` défini, `signed: false,
+defaultColor: '#fb923c'`. Vérifier 21 tests V3 verts + nombre de warns
+(2) préservé.
 
 ---
 
