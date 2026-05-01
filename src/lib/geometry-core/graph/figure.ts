@@ -156,7 +156,13 @@ export interface ElementOptions {
 
 /**
  * Resolve a template string by replacing {expr} placeholders with scalar values.
- * Supports: {id}, {id:.2f}, {id:deg}, simple arithmetic {id*2}, {id+other}
+ * Supports: {id}, {id:.2f}, {id:deg}, simple arithmetic {id*2}, {id+other}.
+ *
+ * If the content does not refer to any known scalar (typo or — more commonly —
+ * a LaTeX construct like `\text{...}`, `\sqrt{2}`, `\frac{a}{b}` that happens
+ * to use braces), the original `{...}` is returned **as-is** so the downstream
+ * MathLive/LaTeX renderer receives intact braces. Only scalar refs that resolve
+ * to a non-finite number (NaN/∞ — broken scalar) fall back to '?'.
  */
 function resolveTemplateString(
 	template: string,
@@ -176,7 +182,8 @@ function resolveTemplateString(
 
 		// Evaluate the expression
 		const value = evaluateSimpleExpr(expr, scalarValues);
-		if (value === undefined || !Number.isFinite(value)) return '?';
+		if (value === undefined) return _match; // unknown content — keep literal for LaTeX
+		if (!Number.isFinite(value)) return '?'; // known scalar but broken value (NaN/∞)
 
 		// Format the value
 		return formatScalarValue(value, format);
