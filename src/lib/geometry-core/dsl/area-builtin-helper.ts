@@ -20,6 +20,7 @@ import type { Discontinuity } from '$lib/mathAST/analysis';
 import { DslRuntimeError } from './errors';
 import { warnIfSingularitySuspected, getAllDiscontinuities } from './singularity-warn';
 import type { ResolvedValue } from './builtins';
+import { PROBE_T_MAX } from '$lib/mathAST/integration/improper';
 
 export type AreaBuiltinName = 'integrale' | 'aire' | 'aire_entre';
 
@@ -69,6 +70,21 @@ function resolveBoundParam(
 	line: number
 ): { param: ScalarParam; numericValue: number } {
 	if (arg.type === 'nombre') {
+		// V5 — `±Infinity` flows as a dedicated `InfinityParam` since `GeoNumeric`
+		// rejects non-finite values (coordinate invariant). The improper-area
+		// path in `figure.createImproperIntegralArea` recognises it.
+		if (arg.value === Infinity) {
+			return { param: { infinity: '+' }, numericValue: Infinity };
+		}
+		if (arg.value === -Infinity) {
+			return { param: { infinity: '-' }, numericValue: -Infinity };
+		}
+		if (!Number.isFinite(arg.value)) {
+			throw new DslRuntimeError(
+				`${builtinName}(): la borne ${boundName} (${arg.value}) n'est pas un nombre valide`,
+				line
+			);
+		}
 		return { param: numeric(arg.value), numericValue: arg.value };
 	}
 	if (arg.type === 'element') {
@@ -105,29 +121,40 @@ export function interpretAreaBuiltin(opts: InterpretAreaBuiltinOpts): InterpretA
 	const discontinuities: readonly Discontinuity[] | undefined =
 		getAllDiscontinuities(integrand, 'x') ?? undefined;
 
+	// V5 — improper integrals: route to createImproperIntegralArea when at
+	// least one bound is ±Infinity. Spec: docs/wip/geometry/improper-integrals-study.md.
+	const isImproper = !Number.isFinite(lower.numericValue) || !Number.isFinite(upper.numericValue);
+
 	let result: { areaId: string; scalarId: string };
 	try {
-		result = figure.createIntegralArea(f.id, lower.param, upper.param, {
-			label,
-			signed,
-			...(g ? { secondFunctionId: g.id } : {}),
-			...(defaultColor ? { color: defaultColor } : {}),
-			discontinuities
-		});
+		if (isImproper) {
+			result = figure.createImproperIntegralArea(f.id, lower.param, upper.param, {
+				label,
+				signed,
+				...(g ? { secondFunctionId: g.id } : {}),
+				...(defaultColor ? { color: defaultColor } : {}),
+				discontinuities
+			});
+		} else {
+			result = figure.createIntegralArea(f.id, lower.param, upper.param, {
+				label,
+				signed,
+				...(g ? { secondFunctionId: g.id } : {}),
+				...(defaultColor ? { color: defaultColor } : {}),
+				discontinuities
+			});
+		}
 	} catch (e) {
 		throw new DslRuntimeError(`${name}(): ${e instanceof Error ? e.message : String(e)}`, line);
 	}
 
-	warnIfSingularitySuspected(f.expression, 'x', lower.numericValue, upper.numericValue, line, name);
+	// Singularity warning for finite portions — bounds normalized to the probe
+	// window for improper integrals so analyzeRangeContinuity has finite inputs.
+	const warnLower = Number.isFinite(lower.numericValue) ? lower.numericValue : -PROBE_T_MAX;
+	const warnUpper = Number.isFinite(upper.numericValue) ? upper.numericValue : PROBE_T_MAX;
+	warnIfSingularitySuspected(f.expression, 'x', warnLower, warnUpper, line, name);
 	if (g) {
-		warnIfSingularitySuspected(
-			g.expression,
-			'x',
-			lower.numericValue,
-			upper.numericValue,
-			line,
-			name
-		);
+		warnIfSingularitySuspected(g.expression, 'x', warnLower, warnUpper, line, name);
 	}
 
 	return {

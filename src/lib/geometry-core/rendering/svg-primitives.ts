@@ -1277,7 +1277,7 @@ import type {
 	GeoTangentToQuadratic
 } from '../types/elements';
 import type { ScalarParam } from '../types/geo-value';
-import { isScalarRef } from '../types/geo-value';
+import { isScalarRef, isInfinityParam } from '../types/geo-value';
 import type { ConicParams } from '../types/elements';
 import { conicPointFromParam } from '../graph/conic-helpers';
 import { polarLine } from '../geometry/conic-properties';
@@ -1808,10 +1808,15 @@ export function splitOnZeros(curve: SampledCurve): SignedSubRegion[] {
 	return regions;
 }
 
-/** Resolve a ScalarParam to a JS number using the figure's current scalar values. */
+/** Resolve a ScalarParam to a JS number using the figure's current scalar values.
+ *  V5: returns ±Infinity for an `InfinityParam` so improper-area renderers can clip
+ *  at the viewport edge. */
 function resolveBoundToNumber(param: ScalarParam, figure: Figure): number {
 	if (isScalarRef(param)) {
 		return figure.getScalarValue(param.scalarRef) ?? NaN;
+	}
+	if (isInfinityParam(param)) {
+		return param.infinity === '+' ? Infinity : -Infinity;
 	}
 	return geoToNumber(param);
 }
@@ -1836,14 +1841,19 @@ export function integralAreaToSVG(
 
 	const a = resolveBoundToNumber(area.lowerBound, figure);
 	const b = resolveBoundToNumber(area.upperBound, figure);
-	if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+	if (Number.isNaN(a) || Number.isNaN(b)) return null;
 	if (a === b) return null;
 
-	const lo = Math.min(a, b);
-	const hi = Math.max(a, b);
-
+	// V5 — improper bounds: clip ±∞ to the viewport edge so the rendered region
+	// "exits the frame" naturally (no special indicator V1 — see study §2.5).
 	const topLeft = transformer.svgToMath(0, 0);
 	const bottomRight = transformer.svgToMath(dims.width, dims.height);
+	const aClipped = Number.isFinite(a) ? a : a === -Infinity ? topLeft.x : bottomRight.x;
+	const bClipped = Number.isFinite(b) ? b : b === -Infinity ? topLeft.x : bottomRight.x;
+	const lo = Math.min(aClipped, bClipped);
+	const hi = Math.max(aClipped, bClipped);
+	if (lo === hi) return null;
+
 	const subViewport: Viewport = {
 		xMin: lo,
 		xMax: hi,
@@ -1934,14 +1944,18 @@ export function integralAreaBetweenToSVG(
 
 	const a = resolveBoundToNumber(area.lowerBound, figure);
 	const b = resolveBoundToNumber(area.upperBound, figure);
-	if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+	if (Number.isNaN(a) || Number.isNaN(b)) return null;
 	if (a === b) return null;
 
-	const lo = Math.min(a, b);
-	const hi = Math.max(a, b);
-
+	// V5 — improper bounds: clip ±∞ to the viewport edge.
 	const topLeft = transformer.svgToMath(0, 0);
 	const bottomRight = transformer.svgToMath(dims.width, dims.height);
+	const aClipped = Number.isFinite(a) ? a : a === -Infinity ? topLeft.x : bottomRight.x;
+	const bClipped = Number.isFinite(b) ? b : b === -Infinity ? topLeft.x : bottomRight.x;
+	const lo = Math.min(aClipped, bClipped);
+	const hi = Math.max(aClipped, bClipped);
+	if (lo === hi) return null;
+
 	const subViewport: Viewport = {
 		xMin: lo,
 		xMax: hi,

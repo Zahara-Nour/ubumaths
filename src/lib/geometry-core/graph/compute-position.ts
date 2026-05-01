@@ -40,7 +40,7 @@ import {
 } from '../types/elements';
 import type { GeoPoint } from '../types/primitives';
 import type { GeoValue, ScalarParam } from '../types/geo-value';
-import { isScalarRef } from '../types/geo-value';
+import { isScalarRef, isInfinityParam } from '../types/geo-value';
 import { geoAdd, geoSub, geoMul, geoDiv, geoSqrt, geoFromNumber } from '../compute/geo-arithmetic';
 import { circumcircle } from '../geometry/circumcircle';
 import { geoToNumber } from '../compute/to-number';
@@ -87,6 +87,9 @@ export function resolveScalarParam(
 	if (isScalarRef(param)) {
 		return scalarValues?.get(param.scalarRef) ?? NaN;
 	}
+	if (isInfinityParam(param)) {
+		return param.infinity === '+' ? Infinity : -Infinity;
+	}
 	return geoToNumber(param);
 }
 
@@ -94,6 +97,8 @@ export function resolveScalarParam(
  * Resolve a ScalarParam to a GeoValue (for exact arithmetic).
  * If the param is a ScalarRef, wraps the numeric value from scalarValues.
  * If the param is already a GeoValue, returns it directly.
+ * `InfinityParam` is rejected here (returns null) — exact arithmetic on ±∞ is
+ * undefined; only the numeric resolveScalarParam supports infinity (V5).
  */
 function resolveScalarParamToGeoValue(
 	param: ScalarParam,
@@ -106,6 +111,7 @@ function resolveScalarParamToGeoValue(
 		}
 		return numeric(val);
 	}
+	if (isInfinityParam(param)) return null;
 	return param;
 }
 

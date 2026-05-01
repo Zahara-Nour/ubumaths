@@ -416,6 +416,10 @@ class Parser {
 			const operand = this.parseUnary();
 			return { kind: 'unary', op: '-', operand, line };
 		}
+		if (this.peek().type === 'PLUS') {
+			this.advance();
+			return this.parseUnary();
+		}
 		return this.parsePower();
 	}
 
