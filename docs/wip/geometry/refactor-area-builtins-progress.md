@@ -12,8 +12,8 @@
 | 1 — Helper isolé           | ✅ Terminée | 16 verts (helper) + 62 existants (integrale 20 / aire 21 / aire_entre 21) | a5447a10                                     |
 | 2 — Migration `integrale`  | ✅ Terminée | 20 V1 verts + 16 helper + 42 autres = 78                                  | 5cb4ce4b                                     |
 | 3 — Migration `aire`       | ✅ Terminée | 21 V2 (incluant polygone) + 16 helper + 41 autres = 78                    | b7372ae5                                     |
-| 4 — Migration `aire_entre` | ✅ Terminée | 21 V3 + 16 helper + 41 autres + 33 singularité = 111                      | (à venir)                                    |
-| 5 — Quality checks         | ⏳ À faire  | tous                                                                      | —                                            |
+| 4 — Migration `aire_entre` | ✅ Terminée | 21 V3 + 16 helper + 41 autres + 33 singularité = 111                      | 2a15dab3                                     |
+| 5 — Quality checks         | ✅ Terminée | check:incremental + eslint passants sur fichiers refactorés               | (à venir)                                    |
 
 > **Note sur le compte de tests** : l'étude annonçait `96 + 19 + 21 = 136`,
 > mais les comptes réels mesurés au début de Phase 1 sont
@@ -176,22 +176,86 @@ exact, cleanup imports laisse zéro orphelin.
 
 ---
 
-## Prochaines étapes (Phase 5)
+## Phase 5 — détails
 
-Quality checks finaux :
+### Quality checks
 
-- `pnpm check:incremental` (TS + Svelte, ~30s).
-- `npx eslint <fichiers modifiés>`.
-- Doc finale (cette page) : récap commits + métriques avant/après.
+- `pnpm check:incremental` : 9 errors, 539 warnings, 139 fichiers avec
+  problèmes — **tous pré-existants**. Aucune erreur ni warning ajouté
+  par les fichiers du refactor (vérifié par grep
+  `area-builtin-helper|builtins.ts` sur la sortie : 0 hits).
+- `npx eslint` sur les 3 fichiers (helper, tests helper, builtins.ts) :
+  0 erreur, 0 warning.
+
+### Métriques finales avant / après
+
+**`src/lib/geometry-core/dsl/builtins.ts`** :
+
+| Élément                                      | Avant | Après | Gain |
+| -------------------------------------------- | ----- | ----- | ---- |
+| Total fichier                                | 2609  | 2413  | -196 |
+| `case 'integrale'`                           | 82    | 22    | -60  |
+| `case 'aire'`                                | 95    | 36    | -59  |
+| `case 'aire_entre'`                          | 108   | 36    | -72  |
+| Imports `singularity-warn` + `Discontinuity` | 3     | 0     | -3   |
+
+**Nouveau code consolidé** :
+
+- `src/lib/geometry-core/dsl/area-builtin-helper.ts` : **138 lignes**
+  (incluant types, JSDoc et `resolveBoundParam`).
+- `src/lib/geometry-core/dsl/__tests__/area-builtin-helper.test.ts` :
+  **394 lignes** (16 tests d'isolation, +394 lignes de couverture
+  nouvelle).
+
+**Bilan** :
+
+- **Code production** : -196 + 138 = **-58 lignes nettes**.
+- **Tests ajoutés** : +394 lignes (16 tests d'isolation jamais
+  existants pour le pattern partagé).
+- **Duplication éliminée** : `resolveBoundParam` (~26 lignes × 3 = 78
+  lignes répétées) consolidée en une seule définition.
+- **Coût ajout futur** : un 4e builtin de la même famille
+  (e.g. `aire_intersection`) coûte désormais ~10-15 lignes au lieu de
+  ~95 (gain estimé de l'étude confirmé).
+
+### Récapitulatif des commits
+
+| Phase | Commit      | Description                                               |
+| ----- | ----------- | --------------------------------------------------------- |
+| 1     | a5447a10    | Helper `interpretAreaBuiltin` + 16 tests isolés           |
+| 2     | 5cb4ce4b    | Migration `case 'integrale'` (alignement Q1 du message)   |
+| 3     | b7372ae5    | Migration `case 'aire'` branche courbe (polygone intact)  |
+| 4     | 2a15dab3    | Migration `case 'aire_entre'` + cleanup imports orphelins |
+| 5     | (ce commit) | Quality checks + doc finale                               |
+
+### Tests finaux
+
+- **111 tests verts** : 16 helper + 20 integrale V1 + 21 aire V2 + 21
+  aire_entre V3 + 33 singularité (warn + nan).
+- **0 régression** sur l'ensemble du périmètre du refactor.
+
+---
+
+## Documents produits
+
+- `docs/wip/geometry/prompt-refactor-area-builtins.md` — prompt source.
+- `docs/wip/geometry/refactor-area-builtins-study.md` — étude Phase 0
+  (signature, plan TDD, Q1-Q4).
+- `docs/wip/geometry/refactor-area-builtins-progress.md` — ce document.
+
+Aucune doc utilisateur produite (refactor invisible côté DSL — confirmé
+par le prompt initial).
 
 ---
 
 ## Crash recovery
 
-En cas de crash de session, reprendre ici :
+Refactor V4 **terminé**. Toutes les phases committées :
 
-- Phase 1 (helper) committée a5447a10.
-- Phase 2 (integrale) committée (commit à venir).
-- Restant : Phase 3 (aire), Phase 4 (aire_entre), Phase 5 (quality checks).
-- Tests verts : 78/78.
-- Q1-Q4 arbitrées.
+- Phase 1 — a5447a10
+- Phase 2 — 5cb4ce4b
+- Phase 3 — b7372ae5
+- Phase 4 — 2a15dab3
+- Phase 5 — (ce commit)
+
+Tests verts : 111/111. Aucune régression.
