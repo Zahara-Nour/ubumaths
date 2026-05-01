@@ -49,14 +49,25 @@ h = derivee(g)        # h(x) = 6*x
 
 ## Fichiers créés
 
-- `src/lib/geometry-core/dsl/__tests__/interpreter-derivee.test.ts` : 20 tests
+- `src/lib/geometry-core/dsl/__tests__/interpreter-derivee.test.ts` : 29 tests
+
+## Démos ajoutées (`/geometry-demo/curves`)
+
+Trois exemples pédagogiques dans `src/routes/(public)/geometry-demo/curves/+page.svelte` :
+
+1. **Extrema de f ↔ zéros de f'** : `f(x) = x³ − 3x` et `f'(x)`. Visualisation
+   directe du lien dérivée / extrema.
+2. **exp(x) auto-dérivable** : `f = exp(x)` superposée à `derivee(f)`. Propriété
+   caractéristique de l'exponentielle, immédiate visuellement.
+3. **Cycle des dérivées de sin** : sin → cos → −sin → −cos. Cycle de longueur 4
+   visible avec quatre courbes colorées.
 
 ## Tests
 
-- 20/20 verts pour `interpreter-derivee.test.ts`
-- 1016/1016 verts pour l'ensemble `dsl/__tests__/` (aucune régression)
+- 29/29 verts pour `interpreter-derivee.test.ts`
+- 1026/1026 verts pour l'ensemble `dsl/__tests__/` (aucune régression)
 
-Couverture :
+Couverture (incluant edge cases issus du code review approfondi) :
 
 - Cas nominaux : polynôme, sin, exp, ln, chain rule
 - Récurrence : `derivee(derivee(f))` (f''), champ `g.derivative` (f'')
@@ -64,6 +75,15 @@ Couverture :
 - Autonomie : `dependsOn === []`, équation stockée commence par `y = `
 - Erreurs : point, conique, courbe implicite, droite, tangente, arité (0/2)
 - Round-trip : sérialisation → reparse, valeurs préservées
+- **Edge cases ajoutés** :
+  - Round-trip de dérivées trigonométriques (sin → cos)
+  - Singularités : 1/x, ln(x), sqrt(x) — assertion `!isFinite` au point critique sans throw
+  - Règle du produit : (x²·sin(x))' = 2x·sin(x) + x²·cos(x)
+  - Cycle de longueur 4 : `derivee⁴(sin) ≡ sin`
+  - `compiledDerivative` du résultat = f''' bien calculé
+  - **Round-trip de dérivée constante** : f = x² → f'' = 2 → sérialisée comme
+    `courbe("y = 2")` (détectée comme droite horizontale par le pipeline existant,
+    sémantiquement équivalent — pas de régression)
 
 ## Quality checks
 

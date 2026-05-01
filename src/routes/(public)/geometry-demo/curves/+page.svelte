@@ -24,6 +24,19 @@ Z = zeros(f, couleur="rouge")
 E = extrema(f, couleur="vert")
 I = inflections(f, couleur="violet")`;
 
+	const deriveeExtremaDsl = `f = courbe("y = x^3 - 3*x", couleur="bleu")
+g = derivee(f, couleur="rouge")
+E = extrema(f, couleur="vert")
+Z = zeros(g, couleur="vert")`;
+
+	const deriveeExpDsl = `f = courbe("y = exp(x)", couleur="bleu")
+g = derivee(f, couleur="rouge", trait="tirets")`;
+
+	const deriveeSinCascadeDsl = `f = courbe("y = sin(x)", couleur="bleu")
+g1 = derivee(f, couleur="rouge")
+g2 = derivee(g1, couleur="vert")
+g3 = derivee(g2, couleur="violet")`;
+
 	const conicDsl = `c1 = courbe("x^2 + y^2 - 9 = 0", couleur="bleu")
 c2 = courbe("{x^2}/4 + {y^2}/9 - 1 = 0", couleur="rouge")
 c3 = courbe("x^2 - y^2 - 1 = 0", couleur="vert")
@@ -95,6 +108,36 @@ c4 = courbe("x^2*y - y^3 - x^2 + y = 0", couleur="violet")`;
 		dsl={analysisDsl}
 		title="Analyse — zeros(), extrema(), inflections()"
 		description="Courbe y = x^3 - 3x avec points critiques automatiques."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={deriveeExtremaDsl}
+		title="Dérivée — extrema de f ↔ zéros de f'"
+		description="f(x) = x³ − 3x en bleu, f'(x) en rouge. Les zéros de f' (en vert sur l'axe) sont exactement les abscisses des extrema de f."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={deriveeExpDsl}
+		title="Dérivée — exp(x) est sa propre dérivée"
+		description="f(x) = eˣ et f'(x) sont deux courbes superposées : la propriété caractéristique de la fonction exponentielle."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={deriveeSinCascadeDsl}
+		title="Dérivées successives — cycle de sin"
+		description="sin (bleu) → cos (rouge) → −sin (vert) → −cos (violet). Cycle de longueur 4 visible directement."
 		width={700}
 		height={500}
 	/>
