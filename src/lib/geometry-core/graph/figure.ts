@@ -122,6 +122,7 @@ import {
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { integrateDefinite, numericIntegrate } from '$lib/mathAST/integration';
+import { findRoots } from '$lib/mathAST/analysis/roots';
 import { UndoManager } from './undo-redo';
 import type { Delta } from './undo-redo';
 import { computeElementPosition, resolveScalarParam } from './compute-position';
@@ -2840,14 +2841,21 @@ export class Figure {
 
 	/**
 	 * Create a paired GeoIntegralArea (visual zone) and GeoScalar (reactive value)
-	 * representing ∫ₐᵇ f(x) dx. Returns both ids; the scalar is what the DSL
-	 * `integrale()` builtin exposes. See `docs/wip/geometry/integrale-study.md`.
+	 * representing the area between f and the x-axis on [a, b].
+	 *
+	 * - `options.signed = true` (default) → scalar = F(b) − F(a), used by
+	 *   `integrale()` (DSL builtin). See `docs/wip/geometry/integrale-study.md`.
+	 * - `options.signed = false` → scalar = Σ |F(z_{i+1}) − F(z_i)| over zeros
+	 *   of f in (a, b), used by `aire()` (DSL builtin). Always ≥ 0.
+	 *   See `docs/wip/geometry/aire-study.md`.
+	 *
+	 * Returns both ids; the scalar is what the DSL exposes.
 	 */
 	createIntegralArea(
 		functionId: string,
 		lowerBound: ScalarParam,
 		upperBound: ScalarParam,
-		options?: ElementOptions
+		options?: ElementOptions & { signed?: boolean }
 	): { areaId: string; scalarId: string } {
 		const fnEl = this.elements.get(functionId);
 		if (!fnEl || fnEl.type !== 'function') {
@@ -2870,6 +2878,8 @@ export class Figure {
 		};
 		validateBoundRef(lowerBound, 'lower');
 		validateBoundRef(upperBound, 'upper');
+
+		const signed = options?.signed ?? true;
 
 		// Symbolic integration attempt — only the antiderivative matters here.
 		// Pass allowNumeric: false so integrateDefinite doesn't run a redundant
@@ -2898,6 +2908,7 @@ export class Figure {
 		}
 
 		const fnExpression = fnEl.expression;
+		const fnCompiled = fnEl.compiledFn;
 		const cachedCompiledF = compiledF;
 		const lowerCapture = lowerBound;
 		const upperCapture = upperBound;
@@ -2905,14 +2916,55 @@ export class Figure {
 			const a = resolveScalarParam(lowerCapture, scalarValues);
 			const b = resolveScalarParam(upperCapture, scalarValues);
 			if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN;
-			if (cachedCompiledF) {
-				return cachedCompiledF({ x: b }) - cachedCompiledF({ x: a });
+
+			if (signed) {
+				if (cachedCompiledF) {
+					return cachedCompiledF({ x: b }) - cachedCompiledF({ x: a });
+				}
+				try {
+					return numericIntegrate(fnExpression, 'x', a, b).value;
+				} catch {
+					return NaN;
+				}
 			}
+
+			// signed = false: aire géométrique = Σ |F(z_{i+1}) − F(z_i)| over zeros of f in (a, b).
+			if (a === b) return 0;
+			const lo = Math.min(a, b);
+			const hi = Math.max(a, b);
+			// Inner zeros only — boundary roots would create empty subintervals (harmless,
+			// just wasted work). Tolerance 1e-7 matches splitOnZeros' ZERO_Y_EPS scale.
+			const inner: number[] = [];
 			try {
-				return numericIntegrate(fnExpression, 'x', a, b).value;
+				const all = findRoots(fnExpression, fnCompiled, 'x', lo, hi);
+				for (const r of all) {
+					if (r.x > lo + 1e-7 && r.x < hi - 1e-7) inner.push(r.x);
+				}
 			} catch {
-				return NaN;
+				// findRoots failed; fall back to a single subinterval [lo, hi].
 			}
+			const breakpoints = [lo, ...inner, hi];
+
+			let area = 0;
+			if (cachedCompiledF) {
+				for (let i = 0; i < breakpoints.length - 1; i++) {
+					area += Math.abs(
+						cachedCompiledF({ x: breakpoints[i + 1] }) - cachedCompiledF({ x: breakpoints[i] })
+					);
+				}
+				return area;
+			}
+			for (let i = 0; i < breakpoints.length - 1; i++) {
+				try {
+					area += Math.abs(
+						numericIntegrate(fnExpression, 'x', breakpoints[i], breakpoints[i + 1]).value
+					);
+				} catch {
+					// Subinterval failed (e.g. extremely narrow width or non-integrable form).
+					// Skip contribution rather than discarding partial sums from earlier subintervals.
+				}
+			}
+			return area;
 		};
 
 		const deps: string[] = [functionId];
@@ -2935,6 +2987,7 @@ export class Figure {
 			functionId,
 			lowerBound,
 			upperBound,
+			signed,
 			antiderivative,
 			compiledF,
 			integrationStatus,

@@ -432,7 +432,14 @@ export interface GeoScalar extends GeoElementBase {
 // =============================================================================
 
 /**
- * Visual zone representing ∫ₐᵇ f(x) dx on a figure.
+ * Visual zone representing the area between f and the x-axis on [a, b].
+ *
+ * - When `signed = true` (default, used by `integrale()`): the paired scalar
+ *   carries the signed integral F(b) − F(a) and the visual splits sub-regions
+ *   by sign for two-tone rendering.
+ * - When `signed = false` (used by `aire()`): the paired scalar carries the
+ *   geometric area Σ |F(z_{i+1}) − F(z_i)| over zeros of f in (a, b), always
+ *   ≥ 0; the visual is rendered with a uniform fill regardless of sign.
  *
  * Created in pairs with a GeoScalar (option C of the integrale-study).
  * Stores the antiderivative F(x) and its compiled closure for fast reactive
@@ -445,6 +452,8 @@ export interface GeoIntegralArea extends GeoElementBase {
 	readonly functionId: string;
 	readonly lowerBound: ScalarParam;
 	readonly upperBound: ScalarParam;
+	/** Signed integral (true, integrale) vs unsigned geometric area (false, aire). */
+	readonly signed: boolean;
 	/** Antiderivative F(x) when symbolic integration succeeded, else null. */
 	readonly antiderivative: MathNode | null;
 	/** Compiled F(x) for fast evaluation. Null when antiderivative is null. */
