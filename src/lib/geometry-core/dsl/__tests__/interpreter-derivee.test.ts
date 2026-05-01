@@ -245,6 +245,25 @@ g = derivee(f)`;
 			expect(g2.compiledFn({ x: Math.PI })).toBeCloseTo(-1);
 		}
 	});
+
+	it('round-trip preserves x^x derivative (logarithmic differentiation)', () => {
+		// (x^x)' = x^x * (ln(x) + 1). The simplified form contains
+		// `x * 1/x` whose juxtaposition `x1/x` would be unparseable.
+		// Regression guard for the toCustom implicit-mul safety net.
+		const script = `f = courbe("y = x^x")
+g = derivee(f)`;
+		const { figure, symbols } = runDsl(script);
+		const serialized = serializeDsl(figure, symbols);
+		const { figure: fig2, symbols: sym2 } = runDsl(serialized);
+		const g2 = fig2.getElementById(sym2.get('g')!.figureId!);
+		expect(g2?.type).toBe('function');
+		if (g2 && g2.type === 'function') {
+			// (x^x)'|_{x=1} = 1^1 * (ln(1) + 1) = 1
+			expect(g2.compiledFn({ x: 1 })).toBeCloseTo(1);
+			// (x^x)'|_{x=2} = 2^2 * (ln(2) + 1) ≈ 6.7726
+			expect(g2.compiledFn({ x: 2 })).toBeCloseTo(4 * (Math.log(2) + 1));
+		}
+	});
 });
 
 describe('derivee — singular / undefined points', () => {
