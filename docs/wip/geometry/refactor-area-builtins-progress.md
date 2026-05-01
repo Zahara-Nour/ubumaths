@@ -9,8 +9,8 @@
 | Phase                      | Statut      | Tests                                                                     | Commit                                       |
 | -------------------------- | ----------- | ------------------------------------------------------------------------- | -------------------------------------------- |
 | 0 — Étude                  | ✅ Validée  | —                                                                         | (étude rédigée et validée par l'utilisateur) |
-| 1 — Helper isolé           | ✅ Terminée | 16 verts (helper) + 62 existants (integrale 20 / aire 21 / aire_entre 21) | (à venir)                                    |
-| 2 — Migration `integrale`  | ⏳ À faire  | 20 V1                                                                     | —                                            |
+| 1 — Helper isolé           | ✅ Terminée | 16 verts (helper) + 62 existants (integrale 20 / aire 21 / aire_entre 21) | a5447a10                                     |
+| 2 — Migration `integrale`  | ✅ Terminée | 20 V1 verts + 16 helper + 42 autres = 78                                  | (à venir)                                    |
 | 3 — Migration `aire`       | ⏳ À faire  | 21 V2 + tests polygone                                                    | —                                            |
 | 4 — Migration `aire_entre` | ⏳ À faire  | 21 V3                                                                     | —                                            |
 | 5 — Quality checks         | ⏳ À faire  | tous                                                                      | —                                            |
@@ -90,11 +90,40 @@ Findings non appliqués (jugés OK) :
 
 ---
 
-## Prochaines étapes (Phase 2)
+## Phase 2 — détails
 
-Migrer `case 'integrale'` (`builtins.ts:1719-1801`) vers un appel
-`interpretAreaBuiltin`. Aligner le message `'le premier argument'` →
-`'le 1er argument'` (Q1). Vérifier les 20 tests V1 verts.
+### Fichiers modifiés
+
+- `src/lib/geometry-core/dsl/builtins.ts` :
+  - Import ajouté : `import { interpretAreaBuiltin } from './area-builtin-helper';`
+  - `case 'integrale'` (lignes 1719-1801, 82 lignes) → 22 lignes (gain 60).
+  - Message aligné Q1 : `'le premier argument'` → `'le 1er argument'`
+    (aucun test ne l'asserte, vérifié par grep).
+
+### Code review (Phase 2)
+
+Verdict : **GO Phase 3**. Aucun blocker/major. Findings :
+
+- Minor : `resolveBoundParam` dupliqué subsiste dans `case 'aire'` et
+  `case 'aire_entre'` — sera retiré en Phases 3 et 4 (connu).
+- Nit : changement de message non testé donc safe ; améliore aussi
+  l'homogénéité avec les autres builtins.
+
+### Tests
+
+- Integrale V1 : **20 verts** (0 régression).
+- Helper : **16 verts**.
+- Aire V2 + aire_entre V3 (non touchés) : **42 verts**.
+- **Total : 78/78 verts.**
+
+---
+
+## Prochaines étapes (Phase 3)
+
+Migrer `case 'aire'` (`builtins.ts:1119-1216`). Subtilité : conserver le
+fallthrough silencieux vers la branche polygone si `pos[0]` n'est pas
+une function. Le helper s'occupe uniquement de la branche courbe avec
+`signed: false, defaultColor: '#22c55e'`.
 
 ---
 
@@ -102,7 +131,8 @@ Migrer `case 'integrale'` (`builtins.ts:1719-1801`) vers un appel
 
 En cas de crash de session, reprendre ici :
 
-- Helper créé et testé (16 verts).
-- Étude validée + Q1-Q4 arbitrées.
-- Aucun case DSL touché.
-- Commit Phase 1 à venir (juste après ce doc).
+- Phase 1 (helper) committée a5447a10.
+- Phase 2 (integrale) committée (commit à venir).
+- Restant : Phase 3 (aire), Phase 4 (aire_entre), Phase 5 (quality checks).
+- Tests verts : 78/78.
+- Q1-Q4 arbitrées.

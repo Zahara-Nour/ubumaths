@@ -45,6 +45,7 @@ import type { GeoElement } from '../types/elements';
 import { isPointElement } from '../types/elements';
 import { warnIfSingularitySuspected, getAllDiscontinuities } from './singularity-warn';
 import type { Discontinuity } from '$lib/mathAST/analysis';
+import { interpretAreaBuiltin } from './area-builtin-helper';
 
 /** Resolve a line-like element's two defining point IDs. */
 function resolveLinePoints(el: GeoElement): { p1: string; p2: string } | null {
@@ -1724,80 +1725,20 @@ function _executeBuiltinInner(
 			const intFnEl = figure.getElementById(intFnId);
 			if (!intFnEl || intFnEl.type !== 'function') {
 				throw new DslRuntimeError(
-					'integrale(): le premier argument doit etre une courbe y = f(x)',
+					'integrale(): le 1er argument doit etre une courbe y = f(x)',
 					line
 				);
 			}
-
-			const resolveBoundParam = (
-				arg: ResolvedValue,
-				name: string
-			): { param: ScalarParam; numericValue: number } => {
-				if (arg.type === 'nombre') {
-					return { param: numeric(arg.value), numericValue: arg.value };
-				}
-				if (arg.type === 'element') {
-					const el = figure.getElementById(arg.figureId);
-					if (!el || (el.type !== 'scalar' && el.type !== 'slider')) {
-						throw new DslRuntimeError(
-							`integrale(): la borne ${name} doit etre un nombre ou un curseur/scalaire`,
-							line
-						);
-					}
-					const v = figure.getScalarValue(arg.figureId);
-					return {
-						param: { scalarRef: arg.figureId },
-						numericValue: v ?? NaN
-					};
-				}
-				throw new DslRuntimeError(
-					`integrale(): la borne ${name} doit etre un nombre ou un curseur/scalaire`,
-					line
-				);
-			};
-
-			const lower = resolveBoundParam(pos[1], 'inferieure');
-			const upper = resolveBoundParam(pos[2], 'superieure');
-
-			// V2 : pre-compute the full continuity analysis once, then pass the
-			// list to createIntegralArea so the compute closure can re-classify
-			// against the live bounds on every slider drag (NaN on divergence,
-			// split-point hints on removable/jump). `getAllDiscontinuities`
-			// unwraps the courbe-style `--E` wrapping and swallows any throw.
-			// TODO(perf): `warnIfSingularitySuspected` below re-runs analyzeContinuity
-			// internally — single-digit ms total but a second pass is still wasted.
-			// Refactor to share the analysis result if the cost ever shows up.
-			const intDiscontinuities: readonly Discontinuity[] | undefined =
-				getAllDiscontinuities(intFnEl.expression, 'x') ?? undefined;
-
-			let intResult: { areaId: string; scalarId: string };
-			try {
-				intResult = figure.createIntegralArea(intFnId, lower.param, upper.param, {
-					label,
-					discontinuities: intDiscontinuities
-				});
-			} catch (e) {
-				throw new DslRuntimeError(
-					`integrale(): ${e instanceof Error ? e.message : String(e)}`,
-					line
-				);
-			}
-
-			// GeoFunction is always y = f(x) by convention in geometry-core
-			// (compiledFn signature is `{x: number} -> number`, see types/elements.ts:708).
-			warnIfSingularitySuspected(
-				intFnEl.expression,
-				'x',
-				lower.numericValue,
-				upper.numericValue,
-				line
-			);
-
-			return {
-				figureId: intResult.scalarId,
-				symbolType: 'scalar',
-				styleTargetId: intResult.areaId
-			};
+			return interpretAreaBuiltin({
+				name: 'integrale',
+				f: { id: intFnId, expression: intFnEl.expression },
+				lowerArg: pos[1],
+				upperArg: pos[2],
+				signed: true,
+				line,
+				label,
+				figure
+			});
 		}
 
 		case 'aire_entre': {
