@@ -98,30 +98,37 @@ Sondage post-commit a révélé une seconde forme du bug, **plus grave** : silen
 correcte. Round-trip "réussit" mais avec une AST sémantiquement différente — vraie
 corruption silencieuse de fonctions dérivées dans le DSL geometry-core.
 
-**Fix** : étendre la regex à `/^[0-9.,+-]/` (ajout `+` et `-`). Renommé
-`startsWithNumberToken` → `startsWithAmbiguousLeading` pour refléter la couverture.
-Mêmes 2 call sites, JSDoc enrichie pour documenter les deux modes d'échec
-(hard reject NUMBER vs silent reparse `+`/`-`).
+**Fix** (révisé suite à retour utilisateur) : deux helpers distincts.
 
-| AST input                                        | Avant ext.    | Après ext.     |
-| ------------------------------------------------ | ------------- | -------------- |
-| `multiply(x, opposite(num('2')), 'implicit')`    | `x-2` ❌      | `x*-2` ✅      |
-| `multiply(x, opposite(sin(x)), 'implicit')`      | `x-sin(x)` ❌ | `x*-sin(x)` ✅ |
-| `multiply(x, positive(num('2')), 'implicit')`    | `x+2` ❌      | `x*+2` ✅      |
-| `multiply(opposite(x), opposite(y), 'implicit')` | `-x-y` ❌     | `-x*-y` ✅     |
+- `startsWithNumberToken` (regex `/^[0-9.,]/`) — émet `*` simple (`x*1/x`).
+- `startsWithUnarySign` (regex `/^[+-]/`) — émet `*` ET enrobe le RHS en
+  parenthèses (`x*(-sin(x))`), conformément à la convention mathématique
+  habituelle. Forme `x*-2`/`x*-sin(x)` rejetée par l'utilisateur car peu
+  conventionnelle.
+
+L'usage des parenthèses pour le cas `+`/`-` règle aussi naturellement la
+limitation `add(opposite(a), b)` en RHS : le wrapping `(...)` regroupe le
+sous-AST entier au lieu de laisser le `+b` flotter à l'extérieur.
+
+| AST input                                        | Avant fix     | Après fix        |
+| ------------------------------------------------ | ------------- | ---------------- |
+| `multiply(x, opposite(num('2')), 'implicit')`    | `x-2` ❌      | `x*(-2)` ✅      |
+| `multiply(x, opposite(sin(x)), 'implicit')`      | `x-sin(x)` ❌ | `x*(-sin(x))` ✅ |
+| `multiply(x, positive(num('2')), 'implicit')`    | `x+2` ❌      | `x*(+2)` ✅      |
+| `multiply(opposite(x), opposite(y), 'implicit')` | `-x-y` ❌     | `-x*(-y)` ✅     |
+
+Production réelle (sondage `differentiate`) :
+
+- `x*cos(x)` → `cos(x)+x*(-sin(x))` ✅
+- `x^2*cos(x)` → `2xcos(x)+x^2*(-sin(x))` ✅
+- `sin(x)*cos(x)` → `cos(x)cos(x)+sin(x)*(-sin(x))` ✅
+- `(x+1)*cos(x)` → `cos(x)+(x+1)*(-sin(x))` ✅
 
 **Tests ajoutés** :
 
 - 5 cas dans `custom-generator-implicit-mul.test.ts` (45 tests au total)
 - 1 test sémantique dans `interpreter-derivee.test.ts` : round-trip de
   `derivee(courbe("y = x^2 * cos(x)"))` avec évaluation numérique en x=0, π/2, π
-
-**Limitation résiduelle** (documentée en JSDoc) : si le RHS d'une mul implicite
-est `add(opposite(a), b)` (somme dont premier terme est unaire négatif), le `*`
-n'enveloppe que le premier facteur. `multiply(x, add(opposite(a), b), 'implicit')`
-produit `x*-a+b` lu comme `add(mul(x, opposite(a)), b)`, pas
-`mul(x, add(opposite(a), b))`. En pratique, `differentiate` ne produit jamais cette
-forme (les sommes sont toujours en couche externe).
 
 ## Code review
 

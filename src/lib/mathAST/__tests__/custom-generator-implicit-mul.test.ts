@@ -105,34 +105,35 @@ describe('toCustom — implicit multiplication safety net', () => {
 			expect(toCustom(expr)).toBe('\\pi*2');
 		});
 
-		it('variable * opposite(number) → x*-2', () => {
+		it('variable * opposite(number) → x*(-2)', () => {
 			// Without the safety net, juxtaposition produces `x-2` which the
 			// parser reads as subtraction (silent semantic corruption).
+			// Parens form is the conventional mathematical notation.
 			const expr = MathAST.multiply(x, MathAST.opposite(MathAST.number('2')), 'implicit');
-			expect(toCustom(expr)).toBe('x*-2');
+			expect(toCustom(expr)).toBe('x*(-2)');
 		});
 
-		it('variable * opposite(variable) → x*-y', () => {
+		it('variable * opposite(variable) → x*(-y)', () => {
 			const expr = MathAST.multiply(x, MathAST.opposite(y), 'implicit');
-			expect(toCustom(expr)).toBe('x*-y');
+			expect(toCustom(expr)).toBe('x*(-y)');
 		});
 
-		it('variable * opposite(sin(x)) → x*-sin(x)', () => {
+		it('variable * opposite(sin(x)) → x*(-sin(x))', () => {
 			// This case is reachable from `differentiate(x * cos(x))` via the product rule:
 			// (x*cos(x))' = cos(x) + x*(-sin(x)). Without the safety net, the second term
 			// renders as `x-sin(x)` and the whole derivative becomes a 3-term sum after reparse.
 			const expr = MathAST.multiply(x, MathAST.opposite(MathAST.sin(x)), 'implicit');
-			expect(toCustom(expr)).toBe('x*-sin(x)');
+			expect(toCustom(expr)).toBe('x*(-sin(x))');
 		});
 
-		it('variable * positive(number) → x*+2', () => {
+		it('variable * positive(number) → x*(+2)', () => {
 			const expr = MathAST.multiply(x, MathAST.positive(MathAST.number('2')), 'implicit');
-			expect(toCustom(expr)).toBe('x*+2');
+			expect(toCustom(expr)).toBe('x*(+2)');
 		});
 
-		it('opposite(variable) * opposite(variable) → -x*-y (LHS keeps unary, RHS triggers safety)', () => {
+		it('opposite(variable) * opposite(variable) → -x*(-y) (LHS keeps unary, RHS wrapped)', () => {
 			const expr = MathAST.multiply(MathAST.opposite(x), MathAST.opposite(y), 'implicit');
-			expect(toCustom(expr)).toBe('-x*-y');
+			expect(toCustom(expr)).toBe('-x*(-y)');
 		});
 	});
 
