@@ -117,11 +117,13 @@ import {
 	add,
 	number as mathNumber,
 	variable,
-	relation
+	relation,
+	abs as mathAbs
 } from '$lib/mathAST/factory';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { integrateDefinite, numericIntegrate } from '$lib/mathAST/integration';
+import { improperIntegrate, PROBE_T_MAX } from '$lib/mathAST/integration/improper';
 import { findRoots } from '$lib/mathAST/analysis/roots';
 import type { Discontinuity } from '$lib/mathAST/analysis';
 import { classifyDiscontinuitiesForRange } from '../dsl/singularity-warn';
@@ -3160,6 +3162,202 @@ export class Figure {
 			antiderivative,
 			compiledF,
 			integrationStatus,
+			_scalarId: scalarId,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps,
+			...(secondFnId && {
+				secondFunctionId: secondFnId,
+				differenceExpression,
+				compiledDifference
+			})
+		};
+
+		const scalarElement: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'expression',
+			id: scalarId,
+			targetIds: [],
+			compute,
+			scalarDeps: scalarRefDeps,
+			_visualAreaId: areaId,
+			color: this.resolveColor(options),
+			visible: false,
+			label: undefined,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+
+		this.beginTransaction();
+		try {
+			this.addElement(areaId, areaElement, deps);
+			this.addElement(scalarId, scalarElement, deps);
+			this.computePosition(areaId);
+			this.computePosition(scalarId);
+			this.commit();
+		} catch (e) {
+			this.undo_manager.discard();
+			throw e;
+		}
+
+		return { areaId, scalarId };
+	}
+
+	/**
+	 * Improper integral area — at least one of `lowerBound` / `upperBound` is
+	 * ±Infinity. Routed here from `interpretAreaBuiltin()` when a bound is
+	 * non-finite.
+	 *
+	 * Strategy: a fresh compute closure delegates to `improperIntegrate()` from
+	 * `mathAST/integration/improper`. Divergent diagnostics return NaN. The
+	 * returned `GeoIntegralArea` is structurally identical to the V1-V4 one;
+	 * only the compute closure differs (no symbolic antiderivative branch, no
+	 * findRoots-based unsigned path — the substitution scheme handles signed
+	 * AND unsigned via the `signed` flag wrapping `abs()` around the integrand).
+	 *
+	 * Spec: docs/wip/geometry/improper-integrals-study.md §2.4 + §4 (Phase 3).
+	 */
+	createImproperIntegralArea(
+		functionId: string,
+		lowerBound: ScalarParam,
+		upperBound: ScalarParam,
+		options?: ElementOptions & {
+			signed?: boolean;
+			discontinuities?: readonly Discontinuity[];
+			secondFunctionId?: string;
+		}
+	): { areaId: string; scalarId: string } {
+		const fnEl = this.elements.get(functionId);
+		if (!fnEl || fnEl.type !== 'function') {
+			throw new Error(`createImproperIntegralArea: "${functionId}" is not a function element`);
+		}
+
+		let secondFnEl: GeoFunction | undefined;
+		let secondFnId: string | undefined;
+		if (options?.secondFunctionId !== undefined) {
+			const candidate = this.elements.get(options.secondFunctionId);
+			if (!candidate || candidate.type !== 'function') {
+				throw new Error(
+					`createImproperIntegralArea: secondFunctionId "${options.secondFunctionId}" is not a function element`
+				);
+			}
+			secondFnEl = candidate;
+			secondFnId = options.secondFunctionId;
+		}
+
+		const validateBoundRef = (param: ScalarParam, label: string): void => {
+			if (!isScalarRef(param)) return;
+			const refEl = this.elements.get(param.scalarRef);
+			if (!refEl) {
+				throw new Error(
+					`createImproperIntegralArea: ${label} bound ref "${param.scalarRef}" does not exist`
+				);
+			}
+			if (refEl.type !== 'scalar' && refEl.type !== 'slider') {
+				throw new Error(
+					`createImproperIntegralArea: ${label} bound ref "${param.scalarRef}" is not a scalar or slider`
+				);
+			}
+		};
+		validateBoundRef(lowerBound, 'lower');
+		validateBoundRef(upperBound, 'upper');
+
+		const signed = secondFnEl ? false : (options?.signed ?? true);
+
+		// Working expression: f alone in V1/V2, h = f − g in V3.
+		// `abs(...)` wrap added when signed=false so the substitution scheme
+		// computes the unsigned area directly (no findRoots — there can be
+		// infinitely many zeros on an infinite range).
+		let differenceExpression: MathNode | undefined;
+		let compiledDifference: CompiledFn | undefined;
+		let workingExpression: MathNode = fnEl.expression;
+		if (secondFnEl) {
+			differenceExpression = subtract(fnEl.expression, secondFnEl.expression);
+			try {
+				compiledDifference = compile(differenceExpression);
+			} catch (e) {
+				throw new Error(
+					`createImproperIntegralArea: failed to compile h = f − g — ${e instanceof Error ? e.message : ''}`
+				);
+			}
+			workingExpression = differenceExpression;
+		}
+
+		const computeExpression: MathNode = signed ? workingExpression : mathAbs(workingExpression);
+
+		const cachedDiscs = options?.discontinuities ?? null;
+		const lowerCapture = lowerBound;
+		const upperCapture = upperBound;
+		const compute = (scalarValues: ReadonlyMap<string, number>): number => {
+			const a = resolveScalarParam(lowerCapture, scalarValues);
+			const b = resolveScalarParam(upperCapture, scalarValues);
+			// Both bounds must reduce to a number (possibly ±Infinity).
+			if (Number.isNaN(a) || Number.isNaN(b)) return NaN;
+
+			// Consult discontinuity cache against the effective probe range
+			// [min(a, T_max_neg), max(b, T_max_pos)] = [-PROBE_T_MAX, +PROBE_T_MAX]
+			// extended only on the infinite side(s). A divergent inner singularity
+			// makes the integral diverge.
+			if (cachedDiscs) {
+				const aEff = Number.isFinite(a) ? a : -PROBE_T_MAX;
+				const bEff = Number.isFinite(b) ? b : PROBE_T_MAX;
+				const ranged = classifyDiscontinuitiesForRange(cachedDiscs, aEff, bEff);
+				if (ranged) {
+					for (const rd of ranged) {
+						if (rd.causesDivergence && rd.atBoundary === 'interior') return NaN;
+					}
+				}
+			}
+
+			// If both bounds happen to be finite (slider drag from ±Inf to a number),
+			// fall back to numericIntegrate for that slider range.
+			if (Number.isFinite(a) && Number.isFinite(b)) {
+				const lo = Math.min(a, b);
+				const hi = Math.max(a, b);
+				const direction = a <= b ? 1 : -1;
+				try {
+					const v = numericIntegrate(computeExpression, 'x', lo, hi).value;
+					return signed ? direction * v : v;
+				} catch {
+					return NaN;
+				}
+			}
+
+			try {
+				const r = improperIntegrate(computeExpression, 'x', a, b);
+				return r.status === 'convergent' ? r.value : NaN;
+			} catch {
+				return NaN;
+			}
+		};
+
+		const deps: string[] = [functionId];
+		if (secondFnId && secondFnId !== functionId) deps.push(secondFnId);
+		const scalarRefDeps: string[] = [];
+		if (isScalarRef(lowerBound)) {
+			deps.push(lowerBound.scalarRef);
+			scalarRefDeps.push(lowerBound.scalarRef);
+		}
+		if (isScalarRef(upperBound) && !deps.includes(upperBound.scalarRef)) {
+			deps.push(upperBound.scalarRef);
+			scalarRefDeps.push(upperBound.scalarRef);
+		}
+
+		const areaId = this.generateId('iar');
+		const scalarId = this.generateId('sca');
+
+		const areaElement: GeoIntegralArea = {
+			type: 'integralArea',
+			id: areaId,
+			functionId,
+			lowerBound,
+			upperBound,
+			signed,
+			antiderivative: null,
+			compiledF: null,
+			integrationStatus: 'approximate',
 			_scalarId: scalarId,
 			color: this.resolveColor(options),
 			visible: options?.visible ?? true,

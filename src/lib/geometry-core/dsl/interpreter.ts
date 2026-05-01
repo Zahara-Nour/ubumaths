@@ -96,7 +96,11 @@ class Interpreter {
 		private symbols: SymbolTable,
 		private macros: MacroRegistry,
 		private onDirective?: DirectiveHandler
-	) {}
+	) {
+		// Pre-load mathematical infinity so `inf`, `+inf`, `-inf` work as DSL literals
+		// (V5 improper integrals — see docs/wip/geometry/improper-integrals-study.md §2.1).
+		this.symbols.set('inf', { type: 'nombre', value: Infinity });
+	}
 
 	executeBlock(statements: DslStatement[]): ResolvedValue | undefined {
 		for (const stmt of statements) {
