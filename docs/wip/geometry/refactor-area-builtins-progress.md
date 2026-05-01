@@ -11,8 +11,8 @@
 | 0 — Étude                  | ✅ Validée  | —                                                                         | (étude rédigée et validée par l'utilisateur) |
 | 1 — Helper isolé           | ✅ Terminée | 16 verts (helper) + 62 existants (integrale 20 / aire 21 / aire_entre 21) | a5447a10                                     |
 | 2 — Migration `integrale`  | ✅ Terminée | 20 V1 verts + 16 helper + 42 autres = 78                                  | 5cb4ce4b                                     |
-| 3 — Migration `aire`       | ✅ Terminée | 21 V2 (incluant polygone) + 16 helper + 41 autres = 78                    | (à venir)                                    |
-| 4 — Migration `aire_entre` | ⏳ À faire  | 21 V3                                                                     | —                                            |
+| 3 — Migration `aire`       | ✅ Terminée | 21 V2 (incluant polygone) + 16 helper + 41 autres = 78                    | b7372ae5                                     |
+| 4 — Migration `aire_entre` | ✅ Terminée | 21 V3 + 16 helper + 41 autres + 33 singularité = 111                      | (à venir)                                    |
 | 5 — Quality checks         | ⏳ À faire  | tous                                                                      | —                                            |
 
 > **Note sur le compte de tests** : l'étude annonçait `96 + 19 + 21 = 136`,
@@ -146,13 +146,43 @@ Verdict : **GO Phase 4**. Aucun blocker/major. Findings :
 
 ---
 
-## Prochaines étapes (Phase 4)
+## Phase 4 — détails
 
-Migrer `case 'aire_entre'` (`builtins.ts:~1742-1850` après Phase 3).
-Validation `f` ET `g` (avec messages déjà alignés `'le 1er argument'` /
-`'le 2e argument'`). Appel helper avec `g` défini, `signed: false,
-defaultColor: '#fb923c'`. Vérifier 21 tests V3 verts + nombre de warns
-(2) préservé.
+### Fichiers modifiés
+
+- `src/lib/geometry-core/dsl/builtins.ts` :
+  - `case 'aire_entre'` (lignes 1681-1789, 108 lignes) → 36 lignes (gain 72).
+  - Validation `f` ET `g` (avec messages déjà alignés `'le 1er argument'`
+    / `'le 2e argument'`).
+  - Appel `interpretAreaBuiltin` avec `g` défini, `signed: false,
+defaultColor: '#fb923c'`.
+  - **Imports retirés (orphelins)** : `warnIfSingularitySuspected`,
+    `getAllDiscontinuities`, `Discontinuity`. Plus aucun usage dans
+    `builtins.ts` après les 3 migrations.
+
+### Code review (Phase 4)
+
+Verdict : **GO Phase 5**. Aucun blocker/major/minor/nit. Migration
+textbook : validation au callsite, logique déléguée, mapping arguments
+exact, cleanup imports laisse zéro orphelin.
+
+### Tests
+
+- Aire_entre V3 : **21 verts** (0 régression).
+- Helper : **16 verts**.
+- Integrale + aire V2 (non touchés) : **41 verts**.
+- Singularité (warn + nan, non touchés) : **33 verts**.
+- **Total : 111/111 verts.**
+
+---
+
+## Prochaines étapes (Phase 5)
+
+Quality checks finaux :
+
+- `pnpm check:incremental` (TS + Svelte, ~30s).
+- `npx eslint <fichiers modifiés>`.
+- Doc finale (cette page) : récap commits + métriques avant/après.
 
 ---
 
