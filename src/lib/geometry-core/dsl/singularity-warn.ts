@@ -36,6 +36,10 @@ import { isInfinity } from '$lib/mathAST/guards';
  */
 export interface RangeDiscontinuity {
 	readonly disc: Discontinuity;
+	/** Numeric value of `disc.point`, evaluated once at filter time. Always finite —
+	 * symbolic points that fail evaluation are dropped before this stage. Lets the
+	 * compute closure pick interior split points without re-evaluating the node. */
+	readonly pointValue: number;
 	readonly atBoundary: 'lower' | 'upper' | 'interior';
 	readonly causesDivergence: boolean;
 }
@@ -45,6 +49,55 @@ const BOUNDARY_TOL = 1e-9;
 // =============================================================================
 // analyzeRangeContinuity — public API
 // =============================================================================
+
+/**
+ * Strip an arbitrary number of leading `opposite(opposite(...))` wrappers from
+ * the AST. The `courbe()` builtin parses `y = E` as `--E` (mathematically
+ * equivalent but two opposite nodes thick), and `analyzeContinuity()` reasons
+ * structurally on the AST: the wrapping confuses limit evaluation and turns
+ * removable cases like `sin(x)/x` into spurious `essential` ones. Unwrapping
+ * yields the canonical form without changing the math.
+ *
+ * Note: only handles **paired** opposites (even count). A triple-opposite
+ * `---E` would leave one wrapper in place. `courbe()` consistently emits an
+ * even count today; if the parser convention changes this helper will need
+ * to handle odd cases too.
+ */
+function unwrapDoubleOpposites(node: MathNode): MathNode {
+	let cur = node;
+	while (cur.type === 'opposite' && cur.operand.type === 'opposite') {
+		cur = cur.operand.operand;
+	}
+	return cur;
+}
+
+/**
+ * Run `analyzeContinuity()` and return its `discontinuities` list.
+ *
+ * Pre-unwraps double-opposite wrappers so callers that pass an integrand
+ * straight from a `courbe()` element get the correct classification (the
+ * `--E` wrapping otherwise breaks the limits engine — see
+ * `unwrapDoubleOpposites`). Use this from `case 'integrale'` / `case 'aire'`
+ * to populate the `discontinuities` cache passed to `createIntegralArea`.
+ *
+ * Returns `null` when the analysis throws. **Downstream consequence**:
+ * `createIntegralArea`'s compute closure treats `null` and `undefined` the
+ * same way — it skips the NaN-on-divergence check entirely. This is the
+ * fail-open posture appropriate for a consultative API: a broken analysis
+ * must never break creation, even if it means silently missing a singularity
+ * that should have been reported.
+ */
+export function getAllDiscontinuities(
+	expr: MathNode,
+	variable: string
+): readonly Discontinuity[] | null {
+	try {
+		const canonical = unwrapDoubleOpposites(expr);
+		return analyzeContinuity(canonical, variable, { verbosity: 'result' }).discontinuities;
+	} catch {
+		return null;
+	}
+}
 
 /**
  * Try to evaluate a `MathNode` to a finite number. Returns `null` if evaluation
@@ -92,21 +145,20 @@ function classifyCausesDivergence(
 }
 
 /**
- * Analyse the continuity of `expr` restricted to `[a, b]`.
+ * Classify a precomputed list of discontinuities (typically `result.discontinuities`
+ * from `analyzeContinuity`) against the range `[a, b]`.
  *
- * Delegates to `analyzeContinuity()`, then filters to discontinuities whose
- * location lies in `[a, b]` and tags each with its position and a divergence
- * verdict.
+ * Filters to points inside `[a, b]` and tags each with its position
+ * (`atBoundary`) and divergence verdict (`causesDivergence`). Cheap (no
+ * re-analysis): suitable for the compute closure of `createIntegralArea`,
+ * which calls it on every slider drag.
  *
- * @returns The discontinuities inside `[a, b]` (interior + boundary), or `null`
- *   when bounds are non-finite or the interval is degenerate (`a === b`).
- *   Inverted bounds (`a > b`) are normalized to `[min, max]`. May throw if the
- *   underlying continuity analysis throws — callers consult this at their own
- *   risk; the consultative `warnIfSingularitySuspected` wraps it defensively.
+ * @returns The matching discontinuities, or `null` when bounds are non-finite
+ *   or the interval is degenerate (`a === b`). Inverted bounds (`a > b`) are
+ *   normalized to `[min, max]`.
  */
-export function analyzeRangeContinuity(
-	expr: MathNode,
-	variable: string,
+export function classifyDiscontinuitiesForRange(
+	allDiscs: readonly Discontinuity[],
 	a: number,
 	b: number
 ): readonly RangeDiscontinuity[] | null {
@@ -115,10 +167,8 @@ export function analyzeRangeContinuity(
 	const lo = Math.min(a, b);
 	const hi = Math.max(a, b);
 
-	const result = analyzeContinuity(expr, variable, { verbosity: 'result' });
-
 	const inRange: RangeDiscontinuity[] = [];
-	for (const disc of result.discontinuities) {
+	for (const disc of allDiscs) {
 		const pVal = pointToNumber(disc.point);
 		if (pVal === null) continue;
 		if (pVal < lo - BOUNDARY_TOL) continue;
@@ -131,12 +181,38 @@ export function analyzeRangeContinuity(
 
 		inRange.push({
 			disc,
+			pointValue: pVal,
 			atBoundary,
 			causesDivergence: classifyCausesDivergence(disc, atBoundary)
 		});
 	}
 
 	return inRange;
+}
+
+/**
+ * Analyse the continuity of `expr` restricted to `[a, b]`.
+ *
+ * Convenience wrapper: runs `analyzeContinuity()` then
+ * `classifyDiscontinuitiesForRange()`. Use directly when bounds are static; use
+ * the two-step path (cache `analyzeContinuity` result, call
+ * `classifyDiscontinuitiesForRange` on each drag) when bounds are reactive.
+ *
+ * @returns Same as `classifyDiscontinuitiesForRange`. May throw if the
+ *   underlying continuity analysis throws — callers consult this at their own
+ *   risk; the consultative `warnIfSingularitySuspected` wraps it defensively.
+ */
+export function analyzeRangeContinuity(
+	expr: MathNode,
+	variable: string,
+	a: number,
+	b: number
+): readonly RangeDiscontinuity[] | null {
+	if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+	if (a === b) return null;
+	const canonical = unwrapDoubleOpposites(expr);
+	const result = analyzeContinuity(canonical, variable, { verbosity: 'result' });
+	return classifyDiscontinuitiesForRange(result.discontinuities, a, b);
 }
 
 // =============================================================================

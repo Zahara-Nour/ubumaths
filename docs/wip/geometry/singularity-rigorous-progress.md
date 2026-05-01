@@ -1,6 +1,6 @@
 # Singularity rigorous V2 — progression
 
-**Statut** : Phase 1 livrée. Phases 2-3 à venir.
+**Statut** : Phases 1 et 2 livrées. Phase 3 (quality checks finaux) à venir.
 **Étude amont** : `docs/wip/geometry/singularity-rigorous-study.md`.
 **Brief** : `docs/wip/geometry/prompt-singularity-rigorous-study.md`.
 
@@ -89,27 +89,82 @@ Issues notées non bloquantes (pas d'action) :
 
 ---
 
-## Phase 2 — Intégration dans `case 'integrale'` et `case 'aire'` (À FAIRE)
+## Phase 2 — Intégration dans `case 'integrale'` et `case 'aire'` ✅
 
-### Tâches restantes
+### Décisions clarifiées avant implémentation
 
-| Tâche                                                                                    | Agent / Méthode           |
-| ---------------------------------------------------------------------------------------- | ------------------------- |
-| 2.1 Lister comportements (sémantique Q1) en français, attendre validation                | direct (Claude)           |
-| 2.2 Tests sur le builtin DSL : `integrale 1/x` → NaN, `integrale sin(x)/x` → valeur,     | `test-automator` (Sonnet) |
-| etc. (~10 nouveaux tests dans `builtins.test.ts`)                                        |                           |
-| 2.3 Modifier `case 'integrale'` et `case 'aire'` pour consulter `analyzeRangeContinuity` | direct (Claude)           |
-| 2.4 Cacher le résultat sur l'élément (cf. O5 du study)                                   | direct (Claude)           |
-| 2.5 Adapter le compute closure pour retourner NaN sur infinite/essential interior        | direct (Claude)           |
-| 2.6 Code review                                                                          | `code-reviewer` (Sonnet)  |
-| 2.7 Commit                                                                               | `commit-manager`          |
+- **O5 cache** : Option **b** validée — fermeture lexicale dans le compute
+  closure de `createIntegralArea`. Implémentation : nouveau champ optionnel
+  `discontinuities?: readonly Discontinuity[]` sur les options de
+  `createIntegralArea`. Le builtin passe la liste **complète** (sortie de
+  `analyzeContinuity`, non filtrée par bornes) ; le closure filtre contre
+  les bornes courantes à chaque drag.
+- **Quirk `courbe()`** : le DSL parse `y = E` en `--E` (double opposé), ce
+  qui fait que `analyzeContinuity` mé-classifie removable comme essential.
+  Solution : helper `unwrapDoubleOpposites` dans `singularity-warn.ts` et
+  helper `getAllDiscontinuities(expr, var)` qui unwrap + analyse + swallow
+  les exceptions. Le builtin utilise `getAllDiscontinuities`.
+- **Cas removable interior** : l'intégrale converge mais `numericIntegrate`
+  échantillonne aux endpoints, ce qui produit `NaN` si on évalue exactement
+  au point removable (ex. `sin(0)/0`). Solution : split avec sliver `1e-9`
+  autour du point dans le compute closure.
 
-### Question ouverte O5 à trancher en Phase 2
+### Livrables
 
-Cache des discontinuités sur `GeoIntegralArea` (champ optionnel) **vs**
-fermeture lexicale dans le compute closure. La conversation Phase 0 a
-mentionné cette question mais ne l'a pas explicitement tranchée. À
-clarifier avant le 2.3.
+- `src/lib/geometry-core/dsl/singularity-warn.ts` :
+  - **Nouveau** : `pointValue: number` sur `RangeDiscontinuity`.
+  - **Nouveau** : export `classifyDiscontinuitiesForRange(allDiscs, a, b)`
+    (extraction du filtre interne, utilisé par le compute closure à chaque
+    drag — pas de re-analyse).
+  - **Nouveau** : export `getAllDiscontinuities(expr, var)` (unwrap +
+    `analyzeContinuity`, défensif).
+  - **Nouveau** : helper interne `unwrapDoubleOpposites`.
+- `src/lib/geometry-core/graph/figure.ts createIntegralArea` :
+  - Nouvelle option `discontinuities?: readonly Discontinuity[]`.
+  - Compute closure : NaN guard + split-points pour signed=true et
+    signed=false.
+- `src/lib/geometry-core/dsl/builtins.ts` `case 'integrale'` et `case 'aire'` :
+  - Appel à `getAllDiscontinuities` à la création.
+  - Passage à `createIntegralArea` via `options.discontinuities`.
+- `src/lib/geometry-core/dsl/__tests__/interpreter-singularity-nan.test.ts` :
+  15 tests (5 NaN intégrale + 5 finite intégrale + 4 aire + 1 réactivité drag).
+
+### Tests
+
+- 15 tests `interpreter-singularity-nan.test.ts` : tous verts.
+- 37 tests Phase 1 (singularity-warn + singularity-warn-v2) : restent verts.
+- 1559/1561 tests sur `geometry-core/dsl` + `geometry-core/graph` (2 skipped
+  préexistants) : aucune régression.
+
+### Code review (corrections appliquées)
+
+Issues retournées par `code-reviewer` (Sonnet) et adressées :
+
+1. **Important — Latent issue antiderivative + jump** : commentaire ajouté
+   dans le path `signed=true` + `cachedCompiledF` expliquant pourquoi le
+   chemin est sûr aujourd'hui (`integrateDefinite` refuse les piecewise
+   discontinus) et comment ajouter le guard si une régression apparaît.
+2. **Important — Tolerance asymetry 1e-7 vs 1e-9** : commentaire ajouté
+   sur `removableNotZero` justifiant le choix `1e-7` (matche la précision
+   de `findRoots`) vs `splitEps = 1e-9` (sliver pour adaptive Simpson).
+3. **Minor — `unwrapDoubleOpposites` paire seulement** : commentaire ajouté
+   notant la limitation et la condition pour étendre.
+4. **Minor — JSDoc `getAllDiscontinuities` downstream consequence** :
+   précisé que `null` désactive le NaN guard (fail-open).
+5. **Minor — TODO(perf)** : `analyzeContinuity` est appelé deux fois à la
+   création (via `getAllDiscontinuities` + via `warnIfSingularitySuspected`).
+   Coût single-digit ms, comment posé pour optimisation future.
+6. **Minor — Tests manquants** : ajout de **C4** (`aire(sin(x)/x, -1, 1)`
+   — exerce le path signed=false avec interior removable) et **B5**
+   (`integrale(x^2, 1, 0)` — valide le `direction * total` sur bornes
+   inversées).
+
+### Détail d'implémentation à noter pour Phase 3
+
+- Pas de fichier `.svelte` modifié → pas d'autofixer à lancer.
+- `pnpm format` sur les 4 fichiers modifiés (singularity-warn.ts, figure.ts,
+  builtins.ts, interpreter-singularity-nan.test.ts) + le doc.
+- `pnpm check:incremental` sur les modifications.
 
 ---
 
