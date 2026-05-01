@@ -255,13 +255,17 @@ export function findSingularitiesInRange(
 }
 
 /** Aggregate findings into a single multi-line warning string. */
-export function formatSingularityWarnings(findings: SingularityFinding[], line?: number): string {
+export function formatSingularityWarnings(
+	findings: SingularityFinding[],
+	line?: number,
+	builtin: string = 'integrale'
+): string {
 	if (findings.length === 0) return '';
-	const prefix = line !== undefined ? `integrale ligne ${line}: ` : 'integrale: ';
+	const prefix = line !== undefined ? `${builtin} ligne ${line}: ` : `${builtin}: `;
 	const header =
 		findings.length === 1
-			? `${prefix}singularité suspectée — l'intégrale peut être incorrecte.`
-			: `${prefix}${findings.length} singularités suspectées — l'intégrale peut être incorrecte.`;
+			? `${prefix}singularité suspectée — le résultat peut être incorrect.`
+			: `${prefix}${findings.length} singularités suspectées — le résultat peut être incorrect.`;
 	const body = findings.map((f) => `  • ${f.description}`).join('\n');
 	return `${header}\n${body}`;
 }
@@ -270,16 +274,20 @@ export function formatSingularityWarnings(findings: SingularityFinding[], line?:
  * Entry point used by the DSL builtin. Emits a single console.warn when at
  * least one finding is detected. Silent otherwise. Bound non-finite values
  * skip detection entirely.
+ *
+ * `builtin` is the name displayed in the warning prefix (default 'integrale'
+ * for V1 backward compat; pass 'aire' from the aire() builtin).
  */
 export function warnIfSingularitySuspected(
 	expr: MathNode,
 	variable: string,
 	a: number,
 	b: number,
-	line?: number
+	line?: number,
+	builtin: string = 'integrale'
 ): void {
 	if (!Number.isFinite(a) || !Number.isFinite(b)) return;
 	const findings = findSingularitiesInRange(expr, variable, a, b);
 	if (findings.length === 0) return;
-	console.warn(formatSingularityWarnings(findings, line));
+	console.warn(formatSingularityWarnings(findings, line, builtin));
 }

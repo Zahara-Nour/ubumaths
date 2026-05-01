@@ -10,11 +10,14 @@
 **Phase 1 terminée** ✅ — Extension du type `GeoIntegralArea` (champ `signed`)
 
 - branchement de la closure compute dans `figure.createIntegralArea` selon
-  le mode signé/non-signé.
+  le mode signé/non-signé. Commit `ef6ab0ad`.
+
+**Phase 2 terminée** ✅ — Surcharge du `case 'aire'` dans `builtins.ts` pour
+router vers la branche aire-sous-courbe quand le premier arg est une
+`GeoFunction`. Refactor `singularity-warn` pour préfixe paramétrique.
 
 Phases restantes :
 
-- **Phase 2** — Builtin DSL `case 'aire'` (surcharge sur le case existant).
 - **Phase 3** — Rendu SVG (branche `fillOpacity` uniforme dans `GeometryCanvas.svelte`).
 - **Phase 4** — Page démo `/geometry-demo/sliders/aire` + doc utilisateur
   `docs/ref/geometry-dsl/aire.md`.
@@ -143,6 +146,123 @@ Reste validé sans modification :
   que la signature polygone reste fonctionnelle.
 - L'appel sera `figure.createIntegralArea(fnId, lower, upper, { label, signed: false })`
   (Phase 2 ajoutera juste `signed: false` à l'appel actuel d'`integrale`).
+
+---
+
+## Phase 2 — DSL builtin `aire(f, a, b)` ✅
+
+### Livrables
+
+**Modifiés** :
+
+- `src/lib/geometry-core/dsl/singularity-warn.ts`
+
+  - `formatSingularityWarnings(findings, line?, builtin = 'integrale')` :
+    nouveau paramètre `builtin` pour personnaliser le préfixe du message
+    (`'integrale ligne X:'` ou `'aire ligne X:'`). Défaut V1 backward compat.
+  - `warnIfSingularitySuspected(...)` : idem, propage à `formatSingularityWarnings`.
+  - Wording du message générique : "le résultat peut être incorrect"
+    (au lieu de "l'intégrale peut être incorrecte"). Aucun test V1 ne
+    dépend du wording exact (vérifié).
+
+- `src/lib/geometry-core/dsl/builtins.ts`
+  - `case 'aire'` étendu avec discrimination en tête :
+    - Si `pos.length === 3` ET `pos[0].type === 'element'` ET
+      `candidateEl.type === 'function'` → branche aire-sous-courbe (clone
+      de `case 'integrale'` avec `signed: false` et préfixe `'aire'`).
+    - Sinon (incluant ≥ 4 args, ou pos[0] non-fonction) → comportement
+      polygone inchangé (`createScalarArea(pointIds, ...)`).
+  - Helper `resolveBoundParam` dupliqué inline (décision §2.10 de l'étude).
+  - Re-wrap des `Error` JS en `DslRuntimeError` avec numéro de ligne.
+  - Retour : `{ figureId: scalarId, symbolType: 'scalar', styleTargetId: areaId }`
+    (cohérent V1 d'`integrale`).
+  - Commentaires de tête : explicite la fallthrough pour pos[0] non-fonction
+    (acceptable V1, à améliorer V3) + limitation slider non-rechecked.
+
+**Nouveaux** :
+
+- `src/lib/geometry-core/dsl/__tests__/interpreter-aire-undercurve.test.ts`
+  18 tests, tous verts.
+
+### Comportements implémentés
+
+#### A. Régression polygon (3 tests)
+
+- ✅ A1 : `aire(P1, P2, P3)` triangle = 2.
+- ✅ A2 : `aire(P1, P2, P3, P4)` quadrilatère = 4 (≥ 3 args toujours OK).
+- ✅ A3 : `aire(P1, P2)` (< 3 args) → erreur `DslRuntimeError`.
+
+#### B. Aire sous courbe (8 tests)
+
+- ✅ B1 : `aire(x², 0, 1)` = 1/3.
+- ✅ B2 : `aire(x³−x, -1, 1)` = 0.5 (vs `integrale = 0`).
+- ✅ B3 : symbole DSL exposé = scalar.
+- ✅ B4 : `GeoIntegralArea` créé avec `signed: false`.
+- ✅ B5 : `integrale` et `aire` sur même `f` créent 2 areas indépendantes
+  (signed/unsigned).
+- ✅ B6 : sliders + recompute correct (`aire(sin(x), 0, b)` avec `b` qui
+  passe de π à 2π → 2 puis 4).
+- ✅ B7 : fallback numérique gaussienne `aire(e^{-x²}, -1, 1)` ≈ 1.4937.
+- ✅ B8 : bornes inversées → même valeur (orientation ignorée).
+
+#### C. Style inline (2 tests)
+
+- ✅ C1 : `couleur="vert"` appliqué à l'area.
+- ✅ C2 : `opacite_fond=0.5` appliqué à l'area.
+
+#### D. Singularity warn (3 tests)
+
+- ✅ D1 : pôle de `1/x` dans `[-1, 1]` → warn émis.
+- ✅ D2 : préfixe du message est `'aire ligne X:'` (pas `'integrale'`).
+- ✅ D3 : fonction propre → silence.
+
+#### E. Disambiguation (2 tests)
+
+- ✅ E1 : `aire(f, a, b)` avec sliders → routes correctement vers
+  under-curve (1 area créée).
+- ✅ E2 : `aire(f, P, 1)` (point comme borne) → erreur claire dans
+  `resolveBoundParam` (n'arrive pas jusqu'à polygon, branche under-curve
+  rejette immédiatement).
+
+### Code review (corrections appliquées)
+
+Issues mineures suggérées par `code-reviewer` et corrigées :
+
+1. **Minor** — Commentaire ajouté avant `warnIfSingularitySuspected` :
+   "Singularity check uses numeric bound values at creation time only —
+   slider-driven bounds are not re-checked on drag (same limitation as
+   integrale())." Aligne sur le style V1.
+2. **Minor** — Documentation de la fallthrough dans le commentaire de
+   tête du `case 'aire'` : explicite qu'un élément non-fonction (ex.
+   cercle) en pos[0] sera routé vers polygon avec une erreur "point1"
+   peu claire. Documenté comme acceptable V1.
+
+Suggestions optionnelles déclinées :
+
+- Renommage `aireFnEl` → `aireFunctionEl` : non, alias minimal cohérent.
+- Test DSL-level pour le label sur l'area : redondant avec le test factory
+  V1 (`figure-integral-area.test.ts:292`).
+
+### Tests
+
+- 18 nouveaux tests sur `interpreter-aire-undercurve.test.ts` : tous verts.
+- 20 tests V1 `interpreter-integrale.test.ts` : tous verts inchangés
+  (préfixe `'integrale ligne 2:'` toujours valide grâce au défaut).
+- 33 tests V1 `singularity-warn.test.ts` : tous verts inchangés.
+- Régression complète : **2323/2323** tests verts sur tout `geometry-core`
+  (+ 2 skipped pour bench perf manuel V1).
+
+### Détail d'implémentation à noter pour Phase 3
+
+- Le `GeoIntegralArea` créé par `aire()` a `signed: false`. La Phase 3
+  doit lire ce flag dans `GeometryCanvas.svelte` pour appliquer un
+  `fillOpacity` uniforme (au lieu du splittage signed/unsigned du V1
+  `integrale`).
+- Le rendu `splitOnZeros` + `integralAreaToSVG` reste inchangé : il
+  retourne déjà des paths avec un tag `sign: 'positive' | 'negative'`.
+  Le dispatcher Svelte doit ignorer le tag quand `signed=false`.
+- La couleur par défaut verte (`#22c55e`) sera appliquée via le style
+  par défaut quand `couleur=` n'est pas spécifié — décision §0.
 
 ---
 
