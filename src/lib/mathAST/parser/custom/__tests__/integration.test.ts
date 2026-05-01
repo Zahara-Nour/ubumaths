@@ -173,6 +173,25 @@ describe('Custom Parser Integration', () => {
 			const result = parseCustom('f', { genericFunctions: null });
 			expect(result.type).toBe('variable');
 		});
+
+		// Functions historically missing from the tokenizer's known-name list
+		// were silently parsed as implicit multiplications of single letters
+		// (e.g. `sign(x)` became `s * i * g * n * (x)` with `i` resolved as
+		// the imaginary unit). These tests pin the fix.
+		describe('piecewise & remaining trig functions are tokenized as FUNC', () => {
+			it.each(['sign', 'sgn', 'cot', 'sec', 'csc'])(
+				'parseCustom("%s(x)") produces a function node',
+				(name) => {
+					const result = parseCustom(`${name}(x)`);
+					expect(result.type).toBe('function');
+					if (result.type === 'function') {
+						expect(result.name).toBe(name);
+						expect(result.args).toHaveLength(1);
+						expect(result.args[0].type).toBe('variable');
+					}
+				}
+			);
+		});
 	});
 
 	describe('Error handling parity', () => {

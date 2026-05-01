@@ -138,6 +138,9 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'sin',
 	'cos',
 	'tan',
+	'cot',
+	'sec',
+	'csc',
 	'ln',
 	'log',
 	'exp',
@@ -154,11 +157,13 @@ const _FUNCTION_NAMES: ReadonlySet<string> = new Set([
 	'arcsinh',
 	'arccosh',
 	'arctanh',
-	// Rounding functions
+	// Rounding & piecewise functions
 	'floor',
 	'ceil',
 	'round',
 	'abs',
+	'sign',
+	'sgn',
 	// Statistical functions
 	'mean',
 	'median',
@@ -193,6 +198,7 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'stdev', // 5 chars
 	'floor', // 5 chars
 	'round', // 5 chars
+	'sign', // 4 chars
 	'sinh', // 4 chars
 	'cosh', // 4 chars
 	'tanh', // 4 chars
@@ -202,6 +208,10 @@ const FUNCTION_NAMES_BY_LENGTH: readonly string[] = [
 	'sin', // 3 chars
 	'cos', // 3 chars
 	'tan', // 3 chars
+	'cot', // 3 chars
+	'sec', // 3 chars
+	'csc', // 3 chars
+	'sgn', // 3 chars
 	'log', // 3 chars
 	'exp', // 3 chars
 	'min', // 3 chars
