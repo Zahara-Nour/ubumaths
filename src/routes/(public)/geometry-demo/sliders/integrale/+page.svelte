@@ -5,7 +5,7 @@
 a = slider(min=-2, max=2, valeur=-1.5, pas=0.05)
 b = slider(min=-2, max=2, valeur=1.5, pas=0.05)
 A = integrale(f, a, b, couleur="violet", opacite_fond=0.35)
-mtexte(2.5, 2.5, "\\\\int_{a}^{b} (x^3 - x)\\\\, dx = {A:.3f}")`;
+mtexte(2.5, 2.5, "\\int_a^b (x^3 - x)\\, dx = {A:.3f}")`;
 </script>
 
 <svelte:head>
