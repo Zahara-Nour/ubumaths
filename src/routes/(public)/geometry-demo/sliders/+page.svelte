@@ -69,5 +69,12 @@
 				Aire signee sous une courbe avec bornes mobiles. Sous-regions teintees selon le signe de f.
 			</p>
 		</a>
+		<a href="/geometry-demo/sliders/aire" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Aire geometrique vs integrale</h2>
+			<p class="text-sm text-muted-foreground">
+				Difference visuelle entre l'aire geometrique (toujours positive) et l'integrale signee sur
+				la meme courbe.
+			</p>
+		</a>
 	</div>
 </div>

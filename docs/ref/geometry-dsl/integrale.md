@@ -186,13 +186,15 @@ Non supportées en V1. Les bornes doivent être finies.
 ### Aire géométrique (positive)
 
 `integrale` retourne l'**intégrale** signée. Pour calculer l'**aire
-géométrique** `∫|f|` (toujours positive), il n'existe pas encore de
-builtin dédié — **prévu en V2** sous le nom `aire_sous_courbe(f, a, b)`.
+géométrique** `∫|f|` (toujours positive), utiliser
+[`aire(f, a, b)`](./aire.md) qui splitte sur les zéros de `f` et somme
+les aires absolues des sous-régions.
 
 ---
 
 ## Voir aussi
 
+- [`aire(f, a, b)`](./aire.md) — aire géométrique (toujours positive).
 - [`courbe(...)`](./courbe.md) — création de la fonction `f`.
 - [`derivee(f)`](./derivee.md) — fonction dérivée.
 - [`mesure(A)`](./mesure.md) — affichage du scalaire sur la figure.

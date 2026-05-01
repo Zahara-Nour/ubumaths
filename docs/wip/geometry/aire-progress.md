@@ -19,12 +19,15 @@ router vers la branche aire-sous-courbe quand le premier arg est une
 
 **Phase 3 terminée** ✅ — Couleur verte par défaut (`#22c55e`) côté DSL
 builtin + branche dispatcher Svelte pour `fillOpacity` uniforme quand
-`el.signed === false`.
+`el.signed === false`. Commit `6ea333eb`.
+
+**Phase 4 terminée** ✅ — Page démo `/geometry-demo/sliders/aire`
+montrant la différence pédagogique integrale/aire sur `f = x³ − x` ;
+doc utilisateur DSL `docs/ref/geometry-dsl/aire.md` ; mise à jour de
+`integrale.md` pour pointer vers `aire.md`.
 
 Phases restantes :
 
-- **Phase 4** — Page démo `/geometry-demo/sliders/aire` + doc utilisateur
-  `docs/ref/geometry-dsl/aire.md`.
 - **Phase 5** — Quality checks finaux + commit final.
 
 ---
@@ -358,8 +361,84 @@ Suggestions optionnelles déclinées :
 
 ---
 
+## Phase 4 — Démo + doc utilisateur ✅
+
+### Livrables
+
+**Nouveaux** :
+
+- `src/routes/(public)/geometry-demo/sliders/aire/+page.svelte`
+  Démo interactive : `f = courbe("y = x^3 - x", couleur="noir")` avec
+  deux sliders pour les bornes `a` et `b`. Affiche simultanément :
+  - `I = integrale(f, a, b)` (zone bleue par défaut, signée)
+  - `A = aire(f, a, b)` (zone verte par défaut, non signée)
+  - 2 `mtexte` montrant les deux valeurs côte à côte.
+    Valeurs initiales `a = -1, b = 1` mettent en valeur le cas
+    `I = 0, A = 0.5` (différence pédagogique maximale).
+- `src/routes/(public)/geometry-demo/sliders/aire/+page.ts` :
+  `export const ssr = false;` (cohérent avec les autres démos).
+- `docs/ref/geometry-dsl/aire.md` : doc utilisateur complète
+  (vocabulaire intégrale vs aire, syntaxe avec note sur la surcharge
+  polygon, args nommés avec couleur verte par défaut documentée,
+  6 exemples — positive, différence pédagogique, sliders, bornes
+  inversées, gaussienne, zéro tangent —, visuel, sémantique avec
+  formule `Σ |F(z_{i+1}) − F(z_i)|`, cas limites V1).
+
+**Modifiés** :
+
+- `src/routes/(public)/geometry-demo/sliders/+page.svelte` : ajout
+  d'une carte « Aire geometrique vs integrale » entre la carte
+  Integrale et la fin.
+- `docs/ref/geometry-dsl/integrale.md` :
+  - § « Aire géométrique (positive) » : remplace « V2 prévu » par un
+    lien vers `aire.md`.
+  - § « Voir aussi » : ajout du lien `aire(f, a, b)`.
+
+### Vérification manuelle
+
+- HTTP 200 sur `/geometry-demo/sliders/aire`.
+- HTTP 200 sur `/geometry-demo/sliders` (avec carte ajoutée).
+- HTTP 200 sur `/geometry-demo/sliders/integrale` (régression V1 visuelle).
+- L'autofixer Svelte signale uniquement le pattern `resolve()` pour
+  les hrefs — non adopté par les autres pages démo (cohérent V1).
+
+### Code review (correction appliquée)
+
+`code-reviewer` consulté — quality OK, 1 risque mineur signalé :
+
+- **Mineur** — Risque que `mtexte(2.5, 2.8, ...)` soit hors viewport
+  (la V1 d'integrale utilise `y=2.5`). Corrigé en abaissant à
+  `y=2.4` et `y=1.7` pour les deux mtexte. Garantit la visibilité des
+  deux légendes sur tous les zooms standard.
+
+Tout le reste validé :
+
+- Échappement LaTeX `\\int_a^b` correct dans le template literal.
+- Interpolation `{I:.3f}` et `{A:.3f}` syntaxe cohérente.
+- Couleur par défaut `#22c55e` documentée et cohérente.
+- Surcharge polygon expliquée pédagogiquement (premier arg = function
+  ou point).
+- Exemples DSL syntaxiquement valides (`e^{-x^2}` avec accolades).
+- Valeurs numériques de tous les exemples vérifiées :
+  `aire(x², 0, 1) = 1/3`, `aire(x³−x, -1, 1) = 0.5`, `aire(e^{-x²}, -1, 1) ≈ 1.4937`,
+  `aire((x-1)², 0, 2) = 2/3`.
+
+### Détail d'implémentation à noter pour Phase 5
+
+- Quality checks finaux à exécuter une seule fois sur tous les fichiers
+  modifiés au fil des Phases 1-4 :
+  - `mcp__svelte__svelte-autofixer` sur `GeometryCanvas.svelte` (si
+    pas déjà passé) et sur la page démo aire.
+  - `pnpm check:incremental` (TypeScript + Svelte, ~30s).
+  - `npx eslint <fichiers modifiés>` sur tous les TS/Svelte modifiés.
+- Résumé des commits livrés (4) à inclure dans le commit final ou le
+  document de progression.
+
+---
+
 ## Documents produits
 
 - `docs/wip/geometry/aire-study.md` — étude / spec validée par l'utilisateur
   (5 décisions clés enregistrées).
 - `docs/wip/geometry/aire-progress.md` — ce document, journal de reprise.
+- `docs/ref/geometry-dsl/aire.md` — doc utilisateur DSL.
