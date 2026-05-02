@@ -1353,13 +1353,26 @@ export function functionToSVG(
 		}
 	}
 
+	// Bindings for slider/scalar values referenced inside the expression
+	// (used when the expression is a PiecewiseNode whose conditions or values
+	// reference scalar variables by name). For non-piecewise functions this
+	// is harmless (no free variables besides x).
+	const scalarBindings: Record<string, number> = {};
+	for (const depId of fn.dependsOn) {
+		const depEl = figure.getElementById(depId);
+		if (depEl?.label) {
+			const val = figure.getScalarValue(depId);
+			if (val !== undefined) scalarBindings[depEl.label] = val;
+		}
+	}
+
 	// Safe evaluators: return null for NaN/Infinity
 	const evaluator = (x: number): number | null => {
-		const y = fn.compiledFn({ x });
+		const y = fn.compiledFn({ x, ...scalarBindings });
 		return Number.isFinite(y) ? y : null;
 	};
 	const derivativeEvaluator = (x: number): number | null => {
-		const d = fn.compiledDerivative({ x });
+		const d = fn.compiledDerivative({ x, ...scalarBindings });
 		return Number.isFinite(d) ? d : null;
 	};
 
