@@ -54,13 +54,31 @@ courbe("r = 2*cos(theta)", theta_min=0, theta_max=pi)
 
 | Phase                                  | Statut                         | Commit     |
 | -------------------------------------- | ------------------------------ | ---------- |
-| 1 — Type + Factory + Sampler 2D        | terminée (TDD, 32 tests verts) | en attente |
-| 2 — DSL builtin courbe() 2-strings     | terminée (TDD, 29 tests verts) | en attente |
-| 3 — Rendu SVG + courbe fermée + UI     | terminée (TDD, 16 tests verts) | en attente |
-| 4 — Réactivité (sliders/scalaires)     | pending                        | —          |
+| 1 — Type + Factory + Sampler 2D        | terminée (TDD, 34 tests verts) | 2273eccf   |
+| 2 — DSL builtin courbe() 2-strings     | terminée (TDD, 30 tests verts) | d99a0522   |
+| 3 — Rendu SVG + courbe fermée + UI     | terminée (TDD, 16 tests verts) | 6d23b1a1   |
+| 4 — Réactivité (sliders/scalaires)     | terminée (TDD, 4 tests verts)  | en attente |
 | 5 — Exports TikZ/Typst + sérialisation | pending                        | —          |
 | 6 — Demo page                          | pending                        | —          |
 | 7 — Quality Checks finaux              | pending                        | —          |
+
+### Phase 4 — Réactivité
+
+**Statut** : terminée (4 tests d'intégration verts).
+
+L'infrastructure réactive était déjà câblée par les phases 1-3 :
+
+- Phase 2 collecte les `dependsOn` des scalaires/sliders dans x(t), y(t), t_min, t_max
+- Phase 3 résout `ScalarParam` dynamiquement via `resolveScalarParam` à chaque appel de `computeParametricCurveSampling`
+- `figure.moveSlider` met à jour `scalarValues` et `markDirty` pour invalider le graphe
+
+Phase 4 ajoute uniquement les tests d'intégration end-to-end :
+
+- `src/lib/geometry-core/graph/__tests__/figure-parametric-reactivity.test.ts` — 4 tests
+  - F-A. Slider sur `t_max` change le dernier point échantillonné
+  - F-B. Slider sur `t_max` bascule le flag `closed` (demi-cercle → cercle complet)
+  - F-C. Slider dans coefficient de x(t)/y(t) rescale tous les points
+  - F-D. `dependsOn` contient bien tous les sliders référencés (x, y, t_min, t_max)
 
 ---
 
