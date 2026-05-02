@@ -1404,7 +1404,7 @@ export function functionToSVG(
 	// as a fallback to catch those cases.
 	const internalMarkers: FunctionEndpointMarker[] = [];
 	if (isPiecewise(fn.expression)) {
-		const symbolicBoundaries = extractPiecewiseBoundaries(fn.expression).filter(
+		const symbolicBoundaries = extractPiecewiseBoundaries(fn.expression, scalarBindings).filter(
 			(b) => b.x > viewport.xMin && b.x < viewport.xMax
 		);
 
