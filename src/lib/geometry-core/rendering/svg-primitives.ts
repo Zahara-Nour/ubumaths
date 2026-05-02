@@ -1291,6 +1291,7 @@ import type { Viewport, SampledCurve, Point } from '../viewport/types';
 import { sampleWithDerivative } from '$lib/grapheur/sampler';
 import { curveToSVGPath } from '../rendering/bezier';
 import { marchingSquares } from './marching-squares';
+import { isPiecewise } from '$lib/mathAST';
 
 /** Number of sample points for function curve rendering. */
 const FUNCTION_SAMPLE_POINTS = 300;
@@ -1383,13 +1384,21 @@ export function functionToSVG(
 	};
 
 	// Adaptive sampling with derivative (over the clamped viewport).
-	const curve = sampleWithDerivative(
+	let curve = sampleWithDerivative(
 		evaluator,
 		derivativeEvaluator,
 		viewport,
 		FUNCTION_SAMPLE_POINTS
 	);
 	if (curve.points.length === 0) return null;
+
+	// For piecewise expressions, the generic sampler's asymptote-only
+	// discontinuity detector (which fires only on huge jumps ≫ viewport height)
+	// misses normal step jumps like sign(x) going from -1 to +1. Augment the
+	// discontinuity list with a sensitive step-jump detector.
+	if (isPiecewise(fn.expression)) {
+		curve = augmentPiecewiseDiscontinuities(curve, viewport);
+	}
 
 	const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
 	if (!path) return null;
@@ -1433,6 +1442,43 @@ export function functionToSVG(
 }
 
 const ENDPOINT_MARKER_RADIUS = 4;
+
+/**
+ * Threshold (as a fraction of viewport height) above which a y-jump between
+ * consecutive samples is classified as a step discontinuity for piecewise
+ * functions. 5% catches sign(x) -1→1 jumps in a [-10, 10] viewport while
+ * staying conservative enough to ignore normal slope variations.
+ */
+const PIECEWISE_STEP_JUMP_RATIO = 0.05;
+
+/**
+ * Augment a sampled curve's `discontinuityIndices` with detected step jumps.
+ *
+ * The generic sampler only flags asymptote-class jumps (deltaY > 2 × viewport
+ * height). For piecewise functions, ordinary branch boundaries produce smaller
+ * but still visually obvious jumps (e.g., sign function -1 → 1, jump = 2 in a
+ * viewport of height 20 = 10%). We post-process the curve to insert
+ * discontinuity markers wherever |Δy| exceeds a small fraction of the viewport
+ * height, so `curveToSVGPath` splits the path with `M` commands at these
+ * points instead of drawing a bridging vertical segment.
+ */
+function augmentPiecewiseDiscontinuities(curve: SampledCurve, viewport: Viewport): SampledCurve {
+	const viewportHeight = viewport.yMax - viewport.yMin;
+	if (viewportHeight <= 0) return curve;
+	const threshold = PIECEWISE_STEP_JUMP_RATIO * viewportHeight;
+
+	const newSet = new Set(curve.discontinuityIndices);
+	for (let i = 1; i < curve.points.length; i++) {
+		const dy = Math.abs(curve.points[i].y - curve.points[i - 1].y);
+		if (dy > threshold) newSet.add(i);
+	}
+
+	if (newSet.size === curve.discontinuityIndices.length) return curve;
+	return {
+		points: curve.points,
+		discontinuityIndices: [...newSet].sort((a, b) => a - b)
+	};
+}
 
 /**
  * Convert a GeoTangentLine to SVG line attributes.
