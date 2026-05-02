@@ -58,7 +58,7 @@ courbe("r = 2*cos(theta)", theta_min=0, theta_max=pi)
 | 2 — DSL builtin courbe() 2-strings     | terminée (TDD, 30 tests verts) | d99a0522   |
 | 3 — Rendu SVG + courbe fermée + UI     | terminée (TDD, 16 tests verts) | 6d23b1a1   |
 | 4 — Réactivité (sliders/scalaires)     | terminée (TDD, 4 tests verts)  | en attente |
-| 5 — Exports TikZ/Typst + sérialisation | pending                        | —          |
+| 5 — Exports TikZ/Typst + sérialisation | terminée (TDD, 18 tests verts) | pending    |
 | 6 — Demo page                          | pending                        | —          |
 | 7 — Quality Checks finaux              | pending                        | —          |
 
@@ -189,6 +189,50 @@ Décisions prises pendant l'implémentation :
 - **Label position simple** : centre du viewport + offset (10, -10) par défaut. Le placement précis le long de la courbe (équivalent à ce que `'function'` fait avec `f(0.85 * xMax)`) est non trivial pour une courbe paramétrique (il faudrait choisir un t arbitraire) — repoussé à une phase de polish.
 - **Hover/popover/double-clic** : non implémentés dans la branche (path n'a pas de handler dédié, juste la classe `function-curve` et `class:hovered`). Le hit-testing global du canvas (via `findElementNear`) suffit pour le hover de base ; un popover dédié pourra être ajouté en Phase 6 si besoin.
 - **Svelte autofixer** : exécuté sur le composant. 3 issues détectées (`state_referenced_locally` lignes 137-138 sur `initialCenter`/`initialPpu` dans `$state(...)` initializers) — toutes pré-existantes au fichier, non introduites par la Phase 3. La nouvelle branche en isolation ne génère aucun warning.
+
+---
+
+### Phase 5 (terminée — 18 tests verts)
+
+Modifiés :
+
+- `src/lib/geometry-core/rendering/export-tikz.ts`
+  - Pass 2e ajouté entre Pass 2c (conics) et Pass 2d (tangentes) : `el.type === 'parametricCurve'`
+  - Appelle `figure.computeParametricCurveSampling(el.id, viewport)` → liste de points
+  - Split sur `discontinuityIndices` → sous-paths séparés
+  - Format TikZ : `\draw[opts, smooth] plot coordinates {(x1,y1) ...}` + ` -- cycle` si fermée
+- `src/lib/geometry-core/rendering/export-typst.ts`
+  - Pass 2e ajouté entre Pass 2c (conics) et Pass 2d (tangentes) : `el.type === 'parametricCurve'`
+  - Même approche sampler → sous-paths
+  - Format Typst : `line((x1,y1), ..., stroke: ..., fill: none, closed: true)` si fermée
+- `src/lib/geometry-core/dsl/serializer.ts`
+  - Ajout `'parametricCurve'` dans `defaultPrefix()` (→ `'f'`)
+  - Case `'parametricCurve'` dans `serializeElement()` :
+    - Produit `courbe("${el.equationX}", "${el.equationY}", t_min=..., t_max=...)`
+    - Bornes via `fmtScalarParam()` : scalarRef → nom symbolique, numeric → nombre
+    - Ajoute `param="..."` seulement si `el.parameter !== 't'`
+    - Préfixe omis si nom commence par `_` (élément anonyme)
+
+Créés (tests TDD red-first) :
+
+- `src/lib/geometry-core/rendering/__tests__/parametric-exports.test.ts` — 18 tests :
+  - A. TikZ × 4 : draw present, cycle sur fermée, pas de cycle sur ouverte, plot coordinates
+  - B. TikZ styles × 2 : couleur par défaut, dash=dashed
+  - C. Typst × 3 : line( présent, coordonnées multiples, parabole
+  - D. Sérialiseur nominal × 2 : cercle et parabole avec noms et bornes corrects
+  - E. Sérialiseur scalarRef × 2 : t_max=s (nom slider), t_min=a t_max=b (deux sliders)
+  - F. Sérialiseur param × 2 : param= omis si 't', param="u" si non-défaut
+  - G. Sérialiseur anonyme × 1 : pas de "\_ = courbe"
+  - H. Round-trip × 2 : cercle et parabole préservent l'élément après re-parse
+
+Décisions prises pendant l'implémentation :
+
+- **Approche sampler vs symbolique** : approche échantillonnage explicite retenue (robuste, évite traduction mathAST→TikZ/Typst math). Même approche que les conics dans `sampleConicPaths`.
+- **Discontinuités** : split en sous-paths séparés pour TikZ et Typst (même logique dans les deux exports).
+- **Courbe fermée TikZ** : suffixe ` -- cycle` uniquement si `result.closed && discontinuityIndices.length === 0` (pas de cycle si curve discontinue).
+- **Courbe fermée Typst** : attribut `closed: true` sur la dernière `line()`.
+- **Sérialiseur** : `fmtScalarParam()` existant réutilisé directement (gère déjà scalarRef → nom symbolique via `idToName`).
+- **0 régression** : 310 tests rendering + 1216 tests DSL tous verts.
 
 ---
 

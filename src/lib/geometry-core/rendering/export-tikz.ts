@@ -295,6 +295,42 @@ export function exportToTikZ(
 		}
 	}
 
+	// Pass 2e: parametric curves
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'parametricCurve') continue;
+		const opts = styleOptions(el, figure.defaults);
+
+		const result = figure.computeParametricCurveSampling(el.id, viewport);
+		if (!result || result.points.length < 2) continue;
+
+		// Split at discontinuity indices into sub-paths
+		const subPaths: { x: number; y: number }[][] = [];
+		let segStart = 0;
+		for (const discIdx of result.discontinuityIndices) {
+			if (discIdx > segStart) {
+				subPaths.push(Array.from(result.points.slice(segStart, discIdx)));
+			}
+			segStart = discIdx;
+		}
+		if (segStart < result.points.length) {
+			subPaths.push(Array.from(result.points.slice(segStart)));
+		}
+
+		const isLastSeg = (idx: number) => idx === subPaths.length - 1;
+
+		for (let i = 0; i < subPaths.length; i++) {
+			const pts = subPaths[i];
+			if (pts.length < 2) continue;
+			const tikzPts = pts.map((p) => coord(p.x, p.y));
+			// Close the last sub-path if the full curve is closed and there are no discontinuities
+			const closePart =
+				result.closed && result.discontinuityIndices.length === 0 && isLastSeg(i)
+					? ' -- cycle'
+					: '';
+			lines.push(`  \\draw[${opts}, smooth] plot coordinates {${tikzPts.join(' ')}}${closePart};`);
+		}
+	}
+
 	// Pass 2d: tangents to quadratic curves
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'tangentToQuadratic') continue;
