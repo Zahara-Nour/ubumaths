@@ -27,6 +27,16 @@ export function serialize(figure: Figure, symbols?: SymbolTable): string {
 		}
 	}
 
+	// Pair tangentParametric (line) and tangentVector (vector) emitted by the
+	// builtin `(d, v) = tangente(c, t0)`. The line is the canonical emitter; the
+	// vector is skipped at iteration time and re-fetched during line serialization.
+	const tangentGroupVectorByGroupId = new Map<string, string>();
+	for (const el of elements) {
+		if (el.type === 'tangentVector') {
+			tangentGroupVectorByGroupId.set(el.tangentGroupId, el.id);
+		}
+	}
+
 	for (const el of elements) {
 		// Skip invisible elements, except transformation objects, named scalars, and sliders
 		if (!el.visible && !isTransformationType(el.type) && !isScalarLikeType(el.type)) continue;
@@ -35,7 +45,9 @@ export function serialize(figure: Figure, symbols?: SymbolTable): string {
 			continue;
 		// Skip scalars that are internally managed by auto-positioned text (mesure() sugar)
 		if (el.type === 'scalar' && internalScalarIds.has(el.id)) continue;
-		const line = serializeElement(el, figure, idToName);
+		// Skip tangentVector — emitted as part of the paired tangentParametric line.
+		if (el.type === 'tangentVector') continue;
+		const line = serializeElement(el, figure, idToName, tangentGroupVectorByGroupId);
 		if (line) lines.push(line);
 	}
 
@@ -159,7 +171,10 @@ function typePrefix(type: string): string {
 			return 'T';
 		case 'tangentLine':
 		case 'tangentToQuadratic':
+		case 'tangentParametric':
 			return 'tg';
+		case 'tangentVector':
+			return 'v';
 		case 'conicPolar':
 			return 'pol';
 		case 'vectorByPoints':
@@ -234,7 +249,8 @@ function isScalarLikeType(type: string): boolean {
 function serializeElement(
 	el: GeoElement,
 	figure: Figure,
-	idToName: Map<string, string>
+	idToName: Map<string, string>,
+	tangentGroupVectorByGroupId?: ReadonlyMap<string, string>
 ): string | null {
 	const n = name(idToName, el.id);
 
@@ -516,6 +532,23 @@ function serializeElement(
 				return `${n} = tangente(${name(idToName, el.functionId)}, ${name(idToName, el.pointOnCurveId)})`;
 			}
 			return `${n} = tangente(${name(idToName, el.functionId)}, ${fmtGeoValue(el.x0!)})`;
+
+		case 'tangentParametric': {
+			// Emit `(d, v) = tangente(c, t0)` — the companion vector name is looked
+			// up via the shared tangentGroupId. If for some reason the vector is
+			// missing (corrupted figure / direct construction), fall back to a
+			// single-name form using the line name only.
+			const vectorId = tangentGroupVectorByGroupId?.get(el.tangentGroupId);
+			const lineName = n;
+			const vectorName = vectorId ? name(idToName, vectorId) : `${n}_v`;
+			const curveName = name(idToName, el.parametricCurveId);
+			const tStr = fmtScalarParam(el.t, idToName);
+			return `(${lineName}, ${vectorName}) = tangente(${curveName}, ${tStr})`;
+		}
+
+		case 'tangentVector':
+			// Normally never serialized directly — emitted via the paired tangentParametric.
+			return null;
 
 		case 'tangentToQuadratic': {
 			if (el.pointOnCurveId) {
