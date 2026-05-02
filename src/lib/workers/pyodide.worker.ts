@@ -652,36 +652,72 @@ def _ubumaths_validate_syntax(code):
 _UBUMATHS_DEBUG_MAX_SERIALIZE_DEPTH = 5
 _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS = 50
 _UBUMATHS_DEBUG_MAX_STRING_LENGTH = 200
+_UBUMATHS_DEBUG_MAX_KEY_LENGTH = 500
 
 # Built-in types for type classification
-_UBUMATHS_BUILTIN_TYPES = {'int', 'float', 'str', 'bool', 'list', 'dict', 'tuple', 'set', 'NoneType', 'bytes', 'complex'}
+_UBUMATHS_BUILTIN_TYPES = {'int', 'float', 'str', 'bool', 'list', 'dict', 'tuple', 'set', 'frozenset', 'NoneType', 'bytes', 'complex'}
 
-# Debug state (minimal - most state is in generator)
-_ubumaths_debug_seen_objects = set()
+# Types that should NOT be treated as user-class instances even if they have __dict__
+import types as _ubumaths_types
+_UBUMATHS_NON_INSTANCE_TYPES = (
+    type,                                       # classes themselves
+    _ubumaths_types.ModuleType,                 # modules
+    _ubumaths_types.FunctionType,               # def-based functions
+    _ubumaths_types.MethodType,                 # bound methods
+    _ubumaths_types.BuiltinFunctionType,        # builtins
+    _ubumaths_types.BuiltinMethodType,          # bound builtin methods
+)
 
-def _ubumaths_serialize_value(value, depth=0):
-    """Serialize Python values to JSON-safe format.
+
+def _ubumaths_truncate_key(key_str):
+    """Truncate dict keys / instance attr names for safe serialization."""
+    if len(key_str) > _UBUMATHS_DEBUG_MAX_KEY_LENGTH:
+        return key_str[:_UBUMATHS_DEBUG_MAX_KEY_LENGTH] + '...'
+    return key_str
+
+
+def _ubumaths_is_user_instance(value):
+    """Detect a user-class instance (vs builtin / function / module / class)."""
+    if isinstance(value, _UBUMATHS_NON_INSTANCE_TYPES):
+        return False
+    if not hasattr(value, '__dict__'):
+        return False
+    # Builtins and stdlib types (int, str, dict, ...) are excluded by the
+    # isinstance checks performed before us in _ubumaths_serialize_with_heap.
+    return True
+
+
+def _ubumaths_serialize_with_heap(value, heap, depth=0):
+    """Serialize a Python value with a shared heap dict.
+
+    Primitives (int, float, str, bool, None, complex, bytes) stay inline as
+    a dict with type+value. Containers (list, dict, set, tuple, frozenset)
+    and user-class instances become HeapObjects in the shared heap dict and
+    yield a HeapRef so aliases naturally collapse.
+
+    Cycles are handled by inserting a placeholder in the heap BEFORE recursing
+    into the object's contents -- a back-reference encountered during recursion
+    finds the placeholder and emits a ref instead of recursing.
 
     Args:
         value: Any Python value to serialize
+        heap: dict mapping str(id(value)) to HeapObject, mutated in place
         depth: Current recursion depth (default 0)
 
     Returns:
-        dict with 'type' and 'value' keys
+        dict -- InlineValue, HeapRef, or TruncatedValue
     """
-    global _ubumaths_debug_seen_objects
-
     type_name = type(value).__name__
 
-    # Check depth limit
+    # Depth limit applies to the contents of containers; the container itself
+    # remains addressable via its HeapRef even when deep entries are truncated.
     if depth >= _UBUMATHS_DEBUG_MAX_SERIALIZE_DEPTH:
-        return {'type': type_name, 'value': '...'}
+        return {'type': 'truncated', 'value': 'depth'}
 
-    # Handle None
+    # --- Primitives (inline) --------------------------------------------------
     if value is None:
         return {'type': 'NoneType', 'value': 'None'}
 
-    # Handle primitives
     if isinstance(value, bool):
         return {'type': 'bool', 'value': str(value)}
 
@@ -701,80 +737,132 @@ def _ubumaths_serialize_value(value, depth=0):
             return {'type': 'bytes', 'value': repr(value[:_UBUMATHS_DEBUG_MAX_STRING_LENGTH]) + '...'}
         return {'type': 'bytes', 'value': repr(value)}
 
-    # Check for circular references for mutable objects
-    obj_id = id(value)
-    if isinstance(value, (list, dict, set)):
-        if obj_id in _ubumaths_debug_seen_objects:
-            return {'type': type_name, 'value': '[circular]'}
-        _ubumaths_debug_seen_objects.add(obj_id)
+    # --- Heap objects (containers + user-class instances) ---------------------
+    is_container = isinstance(value, (list, tuple, set, frozenset, dict))
+    is_instance = _ubumaths_is_user_instance(value)
 
-    try:
-        # Handle list
+    if is_container or is_instance:
+        obj_id = str(id(value))
+
+        # Already serialized (or being serialized — cycle detection).
+        if obj_id in heap:
+            return {'type': 'ref', 'objectId': obj_id}
+
+        # Resolve heap object type label.
         if isinstance(value, list):
-            items = []
-            for i, item in enumerate(value):
-                if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
-                    items.append({'type': '...', 'value': f'... ({len(value) - i} more)'})
-                    break
-                items.append(_ubumaths_serialize_value(item, depth + 1))
-            return {'type': 'list', 'value': items, 'length': len(value)}
+            heap_type = 'list'
+        elif isinstance(value, tuple):
+            heap_type = 'tuple'
+        elif isinstance(value, set):
+            heap_type = 'set'
+        elif isinstance(value, frozenset):
+            heap_type = 'frozenset'
+        elif isinstance(value, dict):
+            heap_type = 'dict'
+        else:
+            class_name = type(value).__name__
+            heap_type = 'instance:' + class_name
 
-        # Handle tuple
-        if isinstance(value, tuple):
-            items = []
-            for i, item in enumerate(value):
-                if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
-                    items.append({'type': '...', 'value': f'... ({len(value) - i} more)'})
-                    break
-                items.append(_ubumaths_serialize_value(item, depth + 1))
-            return {'type': 'tuple', 'value': items, 'length': len(value)}
+        # PRE-INSERT placeholder BEFORE recursing into contents — so any
+        # back-reference we hit while recursing emits a HeapRef instead of
+        # infinite recursion.
+        placeholder = {
+            'id': obj_id,
+            'type': heap_type,
+            'length': 0,
+            'entries': []
+        }
+        heap[obj_id] = placeholder
 
-        # Handle set
-        if isinstance(value, set):
-            items = []
-            for i, item in enumerate(value):
-                if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
-                    items.append({'type': '...', 'value': f'... ({len(value) - i} more)'})
-                    break
-                items.append(_ubumaths_serialize_value(item, depth + 1))
-            return {'type': 'set', 'value': items, 'length': len(value)}
+        entries = []
+        try:
+            if isinstance(value, dict):
+                length = len(value)
+                for i, (k, v) in enumerate(value.items()):
+                    if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
+                        entries.append({'value': {'type': 'truncated', 'value': 'items'}})
+                        break
+                    key_str = _ubumaths_truncate_key(str(k))
+                    entries.append({
+                        'key': key_str,
+                        'value': _ubumaths_serialize_with_heap(v, heap, depth + 1)
+                    })
+            elif isinstance(value, (set, frozenset)):
+                # Sort by repr for stable visual ordering across snapshots.
+                try:
+                    items = sorted(value, key=repr)
+                except Exception:
+                    items = list(value)
+                length = len(items)
+                for i, item in enumerate(items):
+                    if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
+                        entries.append({'value': {'type': 'truncated', 'value': 'items'}})
+                        break
+                    entries.append({
+                        'value': _ubumaths_serialize_with_heap(item, heap, depth + 1)
+                    })
+            elif is_instance:
+                try:
+                    attrs = vars(value)
+                except TypeError:
+                    attrs = {}
+                length = len(attrs)
+                for i, (attr_name, attr_value) in enumerate(attrs.items()):
+                    if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
+                        entries.append({'value': {'type': 'truncated', 'value': 'items'}})
+                        break
+                    entries.append({
+                        'key': _ubumaths_truncate_key(str(attr_name)),
+                        'value': _ubumaths_serialize_with_heap(attr_value, heap, depth + 1)
+                    })
+            else:
+                # list, tuple
+                length = len(value)
+                for i, item in enumerate(value):
+                    if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
+                        entries.append({'value': {'type': 'truncated', 'value': 'items'}})
+                        break
+                    entries.append({
+                        'value': _ubumaths_serialize_with_heap(item, heap, depth + 1)
+                    })
 
-        # Handle dict
-        if isinstance(value, dict):
-            items = {}
-            for i, (k, v) in enumerate(value.items()):
-                if i >= _UBUMATHS_DEBUG_MAX_SERIALIZE_ITEMS:
-                    items['...'] = {'type': '...', 'value': f'... ({len(value) - i} more)'}
-                    break
-                key_str = str(k) if not isinstance(k, str) else k
-                items[key_str] = _ubumaths_serialize_value(v, depth + 1)
-            return {'type': 'dict', 'value': items, 'length': len(value)}
+            placeholder['length'] = length
+            placeholder['entries'] = entries
+        except Exception as e:
+            # Defensive: if a __getattr__ / iteration raises, mark as truncated
+            # so the heap object stays valid rather than corrupting the snapshot.
+            placeholder['length'] = 0
+            placeholder['entries'] = [{'value': {'type': 'truncated', 'value': 'error: ' + repr(e)[:100]}}]
 
-        # Handle other objects - use repr
-        repr_str = repr(value)
-        if len(repr_str) > _UBUMATHS_DEBUG_MAX_STRING_LENGTH:
-            repr_str = repr_str[:_UBUMATHS_DEBUG_MAX_STRING_LENGTH] + '...'
-        return {'type': type_name, 'value': repr_str}
-    finally:
-        # Remove from seen set after processing
-        if isinstance(value, (list, dict, set)):
-            _ubumaths_debug_seen_objects.discard(obj_id)
+        return {'type': 'ref', 'objectId': obj_id}
+
+    # --- Fallback: functions, modules, classes, exotic types — inline repr ---
+    repr_str = repr(value)
+    if len(repr_str) > _UBUMATHS_DEBUG_MAX_STRING_LENGTH:
+        repr_str = repr_str[:_UBUMATHS_DEBUG_MAX_STRING_LENGTH] + '...'
+    return {'type': type_name, 'value': repr_str}
 
 
-def _ubumaths_get_variables(namespace, prev_namespace=None):
-    """Extract variables from a namespace.
+def _ubumaths_get_variables(namespace, prev_namespace=None, heap=None):
+    """Extract variables from a namespace, populating the heap along the way.
 
     Args:
         namespace: dict of variables
         prev_namespace: dict of previous namespace for change detection
+        heap: dict mapping object id to HeapObject, shared across the snapshot
+              (created when None)
 
     Returns:
-        list of variable dicts
+        list of variable dicts. The 'value' field is a JSON string of either
+        InlineValue, HeapRef, or TruncatedValue.
     """
     import json
 
     if prev_namespace is None:
         prev_namespace = {}
+
+    if heap is None:
+        heap = {}
 
     variables = []
 
@@ -790,10 +878,8 @@ def _ubumaths_get_variables(namespace, prev_namespace=None):
         type_name = type(value).__name__
         is_builtin = type_name in _UBUMATHS_BUILTIN_TYPES
 
-        # Serialize the value
-        global _ubumaths_debug_seen_objects
-        _ubumaths_debug_seen_objects = set()  # Reset for each variable
-        serialized = _ubumaths_serialize_value(value)
+        # Serialize the value (may insert into heap)
+        serialized = _ubumaths_serialize_with_heap(value, heap)
 
         # Check if value changed
         is_changed = False
@@ -871,11 +957,17 @@ def _ubumaths_debug_generator(code, breakpoints_json):
         nonlocal snapshot_id, prev_namespace
         snapshot_id += 1
 
+        # Shared heap dict — populated by _ubumaths_serialize_with_heap as we
+        # extract variables from each frame. Same Python id() across multiple
+        # variables / frames produces a single HeapObject entry so aliases
+        # naturally collapse to one node in the visualization.
+        heap = {}
+
         # Build call stack frames
         frames = []
 
         # Add module frame
-        module_vars = _ubumaths_get_variables(namespace, prev_namespace)
+        module_vars = _ubumaths_get_variables(namespace, prev_namespace, heap)
         frames.append({
             'functionName': '<module>',
             'filename': '<exec>',
@@ -888,7 +980,8 @@ def _ubumaths_debug_generator(code, breakpoints_json):
         for i, frame_info in enumerate(call_stack):
             frame_vars = _ubumaths_get_variables(
                 frame_info.get('locals', {}),
-                frame_info.get('prev_locals', {})
+                frame_info.get('prev_locals', {}),
+                heap
             )
             frames.append({
                 'functionName': frame_info['name'],
@@ -915,7 +1008,8 @@ def _ubumaths_debug_generator(code, breakpoints_json):
             'globals': globals_vars,
             'loops': [{'loopId': f"loop_{l['lineno']}", 'lineNumber': l['lineno'], 'iterationCount': l['iteration'], 'loopType': l['type']} for l in active_loops],
             'stdout': stdout_capture,
-            'event': event
+            'event': event,
+            'heap': list(heap.values())
         }
 
         # Update prev_namespace for change detection
@@ -1243,6 +1337,7 @@ def _ubumaths_debug_generator(code, breakpoints_json):
             'loops': [],
             'stdout': '',
             'event': 'exception',
+            'heap': [],
             'error': f'SyntaxError: {e.msg}'
         }
         return
@@ -1278,6 +1373,10 @@ def _ubumaths_debug_generator(code, breakpoints_json):
                     lineno = frame.lineno
                     break
 
+        # Shared heap dict for the exception snapshot — same semantics as
+        # create_snapshot above (one HeapObject per Python id, aliases collapse).
+        _err_heap = {}
+        _err_vars = _ubumaths_get_variables(namespace, None, _err_heap)
         yield {
             'id': f'snap_{snapshot_id + 1}',
             'lineNumber': lineno or 1,
@@ -1286,13 +1385,14 @@ def _ubumaths_debug_generator(code, breakpoints_json):
                 'functionName': '<module>',
                 'filename': '<exec>',
                 'lineNumber': lineno or 1,
-                'locals': _ubumaths_get_variables(namespace),
+                'locals': _err_vars,
                 'isCurrentFrame': True
             }],
-            'globals': _ubumaths_get_variables(namespace),
+            'globals': _err_vars,
             'loops': [],
             'stdout': stdout_capture,
             'event': 'exception',
+            'heap': list(_err_heap.values()),
             'error': f'{type(e).__name__}: {str(e)}'
         }
 `);

@@ -415,7 +415,8 @@ describe('PythonDebugStore', () => {
 			globals: [],
 			loops: [],
 			stdout: '',
-			event: 'line'
+			event: 'line',
+			heap: []
 		});
 
 		describe('pushSnapshot', () => {
@@ -738,7 +739,8 @@ describe('PythonDebugStore', () => {
 					globals: [],
 					loops: [],
 					stdout: '',
-					event: 'line'
+					event: 'line',
+					heap: []
 				});
 
 				debugStore.startSession();
@@ -888,7 +890,8 @@ describe('PythonDebugStore', () => {
 					globals: [],
 					loops: [],
 					stdout: '',
-					event: 'line'
+					event: 'line',
+					heap: []
 				});
 
 				debugStore.resetSession();
@@ -1071,7 +1074,8 @@ describe('PythonDebugStore', () => {
 				globals: [],
 				loops: [],
 				stdout: '',
-				event: 'line'
+				event: 'line',
+				heap: []
 			});
 
 			// Resume execution
@@ -1102,7 +1106,8 @@ describe('PythonDebugStore', () => {
 					globals: [],
 					loops: [],
 					stdout: '',
-					event: 'line'
+					event: 'line',
+					heap: []
 				});
 			}
 
@@ -1166,7 +1171,8 @@ describe('PythonDebugStore', () => {
 					globals: [],
 					loops: [],
 					stdout: '',
-					event: 'line'
+					event: 'line',
+					heap: []
 				});
 			}
 
@@ -1181,7 +1187,8 @@ describe('PythonDebugStore', () => {
 				globals: [],
 				loops: [],
 				stdout: '',
-				event: 'line'
+				event: 'line',
+				heap: []
 			});
 
 			expect(debugStore.snapshotCount).toBe(DEBUG_CONFIG.MAX_HISTORY_SIZE);

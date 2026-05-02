@@ -110,6 +110,9 @@ class PythonDebugStore {
 	/** Current snapshot at history index (null if no snapshots) */
 	currentSnapshot = $derived(this._snapshots[this.historyIndex] ?? null);
 
+	/** Heap objects in the current snapshot (empty when no heap or no snapshot) */
+	currentHeap = $derived(this.currentSnapshot?.heap ?? []);
+
 	/** Total number of snapshots in history */
 	snapshotCount = $derived(this._snapshots.length);
 

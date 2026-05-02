@@ -16,6 +16,12 @@ import {
 	debugStackFrameSchema,
 	debugLoopInfoSchema,
 	debugSnapshotSchema,
+	// Heap schemas
+	inlineValueSchema,
+	heapRefSchema,
+	truncatedValueSchema,
+	heapEntrySchema,
+	heapObjectSchema,
 	// Message schemas
 	debugStartMessageSchema,
 	debugStepMessageSchema,
@@ -325,7 +331,8 @@ describe('debugSnapshotSchema', () => {
 			globals: [],
 			loops: [],
 			stdout: '',
-			event: 'line'
+			event: 'line',
+			heap: []
 		};
 		const result = debugSnapshotSchema.safeParse(snapshot);
 		expect(result.success).toBe(true);
@@ -363,7 +370,8 @@ describe('debugSnapshotSchema', () => {
 				}
 			],
 			stdout: 'Hello\nWorld\n',
-			event: 'line'
+			event: 'line',
+			heap: []
 		};
 		const result = debugSnapshotSchema.safeParse(snapshot);
 		expect(result.success).toBe(true);
@@ -378,7 +386,8 @@ describe('debugSnapshotSchema', () => {
 			globals: [],
 			loops: [],
 			stdout: '',
-			event: 'line'
+			event: 'line',
+			heap: []
 		};
 		const result = debugSnapshotSchema.safeParse(snapshot);
 		expect(result.success).toBe(false);
@@ -401,7 +410,8 @@ describe('debugSnapshotSchema', () => {
 			globals: [],
 			loops: [],
 			stdout: '',
-			event: 'invalid'
+			event: 'invalid',
+			heap: []
 		};
 		const result = debugSnapshotSchema.safeParse(snapshot);
 		expect(result.success).toBe(false);
@@ -424,9 +434,214 @@ describe('debugSnapshotSchema', () => {
 			globals: [],
 			loops: [],
 			stdout: '',
-			event: 'line'
+			event: 'line',
+			heap: []
 		};
 		const result = debugSnapshotSchema.safeParse(snapshot);
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects snapshot missing heap field', () => {
+		const snapshot = {
+			id: 'snap-001',
+			lineNumber: 10,
+			timestamp: 1234567890,
+			callStack: [
+				{
+					functionName: '<module>',
+					filename: '<exec>',
+					lineNumber: 10,
+					locals: [],
+					isCurrentFrame: true
+				}
+			],
+			globals: [],
+			loops: [],
+			stdout: '',
+			event: 'line'
+			// heap missing
+		};
+		const result = debugSnapshotSchema.safeParse(snapshot);
+		expect(result.success).toBe(false);
+	});
+
+	it('accepts snapshot with populated heap (alias case)', () => {
+		const snapshot = {
+			id: 'snap-alias',
+			lineNumber: 2,
+			timestamp: 0,
+			callStack: [
+				{
+					functionName: '<module>',
+					filename: '<exec>',
+					lineNumber: 2,
+					locals: [],
+					isCurrentFrame: true
+				}
+			],
+			globals: [
+				{
+					name: 'a',
+					value: '{"type":"ref","objectId":"140"}',
+					type: 'list',
+					isBuiltin: true,
+					isChanged: false,
+					objectId: '140'
+				},
+				{
+					name: 'b',
+					value: '{"type":"ref","objectId":"140"}',
+					type: 'list',
+					isBuiltin: true,
+					isChanged: false,
+					objectId: '140'
+				}
+			],
+			loops: [],
+			stdout: '',
+			event: 'line',
+			heap: [
+				{
+					id: '140',
+					type: 'list',
+					length: 3,
+					entries: [
+						{ value: { type: 'int', value: '1' } },
+						{ value: { type: 'int', value: '2' } },
+						{ value: { type: 'int', value: '3' } }
+					]
+				}
+			]
+		};
+		const result = debugSnapshotSchema.safeParse(snapshot);
+		expect(result.success).toBe(true);
+	});
+});
+
+// =============================================================================
+// Heap Schemas (Python Tutor-style visualization)
+// =============================================================================
+
+describe('inlineValueSchema', () => {
+	it('accepts all primitive types', () => {
+		const types = ['int', 'float', 'str', 'bool', 'NoneType', 'complex', 'bytes'];
+		for (const t of types) {
+			const result = inlineValueSchema.safeParse({ type: t, value: 'x' });
+			expect(result.success).toBe(true);
+		}
+	});
+
+	it('rejects container types', () => {
+		const result = inlineValueSchema.safeParse({ type: 'list', value: '[]' });
+		expect(result.success).toBe(false);
+	});
+});
+
+describe('heapRefSchema', () => {
+	it('accepts a valid ref', () => {
+		const result = heapRefSchema.safeParse({ type: 'ref', objectId: '140234567' });
+		expect(result.success).toBe(true);
+	});
+
+	it('rejects empty objectId', () => {
+		const result = heapRefSchema.safeParse({ type: 'ref', objectId: '' });
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects wrong type literal', () => {
+		const result = heapRefSchema.safeParse({ type: 'pointer', objectId: '42' });
+		expect(result.success).toBe(false);
+	});
+});
+
+describe('truncatedValueSchema', () => {
+	it('accepts depth marker', () => {
+		const result = truncatedValueSchema.safeParse({ type: 'truncated', value: 'depth' });
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts items marker', () => {
+		const result = truncatedValueSchema.safeParse({ type: 'truncated', value: 'items' });
+		expect(result.success).toBe(true);
+	});
+});
+
+describe('heapEntrySchema', () => {
+	it('accepts a list-style entry (no key)', () => {
+		const result = heapEntrySchema.safeParse({ value: { type: 'int', value: '1' } });
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts a dict-style entry (with key)', () => {
+		const result = heapEntrySchema.safeParse({
+			key: 'x',
+			value: { type: 'ref', objectId: '42' }
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts a truncated value', () => {
+		const result = heapEntrySchema.safeParse({
+			value: { type: 'truncated', value: 'depth' }
+		});
+		expect(result.success).toBe(true);
+	});
+});
+
+describe('heapObjectSchema', () => {
+	it('accepts a list', () => {
+		const result = heapObjectSchema.safeParse({
+			id: '140',
+			type: 'list',
+			length: 0,
+			entries: []
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts each container type', () => {
+		const containers = ['list', 'dict', 'set', 'tuple', 'frozenset'];
+		for (const t of containers) {
+			const result = heapObjectSchema.safeParse({
+				id: '1',
+				type: t,
+				length: 0,
+				entries: []
+			});
+			expect(result.success).toBe(true);
+		}
+	});
+
+	it('accepts user-class instance with instance:<Name> type', () => {
+		const result = heapObjectSchema.safeParse({
+			id: '200',
+			type: 'instance:Point',
+			length: 2,
+			entries: [
+				{ key: 'x', value: { type: 'int', value: '3' } },
+				{ key: 'y', value: { type: 'int', value: '4' } }
+			]
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('rejects unknown type', () => {
+		const result = heapObjectSchema.safeParse({
+			id: '1',
+			type: 'tree',
+			length: 0,
+			entries: []
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects negative length', () => {
+		const result = heapObjectSchema.safeParse({
+			id: '1',
+			type: 'list',
+			length: -1,
+			entries: []
+		});
 		expect(result.success).toBe(false);
 	});
 });
@@ -576,7 +791,8 @@ describe('debugSnapshotMessageSchema', () => {
 				globals: [],
 				loops: [],
 				stdout: '',
-				event: 'line'
+				event: 'line',
+				heap: []
 			}
 		};
 		const result = debugSnapshotMessageSchema.safeParse(msg);
@@ -722,7 +938,8 @@ describe('fromWorkerMessageSchema with debug messages', () => {
 				globals: [],
 				loops: [],
 				stdout: '',
-				event: 'line'
+				event: 'line',
+				heap: []
 			}
 		};
 		const result = fromWorkerMessageSchema.safeParse(msg);

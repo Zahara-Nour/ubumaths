@@ -111,6 +111,60 @@ export const debugLoopInfoSchema = z.object({
 	lineNumber: lineNumberSchema
 });
 
+// =============================================================================
+// Heap schemas (Python Tutor-style visualization)
+// =============================================================================
+
+/**
+ * Inline primitive value (stays inside its parent — variable or HeapEntry)
+ */
+export const inlineValueSchema = z.object({
+	type: z.enum(['int', 'float', 'str', 'bool', 'NoneType', 'complex', 'bytes']),
+	value: z.string().max(10_000)
+});
+
+/**
+ * Reference from a variable / HeapEntry to a HeapObject
+ */
+export const heapRefSchema = z.object({
+	type: z.literal('ref'),
+	objectId: z.string().min(1).max(100)
+});
+
+/**
+ * Marker for content truncated due to depth/items/string limits
+ */
+export const truncatedValueSchema = z.object({
+	type: z.literal('truncated'),
+	value: z.string().max(200)
+});
+
+/**
+ * One entry inside a HeapObject (list item, dict entry, instance attr, …)
+ */
+export const heapEntrySchema = z.object({
+	key: z.string().max(500).optional(),
+	value: z.union([inlineValueSchema, heapRefSchema, truncatedValueSchema])
+});
+
+/**
+ * Heap object: container or user-class instance.
+ * `type` is one of 'list' | 'dict' | 'set' | 'tuple' | 'frozenset'
+ * or 'instance:<ClassName>' for user-defined classes.
+ */
+export const heapObjectSchema = z.object({
+	id: z.string().min(1).max(100),
+	type: z
+		.string()
+		.min(1)
+		.max(200)
+		.regex(/^(list|dict|set|tuple|frozenset|instance:[\w.]{1,150})$/, {
+			message: 'type must be a container or instance:<ClassName>'
+		}),
+	length: z.number().int().min(0).max(1_000_000),
+	entries: z.array(heapEntrySchema).max(1000)
+});
+
 /**
  * Debug snapshot schema
  */
@@ -122,7 +176,8 @@ export const debugSnapshotSchema = z.object({
 	globals: z.array(debugVariableSchema).max(500),
 	loops: z.array(debugLoopInfoSchema).max(20),
 	stdout: z.string().max(100_000),
-	event: debugTraceEventSchema
+	event: debugTraceEventSchema,
+	heap: z.array(heapObjectSchema).max(2000)
 });
 
 // =============================================================================
