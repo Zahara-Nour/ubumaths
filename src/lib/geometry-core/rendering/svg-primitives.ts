@@ -1678,6 +1678,50 @@ export function locusToSVG(
 }
 
 /**
+ * Convert a GeoParametricCurve to an SVG path string.
+ *
+ * Resolves the parameter bounds via the figure (sliders / scalar refs),
+ * samples the curve through `figure.computeParametricCurveSampling`, and
+ * builds a Catmull-Rom path with `curveToSVGPath`.
+ *
+ * Returns `{ path, closed }`:
+ *  - `path` — SVG path string (possibly with multiple `M…` chunks at
+ *    discontinuities); ends with `Z` when `closed === true`.
+ *  - `closed` — true when the sampler detected P(tMin) ≈ P(tMax).
+ */
+export function parametricCurveToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): { path: string; closed: boolean } | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'parametricCurve') return null;
+
+	const topLeft = transformer.svgToMath(0, 0);
+	const bottomRight = transformer.svgToMath(dims.width, dims.height);
+	const viewport: Viewport = {
+		xMin: topLeft.x,
+		xMax: bottomRight.x,
+		yMin: bottomRight.y,
+		yMax: topLeft.y
+	};
+
+	const result = figure.computeParametricCurveSampling(id, viewport);
+	if (!result || result.points.length < 2) return null;
+
+	const curve: SampledCurve = {
+		points: result.points,
+		discontinuityIndices: result.discontinuityIndices
+	};
+	const basePath = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
+	if (!basePath) return null;
+
+	const path = result.closed ? `${basePath} Z` : basePath;
+	return { path, closed: result.closed };
+}
+
+/**
  * Convert a GeoTrace to an SVG path string.
  * Uses the accumulated trace points from the figure.
  */

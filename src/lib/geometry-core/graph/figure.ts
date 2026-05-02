@@ -133,6 +133,7 @@ import type { Delta } from './undo-redo';
 import { computeElementPosition, resolveScalarParam } from './compute-position';
 import { computeLocusCurve } from './compute-locus';
 import type { SampledCurve, Viewport, Point } from '../viewport/types';
+import { sampleParametric2D, type ParametricSampleResult } from '$lib/grapheur/sampler';
 
 const DEFAULT_COLOR = '#1e40af';
 
@@ -3589,6 +3590,52 @@ export class Figure {
 			viewport,
 			this.scalarValues
 		);
+	}
+
+	/**
+	 * Sample a parametric curve t → (x(t), y(t)) over its [tMin, tMax] range.
+	 * Resolves slider/scalar refs in tMin/tMax via the figure's scalarValues.
+	 * Uses adaptive sampling when symbolic derivatives are available, falls back
+	 * to uniform sampling otherwise.
+	 *
+	 * @returns null if the element is not a parametric curve, or if the bounds
+	 *          are not finite / inverted (tMax ≤ tMin) — caller should treat
+	 *          null as "do not render".
+	 */
+	computeParametricCurveSampling(id: string, viewport?: Viewport): ParametricSampleResult | null {
+		const el = this.elements.get(id);
+		if (!el || el.type !== 'parametricCurve') return null;
+		const pc = el as GeoParametricCurve;
+
+		const tMin = resolveScalarParam(pc.tMin, this.scalarValues);
+		const tMax = resolveScalarParam(pc.tMax, this.scalarValues);
+		if (!Number.isFinite(tMin) || !Number.isFinite(tMax) || tMax <= tMin) {
+			return null;
+		}
+
+		const param = pc.parameter;
+		const xFn = (t: number): number | null => {
+			const v = pc.compiledX({ [param]: t });
+			return Number.isFinite(v) ? v : null;
+		};
+		const yFn = (t: number): number | null => {
+			const v = pc.compiledY({ [param]: t });
+			return Number.isFinite(v) ? v : null;
+		};
+		const xPrime = pc.compiledXPrime
+			? (t: number): number | null => {
+					const v = pc.compiledXPrime!({ [param]: t });
+					return Number.isFinite(v) ? v : null;
+				}
+			: null;
+		const yPrime = pc.compiledYPrime
+			? (t: number): number | null => {
+					const v = pc.compiledYPrime!({ [param]: t });
+					return Number.isFinite(v) ? v : null;
+				}
+			: null;
+
+		return sampleParametric2D(xFn, yFn, xPrime, yPrime, tMin, tMax, 300, viewport);
 	}
 
 	getLineEquation(id: string): LineEquation | null {
