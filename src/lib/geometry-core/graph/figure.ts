@@ -139,6 +139,7 @@ import { computeElementPosition, resolveScalarParam } from './compute-position';
 import { computeLocusCurve } from './compute-locus';
 import type { SampledCurve, Viewport, Point } from '../viewport/types';
 import { sampleParametric2D, type ParametricSampleResult } from '$lib/grapheur/sampler';
+import { findClosestParameterOnCurve } from './parametric-newton';
 
 const DEFAULT_COLOR = '#1e40af';
 
@@ -2236,11 +2237,11 @@ export class Figure {
 
 	/**
 	 * Create a point constrained to a parametric curve at parameter t0.
-	 * Position is γ(t0). Not draggable in V1.
+	 * Position is γ(t0). Draggable when t is numeric or a slider reference (V2).
 	 *
 	 * `tValue` is a ScalarParam: a numeric/exact GeoValue OR a scalar reference
-	 * (slider). When `tValue` is a scalarRef, the slider id is added to dependsOn
-	 * so position recomputes when the slider moves.
+	 * (slider or computed scalar). When `tValue` is a scalarRef, the referenced
+	 * id is added to dependsOn so position recomputes when the source moves.
 	 */
 	createPointOnParametricCurve(
 		curveId: string,
@@ -2260,13 +2261,23 @@ export class Figure {
 			deps.push(tValue.scalarRef);
 		}
 
+		// Drag policy (V2):
+		//   - numeric t            → draggable (drag writes el.t directly)
+		//   - scalarRef → slider   → draggable (drag moves the slider)
+		//   - scalarRef → scalar   → read-only (no single slider to update)
+		let isDraggable = true;
+		if (isScalarRef(tValue)) {
+			const refEl = this.elements.get(tValue.scalarRef);
+			if (!refEl || !isSlider(refEl)) isDraggable = false;
+		}
+
 		const id = this.generateId('ptP');
 		const element: GeoPointOnParametricCurve = {
 			type: 'pointOnParametricCurve',
 			id,
 			parametricCurveId: curveId,
 			t: tValue,
-			draggable: false,
+			draggable: isDraggable,
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
@@ -2277,6 +2288,87 @@ export class Figure {
 		this.addElement(id, element, deps);
 		this.computePosition(id);
 		return id;
+	}
+
+	/**
+	 * Update the parameter t of a `pointOnParametricCurve` element directly.
+	 *
+	 * Used when t is a numeric GeoValue: the new t replaces el.t (no scalar
+	 * binding lookup, no Newton — caller provides newT). For slider-backed t,
+	 * see `movePointOnParametricCurveFromCursor` which dispatches to
+	 * `moveSlider` instead.
+	 */
+	movePointOnParametricCurve(id: string, newT: number): void {
+		const el = this.elements.get(id);
+		if (!el || !isPointOnParametricCurve(el)) {
+			throw new Error(`movePointOnParametricCurve: "${id}" is not a pointOnParametricCurve`);
+		}
+		if (!Number.isFinite(newT)) return;
+
+		const updated: GeoPointOnParametricCurve = { ...el, t: numeric(newT) };
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+		this.graph.markDirty(id);
+	}
+
+	/**
+	 * Drag entry point for `pointOnParametricCurve`: given a cursor position,
+	 * run Newton multi-start on f(t) = (γ(t) − cursor)·γ'(t), pick the root
+	 * minimising ‖γ(t) − cursor‖, clamp to [t_min, t_max], and dispatch:
+	 *   - numeric t       → `movePointOnParametricCurve(id, newT)`
+	 *   - slider-backed t → `moveSlider(sliderId, newT)`
+	 *   - scalar-backed t → no-op (read-only)
+	 *
+	 * If every Newton start is singular (degenerate curve at the chosen
+	 * sample points), the call is silently ignored — drag has no effect.
+	 */
+	movePointOnParametricCurveFromCursor(id: string, cursorX: number, cursorY: number): void {
+		const el = this.elements.get(id);
+		if (!el || !isPointOnParametricCurve(el)) {
+			throw new Error(
+				`movePointOnParametricCurveFromCursor: "${id}" is not a pointOnParametricCurve`
+			);
+		}
+		if (!Number.isFinite(cursorX) || !Number.isFinite(cursorY)) return;
+
+		const curveEl = this.elements.get(el.parametricCurveId);
+		if (!curveEl || curveEl.type !== 'parametricCurve') return;
+
+		// Read-only when t is a computed scalar (no slider to update).
+		if (!el.draggable) return;
+
+		// Resolve t_min and t_max (may themselves be scalarRefs).
+		const tMin = resolveScalarParam(curveEl.tMin, this.scalarValues);
+		const tMax = resolveScalarParam(curveEl.tMax, this.scalarValues);
+		if (!Number.isFinite(tMin) || !Number.isFinite(tMax) || tMax <= tMin) return;
+
+		// Build scalar bindings for free variables in x(t)/y(t) (e.g. `a`
+		// in `a*cos(t)`). Mirrors the binding logic in compute-position.ts
+		// and createTangentToParametric.
+		const scalarBindings: Record<string, number> = {};
+		for (const depId of curveEl.dependsOn) {
+			const depEl = this.elements.get(depId);
+			if (depEl?.label) {
+				const val = this.scalarValues.get(depId);
+				if (val !== undefined) scalarBindings[depEl.label] = val;
+			}
+		}
+
+		const newT = findClosestParameterOnCurve(curveEl, cursorX, cursorY, scalarBindings, tMin, tMax);
+
+		// All starts singular → drag silently ignored.
+		if (newT === null) return;
+
+		// Dispatch on t kind.
+		if (isScalarRef(el.t)) {
+			const refEl = this.elements.get(el.t.scalarRef);
+			if (refEl && isSlider(refEl)) {
+				this.moveSlider(el.t.scalarRef, newT);
+			}
+			// scalar-backed t is excluded above (draggable === false).
+		} else {
+			this.movePointOnParametricCurve(id, newT);
+		}
 	}
 
 	createLocus(

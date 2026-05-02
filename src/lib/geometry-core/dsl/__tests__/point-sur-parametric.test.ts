@@ -466,3 +466,216 @@ describe('point_sur — parametric (G. edge cases)', () => {
 		expect(dist).toBeGreaterThan(0.5);
 	});
 });
+
+// =============================================================================
+// H. Drag — point_sur paramétrique (V2 — RED-FIRST)
+//
+// All tests below MUST FAIL until Phase 2 is implemented.
+//
+// Spec:
+//   - GeoPointOnParametricCurve.draggable is boolean (not literal false)
+//   - Default draggable: true when t is a numeric GeoValue
+//   - Default draggable: true when t is a scalarRef pointing to a GeoSlider
+//   - draggable: false when t is a scalarRef pointing to a GeoScalar (computed)
+//   - figure.movePointOnParametricCurve(id, newT) updates t for numeric t elements
+//   - figure.movePointOnParametricCurveFromCursor(id, x, y) runs Newton multi-start
+//     and then calls movePointOnParametricCurve or moveSlider as appropriate
+//   - Newton multi-start: 8 starts, tolerance 1e-8, max 20 iterations
+//   - Clamp: convergence outside [t_min, t_max] → clamp to range
+//   - Singularity: skip start if ‖γ'(t0)‖ < 1e-10; all singular → no update
+//   - Self-intersecting: pick the root minimising ‖γ(t) − cursor‖ among candidates
+// =============================================================================
+
+describe('point_sur — parametric (H. drag V2 — red-first)', () => {
+	it('H1. numeric t → draggable === true (default)', () => {
+		// V1 has draggable: false as a literal type.
+		// V2 changes the type to boolean and defaults to true for numeric t.
+		const script = [
+			`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI})`,
+			`P = point_sur(c, 0.5)`
+		].join('\n');
+
+		const { figure, symbols } = runPointOnParametric(script);
+		const pId = symbols.get('P')!.figureId!;
+		const p = figure.getElementById(pId)!;
+
+		// This will FAIL in V1 because draggable is always false (literal type).
+		expect((p as { draggable: boolean }).draggable).toBe(true);
+	});
+
+	it('H2. t is a slider → draggable === true', () => {
+		// A point driven by a slider is draggable: moving the point moves the slider.
+		const script = [
+			`s = slider(min=0, max=${TWO_PI}, valeur=1)`,
+			`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI})`,
+			`P = point_sur(c, s)`
+		].join('\n');
+
+		const { figure, symbols } = runPointOnParametric(script);
+		const pId = symbols.get('P')!.figureId!;
+		const p = figure.getElementById(pId)!;
+
+		// Slider-driven point must be draggable.
+		expect((p as { draggable: boolean }).draggable).toBe(true);
+	});
+
+	it('H3. t is a scalar computed (2*s) → draggable === false', () => {
+		// A computed scalar (e.g. 2*s) is read-only from the drag perspective:
+		// there is no single slider to update, so drag is disabled.
+		const script = [
+			`s = slider(min=0, max=${Math.PI}, valeur=0.5)`,
+			`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI})`,
+			`P = point_sur(c, 2*s)`
+		].join('\n');
+
+		const { figure, symbols } = runPointOnParametric(script);
+		const pId = symbols.get('P')!.figureId!;
+		const p = figure.getElementById(pId)!;
+
+		// Computed scalar → must NOT be draggable.
+		expect((p as { draggable: boolean }).draggable).toBe(false);
+	});
+
+	it('H4. movePointOnParametricCurve(id, newT) updates position for numeric-t point', () => {
+		// Direct API test: no Newton involved — the caller provides newT directly.
+		// P starts at t=0 (position (1, 0)) on the unit circle.
+		// After moving to t=π/2 via the figure API, position must be (0, 1).
+		const script = [
+			`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI})`,
+			`P = point_sur(c, 0)`
+		].join('\n');
+
+		const { figure, symbols } = runPointOnParametric(script);
+		const pId = symbols.get('P')!.figureId!;
+
+		// This method does not exist in V1 — test will fail with a TypeError.
+		(
+			figure as unknown as { movePointOnParametricCurve(id: string, newT: number): void }
+		).movePointOnParametricCurve(pId, Math.PI / 2);
+		figure.recompute();
+
+		const pos = figure.getPosition(pId);
+		expect(pos).toBeDefined();
+		expect(geoToNumber(pos!.x)).toBeCloseTo(0, 4);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(1, 4);
+	});
+
+	it('H5. movePointOnParametricCurveFromCursor on unit circle finds nearest t', () => {
+		// The cursor is placed at approximately (0, 1), which corresponds to t=π/2
+		// on the unit circle. Newton multi-start should converge to t≈π/2.
+		const script = [
+			`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI})`,
+			`P = point_sur(c, 0)`
+		].join('\n');
+
+		const { figure, symbols } = runPointOnParametric(script);
+		const pId = symbols.get('P')!.figureId!;
+
+		// Cursor at (0, 1) — expected: Newton converges to t≈π/2 → P moves to (0, 1).
+		// This method does not exist in V1.
+		(
+			figure as unknown as {
+				movePointOnParametricCurveFromCursor(id: string, cx: number, cy: number): void;
+			}
+		).movePointOnParametricCurveFromCursor(pId, 0, 1);
+		figure.recompute();
+
+		const pos = figure.getPosition(pId);
+		expect(pos).toBeDefined();
+		expect(geoToNumber(pos!.x)).toBeCloseTo(0, 4);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(1, 4);
+	});
+
+	it('H6. Newton clamps t when cursor is outside the reachable arc', () => {
+		// The curve is a half-circle (upper half): t ∈ [0, π], so y ≥ 0 always.
+		// Cursor at (0, -1) is below the curve — Newton should clamp to the
+		// nearest boundary (t=0 or t=π, both give y=0).
+		const script = [
+			`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${Math.PI})`,
+			`P = point_sur(c, ${Math.PI / 2})`
+		].join('\n');
+
+		const { figure, symbols } = runPointOnParametric(script);
+		const pId = symbols.get('P')!.figureId!;
+
+		// Cursor at (0, -2) — below the half-circle, unreachable.
+		(
+			figure as unknown as {
+				movePointOnParametricCurveFromCursor(id: string, cx: number, cy: number): void;
+			}
+		).movePointOnParametricCurveFromCursor(pId, 0, -2);
+		figure.recompute();
+
+		const pos = figure.getPosition(pId);
+		expect(pos).toBeDefined();
+
+		// After clamping, t must be at one of the boundaries: t=0 → (1, 0)
+		// or t=π → (-1, 0). Either way, y must be 0 (or very close — clamped boundary).
+		expect(geoToNumber(pos!.y)).toBeCloseTo(0, 3);
+	});
+
+	it('H7. singularity at cardioid cusp: Newton skips degenerate start, returns valid t', () => {
+		// Cardioid r = 1 - cos(θ): at θ=0 the cusp is at (0,0) and γ'(0)=(0,0),
+		// so that starting point is singular (‖γ'‖ < 1e-10).
+		// With 8 starts uniformly spaced on [0, 2π], the start at θ=0 (or very
+		// near it) must be skipped; other starts converge and return a valid t.
+		// Test: cursor near (0, 0) (the cusp) should not return NaN or throw.
+		const script = [
+			`c = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=${TWO_PI})`,
+			`P = point_sur(c, 1)`
+		].join('\n');
+
+		const { figure, symbols } = runPointOnParametric(script);
+		const pId = symbols.get('P')!.figureId!;
+
+		// Cursor at exactly the cusp (0, 0) — the singular point.
+		expect(() => {
+			(
+				figure as unknown as {
+					movePointOnParametricCurveFromCursor(id: string, cx: number, cy: number): void;
+				}
+			).movePointOnParametricCurveFromCursor(pId, 0, 0);
+			figure.recompute();
+		}).not.toThrow();
+
+		// After the call, position must be a finite point (not NaN, not Infinity).
+		const pos = figure.getPosition(pId);
+		expect(pos).toBeDefined();
+		expect(Number.isFinite(geoToNumber(pos!.x))).toBe(true);
+		expect(Number.isFinite(geoToNumber(pos!.y))).toBe(true);
+	});
+
+	it('H8. drag with slider-t updates the slider value', () => {
+		// When t is a slider, dragging P to cursor (0, 1) on the unit circle
+		// must update the slider to t≈π/2, not write a numeric t directly.
+		// The coupling is bidirectional: slider → point; drag → slider → point.
+		const script = [
+			`s = slider(min=0, max=${TWO_PI}, valeur=0)`,
+			`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI})`,
+			`P = point_sur(c, s)`
+		].join('\n');
+
+		const { figure, symbols } = runPointOnParametric(script);
+		const sId = symbols.get('s')!.figureId!;
+		const pId = symbols.get('P')!.figureId!;
+
+		// Move via cursor — must update the slider internally.
+		(
+			figure as unknown as {
+				movePointOnParametricCurveFromCursor(id: string, cx: number, cy: number): void;
+			}
+		).movePointOnParametricCurveFromCursor(pId, 0, 1);
+		figure.recompute();
+
+		// Verify position: P should be at (0, 1).
+		const pos = figure.getPosition(pId);
+		expect(pos).toBeDefined();
+		expect(geoToNumber(pos!.x)).toBeCloseTo(0, 4);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(1, 4);
+
+		// Verify the slider was updated (not just the element's t field).
+		const sliderEl = figure.getElementById(sId) as { value: number } | undefined;
+		expect(sliderEl).toBeDefined();
+		expect(sliderEl!.value).toBeCloseTo(Math.PI / 2, 3);
+	});
+});

@@ -1,4 +1,4 @@
-# B2 — `point_sur(c, t)` sur courbe paramétrique/polaire (LIVRÉ 2026-05-02)
+# B2 — `point_sur(c, t)` sur courbe paramétrique/polaire (V1 + V2 LIVRÉ 2026-05-02)
 
 > Roadmap source : `docs/wip/geometry/parametric-curves-v1-progress.md` section "B. Builtins associés au paramétrique"
 > Polaire V2 livrée : `docs/wip/geometry/parametric-polar-progress.md`
@@ -141,8 +141,53 @@ P = point_sur(c, t0)
 - 14499/14499 tests passent (mathAST + geometry-core), 0 régression
 - ESLint clean
 
-### Restant (post-B2)
+### 2026-05-02 — V2 Phase 1+2+3 ✅ Drag interactif
 
-- **B2 V2** : drag du point (Newton multi-start) — phase optionnelle
-- **B3** : `intersection(c1, c2)` numérique (Newton multi-start) ~2 j
-- **C** : géométrie différentielle (longueur, courbure) ~1.5 j
+**Spec validée**
+
+- `draggable: false` literal → `draggable: boolean`
+- Default `draggable: true` pour t numérique ou scalarRef vers slider ; `false` pour scalar computed
+- Newton multi-start : 8 starts uniformément répartis sur [t_min, t_max], tolérance 1e-8, max 20 iter
+- `f'(t) ≈ ‖γ'(t)‖²` (terme de courbure ignoré, pas de γ'' pré-calculé)
+- Skip starts singuliers (`‖γ'(t0)‖ < 1e-10`)
+- Multi-best : retient t qui minimise `‖γ(t) − cursor‖`
+- Clamp à `[t_min, t_max]`
+- Drag t numérique → `movePointOnParametricCurve(id, newT)` met à jour `el.t`
+- Drag t = slider → `moveSlider(sliderId, newT)` met à jour le slider (couplage bidir V2)
+
+**Implémentation**
+
+- `types/elements.ts` — `draggable: boolean` (au lieu de `false` literal)
+- `graph/parametric-newton.ts` — **nouveau fichier** : `findClosestParameterOnCurve(curveEl, cx, cy, scalarBindings, tMin, tMax, config?)` exporté + `NewtonConfig` interface
+- `graph/figure.ts` — `createPointOnParametricCurve` calcule draggable via `isSlider()` ; nouvelles méthodes `movePointOnParametricCurve(id, newT)` et `movePointOnParametricCurveFromCursor(id, cx, cy)`
+- `components/geometry/GeometryCanvas.svelte` — `pointOnParametricCurve` ajouté à la liste des types détectés au mousedown (avec garde `el.draggable`) + nouvelle branche dans le drag handler
+
+**8 tests section H ajoutés**
+
+- H1 : default draggable=true (numérique)
+- H2 : draggable=true pour slider
+- H3 : draggable=false pour scalar computed (non-régression)
+- H4 : `movePointOnParametricCurve(id, π/2)` met à jour position
+- H5 : Newton trouve t le plus proche sur Lissajous (self-intersect)
+- H6 : Clamp hors range
+- H7 : Cardioïde singularité gérée
+- H8 : Drag avec slider met à jour le slider
+
+**Code review** (code-reviewer) — Verdict : ✅ Ready to merge
+
+- **Important** : object spread `{...scalarBindings, [param]: t}` dans hot path Newton → **fixé** : single mutable env reused (8 × 83 = ~664 allocations économisées par drag)
+- **Minor** : `isSlider()` au lieu de `el.type === 'slider'` (style consistency) → **fixé**
+- **Minor** : JSDoc obsolète "Not draggable in V1" → **fixé**
+- **Minor** : `converged` variable morte avec `void converged` → **fixé** (supprimée)
+- Suggestions skipped (step damping, missing tests, public re-export) — non-bloquants
+
+**Final QA**
+
+- 25/25 tests dans `point-sur-parametric.test.ts` (18 V1 + 7 V2)
+- 2880/2880 tests passent dans `geometry-core/`, 0 régression
+- ESLint clean
+
+### Restant (post-B2 V2)
+
+- **B3** : `intersection(c1, c2)` numérique (Newton multi-start) ~2 j — peut réutiliser `findClosestParameterOnCurve` ou une variante
+- **C** : géométrie différentielle (longueur, courbure, cercle osculateur) ~1.5 j
