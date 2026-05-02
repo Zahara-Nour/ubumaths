@@ -13,15 +13,15 @@ pédagogiques, effort total ~6–9 h.
 
 ## Résumé exécutif
 
-| Élément                  | Décision V1                                                                       |
+| Élément                  | Décision V5                                                                       |
 | ------------------------ | --------------------------------------------------------------------------------- |
 | Syntaxe DSL              | Option α : `inf`, `+inf`, `-inf` (identifier pré-chargé, pas de nouveau token)    |
 | Schéma numérique         | **Hybride C** : diagnose A (truncation) + calcul B (substitution `u = x/(1+x)`)   |
 | Détection divergence     | Numérique seul — stagnation des deltas et croissance unboundée                    |
 | Singularités intérieures | Réutilise cache `discontinuities` ; étend la borne effective `[a, T_max]`         |
-| Rendu SVG                | Clipping au viewport ; pas d'indicateur visuel V1                                 |
-| Chemin symbolique        | Repoussé V2 — V1 100 % numérique                                                  |
-| Hors scope V1            | bornes points, `aire_intersection`, Cauchy PV, asymptote intérieure dans `[a, ∞)` |
+| Rendu SVG                | Clipping au viewport ; pas d'indicateur visuel V5                                 |
+| Chemin symbolique        | Repoussé V6 — V5 100 % numérique                                                  |
+| Hors scope V5            | bornes points, `aire_intersection`, Cauchy PV, asymptote intérieure dans `[a, ∞)` |
 
 **Bench mesuré sur les 8 cas** (machine dev) : 0.1–1.1 ms convergent, 6.9 ms
 divergent (sin oscillant). Largement compatible slider réactif (<50 ms cible).
@@ -88,7 +88,7 @@ if (opts.allowNumeric && isNumber(lower) && isNumber(upper)) {  // L. 597
 
 → Le système **ne supporte pas** les bornes symboliques `±∞` aujourd'hui.
 Étendre `integrateDefinite` (cas e^{-x}, 1/(1+x²) pour calcul exact) est un
-chantier séparé. **V1 = 100 % numérique**.
+chantier séparé. **V5 = 100 % numérique**.
 
 ### 1.5 `singularity-warn.ts` — cache `discontinuities`
 
@@ -239,15 +239,15 @@ diagnose est ≤ 7 ms même dans le pire cas (sin), bien sous la cible 50 ms.
 
 ### 2.3 Détection divergence — numérique seul
 
-V1 n'introduit **pas** d'analyse asymptotique symbolique. Les heuristiques de
+V5 n'introduit **pas** d'analyse asymptotique symbolique. Les heuristiques de
 2.2 (stagnation deltas + croissance unboundée) couvrent les 6 cas pédagogiques
 divergents (5 testé direct ; 6 testé direct ; les 4 autres divergents possibles
 dérivent : `tan(x)`, `x²`, `e^x`, `cos(x)/x` partagent un des deux signaux).
 
-**Reportée V2** : si un futur scénario pédagogique requiert une décision
+**Reportée V6** : si un futur scénario pédagogique requiert une décision
 symbolique (ex. `∫_a^+∞ P(x)/Q(x) dx` analysé via le degré dominant), ajouter
 une pré-passe `analyzeAsymptoticBehavior(f, x, +∞)` consultative. Pas
-nécessaire en V1.
+nécessaire en V5.
 
 ### 2.4 Singularités intérieures — étendre le cache existant
 
@@ -259,14 +259,14 @@ indépendamment des bornes. À l'évaluation :
 2. Appeler `classifyDiscontinuitiesForRange(allDiscs, a_eff, T_max)` avec
    `a_eff` = borne finie (ou `-T_max` si left-inf).
 3. **Si une discontinuité divergente y tombe → NaN immédiat**, cohérent avec
-   le V1 borné (cas `aire(1/(x−2), 0, 5)` → NaN).
+   le cas borné existant (ex. `aire(1/(x−2), 0, 5)` → NaN).
 4. Removable/jump intérieurs : utilisés comme split points dans le probe A.
 
 **Évolution requise** : la signature de `classifyDiscontinuitiesForRange`
 n'accepte que des bornes finies — déjà ok après étape 1 puisqu'on substitue
 `T_max` aux bornes infinies.
 
-### 2.5 Rendu SVG — clipping viewport, pas d'indicateur V1
+### 2.5 Rendu SVG — clipping viewport, pas d'indicateur V5
 
 Dans `integralAreaToSVG` et `integralAreaBetweenToSVG` :
 
@@ -280,12 +280,12 @@ fermée par l'axe x (V1/V2) ou la deuxième courbe (V3 entre f et g). Le résult
 est visuellement identique au cas borné, l'utilisateur perçoit que la zone
 "continue hors cadre".
 
-**Indicateur visuel** (flèche, fade-out aux bords) : reporté V2 (cf. Q4).
-Risque V1 trop élevé pour un gain UX modeste.
+**Indicateur visuel** (flèche, fade-out aux bords) : reporté V6 (cf. Q4).
+Risque V5 trop élevé pour un gain UX modeste.
 
-### 2.6 Chemin symbolique — V2
+### 2.6 Chemin symbolique — V6
 
-V1 = 100 % numérique. Argumentation :
+V5 = 100 % numérique. Argumentation :
 
 - `integrateDefinite` ne supporte pas `Infinity` comme borne (limite côté
   `evaluate()` qui ne réduit pas symboliquement `e^{-Infinity}` à 0).
@@ -294,11 +294,11 @@ V1 = 100 % numérique. Argumentation :
   (`exp(−x) → 0`, `1/x → 0`, `arctan(x) → π/2`, etc.).
 - Le numérique (4 % d'erreur sur Cauchy avec scheme C) est largement suffisant
   pour la pédagogie.
-- En V2, on pourrait l'ajouter comme accélérateur : si `integrateDefinite`
+- En V6, on pourrait l'ajouter comme accélérateur : si `integrateDefinite`
   succeed avec antiderivée évaluable à ±∞, on retourne la valeur exacte ;
   sinon fallback numérique.
 
-### 2.7 Hors scope V1
+### 2.7 Hors scope V5
 
 - **Bornes points** (`integrale(f, P1, P2)` avec P points) : déjà hors scope V1-V4.
 - **`aire_intersection`** (3+ courbes) : architecture distincte, pas lié.
@@ -480,7 +480,7 @@ Livrable : ce document. Effort : ~1 h.
 1. **Alias `infini`** — `inf` couvre la convention scientifique (`+∞`, `−∞`).
    Ajouter aussi `infini` comme alias francisé est trivial (1 ligne au
    pré-chargement) mais introduit deux écritures pour le même concept.
-   Recommandation : **`inf` seul en V1**, `infini` ajoutable plus tard sans
+   Recommandation : **`inf` seul en V5**, `infini` ajoutable plus tard sans
    breaking change. **Ton choix ?**
 
 2. **Paramètres T₀ et MAX_T du diagnose** — actuellement T₀=10, T_max = 640
@@ -488,26 +488,26 @@ Livrable : ce document. Effort : ~1 h.
    large (ex. `f(x) = exp(-(x − 1000)²)`) serait diagnostiquée à tort comme
    plate sur `[0, 640]`. Faut-il rendre T₀, MAX_T configurables, ou supposer
    des cas pédagogiques avec support raisonnable ?
-   Recommandation : **constantes V1**, configuration repoussée si besoin émerge.
+   Recommandation : **constantes V5**, configuration repoussée si besoin émerge.
 
 3. **`infini.warn()` ou `console.warn()` direct** — quand le diagnose détecte
    une divergence, faut-il émettre un `console.warn` (cohérent avec
    `singularity-warn`) ou un `toaster.warning(...)` UI-visible ? Cohérence avec
    l'écosystème actuel : `console.warn`. Mais l'utilisateur final voit juste
-   NaN sans explication. Recommandation : **`console.warn` V1, toaster reporté
-   V2** quand on aura une stratégie globale de feedback "intégrale ne converge
+   NaN sans explication. Recommandation : **`console.warn` V5, toaster reporté
+   V6** quand on aura une stratégie globale de feedback "intégrale ne converge
    pas".
 
-4. **Indicateur visuel SVG (flèche/fade-out aux bords du viewport)** — V1 ne
+4. **Indicateur visuel SVG (flèche/fade-out aux bords du viewport)** — V5 ne
    l'inclut pas. L'utilisateur voit la zone clippée comme n'importe quelle
-   fonction non bornée. Ajouter en V2 selon retour pédagogique. **Confirmer
+   fonction non bornée. Ajouter en V6 selon retour pédagogique. **Confirmer
    ce report ?**
 
 5. **`aire_entre(f, g, -inf, +inf)`** — couverte par le schéma hybride si
    `h = f − g` décroît assez vite. Si non, NaN. Pas de cas pédagogique standard
    identifié (la plupart des aires entre courbes pédagogiques ont des bornes
-   finies, intersection points). Garder en V1 ou reporter V2 ?
-   Recommandation : **garder en V1** — le helper route automatiquement, même
+   finies, intersection points). Garder en V5 ou reporter V6 ?
+   Recommandation : **garder en V5** — le helper route automatiquement, même
    chemin de code que aire_entre borné côté API. Coût zéro additionnel.
 
 ---

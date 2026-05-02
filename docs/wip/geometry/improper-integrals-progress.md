@@ -5,11 +5,11 @@
 
 ## Décisions verrouillées (utilisateur, 2026-05-01)
 
-1. **Alias `infini`** : NON. `inf` seul en V1.
-2. **T₀, MAX_T** : constantes V1 (T₀=10, k=0..6 → T_max=640).
-3. **Notification divergence** : `console.warn` V1.
-4. **Indicateur visuel SVG** : reporté V2.
-5. **`aire_entre(f, g, -inf, +inf)`** : gardé V1.
+1. **Alias `infini`** : NON. `inf` seul en V5.
+2. **T₀, MAX_T** : constantes V5 (T₀=10, k=0..6 → T_max=640).
+3. **Notification divergence** : `console.warn` V5.
+4. **Indicateur visuel SVG** : reporté V6.
+5. **`aire_entre(f, g, -inf, +inf)`** : gardé V5.
 
 ## Statut des phases
 

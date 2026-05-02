@@ -31,7 +31,7 @@ export interface ImproperResult {
 }
 
 // =============================================================================
-// Constants (locked V1 — see study §2.2)
+// Constants (locked V5 — see study §2.2)
 // =============================================================================
 
 /** Initial truncation half-width T₀. */
@@ -57,7 +57,7 @@ const STAGNATION_RUN = 2;
 /** Unbounded growth signal: lateMax > 5 × earlyMax with earlyMax > 1e-3.
  *  NOTE: GROWTH_FLOOR suppresses the growth signal for integrands with tiny
  *  early partial sums (e.g. ∫ 1/(x·ln x) dx); covered by stagnation in those
- *  V1-scoped cases. */
+ *  V5-scoped cases. */
 const GROWTH_FACTOR = 5;
 const GROWTH_FLOOR = 1e-3;
 /** Substitution endpoint trim — avoids singular evaluation at u=±1. */
