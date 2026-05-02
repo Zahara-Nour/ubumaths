@@ -36,6 +36,17 @@ c = courbe("r = 1 + b*cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="rouge
 c = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=s, couleur="violet")`;
 
 	const latexThetaDsl = `c = courbe("r = \\theta", theta_min=0, theta_max=4*\\pi, couleur="cyan")`;
+
+	// Tangente sur courbes polaires
+	const tangenteCardioidDsl = `c = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="violet")
+(d, v) = tangente(c, \\pi/2)`;
+
+	const tangenteRoseDsl = `c = courbe("r = sin(2*theta)", theta_min=0, theta_max=2*\\pi, couleur="orange")
+(d, v) = tangente(c, \\pi/8)`;
+
+	const tangenteSliderPolarDsl = `c = courbe("r = 1 + 0.5*cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="rouge")
+t0 = slider(min=0, max=2*\\pi, valeur=\\pi/3)
+(d, v) = tangente(c, t0)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -193,6 +204,51 @@ c = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=s, couleur="violet")`;
 		dsl={latexThetaDsl}
 		title="Notation LaTeX — r = \theta"
 		description="Le paramètre angulaire peut s'écrire en LaTeX \theta (équivalent à `theta` ASCII). Spirale d'Archimède sur [0, 4π]."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Tangente à une courbe polaire</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		<code>tangente(c, theta0)</code> sur une courbe polaire retourne la
+		<strong>droite tangente</strong> (pointillés) + le <strong>vecteur tangent</strong>. La syntaxe
+		<code>(d, v) = tangente(c, theta0)</code> est obligatoire (destructuring).
+	</p>
+
+	<p class="mb-6 text-muted-foreground">
+		<strong>Note pédagogique :</strong> sur une cardioïde
+		<code>r = 1 − cos(θ)</code>, le point de rebroussement à θ = 0 est une
+		<strong>singularité</strong> (γ'(0) = (0,0)) — appeler
+		<code>tangente(c, 0)</code> lève une erreur DSL "tangente non définie — vitesse nulle".
+	</p>
+
+	<DslDemo
+		dsl={tangenteCardioidDsl}
+		title="Tangente sur cardioïde à θ = π/2"
+		description="La cardioïde a un point de rebroussement à θ=0 ; à θ=π/2 le point est régulier."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={tangenteRoseDsl}
+		title="Tangente sur rosace à θ = π/8"
+		description="Vecteur tangent à la rosace 4 pétales pendant qu'elle s'enroule autour du premier pétale."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={tangenteSliderPolarDsl}
+		title="Tangente animée sur limaçon — slider sur theta0"
+		description="Déplace le slider pour suivre la tangente le long du limaçon. La magnitude du vecteur tangent varie avec la vitesse instantanée."
 		width={700}
 		height={500}
 	/>

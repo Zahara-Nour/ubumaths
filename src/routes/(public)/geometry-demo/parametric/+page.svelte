@@ -51,6 +51,20 @@ c = courbe("x = \\phi*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="ora
 s = slider(min=0.5, max=4, valeur=2)
 k = 2 * s
 c = courbe("x = k*cos(t)", "y = k*sin(t)", t_min=0, t_max=2*\\pi, couleur="rouge")`;
+
+	// Tangente paramétrique : (d, v) = tangente(c, t0)
+	// d = droite tangente (pointillés), v = vecteur tangent γ'(t0)
+	const tangenteParabolaDsl = `c = courbe("x = t", "y = t^2", t_min=-2, t_max=2, couleur="bleu")
+(d, v) = tangente(c, 1)`;
+
+	const tangenteLissajousDsl = `unite_angle("radians")
+c = courbe("x = sin(3*t)", "y = sin(2*t)", t_min=0, t_max=2*\\pi, couleur="violet")
+(d, v) = tangente(c, 0.6)`;
+
+	const tangenteSliderDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+t0 = slider(min=0, max=2*\\pi, valeur=\\pi/4)
+(d, v) = tangente(c, t0)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -173,6 +187,45 @@ c = courbe("x = k*cos(t)", "y = k*sin(t)", t_min=0, t_max=2*\\pi, couleur="rouge
 		dsl={reactiveDsl}
 		title="Variable réactive — k = 2·s"
 		description="La variable k dépend du slider s. Toute expression contenant un slider/scalar produit un GeoScalar réactif ; la courbe se redessine quand s bouge."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Tangente à une courbe paramétrique</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		Le builtin <code>tangente(c, t0)</code> appliqué à une courbe paramétrique retourne deux
+		éléments : la <strong>droite tangente</strong> (pointillés par défaut) et le
+		<strong>vecteur tangent</strong> <code>γ'(t0)</code> ancré en <code>γ(t0)</code>. La syntaxe
+		impose le destructuring <code>(d, v) = tangente(c, t0)</code>.
+	</p>
+
+	<DslDemo
+		dsl={tangenteParabolaDsl}
+		title="Tangente sur parabole — (t, t²) à t = 1"
+		description="γ(1) = (1, 1), γ'(1) = (1, 2). Pente 2 = dérivée de y = x² en x = 1."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={tangenteLissajousDsl}
+		title="Tangente sur Lissajous (3:2) à t ≈ 0.6"
+		description="La direction et la magnitude du vecteur tangent varient le long du chemin — particulièrement marqué près des points de rebroussement."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={tangenteSliderDsl}
+		title="Tangente animée — slider sur t0"
+		description="Déplace le slider pour faire glisser le point de tangence sur le cercle. Le vecteur tangent (cos t pi/2 + 1, sin t pi/2 + 1) reste de norme 1 (vitesse constante)."
 		width={700}
 		height={500}
 	/>

@@ -54,6 +54,8 @@ import type {
 	GeoIntersectionFF,
 	GeoTangentLine,
 	GeoTangentToQuadratic,
+	GeoTangentParametric,
+	GeoTangentVector,
 	GeoConicPolar,
 	GeoVectorByPoints,
 	GeoFreeVector,
@@ -2406,6 +2408,128 @@ export class Figure {
 		};
 		this.addElement(id, element, deps);
 		return id;
+	}
+
+	/**
+	 * Create the tangent line and tangent vector to a parametric curve at t = t0.
+	 *
+	 * Returns both element ids; the caller (DSL builtin) typically destructures
+	 * them as `(d, v) = tangente(c, t0)`. Both elements share a `tangentGroupId`
+	 * so the serializer can re-emit them together as a single DSL line.
+	 *
+	 * The tangent direction γ'(t0) is computed from the curve's compiled
+	 * derivatives. If ‖γ'(t0)‖ < 1e-10 (singularity / cusp), throws an Error
+	 * which the builtin layer wraps as a DslRuntimeError.
+	 */
+	createTangentToParametric(
+		curveId: string,
+		tValue: ScalarParam,
+		options?: ElementOptions
+	): { tangentId: string; vectorId: string } {
+		const curveEl = this.elements.get(curveId);
+		if (!curveEl || curveEl.type !== 'parametricCurve') {
+			throw new Error(`createTangentToParametric: "${curveId}" is not a parametricCurve element`);
+		}
+		if (!curveEl.compiledXPrime || !curveEl.compiledYPrime) {
+			throw new Error(`createTangentToParametric: curve "${curveId}" has no compiled derivatives`);
+		}
+
+		// Resolve t0 to a number (sliders use stored scalarValues).
+		const t0 = resolveScalarParam(tValue, this.scalarValues);
+		if (!Number.isFinite(t0)) {
+			throw new Error(`createTangentToParametric: t0 is not finite (${t0})`);
+		}
+
+		const param = curveEl.parameter;
+
+		// Inject scalar bindings for any slider/scalar referenced by the curve
+		// (e.g. `a*cos(t)` where `a` is a slider). Without these, free variables
+		// would resolve to NaN/undefined and γ(t0) would be non-finite.
+		const scalarBindings: Record<string, number> = {};
+		for (const depId of curveEl.dependsOn) {
+			const depEl = this.elements.get(depId);
+			if (depEl?.label) {
+				const val = this.scalarValues.get(depId);
+				if (val !== undefined) scalarBindings[depEl.label] = val;
+			}
+		}
+
+		const px = curveEl.compiledX({ ...scalarBindings, [param]: t0 });
+		const py = curveEl.compiledY({ ...scalarBindings, [param]: t0 });
+		const dx = curveEl.compiledXPrime({ ...scalarBindings, [param]: t0 });
+		const dy = curveEl.compiledYPrime({ ...scalarBindings, [param]: t0 });
+
+		if (!Number.isFinite(px) || !Number.isFinite(py)) {
+			throw new Error(`tangente non définie au point γ(t0) — γ(t0) non fini`);
+		}
+		if (!Number.isFinite(dx) || !Number.isFinite(dy)) {
+			throw new Error(`tangente non définie au point γ(t0) — dérivée non calculable`);
+		}
+		const norm = Math.sqrt(dx * dx + dy * dy);
+		if (norm < 1e-10) {
+			throw new Error(`tangente non définie au point γ(t0) — vitesse nulle`);
+		}
+
+		// Build dependency lists. For a slider-backed t0 the scalarRef must be in deps.
+		const deps: string[] = [curveId];
+		if (isScalarRef(tValue) && !deps.includes(tValue.scalarRef)) {
+			deps.push(tValue.scalarRef);
+		}
+
+		const tangentGroupId = this.generateId('tgrp');
+		const tangentId = this.generateId('tg');
+		const vectorId = this.generateId('vec');
+
+		const point = { x: px, y: py };
+		const tail = { x: px, y: py };
+		const head = { x: px + dx, y: py + dy };
+		const direction = { dx, dy };
+
+		// Default style: tangent line is dashed; the vector inherits caller styling.
+		const lineStyle: GeoStyle = { dash: 'dashed', ...this.resolveStyle(options) };
+
+		const tangentEl: GeoTangentParametric = {
+			type: 'tangentParametric',
+			id: tangentId,
+			parametricCurveId: curveId,
+			t: tValue,
+			tangentGroupId,
+			point,
+			direction,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: lineStyle,
+			dependsOn: deps as readonly string[]
+		};
+		this.addElement(tangentId, tangentEl, deps);
+
+		const vectorEl: GeoTangentVector = {
+			type: 'tangentVector',
+			id: vectorId,
+			parametricCurveId: curveId,
+			t: tValue,
+			tangentGroupId,
+			tail,
+			head,
+			dx,
+			dy,
+			color: this.resolveColor(options),
+			visible: true,
+			label: undefined,
+			style: this.resolveStyle(options),
+			dependsOn: deps as readonly string[]
+		};
+		this.addElement(vectorId, vectorEl, deps);
+
+		// Track positions so downstream consumers (e.g. snapshot/inspect) can
+		// query getPosition(). The tangent line's "position" is set at the
+		// point of tangency; the vector's anchor at the tail.
+		this.positions.set(tangentId, { x: numeric(point.x), y: numeric(point.y) });
+		this.positions.set(vectorId, { x: numeric(tail.x), y: numeric(tail.y) });
+
+		return { tangentId, vectorId };
 	}
 
 	createScalarArea(pointIds: string[], options?: ElementOptions): string {

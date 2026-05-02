@@ -1652,6 +1652,24 @@ function _executeBuiltinInner(
 			const tFnId = requireElement(pos[0], 'fonction', line);
 			const tFnEl = figure.getElementById(tFnId);
 
+			// Parametric curve branch — returns 2 elements (line, vector).
+			if (tFnEl && tFnEl.type === 'parametricCurve') {
+				const tParam = toScalarParam(pos[1], toGeoValue, line);
+				let result;
+				try {
+					result = figure.createTangentToParametric(tFnId, tParam, { label });
+				} catch (e) {
+					const msg = e instanceof Error ? e.message : String(e);
+					throw new DslRuntimeError(`tangente(): ${msg}`, line);
+				}
+				return {
+					elements: [
+						{ figureId: result.tangentId, symbolType: 'tangente' },
+						{ figureId: result.vectorId, symbolType: 'vecteur' }
+					]
+				} as BuiltinMultiResult;
+			}
+
 			if (tFnEl && tFnEl.type === 'quadraticCurve') {
 				// Tangent to quadratic curve
 				if (pos[1].type === 'element') {

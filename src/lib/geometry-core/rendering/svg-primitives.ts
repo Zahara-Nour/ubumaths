@@ -1278,7 +1278,9 @@ import type {
 	GeoIntegralArea,
 	GeoQuadraticCurve,
 	GeoTangentLine,
-	GeoTangentToQuadratic
+	GeoTangentToQuadratic,
+	GeoTangentParametric,
+	GeoTangentVector
 } from '../types/elements';
 import type { ScalarParam } from '../types/geo-value';
 import { isScalarRef, isInfinityParam } from '../types/geo-value';
@@ -1514,6 +1516,81 @@ export function tangentToQuadraticToSVG(
 	if (Math.abs(dFx) < 1e-12 && Math.abs(dFy) < 1e-12) return null;
 
 	return extendLineToBounds(x0, y0, x0 - dFy, y0 + dFx, transformer, dims);
+}
+
+/**
+ * Helper — evaluate γ(t0) and γ'(t0) for a parametric curve, including any
+ * scalar/slider bindings the curve depends on. Returns null when γ or γ' is
+ * non-finite or when the curve has no compiled derivatives.
+ */
+function evalParametricAtT(
+	curveId: string,
+	tParam: ScalarParam,
+	figure: Figure
+): { px: number; py: number; dx: number; dy: number } | null {
+	const curveEl = figure.getElementById(curveId);
+	if (!curveEl || curveEl.type !== 'parametricCurve') return null;
+	if (!curveEl.compiledXPrime || !curveEl.compiledYPrime) return null;
+	const t0 = isScalarRef(tParam)
+		? (figure.getScalarValue(tParam.scalarRef) ?? NaN)
+		: isInfinityParam(tParam)
+			? NaN
+			: geoToNumber(tParam);
+	if (!Number.isFinite(t0)) return null;
+	const param = curveEl.parameter;
+	const scalarBindings: Record<string, number> = {};
+	for (const depId of curveEl.dependsOn) {
+		const depEl = figure.getElementById(depId);
+		if (depEl?.label) {
+			const val = figure.getScalarValue(depId);
+			if (val !== undefined) scalarBindings[depEl.label] = val;
+		}
+	}
+	const env = { ...scalarBindings, [param]: t0 };
+	const px = curveEl.compiledX(env);
+	const py = curveEl.compiledY(env);
+	const dx = curveEl.compiledXPrime(env);
+	const dy = curveEl.compiledYPrime(env);
+	if (!Number.isFinite(px) || !Number.isFinite(py)) return null;
+	if (!Number.isFinite(dx) || !Number.isFinite(dy)) return null;
+	return { px, py, dx, dy };
+}
+
+/**
+ * Convert a GeoTangentParametric to SVG line attributes.
+ * Renders the tangent line at γ(t0) with direction γ'(t0), extended to viewport bounds.
+ */
+export function tangentParametricToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer,
+	dims: { width: number; height: number }
+): LineSVG | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'tangentParametric') return null;
+	const tp = el as GeoTangentParametric;
+	const evaluated = evalParametricAtT(tp.parametricCurveId, tp.t, figure);
+	if (!evaluated) return null;
+	const { px, py, dx, dy } = evaluated;
+	if (Math.abs(dx) < 1e-12 && Math.abs(dy) < 1e-12) return null;
+	return extendLineToBounds(px, py, px + dx, py + dy, transformer, dims);
+}
+
+/**
+ * Resolve a GeoTangentVector to absolute math-space tail/head coordinates.
+ * Caller renders an arrow (tail → head) via the standard vector renderer.
+ */
+export function tangentVectorPositions(
+	id: string,
+	figure: Figure
+): { tailX: number; tailY: number; headX: number; headY: number } | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'tangentVector') return null;
+	const tv = el as GeoTangentVector;
+	const evaluated = evalParametricAtT(tv.parametricCurveId, tv.t, figure);
+	if (!evaluated) return null;
+	const { px, py, dx, dy } = evaluated;
+	return { tailX: px, tailY: py, headX: px + dx, headY: py + dy };
 }
 
 /**

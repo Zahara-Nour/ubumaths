@@ -725,6 +725,48 @@ export interface GeoConicPolar extends GeoElementBase {
 	readonly dependsOn: readonly string[];
 }
 
+/**
+ * Tangent line to a parametric curve at parameter t0.
+ * Created by destructuring `(d, v) = tangente(c, t0)`. Companion vector is
+ * marked with the same `tangentGroupId` so the serializer can re-emit them
+ * together.
+ */
+export interface GeoTangentParametric extends GeoElementBase {
+	readonly type: 'tangentParametric';
+	readonly parametricCurveId: string;
+	/** Parameter t0 — fixed value or scalarRef (slider/scalar) for reactivity. */
+	readonly t: ScalarParam;
+	/** Group id shared with the companion GeoTangentVector for serialization pairing. */
+	readonly tangentGroupId: string;
+	/** Cached point of tangency γ(t0) at creation time (for inspection/snapshot). */
+	readonly point: { readonly x: number; readonly y: number };
+	/** Cached direction γ'(t0) at creation time (raw, not normalized). */
+	readonly direction: { readonly dx: number; readonly dy: number };
+	readonly dependsOn: readonly string[];
+}
+
+/**
+ * Tangent vector to a parametric curve at parameter t0, anchored at γ(t0).
+ * Tail is at γ(t0); head is at γ(t0) + γ'(t0). Companion of GeoTangentParametric
+ * via shared `tangentGroupId`.
+ */
+export interface GeoTangentVector extends GeoElementBase {
+	readonly type: 'tangentVector';
+	readonly parametricCurveId: string;
+	/** Parameter t0 — fixed value or scalarRef. */
+	readonly t: ScalarParam;
+	/** Group id shared with the companion GeoTangentParametric. */
+	readonly tangentGroupId: string;
+	/** Cached tail γ(t0) at creation time. */
+	readonly tail: { readonly x: number; readonly y: number };
+	/** Cached head γ(t0) + γ'(t0) at creation time. */
+	readonly head: { readonly x: number; readonly y: number };
+	/** Cached components γ'(t0) at creation time (mirror of head - tail). */
+	readonly dx: number;
+	readonly dy: number;
+	readonly dependsOn: readonly string[];
+}
+
 // =============================================================================
 // Function curve (y = f(x), from courbe() builtin)
 // =============================================================================
@@ -1084,6 +1126,8 @@ export type GeoElement =
 	| GeoPointOnArc
 	| GeoTangentLine
 	| GeoTangentToQuadratic
+	| GeoTangentParametric
+	| GeoTangentVector
 	| GeoConicPolar
 	| GeoVectorByPoints
 	| GeoFreeVector
@@ -1340,6 +1384,14 @@ export function isTrace(el: GeoElement): el is GeoTrace {
 
 export function isTangentLine(el: GeoElement): el is GeoTangentLine {
 	return el.type === 'tangentLine';
+}
+
+export function isTangentParametric(el: GeoElement): el is GeoTangentParametric {
+	return el.type === 'tangentParametric';
+}
+
+export function isTangentVector(el: GeoElement): el is GeoTangentVector {
+	return el.type === 'tangentVector';
 }
 
 export function isVectorByPoints(el: GeoElement): el is GeoVectorByPoints {

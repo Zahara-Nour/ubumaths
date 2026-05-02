@@ -32,6 +32,8 @@
 		implicitCurveToSVG,
 		tangentLineToSVG,
 		tangentToQuadraticToSVG,
+		tangentParametricToSVG,
+		tangentVectorPositions,
 		conicPolarToSVG,
 		locusToSVG,
 		parametricCurveToSVG,
@@ -1209,6 +1211,97 @@
 							class="geo-line"
 							class:hovered={hoveredId === el.id}
 						/>
+					{/if}
+				{:else if el.type === 'tangentParametric'}
+					{@const svg = tangentParametricToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						<line
+							x1={svg.x1}
+							y1={svg.y1}
+							x2={svg.x2}
+							y2={svg.y2}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							stroke-linecap="round"
+							opacity={sty.opacity}
+							class="geo-line"
+							class:hovered={hoveredId === el.id}
+						/>
+						{#if el.label}
+							{@const t = 0.9}
+							{@const mx = svg.x1 + t * (svg.x2 - svg.x1)}
+							{@const my = svg.y1 + t * (svg.y2 - svg.y1)}
+							{@const dx = svg.x2 - svg.x1}
+							{@const dy = svg.y2 - svg.y1}
+							{@const len = Math.sqrt(dx * dx + dy * dy) || 1}
+							{@const nx = -dy / len}
+							{@const ny = dx / len}
+							{@const sign = ny > 0 ? -1 : 1}
+							{@const offset = 10 + 5 * Math.abs(nx)}
+							<text
+								x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
+								y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
+								class="label"
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke">{el.label}</text
+							>
+						{/if}
+					{/if}
+				{:else if el.type === 'tangentVector'}
+					{@const tvPos = tangentVectorPositions(el.id, figure)}
+					{#if tvPos}
+						{@const sv1 = transformer.mathToSvg(tvPos.tailX, tvPos.tailY)}
+						{@const sv2 = transformer.mathToSvg(tvPos.headX, tvPos.headY)}
+						{@const sx = sv1.x}
+						{@const sy = sv1.y}
+						{@const ex = sv2.x}
+						{@const ey = sv2.y}
+						{@const vdx = ex - sx}
+						{@const vdy = ey - sy}
+						{@const vlen = Math.sqrt(vdx * vdx + vdy * vdy)}
+						{#if vlen >= 1}
+							{@const angle = Math.atan2(vdy, vdx)}
+							{@const arrowLen = 12}
+							{@const arrowAngle = Math.PI / 7}
+							{@const w1x = ex - arrowLen * Math.cos(angle - arrowAngle)}
+							{@const w1y = ey - arrowLen * Math.sin(angle - arrowAngle)}
+							{@const w2x = ex - arrowLen * Math.cos(angle + arrowAngle)}
+							{@const w2y = ey - arrowLen * Math.sin(angle + arrowAngle)}
+							{@const shaftX2 = (w1x + w2x) / 2}
+							{@const shaftY2 = (w1y + w2y) / 2}
+							<!-- Shaft -->
+							<line
+								x1={sx}
+								y1={sy}
+								x2={shaftX2}
+								y2={shaftY2}
+								stroke={sty.color}
+								stroke-width={sty.strokeWidth}
+								opacity={sty.opacity}
+								pointer-events="none"
+							/>
+							<!-- Arrowhead -->
+							<polygon
+								points={`${Math.round(w1x * 100) / 100},${Math.round(w1y * 100) / 100} ${Math.round(ex * 100) / 100},${Math.round(ey * 100) / 100} ${Math.round(w2x * 100) / 100},${Math.round(w2y * 100) / 100}`}
+								fill={sty.color}
+								opacity={sty.opacity}
+								pointer-events="none"
+							/>
+							{#if el.label}
+								<text
+									x={(sx + ex) / 2 + (el.labelOffset?.dx ?? 6)}
+									y={(sy + ey) / 2 + (el.labelOffset?.dy ?? -8)}
+									class="label"
+									fill={sty.color}
+									stroke="white"
+									stroke-width="3"
+									paint-order="stroke">{el.label}</text
+								>
+							{/if}
+						{/if}
 					{/if}
 				{:else if el.type === 'conicPolar'}
 					{@const svg = conicPolarToSVG(el.id, figure, transformer, dims)}
