@@ -55,7 +55,7 @@ courbe("r = 2*cos(theta)", theta_min=0, theta_max=pi)
 | Phase                                  | Statut                         | Commit     |
 | -------------------------------------- | ------------------------------ | ---------- |
 | 1 — Type + Factory + Sampler 2D        | terminée (TDD, 32 tests verts) | en attente |
-| 2 — DSL builtin courbe() 2-strings     | pending                        | —          |
+| 2 — DSL builtin courbe() 2-strings     | terminée (TDD, 29 tests verts) | en attente |
 | 3 — Rendu SVG + courbe fermée + UI     | pending                        | —          |
 | 4 — Réactivité (sliders/scalaires)     | pending                        | —          |
 | 5 — Exports TikZ/Typst + sérialisation | pending                        | —          |
@@ -107,6 +107,37 @@ Décisions prises pendant l'implémentation :
 - **Endpoints** : forçage exact de `tValues[0] = tMin` et `tValues[n-1] = tMax` pour garantir que la détection de fermeture utilise bien P(tMin) et P(tMax).
 - **Pas d'inférence de dépendances** dans la factory : la liste est passée par l'appelant (le builtin DSL Phase 2 collectera les `scalarRef` via `getVariables`).
 - **`compiledX` / `compiledY` jamais nullables** (l'évaluation numérique est obligatoire) ; seules `compiledXPrime` / `compiledYPrime` peuvent être `null` (échec de différentiation symbolique → fallback uniforme côté sampler).
+
+### Phase 2 (terminée — 29 tests verts, en attente code review)
+
+Modifiés :
+
+- `src/lib/geometry-core/dsl/builtins.ts`
+  - imports : ajout de `isVariable`, `isGreek`, `getVariables` depuis `$lib/mathAST`
+  - case `'courbe'` étendu : 1 string positionnelle (cartésien existant) ou 2 strings positionnelles (paramétrique). Garde-fou explicite sur les arguments nommés `t_min`/`t_max` quand 1 seule string est fournie.
+  - nouvelle fonction `createParametricCurveFromEquations(eq1, eq2, named, figure, line, label, toGeoValue, symbols)` qui :
+    1. parse les 2 équations via `parseCustom` + valide `isRelation` + LHS ∈ {x, y} (incluant `\theta`/`\alpha` → GreekLetterNode acceptés via `isGreek`),
+    2. identifie l'équation x= et y= peu importe l'ordre d'entrée,
+    3. valide `t_min`/`t_max` (obligatoires, scalaire/slider/numérique acceptés, `t_min < t_max` vérifié si numériques),
+    4. détecte l'incohérence des variables (free var exclusive à xRhs ET autre free var exclusive à yRhs) AVANT l'auto-détection,
+    5. honore `param="..."` ou auto-détecte la variable libre unique (hors {x, y, symboles définis}),
+    6. différencie symboliquement (best-effort) avec fallback `null`,
+    7. compile `compiledX`/`compiledY` (obligatoire) et les dérivées (best-effort),
+    8. collecte les ids des scalaires/sliders dans `dependsOn` (variables libres définies dans la SymbolTable + `scalarRef` de tMin/tMax).
+  - helpers privés : `lhsVariableName`, `parseParametricEquation`, `resolveTBoundArg`.
+
+Créés (tests TDD red-first) :
+
+- `src/lib/geometry-core/dsl/__tests__/courbe-parametric.test.ts` — 29 tests (A. nominal × 6, B. swap d'ordre × 2, C. param= × 2, D. erreurs × 13, E. dérivation/compilation × 3, F. dependsOn × 3)
+
+Décisions prises pendant l'implémentation :
+
+- **Token `theta`** : le tokenizer `parseCustom` ne reconnaît pas `theta` nu (interprétation implicite multiplicative `t*h*e*t*a`). Le test A3 utilise `\theta` (syntaxe LaTeX-style supportée par le parser) — les variables grecques arrivent comme `GreekLetterNode` et sont détectées via `isGreek` dans `lhsVariableName` et `getVariables`.
+- **Pas d'escape de chaînes côté DSL** : le tokenizer DSL prend les bytes bruts entre `"` ; un `\` dans la source DSL est passé tel quel au parser mathématique.
+- **Ordre des vérifications** : incohérence avant ambiguïté (sinon une courbe `x = cos(t), y = sin(u)` lèverait "ambigu {t, u}" au lieu du message dédié "incohérent").
+- **Coherence sautée quand `param=` explicite** : le filtrage `xFree`/`yFree` du plan a été remplacé par une détection basée sur les variables exclusives à un seul côté (`exclusiveX` ∩ `exclusiveY` non vides). Cela évite un faux positif quand `param="t"` force le paramètre alors que l'expression contient une autre variable libre commune aux deux RHS (cas C1).
+- **Dépendances réactives** : on filtre les variables libres dont l'entrée `SymbolTable` est de type `'scalar'` (slider, distance, etc.) et on ajoute aussi le `scalarRef` éventuel de `tMin`/`tMax`. Doublon évité via `Set<string>`.
+- **Erreurs sur compile** : si `compile(xRhs)` ou `compile(yRhs)` échoue → erreur DSL claire (mandatory). Si le `compile` d'une dérivée échoue → on retombe à `null` (le sampler utilise alors la version uniforme).
 
 ---
 
