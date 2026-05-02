@@ -144,6 +144,7 @@ function typePrefix(type: string): string {
 		case 'function':
 		case 'quadraticCurve':
 		case 'implicitCurve':
+		case 'parametricCurve':
 			return 'f';
 		case 'pointOnCurve':
 		case 'pointOnQuadraticCurve':
@@ -459,6 +460,14 @@ function serializeElement(
 		case 'quadraticCurve':
 		case 'implicitCurve':
 			return `${n.startsWith('_') ? '' : n + ' = '}courbe("${el.equation}")`;
+
+		case 'parametricCurve': {
+			const tMinStr = fmtScalarParam(el.tMin, idToName);
+			const tMaxStr = fmtScalarParam(el.tMax, idToName);
+			const paramPart = el.parameter !== 't' ? `, param="${el.parameter}"` : '';
+			const prefix = n.startsWith('_') ? '' : n + ' = ';
+			return `${prefix}courbe("${el.equationX}", "${el.equationY}", t_min=${tMinStr}, t_max=${tMaxStr}${paramPart})`;
+		}
 
 		case 'pointOnCurve':
 			return `${n} = point_sur(${name(idToName, el.functionId)}, ${fmtGeoValue(el.x0)})`;

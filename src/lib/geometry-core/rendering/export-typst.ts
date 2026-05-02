@@ -287,6 +287,47 @@ export function exportToTypst(
 		}
 	}
 
+	// Pass 2e: parametric curves
+	for (const el of elements) {
+		if (!el.visible || el.type !== 'parametricCurve') continue;
+		const sty = resolveStyle(el, figure.defaults);
+		const stroke = strokeExpr(
+			sty.color,
+			sty.strokeWidth,
+			sty.dash !== 'solid' ? sty.dash : undefined
+		);
+
+		const result = figure.computeParametricCurveSampling(el.id, viewport);
+		if (!result || result.points.length < 2) continue;
+
+		// Split at discontinuity indices into sub-paths
+		const subPaths: { x: number; y: number }[][] = [];
+		let segStart = 0;
+		for (const discIdx of result.discontinuityIndices) {
+			if (discIdx > segStart) {
+				subPaths.push(Array.from(result.points.slice(segStart, discIdx)));
+			}
+			segStart = discIdx;
+		}
+		if (segStart < result.points.length) {
+			subPaths.push(Array.from(result.points.slice(segStart)));
+		}
+
+		const isLastSeg = (idx: number) => idx === subPaths.length - 1;
+
+		for (let i = 0; i < subPaths.length; i++) {
+			const pts = subPaths[i];
+			if (pts.length < 2) continue;
+			const coords = pts.map((p) => c(p.x, p.y));
+			const closedPart =
+				result.closed && result.discontinuityIndices.length === 0 && isLastSeg(i)
+					? ', closed: true'
+					: '';
+			const fillPart = sty.fillColor ? `, fill: ${hexToTypstColor(sty.fillColor)}` : ', fill: none';
+			lines.push(`  line(${coords.join(', ')}, stroke: ${stroke}${fillPart}${closedPart})`);
+		}
+	}
+
 	// Pass 2d: tangents to quadratic curves
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'tangentToQuadratic') continue;
