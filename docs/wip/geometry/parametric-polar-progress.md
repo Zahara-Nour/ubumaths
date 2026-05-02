@@ -182,15 +182,13 @@ Verdict : ✅ APPROVED WITH SUGGESTIONS (4 critiques)
 
 ### 2026-05-02 — Phase 5 ✅
 
-**Demo page mise à jour** (`src/routes/(public)/geometry-demo/parametric/+page.svelte`)
+**Page polaire dédiée** (`src/routes/(public)/geometry-demo/polar/+page.svelte`)
 
-Section "Courbes polaires" ajoutée après les 11 démos paramétriques existantes, avec 6 nouveaux exemples :
+Page séparée à la demande de l'utilisateur (initialement section dans `parametric/+page.svelte`, refactorisée en page autonome). 13 démos :
 
-- Cercle polaire `r = 2*cos(theta)` sur `[0, π]`
-- Cardioïde `r = 1 - cos(theta)` sur `[0, 2π]` avec remplissage
-- Limaçon avec boucle `r = 1 + 2*cos(theta)` sur `[0, 2π]`
-- Rosace 4 pétales `r = sin(2*theta)` sur `[0, 2π]`
-- Spirale d'Archimède `r = theta` sur `[0, 6π]`
-- Rosace dynamique avec slider `n` (slider sur paramètre dans l'équation)
+- 9 nominales : cercle `r = 2*cos(θ)`, cercle constant `r = 2`, cardioïde, limaçon avec boucle, limaçon avec creux, rosace 4 pétales, rosace 3 pétales, spirale d'Archimède, lemniscate-like (avec `sqrt(abs(...))`)
+- 4 réactives : slider sur `n` (rosace), slider sur `b` (limaçon transitions), slider sur `theta_max` (animation), notation LaTeX `\theta`
 
-Aucun changement de code Svelte 5 (uniquement strings DSL + DslDemo réutilisé).
+**Index `/geometry-demo`** : nouvelle entrée "Courbes polaires" ajoutée à côté de "Courbes paramétriques".
+
+**Page parametric** : revenue à son état pré-polaire (la section polaire a été retirée).
