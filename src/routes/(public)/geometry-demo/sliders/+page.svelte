@@ -83,5 +83,15 @@
 				classique de Terminale.
 			</p>
 		</a>
+		<a
+			href="/geometry-demo/sliders/integrale-improper"
+			class="rounded-lg border p-4 hover:bg-muted"
+		>
+			<h2 class="font-bold">Integrales generalisees (bornes infinies)</h2>
+			<p class="text-sm text-muted-foreground">
+				Bornes <code>+inf</code> / <code>-inf</code> dans integrale, aire, aire_entre. 8 cas pedagogiques
+				: exp, gaussienne, Cauchy, divergent, oscillant.
+			</p>
+		</a>
 	</div>
 </div>
