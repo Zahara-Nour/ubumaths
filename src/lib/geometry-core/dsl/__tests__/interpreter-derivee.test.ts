@@ -13,7 +13,9 @@ import { runDsl, serializeDsl } from '../index';
 import { DslRuntimeError } from '../errors';
 
 function run(script: string) {
-	const program = parse(script);
+	// derivee tests work with curve equations in radians (mathAST native).
+	// DSL default mode is degrees, so opt into radians for the whole test file.
+	const program = parse(`unite_angle("radians")\n${script}`);
 	return interpret(program);
 }
 
@@ -233,11 +235,13 @@ g = derivee(f)`;
 	});
 
 	it('round-trip preserves trigonometric derivative (sin → cos)', () => {
-		const script = `f = courbe("y = sin(x)")
+		const script = `unite_angle("radians")
+f = courbe("y = sin(x)")
 g = derivee(f)`;
 		const { figure, symbols } = runDsl(script);
 		const serialized = serializeDsl(figure, symbols);
-		const { figure: fig2, symbols: sym2 } = runDsl(serialized);
+		// V1: serializer doesn't preserve the angle-mode directive — re-add it.
+		const { figure: fig2, symbols: sym2 } = runDsl(`unite_angle("radians")\n${serialized}`);
 		const g2 = fig2.getElementById(sym2.get('g')!.figureId!);
 		expect(g2?.type).toBe('function');
 		if (g2 && g2.type === 'function') {
@@ -252,11 +256,13 @@ g = derivee(f)`;
 		// safety net, it serializes as `x^2-sin(x)` and the whole derivative
 		// becomes a 3-term sum after reparse, silently corrupting the function.
 		// Regression guard for the toCustom implicit-mul safety net (sign variant).
-		const script = `f = courbe("y = x^2 * cos(x)")
+		const script = `unite_angle("radians")
+f = courbe("y = x^2 * cos(x)")
 g = derivee(f)`;
 		const { figure, symbols } = runDsl(script);
 		const serialized = serializeDsl(figure, symbols);
-		const { figure: fig2, symbols: sym2 } = runDsl(serialized);
+		// V1: serializer doesn't preserve the angle-mode directive — re-add it.
+		const { figure: fig2, symbols: sym2 } = runDsl(`unite_angle("radians")\n${serialized}`);
 		const g2 = fig2.getElementById(sym2.get('g')!.figureId!);
 		expect(g2?.type).toBe('function');
 		if (g2 && g2.type === 'function') {

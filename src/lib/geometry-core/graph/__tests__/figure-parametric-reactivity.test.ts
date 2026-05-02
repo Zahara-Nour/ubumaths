@@ -21,6 +21,7 @@ function getParametricCurve(figure: ReturnType<typeof runDsl>['figure'], symbolI
 describe('parametric curve — reactive bounds via slider', () => {
 	it('moving t_max slider changes the sampled point count and last point', () => {
 		const script = [
+			`unite_angle("radians")`,
 			`s = slider(min=0.5, max=${TWO_PI}, valeur=${Math.PI})`,
 			`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=s)`
 		].join('\n');
@@ -48,6 +49,7 @@ describe('parametric curve — reactive bounds via slider', () => {
 
 	it('moving t_max slider changes the closed-curve flag', () => {
 		const script = [
+			`unite_angle("radians")`,
 			`s = slider(min=0.5, max=${TWO_PI}, valeur=${Math.PI})`,
 			`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=s)`
 		].join('\n');
@@ -81,6 +83,7 @@ describe('parametric curve — reactive bounds via slider', () => {
 
 	it('slider in x(t)/y(t) coefficient rescales the sampled points', () => {
 		const script = [
+			`unite_angle("radians")`,
 			`r = slider(min=0.5, max=5, valeur=1)`,
 			`c = courbe("x = r * cos(t)", "y = r * sin(t)", t_min=0, t_max=${TWO_PI}, param="t")`
 		].join('\n');
@@ -110,6 +113,7 @@ describe('parametric curve — reactive bounds via slider', () => {
 
 	it('curve dependsOn includes every scalar referenced in x, y, t_min, and t_max', () => {
 		const script = [
+			`unite_angle("radians")`,
 			`a = slider(min=0.5, max=5, valeur=2)`,
 			`b = slider(min=0, max=10, valeur=1)`,
 			`m = slider(min=0, max=1, valeur=0)`,

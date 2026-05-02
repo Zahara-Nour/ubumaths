@@ -31,7 +31,9 @@ interface GeoIntegralAreaShape {
 
 /** Set up a figure with a single function f and return ids. */
 function setupFigureWithFn(eq: string) {
-	const { figure, symbols } = runDsl(`f = courbe("${eq}")`);
+	// Curve equations follow the active angle mode; DSL default is degrees.
+	// These tests work in radians (mathAST native), so opt in explicitly.
+	const { figure, symbols } = runDsl(`unite_angle("radians")\nf = courbe("${eq}")`);
 	const fnId = symbols.get('f')!.figureId!;
 	return { figure, fnId };
 }

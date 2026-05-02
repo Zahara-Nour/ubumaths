@@ -12,7 +12,9 @@ import { runDsl } from '..';
 import { DslRuntimeError } from '../errors';
 
 function run(script: string) {
-	return runDsl(script);
+	// aire_entre tests use trig integrands in radians (mathAST native).
+	// DSL default mode is degrees, so opt into radians for the whole file.
+	return runDsl(`unite_angle("radians")\n${script}`);
 }
 
 // =============================================================================

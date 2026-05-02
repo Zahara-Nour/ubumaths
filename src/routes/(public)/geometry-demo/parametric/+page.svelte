@@ -4,35 +4,49 @@
 	// Note: \\pi and e (Euler) are now first-class DSL constants thanks to the
 	// mathAST routing. Math functions (sqrt, exp, ln, log, …) and arithmetic
 	// expressions in the RHS are also routed to mathAST automatically.
+	//
+	// The DSL angle mode defaults to degrees. These trigonometric demos opt
+	// into radians via `unite_angle("radians")` so cos(t)/sin(t) on intervals
+	// relative to π behave as expected.
 
-	const circleDsl = `c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")`;
+	const circleDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")`;
 
 	const parabolaDsl = `c = courbe("x = t", "y = t^2", t_min=-2, t_max=2, couleur="rouge")`;
 
-	const cardioidDsl = `c = courbe("x = (1 - cos(t)) * cos(t)", "y = (1 - cos(t)) * sin(t)", t_min=0, t_max=2*\\pi, couleur="violet")`;
+	const cardioidDsl = `unite_angle("radians")
+c = courbe("x = (1 - cos(t)) * cos(t)", "y = (1 - cos(t)) * sin(t)", t_min=0, t_max=2*\\pi, couleur="violet")`;
 
-	const lissajousDsl = `c1 = courbe("x = sin(3*t)", "y = sin(2*t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+	const lissajousDsl = `unite_angle("radians")
+c1 = courbe("x = sin(3*t)", "y = sin(2*t)", t_min=0, t_max=2*\\pi, couleur="bleu")
 c2 = courbe("x = sin(4*t)", "y = sin(3*t)", t_min=0, t_max=2*\\pi, couleur="rouge")
 c3 = courbe("x = sin(5*t)", "y = sin(4*t)", t_min=0, t_max=2*\\pi, couleur="vert")`;
 
-	const cycloidDsl = `c = courbe("x = t - sin(t)", "y = 1 - cos(t)", t_min=0, t_max=4*\\pi, couleur="orange")`;
+	const cycloidDsl = `unite_angle("radians")
+c = courbe("x = t - sin(t)", "y = 1 - cos(t)", t_min=0, t_max=4*\\pi, couleur="orange")`;
 
-	const archimedeanSpiralDsl = `c = courbe("x = t * cos(t)", "y = t * sin(t)", t_min=0, t_max=6*\\pi, couleur="cyan")`;
+	const archimedeanSpiralDsl = `unite_angle("radians")
+c = courbe("x = t * cos(t)", "y = t * sin(t)", t_min=0, t_max=6*\\pi, couleur="cyan")`;
 
-	const sliderTmaxDsl = `s = slider(min=0.1, max=2*\\pi, valeur=\\pi)
+	const sliderTmaxDsl = `unite_angle("radians")
+s = slider(min=0.1, max=2*\\pi, valeur=\\pi)
 c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=s, couleur="bleu")`;
 
-	const sliderRadiusDsl = `r = slider(min=0.5, max=4, valeur=2)
+	const sliderRadiusDsl = `unite_angle("radians")
+r = slider(min=0.5, max=4, valeur=2)
 c = courbe("x = r * cos(t)", "y = r * sin(t)", t_min=0, t_max=2*\\pi, param="t", couleur="rouge")`;
 
-	const closedFillDsl = `c = courbe("x = 2 * cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="violet", remplissage="violet")`;
+	const closedFillDsl = `unite_angle("radians")
+c = courbe("x = 2 * cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="violet", remplissage="violet")`;
 
 	// New: variables and constants — math-pure RHS routed through mathAST.
-	const variablesDsl = `phi = (1 + sqrt(5)) / 2
+	const variablesDsl = `unite_angle("radians")
+phi = (1 + sqrt(5)) / 2
 c = courbe("x = phi*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="orange")`;
 
 	// New: derived reactive scalar — k follows s, the curve follows k.
-	const reactiveDsl = `s = slider(min=0.5, max=4, valeur=2)
+	const reactiveDsl = `unite_angle("radians")
+s = slider(min=0.5, max=4, valeur=2)
 k = 2 * s
 c = courbe("x = k*cos(t)", "y = k*sin(t)", t_min=0, t_max=2*\\pi, couleur="rouge")`;
 </script>

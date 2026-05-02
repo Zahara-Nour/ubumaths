@@ -35,7 +35,11 @@ interface GeoIntegralAreaShape {
 }
 
 function setupFigureWithTwoFns(eqF: string, eqG: string) {
-	const { figure, symbols } = runDsl(`f = courbe("${eqF}")\ng = courbe("${eqG}")`);
+	// Curve equations follow the active angle mode; DSL default is degrees.
+	// These tests work in radians (mathAST native), so opt in explicitly.
+	const { figure, symbols } = runDsl(
+		`unite_angle("radians")\nf = courbe("${eqF}")\ng = courbe("${eqG}")`
+	);
 	const fId = symbols.get('f')!.figureId!;
 	const gId = symbols.get('g')!.figureId!;
 	return { figure, fId, gId };
