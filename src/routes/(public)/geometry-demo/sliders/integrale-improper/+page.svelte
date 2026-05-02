@@ -42,8 +42,8 @@ mtexte(3, 0.4, "\\text{aire entre} = {A:.4f} = 1/2")`;
 
 <div class="container mx-auto max-w-6xl space-y-8 p-4">
 	<div>
-		<a href="/geometry-demo" class="text-sm text-muted-foreground hover:underline"
-			>&larr; Geometry demo</a
+		<a href="/geometry-demo/sliders" class="text-sm text-muted-foreground hover:underline"
+			>&larr; Sliders</a
 		>
 		<h1 class="mt-2 text-2xl font-bold">Intégrales généralisées (bornes infinies)</h1>
 		<p class="text-muted-foreground">
