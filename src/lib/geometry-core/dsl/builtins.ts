@@ -2031,6 +2031,18 @@ function _executeBuiltinInner(
 				return { figureId: ptId, symbolType: 'point' };
 			}
 
+			if (psEl.type === 'parametricCurve') {
+				if (pos.length < 2) {
+					throw new DslRuntimeError(
+						'point_sur(): paramètre t requis pour une courbe paramétrique',
+						line
+					);
+				}
+				const tParam = toScalarParam(pos[1], toGeoValue, line);
+				const ptId = figure.createPointOnParametricCurve(psId, tParam, { label });
+				return { figureId: ptId, symbolType: 'point' };
+			}
+
 			throw new DslRuntimeError(
 				'point_sur(): le premier argument doit etre un segment, droite, demidroite, cercle, arc ou courbe',
 				line
@@ -2126,7 +2138,8 @@ function _executeBuiltinInner(
 				driverEl.type === 'pointOnSegment' ||
 				driverEl.type === 'pointOnLine' ||
 				driverEl.type === 'pointOnCircle' ||
-				driverEl.type === 'pointOnArc';
+				driverEl.type === 'pointOnArc' ||
+				driverEl.type === 'pointOnParametricCurve';
 			if (!driverOnPath) {
 				throw new DslRuntimeError('lieu(): le conducteur doit etre un point_sur', line);
 			}

@@ -65,6 +65,21 @@ c = courbe("x = sin(3*t)", "y = sin(2*t)", t_min=0, t_max=2*\\pi, couleur="viole
 c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
 t0 = slider(min=0, max=2*\\pi, valeur=\\pi/4)
 (d, v) = tangente(c, t0)`;
+
+	// Point sur courbe paramétrique : P = point_sur(c, t0)
+	const pointSurEllipseDsl = `unite_angle("radians")
+c = courbe("x = 2*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+t = slider(min=0, max=2*\\pi, valeur=\\pi/3)
+P = point_sur(c, t)`;
+
+	// Lieu de milieu via point_sur sur cercle paramétrique
+	const lieuMilieuCircleDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)*cos(t)", t_min=0, t_max=2*\\pi, couleur="violet")
+t = slider(min=0, max=2*\\pi, valeur=0)
+O = point(0, 0)
+P = point_sur(c, t)
+M = milieu(O, P)
+L = lieu(M, P)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -226,6 +241,34 @@ t0 = slider(min=0, max=2*\\pi, valeur=\\pi/4)
 		dsl={tangenteSliderDsl}
 		title="Tangente animée — slider sur t0"
 		description="Déplace le slider pour faire glisser le point de tangence sur le cercle. Le vecteur tangent (cos t pi/2 + 1, sin t pi/2 + 1) reste de norme 1 (vitesse constante)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Point sur courbe paramétrique</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		<code>point_sur(c, t0)</code> crée un point ancré sur une courbe paramétrique au paramètre
+		<code>t0</code>. Le paramètre peut être un nombre, un slider ou un scalaire — la position du
+		point se met à jour automatiquement quand le paramètre change.
+	</p>
+
+	<DslDemo
+		dsl={pointSurEllipseDsl}
+		title="Point glissant sur ellipse"
+		description="Le slider t pilote la position du point P = γ(t) sur l'ellipse (2 cos t, sin t)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={lieuMilieuCircleDsl}
+		title="Lieu d'un milieu — courbe paramétrique"
+		description="Quand P parcourt la courbe c, le milieu M de [OP] décrit la courbe c/2 (homothétie de rapport 1/2 centrée en O). Le lieu est calculé sur 32 échantillons de t."
 		width={700}
 		height={500}
 	/>
