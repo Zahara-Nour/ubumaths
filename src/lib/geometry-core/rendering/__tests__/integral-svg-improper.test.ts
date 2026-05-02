@@ -97,7 +97,8 @@ A = integrale(f, 0, +inf)`
 		expect(svg!.infinityEdges).toBeDefined();
 		expect(svg!.infinityEdges!).toHaveLength(1);
 		expect(svg!.infinityEdges![0].direction).toBe('right');
-		expect(svg!.infinityEdges![0].yTop).toBeLessThanOrEqual(svg!.infinityEdges![0].yBottom);
+		expect(svg!.infinityEdges![0].yAxis).toBeGreaterThan(0);
+		expect(svg!.infinityEdges![0].yCurve).toBeGreaterThan(0);
 	});
 
 	it('emits two markers for (-inf, +inf)', () => {

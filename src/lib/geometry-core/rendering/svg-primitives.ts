@@ -1829,10 +1829,10 @@ function resolveBoundToNumber(param: ScalarParam, figure: Figure): number {
 export interface IntegralAreaInfinityEdge {
 	/** SVG x of the clipped viewport edge. */
 	readonly x: number;
-	/** SVG y of the upper boundary of the area at the edge (smaller SVG y). */
-	readonly yTop: number;
-	/** SVG y of the lower boundary at the edge (larger SVG y). */
-	readonly yBottom: number;
+	/** SVG y of the lower boundary at the edge — x-axis for V1/V2, g(edge) for V3. */
+	readonly yAxis: number;
+	/** SVG y of the upper boundary at the edge — f(edge). */
+	readonly yCurve: number;
 	/** Math direction the area extends past the viewport. `right` = +∞. */
 	readonly direction: 'left' | 'right';
 }
@@ -1924,13 +1924,16 @@ export function integralAreaToSVG(
 	// V5.1 — build infinityEdges for the viewport sides where the bound was ±∞.
 	const infinityEdges: IntegralAreaInfinityEdge[] = [];
 	const buildEdge = (mathX: number, direction: 'left' | 'right'): void => {
-		const yCurve = fnEl.compiledFn({ x: mathX });
-		if (!Number.isFinite(yCurve)) return;
-		const svgEdge = transformer.mathToSvg(mathX, 0);
-		const svgCurve = transformer.mathToSvg(mathX, yCurve);
-		const yTop = Math.min(svgEdge.y, svgCurve.y);
-		const yBottom = Math.max(svgEdge.y, svgCurve.y);
-		infinityEdges.push({ x: svgEdge.x, yTop, yBottom, direction });
+		const yMath = fnEl.compiledFn({ x: mathX });
+		if (!Number.isFinite(yMath)) return;
+		const svgAxis = transformer.mathToSvg(mathX, 0);
+		const svgCurve = transformer.mathToSvg(mathX, yMath);
+		infinityEdges.push({
+			x: svgAxis.x,
+			yAxis: svgAxis.y,
+			yCurve: svgCurve.y,
+			direction
+		});
 	};
 	if (a === -Infinity) buildEdge(lo, 'left');
 	if (b === -Infinity) buildEdge(lo, 'left');
@@ -2088,9 +2091,12 @@ export function integralAreaBetweenToSVG(
 		if (!Number.isFinite(fy) || !Number.isFinite(gy)) return;
 		const svgF = transformer.mathToSvg(mathX, fy);
 		const svgG = transformer.mathToSvg(mathX, gy);
-		const yTop = Math.min(svgF.y, svgG.y);
-		const yBottom = Math.max(svgF.y, svgG.y);
-		infinityEdges.push({ x: svgF.x, yTop, yBottom, direction });
+		infinityEdges.push({
+			x: svgF.x,
+			yAxis: svgG.y, // V3 mode: g acts as the "axis" boundary of the area
+			yCurve: svgF.y,
+			direction
+		});
 	};
 	if (a === -Infinity) buildEdge(lo, 'left');
 	if (b === -Infinity) buildEdge(lo, 'left');
