@@ -464,8 +464,13 @@ function serializeElement(
 		case 'parametricCurve': {
 			const tMinStr = fmtScalarParam(el.tMin, idToName);
 			const tMaxStr = fmtScalarParam(el.tMax, idToName);
-			const paramPart = el.parameter !== 't' ? `, param="${el.parameter}"` : '';
 			const prefix = n.startsWith('_') ? '' : n + ' = ';
+			// Polar curves are serialized as a single `r = f(theta)` call with
+			// theta_min/theta_max bounds — round-trips through the polar branch.
+			if (el.polar === true && el.equationR !== undefined) {
+				return `${prefix}courbe("r = ${el.equationR}", theta_min=${tMinStr}, theta_max=${tMaxStr})`;
+			}
+			const paramPart = el.parameter !== 't' ? `, param="${el.parameter}"` : '';
 			return `${prefix}courbe("${el.equationX}", "${el.equationY}", t_min=${tMinStr}, t_max=${tMaxStr}${paramPart})`;
 		}
 

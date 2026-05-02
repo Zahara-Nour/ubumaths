@@ -1803,7 +1803,9 @@ export class Figure {
 		equationX: string,
 		equationY: string,
 		dependencies: readonly string[],
-		options?: ElementOptions
+		options?: ElementOptions,
+		polar?: boolean,
+		equationR?: string
 	): string {
 		const id = this.generateId('pc');
 		const deps = [...dependencies];
@@ -1828,7 +1830,9 @@ export class Figure {
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
-			dependsOn: deps
+			dependsOn: deps,
+			...(polar !== undefined && { polar }),
+			...(equationR !== undefined && { equationR })
 		};
 		this.addElement(id, element, deps);
 		return id;
