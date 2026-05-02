@@ -18,6 +18,12 @@
 				Droites, fonctions, tangentes, zeros/extrema, coniques, implicites
 			</p>
 		</a>
+		<a href="/geometry-demo/parametric" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Courbes paramétriques</h2>
+			<p class="text-sm text-muted-foreground">
+				t → (x(t), y(t)) — cercle, cardioïde, Lissajous, cycloïde, spirale, animations
+			</p>
+		</a>
 		<a href="/geometry-demo/vectors" class="rounded-lg border p-4 hover:bg-muted">
 			<h2 class="font-bold">Vecteurs</h2>
 			<p class="text-sm text-muted-foreground">

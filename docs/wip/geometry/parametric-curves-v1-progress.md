@@ -57,10 +57,18 @@ courbe("r = 2*cos(theta)", theta_min=0, theta_max=pi)
 | 1 — Type + Factory + Sampler 2D        | terminée (TDD, 34 tests verts) | 2273eccf   |
 | 2 — DSL builtin courbe() 2-strings     | terminée (TDD, 30 tests verts) | d99a0522   |
 | 3 — Rendu SVG + courbe fermée + UI     | terminée (TDD, 16 tests verts) | 6d23b1a1   |
-| 4 — Réactivité (sliders/scalaires)     | terminée (TDD, 4 tests verts)  | en attente |
-| 5 — Exports TikZ/Typst + sérialisation | terminée (TDD, 18 tests verts) | pending    |
-| 6 — Demo page                          | pending                        | —          |
+| 4 — Réactivité (sliders/scalaires)     | terminée (TDD, 4 tests verts)  | ec8791a52  |
+| 5 — Exports TikZ/Typst + sérialisation | terminée (TDD, 18 tests verts) | 9c658a48c  |
+| 6 — Demo page                          | terminée                       | en attente |
 | 7 — Quality Checks finaux              | pending                        | —          |
+
+### Phase 6 — Demo page
+
+**Statut** : terminée (test visuel utilisateur recommandé via `pnpm dev -- --port 5175` puis `/geometry-demo/parametric`).
+
+- `src/routes/(public)/geometry-demo/parametric/+page.svelte` — 9 exemples : cercle, parabole, cardioïde, Lissajous (3 ratios), cycloïde, spirale d'Archimède, tracé animé via slider sur t_max, coefficient dynamique via slider, ellipse fermée avec fill.
+- `src/routes/(public)/geometry-demo/parametric/+page.ts` — `ssr = false`.
+- `src/routes/(public)/geometry-demo/+page.svelte` — carte ajoutée (lien vers la nouvelle demo).
 
 ### Phase 4 — Réactivité
 
