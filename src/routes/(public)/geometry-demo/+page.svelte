@@ -24,6 +24,12 @@
 				t → (x(t), y(t)) — cercle, cardioïde, Lissajous, cycloïde, spirale, animations
 			</p>
 		</a>
+		<a href="/geometry-demo/polar" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Courbes polaires</h2>
+			<p class="text-sm text-muted-foreground">
+				r = f(θ) — cercle, cardioïde, limaçon, rosaces, spirale, exemples réactifs
+			</p>
+		</a>
 		<a href="/geometry-demo/piecewise" class="rounded-lg border p-4 hover:bg-muted">
 			<h2 class="font-bold">Domaines et fonctions par morceaux</h2>
 			<p class="text-sm text-muted-foreground">
