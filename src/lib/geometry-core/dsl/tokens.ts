@@ -44,4 +44,8 @@ export interface Token {
 	readonly value: string;
 	readonly line: number;
 	readonly col: number;
+	/** Absolute start offset in the original source string. */
+	readonly start: number;
+	/** Absolute end offset (exclusive) in the original source string. */
+	readonly end: number;
 }

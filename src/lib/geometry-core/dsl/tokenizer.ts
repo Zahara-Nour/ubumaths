@@ -3,6 +3,11 @@
  *
  * Produces tokens from a script string, including Python-like
  * INDENT/DEDENT tokens based on indentation levels.
+ *
+ * Each token carries absolute start/end offsets in the original source so
+ * downstream consumers (interpreter, source-utils) can extract the raw
+ * source slice for any expression — used to route math-pure expressions to
+ * mathAST's parseCustom().
  */
 
 import type { Token, TokenType } from './tokens';
@@ -18,32 +23,54 @@ export class DslTokenizerError extends Error {
 	}
 }
 
+/** V1 whitelist of allowed backslash identifiers. Extend cautiously. */
+const BACKSLASH_WHITELIST = new Set(['pi']);
+
 export function tokenize(source: string): Token[] {
 	const tokens: Token[] = [];
 	const lines = source.split('\n');
 	const indentStack: number[] = [0];
 	let lineNum = 0;
+	// Cumulative offset of the current line's first character in `source`.
+	let lineOffset = 0;
 
 	for (const rawLine of lines) {
 		lineNum++;
 
-		// Skip empty lines and comment-only lines
+		// Skip empty lines and comment-only lines (after stripping comment + trailing space)
 		const trimmed = rawLine.replace(/#.*$/, '').trimEnd();
-		if (trimmed.length === 0) continue;
+		if (trimmed.length === 0) {
+			lineOffset += rawLine.length + 1; // +1 for the '\n' separator
+			continue;
+		}
 
 		// Compute indentation (number of leading spaces)
 		const indent = countLeadingSpaces(rawLine);
 		const contentStart = indent;
 
-		// Emit INDENT/DEDENT tokens
+		// Emit INDENT/DEDENT tokens (zero-width, anchored at the indent column).
 		const currentIndent = indentStack[indentStack.length - 1];
 		if (indent > currentIndent) {
 			indentStack.push(indent);
-			tokens.push({ type: 'INDENT', value: '', line: lineNum, col: 1 });
+			tokens.push({
+				type: 'INDENT',
+				value: '',
+				line: lineNum,
+				col: 1,
+				start: lineOffset + indent,
+				end: lineOffset + indent
+			});
 		} else if (indent < currentIndent) {
 			while (indentStack.length > 1 && indentStack[indentStack.length - 1] > indent) {
 				indentStack.pop();
-				tokens.push({ type: 'DEDENT', value: '', line: lineNum, col: 1 });
+				tokens.push({
+					type: 'DEDENT',
+					value: '',
+					line: lineNum,
+					col: 1,
+					start: lineOffset + indent,
+					end: lineOffset + indent
+				});
 			}
 			if (indentStack[indentStack.length - 1] !== indent) {
 				throw new DslTokenizerError('Indentation inconsistante', lineNum, 1);
@@ -51,19 +78,43 @@ export function tokenize(source: string): Token[] {
 		}
 
 		// Tokenize the line content
-		tokenizeLine(trimmed, contentStart, lineNum, tokens);
+		tokenizeLine(trimmed, contentStart, lineNum, lineOffset, tokens);
 
-		// End of line
-		tokens.push({ type: 'NEWLINE', value: '\n', line: lineNum, col: trimmed.length + 1 });
+		// End of line: NEWLINE positioned at the trimmed-content end.
+		const newlinePos = lineOffset + trimmed.length;
+		tokens.push({
+			type: 'NEWLINE',
+			value: '\n',
+			line: lineNum,
+			col: trimmed.length + 1,
+			start: newlinePos,
+			end: newlinePos
+		});
+
+		lineOffset += rawLine.length + 1; // advance past the '\n' separator
 	}
 
-	// Close remaining indentation levels
+	// Close remaining indentation levels (zero-width, end-of-source position)
 	while (indentStack.length > 1) {
 		indentStack.pop();
-		tokens.push({ type: 'DEDENT', value: '', line: lineNum, col: 1 });
+		tokens.push({
+			type: 'DEDENT',
+			value: '',
+			line: lineNum,
+			col: 1,
+			start: source.length,
+			end: source.length
+		});
 	}
 
-	tokens.push({ type: 'EOF', value: '', line: lineNum + 1, col: 1 });
+	tokens.push({
+		type: 'EOF',
+		value: '',
+		line: lineNum + 1,
+		col: 1,
+		start: source.length,
+		end: source.length
+	});
 	return tokens;
 }
 
@@ -77,7 +128,13 @@ function countLeadingSpaces(line: string): number {
 	return count;
 }
 
-function tokenizeLine(line: string, startCol: number, lineNum: number, tokens: Token[]): void {
+function tokenizeLine(
+	line: string,
+	startCol: number,
+	lineNum: number,
+	lineOffset: number,
+	tokens: Token[]
+): void {
 	let pos = startCol; // skip indentation already handled
 
 	// Skip leading whitespace in the trimmed line
@@ -86,6 +143,7 @@ function tokenizeLine(line: string, startCol: number, lineNum: number, tokens: T
 	while (pos < line.length) {
 		const ch = line[pos];
 		const col = pos + 1;
+		const absStart = lineOffset + pos;
 
 		// Skip whitespace
 		if (ch === ' ' || ch === '\t') {
@@ -104,7 +162,45 @@ function tokenizeLine(line: string, startCol: number, lineNum: number, tokens: T
 			}
 			const start = pos;
 			while (pos < line.length && isIdentPart(line[pos])) pos++;
-			tokens.push({ type: 'AT_DIRECTIVE', value: line.slice(start, pos), line: lineNum, col });
+			tokens.push({
+				type: 'AT_DIRECTIVE',
+				value: line.slice(start, pos),
+				line: lineNum,
+				col,
+				start: absStart,
+				end: lineOffset + pos
+			});
+			continue;
+		}
+
+		// Backslash identifier (e.g. \pi). V1 only allows whitelisted names.
+		if (ch === '\\') {
+			pos++; // skip backslash
+			if (pos >= line.length || !isIdentStart(line[pos])) {
+				throw new DslTokenizerError(
+					'Sequence "\\" inconnue : un nom de constante doit suivre',
+					lineNum,
+					col
+				);
+			}
+			const nameStart = pos;
+			while (pos < line.length && isIdentPart(line[pos])) pos++;
+			const name = line.slice(nameStart, pos);
+			if (!BACKSLASH_WHITELIST.has(name)) {
+				throw new DslTokenizerError(
+					`Sequence "\\${name}" inconnue (V1 supporte uniquement \\pi)`,
+					lineNum,
+					col
+				);
+			}
+			tokens.push({
+				type: 'IDENTIFIER',
+				value: '\\' + name,
+				line: lineNum,
+				col,
+				start: absStart,
+				end: lineOffset + pos
+			});
 			continue;
 		}
 
@@ -117,7 +213,14 @@ function tokenizeLine(line: string, startCol: number, lineNum: number, tokens: T
 				throw new DslTokenizerError('Chaine non fermee', lineNum, col);
 			}
 			pos++; // skip closing quote
-			tokens.push({ type: 'STRING', value: line.slice(start + 1, pos - 1), line: lineNum, col });
+			tokens.push({
+				type: 'STRING',
+				value: line.slice(start + 1, pos - 1),
+				line: lineNum,
+				col,
+				start: absStart,
+				end: lineOffset + pos
+			});
 			continue;
 		}
 
@@ -129,7 +232,14 @@ function tokenizeLine(line: string, startCol: number, lineNum: number, tokens: T
 				pos++;
 				while (pos < line.length && isDigit(line[pos])) pos++;
 			}
-			tokens.push({ type: 'NUMBER', value: line.slice(start, pos), line: lineNum, col });
+			tokens.push({
+				type: 'NUMBER',
+				value: line.slice(start, pos),
+				line: lineNum,
+				col,
+				start: absStart,
+				end: lineOffset + pos
+			});
 			continue;
 		}
 
@@ -139,7 +249,14 @@ function tokenizeLine(line: string, startCol: number, lineNum: number, tokens: T
 			while (pos < line.length && isIdentPart(line[pos])) pos++;
 			const word = line.slice(start, pos);
 			const type: TokenType = isKeyword(word) ? 'KEYWORD' : 'IDENTIFIER';
-			tokens.push({ type, value: word, line: lineNum, col });
+			tokens.push({
+				type,
+				value: word,
+				line: lineNum,
+				col,
+				start: absStart,
+				end: lineOffset + pos
+			});
 			continue;
 		}
 
@@ -148,7 +265,14 @@ function tokenizeLine(line: string, startCol: number, lineNum: number, tokens: T
 			const two = line.slice(pos, pos + 2);
 			const twoType = TWO_CHAR_OPS[two];
 			if (twoType) {
-				tokens.push({ type: twoType, value: two, line: lineNum, col });
+				tokens.push({
+					type: twoType,
+					value: two,
+					line: lineNum,
+					col,
+					start: absStart,
+					end: lineOffset + pos + 2
+				});
 				pos += 2;
 				continue;
 			}
@@ -157,7 +281,14 @@ function tokenizeLine(line: string, startCol: number, lineNum: number, tokens: T
 		// Single-character operators/punctuation
 		const oneType = ONE_CHAR_OPS[ch];
 		if (oneType) {
-			tokens.push({ type: oneType, value: ch, line: lineNum, col });
+			tokens.push({
+				type: oneType,
+				value: ch,
+				line: lineNum,
+				col,
+				start: absStart,
+				end: lineOffset + pos + 1
+			});
 			pos++;
 			continue;
 		}
