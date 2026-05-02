@@ -47,7 +47,7 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	['log10', { domain: positiveReals(), constraint: 'x > 0' }],
 	['log2', { domain: positiveReals(), constraint: 'x > 0' }],
 
-	// Inverse trig with [-1, 1] domain
+	// Inverse trig with [-1 ; 1] domain
 	['arcsin', { domain: unitInterval(), constraint: '-1 <= x <= 1' }],
 	['arccos', { domain: unitInterval(), constraint: '-1 <= x <= 1' }],
 
@@ -68,7 +68,7 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	['tanh', { domain: universalDomain() }],
 	['arcsinh', { domain: universalDomain() }],
 
-	// arctanh: strictly between -1 and 1 (open interval ]-1, 1[)
+	// arctanh: strictly between -1 and 1 (open interval ]-1 ; 1[)
 	[
 		'arctanh',
 		{
@@ -82,7 +82,7 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	['csc', { domain: universalDomain() }], // Note: actually ℝ \ {kπ}
 	['cot', { domain: universalDomain() }], // Note: actually ℝ \ {kπ}
 
-	// Inverse reciprocal trig: |x| >= 1 means ]-∞, -1] ∪ [1, +∞[
+	// Inverse reciprocal trig: |x| >= 1 means ]-∞ ; -1] ∪ [1 ; +∞[
 	[
 		'arcsec',
 		{
@@ -130,8 +130,8 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
  * @returns The domain, or undefined if function is unknown
  *
  * @example
- * getBuiltinDomain('sqrt') // → nonNegativeReals() [0, +∞[
- * getBuiltinDomain('ln')   // → positiveReals() ]0, +∞[
+ * getBuiltinDomain('sqrt') // → nonNegativeReals() [0 ; +∞[
+ * getBuiltinDomain('ln')   // → positiveReals() ]0 ; +∞[
  * getBuiltinDomain('sin')  // → universalDomain()
  * getBuiltinDomain('foo')  // → undefined
  */
@@ -383,7 +383,7 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 			upperInclusive: false,
 			monotonicity: 'none',
 			evaluate: (x: number) => 1 / Math.cos(x)
-			// Range is actually ]-∞, -1] ∪ [1, +∞[, but we use unbounded for simplicity
+			// Range is actually ]-∞ ; -1] ∪ [1 ; +∞[, but we use unbounded for simplicity
 		}
 	],
 	[
@@ -395,7 +395,7 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 			upperInclusive: false,
 			monotonicity: 'none',
 			evaluate: (x: number) => 1 / Math.sin(x)
-			// Range is actually ]-∞, -1] ∪ [1, +∞[
+			// Range is actually ]-∞ ; -1] ∪ [1 ; +∞[
 		}
 	],
 
@@ -669,12 +669,12 @@ export const BUILTIN_RANGES: Map<string, BuiltinRangeEntry> = new Map([
 function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 	const { lower, lowerInclusive, upper, upperInclusive } = entry;
 
-	// Unbounded: ]-∞, +∞[
+	// Unbounded: ]-∞ ; +∞[
 	if (lower === null && upper === null) {
 		return universalDomain();
 	}
 
-	// Only lower bound: [a, +∞[ or ]a, +∞[
+	// Only lower bound: [a ; +∞[ or ]a ; +∞[
 	if (upper === null) {
 		if (lowerInclusive) {
 			return intervalDomain([greaterThanOrEqualInterval(number(lower!))]);
@@ -683,7 +683,7 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 		}
 	}
 
-	// Only upper bound: ]-∞, b] or ]-∞, b[
+	// Only upper bound: ]-∞ ; b] or ]-∞ ; b[
 	if (lower === null) {
 		if (upperInclusive) {
 			return intervalDomain([lessThanOrEqualInterval(number(upper))]);
@@ -705,7 +705,7 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 	} else if (!lowerInclusive && !upperInclusive) {
 		return intervalDomain([openInterval(number(lower), number(upper))]);
 	} else if (lowerInclusive && !upperInclusive) {
-		// [a, b[
+		// [a ; b[
 		return intervalDomain([
 			{
 				kind: 'interval',
@@ -714,7 +714,7 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 			}
 		]);
 	} else {
-		// ]a, b]
+		// ]a ; b]
 		return intervalDomain([
 			{
 				kind: 'interval',
@@ -732,9 +732,9 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
  * @returns The range as a Domain, or undefined if unknown
  *
  * @example
- * getBuiltinRange('sqrt') // → [0, +∞[
- * getBuiltinRange('sin')  // → [-1, 1]
- * getBuiltinRange('exp')  // → ]0, +∞[
+ * getBuiltinRange('sqrt') // → [0 ; +∞[
+ * getBuiltinRange('sin')  // → [-1 ; 1]
+ * getBuiltinRange('exp')  // → ]0 ; +∞[
  * getBuiltinRange('ln')   // → ℝ (unbounded)
  */
 export function getBuiltinRange(name: string): Domain | undefined {
@@ -762,7 +762,7 @@ export function getBuiltinRangeEntry(name: string): BuiltinRangeEntry | undefine
  *
  * @example
  * hasRestrictedRange('sqrt') // → true (bounded below by 0)
- * hasRestrictedRange('sin')  // → true (bounded to [-1, 1])
+ * hasRestrictedRange('sin')  // → true (bounded to [-1 ; 1])
  * hasRestrictedRange('ln')   // → false (unbounded)
  * hasRestrictedRange('exp')  // → true (bounded below by 0)
  */
@@ -861,9 +861,9 @@ function domainFromNumericBounds(bounds: NumericBounds): Domain {
  * @returns The output range
  *
  * @example
- * applyFunctionToRange('sqrt', [4, 9])  // → [2, 3]
- * applyFunctionToRange('sin', [0, π/2]) // → [0, 1]
- * applyFunctionToRange('abs', [-2, 1])  // → [0, 2]
+ * applyFunctionToRange('sqrt', [4 ; 9])  // → [2 ; 3]
+ * applyFunctionToRange('sin', [0 ; π/2]) // → [0 ; 1]
+ * applyFunctionToRange('abs', [-2 ; 1])  // → [0 ; 2]
  */
 export function applyFunctionToRange(name: string, inputRange: Domain): Domain {
 	const entry = getBuiltinRangeEntry(name);
@@ -938,7 +938,7 @@ function applyMonotonicFunctionWithEntry(
 	let outputUpperInclusive = true;
 
 	if (monotonicity === 'increasing') {
-		// f([a, b]) = [f(a), f(b)]
+		// f([a ; b]) = [f(a), f(b)]
 		if (lowerVal !== null) {
 			const result = evaluate(lowerVal);
 			// Handle infinite results: -Infinity means unbounded below
@@ -977,7 +977,7 @@ function applyMonotonicFunctionWithEntry(
 			outputUpperInclusive = entry.upperInclusive;
 		}
 	} else {
-		// Decreasing: f([a, b]) = [f(b), f(a)]
+		// Decreasing: f([a ; b]) = [f(b), f(a)]
 		if (upperVal !== null) {
 			const result = evaluate(upperVal);
 			if (result === -Infinity) {

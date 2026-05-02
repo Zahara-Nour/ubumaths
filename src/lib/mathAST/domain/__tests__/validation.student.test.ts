@@ -70,6 +70,85 @@ describe('parseStudentDomain - interval notation', () => {
 		const result = parseStudentDomain(']0, +∞[ \\ {1}');
 		expect(result.success).toBe(true);
 	});
+
+	// =============================================================================
+	// Semicolon separator (preferred French school convention)
+	// =============================================================================
+
+	it('should parse French open interval with semicolon ]a ; b[', () => {
+		const result = parseStudentDomain(']0 ; 5[');
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.format).toBe('interval');
+			expect(result.domain.kind).toBe('interval_set');
+		}
+	});
+
+	it('should parse French closed interval with semicolon [a ; b]', () => {
+		const result = parseStudentDomain('[0 ; 5]');
+		expect(result.success).toBe(true);
+	});
+
+	it('should parse mixed interval with semicolon ]a ; b]', () => {
+		const result = parseStudentDomain(']0 ; 5]');
+		expect(result.success).toBe(true);
+	});
+
+	it('should parse interval with infinity and semicolon ]0 ; +∞[', () => {
+		const result = parseStudentDomain(']0 ; +∞[');
+		expect(result.success).toBe(true);
+	});
+
+	it('should parse semicolon notation without spaces ]0;5[', () => {
+		const result = parseStudentDomain(']0;5[');
+		expect(result.success).toBe(true);
+	});
+
+	// Decimal-comma ambiguity: in French, `,` is the decimal separator.
+	// When `;` is present, `,` MUST be allowed inside bounds.
+	it('should parse French decimals with semicolon separator ]0,5 ; 1,5[', () => {
+		const result = parseStudentDomain(']0,5 ; 1,5[');
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.format).toBe('interval');
+			expect(result.domain.kind).toBe('interval_set');
+		}
+	});
+
+	it('should parse French decimals with semicolon (no spaces) ]0,5;1,5[', () => {
+		const result = parseStudentDomain(']0,5;1,5[');
+		expect(result.success).toBe(true);
+	});
+
+	it('should parse [-1,5 ; 2,5] with French decimals on closed bounds', () => {
+		const result = parseStudentDomain('[-1,5 ; 2,5]');
+		expect(result.success).toBe(true);
+	});
+
+	it('should parse excluded points with French decimals {0,5 ; 1,5}', () => {
+		const result = parseStudentDomain(']0 ; +∞[ \\ {0,5 ; 1,5}');
+		expect(result.success).toBe(true);
+	});
+
+	it('should parse union of intervals with semicolons', () => {
+		const result = parseStudentDomain(']-∞ ; 0[ ∪ ]1 ; +∞[');
+		expect(result.success).toBe(true);
+	});
+
+	it('should parse interval with excluded points using semicolon', () => {
+		const result = parseStudentDomain(']0 ; +∞[ \\ {1}');
+		expect(result.success).toBe(true);
+	});
+
+	it('should produce equivalent domain for both separators', () => {
+		const withComma = parseStudentDomain(']0, 5[');
+		const withSemi = parseStudentDomain(']0 ; 5[');
+		expect(withComma.success).toBe(true);
+		expect(withSemi.success).toBe(true);
+		if (withComma.success && withSemi.success) {
+			expect(withComma.domain.kind).toBe(withSemi.domain.kind);
+		}
+	});
 });
 
 describe('parseStudentDomain - condition notation', () => {

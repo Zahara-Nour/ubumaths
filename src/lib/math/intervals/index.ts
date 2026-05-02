@@ -12,14 +12,14 @@
  * import { number } from '$lib/mathAST/factory';
  *
  * const domain = intervalSet([closedInterval(number(0), bound('sqrt(2)'))]);
- * console.log(formatDomainInterval(domain)); // "[0, √2]"
+ * console.log(formatDomainInterval(domain)); // "[0 ; √2]"
  *
  * @example
  * // Perform set operations
  * import { intersect, union, complement, positiveReals, unitInterval } from '$lib/math/intervals';
  *
  * const result = intersect(positiveReals(), unitInterval());
- * // result = ]0, 1]
+ * // result = ]0 ; 1]
  */
 
 // Types

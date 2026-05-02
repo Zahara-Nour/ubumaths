@@ -94,32 +94,32 @@ describe('formatDomainInterval', () => {
 
 	it('formats closed interval', () => {
 		const domain = intervalSet([closedInterval(number(0), number(1))]);
-		expect(formatDomainInterval(domain)).toBe('[0, 1]');
+		expect(formatDomainInterval(domain)).toBe('[0 ; 1]');
 	});
 
 	it('formats open interval', () => {
 		const domain = intervalSet([openInterval(number(0), number(1))]);
-		expect(formatDomainInterval(domain)).toBe(']0, 1[');
+		expect(formatDomainInterval(domain)).toBe(']0 ; 1[');
 	});
 
 	it('formats greaterThanInterval', () => {
 		const domain = intervalSet([greaterThanInterval(number(0))]);
-		expect(formatDomainInterval(domain)).toBe(']0, +∞[');
+		expect(formatDomainInterval(domain)).toBe(']0 ; +∞[');
 	});
 
 	it('formats greaterThanOrEqualInterval', () => {
 		const domain = intervalSet([greaterThanOrEqualInterval(number(0))]);
-		expect(formatDomainInterval(domain)).toBe('[0, +∞[');
+		expect(formatDomainInterval(domain)).toBe('[0 ; +∞[');
 	});
 
 	it('formats lessThanInterval', () => {
 		const domain = intervalSet([lessThanInterval(number(0))]);
-		expect(formatDomainInterval(domain)).toBe(']-∞, 0[');
+		expect(formatDomainInterval(domain)).toBe(']-∞ ; 0[');
 	});
 
 	it('formats lessThanOrEqualInterval', () => {
 		const domain = intervalSet([lessThanOrEqualInterval(number(0))]);
-		expect(formatDomainInterval(domain)).toBe(']-∞, 0]');
+		expect(formatDomainInterval(domain)).toBe(']-∞ ; 0]');
 	});
 
 	it('formats union of intervals', () => {
@@ -127,30 +127,30 @@ describe('formatDomainInterval', () => {
 			closedInterval(number(0), number(1)),
 			closedInterval(number(2), number(3))
 		]);
-		expect(formatDomainInterval(domain)).toBe('[0, 1] ∪ [2, 3]');
+		expect(formatDomainInterval(domain)).toBe('[0 ; 1] ∪ [2 ; 3]');
 	});
 
 	it('formats non-zero reals as split intervals', () => {
-		expect(formatDomainInterval(nonZeroReals())).toBe(']-∞, 0[ ∪ ]0, +∞[');
+		expect(formatDomainInterval(nonZeroReals())).toBe(']-∞ ; 0[ ∪ ]0 ; +∞[');
 	});
 
 	it('formats interval with symbolic bounds', () => {
 		const sqrt2 = bound('sqrt(2)');
 		const sqrt3 = bound('sqrt(3)');
 		const domain = intervalSet([closedInterval(sqrt2, sqrt3)]);
-		expect(formatDomainInterval(domain)).toBe('[√2, √3]');
+		expect(formatDomainInterval(domain)).toBe('[√2 ; √3]');
 	});
 
 	it('formats positive reals', () => {
-		expect(formatDomainInterval(positiveReals())).toBe(']0, +∞[');
+		expect(formatDomainInterval(positiveReals())).toBe(']0 ; +∞[');
 	});
 
 	it('formats non-negative reals', () => {
-		expect(formatDomainInterval(nonNegativeReals())).toBe('[0, +∞[');
+		expect(formatDomainInterval(nonNegativeReals())).toBe('[0 ; +∞[');
 	});
 
 	it('formats unit interval', () => {
-		expect(formatDomainInterval(unitInterval())).toBe('[-1, 1]');
+		expect(formatDomainInterval(unitInterval())).toBe('[-1 ; 1]');
 	});
 });
 
@@ -221,7 +221,7 @@ describe('formatDomainFull', () => {
 	it('returns both interval and condition format', () => {
 		const domain = positiveReals();
 		const result = formatDomainFull(domain);
-		expect(result.interval).toBe(']0, +∞[');
+		expect(result.interval).toBe(']0 ; +∞[');
 		expect(result.condition).toBe('x > 0');
 	});
 
@@ -235,7 +235,7 @@ describe('formatDomainFull', () => {
 		const sqrt2 = bound('sqrt(2)');
 		const domain = intervalSet([closedInterval(number(0), sqrt2)]);
 		const result = formatDomainFull(domain);
-		expect(result.interval).toBe('[0, √2]');
+		expect(result.interval).toBe('[0 ; √2]');
 		expect(result.condition).toBe('0 ≤ x ≤ √2');
 	});
 });
@@ -326,19 +326,19 @@ describe('formatEndpointValue edge cases', () => {
 
 describe('formatDomainInterval edge cases', () => {
 	it('formats mixed open/closed bounds', () => {
-		// ]0, 1]
+		// ]0 ; 1]
 		const domain = intervalSet([rightClosedInterval(number(0), number(1))]);
-		expect(formatDomainInterval(domain)).toBe(']0, 1]');
+		expect(formatDomainInterval(domain)).toBe(']0 ; 1]');
 	});
 
-	it('formats left-closed interval [a, b[', () => {
+	it('formats left-closed interval [a ; b[', () => {
 		const domain = intervalSet([leftClosedInterval(number(0), number(1))]);
-		expect(formatDomainInterval(domain)).toBe('[0, 1[');
+		expect(formatDomainInterval(domain)).toBe('[0 ; 1[');
 	});
 
-	it('formats single point [a, a]', () => {
+	it('formats single point [a ; a]', () => {
 		const domain = intervalSet([closedInterval(number(5), number(5))]);
-		expect(formatDomainInterval(domain)).toBe('[5, 5]');
+		expect(formatDomainInterval(domain)).toBe('[5 ; 5]');
 	});
 
 	it('formats three disjoint intervals', () => {
@@ -347,29 +347,29 @@ describe('formatDomainInterval edge cases', () => {
 			closedInterval(number(3), number(4)),
 			closedInterval(number(6), number(7))
 		]);
-		expect(formatDomainInterval(domain)).toBe('[0, 1] ∪ [3, 4] ∪ [6, 7]');
+		expect(formatDomainInterval(domain)).toBe('[0 ; 1] ∪ [3 ; 4] ∪ [6 ; 7]');
 	});
 
 	it('formats negative bounds', () => {
 		const domain = intervalSet([closedInterval(number(-10), number(-5))]);
-		expect(formatDomainInterval(domain)).toBe('[-10, -5]');
+		expect(formatDomainInterval(domain)).toBe('[-10 ; -5]');
 	});
 
 	it('formats bounds spanning zero', () => {
 		const domain = intervalSet([closedInterval(number(-5), number(5))]);
-		expect(formatDomainInterval(domain)).toBe('[-5, 5]');
+		expect(formatDomainInterval(domain)).toBe('[-5 ; 5]');
 	});
 });
 
 describe('formatDomainCondition edge cases', () => {
 	it('formats mixed interval as double inequality', () => {
-		// ]0, 1]
+		// ]0 ; 1]
 		const domain = intervalSet([rightClosedInterval(number(0), number(1))]);
 		expect(formatDomainCondition(domain)).toBe('0 < x ≤ 1');
 	});
 
 	it('formats left-closed interval as double inequality', () => {
-		// [0, 1[
+		// [0 ; 1[
 		const domain = intervalSet([leftClosedInterval(number(0), number(1))]);
 		expect(formatDomainCondition(domain)).toBe('0 ≤ x < 1');
 	});
@@ -416,7 +416,7 @@ describe('formatDomainFull edge cases', () => {
 		const sqrt2 = bound('sqrt(2)');
 		const domain = intervalSet([greaterThanInterval(sqrt2)]);
 		const result = formatDomainFull(domain, 'y');
-		expect(result.interval).toBe(']√2, +∞[');
+		expect(result.interval).toBe(']√2 ; +∞[');
 		expect(result.condition).toBe('y > √2');
 	});
 
@@ -435,10 +435,61 @@ describe('formatDomainFull edge cases', () => {
 	it('handles non-zero reals in both formats', () => {
 		const domain = nonZeroReals();
 		const result = formatDomainFull(domain);
-		expect(result.interval).toBe(']-∞, 0[ ∪ ]0, +∞[');
+		expect(result.interval).toBe(']-∞ ; 0[ ∪ ]0 ; +∞[');
 		expect(result.condition).toBe('x < 0 ou x > 0');
 	});
 });
 
 // Additional imports for edge cases
 import { rightClosedInterval, leftClosedInterval } from '../factory';
+
+// =============================================================================
+// Semicolon separator convention (French school standard)
+// =============================================================================
+
+describe('semicolon separator convention', () => {
+	it('uses ";" not "," between bounds in formatted output', () => {
+		const domain = intervalSet([closedInterval(number(0), number(1))]);
+		expect(formatDomainInterval(domain)).toContain(' ; ');
+		expect(formatDomainInterval(domain)).not.toContain(', ');
+	});
+
+	it('uses ";" in unions of intervals', () => {
+		const domain = intervalSet([
+			closedInterval(number(0), number(1)),
+			closedInterval(number(2), number(3))
+		]);
+		const out = formatDomainInterval(domain);
+		expect(out).toBe('[0 ; 1] ∪ [2 ; 3]');
+		expect(out).not.toContain(', ');
+	});
+
+	it('uses ";" with infinite bounds', () => {
+		expect(formatDomainInterval(positiveReals())).toBe(']0 ; +∞[');
+		expect(formatDomainInterval(intervalSet([lessThanInterval(number(0))]))).toBe(']-∞ ; 0[');
+	});
+
+	it('uses ";" with symbolic bounds', () => {
+		const sqrt2 = bound('sqrt(2)');
+		const domain = intervalSet([closedInterval(sqrt2, number(5))]);
+		expect(formatDomainInterval(domain)).toBe('[√2 ; 5]');
+	});
+
+	it('uses ";" with negative bounds', () => {
+		const domain = intervalSet([closedInterval(number(-3), number(-1))]);
+		expect(formatDomainInterval(domain)).toBe('[-3 ; -1]');
+	});
+
+	it('uses ";" with all bracket combinations', () => {
+		expect(formatDomainInterval(intervalSet([closedInterval(number(0), number(1))]))).toBe(
+			'[0 ; 1]'
+		);
+		expect(formatDomainInterval(intervalSet([openInterval(number(0), number(1))]))).toBe(']0 ; 1[');
+		expect(formatDomainInterval(intervalSet([leftClosedInterval(number(0), number(1))]))).toBe(
+			'[0 ; 1['
+		);
+		expect(formatDomainInterval(intervalSet([rightClosedInterval(number(0), number(1))]))).toBe(
+			']0 ; 1]'
+		);
+	});
+});

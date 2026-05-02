@@ -36,7 +36,7 @@ export type Monotonicity = 'increasing' | 'decreasing' | 'constant' | 'unknown';
  * An interval annotated with monotonicity information.
  *
  * @example
- * // f(x) = x^2 is decreasing on ]-infinity, 0[
+ * // f(x) = x^2 is decreasing on ]-infinity ; 0[
  * {
  *   interval: { kind: 'interval', lower: negInfinityEndpoint(), upper: openEndpoint(0) },
  *   monotonicity: 'decreasing',
@@ -263,8 +263,8 @@ export interface VariationStep {
  *   derivativeSign: { ... }, // Sign analysis of 2x
  *   criticalPoints: [{ x: 0, nature: 'derivative_zero', ... }],
  *   monotonicIntervals: [
- *     { interval: ]-infinity, 0[, monotonicity: 'decreasing', ... },
- *     { interval: ]0, +infinity[, monotonicity: 'increasing', ... }
+ *     { interval: ]-infinity ; 0[, monotonicity: 'decreasing', ... },
+ *     { interval: ]0 ; +infinity[, monotonicity: 'increasing', ... }
  *   ],
  *   extrema: [{ x: 0, y: 0, type: 'global_minimum', ... }]
  * }

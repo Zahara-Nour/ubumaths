@@ -68,8 +68,8 @@ export interface BoundaryValue {
  *
  * @example
  * // For f(x) = x^2 with critical point at x=0:
- * // - Decreasing on ]-inf, 0[
- * // - Increasing on ]0, +inf[
+ * // - Decreasing on ]-inf ; 0[
+ * // - Increasing on ]0 ; +inf[
  * // => Local minimum at x=0 (sign change - to +)
  */
 export function findExtrema(

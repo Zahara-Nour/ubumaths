@@ -48,7 +48,7 @@ import { union, excludePoints } from '../algebra';
  *
  * @example
  * ```typescript
- * parseStudentDomain(']0, +∞[');
+ * parseStudentDomain(']0 ; +∞[');
  * // { success: true, domain: { kind: 'interval_set', ... }, format: 'interval' }
  *
  * parseStudentDomain('x > 0 et x ≠ 1', 'x');
@@ -86,7 +86,7 @@ export function parseStudentDomain(
 	return {
 		success: false,
 		error:
-			'Format non reconnu. Utilisez la notation intervalle (ex: ]0, +∞[), condition (ex: x > 0) ou ensemble (ex: ℝ \\ {0})'
+			'Format non reconnu. Utilisez la notation intervalle (ex: ]0 ; +∞[), condition (ex: x > 0) ou ensemble (ex: ℝ \\ {0})'
 	};
 }
 
@@ -228,12 +228,16 @@ function parseSetNotation(input: string): ParseStudentDomainResult {
 
 /**
  * Parse a list of excluded points.
+ *
+ * Same separator strategy as intervals: prefer `;` if present (so `{0,5 ; 1,5}`
+ * is parsed as two French-decimal points), fall back to `,` otherwise.
  */
 function parseExcludedPoints(
 	input: string
 ): { success: true; points: MathNode[] } | { success: false } {
+	const sep = input.includes(';') ? ';' : ',';
 	const parts = input
-		.split(/[,;]/)
+		.split(sep)
 		.map((s) => s.trim())
 		.filter(Boolean);
 	const points: MathNode[] = [];
@@ -254,7 +258,10 @@ function parseExcludedPoints(
 // =============================================================================
 
 /**
- * Parse interval notation: ]0, +∞[, [0, 1], ]-∞, 2[ ∪ ]3, +∞[
+ * Parse interval notation: ]0 ; +∞[, [0 ; 1], ]-∞ ; 2[ ∪ ]3 ; +∞[
+ *
+ * Accepts both ';' (preferred French school convention) and ',' (legacy/English)
+ * as bound separators, for backwards compatibility with student input habits.
  */
 function parseIntervalNotation(input: string): ParseStudentDomainResult {
 	const trimmed = input.trim();
@@ -306,14 +313,27 @@ function parseIntervalNotation(input: string): ParseStudentDomainResult {
 
 /**
  * Parse a single interval.
+ *
+ * Separator strategy: if `;` appears anywhere inside the brackets, treat it as
+ * the bound separator and allow `,` inside bounds (so `]0,5 ; 1[` parses as
+ * `(0.5, 1)` with French decimal notation). Otherwise fall back to `,` as the
+ * separator (legacy / English style).
  */
 function parseSingleInterval(input: string): ParseStudentDomainResult {
 	const trimmed = input.trim();
 
-	// French notation: ]a, b[, [a, b], ]a, b], [a, b[
+	// Detect separator: prefer ';' if present (handles French decimal commas).
+	const inner = trimmed.slice(1, -1); // content between outer brackets
+	const sep = inner.includes(';') ? ';' : ',';
+	const notSep = sep === ';' ? '[^;]' : '[^,;]';
+
+	// French notation: ]a ; b[, [a ; b], ]a ; b], [a ; b[ (semicolon = preferred)
+	// Also accepts comma as legacy separator: ]a, b[, [a, b]
 	// English notation: (a, b), [a, b], (a, b], [a, b)
-	const frenchMatch = trimmed.match(/^([[\]])([^,]+),\s*([^[\]]+)([[\]])$/);
-	const englishMatch = trimmed.match(/^([([])([^,]+),\s*([^)\]]+)([)\]])$/);
+	const frenchPattern = new RegExp(`^([[\\]])(${notSep}+)\\s*${sep}\\s*(${notSep}+)([[\\]])$`);
+	const englishPattern = new RegExp(`^([([])(${notSep}+)\\s*${sep}\\s*(${notSep}+)([)\\]])$`);
+	const frenchMatch = trimmed.match(frenchPattern);
+	const englishMatch = trimmed.match(englishPattern);
 
 	const match = frenchMatch ?? englishMatch;
 	if (!match) {

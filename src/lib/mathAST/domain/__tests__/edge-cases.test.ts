@@ -66,7 +66,7 @@ describe('ConditionDomain edge cases', () => {
 
 		it('intersect with ConditionDomain converts and computes correctly', () => {
 			const result = intersect(condX_gt_0, positiveReals());
-			// condX_gt_0 converts to ]0, +∞[, intersection with ]0, +∞[ is ]0, +∞[
+			// condX_gt_0 converts to ]0 ; +∞[, intersection with ]0 ; +∞[ is ]0 ; +∞[
 			expect(result.kind).toBe('interval_set');
 			expect(containsValue(result, 1)).toBe(true);
 			expect(containsValue(result, 0)).toBe(false);
@@ -74,14 +74,14 @@ describe('ConditionDomain edge cases', () => {
 
 		it('union with ConditionDomain converts and computes correctly', () => {
 			const result = union(condX_gt_0, positiveReals());
-			// Both are ]0, +∞[, union is ]0, +∞[
+			// Both are ]0 ; +∞[, union is ]0 ; +∞[
 			expect(result.kind).toBe('interval_set');
 			expect(containsValue(result, 1)).toBe(true);
 		});
 
 		it('complement of ConditionDomain converts and computes correctly', () => {
 			const result = complement(condX_gt_0);
-			// condX_gt_0 is ]0, +∞[, complement is ]-∞, 0]
+			// condX_gt_0 is ]0 ; +∞[, complement is ]-∞ ; 0]
 			expect(result.kind).toBe('interval_set');
 			expect(containsValue(result, 0)).toBe(true);
 			expect(containsValue(result, -1)).toBe(true);
@@ -90,13 +90,13 @@ describe('ConditionDomain edge cases', () => {
 
 		it('difference with ConditionDomain converts and computes correctly', () => {
 			const result = difference(condX_gt_0, positiveReals());
-			// ]0, +∞[ \ ]0, +∞[ = empty
+			// ]0 ; +∞[ \ ]0 ; +∞[ = empty
 			expect(result.kind).toBe('empty');
 		});
 
 		it('excludePoints on ConditionDomain converts and excludes correctly', () => {
 			const result = excludePoints(condX_gt_0, [number(5)]);
-			// ]0, +∞[ \ {5}
+			// ]0 ; +∞[ \ {5}
 			expect(result.kind).toBe('interval_set');
 			expect(containsValue(result, 1)).toBe(true);
 			expect(containsValue(result, 5)).toBe(false);
@@ -182,7 +182,7 @@ describe('ConditionDomain edge cases', () => {
 
 describe('Symbolic bounds edge cases', () => {
 	describe('π (pi) as bound', () => {
-		it('creates interval [0, π]', () => {
+		it('creates interval [0 ; π]', () => {
 			const d = intervalDomain([closedInterval(number(0), bound('\\pi'))]);
 			expect(d.kind).toBe('interval_set');
 			if (d.kind === 'interval_set') {
@@ -190,14 +190,14 @@ describe('Symbolic bounds edge cases', () => {
 			}
 		});
 
-		it('formats [0, π] correctly', () => {
+		it('formats [0 ; π] correctly', () => {
 			const d = intervalDomain([closedInterval(number(0), bound('\\pi'))]);
-			expect(formatDomainInterval(d)).toBe('[0, π]');
+			expect(formatDomainInterval(d)).toBe('[0 ; π]');
 		});
 
-		it('formats ]0, π[ correctly', () => {
+		it('formats ]0 ; π[ correctly', () => {
 			const d = intervalDomain([openInterval(number(0), bound('\\pi'))]);
-			expect(formatDomainInterval(d)).toBe(']0, π[');
+			expect(formatDomainInterval(d)).toBe(']0 ; π[');
 		});
 
 		it('containsValue with π bound', () => {
@@ -210,14 +210,14 @@ describe('Symbolic bounds edge cases', () => {
 	});
 
 	describe('e (Euler number) as bound', () => {
-		it('creates interval ]1, e]', () => {
+		it('creates interval ]1 ; e]', () => {
 			const d = intervalDomain([rightClosedInterval(number(1), bound('e'))]);
 			expect(d.kind).toBe('interval_set');
 		});
 
-		it('formats ]1, e] correctly', () => {
+		it('formats ]1 ; e] correctly', () => {
 			const d = intervalDomain([rightClosedInterval(number(1), bound('e'))]);
-			expect(formatDomainInterval(d)).toBe(']1, e]');
+			expect(formatDomainInterval(d)).toBe(']1 ; e]');
 		});
 
 		it('containsValue with e bound', () => {
@@ -230,19 +230,19 @@ describe('Symbolic bounds edge cases', () => {
 	});
 
 	describe('√2 as bound', () => {
-		it('creates interval [0, √2]', () => {
+		it('creates interval [0 ; √2]', () => {
 			const d = intervalDomain([closedInterval(number(0), bound('sqrt(2)'))]);
 			expect(d.kind).toBe('interval_set');
 		});
 
-		it('formats [0, √2] correctly', () => {
+		it('formats [0 ; √2] correctly', () => {
 			const d = intervalDomain([closedInterval(number(0), bound('sqrt(2)'))]);
-			expect(formatDomainInterval(d)).toBe('[0, √2]');
+			expect(formatDomainInterval(d)).toBe('[0 ; √2]');
 		});
 
-		it('formats [√2, √3] correctly', () => {
+		it('formats [√2 ; √3] correctly', () => {
 			const d = intervalDomain([closedInterval(bound('sqrt(2)'), bound('sqrt(3)'))]);
-			expect(formatDomainInterval(d)).toBe('[√2, √3]');
+			expect(formatDomainInterval(d)).toBe('[√2 ; √3]');
 		});
 
 		it('containsValue with √2 bound', () => {
@@ -256,7 +256,7 @@ describe('Symbolic bounds edge cases', () => {
 	});
 
 	describe('mixed symbolic/numeric bounds', () => {
-		it('creates [0, √2] ∪ [π, +∞[', () => {
+		it('creates [0 ; √2] ∪ [π ; +∞[', () => {
 			const d = intervalDomain([
 				closedInterval(number(0), bound('sqrt(2)')),
 				greaterThanOrEqualInterval(bound('\\pi'))
@@ -267,20 +267,20 @@ describe('Symbolic bounds edge cases', () => {
 			}
 		});
 
-		it('formats [0, √2] ∪ [π, +∞[ correctly', () => {
+		it('formats [0 ; √2] ∪ [π ; +∞[ correctly', () => {
 			const d = intervalDomain([
 				closedInterval(number(0), bound('sqrt(2)')),
 				greaterThanOrEqualInterval(bound('\\pi'))
 			]);
-			expect(formatDomainInterval(d)).toBe('[0, √2] ∪ [π, +∞[');
+			expect(formatDomainInterval(d)).toBe('[0 ; √2] ∪ [π ; +∞[');
 		});
 
-		it('creates [e, π]', () => {
+		it('creates [e ; π]', () => {
 			const d = intervalDomain([closedInterval(bound('e'), bound('\\pi'))]);
-			expect(formatDomainInterval(d)).toBe('[e, π]');
+			expect(formatDomainInterval(d)).toBe('[e ; π]');
 		});
 
-		it('containsValue for [0, √2] ∪ [π, +∞[', () => {
+		it('containsValue for [0 ; √2] ∪ [π ; +∞[', () => {
 			const d = intervalDomain([
 				closedInterval(number(0), bound('sqrt(2)')),
 				greaterThanOrEqualInterval(bound('\\pi'))
@@ -380,7 +380,7 @@ describe('Multi-interval edge cases', () => {
 			const comp = complement(d);
 			expect(comp.kind).toBe('interval_set');
 			if (comp.kind === 'interval_set') {
-				// ]-∞, 0[ ∪ ]1, 3[ ∪ ]4, 6[ ∪ ]7, +∞[
+				// ]-∞ ; 0[ ∪ ]1 ; 3[ ∪ ]4 ; 6[ ∪ ]7 ; +∞[
 				expect(comp.intervals).toHaveLength(4);
 			}
 		});
@@ -422,7 +422,7 @@ describe('Multi-interval edge cases', () => {
 
 	describe('excluded points edge cases', () => {
 		it('excluded point at interval boundary is redundant', () => {
-			// ]0, 1[ with 0 excluded - 0 is already not in interval
+			// ]0 ; 1[ with 0 excluded - 0 is already not in interval
 			const d = intervalDomain([openInterval(number(0), number(1))], [excludedPoint(number(0))]);
 			// Should still be valid, even if redundant
 			expect(containsValue(d, 0)).toBe(false);
@@ -536,7 +536,7 @@ describe('Algebra corner cases', () => {
 		});
 
 		it('union creates gap-filling', () => {
-			// ]−∞, 0] ∪ ]0, +∞[ should cover all reals
+			// ]−∞ ; 0] ∪ ]0 ; +∞[ should cover all reals
 			const a = intervalDomain([lessThanOrEqualInterval(number(0))]);
 			const b = intervalDomain([greaterThanInterval(number(0))]);
 			const result = union(a, b);
@@ -559,7 +559,7 @@ describe('Algebra corner cases', () => {
 			const result = complement(point);
 			expect(result.kind).toBe('interval_set');
 			if (result.kind === 'interval_set') {
-				// Should be ]-∞, 5[ ∪ ]5, +∞[
+				// Should be ]-∞ ; 5[ ∪ ]5 ; +∞[
 				expect(result.intervals).toHaveLength(2);
 			}
 		});
@@ -655,28 +655,28 @@ describe('Algebra corner cases', () => {
 
 describe('Boundary type edge cases', () => {
 	describe('all open/closed combinations', () => {
-		it(']a, b[ open-open', () => {
+		it(']a ; b[ open-open', () => {
 			const d = intervalDomain([openInterval(number(0), number(1))]);
 			expect(containsValue(d, 0)).toBe(false);
 			expect(containsValue(d, 0.5)).toBe(true);
 			expect(containsValue(d, 1)).toBe(false);
 		});
 
-		it('[a, b] closed-closed', () => {
+		it('[a ; b] closed-closed', () => {
 			const d = intervalDomain([closedInterval(number(0), number(1))]);
 			expect(containsValue(d, 0)).toBe(true);
 			expect(containsValue(d, 0.5)).toBe(true);
 			expect(containsValue(d, 1)).toBe(true);
 		});
 
-		it('[a, b[ left-closed', () => {
+		it('[a ; b[ left-closed', () => {
 			const d = intervalDomain([leftClosedInterval(number(0), number(1))]);
 			expect(containsValue(d, 0)).toBe(true);
 			expect(containsValue(d, 0.5)).toBe(true);
 			expect(containsValue(d, 1)).toBe(false);
 		});
 
-		it(']a, b] right-closed', () => {
+		it(']a ; b] right-closed', () => {
 			const d = intervalDomain([rightClosedInterval(number(0), number(1))]);
 			expect(containsValue(d, 0)).toBe(false);
 			expect(containsValue(d, 0.5)).toBe(true);
@@ -686,7 +686,7 @@ describe('Boundary type edge cases', () => {
 
 	describe('boundary preservation in operations', () => {
 		it('intersect preserves strictest boundary', () => {
-			// [0, 2] ∩ ]1, 3] = ]1, 2]
+			// [0 ; 2] ∩ ]1 ; 3] = ]1 ; 2]
 			const a = intervalDomain([closedInterval(number(0), number(2))]);
 			const b = intervalDomain([rightClosedInterval(number(1), number(3))]);
 			const result = intersect(a, b);
@@ -697,7 +697,7 @@ describe('Boundary type edge cases', () => {
 		});
 
 		it('union preserves most permissive boundary', () => {
-			// [0, 1] ∪ ]1, 2] should include 1
+			// [0 ; 1] ∪ ]1 ; 2] should include 1
 			const a = intervalDomain([closedInterval(number(0), number(1))]);
 			const b = intervalDomain([rightClosedInterval(number(1), number(2))]);
 			const result = union(a, b);
@@ -713,7 +713,7 @@ describe('Boundary type edge cases', () => {
 
 describe('Domain computation edge cases', () => {
 	describe('nested compositions', () => {
-		it('sqrt(sqrt(x)) has domain [0, +∞[', () => {
+		it('sqrt(sqrt(x)) has domain [0 ; +∞[', () => {
 			const expr = parseLatex('\\sqrt{\\sqrt{x}}');
 			const result = computeDomain(expr, 'x');
 			expect(result.domain.kind).not.toBe('empty');
@@ -722,7 +722,7 @@ describe('Domain computation edge cases', () => {
 			expect(containsValue(result.domain, -1)).toBe(false);
 		});
 
-		it('ln(ln(x)) has domain ]1, +∞[ (requires x > 1 for outer ln)', () => {
+		it('ln(ln(x)) has domain ]1 ; +∞[ (requires x > 1 for outer ln)', () => {
 			const expr = parseLatex('\\ln(\\ln(x))');
 			const result = computeDomain(expr, 'x');
 			// Current implementation only tracks x > 0 from inner ln
@@ -763,7 +763,7 @@ describe('Domain computation edge cases', () => {
 	});
 
 	describe('power function domains', () => {
-		it('x^(1/2) (sqrt) has domain [0, +∞[', () => {
+		it('x^(1/2) (sqrt) has domain [0 ; +∞[', () => {
 			const expr = parseLatex('x^{1/2}');
 			const result = computeDomain(expr, 'x');
 			expect(containsValue(result.domain, 0)).toBe(true);
@@ -796,16 +796,16 @@ describe('Domain computation edge cases', () => {
 
 describe('Format edge cases', () => {
 	describe('special values', () => {
-		it('formats single point [5, 5]', () => {
+		it('formats single point [5 ; 5]', () => {
 			const d = intervalDomain([closedInterval(number(5), number(5))]);
 			const result = formatDomainInterval(d);
-			// Could be "[5, 5]" or "{5}"
+			// Could be "[5 ; 5]" or "{5}"
 			expect(result).toContain('5');
 		});
 
 		it('formats negative bounds correctly', () => {
 			const d = intervalDomain([closedInterval(number(-5), number(-1))]);
-			expect(formatDomainInterval(d)).toBe('[-5, -1]');
+			expect(formatDomainInterval(d)).toBe('[-5 ; -1]');
 		});
 
 		it('formats condition with negative bound', () => {
@@ -846,7 +846,7 @@ describe('Format edge cases', () => {
 		it('handles symbolic bounds', () => {
 			const d = intervalDomain([closedInterval(number(0), bound('\\pi'))]);
 			const result = formatDomainFull(d);
-			expect(result.interval).toBe('[0, π]');
+			expect(result.interval).toBe('[0 ; π]');
 			expect(result.condition).toBe('0 ≤ x ≤ π');
 		});
 	});
@@ -920,12 +920,12 @@ describe('Validation edge cases', () => {
 // =============================================================================
 
 describe('Degenerate cases', () => {
-	it('empty interval ]a, a[ is empty', () => {
+	it('empty interval ]a ; a[ is empty', () => {
 		const d = intervalDomain([openInterval(number(5), number(5))]);
 		expect(isEmpty(d)).toBe(true);
 	});
 
-	it('inverted interval ]10, 0[ is empty', () => {
+	it('inverted interval ]10 ; 0[ is empty', () => {
 		const d = intervalDomain([openInterval(number(10), number(0))]);
 		expect(isEmpty(d)).toBe(true);
 	});

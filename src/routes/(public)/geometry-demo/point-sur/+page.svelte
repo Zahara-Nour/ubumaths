@@ -151,7 +151,7 @@ R = point_sur(r, 1.5, couleur="rouge")`;
 
 	<DslDemo
 		dsl={lineDsl}
-		title="point_sur(droite) — t ∈ ]-∞, +∞["
+		title="point_sur(droite) — t ∈ ]-∞ ; +∞["
 		description="Points sur une droite avec t = -0.5, 0, 0.5, 1, 1.5. Pas de clamping — les points peuvent aller au-dela des points definissants."
 		center={{ x: 1, y: 1 }}
 		pixelsPerUnit={40}

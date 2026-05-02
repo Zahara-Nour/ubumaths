@@ -59,7 +59,7 @@ export interface BoundaryPoint {
  * @returns Array of BoundaryLimit for each boundary point
  *
  * @example
- * // For f(x) = 1/x on ]-inf, 0[ U ]0, +inf[:
+ * // For f(x) = 1/x on ]-inf ; 0[ U ]0 ; +inf[:
  * // - lim(x -> -inf) = 0
  * // - lim(x -> 0-) = -inf
  * // - lim(x -> 0+) = +inf
@@ -109,7 +109,7 @@ export function computeBoundaryLimits(
  * @returns Array of boundary points with approach directions
  *
  * @example
- * // For domain ]0, +inf[:
+ * // For domain ]0 ; +inf[:
  * // - { point: 0, direction: 'right' }  (approach from right)
  * // - { point: +inf, direction: 'left' } (approach from left)
  */

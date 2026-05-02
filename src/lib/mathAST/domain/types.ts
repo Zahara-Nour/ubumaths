@@ -50,10 +50,10 @@ export interface ExcludedPoint {
  * can be passed to interval-level functions that only read the intervals field.
  *
  * Represents domains like:
- * - ]0, +∞[
- * - ]-∞, 0[ ∪ ]0, +∞[ (ℝ \ {0})
- * - [-1, 1]
- * - [0, π]
+ * - ]0 ; +∞[
+ * - ]-∞ ; 0[ ∪ ]0 ; +∞[ (ℝ \ {0})
+ * - [-1 ; 1]
+ * - [0 ; π]
  */
 export interface IntervalSet {
 	readonly kind: 'interval_set';
