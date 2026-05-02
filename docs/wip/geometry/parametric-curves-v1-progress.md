@@ -59,8 +59,56 @@ courbe("r = 2*cos(theta)", theta_min=0, theta_max=pi)
 | 3 — Rendu SVG + courbe fermée + UI     | terminée (TDD, 16 tests verts) | 6d23b1a1   |
 | 4 — Réactivité (sliders/scalaires)     | terminée (TDD, 4 tests verts)  | ec8791a52  |
 | 5 — Exports TikZ/Typst + sérialisation | terminée (TDD, 18 tests verts) | 9c658a48c  |
-| 6 — Demo page                          | terminée                       | en attente |
-| 7 — Quality Checks finaux              | pending                        | —          |
+| 6 — Demo page                          | terminée                       | fb8c57811  |
+| 7 — Quality Checks finaux              | terminée                       | en attente |
+
+### Phase 7 — Quality Checks
+
+**Statut** : terminée — 0 régression, 0 erreur dans le périmètre paramétrique.
+
+- `pnpm format` sur tous les fichiers modifiés → tous "unchanged" (prettier déjà appliqué via husky pre-commit hooks).
+- `npx eslint` sur les 9 fichiers modifiés/créés → 0 erreur, 0 warning.
+- `pnpm check:incremental` → ✓ 1541 FILES, 9 errors filtrés (pré-existantes dans `slides/demo` et `extern/`), exit 0. Aucune erreur introduite par la V1 paramétrique.
+- Suite complète `pnpm test:server src/lib/geometry-core/ src/lib/grapheur/` → **2767 passing, 2 skipped (pré-existants), 0 failing** sur 116 fichiers de tests.
+- Périmètre paramétrique seul : **102 tests verts** sur 7 fichiers (Phase 1-2-3-4-5).
+
+---
+
+## Résumé final V1
+
+**102 tests** ajoutés en TDD red-first, **6 commits** sur `main` :
+
+| #   | Commit      | Phase | Périmètre                                           |
+| --- | ----------- | ----- | --------------------------------------------------- |
+| 1   | `2273eccf`  | 1     | Type GeoParametricCurve + factory + sampler 2D      |
+| 2   | `d99a0522`  | 2     | DSL builtin courbe() 2-strings + auto-détection     |
+| 3   | `6d23b1a1`  | 3     | Rendu SVG + détection courbe fermée + canvas branch |
+| 4   | `ec8791a52` | 4     | Tests d'intégration réactivité (sliders)            |
+| 5   | `9c658a48c` | 5     | Exports TikZ/Typst + sérialisation DSL              |
+| 6   | `fb8c57811` | 6     | Demo page (9 exemples)                              |
+
+**Comportements V1 livrés** :
+
+- Création via `courbe("x = ...", "y = ...", t_min=..., t_max=...)` avec auto-détection du paramètre.
+- Sampling 2D adaptatif basé sur ‖vitesse(t)‖, fallback uniforme si dérivation symbolique échoue.
+- Détection automatique de courbe fermée (path SVG `Z`, fill conditionnel).
+- Réactivité : t_min, t_max, et les coefficients de x(t), y(t) peuvent référencer des sliders/scalaires ; le tracé se redessine quand la valeur change.
+- Exports TikZ (`\draw plot coordinates`) et Typst (`line(..., closed: true)`) en sampling-based, robustes face aux cas limites.
+- Sérialisation DSL round-trip avec préservation des noms symboliques (sliders).
+- Page demo `/geometry-demo/parametric` avec 9 exemples : cercle, parabole, cardioïde, Lissajous (3 ratios), cycloïde, spirale d'Archimède, animations slider, ellipse remplie.
+
+**Hors scope V1 (futurs V2/V3)** :
+
+- `point_sur(parametricCurve, t=...)` draggable.
+- `tangente(parametricCurve, t=...)` (vecteur direction (x'(t₀), y'(t₀))).
+- `lieu()` driver = point sur courbe paramétrique.
+- Polaire `courbe("r = ...", theta_min=..., theta_max=...)` (3e branche).
+- `intersection(parametricCurve, droite)` numérique.
+- `longueur()`, `courbure()`, `cercle_osculateur()`.
+
+**Documents produits** :
+
+- `docs/wip/geometry/parametric-curves-v1-progress.md` (ce fichier — historique complet et reprise crash).
 
 ### Phase 6 — Demo page
 
