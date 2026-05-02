@@ -170,13 +170,30 @@ describe('courbe() — piecewise errors', () => {
 	});
 });
 
-describe('courbe() — piecewise with domain restriction', () => {
-	it('combines piecewise body with sur-suffix domain restriction', () => {
-		const { figure } = run('f = courbe("y = { -x si x < 0, x } sur [-5 ; 5]")');
+describe('courbe() — piecewise rejects external domain restriction', () => {
+	it('rejects sur-suffix on a piecewise (conceptually redundant)', () => {
+		// A piecewise already defines the function case by case; combining it
+		// with an external `sur` suffix is confusing — encode the restriction
+		// directly in the piecewise conditions instead.
+		expect(() => run('f = courbe("y = { -x si x < 0, x } sur [-5 ; 5]")')).toThrow(
+			/déjà la fonction par cas/
+		);
+	});
+
+	it('rejects avec-suffix on a piecewise', () => {
+		expect(() => run('f = courbe("y = { -x si x < 0, x } avec -5 < x <= 5")')).toThrow(
+			/déjà la fonction par cas/
+		);
+	});
+
+	it('encodes domain restriction inside the piecewise conditions instead', () => {
+		// User-friendly alternative: write the restriction as conditions.
+		const { figure } = run('f = courbe("y = { -x si -5 <= x < 0, x si 0 <= x <= 5 }")');
 		const fn = getFunction(figure);
 		expect(isPiecewise(fn.expression)).toBe(true);
-		expect(fn.domain).toBeDefined();
-		expect(fn.domain!.lower).toEqual({ kind: 'numeric', value: -5 });
-		expect(fn.domain!.upper).toEqual({ kind: 'numeric', value: 5 });
+		expect(fn.compiledFn({ x: -3 })).toBe(3);
+		expect(fn.compiledFn({ x: 3 })).toBe(3);
+		expect(Number.isNaN(fn.compiledFn({ x: -10 }))).toBe(true);
+		expect(Number.isNaN(fn.compiledFn({ x: 10 }))).toBe(true);
 	});
 });
