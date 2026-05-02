@@ -96,7 +96,7 @@ describe('courbe — parametric (A. nominal creation)', () => {
 
 describe('courbe — parametric (B. equation order swap)', () => {
 	it('B1. accepts (y=..., x=...) order', () => {
-		const script = `c = courbe("y = sin(t)", "x = cos(t)", t_min=0, t_max=${2 * Math.PI})`;
+		const script = `unite_angle("radians")\nc = courbe("y = sin(t)", "x = cos(t)", t_min=0, t_max=${2 * Math.PI})`;
 		const { figure, symbols } = runDsl(script);
 		const pc = figure.getElementById(symbols.get('c')!.figureId!) as GeoParametricCurve;
 		expect(isParametricCurve(pc)).toBe(true);
@@ -218,7 +218,7 @@ describe('courbe — parametric (D. errors)', () => {
 
 describe('courbe — parametric (E. differentiation and compilation)', () => {
 	it('E1. standard cos/sin curve has non-null xDerivative and yDerivative', () => {
-		const script = `c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${2 * Math.PI})`;
+		const script = `unite_angle("radians")\nc = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${2 * Math.PI})`;
 		const { figure, symbols } = runDsl(script);
 		const pc = figure.getElementById(symbols.get('c')!.figureId!) as GeoParametricCurve;
 		expect(pc.xDerivative).not.toBeNull();

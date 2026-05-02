@@ -17,7 +17,9 @@ import { runDsl } from '..';
 import { DslRuntimeError } from '../errors';
 
 function run(script: string) {
-	return runDsl(script);
+	// aire-undercurve tests use trig integrands in radians (mathAST native).
+	// DSL default mode is degrees, so opt into radians for the whole file.
+	return runDsl(`unite_angle("radians")\n${script}`);
 }
 
 // =============================================================================
@@ -248,7 +250,8 @@ A = aire(f, -1, 1)`
 A = aire(f, -1, 1)`
 		);
 		const message = warnSpy.mock.calls[0][0] as string;
-		expect(message).toMatch(/aire ligne 2:/);
+		// Helper prepends `unite_angle("radians")` so script lines shift by 1.
+		expect(message).toMatch(/aire ligne 3:/);
 		expect(message).not.toMatch(/integrale ligne/);
 	});
 

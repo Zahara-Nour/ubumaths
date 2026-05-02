@@ -195,9 +195,18 @@
 
 ### Décision V1 importante
 
-**Les équations passées à `courbe(...)` ne sont PAS affectées par le mode angle.** Elles restent en radians (mathAST natif) pour préserver la compatibilité avec les usages existants (`cos(t)`, `sin(t)` sur intervalles standards). Le param `_angleMode` est conservé dans la signature pour une intégration V2.
+**Le mode angle s'applique uniformément** : RHS d'affectations routés mathAST, builtins angles (arc/rotation/secteur/etc.), ET équations passées à `courbe(...)`.
 
-Les RHS d'affectations (routés mathAST) ET les builtins angles (arc/rotation/etc.) suivent bien le mode angle global.
+Les démos et tests existants qui utilisaient `cos(t)`/`sin(t)` sur des intervalles relatifs à π (donc en convention radians) ont été migrés en ajoutant `unite_angle("radians")` au début de leur script DSL. Cela couvre :
+
+- `figure-integral-area*.test.ts` — helpers `setupFigureWithFn`/`setupFigureWithTwoFns`
+- `figure-parametric-reactivity.test.ts` — scripts inline
+- `interpreter-derivee.test.ts` — helper `run` + scripts round-trip
+- `interpreter-aire-entre.test.ts`, `interpreter-aire-undercurve.test.ts`, `interpreter-singularity-nan.test.ts` — helpers `run`
+- `courbe-parametric.test.ts` — tests B1, E1
+- Démo `parametric/+page.svelte` — tous les scripts trig
+
+**Limitation V1** : la sérialisation DSL ne préserve pas la directive `unite_angle`. Les tests round-trip réinjectent le mode après désérialisation. À corriger en V2.
 
 ## Phase 6 — Réservation `\pi`/`e` en LHS
 

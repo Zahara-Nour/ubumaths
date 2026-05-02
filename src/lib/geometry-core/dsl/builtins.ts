@@ -47,6 +47,7 @@ import { numeric } from '../types/geo-value';
 import { applyTransformationToElement } from './transform-apply';
 import type { GeoElement } from '../types/elements';
 import { isPointElement } from '../types/elements';
+import { applyAngleMode } from './apply-angle-mode';
 import { interpretAreaBuiltin } from './area-builtin-helper';
 
 /** Resolve a line-like element's two defining point IDs. */
@@ -2213,10 +2214,7 @@ function createCurveFromEquation(
 	figure: Figure,
 	line: number,
 	label?: string,
-	// Reserved for future angle-mode integration on curve equations. V1 keeps
-	// equations in radians (mathAST native) for backward compatibility with
-	// existing usages of `cos(t)` / `sin(t)` over standard intervals.
-	_angleMode: AngleMode = 'deg',
+	angleMode: AngleMode = 'deg',
 	symbols?: SymbolTable
 ): BuiltinResult {
 	// Parse the equation string with mathAST
@@ -2226,6 +2224,9 @@ function createCurveFromEquation(
 	} catch {
 		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${equation}"`, line);
 	}
+
+	// Apply the active angle mode (wraps trig calls in deg mode).
+	parsed = applyAngleMode(parsed, angleMode);
 
 	// Substitute static variables (numbers in symbol table) into the equation.
 	if (symbols) {
@@ -2520,9 +2521,7 @@ function createParametricCurveFromEquations(
 	label: string | undefined,
 	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
 	symbols?: SymbolTable,
-	// Reserved for future angle-mode integration on parametric equations.
-	// V1 keeps equations in radians (mathAST native) for backward compat.
-	_angleMode: AngleMode = 'deg'
+	angleMode: AngleMode = 'deg'
 ): BuiltinResult {
 	// --- A. Parse both equations ---
 	const { lhs: lhs1, rhs: rhs1 } = parseParametricEquation(eq1, '1ère', line);
@@ -2532,8 +2531,9 @@ function createParametricCurveFromEquations(
 		throw new DslRuntimeError('courbe(): il faut une équation en x et une en y', line);
 	}
 
-	let xRhs = lhs1 === 'x' ? rhs1 : rhs2;
-	let yRhs = lhs1 === 'y' ? rhs1 : rhs2;
+	// Apply the active angle mode to wrap any trig calls in each equation.
+	let xRhs = applyAngleMode(lhs1 === 'x' ? rhs1 : rhs2, angleMode);
+	let yRhs = applyAngleMode(lhs1 === 'y' ? rhs1 : rhs2, angleMode);
 	const eqXOriginal = lhs1 === 'x' ? eq1 : eq2;
 	const eqYOriginal = lhs1 === 'y' ? eq1 : eq2;
 
