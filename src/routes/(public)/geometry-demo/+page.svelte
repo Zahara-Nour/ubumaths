@@ -24,6 +24,12 @@
 				t → (x(t), y(t)) — cercle, cardioïde, Lissajous, cycloïde, spirale, animations
 			</p>
 		</a>
+		<a href="/geometry-demo/piecewise" class="rounded-lg border p-4 hover:bg-muted">
+			<h2 class="font-bold">Domaines et fonctions par morceaux</h2>
+			<p class="text-sm text-muted-foreground">
+				Restriction de domaine (sur ]a;b]), piecewise (forme si / sur), bornes réactives
+			</p>
+		</a>
 		<a href="/geometry-demo/vectors" class="rounded-lg border p-4 hover:bg-muted">
 			<h2 class="font-bold">Vecteurs</h2>
 			<p class="text-sm text-muted-foreground">
