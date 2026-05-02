@@ -2,7 +2,9 @@
  * Interval formatting functions.
  *
  * Formats intervals for display using:
- * - French interval notation: ]a, b[
+ * - French interval notation with semicolon separator: ]a ; b[
+ *   (Semicolon is the standard French school convention because the
+ *   comma is the decimal separator.)
  * - Mathematical symbols: ℝ, ∪, ∞
  * - Symbolic bounds: √2, π, ln(2)
  * - Condition notation: x > 0
@@ -31,11 +33,11 @@ import { isUniversalInterval } from './algebra';
 /**
  * Format an interval domain as an interval notation string.
  *
- * Uses French notation: ]a, b[ for open intervals.
+ * Uses French notation with semicolon: ]a ; b[ for open intervals.
  *
  * @example
- * formatInterval(positiveReals()) // → "]0, +∞["
- * formatInterval(unitInterval()) // → "[-1, 1]"
+ * formatInterval(positiveReals()) // → "]0 ; +∞["
+ * formatInterval(unitInterval()) // → "[-1 ; 1]"
  * formatInterval(nonZeroReals()) // → "ℝ \\ {0}"
  */
 export function formatInterval(domain: IntervalDomain): string {
@@ -105,7 +107,7 @@ function formatIntervalSet(domain: IntervalSet): string {
 	const intervalStrs = domain.intervals.map(formatSingleInterval);
 
 	// Check for full real line
-	if (intervalStrs.length === 1 && intervalStrs[0] === ']-∞, +∞[') {
+	if (intervalStrs.length === 1 && intervalStrs[0] === ']-∞ ; +∞[') {
 		return 'ℝ';
 	}
 
@@ -118,7 +120,7 @@ function formatSingleInterval(interval: Interval): string {
 	const lower = formatEndpointValue(interval.lower.value);
 	const upper = formatEndpointValue(interval.upper.value);
 
-	return `${leftBracket}${lower}, ${upper}${rightBracket}`;
+	return `${leftBracket}${lower} ; ${upper}${rightBracket}`;
 }
 
 /**

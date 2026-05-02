@@ -69,9 +69,9 @@ import type {
  *   x = 0 (f'=0)
  *
  * Signe de f'(x) :
- *   ]-inf, 0[ : -  (f decroissante)
+ *   ]-inf ; 0[ : -  (f decroissante)
  *   {0}       : 0  (f constante)
- *   ]0, +inf[ : +  (f croissante)
+ *   ]0 ; +inf[ : +  (f croissante)
  *
  * Extrema :
  *   Minimum global : f(0) = 0
@@ -87,11 +87,11 @@ import type {
  *   x = 1 (f'=0)
  *
  * Signe de f'(x) :
- *   ]-inf, -1[ : +  (f croissante)
+ *   ]-inf ; -1[ : +  (f croissante)
  *   {-1}       : 0  (f constante)
- *   ]-1, 1[    : -  (f decroissante)
+ *   ]-1 ; 1[    : -  (f decroissante)
  *   {1}        : 0  (f constante)
- *   ]1, +inf[  : +  (f croissante)
+ *   ]1 ; +inf[  : +  (f croissante)
  *
  * Extrema :
  *   Maximum local : f(-1) = 2
@@ -376,7 +376,7 @@ export class VariationsCommand extends BaseCommand {
 		const lowerStr = this.formatEndpointValue(interval.lower.value);
 		const upperStr = this.formatEndpointValue(interval.upper.value);
 
-		return `${lowerBracket}${lowerStr}, ${upperStr}${upperBracket}`;
+		return `${lowerBracket}${lowerStr} ; ${upperStr}${upperBracket}`;
 	}
 
 	/**

@@ -79,8 +79,8 @@ interface ResolvedOptions {
  * // result.derivative = 2x
  * // result.criticalPoints = [{ x: 0, y: 0, nature: 'derivative_zero' }]
  * // result.monotonicIntervals = [
- * //   { interval: ]-inf, 0[, monotonicity: 'decreasing' },
- * //   { interval: ]0, +inf[, monotonicity: 'increasing' }
+ * //   { interval: ]-inf ; 0[, monotonicity: 'decreasing' },
+ * //   { interval: ]0 ; +inf[, monotonicity: 'increasing' }
  * // ]
  * // result.extrema = [{ x: 0, y: 0, type: 'global_minimum' }]
  *
@@ -325,8 +325,8 @@ export function computeVariations(expr: MathNode, options?: VariationOptions): V
  * // "Etude des variations de f(x) = x^2
  * //  Derivee: f'(x) = 2x
  * //  Point critique: x = 0
- * //  f est decroissante sur ]-infini, 0[
- * //  f est croissante sur ]0, +infini[
+ * //  f est decroissante sur ]-infini ; 0[
+ * //  f est croissante sur ]0 ; +infini[
  * //  Minimum global en x = 0, f(0) = 0"
  */
 export function getVariationSummary(result: VariationResult): string {
@@ -477,7 +477,7 @@ function formatInterval(interval: {
 	const upperBracket = interval.upper.type === 'closed' ? ']' : '[';
 	const lowerStr = formatEndpointValue(interval.lower.value);
 	const upperStr = formatEndpointValue(interval.upper.value);
-	return `${lowerBracket}${lowerStr}, ${upperStr}${upperBracket}`;
+	return `${lowerBracket}${lowerStr} ; ${upperStr}${upperBracket}`;
 }
 
 /**

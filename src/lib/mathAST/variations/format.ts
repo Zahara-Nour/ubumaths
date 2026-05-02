@@ -16,11 +16,11 @@
  *   x = 1
  *
  * Signe de f'(x) :
- *   ]-inf, -1[ : +    (f croissante)
+ *   ]-inf ; -1[ : +    (f croissante)
  *   {-1}       : 0
- *   ]-1, 1[    : -    (f decroissante)
+ *   ]-1 ; 1[    : -    (f decroissante)
  *   {1}        : 0
- *   ]1, +inf[  : +    (f croissante)
+ *   ]1 ; +inf[  : +    (f croissante)
  *
  * Extrema :
  *   Maximum local : f(-1) = 2
@@ -154,7 +154,7 @@ export function formatCriticalPoints(
  * @returns Formatted string
  *
  * @example
- * // "Signe de f'(x) :\n  ]-inf, 0[ : -  (f decroissante)\n  ...]"
+ * // "Signe de f'(x) :\n  ]-inf ; 0[ : -  (f decroissante)\n  ...]"
  */
 export function formatMonotonicIntervals(
 	intervals: readonly MonotonicInterval[],
@@ -305,7 +305,7 @@ function formatSingleInterval(interval: Interval): string {
 	const lowerStr = formatEndpointValue(interval.lower.value);
 	const upperStr = formatEndpointValue(interval.upper.value);
 
-	return `${lowerBracket}${lowerStr}, ${upperStr}${upperBracket}`;
+	return `${lowerBracket}${lowerStr} ; ${upperStr}${upperBracket}`;
 }
 
 /**
@@ -372,7 +372,7 @@ function formatLimitValue(value: LimitValue): string {
  *
  * @example
  * formatVariationSummary(result)
- * // "f' = 2x ; croissante sur ]0, +inf[, decroissante sur ]-inf, 0[ ; min en x=0"
+ * // "f' = 2x ; croissante sur ]0 ; +inf[, decroissante sur ]-inf ; 0[ ; min en x=0"
  */
 export function formatVariationSummary(result: VariationResult): string {
 	const parts: string[] = [];

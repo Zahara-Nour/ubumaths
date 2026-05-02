@@ -23,9 +23,9 @@ export const DOMAIN_RULE_DESCRIPTIONS: Readonly<Record<DomainRule, string>> = {
 		'Le logarithme nécessite un argument strictement positif (log(u) défini si u > 0)',
 	division_constraint: 'La division nécessite un dénominateur non nul (u/v défini si v ≠ 0)',
 	arcsin_constraint:
-		"L'arc sinus nécessite un argument dans [-1, 1] (arcsin(u) défini si -1 ≤ u ≤ 1)",
+		"L'arc sinus nécessite un argument dans [-1 ; 1] (arcsin(u) défini si -1 ≤ u ≤ 1)",
 	arccos_constraint:
-		"L'arc cosinus nécessite un argument dans [-1, 1] (arccos(u) défini si -1 ≤ u ≤ 1)",
+		"L'arc cosinus nécessite un argument dans [-1 ; 1] (arccos(u) défini si -1 ≤ u ≤ 1)",
 	tan_constraint: 'La tangente nécessite un argument différent de π/2 + kπ (tan(x) ≠ π/2 + kπ)',
 	cot_constraint: 'La cotangente nécessite un argument différent de kπ (cot(x) ≠ kπ)',
 	sec_constraint: 'La sécante nécessite un argument différent de π/2 + kπ (sec(x) ≠ π/2 + kπ)',

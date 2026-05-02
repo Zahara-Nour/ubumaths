@@ -88,14 +88,14 @@ export function monotonicityToSign(monotonicity: Monotonicity): Sign {
  *
  * @example
  * // Sign analysis of f'(x) = 2x:
- * // - negative on ]-infinity, 0[
+ * // - negative on ]-infinity ; 0[
  * // - zero at x = 0
- * // - positive on ]0, +infinity[
+ * // - positive on ]0 ; +infinity[
  * //
  * // Monotonic intervals:
- * // - decreasing on ]-infinity, 0[
+ * // - decreasing on ]-infinity ; 0[
  * // - constant at x = 0 (point interval)
- * // - increasing on ]0, +infinity[
+ * // - increasing on ]0 ; +infinity[
  */
 export function buildMonotonicIntervals(signResult: SignAnalysisResult): MonotonicInterval[] {
 	const monotonicIntervals: MonotonicInterval[] = [];
@@ -125,8 +125,8 @@ export function buildMonotonicIntervals(signResult: SignAnalysisResult): Monoton
  * @returns Array with adjacent same-monotonicity intervals merged
  *
  * @example
- * // Input: [decreasing on ]-2, 0[, constant at 0, increasing on ]0, 2[, increasing on ]2, 3[]
- * // Output: [decreasing on ]-2, 0[, constant at 0, increasing on ]0, 3[]
+ * // Input: [decreasing on ]-2 ; 0[, constant at 0, increasing on ]0 ; 2[, increasing on ]2 ; 3[]
+ * // Output: [decreasing on ]-2 ; 0[, constant at 0, increasing on ]0 ; 3[]
  */
 export function mergeMonotonicIntervals(
 	intervals: readonly MonotonicInterval[]

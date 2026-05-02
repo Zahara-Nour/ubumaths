@@ -76,13 +76,13 @@ function getOuterFunctionRequirement(
 			return { needsPositive: false, needsNonNegative: true, lowerBound: 0 };
 		case 'arcsin':
 		case 'arccos':
-			// Inverse trig needs input in [-1, 1] - handled by preimage already
+			// Inverse trig needs input in [-1 ; 1] - handled by preimage already
 			return null;
 		case 'arccosh':
 			// arccosh needs input >= 1
 			return { needsPositive: false, needsNonNegative: false, lowerBound: 1 };
 		case 'arctanh':
-			// arctanh needs input in ]-1, 1[ - handled by preimage already
+			// arctanh needs input in ]-1 ; 1[ - handled by preimage already
 			return null;
 		default:
 			return null;
@@ -213,8 +213,8 @@ export interface ComputeDomainOptions {
  * @returns Domain result with the computed domain and optional steps
  *
  * @example
- * computeDomain(sqrt(x), 'x') // → [0, +∞[
- * computeDomain(ln(x-2), 'x') // → ]2, +∞[
+ * computeDomain(sqrt(x), 'x') // → [0 ; +∞[
+ * computeDomain(ln(x-2), 'x') // → ]2 ; +∞[
  * computeDomain(1/x, 'x') // → ℝ \ {0}
  */
 export function computeDomain(

@@ -32,57 +32,57 @@ describe('formatDomainInterval()', () => {
 	});
 
 	describe('French interval notation', () => {
-		it('formats ]0, +∞[ (positiveReals)', () => {
-			expect(formatDomainInterval(positiveReals())).toBe(']0, +∞[');
+		it('formats ]0 ; +∞[ (positiveReals)', () => {
+			expect(formatDomainInterval(positiveReals())).toBe(']0 ; +∞[');
 		});
 
-		it('formats [0, +∞[ (nonNegativeReals)', () => {
-			expect(formatDomainInterval(nonNegativeReals())).toBe('[0, +∞[');
+		it('formats [0 ; +∞[ (nonNegativeReals)', () => {
+			expect(formatDomainInterval(nonNegativeReals())).toBe('[0 ; +∞[');
 		});
 
-		it('formats [-1, 1] (unitInterval)', () => {
-			expect(formatDomainInterval(unitInterval())).toBe('[-1, 1]');
+		it('formats [-1 ; 1] (unitInterval)', () => {
+			expect(formatDomainInterval(unitInterval())).toBe('[-1 ; 1]');
 		});
 
 		it('formats ℝ \\ {0} (nonZeroReals)', () => {
 			expect(formatDomainInterval(nonZeroReals())).toBe('ℝ \\ {0}');
 		});
 
-		it('formats ]-∞, 0[', () => {
+		it('formats ]-∞ ; 0[', () => {
 			const d = intervalDomain([lessThanInterval(number(0))]);
-			expect(formatDomainInterval(d)).toBe(']-∞, 0[');
+			expect(formatDomainInterval(d)).toBe(']-∞ ; 0[');
 		});
 
-		it('formats ]-∞, 0]', () => {
+		it('formats ]-∞ ; 0]', () => {
 			const d = intervalDomain([lessThanOrEqualInterval(number(0))]);
-			expect(formatDomainInterval(d)).toBe(']-∞, 0]');
+			expect(formatDomainInterval(d)).toBe(']-∞ ; 0]');
 		});
 
-		it('formats ]1, +∞[', () => {
+		it('formats ]1 ; +∞[', () => {
 			const d = intervalDomain([greaterThanInterval(number(1))]);
-			expect(formatDomainInterval(d)).toBe(']1, +∞[');
+			expect(formatDomainInterval(d)).toBe(']1 ; +∞[');
 		});
 
-		it('formats [1, +∞[', () => {
+		it('formats [1 ; +∞[', () => {
 			const d = intervalDomain([greaterThanOrEqualInterval(number(1))]);
-			expect(formatDomainInterval(d)).toBe('[1, +∞[');
+			expect(formatDomainInterval(d)).toBe('[1 ; +∞[');
 		});
 	});
 
 	describe('union of intervals', () => {
-		it('formats ]-∞, -2] ∪ [2, +∞[', () => {
+		it('formats ]-∞ ; -2] ∪ [2 ; +∞[', () => {
 			const d = intervalDomain([
 				lessThanOrEqualInterval(number(-2)),
 				greaterThanOrEqualInterval(number(2))
 			]);
-			expect(formatDomainInterval(d)).toBe(']-∞, -2] ∪ [2, +∞[');
+			expect(formatDomainInterval(d)).toBe(']-∞ ; -2] ∪ [2 ; +∞[');
 		});
 	});
 
 	describe('excluded points', () => {
 		it('formats interval with excluded point', () => {
 			const d = intervalDomain([greaterThanInterval(number(0))], [excludedPoint(number(1))]);
-			expect(formatDomainInterval(d)).toBe(']0, +∞[ \\ {1}');
+			expect(formatDomainInterval(d)).toBe(']0 ; +∞[ \\ {1}');
 		});
 
 		it('formats interval with multiple excluded points', () => {
@@ -90,7 +90,7 @@ describe('formatDomainInterval()', () => {
 				[greaterThanInterval(number(0))],
 				[excludedPoint(number(1)), excludedPoint(number(2))]
 			);
-			expect(formatDomainInterval(d)).toBe(']0, +∞[ \\ {1, 2}');
+			expect(formatDomainInterval(d)).toBe(']0 ; +∞[ \\ {1, 2}');
 		});
 	});
 });
@@ -160,13 +160,13 @@ describe('formatDomainCondition()', () => {
 describe('formatDomainFull()', () => {
 	it('returns both interval and condition format', () => {
 		const result = formatDomainFull(positiveReals());
-		expect(result.interval).toBe(']0, +∞[');
+		expect(result.interval).toBe(']0 ; +∞[');
 		expect(result.condition).toBe('x > 0');
 	});
 
 	it('uses custom variable for condition', () => {
 		const result = formatDomainFull(unitInterval(), 't');
-		expect(result.interval).toBe('[-1, 1]');
+		expect(result.interval).toBe('[-1 ; 1]');
 		expect(result.condition).toBe('-1 ≤ t ≤ 1');
 	});
 });

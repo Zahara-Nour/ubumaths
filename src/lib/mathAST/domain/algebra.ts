@@ -132,12 +132,12 @@ function wrapWithExcludedPoints(
 /**
  * Try to convert a ConditionDomain to an IntervalSet.
  * Handles simple cases like:
- * - x > 0 → ]0, +∞[
- * - x >= 0 → [0, +∞[
- * - x < 5 → ]-∞, 5[
- * - x <= 5 → ]-∞, 5]
+ * - x > 0 → ]0 ; +∞[
+ * - x >= 0 → [0 ; +∞[
+ * - x < 5 → ]-∞ ; 5[
+ * - x <= 5 → ]-∞ ; 5]
  * - x != 5 → ℝ \ {5}
- * - x > 0 AND x < 10 → ]0, 10[
+ * - x > 0 AND x < 10 → ]0 ; 10[
  *
  * Returns null if conversion is not possible.
  */
@@ -188,10 +188,10 @@ function convertSingleCondition(
 		case '<=':
 			return intervalDomain([lessThanOrEqualInterval(bound)]);
 		case '!=':
-			// ℝ \ {bound} = ]-∞, bound[ ∪ ]bound, +∞[
+			// ℝ \ {bound} = ]-∞ ; bound[ ∪ ]bound ; +∞[
 			return intervalDomain([lessThanInterval(bound), greaterThanInterval(bound)]);
 		case '=':
-			// Single point as closed interval [bound, bound]
+			// Single point as closed interval [bound ; bound]
 			return intervalDomain([closedInterval(bound, bound)]);
 		default:
 			return null;
@@ -200,7 +200,7 @@ function convertSingleCondition(
 
 /**
  * Convert AND-combined conditions to an IntervalSet.
- * Handles common patterns like: x > a AND x < b → ]a, b[
+ * Handles common patterns like: x > a AND x < b → ]a ; b[
  */
 function convertAndConditions(
 	conditions: readonly ConditionDomain['conditions'][number][]
@@ -232,7 +232,7 @@ function convertAndConditions(
 
 /**
  * Convert OR-combined conditions to an IntervalSet.
- * Handles patterns like: x < a OR x > b → ]-∞, a[ ∪ ]b, +∞[
+ * Handles patterns like: x < a OR x > b → ]-∞ ; a[ ∪ ]b ; +∞[
  */
 function convertOrConditions(
 	conditions: readonly ConditionDomain['conditions'][number][]

@@ -5,7 +5,7 @@
  * Handles ConditionDomain locally.
  *
  * Formats domains for display using:
- * - French interval notation: ]a, b[
+ * - French interval notation with semicolon: ]a ; b[
  * - Mathematical symbols: ℝ, ∪, ∞
  * - Symbolic bounds: √2, π, ln(2)
  * - Condition notation: x > 0
@@ -33,11 +33,11 @@ export { formatEndpointValue } from '$lib/math/intervals/format';
 /**
  * Format a domain as an interval notation string.
  *
- * Uses French notation: ]a, b[ for open intervals.
+ * Uses French notation with semicolon: ]a ; b[ for open intervals.
  *
  * @example
- * formatInterval(positiveReals()) // → "]0, +∞["
- * formatInterval(unitInterval()) // → "[-1, 1]"
+ * formatInterval(positiveReals()) // → "]0 ; +∞["
+ * formatInterval(unitInterval()) // → "[-1 ; 1]"
  * formatInterval(nonZeroReals()) // → "ℝ \\ {0}"
  */
 export function formatInterval(domain: Domain): string {

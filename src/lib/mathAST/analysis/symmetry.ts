@@ -98,7 +98,7 @@ function isIntervalSetSymmetric(domain: IntervalSet): boolean | undefined {
 
 /**
  * Check if a single interval is symmetric about the origin.
- * Examples: [-1, 1], ]-∞, +∞[, ]-a, a[
+ * Examples: [-1 ; 1], ]-∞ ; +∞[, ]-a ; a[
  */
 function isIntervalSymmetric(interval: Interval): boolean | undefined {
 	const lowerVal = getEndpointNumericValue(interval.lower.value);
@@ -108,18 +108,18 @@ function isIntervalSymmetric(interval: Interval): boolean | undefined {
 	const lowerIsNegInf = isNegativeInfinity(interval.lower.value);
 	const upperIsPosInf = isPositiveInfinity(interval.upper.value);
 
-	// ]-∞, +∞[ is symmetric
+	// ]-∞ ; +∞[ is symmetric
 	if (lowerIsNegInf && upperIsPosInf) {
 		return true;
 	}
 
-	// ]-∞, a] or [a, +∞[ - not symmetric unless a = 0 with special structure
+	// ]-∞ ; a] or [a ; +∞[ - not symmetric unless a = 0 with special structure
 	if (lowerIsNegInf || upperIsPosInf) {
 		// One-sided infinite intervals are not symmetric
 		return false;
 	}
 
-	// Finite interval [a, b]
+	// Finite interval [a ; b]
 	if (lowerVal !== undefined && upperVal !== undefined) {
 		// Symmetric if a = -b and same endpoint types
 		const isSymmetricBounds = Math.abs(lowerVal + upperVal) < 1e-10;
@@ -133,7 +133,7 @@ function isIntervalSymmetric(interval: Interval): boolean | undefined {
 
 /**
  * Get the mirror interval (negated endpoints).
- * [a, b] → [-b, -a]
+ * [a ; b] → [-b ; -a]
  */
 function getMirrorInterval(
 	interval: Interval

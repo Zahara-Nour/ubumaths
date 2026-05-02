@@ -37,7 +37,7 @@ import { formatInterval } from '../format';
  * const expr = { type: 'function', name: 'sqrt', args: [{ type: 'variable', name: 'x' }] };
  * const correct = intervalDomain([greaterThanOrEqualInterval(number(0))]);
  *
- * const result = validateStudentDomain(']0, +∞[', correct, expr);
+ * const result = validateStudentDomain(']0 ; +∞[', correct, expr);
  * // {
  * //   isCorrect: false,
  * //   score: 85,

@@ -96,56 +96,56 @@ export function interval(lower: Endpoint, upper: Endpoint): Interval {
 }
 
 /**
- * Creates an open interval (a, b) - French notation ]a, b[
+ * Creates an open interval (a, b) - French notation ]a ; b[
  */
 export function openInterval(lower: MathNode, upper: MathNode): Interval {
 	return interval(openEndpoint(lower), openEndpoint(upper));
 }
 
 /**
- * Creates a closed interval [a, b]
+ * Creates a closed interval [a ; b]
  */
 export function closedInterval(lower: MathNode, upper: MathNode): Interval {
 	return interval(closedEndpoint(lower), closedEndpoint(upper));
 }
 
 /**
- * Creates a half-open interval [a, b) - French notation [a, b[
+ * Creates a half-open interval [a, b) - French notation [a ; b[
  */
 export function leftClosedInterval(lower: MathNode, upper: MathNode): Interval {
 	return interval(closedEndpoint(lower), openEndpoint(upper));
 }
 
 /**
- * Creates a half-open interval (a, b] - French notation ]a, b]
+ * Creates a half-open interval (a, b] - French notation ]a ; b]
  */
 export function rightClosedInterval(lower: MathNode, upper: MathNode): Interval {
 	return interval(openEndpoint(lower), closedEndpoint(upper));
 }
 
 /**
- * Creates (-infinity, a) - French notation ]-infinity, a[
+ * Creates (-infinity, a) - French notation ]-infinity ; a[
  */
 export function lessThanInterval(bound: MathNode): Interval {
 	return interval(negInfinityEndpoint(), openEndpoint(bound));
 }
 
 /**
- * Creates (-infinity, a] - French notation ]-infinity, a]
+ * Creates (-infinity, a] - French notation ]-infinity ; a]
  */
 export function lessThanOrEqualInterval(bound: MathNode): Interval {
 	return interval(negInfinityEndpoint(), closedEndpoint(bound));
 }
 
 /**
- * Creates (a, +infinity) - French notation ]a, +infinity[
+ * Creates (a, +infinity) - French notation ]a ; +infinity[
  */
 export function greaterThanInterval(bound: MathNode): Interval {
 	return interval(openEndpoint(bound), posInfinityEndpoint());
 }
 
 /**
- * Creates [a, +infinity) - French notation [a, +infinity[
+ * Creates [a, +infinity) - French notation [a ; +infinity[
  */
 export function greaterThanOrEqualInterval(bound: MathNode): Interval {
 	return interval(closedEndpoint(bound), posInfinityEndpoint());

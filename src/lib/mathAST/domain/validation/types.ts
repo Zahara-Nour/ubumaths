@@ -53,14 +53,14 @@ export interface DomainValidationResult {
  */
 export interface DomainValidationOptions {
 	/**
-	 * Require strict notation (e.g., ]0, +∞[ vs (0, +∞))
+	 * Require strict notation (e.g., ]0 ; +∞[ vs (0, +∞))
 	 * @default false
 	 */
 	readonly strictNotation?: boolean;
 
 	/**
 	 * Accept mathematically equivalent forms
-	 * (e.g., x > 0 vs ]0, +∞[ vs ℝ*₊)
+	 * (e.g., x > 0 vs ]0 ; +∞[ vs ℝ*₊)
 	 * @default true
 	 */
 	readonly allowEquivalent?: boolean;
