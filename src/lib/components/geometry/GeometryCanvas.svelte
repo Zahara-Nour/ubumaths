@@ -34,6 +34,7 @@
 		tangentToQuadraticToSVG,
 		conicPolarToSVG,
 		locusToSVG,
+		parametricCurveToSVG,
 		traceToSVG,
 		sectorToSVG,
 		annulusToSVG,
@@ -1329,6 +1330,34 @@
 									paint-order="stroke">{el.label}</text
 								>
 							{/if}
+						{/if}
+					{/if}
+				{:else if el.type === 'parametricCurve'}
+					{@const svg = parametricCurveToSVG(el.id, figure, transformer, dims)}
+					{#if svg}
+						<path
+							d={svg.path}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							opacity={sty.opacity}
+							fill={svg.closed && sty.fillColor ? sty.fillColor : 'none'}
+							fill-opacity={svg.closed && sty.fillColor ? sty.fillOpacity : 0}
+							class="function-curve"
+							class:hovered={hoveredId === el.id}
+						/>
+						{#if el.label}
+							<text
+								x={dims.width / 2 + (el.labelOffset?.dx ?? 10)}
+								y={dims.height / 2 + (el.labelOffset?.dy ?? -10)}
+								class="label"
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke">{el.label}</text
+							>
 						{/if}
 					{/if}
 				{:else if el.type === 'quadraticCurve'}

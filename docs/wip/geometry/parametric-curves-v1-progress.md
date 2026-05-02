@@ -1,6 +1,6 @@
 # Courbes paramétriques — V1 (geometry-core)
 
-**Statut** : en cours — Phase 0 validée, **Phase 1 terminée (en attente code review)**
+**Statut** : en cours — Phase 0 validée, Phase 1+2 terminées, **Phase 3 terminée (en attente code review)**
 **Module** : `src/lib/geometry-core/`
 **Doc de plan** : voir conversation pour spec complète
 **Date début** : 2026-05-02
@@ -56,7 +56,7 @@ courbe("r = 2*cos(theta)", theta_min=0, theta_max=pi)
 | -------------------------------------- | ------------------------------ | ---------- |
 | 1 — Type + Factory + Sampler 2D        | terminée (TDD, 32 tests verts) | en attente |
 | 2 — DSL builtin courbe() 2-strings     | terminée (TDD, 29 tests verts) | en attente |
-| 3 — Rendu SVG + courbe fermée + UI     | pending                        | —          |
+| 3 — Rendu SVG + courbe fermée + UI     | terminée (TDD, 16 tests verts) | en attente |
 | 4 — Réactivité (sliders/scalaires)     | pending                        | —          |
 | 5 — Exports TikZ/Typst + sérialisation | pending                        | —          |
 | 6 — Demo page                          | pending                        | —          |
@@ -138,6 +138,39 @@ Décisions prises pendant l'implémentation :
 - **Coherence sautée quand `param=` explicite** : le filtrage `xFree`/`yFree` du plan a été remplacé par une détection basée sur les variables exclusives à un seul côté (`exclusiveX` ∩ `exclusiveY` non vides). Cela évite un faux positif quand `param="t"` force le paramètre alors que l'expression contient une autre variable libre commune aux deux RHS (cas C1).
 - **Dépendances réactives** : on filtre les variables libres dont l'entrée `SymbolTable` est de type `'scalar'` (slider, distance, etc.) et on ajoute aussi le `scalarRef` éventuel de `tMin`/`tMax`. Doublon évité via `Set<string>`.
 - **Erreurs sur compile** : si `compile(xRhs)` ou `compile(yRhs)` échoue → erreur DSL claire (mandatory). Si le `compile` d'une dérivée échoue → on retombe à `null` (le sampler utilise alors la version uniforme).
+
+### Phase 3 (terminée — 16 tests verts, en attente code review)
+
+Modifiés :
+
+- `src/lib/geometry-core/graph/figure.ts`
+  - import `sampleParametric2D` + `ParametricSampleResult` depuis `$lib/grapheur/sampler` (nouvel import)
+  - nouvelle méthode `computeParametricCurveSampling(id, viewport?)` après `computeLocusCurveForElement` (~ligne 3604) : résout `tMin`/`tMax` via `resolveScalarParam` (gère scalaires/sliders), wrappe `compiledX`/`compiledY` avec garde NaN/Inf, idem pour les dérivées (best-effort, null-safe), retourne null si bornes invalides ou inversées, sinon délègue à `sampleParametric2D` avec 300 points.
+- `src/lib/geometry-core/rendering/svg-primitives.ts`
+  - nouvelle fonction `parametricCurveToSVG(id, figure, transformer, dims)` insérée après `locusToSVG` (~ligne 1680) : calcule le viewport math, appelle `figure.computeParametricCurveSampling`, convertit avec `curveToSVGPath` (Catmull-Rom), suffixe ` Z` au path quand `result.closed === true`. Renvoie `{ path: string; closed: boolean } | null`.
+- `src/lib/components/geometry/GeometryCanvas.svelte`
+  - import `parametricCurveToSVG` ajouté à la liste destructurée (entre `locusToSVG` et `traceToSVG`, ligne 37)
+  - branche `{:else if el.type === 'parametricCurve'}` ajoutée juste après `'function'` et avant `'quadraticCurve'` (~ligne 1335). Path SVG avec strokes/dasharray standard, fill conditionnel si courbe fermée + fillColor explicite, label centré au milieu du viewport (positionnement minimal viable — Phase 6 pourra raffiner).
+
+Créés (tests TDD red-first) :
+
+- `src/lib/geometry-core/rendering/__tests__/parametric-curve-svg.test.ts` — 16 tests :
+  - A. Nominal × 4 : cercle path non vide + `closed: true`, parabole path non vide + `closed: false`, suffixe `Z` sur fermée, absence de `Z` sur ouverte.
+  - B. Bornes dynamiques (slider) × 2 : tMax slider à π → demi-cercle non fermé ; tMax slider à 2π → fermé.
+  - C. Edge cases × 3 : id inconnu, élément non paramétrique (slider), bornes inversées slider → null.
+  - D. Discontinuité × 1 : `y = 1/t` sur `[-2, 2]` → path contient ≥ 2 commandes `M` (split au passage NaN).
+  - E. `computeParametricCurveSampling` × 4 : structure, id inconnu, mauvais type, viewport optionnel.
+  - F. Type signatures × 2 : forme de retour, type d'élément.
+
+Décisions prises pendant l'implémentation :
+
+- **Pas de `dependsOn` → tracking** : la résolution dynamique des bornes se fait à chaque appel via `resolveScalarParam(this.scalarValues)` ; pas de cache. La réactivité côté Svelte est portée par le `version` counter qui invalide les `$derived` du canvas — donc déjà câblée sans changement supplémentaire.
+- **Viewport optionnel sur `computeParametricCurveSampling`** : utile pour les tests serveur sans transformer ; le sampler a un fallback `DEFAULT_PARAMETRIC_SPAN`. La branche canvas le passe toujours explicitement (calculé via `transformer.svgToMath`).
+- **Suffixe `Z` au path** : ajouté dans `parametricCurveToSVG` plutôt qu'au niveau du builder Catmull-Rom (qui ne sait pas si la courbe doit être fermée). Format `${basePath} Z` conservé séparé pour permettre au caller d'inspecter `closed` indépendamment.
+- **Fill conditionnel** : la branche canvas n'applique le `fill` que si `svg.closed && sty.fillColor`. Sans `fillColor` explicite, la courbe fermée reste un trait (cas par défaut). Le `fillOpacity` provient de `GeoStyleResolved` (toujours défini avec valeur 0 par défaut).
+- **Label position simple** : centre du viewport + offset (10, -10) par défaut. Le placement précis le long de la courbe (équivalent à ce que `'function'` fait avec `f(0.85 * xMax)`) est non trivial pour une courbe paramétrique (il faudrait choisir un t arbitraire) — repoussé à une phase de polish.
+- **Hover/popover/double-clic** : non implémentés dans la branche (path n'a pas de handler dédié, juste la classe `function-curve` et `class:hovered`). Le hit-testing global du canvas (via `findElementNear`) suffit pour le hover de base ; un popover dédié pourra être ajouté en Phase 6 si besoin.
+- **Svelte autofixer** : exécuté sur le composant. 3 issues détectées (`state_referenced_locally` lignes 137-138 sur `initialCenter`/`initialPpu` dans `$state(...)` initializers) — toutes pré-existantes au fichier, non introduites par la Phase 3. La nouvelle branche en isolation ne génère aucun warning.
 
 ---
 
