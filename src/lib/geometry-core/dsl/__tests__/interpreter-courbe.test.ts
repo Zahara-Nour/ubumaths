@@ -225,6 +225,7 @@ describe('zeros — find zeros of a function', () => {
 	it('zeros are non-draggable', () => {
 		const { figure } = run('f = courbe("y = x^2 - 4")\nZ = zeros(f)');
 		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnCurve');
+		expect(pts.length).toBeGreaterThanOrEqual(2);
 		for (const pt of pts) {
 			if (pt.type === 'pointOnCurve') {
 				expect(pt.draggable).toBe(false);
@@ -235,6 +236,7 @@ describe('zeros — find zeros of a function', () => {
 	it('zeros are at correct positions', () => {
 		const { figure } = run('f = courbe("y = x^2 - 4")\nZ = zeros(f)');
 		const pts = figure.getAllElements().filter((e) => e.type === 'pointOnCurve');
+		expect(pts.length).toBeGreaterThanOrEqual(2);
 		const ys = pts.map((p) => {
 			const pos = figure.getPosition(p.id);
 			return pos ? geoToNumber(pos.y) : null;
@@ -414,6 +416,7 @@ describe('zeros on quadratic curve', () => {
 		const pts = figure
 			.getAllElements()
 			.filter((e) => e.type === 'freePoint' && e.visible && !e.draggable);
+		expect(pts.length).toBeGreaterThan(0);
 		for (const pt of pts) {
 			const pos = figure.getPosition(pt.id);
 			if (pos) expect(geoToNumber(pos.y)).toBeCloseTo(0);

@@ -99,6 +99,7 @@ describe('lieu() — driver on segment', () => {
 		const locId = getLocusId(symbols, 'L');
 		const curve = getLocusCurve(figure, locId);
 		expect(curve).not.toBeNull();
+		expect(curve!.points.length).toBeGreaterThan(0);
 
 		// All points should have y ≈ 3 (midpoint between y=0 and y=6)
 		for (const pt of curve!.points) {
@@ -208,6 +209,7 @@ describe('lieu() — driver on line', () => {
 		const locId = getLocusId(symbols, 'L');
 		const curve = getLocusCurve(figure, locId);
 		expect(curve).not.toBeNull();
+		expect(curve!.points.length).toBeGreaterThan(0);
 
 		// Midpoint of (t, 0) and (0, 4) → y should be ≈ 2
 		for (const pt of curve!.points) {
@@ -267,6 +269,7 @@ describe('lieu() — identity (driver = tracer)', () => {
 		const locId = getLocusId(symbols, 'L');
 		const curve = getLocusCurve(figure, locId);
 		expect(curve).not.toBeNull();
+		expect(curve!.points.length).toBeGreaterThan(0);
 
 		// All points should be on the circle of radius 3
 		for (const pt of curve!.points) {
@@ -355,6 +358,7 @@ describe('lieu() — classic constructions', () => {
 		const locId = getLocusId(symbols, 'L');
 		const curve = getLocusCurve(figure, locId);
 		expect(curve).not.toBeNull();
+		expect(curve!.points.length).toBeGreaterThan(0);
 
 		// Midpoint of (4cos θ, 4sin θ) and (3, 0) → ((4cos θ+3)/2, 2sin θ)
 		// This is an ellipse centered at (1.5, 0) with semi-axes 2 and 2
@@ -428,6 +432,7 @@ describe('lieu() — edge cases', () => {
 		const curve = getLocusCurve(figure, locId);
 		// All samples collapse to origin
 		if (curve) {
+			expect(curve.points.length).toBeGreaterThan(0);
 			for (const pt of curve.points) {
 				expect(pt.x).toBeCloseTo(0, 5);
 				expect(pt.y).toBeCloseTo(0, 5);
@@ -478,6 +483,7 @@ describe('lieu() — edge cases', () => {
 		const locId = getLocusId(symbols, 'L');
 		const curve = getLocusCurve(figure, locId);
 		expect(curve).not.toBeNull();
+		expect(curve!.points.length).toBeGreaterThan(0);
 
 		// C = -rotation(A, 45) still on circle of radius 3
 		for (const pt of curve!.points) {
@@ -518,6 +524,7 @@ describe('lieu() — edge cases', () => {
 		const locId = getLocusId(symbols, 'L');
 		const curve = getLocusCurve(figure, locId);
 		if (curve) {
+			expect(curve.points.length).toBeGreaterThan(0);
 			for (const pt of curve.points) {
 				expect(pt.x).toBeCloseTo(1.5, 3);
 				expect(pt.y).toBeCloseTo(1.5, 3);
