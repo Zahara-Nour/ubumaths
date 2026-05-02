@@ -243,6 +243,15 @@ export function findElementNear(
 				const r = Math.sqrt((geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2);
 				dist = distToCircle(mathX, mathY, cx, cy, r);
 			}
+		} else if (el.type === 'parametricCurve') {
+			// Use the read-only cursor query to find the closest point on the curve.
+			// Newton multi-start handles polar / self-intersecting cases robustly.
+			const info = figure.queryParametricCurveAtCursor(el.id, mathX, mathY);
+			if (info) {
+				const dx = info.x - mathX;
+				const dy = info.y - mathY;
+				dist = Math.sqrt(dx * dx + dy * dy);
+			}
 		}
 
 		if (dist <= threshold && dist < bestDist) {
