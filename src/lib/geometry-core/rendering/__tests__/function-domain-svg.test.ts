@@ -121,4 +121,30 @@ f = courbe("y = x^2 sur [a ; b]")
 			expect(m.cy).toBeLessThanOrEqual(dims.height);
 		}
 	});
+
+	it('splits the SVG path at step jumps in piecewise functions (sign function)', () => {
+		// sign(x) jumps from -1 to +1 at x = 0. The generic asymptote detector
+		// would miss this (jump = 2, viewport height = 20), so the augmented
+		// piecewise discontinuity detection must kick in.
+		const { figure } = run('f = courbe("y = { -1 si x < 0, 1 si x > 0 }")');
+		const fnId = figure.getAllElements().find((e) => e.type === 'function')!.id;
+		const svg = functionToSVG(fnId, figure, transformer, dims);
+		expect(svg).not.toBeNull();
+		// A piecewise step jump produces more than one `M` command in the path
+		// (one initial move, one for each split). We expect at least 2.
+		const mCount = (svg!.path.match(/M/g) ?? []).length;
+		expect(mCount).toBeGreaterThanOrEqual(2);
+	});
+
+	it('does NOT split a continuous piecewise (|x|)', () => {
+		// |x| is continuous at x=0 (no jump), so the path should remain a single
+		// segment despite being piecewise.
+		const { figure } = run('f = courbe("y = { -x si x < 0, x si x >= 0 }")');
+		const fnId = figure.getAllElements().find((e) => e.type === 'function')!.id;
+		const svg = functionToSVG(fnId, figure, transformer, dims);
+		expect(svg).not.toBeNull();
+		// One `M` for the initial move, no extra splits.
+		const mCount = (svg!.path.match(/M/g) ?? []).length;
+		expect(mCount).toBe(1);
+	});
 });
