@@ -170,6 +170,29 @@ describe('courbe() — piecewise errors', () => {
 	});
 });
 
+describe('courbe() — piecewise differentiation', () => {
+	it('produces correct derivative for |x|', () => {
+		const { figure } = run('f = courbe("y = { -x si x < 0, x si x >= 0 }")');
+		const fn = getFunction(figure);
+		expect(fn.compiledDerivative({ x: -2 })).toBe(-1);
+		expect(fn.compiledDerivative({ x: 3 })).toBe(1);
+	});
+
+	it('evaluates derivative at the closed boundary x=0 using the matching branch (>=)', () => {
+		const { figure } = run('f = courbe("y = { -x si x < 0, x si x >= 0 }")');
+		const fn = getFunction(figure);
+		// At x=0, the second branch (x >= 0) matches → derivative there is 1.
+		expect(fn.compiledDerivative({ x: 0 })).toBe(1);
+	});
+
+	it('produces correct derivative for piecewise polynomial', () => {
+		const { figure } = run('f = courbe("y = { x^2 si x < 1, 2*x - 1 si x >= 1 }")');
+		const fn = getFunction(figure);
+		expect(fn.compiledDerivative({ x: -2 })).toBe(-4); // 2x at x=-2
+		expect(fn.compiledDerivative({ x: 3 })).toBe(2); // d/dx(2x-1) = 2
+	});
+});
+
 describe('courbe() — piecewise rejects external domain restriction', () => {
 	it('rejects sur-suffix on a piecewise (conceptually redundant)', () => {
 		// A piecewise already defines the function case by case; combining it
