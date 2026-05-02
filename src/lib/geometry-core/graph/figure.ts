@@ -42,6 +42,7 @@ import type {
 	GeoFunction,
 	GeoQuadraticCurve,
 	GeoImplicitCurve,
+	GeoParametricCurve,
 	GeoPointOnCurve,
 	GeoPointOnQuadraticCurve,
 	GeoPointOnSegment,
@@ -1770,6 +1771,59 @@ export class Figure {
 			dependsOn: [] as const
 		};
 		this.addElement(id, element, []);
+		return id;
+	}
+
+	/**
+	 * Create a parametric curve t → (x(t), y(t)) over [tMin, tMax].
+	 *
+	 * `dependencies` lists ids of scalars/sliders referenced inside x(t), y(t),
+	 * tMin or tMax — they are wired into the dependency graph so the figure
+	 * recomputes the curve when those parents change.
+	 */
+	createParametricCurve(
+		xExpression: MathNode,
+		yExpression: MathNode,
+		xDerivative: MathNode | null,
+		yDerivative: MathNode | null,
+		compiledX: CompiledFn,
+		compiledY: CompiledFn,
+		compiledXPrime: CompiledFn | null,
+		compiledYPrime: CompiledFn | null,
+		parameter: string,
+		tMin: ScalarParam,
+		tMax: ScalarParam,
+		equationX: string,
+		equationY: string,
+		dependencies: readonly string[],
+		options?: ElementOptions
+	): string {
+		const id = this.generateId('pc');
+		const deps = [...dependencies];
+		const element: GeoParametricCurve = {
+			type: 'parametricCurve',
+			id,
+			xExpression,
+			yExpression,
+			xDerivative,
+			yDerivative,
+			compiledX,
+			compiledY,
+			compiledXPrime,
+			compiledYPrime,
+			parameter,
+			tMin,
+			tMax,
+			equationX,
+			equationY,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
 		return id;
 	}
 

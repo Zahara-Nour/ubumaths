@@ -801,6 +801,43 @@ export interface GeoImplicitCurve extends GeoElementBase {
 }
 
 // =============================================================================
+// Parametric curve (t → (x(t), y(t)), from courbe() builtin with 2 equations)
+// =============================================================================
+
+/** Parametric curve t → (x(t), y(t)). Bounds can be dynamic (slider/scalar refs). */
+export interface GeoParametricCurve extends GeoElementBase {
+	readonly type: 'parametricCurve';
+	/** x(t) as a symbolic MathNode. */
+	readonly xExpression: MathNode;
+	/** y(t) as a symbolic MathNode. */
+	readonly yExpression: MathNode;
+	/** dx/dt as a symbolic MathNode (or null if differentiation failed → uniform sampling fallback). */
+	readonly xDerivative: MathNode | null;
+	/** dy/dt as a symbolic MathNode (or null). */
+	readonly yDerivative: MathNode | null;
+	/** Compiled closure for x(t). Takes { [parameter]: number } and returns number. */
+	readonly compiledX: CompiledFn;
+	/** Compiled closure for y(t). */
+	readonly compiledY: CompiledFn;
+	/** Compiled dx/dt (or null if symbolic differentiation failed). */
+	readonly compiledXPrime: CompiledFn | null;
+	/** Compiled dy/dt (or null). */
+	readonly compiledYPrime: CompiledFn | null;
+	/** Parameter variable name (e.g. "t", "theta", "u"). */
+	readonly parameter: string;
+	/** Lower bound — can be a fixed GeoValue or a ScalarRef (slider/scalar). */
+	readonly tMin: ScalarParam;
+	/** Upper bound. */
+	readonly tMax: ScalarParam;
+	/** Original equation string for x(t), e.g. "x = cos(t)". */
+	readonly equationX: string;
+	/** Original equation string for y(t), e.g. "y = sin(t)". */
+	readonly equationY: string;
+	/** Ids of scalar/slider elements referenced in xExpression, yExpression, tMin, tMax. */
+	readonly dependsOn: readonly string[];
+}
+
+// =============================================================================
 // Transformation objects (invisible, reusable)
 // =============================================================================
 
@@ -1001,6 +1038,7 @@ export type GeoElement =
 	| GeoFunction
 	| GeoQuadraticCurve
 	| GeoImplicitCurve
+	| GeoParametricCurve
 	| GeoPointOnCurve
 	| GeoPointOnQuadraticCurve
 	| GeoPointOnSegment
@@ -1249,6 +1287,10 @@ export function isFunction(el: GeoElement): el is GeoFunction {
 
 export function isImplicitCurve(el: GeoElement): el is GeoImplicitCurve {
 	return el.type === 'implicitCurve';
+}
+
+export function isParametricCurve(el: GeoElement): el is GeoParametricCurve {
+	return el.type === 'parametricCurve';
 }
 
 export function isLocus(el: GeoElement): el is GeoLocus {
