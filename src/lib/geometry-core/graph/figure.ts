@@ -3620,23 +3620,33 @@ export class Figure {
 		}
 
 		const param = pc.parameter;
+		// Bindings for slider/scalar values referenced inside x(t) or y(t).
+		// Matches the function-curve renderer pattern in svg-primitives.ts.
+		const scalarBindings: Record<string, number> = {};
+		for (const depId of pc.dependsOn) {
+			const depEl = this.elements.get(depId);
+			if (depEl?.label) {
+				const val = this.scalarValues.get(depId);
+				if (val !== undefined) scalarBindings[depEl.label] = val;
+			}
+		}
 		const xFn = (t: number): number | null => {
-			const v = pc.compiledX({ [param]: t });
+			const v = pc.compiledX({ ...scalarBindings, [param]: t });
 			return Number.isFinite(v) ? v : null;
 		};
 		const yFn = (t: number): number | null => {
-			const v = pc.compiledY({ [param]: t });
+			const v = pc.compiledY({ ...scalarBindings, [param]: t });
 			return Number.isFinite(v) ? v : null;
 		};
 		const xPrime = pc.compiledXPrime
 			? (t: number): number | null => {
-					const v = pc.compiledXPrime!({ [param]: t });
+					const v = pc.compiledXPrime!({ ...scalarBindings, [param]: t });
 					return Number.isFinite(v) ? v : null;
 				}
 			: null;
 		const yPrime = pc.compiledYPrime
 			? (t: number): number | null => {
-					const v = pc.compiledYPrime!({ [param]: t });
+					const v = pc.compiledYPrime!({ ...scalarBindings, [param]: t });
 					return Number.isFinite(v) ? v : null;
 				}
 			: null;
