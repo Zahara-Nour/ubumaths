@@ -40,6 +40,7 @@ import type {
 	GeoAnnulus,
 	GeoPolygon,
 	GeoFunction,
+	GeoFunctionDomain,
 	GeoQuadraticCurve,
 	GeoImplicitCurve,
 	GeoParametricCurve,
@@ -1753,9 +1754,13 @@ export class Figure {
 		compiledFn: CompiledFn,
 		compiledDerivative: CompiledFn,
 		equation: string,
-		options?: ElementOptions
+		options?: ElementOptions & {
+			domain?: GeoFunctionDomain;
+			dependencies?: readonly string[];
+		}
 	): string {
 		const id = this.generateId('fn');
+		const deps = options?.dependencies ? [...options.dependencies] : [];
 		const element: GeoFunction = {
 			type: 'function',
 			id,
@@ -1764,14 +1769,15 @@ export class Figure {
 			compiledFn,
 			compiledDerivative,
 			equation,
+			...(options?.domain ? { domain: options.domain } : {}),
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
-			dependsOn: [] as const
+			dependsOn: deps
 		};
-		this.addElement(id, element, []);
+		this.addElement(id, element, deps);
 		return id;
 	}
 
@@ -2635,12 +2641,12 @@ export class Figure {
 		return this.scalarValues.get(id);
 	}
 
-	/** Resolve a ScalarParam to a number. ScalarRef looks up scalarValues, GeoValue converts directly. */
+	/**
+	 * Resolve a ScalarParam to a number. ScalarRef looks up scalarValues, GeoValue
+	 * converts directly, InfinityParam returns ±Infinity.
+	 */
 	resolveParam(param: ScalarParam): number {
-		if (isScalarRef(param)) {
-			return this.scalarValues.get(param.scalarRef) ?? 0;
-		}
-		return geoToNumber(param);
+		return resolveScalarParam(param, this.scalarValues);
 	}
 
 	// ─── Scalar factories ───────────────────────────────────────

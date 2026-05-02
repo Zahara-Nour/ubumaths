@@ -1290,7 +1290,25 @@ import { marchingSquares } from './marching-squares';
 const FUNCTION_SAMPLE_POINTS = 300;
 
 /**
- * Convert a GeoFunction to an SVG path string.
+ * Endpoint marker for a function curve with restricted domain.
+ * Rendered as an SVG circle: filled for closed bounds, hollow for open ones.
+ */
+export interface FunctionEndpointMarker {
+	readonly cx: number;
+	readonly cy: number;
+	readonly r: number;
+	readonly bracketType: 'open' | 'closed';
+}
+
+/**
+ * Convert a GeoFunction to an SVG path string and (optionally) endpoint markers.
+ *
+ * If the function has a `domain` restriction, the sampling viewport is clamped
+ * to `[domain.lower, domain.upper] ∩ visibleViewport`, and structured marker
+ * descriptors are returned for finite endpoints (filled for closed bounds,
+ * hollow for open). The caller renders the actual SVG `<circle>` elements,
+ * keeping the color attribute properly escaped by Svelte.
+ *
  * Uses adaptive sampling based on the derivative for optimal point distribution.
  */
 export function functionToSVG(
@@ -1298,21 +1316,42 @@ export function functionToSVG(
 	figure: Figure,
 	transformer: CoordinateTransformer,
 	dims: { width: number; height: number }
-): { path: string } | null {
+): { path: string; endpointMarkers?: readonly FunctionEndpointMarker[] } | null {
 	const el = figure.getElementById(id);
 	if (!el || el.type !== 'function') return null;
 
 	const fn = el as GeoFunction;
 
-	// Compute viewport in math coordinates
+	// Compute the visible viewport in math coordinates.
 	const topLeft = transformer.svgToMath(0, 0);
 	const bottomRight = transformer.svgToMath(dims.width, dims.height);
-	const viewport: Viewport = {
+	let viewport: Viewport = {
 		xMin: topLeft.x,
 		xMax: bottomRight.x,
 		yMin: bottomRight.y, // y is inverted in SVG
 		yMax: topLeft.y
 	};
+
+	// Resolve domain restriction (if any) to numeric bounds.
+	let domainLowerNum: number | null = null;
+	let domainUpperNum: number | null = null;
+	if (fn.domain) {
+		domainLowerNum = figure.resolveParam(fn.domain.lower);
+		domainUpperNum = figure.resolveParam(fn.domain.upper);
+
+		// Clamp visible viewport to the finite portion of the domain.
+		if (Number.isFinite(domainLowerNum)) {
+			viewport = { ...viewport, xMin: Math.max(viewport.xMin, domainLowerNum) };
+		}
+		if (Number.isFinite(domainUpperNum)) {
+			viewport = { ...viewport, xMax: Math.min(viewport.xMax, domainUpperNum) };
+		}
+
+		// Empty intersection → render nothing.
+		if (viewport.xMax <= viewport.xMin) {
+			return null;
+		}
+	}
 
 	// Safe evaluators: return null for NaN/Infinity
 	const evaluator = (x: number): number | null => {
@@ -1324,7 +1363,7 @@ export function functionToSVG(
 		return Number.isFinite(d) ? d : null;
 	};
 
-	// Adaptive sampling with derivative
+	// Adaptive sampling with derivative (over the clamped viewport).
 	const curve = sampleWithDerivative(
 		evaluator,
 		derivativeEvaluator,
@@ -1333,10 +1372,48 @@ export function functionToSVG(
 	);
 	if (curve.points.length === 0) return null;
 
-	// Convert to SVG path with Catmull-Rom smoothing
 	const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
-	return path ? { path } : null;
+	if (!path) return null;
+
+	// Endpoint markers (only at finite domain bounds inside the visible area).
+	let endpointMarkers: FunctionEndpointMarker[] | undefined;
+	if (fn.domain) {
+		const markers: FunctionEndpointMarker[] = [];
+		const lower = domainLowerNum;
+		const upper = domainUpperNum;
+
+		if (lower !== null && Number.isFinite(lower)) {
+			const y = evaluator(lower);
+			if (y !== null && y >= bottomRight.y && y <= topLeft.y) {
+				const p = transformer.mathToSvg(lower, y);
+				markers.push({
+					cx: p.x,
+					cy: p.y,
+					r: ENDPOINT_MARKER_RADIUS,
+					bracketType: fn.domain.lowerType
+				});
+			}
+		}
+		if (upper !== null && Number.isFinite(upper)) {
+			const y = evaluator(upper);
+			if (y !== null && y >= bottomRight.y && y <= topLeft.y) {
+				const p = transformer.mathToSvg(upper, y);
+				markers.push({
+					cx: p.x,
+					cy: p.y,
+					r: ENDPOINT_MARKER_RADIUS,
+					bracketType: fn.domain.upperType
+				});
+			}
+		}
+
+		if (markers.length > 0) endpointMarkers = markers;
+	}
+
+	return endpointMarkers ? { path, endpointMarkers } : { path };
 }
+
+const ENDPOINT_MARKER_RADIUS = 4;
 
 /**
  * Convert a GeoTangentLine to SVG line attributes.

@@ -10,6 +10,7 @@ import { exact, isScalarRef } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import type { SymbolType, SymbolTable } from './symbol-table';
 import { DslRuntimeError } from './errors';
+import { splitDomainSuffix, parseDomainSuffix, type ParseDomainResult } from './domain-parser';
 import {
 	parseCustom,
 	isRelation,
@@ -2218,12 +2219,28 @@ function createCurveFromEquation(
 	angleMode: AngleMode = 'deg',
 	symbols?: SymbolTable
 ): BuiltinResult {
+	// Split off optional domain restriction suffix (`sur ...` or `avec ...`).
+	// This must happen before parseCustom because the suffix is not valid
+	// math syntax — it's geometry-core DSL sugar.
+	const split = splitDomainSuffix(equation);
+	let domainResult: ParseDomainResult | null = null;
+	if (split.keyword && split.suffix) {
+		if (!split.core.trim()) {
+			throw new DslRuntimeError(
+				`courbe(): aucune équation avant le suffixe "${split.keyword}"`,
+				line
+			);
+		}
+		domainResult = parseDomainSuffix(split.suffix, split.keyword, symbols, line);
+	}
+	const coreEquation = split.core;
+
 	// Parse the equation string with mathAST
 	let parsed: MathNode;
 	try {
-		parsed = parseCustom(equation);
+		parsed = parseCustom(coreEquation);
 	} catch {
-		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${equation}"`, line);
+		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${coreEquation}"`, line);
 	}
 
 	// Apply the active angle mode (wraps trig calls in deg mode).
@@ -2253,20 +2270,25 @@ function createCurveFromEquation(
 	}
 
 	// --- Try 1: Line (affine in both x and y) ---
-	const affineXY = extractAffineCombination(F, ['x', 'y']);
-	if (affineXY.isAffine) {
-		const a = affineXY.coefficients.get('x')!;
-		const b = affineXY.coefficients.get('y')!;
-		const c = affineXY.constant;
+	// Skip when a domain restriction is present: an affine function with a
+	// restricted domain (e.g. `y = 2x sur [-1 ; 1]`) should be plotted as a
+	// function curve, not a full line — let it fall through to Try 2.
+	if (!domainResult) {
+		const affineXY = extractAffineCombination(F, ['x', 'y']);
+		if (affineXY.isAffine) {
+			const a = affineXY.coefficients.get('x')!;
+			const b = affineXY.coefficients.get('y')!;
+			const c = affineXY.constant;
 
-		if (isZeroExpression(a) && isZeroExpression(b)) {
-			throw new DslRuntimeError(
-				'courbe(): équation dégénérée (0 = 0 ou constante non nulle)',
-				line
-			);
+			if (isZeroExpression(a) && isZeroExpression(b)) {
+				throw new DslRuntimeError(
+					'courbe(): équation dégénérée (0 = 0 ou constante non nulle)',
+					line
+				);
+			}
+
+			return createLineFromCoefficients(a, b, c, equation, figure, label);
 		}
-
-		return createLineFromCoefficients(a, b, c, equation, figure, label);
 	}
 
 	// --- Try 2: y = f(x) (affine in y alone) ---
@@ -2279,7 +2301,23 @@ function createCurveFromEquation(
 			throw new DslRuntimeError("courbe(): la variable y est absente de l'expression", line);
 		}
 
-		return createFunctionFromCoefficients(g, h, equation, figure, line, label);
+		return createFunctionFromCoefficients(
+			g,
+			h,
+			equation,
+			figure,
+			line,
+			label,
+			domainResult ?? undefined
+		);
+	}
+
+	// Domain suffix is only meaningful for y=f(x) curves (not lines, conics, implicit).
+	if (domainResult) {
+		throw new DslRuntimeError(
+			`courbe(): restriction de domaine ("sur"/"avec") n'est supportée que pour les fonctions y = f(x)`,
+			line
+		);
 	}
 
 	// --- Try 3: Quadratic curve (conic section) ---
@@ -2338,7 +2376,8 @@ function createFunctionFromCoefficients(
 	equation: string,
 	figure: Figure,
 	line: number,
-	label?: string
+	label?: string,
+	domainResult?: ParseDomainResult
 ): BuiltinResult {
 	// f(x) = -h / g. If g = 1, simplify to f(x) = -h.
 	let f: MathNode;
@@ -2369,7 +2408,10 @@ function createFunctionFromCoefficients(
 	}
 
 	const fnId = figure.createFunction(f, fPrime, compiledFn, compiledDerivative, equation, {
-		label
+		label,
+		...(domainResult
+			? { domain: domainResult.domain, dependencies: domainResult.dependencies }
+			: {})
 	});
 
 	return { figureId: fnId, symbolType: 'courbe' };
