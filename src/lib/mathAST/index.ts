@@ -451,6 +451,8 @@ export type { EvalBindings, EvalOptions, EvalResult } from './eval';
 
 // Helper utilities for variable analysis
 export { getVariables, hasVariable, hasAllBindings, getMissingBindings } from './eval';
+export { extractPiecewiseBoundaries } from './piecewise/boundaries';
+export type { PiecewiseBoundary } from './piecewise/boundaries';
 
 // Function bindings for generic functions (f, g, h)
 export type { FunctionDefinition, FunctionBindings } from './eval';

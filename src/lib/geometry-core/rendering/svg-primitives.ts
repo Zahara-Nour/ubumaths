@@ -1291,7 +1291,8 @@ import type { Viewport, SampledCurve, Point } from '../viewport/types';
 import { sampleWithDerivative } from '$lib/grapheur/sampler';
 import { curveToSVGPath } from '../rendering/bezier';
 import { marchingSquares } from './marching-squares';
-import { isPiecewise } from '$lib/mathAST';
+import { isPiecewise, extractPiecewiseBoundaries } from '$lib/mathAST';
+import type { PiecewiseBoundary } from '$lib/mathAST';
 
 /** Number of sample points for function curve rendering. */
 const FUNCTION_SAMPLE_POINTS = 300;
@@ -1392,21 +1393,58 @@ export function functionToSVG(
 	);
 	if (curve.points.length === 0) return null;
 
-	// For piecewise expressions, the generic sampler's asymptote-only
-	// discontinuity detector (which fires only on huge jumps ≫ viewport height)
-	// misses normal step jumps like sign(x) going from -1 to +1. Augment the
-	// discontinuity list with a sensitive step-jump detector.
+	// For piecewise expressions, extract numeric boundaries symbolically from
+	// the AST (precise positions where branches switch) and use them to:
+	//   1. Insert path discontinuities at those exact x values (so the SVG
+	//      path splits cleanly without bridging vertical segments).
+	//   2. Emit open/closed circle markers on each side of each rupture
+	//      according to the `<` vs `≤` semantics of the conditions.
+	// Symbolic / variable boundaries (e.g., `x < a` with a as a slider) are
+	// silently skipped by the analyzer; the legacy step-jump heuristic remains
+	// as a fallback to catch those cases.
+	const internalMarkers: FunctionEndpointMarker[] = [];
 	if (isPiecewise(fn.expression)) {
+		const symbolicBoundaries = extractPiecewiseBoundaries(fn.expression).filter(
+			(b) => b.x > viewport.xMin && b.x < viewport.xMax
+		);
+
+		const viewportHeight = viewport.yMax - viewport.yMin;
+		const splitIndices: number[] = [];
+
+		for (const b of symbolicBoundaries) {
+			const result = analyzeBoundary(b, evaluator, transformer, viewportHeight, {
+				topLeft,
+				bottomRight
+			});
+			if (result.splitIndex !== null) {
+				const idx = findSampleIndexAtX(curve, b.x);
+				if (idx > 0 && idx < curve.points.length) splitIndices.push(idx);
+			}
+			internalMarkers.push(...result.markers);
+		}
+
+		if (splitIndices.length > 0) {
+			const newSet = new Set([...curve.discontinuityIndices, ...splitIndices]);
+			curve = {
+				points: curve.points,
+				discontinuityIndices: [...newSet].sort((a, b) => a - b)
+			};
+		}
+
+		// Fallback: any jump still missed by the symbolic analyzer (e.g.,
+		// a piecewise with a variable slider as boundary) gets caught by the
+		// heuristic 5%-of-viewport-height detector.
 		curve = augmentPiecewiseDiscontinuities(curve, viewport);
 	}
 
 	const path = curveToSVGPath(curve, (p) => transformer.mathToSvg(p.x, p.y));
 	if (!path) return null;
 
-	// Endpoint markers (only at finite domain bounds inside the visible area).
-	let endpointMarkers: FunctionEndpointMarker[] | undefined;
+	// Endpoint markers come from two sources:
+	// - domain restriction (Phase B): finite outer bounds of the function
+	// - piecewise boundaries (Phase F): each internal rupture
+	const endpointMarkers: FunctionEndpointMarker[] = [...internalMarkers];
 	if (fn.domain) {
-		const markers: FunctionEndpointMarker[] = [];
 		const lower = domainLowerNum;
 		const upper = domainUpperNum;
 
@@ -1414,7 +1452,7 @@ export function functionToSVG(
 			const y = evaluator(lower);
 			if (y !== null && y >= bottomRight.y && y <= topLeft.y) {
 				const p = transformer.mathToSvg(lower, y);
-				markers.push({
+				endpointMarkers.push({
 					cx: p.x,
 					cy: p.y,
 					r: ENDPOINT_MARKER_RADIUS,
@@ -1426,7 +1464,7 @@ export function functionToSVG(
 			const y = evaluator(upper);
 			if (y !== null && y >= bottomRight.y && y <= topLeft.y) {
 				const p = transformer.mathToSvg(upper, y);
-				markers.push({
+				endpointMarkers.push({
 					cx: p.x,
 					cy: p.y,
 					r: ENDPOINT_MARKER_RADIUS,
@@ -1434,11 +1472,9 @@ export function functionToSVG(
 				});
 			}
 		}
-
-		if (markers.length > 0) endpointMarkers = markers;
 	}
 
-	return endpointMarkers ? { path, endpointMarkers } : { path };
+	return endpointMarkers.length > 0 ? { path, endpointMarkers } : { path };
 }
 
 const ENDPOINT_MARKER_RADIUS = 4;
@@ -1452,6 +1488,102 @@ const ENDPOINT_MARKER_RADIUS = 4;
 const PIECEWISE_STEP_JUMP_RATIO = 0.05;
 
 /**
+ * Find the index of the first sample with x ≥ targetX in the curve.
+ * The sample sequence is monotonically increasing in x.
+ */
+function findSampleIndexAtX(curve: SampledCurve, targetX: number): number {
+	let i = 0;
+	while (i < curve.points.length && curve.points[i].x < targetX) i++;
+	return i;
+}
+
+/**
+ * Decide what to do at one piecewise boundary: whether to split the SVG path
+ * (true jump) and which endpoint markers to emit.
+ *
+ * Three cases per boundary:
+ *
+ * 1. **Continuous junction** (lim_left ≈ lim_right): no split; emit a SINGLE
+ *    marker at the common y value. Closed circle if at least one side is closed
+ *    (the point belongs to the function), open otherwise (point excluded).
+ *    Examples: |x| at 0 (continuous + corner), step on a constant plateau.
+ *
+ * 2. **Step jump** (|lim_left − lim_right| significant): split the path; emit
+ *    TWO markers, one on each side, each closed/open per its own bracket type.
+ *    Example: sign(x) at 0 — open at (0, -1), open at (0, +1).
+ *
+ * 3. **Evaluation failure** on either side: skip silently (fall back to the
+ *    heuristic detector or no marker).
+ */
+function analyzeBoundary(
+	b: PiecewiseBoundary,
+	evaluator: (x: number) => number | null,
+	transformer: CoordinateTransformer,
+	viewportHeight: number,
+	visible: { topLeft: { x: number; y: number }; bottomRight: { x: number; y: number } }
+): { splitIndex: 'split' | null; markers: FunctionEndpointMarker[] } {
+	// Probe slightly to each side — large enough to escape floating-point noise
+	// at the boundary, small enough to land inside the side branch.
+	const eps = Math.max(1e-9, Math.abs(b.x) * 1e-12);
+	const yLeft = evaluator(b.x - eps);
+	const yRight = evaluator(b.x + eps);
+
+	if (yLeft === null && yRight === null) return { splitIndex: null, markers: [] };
+
+	const jumpThreshold = PIECEWISE_STEP_JUMP_RATIO * viewportHeight;
+	const dy =
+		yLeft !== null && yRight !== null && Number.isFinite(yLeft) && Number.isFinite(yRight)
+			? Math.abs(yLeft - yRight)
+			: Infinity;
+
+	const isInViewport = (y: number): boolean => y >= visible.bottomRight.y && y <= visible.topLeft.y;
+
+	if (dy > jumpThreshold) {
+		// Step jump: split the path and emit one marker per side.
+		const markers: FunctionEndpointMarker[] = [];
+		if (yLeft !== null && Number.isFinite(yLeft) && isInViewport(yLeft)) {
+			const p = transformer.mathToSvg(b.x, yLeft);
+			markers.push({
+				cx: p.x,
+				cy: p.y,
+				r: ENDPOINT_MARKER_RADIUS,
+				bracketType: b.leftClosed ? 'closed' : 'open'
+			});
+		}
+		if (yRight !== null && Number.isFinite(yRight) && isInViewport(yRight)) {
+			const p = transformer.mathToSvg(b.x, yRight);
+			markers.push({
+				cx: p.x,
+				cy: p.y,
+				r: ENDPOINT_MARKER_RADIUS,
+				bracketType: b.rightClosed ? 'closed' : 'open'
+			});
+		}
+		return { splitIndex: 'split', markers };
+	}
+
+	// Continuous junction (or single side defined): one shared marker.
+	const yShared = yLeft !== null && Number.isFinite(yLeft) ? yLeft : yRight;
+	if (yShared === null || !Number.isFinite(yShared) || !isInViewport(yShared)) {
+		return { splitIndex: null, markers: [] };
+	}
+	// Closed if the point belongs to at least one branch (≤/≥ on either side).
+	const pointBelongs = b.leftClosed || b.rightClosed;
+	const p = transformer.mathToSvg(b.x, yShared);
+	return {
+		splitIndex: null,
+		markers: [
+			{
+				cx: p.x,
+				cy: p.y,
+				r: ENDPOINT_MARKER_RADIUS,
+				bracketType: pointBelongs ? 'closed' : 'open'
+			}
+		]
+	};
+}
+
+/**
  * Augment a sampled curve's `discontinuityIndices` with detected step jumps.
  *
  * The generic sampler only flags asymptote-class jumps (deltaY > 2 × viewport
@@ -1461,6 +1593,9 @@ const PIECEWISE_STEP_JUMP_RATIO = 0.05;
  * discontinuity markers wherever |Δy| exceeds a small fraction of the viewport
  * height, so `curveToSVGPath` splits the path with `M` commands at these
  * points instead of drawing a bridging vertical segment.
+ *
+ * This is the FALLBACK detector for piecewise rupture points whose boundaries
+ * couldn't be extracted symbolically (e.g., variable slider as a bound).
  */
 function augmentPiecewiseDiscontinuities(curve: SampledCurve, viewport: Viewport): SampledCurve {
 	const viewportHeight = viewport.yMax - viewport.yMin;
