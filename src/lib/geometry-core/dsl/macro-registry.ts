@@ -26,6 +26,11 @@ export class MacroRegistry {
 		return this.macros.has(name);
 	}
 
+	/** All currently-defined macro names (used by isMathPureExpr). */
+	allNames(): ReadonlySet<string> {
+		return new Set(this.macros.keys());
+	}
+
 	enterCall(name: string, line: number): void {
 		this.callDepth++;
 		if (this.callDepth > MAX_CALL_DEPTH) {

@@ -318,14 +318,15 @@ describe('trace() — edge cases', () => {
 	});
 
 	it('trace on intersection point', () => {
+		// `e` is reserved (Euler) — use `e2` for the second line.
 		const script = [
 			'A = point(-5, 0)',
 			'B = point(5, 0)',
 			'd = droite(A, B)',
 			'C = point(0, -5)',
 			'D = point(0, 5)',
-			'e = droite(C, D)',
-			'P = intersection(d, e)',
+			'e2 = droite(C, D)',
+			'P = intersection(d, e2)',
 			'T = trace(P)'
 		].join('\n');
 		const { figure, symbols } = run(script);
