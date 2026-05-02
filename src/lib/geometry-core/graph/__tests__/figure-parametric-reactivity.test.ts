@@ -93,6 +93,7 @@ describe('parametric curve — reactive bounds via slider', () => {
 
 		const before = figure.computeParametricCurveSampling(curveId);
 		expect(before).not.toBeNull();
+		expect(before!.points.length).toBeGreaterThan(2);
 		// All points sit on the unit circle.
 		for (const p of before!.points) {
 			expect(Math.hypot(p.x, p.y)).toBeCloseTo(1, 1);
@@ -105,6 +106,7 @@ describe('parametric curve — reactive bounds via slider', () => {
 
 		const after = figure.computeParametricCurveSampling(curveId);
 		expect(after).not.toBeNull();
+		expect(after!.points.length).toBeGreaterThan(2);
 		// Now points sit on the radius-3 circle.
 		for (const p of after!.points) {
 			expect(Math.hypot(p.x, p.y)).toBeCloseTo(3, 1);
