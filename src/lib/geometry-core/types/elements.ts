@@ -267,6 +267,19 @@ export interface GeoPointOnArc extends GeoElementBase {
 	readonly dependsOn: readonly [string];
 }
 
+/**
+ * Point constrained to a parametric curve at parameter t0.
+ * Position is γ(t0). Not draggable in V1 (drag would require Newton multi-start).
+ */
+export interface GeoPointOnParametricCurve extends GeoElementBase {
+	readonly type: 'pointOnParametricCurve';
+	readonly parametricCurveId: string;
+	/** Parameter t value (number or scalar reference for slider reactivity). */
+	readonly t: ScalarParam;
+	readonly draggable: false;
+	readonly dependsOn: readonly string[];
+}
+
 /** Locus: trajectory of tracerPoint as driverPoint moves along its parent path. */
 export interface GeoLocus extends GeoElementBase {
 	readonly type: 'locus';
@@ -1074,7 +1087,8 @@ export type GeoPointElement =
 	| GeoPointOnSegment
 	| GeoPointOnLine
 	| GeoPointOnCircle
-	| GeoPointOnArc;
+	| GeoPointOnArc
+	| GeoPointOnParametricCurve;
 export type GeoLineLikeElement = GeoSegment | GeoLine | GeoRay;
 
 export type GeoElement =
@@ -1124,6 +1138,7 @@ export type GeoElement =
 	| GeoPointOnLine
 	| GeoPointOnCircle
 	| GeoPointOnArc
+	| GeoPointOnParametricCurve
 	| GeoTangentLine
 	| GeoTangentToQuadratic
 	| GeoTangentParametric
@@ -1239,6 +1254,10 @@ export function isPointOnArc(el: GeoElement): el is GeoPointOnArc {
 	return el.type === 'pointOnArc';
 }
 
+export function isPointOnParametricCurve(el: GeoElement): el is GeoPointOnParametricCurve {
+	return el.type === 'pointOnParametricCurve';
+}
+
 export function isPointElement(el: GeoElement): el is GeoPointElement {
 	return (
 		el.type === 'freePoint' ||
@@ -1264,7 +1283,8 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'pointOnSegment' ||
 		el.type === 'pointOnLine' ||
 		el.type === 'pointOnCircle' ||
-		el.type === 'pointOnArc'
+		el.type === 'pointOnArc' ||
+		el.type === 'pointOnParametricCurve'
 	);
 }
 

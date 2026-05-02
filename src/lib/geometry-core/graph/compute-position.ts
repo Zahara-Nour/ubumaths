@@ -36,6 +36,7 @@ import {
 	isPointOnLine,
 	isPointOnCircle,
 	isPointOnArc,
+	isPointOnParametricCurve,
 	isComputedPoint
 } from '../types/elements';
 import type { GeoPoint } from '../types/primitives';
@@ -462,6 +463,37 @@ export function computeElementPosition(
 			if (!Number.isFinite(r)) return { position: null, hasComputablePosition: true };
 			const x = cx + r * Math.cos(el.theta);
 			const y = cy + r * Math.sin(el.theta);
+			return { position: { x: numeric(x), y: numeric(y) }, hasComputablePosition: true };
+		}
+		return { position: null, hasComputablePosition: true };
+	}
+
+	if (isPointOnParametricCurve(el)) {
+		const curveEl = elements.get(el.parametricCurveId);
+		if (curveEl && curveEl.type === 'parametricCurve') {
+			const t0 = resolveScalarParam(el.t, scalarValues);
+			if (!Number.isFinite(t0)) return { position: null, hasComputablePosition: true };
+			// NOTE: this duplicates the scalar-bindings injection logic from
+			// `evalParametricAtT` in `rendering/svg-primitives.ts` (used for
+			// tangent rendering). Both paths must stay in sync. They are
+			// intentionally separate to keep graph/ and rendering/ decoupled.
+			// Inject scalar bindings for any slider/scalar referenced by the curve
+			// (e.g. `a*cos(t)` where `a` is a slider). Without these, free variables
+			// would resolve to NaN/undefined and γ(t0) would be non-finite.
+			const scalarBindings: Record<string, number> = {};
+			for (const depId of curveEl.dependsOn) {
+				const depEl = elements.get(depId);
+				if (depEl?.label) {
+					const val = scalarValues?.get(depId);
+					if (val !== undefined) scalarBindings[depEl.label] = val;
+				}
+			}
+			const env = { ...scalarBindings, [curveEl.parameter]: t0 };
+			const x = curveEl.compiledX(env);
+			const y = curveEl.compiledY(env);
+			if (!Number.isFinite(x) || !Number.isFinite(y)) {
+				return { position: null, hasComputablePosition: true };
+			}
 			return { position: { x: numeric(x), y: numeric(y) }, hasComputablePosition: true };
 		}
 		return { position: null, hasComputablePosition: true };

@@ -17,12 +17,13 @@ import {
 	isPointOnSegment,
 	isPointOnLine,
 	isPointOnCircle,
-	isPointOnArc
+	isPointOnArc,
+	isPointOnParametricCurve
 } from '../types/elements';
 import type { GeoPoint } from '../types/primitives';
 import { numeric } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
-import { computeElementPosition } from './compute-position';
+import { computeElementPosition, resolveScalarParam } from './compute-position';
 import type { SampledCurve, Point, Viewport } from '../viewport/types';
 
 // =============================================================================
@@ -66,7 +67,7 @@ export function computeLocusCurve(
 	if (!driverEl) return null;
 
 	// 1. Get driver parameter info
-	const paramInfo = getDriverParamInfo(driverEl, elements, positions, viewport);
+	const paramInfo = getDriverParamInfo(driverEl, elements, positions, viewport, scalarValues);
 	if (!paramInfo) return null;
 
 	// 2. Find the sub-graph: elements between driver and tracer
@@ -122,7 +123,8 @@ function getDriverParamInfo(
 	driver: GeoElement,
 	elements: ReadonlyMap<string, GeoElement>,
 	positions: ReadonlyMap<string, GeoPoint>,
-	viewport: Viewport
+	viewport: Viewport,
+	scalarValues?: ReadonlyMap<string, number>
 ): DriverParamInfo | null {
 	if (isPointOnCurve(driver)) {
 		return {
@@ -233,6 +235,29 @@ function getDriverParamInfo(
 			tMax: 1,
 			closed: false,
 			mutateDriver: (t) => ({ ...driver, t })
+		};
+	}
+
+	if (isPointOnParametricCurve(driver)) {
+		const curveEl = elements.get(driver.parametricCurveId);
+		if (!curveEl || curveEl.type !== 'parametricCurve') return null;
+		const tMin = resolveScalarParam(curveEl.tMin, scalarValues);
+		const tMax = resolveScalarParam(curveEl.tMax, scalarValues);
+		const safeMin = Number.isFinite(tMin) ? tMin : 0;
+		const safeMax = Number.isFinite(tMax) ? tMax : 2 * Math.PI;
+		// Closed-revolution detection: when the parameter range spans exactly
+		// a full revolution (2π), the path can be safely closed. Most useful
+		// for polar curves on [0, 2π] (cardioid, rose, limaçon) where γ(0) = γ(2π).
+		// Cartesian parametric curves with t ∈ [0, 2π] also benefit if cyclic
+		// (cos/sin); other shapes simply won't have coincident endpoints and
+		// the sampler's own closed-detection will downgrade if needed.
+		const isFullRevolution =
+			Number.isFinite(tMin) && Number.isFinite(tMax) && Math.abs(tMax - tMin - 2 * Math.PI) < 1e-9;
+		return {
+			tMin: safeMin,
+			tMax: safeMax,
+			closed: isFullRevolution,
+			mutateDriver: (t) => ({ ...driver, t: numeric(t) })
 		};
 	}
 

@@ -50,6 +50,7 @@ import type {
 	GeoPointOnLine,
 	GeoPointOnCircle,
 	GeoPointOnArc,
+	GeoPointOnParametricCurve,
 	GeoIntersectionLF,
 	GeoIntersectionFF,
 	GeoTangentLine,
@@ -97,6 +98,7 @@ import {
 	isPointOnLine,
 	isPointOnCircle,
 	isPointOnArc,
+	isPointOnParametricCurve,
 	isTransformation,
 	isVector,
 	isSlider
@@ -2232,6 +2234,51 @@ export class Figure {
 		this.graph.markDirty(id);
 	}
 
+	/**
+	 * Create a point constrained to a parametric curve at parameter t0.
+	 * Position is γ(t0). Not draggable in V1.
+	 *
+	 * `tValue` is a ScalarParam: a numeric/exact GeoValue OR a scalar reference
+	 * (slider). When `tValue` is a scalarRef, the slider id is added to dependsOn
+	 * so position recomputes when the slider moves.
+	 */
+	createPointOnParametricCurve(
+		curveId: string,
+		tValue: ScalarParam,
+		options?: ElementOptions
+	): string {
+		const curveEl = this.elements.get(curveId);
+		if (!curveEl || curveEl.type !== 'parametricCurve') {
+			throw new Error(
+				`createPointOnParametricCurve: "${curveId}" is not a parametricCurve element`
+			);
+		}
+
+		// Build dependency list: the curve, and the slider if t is a scalarRef.
+		const deps: string[] = [curveId];
+		if (isScalarRef(tValue) && !deps.includes(tValue.scalarRef)) {
+			deps.push(tValue.scalarRef);
+		}
+
+		const id = this.generateId('ptP');
+		const element: GeoPointOnParametricCurve = {
+			type: 'pointOnParametricCurve',
+			id,
+			parametricCurveId: curveId,
+			t: tValue,
+			draggable: false,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps as readonly string[]
+		};
+		this.addElement(id, element, deps);
+		this.computePosition(id);
+		return id;
+	}
+
 	createLocus(
 		driverId: string,
 		tracerId: string,
@@ -2247,7 +2294,8 @@ export class Figure {
 			isPointOnSegment(driverEl) ||
 			isPointOnLine(driverEl) ||
 			isPointOnCircle(driverEl) ||
-			isPointOnArc(driverEl);
+			isPointOnArc(driverEl) ||
+			isPointOnParametricCurve(driverEl);
 		if (!isDriverOnPath) {
 			throw new Error(`createLocus: driver "${driverId}" must be a point_sur`);
 		}

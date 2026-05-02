@@ -164,6 +164,7 @@ function typePrefix(type: string): string {
 		case 'pointOnLine':
 		case 'pointOnCircle':
 		case 'pointOnArc':
+		case 'pointOnParametricCurve':
 			return 'pt';
 		case 'locus':
 			return 'L';
@@ -520,6 +521,11 @@ function serializeElement(
 
 		case 'pointOnArc':
 			return `${n} = point_sur(${name(idToName, el.arcId)}, ${fmtNum(el.t)})`;
+
+		case 'pointOnParametricCurve': {
+			const tStr = fmtScalarParam(el.t, idToName);
+			return `${n} = point_sur(${name(idToName, el.parametricCurveId)}, ${tStr})`;
+		}
 
 		case 'locus':
 			return `${n} = lieu(${name(idToName, el.tracerId)}, ${name(idToName, el.driverId)})`;

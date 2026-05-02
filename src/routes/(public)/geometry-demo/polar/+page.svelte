@@ -47,6 +47,18 @@ c = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=s, couleur="violet")`;
 	const tangenteSliderPolarDsl = `c = courbe("r = 1 + 0.5*cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="rouge")
 t0 = slider(min=0, max=2*\\pi, valeur=\\pi/3)
 (d, v) = tangente(c, t0)`;
+
+	// Point sur courbe polaire et lieu d'un milieu
+	const pointSurCardioidDsl = `c = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="violet")
+t = slider(min=0, max=2*\\pi, valeur=\\pi/2)
+P = point_sur(c, t)`;
+
+	const lieuMilieuCardioidDsl = `c = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="violet")
+O = point(0, 0)
+t = slider(min=0, max=2*\\pi, valeur=0)
+P = point_sur(c, t)
+M = milieu(O, P)
+L = lieu(M, P)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -249,6 +261,34 @@ t0 = slider(min=0, max=2*\\pi, valeur=\\pi/3)
 		dsl={tangenteSliderPolarDsl}
 		title="Tangente animée sur limaçon — slider sur theta0"
 		description="Déplace le slider pour suivre la tangente le long du limaçon. La magnitude du vecteur tangent varie avec la vitesse instantanée."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Point sur courbe polaire et lieu</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		<code>point_sur(c, t0)</code> sur une courbe polaire crée un point ancré au paramètre angulaire
+		<code>theta = t0</code>. Combiné avec <code>lieu()</code>, on peut tracer la trajectoire d'un
+		objet construit à partir du point quand il parcourt toute la courbe.
+	</p>
+
+	<DslDemo
+		dsl={pointSurCardioidDsl}
+		title="Point glissant sur cardioïde"
+		description="Le slider t pilote l'angle θ ; P = γ(θ) suit la cardioïde."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={lieuMilieuCardioidDsl}
+		title="Lieu du milieu OP — cardioïde"
+		description="Quand P parcourt la cardioïde, le milieu M de [OP] décrit une demi-cardioïde (homothétie de rapport 1/2 centrée en O). Le lieu est fermé (parcourt complet θ ∈ [0, 2π])."
 		width={700}
 		height={500}
 	/>
