@@ -147,10 +147,11 @@ describe('lieu() — driver on function curve', () => {
 
 describe('lieu() — driver on quadratic curve', () => {
 	it('driver on ellipse, midpoint with fixed point', () => {
+		// `e` is reserved (Euler) — use `el` for the ellipse.
 		const script = [
 			'P = point(5, 0)',
-			'e = courbe("4*x^2 + 9*y^2 - 36 = 0")',
-			'A = point_sur(e, 0)',
+			'el = courbe("4*x^2 + 9*y^2 - 36 = 0")',
+			'A = point_sur(el, 0)',
 			'M = milieu(A, P)',
 			'L = lieu(M, A)'
 		].join('\n');

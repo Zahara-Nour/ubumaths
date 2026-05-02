@@ -25,6 +25,11 @@ import type { DslProgram, DslStatement, DslExpr, DslFunctionCallExpr } from './t
 import { MacroRegistry } from './macro-registry';
 import { STDLIB_MACROS } from './stdlib';
 import { parse } from './parser';
+import { isMathPureExpr } from './math-pure-expr';
+import { getRawSource } from './source-utils';
+import { parseCustom, getVariables } from '$lib/mathAST';
+import { compile } from '$lib/mathAST/eval/compile';
+import { applyAngleMode, type AngleMode } from './apply-angle-mode';
 
 /** Check if a resolved value is a vector element reference. */
 function isVectorValue(val: ResolvedValue): boolean {
@@ -38,17 +43,33 @@ function isScalarValue(
 	return val.type === 'element' && val.elementType === 'scalar';
 }
 
-/** Math operations that can be applied to scalar values. */
-const SCALAR_MATH_OPS: Record<string, (x: number) => number> = {
-	sqrt: Math.sqrt,
-	abs: Math.abs,
-	sin: (x) => Math.sin((x * Math.PI) / 180),
-	cos: (x) => Math.cos((x * Math.PI) / 180),
-	tan: (x) => Math.tan((x * Math.PI) / 180),
-	asin: (x) => (Math.asin(x) * 180) / Math.PI,
-	acos: (x) => (Math.acos(x) * 180) / Math.PI,
-	atan: (x) => (Math.atan(x) * 180) / Math.PI
-};
+/**
+ * Math operations applied to scalar values. Trig functions consult the
+ * interpreter's active angle mode so the legacy DSL path (used for cases
+ * the mathAST router cannot handle, e.g. `sin(P.x)`) stays consistent.
+ */
+function scalarMathOpFor(name: string, mode: AngleMode): ((x: number) => number) | undefined {
+	switch (name) {
+		case 'sqrt':
+			return Math.sqrt;
+		case 'abs':
+			return Math.abs;
+		case 'sin':
+			return mode === 'deg' ? (x) => Math.sin((x * Math.PI) / 180) : Math.sin;
+		case 'cos':
+			return mode === 'deg' ? (x) => Math.cos((x * Math.PI) / 180) : Math.cos;
+		case 'tan':
+			return mode === 'deg' ? (x) => Math.tan((x * Math.PI) / 180) : Math.tan;
+		case 'asin':
+			return mode === 'deg' ? (x) => (Math.asin(x) * 180) / Math.PI : Math.asin;
+		case 'acos':
+			return mode === 'deg' ? (x) => (Math.acos(x) * 180) / Math.PI : Math.acos;
+		case 'atan':
+			return mode === 'deg' ? (x) => (Math.atan(x) * 180) / Math.PI : Math.atan;
+		default:
+			return undefined;
+	}
+}
 
 /** Coerce a ResolvedValue to a number, throwing if not numeric. */
 function coerceToNumber(val: ResolvedValue, line: number): number {
@@ -82,20 +103,64 @@ export function interpret(
 	const symbols = new SymbolTable();
 	const macros = new MacroRegistry();
 	loadStdlib(macros);
-	const interpreter = new Interpreter(fig, symbols, macros, onDirective);
+	const interpreter = new Interpreter(fig, symbols, macros, onDirective, program.source ?? '');
 	interpreter.executeBlock(program.statements);
 	return { figure: fig, symbols };
+}
+
+/**
+ * Reserved DSL names that cannot be assigned to. `\pi` is the math constant π;
+ * `e` is Euler's number (Q7 = α: strict reservation). Both can still be used
+ * in any RHS/expression context — they're routed to mathAST and resolve to
+ * Math.PI / Math.E respectively.
+ */
+const RESERVED_NAMES = new Set(['\\pi', 'e']);
+
+function assertNameNotReserved(name: string, line: number): void {
+	if (RESERVED_NAMES.has(name)) {
+		throw new DslRuntimeError(`"${name}" est une constante réservée`, line);
+	}
+}
+
+/** Collect every identifier name used in a DslExpr (recursive). */
+function collectIdentifiers(expr: DslExpr, out: Set<string>): void {
+	switch (expr.kind) {
+		case 'identifier':
+			out.add(expr.name);
+			return;
+		case 'unary':
+			collectIdentifiers(expr.operand, out);
+			return;
+		case 'binary':
+			collectIdentifiers(expr.left, out);
+			collectIdentifiers(expr.right, out);
+			return;
+		case 'call':
+			for (const a of expr.args) collectIdentifiers(a, out);
+			return;
+		case 'tuple':
+		case 'list':
+			for (const e of expr.elements) collectIdentifiers(e, out);
+			return;
+		case 'indexedAccess':
+			collectIdentifiers(expr.index, out);
+			return;
+	}
 }
 
 class Interpreter {
 	/** Label to assign to the next geometry element created (from assignment LHS). */
 	private _assignmentLabel: string | undefined;
 
+	/** Active angle mode. Default `'deg'` (matches existing builtins). */
+	private angleMode: AngleMode = 'deg';
+
 	constructor(
 		private figure: Figure,
 		private symbols: SymbolTable,
 		private macros: MacroRegistry,
-		private onDirective?: DirectiveHandler
+		private onDirective?: DirectiveHandler,
+		private source: string = ''
 	) {
 		// Pre-load mathematical infinity so `inf`, `+inf`, `-inf` work as DSL literals
 		// (V5 improper integrals — see docs/wip/geometry/improper-integrals-study.md §2.1).
@@ -113,6 +178,7 @@ class Interpreter {
 	executeStatement(stmt: DslStatement): ResolvedValue | undefined {
 		switch (stmt.kind) {
 			case 'assignment': {
+				assertNameNotReserved(stmt.name, stmt.line);
 				this._assignmentLabel = this.macros.insideMacro ? undefined : stmt.name;
 				const value = this.evaluateExpr(stmt.value, stmt.line);
 				this._assignmentLabel = undefined;
@@ -126,6 +192,7 @@ class Interpreter {
 			}
 
 			case 'indexedAssignment': {
+				assertNameNotReserved(stmt.name, stmt.line);
 				const index = Math.round(this.evaluateToNumber(stmt.index, stmt.line));
 				const value = this.evaluateExpr(stmt.value, stmt.line);
 				this.symbols.setIndexed(stmt.name, index, this.toSymbolEntry(value));
@@ -133,6 +200,7 @@ class Interpreter {
 			}
 
 			case 'destructuring': {
+				for (const name of stmt.names) assertNameNotReserved(name, stmt.line);
 				const inMacro = this.macros.insideMacro;
 				const value = this.evaluateExpr(stmt.value, stmt.line);
 				if (value.type !== 'tuple') {
@@ -226,7 +294,119 @@ class Interpreter {
 		return undefined;
 	}
 
+	/**
+	 * Try to evaluate a math-pure expression by routing its raw source through
+	 * mathAST's `parseCustom()`. Returns `null` when the expression is not
+	 * math-pure or cannot be routed (free var refers to a non-number, contains
+	 * a trig function which Phase 5 will handle, parse/compile fails, etc.),
+	 * in which case the caller falls back to the legacy DSL path.
+	 */
+	private tryEvaluateAsMathExpr(expr: DslExpr): ResolvedValue | null {
+		// Inside macro bodies the source positions point into the macro definition
+		// (e.g. STDLIB_MACROS), not into the interpreter's `this.source`. Routing
+		// would extract a stray slice and may produce wrong values. The legacy DSL
+		// path handles macro evaluation correctly.
+		if (this.macros.insideMacro) return null;
+
+		// Bare identifier referencing an existing symbol: return it as-is. This
+		// preserves dependsOn semantics for callers like `courbe(t_max=m)` —
+		// they want the slider's id directly, not a new derived scalar.
+		// (\pi, e, and unknown identifiers fall through to mathAST routing.)
+		if (expr.kind === 'identifier') {
+			const entry = this.symbols.get(expr.name);
+			if (entry) return this.fromSymbolEntry(entry);
+		}
+
+		if (!isMathPureExpr(expr, { macroNames: this.macros.allNames() })) return null;
+
+		const rawSource = getRawSource(expr, this.source);
+		if (rawSource === null) return null;
+		// Defensive: positions out of source bounds → skip routing
+		if (expr.start! < 0 || expr.end! > this.source.length) return null;
+
+		// If any DSL identifier in the expression refers to a geometric element
+		// (point, droite, …) — but not a scalar/slider, which the reactive path
+		// handles — fall back to the DSL path so the user's symbol-table value
+		// wins over mathAST's constant-folding (e.g. `e` as Euler when user
+		// defined `e = droite(...)`).
+		const dslIdentifiers = new Set<string>();
+		collectIdentifiers(expr, dslIdentifiers);
+		for (const name of dslIdentifiers) {
+			const entry = this.symbols.get(name);
+			if (entry && entry.type !== 'nombre' && entry.type !== 'scalar') return null;
+		}
+
+		let node;
+		try {
+			node = parseCustom(rawSource);
+		} catch {
+			return null;
+		}
+
+		// Apply the active angle mode to wrap any trig calls.
+		node = applyAngleMode(node, this.angleMode);
+
+		// Resolve free variables: split into static bindings and scalar deps.
+		const freeVars = getVariables(node);
+		const staticBindings: Record<string, number> = {};
+		const scalarDeps: { name: string; figureId: string }[] = [];
+		for (const varName of freeVars) {
+			const entry = this.symbols.get(varName);
+			if (!entry) return null; // unknown — let DSL path raise its standard error
+			if (entry.type === 'nombre') {
+				staticBindings[varName] = entry.value ?? 0;
+			} else if (entry.type === 'scalar' && entry.figureId) {
+				scalarDeps.push({ name: varName, figureId: entry.figureId });
+			} else {
+				// Geometric element (point, droite, …) — not numeric.
+				return null;
+			}
+		}
+
+		let fn;
+		try {
+			fn = compile(node);
+		} catch {
+			return null;
+		}
+
+		// Static path: no scalar deps → return a number directly.
+		if (scalarDeps.length === 0) {
+			let value: number;
+			try {
+				value = fn(staticBindings);
+			} catch {
+				return null;
+			}
+			return { type: 'nombre', value };
+		}
+
+		// Reactive path: at least one scalar dep → build a GeoScalar with a
+		// closure that re-evaluates the compiled function on each recompute.
+		// Convention (matches the legacy `evaluateScalarBinary`): non-finite
+		// results in a derived scalar are surfaced as NaN, not Infinity, so
+		// downstream renderers treat them as undefined.
+		const compute = (sv: ReadonlyMap<string, number>): number => {
+			const bindings: Record<string, number> = { ...staticBindings };
+			for (const { name, figureId } of scalarDeps) {
+				bindings[name] = sv.get(figureId) ?? 0;
+			}
+			const result = fn(bindings);
+			return Number.isFinite(result) ? result : NaN;
+		};
+		const depIds = scalarDeps.map((d) => d.figureId);
+		const newScalarId = this.figure.createScalarExpression(compute, depIds);
+		return { type: 'element', figureId: newScalarId, elementType: 'scalar' };
+	}
+
 	private evaluateExpr(expr: DslExpr, line: number): ResolvedValue {
+		// Phase 3: route math-pure expressions through mathAST's parseCustom().
+		// Skip trivial primitives (number/string/bool) — no benefit from routing.
+		if (expr.kind !== 'number' && expr.kind !== 'string' && expr.kind !== 'bool') {
+			const routed = this.tryEvaluateAsMathExpr(expr);
+			if (routed !== null) return routed;
+		}
+
 		switch (expr.kind) {
 			case 'number':
 				return { type: 'nombre', value: expr.value };
@@ -373,6 +553,11 @@ class Interpreter {
 	private evaluateCall(expr: DslFunctionCallExpr): ResolvedValue {
 		const { name, line } = expr;
 
+		// Special: angle-mode directive — mutates interpreter state.
+		if (name === 'unite_angle') {
+			return this.evaluateUniteAngle(expr);
+		}
+
 		// Math functions
 		if (MATH_FUNCTIONS.has(name)) {
 			return this.evaluateMathFunction(name, expr);
@@ -396,7 +581,8 @@ class Interpreter {
 				(x, y, l) => this.toGeoPoint(x, y, l),
 				line,
 				this._assignmentLabel,
-				this.symbols
+				this.symbols,
+				this.angleMode
 			);
 			if (result) {
 				// Scalar result: builtins like norme(), produit_scalaire(), angle_vecteurs()
@@ -423,43 +609,51 @@ class Interpreter {
 		throw new DslRuntimeError(`Fonction inconnue : "${name}"`, line);
 	}
 
+	/**
+	 * Handle `unite_angle("degres" | "radians")` — switches the interpreter's
+	 * angle mode for all subsequent statements (math-pure routing + builtins).
+	 * Returns a synthetic "nombre 0" so callers ignore the result.
+	 */
+	private evaluateUniteAngle(expr: DslFunctionCallExpr): ResolvedValue {
+		if (expr.namedArgs.size > 0 || expr.args.length !== 1) {
+			throw new DslRuntimeError(
+				'unite_angle() attend 1 argument string ("degres" ou "radians")',
+				expr.line
+			);
+		}
+		const arg = expr.args[0];
+		if (arg.kind !== 'string') {
+			throw new DslRuntimeError('unite_angle() attend une chaine "degres" ou "radians"', expr.line);
+		}
+		if (arg.value === 'degres' || arg.value === 'degrees') {
+			this.angleMode = 'deg';
+		} else if (arg.value === 'radians') {
+			this.angleMode = 'rad';
+		} else {
+			throw new DslRuntimeError(
+				`unite_angle: "${arg.value}" invalide (attendu "degres" ou "radians")`,
+				expr.line
+			);
+		}
+		return { type: 'nombre', value: 0 };
+	}
+
 	private evaluateMathFunction(name: string, expr: DslFunctionCallExpr): ResolvedValue {
 		// Evaluate the first argument to check if it's a scalar
 		const argVal = this.evaluateExpr(expr.args[0], expr.line);
+		const op = scalarMathOpFor(name, this.angleMode);
+		if (!op) throw new DslRuntimeError(`Fonction math inconnue : "${name}"`, expr.line);
 
 		// If argument is a scalar, create a composed scalar with the math operation
 		if (isScalarValue(argVal)) {
 			const depId = argVal.figureId;
-			const mathOp = SCALAR_MATH_OPS[name];
-			if (!mathOp) throw new DslRuntimeError(`Fonction math inconnue : "${name}"`, expr.line);
-			const id = this.figure.createScalarExpression((sv) => mathOp(sv.get(depId) ?? 0), [depId]);
+			const id = this.figure.createScalarExpression((sv) => op(sv.get(depId) ?? 0), [depId]);
 			return { type: 'element', figureId: id, elementType: 'scalar' };
 		}
 
 		// Regular numeric path
 		const arg0 = coerceToNumber(argVal, expr.line);
-		const restArgs = expr.args.slice(1).map((a) => this.evaluateToNumber(a, expr.line));
-		const args = [arg0, ...restArgs];
-		switch (name) {
-			case 'sqrt':
-				return { type: 'nombre', value: Math.sqrt(args[0]) };
-			case 'abs':
-				return { type: 'nombre', value: Math.abs(args[0]) };
-			case 'sin':
-				return { type: 'nombre', value: Math.sin((args[0] * Math.PI) / 180) };
-			case 'cos':
-				return { type: 'nombre', value: Math.cos((args[0] * Math.PI) / 180) };
-			case 'tan':
-				return { type: 'nombre', value: Math.tan((args[0] * Math.PI) / 180) };
-			case 'asin':
-				return { type: 'nombre', value: (Math.asin(args[0]) * 180) / Math.PI };
-			case 'acos':
-				return { type: 'nombre', value: (Math.acos(args[0]) * 180) / Math.PI };
-			case 'atan':
-				return { type: 'nombre', value: (Math.atan(args[0]) * 180) / Math.PI };
-			default:
-				throw new DslRuntimeError(`Fonction math inconnue : "${name}"`, expr.line);
-		}
+		return { type: 'nombre', value: op(arg0) };
 	}
 
 	private executeMacroCall(name: string, args: ResolvedArgs, line: number): ResolvedValue {

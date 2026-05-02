@@ -218,23 +218,24 @@ F = foyers(c)`);
 // =============================================================================
 
 describe('excentricite()', () => {
-	it('circle: e = 0', () => {
+	// `e` is reserved (Euler's number) at the DSL level — use `exc` for eccentricity.
+	it('circle: exc = 0', () => {
 		const { symbols } = run(`c = courbe("x^2 + y^2 - 9 = 0")
-e = excentricite(c)`);
-		expect(symbols.get('e')!.value).toBe(0);
+exc = excentricite(c)`);
+		expect(symbols.get('exc')!.value).toBe(0);
 	});
 
-	it('ellipse: 0 < e < 1', () => {
-		// 9x^2 + 25y^2 = 225 => a=5, b=3, e=4/5=0.8
+	it('ellipse: 0 < exc < 1', () => {
+		// 9x^2 + 25y^2 = 225 => a=5, b=3, exc=4/5=0.8
 		const { symbols } = run(`c = courbe("9*x^2 + 25*y^2 - 225 = 0")
-e = excentricite(c)`);
-		expect(symbols.get('e')!.value).toBeCloseTo(0.8, 1);
+exc = excentricite(c)`);
+		expect(symbols.get('exc')!.value).toBeCloseTo(0.8, 1);
 	});
 
-	it('hyperbola: e > 1', () => {
+	it('hyperbola: exc > 1', () => {
 		const { symbols } = run(`c = courbe("x^2 - y^2 - 1 = 0")
-e = excentricite(c)`);
-		const ecc = symbols.get('e')!.value!;
+exc = excentricite(c)`);
+		const ecc = symbols.get('exc')!.value!;
 		expect(ecc).toBeGreaterThan(1);
 	});
 });

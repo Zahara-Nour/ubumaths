@@ -266,6 +266,13 @@ function applyInlineStyle(
 	}
 }
 
+export type AngleMode = 'deg' | 'rad';
+
+/** Convert an angle value (number) from the active mode to radians. */
+export function toRadians(value: number, mode: AngleMode): number {
+	return mode === 'deg' ? (value * Math.PI) / 180 : value;
+}
+
 export function executeBuiltin(
 	name: string,
 	args: ResolvedArgs,
@@ -274,7 +281,8 @@ export function executeBuiltin(
 	toGeoPoint: (x: ResolvedValue, y: ResolvedValue, line: number) => GeoPoint,
 	line: number,
 	label?: string,
-	symbols?: SymbolTable
+	symbols?: SymbolTable,
+	angleMode: AngleMode = 'deg'
 ): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
 	const pos = args.positional;
 	const named = args.named;
@@ -289,7 +297,8 @@ export function executeBuiltin(
 		toGeoPoint,
 		line,
 		label,
-		symbols
+		symbols,
+		angleMode
 	);
 
 	// Apply inline style args (couleur, forme, etc.) to created element(s).
@@ -333,7 +342,8 @@ function _executeBuiltinInner(
 	toGeoPoint: (x: ResolvedValue, y: ResolvedValue, line: number) => GeoPoint,
 	line: number,
 	label?: string,
-	symbols?: SymbolTable
+	symbols?: SymbolTable,
+	angleMode: AngleMode = 'deg'
 ): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
 	switch (name) {
 		case 'point': {
@@ -460,7 +470,10 @@ function _executeBuiltinInner(
 			if (len1 < 1e-15 || len2 < 1e-15)
 				throw new DslRuntimeError('angle_vecteurs(): vecteur nul', line);
 			const cosA = Math.max(-1, Math.min(1, dotProd / (len1 * len2)));
-			return { scalarValue: (Math.acos(cosA) * 180) / Math.PI };
+			const angleRad = Math.acos(cosA);
+			return {
+				scalarValue: angleMode === 'deg' ? (angleRad * 180) / Math.PI : angleRad
+			};
 		}
 
 		case 'cercle': {
@@ -561,20 +574,24 @@ function _executeBuiltinInner(
 				line
 			);
 			const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
-			// Convert angle to radians: scalar → composed scalar (*pi/180), number → GeoValue
+			// Convert angle to radians according to the active angle mode.
+			// In 'rad' mode the value is already in radians (no conversion).
 			let angleRad: ScalarParam;
 			if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
-				// Create a composed scalar that converts degrees to radians
 				const depId = angleArg.figureId;
-				angleRad = {
-					scalarRef: figure.createScalarExpression(
-						(sv) => ((sv.get(depId) ?? 0) * Math.PI) / 180,
-						[depId]
-					)
-				};
+				if (angleMode === 'deg') {
+					angleRad = {
+						scalarRef: figure.createScalarExpression(
+							(sv) => ((sv.get(depId) ?? 0) * Math.PI) / 180,
+							[depId]
+						)
+					};
+				} else {
+					angleRad = { scalarRef: depId };
+				}
 			} else {
-				const angleDeg = requireNumber(angleArg, 'angle', line);
-				angleRad = { kind: 'numeric', value: (angleDeg * Math.PI) / 180 };
+				const angleVal = requireNumber(angleArg, 'angle', line);
+				angleRad = { kind: 'numeric', value: toRadians(angleVal, angleMode) };
 			}
 			// 0 positional args → create transformation object
 			if (pos.length === 0) {
@@ -750,19 +767,23 @@ function _executeBuiltinInner(
 				line
 			);
 			const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
-			// Convert angle to radians: scalar → composed scalar (*pi/180), number → GeoValue
+			// Convert angle to radians according to the active angle mode.
 			let simAngleRad: ScalarParam;
 			if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
 				const depId = angleArg.figureId;
-				simAngleRad = {
-					scalarRef: figure.createScalarExpression(
-						(sv) => ((sv.get(depId) ?? 0) * Math.PI) / 180,
-						[depId]
-					)
-				};
+				if (angleMode === 'deg') {
+					simAngleRad = {
+						scalarRef: figure.createScalarExpression(
+							(sv) => ((sv.get(depId) ?? 0) * Math.PI) / 180,
+							[depId]
+						)
+					};
+				} else {
+					simAngleRad = { scalarRef: depId };
+				}
 			} else {
-				const angleDeg = requireNumber(angleArg, 'angle', line);
-				simAngleRad = { kind: 'numeric', value: (angleDeg * Math.PI) / 180 };
+				const angleVal = requireNumber(angleArg, 'angle', line);
+				simAngleRad = { kind: 'numeric', value: toRadians(angleVal, angleMode) };
 			}
 			const simFactor = toScalarParam(
 				named.get('rapport') ?? { type: 'nombre', value: 1 },
@@ -1461,15 +1482,19 @@ function _executeBuiltinInner(
 				return { figureId: id, symbolType: 'arc' };
 			}
 			if (pos.length === 1) {
-				// arc(O, rayon=3, debut=0, fin=90) — arc by angles (degrees in DSL)
+				// arc(O, rayon=3, debut=0, fin=90) — angles interpreted per active angleMode.
 				const centerId = requireElement(pos[0], 'centre', line);
 				if (!named.has('rayon'))
 					throw new DslRuntimeError("arc() avec 1 argument necessite 'rayon'", line);
 				const radius = toGeoValue(named.get('rayon')!, line);
-				const startDeg = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
-				const endDeg = named.has('fin') ? requireNumber(named.get('fin')!, 'fin', line) : 360;
-				const startRad: GeoValue = { kind: 'numeric', value: (startDeg * Math.PI) / 180 };
-				const endRad: GeoValue = { kind: 'numeric', value: (endDeg * Math.PI) / 180 };
+				const startVal = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
+				const endVal = named.has('fin')
+					? requireNumber(named.get('fin')!, 'fin', line)
+					: angleMode === 'deg'
+						? 360
+						: 2 * Math.PI;
+				const startRad: GeoValue = { kind: 'numeric', value: toRadians(startVal, angleMode) };
+				const endRad: GeoValue = { kind: 'numeric', value: toRadians(endVal, angleMode) };
 				const id = figure.createArcByAngles(centerId, radius, startRad, endRad, { label });
 				return { figureId: id, symbolType: 'arc' };
 			}
@@ -1489,15 +1514,19 @@ function _executeBuiltinInner(
 				return { figureId: id, symbolType: 'secteur' as SymbolType };
 			}
 			if (pos.length === 1) {
-				// secteur(O, rayon=3, debut=0, fin=90)
+				// secteur(O, rayon=3, debut=0, fin=90) — angles per active angleMode.
 				const centerId = requireElement(pos[0], 'centre', line);
 				if (!named.has('rayon'))
 					throw new DslRuntimeError("secteur() avec 1 argument necessite 'rayon'", line);
 				const radius = toScalarParam(named.get('rayon')!, toGeoValue, line);
-				const startDeg = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
-				const endDeg = named.has('fin') ? requireNumber(named.get('fin')!, 'fin', line) : 360;
-				const startRad: GeoValue = { kind: 'numeric', value: (startDeg * Math.PI) / 180 };
-				const endRad: GeoValue = { kind: 'numeric', value: (endDeg * Math.PI) / 180 };
+				const startVal = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
+				const endVal = named.has('fin')
+					? requireNumber(named.get('fin')!, 'fin', line)
+					: angleMode === 'deg'
+						? 360
+						: 2 * Math.PI;
+				const startRad: GeoValue = { kind: 'numeric', value: toRadians(startVal, angleMode) };
+				const endRad: GeoValue = { kind: 'numeric', value: toRadians(endVal, angleMode) };
 				const id = figure.createSectorByAngles(centerId, radius, startRad, endRad, { label });
 				return { figureId: id, symbolType: 'secteur' as SymbolType };
 			}
@@ -1599,7 +1628,7 @@ function _executeBuiltinInner(
 					const tRaw = requireNumber(pos[1], 'param', line);
 					const conicType = tFnEl.conic.type;
 					const t =
-						conicType === 'circle' || conicType === 'ellipse' ? (tRaw * Math.PI) / 180 : tRaw;
+						conicType === 'circle' || conicType === 'ellipse' ? toRadians(tRaw, angleMode) : tRaw;
 					const tgId = figure.createTangentToQuadratic(tFnId, { t }, { label });
 					return { figureId: tgId, symbolType: 'tangente' };
 				}
@@ -1913,8 +1942,8 @@ function _executeBuiltinInner(
 				psEl.type === 'circleByPoint' ||
 				psEl.type === 'circleBy3Points'
 			) {
-				const angleDeg = pos.length >= 2 ? requireNumber(pos[1], 'angle', line) : 0;
-				const theta = (angleDeg * Math.PI) / 180;
+				const angleVal = pos.length >= 2 ? requireNumber(pos[1], 'angle', line) : 0;
+				const theta = toRadians(angleVal, angleMode);
 				const ptId = figure.createPointOnCircle(psId, theta, { label });
 				return { figureId: ptId, symbolType: 'point' };
 			}
@@ -1928,7 +1957,8 @@ function _executeBuiltinInner(
 			if (psEl.type === 'quadraticCurve') {
 				const tRaw = pos.length >= 2 ? requireNumber(pos[1], 'param', line) : 0;
 				const conicType = psEl.conic.type;
-				const t = conicType === 'circle' || conicType === 'ellipse' ? (tRaw * Math.PI) / 180 : tRaw;
+				const t =
+					conicType === 'circle' || conicType === 'ellipse' ? toRadians(tRaw, angleMode) : tRaw;
 				const ptId = figure.createPointOnQuadraticCurve(psId, t, { label });
 				return { figureId: ptId, symbolType: 'point' };
 			}
