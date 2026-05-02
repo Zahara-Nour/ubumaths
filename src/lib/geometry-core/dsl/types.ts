@@ -1,50 +1,61 @@
 /**
  * AST node types for the geometry DSL.
+ *
+ * Each DslExpr produced by the parser carries optional `start` / `end`
+ * absolute source offsets. They are populated by the parser and used by
+ * `getRawSource()` to retrieve the original source slice — required to
+ * route math-pure expressions through mathAST's `parseCustom()`.
  */
 
 // =============================================================================
 // Expressions
 // =============================================================================
 
-export interface DslNumberLiteral {
+/** Optional source-position fields shared by every DslExpr variant. */
+export interface DslExprPos {
+	readonly start?: number;
+	readonly end?: number;
+}
+
+export interface DslNumberLiteral extends DslExprPos {
 	readonly kind: 'number';
 	readonly value: number;
 	readonly line: number;
 }
 
-export interface DslStringLiteral {
+export interface DslStringLiteral extends DslExprPos {
 	readonly kind: 'string';
 	readonly value: string;
 	readonly line: number;
 }
 
-export interface DslBoolLiteral {
+export interface DslBoolLiteral extends DslExprPos {
 	readonly kind: 'bool';
 	readonly value: boolean;
 	readonly line: number;
 }
 
-export interface DslIdentifier {
+export interface DslIdentifier extends DslExprPos {
 	readonly kind: 'identifier';
 	readonly name: string;
 	readonly line: number;
 }
 
-export interface DslIndexedAccess {
+export interface DslIndexedAccess extends DslExprPos {
 	readonly kind: 'indexedAccess';
 	readonly name: string;
 	readonly index: DslExpr;
 	readonly line: number;
 }
 
-export interface DslPropertyAccess {
+export interface DslPropertyAccess extends DslExprPos {
 	readonly kind: 'propertyAccess';
 	readonly object: string;
 	readonly property: string;
 	readonly line: number;
 }
 
-export interface DslBinaryExpr {
+export interface DslBinaryExpr extends DslExprPos {
 	readonly kind: 'binary';
 	readonly op:
 		| '+'
@@ -66,14 +77,14 @@ export interface DslBinaryExpr {
 	readonly line: number;
 }
 
-export interface DslUnaryExpr {
+export interface DslUnaryExpr extends DslExprPos {
 	readonly kind: 'unary';
 	readonly op: '-' | 'non';
 	readonly operand: DslExpr;
 	readonly line: number;
 }
 
-export interface DslFunctionCallExpr {
+export interface DslFunctionCallExpr extends DslExprPos {
 	readonly kind: 'call';
 	readonly name: string;
 	readonly args: DslExpr[];
@@ -81,13 +92,13 @@ export interface DslFunctionCallExpr {
 	readonly line: number;
 }
 
-export interface DslTupleLiteral {
+export interface DslTupleLiteral extends DslExprPos {
 	readonly kind: 'tuple';
 	readonly elements: DslExpr[];
 	readonly line: number;
 }
 
-export interface DslListLiteral {
+export interface DslListLiteral extends DslExprPos {
 	readonly kind: 'list';
 	readonly elements: DslExpr[];
 	readonly line: number;
@@ -209,4 +220,6 @@ export type DslStatement =
 export interface DslProgram {
 	readonly kind: 'program';
 	readonly statements: DslStatement[];
+	/** Original source string passed to the parser. Used by `getRawSource()`. */
+	readonly source?: string;
 }

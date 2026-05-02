@@ -4,6 +4,13 @@
  * Transforms a token stream into an AST (DslProgram).
  * Handles operator precedence, named arguments, indexed names,
  * macro/for/if blocks with indentation.
+ *
+ * Each DslExpr produced carries `start`/`end` absolute source offsets
+ * (inherited from the underlying tokens). They are populated through the
+ * `withPos` helper applied at the end of every parseX method so that any
+ * expression — even a deeply-nested binary — knows its source span. This
+ * is required by `getRawSource()` to extract the original substring for
+ * routing math-pure expressions to mathAST's `parseCustom()`.
  */
 
 import type { Token, TokenType } from './tokens';
@@ -21,7 +28,8 @@ import type {
 export function parse(source: string): DslProgram {
 	const tokens = tokenize(source);
 	const parser = new Parser(tokens);
-	return parser.parseProgram();
+	const program = parser.parseProgram();
+	return { ...program, source };
 }
 
 class Parser {
@@ -79,6 +87,16 @@ class Parser {
 
 	private skipNewlines(): void {
 		while (this.peek().type === 'NEWLINE') this.advance();
+	}
+
+	/**
+	 * Wrap a freshly-built DslExpr with the source span [startPos, lastConsumedTokenEnd].
+	 * Called at the end of each parseX method that returns a DslExpr.
+	 */
+	private withPos<T extends DslExpr>(startPos: number, expr: T): T {
+		const lastTok = this.tokens[this.pos - 1];
+		const endPos = lastTok ? lastTok.end : startPos;
+		return { ...expr, start: startPos, end: endPos };
 	}
 
 	// ─── Program ──────────────────────────────────────────────
@@ -333,38 +351,42 @@ class Parser {
 	}
 
 	private parseOr(): DslExpr {
+		const startPos = this.peek().start;
 		let left = this.parseAnd();
 		while (this.isKeyword('ou')) {
 			const line = this.peek().line;
 			this.advance();
 			const right = this.parseAnd();
-			left = { kind: 'binary', op: 'ou', left, right, line };
+			left = this.withPos(startPos, { kind: 'binary', op: 'ou', left, right, line });
 		}
 		return left;
 	}
 
 	private parseAnd(): DslExpr {
+		const startPos = this.peek().start;
 		let left = this.parseNot();
 		while (this.isKeyword('et')) {
 			const line = this.peek().line;
 			this.advance();
 			const right = this.parseNot();
-			left = { kind: 'binary', op: 'et', left, right, line };
+			left = this.withPos(startPos, { kind: 'binary', op: 'et', left, right, line });
 		}
 		return left;
 	}
 
 	private parseNot(): DslExpr {
 		if (this.isKeyword('non')) {
+			const startPos = this.peek().start;
 			const line = this.peek().line;
 			this.advance();
 			const operand = this.parseNot();
-			return { kind: 'unary', op: 'non', operand, line };
+			return this.withPos(startPos, { kind: 'unary', op: 'non', operand, line });
 		}
 		return this.parseComparison();
 	}
 
 	private parseComparison(): DslExpr {
+		const startPos = this.peek().start;
 		let left = this.parseAddSub();
 		const t = this.peek();
 		if (
@@ -378,23 +400,25 @@ class Parser {
 			const line = t.line;
 			const op = this.advance().value as '==' | '!=' | '<' | '>' | '<=' | '>=';
 			const right = this.parseAddSub();
-			left = { kind: 'binary', op, left, right, line };
+			left = this.withPos(startPos, { kind: 'binary', op, left, right, line });
 		}
 		return left;
 	}
 
 	private parseAddSub(): DslExpr {
+		const startPos = this.peek().start;
 		let left = this.parseMulDiv();
 		while (this.peek().type === 'PLUS' || this.peek().type === 'MINUS') {
 			const line = this.peek().line;
 			const op = this.advance().value as '+' | '-';
 			const right = this.parseMulDiv();
-			left = { kind: 'binary', op, left, right, line };
+			left = this.withPos(startPos, { kind: 'binary', op, left, right, line });
 		}
 		return left;
 	}
 
 	private parseMulDiv(): DslExpr {
+		const startPos = this.peek().start;
 		let left = this.parseUnary();
 		while (
 			this.peek().type === 'STAR' ||
@@ -404,17 +428,18 @@ class Parser {
 			const line = this.peek().line;
 			const op = this.advance().value as '*' | '/' | '%';
 			const right = this.parseUnary();
-			left = { kind: 'binary', op, left, right, line };
+			left = this.withPos(startPos, { kind: 'binary', op, left, right, line });
 		}
 		return left;
 	}
 
 	private parseUnary(): DslExpr {
 		if (this.peek().type === 'MINUS') {
+			const startPos = this.peek().start;
 			const line = this.peek().line;
 			this.advance();
 			const operand = this.parseUnary();
-			return { kind: 'unary', op: '-', operand, line };
+			return this.withPos(startPos, { kind: 'unary', op: '-', operand, line });
 		}
 		if (this.peek().type === 'PLUS') {
 			this.advance();
@@ -424,17 +449,19 @@ class Parser {
 	}
 
 	private parsePower(): DslExpr {
+		const startPos = this.peek().start;
 		let left = this.parsePostfix();
 		if (this.peek().type === 'CARET') {
 			const line = this.peek().line;
 			this.advance();
 			const right = this.parseUnary(); // right-associative
-			left = { kind: 'binary', op: '^', left, right, line };
+			left = this.withPos(startPos, { kind: 'binary', op: '^', left, right, line });
 		}
 		return left;
 	}
 
 	private parsePostfix(): DslExpr {
+		const startPos = this.peek().start;
 		let expr = this.parsePrimary();
 
 		while (true) {
@@ -443,25 +470,26 @@ class Parser {
 				this.advance();
 				const index = this.parseExpr();
 				this.expect('RBRACKET', 'index');
-				expr = {
+				expr = this.withPos(startPos, {
 					kind: 'indexedAccess',
 					name: (expr as { name: string }).name ?? '',
 					index,
 					line: expr.line
-				};
+				});
 			} else if (this.peek().type === 'DOT') {
 				// Property access: A.x
 				this.advance();
 				const prop = this.expect('IDENTIFIER', 'propriete').value;
-				expr = {
+				expr = this.withPos(startPos, {
 					kind: 'propertyAccess',
 					object: (expr as { name: string }).name ?? '',
 					property: prop,
 					line: expr.line
-				};
+				});
 			} else if (this.peek().type === 'LPAREN' && expr.kind === 'identifier') {
 				// Function call: f(args)
-				expr = this.parseFunctionCall(expr.name, expr.line);
+				const call = this.parseFunctionCall(expr.name, expr.line);
+				expr = this.withPos(startPos, call);
 			} else {
 				break;
 			}
@@ -472,39 +500,41 @@ class Parser {
 
 	private parsePrimary(): DslExpr {
 		const t = this.peek();
+		const startPos = t.start;
 
 		// Number literal
 		if (t.type === 'NUMBER') {
 			this.advance();
-			return { kind: 'number', value: parseFloat(t.value), line: t.line };
+			return this.withPos(startPos, { kind: 'number', value: parseFloat(t.value), line: t.line });
 		}
 
 		// String literal
 		if (t.type === 'STRING') {
 			this.advance();
-			return { kind: 'string', value: t.value, line: t.line };
+			return this.withPos(startPos, { kind: 'string', value: t.value, line: t.line });
 		}
 
 		// Boolean literals
 		if (t.type === 'KEYWORD' && t.value === 'vrai') {
 			this.advance();
-			return { kind: 'bool', value: true, line: t.line };
+			return this.withPos(startPos, { kind: 'bool', value: true, line: t.line });
 		}
 		if (t.type === 'KEYWORD' && t.value === 'faux') {
 			this.advance();
-			return { kind: 'bool', value: false, line: t.line };
+			return this.withPos(startPos, { kind: 'bool', value: false, line: t.line });
 		}
 
 		// Keyword used as function name (point, segment, etc.)
 		if (t.type === 'KEYWORD' && this.tokens[this.pos + 1]?.type === 'LPAREN') {
 			const name = this.advance().value;
-			return this.parseFunctionCall(name, t.line);
+			const call = this.parseFunctionCall(name, t.line);
+			return this.withPos(startPos, call);
 		}
 
 		// Identifier
 		if (t.type === 'IDENTIFIER') {
 			this.advance();
-			return { kind: 'identifier', name: t.value, line: t.line };
+			return this.withPos(startPos, { kind: 'identifier', name: t.value, line: t.line });
 		}
 
 		// Parenthesized expression or tuple
@@ -519,10 +549,11 @@ class Parser {
 					elements.push(this.parseExpr());
 				}
 				this.expect('RPAREN', 'tuple');
-				return { kind: 'tuple', elements, line: t.line };
+				return this.withPos(startPos, { kind: 'tuple', elements, line: t.line });
 			}
 			this.expect('RPAREN', 'expression parenthesee');
-			return first;
+			// Parenthesized expression: positions span the outer parens.
+			return this.withPos(startPos, first);
 		}
 
 		// List literal [a, b, c]
@@ -537,7 +568,7 @@ class Parser {
 				}
 			}
 			this.expect('RBRACKET', 'liste');
-			return { kind: 'list', elements, line: t.line };
+			return this.withPos(startPos, { kind: 'list', elements, line: t.line });
 		}
 
 		throw new DslParseError(`Expression inattendue : ${t.type} '${t.value}'`, t.line, t.col);
