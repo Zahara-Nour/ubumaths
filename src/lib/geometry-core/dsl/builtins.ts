@@ -268,7 +268,8 @@ function applyInlineStyle(
 	}
 }
 
-export type AngleMode = 'deg' | 'rad';
+export type { AngleMode } from './apply-angle-mode';
+import type { AngleMode } from './apply-angle-mode';
 
 /** Convert an angle value (number) from the active mode to radians. */
 export function toRadians(value: number, mode: AngleMode): number {
