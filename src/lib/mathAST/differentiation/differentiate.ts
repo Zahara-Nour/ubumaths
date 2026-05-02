@@ -44,7 +44,7 @@ import {
 	simplifiedMultiply
 } from './rules';
 import { substitute } from '../eval/substitute';
-import { derivativeFunc, number, multiply } from '../factory';
+import { derivativeFunc, number, multiply, piecewise, piecewisePiece } from '../factory';
 import { isDerivativeFunction, isInverseFunction, isZero } from '../guards';
 
 // =============================================================================
@@ -294,15 +294,19 @@ function differentiateNode(
 			// Signed zero is a constant — derivative is 0
 			return number('0');
 
-		case 'piecewise':
-			// Piecewise differentiation requires per-branch differentiation plus
-			// continuity/differentiability analysis at junctions. Not implemented
-			// in Phase C — Phase D falls back to numeric sampling.
-			throw new DifferentiationError(
-				'Piecewise function differentiation is not yet implemented',
-				'piecewise',
-				'Phase C ships PiecewiseNode without symbolic differentiation; numeric sampling is used instead'
+		case 'piecewise': {
+			// Per-branch differentiation. Conditions are predicates and remain
+			// unchanged. C¹ continuity at junctions is a separate concern, not
+			// part of computing the piecewise derivative.
+			const newPieces = node.pieces.map((p) =>
+				piecewisePiece(p.condition, differentiateNode(p.value, variable, simplify, functions))
 			);
+			const newOtherwise =
+				node.otherwise !== undefined
+					? differentiateNode(node.otherwise, variable, simplify, functions)
+					: undefined;
+			return piecewise(newPieces, newOtherwise, node.metadata);
+		}
 
 		default: {
 			const _exhaustive: never = node;

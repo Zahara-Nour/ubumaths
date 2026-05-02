@@ -96,7 +96,7 @@ Forme `si` retenue par l'utilisateur (cf. mémoire `dsl-piecewise-syntax.md`).
 ### Ce qui est explicitement reporté
 
 1. **`evaluate()` symbolique** dans `eval/evaluate.ts` — non nécessaire pour Phase D (`compile` suffit pour le rendu).
-2. **`differentiate()` symbolique** des piecewises — Phase D fallback sur le sampling numérique. La différentiation par branche + analyse de raccord (continuité C¹) sera ajoutée si un usage pédagogique le demande.
+2. ~~**`differentiate()` symbolique** des piecewises — Phase D fallback sur le sampling numérique. La différentiation par branche + analyse de raccord (continuité C¹) sera ajoutée si un usage pédagogique le demande.~~ **Levée en Phase G** : différentiation par branche implémentée, conditions inchangées. Analyse de continuité C¹ aux raccords reste hors scope.
 3. **`computeDomain()` pour piecewise** — Phase D peut sampler les bornes via `getVariables`/`compile` ; pas critique.
 4. **`analyzeContinuity()` aux raccords** — détection numérique des sauts via le sampler suffit pour Phase D V1.
 5. **Parser custom mathAST** pour `{ ... si ... }` syntax — sera implémenté côté `geometry-core/dsl/piecewise-parser.ts` en Phase D, pas dans `mathAST/parser/custom`. Cela isole le sucre DSL côté geometry-core et garde mathAST agnostique de la syntaxe.

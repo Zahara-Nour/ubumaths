@@ -2667,11 +2667,9 @@ function createLineFromCoefficients(
  *
  * Differs from `createFunctionFromCoefficients` in that:
  * - The expression is the parsed PiecewiseNode (no `g·y + h = 0` extraction).
- * - The symbolic derivative is set to a placeholder (number 0): symbolic
- *   differentiation of piecewise expressions is not implemented in Phase C/D
- *   (numeric sampling is used instead). Any consumer that requires the symbolic
- *   derivative will get a constant 0 — acceptable as a Phase D simplification
- *   because the curve renderer does not consult the derivative for piecewise.
+ * - The symbolic derivative is computed per-branch via `differentiate`, then
+ *   compiled. If differentiation throws (pathological branch content), we
+ *   fall back to a constant-zero derivative so the curve still renders.
  * - The compiled function evaluates the piecewise via `compile(piecewiseNode)`.
  * - The slider/scalar dependencies are propagated for reactive re-render.
  */
@@ -2693,15 +2691,21 @@ function createPiecewiseFunctionFromAst(
 		);
 	}
 
-	// Placeholder derivative (symbolic differentiation of piecewise is deferred).
-	const derivativePlaceholder = ZERO_NODE;
-	const compiledDerivativePlaceholder = () => 0;
+	let derivative: MathNode;
+	let compiledDerivative: CompiledFn;
+	try {
+		derivative = differentiate(piecewiseNode, { variable: 'x', simplify: true });
+		compiledDerivative = compile(derivative);
+	} catch {
+		derivative = ZERO_NODE;
+		compiledDerivative = () => 0;
+	}
 
 	const fnId = figure.createFunction(
 		piecewiseNode,
-		derivativePlaceholder,
+		derivative,
 		compiledFn,
-		compiledDerivativePlaceholder,
+		compiledDerivative,
 		equation,
 		{
 			label,
