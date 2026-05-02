@@ -12,11 +12,13 @@
 	import VariablesHistory from './VariablesHistory.svelte';
 	import CallStackPanel from './CallStackPanel.svelte';
 	import LoopIndicator from './LoopIndicator.svelte';
+	import MemoryDiagramView from './MemoryDiagramView.svelte';
 	import { cn } from '$lib/utils';
 	import Bug from '@lucide/svelte/icons/bug';
 	import Info from '@lucide/svelte/icons/info';
 	import Table from '@lucide/svelte/icons/table';
 	import List from '@lucide/svelte/icons/list';
+	import Network from '@lucide/svelte/icons/network';
 
 	// Types
 	interface Props {
@@ -30,7 +32,7 @@
 	let { onSelectFrame, class: className }: Props = $props();
 
 	// Local state for view toggle
-	let viewMode = $state<'list' | 'table'>('list');
+	let viewMode = $state<'list' | 'table' | 'heap'>('list');
 
 	// Derived state from debug store
 	let currentSnapshot = $derived(debugStore.currentSnapshot);
@@ -45,6 +47,7 @@
 	let globals = $derived(currentSnapshot?.globals ?? []);
 	let callStack = $derived(currentSnapshot?.callStack ?? []);
 	let loops = $derived(currentSnapshot?.loops ?? []);
+	let heap = $derived(debugStore.currentHeap);
 
 	/**
 	 * Get pause reason text in French
@@ -153,6 +156,20 @@
 					<Table class="size-3.5" aria-hidden="true" />
 					Historique
 				</button>
+				<button
+					type="button"
+					onclick={() => (viewMode = 'heap')}
+					class={cn(
+						'flex items-center gap-1.5 px-2.5 py-1 text-xs transition-colors',
+						viewMode === 'heap'
+							? 'bg-primary text-primary-foreground'
+							: 'bg-background text-muted-foreground hover:bg-muted'
+					)}
+					aria-pressed={viewMode === 'heap'}
+				>
+					<Network class="size-3.5" aria-hidden="true" />
+					Diagramme mémoire
+				</button>
 			</div>
 		</div>
 
@@ -169,6 +186,11 @@
 				<div class="min-w-0">
 					<CallStackPanel {callStack} {onSelectFrame} />
 				</div>
+			</div>
+		{:else if viewMode === 'heap'}
+			<!-- Memory diagram view: Python Tutor-style frames + heap with arrows -->
+			<div class="min-h-[400px]">
+				<MemoryDiagramView {callStack} {heap} />
 			</div>
 		{:else}
 			<!-- Table view: Variables history -->

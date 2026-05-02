@@ -4,14 +4,14 @@ Plan : `~/.claude/plans/virtual-soaring-fountain.md`
 
 ## Statut
 
-| Phase | Description                            | Statut      |
-| ----- | -------------------------------------- | ----------- |
-| 0     | Spécification TDD (9 comportements)    | Validé      |
-| 1     | Tracer + types + schémas Zod           | **Terminé** |
-| 2     | FramesPanel + HeapPanel (sans flèches) | **Terminé** |
-| 3     | MemoryDiagramView + flèches SVG        | **Terminé** |
-| 4     | Intégration DebugPanel + test manuel   | À faire     |
-| 5     | Quality checks finaux                  | À faire     |
+| Phase | Description                            | Statut                                                 |
+| ----- | -------------------------------------- | ------------------------------------------------------ |
+| 0     | Spécification TDD (9 comportements)    | Validé                                                 |
+| 1     | Tracer + types + schémas Zod           | **Terminé**                                            |
+| 2     | FramesPanel + HeapPanel (sans flèches) | **Terminé**                                            |
+| 3     | MemoryDiagramView + flèches SVG        | **Terminé**                                            |
+| 4     | Intégration DebugPanel + test manuel   | **Intégration OK, test manuel utilisateur en attente** |
+| 5     | Quality checks finaux                  | À faire                                                |
 
 ## Phase 0 — Spécifications validées
 
@@ -197,6 +197,81 @@ Composant orchestrant le diagramme complet :
 src/lib/components/python/debug/MemoryDiagramView.svelte
 ```
 
-## Phase 4 — Prochaine étape
+## Phase 4 — Réalisé (intégration) / En attente (test manuel utilisateur)
 
-Ajouter le 3e mode `'heap'` dans le toggle viewMode de `DebugPanel.svelte` (déjà `'list' | 'table'`). Icône lucide `Network` ou `GitBranch`. Brancher `<MemoryDiagramView callStack={currentSnapshot.callStack} heap={currentHeap} />`. Test manuel sur les 9 comportements définis en Phase 0.
+### Intégration
+
+`src/lib/components/python/debug/DebugPanel.svelte` :
+
+- `viewMode = $state<'list' | 'table' | 'heap'>('list')`
+- 3e bouton dans le toggle avec icône `Network` (lucide), label « Diagramme mémoire ».
+- Branche `{:else if viewMode === 'heap'}` : `<MemoryDiagramView {callStack} {heap} />` dans un wrapper `min-h-[400px]`.
+- `heap = $derived(debugStore.currentHeap)` exposé depuis le store.
+
+`src/lib/components/python/debug/index.ts` : exporte `FramesPanel`, `HeapPanel`, `MemoryDiagramView`.
+
+### Vérifications automatiques OK
+
+- `pnpm check:incremental` : aucune erreur TS/Svelte dans les fichiers modifiés (les 9 erreurs résiduelles sont préexistantes dans `slides/demo` et `extern/`, filtrées par le script).
+- `mcp__svelte__svelte-autofixer` sur `DebugPanel.svelte` : 0 issue, 0 suggestion.
+- `pnpm dev -- --port 5175` : page `/python` sert HTTP 200, aucune erreur SSR.
+
+### Test manuel utilisateur (à faire dans le navigateur)
+
+L'environnement de Claude n'a pas de navigateur interactif. Test manuel à exécuter par l'utilisateur :
+
+1. `pnpm dev -- --port 5173` (ou similaire utilisateur)
+2. Aller sur `/python`
+3. Activer le mode debug (toggle DebugToolbar)
+4. Coller chacun des 9 cas de test et stepper :
+
+```python
+# Cas 1 — primitives seules : heap doit être vide
+a = 1
+b = "x"
+c = None
+
+# Cas 2 — container simple : 1 carte heap
+a = [1, 2, 3]
+
+# Cas 3 — alias (objectif principal) : 1 carte, 2 flèches même couleur
+a = [1, 2, 3]
+b = a
+b.append(4)
+
+# Cas 4 — imbrication : 3 cartes (liste externe + 2 internes)
+a = [[1, 2], [3, 4]]
+
+# Cas 5 — dict avec valeur container : 2 cartes
+d = {"k": [1]}
+
+# Cas 6 — cycle : 1 carte avec ref vers elle-même, pas d'infinite loop
+a = []
+a.append(a)
+
+# Cas 7 — instance : 2 cartes (instance:Pt + liste)
+class Pt:
+    def __init__(s, x): s.x = x
+p = Pt([1, 2])
+
+# Cas 8 — tuple : 2 cartes (tuple + liste interne)
+t = (1, [2, 3])
+
+# Cas 9 — profondeur > 5 : entries au fond marquées '…' mais objet reste accessible
+deep = [[[[[[1, 2]]]]]]
+```
+
+5. Basculer vue « Diagramme mémoire »
+6. Vérifier :
+   - Cas 3 : flèches `a` et `b` même couleur, même cible.
+   - Cas 6 : carte `#xxxx` avec entrée `[0] → #xxxx` (même id).
+   - Hover sur une variable : la carte cible et la flèche sont highlightées.
+   - Hover sur une carte : les flèches y arrivant sont épaissies.
+   - Resize de la fenêtre : les flèches se recalculent.
+   - Step backward / forward : le diagramme suit l'historique.
+
+Reporter tout problème détecté.
+
+## Phase 5 — Prochaine étape
+
+Quality checks finaux + mise à jour de `docs/ref/python/progress/python-debugger-progress.md` (Phase 6 → Terminé).
