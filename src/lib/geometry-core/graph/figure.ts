@@ -2582,6 +2582,37 @@ export class Figure {
 	 * If every Newton start is singular (degenerate curve at the chosen
 	 * sample points), the call is silently ignored — drag has no effect.
 	 */
+	/**
+	 * Query a parametric curve at cursor position: find t closest to (cursorX, cursorY)
+	 * and return { t, x, y } where (x, y) = γ(t). Used for hover tooltips.
+	 *
+	 * Returns null if the curve is missing, derivatives are unavailable, the bounds
+	 * cannot be resolved, or all Newton starts are singular. Pure read-only query.
+	 */
+	queryParametricCurveAtCursor(
+		curveId: string,
+		cursorX: number,
+		cursorY: number
+	): { t: number; x: number; y: number } | null {
+		const curveEl = this.elements.get(curveId);
+		if (!curveEl || curveEl.type !== 'parametricCurve') return null;
+		if (!Number.isFinite(cursorX) || !Number.isFinite(cursorY)) return null;
+
+		const tMin = resolveScalarParam(curveEl.tMin, this.scalarValues);
+		const tMax = resolveScalarParam(curveEl.tMax, this.scalarValues);
+		if (!Number.isFinite(tMin) || !Number.isFinite(tMax) || tMax <= tMin) return null;
+
+		const scalarBindings = buildCurveBindings(curveEl, this.elements, this.scalarValues);
+		const t = findClosestParameterOnCurve(curveEl, cursorX, cursorY, scalarBindings, tMin, tMax);
+		if (t === null) return null;
+
+		const env = { ...scalarBindings, [curveEl.parameter]: t };
+		const x = curveEl.compiledX(env);
+		const y = curveEl.compiledY(env);
+		if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+		return { t, x, y };
+	}
+
 	movePointOnParametricCurveFromCursor(id: string, cursorX: number, cursorY: number): void {
 		const el = this.elements.get(id);
 		if (!el || !isPointOnParametricCurve(el)) {
