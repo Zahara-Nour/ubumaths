@@ -1,4 +1,4 @@
-# V2 paramétrique — Forme polaire `courbe()` (en cours)
+# V2 paramétrique — Forme polaire `courbe()` (LIVRÉE 2026-05-02)
 
 > Plan source : `docs/wip/geometry/prompt-parametric-polar.md`
 > V1 paramétrique livrée : `docs/wip/geometry/parametric-curves-v1-progress.md`
@@ -51,8 +51,8 @@ courbe("r = theta", theta_min=0, theta_max=6*\pi)                     # spirale 
 | 3     | Sérialisation polaire (option β) + tests round-trip    | (fait dans Phase 2)      | ✅     |
 | 4     | Code review + 6 edge cases ajoutés                     | code-reviewer            | ✅     |
 | 5     | Demo page : section "Courbes polaires"                 | (direct)                 | ✅     |
-| 6     | Doc V2 livrée + memory update                          | (direct)                 | —      |
-| 7     | Quality checks (eslint + check:incremental)            | (direct)                 | —      |
+| 6     | Doc V2 livrée + memory update                          | (direct)                 | ✅     |
+| 7     | Quality checks (eslint + check:incremental)            | (direct)                 | ✅     |
 
 ## Fichiers concernés
 
@@ -152,6 +152,33 @@ Verdict : ✅ APPROVED WITH SUGGESTIONS (4 critiques)
 
 - 24/24 polar tests passing
 - 87/87 régression (parametric, serialize-curves, roundtrip) passing
+
+### 2026-05-02 — Phases 6 + 7 ✅
+
+**Phase 6 (doc + memory)**
+
+- `docs/wip/geometry/parametric-curves-v1-progress.md` — section "A. Forme polaire (V2 — livrée mai 2026)" mise à jour avec détails d'implémentation, statut LIVRÉE, lien vers le doc spécifique.
+- `~/.claude/projects/.../memory/MEMORY.md` — entrée "courbe() polaire — V2 livrée (2026-05-02)" ajoutée.
+- `~/.claude/projects/.../memory/parametric-polar-status.md` — fichier mémoire dédié (surface API, décisions, fichiers, erreurs, pièges, commits).
+
+**Phase 7 (quality checks finaux)**
+
+- ESLint sur les 6 fichiers modifiés : 0 erreur.
+- `pnpm check:incremental` : 0 nouvelle erreur (les 9 erreurs pré-existantes sont dans `slides/demo`/`extern/`, filtrées par le script).
+- Régression complète : `pnpm test:server src/lib/geometry-core/` → **130 fichiers, 2833 tests passing, 2 skipped**.
+
+### Documents produits
+
+- `docs/wip/geometry/parametric-polar-progress.md` (ce document)
+- `docs/wip/geometry/prompt-parametric-polar.md` (prompt source, créé pré-session)
+- `~/.claude/.../memory/parametric-polar-status.md` (memory)
+
+### Commits
+
+- `fb449626b` — `test(geometry-core): add 18 red-first tests for polar courbe()`
+- `e749fb838` — `feat(geometry-core): add polar branch to courbe() — courbe("r = f(theta)", ...)`
+- `b82ae6a35` — `feat(geometry-demo): add polar curves section to parametric demo page`
+- (à suivre) — doc finale + memory update
 
 ### 2026-05-02 — Phase 5 ✅
 

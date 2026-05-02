@@ -149,25 +149,30 @@ Trois bugs hors plan, découverts en utilisant `/geometry-demo/parametric` une f
 
 Classés par catégorie. Les priorités reflètent le couplage à des cas d'usage concrets identifiés (démo, exercice, demande utilisateur), pas une opinion absolue.
 
-### A. Forme polaire (V2 explicitement prévue)
+### A. Forme polaire (V2 — livrée mai 2026) ✅
 
-**Priorité** : HAUTE — déjà spec dans Phase 0 ligne 22.
+**Statut** : LIVRÉE le 2026-05-02 (commits `fb449626b` → `b82ae6a35`, ~0,5 j effectif).
 
-Surface API visée :
+Surface API livrée :
 
 ```
-# 3e branche du builtin courbe()
-courbe("r = 2*cos(theta)", theta_min=0, theta_max=pi)
+courbe("r = 2*cos(theta)", theta_min=0, theta_max=\pi)            # cercle
+courbe("r = 1 - cos(theta)", theta_min=0, theta_max=2*\pi)        # cardioïde
+courbe("r = 1 + 2*cos(theta)", theta_min=0, theta_max=2*\pi)      # limaçon
+courbe("r = sin(2*theta)", theta_min=0, theta_max=2*\pi)          # rosace 4 pétales
+courbe("r = theta", theta_min=0, theta_max=6*\pi)                 # spirale d'Archimède
 ```
 
-Croquis d'implémentation :
+Implémentation :
 
-- Détecter en amont : 1 string positionnelle dont la LHS de la relation est `r` → branche polaire.
-- Réécriture interne : `x = r(θ)·cos(θ)`, `y = r(θ)·sin(θ)` puis `createParametricCurveFromEquations` avec `param="theta"` (ou `\theta`).
-- Bornes : `theta_min` / `theta_max` (et alias `θ_min`/`θ_max` ?) mappés vers `t_min`/`t_max` du moteur paramétrique.
-- Décision à prendre : conserver une marque `polar: true` dans le `GeoParametricCurve` pour la sérialisation round-trip ? Sinon le serializer reproduira la forme paramétrique x/y, ce qui est correct mais perd l'intention pédagogique.
+- **Détection** : 1 string positionnelle dont la LHS est `r` ET présence d'au moins un de `theta_min`/`theta_max` → branche polaire.
+- **Réécriture interne** : `xRhs = f(θ)·cos(θ)`, `yRhs = f(θ)·sin(θ)` au niveau MathNode, puis pipeline paramétrique standard via `buildParametricCurveFromXY` (helper extrait, partagé avec la branche paramétrique 2-strings).
+- **Tokenisation** : pré-substitution `theta` ASCII → `\theta` LaTeX dans la chaîne d'équation (regex avec lookbehind négatif pour ne pas toucher `\theta` ni les mots englobants).
+- **Mode angle** : forcé `radians` localement, indépendamment de `unite_angle("degrees")` global.
+- **Sérialisation option β** : champs `polar?: boolean` et `equationR?: string` ajoutés à `GeoParametricCurve`. Le serializer reproduit `courbe("r = ${equationR}", theta_min=..., theta_max=...)` quand `polar === true` → round-trip fidèle.
+- **Tests** : 24 tests dans `src/lib/geometry-core/dsl/__tests__/courbe-polar.test.ts` (18 nominal/erreurs/serialisation/sampling + 6 edge cases issus du code review).
 
-Effort estimé : ~1 j TDD (5-10 tests) en réutilisant le pipeline existant.
+Détails complets : `docs/wip/geometry/parametric-polar-progress.md`.
 
 ### B. Builtins associés au paramétrique
 
