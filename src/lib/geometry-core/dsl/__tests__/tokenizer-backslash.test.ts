@@ -1,9 +1,12 @@
 /**
  * Tests for tokenizer recognition of backslashed identifiers like \pi.
  *
- * Phase 1 of dsl-mathast-routing plan: \name must be tokenized as a single
- * IDENTIFIER token with value '\name' (backslash included). For V1, only
- * \pi is whitelisted; other \name produce a tokenizer error.
+ * \pi keeps its backslash in the token value (math constant, special-cased
+ * downstream). All other lowercase Greek letters (\alpha, \beta, …, \omega)
+ * are tokenized as IDENTIFIER with value stripped of the backslash, so
+ * `\theta = 1` and `theta = 1` produce the same symbol-table entry.
+ *
+ * Capitals (`\Pi`, `\PI`) and unknown names are rejected.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -34,13 +37,50 @@ describe('tokenizer — backslash identifiers (\\pi)', () => {
 		expect(tokens[2]).toMatchObject({ type: 'NUMBER', value: '5' });
 	});
 
-	it('\\theta → tokenizer error (not whitelisted in V1)', () => {
-		expect(() => tokenize('\\theta')).toThrow(DslTokenizerError);
-		expect(() => tokenize('\\theta')).toThrow(/\\theta.*inconnue/i);
+	it('\\theta → IDENTIFIER with value "theta" (backslash stripped)', () => {
+		const tokens = tokenize('\\theta');
+		expect(tokens[0]).toMatchObject({ type: 'IDENTIFIER', value: 'theta' });
 	});
 
-	it('\\alpha → tokenizer error', () => {
-		expect(() => tokenize('\\alpha')).toThrow(DslTokenizerError);
+	it('\\alpha → IDENTIFIER with value "alpha" (backslash stripped)', () => {
+		const tokens = tokenize('\\alpha');
+		expect(tokens[0]).toMatchObject({ type: 'IDENTIFIER', value: 'alpha' });
+	});
+
+	it('\\phi in assignment LHS: \\phi = 5 → IDENTIFIER "phi"', () => {
+		const tokens = tokenize('\\phi = 5');
+		expect(tokens[0]).toMatchObject({ type: 'IDENTIFIER', value: 'phi' });
+		expect(tokens[1]).toMatchObject({ type: 'EQUALS' });
+	});
+
+	it('\\omega and other lowercase Greek letters all accepted', () => {
+		for (const letter of [
+			'alpha',
+			'beta',
+			'gamma',
+			'delta',
+			'epsilon',
+			'zeta',
+			'eta',
+			'theta',
+			'iota',
+			'kappa',
+			'lambda',
+			'mu',
+			'nu',
+			'xi',
+			'rho',
+			'sigma',
+			'tau',
+			'upsilon',
+			'phi',
+			'chi',
+			'psi',
+			'omega'
+		]) {
+			const tokens = tokenize(`\\${letter}`);
+			expect(tokens[0]).toMatchObject({ type: 'IDENTIFIER', value: letter });
+		}
 	});
 
 	it('\\Pi (capital) → tokenizer error', () => {

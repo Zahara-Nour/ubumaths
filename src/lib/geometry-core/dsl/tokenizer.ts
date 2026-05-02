@@ -23,8 +23,19 @@ export class DslTokenizerError extends Error {
 	}
 }
 
-/** V1 whitelist of allowed backslash identifiers. Extend cautiously. */
-const BACKSLASH_WHITELIST = new Set(['pi']);
+/**
+ * Whitelist of allowed backslash identifiers in the DSL.
+ *
+ * `\pi` is special — it tokenizes to value `\pi` (with backslash) and is treated
+ * as the math constant π via `RESERVED_NAMES` in the interpreter.
+ *
+ * All other lowercase Greek letters (`\theta`, `\alpha`, `\phi`, …) are
+ * tokenized as IDENTIFIER with value stripped of the backslash (`theta`,
+ * `alpha`, …). This makes `\phi = 1.618` and `phi = 1.618` interchangeable —
+ * both assign to the same symbol-table key.
+ */
+import { SUPPORTED_GREEK_LETTERS } from '$lib/mathAST/parser/constants';
+const BACKSLASH_WHITELIST = SUPPORTED_GREEK_LETTERS;
 
 export function tokenize(source: string): Token[] {
 	const tokens: Token[] = [];
@@ -188,14 +199,18 @@ function tokenizeLine(
 			const name = line.slice(nameStart, pos);
 			if (!BACKSLASH_WHITELIST.has(name)) {
 				throw new DslTokenizerError(
-					`Sequence "\\${name}" inconnue (V1 supporte uniquement \\pi)`,
+					`Sequence "\\${name}" inconnue (lettres grecques minuscules supportees : \\alpha, \\beta, …, \\omega)`,
 					lineNum,
 					col
 				);
 			}
+			// `\pi` keeps its backslash (treated as math constant by the interpreter).
+			// All other Greek letters are normalized to ASCII so `\theta = 1` and
+			// `theta = 1` are interchangeable (same symbol-table key).
+			const tokenValue = name === 'pi' ? '\\' + name : name;
 			tokens.push({
 				type: 'IDENTIFIER',
-				value: '\\' + name,
+				value: tokenValue,
 				line: lineNum,
 				col,
 				start: absStart,
