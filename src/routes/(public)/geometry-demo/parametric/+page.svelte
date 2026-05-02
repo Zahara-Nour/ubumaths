@@ -1,32 +1,40 @@
 <script lang="ts">
 	import DslDemo from '../DslDemo.svelte';
 
-	const PI = Math.PI;
-	const TWO_PI = 2 * Math.PI;
-	const FOUR_PI = 4 * Math.PI;
-	const SIX_PI = 6 * Math.PI;
+	// Note: \\pi and e (Euler) are now first-class DSL constants thanks to the
+	// mathAST routing. Math functions (sqrt, exp, ln, log, …) and arithmetic
+	// expressions in the RHS are also routed to mathAST automatically.
 
-	const circleDsl = `c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI}, couleur="bleu")`;
+	const circleDsl = `c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")`;
 
 	const parabolaDsl = `c = courbe("x = t", "y = t^2", t_min=-2, t_max=2, couleur="rouge")`;
 
-	const cardioidDsl = `c = courbe("x = (1 - cos(t)) * cos(t)", "y = (1 - cos(t)) * sin(t)", t_min=0, t_max=${TWO_PI}, couleur="violet")`;
+	const cardioidDsl = `c = courbe("x = (1 - cos(t)) * cos(t)", "y = (1 - cos(t)) * sin(t)", t_min=0, t_max=2*\\pi, couleur="violet")`;
 
-	const lissajousDsl = `c1 = courbe("x = sin(3*t)", "y = sin(2*t)", t_min=0, t_max=${TWO_PI}, couleur="bleu")
-c2 = courbe("x = sin(4*t)", "y = sin(3*t)", t_min=0, t_max=${TWO_PI}, couleur="rouge")
-c3 = courbe("x = sin(5*t)", "y = sin(4*t)", t_min=0, t_max=${TWO_PI}, couleur="vert")`;
+	const lissajousDsl = `c1 = courbe("x = sin(3*t)", "y = sin(2*t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+c2 = courbe("x = sin(4*t)", "y = sin(3*t)", t_min=0, t_max=2*\\pi, couleur="rouge")
+c3 = courbe("x = sin(5*t)", "y = sin(4*t)", t_min=0, t_max=2*\\pi, couleur="vert")`;
 
-	const cycloidDsl = `c = courbe("x = t - sin(t)", "y = 1 - cos(t)", t_min=0, t_max=${FOUR_PI}, couleur="orange")`;
+	const cycloidDsl = `c = courbe("x = t - sin(t)", "y = 1 - cos(t)", t_min=0, t_max=4*\\pi, couleur="orange")`;
 
-	const archimedeanSpiralDsl = `c = courbe("x = t * cos(t)", "y = t * sin(t)", t_min=0, t_max=${SIX_PI}, couleur="cyan")`;
+	const archimedeanSpiralDsl = `c = courbe("x = t * cos(t)", "y = t * sin(t)", t_min=0, t_max=6*\\pi, couleur="cyan")`;
 
-	const sliderTmaxDsl = `s = slider(min=0.1, max=${TWO_PI}, valeur=${PI})
+	const sliderTmaxDsl = `s = slider(min=0.1, max=2*\\pi, valeur=\\pi)
 c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=s, couleur="bleu")`;
 
 	const sliderRadiusDsl = `r = slider(min=0.5, max=4, valeur=2)
-c = courbe("x = r * cos(t)", "y = r * sin(t)", t_min=0, t_max=${TWO_PI}, param="t", couleur="rouge")`;
+c = courbe("x = r * cos(t)", "y = r * sin(t)", t_min=0, t_max=2*\\pi, param="t", couleur="rouge")`;
 
-	const closedFillDsl = `c = courbe("x = 2 * cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI}, couleur="violet", remplissage="violet")`;
+	const closedFillDsl = `c = courbe("x = 2 * cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="violet", remplissage="violet")`;
+
+	// New: variables and constants — math-pure RHS routed through mathAST.
+	const variablesDsl = `phi = (1 + sqrt(5)) / 2
+c = courbe("x = phi*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="orange")`;
+
+	// New: derived reactive scalar — k follows s, the curve follows k.
+	const reactiveDsl = `s = slider(min=0.5, max=4, valeur=2)
+k = 2 * s
+c = courbe("x = k*cos(t)", "y = k*sin(t)", t_min=0, t_max=2*\\pi, couleur="rouge")`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -129,6 +137,26 @@ c = courbe("x = r * cos(t)", "y = r * sin(t)", t_min=0, t_max=${TWO_PI}, param="
 		dsl={closedFillDsl}
 		title="Courbe fermée — remplissage"
 		description="Ellipse paramétrique avec fond. Le sampler détecte la fermeture et le rendu SVG ferme le path (Z) pour permettre le fill."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={variablesDsl}
+		title="Variables et constantes — phi = (1 + √5) / 2"
+		description="Les RHS math-pures sont routées vers mathAST : sqrt(), \pi, e et toutes les fonctions math sont disponibles. La variable phi est substituée dans les équations avant compilation."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={reactiveDsl}
+		title="Variable réactive — k = 2·s"
+		description="La variable k dépend du slider s. Toute expression contenant un slider/scalar produit un GeoScalar réactif ; la courbe se redessine quand s bouge."
 		width={700}
 		height={500}
 	/>
