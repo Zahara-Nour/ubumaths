@@ -1831,6 +1831,82 @@ function _executeBuiltinInner(
 			}
 		}
 
+		case 'longueur': {
+			// longueur(c)            → arc length over the curve's own [t_min, t_max]
+			// longueur(c, t1, t2)    → arc length over [t1, t2]
+			if (pos.length === 0) {
+				throw new DslRuntimeError('longueur() attend 1 ou 3 arguments (c) ou (c, t1, t2)', line);
+			}
+			if (pos.length === 2) {
+				throw new DslRuntimeError('longueur(): t1 et t2 doivent etre fournis ensemble', line);
+			}
+			if (pos.length > 3) {
+				throw new DslRuntimeError('longueur() attend 1 ou 3 arguments (c) ou (c, t1, t2)', line);
+			}
+
+			const lcId = requireElement(pos[0], 'courbe', line);
+			const lcEl = figure.getElementById(lcId);
+			if (!lcEl || lcEl.type !== 'parametricCurve') {
+				throw new DslRuntimeError(
+					'longueur(): le premier argument doit etre une courbe parametrique',
+					line
+				);
+			}
+
+			let tMinParam: ScalarParam | undefined;
+			let tMaxParam: ScalarParam | undefined;
+			if (pos.length === 3) {
+				tMinParam = toScalarParam(pos[1], toGeoValue, line);
+				tMaxParam = toScalarParam(pos[2], toGeoValue, line);
+				// Numeric validation only — slider-backed bounds may legitimately
+				// invert at runtime, in which case the scalar resolves to undefined.
+				if (!isScalarRef(tMinParam) && !isScalarRef(tMaxParam)) {
+					const t1Num = geoToNumber(tMinParam);
+					const t2Num = geoToNumber(tMaxParam);
+					if (Number.isFinite(t1Num) && Number.isFinite(t2Num) && t1Num >= t2Num) {
+						throw new DslRuntimeError('longueur(): t2 doit etre superieur a t1', line);
+					}
+				}
+			}
+
+			const lId = figure.createArcLength(lcId, tMinParam, tMaxParam, { label });
+			return { figureId: lId, symbolType: 'scalar' };
+		}
+
+		case 'courbure': {
+			if (pos.length !== 2) {
+				throw new DslRuntimeError('courbure() attend 2 arguments (c, t0)', line);
+			}
+			const kcId = requireElement(pos[0], 'courbe', line);
+			const kcEl = figure.getElementById(kcId);
+			if (!kcEl || kcEl.type !== 'parametricCurve') {
+				throw new DslRuntimeError(
+					'courbure(): le premier argument doit etre une courbe parametrique',
+					line
+				);
+			}
+			const tParam = toScalarParam(pos[1], toGeoValue, line);
+			const kId = figure.createCurvature(kcId, tParam, { label });
+			return { figureId: kId, symbolType: 'scalar' };
+		}
+
+		case 'cercle_osculateur': {
+			if (pos.length !== 2) {
+				throw new DslRuntimeError('cercle_osculateur() attend 2 arguments (c, t0)', line);
+			}
+			const ocCurveId = requireElement(pos[0], 'courbe', line);
+			const ocCurveEl = figure.getElementById(ocCurveId);
+			if (!ocCurveEl || ocCurveEl.type !== 'parametricCurve') {
+				throw new DslRuntimeError(
+					'cercle_osculateur(): le premier argument doit etre une courbe parametrique',
+					line
+				);
+			}
+			const ocTParam = toScalarParam(pos[1], toGeoValue, line);
+			const ocId = figure.createOsculatingCircle(ocCurveId, ocTParam, { label });
+			return { figureId: ocId, symbolType: 'cercle' };
+		}
+
 		case 'derivee': {
 			if (pos.length !== 1) {
 				throw new DslRuntimeError('derivee() attend 1 argument (une fonction)', line);
@@ -2351,6 +2427,9 @@ export const BUILTIN_NAMES = new Set([
 	'courbe',
 	'point_sur',
 	'tangente',
+	'longueur',
+	'courbure',
+	'cercle_osculateur',
 	'derivee',
 	'integrale',
 	'asymptotes',

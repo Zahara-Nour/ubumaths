@@ -1056,6 +1056,26 @@
 							>
 						{/if}
 					{/if}
+				{:else if el.type === 'osculatingCircle'}
+					{@const centre = figure.getPosition(el.id)}
+					{@const radius = figure.getOsculatingCircleRadius(el.id)}
+					{#if centre && radius !== null && Number.isFinite(radius)}
+						{@const svgC = transformer.mathToSvg(geoToNumber(centre.x), geoToNumber(centre.y))}
+						{@const rPx = Math.abs(radius * transformer.scaleX)}
+						<circle
+							cx={svgC.x}
+							cy={svgC.y}
+							r={rPx}
+							stroke={sty.color}
+							stroke-width={sty.strokeWidth}
+							stroke-dasharray={sty.dashArray}
+							opacity={sty.opacity}
+							fill={sty.fillColor ?? 'none'}
+							fill-opacity={sty.fillOpacity}
+							class="circle"
+							class:hovered={hoveredId === el.id}
+						/>
+					{/if}
 				{:else if el.type === 'circleByRadius' || el.type === 'circleByPoint' || el.type === 'circleBy3Points'}
 					{@const svg = circleToSVG(el.id, figure, transformer)}
 					{#if svg}

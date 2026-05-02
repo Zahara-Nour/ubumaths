@@ -548,7 +548,9 @@ export interface GeoScalar extends GeoElementBase {
 		| 'radius'
 		| 'power'
 		| 'expression'
-		| 'coordinate';
+		| 'coordinate'
+		| 'arcLength'
+		| 'curvature';
 	/** Target element IDs for primitive kinds (points for distance/angle/area, vector for norme). */
 	readonly targetIds: readonly string[];
 	/** Computation closure for 'expression' kind: receives scalar values, returns number. */
@@ -561,6 +563,14 @@ export interface GeoScalar extends GeoElementBase {
 	readonly format?: 'exact' | 'approx' | 'degrees' | 'radians';
 	/** Internal: paired GeoIntegralArea id when this scalar comes from `integrale()`. */
 	readonly _visualAreaId?: string;
+	/** Parametric curve id (arcLength, curvature kinds). */
+	readonly curveId?: string;
+	/** Lower integration bound for arcLength kind (undefined = curve.tMin). */
+	readonly tMin?: ScalarParam;
+	/** Upper integration bound for arcLength kind (undefined = curve.tMax). */
+	readonly tMax?: ScalarParam;
+	/** Evaluation parameter for curvature kind. */
+	readonly t?: ScalarParam;
 	readonly dependsOn: readonly string[];
 }
 
@@ -878,6 +888,21 @@ export interface GeoTangentParametric extends GeoElementBase {
 	readonly point: { readonly x: number; readonly y: number };
 	/** Cached direction γ'(t0) at creation time (raw, not normalized). */
 	readonly direction: { readonly dx: number; readonly dy: number };
+	readonly dependsOn: readonly string[];
+}
+
+/**
+ * Osculating circle of a parametric curve at parameter t0.
+ *
+ * Stores `curveId` and `t` (a `ScalarParam` for slider reactivity). Centre
+ * γ(t0) + n̂/κ and radius 1/|κ| are computed on demand by
+ * `computeOsculatingCircle`. When κ = 0 (straight line) or γ'(t0) = 0
+ * (cusp / singularity), both centre and radius silently resolve to null.
+ */
+export interface GeoOsculatingCircle extends GeoElementBase {
+	readonly type: 'osculatingCircle';
+	readonly curveId: string;
+	readonly t: ScalarParam;
 	readonly dependsOn: readonly string[];
 }
 
@@ -1278,6 +1303,7 @@ export type GeoElement =
 	| GeoTangentToQuadratic
 	| GeoTangentParametric
 	| GeoTangentVector
+	| GeoOsculatingCircle
 	| GeoConicPolar
 	| GeoVectorByPoints
 	| GeoFreeVector
@@ -1583,6 +1609,18 @@ export function isTangentParametric(el: GeoElement): el is GeoTangentParametric 
 
 export function isTangentVector(el: GeoElement): el is GeoTangentVector {
 	return el.type === 'tangentVector';
+}
+
+export function isOsculatingCircle(el: GeoElement): el is GeoOsculatingCircle {
+	return el.type === 'osculatingCircle';
+}
+
+export function isArcLength(el: GeoElement): el is GeoScalar {
+	return el.type === 'scalar' && el.scalarKind === 'arcLength';
+}
+
+export function isCurvature(el: GeoElement): el is GeoScalar {
+	return el.type === 'scalar' && el.scalarKind === 'curvature';
 }
 
 export function isVectorByPoints(el: GeoElement): el is GeoVectorByPoints {
