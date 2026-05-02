@@ -8,7 +8,7 @@
 1. **Alias `infini`** : NON. `inf` seul en V5.
 2. **T₀, MAX_T** : constantes V5 (T₀=10, k=0..6 → T_max=640).
 3. **Notification divergence** : `console.warn` V5.
-4. **Indicateur visuel SVG** : reporté V6.
+4. **Indicateur visuel SVG** : ~~reporté V6~~ → **livré en V5.1** (2026-05-02).
 5. **`aire_entre(f, g, -inf, +inf)`** : gardé V5.
 
 ## Statut des phases
@@ -20,6 +20,7 @@
 - [x] **Phase 4 — Rendu SVG clipping viewport** ✓
 - [x] **Phase 5 — Démo + doc utilisateur** ✓
 - [x] **Phase 6 — Quality checks finaux** ✓
+- [x] **V5.1 — Indicateur visuel SVG bornes ±∞** ✓ (2026-05-02)
 
 ## Phase 5 + 6 récap (2026-05-01)
 
@@ -48,11 +49,6 @@
   rendering (115 fichiers de tests).
 - Pas de pollution du cache : 9 errors filtrées vérifiées pré-existantes
   via `git stash` + run.
-
-## Documents produits (Phase 0–6)
-
-- `docs/wip/geometry/improper-integrals-study.md` (étude Phase 0)
-- `docs/wip/geometry/improper-integrals-progress.md` (ce document)
 
 ## Phases 2+3+4 — Récap (2026-05-01)
 
@@ -89,6 +85,58 @@ sémantique JS héritée, parseUnary PLUS, scope macro isolé).
 
 **Code review** : code-reviewer (Sonnet 4.6) → "Excellent", 2 améliorations
 mineures appliquées (macro-scope isolation test + comment inline).
+
+## V5.1 — Indicateur visuel bornes ±∞ (2026-05-02)
+
+**Motivation** : sans indicateur, une zone improper clippée au viewport est
+visuellement indistinguable d'une zone finie qui sort du cadre. Risque
+pédagogique : les élèves manquent que l'intégrale s'étend à l'infini.
+
+**Implémentation initiale** (`c5a284c2`) :
+
+- `integralAreaToSVG` et `integralAreaBetweenToSVG` exposent un champ
+  optionnel `infinityEdges` décrivant les bords clippés (±∞).
+- `GeometryCanvas` rend à chaque bord : ligne pointillée, flèche orientée
+  vers l'extérieur, label `∞` italique.
+- Aires finies : `infinityEdges === undefined`, comportement inchangé.
+
+**Fix placement** (`c09731fa`) :
+
+- Premier essai plaçait la flèche au milieu vertical de la zone clippée. Pour
+  des aires fines (ex. `e^{-x}` à `x=5`), la flèche tombait sur l'axe des x.
+- Restructure des données de bord : champs explicites `yAxis` / `yCurve`
+  (plus de `yTop` / `yBottom` triés). Le consommateur sait quel côté est
+  l'axe.
+- Placement adaptatif : milieu si l'aire est épaisse (>44px), sinon 22px de
+  l'axe vers la courbe. Suppression de la ligne pointillée redondante avec
+  la fermeture du path.
+
+**Fichiers modifiés** :
+
+- `src/lib/geometry-core/rendering/svg-primitives.ts` (+69 lignes : champ
+  `infinityEdges`, structure yAxis/yCurve)
+- `src/lib/components/geometry/GeometryCanvas.svelte` (+43 lignes : rendu
+  flèche + label ∞)
+- `src/lib/geometry-core/rendering/__tests__/integral-svg-improper.test.ts`
+  (+81 lignes : tests V5.1)
+
+**Code review** : pas de session dédiée ; intégrée dans le commit de fix.
+
+## V5 — Démo déplacée (2026-05-02)
+
+`90c7179a` : la démo V5 vivait sous `/geometry-demo/integrales/improper/`
+sans point d'entrée depuis l'index. Déplacée vers
+`/sliders/integrale-improper/` pour cohérence avec les démos
+`integrale` / `aire` / `aire-entre` existantes. Carte ajoutée dans l'index
+`sliders`. Back-link mis à jour.
+
+## V5 — Harmonisation versioning docs (2026-05-01)
+
+`d5c556e0` : V1-V4 désignaient des étapes de la famille area-builtins
+(V1=`integrale`, V2=`aire`, V3=`aire_entre`, V4=refactor helper). V5 = improper
+integrals. Remplacement des "V1"/"V2" ambigus (ex-jargon improper interne)
+par "V5"/"V6" dans les docs. Les références "V1+V2+V3" / "V1-V4" légitimes
+aux area-builtins sont préservées.
 
 ## Documents produits
 
