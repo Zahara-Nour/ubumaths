@@ -5,7 +5,7 @@
 
 echo "🔍 Checking for running servers..."
 
-PORTS=(5173 5174 5175 54321)
+PORTS=(5173 5174 5175 5176 5177 5178 5179 5180 54321)
 KILLED=0
 
 for PORT in "${PORTS[@]}"; do
