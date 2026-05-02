@@ -122,6 +122,8 @@ function typePrefix(type: string): string {
 		case 'intersectionParametricLine':
 		case 'intersectionParametricCircle':
 		case 'intersectionParametricFunction':
+		case 'intersectionParametricSegment':
+		case 'intersectionParametricRay':
 		case 'reflectedPoint':
 		case 'rotatedPoint':
 		case 'translatedPoint':
@@ -330,6 +332,22 @@ function serializeElement(
 			const f = name(idToName, el.functionId);
 			if (el.k === 1) return `${n} = intersection(${c}, ${f})`;
 			return `${n} = intersection(${c}, ${f}, ${el.k})`;
+		}
+
+		case 'intersectionParametricSegment': {
+			const c = name(idToName, el.curveId);
+			const s = name(idToName, el.segmentId);
+			// Canonical order: parametric curve first.
+			if (el.k === 1) return `${n} = intersection(${c}, ${s})`;
+			return `${n} = intersection(${c}, ${s}, ${el.k})`;
+		}
+
+		case 'intersectionParametricRay': {
+			const c = name(idToName, el.curveId);
+			const r = name(idToName, el.rayId);
+			// Canonical order: parametric curve first.
+			if (el.k === 1) return `${n} = intersection(${c}, ${r})`;
+			return `${n} = intersection(${c}, ${r}, ${el.k})`;
 		}
 
 		case 'reflectedPoint':

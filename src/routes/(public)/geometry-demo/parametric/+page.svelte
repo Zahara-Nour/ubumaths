@@ -119,6 +119,22 @@ c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
 f = courbe("y = x^2 - 0.3", couleur="rouge")
 P1 = intersection(c, f, 1)
 P2 = intersection(c, f, 2)`;
+
+	// V3 — paramétrique × segment / demidroite (Newton 1D ligne + clipping)
+	const intersectionParamSegmentDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+A = point(-2, 0.3)
+B = point(2, 0.3)
+seg = segment(A, B)
+P1 = intersection(c, seg, 1)
+P2 = intersection(c, seg, 2)`;
+
+	const intersectionParamRayDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+O = point(0, 0)
+T = point(2, 0.5)
+ray = demidroite(O, T)
+P = intersection(c, ray, 1)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -375,6 +391,26 @@ P2 = intersection(c, f, 2)`;
 		dsl={intersectionParamFunctionDsl}
 		title="Cercle paramétrique × parabole — 2 points"
 		description="Cercle unité × parabole y = x² − 0.3. Newton 1D résout γ_y(t) − f(γ_x(t)) = 0."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={intersectionParamSegmentDsl}
+		title="Cercle × segment — clipping s ∈ [0, 1]"
+		description="L'intersection avec un segment [AB] : Newton 1D sur la ligne support, puis filtrage par paramètre s ∈ [0, 1]. Ici 2 points sur le cercle dans le segment."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={intersectionParamRayDsl}
+		title="Cercle × demidroite — clipping s ≥ 0"
+		description="Demidroite issue de O dans la direction de T : seules les intersections avec s ≥ 0 (devant l'origine) sont retenues. Le point sur le cercle à s < 0 est filtré."
 		width={700}
 		height={500}
 	/>

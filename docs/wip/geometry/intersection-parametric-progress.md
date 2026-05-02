@@ -206,3 +206,56 @@ Système non-linéaire 2D : `F(t1, t2) = γ1(t1) − γ2(t2) = (0, 0)`.
 - 18/18 dans `intersection-parametric-mixed.test.ts` (16 + 2 edge cases)
 - 2914/2916 tests geometry-core (2 skipped, 0 régression)
 - ESLint clean
+
+---
+
+## V3 — Intersection paramétrique × segment/demidroite (LIVRÉ 2026-05-02)
+
+### Spec validée
+
+**Scope V3** : 2 nouvelles combinaisons (paramétrique × `segment`, × `demidroite`) en réutilisant `findParametricLineIntersections` (V2) + filtrage par clipping.
+
+| Combo                     | Algorithme                                                |
+| ------------------------- | --------------------------------------------------------- |
+| paramétrique × segment    | Newton 1D ligne + filtre `s ∈ [0, 1]` où `s = projection` |
+| paramétrique × demidroite | Newton 1D ligne + filtre `s ≥ 0`                          |
+
+### Décisions tranchées
+
+| #   | Question    | Décision                                                              |
+| --- | ----------- | --------------------------------------------------------------------- |
+| Q1  | Helpers     | Fonctions séparées `findParametricSegmentIntersections`, `Ray`        |
+| Q2  | Tolérance s | ε relatif : `acceptanceTolerance / ‖p2-p1‖` (s ∈ [-ε, 1+ε] ou s ≥ -ε) |
+| Q3  | Types       | 2 nouveaux types `GeoIntersectionParametric{Segment,Ray}`             |
+| Q4  | Tests       | ~10-12 tests                                                          |
+| Q5  | Démos       | segment × cercle paramétrique, demidroite × cardioïde                 |
+
+### Test E1 V2 mis à jour
+
+Dans `intersection-parametric-mixed.test.ts`, le test E1 a été modifié pour vérifier que `intersection(c, segment)` fonctionne en V3 (au lieu de lever une erreur DSL). E2 (`quadraticCurve`) reste inchangé (toujours hors scope).
+
+### Implémentation
+
+- `types/elements.ts` : 2 nouveaux types `GeoIntersectionParametricSegment`, `GeoIntersectionParametricRay`
+- `graph/parametric-intersection-1d.ts` : 2 nouveaux helpers `findParametricSegmentIntersections` et `findParametricRayIntersections`. Réutilisent `findParametricLineIntersections` puis filtrent par paramètre `s` projeté.
+- `graph/figure.ts` : 2 factories + extension `getPosition` override
+- `graph/compute-position.ts` : 2 branches live (lecture endpoints du segment ou origine/through de la demidroite)
+- `dsl/builtins.ts` : helpers `isSegmentOnly`/`isRayOnly` ajoutés au dispatch V2. quadraticCurve reste hors scope.
+- `dsl/serializer.ts` : 2 cases canoniques (curve d'abord)
+
+**Décisions clés**
+
+- Tolérance `s` relative : `eps = acceptanceTolerance / length` — un point dans `acceptanceTolerance` unités du bord du segment est inclus
+- Segment dégénéré (`p1 = p2`) : retourne `[]` silencieusement (cohérent avec line dégénérée)
+- Auto-swap pattern identique à V2
+
+### Tests
+
+- 11/11 dans `intersection-parametric-segment-ray.test.ts`
+- 18/18 dans `intersection-parametric-mixed.test.ts` (E1 maintenant vert avec V3)
+- 2925/2927 tests geometry-core (2 skipped, 0 régression)
+- ESLint clean
+
+### Démos
+
+- `parametric/+page.svelte` : 2 nouvelles (cercle × segment, cercle × demidroite)

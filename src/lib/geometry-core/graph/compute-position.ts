@@ -19,6 +19,8 @@ import {
 	isIntersectionParametricLine,
 	isIntersectionParametricCircle,
 	isIntersectionParametricFunction,
+	isIntersectionParametricSegment,
+	isIntersectionParametricRay,
 	isReflectedPoint,
 	isRotatedPoint,
 	isTranslatedPoint,
@@ -75,7 +77,9 @@ import { findParametricIntersections } from './parametric-intersection';
 import {
 	findParametricLineIntersections,
 	findParametricCircleIntersections,
-	findParametricFunctionIntersections
+	findParametricFunctionIntersections,
+	findParametricSegmentIntersections,
+	findParametricRayIntersections
 } from './parametric-intersection-1d';
 
 export interface ComputePositionResult {
@@ -422,6 +426,92 @@ export function computeElementPosition(
 			fnEl.compiledDerivative,
 			xMin,
 			xMax
+		);
+		if (el.k < 1 || el.k > intersections.length) {
+			return { position: null, hasComputablePosition: true };
+		}
+		const intr = intersections[el.k - 1];
+		return {
+			position: { x: numeric(intr.x), y: numeric(intr.y) },
+			hasComputablePosition: true
+		};
+	}
+
+	if (isIntersectionParametricSegment(el)) {
+		const curveEl = elements.get(el.curveId);
+		const segEl = elements.get(el.segmentId);
+		if (!curveEl || curveEl.type !== 'parametricCurve' || !segEl || segEl.type !== 'segment') {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		const tMin = resolveScalarParam(curveEl.tMin, scalarValues);
+		const tMax = resolveScalarParam(curveEl.tMax, scalarValues);
+		if (!Number.isFinite(tMin) || !Number.isFinite(tMax)) {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		const p1 = positions.get(segEl.startId);
+		const p2 = positions.get(segEl.endId);
+		if (!p1 || !p2) return { position: null, hasComputablePosition: true };
+
+		const p1x = geoToNumber(p1.x);
+		const p1y = geoToNumber(p1.y);
+		const p2x = geoToNumber(p2.x);
+		const p2y = geoToNumber(p2.y);
+
+		const bindings = buildCurveBindings(curveEl, elements, scalarValues);
+		const intersections = findParametricSegmentIntersections(
+			curveEl,
+			bindings,
+			tMin,
+			tMax,
+			p1x,
+			p1y,
+			p2x,
+			p2y
+		);
+		if (el.k < 1 || el.k > intersections.length) {
+			return { position: null, hasComputablePosition: true };
+		}
+		const intr = intersections[el.k - 1];
+		return {
+			position: { x: numeric(intr.x), y: numeric(intr.y) },
+			hasComputablePosition: true
+		};
+	}
+
+	if (isIntersectionParametricRay(el)) {
+		const curveEl = elements.get(el.curveId);
+		const rayEl = elements.get(el.rayId);
+		if (!curveEl || curveEl.type !== 'parametricCurve' || !rayEl || rayEl.type !== 'ray') {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		const tMin = resolveScalarParam(curveEl.tMin, scalarValues);
+		const tMax = resolveScalarParam(curveEl.tMax, scalarValues);
+		if (!Number.isFinite(tMin) || !Number.isFinite(tMax)) {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		const origin = positions.get(rayEl.originId);
+		const through = positions.get(rayEl.throughId);
+		if (!origin || !through) return { position: null, hasComputablePosition: true };
+
+		const ox = geoToNumber(origin.x);
+		const oy = geoToNumber(origin.y);
+		const vx = geoToNumber(through.x) - ox;
+		const vy = geoToNumber(through.y) - oy;
+
+		const bindings = buildCurveBindings(curveEl, elements, scalarValues);
+		const intersections = findParametricRayIntersections(
+			curveEl,
+			bindings,
+			tMin,
+			tMax,
+			ox,
+			oy,
+			vx,
+			vy
 		);
 		if (el.k < 1 || el.k > intersections.length) {
 			return { position: null, hasComputablePosition: true };
