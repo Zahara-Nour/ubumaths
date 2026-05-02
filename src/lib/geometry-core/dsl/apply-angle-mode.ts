@@ -34,8 +34,60 @@ const TRIG_INVERSE = new Set([
 
 export function applyAngleMode(node: MathNode, mode: AngleMode): MathNode {
 	if (mode === 'rad') return node;
+	// Fast path: walking + spreading the entire AST is wasted work when no
+	// trig call is present. A single read-only scan beats an unconditional
+	// allocating tree-copy for the common case (`r = 2*a + 3`, `r = sqrt(x)`).
+	if (!hasTrigCall(node)) return node;
 	return walkDeg(node);
 }
+
+/** True iff the tree contains any forward- or inverse-trig FunctionNode. */
+function hasTrigCall(node: MathNode): boolean {
+	if (isFunction(node)) {
+		if (TRIG_FORWARD.has(node.name) || TRIG_INVERSE.has(node.name)) return true;
+		for (const a of node.args) if (hasTrigCall(a)) return true;
+		return false;
+	}
+	for (const child of childrenOf(node)) {
+		if (hasTrigCall(child)) return true;
+	}
+	return false;
+}
+
+/** Yield every direct child MathNode of `node`. Mirrors `mapChildren` shape. */
+function childrenOf(node: MathNode): readonly MathNode[] {
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+		case 'implicit_multiplication':
+			return [node.left, node.right];
+		case 'division':
+		case 'fraction':
+			return [node.numerator, node.denominator];
+		case 'opposite':
+		case 'positive':
+			return [node.operand];
+		case 'function':
+			return node.args;
+		case 'superscript':
+			return [node.base, node.superscript];
+		case 'subscript':
+			return [node.base, node.subscript];
+		case 'sqrt':
+			return node.index ? [node.radicand, node.index] : [node.radicand];
+		case 'absolute':
+			return [node.operand];
+		case 'delimiter':
+			return [node.content];
+		case 'relation':
+			return [node.left, node.right];
+		default:
+			return EMPTY_CHILDREN;
+	}
+}
+
+const EMPTY_CHILDREN: readonly MathNode[] = [];
 
 /** Recursively walk the tree, transforming trig/inverse-trig calls. */
 function walkDeg(node: MathNode): MathNode {

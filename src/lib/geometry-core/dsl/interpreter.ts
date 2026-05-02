@@ -28,6 +28,7 @@ import { parse } from './parser';
 import { isMathPureExpr } from './math-pure-expr';
 import { getRawSource } from './source-utils';
 import { parseCustom, getVariables } from '$lib/mathAST';
+import type { MathNode } from '$lib/mathAST';
 import { compile } from '$lib/mathAST/eval/compile';
 import { applyAngleMode, type AngleMode } from './apply-angle-mode';
 
@@ -115,6 +116,19 @@ export function interpret(
  * Math.PI / Math.E respectively.
  */
 const RESERVED_NAMES = new Set(['\\pi', 'e']);
+
+/**
+ * Module-level cache for `parseCustom(rawSource) → MathNode`. The mapping is
+ * deterministic (same source string always parses to the same AST), so the
+ * cache never needs invalidation. Bounded by the number of distinct expression
+ * substrings the DSL has ever encountered in the running session.
+ *
+ * This is the dominant optimization: without it, a `pour i de 1 a 100`
+ * loop body that contains `r = sqrt(i)` re-parses the same string 100 times.
+ */
+const PARSE_CACHE = new Map<string, MathNode>();
+/** Strings known to fail `parseCustom` — avoid retrying them. */
+const PARSE_FAILURE_CACHE = new Set<string>();
 
 function assertNameNotReserved(name: string, line: number): void {
 	if (RESERVED_NAMES.has(name)) {
@@ -338,11 +352,18 @@ class Interpreter {
 			if (entry && entry.type !== 'nombre' && entry.type !== 'scalar') return null;
 		}
 
-		let node;
-		try {
-			node = parseCustom(rawSource);
-		} catch {
-			return null;
+		// Module-level parse cache: same source always parses to the same AST,
+		// so we never need invalidation. Skip strings already known to fail.
+		if (PARSE_FAILURE_CACHE.has(rawSource)) return null;
+		let node = PARSE_CACHE.get(rawSource);
+		if (node === undefined) {
+			try {
+				node = parseCustom(rawSource);
+			} catch {
+				PARSE_FAILURE_CACHE.add(rawSource);
+				return null;
+			}
+			PARSE_CACHE.set(rawSource, node);
 		}
 
 		// Apply the active angle mode to wrap any trig calls.
