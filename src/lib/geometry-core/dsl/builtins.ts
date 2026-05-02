@@ -13,13 +13,16 @@ import { DslRuntimeError } from './errors';
 import {
 	parseCustom,
 	isRelation,
+	isVariable,
+	isGreek,
 	subtract,
 	divide,
 	opposite,
 	add,
 	number as mathNumber,
 	compile,
-	toCustom
+	toCustom,
+	getVariables
 } from '$lib/mathAST';
 import type { MathNode, CompiledFn } from '$lib/mathAST';
 import {
@@ -1543,14 +1546,33 @@ function _executeBuiltinInner(
 		}
 
 		case 'courbe': {
-			if (pos.length !== 1 || pos[0].type !== 'string') {
-				throw new DslRuntimeError(
-					'courbe() attend 1 argument string (ex: courbe("y = 2*x + 3"))',
-					line
+			// 1 string positional → cartesian curve (line / function / quadratic / implicit).
+			if (pos.length === 1 && pos[0].type === 'string') {
+				if (named.has('t_min') || named.has('t_max')) {
+					throw new DslRuntimeError(
+						"courbe(): t_min/t_max ne s'applique qu'à une courbe paramétrique (2 équations)",
+						line
+					);
+				}
+				return createCurveFromEquation(pos[0].value, figure, line, label);
+			}
+			// 2 strings positional → parametric curve.
+			if (pos.length === 2 && pos[0].type === 'string' && pos[1].type === 'string') {
+				return createParametricCurveFromEquations(
+					pos[0].value,
+					pos[1].value,
+					named,
+					figure,
+					line,
+					label,
+					toGeoValue,
+					symbols
 				);
 			}
-			const courbeResult = createCurveFromEquation(pos[0].value, figure, line, label);
-			return courbeResult;
+			throw new DslRuntimeError(
+				'courbe() attend 1 ou 2 arguments string (1 = équation cartésienne, 2 = équations paramétriques x= et y=)',
+				line
+			);
 		}
 
 		case 'tangente': {
@@ -2357,6 +2379,283 @@ function createImplicitCurve(
 ): BuiltinResult {
 	const icId = figure.createImplicitCurve(F, compiledFn, equation, { label });
 	return { figureId: icId, symbolType: 'courbe' };
+}
+
+// =============================================================================
+// courbe() — parametric branch (2 equations: x = ..., y = ...)
+// =============================================================================
+
+/**
+ * Get the LHS variable name of an equation node (must be `x` or `y`),
+ * or return the actual name if it is a single variable but not x/y, or null otherwise.
+ */
+function lhsVariableName(node: MathNode): string | null {
+	if (isVariable(node)) return node.name;
+	if (isGreek(node)) return node.letter;
+	return null;
+}
+
+/** Parse one parametric equation string and check it is a Relation `x|y = RHS`.
+ * Returns the LHS variable name and the RHS, throwing DSL errors with position-aware messages. */
+function parseParametricEquation(
+	eq: string,
+	position: '1ère' | '2ème',
+	line: number
+): { lhs: string; rhs: MathNode } {
+	let parsed: MathNode;
+	try {
+		parsed = parseCustom(eq);
+	} catch {
+		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${eq}"`, line);
+	}
+	if (!isRelation(parsed) || parsed.relation !== '=') {
+		throw new DslRuntimeError(
+			`courbe(): ${position} équation invalide : attendu "x = ..." ou "y = ..." (reçu "${eq}")`,
+			line
+		);
+	}
+	const lhs = lhsVariableName(parsed.left);
+	if (lhs === null) {
+		throw new DslRuntimeError(
+			`courbe(): ${position} équation invalide : LHS doit être x ou y (reçu "${eq}")`,
+			line
+		);
+	}
+	if (lhs !== 'x' && lhs !== 'y') {
+		throw new DslRuntimeError(
+			`courbe(): équation invalide : "${lhs}" non reconnu (utilise x, y)`,
+			line
+		);
+	}
+	return { lhs, rhs: parsed.right };
+}
+
+/** Resolve a named arg representing a t-bound to a ScalarParam (numeric or scalarRef). */
+function resolveTBoundArg(
+	val: ResolvedValue,
+	name: string,
+	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
+	line: number
+): ScalarParam {
+	if (val.type === 'element' && val.elementType === 'scalar') {
+		return { scalarRef: val.figureId };
+	}
+	if (val.type === 'nombre' || val.type === 'geoValue') {
+		return toGeoValue(val, line);
+	}
+	throw new DslRuntimeError(`courbe(): ${name} doit être un nombre ou un scalaire/slider`, line);
+}
+
+/**
+ * Build a parametric curve element from two equation strings (`x = ...`, `y = ...`).
+ *
+ * Algorithm:
+ *   1. Parse both equations and ensure they are relations with LHS in {x, y}.
+ *   2. Identify the x= and y= equation (order-independent).
+ *   3. Validate t_min and t_max (required, both ScalarParam-compatible, t_min < t_max if numeric).
+ *   4. Auto-detect the parameter (single free variable not in {x, y} ∪ defined symbols),
+ *      or honor an explicit `param="..."` override.
+ *   5. Best-effort symbolic differentiation of x(t), y(t).
+ *   6. Compile x(t) and y(t) (mandatory).
+ *   7. Collect dependency ids (scalars/sliders referenced in x, y, t_min, t_max).
+ */
+function createParametricCurveFromEquations(
+	eq1: string,
+	eq2: string,
+	named: Map<string, ResolvedValue>,
+	figure: Figure,
+	line: number,
+	label: string | undefined,
+	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
+	symbols?: SymbolTable
+): BuiltinResult {
+	// --- A. Parse both equations ---
+	const { lhs: lhs1, rhs: rhs1 } = parseParametricEquation(eq1, '1ère', line);
+	const { lhs: lhs2, rhs: rhs2 } = parseParametricEquation(eq2, '2ème', line);
+
+	if (lhs1 === lhs2) {
+		throw new DslRuntimeError('courbe(): il faut une équation en x et une en y', line);
+	}
+
+	const xRhs = lhs1 === 'x' ? rhs1 : rhs2;
+	const yRhs = lhs1 === 'y' ? rhs1 : rhs2;
+	const eqXOriginal = lhs1 === 'x' ? eq1 : eq2;
+	const eqYOriginal = lhs1 === 'y' ? eq1 : eq2;
+
+	// --- B. t_min / t_max validation ---
+	const tMinRaw = named.get('t_min');
+	const tMaxRaw = named.get('t_max');
+	if (tMinRaw === undefined || tMaxRaw === undefined) {
+		throw new DslRuntimeError(
+			'courbe(): t_min et t_max obligatoires pour une courbe paramétrique',
+			line
+		);
+	}
+	const tMin = resolveTBoundArg(tMinRaw, 't_min', toGeoValue, line);
+	const tMax = resolveTBoundArg(tMaxRaw, 't_max', toGeoValue, line);
+
+	// Static check t_min < t_max only if both are numeric.
+	const tMinNum = !isScalarRef(tMin) && tMin.kind === 'numeric' ? tMin.value : null;
+	const tMaxNum = !isScalarRef(tMax) && tMax.kind === 'numeric' ? tMax.value : null;
+	if (tMinNum !== null && tMaxNum !== null && tMinNum >= tMaxNum) {
+		throw new DslRuntimeError('courbe(): t_max doit être strictement supérieur à t_min', line);
+	}
+
+	// --- C. Free-variable analysis ---
+	const xVars = getVariables(xRhs);
+	const yVars = getVariables(yRhs);
+	const allVars = new Set<string>([...xVars, ...yVars]);
+	allVars.delete('x');
+	allVars.delete('y');
+
+	// Defined symbols (scalars/sliders/etc. visible in the current scope).
+	const definedSymbols = new Set<string>();
+	if (symbols) {
+		for (const [name] of symbols.allEntries()) {
+			definedSymbols.add(name);
+		}
+	}
+
+	// Candidates = variables free in expressions and not defined elsewhere.
+	const candidates = [...allVars].filter((v) => !definedSymbols.has(v));
+	candidates.sort();
+
+	// --- D. Coherence: detect "different param in x vs y" before ambiguity check ---
+	// Incoherent iff there exists a candidate variable exclusive to xRhs *and* a
+	// (different) candidate variable exclusive to yRhs. Same variable in both
+	// sides is fine — that's the normal case.
+	const exclusiveX = candidates.filter((v) => xVars.has(v) && !yVars.has(v));
+	const exclusiveY = candidates.filter((v) => yVars.has(v) && !xVars.has(v));
+	if (exclusiveX.length > 0 && exclusiveY.length > 0) {
+		throw new DslRuntimeError(
+			`courbe(): paramètre incohérent : "${exclusiveX[0]}" en x, "${exclusiveY[0]}" en y`,
+			line
+		);
+	}
+
+	// --- E. Honor explicit param= or auto-detect ---
+	let parameterName: string;
+	const paramOverride = named.get('param');
+	if (paramOverride !== undefined) {
+		if (paramOverride.type !== 'string') {
+			throw new DslRuntimeError('courbe(): param doit être une chaîne de caractères', line);
+		}
+		parameterName = paramOverride.value;
+		if (parameterName === 'x' || parameterName === 'y') {
+			throw new DslRuntimeError(
+				`courbe(): param ne peut pas être "x" ou "y" (réservés aux coordonnées)`,
+				line
+			);
+		}
+		if (!xVars.has(parameterName) && !yVars.has(parameterName)) {
+			throw new DslRuntimeError(
+				`courbe(): la variable "${parameterName}" n'apparaît pas dans les expressions`,
+				line
+			);
+		}
+	} else {
+		if (candidates.length === 0) {
+			throw new DslRuntimeError('courbe(): aucune variable de paramètre détectée', line);
+		}
+		if (candidates.length >= 2) {
+			throw new DslRuntimeError(
+				`courbe(): paramètre ambigu : {${candidates.join(', ')}} ; précisez param="..."`,
+				line
+			);
+		}
+		parameterName = candidates[0];
+	}
+
+	// --- F. Best-effort symbolic differentiation ---
+	let xDerivative: MathNode | null = null;
+	let yDerivative: MathNode | null = null;
+	try {
+		xDerivative = differentiate(xRhs, { variable: parameterName, simplify: true });
+	} catch {
+		xDerivative = null;
+	}
+	try {
+		yDerivative = differentiate(yRhs, { variable: parameterName, simplify: true });
+	} catch {
+		yDerivative = null;
+	}
+
+	// --- G. Compile x(t) and y(t) (mandatory) ---
+	let compiledX: CompiledFn;
+	let compiledY: CompiledFn;
+	try {
+		compiledX = compile(xRhs);
+	} catch (e) {
+		throw new DslRuntimeError(
+			`courbe(): impossible de compiler "${eqXOriginal}" — ${e instanceof Error ? e.message : ''}`,
+			line
+		);
+	}
+	try {
+		compiledY = compile(yRhs);
+	} catch (e) {
+		throw new DslRuntimeError(
+			`courbe(): impossible de compiler "${eqYOriginal}" — ${e instanceof Error ? e.message : ''}`,
+			line
+		);
+	}
+
+	// Compile derivatives best-effort. If compile fails, fall back to null
+	// (sampler will use uniform sampling).
+	let compiledXPrime: CompiledFn | null = null;
+	let compiledYPrime: CompiledFn | null = null;
+	if (xDerivative !== null) {
+		try {
+			compiledXPrime = compile(xDerivative);
+		} catch {
+			compiledXPrime = null;
+			xDerivative = null;
+		}
+	}
+	if (yDerivative !== null) {
+		try {
+			compiledYPrime = compile(yDerivative);
+		} catch {
+			compiledYPrime = null;
+			yDerivative = null;
+		}
+	}
+
+	// --- H. Collect reactive dependencies (scalars/sliders referenced anywhere) ---
+	const dependencies = new Set<string>();
+	if (symbols) {
+		const allFreeVars = new Set<string>([...xVars, ...yVars]);
+		allFreeVars.delete('x');
+		allFreeVars.delete('y');
+		allFreeVars.delete(parameterName);
+		for (const name of allFreeVars) {
+			const entry = symbols.get(name);
+			if (entry?.type === 'scalar' && entry.figureId) {
+				dependencies.add(entry.figureId);
+			}
+		}
+	}
+	if (isScalarRef(tMin)) dependencies.add(tMin.scalarRef);
+	if (isScalarRef(tMax)) dependencies.add(tMax.scalarRef);
+
+	const id = figure.createParametricCurve(
+		xRhs,
+		yRhs,
+		xDerivative,
+		yDerivative,
+		compiledX,
+		compiledY,
+		compiledXPrime,
+		compiledYPrime,
+		parameterName,
+		tMin,
+		tMax,
+		eqXOriginal,
+		eqYOriginal,
+		[...dependencies],
+		{ label }
+	);
+	return { figureId: id, symbolType: 'courbe' };
 }
 
 /** Create zero points (y=0 intersections) for a quadratic curve. */
