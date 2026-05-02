@@ -917,11 +917,11 @@ function _executeBuiltinInner(
 				return { figureId: ptId, symbolType: 'point' };
 			}
 
-			// V2 (B3): parametric × {droite, cercle, fonction}. Auto-swap supported.
-			// Scope is INTENTIONALLY narrower than `isLineType` (which also matches
-			// segment/demidroite — those remain V3 scope). We use a local predicate
-			// that matches only `'droite'`.
+			// V2 (B3) + V3: parametric × {droite, cercle, fonction, segment, demidroite}.
+			// Auto-swap supported. quadraticCurve remains hors scope (E2 must still throw).
 			const isDroiteOnly = (t: string | undefined) => t === 'droite';
+			const isSegmentOnly = (t: string | undefined) => t === 'segment';
+			const isRayOnly = (t: string | undefined) => t === 'demidroite';
 			if (isParam1 || isParam2) {
 				const paramId = isParam1 ? id1 : id2;
 				const otherType = isParam1 ? type2 : type1;
@@ -930,8 +930,10 @@ function _executeBuiltinInner(
 
 				const otherIsDroite = isDroiteOnly(otherType);
 				const otherIsCircle = isCircleType(otherType);
+				const otherIsSegment = isSegmentOnly(otherType);
+				const otherIsRay = isRayOnly(otherType);
 
-				if (otherIsDroite || otherIsCircle || otherIsFunc) {
+				if (otherIsDroite || otherIsCircle || otherIsFunc || otherIsSegment || otherIsRay) {
 					let kVal = 1;
 					if (pos.length === 3) {
 						const kRaw = requireNumber(pos[2], 'k', line);
@@ -952,14 +954,26 @@ function _executeBuiltinInner(
 						});
 						return { figureId: ptId, symbolType: 'point' };
 					}
+					if (otherIsSegment) {
+						const ptId = figure.createIntersectionParametricSegment(paramId, otherId, kVal, {
+							label
+						});
+						return { figureId: ptId, symbolType: 'point' };
+					}
+					if (otherIsRay) {
+						const ptId = figure.createIntersectionParametricRay(paramId, otherId, kVal, {
+							label
+						});
+						return { figureId: ptId, symbolType: 'point' };
+					}
 					// otherIsFunc
 					const ptId = figure.createIntersectionParametricFunction(paramId, otherId, kVal, {
 						label
 					});
 					return { figureId: ptId, symbolType: 'point' };
 				}
-				// Fall through to the rejection below — this preserves the existing
-				// error behaviour for segment/demidroite/quadraticCurve combos (E1/E2).
+				// Fall through to the rejection below — preserves error behaviour
+				// for quadraticCurve combos (E2).
 			}
 
 			// Reject implicit curves (not functions, not conics, not parametric)

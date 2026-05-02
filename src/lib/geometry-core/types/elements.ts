@@ -234,6 +234,44 @@ export interface GeoIntersectionParametricFunction extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
+/**
+ * Intersection of a parametric curve γ(t) and a `segment` (V3).
+ *
+ * Solved live by Newton 1D multi-start on the support line of the segment, then
+ * filtered to keep only intersections whose foot parameter s ∈ [0, 1] (with a
+ * small tolerance ε = acceptanceTolerance / ‖p2 − p1‖ to absorb numerical slop
+ * at the boundaries).
+ *
+ * `k` is 1-indexed; out-of-range k silently returns null.
+ */
+export interface GeoIntersectionParametricSegment extends GeoElementBase {
+	readonly type: 'intersectionParametricSegment';
+	readonly curveId: string;
+	readonly segmentId: string;
+	/** 1-indexed k. */
+	readonly k: number;
+	readonly dependsOn: readonly [string, string];
+}
+
+/**
+ * Intersection of a parametric curve γ(t) and a `demidroite` (ray) (V3).
+ *
+ * Solved live by Newton 1D multi-start on the support line of the ray, then
+ * filtered to keep only intersections whose foot parameter s ≥ 0 (with a
+ * small tolerance ε = acceptanceTolerance / ‖direction‖ to absorb numerical
+ * slop near the origin).
+ *
+ * `k` is 1-indexed; out-of-range k silently returns null.
+ */
+export interface GeoIntersectionParametricRay extends GeoElementBase {
+	readonly type: 'intersectionParametricRay';
+	readonly curveId: string;
+	readonly rayId: string;
+	/** 1-indexed k. */
+	readonly k: number;
+	readonly dependsOn: readonly [string, string];
+}
+
 /** Image of a point by central symmetry (reflection through a center). */
 export interface GeoReflectedPoint extends GeoElementBase {
 	readonly type: 'reflectedPoint';
@@ -1163,6 +1201,8 @@ export type GeoPointElement =
 	| GeoIntersectionParametricLine
 	| GeoIntersectionParametricCircle
 	| GeoIntersectionParametricFunction
+	| GeoIntersectionParametricSegment
+	| GeoIntersectionParametricRay
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -1195,6 +1235,8 @@ export type GeoElement =
 	| GeoIntersectionParametricLine
 	| GeoIntersectionParametricCircle
 	| GeoIntersectionParametricFunction
+	| GeoIntersectionParametricSegment
+	| GeoIntersectionParametricRay
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -1323,6 +1365,16 @@ export function isIntersectionParametricFunction(
 	return el.type === 'intersectionParametricFunction';
 }
 
+export function isIntersectionParametricSegment(
+	el: GeoElement
+): el is GeoIntersectionParametricSegment {
+	return el.type === 'intersectionParametricSegment';
+}
+
+export function isIntersectionParametricRay(el: GeoElement): el is GeoIntersectionParametricRay {
+	return el.type === 'intersectionParametricRay';
+}
+
 export function isReflectedPoint(el: GeoElement): el is GeoReflectedPoint {
 	return el.type === 'reflectedPoint';
 }
@@ -1387,6 +1439,8 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'intersectionParametricLine' ||
 		el.type === 'intersectionParametricCircle' ||
 		el.type === 'intersectionParametricFunction' ||
+		el.type === 'intersectionParametricSegment' ||
+		el.type === 'intersectionParametricRay' ||
 		el.type === 'reflectedPoint' ||
 		el.type === 'rotatedPoint' ||
 		el.type === 'translatedPoint' ||

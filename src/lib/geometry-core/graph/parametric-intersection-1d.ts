@@ -261,6 +261,119 @@ export function findParametricCircleIntersections(
 }
 
 /**
+ * Find intersections of γ(t) with the segment from (p1x, p1y) to (p2x, p2y) (V3).
+ *
+ * Reuses {@link findParametricLineIntersections} on the support line of the segment,
+ * then keeps only the hits whose foot parameter `s = dot(p − p1, p2 − p1) / ‖p2 − p1‖²`
+ * lies in `[0, 1]` (with a relative tolerance `ε = acceptanceTolerance / ‖p2 − p1‖`
+ * to absorb numerical slop near the endpoints).
+ *
+ * Degenerate input (p1 ≈ p2) returns `[]`.
+ */
+export function findParametricSegmentIntersections(
+	curve: GeoParametricCurve,
+	bindings: Record<string, number>,
+	tMin: number,
+	tMax: number,
+	p1x: number,
+	p1y: number,
+	p2x: number,
+	p2y: number,
+	config?: Partial<IntersectionConfig1D>
+): ParametricIntersection1D[] {
+	const cfg = { ...DEFAULT_CONFIG, ...config };
+	if (
+		!Number.isFinite(p1x) ||
+		!Number.isFinite(p1y) ||
+		!Number.isFinite(p2x) ||
+		!Number.isFinite(p2y)
+	) {
+		return [];
+	}
+	const vx = p2x - p1x;
+	const vy = p2y - p1y;
+	const lengthSq = vx * vx + vy * vy;
+	const length = Math.sqrt(lengthSq);
+	const linearEps = Math.sqrt(cfg.singularityThreshold);
+	if (length < linearEps) return []; // degenerate segment (p1 = p2)
+
+	const lineHits = findParametricLineIntersections(
+		curve,
+		bindings,
+		tMin,
+		tMax,
+		p1x,
+		p1y,
+		vx,
+		vy,
+		cfg
+	);
+
+	// Tolerance on s relative to the segment length so that an intersection within
+	// `acceptanceTolerance` units of the endpoint passes the boundary check.
+	const eps = cfg.acceptanceTolerance / length;
+	return lineHits.filter((p) => {
+		const s = ((p.x - p1x) * vx + (p.y - p1y) * vy) / lengthSq;
+		return s >= -eps && s <= 1 + eps;
+	});
+}
+
+/**
+ * Find intersections of γ(t) with the ray (demidroite) starting at (ox, oy) along
+ * direction (vx, vy) (V3).
+ *
+ * Reuses {@link findParametricLineIntersections} on the support line of the ray,
+ * then keeps only the hits whose foot parameter `s = dot(p − origin, direction) / ‖direction‖²`
+ * is `≥ 0` (with a relative tolerance `ε = acceptanceTolerance / ‖direction‖`
+ * to absorb numerical slop near the origin).
+ *
+ * Degenerate input (‖direction‖ ≈ 0) returns `[]`.
+ */
+export function findParametricRayIntersections(
+	curve: GeoParametricCurve,
+	bindings: Record<string, number>,
+	tMin: number,
+	tMax: number,
+	ox: number,
+	oy: number,
+	vx: number,
+	vy: number,
+	config?: Partial<IntersectionConfig1D>
+): ParametricIntersection1D[] {
+	const cfg = { ...DEFAULT_CONFIG, ...config };
+	if (
+		!Number.isFinite(ox) ||
+		!Number.isFinite(oy) ||
+		!Number.isFinite(vx) ||
+		!Number.isFinite(vy)
+	) {
+		return [];
+	}
+	const lengthSq = vx * vx + vy * vy;
+	const length = Math.sqrt(lengthSq);
+	const linearEps = Math.sqrt(cfg.singularityThreshold);
+	if (length < linearEps) return []; // degenerate ray (zero direction)
+
+	const lineHits = findParametricLineIntersections(
+		curve,
+		bindings,
+		tMin,
+		tMax,
+		ox,
+		oy,
+		vx,
+		vy,
+		cfg
+	);
+
+	const eps = cfg.acceptanceTolerance / length;
+	return lineHits.filter((p) => {
+		const s = ((p.x - ox) * vx + (p.y - oy) * vy) / lengthSq;
+		return s >= -eps;
+	});
+}
+
+/**
  * Find intersections of γ(t) with the function curve y = f(x).
  *
  * g(t)  = γ_y(t) − f(γ_x(t))

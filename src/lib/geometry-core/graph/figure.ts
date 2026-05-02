@@ -57,6 +57,8 @@ import type {
 	GeoIntersectionParametricLine,
 	GeoIntersectionParametricCircle,
 	GeoIntersectionParametricFunction,
+	GeoIntersectionParametricSegment,
+	GeoIntersectionParametricRay,
 	GeoTangentLine,
 	GeoTangentToQuadratic,
 	GeoTangentParametric,
@@ -1136,6 +1138,92 @@ export class Figure {
 			dependsOn: [curveId, functionId]
 		};
 		this.addElement(id, element, [curveId, functionId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Parametric × segment intersection (V3).
+	 * Solved live by Newton 1D on the support line of the segment, then filtered
+	 * to keep only intersections with foot parameter s ∈ [0, 1].
+	 * `k` is 1-indexed.
+	 */
+	createIntersectionParametricSegment(
+		curveId: string,
+		segmentId: string,
+		k: number,
+		options?: ElementOptions
+	): string {
+		const elC = this.elements.get(curveId);
+		const elS = this.elements.get(segmentId);
+		if (!elC || elC.type !== 'parametricCurve')
+			throw new Error(
+				`createIntersectionParametricSegment: "${curveId}" is not a parametric curve element`
+			);
+		if (!elS || elS.type !== 'segment')
+			throw new Error(
+				`createIntersectionParametricSegment: "${segmentId}" is not a segment element`
+			);
+		if (!Number.isInteger(k) || k < 1)
+			throw new Error(`createIntersectionParametricSegment: k must be an integer >= 1 (got ${k})`);
+
+		const id = this.generateId('intPS');
+		const element: GeoIntersectionParametricSegment = {
+			type: 'intersectionParametricSegment',
+			id,
+			curveId,
+			segmentId,
+			k,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [curveId, segmentId]
+		};
+		this.addElement(id, element, [curveId, segmentId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Parametric × demidroite (ray) intersection (V3).
+	 * Solved live by Newton 1D on the support line of the ray, then filtered
+	 * to keep only intersections with foot parameter s ≥ 0.
+	 * `k` is 1-indexed.
+	 */
+	createIntersectionParametricRay(
+		curveId: string,
+		rayId: string,
+		k: number,
+		options?: ElementOptions
+	): string {
+		const elC = this.elements.get(curveId);
+		const elR = this.elements.get(rayId);
+		if (!elC || elC.type !== 'parametricCurve')
+			throw new Error(
+				`createIntersectionParametricRay: "${curveId}" is not a parametric curve element`
+			);
+		if (!elR || elR.type !== 'ray')
+			throw new Error(`createIntersectionParametricRay: "${rayId}" is not a ray element`);
+		if (!Number.isInteger(k) || k < 1)
+			throw new Error(`createIntersectionParametricRay: k must be an integer >= 1 (got ${k})`);
+
+		const id = this.generateId('intPR');
+		const element: GeoIntersectionParametricRay = {
+			type: 'intersectionParametricRay',
+			id,
+			curveId,
+			rayId,
+			k,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [curveId, rayId]
+		};
+		this.addElement(id, element, [curveId, rayId]);
 		this.computePosition(id);
 		return id;
 	}
@@ -4036,7 +4124,9 @@ export class Figure {
 			(el.type === 'intersectionParametric' ||
 				el.type === 'intersectionParametricLine' ||
 				el.type === 'intersectionParametricCircle' ||
-				el.type === 'intersectionParametricFunction')
+				el.type === 'intersectionParametricFunction' ||
+				el.type === 'intersectionParametricSegment' ||
+				el.type === 'intersectionParametricRay')
 		) {
 			// V2 (B3): parametric × {droite, cercle, fonction} reads parent positions
 			// (line endpoints, circle center, function-defining points) from the

@@ -391,10 +391,12 @@ describe('intersection — polaire × droite/cercle (D.)', () => {
 // =============================================================================
 
 describe('intersection — hors-scope V2 (E.)', () => {
-	it('E1. intersection(c, segment) → DslRuntimeError avec message francophone', () => {
-		// Segment is NOT part of V2 scope. The dispatcher must throw a DSL error
-		// indicating this limitation with a French message.
-		// The error message is implementation-defined but must be francophone.
+	it('E1. intersection(c, segment) → works in V3: returns a point on the circle', () => {
+		// V2 threw DslRuntimeError for segment (out of scope).
+		// V3 now supports parametric × segment: this must succeed and return
+		// a valid intersection point rather than throwing.
+		// Unit circle (cos t, sin t) × segment [(-2,0)→(2,0)] has 2 intersections at (±1,0).
+		// k=1 must return one of them (not null, no throw).
 		const script = [
 			`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI})`,
 			`A = point(-2, 0)`,
@@ -403,10 +405,18 @@ describe('intersection — hors-scope V2 (E.)', () => {
 			`P = intersection(c, s, 1)`
 		].join('\n');
 
-		// Assumption: V2 will still throw for segment (not part of V2 scope).
-		// This test confirms the error is thrown (message pattern may need updating
-		// once V2 is implemented and the exact error text is known).
-		expect(() => runMixed(script)).toThrow(DslRuntimeError);
+		// V3: segment is supported → must NOT throw.
+		const { figure, symbols } = runMixed(script);
+		const pos = getPos(figure, symbols, 'P');
+
+		// Must return a valid intersection point on the unit circle
+		expect(pos).not.toBeNull();
+		const x = geoToNumber(pos!.x);
+		const y = geoToNumber(pos!.y);
+		// Point must lie on the unit circle
+		expect(x * x + y * y).toBeCloseTo(1, 3);
+		// y must be ≈ 0 (the segment is horizontal at y=0)
+		expect(y).toBeCloseTo(0, 3);
 	});
 
 	it('E2. intersection(c, quadraticCurve) → DslRuntimeError (conique implicite non supportée)', () => {
