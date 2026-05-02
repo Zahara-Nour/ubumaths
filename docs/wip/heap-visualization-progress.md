@@ -11,7 +11,7 @@ Plan : `~/.claude/plans/virtual-soaring-fountain.md`
 | 2     | FramesPanel + HeapPanel (sans flèches) | **Terminé**                                            |
 | 3     | MemoryDiagramView + flèches SVG        | **Terminé**                                            |
 | 4     | Intégration DebugPanel + test manuel   | **Intégration OK, test manuel utilisateur en attente** |
-| 5     | Quality checks finaux                  | À faire                                                |
+| 5     | Quality checks finaux                  | **Terminé**                                            |
 
 ## Phase 0 — Spécifications validées
 
@@ -272,6 +272,26 @@ deep = [[[[[[1, 2]]]]]]
 
 Reporter tout problème détecté.
 
-## Phase 5 — Prochaine étape
+## Phase 5 — Réalisé
 
-Quality checks finaux + mise à jour de `docs/ref/python/progress/python-debugger-progress.md` (Phase 6 → Terminé).
+### Quality checks
+
+- `npx eslint <14 fichiers modifiés>` : 0 erreur, 1 warning (faux-positif `prefer-svelte-reactivity` sur Map locale dans MemoryDiagramView, recréée à chaque appel — pas besoin de SvelteMap).
+- `pnpm check:incremental` : 0 erreur dans les fichiers touchés (les 9 erreurs résiduelles préexistantes sont dans `slides/demo/` et `extern/`, filtrées par le script).
+- `mcp__svelte__svelte-autofixer` lancé sur les 4 composants .svelte créés/modifiés : 0 issue. Toutes les suggestions restantes sont des faux-positifs (effects légitimes pour mesurer le DOM, etc.).
+- `pnpm test:server` sur les 3 fichiers de tests heap : 137 tests passent (43 types + 70 schemas + 24 utils).
+- Page `/python` sert HTTP 200 sans erreur SSR.
+
+### Documentation
+
+- `docs/ref/python/progress/python-debugger-progress.md` : Phase 6 marquée Terminée, résumé complet ajouté en bas du document.
+
+## Documents produits (à la fin du plan)
+
+- `~/.claude/plans/virtual-soaring-fountain.md` — plan original (5 phases + spécification TDD).
+- `docs/wip/heap-visualization-progress.md` — ce document de progression (recovery-friendly, mis à jour à chaque phase).
+- `docs/ref/python/progress/python-debugger-progress.md` — section Phase 6 ajoutée pour pérenniser la livraison dans la doc de référence.
+
+## Statut final
+
+Implémentation complète des 5 phases. Tests serveur passent. Reste : test manuel utilisateur sur les 9 cas TDD listés en Phase 4 ci-dessus (alias, cycle, instance, imbrication, etc.) — l'environnement Claude n'a pas de navigateur interactif.
