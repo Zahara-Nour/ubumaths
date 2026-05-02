@@ -54,13 +54,17 @@ Le dernier morceau sans `si`/`sur` est le `otherwise` :
 courbe("y = { -x si x < 0, x }")  # x est la valeur par défaut
 ```
 
-### Combinaison piecewise + domain restriction
+### Restriction de domaine sur piecewise : interdite (redondante)
+
+Un piecewise définit DÉJÀ la fonction par cas — combiner avec `sur`/`avec`
+en suffixe est conceptuellement redondant et rejeté avec un message clair.
+L'utilisateur encode la restriction directement dans les conditions :
 
 ```dsl
-courbe("y = { -x si x < 0, x } sur [-5 ; 5]")
+# Au lieu de :  y = { -x si x < 0, x } sur [-5 ; 5]   (ERREUR)
+# On écrit :
+courbe("y = { -x si -5 <= x < 0, x si 0 <= x <= 5 }")
 ```
-
-Le piecewise définit la fonction par cas, le suffixe `sur` restreint le tracé.
 
 ### Erreurs détectées
 
@@ -70,6 +74,7 @@ Le piecewise définit la fonction par cas, le suffixe `sur` restreint le tracé.
 - Intervalle avec `,` comme séparateur de bornes → erreur (forcer `;`)
 - Piecewise imbriqué → erreur claire (non supporté en V1)
 - Intervalle non borné `]-infini ; +infini[` → erreur
+- **Piecewise + suffixe `sur`/`avec`** → erreur claire (redondance conceptuelle)
 
 ## Modifications
 

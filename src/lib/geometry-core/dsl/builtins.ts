@@ -2246,6 +2246,15 @@ function createCurveFromEquation(
 			const lhs = coreEquation.slice(0, eqIdx).trim();
 			const rhs = coreEquation.slice(eqIdx + 1).trim();
 			if (lhs === 'y' && isPiecewiseRhs(rhs)) {
+				// A piecewise expression already defines the function case-by-case,
+				// so combining it with an external `sur`/`avec` domain suffix is
+				// conceptually redundant and confusing — reject it explicitly.
+				if (domainResult) {
+					throw new DslRuntimeError(
+						`courbe(): un piecewise définit déjà la fonction par cas — la restriction "sur"/"avec" est redondante. Encodez la restriction directement dans les conditions du piecewise.`,
+						line
+					);
+				}
 				const result = parsePiecewise(rhs, symbols, line);
 				return createPiecewiseFunctionFromAst(
 					result.node,
@@ -2253,8 +2262,7 @@ function createCurveFromEquation(
 					equation,
 					figure,
 					line,
-					label,
-					domainResult
+					label
 				);
 			}
 		}
@@ -2413,8 +2421,7 @@ function createPiecewiseFunctionFromAst(
 	equation: string,
 	figure: Figure,
 	line: number,
-	label?: string,
-	domainResult?: ParseDomainResult | null
+	label?: string
 ): BuiltinResult {
 	let compiledFn;
 	try {
@@ -2430,9 +2437,6 @@ function createPiecewiseFunctionFromAst(
 	const derivativePlaceholder = ZERO_NODE;
 	const compiledDerivativePlaceholder = () => 0;
 
-	const allDeps = new Set<string>(dependencies);
-	if (domainResult) for (const d of domainResult.dependencies) allDeps.add(d);
-
 	const fnId = figure.createFunction(
 		piecewiseNode,
 		derivativePlaceholder,
@@ -2441,8 +2445,7 @@ function createPiecewiseFunctionFromAst(
 		equation,
 		{
 			label,
-			...(domainResult ? { domain: domainResult.domain } : {}),
-			dependencies: Array.from(allDeps)
+			dependencies: [...dependencies]
 		}
 	);
 
