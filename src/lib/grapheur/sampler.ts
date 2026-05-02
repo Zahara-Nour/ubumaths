@@ -421,6 +421,234 @@ export function sampleWithDerivative(
 	return { points: refinedPoints, discontinuityIndices: refinedDiscontinuities };
 }
 
+// =============================================================================
+// Parametric 2D Sampling
+// =============================================================================
+
+/**
+ * Result of sampling a 2D parametric curve t → (x(t), y(t)).
+ *
+ * - `points` are valid (finite) sampled points in parameter order.
+ * - `discontinuityIndices` lists positions in `points` where a break occurred
+ *   (NaN/Inf, undefined, or large jump) — the renderer should split path here.
+ * - `closed` is true when P(tMin) ≈ P(tMax) within a viewport-relative epsilon.
+ */
+export interface ParametricSampleResult {
+	readonly points: readonly Point[];
+	readonly discontinuityIndices: readonly number[];
+	readonly closed: boolean;
+}
+
+/** Number of probe points used to estimate ‖speed(t)‖ when derivatives are available. */
+const PARAMETRIC_PROBE_COUNT = 100;
+
+/** Density factor: high-speed regions get up to (1 + DENSITY_FACTOR) × more points. */
+const PARAMETRIC_DENSITY_FACTOR = 3;
+
+/**
+ * Default math-unit span used to convert |speed| × dt into a relative jump scale
+ * when the caller does not supply a viewport.
+ */
+const DEFAULT_PARAMETRIC_SPAN = 10;
+
+/** Closed curve detection: dist(P(tMin), P(tMax)) < ε × viewportSpan. */
+const CLOSED_CURVE_RELATIVE_EPSILON = 0.01;
+
+/** Threshold below which speed is considered effectively zero (degenerate curve). */
+const SPEED_ZERO_THRESHOLD = 1e-10;
+
+/** Coerce an evaluator's return value into a finite number or null. */
+function toFiniteOrNull(v: number | null): number | null {
+	if (v === null) return null;
+	return Number.isFinite(v) ? v : null;
+}
+
+/**
+ * Detect a discontinuity between two consecutive sampled points of a parametric curve.
+ *
+ * A discontinuity is detected when:
+ * - either point is null (NaN/Inf/undefined value),
+ * - or the Euclidean distance between consecutive points exceeds
+ *   `ASYMPTOTE_FACTOR × viewportSpan` (huge jump relative to view).
+ */
+function isParametricDiscontinuity(
+	p1: Point | null,
+	p2: Point | null,
+	viewportSpan: number
+): boolean {
+	if (p1 === null || p2 === null) return true;
+	const span = Math.max(viewportSpan, MIN_VIEWPORT_DIM);
+	const dx = p2.x - p1.x;
+	const dy = p2.y - p1.y;
+	const dist = Math.hypot(dx, dy);
+	return dist > ASYMPTOTE_FACTOR * span;
+}
+
+/**
+ * Sample a 2D parametric curve t → (x(t), y(t)) over [tMin, tMax].
+ *
+ * Algorithm:
+ * - If `tMax ≤ tMin`: return an empty result.
+ * - If both x'(t) and y'(t) are provided: probe ‖speed(t)‖ at K points and
+ *   distribute samples non-uniformly so that fast-moving regions get more points.
+ * - Otherwise: uniform sampling over [tMin, tMax].
+ * - Evaluate (x(t), y(t)) at each sample; track NaN / null / huge-jump as
+ *   discontinuities.
+ * - Detect "closed curve" by comparing P(tMin) to P(tMax) within a relative
+ *   epsilon driven by the viewport span (or `DEFAULT_PARAMETRIC_SPAN`).
+ *
+ * @param xFn       t → x(t) | null
+ * @param yFn       t → y(t) | null
+ * @param xPrime    t → x'(t) | null  (set both xPrime and yPrime to null to force uniform sampling)
+ * @param yPrime    t → y'(t) | null
+ * @param tMin      lower bound
+ * @param tMax      upper bound
+ * @param numPoints target number of samples (default 300)
+ * @param viewport  optional viewport — used to scale the closed-curve epsilon and the jump threshold
+ */
+export function sampleParametric2D(
+	xFn: (t: number) => number | null,
+	yFn: (t: number) => number | null,
+	xPrime: ((t: number) => number | null) | null,
+	yPrime: ((t: number) => number | null) | null,
+	tMin: number,
+	tMax: number,
+	numPoints: number = 300,
+	viewport?: { xMin: number; xMax: number; yMin: number; yMax: number }
+): ParametricSampleResult {
+	// Empty / inverted range → empty result.
+	if (!Number.isFinite(tMin) || !Number.isFinite(tMax) || tMax <= tMin) {
+		return { points: [], discontinuityIndices: [], closed: false };
+	}
+
+	const n = Math.max(2, Math.floor(numPoints));
+	const tSpan = tMax - tMin;
+
+	// Viewport span used both for closed-curve detection and discontinuity scaling.
+	let viewportSpan: number;
+	if (viewport) {
+		const w = Math.max(0, viewport.xMax - viewport.xMin);
+		const h = Math.max(0, viewport.yMax - viewport.yMin);
+		viewportSpan = Math.max(w, h);
+		if (viewportSpan <= MIN_VIEWPORT_DIM) viewportSpan = DEFAULT_PARAMETRIC_SPAN;
+	} else {
+		viewportSpan = DEFAULT_PARAMETRIC_SPAN;
+	}
+
+	// ─── Step 1: build the array of t values ────────────────────────────
+	const tValues: number[] = [];
+
+	if (xPrime && yPrime) {
+		// Adaptive: probe |speed(t)| at K points.
+		const probeStep = tSpan / (PARAMETRIC_PROBE_COUNT - 1);
+		const speeds: number[] = [];
+		let maxSpeed = 0;
+		for (let i = 0; i < PARAMETRIC_PROBE_COUNT; i++) {
+			const t = tMin + i * probeStep;
+			const xp = xPrime(t);
+			const yp = yPrime(t);
+			const sx = xp !== null && Number.isFinite(xp) ? xp : 0;
+			const sy = yp !== null && Number.isFinite(yp) ? yp : 0;
+			const s = Math.hypot(sx, sy);
+			speeds.push(s);
+			if (s > maxSpeed) maxSpeed = s;
+		}
+
+		if (maxSpeed < SPEED_ZERO_THRESHOLD) {
+			// Speed essentially zero everywhere → uniform.
+			for (let i = 0; i < n; i++) {
+				tValues.push(tMin + (i / (n - 1)) * tSpan);
+			}
+		} else {
+			// Cumulative density. At each probe interval [tᵢ, tᵢ₊₁]:
+			//   density = 1 + DENSITY_FACTOR * avg(speedᵢ, speedᵢ₊₁) / maxSpeed
+			const cumulativeDensity: number[] = [0];
+			for (let i = 1; i < PARAMETRIC_PROBE_COUNT; i++) {
+				const avg = (speeds[i - 1] + speeds[i]) / 2;
+				const density = 1 + (PARAMETRIC_DENSITY_FACTOR * avg) / maxSpeed;
+				cumulativeDensity.push(cumulativeDensity[i - 1] + density * probeStep);
+			}
+			const totalDensity = cumulativeDensity[cumulativeDensity.length - 1];
+
+			for (let i = 0; i < n; i++) {
+				const target = (i / (n - 1)) * totalDensity;
+				// Binary search for the probe interval containing `target`.
+				let lo = 0;
+				let hi = PARAMETRIC_PROBE_COUNT - 2;
+				while (lo < hi) {
+					const mid = (lo + hi) >> 1;
+					if (cumulativeDensity[mid + 1] < target) {
+						lo = mid + 1;
+					} else {
+						hi = mid;
+					}
+				}
+				const dRange = cumulativeDensity[lo + 1] - cumulativeDensity[lo];
+				const u = dRange > 0 ? (target - cumulativeDensity[lo]) / dRange : 0;
+				tValues.push(tMin + (lo + u) * probeStep);
+			}
+
+			// Anchor endpoints exactly on tMin/tMax.
+			tValues[0] = tMin;
+			tValues[tValues.length - 1] = tMax;
+		}
+	} else {
+		// Uniform sampling.
+		for (let i = 0; i < n; i++) {
+			tValues.push(tMin + (i / (n - 1)) * tSpan);
+		}
+	}
+
+	// ─── Step 2: evaluate (x(t), y(t)) at each t ────────────────────────
+	const points: Point[] = [];
+	const discontinuityIndices: number[] = [];
+	let prevPoint: Point | null = null;
+	let firstValidPoint: Point | null = null;
+	let lastValidPoint: Point | null = null;
+
+	for (let i = 0; i < tValues.length; i++) {
+		const t = tValues[i];
+		const xRaw = xFn(t);
+		const yRaw = yFn(t);
+		const x = toFiniteOrNull(xRaw);
+		const y = toFiniteOrNull(yRaw);
+		const current: Point | null = x !== null && y !== null ? { x, y } : null;
+
+		// Discontinuity check (skip for the very first sample).
+		if (i > 0 && isParametricDiscontinuity(prevPoint, current, viewportSpan)) {
+			discontinuityIndices.push(points.length);
+		}
+
+		if (current !== null) {
+			points.push(current);
+			if (firstValidPoint === null) firstValidPoint = current;
+			lastValidPoint = current;
+		}
+
+		prevPoint = current;
+	}
+
+	// ─── Step 3: closed-curve detection ─────────────────────────────────
+	let closed = false;
+	if (
+		firstValidPoint !== null &&
+		lastValidPoint !== null &&
+		discontinuityIndices.length === 0 &&
+		points.length >= 3
+	) {
+		const epsilon = Math.max(viewportSpan * CLOSED_CURVE_RELATIVE_EPSILON, MIN_VIEWPORT_DIM);
+		const d = Math.hypot(
+			lastValidPoint.x - firstValidPoint.x,
+			lastValidPoint.y - firstValidPoint.y
+		);
+		if (d < epsilon) {
+			closed = true;
+		}
+	}
+
+	return { points, discontinuityIndices, closed };
+}
+
 /**
  * Generate sample points at specific x coordinates.
  *
