@@ -1249,45 +1249,45 @@
 							/>
 						{/each}
 						{#each svg.infinityEdges ?? [] as edge, i (i)}
-							{@const arrowLen = 14}
-							{@const arrowHead = 4}
+							{@const arrowLen = 18}
+							{@const arrowHead = 5}
+							{@const inset = 4}
+							{@const minOffsetFromAxis = 22}
 							{@const sign = edge.direction === 'right' ? 1 : -1}
-							{@const arrowY = (edge.yTop + edge.yBottom) / 2}
+							{@const dyArea = edge.yCurve - edge.yAxis}
+							{@const signY = dyArea === 0 ? -1 : Math.sign(dyArea)}
+							{@const arrowY =
+								Math.abs(dyArea) > minOffsetFromAxis * 2
+									? (edge.yAxis + edge.yCurve) / 2
+									: edge.yAxis + signY * minOffsetFromAxis}
+							{@const arrowTipX = edge.x - sign * inset}
+							{@const arrowTailX = arrowTipX - sign * arrowLen}
 							<g class="integral-area-infinity" pointer-events="none">
 								<line
-									x1={edge.x}
-									y1={edge.yTop}
-									x2={edge.x}
-									y2={edge.yBottom}
-									stroke={sty.color}
-									stroke-width={1}
-									stroke-dasharray="3,3"
-									stroke-opacity={0.7}
-								/>
-								<line
-									x1={edge.x}
+									x1={arrowTailX}
 									y1={arrowY}
-									x2={edge.x + sign * arrowLen}
+									x2={arrowTipX}
 									y2={arrowY}
 									stroke={sty.color}
-									stroke-width={1.5}
-									stroke-opacity={0.85}
+									stroke-width={2}
+									stroke-opacity={0.95}
 								/>
 								<polyline
-									points={`${edge.x + sign * (arrowLen - arrowHead)},${arrowY - arrowHead} ${edge.x + sign * arrowLen},${arrowY} ${edge.x + sign * (arrowLen - arrowHead)},${arrowY + arrowHead}`}
+									points={`${arrowTipX - sign * arrowHead},${arrowY - arrowHead} ${arrowTipX},${arrowY} ${arrowTipX - sign * arrowHead},${arrowY + arrowHead}`}
 									fill="none"
 									stroke={sty.color}
-									stroke-width={1.5}
-									stroke-opacity={0.85}
+									stroke-width={2}
+									stroke-opacity={0.95}
 								/>
 								<text
-									x={edge.x + sign * (arrowLen + 4)}
-									y={arrowY - 6}
+									x={arrowTailX - sign * 4}
+									y={arrowY + 5}
 									fill={sty.color}
-									font-size="13"
+									font-size="16"
+									font-weight="bold"
 									font-style="italic"
-									opacity={0.9}
-									text-anchor={edge.direction === 'right' ? 'start' : 'end'}>∞</text
+									opacity={0.95}
+									text-anchor={edge.direction === 'right' ? 'end' : 'start'}>∞</text
 								>
 							</g>
 						{/each}
