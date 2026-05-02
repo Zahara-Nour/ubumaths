@@ -1,27 +1,32 @@
 <script lang="ts">
 	import DslDemo from '../DslDemo.svelte';
 
-	const circleDsl = `c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*pi, couleur="bleu")`;
+	const PI = Math.PI;
+	const TWO_PI = 2 * Math.PI;
+	const FOUR_PI = 4 * Math.PI;
+	const SIX_PI = 6 * Math.PI;
+
+	const circleDsl = `c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI}, couleur="bleu")`;
 
 	const parabolaDsl = `c = courbe("x = t", "y = t^2", t_min=-2, t_max=2, couleur="rouge")`;
 
-	const cardioidDsl = `c = courbe("x = (1 - cos(t)) * cos(t)", "y = (1 - cos(t)) * sin(t)", t_min=0, t_max=2*pi, couleur="violet")`;
+	const cardioidDsl = `c = courbe("x = (1 - cos(t)) * cos(t)", "y = (1 - cos(t)) * sin(t)", t_min=0, t_max=${TWO_PI}, couleur="violet")`;
 
-	const lissajousDsl = `c1 = courbe("x = sin(3*t)", "y = sin(2*t)", t_min=0, t_max=2*pi, couleur="bleu")
-c2 = courbe("x = sin(4*t)", "y = sin(3*t)", t_min=0, t_max=2*pi, couleur="rouge")
-c3 = courbe("x = sin(5*t)", "y = sin(4*t)", t_min=0, t_max=2*pi, couleur="vert")`;
+	const lissajousDsl = `c1 = courbe("x = sin(3*t)", "y = sin(2*t)", t_min=0, t_max=${TWO_PI}, couleur="bleu")
+c2 = courbe("x = sin(4*t)", "y = sin(3*t)", t_min=0, t_max=${TWO_PI}, couleur="rouge")
+c3 = courbe("x = sin(5*t)", "y = sin(4*t)", t_min=0, t_max=${TWO_PI}, couleur="vert")`;
 
-	const cycloidDsl = `c = courbe("x = t - sin(t)", "y = 1 - cos(t)", t_min=0, t_max=4*pi, couleur="orange")`;
+	const cycloidDsl = `c = courbe("x = t - sin(t)", "y = 1 - cos(t)", t_min=0, t_max=${FOUR_PI}, couleur="orange")`;
 
-	const archimedeanSpiralDsl = `c = courbe("x = t * cos(t)", "y = t * sin(t)", t_min=0, t_max=6*pi, couleur="cyan")`;
+	const archimedeanSpiralDsl = `c = courbe("x = t * cos(t)", "y = t * sin(t)", t_min=0, t_max=${SIX_PI}, couleur="cyan")`;
 
-	const sliderTmaxDsl = `s = slider(min=0.1, max=2*pi, valeur=pi)
+	const sliderTmaxDsl = `s = slider(min=0.1, max=${TWO_PI}, valeur=${PI})
 c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=s, couleur="bleu")`;
 
 	const sliderRadiusDsl = `r = slider(min=0.5, max=4, valeur=2)
-c = courbe("x = r * cos(t)", "y = r * sin(t)", t_min=0, t_max=2*pi, param="t", couleur="rouge")`;
+c = courbe("x = r * cos(t)", "y = r * sin(t)", t_min=0, t_max=${TWO_PI}, param="t", couleur="rouge")`;
 
-	const closedFillDsl = `c = courbe("x = 2 * cos(t)", "y = sin(t)", t_min=0, t_max=2*pi, couleur="violet", remplissage="violet")`;
+	const closedFillDsl = `c = courbe("x = 2 * cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI}, couleur="violet", remplissage="violet")`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
