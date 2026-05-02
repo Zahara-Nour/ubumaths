@@ -11,6 +11,7 @@ import type { GeoValue, ScalarParam } from './geo-value';
 import type { GeoPoint } from './primitives';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
+import type { EndpointType } from '$lib/math/intervals/types';
 
 // =============================================================================
 // Style
@@ -728,6 +729,29 @@ export interface GeoConicPolar extends GeoElementBase {
 // Function curve (y = f(x), from courbe() builtin)
 // =============================================================================
 
+/**
+ * Optional domain restriction for a function curve.
+ *
+ * The function is plotted only on the interval defined by `lower` and `upper`,
+ * with bracket types determining whether the bounds are included.
+ *
+ * Bounds support:
+ * - Fixed values (`GeoValue`)
+ * - References to sliders/scalars (`ScalarRef`) for reactive bounds
+ * - `±∞` (`InfinityParam`) for half-bounded restrictions
+ *
+ * Examples:
+ * - `courbe("y = x^2 sur [-2 ; 2]")` → both endpoints closed
+ * - `courbe("y = x^2 sur ]a ; b]")` with sliders a, b → reactive open-closed
+ * - `courbe("y = x^2 avec x > 0")` → lower=0 open, upper=+∞
+ */
+export interface GeoFunctionDomain {
+	readonly lower: ScalarParam;
+	readonly upper: ScalarParam;
+	readonly lowerType: EndpointType;
+	readonly upperType: EndpointType;
+}
+
 export interface GeoFunction extends GeoElementBase {
 	readonly type: 'function';
 	/** f(x) as a symbolic MathNode (for exact analysis: derivative, zeros, domain). */
@@ -740,8 +764,10 @@ export interface GeoFunction extends GeoElementBase {
 	readonly compiledDerivative: CompiledFn;
 	/** Original equation string as entered by the user (for serialization). */
 	readonly equation: string;
-	/** Autonomous element — no dependencies on other elements. */
-	readonly dependsOn: readonly [];
+	/** Optional domain restriction (e.g. `sur [-2;2]` or `avec a<x<=b` in DSL). */
+	readonly domain?: GeoFunctionDomain;
+	/** Ids of scalar/slider elements referenced in domain bounds (empty if no domain or only literal bounds). */
+	readonly dependsOn: readonly string[];
 }
 
 // =============================================================================

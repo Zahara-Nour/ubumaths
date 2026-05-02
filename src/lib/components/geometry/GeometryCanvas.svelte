@@ -1308,6 +1308,22 @@
 							class="function-curve"
 							class:hovered={hoveredId === el.id}
 						/>
+						{#if svg.endpointMarkers}
+							{#each svg.endpointMarkers as marker (marker.cx + ',' + marker.cy)}
+								{#if marker.bracketType === 'closed'}
+									<circle cx={marker.cx} cy={marker.cy} r={marker.r} fill={sty.color} />
+								{:else}
+									<circle
+										cx={marker.cx}
+										cy={marker.cy}
+										r={marker.r}
+										fill="white"
+										stroke={sty.color}
+										stroke-width="2"
+									/>
+								{/if}
+							{/each}
+						{/if}
 						{#if el.label && el.type === 'function'}
 							{@const labelX = viewport.xMin + 0.85 * (viewport.xMax - viewport.xMin)}
 							{@const labelY = el.compiledFn({ x: labelX })}

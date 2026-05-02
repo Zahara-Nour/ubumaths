@@ -39,6 +39,7 @@ export type {
 	GeoArcByPoints,
 	GeoPolygon,
 	GeoFunction,
+	GeoFunctionDomain,
 	GeoPointOnCurve,
 	GeoTangentLine,
 	GeoLocus,
