@@ -131,6 +131,16 @@
 	let popoverX = $state(0);
 	let popoverY = $state(0);
 
+	// Parametric curve hover tooltip state (D3): shows t, x, y at cursor.
+	let parametricHover: {
+		curveId: string;
+		t: number;
+		x: number;
+		y: number;
+		svgX: number;
+		svgY: number;
+	} | null = $state(null);
+
 	// Label drag state
 	let draggingLabelId: string | null = $state(null);
 	let labelDragStart: { mx: number; my: number; dx: number; dy: number } | null = $state(null);
@@ -1483,6 +1493,29 @@
 							fill-opacity={svg.closed && sty.fillColor ? sty.fillOpacity : 0}
 							class="function-curve"
 							class:hovered={hoveredId === el.id}
+							onmousemove={(e) => {
+								const rect = (
+									e.currentTarget as SVGElement
+								).ownerSVGElement?.getBoundingClientRect();
+								if (!rect) return;
+								const svgX = e.clientX - rect.left;
+								const svgY = e.clientY - rect.top;
+								const math = transformer.svgToMath(svgX, svgY);
+								const info = figure.queryParametricCurveAtCursor(el.id, math.x, math.y);
+								if (info) {
+									parametricHover = {
+										curveId: el.id,
+										t: info.t,
+										x: info.x,
+										y: info.y,
+										svgX,
+										svgY
+									};
+								}
+							}}
+							onmouseleave={() => {
+								if (parametricHover?.curveId === el.id) parametricHover = null;
+							}}
 						/>
 						{#if el.label}
 							{@const labelPos = parametricCurveLabelPosition(el.id, figure, transformer)}
@@ -2042,6 +2075,18 @@
 			onchange={() => version++}
 		/>
 	{/if}
+
+	{#if parametricHover}
+		<div
+			class="parametric-tooltip"
+			style:left="{parametricHover.svgX + 12}px"
+			style:top="{parametricHover.svgY - 28}px"
+		>
+			t = {parametricHover.t.toFixed(2)} ; ({parametricHover.x.toFixed(2)}, {parametricHover.y.toFixed(
+				2
+			)})
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -2051,6 +2096,19 @@
 		background: #ffffff;
 		touch-action: none;
 		user-select: none;
+	}
+
+	.parametric-tooltip {
+		position: absolute;
+		background: rgba(0, 0, 0, 0.8);
+		color: white;
+		font-family: monospace;
+		font-size: 0.75rem;
+		padding: 4px 8px;
+		border-radius: 4px;
+		pointer-events: none;
+		white-space: nowrap;
+		z-index: 10;
 	}
 
 	.geometry-canvas.interactive {
