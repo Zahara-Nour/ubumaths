@@ -155,6 +155,25 @@ export interface GeoIntersectionFF extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
+/**
+ * Intersection of two parametric curves γ1(t1) and γ2(t2).
+ *
+ * Solved live by Newton 2D multi-start (8×8 grid) on F(t1, t2) = γ1(t1) − γ2(t2) = 0.
+ * Results are sorted lexicographically by (t1, t2), deduplicated with a relative
+ * epsilon ((range_t)/1000 on each parameter), and clamped to the curves' domains.
+ *
+ * `k` is 1-indexed (DSL convention). When `k` exceeds the number of intersections
+ * found, getPosition silently returns null (no DslRuntimeError).
+ */
+export interface GeoIntersectionParametric extends GeoElementBase {
+	readonly type: 'intersectionParametric';
+	readonly curve1Id: string;
+	readonly curve2Id: string;
+	/** 1-indexed k. */
+	readonly k: number;
+	readonly dependsOn: readonly [string, string];
+}
+
 /** Image of a point by central symmetry (reflection through a center). */
 export interface GeoReflectedPoint extends GeoElementBase {
 	readonly type: 'reflectedPoint';
@@ -1080,6 +1099,7 @@ export type GeoPointElement =
 	| GeoIntersectionQQ
 	| GeoIntersectionLF
 	| GeoIntersectionFF
+	| GeoIntersectionParametric
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -1108,6 +1128,7 @@ export type GeoElement =
 	| GeoIntersectionQQ
 	| GeoIntersectionLF
 	| GeoIntersectionFF
+	| GeoIntersectionParametric
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -1216,6 +1237,10 @@ export function isIntersectionFF(el: GeoElement): el is GeoIntersectionFF {
 	return el.type === 'intersectionFF';
 }
 
+export function isIntersectionParametric(el: GeoElement): el is GeoIntersectionParametric {
+	return el.type === 'intersectionParametric';
+}
+
 export function isReflectedPoint(el: GeoElement): el is GeoReflectedPoint {
 	return el.type === 'reflectedPoint';
 }
@@ -1276,6 +1301,7 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'intersectionQQ' ||
 		el.type === 'intersectionLF' ||
 		el.type === 'intersectionFF' ||
+		el.type === 'intersectionParametric' ||
 		el.type === 'reflectedPoint' ||
 		el.type === 'rotatedPoint' ||
 		el.type === 'translatedPoint' ||

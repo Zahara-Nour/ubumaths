@@ -118,6 +118,7 @@ function typePrefix(type: string): string {
 		case 'intersectionCC':
 		case 'intersectionLQ':
 		case 'intersectionQQ':
+		case 'intersectionParametric':
 		case 'reflectedPoint':
 		case 'rotatedPoint':
 		case 'translatedPoint':
@@ -297,6 +298,14 @@ function serializeElement(
 
 		case 'intersectionFF':
 			return `${n} = intersection(${name(idToName, el.function1Id)}, ${name(idToName, el.function2Id)}, ${el.index + 1})`;
+
+		case 'intersectionParametric': {
+			const c1 = name(idToName, el.curve1Id);
+			const c2 = name(idToName, el.curve2Id);
+			// k=1 is the default — emit `intersection(c1, c2)` for cleanliness.
+			if (el.k === 1) return `${n} = intersection(${c1}, ${c2})`;
+			return `${n} = intersection(${c1}, ${c2}, ${el.k})`;
+		}
 
 		case 'reflectedPoint':
 			return `${n} = symetrie(${name(idToName, el.sourceId)}, centre=${name(idToName, el.centerId)})`;

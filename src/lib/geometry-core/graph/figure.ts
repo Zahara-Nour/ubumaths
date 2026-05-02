@@ -53,6 +53,7 @@ import type {
 	GeoPointOnParametricCurve,
 	GeoIntersectionLF,
 	GeoIntersectionFF,
+	GeoIntersectionParametric,
 	GeoTangentLine,
 	GeoTangentToQuadratic,
 	GeoTangentParametric,
@@ -966,6 +967,44 @@ export class Figure {
 			dependsOn: [function1Id, function2Id]
 		};
 		this.addElement(id, element, [function1Id, function2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	createIntersectionParametric(
+		curve1Id: string,
+		curve2Id: string,
+		k: number,
+		options?: ElementOptions
+	): string {
+		const el1 = this.elements.get(curve1Id);
+		const el2 = this.elements.get(curve2Id);
+		if (!el1 || el1.type !== 'parametricCurve')
+			throw new Error(
+				`createIntersectionParametric: "${curve1Id}" is not a parametric curve element`
+			);
+		if (!el2 || el2.type !== 'parametricCurve')
+			throw new Error(
+				`createIntersectionParametric: "${curve2Id}" is not a parametric curve element`
+			);
+		if (!Number.isInteger(k) || k < 1)
+			throw new Error(`createIntersectionParametric: k must be an integer ≥ 1 (got ${k})`);
+
+		const id = this.generateId('intP');
+		const element: GeoIntersectionParametric = {
+			type: 'intersectionParametric',
+			id,
+			curve1Id,
+			curve2Id,
+			k,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [curve1Id, curve2Id]
+		};
+		this.addElement(id, element, [curve1Id, curve2Id]);
 		this.computePosition(id);
 		return id;
 	}
@@ -3847,6 +3886,29 @@ export class Figure {
 	}
 
 	getPosition(id: string): GeoPoint | null {
+		// Parametric intersections are computed live (Newton 2D, multi-start) so
+		// they always reflect the current slider/scalar values without requiring
+		// an explicit `recompute()` call. The cache is still updated as a side
+		// effect for subsequent reads.
+		//
+		// LIMITATION (V1) : descendants of an intersectionParametric (e.g.
+		// `M = milieu(P, Q)` with P = intersection(c1, c2)) read the cache via
+		// `positions.get(P.id)` during recompute(). If recompute() runs without
+		// a prior getPosition(P.id), the cached value may be stale after a slider
+		// move. In practice the SVG renderer calls getPosition() per element, so
+		// this is invisible during interactive use. A future V2 should plumb the
+		// live recomputation through compute-position.ts to support arbitrary
+		// dependency chains.
+		const el = this.elements.get(id);
+		if (el && el.type === 'intersectionParametric') {
+			const result = computeElementPosition(el, this.positions, this.elements, this.scalarValues);
+			if (result.position) {
+				this.positions.set(id, result.position);
+				return result.position;
+			}
+			this.positions.delete(id);
+			return null;
+		}
 		return this.positions.get(id) ?? null;
 	}
 
