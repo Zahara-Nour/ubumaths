@@ -95,6 +95,30 @@ c1 = courbe("x = sin(2*t)", "y = sin(3*t)", t_min=0, t_max=2*\\pi, couleur="viol
 c2 = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="orange")
 P = intersection(c1, c2, 1)
 Q = intersection(c1, c2, 2)`;
+
+	// V2 — paramétrique × droite/cercle/fonction (Newton 1D)
+	const intersectionParamLineDsl = `unite_angle("radians")
+c = courbe("x = 2*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+A = point(-3, 0.5)
+B = point(3, 0.5)
+d = droite(A, B)
+P1 = intersection(c, d, 1)
+P2 = intersection(c, d, 2)`;
+
+	const intersectionParamCircleDsl = `unite_angle("radians")
+c = courbe("x = 2*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+O = point(0, 0)
+cercle1 = cercle(O, rayon=1.2)
+P1 = intersection(c, cercle1, 1)
+P2 = intersection(c, cercle1, 2)
+P3 = intersection(c, cercle1, 3)
+P4 = intersection(c, cercle1, 4)`;
+
+	const intersectionParamFunctionDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+f = courbe("y = x^2 - 0.3", couleur="rouge")
+P1 = intersection(c, f, 1)
+P2 = intersection(c, f, 2)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -312,6 +336,45 @@ Q = intersection(c1, c2, 2)`;
 		dsl={intersectionLissajousDsl}
 		title="Lissajous × cercle — 2+ intersections"
 		description="Une courbe de Lissajous (sin 2t, sin 3t) croise le cercle unité en plusieurs points. Newton 2D les trouve robustement malgré les self-intersections de Lissajous."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">
+		Intersection paramétrique × ligne / cercle / fonction
+	</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		<code>intersection(c, droite/cercle/fonction, k)</code> traite les combinaisons mixtes via Newton
+		1D (16 starts). Les courbes paramétriques peuvent ainsi être combinées avec les autres types géométriques.
+	</p>
+
+	<DslDemo
+		dsl={intersectionParamLineDsl}
+		title="Ellipse × droite horizontale — 2 points"
+		description="L'ellipse (2cos t, sin t) coupe la droite y = 0.5 en 2 points symétriques. Newton 1D résout cross(γ(t)−P, v) = 0."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={intersectionParamCircleDsl}
+		title="Ellipse × cercle — 4 points"
+		description="L'ellipse (2cos t, sin t) coupe un cercle de rayon 1.2 en 4 points. Newton 1D résout ‖γ(t)−center‖² − r² = 0."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={intersectionParamFunctionDsl}
+		title="Cercle paramétrique × parabole — 2 points"
+		description="Cercle unité × parabole y = x² − 0.3. Newton 1D résout γ_y(t) − f(γ_x(t)) = 0."
 		width={700}
 		height={500}
 	/>

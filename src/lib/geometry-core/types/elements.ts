@@ -174,6 +174,66 @@ export interface GeoIntersectionParametric extends GeoElementBase {
 	readonly dependsOn: readonly [string, string];
 }
 
+/**
+ * Intersection of a parametric curve γ(t) and a `droite` line.
+ *
+ * Solved live by Newton 1D multi-start (16 uniform starts in [t_min, t_max])
+ * on f(t) = (γ(t) − P) × v = (γ_x − P_x)·v_y − (γ_y − P_y)·v_x = 0,
+ * where the line passes through P with direction v. f'(t) = γ'_x·v_y − γ'_y·v_x.
+ *
+ * Pipeline: Newton → clamp → acceptance filter → sort by t ascending → dedup
+ * with relative epsilon (range_t × 1/1000). `k` is 1-indexed; out-of-range k
+ * silently returns null.
+ *
+ * Scope: only `'line'` (droite). Segment / ray are not supported (V3 scope).
+ */
+export interface GeoIntersectionParametricLine extends GeoElementBase {
+	readonly type: 'intersectionParametricLine';
+	readonly curveId: string;
+	readonly lineId: string;
+	/** 1-indexed k. */
+	readonly k: number;
+	readonly dependsOn: readonly [string, string];
+}
+
+/**
+ * Intersection of a parametric curve γ(t) and a circle (any of circleByRadius,
+ * circleByPoint, circleBy3Points).
+ *
+ * Solved live by Newton 1D multi-start on f(t) = (γ_x − c_x)² + (γ_y − c_y)² − r² = 0,
+ * f'(t) = 2·(γ_x − c_x)·γ'_x + 2·(γ_y − c_y)·γ'_y.
+ *
+ * `k` is 1-indexed; out-of-range k silently returns null.
+ */
+export interface GeoIntersectionParametricCircle extends GeoElementBase {
+	readonly type: 'intersectionParametricCircle';
+	readonly curveId: string;
+	readonly circleId: string;
+	/** 1-indexed k. */
+	readonly k: number;
+	readonly dependsOn: readonly [string, string];
+}
+
+/**
+ * Intersection of a parametric curve γ(t) and a function curve y = f(x).
+ *
+ * Solved live by Newton 1D multi-start on g(t) = γ_y(t) − f(γ_x(t)) = 0,
+ * g'(t) = γ'_y(t) − f'(γ_x(t)) · γ'_x(t).
+ *
+ * After convergence, results outside the function's domain (when restricted)
+ * are filtered out: γ_x(t) must lie in [xMin, xMax].
+ *
+ * `k` is 1-indexed; out-of-range k silently returns null.
+ */
+export interface GeoIntersectionParametricFunction extends GeoElementBase {
+	readonly type: 'intersectionParametricFunction';
+	readonly curveId: string;
+	readonly functionId: string;
+	/** 1-indexed k. */
+	readonly k: number;
+	readonly dependsOn: readonly [string, string];
+}
+
 /** Image of a point by central symmetry (reflection through a center). */
 export interface GeoReflectedPoint extends GeoElementBase {
 	readonly type: 'reflectedPoint';
@@ -1100,6 +1160,9 @@ export type GeoPointElement =
 	| GeoIntersectionLF
 	| GeoIntersectionFF
 	| GeoIntersectionParametric
+	| GeoIntersectionParametricLine
+	| GeoIntersectionParametricCircle
+	| GeoIntersectionParametricFunction
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -1129,6 +1192,9 @@ export type GeoElement =
 	| GeoIntersectionLF
 	| GeoIntersectionFF
 	| GeoIntersectionParametric
+	| GeoIntersectionParametricLine
+	| GeoIntersectionParametricCircle
+	| GeoIntersectionParametricFunction
 	| GeoReflectedPoint
 	| GeoRotatedPoint
 	| GeoTranslatedPoint
@@ -1241,6 +1307,22 @@ export function isIntersectionParametric(el: GeoElement): el is GeoIntersectionP
 	return el.type === 'intersectionParametric';
 }
 
+export function isIntersectionParametricLine(el: GeoElement): el is GeoIntersectionParametricLine {
+	return el.type === 'intersectionParametricLine';
+}
+
+export function isIntersectionParametricCircle(
+	el: GeoElement
+): el is GeoIntersectionParametricCircle {
+	return el.type === 'intersectionParametricCircle';
+}
+
+export function isIntersectionParametricFunction(
+	el: GeoElement
+): el is GeoIntersectionParametricFunction {
+	return el.type === 'intersectionParametricFunction';
+}
+
 export function isReflectedPoint(el: GeoElement): el is GeoReflectedPoint {
 	return el.type === 'reflectedPoint';
 }
@@ -1302,6 +1384,9 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'intersectionLF' ||
 		el.type === 'intersectionFF' ||
 		el.type === 'intersectionParametric' ||
+		el.type === 'intersectionParametricLine' ||
+		el.type === 'intersectionParametricCircle' ||
+		el.type === 'intersectionParametricFunction' ||
 		el.type === 'reflectedPoint' ||
 		el.type === 'rotatedPoint' ||
 		el.type === 'translatedPoint' ||

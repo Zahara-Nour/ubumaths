@@ -54,6 +54,9 @@ import type {
 	GeoIntersectionLF,
 	GeoIntersectionFF,
 	GeoIntersectionParametric,
+	GeoIntersectionParametricLine,
+	GeoIntersectionParametricCircle,
+	GeoIntersectionParametricFunction,
 	GeoTangentLine,
 	GeoTangentToQuadratic,
 	GeoTangentParametric,
@@ -1005,6 +1008,134 @@ export class Figure {
 			dependsOn: [curve1Id, curve2Id]
 		};
 		this.addElement(id, element, [curve1Id, curve2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Parametric × droite intersection (V2 of B3).
+	 * `lineId` must reference a `'line'` (droite) — segments and rays are NOT
+	 * supported (V3 scope). `k` is 1-indexed.
+	 */
+	createIntersectionParametricLine(
+		curveId: string,
+		lineId: string,
+		k: number,
+		options?: ElementOptions
+	): string {
+		const elC = this.elements.get(curveId);
+		const elL = this.elements.get(lineId);
+		if (!elC || elC.type !== 'parametricCurve')
+			throw new Error(
+				`createIntersectionParametricLine: "${curveId}" is not a parametric curve element`
+			);
+		if (!elL || elL.type !== 'line')
+			throw new Error(
+				`createIntersectionParametricLine: "${lineId}" is not a line (droite) element`
+			);
+		if (!Number.isInteger(k) || k < 1)
+			throw new Error(`createIntersectionParametricLine: k must be an integer >= 1 (got ${k})`);
+
+		const id = this.generateId('intPL');
+		const element: GeoIntersectionParametricLine = {
+			type: 'intersectionParametricLine',
+			id,
+			curveId,
+			lineId,
+			k,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [curveId, lineId]
+		};
+		this.addElement(id, element, [curveId, lineId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Parametric × cercle intersection (V2 of B3).
+	 * Accepts any of `circleByRadius`, `circleByPoint`, `circleBy3Points`.
+	 * `k` is 1-indexed.
+	 */
+	createIntersectionParametricCircle(
+		curveId: string,
+		circleId: string,
+		k: number,
+		options?: ElementOptions
+	): string {
+		const elC = this.elements.get(curveId);
+		const elCirc = this.elements.get(circleId);
+		if (!elC || elC.type !== 'parametricCurve')
+			throw new Error(
+				`createIntersectionParametricCircle: "${curveId}" is not a parametric curve element`
+			);
+		if (!elCirc || !isCircle(elCirc))
+			throw new Error(`createIntersectionParametricCircle: "${circleId}" is not a circle element`);
+		if (!Number.isInteger(k) || k < 1)
+			throw new Error(`createIntersectionParametricCircle: k must be an integer >= 1 (got ${k})`);
+
+		const id = this.generateId('intPC');
+		const element: GeoIntersectionParametricCircle = {
+			type: 'intersectionParametricCircle',
+			id,
+			curveId,
+			circleId,
+			k,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [curveId, circleId]
+		};
+		this.addElement(id, element, [curveId, circleId]);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Parametric × fonction intersection (V2 of B3).
+	 * `functionId` must reference a `GeoFunction` (y = f(x)).
+	 * Domain restrictions on the function are honoured by filtering γ_x(t).
+	 * `k` is 1-indexed.
+	 */
+	createIntersectionParametricFunction(
+		curveId: string,
+		functionId: string,
+		k: number,
+		options?: ElementOptions
+	): string {
+		const elC = this.elements.get(curveId);
+		const elF = this.elements.get(functionId);
+		if (!elC || elC.type !== 'parametricCurve')
+			throw new Error(
+				`createIntersectionParametricFunction: "${curveId}" is not a parametric curve element`
+			);
+		if (!elF || !isFunction(elF))
+			throw new Error(
+				`createIntersectionParametricFunction: "${functionId}" is not a function element`
+			);
+		if (!Number.isInteger(k) || k < 1)
+			throw new Error(`createIntersectionParametricFunction: k must be an integer >= 1 (got ${k})`);
+
+		const id = this.generateId('intPF');
+		const element: GeoIntersectionParametricFunction = {
+			type: 'intersectionParametricFunction',
+			id,
+			curveId,
+			functionId,
+			k,
+			color: this.resolveColor(options),
+			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [curveId, functionId]
+		};
+		this.addElement(id, element, [curveId, functionId]);
 		this.computePosition(id);
 		return id;
 	}
@@ -3900,7 +4031,21 @@ export class Figure {
 		// live recomputation through compute-position.ts to support arbitrary
 		// dependency chains.
 		const el = this.elements.get(id);
-		if (el && el.type === 'intersectionParametric') {
+		if (
+			el &&
+			(el.type === 'intersectionParametric' ||
+				el.type === 'intersectionParametricLine' ||
+				el.type === 'intersectionParametricCircle' ||
+				el.type === 'intersectionParametricFunction')
+		) {
+			// V2 (B3): parametric × {droite, cercle, fonction} reads parent positions
+			// (line endpoints, circle center, function-defining points) from the
+			// cache. After moveSlider() flagged dirty nodes, those parent positions
+			// may be stale. Flush dirty work BEFORE the live recomputation so the
+			// Newton 1D solver consumes fresh inputs. V1 (parametric × parametric)
+			// does not strictly need this — its inputs are scalarValues, not
+			// positions — but flushing is harmless and keeps both branches uniform.
+			this.recompute();
 			const result = computeElementPosition(el, this.positions, this.elements, this.scalarValues);
 			if (result.position) {
 				this.positions.set(id, result.position);

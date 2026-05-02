@@ -917,6 +917,51 @@ function _executeBuiltinInner(
 				return { figureId: ptId, symbolType: 'point' };
 			}
 
+			// V2 (B3): parametric × {droite, cercle, fonction}. Auto-swap supported.
+			// Scope is INTENTIONALLY narrower than `isLineType` (which also matches
+			// segment/demidroite — those remain V3 scope). We use a local predicate
+			// that matches only `'droite'`.
+			const isDroiteOnly = (t: string | undefined) => t === 'droite';
+			if (isParam1 || isParam2) {
+				const paramId = isParam1 ? id1 : id2;
+				const otherType = isParam1 ? type2 : type1;
+				const otherId = isParam1 ? id2 : id1;
+				const otherIsFunc = isParam1 ? isFunc2 : isFunc1;
+
+				const otherIsDroite = isDroiteOnly(otherType);
+				const otherIsCircle = isCircleType(otherType);
+
+				if (otherIsDroite || otherIsCircle || otherIsFunc) {
+					let kVal = 1;
+					if (pos.length === 3) {
+						const kRaw = requireNumber(pos[2], 'k', line);
+						if (!Number.isInteger(kRaw) || kRaw < 1) {
+							throw new DslRuntimeError('intersection(): k doit etre un entier >= 1', line);
+						}
+						kVal = kRaw;
+					}
+					if (otherIsDroite) {
+						const ptId = figure.createIntersectionParametricLine(paramId, otherId, kVal, {
+							label
+						});
+						return { figureId: ptId, symbolType: 'point' };
+					}
+					if (otherIsCircle) {
+						const ptId = figure.createIntersectionParametricCircle(paramId, otherId, kVal, {
+							label
+						});
+						return { figureId: ptId, symbolType: 'point' };
+					}
+					// otherIsFunc
+					const ptId = figure.createIntersectionParametricFunction(paramId, otherId, kVal, {
+						label
+					});
+					return { figureId: ptId, symbolType: 'point' };
+				}
+				// Fall through to the rejection below — this preserves the existing
+				// error behaviour for segment/demidroite/quadraticCurve combos (E1/E2).
+			}
+
 			// Reject implicit curves (not functions, not conics, not parametric)
 			if (isCourbeType(type1) && !isQuad1 && !isFunc1 && !isParam1) {
 				throw new DslRuntimeError(
@@ -1660,7 +1705,26 @@ function _executeBuiltinInner(
 						line
 					);
 				}
-				return createCurveFromEquation(pos[0].value, figure, line, label, angleMode, symbols);
+				// `x_min`/`x_max` named args: optional domain restriction for y=f(x)
+				// curves (closed bounds). Same semantics as `sur [x_min ; x_max]`.
+				let equationStr = pos[0].value;
+				if (named.has('x_min') || named.has('x_max')) {
+					const equationAlreadyHasDomain = /\b(sur|avec)\b/.test(equationStr);
+					if (equationAlreadyHasDomain) {
+						throw new DslRuntimeError(
+							'courbe(): combiner x_min/x_max avec un suffixe "sur"/"avec" n\'est pas supporté',
+							line
+						);
+					}
+					const xMinStr = named.has('x_min')
+						? String(requireNumber(named.get('x_min')!, 'x_min', line))
+						: '-infini';
+					const xMaxStr = named.has('x_max')
+						? String(requireNumber(named.get('x_max')!, 'x_max', line))
+						: '+infini';
+					equationStr = `${equationStr} sur [${xMinStr} ; ${xMaxStr}]`;
+				}
+				return createCurveFromEquation(equationStr, figure, line, label, angleMode, symbols);
 			}
 			// 2 strings positional → parametric curve.
 			if (pos.length === 2 && pos[0].type === 'string' && pos[1].type === 'string') {
