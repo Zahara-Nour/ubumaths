@@ -80,6 +80,21 @@ O = point(0, 0)
 P = point_sur(c, t)
 M = milieu(O, P)
 L = lieu(M, P)`;
+
+	// Intersection de courbes paramétriques (Newton 2D multi-start)
+	const intersectionEllipsesDsl = `unite_angle("radians")
+c1 = courbe("x = 2*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+c2 = courbe("x = cos(t)", "y = 2*sin(t)", t_min=0, t_max=2*\\pi, couleur="rouge")
+A = intersection(c1, c2, 1)
+B = intersection(c1, c2, 2)
+C = intersection(c1, c2, 3)
+D = intersection(c1, c2, 4)`;
+
+	const intersectionLissajousDsl = `unite_angle("radians")
+c1 = courbe("x = sin(2*t)", "y = sin(3*t)", t_min=0, t_max=2*\\pi, couleur="violet")
+c2 = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="orange")
+P = intersection(c1, c2, 1)
+Q = intersection(c1, c2, 2)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -269,6 +284,34 @@ L = lieu(M, P)`;
 		dsl={lieuMilieuCircleDsl}
 		title="Lieu d'un milieu — courbe paramétrique"
 		description="Quand P parcourt la courbe c, le milieu M de [OP] décrit la courbe c/2 (homothétie de rapport 1/2 centrée en O). Le lieu est calculé sur 32 échantillons de t."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Intersection de courbes paramétriques</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		<code>intersection(c1, c2, k)</code> retourne le k-ème point d'intersection de deux courbes paramétriques
+		(ou polaires). L'algorithme est un Newton 2D multi-start sur la grille 8×8 du domaine produit. Si
+		k dépasse le nombre d'intersections, la position est null.
+	</p>
+
+	<DslDemo
+		dsl={intersectionEllipsesDsl}
+		title="Ellipses orthogonales — 4 points d'intersection"
+		description="Deux ellipses (2cos t, sin t) et (cos t, 2sin t) se croisent en 4 points symétriques. Triés lexicographiquement par (t1, t2)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={intersectionLissajousDsl}
+		title="Lissajous × cercle — 2+ intersections"
+		description="Une courbe de Lissajous (sin 2t, sin 3t) croise le cercle unité en plusieurs points. Newton 2D les trouve robustement malgré les self-intersections de Lissajous."
 		width={700}
 		height={500}
 	/>

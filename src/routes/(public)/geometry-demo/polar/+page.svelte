@@ -59,6 +59,12 @@ t = slider(min=0, max=2*\\pi, valeur=0)
 P = point_sur(c, t)
 M = milieu(O, P)
 L = lieu(M, P)`;
+
+	// Intersection cardioïde × cercle polaire
+	const intersectionCardioidCircleDsl = `c1 = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="violet")
+c2 = courbe("r = 1", theta_min=0, theta_max=2*\\pi, couleur="bleu")
+A = intersection(c1, c2, 1)
+B = intersection(c1, c2, 2)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -289,6 +295,23 @@ L = lieu(M, P)`;
 		dsl={lieuMilieuCardioidDsl}
 		title="Lieu du milieu OP — cardioïde"
 		description="Quand P parcourt la cardioïde, le milieu M de [OP] décrit une demi-cardioïde (homothétie de rapport 1/2 centrée en O). Le lieu est fermé (parcourt complet θ ∈ [0, 2π])."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Intersection de courbes polaires</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		<code>intersection(c1, c2, k)</code> trouve les points d'intersection de deux courbes polaires via
+		Newton 2D multi-start.
+	</p>
+
+	<DslDemo
+		dsl={intersectionCardioidCircleDsl}
+		title="Cardioïde × cercle polaire"
+		description="r = 1 − cos(θ) et r = 1 se croisent en θ = π/2 et θ = 3π/2 → points (0, 1) et (0, −1)."
 		width={700}
 		height={500}
 	/>

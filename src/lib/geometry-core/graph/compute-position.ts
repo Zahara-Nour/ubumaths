@@ -15,6 +15,7 @@ import {
 	isIntersectionQQ,
 	isIntersectionLF,
 	isIntersectionFF,
+	isIntersectionParametric,
 	isReflectedPoint,
 	isRotatedPoint,
 	isTranslatedPoint,
@@ -67,6 +68,7 @@ import {
 	invertPoint
 } from '../geometry/transformations';
 import { conicPointFromParam } from './conic-helpers';
+import { findParametricIntersections } from './parametric-intersection';
 
 export interface ComputePositionResult {
 	position: GeoPoint | null;
@@ -228,6 +230,70 @@ export function computeElementPosition(
 			elements
 		);
 		return { position: pos, hasComputablePosition: true };
+	}
+
+	if (isIntersectionParametric(el)) {
+		const c1 = elements.get(el.curve1Id);
+		const c2 = elements.get(el.curve2Id);
+		if (!c1 || c1.type !== 'parametricCurve' || !c2 || c2.type !== 'parametricCurve') {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		// Resolve parameter bounds from each curve.
+		const t1Min = resolveScalarParam(c1.tMin, scalarValues);
+		const t1Max = resolveScalarParam(c1.tMax, scalarValues);
+		const t2Min = resolveScalarParam(c2.tMin, scalarValues);
+		const t2Max = resolveScalarParam(c2.tMax, scalarValues);
+
+		if (
+			!Number.isFinite(t1Min) ||
+			!Number.isFinite(t1Max) ||
+			!Number.isFinite(t2Min) ||
+			!Number.isFinite(t2Max)
+		) {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		// Build scalar bindings for each curve from its dependsOn list (sliders/scalars
+		// referenced in xExpression/yExpression/tMin/tMax). See `pointOnParametricCurve`
+		// branch for the same pattern.
+		const bindings1: Record<string, number> = {};
+		for (const depId of c1.dependsOn) {
+			const depEl = elements.get(depId);
+			if (depEl?.label) {
+				const val = scalarValues?.get(depId);
+				if (val !== undefined) bindings1[depEl.label] = val;
+			}
+		}
+		const bindings2: Record<string, number> = {};
+		for (const depId of c2.dependsOn) {
+			const depEl = elements.get(depId);
+			if (depEl?.label) {
+				const val = scalarValues?.get(depId);
+				if (val !== undefined) bindings2[depEl.label] = val;
+			}
+		}
+
+		const intersections = findParametricIntersections(
+			c1,
+			c2,
+			bindings1,
+			bindings2,
+			t1Min,
+			t1Max,
+			t2Min,
+			t2Max
+		);
+
+		// k is 1-indexed; null silently when out of range (no DslRuntimeError).
+		if (el.k < 1 || el.k > intersections.length) {
+			return { position: null, hasComputablePosition: true };
+		}
+		const intr = intersections[el.k - 1];
+		return {
+			position: { x: numeric(intr.x), y: numeric(intr.y) },
+			hasComputablePosition: true
+		};
 	}
 
 	if (isReflectedPoint(el)) {

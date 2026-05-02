@@ -888,16 +888,53 @@ function _executeBuiltinInner(
 			const isFunc1 = isCourbeType(type1) && isFunctionCourbe(id1);
 			const isFunc2 = isCourbeType(type2) && isFunctionCourbe(id2);
 
-			// Reject implicit curves (not functions, not conics)
-			if (isCourbeType(type1) && !isQuad1 && !isFunc1) {
+			// Detect parametric curves (polar curves are also parametric internally).
+			const isParametricCourbe = (figureId: string): boolean => {
+				const el = figure.getElementById(figureId);
+				return !!el && el.type === 'parametricCurve';
+			};
+			const isParam1 = isCourbeType(type1) && isParametricCourbe(id1);
+			const isParam2 = isCourbeType(type2) && isParametricCourbe(id2);
+
+			// Parametric × parametric branch (V1 scope: includes polar curves).
+			// Routed before the implicit-curve rejection below.
+			if (isParam1 && isParam2) {
+				if (id1 === id2) {
+					throw new DslRuntimeError(
+						'intersection(): les deux courbes doivent etre distinctes',
+						line
+					);
+				}
+				let kVal = 1;
+				if (pos.length === 3) {
+					const kRaw = requireNumber(pos[2], 'k', line);
+					if (!Number.isInteger(kRaw) || kRaw < 1) {
+						throw new DslRuntimeError('intersection(): k doit etre un entier >= 1', line);
+					}
+					kVal = kRaw;
+				}
+				const ptId = figure.createIntersectionParametric(id1, id2, kVal, { label });
+				return { figureId: ptId, symbolType: 'point' };
+			}
+
+			// Reject implicit curves (not functions, not conics, not parametric)
+			if (isCourbeType(type1) && !isQuad1 && !isFunc1 && !isParam1) {
 				throw new DslRuntimeError(
 					'intersection(): les courbes implicites ne sont pas supportees',
 					line
 				);
 			}
-			if (isCourbeType(type2) && !isQuad2 && !isFunc2) {
+			if (isCourbeType(type2) && !isQuad2 && !isFunc2 && !isParam2) {
 				throw new DslRuntimeError(
 					'intersection(): les courbes implicites ne sont pas supportees',
+					line
+				);
+			}
+
+			// Reject mixed parametric × non-parametric combos (V1 scope: parametric × parametric only).
+			if (isParam1 || isParam2) {
+				throw new DslRuntimeError(
+					'intersection(): combinaison courbe parametrique / autre type non supportee (V1: parametrique x parametrique uniquement)',
 					line
 				);
 			}
