@@ -81,7 +81,7 @@ export type EditorTheme =
 
 /** Theme display names for UI */
 export const EDITOR_THEMES: { value: EditorTheme; label: string; dark: boolean }[] = [
-	{ value: 'default', label: 'Par défaut (clair)', dark: false },
+	{ value: 'default', label: 'Par défaut (auto clair/sombre)', dark: false },
 	{ value: 'oneDark', label: 'One Dark', dark: true },
 	{ value: 'dracula', label: 'Dracula', dark: true },
 	{ value: 'github', label: 'GitHub (clair)', dark: false },

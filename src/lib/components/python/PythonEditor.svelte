@@ -19,7 +19,9 @@
 	import type { Extension } from '@codemirror/state';
 	import type { CompletionContext, CompletionResult, Completion } from '@codemirror/autocomplete';
 	import { pythonStore, type EditorTheme } from '$lib/stores/pythonPlayground.svelte';
+	import { theme as appTheme } from '$lib/stores/theme.svelte';
 	import type { CompletionItem, CompletionProvider } from '$lib/shared/python';
+	import { resolveEffectiveTheme } from './editor-theme';
 
 	// Props
 	let {
@@ -127,7 +129,13 @@
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let debugLineEffectType: { of: (value: number | null) => any } | null = null;
 
-	// Track current theme for change detection
+	// Resolve the actual theme to apply: when the user has 'default' selected
+	// and the app is in dark mode, fall back to oneDark. Other themes are
+	// passed through unchanged (explicit user choice). See editor-theme.ts.
+	let effectiveTheme = $derived(resolveEffectiveTheme(theme, appTheme.dark));
+
+	// Track current theme for change detection (compared against effectiveTheme,
+	// so that toggling dark mode triggers a reinitialization).
 	let currentTheme = $state<EditorTheme>(theme);
 
 	// Prevent race conditions during theme switch
@@ -283,8 +291,8 @@
 				import('@codemirror/commands')
 			]);
 
-			// Load the selected theme extension
-			const themeExtension = await loadThemeExtension(theme);
+			// Load the selected theme extension (resolved against app dark mode)
+			const themeExtension = await loadThemeExtension(effectiveTheme);
 
 			// Create error line highlighting system
 			const errorEffectType = StateEffect.define<number | null>();
@@ -412,8 +420,8 @@
 				}
 			});
 
-			// Track the current theme
-			currentTheme = theme;
+			// Track the resolved theme (so dark-mode toggles trigger a reinit)
+			currentTheme = effectiveTheme;
 
 			// Build extensions
 			const extensions: Extension[] = [
@@ -571,10 +579,12 @@
 		}
 	});
 
-	// Theme change observer - reinitialize editor when theme prop changes
+	// Theme change observer - reinitialize editor when the resolved theme
+	// changes. Resolved theme depends on both the user's editorTheme prop AND
+	// the app's dark mode state, so toggling dark mode also triggers a reinit
+	// when editorTheme === 'default'.
 	$effect(() => {
-		// Read theme prop to track it
-		const newTheme = theme;
+		const newTheme = effectiveTheme;
 
 		// Only reinitialize if theme actually changed and editor exists
 		if (newTheme !== currentTheme && editor && !isReinitializing) {
