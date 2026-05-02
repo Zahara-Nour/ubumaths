@@ -11,6 +11,7 @@ import type { GeoPoint } from '../types/primitives';
 import type { SymbolType, SymbolTable } from './symbol-table';
 import { DslRuntimeError } from './errors';
 import { splitDomainSuffix, parseDomainSuffix, type ParseDomainResult } from './domain-parser';
+import { parsePiecewise, isPiecewiseRhs } from './piecewise-parser';
 import {
 	parseCustom,
 	isRelation,
@@ -2235,6 +2236,30 @@ function createCurveFromEquation(
 	}
 	const coreEquation = split.core;
 
+	// --- Try piecewise: y = { ... }
+	// Piecewise blocks are not valid math syntax for parseCustom, so we need
+	// to detect them BEFORE the regular parse pipeline and route to a dedicated
+	// builder that produces a `GeoFunction` whose `expression` is a `PiecewiseNode`.
+	{
+		const eqIdx = coreEquation.indexOf('=');
+		if (eqIdx >= 0) {
+			const lhs = coreEquation.slice(0, eqIdx).trim();
+			const rhs = coreEquation.slice(eqIdx + 1).trim();
+			if (lhs === 'y' && isPiecewiseRhs(rhs)) {
+				const result = parsePiecewise(rhs, symbols, line);
+				return createPiecewiseFunctionFromAst(
+					result.node,
+					result.dependencies,
+					equation,
+					figure,
+					line,
+					label,
+					domainResult
+				);
+			}
+		}
+	}
+
 	// Parse the equation string with mathAST
 	let parsed: MathNode;
 	try {
@@ -2367,6 +2392,61 @@ function createLineFromCoefficients(
 	});
 
 	return { figureId: lineId, symbolType: 'droite' };
+}
+
+/**
+ * Create a `GeoFunction` whose `expression` is a `PiecewiseNode`.
+ *
+ * Differs from `createFunctionFromCoefficients` in that:
+ * - The expression is the parsed PiecewiseNode (no `g·y + h = 0` extraction).
+ * - The symbolic derivative is set to a placeholder (number 0): symbolic
+ *   differentiation of piecewise expressions is not implemented in Phase C/D
+ *   (numeric sampling is used instead). Any consumer that requires the symbolic
+ *   derivative will get a constant 0 — acceptable as a Phase D simplification
+ *   because the curve renderer does not consult the derivative for piecewise.
+ * - The compiled function evaluates the piecewise via `compile(piecewiseNode)`.
+ * - The slider/scalar dependencies are propagated for reactive re-render.
+ */
+function createPiecewiseFunctionFromAst(
+	piecewiseNode: MathNode,
+	dependencies: readonly string[],
+	equation: string,
+	figure: Figure,
+	line: number,
+	label?: string,
+	domainResult?: ParseDomainResult | null
+): BuiltinResult {
+	let compiledFn;
+	try {
+		compiledFn = compile(piecewiseNode);
+	} catch (e) {
+		throw new DslRuntimeError(
+			`courbe(): impossible de compiler le piecewise — ${e instanceof Error ? e.message : ''}`,
+			line
+		);
+	}
+
+	// Placeholder derivative (symbolic differentiation of piecewise is deferred).
+	const derivativePlaceholder = ZERO_NODE;
+	const compiledDerivativePlaceholder = () => 0;
+
+	const allDeps = new Set<string>(dependencies);
+	if (domainResult) for (const d of domainResult.dependencies) allDeps.add(d);
+
+	const fnId = figure.createFunction(
+		piecewiseNode,
+		derivativePlaceholder,
+		compiledFn,
+		compiledDerivativePlaceholder,
+		equation,
+		{
+			label,
+			...(domainResult ? { domain: domainResult.domain } : {}),
+			dependencies: Array.from(allDeps)
+		}
+	);
+
+	return { figureId: fnId, symbolType: 'courbe' };
 }
 
 /** Create a GeoFunction from y = -h(x)/g(x) where F = g*y + h = 0. */

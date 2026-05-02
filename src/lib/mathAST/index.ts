@@ -193,7 +193,11 @@ export {
 	logical,
 	logicalAnd,
 	logicalOr,
-	logicalNot
+	logicalNot,
+
+	// Piecewise (functions defined by cases)
+	piecewise,
+	piecewisePiece
 } from './factory';
 
 // Options types for extended metadata
@@ -276,6 +280,7 @@ export {
 	isBoolean,
 	isLogical,
 	isLogicalNot,
+	isPiecewise,
 
 	// Utility predicates
 	hasDerivativeOrder,
