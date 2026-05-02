@@ -75,11 +75,12 @@ export function variableRule(varName: string, diffVar: string): MathNode {
 }
 
 /**
- * Greek letter rule: d/dx(alpha) = 0
- * Greek letters are treated as constants
+ * Greek letter rule: d/dα(α) = 1, d/dα(β) = 0
+ * Returns 1 if the greek letter matches the differentiation variable name, 0 otherwise.
+ * The diffVar string can be either ASCII (e.g. 'theta') or any letter name; matching is by name.
  */
-export function greekLetterRule(): MathNode {
-	return zero();
+export function greekLetterRule(letter: string, diffVar: string): MathNode {
+	return letter === diffVar ? one() : zero();
 }
 
 // =============================================================================
