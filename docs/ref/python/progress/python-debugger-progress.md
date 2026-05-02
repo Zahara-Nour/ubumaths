@@ -7,15 +7,15 @@
 
 ## Phases
 
-| Phase  | Description                      | Statut     |
-| ------ | -------------------------------- | ---------- |
-| 1      | Types et Messages                | Termine    |
-| 2      | Python Tracer (Worker)           | Termine    |
-| 3      | Store et Executor                | Termine    |
-| 4      | Composants UI                    | Termine    |
-| 5      | Integration                      | Termine    |
-| 6      | Visualisation Heap (Optionnelle) | En attente |
-| Finale | Quality Checks                   | Termine    |
+| Phase  | Description            | Statut  |
+| ------ | ---------------------- | ------- |
+| 1      | Types et Messages      | Termine |
+| 2      | Python Tracer (Worker) | Termine |
+| 3      | Store et Executor      | Termine |
+| 4      | Composants UI          | Termine |
+| 5      | Integration            | Termine |
+| 6      | Visualisation Heap     | Termine |
+| Finale | Quality Checks         | Termine |
 
 ---
 
@@ -249,7 +249,7 @@ Le Python Debugger est maintenant integre dans UbuMaths avec :
 - [ ] Breakpoint gutter dans PythonEditor (CodeMirror)
 - [ ] F9 key handler pour toggle breakpoint
 - [x] Highlight ligne courante dans editeur (jaune + fleche)
-- [ ] Phase 6 : Visualisation Heap (optionnelle)
+- [x] Phase 6 : Visualisation Heap (livree, voir Phase 6 ci-dessous)
 
 ### Fichiers crees
 
@@ -292,4 +292,78 @@ src/lib/shared/python/execution/base-executor.svelte.ts
 src/lib/shared/python/execution/playground-executor.svelte.ts
 src/lib/components/python/PythonPlayground.svelte
 src/lib/components/python/PythonEditor.svelte
+```
+
+---
+
+## Phase 6 : Visualisation Heap (Python Tutor)
+
+Plan original : `~/.claude/plans/virtual-soaring-fountain.md`
+Suivi détaillé : `docs/wip/heap-visualization-progress.md`
+
+Livrée en 5 sous-phases :
+
+| Sous-phase | Description                            | Statut  |
+| ---------- | -------------------------------------- | ------- |
+| 1          | Tracer + types + schémas Zod           | Termine |
+| 2          | FramesPanel + HeapPanel (sans flèches) | Termine |
+| 3          | MemoryDiagramView + flèches SVG        | Termine |
+| 4          | Intégration DebugPanel                 | Termine |
+| 5          | Quality checks finaux                  | Termine |
+
+### Concept
+
+Style Python Tutor : Frames à gauche / Heap à droite / flèches SVG cubic-Bezier.
+Périmètre heap : containers (`list`, `dict`, `set`, `tuple`, `frozenset`) + instances de classes utilisateur. Primitives (int, float, str, bool, None, complex, bytes) restent inline.
+
+### Architecture
+
+**Tracer (Pyodide worker)** : `_ubumaths_serialize_with_heap(value, heap, depth)` mute un `heap` dict partagé au niveau snapshot. Pre-insertion d'un placeholder avant récursion → cycles gérés naturellement (mêmes objects = même `id(value)` → un seul `HeapObject`).
+
+**Types** :
+
+- `InlineValue { type, value }` — primitives.
+- `HeapRef { type:'ref', objectId }` — référence vers un HeapObject.
+- `TruncatedValue { type:'truncated', value }` — depth/items limit.
+- `HeapEntry { key?, value }` — entrée d'un container.
+- `HeapObject { id, type, length, entries }` — un objet sur la heap.
+- `DebugSnapshot.heap: HeapObject[]` — nouveau champ requis.
+
+**UI** :
+
+- `FramesPanel.svelte` : variables avec `<button data-heap-ref>` pour les refs heap (point d'ancrage SVG).
+- `HeapPanel.svelte` : cartes `<div data-heap-id>` une par HeapObject, palette de 8 couleurs stable par id.
+- `MemoryDiagramView.svelte` : layout 2 colonnes + SVG overlay calculant les courbes Bézier via ResizeObserver + scroll listener + raf batch. Hover propagé entre panels.
+- `DebugPanel.svelte` : 3e mode `'heap'` dans le toggle viewMode (icône Network).
+
+### Tests
+
+- `types.test.ts` : 43 tests (helpers + types Heap\*).
+- `messages.debug.test.ts` : 70 tests (5 schémas Heap + extension snapshot).
+- `heap-utils.test.ts` : 24 tests (parsing, type guards, hash stable, palette).
+- 137 tests serveur passent. Tests intégration tracer Python : couverts par test manuel utilisateur (les 9 cas TDD documentés dans `docs/wip/heap-visualization-progress.md`).
+
+### Fichiers ajoutés
+
+```
+src/lib/components/python/debug/
+├── FramesPanel.svelte           # Variables avec ancres data-heap-ref
+├── HeapPanel.svelte             # Cartes avec ancres data-heap-id
+├── MemoryDiagramView.svelte     # SVG overlay flèches Bézier
+├── heap-utils.ts                # parseVariableValue, shortHeapId, colorForHeapId
+└── heap-utils.test.ts
+```
+
+### Fichiers modifiés
+
+```
+src/lib/shared/python/debug/types.ts             # Heap types refonte
+src/lib/shared/python/debug/types.test.ts        # +13 tests
+src/lib/shared/python/worker/messages.ts         # 5 schémas Zod heap + extension snapshot
+src/lib/shared/python/worker/messages.debug.test.ts  # +17 tests
+src/lib/workers/pyodide.worker.ts                # Tracer Python remplacé
+src/lib/stores/pythonDebug.svelte.ts             # currentHeap getter
+src/lib/stores/pythonDebug.svelte.test.ts        # heap: [] dans fixtures
+src/lib/components/python/debug/DebugPanel.svelte  # 3e mode 'heap'
+src/lib/components/python/debug/index.ts         # exports
 ```
