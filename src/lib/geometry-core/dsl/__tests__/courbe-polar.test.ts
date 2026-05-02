@@ -318,3 +318,80 @@ describe('courbe — polar (F. sampling)', () => {
 		}
 	});
 });
+
+// =============================================================================
+// G. Edge cases (added during code review enrichment)
+// =============================================================================
+
+describe('courbe — polar (G. edge cases)', () => {
+	it('G1. negative theta_min: r = 1 + cos(theta) on [-π, π] is accepted', () => {
+		const script = `c = courbe("r = 1 + cos(theta)", theta_min=${-Math.PI}, theta_max=${Math.PI})`;
+		const pc = getPolarCurve(script);
+		expect(pc.polar).toBe(true);
+		expect(pc.tMin).toEqual(numeric(-Math.PI));
+		expect(pc.tMax).toEqual(numeric(Math.PI));
+		// r(-π) = 1 + cos(-π) = 0 → x = 0, y = 0
+		expect(pc.compiledX({ theta: -Math.PI })).toBeCloseTo(0, 6);
+		expect(pc.compiledY({ theta: -Math.PI })).toBeCloseTo(0, 6);
+	});
+
+	it('G2. negative r constant: r = -1 on [0, 2π] is accepted (circle radius 1, phase-flipped)', () => {
+		const script = `c = courbe("r = -1", theta_min=0, theta_max=${2 * Math.PI})`;
+		const pc = getPolarCurve(script);
+		expect(pc.polar).toBe(true);
+		// At theta=0: x = -1·cos(0) = -1, y = -1·sin(0) = 0
+		expect(pc.compiledX({ theta: 0 })).toBeCloseTo(-1, 10);
+		expect(pc.compiledY({ theta: 0 })).toBeCloseTo(0, 10);
+		// At theta=π/2: x = -1·cos(π/2) ≈ 0, y = -1·sin(π/2) = -1
+		expect(pc.compiledX({ theta: Math.PI / 2 })).toBeCloseTo(0, 6);
+		expect(pc.compiledY({ theta: Math.PI / 2 })).toBeCloseTo(-1, 6);
+	});
+
+	it('G3. slider in r AND in theta_max: dependsOn contains both ids', () => {
+		const script = [
+			'a = slider(min=1, max=3, valeur=2)',
+			`s = slider(min=0, max=${2 * Math.PI}, valeur=${Math.PI})`,
+			'c = courbe("r = a*cos(theta)", theta_min=0, theta_max=s)'
+		].join('\n');
+		const { figure, symbols } = runDsl(script);
+		const aId = symbols.get('a')!.figureId!;
+		const sId = symbols.get('s')!.figureId!;
+		const pc = figure.getElementById(symbols.get('c')!.figureId!) as GeoParametricCurve;
+		expect(pc.dependsOn).toContain(aId);
+		expect(pc.dependsOn).toContain(sId);
+	});
+
+	it('G4. unite_angle("degrees") active: polar curve still samples in radians', () => {
+		// Even when angleMode=degrees globally, the polar branch must work in radians.
+		// 4-petal rose r = sin(2*theta): at theta = π/4, r = sin(π/2) = 1
+		// → x = 1·cos(π/4) = √2/2 ≈ 0.7071
+		const script = [
+			'unite_angle("degrees")',
+			`c = courbe("r = sin(2*theta)", theta_min=0, theta_max=${2 * Math.PI})`
+		].join('\n');
+		const pc = getPolarCurve(script);
+		expect(pc.polar).toBe(true);
+		expect(pc.compiledX({ theta: Math.PI / 4 })).toBeCloseTo(Math.sqrt(2) / 2, 5);
+		expect(pc.compiledY({ theta: Math.PI / 4 })).toBeCloseTo(Math.sqrt(2) / 2, 5);
+	});
+
+	it('G5. theta_min == theta_max throws D2 (strictement supérieur)', () => {
+		const script = `c = courbe("r = 2", theta_min=1, theta_max=1)`;
+		expect(() => runDsl(script)).toThrow(/theta_max doit être strictement supérieur à theta_min/);
+	});
+
+	it('G6. sliders in both bounds: D2 skipped, dependsOn contains both', () => {
+		// When both bounds are scalar refs, the numeric inversion check is skipped.
+		const script = [
+			`smin = slider(min=0, max=${Math.PI}, valeur=0)`,
+			`smax = slider(min=${Math.PI}, max=${2 * Math.PI}, valeur=${2 * Math.PI})`,
+			'c = courbe("r = 2*cos(theta)", theta_min=smin, theta_max=smax)'
+		].join('\n');
+		const { figure, symbols } = runDsl(script);
+		const sminId = symbols.get('smin')!.figureId!;
+		const smaxId = symbols.get('smax')!.figureId!;
+		const pc = figure.getElementById(symbols.get('c')!.figureId!) as GeoParametricCurve;
+		expect(pc.dependsOn).toContain(sminId);
+		expect(pc.dependsOn).toContain(smaxId);
+	});
+});

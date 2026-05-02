@@ -859,6 +859,17 @@ export interface GeoParametricCurve extends GeoElementBase {
 	readonly equationX: string;
 	/** Original equation string for y(t), e.g. "y = sin(t)". */
 	readonly equationY: string;
+	/**
+	 * True iff this curve was created from a polar equation `r = f(θ)` and was
+	 * internally rewritten as `(f(θ)·cos(θ), f(θ)·sin(θ))`. Optional — absent on
+	 * regular parametric curves.
+	 */
+	readonly polar?: boolean;
+	/**
+	 * Original RHS of the polar equation `r = f(θ)`, normalized to ASCII `theta`
+	 * (e.g. `"2*cos(theta)"`). Present iff `polar === true`.
+	 */
+	readonly equationR?: string;
 	/** Ids of scalar/slider elements referenced in xExpression, yExpression, tMin, tMax. */
 	readonly dependsOn: readonly string[];
 }

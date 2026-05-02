@@ -21,6 +21,10 @@ import {
 	divide,
 	opposite,
 	add,
+	multiply,
+	cos,
+	sin,
+	greek,
 	number as mathNumber,
 	compile,
 	toCustom,
@@ -1580,8 +1584,39 @@ function _executeBuiltinInner(
 		}
 
 		case 'courbe': {
-			// 1 string positional → cartesian curve (line / function / quadratic / implicit).
+			// Detect polar form: any string starts with "r =" / "r=".
+			const looksPolar = (s: string): boolean => /^\s*r\s*=/.test(s);
+			const hasThetaBound = named.has('theta_min') || named.has('theta_max');
+
+			// D5: two positional strings where one looks polar → reject.
+			if (
+				pos.length === 2 &&
+				pos[0].type === 'string' &&
+				pos[1].type === 'string' &&
+				(looksPolar(pos[0].value) || looksPolar(pos[1].value))
+			) {
+				throw new DslRuntimeError(
+					'courbe(): "r = ..." attendu seul (pas avec une équation x= ou y=)',
+					line
+				);
+			}
+
+			// 1 string positional → could be polar (with theta_min/theta_max), cartesian, or
+			// the polar branch may need to fire because the string starts with "r =" even
+			// without bounds (D1 reports the missing bounds error).
 			if (pos.length === 1 && pos[0].type === 'string') {
+				const polarLike = looksPolar(pos[0].value);
+				if (polarLike || hasThetaBound) {
+					return createPolarCurveFromEquation(
+						pos[0].value,
+						named,
+						figure,
+						line,
+						label,
+						toGeoValue,
+						symbols
+					);
+				}
 				if (named.has('t_min') || named.has('t_max')) {
 					throw new DslRuntimeError(
 						"courbe(): t_min/t_max ne s'applique qu'à une courbe paramétrique (2 équations)",
@@ -2626,6 +2661,195 @@ function resolveTBoundArg(
 }
 
 /**
+ * Substitute static numeric symbols (those bound to a `nombre` value in the
+ * symbol table) directly into a MathNode. Scalar/slider references are left
+ * as free variables (handled later via reactive dependencies).
+ */
+function substituteStaticBindings(node: MathNode, symbols: SymbolTable | undefined): MathNode {
+	if (!symbols) return node;
+	const staticBindings: Record<string, MathNode> = {};
+	for (const v of getVariables(node)) {
+		const entry = symbols.get(v);
+		if (entry?.type === 'nombre') {
+			staticBindings[v] = mathNumber((entry.value ?? 0).toString());
+		}
+	}
+	if (Object.keys(staticBindings).length > 0) {
+		return substitute(node, staticBindings);
+	}
+	return node;
+}
+
+/**
+ * Resolve and validate t_min / t_max bounds (required, both ScalarParam-compatible,
+ * tMin < tMax when both numeric). Optional `errorMessages` lets callers customize
+ * messages for the polar branch (theta_min/theta_max instead of t_min/t_max).
+ */
+function resolveAndValidateBounds(
+	named: Map<string, ResolvedValue>,
+	keyMin: string,
+	keyMax: string,
+	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
+	line: number,
+	errorMessages: { missing: string; inverted: string }
+): { tMin: ScalarParam; tMax: ScalarParam } {
+	const tMinRaw = named.get(keyMin);
+	const tMaxRaw = named.get(keyMax);
+	if (tMinRaw === undefined || tMaxRaw === undefined) {
+		throw new DslRuntimeError(errorMessages.missing, line);
+	}
+	const tMin = resolveTBoundArg(tMinRaw, keyMin, toGeoValue, line);
+	const tMax = resolveTBoundArg(tMaxRaw, keyMax, toGeoValue, line);
+
+	const tMinNum = !isScalarRef(tMin) && tMin.kind === 'numeric' ? tMin.value : null;
+	const tMaxNum = !isScalarRef(tMax) && tMax.kind === 'numeric' ? tMax.value : null;
+	if (tMinNum !== null && tMaxNum !== null && tMinNum >= tMaxNum) {
+		throw new DslRuntimeError(errorMessages.inverted, line);
+	}
+	return { tMin, tMax };
+}
+
+/**
+ * Shared back-end of the parametric and polar branches of `courbe()`.
+ *
+ * Given already-resolved x(t) and y(t) MathNodes plus the parameter name and
+ * bounds, this helper handles:
+ *   - Best-effort symbolic differentiation (dx/dt, dy/dt)
+ *   - Mandatory compilation of x and y (failure → DslRuntimeError)
+ *   - Best-effort compilation of derivatives (failure → null, sampler falls
+ *     back to uniform sampling)
+ *   - Reactive dependency collection (scalars/sliders referenced in x, y, tMin, tMax)
+ *   - Element creation via `figure.createParametricCurve`, optionally tagging
+ *     `polar` and `equationR` for polar curves.
+ */
+function buildParametricCurveFromXY(args: {
+	xRhs: MathNode;
+	yRhs: MathNode;
+	parameterName: string;
+	tMin: ScalarParam;
+	tMax: ScalarParam;
+	equationXOriginal: string;
+	equationYOriginal: string;
+	symbols: SymbolTable | undefined;
+	figure: Figure;
+	line: number;
+	label: string | undefined;
+	polar?: boolean;
+	equationR?: string;
+}): BuiltinResult {
+	const {
+		xRhs,
+		yRhs,
+		parameterName,
+		tMin,
+		tMax,
+		equationXOriginal,
+		equationYOriginal,
+		symbols,
+		figure,
+		line,
+		label,
+		polar,
+		equationR
+	} = args;
+
+	// --- F. Best-effort symbolic differentiation ---
+	let xDerivative: MathNode | null = null;
+	let yDerivative: MathNode | null = null;
+	try {
+		xDerivative = differentiate(xRhs, { variable: parameterName, simplify: true });
+	} catch {
+		xDerivative = null;
+	}
+	try {
+		yDerivative = differentiate(yRhs, { variable: parameterName, simplify: true });
+	} catch {
+		yDerivative = null;
+	}
+
+	// --- G. Compile x(t) and y(t) (mandatory) ---
+	let compiledX: CompiledFn;
+	let compiledY: CompiledFn;
+	try {
+		compiledX = compile(xRhs);
+	} catch (e) {
+		throw new DslRuntimeError(
+			`courbe(): impossible de compiler "${equationXOriginal}" — ${e instanceof Error ? e.message : ''}`,
+			line
+		);
+	}
+	try {
+		compiledY = compile(yRhs);
+	} catch (e) {
+		throw new DslRuntimeError(
+			`courbe(): impossible de compiler "${equationYOriginal}" — ${e instanceof Error ? e.message : ''}`,
+			line
+		);
+	}
+
+	// Compile derivatives best-effort. If compile fails, fall back to null
+	// (sampler will use uniform sampling).
+	let compiledXPrime: CompiledFn | null = null;
+	let compiledYPrime: CompiledFn | null = null;
+	if (xDerivative !== null) {
+		try {
+			compiledXPrime = compile(xDerivative);
+		} catch {
+			compiledXPrime = null;
+			xDerivative = null;
+		}
+	}
+	if (yDerivative !== null) {
+		try {
+			compiledYPrime = compile(yDerivative);
+		} catch {
+			compiledYPrime = null;
+			yDerivative = null;
+		}
+	}
+
+	// --- H. Collect reactive dependencies (scalars/sliders referenced anywhere) ---
+	const dependencies = new Set<string>();
+	if (symbols) {
+		const xVars = getVariables(xRhs);
+		const yVars = getVariables(yRhs);
+		const allFreeVars = new Set<string>([...xVars, ...yVars]);
+		allFreeVars.delete('x');
+		allFreeVars.delete('y');
+		allFreeVars.delete(parameterName);
+		for (const name of allFreeVars) {
+			const entry = symbols.get(name);
+			if (entry?.type === 'scalar' && entry.figureId) {
+				dependencies.add(entry.figureId);
+			}
+		}
+	}
+	if (isScalarRef(tMin)) dependencies.add(tMin.scalarRef);
+	if (isScalarRef(tMax)) dependencies.add(tMax.scalarRef);
+
+	const id = figure.createParametricCurve(
+		xRhs,
+		yRhs,
+		xDerivative,
+		yDerivative,
+		compiledX,
+		compiledY,
+		compiledXPrime,
+		compiledYPrime,
+		parameterName,
+		tMin,
+		tMax,
+		equationXOriginal,
+		equationYOriginal,
+		[...dependencies],
+		{ label },
+		polar,
+		equationR
+	);
+	return { figureId: id, symbolType: 'courbe' };
+}
+
+/**
  * Build a parametric curve element from two equation strings (`x = ...`, `y = ...`).
  *
  * Algorithm:
@@ -2634,9 +2858,8 @@ function resolveTBoundArg(
  *   3. Validate t_min and t_max (required, both ScalarParam-compatible, t_min < t_max if numeric).
  *   4. Auto-detect the parameter (single free variable not in {x, y} ∪ defined symbols),
  *      or honor an explicit `param="..."` override.
- *   5. Best-effort symbolic differentiation of x(t), y(t).
- *   6. Compile x(t) and y(t) (mandatory).
- *   7. Collect dependency ids (scalars/sliders referenced in x, y, t_min, t_max).
+ *   5–7. Differentiation, compilation, dependency collection, element creation
+ *        (delegated to `buildParametricCurveFromXY`).
  */
 function createParametricCurveFromEquations(
 	eq1: string,
@@ -2666,38 +2889,14 @@ function createParametricCurveFromEquations(
 	// Substitute static variables (numbers in the symbol table) into the
 	// equations BEFORE differentiation/compilation. Scalar references stay
 	// symbolic (handled later via `dependencies`).
-	if (symbols) {
-		const staticBindings: Record<string, MathNode> = {};
-		for (const v of new Set([...getVariables(xRhs), ...getVariables(yRhs)])) {
-			const entry = symbols.get(v);
-			if (entry?.type === 'nombre') {
-				staticBindings[v] = mathNumber((entry.value ?? 0).toString());
-			}
-		}
-		if (Object.keys(staticBindings).length > 0) {
-			xRhs = substitute(xRhs, staticBindings);
-			yRhs = substitute(yRhs, staticBindings);
-		}
-	}
+	xRhs = substituteStaticBindings(xRhs, symbols);
+	yRhs = substituteStaticBindings(yRhs, symbols);
 
 	// --- B. t_min / t_max validation ---
-	const tMinRaw = named.get('t_min');
-	const tMaxRaw = named.get('t_max');
-	if (tMinRaw === undefined || tMaxRaw === undefined) {
-		throw new DslRuntimeError(
-			'courbe(): t_min et t_max obligatoires pour une courbe paramétrique',
-			line
-		);
-	}
-	const tMin = resolveTBoundArg(tMinRaw, 't_min', toGeoValue, line);
-	const tMax = resolveTBoundArg(tMaxRaw, 't_max', toGeoValue, line);
-
-	// Static check t_min < t_max only if both are numeric.
-	const tMinNum = !isScalarRef(tMin) && tMin.kind === 'numeric' ? tMin.value : null;
-	const tMaxNum = !isScalarRef(tMax) && tMax.kind === 'numeric' ? tMax.value : null;
-	if (tMinNum !== null && tMaxNum !== null && tMinNum >= tMaxNum) {
-		throw new DslRuntimeError('courbe(): t_max doit être strictement supérieur à t_min', line);
-	}
+	const { tMin, tMax } = resolveAndValidateBounds(named, 't_min', 't_max', toGeoValue, line, {
+		missing: 'courbe(): t_min et t_max obligatoires pour une courbe paramétrique',
+		inverted: 'courbe(): t_max doit être strictement supérieur à t_min'
+	});
 
 	// --- C. Free-variable analysis ---
 	const xVars = getVariables(xRhs);
@@ -2764,96 +2963,191 @@ function createParametricCurveFromEquations(
 		parameterName = candidates[0];
 	}
 
-	// --- F. Best-effort symbolic differentiation ---
-	let xDerivative: MathNode | null = null;
-	let yDerivative: MathNode | null = null;
-	try {
-		xDerivative = differentiate(xRhs, { variable: parameterName, simplify: true });
-	} catch {
-		xDerivative = null;
-	}
-	try {
-		yDerivative = differentiate(yRhs, { variable: parameterName, simplify: true });
-	} catch {
-		yDerivative = null;
-	}
-
-	// --- G. Compile x(t) and y(t) (mandatory) ---
-	let compiledX: CompiledFn;
-	let compiledY: CompiledFn;
-	try {
-		compiledX = compile(xRhs);
-	} catch (e) {
-		throw new DslRuntimeError(
-			`courbe(): impossible de compiler "${eqXOriginal}" — ${e instanceof Error ? e.message : ''}`,
-			line
-		);
-	}
-	try {
-		compiledY = compile(yRhs);
-	} catch (e) {
-		throw new DslRuntimeError(
-			`courbe(): impossible de compiler "${eqYOriginal}" — ${e instanceof Error ? e.message : ''}`,
-			line
-		);
-	}
-
-	// Compile derivatives best-effort. If compile fails, fall back to null
-	// (sampler will use uniform sampling).
-	let compiledXPrime: CompiledFn | null = null;
-	let compiledYPrime: CompiledFn | null = null;
-	if (xDerivative !== null) {
-		try {
-			compiledXPrime = compile(xDerivative);
-		} catch {
-			compiledXPrime = null;
-			xDerivative = null;
-		}
-	}
-	if (yDerivative !== null) {
-		try {
-			compiledYPrime = compile(yDerivative);
-		} catch {
-			compiledYPrime = null;
-			yDerivative = null;
-		}
-	}
-
-	// --- H. Collect reactive dependencies (scalars/sliders referenced anywhere) ---
-	const dependencies = new Set<string>();
-	if (symbols) {
-		const allFreeVars = new Set<string>([...xVars, ...yVars]);
-		allFreeVars.delete('x');
-		allFreeVars.delete('y');
-		allFreeVars.delete(parameterName);
-		for (const name of allFreeVars) {
-			const entry = symbols.get(name);
-			if (entry?.type === 'scalar' && entry.figureId) {
-				dependencies.add(entry.figureId);
-			}
-		}
-	}
-	if (isScalarRef(tMin)) dependencies.add(tMin.scalarRef);
-	if (isScalarRef(tMax)) dependencies.add(tMax.scalarRef);
-
-	const id = figure.createParametricCurve(
+	return buildParametricCurveFromXY({
 		xRhs,
 		yRhs,
-		xDerivative,
-		yDerivative,
-		compiledX,
-		compiledY,
-		compiledXPrime,
-		compiledYPrime,
 		parameterName,
 		tMin,
 		tMax,
-		eqXOriginal,
-		eqYOriginal,
-		[...dependencies],
-		{ label }
+		equationXOriginal: eqXOriginal,
+		equationYOriginal: eqYOriginal,
+		symbols,
+		figure,
+		line,
+		label
+	});
+}
+
+// =============================================================================
+// courbe() — polar branch (1 equation: r = f(theta))
+// =============================================================================
+
+/**
+ * Pre-substitute the user's textual `theta` ASCII with `\theta` LaTeX form so
+ * that the custom parser produces a single GreekLetterNode (letter "theta")
+ * instead of `t·h·e·t·a` implicit multiplication. Operates only on standalone
+ * `theta` words (preceded by non-alphanumeric/underscore, no leading backslash,
+ * not followed by alphanumeric/underscore).
+ *
+ * Examples:
+ *   "r = 2*cos(theta)"     → "r = 2*cos(\\theta)"
+ *   "r = sin(2*theta)"     → "r = sin(2*\\theta)"
+ *   "r = \\theta"          → "r = \\theta"  (already LaTeX, untouched)
+ *   "r = thetaplus"        → "r = thetaplus" (suffix attached, untouched)
+ */
+function normalizeThetaToLatex(eq: string): string {
+	// Negative lookbehind: not preceded by a backslash (so \theta stays \theta)
+	// nor by a word character. Word boundary on the right.
+	return eq.replace(/(?<![\\\w])theta\b/g, '\\theta');
+}
+
+/**
+ * Parse a polar equation string `r = f(theta)`. Returns the RHS MathNode and
+ * the normalized RHS string (ASCII `theta`). Returns `null` (so the caller can
+ * fall through to cartesian) when the LHS is not the variable `r`.
+ *
+ * Throws DslRuntimeError on syntax errors or non-relation input.
+ */
+function parsePolarEquation(eq: string, line: number): { rhs: MathNode; rhsString: string } | null {
+	const normalized = normalizeThetaToLatex(eq);
+	let parsed: MathNode;
+	try {
+		parsed = parseCustom(normalized);
+	} catch {
+		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${eq}"`, line);
+	}
+	if (!isRelation(parsed) || parsed.relation !== '=') {
+		// Not a relation → caller will handle (cartesian fallback or polar error).
+		return null;
+	}
+	const lhs = lhsVariableName(parsed.left);
+	if (lhs !== 'r') {
+		// LHS is not r → not a polar equation. Caller should fall through.
+		return null;
+	}
+	// Re-serialize the RHS in canonical custom form using ASCII theta.
+	const rhsString = toCustom(parsed.right).replace(/\\theta/g, 'theta');
+	return { rhs: parsed.right, rhsString };
+}
+
+/**
+ * Build a parametric curve from a polar equation `r = f(theta)`.
+ *
+ * Algorithm:
+ *   1. Reject t_min/t_max (polar requires theta_min/theta_max).
+ *   2. Parse the equation; require LHS = `r`. If LHS != r and the user did not
+ *      pass theta_min/theta_max, fall through to cartesian. Otherwise, error.
+ *   3. Validate theta_min/theta_max (required, both ScalarParam-compatible,
+ *      strict inequality if both numeric).
+ *   4. Parameter is forced to `theta`. Reject any other free variable.
+ *   5. Substitute static numeric symbols into the RHS.
+ *   6. Build x(theta) = f(theta) * cos(theta), y(theta) = f(theta) * sin(theta)
+ *      at the MathNode level. The trig calls are left in radians regardless of
+ *      the active angle mode (polar branch always operates in radians).
+ *   7. Delegate to `buildParametricCurveFromXY` with `polar=true` and the
+ *      original RHS string preserved as `equationR`.
+ */
+function createPolarCurveFromEquation(
+	eq: string,
+	named: Map<string, ResolvedValue>,
+	figure: Figure,
+	line: number,
+	label: string | undefined,
+	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
+	symbols?: SymbolTable
+): BuiltinResult {
+	// D4: t_min / t_max are wrong for polar — reject explicitly.
+	if (named.has('t_min') || named.has('t_max')) {
+		throw new DslRuntimeError(
+			'courbe(): pour une courbe polaire, utiliser theta_min/theta_max (pas t_min/t_max)',
+			line
+		);
+	}
+
+	// --- A. Parse the polar equation ---
+	const parsed = parsePolarEquation(eq, line);
+	if (parsed === null) {
+		throw new DslRuntimeError(
+			`courbe(): équation polaire invalide : attendu "r = ..." (reçu "${eq}")`,
+			line
+		);
+	}
+	const { rhs: rhsRaw, rhsString } = parsed;
+
+	// --- B. theta_min / theta_max validation (D1 + D2) ---
+	const { tMin, tMax } = resolveAndValidateBounds(
+		named,
+		'theta_min',
+		'theta_max',
+		toGeoValue,
+		line,
+		{
+			missing: 'courbe(): theta_min et theta_max obligatoires pour une courbe polaire',
+			inverted: 'courbe(): theta_max doit être strictement supérieur à theta_min'
+		}
 	);
-	return { figureId: id, symbolType: 'courbe' };
+
+	// --- C. Substitute static numeric symbols, then validate free variables ---
+	const rhs = substituteStaticBindings(rhsRaw, symbols);
+
+	const rhsVars = getVariables(rhs);
+	const definedSymbols = new Set<string>();
+	if (symbols) {
+		for (const [name] of symbols.allEntries()) {
+			definedSymbols.add(name);
+		}
+	}
+	// Free variables in rhs that are neither `theta` nor a defined symbol.
+	// `x`, `y`, `r` are not special in the polar branch — if the user writes
+	// `r = 1/x`, that's an unexpected variable and should error (D6).
+	const freeOther = [...rhsVars].filter((v) => v !== 'theta' && !definedSymbols.has(v));
+	if (freeOther.length > 0) {
+		throw new DslRuntimeError(
+			`courbe(): paramètre polaire attendu : theta (ou \\theta) — variable libre "${freeOther[0]}" non reconnue`,
+			line
+		);
+	}
+
+	// --- D. Build x(theta) = f(theta) * cos(theta), y(theta) = f(theta) * sin(theta) ---
+	// The polar branch ALWAYS works in radians, regardless of the active
+	// angleMode. We construct cos(theta) and sin(theta) directly without going
+	// through `applyAngleMode`, and we also do NOT wrap the user's f(theta)
+	// trig calls with the angle conversion.
+	const thetaNode: MathNode = greek('theta');
+	const cosTheta = cos(thetaNode);
+	const sinTheta = sin(thetaNode);
+	const xRhs = multiply(rhs, cosTheta);
+	const yRhs = multiply(rhs, sinTheta);
+
+	// Synthesize equationX/Y strings so existing serializer code can still
+	// produce something coherent; the polar branch in the serializer will
+	// override these in favor of the polar form.
+	const equationXOriginal = `x = (${rhsString})*cos(theta)`;
+	const equationYOriginal = `y = (${rhsString})*sin(theta)`;
+
+	// NOTE: differentiate() treats GreekLetterNode as constant (containsVariable
+	// returns false for greek), so symbolic derivatives w.r.t. 'theta' resolve
+	// to zero(). buildParametricCurveFromXY then stores compiledXPrime/Y that
+	// always return 0, and the sampler silently falls back to uniform sampling
+	// (max speed = 0 < SPEED_ZERO_THRESHOLD). This is benign — uniform sampling
+	// is sufficient for polar curves and keeps the pipeline simple. Once
+	// differentiate() handles greek letters as variables, polar curves will
+	// automatically benefit from adaptive sampling.
+	return buildParametricCurveFromXY({
+		xRhs,
+		yRhs,
+		parameterName: 'theta',
+		tMin,
+		tMax,
+		equationXOriginal,
+		equationYOriginal,
+		symbols,
+		figure,
+		line,
+		label,
+		polar: true,
+		equationR: rhsString
+	});
 }
 
 /** Create zero points (y=0 intersections) for a quadratic curve. */
