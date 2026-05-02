@@ -51,6 +51,25 @@ c = courbe("x = \\phi*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="ora
 s = slider(min=0.5, max=4, valeur=2)
 k = 2 * s
 c = courbe("x = k*cos(t)", "y = k*sin(t)", t_min=0, t_max=2*\\pi, couleur="rouge")`;
+
+	// =========================================================================
+	// Polar curves (V2) — courbe("r = f(theta)", theta_min=..., theta_max=...)
+	// The polar branch internally rewrites r = f(θ) as (f(θ)·cos(θ), f(θ)·sin(θ))
+	// and always works in radians regardless of the active angle mode.
+	// =========================================================================
+
+	const polarCircleDsl = `c = courbe("r = 2*cos(theta)", theta_min=0, theta_max=\\pi, couleur="bleu")`;
+
+	const polarCardioidDsl = `c = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="violet", remplissage="violet")`;
+
+	const polarLimaconDsl = `c = courbe("r = 1 + 2*cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="rouge")`;
+
+	const polarRoseDsl = `c = courbe("r = sin(2*theta)", theta_min=0, theta_max=2*\\pi, couleur="orange")`;
+
+	const polarSpiralDsl = `c = courbe("r = theta", theta_min=0, theta_max=6*\\pi, couleur="cyan")`;
+
+	const polarSliderDsl = `n = slider(min=2, max=8, valeur=3)
+c = courbe("r = sin(n*theta)", theta_min=0, theta_max=2*\\pi, couleur="vert")`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -173,6 +192,78 @@ c = courbe("x = k*cos(t)", "y = k*sin(t)", t_min=0, t_max=2*\\pi, couleur="rouge
 		dsl={reactiveDsl}
 		title="Variable réactive — k = 2·s"
 		description="La variable k dépend du slider s. Toute expression contenant un slider/scalar produit un GeoScalar réactif ; la courbe se redessine quand s bouge."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Courbes polaires</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		Forme polaire <code>r = f(θ)</code> via
+		<code>courbe("r = ...", theta_min=..., theta_max=...)</code>. En interne, la courbe est réécrite
+		en paramétrique
+		<code>(f(θ)·cos(θ), f(θ)·sin(θ))</code>. Le mode angle est toujours en
+		<strong>radians</strong> pour la branche polaire. Le paramètre <code>theta</code> peut s'écrire
+		en ASCII ou en LaTeX <code>\theta</code>.
+	</p>
+
+	<DslDemo
+		dsl={polarCircleDsl}
+		title="Cercle polaire — r = 2·cos(θ)"
+		description="Cercle de diamètre 2 centré en (1, 0). La forme polaire la plus simple non triviale."
+		width={700}
+		height={500}
+		center={{ x: 1, y: 0 }}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={polarCardioidDsl}
+		title="Cardioïde — r = 1 − cos(θ)"
+		description="Courbe fermée en forme de cœur. Détection automatique de fermeture sur [0, 2π] avec remplissage."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={polarLimaconDsl}
+		title="Limaçon avec boucle — r = 1 + 2·cos(θ)"
+		description="Limaçon de Pascal avec boucle interne (car a < b dans r = a + b·cos(θ))."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={polarRoseDsl}
+		title="Rosace 4 pétales — r = sin(2·θ)"
+		description="Rosace polaire. Pour r = sin(n·θ), on obtient n pétales si n impair, 2n pétales si n pair."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={polarSpiralDsl}
+		title="Spirale d'Archimède — r = θ"
+		description="Forme polaire native (la version paramétrique r·(cos θ, sin θ) est plus haut). Non fermée."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={polarSliderDsl}
+		title="Rosace dynamique — slider sur n"
+		description="Déplace le slider pour faire varier le nombre de pétales : valeurs impaires → n pétales, valeurs paires → 2n pétales."
 		width={700}
 		height={500}
 	/>
