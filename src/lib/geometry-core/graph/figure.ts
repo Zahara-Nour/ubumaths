@@ -63,6 +63,7 @@ import type {
 	GeoTangentToQuadratic,
 	GeoTangentParametric,
 	GeoTangentVector,
+	GeoOsculatingCircle,
 	GeoConicPolar,
 	GeoVectorByPoints,
 	GeoFreeVector,
@@ -141,11 +142,12 @@ import type { Discontinuity } from '$lib/mathAST/analysis';
 import { classifyDiscontinuitiesForRange } from '../dsl/singularity-warn';
 import { UndoManager } from './undo-redo';
 import type { Delta } from './undo-redo';
-import { computeElementPosition, resolveScalarParam } from './compute-position';
+import { computeElementPosition, resolveScalarParam, buildCurveBindings } from './compute-position';
 import { computeLocusCurve } from './compute-locus';
 import type { SampledCurve, Viewport, Point } from '../viewport/types';
 import { sampleParametric2D, type ParametricSampleResult } from '$lib/grapheur/sampler';
 import { findClosestParameterOnCurve } from './parametric-newton';
+import { computeOsculatingCircle } from './parametric-calculus';
 
 const DEFAULT_COLOR = '#1e40af';
 
@@ -2930,6 +2932,153 @@ export class Figure {
 		return { tangentId, vectorId };
 	}
 
+	/**
+	 * Create an arc-length scalar over a parametric curve.
+	 *
+	 * If `tMin` / `tMax` are omitted the curve's own bounds are used. When set
+	 * (typically by the `longueur(c, t1, t2)` builtin) they may be `ScalarRef`s
+	 * pointing to sliders for reactivity. Validation of `t1 < t2` is left to
+	 * the DSL layer for numeric bounds; slider-backed bounds are checked at
+	 * compute time (NaN is returned for invalid ranges, which surfaces as
+	 * `getScalarValue → undefined`).
+	 */
+	createArcLength(
+		curveId: string,
+		tMin?: ScalarParam,
+		tMax?: ScalarParam,
+		options?: ElementOptions
+	): string {
+		const curveEl = this.elements.get(curveId);
+		if (!curveEl || curveEl.type !== 'parametricCurve') {
+			throw new Error(`createArcLength: "${curveId}" is not a parametricCurve element`);
+		}
+
+		const deps: string[] = [curveId];
+		if (tMin !== undefined && isScalarRef(tMin) && !deps.includes(tMin.scalarRef)) {
+			deps.push(tMin.scalarRef);
+		}
+		if (tMax !== undefined && isScalarRef(tMax) && !deps.includes(tMax.scalarRef)) {
+			deps.push(tMax.scalarRef);
+		}
+
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'arcLength',
+			id,
+			targetIds: [curveId],
+			curveId,
+			tMin,
+			tMax,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Create a curvature scalar κ(t0) over a parametric curve. `t` may be a
+	 * fixed `GeoValue` or a `ScalarRef` for slider-driven evaluation.
+	 *
+	 * Returns `undefined` from `getScalarValue` when γ'(t0) ≈ 0 (cusp) — the
+	 * formula κ = (x'·y'' − y'·x'') / (x'² + y'²)^(3/2) is undefined there.
+	 */
+	createCurvature(curveId: string, t: ScalarParam, options?: ElementOptions): string {
+		const curveEl = this.elements.get(curveId);
+		if (!curveEl || curveEl.type !== 'parametricCurve') {
+			throw new Error(`createCurvature: "${curveId}" is not a parametricCurve element`);
+		}
+
+		const deps: string[] = [curveId];
+		if (isScalarRef(t) && !deps.includes(t.scalarRef)) {
+			deps.push(t.scalarRef);
+		}
+
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'curvature',
+			id,
+			targetIds: [curveId],
+			curveId,
+			t,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Create an osculating circle of a parametric curve at parameter `t`.
+	 * Centre and radius are computed lazily by `computeOsculatingCircle` and
+	 * resolve to null when κ ≈ 0 or γ' ≈ 0.
+	 */
+	createOsculatingCircle(curveId: string, t: ScalarParam, options?: ElementOptions): string {
+		const curveEl = this.elements.get(curveId);
+		if (!curveEl || curveEl.type !== 'parametricCurve') {
+			throw new Error(`createOsculatingCircle: "${curveId}" is not a parametricCurve element`);
+		}
+
+		const deps: string[] = [curveId];
+		if (isScalarRef(t) && !deps.includes(t.scalarRef)) {
+			deps.push(t.scalarRef);
+		}
+
+		const id = this.generateId('osc');
+		const element: GeoOsculatingCircle = {
+			type: 'osculatingCircle',
+			id,
+			curveId,
+			t,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Read the radius of an osculating-circle element. Returns `null` when the
+	 * element is missing, not an osculating circle, or the curvature is
+	 * degenerate (κ ≈ 0 / γ' ≈ 0 / out of range).
+	 */
+	getOsculatingCircleRadius(id: string): number | null {
+		// Ensure scalar bindings reflect the latest slider/scalar values before
+		// reading. Without recompute(), getOsculatingCircleRadius called after
+		// moveSlider() — but without a prior getPosition(id) — would return a
+		// stale result.
+		this.recompute();
+		const el = this.elements.get(id);
+		if (!el || el.type !== 'osculatingCircle') return null;
+		const curveEl = this.elements.get(el.curveId);
+		if (!curveEl || curveEl.type !== 'parametricCurve') return null;
+		const t0 = resolveScalarParam(el.t, this.scalarValues);
+		if (!Number.isFinite(t0)) return null;
+		const tMin = resolveScalarParam(curveEl.tMin, this.scalarValues);
+		const tMax = resolveScalarParam(curveEl.tMax, this.scalarValues);
+		if (Number.isFinite(tMin) && Number.isFinite(tMax) && (t0 < tMin || t0 > tMax)) {
+			return null;
+		}
+		const bindings = buildCurveBindings(curveEl, this.elements, this.scalarValues);
+		const result = computeOsculatingCircle(curveEl, bindings, t0);
+		return result === null ? null : result.radius;
+	}
+
 	createScalarArea(pointIds: string[], options?: ElementOptions): string {
 		if (pointIds.length < 3) {
 			throw new Error('createScalarArea: area requires at least 3 target points');
@@ -3164,6 +3313,25 @@ export class Figure {
 	}
 
 	getScalarValue(id: string): number | undefined {
+		// Parametric calculus scalars (arcLength / curvature) read slider values
+		// that may have changed without an explicit `recompute()`. Recompute live
+		// so the returned value reflects the latest scalarValues. Mirrors the
+		// pattern used for parametric intersections in `getPosition`.
+		const el = this.elements.get(id);
+		if (
+			el &&
+			el.type === 'scalar' &&
+			(el.scalarKind === 'arcLength' || el.scalarKind === 'curvature')
+		) {
+			this.recompute();
+			const result = computeElementPosition(el, this.positions, this.elements, this.scalarValues);
+			if (result.scalarValue !== undefined) {
+				this.scalarValues.set(id, result.scalarValue);
+				return result.scalarValue;
+			}
+			this.scalarValues.delete(id);
+			return undefined;
+		}
 		return this.scalarValues.get(id);
 	}
 
@@ -4126,7 +4294,8 @@ export class Figure {
 				el.type === 'intersectionParametricCircle' ||
 				el.type === 'intersectionParametricFunction' ||
 				el.type === 'intersectionParametricSegment' ||
-				el.type === 'intersectionParametricRay')
+				el.type === 'intersectionParametricRay' ||
+				el.type === 'osculatingCircle')
 		) {
 			// V2 (B3): parametric × {droite, cercle, fonction} reads parent positions
 			// (line endpoints, circle center, function-defining points) from the

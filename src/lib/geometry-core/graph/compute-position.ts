@@ -6,6 +6,8 @@
  */
 
 import type { GeoElement, GeoScalar } from '../types/elements';
+import { isOsculatingCircle } from '../types/elements';
+import { computeArcLength, computeCurvature, computeOsculatingCircle } from './parametric-calculus';
 import {
 	isMidpoint,
 	isIntersectionLL,
@@ -642,6 +644,27 @@ export function computeElementPosition(
 		return { position: null, hasComputablePosition: false };
 	}
 
+	if (isOsculatingCircle(el)) {
+		const curveEl = elements.get(el.curveId);
+		if (!curveEl || curveEl.type !== 'parametricCurve') {
+			return { position: null, hasComputablePosition: true };
+		}
+		const t0 = resolveScalarParam(el.t, scalarValues);
+		if (!Number.isFinite(t0)) return { position: null, hasComputablePosition: true };
+		const tMin = resolveScalarParam(curveEl.tMin, scalarValues);
+		const tMax = resolveScalarParam(curveEl.tMax, scalarValues);
+		if (Number.isFinite(tMin) && Number.isFinite(tMax) && (t0 < tMin || t0 > tMax)) {
+			return { position: null, hasComputablePosition: true };
+		}
+		const bindings = buildCurveBindings(curveEl, elements, scalarValues);
+		const data = computeOsculatingCircle(curveEl, bindings, t0);
+		if (!data) return { position: null, hasComputablePosition: true };
+		return {
+			position: { x: numeric(data.centerX), y: numeric(data.centerY) },
+			hasComputablePosition: true
+		};
+	}
+
 	if (isScalar(el)) {
 		const scalarValue = computeScalarValue(el, positions, elements, scalarValues);
 		return { position: null, hasComputablePosition: false, scalarValue };
@@ -852,7 +875,7 @@ export function computeElementPosition(
  * /tMin/tMax) for a parametric curve. Mirrors the inline logic used by both the
  * point-on-parametric branch and the parametric × parametric (V1) intersection.
  */
-function buildCurveBindings(
+export function buildCurveBindings(
 	curveEl: import('../types/elements').GeoParametricCurve,
 	elements: ReadonlyMap<string, GeoElement>,
 	scalarValues?: ReadonlyMap<string, number>
@@ -1250,6 +1273,36 @@ function computeScalarValue(
 			const pos = positions.get(el.targetIds[0]);
 			if (!pos) return undefined;
 			return geoToNumber(el.coordinateAxis === 'x' ? pos.x : pos.y);
+		}
+		case 'arcLength': {
+			if (!el.curveId) return undefined;
+			const curveEl = elements.get(el.curveId);
+			if (!curveEl || curveEl.type !== 'parametricCurve') return undefined;
+			// Use explicit bounds when provided, otherwise fall back to the
+			// curve's own [tMin, tMax].
+			const tMinParam = el.tMin ?? curveEl.tMin;
+			const tMaxParam = el.tMax ?? curveEl.tMax;
+			const tMin = resolveScalarParam(tMinParam, scalarValues);
+			const tMax = resolveScalarParam(tMaxParam, scalarValues);
+			if (!Number.isFinite(tMin) || !Number.isFinite(tMax) || tMax <= tMin) return undefined;
+			const bindings = buildCurveBindings(curveEl, elements, scalarValues);
+			const L = computeArcLength(curveEl, bindings, tMin, tMax);
+			return Number.isFinite(L) ? L : undefined;
+		}
+		case 'curvature': {
+			if (!el.curveId || el.t === undefined) return undefined;
+			const curveEl = elements.get(el.curveId);
+			if (!curveEl || curveEl.type !== 'parametricCurve') return undefined;
+			const t0 = resolveScalarParam(el.t, scalarValues);
+			if (!Number.isFinite(t0)) return undefined;
+			const tMin = resolveScalarParam(curveEl.tMin, scalarValues);
+			const tMax = resolveScalarParam(curveEl.tMax, scalarValues);
+			if (Number.isFinite(tMin) && Number.isFinite(tMax) && (t0 < tMin || t0 > tMax)) {
+				return undefined;
+			}
+			const bindings = buildCurveBindings(curveEl, elements, scalarValues);
+			const k = computeCurvature(curveEl, bindings, t0);
+			return k === null ? undefined : k;
 		}
 	}
 }

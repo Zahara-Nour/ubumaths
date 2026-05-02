@@ -135,6 +135,27 @@ O = point(0, 0)
 T = point(2, 0.5)
 ray = demidroite(O, T)
 P = intersection(c, ray, 1)`;
+
+	// C — Géométrie différentielle paramétrique
+	const longueurCircleDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+L = longueur(c)`;
+
+	const longueurCardioidDsl = `unite_angle("radians")
+c = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="violet")
+L = longueur(c)`;
+
+	const cercleOsculateurEllipseDsl = `unite_angle("radians")
+c = courbe("x = 2*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+t = slider(min=0, max=2*\\pi, valeur=\\pi/4)
+P = point_sur(c, t)
+oc = cercle_osculateur(c, t)`;
+
+	const cercleOsculateurParabolaDsl = `unite_angle("radians")
+c = courbe("x = t", "y = t^2", t_min=-2, t_max=2, couleur="bleu")
+t = slider(min=-1.5, max=1.5, valeur=0)
+P = point_sur(c, t)
+oc = cercle_osculateur(c, t)`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -411,6 +432,54 @@ P = intersection(c, ray, 1)`;
 		dsl={intersectionParamRayDsl}
 		title="Cercle × demidroite — clipping s ≥ 0"
 		description="Demidroite issue de O dans la direction de T : seules les intersections avec s ≥ 0 (devant l'origine) sont retenues. Le point sur le cercle à s < 0 est filtré."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Géométrie différentielle</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		Trois nouveaux builtins pour la géométrie différentielle : <code>longueur(c)</code>
+		(arc length, Simpson composite N=64), <code>courbure(c, t0)</code> (κ signée), et
+		<code>cercle_osculateur(c, t0)</code> (cercle tangent à la courbure locale).
+	</p>
+
+	<DslDemo
+		dsl={longueurCircleDsl}
+		title="Longueur d'arc — cercle unité"
+		description="∫|γ'(t)| dt = 2π ≈ 6.283 (longueur du cercle unité)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={longueurCardioidDsl}
+		title="Longueur d'arc — cardioïde"
+		description="Longueur exacte d'une cardioïde r = 1 − cos(θ) sur [0, 2π] : 8."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={cercleOsculateurEllipseDsl}
+		title="Cercle osculateur — ellipse"
+		description="Le cercle osculateur tangent à la courbe au point P glisse avec le slider t. Son rayon = 1/|κ| (rayon de courbure)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={cercleOsculateurParabolaDsl}
+		title="Cercle osculateur — parabole"
+		description="Au sommet (t=0), le cercle osculateur a rayon 1/2 (κ=2). Le rayon explose vers ∞ aux extrémités où la parabole devient quasi-droite."
 		width={700}
 		height={500}
 	/>

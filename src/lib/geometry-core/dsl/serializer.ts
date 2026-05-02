@@ -182,6 +182,8 @@ function typePrefix(type: string): string {
 			return 'tg';
 		case 'tangentVector':
 			return 'v';
+		case 'osculatingCircle':
+			return 'oc';
 		case 'conicPolar':
 			return 'pol';
 		case 'vectorByPoints':
@@ -695,10 +697,32 @@ function serializeElement(
 					return `${n} = pente(${name(idToName, el.targetIds[0])})`;
 				case 'radius':
 					return `${n} = rayon(${name(idToName, el.targetIds[0])})`;
+				case 'arcLength': {
+					if (!el.curveId) return null;
+					const curveName = name(idToName, el.curveId);
+					if (el.tMin === undefined || el.tMax === undefined) {
+						return `${n} = longueur(${curveName})`;
+					}
+					const t1 = fmtScalarParam(el.tMin, idToName);
+					const t2 = fmtScalarParam(el.tMax, idToName);
+					return `${n} = longueur(${curveName}, ${t1}, ${t2})`;
+				}
+				case 'curvature': {
+					if (!el.curveId || el.t === undefined) return null;
+					const curveName = name(idToName, el.curveId);
+					const tStr = fmtScalarParam(el.t, idToName);
+					return `${n} = courbure(${curveName}, ${tStr})`;
+				}
 				default:
 					// expression scalars are skipped by the filter above
 					return null;
 			}
+		}
+
+		case 'osculatingCircle': {
+			const curveName = name(idToName, el.curveId);
+			const tStr = fmtScalarParam(el.t, idToName);
+			return `${n} = cercle_osculateur(${curveName}, ${tStr})`;
 		}
 
 		case 'slider': {
