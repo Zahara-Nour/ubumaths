@@ -113,6 +113,7 @@ f = courbe("y = x^2 sur [a ; b]")
 		const { figure } = run('f = courbe("y = x^2 sur [-2 ; 2]")');
 		const fnId = figure.getAllElements().find((e) => e.type === 'function')!.id;
 		const svg = functionToSVG(fnId, figure, transformer, dims);
+		expect(svg!.endpointMarkers!.length).toBeGreaterThan(0);
 		for (const m of svg!.endpointMarkers!) {
 			expect(m.cx).toBeGreaterThanOrEqual(0);
 			expect(m.cx).toBeLessThanOrEqual(dims.width);

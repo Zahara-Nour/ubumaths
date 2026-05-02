@@ -62,6 +62,7 @@ describe('integralAreaBetweenToSVG — basic rendering', () => {
 		const { figure, areaId, transformer } = setup('y = x^2 + 2', 'y = x^2', 0, 1);
 		const svg = integralAreaBetweenToSVG(areaId, figure, transformer, DIMS);
 		expect(svg).not.toBeNull();
+		expect(svg!.paths.length).toBeGreaterThan(0);
 		for (const p of svg!.paths) {
 			expect(p.d.startsWith('M')).toBe(true);
 			expect(p.d.trim().endsWith('Z')).toBe(true);

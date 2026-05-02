@@ -150,6 +150,7 @@ describe('intersectLC', () => {
 		// Circle center (0,0) radius 5, line y=0
 		const result = intersectLC(pt(-10, 0), pt(10, 0), pt(0, 0), geoFromNumber(5));
 		expect(result).not.toBeNull();
+		expect(result!.length).toBeGreaterThan(0);
 		// Should be exact: discriminant is a perfect square
 		for (const p of result!) {
 			expect(isExact(p.x)).toBe(true);

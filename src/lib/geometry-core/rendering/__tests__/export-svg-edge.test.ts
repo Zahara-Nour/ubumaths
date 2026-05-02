@@ -79,6 +79,7 @@ describe('exportToSVG — edge cases', () => {
 		const result = exportToSVG(f, viewport);
 		// Find the segment line (not grid lines)
 		const segLines = result.split('\n').filter((l) => l.includes('stroke="#1e40af"'));
+		expect(segLines.length).toBeGreaterThan(0);
 		for (const line of segLines) {
 			if (line.includes('<line') && !line.includes('class=')) {
 				expect(line).not.toContain('stroke-dasharray');
@@ -104,6 +105,7 @@ describe('exportToSVG — edge cases', () => {
 		const segLines = result
 			.split('\n')
 			.filter((l) => l.includes('stroke="#1e40af"') && l.includes('<line'));
+		expect(segLines.length).toBeGreaterThan(0);
 		for (const line of segLines) {
 			expect(line).not.toContain('opacity=');
 		}
@@ -422,6 +424,7 @@ describe('exportToSVG — edge cases', () => {
 
 		// Self-closing tags should end with />
 		const selfClosing = result.match(/<(line|circle|rect|path|polygon) [^>]*/g) || [];
+		expect(selfClosing.length).toBeGreaterThan(0);
 		for (const tag of selfClosing) {
 			// The full match may not include />, check the line
 			const line = result.split('\n').find((l) => l.includes(tag));

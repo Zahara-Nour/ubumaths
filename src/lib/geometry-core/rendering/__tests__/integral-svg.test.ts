@@ -207,6 +207,7 @@ describe('integralAreaToSVG — basic', () => {
 		const { figure, areaId, transformer } = setup('y = x^2', 0, 1);
 		const svg = integralAreaToSVG(areaId, figure, transformer, DIMS);
 		expect(svg).not.toBeNull();
+		expect(svg!.paths.length).toBeGreaterThan(0);
 		for (const p of svg!.paths) {
 			expect(p.d.trim().endsWith('Z')).toBe(true);
 			expect(p.d.startsWith('M')).toBe(true);
