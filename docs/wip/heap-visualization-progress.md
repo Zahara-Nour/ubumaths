@@ -8,7 +8,7 @@ Plan : `~/.claude/plans/virtual-soaring-fountain.md`
 | ----- | -------------------------------------- | ----------- |
 | 0     | Spécification TDD (9 comportements)    | Validé      |
 | 1     | Tracer + types + schémas Zod           | **Terminé** |
-| 2     | FramesPanel + HeapPanel (sans flèches) | À faire     |
+| 2     | FramesPanel + HeapPanel (sans flèches) | **Terminé** |
 | 3     | MemoryDiagramView + flèches SVG        | À faire     |
 | 4     | Intégration DebugPanel + test manuel   | À faire     |
 | 5     | Quality checks finaux                  | À faire     |
@@ -113,6 +113,53 @@ src/lib/stores/pythonDebug.svelte.ts
 src/lib/stores/pythonDebug.svelte.test.ts
 ```
 
-## Phase 2 — Prochaine étape
+## Phase 2 — Réalisé
 
-Créer `FramesPanel.svelte` et `HeapPanel.svelte` côte à côte (sans flèches). Tests Vitest browser. Utiliser le snapshot fourni par `debugStore.currentSnapshot` + `debugStore.currentHeap`.
+### Helpers (`heap-utils.ts`)
+
+Module utilitaire partagé par les deux panneaux et le futur MemoryDiagramView :
+
+- `parseVariableValue(raw)` : parse le JSON d'un `DebugVariable.value`, retourne `InlineValue | HeapRef | TruncatedValue | null`.
+- `isHeapRef`, `isTruncated`, `isEntryRef` : type guards.
+- `shortHeapId(id)` : suffixe base36 4-chars (bits de poids faible) → identifiants visuels stables et distincts pour ids voisins (`#a3f2`).
+- `colorForHeapId(id)` : couleur stable Tailwind dans une palette de 8 (stroke + bg + text + dark variants), même couleur partout pour un même objet.
+- `formatInline(value)` : rendu compact pour primitive ou troncature.
+- `heapTypeLabel(obj)` : `"list[3]"`, `"dict[2]"`, `"Point"` (pour `instance:Point`).
+
+### `FramesPanel.svelte`
+
+- Accordéon par frame (auto-ouvert via `$effect` synchronisé sur `callStack`).
+- Pour chaque variable : si `parseVariableValue` retourne un `HeapRef`, rendu en `<button>` avec `data-heap-ref="<objectId>"` (point d'ancrage pour les flèches SVG en Phase 3) ; sinon `<div>` simple avec valeur inline.
+- Hover/focus → callback `onVariableHover` pour highlight cross-panel.
+- Re-utilise le code couleur (vert nouveau, jaune modifié) de `VariablesPanel.svelte`.
+- A11y : `aria-label` complet pour chaque variable, `<button type="button">` pour interactivité keyboard-friendly (correction issue `noninteractive_tabindex` détectée par svelte-autofixer).
+
+### `HeapPanel.svelte`
+
+- Une carte `<div data-heap-id="<id>">` par objet heap, couleur de fond depuis `colorForHeapId`.
+- Header : type label (`heapTypeLabel`) + short id (`shortHeapId`).
+- Entries selon type :
+  - `list`/`tuple` : `[0]`, `[1]`, ...
+  - `set`/`frozenset` : `•`
+  - `dict`/`instance:*` : clé/attribut
+- Si entry est un `HeapRef` → bullet coloré + short id (visualisation des refs internes au heap).
+- Si entry est inline → valeur formatée.
+- Hover → callback `onObjectHover`.
+
+### Tests
+
+- `heap-utils.test.ts` : 24 tests serveur passent. Couverture : parsing, type guards, hash stable, palette couleurs, formatage.
+- Pas de tests `*.svelte.test.ts` créés : l'env Vitest browser est cassé localement (Playwright manquant). Validation visuelle reportée à Phase 4 (test manuel).
+
+### Fichiers créés
+
+```
+src/lib/components/python/debug/heap-utils.ts
+src/lib/components/python/debug/heap-utils.test.ts
+src/lib/components/python/debug/FramesPanel.svelte
+src/lib/components/python/debug/HeapPanel.svelte
+```
+
+## Phase 3 — Prochaine étape
+
+Créer `MemoryDiagramView.svelte` qui assemble FramesPanel à gauche et HeapPanel à droite avec un overlay SVG calculant les flèches Bézier entre `data-heap-ref` (frames) et `data-heap-id` (heap). État hover propagé entre les deux panneaux via la nouvelle vue.
