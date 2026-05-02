@@ -281,6 +281,29 @@ function differentiateNode(
 				'Limit differentiation is not yet implemented'
 			);
 
+		case 'boolean':
+		case 'logical':
+		case 'logical-not':
+			throw new DifferentiationError(
+				'Cannot differentiate boolean / logical expressions',
+				node.type,
+				'Boolean and logical operators do not represent differentiable functions'
+			);
+
+		case 'signed-zero':
+			// Signed zero is a constant — derivative is 0
+			return number('0');
+
+		case 'piecewise':
+			// Piecewise differentiation requires per-branch differentiation plus
+			// continuity/differentiability analysis at junctions. Not implemented
+			// in Phase C — Phase D falls back to numeric sampling.
+			throw new DifferentiationError(
+				'Piecewise function differentiation is not yet implemented',
+				'piecewise',
+				'Phase C ships PiecewiseNode without symbolic differentiation; numeric sampling is used instead'
+			);
+
 		default: {
 			const _exhaustive: never = node;
 			return _exhaustive;

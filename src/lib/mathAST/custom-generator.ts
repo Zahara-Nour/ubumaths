@@ -45,7 +45,6 @@ import type {
 	InfinityNode,
 	LimitNode,
 	RelationType,
-	GreekLetter,
 	NodeMetadata
 } from './types';
 import { flattenRelationChain } from './flatten';
@@ -80,14 +79,35 @@ export interface CustomGeneratorOptions {
 
 /**
  * Supported Greek letters in custom syntax.
- * Only these 5 are supported by the custom parser.
+ *
+ * Standard lowercase LaTeX Greek-letter commands. `pi` is special-cased by
+ * parsers as a MathConstant; the rest produce GreekLetter nodes.
+ * Omicron is omitted (rendered as the latin letter `o` in LaTeX).
  */
-export const SUPPORTED_GREEK: ReadonlySet<GreekLetter> = new Set<GreekLetter>([
-	'pi',
+export const SUPPORTED_GREEK: ReadonlySet<string> = new Set<string>([
 	'alpha',
 	'beta',
 	'gamma',
-	'theta'
+	'delta',
+	'epsilon',
+	'zeta',
+	'eta',
+	'theta',
+	'iota',
+	'kappa',
+	'lambda',
+	'mu',
+	'nu',
+	'xi',
+	'pi',
+	'rho',
+	'sigma',
+	'tau',
+	'upsilon',
+	'phi',
+	'chi',
+	'psi',
+	'omega'
 ]);
 
 /**
@@ -572,6 +592,24 @@ export class CustomGenerator {
 				this.visitWithSpans(node.operand);
 				break;
 
+			case 'piecewise': {
+				// `{ value si condition, ..., otherwise }` (geometry-core DSL form)
+				this.emit('{ ', node.metadata);
+				const total = node.pieces.length + (node.otherwise !== undefined ? 1 : 0);
+				let i = 0;
+				for (const p of node.pieces) {
+					this.visitWithSpans(p.value);
+					this.emit(' si ', undefined);
+					this.visitWithSpans(p.condition);
+					if (++i < total) this.emit(', ', undefined);
+				}
+				if (node.otherwise !== undefined) {
+					this.visitWithSpans(node.otherwise);
+				}
+				this.emit(' }', undefined);
+				break;
+			}
+
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -1039,6 +1077,14 @@ export class CustomGenerator {
 			case 'logical-not':
 				content = '!' + this.generateNode(node.operand);
 				break;
+			case 'piecewise': {
+				const parts = node.pieces.map(
+					(p) => `${this.generateNode(p.value)} si ${this.generateNode(p.condition)}`
+				);
+				if (node.otherwise !== undefined) parts.push(this.generateNode(node.otherwise));
+				content = `{ ${parts.join(', ')} }`;
+				break;
+			}
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);

@@ -438,6 +438,24 @@ export class LatexGenerator {
 				this.visitWithSpans(node.operand);
 				break;
 
+			case 'piecewise': {
+				this.emit('\\begin{cases} ', node.metadata);
+				const total = node.pieces.length + (node.otherwise !== undefined ? 1 : 0);
+				let i = 0;
+				for (const p of node.pieces) {
+					this.visitWithSpans(p.value);
+					this.emit(' & ', undefined);
+					this.visitWithSpans(p.condition);
+					if (++i < total) this.emit(' \\\\ ', undefined);
+				}
+				if (node.otherwise !== undefined) {
+					this.visitWithSpans(node.otherwise);
+					this.emit(' & \\text{sinon}', undefined);
+				}
+				this.emit(' \\end{cases}', undefined);
+				break;
+			}
+
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);
@@ -983,6 +1001,17 @@ export class LatexGenerator {
 			case 'logical-not':
 				content = '\\lnot ' + this.generateNode(node.operand);
 				break;
+			case 'piecewise': {
+				// Standard French/math notation: \begin{cases} value & condition \\ ... \end{cases}
+				const rows = node.pieces.map(
+					(p) => `${this.generateNode(p.value)} & ${this.generateNode(p.condition)}`
+				);
+				if (node.otherwise !== undefined) {
+					rows.push(`${this.generateNode(node.otherwise)} & \\text{sinon}`);
+				}
+				content = `\\begin{cases} ${rows.join(' \\\\ ')} \\end{cases}`;
+				break;
+			}
 			default: {
 				const exhaustive: never = node;
 				throw new Error(`Unknown node type: ${(exhaustive as MathNode).type}`);

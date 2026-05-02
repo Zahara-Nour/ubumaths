@@ -387,6 +387,22 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 			break;
 		}
 
+		case 'piecewise': {
+			addLine(ctx, prefix, `Piecewise (${node.pieces.length} pieces)`, node.metadata);
+			const items: { label: string; node: MathNode }[] = [];
+			node.pieces.forEach((piece, i) => {
+				items.push(
+					{ label: `pieces[${i}].condition`, node: piece.condition },
+					{ label: `pieces[${i}].value`, node: piece.value }
+				);
+			});
+			if (node.otherwise !== undefined) {
+				items.push({ label: 'otherwise', node: node.otherwise });
+			}
+			printChildren(items, ctx, childPrefix);
+			break;
+		}
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = node;

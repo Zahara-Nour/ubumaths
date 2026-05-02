@@ -21,6 +21,7 @@ import {
 	limit,
 	logical,
 	logicalNot,
+	piecewise,
 	mathConstant,
 	matrix,
 	multiply,
@@ -251,6 +252,16 @@ export function getChildren(node: MathNode): MathNode[] {
 		// LogicalNot has operand
 		case 'logical-not':
 			return [node.operand];
+
+		// Piecewise has condition+value pairs and an optional otherwise branch
+		case 'piecewise': {
+			const children: MathNode[] = [];
+			for (const piece of node.pieces) {
+				children.push(piece.condition, piece.value);
+			}
+			if (node.otherwise !== undefined) children.push(node.otherwise);
+			return children;
+		}
 	}
 }
 
@@ -459,6 +470,17 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 				metadata: node.metadata
 			});
 			break;
+
+		// Piecewise: map each branch, plus optional otherwise
+		case 'piecewise': {
+			const newPieces = node.pieces.map((p) => ({
+				condition: mapNode(p.condition, fn),
+				value: mapNode(p.value, fn)
+			}));
+			const newOtherwise = node.otherwise !== undefined ? mapNode(node.otherwise, fn) : undefined;
+			transformedNode = piecewise(newPieces, newOtherwise, node.metadata);
+			break;
+		}
 	}
 
 	// Then apply transformation to the parent
@@ -684,6 +706,19 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				operatorMetadata: transformedParent.operatorMetadata,
 				metadata: transformedParent.metadata
 			});
+
+		// Piecewise: top-down map across all sub-expressions
+		case 'piecewise': {
+			const newPieces = transformedParent.pieces.map((p) => ({
+				condition: mapNodeTopDown(p.condition, fn),
+				value: mapNodeTopDown(p.value, fn)
+			}));
+			const newOtherwise =
+				transformedParent.otherwise !== undefined
+					? mapNodeTopDown(transformedParent.otherwise, fn)
+					: undefined;
+			return piecewise(newPieces, newOtherwise, transformedParent.metadata);
+		}
 	}
 }
 
@@ -935,6 +970,17 @@ export function cloneNode<T extends MathNode>(node: T): T {
 				operatorMetadata: node.operatorMetadata,
 				metadata: node.metadata
 			}) as T;
+
+		// Piecewise: deep-clone each branch
+		case 'piecewise':
+			return piecewise(
+				node.pieces.map((p) => ({
+					condition: cloneNode(p.condition),
+					value: cloneNode(p.value)
+				})),
+				node.otherwise !== undefined ? cloneNode(node.otherwise) : undefined,
+				node.metadata
+			) as T;
 	}
 }
 
@@ -1388,6 +1434,31 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 				operatorMetadata: node.operatorMetadata,
 				metadata: node.metadata
 			});
+
+		// Piecewise: strip brackets in conditions and values; otherwise unchanged
+		case 'piecewise':
+			return piecewise(
+				node.pieces.map((p) => ({
+					condition: stripBracketsInternal(p.condition, {
+						...childCtx,
+						isRoot: true,
+						isFirstTerm: true
+					}),
+					value: stripBracketsInternal(p.value, {
+						...childCtx,
+						isRoot: true,
+						isFirstTerm: true
+					})
+				})),
+				node.otherwise !== undefined
+					? stripBracketsInternal(node.otherwise, {
+							...childCtx,
+							isRoot: true,
+							isFirstTerm: true
+						})
+					: undefined,
+				node.metadata
+			);
 	}
 }
 

@@ -36,6 +36,8 @@ import type {
 	NodeMetadata,
 	NumberNode,
 	OppositeNode,
+	PiecewiseNode,
+	PiecewisePiece,
 	PositiveNode,
 	RelationNode,
 	RelationType,
@@ -1825,6 +1827,40 @@ export function logicalNot(
 		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
 		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
+}
+
+/**
+ * Creates a piecewise (cases) expression.
+ *
+ * @param pieces - Ordered list of `(condition, value)` branches. First match wins.
+ * @param otherwise - Optional fallback value when no condition matches.
+ * @param metadata - Optional node metadata.
+ *
+ * @example
+ *   // |x| as piecewise:
+ *   piecewise(
+ *     [{ condition: relation('<', x, zero), value: opposite(x) }],
+ *     x // otherwise
+ *   )
+ */
+export function piecewise(
+	pieces: readonly PiecewisePiece[],
+	otherwise?: MathNode,
+	metadata?: NodeMetadata
+): PiecewiseNode {
+	return {
+		type: 'piecewise',
+		pieces,
+		...(otherwise !== undefined && { otherwise }),
+		...(metadata && { metadata })
+	} as const;
+}
+
+/**
+ * Convenience: builds a single `(condition, value)` piece for use with `piecewise(...)`.
+ */
+export function piecewisePiece(condition: MathNode, value: MathNode): PiecewisePiece {
+	return { condition, value };
 }
 
 // =============================================================================

@@ -15,16 +15,38 @@ import type { MatrixType } from './matrix/types';
 /**
  * Supported Greek letter names (lowercase only)
  *
- * This is a limited set of Greek letters supported by both LaTeX and Custom parsers.
- * Only these letters can be used as variables in mathematical expressions.
+ * Set of Greek letters supported by both LaTeX and Custom parsers. Each value
+ * is the LaTeX command name (without the backslash). These letters can be
+ * used as variables in mathematical expressions.
  *
  * Note: π is NOT a GreekLetter - it's a MathConstant. Use piConstant() or PI.
  * Similarly, e (Euler's number) is MathConstant('euler'), not a variable.
  *
- * Supported: alpha, beta, gamma, theta
- * Not supported: pi (use MathConstant), omega, sigma, delta, epsilon, etc.
+ * Omicron is omitted (rendered as the latin letter `o` in LaTeX).
  */
-export type GreekLetter = 'alpha' | 'beta' | 'gamma' | 'theta';
+export type GreekLetter =
+	| 'alpha'
+	| 'beta'
+	| 'gamma'
+	| 'delta'
+	| 'epsilon'
+	| 'zeta'
+	| 'eta'
+	| 'theta'
+	| 'iota'
+	| 'kappa'
+	| 'lambda'
+	| 'mu'
+	| 'nu'
+	| 'xi'
+	| 'rho'
+	| 'sigma'
+	| 'tau'
+	| 'upsilon'
+	| 'phi'
+	| 'chi'
+	| 'psi'
+	| 'omega';
 
 // =============================================================================
 // Mathematical Constants
@@ -652,6 +674,43 @@ export interface CompositionNode extends BaseNode {
 }
 
 // =============================================================================
+// Piecewise Node (functions defined by cases)
+// =============================================================================
+
+/**
+ * One branch of a piecewise expression: `value` is the expression to evaluate
+ * when `condition` is true. Branches are ordered: the first matching condition
+ * wins (Desmos / GeoGebra convention).
+ *
+ * Conditions are typically `RelationNode` (x < 0), `LogicalNode` (a < x and x < b),
+ * or relation chains (a < x <= b).
+ */
+export interface PiecewisePiece {
+	readonly condition: MathNode;
+	readonly value: MathNode;
+}
+
+/**
+ * Piecewise function expression: `{ value₁ if cond₁, value₂ if cond₂, ..., otherwise }`.
+ *
+ * - Branches are evaluated in order; the first whose condition holds returns its value.
+ * - `otherwise` (optional) is the fallback when no condition matches.
+ *   Without an `otherwise`, the result is undefined when no branch matches.
+ *
+ * LaTeX: `\begin{cases} v_1 & c_1 \\ v_2 & c_2 \\ \vdots \end{cases}`
+ * Custom DSL: `{ -x si x < 0, x^2 si x >= 0 }` or `{ -x sur ]-infini ; 0[, x^2 sur [0 ; +infini[ }`
+ *
+ * Examples:
+ *  - `|x|` as piecewise: `{ -x si x < 0, x si x >= 0 }`
+ *  - `sign(x)`: `{ -1 si x < 0, 0 si x = 0, 1 si x > 0 }`
+ */
+export interface PiecewiseNode extends BaseNode {
+	readonly type: 'piecewise';
+	readonly pieces: readonly PiecewisePiece[];
+	readonly otherwise?: MathNode;
+}
+
+// =============================================================================
 // Union Type for All Nodes
 // =============================================================================
 
@@ -685,7 +744,8 @@ export type MathNode =
 	| LimitNode
 	| BooleanNode
 	| LogicalNode
-	| LogicalNotNode;
+	| LogicalNotNode
+	| PiecewiseNode;
 
 // =============================================================================
 // Node Type Extraction
