@@ -48,3 +48,21 @@ describe('Phase 6 — \\pi reserved in LHS', () => {
 		expect(symbols.get('r')?.value).toBeCloseTo(Math.E, 10);
 	});
 });
+
+describe('Phase 6 — \\pi/e reserved as loop variables', () => {
+	it('pour e de 1 a 3: → erreur (e is reserved)', () => {
+		expect(() => run('pour e de 1 a 3:\n    x = 1')).toThrow(/réservée|reservee/i);
+	});
+
+	it('pour \\pi de 1 a 3: → erreur', () => {
+		expect(() => run('pour \\pi de 1 a 3:\n    x = 1')).toThrow(/réservée|reservee/i);
+	});
+
+	it('pour e dans (1, 2, 3): → erreur', () => {
+		expect(() => run('pour e dans (1, 2, 3):\n    x = 1')).toThrow(/réservée|reservee/i);
+	});
+
+	it('pour \\pi dans (1, 2, 3): → erreur', () => {
+		expect(() => run('pour \\pi dans (1, 2, 3):\n    x = 1')).toThrow(/réservée|reservee/i);
+	});
+});

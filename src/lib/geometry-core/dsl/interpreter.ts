@@ -238,6 +238,7 @@ class Interpreter {
 			}
 
 			case 'forRange': {
+				assertNameNotReserved(stmt.variable, stmt.line);
 				const from = Math.round(this.evaluateToNumber(stmt.from, stmt.line));
 				const to = Math.round(this.evaluateToNumber(stmt.to, stmt.line));
 				const maxIter = 1000;
@@ -253,6 +254,7 @@ class Interpreter {
 			}
 
 			case 'forIn': {
+				assertNameNotReserved(stmt.variable, stmt.line);
 				const iterable = this.evaluateExpr(stmt.iterable, stmt.line);
 				if (iterable.type !== 'tuple') {
 					throw new DslRuntimeError("'pour...dans' necessite une liste", stmt.line);
@@ -927,7 +929,7 @@ export function createStepper(
 	let symbols = new SymbolTable();
 	let macros = new MacroRegistry();
 	loadStdlib(macros);
-	let interpreter = new Interpreter(fig, symbols, macros, onDirective);
+	let interpreter = new Interpreter(fig, symbols, macros, onDirective, program.source ?? '');
 
 	// Register macros upfront, collect non-macro top-level statements
 	const topLevel = registerMacrosAndCollect(program.statements, macros);
@@ -975,7 +977,7 @@ export function createStepper(
 			symbols = new SymbolTable();
 			macros = new MacroRegistry();
 			loadStdlib(macros);
-			interpreter = new Interpreter(fig, symbols, macros, onDirective);
+			interpreter = new Interpreter(fig, symbols, macros, onDirective, program.source ?? '');
 			const freshTopLevel = registerMacrosAndCollect(program.statements, macros);
 			steps = [...freshTopLevel];
 			cursor = -1;

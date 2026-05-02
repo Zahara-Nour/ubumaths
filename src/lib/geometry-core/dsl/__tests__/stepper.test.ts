@@ -226,3 +226,33 @@ describe('stepper — reset', () => {
 		expect(stepper.currentIndex).toBe(0);
 	});
 });
+
+// ─── Regression: createStepper forwards program.source to the interpreter ──
+
+describe('stepper — mathAST routing source forwarding', () => {
+	it('routes \\pi correctly when stepping (regression for createStepper without source)', () => {
+		const program = parse('r = \\pi');
+		const stepper = createStepper(program);
+		stepper.step();
+		expect(stepper.symbols.get('r')?.value).toBeCloseTo(Math.PI, 10);
+	});
+
+	it('routes math functions like sqrt and exp via parseCustom', () => {
+		const program = parse('a = sqrt(2)\nb = exp(1)');
+		const stepper = createStepper(program);
+		stepper.step();
+		stepper.step();
+		expect(stepper.symbols.get('a')?.value).toBeCloseTo(Math.SQRT2, 10);
+		expect(stepper.symbols.get('b')?.value).toBeCloseTo(Math.E, 10);
+	});
+
+	it('preserves routing across reset()', () => {
+		const program = parse('r = 2 * \\pi');
+		const stepper = createStepper(program);
+		stepper.step();
+		expect(stepper.symbols.get('r')?.value).toBeCloseTo(2 * Math.PI, 10);
+		stepper.reset();
+		stepper.step();
+		expect(stepper.symbols.get('r')?.value).toBeCloseTo(2 * Math.PI, 10);
+	});
+});
