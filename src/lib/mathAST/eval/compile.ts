@@ -28,8 +28,14 @@ import {
 	isPositive,
 	isFunction,
 	isDelimiter,
-	isSuperscript
+	isSuperscript,
+	isRelation,
+	isLogical,
+	isLogicalNot,
+	isBoolean,
+	isPiecewise
 } from '../guards';
+import { flattenRelationChain } from '../flatten';
 
 export type CompiledFn = (vars: Record<string, number>) => number;
 
@@ -147,7 +153,91 @@ export function compile(node: MathNode): CompiledFn {
 		return () => 0;
 	}
 
+	if (isPiecewise(node)) {
+		const compiledPieces = node.pieces.map((p) => ({
+			condition: compileCondition(p.condition),
+			value: compile(p.value)
+		}));
+		const compiledOtherwise = node.otherwise !== undefined ? compile(node.otherwise) : null;
+		return (vars) => {
+			for (const piece of compiledPieces) {
+				if (piece.condition(vars)) return piece.value(vars);
+			}
+			return compiledOtherwise ? compiledOtherwise(vars) : NaN;
+		};
+	}
+
 	throw new CompileError(`Unsupported node type: ${node.type}`);
+}
+
+/**
+ * Compiled condition: takes variable bindings, returns a boolean.
+ * Supports relations (`a < b`), logical and/or/not, relation chains
+ * (`a < x <= b`), and boolean literals.
+ */
+type CompiledCondition = (vars: Record<string, number>) => boolean;
+
+function compileCondition(node: MathNode): CompiledCondition {
+	if (isBoolean(node)) {
+		const v = node.value;
+		return () => v;
+	}
+
+	if (isLogical(node)) {
+		const left = compileCondition(node.left);
+		const right = compileCondition(node.right);
+		if (node.operator === 'and') return (v) => left(v) && right(v);
+		return (v) => left(v) || right(v);
+	}
+
+	if (isLogicalNot(node)) {
+		const operand = compileCondition(node.operand);
+		return (v) => !operand(v);
+	}
+
+	if (isRelation(node)) {
+		// Relation chains (a < b < c) are nested RelationNodes — flatten first.
+		const chain = flattenRelationChain(node);
+		if (chain.operands.length < 2) {
+			throw new CompileError(`Invalid relation chain (no operands)`);
+		}
+
+		const operands = chain.operands.map(compile);
+		const relations = chain.relations;
+
+		return (v) => {
+			let prev = operands[0](v);
+			for (let i = 0; i < relations.length; i++) {
+				const cur = operands[i + 1](v);
+				if (!compareNumbers(prev, relations[i], cur)) return false;
+				prev = cur;
+			}
+			return true;
+		};
+	}
+
+	throw new CompileError(`Unsupported condition node type: ${node.type}`);
+}
+
+function compareNumbers(a: number, op: string, b: number): boolean {
+	switch (op) {
+		case '<':
+			return a < b;
+		case '<=':
+		case '≤':
+			return a <= b;
+		case '>':
+			return a > b;
+		case '>=':
+		case '≥':
+			return a >= b;
+		case '=':
+			return a === b;
+		case '!=':
+		case '≠':
+			return a !== b;
+	}
+	return false;
 }
 
 /** Inverse function mapping for isInverse=true. */

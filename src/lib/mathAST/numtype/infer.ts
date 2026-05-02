@@ -232,6 +232,26 @@ function inferTypeUncached(node: MathNode, ctx: TypeContext): MathType {
 		case 'constant':
 			// If we reach here, inferLiteralType returned null unexpectedly
 			return UNKNOWN_TYPE;
+
+		// Boolean/logical operators are not numerically typed
+		case 'boolean':
+		case 'logical':
+		case 'logical-not':
+			return UNKNOWN_TYPE;
+
+		// SignedZero is a real number (with sign info, but type-wise just real)
+		case 'signed-zero':
+			return REAL_TYPE;
+
+		// Piecewise: result type is the join of all branch value types.
+		// Conservative: if all values infer to the same type, use it; else UNKNOWN.
+		case 'piecewise': {
+			const types = node.pieces.map((p) => inferType(p.value, ctx));
+			if (node.otherwise !== undefined) types.push(inferType(node.otherwise, ctx));
+			if (types.length === 0) return UNKNOWN_TYPE;
+			const first = types[0];
+			return types.every((t) => t === first) ? first : UNKNOWN_TYPE;
+		}
 	}
 }
 

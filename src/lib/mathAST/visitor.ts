@@ -54,6 +54,8 @@ import {
 	logical,
 	logicalNot,
 	matrix,
+	piecewise,
+	signedZero,
 	multiply,
 	opposite,
 	positive,
@@ -323,10 +325,12 @@ const TYPE_TO_METHOD_NAME: Record<MathNode['type'], string> = {
 	matrix: 'Matrix',
 	complex: 'Complex',
 	infinity: 'Infinity',
+	'signed-zero': 'SignedZero',
 	limit: 'Limit',
 	boolean: 'Boolean',
 	logical: 'Logical',
-	'logical-not': 'LogicalNot'
+	'logical-not': 'LogicalNot',
+	piecewise: 'Piecewise'
 };
 
 // =============================================================================
@@ -475,6 +479,25 @@ function getChildrenWithPaths(node: MathNode): ChildInfo[] {
 		// LogicalNot has operand
 		case 'logical-not':
 			return [{ child: node.operand, pathSegments: ['operand'] }];
+
+		// SignedZero is a leaf node
+		case 'signed-zero':
+			return [];
+
+		// Piecewise: each piece exposes a condition and value, plus optional otherwise
+		case 'piecewise': {
+			const children: ChildInfo[] = [];
+			node.pieces.forEach((piece, index) => {
+				children.push(
+					{ child: piece.condition, pathSegments: ['pieces', index, 'condition'] },
+					{ child: piece.value, pathSegments: ['pieces', index, 'value'] }
+				);
+			});
+			if (node.otherwise !== undefined) {
+				children.push({ child: node.otherwise, pathSegments: ['otherwise'] });
+			}
+			return children;
+		}
 	}
 }
 
@@ -708,6 +731,23 @@ function reconstructNode(original: MathNode, transformedChildren: Map<string, Ma
 				operatorMetadata: original.operatorMetadata,
 				metadata: original.metadata
 			});
+
+		// SignedZero is a leaf — no children to reconstruct
+		case 'signed-zero':
+			return signedZero(original.sign, original.metadata);
+
+		// Piecewise: rebuild each piece by looking up transformed children
+		case 'piecewise': {
+			const newPieces = original.pieces.map((piece, index) => ({
+				condition: transformedChildren.get(`pieces,${index},condition`) ?? piece.condition,
+				value: transformedChildren.get(`pieces,${index},value`) ?? piece.value
+			}));
+			const newOtherwise =
+				original.otherwise !== undefined
+					? (transformedChildren.get('otherwise') ?? original.otherwise)
+					: undefined;
+			return piecewise(newPieces, newOtherwise, original.metadata);
+		}
 	}
 }
 

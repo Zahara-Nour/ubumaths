@@ -34,6 +34,7 @@ import type {
 	BooleanNode,
 	LogicalNode,
 	LogicalNotNode,
+	PiecewiseNode,
 	LiteralNode,
 	BinaryOperationNode,
 	UnaryOperationNode,
@@ -314,6 +315,13 @@ export function isLogical(node: MathNode): node is LogicalNode {
  */
 export function isLogicalNot(node: MathNode): node is LogicalNotNode {
 	return node.type === 'logical-not';
+}
+
+/**
+ * Type guard for PiecewiseNode
+ */
+export function isPiecewise(node: MathNode): node is PiecewiseNode {
+	return node.type === 'piecewise';
 }
 
 /**
