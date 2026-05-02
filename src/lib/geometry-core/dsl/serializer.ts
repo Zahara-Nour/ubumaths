@@ -119,6 +119,9 @@ function typePrefix(type: string): string {
 		case 'intersectionLQ':
 		case 'intersectionQQ':
 		case 'intersectionParametric':
+		case 'intersectionParametricLine':
+		case 'intersectionParametricCircle':
+		case 'intersectionParametricFunction':
 		case 'reflectedPoint':
 		case 'rotatedPoint':
 		case 'translatedPoint':
@@ -305,6 +308,28 @@ function serializeElement(
 			// k=1 is the default — emit `intersection(c1, c2)` for cleanliness.
 			if (el.k === 1) return `${n} = intersection(${c1}, ${c2})`;
 			return `${n} = intersection(${c1}, ${c2}, ${el.k})`;
+		}
+
+		case 'intersectionParametricLine': {
+			const c = name(idToName, el.curveId);
+			const d = name(idToName, el.lineId);
+			// Canonical order: parametric curve first.
+			if (el.k === 1) return `${n} = intersection(${c}, ${d})`;
+			return `${n} = intersection(${c}, ${d}, ${el.k})`;
+		}
+
+		case 'intersectionParametricCircle': {
+			const c = name(idToName, el.curveId);
+			const circ = name(idToName, el.circleId);
+			if (el.k === 1) return `${n} = intersection(${c}, ${circ})`;
+			return `${n} = intersection(${c}, ${circ}, ${el.k})`;
+		}
+
+		case 'intersectionParametricFunction': {
+			const c = name(idToName, el.curveId);
+			const f = name(idToName, el.functionId);
+			if (el.k === 1) return `${n} = intersection(${c}, ${f})`;
+			return `${n} = intersection(${c}, ${f}, ${el.k})`;
 		}
 
 		case 'reflectedPoint':

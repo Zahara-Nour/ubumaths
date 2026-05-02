@@ -16,6 +16,9 @@ import {
 	isIntersectionLF,
 	isIntersectionFF,
 	isIntersectionParametric,
+	isIntersectionParametricLine,
+	isIntersectionParametricCircle,
+	isIntersectionParametricFunction,
 	isReflectedPoint,
 	isRotatedPoint,
 	isTranslatedPoint,
@@ -69,6 +72,11 @@ import {
 } from '../geometry/transformations';
 import { conicPointFromParam } from './conic-helpers';
 import { findParametricIntersections } from './parametric-intersection';
+import {
+	findParametricLineIntersections,
+	findParametricCircleIntersections,
+	findParametricFunctionIntersections
+} from './parametric-intersection-1d';
 
 export interface ComputePositionResult {
 	position: GeoPoint | null;
@@ -286,6 +294,135 @@ export function computeElementPosition(
 		);
 
 		// k is 1-indexed; null silently when out of range (no DslRuntimeError).
+		if (el.k < 1 || el.k > intersections.length) {
+			return { position: null, hasComputablePosition: true };
+		}
+		const intr = intersections[el.k - 1];
+		return {
+			position: { x: numeric(intr.x), y: numeric(intr.y) },
+			hasComputablePosition: true
+		};
+	}
+
+	if (isIntersectionParametricLine(el)) {
+		const curveEl = elements.get(el.curveId);
+		const lineEl = elements.get(el.lineId);
+		if (!curveEl || curveEl.type !== 'parametricCurve' || !lineEl || lineEl.type !== 'line') {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		const tMin = resolveScalarParam(curveEl.tMin, scalarValues);
+		const tMax = resolveScalarParam(curveEl.tMax, scalarValues);
+		if (!Number.isFinite(tMin) || !Number.isFinite(tMax)) {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		const p1 = positions.get(lineEl.point1Id);
+		const p2 = positions.get(lineEl.point2Id);
+		if (!p1 || !p2) return { position: null, hasComputablePosition: true };
+
+		const px = geoToNumber(p1.x);
+		const py = geoToNumber(p1.y);
+		const vx = geoToNumber(p2.x) - px;
+		const vy = geoToNumber(p2.y) - py;
+
+		const bindings = buildCurveBindings(curveEl, elements, scalarValues);
+		const intersections = findParametricLineIntersections(
+			curveEl,
+			bindings,
+			tMin,
+			tMax,
+			px,
+			py,
+			vx,
+			vy
+		);
+		if (el.k < 1 || el.k > intersections.length) {
+			return { position: null, hasComputablePosition: true };
+		}
+		const intr = intersections[el.k - 1];
+		return {
+			position: { x: numeric(intr.x), y: numeric(intr.y) },
+			hasComputablePosition: true
+		};
+	}
+
+	if (isIntersectionParametricCircle(el)) {
+		const curveEl = elements.get(el.curveId);
+		const circleEl = elements.get(el.circleId);
+		if (!curveEl || curveEl.type !== 'parametricCurve' || !circleEl) {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		const tMin = resolveScalarParam(curveEl.tMin, scalarValues);
+		const tMax = resolveScalarParam(curveEl.tMax, scalarValues);
+		if (!Number.isFinite(tMin) || !Number.isFinite(tMax)) {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		const circle = getCircleParams(el.circleId, positions, elements, scalarValues);
+		if (!circle) return { position: null, hasComputablePosition: true };
+		const cx = geoToNumber(circle.center.x);
+		const cy = geoToNumber(circle.center.y);
+		const r = geoToNumber(circle.radius);
+		if (!Number.isFinite(cx) || !Number.isFinite(cy) || !Number.isFinite(r) || r <= 0) {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		const bindings = buildCurveBindings(curveEl, elements, scalarValues);
+		const intersections = findParametricCircleIntersections(
+			curveEl,
+			bindings,
+			tMin,
+			tMax,
+			cx,
+			cy,
+			r
+		);
+		if (el.k < 1 || el.k > intersections.length) {
+			return { position: null, hasComputablePosition: true };
+		}
+		const intr = intersections[el.k - 1];
+		return {
+			position: { x: numeric(intr.x), y: numeric(intr.y) },
+			hasComputablePosition: true
+		};
+	}
+
+	if (isIntersectionParametricFunction(el)) {
+		const curveEl = elements.get(el.curveId);
+		const fnEl = elements.get(el.functionId);
+		if (!curveEl || curveEl.type !== 'parametricCurve' || !fnEl || fnEl.type !== 'function') {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		const tMin = resolveScalarParam(curveEl.tMin, scalarValues);
+		const tMax = resolveScalarParam(curveEl.tMax, scalarValues);
+		if (!Number.isFinite(tMin) || !Number.isFinite(tMax)) {
+			return { position: null, hasComputablePosition: true };
+		}
+
+		// Domain bounds (default ±Infinity = unrestricted).
+		let xMin = -Infinity;
+		let xMax = Infinity;
+		if (fnEl.domain) {
+			xMin = resolveScalarParam(fnEl.domain.lower, scalarValues);
+			xMax = resolveScalarParam(fnEl.domain.upper, scalarValues);
+			if (!Number.isFinite(xMin) && xMin !== -Infinity) xMin = -Infinity;
+			if (!Number.isFinite(xMax) && xMax !== Infinity) xMax = Infinity;
+		}
+
+		const bindings = buildCurveBindings(curveEl, elements, scalarValues);
+		const intersections = findParametricFunctionIntersections(
+			curveEl,
+			bindings,
+			tMin,
+			tMax,
+			fnEl.compiledFn,
+			fnEl.compiledDerivative,
+			xMin,
+			xMax
+		);
 		if (el.k < 1 || el.k > intersections.length) {
 			return { position: null, hasComputablePosition: true };
 		}
@@ -619,6 +756,27 @@ export function computeElementPosition(
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
+
+/**
+ * Build the scalar bindings (sliders/scalars referenced in xExpression/yExpression
+ * /tMin/tMax) for a parametric curve. Mirrors the inline logic used by both the
+ * point-on-parametric branch and the parametric × parametric (V1) intersection.
+ */
+function buildCurveBindings(
+	curveEl: import('../types/elements').GeoParametricCurve,
+	elements: ReadonlyMap<string, GeoElement>,
+	scalarValues?: ReadonlyMap<string, number>
+): Record<string, number> {
+	const bindings: Record<string, number> = {};
+	for (const depId of curveEl.dependsOn) {
+		const depEl = elements.get(depId);
+		if (depEl?.label) {
+			const val = scalarValues?.get(depId);
+			if (val !== undefined) bindings[depEl.label] = val;
+		}
+	}
+	return bindings;
+}
 
 function getLineLikePoints(
 	lineId: string,

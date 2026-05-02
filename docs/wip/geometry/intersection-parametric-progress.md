@@ -146,5 +146,63 @@ Système non-linéaire 2D : `F(t1, t2) = γ1(t1) − γ2(t2) = (0, 0)`.
 
 ### Restant (post-B3)
 
-- **B3 V2** : `intersection(c, droite)`, `intersection(c, cercle)`, `intersection(c, fonction)` — Newton 1D plus simple
+- **B3 V2** : `intersection(c, droite)`, `intersection(c, cercle)`, `intersection(c, fonction)` — Newton 1D plus simple → **EN COURS**
 - **C** : géométrie différentielle (longueur, courbure, cercle osculateur) ~1.5 j
+
+---
+
+## V2 — Intersection paramétrique × autres types (LIVRÉ 2026-05-02)
+
+### Spec validée
+
+**Scope V2** : 3 nouvelles combinaisons (paramétrique × droite, × cercle, × fonction) traitées par Newton 1D.
+
+| Combo                   | Algorithme Newton 1D                        |
+| ----------------------- | ------------------------------------------- |
+| paramétrique × droite   | `cross(γ(t) − P, v) = 0`                    |
+| paramétrique × cercle   | `‖γ(t) − center‖² − r² = 0`                 |
+| paramétrique × fonction | `γ_y(t) − f(γ_x(t)) = 0`, filtre x ∈ domain |
+
+**Hors scope V2** : segment/demidroite (clipping supplémentaire), quadraticCurve (conics — l'utilisateur peut convertir en paramétrique).
+
+### Décisions tranchées
+
+| #   | Question         | Décision                                                      |
+| --- | ---------------- | ------------------------------------------------------------- |
+| Q1  | Auto-swap        | Oui (line × parametric et parametric × line équivalents)      |
+| Q2  | Newton 1D config | 16 starts, 20 iter, tol 1e-8                                  |
+| Q3  | Helper           | Nouveau fichier `parametric-intersection-1d.ts`, 3 fonctions  |
+| Q4  | Fonction domaine | Filtre `γ_x(t) ∈ [xMin, xMax]` après convergence              |
+| Q5  | Cercle types     | Extract center+radius pour `circleByRadius`/`Point`/`3Points` |
+| Q6  | Commit groupé    | 3 combos en 1 commit                                          |
+
+### Implémentation
+
+- `types/elements.ts` : 3 nouveaux types `GeoIntersectionParametric{Line,Circle,Function}`
+- `graph/parametric-intersection-1d.ts` : nouveau fichier avec helper `newtonMultiStart` partagé + 3 wrappers `findParametricLineIntersections`/`Circle`/`Function`
+- `graph/figure.ts` : 3 factories + extension du `getPosition` override (live-recompute pour ces types)
+- `graph/compute-position.ts` : 3 branches live + helper partagé `buildCurveBindings`
+- `dsl/builtins.ts` : dispatch V2 AVANT V1 avec auto-swap. `isDroiteOnly` strict (pas segment/demidroite). Élargissement scope mineur : support `x_min=`/`x_max=` named args dans `courbe()` cartésien (rewrite vers `sur [a;b]`).
+- `dsl/serializer.ts` : 3 cases canoniques `intersection(c, line/circle/fn[, k])`
+
+### Code review (8 issues, 3 fixées)
+
+- **Issue 1 (Important)** : spatial dedup hard-coded `1e-3` → **fixé** : relatif à `acceptanceTolerance × 1000` (scale automatiquement avec la figure)
+- **Issue 3 (Important)** : evaluator non-réentrant non documenté → **fixé** : commentaire explicite sur `makeCurveEvaluator`
+- **Issue 8 (Suggestion)** : `speed2 < threshold` mismatch units → **fixé** : compare `‖v‖` (linear) au lieu de `‖v‖²`
+- Issues 2, 4, 5, 6, 7 : cosmétique / non-bloquant
+
+**2 edge cases ajoutés (section H)**
+
+- H1 : `x_min`/`x_max` + `sur [a;b]` simultané → erreur DSL
+- H2 : dedup spatial scale relatif (test micro-scale)
+
+### Démos
+
+- `parametric/+page.svelte` : 3 nouvelles (ellipse × droite, ellipse × cercle 4 pts, cercle × parabole)
+
+### Tests
+
+- 18/18 dans `intersection-parametric-mixed.test.ts` (16 + 2 edge cases)
+- 2914/2916 tests geometry-core (2 skipped, 0 régression)
+- ESLint clean
