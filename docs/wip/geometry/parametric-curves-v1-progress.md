@@ -1,6 +1,7 @@
 # Courbes paramétriques — V1 (geometry-core)
 
-**Statut** : en cours — Phase 0 validée, Phase 1+2 terminées, **Phase 3 terminée (en attente code review)**
+**Statut V1** : terminée (7 phases, 102 tests TDD verts, 6 commits sur main)
+**Statut post-V1** : 3 régressions corrigées (mai 2026) — voir section dédiée
 **Module** : `src/lib/geometry-core/`
 **Doc de plan** : voir conversation pour spec complète
 **Date début** : 2026-05-02
@@ -97,18 +98,113 @@ courbe("r = 2*cos(theta)", theta_min=0, theta_max=pi)
 - Sérialisation DSL round-trip avec préservation des noms symboliques (sliders).
 - Page demo `/geometry-demo/parametric` avec 9 exemples : cercle, parabole, cardioïde, Lissajous (3 ratios), cycloïde, spirale d'Archimède, animations slider, ellipse remplie.
 
-**Hors scope V1 (futurs V2/V3)** :
-
-- `point_sur(parametricCurve, t=...)` draggable.
-- `tangente(parametricCurve, t=...)` (vecteur direction (x'(t₀), y'(t₀))).
-- `lieu()` driver = point sur courbe paramétrique.
-- Polaire `courbe("r = ...", theta_min=..., theta_max=...)` (3e branche).
-- `intersection(parametricCurve, droite)` numérique.
-- `longueur()`, `courbure()`, `cercle_osculateur()`.
-
 **Documents produits** :
 
-- `docs/wip/geometry/parametric-curves-v1-progress.md` (ce fichier — historique complet et reprise crash).
+- `docs/wip/geometry/parametric-curves-v1-progress.md` (ce fichier — historique complet, post-V1, roadmap, reprise crash).
+
+---
+
+## Post-V1 — Régressions corrigées (mai 2026)
+
+Trois bugs hors plan, découverts en utilisant `/geometry-demo/parametric` une fois la V1 livrée.
+
+### 1. `feat(mathAST): support full lowercase Greek letter alphabet` — `2c1cc1fc5`
+
+**Cause** : le parser custom mathAST ne reconnaissait que 5 lettres grecques (alpha, beta, gamma, theta, pi). `\phi` levait `Invalid backslash sequence`. `phi` nu était tokenisé en multiplication implicite `p·h·i` (avec `i` = unité imaginaire) → variable phi jamais visible côté courbe builtin.
+
+**Fix** : extension à l'alphabet grec lowercase complet (22 lettres, omicron exclu — rendu `o` en LaTeX) :
+
+- `src/lib/mathAST/types.ts` : type `GreekLetter` étendu
+- `src/lib/mathAST/parser/types.ts` : `GREEK_COMMANDS`
+- `src/lib/mathAST/parser/constants.ts` : `SUPPORTED_GREEK_LETTERS` + type union
+- `src/lib/mathAST/custom-generator.ts` : `SUPPORTED_GREEK`
+- `src/lib/mathAST/parser/custom/{parser-pratt,parser-rd}.ts` : `GREEK_SYMBOL_MAP`
+- `src/lib/mathAST/parser/custom/{tokenizer,pattern-tokenizer}.ts` : `VALID_SYMBOLS`
+
+**Tests** :
+
+- `src/lib/mathAST/parser/__tests__/greek-support.test.ts` mis à jour (UNSUPPORTED_GREEK passe à `varphi/varepsilon/vartheta`)
+- `src/lib/geometry-core/dsl/__tests__/dsl-courbe-with-variables.test.ts` : nouveau test `\phi` dans courbe paramétrique
+- Demo mise à jour : `"x = \phi*cos(t)"` au lieu de `"x = phi*cos(t)"`
+
+### 2. `fix(geometry-core): inject scalar bindings in parametric curve sampling` — `9279b2b64`
+
+**Cause** : `figure.computeParametricCurveSampling` (figure.ts:3611) ne passait que `{ [param]: t }` à `compiledX/Y/X'/Y'`. Tout slider/scalaire référencé dans `x(t)` ou `y(t)` (ex. `r·cos(t)` avec `r` slider) restait non lié → `compiledX({ t })` retournait NaN → 0 points → courbe invisible. Visible sur l'exemple "Coefficient dynamique" de `/geometry-demo/parametric`.
+
+**Fix** : construction d'un dict `name→value` à partir de `pc.dependsOn` en utilisant le `label` de chaque dépendance, fusionné dans chaque appel de fonction compilée. Pattern identique à `svg-primitives.ts:1361-1367` pour les courbes de fonction.
+
+**Pourquoi ça n'avait pas été détecté en V1** : le test existant `figure-parametric-reactivity.test.ts:84-112` "slider in x(t)/y(t) coefficient rescales the sampled points" itérait `for (const p of before!.points) expect(...)` — quand `points` est vide, la boucle ne lance aucune assertion et le test passe à vide. Test renforcé avec `expect(points.length).toBeGreaterThan(2)` avant l'itération.
+
+### 3. `fix(geometry-core): default fillOpacity to 1 when fillColor is set` — `afb578253`
+
+**Cause** : `resolveStyle` (svg-primitives.ts:90) retournait `fillOpacity ?? 0`. Quand l'utilisateur écrit `remplissage="violet"` sans `opacite_fond=...`, `fillOpacity` valait 0 → fill invisible. Visible sur l'exemple "Courbe fermée — remplissage". Le pattern défensif `?? 0.3` dans certains templates (sectors, etc.) ne déclenchait jamais son fallback puisque 0 n'est pas nullish.
+
+**Fix** : défaut conditionnel `?? (fillColor !== undefined ? 1 : 0)` — préserve le pass-through pour les éléments sans fill, mais affiche fully opaque dès qu'un `fillColor` est explicite.
+
+**Tests** : `src/lib/geometry-core/rendering/__tests__/resolve-style.test.ts` (5 tests, dont vérification de l'override explicite à 0).
+
+---
+
+## Roadmap — prochains développements possibles
+
+Classés par catégorie. Les priorités reflètent le couplage à des cas d'usage concrets identifiés (démo, exercice, demande utilisateur), pas une opinion absolue.
+
+### A. Forme polaire (V2 explicitement prévue)
+
+**Priorité** : HAUTE — déjà spec dans Phase 0 ligne 22.
+
+Surface API visée :
+
+```
+# 3e branche du builtin courbe()
+courbe("r = 2*cos(theta)", theta_min=0, theta_max=pi)
+```
+
+Croquis d'implémentation :
+
+- Détecter en amont : 1 string positionnelle dont la LHS de la relation est `r` → branche polaire.
+- Réécriture interne : `x = r(θ)·cos(θ)`, `y = r(θ)·sin(θ)` puis `createParametricCurveFromEquations` avec `param="theta"` (ou `\theta`).
+- Bornes : `theta_min` / `theta_max` (et alias `θ_min`/`θ_max` ?) mappés vers `t_min`/`t_max` du moteur paramétrique.
+- Décision à prendre : conserver une marque `polar: true` dans le `GeoParametricCurve` pour la sérialisation round-trip ? Sinon le serializer reproduira la forme paramétrique x/y, ce qui est correct mais perd l'intention pédagogique.
+
+Effort estimé : ~1 j TDD (5-10 tests) en réutilisant le pipeline existant.
+
+### B. Builtins associés au paramétrique
+
+**Priorité** : MOYENNE — usages pédagogiques évidents.
+
+- **`tangente(c, t=...)`** — vecteur tangent `(x'(t₀), y'(t₀))`. La dérivation symbolique est déjà calculée et stockée (`xDerivative`, `yDerivative`, `compiledXPrime`, `compiledYPrime`). Reste : nouveau cas dans le builtin `tangente()` quand l'argument est une courbe paramétrique, et rendu (vecteur ou droite). Effort ~1 j.
+- **`point_sur(c, t=...)`** — point ancré sur la courbe au paramètre `t`, draggable. Nouveau type d'élément `GeoPointOnParametric` avec `dependsOn = [curveId, scalarRef(t)]`. Coordonnées calculées via les compileds. Drag → résoudre `t` minimisant la distance au curseur (Newton sur `f(t) = (γ(t) - cursor)·γ'(t) = 0`). Effort ~2 j.
+- **`lieu(point_sur(c, t), t)`** — driver = point sur courbe paramétrique. À tester : le sous-graphe de `lieu()` recompile-t-il bien quand `t` varie sur sa plage ? Pas de nouveau code attendu si `point_sur` produit un scalaire propre. Effort ~0,5 j (essentiellement test).
+- **`intersection(c1, c2)` / `intersection(c, droite)`** numériques — système non linéaire `γ₁(t₁) = γ₂(t₂)` ou `γ(t) = P + s·v`. Newton multi-démarrages sur grille `[t_min, t_max]`. Effort ~2 j.
+
+### C. Géométrie différentielle
+
+**Priorité** : BASSE — pédagogie spécialisée.
+
+- **`longueur(c, t1?, t2?)`** — `∫|γ'(t)| dt`, quadrature numérique adaptative (Gauss-Legendre ou Simpson sur sous-intervalles).
+- **`courbure(c, t)`** — `κ(t) = (x'·y'' − y'·x'') / (x'² + y'²)^(3/2)`. Demande la dérivée seconde — soit symbolique via `differentiate(xDerivative, t)`, soit numérique sur les compileds.
+- **`cercle_osculateur(c, t)`** — cercle de rayon `1/κ(t)` centré au centre de courbure.
+
+Effort total ~1,5 j si on factorise un module `parametric-calculus.ts` partagé.
+
+### D. Limitations relevées hors V2/V3
+
+**Priorité** : faible mais utile pour ergonomie.
+
+- **DSL tokenizer `BACKSLASH_WHITELIST`** (`src/lib/geometry-core/dsl/tokenizer.ts:27`) ne contient que `pi`. Conséquence : impossible d'écrire `\phi = (1+sqrt(5))/2` ou `\theta = pi/4` comme assignation DSL — seulement `phi`/`theta` (ASCII). À l'intérieur des chaînes d'équations le parser mathAST accepte désormais tout l'alphabet grec. Action : aligner `BACKSLASH_WHITELIST` sur l'alphabet grec, et harmoniser le mapping `\phi`-DSL ↔ `phi`-mathAST (clé symbol-table sans backslash). Effort ~0,5 j.
+- **Placement du label** (Phase 3 ligne 245) : centre du viewport + offset (10,−10). Idéal : placer au point de la courbe à `t = (t_min+t_max)/2`, ou à |y| max, ou comme la branche `function` (à `0.85·xMax`). Effort ~0,3 j.
+- **Hover / popover / double-clic** (Phase 3 ligne 246) : pas de handler dédié. Ajouter au minimum un popover avec `x(t)`, `y(t)`, et la valeur courante de `t` au survol — utile en démo et en exercices. Effort ~0,5 j.
+- **Direct LHS `\theta = ...`** : actuellement `\phi` n'est accepté que dans les chaînes d'équations (côté mathAST). Si on veut `\phi*cos(t)` en RHS d'une assignation DSL hors chaîne (ex. `r = \phi * 2`), il faut que la pipeline math-pure de l'interpréteur (`tryEvaluateAsMathExpr`) reconnaisse les Greek letters DSL → routage parseCustom. À tester : ça marche probablement déjà puisque la slice raw passe directe à `parseCustom`. Effort : 0,1 j (audit + 2 tests).
+
+### E. Robustesse des tests
+
+**Priorité** : MOYENNE — un bug similaire à celui du sampling pourrait se cacher ailleurs.
+
+- **Audit `for-of` vacuous** : grep des tests qui itèrent sur des collections résultantes (`points`, `paths`, `elements`) sans `expect(length).toBeGreaterThan(...)` au préalable. Ajouter l'assertion partout où le test est censé valider que la collection est non vide. Effort ~0,5 j.
+- **Test snapshot du SVG path** sur un cas avec `remplissage` mais sans `opacite_fond` : éviter une régression de `resolveStyle.fillOpacity` à 0. Effort 0,1 j.
+
+---
 
 ### Phase 6 — Demo page
 
