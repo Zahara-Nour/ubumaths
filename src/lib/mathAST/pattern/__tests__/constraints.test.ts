@@ -1044,8 +1044,13 @@ describe('containsVariable', () => {
 		expect(containsVariable(number('42'), 'x')).toBe(false);
 	});
 
-	it('does not find variable in greek letter', () => {
-		expect(containsVariable(greek('alpha'), 'alpha')).toBe(false);
+	it('finds greek letter when name matches diff variable', () => {
+		expect(containsVariable(greek('alpha'), 'alpha')).toBe(true);
+	});
+
+	it('does not find greek letter when name differs', () => {
+		expect(containsVariable(greek('alpha'), 'beta')).toBe(false);
+		expect(containsVariable(greek('alpha'), 'x')).toBe(false);
 	});
 });
 

@@ -34,7 +34,8 @@ import {
 	opposite,
 	piConstant,
 	relation,
-	parentheses
+	parentheses,
+	greek
 } from '../../factory';
 import type { FunctionBindings } from '../../eval/function-bindings';
 
@@ -88,6 +89,62 @@ describe('differentiate', () => {
 		it('d/dx(y) = 0 (y is constant with respect to x)', () => {
 			const result = differentiate(variable('y'), { variable: 'x' });
 			expect(result).toEqual(number('0'));
+		});
+	});
+
+	describe('greek letter rule', () => {
+		it('d/dtheta(theta) = 1 (greek letter as differentiation variable)', () => {
+			const result = differentiate(greek('theta'), { variable: 'theta' });
+			expect(result).toEqual(number('1'));
+		});
+
+		it('d/dtheta(alpha) = 0 (other greek letter is constant)', () => {
+			const result = differentiate(greek('alpha'), { variable: 'theta' });
+			expect(result).toEqual(number('0'));
+		});
+
+		it('d/dx(theta) = 0 (greek letter is constant when diff w.r.t. ascii var)', () => {
+			const result = differentiate(greek('theta'), { variable: 'x' });
+			expect(result).toEqual(number('0'));
+		});
+
+		it('d/dtheta(theta^2) = 2*theta (power rule with greek variable)', () => {
+			const expr = power(greek('theta'), number('2'));
+			const result = differentiate(expr, { variable: 'theta', simplify: true });
+			const latex = toLatex(result);
+			expect(latex).toContain('2');
+			expect(latex).toContain('\\theta');
+		});
+
+		it('d/dtheta(cos(theta)) = -sin(theta) (transcendental with greek variable)', () => {
+			const expr = cos(greek('theta'));
+			const result = differentiate(expr, { variable: 'theta', simplify: true });
+			const latex = toLatex(result);
+			expect(latex).toContain('-');
+			expect(latex).toContain('\\sin');
+			expect(latex).toContain('\\theta');
+		});
+
+		it('d/dtheta(theta * cos(theta)) uses product rule (cos(theta) - theta*sin(theta))', () => {
+			const expr = multiply(greek('theta'), cos(greek('theta')));
+			const result = differentiate(expr, { variable: 'theta', simplify: true });
+			const latex = toLatex(result);
+			// Product rule: 1 * cos(theta) + theta * (-sin(theta))
+			expect(latex).toContain('\\cos');
+			expect(latex).toContain('\\sin');
+			expect(latex).toContain('\\theta');
+		});
+
+		it('containsVariable(theta, "theta") = true', () => {
+			expect(containsVariable(greek('theta'), 'theta')).toBe(true);
+		});
+
+		it('containsVariable(alpha, "theta") = false', () => {
+			expect(containsVariable(greek('alpha'), 'theta')).toBe(false);
+		});
+
+		it('containsVariable(theta, "x") = false (greek does not match ascii var)', () => {
+			expect(containsVariable(greek('theta'), 'x')).toBe(false);
 		});
 	});
 

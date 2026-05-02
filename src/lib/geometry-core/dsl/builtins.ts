@@ -3125,14 +3125,6 @@ function createPolarCurveFromEquation(
 	const equationXOriginal = `x = (${rhsString})*cos(theta)`;
 	const equationYOriginal = `y = (${rhsString})*sin(theta)`;
 
-	// NOTE: differentiate() treats GreekLetterNode as constant (containsVariable
-	// returns false for greek), so symbolic derivatives w.r.t. 'theta' resolve
-	// to zero(). buildParametricCurveFromXY then stores compiledXPrime/Y that
-	// always return 0, and the sampler silently falls back to uniform sampling
-	// (max speed = 0 < SPEED_ZERO_THRESHOLD). This is benign — uniform sampling
-	// is sufficient for polar curves and keeps the pipeline simple. Once
-	// differentiate() handles greek letters as variables, polar curves will
-	// automatically benefit from adaptive sampling.
 	return buildParametricCurveFromXY({
 		xRhs,
 		yRhs,

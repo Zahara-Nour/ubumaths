@@ -21,7 +21,7 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 			return node.name === varName;
 
 		case 'greek':
-			return false; // Greek letters are treated as constants
+			return node.letter === varName;
 
 		case 'addition':
 		case 'subtraction':

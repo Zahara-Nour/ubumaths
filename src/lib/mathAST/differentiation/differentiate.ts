@@ -149,7 +149,7 @@ function differentiateNode(
 			return variableRule(node.name, variable);
 
 		case 'greek':
-			return greekLetterRule();
+			return greekLetterRule(node.letter, variable);
 
 		case 'symbol':
 			return constantRule();
