@@ -1826,12 +1826,26 @@ function resolveBoundToNumber(param: ScalarParam, figure: Figure): number {
  * where f keeps a constant sign). Returns null when the element is missing,
  * not an integral area, or when the geometry cannot be resolved.
  */
+export interface IntegralAreaInfinityEdge {
+	/** SVG x of the clipped viewport edge. */
+	readonly x: number;
+	/** SVG y of the upper boundary of the area at the edge (smaller SVG y). */
+	readonly yTop: number;
+	/** SVG y of the lower boundary at the edge (larger SVG y). */
+	readonly yBottom: number;
+	/** Math direction the area extends past the viewport. `right` = +∞. */
+	readonly direction: 'left' | 'right';
+}
+
 export function integralAreaToSVG(
 	id: string,
 	figure: Figure,
 	transformer: CoordinateTransformer,
 	dims: { width: number; height: number }
-): { paths: Array<{ d: string; sign: 'positive' | 'negative' }> } | null {
+): {
+	paths: Array<{ d: string; sign: 'positive' | 'negative' }>;
+	infinityEdges?: readonly IntegralAreaInfinityEdge[];
+} | null {
 	const el = figure.getElementById(id);
 	if (!el || el.type !== 'integralArea') return null;
 	const area = el as GeoIntegralArea;
@@ -1845,7 +1859,8 @@ export function integralAreaToSVG(
 	if (a === b) return null;
 
 	// V5 — improper bounds: clip ±∞ to the viewport edge so the rendered region
-	// "exits the frame" naturally (no special indicator V1 — see study §2.5).
+	// "exits the frame" naturally. V5.1 adds infinityEdges so the consumer can
+	// draw an arrow + ∞ marker indicating the area continues past the viewport.
 	const topLeft = transformer.svgToMath(0, 0);
 	const bottomRight = transformer.svgToMath(dims.width, dims.height);
 	const aClipped = Number.isFinite(a) ? a : a === -Infinity ? topLeft.x : bottomRight.x;
@@ -1905,7 +1920,24 @@ export function integralAreaToSVG(
 	}
 
 	if (paths.length === 0) return null;
-	return { paths };
+
+	// V5.1 — build infinityEdges for the viewport sides where the bound was ±∞.
+	const infinityEdges: IntegralAreaInfinityEdge[] = [];
+	const buildEdge = (mathX: number, direction: 'left' | 'right'): void => {
+		const yCurve = fnEl.compiledFn({ x: mathX });
+		if (!Number.isFinite(yCurve)) return;
+		const svgEdge = transformer.mathToSvg(mathX, 0);
+		const svgCurve = transformer.mathToSvg(mathX, yCurve);
+		const yTop = Math.min(svgEdge.y, svgCurve.y);
+		const yBottom = Math.max(svgEdge.y, svgCurve.y);
+		infinityEdges.push({ x: svgEdge.x, yTop, yBottom, direction });
+	};
+	if (a === -Infinity) buildEdge(lo, 'left');
+	if (b === -Infinity) buildEdge(lo, 'left');
+	if (a === Infinity) buildEdge(hi, 'right');
+	if (b === Infinity) buildEdge(hi, 'right');
+
+	return infinityEdges.length > 0 ? { paths, infinityEdges } : { paths };
 }
 
 /**
@@ -1929,7 +1961,10 @@ export function integralAreaBetweenToSVG(
 	figure: Figure,
 	transformer: CoordinateTransformer,
 	dims: { width: number; height: number }
-): { paths: Array<{ d: string; sign: 'positive' | 'negative' }> } | null {
+): {
+	paths: Array<{ d: string; sign: 'positive' | 'negative' }>;
+	infinityEdges?: readonly IntegralAreaInfinityEdge[];
+} | null {
 	const el = figure.getElementById(id);
 	if (!el || el.type !== 'integralArea') return null;
 	const area = el as GeoIntegralArea;
@@ -2044,5 +2079,23 @@ export function integralAreaBetweenToSVG(
 	}
 
 	if (paths.length === 0) return null;
-	return { paths };
+
+	// V5.1 — infinity edges: attach between f and g at the clipped viewport edge.
+	const infinityEdges: IntegralAreaInfinityEdge[] = [];
+	const buildEdge = (mathX: number, direction: 'left' | 'right'): void => {
+		const fy = fnEl.compiledFn({ x: mathX });
+		const gy = gnEl.compiledFn({ x: mathX });
+		if (!Number.isFinite(fy) || !Number.isFinite(gy)) return;
+		const svgF = transformer.mathToSvg(mathX, fy);
+		const svgG = transformer.mathToSvg(mathX, gy);
+		const yTop = Math.min(svgF.y, svgG.y);
+		const yBottom = Math.max(svgF.y, svgG.y);
+		infinityEdges.push({ x: svgF.x, yTop, yBottom, direction });
+	};
+	if (a === -Infinity) buildEdge(lo, 'left');
+	if (b === -Infinity) buildEdge(lo, 'left');
+	if (a === Infinity) buildEdge(hi, 'right');
+	if (b === Infinity) buildEdge(hi, 'right');
+
+	return infinityEdges.length > 0 ? { paths, infinityEdges } : { paths };
 }
