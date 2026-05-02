@@ -368,7 +368,8 @@
 					el?.type === 'pointOnSegment' ||
 					el?.type === 'pointOnLine' ||
 					el?.type === 'pointOnCircle' ||
-					el?.type === 'pointOnArc') &&
+					el?.type === 'pointOnArc' ||
+					el?.type === 'pointOnParametricCurve') &&
 				el.draggable
 			) {
 				draggingId = pointId;
@@ -492,6 +493,10 @@
 					const t = projectOnArc(figure, arcEl, math.x, math.y);
 					figure.movePointOnArc(draggingId, t);
 				}
+			} else if (dragEl?.type === 'pointOnParametricCurve') {
+				// Newton multi-start to find the closest t* on γ; dispatches to
+				// movePointOnParametricCurve (numeric t) or moveSlider (slider t).
+				figure.movePointOnParametricCurveFromCursor(draggingId, math.x, math.y);
 			} else if (
 				(dragEl?.type === 'text' || dragEl?.type === 'mathText' || dragEl?.type === 'richText') &&
 				dragEl.position
@@ -553,7 +558,8 @@
 					dragEl?.type === 'pointOnSegment' ||
 					dragEl?.type === 'pointOnLine' ||
 					dragEl?.type === 'pointOnCircle' ||
-					dragEl?.type === 'pointOnArc'
+					dragEl?.type === 'pointOnArc' ||
+					dragEl?.type === 'pointOnParametricCurve'
 				) {
 					// Constrained points: no snap, keep current position
 				} else {

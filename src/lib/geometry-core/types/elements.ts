@@ -269,14 +269,20 @@ export interface GeoPointOnArc extends GeoElementBase {
 
 /**
  * Point constrained to a parametric curve at parameter t0.
- * Position is γ(t0). Not draggable in V1 (drag would require Newton multi-start).
+ * Position is γ(t0).
+ *
+ * Drag (V2):
+ * - draggable: true when t is a numeric GeoValue or a scalarRef pointing to a
+ *   slider (drag updates t directly or moves the slider).
+ * - draggable: false when t is a scalarRef pointing to a computed scalar
+ *   (e.g. `2*s`) — read-only from the drag perspective.
  */
 export interface GeoPointOnParametricCurve extends GeoElementBase {
 	readonly type: 'pointOnParametricCurve';
 	readonly parametricCurveId: string;
 	/** Parameter t value (number or scalar reference for slider reactivity). */
 	readonly t: ScalarParam;
-	readonly draggable: false;
+	readonly draggable: boolean;
 	readonly dependsOn: readonly string[];
 }
 
