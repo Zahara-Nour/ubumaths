@@ -22,7 +22,8 @@ import {
 	number as mathNumber,
 	compile,
 	toCustom,
-	getVariables
+	getVariables,
+	substitute
 } from '$lib/mathAST';
 import type { MathNode, CompiledFn } from '$lib/mathAST';
 import {
@@ -1583,7 +1584,7 @@ function _executeBuiltinInner(
 						line
 					);
 				}
-				return createCurveFromEquation(pos[0].value, figure, line, label);
+				return createCurveFromEquation(pos[0].value, figure, line, label, angleMode, symbols);
 			}
 			// 2 strings positional → parametric curve.
 			if (pos.length === 2 && pos[0].type === 'string' && pos[1].type === 'string') {
@@ -1595,7 +1596,8 @@ function _executeBuiltinInner(
 					line,
 					label,
 					toGeoValue,
-					symbols
+					symbols,
+					angleMode
 				);
 			}
 			throw new DslRuntimeError(
@@ -2210,7 +2212,12 @@ function createCurveFromEquation(
 	equation: string,
 	figure: Figure,
 	line: number,
-	label?: string
+	label?: string,
+	// Reserved for future angle-mode integration on curve equations. V1 keeps
+	// equations in radians (mathAST native) for backward compatibility with
+	// existing usages of `cos(t)` / `sin(t)` over standard intervals.
+	_angleMode: AngleMode = 'deg',
+	symbols?: SymbolTable
 ): BuiltinResult {
 	// Parse the equation string with mathAST
 	let parsed: MathNode;
@@ -2218,6 +2225,21 @@ function createCurveFromEquation(
 		parsed = parseCustom(equation);
 	} catch {
 		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${equation}"`, line);
+	}
+
+	// Substitute static variables (numbers in symbol table) into the equation.
+	if (symbols) {
+		const staticBindings: Record<string, MathNode> = {};
+		for (const v of getVariables(parsed)) {
+			if (v === 'x' || v === 'y') continue;
+			const entry = symbols.get(v);
+			if (entry?.type === 'nombre') {
+				staticBindings[v] = mathNumber((entry.value ?? 0).toString());
+			}
+		}
+		if (Object.keys(staticBindings).length > 0) {
+			parsed = substitute(parsed, staticBindings);
+		}
 	}
 
 	// Extract F(x,y) such that F = 0
@@ -2497,7 +2519,10 @@ function createParametricCurveFromEquations(
 	line: number,
 	label: string | undefined,
 	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
-	symbols?: SymbolTable
+	symbols?: SymbolTable,
+	// Reserved for future angle-mode integration on parametric equations.
+	// V1 keeps equations in radians (mathAST native) for backward compat.
+	_angleMode: AngleMode = 'deg'
 ): BuiltinResult {
 	// --- A. Parse both equations ---
 	const { lhs: lhs1, rhs: rhs1 } = parseParametricEquation(eq1, '1ère', line);
@@ -2507,10 +2532,27 @@ function createParametricCurveFromEquations(
 		throw new DslRuntimeError('courbe(): il faut une équation en x et une en y', line);
 	}
 
-	const xRhs = lhs1 === 'x' ? rhs1 : rhs2;
-	const yRhs = lhs1 === 'y' ? rhs1 : rhs2;
+	let xRhs = lhs1 === 'x' ? rhs1 : rhs2;
+	let yRhs = lhs1 === 'y' ? rhs1 : rhs2;
 	const eqXOriginal = lhs1 === 'x' ? eq1 : eq2;
 	const eqYOriginal = lhs1 === 'y' ? eq1 : eq2;
+
+	// Substitute static variables (numbers in the symbol table) into the
+	// equations BEFORE differentiation/compilation. Scalar references stay
+	// symbolic (handled later via `dependencies`).
+	if (symbols) {
+		const staticBindings: Record<string, MathNode> = {};
+		for (const v of new Set([...getVariables(xRhs), ...getVariables(yRhs)])) {
+			const entry = symbols.get(v);
+			if (entry?.type === 'nombre') {
+				staticBindings[v] = mathNumber((entry.value ?? 0).toString());
+			}
+		}
+		if (Object.keys(staticBindings).length > 0) {
+			xRhs = substitute(xRhs, staticBindings);
+			yRhs = substitute(yRhs, staticBindings);
+		}
+	}
 
 	// --- B. t_min / t_max validation ---
 	const tMinRaw = named.get('t_min');
