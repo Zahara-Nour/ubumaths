@@ -1248,6 +1248,49 @@
 								class:hovered={hoveredId === el.id}
 							/>
 						{/each}
+						{#each svg.infinityEdges ?? [] as edge, i (i)}
+							{@const arrowLen = 14}
+							{@const arrowHead = 4}
+							{@const sign = edge.direction === 'right' ? 1 : -1}
+							{@const arrowY = (edge.yTop + edge.yBottom) / 2}
+							<g class="integral-area-infinity" pointer-events="none">
+								<line
+									x1={edge.x}
+									y1={edge.yTop}
+									x2={edge.x}
+									y2={edge.yBottom}
+									stroke={sty.color}
+									stroke-width={1}
+									stroke-dasharray="3,3"
+									stroke-opacity={0.7}
+								/>
+								<line
+									x1={edge.x}
+									y1={arrowY}
+									x2={edge.x + sign * arrowLen}
+									y2={arrowY}
+									stroke={sty.color}
+									stroke-width={1.5}
+									stroke-opacity={0.85}
+								/>
+								<polyline
+									points={`${edge.x + sign * (arrowLen - arrowHead)},${arrowY - arrowHead} ${edge.x + sign * arrowLen},${arrowY} ${edge.x + sign * (arrowLen - arrowHead)},${arrowY + arrowHead}`}
+									fill="none"
+									stroke={sty.color}
+									stroke-width={1.5}
+									stroke-opacity={0.85}
+								/>
+								<text
+									x={edge.x + sign * (arrowLen + 4)}
+									y={arrowY - 6}
+									fill={sty.color}
+									font-size="13"
+									font-style="italic"
+									opacity={0.9}
+									text-anchor={edge.direction === 'right' ? 'start' : 'end'}>∞</text
+								>
+							</g>
+						{/each}
 					{/if}
 				{:else if el.type === 'function'}
 					{@const svg = functionToSVG(el.id, figure, transformer, dims)}

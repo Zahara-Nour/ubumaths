@@ -78,3 +78,83 @@ A = aire_entre(f, g, 0, +inf)`
 		expect(svg!.paths.length).toBeGreaterThanOrEqual(1);
 	});
 });
+
+// =============================================================================
+// V5.1 — infinityEdges visual indicator
+// =============================================================================
+
+describe('integralAreaToSVG — infinityEdges (V5.1)', () => {
+	it('emits a right-edge marker for [0, +inf)', () => {
+		const { figure, symbols } = runDsl(
+			`f = courbe("y = exp(-x)")
+A = integrale(f, 0, +inf)`
+		);
+		const aId = symbols.get('A')!.figureId!;
+		const areaId = (figure.getElementById(aId) as { _visualAreaId?: string })._visualAreaId!;
+		const transformer = createTransformer(VIEWPORT, DIMS.width, DIMS.height);
+		const svg = integralAreaToSVG(areaId, figure, transformer, DIMS);
+		expect(svg).not.toBeNull();
+		expect(svg!.infinityEdges).toBeDefined();
+		expect(svg!.infinityEdges!).toHaveLength(1);
+		expect(svg!.infinityEdges![0].direction).toBe('right');
+		expect(svg!.infinityEdges![0].yTop).toBeLessThanOrEqual(svg!.infinityEdges![0].yBottom);
+	});
+
+	it('emits two markers for (-inf, +inf)', () => {
+		const { figure, symbols } = runDsl(
+			`f = courbe("y = exp(-x^2)")
+A = integrale(f, -inf, +inf)`
+		);
+		const aId = symbols.get('A')!.figureId!;
+		const areaId = (figure.getElementById(aId) as { _visualAreaId?: string })._visualAreaId!;
+		const transformer = createTransformer(VIEWPORT, DIMS.width, DIMS.height);
+		const svg = integralAreaToSVG(areaId, figure, transformer, DIMS);
+		expect(svg!.infinityEdges).toBeDefined();
+		expect(svg!.infinityEdges!).toHaveLength(2);
+		const directions = svg!.infinityEdges!.map((e) => e.direction).sort();
+		expect(directions).toEqual(['left', 'right']);
+	});
+
+	it('does NOT emit infinityEdges for finite bounds', () => {
+		const { figure, symbols } = runDsl(
+			`f = courbe("y = x^2")
+A = integrale(f, 0, 1)`
+		);
+		const aId = symbols.get('A')!.figureId!;
+		const areaId = (figure.getElementById(aId) as { _visualAreaId?: string })._visualAreaId!;
+		const transformer = createTransformer(VIEWPORT, DIMS.width, DIMS.height);
+		const svg = integralAreaToSVG(areaId, figure, transformer, DIMS);
+		expect(svg!.infinityEdges).toBeUndefined();
+	});
+
+	it('emits a left-edge marker for (-inf, 0]', () => {
+		const { figure, symbols } = runDsl(
+			`f = courbe("y = exp(x)")
+A = integrale(f, -inf, 0)`
+		);
+		const aId = symbols.get('A')!.figureId!;
+		const areaId = (figure.getElementById(aId) as { _visualAreaId?: string })._visualAreaId!;
+		const transformer = createTransformer(VIEWPORT, DIMS.width, DIMS.height);
+		const svg = integralAreaToSVG(areaId, figure, transformer, DIMS);
+		expect(svg!.infinityEdges).toBeDefined();
+		expect(svg!.infinityEdges!).toHaveLength(1);
+		expect(svg!.infinityEdges![0].direction).toBe('left');
+	});
+});
+
+describe('integralAreaBetweenToSVG — infinityEdges (V5.1)', () => {
+	it('emits markers attached between f and g at the edge', () => {
+		const { figure, symbols } = runDsl(
+			`f = courbe("y = exp(-x)")
+g = courbe("y = exp(-2*x)")
+A = aire_entre(f, g, 0, +inf)`
+		);
+		const aId = symbols.get('A')!.figureId!;
+		const areaId = (figure.getElementById(aId) as { _visualAreaId?: string })._visualAreaId!;
+		const transformer = createTransformer(VIEWPORT, DIMS.width, DIMS.height);
+		const svg = integralAreaBetweenToSVG(areaId, figure, transformer, DIMS);
+		expect(svg!.infinityEdges).toBeDefined();
+		expect(svg!.infinityEdges!).toHaveLength(1);
+		expect(svg!.infinityEdges![0].direction).toBe('right');
+	});
+});
