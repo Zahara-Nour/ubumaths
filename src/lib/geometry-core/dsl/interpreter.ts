@@ -26,7 +26,6 @@ import { MacroRegistry } from './macro-registry';
 import { STDLIB_MACROS } from './stdlib';
 import { parse } from './parser';
 import { isMathPureExpr } from './math-pure-expr';
-import { getRawSource } from './source-utils';
 import { parseCustom, getVariables } from '$lib/mathAST';
 import type { MathNode } from '$lib/mathAST';
 import { compile } from '$lib/mathAST/eval/compile';
@@ -136,7 +135,12 @@ function assertNameNotReserved(name: string, line: number): void {
 	}
 }
 
-/** Collect every identifier name used in a DslExpr (recursive). */
+/**
+ * Collect every identifier name used in a DslExpr (recursive). Includes the
+ * name of any function call so callers can detect when a user-defined symbol
+ * shadows a function position (e.g. `exp = 5; r = exp(3)` — the user likely
+ * means the math function, but the guard surfaces the collision).
+ */
 function collectIdentifiers(expr: DslExpr, out: Set<string>): void {
 	switch (expr.kind) {
 		case 'identifier':
@@ -150,6 +154,7 @@ function collectIdentifiers(expr: DslExpr, out: Set<string>): void {
 			collectIdentifiers(expr.right, out);
 			return;
 		case 'call':
+			out.add(expr.name);
 			for (const a of expr.args) collectIdentifiers(a, out);
 			return;
 		case 'tuple':
@@ -335,10 +340,17 @@ class Interpreter {
 
 		if (!isMathPureExpr(expr, { macroNames: this.macros.allNames() })) return null;
 
-		const rawSource = getRawSource(expr, this.source);
-		if (rawSource === null) return null;
-		// Defensive: positions out of source bounds → skip routing
-		if (expr.start! < 0 || expr.end! > this.source.length) return null;
+		// Single guard for both missing positions and out-of-bounds slices —
+		// avoids non-null assertions a few lines down.
+		if (
+			expr.start === undefined ||
+			expr.end === undefined ||
+			expr.start < 0 ||
+			expr.end > this.source.length
+		) {
+			return null;
+		}
+		const rawSource = this.source.slice(expr.start, expr.end);
 
 		// If any DSL identifier in the expression refers to a geometric element
 		// (point, droite, …) — but not a scalar/slider, which the reactive path
@@ -636,6 +648,11 @@ class Interpreter {
 	 * Handle `unite_angle("degres" | "radians")` — switches the interpreter's
 	 * angle mode for all subsequent statements (math-pure routing + builtins).
 	 * Returns a synthetic "nombre 0" so callers ignore the result.
+	 *
+	 * TODO(V2): the active angle mode is NOT preserved by `serializeDsl`.
+	 * Round-trip tests must re-inject `unite_angle("…")` after deserialize.
+	 * To fix: emit a `unite_angle` directive at the top of the serialized
+	 * output whenever `interpreter.angleMode` is non-default at end-of-script.
 	 */
 	private evaluateUniteAngle(expr: DslFunctionCallExpr): ResolvedValue {
 		if (expr.namedArgs.size > 0 || expr.args.length !== 1) {

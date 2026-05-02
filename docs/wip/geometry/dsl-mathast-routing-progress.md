@@ -311,17 +311,22 @@ Le RHS des affectations de variables numériques DSL est maintenant routé vers 
 ### Décisions verrouillées (rappel)
 
 - Q7 = α : `e` réservé strict (3 + 2 tests existants migrés vers `exc`/`e2`/`el`)
-- Mode angle dans équations courbe() : laissé en radians (mathAST natif) pour compat — V2 pourra l'intégrer
+- Mode angle global s'applique partout : RHS routés mathAST, builtins angles, ET équations courbe(). Les démos/tests qui assument radians préfixent leur DSL avec `unite_angle("radians")`.
+- Division par zéro : `r = 1/0` → `Infinity` dans le path statique routé via mathAST (cohérent avec `inf` literal et JS natif). Le path réactif retourne `NaN` (cohérence avec `evaluateScalarBinary` legacy). Le path DSL legacy non-routé continue à throw "Division par zero". À unifier en V2.
 
 ### Limitations V1 documentées
 
 - `\theta`, `\alpha`, etc. (Greek letters au top-level) : non supportés
-- Mode angle dans `courbe("y = sin(x)")` : ne s'applique pas — les équations sont en radians
-- Sérialisation des variables : lossy (substitution lors de la création)
+- Sérialisation `unite_angle` : la directive n'est PAS préservée par `serializeDsl`. Les tests round-trip réinjectent le mode après désérialisation.
+- Sérialisation des variables : lossy (substitution lors de la création de la courbe)
+- Trois conventions de division par zéro coexistent (Infinity / NaN / throw) selon le code path emprunté
 
 ### Suggestions follow-up (V2)
 
 - Support `\theta`/`\alpha`/etc. comme variables Greek au top-level
-- Intégration mode angle dans les équations courbe()
+- Préservation de `unite_angle` dans `serializeDsl`
+- Unification des trois conventions de division par zéro
 - `unite_angle("grades")` pour les enseignants suisses
 - Amélioration des erreurs (parseCustom retourne null silencieusement → éventuellement remonter le diagnostic)
+- Cache de `compile(node) → CompiledFn` au-dessus du PARSE_CACHE actuel (gain marginal sauf en boucle)
+- Walker `getVariables` dédié read-only dans mathAST (élimine les allocations inutiles de `mapNode`)

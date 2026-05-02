@@ -115,15 +115,47 @@ describe('Phase 4 — Variables réactives via mathAST routing', () => {
 		expect(figure.getScalarValue(rEntry!.figureId!)).toBeCloseTo(7, 10);
 	});
 
-	it('Cascade: r = 2*s ; t_max for parametric curve uses r reactively', () => {
-		// We don't actually create the curve here; just verify r is wired
-		// and that moving s updates r (E-style cascade tested in Phase 7).
-		const { figure, symbols } = run('s = slider(min=1, max=5, valeur=2)\nr = 2*s');
+	it('Cascade D3: r = 2*s ; courbe(t_max=r) — moveSlider re-samples the curve', () => {
+		// Full reactive chain: slider s → derived scalar r → curve t_max bound.
+		// Moving s must propagate to r, which must propagate to the curve's
+		// effective sampling range.
+		const { figure, symbols } = run(
+			[
+				'unite_angle("radians")',
+				's = slider(min=1, max=10, valeur=2)',
+				'r = 2*s',
+				'c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=r)'
+			].join('\n')
+		);
 		const sId = getId(symbols, 's');
 		const rId = getId(symbols, 'r');
+		const cId = getId(symbols, 'c');
+
+		// Sanity: r reflects 2*s = 4 initially.
 		expect(figure.getScalarValue(rId)).toBeCloseTo(4, 10);
+
+		// Curve depends on r (transitively on s).
+		const curve = figure.getElementById(cId);
+		expect(curve?.dependsOn).toContain(rId);
+
+		// Sampling at t_max=4 → last point ≈ (cos(4), sin(4)).
+		const before = figure.computeParametricCurveSampling(cId);
+		expect(before).not.toBeNull();
+		const lastBefore = before!.points[before!.points.length - 1];
+		expect(lastBefore.x).toBeCloseTo(Math.cos(4), 1);
+		expect(lastBefore.y).toBeCloseTo(Math.sin(4), 1);
+
+		// Move s → r becomes 2*3=6, curve resamples up to t=6.
+		figure.beginTransaction();
 		figure.moveSlider(sId, 3);
 		figure.recompute();
+		figure.commit();
 		expect(figure.getScalarValue(rId)).toBeCloseTo(6, 10);
+
+		const after = figure.computeParametricCurveSampling(cId);
+		expect(after).not.toBeNull();
+		const lastAfter = after!.points[after!.points.length - 1];
+		expect(lastAfter.x).toBeCloseTo(Math.cos(6), 1);
+		expect(lastAfter.y).toBeCloseTo(Math.sin(6), 1);
 	});
 });

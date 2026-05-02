@@ -60,10 +60,8 @@ function childrenOf(node: MathNode): readonly MathNode[] {
 		case 'addition':
 		case 'subtraction':
 		case 'multiplication':
-		case 'implicit_multiplication':
 			return [node.left, node.right];
 		case 'division':
-		case 'fraction':
 			return [node.numerator, node.denominator];
 		case 'opposite':
 		case 'positive':
@@ -74,10 +72,6 @@ function childrenOf(node: MathNode): readonly MathNode[] {
 			return [node.base, node.superscript];
 		case 'subscript':
 			return [node.base, node.subscript];
-		case 'sqrt':
-			return node.index ? [node.radicand, node.index] : [node.radicand];
-		case 'absolute':
-			return [node.operand];
 		case 'delimiter':
 			return [node.content];
 		case 'relation':
@@ -148,53 +142,28 @@ function mapChildren(node: MathNode, f: (n: MathNode) => MathNode): MathNode {
 		case 'addition':
 		case 'subtraction':
 		case 'multiplication':
-		case 'implicit_multiplication':
 			return { ...node, left: f(node.left), right: f(node.right) };
 		case 'division':
-		case 'fraction':
 			return { ...node, numerator: f(node.numerator), denominator: f(node.denominator) };
 		case 'opposite':
 		case 'positive':
 			return { ...node, operand: f(node.operand) };
 		case 'function':
+			// `sqrt`, `abs`, `sin`, etc. all live here as FunctionNode with .name.
 			return { ...node, args: node.args.map(f) };
 		case 'superscript':
 			return { ...node, base: f(node.base), superscript: f(node.superscript) };
 		case 'subscript':
 			return { ...node, base: f(node.base), subscript: f(node.subscript) };
-		case 'sqrt':
-			return {
-				...node,
-				radicand: f(node.radicand),
-				...(node.index && { index: f(node.index) })
-			};
-		case 'absolute':
-			return { ...node, operand: f(node.operand) };
 		case 'delimiter':
 			return { ...node, content: f(node.content) };
 		case 'relation':
 			return { ...node, left: f(node.left), right: f(node.right) };
-		case 'sum':
-		case 'product': {
-			return {
-				...node,
-				body: f(node.body),
-				...(node.lower && { lower: f(node.lower) }),
-				...(node.upper && { upper: f(node.upper) })
-			};
-		}
-		case 'integral': {
-			return {
-				...node,
-				body: f(node.body),
-				...(node.lower && { lower: f(node.lower) }),
-				...(node.upper && { upper: f(node.upper) }),
-				...(node.differential && { differential: f(node.differential) })
-			};
-		}
 		default:
-			// Leaves (number, variable, greek, mathConstant, symbol, hole, …) and
-			// any node type not enumerated above: return as-is.
+			// Leaves (number, variable, greek, constant, symbol, hole, infinity,
+			// signed-zero, boolean) and node types not produced by `parseCustom`
+			// in the DSL context (matrix, complex, unit, limit, logical*,
+			// composition): return as-is. If a future DSL adds those, extend.
 			return node;
 	}
 }
