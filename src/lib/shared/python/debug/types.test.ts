@@ -20,7 +20,10 @@ import {
 	type DebugTraceEvent,
 	type DebugPauseReason,
 	type HeapObject,
-	type DebugVisualization
+	type HeapEntry,
+	type HeapRef,
+	type InlineValue,
+	type TruncatedValue
 } from './types';
 
 describe('Debug Types', () => {
@@ -366,62 +369,218 @@ describe('WorkerBreakpoint', () => {
 	});
 });
 
-describe('HeapObject', () => {
-	it('creates a primitive heap object', () => {
-		const obj: HeapObject = {
-			id: 'obj-1',
-			type: 'int',
-			value: '42'
-		};
-
-		expect(obj.type).toBe('int');
-		expect(obj.value).toBe('42');
+describe('InlineValue', () => {
+	it('represents a primitive int', () => {
+		const v: InlineValue = { type: 'int', value: '42' };
+		expect(v.type).toBe('int');
+		expect(v.value).toBe('42');
 	});
 
-	it('creates a list heap object with references', () => {
-		const obj: HeapObject = {
-			id: 'obj-2',
-			type: 'list',
-			value: [
-				{ id: 'obj-3', type: 'int', value: '1' },
-				{ id: 'obj-4', type: 'int', value: '2' }
-			],
-			references: ['obj-3', 'obj-4']
-		};
+	it('represents None as NoneType', () => {
+		const v: InlineValue = { type: 'NoneType', value: 'None' };
+		expect(v.type).toBe('NoneType');
+	});
 
-		expect(obj.type).toBe('list');
-		expect(Array.isArray(obj.value)).toBe(true);
-		expect(obj.references).toHaveLength(2);
+	it('represents a string with repr quotes', () => {
+		const v: InlineValue = { type: 'str', value: "'hello'" };
+		expect(v.value).toBe("'hello'");
 	});
 });
 
-describe('DebugVisualization', () => {
-	it('creates a complete visualization', () => {
-		const viz: DebugVisualization = {
-			stack: [
+describe('HeapRef', () => {
+	it('points to a heap object by id', () => {
+		const ref: HeapRef = { type: 'ref', objectId: '140234567' };
+		expect(ref.type).toBe('ref');
+		expect(ref.objectId).toBe('140234567');
+	});
+});
+
+describe('TruncatedValue', () => {
+	it('marks depth-truncated content', () => {
+		const t: TruncatedValue = { type: 'truncated', value: 'depth' };
+		expect(t.type).toBe('truncated');
+		expect(t.value).toBe('depth');
+	});
+
+	it('marks items-truncated content', () => {
+		const t: TruncatedValue = { type: 'truncated', value: 'items' };
+		expect(t.value).toBe('items');
+	});
+});
+
+describe('HeapEntry', () => {
+	it('creates a list entry (no key) holding an inline value', () => {
+		const e: HeapEntry = { value: { type: 'int', value: '1' } };
+		expect(e.key).toBeUndefined();
+		expect(e.value.type).toBe('int');
+	});
+
+	it('creates a dict entry with a key holding a heap ref', () => {
+		const e: HeapEntry = { key: 'x', value: { type: 'ref', objectId: '42' } };
+		expect(e.key).toBe('x');
+		expect(e.value.type).toBe('ref');
+	});
+
+	it('creates an instance attribute entry', () => {
+		const e: HeapEntry = { key: 'name', value: { type: 'str', value: "'Alice'" } };
+		expect(e.key).toBe('name');
+	});
+});
+
+describe('HeapObject', () => {
+	it('creates a list heap object', () => {
+		const obj: HeapObject = {
+			id: '140234567',
+			type: 'list',
+			length: 3,
+			entries: [
+				{ value: { type: 'int', value: '1' } },
+				{ value: { type: 'int', value: '2' } },
+				{ value: { type: 'int', value: '3' } }
+			]
+		};
+
+		expect(obj.type).toBe('list');
+		expect(obj.length).toBe(3);
+		expect(obj.entries).toHaveLength(3);
+	});
+
+	it('creates a dict heap object with mixed entries', () => {
+		const obj: HeapObject = {
+			id: '140234600',
+			type: 'dict',
+			length: 2,
+			entries: [
+				{ key: 'x', value: { type: 'int', value: '1' } },
+				{ key: 'y', value: { type: 'ref', objectId: '140234700' } }
+			]
+		};
+
+		expect(obj.type).toBe('dict');
+		expect(obj.entries[0].key).toBe('x');
+		expect(obj.entries[1].value.type).toBe('ref');
+	});
+
+	it('creates a user-class instance heap object', () => {
+		const obj: HeapObject = {
+			id: '140234800',
+			type: 'instance:Point',
+			length: 2,
+			entries: [
+				{ key: 'x', value: { type: 'int', value: '3' } },
+				{ key: 'y', value: { type: 'int', value: '4' } }
+			]
+		};
+
+		expect(obj.type).toBe('instance:Point');
+	});
+
+	it('creates a tuple holding a reference', () => {
+		const obj: HeapObject = {
+			id: '140234900',
+			type: 'tuple',
+			length: 2,
+			entries: [
+				{ value: { type: 'int', value: '1' } },
+				{ value: { type: 'ref', objectId: '140235000' } }
+			]
+		};
+
+		expect(obj.type).toBe('tuple');
+		expect(obj.entries[1].value.type).toBe('ref');
+	});
+
+	it('represents a self-referential cycle', () => {
+		// a = []; a.append(a)
+		const obj: HeapObject = {
+			id: '140235100',
+			type: 'list',
+			length: 1,
+			entries: [{ value: { type: 'ref', objectId: '140235100' } }]
+		};
+
+		expect((obj.entries[0].value as HeapRef).objectId).toBe(obj.id);
+	});
+});
+
+describe('DebugSnapshot.heap', () => {
+	it('is empty when only primitives are in scope', () => {
+		const snapshot: DebugSnapshot = {
+			id: 'snap-x',
+			lineNumber: 1,
+			timestamp: 0,
+			callStack: [
 				{
-					frameName: '<module>',
-					variables: [
-						{ name: 'x', valueRef: '42' },
-						{ name: 'my_list', valueRef: 'obj-1' }
-					]
+					functionName: '<module>',
+					filename: '<exec>',
+					lineNumber: 1,
+					locals: [],
+					isCurrentFrame: true
 				}
 			],
+			globals: [],
+			loops: [],
+			stdout: '',
+			event: 'line',
+			heap: []
+		};
+
+		expect(snapshot.heap).toEqual([]);
+	});
+
+	it('holds heap objects referenced by aliased variables', () => {
+		// a = [1, 2, 3]; b = a — both a and b point to id '140111'
+		const snapshot: DebugSnapshot = {
+			id: 'snap-y',
+			lineNumber: 2,
+			timestamp: 0,
+			callStack: [
+				{
+					functionName: '<module>',
+					filename: '<exec>',
+					lineNumber: 2,
+					locals: [],
+					isCurrentFrame: true
+				}
+			],
+			globals: [
+				{
+					name: 'a',
+					value: '{"type":"ref","objectId":"140111"}',
+					type: 'list',
+					isBuiltin: true,
+					isChanged: false,
+					objectId: '140111'
+				},
+				{
+					name: 'b',
+					value: '{"type":"ref","objectId":"140111"}',
+					type: 'list',
+					isBuiltin: true,
+					isChanged: false,
+					objectId: '140111'
+				}
+			],
+			loops: [],
+			stdout: '',
+			event: 'line',
 			heap: [
 				{
-					id: 'obj-1',
+					id: '140111',
 					type: 'list',
-					value: [
-						{ id: 'obj-2', type: 'int', value: '1' },
-						{ id: 'obj-3', type: 'int', value: '2' }
+					length: 3,
+					entries: [
+						{ value: { type: 'int', value: '1' } },
+						{ value: { type: 'int', value: '2' } },
+						{ value: { type: 'int', value: '3' } }
 					]
 				}
 			]
 		};
 
-		expect(viz.stack).toHaveLength(1);
-		expect(viz.heap).toHaveLength(1);
-		expect(viz.stack[0].variables).toHaveLength(2);
+		expect(snapshot.heap).toHaveLength(1);
+		expect(snapshot.globals[0].objectId).toBe(snapshot.globals[1].objectId);
+		expect(snapshot.globals[0].objectId).toBe(snapshot.heap[0].id);
 	});
 });
 

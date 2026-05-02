@@ -134,6 +134,12 @@ export interface DebugSnapshot {
 	stdout: string;
 	/** Trace event that triggered this snapshot */
 	event: DebugTraceEvent;
+	/**
+	 * Heap objects referenced by variables in this snapshot. Empty when only
+	 * primitives are in scope. The same object always has the same id within a
+	 * snapshot, so aliases naturally collapse to a single HeapObject entry.
+	 */
+	heap: HeapObject[];
 }
 
 // =============================================================================
@@ -165,41 +171,66 @@ export type { WorkerBreakpoint } from '../types';
 // =============================================================================
 
 /**
- * Heap object for visualization
+ * Inline primitive value: stays inside its parent (variable or HeapEntry)
+ * rather than getting its own heap object. Covers int, float, str, bool, None,
+ * complex, bytes.
+ */
+export interface InlineValue {
+	type: 'int' | 'float' | 'str' | 'bool' | 'NoneType' | 'complex' | 'bytes';
+	/** repr-like string representation */
+	value: string;
+}
+
+/**
+ * Reference from a variable or HeapEntry to a heap object.
+ */
+export interface HeapRef {
+	type: 'ref';
+	/** ID of the referenced heap object (matches HeapObject.id) */
+	objectId: string;
+}
+
+/**
+ * Marker for content truncated due to MAX_SERIALIZE_DEPTH or MAX_SERIALIZE_ITEMS.
+ * Allows the UI to render a clear "…" placeholder instead of a magic string.
+ */
+export interface TruncatedValue {
+	type: 'truncated';
+	/** Human-readable reason ('depth' | 'items' | string description) */
+	value: string;
+}
+
+/**
+ * Single entry inside a heap object. The shape depends on the container type:
+ * - list / tuple / set / frozenset: ordered entries, no `key`
+ * - dict: `key` is the stringified dict key
+ * - instance:ClassName: `key` is the attribute name
+ */
+export interface HeapEntry {
+	/** Key for dict entries or attribute name for instances; absent for list/tuple/set */
+	key?: string;
+	value: InlineValue | HeapRef | TruncatedValue;
+}
+
+/**
+ * Heap object types tracked for visualization.
+ * Custom user-class instances use the form `instance:<ClassName>`.
+ */
+export type HeapObjectType = 'list' | 'dict' | 'set' | 'tuple' | 'frozenset' | `instance:${string}`;
+
+/**
+ * One object on the heap (Python Tutor style).
+ * Primitives never produce a HeapObject — only containers and user-class
+ * instances do. Same Python `id()` always maps to the same HeapObject within
+ * a snapshot, so aliases naturally merge.
  */
 export interface HeapObject {
-	/** Unique object ID */
+	/** Stringified Python id() — stable within a snapshot */
 	id: string;
-	/** Python type name */
-	type: string;
-	/** Value representation (string for primitives, array for containers) */
-	value: string | HeapObject[];
-	/** IDs of objects this object references */
-	references?: string[];
-}
-
-/**
- * Stack frame for visualization
- */
-export interface VisualizationStackFrame {
-	/** Frame name (function name or '<module>') */
-	frameName: string;
-	/** Variables with their heap references */
-	variables: Array<{
-		name: string;
-		/** Reference to heap object ID, or inline value for primitives */
-		valueRef: string;
-	}>;
-}
-
-/**
- * Complete visualization data (PythonTutor-style)
- */
-export interface DebugVisualization {
-	/** Stack frames from bottom to top */
-	stack: VisualizationStackFrame[];
-	/** Heap objects */
-	heap: HeapObject[];
+	type: HeapObjectType;
+	/** Number of items / attributes (full count, even when entries are truncated) */
+	length: number;
+	entries: HeapEntry[];
 }
 
 // =============================================================================
