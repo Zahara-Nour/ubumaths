@@ -10,7 +10,8 @@
 	const domainOpenClosedDsl = `f = courbe("y = x sur ]-1 ; 1[", couleur="bleu")
 g = courbe("y = x^2 sur [-1 ; 1[", couleur="rouge")`;
 
-	const domainAvecDsl = `f = courbe("y = sin(x) avec -3 < x <= 3", couleur="violet")`;
+	const domainAvecDsl = `unite_angle("radians")
+f = courbe("y = sin(x) avec -3 < x <= 3", couleur="violet")`;
 
 	const domainHalfOpenDsl = `f = courbe("y = x^2 avec x >= 0", couleur="orange")
 g = courbe("y = -x^2 avec x < 0", couleur="vert")`;
