@@ -37,6 +37,7 @@
 		conicPolarToSVG,
 		locusToSVG,
 		parametricCurveToSVG,
+		parametricCurveLabelPosition,
 		traceToSVG,
 		sectorToSVG,
 		annulusToSVG,
@@ -1484,15 +1485,28 @@
 							class:hovered={hoveredId === el.id}
 						/>
 						{#if el.label}
-							<text
-								x={dims.width / 2 + (el.labelOffset?.dx ?? 10)}
-								y={dims.height / 2 + (el.labelOffset?.dy ?? -10)}
-								class="label"
-								fill={sty.color}
-								stroke="white"
-								stroke-width="3"
-								paint-order="stroke">{el.label}</text
-							>
+							{@const labelPos = parametricCurveLabelPosition(el.id, figure, transformer)}
+							{#if labelPos}
+								<text
+									x={labelPos.x + (el.labelOffset?.dx ?? 10)}
+									y={labelPos.y + (el.labelOffset?.dy ?? -10)}
+									class="label"
+									fill={sty.color}
+									stroke="white"
+									stroke-width="3"
+									paint-order="stroke">{el.label}</text
+								>
+							{:else}
+								<text
+									x={dims.width / 2 + (el.labelOffset?.dx ?? 10)}
+									y={dims.height / 2 + (el.labelOffset?.dy ?? -10)}
+									class="label"
+									fill={sty.color}
+									stroke="white"
+									stroke-width="3"
+									paint-order="stroke">{el.label}</text
+								>
+							{/if}
 						{/if}
 					{/if}
 				{:else if el.type === 'quadraticCurve'}

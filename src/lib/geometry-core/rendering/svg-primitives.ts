@@ -1860,6 +1860,47 @@ export function locusToSVG(
  *    discontinuities); ends with `Z` when `closed === true`.
  *  - `closed` — true when the sampler detected P(tMin) ≈ P(tMax).
  */
+/**
+ * Compute the SVG position for a parametric curve label.
+ * Places the label at γ((t_min + t_max) / 2) — the midpoint of the parameter
+ * range — which gives a stable, predictable location for both open and closed
+ * curves. Returns null if bounds or evaluation fail.
+ */
+export function parametricCurveLabelPosition(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): { x: number; y: number } | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'parametricCurve') return null;
+	const tMin = isScalarRef(el.tMin)
+		? (figure.getScalarValue(el.tMin.scalarRef) ?? NaN)
+		: isInfinityParam(el.tMin)
+			? NaN
+			: geoToNumber(el.tMin);
+	const tMax = isScalarRef(el.tMax)
+		? (figure.getScalarValue(el.tMax.scalarRef) ?? NaN)
+		: isInfinityParam(el.tMax)
+			? NaN
+			: geoToNumber(el.tMax);
+	if (!Number.isFinite(tMin) || !Number.isFinite(tMax) || tMax <= tMin) return null;
+	const tMid = (tMin + tMax) / 2;
+	const param = el.parameter;
+	const scalarBindings: Record<string, number> = {};
+	for (const depId of el.dependsOn) {
+		const depEl = figure.getElementById(depId);
+		if (depEl?.label) {
+			const val = figure.getScalarValue(depId);
+			if (val !== undefined) scalarBindings[depEl.label] = val;
+		}
+	}
+	const env = { ...scalarBindings, [param]: tMid };
+	const px = el.compiledX(env);
+	const py = el.compiledY(env);
+	if (!Number.isFinite(px) || !Number.isFinite(py)) return null;
+	return transformer.mathToSvg(px, py);
+}
+
 export function parametricCurveToSVG(
 	id: string,
 	figure: Figure,
