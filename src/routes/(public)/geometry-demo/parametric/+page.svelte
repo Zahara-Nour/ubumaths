@@ -40,9 +40,11 @@ c = courbe("x = r * cos(t)", "y = r * sin(t)", t_min=0, t_max=2*\\pi, param="t",
 c = courbe("x = 2 * cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="violet", remplissage="violet")`;
 
 	// New: variables and constants — math-pure RHS routed through mathAST.
+	// Note: inside the equation strings we write \phi (Greek-letter command);
+	// mathAST would otherwise split the bare word `phi` into p·h·i.
 	const variablesDsl = `unite_angle("radians")
 phi = (1 + sqrt(5)) / 2
-c = courbe("x = phi*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="orange")`;
+c = courbe("x = \\phi*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="orange")`;
 
 	// New: derived reactive scalar — k follows s, the curve follows k.
 	const reactiveDsl = `unite_angle("radians")

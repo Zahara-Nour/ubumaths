@@ -8,9 +8,35 @@ import { parsePratt as parseLatex } from '../latex/parser-pratt';
 import { parseCustomPratt as parseCustom } from '../custom/parser-pratt';
 
 describe('Greek letter support - harmonization between parsers', () => {
-	// Note: 'pi' is NOT a Greek letter - it's a MathConstant
-	const SUPPORTED_GREEK = ['alpha', 'beta', 'gamma', 'theta'];
-	const UNSUPPORTED_GREEK = ['omega', 'sigma', 'delta', 'epsilon', 'lambda', 'mu', 'nu'];
+	// Note: 'pi' is NOT a Greek letter - it's a MathConstant.
+	// Omicron has no LaTeX command (rendered as the latin letter `o`).
+	const SUPPORTED_GREEK = [
+		'alpha',
+		'beta',
+		'gamma',
+		'delta',
+		'epsilon',
+		'zeta',
+		'eta',
+		'theta',
+		'iota',
+		'kappa',
+		'lambda',
+		'mu',
+		'nu',
+		'xi',
+		'rho',
+		'sigma',
+		'tau',
+		'upsilon',
+		'phi',
+		'chi',
+		'psi',
+		'omega'
+	];
+	// LaTeX commands neither in GREEK_COMMANDS nor in any other recognized
+	// command set — both parsers should reject these.
+	const UNSUPPORTED_GREEK = ['varphi', 'varepsilon', 'vartheta'];
 
 	describe('LaTeX parser', () => {
 		it.each(SUPPORTED_GREEK)('should accept supported Greek letter \\%s', (letter) => {

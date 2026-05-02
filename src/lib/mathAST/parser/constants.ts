@@ -14,24 +14,63 @@
 /**
  * Greek letters supported by both parsers (LaTeX and Custom).
  *
- * This is the source of truth for which Greek letters can be used.
- * Both parsers MUST support exactly this set.
- *
- * Supported: pi, alpha, beta, gamma, theta
- * Not supported: All other Greek letters (omega, sigma, delta, etc.)
+ * Standard lowercase LaTeX Greek-letter commands. `pi` is included here for
+ * tokenization, but is special-cased by parsers as a MathConstant rather than
+ * a GreekLetter node. Omicron is omitted (rendered as the latin letter `o`).
  */
 export const SUPPORTED_GREEK_LETTERS: ReadonlySet<string> = new Set([
-	'pi',
 	'alpha',
 	'beta',
 	'gamma',
-	'theta'
+	'delta',
+	'epsilon',
+	'zeta',
+	'eta',
+	'theta',
+	'iota',
+	'kappa',
+	'lambda',
+	'mu',
+	'nu',
+	'xi',
+	'pi',
+	'rho',
+	'sigma',
+	'tau',
+	'upsilon',
+	'phi',
+	'chi',
+	'psi',
+	'omega'
 ]);
 
 /**
  * Type for supported Greek letter names
  */
-export type SupportedGreekLetter = 'pi' | 'alpha' | 'beta' | 'gamma' | 'theta';
+export type SupportedGreekLetter =
+	| 'alpha'
+	| 'beta'
+	| 'gamma'
+	| 'delta'
+	| 'epsilon'
+	| 'zeta'
+	| 'eta'
+	| 'theta'
+	| 'iota'
+	| 'kappa'
+	| 'lambda'
+	| 'mu'
+	| 'nu'
+	| 'xi'
+	| 'pi'
+	| 'rho'
+	| 'sigma'
+	| 'tau'
+	| 'upsilon'
+	| 'phi'
+	| 'chi'
+	| 'psi'
+	| 'omega';
 
 /**
  * Check if a string is a supported Greek letter
