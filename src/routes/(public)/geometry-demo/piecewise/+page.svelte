@@ -49,6 +49,21 @@ f = courbe("y = { -x si x < a, x si x >= a }", couleur="rouge")`;
 
 	const reactiveSurDsl = `b = slider(min=0.5, max=4, valeur=2)
 f = courbe("y = { -x^2 sur ]-infini ; -b], x^2 sur ]-b ; b[, -x^2 sur [b ; +infini[ }", couleur="violet")`;
+
+	// =============================================================================
+	// Piecewise — différentiation symbolique
+	// =============================================================================
+
+	const tangentAbsDsl = `f = courbe("y = { -x si x < 0, x si x >= 0 }", couleur="bleu")
+t1 = tangente(f, -1.5, couleur="rouge", trait="tirets")
+t2 = tangente(f, 2, couleur="vert", trait="tirets")`;
+
+	const tangentPolynomialDsl = `f = courbe("y = { x^2 si x < 1, 2*x - 1 si x >= 1 }", couleur="bleu")
+t1 = tangente(f, -1, couleur="rouge", trait="tirets")
+t2 = tangente(f, 2, couleur="vert", trait="tirets")`;
+
+	const deriveeDsl = `f = courbe("y = { x^2 si x < 1, 2*x - 1 si x >= 1 }", couleur="bleu")
+g = derivee(f, couleur="orange")`;
 </script>
 
 <div class="container mx-auto max-w-6xl px-4 py-8">
@@ -211,6 +226,43 @@ f = courbe("y = { -x^2 sur ]-infini ; -b], x^2 sur ]-b ; b[, -x^2 sur [b ; +infi
 		dsl={reactiveSurDsl}
 		title="Trois branches symétriques — slider b"
 		description="Slider sur la borne commune des trois branches. Démontre la combinaison interval form + réactivité."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mb-4 text-xl font-bold">Différentiation symbolique</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		La dérivée d'un piecewise est calculée branche par branche. <code>tangente()</code>
+		et <code>derivee()</code> fonctionnent donc directement sur des fonctions par morceaux.
+	</p>
+
+	<DslDemo
+		dsl={tangentAbsDsl}
+		title="Tangentes à |x| — pentes ±1 selon le côté"
+		description="La tangente en x = -1.5 a pour pente -1 (branche -x), celle en x = 2 a pour pente +1 (branche x). Avant la Phase G, les deux étaient horizontales (placeholder = 0)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={tangentPolynomialDsl}
+		title="Tangentes à un polynomial par morceaux — pentes différentes par branche"
+		description="Polynomial par morceaux : x² pour x &lt; 1, sinon 2x − 1. En x = -1, la tangente a pour pente 2x = -2 (branche x²). En x = 2, la tangente a pour pente 2 (branche 2x − 1)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={deriveeDsl}
+		title="derivee() d'un polynomial par morceaux"
+		description="f est le piecewise x² pour x &lt; 1, sinon 2x − 1. Sa dérivée f' vaut 2x sur la première branche et 2 sur la seconde. Les deux courbes sont superposées."
 		width={700}
 		height={500}
 	/>
