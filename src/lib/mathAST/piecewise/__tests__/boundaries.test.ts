@@ -131,14 +131,44 @@ describe('extractPiecewiseBoundaries — non-piecewise input', () => {
 	});
 });
 
-describe('extractPiecewiseBoundaries — symbolic bounds', () => {
-	it('skips non-numeric bounds (e.g., variables)', () => {
-		// `x < a` where a is a variable — cannot resolve numerically here.
+describe('extractPiecewiseBoundaries — symbolic bounds via bindings', () => {
+	it('skips variable bounds without bindings', () => {
 		const a = variable('a');
 		const node = piecewise([piecewisePiece(relation('<', x, a), number('1'))]);
-		const bounds = extractPiecewiseBoundaries(node);
-		// Symbolic bound is silently skipped — empty result lets the caller
-		// fall back to the heuristic detector.
-		expect(bounds).toEqual([]);
+		expect(extractPiecewiseBoundaries(node)).toEqual([]);
+	});
+
+	it('resolves variable bounds when bindings are provided', () => {
+		const a = variable('a');
+		const node = piecewise([
+			piecewisePiece(relation('<', x, a), opposite(x)),
+			piecewisePiece(relation('>=', x, a), x)
+		]);
+		const bounds = extractPiecewiseBoundaries(node, { a: 2 });
+		expect(bounds).toEqual([{ x: 2, leftClosed: false, rightClosed: true }]);
+	});
+
+	it('resolves negated variable bounds (-a)', () => {
+		const a = variable('a');
+		const node = piecewise([
+			piecewisePiece(relation('<', x, opposite(a)), number('-1')),
+			piecewisePiece(relation('>=', x, opposite(a)), number('1'))
+		]);
+		const bounds = extractPiecewiseBoundaries(node, { a: 3 });
+		expect(bounds).toEqual([{ x: -3, leftClosed: false, rightClosed: true }]);
+	});
+
+	it('does not resolve compound expressions (2*a not yet supported)', () => {
+		// Out-of-scope: `x < 2*a` would require evaluating a multiplication.
+		// Verify it falls back gracefully (returns no bounds).
+		const a = variable('a');
+		const twoA = {
+			type: 'multiplication',
+			left: number('2'),
+			right: a,
+			displayStyle: 'implicit' as const
+		};
+		const node = piecewise([piecewisePiece(relation('<', x, twoA as never), number('1'))]);
+		expect(extractPiecewiseBoundaries(node, { a: 2 })).toEqual([]);
 	});
 });

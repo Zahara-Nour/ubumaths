@@ -10,12 +10,19 @@
  * 2. Emit endpoint markers (filled/hollow circles) at each rupture according
  *    to whether the bracket on each side is closed (`≤`/`≥`) or open (`<`/`>`).
  *
+ * Boundary values can be:
+ *  - Numeric literals (e.g., `x < 0`)
+ *  - Negated literals (e.g., `x < -3`)
+ *  - Variable references resolved via the `bindings` argument (e.g., `x < a`
+ *    where `a` is a slider; pass `{ a: sliderValue }` to obtain a numeric x).
+ *
  * Limitations (Phase F V1):
- * - Only handles **purely numeric** boundary values; symbolic boundaries
- *   (e.g., `x < pi`, `x < a` where `a` is a slider) are skipped.
  * - Conditions must be `RelationNode`, `LogicalNode` (and-of-comparisons), or
  *   relation chains (`a < x < b`). More complex conditions are skipped silently.
- * - The variable is assumed to be `'x'`. Other names are not analyzed.
+ * - The function variable is assumed to be `'x'`; bindings can rename other
+ *   variables.
+ * - Compound symbolic expressions like `x < 2*a` are not yet evaluated; only
+ *   plain variable references are resolved through bindings.
  */
 
 import type { MathNode, PiecewiseNode, RelationType } from '../types';
@@ -55,10 +62,17 @@ export interface PiecewiseBoundary {
  *
  * Returns an empty array if the node is not a piecewise or no numeric
  * boundaries can be extracted.
+ *
+ * @param node     - The expression to analyze (only `PiecewiseNode` produces results).
+ * @param bindings - Optional variable→value map used to resolve symbolic
+ *                   bounds (e.g., a slider whose name appears in a condition).
  */
-export function extractPiecewiseBoundaries(node: MathNode): PiecewiseBoundary[] {
+export function extractPiecewiseBoundaries(
+	node: MathNode,
+	bindings?: Record<string, number>
+): PiecewiseBoundary[] {
 	if (!isPiecewise(node)) return [];
-	return extractBoundariesFromPiecewise(node);
+	return extractBoundariesFromPiecewise(node, bindings ?? {});
 }
 
 // =============================================================================
@@ -69,12 +83,15 @@ export function extractPiecewiseBoundaries(node: MathNode): PiecewiseBoundary[] 
  * For each piece in the piecewise, collect every numeric `x = bound` where
  * the condition transitions from true to false (or vice-versa).
  */
-function extractBoundariesFromPiecewise(node: PiecewiseNode): PiecewiseBoundary[] {
+function extractBoundariesFromPiecewise(
+	node: PiecewiseNode,
+	bindings: Record<string, number>
+): PiecewiseBoundary[] {
 	// Map from x value (rounded to avoid float jitter) to merged boundary info.
 	const map = new Map<string, { x: number; leftClosed: boolean; rightClosed: boolean }>();
 
 	for (const piece of node.pieces) {
-		const branchBounds = extractBranchBounds(piece.condition);
+		const branchBounds = extractBranchBounds(piece.condition, bindings);
 		for (const b of branchBounds) {
 			// `b.side === 'lower'` means: the branch is valid for x ≥ b.x (or x > b.x)
 			//   ⇒ at x = b.x, the LEFT side (slightly below b.x) is OUTSIDE this branch
@@ -126,20 +143,28 @@ interface BranchBound {
  * downstream code falls back to the heuristic jump detector for those rupture
  * points).
  */
-function extractBranchBounds(condition: MathNode): BranchBound[] {
+function extractBranchBounds(condition: MathNode, bindings: Record<string, number>): BranchBound[] {
 	if (isRelation(condition)) {
 		// Relation chains have nested RelationNode left/right: flatten first.
 		const chain = flattenRelationChain(condition);
 		if (chain.operands.length > 2) {
 			// Chain like a < x < b: extract bound for each consecutive (operand, operator, next operand) pair
-			return extractBoundsFromChain(chain.operands, chain.relations);
+			return extractBoundsFromChain(chain.operands, chain.relations, bindings);
 		}
-		const bound = extractBoundFromComparison(condition.left, condition.relation, condition.right);
+		const bound = extractBoundFromComparison(
+			condition.left,
+			condition.relation,
+			condition.right,
+			bindings
+		);
 		return bound ? [bound] : [];
 	}
 
 	if (isLogical(condition) && condition.operator === 'and') {
-		return [...extractBranchBounds(condition.left), ...extractBranchBounds(condition.right)];
+		return [
+			...extractBranchBounds(condition.left, bindings),
+			...extractBranchBounds(condition.right, bindings)
+		];
 	}
 
 	// LogicalNode 'or', LogicalNotNode, BooleanNode, etc. — not analyzed.
@@ -148,11 +173,12 @@ function extractBranchBounds(condition: MathNode): BranchBound[] {
 
 function extractBoundsFromChain(
 	operands: readonly MathNode[],
-	relations: readonly RelationType[]
+	relations: readonly RelationType[],
+	bindings: Record<string, number>
 ): BranchBound[] {
 	const out: BranchBound[] = [];
 	for (let i = 0; i < relations.length; i++) {
-		const bound = extractBoundFromComparison(operands[i], relations[i], operands[i + 1]);
+		const bound = extractBoundFromComparison(operands[i], relations[i], operands[i + 1], bindings);
 		if (bound) out.push(bound);
 	}
 	return out;
@@ -171,18 +197,19 @@ function extractBoundsFromChain(
 function extractBoundFromComparison(
 	lhs: MathNode,
 	op: RelationType,
-	rhs: MathNode
+	rhs: MathNode,
+	bindings: Record<string, number>
 ): BranchBound | null {
 	const lhsIsX = isXVariable(lhs);
 	const rhsIsX = isXVariable(rhs);
 
 	if (lhsIsX && !rhsIsX) {
-		const val = extractNumericValue(rhs);
+		const val = extractNumericValue(rhs, bindings);
 		if (val === null) return null;
 		return resolveBound(op, val, /*xOnLeft=*/ true);
 	}
 	if (rhsIsX && !lhsIsX) {
-		const val = extractNumericValue(lhs);
+		const val = extractNumericValue(lhs, bindings);
 		if (val === null) return null;
 		return resolveBound(op, val, /*xOnLeft=*/ false);
 	}
@@ -194,17 +221,24 @@ function isXVariable(node: MathNode): boolean {
 }
 
 /**
- * Extract a finite numeric value from a node. Handles plain numbers and
- * `OppositeNode(NumberNode)` (e.g., `-3`).
+ * Extract a finite numeric value from a node. Handles:
+ *  - Plain numbers (e.g., `3`, `1.5`)
+ *  - Negated literals (e.g., `-3`)
+ *  - Variable references resolved via `bindings` (e.g., `a` when bindings.a=2)
+ *  - Negated variable references (`-a` → `-bindings.a`)
  */
-function extractNumericValue(node: MathNode): number | null {
+function extractNumericValue(node: MathNode, bindings: Record<string, number>): number | null {
 	if (isNumber(node)) {
 		const v = parseFloat(node.value);
 		return Number.isFinite(v) ? v : null;
 	}
-	if (isOpposite(node) && isNumber(node.operand)) {
-		const v = parseFloat(node.operand.value);
-		return Number.isFinite(v) ? -v : null;
+	if (isVariable(node) && node.name !== 'x') {
+		const v = bindings[node.name];
+		return typeof v === 'number' && Number.isFinite(v) ? v : null;
+	}
+	if (isOpposite(node)) {
+		const inner = extractNumericValue(node.operand, bindings);
+		return inner === null ? null : -inner;
 	}
 	return null;
 }
