@@ -84,4 +84,22 @@ describe('Phase 7 — Static variable substitution in courbe()', () => {
 		const c = figure.getElementById(cId);
 		expect(c).toBeDefined();
 	});
+
+	it('Greek-letter \\phi inside courbe equation strings (mathAST recognizes it)', () => {
+		// Regression: mathAST must accept \phi as a Greek letter so the static
+		// substitution pass in courbe can find it. The DSL identifier on the
+		// left is `phi` (no backslash); inside the equation strings users write
+		// `\phi` so mathAST does not split it into `p*h*i`.
+		const { figure, symbols } = run(
+			[
+				'phi = (1 + sqrt(5)) / 2',
+				'c = courbe("x = \\phi*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi)'
+			].join('\n')
+		);
+		const cId = getId(symbols, 'c');
+		const c = figure.getElementById(cId) as GeoParametricCurve;
+		expect(c).toBeDefined();
+		expect(c.type).toBe('parametricCurve');
+		expect(c.dependsOn).toEqual([]);
+	});
 });

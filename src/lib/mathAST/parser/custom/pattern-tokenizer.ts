@@ -200,11 +200,29 @@ export interface PatternToken {
  * Valid symbol names that can appear after backslash
  */
 const VALID_SYMBOLS: ReadonlySet<string> = new Set([
-	'pi',
 	'alpha',
 	'beta',
 	'gamma',
+	'delta',
+	'epsilon',
+	'zeta',
+	'eta',
 	'theta',
+	'iota',
+	'kappa',
+	'lambda',
+	'mu',
+	'nu',
+	'xi',
+	'pi',
+	'rho',
+	'sigma',
+	'tau',
+	'upsilon',
+	'phi',
+	'chi',
+	'psi',
+	'omega',
 	'infty'
 ]);
 

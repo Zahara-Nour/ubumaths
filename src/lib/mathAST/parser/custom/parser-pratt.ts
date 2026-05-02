@@ -78,7 +78,25 @@ const GREEK_SYMBOL_MAP: Record<string, GreekLetter> = {
 	alpha: 'alpha',
 	beta: 'beta',
 	gamma: 'gamma',
-	theta: 'theta'
+	delta: 'delta',
+	epsilon: 'epsilon',
+	zeta: 'zeta',
+	eta: 'eta',
+	theta: 'theta',
+	iota: 'iota',
+	kappa: 'kappa',
+	lambda: 'lambda',
+	mu: 'mu',
+	nu: 'nu',
+	xi: 'xi',
+	rho: 'rho',
+	sigma: 'sigma',
+	tau: 'tau',
+	upsilon: 'upsilon',
+	phi: 'phi',
+	chi: 'chi',
+	psi: 'psi',
+	omega: 'omega'
 };
 
 /**

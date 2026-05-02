@@ -589,18 +589,38 @@ export const FUNCTION_COMMANDS: ReadonlySet<string> = new Set<string>([
 ]);
 
 /**
- * Commands that are Greek letters (limited set).
+ * Commands that are Greek letters.
  *
- * Only these Greek letters are supported by both LaTeX and Custom parsers.
- * Supported: pi, alpha, beta, gamma, theta
- * Not supported: All other Greek letters (omega, sigma, delta, epsilon, etc.)
+ * Standard lowercase LaTeX Greek-letter commands supported by both LaTeX and
+ * Custom parsers. `pi` is included here for tokenization, but the parsers
+ * special-case it as a MathConstant rather than a GreekLetter node.
+ *
+ * Omicron is omitted (rendered as the latin letter `o` in LaTeX).
  */
 export const GREEK_COMMANDS: ReadonlySet<string> = new Set<string>([
-	'pi',
 	'alpha',
 	'beta',
 	'gamma',
-	'theta'
+	'delta',
+	'epsilon',
+	'zeta',
+	'eta',
+	'theta',
+	'iota',
+	'kappa',
+	'lambda',
+	'mu',
+	'nu',
+	'xi',
+	'pi',
+	'rho',
+	'sigma',
+	'tau',
+	'upsilon',
+	'phi',
+	'chi',
+	'psi',
+	'omega'
 ]);
 
 /**
