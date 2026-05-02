@@ -50,7 +50,7 @@ courbe("r = theta", theta_min=0, theta_max=6*\pi)                     # spirale 
 | 2     | Refactor helper commun + branche polaire dans builtin  | backend-developer (Opus) | ✅     |
 | 3     | Sérialisation polaire (option β) + tests round-trip    | (fait dans Phase 2)      | ✅     |
 | 4     | Code review + 6 edge cases ajoutés                     | code-reviewer            | ✅     |
-| 5     | Demo page : section "Courbes polaires"                 | frontend-developer       | —      |
+| 5     | Demo page : section "Courbes polaires"                 | (direct)                 | ✅     |
 | 6     | Doc V2 livrée + memory update                          | (direct)                 | —      |
 | 7     | Quality checks (eslint + check:incremental)            | (direct)                 | —      |
 
@@ -152,3 +152,18 @@ Verdict : ✅ APPROVED WITH SUGGESTIONS (4 critiques)
 
 - 24/24 polar tests passing
 - 87/87 régression (parametric, serialize-curves, roundtrip) passing
+
+### 2026-05-02 — Phase 5 ✅
+
+**Demo page mise à jour** (`src/routes/(public)/geometry-demo/parametric/+page.svelte`)
+
+Section "Courbes polaires" ajoutée après les 11 démos paramétriques existantes, avec 6 nouveaux exemples :
+
+- Cercle polaire `r = 2*cos(theta)` sur `[0, π]`
+- Cardioïde `r = 1 - cos(theta)` sur `[0, 2π]` avec remplissage
+- Limaçon avec boucle `r = 1 + 2*cos(theta)` sur `[0, 2π]`
+- Rosace 4 pétales `r = sin(2*theta)` sur `[0, 2π]`
+- Spirale d'Archimède `r = theta` sur `[0, 6π]`
+- Rosace dynamique avec slider `n` (slider sur paramètre dans l'équation)
+
+Aucun changement de code Svelte 5 (uniquement strings DSL + DslDemo réutilisé).
