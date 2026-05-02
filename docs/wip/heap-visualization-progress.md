@@ -9,7 +9,7 @@ Plan : `~/.claude/plans/virtual-soaring-fountain.md`
 | 0     | Spécification TDD (9 comportements)    | Validé      |
 | 1     | Tracer + types + schémas Zod           | **Terminé** |
 | 2     | FramesPanel + HeapPanel (sans flèches) | **Terminé** |
-| 3     | MemoryDiagramView + flèches SVG        | À faire     |
+| 3     | MemoryDiagramView + flèches SVG        | **Terminé** |
 | 4     | Intégration DebugPanel + test manuel   | À faire     |
 | 5     | Quality checks finaux                  | À faire     |
 
@@ -160,6 +160,43 @@ src/lib/components/python/debug/FramesPanel.svelte
 src/lib/components/python/debug/HeapPanel.svelte
 ```
 
-## Phase 3 — Prochaine étape
+## Phase 3 — Réalisé
 
-Créer `MemoryDiagramView.svelte` qui assemble FramesPanel à gauche et HeapPanel à droite avec un overlay SVG calculant les flèches Bézier entre `data-heap-ref` (frames) et `data-heap-id` (heap). État hover propagé entre les deux panneaux via la nouvelle vue.
+### `MemoryDiagramView.svelte`
+
+Composant orchestrant le diagramme complet :
+
+- Layout : `<div>` racine `relative + overflow-auto`, grid 2 colonnes (`grid-cols-2 gap-12 p-4`).
+- Frames à gauche, Heap à droite (références `framesEl` / `heapEl` via `bind:this`).
+- État local `hoveredObjectId` partagé entre les deux panels via callbacks `onVariableHover` / `onObjectHover`.
+- SVG overlay `pointer-events-none absolute inset-0 z-10` qui dessine des flèches Bézier cubiques :
+  - `data-heap-ref="<id>"` côté frames → `data-heap-id="<id>"` côté heap.
+  - Path : `M sx sy C cx1 sy, cx2 ty, tx ty` avec contrôles horizontaux pour des courbes propres.
+  - Couleur via `colorForHeapId(objectId).stroke` (palette stable de 8 couleurs).
+  - Marker arrowhead générique défini dans `<defs>`, tinté via `currentColor`.
+  - Stroke-width 1.5 par défaut, 2.5 quand l'objet est survolé (highlight).
+- Recalcul des positions via `requestAnimationFrame` (batchage) déclenché par :
+  - `$effect` réactif sur `snapshotKey` (clé dérivée de la forme du callStack + heap) et `hoveredObjectId`.
+  - `ResizeObserver` sur le conteneur racine.
+  - Listener `scroll` sur le conteneur racine.
+- Cleanup explicite : disconnect ResizeObserver + cancelAnimationFrame + removeEventListener au teardown.
+- Fallback : message muet quand pas de variable et pas de heap.
+
+### Décisions techniques
+
+- **Pas de flèches internes au heap (entry → entry)** : les références internes sont déjà visibles via les short-id chips (`#a3f2`) dans HeapPanel. Limiter au frame→heap garde le diagramme lisible.
+- **`Map` standard pour `heapAnchors`** : strictement local à `computeArrows()`, recréé à chaque appel — pas besoin de `SvelteMap`.
+- **Suggestions du svelte-autofixer non appliquées** :
+  - `$effect` → `$derived` : non, on a besoin de side-effects (mesurer le DOM après render).
+  - `bind:this` → action/attachment : le pattern actuel reste plus lisible.
+  - Toutes les "issues" sont vides ; ce sont seulement des suggestions stylistiques.
+
+### Fichiers créés
+
+```
+src/lib/components/python/debug/MemoryDiagramView.svelte
+```
+
+## Phase 4 — Prochaine étape
+
+Ajouter le 3e mode `'heap'` dans le toggle viewMode de `DebugPanel.svelte` (déjà `'list' | 'table'`). Icône lucide `Network` ou `GitBranch`. Brancher `<MemoryDiagramView callStack={currentSnapshot.callStack} heap={currentHeap} />`. Test manuel sur les 9 comportements définis en Phase 0.
