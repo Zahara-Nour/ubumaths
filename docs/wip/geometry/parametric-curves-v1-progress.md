@@ -2,6 +2,7 @@
 
 **Statut V1** : terminée (7 phases, 102 tests TDD verts, 6 commits sur main)
 **Statut post-V1** : 3 régressions corrigées (mai 2026) — voir section dédiée
+**Statut roadmap** : A (polaire), B1 (tangente), B2 (point_sur), B3 (intersection), C (géom. diff.), D (ergonomie) **toutes livrées le 2026-05-02** — voir progress docs dédiés
 **Module** : `src/lib/geometry-core/`
 **Doc de plan** : voir conversation pour spec complète
 **Date début** : 2026-05-02
@@ -174,40 +175,39 @@ Implémentation :
 
 Détails complets : `docs/wip/geometry/parametric-polar-progress.md`.
 
-### B. Builtins associés au paramétrique
+### B. Builtins associés au paramétrique (LIVRÉS 2026-05-02) ✅
 
-**Priorité** : MOYENNE — usages pédagogiques évidents.
+Surface livrée :
 
-- **`tangente(c, t=...)`** — vecteur tangent `(x'(t₀), y'(t₀))`. La dérivation symbolique est déjà calculée et stockée (`xDerivative`, `yDerivative`, `compiledXPrime`, `compiledYPrime`). Reste : nouveau cas dans le builtin `tangente()` quand l'argument est une courbe paramétrique, et rendu (vecteur ou droite). Effort ~1 j.
-- **`point_sur(c, t=...)`** — point ancré sur la courbe au paramètre `t`, draggable. Nouveau type d'élément `GeoPointOnParametric` avec `dependsOn = [curveId, scalarRef(t)]`. Coordonnées calculées via les compileds. Drag → résoudre `t` minimisant la distance au curseur (Newton sur `f(t) = (γ(t) - cursor)·γ'(t) = 0`). Effort ~2 j.
-- **`lieu(point_sur(c, t), t)`** — driver = point sur courbe paramétrique. À tester : le sous-graphe de `lieu()` recompile-t-il bien quand `t` varie sur sa plage ? Pas de nouveau code attendu si `point_sur` produit un scalaire propre. Effort ~0,5 j (essentiellement test).
-- **`intersection(c1, c2)` / `intersection(c, droite)`** numériques — système non linéaire `γ₁(t₁) = γ₂(t₂)` ou `γ(t) = P + s·v`. Newton multi-démarrages sur grille `[t_min, t_max]`. Effort ~2 j.
+- **`tangente(c, t0)`** → `(droite, vecteur)` — droite pointillée + vecteur tangent au point γ(t₀). Détails : `tangente-parametric-progress.md`. 22 tests, commit `d75659d26` (+ prérequis `0b766795c` fix Greek differentiation).
+- **`point_sur(c, t0)`** — point ancré, V1 ancrage statique + V2 drag interactif (Newton multi-start 8 starts × 20 itérations sur `(γ(t)−cursor)·γ'(t)=0`). Helper `findClosestParameterOnCurve` exporté pour réutilisation. Détails : `point-sur-parametric-progress.md`. 25 tests, commits `76d7628bd`, `3243a6175`.
+- **`lieu(point_sur(c, t), t)`** — débloqué via `point_sur` ; pas de code spécifique nécessaire. Détection révolution complète → courbe fermée.
+- **`intersection(c, autre, k)`** — V1 paramétrique × paramétrique (Newton 2D multi-start 8×8), V2 mixed (paramétrique × droite/cercle/fonction, Newton 1D multi-start 16), V3 segment/demi-droite avec contraintes de domaine. Détails : `intersection-parametric-progress.md`. Commits `b147a0323`, `67878e59e`, `909d95f07`.
 
-### C. Géométrie différentielle
+### C. Géométrie différentielle (LIVRÉE 2026-05-02) ✅
 
-**Priorité** : BASSE — pédagogie spécialisée.
+3 builtins livrés en un commit `e4d4a57bf` (module `graph/parametric-calculus.ts`, 20 tests). Détails : `parametric-calculus-progress.md`.
 
-- **`longueur(c, t1?, t2?)`** — `∫|γ'(t)| dt`, quadrature numérique adaptative (Gauss-Legendre ou Simpson sur sous-intervalles).
-- **`courbure(c, t)`** — `κ(t) = (x'·y'' − y'·x'') / (x'² + y'²)^(3/2)`. Demande la dérivée seconde — soit symbolique via `differentiate(xDerivative, t)`, soit numérique sur les compileds.
-- **`cercle_osculateur(c, t)`** — cercle de rayon `1/κ(t)` centré au centre de courbure.
+- **`longueur(c, [t1, t2])`** — Simpson composite N=64 sur `∫|γ'(t)| dt`, retourne `GeoScalar` réactif.
+- **`courbure(c, t0)`** — `κ = (x'·y'' − y'·x'') / (x'² + y'²)^(3/2)` signée, dérivation seconde à la volée.
+- **`cercle_osculateur(c, t0)`** — nouveau type `GeoOsculatingCircle`, centre = γ(t) + n̂/κ, rayon = 1/|κ|. Cas dégénérés (κ=0, γ'=0) → null silencieux.
 
-Effort total ~1,5 j si on factorise un module `parametric-calculus.ts` partagé.
+Limitation V1 : pas de cache des dérivées secondes (recompile à chaque appel).
 
-### D. Limitations relevées hors V2/V3
+### D. Ergonomie (LIVRÉE 2026-05-02) ✅
 
-**Priorité** : faible mais utile pour ergonomie.
-
-- **DSL tokenizer `BACKSLASH_WHITELIST`** (`src/lib/geometry-core/dsl/tokenizer.ts:27`) ne contient que `pi`. Conséquence : impossible d'écrire `\phi = (1+sqrt(5))/2` ou `\theta = pi/4` comme assignation DSL — seulement `phi`/`theta` (ASCII). À l'intérieur des chaînes d'équations le parser mathAST accepte désormais tout l'alphabet grec. Action : aligner `BACKSLASH_WHITELIST` sur l'alphabet grec, et harmoniser le mapping `\phi`-DSL ↔ `phi`-mathAST (clé symbol-table sans backslash). Effort ~0,5 j.
-- **Placement du label** (Phase 3 ligne 245) : centre du viewport + offset (10,−10). Idéal : placer au point de la courbe à `t = (t_min+t_max)/2`, ou à |y| max, ou comme la branche `function` (à `0.85·xMax`). Effort ~0,3 j.
-- **Hover / popover / double-clic** (Phase 3 ligne 246) : pas de handler dédié. Ajouter au minimum un popover avec `x(t)`, `y(t)`, et la valeur courante de `t` au survol — utile en démo et en exercices. Effort ~0,5 j.
-- **Direct LHS `\theta = ...`** : actuellement `\phi` n'est accepté que dans les chaînes d'équations (côté mathAST). Si on veut `\phi*cos(t)` en RHS d'une assignation DSL hors chaîne (ex. `r = \phi * 2`), il faut que la pipeline math-pure de l'interpréteur (`tryEvaluateAsMathExpr`) reconnaisse les Greek letters DSL → routage parseCustom. À tester : ça marche probablement déjà puisque la slice raw passe directe à `parseCustom`. Effort : 0,1 j (audit + 2 tests).
+- **D1 + D4** — Tokenizer DSL accepte tout l'alphabet grec lowercase comme identifiant (`\phi = ...`, `\theta = pi/4`, etc.). Commit `7912c1e1a`.
+- **D2** — Placement du label à γ((t_min + t_max)/2) au lieu du centre du viewport. Commit `3c21e9d2e`.
+- **D3** — Tooltip hover sur courbes paramétriques (avec `x(t)`, `y(t)`, `t` courant) + inclusion dans `findElementNear`. Commits `70a8f356b`, `58b1c4687`.
 
 ### E. Robustesse des tests
 
-**Priorité** : MOYENNE — un bug similaire à celui du sampling pourrait se cacher ailleurs.
+**Statut** : non livré explicitement. Le pattern `for-of` vacuous a été corrigé localement sur le test impacté (`figure-parametric-reactivity.test.ts`) lors du fix `9279b2b64`, mais un audit systématique reste à faire si on veut prévenir des bugs similaires dans d'autres parties du code.
 
-- **Audit `for-of` vacuous** : grep des tests qui itèrent sur des collections résultantes (`points`, `paths`, `elements`) sans `expect(length).toBeGreaterThan(...)` au préalable. Ajouter l'assertion partout où le test est censé valider que la collection est non vide. Effort ~0,5 j.
-- **Test snapshot du SVG path** sur un cas avec `remplissage` mais sans `opacite_fond` : éviter une régression de `resolveStyle.fillOpacity` à 0. Effort 0,1 j.
+Action si besoin :
+
+- Audit `grep -rn "for (const .* of " src/**/__tests__` puis vérifier que `expect(arr.length).toBeGreaterThan(...)` précède quand la collection est censée être non vide.
+- Ajouter un test snapshot SVG pour `remplissage` sans `opacite_fond` (régression `resolveStyle.fillOpacity`).
 
 ---
 
