@@ -15,6 +15,7 @@ import type {
 } from '../types';
 import { isNumber, isVariable, isZero } from '../../guards';
 import { number, divide, add, subtract, power, implicitMultiply, func } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import { containsVariable } from '../rules';
 import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
 // Polynomial division utilities
@@ -654,7 +655,7 @@ function createCoeffNode(value: number): MathNode {
 			}
 		}
 		// Use decimal approximation
-		return number(value.toFixed(6));
+		return numericNode(value.toFixed(6));
 	}
 }
 
@@ -1127,7 +1128,7 @@ function solveCoefficients(
 		const coeffValue = numValue / denomProduct;
 
 		// Convert to MathNode (fraction if not integer)
-		let coeffNode: MathNode = number(coeffValue.toFixed(6)); // Default fallback
+		let coeffNode: MathNode = numericNode(coeffValue.toFixed(6)); // Default fallback
 		if (Number.isInteger(coeffValue)) {
 			if (coeffValue >= 0) {
 				coeffNode = number(coeffValue.toString());
@@ -1156,7 +1157,7 @@ function solveCoefficients(
 			}
 			if (!found) {
 				// Use decimal approximation
-				coeffNode = number(coeffValue.toFixed(6));
+				coeffNode = numericNode(coeffValue.toFixed(6));
 			}
 		}
 
@@ -1196,8 +1197,8 @@ function integratePartialFraction(
 			// A/(x-a)^n → A * (x-a)^(-n+1) / (-n+1) for n > 1
 			const n = term.power;
 			const xMinusA = subtract({ type: 'variable', name: variable }, term.factor.root!);
-			const newPower = power(xMinusA, number((-n + 1).toString()));
-			const divisor = number((-n + 1).toString());
+			const newPower = power(xMinusA, numericNode(-n + 1));
+			const divisor = numericNode(-n + 1);
 			return implicitMultiply(term.coefficient, divide(newPower, divisor, 'fraction'));
 		}
 	} else if (term.factor.type === 'quadratic') {

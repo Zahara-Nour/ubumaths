@@ -21,6 +21,7 @@ import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
 import { createStepRecorder } from '../step-recorder';
 import { selectIntegrator } from './select';
 import { variable as variableFactory, number, divide, power, fraction } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import { simplifiedMultiply } from '../../differentiation/rules';
 import { toCustom } from '../../custom-generator';
 import { hashMathNode } from '../../normal/hash';
@@ -274,7 +275,7 @@ function performUSubstitution(
 			const result = tryFactorDu(integrand, u, du, variable, matchedConstantFactor);
 			transformedIntegrand = result.transformedIntegrand;
 			if (result.constantFactor !== null) {
-				constantFactor = number(result.constantFactor.toString());
+				constantFactor = numericNode(result.constantFactor);
 			}
 		}
 	} catch (error) {

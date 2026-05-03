@@ -17,7 +17,7 @@ import type {
 	ResolvedIntegrateOptions
 } from '../types';
 import { isNumber, isVariable } from '../../guards';
-import { number } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import { containsVariable } from '../rules';
 import { CONSTANT_OF_INTEGRATION_NOTE } from '../descriptions-fr';
 
@@ -211,10 +211,10 @@ function extractSquareRootOfConstant(expr: MathNode): MathNode | null {
 			const sqrt = Math.sqrt(value);
 			// If perfect square, return integer
 			if (Number.isInteger(sqrt)) {
-				return number(sqrt.toString());
+				return numericNode(sqrt);
 			}
 			// Otherwise, could return sqrt node, but for simplicity return the sqrt value
-			return number(sqrt.toString());
+			return numericNode(sqrt);
 		}
 	}
 	return null;
