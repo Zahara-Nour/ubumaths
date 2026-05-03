@@ -557,9 +557,42 @@ Quand `computedValue < 0`, `String(computedValue)` produit `'-N'` → `factory.n
 
 ---
 
-## Phase 5 — Quality + cleanup (à venir)
+## Phase 5 — Cleanup ✓
 
-[à compléter après Phase 4]
+**Date** : 2026-05-03
+**Commit** : `05393c739`
+
+### Objectif
+
+Après Phase 4, les branches "legacy form during migration" dans le code de production sont devenues du dead code (impossible à construire car `factory.number()` throw). Nettoyage.
+
+### Modifications
+
+#### Branches dead code retirées
+
+- **`guards.ts:isMinusOne`** : retrait de la branche `isNumber(node) && parseFloat === -1`. Ne reconnaît plus que la forme canonique `opposite(number('1'))`.
+- **`latex-generator.ts:visitComplexSpans` + `generateComplex`** : helpers `isNegOne`, `isNegative`, `absValue` simplifiés (retrait des branches `n.value.startsWith('-')` et `n.value === '-1'`).
+- **`cli/commands/solve.command.ts:negate()`** : retrait de la branche `isNumber(node) && node.value.startsWith('-')`. Import `isNumber` retiré.
+
+#### Commentaires/JSDoc mis à jour
+
+- **`analysis/coefficient-utils.ts:36`** : commentaire MINUS_ONE allégé.
+- **`analysis/linear-combination.ts`** : 3 exemples migrés vers la forme canonique.
+- **`analysis/quadratic-combination.ts`** : 1 exemple.
+- **`math/intervals/types.ts`** : 1 exemple.
+- **`math/intervals/algebra.ts`** : 1 exemple.
+- **`solve/solve.ts`** : 1 exemple.
+
+#### MINUS_ONE
+
+Vérifié : déjà `export const MINUS_ONE = opposite(number('1'))`. Cohérent avec `ZERO` et `ONE` (pas de `Object.freeze`). Aucun changement nécessaire.
+
+### Résultat
+
+- ✅ 14901 tests verts (inchangé).
+- ✅ Plus aucune mention de `number('-N')` dans le code de production hors tests legacy intentionnels (`factory.test.ts` Phase 4 throws, `no-negative-number-node.test.ts` JSDoc historiques, `templates/advancedEngine.test.ts` qui est un filter sans rapport).
+
+---
 
 ---
 
