@@ -12,8 +12,23 @@ import { isScalarRef } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
 import type { SymbolTable } from './symbol-table';
 import type { DslProgram, DslStatement, DslExpr, DslDirective } from './types';
+import type { AngleMode } from './apply-angle-mode';
 
-export function serialize(figure: Figure, symbols?: SymbolTable): string {
+export interface SerializeOptions {
+	/**
+	 * Active angle mode at the time of serialization. When `'rad'`, the
+	 * serialized output starts with `unite_angle("radians")` so a re-interpret
+	 * preserves trig semantics. When `'deg'` or omitted, no prefix is emitted
+	 * (the DSL default is degrees).
+	 */
+	readonly angleMode?: AngleMode;
+}
+
+export function serialize(
+	figure: Figure,
+	symbols?: SymbolTable,
+	options?: SerializeOptions
+): string {
 	const elements = figure.getAllElements();
 	const idToName = buildNameMap(elements, symbols);
 	const lines: string[] = [];
@@ -35,6 +50,13 @@ export function serialize(figure: Figure, symbols?: SymbolTable): string {
 		if (el.type === 'tangentVector') {
 			tangentGroupVectorByGroupId.set(el.tangentGroupId, el.id);
 		}
+	}
+
+	// Preserve the active angle mode so a re-interpret of the output behaves
+	// identically. Default `'deg'` is omitted to keep round-trip output minimal
+	// for the common case.
+	if (options?.angleMode === 'rad') {
+		lines.push('unite_angle("radians")');
 	}
 
 	for (const el of elements) {

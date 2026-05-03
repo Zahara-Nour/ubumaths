@@ -83,6 +83,8 @@ export type DirectiveHandler = (name: string, args: ResolvedArgs, line: number) 
 export interface InterpretResult {
 	figure: Figure;
 	symbols: SymbolTable;
+	/** Active angle mode at the end of execution. Used by `serializeDsl`. */
+	angleMode: AngleMode;
 }
 
 function loadStdlib(macros: MacroRegistry): void {
@@ -105,7 +107,7 @@ export function interpret(
 	loadStdlib(macros);
 	const interpreter = new Interpreter(fig, symbols, macros, onDirective, program.source ?? '');
 	interpreter.executeBlock(program.statements);
-	return { figure: fig, symbols };
+	return { figure: fig, symbols, angleMode: interpreter.getAngleMode() };
 }
 
 /**
@@ -173,6 +175,11 @@ class Interpreter {
 
 	/** Active angle mode. Default `'deg'` (matches existing builtins). */
 	private angleMode: AngleMode = 'deg';
+
+	/** Public getter for the active angle mode (used by serialize round-trip). */
+	getAngleMode(): AngleMode {
+		return this.angleMode;
+	}
 
 	constructor(
 		private figure: Figure,
@@ -649,10 +656,8 @@ class Interpreter {
 	 * angle mode for all subsequent statements (math-pure routing + builtins).
 	 * Returns a synthetic "nombre 0" so callers ignore the result.
 	 *
-	 * TODO(V2): the active angle mode is NOT preserved by `serializeDsl`.
-	 * Round-trip tests must re-inject `unite_angle("…")` after deserialize.
-	 * To fix: emit a `unite_angle` directive at the top of the serialized
-	 * output whenever `interpreter.angleMode` is non-default at end-of-script.
+	 * The active mode is exposed via `getAngleMode()` and round-tripped by
+	 * `serializeDsl(figure, symbols, { angleMode })`.
 	 */
 	private evaluateUniteAngle(expr: DslFunctionCallExpr): ResolvedValue {
 		if (expr.namedArgs.size > 0 || expr.args.length !== 1) {
@@ -947,6 +952,8 @@ export interface DslStepper {
 	readonly totalSteps: number;
 	/** All steps (read-only). Control flow (for/if) appears as single atomic entries. */
 	readonly steps: readonly DslStatement[];
+	/** Active angle mode after the most recent step. */
+	readonly angleMode: AngleMode;
 	/** Reset to beginning with a fresh figure. */
 	reset(): void;
 }
@@ -1008,6 +1015,10 @@ export function createStepper(
 
 		get steps(): readonly DslStatement[] {
 			return steps;
+		},
+
+		get angleMode(): AngleMode {
+			return interpreter.getAngleMode();
 		},
 
 		reset(): void {

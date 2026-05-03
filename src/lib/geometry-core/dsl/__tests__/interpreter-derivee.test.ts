@@ -238,10 +238,9 @@ g = derivee(f)`;
 		const script = `unite_angle("radians")
 f = courbe("y = sin(x)")
 g = derivee(f)`;
-		const { figure, symbols } = runDsl(script);
-		const serialized = serializeDsl(figure, symbols);
-		// V1: serializer doesn't preserve the angle-mode directive — re-add it.
-		const { figure: fig2, symbols: sym2 } = runDsl(`unite_angle("radians")\n${serialized}`);
+		const { figure, symbols, angleMode } = runDsl(script);
+		const serialized = serializeDsl(figure, symbols, { angleMode });
+		const { figure: fig2, symbols: sym2 } = runDsl(serialized);
 		const g2 = fig2.getElementById(sym2.get('g')!.figureId!);
 		expect(g2?.type).toBe('function');
 		if (g2 && g2.type === 'function') {
@@ -259,10 +258,9 @@ g = derivee(f)`;
 		const script = `unite_angle("radians")
 f = courbe("y = x^2 * cos(x)")
 g = derivee(f)`;
-		const { figure, symbols } = runDsl(script);
-		const serialized = serializeDsl(figure, symbols);
-		// V1: serializer doesn't preserve the angle-mode directive — re-add it.
-		const { figure: fig2, symbols: sym2 } = runDsl(`unite_angle("radians")\n${serialized}`);
+		const { figure, symbols, angleMode } = runDsl(script);
+		const serialized = serializeDsl(figure, symbols, { angleMode });
+		const { figure: fig2, symbols: sym2 } = runDsl(serialized);
 		const g2 = fig2.getElementById(sym2.get('g')!.figureId!);
 		expect(g2?.type).toBe('function');
 		if (g2 && g2.type === 'function') {

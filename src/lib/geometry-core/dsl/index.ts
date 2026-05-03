@@ -4,7 +4,9 @@
  * Public API:
  * - parseDsl(script) — parse script to AST
  * - interpretDsl(program, figure?) — execute AST to produce Figure
- * - serializeDsl(figure, symbols?) — convert Figure back to script
+ * - serializeDsl(figure, symbols?, options?) — convert Figure back to script.
+ *   Pass `{ angleMode }` from the InterpretResult to preserve unite_angle()
+ *   across round-trip.
  * - runDsl(script, figure?) — parse + interpret in one call
  */
 
