@@ -89,11 +89,15 @@
 	/** Score multiplier for this game */
 	let scoreMultiplier = $state(1);
 
+	// Snapshot of the data prop for one-shot init below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	/** Current gidouilles balance (updated after each power use) */
-	let currentGidouilles = $state(data.gidouilles);
+	let currentGidouilles = $state(initialData.gidouilles);
 
 	/** VIP cards from server */
-	let vipCards = $state<StudentVipCards | null>(data.vipCards ?? null);
+	let vipCards = $state<StudentVipCards | null>(initialData.vipCards ?? null);
 
 	// Derived: available cards + affordability
 	let hasLetterCard = $derived(findCardInstanceId(LETTER_CARD_IDS) !== null);
@@ -277,7 +281,7 @@
 	// ===== Effects =====
 
 	// For authenticated students, enforce fixed 6 attempts on init
-	if (data.canSaveScore && game.maxAttempts !== 6 && !game.isGameOver()) {
+	if (initialData.canSaveScore && game.maxAttempts !== 6 && !game.isGameOver()) {
 		game.startNewGame(game.grade, 6);
 	}
 
