@@ -138,6 +138,29 @@ function assertNameNotReserved(name: string, line: number): void {
 }
 
 /**
+ * Suggest a fix when a user references a name that looks like a misspelling
+ * of a math constant. Returns an empty string when no hint applies.
+ */
+function unknownVariableHint(name: string): string {
+	const lower = name.toLowerCase();
+	if (lower === 'pi') {
+		return ' (la constante π s\'écrit "\\pi" avec backslash)';
+	}
+	if (name === 'E' || lower === 'euler') {
+		return ' (la constante e (Euler) s\'écrit en minuscule "e")';
+	}
+	return '';
+}
+
+/**
+ * Hint for `Fonction inconnue` errors: point at the categories of available
+ * function names so the user knows where to look.
+ */
+const UNKNOWN_FUNCTION_HINT =
+	' (fonctions math disponibles : sqrt, abs, sin, cos, tan, asin, acos, atan, exp, ln, log, ceil, floor… ; ' +
+	'builtins DSL : point, droite, segment, cercle, courbe, slider, distance, intersection…)';
+
+/**
  * Collect every identifier name used in a DslExpr (recursive). Includes the
  * name of any function call so callers can detect when a user-defined symbol
  * shadows a function position (e.g. `exp = 5; r = exp(3)` — the user likely
@@ -462,7 +485,10 @@ class Interpreter {
 			case 'identifier': {
 				const entry = this.symbols.get(expr.name);
 				if (!entry) {
-					throw new DslRuntimeError(`Variable inconnue : "${expr.name}"`, expr.line);
+					throw new DslRuntimeError(
+						`Variable inconnue : "${expr.name}"${unknownVariableHint(expr.name)}`,
+						expr.line
+					);
 				}
 				return this.fromSymbolEntry(entry);
 			}
@@ -648,7 +674,7 @@ class Interpreter {
 			return { type: 'nombre', value: 0 }; // style() returns nothing
 		}
 
-		throw new DslRuntimeError(`Fonction inconnue : "${name}"`, line);
+		throw new DslRuntimeError(`Fonction inconnue : "${name}"${UNKNOWN_FUNCTION_HINT}`, line);
 	}
 
 	/**
@@ -687,7 +713,11 @@ class Interpreter {
 		// Evaluate the first argument to check if it's a scalar
 		const argVal = this.evaluateExpr(expr.args[0], expr.line);
 		const op = scalarMathOpFor(name, this.angleMode);
-		if (!op) throw new DslRuntimeError(`Fonction math inconnue : "${name}"`, expr.line);
+		if (!op)
+			throw new DslRuntimeError(
+				`Fonction math inconnue : "${name}"${UNKNOWN_FUNCTION_HINT}`,
+				expr.line
+			);
 
 		// If argument is a scalar, create a composed scalar with the math operation
 		if (isScalarValue(argVal)) {
