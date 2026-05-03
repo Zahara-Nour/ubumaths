@@ -19,6 +19,7 @@ export { formatNumber, cleanNumber } from './format.js';
 export {
 	getNumericValue,
 	numericNode,
+	extractRational,
 	evaluateNumeric,
 	evaluateWithSubstitution
 } from './numeric.js';

@@ -174,6 +174,50 @@ describe('reduceFractionsAST', () => {
 		const result = toLatex(reduceFractionsAST(ast));
 		expect(result).toBe('\\dfrac{2 x}{3}');
 	});
+
+	// -------------------------------------------------------------------------
+	// Decimal fractions — exact rational reduction (proposition #3)
+	// Previously broken because parseFloat + Math.round + BigInt rounded
+	// the operands silently, producing wrong reductions.
+	// See docs/wip/cosmetic-fraction-precision-progress.md
+	// -------------------------------------------------------------------------
+
+	it('reduces 1.7/2.3 to 17/23 (exact)', () => {
+		const result = transformLatex('\\frac{1.7}{2.3}', reduceFractionsAST);
+		expect(result).toBe('\\dfrac{17}{23}');
+	});
+
+	it('reduces 1.2/0.6 to 2 (exact)', () => {
+		const result = transformLatex('\\frac{1.2}{0.6}', reduceFractionsAST);
+		expect(result).toBe('2');
+	});
+
+	it('reduces 1.5/2.5 to 3/5 (exact)', () => {
+		const result = transformLatex('\\frac{1.5}{2.5}', reduceFractionsAST);
+		expect(result).toBe('\\dfrac{3}{5}');
+	});
+
+	it('reduces 0.3/0.1 to 3 (exact)', () => {
+		const result = transformLatex('\\frac{0.3}{0.1}', reduceFractionsAST);
+		expect(result).toBe('3');
+	});
+
+	it('reduces -1.5/2.5 to -3/5', () => {
+		const result = transformLatex('\\frac{-1.5}{2.5}', reduceFractionsAST);
+		expect(result).toBe('-\\dfrac{3}{5}');
+	});
+
+	it('preserves precision for big integers (>2^53-1)', () => {
+		// 123456789012345678 / 2 = 61728394506172839 (exact).
+		// parseFloat would have rounded the input to 123456789012345680.
+		const result = transformLatex('\\frac{123456789012345678}{2}', reduceFractionsAST);
+		expect(result).toBe('61728394506172839');
+	});
+
+	it('reduces 7.5/2.5 to 3 (decimal that simplifies to integer)', () => {
+		const result = transformLatex('\\frac{7.5}{2.5}', reduceFractionsAST);
+		expect(result).toBe('3');
+	});
 });
 
 // =============================================================================

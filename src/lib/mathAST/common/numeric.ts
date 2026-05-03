@@ -7,8 +7,10 @@
  */
 
 import type { MathNode } from '../types';
+import type { Rational } from '../normal/types';
 import { isNumber } from '../guards';
 import { number, opposite } from '../factory';
+import { rational, fromInteger, negRational, floatToRational } from '../normal/rational';
 
 /**
  * Get numeric value from a MathNode if it's a number or opposite(number).
@@ -66,6 +68,99 @@ export function numericNode(value: number | string): MathNode {
 		}
 	}
 	return number(value);
+}
+
+/**
+ * Parse a decimal numeric string into an exact Rational.
+ *
+ * Examples:
+ *   "1.7"     → 17/10
+ *   "1.500"   → 1500/1000 → 3/2 (after rational() reduction)
+ *   "42"      → 42/1
+ *   "0.001"   → 1/1000
+ *   "1e3"     → 1000/1 (scientific via parseFloat + floatToRational)
+ *   "1.5e-3"  → 15/10000 (scientific via parseFloat + floatToRational)
+ *
+ * Returns null if the string cannot be parsed.
+ */
+function parseDecimalToRational(value: string): Rational | null {
+	const s = value.trim();
+	if (s.length === 0) return null;
+
+	// Scientific notation: fall back to floatToRational (IEEE754 round-trip).
+	// Acceptable here because scientific notation in user input is rare and
+	// already implies finite precision.
+	if (s.includes('e') || s.includes('E')) {
+		const f = parseFloat(s);
+		if (!Number.isFinite(f)) return null;
+		try {
+			return floatToRational(f);
+		} catch {
+			return null;
+		}
+	}
+
+	// Decimal with explicit fractional part: parse exactly via BigInt.
+	if (s.includes('.')) {
+		const parts = s.split('.');
+		// Reject malformed strings with multiple dots like "1.2.3".
+		if (parts.length !== 2) return null;
+		const [intPart, decPart] = parts;
+		// Both parts are unsigned digit sequences (factory rejects signed literals).
+		// intPart may be empty (".5"), decPart must have at least one digit.
+		if (!/^\d*$/.test(intPart) || !/^\d+$/.test(decPart)) return null;
+		try {
+			const numerator = BigInt((intPart || '0') + decPart);
+			const denominator = 10n ** BigInt(decPart.length);
+			return rational(numerator, denominator);
+		} catch {
+			return null;
+		}
+	}
+
+	// Pure integer.
+	if (!/^\d+$/.test(s)) return null;
+	try {
+		return fromInteger(BigInt(s));
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Extract an exact Rational from a numeric MathNode.
+ *
+ * Recognises both canonical forms:
+ *   number('N')               → +N
+ *   opposite(number('N'))     → -N
+ *   positive(number('N'))     → +N
+ *   delimiter(...)            → recurse on content
+ *
+ * Decimal values are parsed exactly via BigInt — no parseFloat round-off.
+ *
+ * @param node - The MathNode to extract a rational from
+ * @returns A Rational or null if the node is not a numeric literal
+ *
+ * @example
+ * extractRational(number('1.7'))             // 17/10
+ * extractRational(opposite(number('1.5')))   // -3/2 (after rational() reduction)
+ * extractRational(variable('x'))             // null
+ */
+export function extractRational(node: MathNode): Rational | null {
+	if (isNumber(node)) {
+		return parseDecimalToRational(node.value);
+	}
+	if (node.type === 'opposite') {
+		const inner = extractRational(node.operand);
+		return inner ? negRational(inner) : null;
+	}
+	if (node.type === 'positive') {
+		return extractRational(node.operand);
+	}
+	if (node.type === 'delimiter') {
+		return extractRational(node.content);
+	}
+	return null;
 }
 
 /**
