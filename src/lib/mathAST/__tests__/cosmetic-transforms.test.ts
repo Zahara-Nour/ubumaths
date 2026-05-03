@@ -553,6 +553,58 @@ describe('stripUnnecessaryBracketsAST', () => {
 		const result = transformLatex('\\left(x^{2}\\right)^{3}', stripUnnecessaryBracketsAST);
 		expect(result).toContain('\\left(');
 	});
+
+	// -------------------------------------------------------------------------
+	// Opposite parent: strip brackets except for addition/subtraction/opposite
+	// content (proposition #7 — Poincaré OppositeNode::childAtIndexNeedsUserParentheses).
+	// See docs/wip/cosmetic-bracket-opposite-progress.md
+	// -------------------------------------------------------------------------
+
+	it('strips -(3x) → -3x (opposite around multiplication)', () => {
+		const result = transformLatex('-\\left(3x\\right)', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips -(a*b) → -a*b (opposite around multiplication)', () => {
+		const result = transformLatex('-\\left(a\\times b\\right)', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips -(x^2) → -x^2 (opposite around superscript)', () => {
+		const result = transformLatex('-\\left(x^{2}\\right)', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips -(a/b) → -a/b (opposite around division)', () => {
+		// Division is in isSimpleElement, so this should already strip via case 1.
+		// Test confirms it stays correct.
+		const result = transformLatex('-\\left(\\dfrac{a}{b}\\right)', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	it('strips -(2x*y) → -2xy (opposite around multi-factor mul)', () => {
+		const result = transformLatex('-\\left(2x\\times y\\right)', stripUnnecessaryBracketsAST);
+		expect(result).not.toContain('\\left(');
+	});
+
+	// --- Opposite parent: PRESERVE addition/subtraction/opposite ---
+
+	it('preserves -(a+b) (opposite around addition needs brackets)', () => {
+		const result = transformLatex('-\\left(a+b\\right)', stripUnnecessaryBracketsAST);
+		expect(result).toContain('\\left(');
+	});
+
+	it('preserves -(a-b) (opposite around subtraction needs brackets)', () => {
+		const result = transformLatex('-\\left(a-b\\right)', stripUnnecessaryBracketsAST);
+		expect(result).toContain('\\left(');
+	});
+
+	it('preserves -(-x) (opposite around opposite needs brackets)', () => {
+		// -(-x) without brackets would be --x which is parsed differently.
+		// Brackets are necessary for unambiguous reading.
+		const result = transformLatex('-\\left(-x\\right)', stripUnnecessaryBracketsAST);
+		expect(result).toContain('\\left(');
+	});
 });
 
 // =============================================================================

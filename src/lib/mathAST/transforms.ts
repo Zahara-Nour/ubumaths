@@ -1168,7 +1168,33 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 				return strippedContent;
 			}
 
-			// Case 4: Negative inside (not root) - we may need to keep brackets
+			// Case 4 (Poincaré-aligned): parent = opposite.
+			// Mirrors poincare/src/opposite.cpp:34 OppositeNode::childAtIndexNeedsUserParentheses.
+			// Keep brackets only if content is addition/subtraction/opposite.
+			// Strip otherwise (multiplication, division, superscript, function, atomic, ...).
+			// (negative-number content is impossible after the factory migration —
+			// `number()` rejects signed literals.)
+			// This must come BEFORE case 5 (legacy isNegativeNode handler) which
+			// would otherwise strip `-(-x)` into `--x` (ambiguous LaTeX).
+			if (parentType === 'opposite') {
+				if (
+					strippedContent.type === 'addition' ||
+					strippedContent.type === 'subtraction' ||
+					strippedContent.type === 'opposite'
+				) {
+					// Keep brackets
+					return delimiter(node.delimiters, strippedContent, node.semantic, {
+						delimiterMetadata: node.delimiterMetadata,
+						leftDelimiterMetadata: node.leftDelimiterMetadata,
+						rightDelimiterMetadata: node.rightDelimiterMetadata,
+						metadata: node.metadata
+					});
+				}
+				// Strip
+				return strippedContent;
+			}
+
+			// Case 5: Negative inside (not root) - we may need to keep brackets
 			if (isNegativeNode(strippedContent)) {
 				if (needsBracketsForOpposite(strippedContent, isFirstTerm, allowFirstNegative)) {
 					// Keep the brackets
@@ -1183,7 +1209,7 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 				return strippedContent;
 			}
 
-			// Case 5: Operator precedence — strip if content binds tighter than parent
+			// Case 6: Operator precedence — strip if content binds tighter than parent
 			// e.g., (a*b)+c → a*b+c, (x^2)+1 → x^2+1
 			if (parentType) {
 				const contentPrec = getOperatorPrecedence(strippedContent.type);
@@ -1290,16 +1316,34 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 
 		// Unary operations
 		case 'opposite':
-			return opposite(stripBracketsInternal(node.operand, { ...childCtx, isFirstTerm: true }), {
-				operatorMetadata: node.operatorMetadata,
-				metadata: node.metadata
-			});
+			return opposite(
+				stripBracketsInternal(node.operand, {
+					...childCtx,
+					isFirstTerm: true,
+					parentType: 'opposite'
+				}),
+				{
+					operatorMetadata: node.operatorMetadata,
+					metadata: node.metadata
+				}
+			);
 
 		case 'positive':
-			return positive(stripBracketsInternal(node.operand, { ...childCtx, isFirstTerm: true }), {
-				operatorMetadata: node.operatorMetadata,
-				metadata: node.metadata
-			});
+			// parentType: 'positive' propagated for symmetry with 'opposite',
+			// even though stripBracketsInternal has no Poincaré-style rule for
+			// PositiveNode (the unary + is rare and Poincaré itself does not
+			// define a dedicated childAtIndexNeedsUserParentheses for it).
+			return positive(
+				stripBracketsInternal(node.operand, {
+					...childCtx,
+					isFirstTerm: true,
+					parentType: 'positive'
+				}),
+				{
+					operatorMetadata: node.operatorMetadata,
+					metadata: node.metadata
+				}
+			);
 
 		// Function - strip brackets in arguments and power
 		case 'function':
