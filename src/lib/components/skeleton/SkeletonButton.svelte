@@ -29,7 +29,9 @@
 		default: 'h-10 w-24'
 	};
 
-	const sizeClass = size in sizeClasses ? sizeClasses[size as keyof typeof sizeClasses] : size;
+	const sizeClass = $derived(
+		size in sizeClasses ? sizeClasses[size as keyof typeof sizeClasses] : size
+	);
 </script>
 
 <!-- Button skeleton -->
