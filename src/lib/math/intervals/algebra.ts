@@ -21,7 +21,7 @@ import {
 	EMPTY_SET,
 	UNIVERSAL_SET
 } from './factory';
-import { number } from '$lib/mathAST/factory';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import {
 	endpointToNumber,
 	isNegativeInfinityEndpoint,
@@ -142,7 +142,7 @@ export function isUniversalInterval(d: IntervalDomain): boolean {
 export function containsValue(d: IntervalDomain, value: MathNode | number): boolean {
 	// Convert raw numbers to MathNode
 	if (typeof value === 'number') {
-		return containsValue(d, number(value));
+		return containsValue(d, numericNode(value));
 	}
 	switch (d.kind) {
 		case 'empty':
