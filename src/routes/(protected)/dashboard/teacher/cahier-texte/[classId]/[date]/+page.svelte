@@ -42,11 +42,15 @@
 
 	let { data, form }: Props = $props();
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// Form state
-	let lessonContent = $state(data.entry?.lessonContent || '');
-	let homeworkContent = $state(data.entry?.homeworkContent || '');
-	let homeworkDueDate = $state(data.entry?.homeworkDueDate || '');
-	let isPublished = $state(data.entry?.isPublished || false);
+	let lessonContent = $state(initialData.entry?.lessonContent || '');
+	let homeworkContent = $state(initialData.entry?.homeworkContent || '');
+	let homeworkDueDate = $state(initialData.entry?.homeworkDueDate || '');
+	let isPublished = $state(initialData.entry?.isPublished || false);
 	let isSaving = $state(false);
 	let isDeleting = $state(false);
 
