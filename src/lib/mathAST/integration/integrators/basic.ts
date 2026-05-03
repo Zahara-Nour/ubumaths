@@ -15,6 +15,7 @@ import type {
 } from '../types';
 import { isNumber, isVariable, isEulerConstant } from '../../guards';
 import { number, opposite, power } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import {
 	powerRule,
 	constantRule,
@@ -255,7 +256,7 @@ function isArctanPattern(
 					const sqrtVal = Math.sqrt(val);
 					if (Number.isInteger(sqrtVal)) {
 						return {
-							a: number(sqrtVal.toString()),
+							a: numericNode(sqrtVal),
 							varNode: (xSquared as { base: MathNode }).base
 						};
 					}
@@ -342,7 +343,7 @@ function isArcsinPattern(
 						if (isNumber(right.superscript) && right.superscript.value === '2') {
 							const sqrtVal = Math.sqrt(val);
 							if (Number.isInteger(sqrtVal)) {
-								return { a: number(sqrtVal.toString()), varNode: right.base };
+								return { a: numericNode(sqrtVal), varNode: right.base };
 							}
 						}
 					}

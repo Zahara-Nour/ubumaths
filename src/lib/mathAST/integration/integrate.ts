@@ -22,6 +22,7 @@ import { containsVariable } from './rules';
 import { preprocess } from '../normal/rules';
 import { normalize, denormalize } from '../normal';
 import { number, subtract } from '../factory';
+import { numericNode } from '../common/numeric';
 import { isAddition, isSubtraction, isMultiplication, isNumber, isDelimiter } from '../guards';
 import { simplifiedAdd, simplifiedMultiply } from '../common/simplify';
 import { CONSTANT_OF_INTEGRATION_NOTE } from './descriptions-fr';
@@ -615,7 +616,7 @@ export function integrateDefinite(
 					'numeric-simpson',
 					`Approximation numérique par la méthode de Simpson adaptative`,
 					expr,
-					number(numericResult.value.toString()),
+					numericNode(numericResult.value),
 					'summarized',
 					undefined,
 					`Erreur estimée: ${numericResult.error.toExponential(2)}`
@@ -627,7 +628,7 @@ export function integrateDefinite(
 					technique: 'numeric',
 					lowerBound: lower,
 					upperBound: upper,
-					value: number(numericResult.value.toString()),
+					value: numericNode(numericResult.value),
 					approximate: numericResult.value,
 					steps: recorder.getStepsFiltered(opts.verbosity)
 				};

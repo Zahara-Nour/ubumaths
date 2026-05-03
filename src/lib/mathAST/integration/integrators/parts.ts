@@ -31,6 +31,7 @@ import {
 } from '../descriptions-fr';
 import { integrate } from '../integrate';
 import { multiply, subtract, divide, number, add, func, opposite } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import {
 	isMultiplication,
 	isFunction,
@@ -197,7 +198,7 @@ function simplifyProductWithCancellation(expr: MathNode, variable: string): Math
 							{
 								type: 'superscript',
 								base: { type: 'variable', name: variable },
-								superscript: number(newExp.toString())
+								superscript: numericNode(newExp)
 							},
 							left.denominator,
 							'fraction'
@@ -755,7 +756,7 @@ function integrateExpTrigPattern(
 	} else if (aNum === -1) {
 		expArg = opposite(x);
 	} else {
-		expArg = multiply(number(a), x, 'implicit');
+		expArg = multiply(numericNode(a), x, 'implicit');
 	}
 	const expTerm = func('exp', [expArg]);
 
@@ -764,20 +765,20 @@ function integrateExpTrigPattern(
 	if (bNum === 1) {
 		trigArg = x;
 	} else {
-		trigArg = multiply(number(b), x, 'implicit');
+		trigArg = multiply(numericNode(b), x, 'implicit');
 	}
 
 	// Build the result based on trig function
 	let innerExpr: MathNode;
 	if (trigFunc === 'sin') {
 		// a·sin(bx) - b·cos(bx)
-		const sinTerm = multiply(number(a), func('sin', [trigArg]), 'implicit');
-		const cosTerm = multiply(number(b), func('cos', [trigArg]), 'implicit');
+		const sinTerm = multiply(numericNode(a), func('sin', [trigArg]), 'implicit');
+		const cosTerm = multiply(numericNode(b), func('cos', [trigArg]), 'implicit');
 		innerExpr = subtract(sinTerm, cosTerm);
 	} else {
 		// a·cos(bx) + b·sin(bx)
-		const cosTerm = multiply(number(a), func('cos', [trigArg]), 'implicit');
-		const sinTerm = multiply(number(b), func('sin', [trigArg]), 'implicit');
+		const cosTerm = multiply(numericNode(a), func('cos', [trigArg]), 'implicit');
+		const sinTerm = multiply(numericNode(b), func('sin', [trigArg]), 'implicit');
 		innerExpr = add(cosTerm, sinTerm);
 	}
 
