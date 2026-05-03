@@ -147,7 +147,9 @@
 
 	// Local state for pan/zoom. Initialized from props, then diverges.
 	// Pan/zoom modify these directly — prop changes after mount are ignored.
+	// svelte-ignore state_referenced_locally
 	let viewCenter = $state({ x: initialCenter.x, y: initialCenter.y });
+	// svelte-ignore state_referenced_locally
 	let ppu = $state(initialPpu);
 	let isPanning = $state(false);
 	let spaceHeld = $state(false);
@@ -823,6 +825,7 @@
 						{@const imgCy = svg.y + (svg.height ?? svg.width) / 2}
 						{@const imgRot = (-(svg.rotation ?? 0) * 180) / Math.PI}
 						{@const imgSx = svg.flipped ? -1 : 1}
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<g
 							class:draggable-text={isDraggable}
 							onpointerdown={isDraggable
@@ -1481,6 +1484,7 @@
 				{:else if el.type === 'parametricCurve'}
 					{@const svg = parametricCurveToSVG(el.id, figure, transformer, dims)}
 					{#if svg}
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<path
 							d={svg.path}
 							stroke={sty.color}
@@ -1709,6 +1713,7 @@
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{#if svg}
 						{#if isRough(sty, el.type) && rc}
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
 								{#each svg.paths as path, i (i)}
 									<path d={path} stroke="transparent" stroke-width="12" fill="none" />
@@ -1718,6 +1723,7 @@
 								>
 							</g>
 						{:else}
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
 								{#each svg.paths as path, i (i)}
 									<path d={path} stroke="transparent" stroke-width="12" fill="none" />
@@ -1811,6 +1817,7 @@
 						{#if el.label}
 							{@const lx = svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 4)}
 							{@const ly = svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2))}
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<text
 								x={lx}
 								y={ly}
@@ -1834,6 +1841,7 @@
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{#if svg}
 						{#if isRough(sty, el.type) && rc}
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
 								{#each svg.ticks as tick, i (i)}
 									<line
@@ -1850,6 +1858,7 @@
 								>
 							</g>
 						{:else}
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
 								{#each svg.ticks as tick, i (i)}
 									<line
@@ -1884,6 +1893,7 @@
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{@const isDraggable = !!el.position}
 					{#if svg}
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<g
 							class:draggable-text={isDraggable}
 							onpointerdown={isDraggable
@@ -1933,6 +1943,7 @@
 					{@const svg = textToSVG(el.id, figure, transformer)}
 					{@const isDraggable = !!el.position}
 					{#if svg}
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<g
 							class:draggable-text={isDraggable}
 							onpointerdown={isDraggable
@@ -1974,6 +1985,7 @@
 					{@const isDraggable = !!el.position}
 					{#if svg}
 						{@const inlineNodes = parseInlineNodes(svg.text)}
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<g
 							class:draggable-text={isDraggable}
 							onpointerdown={isDraggable
@@ -2014,6 +2026,7 @@
 						{@const imgCy2 = svg.y + (svg.height ?? svg.width) / 2}
 						{@const imgRot2 = (-(svg.rotation ?? 0) * 180) / Math.PI}
 						{@const imgSx2 = svg.flipped ? -1 : 1}
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<g
 							class:draggable-text={isDraggable}
 							onpointerdown={isDraggable
