@@ -41,11 +41,17 @@ function unit(symbol: string): Unit | null {
 		return null;
 	}
 
-	return {
+	// Propagate offset for single-component affine units (°C, °F).
+	// Composite affine units cannot exist because composition is forbidden,
+	// so offset is only meaningful here for exponent === 1.
+	const result: Unit = {
 		components: new Map([[resolved.baseSymbol, 1]]),
 		coefficient: resolved.coefficient,
-		original: symbol
+		original: symbol,
+		...(resolved.offset !== undefined && resolved.offset !== 0 ? { offset: resolved.offset } : {})
 	};
+
+	return result;
 }
 
 /**

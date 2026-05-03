@@ -20,6 +20,41 @@ import type { Unit } from './types';
 const EPSILON = 1e-9;
 
 // =============================================================================
+// Affine Composition Guard
+// =============================================================================
+
+/**
+ * Error thrown when an affine unit (°C, °F) is composed with another unit.
+ *
+ * Affine units have an offset (e.g., 273.15 for °C → K) which makes
+ * multiplication/division mathematically meaningless: `5°C × 2` could mean
+ * `10°C` or `546.3 K`, depending on whether °C is treated as absolute
+ * temperature or as a delta. To avoid ambiguity, all such compositions are
+ * forbidden — convert to Kelvin first if a delta interpretation is intended.
+ */
+export class AffineCompositionError extends Error {
+	readonly code = 'AFFINE_COMPOSITION_FORBIDDEN' as const;
+	constructor(operation: string) {
+		super(
+			`AFFINE_COMPOSITION_FORBIDDEN: cannot ${operation} with an affine unit (°C, °F). Convert to a non-affine temperature unit (K) first.`
+		);
+		this.name = 'AffineCompositionError';
+	}
+}
+
+/**
+ * Local helper to detect affine units inside operations.ts.
+ * Duplicates {@link conversion.isAffine} to avoid a circular import
+ * (conversion.ts already imports from operations.ts).
+ *
+ * **Keep in sync with `isAffine()` in `conversion.ts`** — both encode the same
+ * invariant (single-component unit with a non-zero offset).
+ */
+function hasAffineOffset(u: Unit): boolean {
+	return u.offset !== undefined && u.offset !== 0 && u.components.size === 1;
+}
+
+// =============================================================================
 // Core Arithmetic Operations
 // =============================================================================
 
@@ -42,6 +77,10 @@ const EPSILON = 1e-9;
  * multiply(dimensionless(), unit('m')) // m
  */
 export function multiply(a: Unit, b: Unit): Unit {
+	if (hasAffineOffset(a) || hasAffineOffset(b)) {
+		throw new AffineCompositionError('multiply');
+	}
+
 	// Start with a copy of a's components
 	const resultComponents = new Map(a.components);
 
@@ -100,6 +139,13 @@ export function divide(a: Unit, b: Unit): Unit {
  * power(unit('m'), 0)    // dimensionless
  */
 export function power(u: Unit, exponent: number): Unit {
+	// Affine units cannot be raised to any power other than 1: °C^2 has no
+	// physical meaning, and °C^-1 (used by divide) would silently strip the
+	// offset and let composition slip through.
+	if (hasAffineOffset(u) && Math.abs(exponent - 1) >= EPSILON) {
+		throw new AffineCompositionError('raise to power');
+	}
+
 	// Create new components with multiplied exponents
 	const resultComponents = new Map<string, number>();
 
