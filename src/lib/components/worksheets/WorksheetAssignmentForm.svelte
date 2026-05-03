@@ -74,30 +74,39 @@
 	// FORM STATE - Initialize from assignment if editing
 	// ============================================================================
 
-	let title = $state<string>(assignment?.title || '');
-	let instructions = $state<string>(assignment?.instructions || '');
-	let individualized = $state<boolean>(assignment?.individualized ?? true);
+	// Snapshot of the initial assignment prop for $state initializers below.
+	// svelte-ignore state_referenced_locally
+	const initialAssignment = assignment;
+
+	let title = $state<string>(initialAssignment?.title || '');
+	let instructions = $state<string>(initialAssignment?.instructions || '');
+	let individualized = $state<boolean>(initialAssignment?.individualized ?? true);
 
 	// Multi-class selection - extract class IDs from assignment
 	let selectedClassIds = $state<string[]>(
-		assignment?.classes?.map((c) => c.id) || (assignment?.class_id ? [assignment.class_id] : [])
+		initialAssignment?.classes?.map((c) => c.id) ||
+			(initialAssignment?.class_id ? [initialAssignment.class_id] : [])
 	);
 
 	// Individual student selection - extract student IDs from assignment
-	let selectedStudentIds = $state<string[]>(assignment?.assigned_students?.map((s) => s.id) || []);
+	let selectedStudentIds = $state<string[]>(
+		initialAssignment?.assigned_students?.map((s) => s.id) || []
+	);
 
 	// Availability dates
 	let availableFrom = $state<string>(
-		assignment?.available_from
-			? new Date(assignment.available_from).toISOString().slice(0, 16)
+		initialAssignment?.available_from
+			? new Date(initialAssignment.available_from).toISOString().slice(0, 16)
 			: new Date().toISOString().slice(0, 16)
 	);
 	let closesAt = $state<string>(
-		assignment?.closes_at ? new Date(assignment.closes_at).toISOString().slice(0, 16) : ''
+		initialAssignment?.closes_at
+			? new Date(initialAssignment.closes_at).toISOString().slice(0, 16)
+			: ''
 	);
 
 	// Online consultation mode (allows students to view the worksheet online)
-	let showCorrections = $state<boolean>(assignment?.show_corrections ?? false);
+	let showCorrections = $state<boolean>(initialAssignment?.show_corrections ?? false);
 
 	// Loading state
 	let isSubmitting = $state(false);
