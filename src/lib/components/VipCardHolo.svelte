@@ -93,6 +93,7 @@
 	};
 
 	// Get rarity display info for this card, defaulting to common if rarity not set
+	// svelte-ignore state_referenced_locally
 	const rarityInfo = card.rarity ? rarityColors[card.rarity] : rarityColors.common;
 
 	// Use imagePath from database (Supabase Storage URL)
@@ -134,6 +135,7 @@
 	let showcaseInterval: number | undefined = $state();
 	let showcaseTimerStart: number | undefined = $state();
 	let showcaseTimerEnd: number | undefined = $state();
+	// svelte-ignore state_referenced_locally
 	let showcaseRunning = $state(showcase);
 
 	// End showcase animation
