@@ -242,6 +242,8 @@
 		<!-- Drag handle -->
 		<div
 			class="drag-handle"
+			role="button"
+			tabindex="-1"
 			onpointerdown={handleDragStart}
 			ondblclick={handleDragDoubleClick}
 			title="Glisser pour déplacer (double-clic pour réinitialiser)"
@@ -444,6 +446,8 @@
 								class="color-swatch"
 								class:selected={annotationStyle.color === color}
 								style="background-color: {color}"
+								title={color}
+								aria-label="Couleur {color}"
 								onclick={() => selectColor(color)}
 							></button>
 						{/each}
@@ -775,11 +779,11 @@
 		);
 	}
 
-	.fill-button .fill-icon {
+	.fill-button :global(.fill-icon) {
 		opacity: 0.6;
 	}
 
-	.fill-button.has-fill .fill-icon {
+	.fill-button.has-fill :global(.fill-icon) {
 		color: hsl(var(--background));
 		opacity: 1;
 	}
