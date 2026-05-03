@@ -31,10 +31,12 @@
 
 	// Props from server (includes parent layout data: user, supabase)
 	let { data } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// Get supabase client and user from parent layout data
-	const supabase = data.supabase;
-	const user = data.user;
+	const supabase = initialData.supabase;
+	const user = initialData.user;
 
 	// Local state
 	let isMobileView = $state(false);

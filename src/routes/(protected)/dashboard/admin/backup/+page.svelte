@@ -22,6 +22,8 @@
 	import type { BackupStats, RestoreResult } from '$lib/server/validation/backup';
 
 	let { data } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// Export state
 	let exportingJson = $state(false);
@@ -40,7 +42,7 @@
 	let restoreResult = $state<RestoreResult | null>(null);
 
 	// Stats from server
-	let stats = $state<BackupStats>(data.stats);
+	let stats = $state<BackupStats>(initialData.stats);
 
 	// Items for conflict strategy select
 	const conflictItems = [

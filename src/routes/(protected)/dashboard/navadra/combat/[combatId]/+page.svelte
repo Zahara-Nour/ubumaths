@@ -34,6 +34,7 @@
 
 	// Player HP calculation - initialize once at combat start
 	const playerMaxHP = $derived(calculatePlayerMaxEndurance(data.gamePlayer.level));
+	// svelte-ignore state_referenced_locally
 	const initialMaxHP = calculatePlayerMaxEndurance(data.gamePlayer.level);
 	let playerCurrentHP = $state(initialMaxHP);
 

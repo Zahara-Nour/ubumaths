@@ -50,10 +50,12 @@
 	}
 
 	let { data }: { data: PageData } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// Local state with Svelte 5 $state
-	let templates = $state<VipCardTemplate[]>(data.templates);
-	let configs = $state<VipCardConfig[]>(data.configs);
+	let templates = $state<VipCardTemplate[]>(initialData.templates);
+	let configs = $state<VipCardConfig[]>(initialData.configs);
 
 	// Optimistic UI state
 	let optimisticToggles = $state<Record<string, boolean>>({});

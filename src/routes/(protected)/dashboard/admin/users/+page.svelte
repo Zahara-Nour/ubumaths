@@ -37,6 +37,8 @@
 	};
 
 	let { data }: { data: PageData } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// Search state
 	let searchTerm = $state(''); // Current text search input
@@ -51,7 +53,7 @@
 	let searchTimeout: NodeJS.Timeout | null = null; // Debounce timer for search
 
 	// Pending count from server
-	let pendingCount = $state(data.pendingCount);
+	let pendingCount = $state(initialData.pendingCount);
 
 	// Test filter state
 	let showTestUsers = $state(false); // Show test users (false = real users only)

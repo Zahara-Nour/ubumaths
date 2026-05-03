@@ -13,8 +13,10 @@
 
 	// Get Supabase client and user from page data
 	let { data } = $props();
-	const supabase = data.supabase;
-	const user = data.user;
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+	const supabase = initialData.supabase;
+	const user = initialData.user;
 
 	// Loading state
 	let isInitialized = $state(false);

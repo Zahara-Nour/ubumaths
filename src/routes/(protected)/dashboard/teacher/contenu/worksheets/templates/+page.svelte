@@ -27,10 +27,12 @@
 	import type { DefaultTemplate } from '$lib/worksheets/default-templates';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// Filter state
-	let searchQuery = $state(data.filters.search || '');
-	let includePublic = $state(data.filters.includePublic);
+	let searchQuery = $state(initialData.filters.search || '');
+	let includePublic = $state(initialData.filters.includePublic);
 
 	// Dialog state
 	let showDefaultsDialog = $state(false);

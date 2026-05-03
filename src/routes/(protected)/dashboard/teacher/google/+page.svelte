@@ -157,9 +157,11 @@
 	// ============================================================================
 
 	let { data }: Props = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// Courses from SSR hydration
-	let courses = $state<Course[]>(data.courses || []);
+	let courses = $state<Course[]>(initialData.courses || []);
 
 	// Expanded course ID (only one course expanded at a time)
 	let expandedCourseId = $state<string | null>(null);

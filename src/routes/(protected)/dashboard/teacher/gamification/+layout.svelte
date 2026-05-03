@@ -6,7 +6,7 @@
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
-	const tabs = [
+	const tabs = $derived([
 		{
 			href: '/dashboard/teacher/gamification/rewards',
 			label: 'Rewards',
@@ -28,7 +28,7 @@
 			label: 'Palotins',
 			icon: Users
 		}
-	];
+	]);
 </script>
 
 <GroupedRouteLayout

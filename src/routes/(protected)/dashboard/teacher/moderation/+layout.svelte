@@ -6,7 +6,7 @@
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
-	const tabs = [
+	const tabs = $derived([
 		{
 			href: '/dashboard/teacher/moderation/avertissements',
 			label: 'Avertissements',
@@ -18,7 +18,7 @@
 			icon: ShieldAlert,
 			badge: data.pendingReportsCount > 0 ? data.pendingReportsCount : undefined
 		}
-	];
+	]);
 </script>
 
 <GroupedRouteLayout

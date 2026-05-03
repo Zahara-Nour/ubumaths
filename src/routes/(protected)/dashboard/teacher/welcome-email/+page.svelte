@@ -21,9 +21,11 @@
 	import { WELCOME_EMAIL_SUBJECT, getWelcomeEmailText } from '$lib/email-templates/welcome';
 
 	let { data }: { data: PageData } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	let isSending = $state(false);
-	let previousEmail = $state(data.previousEmail);
+	let previousEmail = $state(initialData.previousEmail);
 
 	// Format date for display
 	function formatDate(dateString: string): string {

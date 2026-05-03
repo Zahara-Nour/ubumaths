@@ -11,10 +11,12 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// State
 	let showSolution = $state(false);
-	let isCompleted = $state(!!data.completion?.completed_at);
+	let isCompleted = $state(!!initialData.completion?.completed_at);
 	let loading = $state(false);
 
 	// Track view on mount

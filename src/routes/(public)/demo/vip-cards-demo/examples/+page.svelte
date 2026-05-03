@@ -8,6 +8,7 @@
 	let { data }: { data: PageData } = $props();
 
 	// Use a legendary card for all examples (convert to VipCard format)
+	// svelte-ignore state_referenced_locally
 	const enabledCards = data.templates.filter((c) => c.is_enabled).map(templateToVipCard);
 	const exampleCard = enabledCards.find((c) => c.rarity === 'legendary') || enabledCards[0];
 
