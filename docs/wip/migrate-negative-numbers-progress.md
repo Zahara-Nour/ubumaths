@@ -221,9 +221,24 @@ Tests : 883 verts dans `cli/`, suite mathAST inchangée (11658 verts, 1 rouge in
 - 1018/1018 tests `domain/` + `intervals/` verts.
 - Suite mathAST complète : **11659 verts, 0 rouge**.
 
-### Phase 3d-bis — `domainFromNumericBounds` (sites dynamiques BUILTIN_RANGES)
+### Phase 3d-bis — `domainFromNumericBounds` (sites dynamiques BUILTIN_RANGES) ✓
 
-[à venir]
+**Date** : 2026-05-02
+
+#### Modifications
+
+`src/lib/mathAST/domain/builtins.ts` :
+
+- Import `numericNode` depuis `$lib/mathAST/common/numeric`.
+- `rangeEntryToDomain` (lignes 670-727) : 11 occurrences `number(lower)`, `number(upper)`, `number(lower!)` → `numericNode(...)`. Ces sites recevaient des `number` JS pouvant être négatifs (ex. `lower: -Math.PI / 2` dans BUILTIN_RANGES).
+- `domainFromNumericBounds` (lignes 822-843) : 2 occurrences idem.
+
+`numericNode(value)` (déjà existant dans `common/numeric.ts:46`) wrappe automatiquement les valeurs négatives dans `opposite(...)` — forme canonique garantie sans intervention manuelle.
+
+#### Tests
+
+- 757/757 tests `domain/` verts.
+- Suite mathAST complète : 11659 verts, 0 rouge.
 
 ### Phase 3e — Consommateurs `latex-generator.ts` (C1, C2)
 
@@ -285,3 +300,7 @@ Tests : 883 verts dans `cli/`, suite mathAST inchangée (11658 verts, 1 rouge in
 - `src/lib/math/intervals/factory.ts` — import `opposite`, `unitInterval()` migré
 - `src/lib/mathAST/domain/__tests__/factory.test.ts` — imports + 1 site test + assertions `getNumericValue`
 - `src/lib/mathAST/domain/__tests__/algebra.test.ts` — imports + 3 sites test + assertions `getNumericValue`
+
+### Phase 3d-bis (sites dynamiques `rangeEntryToDomain` + `domainFromNumericBounds`)
+
+- `src/lib/mathAST/domain/builtins.ts` — import `numericNode`, 13 occurrences `number(lower|upper)` → `numericNode(...)`

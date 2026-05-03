@@ -20,6 +20,7 @@ import {
 	closedInterval
 } from './factory';
 import { number, opposite } from '$lib/mathAST/factory';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import { getEndpoints, buildInterval } from '$lib/math/intervals';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { tryConvertConditionToInterval } from './algebra';
@@ -677,23 +678,23 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 	// Only lower bound: [a ; +∞[ or ]a ; +∞[
 	if (upper === null) {
 		if (lowerInclusive) {
-			return intervalDomain([greaterThanOrEqualInterval(number(lower!))]);
+			return intervalDomain([greaterThanOrEqualInterval(numericNode(lower!))]);
 		} else {
-			return intervalDomain([greaterThanInterval(number(lower!))]);
+			return intervalDomain([greaterThanInterval(numericNode(lower!))]);
 		}
 	}
 
 	// Only upper bound: ]-∞ ; b] or ]-∞ ; b[
 	if (lower === null) {
 		if (upperInclusive) {
-			return intervalDomain([lessThanOrEqualInterval(number(upper))]);
+			return intervalDomain([lessThanOrEqualInterval(numericNode(upper))]);
 		} else {
 			// lessThan is not exported, use openInterval with -∞
 			return intervalDomain([
 				{
 					kind: 'interval',
 					lower: { value: { type: 'infinity', sign: 'negative' }, type: 'open' },
-					upper: { value: number(upper), type: 'open' }
+					upper: { value: numericNode(upper), type: 'open' }
 				}
 			]);
 		}
@@ -701,16 +702,16 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 
 	// Both bounds
 	if (lowerInclusive && upperInclusive) {
-		return intervalDomain([closedInterval(number(lower), number(upper))]);
+		return intervalDomain([closedInterval(numericNode(lower), numericNode(upper))]);
 	} else if (!lowerInclusive && !upperInclusive) {
-		return intervalDomain([openInterval(number(lower), number(upper))]);
+		return intervalDomain([openInterval(numericNode(lower), numericNode(upper))]);
 	} else if (lowerInclusive && !upperInclusive) {
 		// [a ; b[
 		return intervalDomain([
 			{
 				kind: 'interval',
-				lower: { value: number(lower), type: 'closed' },
-				upper: { value: number(upper), type: 'open' }
+				lower: { value: numericNode(lower), type: 'closed' },
+				upper: { value: numericNode(upper), type: 'open' }
 			}
 		]);
 	} else {
@@ -718,8 +719,8 @@ function rangeEntryToDomain(entry: BuiltinRangeEntry): Domain {
 		return intervalDomain([
 			{
 				kind: 'interval',
-				lower: { value: number(lower), type: 'open' },
-				upper: { value: number(upper), type: 'closed' }
+				lower: { value: numericNode(lower), type: 'open' },
+				upper: { value: numericNode(upper), type: 'closed' }
 			}
 		]);
 	}
@@ -831,11 +832,17 @@ function domainFromNumericBounds(bounds: NumericBounds): Domain {
 
 	const lo =
 		lower !== null
-			? { value: number(lower), type: lowerInclusive ? ('closed' as const) : ('open' as const) }
+			? {
+					value: numericNode(lower),
+					type: lowerInclusive ? ('closed' as const) : ('open' as const)
+				}
 			: { value: { type: 'infinity' as const, sign: 'negative' as const }, type: 'open' as const };
 	const hi =
 		upper !== null
-			? { value: number(upper), type: upperInclusive ? ('closed' as const) : ('open' as const) }
+			? {
+					value: numericNode(upper),
+					type: upperInclusive ? ('closed' as const) : ('open' as const)
+				}
 			: { value: { type: 'infinity' as const, sign: 'positive' as const }, type: 'open' as const };
 
 	return buildInterval(lo, hi) as Domain;
