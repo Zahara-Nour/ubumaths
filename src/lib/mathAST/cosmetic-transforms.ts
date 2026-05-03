@@ -15,6 +15,7 @@
 
 import type { MathNode } from './types';
 import { number, opposite, multiply, divide, add, subtract } from './factory';
+import { numericNode } from './common/numeric';
 import { mapNode, stripUnnecessaryBrackets, removeNullTermsAST } from './transforms';
 import {
 	flattenSumShallow,
@@ -162,12 +163,12 @@ export function reduceFractionsAST(ast: MathNode): MathNode {
 				const newDen = Number(absDen / g);
 
 				if (newDen === 1) {
-					const result = number(String(newNum));
+					const result = numericNode(newNum);
 					return sign < 0 ? opposite(result) : result;
 				}
 
-				const numNode = number(String(newNum));
-				const denNode = number(String(newDen));
+				const numNode = numericNode(newNum);
+				const denNode = numericNode(newDen);
 				const frac = divide(numNode, denNode, 'fraction');
 				return sign < 0 ? opposite(frac) : frac;
 			}
@@ -196,9 +197,9 @@ export function reduceFractionsAST(ast: MathNode): MathNode {
 					newNum =
 						newNumCoef === 1
 							? numVarPart
-							: multiply(number(String(newNumCoef)), numVarPart, 'implicit');
+							: multiply(numericNode(newNumCoef), numVarPart, 'implicit');
 				} else {
-					newNum = number(String(newNumCoef));
+					newNum = numericNode(newNumCoef);
 				}
 
 				// Rebuild denominator: coefficient * variable part
@@ -207,9 +208,9 @@ export function reduceFractionsAST(ast: MathNode): MathNode {
 					newDen =
 						newDenCoef === 1
 							? denVarPart
-							: multiply(number(String(newDenCoef)), denVarPart, 'implicit');
+							: multiply(numericNode(newDenCoef), denVarPart, 'implicit');
 				} else {
-					newDen = number(String(newDenCoef));
+					newDen = numericNode(newDenCoef);
 				}
 
 				// If denominator is 1, return just the numerator
