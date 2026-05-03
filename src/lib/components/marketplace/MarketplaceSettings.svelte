@@ -38,10 +38,14 @@
 		onUpdate?: () => void;
 	} = $props();
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialConfig = config;
+
 	// Form state
-	let isEnabled = $state(config?.is_enabled || false);
-	let maxListingsPerStudent = $state(config?.max_listings_per_student || 5);
-	let maxTradesPerDay = $state(config?.max_trades_per_day || 10);
+	let isEnabled = $state(initialConfig?.is_enabled || false);
+	let maxListingsPerStudent = $state(initialConfig?.max_listings_per_student || 5);
+	let maxTradesPerDay = $state(initialConfig?.max_trades_per_day || 10);
 	let isLoading = $state(false);
 
 	// Validation schema (must match backend validation in src/lib/server/marketplace/validation.ts)
