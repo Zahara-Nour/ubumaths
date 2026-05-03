@@ -69,11 +69,15 @@
 		return '';
 	});
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialAssignment = assignment;
+
 	// State
-	let releaseMode = $state<CorrectionReleaseMode>(assignment.correction_release_mode);
+	let releaseMode = $state<CorrectionReleaseMode>(initialAssignment.correction_release_mode);
 	let scheduledDate = $state<string>(
-		assignment.correction_release_at
-			? new Date(assignment.correction_release_at).toISOString().slice(0, 16)
+		initialAssignment.correction_release_at
+			? new Date(initialAssignment.correction_release_at).toISOString().slice(0, 16)
 			: ''
 	);
 
