@@ -10,7 +10,8 @@ import {
 	getCoefficient
 } from '../linear-combination';
 import { parseLatex } from '../../parser';
-import { isNumber, isFunction, isDivision, isMathConstant, isOpposite } from '../../guards';
+import { isNumber, isFunction, isDivision, isMathConstant } from '../../guards';
+import { getNumericValue } from '../../common/numeric';
 
 // Helper to parse and extract
 function extract(latex: string, variables: string[]) {
@@ -18,13 +19,15 @@ function extract(latex: string, variables: string[]) {
 	return extractLinearCombination(node, variables);
 }
 
-// Helper to get numeric coefficient value
+// Helper to get numeric coefficient value.
+// Uses getNumericValue so it handles both number('3') and opposite(number('3'))
+// (canonical form for negatives — see migrate-negative-numbers-progress.md).
 function getNumericCoeff(latex: string, variable: string, allVars: string[]): number | null {
 	const result = extract(latex, allVars);
 	if (!result.isLinear) return null;
 	const coeff = result.coefficients.get(variable);
-	if (!coeff || !isNumber(coeff)) return null;
-	return parseFloat(coeff.value);
+	if (!coeff) return null;
+	return getNumericValue(coeff);
 }
 
 describe('extractLinearCombination', () => {
@@ -298,16 +301,13 @@ function getAffineNumericCoeff(latex: string, variable: string, allVars: string[
 	if (!result.isAffine) return null;
 	const coeff = result.coefficients.get(variable);
 	if (!coeff) return null;
-	if (isNumber(coeff)) return parseFloat(coeff.value);
-	if (isOpposite(coeff) && isNumber(coeff.operand)) return -parseFloat(coeff.operand.value);
-	return null;
+	return getNumericValue(coeff);
 }
 
 function getAffineConstant(latex: string, allVars: string[]): number | null {
 	const result = extractAffine(latex, allVars);
 	if (!result.isAffine) return null;
-	if (!isNumber(result.constant)) return null;
-	return parseFloat(result.constant.value);
+	return getNumericValue(result.constant);
 }
 
 describe('extractAffineCombination', () => {
