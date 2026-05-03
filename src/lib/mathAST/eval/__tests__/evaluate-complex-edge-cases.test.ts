@@ -132,31 +132,31 @@ describe('Powers of imaginary unit i', () => {
 	describe('negative integer powers', () => {
 		// Complex denominator rationalization is now implemented
 		it('i^(-1) = -i (rationalized)', () => {
-			const expr = power(i(), number('-1'));
+			const expr = power(i(), opposite(number('1')));
 			const result = evaluate(expr);
 			expectLatex(result, '-\\imaginaryI');
 		});
 
 		it('i^(-2) = -1', () => {
-			const expr = power(i(), number('-2'));
+			const expr = power(i(), opposite(number('2')));
 			const result = evaluate(expr);
 			expectLatex(result, '-1');
 		});
 
 		it('i^(-3) = i (rationalized)', () => {
-			const expr = power(i(), number('-3'));
+			const expr = power(i(), opposite(number('3')));
 			const result = evaluate(expr);
 			expectLatex(result, '\\imaginaryI');
 		});
 
 		it('i^(-4) = 1', () => {
-			const expr = power(i(), number('-4'));
+			const expr = power(i(), opposite(number('4')));
 			const result = evaluate(expr);
 			expectLatex(result, '1');
 		});
 
 		it('i^(-5) = -i (rationalized)', () => {
-			const expr = power(i(), number('-5'));
+			const expr = power(i(), opposite(number('5')));
 			const result = evaluate(expr);
 			expectLatex(result, '-\\imaginaryI');
 		});
@@ -219,7 +219,7 @@ describe('Complex division edge cases', () => {
 
 		it('z / (-1) = -z', () => {
 			const z = c(3, 4);
-			const expr = divide(z, number('-1'), 'fraction');
+			const expr = divide(z, opposite(number('1')), 'fraction');
 			const result = evaluate(expr);
 			expectLatex(result, '-3 - 4 \\imaginaryI');
 		});
@@ -387,7 +387,7 @@ describe('Argument function across all quadrants', () => {
 		});
 
 		it('arg(-1) stays as function', () => {
-			const expr = func('arg', [number('-1')]);
+			const expr = func('arg', [opposite(number('1'))]);
 			const result = evaluate(expr);
 			expectFunction(result, 'arg');
 		});

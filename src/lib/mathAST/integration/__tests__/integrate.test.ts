@@ -8,7 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { integrate, integrateDefinite } from '../integrate';
-import { number, variable, add, multiply, power, divide, exp } from '../../factory';
+import { number, variable, add, multiply, power, divide, exp, opposite } from '../../factory';
 import { parseLatex } from '../../parser';
 
 // =============================================================================
@@ -139,7 +139,7 @@ describe('integrate() - linearity: constant multiple', () => {
 
 	it('should handle negative constants', () => {
 		// ∫ -3x dx = -3x²/2
-		const expr = multiply(number('-3'), variable('x'), 'implicit');
+		const expr = multiply(opposite(number('3')), variable('x'), 'implicit');
 		const result = integrate(expr);
 
 		expect(result.status).toBe('exact');
@@ -350,7 +350,9 @@ describe('integrateDefinite() - numeric fallback', () => {
 	it('should use numeric integration when symbolic fails', () => {
 		// Create an expression that symbolic integration cannot handle
 		// e^(-x²) is a Gaussian integral with no elementary antiderivative
-		const expr = exp(multiply(number('-1'), power(variable('x'), number('2')), 'implicit'));
+		const expr = exp(
+			multiply(opposite(number('1')), power(variable('x'), number('2')), 'implicit')
+		);
 		const result = integrateDefinite(expr, number('0'), number('1'));
 
 		expect(result.status).toBe('approximate');
@@ -362,7 +364,9 @@ describe('integrateDefinite() - numeric fallback', () => {
 	});
 
 	it('should respect allowNumeric: false option', () => {
-		const expr = exp(multiply(number('-1'), power(variable('x'), number('2')), 'implicit'));
+		const expr = exp(
+			multiply(opposite(number('1')), power(variable('x'), number('2')), 'implicit')
+		);
 		const result = integrateDefinite(expr, number('0'), number('1'), { allowNumeric: false });
 
 		expect(result.status).toBe('unsupported');
@@ -372,7 +376,9 @@ describe('integrateDefinite() - numeric fallback', () => {
 
 	it('should not use numeric fallback for symbolic bounds', () => {
 		// Even if symbolic integration fails, can't use numeric with symbolic bounds
-		const expr = exp(multiply(number('-1'), power(variable('x'), number('2')), 'implicit'));
+		const expr = exp(
+			multiply(opposite(number('1')), power(variable('x'), number('2')), 'implicit')
+		);
 		const result = integrateDefinite(expr, number('0'), variable('a'));
 
 		expect(result.status).toBe('unsupported');
@@ -380,7 +386,9 @@ describe('integrateDefinite() - numeric fallback', () => {
 	});
 
 	it('should include numeric error estimate in steps', () => {
-		const expr = exp(multiply(number('-1'), power(variable('x'), number('2')), 'implicit'));
+		const expr = exp(
+			multiply(opposite(number('1')), power(variable('x'), number('2')), 'implicit')
+		);
 		const result = integrateDefinite(expr, number('0'), number('1'), { verbosity: 'detailed' });
 
 		expect(result.status).toBe('approximate');

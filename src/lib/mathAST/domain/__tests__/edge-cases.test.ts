@@ -39,7 +39,7 @@ import {
 	excludedPoint,
 	bound
 } from '../factory';
-import { number } from '$lib/mathAST/factory';
+import { number, opposite } from '$lib/mathAST/factory';
 import { formatDomainInterval, formatDomainCondition, formatDomainFull } from '../format';
 import { computeDomain } from '../compute';
 import { isInDomain, getDomainViolations } from '../validate';
@@ -804,19 +804,19 @@ describe('Format edge cases', () => {
 		});
 
 		it('formats negative bounds correctly', () => {
-			const d = intervalDomain([closedInterval(number(-5), number(-1))]);
+			const d = intervalDomain([closedInterval(opposite(number('5')), opposite(number('1')))]);
 			expect(formatDomainInterval(d)).toBe('[-5 ; -1]');
 		});
 
 		it('formats condition with negative bound', () => {
-			const d = intervalDomain([greaterThanOrEqualInterval(number(-10))]);
+			const d = intervalDomain([greaterThanOrEqualInterval(opposite(number('10')))]);
 			expect(formatDomainCondition(d)).toBe('x ≥ -10');
 		});
 	});
 
 	describe('condition format variations', () => {
 		it('formats single interval as double inequality', () => {
-			const d = intervalDomain([closedInterval(number(-1), number(1))]);
+			const d = intervalDomain([closedInterval(opposite(number('1')), number(1))]);
 			expect(formatDomainCondition(d)).toBe('-1 ≤ x ≤ 1');
 		});
 
@@ -835,7 +835,7 @@ describe('Format edge cases', () => {
 	describe('formatDomainFull edge cases', () => {
 		it('returns both formats for complex domain', () => {
 			const d = intervalDomain([
-				lessThanOrEqualInterval(number(-2)),
+				lessThanOrEqualInterval(opposite(number('2'))),
 				greaterThanOrEqualInterval(number(2))
 			]);
 			const result = formatDomainFull(d);

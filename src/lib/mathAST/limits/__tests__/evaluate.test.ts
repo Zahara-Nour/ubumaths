@@ -20,7 +20,8 @@ import {
 	subtract,
 	power,
 	limit,
-	positiveInfinity
+	positiveInfinity,
+	opposite
 } from '../../factory';
 import { isNumber, isInfinity } from '../../guards';
 
@@ -276,7 +277,7 @@ describe('evaluateLimit', () => {
 		it('returns pedagogical error for sqrt(x) at x=-1', () => {
 			// sqrt(x) is not defined for x < 0 (neither side accessible)
 			const expr = func('sqrt', [variable('x')]);
-			const result = evaluateLimit(expr, 'x', number('-1'), 'both');
+			const result = evaluateLimit(expr, 'x', opposite(number('1')), 'both');
 			expect(result.status).toBe('does-not-exist');
 			expect(result.error).toContain('definie');
 		});
@@ -284,7 +285,7 @@ describe('evaluateLimit', () => {
 		it('returns pedagogical error for ln(x) at x=-1', () => {
 			// ln(x) is not defined for x <= 0 (neither side accessible)
 			const expr = func('ln', [variable('x')]);
-			const result = evaluateLimit(expr, 'x', number('-1'), 'both');
+			const result = evaluateLimit(expr, 'x', opposite(number('1')), 'both');
 			expect(result.status).toBe('does-not-exist');
 			expect(result.error).toContain('definie');
 		});

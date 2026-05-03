@@ -26,7 +26,7 @@ import {
 	intervalSet
 } from '../factory';
 import { endpointToNumber } from '../endpoint';
-import { number } from '$lib/mathAST/factory';
+import { number, opposite } from '$lib/mathAST/factory';
 
 describe('isEmpty', () => {
 	it('empty set is empty', () => {
@@ -323,7 +323,7 @@ describe('containsValue edge cases', () => {
 	});
 
 	it('handles negative values', () => {
-		const domain = intervalSet([closedInterval(number(-10), number(-5))]);
+		const domain = intervalSet([closedInterval(opposite(number('10')), opposite(number('5')))]);
 		expect(containsValue(domain, -7)).toBe(true);
 		expect(containsValue(domain, -11)).toBe(false);
 		expect(containsValue(domain, -4)).toBe(false);
@@ -416,7 +416,7 @@ describe('intersect edge cases', () => {
 
 	it('intersect split intervals preserves gap', () => {
 		const a = intervalSet([lessThanInterval(number(0)), greaterThanInterval(number(0))]);
-		const b = intervalSet([closedInterval(number(-1), number(1))]);
+		const b = intervalSet([closedInterval(opposite(number('1')), number(1))]);
 		const result = intersect(a, b);
 		expect(result.kind).toBe('interval_set');
 		if (result.kind === 'interval_set') {
@@ -524,7 +524,7 @@ describe('difference edge cases', () => {
 
 	it('partial overlap from left', () => {
 		const a = intervalSet([closedInterval(number(0), number(5))]);
-		const b = intervalSet([closedInterval(number(-2), number(3))]);
+		const b = intervalSet([closedInterval(opposite(number('2')), number(3))]);
 		const result = difference(a, b);
 		expect(result.kind).toBe('interval_set');
 		if (result.kind === 'interval_set') {
@@ -548,7 +548,7 @@ describe('difference edge cases', () => {
 
 	it('difference with split intervals around 0', () => {
 		const a = intervalSet([lessThanInterval(number(0)), greaterThanInterval(number(0))]);
-		const b = intervalSet([closedInterval(number(-1), number(1))]);
+		const b = intervalSet([closedInterval(opposite(number('1')), number(1))]);
 		// (]-inf,0[ ∪ ]0,+inf[) \ [-1, 1] = ]-inf, -1[ ∪ ]1, +inf[
 		const result = difference(a, b);
 		expect(result.kind).toBe('interval_set');

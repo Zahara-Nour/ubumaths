@@ -4,7 +4,16 @@
 
 import { describe, it, expect } from 'vitest';
 import { evaluateLimit } from '../evaluate';
-import { add, subtract, multiply, divide, variable, number, positiveInfinity } from '../../factory';
+import {
+	add,
+	subtract,
+	multiply,
+	divide,
+	variable,
+	number,
+	positiveInfinity,
+	opposite
+} from '../../factory';
 import { isInfinity, isNumber } from '../../guards';
 
 /** Helper to check if status indicates a successful limit computation */
@@ -72,7 +81,7 @@ describe('Infinity Algebra Integration', () => {
 		});
 
 		it('-3x at x→+∞ is -∞', () => {
-			const expr = multiply(number('-3'), variable('x'));
+			const expr = multiply(opposite(number('3')), variable('x'));
 			const result = evaluateLimit(expr, 'x', positiveInfinity());
 			expectInfinity(result, 'negative');
 		});
@@ -110,7 +119,7 @@ describe('Infinity Algebra Integration', () => {
 		});
 
 		it('-5/x at x→0⁺ is -∞', () => {
-			const expr = divide(number('-5'), variable('x'), 'fraction');
+			const expr = divide(opposite(number('5')), variable('x'), 'fraction');
 			const result = evaluateLimit(expr, 'x', number('0'), 'right');
 			expectInfinity(result, 'negative');
 		});

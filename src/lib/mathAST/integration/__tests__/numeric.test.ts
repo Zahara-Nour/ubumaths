@@ -6,7 +6,18 @@
 
 import { describe, it, expect } from 'vitest';
 import { simpson, adaptiveSimpson, numericIntegrate } from '../numeric';
-import { variable, number, power, multiply, add, divide, sin, exp, sqrt } from '../../factory';
+import {
+	variable,
+	number,
+	power,
+	multiply,
+	add,
+	divide,
+	sin,
+	exp,
+	sqrt,
+	opposite
+} from '../../factory';
 
 describe('Numeric Integration', () => {
 	// =============================================================================
@@ -330,7 +341,9 @@ describe('Numeric Integration', () => {
 
 		it('should approximate transcendental integrals accurately', () => {
 			// ∫₀¹ e^(-x²) dx (Gaussian, no closed form, but can compute numerically)
-			const expr = exp(multiply(number('-1'), power(variable('x'), number('2')), 'implicit'));
+			const expr = exp(
+				multiply(opposite(number('1')), power(variable('x'), number('2')), 'implicit')
+			);
 			const result = numericIntegrate(expr, 'x', 0, 1, { tolerance: 1e-6 });
 
 			// Reference value ≈ 0.746824

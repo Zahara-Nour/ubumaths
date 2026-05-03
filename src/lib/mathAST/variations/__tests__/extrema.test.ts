@@ -26,7 +26,7 @@ import {
 import type { CriticalPointInfo, MonotonicInterval, ExtremumInfo } from '../types';
 import type { Domain, IntervalSet } from '../../domain/types';
 import { parseLatex } from '../../parser';
-import { number } from '../../factory';
+import { number, opposite } from '../../factory';
 import {
 	interval,
 	openEndpoint,
@@ -250,7 +250,7 @@ describe('findAdjacentIntervals', () => {
 		];
 
 		// At x = -1
-		const xMinus1 = number('-1');
+		const xMinus1 = opposite(number('1'));
 		const resultMinus1 = findAdjacentIntervals(xMinus1, intervals);
 		expect(resultMinus1.before?.monotonicity).toBe('increasing');
 		expect(resultMinus1.after?.monotonicity).toBe('decreasing');
@@ -409,7 +409,7 @@ describe('classifyGlobalExtrema', () => {
 			const expr = parse('x^3 - 3x');
 			const localExtrema: ExtremumInfo[] = [
 				{
-					x: number('-1'),
+					x: opposite(number('1')),
 					xApproximate: -1,
 					y: number('2'),
 					yApproximate: 2,
@@ -419,7 +419,7 @@ describe('classifyGlobalExtrema', () => {
 				{
 					x: number('1'),
 					xApproximate: 1,
-					y: number('-2'),
+					y: opposite(number('2')),
 					yApproximate: -2,
 					type: 'local_minimum',
 					exact: true

@@ -79,7 +79,7 @@ describe('Integration Helper Functions', () => {
 		it('should return false for non-zero numbers', () => {
 			expect(isZero(number('1'))).toBe(false);
 			expect(isZero(number('0.5'))).toBe(false);
-			expect(isZero(number('-1'))).toBe(false);
+			expect(isZero(opposite(number('1')))).toBe(false);
 		});
 
 		it('should return false for non-numeric nodes', () => {
@@ -97,7 +97,7 @@ describe('Integration Helper Functions', () => {
 		it('should return false for non-one numbers', () => {
 			expect(isOne(number('0'))).toBe(false);
 			expect(isOne(number('2'))).toBe(false);
-			expect(isOne(number('-1'))).toBe(false);
+			expect(isOne(opposite(number('1')))).toBe(false);
 		});
 
 		it('should return false for non-numeric nodes', () => {

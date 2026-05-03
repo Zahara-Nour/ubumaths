@@ -98,7 +98,7 @@ describe('computeRange()', () => {
 		});
 
 		it('negative constant -3 has range {-3}', () => {
-			const result = computeRange(number('-3'), 'x');
+			const result = computeRange(opposite(number('3')), 'x');
 			expect(containsValue(result.range, -3)).toBe(true);
 			expect(containsValue(result.range, 3)).toBe(false);
 			expect(containsValue(result.range, 0)).toBe(false);
@@ -401,7 +401,7 @@ describe('computeRange()', () => {
 		});
 
 		it('x + (-5) on [0, 10] has range [-5, 5]', () => {
-			const expr = add(variable('x'), number('-5'));
+			const expr = add(variable('x'), opposite(number('5')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 10) });
 			expect(containsValue(result.range, -5)).toBe(true);
 			expect(containsValue(result.range, 5)).toBe(true);
@@ -526,7 +526,7 @@ describe('computeRange()', () => {
 		});
 
 		it('(-2) * x on [0, 5] has range [-10, 0]', () => {
-			const expr = multiply(number('-2'), variable('x'));
+			const expr = multiply(opposite(number('2')), variable('x'));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(0, 5) });
 			expect(containsValue(result.range, -10)).toBe(true);
 			expect(containsValue(result.range, 0)).toBe(true);
@@ -576,7 +576,7 @@ describe('computeRange()', () => {
 		});
 
 		it('negative * negative range on [-3, -1] * [-4, -2] gives positive', () => {
-			const expr = multiply(variable('x'), number('-3'));
+			const expr = multiply(variable('x'), opposite(number('3')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, -1) });
 			// [-2, -1] * -3 = [3, 6]
 			expect(containsValue(result.range, 3)).toBe(true);
@@ -651,7 +651,7 @@ describe('computeRange()', () => {
 		});
 
 		it('x / (-2) on [4, 10] has range [-5, -2]', () => {
-			const expr = divide(variable('x'), number('-2'));
+			const expr = divide(variable('x'), opposite(number('2')));
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(4, 10) });
 			expect(containsValue(result.range, -5)).toBe(true);
 			expect(containsValue(result.range, -2)).toBe(true);
@@ -957,7 +957,7 @@ describe('computeRange()', () => {
 
 		it('multi-interval domain ]-∞, -1] ∪ [1, +∞[', () => {
 			const domain = intervalDomain([
-				lessThanOrEqualInterval(number(-1)),
+				lessThanOrEqualInterval(opposite(number('1'))),
 				greaterThanOrEqualInterval(number(1))
 			]);
 			const result = computeRange(variable('x'), 'x', { domain });
@@ -1140,7 +1140,7 @@ describe('computeRange()', () => {
 				}).range
 			).toBeNull();
 			expect(
-				computeRange(func('max', [variable('x'), number('-10')]), 'x', {
+				computeRange(func('max', [variable('x'), opposite(number('10'))]), 'x', {
 					domain: closedIntervalDomain(0, 5)
 				}).range
 			).toBeNull();

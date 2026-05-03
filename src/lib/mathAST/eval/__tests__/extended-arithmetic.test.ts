@@ -90,6 +90,8 @@ describe('Extended Addition', () => {
 			expectNumber(addExtended(number('2'), number('3')), 5);
 		});
 
+		// Phase 3f: legacy form retained — addExtended doesn't recognize
+		// opposite(number(...)) yet. Migration deferred to Phase 4.
 		it('-1 + 4 = 3', () => {
 			expectNumber(addExtended(number('-1'), number('4')), 3);
 		});
@@ -188,6 +190,7 @@ describe('Extended Multiplication', () => {
 			expectNumber(multiplyExtended(number('2'), number('3')), 6);
 		});
 
+		// Phase 3f: legacy form retained — see comment above on multiplyExtended.
 		it('-2 × 3 = -6', () => {
 			expectNumber(multiplyExtended(number('-2'), number('3')), -6);
 		});
