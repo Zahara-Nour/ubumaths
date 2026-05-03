@@ -79,7 +79,7 @@
 		}
 	};
 
-	const currentSize = sizeClasses[size];
+	const currentSize = $derived(sizeClasses[size]);
 </script>
 
 <div

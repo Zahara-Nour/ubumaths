@@ -32,6 +32,7 @@
 	// State
 	// ==========================================================================
 
+	// svelte-ignore state_referenced_locally
 	let fileName = $state(defaultName);
 	let inputError = $state<string | null>(null);
 

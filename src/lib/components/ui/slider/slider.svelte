@@ -11,6 +11,7 @@
 	}: WithoutChildrenOrChild<SliderPrimitive.RootProps> = $props();
 
 	// Type assertion to work around Bits UI discriminated union limitation
+	// svelte-ignore state_referenced_locally
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const safeRestProps = restProps as any;
 </script>

@@ -195,6 +195,8 @@
 			const effectType = StateEffect.define<number[]>();
 			const errorLineMark = Decoration.line({ class: 'cm-errorLine' });
 
+			// eslint-disable-next-line svelte/no-unused-svelte-ignore
+			// svelte-ignore perf_avoid_nested_class
 			class ErrorMarker extends GutterMarker {
 				toDOM() {
 					const marker = document.createElement('span');

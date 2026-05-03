@@ -57,6 +57,7 @@
 	}: Props = $props();
 
 	// Local state for gidouilles input
+	// svelte-ignore state_referenced_locally
 	let gidouillesInput = $state(offer.gidouilles.toString());
 
 	// Sync gidouilles input with offer

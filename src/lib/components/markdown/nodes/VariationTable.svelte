@@ -244,7 +244,7 @@
 </script>
 
 <div class="variation-table {className}">
-	<table class="vt-grid" role="table" aria-label="Tableau de variations de {node.variable}">
+	<table class="vt-grid" aria-label="Tableau de variations de {node.variable}">
 		<caption class="sr-only">Tableau de variations de la fonction {node.variable}</caption>
 		<!-- Header row with variable and domain points -->
 		<thead class="vt-header">

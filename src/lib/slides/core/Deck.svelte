@@ -310,6 +310,7 @@
 	const canGoDown = $derived(store.v < store.verticalCount - 1);
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
 	class="deck-wrapper"
 	class:fullscreen={isFullscreen}

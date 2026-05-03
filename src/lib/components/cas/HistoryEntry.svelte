@@ -12,6 +12,7 @@
 	let { entry, variant }: Props = $props();
 
 	// Local toggle state - initialize from result's showDecimalInitially
+	// svelte-ignore state_referenced_locally
 	let showDecimal = $state(entry.result.showDecimalInitially ?? false);
 
 	// Determine if entry is an error

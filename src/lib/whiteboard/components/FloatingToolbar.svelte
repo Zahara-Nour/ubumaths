@@ -359,6 +359,8 @@
 	<!-- Drag handle -->
 	<div
 		class="drag-handle flex cursor-grab items-center justify-center rounded p-1 transition-colors hover:bg-accent active:cursor-grabbing"
+		role="button"
+		tabindex="-1"
 		onpointerdown={handleDragStart}
 		ondblclick={handleDragDoubleClick}
 		title="Glisser pour deplacer (double-clic pour reinitialiser)"

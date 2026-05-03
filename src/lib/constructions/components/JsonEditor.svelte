@@ -225,7 +225,10 @@
 			// Error line decoration (red background)
 			const errorLineMark = Decoration.line({ class: 'cm-errorLine' });
 
-			// Error gutter marker (red dot)
+			// Error gutter marker (red dot) — must be declared here because it
+			// extends a dynamically-imported class.
+			// eslint-disable-next-line svelte/no-unused-svelte-ignore
+			// svelte-ignore perf_avoid_nested_class
 			class ErrorMarker extends GutterMarker {
 				toDOM() {
 					const marker = document.createElement('span');

@@ -245,6 +245,7 @@
 	{@const lineEndX = extents.lineEndX}
 
 	<div class="number-line-input" class:disabled>
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 		<svg
 			bind:this={svgEl}
 			viewBox="0 0 {SVG_WIDTH} {SVG_HEIGHT}"

@@ -87,6 +87,7 @@
 
 	let { courseworkItems, onClose, onSuccess }: Props = $props();
 
+	// svelte-ignore state_referenced_locally
 	let courseworkSelections = $state<CourseworkSelection[]>(
 		courseworkItems.map((c) => ({ ...c, selected: true }))
 	);

@@ -74,6 +74,7 @@
 	// ==========================================================================
 
 	/** Local content for editing */
+	// svelte-ignore state_referenced_locally
 	let editContent = $state(element.labelMarkdown ?? '');
 
 	/** Reference to textarea for focus */

@@ -56,6 +56,7 @@
 	} = $props();
 
 	// State
+	// svelte-ignore state_referenced_locally
 	let activities = $state<Activity[]>(initialActivities);
 	let isLoading = $state(false);
 	let autoRefresh = $state(false);

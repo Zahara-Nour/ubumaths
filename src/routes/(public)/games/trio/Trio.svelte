@@ -61,6 +61,7 @@
 	let op = $state('+'); // User's selected operation
 	let win = $state(false); // Whether player has won
 	let selecteds: Position[] = $state([]); // Currently selected cells (max 3)
+	// svelte-ignore state_referenced_locally
 	let gridSize = $state(size); // Current grid dimensions
 
 	/**

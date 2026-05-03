@@ -39,6 +39,7 @@
 	}
 
 	// Use custom or default isActive function
+	// svelte-ignore state_referenced_locally
 	const checkActive = customIsActive ?? defaultIsActive;
 
 	// Handle navigation - close drawer after click
