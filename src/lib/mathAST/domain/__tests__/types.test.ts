@@ -17,7 +17,7 @@ import type {
 	Domain
 } from '../types';
 import { bound } from '../factory';
-import { number } from '$lib/mathAST/factory';
+import { number, opposite } from '$lib/mathAST/factory';
 import { isNumber, isPositiveInfinity, isNegativeInfinity } from '$lib/mathAST/guards';
 
 describe('Domain Types', () => {
@@ -64,7 +64,7 @@ describe('Domain Types', () => {
 		it('can represent a closed interval [-1, 1]', () => {
 			const interval: Interval = {
 				kind: 'interval',
-				lower: { value: number(-1), type: 'closed' },
+				lower: { value: opposite(number('1')), type: 'closed' },
 				upper: { value: number(1), type: 'closed' }
 			};
 			expect(interval.lower.type).toBe('closed');

@@ -20,7 +20,7 @@ import {
 	openInterval,
 	universalDomain
 } from '../../domain/factory';
-import { number } from '$lib/mathAST/factory';
+import { number, opposite } from '$lib/mathAST/factory';
 import type { Domain } from '../../domain/types';
 import { toLatex } from '../../latex-generator';
 
@@ -139,7 +139,7 @@ describe('Domain filtering in solve()', () => {
 
 			it('should keep both solutions of x² - 4 = 0 on [-3, 3]', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([closedInterval(number(-3), number(3))])
+					domain: intervalDomain([closedInterval(opposite(number('3')), number(3))])
 				});
 
 				expect(result.status).toBe('multiple');
@@ -188,7 +188,7 @@ describe('Domain filtering in solve()', () => {
 
 			it('should KEEP solution x = -2 on ]-∞, -2] (closed includes boundary)', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([lessThanOrEqualInterval(number(-2))])
+					domain: intervalDomain([lessThanOrEqualInterval(opposite(number('2')))])
 				});
 
 				expect(result.solutions).toHaveLength(1);
@@ -197,7 +197,7 @@ describe('Domain filtering in solve()', () => {
 
 			it('should EXCLUDE solution x = -2 on ]-∞, -2[ (open excludes boundary)', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([lessThanInterval(number(-2))])
+					domain: intervalDomain([lessThanInterval(opposite(number('2')))])
 				});
 
 				expect(result.solutions).toHaveLength(0);
@@ -263,7 +263,7 @@ describe('Domain filtering in solve()', () => {
 				// ln(x) = 0 → x = 1, computed domain ]0, +∞[
 				// User provides ]-10, +∞[ → superset → no effect
 				const result = solve(parseEquation('\\ln(x) = 0'), {
-					domain: intervalDomain([greaterThanInterval(number(-10))])
+					domain: intervalDomain([greaterThanInterval(opposite(number('10')))])
 				});
 
 				expect(result.status).toBe('unique');
@@ -308,7 +308,7 @@ describe('Domain filtering in solve()', () => {
 
 			it('should find nothing in interval between solutions: x² - 4 = 0 on [-1, 1]', () => {
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([closedInterval(number(-1), number(1))])
+					domain: intervalDomain([closedInterval(opposite(number('1')), number(1))])
 				});
 
 				expect(result.status).toBe('no-solution');
@@ -323,7 +323,10 @@ describe('Domain filtering in solve()', () => {
 			it('should filter on ]-∞, -1[ ∪ ]1, +∞[ keeping both solutions of x² - 4 = 0', () => {
 				// Solutions ±2 are both in the union
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([lessThanInterval(number(-1)), greaterThanInterval(number(1))])
+					domain: intervalDomain([
+						lessThanInterval(opposite(number('1'))),
+						greaterThanInterval(number(1))
+					])
 				});
 
 				expect(result.solutions).toHaveLength(2);
@@ -332,7 +335,10 @@ describe('Domain filtering in solve()', () => {
 			it('should filter on ]-∞, -3[ ∪ ]3, +∞[ excluding both solutions of x² - 4 = 0', () => {
 				// Solutions ±2 are NOT in the union
 				const result = solve(parseEquation('x^2 - 4 = 0'), {
-					domain: intervalDomain([lessThanInterval(number(-3)), greaterThanInterval(number(3))])
+					domain: intervalDomain([
+						lessThanInterval(opposite(number('3'))),
+						greaterThanInterval(number(3))
+					])
 				});
 
 				expect(result.status).toBe('no-solution');

@@ -23,7 +23,7 @@ import {
 	resultToFiniteNode
 } from '../exact-evaluation';
 import { parseLatex } from '../../parser';
-import { number, positiveInfinity } from '../../factory';
+import { number, positiveInfinity, opposite } from '../../factory';
 import { isNumber, isSignedZero, isInfinity as isInfinityNode } from '../../guards';
 
 // =============================================================================
@@ -383,7 +383,7 @@ describe('result predicates', () => {
 describe('Edge Cases: Negative Numbers', () => {
 	it('evaluates x+2 at x=-3 to get -1', () => {
 		const expression = expr('x+2');
-		const result = evaluateLimitExact(expression, 'x', number('-3'), 'both');
+		const result = evaluateLimitExact(expression, 'x', opposite(number('3')), 'both');
 
 		expect(result.type).toBe('normal');
 		expect(resultToNumber(result)).toBe(-1);
@@ -397,6 +397,10 @@ describe('Edge Cases: Negative Numbers', () => {
 		expect(resultToNumber(result)).toBe(-5);
 	});
 
+	// Phase 3f: keep legacy form here — substituteApproachFactors uses
+	// `isNumber(approach)` to extract the numeric value, which doesn't
+	// recognize `opposite(number('3'))`. Migration deferred until Phase 4
+	// adapts the production code (see migrate-negative-numbers-progress.md).
 	it('evaluates 1/(x+3) at x→-3⁺ to get +∞', () => {
 		const expression = expr('\\frac{1}{x+3}');
 		const result = evaluateLimitExact(expression, 'x', number('-3'), 'right');
@@ -660,6 +664,7 @@ describe('Edge Cases: Different Variable Names', () => {
 		expect(getZeroSign(result)).toBe('positive');
 	});
 
+	// Phase 3f: legacy form retained — see comment above on substituteApproachFactors.
 	it('evaluates 1/(y+1) at y→-1⁺ to get +∞', () => {
 		const expression = parseLatex('\\frac{1}{y+1}');
 		const result = evaluateLimitExact(expression, 'y', number('-1'), 'right');

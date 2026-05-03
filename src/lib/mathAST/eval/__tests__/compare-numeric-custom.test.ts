@@ -15,7 +15,7 @@
 import { describe, it, expect } from 'vitest';
 import { compareNumericNodes } from '../compare-numeric';
 import { parseCustom } from '../../parser/custom';
-import { number, variable, positiveInfinity, negativeInfinity } from '../../factory';
+import { number, variable, positiveInfinity, negativeInfinity, opposite } from '../../factory';
 
 // =============================================================================
 // Helper Functions
@@ -168,12 +168,12 @@ describe('compareNumericNodes (custom syntax)', () => {
 	describe('infinity', () => {
 		it('should return 1 when +infinity > finite number', () => {
 			expect(compareNumericNodes(positiveInfinity(), number('1000000'))).toBe(1);
-			expect(compareNumericNodes(positiveInfinity(), number('-1000000'))).toBe(1);
+			expect(compareNumericNodes(positiveInfinity(), opposite(number('1000000')))).toBe(1);
 		});
 
 		it('should return -1 when -infinity < finite number', () => {
 			expect(compareNumericNodes(negativeInfinity(), number('1000000'))).toBe(-1);
-			expect(compareNumericNodes(negativeInfinity(), number('-1000000'))).toBe(-1);
+			expect(compareNumericNodes(negativeInfinity(), opposite(number('1000000')))).toBe(-1);
 		});
 
 		it('should return 0 when comparing same infinities', () => {

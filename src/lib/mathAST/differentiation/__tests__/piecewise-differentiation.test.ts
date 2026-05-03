@@ -66,7 +66,7 @@ describe('differentiate — PiecewiseNode', () => {
 
 	it('differentiates sign(x) (three constant branches) into all-zero piecewise', () => {
 		const sign = piecewise([
-			piecewisePiece(relation('<', x, zero), number('-1')),
+			piecewisePiece(relation('<', x, zero), opposite(number('1'))),
 			piecewisePiece(relation('=', x, zero), zero),
 			piecewisePiece(relation('>', x, zero), one)
 		]);

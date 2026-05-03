@@ -168,7 +168,7 @@ describe('Domain Boundary Cases', () => {
 
 		it('sqrt(4-x²) at x=-2 right-sided exists', () => {
 			const expr = func('sqrt', [subtract(number('4'), xPow('2'))]);
-			const result = evaluateLimit(expr, 'x', number('-2'), 'right');
+			const result = evaluateLimit(expr, 'x', opposite(number('2')), 'right');
 			expectNumber(result, 0);
 		});
 
@@ -212,7 +212,7 @@ describe('Domain Boundary Cases', () => {
 
 		it('ln(x) at x=-1 both-sided does not exist', () => {
 			const expr = func('ln', [variable('x')]);
-			const result = evaluateLimit(expr, 'x', number('-1'));
+			const result = evaluateLimit(expr, 'x', opposite(number('1')));
 			expect(result.status).toBe('does-not-exist');
 		});
 	});
@@ -958,7 +958,7 @@ describe('Error and Edge Cases', () => {
 	describe('domain errors with pedagogical messages', () => {
 		it('returns French error message for ln(x) at x=-1', () => {
 			const expr = func('ln', [variable('x')]);
-			const result = evaluateLimit(expr, 'x', number('-1'));
+			const result = evaluateLimit(expr, 'x', opposite(number('1')));
 			expect(result.status).toBe('does-not-exist');
 			expect(result.error).toBeDefined();
 			expect(result.error).toContain('definie');
@@ -966,7 +966,7 @@ describe('Error and Edge Cases', () => {
 
 		it('returns French error message for sqrt(x) at x=-4', () => {
 			const expr = func('sqrt', [variable('x')]);
-			const result = evaluateLimit(expr, 'x', number('-4'));
+			const result = evaluateLimit(expr, 'x', opposite(number('4')));
 			expect(result.status).toBe('does-not-exist');
 			expect(result.error).toBeDefined();
 		});
@@ -1033,7 +1033,7 @@ describe('Negative Number Edge Cases', () => {
 	});
 
 	it('(-1)^x is not evaluated at non-integer x approaching 0', () => {
-		const expr = power(number('-1'), variable('x'));
+		const expr = power(opposite(number('1')), variable('x'));
 		const result = evaluateLimit(expr, 'x', number('0'));
 		// (-1)^0 = 1
 		expectNumber(result, 1);
@@ -1203,22 +1203,25 @@ describe('Rational Functions with Higher Degrees', () => {
 describe('Negative Approach Values', () => {
 	it('1/(x+3) at x=-3 right-sided is +∞', () => {
 		const expr = divide(number('1'), xPlus('3'), 'fraction');
-		const result = evaluateLimit(expr, 'x', number('-3'), 'right');
+		const result = evaluateLimit(expr, 'x', opposite(number('3')), 'right');
 		expectPosInfinity(result);
 	});
 
 	it('1/(x+3) at x=-3 left-sided is -∞', () => {
 		const expr = divide(number('1'), xPlus('3'), 'fraction');
-		const result = evaluateLimit(expr, 'x', number('-3'), 'left');
+		const result = evaluateLimit(expr, 'x', opposite(number('3')), 'left');
 		expectNegInfinity(result);
 	});
 
 	it('sqrt(x+4) at x=-4 right-sided equals 0', () => {
 		const expr = func('sqrt', [xPlus('4')]);
-		const result = evaluateLimit(expr, 'x', number('-4'), 'right');
+		const result = evaluateLimit(expr, 'x', opposite(number('4')), 'right');
 		expectNumber(result, 0);
 	});
 
+	// Phase 3f: legacy form retained — the limit pipeline passes the approach
+	// to substituteApproachFactors which uses isNumber(approach) for value
+	// extraction; canonical form rejected. Migration deferred to Phase 4.
 	it('ln(x+5) at x=-5 right-sided is -∞', () => {
 		const expr = func('ln', [xPlus('5')]);
 		const result = evaluateLimit(expr, 'x', number('-5'), 'right');
@@ -1227,13 +1230,13 @@ describe('Negative Approach Values', () => {
 
 	it('(x+2)² at x=-2 equals 0', () => {
 		const expr = power(xPlus('2'), number('2'));
-		const result = evaluateLimit(expr, 'x', number('-2'));
+		const result = evaluateLimit(expr, 'x', opposite(number('2')));
 		expectNumber(result, 0);
 	});
 
 	it('(x+1)³ at x=-1 equals 0', () => {
 		const expr = power(xPlus('1'), number('3'));
-		const result = evaluateLimit(expr, 'x', number('-1'));
+		const result = evaluateLimit(expr, 'x', opposite(number('1')));
 		expectNumber(result, 0);
 	});
 });
@@ -1472,7 +1475,7 @@ describe('Vertical Asymptotes with Different Coefficients', () => {
 	});
 
 	it('-3/(x-1) at x=1 right-sided is -∞', () => {
-		const expr = divide(number('-3'), xMinus('1'), 'fraction');
+		const expr = divide(opposite(number('3')), xMinus('1'), 'fraction');
 		const result = evaluateLimit(expr, 'x', number('1'), 'right');
 		expectNegInfinity(result);
 	});
@@ -1484,7 +1487,7 @@ describe('Vertical Asymptotes with Different Coefficients', () => {
 	});
 
 	it('-5/(x-1)² at x=1 both-sided is -∞', () => {
-		const expr = divide(number('-5'), power(xMinus('1'), number('2')), 'fraction');
+		const expr = divide(opposite(number('5')), power(xMinus('1'), number('2')), 'fraction');
 		const result = evaluateLimit(expr, 'x', number('1'));
 		expectNegInfinity(result);
 	});
@@ -1514,7 +1517,7 @@ describe('Exponential and Logarithmic Edge Cases', () => {
 	});
 
 	it('exp(-2x) at x→+∞ equals 0', () => {
-		const expr = func('exp', [multiply(number('-2'), variable('x'))]);
+		const expr = func('exp', [multiply(opposite(number('2')), variable('x'))]);
 		const result = evaluateLimit(expr, 'x', positiveInfinity());
 		expectNumber(result, 0);
 	});

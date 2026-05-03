@@ -29,7 +29,14 @@ import {
 	nonZeroReals,
 	unitInterval
 } from '../factory';
-import { infinity, func, number, implicitMultiply, piConstant } from '$lib/mathAST/factory';
+import {
+	infinity,
+	func,
+	number,
+	implicitMultiply,
+	piConstant,
+	opposite
+} from '$lib/mathAST/factory';
 
 describe('formatEndpointValue', () => {
 	it('formats positive infinity', () => {
@@ -45,7 +52,7 @@ describe('formatEndpointValue', () => {
 	it('formats integer values', () => {
 		expect(formatEndpointValue(number(0))).toBe('0');
 		expect(formatEndpointValue(number(1))).toBe('1');
-		expect(formatEndpointValue(number(-5))).toBe('-5');
+		expect(formatEndpointValue(opposite(number('5')))).toBe('-5');
 		expect(formatEndpointValue(number(42))).toBe('42');
 	});
 
@@ -60,7 +67,7 @@ describe('formatEndpointValue', () => {
 	});
 
 	it('formats negative square roots', () => {
-		const negSqrt2 = implicitMultiply(number('-1'), func('sqrt', [number('2')]));
+		const negSqrt2 = implicitMultiply(opposite(number('1')), func('sqrt', [number('2')]));
 		expect(formatEndpointValue(negSqrt2)).toBe('-1*√2');
 	});
 
@@ -252,8 +259,8 @@ describe('formatEndpointValue edge cases', () => {
 	});
 
 	it('formats negative integers', () => {
-		expect(formatEndpointValue(number(-10))).toBe('-10');
-		expect(formatEndpointValue(number(-1))).toBe('-1');
+		expect(formatEndpointValue(opposite(number('10')))).toBe('-10');
+		expect(formatEndpointValue(opposite(number('1')))).toBe('-1');
 	});
 
 	it('formats decimal numbers', () => {
@@ -351,12 +358,12 @@ describe('formatDomainInterval edge cases', () => {
 	});
 
 	it('formats negative bounds', () => {
-		const domain = intervalSet([closedInterval(number(-10), number(-5))]);
+		const domain = intervalSet([closedInterval(opposite(number('10')), opposite(number('5')))]);
 		expect(formatDomainInterval(domain)).toBe('[-10 ; -5]');
 	});
 
 	it('formats bounds spanning zero', () => {
-		const domain = intervalSet([closedInterval(number(-5), number(5))]);
+		const domain = intervalSet([closedInterval(opposite(number('5')), number(5))]);
 		expect(formatDomainInterval(domain)).toBe('[-5 ; 5]');
 	});
 });
@@ -406,7 +413,7 @@ describe('formatDomainCondition edge cases', () => {
 	});
 
 	it('formats negative bounds in condition', () => {
-		const domain = intervalSet([closedInterval(number(-5), number(-1))]);
+		const domain = intervalSet([closedInterval(opposite(number('5')), opposite(number('1')))]);
 		expect(formatDomainCondition(domain)).toBe('-5 ≤ x ≤ -1');
 	});
 });
@@ -476,7 +483,7 @@ describe('semicolon separator convention', () => {
 	});
 
 	it('uses ";" with negative bounds', () => {
-		const domain = intervalSet([closedInterval(number(-3), number(-1))]);
+		const domain = intervalSet([closedInterval(opposite(number('3')), opposite(number('1')))]);
 		expect(formatDomainInterval(domain)).toBe('[-3 ; -1]');
 	});
 

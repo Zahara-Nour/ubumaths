@@ -256,9 +256,104 @@ Tests : 883 verts dans `cli/`, suite mathAST inchangée (11658 verts, 1 rouge in
 - 21/21 `complex-latex.test.ts` verts.
 - Suite mathAST complète : 11659 verts, 0 rouge.
 
-### Phase 3f — Migration des tests legacy restants (à venir)
+### Phase 3f — Migration des tests legacy restants ✓ (partielle)
 
-Audit grep final : ~25-30 fichiers de test utilisent encore `number('-N')` ou `number(-N)`. Liste non exhaustive : `integration/__tests__/{rules,numeric,integrate}.test.ts`, `limits/__tests__/{evaluate,exact-evaluation,edge-cases,infinity-algebra-integration}.test.ts`, `solve/__tests__/domain-filtering.test.ts`, `domain/__tests__/{range,types,format,edge-cases}.test.ts`, `math/intervals/__tests__/algebra.test.ts`, `variations/__tests__/extrema.test.ts`, `piecewise/__tests__/boundaries.test.ts`. **À migrer avant Phase 4**, sinon factory.throw cassera ces tests.
+**Date** : 2026-05-02
+
+#### Fichiers de tests migrés (forme canonique partout où possible)
+
+| Fichier                                                               | Sites migrés | Tests verts |
+| --------------------------------------------------------------------- | -----------: | ----------: |
+| `mathAST/integration/__tests__/rules.test.ts`                         |            2 |          66 |
+| `mathAST/integration/__tests__/numeric.test.ts`                       |            1 |          34 |
+| `mathAST/integration/__tests__/integrate.test.ts`                     |            5 |          37 |
+| `mathAST/piecewise/__tests__/boundaries.test.ts`                      |            1 |          15 |
+| `mathAST/variations/__tests__/extrema.test.ts`                        |            5 |          33 |
+| `mathAST/limits/__tests__/infinity-algebra-integration.test.ts`       |            2 |          12 |
+| `mathAST/limits/__tests__/evaluate.test.ts`                           |            2 |          26 |
+| `mathAST/limits/__tests__/exact-evaluation.test.ts`                   |            1 |          67 |
+| `mathAST/limits/__tests__/edge-cases.test.ts`                         |            9 |         202 |
+| `mathAST/solve/__tests__/domain-filtering.test.ts`                    |            7 |          43 |
+| `mathAST/domain/__tests__/range.test.ts`                              |            6 |         140 |
+| `mathAST/domain/__tests__/types.test.ts`                              |            1 |          15 |
+| `mathAST/domain/__tests__/format.test.ts`                             |            2 |          26 |
+| `mathAST/domain/__tests__/edge-cases.test.ts`                         |            4 |         103 |
+| `mathAST/__tests__/piecewise-node.test.ts`                            |            3 |          14 |
+| `mathAST/eval/__tests__/compare-numeric.test.ts`                      |            2 |         110 |
+| `mathAST/eval/__tests__/compare-numeric-custom.test.ts`               |            2 |         112 |
+| `mathAST/eval/__tests__/evaluate-complex.test.ts`                     |            2 |          29 |
+| `mathAST/eval/__tests__/evaluate-complex-edge-cases.test.ts`          |            7 |          66 |
+| `mathAST/matrix/__tests__/operations.test.ts`                         |            1 |          91 |
+| `mathAST/differentiation/__tests__/piecewise-differentiation.test.ts` |            1 |           6 |
+| `mathAST/domain/__tests__/compute.test.ts`                            |            2 |          38 |
+| `math/intervals/__tests__/algebra.test.ts`                            |            4 |          63 |
+| `math/intervals/__tests__/format.test.ts`                             |            7 |          77 |
+
+**Total : 23 fichiers, ~78 sites migrés**
+
+#### Tests **non migrés** (bloqueurs identifiés — code de production à adapter en Phase 4)
+
+Plusieurs tests dépendent de helpers du code de production qui ne reconnaissent pas encore la forme canonique `opposite(number(...))`. Migration différée à Phase 4 :
+
+| Fichier                                              | Sites | Bloqueur                                                                                                         |
+| ---------------------------------------------------- | ----: | ---------------------------------------------------------------------------------------------------------------- |
+| `mathAST/limits/__tests__/exact-evaluation.test.ts`  |     3 | `substituteApproachFactors` utilise `isNumber(approach)` + `parseFloat(.value)`                                  |
+| `mathAST/limits/__tests__/edge-cases.test.ts`        |     1 | Idem (chemin `evaluateLimit` → `substituteApproachFactors`)                                                      |
+| `mathAST/eval/__tests__/extended-arithmetic.test.ts` |    13 | `addExtended`, `multiplyExtended`, `divideExtended` ne reconnaissent que `isNumber` (pattern matching numérique) |
+| `mathAST/pattern/__tests__/constraints.test.ts`      |    50 | `parseNumberValue` dans `pattern/constraints.ts` exige `isNumber(node)`                                          |
+| `mathAST/pattern/__tests__/match.test.ts`            |     2 | Idem (`P.isPositive`, `P.isNonzero`)                                                                             |
+| `mathAST/pattern/__tests__/sequence-match.test.ts`   |     3 | Idem + `P.isNegative` ne matche que `number('-N')` actuellement                                                  |
+| `math/intervals/__tests__/factory.test.ts`           |     3 | Tests **directs** de `number(-1)`, `number(-0)`, `number(-1e15)` — invalidés par Phase 4 (à supprimer/convertir) |
+| `mathAST/__tests__/factory.test.ts`                  |     8 | `it.fails` Phase 4 (intentionnels, déjà documentés)                                                              |
+| `mathAST/__tests__/no-negative-number-node.test.ts`  |    10 | Commentaires intentionnels (déjà documentés)                                                                     |
+
+**Total reverté/non migré : ~93 occurrences, mais seulement ~75 nécessitent une action en Phase 4** (les autres sont des `it.fails` ou commentaires).
+
+#### Helpers de production à adapter en Phase 4 (avant le throw)
+
+1. **`mathAST/limits/exact-evaluation.ts:257`** : `isNumber(approach) ? parseFloat(approach.value) : null` → utiliser `getNumericValue(approach)`.
+2. **`mathAST/eval/extended-arithmetic.ts`** : `addExtended`, `multiplyExtended`, `divideExtended` doivent reconnaître `opposite(number(...))` comme valeur numérique. Probablement via `getNumericValue` partout.
+3. **`mathAST/pattern/constraints.ts:24-28`** : `parseNumberValue` doit utiliser `getNumericValue` au lieu de `isNumber + parseFloat`.
+4. **`mathAST/pattern/builder.ts`** (probablement) : `P.isNegative()`, `P.isPositive()`, `P.isNonzero()` doivent reconnaître la forme canonique.
+5. **`math/intervals/__tests__/factory.test.ts`** : tests `number(-1)`, `number(-0)`, `number(-1e15)` à convertir en tests `it.fails` ou supprimer (testaient le comportement legacy).
+
+#### Régressions notées (issues du grep initial étendu)
+
+L'audit grep final a révélé que la liste initiale fournie était incomplète. Les fichiers suivants n'étaient pas dans la liste mais ont été migrés ici :
+
+- `mathAST/limits/__tests__/edge-cases.test.ts` (Negative Approach Values + Vertical Asymptotes — 9 sites au lieu du seul Domain section)
+- `mathAST/__tests__/piecewise-node.test.ts` (3 sites)
+- `mathAST/eval/__tests__/compare-numeric.test.ts` (2)
+- `mathAST/eval/__tests__/compare-numeric-custom.test.ts` (2)
+- `mathAST/eval/__tests__/evaluate-complex.test.ts` (2)
+- `mathAST/eval/__tests__/evaluate-complex-edge-cases.test.ts` (7)
+- `mathAST/matrix/__tests__/operations.test.ts` (1)
+- `mathAST/differentiation/__tests__/piecewise-differentiation.test.ts` (1)
+- `mathAST/domain/__tests__/compute.test.ts` (2)
+- `math/intervals/__tests__/format.test.ts` (7)
+
+#### Grep final post-Phase 3f
+
+```bash
+$ grep -rn "number('-\|number(\"-\|number(-[0-9]" src/lib/mathAST src/lib/math/intervals 2>/dev/null | grep -v "\.test\.ts:" | wc -l
+0  # (que des commentaires/JSDoc, aucun code source actif)
+
+$ grep -rn "number('-\|number(\"-\|number(-[0-9]" src/lib/mathAST src/lib/math/intervals 2>/dev/null | grep "\.test\.ts:" | wc -l
+93  # Décomposés ci-dessus : bloqueurs + factory.test.ts it.fails + commentaires
+```
+
+#### Tests verts post-Phase 3f
+
+- `pnpm test:server src/lib/mathAST` : **11659 verts | 0 rouge | 18 skipped | 3 todo**
+- `pnpm test:server src/lib/math/intervals` : **256 verts | 0 rouge**
+
+#### État Phase 3f
+
+✓ Tous les sites listés dans la consigne initiale ont été migrés (sauf bloqueurs documentés).
+✓ Tous les sites supplémentaires identifiés par grep ont été migrés (sauf bloqueurs documentés).
+✓ 0 régression : suite mathAST + intervals reste verte.
+
+⚠️ **Phase 4 prerequisite** : avant d'ajouter le `throw` dans `factory.number()`, il faudra adapter les helpers de production listés ci-dessus pour qu'ils reconnaissent `opposite(number('N'))` comme valeur numérique. Sans cette adaptation, ~75 tests casseront simultanément.
 
 ---
 
@@ -321,3 +416,40 @@ Audit grep final : ~25-30 fichiers de test utilisent encore `number('-N')` ou `n
 
 - `src/lib/mathAST/latex-generator.ts` — `visitComplexSpans` et `generateComplex` étendus pour reconnaître les deux formes (legacy + canonique)
 - `src/lib/mathAST/__tests__/complex-latex.test.ts` — import `opposite`, 8 cas migrés vers la forme canonique
+
+### Phase 3f (migration tests legacy)
+
+Tests migrés vers forme canonique :
+
+- `src/lib/mathAST/integration/__tests__/rules.test.ts` — 2 sites
+- `src/lib/mathAST/integration/__tests__/numeric.test.ts` — 1 site
+- `src/lib/mathAST/integration/__tests__/integrate.test.ts` — 5 sites
+- `src/lib/mathAST/piecewise/__tests__/boundaries.test.ts` — 1 site
+- `src/lib/mathAST/variations/__tests__/extrema.test.ts` — 5 sites
+- `src/lib/mathAST/limits/__tests__/infinity-algebra-integration.test.ts` — 2 sites
+- `src/lib/mathAST/limits/__tests__/evaluate.test.ts` — 2 sites
+- `src/lib/mathAST/limits/__tests__/exact-evaluation.test.ts` — 1 site (3 sites laissés legacy : bloqueur `substituteApproachFactors`)
+- `src/lib/mathAST/limits/__tests__/edge-cases.test.ts` — 9 sites (1 site laissé legacy : `ln(x+5) at x=-5`)
+- `src/lib/mathAST/solve/__tests__/domain-filtering.test.ts` — 7 sites
+- `src/lib/mathAST/domain/__tests__/range.test.ts` — 6 sites (alias import `opposite as factoryOpposite` pour éviter shadow conflict)
+- `src/lib/mathAST/domain/__tests__/types.test.ts` — 1 site
+- `src/lib/mathAST/domain/__tests__/format.test.ts` — 2 sites
+- `src/lib/mathAST/domain/__tests__/edge-cases.test.ts` — 4 sites
+- `src/lib/mathAST/domain/__tests__/compute.test.ts` — 2 sites
+- `src/lib/mathAST/__tests__/piecewise-node.test.ts` — 3 sites
+- `src/lib/mathAST/eval/__tests__/compare-numeric.test.ts` — 2 sites
+- `src/lib/mathAST/eval/__tests__/compare-numeric-custom.test.ts` — 2 sites
+- `src/lib/mathAST/eval/__tests__/evaluate-complex.test.ts` — 2 sites
+- `src/lib/mathAST/eval/__tests__/evaluate-complex-edge-cases.test.ts` — 7 sites
+- `src/lib/mathAST/matrix/__tests__/operations.test.ts` — 1 site
+- `src/lib/mathAST/differentiation/__tests__/piecewise-differentiation.test.ts` — 1 site
+- `src/lib/math/intervals/__tests__/algebra.test.ts` — 4 sites
+- `src/lib/math/intervals/__tests__/format.test.ts` — 7 sites
+
+Tests **non migrés** (bloqueurs documentés ci-dessus) :
+
+- `src/lib/mathAST/eval/__tests__/extended-arithmetic.test.ts` — 13 sites (bloqueur : helpers `addExtended`, `multiplyExtended`, `divideExtended`)
+- `src/lib/mathAST/pattern/__tests__/constraints.test.ts` — 50 sites (bloqueur : `parseNumberValue`)
+- `src/lib/mathAST/pattern/__tests__/match.test.ts` — 2 sites (idem)
+- `src/lib/mathAST/pattern/__tests__/sequence-match.test.ts` — 3 sites (idem)
+- `src/lib/math/intervals/__tests__/factory.test.ts` — 3 sites (testaient `number(-N)` directement, à convertir en Phase 4)

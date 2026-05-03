@@ -18,7 +18,7 @@ import {
 	lessThanOrEqualInterval,
 	excludedPoint
 } from '../factory';
-import { number } from '$lib/mathAST/factory';
+import { number, opposite } from '$lib/mathAST/factory';
 
 describe('formatDomainInterval()', () => {
 	describe('special domains', () => {
@@ -72,7 +72,7 @@ describe('formatDomainInterval()', () => {
 	describe('union of intervals', () => {
 		it('formats ]-∞ ; -2] ∪ [2 ; +∞[', () => {
 			const d = intervalDomain([
-				lessThanOrEqualInterval(number(-2)),
+				lessThanOrEqualInterval(opposite(number('2'))),
 				greaterThanOrEqualInterval(number(2))
 			]);
 			expect(formatDomainInterval(d)).toBe(']-∞ ; -2] ∪ [2 ; +∞[');
@@ -149,7 +149,7 @@ describe('formatDomainCondition()', () => {
 	describe('union conditions', () => {
 		it('formats x ≤ -2 ou x ≥ 2', () => {
 			const d = intervalDomain([
-				lessThanOrEqualInterval(number(-2)),
+				lessThanOrEqualInterval(opposite(number('2'))),
 				greaterThanOrEqualInterval(number(2))
 			]);
 			expect(formatDomainCondition(d)).toBe('x ≤ -2 ou x ≥ 2');

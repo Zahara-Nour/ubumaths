@@ -5,7 +5,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { evaluate } from '../evaluate';
-import { complex, number, func } from '../../factory';
+import { complex, number, func, opposite } from '../../factory';
 import { parsePratt } from '../../parser/latex/parser-pratt';
 import { toLatex } from '../../latex-generator';
 
@@ -40,13 +40,13 @@ describe('Complex number evaluation', () => {
 
 	describe('complex arithmetic edge cases', () => {
 		it('evaluates negative imaginary correctly', () => {
-			const node = complex(number('0'), number('-3'));
+			const node = complex(number('0'), opposite(number('3')));
 			const result = evaluate(node);
 			expect(toLatex(result.node)).toBe('-3 \\imaginaryI');
 		});
 
 		it('evaluates negative real correctly', () => {
-			const node = complex(number('-2'), number('1'));
+			const node = complex(opposite(number('2')), number('1'));
 			const result = evaluate(node);
 			expect(toLatex(result.node)).toBe('-2 + \\imaginaryI');
 		});

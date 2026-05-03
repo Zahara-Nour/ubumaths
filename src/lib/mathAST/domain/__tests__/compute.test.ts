@@ -15,7 +15,8 @@ import {
 	power,
 	sqrt,
 	ln,
-	func
+	func,
+	opposite
 } from '../../factory';
 import { containsValue } from '../algebra';
 
@@ -267,7 +268,7 @@ describe('computeDomain()', () => {
 
 	describe('power expressions', () => {
 		it('x^(-1) has domain R \\ {0}', () => {
-			const expr = power(variable('x'), number('-1'));
+			const expr = power(variable('x'), opposite(number('1')));
 			const result = computeDomain(expr, 'x');
 			expect(containsValue(result.domain, 1)).toBe(true);
 			expect(containsValue(result.domain, -1)).toBe(true);
@@ -283,7 +284,7 @@ describe('computeDomain()', () => {
 		});
 
 		it('(x-1)^(-2) has domain R \\ {1}', () => {
-			const expr = power(subtract(variable('x'), number('1')), number('-2'));
+			const expr = power(subtract(variable('x'), number('1')), opposite(number('2')));
 			const result = computeDomain(expr, 'x');
 			expect(containsValue(result.domain, 0)).toBe(true);
 			expect(containsValue(result.domain, 2)).toBe(true);

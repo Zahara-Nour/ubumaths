@@ -93,7 +93,7 @@ describe('PiecewiseNode — compilation (first match wins)', () => {
 	it('compiles a 3-branch sign function', () => {
 		const sgn = piecewise(
 			[
-				piecewisePiece(relation('<', variable('x'), number('0')), number('-1')),
+				piecewisePiece(relation('<', variable('x'), number('0')), opposite(number('1'))),
 				piecewisePiece(relation('=', variable('x'), number('0')), number('0'))
 			],
 			number('1') // otherwise: x > 0
@@ -116,7 +116,7 @@ describe('PiecewiseNode — compilation (first match wins)', () => {
 	it('respects ORDER (first matching branch wins)', () => {
 		// Both branches match for x = 0; first match wins.
 		const ambiguous = piecewise([
-			piecewisePiece(relation('>=', variable('x'), number('-1')), number('1')),
+			piecewisePiece(relation('>=', variable('x'), opposite(number('1'))), number('1')),
 			piecewisePiece(relation('>=', variable('x'), number('0')), number('2'))
 		]);
 		const f = compile(ambiguous);
@@ -147,7 +147,7 @@ describe('PiecewiseNode — compilation (first match wins)', () => {
 			piecewisePiece(
 				logical(
 					'or',
-					relation('<', variable('x'), number('-1')),
+					relation('<', variable('x'), opposite(number('1'))),
 					relation('>', variable('x'), number('1'))
 				),
 				number('1')

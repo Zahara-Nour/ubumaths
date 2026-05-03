@@ -151,7 +151,7 @@ describe('extractPiecewiseBoundaries — symbolic bounds via bindings', () => {
 	it('resolves negated variable bounds (-a)', () => {
 		const a = variable('a');
 		const node = piecewise([
-			piecewisePiece(relation('<', x, opposite(a)), number('-1')),
+			piecewisePiece(relation('<', x, opposite(a)), opposite(number('1'))),
 			piecewisePiece(relation('>=', x, opposite(a)), number('1'))
 		]);
 		const bounds = extractPiecewiseBoundaries(node, { a: 3 });

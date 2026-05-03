@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { matrix, number, divide } from '../../factory';
+import { matrix, number, divide, opposite } from '../../factory';
 import type { MatrixNode, NumberNode, MathNode } from '../../types';
 import {
 	getDimensions,
@@ -172,7 +172,7 @@ describe('Scalar Multiplication', () => {
 			[1, 2],
 			[3, 4]
 		]);
-		const result = scalarMultiply(number('-1'), m);
+		const result = scalarMultiply(opposite(number('1')), m);
 		expect(extractValues(result)).toEqual([
 			[-1, -2],
 			[-3, -4]
