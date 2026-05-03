@@ -192,7 +192,40 @@ Tests : 340/340 `integration/` verts.
 
 Tests : 883 verts dans `cli/`, suite mathAST inchangée (11658 verts, 1 rouge intentionnel sites #5-8).
 
-### Phase 3d — `domain/builtins.ts` + `domain/factory.ts` + `math/intervals/factory.ts` (sites #5-9)
+### Phase 3d — `domain/builtins.ts` + `domain/factory.ts` + `math/intervals/factory.ts` (sites #5-9) ✓
+
+**Date** : 2026-05-02
+
+#### Source files
+
+- `src/lib/mathAST/domain/builtins.ts` — import `opposite`, 3 occurrences `number(-1)` → `opposite(number('1'))` (replace_all).
+- `src/lib/mathAST/domain/factory.ts` — import `opposite`, `unitInterval()` migré.
+- `src/lib/math/intervals/factory.ts` — import `opposite`, `unitInterval()` migré.
+
+#### Tests adaptés
+
+- `src/lib/mathAST/domain/__tests__/factory.test.ts` — `closedInterval(number(-1), number(1))` → forme canonique ; assertion `isNumber(...)` remplacée par `getNumericValue(...)` (renforcement, vérifie aussi la valeur).
+- `src/lib/mathAST/domain/__tests__/algebra.test.ts` — 3 occurrences `number(-1)` migrées (replace_all), assertions `isNumber` du test `complement([-1, 1])` adaptées via `getNumericValue`.
+
+#### Tests qui virent au vert
+
+- ✓ `no-negative-number-node.test.ts > unitInterval() bounds` (rouge → vert)
+
+#### Décisions issues du code review Phase 3d
+
+- **Site supplémentaire repéré** : `domainFromNumericBounds` (`builtins.ts:821-725`) appelle `number(lower)` et `number(upper)` avec des `number` JavaScript pouvant être négatifs (BUILTIN_RANGES contient `lower: -1`, `lower: -Math.PI/2`, etc.). À traiter en **Phase 3d-bis**.
+- **Régression visuelle latente** : les tests `complex-latex.test.ts` (8+ cas avec `complex(number('-3'), number('-4'))`) passent encore au vert grâce aux branches dédiées `value.startsWith('-')` du générateur LaTeX. Phase 4 cassera ces tests si on ne migre pas. → Phase 3e doit être faite avant Phase 4.
+
+#### État Phase 3d
+
+- 1018/1018 tests `domain/` + `intervals/` verts.
+- Suite mathAST complète : **11659 verts, 0 rouge**.
+
+### Phase 3d-bis — `domainFromNumericBounds` (sites dynamiques BUILTIN_RANGES)
+
+[à venir]
+
+### Phase 3e — Consommateurs `latex-generator.ts` (C1, C2)
 
 [à venir]
 
@@ -244,3 +277,11 @@ Tests : 883 verts dans `cli/`, suite mathAST inchangée (11658 verts, 1 rouge in
 ### Phase 3c (migration `cli/solve.command.ts`, sites #3, #4)
 
 - `src/lib/mathAST/cli/commands/solve.command.ts` — `negate()` refactorée, `extractCoefficientFromTerm` site #4 corrigé
+
+### Phase 3d (migration `domain/` + `intervals/`, sites #5-9)
+
+- `src/lib/mathAST/domain/builtins.ts` — import `opposite`, 3 occurrences `number(-1)` migrées
+- `src/lib/mathAST/domain/factory.ts` — import `opposite`, `unitInterval()` migré
+- `src/lib/math/intervals/factory.ts` — import `opposite`, `unitInterval()` migré
+- `src/lib/mathAST/domain/__tests__/factory.test.ts` — imports + 1 site test + assertions `getNumericValue`
+- `src/lib/mathAST/domain/__tests__/algebra.test.ts` — imports + 3 sites test + assertions `getNumericValue`

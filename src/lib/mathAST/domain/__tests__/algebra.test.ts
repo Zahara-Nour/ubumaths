@@ -38,7 +38,8 @@ import {
 	comparison
 } from '../factory';
 import { isNumber, isNegativeInfinity } from '$lib/mathAST/guards';
-import { number } from '$lib/mathAST/factory';
+import { number, opposite } from '$lib/mathAST/factory';
+import { getNumericValue } from '$lib/mathAST/common/numeric';
 
 describe('isEmpty()', () => {
 	it('returns true for empty domain', () => {
@@ -193,7 +194,7 @@ describe('union()', () => {
 		});
 
 		it('union of disjoint intervals keeps both', () => {
-			const a = intervalDomain([lessThanInterval(number(-1))]); // ]-inf, -1[
+			const a = intervalDomain([lessThanInterval(opposite(number('1')))]); // ]-inf, -1[
 			const b = intervalDomain([greaterThanInterval(number(1))]); // ]1, +inf[
 			const result = union(a, b);
 
@@ -245,11 +246,11 @@ describe('complement()', () => {
 		expect(result.kind).toBe('interval_set');
 		if (result.kind === 'interval_set') {
 			expect(result.intervals).toHaveLength(2);
-			// First: ]-inf, -1[
-			expect(isNumber(result.intervals[0].upper.value)).toBe(true);
+			// First: ]-inf, -1[ — bounds may be number(...) or opposite(number(...))
+			expect(getNumericValue(result.intervals[0].upper.value)).toBe(-1);
 			expect(result.intervals[0].upper.type).toBe('open');
 			// Second: ]1, +inf[
-			expect(isNumber(result.intervals[1].lower.value)).toBe(true);
+			expect(getNumericValue(result.intervals[1].lower.value)).toBe(1);
 			expect(result.intervals[1].lower.type).toBe('open');
 		}
 	});
@@ -433,7 +434,7 @@ describe('tryConvertConditionToInterval()', () => {
 
 		it('converts x >= -1 AND x <= 1 to [-1, 1]', () => {
 			const cd = conditionDomain(
-				[comparison('x', '>=', number(-1)), comparison('x', '<=', number(1))],
+				[comparison('x', '>=', opposite(number('1'))), comparison('x', '<=', number(1))],
 				'and'
 			);
 			const result = tryConvertConditionToInterval(cd);
@@ -475,7 +476,7 @@ describe('tryConvertConditionToInterval()', () => {
 
 		it('converts x <= -1 OR x >= 1 to ]-∞, -1] ∪ [1, +∞[', () => {
 			const cd = conditionDomain(
-				[comparison('x', '<=', number(-1)), comparison('x', '>=', number(1))],
+				[comparison('x', '<=', opposite(number('1'))), comparison('x', '>=', number(1))],
 				'or'
 			);
 			const result = tryConvertConditionToInterval(cd);

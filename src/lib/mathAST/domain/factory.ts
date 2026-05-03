@@ -65,7 +65,7 @@ import {
 	closedInterval as intervalsClosedInterval,
 	realLine as intervalsRealLine
 } from '$lib/math/intervals/factory';
-import { number } from '$lib/mathAST/factory';
+import { number, opposite } from '$lib/mathAST/factory';
 
 /**
  * Creates a condition-based domain.
@@ -198,5 +198,5 @@ export function nonZeroReals(): IntervalSet {
 
 /** Domain for -1 <= x <= 1 (e.g., for arcsin, arccos) - [-1, 1] */
 export function unitInterval(): IntervalSet {
-	return intervalSet([intervalsClosedInterval(number(-1), number(1))]);
+	return intervalSet([intervalsClosedInterval(opposite(number('1')), number('1'))]);
 }

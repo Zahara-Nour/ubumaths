@@ -43,7 +43,8 @@ import {
 	UNIVERSAL_DOMAIN
 } from '../factory';
 import { isNumber, isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
-import { number } from '$lib/mathAST/factory';
+import { getNumericValue } from '$lib/mathAST/common/numeric';
+import { number, opposite } from '$lib/mathAST/factory';
 
 describe('Endpoint factories', () => {
 	describe('endpoint()', () => {
@@ -120,7 +121,7 @@ describe('Interval factories', () => {
 
 	describe('closedInterval()', () => {
 		it('creates [a, b]', () => {
-			const i = closedInterval(number(-1), number(1));
+			const i = closedInterval(opposite(number('1')), number('1'));
 			expect(i.lower.type).toBe('closed');
 			expect(i.upper.type).toBe('closed');
 		});
@@ -305,9 +306,11 @@ describe('Common domain shortcuts', () => {
 		it('creates [-1, 1]', () => {
 			const d = unitInterval();
 			expect(d.kind).toBe('interval_set');
-			expect(isNumber(d.intervals[0].lower.value)).toBe(true);
+			// Bounds are MathNodes — use getNumericValue to accept both
+			// number('1') and opposite(number('1')) (canonical for negatives).
+			expect(getNumericValue(d.intervals[0].lower.value)).toBe(-1);
 			expect(d.intervals[0].lower.type).toBe('closed');
-			expect(isNumber(d.intervals[0].upper.value)).toBe(true);
+			expect(getNumericValue(d.intervals[0].upper.value)).toBe(1);
 			expect(d.intervals[0].upper.type).toBe('closed');
 		});
 	});

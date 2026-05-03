@@ -19,7 +19,7 @@ import {
 	openInterval,
 	closedInterval
 } from './factory';
-import { number } from '$lib/mathAST/factory';
+import { number, opposite } from '$lib/mathAST/factory';
 import { getEndpoints, buildInterval } from '$lib/math/intervals';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { tryConvertConditionToInterval } from './algebra';
@@ -72,7 +72,7 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 	[
 		'arctanh',
 		{
-			domain: intervalDomain([openInterval(number(-1), number(1))]),
+			domain: intervalDomain([openInterval(opposite(number('1')), number(1))]),
 			constraint: '-1 < x < 1'
 		}
 	],
@@ -87,7 +87,7 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 		'arcsec',
 		{
 			domain: intervalDomain([
-				lessThanOrEqualInterval(number(-1)),
+				lessThanOrEqualInterval(opposite(number('1'))),
 				greaterThanOrEqualInterval(number(1))
 			]),
 			constraint: '|x| >= 1'
@@ -97,7 +97,7 @@ export const BUILTIN_DOMAINS: Map<string, BuiltinDomainEntry> = new Map([
 		'arccsc',
 		{
 			domain: intervalDomain([
-				lessThanOrEqualInterval(number(-1)),
+				lessThanOrEqualInterval(opposite(number('1'))),
 				greaterThanOrEqualInterval(number(1))
 			]),
 			constraint: '|x| >= 1'
