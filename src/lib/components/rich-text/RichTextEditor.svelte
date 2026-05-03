@@ -1794,6 +1794,7 @@
 				</button>
 
 				<!-- TipTap editor - always in DOM, hidden when in markdown mode -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div
 					bind:this={editorElement}
 					class="h-full bg-background {isMarkdownEditMode ? 'hidden' : ''}"
@@ -1854,6 +1855,7 @@
 
 	<!-- Resize Handle (inline mode only) -->
 	{#if !isFullscreen && containerHeight}
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 		<div
 			role="separator"
 			aria-orientation="horizontal"
