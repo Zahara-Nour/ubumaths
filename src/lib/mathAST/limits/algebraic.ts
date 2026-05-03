@@ -23,6 +23,7 @@ import {
 	isInfinity
 } from '../guards';
 import { number, divide, multiply, subtract, add, power, opposite } from '../factory';
+import { numericNode } from '../common/numeric';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
@@ -144,7 +145,7 @@ function tryFactorLinear(
 			if (Math.abs(aSquared - a * a) < 1e-10) {
 				// x² - a² = (x-a)(x+a), quotient is (x+a)
 				return {
-					quotient: add(variable(varName), number(String(a))),
+					quotient: add(variable(varName), numericNode(a)),
 					multiplicity: 1
 				};
 			}
@@ -790,7 +791,7 @@ export function tryAlgebraicSimplification(
 				if (Math.abs(evalResult - rounded) < 1e-6) {
 					return {
 						success: true,
-						simplified: number(String(rounded)),
+						simplified: numericNode(rounded),
 						technique: 'abs-simplification',
 						description: absResult.description
 					};

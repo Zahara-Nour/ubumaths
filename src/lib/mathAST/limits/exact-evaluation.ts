@@ -17,7 +17,7 @@ import { substitute } from '../eval/substitute';
 import { zeroPlus, zeroMinus, number } from '../factory';
 import { mapNode } from '../transforms';
 import { isSubtraction, isAddition, isVariable, isOpposite, isInfinity } from '../guards';
-import { getNumericValue } from '../common/numeric';
+import { getNumericValue, numericNode } from '../common/numeric';
 
 // =============================================================================
 // Result Type Predicates
@@ -513,10 +513,10 @@ export function resultToFiniteNode(result: ExtendedNormalizeResult): MathNode | 
 				// If it's an integer or very close to one, return as integer
 				const intValue = Math.round(numValue);
 				if (Math.abs(numValue - intValue) < 1e-10) {
-					return number(intValue.toString());
+					return numericNode(intValue);
 				}
 				// Otherwise return the numeric value with precision
-				return number(numValue.toPrecision(10).replace(/\.?0+$/, ''));
+				return numericNode(numValue.toPrecision(10).replace(/\.?0+$/, ''));
 			}
 			// Fallback to denormalized form
 			return resultToNode(result);
