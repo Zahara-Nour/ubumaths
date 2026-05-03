@@ -15,7 +15,8 @@ import type {
 	ConditionDomain
 } from './types';
 import { ZERO_TOLERANCE } from '../common';
-import { number, subtract, divide } from '$lib/mathAST/factory';
+import { subtract, divide } from '$lib/mathAST/factory';
+import { numericNode } from '../common/numeric';
 import type { IntervalDomain } from '$lib/math/intervals/types';
 import {
 	isEmptyInterval as intervalsIsEmpty,
@@ -720,7 +721,7 @@ export function excludePoints(d: Domain, values: MathNode[]): Domain {
 export function excludeNumericPoints(d: Domain, values: number[]): Domain {
 	return excludePoints(
 		d,
-		values.map((v) => number(v))
+		values.map((v) => numericNode(v))
 	);
 }
 

@@ -23,6 +23,7 @@ import { intervalSet, closedInterval } from '$lib/math/intervals';
 import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/math/intervals';
 import { compareNumericNodes } from '../../eval/compare-numeric';
 import { number, euler } from '../../factory';
+import { numericNode } from '../../common/numeric';
 
 // =============================================================================
 // Helper: Sign deduction from bounds
@@ -145,7 +146,7 @@ export function inferNumberType(node: NumberNode): MathType {
 		parity = Math.abs(value) % 2 === 0 ? 'even' : 'odd';
 	}
 
-	const endpoint = number(value);
+	const endpoint = numericNode(value);
 	const bounds: IntervalDomain = intervalSet([closedInterval(endpoint, endpoint)]);
 
 	return {

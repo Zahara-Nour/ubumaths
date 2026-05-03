@@ -12,7 +12,7 @@
 import type { MathNode } from '../types';
 import type { Domain, RangeResult, RangeStep } from './types';
 import { intervalDomain, closedInterval } from './factory';
-import { number } from '$lib/mathAST/factory';
+import { numericNode } from '../common/numeric';
 import { computeDomain } from './compute';
 import { formatInterval } from './format';
 import {
@@ -292,7 +292,7 @@ function computeVariableRange(
  * Create a single-point domain.
  */
 function singlePoint(value: number): Domain {
-	return intervalDomain([closedInterval(number(value), number(value))]);
+	return intervalDomain([closedInterval(numericNode(value), numericNode(value))]);
 }
 
 /**
