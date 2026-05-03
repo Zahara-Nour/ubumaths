@@ -93,24 +93,30 @@
 
 	const currentEnabled = $derived(isEnabled ?? card.is_enabled);
 
+	// Snapshot of the initial card prop for $state initializers below.
+	// Reactive usages elsewhere (template, $derived, reset function) keep
+	// using `card` to follow prop updates.
+	// svelte-ignore state_referenced_locally
+	const initialCard = card;
+
 	// Inline editing state
 	let editingTitle = $state(false);
 	let editingDescription = $state(false);
 	let editingAction = $state(false);
 	let editingRarity = $state(false);
-	let tempName = $state(card.name);
-	let tempDescription = $state(card.description);
+	let tempName = $state(initialCard.name);
+	let tempDescription = $state(initialCard.description);
 	let tempActionType = $state<string | undefined>(
-		isTypedAction(card.action) ? card.action.type : undefined
+		isTypedAction(initialCard.action) ? initialCard.action.type : undefined
 	);
 	let tempActionValue = $state<number>(
-		isTypedAction(card.action) && card.action.type === 'add_gidouilles'
-			? card.action.amount || 0
-			: isTypedAction(card.action)
-				? card.action.count || 1
+		isTypedAction(initialCard.action) && initialCard.action.type === 'add_gidouilles'
+			? initialCard.action.amount || 0
+			: isTypedAction(initialCard.action)
+				? initialCard.action.count || 1
 				: 1
 	);
-	let tempRarity = $state(card.rarity);
+	let tempRarity = $state(initialCard.rarity);
 	let isSaving = $state(false);
 
 	const isEditing = $derived(editingTitle || editingDescription || editingAction || editingRarity);
