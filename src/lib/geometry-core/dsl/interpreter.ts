@@ -551,9 +551,14 @@ class Interpreter {
 					case '*':
 						return { type: 'nombre', value: left * right };
 					case '/':
-						if (right === 0) throw new DslRuntimeError('Division par zero', expr.line);
+						// IEEE 754 / JS native: 1/0 → Infinity, 0/0 → NaN, -1/0 → -Infinity.
+						// Aligns the legacy DSL path with the mathAST static path so the
+						// same expression produces the same value regardless of routing.
+						// The reactive scalar path keeps its NaN-coerce post-process for
+						// rendering (a coordinate becomes invisible rather than off-screen).
 						return { type: 'nombre', value: left / right };
 					case '%':
+						// JS: 5 % 0 = NaN (no throw). Formula tolerates NaN.
 						return { type: 'nombre', value: ((left % right) + right) % right };
 					case '^':
 						return { type: 'nombre', value: Math.pow(left, right) };
@@ -871,6 +876,11 @@ class Interpreter {
 		if (op === '/' && leftIsVec && !rightIsVec) {
 			// vector / scalar
 			const divisor = coerceToNumber(rightVal, line);
+			// V2 #2 (F simple): unified IEEE 754 division for numbers, but vectors
+			// still throw because `numeric()` enforces a finite-only invariant on
+			// coordinates. Allowing a vector with infinite components would cascade
+			// into many downstream renderers. To unify in V3 alongside relaxing the
+			// `GeoNumeric` invariant.
 			if (divisor === 0) throw new DslRuntimeError('Division par zero', line);
 			const factor = numeric(1 / divisor);
 			const id = this.figure.createVectorScaled(leftVal.figureId, factor);
