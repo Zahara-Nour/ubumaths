@@ -45,18 +45,22 @@
 
 	let { riddle = null, onSubmit, onCancel, loading = false }: Props = $props();
 
+	// Snapshot of the initial riddle prop for $state initializers below.
+	// svelte-ignore state_referenced_locally
+	const initialRiddle = riddle;
+
 	// ============================================================================
 	// FORM STATE
 	// ============================================================================
 
-	let title = $state(riddle?.title || '');
-	let genre = $state(riddle?.genre || '');
-	let difficulty = $state<RiddleDifficulty>(riddle?.difficulty || 1);
-	let statement = $state(riddle?.statement || '');
-	let correction = $state(riddle?.correction || '');
-	let imageUrl = $state(riddle?.image_url || '');
-	let answerConfig = $state<AnswerConfig | null>(riddle?.answer || null);
-	let status = $state<'draft' | 'published'>(riddle?.status || 'draft');
+	let title = $state(initialRiddle?.title || '');
+	let genre = $state(initialRiddle?.genre || '');
+	let difficulty = $state<RiddleDifficulty>(initialRiddle?.difficulty || 1);
+	let statement = $state(initialRiddle?.statement || '');
+	let correction = $state(initialRiddle?.correction || '');
+	let imageUrl = $state(initialRiddle?.image_url || '');
+	let answerConfig = $state<AnswerConfig | null>(initialRiddle?.answer || null);
+	let status = $state<'draft' | 'published'>(initialRiddle?.status || 'draft');
 
 	// Genre suggestions (common math topics)
 	const genreSuggestions = [
