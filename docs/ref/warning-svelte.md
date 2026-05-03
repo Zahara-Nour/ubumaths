@@ -12,8 +12,9 @@ Ce document recense l'usage de `svelte-ignore` dans le code source et catégoris
 
 Svelte 5 émet `state_referenced_locally` quand on lit une variable réactive (prop, `$state`, etc.) dans un contexte qui ne capture que la valeur initiale, par exemple :
 
-```svelte
-let {template} = $props(); let title = $state(template?.title ?? ''); // ⚠️ warning
+```ts
+let { template } = $props();
+let title = $state(template?.title ?? ''); // ⚠️ warning state_referenced_locally
 ```
 
 Le compilateur suppose que tu voulais probablement `$derived(template?.title)`. Mais pour un **formulaire d'édition**, on veut justement l'inverse : initialiser une fois, puis laisser l'utilisateur éditer indépendamment de la prop.
@@ -22,8 +23,11 @@ Le compilateur suppose que tu voulais probablement `$derived(template?.title)`. 
 
 Capture explicite dans une `const` non réactive :
 
-```svelte
-let {template} = $props(); // svelte-ignore state_referenced_locally const initialTemplate = template;
+```ts
+let { template } = $props();
+// svelte-ignore state_referenced_locally
+const initialTemplate = template;
+
 let title = $state(initialTemplate?.title ?? '');
 ```
 
