@@ -75,19 +75,23 @@
 
 	let { template, onSave, onCancel }: Props = $props();
 
+	// Snapshot of the initial template prop for $state initializers below.
+	// svelte-ignore state_referenced_locally
+	const initialTemplate = template;
+
 	// Form state - Metadata
-	let title = $state(template?.title ?? '');
-	let description = $state(template?.description ?? '');
-	let selectedGrades = $state<GradeCode[]>(template?.grades ?? []);
-	let color = $state<ChapterColor | null>(template?.color ?? null);
-	let icon = $state<ChapterIcon | null>(template?.icon ?? 'book');
-	let status = $state<TemplateStatus>(template?.status ?? 'draft');
-	let isPublic = $state(template?.isPublic ?? false);
+	let title = $state(initialTemplate?.title ?? '');
+	let description = $state(initialTemplate?.description ?? '');
+	let selectedGrades = $state<GradeCode[]>(initialTemplate?.grades ?? []);
+	let color = $state<ChapterColor | null>(initialTemplate?.color ?? null);
+	let icon = $state<ChapterIcon | null>(initialTemplate?.icon ?? 'book');
+	let status = $state<TemplateStatus>(initialTemplate?.status ?? 'draft');
+	let isPublic = $state(initialTemplate?.isPublic ?? false);
 	let isSubmitting = $state(false);
 
 	// Content snapshot (simplified - full editor would manage these)
 	let contentSnapshot = $state<TemplateContentSnapshot>(
-		template?.contentSnapshot ?? {
+		initialTemplate?.contentSnapshot ?? {
 			documents: [],
 			quizQuestions: [],
 			checklistItems: [],
