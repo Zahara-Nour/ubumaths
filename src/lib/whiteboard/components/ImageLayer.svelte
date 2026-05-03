@@ -412,6 +412,7 @@
 			transform="rotate({rotation} {centerX} {centerY})"
 		>
 			<!-- The actual image -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<image
 				href={image.src}
 				x={image.position.x}
@@ -453,6 +454,7 @@
 				<!-- Resize handles -->
 				{#each HANDLE_POSITIONS as handle (handle)}
 					{@const pos = getHandlePosition(image, handle)}
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<rect
 						class="resize-handle"
 						x={pos.x}
@@ -470,6 +472,7 @@
 				{/each}
 
 				<!-- Rotation handle (circle above the image) -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<circle
 					class="rotate-handle"
 					cx={image.position.x + image.width / 2}
