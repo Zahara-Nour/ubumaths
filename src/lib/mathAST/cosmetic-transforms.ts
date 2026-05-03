@@ -14,8 +14,9 @@
  */
 
 import type { MathNode } from './types';
+import type { Rational } from './normal/types';
 import { number, opposite, multiply, divide, add, subtract } from './factory';
-import { numericNode } from './common/numeric';
+import { extractRational } from './common/numeric';
 import { mapNode, stripUnnecessaryBrackets, removeNullTermsAST } from './transforms';
 import {
 	flattenSumShallow,
@@ -25,7 +26,15 @@ import {
 } from './flatten';
 import { parseLatexSafe } from './parser';
 import { toLatex } from './latex-generator';
-import { gcd, compareNodes } from './normal';
+import { compareNodes } from './normal';
+import {
+	divRational,
+	isInteger,
+	isZero,
+	isNegative,
+	absRational,
+	negRational
+} from './normal/rational';
 import { evaluateNodeToApproximatedNumber } from './eval/evaluate';
 
 // =============================================================================
@@ -139,9 +148,17 @@ export function removeSpaces(latex: string): string {
 
 /**
  * Reduce fractions to lowest terms.
- * Handles numeric fractions and monomial fractions.
+ * Handles numeric fractions (including decimals) and monomial fractions.
  *
- * 4/6 → 2/3, 6/3 → 2, 4x/6x → 2/3
+ * Examples:
+ *   4/6      → 2/3
+ *   6/3      → 2
+ *   1.7/2.3  → 17/23  (exact: parses decimals via BigInt, no parseFloat round-off)
+ *   1.2/0.6  → 2
+ *   4x/6     → 2x/3
+ *
+ * Uses exact Rational arithmetic from normal/rational.ts, so decimal operands
+ * and big integers (>2^53-1) are handled without precision loss.
  */
 export function reduceFractionsAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
@@ -149,82 +166,81 @@ export function reduceFractionsAST(ast: MathNode): MathNode {
 		// Only handle fraction-style divisions
 		if (node.displayStyle !== 'fraction') return node;
 
-		const numValue = extractNumericValue(node.numerator);
-		const denValue = extractNumericValue(node.denominator);
+		// Try purely numeric fraction first (including decimals).
+		const numR = extractRational(node.numerator);
+		const denR = extractRational(node.denominator);
 
-		if (numValue !== null && denValue !== null && denValue !== 0) {
-			const absNum = BigInt(Math.round(Math.abs(numValue)));
-			const absDen = BigInt(Math.round(Math.abs(denValue)));
-			const g = gcd(absNum, absDen);
-
-			if (g > 1n || absDen === 1n) {
-				const sign = numValue < 0 !== denValue < 0 ? -1 : 1;
-				const newNum = Number(absNum / g);
-				const newDen = Number(absDen / g);
-
-				if (newDen === 1) {
-					const result = numericNode(newNum);
-					return sign < 0 ? opposite(result) : result;
-				}
-
-				const numNode = numericNode(newNum);
-				const denNode = numericNode(newDen);
-				const frac = divide(numNode, denNode, 'fraction');
-				return sign < 0 ? opposite(frac) : frac;
-			}
+		if (numR !== null && denR !== null && !isZero(denR)) {
+			// rational() inside divRational already reduces by gcd, so we get the
+			// exact reduced form directly.
+			return rationalToNode(divRational(numR, denR));
 		}
 
-		// Check for reducible coefficients in monomial fractions (like 2x/4 → x/2)
+		// Monomial fraction: numeric coefficient × variable part (e.g. 2x/4 → x/2).
 		const numCoef = extractCoefficient(node.numerator);
 		const denCoef = extractCoefficient(node.denominator);
 
-		if (numCoef !== null && denCoef !== null && denCoef !== 0) {
-			const absNumCoef = BigInt(Math.round(Math.abs(numCoef)));
-			const absDenCoef = BigInt(Math.round(Math.abs(denCoef)));
-			const g = gcd(absNumCoef, absDenCoef);
+		if (numCoef !== null && denCoef !== null && !isZero(denCoef)) {
+			const reduced = divRational(numCoef, denCoef);
+			const numVarPart = extractVariablePart(node.numerator);
+			const denVarPart = extractVariablePart(node.denominator);
 
-			if (g > 1n || absDenCoef === 1n) {
-				const sign = numCoef < 0 !== denCoef < 0 ? -1 : 1;
-				const newNumCoef = Number(absNumCoef / g);
-				const newDenCoef = Number(absDenCoef / g);
+			const sign = isNegative(reduced) ? -1 : 1;
+			const absReduced = absRational(reduced);
+			const newNumCoef = absReduced.n;
+			const newDenCoef = absReduced.d;
 
-				const numVarPart = extractVariablePart(node.numerator);
-				const denVarPart = extractVariablePart(node.denominator);
-
-				// Rebuild numerator: coefficient * variable part
-				let newNum: MathNode;
-				if (numVarPart) {
-					newNum =
-						newNumCoef === 1
-							? numVarPart
-							: multiply(numericNode(newNumCoef), numVarPart, 'implicit');
-				} else {
-					newNum = numericNode(newNumCoef);
-				}
-
-				// Rebuild denominator: coefficient * variable part
-				let newDen: MathNode;
-				if (denVarPart) {
-					newDen =
-						newDenCoef === 1
-							? denVarPart
-							: multiply(numericNode(newDenCoef), denVarPart, 'implicit');
-				} else {
-					newDen = numericNode(newDenCoef);
-				}
-
-				// If denominator is 1, return just the numerator
-				if (newDenCoef === 1 && !denVarPart) {
-					return sign < 0 ? opposite(newNum) : newNum;
-				}
-
-				const frac = divide(newNum, newDen, 'fraction');
-				return sign < 0 ? opposite(frac) : frac;
+			// Rebuild numerator: coefficient × variable part (omit coefficient if 1).
+			let newNum: MathNode;
+			if (numVarPart) {
+				newNum =
+					newNumCoef === 1n
+						? numVarPart
+						: multiply(number(newNumCoef.toString()), numVarPart, 'implicit');
+			} else {
+				newNum = number(newNumCoef.toString());
 			}
+
+			// Rebuild denominator: coefficient × variable part (omit coefficient if 1).
+			let newDen: MathNode;
+			if (denVarPart) {
+				newDen =
+					newDenCoef === 1n
+						? denVarPart
+						: multiply(number(newDenCoef.toString()), denVarPart, 'implicit');
+			} else {
+				newDen = number(newDenCoef.toString());
+			}
+
+			// If denominator collapses to 1, return just the numerator.
+			if (newDenCoef === 1n && !denVarPart) {
+				return sign < 0 ? opposite(newNum) : newNum;
+			}
+
+			const frac = divide(newNum, newDen, 'fraction');
+			return sign < 0 ? opposite(frac) : frac;
 		}
 
 		return node;
 	});
+}
+
+/**
+ * Render a Rational as a canonical MathNode.
+ * Integer → number('N') or opposite(number('N')).
+ * Fraction → divide(number, number) (with sign hoisted as opposite around the fraction).
+ */
+function rationalToNode(r: Rational): MathNode {
+	const sign = isNegative(r) ? -1 : 1;
+	const abs = absRational(r);
+
+	if (isInteger(abs)) {
+		const n = number(abs.n.toString());
+		return sign < 0 ? opposite(n) : n;
+	}
+
+	const frac = divide(number(abs.n.toString()), number(abs.d.toString()), 'fraction');
+	return sign < 0 ? opposite(frac) : frac;
 }
 
 /**
@@ -410,33 +426,26 @@ function unwrapDelimiters(node: MathNode): MathNode {
 	return node;
 }
 
-/** Extract numeric value from a node (handles numbers, opposites, delimiters) */
-function extractNumericValue(node: MathNode): number | null {
-	if (node.type === 'number') return parseFloat(node.value);
-	if (node.type === 'opposite') {
-		const inner = extractNumericValue(node.operand);
-		return inner !== null ? -inner : null;
-	}
-	if (node.type === 'positive') return extractNumericValue(node.operand);
-	if (node.type === 'delimiter') return extractNumericValue(node.content);
-	return null;
-}
-
-/** Extract the numeric coefficient from a node */
-function extractCoefficient(node: MathNode): number | null {
-	const numValue = extractNumericValue(node);
-	if (numValue !== null) return numValue;
+/**
+ * Extract the numeric coefficient from a node as an exact Rational.
+ *
+ * Handles atomic numerics (number, opposite/positive/delimiter wrappers) and
+ * monomials of the form coefficient × variablePart (e.g. 2x → 2/1).
+ */
+function extractCoefficient(node: MathNode): Rational | null {
+	const direct = extractRational(node);
+	if (direct !== null) return direct;
 
 	if (node.type === 'multiplication') {
-		const leftNum = extractNumericValue(node.left);
-		if (leftNum !== null) return leftNum;
-		const rightNum = extractNumericValue(node.right);
-		if (rightNum !== null) return rightNum;
+		const leftR = extractRational(node.left);
+		if (leftR !== null) return leftR;
+		const rightR = extractRational(node.right);
+		if (rightR !== null) return rightR;
 	}
 
 	if (node.type === 'opposite' && node.operand.type === 'multiplication') {
 		const coef = extractCoefficient(node.operand);
-		return coef !== null ? -coef : null;
+		return coef !== null ? negRational(coef) : null;
 	}
 
 	if (node.type === 'delimiter') return extractCoefficient(node.content);
@@ -452,11 +461,11 @@ function extractVariablePart(node: MathNode): MathNode | null {
 	if (node.type === 'delimiter') return extractVariablePart(node.content);
 
 	if (node.type === 'multiplication') {
-		const leftNum = extractNumericValue(node.left);
-		const rightNum = extractNumericValue(node.right);
+		const leftIsNumeric = extractRational(node.left) !== null;
+		const rightIsNumeric = extractRational(node.right) !== null;
 
-		if (leftNum !== null && rightNum === null) return node.right;
-		if (rightNum !== null && leftNum === null) return node.left;
+		if (leftIsNumeric && !rightIsNumeric) return node.right;
+		if (rightIsNumeric && !leftIsNumeric) return node.left;
 		// Both non-numeric or both numeric — return as-is
 		return null;
 	}
