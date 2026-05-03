@@ -823,6 +823,7 @@
 			<!-- Start endpoint handle -->
 			<g>
 				<!-- Invisible hit area -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<circle
 					class="pointer-events-auto"
 					cx={startX}
@@ -849,6 +850,7 @@
 			<!-- End endpoint handle -->
 			<g>
 				<!-- Invisible hit area -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<circle
 					class="pointer-events-auto"
 					cx={endX}
@@ -891,6 +893,7 @@
 					{@const wpPos = liveWps ? waypoint.position : waypoint.position}
 					<g>
 						<!-- Invisible hit area -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<rect
 							class="pointer-events-auto"
 							x={wpPos.x - waypointHitSize / 2}
@@ -923,6 +926,8 @@
 				{#each curvedResult.segmentMidpoints as midpoint, segmentIndex (segmentIndex)}
 					<g>
 						<!-- Invisible hit area -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<circle
 							class="pointer-events-auto"
 							cx={midpoint.x}
@@ -972,6 +977,7 @@
 						{@const coords = handle.getCoords(bounds)}
 
 						<!-- Invisible larger hit area -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<rect
 							class="pointer-events-auto"
 							x={coords.x - hitAreaSize / 2}
@@ -1020,6 +1026,7 @@
 					/>
 
 					<!-- Invisible larger hit area for rotation handle -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<circle
 						class="pointer-events-auto"
 						cx={centerX}
