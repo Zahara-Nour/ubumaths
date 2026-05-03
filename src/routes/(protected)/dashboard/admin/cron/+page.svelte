@@ -25,10 +25,14 @@
 
 	let { data } = $props();
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// Filter state
-	let jobNameFilter = $state(data.filters.job_name ?? 'all');
-	let statusFilter = $state(data.filters.status);
-	let periodFilter = $state(data.filters.period);
+	let jobNameFilter = $state(initialData.filters.job_name ?? 'all');
+	let statusFilter = $state(initialData.filters.status);
+	let periodFilter = $state(initialData.filters.period);
 
 	// UI state
 	let loading = $state(false);

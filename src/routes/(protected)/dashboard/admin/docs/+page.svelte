@@ -6,7 +6,11 @@
 
 	let { data } = $props();
 
-	let searchQuery = $state(data.searchQuery || '');
+	// Snapshot for $state inits and one-shot HTML build below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
+	let searchQuery = $state(initialData.searchQuery || '');
 	let expandedCategories = $state<Set<string>>(new Set(['features', 'guides']));
 
 	function toggleCategory(categoryPath: string) {
@@ -31,7 +35,7 @@
 	}
 
 	// Add IDs to headers for anchor links
-	const htmlWithIds = data.defaultDoc ? addHeaderIds(data.defaultDoc.html) : '';
+	const htmlWithIds = initialData.defaultDoc ? addHeaderIds(initialData.defaultDoc.html) : '';
 </script>
 
 <svelte:head>
