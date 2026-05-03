@@ -46,6 +46,16 @@ export { type BaseStep, type BaseStepRecorder, StepRecorderBase } from './step-r
 // Variable Detection
 export { containsVariable } from './contains-variable.js';
 
+// Cooperative interruption
+export {
+	AbortError,
+	checkAbort,
+	makeAbortChecker,
+	getActiveAbortChecker,
+	withActiveAbortChecker,
+	type AbortChecker
+} from './abort.js';
+
 // Periodic Functions
 export {
 	type PeriodicFunctionInfo,

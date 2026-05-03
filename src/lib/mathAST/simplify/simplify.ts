@@ -33,6 +33,9 @@ import { nodesEqual } from '../pattern/match';
 import { preprocess } from '../normal/rules';
 import { normalizeExtended, denormalizeExtended } from '../normal';
 
+// Cooperative interruption
+import { makeAbortChecker, withActiveAbortChecker } from '../common/abort';
+
 // =============================================================================
 // Rule Set Builder
 // =============================================================================
@@ -74,11 +77,14 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		enableTrig = true,
 		enableHyperbolic = true,
 		enableAlgebraic = true,
-		enableAbs = true
+		enableAbs = true,
+		signal,
+		timeoutMs
 	} = options ?? {};
 
 	const recorder = new SimplifyStepRecorder();
 	const isRecording = verbosity !== 'result';
+	const shouldAbort = makeAbortChecker(signal, timeoutMs);
 
 	// Build rule set once (abs + trig + hyp + algebraic based on options)
 	const rules = buildSimplifyRules({ enableAbs, enableTrig, enableHyperbolic, enableAlgebraic });
@@ -86,107 +92,129 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	let current = node;
 	let best = node;
 	let bestCost = computeCost(node);
+	let aborted = false;
 
-	for (let iter = 0; iter < maxIterations; iter++) {
-		const beforeIteration = current;
-
-		// Phase A: Normalize (extended — handles ∞ natively)
-		// normalizeExtended propagates infinity/signed-zero through arithmetic
-		// and functions (arctan(∞)→π/2, sinh(∞)→∞, etc.), then delegates to
-		// regular normalize for polynomial canonical form (arithmetic identities,
-		// like-term collection, power simplification, special function values).
-		recorder.setPhase('normalize');
-		try {
-			const preprocessed = preprocess(current);
-			const extResult = normalizeExtended(preprocessed);
-			const afterNormalize = denormalizeExtended(extResult);
-			if (isRecording && !nodesEqual(afterNormalize, current)) {
-				recorder.recordStep(
-					'normalize',
-					getSimplifyRuleDescription('normalize'),
-					current,
-					afterNormalize,
-					'detailed'
-				);
+	// Wrap the loop body so deep pattern-matching loops in match.ts can read the
+	// active checker via getActiveAbortChecker(). withActiveAbortChecker installs
+	// `shouldAbort` for the dynamic extent and restores the previous value on
+	// exit (even if the body throws).
+	withActiveAbortChecker(shouldAbort, () => {
+		for (let iter = 0; iter < maxIterations; iter++) {
+			if (shouldAbort?.()) {
+				aborted = true;
+				break;
 			}
-			current = afterNormalize;
-		} catch {
-			// normalizeExtended can fail on edge cases (indeterminate forms,
-			// complex domain errors). Skip safely and continue.
-		}
+			const beforeIteration = current;
 
-		// Phase B: Pattern rules (single bottom-up pass)
-		// Applies all enabled rules in one traversal: abs, trig identities,
-		// hyperbolic identities, and algebraic factoring. Arithmetic/power rules
-		// are NOT included — they are fully redundant with normalize's polynomial
-		// arithmetic.
-		if (rules.length > 0) {
-			recorder.setPhase('rules');
-			const { result: afterRules, steps: ruleSteps } = applyRulesDeepOnceTracked(
-				rules,
-				current,
-				ctx
-			);
-			if (isRecording) {
-				for (const step of ruleSteps) {
+			// Phase A: Normalize (extended — handles ∞ natively)
+			// normalizeExtended propagates infinity/signed-zero through arithmetic
+			// and functions (arctan(∞)→π/2, sinh(∞)→∞, etc.), then delegates to
+			// regular normalize for polynomial canonical form (arithmetic identities,
+			// like-term collection, power simplification, special function values).
+			recorder.setPhase('normalize');
+			try {
+				const preprocessed = preprocess(current);
+				const extResult = normalizeExtended(preprocessed);
+				const afterNormalize = denormalizeExtended(extResult);
+				if (isRecording && !nodesEqual(afterNormalize, current)) {
 					recorder.recordStep(
-						step.ruleName,
-						getSimplifyRuleDescription(step.ruleName),
-						step.before,
-						step.after,
+						'normalize',
+						getSimplifyRuleDescription('normalize'),
+						current,
+						afterNormalize,
 						'detailed'
 					);
 				}
+				current = afterNormalize;
+			} catch {
+				// normalizeExtended can fail on edge cases (indeterminate forms,
+				// complex domain errors). Skip safely and continue.
 			}
-			current = afterRules;
-		}
 
-		// Cost check before post-normalize (rules may produce cheaper forms)
-		const preNormCost = computeCost(current);
-		if (preNormCost < bestCost) {
-			best = current;
-			bestCost = preNormCost;
-		}
+			if (shouldAbort?.()) {
+				aborted = true;
+				break;
+			}
 
-		// Phase C: Post-normalize
-		// Re-normalize after pattern rules, which may produce expressions
-		// that benefit from canonical form (e.g., trig identity yields 1 + 3 → 4).
-		recorder.setPhase('post-normalize');
-		try {
-			const preprocessed2 = preprocess(current);
-			const extResult2 = normalizeExtended(preprocessed2);
-			const afterPostNorm = denormalizeExtended(extResult2);
-			if (isRecording && !nodesEqual(afterPostNorm, current)) {
-				recorder.recordStep(
-					'post-normalize',
-					getSimplifyRuleDescription('normalize'),
+			// Phase B: Pattern rules (single bottom-up pass)
+			// Applies all enabled rules in one traversal: abs, trig identities,
+			// hyperbolic identities, and algebraic factoring. Arithmetic/power rules
+			// are NOT included — they are fully redundant with normalize's polynomial
+			// arithmetic.
+			if (rules.length > 0) {
+				recorder.setPhase('rules');
+				const { result: afterRules, steps: ruleSteps } = applyRulesDeepOnceTracked(
+					rules,
 					current,
-					afterPostNorm,
-					'detailed'
+					ctx
 				);
+				if (isRecording) {
+					for (const step of ruleSteps) {
+						recorder.recordStep(
+							step.ruleName,
+							getSimplifyRuleDescription(step.ruleName),
+							step.before,
+							step.after,
+							'detailed'
+						);
+					}
+				}
+				current = afterRules;
 			}
-			current = afterPostNorm;
-		} catch {
-			// Skip normalization on failure
-		}
 
-		// Phase D: Cost check (post-normalize may also produce cheaper forms)
-		// Use <= so that post-normalize's canonical form wins over equivalent cost
-		const currentCost = computeCost(current);
-		if (currentCost <= bestCost) {
-			best = current;
-			bestCost = currentCost;
-		}
+			// Cost check before post-normalize (rules may produce cheaper forms)
+			const preNormCost = computeCost(current);
+			if (preNormCost < bestCost) {
+				best = current;
+				bestCost = preNormCost;
+			}
 
-		// Phase E: Fixpoint check
-		if (nodesEqual(current, beforeIteration)) {
-			break;
+			if (shouldAbort?.()) {
+				aborted = true;
+				break;
+			}
+
+			// Phase C: Post-normalize
+			// Re-normalize after pattern rules, which may produce expressions
+			// that benefit from canonical form (e.g., trig identity yields 1 + 3 → 4).
+			recorder.setPhase('post-normalize');
+			try {
+				const preprocessed2 = preprocess(current);
+				const extResult2 = normalizeExtended(preprocessed2);
+				const afterPostNorm = denormalizeExtended(extResult2);
+				if (isRecording && !nodesEqual(afterPostNorm, current)) {
+					recorder.recordStep(
+						'post-normalize',
+						getSimplifyRuleDescription('normalize'),
+						current,
+						afterPostNorm,
+						'detailed'
+					);
+				}
+				current = afterPostNorm;
+			} catch {
+				// Skip normalization on failure
+			}
+
+			// Phase D: Cost check (post-normalize may also produce cheaper forms)
+			// Use <= so that post-normalize's canonical form wins over equivalent cost
+			const currentCost = computeCost(current);
+			if (currentCost <= bestCost) {
+				best = current;
+				bestCost = currentCost;
+			}
+
+			// Phase E: Fixpoint check
+			if (nodesEqual(current, beforeIteration)) {
+				break;
+			}
 		}
-	}
+	});
 
 	return {
 		result: best,
 		steps: recorder.getStepsFiltered(verbosity),
-		cost: bestCost
+		cost: bestCost,
+		...(aborted && { aborted: true })
 	};
 }

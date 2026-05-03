@@ -28,6 +28,7 @@ import {
 	isAnySequencePattern,
 	isMathNodeBinding
 } from './types';
+import { getActiveAbortChecker } from '../common/abort';
 import type { MathNode } from '../types';
 import type { TypeContext } from '../numtype/types';
 import type { SignedTerm } from '../flatten';
@@ -544,6 +545,14 @@ function matchPair(
  * @yields Arrays of k indices
  */
 function* combinations<T>(arr: readonly T[], k: number): Generator<T[]> {
+	// Cooperative interruption: an active abort checker (installed by simplify()
+	// or another entry point via withActiveAbortChecker) lets us bail out of
+	// combinatorial enumeration before C(n,k) blows the wall-clock budget.
+	// Note: we early-return silently (no AbortError thrown) — generators don't
+	// play well with exceptions across yield boundaries. The caller's outer
+	// loop in simplify.ts will observe the abort at its next inter-phase check
+	// and set `aborted: true` accordingly.
+	if (getActiveAbortChecker()?.()) return;
 	if (k === 0) {
 		yield [];
 		return;
@@ -566,6 +575,9 @@ function* combinations<T>(arr: readonly T[], k: number): Generator<T[]> {
  * @yields All permutations
  */
 function* permutations<T>(arr: readonly T[]): Generator<T[]> {
+	// Same cooperative bail-out as combinations: O(n!) enumeration is the worst
+	// offender for wall-clock blowup on large sums/products.
+	if (getActiveAbortChecker()?.()) return;
 	if (arr.length <= 1) {
 		yield [...arr];
 		return;

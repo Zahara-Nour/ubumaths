@@ -6,10 +6,11 @@
  */
 
 import type { MathNode } from './types';
-import { normalize } from './normal/normalize';
+import { normalize, type NormalizeAbortOptions } from './normal/normalize';
 import { normalFormsEquivalent } from './normal/hash';
 import { evaluate, evaluateNodeToApproximatedNumber } from './eval/evaluate';
 import { EQUALITY_TOLERANCE } from './common/constants';
+import { AbortError, makeAbortChecker } from './common/abort';
 
 /**
  * Checks if two MathNodes are mathematically equivalent.
@@ -27,14 +28,19 @@ import { EQUALITY_TOLERANCE } from './common/constants';
  * areEquivalent(parse('2x + 3'), parse('3 + 2x'))        // true
  * areEquivalent(parse('sqrt(2)'), parse('sqrt(2)'))       // true
  */
-export function areEquivalent(a: MathNode, b: MathNode): boolean {
+export function areEquivalent(a: MathNode, b: MathNode, options?: NormalizeAbortOptions): boolean {
+	const abortChecker = makeAbortChecker(options?.signal, options?.timeoutMs);
+	const ctx = abortChecker ? { abortChecker } : undefined;
+
 	// Try structural equivalence via normalization
 	try {
-		const formA = normalize(a);
-		const formB = normalize(b);
+		const formA = normalize(a, ctx);
+		const formB = normalize(b, ctx);
 		return normalFormsEquivalent(formA, formB);
-	} catch {
-		// Normalization failed — try numeric comparison as fallback
+	} catch (e) {
+		// On abort, return false (conservative — we couldn't prove equivalence).
+		// Any other normalization failure falls through to the numeric fallback.
+		if (e instanceof AbortError) return false;
 	}
 
 	try {

@@ -37,6 +37,21 @@ export interface SimplifyOptions {
 
 	/** Enable absolute value simplification (default: true) */
 	readonly enableAbs?: boolean;
+
+	/**
+	 * Cooperative interruption signal. When aborted, simplify returns the best
+	 * form found so far with `aborted: true` (no exception thrown). Combine
+	 * freely with `timeoutMs`.
+	 */
+	readonly signal?: AbortSignal;
+
+	/**
+	 * Convenience: maximum wall-clock budget in milliseconds. Implemented via a
+	 * `performance.now()` deadline captured at call time so it fires during
+	 * synchronous simplify execution (an `AbortSignal.timeout` would be starved
+	 * by the event loop). If `signal` is also provided, both are combined.
+	 */
+	readonly timeoutMs?: number;
 }
 
 // =============================================================================
@@ -68,4 +83,11 @@ export interface SimplifyResult {
 
 	/** Cost of the result expression */
 	readonly cost: number;
+
+	/**
+	 * Set to `true` when simplification was interrupted before reaching fixpoint.
+	 * In that case `result` is the best-cost form encountered up to the abort
+	 * point, which may be the original input.
+	 */
+	readonly aborted?: boolean;
 }
