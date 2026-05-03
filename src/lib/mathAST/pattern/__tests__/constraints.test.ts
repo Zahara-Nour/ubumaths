@@ -60,7 +60,7 @@ describe('Constraint Evaluation', () => {
 
 			expect(checkConstraint(constraint, number('42'))).toBe(true);
 			expect(checkConstraint(constraint, number('3.14'))).toBe(true);
-			expect(checkConstraint(constraint, number('-5'))).toBe(true);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(true);
 			expect(checkConstraint(constraint, number('0'))).toBe(true);
 		});
 
@@ -115,8 +115,8 @@ describe('Constraint Evaluation', () => {
 		it('fails for negative numbers', () => {
 			const constraint = P.isPositive();
 
-			expect(checkConstraint(constraint, number('-5'))).toBe(false);
-			expect(checkConstraint(constraint, number('-0.001'))).toBe(false);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(false);
+			expect(checkConstraint(constraint, opposite(number('0.001')))).toBe(false);
 		});
 
 		it('fails for non-number nodes', () => {
@@ -134,9 +134,9 @@ describe('Constraint Evaluation', () => {
 		it('matches negative numbers', () => {
 			const constraint = P.isNegative();
 
-			expect(checkConstraint(constraint, number('-5'))).toBe(true);
-			expect(checkConstraint(constraint, number('-0.001'))).toBe(true);
-			expect(checkConstraint(constraint, number('-999'))).toBe(true);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(true);
+			expect(checkConstraint(constraint, opposite(number('0.001')))).toBe(true);
+			expect(checkConstraint(constraint, opposite(number('999')))).toBe(true);
 		});
 
 		it('fails for zero', () => {
@@ -174,8 +174,8 @@ describe('Constraint Evaluation', () => {
 		it('matches negative numbers', () => {
 			const constraint = P.isNonzero();
 
-			expect(checkConstraint(constraint, number('-5'))).toBe(true);
-			expect(checkConstraint(constraint, number('-0.001'))).toBe(true);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(true);
+			expect(checkConstraint(constraint, opposite(number('0.001')))).toBe(true);
 		});
 
 		it('fails for zero', () => {
@@ -201,7 +201,7 @@ describe('Constraint Evaluation', () => {
 
 			expect(checkConstraint(constraint, number('0'))).toBe(true);
 			expect(checkConstraint(constraint, number('2'))).toBe(true);
-			expect(checkConstraint(constraint, number('-1'))).toBe(true);
+			expect(checkConstraint(constraint, opposite(number('1')))).toBe(true);
 			expect(checkConstraint(constraint, number('0.5'))).toBe(true);
 		});
 
@@ -234,7 +234,7 @@ describe('Constraint Evaluation', () => {
 			it('fails for values equal or less than threshold', () => {
 				expect(checkConstraint(P.gt(5), number('5'))).toBe(false);
 				expect(checkConstraint(P.gt(5), number('4'))).toBe(false);
-				expect(checkConstraint(P.gt(5), number('-1'))).toBe(false);
+				expect(checkConstraint(P.gt(5), opposite(number('1')))).toBe(false);
 			});
 
 			it('fails for non-number nodes', () => {
@@ -245,8 +245,8 @@ describe('Constraint Evaluation', () => {
 		describe('lt (less than)', () => {
 			it('matches values less than threshold', () => {
 				expect(checkConstraint(P.lt(10), number('9'))).toBe(true);
-				expect(checkConstraint(P.lt(10), number('-5'))).toBe(true);
-				expect(checkConstraint(P.lt(0), number('-0.001'))).toBe(true);
+				expect(checkConstraint(P.lt(10), opposite(number('5')))).toBe(true);
+				expect(checkConstraint(P.lt(0), opposite(number('0.001')))).toBe(true);
 			});
 
 			it('fails for values equal or greater than threshold', () => {
@@ -268,7 +268,7 @@ describe('Constraint Evaluation', () => {
 
 			it('fails for values less than threshold', () => {
 				expect(checkConstraint(P.gte(5), number('4'))).toBe(false);
-				expect(checkConstraint(P.gte(5), number('-1'))).toBe(false);
+				expect(checkConstraint(P.gte(5), opposite(number('1')))).toBe(false);
 			});
 		});
 
@@ -289,7 +289,7 @@ describe('Constraint Evaluation', () => {
 			it('matches values equal to threshold', () => {
 				expect(checkConstraint(P.eq(5), number('5'))).toBe(true);
 				expect(checkConstraint(P.eq(0), number('0'))).toBe(true);
-				expect(checkConstraint(P.eq(-3), number('-3'))).toBe(true);
+				expect(checkConstraint(P.eq(-3), opposite(number('3')))).toBe(true);
 			});
 
 			it('fails for values not equal to threshold', () => {
@@ -301,7 +301,7 @@ describe('Constraint Evaluation', () => {
 		describe('ne (not equal)', () => {
 			it('matches values not equal to threshold', () => {
 				expect(checkConstraint(P.ne(0), number('1'))).toBe(true);
-				expect(checkConstraint(P.ne(0), number('-1'))).toBe(true);
+				expect(checkConstraint(P.ne(0), opposite(number('1')))).toBe(true);
 				expect(checkConstraint(P.ne(1), number('0'))).toBe(true);
 			});
 
@@ -321,7 +321,7 @@ describe('Constraint Evaluation', () => {
 			expect(checkConstraint(P.isMultipleOf(10), number('0'))).toBe(true);
 			expect(checkConstraint(P.isMultipleOf(10), number('10'))).toBe(true);
 			expect(checkConstraint(P.isMultipleOf(10), number('340'))).toBe(true);
-			expect(checkConstraint(P.isMultipleOf(10), number('-20'))).toBe(true);
+			expect(checkConstraint(P.isMultipleOf(10), opposite(number('20')))).toBe(true);
 		});
 
 		it('fails for non-multiples of 10', () => {
@@ -333,7 +333,7 @@ describe('Constraint Evaluation', () => {
 		it('matches multiples of 3', () => {
 			expect(checkConstraint(P.isMultipleOf(3), number('0'))).toBe(true);
 			expect(checkConstraint(P.isMultipleOf(3), number('9'))).toBe(true);
-			expect(checkConstraint(P.isMultipleOf(3), number('-6'))).toBe(true);
+			expect(checkConstraint(P.isMultipleOf(3), opposite(number('6')))).toBe(true);
 		});
 
 		it('fails for non-integer values', () => {
@@ -364,8 +364,8 @@ describe('Constraint Evaluation', () => {
 			});
 
 			it('fails for negative numbers', () => {
-				expect(checkConstraint(P.inPositiveReals(), number('-5'))).toBe(false);
-				expect(checkConstraint(P.inPositiveReals(), number('-0.001'))).toBe(false);
+				expect(checkConstraint(P.inPositiveReals(), opposite(number('5')))).toBe(false);
+				expect(checkConstraint(P.inPositiveReals(), opposite(number('0.001')))).toBe(false);
 			});
 
 			it('fails for non-number nodes', () => {
@@ -384,8 +384,8 @@ describe('Constraint Evaluation', () => {
 			});
 
 			it('fails for negative numbers', () => {
-				expect(checkConstraint(P.inNonNegativeReals(), number('-5'))).toBe(false);
-				expect(checkConstraint(P.inNonNegativeReals(), number('-0.001'))).toBe(false);
+				expect(checkConstraint(P.inNonNegativeReals(), opposite(number('5')))).toBe(false);
+				expect(checkConstraint(P.inNonNegativeReals(), opposite(number('0.001')))).toBe(false);
 			});
 		});
 
@@ -393,14 +393,14 @@ describe('Constraint Evaluation', () => {
 			it('matches values in [-1, 1]', () => {
 				expect(checkConstraint(P.inUnitInterval(), number('0'))).toBe(true);
 				expect(checkConstraint(P.inUnitInterval(), number('0.5'))).toBe(true);
-				expect(checkConstraint(P.inUnitInterval(), number('-0.5'))).toBe(true);
+				expect(checkConstraint(P.inUnitInterval(), opposite(number('0.5')))).toBe(true);
 				expect(checkConstraint(P.inUnitInterval(), number('1'))).toBe(true);
-				expect(checkConstraint(P.inUnitInterval(), number('-1'))).toBe(true);
+				expect(checkConstraint(P.inUnitInterval(), opposite(number('1')))).toBe(true);
 			});
 
 			it('fails for values outside [-1, 1]', () => {
 				expect(checkConstraint(P.inUnitInterval(), number('1.01'))).toBe(false);
-				expect(checkConstraint(P.inUnitInterval(), number('-1.01'))).toBe(false);
+				expect(checkConstraint(P.inUnitInterval(), opposite(number('1.01')))).toBe(false);
 				expect(checkConstraint(P.inUnitInterval(), number('5'))).toBe(false);
 			});
 		});
@@ -409,7 +409,7 @@ describe('Constraint Evaluation', () => {
 			describe('inR - all reals', () => {
 				it('matches any finite number', () => {
 					expect(checkConstraint(P.inR(), number('5'))).toBe(true);
-					expect(checkConstraint(P.inR(), number('-100'))).toBe(true);
+					expect(checkConstraint(P.inR(), opposite(number('100')))).toBe(true);
 					expect(checkConstraint(P.inR(), number('0'))).toBe(true);
 					expect(checkConstraint(P.inR(), number('3.14'))).toBe(true);
 				});
@@ -427,8 +427,8 @@ describe('Constraint Evaluation', () => {
 				});
 
 				it('fails for negative numbers', () => {
-					expect(checkConstraint(P.inRplus(), number('-1'))).toBe(false);
-					expect(checkConstraint(P.inRplus(), number('-0.001'))).toBe(false);
+					expect(checkConstraint(P.inRplus(), opposite(number('1')))).toBe(false);
+					expect(checkConstraint(P.inRplus(), opposite(number('0.001')))).toBe(false);
 				});
 			});
 
@@ -440,14 +440,14 @@ describe('Constraint Evaluation', () => {
 
 				it('fails for zero and negative numbers', () => {
 					expect(checkConstraint(P.inRplusStar(), number('0'))).toBe(false);
-					expect(checkConstraint(P.inRplusStar(), number('-1'))).toBe(false);
+					expect(checkConstraint(P.inRplusStar(), opposite(number('1')))).toBe(false);
 				});
 			});
 
 			describe('inRstar - non-zero reals (x != 0)', () => {
 				it('matches non-zero numbers', () => {
 					expect(checkConstraint(P.inRstar(), number('5'))).toBe(true);
-					expect(checkConstraint(P.inRstar(), number('-5'))).toBe(true);
+					expect(checkConstraint(P.inRstar(), opposite(number('5')))).toBe(true);
 					expect(checkConstraint(P.inRstar(), number('0.001'))).toBe(true);
 				});
 
@@ -459,8 +459,8 @@ describe('Constraint Evaluation', () => {
 			describe('inRminus - non-positive reals (x <= 0)', () => {
 				it('matches non-positive numbers', () => {
 					expect(checkConstraint(P.inRminus(), number('0'))).toBe(true);
-					expect(checkConstraint(P.inRminus(), number('-5'))).toBe(true);
-					expect(checkConstraint(P.inRminus(), number('-0.001'))).toBe(true);
+					expect(checkConstraint(P.inRminus(), opposite(number('5')))).toBe(true);
+					expect(checkConstraint(P.inRminus(), opposite(number('0.001')))).toBe(true);
 				});
 
 				it('fails for positive numbers', () => {
@@ -471,8 +471,8 @@ describe('Constraint Evaluation', () => {
 
 			describe('inRminusStar - negative reals (x < 0)', () => {
 				it('matches negative numbers', () => {
-					expect(checkConstraint(P.inRminusStar(), number('-5'))).toBe(true);
-					expect(checkConstraint(P.inRminusStar(), number('-0.001'))).toBe(true);
+					expect(checkConstraint(P.inRminusStar(), opposite(number('5')))).toBe(true);
+					expect(checkConstraint(P.inRminusStar(), opposite(number('0.001')))).toBe(true);
 				});
 
 				it('fails for zero and positive numbers', () => {
@@ -489,8 +489,8 @@ describe('Constraint Evaluation', () => {
 				});
 
 				it('fails for negative integers', () => {
-					expect(checkConstraint(P.inN(), number('-1'))).toBe(false);
-					expect(checkConstraint(P.inN(), number('-100'))).toBe(false);
+					expect(checkConstraint(P.inN(), opposite(number('1')))).toBe(false);
+					expect(checkConstraint(P.inN(), opposite(number('100')))).toBe(false);
 				});
 
 				it('fails for non-integers', () => {
@@ -510,7 +510,7 @@ describe('Constraint Evaluation', () => {
 				});
 
 				it('fails for negative integers', () => {
-					expect(checkConstraint(P.inNstar(), number('-1'))).toBe(false);
+					expect(checkConstraint(P.inNstar(), opposite(number('1')))).toBe(false);
 				});
 
 				it('fails for non-integers', () => {
@@ -522,7 +522,7 @@ describe('Constraint Evaluation', () => {
 				it('matches any integer', () => {
 					expect(checkConstraint(P.inZ(), number('0'))).toBe(true);
 					expect(checkConstraint(P.inZ(), number('5'))).toBe(true);
-					expect(checkConstraint(P.inZ(), number('-5'))).toBe(true);
+					expect(checkConstraint(P.inZ(), opposite(number('5')))).toBe(true);
 				});
 
 				it('fails for non-integers', () => {
@@ -534,7 +534,7 @@ describe('Constraint Evaluation', () => {
 			describe('inZstar - non-zero integers', () => {
 				it('matches non-zero integers', () => {
 					expect(checkConstraint(P.inZstar(), number('1'))).toBe(true);
-					expect(checkConstraint(P.inZstar(), number('-1'))).toBe(true);
+					expect(checkConstraint(P.inZstar(), opposite(number('1')))).toBe(true);
 					expect(checkConstraint(P.inZstar(), number('100'))).toBe(true);
 				});
 
@@ -640,11 +640,11 @@ describe('Constraint Evaluation', () => {
 				const constraint = pattern.constraint as PatternConstraint;
 				expect(checkConstraint(constraint, number('0'))).toBe(true);
 				expect(checkConstraint(constraint, number('0.25'))).toBe(true);
-				expect(checkConstraint(constraint, number('-0.25'))).toBe(true);
+				expect(checkConstraint(constraint, opposite(number('0.25')))).toBe(true);
 				expect(checkConstraint(constraint, number('0.5'))).toBe(true);
-				expect(checkConstraint(constraint, number('-0.5'))).toBe(true);
+				expect(checkConstraint(constraint, opposite(number('0.5')))).toBe(true);
 				expect(checkConstraint(constraint, number('0.6'))).toBe(false);
-				expect(checkConstraint(constraint, number('-0.6'))).toBe(false);
+				expect(checkConstraint(constraint, opposite(number('0.6')))).toBe(false);
 			});
 
 			it('matches interval with complex expression: in[(1+sqrt(5))/2,2]', () => {
@@ -685,7 +685,7 @@ describe('Constraint Evaluation', () => {
 			const constraint = P.isInteger();
 
 			expect(checkConstraint(constraint, number('5'))).toBe(true);
-			expect(checkConstraint(constraint, number('-42'))).toBe(true);
+			expect(checkConstraint(constraint, opposite(number('42')))).toBe(true);
 			expect(checkConstraint(constraint, number('0'))).toBe(true);
 			expect(checkConstraint(constraint, number('1000000'))).toBe(true);
 		});
@@ -695,7 +695,7 @@ describe('Constraint Evaluation', () => {
 
 			expect(checkConstraint(constraint, number('3.14'))).toBe(false);
 			expect(checkConstraint(constraint, number('0.5'))).toBe(false);
-			expect(checkConstraint(constraint, number('-2.7'))).toBe(false);
+			expect(checkConstraint(constraint, opposite(number('2.7')))).toBe(false);
 		});
 
 		it('fails for non-number nodes', () => {
@@ -790,7 +790,7 @@ describe('Constraint Evaluation', () => {
 		it('fails when any constraint fails', () => {
 			const constraint = P.and(P.isNumber(), P.isPositive());
 
-			expect(checkConstraint(constraint, number('-5'))).toBe(false);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(false);
 			expect(checkConstraint(constraint, variable('x'))).toBe(false);
 		});
 
@@ -799,7 +799,7 @@ describe('Constraint Evaluation', () => {
 
 			expect(checkConstraint(constraint, number('5'))).toBe(true);
 			expect(checkConstraint(constraint, number('5.5'))).toBe(false);
-			expect(checkConstraint(constraint, number('-5'))).toBe(false);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(false);
 		});
 
 		it('handles empty and constraint', () => {
@@ -882,7 +882,7 @@ describe('Constraint Evaluation', () => {
 
 			// Not (number AND positive) = not number OR not positive
 			expect(checkConstraint(constraint, number('5'))).toBe(false);
-			expect(checkConstraint(constraint, number('-5'))).toBe(true);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(true);
 			expect(checkConstraint(constraint, variable('x'))).toBe(true);
 		});
 	});
@@ -908,7 +908,7 @@ describe('Constraint Evaluation', () => {
 
 			expect(checkConstraint(constraint, number('50'))).toBe(true);
 			expect(checkConstraint(constraint, number('150'))).toBe(false);
-			expect(checkConstraint(constraint, number('-5'))).toBe(false);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(false);
 		});
 
 		it('can access node properties', () => {
@@ -931,7 +931,7 @@ describe('Constraint Evaluation', () => {
 			const constraint = P.and(P.isInteger(), P.isPositive());
 
 			expect(checkConstraint(constraint, number('5'))).toBe(true);
-			expect(checkConstraint(constraint, number('-5'))).toBe(false);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(false);
 			expect(checkConstraint(constraint, number('5.5'))).toBe(false);
 			expect(checkConstraint(constraint, number('0'))).toBe(false);
 		});
@@ -950,7 +950,7 @@ describe('Constraint Evaluation', () => {
 
 			expect(checkConstraint(constraint, number('5'))).toBe(true);
 			expect(checkConstraint(constraint, number('0'))).toBe(true);
-			expect(checkConstraint(constraint, number('-5'))).toBe(false);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(false);
 			expect(checkConstraint(constraint, variable('x'))).toBe(true);
 		});
 
@@ -961,7 +961,7 @@ describe('Constraint Evaluation', () => {
 			// = positive or zero integer
 			expect(checkConstraint(constraint, number('5'))).toBe(true);
 			expect(checkConstraint(constraint, number('0'))).toBe(true);
-			expect(checkConstraint(constraint, number('-5'))).toBe(false);
+			expect(checkConstraint(constraint, opposite(number('5')))).toBe(false);
 			expect(checkConstraint(constraint, number('5.5'))).toBe(false);
 		});
 	});

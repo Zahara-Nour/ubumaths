@@ -135,7 +135,7 @@ describe('Pattern Matching Algorithm', () => {
 				const pattern = P._('k', P.and(P.isInteger(), P.isPositive()));
 
 				expect(match(pattern, number('5')).success).toBe(true);
-				expect(match(pattern, number('-5')).success).toBe(false);
+				expect(match(pattern, opposite(number('5'))).success).toBe(false);
 				expect(match(pattern, number('5.5')).success).toBe(false);
 			});
 
@@ -143,7 +143,7 @@ describe('Pattern Matching Algorithm', () => {
 				const pattern = P._('d', P.isNonzero());
 
 				expect(match(pattern, number('5')).success).toBe(true);
-				expect(match(pattern, number('-3')).success).toBe(true);
+				expect(match(pattern, opposite(number('3'))).success).toBe(true);
 				expect(match(pattern, number('0')).success).toBe(false);
 			});
 

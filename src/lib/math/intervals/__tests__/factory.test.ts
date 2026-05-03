@@ -31,7 +31,7 @@ import {
 } from '../factory';
 import { endpointToNumber } from '../endpoint';
 import { isNumber, isInfinity, isMathConstant, isFunction, isDivision } from '$lib/mathAST/guards';
-import { number } from '$lib/mathAST/factory';
+import { number, opposite } from '$lib/mathAST/factory';
 
 describe('bound value constructors', () => {
 	describe('number', () => {
@@ -51,11 +51,14 @@ describe('bound value constructors', () => {
 			}
 		});
 
-		it('creates NumberNode for -1', () => {
-			const minusOne = number(-1);
-			expect(isNumber(minusOne)).toBe(true);
-			if (isNumber(minusOne)) {
-				expect(minusOne.value).toBe('-1');
+		it('creates canonical OppositeNode for -1', () => {
+			// Canonical form: -1 is opposite(number('1')), not number('-1').
+			// See docs/wip/migrate-negative-numbers-progress.md
+			const minusOne = opposite(number('1'));
+			expect(minusOne.type).toBe('opposite');
+			expect(isNumber(minusOne.operand)).toBe(true);
+			if (isNumber(minusOne.operand)) {
+				expect(minusOne.operand.value).toBe('1');
 			}
 		});
 
@@ -316,16 +319,14 @@ describe('number edge cases', () => {
 		expect(endpointToNumber(small)).toBeCloseTo(1e-10);
 	});
 
-	it('handles negative zero', () => {
-		const negZero = number(-0);
-		expect(isNumber(negZero)).toBe(true);
-		// -0 should be stored as "0"
-		expect(endpointToNumber(negZero)).toBe(0);
-	});
+	// Note: number(-0) is rejected by the factory in Phase 4 of the
+	// migration plan. The legacy "negative zero stored as '0'" behaviour
+	// is no longer relevant — see migrate-negative-numbers-progress.md.
 
 	it('handles very negative numbers', () => {
-		const negLarge = number(-1e15);
-		expect(isNumber(negLarge)).toBe(true);
+		// Canonical form: -1e15 is opposite(number('1e15')).
+		const negLarge = opposite(number('1e15'));
+		expect(negLarge.type).toBe('opposite');
 		expect(endpointToNumber(negLarge)).toBe(-1e15);
 	});
 });

@@ -1219,12 +1219,9 @@ describe('Negative Approach Values', () => {
 		expectNumber(result, 0);
 	});
 
-	// Phase 3f: legacy form retained — the limit pipeline passes the approach
-	// to substituteApproachFactors which uses isNumber(approach) for value
-	// extraction; canonical form rejected. Migration deferred to Phase 4.
 	it('ln(x+5) at x=-5 right-sided is -∞', () => {
 		const expr = func('ln', [xPlus('5')]);
-		const result = evaluateLimit(expr, 'x', number('-5'), 'right');
+		const result = evaluateLimit(expr, 'x', opposite(number('5')), 'right');
 		expectNegInfinity(result);
 	});
 

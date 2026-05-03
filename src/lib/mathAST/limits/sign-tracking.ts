@@ -16,9 +16,9 @@
 
 import type { MathNode } from '../types';
 import type { LimitDirection } from './types';
-import { isNumber, isInfinity, isSignedZero as isSignedZeroNode } from '../guards';
+import { isInfinity, isSignedZero as isSignedZeroNode } from '../guards';
 import { number, positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../factory';
-import { evaluateNumeric, getNumericValue, formatNumber } from '../common';
+import { evaluateNumeric, getNumericValue, numericNode } from '../common';
 import {
 	addExtended,
 	subtractExtended,
@@ -540,7 +540,8 @@ export function signedValueToMathNode(value: SignedLimitValue): MathNode | null 
 		case 'neg-infinity':
 			return negativeInfinity();
 		case 'finite':
-			return number(formatNumber(value.value));
+			// numericNode wraps negative values in opposite(...) (canonical form).
+			return numericNode(value.value);
 		case 'zero-plus':
 			return zeroPlus();
 		case 'zero-minus':
@@ -556,8 +557,9 @@ export function signedValueToMathNode(value: SignedLimitValue): MathNode | null 
  * Convert a MathNode to a SignedLimitValue.
  */
 export function mathNodeToSignedValue(node: MathNode): SignedLimitValue {
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
+	// getNumericValue accepts both number('N') and opposite(number('N')) (canonical for negatives).
+	const val = getNumericValue(node);
+	if (val !== null) {
 		if (val === 0) return { type: 'zero' };
 		if (Number.isFinite(val)) return { type: 'finite', value: val };
 		return { type: 'unknown' };
@@ -599,7 +601,8 @@ export function signedValueToInfinity(value: SignedLimitValue): MathNode | null 
 		case 'neg-infinity':
 			return negativeInfinity();
 		case 'finite':
-			return number(formatNumber(value.value));
+			// numericNode wraps negative values in opposite(...) (canonical form).
+			return numericNode(value.value);
 		case 'zero':
 		case 'zero-plus':
 		case 'zero-minus':

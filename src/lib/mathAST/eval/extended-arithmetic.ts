@@ -8,8 +8,9 @@
  */
 
 import type { MathNode } from '../types';
-import { isNumber, isInfinity, isSignedZero } from '../guards';
+import { isInfinity, isSignedZero } from '../guards';
 import { number, positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../factory';
+import { getNumericValue, numericNode } from '../common/numeric';
 
 // =============================================================================
 // Types
@@ -37,19 +38,14 @@ function indeterminate(form: IndeterminateForm): ExtendedResult {
 	return { type: 'indeterminate', form };
 }
 
+// Recognise both number('N') and opposite(number('N')) (canonical for negatives).
+// Delegates to getNumericValue from common/numeric which handles both forms.
 function getNumberValue(node: MathNode): number | null {
-	if (isNumber(node)) {
-		const val = parseFloat(node.value);
-		return Number.isFinite(val) ? val : null;
-	}
-	return null;
+	return getNumericValue(node);
 }
 
 function isZeroNumber(node: MathNode): boolean {
-	if (isNumber(node)) {
-		return parseFloat(node.value) === 0;
-	}
-	return false;
+	return getNumberValue(node) === 0;
 }
 
 function flipSign(sign: 'positive' | 'negative'): 'positive' | 'negative' {
@@ -81,7 +77,7 @@ export function addExtended(a: MathNode, b: MathNode): ExtendedResult {
 	const aNum = getNumberValue(a);
 	const bNum = getNumberValue(b);
 	if (aNum !== null && bNum !== null) {
-		return value(number((aNum + bNum).toString()));
+		return value(numericNode(aNum + bNum));
 	}
 
 	// Infinity + Infinity
@@ -140,7 +136,7 @@ export function subtractExtended(a: MathNode, b: MathNode): ExtendedResult {
 	const aNum = getNumberValue(a);
 	const bNum = getNumberValue(b);
 	if (aNum !== null && bNum !== null) {
-		return value(number((aNum - bNum).toString()));
+		return value(numericNode(aNum - bNum));
 	}
 
 	// Infinity - Infinity
@@ -170,7 +166,7 @@ export function subtractExtended(a: MathNode, b: MathNode): ExtendedResult {
 
 	// SignedZero - finite or finite - SignedZero
 	if (isSignedZero(a) && bNum !== null) {
-		return value(number((-bNum).toString()));
+		return value(numericNode(-bNum));
 	}
 	if (aNum !== null && isSignedZero(b)) {
 		return value(a);
@@ -197,7 +193,7 @@ export function multiplyExtended(a: MathNode, b: MathNode): ExtendedResult {
 	const aNum = getNumberValue(a);
 	const bNum = getNumberValue(b);
 	if (aNum !== null && bNum !== null) {
-		return value(number((aNum * bNum).toString()));
+		return value(numericNode(aNum * bNum));
 	}
 
 	// 0 × ∞ = indeterminate
@@ -278,7 +274,7 @@ export function divideExtended(a: MathNode, b: MathNode): ExtendedResult {
 			// Should not happen if using SignedZero properly
 			return value(number('NaN'));
 		}
-		return value(number((aNum / bNum).toString()));
+		return value(numericNode(aNum / bNum));
 	}
 
 	// 0 / 0 = indeterminate (any combination)
@@ -371,7 +367,7 @@ export function lnExtended(arg: MathNode): ExtendedResult {
 		if (num <= 0) {
 			return value(number('NaN'));
 		}
-		return value(number(Math.log(num).toString()));
+		return value(numericNode(Math.log(num)));
 	}
 
 	return value(number('NaN'));
@@ -406,7 +402,7 @@ export function expExtended(arg: MathNode): ExtendedResult {
 		if (!Number.isFinite(result)) {
 			return value(result > 0 ? positiveInfinity() : negativeInfinity());
 		}
-		return value(number(result.toString()));
+		return value(numericNode(result));
 	}
 
 	return value(number('NaN'));
@@ -440,7 +436,7 @@ export function sqrtExtended(arg: MathNode): ExtendedResult {
 		if (num < 0) {
 			return value(number('NaN'));
 		}
-		return value(number(Math.sqrt(num).toString()));
+		return value(numericNode(Math.sqrt(num)));
 	}
 
 	return value(number('NaN'));
@@ -465,7 +461,7 @@ export function sinExtended(arg: MathNode): ExtendedResult {
 
 	const num = getNumberValue(arg);
 	if (num !== null) {
-		return value(number(Math.sin(num).toString()));
+		return value(numericNode(Math.sin(num)));
 	}
 
 	return value(number('NaN'));
@@ -489,7 +485,7 @@ export function cosExtended(arg: MathNode): ExtendedResult {
 
 	const num = getNumberValue(arg);
 	if (num !== null) {
-		return value(number(Math.cos(num).toString()));
+		return value(numericNode(Math.cos(num)));
 	}
 
 	return value(number('NaN'));
@@ -513,7 +509,7 @@ export function negateExtended(a: MathNode): ExtendedResult {
 
 	const num = getNumberValue(a);
 	if (num !== null) {
-		return value(number((-num).toString()));
+		return value(numericNode(-num));
 	}
 
 	return value(number('NaN'));

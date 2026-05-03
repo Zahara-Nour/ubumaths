@@ -256,7 +256,7 @@ Tests : 883 verts dans `cli/`, suite mathAST inchangée (11658 verts, 1 rouge in
 - 21/21 `complex-latex.test.ts` verts.
 - Suite mathAST complète : 11659 verts, 0 rouge.
 
-### Phase 3f — Migration des tests legacy restants ✓ (partielle)
+### Phase 3f — Migration des tests legacy restants ✓
 
 **Date** : 2026-05-02
 
@@ -341,6 +341,72 @@ $ grep -rn "number('-\|number(\"-\|number(-[0-9]" src/lib/mathAST src/lib/math/i
 $ grep -rn "number('-\|number(\"-\|number(-[0-9]" src/lib/mathAST src/lib/math/intervals 2>/dev/null | grep "\.test\.ts:" | wc -l
 93  # Décomposés ci-dessus : bloqueurs + factory.test.ts it.fails + commentaires
 ```
+
+### Phase 3g — Adapter les helpers de production ✓
+
+**Date** : 2026-05-02
+
+3 helpers production qui inspectaient `parseFloat(node.value)` sans gérer la forme canonique sont désormais alignés.
+
+#### Modifications
+
+- `src/lib/mathAST/eval/extended-arithmetic.ts` :
+  - Import `numericNode, getNumericValue` de `common/numeric`.
+  - `getNumberValue` simplifié pour déléguer à `getNumericValue` (gère les deux formes).
+  - 11 occurrences `number((<expr>).toString())` → `numericNode(<expr>)` (préserve la canonicité quand le résultat est négatif).
+- `src/lib/mathAST/limits/exact-evaluation.ts` :
+  - Import `getNumericValue` ; suppression de `isNumber` devenu inutile.
+  - 9 patterns `isNumber(node) + parseFloat(node.value)` → `getNumericValue(node) + null check` dans `analyzeSubtraction`, `analyzeAdditionAsSubtraction`, `substituteApproachFactors`, `getSubstitutionValue`, et le fallback de `evaluateNumeric`.
+- `src/lib/mathAST/limits/sign-tracking.ts` :
+  - Import `numericNode`.
+  - `signedValueToMathNode` (2 occurrences `case 'finite'`) : `number(formatNumber(value.value))` → `numericNode(value.value)`.
+  - `mathNodeToSignedValue` : utilise `getNumericValue` au lieu de `isNumber + parseFloat`.
+- `src/lib/mathAST/pattern/constraints.ts` :
+  - Import `getNumericValue`.
+  - `parseNumberValue` utilise `getNumericValue` (gère les deux formes).
+  - Constraint `number` (cas pattern) : accepte aussi `opposite(number(...))` ; ne filtre pas par finitude (préserve la sémantique d'origine `Infinity`/`NaN`).
+  - Constraint `interval` : utilise `parseNumberValue` au lieu de `isNumber` (accepte la forme canonique).
+
+#### Tests adaptés
+
+- `src/lib/mathAST/eval/__tests__/extended-arithmetic.test.ts` : helper `expectNumber` utilise `getNumericValue` (accepte les deux formes). 13 sites `number('-N')` migrés vers `opposite(number('N'))`. Commentaires "Phase 3f legacy" retirés.
+
+#### Tests verts
+
+- 73/73 `extended-arithmetic.test.ts`
+- 507/507 `limits/`
+- 134/134 `pattern/__tests__/constraints.test.ts`
+- 11915/11915 suite mathAST + intervals globalement
+
+### Phase 3h — Migration des tests legacy ultimes ✓
+
+**Date** : 2026-05-02
+
+Sites finaux découverts en audit grep complet après Phase 3g :
+
+#### Tests migrés
+
+- `mathAST/pattern/__tests__/match.test.ts` — 2 sites
+- `mathAST/pattern/__tests__/sequence-match.test.ts` — 3 sites (un test `fails combined constraint` ré-écrit avec `variable('b')` car le sequence matcher extrait les signes des `opposite()` avant d'évaluer les contraintes — la sémantique "négative" était perdue par flatten).
+- `mathAST/pattern/__tests__/constraints.test.ts` — 50 occurrences (déjà couvertes par Phase 3g, listées ici pour traçabilité).
+- `mathAST/limits/__tests__/exact-evaluation.test.ts` — 3 sites (commentaires "Phase 3f: legacy retained" supprimés).
+- `mathAST/limits/__tests__/edge-cases.test.ts` — 1 site `ln(x+5) at x=-5`.
+- `math/intervals/__tests__/factory.test.ts` — 2 tests legacy ré-écrits (test "creates NumberNode for -1" reformulé en "canonical OppositeNode", test "handles negative zero" supprimé car son comportement est éliminé par Phase 4).
+- `geometry-core/compute/__tests__/compare.test.ts` — 1 site (test dual-representation réécrit en tautologie post-migration).
+- `geometry-core/compute/__tests__/geo-arithmetic.test.ts` — 2 sites (`number('-4')`, `number('-1')`).
+- `geometry-core/compute/__tests__/to-number.test.ts` — 1 test redondant supprimé (le test "via opposite" ligne suivante couvre déjà le cas).
+- `geometry-core/graph/__tests__/figure-line-equation.test.ts` — 1 site.
+
+#### État final post-Phase 3h
+
+- **Audit grep** :
+  - Code source : **0 call site** `number('-N')` ou `number(-N)`.
+  - Tests : seules exceptions persistantes (intentionnelles) :
+    - `factory.test.ts:106-120` — `it.fails` pour Phase 4.
+    - `no-negative-number-node.test.ts:125-135` — commentaires JSDoc historiques.
+    - `templates/advancedEngine.test.ts:101` — `TEMPLATE_FILTERS.number(-1234)` (filter de template, **pas** la factory `number()` de mathAST).
+- **Tests** : 14901/14901 verts dans `src/lib/mathAST + src/lib/math/intervals + src/lib/geometry-core` (3 todo, 20 skipped).
+- **Prêt pour Phase 4** : la factory peut désormais throw sans casser de test.
 
 #### Tests verts post-Phase 3f
 

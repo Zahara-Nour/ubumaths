@@ -16,7 +16,8 @@ import { denormalizeExtended } from '../normal/denormalize';
 import { substitute } from '../eval/substitute';
 import { zeroPlus, zeroMinus, number } from '../factory';
 import { mapNode } from '../transforms';
-import { isSubtraction, isAddition, isVariable, isNumber, isOpposite, isInfinity } from '../guards';
+import { isSubtraction, isAddition, isVariable, isOpposite, isInfinity } from '../guards';
+import { getNumericValue } from '../common/numeric';
 
 // =============================================================================
 // Result Type Predicates
@@ -103,19 +104,22 @@ function analyzeSubtraction(
 
 	const { left, right } = node;
 
-	// Check for (x - a) pattern
+	// Check for (x - a) pattern.
+	// getNumericValue accepts both number('N') and opposite(number('N')) (canonical for negatives).
+	const rightNum = getNumericValue(right);
 	const isVarMinusApproach =
 		isVariable(left) &&
 		left.name === varName &&
-		isNumber(right) &&
+		rightNum !== null &&
 		approachValue !== null &&
-		Math.abs(parseFloat(right.value) - approachValue) < 1e-12;
+		Math.abs(rightNum - approachValue) < 1e-12;
 
-	// Check for (a - x) pattern
+	// Check for (a - x) pattern.
+	const leftNum = getNumericValue(left);
 	const isApproachMinusVar =
-		isNumber(left) &&
+		leftNum !== null &&
 		approachValue !== null &&
-		Math.abs(parseFloat(left.value) - approachValue) < 1e-12 &&
+		Math.abs(leftNum - approachValue) < 1e-12 &&
 		isVariable(right) &&
 		right.name === varName;
 
@@ -145,11 +149,11 @@ function analyzeAdditionAsSubtraction(
 	// Pattern 1: x + (-a) where -a is the negation of approach
 	// Example: x + (-3) when approaching 3
 	if (isVariable(left) && left.name === varName && isOpposite(right)) {
-		const innerOperand = right.operand;
+		const innerValue = getNumericValue(right.operand);
 		if (
-			isNumber(innerOperand) &&
+			innerValue !== null &&
 			approachValue !== null &&
-			Math.abs(parseFloat(innerOperand.value) - approachValue) < 1e-12
+			Math.abs(innerValue - approachValue) < 1e-12
 		) {
 			return { isVarMinusApproach: true, isApproachMinusVar: false };
 		}
@@ -157,11 +161,11 @@ function analyzeAdditionAsSubtraction(
 
 	// Pattern 2: (-a) + x where -a is the negation of approach
 	if (isOpposite(left) && isVariable(right) && right.name === varName) {
-		const innerOperand = left.operand;
+		const innerValue = getNumericValue(left.operand);
 		if (
-			isNumber(innerOperand) &&
+			innerValue !== null &&
 			approachValue !== null &&
-			Math.abs(parseFloat(innerOperand.value) - approachValue) < 1e-12
+			Math.abs(innerValue - approachValue) < 1e-12
 		) {
 			return { isVarMinusApproach: true, isApproachMinusVar: false };
 		}
@@ -170,9 +174,10 @@ function analyzeAdditionAsSubtraction(
 	// Pattern 3: x + a where approach is -a (negative)
 	// Example: x + 3 when approaching -3
 	// x + 3 = x - (-3), so when x → -3, this is (x - approach) → 0
-	if (isVariable(left) && left.name === varName && isNumber(right)) {
-		const addedValue = parseFloat(right.value);
+	if (isVariable(left) && left.name === varName) {
+		const addedValue = getNumericValue(right);
 		if (
+			addedValue !== null &&
 			approachValue !== null &&
 			approachValue < 0 &&
 			Math.abs(addedValue + approachValue) < 1e-12 // addedValue = -approachValue
@@ -183,9 +188,10 @@ function analyzeAdditionAsSubtraction(
 
 	// Pattern 4: a + x where approach is -a (negative)
 	// Example: 3 + x when approaching -3
-	if (isNumber(left) && isVariable(right) && right.name === varName) {
-		const addedValue = parseFloat(left.value);
+	if (isVariable(right) && right.name === varName) {
+		const addedValue = getNumericValue(left);
 		if (
+			addedValue !== null &&
 			approachValue !== null &&
 			approachValue < 0 &&
 			Math.abs(addedValue + approachValue) < 1e-12 // addedValue = -approachValue
@@ -253,8 +259,9 @@ export function substituteApproachFactors(
 		return expr;
 	}
 
-	// Get numeric value of approach point
-	const approachValue = isNumber(approach) ? parseFloat(approach.value) : null;
+	// Get numeric value of approach point.
+	// getNumericValue handles both number('N') and opposite(number('N')) (canonical for negatives).
+	const approachValue = getNumericValue(approach);
 	if (approachValue === null) {
 		return expr;
 	}
@@ -295,7 +302,7 @@ export function substituteApproachFactors(
  */
 function getSubstitutionValue(approach: MathNode, direction: LimitDirection): MathNode {
 	// For one-sided limits approaching 0, use signed zero
-	if (direction !== 'both' && isNumber(approach) && parseFloat(approach.value) === 0) {
+	if (direction !== 'both' && getNumericValue(approach) === 0) {
 		return direction === 'right' ? zeroPlus() : zeroMinus();
 	}
 	return approach;
@@ -472,13 +479,10 @@ export function resultToNumber(result: ExtendedNormalizeResult): number | null {
 				return directValue;
 			}
 
-			// Fallback: try via denormalized node
+			// Fallback: try via denormalized node.
+			// getNumericValue handles both number('N') and opposite(number('N')).
 			const node = resultToNode(result);
-			if (node && isNumber(node)) {
-				const val = parseFloat(node.value);
-				return Number.isFinite(val) ? val : null;
-			}
-			return null;
+			return node ? getNumericValue(node) : null;
 		}
 	}
 }

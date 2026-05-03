@@ -5,7 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { Figure } from '../figure';
 import { exact, numeric } from '../../types/geo-value';
-import { number } from '$lib/mathAST';
+import { number, opposite } from '$lib/mathAST';
 import { evaluate } from '$lib/mathAST/eval';
 import { isZeroExpression } from '$lib/mathAST/normal';
 
@@ -138,7 +138,7 @@ describe('Figure.getLineEquation', () => {
 			const p2 = fig.createFreePoint(pt(1, 5));
 			const storedEq = {
 				a: number('2'),
-				b: number('-1'),
+				b: opposite(number('1')),
 				c: number('3'),
 				expression: 'y = 2*x + 3'
 			};
