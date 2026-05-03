@@ -319,13 +319,13 @@ Le RHS des affectations de variables numériques DSL est maintenant routé vers 
 - `\theta`, `\alpha`, etc. (Greek letters au top-level) : non supportés
 - ~~Sérialisation `unite_angle` : la directive n'est PAS préservée par `serializeDsl`~~. **Résolu (V2 #1)** : `interpret()` expose désormais `angleMode` dans `InterpretResult` et `serializeDsl(figure, symbols, { angleMode })` préfixe `unite_angle("radians")` si le mode est non-default.
 - Sérialisation des variables : lossy (substitution lors de la création de la courbe)
-- Trois conventions de division par zéro coexistent (Infinity / NaN / throw) selon le code path emprunté
+- Deux conventions de division par zéro coexistent intentionnellement : path numérique (statique ou legacy) = IEEE 754 (`Infinity`/`NaN`) ; path reactive (scalar binary, mathAST closure) = NaN-coerced pour le rendu. Vector/0 throw encore (V3 follow-up).
 
 ### Suggestions follow-up (V2)
 
 - ~~Support `\theta`/`\alpha`/etc. comme variables Greek au top-level~~ — fait (tokenizer accepte tous les Greek lowercase, backslash strippé sauf pour `\pi`).
 - ~~Préservation de `unite_angle` dans `serializeDsl`~~ — fait (V2 #1, voir au-dessus)
-- Unification des trois conventions de division par zéro
+- ~~Unification des trois conventions de division par zéro~~ — fait (V2 #2, F simple) : le path DSL legacy (`case 'binary'` `/`, ligne 553) ne throw plus ; il retourne `Infinity`/`NaN` IEEE 754 comme le path mathAST static. Le path reactive garde son NaN-coerce (raison rendu : un point qui disparaît plutôt qu'à l'infini visuellement). Vector/0 garde le throw temporairement (invariant `numeric()` finite — V3 follow-up).
 - ~~Amélioration des erreurs (parseCustom retourne null silencieusement)~~ — fait (V2 #3) : `Variable inconnue : "pi/PI/Pi"` suggère `\pi` ; `Variable inconnue : "E/Euler"` suggère `e` minuscule ; `Fonction inconnue` liste les catégories disponibles (math + builtins).
 - `unite_angle("grades")` pour les enseignants suisses
 - Amélioration des erreurs (parseCustom retourne null silencieusement → éventuellement remonter le diagnostic)
