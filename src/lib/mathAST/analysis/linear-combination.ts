@@ -17,7 +17,7 @@
  *
  * // Implicit coefficient (x = 1·x)
  * extractLinearCombination(parse('x - y'), ['x', 'y'])
- * // → { x: number(1), y: number(-1) }
+ * // → { x: number('1'), y: opposite(number('1')) }
  *
  * @module mathAST/analysis/linear-combination
  */
@@ -86,7 +86,7 @@ export interface LinearCombinationResult {
  * // Numeric coefficients
  * const result = extractLinearCombination(parse('2x - 3y'), ['x', 'y']);
  * result.coefficients.get('x') // → number('2')
- * result.coefficients.get('y') // → number('-3')
+ * result.coefficients.get('y') // → opposite(number('3'))
  *
  * @example
  * // Symbolic coefficients
@@ -197,7 +197,7 @@ export interface AffineCombinationResult {
  * @example
  * const result = extractAffineCombination(parse('2x - 3y + 5'), ['x', 'y']);
  * result.coefficients.get('x') // → number('2')
- * result.coefficients.get('y') // → number('-3')
+ * result.coefficients.get('y') // → opposite(number('3'))
  * result.constant              // → number('5')
  */
 export function extractAffineCombination(

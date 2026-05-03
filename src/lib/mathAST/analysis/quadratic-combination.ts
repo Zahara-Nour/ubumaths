@@ -270,7 +270,7 @@ function extractQuadraticMonomial(
  * const result = extractQuadraticCombination(parse('x^2 + y^2 - 9'), ['x', 'y']);
  * result.coefficients.get('x^2') // → number('1')
  * result.coefficients.get('y^2') // → number('1')
- * result.constant                // → number('-9')
+ * result.constant                // → opposite(number('9'))
  */
 export function extractQuadraticCombination(
 	node: MathNode,

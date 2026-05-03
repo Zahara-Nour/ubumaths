@@ -33,8 +33,6 @@ export { containsVariable };
 
 export const ZERO = number('0');
 export const ONE = number('1');
-// Canonical form: opposite(number('1')) — never number('-1').
-// See docs/wip/migrate-negative-numbers-progress.md
 export const MINUS_ONE = opposite(number('1'));
 
 // =============================================================================
