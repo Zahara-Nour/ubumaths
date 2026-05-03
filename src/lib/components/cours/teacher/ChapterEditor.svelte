@@ -71,12 +71,16 @@
 
 	let { chapter, classId, onSave, onCancel }: Props = $props();
 
+	// Snapshot of the initial chapter prop for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialChapter = chapter;
+
 	// Form state
-	let title = $state(chapter?.title ?? '');
-	let description = $state(chapter?.description ?? '');
-	let color = $state<ChapterColor | null>(chapter?.color ?? null);
-	let icon = $state<ChapterIcon | null>(chapter?.icon ?? 'book');
-	let isVisible = $state(chapter?.isVisible ?? true);
+	let title = $state(initialChapter?.title ?? '');
+	let description = $state(initialChapter?.description ?? '');
+	let color = $state<ChapterColor | null>(initialChapter?.color ?? null);
+	let icon = $state<ChapterIcon | null>(initialChapter?.icon ?? 'book');
+	let isVisible = $state(initialChapter?.isVisible ?? true);
 	let isSubmitting = $state(false);
 
 	// Validation
