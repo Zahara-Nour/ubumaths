@@ -9,7 +9,8 @@ import type { GeoValue } from '../types/geo-value';
 import { exact, numeric, isExact } from '../types/geo-value';
 import { geoToNumber } from './to-number';
 import { geoIsZero } from './compare';
-import { number, add, subtract, multiply, divide, fraction, sqrt, opposite } from '$lib/mathAST';
+import { add, subtract, multiply, divide, fraction, sqrt, opposite } from '$lib/mathAST';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import { evaluate } from '$lib/mathAST/eval';
 import type { MathNode } from '$lib/mathAST/types';
 
@@ -107,7 +108,7 @@ export function geoOpposite(a: GeoValue): GeoValue {
  */
 export function geoFromNumber(n: number): GeoValue {
 	if (Number.isInteger(n)) {
-		return exact(number(n));
+		return exact(numericNode(n));
 	}
 	return numeric(n);
 }
@@ -117,5 +118,5 @@ export function geoFromNumber(n: number): GeoValue {
  * Both arguments should be integers or simple decimals.
  */
 export function geoFromFraction(num: number, den: number): GeoValue {
-	return exact(fraction(number(num), number(den)));
+	return exact(fraction(numericNode(num), numericNode(den)));
 }

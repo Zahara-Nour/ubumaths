@@ -9,7 +9,7 @@ import type { Figure } from '../graph/figure';
 import type { GeoPoint } from '../types/primitives';
 import { exact } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
-import { number } from '$lib/mathAST';
+import { numericNode } from '$lib/mathAST/common/numeric';
 
 /**
  * Snap coordinates to the nearest grid position.
@@ -19,8 +19,8 @@ export function snapToGrid(mathX: number, mathY: number, gridStep: number): GeoP
 	const snappedX = Math.round(mathX / gridStep) * gridStep;
 	const snappedY = Math.round(mathY / gridStep) * gridStep;
 	return {
-		x: exact(number(snappedX)),
-		y: exact(number(snappedY))
+		x: exact(numericNode(snappedX)),
+		y: exact(numericNode(snappedY))
 	};
 }
 
