@@ -27,11 +27,15 @@
 
 	let { data }: Props = $props();
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// Filter state
-	let selectedClass = $state(data.filters.classId);
-	let selectedCategory = $state(data.filters.categoryId);
-	let selectedTopic = $state(data.filters.topicId);
-	let currentPage = $state(data.filters.page);
+	let selectedClass = $state(initialData.filters.classId);
+	let selectedCategory = $state(initialData.filters.categoryId);
+	let selectedTopic = $state(initialData.filters.topicId);
+	let currentPage = $state(initialData.filters.page);
 
 	// Derived values
 	let isNavigating = $derived(!!$navigating);
