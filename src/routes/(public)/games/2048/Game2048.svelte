@@ -124,11 +124,15 @@
 
 	// Initialize best score: server > localStorage > 0
 	if (browser) {
+		// Snapshot the server score once for one-shot init logic.
+		// eslint-disable-next-line svelte/no-unused-svelte-ignore
+		// svelte-ignore state_referenced_locally
+		const initialServerBestScore = serverBestScore;
 		// Server score takes priority if available
-		if (serverBestScore !== null && serverBestScore > 0) {
-			bestScore = serverBestScore;
+		if (initialServerBestScore !== null && initialServerBestScore > 0) {
+			bestScore = initialServerBestScore;
 			// Also update localStorage to keep in sync
-			localStorage.setItem(STORAGE_KEY_BEST_SCORE, serverBestScore.toString());
+			localStorage.setItem(STORAGE_KEY_BEST_SCORE, initialServerBestScore.toString());
 		} else {
 			// Fall back to localStorage
 			const savedBestScore = localStorage.getItem(STORAGE_KEY_BEST_SCORE);
@@ -187,13 +191,22 @@
 		vision: 0,
 		multiplier: 0
 	});
+	// Initial card counts come in as props but the game state evolves locally.
+	// svelte-ignore state_referenced_locally
 	let undoCardsAvailable = $state(initialUndoCards);
+	// svelte-ignore state_referenced_locally
 	let bombCardsByTier = $state({ ...initialBombCards });
+	// svelte-ignore state_referenced_locally
 	let freezeCardsAvailable = $state(initialFreezeCards);
+	// svelte-ignore state_referenced_locally
 	let fusionCardsAvailable = $state(initialFusionCards);
+	// svelte-ignore state_referenced_locally
 	let jokerCardsAvailable = $state(initialJokerCards);
+	// svelte-ignore state_referenced_locally
 	let visionCardsAvailable = $state(initialVisionCards);
+	// svelte-ignore state_referenced_locally
 	let multiplierCardsByFactor = $state({ ...initialMultiplierCards });
+	// svelte-ignore state_referenced_locally
 	let gidouilles = $state(initialGidouilles);
 	let isCardLoading = $state(false);
 
@@ -1165,6 +1178,7 @@
 	<div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
 		<!-- Board (main area) -->
 		<div class="flex justify-center lg:col-span-3">
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
 				class={cn(
 					'game-board rounded-lg bg-muted/50 p-3 select-none sm:p-4',
