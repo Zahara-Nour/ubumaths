@@ -423,7 +423,90 @@ Sites finaux découverts en audit grep complet après Phase 3g :
 
 ---
 
-## Phase 4 — Throw dans la factory (BLOQUÉE — tentative reverté)
+## Phase 4 — Throw dans la factory ✓
+
+**Date** : 2026-05-03
+**Branche** : `main`
+**Commits** : 8 commits (de `82b4d8e50` à `28cb1668e`)
+
+### Résultat
+
+`factory.number()` rejette désormais les littéraux signés au runtime :
+
+```ts
+export function number(value: string | number, metadata?: NodeMetadata): NumberNode {
+	const str = typeof value === 'number' ? value.toString() : value;
+	if (str.length > 0 && (str[0] === '-' || str[0] === '+')) {
+		throw new Error(
+			`number(${JSON.stringify(value)}): signed numeric literal rejected. ` +
+				`Use opposite(number(${JSON.stringify(str.slice(1))})) for negatives, ` +
+				`or call numericNode(${JSON.stringify(value)}) which handles the sign automatically.`
+		);
+	}
+	return { type: 'number', value: str, ...(metadata && { metadata }) } as const;
+}
+```
+
+### Découpage des 8 commits
+
+| #   | Module migré                                                     | Sites | Test                                           |
+| --- | ---------------------------------------------------------------- | ----: | ---------------------------------------------- |
+| 1   | `cosmetic-transforms.ts`                                         |     7 | `pnpm test:server cosmetic-transforms`         |
+| 2   | `solve/` + extension `numericNode` (string variant)              |    17 | `pnpm test:server src/lib/mathAST/solve`       |
+| 3   | `integration/`                                                   |    28 | `pnpm test:server src/lib/mathAST/integration` |
+| 4   | `limits/` + adapt sign test                                      |    24 | `pnpm test:server src/lib/mathAST/limits`      |
+| 5   | `eval/` + `analysis/` + `differentiation/` + `taylor/` + `sign/` |    22 | `pnpm test:server` on each                     |
+| 6   | `domain/` + `numtype/` + `cli/`                                  |    17 | `pnpm test:server` on each                     |
+| 7   | `math/intervals` + `geometry-core`                               |     5 | `pnpm test:server` on each                     |
+| 8   | **Throw factory + conversion `it.fails`**                        |   ~25 | Suite globale **14901+ verts**                 |
+
+### Étapes critiques du commit 8
+
+L'ajout du throw a révélé des sites manqués qui ont été corrigés in-flight :
+
+#### Sites de production additionnels
+
+- **`numtype/rules/function-bounds.ts:32`** : `NEG_ONE = numberNode('-1')` → `opposite(numberNode('1'))`
+- **`normal/denormalize.ts`** : la fonction interne `numberNode(value: bigint): NumberNode` qui bypassait la factory a été adaptée pour wrapper les bigints négatifs en `opposite(...)`. Signature changée en `MathNode`.
+- **`analysis/critical-points.ts`** : 7 sites `mathNumber(String(x))` → `numericNode(x)`
+- **`analysis/differentiability.ts`** : 13 sites (statiques `numNode('-1')` → `opposite(numNode('1'))` + dynamiques `numNode(String(...))` → `numericNode(...)`)
+- **`analysis/periodicity.ts`** déjà migré commit 5 : ajout de sites manqués
+- **`domain/compute.ts`** : 5 sites `numberNode(...)` → `numericNode(...)`
+- **`numtype/predicates.ts`** : 2 sites `numberNode(String(low/high))` → `numericNode(...)`
+- **`common/periodic-functions.ts:168`** : `number(formatNumber(info.basePoint))` → `numericNode(formatNumber(info.basePoint))`
+- **`pattern/builder.ts:224`** : `astNumber(String(value))` → `numericNode(value)`
+
+#### Tests legacy adaptés
+
+Tous les `function pt(x, y) { return { x: exact(number(x)), y: exact(number(y)) }; }` dans `geometry-core/__tests__/`, ainsi que les helpers similaires `numericInterval`, `boundedDomain`, `closedDomain`, `quantity`, `numericEndpoint`, `c(a, b)`, `closedBounds`, etc. dans tests `mathAST/`. Tous migrés vers `numericNode(...)`.
+
+Helpers `hasNonDiffPointAt` et autres adaptés pour utiliser `getNumericValue` au lieu de `parseFloat(point.value)` (pour reconnaître les deux formes).
+
+#### Conversion `it.fails` → `expect().toThrow()`
+
+Les 5 cas `it.fails` de `factory.test.ts:104-126` sont devenus des `expect().toThrow(/signed numeric literal/)`. Le test "1.5e-3 accepté" reste vert (le `-` est dans l'exposant, pas un préfixe de signe).
+
+### Extension du helper `numericNode` (commit 2)
+
+`numericNode` accepte désormais aussi des strings :
+
+```ts
+export function numericNode(value: number | string): MathNode {
+	// Pour les strings : strip leading '-' / '+' si présent
+	// Pour les numbers : Math.abs + opposite() si négatif
+}
+```
+
+Cela permet de migrer `number(x.toFixed(10))` en `numericNode(x.toFixed(10))` sans perdre la précision.
+
+### Résultat final
+
+- ✅ `factory.number()` throw sur `-N`/`+N`/`-0` runtime
+- ✅ Suite `pnpm test:server src/lib/mathAST src/lib/math/intervals src/lib/geometry-core` : **14901 verts** | 20 skipped | 3 todo
+- ✅ 5 `it.fails` convertis en `expect().toThrow()`
+- ✅ 0 régression
+
+### Phase 4 originale (BLOQUÉE — tentative reverté précédente)
 
 **Tentative** : ajouter le `throw` dans `factory.number()` quand `value` commence par `-` ou `+`.
 
