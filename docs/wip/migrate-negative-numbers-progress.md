@@ -240,13 +240,25 @@ Tests : 883 verts dans `cli/`, suite mathAST inchangée (11658 verts, 1 rouge in
 - 757/757 tests `domain/` verts.
 - Suite mathAST complète : 11659 verts, 0 rouge.
 
-### Phase 3e — Consommateurs `latex-generator.ts` (C1, C2)
+### Phase 3e — Consommateurs `latex-generator.ts` (C1, C2) ✓
 
-[à venir]
+**Date** : 2026-05-02
 
-### Phase 3e — Consommateurs `latex-generator.ts` (C1, C2)
+#### Modifications
 
-[à venir]
+- `src/lib/mathAST/latex-generator.ts` :
+  - `visitComplexSpans` : helpers `isNegOne`, `isNegative`, `absValue` étendus pour reconnaître **les deux formes** : `number('-N')` (legacy) et `opposite(number('N'))` (canonique).
+  - `generateComplex` : idem.
+- `src/lib/mathAST/__tests__/complex-latex.test.ts` : 8 cas migrés vers la forme canonique. Import `opposite` ajouté.
+
+#### Tests
+
+- 21/21 `complex-latex.test.ts` verts.
+- Suite mathAST complète : 11659 verts, 0 rouge.
+
+### Phase 3f — Migration des tests legacy restants (à venir)
+
+Audit grep final : ~25-30 fichiers de test utilisent encore `number('-N')` ou `number(-N)`. Liste non exhaustive : `integration/__tests__/{rules,numeric,integrate}.test.ts`, `limits/__tests__/{evaluate,exact-evaluation,edge-cases,infinity-algebra-integration}.test.ts`, `solve/__tests__/domain-filtering.test.ts`, `domain/__tests__/{range,types,format,edge-cases}.test.ts`, `math/intervals/__tests__/algebra.test.ts`, `variations/__tests__/extrema.test.ts`, `piecewise/__tests__/boundaries.test.ts`. **À migrer avant Phase 4**, sinon factory.throw cassera ces tests.
 
 ---
 
@@ -304,3 +316,8 @@ Tests : 883 verts dans `cli/`, suite mathAST inchangée (11658 verts, 1 rouge in
 ### Phase 3d-bis (sites dynamiques `rangeEntryToDomain` + `domainFromNumericBounds`)
 
 - `src/lib/mathAST/domain/builtins.ts` — import `numericNode`, 13 occurrences `number(lower|upper)` → `numericNode(...)`
+
+### Phase 3e (latex-generator + tests complex)
+
+- `src/lib/mathAST/latex-generator.ts` — `visitComplexSpans` et `generateComplex` étendus pour reconnaître les deux formes (legacy + canonique)
+- `src/lib/mathAST/__tests__/complex-latex.test.ts` — import `opposite`, 8 cas migrés vers la forme canonique

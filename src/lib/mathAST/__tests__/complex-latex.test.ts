@@ -6,7 +6,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { toLatex } from '../latex-generator';
-import { complex, number, variable, MathAST } from '../factory';
+import { complex, number, opposite, variable, MathAST } from '../factory';
 import { parsePratt } from '../parser/latex/parser-pratt';
 
 describe('ComplexNode LaTeX generation', () => {
@@ -89,42 +89,42 @@ describe('ComplexNode LaTeX generation', () => {
 
 	describe('negative value edge cases', () => {
 		it('generates -\\imaginaryI for (0 + (-1)i)', () => {
-			const node = complex(number('0'), number('-1'));
+			const node = complex(number('0'), opposite(number('1')));
 			expect(toLatex(node)).toBe('-\\imaginaryI');
 		});
 
 		it('generates -3\\imaginaryI for (0 + (-3)i)', () => {
-			const node = complex(number('0'), number('-3'));
+			const node = complex(number('0'), opposite(number('3')));
 			expect(toLatex(node)).toBe('-3\\imaginaryI');
 		});
 
 		it('generates -3 for (-3 + 0i)', () => {
-			const node = complex(number('-3'), number('0'));
+			const node = complex(opposite(number('3')), number('0'));
 			expect(toLatex(node)).toBe('-3');
 		});
 
 		it('generates -3 + 4\\imaginaryI for negative real', () => {
-			const node = complex(number('-3'), number('4'));
+			const node = complex(opposite(number('3')), number('4'));
 			expect(toLatex(node)).toBe('-3 + 4\\imaginaryI');
 		});
 
 		it('generates 3 - 4\\imaginaryI for negative imaginary', () => {
-			const node = complex(number('3'), number('-4'));
+			const node = complex(number('3'), opposite(number('4')));
 			expect(toLatex(node)).toBe('3 - 4\\imaginaryI');
 		});
 
 		it('generates -3 - 4\\imaginaryI for both negative', () => {
-			const node = complex(number('-3'), number('-4'));
+			const node = complex(opposite(number('3')), opposite(number('4')));
 			expect(toLatex(node)).toBe('-3 - 4\\imaginaryI');
 		});
 
 		it('generates 3 - \\imaginaryI for imaginary = -1', () => {
-			const node = complex(number('3'), number('-1'));
+			const node = complex(number('3'), opposite(number('1')));
 			expect(toLatex(node)).toBe('3 - \\imaginaryI');
 		});
 
 		it('generates -3 - \\imaginaryI for real=-3, imag=-1', () => {
-			const node = complex(number('-3'), number('-1'));
+			const node = complex(opposite(number('3')), opposite(number('1')));
 			expect(toLatex(node)).toBe('-3 - \\imaginaryI');
 		});
 	});
