@@ -1078,7 +1078,7 @@ function filterSolutionsByDomain(
  * // Solve 2x + 4 = 0
  * const eq = equals(add(multiply(number('2'), variable('x')), number('4')), number('0'));
  * const result = solve(eq);
- * // result.solutions = [{ value: number('-2'), exact: true }]
+ * // result.solutions = [{ value: opposite(number('2')), exact: true }]
  * ```
  *
  * @example

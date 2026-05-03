@@ -46,7 +46,7 @@ export interface Endpoint {
  *
  * // [-1 ; 1] represents -1 <= x <= 1
  * { kind: 'interval',
- *   lower: { value: number('-1'), type: 'closed' },
+ *   lower: { value: opposite(number('1')), type: 'closed' },
  *   upper: { value: number('1'), type: 'closed' } }
  *
  * // [0 ; π] represents 0 <= x <= π

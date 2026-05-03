@@ -134,7 +134,7 @@ export function isUniversalInterval(d: IntervalDomain): boolean {
  *
  * @example
  * containsValue(positiveReals, number('5'))     // true
- * containsValue(positiveReals, number('-3'))    // false
+ * containsValue(positiveReals, opposite(number('3')))    // false
  * containsValue(unitInterval, piConstant())      // false (π > 1)
  * containsValue(interval_0_pi, sqrt(2))         // true (√2 ≈ 1.41 < π)
  * containsValue(positiveReals, 5)               // true (accepts raw numbers)

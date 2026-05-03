@@ -19,7 +19,7 @@ import type { CommandContext, CommandResult } from '../types';
 import { toCustom } from '../../custom-generator';
 import { parse } from '../core/pipeline';
 import { solve, type SolvingVerbosity, SolveError } from '../../solve';
-import { isRelation, isMultiplication, isOpposite, isVariable, isNumber } from '../../guards';
+import { isRelation, isMultiplication, isOpposite, isVariable } from '../../guards';
 import type { MathNode, RelationNode } from '../../types';
 import { preprocess } from '../../normal';
 import { number, opposite, add } from '../../factory';
@@ -37,11 +37,7 @@ function negate(node: MathNode): MathNode {
 	if (isOpposite(node)) {
 		return node.operand;
 	}
-	// Legacy form during migration: number('-N') -> number('N') (signed-zero stays canonical)
-	if (isNumber(node) && node.value.startsWith('-')) {
-		return number(node.value.slice(1));
-	}
-	// Canonical form: wrap in opposite (covers number('N') and any other expression)
+	// Wrap in opposite (covers number('N') and any other expression)
 	return opposite(node);
 }
 

@@ -781,18 +781,11 @@ export class LatexGenerator {
 	private visitComplexSpans(node: ComplexNode): void {
 		const isZero = (n: MathNode) => n.type === 'number' && n.value === '0';
 		const isOne = (n: MathNode) => n.type === 'number' && n.value === '1';
-		// isNegOne / isNegative / absValue accept both legacy `number('-N')` and
-		// canonical `opposite(number('N'))`.
 		const isNegOne = (n: MathNode) =>
-			(n.type === 'number' && n.value === '-1') ||
-			(n.type === 'opposite' && n.operand.type === 'number' && n.operand.value === '1');
+			n.type === 'opposite' && n.operand.type === 'number' && n.operand.value === '1';
 		const isNegative = (n: MathNode) =>
-			(n.type === 'number' && n.value.startsWith('-') && n.value !== '0') ||
-			(n.type === 'opposite' && n.operand.type === 'number' && n.operand.value !== '0');
+			n.type === 'opposite' && n.operand.type === 'number' && n.operand.value !== '0';
 		const absValue = (n: MathNode): MathNode => {
-			if (n.type === 'number' && n.value.startsWith('-')) {
-				return { ...n, value: n.value.slice(1) };
-			}
 			if (n.type === 'opposite') {
 				return n.operand;
 			}
@@ -1338,18 +1331,11 @@ export class LatexGenerator {
 	private generateComplex(node: ComplexNode): string {
 		const isZero = (n: MathNode) => n.type === 'number' && n.value === '0';
 		const isOne = (n: MathNode) => n.type === 'number' && n.value === '1';
-		// isNegOne / isNegative / absValue accept both legacy `number('-N')` and
-		// canonical `opposite(number('N'))`.
 		const isNegOne = (n: MathNode) =>
-			(n.type === 'number' && n.value === '-1') ||
-			(n.type === 'opposite' && n.operand.type === 'number' && n.operand.value === '1');
+			n.type === 'opposite' && n.operand.type === 'number' && n.operand.value === '1';
 		const isNegative = (n: MathNode) =>
-			(n.type === 'number' && n.value.startsWith('-') && n.value !== '0') ||
-			(n.type === 'opposite' && n.operand.type === 'number' && n.operand.value !== '0');
+			n.type === 'opposite' && n.operand.type === 'number' && n.operand.value !== '0';
 		const absValue = (n: MathNode): string => {
-			if (n.type === 'number' && n.value.startsWith('-')) {
-				return n.value.slice(1);
-			}
 			if (n.type === 'opposite') {
 				return this.generateNode(n.operand);
 			}
