@@ -301,6 +301,7 @@
 			></button>
 
 			{#if showColorPicker}
+				<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 				<div class="color-palette" onclick={stopPropagation}>
 					{#each COLORS as color (color)}
 						<button
@@ -308,6 +309,8 @@
 							class="color-swatch"
 							class:selected={style.color === color}
 							style="background-color: {color}"
+							title={color}
+							aria-label="Couleur {color}"
 							onclick={() => handleColorChange(color)}
 						></button>
 					{/each}
