@@ -45,7 +45,7 @@ function isScalarValue(
 
 /**
  * Math operations applied to scalar values. Trig functions consult the
- * interpreter's active angle mode so the legacy DSL path (used for cases
+ * interpreter's active angle mode so the DSL evaluator path (used for cases
  * the mathAST router cannot handle, e.g. `sin(P.x)`) stays consistent.
  */
 function scalarMathOpFor(name: string, mode: AngleMode): ((x: number) => number) | undefined {
@@ -350,13 +350,14 @@ class Interpreter {
 	 * mathAST's `parseCustom()`. Returns `null` when the expression is not
 	 * math-pure or cannot be routed (free var refers to a non-number, contains
 	 * a trig function which Phase 5 will handle, parse/compile fails, etc.),
-	 * in which case the caller falls back to the legacy DSL path.
+	 * in which case the caller falls back to the DSL evaluator (the general
+	 * geometric path that handles tuples, builtins, macros, vectors, etc.).
 	 */
 	private tryEvaluateAsMathExpr(expr: DslExpr): ResolvedValue | null {
 		// Inside macro bodies the source positions point into the macro definition
 		// (e.g. STDLIB_MACROS), not into the interpreter's `this.source`. Routing
-		// would extract a stray slice and may produce wrong values. The legacy DSL
-		// path handles macro evaluation correctly.
+		// would extract a stray slice and may produce wrong values. The DSL
+		// evaluator handles macro evaluation correctly.
 		if (this.macros.insideMacro) return null;
 
 		// Bare identifier referencing an existing symbol: return it as-is. This
@@ -448,9 +449,9 @@ class Interpreter {
 
 		// Reactive path: at least one scalar dep → build a GeoScalar with a
 		// closure that re-evaluates the compiled function on each recompute.
-		// Convention (matches the legacy `evaluateScalarBinary`): non-finite
-		// results in a derived scalar are surfaced as NaN, not Infinity, so
-		// downstream renderers treat them as undefined.
+		// Convention (matches `evaluateScalarBinary` in the DSL evaluator):
+		// non-finite results in a derived scalar are surfaced as NaN, not
+		// Infinity, so downstream renderers treat them as undefined.
 		const compute = (sv: ReadonlyMap<string, number>): number => {
 			const bindings: Record<string, number> = { ...staticBindings };
 			for (const { name, figureId } of scalarDeps) {
@@ -552,7 +553,7 @@ class Interpreter {
 						return { type: 'nombre', value: left * right };
 					case '/':
 						// IEEE 754 / JS native: 1/0 → Infinity, 0/0 → NaN, -1/0 → -Infinity.
-						// Aligns the legacy DSL path with the mathAST static path so the
+						// Aligns the DSL evaluator with the mathAST static path so the
 						// same expression produces the same value regardless of routing.
 						// The reactive scalar path keeps its NaN-coerce post-process for
 						// rendering (a coordinate becomes invisible rather than off-screen).
