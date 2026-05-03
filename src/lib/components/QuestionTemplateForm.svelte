@@ -100,32 +100,41 @@
 
 	let { template, onSave, onCancel, isSubmitting }: Props = $props();
 
+	// Snapshot of the initial template prop for $state initializers.
+	// This form initializes once from the prop and then evolves independently;
+	// using a non-reactive alias avoids state_referenced_locally warnings.
+	// svelte-ignore state_referenced_locally
+	const initialTemplate = template;
+
 	// Shared configuration state
 	// Infer type from structure when editing existing template
 	let questionType = $state<QuestionType>(
-		template
-			? getQuestionType({ choices: template.variations?.[0]?.choices, shared: template.shared })
+		initialTemplate
+			? getQuestionType({
+					choices: initialTemplate.variations?.[0]?.choices,
+					shared: initialTemplate.shared
+				})
 			: 'fill_in_blanks'
 	);
-	let grades = $state<GradeLevel[]>(template?.grades || []);
-	let delay = $state<number | undefined>(template?.delay);
+	let grades = $state<GradeLevel[]>(initialTemplate?.grades || []);
+	let delay = $state<number | undefined>(initialTemplate?.delay);
 
 	// Exercise instruction (shared, optional)
-	let exerciseInstruction = $state<string | undefined>(template?.exerciseInstruction);
+	let exerciseInstruction = $state<string | undefined>(initialTemplate?.exerciseInstruction);
 
 	// Title and description (shared)
-	let title = $state<string>(template?.title || '');
-	let description = $state<string>(template?.description || '');
+	let title = $state<string>(initialTemplate?.title || '');
+	let description = $state<string>(initialTemplate?.description || '');
 
 	// Categorization fields (shared)
-	let theme = $state<string>(template?.theme || '');
-	let domain = $state<string>(template?.domain || '');
-	let subdomain = $state<string | undefined>(template?.subdomain);
-	let level = $state<number>(template?.level || 1);
-	let status = $state<'draft' | 'published'>(template?.status || 'draft');
+	let theme = $state<string>(initialTemplate?.theme || '');
+	let domain = $state<string>(initialTemplate?.domain || '');
+	let subdomain = $state<string | undefined>(initialTemplate?.subdomain);
+	let level = $state<number>(initialTemplate?.level || 1);
+	let status = $state<'draft' | 'published'>(initialTemplate?.status || 'draft');
 
 	// Test specs
-	let testSpecs = $state<TestSpec[]>(template?.testSpecs ?? []);
+	let testSpecs = $state<TestSpec[]>(initialTemplate?.testSpecs ?? []);
 	let testSpecMode = $state(false);
 
 	// Category duplicate detection
@@ -236,43 +245,49 @@
 	});
 
 	// Type-specific fields (shared)
-	let multipleAnswers = $state<boolean | undefined>(template?.multipleAnswers);
+	let multipleAnswers = $state<boolean | undefined>(initialTemplate?.multipleAnswers);
 
 	// Default display options state
-	let displayShuffleTerms = $state(template?.defaultDisplayOptions?.shuffleTerms ?? false);
-	let displayShuffleFactors = $state(template?.defaultDisplayOptions?.shuffleFactors ?? false);
+	let displayShuffleTerms = $state(initialTemplate?.defaultDisplayOptions?.shuffleTerms ?? false);
+	let displayShuffleFactors = $state(
+		initialTemplate?.defaultDisplayOptions?.shuffleFactors ?? false
+	);
 	let displayShuffleTermsAndFactors = $state(
-		template?.defaultDisplayOptions?.shuffleTermsAndFactors ?? false
+		initialTemplate?.defaultDisplayOptions?.shuffleTermsAndFactors ?? false
 	);
 	let displayShallowShuffleTerms = $state(
-		template?.defaultDisplayOptions?.shallowShuffleTerms ?? false
+		initialTemplate?.defaultDisplayOptions?.shallowShuffleTerms ?? false
 	);
 	let displayShallowShuffleFactors = $state(
-		template?.defaultDisplayOptions?.shallowShuffleFactors ?? false
+		initialTemplate?.defaultDisplayOptions?.shallowShuffleFactors ?? false
 	);
-	let displayRemoveNullTerms = $state(template?.defaultDisplayOptions?.removeNullTerms ?? false);
+	let displayRemoveNullTerms = $state(
+		initialTemplate?.defaultDisplayOptions?.removeNullTerms ?? false
+	);
 	let displayRemoveUnnecessaryBrackets = $state(
-		template?.defaultDisplayOptions?.removeUnnecessaryBrackets ?? false
+		initialTemplate?.defaultDisplayOptions?.removeUnnecessaryBrackets ?? false
 	);
-	let displayRemoveSpaces = $state(template?.defaultDisplayOptions?.removeSpaces ?? false);
+	let displayRemoveSpaces = $state(initialTemplate?.defaultDisplayOptions?.removeSpaces ?? false);
 
 	// Template options state
-	let optAllowEquivalent = $state(template?.options?.allowEquivalent ?? false);
-	let optAllowDifferentForms = $state(template?.options?.allowDifferentForms ?? false);
-	let optCanonicalForm = $state<string>(template?.options?.canonicalForm || '');
-	let optOrderIndependent = $state(template?.options?.orderIndependent ?? false);
-	let optValidator = $state<string>(template?.options?.validator || '');
+	let optAllowEquivalent = $state(initialTemplate?.options?.allowEquivalent ?? false);
+	let optAllowDifferentForms = $state(initialTemplate?.options?.allowDifferentForms ?? false);
+	let optCanonicalForm = $state<string>(initialTemplate?.options?.canonicalForm || '');
+	let optOrderIndependent = $state(initialTemplate?.options?.orderIndependent ?? false);
+	let optValidator = $state<string>(initialTemplate?.options?.validator || '');
 	let optValidatorParamsJson = $state(
-		JSON.stringify(template?.options?.validatorParams || {}, null, 2)
+		JSON.stringify(initialTemplate?.options?.validatorParams || {}, null, 2)
 	);
-	let optShuffleChoices = $state(template?.options?.shuffleChoices ?? true);
+	let optShuffleChoices = $state(initialTemplate?.options?.shuffleChoices ?? true);
 	let optAllowBracketsInFirstNegativeTerm = $state(
-		template?.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false
+		initialTemplate?.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false
 	);
 
 	// Constraint states
 	let constraintModes = $state<Record<string, string>>(
-		Object.fromEntries(CONSTRAINT_IDS.map((id) => [id, template?.options?.constraints?.[id] || '']))
+		Object.fromEntries(
+			CONSTRAINT_IDS.map((id) => [id, initialTemplate?.options?.constraints?.[id] || ''])
+		)
 	);
 
 	// Current options (derived for TestSpecEditor)
@@ -298,48 +313,52 @@
 	});
 
 	// Shared variables (resolved before per-variation variables)
-	let sharedVariables = $state<QuestionVariable[]>(template?.shared?.variables || []);
-	let sharedStatement = $state(templateMarkdown(template?.shared?.statement || ''));
+	let sharedVariables = $state<QuestionVariable[]>(initialTemplate?.shared?.variables || []);
+	let sharedStatement = $state(templateMarkdown(initialTemplate?.shared?.statement || ''));
 	let sharedCorrectChoiceIndex = $state<string | string[]>(
-		template?.shared?.correctChoiceIndex || ''
+		initialTemplate?.shared?.correctChoiceIndex || ''
 	);
-	let sharedCorrectionString = $state(correctionToString(template?.shared?.correction));
-	let sharedChoices = $state(template?.shared?.choices ?? []);
+	let sharedCorrectionString = $state(correctionToString(initialTemplate?.shared?.correction));
+	let sharedChoices = $state(initialTemplate?.shared?.choices ?? []);
 	let sharedRequiredFormSelect = $state<string>(
-		template?.shared?.requiredForm
-			? typeof template.shared.requiredForm === 'string'
-				? template.shared.requiredForm
+		initialTemplate?.shared?.requiredForm
+			? typeof initialTemplate.shared.requiredForm === 'string'
+				? initialTemplate.shared.requiredForm
 				: 'custom'
 			: ''
 	);
 	let sharedRequiredFormPattern = $state(
-		template?.shared?.requiredForm && typeof template.shared.requiredForm === 'object'
-			? template.shared.requiredForm.pattern
+		initialTemplate?.shared?.requiredForm && typeof initialTemplate.shared.requiredForm === 'object'
+			? initialTemplate.shared.requiredForm.pattern
 			: ''
 	);
 	let sharedBlankPrecision = $state(
-		template?.shared?.blankDefaults?.precision ?? { type: 'none' as const }
+		initialTemplate?.shared?.blankDefaults?.precision ?? { type: 'none' as const }
 	);
 	let sharedBlankRequiredFormSelect = $state<string>(
-		template?.shared?.blankDefaults?.requiredForm
-			? typeof template.shared.blankDefaults.requiredForm === 'string'
-				? template.shared.blankDefaults.requiredForm
+		initialTemplate?.shared?.blankDefaults?.requiredForm
+			? typeof initialTemplate.shared.blankDefaults.requiredForm === 'string'
+				? initialTemplate.shared.blankDefaults.requiredForm
 				: 'custom'
 			: ''
 	);
 	let sharedBlankRequiredFormPattern = $state(
-		template?.shared?.blankDefaults?.requiredForm &&
-			typeof template.shared.blankDefaults.requiredForm === 'object'
-			? template.shared.blankDefaults.requiredForm.pattern
+		initialTemplate?.shared?.blankDefaults?.requiredForm &&
+			typeof initialTemplate.shared.blankDefaults.requiredForm === 'object'
+			? initialTemplate.shared.blankDefaults.requiredForm.pattern
 			: ''
 	);
-	let sharedBlankUnitExpected = $state(template?.shared?.blankDefaults?.unit?.expected ?? false);
-	let sharedBlankUnitRequired = $state(template?.shared?.blankDefaults?.unit?.required || '');
+	let sharedBlankUnitExpected = $state(
+		initialTemplate?.shared?.blankDefaults?.unit?.expected ?? false
+	);
+	let sharedBlankUnitRequired = $state(
+		initialTemplate?.shared?.blankDefaults?.unit?.required || ''
+	);
 	let sharedValidationRulesJson = $state(
-		JSON.stringify(template?.shared?.validationRules || [], null, 2)
+		JSON.stringify(initialTemplate?.shared?.validationRules || [], null, 2)
 	);
 	let sharedAnswerFormatsJson = $state(
-		JSON.stringify(template?.shared?.answerFormats || {}, null, 2)
+		JSON.stringify(initialTemplate?.shared?.answerFormats || {}, null, 2)
 	);
 
 	// Valid required form values (used in buildTemplate)
@@ -397,7 +416,7 @@
 	// Variations state (NEW)
 	// Note: correction is optional, only used if provided
 	let variations = $state<QuestionVariation[]>(
-		template?.variations.map((v) => ({
+		initialTemplate?.variations.map((v) => ({
 			...v,
 			variables: v.variables || [],
 			blanks: v.blanks || [],
@@ -436,7 +455,7 @@
 	};
 
 	let variationExtras = $state<VariationExtra[]>(
-		template?.variations.map((v) => ({
+		initialTemplate?.variations.map((v) => ({
 			correctionString: correctionToString(v.correction),
 			validationRulesJson: JSON.stringify(v.validationRules || [], null, 2),
 			answerFormatsJson: JSON.stringify(v.answerFormats || {}, null, 2),
