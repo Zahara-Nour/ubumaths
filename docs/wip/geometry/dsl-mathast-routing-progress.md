@@ -326,6 +326,7 @@ Le RHS des affectations de variables numériques DSL est maintenant routé vers 
 - ~~Support `\theta`/`\alpha`/etc. comme variables Greek au top-level~~ — fait (tokenizer accepte tous les Greek lowercase, backslash strippé sauf pour `\pi`).
 - ~~Préservation de `unite_angle` dans `serializeDsl`~~ — fait (V2 #1, voir au-dessus)
 - Unification des trois conventions de division par zéro
+- ~~Amélioration des erreurs (parseCustom retourne null silencieusement)~~ — fait (V2 #3) : `Variable inconnue : "pi/PI/Pi"` suggère `\pi` ; `Variable inconnue : "E/Euler"` suggère `e` minuscule ; `Fonction inconnue` liste les catégories disponibles (math + builtins).
 - `unite_angle("grades")` pour les enseignants suisses
 - Amélioration des erreurs (parseCustom retourne null silencieusement → éventuellement remonter le diagnostic)
 - Cache de `compile(node) → CompiledFn` au-dessus du PARSE_CACHE actuel (gain marginal sauf en boucle)
