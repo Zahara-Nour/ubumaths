@@ -45,8 +45,13 @@
 	// State
 	// ==========================================================================
 
+	// Snapshot of the element prop for the editing $state. Edits are
+	// committed back to the element via onEndEdit; the local copy is
+	// intentionally not kept in lock-step with the prop.
+	// svelte-ignore state_referenced_locally
+	const initialElement = element;
 	/** Local content for editing (synced on save) */
-	let editContent = $state(element.markdownContent);
+	let editContent = $state(initialElement.markdownContent);
 
 	/** Reference to RichTextEditor to call getMarkdown() synchronously */
 	let editorRef: ReturnType<typeof RichTextEditor> | null = $state(null);
@@ -333,7 +338,7 @@
 				onpointerdown={(e) => handleResizeStart(e, 'n')}
 				onpointermove={handleResizeMove}
 				onpointerup={handleResizeEnd}
-				role="slider"
+				role="button"
 				aria-label="Redimensionner vers le haut"
 				tabindex="-1"
 			></div>
@@ -342,7 +347,7 @@
 				onpointerdown={(e) => handleResizeStart(e, 's')}
 				onpointermove={handleResizeMove}
 				onpointerup={handleResizeEnd}
-				role="slider"
+				role="button"
 				aria-label="Redimensionner vers le bas"
 				tabindex="-1"
 			></div>
@@ -351,7 +356,7 @@
 				onpointerdown={(e) => handleResizeStart(e, 'e')}
 				onpointermove={handleResizeMove}
 				onpointerup={handleResizeEnd}
-				role="slider"
+				role="button"
 				aria-label="Redimensionner vers la droite"
 				tabindex="-1"
 			></div>
@@ -360,7 +365,7 @@
 				onpointerdown={(e) => handleResizeStart(e, 'w')}
 				onpointermove={handleResizeMove}
 				onpointerup={handleResizeEnd}
-				role="slider"
+				role="button"
 				aria-label="Redimensionner vers la gauche"
 				tabindex="-1"
 			></div>
@@ -369,7 +374,7 @@
 				onpointerdown={(e) => handleResizeStart(e, 'ne')}
 				onpointermove={handleResizeMove}
 				onpointerup={handleResizeEnd}
-				role="slider"
+				role="button"
 				aria-label="Redimensionner coin supérieur droit"
 				tabindex="-1"
 			></div>
@@ -378,7 +383,7 @@
 				onpointerdown={(e) => handleResizeStart(e, 'nw')}
 				onpointermove={handleResizeMove}
 				onpointerup={handleResizeEnd}
-				role="slider"
+				role="button"
 				aria-label="Redimensionner coin supérieur gauche"
 				tabindex="-1"
 			></div>
@@ -387,7 +392,7 @@
 				onpointerdown={(e) => handleResizeStart(e, 'se')}
 				onpointermove={handleResizeMove}
 				onpointerup={handleResizeEnd}
-				role="slider"
+				role="button"
 				aria-label="Redimensionner coin inférieur droit"
 				tabindex="-1"
 			></div>
@@ -396,7 +401,7 @@
 				onpointerdown={(e) => handleResizeStart(e, 'sw')}
 				onpointermove={handleResizeMove}
 				onpointerup={handleResizeEnd}
-				role="slider"
+				role="button"
 				aria-label="Redimensionner coin inférieur gauche"
 				tabindex="-1"
 			></div>
