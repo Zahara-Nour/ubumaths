@@ -64,12 +64,19 @@
 		initialCaption
 	}: Props = $props();
 
-	// State - initialize with props if provided
+	// State - initialize with props if provided.
+	// Props are reactive (the $effect below resets state on prop change), so the
+	// initial captures here are intentional snapshots — silence the warnings.
 	let uploadedImage = $state<UploadedImage | null>(null);
+	// svelte-ignore state_referenced_locally
 	let sizeClass = $state<ImageSizeClass>(initialSizeClass ?? 'medium');
+	// svelte-ignore state_referenced_locally
 	let customWidth = $state<number | undefined>(initialWidthPercent);
+	// svelte-ignore state_referenced_locally
 	let alignment = $state<ImageAlignment>(initialAlignment ?? 'center');
+	// svelte-ignore state_referenced_locally
 	let caption = $state(initialCaption ?? '');
+	// svelte-ignore state_referenced_locally
 	let altText = $state(initialAlt);
 	let copied = $state(false);
 
