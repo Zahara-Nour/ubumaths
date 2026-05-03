@@ -11,6 +11,10 @@
 
 	let { data }: { data: PageData } = $props();
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	let EditorComponent = $state<Component | null>(null);
 
 	onMount(async () => {
@@ -18,11 +22,11 @@
 		EditorComponent = mod.default;
 	});
 
-	let title = $state(data.construction.title);
-	let description = $state(data.construction.description ?? '');
-	let isPublic = $state(data.construction.is_public ?? false);
+	let title = $state(initialData.construction.title);
+	let description = $state(initialData.construction.description ?? '');
+	let isPublic = $state(initialData.construction.is_public ?? false);
 	let isSaving = $state(false);
-	let script = $state(data.construction.dsl_script ?? '');
+	let script = $state(initialData.construction.dsl_script ?? '');
 
 	let isDsl = $derived(data.construction.format === 'dsl');
 
