@@ -49,6 +49,7 @@ import {
 	fraction,
 	power
 } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import { denormalize, normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
 import { integerNthRoot } from '../../normal/radical';
 import {
@@ -206,7 +207,7 @@ function createNthRootNode(radicand: MathNode, n: number): MathNode {
 		return func('cbrt', [radicand]);
 	}
 	// General nth root: root(radicand, index)
-	return func('root', [radicand, number(n.toString())]);
+	return func('root', [radicand, numericNode(n)]);
 }
 
 // =============================================================================
@@ -279,8 +280,7 @@ export function extractCoefficient(terms: MathNode[], variable: string, degree: 
 	}
 
 	// Divide by x^degree to get coefficient
-	const divisor =
-		degree === 1 ? varNode(variable) : power(varNode(variable), number(degree.toString()));
+	const divisor = degree === 1 ? varNode(variable) : power(varNode(variable), numericNode(degree));
 	const coeffExpr = fraction(termSum, divisor);
 	return denormalize(normalize(coeffExpr));
 }
@@ -543,7 +543,7 @@ function handleOddExponent(
 		const exactRoot = integerNthRoot(kBigInt, BigInt(n));
 		if (exactRoot !== null) {
 			// Perfect power - exact integer solution
-			solutionNode = number(exactRoot.toString());
+			solutionNode = numericNode(exactRoot.toString());
 			approximate = Number(exactRoot);
 		} else {
 			// Not a perfect power - symbolic root
@@ -617,7 +617,7 @@ function handleEvenPositive(
 		const exactRoot = integerNthRoot(kBigInt, BigInt(n));
 		if (exactRoot !== null) {
 			// Perfect power - exact integer solution
-			positiveRoot = number(exactRoot.toString());
+			positiveRoot = numericNode(exactRoot.toString());
 			approximatePositive = Number(exactRoot);
 		} else {
 			// Not a perfect power - symbolic root
@@ -964,7 +964,7 @@ function handleCubicOneReal(
 		// Try to find if it's a rational root
 		const roundedApprox = Math.round(approximate);
 		if (Math.abs(approximate - roundedApprox) < 1e-9) {
-			solutionNode = number(roundedApprox.toString());
+			solutionNode = numericNode(roundedApprox);
 		} else {
 			// Build symbolic form
 			const sqrtDisc = func('sqrt', [discriminantInnerSimplified]);
@@ -1166,18 +1166,15 @@ function handleCubicThreeReal(
 			let solutionNode: MathNode;
 
 			if (Math.abs(x - rounded) < 1e-9) {
-				solutionNode = number(rounded.toString());
+				solutionNode = numericNode(rounded);
 			} else {
 				// Check for simple fractions
 				const fractionResult = findSimpleFraction(x);
 				if (fractionResult) {
-					solutionNode = fraction(
-						number(fractionResult.n.toString()),
-						number(fractionResult.d.toString())
-					);
+					solutionNode = fraction(numericNode(fractionResult.n), numericNode(fractionResult.d));
 				} else {
 					// Keep as symbolic (approximate)
-					solutionNode = number(x.toFixed(10));
+					solutionNode = numericNode(x.toFixed(10));
 				}
 			}
 
