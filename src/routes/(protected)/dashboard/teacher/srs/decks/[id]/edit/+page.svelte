@@ -50,17 +50,21 @@
 
 	let { data }: Props = $props();
 
+	// Snapshot for $state initializers; reactive uses keep `data` directly.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// State
-	let deckName = $state(data.deck.name);
-	let deckDescription = $state(data.deck.description || '');
-	let deckType = $state<'official' | 'personal'>(data.deck.deckType);
+	let deckName = $state(initialData.deck.name);
+	let deckDescription = $state(initialData.deck.description || '');
+	let deckType = $state<'official' | 'personal'>(initialData.deck.deckType);
 	let retentionProfile = $state<keyof typeof RETENTION_PROFILES>(
-		getRetentionProfile(data.deck.config?.desiredRetention || 0.9)
+		getRetentionProfile(initialData.deck.config?.desiredRetention || 0.9)
 	);
 
 	let isSaving = $state(false);
 	let showCustomCardEditor = $state(false);
-	let cards = $state([...data.cards]);
+	let cards = $state([...initialData.cards]);
 
 	// Form validation
 	const canSave = $derived(deckName.trim().length > 0);
