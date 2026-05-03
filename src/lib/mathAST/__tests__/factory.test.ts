@@ -93,6 +93,45 @@ describe('factory', () => {
 		});
 	});
 
+	// =============================================================================
+	// number() — negative rejection (Phase 4)
+	//
+	// These tests use it.fails so they PASS NOW (number() does not throw yet) and
+	// will TURN RED when Phase 4 adds the throw.  At that point each it.fails must
+	// be converted to a regular it + expect(() => ...).toThrow().
+	// =============================================================================
+
+	describe('number — negative rejection (Phase 4)', () => {
+		// it.fails: passes while the code does NOT throw; turns red once it does throw.
+		it.fails("number('-3') throws", () => {
+			number('-3');
+		});
+
+		it.fails('number(-3) throws (numeric form)', () => {
+			number(-3);
+		});
+
+		it.fails("number('-3.5') throws", () => {
+			number('-3.5');
+		});
+
+		// Q1: '-0' also rejected (decision confirmed in Phase 0)
+		it.fails("number('-0') throws", () => {
+			number('-0');
+		});
+
+		// Q2: '+3' also rejected (decision confirmed in Phase 0)
+		it.fails("number('+3') throws", () => {
+			number('+3');
+		});
+
+		// This case MUST keep passing even after Phase 4: minus is in the exponent,
+		// not a sign prefix on the mantissa.
+		it("number('1.5e-3') is accepted (minus is inside the exponent)", () => {
+			expect(() => number('1.5e-3')).not.toThrow();
+		});
+	});
+
 	describe('variable', () => {
 		it('creates variable node with correct type and name', () => {
 			const node = variable('x');

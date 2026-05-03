@@ -88,9 +88,56 @@ Après le renommage, deux exports `isMinusOne` distincts :
 
 ---
 
-## Phase 2 — Tests rouges (à venir)
+## Phase 2 — Tests rouges ✓
 
-[à compléter après Phase 1]
+**Date** : 2026-05-02
+
+### Fichiers créés / modifiés
+
+| Fichier                                                     | Action                                                                                             |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `src/lib/mathAST/__tests__/factory.test.ts`                 | Ajout de `describe('number — negative rejection (Phase 4)')` avec 5 `it.fails` + 1 `it` régression |
+| `src/lib/mathAST/__tests__/no-negative-number-node.test.ts` | Nouveau fichier — 5 tests E2E sur les ASTs produits                                                |
+
+### Résultats des tests
+
+#### `factory.test.ts` — 103 tests, tous verts ✓
+
+Les 5 cas `it.fails` passent (sémantique inversée : ils sont verts maintenant car `number()` ne throw pas encore). Ils deviendront rouges en Phase 4 quand on ajoutera le throw, puis on les convertira en `it` + `.toThrow()`.
+
+| Test                       | Statut actuel       | Deviendra rouge en |
+| -------------------------- | ------------------- | ------------------ |
+| `number('-3') throws`      | ✓ vert (`it.fails`) | Phase 4            |
+| `number(-3) throws`        | ✓ vert (`it.fails`) | Phase 4            |
+| `number('-3.5') throws`    | ✓ vert (`it.fails`) | Phase 4            |
+| `number('-0') throws`      | ✓ vert (`it.fails`) | Phase 4            |
+| `number('+3') throws`      | ✓ vert (`it.fails`) | Phase 4            |
+| `number('1.5e-3') accepté` | ✓ vert (`it`)       | doit rester vert   |
+
+#### `no-negative-number-node.test.ts` — 5 tests : **2 rouges, 3 verts**
+
+| Test                                            | Statut    | Site                                     | Action Phase 3                                                                                                                                                                                                                        |
+| ----------------------------------------------- | --------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MINUS_ONE should not be a negative NumberNode` | **rouge** | #1 `coefficient-utils.ts:35`             | `number('-1')` → `opposite(number('1'))`                                                                                                                                                                                              |
+| `d/dx[x^2] no negative NumberNode`              | ✓ vert    | —                                        | sanity check, doit rester vert                                                                                                                                                                                                        |
+| `d/dx[-x^3] no negative NumberNode`             | ✓ vert    | #1 indirect                              | vert car la négation passe par `opposite()`, pas `multiply(MINUS_ONE)` dans ce chemin                                                                                                                                                 |
+| `integrate(x^(-1)) no negative NumberNode`      | ✓ vert    | #2 `basic.ts:453`                        | vert car normalisation préalable transforme `power(x, opposite(1))` en `division` avant basic integrator — le NumberNode `-1` de la ligne 453 n'est jamais produit en pratique. Fix site #2 reste utile mais ce test ne le force pas. |
+| `unitInterval() no negative NumberNode`         | **rouge** | #5-8 `builtins.ts` + `domain/factory.ts` | `number(-1)` → `opposite(number('1'))`                                                                                                                                                                                                |
+
+### Observations post-phase 2
+
+1. **Site #2 moins critique qu'anticipé** : La normalisation dans `integrate()` transforme `power(x, opposite(1))` → `division` avant d'entrer dans le basic integrator. La ligne 453 `power(expr, number('-1'))` n'est donc jamais atteinte avec les entrées normales. Le fix reste recommandé pour la cohérence du code, mais le test E2E ne peut pas le forcer facilement sans contourner la normalisation.
+
+2. **Sites #3, #4 (solve.command.ts)** : Non testés E2E — les call sites dynamiques (`number('-' + val)`) nécessitent des tests spécifiques au CLI qui sortent du scope des tests unitaires mathAST. Voir Phase 3 pour décision.
+
+3. **Site #9 (`math/intervals/factory.ts:222`)** : Non testé ici (hors du dossier `mathAST/__tests__/`). À ajouter dans un test dédié `math/intervals/` en Phase 3 si jugé nécessaire.
+
+### Notes pour les phases suivantes (issues du code review Phase 2)
+
+- **Helper `findNegativeNumberNodesInIntervalSet`** : intentionnellement non exporté (usage interne au fichier de test). Si Phase 3 ajoute un test E2E dans `math/intervals/__tests__/` (site #9), décider entre ré-implémenter localement ou exporter.
+- **Risque TS en Phase 4** : si on ajoute une surcharge TypeScript qui rend `number('-3')` une erreur de **compilation** (pas seulement runtime), le fichier `factory.test.ts` ne compilera plus et les `it.fails` ne pourront pas tourner rouge — la suite plantera à la compilation. Risque faible (le throw est runtime), mais à vérifier au moment de la Phase 4.
+
+4. **`it.fails` vs `it.todo`** : Choix fait pour `it.fails` dans `factory.test.ts`. La sémantique est claire : le test passe aujourd'hui et échouera en Phase 4 quand le throw sera ajouté, signalant qu'il faut le convertir en `it` + `.toThrow()`. Ce retournement est intentionnel et documenté.
 
 ---
 
@@ -123,3 +170,8 @@ Après le renommage, deux exports `isMinusOne` distincts :
 - `src/lib/mathAST/guards.ts` — renommage de la définition + JSDoc enrichie (mention migration + alignement Poincaré)
 - `src/lib/mathAST/common/simplify.ts` — adaptation de l'import + 2 call sites
 - `docs/wip/migrate-negative-numbers-progress.md` — créé
+
+### Phase 2 (tests rouges)
+
+- `src/lib/mathAST/__tests__/factory.test.ts` — ajout de `describe('number — negative rejection (Phase 4)')` (5 `it.fails` + 1 `it`)
+- `src/lib/mathAST/__tests__/no-negative-number-node.test.ts` — créé (5 tests E2E, 2 rouges / 3 verts)
