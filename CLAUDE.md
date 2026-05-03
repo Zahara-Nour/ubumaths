@@ -355,15 +355,16 @@ npx eslint <fichiers modifies>
 
 ### For Claude Code
 
-| Doc                                                      | Content                           |
-| -------------------------------------------------------- | --------------------------------- |
-| [architecture.md](docs/claude/architecture.md)           | Structure, routing, performance   |
-| [best-practices.md](docs/claude/best-practices.md)       | Svelte 5, TypeScript              |
-| [ui-components.md](docs/claude/ui-components.md)         | Shadcn, MySelect, Tailwind        |
-| [database.md](docs/claude/database.md)                   | Supabase, migrations              |
-| [quality-standards.md](docs/claude/quality-standards.md) | Tests, linting, Zod               |
-| [realtime.md](docs/claude/realtime.md)                   | Supabase Realtime, chat, presence |
-| [docs/ref/tests/tdd.md](docs/ref/tests/tdd.md)           | TDD collaboratif (OBLIGATOIRE)    |
+| Doc                                                      | Content                                                        |
+| -------------------------------------------------------- | -------------------------------------------------------------- |
+| [architecture.md](docs/claude/architecture.md)           | Structure, routing, performance                                |
+| [best-practices.md](docs/claude/best-practices.md)       | Svelte 5, TypeScript                                           |
+| [ui-components.md](docs/claude/ui-components.md)         | Shadcn, MySelect, Tailwind                                     |
+| [database.md](docs/claude/database.md)                   | Supabase, migrations                                           |
+| [quality-standards.md](docs/claude/quality-standards.md) | Tests, linting, Zod                                            |
+| [warning-svelte.md](docs/ref/warning-svelte.md)          | svelte-ignore : ce qui est légitime vs dette a11y à rembourser |
+| [realtime.md](docs/claude/realtime.md)                   | Supabase Realtime, chat, presence                              |
+| [docs/ref/tests/tdd.md](docs/ref/tests/tdd.md)           | TDD collaboratif (OBLIGATOIRE)                                 |
 
 ### For Users
 
