@@ -588,6 +588,7 @@
 
 			<!-- Student names -->
 			{#each wheelData() as name, i (i)}
+				<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 				<text
 					fill={highlightedIndex === i ? '#fbbf24' : getTextColor(i)}
 					font-weight="bold"

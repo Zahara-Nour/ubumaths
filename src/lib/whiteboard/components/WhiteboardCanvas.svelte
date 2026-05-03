@@ -1686,6 +1686,7 @@
 {/snippet}
 
 <div class="whiteboard-canvas-container relative overflow-hidden bg-gray-100 {className}">
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 	<svg
 		bind:this={svgRef}
 		class="whiteboard-svg"

@@ -277,6 +277,7 @@
 					{@const isActive = index === currentPageIndex}
 					{@const isDropTarget = dropTargetIndex === index && draggedIndex !== index}
 
+					<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 					<div
 						class="thumbnail-item group relative cursor-pointer rounded-md border-2 transition-all {isActive
 							? 'border-primary ring-2 ring-primary/30'

@@ -57,6 +57,7 @@
 	const deckContext = getContext<{ getStore: () => DeckStore }>(DECK_CONTEXT_KEY);
 	const deckStore = deckContext?.getStore();
 	const positionContext = getContext<SlidePositionContext | undefined>(SLIDE_POSITION_KEY);
+	// svelte-ignore state_referenced_locally
 	const hasVerticalSlides = vertical !== undefined;
 
 	let slideH = $state(0);
@@ -456,10 +457,6 @@
 		transition:
 			opacity 0.3s ease,
 			transform 0.3s ease !important;
-	}
-
-	:global(.fragment.current-fragment) {
-		/* Additional styling for currently revealing fragment */
 	}
 
 	/* Fragment animation variants */

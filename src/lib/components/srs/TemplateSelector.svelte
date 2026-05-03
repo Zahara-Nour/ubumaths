@@ -44,9 +44,11 @@
 			description?: string;
 		}>
 	>([]);
+	// svelte-ignore state_referenced_locally
 	let selectedIds = new SvelteSet<string>(initialSelection);
 	let searchQuery = $state('');
 	let isLoading = $state(true);
+	// svelte-ignore state_referenced_locally
 	let selectionCount = $state(initialSelection.length); // Track count separately
 
 	// Derived
