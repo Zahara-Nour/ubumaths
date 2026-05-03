@@ -474,7 +474,7 @@
 
 			<!-- Caption -->
 			{#if caption}
-				<figcaption class="image-caption">{caption}</figcaption>
+				<div class="image-caption">{caption}</div>
 			{/if}
 		</div>
 	{/if}

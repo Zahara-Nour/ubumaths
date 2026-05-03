@@ -143,6 +143,7 @@
 	}
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
 	bind:this={tileEl}
 	class="tile flex h-16 w-16 flex-col items-center justify-center rounded-lg shadow-md sm:h-20 sm:w-20 {getTileColor(

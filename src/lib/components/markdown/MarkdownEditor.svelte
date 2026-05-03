@@ -103,6 +103,7 @@
 
 	// Editor state
 	let textareaEl = $state<HTMLTextAreaElement | null>(null);
+	// svelte-ignore state_referenced_locally
 	let previewVisible = $state(showPreview);
 	let fileInputEl = $state<HTMLInputElement | null>(null);
 	let uploadingImage = $state(false);

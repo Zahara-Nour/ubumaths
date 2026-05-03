@@ -17,6 +17,7 @@
 
 	let { instance, onsubmit, ontimeout, showHint = true }: Props = $props();
 
+	// svelte-ignore state_referenced_locally
 	let timeRemaining = $state(instance.challenge.timer);
 	let timerActive = $state(true);
 	let answered = $state(false);

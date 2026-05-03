@@ -132,6 +132,7 @@
 	// should remount this form when editing a different question (which is handled
 	// by the dialog key={...} pattern in the parent).
 	// Using JSON parse/stringify because structuredClone can't handle some object types.
+	// svelte-ignore state_referenced_locally
 	let formData = $state<EditedQuestion>(JSON.parse(JSON.stringify(initialData)));
 	let editNotes = $state('');
 

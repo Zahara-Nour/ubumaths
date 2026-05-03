@@ -371,7 +371,7 @@
 			</span>
 		</div>
 
-		<div class="mx-2 h-6 w-px bg-border" />
+		<div class="mx-2 h-6 w-px bg-border"></div>
 
 		<Button
 			variant="outline"

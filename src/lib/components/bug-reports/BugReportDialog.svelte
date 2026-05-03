@@ -44,6 +44,7 @@
 	let category = $state<BugReportCategory>('bug');
 	let severity = $state<BugReportSeverity>('medium');
 	let title = $state('');
+	// svelte-ignore state_referenced_locally
 	let description = $state(initialDescription);
 	let screenshotFile = $state<File | null>(null);
 	let screenshotPreview = $state<string | null>(null);

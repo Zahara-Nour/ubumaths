@@ -102,6 +102,7 @@
 		onSuccess
 	}: Props = $props();
 
+	// svelte-ignore state_referenced_locally
 	let materialSelections = $state<MaterialSelection[]>(
 		materials.map((m) => ({ id: m.id, title: m.title, selected: true }))
 	);

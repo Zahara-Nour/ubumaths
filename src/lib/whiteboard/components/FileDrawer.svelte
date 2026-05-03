@@ -717,7 +717,7 @@
 		imageInputRef?.click();
 	}
 
-	let pendingPdfMode: PdfImportMode = 'normal';
+	let pendingPdfMode = $state<PdfImportMode>('normal');
 
 	function handlePdfImportClick(mode: PdfImportMode) {
 		pendingPdfMode = mode;

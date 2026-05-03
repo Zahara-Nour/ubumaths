@@ -51,6 +51,7 @@
 
 	// Form state
 	let selectedClassId = $state<string>('');
+	// svelte-ignore state_referenced_locally
 	let title = $state(template.title);
 	let isVisible = $state(true);
 	let isSubmitting = $state(false);

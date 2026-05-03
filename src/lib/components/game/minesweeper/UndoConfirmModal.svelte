@@ -33,6 +33,7 @@
 	let { onUseUndo, onDecline, isLoading = false, autoDeclineSeconds = 10 }: Props = $props();
 
 	// Countdown timer state
+	// svelte-ignore state_referenced_locally
 	let secondsRemaining = $state(autoDeclineSeconds);
 	let countdownInterval: ReturnType<typeof setInterval> | null = null;
 

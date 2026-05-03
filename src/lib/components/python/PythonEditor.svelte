@@ -136,6 +136,7 @@
 
 	// Track current theme for change detection (compared against effectiveTheme,
 	// so that toggling dark mode triggers a reinitialization).
+	// svelte-ignore state_referenced_locally
 	let currentTheme = $state<EditorTheme>(theme);
 
 	// Prevent race conditions during theme switch

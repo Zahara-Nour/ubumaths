@@ -26,6 +26,7 @@
 
 	// Default-open all frames present at mount. New frames added later stay
 	// closed; the user opens them as needed. Same UX as VariablesPanel.
+	// svelte-ignore state_referenced_locally
 	let openFrames = $state<string[]>(callStack.map((_, i) => `frame-${i}`));
 
 	function frameLabel(name: string): string {

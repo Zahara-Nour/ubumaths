@@ -37,7 +37,7 @@
 	</div>
 
 	<!-- Tab Navigation -->
-	<nav
+	<div
 		class="inline-flex h-auto w-fit items-center justify-center gap-3 rounded-lg bg-muted p-2 text-muted-foreground"
 		role="tablist"
 	>
@@ -70,7 +70,7 @@
 				{/if}
 			</a>
 		{/each}
-	</nav>
+	</div>
 
 	<!-- Content -->
 	<div role="tabpanel">

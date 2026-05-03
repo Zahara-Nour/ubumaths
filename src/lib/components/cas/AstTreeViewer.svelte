@@ -14,6 +14,7 @@
 	let { node, depth = 0, nodeId = 'root' }: Props = $props();
 
 	// Track expanded state for collapsible nodes
+	// svelte-ignore state_referenced_locally
 	let expanded = $state(depth < 2);
 
 	// Generate unique IDs for child nodes

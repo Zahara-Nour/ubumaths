@@ -140,6 +140,7 @@
 </script>
 
 <!-- Instrument Layer SVG Group -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <g
 	class="instrument-layer"
 	onpointermove={handlePointerMove}
