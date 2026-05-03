@@ -750,8 +750,15 @@ export function isOne(node: MathNode): boolean {
 
 /**
  * Check if a node represents negative one (-1).
+ *
+ * Handles both representations:
+ * - `opposite(number('1'))` (canonical form)
+ * - `number('-1')` (legacy form, being phased out via migration plan
+ *   in `docs/wip/migrate-negative-numbers-progress.md`)
+ *
+ * Aligned with Poincaré's `Rational::isMinusOne`.
  */
-export function isNegativeOne(node: MathNode): boolean {
+export function isMinusOne(node: MathNode): boolean {
 	if (isNumber(node)) {
 		const val = parseFloat(node.value);
 		return val === -1;
