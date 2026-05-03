@@ -36,21 +36,26 @@
 
 	let { card, onSave, onCancel }: Props = $props();
 
+	// Snapshot of the initial card prop for $state initializers.
+	// This editor initializes once from the prop and then evolves independently.
+	// svelte-ignore state_referenced_locally
+	const initialCard = card;
+
 	// Form state using Svelte 5 $state
 	let formData = $state<CreateTemplateData>({
-		id: card?.id ?? '',
-		name: card?.name ?? '',
-		description: card?.description ?? '',
-		rarity: (card?.rarity as 'common' | 'rare' | 'epic' | 'legendary') ?? 'common',
-		category: (card?.category as 'bonus' | 'privilege' | 'social' | 'power') ?? 'bonus',
-		is_enabled: card?.is_enabled ?? true,
-		image_path: card?.image_path ?? '',
-		sort_order: card?.sort_order ?? 0,
-		action: card?.action as VipCardAction | null,
-		uses_total: card?.uses_total ?? null,
-		base_price: card?.base_price ?? 0,
-		is_purchasable: card?.is_purchasable ?? true,
-		max_owned_per_student: card?.max_owned_per_student ?? 5
+		id: initialCard?.id ?? '',
+		name: initialCard?.name ?? '',
+		description: initialCard?.description ?? '',
+		rarity: (initialCard?.rarity as 'common' | 'rare' | 'epic' | 'legendary') ?? 'common',
+		category: (initialCard?.category as 'bonus' | 'privilege' | 'social' | 'power') ?? 'bonus',
+		is_enabled: initialCard?.is_enabled ?? true,
+		image_path: initialCard?.image_path ?? '',
+		sort_order: initialCard?.sort_order ?? 0,
+		action: initialCard?.action as VipCardAction | null,
+		uses_total: initialCard?.uses_total ?? null,
+		base_price: initialCard?.base_price ?? 0,
+		is_purchasable: initialCard?.is_purchasable ?? true,
+		max_owned_per_student: initialCard?.max_owned_per_student ?? 5
 	});
 
 	let saving = $state(false);
@@ -112,8 +117,10 @@
 	];
 
 	// Consumable state: checkbox drives whether uses_total is set
-	let isConsumable = $state(card?.uses_total !== null && card?.uses_total !== undefined);
-	let usesTotalInput = $state(card?.uses_total ?? 3);
+	let isConsumable = $state(
+		initialCard?.uses_total !== null && initialCard?.uses_total !== undefined
+	);
+	let usesTotalInput = $state(initialCard?.uses_total ?? 3);
 
 	// Sync consumable state → formData.uses_total
 	$effect(() => {
