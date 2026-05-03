@@ -22,6 +22,7 @@ import { differentiate } from '../differentiation';
 import { evaluate, evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
 import { number, variable, add, multiply, power, opposite, divide } from '../factory';
+import { numericNode } from '../common/numeric';
 
 // =============================================================================
 // Helper Functions
@@ -111,7 +112,7 @@ function coefficientToNode(value: number): MathNode {
 
 	// Handle integers
 	if (Number.isInteger(value)) {
-		return number(value.toString());
+		return numericNode(value);
 	}
 
 	// Try to find a simple fraction representation
@@ -124,16 +125,16 @@ function coefficientToNode(value: number): MathNode {
 			const reducedNum = numerator / g;
 			const reducedDen = d / g;
 			if (reducedDen === 1) {
-				return number(reducedNum.toString());
+				return numericNode(reducedNum);
 			}
-			return divide(number(reducedNum.toString()), number(reducedDen.toString()), 'fraction');
+			return divide(numericNode(reducedNum), numericNode(reducedDen), 'fraction');
 		}
 	}
 
 	// Fall back to decimal representation
 	// Use reasonable precision
 	const formatted = value.toPrecision(10).replace(/\.?0+$/, '');
-	return number(formatted);
+	return numericNode(formatted);
 }
 
 /**
