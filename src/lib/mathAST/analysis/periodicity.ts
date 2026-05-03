@@ -12,6 +12,7 @@ import type { Verbosity } from '../common/verbosity';
 import type { Domain, PeriodicExclusion } from '../domain/types';
 import { isNumber } from '../guards';
 import { number, multiply, divide, PI, TWO_PI } from '../factory';
+import { numericNode } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { extractLinearForm } from './coefficient-utils';
@@ -280,7 +281,7 @@ export function registerPeriodicFunction(
 	period: MathNode | number,
 	options: RegisterFunctionOptions = {}
 ): void {
-	const periodNode = typeof period === 'number' ? number(String(period)) : period;
+	const periodNode = typeof period === 'number' ? numericNode(period) : period;
 
 	userFunctionRegistry.set(name, {
 		period: periodNode,
@@ -548,18 +549,18 @@ function combineSymbolicPeriods(
 	const ratio1 = combinedNumeric / numeric1;
 	if (Math.abs(ratio1 - Math.round(ratio1)) < tolerance) {
 		const n = Math.round(ratio1);
-		return multiply(number(String(n)), period1, 'implicit');
+		return multiply(numericNode(n), period1, 'implicit');
 	}
 
 	// LCM is a multiple of period2: try to express as n * period2
 	const ratio2 = combinedNumeric / numeric2;
 	if (Math.abs(ratio2 - Math.round(ratio2)) < tolerance) {
 		const n = Math.round(ratio2);
-		return multiply(number(String(n)), period2, 'implicit');
+		return multiply(numericNode(n), period2, 'implicit');
 	}
 
 	// Fallback to numeric
-	return number(String(combinedNumeric));
+	return numericNode(combinedNumeric);
 }
 
 /**

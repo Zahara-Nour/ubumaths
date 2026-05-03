@@ -13,6 +13,7 @@ import {
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
 import { number, variable, add, sin, parentheses } from '../../factory';
+import { getNumericValue } from '../../common/numeric';
 import type { EvalBindings } from '../types';
 
 // Helper to parse, substitute, and convert back to LaTeX for easy comparison
@@ -371,10 +372,7 @@ describe('substitute', () => {
 			const expr = parseLatex('x');
 			const result = substitute(expr, { x: -5 });
 
-			expect(result.type).toBe('number');
-			if (result.type === 'number') {
-				expect(result.value).toBe('-5');
-			}
+			expect(getNumericValue(result)).toBe(-5);
 		});
 
 		it('handles zero', () => {

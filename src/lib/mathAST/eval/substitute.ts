@@ -12,7 +12,8 @@ import type { FunctionBindings } from './function-bindings';
 import { DEFAULT_SUBSTITUTE_OPTIONS } from './types';
 import { mapNode } from '../transforms';
 import { isVariable, isGreek } from '../guards';
-import { number, multiply } from '../factory';
+import { multiply } from '../factory';
+import { numericNode } from '../common/numeric';
 import { parseLatex } from '../parser';
 
 // =============================================================================
@@ -44,7 +45,7 @@ function bindingToNode(value: BindingValue): MathNode {
 			throw new Error('Cannot substitute infinite value');
 		}
 		// Use toString() to preserve the exact representation
-		return number(value.toString());
+		return numericNode(value);
 	}
 
 	// String - parse as LaTeX

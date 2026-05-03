@@ -56,6 +56,7 @@ import {
 } from '../normal/rational';
 import { integerNthRoot } from '../normal/radical';
 import { number, divide, boolean as booleanNode } from '../factory';
+import { numericNode } from '../common/numeric';
 import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
 import { normalizeExtended } from '../normal/normalize-extended';
@@ -860,7 +861,7 @@ function evaluateRoundingFunctions(node: MathNode): MathNode {
 			}
 
 			// Return integer result
-			return number(result.toString());
+			return numericNode(result);
 		} catch {
 			// If evaluation fails (e.g., contains variables), keep symbolic
 			return n;
@@ -1139,8 +1140,8 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 
 		// Create a MathNode for the numeric result
 		const resultNode = Number.isInteger(numericValue)
-			? number(numericValue.toString())
-			: number(numericValue.toPrecision(15));
+			? numericNode(numericValue)
+			: numericNode(numericValue.toPrecision(15));
 
 		return {
 			status: 'value',

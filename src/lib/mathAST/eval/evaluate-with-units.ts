@@ -25,7 +25,8 @@ import { getUnitFamily } from '../units/definitions';
 import { UnitAST } from '../units/factory';
 import type { MathNode } from '../types';
 import { isUnit } from '../guards';
-import { number, withUnit } from '../factory';
+import { withUnit } from '../factory';
+import { numericNode } from '../common/numeric';
 import { mapNode } from '../transforms';
 
 // =============================================================================
@@ -293,7 +294,7 @@ function transformToTargetUnit(node: MathNode, targetUnit: Unit): MathNode {
 				// Direct conversion of numeric value
 				const originalValue = parseFloat(innerNode.value);
 				const convertedValue = originalValue * factor;
-				return withUnit(number(String(convertedValue)), targetUnit);
+				return withUnit(numericNode(convertedValue), targetUnit);
 			}
 
 			// For complex expressions (e.g., (2+3) km), wrap with multiplication.
@@ -301,7 +302,7 @@ function transformToTargetUnit(node: MathNode, targetUnit: Unit): MathNode {
 			return withUnit(
 				{
 					type: 'multiplication',
-					left: number(String(factor)),
+					left: numericNode(factor),
 					right: innerNode,
 					style: 'implicit',
 					displayStyle: 'implicit'
@@ -475,7 +476,7 @@ export function evaluateWithUnits(
 		// This is because we need to represent the value in the selected "best" unit.
 		return {
 			value: best.value,
-			node: number(String(best.value)),
+			node: numericNode(best.value),
 			exact: siResult.exact,
 			unit: finalUnit,
 			...(originalUnit && { originalUnit })

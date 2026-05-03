@@ -184,9 +184,7 @@ export function powerRuleConstantExp(
 	}
 
 	// Non-simplified version
-	const newExp = isNumber(exp)
-		? number((parseFloat(exp.value) - 1).toString())
-		: subtract(exp, one());
+	const newExp = isNumber(exp) ? numericNode(parseFloat(exp.value) - 1) : subtract(exp, one());
 
 	const coeff = exp;
 	const powerTerm = power(base, newExp);
