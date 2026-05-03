@@ -173,13 +173,24 @@ Les 5 cas `it.fails` passent (sémantique inversée : ils sont verts maintenant 
 - Suite mathAST complète : 11658 verts, 1 rouge intentionnel (test E2E `unitInterval` à résoudre en Phase 3d).
 - `pnpm check:incremental` ✓ aucune erreur introduite.
 
-### Phase 3b — `integration/integrators/basic.ts` (site #2)
+### Phase 3b — `integration/integrators/basic.ts` (site #2) ✓
 
-[à venir]
+**Date** : 2026-05-02
 
-### Phase 3c — `cli/commands/solve.command.ts` (sites #3, #4)
+Changement minimal : `power(expr, number('-1'))` → `power(expr, opposite(number('1')))` ligne 453, ajout de l'import `opposite`. Site dead-branch en pratique (la normalisation préalable de `integrate()` transforme `power(x, opposite(1))` en `division` avant d'atteindre cette ligne), correction par cohérence.
 
-[à venir]
+Tests : 340/340 `integration/` verts.
+
+### Phase 3c — `cli/commands/solve.command.ts` (sites #3, #4) ✓
+
+**Date** : 2026-05-02
+
+#### Modifications
+
+- `negate(node)` ligne 35 : refactorée. La branche `'-' + val` (qui produisait du `number('-N')`) est remplacée par `opposite(node)`. La branche `slice('-')` est conservée le temps de la transition (elle gère un `number('-N')` legacy entrant).
+- `extractCoefficientFromTerm` ligne 311 : `number('-1')` → `opposite(number('1'))`.
+
+Tests : 883 verts dans `cli/`, suite mathAST inchangée (11658 verts, 1 rouge intentionnel sites #5-8).
 
 ### Phase 3d — `domain/builtins.ts` + `domain/factory.ts` + `math/intervals/factory.ts` (sites #5-9)
 
@@ -225,3 +236,11 @@ Les 5 cas `it.fails` passent (sémantique inversée : ils sont verts maintenant 
 - `src/lib/mathAST/analysis/coefficient-utils.ts` — MINUS_ONE canonique, applySign refactorisée, addCoefficients élargie
 - `src/lib/mathAST/analysis/__tests__/linear-combination.test.ts` — helpers de test adaptés, import `isOpposite` retiré
 - `src/lib/mathAST/analysis/__tests__/polynomial-analysis.test.ts` — helper `getNumericCoeff` adapté
+
+### Phase 3b (migration `integration/basic.ts`, site #2)
+
+- `src/lib/mathAST/integration/integrators/basic.ts` — import `opposite`, ligne 453 `number('-1')` → `opposite(number('1'))`
+
+### Phase 3c (migration `cli/solve.command.ts`, sites #3, #4)
+
+- `src/lib/mathAST/cli/commands/solve.command.ts` — `negate()` refactorée, `extractCoefficientFromTerm` site #4 corrigé

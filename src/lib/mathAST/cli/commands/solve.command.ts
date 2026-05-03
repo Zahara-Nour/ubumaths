@@ -33,20 +33,15 @@ import { evaluate } from '../../eval/evaluate';
  * For numbers like -4, returns 4 (not --4).
  */
 function negate(node: MathNode): MathNode {
-	// If it's a number, negate the string value directly
-	if (isNumber(node)) {
-		const val = node.value;
-		if (val.startsWith('-')) {
-			return number(val.slice(1)); // -4 -> 4
-		} else {
-			return number('-' + val); // 4 -> -4
-		}
-	}
-	// If it's already an opposite, return the inner operand
+	// If it's already an opposite, return the inner operand: -(-x) = x
 	if (isOpposite(node)) {
 		return node.operand;
 	}
-	// Otherwise wrap in opposite
+	// Legacy form during migration: number('-N') -> number('N') (signed-zero stays canonical)
+	if (isNumber(node) && node.value.startsWith('-')) {
+		return number(node.value.slice(1));
+	}
+	// Canonical form: wrap in opposite (covers number('N') and any other expression)
 	return opposite(node);
 }
 
@@ -308,7 +303,7 @@ function extractCoefficientFromTerm(term: MathNode, variable: string): MathNode 
 	if (isOpposite(term)) {
 		const inner = term.operand;
 		if (isVariable(inner) && inner.name === variable) {
-			return number('-1');
+			return opposite(number('1'));
 		}
 		// Case: -(3x) -> coefficient is -3
 		const innerCoeff = extractCoefficientFromTerm(inner, variable);
