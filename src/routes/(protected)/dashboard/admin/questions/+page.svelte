@@ -68,29 +68,36 @@
 
 	let { data }: { data: PageData } = $props();
 
+	// Snapshot of the initial data prop for $state initializers below.
+
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	/**
 	 * Local state (Svelte 5 runes)
 	 *
-	 * All state is initialized from URL query parameters (data.filters)
+	 * All state is initialized from URL query parameters (initialData.filters)
 	 * to ensure consistency when navigating with filtered URLs.
 	 */
-	let searchTerm = $state(data.filters.search || ''); // Current search term
-	let selectedType = $state<string>(data.filters.type || 'all'); // Filter by question type
+	let searchTerm = $state(initialData.filters.search || ''); // Current search term
+	let selectedType = $state<string>(initialData.filters.type || 'all'); // Filter by question type
 	let selectedGradesList = $state<GradeCode[]>(
 		// Filter by grade levels (comma-separated in URL)
-		(data.filters.grades ? data.filters.grades.split(',').map((g) => g.trim()) : []) as GradeCode[]
+		(initialData.filters.grades
+			? initialData.filters.grades.split(',').map((g) => g.trim())
+			: []) as GradeCode[]
 	);
-	let selectedTheme = $state<string>(data.filters.theme || 'all'); // Filter by theme
-	let selectedDomain = $state<string>(data.filters.domain || 'all'); // Filter by domain
-	let selectedSubdomain = $state<string>(data.filters.subdomain || 'all'); // Filter by subdomain
+	let selectedTheme = $state<string>(initialData.filters.theme || 'all'); // Filter by theme
+	let selectedDomain = $state<string>(initialData.filters.domain || 'all'); // Filter by domain
+	let selectedSubdomain = $state<string>(initialData.filters.subdomain || 'all'); // Filter by subdomain
 	let minLevel = $state<number | undefined>(
-		data.filters.minLevel ? parseInt(data.filters.minLevel) : undefined
+		initialData.filters.minLevel ? parseInt(initialData.filters.minLevel) : undefined
 	); // Minimum difficulty level
 	let maxLevel = $state<number | undefined>(
-		data.filters.maxLevel ? parseInt(data.filters.maxLevel) : undefined
+		initialData.filters.maxLevel ? parseInt(initialData.filters.maxLevel) : undefined
 	); // Maximum difficulty level
-	let sortField = $state<string>(data.sort || 'created_at'); // Sort column
-	let sortOrder = $state<'asc' | 'desc'>(data.order === 'asc' ? 'asc' : 'desc'); // Sort direction
+	let sortField = $state<string>(initialData.sort || 'created_at'); // Sort column
+	let sortOrder = $state<'asc' | 'desc'>(initialData.order === 'asc' ? 'asc' : 'desc'); // Sort direction
 	let viewMode = $state<'table' | 'card'>('table'); // Display mode (persisted in localStorage)
 	let deleteConfirmOpen = $state(false); // Delete dialog state
 	let templateToDelete = $state<string | null>(null); // Template ID to delete
