@@ -14,13 +14,17 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
+	// Snapshot for $state initializers below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// Form state
-	let name = $state(data.template?.name || '');
-	let description = $state(data.template?.description || '');
+	let name = $state(initialData.template?.name || '');
+	let description = $state(initialData.template?.description || '');
 	let templateContent = $state(
-		data.template?.template_content || STANDARD_TEMPLATE.template_content
+		initialData.template?.template_content || STANDARD_TEMPLATE.template_content
 	);
-	let isPublic = $state(data.template?.is_public || false);
+	let isPublic = $state(initialData.template?.is_public || false);
 
 	// Loading state
 	let submitting = $state(false);
