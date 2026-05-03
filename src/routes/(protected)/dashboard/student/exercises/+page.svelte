@@ -9,11 +9,15 @@
 
 	let { data }: { data: PageData } = $props();
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// Filter state
-	let searchQuery = $state(data.filters.search);
-	let showCompleted = $state(data.filters.completed);
-	let assignedOnly = $state(data.filters.assigned_only);
-	let hasDeadline = $state(data.filters.has_deadline);
+	let searchQuery = $state(initialData.filters.search);
+	let showCompleted = $state(initialData.filters.completed);
+	let assignedOnly = $state(initialData.filters.assigned_only);
+	let hasDeadline = $state(initialData.filters.has_deadline);
 	let loading = $state(false);
 
 	// Build filter URL
