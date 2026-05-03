@@ -522,7 +522,9 @@ function roundToMagnitude(num: number, magnitude: number): number {
  * @returns Validation result
  */
 export function validateAlgebraic(userAnswer: string, correctAnswer: string): ValidationResult {
-	const isCorrect = areEquivalent(userAnswer, correctAnswer);
+	// Bound wall-clock time so a pathological learner input cannot freeze the UI.
+	// On timeout, areEquivalent returns false → answer treated as incorrect.
+	const isCorrect = areEquivalent(userAnswer, correctAnswer, { timeoutMs: 500 });
 
 	return {
 		isCorrect,
@@ -757,7 +759,9 @@ export function validateBlanks(
 
 /** Match a single answer against expected (algebraic equivalence or case-insensitive string) */
 function isAnswerMatch(userAns: string, correctAns: string): boolean {
-	if (areEquivalent(userAns, correctAns)) return true;
+	// Same UI-protection rationale as validateAlgebraic: bound the equivalence
+	// check so a malicious or accidental pathological input cannot freeze the UI.
+	if (areEquivalent(userAns, correctAns, { timeoutMs: 500 })) return true;
 	return userAns.trim().toLowerCase() === correctAns.trim().toLowerCase();
 }
 

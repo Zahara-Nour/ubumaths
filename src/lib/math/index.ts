@@ -117,8 +117,16 @@ export function evaluateExpression(latex: string): number | string {
  * areEquivalent('x^2 - 1', '(x-1)(x+1)')         // true
  * areEquivalent('\\sin(\\frac{\\pi}{6})', '0.5')   // true
  * areEquivalent('2x + 3', '3 + 2x')                // true
+ *
+ * @param options.signal - AbortSignal for cooperative interruption.
+ * @param options.timeoutMs - Wall-clock budget in ms. Returns `false` (conservative)
+ *                            on abort/timeout — caller cannot prove equivalence in time.
  */
-export function areEquivalent(latex1: string, latex2: string): boolean {
+export function areEquivalent(
+	latex1: string,
+	latex2: string,
+	options?: { signal?: AbortSignal; timeoutMs?: number }
+): boolean {
 	const cleaned1 = stripLatexSpacing(latex1);
 	const cleaned2 = stripLatexSpacing(latex2);
 	const result1 = parseLatexSafe(cleaned1);
@@ -128,7 +136,7 @@ export function areEquivalent(latex1: string, latex2: string): boolean {
 		return cleaned1 === cleaned2;
 	}
 
-	return areEquivalentNodes(result1.ast, result2.ast);
+	return areEquivalentNodes(result1.ast, result2.ast, options);
 }
 
 /**

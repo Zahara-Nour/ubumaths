@@ -14,6 +14,7 @@
 import type { MathNode } from '../types';
 import type { NormalForm, NormalTerm, Rational, NormalizationStep, SymbolicFactor } from './types';
 import { type Verbosity, shouldIncludeStep } from '../common/verbosity.js';
+import { type AbortChecker, AbortError, checkAbort, makeAbortChecker } from '../common/abort.js';
 import { hashPolynomial, hashNormalForm, hashMathNode } from './hash';
 import { StepRecorder, getRuleDescription } from './step-recorder.js';
 import {
@@ -88,21 +89,39 @@ export const ONE_NORMAL_FORM: NormalForm = {
 // =============================================================================
 
 /**
- * Context for normalization with optional step recording.
+ * Context for normalization with optional step recording and/or interruption.
  *
- * Pass this to normalize() to record transformation steps for pedagogical display.
+ * Pass this to normalize() to record transformation steps for pedagogical display
+ * and/or to enable cooperative interruption on long-running normalizations.
  *
  * @example
+ * // Step recording for pedagogical display
  * const recorder = new StepRecorder();
  * const ctx: NormalizeContext = { recorder, verbosity: 'summarized' };
- * const form = normalize(expr, ctx);
- * const steps = recorder.getSteps();
+ *
+ * @example
+ * // Cooperative interruption only
+ * const ctx: NormalizeContext = { abortChecker: makeAbortChecker(undefined, 200) };
  */
 export interface NormalizeContext {
-	/** Step recorder instance */
-	readonly recorder: StepRecorder;
-	/** Verbosity level for filtering */
-	readonly verbosity: Verbosity;
+	/** Step recorder instance (optional — only required when verbosity != 'result') */
+	readonly recorder?: StepRecorder;
+	/** Verbosity level for filtering. Defaults to 'result' (no recording). */
+	readonly verbosity?: Verbosity;
+	/**
+	 * Abort checker called at the start of every recursive node visit.
+	 * Throws AbortError when work should stop. Build with `makeAbortChecker`.
+	 */
+	readonly abortChecker?: AbortChecker;
+}
+
+/**
+ * Public abort options for callers that do not need step recording.
+ * Used by `isZeroExpression`, `isOneExpression`, and via `areEquivalent`.
+ */
+export interface NormalizeAbortOptions {
+	readonly signal?: AbortSignal;
+	readonly timeoutMs?: number;
 }
 
 /**
@@ -125,7 +144,7 @@ function recordNormalizationStep(
 	stepVerbosity: Verbosity
 ): void {
 	// Fast path: no recording needed
-	if (!ctx || ctx.verbosity === 'result') return;
+	if (!ctx || !ctx.recorder || !ctx.verbosity || ctx.verbosity === 'result') return;
 
 	// Skip if this step's verbosity is higher than requested
 	// (detailed steps not shown when 'summarized' is requested)
@@ -1461,7 +1480,7 @@ export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
 	const simplified = preprocess(node);
 
 	// Record pre-simplification step if anything changed
-	if (ctx && ctx.verbosity !== 'result') {
+	if (ctx?.recorder && ctx.verbosity && ctx.verbosity !== 'result') {
 		const beforeHash = hashMathNode(node);
 		const afterHash = hashMathNode(simplified);
 		if (beforeHash !== afterHash) {
@@ -1481,8 +1500,12 @@ export function normalize(node: MathNode, ctx?: NormalizeContext): NormalForm {
 
 /**
  * Internal normalization of a simplified node.
+ *
+ * Cooperative interruption: when `ctx.abortChecker` is set, called at the
+ * start of every recursive visit. Throws AbortError if work should stop.
  */
 function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
+	checkAbort(ctx?.abortChecker);
 	switch (node.type) {
 		case 'number': {
 			const r = parseNumberToRational(node.value);
@@ -4090,9 +4113,18 @@ function powNormalForm(a: NormalForm, n: number): NormalForm {
  * isZeroExpression(parse("0*x"))   // true
  * isZeroExpression(parse("1"))     // false
  */
-export function isZeroExpression(node: MathNode): boolean {
-	const form = normalize(node);
-	return form.numerator.length === 0;
+export function isZeroExpression(node: MathNode, options?: NormalizeAbortOptions): boolean {
+	const abortChecker = makeAbortChecker(options?.signal, options?.timeoutMs);
+	try {
+		const form = normalize(node, abortChecker ? { abortChecker } : undefined);
+		return form.numerator.length === 0;
+	} catch (e) {
+		// Conservative on abort: caller cannot prove zero in time.
+		// Re-throw any other error to preserve previous behavior (callers may rely
+		// on normalize throwing for genuinely undefined expressions).
+		if (e instanceof AbortError) return false;
+		throw e;
+	}
 }
 
 /**
@@ -4105,9 +4137,17 @@ export function isZeroExpression(node: MathNode): boolean {
  * isOneExpression(parse("2/2"))    // true
  * isOneExpression(parse("0"))      // false
  */
-export function isOneExpression(node: MathNode): boolean {
-	const form = normalize(node);
-	return isOnePolynomial(form.numerator) && isOnePolynomial(form.denominator);
+export function isOneExpression(node: MathNode, options?: NormalizeAbortOptions): boolean {
+	const abortChecker = makeAbortChecker(options?.signal, options?.timeoutMs);
+	try {
+		const form = normalize(node, abortChecker ? { abortChecker } : undefined);
+		return isOnePolynomial(form.numerator) && isOnePolynomial(form.denominator);
+	} catch (e) {
+		// Conservative on abort: caller cannot prove one in time. Re-throw any
+		// other error to preserve previous behavior (see isZeroExpression).
+		if (e instanceof AbortError) return false;
+		throw e;
+	}
 }
 
 // =============================================================================
