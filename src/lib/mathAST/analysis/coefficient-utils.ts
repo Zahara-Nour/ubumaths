@@ -20,6 +20,7 @@ import {
 	isSubtraction
 } from '../guards';
 import { number, opposite, multiply, divide, add } from '../factory';
+import { numericNode, getNumericValue } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
 import { containsVariable } from '../common/contains-variable';
 
@@ -32,7 +33,9 @@ export { containsVariable };
 
 export const ZERO = number('0');
 export const ONE = number('1');
-export const MINUS_ONE = number('-1');
+// Canonical form: opposite(number('1')) — never number('-1').
+// See docs/wip/migrate-negative-numbers-progress.md
+export const MINUS_ONE = opposite(number('1'));
 
 // =============================================================================
 // Variable Detection
@@ -87,25 +90,23 @@ export function applySign(coefficient: MathNode, sign: '+' | '-'): MathNode {
 		return coefficient;
 	}
 
+	// Optimization: -(−x) → x (double negation)
+	// Handles canonical opposite(number('1')) (= MINUS_ONE) → number('1')
+	if (isOpposite(coefficient)) {
+		return coefficient.operand;
+	}
+
 	// Optimization: 1 → -1
 	if (isNumber(coefficient) && coefficient.value === '1') {
 		return MINUS_ONE;
 	}
 
-	// Optimization: -1 → 1
-	if (isNumber(coefficient) && coefficient.value === '-1') {
-		return ONE;
-	}
-
-	// Optimization: -(−x) → x (double negation)
-	if (isOpposite(coefficient)) {
-		return coefficient.operand;
-	}
-
-	// Optimization: -n → number(-n) for numeric values
+	// Optimization: numeric value → invert sign via canonical form.
+	// numericNode wraps negatives in opposite() so we never produce a
+	// NumberNode with a leading '-' in its value.
 	if (isNumber(coefficient)) {
 		const value = parseFloat(coefficient.value);
-		return number(String(-value));
+		return numericNode(-value);
 	}
 
 	// General case: wrap in opposite
@@ -126,10 +127,13 @@ export function addCoefficients(a: MathNode, b: MathNode): MathNode {
 		return a;
 	}
 
-	// Numeric addition: n + m = (n+m)
-	if (isNumber(a) && isNumber(b)) {
-		const sum = parseFloat(a.value) + parseFloat(b.value);
-		return number(String(sum));
+	// Numeric addition: n + m = (n+m).
+	// getNumericValue handles both number('3') and opposite(number('3')) (canonical).
+	// numericNode keeps the result in canonical form.
+	const aVal = getNumericValue(a);
+	const bVal = getNumericValue(b);
+	if (aVal !== null && bVal !== null) {
+		return numericNode(aVal + bVal);
 	}
 
 	// General case: create addition node

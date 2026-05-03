@@ -13,6 +13,7 @@ import {
 } from '../polynomial-analysis';
 import { parseLatex } from '../../parser';
 import { isNumber } from '../../guards';
+import { getNumericValue } from '../../common/numeric';
 
 // Helper to parse and analyze
 function analyze(latex: string, variable: string = 'x') {
@@ -20,12 +21,14 @@ function analyze(latex: string, variable: string = 'x') {
 	return analyzePolynomial(node, variable);
 }
 
-// Helper to get numeric coefficient value
+// Helper to get numeric coefficient value.
+// Uses getNumericValue so it handles both number('3') and opposite(number('3'))
+// (canonical form for negatives — see migrate-negative-numbers-progress.md).
 function getNumericCoeff(analysis: ReturnType<typeof analyze>, degree: number): number | null {
 	if (!analysis.isPolynomial) return null;
 	const coeff = analysis.coefficients.get(degree);
-	if (!coeff || !isNumber(coeff)) return null;
-	return parseFloat(coeff.value);
+	if (!coeff) return null;
+	return getNumericValue(coeff);
 }
 
 describe('analyzePolynomial', () => {

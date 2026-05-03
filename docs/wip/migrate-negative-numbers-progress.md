@@ -141,9 +141,53 @@ Les 5 cas `it.fails` passent (sémantique inversée : ils sont verts maintenant 
 
 ---
 
-## Phase 3 — Migration par module (à venir)
+## Phase 3 — Migration par module
 
-[à compléter après Phase 2]
+### Phase 3a — `analysis/coefficient-utils.ts` (site #1) ✓
+
+**Date** : 2026-05-02
+
+#### Fichiers modifiés
+
+| Fichier                                                          | Action                                                                                                                                                                                                                               |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/mathAST/analysis/coefficient-utils.ts`                  | `MINUS_ONE = number('-1')` → `MINUS_ONE = opposite(number('1'))` ; `applySign` réécrite avec `numericNode` ; `addCoefficients` utilise `getNumericValue + numericNode` (gère désormais aussi `opposite(number(...))` comme opérande) |
+| `src/lib/mathAST/analysis/__tests__/linear-combination.test.ts`  | Helpers `getNumericCoeff`, `getAffineNumericCoeff`, `getAffineConstant` utilisent `getNumericValue` au lieu de `isNumber + parseFloat`. Suppression de l'import `isOpposite` devenu inutile                                          |
+| `src/lib/mathAST/analysis/__tests__/polynomial-analysis.test.ts` | Helper `getNumericCoeff` adapté pareillement                                                                                                                                                                                         |
+
+#### Tests qui virent au vert
+
+- ✓ `no-negative-number-node.test.ts > MINUS_ONE constant` (rouge → vert)
+
+#### Régressions résolues
+
+8 tests dans `analysis/` ont cassé après le changement de `MINUS_ONE` (les helpers de test rejetaient les `opposite(number(...))` car `isNumber()` ne matche pas). Tous corrigés via `getNumericValue` qui gère les deux formes.
+
+#### Décisions de scope
+
+- **`addCoefficients` élargi** : la branche numérique gère désormais aussi le cas `opposite(number(...)) + number(...)`. Élargissement intentionnel : avant la migration, un tel pattern n'arrivait quasi jamais (les négatifs étaient des `number('-N')`). Après migration, il devient le cas dominant. Sans cet élargissement, `5x - 2x` aurait retourné `add(number('5'), opposite(number('2')))` au lieu de `number('3')`, cassant le test "subtraction of like terms".
+
+#### État Phase 3a
+
+- 482 tests `analysis/` verts (avant : 482 dont 8 cassés post-migration → maintenant tous verts).
+- Suite mathAST complète : 11658 verts, 1 rouge intentionnel (test E2E `unitInterval` à résoudre en Phase 3d).
+- `pnpm check:incremental` ✓ aucune erreur introduite.
+
+### Phase 3b — `integration/integrators/basic.ts` (site #2)
+
+[à venir]
+
+### Phase 3c — `cli/commands/solve.command.ts` (sites #3, #4)
+
+[à venir]
+
+### Phase 3d — `domain/builtins.ts` + `domain/factory.ts` + `math/intervals/factory.ts` (sites #5-9)
+
+[à venir]
+
+### Phase 3e — Consommateurs `latex-generator.ts` (C1, C2)
+
+[à venir]
 
 ---
 
@@ -175,3 +219,9 @@ Les 5 cas `it.fails` passent (sémantique inversée : ils sont verts maintenant 
 
 - `src/lib/mathAST/__tests__/factory.test.ts` — ajout de `describe('number — negative rejection (Phase 4)')` (5 `it.fails` + 1 `it`)
 - `src/lib/mathAST/__tests__/no-negative-number-node.test.ts` — créé (5 tests E2E, 2 rouges / 3 verts)
+
+### Phase 3a (migration `coefficient-utils.ts`, site #1)
+
+- `src/lib/mathAST/analysis/coefficient-utils.ts` — MINUS_ONE canonique, applySign refactorisée, addCoefficients élargie
+- `src/lib/mathAST/analysis/__tests__/linear-combination.test.ts` — helpers de test adaptés, import `isOpposite` retiré
+- `src/lib/mathAST/analysis/__tests__/polynomial-analysis.test.ts` — helper `getNumericCoeff` adapté
