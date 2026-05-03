@@ -26,16 +26,20 @@
 
 	let { config, onSave, onCancel }: Props = $props();
 
+	// Snapshot of the initial config prop for $state init below.
+	// svelte-ignore state_referenced_locally
+	const initialConfig = config;
+
 	// Form state
 	let formData = $state<CreateConfigData>({
-		config_name: config?.config_name ?? '',
-		description: config?.description ?? '',
-		common_probability: config?.common_probability ?? 60,
-		rare_probability: config?.rare_probability ?? 25,
-		epic_probability: config?.epic_probability ?? 12,
-		legendary_probability: config?.legendary_probability ?? 3,
-		valid_from: config?.valid_from ?? null,
-		valid_until: config?.valid_until ?? null
+		config_name: initialConfig?.config_name ?? '',
+		description: initialConfig?.description ?? '',
+		common_probability: initialConfig?.common_probability ?? 60,
+		rare_probability: initialConfig?.rare_probability ?? 25,
+		epic_probability: initialConfig?.epic_probability ?? 12,
+		legendary_probability: initialConfig?.legendary_probability ?? 3,
+		valid_from: initialConfig?.valid_from ?? null,
+		valid_until: initialConfig?.valid_until ?? null
 	});
 
 	let saving = $state(false);
