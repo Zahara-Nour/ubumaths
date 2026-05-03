@@ -53,24 +53,28 @@
 		onvariationchange
 	}: Props = $props();
 
+	// Snapshot of the initial exercise prop for $state initializers below.
+	// svelte-ignore state_referenced_locally
+	const initialExercise = exercise;
+
 	// Form state
-	let title = $state(exercise?.title || '');
-	let slug = $state(exercise?.slug || '');
-	let source = $state(exercise?.source || '');
-	let category = $state<ExerciseCategory | ''>(exercise?.category || '');
-	let tags = $state<string[]>(exercise?.tags || []);
-	let topic = $state(exercise?.topic || '');
-	let gradeLevels = $state<GradeCode[]>((exercise?.grades as GradeCode[]) || []);
+	let title = $state(initialExercise?.title || '');
+	let slug = $state(initialExercise?.slug || '');
+	let source = $state(initialExercise?.source || '');
+	let category = $state<ExerciseCategory | ''>(initialExercise?.category || '');
+	let tags = $state<string[]>(initialExercise?.tags || []);
+	let topic = $state(initialExercise?.topic || '');
+	let gradeLevels = $state<GradeCode[]>((initialExercise?.grades as GradeCode[]) || []);
 	let resources = $state<ExerciseResource[]>(
-		(exercise?.resources as unknown as ExerciseResource[]) || []
+		(initialExercise?.resources as unknown as ExerciseResource[]) || []
 	);
-	let isPublic = $state(exercise?.is_public ?? false);
+	let isPublic = $state(initialExercise?.is_public ?? false);
 
 	/**
 	 * Generic function names for math expression parsing.
 	 * Now properly typed via Exercise interface from $lib/exercises/types.
 	 */
-	let genericFunctions = $state<string[]>(exercise?.generic_functions ?? []);
+	let genericFunctions = $state<string[]>(initialExercise?.generic_functions ?? []);
 
 	/**
 	 * Variations are the single source of truth for exercise content.
@@ -78,7 +82,7 @@
 	 * Existing exercises must have variations (legacy fields are deprecated).
 	 */
 	let variations = $state<ExerciseVariation[]>(
-		exercise?.variations ?? [
+		initialExercise?.variations ?? [
 			{
 				label: 'guided',
 				statement_md: '',
@@ -92,7 +96,7 @@
 	 * Shared defaults for variations (variables, statement, solution fallbacks).
 	 * Properly typed via Exercise interface.
 	 */
-	let shared = $state<SharedExerciseDefaults | undefined>(exercise?.shared);
+	let shared = $state<SharedExerciseDefaults | undefined>(initialExercise?.shared);
 
 	// Active variation tab - find index from initialVariation label or default to first
 	function getInitialTabIndex(): string {
@@ -114,7 +118,7 @@
 
 	// Collapsible section states
 	// Metadata collapsed by default when editing, open when creating
-	let metadataOpen = $state(!exercise);
+	let metadataOpen = $state(!initialExercise);
 	let sharedVariablesOpen = $state(false);
 	let resourcesOpen = $state(false);
 	let genericFunctionsOpen = $state(false);
