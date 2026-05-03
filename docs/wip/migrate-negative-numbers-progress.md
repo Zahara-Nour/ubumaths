@@ -423,9 +423,54 @@ Sites finaux découverts en audit grep complet après Phase 3g :
 
 ---
 
-## Phase 4 — Throw dans la factory (à venir)
+## Phase 4 — Throw dans la factory (BLOQUÉE — tentative reverté)
 
-[à compléter après Phase 3]
+**Tentative** : ajouter le `throw` dans `factory.number()` quand `value` commence par `-` ou `+`.
+
+**Résultat** : 231 erreurs, 248 fichiers de tests cassés. **Reverté** sans commit.
+
+**Cause** : de nombreux call sites **dynamiques** restent dans le code de production. Le pattern récurrent :
+
+```ts
+// Quelque part dans solve/, integration/, cosmetic-transforms, etc.
+return number(String(computedValue)); // computedValue peut être négatif
+return number(computedValue.toString()); // idem
+return number(roundedNumber); // idem
+```
+
+Quand `computedValue < 0`, `String(computedValue)` produit `'-N'` → `factory.number()` throw.
+
+### Sites dynamiques identifiés (audit grep `number(String\|number(.*toString`)
+
+À migrer vers `numericNode(value)` (qui wrappe automatiquement les négatifs en `opposite(...)`) :
+
+| Fichier                                                | Sites approximatifs |
+| ------------------------------------------------------ | ------------------: |
+| `mathAST/cosmetic-transforms.ts`                       |                   7 |
+| `mathAST/solve/solve.ts`                               |                   3 |
+| `mathAST/solve/solvers/polynomial.ts`                  |                  8+ |
+| `mathAST/solve/solvers/quartic.ts`                     |                  1+ |
+| `mathAST/solve/solvers/transcendental.ts`              |                   1 |
+| `mathAST/integration/integrators/parts.ts`             |                   7 |
+| `mathAST/integration/integrators/trig-substitution.ts` |                   2 |
+| `mathAST/integration/integrators/basic.ts`             |                  1+ |
+
+### Plan recommandé pour finir Phase 4 (session future)
+
+1. **Audit grep complet** : `grep -rn "number(String\|number(.*toString\|number(<var>)" src/lib/`. Recenser tous les sites où l'argument est une expression calculée (non une string littérale).
+2. **Migration mécanique** : pour chaque site, remplacer `number(...)` par `numericNode(...)`. Importer `numericNode` depuis `common/numeric` si pas déjà fait.
+3. **Tester par module** : intégration → solve → cosmetic-transforms. Confirmer 0 régression à chaque étape.
+4. **Re-tenter le throw** : ajouter le throw dans `factory.number()`, lancer la suite globale, fixer les derniers résiduels.
+5. **Convertir les `it.fails`** en `expect().toThrow()` dans `factory.test.ts:104-126`.
+
+### État de la migration au jour de l'arrêt (2026-05-02)
+
+- ✅ 10 commits committés : Phase 1, 2, 3a, 3b+c, 3d, 3d-bis, 3e, 3f, 3g+3h.
+- ✅ Code source : 0 call site **statique** créateur `number('-N')` ou `number(-N)`.
+- ⚠️ Code source : ~30+ call sites **dynamiques** `number(String(<expr>))` à migrer vers `numericNode(<expr>)` — Phase 4 préalable.
+- ✅ Tests : 14901/14901 verts dans `mathAST + math/intervals + geometry-core`.
+- ✅ Helpers de production étendus pour reconnaître `opposite(number(...))` (Phase 3g) : `extended-arithmetic`, `exact-evaluation`, `sign-tracking`, `pattern/constraints`.
+- ❌ Phase 4 (throw factory) : tentée, reverté. Nécessite la migration des call sites dynamiques d'abord.
 
 ---
 
