@@ -23,22 +23,26 @@
 
 	let { data }: { data: PageData } = $props();
 
+	// Snapshot of the initial data prop for $state initializers below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// Sort type including client-side grades sorting
 	type SortByField = 'title' | 'updated_at' | 'grades';
 
 	// Local state for exercises (allows fetch-based updates)
-	let exercises = $state(data.exercises);
-	let pagination = $state(data.pagination);
-	let sortBy = $state<SortByField>((data.sortBy as SortByField) || 'updated_at');
-	let sortOrder = $state<'asc' | 'desc'>(data.sortOrder || 'desc');
+	let exercises = $state(initialData.exercises);
+	let pagination = $state(initialData.pagination);
+	let sortBy = $state<SortByField>((initialData.sortBy as SortByField) || 'updated_at');
+	let sortOrder = $state<'asc' | 'desc'>(initialData.sortOrder || 'desc');
 	let isLoading = $state(false);
 
 	// Filter state
-	let searchQuery = $state(data.filters.search);
+	let searchQuery = $state(initialData.filters.search);
 	let selectedCategory = $state<ExerciseCategory | ''>(
-		(data.filters.category as ExerciseCategory) || ''
+		(initialData.filters.category as ExerciseCategory) || ''
 	);
-	let selectedGradeLevels = $state<GradeCode[]>((data.filters.grades || []) as GradeCode[]);
+	let selectedGradeLevels = $state<GradeCode[]>((initialData.filters.grades || []) as GradeCode[]);
 
 	// Delete confirmation
 	let deletingId = $state<string | null>(null);
