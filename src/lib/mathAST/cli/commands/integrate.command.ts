@@ -24,7 +24,7 @@ import type {
 	DefiniteIntegrateResult
 } from '../../integration';
 import type { MathNode } from '../../types';
-import { number } from '../../factory';
+import { numericNode } from '../../common/numeric';
 
 // =============================================================================
 // Integrate Command
@@ -112,8 +112,8 @@ export class IntegrateCommand extends BaseCommand {
 
 			if (bounds) {
 				// Definite integral - create MathNode bounds
-				const lowerNode = number(String(bounds.lower));
-				const upperNode = number(String(bounds.upper));
+				const lowerNode = numericNode(bounds.lower);
+				const upperNode = numericNode(bounds.upper);
 
 				const result = integrateDefinite(parseResult.ast, lowerNode, upperNode, {
 					variable,

@@ -12,6 +12,7 @@
 
 import type { MathNode } from '../../types';
 import { number } from '$lib/mathAST/factory';
+import { numericNode } from '../../common/numeric';
 import type { Domain, Interval } from '../types';
 import type { ParseStudentDomainResult } from './types';
 import {
@@ -620,7 +621,7 @@ function parseEndpointValue(input: string): MathNode | null {
 	// Numbers (including negative and decimal)
 	const num = parseFloat(trimmed);
 	if (!isNaN(num) && isFinite(num)) {
-		return number(num);
+		return numericNode(num);
 	}
 
 	// Fractions (a/b)

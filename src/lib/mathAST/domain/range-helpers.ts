@@ -22,6 +22,7 @@ import {
 	positiveInfinity as posInfinityNode,
 	negativeInfinity as negInfinityNode
 } from '../factory';
+import { numericNode } from '../common/numeric';
 import { evaluateLimit } from '../limits';
 import { getEndpoints, buildInterval } from '$lib/math/intervals';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
@@ -92,11 +93,17 @@ function domainFromNumericBounds(bounds: NumericBounds): Domain {
 
 	const lo =
 		lower !== null
-			? { value: number(lower), type: lowerInclusive ? ('closed' as const) : ('open' as const) }
+			? {
+					value: numericNode(lower),
+					type: lowerInclusive ? ('closed' as const) : ('open' as const)
+				}
 			: negInfinityEndpoint();
 	const hi =
 		upper !== null
-			? { value: number(upper), type: upperInclusive ? ('closed' as const) : ('open' as const) }
+			? {
+					value: numericNode(upper),
+					type: upperInclusive ? ('closed' as const) : ('open' as const)
+				}
 			: posInfinityEndpoint();
 
 	return buildInterval(lo, hi) as Domain;
@@ -559,7 +566,7 @@ export function computeLinearRange(linear: LinearForm, inputDomain: Domain): Dom
 
 	// Constant function
 	if (Math.abs(a) < 1e-10) {
-		return intervalDomain([closedInterval(number(b), number(b))]);
+		return intervalDomain([closedInterval(numericNode(b), numericNode(b))]);
 	}
 
 	const bounds = getNumericBounds(inputDomain);
@@ -894,7 +901,7 @@ export function computeRangeWithCriticalPointsExact(
 
 		// Evaluate f at lower endpoint (finite) or compute limit (infinite)
 		if (bounds.lower !== null) {
-			const lowerEval = evaluateAtCriticalPoint(expr, variable, number(bounds.lower));
+			const lowerEval = evaluateAtCriticalPoint(expr, variable, numericNode(bounds.lower));
 			if (!lowerEval || lowerEval.yApproximate === undefined) return null;
 			candidates.push({
 				node: lowerEval.y,
@@ -929,7 +936,7 @@ export function computeRangeWithCriticalPointsExact(
 
 		// Evaluate f at upper endpoint (finite) or compute limit (infinite)
 		if (bounds.upper !== null) {
-			const upperEval = evaluateAtCriticalPoint(expr, variable, number(bounds.upper));
+			const upperEval = evaluateAtCriticalPoint(expr, variable, numericNode(bounds.upper));
 			if (!upperEval || upperEval.yApproximate === undefined) return null;
 			candidates.push({
 				node: upperEval.y,

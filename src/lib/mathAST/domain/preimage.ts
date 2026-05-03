@@ -22,7 +22,7 @@ import {
 	realLine,
 	excludedPoint
 } from './factory';
-import { number } from '$lib/mathAST/factory';
+import { numericNode } from '../common/numeric';
 import { ZERO_TOLERANCE } from '../common';
 
 // =============================================================================
@@ -587,7 +587,7 @@ export function solveLinearInequality(
 	}
 
 	const solution = rhs / a;
-	const solutionValue = number(solution);
+	const solutionValue = numericNode(solution);
 
 	// If a > 0, inequality direction is preserved
 	// If a < 0, inequality direction is flipped
@@ -661,7 +661,7 @@ export function solveQuadraticInequality(
 	if (Math.abs(discriminant) < ZERO_TOLERANCE) {
 		// One root (tangent to axis)
 		const root = -b / (2 * a);
-		const rootValue = number(root);
+		const rootValue = numericNode(root);
 		if (a > 0) {
 			// Parabola opens up, touches 0 at root
 			if (op === '>=') {
@@ -689,8 +689,8 @@ export function solveQuadraticInequality(
 	const root2 = (-b + sqrtD) / (2 * a);
 	const minRoot = Math.min(root1, root2);
 	const maxRoot = Math.max(root1, root2);
-	const minRootValue = number(minRoot);
-	const maxRootValue = number(maxRoot);
+	const minRootValue = numericNode(minRoot);
+	const maxRootValue = numericNode(maxRoot);
 
 	if (a > 0) {
 		// Parabola opens up: negative between roots, positive outside
@@ -1104,7 +1104,7 @@ export function solveCubicInequality(
 	if (roots.length === 1) {
 		// One real root r
 		const r = roots[0];
-		const rValue = number(r);
+		const rValue = numericNode(r);
 
 		// For a > 0: f(x) < 0 when x < r, f(x) > 0 when x > r
 		// For a < 0: f(x) > 0 when x < r, f(x) < 0 when x > r
@@ -1140,8 +1140,8 @@ export function solveCubicInequality(
 		// Two real roots (one simple, one double)
 		const r1 = roots[0];
 		const r2 = roots[1];
-		const r1Value = number(r1);
-		const r2Value = number(r2);
+		const r1Value = numericNode(r1);
+		const r2Value = numericNode(r2);
 
 		// The sign pattern depends on which root is the double root
 		// For simplicity, handle like three roots case with middle behavior adjusted
@@ -1182,9 +1182,9 @@ export function solveCubicInequality(
 	const r1 = roots[0];
 	const r2 = roots[1];
 	const r3 = roots[2];
-	const r1Value = number(r1);
-	const r2Value = number(r2);
-	const r3Value = number(r3);
+	const r1Value = numericNode(r1);
+	const r2Value = numericNode(r2);
+	const r3Value = numericNode(r3);
 
 	// For a > 0: f(x) < 0 when x < r1 or r2 < x < r3
 	//            f(x) > 0 when r1 < x < r2 or x > r3
@@ -1290,7 +1290,7 @@ export function solveQuarticInequality(
 		}
 	}
 
-	const rootValues = roots.map((r) => number(r));
+	const rootValues = roots.map((r) => numericNode(r));
 
 	if (roots.length === 1) {
 		// One root (with multiplicity or tangent point)
