@@ -578,7 +578,7 @@
 </script>
 
 <div class="probability-tree {className}">
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 	<svg
 		width={svgWidth}
 		height={svgHeight}
@@ -674,6 +674,7 @@
 				/>
 
 				<!-- Probability label (perpendicular to branch, above line) - clickable to toggle name/value -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<foreignObject
 					x={labelX - 40}
 					y={labelY - 10}
@@ -698,7 +699,7 @@
 					height="20"
 					class:pt-event-foreign-clickable={isLeaf}
 				>
-					<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+					<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 					<div
 						class="pt-label pt-event-label"
 						class:pt-event-clickable={isLeaf}
@@ -780,11 +781,6 @@
 	/* SVG */
 	.pt-svg {
 		display: block;
-	}
-
-	/* Root label - inherits from pt-label and pt-event-label */
-	.pt-root-label {
-		/* Additional styling if needed */
 	}
 
 	/* Branch group */
