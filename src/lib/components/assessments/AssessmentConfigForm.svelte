@@ -37,22 +37,28 @@
 
 	let { initialData, onSubmit, onCancel, submitLabel = 'Créer' }: Props = $props();
 
+	// Capture the prop in a non-reactive alias to avoid state_referenced_locally
+	// warnings on the $state initializers below — initialData is already
+	// semantically a snapshot.
+	// svelte-ignore state_referenced_locally
+	const init = initialData;
+
 	// Grade select items (middle school grades for assessments)
 	const gradeItems = getGradeSelectItemsByLevel('middle');
 
 	// Form state
-	let title = $state(initialData?.title || '');
-	let grade = $state(initialData?.grade || '6');
-	let description = $state(initialData?.description || '');
+	let title = $state(init?.title || '');
+	let grade = $state(init?.grade || '6');
+	let description = $state(init?.description || '');
 	let maxAttempts = $state<number | null>(
-		initialData?.settings?.max_attempts ?? DEFAULT_ASSESSMENT_SETTINGS.max_attempts
+		init?.settings?.max_attempts ?? DEFAULT_ASSESSMENT_SETTINGS.max_attempts
 	);
 	let timeLimit = $state<number | null>(
-		initialData?.settings?.time_limit ?? DEFAULT_ASSESSMENT_SETTINGS.time_limit
+		init?.settings?.time_limit ?? DEFAULT_ASSESSMENT_SETTINGS.time_limit
 	);
-	let deadline = $state<string>(initialData?.settings?.deadline ?? '');
+	let deadline = $state<string>(init?.settings?.deadline ?? '');
 	let shuffleQuestions = $state(
-		initialData?.settings?.shuffle_questions ?? DEFAULT_ASSESSMENT_SETTINGS.shuffle_questions
+		init?.settings?.shuffle_questions ?? DEFAULT_ASSESSMENT_SETTINGS.shuffle_questions
 	);
 
 	// Input values for optional fields (string for input binding)
