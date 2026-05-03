@@ -4,7 +4,7 @@
  * All bounds are MathNodes from mathAST, supporting symbolic expressions.
  */
 
-import { number, infinity } from '$lib/mathAST/factory';
+import { number, opposite, infinity } from '$lib/mathAST/factory';
 import { parseCustomPratt } from '$lib/mathAST/parser/custom/parser-pratt';
 import type { MathNode } from '$lib/mathAST/types';
 import type {
@@ -219,5 +219,5 @@ export function nonZeroReals(): IntervalSet {
 
 /** Domain for -1 <= x <= 1 (e.g., for arcsin, arccos) - [-1, 1] */
 export function unitInterval(): IntervalSet {
-	return intervalSet([closedInterval(number(-1), number(1))]);
+	return intervalSet([closedInterval(opposite(number('1')), number('1'))]);
 }
