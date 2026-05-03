@@ -1029,6 +1029,7 @@
 						stroke="#3b82f6"
 						stroke-width={strokeWidth}
 					/>
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<circle
 						cx={centerX}
 						cy={selectionBounds.y - rotateOffset}
@@ -1052,6 +1053,7 @@
 
 					<!-- Resize handles -->
 					{#each handles as h (h.pos)}
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<rect
 							x={h.x - hitSize / 2}
 							y={h.y - hitSize / 2}

@@ -41,7 +41,9 @@
 	}: Props = $props();
 
 	// State
+	// svelte-ignore state_referenced_locally
 	let frontMarkdown = $state(initialFrontContent || '');
+	// svelte-ignore state_referenced_locally
 	let backMarkdown = $state(initialBackContent || '');
 	let isSaving = $state(false);
 	let activeTab = $state('edit');

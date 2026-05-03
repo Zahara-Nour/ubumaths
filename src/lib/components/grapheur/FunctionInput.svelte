@@ -33,8 +33,10 @@ Features:
 	let { func }: { func: ExplicitFunction } = $props();
 
 	// Local state for latex input (bound to MathField)
+	// svelte-ignore state_referenced_locally
 	let latex = $state(func.latex);
 	let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+	// svelte-ignore state_referenced_locally
 	let previousFuncLatex = func.latex;
 
 	// Watch for latex changes and debounce update to store

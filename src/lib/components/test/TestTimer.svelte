@@ -66,8 +66,10 @@
 	}: Props = $props();
 
 	// State
+	// svelte-ignore state_referenced_locally
 	let remaining = $state(duration);
 	let elapsed = $state(0); // For stopwatch mode
+	// svelte-ignore state_referenced_locally
 	let initialDuration = $state(duration); // Store initial duration for progress calculation
 	let animationFrame = $state<number | null>(null);
 	let hasCompleted = $state(false);

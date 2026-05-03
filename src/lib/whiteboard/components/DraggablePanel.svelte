@@ -48,6 +48,7 @@
 	// State
 	// ==========================================================================
 
+	// svelte-ignore state_referenced_locally
 	let position = $state({ ...initialPosition });
 	let isDragging = $state(false);
 	let dragStart = $state({ x: 0, y: 0 });
@@ -139,6 +140,7 @@
 		style="right: {-position.x}px; top: {position.y}px;"
 	>
 		<!-- Header (draggable) -->
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			class="flex cursor-grab items-center justify-between gap-2 border-b border-border px-3 py-2 active:cursor-grabbing"
 			onpointerdown={handleDragStart}

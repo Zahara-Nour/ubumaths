@@ -79,6 +79,7 @@
 >
 	<div class="flex items-start justify-between gap-3">
 		{#if selectable}
+			<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 			<div class="flex-shrink-0 pt-1" onclick={(e) => e.stopPropagation()}>
 				<MyCheckbox checked={selected} onCheckedChange={handleSelectionChange} />
 			</div>

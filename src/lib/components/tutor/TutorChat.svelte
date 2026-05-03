@@ -97,6 +97,7 @@
 	let loadingRotation = $state(0);
 	let typingMessageIndex = $state<number | null>(null);
 	let displayedText = $state<Record<number, string>>({});
+	// svelte-ignore state_referenced_locally
 	let helpLevel = $state(initialHelpLevel);
 	let remaining = $state<{ exercise: number | null; hour: number; day: number }>({
 		exercise: null,
@@ -122,7 +123,7 @@
 	let abortController: AbortController | null = null;
 
 	// Refs
-	let messagesContainer: HTMLDivElement | undefined;
+	let messagesContainer: HTMLDivElement | undefined = $state();
 
 	// Generate random rotation for avatar
 	function generateRandomRotation(): number {

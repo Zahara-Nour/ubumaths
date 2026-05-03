@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import {
 		Home,
 		Gamepad2,
 		FileSpreadsheet,
 		BookOpen,
-		PenTool
+		PenTool,
+		Terminal
 		// Calculator,
-		// Terminal,
 		// CalculatorIcon,
 		// LineChart
 	} from 'lucide-svelte';
@@ -22,6 +23,12 @@
 		items = [
 			{ label: 'Accueil', href: '/', icon: Home },
 			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
+			{
+				label: 'Python',
+				href: '/python',
+				icon: Terminal,
+				roles: ['student', 'teacher']
+			},
 			{
 				label: 'Worksheets',
 				href: '/dashboard/teacher/contenu/worksheets',
@@ -94,7 +101,7 @@
 	<nav class="flex flex-col items-center gap-1 py-4">
 		{#each visibleItems as item (item.href)}
 			<a
-				href={item.href}
+				href={resolve(item.href as '/')}
 				data-sveltekit-preload-data="tap"
 				class="group flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
 					item.href
