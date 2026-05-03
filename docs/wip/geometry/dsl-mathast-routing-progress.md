@@ -13,6 +13,8 @@
 
 ## Architecture cible
 
+### Pipeline d'évaluation
+
 ```
 "r = 2 * \pi + sqrt(s)"
          │
@@ -32,12 +34,41 @@
                  node = applyAngleMode(node, this.angleMode)
                  freeVars = getVariables(node)
                  - Substitute statics, collect scalar deps
-                 - Si scalarDeps vide : evaluate(node, {}) → number
-                 - Sinon : createScalarExpression(closure, scalarDeps)
+                 - Si scalarDeps vide : evaluate(node, {}) → number   [STATIC]
+                 - Sinon : createScalarExpression(closure, scalarDeps) [REACTIVE]
        - Sinon : null
-    3. Si null → fallback evaluateExpr (path DSL)
+    3. Si null → fallback evaluateExpr (DSL evaluator)
     4. Stocker dans symbol table
 ```
+
+### Les 4 quadrants d'évaluation (path × mode)
+
+L'évaluation d'une expression DSL traverse l'un de **2 paths** dans l'un de **2 modes**. Les 4 combinaisons existent toutes et coexistent volontairement.
+
+|                     | **Static** (snapshot, retour `number`)                                                | **Reactive** (`GeoScalar` live, recompute)                                       |
+| ------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| **mathAST routing** | `tryEvaluateAsMathExpr` branche `if (scalarDeps.length === 0)` → `fn(staticBindings)` | Même fonction, branche `else` → `figure.createScalarExpression(closure, depIds)` |
+| **DSL evaluator**   | `evaluateExpr case 'binary'` avec deux operands typés `nombre` → JS arithmétique      | `evaluateScalarBinary` (≥1 operand est scalar) → `figure.createScalarExpression` |
+
+#### Critère "path"
+
+- **mathAST routing** ouvre quand `isMathPureExpr(expr) === true` ET pas de macro body ET source slice valide. Délègue le parse + compile à mathAST. Fast-path opportuniste.
+- **DSL evaluator** prend tout le reste : tuples, property access (`P.x`), vecteurs, appels aux builtins (`distance`, `slider`, `cercle`, …), macros user, cas mixtes (builtin + scalar).
+
+#### Critère "mode"
+
+- **Static** quand l'expression ne référence aucun `slider`/`scalar` réactif. Le résultat est un `number` figé au moment de l'évaluation.
+- **Reactive** quand au moins un opérande est un `slider`/`scalar`. Le résultat est un `GeoScalar` qui recompute automatiquement à chaque `figure.recompute()` (drag de slider, mouvement de point free, etc.).
+
+#### Conventions par quadrant
+
+| Aspect            | mathAST static                                         | mathAST reactive                 | DSL static (binary)                    | DSL reactive (`evaluateScalarBinary`) |
+| ----------------- | ------------------------------------------------------ | -------------------------------- | -------------------------------------- | ------------------------------------- |
+| Division par zéro | IEEE 754 (`±Inf` / `NaN`)                              | NaN-coerced (`Infinity` → `NaN`) | IEEE 754 (V2 #2)                       | NaN-coerced                           |
+| Mode angle        | `applyAngleMode` appliqué après `parseCustom`          | idem                             | `scalarMathOpFor(name, mode)`          | `scalarMathOpFor(name, mode)`         |
+| Détection deps    | `getVariables(node)` ∩ symbol table → `scalar` entries | idem                             | implicite (operands sont déjà résolus) | `isScalarValue(left/right)`           |
+
+La convention NaN-coerced sur les paths reactive sert le rendu : un `GeoScalar` représente une coordonnée animée qui doit "disparaître" sur indéfini (NaN), pas être catapulté à l'infini visuellement.
 
 ## Phases
 
