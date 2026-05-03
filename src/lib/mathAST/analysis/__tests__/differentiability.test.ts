@@ -17,6 +17,7 @@ import {
 } from '../differentiability';
 import { parseLatex } from '../../parser';
 import { number } from '../../factory';
+import { getNumericValue } from '../../common/numeric';
 import type { NonDifferentiabilityType } from '../differentiability-types';
 
 // =============================================================================
@@ -937,9 +938,10 @@ describe('analyzeDifferentiability - edge cases: logarithmic variations', () => 
 	it('ln(x+1) has boundary at x=-1', () => {
 		const result = analyzeDiff('\\ln(x + 1)');
 
-		const boundary = result.boundaryBehavior.find(
-			(b) => b.point.type === 'number' && Math.abs(parseFloat(b.point.value) + 1) < 1e-6
-		);
+		const boundary = result.boundaryBehavior.find((b) => {
+			const val = getNumericValue(b.point);
+			return val !== null && Math.abs(val + 1) < 1e-6;
+		});
 		expect(boundary).toBeDefined();
 	});
 
