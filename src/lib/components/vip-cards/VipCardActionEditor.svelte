@@ -14,89 +14,111 @@
 
 	let { value, onValueChange }: Props = $props();
 
+	// Snapshot of the initial value prop for $state initializers.
+	// This editor initializes once from the prop and then evolves independently;
+	// using a non-reactive alias avoids state_referenced_locally warnings.
+	// svelte-ignore state_referenced_locally
+	const initialValue = value;
+
 	// Internal state for building the action
-	let actionType = $state<string>(value?.type ?? 'none');
+	let actionType = $state<string>(initialValue?.type ?? 'none');
 
 	// Context for activation (shared across all action types)
-	let actionContext = $state<string>(value?.context ?? '');
+	let actionContext = $state<string>(initialValue?.context ?? '');
 
 	// Parameters for each action type
-	let drawCardsCount = $state<number>(value?.type === 'draw_cards' ? value.count : 2);
-	let removeWarningsCount = $state<number>(value?.type === 'remove_warnings' ? value.count : 1);
-	let removeWarningsType = $state<string>(
-		value?.type === 'remove_warnings' && value.warningType ? value.warningType : 'none'
+	let drawCardsCount = $state<number>(initialValue?.type === 'draw_cards' ? initialValue.count : 2);
+	let removeWarningsCount = $state<number>(
+		initialValue?.type === 'remove_warnings' ? initialValue.count : 1
 	);
-	let addGidouillesAmount = $state<number>(value?.type === 'add_gidouilles' ? value.amount : 50);
-	let freezeDuration = $state<number>(value?.type === 'freeze_timer' ? value.duration : 60);
+	let removeWarningsType = $state<string>(
+		initialValue?.type === 'remove_warnings' && initialValue.warningType
+			? initialValue.warningType
+			: 'none'
+	);
+	let addGidouillesAmount = $state<number>(
+		initialValue?.type === 'add_gidouilles' ? initialValue.amount : 50
+	);
+	let freezeDuration = $state<number>(
+		initialValue?.type === 'freeze_timer' ? initialValue.duration : 60
+	);
 
 	// draw_cards filters
 	let drawForceRarity = $state<VipCardRarity | undefined>(
-		value?.type === 'draw_cards' && value.filters?.forceRarity
-			? value.filters.forceRarity
+		initialValue?.type === 'draw_cards' && initialValue.filters?.forceRarity
+			? initialValue.filters.forceRarity
 			: undefined
 	);
 	let drawMinRarity = $state<VipCardRarity | undefined>(
-		value?.type === 'draw_cards' && value.filters?.minRarity ? value.filters.minRarity : undefined
+		initialValue?.type === 'draw_cards' && initialValue.filters?.minRarity
+			? initialValue.filters.minRarity
+			: undefined
 	);
 	let drawExcludeCardIds = $state<string>(
-		value?.type === 'draw_cards' && value.filters?.excludeCardIds
-			? value.filters.excludeCardIds.join(', ')
+		initialValue?.type === 'draw_cards' && initialValue.filters?.excludeCardIds
+			? initialValue.filters.excludeCardIds.join(', ')
 			: ''
 	);
 	let drawOnlyCardsWithActions = $state<boolean>(
-		value?.type === 'draw_cards' && value.filters?.onlyCardsWithActions
-			? value.filters.onlyCardsWithActions
+		initialValue?.type === 'draw_cards' && initialValue.filters?.onlyCardsWithActions
+			? initialValue.filters.onlyCardsWithActions
 			: false
 	);
 
 	// Exchange cards parameters
 	let exchangeMode = $state<string>(
-		value?.type === 'exchange_cards' ? value.exchange.mode : 'replace_random'
+		initialValue?.type === 'exchange_cards' ? initialValue.exchange.mode : 'replace_random'
 	);
 	let replaceRandomCount = $state<number>(
-		value?.type === 'exchange_cards' && value.exchange.mode === 'replace_random'
-			? (value.exchange.count ?? 3)
+		initialValue?.type === 'exchange_cards' && initialValue.exchange.mode === 'replace_random'
+			? (initialValue.exchange.count ?? 3)
 			: 3
 	);
 	let replaceRandomFlexible = $state<boolean>(
-		value?.type === 'exchange_cards' &&
-			value.exchange.mode === 'replace_random' &&
-			value.exchange.count === undefined
+		initialValue?.type === 'exchange_cards' &&
+			initialValue.exchange.mode === 'replace_random' &&
+			initialValue.exchange.count === undefined
 	);
 	let rarityPointsTargetRarity = $state<string>(
-		value?.type === 'exchange_cards' && value.exchange.mode === 'rarity_points'
-			? value.exchange.targetRarity
+		initialValue?.type === 'exchange_cards' && initialValue.exchange.mode === 'rarity_points'
+			? initialValue.exchange.targetRarity
 			: 'common'
 	);
 	let discardForSpecificCount = $state<number>(
-		value?.type === 'exchange_cards' && value.exchange.mode === 'discard_for_specific'
-			? value.exchange.discardCount
+		initialValue?.type === 'exchange_cards' && initialValue.exchange.mode === 'discard_for_specific'
+			? initialValue.exchange.discardCount
 			: 3
 	);
 	let discardForSpecificTargetCardId = $state<string>(
-		value?.type === 'exchange_cards' && value.exchange.mode === 'discard_for_specific'
-			? value.exchange.targetCardId
+		initialValue?.type === 'exchange_cards' && initialValue.exchange.mode === 'discard_for_specific'
+			? initialValue.exchange.targetCardId
 			: ''
 	);
 
 	// Choose cards parameters
-	let chooseCardCount = $state<number>(value?.type === 'choose_card' ? value.count : 1);
+	let chooseCardCount = $state<number>(
+		initialValue?.type === 'choose_card' ? initialValue.count : 1
+	);
 	let chooseCardFilterMode = $state<string>(
-		value?.type === 'choose_card'
-			? value.filter
+		initialValue?.type === 'choose_card'
+			? initialValue.filter
 				? 'all'
-				: value.maxRarity
+				: initialValue.maxRarity
 					? 'maxRarity'
-					: value.possibleCardIds
+					: initialValue.possibleCardIds
 						? 'specific'
 						: 'all'
 			: 'all'
 	);
 	let chooseCardMaxRarity = $state<string>(
-		value?.type === 'choose_card' && value.maxRarity ? value.maxRarity : 'common'
+		initialValue?.type === 'choose_card' && initialValue.maxRarity
+			? initialValue.maxRarity
+			: 'common'
 	);
 	let chooseCardPossibleIds = $state<string>(
-		value?.type === 'choose_card' && value.possibleCardIds ? value.possibleCardIds.join(', ') : ''
+		initialValue?.type === 'choose_card' && initialValue.possibleCardIds
+			? initialValue.possibleCardIds.join(', ')
+			: ''
 	);
 
 	// Action type options
