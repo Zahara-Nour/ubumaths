@@ -25,22 +25,28 @@
 
 	let { config, onChange }: Props = $props();
 
+	// Snapshot of the initial config prop for $state initializers.
+	// svelte-ignore state_referenced_locally
+	const initialConfig = config;
+
 	// State
-	let enabled = $state(config !== null);
-	let answerType = $state<AnswerType>(config?.type || 'text');
+	let enabled = $state(initialConfig !== null);
+	let answerType = $state<AnswerType>(initialConfig?.type || 'text');
 	let answerValue = $state<string>(
-		typeof config?.value === 'string' ? config.value : String(config?.value || '')
+		typeof initialConfig?.value === 'string'
+			? initialConfig.value
+			: String(initialConfig?.value || '')
 	);
-	let tolerance = $state(config?.options?.tolerance ?? 0.01);
-	let caseSensitive = $state(config?.options?.caseSensitive ?? false);
-	let qcmChoices = $state<string[]>(config?.options?.choices || ['', '', '']);
+	let tolerance = $state(initialConfig?.options?.tolerance ?? 0.01);
+	let caseSensitive = $state(initialConfig?.options?.caseSensitive ?? false);
+	let qcmChoices = $state<string[]>(initialConfig?.options?.choices || ['', '', '']);
 	let correctChoices = $state<number[]>(
-		Array.isArray(config?.value)
-			? (config.value.filter((v) => typeof v === 'number') as number[])
-			: [typeof config?.value === 'number' ? config.value : 0]
+		Array.isArray(initialConfig?.value)
+			? (initialConfig.value.filter((v) => typeof v === 'number') as number[])
+			: [typeof initialConfig?.value === 'number' ? initialConfig.value : 0]
 	);
-	let multipleAnswers = $state(config?.options?.multipleAnswers ?? false);
-	let exactMatch = $state(config?.options?.exactMatch ?? true);
+	let multipleAnswers = $state(initialConfig?.options?.multipleAnswers ?? false);
+	let exactMatch = $state(initialConfig?.options?.exactMatch ?? true);
 
 	// Update config when any field changes
 	$effect(() => {
