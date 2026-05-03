@@ -571,7 +571,7 @@
 									style:background-color={color}
 									onclick={() => (createBackgroundColor = color)}
 									title={color}
-								/>
+								></button>
 							{/each}
 							<input
 								type="color"
@@ -612,7 +612,7 @@
 						<div
 							class="h-24 rounded-lg border"
 							style={getBackgroundPreviewStyle(createBackgroundColor, createBackgroundStyle)}
-						/>
+						></div>
 					</div>
 
 					<!-- Create Button -->
@@ -658,7 +658,7 @@
 							style:background-color={color}
 							onclick={() => (customBackgroundColor = color)}
 							title={color}
-						/>
+						></button>
 					{/each}
 					<input
 						type="color"
@@ -699,7 +699,7 @@
 				<div
 					class="h-20 rounded-lg border"
 					style={getBackgroundPreviewStyle(customBackgroundColor, customBackgroundStyle)}
-				/>
+				></div>
 			</div>
 		</div>
 
