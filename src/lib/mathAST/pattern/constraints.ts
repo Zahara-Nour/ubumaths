@@ -12,19 +12,20 @@ import { isNumber, isVariable } from '../guards';
 import { inferType, isSubtype } from '../numtype';
 import { containsValue } from '$lib/math/intervals';
 import { containsVariable } from '../common/contains-variable';
+import { getNumericValue } from '../common/numeric';
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
 
 /**
- * Parses a number from a NumberNode's string value.
- * Returns undefined if the value cannot be parsed.
+ * Parses a number from a node.
+ * Accepts both number('N') and opposite(number('N')) (canonical for negatives).
+ * Returns undefined if the node is not numeric or the value is not finite.
  */
 function parseNumberValue(node: MathNode): number | undefined {
-	if (!isNumber(node)) return undefined;
-	const parsed = parseFloat(node.value);
-	return Number.isFinite(parsed) ? parsed : undefined;
+	const parsed = getNumericValue(node);
+	return parsed !== null && Number.isFinite(parsed) ? parsed : undefined;
 }
 
 /**
@@ -73,7 +74,9 @@ export function checkConstraint(
 		}
 
 		case 'number':
-			return isNumber(node);
+			// Accept both number('N') and opposite(number('N')) (canonical for negatives).
+			// Don't filter by finiteness — number('Infinity'), number('NaN') still match.
+			return isNumber(node) || (node.type === 'opposite' && isNumber(node.operand));
 
 		case 'variable':
 			return isVariable(node);
@@ -135,9 +138,9 @@ export function checkConstraint(
 		}
 
 		case 'interval': {
-			// First check that the node is a literal number (not a variable or symbolic expression)
-			// This ensures interval constraints only match concrete numeric values in patterns
-			if (!isNumber(node)) return false;
+			// First check that the node is a literal numeric value (not a variable or symbolic expression).
+			// Accept both number('N') and opposite(number('N')) (canonical for negatives).
+			if (parseNumberValue(node) === undefined) return false;
 			// Pass the node directly for symbolic comparison with interval bounds
 			return containsValue(constraint.domain, node);
 		}

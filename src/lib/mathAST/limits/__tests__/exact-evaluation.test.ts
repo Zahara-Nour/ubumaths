@@ -397,13 +397,9 @@ describe('Edge Cases: Negative Numbers', () => {
 		expect(resultToNumber(result)).toBe(-5);
 	});
 
-	// Phase 3f: keep legacy form here — substituteApproachFactors uses
-	// `isNumber(approach)` to extract the numeric value, which doesn't
-	// recognize `opposite(number('3'))`. Migration deferred until Phase 4
-	// adapts the production code (see migrate-negative-numbers-progress.md).
 	it('evaluates 1/(x+3) at x→-3⁺ to get +∞', () => {
 		const expression = expr('\\frac{1}{x+3}');
-		const result = evaluateLimitExact(expression, 'x', number('-3'), 'right');
+		const result = evaluateLimitExact(expression, 'x', opposite(number('3')), 'right');
 
 		expect(isInfinityResult(result)).toBe(true);
 		expect(getInfinitySign(result)).toBe('positive');
@@ -411,7 +407,7 @@ describe('Edge Cases: Negative Numbers', () => {
 
 	it('evaluates 1/(x+3) at x→-3⁻ to get -∞', () => {
 		const expression = expr('\\frac{1}{x+3}');
-		const result = evaluateLimitExact(expression, 'x', number('-3'), 'left');
+		const result = evaluateLimitExact(expression, 'x', opposite(number('3')), 'left');
 
 		expect(isInfinityResult(result)).toBe(true);
 		expect(getInfinitySign(result)).toBe('negative');
@@ -664,10 +660,9 @@ describe('Edge Cases: Different Variable Names', () => {
 		expect(getZeroSign(result)).toBe('positive');
 	});
 
-	// Phase 3f: legacy form retained — see comment above on substituteApproachFactors.
 	it('evaluates 1/(y+1) at y→-1⁺ to get +∞', () => {
 		const expression = parseLatex('\\frac{1}{y+1}');
-		const result = evaluateLimitExact(expression, 'y', number('-1'), 'right');
+		const result = evaluateLimitExact(expression, 'y', opposite(number('1')), 'right');
 
 		expect(isInfinityResult(result)).toBe(true);
 		expect(getInfinitySign(result)).toBe('positive');

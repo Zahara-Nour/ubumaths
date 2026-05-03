@@ -57,8 +57,11 @@ describe('geoEqual - exact values', () => {
 		expect(geoEqual(exact(number('0')), exact(number('0')))).toBe(true);
 	});
 
-	it('-5 = -5 via opposite', () => {
-		expect(geoEqual(exact(opposite(number('5'))), exact(number('-5')))).toBe(true);
+	it('-5 = -5 (opposite of 5 equals itself)', () => {
+		// Note: this previously tested dual-representation (number('-5') ≡ opposite(number('5')))
+		// but number('-5') is now rejected by the factory. The canonical form is
+		// opposite(number('5')) — see migrate-negative-numbers-progress.md.
+		expect(geoEqual(exact(opposite(number('5'))), exact(opposite(number('5'))))).toBe(true);
 	});
 
 	it('2/4 = 1/2 (fraction simplification)', () => {

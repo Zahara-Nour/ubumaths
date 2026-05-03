@@ -17,8 +17,16 @@ import {
 	isIndeterminateResult,
 	type ExtendedResult
 } from '../extended-arithmetic';
-import { number, positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../../factory';
-import { isNumber, isInfinity, isSignedZero } from '../../guards';
+import {
+	number,
+	opposite,
+	positiveInfinity,
+	negativeInfinity,
+	zeroPlus,
+	zeroMinus
+} from '../../factory';
+import { isInfinity, isSignedZero } from '../../guards';
+import { getNumericValue } from '../../common/numeric';
 
 // =============================================================================
 // Helpers
@@ -26,11 +34,15 @@ import { isNumber, isInfinity, isSignedZero } from '../../guards';
 
 function expectNumber(result: ExtendedResult, expected: number, tolerance = 1e-10): void {
 	expect(result.type).toBe('value');
-	if (result.type === 'value' && isNumber(result.value)) {
-		expect(Math.abs(parseFloat(result.value.value) - expected)).toBeLessThan(tolerance);
-	} else {
-		throw new Error(`Expected number ${expected}, got ${JSON.stringify(result)}`);
+	if (result.type === 'value') {
+		// getNumericValue handles both number('N') and opposite(number('N')) (canonical).
+		const actual = getNumericValue(result.value);
+		if (actual !== null) {
+			expect(Math.abs(actual - expected)).toBeLessThan(tolerance);
+			return;
+		}
 	}
+	throw new Error(`Expected number ${expected}, got ${JSON.stringify(result)}`);
 }
 
 function expectPosInfinity(result: ExtendedResult): void {
@@ -90,10 +102,8 @@ describe('Extended Addition', () => {
 			expectNumber(addExtended(number('2'), number('3')), 5);
 		});
 
-		// Phase 3f: legacy form retained — addExtended doesn't recognize
-		// opposite(number(...)) yet. Migration deferred to Phase 4.
 		it('-1 + 4 = 3', () => {
-			expectNumber(addExtended(number('-1'), number('4')), 3);
+			expectNumber(addExtended(opposite(number('1')), number('4')), 3);
 		});
 	});
 
@@ -190,9 +200,8 @@ describe('Extended Multiplication', () => {
 			expectNumber(multiplyExtended(number('2'), number('3')), 6);
 		});
 
-		// Phase 3f: legacy form retained — see comment above on multiplyExtended.
 		it('-2 × 3 = -6', () => {
-			expectNumber(multiplyExtended(number('-2'), number('3')), -6);
+			expectNumber(multiplyExtended(opposite(number('2')), number('3')), -6);
 		});
 	});
 
@@ -230,11 +239,11 @@ describe('Extended Multiplication', () => {
 		});
 
 		it('+∞ × -3 = -∞', () => {
-			expectNegInfinity(multiplyExtended(positiveInfinity(), number('-3')));
+			expectNegInfinity(multiplyExtended(positiveInfinity(), opposite(number('3'))));
 		});
 
 		it('-∞ × -2 = +∞', () => {
-			expectPosInfinity(multiplyExtended(negativeInfinity(), number('-2')));
+			expectPosInfinity(multiplyExtended(negativeInfinity(), opposite(number('2'))));
 		});
 	});
 
@@ -244,11 +253,11 @@ describe('Extended Multiplication', () => {
 		});
 
 		it('0⁺ × -3 = 0⁻', () => {
-			expectZeroMinus(multiplyExtended(zeroPlus(), number('-3')));
+			expectZeroMinus(multiplyExtended(zeroPlus(), opposite(number('3'))));
 		});
 
 		it('0⁻ × -2 = 0⁺', () => {
-			expectZeroPlus(multiplyExtended(zeroMinus(), number('-2')));
+			expectZeroPlus(multiplyExtended(zeroMinus(), opposite(number('2'))));
 		});
 	});
 
@@ -278,7 +287,7 @@ describe('Extended Division', () => {
 		});
 
 		it('-6 / 2 = -3', () => {
-			expectNumber(divideExtended(number('-6'), number('2')), -3);
+			expectNumber(divideExtended(opposite(number('6')), number('2')), -3);
 		});
 	});
 
@@ -292,11 +301,11 @@ describe('Extended Division', () => {
 		});
 
 		it('-5 / 0⁺ = -∞', () => {
-			expectNegInfinity(divideExtended(number('-5'), zeroPlus()));
+			expectNegInfinity(divideExtended(opposite(number('5')), zeroPlus()));
 		});
 
 		it('-5 / 0⁻ = +∞', () => {
-			expectPosInfinity(divideExtended(number('-5'), zeroMinus()));
+			expectPosInfinity(divideExtended(opposite(number('5')), zeroMinus()));
 		});
 	});
 
@@ -326,7 +335,7 @@ describe('Extended Division', () => {
 		});
 
 		it('-3 / +∞ = 0⁻', () => {
-			expectZeroMinus(divideExtended(number('-3'), positiveInfinity()));
+			expectZeroMinus(divideExtended(opposite(number('3')), positiveInfinity()));
 		});
 	});
 
@@ -336,11 +345,11 @@ describe('Extended Division', () => {
 		});
 
 		it('+∞ / -2 = -∞', () => {
-			expectNegInfinity(divideExtended(positiveInfinity(), number('-2')));
+			expectNegInfinity(divideExtended(positiveInfinity(), opposite(number('2'))));
 		});
 
 		it('-∞ / -3 = +∞', () => {
-			expectPosInfinity(divideExtended(negativeInfinity(), number('-3')));
+			expectPosInfinity(divideExtended(negativeInfinity(), opposite(number('3'))));
 		});
 	});
 
@@ -350,7 +359,7 @@ describe('Extended Division', () => {
 		});
 
 		it('0⁺ / -3 = 0⁻', () => {
-			expectZeroMinus(divideExtended(zeroPlus(), number('-3')));
+			expectZeroMinus(divideExtended(zeroPlus(), opposite(number('3'))));
 		});
 	});
 });

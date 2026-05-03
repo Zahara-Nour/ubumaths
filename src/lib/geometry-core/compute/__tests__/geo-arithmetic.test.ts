@@ -12,7 +12,7 @@ import {
 import { exact, numeric, isExact, isNumeric } from '../../types/geo-value';
 import { geoToNumber } from '../to-number';
 import { geoEqual } from '../compare';
-import { number, sqrt, fraction } from '$lib/mathAST';
+import { number, opposite, sqrt, fraction } from '$lib/mathAST';
 
 // =============================================================================
 // Exact propagation rule: exact op exact = exact
@@ -250,11 +250,11 @@ describe('geoSqrt', () => {
 	});
 
 	it('geoSqrt(exact(-4)) returns null (exact negative)', () => {
-		expect(geoSqrt(exact(number('-4')))).toBeNull();
+		expect(geoSqrt(exact(opposite(number('4'))))).toBeNull();
 	});
 
 	it('geoSqrt(exact(-1)) returns null (exact negative)', () => {
-		expect(geoSqrt(exact(number('-1')))).toBeNull();
+		expect(geoSqrt(exact(opposite(number('1'))))).toBeNull();
 	});
 
 	it('sqrt(a)*sqrt(a) = a (exact round-trip)', () => {

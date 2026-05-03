@@ -531,7 +531,12 @@ describe('Sequence Pattern Matching', () => {
 
 		it('fails combined constraint when one element fails', () => {
 			const pattern = P.sum(P._('first'), P.__('rest', P.and(P.isNumber(), P.isPositive())));
-			const node = add(add(variable('a'), number('-1')), number('2'));
+			// `b` is a variable, so isNumber(b) = false → the AND fails on b.
+			// (Previously this test used number('-1') and relied on isPositive
+			// failing; after migration the sequence matcher extracts the sign
+			// from opposite() before evaluating constraints, so we use a
+			// non-numeric element to keep the "AND fails" semantics.)
+			const node = add(add(variable('a'), variable('b')), number('2'));
 
 			const result = match(pattern, node);
 			expect(result.success).toBe(false);
@@ -1126,11 +1131,11 @@ describe('Sequence Pattern Matching', () => {
 
 		it('handles negative numbers in sum', () => {
 			const pattern = P.sum(P._('neg', P.isNegative()), P.__('rest'));
-			const node = add(add(number('-5'), number('3')), variable('x'));
+			const node = add(add(opposite(number('5')), number('3')), variable('x'));
 
 			const result = match(pattern, node);
 			expect(result.success).toBe(true);
-			expect(nodesEqual(result.bindings.get('neg')!, number('-5'))).toBe(true);
+			expect(nodesEqual(result.bindings.get('neg')!, opposite(number('5')))).toBe(true);
 		});
 
 		it('handles decimal numbers in sum', () => {

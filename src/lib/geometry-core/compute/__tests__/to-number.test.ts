@@ -34,10 +34,6 @@ describe('geoToNumber - exact values', () => {
 		expect(geoToNumber(exact(number('0')))).toBe(0);
 	});
 
-	it('evaluates exact negative', () => {
-		expect(geoToNumber(exact(number('-7')))).toBe(-7);
-	});
-
 	it('evaluates exact negative via opposite', () => {
 		expect(geoToNumber(exact(opposite(number('7'))))).toBe(-7);
 	});
