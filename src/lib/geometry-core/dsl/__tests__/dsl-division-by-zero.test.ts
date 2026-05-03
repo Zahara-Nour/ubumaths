@@ -5,7 +5,7 @@
  *
  * Convention:
  * - Number/number division and modulo follow IEEE 754 / JS native semantics.
- *   This aligns the legacy DSL path with the mathAST static path so the same
+ *   This aligns the DSL evaluator with the mathAST static path so the same
  *   expression produces the same value regardless of the route taken.
  * - Reactive scalar binary ops keep their NaN-coerce post-process (see
  *   `evaluateScalarBinary` and the reactive closure in `tryEvaluateAsMathExpr`).
@@ -56,12 +56,12 @@ describe('division by zero — number/number (IEEE 754)', () => {
 	});
 });
 
-describe('division by zero — legacy path (number/number, routing bypassed)', () => {
+describe('division by zero — DSL evaluator path (number/number, routing bypassed)', () => {
 	// excentricite() returns a plain number (BuiltinScalarResult), so the
 	// outer `/ 0` lands in `case 'binary'` with both operands typed as 'nombre'
-	// — this is the legacy site that used to throw 'Division par zero' before
-	// F simple. The reactive scalar path (distance, slider, …) is exercised in
-	// the next describe block.
+	// — this is the DSL evaluator site that used to throw 'Division par zero'
+	// before F simple. The reactive scalar path (distance, slider, …) is
+	// exercised in the next describe block.
 
 	it('r = excentricite(c) / 0 returns Infinity (no throw)', () => {
 		// excentricite of a non-circle ellipse > 0 → the division yields Infinity.
@@ -82,7 +82,7 @@ describe('division by zero — legacy path (number/number, routing bypassed)', (
 describe('division by zero — modulo (IEEE 754)', () => {
 	it('r = 5 % 0 returns NaN', () => {
 		const { symbols } = run('r = 5 % 0');
-		// JS: 5 % 0 = NaN. The legacy DSL formula `((l % r) + r) % r` still
+		// JS: 5 % 0 = NaN. The DSL evaluator formula `((l % r) + r) % r` still
 		// yields NaN when r === 0. No throw expected.
 		expect(Number.isNaN(symbols.get('r')!.value)).toBe(true);
 	});
@@ -111,11 +111,11 @@ describe('division by zero — vector / scalar still throws', () => {
 	});
 });
 
-describe('division by zero — full equivalence DSL legacy = mathAST static', () => {
+describe('division by zero — full equivalence DSL evaluator = mathAST static', () => {
 	it('r = a/b with a, b numbers gives the same result whether routed or not', () => {
 		// `a/b` where a, b are number-typed in symbol table. isMathPureExpr is
 		// true → routing applies. parseCustom reads "a/b", evaluates with
-		// staticBindings, returns Infinity. Equivalent to legacy path.
+		// staticBindings, returns Infinity. Equivalent to the DSL evaluator path.
 		const { symbols } = run('a = 1\nb = 0\nr = a/b');
 		expect(symbols.get('r')?.value).toBe(Infinity);
 	});

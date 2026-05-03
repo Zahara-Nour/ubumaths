@@ -137,7 +137,7 @@
 1. **Skip dans les bodies de macros** (`this.macros.insideMacro`) — les positions des stmts stdlib ne correspondent pas à `this.source`.
 2. **Bornes du source** (start/end ≥ 0 et ≤ source.length) — défense contre out-of-bounds.
 3. **Identifiers DSL non-numériques** (`collectIdentifiers` + check symbol table) — si `e = droite(...)` user, on garde le path DSL pour `intersection(d, e)` au lieu d'évaluer `e` comme Euler.
-4. **Trig fonctions exclues V1** — restent sur le path DSL legacy en degrés (Phase 5 ajoutera `applyAngleMode`).
+4. **Trig fonctions exclues V1** — restent sur le path DSL evaluator en degrés (Phase 5 ajoutera `applyAngleMode`).
 5. **Free vars non définies** → return null (laisser DSL lever erreur cohérente).
 6. **Scalar deps** → return null pour V1 (Phase 4 traitera via createScalarExpression).
 
@@ -151,7 +151,7 @@
 
 - `tryEvaluateAsMathExpr` étendu : split free vars en `staticBindings` + `scalarDeps`
 - Si `scalarDeps.length > 0` : créer `GeoScalar` via `figure.createScalarExpression(compute, depIds)`
-- Closure compute = `fn({...staticBindings, varName: sv.get(scalarId)})`, avec post-process `Number.isFinite(result) ? result : NaN` pour cohérence avec la sémantique `evaluateScalarBinary` legacy (scalar/0 → NaN, pas Infinity)
+- Closure compute = `fn({...staticBindings, varName: sv.get(scalarId)})`, avec post-process `Number.isFinite(result) ? result : NaN` pour cohérence avec la sémantique `evaluateScalarBinary` du DSL evaluator (scalar/0 → NaN, pas Infinity)
 - Optimisation "bare identifier" : si `expr.kind === 'identifier'` et symbol existe, retourne directement l'entrée (préserve `dependsOn` pour `courbe(t_max=m)` etc.)
 - Check identifier non-numeric assoupli : autorise `'scalar'` (réactivité) en plus de `'nombre'`
 
@@ -312,20 +312,20 @@ Le RHS des affectations de variables numériques DSL est maintenant routé vers 
 
 - Q7 = α : `e` réservé strict (3 + 2 tests existants migrés vers `exc`/`e2`/`el`)
 - Mode angle global s'applique partout : RHS routés mathAST, builtins angles, ET équations courbe(). Les démos/tests qui assument radians préfixent leur DSL avec `unite_angle("radians")`.
-- Division par zéro : `r = 1/0` → `Infinity` dans le path statique routé via mathAST (cohérent avec `inf` literal et JS natif). Le path réactif retourne `NaN` (cohérence avec `evaluateScalarBinary` legacy). Le path DSL legacy non-routé continue à throw "Division par zero". À unifier en V2.
+- Division par zéro : `r = 1/0` → `Infinity` dans le path statique routé via mathAST (cohérent avec `inf` literal et JS natif). Le path réactif retourne `NaN` (cohérence avec `evaluateScalarBinary` du DSL evaluator). Le path DSL evaluator non-routé continue à throw "Division par zero". À unifier en V2.
 
 ### Limitations V1 documentées
 
 - `\theta`, `\alpha`, etc. (Greek letters au top-level) : non supportés
 - ~~Sérialisation `unite_angle` : la directive n'est PAS préservée par `serializeDsl`~~. **Résolu (V2 #1)** : `interpret()` expose désormais `angleMode` dans `InterpretResult` et `serializeDsl(figure, symbols, { angleMode })` préfixe `unite_angle("radians")` si le mode est non-default.
 - Sérialisation des variables : lossy (substitution lors de la création de la courbe)
-- Deux conventions de division par zéro coexistent intentionnellement : path numérique (statique ou legacy) = IEEE 754 (`Infinity`/`NaN`) ; path reactive (scalar binary, mathAST closure) = NaN-coerced pour le rendu. Vector/0 throw encore (V3 follow-up).
+- Deux conventions de division par zéro coexistent intentionnellement : path numérique (statique mathAST ou DSL evaluator) = IEEE 754 (`Infinity`/`NaN`) ; path reactive (scalar binary, mathAST closure) = NaN-coerced pour le rendu. Vector/0 throw encore (V3 follow-up).
 
 ### Suggestions follow-up (V2)
 
 - ~~Support `\theta`/`\alpha`/etc. comme variables Greek au top-level~~ — fait (tokenizer accepte tous les Greek lowercase, backslash strippé sauf pour `\pi`).
 - ~~Préservation de `unite_angle` dans `serializeDsl`~~ — fait (V2 #1, voir au-dessus)
-- ~~Unification des trois conventions de division par zéro~~ — fait (V2 #2, F simple) : le path DSL legacy (`case 'binary'` `/`, ligne 553) ne throw plus ; il retourne `Infinity`/`NaN` IEEE 754 comme le path mathAST static. Le path reactive garde son NaN-coerce (raison rendu : un point qui disparaît plutôt qu'à l'infini visuellement). Vector/0 garde le throw temporairement (invariant `numeric()` finite — V3 follow-up).
+- ~~Unification des trois conventions de division par zéro~~ — fait (V2 #2, F simple) : le DSL evaluator (`case 'binary'` `/`, ligne 553) ne throw plus ; il retourne `Infinity`/`NaN` IEEE 754 comme le path mathAST static. Le path reactive garde son NaN-coerce (raison rendu : un point qui disparaît plutôt qu'à l'infini visuellement). Vector/0 garde le throw temporairement (invariant `numeric()` finite — V3 follow-up).
 - ~~Amélioration des erreurs (parseCustom retourne null silencieusement)~~ — fait (V2 #3) : `Variable inconnue : "pi/PI/Pi"` suggère `\pi` ; `Variable inconnue : "E/Euler"` suggère `e` minuscule ; `Fonction inconnue` liste les catégories disponibles (math + builtins).
 - `unite_angle("grades")` pour les enseignants suisses
 - Amélioration des erreurs (parseCustom retourne null silencieusement → éventuellement remonter le diagnostic)

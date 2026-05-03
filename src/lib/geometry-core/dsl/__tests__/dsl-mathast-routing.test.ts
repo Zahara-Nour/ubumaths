@@ -8,7 +8,7 @@
  * - Static variables substituted into mathAST nodes
  * - Trig functions (sin/cos/tan/asin/acos/atan) intentionally LEFT on the
  *   existing DSL path for V1: angle-mode integration is Phase 5. Tests here
- *   verify they still work in the legacy degrees-default mode.
+ *   verify they still work in the DSL evaluator's degrees-default mode.
  */
 
 import { describe, it, expect } from 'vitest';
