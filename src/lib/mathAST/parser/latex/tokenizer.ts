@@ -221,6 +221,23 @@ export class Tokenizer {
 				value += char;
 				hasDecimal = true;
 				this.position++;
+			} else if (
+				// French decimal comma {,} — LaTeX notation produced by
+				// lib/utils/french-math.ts:toFrenchDecimal. Treated as a
+				// decimal separator, identical in semantics to '.'.
+				// Guarded by `value.length > 0` and `!hasDecimal` so it
+				// only triggers between digits, never at the start of a
+				// number nor after an existing decimal point.
+				char === '{' &&
+				!hasDecimal &&
+				value.length > 0 &&
+				this.position + 2 < this.length &&
+				this.input[this.position + 1] === ',' &&
+				this.input[this.position + 2] === '}'
+			) {
+				value += '.';
+				hasDecimal = true;
+				this.position += 3; // skip {,}
 			} else {
 				break;
 			}
@@ -262,7 +279,10 @@ export class Tokenizer {
 			}
 		}
 
-		return this.makeToken('NUMBER', value, startPos);
+		// Pass explicit sourceLength because `value` is the canonicalised form
+		// (with '.' instead of '{,}') and may be shorter than the consumed
+		// source range.
+		return this.makeToken('NUMBER', value, startPos, this.position - startPos);
 	}
 
 	/**
@@ -348,12 +368,20 @@ export class Tokenizer {
 	/**
 	 * Creates a token with the given type, value, and position.
 	 */
-	private makeToken(type: TokenType, value: string, position: number): Token {
+	private makeToken(
+		type: TokenType,
+		value: string,
+		position: number,
+		sourceLength?: number
+	): Token {
 		return {
 			type,
 			value,
 			position,
-			length: type === 'COMMAND' ? value.length + 1 : value.length // +1 for backslash in commands
+			// Tokens whose canonicalised value differs in length from the source
+			// substring (e.g. NUMBER '1.5' from source '1{,}5') must pass an
+			// explicit sourceLength so subsequent token positions are correct.
+			length: sourceLength ?? (type === 'COMMAND' ? value.length + 1 : value.length)
 		};
 	}
 
