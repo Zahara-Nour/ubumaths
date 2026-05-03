@@ -17,11 +17,15 @@
 	// Props
 	let { data }: { data: PageData } = $props();
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// State
-	let tournament = $state(data.tournament);
-	let standings = $state(data.standings);
-	let userStanding = $state(data.userStanding);
-	let inProgressGame = $state(data.inProgressGame);
+	let tournament = $state(initialData.tournament);
+	let standings = $state(initialData.standings);
+	let userStanding = $state(initialData.userStanding);
+	let inProgressGame = $state(initialData.inProgressGame);
 	let isStartingGame = $state(false);
 
 	// Derived state
