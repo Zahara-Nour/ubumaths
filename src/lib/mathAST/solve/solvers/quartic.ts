@@ -25,6 +25,7 @@ import type {
 import { getPolynomialDegree } from '../classify';
 import { flattenSumShallow } from '../../flatten';
 import { number, opposite, equals, variable as varNode, fraction } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import { denormalize, normalize } from '../../normal';
 import {
 	describeSolution,
@@ -308,21 +309,21 @@ function numericToSymbolic(value: number): MathNode {
 	// Integer check
 	const rounded = Math.round(value);
 	if (Math.abs(value - rounded) < EPSILON) {
-		return number(rounded.toString());
+		return numericNode(rounded);
 	}
 
 	// Simple fraction check
 	const frac = findSimpleFraction(value);
 	if (frac) {
-		if (frac.d === 1) return number(frac.n.toString());
+		if (frac.d === 1) return numericNode(frac.n);
 		if (frac.n < 0) {
-			return opposite(fraction(number((-frac.n).toString()), number(frac.d.toString())));
+			return opposite(fraction(numericNode(-frac.n), numericNode(frac.d)));
 		}
-		return fraction(number(frac.n.toString()), number(frac.d.toString()));
+		return fraction(numericNode(frac.n), numericNode(frac.d));
 	}
 
 	// Decimal fallback
-	return number(value.toFixed(10));
+	return numericNode(value.toFixed(10));
 }
 
 /**

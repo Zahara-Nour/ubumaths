@@ -73,6 +73,7 @@ import { extractLinearForm } from '../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM, denormalize } from '../normal';
 import { number, equals, func, superscript, euler, divide } from '../factory';
+import { numericNode } from '../common/numeric';
 import { flattenSumShallow, flattenProductShallow, unflattenSum } from '../flatten';
 import { getVariables } from '../eval/substitute';
 import { isZeroNode } from './solvers/polynomial';
@@ -760,8 +761,8 @@ function extractRadicalEquation(expr: MathNode, variable: string): RadicalEquati
 		const constantNumeric = -bNumeric / aNumeric;
 		const constantNode =
 			Math.abs(constantNumeric - Math.round(constantNumeric)) < 1e-12
-				? number(String(Math.round(constantNumeric)))
-				: number(String(constantNumeric));
+				? numericNode(Math.round(constantNumeric))
+				: numericNode(constantNumeric);
 
 		return {
 			argument: matched.argument,
@@ -952,8 +953,7 @@ function tryRadicalDecomposition(
 	}
 
 	// Build symbolic u-value: u^(p/q) = c → u = c^(q/p)
-	const inverseExp =
-		q === 1 ? number(String(p)) : divide(number(String(q)), number(String(p)), 'fraction');
+	const inverseExp = q === 1 ? numericNode(p) : divide(numericNode(q), numericNode(p), 'fraction');
 	const uSymbolic =
 		p === 1 && q === 1
 			? constantNode

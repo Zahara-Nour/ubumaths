@@ -34,21 +34,38 @@ export function getNumericValue(node: MathNode): number | null {
 }
 
 /**
- * Create a MathNode from a numeric value.
- * Negative values are wrapped in opposite().
+ * Create a MathNode from a numeric value (or pre-formatted numeric string).
+ * Negative values (or strings starting with '-') are wrapped in opposite().
+ * Strings starting with '+' have the prefix stripped.
  *
- * @param value - The numeric value
- * @returns A MathNode representing the value
+ * Accepts a string variant to preserve formatting from `.toFixed(n)` /
+ * `.toPrecision(n)` / `.toExponential(n)` without reparsing through Number.
+ *
+ * @param value - The numeric value (number) or pre-formatted decimal (string)
+ * @returns A MathNode representing the value (canonical: positive number, or opposite of positive)
  *
  * @example
- * numericNode(3)  // number('3')
- * numericNode(-5) // opposite(number('5'))
+ * numericNode(3)              // number('3')
+ * numericNode(-5)             // opposite(number('5'))
+ * numericNode('3.14')         // number('3.14')
+ * numericNode('-2.5000000000') // opposite(number('2.5000000000'))   (preserves trailing zeros)
  */
-export function numericNode(value: number): MathNode {
-	if (value < 0) {
-		return opposite(number(Math.abs(value).toString()));
+export function numericNode(value: number | string): MathNode {
+	if (typeof value === 'number') {
+		if (value < 0) {
+			return opposite(number(Math.abs(value).toString()));
+		}
+		return number(value.toString());
 	}
-	return number(value.toString());
+	if (value.length > 0) {
+		if (value[0] === '-') {
+			return opposite(number(value.slice(1)));
+		}
+		if (value[0] === '+') {
+			return number(value.slice(1));
+		}
+	}
+	return number(value);
 }
 
 /**
