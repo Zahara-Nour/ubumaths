@@ -25,8 +25,12 @@
 
 	let { element, figure, x, y, onclose, onchange }: Props = $props();
 
-	let label = $state(element.label ?? '');
-	let selectedColor = $state(element.style?.color ?? element.color);
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialElement = element;
+
+	let label = $state(initialElement.label ?? '');
+	let selectedColor = $state(initialElement.style?.color ?? initialElement.color);
 
 	function updateColor(color: string) {
 		selectedColor = color;
