@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { evaluateWithUnits, DimensionalEvaluationError } from '../evaluate-with-units';
 import { evaluateNodeToApproximatedNumber } from '../evaluate';
 import { number, add, multiply, divide, func, withUnit } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import { UnitAST } from '../../units/factory';
 import type { MathNode } from '../../types';
 import type { EvalValue, ComplexValueResult } from '../types';
@@ -14,7 +15,7 @@ import type { EvalValue, ComplexValueResult } from '../types';
 function quantity(value: string, unitStr: string) {
 	const unit = UnitAST.unit(unitStr);
 	if (!unit) throw new Error(`Invalid unit: ${unitStr}`);
-	return withUnit(number(value), unit);
+	return withUnit(numericNode(value), unit);
 }
 
 // =============================================================================

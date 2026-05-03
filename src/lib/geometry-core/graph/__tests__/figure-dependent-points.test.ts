@@ -4,11 +4,11 @@ import { exact, numeric, isExact, isNumeric } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { geoEqual } from '../../compute/compare';
 import { geoFromNumber, geoFromFraction } from '../../compute/geo-arithmetic';
-import { number } from '$lib/mathAST';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import type { GeoPoint } from '../../types/primitives';
 
 function pt(x: number, y: number): GeoPoint {
-	return { x: exact(number(x)), y: exact(number(y)) };
+	return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
 }
 
 // =============================================================================
@@ -346,8 +346,8 @@ describe('createReflectedPoint', () => {
 		const reflected2 = f.createReflectedPoint(reflected1, center);
 
 		const pos = f.getPosition(reflected2)!;
-		expect(geoEqual(pos.x, exact(number(7)))).toBe(true);
-		expect(geoEqual(pos.y, exact(number(3)))).toBe(true);
+		expect(geoEqual(pos.x, exact(numericNode(7)))).toBe(true);
+		expect(geoEqual(pos.y, exact(numericNode(3)))).toBe(true);
 	});
 
 	it('double reflection still works after drag + recompute', () => {

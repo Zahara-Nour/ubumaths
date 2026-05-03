@@ -42,8 +42,8 @@ function hasNonDiffPointAt(
 	expectedType?: NonDifferentiabilityType
 ): boolean {
 	return result.nonDifferentiablePoints.some((p) => {
-		if (p.point.type !== 'number') return false;
-		const value = parseFloat(p.point.value);
+		const value = getNumericValue(p.point);
+		if (value === null) return false;
 		const matches = Math.abs(value - pointValue) < 1e-6;
 		if (expectedType && matches) {
 			return p.type === expectedType;
@@ -759,9 +759,10 @@ describe('analyzeDifferentiability - edge cases: fractional power variations', (
 	it('(x+1)^(1/3) has non-differentiable point at x=-1', () => {
 		const result = analyzeDiff('(x + 1)^{1/3}');
 
-		const pointAtMinus1 = result.nonDifferentiablePoints.find(
-			(p) => p.point.type === 'number' && Math.abs(parseFloat(p.point.value) + 1) < 1e-6
-		);
+		const pointAtMinus1 = result.nonDifferentiablePoints.find((p) => {
+			const v = getNumericValue(p.point);
+			return v !== null && Math.abs(v + 1) < 1e-6;
+		});
 		expect(pointAtMinus1).toBeDefined();
 	});
 

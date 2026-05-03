@@ -17,7 +17,8 @@ import {
 	isNegativeInfinityEndpoint,
 	isPositiveInfinityEndpoint
 } from '$lib/math/intervals';
-import { infinity, number } from '../../factory';
+import { infinity } from '../../factory';
+import { numericNode } from '../../common/numeric';
 
 // =============================================================================
 // Helpers
@@ -32,11 +33,11 @@ function numericInterval(
 	return intervalSet([
 		interval(
 			{
-				value: lower === null ? infinity('negative') : number(lower),
+				value: lower === null ? infinity('negative') : numericNode(lower),
 				type: (lower === null ? 'open' : lowerInclusive ? 'closed' : 'open') as EndpointType
 			},
 			{
-				value: upper === null ? infinity('positive') : number(upper),
+				value: upper === null ? infinity('positive') : numericNode(upper),
 				type: (upper === null ? 'open' : upperInclusive ? 'closed' : 'open') as EndpointType
 			}
 		)

@@ -14,18 +14,17 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseCustom } from '$lib/mathAST';
+import { getNumericValue } from '$lib/mathAST/common/numeric';
 import { analyzeRangeContinuity, type RangeDiscontinuity } from '../singularity-warn';
 
 // =============================================================================
 // Helper — extract the numeric value of a discontinuity point.
-// The `point` field is a MathNode; for all rational cases it is type 'number'.
 // =============================================================================
 
 function pointValue(rd: RangeDiscontinuity): number {
-	const p = rd.disc.point;
-	if (p.type === 'number') return parseFloat(p.value);
-	// Fallback for symbolic points — should not occur in this test batch.
-	throw new Error(`Unexpected point type: ${p.type}`);
+	const v = getNumericValue(rd.disc.point);
+	if (v !== null) return v;
+	throw new Error(`Unexpected point type: ${rd.disc.point.type}`);
 }
 
 // =============================================================================

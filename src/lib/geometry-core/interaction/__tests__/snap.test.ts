@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import { snapToGrid, snapToPoint } from '../snap';
 import { Figure } from '../../graph/figure';
 import { exact, isExact } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
-import { number } from '$lib/mathAST';
 
 function pt(x: number, y: number) {
-	return { x: exact(number(x)), y: exact(number(y)) };
+	return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
 }
 
 // =============================================================================

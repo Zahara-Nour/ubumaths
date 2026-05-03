@@ -26,6 +26,7 @@ import type { TypeContext } from '../../numtype/types';
 import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
 import { intervalSet, interval } from '$lib/math/intervals';
 import { infinity } from '$lib/mathAST/factory';
+import { numericNode } from '$lib/mathAST/common/numeric';
 
 // =============================================================================
 // Helpers
@@ -57,7 +58,7 @@ function ltBounds(value: number): IntervalDomain {
 	return intervalSet([
 		interval(
 			{ value: infinity('negative'), type: 'open' as EndpointType },
-			{ value: number(value), type: 'open' as EndpointType }
+			{ value: numericNode(value), type: 'open' as EndpointType }
 		)
 	]);
 }
@@ -65,7 +66,7 @@ function ltBounds(value: number): IntervalDomain {
 function gtBounds(value: number): IntervalDomain {
 	return intervalSet([
 		interval(
-			{ value: number(value), type: 'open' as EndpointType },
+			{ value: numericNode(value), type: 'open' as EndpointType },
 			{ value: infinity('positive'), type: 'open' as EndpointType }
 		)
 	]);
@@ -74,8 +75,8 @@ function gtBounds(value: number): IntervalDomain {
 function closedBounds(a: number, b: number): IntervalDomain {
 	return intervalSet([
 		interval(
-			{ value: number(a), type: 'closed' as EndpointType },
-			{ value: number(b), type: 'closed' as EndpointType }
+			{ value: numericNode(a), type: 'closed' as EndpointType },
+			{ value: numericNode(b), type: 'closed' as EndpointType }
 		)
 	]);
 }

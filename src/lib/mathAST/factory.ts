@@ -253,9 +253,17 @@ function normalizeCompositionOptions(
  * @param metadata - Optional rendering hints
  */
 export function number(value: string | number, metadata?: NodeMetadata): NumberNode {
+	const str = typeof value === 'number' ? value.toString() : value;
+	if (str.length > 0 && (str[0] === '-' || str[0] === '+')) {
+		throw new Error(
+			`number(${JSON.stringify(value)}): signed numeric literal rejected. ` +
+				`Use opposite(number(${JSON.stringify(str.slice(1))})) for negatives, ` +
+				`or call numericNode(${JSON.stringify(value)}) which handles the sign automatically.`
+		);
+	}
 	return {
 		type: 'number',
-		value: typeof value === 'number' ? value.toString() : value,
+		value: str,
 		...(metadata && { metadata })
 	} as const;
 }

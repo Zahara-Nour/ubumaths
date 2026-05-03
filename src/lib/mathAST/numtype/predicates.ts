@@ -11,7 +11,7 @@ import { EMPTY_CONTEXT } from './types';
 import { isSubtype } from './algebra';
 import { inferType } from './infer';
 import type { IntervalDomain } from '$lib/math/intervals/types';
-import { number as numberNode } from '../factory';
+import { numericNode } from '../common/numeric';
 import { compareNumericNodes } from '../eval/compare-numeric';
 
 // =============================================================================
@@ -393,8 +393,8 @@ export function isInRangeType(
 	const hi = bounds.intervals[bounds.intervals.length - 1].upper;
 
 	// Compare symbolic endpoints against numeric thresholds
-	const lowNode = numberNode(String(low));
-	const highNode = numberNode(String(high));
+	const lowNode = numericNode(low);
+	const highNode = numericNode(high);
 
 	const loCmp = compareNumericNodes(lo.value, lowNode);
 	const hiCmp = compareNumericNodes(hi.value, highNode);

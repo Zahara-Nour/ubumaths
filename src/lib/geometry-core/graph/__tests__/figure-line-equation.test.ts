@@ -6,11 +6,12 @@ import { describe, it, expect } from 'vitest';
 import { Figure } from '../figure';
 import { exact, numeric } from '../../types/geo-value';
 import { number, opposite } from '$lib/mathAST';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import { evaluate } from '$lib/mathAST/eval';
 import { isZeroExpression } from '$lib/mathAST/normal';
 
 function pt(x: number, y: number) {
-	return { x: exact(number(x)), y: exact(number(y)) };
+	return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
 }
 
 function npt(x: number, y: number) {

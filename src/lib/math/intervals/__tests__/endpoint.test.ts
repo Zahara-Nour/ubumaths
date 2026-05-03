@@ -23,19 +23,20 @@ import {
 	piConstant,
 	euler
 } from '$lib/mathAST/factory';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import type { MathNode } from '$lib/mathAST/types';
 
 // Helpers to create endpoint values using MathNode
 function numericEndpoint(n: number): MathNode {
-	return number(n.toString());
+	return numericNode(n);
 }
 
 function rationalEndpoint(num: number, denom: number): MathNode {
-	return fraction(number(num.toString()), number(denom.toString()));
+	return fraction(numericNode(num), numericNode(denom));
 }
 
 function sqrtEndpoint(radicand: number): MathNode {
-	return func('sqrt', [number(radicand.toString())]);
+	return func('sqrt', [numericNode(radicand)]);
 }
 
 const posInf: MathNode = infinity('positive');

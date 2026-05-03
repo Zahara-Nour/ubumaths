@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import { intersectLQ, intersectQQ } from '../intersections';
 import { intersectLC } from '../intersections';
 import { exact } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { geoFromNumber } from '../../compute/geo-arithmetic';
-import { number } from '$lib/mathAST';
 import type { GeoPoint } from '../../types/primitives';
 
 function pt(x: number, y: number): GeoPoint {
-	return { x: exact(number(x)), y: exact(number(y)) };
+	return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
 }
 
 /** Sort points by x, then by y for deterministic comparison */

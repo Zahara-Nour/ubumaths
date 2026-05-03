@@ -8,7 +8,8 @@ import { describe, it, expect } from 'vitest';
 import { parseRule, RuleParseError } from '../../parser/custom/rule-parser';
 import { P } from '../builder';
 import { applyRule } from '../rule';
-import { number, variable, add, multiply, divide, power } from '../../factory';
+import { variable, add, multiply, divide, power } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import type { MathNode } from '../../types';
 
 // =============================================================================
@@ -19,7 +20,7 @@ import type { MathNode } from '../../types';
  * Creates a number node for testing
  */
 function num(value: string | number): MathNode {
-	return number(String(value));
+	return numericNode(typeof value === 'number' ? value : value);
 }
 
 /**

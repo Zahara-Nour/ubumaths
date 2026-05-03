@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import { intersectLL, intersectLC, intersectCC } from '../intersections';
 import { exact, isExact } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
@@ -8,7 +9,7 @@ import { number, sqrt } from '$lib/mathAST';
 import type { GeoPoint } from '../../types/primitives';
 
 function pt(x: number, y: number): GeoPoint {
-	return { x: exact(number(x)), y: exact(number(y)) };
+	return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
 }
 
 // =============================================================================

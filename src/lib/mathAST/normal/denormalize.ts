@@ -6,7 +6,7 @@
  * but human-readable expression.
  */
 
-import type { MathNode, NumberNode } from '../types';
+import type { MathNode } from '../types';
 import type {
 	NormalForm,
 	NormalTerm,
@@ -18,7 +18,7 @@ import type {
 	ExtendedNormalizeResult
 } from './types';
 import { isZero as isZeroRational, isOne as isOneRational, isNegative } from './rational';
-import { positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../factory';
+import { positiveInfinity, negativeInfinity, zeroPlus, zeroMinus, opposite } from '../factory';
 
 // =============================================================================
 // Helper Functions
@@ -26,8 +26,12 @@ import { positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../fact
 
 /**
  * Creates a number node from a bigint.
+ * Negative bigints are wrapped in opposite() to preserve canonical form.
  */
-function numberNode(value: bigint): NumberNode {
+function numberNode(value: bigint): MathNode {
+	if (value < 0n) {
+		return opposite({ type: 'number', value: (-value).toString() });
+	}
 	return { type: 'number', value: value.toString() };
 }
 

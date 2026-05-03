@@ -12,6 +12,7 @@
 import type { MathNode } from '../types';
 import { divide, number, piConstant } from '../factory';
 import { formatNumber } from './format';
+import { numericNode } from './numeric';
 
 // =============================================================================
 // Types
@@ -165,7 +166,7 @@ export function getPeriodicPattern(name: string): PeriodicPattern | null {
 	} else if (Math.abs(info.basePoint) < 0.01) {
 		basePoint = number('0');
 	} else {
-		basePoint = number(formatNumber(info.basePoint));
+		basePoint = numericNode(formatNumber(info.basePoint));
 	}
 
 	const period = pi();

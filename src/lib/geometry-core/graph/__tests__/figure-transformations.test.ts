@@ -3,15 +3,16 @@ import { Figure } from '../figure';
 import { exact, numeric, isExact } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 import { geoFromNumber, geoFromFraction } from '../../compute/geo-arithmetic';
-import { number, divide, piConstant } from '$lib/mathAST';
+import { divide, piConstant } from '$lib/mathAST';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import type { GeoPoint } from '../../types/primitives';
 
 function pt(x: number, y: number): GeoPoint {
-	return { x: exact(number(x)), y: exact(number(y)) };
+	return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
 }
 
 function piOver(n: number) {
-	return exact(divide(piConstant(), number(n), 'fraction'));
+	return exact(divide(piConstant(), numericNode(n), 'fraction'));
 }
 
 // =============================================================================

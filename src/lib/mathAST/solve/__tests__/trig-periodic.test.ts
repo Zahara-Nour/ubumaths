@@ -22,6 +22,7 @@ import { parseCustom } from '../../parser/custom';
 import type { RelationNode } from '../../types';
 import { analyzeSign } from '../../sign';
 import { number, multiply, PI } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import {
 	closedInterval,
 	openInterval,
@@ -64,14 +65,14 @@ function hasNoZeroNear(
  * Create an interval_set domain [a, b] with symbolic endpoints.
  */
 function closedDomain(lower: number, upper: number) {
-	return intervalSet([closedInterval(number(lower.toString()), number(upper.toString()))]);
+	return intervalSet([closedInterval(numericNode(lower), numericNode(upper))]);
 }
 
 /**
  * Create an interval_set domain (a, b) with symbolic endpoints.
  */
 function openDomain(lower: number, upper: number) {
-	return intervalSet([openInterval(number(lower.toString()), number(upper.toString()))]);
+	return intervalSet([openInterval(numericNode(lower), numericNode(upper))]);
 }
 
 /**

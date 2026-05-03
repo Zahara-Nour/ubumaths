@@ -21,6 +21,7 @@ import {
 	nonZeroReals
 } from '../factory';
 import { number } from '$lib/mathAST/factory';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import type { MathNode } from '../../types';
 import type { Domain } from '../types';
 
@@ -66,12 +67,12 @@ function opposite(operand: MathNode): MathNode {
 
 // Helper to create a closed interval domain [a, b]
 function closedIntervalDomain(a: number, b: number): Domain {
-	return intervalDomain([closedInterval(number(a), number(b))]);
+	return intervalDomain([closedInterval(numericNode(a), numericNode(b))]);
 }
 
 // Helper to create an open interval domain ]a, b[
 function openIntervalDomain(a: number, b: number): Domain {
-	return intervalDomain([openInterval(number(a), number(b))]);
+	return intervalDomain([openInterval(numericNode(a), numericNode(b))]);
 }
 
 // =============================================================================
