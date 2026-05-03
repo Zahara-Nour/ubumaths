@@ -26,28 +26,10 @@
 		variables?: Record<string, string | number>;
 	}
 
-	let {
-		content,
-		variables = {},
-		// Slide props
-		transition,
-		transitionSpeed,
-		background,
-		backgroundImage,
-		backgroundVideo,
-		backgroundIframe,
-		backgroundSize,
-		backgroundPosition,
-		backgroundRepeat,
-		backgroundOpacity,
-		state: slideState,
-		autoSlide,
-		autoAnimate,
-		autoAnimateId,
-		visibility,
-		class: className,
-		data
-	}: Props = $props();
+	// Slide props are spread through to <Slide> via ...slideProps to preserve
+	// reactivity — collecting them into a plain object would only capture
+	// initial values (state_referenced_locally).
+	let { content, variables = {}, ...slideProps }: Props = $props();
 
 	// Simple variable substitution
 	function resolveContent(text: string, vars: Record<string, string | number>): string {
@@ -146,27 +128,6 @@
 			fragmentTarget.classList.add('fragment');
 		}
 	}
-
-	// Collect slide props to pass through
-	const slideProps = {
-		transition,
-		transitionSpeed,
-		background,
-		backgroundImage,
-		backgroundVideo,
-		backgroundIframe,
-		backgroundSize,
-		backgroundPosition,
-		backgroundRepeat,
-		backgroundOpacity,
-		state: slideState,
-		autoSlide,
-		autoAnimate,
-		autoAnimateId,
-		visibility,
-		class: className,
-		data
-	};
 </script>
 
 <Slide {...slideProps}>
