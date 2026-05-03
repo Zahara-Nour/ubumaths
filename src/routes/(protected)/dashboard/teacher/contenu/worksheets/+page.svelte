@@ -29,10 +29,14 @@
 
 	let { data }: { data: PageData } = $props();
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// Filter state
-	let searchQuery = $state(data.filters.search || '');
-	let selectedStatus = $state<string>(data.filters.status || '');
-	let selectedType = $state<string>(data.filters.type || '');
+	let searchQuery = $state(initialData.filters.search || '');
+	let selectedStatus = $state<string>(initialData.filters.status || '');
+	let selectedType = $state<string>(initialData.filters.type || '');
 
 	// Loading states
 	let deletingId = $state<string | null>(null);

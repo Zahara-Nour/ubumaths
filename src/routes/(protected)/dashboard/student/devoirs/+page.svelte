@@ -25,10 +25,14 @@
 
 	let { data }: Props = $props();
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// Filter state
-	let selectedClass = $state(data.filters.classId);
-	let selectedCategory = $state(data.filters.categoryId);
-	let currentPage = $state(data.filters.page);
+	let selectedClass = $state(initialData.filters.classId);
+	let selectedCategory = $state(initialData.filters.categoryId);
+	let currentPage = $state(initialData.filters.page);
 	let isLoading = $state(false);
 
 	// Derived values

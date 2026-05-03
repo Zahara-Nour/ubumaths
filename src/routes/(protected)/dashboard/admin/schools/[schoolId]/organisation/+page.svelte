@@ -66,6 +66,10 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
+	// Snapshot for $state inits below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// ========================================
 	// State - Tabs
 	// ========================================
@@ -75,7 +79,7 @@
 	// State - Timetable (existing)
 	// ========================================
 	let periods = $state<SchoolPeriod[]>(
-		data.school.timetable?.periods ? [...data.school.timetable.periods] : []
+		initialData.school.timetable?.periods ? [...initialData.school.timetable.periods] : []
 	);
 
 	let showTimetableModal = $state(false);
@@ -92,7 +96,7 @@
 	// ========================================
 	// State - Academic Periods
 	// ========================================
-	let selectedYearId = $state<string | undefined>(data.activeYear?.id);
+	let selectedYearId = $state<string | undefined>(initialData.activeYear?.id);
 	let editingYear = $state<SchoolYear | null>(null);
 	let editingAcademicPeriod = $state<AcademicPeriod | null>(null);
 	let editingHoliday = $state<SchoolHoliday | null>(null);
