@@ -14,7 +14,7 @@ import { isFunction, isNumber } from '../guards';
 import { findNodes } from '../transforms';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
-import { number } from '../factory';
+import { numericNode } from '../common/numeric';
 
 // =============================================================================
 // Types
@@ -202,7 +202,7 @@ function evaluateFloorLimit(
 		const value = Math.floor(argAtApproach);
 		return {
 			success: true,
-			value: number(String(value)),
+			value: numericNode(value),
 			technique: 'direct-substitution',
 			description: `floor(${argAtApproach}) = ${value}`
 		};
@@ -216,14 +216,14 @@ function evaluateFloorLimit(
 			'one-sided',
 			`Limite à gauche de floor en ${n}`,
 			argument,
-			number(String(value)),
+			numericNode(value),
 			'detailed',
 			undefined,
 			`floor(${n}⁻) = ${value}`
 		);
 		return {
 			success: true,
-			value: number(String(value)),
+			value: numericNode(value),
 			technique: 'one-sided',
 			description: `floor(x) → ${value} quand x → ${n}⁻`
 		};
@@ -236,14 +236,14 @@ function evaluateFloorLimit(
 			'one-sided',
 			`Limite à droite de floor en ${n}`,
 			argument,
-			number(String(value)),
+			numericNode(value),
 			'detailed',
 			undefined,
 			`floor(${n}⁺) = ${value}`
 		);
 		return {
 			success: true,
-			value: number(String(value)),
+			value: numericNode(value),
 			technique: 'one-sided',
 			description: `floor(x) → ${value} quand x → ${n}⁺`
 		};
@@ -286,7 +286,7 @@ function evaluateCeilLimit(
 		const value = Math.ceil(argAtApproach);
 		return {
 			success: true,
-			value: number(String(value)),
+			value: numericNode(value),
 			technique: 'direct-substitution',
 			description: `ceil(${argAtApproach}) = ${value}`
 		};
@@ -300,14 +300,14 @@ function evaluateCeilLimit(
 			'one-sided',
 			`Limite à gauche de ceil en ${n}`,
 			argument,
-			number(String(value)),
+			numericNode(value),
 			'detailed',
 			undefined,
 			`ceil(${n}⁻) = ${value}`
 		);
 		return {
 			success: true,
-			value: number(String(value)),
+			value: numericNode(value),
 			technique: 'one-sided',
 			description: `ceil(x) → ${value} quand x → ${n}⁻`
 		};
@@ -332,14 +332,14 @@ function evaluateCeilLimit(
 			'one-sided',
 			`Limite à droite de ceil en ${n}`,
 			argument,
-			number(String(value)),
+			numericNode(value),
 			'detailed',
 			undefined,
 			`ceil(${n}⁺) = ${value}`
 		);
 		return {
 			success: true,
-			value: number(String(value)),
+			value: numericNode(value),
 			technique: 'one-sided',
 			description: `ceil(x) → ${value} quand x → ${n}⁺`
 		};
@@ -375,7 +375,7 @@ function evaluateSignLimit(
 		const value = Math.sign(argAtApproach);
 		return {
 			success: true,
-			value: number(String(value)),
+			value: numericNode(value),
 			technique: 'direct-substitution',
 			description: `sign(${argAtApproach}) = ${value}`
 		};
@@ -395,14 +395,14 @@ function evaluateSignLimit(
 			'one-sided',
 			`Limite à gauche de sign`,
 			argument,
-			number(String(value)),
+			numericNode(value),
 			'detailed',
 			undefined,
 			`sign(g(x)) → ${value} quand x → ${approachValue}⁻`
 		);
 		return {
 			success: true,
-			value: number(String(value)),
+			value: numericNode(value),
 			technique: 'one-sided',
 			description: `sign → ${value} quand x → ${approachValue}⁻`
 		};
@@ -419,14 +419,14 @@ function evaluateSignLimit(
 			'one-sided',
 			`Limite à droite de sign`,
 			argument,
-			number(String(value)),
+			numericNode(value),
 			'detailed',
 			undefined,
 			`sign(g(x)) → ${value} quand x → ${approachValue}⁺`
 		);
 		return {
 			success: true,
-			value: number(String(value)),
+			value: numericNode(value),
 			technique: 'one-sided',
 			description: `sign → ${value} quand x → ${approachValue}⁺`
 		};
@@ -447,7 +447,7 @@ function evaluateSignLimit(
 		// Same sign on both sides - limit exists
 		return {
 			success: true,
-			value: number(String(signLeft)),
+			value: numericNode(signLeft),
 			technique: 'direct-substitution',
 			description: `sign → ${signLeft}`
 		};
@@ -475,7 +475,7 @@ function evaluateComposedPiecewiseLimit(
 		if (value !== null && Number.isFinite(value)) {
 			return {
 				success: true,
-				value: number(formatNumber(value)),
+				value: numericNode(formatNumber(value)),
 				technique: 'one-sided'
 			};
 		}
@@ -486,7 +486,7 @@ function evaluateComposedPiecewiseLimit(
 		if (value !== null && Number.isFinite(value)) {
 			return {
 				success: true,
-				value: number(formatNumber(value)),
+				value: numericNode(formatNumber(value)),
 				technique: 'one-sided'
 			};
 		}
@@ -500,7 +500,7 @@ function evaluateComposedPiecewiseLimit(
 			if (Math.abs(leftValue - rightValue) < 1e-6) {
 				return {
 					success: true,
-					value: number(formatNumber(leftValue)),
+					value: numericNode(formatNumber(leftValue)),
 					technique: 'direct-substitution'
 				};
 			}
@@ -519,7 +519,7 @@ function evaluateComposedPiecewiseLimit(
  */
 function evaluateArgumentAt(arg: MathNode, varName: string, value: number): number | null {
 	try {
-		const substituted = substitute(arg, { [varName]: number(String(value)) });
+		const substituted = substitute(arg, { [varName]: numericNode(value) });
 		const result = evaluateNodeToApproximatedNumber(substituted);
 		return Number.isFinite(result) ? result : null;
 	} catch {
@@ -532,7 +532,7 @@ function evaluateArgumentAt(arg: MathNode, varName: string, value: number): numb
  */
 function evaluateExpressionAt(expr: MathNode, varName: string, value: number): number | null {
 	try {
-		const substituted = substitute(expr, { [varName]: number(String(value)) });
+		const substituted = substitute(expr, { [varName]: numericNode(value) });
 		const result = evaluateNodeToApproximatedNumber(substituted);
 		return Number.isFinite(result) ? result : null;
 	} catch {

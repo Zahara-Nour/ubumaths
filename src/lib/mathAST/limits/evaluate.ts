@@ -37,7 +37,7 @@ import { tryCompositionLimit } from './composition';
 import { tryPiecewiseFunctionLimit, containsPiecewiseFunction } from './piecewise';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
-import { number } from '../factory';
+import { numericNode } from '../common/numeric';
 import { computeDomain } from '../domain/compute';
 import { containsValue } from '../domain/algebra';
 import {
@@ -246,8 +246,8 @@ export function evaluateLimit(
 					const intValue = Math.round(numValue);
 					evaluatedExpr =
 						Math.abs(numValue - intValue) < ZERO_TOLERANCE
-							? number(intValue.toString())
-							: number(numValue.toPrecision(15));
+							? numericNode(intValue)
+							: numericNode(numValue.toPrecision(15));
 				}
 			} catch {
 				// If numeric evaluation fails, return the expression as-is
@@ -534,8 +534,8 @@ function evaluateLimitInternal(
 					const intValue = Math.round(numValue);
 					evaluatedExpr =
 						Math.abs(numValue - intValue) < ZERO_TOLERANCE
-							? number(intValue.toString())
-							: number(numValue.toPrecision(15));
+							? numericNode(intValue)
+							: numericNode(numValue.toPrecision(15));
 				}
 			} catch {
 				// If numeric evaluation fails, return the expression as-is
