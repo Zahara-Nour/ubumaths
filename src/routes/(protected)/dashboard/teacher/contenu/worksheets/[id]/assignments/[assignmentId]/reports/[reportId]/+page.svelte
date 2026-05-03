@@ -68,11 +68,15 @@
 	// Props
 	let { data }: { data: PageData } = $props();
 
+	// Snapshot for the const casts below — data is captured once at mount.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// Cast for type safety
-	const report = data.report as ReportData;
-	const exercise = data.exercise as ExerciseData;
-	const context = data.context as ContextData;
-	const nextPendingReportId = data.nextPendingReportId as string | null;
+	const report = initialData.report as ReportData;
+	const exercise = initialData.exercise as ExerciseData;
+	const context = initialData.context as ContextData;
+	const nextPendingReportId = initialData.nextPendingReportId as string | null;
 
 	// State - deep copy variations for editing
 	let variations = $state<ExerciseVariation[]>(JSON.parse(JSON.stringify(exercise.variations)));
