@@ -110,9 +110,15 @@
 	// STATE
 	// ============================================================================
 
+	// Initial collapse state comes from props but each section is then
+	// toggled locally — snapshot capture is intentional.
+	// svelte-ignore state_referenced_locally
 	let isMetadataOpen = $state(!metadataCollapsed);
+	// svelte-ignore state_referenced_locally
 	let isVariablesOpen = $state(!variablesCollapsed);
+	// svelte-ignore state_referenced_locally
 	let isCorrectionOpen = $state(!correctionCollapsed);
+	// svelte-ignore state_referenced_locally
 	let isTechnicalOpen = $state(!technicalCollapsed);
 	let isStatementExpanded = $state(false);
 

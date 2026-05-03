@@ -281,7 +281,7 @@
 				{ python },
 				{ defaultHighlightStyle, syntaxHighlighting, bracketMatching, indentOnInput },
 				{ autocompletion, closeBrackets, closeBracketsKeymap },
-				{ history, defaultKeymap, historyKeymap }
+				{ history, defaultKeymap, historyKeymap, indentWithTab }
 			] = await Promise.all([
 				import('@codemirror/view'),
 				import('@codemirror/state'),
@@ -469,7 +469,11 @@
 							onSave();
 							return true;
 						}
-					}
+					},
+					// Tab indents, Shift-Tab outdents. Listed last so it doesn't
+					// shadow autocomplete's own Tab handling. Press Escape first
+					// to leave the editor with the keyboard (a11y).
+					indentWithTab
 				]),
 
 				// Update listener
