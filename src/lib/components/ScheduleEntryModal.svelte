@@ -94,16 +94,25 @@
 		onDelete
 	}: Props = $props();
 
+	// Snapshots of the props for $state initializers — the form initializes
+	// once and is then reset by the $effect when `open` toggles.
+	// svelte-ignore state_referenced_locally
+	const initialEntry = entry;
+	// svelte-ignore state_referenced_locally
+	const initialDefaultDay = defaultDay;
+	// svelte-ignore state_referenced_locally
+	const initialPeriods = periods;
+
 	// Form state - stores current values for all form fields
 	let formData = $state<ScheduleFormData>({
-		id: entry?.id,
-		day_of_week: entry?.day_of_week ?? defaultDay,
-		start_time: entry?.start_time ?? (periods[0]?.start_time || '08:00:00'),
-		end_time: entry?.end_time ?? (periods[0]?.end_time || '09:00:00'),
-		period_number: entry?.period_number ?? (periods[0]?.number || 1),
-		subject: entry?.subject ?? '',
-		room: entry?.room ?? '',
-		notes: entry?.notes ?? ''
+		id: initialEntry?.id,
+		day_of_week: initialEntry?.day_of_week ?? initialDefaultDay,
+		start_time: initialEntry?.start_time ?? (initialPeriods[0]?.start_time || '08:00:00'),
+		end_time: initialEntry?.end_time ?? (initialPeriods[0]?.end_time || '09:00:00'),
+		period_number: initialEntry?.period_number ?? (initialPeriods[0]?.number || 1),
+		subject: initialEntry?.subject ?? '',
+		room: initialEntry?.room ?? '',
+		notes: initialEntry?.notes ?? ''
 	});
 
 	/**
@@ -177,8 +186,10 @@
 
 	// Selected values as strings for MySelect binding
 	// Initialize with derived values to avoid capturing stale initial state
-	let selectedDay = $state(String(entry?.day_of_week ?? defaultDay));
-	let selectedPeriod = $state(String(entry?.period_number ?? (periods[0]?.number || 1)));
+	let selectedDay = $state(String(initialEntry?.day_of_week ?? initialDefaultDay));
+	let selectedPeriod = $state(
+		String(initialEntry?.period_number ?? (initialPeriods[0]?.number || 1))
+	);
 
 	// Sync formData when selections change
 	$effect(() => {
