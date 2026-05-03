@@ -2,6 +2,34 @@
  * DSL Interpreter — walks the AST and produces a Figure.
  *
  * Maps DSL function calls to Figure factory methods via builtins.
+ *
+ * ─── Evaluation matrix (path × mode) ──────────────────────────────────────
+ *
+ * Every DSL expression is evaluated through one of 2 paths in one of 2 modes:
+ *
+ *                │  Static (snapshot, returns number)  │  Reactive (live GeoScalar)
+ * ───────────────┼─────────────────────────────────────┼────────────────────────────
+ * mathAST routing│  tryEvaluateAsMathExpr —            │  same fn — `scalarDeps`
+ *                │  `if (scalarDeps.length === 0)`     │  branch → `createScalarExpression`
+ * ───────────────┼─────────────────────────────────────┼────────────────────────────
+ * DSL evaluator  │  `case 'binary'` w/ two `nombre`    │  `evaluateScalarBinary` (≥1
+ *                │  operands → JS arithmetic           │  operand is scalar)
+ *
+ * Path: `mathAST routing` opens when `isMathPureExpr(expr)` is true (and not
+ * inside a macro body, etc.). It delegates parse + compile to mathAST. The
+ * `DSL evaluator` covers everything else (tuples, property access, vectors,
+ * builtin/macro calls, builtin+scalar mixed).
+ *
+ * Mode: `Static` when the expression has no slider/scalar deps → result is
+ * a `number`. `Reactive` when ≥1 operand is a scalar → result is a
+ * `GeoScalar` that recomputes on every `figure.recompute()`.
+ *
+ * Reactive paths apply `Number.isFinite(result) ? result : NaN` so a derived
+ * coordinate "disappears" on non-finite rather than being catapulted off-
+ * screen. Static paths (both routing and DSL evaluator since V2 #2) follow
+ * IEEE 754 / JS native arithmetic (`1/0 → Infinity`, `0/0 → NaN`).
+ *
+ * Full design notes: `docs/wip/geometry/dsl-mathast-routing-progress.md`.
  */
 
 import { Figure } from '../graph/figure';
