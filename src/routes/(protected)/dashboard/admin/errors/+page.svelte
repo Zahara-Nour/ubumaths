@@ -15,12 +15,16 @@
 
 	let { data } = $props();
 
+	// Snapshot for $state initializers below.
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
+
 	// Filter state
-	let searchInput = $state(data.filters.search || '');
-	let typeFilter = $state(data.filters.type || 'all');
-	let severityFilter = $state(data.filters.severity || 'all');
+	let searchInput = $state(initialData.filters.search || '');
+	let typeFilter = $state(initialData.filters.type || 'all');
+	let severityFilter = $state(initialData.filters.severity || 'all');
 	let resolvedFilter = $state(
-		data.filters.resolved === null ? 'all' : data.filters.resolved ? 'true' : 'false'
+		initialData.filters.resolved === null ? 'all' : initialData.filters.resolved ? 'true' : 'false'
 	);
 
 	// Items for MySelect dropdowns
