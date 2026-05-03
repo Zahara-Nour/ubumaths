@@ -317,14 +317,14 @@ Le RHS des affectations de variables numériques DSL est maintenant routé vers 
 ### Limitations V1 documentées
 
 - `\theta`, `\alpha`, etc. (Greek letters au top-level) : non supportés
-- Sérialisation `unite_angle` : la directive n'est PAS préservée par `serializeDsl`. Les tests round-trip réinjectent le mode après désérialisation.
+- ~~Sérialisation `unite_angle` : la directive n'est PAS préservée par `serializeDsl`~~. **Résolu (V2 #1)** : `interpret()` expose désormais `angleMode` dans `InterpretResult` et `serializeDsl(figure, symbols, { angleMode })` préfixe `unite_angle("radians")` si le mode est non-default.
 - Sérialisation des variables : lossy (substitution lors de la création de la courbe)
 - Trois conventions de division par zéro coexistent (Infinity / NaN / throw) selon le code path emprunté
 
 ### Suggestions follow-up (V2)
 
-- Support `\theta`/`\alpha`/etc. comme variables Greek au top-level
-- Préservation de `unite_angle` dans `serializeDsl`
+- ~~Support `\theta`/`\alpha`/etc. comme variables Greek au top-level~~ — fait (tokenizer accepte tous les Greek lowercase, backslash strippé sauf pour `\pi`).
+- ~~Préservation de `unite_angle` dans `serializeDsl`~~ — fait (V2 #1, voir au-dessus)
 - Unification des trois conventions de division par zéro
 - `unite_angle("grades")` pour les enseignants suisses
 - Amélioration des erreurs (parseCustom retourne null silencieusement → éventuellement remonter le diagnostic)
