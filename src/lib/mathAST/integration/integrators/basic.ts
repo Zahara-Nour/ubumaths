@@ -14,7 +14,7 @@ import type {
 	ResolvedIntegrateOptions
 } from '../types';
 import { isNumber, isVariable, isEulerConstant } from '../../guards';
-import { number, power } from '../../factory';
+import { number, opposite, power } from '../../factory';
 import {
 	powerRule,
 	constantRule,
@@ -450,7 +450,7 @@ export const basicIntegrator: Integrator = {
 		if (isOneOverX(expr, variable)) {
 			recorder.recordStepByRule('ln-rule', expr, expr, 'detailed');
 			antiderivative = lnAbsRule(
-				expr.type === 'division' ? expr.denominator : power(expr, number('-1'))
+				expr.type === 'division' ? expr.denominator : power(expr, opposite(number('1')))
 			);
 			recorder.recordStepByRule('ln-rule', expr, antiderivative, 'summarized');
 
