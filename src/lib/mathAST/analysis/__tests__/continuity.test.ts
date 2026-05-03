@@ -21,6 +21,7 @@ import {
 	func,
 	tan
 } from '../../factory';
+import { getNumericValue } from '../../common/numeric';
 
 describe('analyzeContinuity()', () => {
 	describe('continuous functions', () => {
@@ -90,10 +91,7 @@ describe('analyzeContinuity()', () => {
 
 			expect(result.discontinuities.length).toBeGreaterThanOrEqual(2);
 
-			const points = result.discontinuities.map((d) => {
-				if (d.point.type === 'number') return parseFloat(d.point.value);
-				return null;
-			});
+			const points = result.discontinuities.map((d) => getNumericValue(d.point));
 
 			// Should have discontinuities at both -1 and 1
 			expect(points.some((p) => p !== null && Math.abs(p - 1) < 0.01)).toBe(true);

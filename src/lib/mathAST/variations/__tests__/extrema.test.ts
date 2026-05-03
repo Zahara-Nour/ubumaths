@@ -27,6 +27,7 @@ import type { CriticalPointInfo, MonotonicInterval, ExtremumInfo } from '../type
 import type { Domain, IntervalSet } from '../../domain/types';
 import { parseLatex } from '../../parser';
 import { number, opposite } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import {
 	interval,
 	openEndpoint,
@@ -59,7 +60,7 @@ function universalDomain(): Domain {
 function boundedDomain(lower: number, upper: number): IntervalSet {
 	return {
 		kind: 'interval_set',
-		intervals: [interval(closedEndpoint(number(lower)), closedEndpoint(number(upper)))],
+		intervals: [interval(closedEndpoint(numericNode(lower)), closedEndpoint(numericNode(upper)))],
 		excludedPoints: []
 	};
 }
@@ -74,10 +75,10 @@ function createMonotonicInterval(
 	derivativeSign: 'positive' | 'negative' | 'zero' | 'unknown'
 ): MonotonicInterval {
 	const lowerEndpoint =
-		typeof lower === 'number' ? openEndpoint(number(lower)) : negInfinityEndpoint();
+		typeof lower === 'number' ? openEndpoint(numericNode(lower)) : negInfinityEndpoint();
 
 	const upperEndpoint =
-		typeof upper === 'number' ? openEndpoint(number(upper)) : posInfinityEndpoint();
+		typeof upper === 'number' ? openEndpoint(numericNode(upper)) : posInfinityEndpoint();
 
 	return {
 		interval: interval(lowerEndpoint, upperEndpoint),
@@ -95,9 +96,9 @@ function createCriticalPoint(
 	nature: 'derivative_zero' | 'derivative_undefined' = 'derivative_zero'
 ): CriticalPointInfo {
 	return {
-		x: number(String(xValue)),
+		x: numericNode(xValue),
 		xApproximate: xValue,
-		y: yValue !== undefined ? number(String(yValue)) : undefined,
+		y: yValue !== undefined ? numericNode(yValue) : undefined,
 		yApproximate: yValue,
 		nature,
 		exact: true

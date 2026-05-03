@@ -26,6 +26,7 @@ import {
 	figureStateSchema
 } from '../types/schemas';
 import { number, sqrt, fraction } from '$lib/mathAST';
+import { numericNode } from '$lib/mathAST/common/numeric';
 
 // Standard viewport and transformer
 const viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
@@ -33,7 +34,7 @@ const transformer = createTransformer(viewport, 800, 600);
 const dims = { width: 800, height: 600 };
 
 function pt(x: number, y: number) {
-	return { x: exact(number(x)), y: exact(number(y)) };
+	return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
 }
 
 // =============================================================================

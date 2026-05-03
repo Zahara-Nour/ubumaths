@@ -96,33 +96,32 @@ describe('factory', () => {
 	// =============================================================================
 	// number() — negative rejection (Phase 4)
 	//
-	// These tests use it.fails so they PASS NOW (number() does not throw yet) and
-	// will TURN RED when Phase 4 adds the throw.  At that point each it.fails must
-	// be converted to a regular it + expect(() => ...).toThrow().
+	// number() now throws on signed numeric literals. Use numericNode(value)
+	// or opposite(number(...)) for negatives. Exponent minus (e.g. 1.5e-3)
+	// stays accepted.
 	// =============================================================================
 
 	describe('number — negative rejection (Phase 4)', () => {
-		// it.fails: passes while the code does NOT throw; turns red once it does throw.
-		it.fails("number('-3') throws", () => {
-			number('-3');
+		it("number('-3') throws", () => {
+			expect(() => number('-3')).toThrow(/signed numeric literal/);
 		});
 
-		it.fails('number(-3) throws (numeric form)', () => {
-			number(-3);
+		it('number(-3) throws (numeric form)', () => {
+			expect(() => number(-3)).toThrow(/signed numeric literal/);
 		});
 
-		it.fails("number('-3.5') throws", () => {
-			number('-3.5');
+		it("number('-3.5') throws", () => {
+			expect(() => number('-3.5')).toThrow(/signed numeric literal/);
 		});
 
 		// Q1: '-0' also rejected (decision confirmed in Phase 0)
-		it.fails("number('-0') throws", () => {
-			number('-0');
+		it("number('-0') throws", () => {
+			expect(() => number('-0')).toThrow(/signed numeric literal/);
 		});
 
 		// Q2: '+3' also rejected (decision confirmed in Phase 0)
-		it.fails("number('+3') throws", () => {
-			number('+3');
+		it("number('+3') throws", () => {
+			expect(() => number('+3')).toThrow(/signed numeric literal/);
 		});
 
 		// This case MUST keep passing even after Phase 4: minus is in the exponent,

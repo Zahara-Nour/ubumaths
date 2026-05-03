@@ -54,7 +54,8 @@ import { isInfinity, isFunction } from '../guards';
 import { findNodes } from '../transforms';
 import { shouldIncludeStep } from '../common/verbosity';
 import { solveEquation } from '../solve';
-import { equals, number as numNode } from '../factory';
+import { equals, number as numNode, opposite } from '../factory';
+import { numericNode } from '../common/numeric';
 import {
 	describeNonDifferentiablePoint,
 	describeBoundary,
@@ -683,7 +684,7 @@ function computeAbsDerivativesAtZero(
 	if (absFuncs.length === 0) {
 		// Default for simple |x|
 		return {
-			left: numNode('-1'),
+			left: opposite(numNode('1')),
 			right: numNode('1')
 		};
 	}
@@ -692,7 +693,7 @@ function computeAbsDerivativesAtZero(
 	const arg = absFunc.args[0];
 
 	if (!arg) {
-		return { left: numNode('-1'), right: numNode('1') };
+		return { left: opposite(numNode('1')), right: numNode('1') };
 	}
 
 	// Try to compute f'(x₀)
@@ -710,8 +711,8 @@ function computeAbsDerivativesAtZero(
 			const leftX = pointValue - epsilon;
 			const rightX = pointValue + epsilon;
 
-			const leftFNode = substitute(arg, { [variable]: numNode(String(leftX)) });
-			const rightFNode = substitute(arg, { [variable]: numNode(String(rightX)) });
+			const leftFNode = substitute(arg, { [variable]: numericNode(leftX) });
+			const rightFNode = substitute(arg, { [variable]: numericNode(rightX) });
 
 			const leftFValue = evaluateNodeToApproximatedNumber(leftFNode);
 			const rightFValue = evaluateNodeToApproximatedNumber(rightFNode);
@@ -725,8 +726,8 @@ function computeAbsDerivativesAtZero(
 			const rightDeriv = rightSign * derivValue;
 
 			return {
-				left: numNode(formatNumber(leftDeriv)),
-				right: numNode(formatNumber(rightDeriv))
+				left: numericNode(formatNumber(leftDeriv)),
+				right: numericNode(formatNumber(rightDeriv))
 			};
 		}
 	} catch {
@@ -735,7 +736,7 @@ function computeAbsDerivativesAtZero(
 
 	// Default: assume simple |x| behavior
 	return {
-		left: numNode('-1'),
+		left: opposite(numNode('1')),
 		right: numNode('1')
 	};
 }
@@ -906,7 +907,7 @@ function approximateDerivativeLimitFromDerivative(
 
 		for (const epsilon of epsilons) {
 			const x = pointValue + sign * epsilon;
-			const substituted = substitute(derivative, { [variable]: numNode(String(x)) });
+			const substituted = substitute(derivative, { [variable]: numericNode(x) });
 			const value = evaluateNodeToApproximatedNumber(substituted);
 
 			if (!Number.isFinite(value)) {
@@ -939,7 +940,7 @@ function approximateDerivativeLimitFromDerivative(
 		}
 
 		// Return the finite limit
-		return numNode(formatNumber(lastValue));
+		return numericNode(formatNumber(lastValue));
 	} catch {
 		return 'undefined';
 	}
@@ -1087,7 +1088,7 @@ function findArgumentZeros(arg: MathNode, variable: string): MathNode[] {
 	try {
 		const algebraicZeros = findZeros(arg, variable);
 		if (algebraicZeros.length > 0) {
-			return algebraicZeros.map((z) => numNode(formatNumber(z)));
+			return algebraicZeros.map((z) => numericNode(formatNumber(z)));
 		}
 	} catch {
 		// findZeros failed, try solver
@@ -1178,7 +1179,7 @@ function enumeratePeriodicPoints(
 
 		if (pointValue >= min) {
 			candidates.push({
-				point: numNode(formatNumber(pointValue)),
+				point: numericNode(formatNumber(pointValue)),
 				source,
 				periodic: {
 					basePoint,
@@ -1269,12 +1270,12 @@ function normalizeSolutionToNumber(node: MathNode): MathNode {
 
 	if (node.type === 'opposite' && node.operand.type === 'number') {
 		const val = -parseFloat(node.operand.value);
-		return numNode(formatNumber(val));
+		return numericNode(formatNumber(val));
 	}
 
 	const numericValue = tryEvaluateNumeric(node);
 	if (numericValue !== null) {
-		return numNode(formatNumber(numericValue));
+		return numericNode(formatNumber(numericValue));
 	}
 
 	return node;
@@ -1344,7 +1345,7 @@ function tryEvaluateAtPoint(expr: MathNode, variable: string, point: MathNode): 
 		const value = evaluateNodeToApproximatedNumber(substituted);
 
 		if (Number.isFinite(value) && Math.abs(value) < 1e8) {
-			return numNode(formatNumber(value));
+			return numericNode(formatNumber(value));
 		}
 	} catch {
 		// Evaluation failed

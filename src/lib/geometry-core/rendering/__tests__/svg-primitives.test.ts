@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import { pointToSVG, segmentToSVG, lineToSVG, rayToSVG, circleToSVG } from '../svg-primitives';
 import { Figure } from '../../graph/figure';
 import { createTransformer } from '../../viewport/viewport';
 import { exact } from '../../types/geo-value';
 import { geoFromNumber } from '../../compute/geo-arithmetic';
-import { number } from '$lib/mathAST';
 
 // Standard viewport: -10..10 on both axes, 800x600 SVG
 const viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
 const transformer = createTransformer(viewport, 800, 600);
 
 function point(x: number, y: number) {
-	return { x: exact(number(x)), y: exact(number(y)) };
+	return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
 }
 
 // =============================================================================

@@ -15,6 +15,7 @@
 import type { MathNode, RelationNode } from '../types';
 import type { CompiledFn } from '../eval/compile';
 import { equals, number as mathNumber } from '../factory';
+import { numericNode } from '../common/numeric';
 import { solve } from '../solve';
 import { substitute } from '../eval/substitute';
 import { evaluate } from '../eval/evaluate';
@@ -137,7 +138,7 @@ export function findCriticalInflections(
 			return {
 				...pt,
 				yNumeric: Number.isFinite(yNum) ? yNum : 0,
-				y: mathNumber(String(Number.isFinite(yNum) ? yNum : 0)),
+				y: numericNode(Number.isFinite(yNum) ? yNum : 0),
 				type: 'inflection' as const
 			};
 		});
@@ -179,7 +180,7 @@ function solveExact(
 			points.push({
 				x: sol.value,
 				xNumeric: xNum,
-				y: mathNumber(String(Number.isFinite(yNum) ? yNum : 0)),
+				y: numericNode(Number.isFinite(yNum) ? yNum : 0),
 				yNumeric: Number.isFinite(yNum) ? yNum : 0,
 				exact: sol.exact,
 				type
@@ -205,9 +206,9 @@ function solveExact(
 
 					const yNum = compiledFn({ [variable]: xNum });
 					points.push({
-						x: mathNumber(String(xNum)),
+						x: numericNode(xNum),
 						xNumeric: xNum,
-						y: mathNumber(String(Number.isFinite(yNum) ? yNum : 0)),
+						y: numericNode(Number.isFinite(yNum) ? yNum : 0),
 						yNumeric: Number.isFinite(yNum) ? yNum : 0,
 						exact: false, // expanded periodic, not symbolically exact
 						type
@@ -319,9 +320,9 @@ function isAsymptote(compiledFn: CompiledFn, x: number): boolean {
 function makeNumericPoint(x: number, y: number, type: CriticalPoint['type']): CriticalPoint {
 	const yVal = Number.isFinite(y) ? y : 0;
 	return {
-		x: mathNumber(String(x)),
+		x: numericNode(x),
 		xNumeric: x,
-		y: mathNumber(String(yVal)),
+		y: numericNode(yVal),
 		yNumeric: yVal,
 		exact: false,
 		type
@@ -402,7 +403,7 @@ function classifyExtrema(
 		if (!Number.isFinite(yNum)) continue;
 
 		// Try exact y if point was exact
-		let y: MathNode = mathNumber(String(yNum));
+		let y: MathNode = numericNode(yNum);
 		if (pt.exact) {
 			try {
 				const substituted = substitute(expression, { [variable]: pt.x });

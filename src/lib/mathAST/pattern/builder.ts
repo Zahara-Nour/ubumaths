@@ -9,6 +9,7 @@ import type { MathNode, MathNodeType, RelationType } from '../types';
 import { parsePattern } from '../parser/custom/pattern-parser';
 import { parseRule } from '../parser/custom/rule-parser';
 import { number as astNumber, variable as astVariable } from '../factory';
+import { numericNode } from '../common/numeric';
 import type {
 	// Pattern types
 	Pattern,
@@ -221,7 +222,7 @@ function prod(...elements: ProductPatternElement[]): ProductPattern {
 function num(value: number): LiteralPattern {
 	return {
 		type: 'literal',
-		node: astNumber(String(value))
+		node: numericNode(value)
 	} as const;
 }
 

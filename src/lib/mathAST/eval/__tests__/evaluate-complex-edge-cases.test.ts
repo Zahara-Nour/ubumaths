@@ -13,6 +13,7 @@
 import { describe, it, expect } from 'vitest';
 import { evaluate } from '../evaluate';
 import { complex, number, func, power, multiply, divide, add, opposite } from '../../factory';
+import { numericNode } from '../../common/numeric';
 import { parsePratt } from '../../parser/latex/parser-pratt';
 import { toLatex } from '../../latex-generator';
 
@@ -53,7 +54,7 @@ function i() {
  * Create complex number a + bi
  */
 function c(a: number, b: number) {
-	return complex(number(String(a)), number(String(b)));
+	return complex(numericNode(a), numericNode(b));
 }
 
 // =============================================================================

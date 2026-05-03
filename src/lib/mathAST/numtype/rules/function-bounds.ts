@@ -24,12 +24,18 @@ import {
 	getEndpoints,
 	buildInterval
 } from '$lib/math/intervals';
-import { func as funcNode, sqrt as sqrtNode, infinity, number as numberNode } from '../../factory';
+import {
+	func as funcNode,
+	sqrt as sqrtNode,
+	infinity,
+	number as numberNode,
+	opposite
+} from '../../factory';
 import { compareNumericNodes } from '../../eval/compare-numeric';
 
 const ZERO = numberNode('0');
 const ONE = numberNode('1');
-const NEG_ONE = numberNode('-1');
+const NEG_ONE = opposite(numberNode('1'));
 
 // =============================================================================
 // Monotone function registry

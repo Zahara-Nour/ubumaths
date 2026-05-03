@@ -23,7 +23,7 @@ import {
 } from './factory';
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
-import { number as numberNode } from '../factory';
+import { numericNode } from '../common/numeric';
 import { intersect, excludePoints, union, isEmpty } from './algebra';
 import { getBuiltinDomain, hasRestrictedDomain, getBuiltinRangeEntry } from './builtins';
 import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
@@ -139,7 +139,7 @@ function analyzeComposition(
 			if (zeros.length > 0) {
 				domain = excludePoints(
 					domain,
-					zeros.map((z) => numberNode(z))
+					zeros.map((z) => numericNode(z))
 				);
 			}
 		}
@@ -158,7 +158,7 @@ function analyzeComposition(
 				Math.abs(outerReq.lowerBound) < ZERO_TOLERANCE
 			) {
 				// ln(expr) >= 0 means expr >= 1
-				const constraintDomain = intervalDomain([greaterThanOrEqualInterval(numberNode(1))]);
+				const constraintDomain = intervalDomain([greaterThanOrEqualInterval(numericNode(1))]);
 				const preimage = computePreimage(innerArg, constraintDomain, variable);
 				if (preimage) {
 					domain = intersect(domain, preimage);
@@ -167,7 +167,7 @@ function analyzeComposition(
 				// For other functions, construct the inner node and compute preimage
 				const innerExpr: MathNode = { type: 'function', name: innerNode.name, args: [innerArg] };
 				const constraintDomain = intervalDomain([
-					greaterThanOrEqualInterval(numberNode(outerReq.lowerBound))
+					greaterThanOrEqualInterval(numericNode(outerReq.lowerBound))
 				]);
 				const preimage = computePreimage(innerExpr, constraintDomain, variable);
 				if (preimage) {
@@ -180,7 +180,7 @@ function analyzeComposition(
 	// Case 3: Outer needs >= specific bound (like acosh needs >= 1)
 	if (outerReq.lowerBound !== undefined && outerReq.lowerBound !== 0) {
 		const constraintDomain = intervalDomain([
-			greaterThanOrEqualInterval(numberNode(outerReq.lowerBound))
+			greaterThanOrEqualInterval(numericNode(outerReq.lowerBound))
 		]);
 		const preimage = computePreimage(innerArg, constraintDomain, variable);
 		if (preimage) {
@@ -340,7 +340,7 @@ function computeDivisionDomain(
 	if (zeros.length > 0) {
 		domain = excludePoints(
 			domain,
-			zeros.map((z) => numberNode(z))
+			zeros.map((z) => numericNode(z))
 		);
 	}
 
@@ -515,7 +515,7 @@ function createLinearPeriodicExclusion(
 	// Compute the new period: π / |a|
 	const newPeriod = Math.PI / Math.abs(a);
 
-	return periodicExclusion(numberNode(String(newBasePoint)), numberNode(String(newPeriod)));
+	return periodicExclusion(numericNode(newBasePoint), numericNode(newPeriod));
 }
 
 /**
@@ -540,7 +540,7 @@ function computePowerDomain(
 		if (zeros.length > 0) {
 			domain = excludePoints(
 				domain,
-				zeros.map((z) => numberNode(z))
+				zeros.map((z) => numericNode(z))
 			);
 		}
 	}
@@ -553,7 +553,7 @@ function computePowerDomain(
 			// Even root requires base >= 0
 			const preimage = computePreimage(
 				node.base,
-				intervalDomain([greaterThanOrEqualInterval(numberNode(0))]),
+				intervalDomain([greaterThanOrEqualInterval(numericNode(0))]),
 				variable
 			);
 			if (preimage) {
@@ -670,7 +670,7 @@ function computePreimageForSingleInterval(
 			if (zeros.length > 0) {
 				resultDomain = excludePoints(
 					resultDomain,
-					zeros.map((z) => numberNode(z))
+					zeros.map((z) => numericNode(z))
 				);
 			}
 		}
