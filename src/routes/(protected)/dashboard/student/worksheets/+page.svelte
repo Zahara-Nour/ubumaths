@@ -12,10 +12,12 @@
 	}
 
 	let { data }: Props = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// Filter state
-	let selectedClass = $state(data.filters.classId);
-	let currentPage = $state(data.filters.page);
+	let selectedClass = $state(initialData.filters.classId);
+	let currentPage = $state(initialData.filters.page);
 	let isLoading = $state(false);
 
 	// Derived values

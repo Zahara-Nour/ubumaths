@@ -20,9 +20,11 @@
 	import { goto } from '$app/navigation';
 
 	let { data }: { data: PageData } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
-	let selectedDifficulty = $state<string>(data.filters.difficulty || 'all');
-	let selectedGenre = $state<string>(data.filters.genre || 'all');
+	let selectedDifficulty = $state<string>(initialData.filters.difficulty || 'all');
+	let selectedGenre = $state<string>(initialData.filters.genre || 'all');
 
 	// Difficulty items for MySelect
 	const difficultyItems = [

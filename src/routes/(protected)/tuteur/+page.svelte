@@ -25,8 +25,10 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
-	const { studentGrade } = data;
+	const { studentGrade } = initialData;
 </script>
 
 <svelte:head>

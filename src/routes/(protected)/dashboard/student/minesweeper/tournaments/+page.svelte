@@ -6,9 +6,11 @@
 
 	// Props
 	let { data }: { data: PageData } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// State
-	let tournaments = $state(data.tournaments);
+	let tournaments = $state(initialData.tournaments);
 
 	// Derived state
 	let activeTournaments = $derived(tournaments.filter((t) => t.status === 'active'));

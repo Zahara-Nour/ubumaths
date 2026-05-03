@@ -7,6 +7,7 @@
 	let { data }: { data: PageData } = $props();
 
 	// Group cards by rarity (filter enabled cards only) and convert to VipCard format
+	// svelte-ignore state_referenced_locally
 	const enabledCards = data.templates.filter((c) => c.is_enabled).map(templateToVipCard);
 	const legendaryCards = enabledCards.filter((c) => c.rarity === 'legendary');
 	const epicCards = enabledCards.filter((c) => c.rarity === 'epic');

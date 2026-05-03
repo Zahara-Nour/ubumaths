@@ -40,13 +40,15 @@
 	import Loader2 from 'lucide-svelte/icons/loader-2';
 
 	let { data }: { data: PageData } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// ============================================================================
 	// STATE
 	// ============================================================================
 
 	let showSolution = $state(false);
-	let currentSeed = $state(data.initialSeed ?? Math.floor(Math.random() * 1000000));
+	let currentSeed = $state(initialData.initialSeed ?? Math.floor(Math.random() * 1000000));
 	let linkCopied = $state(false);
 	let isPdfLoading = $state(false);
 	let showPdfDialog = $state(false);

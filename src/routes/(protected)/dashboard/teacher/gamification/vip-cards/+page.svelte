@@ -9,6 +9,7 @@
 
 	// Build overrides map from database data
 	const initialOverrides: Record<string, boolean> = {};
+	// svelte-ignore state_referenced_locally
 	data.overrides.forEach((override) => {
 		initialOverrides[override.card_id] = override.is_enabled;
 	});

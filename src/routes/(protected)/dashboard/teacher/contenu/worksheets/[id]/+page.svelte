@@ -82,7 +82,9 @@
 		DEFAULT_TEMPLATES.map((t) => ({ id: t.id, name: t.name, description: t.description }))
 	);
 
-	// Type-safe worksheet access with local state for updates
+	// Type-safe worksheet access with local state for updates.
+	// Snapshot intentional: $effect below resets it on data changes.
+	// svelte-ignore state_referenced_locally
 	let worksheetData = $state(data.worksheet as WorksheetWithRelations);
 
 	// Pending changes for metadata editing (single source of truth for edits)

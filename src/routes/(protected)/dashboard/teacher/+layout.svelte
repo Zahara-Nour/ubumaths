@@ -15,9 +15,11 @@
 	import type { Snippet } from 'svelte';
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
+	// svelte-ignore state_referenced_locally
+	const initialData = data;
 
 	// Classes loaded via SSR hydration
-	let classes = $state<ClassWithData[]>(data.classes || []);
+	let classes = $state<ClassWithData[]>(initialData.classes || []);
 
 	/**
 	 * Initialize selectedClassId if not already set
