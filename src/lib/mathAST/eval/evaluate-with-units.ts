@@ -20,7 +20,7 @@ import { DEFAULT_EVAL_WITH_UNITS_OPTIONS } from './types';
 import { analyzeDimensions } from '../dimensional/analyzer';
 import type { DimensionalContext } from '../dimensional/types';
 import type { Unit } from '../units/types';
-import { getConversionFactor, normalizeToBase } from '../units/conversion';
+import { getConversionFactor, isAffine, normalizeToBase } from '../units/conversion';
 import { getUnitFamily } from '../units/definitions';
 import { UnitAST } from '../units/factory';
 import type { MathNode } from '../types';
@@ -349,6 +349,244 @@ function getNumericValue(value: EvalValue): number {
 }
 
 // =============================================================================
+// Affine (Temperature) Operations
+// =============================================================================
+
+/**
+ * Detect any composition (multiplication, division, exponentiation) involving
+ * an affine unit (°C, °F) anywhere in the expression.
+ *
+ * Affine units have an offset that makes multiplicative composition undefined:
+ * `5°C × 2` could mean `10°C` or `546.3 K` depending on interpretation.
+ * To avoid ambiguity all such compositions are forbidden.
+ *
+ * Plain addition/subtraction is allowed and handled by
+ * {@link tryEvaluateAffineBinary}.
+ */
+function detectAffineComposition(node: MathNode): boolean {
+	let found = false;
+
+	function visit(n: MathNode, withinComposition: boolean): void {
+		if (found) return;
+
+		if (isUnit(n)) {
+			if (withinComposition && isAffine(n.unit)) {
+				found = true;
+				return;
+			}
+			visit(n.expression, withinComposition);
+			return;
+		}
+
+		switch (n.type) {
+			// --- Composition contexts (affine units forbidden as descendants) ---
+			case 'multiplication':
+				visit(n.left, true);
+				visit(n.right, true);
+				break;
+			case 'division':
+				visit(n.numerator, true);
+				visit(n.denominator, true);
+				break;
+			case 'superscript':
+				visit(n.base, true);
+				visit(n.superscript, true);
+				break;
+			case 'function':
+				// sin(°C), exp(°C), etc. are meaningless.
+				for (const arg of n.args) {
+					visit(arg, true);
+				}
+				break;
+			case 'composition':
+				// f ∘ g treats inner/outer as composed (function-of-function).
+				visit(n.outer, true);
+				visit(n.inner, true);
+				break;
+			case 'logical':
+				// and/or applied to quantities is meaningless.
+				visit(n.left, true);
+				visit(n.right, true);
+				break;
+			case 'logical-not':
+				visit(n.operand, true);
+				break;
+			case 'limit':
+				// lim involves an evaluation, treat the expression as composed
+				// to be conservative.
+				visit(n.expression, true);
+				visit(n.approach, true);
+				break;
+
+			// --- Pass-through contexts (preserve withinComposition) ---
+			case 'addition':
+			case 'subtraction':
+				visit(n.left, withinComposition);
+				visit(n.right, withinComposition);
+				break;
+			case 'opposite':
+			case 'positive':
+				visit(n.operand, withinComposition);
+				break;
+			case 'delimiter':
+				visit(n.content, withinComposition);
+				break;
+			case 'relation':
+				// 5°C > 3°C is a comparison; both sides retain context.
+				visit(n.left, withinComposition);
+				visit(n.right, withinComposition);
+				break;
+			case 'subscript':
+				// x_1: base is the value, subscript is an index. Keep context.
+				visit(n.base, withinComposition);
+				visit(n.subscript, withinComposition);
+				break;
+			case 'piecewise':
+				for (const piece of n.pieces) {
+					visit(piece.condition, withinComposition);
+					visit(piece.value, withinComposition);
+				}
+				if (n.otherwise) visit(n.otherwise, withinComposition);
+				break;
+			case 'matrix':
+				for (const row of n.rows) {
+					for (const cell of row) {
+						visit(cell, withinComposition);
+					}
+				}
+				break;
+
+			// --- Leaf nodes (no children) ---
+			// number, variable, greek, symbol, hole, constant, boolean,
+			// complex, infinity, signed-zero
+			default:
+				break;
+		}
+	}
+
+	visit(node, false);
+	return found;
+}
+
+/**
+ * Build a DimensionalEvaluationError for affine composition violations.
+ */
+function affineCompositionError(detail: string): DimensionalEvaluationError {
+	const message = `AFFINE_COMPOSITION_FORBIDDEN: ${detail}`;
+	return new DimensionalEvaluationError(message, [
+		{ code: 'AFFINE_COMPOSITION_FORBIDDEN', message }
+	]);
+}
+
+/**
+ * Handle direct top-level binary additions/subtractions involving affine units.
+ *
+ * Semantics:
+ * - sub(°C/F, °C/F): difference of absolute temperatures → result in K (delta)
+ * - sub(°C/F, K):    absolute - delta → absolute, in left's unit
+ * - add(°C/F, °C/F): forbidden (sum of absolutes)
+ * - add(°C/F, K):    absolute + delta → absolute, in left's unit
+ * - add(K, °C/F):    delta + absolute → absolute, in right's unit
+ * - sub(K, °C/F):    forbidden (delta - absolute is meaningless)
+ *
+ * Returns null if the node is not a recognized affine binary pattern.
+ * Throws DimensionalEvaluationError for forbidden patterns.
+ */
+function tryEvaluateAffineBinary(node: MathNode): EvalResultWithUnit | null {
+	if (node.type !== 'addition' && node.type !== 'subtraction') return null;
+
+	// Strip parenthetical wrappers — `(5°C) - (3°C)` should behave like `5°C - 3°C`.
+	const stripDelim = (n: MathNode): MathNode => {
+		let cur = n;
+		while (cur.type === 'delimiter') cur = cur.content;
+		return cur;
+	};
+
+	const left = stripDelim(node.left);
+	const right = stripDelim(node.right);
+	if (!isUnit(left) || !isUnit(right)) return null;
+
+	const leftAffine = isAffine(left.unit);
+	const rightAffine = isAffine(right.unit);
+
+	if (!leftAffine && !rightAffine) return null;
+
+	// Dimensional check: both must be temperature-compatible
+	const leftIsTemperature = left.unit.components.has('K');
+	const rightIsTemperature = right.unit.components.has('K');
+	if (!leftIsTemperature || !rightIsTemperature) {
+		throw affineCompositionError('temperature units cannot be combined with non-temperature units');
+	}
+
+	const leftValue = evaluateNodeToApproximatedNumber(left.expression);
+	const rightValue = evaluateNodeToApproximatedNumber(right.expression);
+
+	const leftCoeff = left.unit.coefficient;
+	const rightCoeff = right.unit.coefficient;
+	const leftOffset = left.unit.offset ?? 0;
+	const rightOffset = right.unit.offset ?? 0;
+
+	if (node.type === 'subtraction') {
+		if (leftAffine && rightAffine) {
+			// Both absolute: convert to K, subtract → delta in K
+			const leftK = (leftValue + leftOffset) * leftCoeff;
+			const rightK = (rightValue + rightOffset) * rightCoeff;
+			const deltaK = leftK - rightK;
+			const kUnit = UnitAST.unit('K')!;
+			return {
+				value: deltaK,
+				node: numericNode(deltaK),
+				exact: false,
+				unit: kUnit
+			};
+		}
+		if (leftAffine && !rightAffine) {
+			// absolute - delta = absolute (in left's unit)
+			// rightValue is in K-equivalent (after coefficient scaling).
+			const deltaInLeftUnit = (rightValue * rightCoeff) / leftCoeff;
+			const result = leftValue - deltaInLeftUnit;
+			return {
+				value: result,
+				node: numericNode(result),
+				exact: false,
+				unit: left.unit
+			};
+		}
+		// !leftAffine && rightAffine: K - °C is meaningless (delta − absolute)
+		throw affineCompositionError(
+			'cannot subtract an absolute temperature (°C/°F) from a delta (K)'
+		);
+	}
+
+	// Addition
+	if (leftAffine && rightAffine) {
+		throw affineCompositionError(
+			'sum of absolute temperatures (°C/°F) is undefined; convert at least one operand to K (delta)'
+		);
+	}
+	if (leftAffine && !rightAffine) {
+		// absolute + delta = absolute in left unit
+		const deltaInLeftUnit = (rightValue * rightCoeff) / leftCoeff;
+		const result = leftValue + deltaInLeftUnit;
+		return {
+			value: result,
+			node: numericNode(result),
+			exact: false,
+			unit: left.unit
+		};
+	}
+	// !leftAffine && rightAffine: delta + absolute = absolute in right unit
+	const deltaInRightUnit = (leftValue * leftCoeff) / rightCoeff;
+	const result = rightValue + deltaInRightUnit;
+	return {
+		value: result,
+		node: numericNode(result),
+		exact: false,
+		unit: right.unit
+	};
+}
+
+// =============================================================================
 // Main Function
 // =============================================================================
 
@@ -393,6 +631,23 @@ export function evaluateWithUnits(
 	};
 
 	const conversionMode: UnitConversionMode = opts.conversionMode ?? 'first';
+
+	// Step 0a: Reject any composition (×, ÷, ^, function call) that involves
+	// an affine unit (°C, °F). Multiplicative composition with an offset is
+	// mathematically undefined.
+	if (detectAffineComposition(node)) {
+		throw affineCompositionError(
+			'cannot multiply, divide, raise to a power, or pass to a function an affine unit (°C, °F)'
+		);
+	}
+
+	// Step 0b: Top-level binary operations with affine operands have special
+	// semantics (delta vs absolute) and cannot go through the multiplicative
+	// pipeline. Handle them up-front.
+	const affineBinaryResult = tryEvaluateAffineBinary(node);
+	if (affineBinaryResult !== null) {
+		return affineBinaryResult;
+	}
 
 	// Step 1: Build dimensional context from variable units
 	const dimensionalContext: DimensionalContext = {

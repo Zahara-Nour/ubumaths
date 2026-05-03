@@ -223,6 +223,139 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 		}
 	],
 
+	// =========== IMPERIAL UNITS ===========
+	// Distance
+	[
+		'in',
+		{
+			symbol: 'in',
+			baseSymbol: 'm',
+			coefficient: 0.0254,
+			dimension: 'length',
+			name: 'inch'
+		}
+	],
+	[
+		'ft',
+		{
+			symbol: 'ft',
+			baseSymbol: 'm',
+			coefficient: 0.3048,
+			dimension: 'length',
+			name: 'foot'
+		}
+	],
+	[
+		'yd',
+		{
+			symbol: 'yd',
+			baseSymbol: 'm',
+			coefficient: 0.9144,
+			dimension: 'length',
+			name: 'yard'
+		}
+	],
+	[
+		'mi',
+		{
+			symbol: 'mi',
+			baseSymbol: 'm',
+			coefficient: 1609.344,
+			dimension: 'length',
+			name: 'mile'
+		}
+	],
+	// Mass (avoirdupois)
+	[
+		'oz',
+		{
+			symbol: 'oz',
+			baseSymbol: 'g',
+			coefficient: 28.349523125,
+			dimension: 'mass',
+			name: 'ounce'
+		}
+	],
+	[
+		'lb',
+		{
+			symbol: 'lb',
+			baseSymbol: 'g',
+			coefficient: 453.59237,
+			dimension: 'mass',
+			name: 'pound'
+		}
+	],
+	// Volume (US)
+	[
+		'gal',
+		{
+			symbol: 'gal',
+			baseSymbol: 'L',
+			coefficient: 3.785411784,
+			dimension: 'volume',
+			name: 'gallon (US)'
+		}
+	],
+	[
+		'qt',
+		{
+			symbol: 'qt',
+			baseSymbol: 'L',
+			coefficient: 0.946352946,
+			dimension: 'volume',
+			name: 'quart (US)'
+		}
+	],
+	[
+		'pt',
+		{
+			symbol: 'pt',
+			baseSymbol: 'L',
+			coefficient: 0.473176473,
+			dimension: 'volume',
+			name: 'pint (US)'
+		}
+	],
+	[
+		'floz',
+		{
+			symbol: 'floz',
+			baseSymbol: 'L',
+			coefficient: 0.0295735295625,
+			dimension: 'volume',
+			name: 'fluid ounce (US)'
+		}
+	],
+
+	// =========== TEMPERATURE UNITS (AFFINE) ===========
+	// Celsius and Fahrenheit use affine (offset-based) conversions to Kelvin.
+	// Conversion formula (in conversion.ts/convertAffine):
+	//   value_in_base = (value + offset) * coefficient
+	// Composition with any other unit raises AFFINE_COMPOSITION_FORBIDDEN.
+	[
+		'°C',
+		{
+			symbol: '°C',
+			baseSymbol: 'K',
+			coefficient: 1,
+			offset: 273.15,
+			dimension: 'temperature',
+			name: 'celsius'
+		}
+	],
+	[
+		'°F',
+		{
+			symbol: '°F',
+			baseSymbol: 'K',
+			coefficient: 5 / 9,
+			offset: 459.67,
+			dimension: 'temperature',
+			name: 'fahrenheit'
+		}
+	],
+
 	// =========== ANGLE UNITS ===========
 	[
 		'°',
@@ -318,6 +451,11 @@ export const UNIT_ALIASES: ReadonlyMap<string, string> = new Map([
 	['metre', 'm'],
 	['gramme', 'g'],
 	['seconde', 's'],
+
+	// Imperial (French aliases)
+	['pouce', 'in'],
+	['pied', 'ft'],
+	['livre', 'lb'],
 
 	// Angle
 	['degré', 'deg'],

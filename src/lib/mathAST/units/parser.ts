@@ -263,10 +263,19 @@ export function parse(input: string): Unit | null {
 			return null; // Unknown symbol
 		}
 
-		// Create Unit for this term
+		// Affine units (°C, °F) cannot be composed.
+		// They are valid only as a single term with exponent === 1.
+		const isTermAffine = resolved.offset !== undefined && resolved.offset !== 0;
+		if (isTermAffine && (terms.length !== 1 || term.exponent !== 1)) {
+			return null;
+		}
+
+		// Create Unit for this term, propagating offset only for single-component
+		// affine units with exponent 1 (validated above).
 		const termUnit: Unit = {
 			components: new Map([[resolved.baseSymbol, term.exponent]]),
-			coefficient: Math.pow(resolved.coefficient, term.exponent)
+			coefficient: Math.pow(resolved.coefficient, term.exponent),
+			...(isTermAffine ? { offset: resolved.offset } : {})
 		};
 
 		resolvedTerms.push(termUnit);
@@ -278,7 +287,7 @@ export function parse(input: string): Unit | null {
 		result = multiply(result, resolvedTerms[i]);
 	}
 
-	// Add original string
+	// Add original string (preserve offset if present)
 	return {
 		...result,
 		original: trimmed

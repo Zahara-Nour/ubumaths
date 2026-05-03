@@ -72,6 +72,12 @@ export function unitsAreCompatible(a: Unit, b: Unit): boolean {
  * getConversionFactor(unit('km/h'), unit('m/s')) // 1000/3600 ≈ 0.2778
  */
 export function getConversionFactor(from: Unit, to: Unit): number | null {
+	// Affine units (°C, °F) cannot be converted via a multiplicative factor.
+	// Use convertAffine() instead.
+	if (isAffine(from) || isAffine(to)) {
+		return null;
+	}
+
 	// Check if units are compatible
 	if (!unitsAreCompatible(from, to)) {
 		return null;
@@ -85,6 +91,76 @@ export function getConversionFactor(from: Unit, to: Unit): number | null {
 
 	// Calculate conversion factor
 	return from.coefficient / to.coefficient;
+}
+
+// =============================================================================
+// Affine Conversions (Temperature)
+// =============================================================================
+
+/**
+ * Check whether a unit uses an affine (offset-based) conversion.
+ *
+ * Affine units cannot be combined multiplicatively with other units (no
+ * `°C × m`, no `°C^2`). They are detected by the presence of a non-zero
+ * `offset` field on a single-component unit.
+ *
+ * @param u - Unit to check
+ * @returns True if the unit is affine, false otherwise
+ *
+ * @example
+ * isAffine(unit('°C')) // true
+ * isAffine(unit('°F')) // true
+ * isAffine(unit('K'))  // false
+ * isAffine(unit('m'))  // false
+ */
+export function isAffine(u: Unit): boolean {
+	return u.offset !== undefined && u.offset !== 0 && u.components.size === 1;
+}
+
+/**
+ * Convert a numeric value from one unit to another, supporting affine units.
+ *
+ * Unified conversion entry point that handles both:
+ * - Multiplicative units (m → km, h → s, etc.)
+ * - Affine units (°C → K, °F → °C, etc.)
+ *
+ * Formula for affine conversion:
+ *   value_in_base = (value + from.offset) * from.coefficient
+ *   value_in_to   = value_in_base / to.coefficient - to.offset
+ *
+ * The pure-multiplicative case is the same formula with `from.offset = 0` and
+ * `to.offset = 0`, so K → °C and m → km go through the same code path:
+ * non-affine units have `offset === undefined` which is treated as 0.
+ *
+ * @param value - Numeric value in the source unit
+ * @param from - Source unit
+ * @param to - Target unit
+ * @returns Converted value, or null if units are incompatible
+ *
+ * @example
+ * convertAffine(0, unit('°C'), unit('K'))   // 273.15
+ * convertAffine(100, unit('°C'), unit('°F')) // 212
+ * convertAffine(-40, unit('°C'), unit('°F')) // -40
+ * convertAffine(1, unit('km'), unit('m'))    // 1000 (delegates to multiplicative)
+ * convertAffine(1, unit('m'), unit('K'))     // null (incompatible)
+ */
+export function convertAffine(value: number, from: Unit, to: Unit): number | null {
+	// Check dimensional compatibility
+	if (!unitsAreCompatible(from, to)) {
+		return null;
+	}
+
+	// Avoid division by zero
+	if (Math.abs(to.coefficient) < EPSILON) {
+		return null;
+	}
+
+	const fromOffset = from.offset ?? 0;
+	const toOffset = to.offset ?? 0;
+
+	// Affine formula: handles both pure multiplicative (offset = 0) and affine cases.
+	// (value + fromOffset) * fromCoeff / toCoeff - toOffset
+	return ((value + fromOffset) * from.coefficient) / to.coefficient - toOffset;
 }
 
 // =============================================================================
@@ -229,5 +305,7 @@ export const UnitConversion = {
 	unitsAreCompatible,
 	getConversionFactor,
 	getDimensionalSignature,
-	normalizeToBase
+	normalizeToBase,
+	isAffine,
+	convertAffine
 } as const;

@@ -132,6 +132,28 @@ export interface BaseUnitDef {
 	 * Examples: 'metre', 'kilometre', 'gramme', 'seconde', 'litre'
 	 */
 	readonly name?: string;
+
+	/**
+	 * Affine offset for temperature-style conversions.
+	 *
+	 * For most units, conversion is purely multiplicative:
+	 *   value_in_base = value * coefficient
+	 *
+	 * Some units (Celsius, Fahrenheit) require an affine transformation:
+	 *   value_in_base = (value + offset) * coefficient
+	 *
+	 * If undefined or 0, the unit is purely multiplicative.
+	 *
+	 * @example Celsius (offset 273.15, coefficient 1)
+	 * 0°C → (0 + 273.15) × 1 = 273.15 K ✓
+	 *
+	 * @example Fahrenheit (offset 459.67, coefficient 5/9)
+	 * 32°F → (32 + 459.67) × 5/9 = 273.15 K ✓
+	 *
+	 * Affine units cannot be composed (multiplied/divided) with other units.
+	 * Composition raises AFFINE_COMPOSITION_FORBIDDEN.
+	 */
+	readonly offset?: number;
 }
 
 // =============================================================================
@@ -249,4 +271,16 @@ export interface Unit {
 	 * 'km', 'm/s', 'kg.m^-2.s^-2', '°C'
 	 */
 	readonly original?: string;
+
+	/**
+	 * Affine offset for temperature-style conversions.
+	 *
+	 * Propagated from {@link BaseUnitDef.offset} only when the Unit has a
+	 * single component (single-symbol absolute temperature like °C or °F).
+	 * Composite units (e.g., °C/m) cannot exist: any composition involving
+	 * an affine unit raises AFFINE_COMPOSITION_FORBIDDEN.
+	 *
+	 * @see BaseUnitDef.offset
+	 */
+	readonly offset?: number;
 }
