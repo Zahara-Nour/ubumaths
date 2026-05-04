@@ -177,18 +177,22 @@ describe('LinearEquationRenderer', () => {
 					verbosity: 'summarized',
 					schoolLevel: 'college'
 				});
-				// Identify: before === after, no Rightarrow
+				// Identify: before === after, single equation, no align block
+				expect(r.expressionLatex).not.toContain('begin{aligned}');
 				expect(r.expressionLatex).not.toContain('Rightarrow');
 			}
 		});
 
-		it('uses arrow form when before !== after (transformation steps)', () => {
+		it('uses \\begin{aligned} when before !== after (equation transformation)', () => {
 			const steps = generateLinearEquationSteps(eq3x_minus_2_eq_minus_5x_plus_7(), {
 				level: 'college'
 			});
 			const addStep = steps.find((s) => s.operation?.kind === 'add-both-sides')!;
 			const r = renderer.render(addStep, { verbosity: 'summarized', schoolLevel: 'college' });
-			expect(r.expressionLatex).toContain('Rightarrow');
+			expect(r.expressionLatex).toContain('\\begin{aligned}');
+			expect(r.expressionLatex).toContain('\\end{aligned}');
+			// Each line uses `&=` to align on the equality column
+			expect(r.expressionLatex.match(/&=/g)?.length).toBe(2);
 		});
 	});
 });

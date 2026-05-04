@@ -147,14 +147,7 @@ export class LinearEquationRenderer
 				? this.resolveExplanation(step, options.schoolLevel)
 				: undefined;
 
-		const beforeLatex = toLatex(step.before);
-		const afterLatex = toLatex(step.after);
-		// For info-only ops (identify, read-solution) before === after, no arrow needed
-		const expressionLatex =
-			beforeLatex === afterLatex
-				? beforeLatex
-				: `${beforeLatex} \\quad\\Rightarrow\\quad ${afterLatex}`;
-
+		const expressionLatex = formatExpressionLatex(step);
 		const renderedSubSteps = step.subSteps?.map((s) => this.render(s, options));
 
 		const base: RenderedStep = {
@@ -214,4 +207,26 @@ function assertSupportedLevel(level: SchoolLevel): asserts level is LinearSchool
 			"LinearEquationRenderer: school level 'primaire' is not supported (linear algebra is not in the primary curriculum)."
 		);
 	}
+}
+
+/**
+ * Build the LaTeX expression for a step.
+ *
+ * - When `before === after` (info-only steps like `identify-equation` or
+ *   `read-solution`), returns the single equation as plain LaTeX.
+ * - When `before !== after` AND both are equations (RelationNode), returns
+ *   a `\begin{aligned}` block aligning both equations on `=`. MathLive
+ *   renders it as two stacked lines aligned on the relation symbol.
+ * - Fallback for non-equation transformations: `before \quad\Rightarrow\quad after`.
+ */
+function formatExpressionLatex(step: EquationStep): string {
+	const beforeLatex = fmt(step.before);
+	const afterLatex = fmt(step.after);
+	if (beforeLatex === afterLatex) return beforeLatex;
+	if (step.before.type === 'relation' && step.after.type === 'relation') {
+		const beforeAligned = `${fmt(step.before.left)} &${step.before.relation} ${fmt(step.before.right)}`;
+		const afterAligned = `${fmt(step.after.left)} &${step.after.relation} ${fmt(step.after.right)}`;
+		return `\\begin{aligned}${beforeAligned} \\\\ ${afterAligned}\\end{aligned}`;
+	}
+	return `${beforeLatex} \\quad\\Rightarrow\\quad ${afterLatex}`;
 }
