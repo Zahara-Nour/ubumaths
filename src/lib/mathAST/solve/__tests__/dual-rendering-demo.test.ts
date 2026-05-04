@@ -5,12 +5,11 @@
  * the canonical equation `2x + 3 = 7`. The same `SolveStep[]` is rendered:
  *
  * 1. **Technically** (`GenericTechnicalRenderer`) — verbose dump for debug.
- * 2. **Pedagogically** (`SolvePedagogicalRenderer`) for three school levels
- *    with different verbosities.
+ * 2. **Pedagogically** (`SolvePedagogicalRenderer`) for the four school levels
+ *    in BOTH `detailed` and `summarized` verbosities (8 renderings total).
  *
- * Run this test with `pnpm test:server <path>` to see the formatted comparison
- * via `console.log`. Assertions verify that the renderings differ between
- * levels and between technique/pedagogical.
+ * Run with `pnpm test:server <path>` to see the formatted comparison via
+ * `console.log`.
  *
  * @module mathAST/solve/__tests__/dual-rendering-demo
  */
@@ -18,12 +17,32 @@
 import { describe, it, expect } from 'vitest';
 import { solve } from '../solve';
 import type { SolveStep } from '../types';
+import type { SchoolLevel } from '../../common/step-renderer-base';
+import type { Verbosity } from '../../common/verbosity';
+import type { RenderedStep } from '../../common/step-renderer-base';
 import { number, variable, add, implicitMultiply, relation } from '../../factory';
 import { GenericTechnicalRenderer } from '../../common/technical-renderer';
 import { SolvePedagogicalRenderer } from '../pedagogical-renderer';
 
+const allLevels: readonly SchoolLevel[] = ['primaire', 'college', 'lycee', 'superieur'] as const;
+const allVerbosities: readonly Verbosity[] = ['summarized', 'detailed'] as const;
+
+function formatPedagogicalSection(
+	level: SchoolLevel,
+	verbosity: Verbosity,
+	steps: readonly RenderedStep[]
+): string {
+	const header = `========== ${level.toUpperCase()} (${verbosity}) ==========`;
+	const body: string[] = [];
+	for (const s of steps) {
+		body.push(`[${s.id}] ${s.title}`);
+		if (s.explanation) body.push(`    → ${s.explanation}`);
+	}
+	return [header, ...body].join('\n');
+}
+
 describe('Dual rendering — solve technique vs pédagogique', () => {
-	it('solves 2x + 3 = 7 and presents both renderings', () => {
+	it('solves 2x + 3 = 7 and presents technique + 4 levels × 2 verbosities', () => {
 		// Build the equation: 2x + 3 = 7
 		const equation = relation(
 			'=',
@@ -35,75 +54,77 @@ describe('Dual rendering — solve technique vs pédagogique', () => {
 		const result = solve(equation, { verbosity: 'detailed' });
 		expect(result.steps.length).toBeGreaterThan(0);
 
-		// Same source steps — two renderers
 		const technical = new GenericTechnicalRenderer<SolveStep>();
 		const pedagogical = new SolvePedagogicalRenderer();
 
+		// Technical (debug dump)
 		const techSteps = technical.renderAll(result.steps, {
 			verbosity: 'detailed',
 			format: 'text'
 		});
-		const collegeSteps = pedagogical.renderAll(result.steps, {
-			verbosity: 'detailed',
-			schoolLevel: 'college'
-		});
-		const lyceeSteps = pedagogical.renderAll(result.steps, {
-			verbosity: 'summarized',
-			schoolLevel: 'lycee'
-		});
-		const primaireSteps = pedagogical.renderAll(result.steps, {
-			verbosity: 'detailed',
-			schoolLevel: 'primaire'
-		});
 
-		// Visual comparison — visible in test output
-		const lines: string[] = [];
-		lines.push('\n========== TECHNIQUE (debug dump) ==========');
-		for (const s of techSteps) lines.push(s.text ?? `[${s.id}] ${s.title}`);
-
-		lines.push('\n========== COLLÈGE (detailed) ==========');
-		for (const s of collegeSteps) {
-			lines.push(`[${s.id}] ${s.title}`);
-			if (s.explanation) lines.push(`    → ${s.explanation}`);
+		// 4 levels × 2 verbosities = 8 pedagogical renderings
+		type Key = `${SchoolLevel}-${Verbosity}`;
+		const pedaRenderings = new Map<Key, readonly RenderedStep[]>();
+		for (const level of allLevels) {
+			for (const verbosity of allVerbosities) {
+				const out = pedagogical.renderAll(result.steps, { verbosity, schoolLevel: level });
+				pedaRenderings.set(`${level}-${verbosity}`, out);
+			}
 		}
 
-		lines.push('\n========== LYCÉE (summarized) ==========');
-		for (const s of lyceeSteps) lines.push(`[${s.id}] ${s.title}`);
+		// Visual output
+		const sections: string[] = [];
+		sections.push('========== TECHNIQUE (debug dump) ==========');
+		for (const s of techSteps) sections.push(s.text ?? `[${s.id}] ${s.title}`);
+		sections.push(''); // blank line between blocks
 
-		lines.push('\n========== PRIMAIRE (detailed) ==========');
-		for (const s of primaireSteps) {
-			lines.push(`[${s.id}] ${s.title}`);
-			if (s.explanation) lines.push(`    → ${s.explanation}`);
+		for (const level of allLevels) {
+			for (const verbosity of allVerbosities) {
+				const steps = pedaRenderings.get(`${level}-${verbosity}`)!;
+				sections.push(formatPedagogicalSection(level, verbosity, steps));
+				sections.push('');
+			}
 		}
-		console.log(lines.join('\n'));
+		console.log('\n' + sections.join('\n'));
 
-		// Same number of rendered steps for each rendering
+		// Sanity assertions
 		expect(techSteps).toHaveLength(result.steps.length);
-		expect(collegeSteps).toHaveLength(result.steps.length);
-		expect(lyceeSteps).toHaveLength(result.steps.length);
-		expect(primaireSteps).toHaveLength(result.steps.length);
+		for (const [, steps] of pedaRenderings) {
+			expect(steps).toHaveLength(result.steps.length);
+			expect(steps.map((s) => s.rule)).toEqual(techSteps.map((s) => s.rule));
+		}
 
-		// Source rule keys preserved across renderings
-		expect(techSteps.map((s) => s.rule)).toEqual(collegeSteps.map((s) => s.rule));
-		expect(techSteps.map((s) => s.rule)).toEqual(lyceeSteps.map((s) => s.rule));
+		// Verbosity invariant: summarized never includes explanations
+		for (const level of allLevels) {
+			const summarized = pedaRenderings.get(`${level}-summarized`)!;
+			expect(summarized.every((s) => s.explanation === undefined)).toBe(true);
+		}
 
-		// Renderings produce different titles between levels (verifies adaptation)
-		const collegeTitles = collegeSteps.map((s) => s.title).join('|');
-		const lyceeTitles = lyceeSteps.map((s) => s.title).join('|');
-		const primaireTitles = primaireSteps.map((s) => s.title).join('|');
-		expect(new Set([collegeTitles, lyceeTitles, primaireTitles]).size).toBeGreaterThanOrEqual(2);
+		// At least one level/verbosity pair includes an explanation under detailed
+		const someDetailedHasExplanation = allLevels.some((level) =>
+			pedaRenderings.get(`${level}-detailed`)!.some((s) => s.explanation !== undefined)
+		);
+		expect(someDetailedHasExplanation).toBe(true);
 
-		// Verbosity correctly drives explanation inclusion
-		const lyceeHasExplanations = lyceeSteps.some((s) => s.explanation !== undefined);
-		expect(lyceeHasExplanations).toBe(false); // 'summarized' → no explanations
-
-		// Technical rendering has expressionLatex (LaTeX dump of before ⇒ after)
-		expect(techSteps[0].expressionLatex).toBeDefined();
+		// Technical rendering carries expressionLatex
 		expect(techSteps[0].expressionLatex).toContain('Rightarrow');
 
-		// Pedagogical rendering is tagged with the active school level
-		expect(collegeSteps[0].schoolLevel).toBe('college');
-		expect(lyceeSteps[0].schoolLevel).toBe('lycee');
-		expect(primaireSteps[0].schoolLevel).toBe('primaire');
+		// SchoolLevel propagated into rendered steps
+		for (const level of allLevels) {
+			const detailed = pedaRenderings.get(`${level}-detailed`)!;
+			expect(detailed[0].schoolLevel).toBe(level);
+		}
+
+		// At least 3 distinct title profiles across the 4 levels (vocab adaptation)
+		const titleProfiles = new Set(
+			allLevels.map((level) =>
+				pedaRenderings
+					.get(`${level}-detailed`)!
+					.map((s) => s.title)
+					.join('|')
+			)
+		);
+		expect(titleProfiles.size).toBeGreaterThanOrEqual(3);
 	});
 });
