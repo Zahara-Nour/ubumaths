@@ -437,21 +437,6 @@ export interface QuestionTemplate {
 
 	/** Validation options for multiple acceptable answers */
 	options?: {
-		/** Accept equivalent forms (e.g., 1/2 = 0.5) */
-		allowEquivalent?: boolean;
-
-		/** Accept different algebraic forms (e.g., 1/2 = 2/4) */
-		allowDifferentForms?: boolean;
-
-		/** Preferred canonical form */
-		canonicalForm?: 'fraction' | 'decimal' | 'scientific';
-
-		/** Custom validator function name */
-		validator?: 'checkEquivalence' | 'checkAlgebraic' | 'checkNumeric';
-
-		/** Parameters for custom validator */
-		validatorParams?: Record<string, unknown>;
-
 		/** Constraint validation options for form checking */
 		constraints?: ConstraintOptions;
 

@@ -200,12 +200,7 @@ export const constraintsSchema = z.object({
 });
 
 export const optionsSchema = z.object({
-	allowEquivalent: z.boolean().optional(),
-	allowDifferentForms: z.boolean().optional(),
-	canonicalForm: z.enum(['fraction', 'decimal', 'scientific']).optional(),
 	orderIndependent: z.boolean().optional(),
-	validator: z.enum(['checkEquivalence', 'checkAlgebraic', 'checkNumeric']).optional(),
-	validatorParams: z.record(z.string(), z.unknown()).optional(),
 	constraints: constraintsSchema.optional(),
 	shuffleChoices: z.boolean().optional()
 });
@@ -291,12 +286,7 @@ const constraintsStrictZ = constraintsSchema.strict();
 
 const optionsStrictZ = z
 	.object({
-		allowEquivalent: z.boolean().optional(),
-		allowDifferentForms: z.boolean().optional(),
-		canonicalForm: z.enum(['fraction', 'decimal', 'scientific']).optional(),
 		orderIndependent: z.boolean().optional(),
-		validator: z.enum(['checkEquivalence', 'checkAlgebraic', 'checkNumeric']).optional(),
-		validatorParams: z.record(z.string(), z.unknown()).optional(),
 		constraints: constraintsStrictZ.optional(),
 		shuffleChoices: z.boolean().optional()
 	})
