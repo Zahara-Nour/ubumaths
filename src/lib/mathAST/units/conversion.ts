@@ -8,7 +8,7 @@
  */
 
 import type { Unit, Dimension } from './types';
-import { resolveUnit } from './definitions';
+import { DERIVED_UNITS, resolveUnit } from './definitions';
 import { unitsEquivalent } from './operations';
 
 // =============================================================================
@@ -289,17 +289,87 @@ export function normalizeToBase(u: Unit): Unit {
 }
 
 // =============================================================================
+// Named SI Derived Unit Recognition
+// =============================================================================
+
+/**
+ * Check whether two component maps have the same keys with the same exponents.
+ * Order-independent.
+ *
+ * **Note**: equivalent to the body of `unitsEquivalent()` in `operations.ts`.
+ * Duplicated here to avoid the circular import (`conversion.ts → operations.ts`
+ * already exists). Keep both in sync — same algorithm, same EPSILON.
+ */
+function componentsMatch(a: ReadonlyMap<string, number>, b: ReadonlyMap<string, number>): boolean {
+	if (a.size !== b.size) return false;
+	for (const [key, value] of a) {
+		const bValue = b.get(key);
+		if (bValue === undefined) return false;
+		if (Math.abs(value - bValue) >= EPSILON) return false;
+	}
+	return true;
+}
+
+/**
+ * Recognize a unit as a named SI derived unit (Newton, Joule, Watt, ...).
+ *
+ * Given a Unit whose components map matches the SI base signature of one of
+ * the derived units in {@link DERIVED_UNITS}, returns the **canonical**
+ * derived Unit (catalog components + catalog coefficient + `original` set to
+ * the derived symbol). Otherwise returns null.
+ *
+ * The match is on **components only** — the input's coefficient is ignored
+ * and the catalog coefficient is used in the output. The caller (typically
+ * `maybeRecognizeDerived` in the eval pipeline) is responsible for rescaling
+ * the associated numeric value: `newValue = oldValue × oldUnit.coefficient /
+ * canonical.coefficient`.
+ *
+ * @example
+ * recognizeDerivedUnit(parse('s^-1'))
+ * // → { components: Map([['s', -1]]), coefficient: 1, original: 'Hz' }
+ *
+ * // Note: project base for mass is 'g', not 'kg'. The signature for Newton
+ * // is `Map([['g',1],['m',1],['s',-2]])`.
+ * recognizeDerivedUnit(fromComponents(new Map([['g',1],['m',1],['s',-2]]), 1))
+ * // → { components: Map([['g',1],['m',1],['s',-2]]), coefficient: 1000, original: 'N' }
+ *
+ * recognizeDerivedUnit(unit('m'))      // null (not a named derived)
+ * recognizeDerivedUnit(unit('kg'))     // null (base unit, not derived)
+ *
+ * @param u - Unit to recognize
+ * @returns Canonical derived Unit, or null
+ */
+export function recognizeDerivedUnit(u: Unit): Unit | null {
+	// Affine units (°C, °F) are never named derivatives; they have offsets.
+	if (isAffine(u)) return null;
+
+	// Empty (dimensionless) is not a derived unit.
+	if (u.components.size === 0) return null;
+
+	for (const [symbol, derived] of DERIVED_UNITS) {
+		if (!derived.components) continue;
+		if (!componentsMatch(u.components, derived.components)) continue;
+
+		// Components match — return the **canonical** derived unit (the catalog
+		// entry's components and coefficient). The caller rescales the value:
+		//   newValue = oldValue × oldUnit.coefficient / canonical.coefficient
+		// e.g., 15000 g·m·s⁻² (coef 1) → 15 N (coef 1000).
+		return {
+			components: new Map(derived.components),
+			coefficient: derived.coefficient,
+			original: symbol
+		};
+	}
+
+	return null;
+}
+
+// =============================================================================
 // Conversion Namespace
 // =============================================================================
 
 /**
- * Namespace containing all Unit conversion functions
- *
- * Usage:
- * - UnitConversion.unitsAreCompatible(a, b) to check compatibility
- * - UnitConversion.getConversionFactor(from, to) to get conversion factor
- * - UnitConversion.getDimensionalSignature(u) to get dimension info
- * - UnitConversion.normalizeToBase(u) to normalize to SI base units
+ * Namespace containing all Unit conversion functions.
  */
 export const UnitConversion = {
 	unitsAreCompatible,
@@ -307,5 +377,6 @@ export const UnitConversion = {
 	getDimensionalSignature,
 	normalizeToBase,
 	isAffine,
-	convertAffine
+	convertAffine,
+	recognizeDerivedUnit
 } as const;

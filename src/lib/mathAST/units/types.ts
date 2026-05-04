@@ -36,7 +36,17 @@ export type Dimension =
 	| 'luminous_intensity'
 	| 'angle'
 	| 'currency'
-	| 'dimensionless';
+	| 'dimensionless'
+	// Named SI derived dimensions (mathematically composite, but commonly named)
+	| 'frequency'
+	| 'force'
+	| 'pressure'
+	| 'energy'
+	| 'power'
+	| 'electric_charge'
+	| 'electric_potential'
+	| 'electric_resistance'
+	| 'electric_capacitance';
 
 // =============================================================================
 // BASE UNIT DEFINITION
@@ -154,6 +164,18 @@ export interface BaseUnitDef {
 	 * Composition raises AFFINE_COMPOSITION_FORBIDDEN.
 	 */
 	readonly offset?: number;
+
+	/**
+	 * Full SI base signature for named derived units (Newton, Joule, ...).
+	 *
+	 * When present, takes precedence over `baseSymbol` when building Unit
+	 * components: the derived unit `N` (Newton) has
+	 * `components: Map([['g', 1], ['m', 1], ['s', -2]])`.
+	 *
+	 * Absent for simple units (length, mass, ...) which are fully described
+	 * by their single `baseSymbol`.
+	 */
+	readonly components?: ReadonlyMap<string, number>;
 }
 
 // =============================================================================

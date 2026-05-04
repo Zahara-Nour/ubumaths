@@ -96,10 +96,12 @@ describe('Unit Factory Functions', () => {
 				expect(result?.coefficient).toBe(1e-9);
 			});
 
-			it('should create megapascal (MHz is invalid)', () => {
-				// MHz is not defined because Hz is not a base unit
+			it('should create megahertz (MHz)', () => {
+				// Hz is now a named SI derived unit, so MHz resolves with coefficient 1e6
 				const result = unit('MHz');
-				expect(result).toBeNull();
+				expect(result).not.toBeNull();
+				expect(result?.components).toEqual(new Map([['s', -1]]));
+				expect(result?.coefficient).toBeCloseTo(1e6, 0);
 			});
 
 			it('should create gigaliters (GL)', () => {

@@ -402,6 +402,169 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 ]);
 
 // =============================================================================
+// DERIVED SI UNITS (named units composed of base units)
+// =============================================================================
+
+/**
+ * Named SI derived units (Newton, Joule, Watt, Pascal, etc.).
+ *
+ * Each entry stores the **full SI base signature** in `components` (e.g., for
+ * Newton: `g·m·s⁻²`) and a `coefficient` that scales to base SI. Note that the
+ * project uses `g` (gram) as the mass base — therefore a Newton's coefficient
+ * is `1000`, since `1 N = 1 kg·m·s⁻² = 1000 g·m·s⁻²`. Conversely, a Farad's
+ * coefficient is `0.001` because it contains `kg⁻¹`.
+ *
+ * Unlike `SPECIAL_UNITS`, derived units **accept SI prefixes** (`kN`, `mJ`,
+ * `μF`, `MΩ`, `kHz`, `kPa`, `mW`, etc.) — `resolveUnit` handles this.
+ *
+ * @example
+ * DERIVED_UNITS.get('N')
+ * // {
+ * //   symbol: 'N',
+ * //   baseSymbol: 'g',                                  // primary representative (display fallback)
+ * //   components: Map([['g',1],['m',1],['s',-2]]),      // full SI signature
+ * //   coefficient: 1000,                                // 1 N = 1000 g·m·s⁻²
+ * //   dimension: 'force',
+ * //   name: 'newton'
+ * // }
+ */
+export const DERIVED_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
+	[
+		'Hz',
+		{
+			symbol: 'Hz',
+			baseSymbol: 's',
+			components: new Map([['s', -1]]),
+			coefficient: 1,
+			dimension: 'frequency',
+			name: 'hertz'
+		}
+	],
+	[
+		'N',
+		{
+			symbol: 'N',
+			baseSymbol: 'g',
+			components: new Map([
+				['g', 1],
+				['m', 1],
+				['s', -2]
+			]),
+			coefficient: 1000,
+			dimension: 'force',
+			name: 'newton'
+		}
+	],
+	[
+		'Pa',
+		{
+			symbol: 'Pa',
+			baseSymbol: 'g',
+			components: new Map([
+				['g', 1],
+				['m', -1],
+				['s', -2]
+			]),
+			coefficient: 1000,
+			dimension: 'pressure',
+			name: 'pascal'
+		}
+	],
+	[
+		'J',
+		{
+			symbol: 'J',
+			baseSymbol: 'g',
+			components: new Map([
+				['g', 1],
+				['m', 2],
+				['s', -2]
+			]),
+			coefficient: 1000,
+			dimension: 'energy',
+			name: 'joule'
+		}
+	],
+	[
+		'W',
+		{
+			symbol: 'W',
+			baseSymbol: 'g',
+			components: new Map([
+				['g', 1],
+				['m', 2],
+				['s', -3]
+			]),
+			coefficient: 1000,
+			dimension: 'power',
+			name: 'watt'
+		}
+	],
+	[
+		'C',
+		{
+			symbol: 'C',
+			baseSymbol: 'A',
+			components: new Map([
+				['A', 1],
+				['s', 1]
+			]),
+			coefficient: 1,
+			dimension: 'electric_charge',
+			name: 'coulomb'
+		}
+	],
+	[
+		'V',
+		{
+			symbol: 'V',
+			baseSymbol: 'g',
+			components: new Map([
+				['g', 1],
+				['m', 2],
+				['s', -3],
+				['A', -1]
+			]),
+			coefficient: 1000,
+			dimension: 'electric_potential',
+			name: 'volt'
+		}
+	],
+	[
+		'Ω',
+		{
+			symbol: 'Ω',
+			baseSymbol: 'g',
+			components: new Map([
+				['g', 1],
+				['m', 2],
+				['s', -3],
+				['A', -2]
+			]),
+			coefficient: 1000,
+			dimension: 'electric_resistance',
+			name: 'ohm'
+		}
+	],
+	[
+		'F',
+		{
+			symbol: 'F',
+			baseSymbol: 'g',
+			components: new Map([
+				['g', -1],
+				['m', -2],
+				['s', 4],
+				['A', 2]
+			]),
+			coefficient: 0.001,
+			dimension: 'electric_capacitance',
+			name: 'farad'
+		}
+	]
+]);
+
+// =============================================================================
 // UNIT ALIASES
 // =============================================================================
 
@@ -558,6 +721,19 @@ export function resolveUnit(symbol: string): BaseUnitDef | null {
 					name: `${prefix}${baseUnit.name}`
 				};
 			}
+
+			// Or a named SI derived unit (Hz, N, J, ...)
+			const derivedUnit = DERIVED_UNITS.get(baseSymbol);
+			if (derivedUnit) {
+				return {
+					symbol: normalizedSymbol,
+					baseSymbol: derivedUnit.baseSymbol,
+					components: derivedUnit.components,
+					coefficient: factor * derivedUnit.coefficient,
+					dimension: derivedUnit.dimension,
+					name: `${prefix}${derivedUnit.name ?? derivedUnit.symbol}`
+				};
+			}
 		}
 	}
 
@@ -571,6 +747,11 @@ export function resolveUnit(symbol: string): BaseUnitDef | null {
 			dimension: baseUnit.dimension,
 			name: baseUnit.name
 		};
+	}
+
+	// Step 5: Check DERIVED_UNITS (without prefix)
+	if (DERIVED_UNITS.has(normalizedSymbol)) {
+		return DERIVED_UNITS.get(normalizedSymbol)!;
 	}
 
 	// Not recognized

@@ -41,11 +41,18 @@ function unit(symbol: string): Unit | null {
 		return null;
 	}
 
+	// For named SI derived units (Newton, Joule, ...), `resolved.components`
+	// holds the full SI base signature. For simple units, fall back to a
+	// single-component map keyed by `baseSymbol`.
+	const components = resolved.components
+		? new Map(resolved.components)
+		: new Map([[resolved.baseSymbol, 1]]);
+
 	// Propagate offset for single-component affine units (°C, °F).
 	// Composite affine units cannot exist because composition is forbidden,
 	// so offset is only meaningful here for exponent === 1.
 	const result: Unit = {
-		components: new Map([[resolved.baseSymbol, 1]]),
+		components,
 		coefficient: resolved.coefficient,
 		original: symbol,
 		...(resolved.offset !== undefined && resolved.offset !== 0 ? { offset: resolved.offset } : {})
@@ -77,11 +84,17 @@ function unitWithPower(symbol: string, exponent: number): Unit | null {
 		return null;
 	}
 
+	// For named SI derived units (Newton, Joule, ...), expand the components map
+	// to the full SI base signature, scaling each exponent by `exponent`.
+	const components = resolved.components
+		? new Map(Array.from(resolved.components, ([base, exp]) => [base, exp * exponent]))
+		: new Map([[resolved.baseSymbol, exponent]]);
+
 	// Calculate coefficient as (prefix_factor)^exponent
 	const coefficient = Math.pow(resolved.coefficient, exponent);
 
 	return {
-		components: new Map([[resolved.baseSymbol, exponent]]),
+		components,
 		coefficient,
 		original: symbol
 	};

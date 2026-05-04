@@ -270,10 +270,17 @@ export function parse(input: string): Unit | null {
 			return null;
 		}
 
+		// For named SI derived units (Newton, Joule, ...), expand the components
+		// map to the full SI base signature, scaling exponents by `term.exponent`.
+		// For simple units, the map has a single entry (baseSymbol → exponent).
+		const termComponents = resolved.components
+			? new Map(Array.from(resolved.components, ([base, exp]) => [base, exp * term.exponent]))
+			: new Map([[resolved.baseSymbol, term.exponent]]);
+
 		// Create Unit for this term, propagating offset only for single-component
 		// affine units with exponent 1 (validated above).
 		const termUnit: Unit = {
-			components: new Map([[resolved.baseSymbol, term.exponent]]),
+			components: termComponents,
 			coefficient: Math.pow(resolved.coefficient, term.exponent),
 			...(isTermAffine ? { offset: resolved.offset } : {})
 		};
