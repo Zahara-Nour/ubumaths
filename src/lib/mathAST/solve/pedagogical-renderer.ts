@@ -104,6 +104,7 @@ const TITLES: Record<SchoolLevel, Partial<Record<string, TitleFn>>> = {
 
 const EXPLANATIONS: Record<SchoolLevel, Partial<Record<string, ExplanationFn>>> = {
 	primaire: {
+		// Linear — kid-friendly justifications
 		'subtract-constant': (s) =>
 			`Pour avoir l'inconnue toute seule, on enlève ${fmt(s.operand)} d'un côté ET de l'autre, comme une balance qui doit rester équilibrée.`,
 		'add-constant': (s) =>
@@ -116,14 +117,60 @@ const EXPLANATIONS: Record<SchoolLevel, Partial<Record<string, ExplanationFn>>> 
 			"On a fait toutes les opérations pour avoir la lettre toute seule d'un côté."
 	},
 	college: {
+		// Linear — equality-preservation language
+		'identify-linear-coefficients': () =>
+			"Une équation du premier degré s'écrit ax + b = 0. Identifier a et b permet d'isoler x.",
+		'subtract-constant': (s) =>
+			`On retire ${fmt(s.operand)} aux deux membres : l'égalité est préservée car on enlève la même quantité de chaque côté.`,
+		'add-constant': (s) =>
+			`On ajoute ${fmt(s.operand)} aux deux membres : l'égalité est préservée car on ajoute la même quantité de chaque côté.`,
+		'divide-coefficient': (s) =>
+			`On divise les deux membres par ${fmt(s.operand)} (le coefficient devant x) pour isoler x. L'égalité est préservée tant que ${fmt(s.operand)} ≠ 0.`,
+		'multiply-coefficient': (s) =>
+			`On multiplie les deux membres par ${fmt(s.operand)} pour faire disparaître la fraction. L'égalité est préservée car ${fmt(s.operand)} ≠ 0.`,
+		'isolate-variable': () =>
+			"L'inconnue est seule dans un membre : on peut lire directement la solution.",
+		// Quadratic
 		'compute-discriminant': () =>
 			'Le discriminant Δ permet de savoir combien il y a de solutions : Δ > 0 → 2 solutions, Δ = 0 → 1 solution double, Δ < 0 → aucune solution réelle.',
 		'apply-quadratic-formula': () =>
 			'La formule x = (−b ± √Δ) / (2a) donne directement les solutions quand Δ ≥ 0.'
 	},
-	// lycee/superieur : titles already terse, no extra explanations needed for MVP
-	lycee: {},
-	superieur: {}
+	lycee: {
+		// Linear — concise formal justifications
+		'identify-linear-coefficients': () => 'Forme canonique ax + b = 0 avec a ≠ 0.',
+		'subtract-constant': (s) =>
+			`Soustraction de ${fmt(s.operand)} : transformation équivalente (l'ensemble des solutions est préservé).`,
+		'add-constant': (s) =>
+			`Addition de ${fmt(s.operand)} : transformation équivalente (l'ensemble des solutions est préservé).`,
+		'divide-coefficient': (s) => `Division par ${fmt(s.operand)} ≠ 0 : transformation équivalente.`,
+		'multiply-coefficient': (s) =>
+			`Multiplication par ${fmt(s.operand)} ≠ 0 : transformation équivalente.`,
+		'isolate-variable': () => 'Forme x = ... atteinte. Solution unique : S = { −b/a }.',
+		// Quadratic
+		'compute-discriminant': () => 'Δ = b² − 4ac détermine la nature des solutions dans ℝ.',
+		'discriminant-positive': () => '√Δ ∈ ℝ : deux solutions réelles distinctes via la formule.',
+		'discriminant-zero': () => 'Racine double : x = −b / (2a).',
+		'discriminant-negative': () =>
+			'Pas de racine réelle ; deux racines complexes conjuguées dans ℂ.',
+		'apply-quadratic-formula': () => 'x = (−b ± √Δ) / (2a) issue de la mise sous forme canonique.'
+	},
+	superieur: {
+		// Linear — minimal formal annotations
+		'identify-linear-coefficients': () => 'ax + b = 0, (a, b) ∈ ℝ* × ℝ.',
+		'subtract-constant': () => 'Translation : opération inversible préservant le noyau.',
+		'add-constant': () => 'Translation : opération inversible préservant le noyau.',
+		'divide-coefficient': () => 'Division par a ∈ ℝ* : multiplication par l’inverse a⁻¹.',
+		'multiply-coefficient': () => 'Multiplication par a ∈ ℝ* : opération bijective sur ℝ.',
+		'isolate-variable': () => 'S = { −b·a⁻¹ }.',
+		// Quadratic
+		'compute-discriminant': () => 'Δ := b² − 4ac.',
+		'discriminant-positive': () => 'Δ > 0 ⇒ S = { (−b ± √Δ)/(2a) }, |S| = 2.',
+		'discriminant-zero': () => 'Δ = 0 ⇒ S = { −b/(2a) }, racine double.',
+		'discriminant-negative': () => 'Δ < 0 ⇒ S = ∅ dans ℝ ; { (−b ± i√|Δ|)/(2a) } dans ℂ.',
+		'apply-quadratic-formula': () =>
+			'Issue de la mise sous forme canonique : a(x + b/(2a))² − Δ/(4a) = 0.'
+	}
 };
 
 // =============================================================================
