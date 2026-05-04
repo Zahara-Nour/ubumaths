@@ -13,16 +13,6 @@
 
 import type { RelationNode } from '../types';
 import type { Verbosity } from '../common/verbosity';
-import {
-	number,
-	variable,
-	add,
-	subtract,
-	implicitMultiply,
-	opposite,
-	relation,
-	fraction
-} from '../factory';
 import { GenericTechnicalRenderer } from '../common/technical-renderer';
 import { solve } from '../solve';
 import type { SolveStep } from '../solve/types';
@@ -107,31 +97,24 @@ export function presentEquation(label: string, equation: RelationNode): string {
 }
 
 // =============================================================================
-// Standard demo equations (reused by script + test)
+// DemoCase type (for use in demo-equations/*)
 // =============================================================================
 
-const x = variable('x');
-
-/** `2x + 3 = 7` — simple equation, single regroupement (constant only) */
-export const EQ_2X_PLUS_3_EQ_7: RelationNode = relation(
-	'=',
-	add(implicitMultiply(number('2'), x), number('3')),
-	number('7')
-);
-
-/** `3x − 2 = −5x + 7` — full regroupement (x-terms AND constants on both sides) */
-export const EQ_3X_MINUS_2_EQ_MINUS_5X_PLUS_7: RelationNode = relation(
-	'=',
-	subtract(implicitMultiply(number('3'), x), number('2')),
-	add(opposite(implicitMultiply(number('5'), x)), number('7'))
-);
+/**
+ * One test case in the demo suite. The `label` shows in test names and demo
+ * headers; the `equation` is a `RelationNode` produced via the factory.
+ */
+export interface DemoCase {
+	readonly label: string;
+	readonly equation: RelationNode;
+}
 
 /**
- * `x/2 + 1/3 = 1` — fractions on both coefficient and constant sides.
- * Demonstrates the pipeline with fractional operands; solution is `x = 4/3`.
+ * A category groups related demo cases (simple, fractions, regroupement…).
+ * Used by `linear-demo.test.ts` (one `describe()` per category) and by the
+ * standalone CLI (filterable via category name argument).
  */
-export const EQ_X_OVER_2_PLUS_1_OVER_3_EQ_1: RelationNode = relation(
-	'=',
-	add(fraction(x, number('2')), fraction(number('1'), number('3'))),
-	number('1')
-);
+export interface DemoCategory {
+	readonly name: string;
+	readonly cases: readonly DemoCase[];
+}
