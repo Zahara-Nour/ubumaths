@@ -270,14 +270,7 @@
 	let displayRemoveSpaces = $state(initialTemplate?.defaultDisplayOptions?.removeSpaces ?? false);
 
 	// Template options state
-	let optAllowEquivalent = $state(initialTemplate?.options?.allowEquivalent ?? false);
-	let optAllowDifferentForms = $state(initialTemplate?.options?.allowDifferentForms ?? false);
-	let optCanonicalForm = $state<string>(initialTemplate?.options?.canonicalForm || '');
 	let optOrderIndependent = $state(initialTemplate?.options?.orderIndependent ?? false);
-	let optValidator = $state<string>(initialTemplate?.options?.validator || '');
-	let optValidatorParamsJson = $state(
-		JSON.stringify(initialTemplate?.options?.validatorParams || {}, null, 2)
-	);
 	let optShuffleChoices = $state(initialTemplate?.options?.shuffleChoices ?? true);
 	let optAllowBracketsInFirstNegativeTerm = $state(
 		initialTemplate?.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false
@@ -293,13 +286,7 @@
 	// Current options (derived for TestSpecEditor)
 	let currentOptions = $derived.by(() => {
 		const opts: QuestionTemplate['options'] = {};
-		if (optAllowEquivalent) opts.allowEquivalent = true;
-		if (optAllowDifferentForms) opts.allowDifferentForms = true;
-		if (optCanonicalForm)
-			opts.canonicalForm = optCanonicalForm as 'fraction' | 'decimal' | 'scientific';
 		if (optOrderIndependent) opts.orderIndependent = true;
-		if (optValidator)
-			opts.validator = optValidator as 'checkEquivalence' | 'checkAlgebraic' | 'checkNumeric';
 		if (!optShuffleChoices) opts.shuffleChoices = false;
 		const constraints: NonNullable<NonNullable<QuestionTemplate['options']>['constraints']> = {};
 		for (const id of CONSTRAINT_IDS) {
@@ -752,19 +739,7 @@
 
 		// Build options
 		const options: QuestionTemplate['options'] = {};
-		if (optAllowEquivalent) options.allowEquivalent = true;
-		if (optAllowDifferentForms) options.allowDifferentForms = true;
-		if (optCanonicalForm)
-			options.canonicalForm = optCanonicalForm as 'fraction' | 'decimal' | 'scientific';
 		if (optOrderIndependent) options.orderIndependent = true;
-		if (optValidator)
-			options.validator = optValidator as 'checkEquivalence' | 'checkAlgebraic' | 'checkNumeric';
-		try {
-			const vp = JSON.parse(optValidatorParamsJson);
-			if (Object.keys(vp).length > 0) options.validatorParams = vp;
-		} catch {
-			/* ignore */
-		}
 		if (!optShuffleChoices) options.shuffleChoices = false;
 		// Build constraints
 		const constraints: NonNullable<NonNullable<QuestionTemplate['options']>['constraints']> = {};
@@ -834,12 +809,7 @@
 		displayRemoveSpaces = t.defaultDisplayOptions?.removeSpaces ?? false;
 
 		// Validation options
-		optAllowEquivalent = t.options?.allowEquivalent ?? false;
-		optAllowDifferentForms = t.options?.allowDifferentForms ?? false;
-		optCanonicalForm = t.options?.canonicalForm || '';
 		optOrderIndependent = t.options?.orderIndependent ?? false;
-		optValidator = t.options?.validator || '';
-		optValidatorParamsJson = JSON.stringify(t.options?.validatorParams || {}, null, 2);
 		optShuffleChoices = t.options?.shuffleChoices ?? true;
 		optAllowBracketsInFirstNegativeTerm =
 			t.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false;
@@ -1466,12 +1436,7 @@
 		<!-- Options de validation -->
 		<ValidationOptionsEditor
 			bind:open={optionsSectionOpen}
-			bind:allowEquivalent={optAllowEquivalent}
-			bind:allowDifferentForms={optAllowDifferentForms}
-			bind:canonicalForm={optCanonicalForm}
 			bind:orderIndependent={optOrderIndependent}
-			bind:validator={optValidator}
-			bind:validatorParamsJson={optValidatorParamsJson}
 			bind:shuffleChoices={optShuffleChoices}
 			bind:allowBracketsInFirstNegativeTerm={optAllowBracketsInFirstNegativeTerm}
 			bind:constraintModes
