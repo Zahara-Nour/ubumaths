@@ -19,7 +19,8 @@ import { describe, it, expect } from 'vitest';
 import {
 	presentEquation,
 	EQ_2X_PLUS_3_EQ_7,
-	EQ_3X_MINUS_2_EQ_MINUS_5X_PLUS_7
+	EQ_3X_MINUS_2_EQ_MINUS_5X_PLUS_7,
+	EQ_X_OVER_2_PLUS_1_OVER_3_EQ_1
 } from '../demo-helpers';
 
 describe('Pedagogical linear demo — snapshot', () => {
@@ -29,5 +30,9 @@ describe('Pedagogical linear demo — snapshot', () => {
 
 	it('matches snapshot for 3x − 2 = −5x + 7', () => {
 		expect(presentEquation('3x − 2 = −5x + 7', EQ_3X_MINUS_2_EQ_MINUS_5X_PLUS_7)).toMatchSnapshot();
+	});
+
+	it('matches snapshot for x/2 + 1/3 = 1 (fractional coefficients and constants)', () => {
+		expect(presentEquation('x/2 + 1/3 = 1', EQ_X_OVER_2_PLUS_1_OVER_3_EQ_1)).toMatchSnapshot();
 	});
 });

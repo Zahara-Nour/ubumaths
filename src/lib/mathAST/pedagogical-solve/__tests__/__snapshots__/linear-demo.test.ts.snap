@@ -154,3 +154,77 @@ exports[`Pedagogical linear demo — snapshot > matches snapshot for 3x − 2 = 
     [3] S = { \\dfrac{9}{8} }
 "
 `;
+
+exports[`Pedagogical linear demo — snapshot > matches snapshot for x/2 + 1/3 = 1 (fractional coefficients and constants) 1`] = `
+"
+###### x/2 + 1/3 = 1 ######
+
+========== TECHNIQUE — solveur algorithmique (solve()) ==========
+[1] identify-linear-coefficients: On identifie les coefficients: a = 1/2, b = -2/3
+[2] isolate-variable: Solution: x = 4/3
+
+========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
+[1] identify-equation: Équation du premier degré
+[2] subtract-both-sides: On soustrait \\dfrac{1}{3} aux deux membres
+[3] divide-both-sides: On divise les deux membres par \\dfrac{1}{2}
+[4] read-solution: Solution : x = \\dfrac{4}{3}
+
+========== COLLEGE (summarized) ==========
+[1] Équation du premier degré
+[2] On soustrait \\dfrac{1}{3} aux deux membres
+[3] On divise les deux membres par \\dfrac{1}{2}
+[4] Solution : x = \\dfrac{4}{3}
+
+========== COLLEGE (detailed) ==========
+[1] Équation du premier degré
+[2] On soustrait \\dfrac{1}{3} aux deux membres
+    │ \\begin{aligned}
+    │   \\dfrac{x}{2} + \\dfrac{1}{3} \\textcolor{blue}{- \\dfrac{1}{3}} &= 1 \\textcolor{blue}{- \\dfrac{1}{3}} \\\\
+    │   \\dfrac{1}{2}x &= \\dfrac{2}{3}
+    │ \\end{aligned}
+[3] On divise les deux membres par \\dfrac{1}{2}
+    │ \\begin{aligned}
+    │   \\dfrac{\\dfrac{1}{2}x}{\\textcolor{blue}{\\dfrac{1}{2}}} &= \\dfrac{\\dfrac{2}{3}}{\\textcolor{blue}{\\dfrac{1}{2}}} \\\\
+    │   x &= \\dfrac{4}{3}
+    │ \\end{aligned}
+[4] Solution : x = \\dfrac{4}{3}
+
+========== LYCEE (summarized) ==========
+[1] Équation du premier degré
+[2] On isole les termes en x dans le membre de gauche
+[3] On termine en simplifiant le coefficient de x
+[4] S = { \\dfrac{4}{3} }
+
+========== LYCEE (detailed) ==========
+[1] Équation du premier degré
+[2] On isole les termes en x dans le membre de gauche
+    │ \\begin{aligned}
+    │   \\dfrac{x}{2} &= 1 \\textcolor{blue}{- \\dfrac{1}{3}} \\\\
+    │   \\dfrac{1}{2}x &= \\dfrac{2}{3}
+    │ \\end{aligned}
+[3] On termine en simplifiant le coefficient de x
+    │ x = \\dfrac{4}{3}
+[4] S = { \\dfrac{4}{3} }
+
+========== SUPERIEUR (summarized) ==========
+[1] On isole x
+    [1] On isole les termes en x dans le membre de gauche
+    [2] On termine en simplifiant le coefficient de x
+    [3] S = { \\dfrac{4}{3} }
+
+========== SUPERIEUR (detailed) ==========
+[1] On isole x
+    │ \\begin{aligned}
+    │   \\dfrac{x}{2} + \\dfrac{1}{3} &= 1 \\\\
+    │   x &= \\dfrac{4}{3}
+    │ \\end{aligned}
+    [1] On isole les termes en x dans le membre de gauche
+        │ \\begin{aligned}
+        │   \\dfrac{x}{2} &= 1 \\textcolor{blue}{- \\dfrac{1}{3}} \\\\
+        │   \\dfrac{1}{2}x &= \\dfrac{2}{3}
+        │ \\end{aligned}
+    [2] On termine en simplifiant le coefficient de x
+        │ x = \\dfrac{4}{3}
+    [3] S = { \\dfrac{4}{3} }
+"
+`;
