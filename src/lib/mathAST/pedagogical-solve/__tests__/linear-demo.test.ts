@@ -51,6 +51,17 @@ function renderTree(steps: readonly RenderedStep[], depth: number = 0): readonly
 	return out;
 }
 
+/**
+ * Compact technical line: `[id] rule: description` only — no LaTeX dump, no
+ * reflection-based `(operation=…)` extras. The verbose `format: 'text'` of
+ * `GenericTechnicalRenderer` is great for debug, but visually noisy here.
+ */
+function compactTechnical(
+	steps: readonly { id: number; rule: string; title: string }[]
+): readonly string[] {
+	return steps.map((s) => `[${s.id}] ${s.rule}: ${s.title}`);
+}
+
 function presentEquation(label: string, equation: RelationNode): string {
 	const pedagogical = new LinearEquationRenderer();
 	const technical = new GenericTechnicalRenderer<EquationStep>();
@@ -59,24 +70,23 @@ function presentEquation(label: string, equation: RelationNode): string {
 	const lines: string[] = [];
 	lines.push(`\n###### ${label} ######\n`);
 
-	// 1. Technical view: algorithmic solver's recorded steps
+	// 1. Technical view: algorithmic solver's recorded steps (compact)
 	const solveResult = solve(equation, { verbosity: 'detailed' });
 	const solverTech = technicalForSolveSteps.renderAll(solveResult.steps, {
-		verbosity: 'detailed',
-		format: 'text'
+		verbosity: 'detailed'
 	});
 	lines.push('========== TECHNIQUE — solveur algorithmique (solve()) ==========');
-	for (const s of solverTech) lines.push(s.text ?? `[${s.id}] ${s.title}`);
+	lines.push(...compactTechnical(solverTech));
 	lines.push('');
 
-	// 2. Technical view: pedagogical pipeline raw EquationStep[] (max-detail college)
+	// 2. Technical view: pedagogical pipeline raw EquationStep[] (compact)
 	const pedaSteps = generateLinearEquationSteps(equation, { level: 'college' });
-	const pedaTech = technical.renderAll(pedaSteps, { verbosity: 'detailed', format: 'text' });
+	const pedaTech = technical.renderAll(pedaSteps, { verbosity: 'detailed' });
 	lines.push('========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========');
-	for (const s of pedaTech) lines.push(s.text ?? `[${s.id}] ${s.title}`);
+	lines.push(...compactTechnical(pedaTech));
 	lines.push('');
 
-	// 3. Pedagogical views — 4 levels × 2 verbosities
+	// 3. Pedagogical views — 3 levels × 2 verbosities
 	for (const level of allLevels) {
 		for (const verbosity of allVerbosities) {
 			const steps: readonly EquationStep[] = generateLinearEquationSteps(equation, {
