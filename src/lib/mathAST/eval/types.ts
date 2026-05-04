@@ -313,13 +313,23 @@ export interface EvalWithUnitsOptions extends EvalOptions {
 	 * Maps variable names to their units for dimensional analysis.
 	 */
 	readonly variableUnits?: ReadonlyMap<string, Unit>;
+
+	/**
+	 * If true, when the result's dimensional signature matches a named SI
+	 * derived unit (Newton, Joule, Watt, ...), the result is annotated with
+	 * the canonical derived symbol (display only — components and coefficient
+	 * are preserved).
+	 *
+	 * Default: `true` in `'best'` mode, `false` in `'first'` and `'si'` modes.
+	 */
+	readonly recognizeDerived?: boolean;
 }
 
 /**
  * Default options for unit-aware evaluation.
  */
 export const DEFAULT_EVAL_WITH_UNITS_OPTIONS: Required<
-	Omit<EvalWithUnitsOptions, 'functions' | 'variableUnits'>
+	Omit<EvalWithUnitsOptions, 'functions' | 'variableUnits' | 'recognizeDerived'>
 > & {
 	functions: FunctionBindings;
 	variableUnits: ReadonlyMap<string, Unit>;

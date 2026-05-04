@@ -85,9 +85,11 @@ describe('resolveUnit', () => {
 		});
 
 		it('should resolve megahertz (MHz)', () => {
-			// Note: Hz (hertz) is not defined as a base unit, so this should fail
+			// Hz is now a named SI derived unit; MHz = mega-Hertz with coefficient 1e6
 			const result = resolveUnit('MHz');
-			expect(result).toBeNull();
+			expect(result).not.toBeNull();
+			expect(result?.coefficient).toBeCloseTo(1e6, 0);
+			expect(result?.dimension).toBe('frequency');
 		});
 	});
 

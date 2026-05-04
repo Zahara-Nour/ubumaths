@@ -20,7 +20,12 @@ import { DEFAULT_EVAL_WITH_UNITS_OPTIONS } from './types';
 import { analyzeDimensions } from '../dimensional/analyzer';
 import type { DimensionalContext } from '../dimensional/types';
 import type { Unit } from '../units/types';
-import { getConversionFactor, isAffine, normalizeToBase } from '../units/conversion';
+import {
+	getConversionFactor,
+	isAffine,
+	normalizeToBase,
+	recognizeDerivedUnit
+} from '../units/conversion';
 import { getUnitFamily } from '../units/definitions';
 import { UnitAST } from '../units/factory';
 import type { MathNode } from '../types';
@@ -315,6 +320,60 @@ function transformToTargetUnit(node: MathNode, targetUnit: Unit): MathNode {
 }
 
 /**
+ * Normalize each UnitNode in the expression to its own SI base form
+ * (coefficient = 1), absorbing the prefix factor into the value.
+ *
+ * Unlike {@link transformToTargetUnit}, this does **not** require a common
+ * target unit — each UnitNode is rewritten independently. After this pass,
+ * a downstream multiplication of values produces a result whose unit's
+ * coefficient is exactly 1 (pure SI base). This is necessary in 'best' mode
+ * for derived-unit recognition (Newton, Joule, ...) where the target unit
+ * is composite and cannot be reached via a single conversion factor.
+ *
+ * **Precondition**: no affine units (°C, °F) anywhere in `node`.
+ * `detectAffineComposition` must have already short-circuited those cases —
+ * the formula `value × unit.coefficient` is wrong for affine units (it
+ * ignores the offset).
+ *
+ * @example
+ * // 5 kg → 5000 g (g now coefficient 1)
+ * // 3 m  → 3 m   (already coefficient 1)
+ * // 1 s  → 1 s   (already coefficient 1)
+ */
+function normalizeAllUnitsToBase(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (!isUnit(n)) return n;
+
+		// Already in pure base form (coefficient ≈ 1) and components map is
+		// keyed by SI base symbols.
+		if (Math.abs(n.unit.coefficient - 1) < EPSILON) return n;
+
+		const baseUnit: Unit = {
+			components: n.unit.components,
+			coefficient: 1
+		};
+		const factor = n.unit.coefficient;
+		const innerNode = n.expression;
+
+		if (innerNode.type === 'number') {
+			const originalValue = parseFloat(innerNode.value);
+			return withUnit(numericNode(originalValue * factor), baseUnit);
+		}
+
+		return withUnit(
+			{
+				type: 'multiplication',
+				left: numericNode(factor),
+				right: innerNode,
+				style: 'implicit',
+				displayStyle: 'implicit'
+			} as MathNode,
+			baseUnit
+		);
+	});
+}
+
+/**
  * Type guard for MathNode.
  */
 function isMathNode(value: EvalValue): value is MathNode {
@@ -587,6 +646,33 @@ function tryEvaluateAffineBinary(node: MathNode): EvalResultWithUnit | null {
 }
 
 // =============================================================================
+// Named SI Derived Unit Recognition
+// =============================================================================
+
+/**
+ * If `enabled`, try to recognize the result unit as a named SI derived unit
+ * (Newton, Joule, ...). On match, returns the rescaled `{ value, unit }`
+ * pair so the displayed value matches the canonical derived coefficient
+ * (e.g., 15000 g·m·s⁻² → 15 N).
+ *
+ * Returns the input unchanged if `enabled` is false or no derived match.
+ */
+function maybeRecognizeDerived(
+	value: number,
+	unit: Unit,
+	enabled: boolean
+): { value: number; unit: Unit } {
+	if (!enabled) return { value, unit };
+	const recognized = recognizeDerivedUnit(unit);
+	if (!recognized) return { value, unit };
+
+	// Rescale: newValue × recognized.coefficient = oldValue × oldUnit.coefficient
+	// Both expressions equal the value in SI base.
+	const newValue = (value * unit.coefficient) / recognized.coefficient;
+	return { value: newValue, unit: recognized };
+}
+
+// =============================================================================
 // Main Function
 // =============================================================================
 
@@ -692,7 +778,10 @@ export function evaluateWithUnits(
 		// We need to evaluate first to get the numeric value for best selection
 		// Use SI base with coefficient = 1 first, then select best
 		const siUnit = toSIBaseUnit(resultUnit);
-		const siTransformed = transformToTargetUnit(node, siUnit);
+		// Normalize each UnitNode to its own SI base (coef = 1) so the result
+		// genuinely lands in pure SI base. Required when the target is composite
+		// (e.g., recognizing kg·m·s⁻² as Newton).
+		const siTransformed = normalizeAllUnitsToBase(node);
 		const siResult = evaluate(siTransformed, {
 			mode: opts.mode,
 			precision: opts.precision,
@@ -720,7 +809,17 @@ export function evaluateWithUnits(
 		const siValue = getNumericValue(siResult.value);
 		const best = selectBestUnit(siValue, siUnit);
 
-		finalUnit = best.unit;
+		// In 'best' mode, recognize named SI derived units (Newton, Joule, ...)
+		// before the family-based prefix selection takes effect. We use the
+		// SI value/unit as input so the canonical-coefficient rescaling works.
+		// TODO(V2): after derived recognition, reapply selectBestUnit-like
+		// prefix selection within the derived unit's family — `5e6 N` should
+		// display as `5 MN`, not `5000000 N`. Out of scope for V1.
+		const recognizeDerivedFlag = opts.recognizeDerived ?? true;
+		const derivedAtSI = maybeRecognizeDerived(siValue, siUnit, recognizeDerivedFlag);
+		const useDerived = derivedAtSI.unit !== siUnit;
+		const finalValue = useDerived ? derivedAtSI.value : best.value;
+		finalUnit = useDerived ? derivedAtSI.unit : best.unit;
 		if (firstUnit) {
 			originalUnit = firstUnit;
 		}
@@ -730,8 +829,8 @@ export function evaluateWithUnits(
 		// unlike 'first'/'si' modes which preserve the evaluated node structure.
 		// This is because we need to represent the value in the selected "best" unit.
 		return {
-			value: best.value,
-			node: numericNode(best.value),
+			value: finalValue,
+			node: numericNode(finalValue),
 			exact: siResult.exact,
 			unit: finalUnit,
 			...(originalUnit && { originalUnit })
@@ -772,7 +871,33 @@ export function evaluateWithUnits(
 		);
 	}
 
-	// Step 8: Build and return result with the correctly computed finalUnit
+	// Step 8: Optional derived-unit recognition for 'first' / 'si' modes.
+	// Default off; user opts in with `recognizeDerived: true`. We rescale the
+	// numeric value via maybeRecognizeDerived; for non-numeric results we keep
+	// the original value (rescaling MathNode/Complex is out of scope here).
+	if (opts.recognizeDerived === true) {
+		const numericValue = (() => {
+			try {
+				return getNumericValue(evalResult.value);
+			} catch {
+				return null;
+			}
+		})();
+		if (numericValue !== null) {
+			const recognized = maybeRecognizeDerived(numericValue, finalUnit, true);
+			if (recognized.unit !== finalUnit) {
+				return {
+					value: recognized.value,
+					node: numericNode(recognized.value),
+					exact: false,
+					unit: recognized.unit,
+					...(originalUnit && { originalUnit })
+				};
+			}
+		}
+	}
+
+	// Step 9: Build and return result with the correctly computed finalUnit
 	return {
 		value: evalResult.value,
 		node: evalResult.node,
