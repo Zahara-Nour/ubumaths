@@ -46,45 +46,75 @@ function operandStr(op: EquationOperation): string {
 }
 
 const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind'], TitleFn>>> = {
+	// College : on explicite « aux deux membres » et la notation « Solution : x = … »
 	college: {
-		'identify-equation': () => 'Équation du premier degré (linéaire)',
-		'add-both-sides': (op) => `Addition de ${operandStr(op)} aux deux membres`,
-		'subtract-both-sides': (op) => `Soustraction de ${operandStr(op)} aux deux membres`,
-		'multiply-both-sides': (op) => `Multiplication des deux membres par ${operandStr(op)}`,
-		'divide-both-sides': (op) => `Division des deux membres par ${operandStr(op)}`,
-		simplify: () => 'Simplification',
+		'identify-equation': () => 'Équation du premier degré',
+		'add-both-sides': (op) => `On ajoute ${operandStr(op)} aux deux membres`,
+		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)} aux deux membres`,
+		'multiply-both-sides': (op) => `On multiplie les deux membres par ${operandStr(op)}`,
+		'divide-both-sides': (op) => `On divise les deux membres par ${operandStr(op)}`,
+		simplify: () => 'On simplifie',
 		'group-variable-terms': (op) =>
-			`Regroupement des termes en ${(op as { variable: string }).variable}`,
-		'group-constants': () => 'Regroupement des constantes',
-		'reduce-to-canonical': () => 'Mise sous forme ax = b',
+			`On regroupe les termes en ${(op as { variable: string }).variable}`,
+		'group-constants': () => 'On regroupe les constantes',
+		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
 		'read-solution': (op) =>
 			`Solution : ${(op as { variable: string }).variable} = ${operandStr(op)}`
 	},
+	// Lycée : « aux deux membres » devient implicite, notation S = { … } pour la solution
 	lycee: {
-		'identify-equation': () => 'Équation linéaire (degré 1)',
-		'add-both-sides': (op) => `+${operandStr(op)} de chaque côté`,
-		'subtract-both-sides': (op) => `−${operandStr(op)} de chaque côté`,
-		'multiply-both-sides': (op) => `× ${operandStr(op)}`,
-		'divide-both-sides': (op) => `÷ ${operandStr(op)}`,
-		simplify: () => 'Simplification',
-		'group-variable-terms': (op) => `Regroupement des ${(op as { variable: string }).variable}`,
-		'group-constants': () => 'Regroupement des constantes',
-		'reduce-to-canonical': () => 'Forme canonique ax = b',
+		'identify-equation': () => 'Équation du premier degré',
+		'add-both-sides': (op) => `On ajoute ${operandStr(op)}`,
+		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)}`,
+		'multiply-both-sides': (op) => `On multiplie par ${operandStr(op)}`,
+		'divide-both-sides': (op) => `On divise par ${operandStr(op)}`,
+		simplify: () => 'On simplifie',
+		'group-variable-terms': (op) =>
+			`On regroupe les termes en ${(op as { variable: string }).variable}`,
+		'group-constants': () => 'On regroupe les constantes',
+		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
 		'read-solution': (op) => `S = { ${operandStr(op)} }`
 	},
+	// Supérieur : vocabulaire identique au lycée — la différence est structurelle
+	// (mergeAll regroupe tout en une seule étape avec drill-down vers les détails).
 	superieur: {
-		'identify-equation': () => 'ax + b = cx + d',
-		'add-both-sides': (op) => `+${operandStr(op)}`,
-		'subtract-both-sides': (op) => `−${operandStr(op)}`,
-		'multiply-both-sides': (op) => `·${operandStr(op)}`,
-		'divide-both-sides': (op) => `/${operandStr(op)}`,
-		simplify: () => 'simpl.',
-		'group-variable-terms': () => 'regroup. var.',
-		'group-constants': () => 'regroup. const.',
-		'reduce-to-canonical': () => 'forme can.',
+		'identify-equation': () => 'Équation du premier degré',
+		'add-both-sides': (op) => `On ajoute ${operandStr(op)}`,
+		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)}`,
+		'multiply-both-sides': (op) => `On multiplie par ${operandStr(op)}`,
+		'divide-both-sides': (op) => `On divise par ${operandStr(op)}`,
+		simplify: () => 'On simplifie',
+		'group-variable-terms': (op) =>
+			`On regroupe les termes en ${(op as { variable: string }).variable}`,
+		'group-constants': () => 'On regroupe les constantes',
+		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
 		'read-solution': (op) => `S = { ${operandStr(op)} }`
 	}
 };
+
+/** Best-effort detection of the unknown variable name in an EquationStep. */
+function variableOf(step: EquationStep): string {
+	const find = (n: { type: string } & object): string | null => {
+		if ((n as { type: string }).type === 'variable') return (n as { name: string }).name;
+		const rec = n as Record<string, unknown>;
+		for (const key of Object.keys(rec)) {
+			const v = rec[key];
+			if (Array.isArray(v)) {
+				for (const item of v) {
+					if (typeof item === 'object' && item !== null && 'type' in item) {
+						const found = find(item as { type: string } & object);
+						if (found) return found;
+					}
+				}
+			} else if (typeof v === 'object' && v !== null && 'type' in v) {
+				const found = find(v as { type: string } & object);
+				if (found) return found;
+			}
+		}
+		return null;
+	};
+	return find(step.before as { type: string } & object) ?? 'x';
+}
 
 const EXPLANATIONS: Record<
 	LinearSchoolLevel,
