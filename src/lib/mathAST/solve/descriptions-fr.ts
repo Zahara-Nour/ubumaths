@@ -19,6 +19,7 @@ import { toCustom } from '../custom-generator';
 export type SolvingRule =
 	// Linear solving
 	| 'identify-linear'
+	| 'identify-linear-coefficients'
 	| 'subtract-constant'
 	| 'add-constant'
 	| 'divide-coefficient'
@@ -94,6 +95,7 @@ export type SolvingRule =
 const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	// Linear solving
 	'identify-linear': "L'equation est lineaire (degre 1)",
+	'identify-linear-coefficients': 'On identifie les coefficients a et b',
 	'subtract-constant': 'On soustrait la constante des deux membres',
 	'add-constant': 'On ajoute la constante aux deux membres',
 	'divide-coefficient': 'On divise les deux membres par le coefficient',

@@ -36,6 +36,7 @@ const TITLES: Record<SchoolLevel, Partial<Record<string, TitleFn>>> = {
 	primaire: {
 		// Linear — primaire-friendly phrasing
 		'identify-linear': () => 'On a une équation simple avec une seule inconnue',
+		'identify-linear-coefficients': () => 'On regarde les nombres devant et après la lettre',
 		'subtract-constant': (s) => `On enlève ${fmt(s.operand)} des deux côtés`,
 		'add-constant': (s) => `On ajoute ${fmt(s.operand)} des deux côtés`,
 		'divide-coefficient': (s) => `On partage les deux côtés en ${fmt(s.operand)} parts égales`,
@@ -45,6 +46,7 @@ const TITLES: Record<SchoolLevel, Partial<Record<string, TitleFn>>> = {
 	college: {
 		// Linear
 		'identify-linear': () => 'Équation du premier degré (linéaire)',
+		'identify-linear-coefficients': () => 'Identification des coefficients a et b',
 		'subtract-constant': (s) => `Soustraction de ${fmt(s.operand)} des deux membres`,
 		'add-constant': (s) => `Addition de ${fmt(s.operand)} aux deux membres`,
 		'divide-coefficient': (s) => `Division par ${fmt(s.operand)} des deux membres`,
@@ -63,6 +65,7 @@ const TITLES: Record<SchoolLevel, Partial<Record<string, TitleFn>>> = {
 	lycee: {
 		// Linear — terse formal style
 		'identify-linear': () => 'Équation linéaire (degré 1)',
+		'identify-linear-coefficients': () => 'Coefficients a, b',
 		'subtract-constant': (s) => `−${fmt(s.operand)} de chaque côté`,
 		'add-constant': (s) => `+${fmt(s.operand)} de chaque côté`,
 		'divide-coefficient': (s) => `÷ ${fmt(s.operand)}`,
@@ -81,6 +84,7 @@ const TITLES: Record<SchoolLevel, Partial<Record<string, TitleFn>>> = {
 	superieur: {
 		// Linear — symbol-only
 		'identify-linear': () => 'ax + b = 0',
+		'identify-linear-coefficients': () => 'a, b',
 		'subtract-constant': (s) => `−${fmt(s.operand)}`,
 		'add-constant': (s) => `+${fmt(s.operand)}`,
 		'divide-coefficient': (s) => `/${fmt(s.operand)}`,
