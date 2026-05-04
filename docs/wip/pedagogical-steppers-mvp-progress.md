@@ -151,6 +151,16 @@ Les sous-calculs sont maintenant en arithmétique rationnelle exacte :
 - 25/25 tests step-generator (+3 nouveaux pour précision exacte, 1 ajusté)
 - 11929/11950 tests mathAST (+3 du Phase 3, 0 régression)
 
-## Phase 4 — Démo end-to-end + README (à faire)
+## Phase 4 — Démo end-to-end + README (terminée ✓)
+
+### Fichiers créés
+
+- `src/lib/mathAST/solve/__tests__/dual-rendering-demo.test.ts` — résout `2x + 3 = 7` et imprime côte-à-côte les 4 rendus (technique, college, lycee, primaire) via `console.log`. Assertions vérifient que les rendus diffèrent et que verbosity gate les explanations.
+- `src/lib/mathAST/common/REWRITING.md` — README court : pattern dual rendering, structure des fichiers, exemple de moteur, comment ajouter un renderer pédagogique pour un nouveau domaine, note sur le workaround load-order.
+
+### Validation
+
+- 1/1 demo test passe avec sortie visible
+- 11930/11951 tests mathAST (+1 du demo, 0 régression)
 
 ## Phase 5 — Quality checks + commit final (à faire)
