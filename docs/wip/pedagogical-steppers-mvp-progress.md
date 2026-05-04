@@ -163,4 +163,50 @@ Les sous-calculs sont maintenant en arithmétique rationnelle exacte :
 - 1/1 demo test passe avec sortie visible
 - 11930/11951 tests mathAST (+1 du demo, 0 régression)
 
-## Phase 5 — Quality checks + commit final (à faire)
+## Phase 5 — Quality checks + commit final (terminée ✓)
+
+### Quality checks
+
+- [x] **ESLint** sur les 14 fichiers créés/modifiés : **0 erreur, 0 warning**
+- [x] **`pnpm check:incremental`** (TypeScript + Svelte) : `✓` (0 nouvelle erreur ; les 9 erreurs préexistantes dans `slides/demo` et `extern/` sont filtrées par le script — comportement attendu)
+- [x] Pas de fichiers `.svelte` modifiés → svelte-autofixer non applicable
+
+### Tests régression finaux
+
+- 11930/11951 tests mathAST passent (18 skipped, 3 todo, 0 fail) — voir flaky perf test improperIntegrate qui passe au 2e run.
+
+---
+
+## Récapitulatif MVP terminé
+
+### Commits
+
+1. `828668976` `feat(mathAST): rewriting engine + step renderer infrastructure (Phase 1 MVP)` (11 fichiers, +2075 / -142)
+2. `7a6b8a232` `feat(mathAST/solve): renderer pédagogique adapté au SchoolLevel (Phase 2 MVP)` (3 fichiers, +444 / -2)
+3. `252434494` `refactor(mathAST/step-generator): delegate arithmetic to evaluate(exact) (Phase 3 MVP)` (3 fichiers, +127 / -120)
+4. `1b8cb8a28` `docs(mathAST): demo end-to-end dual rendering + README (Phase 4 MVP)` (3 fichiers, +220 / -1)
+
+Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce commit final (Phase 5 doc only).
+
+### Hors scope (à reprendre dans des sessions ultérieures)
+
+- Renderers pédagogiques pour les autres domaines (integration, limits, matrix, domain)
+- Stepper pour différentiation (nouveau step recorder + renderer)
+- Pipeline pédagogique complet pour arithmétique (regroupement, fractions, radicaux)
+- Pipeline pédagogique pour simplification d'expression
+- Intégration aux corrections de questions (`QuestionCorrection.generatedSteps`)
+- Implémentation effective de `PedagogicalTarget` (extraction depuis instance/blank)
+- Modes `SymbolicComputation` (Mode 0, Mode 2) inspirés de Poincaré
+- Investigation root-cause du load-order issue de `common/index.ts`
+
+### Critères d'acceptation atteints
+
+- [x] Aucune régression sur les ~12000 tests `mathAST + math + geometry-core/compute`
+- [x] API publique de `simplify()` strictement identique
+- [x] Démo opérationnelle : test passe et imprime visiblement la différence entre 4 rendus
+- [x] `arithmetic-steps.ts` ne contient plus la fonction `evaluateNumeric` (doublon supprimé, 442 → 386 LOC)
+- [x] Tests existants `arithmetic-steps` passent (1 test ajusté pour précision exacte)
+- [x] 0 erreur ESLint sur les fichiers modifiés
+- [x] 0 nouvelle erreur TypeScript dans `pnpm check:incremental`
+- [x] Documentation de progression écrite (ce fichier)
+- [x] Commits créés via `commit-manager` (Phase 1) et directement (Phases 2, 3, 4) selon complexité
