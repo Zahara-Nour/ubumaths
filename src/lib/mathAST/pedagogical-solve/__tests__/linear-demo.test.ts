@@ -16,10 +16,10 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateLinearEquationSteps } from '../linear';
-import { LinearEquationRenderer } from '../linear-renderer';
+import { LinearEquationRenderer, formatTransformationLines } from '../linear-renderer';
 import type { EquationStep, LinearSchoolLevel } from '../types';
 import type { Verbosity } from '../../common/verbosity';
-import type { RelationNode, MathNode } from '../../types';
+import type { RelationNode } from '../../types';
 import type { RenderedStep } from '../../common/step-renderer-base';
 import {
 	number,
@@ -33,35 +33,13 @@ import {
 import { solve } from '../../solve';
 import type { SolveStep } from '../../solve/types';
 import { GenericTechnicalRenderer } from '../../common/technical-renderer';
-import { toLatex } from '../../latex-generator';
 
 // Linear pipeline excludes 'primaire' (linear algebra is not in the primary curriculum)
 const allLevels: readonly LinearSchoolLevel[] = ['college', 'lycee', 'superieur'];
 const allVerbosities: readonly Verbosity[] = ['summarized', 'detailed'];
 
-/** Plain-text formatter: LaTeX with implicit-multiplication spaces stripped. */
-function plain(node: MathNode): string {
-	return toLatex(node).replace(/(\d|\})\s+([a-zA-Z\\])/g, '$1$2');
-}
-
-/**
- * Pretty-print an equation transformation as multi-line LaTeX using the
- * `aligned` environment. This is the actual LaTeX that goes into the
- * `expressionLatex` field and that MathLive will render as 2 stacked
- * equations aligned on the relation symbol.
- */
-function prettyTransformation(before: RelationNode, after: RelationNode): readonly string[] {
-	const bL = plain(before.left);
-	const bR = plain(before.right);
-	const aL = plain(after.left);
-	const aR = plain(after.right);
-	return [
-		'\\begin{aligned}',
-		`  ${bL} &${before.relation} ${bR} \\\\`,
-		`  ${aL} &${after.relation} ${aR}`,
-		'\\end{aligned}'
-	];
-}
+// `formatTransformationLines` from the renderer produces the same multi-line
+// LaTeX that MathLive will render. We just iterate over the lines here.
 
 /**
  * Walk the EquationStep[] tree directly so we keep access to the structural
@@ -86,9 +64,11 @@ function renderTree(
 	for (const s of steps) {
 		const r = renderer.render(s, { verbosity, schoolLevel: level });
 		out.push(`${indent}[${s.id}] ${r.title}`);
-		if (verbosity === 'detailed' && toLatex(s.before) !== toLatex(s.after)) {
-			const lines = prettyTransformation(s.before, s.after);
-			for (const line of lines) out.push(`${indent}    │ ${line}`);
+		if (verbosity === 'detailed') {
+			const lines = formatTransformationLines(s);
+			if (lines !== null) {
+				for (const line of lines) out.push(`${indent}    │ ${line}`);
+			}
 		}
 		if (s.subSteps && s.subSteps.length > 0) {
 			out.push(...renderTree(s.subSteps, level, verbosity, depth + 1));

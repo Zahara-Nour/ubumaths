@@ -212,21 +212,85 @@ function assertSupportedLevel(level: SchoolLevel): asserts level is LinearSchool
 /**
  * Build the LaTeX expression for a step.
  *
- * - When `before === after` (info-only steps like `identify-equation` or
- *   `read-solution`), returns the single equation as plain LaTeX.
- * - When `before !== after` AND both are equations (RelationNode), returns
- *   a `\begin{aligned}` block aligning both equations on `=`. MathLive
- *   renders it as two stacked lines aligned on the relation symbol.
- * - Fallback for non-equation transformations: `before \quad\Rightarrow\quad after`.
+ * Shape of the output:
+ * - **Info-only** ops (`identify-equation`, `read-solution`) → the single
+ *   equation as plain LaTeX.
+ * - **Transformation** ops (`add/subtract/multiply/divide-both-sides`) → a
+ *   `\begin{aligned}` block with TWO lines:
+ *     1. The original equation with the applied operation in `\textcolor{blue}`
+ *        on each side (e.g. `3x - 2 + \textcolor{blue}{5x} = -5x + 7 + \textcolor{blue}{5x}`).
+ *     2. The simplified result (`8x - 2 = 7`).
+ * - **Composite** ops (`reduce-to-canonical`, `group-*`, `simplify`) — there
+ *   is no single operation to highlight, so we fall back to a plain
+ *   before/after `\begin{aligned}` block.
  */
 function formatExpressionLatex(step: EquationStep): string {
-	const beforeLatex = fmt(step.before);
-	const afterLatex = fmt(step.after);
-	if (beforeLatex === afterLatex) return beforeLatex;
-	if (step.before.type === 'relation' && step.after.type === 'relation') {
-		const beforeAligned = `${fmt(step.before.left)} &${step.before.relation} ${fmt(step.before.right)}`;
-		const afterAligned = `${fmt(step.after.left)} &${step.after.relation} ${fmt(step.after.right)}`;
-		return `\\begin{aligned}${beforeAligned} \\\\ ${afterAligned}\\end{aligned}`;
+	const lines = formatTransformationLines(step);
+	if (lines === null) return fmt(step.before);
+	return lines.join(' ');
+}
+
+/**
+ * Build the multi-line LaTeX form of a step transformation. Returns `null`
+ * for info-only steps (no transformation to display). Exposed for the demo
+ * which prints each line on its own terminal row.
+ */
+export function formatTransformationLines(step: EquationStep): readonly string[] | null {
+	const op = step.operation;
+	const rel = step.before.type === 'relation' ? step.before.relation : '=';
+	const bL = step.before.type === 'relation' ? fmt(step.before.left) : fmt(step.before);
+	const bR = step.before.type === 'relation' ? fmt(step.before.right) : '';
+	const aL = step.after.type === 'relation' ? fmt(step.after.left) : fmt(step.after);
+	const aR = step.after.type === 'relation' ? fmt(step.after.right) : '';
+	const beforeEqualsAfter = bL === aL && bR === aR;
+
+	// Info-only ops: identify-equation, read-solution → no transformation
+	if (!op || op.kind === 'identify-equation' || op.kind === 'read-solution') {
+		return null;
 	}
-	return `${beforeLatex} \\quad\\Rightarrow\\quad ${afterLatex}`;
+
+	// Composite ops without a single operand to highlight → before/after fallback
+	if (
+		op.kind === 'reduce-to-canonical' ||
+		op.kind === 'group-variable-terms' ||
+		op.kind === 'group-constants' ||
+		op.kind === 'simplify'
+	) {
+		if (beforeEqualsAfter) return null;
+		return [
+			'\\begin{aligned}',
+			`  ${bL} &${rel} ${bR} \\\\`,
+			`  ${aL} &${rel} ${aR}`,
+			'\\end{aligned}'
+		];
+	}
+
+	// Transformation ops with a colored operand
+	const operand = fmt(op.operand);
+	let leftApplied: string;
+	let rightApplied: string;
+	switch (op.kind) {
+		case 'add-both-sides':
+			leftApplied = `${bL} \\textcolor{blue}{+ ${operand}}`;
+			rightApplied = `${bR} \\textcolor{blue}{+ ${operand}}`;
+			break;
+		case 'subtract-both-sides':
+			leftApplied = `${bL} \\textcolor{blue}{- ${operand}}`;
+			rightApplied = `${bR} \\textcolor{blue}{- ${operand}}`;
+			break;
+		case 'multiply-both-sides':
+			leftApplied = `\\textcolor{blue}{${operand} \\times} \\left(${bL}\\right)`;
+			rightApplied = `\\textcolor{blue}{${operand} \\times} \\left(${bR}\\right)`;
+			break;
+		case 'divide-both-sides':
+			leftApplied = `\\dfrac{${bL}}{\\textcolor{blue}{${operand}}}`;
+			rightApplied = `\\dfrac{${bR}}{\\textcolor{blue}{${operand}}}`;
+			break;
+	}
+	return [
+		'\\begin{aligned}',
+		`  ${leftApplied} &${rel} ${rightApplied} \\\\`,
+		`  ${aL} &${rel} ${aR}`,
+		'\\end{aligned}'
+	];
 }
