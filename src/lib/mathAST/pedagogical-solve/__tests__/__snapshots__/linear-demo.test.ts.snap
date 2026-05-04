@@ -1,0 +1,156 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Pedagogical linear demo — snapshot > matches snapshot for 2x + 3 = 7 1`] = `
+"
+###### 2x + 3 = 7 ######
+
+========== TECHNIQUE — solveur algorithmique (solve()) ==========
+[1] identify-linear-coefficients: On identifie les coefficients: a = 2, b = -4
+[2] isolate-variable: Solution: x = 2
+
+========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
+[1] identify-equation: Équation du premier degré
+[2] subtract-both-sides: On soustrait 3 aux deux membres
+[3] divide-both-sides: On divise les deux membres par 2
+[4] read-solution: Solution : x = 2
+
+========== COLLEGE (summarized) ==========
+[1] Équation du premier degré
+[2] On soustrait 3 aux deux membres
+[3] On divise les deux membres par 2
+[4] Solution : x = 2
+
+========== COLLEGE (detailed) ==========
+[1] Équation du premier degré
+[2] On soustrait 3 aux deux membres
+    │ \\begin{aligned}
+    │   2x + 3 \\textcolor{blue}{- 3} &= 7 \\textcolor{blue}{- 3} \\\\
+    │   2x &= 4
+    │ \\end{aligned}
+[3] On divise les deux membres par 2
+    │ \\begin{aligned}
+    │   \\dfrac{2x}{\\textcolor{blue}{2}} &= \\dfrac{4}{\\textcolor{blue}{2}} \\\\
+    │   x &= 2
+    │ \\end{aligned}
+[4] Solution : x = 2
+
+========== LYCEE (summarized) ==========
+[1] Équation du premier degré
+[2] On isole les termes en x dans le membre de gauche
+[3] On termine en simplifiant le coefficient de x
+[4] S = { 2 }
+
+========== LYCEE (detailed) ==========
+[1] Équation du premier degré
+[2] On isole les termes en x dans le membre de gauche
+    │ \\begin{aligned}
+    │   2x &= 7 \\textcolor{blue}{- 3} \\\\
+    │   2x &= 4
+    │ \\end{aligned}
+[3] On termine en simplifiant le coefficient de x
+    │ x = 2
+[4] S = { 2 }
+
+========== SUPERIEUR (summarized) ==========
+[1] On isole x
+    [1] On isole les termes en x dans le membre de gauche
+    [2] On termine en simplifiant le coefficient de x
+    [3] S = { 2 }
+
+========== SUPERIEUR (detailed) ==========
+[1] On isole x
+    │ \\begin{aligned}
+    │   2x + 3 &= 7 \\\\
+    │   x &= 2
+    │ \\end{aligned}
+    [1] On isole les termes en x dans le membre de gauche
+        │ \\begin{aligned}
+        │   2x &= 7 \\textcolor{blue}{- 3} \\\\
+        │   2x &= 4
+        │ \\end{aligned}
+    [2] On termine en simplifiant le coefficient de x
+        │ x = 2
+    [3] S = { 2 }
+"
+`;
+
+exports[`Pedagogical linear demo — snapshot > matches snapshot for 3x − 2 = −5x + 7 1`] = `
+"
+###### 3x − 2 = −5x + 7 ######
+
+========== TECHNIQUE — solveur algorithmique (solve()) ==========
+[1] identify-linear-coefficients: On identifie les coefficients: a = 8, b = -9
+[2] isolate-variable: Solution: x = 9/8
+
+========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
+[1] identify-equation: Équation du premier degré
+[2] add-both-sides: On ajoute 5x aux deux membres
+[3] add-both-sides: On ajoute 2 aux deux membres
+[4] divide-both-sides: On divise les deux membres par 8
+[5] read-solution: Solution : x = \\dfrac{9}{8}
+
+========== COLLEGE (summarized) ==========
+[1] Équation du premier degré
+[2] On ajoute 5x aux deux membres
+[3] On ajoute 2 aux deux membres
+[4] On divise les deux membres par 8
+[5] Solution : x = \\dfrac{9}{8}
+
+========== COLLEGE (detailed) ==========
+[1] Équation du premier degré
+[2] On ajoute 5x aux deux membres
+    │ \\begin{aligned}
+    │   3x - 2 \\textcolor{blue}{+ 5x} &= -5x + 7 \\textcolor{blue}{+ 5x} \\\\
+    │   8x - 2 &= 7
+    │ \\end{aligned}
+[3] On ajoute 2 aux deux membres
+    │ \\begin{aligned}
+    │   8x - 2 \\textcolor{blue}{+ 2} &= 7 \\textcolor{blue}{+ 2} \\\\
+    │   8x &= 9
+    │ \\end{aligned}
+[4] On divise les deux membres par 8
+    │ \\begin{aligned}
+    │   \\dfrac{8x}{\\textcolor{blue}{8}} &= \\dfrac{9}{\\textcolor{blue}{8}} \\\\
+    │   x &= \\dfrac{9}{8}
+    │ \\end{aligned}
+[5] Solution : x = \\dfrac{9}{8}
+
+========== LYCEE (summarized) ==========
+[1] Équation du premier degré
+[2] On isole les termes en x dans le membre de gauche
+[3] On termine en simplifiant le coefficient de x
+[4] S = { \\dfrac{9}{8} }
+
+========== LYCEE (detailed) ==========
+[1] Équation du premier degré
+[2] On isole les termes en x dans le membre de gauche
+    │ \\begin{aligned}
+    │   3x \\textcolor{blue}{+ 5x} &= 7 \\textcolor{blue}{+ 2} \\\\
+    │   8x &= 9
+    │ \\end{aligned}
+[3] On termine en simplifiant le coefficient de x
+    │ x = \\dfrac{9}{8}
+[4] S = { \\dfrac{9}{8} }
+
+========== SUPERIEUR (summarized) ==========
+[1] On isole x
+    [1] On isole les termes en x dans le membre de gauche
+    [2] On termine en simplifiant le coefficient de x
+    [3] S = { \\dfrac{9}{8} }
+
+========== SUPERIEUR (detailed) ==========
+[1] On isole x
+    │ \\begin{aligned}
+    │   3x - 2 &= -5x + 7 \\\\
+    │   x &= \\dfrac{9}{8}
+    │ \\end{aligned}
+    [1] On isole les termes en x dans le membre de gauche
+        │ \\begin{aligned}
+        │   3x \\textcolor{blue}{+ 5x} &= 7 \\textcolor{blue}{+ 2} \\\\
+        │   8x &= 9
+        │ \\end{aligned}
+    [2] On termine en simplifiant le coefficient de x
+        │ x = \\dfrac{9}{8}
+    [3] S = { \\dfrac{9}{8} }
+"
+`;
