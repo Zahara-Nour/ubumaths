@@ -173,9 +173,9 @@ export const linearSolver: EquationSolver = {
 
 		const { a, b } = coeffs;
 
-		// Record coefficient identification
+		// Record coefficient identification (linear: a, b only — no c)
 		recorder.recordStep(
-			'identify-coefficients',
+			'identify-linear-coefficients',
 			describeCoefficients(a, b),
 			equals(simplified, number('0')),
 			equals(simplified, number('0')),
