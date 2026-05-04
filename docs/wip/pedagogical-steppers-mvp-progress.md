@@ -123,7 +123,33 @@ Note ajoutée dans `common/index.ts` pour expliquer cette restriction.
 - 17/17 tests renderer pédagogique
 - 11926/11947 tests mathAST (+17 du renderer Phase 2, 0 régression)
 
-## Phase 3 — Refactor arithmetic-steps (à faire)
+## Phase 3 — Refactor arithmetic-steps (terminée ✓)
+
+### Fichiers modifiés
+
+- `src/lib/mathAST/step-generator/arithmetic-steps.ts` (442 → 386 LOC, -56 LOC après suppression du doublon `evaluateNumeric` + `formatNumber`)
+- `src/lib/mathAST/step-generator/__tests__/step-generator.test.ts` (+3 tests précision exacte ; 1 test ajusté pour le nouveau comportement float→exact)
+
+### Changements
+
+- **Suppression** : `evaluateNumeric()` (~70 LOC, doublon de `evaluate()`) et `formatNumber()` (~6 LOC, redondant avec `toLatex()`).
+- **Ajout** : helper local `evaluateToNode(node)` qui appelle `evaluate(node, { mode: 'exact' })` et retourne un `MathNode` ou `null`.
+- **Format de sortie** : LaTeX via `toLatex(node)` au lieu de strings manuelles. Cas où `evaluate` ne donne pas de valeur exacte : on skippe l'étape (comme avant).
+- **API publique inchangée** : `generateStepsForNode(node, level, startIndex)` retourne toujours `{ steps: CalculationStep[]; nextIndex: number }`.
+
+### Conséquences sémantiques (cf. prompt 3.3)
+
+Les sous-calculs sont maintenant en arithmétique rationnelle exacte :
+
+- `1/3 + 1/6` → `\dfrac{1}{2}` (au lieu de `0.5` en float)
+- `\sqrt{8}` → `2\sqrt{2}` (au lieu de `2.828...`)
+- `3.14 * 2` → `\dfrac{157}{25}` (au lieu de `6.28` ; test ajusté)
+- Grands entiers (`2^30 + 1`) restent exacts.
+
+### Validation
+
+- 25/25 tests step-generator (+3 nouveaux pour précision exacte, 1 ajusté)
+- 11929/11950 tests mathAST (+3 du Phase 3, 0 régression)
 
 ## Phase 4 — Démo end-to-end + README (à faire)
 

@@ -3,13 +3,20 @@
  *
  * Generates step-by-step explanations for arithmetic operations.
  * Adapts detail level based on school level.
+ *
+ * MVP refactor (Phase 3) — sub-calculation values delegate to
+ * `evaluate(node, { mode: 'exact' })` and are rendered via `toLatex`. The
+ * previous local `evaluateNumeric` / `formatNumber` doublon has been removed.
+ * Results are now exact (BigInt rationals, simplified radicals, …) instead of
+ * lossy floats: `1/3 + 1/6` displays as `\dfrac{1}{2}` rather than `0.5`.
  */
 
 import type { MathNode } from '../types';
 import type { CalculationStep, SchoolLevel } from './types';
 import { toLatex } from '../index';
+import { evaluate } from '../eval/evaluate';
+import { isEvalValue } from '../eval/types';
 import {
-	isNumber,
 	isVariable,
 	isAddition,
 	isSubtraction,
@@ -18,7 +25,8 @@ import {
 	isSuperscript,
 	isFunction,
 	isOpposite,
-	isDelimiter
+	isDelimiter,
+	isNumber
 } from '../guards';
 
 /**
@@ -71,81 +79,21 @@ function getDescription(op: string, level: SchoolLevel): string {
 }
 
 /**
- * Evaluate a simple numeric expression
+ * Evaluate a node to its exact form via the central `evaluate()` and return
+ * the resulting `MathNode`, or `null` when the expression cannot be reduced
+ * to a value (free variables, indeterminate forms, domain errors).
+ *
+ * Replaces the previous `evaluateNumeric` doublon: gives exact rational
+ * arithmetic, exact radicals, and avoids float precision drift.
  */
-function evaluateNumeric(node: MathNode): number | null {
-	if (isNumber(node)) {
-		return parseFloat(node.value);
-	}
-
-	if (isOpposite(node)) {
-		const inner = evaluateNumeric(node.operand);
-		return inner !== null ? -inner : null;
-	}
-
-	if (isDelimiter(node)) {
-		return evaluateNumeric(node.content);
-	}
-
-	if (isAddition(node)) {
-		const left = evaluateNumeric(node.left);
-		const right = evaluateNumeric(node.right);
-		if (left !== null && right !== null) return left + right;
-	}
-
-	if (isSubtraction(node)) {
-		const left = evaluateNumeric(node.left);
-		const right = evaluateNumeric(node.right);
-		if (left !== null && right !== null) return left - right;
-	}
-
-	if (isMultiplication(node)) {
-		const left = evaluateNumeric(node.left);
-		const right = evaluateNumeric(node.right);
-		if (left !== null && right !== null) return left * right;
-	}
-
-	if (isDivision(node)) {
-		const left = evaluateNumeric(node.numerator);
-		const right = evaluateNumeric(node.denominator);
-		if (left !== null && right !== null && right !== 0) return left / right;
-	}
-
-	if (isSuperscript(node)) {
-		const base = evaluateNumeric(node.base);
-		const exp = evaluateNumeric(node.superscript);
-		if (base !== null && exp !== null) return Math.pow(base, exp);
-	}
-
-	if (isFunction(node) && node.args.length === 1) {
-		const arg = evaluateNumeric(node.args[0]);
-		if (arg === null) return null;
-
-		switch (node.name) {
-			case 'sin':
-				return Math.sin(arg);
-			case 'cos':
-				return Math.cos(arg);
-			case 'tan':
-				return Math.tan(arg);
-			case 'sqrt':
-				return arg >= 0 ? Math.sqrt(arg) : null;
-			case 'abs':
-				return Math.abs(arg);
-			case 'ln':
-				return arg > 0 ? Math.log(arg) : null;
-			case 'log':
-				return arg > 0 ? Math.log10(arg) : null;
-			case 'exp':
-				return Math.exp(arg);
-		}
-	}
-
-	return null;
+function evaluateToNode(node: MathNode): MathNode | null {
+	const result = evaluate(node, { mode: 'exact' });
+	if (!isEvalValue(result)) return null;
+	return result.node;
 }
 
 /**
- * Check if a node is a simple numeric value
+ * Check if a node is a simple numeric value (no further evaluation needed).
  */
 function isNumericValue(node: MathNode | undefined): boolean {
 	if (!node) return false;
@@ -153,16 +101,6 @@ function isNumericValue(node: MathNode | undefined): boolean {
 	if (isOpposite(node) && node.operand && isNumber(node.operand)) return true;
 	if (isDelimiter(node) && node.content) return isNumericValue(node.content);
 	return false;
-}
-
-/**
- * Format a number for display
- */
-function formatNumber(n: number): string {
-	if (Number.isInteger(n)) return n.toString();
-	// Round to reasonable precision
-	const rounded = Math.round(n * 1000000) / 1000000;
-	return rounded.toString();
 }
 
 /**
@@ -179,15 +117,15 @@ function generateBinarySteps(
 	const steps: CalculationStep[] = [];
 	let currentIndex = stepIndex;
 
-	// Get numeric values
-	const leftVal = evaluateNumeric(left);
-	const rightVal = evaluateNumeric(right);
-	const resultVal = evaluateNumeric(node);
+	// Get exact values via evaluate(mode: 'exact')
+	const leftNode = evaluateToNode(left);
+	const rightNode = evaluateToNode(right);
+	const resultNode = evaluateToNode(node);
 
-	if (leftVal !== null && rightVal !== null && resultVal !== null) {
-		const leftStr = formatNumber(leftVal);
-		const rightStr = formatNumber(rightVal);
-		const resultStr = formatNumber(resultVal);
+	if (leftNode !== null && rightNode !== null && resultNode !== null) {
+		const leftLatex = toLatex(leftNode);
+		const rightLatex = toLatex(rightNode);
+		const resultLatex = toLatex(resultNode);
 
 		let description: string;
 		let expression: string;
@@ -196,35 +134,35 @@ function generateBinarySteps(
 		switch (opType) {
 			case 'add':
 				description = getDescription('add', level);
-				expression = `${leftStr} + ${rightStr} = ${resultStr}`;
+				expression = `${leftLatex} + ${rightLatex} = ${resultLatex}`;
 				if (level === 'primaire') {
-					explanation = `On ajoute ${rightStr} à ${leftStr}`;
+					explanation = `On ajoute ${rightLatex} à ${leftLatex}`;
 				}
 				break;
 			case 'subtract':
 				description = getDescription('subtract', level);
-				expression = `${leftStr} - ${rightStr} = ${resultStr}`;
+				expression = `${leftLatex} - ${rightLatex} = ${resultLatex}`;
 				if (level === 'primaire') {
-					explanation = `On enlève ${rightStr} de ${leftStr}`;
+					explanation = `On enlève ${rightLatex} de ${leftLatex}`;
 				}
 				break;
 			case 'multiply':
 				description = getDescription('multiply', level);
-				expression = `${leftStr} \\times ${rightStr} = ${resultStr}`;
+				expression = `${leftLatex} \\times ${rightLatex} = ${resultLatex}`;
 				if (level === 'primaire') {
-					explanation = `${leftStr} fois ${rightStr}`;
+					explanation = `${leftLatex} fois ${rightLatex}`;
 				}
 				break;
 			case 'divide':
 				description = getDescription('divide', level);
-				expression = `${leftStr} \\div ${rightStr} = ${resultStr}`;
+				expression = `${leftLatex} \\div ${rightLatex} = ${resultLatex}`;
 				if (level === 'primaire') {
-					explanation = `On partage ${leftStr} en ${rightStr} parts égales`;
+					explanation = `On partage ${leftLatex} en ${rightLatex} parts égales`;
 				}
 				break;
 			default:
 				description = getDescription('evaluate', level);
-				expression = `${toLatex(node)} = ${resultStr}`;
+				expression = `${toLatex(node)} = ${resultLatex}`;
 		}
 
 		steps.push({
@@ -250,27 +188,31 @@ function generatePowerSteps(
 	const steps: CalculationStep[] = [];
 	let currentIndex = stepIndex;
 
-	const baseVal = evaluateNumeric(node.base);
-	const expVal = evaluateNumeric(node.superscript);
-	const resultVal = evaluateNumeric(node);
+	const baseNode = evaluateToNode(node.base);
+	const expNode = evaluateToNode(node.superscript);
+	const resultNode = evaluateToNode(node);
 
-	if (baseVal !== null && expVal !== null && resultVal !== null) {
-		const baseStr = formatNumber(baseVal);
-		const expStr = formatNumber(expVal);
-		const resultStr = formatNumber(resultVal);
+	if (baseNode !== null && expNode !== null && resultNode !== null) {
+		const baseLatex = toLatex(baseNode);
+		const expLatex = toLatex(expNode);
+		const resultLatex = toLatex(resultNode);
 
 		let explanation: string | undefined;
 		if (level === 'primaire' || level === 'college') {
-			if (Number.isInteger(expVal) && expVal > 0 && expVal <= 5) {
-				const factors = Array(expVal).fill(baseStr).join(' \\times ');
-				explanation = `${baseStr}^{${expStr}} = ${factors}`;
+			// Show repeated multiplication for small positive integer exponents
+			if (isNumber(expNode)) {
+				const expInt = Number(expNode.value);
+				if (Number.isInteger(expInt) && expInt > 0 && expInt <= 5) {
+					const factors = Array(expInt).fill(baseLatex).join(' \\times ');
+					explanation = `${baseLatex}^{${expLatex}} = ${factors}`;
+				}
 			}
 		}
 
 		steps.push({
 			index: currentIndex++,
 			description: getDescription('power', level),
-			expression: `${baseStr}^{${expStr}} = ${resultStr}`,
+			expression: `${baseLatex}^{${expLatex}} = ${resultLatex}`,
 			explanation,
 			ast: node
 		});
@@ -291,21 +233,24 @@ function generateFunctionSteps(
 	let currentIndex = stepIndex;
 
 	if (node.args.length === 1) {
-		const argVal = evaluateNumeric(node.args[0]);
-		const resultVal = evaluateNumeric(node);
+		const argNode = evaluateToNode(node.args[0]);
+		const resultNode = evaluateToNode(node);
 
-		if (argVal !== null && resultVal !== null) {
-			const argStr = formatNumber(argVal);
-			const resultStr = formatNumber(resultVal);
+		if (argNode !== null && resultNode !== null) {
+			const argLatex = toLatex(argNode);
+			const resultLatex = toLatex(resultNode);
 
 			steps.push({
 				index: currentIndex++,
 				description: `${node.name}`,
-				expression: `\\${node.name}(${argStr}) = ${resultStr}`,
+				expression: `\\${node.name}(${argLatex}) = ${resultLatex}`,
 				ast: node
 			});
 		}
 	}
+
+	// Suppress unused-variable warning (level is part of API for future use)
+	void level;
 
 	return { steps, nextIndex: currentIndex };
 }
