@@ -37,6 +37,7 @@ export type Dimension =
 	| 'angle'
 	| 'currency'
 	| 'dimensionless'
+	| 'area'
 	// Named SI derived dimensions (mathematically composite, but commonly named)
 	| 'frequency'
 	| 'force'
