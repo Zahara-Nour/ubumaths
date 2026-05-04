@@ -152,12 +152,15 @@ describe('Step Generator', () => {
 			expect(result.steps.length).toBeGreaterThan(0);
 		});
 
-		it('should handle decimal numbers', () => {
+		it('should handle decimal numbers (exact rational arithmetic)', () => {
+			// Phase 3 refactor : sub-calculations use evaluate(exact), so floats
+			// are converted to exact rationals (3.14 → 157/50, 3.14×2 → 157/25).
 			const ast = parseCustom('3.14 * 2');
 			const result = generateSteps(ast, { level: 'college' });
 
 			expect(result.steps.length).toBeGreaterThan(0);
-			expect(result.steps[0].expression).toContain('6.28');
+			// Exact result: 3.14 × 2 = 157/25 (= 6.28 in decimal)
+			expect(result.steps[0].expression).toContain('\\dfrac{157}{25}');
 		});
 
 		it('should respect maxSteps configuration', () => {
@@ -172,6 +175,39 @@ describe('Step Generator', () => {
 			const result = generateSteps(ast, { level: 'college' });
 
 			expect(result.steps.length).toBe(0);
+		});
+	});
+
+	describe('exact precision (Phase 3 refactor)', () => {
+		it('keeps fractions exact: 1/3 + 1/6 = 1/2', () => {
+			const ast = parseCustom('1/3 + 1/6');
+			const result = generateSteps(ast, { level: 'college' });
+			expect(result.steps.length).toBeGreaterThan(0);
+			// Final step should mention the exact result
+			const lastStep = result.steps[result.steps.length - 1];
+			expect(lastStep.expression).toMatch(/\\dfrac\{1\}\{2\}/);
+		});
+
+		it('keeps radicals exact: sqrt(8) collapses to 2 sqrt(2) intermediate', () => {
+			// sqrt(8) on its own does not produce binary-op steps, but it should
+			// appear as exact in any wrapping expression, e.g. sqrt(8) + 0.
+			const ast = parseCustom('sqrt(8) + 0');
+			const result = generateSteps(ast, { level: 'college' });
+			// The addition step's right operand is 0, left is sqrt(8) which evaluates
+			// to 2*sqrt(2) exactly. Verify no float approximation appears.
+			for (const step of result.steps) {
+				expect(step.expression).not.toMatch(/2\.828/);
+			}
+		});
+
+		it('keeps large integers exact (no float overflow)', () => {
+			// 2^30 + 1 = 1073741825 — well within JS safe integer range, but
+			// verifies that the exact path produces the integer literally.
+			const ast = parseCustom('2^30 + 1');
+			const result = generateSteps(ast, { level: 'college' });
+			expect(result.steps.length).toBeGreaterThan(0);
+			const lastStep = result.steps[result.steps.length - 1];
+			expect(lastStep.expression).toContain('1073741825');
 		});
 	});
 });
