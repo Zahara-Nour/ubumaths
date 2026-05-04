@@ -17,8 +17,7 @@
 import { describe, it, expect } from 'vitest';
 import { generateLinearEquationSteps } from '../linear';
 import { LinearEquationRenderer } from '../linear-renderer';
-import type { EquationStep } from '../types';
-import type { SchoolLevel } from '../../common/step-renderer-base';
+import type { EquationStep, LinearSchoolLevel } from '../types';
 import type { Verbosity } from '../../common/verbosity';
 import type { RelationNode } from '../../types';
 import type { RenderedStep } from '../../common/step-renderer-base';
@@ -35,7 +34,8 @@ import { solve } from '../../solve';
 import type { SolveStep } from '../../solve/types';
 import { GenericTechnicalRenderer } from '../../common/technical-renderer';
 
-const allLevels: readonly SchoolLevel[] = ['primaire', 'college', 'lycee', 'superieur'];
+// Linear pipeline excludes 'primaire' (linear algebra is not in the primary curriculum)
+const allLevels: readonly LinearSchoolLevel[] = ['college', 'lycee', 'superieur'];
 const allVerbosities: readonly Verbosity[] = ['summarized', 'detailed'];
 
 function renderTree(steps: readonly RenderedStep[], depth: number = 0): readonly string[] {

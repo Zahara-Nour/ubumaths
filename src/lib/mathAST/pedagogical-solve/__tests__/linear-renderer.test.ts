@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { LinearEquationRenderer } from '../linear-renderer';
 import { generateLinearEquationSteps } from '../linear';
-import type { SchoolLevel } from '../../common/step-renderer-base';
+import type { LinearSchoolLevel } from '../types';
 import {
 	number,
 	variable,
@@ -22,7 +22,7 @@ function eq3x_minus_2_eq_minus_5x_plus_7() {
 	);
 }
 
-const allLevels: readonly SchoolLevel[] = ['primaire', 'college', 'lycee', 'superieur'];
+const allLevels: readonly LinearSchoolLevel[] = ['college', 'lycee', 'superieur'];
 
 describe('LinearEquationRenderer', () => {
 	const renderer = new LinearEquationRenderer();
@@ -148,6 +148,21 @@ describe('LinearEquationRenderer', () => {
 				schoolLevel: 'college'
 			});
 			for (const r of rendered) expect(r.text).toBeUndefined();
+		});
+	});
+
+	describe('primaire is unsupported', () => {
+		it('throws a clear error when called with schoolLevel: primaire', () => {
+			const steps = generateLinearEquationSteps(eq3x_minus_2_eq_minus_5x_plus_7(), {
+				level: 'college'
+			});
+			expect(() =>
+				renderer.render(steps[0], {
+					verbosity: 'summarized',
+					// primaire is intentionally not in LinearSchoolLevel; cast for the test
+					schoolLevel: 'primaire' as never
+				})
+			).toThrow(/primaire.*not supported|primary curriculum/);
 		});
 	});
 

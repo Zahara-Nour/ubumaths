@@ -89,11 +89,18 @@ export interface EquationStep extends BaseStep {
 // =============================================================================
 
 /**
+ * School levels that linear equations apply to. Excludes `primaire` — linear
+ * algebra is not in the primary-school curriculum, so this pipeline refuses
+ * that level at the type level.
+ */
+export type LinearSchoolLevel = Exclude<SchoolLevel, 'primaire'>;
+
+/**
  * Options for `generateLinearEquationSteps`.
  */
 export interface LinearEquationStepsOptions {
-	/** Target school level — drives top-level granularity */
-	readonly level: SchoolLevel;
+	/** Target school level — drives top-level granularity. `primaire` excluded. */
+	readonly level: LinearSchoolLevel;
 	/**
 	 * Include `subSteps` for drill-down. Default `true`.
 	 * Set to `false` for a flat output (e.g. for tests, logs).
@@ -130,11 +137,10 @@ export interface GenerationStrategy {
 }
 
 /**
- * Strategy table — `primaire` falls back to `college` since linear algebra
- * is not in the primaire curriculum.
+ * Strategy table for the supported school levels. `primaire` is intentionally
+ * absent (linear equations are not in the primary curriculum).
  */
-export const STRATEGIES: Readonly<Record<SchoolLevel, GenerationStrategy>> = {
-	primaire: { groupRegroupement: false, groupDivision: false, includeIdentify: true },
+export const STRATEGIES: Readonly<Record<LinearSchoolLevel, GenerationStrategy>> = {
 	college: { groupRegroupement: false, groupDivision: false, includeIdentify: true },
 	lycee: { groupRegroupement: true, groupDivision: false, includeIdentify: false },
 	superieur: {
