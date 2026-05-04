@@ -135,8 +135,8 @@ export interface RenderedStep {
  *
  * @example Pedagogical renderer (school-adapted)
  * ```typescript
- * class SolvePedagogicalRenderer
- *   implements StepRenderer<SolveStep, PedagogicalRenderOptions> {
+ * class LinearEquationRenderer
+ *   implements StepRenderer<EquationStep, PedagogicalRenderOptions> {
  *   render(step, options) { ... }
  *   renderAll(steps, options) { return steps.map(s => this.render(s, options)); }
  * }
