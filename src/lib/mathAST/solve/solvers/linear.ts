@@ -27,8 +27,10 @@ import {
 } from '../../factory';
 import { preprocess, denormalize, normalize, normalFormsEquivalent } from '../../normal';
 import { toLatex } from '../../latex-generator';
+import { getNumericValue } from '../../common/numeric';
 import {
 	describeSubtract,
+	describeAdd,
 	describeDivide,
 	describeSolution,
 	describeCoefficients
@@ -68,14 +70,16 @@ function extractLinearCoefficients(
 	// For a linear expression, each variable term should be of form c*x
 	// So the coefficient is the sum of the c's
 
-	// Build the constant b
+	// Build the constant b — canonicalize so the recorded operand is a clean
+	// literal (e.g. `-4`) rather than the raw flat sum (`3 + -7`).
 	// Note: unflattenSum returns null only for empty arrays, which we've already handled
-	const b =
+	const bRaw =
 		constantTerms.length === 0
 			? number('0')
 			: constantTerms.length === 1
 				? constantTerms[0]
 				: unflattenSum(constantTerms.map((t) => ({ sign: '+' as const, term: t })))!;
+	const b = denormalize(normalize(bRaw));
 
 	// For the coefficient a, we need to extract it from terms like 2x, -3x, x
 	// The simplest approach: coefficient = (expr - b) / x when evaluated with x=1
@@ -221,17 +225,26 @@ export const linearSolver: EquationSolver = {
 		}
 
 		// Solve: x = -b/a
-		// Step 1: ax = -b (subtract b from both sides)
-		const negB = opposite(b);
+		// Step 1: ax = -b (subtract b from both sides). Canonicalize -b so the
+		// recorded after expression is a clean literal (e.g. `2x = 4`) rather
+		// than `2x = -(3 + -7)` etc.
+		const negB = denormalize(normalize(opposite(b)));
 		const axEqualsNegB = equals(implicitMultiply(a, varNode(variable)), negB);
 
+		// Choose `add-constant` vs `subtract-constant` based on the sign of b so
+		// the displayed operand is always positive (avoids ugly forms like
+		// "On soustrait -4" or "−-4"). When b < 0 we conceptually *add* |b| to
+		// both sides; when b > 0 we *subtract* b.
+		const bNumeric = getNumericValue(b);
+		const useAddRule = bNumeric !== null && bNumeric < 0;
+		const operand = useAddRule ? negB : b;
 		recorder.recordStep(
-			'subtract-constant',
-			describeSubtract(b),
+			useAddRule ? 'add-constant' : 'subtract-constant',
+			useAddRule ? describeAdd(operand) : describeSubtract(operand),
 			equals(simplified, number('0')),
 			axEqualsNegB,
 			'detailed',
-			b
+			operand
 		);
 
 		// Step 2: x = -b/a (divide both sides by a)
