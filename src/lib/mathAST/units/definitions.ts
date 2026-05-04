@@ -328,6 +328,52 @@ export const SPECIAL_UNITS: ReadonlyMap<string, BaseUnitDef> = new Map([
 		}
 	],
 
+	// =========== AREA UNITS ===========
+	// Areas use the new `components` field (Map([['m', 2]])) introduced for
+	// named SI derived units. No SI prefixes accepted (would be redundant —
+	// hectare is already hecto-are).
+	//
+	// **Note on dimensional signature**: `getDimensionalSignature(unit('ha'))`
+	// returns `{ length: 2 }`, not `{ area: 1 }`. This diverges from how
+	// `'volume'` is treated (litre is a BASE_UNITS entry with dimension 'volume',
+	// giving `{ volume: 1 }`). Here `'area'` is **catalog metadata only**:
+	// `unitsAreCompatible` works correctly because it compares components maps
+	// directly. Any future code that branches on the dimension signature for
+	// area must rely on `{ length: 2 }` rather than `{ area: 1 }`.
+	[
+		'a',
+		{
+			symbol: 'a',
+			baseSymbol: 'm',
+			components: new Map([['m', 2]]),
+			coefficient: 100,
+			dimension: 'area',
+			name: 'are'
+		}
+	],
+	[
+		'ha',
+		{
+			symbol: 'ha',
+			baseSymbol: 'm',
+			components: new Map([['m', 2]]),
+			coefficient: 10000,
+			dimension: 'area',
+			name: 'hectare'
+		}
+	],
+	[
+		'acre',
+		{
+			symbol: 'acre',
+			baseSymbol: 'm',
+			components: new Map([['m', 2]]),
+			coefficient: 4046.8564224,
+			dimension: 'area',
+			name: 'acre'
+		}
+	],
+
 	// =========== TEMPERATURE UNITS (AFFINE) ===========
 	// Celsius and Fahrenheit use affine (offset-based) conversions to Kelvin.
 	// Conversion formula (in conversion.ts/convertAffine):
@@ -620,6 +666,13 @@ export const UNIT_ALIASES: ReadonlyMap<string, string> = new Map([
 	['pied', 'ft'],
 	['livre', 'lb'],
 
+	// Area (French aliases + plurals)
+	['are', 'a'],
+	['ares', 'a'],
+	['hectare', 'ha'],
+	['hectares', 'ha'],
+	['acres', 'acre'],
+
 	// Angle
 	['degré', 'deg'],
 	['degres', '°'],
@@ -810,6 +863,9 @@ export const UNIT_FAMILIES: Readonly<Record<string, readonly string[]>> = {
 	// Currency
 	'€': ['€'],
 	$: ['$']
+	// TODO: add an area family (e.g., m², a, ha, km², acre) when 'best' mode
+	// supports composite-signature lookup. Currently area units fall back to
+	// `getUnitFamily('m') = ['km', ..., 'nm']` which is length, not m².
 } as const;
 
 /**
