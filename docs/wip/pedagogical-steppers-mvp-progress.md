@@ -55,7 +55,7 @@
 - [x] 1.4 Refactor `simplify.ts` (API publique inchangée, 92/92 simplify tests ✓, 0 régression sur 11907 mathAST tests)
 - [x] 1.5 Type stubs `pedagogical-evaluate/types.ts`
 - [x] `code-reviewer` agent (Opus) — appliqué les fixes : doc iterations, doc bestCost sentinel, doc RewriteStep.label, doc bridge phase, +2 tests (cost tie-break, onStep ordering)
-- [ ] commit Phase 1
+- [x] commit Phase 1 — `828668976` `feat(mathAST): rewriting engine + step renderer infrastructure (Phase 1 MVP)` (11 fichiers, +2075 / -142)
 
 ### Fichiers créés / modifiés
 
@@ -105,7 +105,23 @@ Note ajoutée dans `common/index.ts` pour expliquer cette restriction.
 
 ---
 
-## Phase 2 — Renderer pédagogique solve (à faire)
+## Phase 2 — Renderer pédagogique solve (terminée ✓)
+
+### Fichiers créés
+
+- `src/lib/mathAST/solve/pedagogical-renderer.ts` (~190 LOC, `SolvePedagogicalRenderer` classe)
+- `src/lib/mathAST/solve/__tests__/pedagogical-renderer.test.ts` (17 tests, tous ✓)
+
+### Couverture
+
+- **Linéaire (4 niveaux)** : `identify-linear`, `subtract-constant`, `add-constant`, `divide-coefficient`, `multiply-coefficient`, `isolate-variable`
+- **Quadratique (college, lycee, superieur)** : `identify-quadratic`, `identify-coefficients`, `compute-discriminant`, `discriminant-{positive,zero,negative}`, `apply-quadratic-formula`, `simplify-solution`
+- **Fallback** : `TITLES[level][rule]` → `TITLES.lycee[rule]` → `step.description`
+
+### Validation
+
+- 17/17 tests renderer pédagogique
+- 11926/11947 tests mathAST (+17 du renderer Phase 2, 0 régression)
 
 ## Phase 3 — Refactor arithmetic-steps (à faire)
 
