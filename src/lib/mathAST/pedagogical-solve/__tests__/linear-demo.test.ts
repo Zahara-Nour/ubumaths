@@ -64,9 +64,15 @@ function prettyTransformation(before: RelationNode, after: RelationNode): readon
 }
 
 /**
- * Walk the EquationStep[] tree (not the rendered tree) so we keep access to
- * the structural before/after fields for the equation-transformation display.
- * Title/explanation are still produced by the renderer.
+ * Walk the EquationStep[] tree directly so we keep access to the structural
+ * `before`/`after` fields for the equation-transformation display. Verbosity
+ * controls whether the equation transformations are printed:
+ *
+ * - `summarized` → titres seuls
+ * - `detailed`   → titres + transformations LaTeX (\\begin{aligned} block)
+ *
+ * Explanations are not surfaced by this terminal demo (the renderer still
+ * exposes them in `RenderedStep.explanation` for UI consumers).
  */
 function renderTree(
 	steps: readonly EquationStep[],
@@ -80,12 +86,10 @@ function renderTree(
 	for (const s of steps) {
 		const r = renderer.render(s, { verbosity, schoolLevel: level });
 		out.push(`${indent}[${s.id}] ${r.title}`);
-		// Show the equation transformation when before !== after (transformation steps)
-		if (toLatex(s.before) !== toLatex(s.after)) {
+		if (verbosity === 'detailed' && toLatex(s.before) !== toLatex(s.after)) {
 			const lines = prettyTransformation(s.before, s.after);
 			for (const line of lines) out.push(`${indent}    │ ${line}`);
 		}
-		if (r.explanation) out.push(`${indent}    → ${r.explanation}`);
 		if (s.subSteps && s.subSteps.length > 0) {
 			out.push(...renderTree(s.subSteps, level, verbosity, depth + 1));
 		}
