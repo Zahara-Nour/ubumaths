@@ -109,17 +109,39 @@ describe('LinearEquationRenderer', () => {
 		});
 	});
 
-	describe('vocabulary differs across levels', () => {
-		it('add-both-sides title differs across levels', () => {
+	describe('vocabulary across levels', () => {
+		it('add-both-sides : college diffère de lycée/supérieur (« aux deux membres » explicite ou non)', () => {
 			const steps = generateLinearEquationSteps(eq3x_minus_2_eq_minus_5x_plus_7(), {
 				level: 'college'
 			});
 			const addStep = steps.find((s) => s.operation?.kind === 'add-both-sides')!;
 			expect(addStep).toBeDefined();
-			const titles = allLevels.map(
-				(level) => renderer.render(addStep, { verbosity: 'summarized', schoolLevel: level }).title
-			);
-			expect(new Set(titles).size).toBeGreaterThanOrEqual(3);
+			const titleCollege = renderer.render(addStep, {
+				verbosity: 'summarized',
+				schoolLevel: 'college'
+			}).title;
+			const titleLycee = renderer.render(addStep, {
+				verbosity: 'summarized',
+				schoolLevel: 'lycee'
+			}).title;
+			expect(titleCollege).toContain('aux deux membres');
+			expect(titleLycee).not.toContain('aux deux membres');
+		});
+
+		it('lycée et supérieur partagent le vocabulaire (différence purement structurelle)', () => {
+			const steps = generateLinearEquationSteps(eq3x_minus_2_eq_minus_5x_plus_7(), {
+				level: 'college'
+			});
+			const addStep = steps.find((s) => s.operation?.kind === 'add-both-sides')!;
+			const titleLycee = renderer.render(addStep, {
+				verbosity: 'summarized',
+				schoolLevel: 'lycee'
+			}).title;
+			const titleSuperieur = renderer.render(addStep, {
+				verbosity: 'summarized',
+				schoolLevel: 'superieur'
+			}).title;
+			expect(titleLycee).toBe(titleSuperieur);
 		});
 	});
 
