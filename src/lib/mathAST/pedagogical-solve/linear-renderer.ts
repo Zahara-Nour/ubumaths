@@ -29,8 +29,12 @@ type TitleFn = (op: EquationOperation, step: EquationStep) => string;
 type ExplanationFn = (op: EquationOperation, step: EquationStep) => string;
 
 function fmt(node: { type: string } & object): string {
-	// `node` is a MathNode subset
-	return toLatex(node as Parameters<typeof toLatex>[0]);
+	// `toLatex` emits a literal space for implicit multiplication (`5 x`) for
+	// LaTeX source readability. In our pedagogical operand strings (titles
+	// shown in plain text or via MathLive) we want the tighter `5x`. Strip
+	// the space only between a digit/closing-brace and a letter — leave
+	// `\dfrac{...}{...}` etc. untouched.
+	return toLatex(node as Parameters<typeof toLatex>[0]).replace(/(\d|\})\s+([a-zA-Z\\])/g, '$1$2');
 }
 
 // Helpers to extract operand-ish strings

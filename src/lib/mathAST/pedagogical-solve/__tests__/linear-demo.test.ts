@@ -31,6 +31,9 @@ import {
 	opposite,
 	relation
 } from '../../factory';
+import { solve } from '../../solve';
+import type { SolveStep } from '../../solve/types';
+import { GenericTechnicalRenderer } from '../../common/technical-renderer';
 
 const allLevels: readonly SchoolLevel[] = ['primaire', 'college', 'lycee', 'superieur'];
 const allVerbosities: readonly Verbosity[] = ['summarized', 'detailed'];
@@ -49,16 +52,38 @@ function renderTree(steps: readonly RenderedStep[], depth: number = 0): readonly
 }
 
 function presentEquation(label: string, equation: RelationNode): string {
-	const renderer = new LinearEquationRenderer();
+	const pedagogical = new LinearEquationRenderer();
+	const technical = new GenericTechnicalRenderer<EquationStep>();
+	const technicalForSolveSteps = new GenericTechnicalRenderer<SolveStep>();
+
 	const lines: string[] = [];
 	lines.push(`\n###### ${label} ######\n`);
+
+	// 1. Technical view: algorithmic solver's recorded steps
+	const solveResult = solve(equation, { verbosity: 'detailed' });
+	const solverTech = technicalForSolveSteps.renderAll(solveResult.steps, {
+		verbosity: 'detailed',
+		format: 'text'
+	});
+	lines.push('========== TECHNIQUE — solveur algorithmique (solve()) ==========');
+	for (const s of solverTech) lines.push(s.text ?? `[${s.id}] ${s.title}`);
+	lines.push('');
+
+	// 2. Technical view: pedagogical pipeline raw EquationStep[] (max-detail college)
+	const pedaSteps = generateLinearEquationSteps(equation, { level: 'college' });
+	const pedaTech = technical.renderAll(pedaSteps, { verbosity: 'detailed', format: 'text' });
+	lines.push('========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========');
+	for (const s of pedaTech) lines.push(s.text ?? `[${s.id}] ${s.title}`);
+	lines.push('');
+
+	// 3. Pedagogical views — 4 levels × 2 verbosities
 	for (const level of allLevels) {
 		for (const verbosity of allVerbosities) {
 			const steps: readonly EquationStep[] = generateLinearEquationSteps(equation, {
 				level,
 				includeSubSteps: true
 			});
-			const rendered = renderer.renderAll(steps, { verbosity, schoolLevel: level });
+			const rendered = pedagogical.renderAll(steps, { verbosity, schoolLevel: level });
 			lines.push(`========== ${level.toUpperCase()} (${verbosity}) ==========`);
 			lines.push(...renderTree(rendered));
 			lines.push('');
