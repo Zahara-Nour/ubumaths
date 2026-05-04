@@ -1,38 +1,27 @@
 /**
- * Pedagogical Linear Demo — Snapshot Tests
+ * Pedagogical Linear Demo — Snapshot Tests (Option C)
  *
- * Each equation has a snapshot file (in `__snapshots__/linear-demo.test.ts.snap`)
- * containing the expected output. The test calls `presentEquation(...)` and
- * compares byte-for-byte to the snapshot.
+ * Each category in `demo-equations/` produces its own `describe()` block with
+ * one snapshot per equation. Snapshots are tagged by category in the single
+ * `__snapshots__/linear-demo.test.ts.snap` file (e.g.
+ * `exports['snapshot — fractions > x/2 + 1/3 = 1 1'] = ...`).
  *
- * - First run / new equation → vitest creates the snapshot, mark it for review.
- * - Output drift → test fails with a diff. Either fix the code, or update the
- *   snapshot via `pnpm test:server <path> -u`.
- *
- * The same `presentEquation` is consumed by `scripts/pedagogical-solve-demo.ts`
- * so the standalone CLI and the test always agree.
+ * Adding a new equation : append to the relevant `demo-equations/<category>.ts`.
+ * Run `pnpm test:server <path> -u` to update snapshots after intentional changes.
  *
  * @module mathAST/pedagogical-solve/__tests__/linear-demo
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-	presentEquation,
-	EQ_2X_PLUS_3_EQ_7,
-	EQ_3X_MINUS_2_EQ_MINUS_5X_PLUS_7,
-	EQ_X_OVER_2_PLUS_1_OVER_3_EQ_1
-} from '../demo-helpers';
+import { presentEquation } from '../demo-helpers';
+import { ALL_CATEGORIES } from '../demo-equations';
 
-describe('Pedagogical linear demo — snapshot', () => {
-	it('matches snapshot for 2x + 3 = 7', () => {
-		expect(presentEquation('2x + 3 = 7', EQ_2X_PLUS_3_EQ_7)).toMatchSnapshot();
+for (const category of ALL_CATEGORIES) {
+	describe(`snapshot — ${category.name}`, () => {
+		for (const { label, equation } of category.cases) {
+			it(`${label}`, () => {
+				expect(presentEquation(label, equation)).toMatchSnapshot();
+			});
+		}
 	});
-
-	it('matches snapshot for 3x − 2 = −5x + 7', () => {
-		expect(presentEquation('3x − 2 = −5x + 7', EQ_3X_MINUS_2_EQ_MINUS_5X_PLUS_7)).toMatchSnapshot();
-	});
-
-	it('matches snapshot for x/2 + 1/3 = 1 (fractional coefficients and constants)', () => {
-		expect(presentEquation('x/2 + 1/3 = 1', EQ_X_OVER_2_PLUS_1_OVER_3_EQ_1)).toMatchSnapshot();
-	});
-});
+}

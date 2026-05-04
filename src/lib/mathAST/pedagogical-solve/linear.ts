@@ -312,10 +312,14 @@ export function generateLinearEquationSteps(
 		}
 	}
 
-	// Step 3 — Division (skip when coefficient is 1)
+	// Step 3 — Division (skip when coefficient is 1, 0 or absent)
+	// `coefficient === 0` happens for degenerate cases like `0x = 0` or `0x = 5`
+	// — we must NOT divide by 0. The pipeline currently leaves these without
+	// a division step ; a future "no-solution" / "infinite-solutions" branch
+	// could produce a more pedagogical narrative.
 	let divisionStep: EquationStep | null = null;
 	const coefficient = extractCoefficientOfX(current.left, variable);
-	if (coefficient !== null && !isOne(coefficient)) {
+	if (coefficient !== null && !isOne(coefficient) && !isZero(coefficient)) {
 		const after = divideBothSides(current, coefficient);
 		if (strategy.divisionMode === 'compact') {
 			divisionStep = makeStep({
