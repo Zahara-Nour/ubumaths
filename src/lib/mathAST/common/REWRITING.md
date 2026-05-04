@@ -21,8 +21,14 @@ common/
 └── rewriting-engine.ts       # rewrite(node, config): EngineResult
 ```
 
-Domain-specific pedagogical renderers live next to the recorder they consume
-(e.g. `solve/pedagogical-renderer.ts`).
+Domain-specific pedagogical renderers live next to the source they consume
+(e.g. `pedagogical-solve/linear-renderer.ts` for linear equations).
+
+> **Note (Phase 6)** : `solve/pedagogical-renderer.ts` (Phase 2) was removed
+> because the algorithmic solver does NOT match what a student does on paper.
+> A separate pedagogical pipeline lives in `pedagogical-solve/` and walks the
+> equation directly. The dual-rendering pattern below stays for domains where
+> algorithm = pedagogy (limit, integrate, differentiate, matrix, domain).
 
 ## Dual rendering pattern
 
@@ -51,8 +57,10 @@ differentiate, limits, matrix, domain):
    optionally `EXPLANATIONS` (typically primaire only).
 4. Fallback chain: `TITLES[level][rule]` → `TITLES.lycee[rule]` → `step.description`.
 
-`solve/pedagogical-renderer.ts` is the reference implementation (covers linear
-and quadratic rules across the four French school levels).
+`pedagogical-solve/linear-renderer.ts` (Phase 6) is the reference
+implementation: maps `EquationStep[]` produced by `generateLinearEquationSteps`
+to `RenderedStep[]` adapted to the four French school levels with recursive
+`subSteps` rendering.
 
 ## Using the rewrite engine
 
