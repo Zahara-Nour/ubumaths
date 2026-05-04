@@ -81,19 +81,21 @@ describe('LinearEquationRenderer', () => {
 	});
 
 	describe('subSteps recursion', () => {
-		it('lycee renders subSteps recursively', () => {
+		it('superieur renders subSteps recursively (mergeAll layout)', () => {
 			const steps = generateLinearEquationSteps(eq3x_minus_2_eq_minus_5x_plus_7(), {
-				level: 'lycee',
+				level: 'superieur',
 				includeSubSteps: true
 			});
-			const rendered = renderer.renderAll(steps, { verbosity: 'detailed', schoolLevel: 'lycee' });
+			const rendered = renderer.renderAll(steps, {
+				verbosity: 'detailed',
+				schoolLevel: 'superieur'
+			});
 			const someWithSub = rendered.find((r) => r.subSteps !== undefined);
 			expect(someWithSub).toBeDefined();
 			expect(someWithSub!.subSteps!.length).toBeGreaterThan(0);
-			// Each substep is also a RenderedStep
 			for (const sub of someWithSub!.subSteps!) {
 				expect(sub.title.length).toBeGreaterThan(0);
-				expect(sub.schoolLevel).toBe('lycee');
+				expect(sub.schoolLevel).toBe('superieur');
 			}
 		});
 

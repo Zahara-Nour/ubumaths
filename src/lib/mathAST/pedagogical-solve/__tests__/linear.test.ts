@@ -78,11 +78,12 @@ describe('generateLinearEquationSteps', () => {
 			expect(steps[2].operation?.kind).toBe('read-solution');
 		});
 
-		it('lycee: 2x = 4 → divide + solution (2 top-level, no identify)', () => {
+		it('lycee: 2x = 4 → identify + simplify-coefficient + solution (3 top-level)', () => {
 			const steps = generateLinearEquationSteps(eq2x_eq_4(), { level: 'lycee' });
-			expect(steps.length).toBe(2);
-			expect(steps[0].operation?.kind).toBe('divide-both-sides');
-			expect(steps[1].operation?.kind).toBe('read-solution');
+			expect(steps.length).toBe(3);
+			expect(steps[0].operation?.kind).toBe('identify-equation');
+			expect(steps[1].operation?.kind).toBe('simplify-coefficient');
+			expect(steps[2].operation?.kind).toBe('read-solution');
 		});
 
 		it('superieur: 2x = 4 → reduce-to-canonical + solution (1-2 top-level)', () => {
@@ -124,26 +125,26 @@ describe('generateLinearEquationSteps', () => {
 			expect(hasDivide).toBe(true);
 		});
 
-		it('lycee: 3x − 2 = −5x + 7 groups regroupement (2-3 top-level)', () => {
+		it('lycee: 3x − 2 = −5x + 7 → identify + transpose + simplify-coef + solution (4 flat)', () => {
 			const steps = generateLinearEquationSteps(eq3x_minus_2_eq_minus_5x_plus_7(), {
 				level: 'lycee'
 			});
-			// Expect: [reduce-to-canonical OR group-x+group-const, divide, solution]
-			// Top-level should be ≤ 4
-			expect(steps.length).toBeLessThanOrEqual(4);
-			// Last is solution
-			const last = steps[steps.length - 1];
-			expect(last.operation?.kind).toBe('read-solution');
-			// SubSteps should exist for the grouping (drill-down)
-			const groupingStep = steps.find(
-				(s) =>
-					s.operation?.kind === 'group-variable-terms' ||
-					s.operation?.kind === 'group-constants' ||
-					s.operation?.kind === 'reduce-to-canonical'
-			);
-			expect(groupingStep).toBeDefined();
-			expect(groupingStep!.subSteps).toBeDefined();
-			expect(groupingStep!.subSteps!.length).toBeGreaterThan(0);
+			// Lycée structure: 4 flat top-level steps, no wrapper, no substeps
+			expect(steps.length).toBe(4);
+			expect(steps[0].operation?.kind).toBe('identify-equation');
+			expect(steps[1].operation?.kind).toBe('transpose-terms');
+			expect(steps[2].operation?.kind).toBe('simplify-coefficient');
+			expect(steps[3].operation?.kind).toBe('read-solution');
+			// transpose-terms has BOTH operands set (variable + constant moves)
+			const transpose = steps[1].operation as {
+				kind: 'transpose-terms';
+				variableOperand: unknown;
+				constantOperand: unknown;
+			};
+			expect(transpose.variableOperand).not.toBeNull();
+			expect(transpose.constantOperand).not.toBeNull();
+			// No substeps in lycée flat layout
+			for (const s of steps) expect(s.subSteps).toBeUndefined();
 		});
 
 		it('superieur: 3x − 2 = −5x + 7 ultra-condensed (1-2 top-level)', () => {
@@ -169,13 +170,16 @@ describe('generateLinearEquationSteps', () => {
 	});
 
 	describe('substeps', () => {
-		it('lycee with includeSubSteps:true gives drill-down on grouping', () => {
+		it('lycee structure is flat (no substeps even with includeSubSteps:true)', () => {
+			// Phase Phase 6 v2 — lycée uses transpose-terms + simplify-coefficient
+			// instead of a reduce-to-canonical wrapper. So no substeps at all.
 			const steps = generateLinearEquationSteps(eq3x_minus_2_eq_minus_5x_plus_7(), {
 				level: 'lycee',
 				includeSubSteps: true
 			});
 			const total = countAllSteps(steps);
-			expect(total).toBeGreaterThan(steps.length); // some substeps exist
+			expect(total).toBe(steps.length); // no substeps
+			for (const s of steps) expect(s.subSteps).toBeUndefined();
 		});
 
 		it('lycee with includeSubSteps:false has no substeps', () => {

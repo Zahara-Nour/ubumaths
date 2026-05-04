@@ -47,6 +47,25 @@ export type EquationOperation =
 	/** Simplify a side (collecting like terms, evaluating arithmetic) */
 	| { readonly kind: 'simplify'; readonly side: 'left' | 'right' | 'both' }
 	/**
+	 * Combined transposition (lycée+) — moves x-terms to the left side and
+	 * constants to the right side IN ONE STEP. The displayed transformation
+	 * shows BOTH operands simultaneously in color (`+5x` on the left, `+2`
+	 * on the right). Either operand may be `null` when the corresponding
+	 * move is not needed (e.g. equation already has x only on left).
+	 */
+	| {
+			readonly kind: 'transpose-terms';
+			readonly variableOperand: MathNode | null;
+			readonly constantOperand: MathNode | null;
+	  }
+	/**
+	 * Compact division (lycée+) — replaces `divide-both-sides` for terse
+	 * presentations. The display shows only the result equation `x = …` ;
+	 * the actual division is implicit in the title ("On termine en
+	 * simplifiant le coefficient de x").
+	 */
+	| { readonly kind: 'simplify-coefficient'; readonly coefficient: MathNode }
+	/**
 	 * Top-level grouping step (lycée-level abstraction). Substeps contain
 	 * the actual add/subtract/simplify operations.
 	 */
@@ -115,23 +134,26 @@ export interface LinearEquationStepsOptions {
 // =============================================================================
 
 /**
- * Per-level strategy controlling top-level granularity. The actual generation
- * always knows the full step tree internally; `STRATEGIES[level]` decides which
- * sub-operations get promoted to top-level steps.
+ * Per-level strategy controlling step granularity and operation choice.
  *
- * - `groupRegroupement`: when `true`, the regroupement operations (move x-terms
- *   left, move constants right) are wrapped in a single top-level step. When
- *   `false`, each operation appears as a separate top-level step.
- * - `groupDivision`: similarly for the final division.
+ * - `regroupementMode`:
+ *     - `'atomic'` (college) — emit one `add-both-sides` per move, sequentially.
+ *     - `'combined'` (lycée+) — emit ONE `transpose-terms` step combining both
+ *       moves (x-terms one way, constants the other) with both operands shown
+ *       in color simultaneously.
+ * - `divisionMode`:
+ *     - `'full'` (college) — emit `divide-both-sides`, displayed with the
+ *       division operation in color and the simplified result.
+ *     - `'compact'` (lycée+) — emit `simplify-coefficient`, displayed as the
+ *       result equation only (no transformation block). The division is
+ *       implicit in the title.
  * - `includeIdentify`: emit the initial `identify-equation` step.
- * - `mergeAll`: when `true`, EVERYTHING (regroupement + division + solution)
- *   is collapsed into one top-level step with all substeps inside. Used at
- *   `superieur` level for ultra-condensed display. Implies `groupRegroupement`
- *   and `groupDivision` semantically.
+ * - `mergeAll`: collapse everything into one top-level step with substeps.
+ *   Currently used only for the legacy supérieur layout; under review.
  */
 export interface GenerationStrategy {
-	readonly groupRegroupement: boolean;
-	readonly groupDivision: boolean;
+	readonly regroupementMode: 'atomic' | 'combined';
+	readonly divisionMode: 'full' | 'compact';
 	readonly includeIdentify: boolean;
 	readonly mergeAll?: boolean;
 }
@@ -141,11 +163,12 @@ export interface GenerationStrategy {
  * absent (linear equations are not in the primary curriculum).
  */
 export const STRATEGIES: Readonly<Record<LinearSchoolLevel, GenerationStrategy>> = {
-	college: { groupRegroupement: false, groupDivision: false, includeIdentify: true },
-	lycee: { groupRegroupement: true, groupDivision: false, includeIdentify: false },
+	college: { regroupementMode: 'atomic', divisionMode: 'full', includeIdentify: true },
+	lycee: { regroupementMode: 'combined', divisionMode: 'compact', includeIdentify: true },
+	// Supérieur — provisoirement avec mergeAll en attendant l'arbitrage utilisateur
 	superieur: {
-		groupRegroupement: true,
-		groupDivision: true,
+		regroupementMode: 'combined',
+		divisionMode: 'compact',
 		includeIdentify: false,
 		mergeAll: true
 	}
