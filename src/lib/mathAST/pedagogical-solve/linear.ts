@@ -32,6 +32,7 @@ import {
 import { add, divide, opposite, relation, variable as varNode } from '../factory';
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
+import { getNumericValue } from '../common/numeric';
 import { denormalize, normalize } from '../normal';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 
@@ -103,6 +104,49 @@ function isOne(node: MathNode): boolean {
 /** True when a MathNode is a number literal equal to 0. */
 function isZero(node: MathNode): boolean {
 	return node.type === 'number' && node.value === '0';
+}
+
+/**
+ * Resolve a "move-to-other-side" operation to either `add-both-sides` or
+ * `subtract-both-sides` so the operand is always non-negative for display.
+ *
+ * Given the math operand we need to add (e.g., `-3` to cancel a `+3` on the
+ * left), pedagogically we want to display "subtract 3" rather than "add −3".
+ *
+ * @param operand the operand to add (math equivalent)
+ * @returns kind + display operand (always non-negative when numeric)
+ */
+function chooseAddOrSubtract(operand: MathNode): {
+	kind: 'add-both-sides' | 'subtract-both-sides';
+	displayOperand: MathNode;
+} {
+	const numeric = getNumericValue(operand);
+	if (numeric !== null && numeric < 0) {
+		return {
+			kind: 'subtract-both-sides',
+			displayOperand: canon(opposite(operand))
+		};
+	}
+	return { kind: 'add-both-sides', displayOperand: operand };
+}
+
+/**
+ * Renumber a step tree so top-level steps get IDs 1, 2, 3, … and each parent's
+ * substeps restart at 1. Applied as a final pass after assembly because the
+ * generation order does not match the desired top-level order (substeps are
+ * created before their wrapping group step).
+ */
+function renumberSteps(steps: readonly EquationStep[]): readonly EquationStep[] {
+	return steps.map((step, i) => renumberStep(step, i + 1));
+}
+
+function renumberStep(step: EquationStep, id: number): EquationStep {
+	const renumberedSubs = step.subSteps?.map((sub, j) => renumberStep(sub, j + 1));
+	return {
+		...step,
+		id,
+		...(renumberedSubs !== undefined && { subSteps: renumberedSubs })
+	};
 }
 
 // =============================================================================
@@ -190,16 +234,20 @@ export function generateLinearEquationSteps(
 	// 2a — Move x-terms from RIGHT to LEFT
 	const rightSplit = splitSide(current.right, variable);
 	if (rightSplit.xPart !== null) {
-		const operand = canon(opposite(rightSplit.xPart));
-		const after = addToBothSides(current, operand);
+		const mathOperand = canon(opposite(rightSplit.xPart));
+		const choice = chooseAddOrSubtract(mathOperand);
+		const after = addToBothSides(current, mathOperand);
 		regroupementMicro.push(
 			makeStep({
 				id: id(),
-				rule: 'add-both-sides',
-				description: `On ajoute ${operandPretty(operand)} aux deux membres pour regrouper les termes en ${variable} à gauche`,
+				rule: choice.kind,
+				description:
+					choice.kind === 'add-both-sides'
+						? `On ajoute ${operandPretty(choice.displayOperand)} aux deux membres pour regrouper les termes en ${variable} à gauche`
+						: `On retire ${operandPretty(choice.displayOperand)} aux deux membres pour regrouper les termes en ${variable} à gauche`,
 				before: current,
 				after,
-				operation: { kind: 'add-both-sides', operand }
+				operation: { kind: choice.kind, operand: choice.displayOperand }
 			})
 		);
 		current = after;
@@ -208,16 +256,20 @@ export function generateLinearEquationSteps(
 	// 2b — Move constants from LEFT to RIGHT
 	const leftSplit = splitSide(current.left, variable);
 	if (leftSplit.constPart !== null && !isZero(leftSplit.constPart)) {
-		const operand = canon(opposite(leftSplit.constPart));
-		const after = addToBothSides(current, operand);
+		const mathOperand = canon(opposite(leftSplit.constPart));
+		const choice = chooseAddOrSubtract(mathOperand);
+		const after = addToBothSides(current, mathOperand);
 		regroupementMicro.push(
 			makeStep({
 				id: id(),
-				rule: 'add-both-sides',
-				description: `On ajoute ${operandPretty(operand)} aux deux membres pour isoler le terme en ${variable}`,
+				rule: choice.kind,
+				description:
+					choice.kind === 'add-both-sides'
+						? `On ajoute ${operandPretty(choice.displayOperand)} aux deux membres pour isoler le terme en ${variable}`
+						: `On retire ${operandPretty(choice.displayOperand)} aux deux membres pour isoler le terme en ${variable}`,
 				before: current,
 				after,
-				operation: { kind: 'add-both-sides', operand }
+				operation: { kind: choice.kind, operand: choice.displayOperand }
 			})
 		);
 		current = after;
@@ -293,7 +345,7 @@ export function generateLinearEquationSteps(
 			// No work to do (e.g., already x = value)
 			result.push(solutionStep);
 		}
-		return result;
+		return renumberSteps(result);
 	}
 
 	// Standard assembly (non-mergeAll)
@@ -335,7 +387,11 @@ export function generateLinearEquationSteps(
 
 	if (solutionStep) result.push(solutionStep);
 
-	return result;
+	// Final pass: renumber so top-level IDs are 1, 2, 3, … and substeps
+	// restart at 1 within each parent. (The `id()` counter is global, so the
+	// wrapping group steps end up with the highest IDs even though they
+	// appear first.)
+	return renumberSteps(result);
 }
 
 // =============================================================================
@@ -345,7 +401,12 @@ export function generateLinearEquationSteps(
 import { toLatex } from '../latex-generator';
 
 function operandPretty(node: MathNode): string {
-	return toLatex(node);
+	// `toLatex` emits a literal space for implicit multiplication (`5 x`) for
+	// LaTeX source readability. In our pedagogical operand strings (terminal
+	// demos, plain-text titles) we want the tighter `5x`. Strip the space
+	// only between a digit/closing-brace and a letter (the implicit-multiply
+	// case) — leave `\dfrac{...}{...}` etc. untouched.
+	return toLatex(node).replace(/(\d|\})\s+([a-zA-Z\\])/g, '$1$2');
 }
 
 /**
