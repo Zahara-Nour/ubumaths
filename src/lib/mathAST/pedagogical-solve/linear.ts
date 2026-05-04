@@ -53,8 +53,12 @@ function canonEquation(eq: RelationNode): RelationNode {
 /**
  * Split a side of an equation into (x-terms-sum, constant-terms-sum).
  * Either part may be `null` when no such terms exist on that side.
+ *
+ * Exported so the renderer (`linear-renderer`) can compute the "remainders"
+ * displayed in the `transpose-terms` LaTeX form (LEFT remainder = x-part of
+ * LEFT, RIGHT remainder = constant-part of RIGHT).
  */
-function splitSide(
+export function splitSide(
 	side: MathNode,
 	variable: string
 ): { xPart: MathNode | null; constPart: MathNode | null } {
@@ -229,50 +233,77 @@ export function generateLinearEquationSteps(
 		: null;
 
 	let current: RelationNode = equation;
-	const regroupementMicro: EquationStep[] = [];
+	const regroupementSteps: EquationStep[] = [];
 
-	// 2a — Move x-terms from RIGHT to LEFT
+	// Compute the two regroupement operands once (shared by atomic + combined modes)
 	const rightSplit = splitSide(current.right, variable);
-	if (rightSplit.xPart !== null) {
-		const mathOperand = canon(opposite(rightSplit.xPart));
-		const choice = chooseAddOrSubtract(mathOperand);
-		const after = addToBothSides(current, mathOperand);
-		regroupementMicro.push(
-			makeStep({
-				id: id(),
-				rule: choice.kind,
-				description:
-					choice.kind === 'add-both-sides'
-						? `On ajoute ${operandPretty(choice.displayOperand)} aux deux membres pour regrouper les termes en ${variable} à gauche`
-						: `On retire ${operandPretty(choice.displayOperand)} aux deux membres pour regrouper les termes en ${variable} à gauche`,
-				before: current,
-				after,
-				operation: { kind: choice.kind, operand: choice.displayOperand }
-			})
-		);
-		current = after;
-	}
-
-	// 2b — Move constants from LEFT to RIGHT
 	const leftSplit = splitSide(current.left, variable);
-	if (leftSplit.constPart !== null && !isZero(leftSplit.constPart)) {
-		const mathOperand = canon(opposite(leftSplit.constPart));
-		const choice = chooseAddOrSubtract(mathOperand);
-		const after = addToBothSides(current, mathOperand);
-		regroupementMicro.push(
-			makeStep({
-				id: id(),
-				rule: choice.kind,
-				description:
-					choice.kind === 'add-both-sides'
-						? `On ajoute ${operandPretty(choice.displayOperand)} aux deux membres pour isoler le terme en ${variable}`
-						: `On retire ${operandPretty(choice.displayOperand)} aux deux membres pour isoler le terme en ${variable}`,
-				before: current,
-				after,
-				operation: { kind: choice.kind, operand: choice.displayOperand }
-			})
-		);
-		current = after;
+	const xMoveRaw = rightSplit.xPart !== null ? canon(opposite(rightSplit.xPart)) : null;
+	const constMoveRaw =
+		leftSplit.constPart !== null && !isZero(leftSplit.constPart)
+			? canon(opposite(leftSplit.constPart))
+			: null;
+
+	if (strategy.regroupementMode === 'combined') {
+		// Combined: ONE transpose-terms step showing both moves simultaneously
+		if (xMoveRaw !== null || constMoveRaw !== null) {
+			let after = current;
+			if (xMoveRaw !== null) after = addToBothSides(after, xMoveRaw);
+			if (constMoveRaw !== null) after = addToBothSides(after, constMoveRaw);
+			regroupementSteps.push(
+				makeStep({
+					id: id(),
+					rule: 'transpose-terms',
+					description: `On isole les termes en ${variable} dans le membre de gauche`,
+					before: current,
+					after,
+					operation: {
+						kind: 'transpose-terms',
+						variableOperand: xMoveRaw,
+						constantOperand: constMoveRaw
+					}
+				})
+			);
+			current = after;
+		}
+	} else {
+		// Atomic: one add-both-sides per move (college style)
+		if (xMoveRaw !== null) {
+			const choice = chooseAddOrSubtract(xMoveRaw);
+			const after = addToBothSides(current, xMoveRaw);
+			regroupementSteps.push(
+				makeStep({
+					id: id(),
+					rule: choice.kind,
+					description:
+						choice.kind === 'add-both-sides'
+							? `On ajoute ${operandPretty(choice.displayOperand)} aux deux membres`
+							: `On soustrait ${operandPretty(choice.displayOperand)} aux deux membres`,
+					before: current,
+					after,
+					operation: { kind: choice.kind, operand: choice.displayOperand }
+				})
+			);
+			current = after;
+		}
+		if (constMoveRaw !== null) {
+			const choice = chooseAddOrSubtract(constMoveRaw);
+			const after = addToBothSides(current, constMoveRaw);
+			regroupementSteps.push(
+				makeStep({
+					id: id(),
+					rule: choice.kind,
+					description:
+						choice.kind === 'add-both-sides'
+							? `On ajoute ${operandPretty(choice.displayOperand)} aux deux membres`
+							: `On soustrait ${operandPretty(choice.displayOperand)} aux deux membres`,
+					before: current,
+					after,
+					operation: { kind: choice.kind, operand: choice.displayOperand }
+				})
+			);
+			current = after;
+		}
 	}
 
 	// Step 3 — Division (skip when coefficient is 1)
@@ -280,14 +311,25 @@ export function generateLinearEquationSteps(
 	const coefficient = extractCoefficientOfX(current.left, variable);
 	if (coefficient !== null && !isOne(coefficient)) {
 		const after = divideBothSides(current, coefficient);
-		divisionStep = makeStep({
-			id: id(),
-			rule: 'divide-both-sides',
-			description: `On divise les deux membres par ${operandPretty(coefficient)}`,
-			before: current,
-			after,
-			operation: { kind: 'divide-both-sides', operand: coefficient }
-		});
+		if (strategy.divisionMode === 'compact') {
+			divisionStep = makeStep({
+				id: id(),
+				rule: 'simplify-coefficient',
+				description: `On termine en simplifiant le coefficient de ${variable}`,
+				before: current,
+				after,
+				operation: { kind: 'simplify-coefficient', coefficient }
+			});
+		} else {
+			divisionStep = makeStep({
+				id: id(),
+				rule: 'divide-both-sides',
+				description: `On divise les deux membres par ${operandPretty(coefficient)}`,
+				before: current,
+				after,
+				operation: { kind: 'divide-both-sides', operand: coefficient }
+			});
+		}
 		current = after;
 	}
 
@@ -313,17 +355,11 @@ export function generateLinearEquationSteps(
 
 	if (identifyStep) result.push(identifyStep);
 
-	// `mergeAll`: collapse regroupement + division + solution into ONE step.
-	// Drops `solutionStep` and `divisionStep` as separate top-level entries;
-	// they live inside the merged step's substeps instead.
+	// `mergeAll`: collapse regroupement + division + solution into ONE step
+	// with everything as substeps. Used for the legacy supérieur layout.
 	if (strategy.mergeAll) {
-		const allMicro: EquationStep[] = [...regroupementMicro];
+		const allMicro: EquationStep[] = [...regroupementSteps];
 		if (divisionStep) allMicro.push(divisionStep);
-		// Include solutionStep in substeps so the drill-down shows the full
-		// narrative (regroupement → division → "Solution: x = …"). The
-		// merged top-level step's `after` field already shows the solved
-		// equation, so a separate top-level "Solution" entry would be
-		// redundant for the ultra-condensed superieur view.
 		if (solutionStep) allMicro.push(solutionStep);
 		if (allMicro.length > 0) {
 			const before = allMicro[0].before;
@@ -333,8 +369,8 @@ export function generateLinearEquationSteps(
 					id: id(),
 					rule: 'reduce-to-canonical',
 					description: solutionStep
-						? `Forme canonique → ${solutionStep.description.replace(/^Solution : /, '')}`
-						: 'Forme canonique ax = b',
+						? `On isole ${variable} → ${solutionStep.description.replace(/^Solution : /, '')}`
+						: `On isole ${variable}`,
 					before,
 					after,
 					operation: { kind: 'reduce-to-canonical' },
@@ -342,49 +378,16 @@ export function generateLinearEquationSteps(
 				})
 			);
 		} else if (solutionStep) {
-			// No work to do (e.g., already x = value)
 			result.push(solutionStep);
 		}
 		return renumberSteps(result);
 	}
 
-	// Standard assembly (non-mergeAll)
-	if (regroupementMicro.length > 0) {
-		if (strategy.groupRegroupement) {
-			result.push(
-				makeStep({
-					id: id(),
-					rule: 'reduce-to-canonical',
-					description: 'Mise sous forme canonique ax = b',
-					before: regroupementMicro[0].before,
-					after: regroupementMicro[regroupementMicro.length - 1].after,
-					operation: { kind: 'reduce-to-canonical' },
-					subSteps: includeSubSteps ? regroupementMicro : undefined
-				})
-			);
-		} else {
-			result.push(...regroupementMicro);
-		}
-	}
-
-	if (divisionStep) {
-		if (strategy.groupDivision && includeSubSteps) {
-			result.push(
-				makeStep({
-					id: id(),
-					rule: 'divide-both-sides',
-					description: divisionStep.description,
-					before: divisionStep.before,
-					after: divisionStep.after,
-					operation: divisionStep.operation,
-					subSteps: [divisionStep]
-				})
-			);
-		} else {
-			result.push(divisionStep);
-		}
-	}
-
+	// Flat assembly (college, lycée): each step is its own top-level entry.
+	// At lycée the combined transpose-terms + simplify-coefficient already
+	// reduce the count; no wrapper step is needed.
+	result.push(...regroupementSteps);
+	if (divisionStep) result.push(divisionStep);
 	if (solutionStep) result.push(solutionStep);
 
 	// Final pass: renumber so top-level IDs are 1, 2, 3, … and substeps

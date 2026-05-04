@@ -19,7 +19,9 @@ import type {
 	SchoolLevel
 } from '../common/step-renderer-base';
 import { toLatex } from '../latex-generator';
+import type { MathNode } from '../types';
 import type { EquationStep, EquationOperation, LinearSchoolLevel } from './types';
+import { splitSide } from './linear';
 
 // =============================================================================
 // Vocabulary (titles + explanations)
@@ -61,13 +63,19 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 		'read-solution': (op) =>
 			`Solution : ${(op as { variable: string }).variable} = ${operandStr(op)}`
 	},
-	// Lycée : « aux deux membres » devient implicite, notation S = { … } pour la solution
+	// Lycée : « aux deux membres » devient implicite, notation S = { … } pour la solution.
+	// Utilise transpose-terms (combiné) et simplify-coefficient (compact) à la place
+	// des add-both-sides + divide-both-sides du collège.
 	lycee: {
 		'identify-equation': () => 'Équation du premier degré',
 		'add-both-sides': (op) => `On ajoute ${operandStr(op)}`,
 		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)}`,
 		'multiply-both-sides': (op) => `On multiplie par ${operandStr(op)}`,
 		'divide-both-sides': (op) => `On divise par ${operandStr(op)}`,
+		'transpose-terms': (_op, step) =>
+			`On isole les termes en ${variableOf(step)} dans le membre de gauche`,
+		'simplify-coefficient': (_op, step) =>
+			`On termine en simplifiant le coefficient de ${variableOf(step)}`,
 		simplify: () => 'On simplifie',
 		'group-variable-terms': (op) =>
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
@@ -83,6 +91,10 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)}`,
 		'multiply-both-sides': (op) => `On multiplie par ${operandStr(op)}`,
 		'divide-both-sides': (op) => `On divise par ${operandStr(op)}`,
+		'transpose-terms': (_op, step) =>
+			`On isole les termes en ${variableOf(step)} dans le membre de gauche`,
+		'simplify-coefficient': (_op, step) =>
+			`On termine en simplifiant le coefficient de ${variableOf(step)}`,
 		simplify: () => 'On simplifie',
 		'group-variable-terms': (op) =>
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
@@ -295,7 +307,35 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 		];
 	}
 
-	// Transformation ops with a colored operand
+	// `transpose-terms` (lycée+) — show reorganized form with BOTH operands
+	// in color simultaneously, and the simplified result.
+	if (op.kind === 'transpose-terms') {
+		if (step.before.type !== 'relation') return null;
+		const variable = variableOf(step);
+		const leftSplit = splitSide(step.before.left, variable);
+		const rightSplit = splitSide(step.before.right, variable);
+		const leftRemainder = leftSplit.xPart !== null ? fmt(leftSplit.xPart) : '0';
+		const rightRemainder = rightSplit.constPart !== null ? fmt(rightSplit.constPart) : '0';
+		const leftAddend =
+			op.variableOperand !== null ? ' ' + formatColoredAddend(op.variableOperand) : '';
+		const rightAddend =
+			op.constantOperand !== null ? ' ' + formatColoredAddend(op.constantOperand) : '';
+		return [
+			'\\begin{aligned}',
+			`  ${leftRemainder}${leftAddend} &${rel} ${rightRemainder}${rightAddend} \\\\`,
+			`  ${aL} &${rel} ${aR}`,
+			'\\end{aligned}'
+		];
+	}
+
+	// `simplify-coefficient` (lycée+) — display only the result equation
+	// (single line, no transformation block). The division operation is
+	// implicit in the title ("On termine en simplifiant le coefficient de x").
+	if (op.kind === 'simplify-coefficient') {
+		return [`${aL} ${rel} ${aR}`];
+	}
+
+	// Transformation ops with a colored operand (atomic, college style)
 	const operand = fmt(op.operand);
 	let leftApplied: string;
 	let rightApplied: string;
@@ -323,4 +363,22 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 		`  ${aL} &${rel} ${aR}`,
 		'\\end{aligned}'
 	];
+}
+
+/**
+ * Format an operand for display in a colored `+` / `-` addition. Detects
+ * negative operands (number literals or `opposite(...)` AST) and renders them
+ * as `\textcolor{blue}{- |X|}` instead of the ugly `\textcolor{blue}{+ -X}`.
+ */
+function formatColoredAddend(operand: MathNode): string {
+	if (operand.type === 'opposite') {
+		return `\\textcolor{blue}{- ${fmt(operand.operand)}}`;
+	}
+	if (operand.type === 'number') {
+		const numericValue = parseFloat(operand.value);
+		if (numericValue < 0) {
+			return `\\textcolor{blue}{- ${Math.abs(numericValue)}}`;
+		}
+	}
+	return `\\textcolor{blue}{+ ${fmt(operand)}}`;
 }
