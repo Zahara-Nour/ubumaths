@@ -114,16 +114,22 @@ function isZero(node: MathNode): boolean {
  * Resolve a "move-to-other-side" operation to either `add-both-sides` or
  * `subtract-both-sides` so the operand is always non-negative for display.
  *
- * Given the math operand we need to add (e.g., `-3` to cancel a `+3` on the
- * left), pedagogically we want to display "subtract 3" rather than "add −3".
- *
- * @param operand the operand to add (math equivalent)
- * @returns kind + display operand (always non-negative when numeric)
+ * Detects negativity in 3 forms :
+ * - `opposite(X)` AST wrapper → kind = subtract, displayOperand = X
+ * - Numeric value (number literal, simple fraction…) < 0 via `getNumericValue`
+ *   → kind = subtract, displayOperand = canon(opposite(operand))
+ * - Otherwise → kind = add, displayOperand = operand
  */
 function chooseAddOrSubtract(operand: MathNode): {
 	kind: 'add-both-sides' | 'subtract-both-sides';
 	displayOperand: MathNode;
 } {
+	if (operand.type === 'opposite') {
+		return {
+			kind: 'subtract-both-sides',
+			displayOperand: operand.operand
+		};
+	}
 	const numeric = getNumericValue(operand);
 	if (numeric !== null && numeric < 0) {
 		return {

@@ -13,7 +13,16 @@
 
 import type { RelationNode } from '../types';
 import type { Verbosity } from '../common/verbosity';
-import { number, variable, add, subtract, implicitMultiply, opposite, relation } from '../factory';
+import {
+	number,
+	variable,
+	add,
+	subtract,
+	implicitMultiply,
+	opposite,
+	relation,
+	fraction
+} from '../factory';
 import { GenericTechnicalRenderer } from '../common/technical-renderer';
 import { solve } from '../solve';
 import type { SolveStep } from '../solve/types';
@@ -115,4 +124,14 @@ export const EQ_3X_MINUS_2_EQ_MINUS_5X_PLUS_7: RelationNode = relation(
 	'=',
 	subtract(implicitMultiply(number('3'), x), number('2')),
 	add(opposite(implicitMultiply(number('5'), x)), number('7'))
+);
+
+/**
+ * `x/2 + 1/3 = 1` — fractions on both coefficient and constant sides.
+ * Demonstrates the pipeline with fractional operands; solution is `x = 4/3`.
+ */
+export const EQ_X_OVER_2_PLUS_1_OVER_3_EQ_1: RelationNode = relation(
+	'=',
+	add(fraction(x, number('2')), fraction(number('1'), number('3'))),
+	number('1')
 );
