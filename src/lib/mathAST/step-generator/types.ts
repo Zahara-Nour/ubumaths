@@ -7,9 +7,12 @@
 import type { MathNode } from '../types';
 
 /**
- * School level for adapting step detail
+ * School level for adapting step detail.
+ *
+ * Re-exported from the canonical home in `common/step-renderer-base` so existing
+ * imports from `step-generator/types` keep working.
  */
-export type SchoolLevel = 'primaire' | 'college' | 'lycee' | 'superieur';
+export type { SchoolLevel } from '../common/step-renderer-base';
 
 /**
  * A single calculation step

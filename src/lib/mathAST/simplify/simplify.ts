@@ -1,15 +1,21 @@
 /**
  * Simplify Pipeline
  *
- * Orchestrates the simplification engines (normalize, pattern rules)
- * with a cost function to produce the simplest form of a mathematical expression.
+ * Orchestrates the simplification engines (normalize, pattern rules) with a
+ * cost function to produce the simplest form of a mathematical expression.
  *
- * Algorithm:
- * 1. Normalize (normalizeExtended handles ∞ natively, then polynomial canonical form)
- * 2. Apply pattern rules (abs + trig + hyp + algebraic — single bottom-up pass)
- * 3. Post-normalize
- * 4. Compare costs, keep the cheapest form
- * 5. Repeat until fixpoint or maxIterations
+ * Algorithm (per iteration, executed by the rewrite engine):
+ * 1. preProcess — preprocess + normalizeExtended + denormalizeExtended
+ *    (handles ∞, signed zero, polynomial canonical form)
+ * 2. apply pattern rules (abs + trig + hyp + algebraic — single bottom-up pass)
+ * 3. cost check (intermediate, strict `<`)
+ * 4. postProcess — same pipeline as preProcess
+ * 5. cost check (final, `<=` so canonical form wins ties)
+ * 6. fixpoint check
+ *
+ * The orchestrator is a thin wrapper around `rewrite()` from
+ * `common/rewriting-engine.ts`. It builds the engine config and bridges step
+ * events into a `SimplifyStepRecorder` (set Phase + description lookup).
  *
  * @module mathAST/simplify/simplify
  */
@@ -26,15 +32,13 @@ import { absSimplifyRules } from '../pattern/rule-sets/abs';
 import { trigSimplifyRules } from '../pattern/rule-sets/trig-identities';
 import { hypSimplifyRules } from '../pattern/rule-sets/hyperbolic-identities';
 import { algebraicSimplifyRules } from '../pattern/rule-sets/algebraic-identities';
-import { applyRulesDeepOnceTracked } from '../pattern/rule';
-import { nodesEqual } from '../pattern/match';
 
 // Normalize
 import { preprocess } from '../normal/rules';
 import { normalizeExtended, denormalizeExtended } from '../normal';
 
-// Cooperative interruption
-import { makeAbortChecker, withActiveAbortChecker } from '../common/abort';
+// Rewriting engine
+import { rewrite, type RewriteStep } from '../common/rewriting-engine';
 
 // =============================================================================
 // Rule Set Builder
@@ -56,6 +60,72 @@ function buildSimplifyRules(options: {
 	if (options.enableHyperbolic !== false) rules.push(...hypSimplifyRules);
 	if (options.enableAlgebraic !== false) rules.push(...algebraicSimplifyRules);
 	return rules;
+}
+
+// =============================================================================
+// Normalize Pass
+// =============================================================================
+
+/**
+ * Single normalize pass: preprocess → normalizeExtended → denormalizeExtended.
+ *
+ * Used as both the preProcess and postProcess hooks of the rewrite engine.
+ * `normalizeExtended` propagates infinity / signed-zero through arithmetic
+ * (arctan(∞) → π/2, sinh(∞) → ∞, …) and then delegates to regular normalize
+ * for polynomial canonical form (arithmetic identities, like-term collection,
+ * power simplification, special function values).
+ */
+function normalizePass(node: MathNode): MathNode {
+	const preprocessed = preprocess(node);
+	const ext = normalizeExtended(preprocessed);
+	return denormalizeExtended(ext);
+}
+
+// =============================================================================
+// Step Bridge
+// =============================================================================
+
+/**
+ * Bridge `RewriteStep` events from the engine into a `SimplifyStepRecorder`.
+ * Maps engine step kinds to simplify pipeline phases and looks up French
+ * descriptions for each rule.
+ *
+ * Note: phase is set only when an event fires (i.e. the engine produced a
+ * non-trivial transformation). The recorder's phase tag has no observable
+ * effect when no `recordStep` follows, so this lazy approach is equivalent
+ * to the original eager `setPhase` calls that surrounded each pipeline phase.
+ */
+function makeStepBridge(recorder: SimplifyStepRecorder): (step: RewriteStep) => void {
+	return (step) => {
+		if (step.kind === 'preProcess') {
+			recorder.setPhase('normalize');
+			recorder.recordStep(
+				'normalize',
+				getSimplifyRuleDescription('normalize'),
+				step.before,
+				step.after,
+				'detailed'
+			);
+		} else if (step.kind === 'postProcess') {
+			recorder.setPhase('post-normalize');
+			recorder.recordStep(
+				'post-normalize',
+				getSimplifyRuleDescription('normalize'),
+				step.before,
+				step.after,
+				'detailed'
+			);
+		} else {
+			recorder.setPhase('rules');
+			recorder.recordStep(
+				step.label,
+				getSimplifyRuleDescription(step.label),
+				step.before,
+				step.after,
+				'detailed'
+			);
+		}
+	};
 }
 
 // =============================================================================
@@ -84,137 +154,30 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 
 	const recorder = new SimplifyStepRecorder();
 	const isRecording = verbosity !== 'result';
-	const shouldAbort = makeAbortChecker(signal, timeoutMs);
 
-	// Build rule set once (abs + trig + hyp + algebraic based on options)
-	const rules = buildSimplifyRules({ enableAbs, enableTrig, enableHyperbolic, enableAlgebraic });
+	const rules = buildSimplifyRules({
+		enableAbs,
+		enableTrig,
+		enableHyperbolic,
+		enableAlgebraic
+	});
 
-	let current = node;
-	let best = node;
-	let bestCost = computeCost(node);
-	let aborted = false;
-
-	// Wrap the loop body so deep pattern-matching loops in match.ts can read the
-	// active checker via getActiveAbortChecker(). withActiveAbortChecker installs
-	// `shouldAbort` for the dynamic extent and restores the previous value on
-	// exit (even if the body throws).
-	withActiveAbortChecker(shouldAbort, () => {
-		for (let iter = 0; iter < maxIterations; iter++) {
-			if (shouldAbort?.()) {
-				aborted = true;
-				break;
-			}
-			const beforeIteration = current;
-
-			// Phase A: Normalize (extended — handles ∞ natively)
-			// normalizeExtended propagates infinity/signed-zero through arithmetic
-			// and functions (arctan(∞)→π/2, sinh(∞)→∞, etc.), then delegates to
-			// regular normalize for polynomial canonical form (arithmetic identities,
-			// like-term collection, power simplification, special function values).
-			recorder.setPhase('normalize');
-			try {
-				const preprocessed = preprocess(current);
-				const extResult = normalizeExtended(preprocessed);
-				const afterNormalize = denormalizeExtended(extResult);
-				if (isRecording && !nodesEqual(afterNormalize, current)) {
-					recorder.recordStep(
-						'normalize',
-						getSimplifyRuleDescription('normalize'),
-						current,
-						afterNormalize,
-						'detailed'
-					);
-				}
-				current = afterNormalize;
-			} catch {
-				// normalizeExtended can fail on edge cases (indeterminate forms,
-				// complex domain errors). Skip safely and continue.
-			}
-
-			if (shouldAbort?.()) {
-				aborted = true;
-				break;
-			}
-
-			// Phase B: Pattern rules (single bottom-up pass)
-			// Applies all enabled rules in one traversal: abs, trig identities,
-			// hyperbolic identities, and algebraic factoring. Arithmetic/power rules
-			// are NOT included — they are fully redundant with normalize's polynomial
-			// arithmetic.
-			if (rules.length > 0) {
-				recorder.setPhase('rules');
-				const { result: afterRules, steps: ruleSteps } = applyRulesDeepOnceTracked(
-					rules,
-					current,
-					ctx
-				);
-				if (isRecording) {
-					for (const step of ruleSteps) {
-						recorder.recordStep(
-							step.ruleName,
-							getSimplifyRuleDescription(step.ruleName),
-							step.before,
-							step.after,
-							'detailed'
-						);
-					}
-				}
-				current = afterRules;
-			}
-
-			// Cost check before post-normalize (rules may produce cheaper forms)
-			const preNormCost = computeCost(current);
-			if (preNormCost < bestCost) {
-				best = current;
-				bestCost = preNormCost;
-			}
-
-			if (shouldAbort?.()) {
-				aborted = true;
-				break;
-			}
-
-			// Phase C: Post-normalize
-			// Re-normalize after pattern rules, which may produce expressions
-			// that benefit from canonical form (e.g., trig identity yields 1 + 3 → 4).
-			recorder.setPhase('post-normalize');
-			try {
-				const preprocessed2 = preprocess(current);
-				const extResult2 = normalizeExtended(preprocessed2);
-				const afterPostNorm = denormalizeExtended(extResult2);
-				if (isRecording && !nodesEqual(afterPostNorm, current)) {
-					recorder.recordStep(
-						'post-normalize',
-						getSimplifyRuleDescription('normalize'),
-						current,
-						afterPostNorm,
-						'detailed'
-					);
-				}
-				current = afterPostNorm;
-			} catch {
-				// Skip normalization on failure
-			}
-
-			// Phase D: Cost check (post-normalize may also produce cheaper forms)
-			// Use <= so that post-normalize's canonical form wins over equivalent cost
-			const currentCost = computeCost(current);
-			if (currentCost <= bestCost) {
-				best = current;
-				bestCost = currentCost;
-			}
-
-			// Phase E: Fixpoint check
-			if (nodesEqual(current, beforeIteration)) {
-				break;
-			}
-		}
+	const engineResult = rewrite(node, {
+		rules,
+		preProcess: normalizePass,
+		postProcess: normalizePass,
+		strategy: { kind: 'cost-fixpoint', cost: computeCost },
+		maxIterations,
+		typeCtx: ctx,
+		signal,
+		timeoutMs,
+		onStep: isRecording ? makeStepBridge(recorder) : undefined
 	});
 
 	return {
-		result: best,
+		result: engineResult.result,
 		steps: recorder.getStepsFiltered(verbosity),
-		cost: bestCost,
-		...(aborted && { aborted: true })
+		cost: computeCost(engineResult.result),
+		...(engineResult.aborted && { aborted: true })
 	};
 }
