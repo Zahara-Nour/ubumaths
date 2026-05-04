@@ -19,7 +19,7 @@ import { generateLinearEquationSteps } from '../linear';
 import { LinearEquationRenderer } from '../linear-renderer';
 import type { EquationStep, LinearSchoolLevel } from '../types';
 import type { Verbosity } from '../../common/verbosity';
-import type { RelationNode } from '../../types';
+import type { RelationNode, MathNode } from '../../types';
 import type { RenderedStep } from '../../common/step-renderer-base';
 import {
 	number,
@@ -33,19 +33,61 @@ import {
 import { solve } from '../../solve';
 import type { SolveStep } from '../../solve/types';
 import { GenericTechnicalRenderer } from '../../common/technical-renderer';
+import { toLatex } from '../../latex-generator';
 
 // Linear pipeline excludes 'primaire' (linear algebra is not in the primary curriculum)
 const allLevels: readonly LinearSchoolLevel[] = ['college', 'lycee', 'superieur'];
 const allVerbosities: readonly Verbosity[] = ['summarized', 'detailed'];
 
-function renderTree(steps: readonly RenderedStep[], depth: number = 0): readonly string[] {
+/** Plain-text formatter: LaTeX with implicit-multiplication spaces stripped. */
+function plain(node: MathNode): string {
+	return toLatex(node).replace(/(\d|\})\s+([a-zA-Z\\])/g, '$1$2');
+}
+
+/**
+ * Pretty-print an equation transformation as multi-line LaTeX using the
+ * `aligned` environment. This is the actual LaTeX that goes into the
+ * `expressionLatex` field and that MathLive will render as 2 stacked
+ * equations aligned on the relation symbol.
+ */
+function prettyTransformation(before: RelationNode, after: RelationNode): readonly string[] {
+	const bL = plain(before.left);
+	const bR = plain(before.right);
+	const aL = plain(after.left);
+	const aR = plain(after.right);
+	return [
+		'\\begin{aligned}',
+		`  ${bL} &${before.relation} ${bR} \\\\`,
+		`  ${aL} &${after.relation} ${aR}`,
+		'\\end{aligned}'
+	];
+}
+
+/**
+ * Walk the EquationStep[] tree (not the rendered tree) so we keep access to
+ * the structural before/after fields for the equation-transformation display.
+ * Title/explanation are still produced by the renderer.
+ */
+function renderTree(
+	steps: readonly EquationStep[],
+	level: LinearSchoolLevel,
+	verbosity: Verbosity,
+	depth: number = 0
+): readonly string[] {
+	const renderer = new LinearEquationRenderer();
 	const out: string[] = [];
 	const indent = '    '.repeat(depth);
 	for (const s of steps) {
-		out.push(`${indent}[${s.id}] ${s.title}`);
-		if (s.explanation) out.push(`${indent}    → ${s.explanation}`);
+		const r = renderer.render(s, { verbosity, schoolLevel: level });
+		out.push(`${indent}[${s.id}] ${r.title}`);
+		// Show the equation transformation when before !== after (transformation steps)
+		if (toLatex(s.before) !== toLatex(s.after)) {
+			const lines = prettyTransformation(s.before, s.after);
+			for (const line of lines) out.push(`${indent}    │ ${line}`);
+		}
+		if (r.explanation) out.push(`${indent}    → ${r.explanation}`);
 		if (s.subSteps && s.subSteps.length > 0) {
-			out.push(...renderTree(s.subSteps, depth + 1));
+			out.push(...renderTree(s.subSteps, level, verbosity, depth + 1));
 		}
 	}
 	return out;
@@ -63,7 +105,6 @@ function compactTechnical(
 }
 
 function presentEquation(label: string, equation: RelationNode): string {
-	const pedagogical = new LinearEquationRenderer();
 	const technical = new GenericTechnicalRenderer<EquationStep>();
 	const technicalForSolveSteps = new GenericTechnicalRenderer<SolveStep>();
 
@@ -93,9 +134,8 @@ function presentEquation(label: string, equation: RelationNode): string {
 				level,
 				includeSubSteps: true
 			});
-			const rendered = pedagogical.renderAll(steps, { verbosity, schoolLevel: level });
 			lines.push(`========== ${level.toUpperCase()} (${verbosity}) ==========`);
-			lines.push(...renderTree(rendered));
+			lines.push(...renderTree(steps, level, verbosity));
 			lines.push('');
 		}
 	}
