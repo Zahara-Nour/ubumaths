@@ -19,7 +19,7 @@ import type {
 	SchoolLevel
 } from '../common/step-renderer-base';
 import { toLatex } from '../latex-generator';
-import type { EquationStep, EquationOperation } from './types';
+import type { EquationStep, EquationOperation, LinearSchoolLevel } from './types';
 
 // =============================================================================
 // Vocabulary (titles + explanations)
@@ -45,20 +45,7 @@ function operandStr(op: EquationOperation): string {
 	return '';
 }
 
-const TITLES: Record<SchoolLevel, Partial<Record<EquationOperation['kind'], TitleFn>>> = {
-	primaire: {
-		'identify-equation': () => "C'est une équation simple avec une seule lettre à trouver",
-		'add-both-sides': (op) => `On ajoute ${operandStr(op)} des deux côtés`,
-		'subtract-both-sides': (op) => `On enlève ${operandStr(op)} des deux côtés`,
-		'multiply-both-sides': (op) => `On multiplie les deux côtés par ${operandStr(op)}`,
-		'divide-both-sides': (op) => `On partage les deux côtés en ${operandStr(op)} parts égales`,
-		simplify: () => 'On simplifie',
-		'group-variable-terms': (op) =>
-			`On regroupe les ${(op as { variable: string }).variable} d'un seul côté`,
-		'group-constants': () => 'On regroupe les nombres',
-		'reduce-to-canonical': () => 'On range bien tout',
-		'read-solution': (op) => `La lettre vaut ${operandStr(op)}` as const
-	},
+const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind'], TitleFn>>> = {
 	college: {
 		'identify-equation': () => 'Équation du premier degré (linéaire)',
 		'add-both-sides': (op) => `Addition de ${operandStr(op)} aux deux membres`,
@@ -100,21 +87,9 @@ const TITLES: Record<SchoolLevel, Partial<Record<EquationOperation['kind'], Titl
 };
 
 const EXPLANATIONS: Record<
-	SchoolLevel,
+	LinearSchoolLevel,
 	Partial<Record<EquationOperation['kind'], ExplanationFn>>
 > = {
-	primaire: {
-		'add-both-sides': (op) =>
-			`On ajoute ${operandStr(op)} des deux côtés à la fois, comme une balance qui doit rester équilibrée.`,
-		'subtract-both-sides': (op) =>
-			`On enlève ${operandStr(op)} d'un côté ET de l'autre pour garder l'égalité.`,
-		'divide-both-sides': (op) =>
-			`On partage chaque côté en ${operandStr(op)} parts égales pour trouver la valeur d'une seule lettre.`,
-		'multiply-both-sides': (op) =>
-			`On multiplie chaque côté par ${operandStr(op)} pour annuler la division.`,
-		'reduce-to-canonical': () =>
-			"On met tous les termes avec la lettre du même côté et tous les nombres de l'autre côté."
-	},
 	college: {
 		'identify-equation': () =>
 			"Une équation du premier degré s'écrit ax + b = 0. On va isoler x étape par étape.",
@@ -210,6 +185,7 @@ export class LinearEquationRenderer
 	}
 
 	private resolveTitle(step: EquationStep, level: SchoolLevel): string {
+		assertSupportedLevel(level);
 		const op = step.operation;
 		if (op) {
 			const titleFn = TITLES[level][op.kind] ?? TITLES.lycee[op.kind];
@@ -219,9 +195,23 @@ export class LinearEquationRenderer
 	}
 
 	private resolveExplanation(step: EquationStep, level: SchoolLevel): string | undefined {
+		assertSupportedLevel(level);
 		const op = step.operation;
 		if (!op) return undefined;
 		const explanationFn = EXPLANATIONS[level][op.kind];
 		return explanationFn?.(op, step);
+	}
+}
+
+/**
+ * Narrow `SchoolLevel` to `LinearSchoolLevel`. The linear pipeline does not
+ * cover primaire (linear algebra is not in the primary curriculum), so calling
+ * the renderer with `schoolLevel: 'primaire'` is a programmer error.
+ */
+function assertSupportedLevel(level: SchoolLevel): asserts level is LinearSchoolLevel {
+	if (level === 'primaire') {
+		throw new Error(
+			"LinearEquationRenderer: school level 'primaire' is not supported (linear algebra is not in the primary curriculum)."
+		);
 	}
 }

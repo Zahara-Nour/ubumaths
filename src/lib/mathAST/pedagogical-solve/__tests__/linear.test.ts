@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateLinearEquationSteps } from '../linear';
-import type { EquationStep, EquationOperation } from '../types';
+import type { EquationStep, EquationOperation, LinearSchoolLevel } from '../types';
 import type { RelationNode } from '../../types';
 import {
 	number,
@@ -12,6 +12,8 @@ import {
 	relation
 } from '../../factory';
 import { toLatex } from '../../latex-generator';
+
+const supportedLevels: readonly LinearSchoolLevel[] = ['college', 'lycee', 'superieur'];
 
 // =============================================================================
 // Test helpers
@@ -93,7 +95,7 @@ describe('generateLinearEquationSteps', () => {
 		});
 
 		it('all levels: solution is x = 2', () => {
-			for (const level of ['primaire', 'college', 'lycee', 'superieur'] as const) {
+			for (const level of supportedLevels) {
 				const steps = generateLinearEquationSteps(eq2x_eq_4(), { level });
 				const sol = findSolution(steps);
 				expect(sol).not.toBeNull();
@@ -155,7 +157,7 @@ describe('generateLinearEquationSteps', () => {
 		});
 
 		it('all levels: solution is x = 9/8', () => {
-			for (const level of ['primaire', 'college', 'lycee', 'superieur'] as const) {
+			for (const level of supportedLevels) {
 				const steps = generateLinearEquationSteps(eq3x_minus_2_eq_minus_5x_plus_7(), {
 					level
 				});
