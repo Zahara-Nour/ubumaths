@@ -977,6 +977,12 @@ export type GeneratedSteps =
 			readonly options?: GeneratedStepsOptions;
 	  }
 	| {
+			readonly kind: 'quadratic-equation';
+			/** Template quadratic equation — supports `{{a}}`, `{{eval:...}}`, etc. */
+			readonly equation: string;
+			readonly options?: GeneratedStepsOptions;
+	  }
+	| {
 			readonly kind: 'differentiate';
 			/** Template expression of the function `f(x)` to differentiate. */
 			readonly expression: string;

@@ -153,6 +153,12 @@ const generatedStepsLinearEquation = z.object({
 	options: generatedStepsOptionsSchema.optional()
 });
 
+const generatedStepsQuadraticEquation = z.object({
+	kind: z.literal('quadratic-equation'),
+	equation: z.string().min(1),
+	options: generatedStepsOptionsSchema.optional()
+});
+
 const generatedStepsDifferentiate = z.object({
 	kind: z.literal('differentiate'),
 	expression: z.string().min(1),
@@ -163,6 +169,7 @@ const generatedStepsDifferentiate = z.object({
 export const generatedStepsSchema = z.discriminatedUnion('kind', [
 	generatedStepsArithmetic,
 	generatedStepsLinearEquation,
+	generatedStepsQuadraticEquation,
 	generatedStepsDifferentiate
 ]);
 
@@ -290,6 +297,14 @@ const generatedStepsLinearEquationStrictZ = z
 	})
 	.strict();
 
+const generatedStepsQuadraticEquationStrictZ = z
+	.object({
+		kind: z.literal('quadratic-equation'),
+		equation: z.string().min(1),
+		options: generatedStepsOptionsStrictZ.optional()
+	})
+	.strict();
+
 const generatedStepsDifferentiateStrictZ = z
 	.object({
 		kind: z.literal('differentiate'),
@@ -302,6 +317,7 @@ const generatedStepsDifferentiateStrictZ = z
 const generatedStepsStrictZ = z.discriminatedUnion('kind', [
 	generatedStepsArithmeticStrictZ,
 	generatedStepsLinearEquationStrictZ,
+	generatedStepsQuadraticEquationStrictZ,
 	generatedStepsDifferentiateStrictZ
 ]);
 

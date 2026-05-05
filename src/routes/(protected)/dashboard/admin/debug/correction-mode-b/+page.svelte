@@ -16,7 +16,8 @@
 		additionGroupingDemo,
 		differentiateCompositionDemo,
 		differentiatePolynomialDemo,
-		linearEquationDemo
+		linearEquationDemo,
+		quadraticEquationDemo
 	} from '$lib/questions/__tests__/fixtures/generated-steps-demo';
 	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
@@ -30,6 +31,7 @@
 
 	const arithmeticResult = generateInstance(additionGroupingDemo, 1);
 	const linearResult = generateInstance(linearEquationDemo, 1);
+	const quadraticResult = generateInstance(quadraticEquationDemo, 1);
 	const differentiatePolyResult = generateInstance(differentiatePolynomialDemo, 1);
 	const differentiateCompResult = generateInstance(differentiateCompositionDemo, 1);
 
@@ -59,6 +61,8 @@
 	const arithmeticIncorrect = buildAnswerResult(arithmeticResult, 1, false);
 	const linearCorrect = buildAnswerResult(linearResult, 0, true);
 	const linearIncorrect = buildAnswerResult(linearResult, 1, false);
+	const quadraticCorrect = buildAnswerResult(quadraticResult, 0, true);
+	const quadraticIncorrect = buildAnswerResult(quadraticResult, 1, false);
 	const differentiatePolyCorrect = buildAnswerResult(differentiatePolyResult, 0, true);
 	const differentiatePolyIncorrect = buildAnswerResult(differentiatePolyResult, 1, false);
 	const differentiateCompCorrect = buildAnswerResult(differentiateCompResult, 0, true);
@@ -74,6 +78,9 @@
 	);
 	const linearSteps = $derived(
 		linearResult.success ? linearResult.instance.correction?._renderedSteps : undefined
+	);
+	const quadraticSteps = $derived(
+		quadraticResult.success ? quadraticResult.instance.correction?._renderedSteps : undefined
 	);
 	const differentiatePolySteps = $derived(
 		differentiatePolyResult.success
@@ -95,9 +102,9 @@
 	<header class="space-y-2">
 		<h1 class="text-3xl font-bold">Mode B — Generated correction steps</h1>
 		<p class="text-muted-foreground">
-			Démo des quatre fixtures Mode B : CM2 arithmétique, 4e équation linéaire, 1ère polynôme
-			(dérivée), Terminale composition (dérivée). Cliquer sur l'icône ↻ d'une carte pour basculer
-			sur la correction détaillée.
+			Démo des cinq fixtures Mode B : CM2 arithmétique, 4e équation linéaire, Terminale équation du
+			second degré, 1ère polynôme (dérivée), Terminale composition (dérivée). Cliquer sur l'icône ↻
+			d'une carte pour basculer sur la correction détaillée.
 		</p>
 	</header>
 
@@ -124,6 +131,14 @@
 					<span class="text-green-600">✓ {linearSteps?.length ?? 0} étapes générées</span>
 				{:else}
 					<span class="text-red-600">✗ {linearResult.errors.join(', ')}</span>
+				{/if}
+			</div>
+			<div>
+				<span class="font-mono">quadraticEquationDemo</span> :
+				{#if quadraticResult.success}
+					<span class="text-green-600">✓ {quadraticSteps?.length ?? 0} étapes générées</span>
+				{:else}
+					<span class="text-red-600">✗ {quadraticResult.errors.join(', ')}</span>
 				{/if}
 			</div>
 			<div>
@@ -154,6 +169,7 @@
 						{
 							arithmetic: arithmeticSteps,
 							linear: linearSteps,
+							quadratic: quadraticSteps,
 							differentiatePolynomial: differentiatePolySteps,
 							differentiateComposition: differentiateCompSteps
 						},
@@ -197,6 +213,19 @@
 				<Card.Content>
 					{#if linearSteps}
 						<GeneratedStepsCorrection steps={linearSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>Tle spé — équation du second degré</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if quadraticSteps}
+						<GeneratedStepsCorrection steps={quadraticSteps} />
 					{:else}
 						<p class="text-muted-foreground">Aucune étape générée.</p>
 					{/if}
@@ -269,28 +298,40 @@
 					<CorrectionCard answerResult={linearIncorrect} questionNumber={4} size="md" />
 				</div>
 			{/if}
+			{#if quadraticCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — réponse correcte (second degré)</h3>
+					<CorrectionCard answerResult={quadraticCorrect} questionNumber={5} size="md" />
+				</div>
+			{/if}
+			{#if quadraticIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — réponse incorrecte (second degré)</h3>
+					<CorrectionCard answerResult={quadraticIncorrect} questionNumber={6} size="md" />
+				</div>
+			{/if}
 			{#if differentiatePolyCorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">1ère spé — réponse correcte (polynôme)</h3>
-					<CorrectionCard answerResult={differentiatePolyCorrect} questionNumber={5} size="md" />
+					<CorrectionCard answerResult={differentiatePolyCorrect} questionNumber={7} size="md" />
 				</div>
 			{/if}
 			{#if differentiatePolyIncorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">1ère spé — réponse incorrecte (polynôme)</h3>
-					<CorrectionCard answerResult={differentiatePolyIncorrect} questionNumber={6} size="md" />
+					<CorrectionCard answerResult={differentiatePolyIncorrect} questionNumber={8} size="md" />
 				</div>
 			{/if}
 			{#if differentiateCompCorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">Terminale spé — réponse correcte (composition)</h3>
-					<CorrectionCard answerResult={differentiateCompCorrect} questionNumber={7} size="md" />
+					<CorrectionCard answerResult={differentiateCompCorrect} questionNumber={9} size="md" />
 				</div>
 			{/if}
 			{#if differentiateCompIncorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">Terminale spé — réponse incorrecte (composition)</h3>
-					<CorrectionCard answerResult={differentiateCompIncorrect} questionNumber={8} size="md" />
+					<CorrectionCard answerResult={differentiateCompIncorrect} questionNumber={10} size="md" />
 				</div>
 			{/if}
 		</div>

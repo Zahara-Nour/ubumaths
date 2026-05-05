@@ -160,6 +160,116 @@ describe("generateCorrection — kind: 'arithmetic'", () => {
 // Linear equation
 // =============================================================================
 
+describe("generateCorrection — kind: 'quadratic-equation'", () => {
+	it('produces _renderedSteps for a simple quadratic equation', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: { kind: 'quadratic-equation', equation: 'x^2-5*x+6=0' }
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+		expect(result.correction?._renderedSteps?.length).toBeGreaterThan(0);
+		const rules = (result.correction!._renderedSteps ?? []).map((s) => s.rule);
+		expect(rules).toContain('compute-discriminant');
+		expect(rules).toContain('read-solutions');
+	});
+
+	it('bumps primaire/college grade to lycee (second-degree OoS before 1ère)', () => {
+		const instance = makeInstance({
+			grades: ['CM2'], // auto → primaire, must bump to lycee
+			correction: {
+				generatedSteps: { kind: 'quadratic-equation', equation: 'x^2-5*x+6=0' }
+			}
+		});
+		const result = generateCorrection(instance);
+		const steps = result.correction?._renderedSteps ?? [];
+		expect(steps.length).toBeGreaterThan(0);
+		expect(steps.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+	});
+
+	it('bumps college grade to lycee', () => {
+		const instance = makeInstance({
+			grades: ['4'], // auto → college, must bump to lycee
+			correction: {
+				generatedSteps: { kind: 'quadratic-equation', equation: 'x^2-5*x+6=0' }
+			}
+		});
+		const result = generateCorrection(instance);
+		const steps = result.correction?._renderedSteps ?? [];
+		expect(steps.length).toBeGreaterThan(0);
+		expect(steps.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+	});
+
+	it('explicit schoolLevel: superieur passes through (no separate discriminant-sign)', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'quadratic-equation',
+					equation: 'x^2-5*x+6=0',
+					options: { schoolLevel: 'superieur' }
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const steps = result.correction?._renderedSteps ?? [];
+		const rules = steps.map((s) => s.rule);
+		expect(rules).not.toContain('discriminant-positive');
+		expect(rules).toContain('compute-discriminant');
+	});
+
+	it('substitutes template variables', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			resolvedVariables: [
+				{ name: 'b', value: '5' },
+				{ name: 'c', value: '6' }
+			],
+			correction: {
+				generatedSteps: {
+					kind: 'quadratic-equation',
+					equation: 'x^2-{{b}}*x+{{c}}=0'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+		expect(result.correction?._renderedSteps?.length).toBeGreaterThan(0);
+	});
+
+	it('parametric coefficients (mx² + 2x + 1 = 0) → silent fallback (no _renderedSteps)', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'quadratic-equation',
+					equation: 'm*x^2+2*x+1=0'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		// PedagogicalQuadraticNotImplemented caught → null returned by renderer →
+		// instance returned unchanged (no _renderedSteps).
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it('non-quadratic equation (linear `2x+3=0`) silently falls back', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: { kind: 'quadratic-equation', equation: '2*x+3=0' }
+			}
+		});
+		const result = generateCorrection(instance);
+		// generateQuadraticEquationSteps throws plain Error for degree ≠ 2 ;
+		// caught by the parent try/catch in `generateCorrection` → silent
+		// fallback (instance unchanged).
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+});
+
 describe("generateCorrection — kind: 'linear-equation'", () => {
 	it('produces _renderedSteps for a simple linear equation', () => {
 		const instance = makeInstance({

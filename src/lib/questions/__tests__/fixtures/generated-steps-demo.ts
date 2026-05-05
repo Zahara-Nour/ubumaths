@@ -148,6 +148,44 @@ export const differentiatePolynomialDemo: QuestionTemplate = {
 };
 
 /**
+ * Demo question : `x² − 5x + 6 = 0` for Terminale spécialité maths.
+ *
+ * Mode B declares a `quadratic-equation` correction. The pipeline emits the
+ * lycée-level resolution : identify a, b, c → compute Δ = 1 → discriminant
+ * positive → apply formula → simplify → S = {2 ; 3}.
+ */
+export const quadraticEquationDemo: QuestionTemplate = {
+	id: 'demo-quadratic-tle',
+	title: 'Équation du second degré (Tle spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'Résous dans $\\mathbb{R}$ : $x^2 - {{b}}x + {{c}} = 0$. $S = ?$'
+			),
+			variables: [
+				{ name: 'b', expression: '5' },
+				{ name: 'c', expression: '6' }
+			],
+			blanks: [{ expectedAnswer: '\\{2 ; 3\\}' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Excellent !') },
+				generatedSteps: {
+					kind: 'quadratic-equation',
+					equation: 'x^2-{{b}}*x+{{c}}=0',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['T_SPE'],
+	theme: 'Algèbre',
+	domain: 'Équations',
+	subdomain: 'Second degré',
+	level: 2
+};
+
+/**
  * Demo question : `f(x) = sin(2x)` for Terminale spécialité maths.
  *
  * Mode B declares a `differentiate` correction with a composition. The
