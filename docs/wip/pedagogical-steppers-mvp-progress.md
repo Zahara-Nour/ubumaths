@@ -203,6 +203,19 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - Composant Svelte `<GeneratedStepsCorrection>` + extension `CorrectionCard.svelte`
   - Mapping `gradeLevelToSchoolLevel` (CP-CM2 → primaire, 6-3 → college, 2-T → lycee)
   - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (4 fixtures : arithmetic + linear-equation + differentiate × 2)
+- **Stepper pédagogique pour équations du second degré** (`kind: 'quadratic-equation'`) → livré, voir `quadratic-stepper-progress.md`. Inclut :
+
+  - Pipeline `pedagogical-solve/quadratic.ts` couvrant 4 cas (standard Δ>0/=0/<0, b=0, c=0, factorisé) + standardisation auto vers `… = 0`
+  - Renderer `quadratic-renderer.ts` lycée + supérieur avec TITLES, EXPLANATIONS, formatExpressionLatex per kind
+  - Dispatcher unifié `pedagogical-solve/index.ts` (`generateEquationSteps` selon degré, bumps primaire→college pour linéaire et primaire/college→lycee pour quadratique)
+  - Helpers partagés `_helpers.ts` (canon, addToBothSides, makeStep, etc.) refacto entre linear et quadratic
+  - Class `PedagogicalQuadraticNotImplemented` pour cas hors scope V1 (paramétriques)
+  - 7 catégories de démos snapshot + CLI `scripts/pedagogical-quadratic-demo.ts`
+  - Mode B `kind: 'quadratic-equation'` intégré (types/Zod/correction-generator/fixture/page debug 5e carte)
+  - 6 commits : `593a82204`, `40789a138`, `910e4e642`, `bd333851a`, `0a52989d6`, `92580f0b9`
+  - 222 tests spécifiques au feature (29 types + 57 pipeline + 29 renderer + 19 dispatcher + 23 demos + 30 correction-generator + 8 generated-steps-demo + 27 ajustements)
+  - Limitations V1 : coefficients paramétriques (`mx²+…`), équations bicarrées, cubiques/quartiques (hors scope, throw NotImplemented → fallback Mode A)
+
 - **Stepper pédagogique pour différentiation** (`kind: 'differentiate'`) → livré, voir `differentiation-stepper-progress.md`. Inclut :
   - Pipeline parallèle `pedagogical-differentiation/` (Option 2 retenue plutôt que dual renderer sur `differentiate.ts`)
   - 34 règles couvertes (sum, product, quotient, chain, sin/cos/tan, exp, ln, puissances entières/rationnelles, etc.)
@@ -219,7 +232,7 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 
 - Renderers pédagogiques pour les autres domaines : integration, limits, matrix, domain
 - Pipeline pédagogique pour simplification d'expression
-- `kind: 'solve'` algorithmique dans Mode B (pedagogical-solve V1 ne supporte que linéaire)
+- `kind: 'solve'` algorithmique dans Mode B (pedagogical-solve V1.0 supporte linéaire + quadratique ; cubic/quartic/transcendental hors scope)
 - `kind: 'arithmetic-from-blank'` (V1 a skippé pour éviter duplication d'expression entre `expectedAnswer` et `generatedSteps.expression`)
 
 **Idées Poincaré**
