@@ -61,10 +61,26 @@ export type EquationOperation =
 	| { readonly kind: 'add-both-sides'; readonly operand: MathNode }
 	/** Subtract the same expression from both sides. */
 	| { readonly kind: 'subtract-both-sides'; readonly operand: MathNode }
-	/** Multiply both sides by the same expression. */
-	| { readonly kind: 'multiply-both-sides'; readonly operand: MathNode }
-	/** Divide both sides by the same (non-zero) expression. */
-	| { readonly kind: 'divide-both-sides'; readonly operand: MathNode }
+	/**
+	 * Multiply both sides by the same expression. For inequalities, set
+	 * `flipOperator: true` when the operand is a numerically negative scalar
+	 * (the renderer adds the « changement de sens » note).
+	 */
+	| {
+			readonly kind: 'multiply-both-sides';
+			readonly operand: MathNode;
+			readonly flipOperator?: boolean;
+	  }
+	/**
+	 * Divide both sides by the same (non-zero) expression. For inequalities,
+	 * set `flipOperator: true` when the operand is a numerically negative
+	 * scalar (the renderer adds the « changement de sens » note).
+	 */
+	| {
+			readonly kind: 'divide-both-sides';
+			readonly operand: MathNode;
+			readonly flipOperator?: boolean;
+	  }
 	/**
 	 * Combined transposition (lycée+) — moves x-terms to the left side and
 	 * constants to the right side IN ONE STEP. The displayed transformation
@@ -81,9 +97,15 @@ export type EquationOperation =
 	 * Compact division (lycée+) — replaces `divide-both-sides` for terse
 	 * presentations. The display shows only the result equation `x = …` ;
 	 * the actual division is implicit in the title ("On termine en
-	 * simplifiant le coefficient de x").
+	 * simplifiant le coefficient de x"). For inequalities, set
+	 * `flipOperator: true` when the coefficient is a numerically negative
+	 * scalar.
 	 */
-	| { readonly kind: 'simplify-coefficient'; readonly coefficient: MathNode }
+	| {
+			readonly kind: 'simplify-coefficient';
+			readonly coefficient: MathNode;
+			readonly flipOperator?: boolean;
+	  }
 	/**
 	 * Top-level grouping step (lycée-level abstraction). Substeps contain
 	 * the actual add/subtract/simplify operations.
@@ -224,6 +246,20 @@ export type EquationOperation =
 			readonly kind: 'factor-gcd';
 			readonly gcd: MathNode;
 			readonly simplified: MathNode;
+	  }
+
+	// =============================================================================
+	// Linear inequality pipeline kinds (palier 2a)
+	// =============================================================================
+	/**
+	 * Final step of a degenerate linear inequality (`a = 0`), where the
+	 * resulting relation is constant on both sides (e.g. `0 < 4`, `7 < 3`).
+	 * The renderer reads `truth` to display "toujours vraie ⇒ S = ℝ" or
+	 * "contradiction ⇒ S = ∅".
+	 */
+	| {
+			readonly kind: 'inequality-conclude-truth';
+			readonly truth: boolean;
 	  };
 
 // =============================================================================
@@ -275,6 +311,17 @@ export interface LinearEquationStepsOptions {
 	 */
 	readonly includeSubSteps?: boolean;
 	/** Variable to solve for. Auto-detected if omitted. */
+	readonly variable?: string;
+}
+
+/**
+ * Options for `generateLinearInequalitySteps`. Same shape as
+ * `LinearEquationStepsOptions` — the linear inequality pipeline reuses the
+ * same `STRATEGIES` table to drive granularity.
+ */
+export interface LinearInequalityStepsOptions {
+	readonly level: LinearSchoolLevel;
+	readonly includeSubSteps?: boolean;
 	readonly variable?: string;
 }
 

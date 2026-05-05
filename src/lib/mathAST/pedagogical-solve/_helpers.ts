@@ -16,6 +16,7 @@ import type { MathNode, RelationNode } from '../types';
 import type { Verbosity } from '../common/verbosity';
 import { add, divide, relation } from '../factory';
 import { denormalize, normalize } from '../normal';
+import { getNumericValue } from '../common/numeric';
 import type { EquationOperation, EquationStep } from './types';
 
 // =============================================================================
@@ -50,6 +51,63 @@ export function divideBothSides(eq: RelationNode, divisor: MathNode): RelationNo
 			divide(eq.right, divisor, 'fraction')
 		)
 	);
+}
+
+/**
+ * Divide both sides by `divisor` and, for inequalities, flip the operator if
+ * the divisor is a numerically negative scalar. Returns the resulting
+ * relation along with a `flipped` flag indicating whether the operator was
+ * inverted (`<` → `>`, etc.). For `=` and `!=` the flag is always `false`.
+ *
+ * If `divisor` is symbolic (no numeric value extractable), `flipped` defaults
+ * to `false` — the caller is expected to either ensure `divisor` is numeric
+ * or to call `divideBothSides` directly. This is the V1 pedagogical
+ * inequality flow which only handles numeric coefficients.
+ */
+export function divideBothSidesWithFlip(
+	ineq: RelationNode,
+	divisor: MathNode
+): { result: RelationNode; flipped: boolean } {
+	const numeric = getNumericValue(divisor);
+	const shouldFlip =
+		numeric !== null &&
+		numeric < 0 &&
+		(ineq.relation === '<' ||
+			ineq.relation === '>' ||
+			ineq.relation === '<=' ||
+			ineq.relation === '>=');
+
+	const newRelation = shouldFlip ? flipRelation(ineq.relation) : ineq.relation;
+	const result = canonEquation(
+		relation(
+			newRelation,
+			divide(ineq.left, divisor, 'fraction'),
+			divide(ineq.right, divisor, 'fraction')
+		)
+	);
+	return { result, flipped: shouldFlip };
+}
+
+/**
+ * Flip a strict/non-strict inequality operator. `=` and `!=` are returned
+ * unchanged. Throws on unknown relation strings.
+ */
+export function flipRelation(rel: string): RelationNode['relation'] {
+	switch (rel) {
+		case '<':
+			return '>';
+		case '>':
+			return '<';
+		case '<=':
+			return '>=';
+		case '>=':
+			return '<=';
+		case '=':
+		case '!=':
+			return rel;
+		default:
+			throw new Error(`flipRelation: unsupported relation '${rel}'`);
+	}
 }
 
 // =============================================================================
