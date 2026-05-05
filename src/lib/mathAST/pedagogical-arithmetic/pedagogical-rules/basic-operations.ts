@@ -31,6 +31,7 @@ import { isAddition, isMultiplication, isNumber, isOpposite, isSubtraction } fro
 import { add, divide, multiply, number, subtract } from '../../factory';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { toLatex } from '../../latex-generator';
+import { mapNode } from '../../transforms';
 import type { PedagogicalArithmeticRule } from '../types';
 
 // =============================================================================
@@ -263,6 +264,121 @@ function applyGroupMultiplications(node: MathNode): MathNode | null {
 }
 
 /**
+ * Pedagogical rule : evaluate every "calculable" parenthesised sub-expression
+ * in ONE step. Skipped at primaire (each parenthesised computation keeps
+ * its own atomic step there).
+ *
+ * "Calculable" means : the content of the parentheses is reducible to a
+ * numeric atom by `evaluate(exact)` and DIFFERS from its current shape
+ * (so `(5)` — already an atom — is not eligible ; `cleanupTrivialParens`
+ * handles those silently).
+ *
+ * The rule's pattern is the universal wildcard plus a structural
+ * condition. The pipeline applies it as a top-level pre-pass (top-down
+ * traversal) — see `pipeline.ts` — for the same reason as the
+ * multiplication-grouping rule : a bottom-up engine pass would let
+ * inner-content rules fire before this rule could see the outer
+ * parentheses.
+ */
+function isAtomLikeNode(node: MathNode): boolean {
+	if (isNumber(node)) return true;
+	if (isOpposite(node) && isNumber(node.operand)) return true;
+	return false;
+}
+
+/**
+ * True when `node` is a parenthesised sub-expression whose content can be
+ * evaluated to an atomic numeric value DIFFERENT from the content itself.
+ */
+function isCalculableParens(node: MathNode): boolean {
+	if (node.type !== 'delimiter') return false;
+	if (node.delimiters !== 'parentheses') return false;
+	if (isAtomLikeNode(node.content)) return false;
+	const evaluated = evaluateExact(node.content);
+	if (!evaluated || !isAtomLikeNode(evaluated)) return false;
+	return true;
+}
+
+/**
+ * Test whether `node` contains at least one calculable parens. Bottom-up
+ * traversal that stops at the first hit.
+ */
+function hasCalculableParens(node: MathNode): boolean {
+	let found = false;
+	const walk = (n: MathNode): void => {
+		if (found) return;
+		if (isCalculableParens(n)) {
+			found = true;
+			return;
+		}
+		switch (n.type) {
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+				walk(n.left);
+				walk(n.right);
+				break;
+			case 'division':
+				walk(n.numerator);
+				walk(n.denominator);
+				break;
+			case 'opposite':
+			case 'positive':
+				walk(n.operand);
+				break;
+			case 'delimiter':
+				walk(n.content);
+				break;
+			default:
+				break;
+		}
+	};
+	walk(node);
+	return found;
+}
+
+/**
+ * Replace every calculable parens in the tree by its evaluated atom.
+ * Non-calculable parens are kept ; outer structure is preserved.
+ */
+function applyGroupParentheses(node: MathNode): MathNode | null {
+	let changed = false;
+	const mapped = mapNode(node, (n) => {
+		if (!isCalculableParens(n)) return n;
+		const delim = n as Extract<MathNode, { type: 'delimiter' }>;
+		const evaluated = evaluateExact(delim.content);
+		if (!evaluated) return n;
+		changed = true;
+		return evaluated;
+	});
+	return changed ? mapped : null;
+}
+
+export const groupParentheses: PedagogicalArithmeticRule = {
+	name: 'group-parentheses',
+	rule: createRule(
+		P._('s', P.custom(hasCalculableParens, 'has-calculable-parens')),
+		(bindings) => {
+			const s = bindingNode(bindings, 's');
+			if (!s) return number('0');
+			return applyGroupParentheses(s) ?? s;
+		},
+		{ name: 'group-parentheses' }
+	),
+	applicableLevels: ['college', 'lycee', 'superieur'],
+	priority: 250,
+	descriptions: {
+		college: () => 'On effectue les calculs entre parenthèses',
+		lycee: () => 'Calculs entre parenthèses',
+		superieur: () => '(.)'
+	},
+	explanations: {
+		college: () =>
+			"En présence de parenthèses, on commence par calculer ce qu'il y a à l'intérieur."
+	}
+};
+
+/**
  * Pedagogical rule : in a sum with ≥2 numeric multiplications, evaluate
  * them all in one step. Skipped at primaire (each multiplication keeps its
  * own atomic step there).
@@ -400,6 +516,7 @@ export const simplifyDivOne: PedagogicalArithmeticRule = {
  * each rule's `priority` field at engine setup time.
  */
 export const BASIC_OPERATION_RULES: readonly PedagogicalArithmeticRule[] = [
+	groupParentheses,
 	groupMultiplicationsInAddition,
 	evaluateBinaryAdd,
 	evaluateBinarySub,

@@ -31,7 +31,10 @@ import type { MatchBindings, Rule } from '../pattern/types';
 import { mapNode, mapNodeTopDown } from '../transforms';
 import { extractAnswerFragment } from './answer-format-parser';
 import { loadPedagogicalRules } from './pedagogical-rules';
-import { groupMultiplicationsInAddition } from './pedagogical-rules/basic-operations';
+import {
+	groupMultiplicationsInAddition,
+	groupParentheses
+} from './pedagogical-rules/basic-operations';
 import { reduceFraction } from './pedagogical-rules/fractions';
 import { toScientificNotation } from './pedagogical-rules/scientific-notation';
 import type {
@@ -85,6 +88,49 @@ function cleanupTrivialParens(node: MathNode): MathNode {
 		if (isOpposite(c) && isNumber(c.operand)) return c;
 		return n;
 	});
+}
+
+/**
+ * Collect every sub-tree of `node` that is a parenthesised sub-expression
+ * whose content evaluates to a numeric atom different from the content
+ * itself. Used by the parens-grouping pre-pass to highlight every parens
+ * the rule just collapsed.
+ */
+function collectCalculableParens(node: MathNode): readonly MathNode[] {
+	const found: MathNode[] = [];
+	const isAtom = (x: MathNode): boolean => isNumber(x) || (isOpposite(x) && isNumber(x.operand));
+	const walk = (n: MathNode): void => {
+		if (n.type === 'delimiter' && n.delimiters === 'parentheses' && !isAtom(n.content)) {
+			const ev = evaluate(n.content, { mode: 'exact' });
+			if (isEvalValue(ev) && isAtom(ev.node)) {
+				found.push(n);
+				return; // Don't recurse — the parens is already a unit.
+			}
+		}
+		switch (n.type) {
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+				walk(n.left);
+				walk(n.right);
+				break;
+			case 'division':
+				walk(n.numerator);
+				walk(n.denominator);
+				break;
+			case 'opposite':
+			case 'positive':
+				walk(n.operand);
+				break;
+			case 'delimiter':
+				walk(n.content);
+				break;
+			default:
+				break;
+		}
+	};
+	walk(node);
+	return found;
 }
 
 /**
@@ -198,8 +244,35 @@ export function generatePedagogicalArithmeticSteps(
 	const collected: PedagogicalArithmeticStep[] = [];
 	let stepId = 0;
 
-	// 2a. ---------- Top-down pre-pass for groupMultiplicationsInAddition -----
 	let workingNode = node;
+
+	// 2a-pre. -------------- Top-level pre-pass for groupParentheses ---------
+	// Computes every calculable `(…)` in one step, collège+ only. Skipped at
+	// primaire so atomic rules walk into each parens individually.
+	if (groupParentheses.applicableLevels.includes(schoolLevel)) {
+		const fragments = collectCalculableParens(workingNode);
+		if (fragments.length > 0) {
+			const replaced = cleanupTrivialParens(
+				applyRule(groupParentheses.rule, workingNode) ?? workingNode
+			);
+			if (!nodesEqual(replaced, workingNode)) {
+				collected.push({
+					id: stepId++,
+					rule: groupParentheses.name,
+					description: describeStep(groupParentheses, schoolLevel, {}),
+					before: workingNode,
+					after: replaced,
+					globalBefore: workingNode,
+					globalAfter: replaced,
+					highlightSubTrees: fragments,
+					verbosityLevel: 'summarized'
+				});
+				workingNode = replaced;
+			}
+		}
+	}
+
+	// 2a. ---------- Top-down pre-pass for groupMultiplicationsInAddition -----
 	if (groupMultiplicationsInAddition.applicableLevels.includes(schoolLevel)) {
 		const grouped = cleanupTrivialParens(
 			mapNodeTopDown(workingNode, (n) => {
@@ -235,7 +308,10 @@ export function generatePedagogicalArithmeticSteps(
 	// only as a top-level pre-pass below (when the target requests it).
 	const enginePedagogicalRules = pedagogicalRules
 		.filter(
-			(r) => r.name !== groupMultiplicationsInAddition.name && r.name !== toScientificNotation.name
+			(r) =>
+				r.name !== groupMultiplicationsInAddition.name &&
+				r.name !== groupParentheses.name &&
+				r.name !== toScientificNotation.name
 		)
 		.slice()
 		.sort((a, b) => b.priority - a.priority);
