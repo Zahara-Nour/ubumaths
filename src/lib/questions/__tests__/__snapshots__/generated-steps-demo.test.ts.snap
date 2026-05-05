@@ -1,0 +1,75 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Mode B end-to-end demos > 4e linear equation — produces college steps 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-equation",
+    "schoolLevel": "college",
+    "title": "Équation du premier degré",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "subtract-both-sides",
+    "schoolLevel": "college",
+    "title": "On soustrait 5 aux deux membres",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "divide-both-sides",
+    "schoolLevel": "college",
+    "title": "On divise les deux membres par 3",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 4,
+    "rule": "read-solution",
+    "schoolLevel": "college",
+    "title": "Solution : x = 3",
+  },
+]
+`;
+
+exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps with grouping 1`] = `
+[
+  {
+    "hasExplanation": false,
+    "hasExpressionLatex": true,
+    "id": 0,
+    "rule": "evaluate-binary-mul",
+    "schoolLevel": "primaire",
+    "title": "On multiplie 3 par 4",
+  },
+  {
+    "hasExplanation": false,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "evaluate-binary-add",
+    "schoolLevel": "primaire",
+    "title": "On additionne 2 et 12",
+  },
+  {
+    "hasExplanation": false,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "evaluate-binary-mul",
+    "schoolLevel": "primaire",
+    "title": "On multiplie 5 par 6",
+  },
+  {
+    "hasExplanation": false,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "evaluate-binary-add",
+    "schoolLevel": "primaire",
+    "title": "On additionne 14 et 30",
+  },
+]
+`;
