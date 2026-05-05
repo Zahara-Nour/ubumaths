@@ -165,3 +165,64 @@ exports[`Mode B end-to-end demos > Terminale spécialité composition differenti
   },
 ]
 `;
+
+exports[`Mode B end-to-end demos > Tle spécialité quadratic equation — produces lycee steps with discriminant 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-equation",
+    "schoolLevel": "lycee",
+    "title": "Équation du second degré",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "identify-coefficients",
+    "schoolLevel": "lycee",
+    "title": "On identifie les coefficients a, b et c",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "compute-discriminant",
+    "schoolLevel": "lycee",
+    "title": "On calcule le discriminant Δ = b² − 4ac",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 4,
+    "rule": "discriminant-positive",
+    "schoolLevel": "lycee",
+    "title": "Δ > 0 : deux solutions distinctes",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 5,
+    "rule": "apply-quadratic-formula",
+    "schoolLevel": "lycee",
+    "title": "On applique la formule : x = (−b ± √Δ) / (2a)",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 6,
+    "rule": "simplify-solutions",
+    "schoolLevel": "lycee",
+    "title": "On simplifie les solutions",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 7,
+    "rule": "read-solutions",
+    "schoolLevel": "lycee",
+    "title": "Solutions",
+  },
+]
+`;

@@ -15,7 +15,8 @@ import {
 	additionGroupingDemo,
 	differentiateCompositionDemo,
 	differentiatePolynomialDemo,
-	linearEquationDemo
+	linearEquationDemo,
+	quadraticEquationDemo
 } from './fixtures/generated-steps-demo';
 
 /** Compact serializable view of a RenderedStep tree (no implementation noise). */
@@ -140,6 +141,36 @@ describe('Mode B end-to-end demos', () => {
 		const steps = result.instance.correction?._renderedSteps;
 		expect(steps).toBeDefined();
 		expect(steps!.length).toBeGreaterThan(0);
+
+		const allSchoolLevels = (function collect(arr: typeof steps): string[] {
+			const out: string[] = [];
+			for (const s of arr ?? []) {
+				if (s.schoolLevel) out.push(s.schoolLevel);
+				if (s.subSteps) out.push(...collect(s.subSteps));
+			}
+			return out;
+		})(steps);
+		expect(allSchoolLevels.every((lvl) => lvl === 'lycee')).toBe(true);
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('Tle spécialité quadratic equation — produces lycee steps with discriminant', () => {
+		const result = generateInstance(quadraticEquationDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		// Tle (lycée) → emit_discriminant_sign true → discriminant-positive present.
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('compute-discriminant');
+		expect(rules).toContain('discriminant-positive');
+		expect(rules).toContain('apply-quadratic-formula');
+		expect(rules).toContain('read-solutions');
 
 		const allSchoolLevels = (function collect(arr: typeof steps): string[] {
 			const out: string[] = [];

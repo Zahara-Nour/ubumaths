@@ -33,7 +33,12 @@ import { generatePedagogicalDifferentiationSteps } from '$lib/mathAST/pedagogica
 import { PedagogicalDifferentiationRenderer } from '$lib/mathAST/pedagogical-differentiation/renderer';
 import { generateLinearEquationSteps } from '$lib/mathAST/pedagogical-solve/linear';
 import { LinearEquationRenderer } from '$lib/mathAST/pedagogical-solve/linear-renderer';
-import type { LinearSchoolLevel } from '$lib/mathAST/pedagogical-solve/types';
+import {
+	generateQuadraticEquationSteps,
+	PedagogicalQuadraticNotImplemented
+} from '$lib/mathAST/pedagogical-solve/quadratic';
+import { QuadraticEquationRenderer } from '$lib/mathAST/pedagogical-solve/quadratic-renderer';
+import type { LinearSchoolLevel, QuadraticSchoolLevel } from '$lib/mathAST/pedagogical-solve/types';
 
 import type { GeneratedStepsOptions, QuestionInstance } from '../types';
 import { gradeLevelToSchoolLevel } from '../grade-level-to-school-level';
@@ -78,6 +83,14 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				break;
 			case 'linear-equation':
 				renderedSteps = renderLinearEquation({
+					equation: generatedSteps.equation,
+					instance,
+					schoolLevel,
+					verbosity
+				});
+				break;
+			case 'quadratic-equation':
+				renderedSteps = renderQuadraticEquation({
 					equation: generatedSteps.equation,
 					instance,
 					schoolLevel,
@@ -181,6 +194,51 @@ function renderLinearEquation({
 	const renderer = new LinearEquationRenderer();
 	const renderOptions: PedagogicalRenderOptions = {
 		schoolLevel: linearLevel,
+		verbosity
+	};
+	return renderer.renderAll(steps, renderOptions);
+}
+
+interface QuadraticEquationDispatch {
+	readonly equation: string;
+	readonly instance: QuestionInstance;
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+}
+
+function renderQuadraticEquation({
+	equation,
+	instance,
+	schoolLevel,
+	verbosity
+}: QuadraticEquationDispatch): readonly RenderedStep[] | null {
+	const node = parseExpression(equation, instance);
+	if (node === null) return null;
+
+	if (node.type !== 'relation') return null;
+	const relationNode = node as RelationNode;
+
+	// `QuadraticSchoolLevel` excludes 'primaire' AND 'college' (the second-degree
+	// formula is not in the syllabus before 1ère). Bump those levels to 'lycee'
+	// so a misplaced quadratic-equation declaration on a sub-1ère question
+	// still produces something useful.
+	const quadraticLevel: QuadraticSchoolLevel =
+		schoolLevel === 'primaire' || schoolLevel === 'college' ? 'lycee' : schoolLevel;
+
+	let steps;
+	try {
+		steps = generateQuadraticEquationSteps(relationNode, { level: quadraticLevel });
+	} catch (err) {
+		// V1 scope refusal (parametric coefficients, etc.) → silent fallback to
+		// Mode A. Any other Error type re-throws upstream (caught by the parent
+		// try/catch in `generateCorrection`).
+		if (err instanceof PedagogicalQuadraticNotImplemented) return null;
+		throw err;
+	}
+
+	const renderer = new QuadraticEquationRenderer();
+	const renderOptions: PedagogicalRenderOptions = {
+		schoolLevel: quadraticLevel,
 		verbosity
 	};
 	return renderer.renderAll(steps, renderOptions);
