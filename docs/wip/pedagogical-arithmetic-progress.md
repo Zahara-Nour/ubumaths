@@ -105,6 +105,53 @@ Populer `expressionName` directement dans `InstanceBlank` via
 `generator/assign-blank-indices.ts`. Une fois fait, le 3e argument
 `expressionName` devient redondant (déductible depuis `blank`).
 
+## Phase 5 — Règles niveau 3 : radicaux (terminée ✓)
+
+### Livré
+
+- `pedagogical-rules/radicals.ts` — 2 règles :
+  - `extractPerfectSquare` (priority 100, college+) — `√8 → 2√2`, `√4 → 2`. Délègue à `simplifyRadical()` de `normal/radical.ts`.
+  - `multiplyRadicals` (priority 110, college+) — `√2 × √3 → √6`, `√2 × √8 → 4` (collapse complet). Inclut l'extraction post-multiplication.
+- 16 tests passent (`__tests__/radicals.test.ts`)
+
+### Hors scope (Phase 5)
+
+- `rationalize-denominator` (`1/√2 → √2/2`) — nécessite pattern fraction-aware
+- `simplify-square-root-of-square` (`√(a²) → |a|`) — nécessite gestion de la valeur absolue
+
+## Phase 6 — Règles niveau 4 : puissances + scientifique (terminée ✓)
+
+### Livré
+
+#### Puissances (`pedagogical-rules/powers.ts`)
+
+- `expandSmallPower` (priority 80, primaire/college) — `2³ → 2 × 2 × 2`. Limite : exposant ≤ 5 (au-delà, `combinePowersSameBase` ou `evaluate(exact)` prennent le relais).
+- `combinePowersSameBase` (priority 110, college+) — `2³ × 2⁵ → 2⁸`.
+- `powerOfPower` (priority 120, college+) — `(2³)² → 2⁶`.
+
+#### Notation scientifique (`pedagogical-rules/scientific-notation.ts`)
+
+- `toScientificNotation` (priority 100, college+) — `5000000 → 5 × 10⁶`, `0.000037 → 3.7 × 10⁻⁵`. Algorithme string-level pour préserver `3.7` exactement (pas de float drift).
+- `multiplyScientific` (priority 110, college+) — `(3 × 10⁴) × (2 × 10⁻²) → 6 × 10²`. Re-normalise les overflow (5×4=20 → 2 × 10).
+- `addScientificSamePower` (priority 110, college+) — `3 × 10⁵ + 2 × 10⁵ → 5 × 10⁵`. Mantissas entières seulement (decimal mantissas hors scope MVP).
+
+#### Loader update
+
+- `loadPedagogicalRules({ targetForm: 'scientific' })` injecte les règles scientific-notation. Sans cette opt-in, elles ne fire pas (sinon elles essaieraient de convertir tout entier en notation scientifique).
+
+#### Tests
+
+- 21 tests dans `__tests__/powers-and-scientific.test.ts`
+- 8 tests dans `__tests__/load-rules.test.ts` (étendus pour le terminal scientific)
+- Total : 195 tests passent
+
+### Décisions design (Phase 6)
+
+- **Mantissas string-level** dans toScientificNotation : préservation exacte de `3.7` (pas de conversion via Number qui perdrait des décimales).
+- **Re-normalisation post-multiplication** : `5 × 4 = 20`, donc `(5×10³)×(4×10²) → 20×10⁵ → 2×10⁶`.
+- **Mantissa entière obligatoire** pour multiply/add scientific : évite la complexité de l'addition de décimaux en string.
+- **Priority `expandSmallPower` (80) < combinePowersSameBase (110) < powerOfPower (120)** : permet à `(2³)² × (2³)²` de se réduire correctement (powerOfPower → combinePowersSameBase → ...).
+
 ## Phase 4 — Règles niveau 2 : fractions (terminée ✓)
 
 ### Livré

@@ -16,6 +16,9 @@ import type { TargetForm } from '../../pedagogical-evaluate/types';
 import type { PedagogicalArithmeticRule } from '../types';
 import { BASIC_OPERATION_RULES } from './basic-operations';
 import { FRACTION_RULES, reduceFraction } from './fractions';
+import { RADICAL_RULES } from './radicals';
+import { POWER_RULES } from './powers';
+import { SCIENTIFIC_NOTATION_RULES, toScientificNotation } from './scientific-notation';
 
 // =============================================================================
 // Re-exports
@@ -23,6 +26,9 @@ import { FRACTION_RULES, reduceFraction } from './fractions';
 
 export { BASIC_OPERATION_RULES } from './basic-operations';
 export { FRACTION_RULES } from './fractions';
+export { RADICAL_RULES } from './radicals';
+export { POWER_RULES } from './powers';
+export { SCIENTIFIC_NOTATION_RULES } from './scientific-notation';
 export type { PedagogicalArithmeticRule } from '../types';
 
 // =============================================================================
@@ -62,7 +68,12 @@ export function loadPedagogicalRules(
 ): readonly PedagogicalArithmeticRule[] {
 	const allFamilies: readonly PedagogicalArithmeticRule[] = [
 		...BASIC_OPERATION_RULES,
-		...FRACTION_RULES
+		...FRACTION_RULES,
+		...RADICAL_RULES,
+		...POWER_RULES
+		// scientific-notation rules are added only when the target asks for it
+		// (otherwise they would fire on plain integers — undesired in basic
+		// arithmetic contexts)
 	];
 
 	const filtered = allFamilies.filter((rule) =>
@@ -80,7 +91,21 @@ export function loadPedagogicalRules(
 	) {
 		terminals.push(reduceFraction);
 	}
-	// Phase 6 — `toScientificNotationForce` when needsScientificFinal.
+	// Phase 6 — when target is scientific notation, include the family
+	// (multiplyScientific, addScientificSamePower, toScientificNotation).
+	if (options.targetForm === 'scientific' || options.needsScientificFinal) {
+		// Filter by school level the same way as core families
+		for (const rule of SCIENTIFIC_NOTATION_RULES) {
+			if (rule.applicableLevels.includes(options.schoolLevel) && !filtered.includes(rule)) {
+				terminals.push(rule);
+			}
+		}
+		// `toScientificNotation` is the terminal converter ; ensure it's added
+		// even outside its applicable levels when explicitly required.
+		if (!terminals.includes(toScientificNotation) && !filtered.includes(toScientificNotation)) {
+			terminals.push(toScientificNotation);
+		}
+	}
 	// Phase 8 — pattern-driven post-processing per `targetForm`.
 
 	return [...filtered, ...terminals];

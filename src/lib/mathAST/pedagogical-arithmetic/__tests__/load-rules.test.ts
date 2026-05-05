@@ -40,16 +40,16 @@ describe('loadPedagogicalRules', () => {
 		expect(names).toContain('reduce-fraction');
 	});
 
-	it('lycee + superieur include the same set as college (at least for now)', () => {
-		const collegeNames = new Set(
-			loadPedagogicalRules({ schoolLevel: 'college' }).map((r) => r.name)
-		);
+	it('lycee and superieur exclude expandSmallPower (kept for primaire/college)', () => {
 		const lyceeNames = new Set(loadPedagogicalRules({ schoolLevel: 'lycee' }).map((r) => r.name));
 		const superNames = new Set(
 			loadPedagogicalRules({ schoolLevel: 'superieur' }).map((r) => r.name)
 		);
-		expect(lyceeNames).toEqual(collegeNames);
-		expect(superNames).toEqual(collegeNames);
+		expect(lyceeNames).not.toContain('expand-small-power');
+		expect(superNames).not.toContain('expand-small-power');
+		// But both still include combinePowersSameBase + powerOfPower
+		expect(lyceeNames).toContain('combine-powers-same-base');
+		expect(lyceeNames).toContain('power-of-power');
 	});
 
 	it('targetForm = "reduced-fraction" adds reduceFraction terminal even in primaire', () => {
@@ -77,5 +77,23 @@ describe('loadPedagogicalRules', () => {
 		});
 		const reduceCount = rules.filter((r) => r.name === 'reduce-fraction').length;
 		expect(reduceCount).toBe(1);
+	});
+
+	it('targetForm = "scientific" adds scientific-notation rules', () => {
+		const rules = loadPedagogicalRules({
+			schoolLevel: 'college',
+			targetForm: 'scientific'
+		});
+		const names = rules.map((r) => r.name);
+		expect(names).toContain('to-scientific-notation');
+		expect(names).toContain('multiply-scientific');
+		expect(names).toContain('add-scientific-same-power');
+	});
+
+	it('without targetForm scientific, scientific rules are absent', () => {
+		const rules = loadPedagogicalRules({ schoolLevel: 'college' });
+		const names = rules.map((r) => r.name);
+		expect(names).not.toContain('to-scientific-notation');
+		expect(names).not.toContain('multiply-scientific');
 	});
 });
