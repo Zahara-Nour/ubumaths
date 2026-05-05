@@ -16,16 +16,28 @@ import type { SchoolLevel } from '../common/step-renderer-base';
 import type { Verbosity } from '../common/verbosity';
 import type { PedagogicalTarget } from '../pedagogical-evaluate/types';
 import { generatePedagogicalArithmeticSteps } from './pipeline';
-import { PedagogicalArithmeticRenderer } from './renderer';
+import { formatTransformationCustom, PedagogicalArithmeticRenderer } from './renderer';
 
 const ALL_LEVELS: readonly SchoolLevel[] = ['primaire', 'college', 'lycee', 'superieur'];
 const ALL_VERBOSITIES: readonly Verbosity[] = ['summarized', 'detailed'];
+
+/**
+ * Output format for the demo presenter :
+ *   - `'custom'` (default) : custom-syntax (ASCII Math) — easier to read in
+ *     terminals and snapshot tests. Color markers `@blue{...}` are emitted
+ *     literally ; the CLI script post-processes them to ANSI codes.
+ *   - `'latex'` : raw LaTeX form, useful when reviewing what the UI will
+ *     actually render in the browser.
+ *   - `'both'` : both formats stacked, for cross-checking.
+ */
+export type DemoFormat = 'custom' | 'latex' | 'both';
 
 function renderAt(
 	node: MathNode,
 	level: SchoolLevel,
 	verbosity: Verbosity,
-	target: PedagogicalTarget | undefined
+	target: PedagogicalTarget | undefined,
+	format: DemoFormat
 ): readonly string[] {
 	const result = generatePedagogicalArithmeticSteps(node, {
 		schoolLevel: level,
@@ -35,13 +47,25 @@ function renderAt(
 	const renderer = new PedagogicalArithmeticRenderer();
 	const rendered = renderer.renderAll(result.steps, { schoolLevel: level, verbosity });
 	const out: string[] = [];
-	for (const step of rendered) {
+	for (let i = 0; i < rendered.length; i++) {
+		const step = rendered[i];
+		const sourceStep = result.steps[i];
 		out.push(`[${step.id}] ${step.title}`);
-		if (verbosity === 'detailed' && step.expressionLatex) {
-			out.push(`    │ ${step.expressionLatex}`);
-		}
-		if (verbosity === 'detailed' && step.explanation) {
-			out.push(`    │ (${step.explanation})`);
+
+		if (verbosity === 'detailed') {
+			if (format === 'custom' || format === 'both') {
+				const customText = formatTransformationCustom(sourceStep);
+				for (const line of customText.split('\n')) out.push(`    │ ${line}`);
+			}
+			if (format === 'both') {
+				out.push(`    ├ (latex)`);
+			}
+			if ((format === 'latex' || format === 'both') && step.expressionLatex) {
+				for (const line of step.expressionLatex.split('\n')) out.push(`    │ ${line}`);
+			}
+			if (step.explanation) {
+				out.push(`    │ (${step.explanation})`);
+			}
 		}
 	}
 	if (result.answerFragment) {
@@ -80,8 +104,13 @@ export interface DemoCategory {
  * Render the full demo for one expression : iterates over each requested
  * `SchoolLevel` and `Verbosity`, producing a stable string used by both
  * the snapshot test and the CLI.
+ *
+ * @param testCase the case to render
+ * @param format which output format(s) to include — defaults to `'custom'`
+ *               (lisible). Pass `'both'` for snapshot tests that want to
+ *               cover LaTeX too.
  */
-export function presentExpression(testCase: DemoCase): string {
+export function presentExpression(testCase: DemoCase, format: DemoFormat = 'custom'): string {
 	const { label, expression, target } = testCase;
 	const levels = testCase.schoolLevels ?? ALL_LEVELS;
 	const lines: string[] = [];
@@ -93,7 +122,7 @@ export function presentExpression(testCase: DemoCase): string {
 	for (const level of levels) {
 		for (const verbosity of ALL_VERBOSITIES) {
 			lines.push(`========== ${level.toUpperCase()} (${verbosity}) ==========`);
-			lines.push(...renderAt(expression, level, verbosity, target));
+			lines.push(...renderAt(expression, level, verbosity, target, format));
 			lines.push('');
 		}
 	}

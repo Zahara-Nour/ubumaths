@@ -32,6 +32,7 @@ import { extractAnswerFragment } from './answer-format-parser';
 import { loadPedagogicalRules } from './pedagogical-rules';
 import { groupMultiplicationsInAddition } from './pedagogical-rules/basic-operations';
 import { reduceFraction } from './pedagogical-rules/fractions';
+import { toScientificNotation } from './pedagogical-rules/scientific-notation';
 import type {
 	PedagogicalArithmeticOptions,
 	PedagogicalArithmeticResult,
@@ -153,8 +154,15 @@ export function generatePedagogicalArithmeticSteps(
 	}
 
 	// 2b. ------------------------------- Manual rule-application fixed point
+	// `toScientificNotation` is excluded from the engine pass for the same
+	// reason as the grouping rule : its wildcard pattern matches ANY number
+	// node, so a bottom-up traversal would re-fire it on the literal `10`
+	// inside the just-produced `a × 10ⁿ` result, looping infinitely. It runs
+	// only as a top-level pre-pass below (when the target requests it).
 	const enginePedagogicalRules = pedagogicalRules
-		.filter((r) => r.name !== groupMultiplicationsInAddition.name)
+		.filter(
+			(r) => r.name !== groupMultiplicationsInAddition.name && r.name !== toScientificNotation.name
+		)
 		.slice()
 		.sort((a, b) => b.priority - a.priority);
 
@@ -220,6 +228,28 @@ export function generatePedagogicalArithmeticSteps(
 				verbosityLevel: 'summarized'
 			});
 			finalNode = reduced;
+		}
+	}
+
+	// 4b. ------------------------- post-processing for scientific notation
+	// Apply `toScientificNotation` ONLY at the top level — never deep in the
+	// tree (see comment near `enginePedagogicalRules`). Fires when the target
+	// demands a scientific final form and the current `finalNode` isn't yet
+	// in that shape.
+	if (target?.structure === 'scientific') {
+		const scientific = applyRule(toScientificNotation.rule, finalNode);
+		if (scientific && !nodesEqual(scientific, finalNode)) {
+			collected.push({
+				id: stepId++,
+				rule: toScientificNotation.name,
+				description: describeStep(toScientificNotation, schoolLevel, {}),
+				before: finalNode,
+				after: scientific,
+				globalBefore: finalNode,
+				globalAfter: scientific,
+				verbosityLevel: 'summarized'
+			});
+			finalNode = scientific;
 		}
 	}
 

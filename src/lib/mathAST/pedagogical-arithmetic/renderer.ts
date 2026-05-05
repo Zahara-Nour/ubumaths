@@ -28,6 +28,7 @@ import type {
 } from '../common/step-renderer-base';
 import type { MathNode } from '../types';
 import type { Verbosity } from '../common/verbosity';
+import { toCustom } from '../custom-generator';
 import { toLatex } from '../latex-generator';
 import { nodesEqual } from '../pattern/match';
 import { ALL_RULES_BY_NAME } from './pedagogical-rules';
@@ -239,4 +240,55 @@ function multiplicationOp(style: string): string {
 		default:
 			return ' \\times ';
 	}
+}
+
+// =============================================================================
+// Custom-syntax pretty printing (CLI / debug-friendly output)
+// =============================================================================
+
+/**
+ * Produce the **custom-syntax** version of the transformation. Returns a
+ * 2-line string :
+ *
+ *   <globalBefore with subBefore wrapped in @blue{...}>
+ *   = <globalAfter>
+ *
+ * Implementation : we let `toCustom` produce the canonical custom-syntax
+ * form of both the global expression and the sub-tree, then substitute
+ * the first occurrence of the sub-tree's text by `@blue{...}`. This keeps
+ * the spacing perfectly consistent with the un-highlighted right-hand side
+ * (no parallel walker drifting from `toCustom`'s conventions).
+ *
+ * The `@blue{...}` markers are post-processed into ANSI escape codes by
+ * the CLI script ; snapshot tests keep them literal.
+ */
+export function formatTransformationCustom(step: PedagogicalArithmeticStep): string {
+	const globalBefore = step.globalBefore ?? step.before;
+	const globalAfter = step.globalAfter ?? step.after;
+	const subBefore = step.before;
+
+	const beforeText = toCustom(globalBefore);
+	const afterText = toCustom(globalAfter);
+	const colored = injectHighlight(beforeText, globalBefore, subBefore);
+
+	return `${colored}\n= ${afterText}`;
+}
+
+/**
+ * Inject `@blue{...}` around the first occurrence of the fragment's
+ * custom-syntax text inside the global expression's text. Uses
+ * `nodesEqual` to check the global itself first — if the global is
+ * structurally equal to the fragment, the whole expression is highlighted.
+ *
+ * Falls back to coloring the whole expression when the fragment text
+ * cannot be located (defensive).
+ */
+function injectHighlight(beforeText: string, global: MathNode, fragment: MathNode): string {
+	if (nodesEqual(global, fragment)) {
+		return `@blue{${beforeText}}`;
+	}
+	const subText = toCustom(fragment);
+	const idx = beforeText.indexOf(subText);
+	if (idx < 0) return `@blue{${beforeText}}`;
+	return beforeText.slice(0, idx) + `@blue{${subText}}` + beforeText.slice(idx + subText.length);
 }
