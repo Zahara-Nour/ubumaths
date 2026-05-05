@@ -313,3 +313,183 @@ src/lib/mathAST/pedagogical-arithmetic/
 4. **`rationalize-denominator`** et **`simplify-square-root-of-square`** (radicaux niveau 3 avancé).
 5. **Decimal mantissas** dans `multiplyScientific` / `addScientificSamePower` (mantissas non-entières en notation scientifique).
 6. **Cohérence `signs`** : étape post-processing `5 + (-3) → 5 - 3` quand `signs: 'strict'` (pas couvert dans cette livraison).
+
+---
+
+## Phase 11 — Itérations UX post-livraison (en cours)
+
+Travaux post-MVP pour rendre le rendu des étapes plus lisible, plus
+pédagogique, et plus fidèle aux conventions scolaires françaises. Toutes
+les modifications sont architecturalement compatibles avec la livraison
+initiale et ne touchent pas aux contrats des phases 1-2.
+
+### 11.1 — Bindings + format 2 lignes (commit `9ec77d607`)
+
+**Problème** : titres `"On additionne ? et ?"` (bindings perdus) +
+`expressionLatex` mono-ligne `before \Rightarrow after`.
+
+**Fix** :
+
+- Pipeline réécrit en boucle manuelle (au lieu de `rewrite()`) pour
+  capturer bindings via `match()` + globalBefore/globalAfter à chaque step.
+- Ajout `globalBefore?` / `globalAfter?` sur `PedagogicalArithmeticStep`.
+- Renderer émet 2 lignes `\begin{aligned}` style solver pédagogique :
+  ```
+  \textcolor{blue}{globalBefore avec sub-tree colorisé}
+  = globalAfter
+  ```
+- Coloration du fragment via `nodesEqual` (structurel) car `mapNode`
+  reconstruit les sous-arbres → identité référentielle ne tient pas.
+
+**Bug bonus fixé** : `evaluateBinaryDiv` restreinte aux résultats entiers.
+`3/6 → 1/2` est désormais étiqueté "On simplifie la fraction"
+(`reduceFraction`) et non "Division".
+
+### 11.2 — Sortie CLI lisible via custom syntax (commit `110a55e18`)
+
+**Problème** : LaTeX dans le terminal est illisible (`\dfrac{1}{3}`).
+
+**Fix** :
+
+- `formatTransformationCustom(step)` ajouté à `renderer.ts` (utilise
+  `toCustom()` + string-replace pour `@blue{...}`).
+- `demo-helpers` : `DemoFormat = 'custom' | 'latex' | 'both'`.
+  `presentExpression(testCase, format = 'custom')`.
+- Script CLI : flags `--latex` / `--both` / `--custom` (default), conversion
+  ANSI auto en TTY.
+- `cleanupTrivialParens` : supprime silencieusement `(5)` et `(-3)` après
+  chaque rule application.
+
+**Bug fixé** : `toScientificNotation` excluse de la rewrite loop (re-firait
+sur `10` dans `5 × 10⁶` → boucle infinie). Top-level pre-pass uniquement.
+
+### 11.3 — Highlight multi-fragment (commit `7052e8506`)
+
+**Problème** : `groupMultiplicationsInAddition` transforme plusieurs
+sous-arbres en une étape, mais le renderer ne pouvait colorer qu'un seul
+fragment.
+
+**Fix** :
+
+- `step.highlightSubTrees?: readonly MathNode[]` (optionnel) ; fallback
+  sur `[step.before]` quand absent.
+- Renderer (LaTeX et custom) itère sur les fragments et colorise chacun.
+- `findOutsideWrapper` évite de re-colorer un span déjà dans `@blue{...}`.
+- Pipeline collecte tous les `n*m` du grouping et les passe au step.
+
+Avant : `2+3*4+5*6` (rien de coloré). Après : `2+@blue{3*4}+@blue{5*6}`.
+
+### 11.4 — Display-only filter primaire+college (commit `41ca86628`)
+
+`DISPLAYED_LEVELS = ['primaire', 'college']` + `DISPLAYED_VERBOSITIES = ['detailed']`
+dans `demo-helpers.ts`. Les `schoolLevels` des cas restent intacts (scope
+pédagogique réel) ; intersection appliquée seulement à l'affichage.
+
+### 11.5 — Cas avec parenthèses + `groupParentheses` (commits `f4c628599`, `fcf11d872`)
+
+**Cas demo ajoutés** : `(2+3)×4`, `2×(3+4)`, `10−(3+2)`, `(2+3)×(4−1)`.
+
+**Nouvelle règle** `groupParentheses` (priority 250, college+) :
+
+- Pattern wildcard + condition `hasCalculableParens`.
+- Replacement : remplace chaque parens calculable par sa valeur.
+- Highlight : chaque parens originale.
+- Pré-passe top-level dans le pipeline (comme `groupMultiplicationsInAddition`).
+- Description : "On effectue les calculs entre parenthèses".
+
+**Au primaire** : pas de `groupParentheses` → calcul atomique de chaque
+parens un step à la fois (cf §11.10).
+
+### 11.6 — Divisions inline + post-traitement opérateurs (commits `aac72f66b`, `c7e28e3d6`)
+
+**Cas demo divisions** : `12÷3`, `6+12÷3`, `20÷4−3`, `(15+5)÷4`, `24÷6+2×3`.
+
+**Post-traitement CLI** : `:/` → `÷`, `*` → `×` (cosmetic-only). Snapshots
+préservent la syntaxe custom native pour stabilité.
+
+**Format compact** : pas d'espaces autour des opérateurs (cohérent avec
+`toCustom` natif). `2+@blue{3×4}+@blue{5×6}` au lieu de `2 + @blue{3 × 4} + @blue{5 × 6}`.
+
+### 11.7 — Ordre gauche-à-droite + grouping × et ÷ (commit `1ebb489e6`)
+
+**Problème** : pour `24÷6+2×3` au primaire, `evaluateBinaryMul` firait
+avant `evaluateBinaryDiv` (rule-first iteration), violant l'ordre
+gauche-à-droite.
+
+**Fix** :
+
+- `findFirstApplication` itère **node-first** puis rule-by-rule à chaque
+  nœud. Le sub-tree le plus à gauche gagne quand priorités égales.
+- `groupMultiplicationsInAddition` étendu aux divisions (`isNumericHighPriorityOp`).
+- Description : "On effectue d'abord les multiplications et divisions".
+
+Primaire : `24÷6` puis `2×3` (gauche-à-droite) ; Collège : `@blue{24÷6}+@blue{2×3} = 4+6` en 1 step.
+
+### 11.8 — Grouping étendu aux chaînes mul/div (commit `55b5477a5`)
+
+**Problème** : pour `24÷(6+2)×3+(15+5)÷4`, après `(6+2)→8` et `(15+5)→20`,
+on a `24÷8×3+20÷4` → `mul(div(24,8), 3)` n'est pas une op binaire simple,
+le grouping ne firait pas.
+
+**Fix** :
+
+- `isNumericMulDivChain` : reconnaît récursivement les chaînes (un mul/div
+  dont les opérandes sont eux-mêmes atoms ou chaînes).
+- `applyGroupMultiplications` évalue la chaîne entière via `evaluateExact`.
+- Highlight = la chaîne entière comme un bloc.
+
+Collège : `@blue{24÷8×3}+@blue{20÷4} = 9+5` (1 step au lieu de 3).
+
+### 11.9 — Cas demo complet (commit `55b5477a5`)
+
+Ajouté : `24÷(6+2)×3+(15+5)÷4 = 14`. Le rendu démontre bien la
+différence pédagogique entre primaire (atomique, 6 steps) et collège
+(condensé, 3 steps).
+
+### 11.10 — Primaire calcule toutes les parens d'abord (commit `7a8233cca`)
+
+**Problème** : au primaire, après `(6+2)→8` le pipeline ferait
+`24÷8` ensuite (gauche-à-droite à plat) au lieu d'attaquer d'abord la
+seconde parens `(15+5)`.
+
+**Fix** :
+
+- Nouveau helper `findFirstApplicationInAnyParens` cherche les
+  applications uniquement à l'intérieur d'une `(...)`.
+- Rewrite loop : `findFirstApplicationInAnyParens(...) ??
+findFirstApplication(...)`. Une app dans une parens gagne TOUJOURS sur
+  une app au niveau externe.
+
+Avant pour `24÷(6+2)×3+(15+5)÷4` au primaire :
+`(6+2), 24÷8, 3×3, (15+5), 20÷4, 9+5` (entrelacé).
+Après : `(6+2), (15+5), 24÷8, 3×3, 20÷4, 9+5` (toutes parens d'abord).
+
+### Récap commits Phase 11
+
+| Commit      | Sujet                                                                 |
+| ----------- | --------------------------------------------------------------------- |
+| `9ec77d607` | Bindings + format 2 lignes du renderer                                |
+| `110a55e18` | Pretty CLI output via custom syntax                                   |
+| `41ca86628` | Filtrage display-only primaire+college                                |
+| `7052e8506` | highlightSubTrees pour multi-fragment coloring                        |
+| `f4c628599` | Cas avec parenthèses + cleanup auto                                   |
+| `fcf11d872` | groupParentheses (calculs entre () en 1 step au collège)              |
+| `aac72f66b` | Cas avec divisions inline (÷)                                         |
+| `c7e28e3d6` | Format compact (sans espaces autour des opérateurs)                   |
+| `1ebb489e6` | Ordre gauche-à-droite + grouping × et ÷                               |
+| `55b5477a5` | Grouping étendu aux chaînes mul/div + cas complet 24÷(6+2)×3+(15+5)÷4 |
+| `7a8233cca` | Primaire calcule toutes les parens d'abord                            |
+
+### Stats actuelles
+
+- **252 tests** passent dans `pedagogical-arithmetic/` (+13 vs livraison initiale)
+- **0 régression** sur le reste de mathAST
+- **17 commits cumulés** sur le module (5 livraison + 12 itérations)
+- **Categories demo** : 6 catégories, 13 cas dans `basic` (couvre +/-, ×, ÷, parens, chaînes).
+
+### TODO restant (post-Phase 11)
+
+- Tester d'autres cas pédagogiques utilisateur-driven
+- Compléter snapshots avec le format `--both` (custom + latex côte à côte)
+- Décider du destin des espaces : actuellement compact — peut-être ajuster
+  par niveau (primaire = plus aéré ?)
