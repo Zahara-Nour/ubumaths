@@ -1,0 +1,1451 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`snapshot — composition > ((\\sin(x))^2) 1`] = `
+"
+###### ((\\sin(x))^2) ######
+
+Expression: (\\sin(x))^2 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [power-constant-exp] Règle de la puissance (exposant constant)
+  \\begin{aligned} & \\textcolor{blue}{(\\left( \\sin\\left( x \\right) \\right)^2)'} \\\\ & = 2 \\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: 2 \\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [power-constant-exp] Règle de la puissance (exposant constant)
+  · Avec f = \\left( \\sin\\left( x \\right) \\right) et l'exposant constant 2, on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(\\left( \\sin\\left( x \\right) \\right)^2)'} \\\\ & = 2 \\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: 2 \\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [power-constant-exp] (f^c)' = cf^{c-1}f'
+  \\begin{aligned} & \\textcolor{blue}{(\\left( \\sin\\left( x \\right) \\right)^2)'} \\\\ & = 2 \\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: 2 \\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [power-constant-exp] (f^c)' = cf^{c-1}f'
+  · Avec f = \\left( \\sin\\left( x \\right) \\right) et l'exposant constant 2, on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(\\left( \\sin\\left( x \\right) \\right)^2)'} \\\\ & = 2 \\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: 2 \\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+"
+`;
+
+exports[`snapshot — composition > (\\ln(\\cos(x))) 1`] = `
+"
+###### (\\ln(\\cos(x))) ######
+
+Expression: \\ln(\\cos(x)) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [ln] Dérivée du logarithme népérien
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( \\cos\\left( x \\right) \\right))'} \\\\ & = \\dfrac{-\\sin\\left( x \\right)}{\\cos\\left( x \\right)} \\end{aligned}
+  - [cos] Dérivée de cosinus
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: \\dfrac{-\\sin\\left( x \\right)}{\\cos\\left( x \\right)}
+
+========== LYCEE (detailed) ==========
+- [ln] Dérivée du logarithme népérien
+  · Avec u = \\cos\\left( x \\right), on a (\\ln u)' = u'/u.
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( \\cos\\left( x \\right) \\right))'} \\\\ & = \\dfrac{-\\sin\\left( x \\right)}{\\cos\\left( x \\right)} \\end{aligned}
+  - [cos] Dérivée de cosinus
+    · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: \\dfrac{-\\sin\\left( x \\right)}{\\cos\\left( x \\right)}
+
+========== SUPERIEUR (summarized) ==========
+- [ln] (\\ln u)' = u'/u
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( \\cos\\left( x \\right) \\right))'} \\\\ & = \\dfrac{-\\sin\\left( x \\right)}{\\cos\\left( x \\right)} \\end{aligned}
+  - [cos] (\\cos u)' = -\\sin(u)\\,u'
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: \\dfrac{-\\sin\\left( x \\right)}{\\cos\\left( x \\right)}
+
+========== SUPERIEUR (detailed) ==========
+- [ln] (\\ln u)' = u'/u
+  · Avec u = \\cos\\left( x \\right), on a (\\ln u)' = u'/u.
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( \\cos\\left( x \\right) \\right))'} \\\\ & = \\dfrac{-\\sin\\left( x \\right)}{\\cos\\left( x \\right)} \\end{aligned}
+  - [cos] (\\cos u)' = -\\sin(u)\\,u'
+    · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: \\dfrac{-\\sin\\left( x \\right)}{\\cos\\left( x \\right)}
+"
+`;
+
+exports[`snapshot — composition > (\\sqrt{x^2 + 1}) 1`] = `
+"
+###### (\\sqrt{x^2 + 1}) ######
+
+Expression: \\sqrt{x^2 + 1} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sqrt] Dérivée de la racine carrée
+  \\begin{aligned} & \\textcolor{blue}{(\\sqrt{x^2 + 1})'} \\\\ & = \\dfrac{2 x}{2 \\sqrt{x^2 + 1}} \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] Règle de la puissance (2)
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{2 \\sqrt{x^2 + 1}}
+
+========== LYCEE (detailed) ==========
+- [sqrt] Dérivée de la racine carrée
+  · Avec u = x^2 + 1, on a (\\sqrt u)' = u'/(2\\sqrt u).
+  \\begin{aligned} & \\textcolor{blue}{(\\sqrt{x^2 + 1})'} \\\\ & = \\dfrac{2 x}{2 \\sqrt{x^2 + 1}} \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x^2 contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] Règle de la puissance (2)
+      · (x^n)' = n x^{n-1} avec n = 2.
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{2 \\sqrt{x^2 + 1}}
+
+========== SUPERIEUR (summarized) ==========
+- [sqrt] (\\sqrt u)' = u'/(2\\sqrt u)
+  \\begin{aligned} & \\textcolor{blue}{(\\sqrt{x^2 + 1})'} \\\\ & = \\dfrac{2 x}{2 \\sqrt{x^2 + 1}} \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] (x^n)' = nx^{n-1}
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{2 \\sqrt{x^2 + 1}}
+
+========== SUPERIEUR (detailed) ==========
+- [sqrt] (\\sqrt u)' = u'/(2\\sqrt u)
+  · Avec u = x^2 + 1, on a (\\sqrt u)' = u'/(2\\sqrt u).
+  \\begin{aligned} & \\textcolor{blue}{(\\sqrt{x^2 + 1})'} \\\\ & = \\dfrac{2 x}{2 \\sqrt{x^2 + 1}} \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x^2 contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] (x^n)' = nx^{n-1}
+      · (x^n)' = n x^{n-1} avec n = 2.
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{2 \\sqrt{x^2 + 1}}
+"
+`;
+
+exports[`snapshot — composition > (cos(2x+1)) 1`] = `
+"
+###### (cos(2x+1)) ######
+
+Expression: \\cos(2x+1) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [cos] Dérivée de cosinus
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( 2 x + 1 \\right))'} \\\\ & = -\\sin\\left( 2 x + 1 \\right) 2 \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    \\begin{aligned} & \\textcolor{blue}{(2 x + 1)'} \\\\ & = 2 \\end{aligned}
+    - [linear-coefficient] On sort la constante 2
+      \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: -\\sin\\left( 2 x + 1 \\right) 2
+
+========== LYCEE (detailed) ==========
+- [cos] Dérivée de cosinus
+  · Avec u = 2 x + 1, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( 2 x + 1 \\right))'} \\\\ & = -\\sin\\left( 2 x + 1 \\right) 2 \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de 2 x contribue.
+    \\begin{aligned} & \\textcolor{blue}{(2 x + 1)'} \\\\ & = 2 \\end{aligned}
+    - [linear-coefficient] On sort la constante 2
+      · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+      \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: -\\sin\\left( 2 x + 1 \\right) 2
+
+========== SUPERIEUR (summarized) ==========
+- [cos] (\\cos u)' = -\\sin(u)\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( 2 x + 1 \\right))'} \\\\ & = -\\sin\\left( 2 x + 1 \\right) 2 \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    \\begin{aligned} & \\textcolor{blue}{(2 x + 1)'} \\\\ & = 2 \\end{aligned}
+    - [linear-coefficient] (cf)' = cf'
+      \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: -\\sin\\left( 2 x + 1 \\right) 2
+
+========== SUPERIEUR (detailed) ==========
+- [cos] (\\cos u)' = -\\sin(u)\\,u'
+  · Avec u = 2 x + 1, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( 2 x + 1 \\right))'} \\\\ & = -\\sin\\left( 2 x + 1 \\right) 2 \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de 2 x contribue.
+    \\begin{aligned} & \\textcolor{blue}{(2 x + 1)'} \\\\ & = 2 \\end{aligned}
+    - [linear-coefficient] (cf)' = cf'
+      · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+      \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: -\\sin\\left( 2 x + 1 \\right) 2
+"
+`;
+
+exports[`snapshot — composition > (exp(\\sin(x))) 1`] = `
+"
+###### (exp(\\sin(x))) ######
+
+Expression: \\exp(\\sin(x)) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [exp] Dérivée de l'exponentielle
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( \\sin\\left( x \\right) \\right))'} \\\\ & = \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [exp] Dérivée de l'exponentielle
+  · Avec u = \\sin\\left( x \\right), on a (e^u)' = e^u \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( \\sin\\left( x \\right) \\right))'} \\\\ & = \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [exp] (e^u)' = e^u\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( \\sin\\left( x \\right) \\right))'} \\\\ & = \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [exp] (e^u)' = e^u\\,u'
+  · Avec u = \\sin\\left( x \\right), on a (e^u)' = e^u \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( \\sin\\left( x \\right) \\right))'} \\\\ & = \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+"
+`;
+
+exports[`snapshot — composition > (sin(x^2)) 1`] = `
+"
+###### (sin(x^2)) ######
+
+Expression: \\sin(x^2) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sin] Dérivée de sinus
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] Règle de la puissance (2)
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\cos\\left( x^2 \\right) 2 x
+
+========== LYCEE (detailed) ==========
+- [sin] Dérivée de sinus
+  · Avec u = x^2, on a (\\sin u)' = \\cos(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] Règle de la puissance (2)
+    · (x^n)' = n x^{n-1} avec n = 2.
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\cos\\left( x^2 \\right) 2 x
+
+========== SUPERIEUR (summarized) ==========
+- [sin] (\\sin u)' = \\cos(u)\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\cos\\left( x^2 \\right) 2 x
+
+========== SUPERIEUR (detailed) ==========
+- [sin] (\\sin u)' = \\cos(u)\\,u'
+  · Avec u = x^2, on a (\\sin u)' = \\cos(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x^2 \\right))'} \\\\ & = \\cos\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    · (x^n)' = n x^{n-1} avec n = 2.
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\cos\\left( x^2 \\right) 2 x
+"
+`;
+
+exports[`snapshot — exponential > (2^x) 1`] = `
+"
+###### (2^x) ######
+
+Expression: 2^x (variable: x)
+
+========== LYCEE (summarized) ==========
+- [power-constant-base] Règle de l'exponentielle généralisée
+  \\begin{aligned} & \\textcolor{blue}{(2^x)'} \\\\ & = 2^x \\ln\\left( 2 \\right) \\end{aligned}
+Result: 2^x \\ln\\left( 2 \\right)
+
+========== LYCEE (detailed) ==========
+- [power-constant-base] Règle de l'exponentielle généralisée
+  · Avec la base constante 2, on a (2^g)' = 2^g \\cdot \\ln(2) \\cdot g'.
+  \\begin{aligned} & \\textcolor{blue}{(2^x)'} \\\\ & = 2^x \\ln\\left( 2 \\right) \\end{aligned}
+Result: 2^x \\ln\\left( 2 \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [power-constant-base] (c^f)' = c^f \\ln(c) f'
+  \\begin{aligned} & \\textcolor{blue}{(2^x)'} \\\\ & = 2^x \\ln\\left( 2 \\right) \\end{aligned}
+Result: 2^x \\ln\\left( 2 \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [power-constant-base] (c^f)' = c^f \\ln(c) f'
+  · Avec la base constante 2, on a (2^g)' = 2^g \\cdot \\ln(2) \\cdot g'.
+  \\begin{aligned} & \\textcolor{blue}{(2^x)'} \\\\ & = 2^x \\ln\\left( 2 \\right) \\end{aligned}
+Result: 2^x \\ln\\left( 2 \\right)
+"
+`;
+
+exports[`snapshot — exponential > (exp(2x)) 1`] = `
+"
+###### (exp(2x)) ######
+
+Expression: \\exp(2x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [exp] Dérivée de l'exponentielle
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) 2 \\end{aligned}
+  - [linear-coefficient] On sort la constante 2
+    \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: \\exp\\left( 2 x \\right) 2
+
+========== LYCEE (detailed) ==========
+- [exp] Dérivée de l'exponentielle
+  · Avec u = 2 x, on a (e^u)' = e^u \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) 2 \\end{aligned}
+  - [linear-coefficient] On sort la constante 2
+    · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+    \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: \\exp\\left( 2 x \\right) 2
+
+========== SUPERIEUR (summarized) ==========
+- [exp] (e^u)' = e^u\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) 2 \\end{aligned}
+  - [linear-coefficient] (cf)' = cf'
+    \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: \\exp\\left( 2 x \\right) 2
+
+========== SUPERIEUR (detailed) ==========
+- [exp] (e^u)' = e^u\\,u'
+  · Avec u = 2 x, on a (e^u)' = e^u \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( 2 x \\right))'} \\\\ & = \\exp\\left( 2 x \\right) 2 \\end{aligned}
+  - [linear-coefficient] (cf)' = cf'
+    · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+    \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: \\exp\\left( 2 x \\right) 2
+"
+`;
+
+exports[`snapshot — exponential > (exp(sin(x))) 1`] = `
+"
+###### (exp(sin(x))) ######
+
+Expression: \\exp(\\sin(x)) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [exp] Dérivée de l'exponentielle
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( \\sin\\left( x \\right) \\right))'} \\\\ & = \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [exp] Dérivée de l'exponentielle
+  · Avec u = \\sin\\left( x \\right), on a (e^u)' = e^u \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( \\sin\\left( x \\right) \\right))'} \\\\ & = \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [exp] (e^u)' = e^u\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( \\sin\\left( x \\right) \\right))'} \\\\ & = \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [exp] (e^u)' = e^u\\,u'
+  · Avec u = \\sin\\left( x \\right), on a (e^u)' = e^u \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( \\sin\\left( x \\right) \\right))'} \\\\ & = \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
+"
+`;
+
+exports[`snapshot — exponential > (exp(x)) 1`] = `
+"
+###### (exp(x)) ######
+
+Expression: \\exp(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [exp] Dérivée de l'exponentielle
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x \\right))'} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [exp] Dérivée de l'exponentielle
+  · Avec u = x, on a (e^u)' = e^u \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x \\right))'} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [exp] (e^u)' = e^u\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x \\right))'} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [exp] (e^u)' = e^u\\,u'
+  · Avec u = x, on a (e^u)' = e^u \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x \\right))'} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+Result: \\exp\\left( x \\right)
+"
+`;
+
+exports[`snapshot — exponential > (exp(x^2)) 1`] = `
+"
+###### (exp(x^2)) ######
+
+Expression: \\exp(x^2) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [exp] Dérivée de l'exponentielle
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] Règle de la puissance (2)
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\exp\\left( x^2 \\right) 2 x
+
+========== LYCEE (detailed) ==========
+- [exp] Dérivée de l'exponentielle
+  · Avec u = x^2, on a (e^u)' = e^u \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] Règle de la puissance (2)
+    · (x^n)' = n x^{n-1} avec n = 2.
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\exp\\left( x^2 \\right) 2 x
+
+========== SUPERIEUR (summarized) ==========
+- [exp] (e^u)' = e^u\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\exp\\left( x^2 \\right) 2 x
+
+========== SUPERIEUR (detailed) ==========
+- [exp] (e^u)' = e^u\\,u'
+  · Avec u = x^2, on a (e^u)' = e^u \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\exp\\left( x^2 \\right))'} \\\\ & = \\exp\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    · (x^n)' = n x^{n-1} avec n = 2.
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\exp\\left( x^2 \\right) 2 x
+"
+`;
+
+exports[`snapshot — logarithm > (ln(x) \\cdot x) 1`] = `
+"
+###### (ln(x) \\cdot x) ######
+
+Expression: \\ln(x) \\cdot x (variable: x)
+
+========== LYCEE (summarized) ==========
+- [product] Règle du produit
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right) \\cdot x)'} \\\\ & = \\dfrac{1}{x} x + \\ln\\left( x \\right) \\end{aligned}
+  - [ln] Dérivée du logarithme népérien
+    \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right))'} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Result: \\dfrac{1}{x} x + \\ln\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [product] Règle du produit
+  · Avec u = \\ln\\left( x \\right) et v = x, on applique (uv)' = u'v + uv'.
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right) \\cdot x)'} \\\\ & = \\dfrac{1}{x} x + \\ln\\left( x \\right) \\end{aligned}
+  - [ln] Dérivée du logarithme népérien
+    · Avec u = x, on a (\\ln u)' = u'/u.
+    \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right))'} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Result: \\dfrac{1}{x} x + \\ln\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [product] (uv)' = u'v + uv'
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right) \\cdot x)'} \\\\ & = \\dfrac{1}{x} x + \\ln\\left( x \\right) \\end{aligned}
+  - [ln] (\\ln u)' = u'/u
+    \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right))'} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Result: \\dfrac{1}{x} x + \\ln\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [product] (uv)' = u'v + uv'
+  · Avec u = \\ln\\left( x \\right) et v = x, on applique (uv)' = u'v + uv'.
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right) \\cdot x)'} \\\\ & = \\dfrac{1}{x} x + \\ln\\left( x \\right) \\end{aligned}
+  - [ln] (\\ln u)' = u'/u
+    · Avec u = x, on a (\\ln u)' = u'/u.
+    \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right))'} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Result: \\dfrac{1}{x} x + \\ln\\left( x \\right)
+"
+`;
+
+exports[`snapshot — logarithm > (ln(x)) 1`] = `
+"
+###### (ln(x)) ######
+
+Expression: \\ln(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [ln] Dérivée du logarithme népérien
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right))'} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Result: \\dfrac{1}{x}
+
+========== LYCEE (detailed) ==========
+- [ln] Dérivée du logarithme népérien
+  · Avec u = x, on a (\\ln u)' = u'/u.
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right))'} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Result: \\dfrac{1}{x}
+
+========== SUPERIEUR (summarized) ==========
+- [ln] (\\ln u)' = u'/u
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right))'} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Result: \\dfrac{1}{x}
+
+========== SUPERIEUR (detailed) ==========
+- [ln] (\\ln u)' = u'/u
+  · Avec u = x, on a (\\ln u)' = u'/u.
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x \\right))'} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Result: \\dfrac{1}{x}
+"
+`;
+
+exports[`snapshot — logarithm > (ln(x^2 + 1)) 1`] = `
+"
+###### (ln(x^2 + 1)) ######
+
+Expression: \\ln(x^2 + 1) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [ln] Dérivée du logarithme népérien
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x^2 + 1 \\right))'} \\\\ & = \\dfrac{2 x}{x^2 + 1} \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] Règle de la puissance (2)
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{x^2 + 1}
+
+========== LYCEE (detailed) ==========
+- [ln] Dérivée du logarithme népérien
+  · Avec u = x^2 + 1, on a (\\ln u)' = u'/u.
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x^2 + 1 \\right))'} \\\\ & = \\dfrac{2 x}{x^2 + 1} \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x^2 contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] Règle de la puissance (2)
+      · (x^n)' = n x^{n-1} avec n = 2.
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{x^2 + 1}
+
+========== SUPERIEUR (summarized) ==========
+- [ln] (\\ln u)' = u'/u
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x^2 + 1 \\right))'} \\\\ & = \\dfrac{2 x}{x^2 + 1} \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] (x^n)' = nx^{n-1}
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{x^2 + 1}
+
+========== SUPERIEUR (detailed) ==========
+- [ln] (\\ln u)' = u'/u
+  · Avec u = x^2 + 1, on a (\\ln u)' = u'/u.
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x^2 + 1 \\right))'} \\\\ & = \\dfrac{2 x}{x^2 + 1} \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x^2 contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] (x^n)' = nx^{n-1}
+      · (x^n)' = n x^{n-1} avec n = 2.
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{x^2 + 1}
+"
+`;
+
+exports[`snapshot — logarithm > (ln(x^2)) 1`] = `
+"
+###### (ln(x^2)) ######
+
+Expression: \\ln(x^2) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [ln] Dérivée du logarithme népérien
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x^2 \\right))'} \\\\ & = \\dfrac{2 x}{x^2} \\end{aligned}
+  - [power-natural] Règle de la puissance (2)
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{x^2}
+
+========== LYCEE (detailed) ==========
+- [ln] Dérivée du logarithme népérien
+  · Avec u = x^2, on a (\\ln u)' = u'/u.
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x^2 \\right))'} \\\\ & = \\dfrac{2 x}{x^2} \\end{aligned}
+  - [power-natural] Règle de la puissance (2)
+    · (x^n)' = n x^{n-1} avec n = 2.
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{x^2}
+
+========== SUPERIEUR (summarized) ==========
+- [ln] (\\ln u)' = u'/u
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x^2 \\right))'} \\\\ & = \\dfrac{2 x}{x^2} \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{x^2}
+
+========== SUPERIEUR (detailed) ==========
+- [ln] (\\ln u)' = u'/u
+  · Avec u = x^2, on a (\\ln u)' = u'/u.
+  \\begin{aligned} & \\textcolor{blue}{(\\ln\\left( x^2 \\right))'} \\\\ & = \\dfrac{2 x}{x^2} \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    · (x^n)' = n x^{n-1} avec n = 2.
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: \\dfrac{2 x}{x^2}
+"
+`;
+
+exports[`snapshot — logarithm > (log(x)) 1`] = `
+"
+###### (log(x)) ######
+
+Expression: \\log(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [log] Dérivée du logarithme
+  \\begin{aligned} & \\textcolor{blue}{(\\log\\left( x \\right))'} \\\\ & = \\dfrac{1}{x \\ln\\left( 10 \\right)} \\end{aligned}
+Result: \\dfrac{1}{x \\ln\\left( 10 \\right)}
+
+========== LYCEE (detailed) ==========
+- [log] Dérivée du logarithme
+  · Avec u = x et base 10, on a (\\log_b u)' = u' / (u \\ln(b)).
+  \\begin{aligned} & \\textcolor{blue}{(\\log\\left( x \\right))'} \\\\ & = \\dfrac{1}{x \\ln\\left( 10 \\right)} \\end{aligned}
+Result: \\dfrac{1}{x \\ln\\left( 10 \\right)}
+
+========== SUPERIEUR (summarized) ==========
+- [log] (\\log_b u)' = u'/(u\\ln b)
+  \\begin{aligned} & \\textcolor{blue}{(\\log\\left( x \\right))'} \\\\ & = \\dfrac{1}{x \\ln\\left( 10 \\right)} \\end{aligned}
+Result: \\dfrac{1}{x \\ln\\left( 10 \\right)}
+
+========== SUPERIEUR (detailed) ==========
+- [log] (\\log_b u)' = u'/(u\\ln b)
+  · Avec u = x et base 10, on a (\\log_b u)' = u' / (u \\ln(b)).
+  \\begin{aligned} & \\textcolor{blue}{(\\log\\left( x \\right))'} \\\\ & = \\dfrac{1}{x \\ln\\left( 10 \\right)} \\end{aligned}
+Result: \\dfrac{1}{x \\ln\\left( 10 \\right)}
+"
+`;
+
+exports[`snapshot — polynomial > ((2x+1)^2) 1`] = `
+"
+###### ((2x+1)^2) ######
+
+Expression: (2x+1)^2 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [power-constant-exp] Règle de la puissance (exposant constant)
+  \\begin{aligned} & \\textcolor{blue}{(\\left( 2 x + 1 \\right)^2)'} \\\\ & = 2 \\left( 2 x + 1 \\right) 2 \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    \\begin{aligned} & \\textcolor{blue}{(2 x + 1)'} \\\\ & = 2 \\end{aligned}
+    - [linear-coefficient] On sort la constante 2
+      \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: 2 \\left( 2 x + 1 \\right) 2
+
+========== LYCEE (detailed) ==========
+- [power-constant-exp] Règle de la puissance (exposant constant)
+  · Avec f = \\left( 2 x + 1 \\right) et l'exposant constant 2, on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(\\left( 2 x + 1 \\right)^2)'} \\\\ & = 2 \\left( 2 x + 1 \\right) 2 \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de 2 x contribue.
+    \\begin{aligned} & \\textcolor{blue}{(2 x + 1)'} \\\\ & = 2 \\end{aligned}
+    - [linear-coefficient] On sort la constante 2
+      · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+      \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: 2 \\left( 2 x + 1 \\right) 2
+
+========== SUPERIEUR (summarized) ==========
+- [power-constant-exp] (f^c)' = cf^{c-1}f'
+  \\begin{aligned} & \\textcolor{blue}{(\\left( 2 x + 1 \\right)^2)'} \\\\ & = 2 \\left( 2 x + 1 \\right) 2 \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    \\begin{aligned} & \\textcolor{blue}{(2 x + 1)'} \\\\ & = 2 \\end{aligned}
+    - [linear-coefficient] (cf)' = cf'
+      \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: 2 \\left( 2 x + 1 \\right) 2
+
+========== SUPERIEUR (detailed) ==========
+- [power-constant-exp] (f^c)' = cf^{c-1}f'
+  · Avec f = \\left( 2 x + 1 \\right) et l'exposant constant 2, on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(\\left( 2 x + 1 \\right)^2)'} \\\\ & = 2 \\left( 2 x + 1 \\right) 2 \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de 2 x contribue.
+    \\begin{aligned} & \\textcolor{blue}{(2 x + 1)'} \\\\ & = 2 \\end{aligned}
+    - [linear-coefficient] (cf)' = cf'
+      · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+      \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: 2 \\left( 2 x + 1 \\right) 2
+"
+`;
+
+exports[`snapshot — polynomial > ((x+1)^3) 1`] = `
+"
+###### ((x+1)^3) ######
+
+Expression: (x+1)^3 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [power-constant-exp] Règle de la puissance (exposant constant)
+  \\begin{aligned} & \\textcolor{blue}{(\\left( x + 1 \\right)^3)'} \\\\ & = 3 \\left( x + 1 \\right)^2 \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: 3 \\left( x + 1 \\right)^2
+
+========== LYCEE (detailed) ==========
+- [power-constant-exp] Règle de la puissance (exposant constant)
+  · Avec f = \\left( x + 1 \\right) et l'exposant constant 3, on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(\\left( x + 1 \\right)^3)'} \\\\ & = 3 \\left( x + 1 \\right)^2 \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: 3 \\left( x + 1 \\right)^2
+
+========== SUPERIEUR (summarized) ==========
+- [power-constant-exp] (f^c)' = cf^{c-1}f'
+  \\begin{aligned} & \\textcolor{blue}{(\\left( x + 1 \\right)^3)'} \\\\ & = 3 \\left( x + 1 \\right)^2 \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: 3 \\left( x + 1 \\right)^2
+
+========== SUPERIEUR (detailed) ==========
+- [power-constant-exp] (f^c)' = cf^{c-1}f'
+  · Avec f = \\left( x + 1 \\right) et l'exposant constant 3, on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(\\left( x + 1 \\right)^3)'} \\\\ & = 3 \\left( x + 1 \\right)^2 \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: 3 \\left( x + 1 \\right)^2
+"
+`;
+
+exports[`snapshot — polynomial > (2x^4 - 3x + 5) 1`] = `
+"
+###### (2x^4 - 3x + 5) ######
+
+Expression: 2x^4 - 3x + 5 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sum-with-constant] La constante a une dérivée nulle
+  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+  - [difference] On dérive chaque terme
+    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+    - [linear-coefficient] On sort la constante 2
+      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 4 x^3 \\end{aligned}
+      - [power-natural] Règle de la puissance (4)
+        \\begin{aligned} & \\textcolor{blue}{(x^4)'} \\\\ & = 4 x^3 \\end{aligned}
+    - [linear-coefficient] On sort la constante 3
+      \\begin{aligned} & \\textcolor{blue}{(3 x)'} \\\\ & = 3 \\end{aligned}
+Result: 2 4 x^3 - 3
+
+========== LYCEE (detailed) ==========
+- [sum-with-constant] La constante a une dérivée nulle
+  · La constante 5 a une dérivée nulle, donc seule la dérivée de 2 x^4 - 3 x contribue.
+  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+  - [difference] On dérive chaque terme
+    · Avec f = 2 x^4 et g = 3 x, on a (f-g)' = f' - g'.
+    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+    - [linear-coefficient] On sort la constante 2
+      · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 4 x^3 \\end{aligned}
+      - [power-natural] Règle de la puissance (4)
+        · (x^n)' = n x^{n-1} avec n = 4.
+        \\begin{aligned} & \\textcolor{blue}{(x^4)'} \\\\ & = 4 x^3 \\end{aligned}
+    - [linear-coefficient] On sort la constante 3
+      · La constante 3 sort de la dérivation : (3 \\cdot f)' = 3 \\cdot f'.
+      \\begin{aligned} & \\textcolor{blue}{(3 x)'} \\\\ & = 3 \\end{aligned}
+Result: 2 4 x^3 - 3
+
+========== SUPERIEUR (summarized) ==========
+- [sum-with-constant] (f+c)' = f'
+  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+  - [difference] (f-g)' = f' - g'
+    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+    - [linear-coefficient] (cf)' = cf'
+      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 4 x^3 \\end{aligned}
+      - [power-natural] (x^n)' = nx^{n-1}
+        \\begin{aligned} & \\textcolor{blue}{(x^4)'} \\\\ & = 4 x^3 \\end{aligned}
+    - [linear-coefficient] (cf)' = cf'
+      \\begin{aligned} & \\textcolor{blue}{(3 x)'} \\\\ & = 3 \\end{aligned}
+Result: 2 4 x^3 - 3
+
+========== SUPERIEUR (detailed) ==========
+- [sum-with-constant] (f+c)' = f'
+  · La constante 5 a une dérivée nulle, donc seule la dérivée de 2 x^4 - 3 x contribue.
+  \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x + 5)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+  - [difference] (f-g)' = f' - g'
+    · Avec f = 2 x^4 et g = 3 x, on a (f-g)' = f' - g'.
+    \\begin{aligned} & \\textcolor{blue}{(2 x^4 - 3 x)'} \\\\ & = 2 4 x^3 - 3 \\end{aligned}
+    - [linear-coefficient] (cf)' = cf'
+      · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+      \\begin{aligned} & \\textcolor{blue}{(2 x^4)'} \\\\ & = 2 4 x^3 \\end{aligned}
+      - [power-natural] (x^n)' = nx^{n-1}
+        · (x^n)' = n x^{n-1} avec n = 4.
+        \\begin{aligned} & \\textcolor{blue}{(x^4)'} \\\\ & = 4 x^3 \\end{aligned}
+    - [linear-coefficient] (cf)' = cf'
+      · La constante 3 sort de la dérivation : (3 \\cdot f)' = 3 \\cdot f'.
+      \\begin{aligned} & \\textcolor{blue}{(3 x)'} \\\\ & = 3 \\end{aligned}
+Result: 2 4 x^3 - 3
+"
+`;
+
+exports[`snapshot — polynomial > (x^2) 1`] = `
+"
+###### (x^2) ######
+
+Expression: x^2 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [power-natural] Règle de la puissance (2)
+  \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: 2 x
+
+========== LYCEE (detailed) ==========
+- [power-natural] Règle de la puissance (2)
+  · (x^n)' = n x^{n-1} avec n = 2.
+  \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: 2 x
+
+========== SUPERIEUR (summarized) ==========
+- [power-natural] (x^n)' = nx^{n-1}
+  \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: 2 x
+
+========== SUPERIEUR (detailed) ==========
+- [power-natural] (x^n)' = nx^{n-1}
+  · (x^n)' = n x^{n-1} avec n = 2.
+  \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: 2 x
+"
+`;
+
+exports[`snapshot — polynomial > (x^3 + 2x^2) 1`] = `
+"
+###### (x^3 + 2x^2) ######
+
+Expression: x^3 + 2x^2 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sum] On dérive chaque terme
+  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 2 x \\end{aligned}
+  - [power-natural] Règle de la puissance (3)
+    \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
+  - [linear-coefficient] On sort la constante 2
+    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 2 x \\end{aligned}
+    - [power-natural] Règle de la puissance (2)
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: 3 x^2 + 2 2 x
+
+========== LYCEE (detailed) ==========
+- [sum] On dérive chaque terme
+  · Avec f = x^3 et g = 2 x^2, on a (f+g)' = f' + g'.
+  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 2 x \\end{aligned}
+  - [power-natural] Règle de la puissance (3)
+    · (x^n)' = n x^{n-1} avec n = 3.
+    \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
+  - [linear-coefficient] On sort la constante 2
+    · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 2 x \\end{aligned}
+    - [power-natural] Règle de la puissance (2)
+      · (x^n)' = n x^{n-1} avec n = 2.
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: 3 x^2 + 2 2 x
+
+========== SUPERIEUR (summarized) ==========
+- [sum] (f+g)' = f' + g'
+  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 2 x \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
+  - [linear-coefficient] (cf)' = cf'
+    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 2 x \\end{aligned}
+    - [power-natural] (x^n)' = nx^{n-1}
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: 3 x^2 + 2 2 x
+
+========== SUPERIEUR (detailed) ==========
+- [sum] (f+g)' = f' + g'
+  · Avec f = x^3 et g = 2 x^2, on a (f+g)' = f' + g'.
+  \\begin{aligned} & \\textcolor{blue}{(x^3 + 2 x^2)'} \\\\ & = 3 x^2 + 2 2 x \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    · (x^n)' = n x^{n-1} avec n = 3.
+    \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
+  - [linear-coefficient] (cf)' = cf'
+    · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+    \\begin{aligned} & \\textcolor{blue}{(2 x^2)'} \\\\ & = 2 2 x \\end{aligned}
+    - [power-natural] (x^n)' = nx^{n-1}
+      · (x^n)' = n x^{n-1} avec n = 2.
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: 3 x^2 + 2 2 x
+"
+`;
+
+exports[`snapshot — polynomial > (x^3) 1`] = `
+"
+###### (x^3) ######
+
+Expression: x^3 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [power-natural] Règle de la puissance (3)
+  \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
+Result: 3 x^2
+
+========== LYCEE (detailed) ==========
+- [power-natural] Règle de la puissance (3)
+  · (x^n)' = n x^{n-1} avec n = 3.
+  \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
+Result: 3 x^2
+
+========== SUPERIEUR (summarized) ==========
+- [power-natural] (x^n)' = nx^{n-1}
+  \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
+Result: 3 x^2
+
+========== SUPERIEUR (detailed) ==========
+- [power-natural] (x^n)' = nx^{n-1}
+  · (x^n)' = n x^{n-1} avec n = 3.
+  \\begin{aligned} & \\textcolor{blue}{(x^3)'} \\\\ & = 3 x^2 \\end{aligned}
+Result: 3 x^2
+"
+`;
+
+exports[`snapshot — product-quotient > ((x^2+1)/(x-1)) 1`] = `
+"
+###### ((x^2+1)/(x-1)) ######
+
+Expression: \\frac{x^2+1}{x-1} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [quotient] Règle du quotient
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2} \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] Règle de la puissance (2)
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+  - [diff-with-constant] La constante a une dérivée nulle
+    \\begin{aligned} & \\textcolor{blue}{(x - 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2}
+
+========== LYCEE (detailed) ==========
+- [quotient] Règle du quotient
+  · Avec u = x^2 + 1 et v = x - 1, on applique (u/v)' = (u'v - uv') / v^2.
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2} \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x^2 contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] Règle de la puissance (2)
+      · (x^n)' = n x^{n-1} avec n = 2.
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+  - [diff-with-constant] La constante a une dérivée nulle
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue (au signe près).
+    \\begin{aligned} & \\textcolor{blue}{(x - 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2}
+
+========== SUPERIEUR (summarized) ==========
+- [quotient] (u/v)' = (u'v - uv')/v^2
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2} \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] (x^n)' = nx^{n-1}
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+  - [diff-with-constant] (f-c)' = f'
+    \\begin{aligned} & \\textcolor{blue}{(x - 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2}
+
+========== SUPERIEUR (detailed) ==========
+- [quotient] (u/v)' = (u'v - uv')/v^2
+  · Avec u = x^2 + 1 et v = x - 1, on applique (u/v)' = (u'v - uv') / v^2.
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x^2 + 1}{x - 1})'} \\\\ & = \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2} \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x^2 contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x^2 + 1)'} \\\\ & = 2 x \\end{aligned}
+    - [power-natural] (x^n)' = nx^{n-1}
+      · (x^n)' = n x^{n-1} avec n = 2.
+      \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+  - [diff-with-constant] (f-c)' = f'
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue (au signe près).
+    \\begin{aligned} & \\textcolor{blue}{(x - 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{2 x x - 1 - x^2 + 1}{x - 1^2}
+"
+`;
+
+exports[`snapshot — product-quotient > (1/(x+1)) 1`] = `
+"
+###### (1/(x+1)) ######
+
+Expression: \\frac{1}{x+1} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [inverse] Dérivée de l'inverse
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{x + 1^2} \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{-1}{x + 1^2}
+
+========== LYCEE (detailed) ==========
+- [inverse] Dérivée de l'inverse
+  · Avec f = x + 1, on a (1/f)' = -f'/f^2.
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{x + 1^2} \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{-1}{x + 1^2}
+
+========== SUPERIEUR (summarized) ==========
+- [inverse] (1/f)' = -f'/f^2
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{x + 1^2} \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{-1}{x + 1^2}
+
+========== SUPERIEUR (detailed) ==========
+- [inverse] (1/f)' = -f'/f^2
+  · Avec f = x + 1, on a (1/f)' = -f'/f^2.
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x + 1})'} \\\\ & = \\dfrac{-1}{x + 1^2} \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{-1}{x + 1^2}
+"
+`;
+
+exports[`snapshot — product-quotient > (1/x) 1`] = `
+"
+###### (1/x) ######
+
+Expression: \\frac{1}{x} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [derivative-of-inverse] Dérivée de 1/x
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x})'} \\\\ & = \\dfrac{-1}{x^2} \\end{aligned}
+Result: \\dfrac{-1}{x^2}
+
+========== LYCEE (detailed) ==========
+- [derivative-of-inverse] Dérivée de 1/x
+  · (1/x)' = -1/x^2.
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x})'} \\\\ & = \\dfrac{-1}{x^2} \\end{aligned}
+Result: \\dfrac{-1}{x^2}
+
+========== SUPERIEUR (summarized) ==========
+- [derivative-of-inverse] (1/x)' = -1/x^2
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x})'} \\\\ & = \\dfrac{-1}{x^2} \\end{aligned}
+Result: \\dfrac{-1}{x^2}
+
+========== SUPERIEUR (detailed) ==========
+- [derivative-of-inverse] (1/x)' = -1/x^2
+  · (1/x)' = -1/x^2.
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{1}{x})'} \\\\ & = \\dfrac{-1}{x^2} \\end{aligned}
+Result: \\dfrac{-1}{x^2}
+"
+`;
+
+exports[`snapshot — product-quotient > (2x) 1`] = `
+"
+###### (2x) ######
+
+Expression: 2x (variable: x)
+
+========== LYCEE (summarized) ==========
+- [linear-coefficient] On sort la constante 2
+  \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: 2
+
+========== LYCEE (detailed) ==========
+- [linear-coefficient] On sort la constante 2
+  · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: 2
+
+========== SUPERIEUR (summarized) ==========
+- [linear-coefficient] (cf)' = cf'
+  \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: 2
+
+========== SUPERIEUR (detailed) ==========
+- [linear-coefficient] (cf)' = cf'
+  · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: 2
+"
+`;
+
+exports[`snapshot — product-quotient > (x \\cdot \\sin(x)) 1`] = `
+"
+###### (x \\cdot \\sin(x)) ######
+
+Expression: x \\cdot \\sin(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [product] Règle du produit
+  \\begin{aligned} & \\textcolor{blue}{(x \\cdot \\sin\\left( x \\right))'} \\\\ & = \\sin\\left( x \\right) + x \\cos\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\sin\\left( x \\right) + x \\cos\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [product] Règle du produit
+  · Avec u = x et v = \\sin\\left( x \\right), on applique (uv)' = u'v + uv'.
+  \\begin{aligned} & \\textcolor{blue}{(x \\cdot \\sin\\left( x \\right))'} \\\\ & = \\sin\\left( x \\right) + x \\cos\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\sin\\left( x \\right) + x \\cos\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [product] (uv)' = u'v + uv'
+  \\begin{aligned} & \\textcolor{blue}{(x \\cdot \\sin\\left( x \\right))'} \\\\ & = \\sin\\left( x \\right) + x \\cos\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\sin\\left( x \\right) + x \\cos\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [product] (uv)' = u'v + uv'
+  · Avec u = x et v = \\sin\\left( x \\right), on applique (uv)' = u'v + uv'.
+  \\begin{aligned} & \\textcolor{blue}{(x \\cdot \\sin\\left( x \\right))'} \\\\ & = \\sin\\left( x \\right) + x \\cos\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\sin\\left( x \\right) + x \\cos\\left( x \\right)
+"
+`;
+
+exports[`snapshot — product-quotient > (x/(x+1)) 1`] = `
+"
+###### (x/(x+1)) ######
+
+Expression: \\frac{x}{x+1} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [quotient] Règle du quotient
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{x + 1^2} \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{x + 1 - x}{x + 1^2}
+
+========== LYCEE (detailed) ==========
+- [quotient] Règle du quotient
+  · Avec u = x et v = x + 1, on applique (u/v)' = (u'v - uv') / v^2.
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{x + 1^2} \\end{aligned}
+  - [sum-with-constant] La constante a une dérivée nulle
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{x + 1 - x}{x + 1^2}
+
+========== SUPERIEUR (summarized) ==========
+- [quotient] (u/v)' = (u'v - uv')/v^2
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{x + 1^2} \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{x + 1 - x}{x + 1^2}
+
+========== SUPERIEUR (detailed) ==========
+- [quotient] (u/v)' = (u'v - uv')/v^2
+  · Avec u = x et v = x + 1, on applique (u/v)' = (u'v - uv') / v^2.
+  \\begin{aligned} & \\textcolor{blue}{(\\dfrac{x}{x + 1})'} \\\\ & = \\dfrac{x + 1 - x}{x + 1^2} \\end{aligned}
+  - [sum-with-constant] (f+c)' = f'
+    · La constante 1 a une dérivée nulle, donc seule la dérivée de x contribue.
+    \\begin{aligned} & \\textcolor{blue}{(x + 1)'} \\\\ & = 1 \\end{aligned}
+Result: \\dfrac{x + 1 - x}{x + 1^2}
+"
+`;
+
+exports[`snapshot — product-quotient > (x^2 \\cdot \\cos(x)) 1`] = `
+"
+###### (x^2 \\cdot \\cos(x)) ######
+
+Expression: x^2 \\cdot \\cos(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [product] Règle du produit
+  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right) \\end{aligned}
+  - [power-natural] Règle de la puissance (2)
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+  - [cos] Dérivée de cosinus
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [product] Règle du produit
+  · Avec u = x^2 et v = \\cos\\left( x \\right), on applique (uv)' = u'v + uv'.
+  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right) \\end{aligned}
+  - [power-natural] Règle de la puissance (2)
+    · (x^n)' = n x^{n-1} avec n = 2.
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+  - [cos] Dérivée de cosinus
+    · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [product] (uv)' = u'v + uv'
+  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right) \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+  - [cos] (\\cos u)' = -\\sin(u)\\,u'
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [product] (uv)' = u'v + uv'
+  · Avec u = x^2 et v = \\cos\\left( x \\right), on applique (uv)' = u'v + uv'.
+  \\begin{aligned} & \\textcolor{blue}{(x^2 \\cdot \\cos\\left( x \\right))'} \\\\ & = 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right) \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    · (x^n)' = n x^{n-1} avec n = 2.
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+  - [cos] (\\cos u)' = -\\sin(u)\\,u'
+    · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: 2 x \\cos\\left( x \\right) + x^2 -\\sin\\left( x \\right)
+"
+`;
+
+exports[`snapshot — trigonometric > (arctan(x)) 1`] = `
+"
+###### (arctan(x)) ######
+
+Expression: \\arctan(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [arctan] Dérivée de l'arctangente
+  \\begin{aligned} & \\textcolor{blue}{(\\arctan\\left( x \\right))'} \\\\ & = \\dfrac{1}{1 + x^2} \\end{aligned}
+Result: \\dfrac{1}{1 + x^2}
+
+========== LYCEE (detailed) ==========
+- [arctan] Dérivée de l'arctangente
+  · Avec u = x, on a (\\arctan u)' = u' / (1 + u^2).
+  \\begin{aligned} & \\textcolor{blue}{(\\arctan\\left( x \\right))'} \\\\ & = \\dfrac{1}{1 + x^2} \\end{aligned}
+Result: \\dfrac{1}{1 + x^2}
+
+========== SUPERIEUR (summarized) ==========
+- [arctan] (\\arctan u)' = u'/(1+u^2)
+  \\begin{aligned} & \\textcolor{blue}{(\\arctan\\left( x \\right))'} \\\\ & = \\dfrac{1}{1 + x^2} \\end{aligned}
+Result: \\dfrac{1}{1 + x^2}
+
+========== SUPERIEUR (detailed) ==========
+- [arctan] (\\arctan u)' = u'/(1+u^2)
+  · Avec u = x, on a (\\arctan u)' = u' / (1 + u^2).
+  \\begin{aligned} & \\textcolor{blue}{(\\arctan\\left( x \\right))'} \\\\ & = \\dfrac{1}{1 + x^2} \\end{aligned}
+Result: \\dfrac{1}{1 + x^2}
+"
+`;
+
+exports[`snapshot — trigonometric > (cos(x)) 1`] = `
+"
+###### (cos(x)) ######
+
+Expression: \\cos(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [cos] Dérivée de cosinus
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: -\\sin\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [cos] Dérivée de cosinus
+  · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: -\\sin\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [cos] (\\cos u)' = -\\sin(u)\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: -\\sin\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [cos] (\\cos u)' = -\\sin(u)\\,u'
+  · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: -\\sin\\left( x \\right)
+"
+`;
+
+exports[`snapshot — trigonometric > (cos(x^2)) 1`] = `
+"
+###### (cos(x^2)) ######
+
+Expression: \\cos(x^2) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [cos] Dérivée de cosinus
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x^2 \\right))'} \\\\ & = -\\sin\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] Règle de la puissance (2)
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: -\\sin\\left( x^2 \\right) 2 x
+
+========== LYCEE (detailed) ==========
+- [cos] Dérivée de cosinus
+  · Avec u = x^2, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x^2 \\right))'} \\\\ & = -\\sin\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] Règle de la puissance (2)
+    · (x^n)' = n x^{n-1} avec n = 2.
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: -\\sin\\left( x^2 \\right) 2 x
+
+========== SUPERIEUR (summarized) ==========
+- [cos] (\\cos u)' = -\\sin(u)\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x^2 \\right))'} \\\\ & = -\\sin\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: -\\sin\\left( x^2 \\right) 2 x
+
+========== SUPERIEUR (detailed) ==========
+- [cos] (\\cos u)' = -\\sin(u)\\,u'
+  · Avec u = x^2, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x^2 \\right))'} \\\\ & = -\\sin\\left( x^2 \\right) 2 x \\end{aligned}
+  - [power-natural] (x^n)' = nx^{n-1}
+    · (x^n)' = n x^{n-1} avec n = 2.
+    \\begin{aligned} & \\textcolor{blue}{(x^2)'} \\\\ & = 2 x \\end{aligned}
+Result: -\\sin\\left( x^2 \\right) 2 x
+"
+`;
+
+exports[`snapshot — trigonometric > (sin(2x)) 1`] = `
+"
+###### (sin(2x)) ######
+
+Expression: \\sin(2x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sin] Dérivée de sinus
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) 2 \\end{aligned}
+  - [linear-coefficient] On sort la constante 2
+    \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: \\cos\\left( 2 x \\right) 2
+
+========== LYCEE (detailed) ==========
+- [sin] Dérivée de sinus
+  · Avec u = 2 x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) 2 \\end{aligned}
+  - [linear-coefficient] On sort la constante 2
+    · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+    \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: \\cos\\left( 2 x \\right) 2
+
+========== SUPERIEUR (summarized) ==========
+- [sin] (\\sin u)' = \\cos(u)\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) 2 \\end{aligned}
+  - [linear-coefficient] (cf)' = cf'
+    \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: \\cos\\left( 2 x \\right) 2
+
+========== SUPERIEUR (detailed) ==========
+- [sin] (\\sin u)' = \\cos(u)\\,u'
+  · Avec u = 2 x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( 2 x \\right))'} \\\\ & = \\cos\\left( 2 x \\right) 2 \\end{aligned}
+  - [linear-coefficient] (cf)' = cf'
+    · La constante 2 sort de la dérivation : (2 \\cdot f)' = 2 \\cdot f'.
+    \\begin{aligned} & \\textcolor{blue}{(2 x)'} \\\\ & = 2 \\end{aligned}
+Result: \\cos\\left( 2 x \\right) 2
+"
+`;
+
+exports[`snapshot — trigonometric > (sin(x) + cos(x)) 1`] = `
+"
+###### (sin(x) + cos(x)) ######
+
+Expression: \\sin(x) + \\cos(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sum] On dérive chaque terme
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + -\\sin\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+  - [cos] Dérivée de cosinus
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: \\cos\\left( x \\right) + -\\sin\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [sum] On dérive chaque terme
+  · Avec f = \\sin\\left( x \\right) et g = \\cos\\left( x \\right), on a (f+g)' = f' + g'.
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + -\\sin\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+  - [cos] Dérivée de cosinus
+    · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: \\cos\\left( x \\right) + -\\sin\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [sum] (f+g)' = f' + g'
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + -\\sin\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+  - [cos] (\\cos u)' = -\\sin(u)\\,u'
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: \\cos\\left( x \\right) + -\\sin\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [sum] (f+g)' = f' + g'
+  · Avec f = \\sin\\left( x \\right) et g = \\cos\\left( x \\right), on a (f+g)' = f' + g'.
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right) + \\cos\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) + -\\sin\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+  - [cos] (\\cos u)' = -\\sin(u)\\,u'
+    · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: \\cos\\left( x \\right) + -\\sin\\left( x \\right)
+"
+`;
+
+exports[`snapshot — trigonometric > (sin(x)) 1`] = `
+"
+###### (sin(x)) ######
+
+Expression: \\sin(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sin] Dérivée de sinus
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\cos\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [sin] Dérivée de sinus
+  · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\cos\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [sin] (\\sin u)' = \\cos(u)\\,u'
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\cos\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [sin] (\\sin u)' = \\cos(u)\\,u'
+  · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: \\cos\\left( x \\right)
+"
+`;
+
+exports[`snapshot — trigonometric > (tan(x)) 1`] = `
+"
+###### (tan(x)) ######
+
+Expression: \\tan(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [tan] Dérivée de tangente
+  \\begin{aligned} & \\textcolor{blue}{(\\tan\\left( x \\right))'} \\\\ & = \\dfrac{1}{\\cos\\left( x \\right)^2} \\end{aligned}
+Result: \\dfrac{1}{\\cos\\left( x \\right)^2}
+
+========== LYCEE (detailed) ==========
+- [tan] Dérivée de tangente
+  · Avec u = x, on a (\\tan u)' = u' / \\cos^2(u).
+  \\begin{aligned} & \\textcolor{blue}{(\\tan\\left( x \\right))'} \\\\ & = \\dfrac{1}{\\cos\\left( x \\right)^2} \\end{aligned}
+Result: \\dfrac{1}{\\cos\\left( x \\right)^2}
+
+========== SUPERIEUR (summarized) ==========
+- [tan] (\\tan u)' = u'/\\cos^2(u)
+  \\begin{aligned} & \\textcolor{blue}{(\\tan\\left( x \\right))'} \\\\ & = \\dfrac{1}{\\cos\\left( x \\right)^2} \\end{aligned}
+Result: \\dfrac{1}{\\cos\\left( x \\right)^2}
+
+========== SUPERIEUR (detailed) ==========
+- [tan] (\\tan u)' = u'/\\cos^2(u)
+  · Avec u = x, on a (\\tan u)' = u' / \\cos^2(u).
+  \\begin{aligned} & \\textcolor{blue}{(\\tan\\left( x \\right))'} \\\\ & = \\dfrac{1}{\\cos\\left( x \\right)^2} \\end{aligned}
+Result: \\dfrac{1}{\\cos\\left( x \\right)^2}
+"
+`;
