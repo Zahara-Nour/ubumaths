@@ -80,3 +80,16 @@ export { ALL_SOLVERS, getSolverByName } from './solvers';
 // =============================================================================
 
 export { solve, solveEquation } from './solve';
+
+// =============================================================================
+// Inequality solving (palier 1 — wrapper around analyzeSign)
+// =============================================================================
+
+export { solveInequality } from './inequality';
+export type {
+	InequalityOp,
+	InequalityStatus,
+	SolveInequalityOptions,
+	SolveInequalityResult
+} from './inequality/types';
+export { SolveInequalityError, InequalityNotSolvable } from './inequality/types';
