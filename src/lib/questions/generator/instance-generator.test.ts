@@ -1827,3 +1827,145 @@ describe('generateInstance - Correction placeholder integration', () => {
 		expect(String(feedback)).not.toContain('{{solution}}');
 	});
 });
+
+// ============================================================================
+// Mode B — generatedSteps auto-call wiring
+// ============================================================================
+
+describe('generateInstance - Mode B generatedSteps auto-call', () => {
+	it('populates correction._renderedSteps when generatedSteps is declared', () => {
+		const template: QuestionTemplate = {
+			id: 'test-modeB-arithmetic',
+			title: 'Mode B arithmetic',
+			status: 'published',
+			variations: [
+				{
+					statement: templateMarkdown('Calcule ${{a}} + {{b}} = ?$'),
+					variables: [
+						{ name: 'a', expression: '7' },
+						{ name: 'b', expression: '8' }
+					],
+					blanks: [{ expectedAnswer: '{{eval:a+b}}' }],
+					correction: {
+						feedback: { correct: templateMarkdown('Bravo!') },
+						generatedSteps: { kind: 'arithmetic', expression: '{{a}}+{{b}}' }
+					}
+				}
+			],
+			grades: ['CM2'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1
+		};
+
+		const result = generateInstance(template, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const renderedSteps = result.instance.correction?._renderedSteps;
+		expect(renderedSteps).toBeDefined();
+		expect(renderedSteps?.length).toBeGreaterThan(0);
+		// Steps should be tagged with the school level derived from CM2 → primaire
+		expect(renderedSteps?.every((s) => s.schoolLevel === 'primaire')).toBe(true);
+	});
+
+	it('preserves existing feedback alongside _renderedSteps', () => {
+		const template: QuestionTemplate = {
+			id: 'test-modeB-feedback',
+			title: 'Mode B with feedback',
+			status: 'published',
+			variations: [
+				{
+					statement: templateMarkdown('Calcule $2+3 = ?$'),
+					blanks: [{ expectedAnswer: '5' }],
+					correction: {
+						feedback: { correct: templateMarkdown('Excellent!') },
+						generatedSteps: { kind: 'arithmetic', expression: '2+3' }
+					}
+				}
+			],
+			grades: ['CM2'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1
+		};
+
+		const result = generateInstance(template, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.correction?.feedback?.correct).toBe('Excellent!');
+		expect(result.instance.correction?._renderedSteps).toBeDefined();
+	});
+
+	it('does NOT populate _renderedSteps when generatedSteps absent (early-return)', () => {
+		const template: QuestionTemplate = {
+			id: 'test-modeA-only',
+			title: 'Mode A only',
+			status: 'published',
+			variations: [
+				{
+					statement: templateMarkdown('Calcule $2+3 = ?$'),
+					blanks: [{ expectedAnswer: '5' }],
+					correction: {
+						steps: [templateMarkdown('Manual step 1'), templateMarkdown('Manual step 2')]
+					}
+				}
+			],
+			grades: ['CM2'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1
+		};
+
+		const result = generateInstance(template, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.correction?._renderedSteps).toBeUndefined();
+		expect(result.instance.correction?.steps).toBeDefined();
+		expect(result.instance.correction?.steps?.length).toBe(2);
+	});
+
+	it('copies generatedSteps declaration onto ResolvedCorrection (no resolution)', () => {
+		const template: QuestionTemplate = {
+			id: 'test-modeB-copy',
+			title: 'Copy declaration',
+			status: 'published',
+			variations: [
+				{
+					statement: templateMarkdown('Calcule $2+3 = ?$'),
+					blanks: [{ expectedAnswer: '5' }],
+					correction: {
+						generatedSteps: {
+							kind: 'arithmetic',
+							expression: '{{a}}+{{b}}',
+							options: { schoolLevel: 'lycee', verbosity: 'summarized' }
+						}
+					},
+					variables: [
+						{ name: 'a', expression: '2' },
+						{ name: 'b', expression: '3' }
+					]
+				}
+			],
+			grades: ['2'],
+			theme: 'Arithmétique',
+			domain: 'Addition',
+			level: 1
+		};
+
+		const result = generateInstance(template, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const gs = result.instance.correction?.generatedSteps;
+		expect(gs).toBeDefined();
+		expect(gs?.kind).toBe('arithmetic');
+		// Expression must remain unresolved on the declaration (resolution happens
+		// inside generateCorrection, the rendered output is the proof of work).
+		if (gs?.kind === 'arithmetic') {
+			expect(gs.expression).toBe('{{a}}+{{b}}');
+		}
+	});
+});
