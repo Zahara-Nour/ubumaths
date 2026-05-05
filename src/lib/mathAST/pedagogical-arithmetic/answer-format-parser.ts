@@ -156,3 +156,112 @@ export function countPlaceholders(format: string): number {
 	const matches = format.match(/\?/g);
 	return matches ? matches.length : 0;
 }
+
+// =============================================================================
+// Phase 7 — Fragment extraction
+// =============================================================================
+
+import type { MathNode } from '../types';
+import { isFunction, isMultiplication, isNumber, isOpposite, isSuperscript } from '../guards';
+import { toLatex } from '../latex-generator';
+
+/**
+ * A path within an `answerFormat` AST locating the `?` placeholder. Each
+ * step is an English label rather than an integer index, to keep the path
+ * readable in test snapshots and UI tooltips.
+ */
+export type PlaceholderPath = readonly string[];
+
+/**
+ * Result of running `extractAnswerFragment`. The `latex` field is what the
+ * student is supposed to type in the blank, and `placeholderPath` records
+ * the structural location of that fragment within the matched expression.
+ */
+export interface AnswerFragment {
+	readonly latex: string;
+	readonly placeholderPath: PlaceholderPath;
+}
+
+/**
+ * Try to extract the `?` fragment from `node` according to the format.
+ *
+ * Supported templates (Phase 7) :
+ *   - `'?'`              → fragment = full node, path = `[]`
+ *   - `'10^?'`           → match `superscript(10, exp)`, fragment = `exp`,
+ *                          path = `['superscript']`
+ *   - `'? × 10^?'` (LaTeX `? \times 10^?`) → match `multiply(a, 10^n)`,
+ *                          fragment = `a` (the FIRST `?`),
+ *                          path = `['left']`
+ *   - `'\sqrt{?}'`       → match `sqrt(arg)`, fragment = `arg`,
+ *                          path = `['arg']`
+ *
+ * Returns `null` when the node doesn't match the format. The caller can
+ * decide to skip the fragment-extraction step in that case.
+ */
+export function extractAnswerFragment(node: MathNode, format: string): AnswerFragment | null {
+	const kind = classifyAnswerFormat(format);
+
+	switch (kind) {
+		case 'plain':
+			return { latex: toLatex(node), placeholderPath: [] };
+
+		case 'scientific': {
+			const placeholders = countPlaceholders(format);
+			if (placeholders === 1) {
+				// '10^?' — exponent only
+				return extractScientificExponentOnly(node);
+			}
+			// '? × 10^?' — mantissa + exponent ; convention : we return the
+			// MANTISSA as the primary fragment (the most common student input).
+			return extractScientificMantissa(node);
+		}
+
+		case 'radical':
+			return extractRadicand(node);
+
+		case 'fraction':
+			// Phase 7 returns the full reduced fraction LaTeX for fraction
+			// templates ; the per-placeholder split is left to a future
+			// extension when the orchestrator demands two distinct blanks.
+			return { latex: toLatex(node), placeholderPath: [] };
+
+		case 'power': {
+			// '?^?' or '2^?' — return the exponent (the fragment of interest)
+			return extractPowerExponent(node);
+		}
+
+		case 'unknown':
+		default:
+			return null;
+	}
+}
+
+/** Match `superscript(10, exp)` and return `exp`. */
+function extractScientificExponentOnly(node: MathNode): AnswerFragment | null {
+	if (!isSuperscript(node)) return null;
+	if (!isNumber(node.base) || node.base.value !== '10') return null;
+	return { latex: toLatex(node.superscript), placeholderPath: ['superscript'] };
+}
+
+/** Match `multiply(mantissa, superscript(10, _))` and return the mantissa. */
+function extractScientificMantissa(node: MathNode): AnswerFragment | null {
+	if (!isMultiplication(node)) return null;
+	const right = node.right;
+	if (!isSuperscript(right)) return null;
+	if (!isNumber(right.base) || right.base.value !== '10') return null;
+	// Mantissa is on the left. Strip a leading `opposite()` if present.
+	const left = isOpposite(node.left) ? node.left.operand : node.left;
+	return { latex: toLatex(left), placeholderPath: ['left'] };
+}
+
+/** Match `sqrt(arg)` and return the `arg`. */
+function extractRadicand(node: MathNode): AnswerFragment | null {
+	if (!isFunction(node) || node.name !== 'sqrt' || node.args.length !== 1) return null;
+	return { latex: toLatex(node.args[0]), placeholderPath: ['arg'] };
+}
+
+/** Match `superscript(_, exp)` and return the exponent. */
+function extractPowerExponent(node: MathNode): AnswerFragment | null {
+	if (!isSuperscript(node)) return null;
+	return { latex: toLatex(node.superscript), placeholderPath: ['superscript'] };
+}

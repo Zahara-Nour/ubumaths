@@ -31,6 +31,22 @@ export { POWER_RULES } from './powers';
 export { SCIENTIFIC_NOTATION_RULES } from './scientific-notation';
 export type { PedagogicalArithmeticRule } from '../types';
 
+/**
+ * Lookup map of every rule across all families, keyed by `rule.name`. The
+ * pipeline emits steps that carry only the rule name; the renderer uses
+ * this map to recover the rule's metadata (per-level descriptions and
+ * explanations).
+ */
+export const ALL_RULES_BY_NAME: ReadonlyMap<string, PedagogicalArithmeticRule> = new Map(
+	[
+		...BASIC_OPERATION_RULES,
+		...FRACTION_RULES,
+		...RADICAL_RULES,
+		...POWER_RULES,
+		...SCIENTIFIC_NOTATION_RULES
+	].map((rule) => [rule.name, rule])
+);
+
 // =============================================================================
 // Loader
 // =============================================================================
