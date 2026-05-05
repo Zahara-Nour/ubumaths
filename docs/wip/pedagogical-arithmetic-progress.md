@@ -105,6 +105,28 @@ Populer `expressionName` directement dans `InstanceBlank` via
 `generator/assign-blank-indices.ts`. Une fois fait, le 3e argument
 `expressionName` devient redondant (déductible depuis `blank`).
 
+## Phase 4 — Règles niveau 2 : fractions (terminée ✓)
+
+### Livré
+
+- `pedagogical-rules/fractions.ts` — 5 règles :
+  - `toCommonDenominator` (priority 130, college+) — `1/3 + 1/6 → 2/6 + 1/6` via LCM
+  - `divideFractions` (priority 120, college+) — `(a/b)/(c/d) → (a/b)×(d/c)`
+  - `addSameDenominator` (priority 110, all levels) — `1/6 + 2/6 → 3/6` (sans réduction)
+  - `multiplyFractions` (priority 110, college+) — `(2/3)×(5/7) → 10/21` (sans réduction)
+  - `reduceFraction` (priority 30, college+) — `3/6 → 1/2` via PGCD ; ré-injectée comme terminal pour primaire si `targetForm === 'reduced-fraction'` ou `needsReducedFractions`
+- `loadPedagogicalRules()` étendu avec terminal `reduceFraction`
+- 24 tests dans `__tests__/fractions.test.ts`
+- 6 tests pour `loadPedagogicalRules` dans `__tests__/load-rules.test.ts`
+- Total : 156 tests passent
+
+### Décisions design (Phase 4)
+
+- **Stratégie unique PGCD/LCM** (pas de différentiation collège-précoce vs collège-tardif). Variante "multiplication directe" possible plus tard.
+- **`asIntegerFraction` strictement structurel** : matche seulement `divide` et `opposite(divide)`, pas les entiers nus. Évite que `addSameDenominator` ne fire sur `2 + 3` (cas géré par `evaluateBinaryAdd`).
+- **`unreducedFractionNode`** : étape intermédiaire sans réduire ; `reduceFraction` est une étape pédagogique distincte.
+- **`reduceFraction` priority 30** : tourne après `evaluateBinaryDiv` (100) et `multiplyFractions` (110) pour simplifier ce qu'ils ont produit.
+
 ## Phase 3 — Règles niveau 1 : basic operations (terminée ✓)
 
 ### Livré
