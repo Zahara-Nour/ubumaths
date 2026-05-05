@@ -129,8 +129,10 @@ describe('generatePedagogicalArithmeticSteps', () => {
 			});
 			expect(rendered.length).toBeGreaterThan(0);
 			expect(rendered[0].schoolLevel).toBe('college');
-			expect(rendered[0].expressionLatex).toContain('Rightarrow');
-			expect(rendered[0].expressionLatex).toContain('textcolor');
+			// Two-line aligned format with colored fragment + new global expression
+			expect(rendered[0].expressionLatex).toContain('begin{aligned}');
+			expect(rendered[0].expressionLatex).toContain('textcolor{blue}');
+			expect(rendered[0].expressionLatex).toContain('= ');
 		});
 
 		it('omits explanation when verbosity is summarized', () => {
