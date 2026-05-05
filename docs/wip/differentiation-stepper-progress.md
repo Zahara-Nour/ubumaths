@@ -9,27 +9,30 @@ Créer un module `src/lib/mathAST/pedagogical-differentiation/` qui implémente 
 
 ## État global
 
-| Phase  | Status          | Commit                   | Notes                                                                                                                                |
-| ------ | --------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| 0      | ✅ Spec validée | —                        | Option 2 confirmée par l'utilisateur                                                                                                 |
-| 1      | ✅ Livrée       | `f9fb1a3a0`              | 38 tests : types + pipeline + renderer (skeleton + triviaux top-level)                                                               |
-| 2a     | ✅ Livrée       | `f9fb1a3a0`              | sum, difference, negation, linear-coefficient, sum-with-constant, diff-with-constant, passthrough (positive/delimiter)               |
-| 2b     | ✅ Livrée       | `f9fb1a3a0`              | power-natural, power-constant-exp, power-constant-base, general-power, sqrt, derivative-of-sqrt                                      |
-| 2c     | ✅ Livrée       | `f9fb1a3a0`              | product (general), quotient, inverse, derivative-of-inverse                                                                          |
-| 2d     | ✅ Livrée       | `f9fb1a3a0`              | sin, cos, tan, arcsin, arccos, arctan (chaîne intégrée)                                                                              |
-| 2e     | ✅ Livrée       | `f9fb1a3a0`              | exp, ln, log (base-aware)                                                                                                            |
-| 2f     | ✅ Livrée       | `f9fb1a3a0`              | sinh, cosh, tanh, asinh, acosh, atanh                                                                                                |
-| 3      | ✅ Livrée       | `f9fb1a3a0`              | Renderer LaTeX 2-lignes aligné (`\begin{aligned}`)                                                                                   |
-| 4      | ✅ Livrée       | `f9fb1a3a0`              | LYCEE_EXPLANATIONS pour les 34 règles + SUPERIEUR_TITLES complets                                                                    |
-| 5      | ✅ Livrée       | `f9fb1a3a0`              | 6 catégories de démos × 36 cas snapshot (polynomial, trig, exp, log, product-quotient, composition)                                  |
-| 6      | ✅ Livrée       | `b1a33b567`              | `kind: 'differentiate'` dans GeneratedSteps + Zod (lax + strict) + correction-generator + 7 nouveaux tests                           |
-| 7      | ✅ Livrée       | `b1a33b567`              | 2 fixtures end-to-end : polynomial 1_SPE + composition T_SPE, snapshots verts                                                        |
-| 8      | ✅ Livrée       | `b1a33b567`              | ESLint clean, `pnpm check:incremental` clean (0 nouvelle erreur), 0 régression                                                       |
-| **9**  | ✅ Livrée       | `98ddcc50e`              | **Fix blockers** issus du code review : `FunctionNode.power` (ex: `\sin^2(x)`) + top-level transparent wrappers (`+x`, `(x)`)        |
-| **10** | ✅ Livrée       | `ac4e2b2f8`              | **Fix should-fix** issus du code review : `dependsOnDiffVariable` pour subscripted vars + skip `linear-coefficient` quand c=0 ou c=1 |
-| **11** | ✅ Livrée       | `0659a0afa`              | **CLI demo standalone** : `scripts/pedagogical-differentiation-demo.ts` (filtrage par catégorie, options `--latex` / `--custom`)     |
-| **12** | ✅ Livrée       | `fbfd92712`              | **Page debug étendue** : `/dashboard/admin/debug/correction-mode-b` ajoute les 2 fixtures différentiation (4 fixtures au total)      |
-| **13** | ✅ Livrée       | `0be5301c7`, `975b7bf14` | **Pretty-print CLI** : option `format: 'latex' \| 'custom'` dans demo-helpers + ANSI bold-blue + cleanup LaTeX résiduel              |
+| Phase      | Status          | Commit                   | Notes                                                                                                                                |
+| ---------- | --------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 0          | ✅ Spec validée | —                        | Option 2 confirmée par l'utilisateur                                                                                                 |
+| 1          | ✅ Livrée       | `f9fb1a3a0`              | 38 tests : types + pipeline + renderer (skeleton + triviaux top-level)                                                               |
+| 2a         | ✅ Livrée       | `f9fb1a3a0`              | sum, difference, negation, linear-coefficient, sum-with-constant, diff-with-constant, passthrough (positive/delimiter)               |
+| 2b         | ✅ Livrée       | `f9fb1a3a0`              | power-natural, power-constant-exp, power-constant-base, general-power, sqrt, derivative-of-sqrt                                      |
+| 2c         | ✅ Livrée       | `f9fb1a3a0`              | product (general), quotient, inverse, derivative-of-inverse                                                                          |
+| 2d         | ✅ Livrée       | `f9fb1a3a0`              | sin, cos, tan, arcsin, arccos, arctan (chaîne intégrée)                                                                              |
+| 2e         | ✅ Livrée       | `f9fb1a3a0`              | exp, ln, log (base-aware)                                                                                                            |
+| 2f         | ✅ Livrée       | `f9fb1a3a0`              | sinh, cosh, tanh, asinh, acosh, atanh                                                                                                |
+| 3          | ✅ Livrée       | `f9fb1a3a0`              | Renderer LaTeX 2-lignes aligné (`\begin{aligned}`)                                                                                   |
+| 4          | ✅ Livrée       | `f9fb1a3a0`              | LYCEE_EXPLANATIONS pour les 34 règles + SUPERIEUR_TITLES complets                                                                    |
+| 5          | ✅ Livrée       | `f9fb1a3a0`              | 6 catégories de démos × 36 cas snapshot (polynomial, trig, exp, log, product-quotient, composition)                                  |
+| 6          | ✅ Livrée       | `b1a33b567`              | `kind: 'differentiate'` dans GeneratedSteps + Zod (lax + strict) + correction-generator + 7 nouveaux tests                           |
+| 7          | ✅ Livrée       | `b1a33b567`              | 2 fixtures end-to-end : polynomial 1_SPE + composition T_SPE, snapshots verts                                                        |
+| 8          | ✅ Livrée       | `b1a33b567`              | ESLint clean, `pnpm check:incremental` clean (0 nouvelle erreur), 0 régression                                                       |
+| **9**      | ✅ Livrée       | `98ddcc50e`              | **Fix blockers** issus du code review : `FunctionNode.power` (ex: `\sin^2(x)`) + top-level transparent wrappers (`+x`, `(x)`)        |
+| **10**     | ✅ Livrée       | `ac4e2b2f8`              | **Fix should-fix** issus du code review : `dependsOnDiffVariable` pour subscripted vars + skip `linear-coefficient` quand c=0 ou c=1 |
+| **11**     | ✅ Livrée       | `0659a0afa`              | **CLI demo standalone** : `scripts/pedagogical-differentiation-demo.ts` (filtrage par catégorie, options `--latex` / `--custom`)     |
+| **12**     | ✅ Livrée       | `fbfd92712`              | **Page debug étendue** : `/dashboard/admin/debug/correction-mode-b` ajoute les 2 fixtures différentiation (4 fixtures au total)      |
+| **13**     | ✅ Livrée       | `0be5301c7`, `975b7bf14` | **Pretty-print CLI** : option `format: 'latex' \| 'custom'` dans demo-helpers + ANSI bold-blue + cleanup LaTeX résiduel              |
+| **V1.1-A** | ✅ Livrée       | `ed44b60d1`              | **Constant folding** : `foldNumericSubtrees` post-traitement sur `result.derivative` (`(2x+3x)' → 5`, `(5x-2x)' → 3`)                |
+| **V1.1-B** | ✅ Livrée       | `a9fc2bd2f`              | **`f/c` → linear-coefficient** : `(f/c)'` route vers `linear-coefficient` avec `c=1/denom`, `(x²/5)' → 2x/5` directement             |
+| **V1.1-D** | ✅ Livrée       | `c11d7a3ce`              | **Notation Leibniz** : option `notation: 'lagrange' \| 'leibniz'` sur le renderer, `\frac{d}{dx}(f) = f'` quand activé               |
 
 ## Décisions architecturales (Phase 0 — validées)
 
@@ -97,10 +100,10 @@ Différence avec `pedagogical-arithmetic/` : pas d'objet `Rule` agrégeant patte
 ### Tests
 
 - `__tests__/types.test.ts` — 6 tests
-- `__tests__/pipeline.test.ts` — 82 tests (triviaux + 6 phases × règles + 12 régressions code-review)
-- `__tests__/renderer.test.ts` — 14 tests
+- `__tests__/pipeline.test.ts` — 91 tests (triviaux + 6 phases × règles + 12 régressions code-review + 9 V1.1 fold/f-c)
+- `__tests__/renderer.test.ts` — 20 tests (14 V1 + 6 V1.1 Leibniz)
 - `__tests__/pedagogical-differentiation-demo.test.ts` — 38 snapshots (36 originaux + `\sin^2(x)` + `\cos^3(x)`)
-- **Total module** : 140 tests verts
+- **Total module** : 155 tests verts
 
 ### Intégration Mode B
 
@@ -118,7 +121,7 @@ Différence avec `pedagogical-arithmetic/` : pas d'objet `Rule` agrégeant patte
 
 ### Score final
 
-- 140 tests module + 23 tests correction-generator + 7 tests generated-steps-demo = **170 tests verts spécifiques au feature**
+- 155 tests module (140 V1 + 15 V1.1) + 23 tests correction-generator + 7 tests generated-steps-demo = **185 tests verts spécifiques au feature**
 - 0 régression : suites adjacentes (mathAST/differentiation, pedagogical-arithmetic, pedagogical-solve) passent inchangées
 - ESLint : clean
 - `pnpm check:incremental` : clean (0 nouvelle erreur, les 9 erreurs résiduelles sont dans `slides/demo` et `extern/`, pré-existantes et filtrées)
@@ -199,22 +202,30 @@ Un code review `code-reviewer` (Opus) a été lancé après les commits `f9fb1a3
 - `src/lib/mathAST/pedagogical-arithmetic/` — modèle de référence direct
 - `src/lib/mathAST/differentiation/rules.ts` — building blocks réutilisés
 
-## Limitations connues V1 (raffinements post-V1)
+## Limitations connues V1.1 (raffinements post-V1.1)
 
-- **Pas de constant-folding final** : `(2x+3x)' = 2 + 3` (et non `5`). `simplifiedAdd` n'agrège pas les littéraux. Pédagogiquement acceptable (le prof écrit aussi les étapes intermédiaires) mais un post-traitement de fold pourrait être ajouté.
-- **`f/c` (numérateur variable, dénominateur constant)** : passe par la règle `quotient` générique. Un cas spécial `linear-coefficient` avec `c = 1/c_node` serait plus pédagogique mais demande de construire un node `1/c` (out of scope V1).
-- **Notation Leibniz `df/dx`** : reportée. V1 utilise Lagrange `f'(x)` partout.
-- **Niveaux primaire/college** : bumpés à `lycee` (la dérivation n'est pas au programme avant la 1ère).
+**Résolues en V1.1** ✅ :
+
+- ~~Pas de constant-folding final~~ → fixé par `foldNumericSubtrees` (commit `ed44b60d1`)
+- ~~`f/c` route vers quotient générique~~ → fixé par la nouvelle branche linear-coefficient (commit `a9fc2bd2f`)
+- ~~Notation Leibniz reportée~~ → option `notation: 'leibniz'` disponible sur le renderer (commit `c11d7a3ce`)
+
+**Restantes** :
+
+- **Niveaux primaire/college** : bumpés à `lycee` (la dérivation n'est pas au programme avant la 1ère). _Choix pédagogique, pas un défaut._
 - **Highlight context dans le renderer** : `globalBefore` n'est pas utilisé pour colorier le sous-arbre dans son contexte parent. Le `\textcolor{blue}{(before)'}` actuel reste local. Refacto possible quand `pedagogical-arithmetic/colorFragmentsInExpression` sera exposé publiquement.
 - **Fonctions inverses (`f^{-1}`) et dérivées (`f'(x)` au sens d'argument déjà-dérivé)** : refusées explicitement avec `PedagogicalDifferentiationNotImplemented` (Mode A fallback côté correction-generator).
 - **Inverse hyperboliques** : le parser LaTeX ne reconnaît pas `\arcsinh`/`\operatorname{argsh}` ; le dispatcher fonctionne quand on construit le node manuellement via `func('asinh', [...])`.
-- **Subscripts dans expressions composées** (ex: `(x_1)^2`) : `dependsOnDiffVariable` peut sur-rapporter via le fallback `containsVariable`, donnant un label `general-power` au lieu d'une trivialisation. Mathématiquement correct, pédagogiquement sub-optimal. Cas marginal.
+- **Subscripts dans expressions composées** (ex: `(x_1)^2`) : `dependsOnDiffVariable` peut sur-rapporter via le fallback `containsVariable`, donnant un label `general-power` au lieu d'une trivialisation. Mathématiquement correct, pédagogiquement sub-optimal. Cas marginal — non-implémenté en V1.1 (raffinement C skippé après discussion : faible ROI sans questions paramétriques avec subscripts).
+- **Titres + explanations en Lagrange même quand `notation: 'leibniz'`** : seul `expressionLatex` switche entre Lagrange/Leibniz. Les `(uv)' = u'v + uv'` dans les titres supérieur restent en Lagrange. V2 scope (full-Leibniz wording).
 
-## Pistes d'amélioration
+## Pistes d'amélioration (post-V1.1)
 
-1. **Post-traitement numeric fold** : appliquer `evaluate(node, { mode: 'exact' })` ciblé sur les sous-arbres de la dérivée pour transformer `2 + 3` en `5` sans toucher aux symboles.
-2. **Cas spécial `f/c`** : détecter constante au dénominateur et router vers `linear-coefficient` avec construction `divide(1, c)`.
+1. ~~Post-traitement numeric fold~~ ✅ V1.1-A
+2. ~~Cas spécial `f/c`~~ ✅ V1.1-B
 3. **Highlight contextuel** : exposer `colorFragmentsInExpression` du module arithmétique et l'utiliser dans le renderer.
-4. **Notation Leibniz** : ajouter une option `notation: 'lagrange' | 'leibniz'` au renderer.
+4. ~~Notation Leibniz~~ ✅ V1.1-D (LHS uniquement ; titres/explanations restent Lagrange — V2)
 5. **Niveau collège (terminales STMG, exposé léger)** : ajouter un set partiel de TITLES/EXPLANATIONS pour les cas simples (puissance, somme, produit).
-6. **Variante de `containsVariable` excluant les subscripts** : pour fixer le cas marginal `(x_1)^n` sans toucher au helper global (qui est utilisé partout).
+6. **Variante de `containsVariable` excluant les subscripts** : skippé V1.1 après discussion ROI. À reconsidérer si questions paramétriques avec subscripts émergent.
+7. **Full-Leibniz wording** : variante des TITLES/EXPLANATIONS écrites en notation Leibniz pour cohérence quand `notation: 'leibniz'` est activé.
+8. **Mode B : exposer `notation` via `GeneratedStepsOptions`** : pour permettre aux questions de demander Leibniz au lieu de Lagrange.
