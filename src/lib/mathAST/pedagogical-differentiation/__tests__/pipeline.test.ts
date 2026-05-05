@@ -206,6 +206,62 @@ describe('Regression — top-level transparent wrappers must produce a step', ()
 	});
 });
 
+// =============================================================================
+// Regression: subscripted variables routed via dependsOnDiffVariable
+// =============================================================================
+
+describe('Regression — subscripted variables treated as constants in special-case detection', () => {
+	it("(x_1 + x)' uses sum-with-constant (x_1 is a parameter, not the diff variable)", () => {
+		const node = parseLatex('x_1 + x');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps[0].rule).toBe('sum-with-constant');
+		// f = the variable side (x), c = the parameter side (x_1).
+		expect(result.steps[0].bindings?.f.type).toBe('variable');
+		expect(result.steps[0].bindings?.c.type).toBe('subscript');
+	});
+
+	it("(x \\cdot y)' (different variable y) routes through linear-coefficient", () => {
+		// Verifies that the dispatcher correctly identifies y as a constant
+		// (different variable, not the diff variable) via dependsOnDiffVariable.
+		const node = parseLatex('x \\cdot y');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps[0].rule).toBe('linear-coefficient');
+		expect(result.steps[0].bindings?.f.type).toBe('variable');
+		// `bindings.c` should be the variable y (treated as a constant w.r.t. x).
+		expect(result.steps[0].bindings?.c.type).toBe('variable');
+	});
+});
+
+// =============================================================================
+// Regression: degenerate linear-coefficient (c = 0 or c = 1)
+// =============================================================================
+
+describe('Regression — linear-coefficient is skipped for c = 0 or c = 1', () => {
+	it('(0 \\cdot x^2) — does NOT emit a linear-coefficient step labelled "On sort la constante 0"', () => {
+		// Manually construct since `0 \cdot x^2` is unusual in templates.
+		const node = parseLatex('0 \\cdot x^2');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps[0].rule).not.toBe('linear-coefficient');
+	});
+
+	it('(1 \\cdot x^2) — does NOT emit a linear-coefficient step labelled "On sort la constante 1"', () => {
+		const node = parseLatex('1 \\cdot x^2');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps[0].rule).not.toBe('linear-coefficient');
+	});
+
+	it('(2 \\cdot x^2) — DOES still use linear-coefficient (c = 2 is a meaningful coefficient)', () => {
+		const node = parseLatex('2 \\cdot x^2');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps[0].rule).toBe('linear-coefficient');
+	});
+});
+
 describe('generatePedagogicalDifferentiationSteps — unimplemented surface (defensive)', () => {
 	it('throws PedagogicalDifferentiationNotImplemented for an unsupported function name', () => {
 		// `abs` is not differentiable at 0 — our pipeline mirrors
