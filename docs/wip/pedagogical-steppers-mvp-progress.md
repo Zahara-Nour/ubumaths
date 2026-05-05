@@ -197,17 +197,56 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 - **Reconnaissance d'unités SI dérivées** (Hz, N, J, W, etc.) — point Poincaré → livré, voir `units-derived-progress.md`
 - **Unités impériales + affines** (Celsius/Fahrenheit, foot, pound, mile, gallon) → livré, voir `units-imperial-affine-progress.md`
 - **Unités d'aire** (a, ha, acre) — bonus débloqué par dérivées → livré, voir `units-area-progress.md`
+- **Intégration aux corrections de questions** (`QuestionCorrection.generatedSteps` Mode B) → livré, voir `correction-integration-progress.md`. Inclut :
+  - Schéma type `GeneratedSteps` discriminé (`kind: 'arithmetic' | 'linear-equation' | 'differentiate'`)
+  - `generateCorrection()` avec auto-call dans `generateInstance()` (early-return strict si absent)
+  - Composant Svelte `<GeneratedStepsCorrection>` + extension `CorrectionCard.svelte`
+  - Mapping `gradeLevelToSchoolLevel` (CP-CM2 → primaire, 6-3 → college, 2-T → lycee)
+  - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (4 fixtures : arithmetic + linear-equation + differentiate × 2)
+- **Stepper pédagogique pour différentiation** (`kind: 'differentiate'`) → livré, voir `differentiation-stepper-progress.md`. Inclut :
+  - Pipeline parallèle `pedagogical-differentiation/` (Option 2 retenue plutôt que dual renderer sur `differentiate.ts`)
+  - 34 règles couvertes (sum, product, quotient, chain, sin/cos/tan, exp, ln, puissances entières/rationnelles, etc.)
+  - 13 phases V1 + 3 raffinements V1.1 (constant folding, `f/c` → linear-coefficient, notation Leibniz)
+  - 12 commits : `f9fb1a3a0`, `b1a33b567`, `98ddcc50e`, `ac4e2b2f8`, `0659a0afa`, `fbfd92712`, `0be5301c7`, `975b7bf14`, `a9fc2bd2f`, `ed44b60d1`, `c11d7a3ce`, `fb173d762`
+  - 185 tests verts spécifiques au feature (155 module + 23 correction-generator + 7 generated-steps-demo)
+  - Mode B `kind: 'differentiate'` intégré
+  - Bugs critiques corrigés : `\sin^2(x)` (FunctionNode.power) + `(+x)`/`((x))` (transparent wrappers)
+  - V1.1 : `(2x+3x)' → 5` (fold), `(x²/5)' → 2x/5` (linear-coefficient), option `notation: 'leibniz'` sur le renderer
 
 #### 🔴 Toujours à faire
 
-- Renderers pédagogiques pour les autres domaines (integration, limits, matrix, domain)
-- Stepper pour différentiation (nouveau step recorder + renderer)
+**Élargissement de couverture**
+
+- Renderers pédagogiques pour les autres domaines : integration, limits, matrix, domain
 - Pipeline pédagogique pour simplification d'expression
-- ~~Intégration aux corrections de questions (`QuestionCorrection.generatedSteps`)~~ — ✅ **Livré 2026-05-05** : voir `correction-integration-progress.md` (Mode B avec auto-call dans `generateInstance()`, composant `<GeneratedStepsCorrection>`, page debug `/dashboard/admin/debug/correction-mode-b`)
-- Modes `SymbolicComputation` (Mode 0, Mode 2) inspirés de Poincaré
+- `kind: 'solve'` algorithmique dans Mode B (pedagogical-solve V1 ne supporte que linéaire)
+- `kind: 'arithmetic-from-blank'` (V1 a skippé pour éviter duplication d'expression entre `expectedAnswer` et `generatedSteps.expression`)
+
+**Idées Poincaré**
+
+- Modes `SymbolicComputation` (Mode 0, Mode 2) — pour cas pédagogiques avec fonctions paramétriques
 - `NormalizeTarget` à 3 niveaux (`Equivalence` / `Analysis` / `Display`)
-- Investigation root-cause du load-order issue de `common/index.ts`
-- TODOs post-arithmétique : `expressionName` dans `InstanceBlank`, variantes fractions sous-niveau, radicaux niveau 3 avancé (rationalize, abs²), decimal mantissas dans scientific, cohérence `signs` strict en post-processing
+
+**UX Mode B (post-V1)**
+
+- Hiérarchie visuelle des étapes (séparation, responsive LaTeX, animation)
+- Densité du `\textcolor{blue}{...}` à valider sur différents zooms
+- Intégration au flow flashcard à valider sur autres écrans
+- Composant interactif (étape par étape avec bouton "Suivant")
+- UI éditeur de questions pour créer un `generatedSteps` via formulaire (V1 = écriture JSON manuelle)
+- Hybridation Mode A + Mode B (afficher les deux) — V1 : Mode A prioritaire si conflit
+
+**Investigation**
+
+- Root-cause du load-order issue de `common/index.ts` (workaround documenté en place)
+
+**TODOs post-prompt arithmétique** (voir `pedagogical-arithmetic-progress.md` pour détails)
+
+- `expressionName` dans `InstanceBlank` via `assign-blank-indices.ts` (~2-3h, rend le 3e arg de `extractPedagogicalTarget` redondant)
+- Variantes fractions sous-niveau (early-college multiplication vs late-college PGCD)
+- Radicaux niveau 3 avancé (`rationalize-denominator`, `simplify-square-root-of-square`)
+- Decimal mantissas dans `multiplyScientific` / `addScientificSamePower`
+- Cohérence `signs: 'strict'` en post-processing (`5 + (-3) → 5 - 3`)
 
 ### Critères d'acceptation atteints
 
