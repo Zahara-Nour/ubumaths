@@ -224,6 +224,79 @@ src/lib/mathAST/pedagogical-arithmetic/
 
 ---
 
-## Phases ultérieures
+## Phase 7 — answer-format-parser enrichi + extraction fragment (terminée ✓)
 
-(Documentées au fur et à mesure de la livraison.)
+### Livré
+
+- `extractAnswerFragment(node, format)` ajouté à `answer-format-parser.ts`
+- Templates supportés (Phase 7) :
+  - `'?'` → fragment = full node (path = `[]`)
+  - `'10^?'` → match `superscript(10, exp)` → fragment = exp (path = `['superscript']`)
+  - `'? × 10^?'` → match `multiply(a, 10^_)` → fragment = a (mantisse, path = `['left']`)
+  - `'\sqrt{?}'` → match `sqrt(arg)` → fragment = arg (path = `['arg']`)
+  - `'?^?'` → match `superscript(_, exp)` → fragment = exp (path = `['superscript']`)
+- 9 nouveaux tests dans `__tests__/answer-format-parser.test.ts` (67 tests total)
+
+## Phase 8 — Pipeline orchestrateur (terminée ✓)
+
+### Livré
+
+- `pipeline.ts` — `generatePedagogicalArithmeticSteps(node, options)` :
+  1. Charge les rules via `loadPedagogicalRules({ targetForm, schoolLevel, … })`
+  2. **Pré-passe top-down** pour `groupMultiplicationsInAddition` (avant la rewrite engine bottom-up qui sinon réduirait les multiplications avant que le grouping voie la somme)
+  3. Rewrite engine en mode `'deterministic'`
+  4. Fallback `evaluate(exact)` si la valeur n'est pas réduite
+  5. Post-processing strict (`reduceFraction` final si `reducedFractions: 'strict'`)
+  6. Extraction fragment si `target.answerFormat`
+- `renderer.ts` — `PedagogicalArithmeticRenderer` :
+  - Titre via `rule.descriptions[schoolLevel]` avec fallback `lycee`
+  - `expressionLatex` colorée : `\textcolor{blue}{before} \quad\Rightarrow\quad after`
+  - Explanation gated by verbosity 'detailed'
+- `ALL_RULES_BY_NAME` exporté depuis `pedagogical-rules/index.ts` pour que le renderer retrouve les rule metadata
+- 11 tests dans `__tests__/pipeline.test.ts`
+
+### Décisions design (Phase 8)
+
+- **Pré-passe top-down pour le grouping** : nécessaire car `applyRulesDeepOnceTracked` traverse bottom-up. Sans cette pré-passe, `evaluate-binary-mul` (priority 100) collapse les multiplications AVANT que `groupMultiplicationsInAddition` (priority 200) ne voie la somme. La pré-passe utilise `mapNodeTopDown` + `applyRule` direct.
+- **Le grouping rule est exclu de la liste passée au rewrite engine** pour éviter la double application.
+
+## Phase 9 — Démo + tests snapshot (terminée ✓)
+
+### Livré
+
+- `demo-helpers.ts` : `presentExpression(testCase)` produit le rendu côte-à-côte 4 niveaux × 2 verbosities (8 vues), avec answerFragment quand pertinent.
+- `demo-cases/` : 6 catégories × ≥3 cas chacune :
+  - `basic.ts` (4 cas) — 2+3, 2+3×4, 2+3×4+5×6, 10−7+3
+  - `fractions.ts` (5 cas) — 1/3+1/6, 1/4+1/6, 2/3×5/7, (2/3)÷(5/7), 2/4 réduction
+  - `radicals.ts` (5 cas) — √8, √18, √45, √2×√3, √2×√8
+  - `scientific.ts` (4 cas) — 5000000, 0.000037, (3×10⁴)×(2×10⁻²), (5×10³)×(4×10²)
+  - `target-form-scenarios.ts` (3 cas) — même expression, target différent → étapes différentes
+  - `answer-format-scenarios.ts` (3 cas) — fragment extraction
+- `__tests__/pedagogical-arithmetic-demo.test.ts` : 24 snapshots (1 par cas)
+- `scripts/pedagogical-arithmetic-demo.ts` : CLI standalone avec filtre par catégorie
+
+## Phase 10 — Quality checks + doc finale (terminée ✓)
+
+### Quality checks
+
+- ✓ ESLint sur tous les fichiers du module : 0 error, 0 warning
+- ✓ `pnpm check:incremental` : 0 nouvelle erreur (9 erreurs préexistantes dans slides/demo + extern/ exclues par le script)
+- ✓ Suite mathAST complète : 12201/12222 passent (18 skipped, 3 todo, 0 fail)
+- ✓ 0 régression vs baseline
+- 0 fichier `.svelte` modifié → svelte-autofixer non applicable
+
+### Documents produits
+
+- `docs/wip/pedagogical-arithmetic-progress.md` (ce fichier)
+
+### Récapitulatif final
+
+- **6 commits intermédiaires** :
+  1. `206e95f7b` — Phases 1+2 (infrastructure + target extractor + answer-format parser basique)
+  2. `cbf546ac8` — Phase 3 (basic operations rules)
+  3. `ff34f1d79` — Phase 4 (fraction rules)
+  4. `cd1907374` — Phases 5+6 (radicaux + powers + scientific)
+  5. à venir — Phases 7-10 (answer-format extraction, pipeline, demo, quality)
+- **Tests ajoutés** : 239 tests dans `pedagogical-arithmetic/`
+- **LOC** : ~3500 ajoutées (modules + tests + démo + doc)
+- **Critères d'acceptation** : tous remplis (voir liste plus haut).

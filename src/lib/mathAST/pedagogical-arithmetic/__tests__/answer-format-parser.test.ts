@@ -5,9 +5,11 @@
  */
 
 import { describe, expect, it } from 'vitest';
+import { multiply, number, opposite, sqrt, superscript } from '../../factory';
 import {
 	classifyAnswerFormat,
 	countPlaceholders,
+	extractAnswerFragment,
 	isFractionFormat,
 	isPlainFormat,
 	isPowerFormat,
@@ -136,6 +138,55 @@ describe('answer-format-parser — classification', () => {
 			['\\sqrt{?}', 1]
 		])('counts placeholders in %s = %d', (format, expected) => {
 			expect(countPlaceholders(format)).toBe(expected);
+		});
+	});
+
+	describe('extractAnswerFragment', () => {
+		it('plain "?" returns the full node as fragment', () => {
+			const fragment = extractAnswerFragment(number('5'), '?');
+			expect(fragment).toEqual({ latex: '5', placeholderPath: [] });
+		});
+
+		it('"10^?" extracts the exponent from 10^6', () => {
+			const node = superscript(number('10'), number('6'));
+			const fragment = extractAnswerFragment(node, '10^?');
+			expect(fragment).toEqual({ latex: '6', placeholderPath: ['superscript'] });
+		});
+
+		it('"10^?" returns null when base is not 10', () => {
+			const node = superscript(number('2'), number('6'));
+			expect(extractAnswerFragment(node, '10^?')).toBeNull();
+		});
+
+		it('"? × 10^?" extracts the mantissa from 5 × 10^6', () => {
+			const node = multiply(number('5'), superscript(number('10'), number('6')), 'cross');
+			const fragment = extractAnswerFragment(node, '? \\times 10^?');
+			expect(fragment).toEqual({ latex: '5', placeholderPath: ['left'] });
+		});
+
+		it('"? × 10^?" handles negative mantissa via opposite() wrapper', () => {
+			const node = multiply(opposite(number('3')), superscript(number('10'), number('6')), 'cross');
+			const fragment = extractAnswerFragment(node, '? \\times 10^?');
+			expect(fragment?.latex).toBe('3');
+		});
+
+		it('"\\sqrt{?}" extracts the radicand from √8', () => {
+			const fragment = extractAnswerFragment(sqrt(number('8')), '\\sqrt{?}');
+			expect(fragment).toEqual({ latex: '8', placeholderPath: ['arg'] });
+		});
+
+		it('"?^?" extracts the exponent from 2^5', () => {
+			const node = superscript(number('2'), number('5'));
+			const fragment = extractAnswerFragment(node, '?^?');
+			expect(fragment).toEqual({ latex: '5', placeholderPath: ['superscript'] });
+		});
+
+		it('returns null when format is unknown', () => {
+			expect(extractAnswerFragment(number('5'), 'weird format')).toBeNull();
+		});
+
+		it('returns null when shape mismatches scientific template', () => {
+			expect(extractAnswerFragment(number('5'), '10^?')).toBeNull();
 		});
 	});
 });
