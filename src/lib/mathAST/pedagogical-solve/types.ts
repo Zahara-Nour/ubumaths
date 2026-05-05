@@ -29,23 +29,42 @@ import type { SchoolLevel } from '../common/step-renderer-base';
 
 /**
  * Structured operation applied at a step. Discriminated union — exhaustive
- * over the operations the linear pipeline emits.
+ * over the operations the linear AND quadratic pipelines emit.
  *
- * Future quadratic / transcendental pipelines may extend this union.
+ * Linear-only kinds: `add-both-sides`, `subtract-both-sides`,
+ * `multiply-both-sides`, `divide-both-sides`, `transpose-terms`,
+ * `simplify-coefficient`, `group-variable-terms`, `group-constants`,
+ * `reduce-to-canonical`, `read-solution`.
+ *
+ * Quadratic-only kinds (Phase 1): `standardize`, `identify-coefficients`,
+ * `compute-discriminant`, `discriminant-{positive,zero,negative}`,
+ * `apply-quadratic-formula`, `simplify-solutions`, `read-solutions`,
+ * `recognize-no-linear-term`, `recognize-no-constant-term`,
+ * `recognize-factored`, `isolate-square`, `extract-square-root`,
+ * `factor-common-x`, `zero-product`, `solve-each-factor`, `no-real-solution`.
+ *
+ * Shared kinds: `identify-equation` (carries `equationType`), `simplify`.
  */
 export type EquationOperation =
-	/** Initial classification — no transformation, just labels the equation */
-	| { readonly kind: 'identify-equation'; readonly equationType: 'linear' }
-	/** Add the same expression to both sides */
-	| { readonly kind: 'add-both-sides'; readonly operand: MathNode }
-	/** Subtract the same expression from both sides */
-	| { readonly kind: 'subtract-both-sides'; readonly operand: MathNode }
-	/** Multiply both sides by the same expression */
-	| { readonly kind: 'multiply-both-sides'; readonly operand: MathNode }
-	/** Divide both sides by the same (non-zero) expression */
-	| { readonly kind: 'divide-both-sides'; readonly operand: MathNode }
-	/** Simplify a side (collecting like terms, evaluating arithmetic) */
+	// =============================================================================
+	// Shared kinds
+	// =============================================================================
+	/** Initial classification — no transformation, just labels the equation. */
+	| { readonly kind: 'identify-equation'; readonly equationType: 'linear' | 'quadratic' }
+	/** Simplify a side (collecting like terms, evaluating arithmetic). */
 	| { readonly kind: 'simplify'; readonly side: 'left' | 'right' | 'both' }
+
+	// =============================================================================
+	// Linear pipeline kinds
+	// =============================================================================
+	/** Add the same expression to both sides. */
+	| { readonly kind: 'add-both-sides'; readonly operand: MathNode }
+	/** Subtract the same expression from both sides. */
+	| { readonly kind: 'subtract-both-sides'; readonly operand: MathNode }
+	/** Multiply both sides by the same expression. */
+	| { readonly kind: 'multiply-both-sides'; readonly operand: MathNode }
+	/** Divide both sides by the same (non-zero) expression. */
+	| { readonly kind: 'divide-both-sides'; readonly operand: MathNode }
 	/**
 	 * Combined transposition (lycée+) — moves x-terms to the left side and
 	 * constants to the right side IN ONE STEP. The displayed transformation
@@ -70,12 +89,130 @@ export type EquationOperation =
 	 * the actual add/subtract/simplify operations.
 	 */
 	| { readonly kind: 'group-variable-terms'; readonly variable: string }
-	/** Top-level grouping for constants (counterpart to group-variable-terms) */
+	/** Top-level grouping for constants (counterpart to group-variable-terms). */
 	| { readonly kind: 'group-constants' }
-	/** Top-level abstraction: full reduction to canonical form `ax = b` */
+	/** Top-level abstraction: full reduction to canonical form `ax = b`. */
 	| { readonly kind: 'reduce-to-canonical' }
-	/** Final: read off the solution from `x = …` */
-	| { readonly kind: 'read-solution'; readonly variable: string; readonly value: MathNode };
+	/** Final: read off the solution from `x = …` (linear). */
+	| { readonly kind: 'read-solution'; readonly variable: string; readonly value: MathNode }
+
+	// =============================================================================
+	// Quadratic pipeline kinds (Phase 1)
+	// =============================================================================
+	/**
+	 * Transpose every term from the right side into the left side so the
+	 * equation reads `f(x) = 0`. Emitted only when the input is not already in
+	 * standard form (e.g. `x² + 2 = x + 8` → `x² − x − 6 = 0`).
+	 */
+	| { readonly kind: 'standardize'; readonly from: 'free-form' }
+	/** Identify the coefficients a, b, c of `ax² + bx + c = 0`. */
+	| {
+			readonly kind: 'identify-coefficients';
+			readonly a: MathNode;
+			readonly b: MathNode;
+			readonly c: MathNode;
+	  }
+	/**
+	 * Compute the discriminant `Δ = b² − 4ac`. The `discriminant` field carries
+	 * the simplified MathNode (e.g. `1`); `numericValue` is its numeric value
+	 * when computable (`1`), used by the renderer to expand square roots.
+	 */
+	| {
+			readonly kind: 'compute-discriminant';
+			readonly a: MathNode;
+			readonly b: MathNode;
+			readonly c: MathNode;
+			readonly discriminant: MathNode;
+			readonly numericValue?: number;
+	  }
+	/** Narrative step announcing Δ > 0 ⇒ two distinct real solutions. */
+	| {
+			readonly kind: 'discriminant-positive';
+			readonly discriminant: MathNode;
+			readonly numericValue?: number;
+	  }
+	/** Narrative step announcing Δ = 0 ⇒ one double solution. */
+	| {
+			readonly kind: 'discriminant-zero';
+			readonly discriminant: MathNode;
+			readonly numericValue?: number;
+	  }
+	/** Narrative step announcing Δ < 0 ⇒ no real solution. */
+	| {
+			readonly kind: 'discriminant-negative';
+			readonly discriminant: MathNode;
+			readonly numericValue?: number;
+	  }
+	/**
+	 * Apply the quadratic formula. Carries the inputs needed to render
+	 * `x = (−b ± √Δ) / (2a)` (or `x = −b / (2a)` for the double-root case)
+	 * and the raw solutions before simplification.
+	 */
+	| {
+			readonly kind: 'apply-quadratic-formula';
+			readonly a: MathNode;
+			readonly b: MathNode;
+			readonly discriminant: MathNode;
+			readonly case: 'two-distinct' | 'double';
+			/** Raw, unsimplified solutions derived directly from the formula. */
+			readonly solutions: readonly MathNode[];
+	  }
+	/**
+	 * Simplify the raw solutions produced by `apply-quadratic-formula` to
+	 * canonical forms. Carries both the raw and simplified arrays so the
+	 * renderer can display the transition without cross-step lookup.
+	 */
+	| {
+			readonly kind: 'simplify-solutions';
+			readonly rawSolutions: readonly MathNode[];
+			readonly solutions: readonly MathNode[];
+	  }
+	/**
+	 * Final read-off of the solution set `S = {x₁, x₂}` (or `{x₀}` /
+	 * `\emptyset`). Plural counterpart to `read-solution` (linear).
+	 */
+	| {
+			readonly kind: 'read-solutions';
+			readonly variable: string;
+			readonly solutions: readonly MathNode[];
+	  }
+	/**
+	 * Special-case detection: `ax² + c = 0` (no linear term, b = 0).
+	 * @see isolate-square — emitted next once detected.
+	 */
+	| { readonly kind: 'recognize-no-linear-term' }
+	/**
+	 * Special-case detection: `ax² + bx = 0` (no constant term, c = 0).
+	 * @see factor-common-x — emitted next once detected.
+	 */
+	| { readonly kind: 'recognize-no-constant-term' }
+	/**
+	 * Special-case detection: input already factored, e.g. `(x − 2)(x + 3) = 0`.
+	 * @see zero-product — emitted next once detected.
+	 */
+	| { readonly kind: 'recognize-factored'; readonly factors: readonly MathNode[] }
+	/** b = 0 path — isolate the square: `ax² + c = 0` ⇒ `x² = −c/a`. */
+	| { readonly kind: 'isolate-square'; readonly rhs: MathNode }
+	/** b = 0 path — extract the square root: `x² = k` ⇒ `x = ±√k`. */
+	| { readonly kind: 'extract-square-root'; readonly argument: MathNode }
+	/** c = 0 path — factorise common x: `ax² + bx = 0` ⇒ `x(ax + b) = 0`. */
+	| { readonly kind: 'factor-common-x'; readonly remainder: MathNode }
+	/**
+	 * Apply the zero-product property: `A · B = 0` ⇒ `A = 0 ou B = 0`. Used by
+	 * both the c = 0 path and the already-factored path.
+	 */
+	| { readonly kind: 'zero-product'; readonly factors: readonly MathNode[] }
+	/**
+	 * Solve each linear factor and aggregate the solutions. The `pairs` field
+	 * is named distinctly from the `solutions: readonly MathNode[]` of other
+	 * kinds because each entry pairs a factor with its solution `(factor, value)`.
+	 */
+	| {
+			readonly kind: 'solve-each-factor';
+			readonly pairs: readonly { readonly factor: MathNode; readonly value: MathNode }[];
+	  }
+	/** Final outcome when Δ < 0 (in ℝ): `S = ∅`. */
+	| { readonly kind: 'no-real-solution' };
 
 // =============================================================================
 // Equation Step
@@ -172,4 +309,62 @@ export const STRATEGIES: Readonly<Record<LinearSchoolLevel, GenerationStrategy>>
 		includeIdentify: false,
 		mergeAll: true
 	}
+};
+
+// =============================================================================
+// Quadratic Pipeline (Phase 1)
+// =============================================================================
+
+/**
+ * School levels that quadratic equations apply to. Excludes BOTH `primaire`
+ * AND `college` — the second-degree formula is not in the curriculum before
+ * 1ère (lycée). The renderer will refuse these levels at runtime to mirror
+ * the type-level constraint.
+ */
+export type QuadraticSchoolLevel = Exclude<SchoolLevel, 'primaire' | 'college'>;
+
+/**
+ * Options for `generateQuadraticEquationSteps`.
+ */
+export interface QuadraticEquationStepsOptions {
+	/** Target school level — drives top-level granularity. `primaire`/`college` excluded. */
+	readonly level: QuadraticSchoolLevel;
+	/**
+	 * Include `subSteps` for drill-down. Default `true`.
+	 * Set to `false` for a flat output (e.g. for tests, logs).
+	 */
+	readonly includeSubSteps?: boolean;
+	/** Variable to solve for. Auto-detected if omitted. */
+	readonly variable?: string;
+}
+
+/**
+ * Per-level strategy controlling step granularity for the quadratic pipeline.
+ *
+ * - `includeIdentify`: emit the initial `identify-equation` step.
+ * - `emitSeparateDiscriminantSign`: when `true` (lycée), emit a dedicated
+ *   `discriminant-{positive,zero,negative}` step right after
+ *   `compute-discriminant`. When `false` (supérieur), the sign declaration
+ *   is folded into the `compute-discriminant` description and no separate
+ *   step is produced.
+ * - `mergeAll`: optionally collapse top-level steps under a single wrapper
+ *   step with sub-steps (currently unused — reserved for future supérieur
+ *   layouts).
+ */
+export interface QuadraticGenerationStrategy {
+	readonly includeIdentify: boolean;
+	readonly emitSeparateDiscriminantSign: boolean;
+	readonly mergeAll?: boolean;
+}
+
+/**
+ * Strategy table for the supported school levels. `primaire` and `college`
+ * are intentionally absent (the quadratic formula is not in the syllabus
+ * before 1ère).
+ */
+export const STRATEGIES_QUADRATIC: Readonly<
+	Record<QuadraticSchoolLevel, QuadraticGenerationStrategy>
+> = {
+	lycee: { includeIdentify: true, emitSeparateDiscriminantSign: true },
+	superieur: { includeIdentify: false, emitSeparateDiscriminantSign: false }
 };

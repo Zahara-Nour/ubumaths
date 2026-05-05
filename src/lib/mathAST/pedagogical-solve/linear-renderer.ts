@@ -47,10 +47,28 @@ function operandStr(op: EquationOperation): string {
 	return '';
 }
 
+/**
+ * Title for `identify-equation` — guards against cross-pipeline misuse.
+ *
+ * The linear renderer hardcodes "Équation du premier degré" but the
+ * `EquationOperation` union now allows `equationType: 'linear' | 'quadratic'`
+ * (Phase 1 of the quadratic stepper). Silently mis-labeling a quadratic step
+ * as first-degree would be confusing, so we throw instead and force the
+ * caller to wire `QuadraticEquationRenderer` for quadratic pipelines.
+ */
+const identifyEquationTitle: TitleFn = (op) => {
+	if (op.kind === 'identify-equation' && op.equationType !== 'linear') {
+		throw new Error(
+			`LinearEquationRenderer: cannot render an identify-equation step with equationType='${op.equationType}'. Use QuadraticEquationRenderer.`
+		);
+	}
+	return 'Équation du premier degré';
+};
+
 const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind'], TitleFn>>> = {
 	// College : on explicite « aux deux membres » et la notation « Solution : x = … »
 	college: {
-		'identify-equation': () => 'Équation du premier degré',
+		'identify-equation': identifyEquationTitle,
 		'add-both-sides': (op) => `On ajoute ${operandStr(op)} aux deux membres`,
 		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)} aux deux membres`,
 		'multiply-both-sides': (op) => `On multiplie les deux membres par ${operandStr(op)}`,
@@ -67,7 +85,7 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 	// Utilise transpose-terms (combiné) et simplify-coefficient (compact) à la place
 	// des add-both-sides + divide-both-sides du collège.
 	lycee: {
-		'identify-equation': () => 'Équation du premier degré',
+		'identify-equation': identifyEquationTitle,
 		'add-both-sides': (op) => `On ajoute ${operandStr(op)}`,
 		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)}`,
 		'multiply-both-sides': (op) => `On multiplie par ${operandStr(op)}`,
@@ -86,7 +104,7 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 	// Supérieur : vocabulaire identique au lycée — la différence est structurelle
 	// (mergeAll regroupe tout en une seule étape avec drill-down vers les détails).
 	superieur: {
-		'identify-equation': () => 'Équation du premier degré',
+		'identify-equation': identifyEquationTitle,
 		'add-both-sides': (op) => `On ajoute ${operandStr(op)}`,
 		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)}`,
 		'multiply-both-sides': (op) => `On multiplie par ${operandStr(op)}`,
@@ -335,27 +353,39 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 		return [`${aL} ${rel} ${aR}`];
 	}
 
-	// Transformation ops with a colored operand (atomic, college style)
-	const operand = fmt(op.operand);
+	// Atomic transformation ops with a colored operand (college style). The
+	// `default` arm covers quadratic-pipeline kinds (handled by
+	// `QuadraticEquationRenderer`) and any future linear kind without an
+	// `operand` field — they produce no transformation lines here.
 	let leftApplied: string;
 	let rightApplied: string;
 	switch (op.kind) {
-		case 'add-both-sides':
+		case 'add-both-sides': {
+			const operand = fmt(op.operand);
 			leftApplied = `${bL} \\textcolor{blue}{+ ${operand}}`;
 			rightApplied = `${bR} \\textcolor{blue}{+ ${operand}}`;
 			break;
-		case 'subtract-both-sides':
+		}
+		case 'subtract-both-sides': {
+			const operand = fmt(op.operand);
 			leftApplied = `${bL} \\textcolor{blue}{- ${operand}}`;
 			rightApplied = `${bR} \\textcolor{blue}{- ${operand}}`;
 			break;
-		case 'multiply-both-sides':
+		}
+		case 'multiply-both-sides': {
+			const operand = fmt(op.operand);
 			leftApplied = `\\textcolor{blue}{${operand} \\times} \\left(${bL}\\right)`;
 			rightApplied = `\\textcolor{blue}{${operand} \\times} \\left(${bR}\\right)`;
 			break;
-		case 'divide-both-sides':
+		}
+		case 'divide-both-sides': {
+			const operand = fmt(op.operand);
 			leftApplied = `\\dfrac{${bL}}{\\textcolor{blue}{${operand}}}`;
 			rightApplied = `\\dfrac{${bR}}{\\textcolor{blue}{${operand}}}`;
 			break;
+		}
+		default:
+			return null;
 	}
 	return [
 		'\\begin{aligned}',
