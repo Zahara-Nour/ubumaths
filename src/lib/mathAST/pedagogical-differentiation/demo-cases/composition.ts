@@ -16,6 +16,10 @@ export const COMPOSITION: DemoCategory = {
 		{ label: '(exp(\\sin(x)))', latex: '\\exp(\\sin(x))' },
 		{ label: '(\\ln(\\cos(x)))', latex: '\\ln(\\cos(x))' },
 		{ label: '(\\sqrt{x^2 + 1})', latex: '\\sqrt{x^2 + 1}' },
-		{ label: '((\\sin(x))^2)', latex: '(\\sin(x))^2' }
+		{ label: '((\\sin(x))^2)', latex: '(\\sin(x))^2' },
+		// `\\sin^2(x)` parses as `function('sin', [x], power: 2)` (NOT a
+		// superscript of a function), exposing the FunctionNode.power path.
+		{ label: '(\\sin^2(x))', latex: '\\sin^2(x)' },
+		{ label: '(\\cos^3(x))', latex: '\\cos^3(x)' }
 	]
 };

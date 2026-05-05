@@ -82,7 +82,7 @@ import {
 	variableRule,
 	zero
 } from '../differentiation/rules';
-import { number } from '../factory';
+import { number, power } from '../factory';
 import { getDefaultDescription } from './descriptions-fr';
 import type {
 	DifferentiationBindings,
@@ -209,6 +209,21 @@ function inlineDifferentiateTrivial(node: MathNode, variable: string): MathNode 
 	if (node.type === 'variable') return variableRule(node.name, variable);
 	if (node.type === 'greek') return greekLetterRule(node.letter, variable);
 	return constantRule();
+}
+
+/**
+ * Strip leading transparent wrappers (`positive`, `delimiter`) so the public
+ * entry point can classify the underlying expression as trivial when it is
+ * (e.g. `(x)`, `+x`, `((x))`). The dispatcher's recursive passes use these
+ * wrappers as no-op passthroughs, but at the very top level we'd otherwise
+ * emit zero steps for an obviously trivial input.
+ */
+function unwrapTransparent(node: MathNode): MathNode {
+	let n = node;
+	while (n.type === 'positive' || n.type === 'delimiter') {
+		n = n.type === 'positive' ? n.operand : n.content;
+	}
+	return n;
 }
 
 // =============================================================================
@@ -653,6 +668,28 @@ function dispatchSuperscript(node: SuperscriptNode, ctx: DispatchContext): Dispa
  * `PedagogicalDifferentiationNotImplemented`.
  */
 function dispatchFunction(node: FunctionNode, ctx: DispatchContext): DispatchResult {
+	// `f^{-1}(x)` (functional inverse) is out of V1 scope — refuse explicitly so
+	// the caller can fall back to Mode A rather than receive a wrong derivative.
+	if (node.isInverse) {
+		throw new PedagogicalDifferentiationNotImplemented(`inverse function "${node.name}^{-1}"`);
+	}
+	// `\sin^2(x)`, `\cos^3(x)`, … parse as a function with `power` set, NOT as
+	// a superscript of the function. Pedagogically these are powers of a
+	// function, so reroute through `dispatchSuperscript` with a power-less
+	// inner function as the base.
+	if (node.power !== undefined) {
+		const innerFunction: FunctionNode = { ...node, power: undefined };
+		const asPower: SuperscriptNode = power(innerFunction, node.power);
+		return dispatchSuperscript(asPower, ctx);
+	}
+
+	// `f''(x)` (derivative-of-derivative) — also out of V1 scope.
+	if (node.derivativeOrder !== undefined && node.derivativeOrder > 0) {
+		throw new PedagogicalDifferentiationNotImplemented(
+			`derivative function "${node.name}^(${node.derivativeOrder})"`
+		);
+	}
+
 	const name = node.name.toLowerCase();
 	switch (name) {
 		case 'sqrt':
@@ -840,10 +877,14 @@ export function generatePedagogicalDifferentiationSteps(
 ): PedagogicalDifferentiationResult {
 	const ctx = createContext(options);
 
-	// Top-level case: input is itself trivial → emit one explicit step.
-	if (isTrivialWrtVariable(node, ctx.variable)) {
-		const derivative = inlineDifferentiateTrivial(node, ctx.variable);
-		const rule = trivialRuleFor(node);
+	// Top-level case: classify after stripping transparent wrappers
+	// (`+x`, `(x)`, `((+x))` all collapse to a trivial step). The original
+	// `node` is preserved on the step's `before`/`globalBefore` so the
+	// rendered LaTeX shows what the author wrote.
+	const unwrapped = unwrapTransparent(node);
+	if (isTrivialWrtVariable(unwrapped, ctx.variable)) {
+		const derivative = inlineDifferentiateTrivial(unwrapped, ctx.variable);
+		const rule = trivialRuleFor(unwrapped);
 		const step = buildStep(ctx, {
 			rule,
 			before: node,

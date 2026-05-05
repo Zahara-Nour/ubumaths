@@ -40,6 +40,46 @@ Result: 2 \\left( \\sin\\left( x \\right) \\right) \\cos\\left( x \\right)
 "
 `;
 
+exports[`snapshot — composition > (\\cos^3(x)) 1`] = `
+"
+###### (\\cos^3(x)) ######
+
+Expression: \\cos^3(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [power-constant-exp] Règle de la puissance (exposant constant)
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right) \\end{aligned}
+  - [cos] Dérivée de cosinus
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [power-constant-exp] Règle de la puissance (exposant constant)
+  · Avec f = \\cos\\left( x \\right) et l'exposant constant 3, on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right) \\end{aligned}
+  - [cos] Dérivée de cosinus
+    · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [power-constant-exp] (f^c)' = cf^{c-1}f'
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right) \\end{aligned}
+  - [cos] (\\cos u)' = -\\sin(u)\\,u'
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [power-constant-exp] (f^c)' = cf^{c-1}f'
+  · Avec f = \\cos\\left( x \\right) et l'exposant constant 3, on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right)^3)'} \\\\ & = 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right) \\end{aligned}
+  - [cos] (\\cos u)' = -\\sin(u)\\,u'
+    · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+Result: 3 \\cos\\left( x \\right)^2 -\\sin\\left( x \\right)
+"
+`;
+
 exports[`snapshot — composition > (\\ln(\\cos(x))) 1`] = `
 "
 ###### (\\ln(\\cos(x))) ######
@@ -77,6 +117,46 @@ Result: \\dfrac{-\\sin\\left( x \\right)}{\\cos\\left( x \\right)}
     · Avec u = x, on a (\\cos u)' = -\\sin(u) \\cdot u'.
     \\begin{aligned} & \\textcolor{blue}{(\\cos\\left( x \\right))'} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
 Result: \\dfrac{-\\sin\\left( x \\right)}{\\cos\\left( x \\right)}
+"
+`;
+
+exports[`snapshot — composition > (\\sin^2(x)) 1`] = `
+"
+###### (\\sin^2(x)) ######
+
+Expression: \\sin^2(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [power-constant-exp] Règle de la puissance (exposant constant)
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right)^2)'} \\\\ & = 2 \\sin\\left( x \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: 2 \\sin\\left( x \\right) \\cos\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [power-constant-exp] Règle de la puissance (exposant constant)
+  · Avec f = \\sin\\left( x \\right) et l'exposant constant 2, on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right)^2)'} \\\\ & = 2 \\sin\\left( x \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] Dérivée de sinus
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: 2 \\sin\\left( x \\right) \\cos\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [power-constant-exp] (f^c)' = cf^{c-1}f'
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right)^2)'} \\\\ & = 2 \\sin\\left( x \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: 2 \\sin\\left( x \\right) \\cos\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [power-constant-exp] (f^c)' = cf^{c-1}f'
+  · Avec f = \\sin\\left( x \\right) et l'exposant constant 2, on a (f^c)' = c \\cdot f^{c-1} \\cdot f'.
+  \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right)^2)'} \\\\ & = 2 \\sin\\left( x \\right) \\cos\\left( x \\right) \\end{aligned}
+  - [sin] (\\sin u)' = \\cos(u)\\,u'
+    · Avec u = x, on a (\\sin u)' = \\cos(u) \\cdot u'.
+    \\begin{aligned} & \\textcolor{blue}{(\\sin\\left( x \\right))'} \\\\ & = \\cos\\left( x \\right) \\end{aligned}
+Result: 2 \\sin\\left( x \\right) \\cos\\left( x \\right)
 "
 `;
 
