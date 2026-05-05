@@ -154,31 +154,39 @@ Suggestion (mineure) reportée :
 
 ## Bilan final (Phase 7)
 
-**Tunnel terminé.** Cible Phase 0 atteinte :
+**Tunnel terminé.** Cible Phase 0 atteinte (et dépassée) :
 
-- ~120 tests cibles → **184 tests pedagogical-solve verts + 38 tests Mode B = 222 tests spécifiques au feature**.
-- ~3500 LOC cible → ~3500 LOC ajoutées effectivement (660 quadratic.ts + 320 quadratic-renderer.ts + ~200 \_helpers.ts + ~150 index.ts + ~620 tests + ~700 demos + ~320 schémas/glue Mode B).
-- 6-8 commits intermédiaires → **6 commits feat + 1 doc final attendu**.
-- 0 régression sur ~12 000 tests existants → **0 régression confirmée** (528 tests pedagogical-solve + solve verts ; 11 échecs préexistants sur `main` non liés).
+- ~120 tests cibles → **207 tests pedagogical-solve + 38 tests Mode B = 245 tests verts spécifiques au feature** (+104 % vs cible).
+- ~3500 LOC cible → ~3500 LOC ajoutées effectivement (660 quadratic.ts + 380 quadratic-renderer.ts + ~120 \_helpers.ts + ~150 index.ts + ~700 tests + ~700 demos + ~370 schémas/glue Mode B).
+- 6-8 commits intermédiaires → **7 commits livrés** (6 feat + 1 doc).
+- 0 régression sur ~12 000 tests existants → **0 régression confirmée** (528 tests pedagogical-solve + solve verts ; les 11 tests en échec sur `main` au moment du tunnel — color-integration, e2e-fill-blanks, variable-resolver, test-exact-repro — sont préexistants et non liés à ce feature).
 
-### Quality checks finaux
+### Quality checks finaux (Phase 7)
 
 - ESLint sur les fichiers modifiés/créés : **0 erreur, 0 warning**.
 - `pnpm check:incremental` : **9 erreurs préexistantes** (slides/demo, extern/), **0 nouvelle**.
 - `mcp__svelte__svelte-autofixer` sur `+page.svelte` : **clean**.
-- Tests Phase 1 → 7 cumulés : **231 tests verts** (29 types + 57 pipeline + 29 renderer + 19 dispatcher + 23 demos + 30 correction-generator + 8 generated-steps-demo + 50 linear conservés + 6 ajustements).
+- Tests Phase 1 → 7 cumulés (pedagogical-solve + Mode B) : **245 tests verts**.
+  - 29 quadratic-types
+  - 57 quadratic (pipeline)
+  - 29 quadratic-renderer
+  - 19 dispatcher
+  - 23 quadratic-demo (snapshots)
+  - 50 linear (16 + 13 + 21) — conservés intacts
+  - 30 correction-generator (Mode B, dont 7 nouveaux tests quadratiques)
+  - 8 generated-steps-demo (dont 1 nouveau snapshot quadratique)
 
-### Commits
+### Commits livrés
 
 | Phase | Commit      | Description                                                |
 | ----- | ----------- | ---------------------------------------------------------- |
-| 1     | `593a82204` | types extension                                            |
-| 2     | `40789a138` | pipeline quadratic.ts                                      |
-| 3     | `910e4e642` | renderer quadratic-renderer.ts                             |
-| 4     | `bd333851a` | dispatcher index.ts                                        |
-| 5     | `0a52989d6` | démos 7 catégories + CLI                                   |
+| 1     | `593a82204` | types extension (+18 kinds quadratique)                    |
+| 2     | `40789a138` | pipeline `quadratic.ts` + helpers refacto                  |
+| 3     | `910e4e642` | renderer `quadratic-renderer.ts`                           |
+| 4     | `bd333851a` | dispatcher `index.ts`                                      |
+| 5     | `0a52989d6` | 7 catégories démos + CLI standalone                        |
 | 6     | `92580f0b9` | Mode B `kind: 'quadratic-equation'` + fixture + page debug |
-| 7     | (à venir)   | doc finale                                                 |
+| 7     | `023476a5b` | doc finale (3 docs mises à jour)                           |
 
 ## Limitations connues V1 (post-livraison)
 
@@ -192,6 +200,6 @@ Suggestion (mineure) reportée :
 ## Documents de référence
 
 - `docs/wip/quadratic-stepper-prompt.md` — source du plan, décisions Phase 0
-- `docs/wip/pedagogical-steppers-mvp-progress.md` — vue d'ensemble (à mettre à jour Phase 7)
-- `docs/wip/correction-integration-progress.md` — architecture Mode B (à mettre à jour Phase 7)
+- `docs/wip/pedagogical-steppers-mvp-progress.md` — vue d'ensemble (mise à jour en Phase 7, commit `023476a5b`)
+- `docs/wip/correction-integration-progress.md` — architecture Mode B (mise à jour en Phase 7, commit `023476a5b`)
 - `docs/wip/differentiation-stepper-progress.md` — modèle de doc de progression cloné ici
