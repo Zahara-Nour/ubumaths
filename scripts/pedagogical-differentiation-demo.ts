@@ -39,9 +39,16 @@ const ANSI_RESET = '\x1b[0m';
 /** ASCII / Unicode substitutions for residual LaTeX commands that appear
  *  inside SUPERIEUR titles + lycee explanations (those are baked in
  *  `descriptions-fr.ts` as LaTeX strings for KaTeX rendering — terminal
- *  display benefits from a light cleanup). */
+ *  display benefits from a light cleanup).
+ *
+ *  Order matters : longer/more-specific patterns first, so `\arcsin` doesn't
+ *  swallow `\arcsinh`, and `\left`/`\right` strip cleanly before the
+ *  catch-all `\alpha` pattern at the end. */
 const LATEX_TO_ASCII: ReadonlyArray<readonly [RegExp, string]> = [
-	// trig / hyperbolic / log function names
+	// delimiters — strip entirely so the surrounding paren / bracket stays
+	[/\\left/g, ''],
+	[/\\right/g, ''],
+	// trig / hyperbolic / log function names (longer first)
 	[/\\arcsinh\b/g, 'arcsinh'],
 	[/\\arccosh\b/g, 'arccosh'],
 	[/\\arctanh\b/g, 'arctanh'],
@@ -64,7 +71,7 @@ const LATEX_TO_ASCII: ReadonlyArray<readonly [RegExp, string]> = [
 	[/\\,/g, ' '],
 	// operatorname (used by argsh, argch, argth)
 	[/\\operatorname\{([^{}]*)\}/g, '$1'],
-	// stray backslash before alpha word (e.g., greek letters typed as \alpha)
+	// catch-all : stray backslash before alpha word (greek letters typed as \alpha, etc.)
 	[/\\([a-zA-Z]+)/g, '$1']
 ];
 
