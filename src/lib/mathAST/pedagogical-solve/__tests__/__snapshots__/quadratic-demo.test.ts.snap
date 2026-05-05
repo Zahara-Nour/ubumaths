@@ -213,7 +213,7 @@ exports[`snapshot — c-zero > 2x² + 6x = 0 1`] = `
 [3] On factorise par x
     │ \\begin{aligned}   2x^2 + 6x &= 0 \\\\   x \\left( 2x + 6\\right) &= 0 \\end{aligned}
 [4] Par la propriété du produit nul
-    │ x \\cdot 2x + 6 = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 2x + 6 = 0
+    │ \\left(x\\right) \\cdot \\left(2x + 6\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 2x + 6 = 0
 [5] On résout chaque facteur séparément
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   2x + 6 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -233,7 +233,7 @@ exports[`snapshot — c-zero > 2x² + 6x = 0 1`] = `
 [2] Factorisation par x
     │ \\begin{aligned}   2x^2 + 6x &= 0 \\\\   x \\left( 2x + 6\\right) &= 0 \\end{aligned}
 [3] Produit nul
-    │ x \\cdot 2x + 6 = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 2x + 6 = 0
+    │ \\left(x\\right) \\cdot \\left(2x + 6\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 2x + 6 = 0
 [4] Résolution par facteur
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   2x + 6 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -270,7 +270,7 @@ exports[`snapshot — c-zero > 5x² − 10x = 0 1`] = `
 [3] On factorise par x
     │ \\begin{aligned}   5x^2 - 10x &= 0 \\\\   x \\left( 5x - 10\\right) &= 0 \\end{aligned}
 [4] Par la propriété du produit nul
-    │ x \\cdot 5x - 10 = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 5x - 10 = 0
+    │ \\left(x\\right) \\cdot \\left(5x - 10\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 5x - 10 = 0
 [5] On résout chaque facteur séparément
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   5x - 10 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\end{aligned}
@@ -290,7 +290,7 @@ exports[`snapshot — c-zero > 5x² − 10x = 0 1`] = `
 [2] Factorisation par x
     │ \\begin{aligned}   5x^2 - 10x &= 0 \\\\   x \\left( 5x - 10\\right) &= 0 \\end{aligned}
 [3] Produit nul
-    │ x \\cdot 5x - 10 = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 5x - 10 = 0
+    │ \\left(x\\right) \\cdot \\left(5x - 10\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 5x - 10 = 0
 [4] Résolution par facteur
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   5x - 10 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\end{aligned}
@@ -327,7 +327,7 @@ exports[`snapshot — c-zero > x² + 3x = 0 1`] = `
 [3] On factorise par x
     │ \\begin{aligned}   x^2 + 3x &= 0 \\\\   x \\left( x + 3\\right) &= 0 \\end{aligned}
 [4] Par la propriété du produit nul
-    │ x \\cdot x + 3 = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
+    │ \\left(x\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
 [5] On résout chaque facteur séparément
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -347,7 +347,7 @@ exports[`snapshot — c-zero > x² + 3x = 0 1`] = `
 [2] Factorisation par x
     │ \\begin{aligned}   x^2 + 3x &= 0 \\\\   x \\left( x + 3\\right) &= 0 \\end{aligned}
 [3] Produit nul
-    │ x \\cdot x + 3 = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
+    │ \\left(x\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
 [4] Résolution par facteur
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
   x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -380,7 +380,7 @@ exports[`snapshot — factorise > (2x + 1)(x − 4) = 0 1`] = `
 [2] L’équation est déjà sous forme factorisée
     │ \\left( 2x + 1\\right) \\left( x - 4\\right) = 0
 [3] Par la propriété du produit nul
-    │ 2x + 1 \\cdot x - 4 = 0 \\;\\Longleftrightarrow\\; 2x + 1 = 0 \\;\\text{ou}\\; x - 4 = 0
+    │ \\left(2x + 1\\right) \\cdot \\left(x - 4\\right) = 0 \\;\\Longleftrightarrow\\; 2x + 1 = 0 \\;\\text{ou}\\; x - 4 = 0
 [4] On résout chaque facteur séparément
     │ \\begin{aligned}   2x + 1 = 0 &\\;\\Longleftrightarrow\\; x = -\\dfrac{1}{2} \\\\
   x - 4 = 0 &\\;\\Longleftrightarrow\\; x = 4 \\end{aligned}
@@ -397,7 +397,7 @@ exports[`snapshot — factorise > (2x + 1)(x − 4) = 0 1`] = `
 [1] Forme factorisée
     │ \\left( 2x + 1\\right) \\left( x - 4\\right) = 0
 [2] Produit nul
-    │ 2x + 1 \\cdot x - 4 = 0 \\;\\Longleftrightarrow\\; 2x + 1 = 0 \\;\\text{ou}\\; x - 4 = 0
+    │ \\left(2x + 1\\right) \\cdot \\left(x - 4\\right) = 0 \\;\\Longleftrightarrow\\; 2x + 1 = 0 \\;\\text{ou}\\; x - 4 = 0
 [3] Résolution par facteur
     │ \\begin{aligned}   2x + 1 = 0 &\\;\\Longleftrightarrow\\; x = -\\dfrac{1}{2} \\\\
   x - 4 = 0 &\\;\\Longleftrightarrow\\; x = 4 \\end{aligned}
@@ -430,7 +430,7 @@ exports[`snapshot — factorise > (x + 1)(x − 5) = 0 1`] = `
 [2] L’équation est déjà sous forme factorisée
     │ \\left( x + 1\\right) \\left( x - 5\\right) = 0
 [3] Par la propriété du produit nul
-    │ x + 1 \\cdot x - 5 = 0 \\;\\Longleftrightarrow\\; x + 1 = 0 \\;\\text{ou}\\; x - 5 = 0
+    │ \\left(x + 1\\right) \\cdot \\left(x - 5\\right) = 0 \\;\\Longleftrightarrow\\; x + 1 = 0 \\;\\text{ou}\\; x - 5 = 0
 [4] On résout chaque facteur séparément
     │ \\begin{aligned}   x + 1 = 0 &\\;\\Longleftrightarrow\\; x = -1 \\\\
   x - 5 = 0 &\\;\\Longleftrightarrow\\; x = 5 \\end{aligned}
@@ -447,7 +447,7 @@ exports[`snapshot — factorise > (x + 1)(x − 5) = 0 1`] = `
 [1] Forme factorisée
     │ \\left( x + 1\\right) \\left( x - 5\\right) = 0
 [2] Produit nul
-    │ x + 1 \\cdot x - 5 = 0 \\;\\Longleftrightarrow\\; x + 1 = 0 \\;\\text{ou}\\; x - 5 = 0
+    │ \\left(x + 1\\right) \\cdot \\left(x - 5\\right) = 0 \\;\\Longleftrightarrow\\; x + 1 = 0 \\;\\text{ou}\\; x - 5 = 0
 [3] Résolution par facteur
     │ \\begin{aligned}   x + 1 = 0 &\\;\\Longleftrightarrow\\; x = -1 \\\\
   x - 5 = 0 &\\;\\Longleftrightarrow\\; x = 5 \\end{aligned}
@@ -480,7 +480,7 @@ exports[`snapshot — factorise > (x − 2)(x + 3) = 0 1`] = `
 [2] L’équation est déjà sous forme factorisée
     │ \\left( x - 2\\right) \\left( x + 3\\right) = 0
 [3] Par la propriété du produit nul
-    │ x - 2 \\cdot x + 3 = 0 \\;\\Longleftrightarrow\\; x - 2 = 0 \\;\\text{ou}\\; x + 3 = 0
+    │ \\left(x - 2\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x - 2 = 0 \\;\\text{ou}\\; x + 3 = 0
 [4] On résout chaque facteur séparément
     │ \\begin{aligned}   x - 2 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\\\
   x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
@@ -497,7 +497,7 @@ exports[`snapshot — factorise > (x − 2)(x + 3) = 0 1`] = `
 [1] Forme factorisée
     │ \\left( x - 2\\right) \\left( x + 3\\right) = 0
 [2] Produit nul
-    │ x - 2 \\cdot x + 3 = 0 \\;\\Longleftrightarrow\\; x - 2 = 0 \\;\\text{ou}\\; x + 3 = 0
+    │ \\left(x - 2\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x - 2 = 0 \\;\\text{ou}\\; x + 3 = 0
 [3] Résolution par facteur
     │ \\begin{aligned}   x - 2 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\\\
   x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
