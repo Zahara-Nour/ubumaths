@@ -230,3 +230,106 @@ describe('PedagogicalDifferentiationRenderer — power-natural binding interpola
 		expect(rendered.title).toContain('3');
 	});
 });
+
+// =============================================================================
+// V1.1 — Leibniz notation
+// =============================================================================
+
+describe('PedagogicalDifferentiationRenderer — Lagrange / Leibniz notation', () => {
+	it('default notation is Lagrange (preserves V1 snapshot output)', () => {
+		const step = makeStep();
+		const rendered = renderer.render(step, {
+			schoolLevel: 'lycee',
+			verbosity: 'summarized'
+		});
+
+		expect(rendered.expressionLatex).toMatch(/\(.*\)'/);
+		expect(rendered.expressionLatex).not.toContain('\\frac{d}');
+	});
+
+	it('explicit notation: lagrange equals default', () => {
+		const step = makeStep();
+		const renderedDefault = renderer.render(step, {
+			schoolLevel: 'lycee',
+			verbosity: 'summarized'
+		});
+		const renderedExplicit = renderer.render(step, {
+			schoolLevel: 'lycee',
+			verbosity: 'summarized',
+			notation: 'lagrange'
+		});
+		expect(renderedExplicit.expressionLatex).toBe(renderedDefault.expressionLatex);
+	});
+
+	it('notation: leibniz produces \\frac{d}{dx} for variable x', () => {
+		const step = makeStep({ variable: 'x', before: variable('x'), after: number('1') });
+		const rendered = renderer.render(step, {
+			schoolLevel: 'lycee',
+			verbosity: 'summarized',
+			notation: 'leibniz'
+		});
+
+		expect(rendered.expressionLatex).toContain('\\frac{d}{dx}');
+		expect(rendered.expressionLatex).not.toMatch(/\(.*\)'/);
+	});
+
+	it('notation: leibniz uses the step variable for the denominator (y, t, …)', () => {
+		const stepY = makeStep({ variable: 'y', before: variable('y'), after: number('1') });
+		const renderedY = renderer.render(stepY, {
+			schoolLevel: 'lycee',
+			verbosity: 'summarized',
+			notation: 'leibniz'
+		});
+		expect(renderedY.expressionLatex).toContain('\\frac{d}{dy}');
+
+		const stepT = makeStep({ variable: 't', before: variable('t'), after: number('1') });
+		const renderedT = renderer.render(stepT, {
+			schoolLevel: 'lycee',
+			verbosity: 'summarized',
+			notation: 'leibniz'
+		});
+		expect(renderedT.expressionLatex).toContain('\\frac{d}{dt}');
+	});
+
+	it('notation: leibniz propagates to subSteps', () => {
+		const inner: PedagogicalDifferentiationStep = makeStep({
+			id: 2,
+			rule: 'power-natural',
+			variable: 'x',
+			before: variable('x'),
+			after: number('1'),
+			bindings: { base: variable('x'), n: number('2') }
+		});
+		const outer: PedagogicalDifferentiationStep = makeStep({
+			id: 1,
+			rule: 'sum',
+			subSteps: [inner],
+			bindings: { f: variable('x'), g: number('1') }
+		});
+
+		const rendered = renderer.render(outer, {
+			schoolLevel: 'lycee',
+			verbosity: 'summarized',
+			notation: 'leibniz'
+		});
+
+		expect(rendered.expressionLatex).toContain('\\frac{d}{dx}');
+		expect(rendered.subSteps?.[0].expressionLatex).toContain('\\frac{d}{dx}');
+	});
+
+	it('renderAll passes the notation through to every step', () => {
+		const steps = [
+			makeStep({ id: 1, rule: 'constant', variable: 'x' }),
+			makeStep({ id: 2, rule: 'variable', variable: 'x' })
+		];
+		const rendered = renderer.renderAll(steps, {
+			schoolLevel: 'lycee',
+			verbosity: 'summarized',
+			notation: 'leibniz'
+		});
+
+		expect(rendered).toHaveLength(2);
+		expect(rendered[0].expressionLatex).toContain('\\frac{d}{dx}');
+		expect(rendered[1].expressionLatex).toContain('\\frac{d}{dx}');
+	});
+});
