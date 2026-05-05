@@ -27,7 +27,14 @@ import { P } from '../../pattern/builder';
 import { createRule } from '../../pattern/rule';
 import { evaluate } from '../../eval/evaluate';
 import { isEvalValue } from '../../eval/types';
-import { isAddition, isMultiplication, isNumber, isOpposite, isSubtraction } from '../../guards';
+import {
+	isAddition,
+	isDivision,
+	isMultiplication,
+	isNumber,
+	isOpposite,
+	isSubtraction
+} from '../../guards';
 import { add, divide, multiply, number, subtract } from '../../factory';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { toLatex } from '../../latex-generator';
@@ -58,10 +65,19 @@ function isNumericAtom(node: MathNode): boolean {
 	return false;
 }
 
-/** True when the node is a multiplication of two numeric atoms (e.g. `3×4`). */
-function isNumericMultiplication(node: MathNode): boolean {
-	if (!isMultiplication(node)) return false;
-	return isNumericAtom(node.left) && isNumericAtom(node.right);
+/**
+ * True when the node is a numeric multiplication or division (e.g. `3×4`,
+ * `12÷3`). These are the operations that share the same priority level —
+ * the ones the grouping rule collapses in a single sum step at college+.
+ */
+function isNumericHighPriorityOp(node: MathNode): boolean {
+	if (isMultiplication(node)) {
+		return isNumericAtom(node.left) && isNumericAtom(node.right);
+	}
+	if (isDivision(node)) {
+		return isNumericAtom(node.numerator) && isNumericAtom(node.denominator);
+	}
+	return false;
 }
 
 /** Lookup a wildcard binding by name; returns `undefined` if not present. */
@@ -239,7 +255,7 @@ function shouldGroupMultiplications(node: MathNode): boolean {
 	const terms = flattenSumShallow(node);
 	let count = 0;
 	for (const { term } of terms) {
-		if (isNumericMultiplication(term)) {
+		if (isNumericHighPriorityOp(term)) {
 			count += 1;
 			if (count >= 2) return true;
 		}
@@ -249,14 +265,14 @@ function shouldGroupMultiplications(node: MathNode): boolean {
 
 /**
  * Replacement function : flatten the sum, evaluate every numeric
- * multiplication factor, leave non-multiplications untouched, and re-build
- * the sum. The result is a sum with the SAME structure but each `n×m`
- * collapsed to `n·m`.
+ * high-priority op (× and ÷), leave the rest untouched, and re-build the
+ * sum. The result is a sum with the SAME structure but each `n×m` /
+ * `n÷m` collapsed to its value.
  */
 function applyGroupMultiplications(node: MathNode): MathNode | null {
 	const terms = flattenSumShallow(node);
 	const replaced: typeof terms = terms.map(({ sign, term }) => {
-		if (!isNumericMultiplication(term)) return { sign, term };
+		if (!isNumericHighPriorityOp(term)) return { sign, term };
 		const evaluated = evaluateExact(term);
 		return evaluated ? { sign, term: evaluated } : { sign, term };
 	});
@@ -397,13 +413,13 @@ export const groupMultiplicationsInAddition: PedagogicalArithmeticRule = {
 	applicableLevels: ['college', 'lycee', 'superieur'],
 	priority: 200,
 	descriptions: {
-		college: () => "On effectue d'abord les multiplications",
-		lycee: () => 'Multiplications prioritaires',
-		superieur: () => 'Priorité ×'
+		college: () => "On effectue d'abord les multiplications et divisions",
+		lycee: () => 'Multiplications et divisions prioritaires',
+		superieur: () => 'Priorité × ÷'
 	},
 	explanations: {
 		college: () =>
-			"En l'absence de parenthèses, les multiplications sont effectuées avant les additions et soustractions."
+			"En l'absence de parenthèses, les multiplications et divisions sont effectuées avant les additions et soustractions."
 	}
 };
 

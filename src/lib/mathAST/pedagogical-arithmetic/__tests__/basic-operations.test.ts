@@ -188,9 +188,9 @@ describe('basic-operations rules', () => {
 			]);
 		});
 
-		it('description college is pedagogical', () => {
+		it('description college mentions multiplications and divisions', () => {
 			expect(groupMultiplicationsInAddition.descriptions.college?.({})).toBe(
-				"On effectue d'abord les multiplications"
+				"On effectue d'abord les multiplications et divisions"
 			);
 		});
 	});

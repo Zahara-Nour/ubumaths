@@ -24,10 +24,10 @@
 import type { MathNode } from '../types';
 import { evaluate } from '../eval/evaluate';
 import { isEvalValue } from '../eval/types';
-import { isMultiplication, isNumber, isOpposite } from '../guards';
+import { isDivision, isMultiplication, isNumber, isOpposite } from '../guards';
 import { match, nodesEqual } from '../pattern/match';
 import { applyRule, instantiate } from '../pattern/rule';
-import type { MatchBindings, Rule } from '../pattern/types';
+import type { MatchBindings } from '../pattern/types';
 import { mapNode, mapNodeTopDown } from '../transforms';
 import { extractAnswerFragment } from './answer-format-parser';
 import { loadPedagogicalRules } from './pedagogical-rules';
@@ -134,20 +134,26 @@ function collectCalculableParens(node: MathNode): readonly MathNode[] {
 }
 
 /**
- * Collect every sub-tree of `node` that is a numeric multiplication (e.g.
- * `3*4`, `(-3)*5`). Used by the grouping rule's pre-pass to tell the
- * renderer which fragments to highlight when the step rewrites several
- * multiplications at once.
+ * Collect every sub-tree of `node` that is a numeric high-priority op —
+ * `n×m` or `n÷m` with both operands being numeric atoms. Used by the
+ * grouping rule's pre-pass to tell the renderer which fragments to
+ * highlight when the step rewrites several such ops at once.
  */
 function collectNumericMultiplications(node: MathNode): readonly MathNode[] {
 	const found: MathNode[] = [];
+	const isNumericAtom = (x: MathNode): boolean =>
+		isNumber(x) || (isOpposite(x) && isNumber(x.operand));
 	const walk = (n: MathNode): void => {
 		if (isMultiplication(n)) {
-			const isNumericAtom = (x: MathNode): boolean =>
-				isNumber(x) || (isOpposite(x) && isNumber(x.operand));
 			if (isNumericAtom(n.left) && isNumericAtom(n.right)) {
 				found.push(n);
-				return; // don't recurse into nested numeric muls
+				return; // don't recurse into nested numeric ops
+			}
+		}
+		if (isDivision(n)) {
+			if (isNumericAtom(n.numerator) && isNumericAtom(n.denominator)) {
+				found.push(n);
+				return;
 			}
 		}
 		// Generic structural walk — covers the operators we'll ever see in a
@@ -180,41 +186,51 @@ function collectNumericMultiplications(node: MathNode): readonly MathNode[] {
 }
 
 /**
- * Find the first sub-tree of `node` where `rule` applies, and return the
- * components needed to record a clean step :
- *   - `subBefore` — the matched sub-tree (the part that will change)
- *   - `subAfter` — the rewritten sub-tree
- *   - `bindings` — the pattern bindings captured at the matched node
- *   - `replacedTree` — `node` with `subBefore` replaced by `subAfter` (the
- *     full expression after this single rewrite)
+ * Find the first sub-tree of `node` where ANY of `rules` applies. Iterates
+ * **node-first**, then rule-by-rule at each node — this means the
+ * left-most applicable sub-tree wins, which mirrors the natural reading
+ * order ("on calcule de gauche à droite quand les priorités sont égales").
  *
- * Bottom-up traversal : children first, then parent. Stops at the first
- * application — does NOT keep applying the rule to other sub-trees in the
- * same call (the outer loop in the pipeline handles iteration).
+ * For each candidate node, rules are tried in priority order ; the first
+ * one that matches AND produces a non-trivial transformation is captured.
+ *
+ * Bottom-up traversal of `mapNode` ensures children are visited before
+ * parents — a multiplication `n*m` deep inside a sum is matched before
+ * the sum itself is considered.
  */
 function findFirstApplication(
-	rule: Rule,
+	rules: readonly PedagogicalArithmeticRule[],
 	node: MathNode
 ): {
+	rule: PedagogicalArithmeticRule;
 	subBefore: MathNode;
 	subAfter: MathNode;
 	bindings: MatchBindings;
 	replacedTree: MathNode;
 } | null {
-	let captured: { subBefore: MathNode; subAfter: MathNode; bindings: MatchBindings } | null = null;
+	let captured: {
+		rule: PedagogicalArithmeticRule;
+		subBefore: MathNode;
+		subAfter: MathNode;
+		bindings: MatchBindings;
+	} | null = null;
 
 	const replacedTree = mapNode(node, (n) => {
 		if (captured) return n;
-		const m = match(rule.pattern, n);
-		if (!m.success) return n;
-		if (rule.condition && !rule.condition(m.bindings)) return n;
-		const transformed =
-			typeof rule.replacement === 'function'
-				? rule.replacement(m.bindings)
-				: instantiate(rule.replacement, m.bindings);
-		if (nodesEqual(transformed, n)) return n;
-		captured = { subBefore: n, subAfter: transformed, bindings: m.bindings };
-		return transformed;
+		for (const pedaRule of rules) {
+			const r = pedaRule.rule;
+			const m = match(r.pattern, n);
+			if (!m.success) continue;
+			if (r.condition && !r.condition(m.bindings)) continue;
+			const transformed =
+				typeof r.replacement === 'function'
+					? r.replacement(m.bindings)
+					: instantiate(r.replacement, m.bindings);
+			if (nodesEqual(transformed, n)) continue;
+			captured = { rule: pedaRule, subBefore: n, subAfter: transformed, bindings: m.bindings };
+			return transformed;
+		}
+		return n;
 	});
 
 	if (!captured) return null;
@@ -322,28 +338,22 @@ export function generatePedagogicalArithmeticSteps(
 	let current = workingNode;
 	for (let iter = 0; iter < DEFAULT_MAX_ITERATIONS; iter++) {
 		if (checkAbort()) break;
-		let applied = false;
-		for (const rule of enginePedagogicalRules) {
-			const found = findFirstApplication(rule.rule, current);
-			if (!found) continue;
-			const recordBindings = bindingsToRecord(found.bindings);
-			const nextGlobal = cleanupTrivialParens(found.replacedTree);
-			collected.push({
-				id: stepId++,
-				rule: rule.name,
-				description: describeStep(rule, schoolLevel, recordBindings),
-				before: found.subBefore,
-				after: found.subAfter,
-				bindings: recordBindings,
-				globalBefore: current,
-				globalAfter: nextGlobal,
-				verbosityLevel: 'summarized'
-			});
-			current = nextGlobal;
-			applied = true;
-			break;
-		}
-		if (!applied) break;
+		const found = findFirstApplication(enginePedagogicalRules, current);
+		if (!found) break;
+		const recordBindings = bindingsToRecord(found.bindings);
+		const nextGlobal = cleanupTrivialParens(found.replacedTree);
+		collected.push({
+			id: stepId++,
+			rule: found.rule.name,
+			description: describeStep(found.rule, schoolLevel, recordBindings),
+			before: found.subBefore,
+			after: found.subAfter,
+			bindings: recordBindings,
+			globalBefore: current,
+			globalAfter: nextGlobal,
+			verbosityLevel: 'summarized'
+		});
+		current = nextGlobal;
 	}
 
 	let finalNode: MathNode = current;
