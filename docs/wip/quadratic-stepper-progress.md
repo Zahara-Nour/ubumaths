@@ -9,16 +9,16 @@ Ajouter un stepper pédagogique pour les équations du second degré dans `src/l
 
 ## État global
 
-| Phase | Status          | Commit      | Notes                                                                                                                                                                                                                                                                        |
-| ----- | --------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0     | ✅ Spec validée | —           | Q1–Q9 « tout en reco » + hypothèses implicites confirmées                                                                                                                                                                                                                    |
-| 1     | ✅ Livrée       | `593a82204` | Extension `EquationOperation` (+18 kinds quadratique), `QuadraticSchoolLevel`, `QuadraticEquationStepsOptions`, `STRATEGIES_QUADRATIC` ; 29 tests d'isolation ; guard linear-renderer + refacto switch ; code review code-reviewer (Opus) appliquée                          |
-| 2     | ✅ Livrée       | —           | Refacto `_helpers.ts` (canon, addToBothSides, makeStep, etc.) ; export `extractQuadraticCoefficients` ; pipeline `quadratic.ts` ~620 LOC (4 cas + standardize + throw NotImplemented) ; `class PedagogicalQuadraticNotImplemented` ; 57 tests ; code review (Opus) appliquée |
-| 3     | ✅ Livrée       | —           | Renderer `quadratic-renderer.ts` (TITLES + EXPLANATIONS lycée+supérieur, formatExpressionLatex per kind, assertSupportedLevel refuse primaire+college) ; 29 tests ; 0 régression                                                                                             |
-| 4     | ✅ Livrée       | —           | Dispatcher `index.ts` (`generateEquationSteps` selon degré + bumps primaire→college, primaire/college→lycee + class `UnsupportedEquationDegree`) ; 19 tests ; 0 régression                                                                                                   |
-| 5     | ⏳ À faire      | —           | 7 catégories démo + script CLI `scripts/pedagogical-quadratic-demo.ts`, ~20 snapshots                                                                                                                                                                                        |
-| 6     | ⏳ À faire      | —           | Mode B `kind: 'quadratic-equation'` (types/Zod/correction-generator/fixture/page debug), ~7 tests                                                                                                                                                                            |
-| 7     | ⏳ À faire      | —           | ESLint + check:incremental + svelte-autofixer + doc + commit final                                                                                                                                                                                                           |
+| Phase | Status          | Commit      | Notes                                                                                                                                                                                                                                                                                                        |
+| ----- | --------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0     | ✅ Spec validée | —           | Q1–Q9 « tout en reco » + hypothèses implicites confirmées                                                                                                                                                                                                                                                    |
+| 1     | ✅ Livrée       | `593a82204` | Extension `EquationOperation` (+18 kinds quadratique), `QuadraticSchoolLevel`, `QuadraticEquationStepsOptions`, `STRATEGIES_QUADRATIC` ; 29 tests d'isolation ; guard linear-renderer + refacto switch ; code review code-reviewer (Opus) appliquée                                                          |
+| 2     | ✅ Livrée       | `40789a138` | Refacto `_helpers.ts` (canon, addToBothSides, makeStep, etc.) ; export `extractQuadraticCoefficients` ; pipeline `quadratic.ts` ~660 LOC (4 cas + standardize + throw NotImplemented) ; `class PedagogicalQuadraticNotImplemented` ; 57 tests ; code review (Opus) appliquée                                 |
+| 3     | ✅ Livrée       | `910e4e642` | Renderer `quadratic-renderer.ts` (TITLES + EXPLANATIONS lycée+supérieur, formatExpressionLatex per kind, assertSupportedLevel refuse primaire+college) ; 29 tests ; 0 régression                                                                                                                             |
+| 4     | ✅ Livrée       | `bd333851a` | Dispatcher `index.ts` (`generateEquationSteps` selon degré + bumps primaire→college, primaire/college→lycee + class `UnsupportedEquationDegree`) ; 19 tests ; 0 régression                                                                                                                                   |
+| 5     | ✅ Livrée       | `0a52989d6` | 7 catégories de démos (`demo-equations-quadratic/`) ; `demo-helpers-quadratic.ts` (avec `presentEquationQuadratic`) ; CLI `scripts/pedagogical-quadratic-demo.ts` ; 23 snapshots ; 0 régression                                                                                                              |
+| 6     | ✅ Livrée       | `92580f0b9` | Mode B `kind: 'quadratic-equation'` : types.ts, Zod (lax+strict), correction-generator (case + bump primaire/college→lycee + catch NotImplemented), fixture `quadraticEquationDemo` (Tle spé `x²−5x+6=0`), 1 snapshot end-to-end, page debug 5e carte, autofixer clean ; +7 tests Mode B (38 verts au total) |
+| 7     | ✅ Livrée       | —           | ESLint clean (0 erreur) + `pnpm check:incremental` (0 nouvelle erreur, 9 préexistantes inchangées) + svelte-autofixer clean + 528 tests pedagogical-solve+solve verts (0 régression) + doc finale                                                                                                            |
 
 ## Décisions architecturales (Phase 0 — validées par l'utilisateur)
 
@@ -151,6 +151,34 @@ Aucun blocker, 0 nouvelle erreur TS, 0 régression linear.
 Suggestion (mineure) reportée :
 
 - `JSON.stringify` pour comparer raw vs simplified : fragile par design, à remplacer par un `nodesEqual()` structurel quand V2 ajoutera des coefficients symboliques. Acceptable V1.
+
+## Bilan final (Phase 7)
+
+**Tunnel terminé.** Cible Phase 0 atteinte :
+
+- ~120 tests cibles → **184 tests pedagogical-solve verts + 38 tests Mode B = 222 tests spécifiques au feature**.
+- ~3500 LOC cible → ~3500 LOC ajoutées effectivement (660 quadratic.ts + 320 quadratic-renderer.ts + ~200 \_helpers.ts + ~150 index.ts + ~620 tests + ~700 demos + ~320 schémas/glue Mode B).
+- 6-8 commits intermédiaires → **6 commits feat + 1 doc final attendu**.
+- 0 régression sur ~12 000 tests existants → **0 régression confirmée** (528 tests pedagogical-solve + solve verts ; 11 échecs préexistants sur `main` non liés).
+
+### Quality checks finaux
+
+- ESLint sur les fichiers modifiés/créés : **0 erreur, 0 warning**.
+- `pnpm check:incremental` : **9 erreurs préexistantes** (slides/demo, extern/), **0 nouvelle**.
+- `mcp__svelte__svelte-autofixer` sur `+page.svelte` : **clean**.
+- Tests Phase 1 → 7 cumulés : **231 tests verts** (29 types + 57 pipeline + 29 renderer + 19 dispatcher + 23 demos + 30 correction-generator + 8 generated-steps-demo + 50 linear conservés + 6 ajustements).
+
+### Commits
+
+| Phase | Commit      | Description                                                |
+| ----- | ----------- | ---------------------------------------------------------- |
+| 1     | `593a82204` | types extension                                            |
+| 2     | `40789a138` | pipeline quadratic.ts                                      |
+| 3     | `910e4e642` | renderer quadratic-renderer.ts                             |
+| 4     | `bd333851a` | dispatcher index.ts                                        |
+| 5     | `0a52989d6` | démos 7 catégories + CLI                                   |
+| 6     | `92580f0b9` | Mode B `kind: 'quadratic-equation'` + fixture + page debug |
+| 7     | (à venir)   | doc finale                                                 |
 
 ## Limitations connues V1 (post-livraison)
 

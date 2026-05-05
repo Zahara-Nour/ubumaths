@@ -209,6 +209,27 @@ Commit : `c7ea40154`.
 | 5   | `23485641a` | Phase 5 | progress doc final + quality checks                       |
 | 6   | `c7ea40154` | Phase 6 | debug page `/dashboard/admin/debug/correction-mode-b`     |
 
+## Extension post-MVP — `kind: 'differentiate'` et `kind: 'quadratic-equation'`
+
+Le scope V1 listait 2 kinds (`arithmetic` + `linear-equation`). Depuis la
+livraison initiale, deux nouveaux kinds ont été ajoutés via des prompts
+distincts qui réutilisent l'infrastructure Mode B existante sans la modifier
+en profondeur :
+
+- **`kind: 'differentiate'`** (`differentiation-stepper-progress.md`) — pipeline
+  pédagogique de dérivation de fonction, branché en Mode B avec son propre
+  case dans `correction-generator.ts`.
+- **`kind: 'quadratic-equation'`** (`quadratic-stepper-progress.md`) — équations
+  du second degré (Δ > 0, Δ = 0, Δ < 0, b = 0, c = 0, factorisé,
+  non-standard-form). Bumps `primaire | college → lycee` (la formule du
+  second degré n'est pas au syllabus avant 1ère). Catch
+  `PedagogicalQuadraticNotImplemented` pour les cas hors V1 (paramétriques)
+  → fallback Mode A silencieux. Page debug étendue avec une 5e carte.
+
+Ces deux extensions valident que l'architecture Mode B est suffisamment
+robuste pour accueillir de nouveaux pipelines pédagogiques sans refactoring
+de la glue.
+
 ## Risques connus / TODOs futurs (post-V1)
 
 ### UX à raffiner (différé)
@@ -230,8 +251,9 @@ debug (Phase 6). L'UI elle-même reste à améliorer dans une session ultérieur
 - **`arithmetic-from-blank`** : skip en V1, à reconsidérer si la duplication
   d'expression entre `expectedAnswer` (`{{eval:a+b}}`) et
   `generatedSteps.expression` (`{{a}}+{{b}}`) devient gênante en pratique.
-- **`kind: 'solve'` (algorithmique)** : pas couvert (le pedagogical-solve V1
-  ne supporte que linéaire).
+- **`kind: 'solve'` (algorithmique générique)** : pas couvert. Le
+  pedagogical-solve V1.0 supporte linéaire + quadratique (cf. extension
+  ci-dessus) ; cubic / quartic / transcendental restent hors scope.
 - **Composant interactif (étape par étape)** : V1 passive uniquement.
 - **UI éditeur de questions** : écriture JSON manuelle pour V1.
 - **Hybridation Mode A + Mode B** : Mode A prioritaire si les deux présents.
