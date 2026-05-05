@@ -9,24 +9,27 @@ Créer un module `src/lib/mathAST/pedagogical-differentiation/` qui implémente 
 
 ## État global
 
-| Phase  | Status          | Commit      | Notes                                                                                                                                |
-| ------ | --------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| 0      | ✅ Spec validée | —           | Option 2 confirmée par l'utilisateur                                                                                                 |
-| 1      | ✅ Livrée       | `f9fb1a3a0` | 38 tests : types + pipeline + renderer (skeleton + triviaux top-level)                                                               |
-| 2a     | ✅ Livrée       | `f9fb1a3a0` | sum, difference, negation, linear-coefficient, sum-with-constant, diff-with-constant, passthrough (positive/delimiter)               |
-| 2b     | ✅ Livrée       | `f9fb1a3a0` | power-natural, power-constant-exp, power-constant-base, general-power, sqrt, derivative-of-sqrt                                      |
-| 2c     | ✅ Livrée       | `f9fb1a3a0` | product (general), quotient, inverse, derivative-of-inverse                                                                          |
-| 2d     | ✅ Livrée       | `f9fb1a3a0` | sin, cos, tan, arcsin, arccos, arctan (chaîne intégrée)                                                                              |
-| 2e     | ✅ Livrée       | `f9fb1a3a0` | exp, ln, log (base-aware)                                                                                                            |
-| 2f     | ✅ Livrée       | `f9fb1a3a0` | sinh, cosh, tanh, asinh, acosh, atanh                                                                                                |
-| 3      | ✅ Livrée       | `f9fb1a3a0` | Renderer LaTeX 2-lignes aligné (`\begin{aligned}`)                                                                                   |
-| 4      | ✅ Livrée       | `f9fb1a3a0` | LYCEE_EXPLANATIONS pour les 34 règles + SUPERIEUR_TITLES complets                                                                    |
-| 5      | ✅ Livrée       | `f9fb1a3a0` | 6 catégories de démos × 36 cas snapshot (polynomial, trig, exp, log, product-quotient, composition)                                  |
-| 6      | ✅ Livrée       | `b1a33b567` | `kind: 'differentiate'` dans GeneratedSteps + Zod (lax + strict) + correction-generator + 7 nouveaux tests                           |
-| 7      | ✅ Livrée       | `b1a33b567` | 2 fixtures end-to-end : polynomial 1_SPE + composition T_SPE, snapshots verts                                                        |
-| 8      | ✅ Livrée       | `b1a33b567` | ESLint clean, `pnpm check:incremental` clean (0 nouvelle erreur), 0 régression                                                       |
-| **9**  | ✅ Livrée       | `98ddcc50e` | **Fix blockers** issus du code review : `FunctionNode.power` (ex: `\sin^2(x)`) + top-level transparent wrappers (`+x`, `(x)`)        |
-| **10** | ✅ Livrée       | `ac4e2b2f8` | **Fix should-fix** issus du code review : `dependsOnDiffVariable` pour subscripted vars + skip `linear-coefficient` quand c=0 ou c=1 |
+| Phase  | Status          | Commit                   | Notes                                                                                                                                |
+| ------ | --------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 0      | ✅ Spec validée | —                        | Option 2 confirmée par l'utilisateur                                                                                                 |
+| 1      | ✅ Livrée       | `f9fb1a3a0`              | 38 tests : types + pipeline + renderer (skeleton + triviaux top-level)                                                               |
+| 2a     | ✅ Livrée       | `f9fb1a3a0`              | sum, difference, negation, linear-coefficient, sum-with-constant, diff-with-constant, passthrough (positive/delimiter)               |
+| 2b     | ✅ Livrée       | `f9fb1a3a0`              | power-natural, power-constant-exp, power-constant-base, general-power, sqrt, derivative-of-sqrt                                      |
+| 2c     | ✅ Livrée       | `f9fb1a3a0`              | product (general), quotient, inverse, derivative-of-inverse                                                                          |
+| 2d     | ✅ Livrée       | `f9fb1a3a0`              | sin, cos, tan, arcsin, arccos, arctan (chaîne intégrée)                                                                              |
+| 2e     | ✅ Livrée       | `f9fb1a3a0`              | exp, ln, log (base-aware)                                                                                                            |
+| 2f     | ✅ Livrée       | `f9fb1a3a0`              | sinh, cosh, tanh, asinh, acosh, atanh                                                                                                |
+| 3      | ✅ Livrée       | `f9fb1a3a0`              | Renderer LaTeX 2-lignes aligné (`\begin{aligned}`)                                                                                   |
+| 4      | ✅ Livrée       | `f9fb1a3a0`              | LYCEE_EXPLANATIONS pour les 34 règles + SUPERIEUR_TITLES complets                                                                    |
+| 5      | ✅ Livrée       | `f9fb1a3a0`              | 6 catégories de démos × 36 cas snapshot (polynomial, trig, exp, log, product-quotient, composition)                                  |
+| 6      | ✅ Livrée       | `b1a33b567`              | `kind: 'differentiate'` dans GeneratedSteps + Zod (lax + strict) + correction-generator + 7 nouveaux tests                           |
+| 7      | ✅ Livrée       | `b1a33b567`              | 2 fixtures end-to-end : polynomial 1_SPE + composition T_SPE, snapshots verts                                                        |
+| 8      | ✅ Livrée       | `b1a33b567`              | ESLint clean, `pnpm check:incremental` clean (0 nouvelle erreur), 0 régression                                                       |
+| **9**  | ✅ Livrée       | `98ddcc50e`              | **Fix blockers** issus du code review : `FunctionNode.power` (ex: `\sin^2(x)`) + top-level transparent wrappers (`+x`, `(x)`)        |
+| **10** | ✅ Livrée       | `ac4e2b2f8`              | **Fix should-fix** issus du code review : `dependsOnDiffVariable` pour subscripted vars + skip `linear-coefficient` quand c=0 ou c=1 |
+| **11** | ✅ Livrée       | `0659a0afa`              | **CLI demo standalone** : `scripts/pedagogical-differentiation-demo.ts` (filtrage par catégorie, options `--latex` / `--custom`)     |
+| **12** | ✅ Livrée       | `fbfd92712`              | **Page debug étendue** : `/dashboard/admin/debug/correction-mode-b` ajoute les 2 fixtures différentiation (4 fixtures au total)      |
+| **13** | ✅ Livrée       | `0be5301c7`, `975b7bf14` | **Pretty-print CLI** : option `format: 'latex' \| 'custom'` dans demo-helpers + ANSI bold-blue + cleanup LaTeX résiduel              |
 
 ## Décisions architecturales (Phase 0 — validées)
 
@@ -88,7 +91,7 @@ Différence avec `pedagogical-arithmetic/` : pas d'objet `Rule` agrégeant patte
 - `pipeline.ts` — dispatcher pédagogique récursif structurel pour 14 types de nodes (addition, subtraction, multiplication, division, opposite, positive, delimiter, superscript, function avec sub-dispatch sur 18 noms de fonctions)
 - `renderer.ts` — `PedagogicalDifferentiationRenderer` avec LaTeX 2-lignes aligné, lookup TITLES + EXPLANATIONS, bump primaire/college → lycee, recursion subSteps
 - `index.ts` — barrel public
-- `demo-helpers.ts` — `presentExpression()` pour snapshots et CLI, format multi-niveau × verbosity
+- `demo-helpers.ts` — `presentExpression(testCase, format)` pour snapshots et CLI, option `format: 'latex' | 'custom'` (défaut latex pour stabilité snapshot)
 - `demo-cases/` — 6 catégories : polynomial, trigonometric, exponential, logarithm, product-quotient, composition
 
 ### Tests
@@ -108,12 +111,61 @@ Différence avec `pedagogical-arithmetic/` : pas d'objet `Rule` agrégeant patte
 - `src/lib/questions/__tests__/fixtures/generated-steps-demo.ts` — 2 fixtures end-to-end (polynomial 1_SPE + composition T_SPE)
 - `src/lib/questions/__tests__/generated-steps-demo.test.ts` — 2 nouveaux tests snapshot
 
+### Outils de test
+
+- `scripts/pedagogical-differentiation-demo.ts` — CLI standalone avec format custom (défaut, lisible terminal) + cleanup LaTeX résiduel + ANSI bold-blue sur TTY
+- `src/routes/(protected)/dashboard/admin/debug/correction-mode-b/+page.svelte` — page debug navigateur étendue avec les 2 nouvelles fixtures différentiation
+
 ### Score final
 
 - 140 tests module + 23 tests correction-generator + 7 tests generated-steps-demo = **170 tests verts spécifiques au feature**
 - 0 régression : suites adjacentes (mathAST/differentiation, pedagogical-arithmetic, pedagogical-solve) passent inchangées
 - ESLint : clean
 - `pnpm check:incremental` : clean (0 nouvelle erreur, les 9 erreurs résiduelles sont dans `slides/demo` et `extern/`, pré-existantes et filtrées)
+
+## Outils de test livrés
+
+### Script CLI standalone
+
+`scripts/pedagogical-differentiation-demo.ts` — calque des CLI `pedagogical-arithmetic-demo` et `pedagogical-solve-demo`.
+
+```bash
+# Toutes catégories, format custom (lisible terminal, défaut)
+pnpm tsx scripts/pedagogical-differentiation-demo.ts
+
+# Filtrage par catégorie
+pnpm tsx scripts/pedagogical-differentiation-demo.ts polynomial trigonometric
+
+# Format LaTeX brut (équivalent snapshot test)
+pnpm tsx scripts/pedagogical-differentiation-demo.ts --latex polynomial
+```
+
+Format `custom` (défaut CLI) :
+
+- `@blue{(x^2)'} = 2x` (ANSI bold-blue sur TTY)
+- ASCII operators (`*` → `×`, `\cdot` → `·`)
+- Cleanup LaTeX résiduel dans titres/explanations supérieur (`\sin u` → `sin u`)
+- `\left`/`\right` strippés proprement
+
+Format `latex` (option `--latex`) : sortie identique au snapshot de référence.
+
+### Page debug navigateur
+
+`/dashboard/admin/debug/correction-mode-b` étendue de 2 à 4 fixtures :
+
+- `additionGroupingDemo` (CM2 arithmétique) — original
+- `linearEquationDemo` (4e équation linéaire) — original
+- `differentiatePolynomialDemo` (1ère spé `x^3 + 2x^2 + 5x + 7`) — nouveau
+- `differentiateCompositionDemo` (Terminale spé `\sin(3x)`) — nouveau
+
+Pour chaque fixture : ligne de statut + aperçu direct `<GeneratedStepsCorrection>` + `<CorrectionCard>` avec flip (réponse correcte/incorrecte).
+
+Lancement local :
+
+```bash
+pnpm dev -- --port 5175
+# puis http://localhost:5175/dashboard/admin/debug/correction-mode-b (auth admin)
+```
 
 ## Code review (post-livraison initiale)
 
