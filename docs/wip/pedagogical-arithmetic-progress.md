@@ -291,12 +291,25 @@ src/lib/mathAST/pedagogical-arithmetic/
 
 ### Récapitulatif final
 
-- **6 commits intermédiaires** :
+- **5 commits intermédiaires** :
   1. `206e95f7b` — Phases 1+2 (infrastructure + target extractor + answer-format parser basique)
   2. `cbf546ac8` — Phase 3 (basic operations rules)
   3. `ff34f1d79` — Phase 4 (fraction rules)
   4. `cd1907374` — Phases 5+6 (radicaux + powers + scientific)
-  5. à venir — Phases 7-10 (answer-format extraction, pipeline, demo, quality)
+  5. `095556850` — Phases 7-10 (answer-format extraction, pipeline, demo, quality)
 - **Tests ajoutés** : 239 tests dans `pedagogical-arithmetic/`
 - **LOC** : ~3500 ajoutées (modules + tests + démo + doc)
 - **Critères d'acceptation** : tous remplis (voir liste plus haut).
+
+### Documents produits durant ce prompt
+
+- `docs/wip/pedagogical-arithmetic-progress.md` (ce fichier — doc de progression complète)
+
+### TODO post-prompt (refactos séparées)
+
+1. **Populer `expressionName` directement dans `InstanceBlank`** via `generator/assign-blank-indices.ts` pour rendre le 3e arg `expressionName` redondant dans `extractPedagogicalTarget` (~2-3h).
+2. **Intégration aux corrections de questions** (`QuestionCorrection.generatedSteps`) — actuellement le pipeline est PRÊT (extractPedagogicalTarget fonctionne) mais la connexion aux composants Svelte de correction reste à faire (autre prompt).
+3. **Variantes de fractions par sous-niveau** : early-college (multiplication directe des dénominateurs, e.g. `1/3+1/6 → 6+3/18 = 9/18 = 1/2`) vs late-college (PGCD).
+4. **`rationalize-denominator`** et **`simplify-square-root-of-square`** (radicaux niveau 3 avancé).
+5. **Decimal mantissas** dans `multiplyScientific` / `addScientificSamePower` (mantissas non-entières en notation scientifique).
+6. **Cohérence `signs`** : étape post-processing `5 + (-3) → 5 - 3` quand `signs: 'strict'` (pas couvert dans cette livraison).
