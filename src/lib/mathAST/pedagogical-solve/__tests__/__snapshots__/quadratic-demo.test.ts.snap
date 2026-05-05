@@ -6,44 +6,51 @@ exports[`snapshot — b-zero > 2x² − 8 = 0 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du second degré
-[2] recognize-no-linear-term: Le coefficient de x est nul : on isole directement le carré
-[3] isolate-square: On isole le carré
-[4] extract-square-root: On extrait la racine carrée
-[5] read-solutions: On conclut sur l’ensemble des solutions
+[2] factor-gcd: On simplifie en divisant les deux membres par 2 (PGCD)
+[3] recognize-no-linear-term: Le coefficient de x est nul : on isole directement le carré
+[4] isolate-square: On isole le carré
+[5] extract-square-root: On extrait la racine carrée
+[6] read-solutions: On conclut sur l’ensemble des solutions
 
 ========== LYCEE (summarized) ==========
 [1] Équation du second degré
-[2] Le coefficient de x est nul : on isole le carré
-[3] On isole le carré
-[4] On extrait la racine carrée
-[5] Solutions
+[2] On divise les deux membres par 2 (PGCD)
+[3] Le coefficient de x est nul : on isole le carré
+[4] On isole le carré
+[5] On extrait la racine carrée
+[6] Solutions
 
 ========== LYCEE (detailed) ==========
 [1] Équation du second degré
     │ 2x^2 - 8 = 0
-[2] Le coefficient de x est nul : on isole le carré
-    │ 2x^2 - 8 = 0
-[3] On isole le carré
-    │ \\begin{aligned}   2x^2 - 8 &= 0 \\\\   x^2 &= 4 \\end{aligned}
-[4] On extrait la racine carrée
+[2] On divise les deux membres par 2 (PGCD)
+    │ \\begin{aligned}   2x^2 - 8 &= 0 \\\\   x^2 - 4 &= 0 \\end{aligned}
+[3] Le coefficient de x est nul : on isole le carré
+    │ x^2 - 4 = 0
+[4] On isole le carré
+    │ \\begin{aligned}   x^2 - 4 &= 0 \\\\   x^2 &= 4 \\end{aligned}
+[5] On extrait la racine carrée
     │ x = \\pm \\sqrt{4}
-[5] Solutions
+[6] Solutions
     │ S = \\left\\{ -2 \\,;\\, 2 \\right\\}
 
 ========== SUPERIEUR (summarized) ==========
-[1] b = 0 → isoler x²
-[2] Isoler x²
-[3] Racine carrée
-[4] Ensemble des solutions
+[1] Simplification (÷ 2)
+[2] b = 0 → isoler x²
+[3] Isoler x²
+[4] Racine carrée
+[5] Ensemble des solutions
 
 ========== SUPERIEUR (detailed) ==========
-[1] b = 0 → isoler x²
-    │ 2x^2 - 8 = 0
-[2] Isoler x²
-    │ \\begin{aligned}   2x^2 - 8 &= 0 \\\\   x^2 &= 4 \\end{aligned}
-[3] Racine carrée
+[1] Simplification (÷ 2)
+    │ \\begin{aligned}   2x^2 - 8 &= 0 \\\\   x^2 - 4 &= 0 \\end{aligned}
+[2] b = 0 → isoler x²
+    │ x^2 - 4 = 0
+[3] Isoler x²
+    │ \\begin{aligned}   x^2 - 4 &= 0 \\\\   x^2 &= 4 \\end{aligned}
+[4] Racine carrée
     │ x = \\pm \\sqrt{4}
-[4] Ensemble des solutions
+[5] Ensemble des solutions
     │ S = \\left\\{ -2 \\,;\\, 2 \\right\\}
 "
 `;
@@ -191,53 +198,60 @@ exports[`snapshot — c-zero > 2x² + 6x = 0 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du second degré
-[2] recognize-no-constant-term: Le terme constant est nul : on factorise par x
-[3] factor-common-x: On factorise par x
-[4] zero-product: Par la propriété du produit nul
-[5] solve-each-factor: On résout chaque facteur séparément
-[6] read-solutions: On conclut sur l’ensemble des solutions
+[2] factor-gcd: On simplifie en divisant les deux membres par 2 (PGCD)
+[3] recognize-no-constant-term: Le terme constant est nul : on factorise par x
+[4] factor-common-x: On factorise par x
+[5] zero-product: Par la propriété du produit nul
+[6] solve-each-factor: On résout chaque facteur séparément
+[7] read-solutions: On conclut sur l’ensemble des solutions
 
 ========== LYCEE (summarized) ==========
 [1] Équation du second degré
-[2] Le terme constant est nul : on factorise par x
-[3] On factorise par x
-[4] Par la propriété du produit nul
-[5] On résout chaque facteur séparément
-[6] Solutions
+[2] On divise les deux membres par 2 (PGCD)
+[3] Le terme constant est nul : on factorise par x
+[4] On factorise par x
+[5] Par la propriété du produit nul
+[6] On résout chaque facteur séparément
+[7] Solutions
 
 ========== LYCEE (detailed) ==========
 [1] Équation du second degré
     │ 2x^2 + 6x = 0
-[2] Le terme constant est nul : on factorise par x
-    │ 2x^2 + 6x = 0
-[3] On factorise par x
-    │ \\begin{aligned}   2x^2 + 6x &= 0 \\\\   x \\left( 2x + 6\\right) &= 0 \\end{aligned}
-[4] Par la propriété du produit nul
-    │ \\left(x\\right) \\cdot \\left(2x + 6\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 2x + 6 = 0
-[5] On résout chaque facteur séparément
+[2] On divise les deux membres par 2 (PGCD)
+    │ \\begin{aligned}   2x^2 + 6x &= 0 \\\\   x^2 + 3x &= 0 \\end{aligned}
+[3] Le terme constant est nul : on factorise par x
+    │ x^2 + 3x = 0
+[4] On factorise par x
+    │ \\begin{aligned}   x^2 + 3x &= 0 \\\\   x \\left( x + 3\\right) &= 0 \\end{aligned}
+[5] Par la propriété du produit nul
+    │ \\left(x\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
+[6] On résout chaque facteur séparément
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
-  2x + 6 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
-[6] Solutions
+  x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
+[7] Solutions
     │ S = \\left\\{ 0 \\,;\\, -3 \\right\\}
 
 ========== SUPERIEUR (summarized) ==========
-[1] c = 0 → factoriser par x
-[2] Factorisation par x
-[3] Produit nul
-[4] Résolution par facteur
-[5] Ensemble des solutions
+[1] Simplification (÷ 2)
+[2] c = 0 → factoriser par x
+[3] Factorisation par x
+[4] Produit nul
+[5] Résolution par facteur
+[6] Ensemble des solutions
 
 ========== SUPERIEUR (detailed) ==========
-[1] c = 0 → factoriser par x
-    │ 2x^2 + 6x = 0
-[2] Factorisation par x
-    │ \\begin{aligned}   2x^2 + 6x &= 0 \\\\   x \\left( 2x + 6\\right) &= 0 \\end{aligned}
-[3] Produit nul
-    │ \\left(x\\right) \\cdot \\left(2x + 6\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 2x + 6 = 0
-[4] Résolution par facteur
+[1] Simplification (÷ 2)
+    │ \\begin{aligned}   2x^2 + 6x &= 0 \\\\   x^2 + 3x &= 0 \\end{aligned}
+[2] c = 0 → factoriser par x
+    │ x^2 + 3x = 0
+[3] Factorisation par x
+    │ \\begin{aligned}   x^2 + 3x &= 0 \\\\   x \\left( x + 3\\right) &= 0 \\end{aligned}
+[4] Produit nul
+    │ \\left(x\\right) \\cdot \\left(x + 3\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x + 3 = 0
+[5] Résolution par facteur
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
-  2x + 6 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
-[5] Ensemble des solutions
+  x + 3 = 0 &\\;\\Longleftrightarrow\\; x = -3 \\end{aligned}
+[6] Ensemble des solutions
     │ S = \\left\\{ 0 \\,;\\, -3 \\right\\}
 "
 `;
@@ -248,53 +262,60 @@ exports[`snapshot — c-zero > 5x² − 10x = 0 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du second degré
-[2] recognize-no-constant-term: Le terme constant est nul : on factorise par x
-[3] factor-common-x: On factorise par x
-[4] zero-product: Par la propriété du produit nul
-[5] solve-each-factor: On résout chaque facteur séparément
-[6] read-solutions: On conclut sur l’ensemble des solutions
+[2] factor-gcd: On simplifie en divisant les deux membres par 5 (PGCD)
+[3] recognize-no-constant-term: Le terme constant est nul : on factorise par x
+[4] factor-common-x: On factorise par x
+[5] zero-product: Par la propriété du produit nul
+[6] solve-each-factor: On résout chaque facteur séparément
+[7] read-solutions: On conclut sur l’ensemble des solutions
 
 ========== LYCEE (summarized) ==========
 [1] Équation du second degré
-[2] Le terme constant est nul : on factorise par x
-[3] On factorise par x
-[4] Par la propriété du produit nul
-[5] On résout chaque facteur séparément
-[6] Solutions
+[2] On divise les deux membres par 5 (PGCD)
+[3] Le terme constant est nul : on factorise par x
+[4] On factorise par x
+[5] Par la propriété du produit nul
+[6] On résout chaque facteur séparément
+[7] Solutions
 
 ========== LYCEE (detailed) ==========
 [1] Équation du second degré
     │ 5x^2 - 10x = 0
-[2] Le terme constant est nul : on factorise par x
-    │ 5x^2 - 10x = 0
-[3] On factorise par x
-    │ \\begin{aligned}   5x^2 - 10x &= 0 \\\\   x \\left( 5x - 10\\right) &= 0 \\end{aligned}
-[4] Par la propriété du produit nul
-    │ \\left(x\\right) \\cdot \\left(5x - 10\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 5x - 10 = 0
-[5] On résout chaque facteur séparément
+[2] On divise les deux membres par 5 (PGCD)
+    │ \\begin{aligned}   5x^2 - 10x &= 0 \\\\   x^2 - 2x &= 0 \\end{aligned}
+[3] Le terme constant est nul : on factorise par x
+    │ x^2 - 2x = 0
+[4] On factorise par x
+    │ \\begin{aligned}   x^2 - 2x &= 0 \\\\   x \\left( x - 2\\right) &= 0 \\end{aligned}
+[5] Par la propriété du produit nul
+    │ \\left(x\\right) \\cdot \\left(x - 2\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x - 2 = 0
+[6] On résout chaque facteur séparément
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
-  5x - 10 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\end{aligned}
-[6] Solutions
+  x - 2 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\end{aligned}
+[7] Solutions
     │ S = \\left\\{ 0 \\,;\\, 2 \\right\\}
 
 ========== SUPERIEUR (summarized) ==========
-[1] c = 0 → factoriser par x
-[2] Factorisation par x
-[3] Produit nul
-[4] Résolution par facteur
-[5] Ensemble des solutions
+[1] Simplification (÷ 5)
+[2] c = 0 → factoriser par x
+[3] Factorisation par x
+[4] Produit nul
+[5] Résolution par facteur
+[6] Ensemble des solutions
 
 ========== SUPERIEUR (detailed) ==========
-[1] c = 0 → factoriser par x
-    │ 5x^2 - 10x = 0
-[2] Factorisation par x
-    │ \\begin{aligned}   5x^2 - 10x &= 0 \\\\   x \\left( 5x - 10\\right) &= 0 \\end{aligned}
-[3] Produit nul
-    │ \\left(x\\right) \\cdot \\left(5x - 10\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; 5x - 10 = 0
-[4] Résolution par facteur
+[1] Simplification (÷ 5)
+    │ \\begin{aligned}   5x^2 - 10x &= 0 \\\\   x^2 - 2x &= 0 \\end{aligned}
+[2] c = 0 → factoriser par x
+    │ x^2 - 2x = 0
+[3] Factorisation par x
+    │ \\begin{aligned}   x^2 - 2x &= 0 \\\\   x \\left( x - 2\\right) &= 0 \\end{aligned}
+[4] Produit nul
+    │ \\left(x\\right) \\cdot \\left(x - 2\\right) = 0 \\;\\Longleftrightarrow\\; x = 0 \\;\\text{ou}\\; x - 2 = 0
+[5] Résolution par facteur
     │ \\begin{aligned}   x = 0 &\\;\\Longleftrightarrow\\; x = 0 \\\\
-  5x - 10 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\end{aligned}
-[5] Ensemble des solutions
+  x - 2 = 0 &\\;\\Longleftrightarrow\\; x = 2 \\end{aligned}
+[6] Ensemble des solutions
     │ S = \\left\\{ 0 \\,;\\, 2 \\right\\}
 "
 `;
@@ -544,8 +565,8 @@ exports[`snapshot — non-standard-form > 3x² = 2x + 1 1`] = `
 [6] On applique la formule : x = (−b ± √Δ) / (2a)
     │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-2\\right) \\pm \\sqrt{16}}{2 \\cdot \\left(3\\right)} \\end{aligned}
 [7] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{--2 - \\sqrt{16}}{2 3} = -\\dfrac{1}{3} \\\\
-  x_2 &= \\dfrac{--2 + \\sqrt{16}}{2 3} = 1 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{2 - \\sqrt{16}}{2 3} = -\\dfrac{1}{3} \\\\
+  x_2 &= \\dfrac{2 + \\sqrt{16}}{2 3} = 1 \\end{aligned}
 [8] Solutions
     │ S = \\left\\{ -\\dfrac{1}{3} \\,;\\, 1 \\right\\}
 
@@ -567,8 +588,8 @@ exports[`snapshot — non-standard-form > 3x² = 2x + 1 1`] = `
 [4] Formule du second degré
     │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-2\\right) \\pm \\sqrt{16}}{2 \\cdot \\left(3\\right)} \\end{aligned}
 [5] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{--2 - \\sqrt{16}}{2 3} = -\\dfrac{1}{3} \\\\
-  x_2 &= \\dfrac{--2 + \\sqrt{16}}{2 3} = 1 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{2 - \\sqrt{16}}{2 3} = -\\dfrac{1}{3} \\\\
+  x_2 &= \\dfrac{2 + \\sqrt{16}}{2 3} = 1 \\end{aligned}
 [6] Ensemble des solutions
     │ S = \\left\\{ -\\dfrac{1}{3} \\,;\\, 1 \\right\\}
 "
@@ -612,8 +633,8 @@ exports[`snapshot — non-standard-form > x² + 2 = x + 8 1`] = `
 [6] On applique la formule : x = (−b ± √Δ) / (2a)
     │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-1\\right) \\pm \\sqrt{25}}{2 \\cdot \\left(1\\right)} \\end{aligned}
 [7] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{--1 - \\sqrt{25}}{2 1} = -2 \\\\
-  x_2 &= \\dfrac{--1 + \\sqrt{25}}{2 1} = 3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2 1} = -2 \\\\
+  x_2 &= \\dfrac{1 + \\sqrt{25}}{2 1} = 3 \\end{aligned}
 [8] Solutions
     │ S = \\left\\{ -2 \\,;\\, 3 \\right\\}
 
@@ -635,8 +656,8 @@ exports[`snapshot — non-standard-form > x² + 2 = x + 8 1`] = `
 [4] Formule du second degré
     │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-1\\right) \\pm \\sqrt{25}}{2 \\cdot \\left(1\\right)} \\end{aligned}
 [5] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{--1 - \\sqrt{25}}{2 1} = -2 \\\\
-  x_2 &= \\dfrac{--1 + \\sqrt{25}}{2 1} = 3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2 1} = -2 \\\\
+  x_2 &= \\dfrac{1 + \\sqrt{25}}{2 1} = 3 \\end{aligned}
 [6] Ensemble des solutions
     │ S = \\left\\{ -2 \\,;\\, 3 \\right\\}
 "
@@ -716,55 +737,62 @@ exports[`snapshot — standard-double > 2x² − 4x + 2 = 0 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du second degré
-[2] identify-coefficients: On identifie les coefficients a, b et c
-[3] compute-discriminant: On calcule le discriminant Δ = b² − 4ac
-[4] discriminant-zero: Δ = 0 : une solution double
-[5] apply-quadratic-formula: On applique la formule : x = −b / (2a)
-[6] simplify-solutions: On simplifie les solutions
-[7] read-solutions: On conclut sur l’ensemble des solutions
+[2] factor-gcd: On simplifie en divisant les deux membres par 2 (PGCD)
+[3] identify-coefficients: On identifie les coefficients a, b et c
+[4] compute-discriminant: On calcule le discriminant Δ = b² − 4ac
+[5] discriminant-zero: Δ = 0 : une solution double
+[6] apply-quadratic-formula: On applique la formule : x = −b / (2a)
+[7] simplify-solutions: On simplifie les solutions
+[8] read-solutions: On conclut sur l’ensemble des solutions
 
 ========== LYCEE (summarized) ==========
 [1] Équation du second degré
-[2] On identifie les coefficients a, b et c
-[3] On calcule le discriminant Δ = b² − 4ac
-[4] Δ = 0 : une solution double
-[5] On applique la formule : x = −b / (2a)
-[6] On simplifie les solutions
-[7] Solutions
+[2] On divise les deux membres par 2 (PGCD)
+[3] On identifie les coefficients a, b et c
+[4] On calcule le discriminant Δ = b² − 4ac
+[5] Δ = 0 : une solution double
+[6] On applique la formule : x = −b / (2a)
+[7] On simplifie les solutions
+[8] Solutions
 
 ========== LYCEE (detailed) ==========
 [1] Équation du second degré
     │ 2x^2 - 4x + 2 = 0
-[2] On identifie les coefficients a, b et c
-    │ a = 2, \\quad b = -4, \\quad c = 2
-[3] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(-4\\right)^2 - 4 \\cdot \\left(2\\right) \\cdot \\left(2\\right) = 0
-[4] Δ = 0 : une solution double
-    │ 2x^2 - 4x + 2 = 0
-[5] On applique la formule : x = −b / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-4\\right)}{2 \\cdot \\left(2\\right)} \\end{aligned}
-[6] On simplifie les solutions
-    │ x_0 = \\dfrac{--4}{2 2} = 1
-[7] Solutions
+[2] On divise les deux membres par 2 (PGCD)
+    │ \\begin{aligned}   2x^2 - 4x + 2 &= 0 \\\\   x^2 - 2x + 1 &= 0 \\end{aligned}
+[3] On identifie les coefficients a, b et c
+    │ a = 1, \\quad b = -2, \\quad c = 1
+[4] On calcule le discriminant Δ = b² − 4ac
+    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(1\\right) = 0
+[5] Δ = 0 : une solution double
+    │ x^2 - 2x + 1 = 0
+[6] On applique la formule : x = −b / (2a)
+    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\cdot \\left(1\\right)} \\end{aligned}
+[7] On simplifie les solutions
+    │ x_0 = \\dfrac{2}{2 1} = 1
+[8] Solutions
     │ S = \\left\\{ 1 \\right\\}
 
 ========== SUPERIEUR (summarized) ==========
-[1] Coefficients a, b, c
-[2] Discriminant : Δ = 0
-[3] Formule du second degré
-[4] Simplification
-[5] Ensemble des solutions
+[1] Simplification (÷ 2)
+[2] Coefficients a, b, c
+[3] Discriminant : Δ = 0
+[4] Formule du second degré
+[5] Simplification
+[6] Ensemble des solutions
 
 ========== SUPERIEUR (detailed) ==========
-[1] Coefficients a, b, c
-    │ a = 2, \\quad b = -4, \\quad c = 2
-[2] Discriminant : Δ = 0
-    │ \\Delta = b^2 - 4ac = \\left(-4\\right)^2 - 4 \\cdot \\left(2\\right) \\cdot \\left(2\\right) = 0
-[3] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-4\\right)}{2 \\cdot \\left(2\\right)} \\end{aligned}
-[4] Simplification
-    │ x_0 = \\dfrac{--4}{2 2} = 1
-[5] Ensemble des solutions
+[1] Simplification (÷ 2)
+    │ \\begin{aligned}   2x^2 - 4x + 2 &= 0 \\\\   x^2 - 2x + 1 &= 0 \\end{aligned}
+[2] Coefficients a, b, c
+    │ a = 1, \\quad b = -2, \\quad c = 1
+[3] Discriminant : Δ = 0
+    │ \\Delta = b^2 - 4ac = \\left(-2\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(1\\right) = 0
+[4] Formule du second degré
+    │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\cdot \\left(1\\right)} \\end{aligned}
+[5] Simplification
+    │ x_0 = \\dfrac{2}{2 1} = 1
+[6] Ensemble des solutions
     │ S = \\left\\{ 1 \\right\\}
 "
 `;
@@ -862,7 +890,7 @@ exports[`snapshot — standard-double > x² − 2x + 1 = 0 1`] = `
 [5] On applique la formule : x = −b / (2a)
     │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\cdot \\left(1\\right)} \\end{aligned}
 [6] On simplifie les solutions
-    │ x_0 = \\dfrac{--2}{2 1} = 1
+    │ x_0 = \\dfrac{2}{2 1} = 1
 [7] Solutions
     │ S = \\left\\{ 1 \\right\\}
 
@@ -881,7 +909,7 @@ exports[`snapshot — standard-double > x² − 2x + 1 = 0 1`] = `
 [3] Formule du second degré
     │ \\begin{aligned}   x &= \\dfrac{-b}{2a} \\\\   &= \\dfrac{-\\left(-2\\right)}{2 \\cdot \\left(1\\right)} \\end{aligned}
 [4] Simplification
-    │ x_0 = \\dfrac{--2}{2 1} = 1
+    │ x_0 = \\dfrac{2}{2 1} = 1
 [5] Ensemble des solutions
     │ S = \\left\\{ 1 \\right\\}
 "
@@ -1028,57 +1056,64 @@ exports[`snapshot — standard-positif > 3x² − 3x − 18 = 0 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du second degré
-[2] identify-coefficients: On identifie les coefficients a, b et c
-[3] compute-discriminant: On calcule le discriminant Δ = b² − 4ac
-[4] discriminant-positive: Δ > 0 : deux solutions distinctes
-[5] apply-quadratic-formula: On applique la formule : x = (−b ± √Δ) / (2a)
-[6] simplify-solutions: On simplifie les solutions
-[7] read-solutions: On conclut sur l’ensemble des solutions
+[2] factor-gcd: On simplifie en divisant les deux membres par 3 (PGCD)
+[3] identify-coefficients: On identifie les coefficients a, b et c
+[4] compute-discriminant: On calcule le discriminant Δ = b² − 4ac
+[5] discriminant-positive: Δ > 0 : deux solutions distinctes
+[6] apply-quadratic-formula: On applique la formule : x = (−b ± √Δ) / (2a)
+[7] simplify-solutions: On simplifie les solutions
+[8] read-solutions: On conclut sur l’ensemble des solutions
 
 ========== LYCEE (summarized) ==========
 [1] Équation du second degré
-[2] On identifie les coefficients a, b et c
-[3] On calcule le discriminant Δ = b² − 4ac
-[4] Δ > 0 : deux solutions distinctes
-[5] On applique la formule : x = (−b ± √Δ) / (2a)
-[6] On simplifie les solutions
-[7] Solutions
+[2] On divise les deux membres par 3 (PGCD)
+[3] On identifie les coefficients a, b et c
+[4] On calcule le discriminant Δ = b² − 4ac
+[5] Δ > 0 : deux solutions distinctes
+[6] On applique la formule : x = (−b ± √Δ) / (2a)
+[7] On simplifie les solutions
+[8] Solutions
 
 ========== LYCEE (detailed) ==========
 [1] Équation du second degré
     │ 3x^2 - 3x - 18 = 0
-[2] On identifie les coefficients a, b et c
-    │ a = 3, \\quad b = -3, \\quad c = -18
-[3] On calcule le discriminant Δ = b² − 4ac
-    │ \\Delta = b^2 - 4ac = \\left(-3\\right)^2 - 4 \\cdot \\left(3\\right) \\cdot \\left(-18\\right) = 225
-[4] Δ > 0 : deux solutions distinctes
-    │ 3x^2 - 3x - 18 = 0
-[5] On applique la formule : x = (−b ± √Δ) / (2a)
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-3\\right) \\pm \\sqrt{225}}{2 \\cdot \\left(3\\right)} \\end{aligned}
-[6] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{--3 - \\sqrt{225}}{2 3} = -2 \\\\
-  x_2 &= \\dfrac{--3 + \\sqrt{225}}{2 3} = 3 \\end{aligned}
-[7] Solutions
+[2] On divise les deux membres par 3 (PGCD)
+    │ \\begin{aligned}   3x^2 - 3x - 18 &= 0 \\\\   x^2 - x - 6 &= 0 \\end{aligned}
+[3] On identifie les coefficients a, b et c
+    │ a = 1, \\quad b = -1, \\quad c = -6
+[4] On calcule le discriminant Δ = b² − 4ac
+    │ \\Delta = b^2 - 4ac = \\left(-1\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(-6\\right) = 25
+[5] Δ > 0 : deux solutions distinctes
+    │ x^2 - x - 6 = 0
+[6] On applique la formule : x = (−b ± √Δ) / (2a)
+    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-1\\right) \\pm \\sqrt{25}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+[7] On simplifie les solutions
+    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2 1} = -2 \\\\
+  x_2 &= \\dfrac{1 + \\sqrt{25}}{2 1} = 3 \\end{aligned}
+[8] Solutions
     │ S = \\left\\{ -2 \\,;\\, 3 \\right\\}
 
 ========== SUPERIEUR (summarized) ==========
-[1] Coefficients a, b, c
-[2] Discriminant : Δ > 0
-[3] Formule du second degré
-[4] Simplification
-[5] Ensemble des solutions
+[1] Simplification (÷ 3)
+[2] Coefficients a, b, c
+[3] Discriminant : Δ > 0
+[4] Formule du second degré
+[5] Simplification
+[6] Ensemble des solutions
 
 ========== SUPERIEUR (detailed) ==========
-[1] Coefficients a, b, c
-    │ a = 3, \\quad b = -3, \\quad c = -18
-[2] Discriminant : Δ > 0
-    │ \\Delta = b^2 - 4ac = \\left(-3\\right)^2 - 4 \\cdot \\left(3\\right) \\cdot \\left(-18\\right) = 225
-[3] Formule du second degré
-    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-3\\right) \\pm \\sqrt{225}}{2 \\cdot \\left(3\\right)} \\end{aligned}
-[4] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{--3 - \\sqrt{225}}{2 3} = -2 \\\\
-  x_2 &= \\dfrac{--3 + \\sqrt{225}}{2 3} = 3 \\end{aligned}
-[5] Ensemble des solutions
+[1] Simplification (÷ 3)
+    │ \\begin{aligned}   3x^2 - 3x - 18 &= 0 \\\\   x^2 - x - 6 &= 0 \\end{aligned}
+[2] Coefficients a, b, c
+    │ a = 1, \\quad b = -1, \\quad c = -6
+[3] Discriminant : Δ > 0
+    │ \\Delta = b^2 - 4ac = \\left(-1\\right)^2 - 4 \\cdot \\left(1\\right) \\cdot \\left(-6\\right) = 25
+[4] Formule du second degré
+    │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-1\\right) \\pm \\sqrt{25}}{2 \\cdot \\left(1\\right)} \\end{aligned}
+[5] Simplification
+    │ \\begin{aligned}   x_1 &= \\dfrac{1 - \\sqrt{25}}{2 1} = -2 \\\\
+  x_2 &= \\dfrac{1 + \\sqrt{25}}{2 1} = 3 \\end{aligned}
+[6] Ensemble des solutions
     │ S = \\left\\{ -2 \\,;\\, 3 \\right\\}
 "
 `;
@@ -1239,8 +1274,8 @@ exports[`snapshot — standard-positif > x² − 5x + 6 = 0 1`] = `
 [5] On applique la formule : x = (−b ± √Δ) / (2a)
     │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-5\\right) \\pm \\sqrt{1}}{2 \\cdot \\left(1\\right)} \\end{aligned}
 [6] On simplifie les solutions
-    │ \\begin{aligned}   x_1 &= \\dfrac{--5 - \\sqrt{1}}{2 1} = 2 \\\\
-  x_2 &= \\dfrac{--5 + \\sqrt{1}}{2 1} = 3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{5 - \\sqrt{1}}{2 1} = 2 \\\\
+  x_2 &= \\dfrac{5 + \\sqrt{1}}{2 1} = 3 \\end{aligned}
 [7] Solutions
     │ S = \\left\\{ 2 \\,;\\, 3 \\right\\}
 
@@ -1259,8 +1294,8 @@ exports[`snapshot — standard-positif > x² − 5x + 6 = 0 1`] = `
 [3] Formule du second degré
     │ \\begin{aligned}   x &= \\dfrac{-b \\pm \\sqrt{\\Delta}}{2a} \\\\   &= \\dfrac{-\\left(-5\\right) \\pm \\sqrt{1}}{2 \\cdot \\left(1\\right)} \\end{aligned}
 [4] Simplification
-    │ \\begin{aligned}   x_1 &= \\dfrac{--5 - \\sqrt{1}}{2 1} = 2 \\\\
-  x_2 &= \\dfrac{--5 + \\sqrt{1}}{2 1} = 3 \\end{aligned}
+    │ \\begin{aligned}   x_1 &= \\dfrac{5 - \\sqrt{1}}{2 1} = 2 \\\\
+  x_2 &= \\dfrac{5 + \\sqrt{1}}{2 1} = 3 \\end{aligned}
 [5] Ensemble des solutions
     │ S = \\left\\{ 2 \\,;\\, 3 \\right\\}
 "

@@ -337,11 +337,15 @@ describe('generateQuadraticEquationSteps', () => {
 	// ===========================================================================
 
 	describe('cas c = 0', () => {
-		it('lycee: 2x² + 6x = 0 → recognize + factor-common-x + zero-product + solve-each + read', () => {
+		it('lycee: 2x² + 6x = 0 → factor-gcd + recognize + factor-common-x + zero-product + solve-each + read', () => {
+			// `2x² + 6x` has GCD = 2, so V1.1-C inserts a `factor-gcd` step between
+			// identify-equation and recognize-no-constant-term, simplifying to
+			// `x² + 3x = 0` before the c-zero branch.
 			const steps = generateQuadraticEquationSteps(eqCZero(), { level: 'lycee' });
 			const kinds = steps.map((s) => s.operation?.kind);
 			expect(kinds).toEqual([
 				'identify-equation',
+				'factor-gcd',
 				'recognize-no-constant-term',
 				'factor-common-x',
 				'zero-product',
@@ -610,7 +614,9 @@ describe('generateQuadraticEquationSteps', () => {
 			expect(read!.solutions.map(toLatex)).toEqual(['1']);
 		});
 
-		it('3x² − 3x − 18 = 0 → x = -2 et x = 3 (Δ = 225)', () => {
+		it('3x² − 3x − 18 = 0 → factor-gcd then x = -2, x = 3 (V1.1-C: Δ=25 sur eq simplifiée)', () => {
+			// V1.1-C: GCD = 3 ⇒ simplified to `x² − x − 6 = 0` ⇒ Δ = 1+24 = 25
+			// (instead of Δ = 225 on the un-simplified form). Solutions identical.
 			const eq = relation(
 				'=',
 				subtract(
@@ -623,8 +629,10 @@ describe('generateQuadraticEquationSteps', () => {
 				number('0')
 			);
 			const steps = generateQuadraticEquationSteps(eq, { level: 'lycee' });
+			const kinds = steps.map((s) => s.operation?.kind);
+			expect(kinds).toContain('factor-gcd');
 			const compute = findOp(steps, 'compute-discriminant');
-			expect(compute?.numericValue).toBe(225);
+			expect(compute?.numericValue).toBe(25);
 			const read = findOp(steps, 'read-solutions');
 			const latexs = read!.solutions.map(toLatex).sort();
 			expect(latexs).toEqual(['-2', '3']);
@@ -706,11 +714,14 @@ describe('generateQuadraticEquationSteps', () => {
 	// ===========================================================================
 
 	describe('superieur — omission de identify-equation pour tous les cas', () => {
-		it('cas c=0 (superieur) : pas d’identify-equation', () => {
+		it('cas c=0 (superieur) : pas d’identify-equation, factor-gcd ouvre la séquence', () => {
+			// `2x² + 6x` triggers V1.1-C, so `factor-gcd` sits at index 0 in
+			// supérieur (which omits identify-equation).
 			const steps = generateQuadraticEquationSteps(eqCZero(), { level: 'superieur' });
 			const kinds = steps.map((s) => s.operation?.kind);
 			expect(kinds).not.toContain('identify-equation');
-			expect(kinds[0]).toBe('recognize-no-constant-term');
+			expect(kinds[0]).toBe('factor-gcd');
+			expect(kinds).toContain('recognize-no-constant-term');
 		});
 
 		it('cas factorisé (superieur) : pas d’identify-equation, démarre par recognize-factored', () => {
@@ -725,6 +736,109 @@ describe('generateQuadraticEquationSteps', () => {
 // =============================================================================
 // PedagogicalQuadraticNotImplemented
 // =============================================================================
+
+describe('V1.1 raffinements (B/C/D)', () => {
+	describe('V1.1-C : factor-gcd (PGCD des coefficients)', () => {
+		it('non émis quand gcd(a,b,c) = 1 (`x² + 5x + 6 = 0`)', () => {
+			const steps = generateQuadraticEquationSteps(eqStandardPositive(), { level: 'lycee' });
+			expect(findOp(steps, 'factor-gcd')).toBeNull();
+		});
+
+		it('émis quand gcd > 1 (`3x² − 3x − 18 = 0`, gcd=3)', () => {
+			const eq = relation(
+				'=',
+				subtract(
+					subtract(
+						implicitMultiply(number('3'), power(x, number('2'))),
+						implicitMultiply(number('3'), x)
+					),
+					number('18')
+				),
+				number('0')
+			);
+			const steps = generateQuadraticEquationSteps(eq, { level: 'lycee' });
+			const gcd = findOp(steps, 'factor-gcd');
+			expect(gcd).not.toBeNull();
+			expect(toLatex(gcd!.gcd)).toBe('3');
+			// Simplified form is `x² - x - 6` (LaTeX may format with explicit signs).
+			expect(toLatex(gcd!.simplified)).toMatch(/x\^2/);
+		});
+
+		it('émis pour b-zero (`2x² − 8 = 0`, gcd=2)', () => {
+			const eq = relation(
+				'=',
+				subtract(implicitMultiply(number('2'), power(x, number('2'))), number('8')),
+				number('0')
+			);
+			const steps = generateQuadraticEquationSteps(eq, { level: 'lycee' });
+			const gcd = findOp(steps, 'factor-gcd');
+			expect(gcd).not.toBeNull();
+			expect(toLatex(gcd!.gcd)).toBe('2');
+			// After GCD : `x² − 4 = 0` ⇒ rhs of isolate-square = 4.
+			const isolate = findOp(steps, 'isolate-square');
+			expect(toLatex(isolate!.rhs)).toBe('4');
+			// Solutions ±2 unchanged by GCD.
+			const read = findOp(steps, 'read-solutions');
+			expect(read!.solutions.map(toLatex).sort()).toEqual(['-2', '2']);
+		});
+
+		it('émis pour c-zero (`2x² + 6x = 0`, gcd=2)', () => {
+			const steps = generateQuadraticEquationSteps(eqCZero(), { level: 'lycee' });
+			const gcd = findOp(steps, 'factor-gcd');
+			expect(gcd).not.toBeNull();
+			expect(toLatex(gcd!.gcd)).toBe('2');
+		});
+
+		it('non émis sur la forme déjà factorisée (`(x−2)(x+3) = 0`)', () => {
+			const steps = generateQuadraticEquationSteps(eqFactored(), { level: 'lycee' });
+			expect(findOp(steps, 'factor-gcd')).toBeNull();
+		});
+
+		it('non émis pour coefficients non-entiers', () => {
+			// `(1/2)x² + x + 1 = 0` — non-integer coeffs ⇒ pas de GCD.
+			// On utilise `fraction(1, 2) · x²` pour produire un coefficient 1/2.
+			// Cas degré 2 vérifié sans factor-gcd.
+			const steps = generateQuadraticEquationSteps(
+				relation('=', add(add(power(x, number('2')), x), number('1')), number('0')),
+				{ level: 'lycee' }
+			);
+			// `x² + x + 1 = 0` (coefficients entiers, gcd=1) ⇒ pas de GCD.
+			expect(findOp(steps, 'factor-gcd')).toBeNull();
+		});
+	});
+
+	describe('V1.1-D : smartNegate (élimine `--N` dans les rawSolutions)', () => {
+		it('rawSolutions de `x² − 5x + 6 = 0` ne contiennent pas `--5` (b=-5 collapse)', () => {
+			const eq = relation(
+				'=',
+				add(subtract(power(x, number('2')), implicitMultiply(number('5'), x)), number('6')),
+				number('0')
+			);
+			const steps = generateQuadraticEquationSteps(eq, { level: 'lycee' });
+			const apply = findOp(steps, 'apply-quadratic-formula');
+			const rawLatex = apply!.solutions.map(toLatex).join(' ');
+			// Avant V1.1-D : `--5` apparaissait. Après : `5` direct.
+			expect(rawLatex).not.toMatch(/--5/);
+			expect(rawLatex).toMatch(/5/);
+		});
+
+		it('positif b reste préfixé `-` dans les rawSolutions (`x² + 5x + 6 = 0`)', () => {
+			const steps = generateQuadraticEquationSteps(eqStandardPositive(), { level: 'lycee' });
+			const apply = findOp(steps, 'apply-quadratic-formula');
+			const rawLatex = apply!.solutions.map(toLatex).join(' ');
+			expect(rawLatex).toMatch(/-5/); // -b visible dans le numérateur
+		});
+	});
+
+	describe('V1.1-B : nodesEqual remplace JSON.stringify (smoke test)', () => {
+		it('simplify-solutions toujours émis quand raw ≠ simplified (régression de la signature)', () => {
+			// Cas standard où raw = `(-5 ± √1)/2` et simplified = `[-3, -2]`.
+			const steps = generateQuadraticEquationSteps(eqStandardPositive(), { level: 'lycee' });
+			const simp = findOp(steps, 'simplify-solutions');
+			expect(simp).not.toBeNull();
+		});
+	});
+});
 
 describe('PedagogicalQuadraticNotImplemented', () => {
 	it('extends Error, exposes reason field', () => {

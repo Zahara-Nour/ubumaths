@@ -272,6 +272,15 @@ describe('pedagogical-solve quadratic types (Phase 1)', () => {
 			const op: EquationOperation = { kind: 'no-real-solution' };
 			expect(op.kind).toBe('no-real-solution');
 		});
+
+		it('factor-gcd carries gcd + simplified (V1.1)', () => {
+			const op: EquationOperation = {
+				kind: 'factor-gcd',
+				gcd: number('3'),
+				simplified: number('1')
+			};
+			expect(op.kind).toBe('factor-gcd');
+		});
 	});
 
 	describe('EquationStep accepts a quadratic operation', () => {
@@ -296,7 +305,7 @@ describe('pedagogical-solve quadratic types (Phase 1)', () => {
 	});
 
 	describe('EquationOperation kinds count', () => {
-		it('exhaustively lists all 30 kinds (12 shared+linear + 18 quadratic)', () => {
+		it('exhaustively lists all 31 kinds (12 shared+linear + 19 quadratic incl. V1.1 factor-gcd)', () => {
 			// Counter per kind to enforce "if you add/remove, update the test"
 			const allKinds: EquationOperation['kind'][] = [
 				// Shared / linear (12)
@@ -312,7 +321,7 @@ describe('pedagogical-solve quadratic types (Phase 1)', () => {
 				'group-constants',
 				'reduce-to-canonical',
 				'read-solution',
-				// Quadratic (18)
+				// Quadratic (19, including V1.1 factor-gcd)
 				'standardize',
 				'identify-coefficients',
 				'compute-discriminant',
@@ -330,10 +339,11 @@ describe('pedagogical-solve quadratic types (Phase 1)', () => {
 				'factor-common-x',
 				'zero-product',
 				'solve-each-factor',
-				'no-real-solution'
+				'no-real-solution',
+				'factor-gcd'
 			];
 			expect(new Set(allKinds).size).toBe(allKinds.length); // no duplicates
-			expect(allKinds).toHaveLength(30);
+			expect(allKinds).toHaveLength(31);
 		});
 	});
 });
