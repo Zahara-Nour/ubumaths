@@ -203,18 +203,20 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - Composant Svelte `<GeneratedStepsCorrection>` + extension `CorrectionCard.svelte`
   - Mapping `gradeLevelToSchoolLevel` (CP-CM2 → primaire, 6-3 → college, 2-T → lycee)
   - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (4 fixtures : arithmetic + linear-equation + differentiate × 2)
-- **Stepper pédagogique pour équations du second degré** (`kind: 'quadratic-equation'`) → livré, voir `quadratic-stepper-progress.md`. Inclut :
+- **Stepper pédagogique pour équations du second degré** (`kind: 'quadratic-equation'`) → livré V1 + V1.1, voir `quadratic-stepper-progress.md`. Inclut :
 
   - Pipeline `pedagogical-solve/quadratic.ts` couvrant 4 cas (standard Δ>0/=0/<0, b=0, c=0, factorisé) + standardisation auto vers `… = 0`
   - Renderer `quadratic-renderer.ts` lycée + supérieur avec TITLES, EXPLANATIONS, formatExpressionLatex per kind
   - Dispatcher unifié `pedagogical-solve/index.ts` (`generateEquationSteps` selon degré, bumps primaire→college pour linéaire et primaire/college→lycee pour quadratique)
   - Helpers partagés `_helpers.ts` (canon, addToBothSides, makeStep, etc.) refacto entre linear et quadratic
   - Class `PedagogicalQuadraticNotImplemented` pour cas hors scope V1 (paramétriques)
-  - 7 catégories de démos snapshot + CLI `scripts/pedagogical-quadratic-demo.ts`
+  - 7 catégories de démos snapshot + CLI `scripts/pedagogical-quadratic-demo.ts` (avec pretty-print LaTeX → ASCII/Unicode + ANSI bold-blue sur TTY, flag `--latex` pour mode raw)
   - Mode B `kind: 'quadratic-equation'` intégré (types/Zod/correction-generator/fixture/page debug 5e carte)
-  - 6 commits : `593a82204`, `40789a138`, `910e4e642`, `bd333851a`, `0a52989d6`, `92580f0b9`
-  - 222 tests spécifiques au feature (29 types + 57 pipeline + 29 renderer + 19 dispatcher + 23 demos + 30 correction-generator + 8 generated-steps-demo + 27 ajustements)
+  - 9 commits : 7 V1 + 2 V1.1 — `593a82204`, `40789a138`, `910e4e642`, `bd333851a`, `0a52989d6`, `92580f0b9`, `023476a5b` (V1) puis `8252a747d`, `23acc3eed` (V1.1)
+  - 245 tests spécifiques au feature (29 types + 66 pipeline avec V1.1 + 29 renderer + 19 dispatcher + 23 demos + 30 correction-generator + 8 generated-steps-demo + 41 ajustements/V1.1)
+  - **V1.1 raffinements livrés** : `nodesEqual` structurel (B), `factor-gcd` nouveau kind (C, count 30 → 31), `smartNegate` collapse `--N` (D), pretty-print CLI, fix `formatZeroProduct` `(A) · (B) = 0`
   - Limitations V1 : coefficients paramétriques (`mx²+…`), équations bicarrées, cubiques/quartiques (hors scope, throw NotImplemented → fallback Mode A)
+  - **V2 prompt rédigé** : `docs/wip/quadratic-stepper-v2-prompt.md` (paramétriques + discussion sur paramètre, ~14-16h tunnel)
 
 - **Stepper pédagogique pour différentiation** (`kind: 'differentiate'`) → livré, voir `differentiation-stepper-progress.md`. Inclut :
   - Pipeline parallèle `pedagogical-differentiation/` (Option 2 retenue plutôt que dual renderer sur `differentiate.ts`)
