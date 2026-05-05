@@ -295,9 +295,35 @@ function formatExpressionLatex(step: EquationStep): string {
  * for info-only steps (no transformation to display). Exposed for the demo
  * which prints each line on its own terminal row.
  */
+/**
+ * Map a `RelationNode.relation` string to its LaTeX equivalent for use inside
+ * an aligned block (where `>=`/`<=`/`!=` are not valid LaTeX tokens).
+ *
+ * Scope: only the 5 operators that the linear inequality pipeline emits
+ * (`<`, `>`, `<=`, `>=`, `!=`), plus `=` for the equation pipeline. The
+ * extended `RelationType` (`≡`, `≢`, `≈`, `⟹`, …) is not produced by either
+ * pipeline; the `default` arm passes such tokens through unchanged.
+ */
+function relToLatex(rel: string): string {
+	switch (rel) {
+		case '<=':
+			return '\\leq';
+		case '>=':
+			return '\\geq';
+		case '!=':
+			return '\\neq';
+		case '<':
+		case '>':
+		case '=':
+			return rel;
+		default:
+			return rel;
+	}
+}
+
 export function formatTransformationLines(step: EquationStep): readonly string[] | null {
 	const op = step.operation;
-	const rel = step.before.type === 'relation' ? step.before.relation : '=';
+	const rel = step.before.type === 'relation' ? relToLatex(step.before.relation) : '=';
 	const bL = step.before.type === 'relation' ? fmt(step.before.left) : fmt(step.before);
 	const bR = step.before.type === 'relation' ? fmt(step.before.right) : '';
 	const aL = step.after.type === 'relation' ? fmt(step.after.left) : fmt(step.after);
