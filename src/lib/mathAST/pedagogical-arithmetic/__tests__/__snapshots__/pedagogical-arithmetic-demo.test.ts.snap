@@ -82,7 +82,7 @@ exports[`snapshot — basic > '2 + 3 × 4 + 5 × 6 (regroupement)' 1`] = `
 
 ========== COLLEGE (detailed) ==========
 [0] On effectue d'abord les multiplications
-    │ @blue{2+3*4+5*6}
+    │ 2+@blue{3*4}+@blue{5*6}
     │ = 2+12+30
     │ (En l'absence de parenthèses, les multiplications sont effectuées avant les additions et soustractions.)
 [1] Addition

@@ -24,6 +24,7 @@
 import type { MathNode } from '../types';
 import { evaluate } from '../eval/evaluate';
 import { isEvalValue } from '../eval/types';
+import { isMultiplication, isNumber, isOpposite } from '../guards';
 import { match, nodesEqual } from '../pattern/match';
 import { applyRule, instantiate } from '../pattern/rule';
 import type { MatchBindings, Rule } from '../pattern/types';
@@ -64,6 +65,52 @@ function bindingsToRecord(bindings: MatchBindings): Record<string, MathNode> {
 		}
 	}
 	return out;
+}
+
+/**
+ * Collect every sub-tree of `node` that is a numeric multiplication (e.g.
+ * `3*4`, `(-3)*5`). Used by the grouping rule's pre-pass to tell the
+ * renderer which fragments to highlight when the step rewrites several
+ * multiplications at once.
+ */
+function collectNumericMultiplications(node: MathNode): readonly MathNode[] {
+	const found: MathNode[] = [];
+	const walk = (n: MathNode): void => {
+		if (isMultiplication(n)) {
+			const isNumericAtom = (x: MathNode): boolean =>
+				isNumber(x) || (isOpposite(x) && isNumber(x.operand));
+			if (isNumericAtom(n.left) && isNumericAtom(n.right)) {
+				found.push(n);
+				return; // don't recurse into nested numeric muls
+			}
+		}
+		// Generic structural walk — covers the operators we'll ever see in a
+		// pre-grouping arithmetic expression. For exotic shapes we silently
+		// stop (caller falls back to a single highlight on `step.before`).
+		switch (n.type) {
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+				walk(n.left);
+				walk(n.right);
+				break;
+			case 'division':
+				walk(n.numerator);
+				walk(n.denominator);
+				break;
+			case 'opposite':
+			case 'positive':
+				walk(n.operand);
+				break;
+			case 'delimiter':
+				walk(n.content);
+				break;
+			default:
+				break;
+		}
+	};
+	walk(node);
+	return found;
 }
 
 /**
@@ -139,6 +186,10 @@ export function generatePedagogicalArithmeticSteps(
 			return result ?? n;
 		});
 		if (!nodesEqual(grouped, workingNode)) {
+			// Collect every sub-tree inside `workingNode` that is a numeric
+			// multiplication — those are the fragments the grouping rule just
+			// collapsed, so the renderer should highlight ALL of them.
+			const highlightSubTrees = collectNumericMultiplications(workingNode);
 			collected.push({
 				id: stepId++,
 				rule: groupMultiplicationsInAddition.name,
@@ -147,6 +198,7 @@ export function generatePedagogicalArithmeticSteps(
 				after: grouped,
 				globalBefore: workingNode,
 				globalAfter: grouped,
+				highlightSubTrees,
 				verbosityLevel: 'summarized'
 			});
 			workingNode = grouped;

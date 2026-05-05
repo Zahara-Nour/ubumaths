@@ -118,6 +118,16 @@ export interface PedagogicalArithmeticStep extends BaseStep {
 	readonly globalAfter?: MathNode;
 
 	/**
+	 * Sub-trees inside `globalBefore` to highlight in the rendering. When
+	 * `undefined`, the renderer defaults to highlighting `step.before`
+	 * (the single fragment that was rewritten). Populated explicitly by
+	 * pipeline rules that transform MULTIPLE sub-trees in a single step
+	 * (e.g. `group-multiplications-in-addition` highlights every `n*m`
+	 * factor it just collapsed).
+	 */
+	readonly highlightSubTrees?: readonly MathNode[];
+
+	/**
 	 * Optional finer-grained substeps. Used by post-processing groupers
 	 * (e.g. group-multiplications-in-addition) to expose the underlying
 	 * atomic operations under a top-level summary step.
