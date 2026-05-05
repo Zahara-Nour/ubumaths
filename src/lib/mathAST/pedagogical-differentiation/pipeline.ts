@@ -50,7 +50,10 @@ import type {
 	SuperscriptNode
 } from '../types';
 import { containsVariable } from '../common/contains-variable';
+import { evaluate } from '../eval/evaluate';
+import { isEvalValue } from '../eval/types';
 import { isOne, isZero } from '../guards';
+import { mapNodeTopDown } from '../transforms';
 import {
 	acoshRule,
 	arccosRule,
@@ -210,6 +213,81 @@ function inlineDifferentiateTrivial(node: MathNode, variable: string): MathNode 
 	if (node.type === 'variable') return variableRule(node.name, variable);
 	if (node.type === 'greek') return greekLetterRule(node.letter, variable);
 	return constantRule();
+}
+
+/**
+ * True iff `node` is composed entirely of numeric leaves and arithmetic
+ * structure (no variable, greek letter, or function call). Such a sub-tree
+ * is safe to fold via `evaluate({mode:'exact'})` because the result will
+ * always be a pure rational/integer (no symbolic dependency on the
+ * differentiation variable).
+ *
+ * Function calls are excluded even when their arguments are constants — we
+ * don't want to evaluate `\sin(5)` to a decimal approximation, and exact
+ * mode would either keep it symbolic or fail.
+ */
+function isFullyNumeric(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+			return true;
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return isFullyNumeric(node.left) && isFullyNumeric(node.right);
+		case 'division':
+			return isFullyNumeric(node.numerator) && isFullyNumeric(node.denominator);
+		case 'opposite':
+		case 'positive':
+			return isFullyNumeric(node.operand);
+		case 'superscript':
+			return isFullyNumeric(node.base) && isFullyNumeric(node.superscript);
+		case 'delimiter':
+			return isFullyNumeric(node.content);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Conservative gate on the result of `evaluate(node, {mode:'exact'})`: only
+ * accept a fold whose output is a single number, the opposite of a number,
+ * or a fraction `±a/±b` of numbers. Anything more complex is rejected, so we
+ * never replace a clean sub-expression with a less-readable one.
+ */
+function isAcceptableFoldResult(node: MathNode): boolean {
+	if (node.type === 'number') return true;
+	if (node.type === 'opposite' && node.operand.type === 'number') return true;
+	if (node.type === 'division') {
+		const numOk =
+			node.numerator.type === 'number' ||
+			(node.numerator.type === 'opposite' && node.numerator.operand.type === 'number');
+		const denOk =
+			node.denominator.type === 'number' ||
+			(node.denominator.type === 'opposite' && node.denominator.operand.type === 'number');
+		return numOk && denOk;
+	}
+	return false;
+}
+
+/**
+ * Walk `node` top-down, folding every fully-numeric sub-tree into its
+ * exact value (`add(2,3)` → `5`, `mul(2,3)` → `6`, `div(6,4)` → `3/2`).
+ * Sub-trees containing the variable are left untouched — only the
+ * arithmetic-only branches collapse.
+ *
+ * Used post-differentiation on `result.derivative` to clean up
+ * non-folding `simplifiedAdd` artifacts (`(2x + 3x)' = 2 + 3 = 5`). Step
+ * `before`/`after` fields are intentionally NOT folded so snapshots stay
+ * stable against intermediate-form drift.
+ */
+export function foldNumericSubtrees(node: MathNode): MathNode {
+	return mapNodeTopDown(node, (n) => {
+		if (!isFullyNumeric(n)) return n;
+		const result = evaluate(n, { mode: 'exact' });
+		if (!isEvalValue(result)) return n;
+		if (!isAcceptableFoldResult(result.node)) return n;
+		return result.node;
+	});
 }
 
 /**
@@ -961,7 +1039,11 @@ export function generatePedagogicalDifferentiationSteps(
 		return { derivative, steps: [step] };
 	}
 
-	// Non-trivial: delegate to the recursive dispatcher.
+	// Non-trivial: delegate to the recursive dispatcher, then collapse any
+	// purely-numeric sub-trees in the final derivative (`(2x+3x)' = 2+3` → 5,
+	// `(5x-2x)' = 5-2` → 3). Step `before`/`after` fields are NOT folded —
+	// they preserve the post-rule intermediate form so snapshots stay stable
+	// and the pedagogical trace doesn't lose its arithmetic step.
 	const { derivative, steps } = differentiateNode(node, ctx);
-	return { derivative, steps };
+	return { derivative: foldNumericSubtrees(derivative), steps };
 }

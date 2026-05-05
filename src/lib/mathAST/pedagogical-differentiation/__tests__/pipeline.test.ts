@@ -298,12 +298,10 @@ describe('Phase 2a — addition (sum + sum-with-constant)', () => {
 		expect(top.subSteps).toHaveLength(2);
 		expect(top.subSteps?.[0].rule).toBe('linear-coefficient');
 		expect(top.subSteps?.[1].rule).toBe('linear-coefficient');
-		// Derivative is `2 + 3` (unsimplified — `simplifiedAdd` does not fold constants).
-		expect(result.derivative.type).toBe('addition');
-		if (result.derivative.type === 'addition') {
-			expect(getNumberValue(result.derivative.left)).toBe('2');
-			expect(getNumberValue(result.derivative.right)).toBe('3');
-		}
+		// V1.1 : numeric sub-trees are folded after differentiation. `(2x+3x)' →
+		// 2+3` collapses to `5`. The intermediate `step.after = add(2,3)` is
+		// preserved (snapshot stable); only `result.derivative` is folded.
+		expect(getNumberValue(result.derivative)).toBe('5');
 	});
 
 	it("(x + x)' uses general sum (both sides depend on x) and emits no inner steps", () => {
@@ -313,8 +311,8 @@ describe('Phase 2a — addition (sum + sum-with-constant)', () => {
 		expect(result.steps[0].rule).toBe('sum');
 		// Both sub-derivations are trivial → no subSteps emitted.
 		expect(result.steps[0].subSteps).toBeUndefined();
-		// Derivative is `1 + 1` (unsimplified).
-		expect(result.derivative.type).toBe('addition');
+		// V1.1 fold : `1 + 1` collapses to `2`.
+		expect(getNumberValue(result.derivative)).toBe('2');
 	});
 
 	it("(x + 5)' uses the `sum-with-constant` special case", () => {
@@ -346,12 +344,9 @@ describe('Phase 2a — subtraction (difference + diff-with-constant)', () => {
 		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
 
 		expect(result.steps[0].rule).toBe('difference');
-		// Derivative is `5 - 2` (unsimplified — pedagogically acceptable, the student finishes).
-		expect(result.derivative.type).toBe('subtraction');
-		if (result.derivative.type === 'subtraction') {
-			expect(getNumberValue(result.derivative.left)).toBe('5');
-			expect(getNumberValue(result.derivative.right)).toBe('2');
-		}
+		// V1.1 fold : `5 - 2` collapses to `3` on `result.derivative` while
+		// the intermediate `step.after = subtract(5, 2)` is preserved.
+		expect(getNumberValue(result.derivative)).toBe('3');
 	});
 
 	it("(2x - 5)' uses diff-with-constant (constant on the right) → derivative is the variable side", () => {
@@ -630,6 +625,48 @@ describe('Phase 2c — general quotient', () => {
 // =============================================================================
 // V1.1 — f/c (constant denominator, variable numerator) → linear-coefficient
 // =============================================================================
+
+// =============================================================================
+// V1.1 — Constant folding on result.derivative (step.before/after preserved)
+// =============================================================================
+
+describe('V1.1 — fold numeric sub-trees on the final derivative', () => {
+	it("(2x + 3x)' final derivative folds to 5 (was 2+3)", () => {
+		const node = parseLatex('2x + 3x');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+		expect(getNumberValue(result.derivative)).toBe('5');
+	});
+
+	it("(2x^4 - 3x + 5)' folds the constant terms but preserves the symbolic ones", () => {
+		const node = parseLatex('2x^4 - 3x + 5');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+		// Derivative contains `8x^3 - 3` (5' = 0, dropped via sum-with-constant).
+		// We don't assert a specific shape; just that it's not a fully-numeric
+		// node (still contains the variable).
+		expect(result.derivative.type).not.toBe('number');
+	});
+
+	it("(sin(x) + 5)' preserves sin(x) and drops the constant via sum-with-constant", () => {
+		const node = parseLatex('\\sin(x) + 5');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+		// derivative = cos(x) (5 dropped). Shouldn't fold cos(x) — function calls
+		// are excluded from the fold.
+		expect(result.derivative.type).toBe('function');
+	});
+
+	it('step.after is NOT folded — preserves the intermediate form for snapshots', () => {
+		const node = parseLatex('2x + 3x');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+		// Top-level step `(2x+3x)' = ?` — the intermediate addition-of-constants
+		// form is kept on the step, even though the final derivative is folded.
+		expect(result.steps[0].after.type).toBe('addition');
+	});
+
+	it("trivial top-level constant `(5)' = 0` — fold is a no-op (already a number)", () => {
+		const result = generatePedagogicalDifferentiationSteps(number('5'), lyceeOpts);
+		expect(getNumberValue(result.derivative)).toBe('0');
+	});
+});
 
 describe('V1.1 — f/c routes to linear-coefficient with c = 1/denom', () => {
 	it("(x^2/5)' uses linear-coefficient with c = 1/5 and a power-natural sub-step", () => {
