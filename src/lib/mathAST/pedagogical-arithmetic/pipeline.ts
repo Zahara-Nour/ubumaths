@@ -187,6 +187,50 @@ function collectNumericMultiplications(node: MathNode): readonly MathNode[] {
 }
 
 /**
+ * Like `findFirstApplication` but restricts the search to nodes located
+ * INSIDE a `(...)` delimiter. Used by the pipeline to prioritise
+ * "calculate the parentheses first" : any application inside a parens
+ * fires before any application at the outer level, regardless of which
+ * is more left.
+ *
+ * Returns null when no rule applies inside any parens.
+ */
+function findFirstApplicationInAnyParens(
+	rules: readonly PedagogicalArithmeticRule[],
+	node: MathNode
+): {
+	rule: PedagogicalArithmeticRule;
+	subBefore: MathNode;
+	subAfter: MathNode;
+	bindings: MatchBindings;
+	replacedTree: MathNode;
+} | null {
+	let captured: {
+		rule: PedagogicalArithmeticRule;
+		subBefore: MathNode;
+		subAfter: MathNode;
+		bindings: MatchBindings;
+	} | null = null;
+
+	const replacedTree = mapNode(node, (n) => {
+		if (captured) return n;
+		if (n.type !== 'delimiter' || n.delimiters !== 'parentheses') return n;
+		const inner = findFirstApplication(rules, n.content);
+		if (!inner) return n;
+		captured = {
+			rule: inner.rule,
+			subBefore: inner.subBefore,
+			subAfter: inner.subAfter,
+			bindings: inner.bindings
+		};
+		return { ...n, content: inner.replacedTree };
+	});
+
+	if (!captured) return null;
+	return { ...captured, replacedTree };
+}
+
+/**
  * Find the first sub-tree of `node` where ANY of `rules` applies. Iterates
  * **node-first**, then rule-by-rule at each node — this means the
  * left-most applicable sub-tree wins, which mirrors the natural reading
@@ -339,7 +383,14 @@ export function generatePedagogicalArithmeticSteps(
 	let current = workingNode;
 	for (let iter = 0; iter < DEFAULT_MAX_ITERATIONS; iter++) {
 		if (checkAbort()) break;
-		const found = findFirstApplication(enginePedagogicalRules, current);
+		// Priority order : an application INSIDE a parens always wins over
+		// an application at the outer level, so the student calculates the
+		// content of every parens before tackling the surrounding ops.
+		// Falls back to the global search when no parens contains a
+		// pending operation.
+		const found =
+			findFirstApplicationInAnyParens(enginePedagogicalRules, current) ??
+			findFirstApplication(enginePedagogicalRules, current);
 		if (!found) break;
 		const recordBindings = bindingsToRecord(found.bindings);
 		const nextGlobal = cleanupTrivialParens(found.replacedTree);
