@@ -136,9 +136,37 @@ Commit : `4b6d01b8e`.
   47 tests d'intégration existants) ; 0 régression sur la base de 2092
   tests `pnpm test:server src/lib/questions/`.
 
+### ✅ Phase 6 — Page debug + validation visuelle
+
+**Fichier :**
+
+- `src/routes/(protected)/dashboard/admin/debug/correction-mode-b/+page.svelte`
+  (nouveau, ~200 lignes)
+
+**Trois sections sur la page :**
+
+1. **État de la génération** — statut ✓/✗ par fixture + bouton « Afficher le
+   JSON brut des `RenderedStep[]` » pour inspecter la sortie pipeline brute.
+2. **Aperçu direct** `<GeneratedStepsCorrection>` — composant nu, 2 cartes
+   côte à côte (CM2 + 4e), sans flip ni `TestAnswerResult`.
+3. **`<CorrectionCard>` flux complet** — 4 cartes (correct/incorrect ×
+   arithmétique/linéaire) ; flip sur ↻ pour voir Mode B dans son contexte
+   réel d'élève.
+
+**Accès** : `http://localhost:5175/dashboard/admin/debug/correction-mode-b`
+(authentification admin requise via le layout `(protected)`).
+
+**Validation visuelle utilisateur** : ✓ — rendu LaTeX correct, étapes
+colorées (`\textcolor{blue}{...}`), feedback préservé sous les étapes,
+flip card opérationnelle en Mode B.
+
+**Svelte autofixer** : 0 issue.
+
+Commit : `c7ea40154`.
+
 ## État final des fichiers
 
-**Nouveaux (10) :**
+**Nouveaux (11) :**
 
 - `src/lib/questions/grade-level-to-school-level.{ts,test.ts}`
 - `src/lib/questions/generator/correction-generator.{ts,test.ts}`
@@ -146,6 +174,7 @@ Commit : `4b6d01b8e`.
 - `src/lib/questions/__tests__/generated-steps-demo.test.ts`
 - `src/lib/questions/__tests__/__snapshots__/generated-steps-demo.test.ts.snap`
 - `src/lib/components/questions/GeneratedStepsCorrection.svelte`
+- `src/routes/(protected)/dashboard/admin/debug/correction-mode-b/+page.svelte`
 - `docs/wip/correction-integration-progress.md` (ce fichier)
 - `docs/wip/correction-integration-prompt.md` (le prompt source)
 
@@ -177,9 +206,26 @@ Commit : `4b6d01b8e`.
 | 2   | `f7a878dfc` | Phase 2 | generateCorrection() pipeline glue + auto-call wiring     |
 | 3   | `034e1d717` | Phase 3 | generated steps Svelte component + correction card wiring |
 | 4   | `4b6d01b8e` | Phase 4 | end-to-end Mode B demo fixtures + snapshot tests          |
-| 5   | (ce commit) | Phase 5 | progress doc final + quality checks                       |
+| 5   | `23485641a` | Phase 5 | progress doc final + quality checks                       |
+| 6   | `c7ea40154` | Phase 6 | debug page `/dashboard/admin/debug/correction-mode-b`     |
 
 ## Risques connus / TODOs futurs (post-V1)
+
+### UX à raffiner (différé)
+
+L'utilisateur a validé visuellement le rendu de bout en bout sur la page
+debug (Phase 6). L'UI elle-même reste à améliorer dans une session ultérieure :
+
+- **Hiérarchie visuelle des étapes** : la liste numérotée fonctionne mais
+  pourrait gagner en lisibilité (séparation entre étapes plus marquée,
+  gestion responsive du LaTeX qui déborde, animation de progression).
+- **Densité du `\textcolor{blue}{...}`** : à confronter à différents
+  zooms / tailles d'écran pour vérifier le contraste et la lisibilité.
+- **Intégration au flow flashcard** : aujourd'hui Mode B s'affiche dans
+  `CorrectionCard` (face arrière, après flip) ; à valider que le ressenti
+  est cohérent dans les autres écrans qui consomment des `QuestionInstance`.
+
+### Périmètre technique non livré
 
 - **`arithmetic-from-blank`** : skip en V1, à reconsidérer si la duplication
   d'expression entre `expectedAnswer` (`{{eval:a+b}}`) et

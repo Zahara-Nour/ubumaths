@@ -308,7 +308,7 @@ src/lib/mathAST/pedagogical-arithmetic/
 ### TODO post-prompt (refactos séparées)
 
 1. **Populer `expressionName` directement dans `InstanceBlank`** via `generator/assign-blank-indices.ts` pour rendre le 3e arg `expressionName` redondant dans `extractPedagogicalTarget` (~2-3h).
-2. **Intégration aux corrections de questions** (`QuestionCorrection.generatedSteps`) — actuellement le pipeline est PRÊT (extractPedagogicalTarget fonctionne) mais la connexion aux composants Svelte de correction reste à faire (autre prompt).
+2. ~~**Intégration aux corrections de questions** (`QuestionCorrection.generatedSteps`)~~ — ✅ **livré le 2026-05-05** : voir `docs/wip/correction-integration-progress.md` (commits `caa9c58e7`–`c7ea40154`). Glue côté serveur (`generateCorrection()` + auto-call dans `generateInstance()`), composant Svelte `<GeneratedStepsCorrection>`, extension `CorrectionCard.svelte` avec priorité Mode A si les deux présents, et page debug `/dashboard/admin/debug/correction-mode-b`.
 3. **Variantes de fractions par sous-niveau** : early-college (multiplication directe des dénominateurs, e.g. `1/3+1/6 → 6+3/18 = 9/18 = 1/2`) vs late-college (PGCD).
 4. **`rationalize-denominator`** et **`simplify-square-root-of-square`** (radicaux niveau 3 avancé).
 5. **Decimal mantissas** dans `multiplyScientific` / `addScientificSamePower` (mantissas non-entières en notation scientifique).
@@ -511,20 +511,21 @@ Après : `(6+2), (15+5), 24÷8, 3×3, 20÷4, 9+5` (toutes parens d'abord).
 - `pedagogical-steppers-mvp-progress.md` — infrastructure générique sur laquelle ce module s'appuie (rewriting-engine, step-renderer-base, technical-renderer, etc.)
 - `pedagogical-steppers-mvp-prompt.md` — prompt source du MVP infrastructure
 - `pedagogical-arithmetic-prompt.md` — prompt source de ce travail
+- `correction-integration-progress.md` — **consommateur en aval** : intégration de ce pipeline aux corrections de questions (`QuestionCorrection.generatedSteps` + composant Svelte + auto-call dans `generateInstance`)
 - `units-imperial-affine-progress.md`, `units-derived-progress.md`, `units-area-progress.md` — travaux unités livrés en parallèle (orthogonaux)
 
 ### TODOs post-prompt à reprendre dans des sessions ultérieures
 
-| Item                                                                                              | Effort | Notes                                                  |
-| ------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------ |
-| Populer `expressionName` dans `InstanceBlank` via `assign-blank-indices.ts`                       | ~2-3h  | Rend le 3e arg de `extractPedagogicalTarget` redondant |
-| Intégration aux corrections de questions (`QuestionCorrection.generatedSteps` + composant Svelte) | ~6-8h  | Pipeline prêt côté backend, manque la glue UX          |
-| Variantes fractions par sous-niveau (early-college multiplication vs late-college PGCD)           | ~2-3h  | Affinage pédagogique                                   |
-| `rationalize-denominator` + `simplify-square-root-of-square` (radicaux avancés)                   | ~3-4h  | Niveau 3 lycée+                                        |
-| Decimal mantissas dans `multiplyScientific` / `addScientificSamePower`                            | ~2-3h  | Support mantisses non-entières                         |
-| Cohérence `signs: 'strict'` en post-processing (`5 + (-3) → 5 - 3`)                               | ~2h    | Étape pédagogique finale conditionnelle                |
-| Format `--both` dans snapshots démo (custom + LaTeX côte à côte)                                  | ~1h    | Lisibilité du dev                                      |
-| Réglage espacement par niveau (primaire plus aéré ?)                                              | ~1-2h  | À évaluer après retour utilisateur                     |
+| Item                                                                                                  | Effort    | Notes                                                               |
+| ----------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------- |
+| Populer `expressionName` dans `InstanceBlank` via `assign-blank-indices.ts`                           | ~2-3h     | Rend le 3e arg de `extractPedagogicalTarget` redondant              |
+| ~~Intégration aux corrections de questions~~ (`QuestionCorrection.generatedSteps` + composant Svelte) | ~~~6-8h~~ | ✅ **Livré 2026-05-05** — voir `correction-integration-progress.md` |
+| Variantes fractions par sous-niveau (early-college multiplication vs late-college PGCD)               | ~2-3h     | Affinage pédagogique                                                |
+| `rationalize-denominator` + `simplify-square-root-of-square` (radicaux avancés)                       | ~3-4h     | Niveau 3 lycée+                                                     |
+| Decimal mantissas dans `multiplyScientific` / `addScientificSamePower`                                | ~2-3h     | Support mantisses non-entières                                      |
+| Cohérence `signs: 'strict'` en post-processing (`5 + (-3) → 5 - 3`)                                   | ~2h       | Étape pédagogique finale conditionnelle                             |
+| Format `--both` dans snapshots démo (custom + LaTeX côte à côte)                                      | ~1h       | Lisibilité du dev                                                   |
+| Réglage espacement par niveau (primaire plus aéré ?)                                                  | ~1-2h     | À évaluer après retour utilisateur                                  |
 
 ### Hors scope ce prompt et liés à ce travail
 
