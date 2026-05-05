@@ -153,9 +153,17 @@ const generatedStepsLinearEquation = z.object({
 	options: generatedStepsOptionsSchema.optional()
 });
 
+const generatedStepsDifferentiate = z.object({
+	kind: z.literal('differentiate'),
+	expression: z.string().min(1),
+	variable: z.string().min(1).optional(),
+	options: generatedStepsOptionsSchema.optional()
+});
+
 export const generatedStepsSchema = z.discriminatedUnion('kind', [
 	generatedStepsArithmetic,
-	generatedStepsLinearEquation
+	generatedStepsLinearEquation,
+	generatedStepsDifferentiate
 ]);
 
 /**
@@ -282,9 +290,19 @@ const generatedStepsLinearEquationStrictZ = z
 	})
 	.strict();
 
+const generatedStepsDifferentiateStrictZ = z
+	.object({
+		kind: z.literal('differentiate'),
+		expression: z.string().min(1),
+		variable: z.string().min(1).optional(),
+		options: generatedStepsOptionsStrictZ.optional()
+	})
+	.strict();
+
 const generatedStepsStrictZ = z.discriminatedUnion('kind', [
 	generatedStepsArithmeticStrictZ,
-	generatedStepsLinearEquationStrictZ
+	generatedStepsLinearEquationStrictZ,
+	generatedStepsDifferentiateStrictZ
 ]);
 
 const correctionStrictZ = z
