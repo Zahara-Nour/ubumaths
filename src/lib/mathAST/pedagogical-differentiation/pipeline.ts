@@ -72,6 +72,7 @@ import {
 	powerRuleConstantExp,
 	productRule,
 	quotientRule,
+	simplifiedDivide,
 	simplifiedMultiply,
 	sinhRule,
 	sinRule,
@@ -525,12 +526,11 @@ function dispatchMultiplication(node: MultiplicationNode, ctx: DispatchContext):
  * 2. **`inverse`** — `1/f(x)` (numerator is `1`, denominator is some compound
  *    function). Yields `-f'/f²` directly without dragging in the full
  *    quotient rule.
- * 3. **`quotient`** — general `u/v` (both depend on the variable, or one
- *    depends and the other is constant ≠ 1).
- *
- * Constant denominators (`f/c`) currently route to the general quotient rule
- * (the constant case is harmless mathematically but verbose pedagogically;
- * future work could extract it as a `linear-coefficient` of `1/c · f`).
+ * 3. **`linear-coefficient`** — `f(x)/c` with constant denominator. Reads the
+ *    division as `(1/c) · f(x)` so the student sees `(f/c)' = f'/c` directly,
+ *    rather than the verbose general quotient `(f'·c − f·0)/c²`.
+ * 4. **`quotient`** — general `u/v` when both depend on the variable, or for
+ *    a constant numerator ≠ 1 (e.g. `5/x` falls here).
  */
 function dispatchDivision(node: DivisionNode, ctx: DispatchContext): DispatchResult {
 	const num = node.numerator;
@@ -561,6 +561,24 @@ function dispatchDivision(node: DivisionNode, ctx: DispatchContext): DispatchRes
 			variable: ctx.variable,
 			bindings: { f: denom },
 			subSteps: denomSub.steps
+		});
+		return { derivative, steps: [step] };
+	}
+
+	if (numHasVar && !denomHasVar) {
+		// (f/c)' = f'/c — pedagogically a constant multiplicative coefficient
+		// `1/c` factored out of the differentiation. The binding reads as
+		// `c = 1/<denom>` so descriptions render "On sort la constante 1/c".
+		const numSub = differentiateNode(num, ctx);
+		const inverseDenom = simplifiedDivide(one(), denom);
+		const derivative = simplifiedDivide(numSub.derivative, denom);
+		const step = buildStep(ctx, {
+			rule: 'linear-coefficient',
+			before: node,
+			after: derivative,
+			variable: ctx.variable,
+			bindings: { c: inverseDenom, f: num },
+			subSteps: numSub.steps
 		});
 		return { derivative, steps: [step] };
 	}
