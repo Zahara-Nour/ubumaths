@@ -40,6 +40,56 @@ target: {"answerFormat":"?\\\\sqrt{?}"}
 "
 `;
 
+exports[`snapshot — basic > '(2 + 3) × (4 − 1) (deux parenthèses)' 1`] = `
+"
+###### (2 + 3) × (4 − 1) (deux parenthèses) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 2 et 3
+    │ (@blue{2+3})*(4-1)
+    │ = 5*(4-1)
+[1] On soustrait 1 de 4
+    │ 5*(@blue{4-1})
+    │ = 5*3
+[2] On multiplie 5 par 3
+    │ @blue{5*3}
+    │ = 15
+
+========== COLLEGE (detailed) ==========
+[0] Addition
+    │ (@blue{2+3})*(4-1)
+    │ = 5*(4-1)
+[1] Soustraction
+    │ 5*(@blue{4-1})
+    │ = 5*3
+[2] Multiplication
+    │ @blue{5*3}
+    │ = 15
+"
+`;
+
+exports[`snapshot — basic > '(2 + 3) × 4 (parenthèses)' 1`] = `
+"
+###### (2 + 3) × 4 (parenthèses) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 2 et 3
+    │ (@blue{2+3})*4
+    │ = 5*4
+[1] On multiplie 5 par 4
+    │ @blue{5*4}
+    │ = 20
+
+========== COLLEGE (detailed) ==========
+[0] Addition
+    │ (@blue{2+3})*4
+    │ = 5*4
+[1] Multiplication
+    │ @blue{5*4}
+    │ = 20
+"
+`;
+
 exports[`snapshot — basic > '2 + 3 × 4 (priorité)' 1`] = `
 "
 ###### 2 + 3 × 4 (priorité) ######
@@ -106,6 +156,50 @@ exports[`snapshot — basic > '2 + 3' 1`] = `
 ========== COLLEGE (detailed) ==========
 [0] Addition
     │ @blue{2+3}
+    │ = 5
+"
+`;
+
+exports[`snapshot — basic > '2 × (3 + 4) (parenthèses)' 1`] = `
+"
+###### 2 × (3 + 4) (parenthèses) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 3 et 4
+    │ 2*(@blue{3+4})
+    │ = 2*7
+[1] On multiplie 2 par 7
+    │ @blue{2*7}
+    │ = 14
+
+========== COLLEGE (detailed) ==========
+[0] Addition
+    │ 2*(@blue{3+4})
+    │ = 2*7
+[1] Multiplication
+    │ @blue{2*7}
+    │ = 14
+"
+`;
+
+exports[`snapshot — basic > '10 − (3 + 2) (parenthèses en soustrac…' 1`] = `
+"
+###### 10 − (3 + 2) (parenthèses en soustraction) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 3 et 2
+    │ 10-(@blue{3+2})
+    │ = 10-5
+[1] On soustrait 5 de 10
+    │ @blue{10-5}
+    │ = 5
+
+========== COLLEGE (detailed) ==========
+[0] Addition
+    │ 10-(@blue{3+2})
+    │ = 10-5
+[1] Soustraction
+    │ @blue{10-5}
     │ = 5
 "
 `;
