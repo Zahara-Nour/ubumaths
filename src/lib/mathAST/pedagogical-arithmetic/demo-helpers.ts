@@ -18,8 +18,18 @@ import type { PedagogicalTarget } from '../pedagogical-evaluate/types';
 import { generatePedagogicalArithmeticSteps } from './pipeline';
 import { formatTransformationCustom, PedagogicalArithmeticRenderer } from './renderer';
 
-const ALL_LEVELS: readonly SchoolLevel[] = ['primaire', 'college'];
-const ALL_VERBOSITIES: readonly Verbosity[] = ['detailed'];
+/**
+ * Levels actually displayed by the demo (subset of the full school-level
+ * spectrum). The cases in `demo-cases/` may declare wider `schoolLevels`
+ * (e.g. `['college', 'lycee', 'superieur']`) — those wider sets describe
+ * pedagogical relevance and stay untouched ; the demo intersects them with
+ * `DISPLAYED_LEVELS` at render time so the CLI/snapshots focus on the
+ * levels we care about right now.
+ */
+const DISPLAYED_LEVELS: readonly SchoolLevel[] = ['primaire', 'college'];
+
+/** Verbosities to display (subset of the full Verbosity spectrum). */
+const DISPLAYED_VERBOSITIES: readonly Verbosity[] = ['detailed'];
 
 /**
  * Output format for the demo presenter :
@@ -112,7 +122,14 @@ export interface DemoCategory {
  */
 export function presentExpression(testCase: DemoCase, format: DemoFormat = 'custom'): string {
 	const { label, expression, target } = testCase;
-	const levels = testCase.schoolLevels ?? ALL_LEVELS;
+	// Take the case's pedagogical scope (or all levels when unspecified) and
+	// intersect it with what the demo currently displays. Cases that declare
+	// e.g. `['college', 'lycee']` end up showing only `college`; cases that
+	// declare `['primaire', 'college', 'lycee']` show both.
+	const caseLevels =
+		testCase.schoolLevels ?? (['primaire', 'college', 'lycee', 'superieur'] as const);
+	const levels = DISPLAYED_LEVELS.filter((l) => caseLevels.includes(l));
+
 	const lines: string[] = [];
 	lines.push(`\n###### ${label} ######\n`);
 	if (target) {
@@ -120,7 +137,7 @@ export function presentExpression(testCase: DemoCase, format: DemoFormat = 'cust
 		lines.push('');
 	}
 	for (const level of levels) {
-		for (const verbosity of ALL_VERBOSITIES) {
+		for (const verbosity of DISPLAYED_VERBOSITIES) {
 			lines.push(`========== ${level.toUpperCase()} (${verbosity}) ==========`);
 			lines.push(...renderAt(expression, level, verbosity, target, format));
 			lines.push('');
