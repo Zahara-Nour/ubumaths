@@ -52,6 +52,20 @@ function ansiColorize(text: string): string {
 	});
 }
 
+/**
+ * Cosmetic substitutions to make the CLI output more readable than raw
+ * `toCustom` syntax. Applied AFTER coloring so substitutions inside
+ * `@blue{...}` wrappers display correctly.
+ *
+ * - `:/` (custom-syntax inline division) → ` ÷ `
+ * - `*` (custom-syntax multiplication)   → ` × `
+ *
+ * Snapshots use raw custom syntax, so this transformation is CLI-only.
+ */
+function prettifyOperators(text: string): string {
+	return text.replace(/:\//g, ' ÷ ').replace(/\*/g, ' × ');
+}
+
 // =============================================================================
 // Argv parsing
 // =============================================================================
@@ -80,9 +94,12 @@ for (const category of ALL_CATEGORIES) {
 	for (const testCase of category.cases) {
 		const raw = presentExpression(testCase, format);
 		// Apply ANSI colors only when the output is a real terminal AND the
-		// format includes the custom rendering. When `--both` is selected we
-		// still colorize the custom block ; LaTeX-only output isn't colorized.
-		const colorize = isTTY && (format === 'custom' || format === 'both');
-		console.log(colorize ? ansiColorize(raw) : raw);
+		// format includes the custom rendering. Cosmetic operator
+		// substitutions are applied to the custom blocks regardless of TTY.
+		const isCustom = format === 'custom' || format === 'both';
+		let out = raw;
+		if (isCustom) out = prettifyOperators(out);
+		if (isTTY && isCustom) out = ansiColorize(out);
+		console.log(out);
 	}
 }
