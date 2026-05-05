@@ -129,6 +129,35 @@ export const testSpecSchema = z.object({
 
 // === Nested objects ===
 
+// === Mode B — Generated steps ===
+
+const schoolLevelSchema = z.union([
+	z.literal('auto'),
+	z.enum(['primaire', 'college', 'lycee', 'superieur'])
+]);
+
+export const generatedStepsOptionsSchema = z.object({
+	schoolLevel: schoolLevelSchema.optional(),
+	verbosity: z.enum(['summarized', 'detailed']).optional()
+});
+
+const generatedStepsArithmetic = z.object({
+	kind: z.literal('arithmetic'),
+	expression: z.string().min(1),
+	options: generatedStepsOptionsSchema.optional()
+});
+
+const generatedStepsLinearEquation = z.object({
+	kind: z.literal('linear-equation'),
+	equation: z.string().min(1),
+	options: generatedStepsOptionsSchema.optional()
+});
+
+export const generatedStepsSchema = z.discriminatedUnion('kind', [
+	generatedStepsArithmetic,
+	generatedStepsLinearEquation
+]);
+
 /**
  * FIX: correctionZ only had `steps` (required). The TypeScript QuestionCorrection
  * interface has `feedback` (optional) + `steps` (optional).
@@ -141,7 +170,8 @@ export const correctionSchema = z.object({
 			partial: z.string().optional()
 		})
 		.optional(),
-	steps: z.array(z.string()).optional()
+	steps: z.array(z.string()).optional(),
+	generatedSteps: generatedStepsSchema.optional()
 });
 
 export const displayOptionsSchema = z.object({
@@ -234,6 +264,29 @@ const validationRuleStrictZ = z.discriminatedUnion('type', [
 	validationRuleCustom.strict()
 ]);
 
+const generatedStepsOptionsStrictZ = generatedStepsOptionsSchema.strict();
+
+const generatedStepsArithmeticStrictZ = z
+	.object({
+		kind: z.literal('arithmetic'),
+		expression: z.string().min(1),
+		options: generatedStepsOptionsStrictZ.optional()
+	})
+	.strict();
+
+const generatedStepsLinearEquationStrictZ = z
+	.object({
+		kind: z.literal('linear-equation'),
+		equation: z.string().min(1),
+		options: generatedStepsOptionsStrictZ.optional()
+	})
+	.strict();
+
+const generatedStepsStrictZ = z.discriminatedUnion('kind', [
+	generatedStepsArithmeticStrictZ,
+	generatedStepsLinearEquationStrictZ
+]);
+
 const correctionStrictZ = z
 	.object({
 		feedback: z
@@ -244,7 +297,8 @@ const correctionStrictZ = z
 			})
 			.strict()
 			.optional(),
-		steps: z.array(z.string()).optional()
+		steps: z.array(z.string()).optional(),
+		generatedSteps: generatedStepsStrictZ.optional()
 	})
 	.strict();
 

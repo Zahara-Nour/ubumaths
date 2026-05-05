@@ -8,7 +8,9 @@ import {
 	variableSchema,
 	blankSchema,
 	choiceSchema,
-	optionsSchema
+	optionsSchema,
+	generatedStepsSchema,
+	generatedStepsOptionsSchema
 } from '../template-schema';
 
 // ============================================================================
@@ -42,6 +44,113 @@ describe('correctionSchema', () => {
 
 	it('rejects invalid steps type', () => {
 		expect(correctionSchema.safeParse({ steps: 'not-array' }).success).toBe(false);
+	});
+
+	it('accepts generatedSteps with kind arithmetic', () => {
+		const result = correctionSchema.safeParse({
+			generatedSteps: { kind: 'arithmetic', expression: '{{a}}+{{b}}' }
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts generatedSteps with kind linear-equation', () => {
+		const result = correctionSchema.safeParse({
+			generatedSteps: { kind: 'linear-equation', equation: '2x + 3 = 7' }
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts steps + generatedSteps coexistence', () => {
+		const result = correctionSchema.safeParse({
+			steps: ['Etape manuelle'],
+			generatedSteps: { kind: 'arithmetic', expression: '2+3' }
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('rejects generatedSteps with unknown kind', () => {
+		const result = correctionSchema.safeParse({
+			generatedSteps: { kind: 'unknown', expression: 'foo' }
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects generatedSteps arithmetic missing expression', () => {
+		const result = correctionSchema.safeParse({
+			generatedSteps: { kind: 'arithmetic' }
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects generatedSteps arithmetic with empty expression', () => {
+		const result = correctionSchema.safeParse({
+			generatedSteps: { kind: 'arithmetic', expression: '' }
+		});
+		expect(result.success).toBe(false);
+	});
+});
+
+// ============================================================================
+// generatedStepsSchema — Mode B declarative correction
+// ============================================================================
+
+describe('generatedStepsSchema', () => {
+	it('accepts arithmetic with expression only', () => {
+		expect(generatedStepsSchema.safeParse({ kind: 'arithmetic', expression: '2+3' }).success).toBe(
+			true
+		);
+	});
+
+	it('accepts arithmetic with full options', () => {
+		const result = generatedStepsSchema.safeParse({
+			kind: 'arithmetic',
+			expression: '{{a}}*{{b}}',
+			options: { schoolLevel: 'auto', verbosity: 'detailed' }
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts linear-equation with explicit schoolLevel', () => {
+		const result = generatedStepsSchema.safeParse({
+			kind: 'linear-equation',
+			equation: '3x + 5 = 14',
+			options: { schoolLevel: 'college', verbosity: 'summarized' }
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('rejects unknown verbosity', () => {
+		const result = generatedStepsSchema.safeParse({
+			kind: 'arithmetic',
+			expression: '2+3',
+			options: { verbosity: 'verbose' }
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects unknown schoolLevel', () => {
+		const result = generatedStepsSchema.safeParse({
+			kind: 'arithmetic',
+			expression: '2+3',
+			options: { schoolLevel: 'maternelle' }
+		});
+		expect(result.success).toBe(false);
+	});
+});
+
+describe('generatedStepsOptionsSchema', () => {
+	it('accepts empty object', () => {
+		expect(generatedStepsOptionsSchema.safeParse({}).success).toBe(true);
+	});
+
+	it('accepts schoolLevel auto', () => {
+		expect(generatedStepsOptionsSchema.safeParse({ schoolLevel: 'auto' }).success).toBe(true);
+	});
+
+	it('accepts all four explicit school levels', () => {
+		for (const lvl of ['primaire', 'college', 'lycee', 'superieur'] as const) {
+			expect(generatedStepsOptionsSchema.safeParse({ schoolLevel: lvl }).success).toBe(true);
+		}
 	});
 });
 
