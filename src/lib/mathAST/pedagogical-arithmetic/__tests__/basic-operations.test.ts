@@ -258,12 +258,16 @@ describe('basic-operations rules', () => {
 	});
 
 	describe('BASIC_OPERATION_RULES export', () => {
-		it('contains all 10 rules', () => {
-			expect(BASIC_OPERATION_RULES).toHaveLength(10);
+		it('contains all 11 rules', () => {
+			expect(BASIC_OPERATION_RULES).toHaveLength(11);
 		});
 
-		it('first item is the grouping rule (highest priority)', () => {
-			expect(BASIC_OPERATION_RULES[0].name).toBe('group-multiplications-in-addition');
+		it('first item is groupParentheses (highest priority among basic ops)', () => {
+			expect(BASIC_OPERATION_RULES[0].name).toBe('group-parentheses');
+		});
+
+		it('second item is groupMultiplicationsInAddition', () => {
+			expect(BASIC_OPERATION_RULES[1].name).toBe('group-multiplications-in-addition');
 		});
 	});
 
