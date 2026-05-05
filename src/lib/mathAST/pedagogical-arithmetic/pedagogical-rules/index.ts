@@ -15,12 +15,14 @@ import type { SchoolLevel } from '../../common/step-renderer-base';
 import type { TargetForm } from '../../pedagogical-evaluate/types';
 import type { PedagogicalArithmeticRule } from '../types';
 import { BASIC_OPERATION_RULES } from './basic-operations';
+import { FRACTION_RULES, reduceFraction } from './fractions';
 
 // =============================================================================
 // Re-exports
 // =============================================================================
 
 export { BASIC_OPERATION_RULES } from './basic-operations';
+export { FRACTION_RULES } from './fractions';
 export type { PedagogicalArithmeticRule } from '../types';
 
 // =============================================================================
@@ -58,17 +60,28 @@ export interface LoadRulesOptions {
 export function loadPedagogicalRules(
 	options: LoadRulesOptions
 ): readonly PedagogicalArithmeticRule[] {
-	const allFamilies: readonly PedagogicalArithmeticRule[] = [...BASIC_OPERATION_RULES];
+	const allFamilies: readonly PedagogicalArithmeticRule[] = [
+		...BASIC_OPERATION_RULES,
+		...FRACTION_RULES
+	];
 
 	const filtered = allFamilies.filter((rule) =>
 		rule.applicableLevels.includes(options.schoolLevel)
 	);
 
 	const terminals: PedagogicalArithmeticRule[] = [];
-	// Terminal rules will be added in subsequent phases :
-	// - Phase 4 : `reduceFractionForce` when needsReducedFractions
-	// - Phase 6 : `toScientificNotationForce` when needsScientificFinal
-	// - Phase 8 : pattern-driven post-processing per `targetForm`
+	// Phase 4 — when `target.structure === 'reduced-fraction'` or strict
+	// `reducedFractions: 'strict'`, we re-include `reduceFraction` even when
+	// the school level normally excludes it (e.g. primaire). This guarantees
+	// the final form respects the question's strict cosmetic constraint.
+	if (
+		(options.targetForm === 'reduced-fraction' || options.needsReducedFractions) &&
+		!filtered.includes(reduceFraction)
+	) {
+		terminals.push(reduceFraction);
+	}
+	// Phase 6 — `toScientificNotationForce` when needsScientificFinal.
+	// Phase 8 — pattern-driven post-processing per `targetForm`.
 
 	return [...filtered, ...terminals];
 }
