@@ -16,7 +16,7 @@ export const TARGET_FORM_SCENARIOS: readonly DemoCase[] = [
 			divide(number('1'), number('3'), 'fraction'),
 			divide(number('1'), number('6'), 'fraction')
 		),
-		schoolLevels: ['college', 'lycee']
+		schoolLevels: ['college']
 	},
 	{
 		label: '1/3 + 1/6 + reduced-fraction strict → 1/2',
@@ -25,12 +25,12 @@ export const TARGET_FORM_SCENARIOS: readonly DemoCase[] = [
 			divide(number('1'), number('6'), 'fraction')
 		),
 		target: { structure: 'reduced-fraction', strictCosmetics: { reducedFractions: 'strict' } },
-		schoolLevels: ['college', 'lycee']
+		schoolLevels: ['college']
 	},
 	{
 		label: '5000000 + scientific target → 5 × 10⁶',
 		expression: number('5000000'),
 		target: { structure: 'scientific' },
-		schoolLevels: ['college', 'lycee']
+		schoolLevels: ['college']
 	}
 ];

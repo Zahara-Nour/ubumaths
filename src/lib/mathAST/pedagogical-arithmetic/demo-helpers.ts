@@ -18,8 +18,8 @@ import type { PedagogicalTarget } from '../pedagogical-evaluate/types';
 import { generatePedagogicalArithmeticSteps } from './pipeline';
 import { formatTransformationCustom, PedagogicalArithmeticRenderer } from './renderer';
 
-const ALL_LEVELS: readonly SchoolLevel[] = ['primaire', 'college', 'lycee', 'superieur'];
-const ALL_VERBOSITIES: readonly Verbosity[] = ['summarized', 'detailed'];
+const ALL_LEVELS: readonly SchoolLevel[] = ['primaire', 'college'];
+const ALL_VERBOSITIES: readonly Verbosity[] = ['detailed'];
 
 /**
  * Output format for the demo presenter :
