@@ -21,10 +21,8 @@
  */
 
 import type { MathNode, RelationNode } from '../types';
-import type { Verbosity } from '../common/verbosity';
 import {
 	type EquationStep,
-	type EquationOperation,
 	type LinearEquationStepsOptions,
 	type GenerationStrategy,
 	STRATEGIES
@@ -33,22 +31,20 @@ import { add, divide, opposite, relation, variable as varNode } from '../factory
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { getNumericValue } from '../common/numeric';
-import { denormalize, normalize } from '../normal';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
+import {
+	canon,
+	addToBothSides,
+	divideBothSides,
+	isOne,
+	isZero,
+	makeStep,
+	renumberSteps
+} from './_helpers';
 
 // =============================================================================
-// Helpers
+// Linear-specific helpers
 // =============================================================================
-
-/** Canonicalize a MathNode (run normalize ∘ denormalize). */
-function canon(node: MathNode): MathNode {
-	return denormalize(normalize(node));
-}
-
-/** Canonicalize a RelationNode by canonicalizing both sides. */
-function canonEquation(eq: RelationNode): RelationNode {
-	return relation(eq.relation, canon(eq.left), canon(eq.right));
-}
 
 /**
  * Split a side of an equation into (x-terms-sum, constant-terms-sum).
@@ -75,22 +71,6 @@ export function splitSide(
 	};
 }
 
-/** Add `operand` to both sides and canonicalize the result. */
-function addToBothSides(eq: RelationNode, operand: MathNode): RelationNode {
-	return canonEquation(relation(eq.relation, add(eq.left, operand), add(eq.right, operand)));
-}
-
-/** Divide both sides by `divisor` and canonicalize. */
-function divideBothSides(eq: RelationNode, divisor: MathNode): RelationNode {
-	return canonEquation(
-		relation(
-			eq.relation,
-			divide(eq.left, divisor, 'fraction'),
-			divide(eq.right, divisor, 'fraction')
-		)
-	);
-}
-
 /**
  * Extract the coefficient of x from a node of the form `ax` (after
  * regroupement). Returns null if the node does not contain the variable.
@@ -98,16 +78,6 @@ function divideBothSides(eq: RelationNode, divisor: MathNode): RelationNode {
 function extractCoefficientOfX(node: MathNode, variable: string): MathNode | null {
 	if (!containsVariable(node, variable)) return null;
 	return canon(divide(node, varNode(variable), 'fraction'));
-}
-
-/** True when a MathNode is a number literal equal to 1. */
-function isOne(node: MathNode): boolean {
-	return node.type === 'number' && node.value === '1';
-}
-
-/** True when a MathNode is a number literal equal to 0. */
-function isZero(node: MathNode): boolean {
-	return node.type === 'number' && node.value === '0';
 }
 
 /**
@@ -138,51 +108,6 @@ function chooseAddOrSubtract(operand: MathNode): {
 		};
 	}
 	return { kind: 'add-both-sides', displayOperand: operand };
-}
-
-/**
- * Renumber a step tree so top-level steps get IDs 1, 2, 3, … and each parent's
- * substeps restart at 1. Applied as a final pass after assembly because the
- * generation order does not match the desired top-level order (substeps are
- * created before their wrapping group step).
- */
-function renumberSteps(steps: readonly EquationStep[]): readonly EquationStep[] {
-	return steps.map((step, i) => renumberStep(step, i + 1));
-}
-
-function renumberStep(step: EquationStep, id: number): EquationStep {
-	const renumberedSubs = step.subSteps?.map((sub, j) => renumberStep(sub, j + 1));
-	return {
-		...step,
-		id,
-		...(renumberedSubs !== undefined && { subSteps: renumberedSubs })
-	};
-}
-
-// =============================================================================
-// Step builders
-// =============================================================================
-
-function makeStep(args: {
-	id: number;
-	rule: string;
-	description: string;
-	before: RelationNode;
-	after: RelationNode;
-	operation?: EquationOperation;
-	verbosityLevel?: Verbosity;
-	subSteps?: readonly EquationStep[];
-}): EquationStep {
-	return {
-		id: args.id,
-		rule: args.rule,
-		description: args.description,
-		before: args.before,
-		after: args.after,
-		verbosityLevel: args.verbosityLevel ?? 'detailed',
-		...(args.operation !== undefined && { operation: args.operation }),
-		...(args.subSteps !== undefined && args.subSteps.length > 0 && { subSteps: args.subSteps })
-	};
 }
 
 // =============================================================================

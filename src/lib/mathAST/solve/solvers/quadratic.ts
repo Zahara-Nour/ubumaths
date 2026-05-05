@@ -40,11 +40,15 @@ import { computeNumericValue } from '../numeric-value';
 /**
  * Extract coefficients a, b, c from a quadratic expression ax^2 + bx + c.
  * Returns { a, b, c } such that expr = ax^2 + bx + c.
+ *
+ * Exported (Phase 2 of the pedagogical-quadratic stepper) for reuse by
+ * `pedagogical-solve/quadratic.ts`. The returned `MathNode`s are produced via
+ * the immutable factory and are safe to pass around without copying.
  */
-function extractQuadraticCoefficients(
+export function extractQuadraticCoefficients(
 	expr: MathNode,
 	variable: string
-): { a: MathNode; b: MathNode; c: MathNode } | null {
+): { readonly a: MathNode; readonly b: MathNode; readonly c: MathNode } | null {
 	// Flatten the expression into terms
 	const flatSum = flattenSumShallow(expr);
 
