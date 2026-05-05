@@ -9,16 +9,16 @@ Ajouter un stepper pédagogique pour les équations du second degré dans `src/l
 
 ## État global
 
-| Phase | Status          | Commit | Notes                                                                                                                                                                                                                                               |
-| ----- | --------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0     | ✅ Spec validée | —      | Q1–Q9 « tout en reco » + hypothèses implicites confirmées                                                                                                                                                                                           |
-| 1     | ✅ Livrée       | —      | Extension `EquationOperation` (+18 kinds quadratique), `QuadraticSchoolLevel`, `QuadraticEquationStepsOptions`, `STRATEGIES_QUADRATIC` ; 29 tests d'isolation ; guard linear-renderer + refacto switch ; code review code-reviewer (Opus) appliquée |
-| 2     | ⏳ À faire      | —      | Pipeline `quadratic.ts` (cas standard + 3 spéciaux + standardize + throw NotImplemented), ~80 tests                                                                                                                                                 |
-| 3     | ⏳ À faire      | —      | Renderer `quadratic-renderer.ts` (TITLES + EXPLANATIONS lycée+supérieur + LaTeX), ~20 tests                                                                                                                                                         |
-| 4     | ⏳ À faire      | —      | Dispatcher `index.ts` (`generateEquationSteps` selon degré), ~10 tests                                                                                                                                                                              |
-| 5     | ⏳ À faire      | —      | 7 catégories démo + script CLI `scripts/pedagogical-quadratic-demo.ts`, ~20 snapshots                                                                                                                                                               |
-| 6     | ⏳ À faire      | —      | Mode B `kind: 'quadratic-equation'` (types/Zod/correction-generator/fixture/page debug), ~7 tests                                                                                                                                                   |
-| 7     | ⏳ À faire      | —      | ESLint + check:incremental + svelte-autofixer + doc + commit final                                                                                                                                                                                  |
+| Phase | Status          | Commit      | Notes                                                                                                                                                                                                                                                                        |
+| ----- | --------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0     | ✅ Spec validée | —           | Q1–Q9 « tout en reco » + hypothèses implicites confirmées                                                                                                                                                                                                                    |
+| 1     | ✅ Livrée       | `593a82204` | Extension `EquationOperation` (+18 kinds quadratique), `QuadraticSchoolLevel`, `QuadraticEquationStepsOptions`, `STRATEGIES_QUADRATIC` ; 29 tests d'isolation ; guard linear-renderer + refacto switch ; code review code-reviewer (Opus) appliquée                          |
+| 2     | ✅ Livrée       | —           | Refacto `_helpers.ts` (canon, addToBothSides, makeStep, etc.) ; export `extractQuadraticCoefficients` ; pipeline `quadratic.ts` ~620 LOC (4 cas + standardize + throw NotImplemented) ; `class PedagogicalQuadraticNotImplemented` ; 57 tests ; code review (Opus) appliquée |
+| 3     | ⏳ À faire      | —           | Renderer `quadratic-renderer.ts` (TITLES + EXPLANATIONS lycée+supérieur + LaTeX), ~20 tests                                                                                                                                                                                  |
+| 4     | ⏳ À faire      | —           | Dispatcher `index.ts` (`generateEquationSteps` selon degré), ~10 tests                                                                                                                                                                                                       |
+| 5     | ⏳ À faire      | —           | 7 catégories démo + script CLI `scripts/pedagogical-quadratic-demo.ts`, ~20 snapshots                                                                                                                                                                                        |
+| 6     | ⏳ À faire      | —           | Mode B `kind: 'quadratic-equation'` (types/Zod/correction-generator/fixture/page debug), ~7 tests                                                                                                                                                                            |
+| 7     | ⏳ À faire      | —           | ESLint + check:incremental + svelte-autofixer + doc + commit final                                                                                                                                                                                                           |
 
 ## Décisions architecturales (Phase 0 — validées par l'utilisateur)
 
@@ -112,15 +112,45 @@ Documentés ici pour transparence (validés en code review) :
 
 Aucun blocker, 0 nouvelle erreur TS, 0 régression linear.
 
-## Tests cumulés (Phase 1)
+## Tests cumulés (Phase 1+2)
 
-| Fichier                               | Tests  |
-| ------------------------------------- | ------ |
-| `__tests__/quadratic-types.test.ts`   | 29     |
-| `__tests__/linear.test.ts` (existant) | 16     |
-| `__tests__/linear-renderer.test.ts`   | 13     |
-| `__tests__/linear-demo.test.ts`       | 21     |
-| **Total pedagogical-solve**           | **79** |
+| Fichier                               | Tests   |
+| ------------------------------------- | ------- |
+| `__tests__/quadratic-types.test.ts`   | 29      |
+| `__tests__/quadratic.test.ts`         | 57      |
+| `__tests__/linear.test.ts` (existant) | 16      |
+| `__tests__/linear-renderer.test.ts`   | 13      |
+| `__tests__/linear-demo.test.ts`       | 21      |
+| **Total pedagogical-solve**           | **136** |
+
+## Fichiers livrés (Phase 2)
+
+### Module `pedagogical-solve/`
+
+- `_helpers.ts` (NEW) — helpers partagés : `canon`, `canonEquation`, `addToBothSides`, `divideBothSides`, `isOne`, `isZero`, `makeStep`, `renumberSteps`. Refacto sans changement de comportement.
+- `linear.ts` (MODIFIED) — imports désormais depuis `_helpers.ts` ; helpers locaux supprimés ; `splitSide`, `extractCoefficientOfX`, `chooseAddOrSubtract` gardés en local (linear-spécifiques).
+- `quadratic.ts` (NEW, ~660 LOC) — pipeline pédagogique principal :
+  - `class PedagogicalQuadraticNotImplemented extends Error` (exporté)
+  - `detectCase()` — dispatch entre standard, b=0, c=0, factored ; throw NotImplemented si paramétrique
+  - 9 atomic step builders + 4 case builders
+  - `extractLinearCoefficients()` + `solveLinearFactor()` réutilisent `extractQuadraticCoefficients`
+  - Public : `generateQuadraticEquationSteps(equation, options)`
+
+### Module `solve/` (1 changement)
+
+- `solve/solvers/quadratic.ts` (MODIFIED) — `extractQuadraticCoefficients` exportée + type de retour annoté `readonly`. 0 régression sur 454 tests solve+pedagogical-solve.
+
+## Code review (Phase 2)
+
+`code-reviewer` (Opus) — 3 retours appliqués :
+
+1. ✅ Extraction de `extractLinearCoefficients(factor, variable): { alpha, beta } | null` pour rendre explicite la sémantique linéaire (évite la confusion `coeffs.b → α`).
+2. ✅ `solveLinearFactor` throw `Error` (au lieu de `PedagogicalQuadraticNotImplemented`) pour les cas pré-conditionnellement impossibles (degré 1 garanti par `tryDetectFactored` upstream).
+3. ✅ Comment explicite sur le fallback `'positive'` quand `numericValue` est null — V1 enforce coefficients numériques donc unreachable, mais documenté comme TODO V2.
+
+Suggestion (mineure) reportée :
+
+- `JSON.stringify` pour comparer raw vs simplified : fragile par design, à remplacer par un `nodesEqual()` structurel quand V2 ajoutera des coefficients symboliques. Acceptable V1.
 
 ## Limitations connues V1 (post-livraison)
 
