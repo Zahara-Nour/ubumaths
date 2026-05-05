@@ -66,18 +66,29 @@ function isNumericAtom(node: MathNode): boolean {
 }
 
 /**
- * True when the node is a numeric multiplication or division (e.g. `3×4`,
- * `12÷3`). These are the operations that share the same priority level —
- * the ones the grouping rule collapses in a single sum step at college+.
+ * True when the node is a multiplication or division **chain** of numeric
+ * atoms — e.g. `3×4`, `12÷3`, but also `24÷8×3` or `2×3÷6×4`. Operations
+ * of equal priority (× and ÷) that combine numeric atoms — these are the
+ * sub-expressions the grouping rule collapses in one sum step at college+.
+ *
+ * Used recursively : a chain is a `*` or `/` whose operands are
+ * themselves either numeric atoms or chains. A bare atom is NOT a chain
+ * (it has no operation to perform), so the rule only fires when there is
+ * actual work to do.
  */
-function isNumericHighPriorityOp(node: MathNode): boolean {
+function isNumericMulDivChain(node: MathNode): boolean {
 	if (isMultiplication(node)) {
-		return isNumericAtom(node.left) && isNumericAtom(node.right);
+		return isMulDivOperand(node.left) && isMulDivOperand(node.right);
 	}
 	if (isDivision(node)) {
-		return isNumericAtom(node.numerator) && isNumericAtom(node.denominator);
+		return isMulDivOperand(node.numerator) && isMulDivOperand(node.denominator);
 	}
 	return false;
+}
+
+/** Operand acceptable inside a mul/div chain : a numeric atom or another chain. */
+function isMulDivOperand(node: MathNode): boolean {
+	return isNumericAtom(node) || isNumericMulDivChain(node);
 }
 
 /** Lookup a wildcard binding by name; returns `undefined` if not present. */
@@ -255,7 +266,7 @@ function shouldGroupMultiplications(node: MathNode): boolean {
 	const terms = flattenSumShallow(node);
 	let count = 0;
 	for (const { term } of terms) {
-		if (isNumericHighPriorityOp(term)) {
+		if (isNumericMulDivChain(term)) {
 			count += 1;
 			if (count >= 2) return true;
 		}
@@ -264,15 +275,15 @@ function shouldGroupMultiplications(node: MathNode): boolean {
 }
 
 /**
- * Replacement function : flatten the sum, evaluate every numeric
- * high-priority op (× and ÷), leave the rest untouched, and re-build the
- * sum. The result is a sum with the SAME structure but each `n×m` /
- * `n÷m` collapsed to its value.
+ * Replacement function : flatten the sum, evaluate every numeric mul/div
+ * chain in one go, leave the rest untouched, and re-build the sum. The
+ * result is a sum with the SAME structure but each `n×m`, `n÷m`, or
+ * longer chain like `24÷8×3` collapsed to its single value.
  */
 function applyGroupMultiplications(node: MathNode): MathNode | null {
 	const terms = flattenSumShallow(node);
 	const replaced: typeof terms = terms.map(({ sign, term }) => {
-		if (!isNumericHighPriorityOp(term)) return { sign, term };
+		if (!isNumericMulDivChain(term)) return { sign, term };
 		const evaluated = evaluateExact(term);
 		return evaluated ? { sign, term: evaluated } : { sign, term };
 	});
