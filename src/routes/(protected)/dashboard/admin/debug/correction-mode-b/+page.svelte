@@ -14,6 +14,8 @@
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
 	import {
 		additionGroupingDemo,
+		differentiateCompositionDemo,
+		differentiatePolynomialDemo,
 		linearEquationDemo
 	} from '$lib/questions/__tests__/fixtures/generated-steps-demo';
 	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
@@ -28,6 +30,8 @@
 
 	const arithmeticResult = generateInstance(additionGroupingDemo, 1);
 	const linearResult = generateInstance(linearEquationDemo, 1);
+	const differentiatePolyResult = generateInstance(differentiatePolynomialDemo, 1);
+	const differentiateCompResult = generateInstance(differentiateCompositionDemo, 1);
 
 	function buildAnswerResult(
 		result: ReturnType<typeof generateInstance>,
@@ -55,6 +59,10 @@
 	const arithmeticIncorrect = buildAnswerResult(arithmeticResult, 1, false);
 	const linearCorrect = buildAnswerResult(linearResult, 0, true);
 	const linearIncorrect = buildAnswerResult(linearResult, 1, false);
+	const differentiatePolyCorrect = buildAnswerResult(differentiatePolyResult, 0, true);
+	const differentiatePolyIncorrect = buildAnswerResult(differentiatePolyResult, 1, false);
+	const differentiateCompCorrect = buildAnswerResult(differentiateCompResult, 0, true);
+	const differentiateCompIncorrect = buildAnswerResult(differentiateCompResult, 1, false);
 
 	// ============================================================================
 	// Raw step inspector
@@ -67,6 +75,16 @@
 	const linearSteps = $derived(
 		linearResult.success ? linearResult.instance.correction?._renderedSteps : undefined
 	);
+	const differentiatePolySteps = $derived(
+		differentiatePolyResult.success
+			? differentiatePolyResult.instance.correction?._renderedSteps
+			: undefined
+	);
+	const differentiateCompSteps = $derived(
+		differentiateCompResult.success
+			? differentiateCompResult.instance.correction?._renderedSteps
+			: undefined
+	);
 </script>
 
 <svelte:head>
@@ -77,8 +95,9 @@
 	<header class="space-y-2">
 		<h1 class="text-3xl font-bold">Mode B — Generated correction steps</h1>
 		<p class="text-muted-foreground">
-			Démo des deux fixtures Mode B (CM2 arithmétique + 4e équation linéaire). Cliquer sur l'icône ↻
-			d'une carte pour basculer sur la correction détaillée.
+			Démo des quatre fixtures Mode B : CM2 arithmétique, 4e équation linéaire, 1ère polynôme
+			(dérivée), Terminale composition (dérivée). Cliquer sur l'icône ↻ d'une carte pour basculer
+			sur la correction détaillée.
 		</p>
 	</header>
 
@@ -107,12 +126,37 @@
 					<span class="text-red-600">✗ {linearResult.errors.join(', ')}</span>
 				{/if}
 			</div>
+			<div>
+				<span class="font-mono">differentiatePolynomialDemo</span> :
+				{#if differentiatePolyResult.success}
+					<span class="text-green-600"
+						>✓ {differentiatePolySteps?.length ?? 0} étape(s) générée(s) (top-level)</span
+					>
+				{:else}
+					<span class="text-red-600">✗ {differentiatePolyResult.errors.join(', ')}</span>
+				{/if}
+			</div>
+			<div>
+				<span class="font-mono">differentiateCompositionDemo</span> :
+				{#if differentiateCompResult.success}
+					<span class="text-green-600"
+						>✓ {differentiateCompSteps?.length ?? 0} étape(s) générée(s) (top-level)</span
+					>
+				{:else}
+					<span class="text-red-600">✗ {differentiateCompResult.errors.join(', ')}</span>
+				{/if}
+			</div>
 			<Button variant="outline" size="sm" onclick={() => (showJson = !showJson)}>
 				{showJson ? 'Masquer' : 'Afficher'} le JSON brut des RenderedStep[]
 			</Button>
 			{#if showJson}
 				<pre class="mt-3 max-h-96 overflow-auto rounded bg-muted p-3 text-xs">{JSON.stringify(
-						{ arithmetic: arithmeticSteps, linear: linearSteps },
+						{
+							arithmetic: arithmeticSteps,
+							linear: linearSteps,
+							differentiatePolynomial: differentiatePolySteps,
+							differentiateComposition: differentiateCompSteps
+						},
 						null,
 						2
 					)}</pre>
@@ -158,6 +202,32 @@
 					{/if}
 				</Card.Content>
 			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>1ère spé — dérivée polynomiale</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if differentiatePolySteps}
+						<GeneratedStepsCorrection steps={differentiatePolySteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>Terminale spé — dérivée par composition</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if differentiateCompSteps}
+						<GeneratedStepsCorrection steps={differentiateCompSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
 		</div>
 	</section>
 
@@ -197,6 +267,30 @@
 				<div>
 					<h3 class="mb-2 text-lg font-medium">4e — réponse incorrecte</h3>
 					<CorrectionCard answerResult={linearIncorrect} questionNumber={4} size="md" />
+				</div>
+			{/if}
+			{#if differentiatePolyCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">1ère spé — réponse correcte (polynôme)</h3>
+					<CorrectionCard answerResult={differentiatePolyCorrect} questionNumber={5} size="md" />
+				</div>
+			{/if}
+			{#if differentiatePolyIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">1ère spé — réponse incorrecte (polynôme)</h3>
+					<CorrectionCard answerResult={differentiatePolyIncorrect} questionNumber={6} size="md" />
+				</div>
+			{/if}
+			{#if differentiateCompCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Terminale spé — réponse correcte (composition)</h3>
+					<CorrectionCard answerResult={differentiateCompCorrect} questionNumber={7} size="md" />
+				</div>
+			{/if}
+			{#if differentiateCompIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Terminale spé — réponse incorrecte (composition)</h3>
+					<CorrectionCard answerResult={differentiateCompIncorrect} questionNumber={8} size="md" />
 				</div>
 			{/if}
 		</div>
