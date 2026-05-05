@@ -29,6 +29,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { RotateCw, Check, X, ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { cn } from '$lib/utils';
+	import GeneratedStepsCorrection from './GeneratedStepsCorrection.svelte';
 
 	// Props
 	interface Props {
@@ -72,7 +73,17 @@
 
 	// Markdown content - instance.statement and instance.correction are now ResolvedMarkdown (strings)
 	const statementMarkdown = $derived(answerResult.instance.statement);
-	// Build correction markdown from ResolvedCorrection object
+
+	// Mode A — explicit author-written steps win over Mode B (generated) when both
+	// are present, per the design decision : explicit > implicit.
+	const hasModeASteps = $derived((answerResult.instance.correction?.steps?.length ?? 0) > 0);
+	const renderedSteps = $derived(answerResult.instance.correction?._renderedSteps);
+	const useGeneratedSteps = $derived(
+		!hasModeASteps && renderedSteps !== undefined && renderedSteps.length > 0
+	);
+	const correctFeedback = $derived(answerResult.instance.correction?.feedback?.correct);
+
+	// Build correction markdown for Mode A (legacy path).
 	const correctionMarkdown = $derived.by(() => {
 		const correction = answerResult.instance.correction;
 		if (!correction) return '';
@@ -317,7 +328,16 @@
 					</Card.Header>
 
 					<Card.Content>
-						{#if correctionMarkdown}
+						{#if useGeneratedSteps && renderedSteps}
+							<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
+								<GeneratedStepsCorrection steps={renderedSteps} />
+								{#if correctFeedback}
+									<div class="mt-3 border-t pt-3">
+										<MarkdownRenderer content={correctFeedback} />
+									</div>
+								{/if}
+							</div>
+						{:else if correctionMarkdown}
 							<div class="space-y-3 rounded-lg border bg-muted/50 p-4">
 								<MarkdownRenderer content={correctionMarkdown} />
 							</div>
