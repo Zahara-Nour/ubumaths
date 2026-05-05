@@ -94,19 +94,19 @@ export class PedagogicalArithmeticRenderer
 
 	/**
 	 * Two-line display :
-	 *   <globalBefore with subBefore highlighted in \textcolor{blue}{...}>
+	 *   <globalBefore with each highlight sub-tree wrapped in \textcolor{blue}{...}>
 	 *   = <globalAfter>
 	 *
-	 * When `globalBefore` / `globalAfter` are missing (e.g. the
-	 * `evaluate-final` fallback emits steps with only `before`/`after`),
-	 * fall back to a single-line `before \Rightarrow after`.
+	 * Highlights come from `step.highlightSubTrees` when set (steps that
+	 * rewrite multiple sub-trees at once, like `group-multiplications-in-addition`),
+	 * else from `[step.before]` (the single fragment that changed).
 	 */
 	private formatTransformation(step: PedagogicalArithmeticStep): string {
 		const globalBefore = step.globalBefore ?? step.before;
 		const globalAfter = step.globalAfter ?? step.after;
-		const subBefore = step.before;
+		const fragments = step.highlightSubTrees ?? [step.before];
 
-		const colored = colorFragmentInExpression(globalBefore, subBefore);
+		const colored = colorFragmentsInExpression(globalBefore, fragments);
 		const afterLatex = toLatex(globalAfter);
 
 		return `\\begin{aligned}\n  & ${colored} \\\\\n  & = ${afterLatex}\n\\end{aligned}`;
@@ -122,24 +122,20 @@ function isDetailedEnough(verbosity: Verbosity): boolean {
 }
 
 /**
- * Produce LaTeX of `globalNode` with the sub-tree `fragment` wrapped in
- * `\textcolor{blue}{...}`. Identifies the fragment by structural equality
+ * Produce LaTeX of `globalNode` with EACH `fragment` wrapped in
+ * `\textcolor{blue}{...}`. Identifies fragments by structural equality
  * (`nodesEqual`) — necessary because `mapNode` reconstructs sub-trees, so
  * reference equality would fail.
  *
- * Stops at the FIRST occurrence — when the same sub-expression appears
- * twice (e.g. `3 + 3`), only the first instance is highlighted.
- *
- * Falls back to coloring the entire global node if structural traversal
- * cannot locate the fragment (defensive — should not happen in normal
- * operation since `findFirstApplication` always passes the freshly
- * captured sub-tree).
+ * Falls back to coloring the entire global node if no fragment can be
+ * located (defensive).
  */
-function colorFragmentInExpression(global: MathNode, fragment: MathNode): string {
-	if (nodesEqual(global, fragment)) {
+function colorFragmentsInExpression(global: MathNode, fragments: readonly MathNode[]): string {
+	if (fragments.length === 0) return toLatex(global);
+	if (fragments.length === 1 && nodesEqual(global, fragments[0])) {
 		return `\\textcolor{blue}{${toLatex(global)}}`;
 	}
-	const found = renderWithHighlight(global, fragment);
+	const found = renderWithHighlights(global, fragments);
 	if (found.matched) return found.latex;
 	return `\\textcolor{blue}{${toLatex(global)}}`;
 }
@@ -150,37 +146,38 @@ interface HighlightResult {
 }
 
 /**
- * Walk `node` to produce its LaTeX while wrapping `fragment` (matched by
- * reference equality) in `\textcolor{blue}{...}`. The traversal mirrors the
- * structure used by `latex-generator.ts` for the operators we routinely
- * encounter — for any other shape, we delegate to `toLatex` and the
- * fragment, if absent, won't be colored (graceful degradation).
+ * Walk `node` to produce its LaTeX while wrapping every node that
+ * structurally matches one of `fragments` in `\textcolor{blue}{...}`. The
+ * traversal mirrors the structure used by `latex-generator.ts` for the
+ * operators we routinely encounter — for any other shape, we delegate to
+ * `toLatex` and the fragment(s), if absent, won't be colored (graceful
+ * degradation).
  */
-function renderWithHighlight(node: MathNode, fragment: MathNode): HighlightResult {
-	if (nodesEqual(node, fragment)) {
+function renderWithHighlights(node: MathNode, fragments: readonly MathNode[]): HighlightResult {
+	if (fragments.some((f) => nodesEqual(node, f))) {
 		return { latex: `\\textcolor{blue}{${toLatex(node)}}`, matched: true };
 	}
 
 	switch (node.type) {
 		case 'addition': {
-			const l = renderWithHighlight(node.left, fragment);
-			const r = renderWithHighlight(node.right, fragment);
+			const l = renderWithHighlights(node.left, fragments);
+			const r = renderWithHighlights(node.right, fragments);
 			return {
 				latex: `${l.latex} + ${r.latex}`,
 				matched: l.matched || r.matched
 			};
 		}
 		case 'subtraction': {
-			const l = renderWithHighlight(node.left, fragment);
-			const r = renderWithHighlight(node.right, fragment);
+			const l = renderWithHighlights(node.left, fragments);
+			const r = renderWithHighlights(node.right, fragments);
 			return {
 				latex: `${l.latex} - ${r.latex}`,
 				matched: l.matched || r.matched
 			};
 		}
 		case 'multiplication': {
-			const l = renderWithHighlight(node.left, fragment);
-			const r = renderWithHighlight(node.right, fragment);
+			const l = renderWithHighlights(node.left, fragments);
+			const r = renderWithHighlights(node.right, fragments);
 			const op = multiplicationOp(node.displayStyle);
 			return {
 				latex: `${l.latex}${op}${r.latex}`,
@@ -188,8 +185,8 @@ function renderWithHighlight(node: MathNode, fragment: MathNode): HighlightResul
 			};
 		}
 		case 'division': {
-			const num = renderWithHighlight(node.numerator, fragment);
-			const den = renderWithHighlight(node.denominator, fragment);
+			const num = renderWithHighlights(node.numerator, fragments);
+			const den = renderWithHighlights(node.denominator, fragments);
 			if (node.displayStyle === 'fraction') {
 				return {
 					latex: `\\dfrac{${num.latex}}{${den.latex}}`,
@@ -202,29 +199,26 @@ function renderWithHighlight(node: MathNode, fragment: MathNode): HighlightResul
 			};
 		}
 		case 'opposite': {
-			const inner = renderWithHighlight(node.operand, fragment);
+			const inner = renderWithHighlights(node.operand, fragments);
 			return { latex: `-${inner.latex}`, matched: inner.matched };
 		}
 		case 'positive': {
-			const inner = renderWithHighlight(node.operand, fragment);
+			const inner = renderWithHighlights(node.operand, fragments);
 			return { latex: `+${inner.latex}`, matched: inner.matched };
 		}
 		case 'delimiter': {
-			const inner = renderWithHighlight(node.content, fragment);
+			const inner = renderWithHighlights(node.content, fragments);
 			return { latex: `\\left(${inner.latex}\\right)`, matched: inner.matched };
 		}
 		case 'superscript': {
-			const base = renderWithHighlight(node.base, fragment);
-			const sup = renderWithHighlight(node.superscript, fragment);
+			const base = renderWithHighlights(node.base, fragments);
+			const sup = renderWithHighlights(node.superscript, fragments);
 			return {
 				latex: `${base.latex}^{${sup.latex}}`,
 				matched: base.matched || sup.matched
 			};
 		}
 		default:
-			// For any other node type, delegate to toLatex without highlighting.
-			// The outer caller will fall back to coloring the whole expression
-			// when nothing matched.
 			return { latex: toLatex(node), matched: false };
 	}
 }
@@ -265,30 +259,66 @@ function multiplicationOp(style: string): string {
 export function formatTransformationCustom(step: PedagogicalArithmeticStep): string {
 	const globalBefore = step.globalBefore ?? step.before;
 	const globalAfter = step.globalAfter ?? step.after;
-	const subBefore = step.before;
+	const fragments = step.highlightSubTrees ?? [step.before];
 
 	const beforeText = toCustom(globalBefore);
 	const afterText = toCustom(globalAfter);
-	const colored = injectHighlight(beforeText, globalBefore, subBefore);
+	const colored = injectHighlights(beforeText, globalBefore, fragments);
 
 	return `${colored}\n= ${afterText}`;
 }
 
 /**
- * Inject `@blue{...}` around the first occurrence of the fragment's
- * custom-syntax text inside the global expression's text. Uses
- * `nodesEqual` to check the global itself first — if the global is
- * structurally equal to the fragment, the whole expression is highlighted.
+ * Inject `@blue{...}` around the first occurrence of EACH fragment's
+ * custom-syntax text inside `beforeText`. When `globalBefore` itself
+ * structurally matches a (single) fragment, the whole expression is
+ * highlighted. Defensive fallback : if no fragment can be located in the
+ * text, color the whole expression.
  *
- * Falls back to coloring the whole expression when the fragment text
- * cannot be located (defensive).
+ * Each pass operates on the partially-modified text from previous passes,
+ * so every distinct fragment receives its own `@blue{...}` wrapper. The
+ * `indexOf` search starts at offset 0 each time but skips over text
+ * already inside an `@blue{...}` wrapper, which prevents re-coloring an
+ * already-highlighted span when two fragments share a common prefix.
  */
-function injectHighlight(beforeText: string, global: MathNode, fragment: MathNode): string {
-	if (nodesEqual(global, fragment)) {
+function injectHighlights(
+	beforeText: string,
+	global: MathNode,
+	fragments: readonly MathNode[]
+): string {
+	if (fragments.length === 0) return beforeText;
+	if (fragments.length === 1 && nodesEqual(global, fragments[0])) {
 		return `@blue{${beforeText}}`;
 	}
-	const subText = toCustom(fragment);
-	const idx = beforeText.indexOf(subText);
-	if (idx < 0) return `@blue{${beforeText}}`;
-	return beforeText.slice(0, idx) + `@blue{${subText}}` + beforeText.slice(idx + subText.length);
+	let result = beforeText;
+	let anyMatched = false;
+	for (const fragment of fragments) {
+		const subText = toCustom(fragment);
+		const idx = findOutsideWrapper(result, subText);
+		if (idx < 0) continue;
+		result = result.slice(0, idx) + `@blue{${subText}}` + result.slice(idx + subText.length);
+		anyMatched = true;
+	}
+	return anyMatched ? result : `@blue{${beforeText}}`;
+}
+
+/**
+ * Find the first occurrence of `needle` in `haystack` that is NOT already
+ * inside an `@blue{...}` wrapper. Prevents the multi-fragment loop from
+ * re-coloring the same span when two fragments overlap textually.
+ */
+function findOutsideWrapper(haystack: string, needle: string): number {
+	let from = 0;
+	while (from <= haystack.length - needle.length) {
+		const idx = haystack.indexOf(needle, from);
+		if (idx < 0) return -1;
+		// Look back for an unmatched `@blue{` before this position
+		const opener = haystack.lastIndexOf('@blue{', idx);
+		if (opener < 0) return idx;
+		const closer = haystack.indexOf('}', opener);
+		if (closer < 0 || closer < idx) return idx;
+		// The match is inside an existing wrapper — skip past the closer
+		from = closer + 1;
+	}
+	return -1;
 }
