@@ -439,10 +439,17 @@ function formatExtractSquareRoot(
 	return `x = \\pm \\sqrt{${fmt(op.argument)}}`;
 }
 
-/** `A \cdot B = 0 \;\Longleftrightarrow\; A = 0 \;\text{ou}\; B = 0` */
+/**
+ * `(A) \cdot (B) = 0 \;\Longleftrightarrow\; A = 0 \;\text{ou}\; B = 0`
+ *
+ * Each factor is wrapped in `\left( \right)` on the product side so the
+ * multiplication binds correctly when the factor is itself a sum or
+ * difference (e.g. `(x − 2)(x + 3) = 0`). On the disjunction side we drop the
+ * parens — `x − 2 = 0` reads cleaner than `(x − 2) = 0`.
+ */
 function formatZeroProduct(op: EquationOperation & { kind: 'zero-product' }): string {
 	const factorsNullified = op.factors.map((f) => `${fmt(f)} = 0`).join(' \\;\\text{ou}\\; ');
-	const product = op.factors.map(fmt).join(' \\cdot ');
+	const product = op.factors.map((f) => `\\left(${fmt(f)}\\right)`).join(' \\cdot ');
 	return `${product} = 0 \\;\\Longleftrightarrow\\; ${factorsNullified}`;
 }
 
