@@ -40,6 +40,7 @@ import { assignBlankIndices } from './assign-blank-indices';
 import { normalizeExpression } from '$lib/ubumark/parameterization';
 import { applyRemoveSpaces } from '$lib/ubumark/parameterization/resolver/variable-resolver';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
+import { generateCorrection } from './correction-generator';
 import { evaluateConditions } from './condition-evaluator';
 
 // ============================================================================
@@ -399,8 +400,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				resolvedVariables
 			);
 
-			const { feedback, steps } = resolvedVariation.correction;
+			const { feedback, steps, generatedSteps } = resolvedVariation.correction;
 			resolvedCorrection = {};
+
+			// Mode B — copy `generatedSteps` declaration as-is (no resolution :
+			// `expression` / `equation` may still hold `{{vars}}` ; resolution
+			// happens inside `generateCorrection()` later in the pipeline).
+			if (generatedSteps) {
+				resolvedCorrection.generatedSteps = generatedSteps;
+			}
 
 			if (feedback) {
 				resolvedCorrection.feedback = {};
@@ -463,9 +471,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			selectedVariationIndex: variationIndex
 		};
 
+		// 9. Mode B — pre-render pedagogical steps if `correction.generatedSteps`
+		// was declared. Strict early-return inside when absent, so this is a
+		// no-op for the vast majority of templates. Coupling with
+		// `correction-generator.ts` is intentional and unidirectional.
+		const finalInstance = generateCorrection(instance);
+
 		return {
 			success: true,
-			instance
+			instance: finalInstance
 		};
 	} catch (error) {
 		return {

@@ -118,12 +118,15 @@ function validateVariation(
 	// Validate correction (if present, now a QuestionCorrection object)
 	if (variation.correction !== undefined) {
 		if (typeof variation.correction !== 'object' || variation.correction === null) {
-			errors.push(`${prefix} Correction must be an object with feedback and/or steps`);
+			errors.push(
+				`${prefix} Correction must be an object with feedback, steps and/or generatedSteps`
+			);
 		} else {
-			const { feedback, steps } = variation.correction;
-			// At least one of feedback or steps should be present for a non-empty correction
-			if (!feedback && !steps) {
-				errors.push(`${prefix} Correction must have at least feedback or steps`);
+			const { feedback, steps, generatedSteps } = variation.correction;
+			// At least one content channel must be present for a non-empty correction.
+			// Mode A = `steps` (manual) ; Mode B = `generatedSteps` (declarative).
+			if (!feedback && !steps && !generatedSteps) {
+				errors.push(`${prefix} Correction must have at least feedback, steps or generatedSteps`);
 			}
 		}
 	}
