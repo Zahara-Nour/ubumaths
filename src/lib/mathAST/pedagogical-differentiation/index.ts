@@ -17,6 +17,8 @@ export {
 
 export { PedagogicalDifferentiationRenderer } from './renderer';
 
+export type { DifferentiationNotation, DifferentiationRenderOptions } from './renderer';
+
 export type {
 	DifferentiationBindings,
 	PedagogicalDifferentiationOptions,
