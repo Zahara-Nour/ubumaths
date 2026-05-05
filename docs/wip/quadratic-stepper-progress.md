@@ -178,28 +178,70 @@ Suggestion (mineure) reportée :
 
 ### Commits livrés
 
-| Phase | Commit      | Description                                                |
-| ----- | ----------- | ---------------------------------------------------------- |
-| 1     | `593a82204` | types extension (+18 kinds quadratique)                    |
-| 2     | `40789a138` | pipeline `quadratic.ts` + helpers refacto                  |
-| 3     | `910e4e642` | renderer `quadratic-renderer.ts`                           |
-| 4     | `bd333851a` | dispatcher `index.ts`                                      |
-| 5     | `0a52989d6` | 7 catégories démos + CLI standalone                        |
-| 6     | `92580f0b9` | Mode B `kind: 'quadratic-equation'` + fixture + page debug |
-| 7     | `023476a5b` | doc finale (3 docs mises à jour)                           |
+| Phase | Commit      | Description                                                                          |
+| ----- | ----------- | ------------------------------------------------------------------------------------ |
+| 1     | `593a82204` | types extension (+18 kinds quadratique)                                              |
+| 2     | `40789a138` | pipeline `quadratic.ts` + helpers refacto                                            |
+| 3     | `910e4e642` | renderer `quadratic-renderer.ts`                                                     |
+| 4     | `bd333851a` | dispatcher `index.ts`                                                                |
+| 5     | `0a52989d6` | 7 catégories démos + CLI standalone                                                  |
+| 6     | `92580f0b9` | Mode B `kind: 'quadratic-equation'` + fixture + page debug                           |
+| 7     | `023476a5b` | doc finale (3 docs mises à jour)                                                     |
+| 7+    | `b97f83855` | enregistrement hash Phase 7 + chiffres exacts dans la doc                            |
+| V1.1  | `8252a747d` | pretty-print CLI demo + fix renderer `formatZeroProduct` `(A) · (B) = 0`             |
+| V1.1  | `23acc3eed` | raffinements B/C/D : `nodesEqual`, `factor-gcd`, `smartNegate` (+10 tests, 31 kinds) |
 
-## Limitations connues V1 (post-livraison)
+## Raffinements V1.1 livrés (post-livraison)
 
-- Coefficients **paramétriques** (ex. `mx² + 2mx + 1 = 0`) → throw `NotImplemented`, fallback Mode A.
-- **Discussion sur paramètre** (Δ = 4m² − 4m → discuter du signe) → V2.
-- **Équations bicarrées** `ax⁴ + bx² + c = 0` → V2 (gérées algorithmiquement par `solvers/quartic.ts`).
-- **Cubiques / quartiques** → hors scope.
-- **Inéquations du 2nd degré** → hors scope.
-- **Discriminant décomposé** (sub-steps b², 4ac, soustraction) → raffinement V1.1 si demandé.
+Trois améliorations appliquées après la livraison V1 du tunnel principal :
+
+- **B — `nodesEqual` structurel** : remplace `JSON.stringify` dans
+  `buildSimplifySolutionsStep`. Plus robuste aux variations d'ordre de
+  propriétés du factory.
+- **C — `factor-gcd`** (nouveau kind, count 30 → 31) : si `gcd(|a|, |b|, |c|) > 1`
+  (entiers), divise les deux membres par le PGCD avant la formule.
+  Exemples : `3x² − 3x − 18 = 0` ⇒ `x² − x − 6 = 0` ⇒ Δ=25 (au lieu de 225) ;
+  `2x² − 8 = 0` ⇒ `x² − 4 = 0`. S'applique aux cas standard, b-zero et
+  c-zero (pas factorisé).
+- **D — `smartNegate`** : collapse `opposite(opposite(x))` dans le `negB`
+  de `apply-quadratic-formula`. Élimine `--5` dans les rawSolutions de
+  `simplify-solutions` quand `b = -5`. Forme substituée du formula step
+  préservée (montre `−(−5)` pour la pédagogie).
+
+CLI demo amélioré (commit `8252a747d`) :
+
+- Pretty-print : `\Delta`→`Δ`, `\dfrac{a}{b}`→`(a)/(b)`, `\sqrt{x}`→`√(x)`,
+  `\cdot`→`·`, `\pm`→`±`, `\Longleftrightarrow`→`⇔`, `\emptyset`→`∅`,
+  `\begin{aligned}` strippé, `--N`→`+N`, `2 1`→`2·1`. ANSI bold-blue sur
+  `[N]` quand TTY. Flag `--latex` pour mode raw (matche les snapshots).
+- Bug fix `formatZeroProduct` : `(x − 2) · (x + 3) = 0` au lieu de
+  `x − 2 · x + 3 = 0` (chaque facteur wrappé dans `\left( \right)`).
+
+Tests cumulés post-V1.1 : **217 tests pedagogical-solve verts** (vs 207
+en fin de Phase 7 stricte). 0 régression Mode B.
+
+## Limitations connues V1 (post-livraison) → roadmap
+
+- ✅ **Discriminant décomposé** (sub-steps b², 4ac, soustraction) →
+  raffinement V1.1 décidé `non-prioritaire` (V1 compact reste suffisant).
+- ✅ **GCD du polynôme** → livré en V1.1-C.
+- ✅ **`-(-N)` simplifié** → livré en V1.1-D.
+- ✅ **`nodesEqual` structurel** → livré en V1.1-B.
+- 🔜 **Coefficients paramétriques + discussion sur paramètre** (`mx² + 2x + 1 = 0`,
+  `(m−1)x² + 2x + m = 0` avec Δ paramétrique) → V2, prompt source
+  `docs/wip/quadratic-stepper-v2-prompt.md` (validé pour exécution dans
+  une session future).
+- 🔜 **Équations bicarrées** `ax⁴ + bx² + c = 0` → V2 (peut être bundled
+  avec le V2 paramétrique ou prompt séparé).
+- ❌ **Cubiques / quartiques** → hors scope (gérés algorithmiquement par
+  `solvers/cubic.ts`, `solvers/quartic.ts` mais sans pipeline pédagogique).
+- ❌ **Inéquations du 2nd degré** → module séparé
+  `pedagogical-inequalities/` (V2+).
 
 ## Documents de référence
 
-- `docs/wip/quadratic-stepper-prompt.md` — source du plan, décisions Phase 0
-- `docs/wip/pedagogical-steppers-mvp-progress.md` — vue d'ensemble (mise à jour en Phase 7, commit `023476a5b`)
-- `docs/wip/correction-integration-progress.md` — architecture Mode B (mise à jour en Phase 7, commit `023476a5b`)
+- `docs/wip/quadratic-stepper-prompt.md` — source du plan V1, décisions Phase 0
+- `docs/wip/quadratic-stepper-v2-prompt.md` — prompt V2 (paramétriques + discussion)
+- `docs/wip/pedagogical-steppers-mvp-progress.md` — vue d'ensemble (mise à jour en Phase 7)
+- `docs/wip/correction-integration-progress.md` — architecture Mode B (mise à jour en Phase 7)
 - `docs/wip/differentiation-stepper-progress.md` — modèle de doc de progression cloné ici
