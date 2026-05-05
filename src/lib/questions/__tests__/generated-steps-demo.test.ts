@@ -1,0 +1,129 @@
+/**
+ * Mode B end-to-end demos — snapshot tests
+ *
+ * Locks the rendered output of two demo templates through the full
+ * `generateInstance() → generateCorrection() → RenderedStep[]` pipeline so
+ * that any drift in the pedagogical-arithmetic or pedagogical-solve pipelines
+ * surfaces immediately as a snapshot diff.
+ *
+ * @see fixtures/generated-steps-demo.ts
+ */
+
+import { describe, it, expect } from 'vitest';
+import { generateInstance } from '../generator/instance-generator';
+import { additionGroupingDemo, linearEquationDemo } from './fixtures/generated-steps-demo';
+
+/** Compact serializable view of a RenderedStep tree (no implementation noise). */
+interface StepView {
+	id: number;
+	rule: string;
+	title: string;
+	schoolLevel?: string;
+	hasExpressionLatex: boolean;
+	hasExplanation: boolean;
+	subSteps?: StepView[];
+}
+
+function summarize(step: {
+	id: number;
+	rule: string;
+	title: string;
+	schoolLevel?: string;
+	expressionLatex?: string;
+	explanation?: string;
+	subSteps?: readonly {
+		id: number;
+		rule: string;
+		title: string;
+		schoolLevel?: string;
+		expressionLatex?: string;
+		explanation?: string;
+		subSteps?: readonly never[];
+	}[];
+}): StepView {
+	const view: StepView = {
+		id: step.id,
+		rule: step.rule,
+		title: step.title,
+		schoolLevel: step.schoolLevel,
+		hasExpressionLatex: !!step.expressionLatex,
+		hasExplanation: !!step.explanation
+	};
+	if (step.subSteps && step.subSteps.length > 0) {
+		view.subSteps = step.subSteps.map((s) => summarize(s));
+	}
+	return view;
+}
+
+describe('Mode B end-to-end demos', () => {
+	it('CM2 arithmetic — produces primaire steps with grouping', () => {
+		const result = generateInstance(additionGroupingDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		// Every step must be tagged primaire (CM2 → primaire via auto-mapping).
+		expect(steps!.every((s) => s.schoolLevel === 'primaire')).toBe(true);
+
+		// Snapshot the structural summary — the actual LaTeX content is verified
+		// by the underlying pedagogical-arithmetic pipeline tests.
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('CM2 arithmetic — feedback.correct preserved alongside generated steps', () => {
+		const result = generateInstance(additionGroupingDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.correction?.feedback?.correct).toBe('Excellent !');
+	});
+
+	it('4e linear equation — produces college steps', () => {
+		const result = generateInstance(linearEquationDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		// Every step (including substeps) must be tagged college.
+		const allSchoolLevels = (function collect(arr: typeof steps): string[] {
+			const out: string[] = [];
+			for (const s of arr ?? []) {
+				if (s.schoolLevel) out.push(s.schoolLevel);
+				if (s.subSteps) out.push(...collect(s.subSteps));
+			}
+			return out;
+		})(steps);
+		expect(allSchoolLevels.every((lvl) => lvl === 'college')).toBe(true);
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('4e linear equation — feedback.correct preserved', () => {
+		const result = generateInstance(linearEquationDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.correction?.feedback?.correct).toBe('Bravo !');
+	});
+
+	it('Mode B declaration is preserved on ResolvedCorrection', () => {
+		const result = generateInstance(additionGroupingDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const gs = result.instance.correction?.generatedSteps;
+		expect(gs?.kind).toBe('arithmetic');
+		if (gs?.kind === 'arithmetic') {
+			// Template variables intentionally NOT resolved on the declaration.
+			expect(gs.expression).toBe('{{a}}+{{b}}*{{c}}+{{d}}*{{e}}');
+		}
+	});
+});
