@@ -211,3 +211,19 @@ Pipeline d'évaluation : détecter le cas affine **avant** d'appliquer le facteu
   - ESLint sur les 9 fichiers modifiés : 0 erreur, 0 warning.
   - `pnpm check:incremental` : 9 erreurs au total, toutes pré-existantes (`slides/demo`, `extern/`), aucune dans les fichiers modifiés. Le script filtre correctement et exit 0.
   - Pas de fichier `.svelte` modifié → autofixer non requis.
+
+---
+
+## Suite des travaux unités (livraisons ultérieures)
+
+Cette livraison a ouvert la voie à deux extensions livrées les jours suivants :
+
+- **2026-05-04** : reconnaissance d'unités SI dérivées (Hz, N, J, W, Pa, C, V, Ω, F) — voir `units-derived-progress.md`. Apporte le champ `components: ReadonlyMap<string, number>` sur `BaseUnitDef`, qui débloque les unités composées en dimension comme l'aire.
+- **2026-05-04** : unités d'aire (a, ha, acre) — voir `units-area-progress.md`. Hors scope de ce prompt mais débloqué par les dérivées.
+
+### TODOs restants identifiés
+
+- Mode locale `unitFormat: 'metric' | 'imperial'` (reporté Phase 5 du prompt initial)
+- Catalogue dérivées étendu : T, H, S, Wb, lm, lx, Bq, Gy, Sv (hors scope V1, à demander selon besoin)
+- Expansion `N → kg·m·s⁻²` (hors scope V1 dérivées, conversion inverse)
+- Distinction sémantique `J` vs `N·m` (couple) — non couvert par la signature dimensionnelle

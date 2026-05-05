@@ -105,3 +105,17 @@ Le custom parser (`src/lib/mathAST/parser/custom/parser-pratt.ts:1640`, fonction
   - **#5** : commentaire ajouté dans le test `da` expliquant la dépendance subtile à `a` étant dans SPECIAL_UNITS.
   - Findings #2 et #3 ne nécessitaient aucune action (test précision OK, coefficient acre exact).
 - **2026-05-04** : Phase 4 livrée. Quality checks : ESLint 0 erreur 0 warning. `pnpm check:incremental` : 9 erreurs pré-existantes hors fichiers modifiés.
+
+---
+
+## Travaux liés sur le système d'unités
+
+- **2026-05-03** : `units-imperial-affine-progress.md` — unités impériales + conversions affines. Pose les fondations `SPECIAL_UNITS` réutilisées ici.
+- **2026-05-04** (même jour) : `units-derived-progress.md` — reconnaissance d'unités SI dérivées (Hz, N, J, W, etc.). Ce travail est l'étape qui a ajouté le champ `components: ReadonlyMap<string, number>` à `BaseUnitDef`, débloquant les unités d'aire.
+
+### TODOs restants identifiés
+
+- Préfixes SI sur unités d'aire — décidés interdits volontairement (cohérent Poincaré). À reconsidérer si demande utilisateur réelle.
+- Famille area dans `UNIT_FAMILIES` pour le mode `'best'` (TODO noté en code Phase 3 #4)
+- Aliases anglais (`hectacre`, etc.) — simples à ajouter si besoin
+- Reconnaissance automatique `m² → ha` dans le mode `'best'` — non pertinent V1, extension future possible

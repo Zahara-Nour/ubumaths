@@ -188,16 +188,26 @@ Les sous-calculs sont maintenant en arithmétique rationnelle exacte :
 
 Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce commit final (Phase 5 doc only).
 
-### Hors scope (à reprendre dans des sessions ultérieures)
+### Hors scope MVP — état au 2026-05-05
+
+#### ✅ Livrés depuis dans des prompts/sessions ultérieurs
+
+- **Pipeline pédagogique complet pour arithmétique** (regroupement, fractions, radicaux, notation scientifique) → livré, voir `pedagogical-arithmetic-progress.md`
+- **Implémentation effective de `PedagogicalTarget`** (extraction depuis instance/blank) → livré dans le même prompt arithmétique (Phase 2b)
+- **Reconnaissance d'unités SI dérivées** (Hz, N, J, W, etc.) — point Poincaré → livré, voir `units-derived-progress.md`
+- **Unités impériales + affines** (Celsius/Fahrenheit, foot, pound, mile, gallon) → livré, voir `units-imperial-affine-progress.md`
+- **Unités d'aire** (a, ha, acre) — bonus débloqué par dérivées → livré, voir `units-area-progress.md`
+
+#### 🔴 Toujours à faire
 
 - Renderers pédagogiques pour les autres domaines (integration, limits, matrix, domain)
 - Stepper pour différentiation (nouveau step recorder + renderer)
-- Pipeline pédagogique complet pour arithmétique (regroupement, fractions, radicaux)
 - Pipeline pédagogique pour simplification d'expression
 - Intégration aux corrections de questions (`QuestionCorrection.generatedSteps`)
-- Implémentation effective de `PedagogicalTarget` (extraction depuis instance/blank)
 - Modes `SymbolicComputation` (Mode 0, Mode 2) inspirés de Poincaré
+- `NormalizeTarget` à 3 niveaux (`Equivalence` / `Analysis` / `Display`)
 - Investigation root-cause du load-order issue de `common/index.ts`
+- TODOs post-arithmétique : `expressionName` dans `InstanceBlank`, variantes fractions sous-niveau, radicaux niveau 3 avancé (rationalize, abs²), decimal mantissas dans scientific, cohérence `signs` strict en post-processing
 
 ### Critères d'acceptation atteints
 
