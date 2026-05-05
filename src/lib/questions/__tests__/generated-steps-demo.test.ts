@@ -11,7 +11,12 @@
 
 import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
-import { additionGroupingDemo, linearEquationDemo } from './fixtures/generated-steps-demo';
+import {
+	additionGroupingDemo,
+	differentiateCompositionDemo,
+	differentiatePolynomialDemo,
+	linearEquationDemo
+} from './fixtures/generated-steps-demo';
 
 /** Compact serializable view of a RenderedStep tree (no implementation noise). */
 interface StepView {
@@ -125,5 +130,45 @@ describe('Mode B end-to-end demos', () => {
 			// Template variables intentionally NOT resolved on the declaration.
 			expect(gs.expression).toBe('{{a}}+{{b}}*{{c}}+{{d}}*{{e}}');
 		}
+	});
+
+	it('1ère spécialité polynomial differentiation — produces lycee steps', () => {
+		const result = generateInstance(differentiatePolynomialDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		const allSchoolLevels = (function collect(arr: typeof steps): string[] {
+			const out: string[] = [];
+			for (const s of arr ?? []) {
+				if (s.schoolLevel) out.push(s.schoolLevel);
+				if (s.subSteps) out.push(...collect(s.subSteps));
+			}
+			return out;
+		})(steps);
+		expect(allSchoolLevels.every((lvl) => lvl === 'lycee')).toBe(true);
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('Terminale spécialité composition differentiation — produces sin + linear-coefficient sub-step', () => {
+		const result = generateInstance(differentiateCompositionDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+		expect(steps![0].rule).toBe('sin');
+		expect(steps![0].subSteps).toBeDefined();
+		expect(steps![0].subSteps!.length).toBeGreaterThan(0);
+		expect(steps![0].subSteps![0].rule).toBe('linear-coefficient');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
 	});
 });

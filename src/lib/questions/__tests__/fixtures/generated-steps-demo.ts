@@ -2,7 +2,7 @@
  * Mode B Generated Steps — Demo Fixtures
  * =======================================
  *
- * Two end-to-end demo templates illustrating Mode B :
+ * Four end-to-end demo templates illustrating Mode B :
  *
  * 1. **`additionGroupingDemo`** — CM2 arithmetic with grouping
  *    (`{{a}} + {{b}} * {{c}} + {{d}} * {{e}}`) ; the pedagogical-arithmetic
@@ -10,6 +10,15 @@
  *
  * 2. **`linearEquationDemo`** — 4e linear equation (`{{a}} * x + {{b}} = {{c}}`)
  *    ; the pedagogical-solve/linear pipeline emits the college-level resolution.
+ *
+ * 3. **`differentiatePolynomialDemo`** — 1ère spécialité maths polynomial
+ *    (`x^3 + {{a}} * x^2 + {{b}} * x + {{c}}`) ; the pedagogical-differentiation
+ *    pipeline emits a lycee walkthrough using `sum`, `linear-coefficient`,
+ *    `power-natural`.
+ *
+ * 4. **`differentiateCompositionDemo`** — Terminale spécialité composition
+ *    (`sin({{a}} * x)`) ; the pedagogical-differentiation pipeline emits the
+ *    chain rule via `sin` + inner `linear-coefficient`.
  *
  * Used by `generated-steps-demo.test.ts` to lock the rendered output via
  * snapshots, so any drift in the pedagogical pipelines surfaces immediately.
@@ -95,5 +104,79 @@ export const linearEquationDemo: QuestionTemplate = {
 	theme: 'Algèbre',
 	domain: 'Équations',
 	subdomain: 'Linéaires',
+	level: 2
+};
+
+/**
+ * Demo question : `f(x) = x^3 + 2x^2 + 5x + 7` for 1ère spécialité maths.
+ *
+ * Mode B declares a `differentiate` correction with a polynomial expression.
+ * The pipeline emits a `sum` top step with two `linear-coefficient` and one
+ * `power-natural` sub-derivations (silent for the constant term).
+ */
+export const differentiatePolynomialDemo: QuestionTemplate = {
+	id: 'demo-differentiate-1ere',
+	title: 'Dérivée polynomiale (1ère spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				"Calcule $f'(x) = ?$ avec $f(x) = x^3 + {{a}}x^2 + {{b}}x + {{c}}$"
+			),
+			variables: [
+				{ name: 'a', expression: '2' },
+				{ name: 'b', expression: '5' },
+				{ name: 'c', expression: '7' }
+			],
+			blanks: [{ expectedAnswer: '3*x^2 + 2*{{a}}*x + {{b}}' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Bravo !') },
+				generatedSteps: {
+					kind: 'differentiate',
+					expression: 'x^3 + {{a}}*x^2 + {{b}}*x + {{c}}',
+					variable: 'x',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['1_SPE'],
+	theme: 'Analyse',
+	domain: 'Dérivation',
+	subdomain: 'Polynômes',
+	level: 1
+};
+
+/**
+ * Demo question : `f(x) = sin(2x)` for Terminale spécialité maths.
+ *
+ * Mode B declares a `differentiate` correction with a composition. The
+ * pipeline emits a `sin` step with a `linear-coefficient` sub-step (chain
+ * rule integrated).
+ */
+export const differentiateCompositionDemo: QuestionTemplate = {
+	id: 'demo-differentiate-tle',
+	title: 'Dérivée par composition (Terminale spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown("Calcule $f'(x) = ?$ avec $f(x) = \\sin({{a}}x)$"),
+			variables: [{ name: 'a', expression: '3' }],
+			blanks: [{ expectedAnswer: '{{a}}*\\cos({{a}}*x)' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Excellent !') },
+				generatedSteps: {
+					kind: 'differentiate',
+					expression: 'sin({{a}}*x)',
+					variable: 'x',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['T_SPE'],
+	theme: 'Analyse',
+	domain: 'Dérivation',
+	subdomain: 'Composition',
 	level: 2
 };

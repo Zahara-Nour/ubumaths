@@ -975,6 +975,14 @@ export type GeneratedSteps =
 			/** Template equation — supports `{{a}}`, `{{eval:...}}`, etc. */
 			readonly equation: string;
 			readonly options?: GeneratedStepsOptions;
+	  }
+	| {
+			readonly kind: 'differentiate';
+			/** Template expression of the function `f(x)` to differentiate. */
+			readonly expression: string;
+			/** Differentiation variable. Defaults to `'x'` when omitted. */
+			readonly variable?: string;
+			readonly options?: GeneratedStepsOptions;
 	  };
 
 /**

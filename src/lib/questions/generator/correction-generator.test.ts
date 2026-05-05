@@ -303,3 +303,115 @@ describe('generateCorrection — verbosity', () => {
 		expect(result.correction?._renderedSteps?.length).toBeGreaterThan(0);
 	});
 });
+
+// =============================================================================
+// Differentiate — basic + special cases
+// =============================================================================
+
+describe("generateCorrection — kind: 'differentiate'", () => {
+	it('produces _renderedSteps for a polynomial', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'differentiate',
+					expression: 'x^3 + 2*x^2'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+		expect(result.correction?._renderedSteps?.length).toBeGreaterThan(0);
+	});
+
+	it('substitutes template variables before parsing', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			resolvedVariables: [{ name: 'a', value: '3' }],
+			correction: {
+				generatedSteps: {
+					kind: 'differentiate',
+					expression: '{{a}}*x^2'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+		// Top-level rule should be linear-coefficient (3 · x²) at 1ère.
+		expect(result.correction?._renderedSteps?.[0].rule).toBe('linear-coefficient');
+	});
+
+	it('defaults the differentiation variable to `x` when not specified', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'differentiate',
+					expression: 'x^2'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps?.[0].rule).toBe('power-natural');
+	});
+
+	it('honours an explicit `variable` override', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'differentiate',
+					expression: 'y^2 + 3*y',
+					variable: 'y'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		// At least one step should be present (sum at top, with sub-steps).
+		expect(result.correction?._renderedSteps?.length).toBeGreaterThan(0);
+	});
+
+	it('returns instance unchanged when expression is not parsable', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'differentiate',
+					expression: '!!!invalid$$$('
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it('returns instance unchanged when differentiating an equation (relation node)', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'differentiate',
+					expression: 'x = 5'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it('rendered steps include the LaTeX 2-line aligned block', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'differentiate',
+					expression: 'x^2'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const top = result.correction?._renderedSteps?.[0];
+		expect(top?.expressionLatex).toContain('\\begin{aligned}');
+		expect(top?.expressionLatex).toContain('\\end{aligned}');
+	});
+});

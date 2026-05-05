@@ -29,6 +29,8 @@ import type {
 import { generatePedagogicalArithmeticSteps } from '$lib/mathAST/pedagogical-arithmetic/pipeline';
 import { PedagogicalArithmeticRenderer } from '$lib/mathAST/pedagogical-arithmetic/renderer';
 import { extractPedagogicalTarget } from '$lib/mathAST/pedagogical-arithmetic/target-extractor';
+import { generatePedagogicalDifferentiationSteps } from '$lib/mathAST/pedagogical-differentiation/pipeline';
+import { PedagogicalDifferentiationRenderer } from '$lib/mathAST/pedagogical-differentiation/renderer';
 import { generateLinearEquationSteps } from '$lib/mathAST/pedagogical-solve/linear';
 import { LinearEquationRenderer } from '$lib/mathAST/pedagogical-solve/linear-renderer';
 import type { LinearSchoolLevel } from '$lib/mathAST/pedagogical-solve/types';
@@ -77,6 +79,15 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 			case 'linear-equation':
 				renderedSteps = renderLinearEquation({
 					equation: generatedSteps.equation,
+					instance,
+					schoolLevel,
+					verbosity
+				});
+				break;
+			case 'differentiate':
+				renderedSteps = renderDifferentiate({
+					expression: generatedSteps.expression,
+					variable: generatedSteps.variable ?? 'x',
 					instance,
 					schoolLevel,
 					verbosity
@@ -173,6 +184,38 @@ function renderLinearEquation({
 		verbosity
 	};
 	return renderer.renderAll(steps, renderOptions);
+}
+
+interface DifferentiateDispatch {
+	readonly expression: string;
+	readonly variable: string;
+	readonly instance: QuestionInstance;
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+}
+
+function renderDifferentiate({
+	expression,
+	variable,
+	instance,
+	schoolLevel,
+	verbosity
+}: DifferentiateDispatch): readonly RenderedStep[] | null {
+	const node = parseExpression(expression, instance);
+	if (node === null) return null;
+
+	// Differentiation expects an expression — refuse a relation silently.
+	if (node.type === 'relation') return null;
+
+	const result = generatePedagogicalDifferentiationSteps(node, {
+		variable,
+		schoolLevel,
+		verbosity
+	});
+
+	const renderer = new PedagogicalDifferentiationRenderer();
+	const renderOptions: PedagogicalRenderOptions = { schoolLevel, verbosity };
+	return renderer.renderAll(result.steps, renderOptions);
 }
 
 // =============================================================================

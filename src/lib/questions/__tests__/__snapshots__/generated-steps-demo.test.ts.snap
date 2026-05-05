@@ -1,5 +1,74 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation — produces lycee steps 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 7,
+    "rule": "sum-with-constant",
+    "schoolLevel": "lycee",
+    "subSteps": [
+      {
+        "hasExplanation": true,
+        "hasExpressionLatex": true,
+        "id": 6,
+        "rule": "sum",
+        "schoolLevel": "lycee",
+        "subSteps": [
+          {
+            "hasExplanation": true,
+            "hasExpressionLatex": true,
+            "id": 4,
+            "rule": "sum",
+            "schoolLevel": "lycee",
+            "subSteps": [
+              {
+                "hasExplanation": true,
+                "hasExpressionLatex": true,
+                "id": 1,
+                "rule": "power-natural",
+                "schoolLevel": "lycee",
+                "title": "Règle de la puissance (3)",
+              },
+              {
+                "hasExplanation": true,
+                "hasExpressionLatex": true,
+                "id": 3,
+                "rule": "linear-coefficient",
+                "schoolLevel": "lycee",
+                "subSteps": [
+                  {
+                    "hasExplanation": true,
+                    "hasExpressionLatex": true,
+                    "id": 2,
+                    "rule": "power-natural",
+                    "schoolLevel": "lycee",
+                    "title": "Règle de la puissance (2)",
+                  },
+                ],
+                "title": "On sort la constante 2",
+              },
+            ],
+            "title": "On dérive chaque terme",
+          },
+          {
+            "hasExplanation": true,
+            "hasExpressionLatex": true,
+            "id": 5,
+            "rule": "linear-coefficient",
+            "schoolLevel": "lycee",
+            "title": "On sort la constante 5",
+          },
+        ],
+        "title": "On dérive chaque terme",
+      },
+    ],
+    "title": "La constante a une dérivée nulle",
+  },
+]
+`;
+
 exports[`Mode B end-to-end demos > 4e linear equation — produces college steps 1`] = `
 [
   {
@@ -70,6 +139,29 @@ exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps wi
     "rule": "evaluate-binary-add",
     "schoolLevel": "primaire",
     "title": "On additionne 14 et 30",
+  },
+]
+`;
+
+exports[`Mode B end-to-end demos > Terminale spécialité composition differentiation — produces sin + linear-coefficient sub-step 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "sin",
+    "schoolLevel": "lycee",
+    "subSteps": [
+      {
+        "hasExplanation": true,
+        "hasExpressionLatex": true,
+        "id": 1,
+        "rule": "linear-coefficient",
+        "schoolLevel": "lycee",
+        "title": "On sort la constante 3",
+      },
+    ],
+    "title": "Dérivée de sinus",
   },
 ]
 `;
