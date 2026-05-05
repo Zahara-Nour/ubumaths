@@ -68,6 +68,26 @@ function bindingsToRecord(bindings: MatchBindings): Record<string, MathNode> {
 }
 
 /**
+ * Strip parentheses whose content is a simple atom (number or `-number`).
+ * Applied silently after each rule application so the displayed `globalAfter`
+ * never contains visually noisy `(5)*4` kind of constructs : the parens
+ * have already served their priority-grouping purpose, and removing them
+ * matches what students actually write down.
+ *
+ * Non-trivial parens (around `2+3`, etc.) are kept intact.
+ */
+function cleanupTrivialParens(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (n.type !== 'delimiter') return n;
+		if (n.delimiters !== 'parentheses') return n;
+		const c = n.content;
+		if (isNumber(c)) return c;
+		if (isOpposite(c) && isNumber(c.operand)) return c;
+		return n;
+	});
+}
+
+/**
  * Collect every sub-tree of `node` that is a numeric multiplication (e.g.
  * `3*4`, `(-3)*5`). Used by the grouping rule's pre-pass to tell the
  * renderer which fragments to highlight when the step rewrites several
@@ -181,10 +201,12 @@ export function generatePedagogicalArithmeticSteps(
 	// 2a. ---------- Top-down pre-pass for groupMultiplicationsInAddition -----
 	let workingNode = node;
 	if (groupMultiplicationsInAddition.applicableLevels.includes(schoolLevel)) {
-		const grouped = mapNodeTopDown(workingNode, (n) => {
-			const result = applyRule(groupMultiplicationsInAddition.rule, n);
-			return result ?? n;
-		});
+		const grouped = cleanupTrivialParens(
+			mapNodeTopDown(workingNode, (n) => {
+				const result = applyRule(groupMultiplicationsInAddition.rule, n);
+				return result ?? n;
+			})
+		);
 		if (!nodesEqual(grouped, workingNode)) {
 			// Collect every sub-tree inside `workingNode` that is a numeric
 			// multiplication — those are the fragments the grouping rule just
@@ -229,6 +251,7 @@ export function generatePedagogicalArithmeticSteps(
 			const found = findFirstApplication(rule.rule, current);
 			if (!found) continue;
 			const recordBindings = bindingsToRecord(found.bindings);
+			const nextGlobal = cleanupTrivialParens(found.replacedTree);
 			collected.push({
 				id: stepId++,
 				rule: rule.name,
@@ -237,10 +260,10 @@ export function generatePedagogicalArithmeticSteps(
 				after: found.subAfter,
 				bindings: recordBindings,
 				globalBefore: current,
-				globalAfter: found.replacedTree,
+				globalAfter: nextGlobal,
 				verbosityLevel: 'summarized'
 			});
-			current = found.replacedTree;
+			current = nextGlobal;
 			applied = true;
 			break;
 		}
