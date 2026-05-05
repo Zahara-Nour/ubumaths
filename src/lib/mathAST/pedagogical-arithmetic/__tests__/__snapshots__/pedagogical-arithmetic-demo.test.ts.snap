@@ -89,6 +89,29 @@ exports[`snapshot — basic > '(2 + 3) × 4 (parenthèses)' 1`] = `
 "
 `;
 
+exports[`snapshot — basic > '(15 + 5) ÷ 4 (parenthèses + division)' 1`] = `
+"
+###### (15 + 5) ÷ 4 (parenthèses + division) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 15 et 5
+    │ (@blue{15+5}):/4
+    │ = 20:/4
+[1] On divise 20 par 4
+    │ @blue{20:/4}
+    │ = 5
+
+========== COLLEGE (detailed) ==========
+[0] On effectue les calculs entre parenthèses
+    │ @blue{(15+5)}:/4
+    │ = 20:/4
+    │ (En présence de parenthèses, on commence par calculer ce qu'il y a à l'intérieur.)
+[1] Division
+    │ @blue{20:/4}
+    │ = 5
+"
+`;
+
 exports[`snapshot — basic > '2 + 3 × 4 (priorité)' 1`] = `
 "
 ###### 2 + 3 × 4 (priorité) ######
@@ -182,6 +205,28 @@ exports[`snapshot — basic > '2 × (3 + 4) (parenthèses)' 1`] = `
 "
 `;
 
+exports[`snapshot — basic > '6 + 12 ÷ 3 (priorité division)' 1`] = `
+"
+###### 6 + 12 ÷ 3 (priorité division) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On divise 12 par 3
+    │ 6+@blue{12:/3}
+    │ = 6+4
+[1] On additionne 6 et 4
+    │ @blue{6+4}
+    │ = 10
+
+========== COLLEGE (detailed) ==========
+[0] Division
+    │ 6+@blue{12:/3}
+    │ = 6+4
+[1] Addition
+    │ @blue{6+4}
+    │ = 10
+"
+`;
+
 exports[`snapshot — basic > '10 − (3 + 2) (parenthèses en soustrac…' 1`] = `
 "
 ###### 10 − (3 + 2) (parenthèses en soustraction) ######
@@ -224,6 +269,72 @@ exports[`snapshot — basic > '10 − 7 + 3' 1`] = `
 [1] Addition
     │ @blue{3+3}
     │ = 6
+"
+`;
+
+exports[`snapshot — basic > '12 ÷ 3 (division simple)' 1`] = `
+"
+###### 12 ÷ 3 (division simple) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On divise 12 par 3
+    │ @blue{12:/3}
+    │ = 4
+
+========== COLLEGE (detailed) ==========
+[0] Division
+    │ @blue{12:/3}
+    │ = 4
+"
+`;
+
+exports[`snapshot — basic > '20 ÷ 4 − 3 (division puis soustractio…' 1`] = `
+"
+###### 20 ÷ 4 − 3 (division puis soustraction) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On divise 20 par 4
+    │ @blue{20:/4}-3
+    │ = 5-3
+[1] On soustrait 3 de 5
+    │ @blue{5-3}
+    │ = 2
+
+========== COLLEGE (detailed) ==========
+[0] Division
+    │ @blue{20:/4}-3
+    │ = 5-3
+[1] Soustraction
+    │ @blue{5-3}
+    │ = 2
+"
+`;
+
+exports[`snapshot — basic > '24 ÷ 6 + 2 × 3 (combine division + mu…' 1`] = `
+"
+###### 24 ÷ 6 + 2 × 3 (combine division + multiplication) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On multiplie 2 par 3
+    │ 24:/6+@blue{2*3}
+    │ = 24:/6+6
+[1] On divise 24 par 6
+    │ @blue{24:/6}+6
+    │ = 4+6
+[2] On additionne 4 et 6
+    │ @blue{4+6}
+    │ = 10
+
+========== COLLEGE (detailed) ==========
+[0] Multiplication
+    │ 24:/6+@blue{2*3}
+    │ = 24:/6+6
+[1] Division
+    │ @blue{24:/6}+6
+    │ = 4+6
+[2] Addition
+    │ @blue{4+6}
+    │ = 10
 "
 `;
 
