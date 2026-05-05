@@ -131,6 +131,81 @@ describe('generatePedagogicalDifferentiationSteps — trivial top-level', () => 
 	});
 });
 
+// =============================================================================
+// Regression: blockers from code review (FunctionNode.power, top-level wrappers)
+// =============================================================================
+
+describe('Regression — FunctionNode.power must not be silently dropped', () => {
+	it("(\\sin^2(x))' routes through power-constant-exp (NOT a bare sin step)", () => {
+		const node = parseLatex('\\sin^2(x)');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		// The dispatcher should treat this as (sin(x))^2 — top-level rule is a
+		// power rule, with sin(x) as the inner base whose derivative produces a
+		// `sin` sub-step.
+		expect(result.steps[0].rule).toBe('power-constant-exp');
+		expect(result.steps[0].subSteps).toBeDefined();
+		expect(result.steps[0].subSteps?.[0].rule).toBe('sin');
+	});
+
+	it("(\\cos^3(x))' uses power-constant-exp with a cos sub-step", () => {
+		const node = parseLatex('\\cos^3(x)');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps[0].rule).toBe('power-constant-exp');
+		expect(result.steps[0].subSteps?.[0].rule).toBe('cos');
+	});
+
+	it("(\\sin^{-1}(x))' refuses (inverse function out of V1 scope)", () => {
+		// Constructed manually to avoid parser ambiguity around `^{-1}`.
+		const node = func('sin', [variable('x')], { isInverse: true });
+		expect(() => generatePedagogicalDifferentiationSteps(node, lyceeOpts)).toThrow(
+			PedagogicalDifferentiationNotImplemented
+		);
+	});
+
+	it("refuses derivative functions like f'(x) (out of V1 scope)", () => {
+		const node = func('f', [variable('x')], { derivativeOrder: 1 });
+		expect(() => generatePedagogicalDifferentiationSteps(node, lyceeOpts)).toThrow(
+			PedagogicalDifferentiationNotImplemented
+		);
+	});
+});
+
+describe('Regression — top-level transparent wrappers must produce a step', () => {
+	it('(+x) yields a single trivial top-level `variable` step', () => {
+		const node = parseLatex('+x');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps).toHaveLength(1);
+		expect(result.steps[0].rule).toBe('variable');
+		// The before should preserve the original wrapping (so the LaTeX shows
+		// what the author wrote).
+		expect(result.steps[0].before).toBe(node);
+	});
+
+	it('((x)) yields a single trivial top-level `variable` step', () => {
+		// Parser does not always preserve nested delimiters; build manually.
+		const node: MathNode = {
+			type: 'delimiter',
+			delimiters: 'parentheses',
+			content: variable('x')
+		};
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps).toHaveLength(1);
+		expect(result.steps[0].rule).toBe('variable');
+	});
+
+	it('+5 yields a single trivial top-level `constant` step', () => {
+		const node = parseLatex('+5');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps).toHaveLength(1);
+		expect(result.steps[0].rule).toBe('constant');
+	});
+});
+
 describe('generatePedagogicalDifferentiationSteps — unimplemented surface (defensive)', () => {
 	it('throws PedagogicalDifferentiationNotImplemented for an unsupported function name', () => {
 		// `abs` is not differentiable at 0 — our pipeline mirrors
