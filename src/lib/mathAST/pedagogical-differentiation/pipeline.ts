@@ -50,7 +50,7 @@ import type {
 	SuperscriptNode
 } from '../types';
 import { containsVariable } from '../common/contains-variable';
-import { isOne } from '../guards';
+import { isOne, isZero } from '../guards';
 import {
 	acoshRule,
 	arccosRule,
@@ -226,6 +226,32 @@ function unwrapTransparent(node: MathNode): MathNode {
 	return n;
 }
 
+/**
+ * True iff differentiating `node` w.r.t. `variable` produces a non-zero
+ * result. Used by the binary dispatchers (sum, product, …) to decide which
+ * operand actually contributes to the derivative — distinct from
+ * `containsVariable`, which over-reports for subscripted parameters
+ * (`containsVariable(x_1, 'x') === true` even though `(x_1)' = 0`).
+ *
+ * Decision rule:
+ * - Trivial atomic node: depends iff the node IS the differentiation variable
+ *   (variable / greek-letter matching). Subscripts, numbers, constants etc.
+ *   are atomic-but-non-dependent.
+ * - Non-trivial compound node: defers to `containsVariable`. The remaining
+ *   edge case (a non-trivial expression whose only occurrence of the variable
+ *   is inside a subscript, e.g. `(x_1)^2`) over-reports here, but the worst
+ *   outcome is a slightly less-tidy step label — the derivative still
+ *   computes correctly via the underlying rules.
+ */
+function dependsOnDiffVariable(node: MathNode, variable: string): boolean {
+	if (isTrivialWrtVariable(node, variable)) {
+		if (node.type === 'variable') return node.name === variable;
+		if (node.type === 'greek') return node.letter === variable;
+		return false;
+	}
+	return containsVariable(node, variable);
+}
+
 // =============================================================================
 // Internal recursive dispatcher
 // =============================================================================
@@ -331,8 +357,8 @@ function isNaturalIntegerAtLeast(node: MathNode, min: number): boolean {
 function dispatchAddition(node: AdditionNode, ctx: DispatchContext): DispatchResult {
 	const left = node.left;
 	const right = node.right;
-	const leftHasVar = containsVariable(left, ctx.variable);
-	const rightHasVar = containsVariable(right, ctx.variable);
+	const leftHasVar = dependsOnDiffVariable(left, ctx.variable);
+	const rightHasVar = dependsOnDiffVariable(right, ctx.variable);
 
 	if (leftHasVar && rightHasVar) {
 		const fSub = differentiateNode(left, ctx);
@@ -376,8 +402,8 @@ function dispatchAddition(node: AdditionNode, ctx: DispatchContext): DispatchRes
 function dispatchSubtraction(node: SubtractionNode, ctx: DispatchContext): DispatchResult {
 	const left = node.left;
 	const right = node.right;
-	const leftHasVar = containsVariable(left, ctx.variable);
-	const rightHasVar = containsVariable(right, ctx.variable);
+	const leftHasVar = dependsOnDiffVariable(left, ctx.variable);
+	const rightHasVar = dependsOnDiffVariable(right, ctx.variable);
 
 	if (leftHasVar && rightHasVar) {
 		const fSub = differentiateNode(left, ctx);
@@ -436,8 +462,8 @@ function dispatchSubtraction(node: SubtractionNode, ctx: DispatchContext): Dispa
 function dispatchMultiplication(node: MultiplicationNode, ctx: DispatchContext): DispatchResult {
 	const left = node.left;
 	const right = node.right;
-	const leftHasVar = containsVariable(left, ctx.variable);
-	const rightHasVar = containsVariable(right, ctx.variable);
+	const leftHasVar = dependsOnDiffVariable(left, ctx.variable);
+	const rightHasVar = dependsOnDiffVariable(right, ctx.variable);
 
 	if (leftHasVar && rightHasVar) {
 		const uSub = differentiateNode(left, ctx);
@@ -456,6 +482,27 @@ function dispatchMultiplication(node: MultiplicationNode, ctx: DispatchContext):
 
 	const variablePart = leftHasVar ? left : right;
 	const constantPart = leftHasVar ? right : left;
+
+	// Degenerate constants: `0 · f` derives to 0 (the whole thing is constant
+	// w.r.t. the variable — caught by isTrivialWrtVariable for top-level, but
+	// can survive here as a sub-expression). `1 · f` reduces to `f`, so the
+	// pedagogical "On sort la constante 1" step is silly. In both cases, fall
+	// through to a plain product step (subSteps unchanged) so the trace stays
+	// faithful without an absurd label.
+	if (isZero(constantPart) || isOne(constantPart)) {
+		const sub = differentiateNode(variablePart, ctx);
+		const derivative = simplifiedMultiply(constantPart, sub.derivative);
+		const step = buildStep(ctx, {
+			rule: 'product',
+			before: node,
+			after: derivative,
+			variable: ctx.variable,
+			bindings: { u: left, v: right },
+			subSteps: sub.steps
+		});
+		return { derivative, steps: [step] };
+	}
+
 	const sub = differentiateNode(variablePart, ctx);
 	const derivative = simplifiedMultiply(constantPart, sub.derivative);
 	const step = buildStep(ctx, {
@@ -488,8 +535,8 @@ function dispatchMultiplication(node: MultiplicationNode, ctx: DispatchContext):
 function dispatchDivision(node: DivisionNode, ctx: DispatchContext): DispatchResult {
 	const num = node.numerator;
 	const denom = node.denominator;
-	const numHasVar = containsVariable(num, ctx.variable);
-	const denomHasVar = containsVariable(denom, ctx.variable);
+	const numHasVar = dependsOnDiffVariable(num, ctx.variable);
+	const denomHasVar = dependsOnDiffVariable(denom, ctx.variable);
 
 	if (!numHasVar && denomHasVar && isOne(num)) {
 		// Reciprocal: numerator = 1.
@@ -586,8 +633,8 @@ function dispatchDelimiter(node: DelimiterNode, ctx: DispatchContext): DispatchR
 function dispatchSuperscript(node: SuperscriptNode, ctx: DispatchContext): DispatchResult {
 	const base = node.base;
 	const exp = node.superscript;
-	const baseHasVar = containsVariable(base, ctx.variable);
-	const expHasVar = containsVariable(exp, ctx.variable);
+	const baseHasVar = dependsOnDiffVariable(base, ctx.variable);
+	const expHasVar = dependsOnDiffVariable(exp, ctx.variable);
 
 	// Constant base, constant exponent → caught by the trivial fast path.
 
