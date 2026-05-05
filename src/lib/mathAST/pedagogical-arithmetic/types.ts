@@ -103,6 +103,21 @@ export interface PedagogicalArithmeticStep extends BaseStep {
 	readonly bindings?: Record<string, MathNode>;
 
 	/**
+	 * The full expression BEFORE this rule fired (when the pipeline can
+	 * track it). When `before` represents only the sub-tree that changed
+	 * (a "fragment"), `globalBefore` holds the whole expression so the
+	 * renderer can display the calculation in context.
+	 *
+	 * Optional : steps emitted by the post-processing path (e.g. the
+	 * `evaluate-final` fallback) leave it undefined and the renderer falls
+	 * back to `before`.
+	 */
+	readonly globalBefore?: MathNode;
+
+	/** The full expression AFTER this rule fired (counterpart of `globalBefore`). */
+	readonly globalAfter?: MathNode;
+
+	/**
 	 * Optional finer-grained substeps. Used by post-processing groupers
 	 * (e.g. group-multiplications-in-addition) to expose the underlying
 	 * atomic operations under a top-level summary step.

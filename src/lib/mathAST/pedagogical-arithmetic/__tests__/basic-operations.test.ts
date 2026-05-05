@@ -104,23 +104,36 @@ describe('basic-operations rules', () => {
 			expect(result && toLatex(result)).toBe('2');
 		});
 
-		it('1 / 3 → 1/3 (kept exact)', () => {
+		it('1 / 3 does NOT fire (non-integer result — left to reduceFraction)', () => {
 			const result = applyRule(
 				evaluateBinaryDiv.rule,
 				divide(number('1'), number('3'), 'fraction')
 			);
-			expect(result && toLatex(result)).toContain('frac');
+			expect(result).toBeNull();
 		});
 
-		it('division by zero is a silent no-op (returns original; engine sees no change)', () => {
-			// evaluate(exact) returns 'unevaluable' on 1/0 ; makeBinaryReplacement
-			// falls back to the original node, so the engine sees nodesEqual and
-			// the rule fizzles. The applyRule call returns the unchanged node.
+		it('3 / 6 does NOT fire (non-integer result — reduceFraction handles it)', () => {
+			const result = applyRule(
+				evaluateBinaryDiv.rule,
+				divide(number('3'), number('6'), 'fraction')
+			);
+			expect(result).toBeNull();
+		});
+
+		it('-12 / 4 → -3 (negative integer result fires)', () => {
+			const result = applyRule(
+				evaluateBinaryDiv.rule,
+				divide(opposite(number('12')), number('4'), 'fraction')
+			);
+			expect(result && toLatex(result)).toBe('-3');
+		});
+
+		it('division by zero is a silent no-op (returns null via condition)', () => {
+			// evaluate(exact) returns 'unevaluable' on 1/0 ; the condition rejects
+			// the binding (no integer result available), so applyRule returns null.
 			const node = divide(number('5'), number('0'), 'fraction');
 			const result = applyRule(evaluateBinaryDiv.rule, node);
-			expect(result).not.toBeNull();
-			// The result should be structurally equal to the original (no change).
-			expect(toLatex(result!)).toBe(toLatex(node));
+			expect(result).toBeNull();
 		});
 	});
 

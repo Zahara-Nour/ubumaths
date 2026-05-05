@@ -176,18 +176,42 @@ export const evaluateBinaryMul: PedagogicalArithmeticRule = {
 /**
  * Pedagogical rule : `a:number / b:number → a/b` (exact).
  *
- * Division by zero is handled implicitly : `evaluate(exact)` returns
- * `unevaluable` for `1/0`, so `makeBinaryReplacement` falls back to the
- * original node. The rewrite engine then sees no structural change
- * (`nodesEqual`) and the rule fizzles silently. No explicit `b≠0`
- * condition is needed.
+ * Restricted to **exact integer divisions** (e.g. `6/3 → 2`). When the
+ * division produces a non-integer fraction (`3/6 → 1/2`), the rule fizzles
+ * — `reduceFraction` (Phase 4) handles the case with the appropriate
+ * "On simplifie la fraction" label. This split keeps the pedagogical
+ * vocabulary accurate : "Division" is not the same act as "Réduction".
+ *
+ * Division by zero is also handled implicitly : `evaluate(exact)` returns
+ * `unevaluable` for `1/0`, so the rule fizzles via the integer-result
+ * condition.
  */
 export const evaluateBinaryDiv: PedagogicalArithmeticRule = {
 	name: 'evaluate-binary-div',
 	rule: createRule(
 		P.parse('a:number / b:number'),
 		makeBinaryReplacement((a, b) => divide(a, b, 'fraction')),
-		{ name: 'evaluate-binary-div' }
+		{
+			name: 'evaluate-binary-div',
+			condition: (bindings) => {
+				const a = bindingNode(bindings, 'a');
+				const b = bindingNode(bindings, 'b');
+				if (!a || !b) return false;
+				const evaluated = evaluateExact(divide(a, b, 'fraction'));
+				if (!evaluated) return false;
+				// Fire ONLY when the result is an integer (or `-integer` via opposite).
+				// Anything else (proper fraction) is left for `reduceFraction`.
+				if (isNumber(evaluated) && /^-?\d+$/.test(evaluated.value)) return true;
+				if (
+					isOpposite(evaluated) &&
+					isNumber(evaluated.operand) &&
+					/^\d+$/.test(evaluated.operand.value)
+				) {
+					return true;
+				}
+				return false;
+			}
+		}
 	),
 	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
 	priority: 100,

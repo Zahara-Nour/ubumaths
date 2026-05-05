@@ -2,31 +2,32 @@
  * Pedagogical Arithmetic — Pipeline Orchestrator (Phase 8)
  *
  * `generatePedagogicalArithmeticSteps(node, options)` is the high-level
- * entry point used by Svelte components and the demo CLI. It :
+ * entry point used by Svelte components and the demo CLI.
  *
- *   1. Loads the appropriate `PedagogicalArithmeticRule[]` via
- *      `loadPedagogicalRules()` (filtered by `schoolLevel` + `targetForm`).
- *   2. Runs the deterministic rewrite engine, collecting each transformation
- *      as a `PedagogicalArithmeticStep` with binding-aware descriptions.
- *   3. Falls back to `evaluate(exact)` when the rules can't fully reduce the
- *      expression (e.g. an `add(2, 3)` that no rule rewrote because it
- *      slipped past the priority ordering).
- *   4. Optionally appends a final fragment-extraction step when
- *      `target.answerFormat` is set.
+ * Strategy : a manual rule-application loop (instead of `rewrite()`) so we
+ * can capture per-step :
+ *   - the FULL expression before / after the rule fires (`globalBefore` /
+ *     `globalAfter` on the step) — used by the renderer to display
+ *     `<colored fragment> = <new global expression>`,
+ *   - the sub-tree that changed (`before` / `after` on the step) — used to
+ *     highlight the part of the expression that was rewritten,
+ *   - the pattern bindings (`step.bindings`) — used by per-level
+ *     descriptions like `"On additionne 2 et 3"`.
  *
- * Cooperative interruption via `signal` / `timeoutMs` (propagated to the
- * engine, which propagates to `evaluate`).
+ * The loop terminates when no rule fires in an iteration, or when
+ * `DEFAULT_MAX_ITERATIONS` is reached. Cooperative interruption via
+ * `signal` / `timeoutMs` is honoured at the top of each iteration.
  *
  * @module mathAST/pedagogical-arithmetic/pipeline
  */
 
 import type { MathNode } from '../types';
-import { rewrite } from '../common/rewriting-engine';
 import { evaluate } from '../eval/evaluate';
 import { isEvalValue } from '../eval/types';
-import { nodesEqual } from '../pattern/match';
-import { applyRule } from '../pattern/rule';
-import { mapNodeTopDown } from '../transforms';
+import { match, nodesEqual } from '../pattern/match';
+import { applyRule, instantiate } from '../pattern/rule';
+import type { MatchBindings, Rule } from '../pattern/types';
+import { mapNode, mapNodeTopDown } from '../transforms';
 import { extractAnswerFragment } from './answer-format-parser';
 import { loadPedagogicalRules } from './pedagogical-rules';
 import { groupMultiplicationsInAddition } from './pedagogical-rules/basic-operations';
@@ -52,22 +53,73 @@ function describeStep(
 	return fn(bindings);
 }
 
+/** Convert `MatchBindings` (Map) to a plain `Record<string, MathNode>`. */
+function bindingsToRecord(bindings: MatchBindings): Record<string, MathNode> {
+	const out: Record<string, MathNode> = {};
+	for (const [k, v] of bindings.entries()) {
+		// Sequence bindings are not directly displayable as MathNode — skip them.
+		if (v && !('terms' in v) && !('factors' in v)) {
+			out[k] = v as MathNode;
+		}
+	}
+	return out;
+}
+
+/**
+ * Find the first sub-tree of `node` where `rule` applies, and return the
+ * components needed to record a clean step :
+ *   - `subBefore` — the matched sub-tree (the part that will change)
+ *   - `subAfter` — the rewritten sub-tree
+ *   - `bindings` — the pattern bindings captured at the matched node
+ *   - `replacedTree` — `node` with `subBefore` replaced by `subAfter` (the
+ *     full expression after this single rewrite)
+ *
+ * Bottom-up traversal : children first, then parent. Stops at the first
+ * application — does NOT keep applying the rule to other sub-trees in the
+ * same call (the outer loop in the pipeline handles iteration).
+ */
+function findFirstApplication(
+	rule: Rule,
+	node: MathNode
+): {
+	subBefore: MathNode;
+	subAfter: MathNode;
+	bindings: MatchBindings;
+	replacedTree: MathNode;
+} | null {
+	let captured: { subBefore: MathNode; subAfter: MathNode; bindings: MatchBindings } | null = null;
+
+	const replacedTree = mapNode(node, (n) => {
+		if (captured) return n;
+		const m = match(rule.pattern, n);
+		if (!m.success) return n;
+		if (rule.condition && !rule.condition(m.bindings)) return n;
+		const transformed =
+			typeof rule.replacement === 'function'
+				? rule.replacement(m.bindings)
+				: instantiate(rule.replacement, m.bindings);
+		if (nodesEqual(transformed, n)) return n;
+		captured = { subBefore: n, subAfter: transformed, bindings: m.bindings };
+		return transformed;
+	});
+
+	if (!captured) return null;
+	return { ...captured, replacedTree };
+}
+
 // =============================================================================
 // Pipeline
 // =============================================================================
 
 const DEFAULT_MAX_ITERATIONS = 50;
 
-/**
- * Orchestrate the pedagogical arithmetic pipeline.
- */
 export function generatePedagogicalArithmeticSteps(
 	node: MathNode,
 	options: PedagogicalArithmeticOptions
 ): PedagogicalArithmeticResult {
 	const { schoolLevel, target, signal, timeoutMs } = options;
 
-	// ------------------------------------------------------------------ 1. rules
+	// 1. ---------------------------------------------------------------- rules
 	const pedagogicalRules = loadPedagogicalRules({
 		schoolLevel,
 		targetForm: target?.structure,
@@ -75,21 +127,10 @@ export function generatePedagogicalArithmeticSteps(
 		needsScientificFinal: target?.structure === 'scientific'
 	});
 
-	// Index rules by name so we can recover their metadata when the engine
-	// emits a RewriteStep (which carries only `label = ruleName`).
-	const ruleIndex = new Map<string, PedagogicalArithmeticRule>();
-	for (const rule of pedagogicalRules) ruleIndex.set(rule.name, rule);
-	// The grouping rule is also indexed (for the pre-pass step description).
-	ruleIndex.set(groupMultiplicationsInAddition.name, groupMultiplicationsInAddition);
-
-	// ----------------------------------------------------------- 2. rewrite loop
 	const collected: PedagogicalArithmeticStep[] = [];
 	let stepId = 0;
 
-	// 2a. Top-down pre-pass for `group-multiplications-in-addition` (the
-	// engine's bottom-up traversal would otherwise let `evaluate-binary-mul`
-	// collapse the multiplications BEFORE the grouping rule sees the sum).
-	// The pass fires only at school levels where the rule is in `applicableLevels`.
+	// 2a. ---------- Top-down pre-pass for groupMultiplicationsInAddition -----
 	let workingNode = node;
 	if (groupMultiplicationsInAddition.applicableLevels.includes(schoolLevel)) {
 		const grouped = mapNodeTopDown(workingNode, (n) => {
@@ -103,49 +144,52 @@ export function generatePedagogicalArithmeticSteps(
 				description: describeStep(groupMultiplicationsInAddition, schoolLevel, {}),
 				before: workingNode,
 				after: grouped,
+				globalBefore: workingNode,
+				globalAfter: grouped,
 				verbosityLevel: 'summarized'
 			});
 			workingNode = grouped;
 		}
 	}
 
-	// Exclude the grouping rule from the engine pass — it was already applied
-	// top-down above. Leaving it in would cause `evaluate-binary-mul` and the
-	// grouping rule to compete during the same iteration, with confusing
-	// outcomes when the bottom-up traversal hits multiplication leaves first.
-	const enginePedagogicalRules = pedagogicalRules.filter(
-		(r) => r.name !== groupMultiplicationsInAddition.name
-	);
+	// 2b. ------------------------------- Manual rule-application fixed point
+	const enginePedagogicalRules = pedagogicalRules
+		.filter((r) => r.name !== groupMultiplicationsInAddition.name)
+		.slice()
+		.sort((a, b) => b.priority - a.priority);
 
-	const result = rewrite(workingNode, {
-		rules: enginePedagogicalRules.map((r) => r.rule),
-		strategy: { kind: 'deterministic' },
-		maxIterations: DEFAULT_MAX_ITERATIONS,
-		signal,
-		timeoutMs,
-		onStep: (rs) => {
-			if (rs.kind !== 'rule') return;
-			const rule = ruleIndex.get(rs.label);
-			if (!rule) return;
-			// `applyRulesDeepOnceTracked` doesn't surface bindings ; the renderer
-			// gracefully falls back to `?` when bindings are missing.
+	const deadline = timeoutMs !== undefined && timeoutMs > 0 ? Date.now() + timeoutMs : Infinity;
+	const checkAbort = () => signal?.aborted === true || Date.now() >= deadline;
+
+	let current = workingNode;
+	for (let iter = 0; iter < DEFAULT_MAX_ITERATIONS; iter++) {
+		if (checkAbort()) break;
+		let applied = false;
+		for (const rule of enginePedagogicalRules) {
+			const found = findFirstApplication(rule.rule, current);
+			if (!found) continue;
+			const recordBindings = bindingsToRecord(found.bindings);
 			collected.push({
 				id: stepId++,
 				rule: rule.name,
-				description: describeStep(rule, schoolLevel, {}),
-				before: rs.before,
-				after: rs.after,
+				description: describeStep(rule, schoolLevel, recordBindings),
+				before: found.subBefore,
+				after: found.subAfter,
+				bindings: recordBindings,
+				globalBefore: current,
+				globalAfter: found.replacedTree,
 				verbosityLevel: 'summarized'
 			});
+			current = found.replacedTree;
+			applied = true;
+			break;
 		}
-	});
+		if (!applied) break;
+	}
 
-	let finalNode: MathNode = result.result;
+	let finalNode: MathNode = current;
 
-	// ----------------------------------------------------- 3. evaluate fallback
-	// When the rules left a residual numeric expression (e.g. an isolated
-	// `2 + 3` that didn't trigger atomic-add for some pattern reason), let
-	// `evaluate(exact)` resolve it and emit a final "calcul" step.
+	// 3. -------------------- evaluate(exact) fallback (residual numeric form)
 	const evaluated = evaluate(finalNode, { mode: 'exact' });
 	if (isEvalValue(evaluated) && !nodesEqual(evaluated.node, finalNode)) {
 		collected.push({
@@ -154,14 +198,14 @@ export function generatePedagogicalArithmeticSteps(
 			description: 'On calcule',
 			before: finalNode,
 			after: evaluated.node,
+			globalBefore: finalNode,
+			globalAfter: evaluated.node,
 			verbosityLevel: 'summarized'
 		});
 		finalNode = evaluated.node;
 	}
 
-	// ------------------------------------ 4. post-processing for strict cosmetic
-	// When `reducedFractions: 'strict'` is set but the rule wasn't reachable
-	// (e.g. ran in primaire), apply the reducer once at the end.
+	// 4. ------------------------------- post-processing for strict cosmetic
 	if (target?.strictCosmetics?.reducedFractions === 'strict') {
 		const reduced = applyRule(reduceFraction.rule, finalNode);
 		if (reduced && !nodesEqual(reduced, finalNode)) {
@@ -171,13 +215,15 @@ export function generatePedagogicalArithmeticSteps(
 				description: describeStep(reduceFraction, schoolLevel, {}),
 				before: finalNode,
 				after: reduced,
+				globalBefore: finalNode,
+				globalAfter: reduced,
 				verbosityLevel: 'summarized'
 			});
 			finalNode = reduced;
 		}
 	}
 
-	// ------------------------------------------- 5. answerFormat fragment step
+	// 5. ---------------------------------- answerFormat fragment extraction
 	let answerFragment: PedagogicalArithmeticResult['answerFragment'] = undefined;
 	if (target?.answerFormat) {
 		const extracted = extractAnswerFragment(finalNode, target.answerFormat);
@@ -186,7 +232,6 @@ export function generatePedagogicalArithmeticSteps(
 				latex: extracted.latex,
 				placeholderPath: extracted.placeholderPath
 			};
-			// Emit a virtual step so the renderer can show "Ce qu'il faut saisir".
 			collected.push({
 				id: stepId++,
 				rule: 'extract-answer-fragment',
