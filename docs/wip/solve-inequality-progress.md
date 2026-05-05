@@ -1,7 +1,7 @@
 # solveInequality — Progression palier 1
 
 **Date** : 2026-05-05.
-**Statut** : livré, prêt à commit.
+**Statut** : **livré et committé** — `4e335a233 feat(solve): add solveInequality V1 — symbolic wrapper over analyzeSign`.
 
 ## Livrable
 
@@ -97,14 +97,48 @@ Pour ré-activer ce test, il faudra fixer en amont :
 | Tests sign + solve + domain (régression)  | **1244 pass / 1 skip / 3 todo / 0 fail**                                                        |
 | ESLint (fichiers nouveaux)                | **0 erreur**                                                                                    |
 | `pnpm check:incremental`                  | **0 nouvelle erreur** (les 9 erreurs existantes sont pré-existantes en `slides/demo`/`extern/`) |
+| Pre-commit hook (lint-staged)             | **OK** — Prettier a reformaté les tableaux markdown et les imports                              |
+| Commit final                              | `4e335a233`, 6 fichiers, +1062 lignes                                                           |
 
 ## Documents produits
 
 - `docs/wip/solve-inequality-spec.md` — spec figée
 - `docs/wip/solve-inequality-progress.md` — ce document
 
+## Surface API exposée
+
+Re-exportée depuis `$lib/mathAST/solve` :
+
+- `solveInequality(relation, options?)` — fonction principale
+- `SolveInequalityError` — relation `=` ou input mal formé
+- `InequalityNotSolvable` — coefs paramétriques, ou `strictMode` + résultat partial
+- Types : `InequalityOp`, `InequalityStatus`, `SolveInequalityOptions`, `SolveInequalityResult`
+
+## Bugs upstream identifiés (à traiter séparément, hors scope V1)
+
+Ces gaps sont signalés ici pour le suivi ; ils ne bloquent pas la livraison V1
+mais expliquent certaines limitations utilisateur.
+
+1. **`sign/analyze.ts:splitDomainAtZeros`** ne découpe pas aux `excludedPoints`
+   d'un `IntervalSet`. Le wrapper compense via `expandExcludedPoints`, mais le
+   fix correct devrait être dans `sign` pour que `analyzeSign` soit cohérent
+   sur tous les appelants (variations, etc.).
+2. **`solve/solvers/transcendental.ts`** ne reconnaît pas `a·e^x + b = 0`
+   (devrait reformuler en `e^x = −b/a` puis appliquer `x = ln(−b/a)`). Idem
+   probablement pour `a·ln(x) + b = 0`. À investiguer.
+3. **`sign/helpers/sampling.ts`** : `MAX_SAMPLE_BOUND = 1e6` provoque overflow/
+   underflow sur exp/ln aux bornes, donnant des résultats faux pour les
+   transcendantes sur ℝ non borné. Stratégie possible : adapter la borne au
+   type de fonction détecté, ou exiger `options.domain` borné pour les
+   expressions contenant exp/ln/trig.
+
 ## Suite (palier 2 — à rediscuter)
 
 Voir `docs/wip/solve-inequality-spec.md` § « PALIER 2 — esquisse » pour les
 questions de périmètre Q-P2-A à Q-P2-D (linéaire numérique, quadratique
 numérique, cas paramétriques, format de sortie pédagogique).
+
+**Recommandation** : palier 2a (linéaire numérique pédagogique) + 2b
+(quadratique numérique pédagogique) en V1. Reporter le paramétrique en V2 —
+cela demande un module de simplification AST de Δ et de comparaison symbolique
+de signes, qui est un projet en soi.
