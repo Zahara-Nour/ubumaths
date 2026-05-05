@@ -72,5 +72,16 @@ export const BASIC: readonly DemoCase[] = [
 	{
 		label: '24 ÷ 6 + 2 × 3 (combine division + multiplication)',
 		expression: add(div('24', '6'), multiply(number('2'), number('3'), 'cross'))
+	},
+	{
+		label: '24 ÷ (6 + 2) × 3 + (15 + 5) ÷ 4 (cas complet)',
+		expression: add(
+			multiply(
+				divide(number('24'), parentheses(add(number('6'), number('2'))), 'inline'),
+				number('3'),
+				'cross'
+			),
+			divide(parentheses(add(number('15'), number('5'))), number('4'), 'inline')
+		)
 	}
 ];

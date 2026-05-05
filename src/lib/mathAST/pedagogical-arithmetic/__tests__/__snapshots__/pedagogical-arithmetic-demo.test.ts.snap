@@ -310,6 +310,45 @@ exports[`snapshot — basic > '20 ÷ 4 − 3 (division puis soustractio…' 1`] 
 "
 `;
 
+exports[`snapshot — basic > '24 ÷ (6 + 2) × 3 + (15 + 5) ÷ 4 (cas …' 1`] = `
+"
+###### 24 ÷ (6 + 2) × 3 + (15 + 5) ÷ 4 (cas complet) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 6 et 2
+    │ 24:/(@blue{6+2})*3+(15+5):/4
+    │ = 24:/8*3+(15+5):/4
+[1] On divise 24 par 8
+    │ @blue{24:/8}*3+(15+5):/4
+    │ = 3*3+(15+5):/4
+[2] On multiplie 3 par 3
+    │ @blue{3*3}+(15+5):/4
+    │ = 9+(15+5):/4
+[3] On additionne 15 et 5
+    │ 9+(@blue{15+5}):/4
+    │ = 9+20:/4
+[4] On divise 20 par 4
+    │ 9+@blue{20:/4}
+    │ = 9+5
+[5] On additionne 9 et 5
+    │ @blue{9+5}
+    │ = 14
+
+========== COLLEGE (detailed) ==========
+[0] On effectue les calculs entre parenthèses
+    │ 24:/@blue{(6+2)}*3+@blue{(15+5)}:/4
+    │ = 24:/8*3+20:/4
+    │ (En présence de parenthèses, on commence par calculer ce qu'il y a à l'intérieur.)
+[1] On effectue d'abord les multiplications et divisions
+    │ @blue{24:/8*3}+@blue{20:/4}
+    │ = 9+5
+    │ (En l'absence de parenthèses, les multiplications et divisions sont effectuées avant les additions et soustractions.)
+[2] Addition
+    │ @blue{9+5}
+    │ = 14
+"
+`;
+
 exports[`snapshot — basic > '24 ÷ 6 + 2 × 3 (combine division + mu…' 1`] = `
 "
 ###### 24 ÷ 6 + 2 × 3 (combine division + multiplication) ######

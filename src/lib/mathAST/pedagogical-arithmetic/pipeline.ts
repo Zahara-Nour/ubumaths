@@ -134,27 +134,28 @@ function collectCalculableParens(node: MathNode): readonly MathNode[] {
 }
 
 /**
- * Collect every sub-tree of `node` that is a numeric high-priority op —
- * `n×m` or `n÷m` with both operands being numeric atoms. Used by the
- * grouping rule's pre-pass to tell the renderer which fragments to
- * highlight when the step rewrites several such ops at once.
+ * Collect every sub-tree of `node` that is a numeric mul/div chain —
+ * `n×m`, `n÷m`, or longer like `24÷8×3`. Used by the grouping rule's
+ * pre-pass to tell the renderer which fragments to highlight when the
+ * step rewrites several such chains at once.
+ *
+ * The walker stops descending once it finds a chain (the chain is a unit
+ * that gets collapsed and highlighted in one piece).
  */
 function collectNumericMultiplications(node: MathNode): readonly MathNode[] {
 	const found: MathNode[] = [];
 	const isNumericAtom = (x: MathNode): boolean =>
 		isNumber(x) || (isOpposite(x) && isNumber(x.operand));
+	const isOperand = (x: MathNode): boolean => isNumericAtom(x) || isChain(x);
+	const isChain = (x: MathNode): boolean => {
+		if (isMultiplication(x)) return isOperand(x.left) && isOperand(x.right);
+		if (isDivision(x)) return isOperand(x.numerator) && isOperand(x.denominator);
+		return false;
+	};
 	const walk = (n: MathNode): void => {
-		if (isMultiplication(n)) {
-			if (isNumericAtom(n.left) && isNumericAtom(n.right)) {
-				found.push(n);
-				return; // don't recurse into nested numeric ops
-			}
-		}
-		if (isDivision(n)) {
-			if (isNumericAtom(n.numerator) && isNumericAtom(n.denominator)) {
-				found.push(n);
-				return;
-			}
+		if ((isMultiplication(n) || isDivision(n)) && isChain(n)) {
+			found.push(n);
+			return; // chain captured as a unit
 		}
 		// Generic structural walk — covers the operators we'll ever see in a
 		// pre-grouping arithmetic expression. For exotic shapes we silently
