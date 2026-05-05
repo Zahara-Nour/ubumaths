@@ -615,13 +615,64 @@ describe('Phase 2c — general quotient', () => {
 		expect(result.steps[0].subSteps).toHaveLength(2);
 	});
 
-	it("(2/(x+1))' (numerator constant, ≠ 1) uses general quotient (V1 limitation)", () => {
+	it("(2/(x+1))' (numerator constant, ≠ 1) uses general quotient", () => {
 		const node = parseLatex('\\frac{2}{x+1}');
 		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
 
-		// V1: only `1/f` triggers the `inverse` shortcut. Other constants fall
-		// through to the general quotient rule. This is mathematically correct;
-		// future work could extract the constant as a linear-coefficient.
+		// `1/f` is the only constant numerator that triggers the `inverse`
+		// shortcut. Other constants fall through to the general quotient rule.
+		// (`f/c` with numerator-with-var goes to linear-coefficient, see V1.1
+		// tests below.)
+		expect(result.steps[0].rule).toBe('quotient');
+	});
+});
+
+// =============================================================================
+// V1.1 — f/c (constant denominator, variable numerator) → linear-coefficient
+// =============================================================================
+
+describe('V1.1 — f/c routes to linear-coefficient with c = 1/denom', () => {
+	it("(x^2/5)' uses linear-coefficient with c = 1/5 and a power-natural sub-step", () => {
+		const node = parseLatex('\\frac{x^2}{5}');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps[0].rule).toBe('linear-coefficient');
+		// `c` binding is `1/5` — a division node so descriptions read "sortir 1/5".
+		expect(result.steps[0].bindings?.c.type).toBe('division');
+		// `f` binding preserves the original numerator.
+		expect(result.steps[0].bindings?.f.type).toBe('superscript');
+		// Sub-step: power-natural for x^2.
+		expect(result.steps[0].subSteps).toHaveLength(1);
+		expect(result.steps[0].subSteps?.[0].rule).toBe('power-natural');
+		// Derivative is `2x/5` (a division).
+		expect(result.derivative.type).toBe('division');
+	});
+
+	it("(\\sin(x)/3)' uses linear-coefficient with sin sub-step", () => {
+		const node = parseLatex('\\frac{\\sin(x)}{3}');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps[0].rule).toBe('linear-coefficient');
+		expect(result.steps[0].subSteps).toHaveLength(1);
+		expect(result.steps[0].subSteps?.[0].rule).toBe('sin');
+	});
+
+	it("(x/5)' uses linear-coefficient with no sub-step (x is trivial)", () => {
+		const node = parseLatex('\\frac{x}{5}');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		expect(result.steps[0].rule).toBe('linear-coefficient');
+		expect(result.steps[0].subSteps).toBeUndefined();
+		// Derivative is `1/5`.
+		expect(result.derivative.type).toBe('division');
+	});
+
+	it("(5/x)' stays on general quotient (numerator constant ≠ 1, denominator has var)", () => {
+		const node = parseLatex('\\frac{5}{x}');
+		const result = generatePedagogicalDifferentiationSteps(node, lyceeOpts);
+
+		// New V1.1 branch only fires when num depends on x. `5/x` has num
+		// constant, so it falls through to general quotient (control case).
 		expect(result.steps[0].rule).toBe('quotient');
 	});
 });
