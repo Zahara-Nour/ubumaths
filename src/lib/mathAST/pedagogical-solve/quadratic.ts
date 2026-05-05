@@ -34,6 +34,7 @@ import {
 } from './types';
 import {
 	add,
+	divide,
 	fraction,
 	implicitMultiply,
 	number,
@@ -46,6 +47,7 @@ import {
 	variable as varNode
 } from '../factory';
 import { getVariables } from '../eval/substitute';
+import { nodesEqual } from '../normal/hash';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { extractQuadraticCoefficients } from '../solve/solvers/quadratic';
 import { computeNumericValue } from '../solve/numeric-value';
@@ -126,6 +128,112 @@ function tryDetectFactored(left: MathNode, variable: string): readonly MathNode[
 /** True when a coefficient contains no variable other than the implicit unknown. */
 function isConstantCoefficient(coeff: MathNode): boolean {
 	return getVariables(coeff).size === 0;
+}
+
+/**
+ * Negate a node, eliminating a redundant `opposite(opposite(x))` chain to
+ * avoid the `--N` LaTeX output (V1.1-D). Used for the formula's `-b` term in
+ * `apply-quadratic-formula` so the rawSolutions display
+ * `(5 − √Δ) / 2a` instead of `(--5 − √Δ) / 2a` when `b = -5`.
+ *
+ * Distinct from `canon(opposite(node))` which would over-simplify the
+ * surrounding fraction structure. We only collapse the unary chain.
+ */
+function smartNegate(node: MathNode): MathNode {
+	if (node.type === 'opposite') return node.operand;
+	return opposite(node);
+}
+
+/**
+ * Convert a (possibly negative) integer to a `MathNode` factory output. The
+ * factory rejects signed numeric literals, so negatives are wrapped in
+ * `opposite(...)`.
+ */
+function intToNode(n: number): MathNode {
+	if (n < 0) return opposite(number(Math.abs(n).toString()));
+	return number(n.toString());
+}
+
+/** Euclidean GCD on non-negative integers. `gcd(n, 0) = n` by convention. */
+function gcdInteger(a: number, b: number): number {
+	let x = Math.abs(a);
+	let y = Math.abs(b);
+	while (y !== 0) {
+		const r = x % y;
+		x = y;
+		y = r;
+	}
+	return x;
+}
+
+/**
+ * V1.1-C — Detect a non-trivial GCD across integer coefficients `(a, b, c)`.
+ * Returns the simplified coefficients and the simplified standard-form
+ * polynomial (computed via `canon(standardForm / gcd)`), or `null` when
+ * the GCD is 1 or the coefficients are not all integers.
+ */
+function tryExtractGcd(
+	a: MathNode,
+	b: MathNode,
+	c: MathNode,
+	standardForm: MathNode
+): {
+	readonly gcd: MathNode;
+	readonly aSimp: MathNode;
+	readonly bSimp: MathNode;
+	readonly cSimp: MathNode;
+	readonly simplifiedLeft: MathNode;
+} | null {
+	const aN = computeNumericValue(a);
+	const bN = computeNumericValue(b);
+	const cN = computeNumericValue(c);
+	if (aN === null || bN === null || cN === null) return null;
+	if (!Number.isInteger(aN) || !Number.isInteger(bN) || !Number.isInteger(cN)) return null;
+
+	const g = gcdInteger(gcdInteger(aN, bN), cN);
+	if (g <= 1) return null;
+
+	const gcdNode = number(g.toString());
+	return {
+		gcd: gcdNode,
+		aSimp: intToNode(aN / g),
+		bSimp: intToNode(bN / g),
+		cSimp: intToNode(cN / g),
+		simplifiedLeft: canon(divide(standardForm, gcdNode, 'fraction'))
+	};
+}
+
+/**
+ * Build the optional `factor-gcd` step at the top of a non-factored case
+ * pipeline. Returns the new `(a, b, c, current)` if the simplification
+ * fired, or `null` to indicate "no GCD step emitted".
+ */
+function buildFactorGcdStep(
+	current: RelationNode,
+	a: MathNode,
+	b: MathNode,
+	c: MathNode,
+	standardForm: MathNode,
+	idGen: () => number
+): {
+	readonly step: EquationStep;
+	readonly after: RelationNode;
+	readonly aSimp: MathNode;
+	readonly bSimp: MathNode;
+	readonly cSimp: MathNode;
+} | null {
+	const info = tryExtractGcd(a, b, c, standardForm);
+	if (info === null) return null;
+	const after = relation('=', info.simplifiedLeft, number('0'));
+	const step = makeStep({
+		id: idGen(),
+		rule: 'factor-gcd',
+		description: `On simplifie en divisant les deux membres par ${(info.gcd as { value: string }).value} (PGCD)`,
+		before: current,
+		after,
+		operation: { kind: 'factor-gcd', gcd: info.gcd, simplified: info.simplifiedLeft }
+	});
+	return { step, after, aSimp: info.aSimp, bSimp: info.bSimp, cSimp: info.cSimp };
 }
 
 /**
@@ -342,7 +450,13 @@ function buildApplyQuadraticFormulaStep(
 	formulaCase: 'two-distinct' | 'double',
 	idGen: () => number
 ): { step: EquationStep; rawSolutions: readonly MathNode[] } {
-	const negB = opposite(b);
+	// `smartNegate` collapses `opposite(opposite(x))` (which arises when `b` is
+	// itself an `opposite(...)` AST for a negative integer coefficient like
+	// `b = -5`). Without this, `-b` renders as `--5` in the rawSolutions
+	// (V1.1-D). The substituted form in `formatApplyQuadraticFormula` keeps
+	// the literal `-(b_value)` for pedagogy — that path uses `op.b` directly,
+	// not `negB`.
+	const negB = smartNegate(b);
 	const twoA = implicitMultiply(number('2'), a);
 
 	let rawSolutions: readonly MathNode[];
@@ -379,10 +493,9 @@ function buildApplyQuadraticFormulaStep(
 
 /**
  * Emit a `simplify-solutions` step only when canonicalisation actually changed
- * at least one solution (compared by LaTeX form as a structural-equality
- * proxy). When the raw and simplified forms coincide, we return `step: null`
- * and let the next step (`read-solutions`) display the canonical solutions
- * directly.
+ * at least one solution (compared by structural AST equality via `nodesEqual`).
+ * When the raw and simplified forms coincide, we return `step: null` and let
+ * the next step (`read-solutions`) display the canonical solutions directly.
  */
 function buildSimplifySolutionsStep(
 	equation: RelationNode,
@@ -390,9 +503,9 @@ function buildSimplifySolutionsStep(
 	idGen: () => number
 ): { step: EquationStep | null; simplified: readonly MathNode[] } {
 	const simplified = rawSolutions.map(canon);
-	const allSame = rawSolutions.every(
-		(_raw, i) => JSON.stringify(rawSolutions[i]) === JSON.stringify(simplified[i])
-	);
+	// V1.1-B : structural equality via `nodesEqual` instead of `JSON.stringify`
+	// (which is fragile to property-order changes in factory output).
+	const allSame = rawSolutions.every((raw, i) => nodesEqual(raw, simplified[i]));
 	if (allSame) return { step: null, simplified };
 	const step = makeStep({
 		id: idGen(),
@@ -451,31 +564,30 @@ function buildStandardCaseSteps(
 ): readonly EquationStep[] {
 	const steps: EquationStep[] = [];
 	let current = equation;
+	let { a, b, c } = detected;
+	let standardForm = detected.standardForm;
 
 	if (detected.needsStandardize) {
-		const { step, after } = buildStandardizeStep(current, detected.standardForm, idGen);
+		const { step, after } = buildStandardizeStep(current, standardForm, idGen);
 		steps.push(step);
 		current = after;
 	}
 
-	steps.push(buildIdentifyCoefficientsStep(current, detected.a, detected.b, detected.c, idGen));
+	// V1.1-C : optional GCD simplification before identify-coefficients.
+	const gcd = buildFactorGcdStep(current, a, b, c, standardForm, idGen);
+	if (gcd !== null) {
+		steps.push(gcd.step);
+		current = gcd.after;
+		a = gcd.aSimp;
+		b = gcd.bSimp;
+		c = gcd.cSimp;
+		standardForm = gcd.after.left;
+	}
 
-	const { discriminant, numericValue } = computeDiscriminantValue(
-		detected.a,
-		detected.b,
-		detected.c
-	);
-	steps.push(
-		buildComputeDiscriminantStep(
-			current,
-			detected.a,
-			detected.b,
-			detected.c,
-			discriminant,
-			numericValue,
-			idGen
-		)
-	);
+	steps.push(buildIdentifyCoefficientsStep(current, a, b, c, idGen));
+
+	const { discriminant, numericValue } = computeDiscriminantValue(a, b, c);
+	steps.push(buildComputeDiscriminantStep(current, a, b, c, discriminant, numericValue, idGen));
 
 	// V1 enforces numeric coefficients (parametric coefficients throw
 	// `PedagogicalQuadraticNotImplemented` at `detectCase`), so `numericValue`
@@ -506,8 +618,8 @@ function buildStandardCaseSteps(
 	const formulaCase = sign === 'zero' ? 'double' : 'two-distinct';
 	const { step: formulaStep, rawSolutions } = buildApplyQuadraticFormulaStep(
 		current,
-		detected.a,
-		detected.b,
+		a,
+		b,
 		discriminant,
 		formulaCase,
 		idGen
@@ -533,11 +645,22 @@ function buildBZeroCaseSteps(
 ): readonly EquationStep[] {
 	const steps: EquationStep[] = [];
 	let current = equation;
+	let a = detected.a;
+	let c = detected.c;
 
 	if (detected.needsStandardize) {
 		const { step, after } = buildStandardizeStep(current, detected.standardForm, idGen);
 		steps.push(step);
 		current = after;
+	}
+
+	// V1.1-C : optional GCD simplification (b is zero in this branch).
+	const gcd = buildFactorGcdStep(current, a, number('0'), c, detected.standardForm, idGen);
+	if (gcd !== null) {
+		steps.push(gcd.step);
+		current = gcd.after;
+		a = gcd.aSimp;
+		c = gcd.cSimp;
 	}
 
 	steps.push(
@@ -552,7 +675,7 @@ function buildBZeroCaseSteps(
 	);
 
 	// Isolate the square: x² = -c/a
-	const rhs = canon(fraction(opposite(detected.c), detected.a));
+	const rhs = canon(fraction(opposite(c), a));
 	const isolatedEq = relation('=', power(varNode(variable), number('2')), rhs);
 	steps.push(
 		makeStep({
@@ -627,11 +750,22 @@ function buildCZeroCaseSteps(
 ): readonly EquationStep[] {
 	const steps: EquationStep[] = [];
 	let current = equation;
+	let a = detected.a;
+	let b = detected.b;
 
 	if (detected.needsStandardize) {
 		const { step, after } = buildStandardizeStep(current, detected.standardForm, idGen);
 		steps.push(step);
 		current = after;
+	}
+
+	// V1.1-C : optional GCD simplification (c is zero in this branch).
+	const gcd = buildFactorGcdStep(current, a, b, number('0'), detected.standardForm, idGen);
+	if (gcd !== null) {
+		steps.push(gcd.step);
+		current = gcd.after;
+		a = gcd.aSimp;
+		b = gcd.bSimp;
 	}
 
 	steps.push(
@@ -646,7 +780,7 @@ function buildCZeroCaseSteps(
 	);
 
 	// Factor common x: ax + b
-	const remainder = canon(add(implicitMultiply(detected.a, varNode(variable)), detected.b));
+	const remainder = canon(add(implicitMultiply(a, varNode(variable)), b));
 	const factoredLeft = implicitMultiply(varNode(variable), parentheses(remainder));
 	const factoredEq = relation('=', factoredLeft, number('0'));
 	steps.push(
@@ -675,7 +809,7 @@ function buildCZeroCaseSteps(
 
 	// solve-each-factor
 	const xZero = number('0');
-	const otherSolution = canon(fraction(opposite(detected.b), detected.a));
+	const otherSolution = canon(fraction(opposite(b), a));
 	const pairs = [
 		{ factor: varNode(variable), value: xZero },
 		{ factor: remainder, value: otherSolution }

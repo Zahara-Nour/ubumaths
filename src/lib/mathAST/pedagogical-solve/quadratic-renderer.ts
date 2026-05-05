@@ -102,7 +102,11 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'extract-square-root': () => 'On extrait la racine carrée',
 		'factor-common-x': (_op, step) => `On factorise par ${variableOf(step)}`,
 		'zero-product': () => 'Par la propriété du produit nul',
-		'solve-each-factor': () => 'On résout chaque facteur séparément'
+		'solve-each-factor': () => 'On résout chaque facteur séparément',
+		'factor-gcd': (op) => {
+			const g = (op as EquationOperation & { kind: 'factor-gcd' }).gcd;
+			return `On divise les deux membres par ${fmt(g)} (PGCD)`;
+		}
 	},
 	superieur: {
 		// Identify-equation deliberately omitted at supérieur (the level-strategy
@@ -126,7 +130,11 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'extract-square-root': () => 'Racine carrée',
 		'factor-common-x': () => 'Factorisation par x',
 		'zero-product': () => 'Produit nul',
-		'solve-each-factor': () => 'Résolution par facteur'
+		'solve-each-factor': () => 'Résolution par facteur',
+		'factor-gcd': (op) => {
+			const g = (op as EquationOperation & { kind: 'factor-gcd' }).gcd;
+			return `Simplification (÷ ${fmt(g)})`;
+		}
 	}
 };
 
@@ -158,6 +166,8 @@ const EXPLANATIONS: Record<
 		'simplify-solutions': () => 'On réduit chaque solution à sa forme canonique.',
 		'read-solutions': () => 'On donne l’ensemble des solutions sous la forme S = { … }.',
 		'no-real-solution': () => 'Dans ℝ, l’équation n’admet aucune solution. On note S = ∅.',
+		'factor-gcd': () =>
+			'Quand les coefficients ont un facteur entier commun, on divise les deux membres par ce PGCD pour simplifier les calculs ; les solutions de l’équation simplifiée sont identiques à celles de l’équation originale.',
 		'recognize-no-linear-term': () =>
 			'Quand b = 0, l’équation se réduit à ax² + c = 0 : on isole x² et on extrait la racine carrée plutôt que d’utiliser la formule générale.',
 		'recognize-no-constant-term': () =>
@@ -290,6 +300,7 @@ function formatExpressionLatex(step: EquationStep): string {
 		case 'standardize':
 		case 'isolate-square':
 		case 'factor-common-x':
+		case 'factor-gcd':
 			return alignedTransformation(step);
 
 		case 'extract-square-root':

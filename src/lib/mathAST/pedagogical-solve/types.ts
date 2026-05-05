@@ -212,7 +212,19 @@ export type EquationOperation =
 			readonly pairs: readonly { readonly factor: MathNode; readonly value: MathNode }[];
 	  }
 	/** Final outcome when Δ < 0 (in ℝ): `S = ∅`. */
-	| { readonly kind: 'no-real-solution' };
+	| { readonly kind: 'no-real-solution' }
+	/**
+	 * V1.1 — Divide both sides by the GCD of the (integer) coefficients before
+	 * applying the discriminant or the factorisation. Emitted when
+	 * `gcd(|a|, |b|, |c|) > 1` and all coefficients are integers.
+	 *
+	 * Example : `3x² − 3x − 18 = 0` ⇒ gcd = 3 ⇒ `x² − x − 6 = 0`.
+	 */
+	| {
+			readonly kind: 'factor-gcd';
+			readonly gcd: MathNode;
+			readonly simplified: MathNode;
+	  };
 
 // =============================================================================
 // Equation Step
