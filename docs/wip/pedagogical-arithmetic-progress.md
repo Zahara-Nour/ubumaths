@@ -105,6 +105,25 @@ Populer `expressionName` directement dans `InstanceBlank` via
 `generator/assign-blank-indices.ts`. Une fois fait, le 3e argument
 `expressionName` devient redondant (déductible depuis `blank`).
 
+## Phase 3 — Règles niveau 1 : basic operations (terminée ✓)
+
+### Livré
+
+- `pedagogical-rules/basic-operations.ts` — 10 règles :
+  - **Atomiques (priority 100)** : `evaluateBinary{Add, Sub, Mul, Div}` — évaluation exacte de `number ⊕ number` (la contrainte `:number` matche aussi les opposés).
+  - **Groupement (priority 200, college+)** : `groupMultiplicationsInAddition` — dans une somme avec ≥2 multiplications numériques, les évalue toutes en une étape (pédagogie de regroupement).
+  - **Trivial (priority 50)** : `simplify{Add, Sub}Zero`, `simplify{Mul, Div}One`, `simplifyMulZero` — `x+0`, `x-0`, `x*1`, `x/1`, `x*0`.
+- `pedagogical-rules/index.ts` — `loadPedagogicalRules({ schoolLevel, targetForm? })` filtre par niveau et appendra les terminaux des phases ultérieures.
+- 32 tests passent (`__tests__/basic-operations.test.ts`)
+- 0 régression sur 12086 tests `mathAST`
+
+### Décisions design (Phase 3)
+
+- **Évaluation via factory + `evaluate(exact)`** : la replacement function reconstruit l'AST `add(a,b)` puis appelle `evaluate(exact)`. Pas d'optimisation prématurée (pas de cas spéciaux pour les entiers vs fractions).
+- **Pattern `:number` accepte les opposés** (`-3`) : on profite de la sémantique du parser de patterns. Pas besoin de canonicalisation préalable.
+- **Groupement = `P._('s', P.custom(...))` + replacement custom** : le pattern matche tout nœud, la condition checke `flattenSumShallow(node)` pour ≥2 multiplications, le replacement re-flatten / évalue chaque multiplication / unflatten.
+- **`evaluateBinaryDiv` a une condition `b≠0`** explicite (la pattern ne peut pas l'exprimer en `:number`).
+
 ### Fichiers à créer
 
 ```

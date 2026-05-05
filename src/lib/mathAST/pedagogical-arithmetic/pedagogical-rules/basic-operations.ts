@@ -1,0 +1,394 @@
+/**
+ * Pedagogical Rules — Basic Operations (Phase 3)
+ *
+ * Atomic binary operations + grouping + trivial simplifications, all with
+ * per-`SchoolLevel` descriptions and priority hints for the deterministic
+ * rewrite engine.
+ *
+ * Rule families :
+ * - **Atomic binary** (`evaluateBinary{Add,Sub,Mul,Div}`) — exact evaluation
+ *   of `number ⊕ number` for the four basic operations.
+ * - **Grouping** (`groupMultiplicationsInAddition`) — fires only at college+
+ *   levels. Replaces ALL `n×m` factors in a sum by their evaluated values
+ *   in ONE step. Skipped at primaire to keep each multiplication explicit.
+ * - **Trivial** (`simplifyAddZero`, `simplifyMulOne`, `simplifyMulZero`) —
+ *   `x+0 → x`, `x×1 → x`, `x×0 → 0`. Always applicable, low priority so
+ *   they run after atomic operations.
+ *
+ * Each rule's `descriptions` use bindings to produce binding-aware labels
+ * (e.g. "On additionne 2 et 3" rather than the generic "Addition").
+ *
+ * @module mathAST/pedagogical-arithmetic/pedagogical-rules/basic-operations
+ */
+
+import type { MathNode } from '../../types';
+import type { Rule, MatchBindings } from '../../pattern/types';
+import { P } from '../../pattern/builder';
+import { createRule } from '../../pattern/rule';
+import { evaluate } from '../../eval/evaluate';
+import { isEvalValue } from '../../eval/types';
+import { isAddition, isMultiplication, isNumber, isOpposite, isSubtraction } from '../../guards';
+import { add, divide, multiply, number, subtract } from '../../factory';
+import { flattenSumShallow, unflattenSum } from '../../flatten';
+import { toLatex } from '../../latex-generator';
+import type { PedagogicalArithmeticRule } from '../types';
+
+// =============================================================================
+// Helpers
+// =============================================================================
+
+/**
+ * Evaluate a node to its exact form. Returns `null` when the node cannot be
+ * reduced (free variables, indeterminate forms, …).
+ *
+ * Mirrors the helper used by `arithmetic-steps.ts` so the pedagogical and
+ * legacy paths agree on what counts as "fully evaluable".
+ */
+function evaluateExact(node: MathNode): MathNode | null {
+	const result = evaluate(node, { mode: 'exact' });
+	if (!isEvalValue(result)) return null;
+	return result.node;
+}
+
+/** True when the node is a numeric atom (plain number or `-number`). */
+function isNumericAtom(node: MathNode): boolean {
+	if (isNumber(node)) return true;
+	if (isOpposite(node) && isNumber(node.operand)) return true;
+	return false;
+}
+
+/** True when the node is a multiplication of two numeric atoms (e.g. `3×4`). */
+function isNumericMultiplication(node: MathNode): boolean {
+	if (!isMultiplication(node)) return false;
+	return isNumericAtom(node.left) && isNumericAtom(node.right);
+}
+
+/** Lookup a wildcard binding by name; returns `undefined` if not present. */
+function bindingNode(bindings: MatchBindings, name: string): MathNode | undefined {
+	const found = bindings.get(name);
+	if (!found) return undefined;
+	if ('terms' in found || 'factors' in found) return undefined;
+	return found as MathNode;
+}
+
+/** Render a binding to LaTeX, falling back to `'?'` when the binding is missing. */
+function bindingLatex(bindings: Record<string, MathNode>, name: string): string {
+	const node = bindings[name];
+	return node ? toLatex(node) : '?';
+}
+
+// =============================================================================
+// Atomic binary operations (priority 100)
+// =============================================================================
+
+/**
+ * Build the four atomic binary rules. They share the same structure:
+ *   - Pattern : `a:number ⊕ b:number` (numeric pair)
+ *   - Replacement : exact evaluation of the operation
+ *   - Description : per-level vocabulary
+ *
+ * `evaluateExact` returning `null` is treated as "rule does not fire" by
+ * returning the original node — the rewriting engine then sees no change
+ * and the rule is skipped.
+ */
+
+/**
+ * Generic atomic-binary replacement factory.
+ *
+ * Reconstructs `a ⊕ b` from the bindings via `nodeBuilder`, runs
+ * `evaluate(exact)`, and returns the simplified node. When evaluation fails
+ * (e.g. division by zero or domain error), the original two-operand
+ * expression is returned so the engine sees no change and the rule fizzles.
+ */
+function makeBinaryReplacement(
+	nodeBuilder: (a: MathNode, b: MathNode) => MathNode
+): (bindings: MatchBindings) => MathNode {
+	return (bindings) => {
+		const a = bindingNode(bindings, 'a');
+		const b = bindingNode(bindings, 'b');
+		if (!a || !b) return number('0'); // unreachable under typed pattern
+		const original = nodeBuilder(a, b);
+		const evaluated = evaluateExact(original);
+		return evaluated ?? original;
+	};
+}
+
+/**
+ * Pedagogical rule : `a:number + b:number → a+b` (exact).
+ */
+export const evaluateBinaryAdd: PedagogicalArithmeticRule = {
+	name: 'evaluate-binary-add',
+	rule: createRule(
+		P.parse('a:number + b:number'),
+		makeBinaryReplacement((a, b) => add(a, b)),
+		{ name: 'evaluate-binary-add' }
+	),
+	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
+	priority: 100,
+	descriptions: {
+		primaire: (b) => `On additionne ${bindingLatex(b, 'a')} et ${bindingLatex(b, 'b')}`,
+		college: () => 'Addition',
+		lycee: () => 'Somme',
+		superieur: () => '+'
+	}
+};
+
+/**
+ * Pedagogical rule : `a:number - b:number → a-b` (exact).
+ */
+export const evaluateBinarySub: PedagogicalArithmeticRule = {
+	name: 'evaluate-binary-sub',
+	rule: createRule(
+		P.parse('a:number - b:number'),
+		makeBinaryReplacement((a, b) => subtract(a, b)),
+		{ name: 'evaluate-binary-sub' }
+	),
+	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
+	priority: 100,
+	descriptions: {
+		primaire: (b) => `On soustrait ${bindingLatex(b, 'b')} de ${bindingLatex(b, 'a')}`,
+		college: () => 'Soustraction',
+		lycee: () => 'Différence',
+		superieur: () => '−'
+	}
+};
+
+/**
+ * Pedagogical rule : `a:number × b:number → a×b` (exact).
+ */
+export const evaluateBinaryMul: PedagogicalArithmeticRule = {
+	name: 'evaluate-binary-mul',
+	rule: createRule(
+		P.parse('a:number * b:number'),
+		makeBinaryReplacement((a, b) => multiply(a, b, 'cross')),
+		{ name: 'evaluate-binary-mul' }
+	),
+	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
+	priority: 100,
+	descriptions: {
+		primaire: (b) => `On multiplie ${bindingLatex(b, 'a')} par ${bindingLatex(b, 'b')}`,
+		college: () => 'Multiplication',
+		lycee: () => 'Produit',
+		superieur: () => '×'
+	}
+};
+
+/**
+ * Pedagogical rule : `a:number / b:number → a/b` (exact).
+ *
+ * Division by zero is handled implicitly : `evaluate(exact)` returns
+ * `unevaluable` for `1/0`, so `makeBinaryReplacement` falls back to the
+ * original node. The rewrite engine then sees no structural change
+ * (`nodesEqual`) and the rule fizzles silently. No explicit `b≠0`
+ * condition is needed.
+ */
+export const evaluateBinaryDiv: PedagogicalArithmeticRule = {
+	name: 'evaluate-binary-div',
+	rule: createRule(
+		P.parse('a:number / b:number'),
+		makeBinaryReplacement((a, b) => divide(a, b, 'fraction')),
+		{ name: 'evaluate-binary-div' }
+	),
+	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
+	priority: 100,
+	descriptions: {
+		primaire: (b) => `On divise ${bindingLatex(b, 'a')} par ${bindingLatex(b, 'b')}`,
+		college: () => 'Division',
+		lycee: () => 'Quotient',
+		superieur: () => '÷'
+	}
+};
+
+// =============================================================================
+// Grouping rule (priority 200, college+)
+// =============================================================================
+
+/**
+ * Test whether a node is a sum (`+` or `-` chain) containing AT LEAST TWO
+ * numeric multiplications. The threshold "two" is what unlocks the
+ * pedagogical regroupement: with only one multiplication, the atomic rule
+ * already produces the natural single step.
+ */
+function shouldGroupMultiplications(node: MathNode): boolean {
+	if (!isAddition(node) && !isSubtraction(node)) return false;
+	const terms = flattenSumShallow(node);
+	let count = 0;
+	for (const { term } of terms) {
+		if (isNumericMultiplication(term)) {
+			count += 1;
+			if (count >= 2) return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Replacement function : flatten the sum, evaluate every numeric
+ * multiplication factor, leave non-multiplications untouched, and re-build
+ * the sum. The result is a sum with the SAME structure but each `n×m`
+ * collapsed to `n·m`.
+ */
+function applyGroupMultiplications(node: MathNode): MathNode | null {
+	const terms = flattenSumShallow(node);
+	const replaced: typeof terms = terms.map(({ sign, term }) => {
+		if (!isNumericMultiplication(term)) return { sign, term };
+		const evaluated = evaluateExact(term);
+		return evaluated ? { sign, term: evaluated } : { sign, term };
+	});
+	return unflattenSum(replaced);
+}
+
+/**
+ * Pedagogical rule : in a sum with ≥2 numeric multiplications, evaluate
+ * them all in one step. Skipped at primaire (each multiplication keeps its
+ * own atomic step there).
+ */
+export const groupMultiplicationsInAddition: PedagogicalArithmeticRule = {
+	name: 'group-multiplications-in-addition',
+	rule: createRule(
+		P._('s', P.custom(shouldGroupMultiplications, 'sum-with-2-mul')),
+		(bindings) => {
+			const s = bindingNode(bindings, 's');
+			if (!s) return number('0');
+			return applyGroupMultiplications(s) ?? s;
+		},
+		{ name: 'group-multiplications-in-addition' }
+	),
+	applicableLevels: ['college', 'lycee', 'superieur'],
+	priority: 200,
+	descriptions: {
+		college: () => "On effectue d'abord les multiplications",
+		lycee: () => 'Multiplications prioritaires',
+		superieur: () => 'Priorité ×'
+	},
+	explanations: {
+		college: () =>
+			"En l'absence de parenthèses, les multiplications sont effectuées avant les additions et soustractions."
+	}
+};
+
+// =============================================================================
+// Trivial simplifications (priority 50)
+// =============================================================================
+
+/**
+ * Pedagogical rule : `x + 0 → x` (commutative — also matches `0 + x`).
+ */
+export const simplifyAddZero: PedagogicalArithmeticRule = {
+	name: 'simplify-add-zero',
+	rule: createRule(P.parse('x + 0'), (bindings) => bindings.get('x') as MathNode, {
+		name: 'simplify-add-zero'
+	}),
+	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
+	priority: 50,
+	descriptions: {
+		primaire: () => 'On enlève le zéro inutile',
+		college: () => 'On supprime le zéro',
+		lycee: () => 'Simplification',
+		superieur: () => '−0'
+	}
+};
+
+/**
+ * Pedagogical rule : `x − 0 → x`.
+ */
+export const simplifySubZero: PedagogicalArithmeticRule = {
+	name: 'simplify-sub-zero',
+	rule: createRule(P.parse('x - 0'), (bindings) => bindings.get('x') as MathNode, {
+		name: 'simplify-sub-zero'
+	}),
+	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
+	priority: 50,
+	descriptions: {
+		primaire: () => 'On enlève le zéro inutile',
+		college: () => 'On supprime le zéro',
+		lycee: () => 'Simplification',
+		superieur: () => '−0'
+	}
+};
+
+/**
+ * Pedagogical rule : `x × 1 → x` (commutative — also matches `1 × x`).
+ */
+export const simplifyMulOne: PedagogicalArithmeticRule = {
+	name: 'simplify-mul-one',
+	rule: createRule(P.parse('x * 1'), (bindings) => bindings.get('x') as MathNode, {
+		name: 'simplify-mul-one'
+	}),
+	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
+	priority: 50,
+	descriptions: {
+		primaire: () => 'Multiplier par 1 ne change rien',
+		college: () => 'On supprime le facteur 1',
+		lycee: () => 'Simplification',
+		superieur: () => '×1'
+	}
+};
+
+/**
+ * Pedagogical rule : `x × 0 → 0` (commutative).
+ *
+ * Limitation (acceptable for arithmetic context) : the rule does not check
+ * whether `x` is well-defined. For pathological symbolic inputs like
+ * `(1/0) × 0` the result `0` is not mathematically correct (the expression
+ * is indeterminate), but for the arithmetic pedagogical pipeline — whose
+ * inputs come from numeric expressions only — this case never arises. A
+ * domain-aware variant can be added later if symbolic inputs are admitted.
+ */
+export const simplifyMulZero: PedagogicalArithmeticRule = {
+	name: 'simplify-mul-zero',
+	rule: createRule(P.parse('x * 0'), () => number('0'), { name: 'simplify-mul-zero' }),
+	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
+	priority: 50,
+	descriptions: {
+		primaire: () => 'Multiplier par 0 donne 0',
+		college: () => 'Le produit par 0 est nul',
+		lycee: () => 'Annulation',
+		superieur: () => '×0=0'
+	}
+};
+
+/**
+ * Pedagogical rule : `x / 1 → x`.
+ */
+export const simplifyDivOne: PedagogicalArithmeticRule = {
+	name: 'simplify-div-one',
+	rule: createRule(P.parse('x / 1'), (bindings) => bindings.get('x') as MathNode, {
+		name: 'simplify-div-one'
+	}),
+	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
+	priority: 50,
+	descriptions: {
+		primaire: () => 'Diviser par 1 ne change rien',
+		college: () => 'On supprime la division par 1',
+		lycee: () => 'Simplification',
+		superieur: () => '÷1'
+	}
+};
+
+// =============================================================================
+// Aggregated export
+// =============================================================================
+
+/**
+ * Ordered collection of basic-operation rules — exported for `loadPedagogicalRules`
+ * (Phase 8). Order does NOT determine application priority — that is taken from
+ * each rule's `priority` field at engine setup time.
+ */
+export const BASIC_OPERATION_RULES: readonly PedagogicalArithmeticRule[] = [
+	groupMultiplicationsInAddition,
+	evaluateBinaryAdd,
+	evaluateBinarySub,
+	evaluateBinaryMul,
+	evaluateBinaryDiv,
+	simplifyAddZero,
+	simplifySubZero,
+	simplifyMulOne,
+	simplifyMulZero,
+	simplifyDivOne
+];
+
+// Re-exported for convenience by `pedagogical-rules/index.ts`.
+export type { PedagogicalArithmeticRule } from '../types';
+// Re-export `Rule` from pattern types (callers might need it for typing).
+export type { Rule };
