@@ -235,3 +235,18 @@ export function recognizeDerivedUnit(u: Unit): Unit | null;
   - ESLint sur les 10 fichiers modifiés : 0 erreur, 0 warning.
   - `pnpm check:incremental` : 9 erreurs pré-existantes (slides/demo + extern/), 0 erreur dans les fichiers modifiés. Le script filtre correctement et exit 0.
   - Pas de fichier `.svelte` modifié → autofixer non requis.
+
+---
+
+## Travaux liés sur le système d'unités
+
+- **2026-05-03** : `units-imperial-affine-progress.md` — unités impériales (in, ft, yd, mi, oz, lb, gal, qt, pt, floz) + conversions affines (°C, °F). Ce travail de dérivées s'appuie sur l'architecture `SPECIAL_UNITS` mise en place là.
+- **2026-05-04** (jour-même) : `units-area-progress.md` — unités d'aire (a, ha, acre). Débloqué par le champ `components` ajouté à `BaseUnitDef` pour ce travail de dérivées.
+
+### TODOs restants identifiés
+
+- Catalogue étendu : T (Tesla), H (Henry), S (Siemens), Wb (Weber), lm (lumen), lx (lux), Bq (Becquerel), Gy (Gray), Sv (Sievert)
+- Expansion inverse (`N → kg·m·s⁻²`) — V1 ne fait que la reconnaissance
+- Distinction `J` vs `N·m` (couple) — sémantique pas dans la signature
+- Conversion entre unités composées et dérivées en mode `'first'`
+- Re-sélection de préfixe à l'intérieur d'une famille dérivée (TODO V2 noté en code : `5e6 N → 5 MN`)

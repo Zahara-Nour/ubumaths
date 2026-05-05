@@ -493,3 +493,44 @@ Après : `(6+2), (15+5), 24÷8, 3×3, 20÷4, 9+5` (toutes parens d'abord).
 - Compléter snapshots avec le format `--both` (custom + latex côte à côte)
 - Décider du destin des espaces : actuellement compact — peut-être ajuster
   par niveau (primaire = plus aéré ?)
+
+---
+
+## Statut global et docs liés
+
+### Travail livré dans ce prompt
+
+- Pipeline pédagogique arithmétique complet (Phases 1-10)
+- Itérations UX post-livraison (Phase 11)
+- `extractPedagogicalTarget()` effectif
+- Support `answerFormat` avec extraction de fragment
+- 252 tests, 17 commits cumulés, 0 régression
+
+### Docs frères dans `docs/wip/`
+
+- `pedagogical-steppers-mvp-progress.md` — infrastructure générique sur laquelle ce module s'appuie (rewriting-engine, step-renderer-base, technical-renderer, etc.)
+- `pedagogical-steppers-mvp-prompt.md` — prompt source du MVP infrastructure
+- `pedagogical-arithmetic-prompt.md` — prompt source de ce travail
+- `units-imperial-affine-progress.md`, `units-derived-progress.md`, `units-area-progress.md` — travaux unités livrés en parallèle (orthogonaux)
+
+### TODOs post-prompt à reprendre dans des sessions ultérieures
+
+| Item                                                                                              | Effort | Notes                                                  |
+| ------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------ |
+| Populer `expressionName` dans `InstanceBlank` via `assign-blank-indices.ts`                       | ~2-3h  | Rend le 3e arg de `extractPedagogicalTarget` redondant |
+| Intégration aux corrections de questions (`QuestionCorrection.generatedSteps` + composant Svelte) | ~6-8h  | Pipeline prêt côté backend, manque la glue UX          |
+| Variantes fractions par sous-niveau (early-college multiplication vs late-college PGCD)           | ~2-3h  | Affinage pédagogique                                   |
+| `rationalize-denominator` + `simplify-square-root-of-square` (radicaux avancés)                   | ~3-4h  | Niveau 3 lycée+                                        |
+| Decimal mantissas dans `multiplyScientific` / `addScientificSamePower`                            | ~2-3h  | Support mantisses non-entières                         |
+| Cohérence `signs: 'strict'` en post-processing (`5 + (-3) → 5 - 3`)                               | ~2h    | Étape pédagogique finale conditionnelle                |
+| Format `--both` dans snapshots démo (custom + LaTeX côte à côte)                                  | ~1h    | Lisibilité du dev                                      |
+| Réglage espacement par niveau (primaire plus aéré ?)                                              | ~1-2h  | À évaluer après retour utilisateur                     |
+
+### Hors scope ce prompt et liés à ce travail
+
+- Stepper différentiation (nouveau step recorder + renderer pédagogique)
+- Renderers pédagogiques pour autres domaines (integration, limits, matrix, domain)
+- Pipeline pédagogique pour simplification d'expression
+- Modes `SymbolicComputation` (Mode 0, Mode 2) inspirés de Poincaré
+- `NormalizeTarget` à 3 niveaux (refactor `normalize.ts`)
+- Investigation root-cause load-order issue (note dans `common/index.ts:56-77`)
