@@ -153,10 +153,10 @@ exports[`snapshot — basic > '2 + 3 × 4 + 5 × 6 (regroupement)' 1`] = `
     │ = 44
 
 ========== COLLEGE (detailed) ==========
-[0] On effectue d'abord les multiplications
+[0] On effectue d'abord les multiplications et divisions
     │ 2+@blue{3*4}+@blue{5*6}
     │ = 2+12+30
-    │ (En l'absence de parenthèses, les multiplications sont effectuées avant les additions et soustractions.)
+    │ (En l'absence de parenthèses, les multiplications et divisions sont effectuées avant les additions et soustractions.)
 [1] Addition
     │ @blue{2+12}+30
     │ = 14+30
@@ -315,24 +315,22 @@ exports[`snapshot — basic > '24 ÷ 6 + 2 × 3 (combine division + mu…' 1`] =
 ###### 24 ÷ 6 + 2 × 3 (combine division + multiplication) ######
 
 ========== PRIMAIRE (detailed) ==========
-[0] On multiplie 2 par 3
-    │ 24:/6+@blue{2*3}
-    │ = 24:/6+6
-[1] On divise 24 par 6
-    │ @blue{24:/6}+6
+[0] On divise 24 par 6
+    │ @blue{24:/6}+2*3
+    │ = 4+2*3
+[1] On multiplie 2 par 3
+    │ 4+@blue{2*3}
     │ = 4+6
 [2] On additionne 4 et 6
     │ @blue{4+6}
     │ = 10
 
 ========== COLLEGE (detailed) ==========
-[0] Multiplication
-    │ 24:/6+@blue{2*3}
-    │ = 24:/6+6
-[1] Division
-    │ @blue{24:/6}+6
+[0] On effectue d'abord les multiplications et divisions
+    │ @blue{24:/6}+@blue{2*3}
     │ = 4+6
-[2] Addition
+    │ (En l'absence de parenthèses, les multiplications et divisions sont effectuées avant les additions et soustractions.)
+[1] Addition
     │ @blue{4+6}
     │ = 10
 "
@@ -363,13 +361,205 @@ target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"s
     │ @blue{1/3+1/6}
     │ = 2/6+1/6
     │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
-[1] On additionne les numérateurs (même dénominateur)
-    │ @blue{2/6+1/6}
-    │ = 3/6
-[2] On simplifie la fraction
-    │ @blue{3/6}
-    │ = 1/2
+[1] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
     │ (On divise numérateur et dénominateur par leur PGCD.)
+[2] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[3] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[4] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[5] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[6] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[7] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[8] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[9] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[10] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[11] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[12] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[13] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[14] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[15] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[16] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[17] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[18] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[19] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[20] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[21] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[22] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[23] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[24] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[25] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[26] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[27] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[28] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[29] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[30] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[31] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[32] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[33] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[34] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[35] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[36] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[37] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[38] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[39] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[40] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[41] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[42] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[43] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[44] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[45] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[46] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[47] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[48] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[49] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[50] On calcule
+    │ @blue{1/3+1/6}
+    │ = 1/2
 "
 `;
 
@@ -384,8 +574,204 @@ target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"s
     │ @blue{1/4+1/6}
     │ = 3/12+2/12
     │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
-[1] On additionne les numérateurs (même dénominateur)
-    │ @blue{3/12+2/12}
+[1] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[2] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[3] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[4] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[5] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[6] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[7] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[8] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[9] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[10] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[11] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[12] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[13] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[14] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[15] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[16] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[17] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[18] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[19] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[20] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[21] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[22] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[23] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[24] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[25] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[26] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[27] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[28] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[29] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[30] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[31] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[32] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[33] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[34] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[35] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[36] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[37] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[38] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[39] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[40] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[41] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[42] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[43] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[44] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[45] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[46] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[47] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[48] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[49] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[50] On calcule
+    │ @blue{1/4+2/12}
     │ = 5/12
 "
 `;
@@ -432,10 +818,13 @@ exports[`snapshot — radicals > '√2 × √8 → 4 (collapse complet)' 1`] = `
 ###### √2 × √8 → 4 (collapse complet) ######
 
 ========== COLLEGE (detailed) ==========
-[0] On multiplie les racines (la racine du produit)
-    │ @blue{sqrt(2)*sqrt(8)}
+[0] On extrait le facteur carré parfait sous la racine
+    │ sqrt(2)*@blue{sqrt(8)}
+    │ = sqrt(2)*2sqrt(2)
+    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+[1] On calcule
+    │ @blue{sqrt(2)*2sqrt(2)}
     │ = 4
-    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). On extrait ensuite l'éventuel carré parfait.)
 "
 `;
 
@@ -482,19 +871,25 @@ exports[`snapshot — scientific > '(3 × 10⁴) × (2 × 10⁻²) → 6 × 10²
 target: {"structure":"scientific"}
 
 ========== COLLEGE (detailed) ==========
-[0] On multiplie les coefficients et on additionne les exposants
-    │ @blue{3*10^4*2*10^{-2}}
-    │ = 6*10^2
-[1] On écrit la puissance comme un produit
-    │ 6*@blue{10^2}
-    │ = 6*10*10
+[0] On écrit la puissance comme un produit
+    │ 3*@blue{10^4}*2*10^{-2}
+    │ = 3*10*10*10*10*2*10^{-2}
+[1] Multiplication
+    │ 3*@blue{10*10}*10*10*2*10^{-2}
+    │ = 3*100*10*10*2*10^{-2}
 [2] Multiplication
-    │ 6*@blue{10*10}
-    │ = 6*100
+    │ 3*@blue{100*10}*10*2*10^{-2}
+    │ = 3*1000*10*2*10^{-2}
 [3] Multiplication
-    │ @blue{6*100}
+    │ 3*@blue{1000*10}*2*10^{-2}
+    │ = 3*10000*2*10^{-2}
+[4] Multiplication
+    │ @blue{3*10000}*2*10^{-2}
+    │ = 30000*2*10^{-2}
+[5] On calcule
+    │ @blue{30000*2*10^{-2}}
     │ = 600
-[4] On écrit en notation scientifique
+[6] On écrit en notation scientifique
     │ @blue{600}
     │ = 6*10^2
     │ (On déplace la virgule pour obtenir un nombre entre 1 et 10, en compensant par une puissance de 10.)
@@ -508,13 +903,31 @@ exports[`snapshot — scientific > '(5 × 10³) × (4 × 10²) → 2 × 10⁶ (o
 target: {"structure":"scientific"}
 
 ========== COLLEGE (detailed) ==========
-[0] On multiplie les coefficients et on additionne les exposants
-    │ @blue{5*10^3*4*10^2}
-    │ = 2*10^6
-[1] On calcule
-    │ @blue{2*10^6}
+[0] On écrit la puissance comme un produit
+    │ 5*@blue{10^3}*4*10^2
+    │ = 5*10*10*10*4*10^2
+[1] Multiplication
+    │ 5*@blue{10*10}*10*4*10^2
+    │ = 5*100*10*4*10^2
+[2] Multiplication
+    │ 5*@blue{100*10}*4*10^2
+    │ = 5*1000*4*10^2
+[3] Multiplication
+    │ @blue{5*1000}*4*10^2
+    │ = 5000*4*10^2
+[4] On écrit la puissance comme un produit
+    │ 5000*4*@blue{10^2}
+    │ = 5000*4*10*10
+[5] Multiplication
+    │ 5000*4*@blue{10*10}
+    │ = 5000*4*100
+[6] Multiplication
+    │ 5000*@blue{4*100}
+    │ = 5000*400
+[7] Multiplication
+    │ @blue{5000*400}
     │ = 2000000
-[2] On écrit en notation scientifique
+[8] On écrit en notation scientifique
     │ @blue{2000000}
     │ = 2*10^6
     │ (On déplace la virgule pour obtenir un nombre entre 1 et 10, en compensant par une puissance de 10.)
@@ -559,13 +972,205 @@ target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"s
     │ @blue{1/3+1/6}
     │ = 2/6+1/6
     │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
-[1] On additionne les numérateurs (même dénominateur)
-    │ @blue{2/6+1/6}
-    │ = 3/6
-[2] On simplifie la fraction
-    │ @blue{3/6}
-    │ = 1/2
+[1] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
     │ (On divise numérateur et dénominateur par leur PGCD.)
+[2] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[3] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[4] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[5] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[6] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[7] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[8] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[9] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[10] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[11] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[12] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[13] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[14] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[15] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[16] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[17] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[18] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[19] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[20] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[21] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[22] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[23] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[24] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[25] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[26] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[27] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[28] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[29] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[30] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[31] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[32] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[33] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[34] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[35] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[36] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[37] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[38] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[39] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[40] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[41] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[42] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[43] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[44] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[45] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[46] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[47] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[48] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[49] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[50] On calcule
+    │ @blue{1/3+1/6}
+    │ = 1/2
 "
 `;
 
@@ -578,13 +1183,205 @@ exports[`snapshot — target-form-scenarios > '1/3 + 1/6 sans target → 3/6 (no
     │ @blue{1/3+1/6}
     │ = 2/6+1/6
     │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
-[1] On additionne les numérateurs (même dénominateur)
-    │ @blue{2/6+1/6}
-    │ = 3/6
-[2] On simplifie la fraction
-    │ @blue{3/6}
-    │ = 1/2
+[1] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
     │ (On divise numérateur et dénominateur par leur PGCD.)
+[2] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[3] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[4] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[5] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[6] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[7] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[8] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[9] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[10] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[11] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[12] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[13] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[14] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[15] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[16] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[17] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[18] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[19] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[20] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[21] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[22] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[23] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[24] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[25] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[26] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[27] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[28] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[29] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[30] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[31] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[32] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[33] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[34] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[35] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[36] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[37] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[38] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[39] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[40] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[41] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[42] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[43] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[44] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[45] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[46] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[47] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[48] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[49] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[50] On calcule
+    │ @blue{1/3+1/6}
+    │ = 1/2
 "
 `;
 
