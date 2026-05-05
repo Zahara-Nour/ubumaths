@@ -210,3 +210,89 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 - [x] 0 nouvelle erreur TypeScript dans `pnpm check:incremental`
 - [x] Documentation de progression écrite (ce fichier)
 - [x] Commits créés via `commit-manager` (Phase 1) et directement (Phases 2, 3, 4) selon complexité
+
+---
+
+## Phase 6 — Pipeline pédagogique dédié + itérations UX (terminée ✓)
+
+> Travaux post-MVP. Le MVP a livré une infrastructure générique (engine, technical renderer, pedagogical renderer du solveur algorithmique). Cette phase ajoute un **pipeline pédagogique séparé** pour les équations linéaires, qui produit des étapes plus fidèles au geste scolaire que la décomposition algorithmique de `solve()`.
+
+### Motivation
+
+Le solveur algorithmique (`solve()`) optimise pour la correction et la généralité ; ses étapes ne correspondent pas toujours à la façon dont un élève écrirait sa résolution (ex : pas de regroupement explicite, transposition implicite, division compacte). On a donc créé un **second pipeline** qui partage l'infrastructure (rewriting engine, renderer base) mais qui a son propre catalogue de règles et son propre rendu.
+
+### Sous-modules livrés
+
+#### `pedagogical-solve/` — pipeline équations linéaires
+
+- `linear.ts` — `generateLinearEquationSteps(equation, { level, includeSubSteps })` : génère un arbre `EquationStep[]` adapté au niveau scolaire (college, lycee, superieur).
+  - **College** : étapes décomposées (transposition explicite des constantes, puis division par le coefficient).
+  - **Lycée** : transposition + division combinées en une seule étape compacte.
+  - **Supérieur** : fusion maximale (`mergeAll`) — provisoire, à raffiner.
+- `linear-renderer.ts` — `LinearEquationRenderer` produit titres + LaTeX colorés.
+- `types.ts` — `EquationStep` (discriminated union), `EquationOperation`, `LinearSchoolLevel`.
+- `__tests__/pedagogical-renderer.test.ts` — couverture des renderers par niveau/verbosity.
+- `demo-helpers.ts` — `presentEquation(label, eq)` qui imprime côte-à-côte 2 vues techniques + 6 vues pédagogiques (3 niveaux × 2 verbosités).
+
+#### `pedagogical-solve/demo-equations/` — banque de cas catégorisés (Option C)
+
+7 catégories, ~21 cas, source partagée entre script CLI et tests snapshot :
+
+- `simple.ts` (3 cas) — `2x + 3 = 7`, `x = 5`, `2x = 4`
+- `simple-negatifs.ts` (4 cas) — `−x + 3 = 0`, `2x − 5 = 1`, `3x = −6`, `−2x + 4 = 10`
+- `simples-fractions.ts` (3 cas) — `x/2 + 1/3 = 1`, `2x/3 = 4/9`, `x/4 + 1/2 = 3/4`
+- `simples-fractions-negatifs.ts` (3 cas) — `−x/2 + 1/3 = 0`, `x/2 − 1/3 = 1`, `−x/2 = 1/4`
+- `regroupement.ts` (3 cas) — `3x − 2 = −5x + 7`, `5 − 2x = 11 + 3x`, `4x + 1 = 2x + 5`
+- `regroupement-fractions.ts` (2 cas) — `x/2 + 1 = x/3 + 2`, `2x/3 − 1/2 = x/4 + 1`
+- `edge-cases.ts` (3 cas) — `0·x = 0`, `0·x = 5`, `x = x + 1`
+- `index.ts` — `ALL_CATEGORIES: readonly DemoCategory[]` (source unique).
+
+#### Test snapshot + script CLI partageant la source
+
+- `__tests__/linear-demo.test.ts` — `for...of ALL_CATEGORIES` → `describe('snapshot — <cat>')` → `it.each(cases)` → `toMatchSnapshot()`. **21 snapshots** dans `__snapshots__/linear-demo.test.ts.snap`.
+- `scripts/pedagogical-solve-demo.ts` — accepte les noms de catégorie en args (`pnpm tsx scripts/pedagogical-solve-demo.ts simple regroupement`), filtre via `Set`, imprime avec en-têtes par catégorie.
+
+### Itérations UX livrées (commits chronologiques)
+
+| Commit      | Apport                                                                                                                                |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `8e104dbbf` | Canonicalize operand + utilise une règle sign-aware (corrige sign-detection sur opérandes négatifs).                                  |
+| `87e080c7a` | Clé de règle distincte `identify-linear-coefficients` (sépare l'identification linéaire de quadratique dans le renderer).             |
+| `37d51f5b2` | Démo originale : 4 niveaux × 2 verbosités (8 rendus).                                                                                 |
+| `095cccbbe` | Explanations rendues à tous les niveaux.                                                                                              |
+| `e1ac27965` | **Phase 6 — création du pipeline pédagogique séparé** pour les équations linéaires.                                                   |
+| `5530d9cfc` | Cosmetic fixes + ajout de la vue technique dans la démo.                                                                              |
+| `fe9a7337e` | **Retrait du niveau primaire** (hors curriculum équations linéaires). 4 niveaux → 3 niveaux.                                          |
+| `8478a0878` | Démo technique compacte (`[id] rule: title`).                                                                                         |
+| `0020597ed` | `expressionLatex` utilise `\begin{aligned}` pour les transformations multi-lignes.                                                    |
+| `5e72d20d2` | Verbosity gating final : `summarized` = titres seuls, `detailed` = titres + équations.                                                |
+| `c4443d02d` | `expressionLatex` colore en bleu (`\textcolor{blue}{...}`) l'opération appliquée.                                                     |
+| `f8745834d` | Vocabulaire naturel adapté à chaque niveau (collège vs lycée vs supérieur).                                                           |
+| `5dd3fd831` | **Lycée** combine transposition + division en une étape compacte.                                                                     |
+| `2198ab523` | Démo standalone (`scripts/pedagogical-solve-demo.ts`) + tests snapshot Vitest.                                                        |
+| `9d67105a2` | Équation à fractions ajoutée + fix sign-detection sur fractions.                                                                      |
+| `864332643` | **Restructuration Option C** : 1 fichier par catégorie, 7 catégories, source partagée script + tests, fix divide-by-zero (`0·x = 0`). |
+
+### Bugs corrigés
+
+- **Sign-detection cassée sur opérandes négatifs** (commit `8e104dbbf`) : la règle de transposition ignorait le signe quand l'opérande était `opposite(...)` ; corrigé via canonicalisation préalable + règle sign-aware.
+- **Sign-detection cassée sur fractions** (commit `9d67105a2`) : même problème pour `−x/2 + 1/3 = 0` ; corrigé.
+- **Crash divide-by-zero sur edge cases** (commit `864332643`) : `0·x = 0` et `0·x = 5` faisaient appeler `divideBothSides(eq, 0)` → "normalize: division by zero". Fix dans `linear.ts` : guard `!isZero(coefficient)` avant l'étape division.
+
+### Limitations connues / TODO post Phase 6
+
+- **`superieur`** utilise encore `mergeAll` (provisoire) — à raffiner pour produire un rendu vraiment lycée+ (par exemple : "directement, x = 2/3" en une seule ligne).
+- **Edge cases** (`0·x = 0`, `0·x = 5`, `x = x + 1`) : le pipeline ne détecte ni "infinité de solutions" ni "pas de solution" ; il s'arrête silencieusement avec un rendu minimal. Une branche `no-solution` / `infinite-solutions` reste à ajouter.
+
+### Validation Phase 6
+
+- 21 snapshots stables (`linear-demo.test.ts`)
+- Tests renderer pédagogique du solveur algorithmique : 17/17 (Phase 2 inchangée)
+- 0 régression mathAST sur les tests pré-existants
+- Script standalone fonctionnel : `pnpm tsx scripts/pedagogical-solve-demo.ts [catégories...]`
+
+### Récapitulatif Phase 6
+
+- 17 commits intermédiaires (`fdef836e0` exclu, c'est le close-out Phase 5).
+- Modules ajoutés : `pedagogical-solve/` (pipeline + renderer + types + demo-helpers), `pedagogical-solve/demo-equations/` (7 catégories), `__tests__/linear-demo.test.ts`, `scripts/pedagogical-solve-demo.ts`.
+- 22 commits poussés vers `origin/main` (incluant le travail MVP Phases 1-5 et la Phase 6).
