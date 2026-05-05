@@ -203,7 +203,7 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 - Renderers pédagogiques pour les autres domaines (integration, limits, matrix, domain)
 - Stepper pour différentiation (nouveau step recorder + renderer)
 - Pipeline pédagogique pour simplification d'expression
-- Intégration aux corrections de questions (`QuestionCorrection.generatedSteps`)
+- ~~Intégration aux corrections de questions (`QuestionCorrection.generatedSteps`)~~ — ✅ **Livré 2026-05-05** : voir `correction-integration-progress.md` (Mode B avec auto-call dans `generateInstance()`, composant `<GeneratedStepsCorrection>`, page debug `/dashboard/admin/debug/correction-mode-b`)
 - Modes `SymbolicComputation` (Mode 0, Mode 2) inspirés de Poincaré
 - `NormalizeTarget` à 3 niveaux (`Equivalence` / `Analysis` / `Display`)
 - Investigation root-cause du load-order issue de `common/index.ts`
