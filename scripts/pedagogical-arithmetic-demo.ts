@@ -57,13 +57,26 @@ function ansiColorize(text: string): string {
  * `toCustom` syntax. Applied AFTER coloring so substitutions inside
  * `@blue{...}` wrappers display correctly.
  *
- * - `:/` (custom-syntax inline division) → ` ÷ `
- * - `*` (custom-syntax multiplication)   → ` × `
+ * Symbol substitutions :
+ *   `:/` → `÷`, `*` → `×`
+ *
+ * Spacing : binary `+ − × ÷` get a space on both sides ; unary minus /
+ * plus (the leading sign of `-3` or `+3`) stays collé. The distinction
+ * uses what's BEFORE the operator : a digit / letter / `}` / `)` means
+ * binary, anything else (start of line, `(`, `=`, …) means unary.
  *
  * Snapshots use raw custom syntax, so this transformation is CLI-only.
  */
 function prettifyOperators(text: string): string {
-	return text.replace(/:\//g, ' ÷ ').replace(/\*/g, ' × ');
+	return (
+		text
+			.replace(/:\//g, '÷')
+			.replace(/\*/g, '×')
+			// Binary +/- : digit/word/}/) on the left, digit/word/\/@/( on the right
+			.replace(/([\d\w})])([+-])(?=[\d\w\\@(])/g, '$1 $2 ')
+			// × ÷ : always binary
+			.replace(/([\d\w})])([×÷])([\d\w\\@(])/g, '$1 $2 $3')
+	);
 }
 
 // =============================================================================
