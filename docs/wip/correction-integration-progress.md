@@ -77,59 +77,107 @@ les étapes pédagogiques sont générées automatiquement par
 `test-exact-repro`, `e2e-fill-blanks-pipeline` ne sont pas liés aux changements
 — vérifié via `git stash`).
 
-### ⏳ Phase 3 — Composant `<GeneratedStepsCorrection>` + `CorrectionCard`
+### ✅ Phase 3 — Composant `<GeneratedStepsCorrection>` + `CorrectionCard`
 
-À faire :
+**Fichiers :**
 
-- Composant Svelte `src/lib/components/questions/GeneratedStepsCorrection.svelte`
-- Étendre `CorrectionCard.svelte:76-87` pour basculer sur Mode B si
-  `_renderedSteps` présent.
-- Tests visuels (ou snapshot) sur 2-3 cas.
-- Svelte autofixer.
+- `src/lib/components/questions/GeneratedStepsCorrection.svelte` (nouveau)
+- `src/lib/components/questions/CorrectionCard.svelte` (extension Mode B)
 
-### ⏳ Phase 4 — Migration de 2 questions tests
+**Comportements clés :**
 
-À faire :
+- Liste verticale numérotée, une étape par bloc.
+- Titre + LaTeX (`$$\\begin{aligned}...$$` via `MarkdownRenderer`) +
+  explanation si `verbosity === 'detailed'`.
+- SubSteps récursifs avec indent visuel et bordure muted.
+- `CorrectionCard` dérive `useGeneratedSteps` (`_renderedSteps?.length > 0 &&
+!hasModeASteps`) — Mode A gagne si les deux sont présents (explicite >
+  implicite).
+- Mode B view rend toujours `feedback.correct` sous les étapes.
+- **Svelte autofixer** : 0 issue sur le nouveau composant ; 0 issue introduite
+  dans `CorrectionCard` (suggestions $effect/bind:this concernent du code
+  pré-existant — hors scope).
 
-- 1 question primaire (arithmétique CM2) → Mode B
-- 1 question collège (équation linéaire 4e/3e) → Mode B
-- Vérification visuelle dev server.
-- Captures avant/après dans ce doc.
+Commit : `034e1d717`.
 
-### ⏳ Phase 5 — Quality checks + doc + commit final
+### ✅ Phase 4 — Migration de 2 questions tests (fixtures + snapshots)
 
-À faire :
+**Fichiers :**
 
-- `npx eslint <fichiers modifiés>`
-- `pnpm check:incremental`
-- Svelte autofixer sur les `.svelte` modifiés
-- Mise à jour de ce doc
-- Commits structurés (un par phase ou un commit Phase 3-5 selon volume)
+- `src/lib/questions/__tests__/fixtures/generated-steps-demo.ts` (nouveau)
+- `src/lib/questions/__tests__/generated-steps-demo.test.ts` (5 tests + 2 snapshots)
+- `src/lib/questions/__tests__/__snapshots__/generated-steps-demo.test.ts.snap`
 
-## État actuel des fichiers (après Phase 2)
+**Démos livrées :**
 
-**Nouveaux :**
+| Question               | Niveau         | Pipeline                   | Steps générés                                    |
+| ---------------------- | -------------- | -------------------------- | ------------------------------------------------ |
+| `2 + 3×4 + 5×6 = ?`    | CM2 → primaire | `pedagogical-arithmetic`   | 4 (mul + add séquentiels, pas de groupement)     |
+| `3x + 5 = 14`, `x = ?` | 4e → college   | `pedagogical-solve/linear` | 4 (identify + subtract + divide + read solution) |
+
+Snapshots verrouillent `id`/`rule`/`title`/`schoolLevel` + booléens
+`hasExpressionLatex`/`hasExplanation` ; le contenu LaTeX exact est verrouillé
+par les tests des pipelines sous-jacents.
+
+Commit : `4b6d01b8e`.
+
+### ✅ Phase 5 — Quality checks + doc + commit final
+
+**Vérifications réalisées :**
+
+- `npx eslint` sur les 14 fichiers touchés : **0 erreur, 0 warning**.
+- `pnpm check:incremental` : **0 nouvelle erreur** (les 9 erreurs détectées
+  sont toutes pré-existantes dans `slides/demo*` et `extern/`, déjà filtrées
+  par le script).
+- `mcp__svelte__svelte-autofixer` exécuté sur les 2 fichiers `.svelte` modifiés :
+  **0 issue dans le code écrit** (suggestions sur `$effect`/`bind:this` =
+  code pré-existant non touché).
+- 168 tests passent sur les suites dédiées Phase 1–4 (47 nouveaux tests +
+  47 tests d'intégration existants) ; 0 régression sur la base de 2092
+  tests `pnpm test:server src/lib/questions/`.
+
+## État final des fichiers
+
+**Nouveaux (10) :**
 
 - `src/lib/questions/grade-level-to-school-level.{ts,test.ts}`
 - `src/lib/questions/generator/correction-generator.{ts,test.ts}`
+- `src/lib/questions/__tests__/fixtures/generated-steps-demo.ts`
+- `src/lib/questions/__tests__/generated-steps-demo.test.ts`
+- `src/lib/questions/__tests__/__snapshots__/generated-steps-demo.test.ts.snap`
+- `src/lib/components/questions/GeneratedStepsCorrection.svelte`
+- `docs/wip/correction-integration-progress.md` (ce fichier)
+- `docs/wip/correction-integration-prompt.md` (le prompt source)
 
-**Modifiés :**
+**Modifiés (6) :**
 
 - `src/lib/questions/types.ts`
 - `src/lib/questions/template-schema.ts`
 - `src/lib/questions/__tests__/template-schema.test.ts`
 - `src/lib/questions/generator/instance-generator.{ts,test.ts}`
 - `src/lib/questions/validators/template-validator.ts`
+- `src/lib/components/questions/CorrectionCard.svelte`
 
-## Tests cumulés Phase 1+2
+## Tests cumulés Phase 1–4
 
-| Suite                                 | Avant | Après           | Δ       |
-| ------------------------------------- | ----- | --------------- | ------- |
-| `grade-level-to-school-level.test.ts` | —     | 12              | +12     |
-| `template-schema.test.ts`             | 40    | 54              | +14     |
-| `correction-generator.test.ts`        | —     | 16              | +16     |
-| `instance-generator.test.ts`          | 43    | 47              | +4      |
-| **Phase 1+2 total**                   | —     | **47 nouveaux** | **+47** |
+| Suite                                 | Avant | Après        | Δ       |
+| ------------------------------------- | ----- | ------------ | ------- |
+| `grade-level-to-school-level.test.ts` | —     | 12           | +12     |
+| `template-schema.test.ts`             | 40    | 54           | +14     |
+| `correction-generator.test.ts`        | —     | 16           | +16     |
+| `instance-generator.test.ts`          | 43    | 47           | +4      |
+| `generated-steps-demo.test.ts`        | —     | 5            | +5      |
+| **Total nouveau code**                | —     | **52 tests** | **+52** |
+
+## Commits livrés
+
+| #   | SHA         | Phase   | Description                                               |
+| --- | ----------- | ------- | --------------------------------------------------------- |
+| 1   | `caa9c58e7` | Phase 1 | types + Zod schema for Mode B generated correction steps  |
+| 2   | `f7a878dfc` | Phase 2 | generateCorrection() pipeline glue + auto-call wiring     |
+| 3   | `034e1d717` | Phase 3 | generated steps Svelte component + correction card wiring |
+| 4   | `4b6d01b8e` | Phase 4 | end-to-end Mode B demo fixtures + snapshot tests          |
+| 5   | (ce commit) | Phase 5 | progress doc final + quality checks                       |
 
 ## Risques connus / TODOs futurs (post-V1)
 
