@@ -50,17 +50,23 @@ export type TargetForm = RequiredForm | 'scientific' | 'reduced-fraction' | 'dec
 /**
  * Aggregated pedagogical target derived from question parameters.
  *
- * Built by a future `extractPedagogicalTarget(instance, blank)` (Phase 5+)
- * that pulls together `requiredForm`, `precision`, the strict subset of
- * `ConstraintOptions`, validation rules, and unit expectations into a single
- * read-only target object consumed by the pedagogical evaluator.
+ * Built by `extractPedagogicalTarget(instance, blank?, expressionName?)`
+ * (`pedagogical-arithmetic/target-extractor.ts`) that pulls together
+ * `requiredForm`, `precision`, the strict subset of `ConstraintOptions`,
+ * validation rules, and unit expectations into a single read-only target
+ * object consumed by the pedagogical evaluator.
  *
  * @see ConstraintOptions in `src/lib/questions/types.ts:801`
  * @see ValidationRule in `src/lib/questions/types.ts:933`
  */
 export interface PedagogicalTarget {
-	/** Structural form expected (e.g., `'fraction'` for fraction reduction problems) */
-	readonly structure?: RequiredForm;
+	/**
+	 * Structural form expected. Uses the wider `TargetForm` (not just
+	 * `RequiredForm`) so the pedagogical pipeline can discriminate
+	 * `'scientific'` / `'reduced-fraction'` / `'decimal'` derived via
+	 * heuristics (see `target-extractor.ts`).
+	 */
+	readonly structure?: TargetForm;
 
 	/** Precision specification (decimal places, significant digits, …) */
 	readonly precision?: PrecisionType;
