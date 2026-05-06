@@ -612,14 +612,16 @@ describe("generateCorrection — kind: 'integrate'", () => {
 		expect(result.correction?._renderedSteps).toBeUndefined();
 	});
 
-	it('falls back silently when the integrand is out of V1 scope', () => {
-		// Partial-fractions case `1/(x²-1)` — V2.
+	it('falls back silently when the integrand is out of V1+V2 scope', () => {
+		// Repeated-root partial fractions `1/(x-1)²` — V2 simple supports only
+		// distinct roots, so this throws NotImplemented and the correction
+		// renders nothing.
 		const instance = makeInstance({
 			grades: ['T_SPE'],
 			correction: {
 				generatedSteps: {
 					kind: 'integrate',
-					expression: '1/(x^2 - 1)'
+					expression: '1/(x^2 - 2*x + 1)'
 				}
 			}
 		});

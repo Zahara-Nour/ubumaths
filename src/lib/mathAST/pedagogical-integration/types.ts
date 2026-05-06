@@ -96,6 +96,9 @@ export type PedagogicalIntegrationRule =
 	| 'choose-u-dv'
 	| 'apply-parts-formula'
 	| 'apply-cyclic-ipp' // V1.1 — ∫e^(αx)·sin(βx)·dx via algebraic resolution after 2 IPPs
+	// ---- Partial fractions (V2, lycée Tle spé option + supérieur) ----
+	| 'decompose-rational' // P/Q = A/(x-r₁) + B/(x-r₂)
+	| 'apply-partial-fractions' // ∫(A/(x-r₁) + B/(x-r₂)) dx = A·ln|x-r₁| + B·ln|x-r₂|
 	// ---- Final ----
 	| 'add-constant' // « + C »
 	| 'simplify-result';
@@ -317,6 +320,12 @@ export interface IntegrationGenerationStrategy {
 	 * programme) ; Tle spé does not introduce arctan/arcsin.
 	 */
 	readonly enableInverseTrig: boolean;
+	/**
+	 * V2 — Enable partial-fractions decomposition for `∫P(x)/Q(x) dx` with
+	 * Q quadratic (Δ > 0) and deg(P) < 2. Active at both lycée (Tle spé
+	 * option) and supérieur.
+	 */
+	readonly enablePartialFractions: boolean;
 }
 
 /**
@@ -338,7 +347,8 @@ export const STRATEGIES_INTEGRATION: Readonly<
 		enableUSubstitution: false,
 		enableComposite: true,
 		enableCyclicParts: true,
-		enableInverseTrig: false
+		enableInverseTrig: false,
+		enablePartialFractions: true
 	},
 	superieur: {
 		includeAddConstant: false,
@@ -348,7 +358,8 @@ export const STRATEGIES_INTEGRATION: Readonly<
 		enableUSubstitution: true,
 		enableComposite: true,
 		enableCyclicParts: true,
-		enableInverseTrig: true
+		enableInverseTrig: true,
+		enablePartialFractions: true
 	}
 };
 

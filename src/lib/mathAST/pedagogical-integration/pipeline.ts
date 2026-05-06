@@ -66,12 +66,19 @@ import {
 	pickExpFactor,
 	pickTrigFactor,
 	tryDetectComposite,
+	tryDetectPartialFractions,
 	tryDetectParts,
 	tryExtractConstant,
 	unwrapSign,
 	withDeeperRecursion
 } from './_helpers';
-import type { CompositeMatch, DispatchContext, PartsMatch } from './_helpers';
+import type {
+	CompositeMatch,
+	DispatchContext,
+	PartialFractionsMatch,
+	PartsMatch
+} from './_helpers';
+import { abs, ln } from '../factory';
 import { findProportionalityConstant } from '../integration/patterns';
 import { arcsinRule, arctanRule } from '../integration/rules';
 import { PedagogicalIntegrationNotImplemented } from './types';
@@ -436,16 +443,17 @@ function integrateNode(integrand: MathNode, ctx: DispatchContext): DispatchResul
 		return integrateKnownPrimitive(integrand, knownFn, ctx);
 	}
 
-	// 4b. Inverse-trig primitives (V1.1, supérieur uniquement) :
-	//     `1/(1+x²) → arctan(x)` and `1/√(1-x²) → arcsin(x)`.
+	// 4b. Inverse-trig primitives (V1.1+V2, supérieur uniquement) :
+	//     `1/(c+x²) → (1/a)·arctan(x/a)` and `1/√(c-x²) → arcsin(x/a)`,
+	//     where `a = √c` (a=1 in V1.1 unit case, V2 generalises to any a > 0).
 	if (ctx.strategy.enableInverseTrig) {
 		const arctanForm = matchArctanForm(integrand, ctx.variable);
 		if (arctanForm) {
-			return integrateInverseTrig(integrand, 'arctan', ctx);
+			return integrateInverseTrig(integrand, 'arctan', arctanForm.a, ctx);
 		}
 		const arcsinForm = matchArcsinForm(integrand, ctx.variable);
 		if (arcsinForm) {
-			return integrateInverseTrig(integrand, 'arcsin', ctx);
+			return integrateInverseTrig(integrand, 'arcsin', arcsinForm.a, ctx);
 		}
 	}
 
@@ -482,6 +490,18 @@ function integrateNode(integrand: MathNode, ctx: DispatchContext): DispatchResul
 	// scope for V1). We therefore short-circuit straight to IPP / throw.
 	// The four `identify-substitution` / `compute-du` / `apply-substitution` /
 	// `substitute-back` rules remain in the type union for V2 reach.
+
+	// 8b. Partial fractions (V2) — `∫P(x)/Q(x) dx` with Q quadratic, Δ > 0,
+	//     deg(P) < 2. Tried after composite-ln (which catches the proportional
+	//     case `u'/u`) so the rule firing order remains pedagogically clean :
+	//     composite-ln for « u'/u » integrals, partial-fractions only for the
+	//     genuinely 2-roots case `1/((x-a)(x-b))`.
+	if (ctx.strategy.enablePartialFractions) {
+		const partialFracs = tryDetectPartialFractions(integrand, ctx.variable);
+		if (partialFracs) {
+			return integratePartialFractions(integrand, partialFracs, ctx);
+		}
+	}
 
 	// 9a. Cyclic IPP (V1.1) — `∫e^(αx)·sin(βx) dx`, `∫e^(αx)·cos(βx) dx`.
 	//     MUST be tried BEFORE regular IPP : the LIATE template (Template B
@@ -809,18 +829,20 @@ function integrateByParts(
 }
 
 /**
- * V1.1 — `∫1/(1+x²) dx = arctan(x)` and `∫1/√(1-x²) dx = arcsin(x)`. Sup
- * only. Single-step `apply-known-primitive` with the inverse-trig
- * antiderivative computed via `arctanRule` / `arcsinRule` from
- * `integration/rules.ts`.
+ * V1.1+V2 — `∫1/(c+x²) dx = (1/a)·arctan(x/a)` and
+ * `∫1/√(c-x²) dx = arcsin(x/a)`, where `a = √c`. Sup only. Single-step
+ * `apply-known-primitive` with the inverse-trig antiderivative computed via
+ * `arctanRule(x, a)` / `arcsinRule(x, a)` from `integration/rules.ts` (which
+ * already handle both the unit case a=1 and the general a > 0).
  */
 function integrateInverseTrig(
 	integrand: MathNode,
 	kind: 'arctan' | 'arcsin',
+	a: MathNode,
 	ctx: DispatchContext
 ): DispatchResult {
 	const arg = variableNode(ctx.variable);
-	const antiderivative = kind === 'arctan' ? arctanRule(arg) : arcsinRule(arg);
+	const antiderivative = kind === 'arctan' ? arctanRule(arg, a) : arcsinRule(arg, a);
 	const step = buildStep(ctx, {
 		rule: 'apply-known-primitive',
 		before: integrand,
@@ -982,6 +1004,72 @@ function integrateCyclicIPP(integrand: MathNode, ctx: DispatchContext): Dispatch
 		bindings: { u: u0, v: v0, u2: u1, v2: v1 }
 	});
 	return { antiderivative, steps: [identify, choose1, apply1, choose2, cyclic] };
+}
+
+/**
+ * V2 — Partial fractions decomposition for `∫ P(x)/Q(x) dx` where Q is
+ * quadratic with two distinct real roots and deg(P) < 2.
+ *
+ * The decomposition `P/Q = A/(x-r₁) + B/(x-r₂)` is computed via the « method
+ * of roots » in `tryDetectPartialFractions` ; here we emit the two
+ * pedagogical steps :
+ *   1. `decompose-rational` — show the partial-fraction decomposition
+ *   2. `apply-partial-fractions` — integrate each term as `A·ln|x-rᵢ|`
+ */
+function integratePartialFractions(
+	integrand: MathNode,
+	match: PartialFractionsMatch,
+	ctx: DispatchContext
+): DispatchResult {
+	const variableNd = variableNode(ctx.variable);
+	const r1Nd = numericNode(match.r1);
+	const r2Nd = numericNode(match.r2);
+	const ANd = numericNode(match.A);
+	const BNd = numericNode(match.B);
+
+	// `x - r₁` and `x - r₂` (kept structural for nice rendering ; if rᵢ is
+	// negative, the renderer / latex layer prints `x + |rᵢ|`).
+	const xMinusR1 = subtract(variableNd, r1Nd);
+	const xMinusR2 = subtract(variableNd, r2Nd);
+
+	// Decomposition `A/(x-r₁) + B/(x-r₂)` for the « before → after » of the
+	// `decompose-rational` step. We use the unscaled coefficients here ; the
+	// final antiderivative folds them into the logarithm coefficients.
+	const term1 = simplifiedDivide(ANd, xMinusR1);
+	const term2 = simplifiedDivide(BNd, xMinusR2);
+	const decomposition = simplifiedAdd(term1, term2);
+
+	// Antiderivative `A·ln|x-r₁| + B·ln|x-r₂|`.
+	const ln1 = ln(abs(xMinusR1));
+	const ln2 = ln(abs(xMinusR2));
+	const result1 = simplifiedMultiply(ANd, ln1);
+	const result2 = simplifiedMultiply(BNd, ln2);
+	const antiderivative = simplifiedAdd(result1, result2);
+
+	const decomposeStep = buildStep(ctx, {
+		rule: 'decompose-rational',
+		before: integrand,
+		after: decomposition,
+		variable: ctx.variable,
+		bindings: {
+			numerator: match.numerator,
+			denominator: match.denominator,
+			r1: r1Nd,
+			r2: r2Nd,
+			A: ANd,
+			B: BNd
+		}
+	});
+
+	const applyStep = buildStep(ctx, {
+		rule: 'apply-partial-fractions',
+		before: decomposition,
+		after: antiderivative,
+		variable: ctx.variable,
+		bindings: { A: ANd, B: BNd, r1: r1Nd, r2: r2Nd }
+	});
+
+	return { antiderivative, steps: [decomposeStep, applyStep] };
 }
 
 // =============================================================================
