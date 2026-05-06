@@ -106,6 +106,56 @@ exports[`Mode B end-to-end demos > 4e linear equation — produces college steps
 ]
 `;
 
+exports[`Mode B end-to-end demos > 4e linear inequality with flip — produces college steps with flipOperator note 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-equation",
+    "schoolLevel": "college",
+    "title": "Inéquation du premier degré",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "divide-both-sides",
+    "schoolLevel": "college",
+    "title": "On divise les deux membres par -2 (changement de sens car -2 est négatif)",
+  },
+]
+`;
+
+exports[`Mode B end-to-end demos > 4e linear inequality with x on both sides — produces college steps 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-equation",
+    "schoolLevel": "college",
+    "title": "Inéquation du premier degré",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "subtract-both-sides",
+    "schoolLevel": "college",
+    "title": "On soustrait x aux deux membres",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "subtract-both-sides",
+    "schoolLevel": "college",
+    "title": "On soustrait 1 aux deux membres",
+  },
+]
+`;
+
 exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps with grouping 1`] = `
 [
   {

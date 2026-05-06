@@ -983,6 +983,16 @@ export type GeneratedSteps =
 			readonly options?: GeneratedStepsOptions;
 	  }
 	| {
+			readonly kind: 'linear-inequality';
+			/**
+			 * Template linear inequality — supports `{{a}}`, `{{eval:...}}`, etc.
+			 * The relation operator must be one of `<`, `>`, `<=`, `>=`, `!=`.
+			 * Calls `pedagogical-solve/linear-inequality`.
+			 */
+			readonly inequality: string;
+			readonly options?: GeneratedStepsOptions;
+	  }
+	| {
 			readonly kind: 'differentiate';
 			/** Template expression of the function `f(x)` to differentiate. */
 			readonly expression: string;

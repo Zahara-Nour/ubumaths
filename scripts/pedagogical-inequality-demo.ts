@@ -1,12 +1,18 @@
 #!/usr/bin/env tsx
 /**
- * Standalone CLI demo for the pedagogical-solve inequality pipeline.
+ * Pedagogical Linear Inequality — CLI Demo
+ *
+ * Mirrors `scripts/pedagogical-arithmetic-demo.ts` :
+ *   - default : custom-syntax with ANSI colors + operator prettification
+ *               (`*` → `×`, `<=` → `≤`, etc.) — readable terminal output
+ *   - `--latex` flag : LaTeX form
+ *   - `--both` flag : both formats stacked
  *
  * Usage :
- *   pnpm tsx scripts/pedagogical-inequality-demo.ts                   # tous les cas
- *   pnpm tsx scripts/pedagogical-inequality-demo.ts simple flip       # filtres
- *   pnpm tsx scripts/pedagogical-inequality-demo.ts -v                # verbose
- *   pnpm tsx scripts/pedagogical-inequality-demo.ts -v simple
+ *   pnpm tsx scripts/pedagogical-inequality-demo.ts                    # tous (custom)
+ *   pnpm tsx scripts/pedagogical-inequality-demo.ts -v simple flip     # filtres
+ *   pnpm tsx scripts/pedagogical-inequality-demo.ts --latex            # LaTeX brut
+ *   pnpm tsx scripts/pedagogical-inequality-demo.ts --both             # custom + LaTeX
  *
  * Catégories :
  *   simple    1-5 — linéaire de base sans flip
@@ -19,11 +25,54 @@
 import { generateLinearInequalitySteps } from '../src/lib/mathAST/pedagogical-solve/linear-inequality';
 import {
 	LinearEquationRenderer,
-	formatTransformationLines
+	formatTransformationLines,
+	formatTransformationCustom
 } from '../src/lib/mathAST/pedagogical-solve/linear-renderer';
 import { parseLatex } from '../src/lib/mathAST/parser';
 import type { RelationNode } from '../src/lib/mathAST/types';
 import type { LinearSchoolLevel } from '../src/lib/mathAST/pedagogical-solve/types';
+
+// =============================================================================
+// ANSI color conversion + operator prettification (mirrors arithmetic demo)
+// =============================================================================
+
+const ANSI_COLOR_MAP: Record<string, string> = {
+	blue: '\x1b[34m',
+	red: '\x1b[31m',
+	green: '\x1b[32m',
+	yellow: '\x1b[33m',
+	magenta: '\x1b[35m',
+	cyan: '\x1b[36m'
+};
+const ANSI_RESET = '\x1b[0m';
+const ANSI_BOLD = '\x1b[1m';
+
+/** Convert `@color{...}` markers into ANSI escape sequences. */
+function ansiColorize(text: string): string {
+	return text.replace(/@(\w+|#[0-9a-fA-F]{6})\{([^{}]*)\}/g, (_, color, content) => {
+		const code = ANSI_COLOR_MAP[color.toLowerCase()] ?? ANSI_COLOR_MAP.blue;
+		return `${ANSI_BOLD}${code}${content}${ANSI_RESET}`;
+	});
+}
+
+/**
+ * Cosmetic substitutions for the CLI output :
+ *   `*` → `×`, `:/` → `÷`, `<=` → `≤`, `>=` → `≥`, `!=` → `≠`
+ *
+ * Snapshots use raw custom syntax, so this transformation is CLI-only.
+ */
+function prettifyOperators(text: string): string {
+	return text
+		.replace(/<=/g, '≤')
+		.replace(/>=/g, '≥')
+		.replace(/!=/g, '≠')
+		.replace(/:\//g, '÷')
+		.replace(/\*/g, '×');
+}
+
+// =============================================================================
+// Demo cases
+// =============================================================================
 
 const renderer = new LinearEquationRenderer();
 
@@ -33,11 +82,14 @@ function ineq(latex: string): RelationNode {
 	return node;
 }
 
+type DemoFormat = 'custom' | 'latex' | 'both';
+
 function presentInequality(
 	label: string,
 	expr: RelationNode,
 	level: LinearSchoolLevel,
-	verbose: boolean
+	verbose: boolean,
+	format: DemoFormat
 ): string {
 	const lines: string[] = [];
 	lines.push(`\n###### ${label} (${level}) ######`);
@@ -50,12 +102,26 @@ function presentInequality(
 
 	for (const r of rendered) {
 		lines.push(`[${r.id}] ${r.title}`);
-		if (verbose && r.explanation) lines.push(`    → ${r.explanation}`);
-		const tx = formatTransformationLines(steps.find((s) => s.id === r.id)!);
-		if (tx) {
-			for (const line of tx) lines.push(`    │ ${line}`);
-		} else {
-			lines.push(`    │ ${r.expressionLatex}`);
+		const sourceStep = steps.find((s) => s.id === r.id)!;
+
+		if (format === 'custom' || format === 'both') {
+			const customText = formatTransformationCustom(sourceStep);
+			if (customText !== null) {
+				for (const line of customText.split('\n')) lines.push(`    │ ${line}`);
+			}
+		}
+		if (format === 'both') {
+			lines.push(`    ├ (latex)`);
+		}
+		if (format === 'latex' || format === 'both') {
+			const latexLines = formatTransformationLines(sourceStep);
+			if (latexLines !== null) {
+				for (const line of latexLines) lines.push(`    │ ${line}`);
+			}
+		}
+
+		if (verbose && r.explanation) {
+			lines.push(`    │ (${r.explanation})`);
 		}
 	}
 	return lines.join('\n');
@@ -87,24 +153,37 @@ const CASES: readonly { category: string; label: string; latex: string }[] = [
 
 const VALID_CATEGORIES = new Set(CASES.map((c) => c.category));
 
-const rawArgs = process.argv.slice(2);
-const verbose = rawArgs.includes('-v') || rawArgs.includes('--verbose');
-const args = rawArgs.filter((a) => a !== '-v' && a !== '--verbose');
-const filter = args.length > 0 ? new Set(args) : null;
+const argv = process.argv.slice(2);
+let format: DemoFormat = 'custom';
+let verbose = false;
+const wanted = new Set<string>();
+for (const arg of argv) {
+	if (arg === '--latex') format = 'latex';
+	else if (arg === '--both') format = 'both';
+	else if (arg === '--custom') format = 'custom';
+	else if (arg === '-v' || arg === '--verbose') verbose = true;
+	else wanted.add(arg);
+}
 
-if (filter) {
-	for (const arg of filter) {
-		if (!VALID_CATEGORIES.has(arg)) {
-			console.error(`Unknown category: ${arg}`);
-			console.error(`Available: ${[...VALID_CATEGORIES].join(', ')}`);
-			process.exit(1);
-		}
+for (const w of wanted) {
+	if (!VALID_CATEGORIES.has(w)) {
+		console.error(`Unknown category: ${w}`);
+		console.error(`Available: ${[...VALID_CATEGORIES].join(', ')}`);
+		process.exit(1);
 	}
 }
 
+const isTTY = process.stdout.isTTY === true;
+const isCustom = format === 'custom' || format === 'both';
+
 for (const { category, label, latex } of CASES) {
-	if (filter && !filter.has(category)) continue;
+	if (wanted.size > 0 && !wanted.has(category)) continue;
 	const expr = ineq(latex);
-	console.log(presentInequality(label, expr, 'college', verbose));
-	console.log(presentInequality(label, expr, 'lycee', verbose));
+	for (const level of ['college', 'lycee'] as const) {
+		const raw = presentInequality(label, expr, level, verbose, format);
+		let out = raw;
+		if (isCustom) out = prettifyOperators(out);
+		if (isTTY && isCustom) out = ansiColorize(out);
+		console.log(out);
+	}
 }

@@ -186,6 +186,78 @@ export const quadraticEquationDemo: QuestionTemplate = {
 };
 
 /**
+ * Demo question : `−2x ≥ 6` for collège (4e).
+ *
+ * Mode B declares a `linear-inequality` correction. The pipeline emits the
+ * college-level resolution with the **règle clé** : dividing by a negative
+ * coefficient flips the operator (≥ becomes ≤). Solution : x ≤ −3.
+ */
+export const linearInequalityFlipDemo: QuestionTemplate = {
+	id: 'demo-linear-inequality-flip-college',
+	title: 'Inéquation avec coefficient négatif (4e)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown('Résous ${{a}}x \\geq {{b}}$ : $?$'),
+			variables: [
+				{ name: 'a', expression: '-2' },
+				{ name: 'b', expression: '6' }
+			],
+			blanks: [{ expectedAnswer: 'x \\leq -3' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Bravo ! Attention au changement de sens.') },
+				generatedSteps: {
+					kind: 'linear-inequality',
+					inequality: '{{a}}*x>={{b}}',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['4'],
+	theme: 'Algèbre',
+	domain: 'Inéquations',
+	subdomain: 'Linéaires',
+	level: 2
+};
+
+/**
+ * Demo question : `2x + 1 < x + 5` for collège (4e).
+ *
+ * Mode B declares a `linear-inequality` correction with x on both sides
+ * (no flip). Solution : x < 4.
+ */
+export const linearInequalityTwoSidesDemo: QuestionTemplate = {
+	id: 'demo-linear-inequality-twosides-college',
+	title: 'Inéquation avec x des deux côtés (4e)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown('Résous ${{a}}x + {{b}} < x + {{c}}$ : $?$'),
+			variables: [
+				{ name: 'a', expression: '2' },
+				{ name: 'b', expression: '1' },
+				{ name: 'c', expression: '5' }
+			],
+			blanks: [{ expectedAnswer: 'x < 4' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Excellent !') },
+				generatedSteps: {
+					kind: 'linear-inequality',
+					inequality: '{{a}}*x+{{b}}<x+{{c}}',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['4'],
+	theme: 'Algèbre',
+	domain: 'Inéquations',
+	subdomain: 'Linéaires',
+	level: 1
+};
+
+/**
  * Demo question : `f(x) = sin(2x)` for Terminale spécialité maths.
  *
  * Mode B declares a `differentiate` correction with a composition. The
