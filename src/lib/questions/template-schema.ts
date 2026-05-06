@@ -166,11 +166,18 @@ const generatedStepsDifferentiate = z.object({
 	options: generatedStepsOptionsSchema.optional()
 });
 
+const generatedStepsLinearInequality = z.object({
+	kind: z.literal('linear-inequality'),
+	inequality: z.string().min(1),
+	options: generatedStepsOptionsSchema.optional()
+});
+
 export const generatedStepsSchema = z.discriminatedUnion('kind', [
 	generatedStepsArithmetic,
 	generatedStepsLinearEquation,
 	generatedStepsQuadraticEquation,
-	generatedStepsDifferentiate
+	generatedStepsDifferentiate,
+	generatedStepsLinearInequality
 ]);
 
 /**
@@ -314,11 +321,20 @@ const generatedStepsDifferentiateStrictZ = z
 	})
 	.strict();
 
+const generatedStepsLinearInequalityStrictZ = z
+	.object({
+		kind: z.literal('linear-inequality'),
+		inequality: z.string().min(1),
+		options: generatedStepsOptionsStrictZ.optional()
+	})
+	.strict();
+
 const generatedStepsStrictZ = z.discriminatedUnion('kind', [
 	generatedStepsArithmeticStrictZ,
 	generatedStepsLinearEquationStrictZ,
 	generatedStepsQuadraticEquationStrictZ,
-	generatedStepsDifferentiateStrictZ
+	generatedStepsDifferentiateStrictZ,
+	generatedStepsLinearInequalityStrictZ
 ]);
 
 const correctionStrictZ = z

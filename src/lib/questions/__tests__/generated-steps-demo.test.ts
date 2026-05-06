@@ -16,6 +16,8 @@ import {
 	differentiateCompositionDemo,
 	differentiatePolynomialDemo,
 	linearEquationDemo,
+	linearInequalityFlipDemo,
+	linearInequalityTwoSidesDemo,
 	quadraticEquationDemo
 } from './fixtures/generated-steps-demo';
 
@@ -118,6 +120,43 @@ describe('Mode B end-to-end demos', () => {
 		if (!result.success) return;
 
 		expect(result.instance.correction?.feedback?.correct).toBe('Bravo !');
+	});
+
+	it('4e linear inequality with flip — produces college steps with flipOperator note', () => {
+		const result = generateInstance(linearInequalityFlipDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		// At least one step's title contains the « changement de sens » note.
+		const allTitles = (function collect(arr: typeof steps): string[] {
+			const out: string[] = [];
+			for (const s of arr ?? []) {
+				out.push(s.title);
+				if (s.subSteps) out.push(...collect(s.subSteps));
+			}
+			return out;
+		})(steps);
+		expect(allTitles.some((t) => /changement de sens/i.test(t))).toBe(true);
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('4e linear inequality with x on both sides — produces college steps', () => {
+		const result = generateInstance(linearInequalityTwoSidesDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
 	});
 
 	it('Mode B declaration is preserved on ResolvedCorrection', () => {

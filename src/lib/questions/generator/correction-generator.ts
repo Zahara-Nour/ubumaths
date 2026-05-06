@@ -38,6 +38,12 @@ import {
 	PedagogicalQuadraticNotImplemented
 } from '$lib/mathAST/pedagogical-solve/quadratic';
 import { QuadraticEquationRenderer } from '$lib/mathAST/pedagogical-solve/quadratic-renderer';
+import {
+	generateLinearInequalitySteps,
+	UnsupportedInequalityDegree,
+	PedagogicalInequalityError
+} from '$lib/mathAST/pedagogical-solve/linear-inequality';
+import { InequalityNotSolvable } from '$lib/mathAST/solve/inequality/types';
 import type { LinearSchoolLevel, QuadraticSchoolLevel } from '$lib/mathAST/pedagogical-solve/types';
 
 import type { GeneratedStepsOptions, QuestionInstance } from '../types';
@@ -101,6 +107,14 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				renderedSteps = renderDifferentiate({
 					expression: generatedSteps.expression,
 					variable: generatedSteps.variable ?? 'x',
+					instance,
+					schoolLevel,
+					verbosity
+				});
+				break;
+			case 'linear-inequality':
+				renderedSteps = renderLinearInequality({
+					inequality: generatedSteps.inequality,
 					instance,
 					schoolLevel,
 					verbosity
@@ -239,6 +253,54 @@ function renderQuadraticEquation({
 	const renderer = new QuadraticEquationRenderer();
 	const renderOptions: PedagogicalRenderOptions = {
 		schoolLevel: quadraticLevel,
+		verbosity
+	};
+	return renderer.renderAll(steps, renderOptions);
+}
+
+interface LinearInequalityDispatch {
+	readonly inequality: string;
+	readonly instance: QuestionInstance;
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+}
+
+function renderLinearInequality({
+	inequality,
+	instance,
+	schoolLevel,
+	verbosity
+}: LinearInequalityDispatch): readonly RenderedStep[] | null {
+	const node = parseExpression(inequality, instance);
+	if (node === null) return null;
+
+	// Linear inequalities require a relation; reject anything else silently.
+	if (node.type !== 'relation') return null;
+	const relationNode = node as RelationNode;
+
+	// `LinearSchoolLevel` excludes 'primaire' (algebra not in primary curriculum).
+	// Bump primaire→college so a misplaced declaration still produces output.
+	const linearLevel: LinearSchoolLevel = schoolLevel === 'primaire' ? 'college' : schoolLevel;
+
+	let steps;
+	try {
+		steps = generateLinearInequalitySteps(relationNode, { level: linearLevel });
+	} catch (err) {
+		// V1 scope refusals (degree ≥ 2, parametric coefficients, equality) →
+		// silent fallback to Mode A. Anything else re-throws upstream.
+		if (
+			err instanceof UnsupportedInequalityDegree ||
+			err instanceof InequalityNotSolvable ||
+			err instanceof PedagogicalInequalityError
+		) {
+			return null;
+		}
+		throw err;
+	}
+
+	const renderer = new LinearEquationRenderer();
+	const renderOptions: PedagogicalRenderOptions = {
+		schoolLevel: linearLevel,
 		verbosity
 	};
 	return renderer.renderAll(steps, renderOptions);

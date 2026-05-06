@@ -19,6 +19,7 @@ import type {
 	SchoolLevel
 } from '../common/step-renderer-base';
 import { toLatex } from '../latex-generator';
+import { toCustom } from '../custom-generator';
 import type { MathNode } from '../types';
 import type { EquationStep, EquationOperation, LinearSchoolLevel } from './types';
 import { splitSide } from './linear';
@@ -558,4 +559,120 @@ function formatColoredAddend(operand: MathNode): string {
 		}
 	}
 	return `\\textcolor{blue}{+ ${fmt(operand)}}`;
+}
+
+// =============================================================================
+// Custom-syntax pretty printing (CLI / debug-friendly output)
+// =============================================================================
+
+/**
+ * Custom-syntax counterpart of `formatTransformationLines`. Returns a
+ * 2-line string (or `null` for info-only steps) using the ASCII / custom
+ * syntax produced by `toCustom`, with `@blue{…}` markers wrapping the
+ * operand of the operation. The CLI script post-processes those markers
+ * into ANSI color codes ; snapshot tests keep them literal.
+ *
+ * Symmetrical to the LaTeX form:
+ * - upper line uses `relBefore` (operation being applied);
+ * - lower line uses `relAfter` (simplified result, with the operator
+ *   already flipped when `flipOperator: true`).
+ */
+export function formatTransformationCustom(step: EquationStep): string | null {
+	const op = step.operation;
+	if (
+		!op ||
+		op.kind === 'identify-equation' ||
+		op.kind === 'read-solution' ||
+		op.kind === 'inequality-conclude-truth'
+	) {
+		return null;
+	}
+
+	const relBefore = step.before.type === 'relation' ? step.before.relation : '=';
+	const relAfter = step.after.type === 'relation' ? step.after.relation : '=';
+	const bL = step.before.type === 'relation' ? toCustom(step.before.left) : toCustom(step.before);
+	const bR = step.before.type === 'relation' ? toCustom(step.before.right) : '';
+	const aL = step.after.type === 'relation' ? toCustom(step.after.left) : toCustom(step.after);
+	const aR = step.after.type === 'relation' ? toCustom(step.after.right) : '';
+
+	// Composite ops: plain before/after with no highlight.
+	if (
+		op.kind === 'reduce-to-canonical' ||
+		op.kind === 'group-variable-terms' ||
+		op.kind === 'group-constants' ||
+		op.kind === 'simplify'
+	) {
+		const beforeEqualsAfter = bL === aL && bR === aR && relBefore === relAfter;
+		if (beforeEqualsAfter) return null;
+		return `${bL} ${relBefore} ${bR}\n${aL} ${relAfter} ${aR}`;
+	}
+
+	if (op.kind === 'transpose-terms') {
+		if (step.before.type !== 'relation') return null;
+		const variable = variableOf(step);
+		const leftSplit = splitSide(step.before.left, variable);
+		const rightSplit = splitSide(step.before.right, variable);
+		const leftRemainder = leftSplit.xPart !== null ? toCustom(leftSplit.xPart) : '0';
+		const rightRemainder = rightSplit.constPart !== null ? toCustom(rightSplit.constPart) : '0';
+		const leftAddend =
+			op.variableOperand !== null ? ' ' + customColoredAddend(op.variableOperand) : '';
+		const rightAddend =
+			op.constantOperand !== null ? ' ' + customColoredAddend(op.constantOperand) : '';
+		return `${leftRemainder}${leftAddend} ${relBefore} ${rightRemainder}${rightAddend}\n${aL} ${relAfter} ${aR}`;
+	}
+
+	if (op.kind === 'simplify-coefficient') {
+		// Single-line: simplified result only (operation implicit in title).
+		return `${aL} ${relAfter} ${aR}`;
+	}
+
+	// Atomic ops with a colored operand (add/subtract/multiply/divide).
+	let leftApplied: string;
+	let rightApplied: string;
+	switch (op.kind) {
+		case 'add-both-sides': {
+			const operand = toCustom(op.operand);
+			leftApplied = `${bL} @blue{+ ${operand}}`;
+			rightApplied = `${bR} @blue{+ ${operand}}`;
+			break;
+		}
+		case 'subtract-both-sides': {
+			const operand = toCustom(op.operand);
+			leftApplied = `${bL} @blue{- ${operand}}`;
+			rightApplied = `${bR} @blue{- ${operand}}`;
+			break;
+		}
+		case 'multiply-both-sides': {
+			const operand = toCustom(op.operand);
+			leftApplied = `@blue{${operand} *}(${bL})`;
+			rightApplied = `@blue{${operand} *}(${bR})`;
+			break;
+		}
+		case 'divide-both-sides': {
+			const operand = toCustom(op.operand);
+			leftApplied = `(${bL})/@blue{${operand}}`;
+			rightApplied = `(${bR})/@blue{${operand}}`;
+			break;
+		}
+		default:
+			return null;
+	}
+	return `${leftApplied} ${relBefore} ${rightApplied}\n${aL} ${relAfter} ${aR}`;
+}
+
+/**
+ * Custom-syntax variant of `formatColoredAddend`: emits `@blue{- X}` instead
+ * of `@blue{+ -X}` when the operand is negative.
+ */
+function customColoredAddend(operand: MathNode): string {
+	if (operand.type === 'opposite') {
+		return `@blue{- ${toCustom(operand.operand)}}`;
+	}
+	if (operand.type === 'number') {
+		const numericValue = parseFloat(operand.value);
+		if (numericValue < 0) {
+			return `@blue{- ${Math.abs(numericValue)}}`;
+		}
+	}
+	return `@blue{+ ${toCustom(operand)}}`;
 }
