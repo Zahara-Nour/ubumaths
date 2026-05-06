@@ -567,6 +567,13 @@ function formatSignTable(op: EquationOperation & { kind: 'quadratic-sign-table' 
 	const sortedRoots = sortRoots(op.roots);
 	const numRoots = sortedRoots.length;
 
+	// Defensive: a quadratic has at most 2 distinct roots. If a future caller
+	// passes more (degree-3 extension, internal bug), fall back to the row of
+	// roots without trying to mis-format a misdimensioned table.
+	if (numRoots > 2) {
+		return `\\text{tableau de signes (${numRoots} racines, hors V1)}`;
+	}
+
 	if (numRoots === 0) {
 		// Δ < 0 : single sign over all ℝ
 		return [

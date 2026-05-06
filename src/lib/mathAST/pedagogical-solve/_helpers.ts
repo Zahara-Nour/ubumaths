@@ -17,6 +17,7 @@ import type { Verbosity } from '../common/verbosity';
 import { add, divide, relation } from '../factory';
 import { denormalize, normalize } from '../normal';
 import { getNumericValue } from '../common/numeric';
+import { getVariables } from '../eval/substitute';
 import type { EquationOperation, EquationStep } from './types';
 
 // =============================================================================
@@ -122,6 +123,14 @@ export function isOne(node: MathNode): boolean {
 /** True when a MathNode is a number literal equal to 0. */
 export function isZero(node: MathNode): boolean {
 	return node.type === 'number' && node.value === '0';
+}
+
+/**
+ * True when a coefficient carries no symbolic variable. Used by the quadratic
+ * pipelines (equation + inequality) to reject parametric coefficients in V1.
+ */
+export function isConstantCoefficient(coeff: MathNode): boolean {
+	return getVariables(coeff).size === 0;
 }
 
 // =============================================================================

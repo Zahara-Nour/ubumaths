@@ -35,10 +35,9 @@ import type { Domain, IntervalSet } from '../domain/types';
 import type { EquationStep, QuadraticInequalityStepsOptions } from './types';
 import { STRATEGIES_QUADRATIC } from './types';
 import { number, opposite, relation, subtract } from '../factory';
-import { getVariables } from '../eval/substitute';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { extractQuadraticCoefficients } from '../solve/solvers/quadratic';
-import { canon, isZero, makeStep, renumberSteps } from './_helpers';
+import { canon, isConstantCoefficient, isZero, makeStep, renumberSteps } from './_helpers';
 import { toLatex } from '../latex-generator';
 import {
 	_buildStandardizeStep,
@@ -69,30 +68,6 @@ type InequalityOp = '<' | '>' | '<=' | '>=' | '!=';
 type DiscriminantSign = 'positive' | 'zero' | 'negative';
 
 const INEQUALITY_OPS: ReadonlySet<string> = new Set(['<', '>', '<=', '>=', '!=']);
-
-// =============================================================================
-// Validation helpers
-// =============================================================================
-
-/** True when a coefficient contains no variable other than the implicit unknown. */
-function isConstantCoefficient(coeff: MathNode): boolean {
-	return getVariables(coeff).size === 0;
-}
-
-/**
- * Reject expressions whose coefficient set carries a free variable other than
- * `variable`. Mirrors `linear-inequality.rejectIfParametric`.
- */
-function rejectIfParametric(expression: MathNode, variable: string): void {
-	const vars = getVariables(expression);
-	const free = [...vars].filter((v) => v !== variable);
-	if (free.length > 0) {
-		throw new InequalityNotSolvable(
-			`Coefficients paramétriques détectés: ${[...new Set(free)].join(', ')}`,
-			'Hors scope V1 — fournir des coefficients numériques.'
-		);
-	}
-}
 
 // =============================================================================
 // Sign-table + conclusion builders
@@ -299,9 +274,10 @@ export function generateQuadraticInequalitySteps(
 		});
 	}
 
-	// Standardize for degree probe and parametric check
+	// Standardize for the degree probe. Parametric coefficients are rejected
+	// by the per-coefficient check after `extractQuadraticCoefficients` below
+	// (mirrors the pattern in `quadratic.ts`).
 	const standardForm = canon(subtract(inequality.left, inequality.right));
-	rejectIfParametric(standardForm, variable);
 
 	// 3. Sanity check : degree must be 0, 1, or 2.
 	const degree = getPolynomialDegree(standardForm, variable);
@@ -378,7 +354,12 @@ export function generateQuadraticInequalitySteps(
 		current = after;
 	}
 
-	// Step 3: identify-coefficients
+	// Step 3: identify-coefficients.
+	// Note: GCD simplification (`factor-gcd`, present in the equation pipeline)
+	// is intentionally omitted here in V1. Inequalities and equations differ on
+	// the sign-flip rule when dividing by a negative GCD, and the sign table
+	// already canonicalises the sign analysis — so the extra step would add
+	// pedagogical noise without changing the solution.
 	result.push(_buildIdentifyCoefficientsStep(current, a, b, c, idGen));
 
 	// Step 4: compute-discriminant
