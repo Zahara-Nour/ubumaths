@@ -838,27 +838,63 @@ function formatConcludeRational(
  * `0` at numerator roots and `||` (double-bar, undefined) at denominator zeros.
  */
 function formatRationalSignTable(op: EquationOperation & { kind: 'rational-sign-table' }): string {
-	type Critical = { node: MathNode; value: number; isP: boolean; isQ: boolean };
+	type Critical = {
+		node: MathNode;
+		value: number;
+		isP: boolean;
+		isQ: boolean;
+		multP: number; // multiplicity in P (0 if not a P-root)
+		multQ: number; // multiplicity in Q (0 if not a Q-zero)
+	};
 
 	// 1. Collect critical points (numerator roots + denominator zeros), tagged.
+	//    Multiplicities run in parallel arrays alongside the roots/zeros lists
+	//    (computed by the pipeline). A double root (mult=2) is a tangent — the
+	//    polynomial's sign does not change across it ; the renderer skips the
+	//    sign flip for even multiplicities.
 	const criticals: Critical[] = [];
-	for (const r of op.numeratorRoots) {
+	let droppedCount = 0;
+	for (let i = 0; i < op.numeratorRoots.length; i++) {
+		const r = op.numeratorRoots[i];
 		const v = computeNumericValue(r);
-		if (v === null) continue;
-		criticals.push({ node: r, value: v, isP: true, isQ: false });
+		if (v === null) {
+			droppedCount++;
+			continue;
+		}
+		criticals.push({
+			node: r,
+			value: v,
+			isP: true,
+			isQ: false,
+			multP: op.numeratorMultiplicities[i] ?? 1,
+			multQ: 0
+		});
 	}
-	for (const z of op.denominatorZeros) {
+	for (let i = 0; i < op.denominatorZeros.length; i++) {
+		const z = op.denominatorZeros[i];
 		const v = computeNumericValue(z);
-		if (v === null) continue;
+		if (v === null) {
+			droppedCount++;
+			continue;
+		}
+		const m = op.denominatorMultiplicities[i] ?? 1;
 		// Merge if a root and a zero coincide (rare but possible after canon).
 		const same = criticals.find((c) => Math.abs(c.value - v) < 1e-9);
 		if (same) {
 			same.isQ = true;
+			same.multQ = m;
 		} else {
-			criticals.push({ node: z, value: v, isP: false, isQ: true });
+			criticals.push({ node: z, value: v, isP: false, isQ: true, multP: 0, multQ: m });
 		}
 	}
 	criticals.sort((a, b) => a.value - b.value);
+
+	// Defensive : if any critical point couldn't be evaluated to a numeric value
+	// (e.g. parametric roots that slipped past the upstream guards), the table
+	// would be structurally wrong. Render a sentinel instead.
+	if (droppedCount > 0) {
+		return `\\text{tableau de signes (${droppedCount} valeurs symboliques non évaluables, hors V1)}`;
+	}
 
 	// 2. Determine starting sign (at -∞) for P and Q.
 	// `op.degP`/`op.degQ` are the actual polynomial degrees, distinct from the
@@ -900,9 +936,10 @@ function formatRationalSignTable(op: EquationOperation & { kind: 'rational-sign-
 		if (c.isQ) fracRow.push('||');
 		else if (c.isP) fracRow.push('0');
 		else fracRow.push('');
-		// Flip signs as we cross the critical point
-		if (c.isP) pSign = flip(pSign);
-		if (c.isQ) qSign = flip(qSign);
+		// Flip signs as we cross the critical point — only at odd-multiplicity
+		// roots/zeros (double roots are tangents and don't change sign).
+		if (c.isP && c.multP % 2 === 1) pSign = flip(pSign);
+		if (c.isQ && c.multQ % 2 === 1) qSign = flip(qSign);
 	}
 	// Final interval to +∞
 	xRow.push('');
