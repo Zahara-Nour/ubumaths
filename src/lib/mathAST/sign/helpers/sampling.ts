@@ -64,8 +64,33 @@ const DEFAULT_SAMPLE_COUNT = 5;
 /** Default tolerance for considering a value as zero */
 const DEFAULT_TOLERANCE = 1e-10;
 
-/** Maximum numeric value for sampling bounds */
-const MAX_SAMPLE_BOUND = 1e6;
+/**
+ * Maximum numeric value used as a stand-in for ±∞ when generating sample
+ * points on unbounded intervals.
+ *
+ * Set to `100` (was `1e6`) — the reduction lets sampling work for two
+ * common cases that the larger bound silently broke :
+ *
+ * - **Exponentials** : `e^1e6` overflows to `Infinity`, so `signFromNumber`
+ *   skipped every sample, leaving `e^x − 1 > 0` on `]0, +∞[` reported as
+ *   `'unknown'`. At `100`, `e^100 ≈ 2.7e43` (well within `Number` range)
+ *   so sign determination succeeds. — see also the upstream classifier
+ *   fix in `analysis/expression-classify.ts:isEulerSuperscript`.
+ *
+ * - **Rationals on unbounded tails** : `1/(x · (x−1))` evaluated at
+ *   `x = 1e6` gives `≈ 1e-12 < tolerance (1e-10)` and gets classified as
+ *   `'zero'` (incorrect: the function is `+0` but never reaches zero on
+ *   `]1, +∞[`). At `x = 100`, the value is `≈ 1e-4`, comfortably above
+ *   tolerance.
+ *
+ * Trade-off : extreme high-degree polynomials like `x^200` overflow at
+ * `x = 100` (`100^200 ≈ 1e400 > Number.MAX_VALUE`). For sign analysis
+ * between zeros that's still fine (the sign is determined by ANY finite
+ * sample). If a future use case needs larger bounds, make this adaptive
+ * to the expression (e.g. detect transcendentals → small bound, else
+ * keep larger).
+ */
+const MAX_SAMPLE_BOUND = 100;
 
 /** Minimum distance from bounds for sampling */
 const BOUNDARY_MARGIN = 0.001;
