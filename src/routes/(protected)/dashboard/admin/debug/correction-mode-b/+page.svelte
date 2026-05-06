@@ -19,7 +19,9 @@
 		linearEquationDemo,
 		linearInequalityFlipDemo,
 		linearInequalityTwoSidesDemo,
-		quadraticEquationDemo
+		quadraticEquationDemo,
+		quadraticInequalityClassicDemo,
+		quadraticInequalityNegativeADemo
 	} from '$lib/questions/__tests__/fixtures/generated-steps-demo';
 	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
@@ -36,6 +38,8 @@
 	const inequalityFlipResult = generateInstance(linearInequalityFlipDemo, 1);
 	const inequalityTwoSidesResult = generateInstance(linearInequalityTwoSidesDemo, 1);
 	const quadraticResult = generateInstance(quadraticEquationDemo, 1);
+	const quadraticIneqClassicResult = generateInstance(quadraticInequalityClassicDemo, 1);
+	const quadraticIneqNegativeAResult = generateInstance(quadraticInequalityNegativeADemo, 1);
 	const differentiatePolyResult = generateInstance(differentiatePolynomialDemo, 1);
 	const differentiateCompResult = generateInstance(differentiateCompositionDemo, 1);
 
@@ -71,6 +75,10 @@
 	const inequalityTwoSidesIncorrect = buildAnswerResult(inequalityTwoSidesResult, 1, false);
 	const quadraticCorrect = buildAnswerResult(quadraticResult, 0, true);
 	const quadraticIncorrect = buildAnswerResult(quadraticResult, 1, false);
+	const quadraticIneqClassicCorrect = buildAnswerResult(quadraticIneqClassicResult, 0, true);
+	const quadraticIneqClassicIncorrect = buildAnswerResult(quadraticIneqClassicResult, 1, false);
+	const quadraticIneqNegativeACorrect = buildAnswerResult(quadraticIneqNegativeAResult, 0, true);
+	const quadraticIneqNegativeAIncorrect = buildAnswerResult(quadraticIneqNegativeAResult, 1, false);
 	const differentiatePolyCorrect = buildAnswerResult(differentiatePolyResult, 0, true);
 	const differentiatePolyIncorrect = buildAnswerResult(differentiatePolyResult, 1, false);
 	const differentiateCompCorrect = buildAnswerResult(differentiateCompResult, 0, true);
@@ -99,6 +107,16 @@
 	);
 	const quadraticSteps = $derived(
 		quadraticResult.success ? quadraticResult.instance.correction?._renderedSteps : undefined
+	);
+	const quadraticIneqClassicSteps = $derived(
+		quadraticIneqClassicResult.success
+			? quadraticIneqClassicResult.instance.correction?._renderedSteps
+			: undefined
+	);
+	const quadraticIneqNegativeASteps = $derived(
+		quadraticIneqNegativeAResult.success
+			? quadraticIneqNegativeAResult.instance.correction?._renderedSteps
+			: undefined
 	);
 	const differentiatePolySteps = $derived(
 		differentiatePolyResult.success
@@ -179,6 +197,26 @@
 				{/if}
 			</div>
 			<div>
+				<span class="font-mono">quadraticInequalityClassicDemo</span> :
+				{#if quadraticIneqClassicResult.success}
+					<span class="text-green-600"
+						>✓ {quadraticIneqClassicSteps?.length ?? 0} étapes générées</span
+					>
+				{:else}
+					<span class="text-red-600">✗ {quadraticIneqClassicResult.errors.join(', ')}</span>
+				{/if}
+			</div>
+			<div>
+				<span class="font-mono">quadraticInequalityNegativeADemo</span> :
+				{#if quadraticIneqNegativeAResult.success}
+					<span class="text-green-600"
+						>✓ {quadraticIneqNegativeASteps?.length ?? 0} étapes générées</span
+					>
+				{:else}
+					<span class="text-red-600">✗ {quadraticIneqNegativeAResult.errors.join(', ')}</span>
+				{/if}
+			</div>
+			<div>
 				<span class="font-mono">differentiatePolynomialDemo</span> :
 				{#if differentiatePolyResult.success}
 					<span class="text-green-600"
@@ -209,6 +247,8 @@
 							inequalityFlip: inequalityFlipSteps,
 							inequalityTwoSides: inequalityTwoSidesSteps,
 							quadratic: quadraticSteps,
+							quadraticInequalityClassic: quadraticIneqClassicSteps,
+							quadraticInequalityNegativeA: quadraticIneqNegativeASteps,
 							differentiatePolynomial: differentiatePolySteps,
 							differentiateComposition: differentiateCompSteps
 						},
@@ -291,6 +331,32 @@
 				<Card.Content>
 					{#if quadraticSteps}
 						<GeneratedStepsCorrection steps={quadraticSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>1ère spé — inéquation du second degré (Δ &gt; 0)</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if quadraticIneqClassicSteps}
+						<GeneratedStepsCorrection steps={quadraticIneqClassicSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>1ère spé — inéquation du second degré (a &lt; 0)</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if quadraticIneqNegativeASteps}
+						<GeneratedStepsCorrection steps={quadraticIneqNegativeASteps} />
 					{:else}
 						<p class="text-muted-foreground">Aucune étape générée.</p>
 					{/if}
@@ -399,28 +465,76 @@
 					<CorrectionCard answerResult={quadraticIncorrect} questionNumber={10} size="md" />
 				</div>
 			{/if}
+			{#if quadraticIneqClassicCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">
+						1ère spé — inéquation 2nd degré (Δ &gt; 0) — correcte
+					</h3>
+					<CorrectionCard
+						answerResult={quadraticIneqClassicCorrect}
+						questionNumber={11}
+						size="md"
+					/>
+				</div>
+			{/if}
+			{#if quadraticIneqClassicIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">
+						1ère spé — inéquation 2nd degré (Δ &gt; 0) — incorrecte
+					</h3>
+					<CorrectionCard
+						answerResult={quadraticIneqClassicIncorrect}
+						questionNumber={12}
+						size="md"
+					/>
+				</div>
+			{/if}
+			{#if quadraticIneqNegativeACorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">
+						1ère spé — inéquation 2nd degré (a &lt; 0) — correcte
+					</h3>
+					<CorrectionCard
+						answerResult={quadraticIneqNegativeACorrect}
+						questionNumber={13}
+						size="md"
+					/>
+				</div>
+			{/if}
+			{#if quadraticIneqNegativeAIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">
+						1ère spé — inéquation 2nd degré (a &lt; 0) — incorrecte
+					</h3>
+					<CorrectionCard
+						answerResult={quadraticIneqNegativeAIncorrect}
+						questionNumber={14}
+						size="md"
+					/>
+				</div>
+			{/if}
 			{#if differentiatePolyCorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">1ère spé — réponse correcte (polynôme)</h3>
-					<CorrectionCard answerResult={differentiatePolyCorrect} questionNumber={11} size="md" />
+					<CorrectionCard answerResult={differentiatePolyCorrect} questionNumber={15} size="md" />
 				</div>
 			{/if}
 			{#if differentiatePolyIncorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">1ère spé — réponse incorrecte (polynôme)</h3>
-					<CorrectionCard answerResult={differentiatePolyIncorrect} questionNumber={12} size="md" />
+					<CorrectionCard answerResult={differentiatePolyIncorrect} questionNumber={16} size="md" />
 				</div>
 			{/if}
 			{#if differentiateCompCorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">Terminale spé — réponse correcte (composition)</h3>
-					<CorrectionCard answerResult={differentiateCompCorrect} questionNumber={13} size="md" />
+					<CorrectionCard answerResult={differentiateCompCorrect} questionNumber={17} size="md" />
 				</div>
 			{/if}
 			{#if differentiateCompIncorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">Terminale spé — réponse incorrecte (composition)</h3>
-					<CorrectionCard answerResult={differentiateCompIncorrect} questionNumber={14} size="md" />
+					<CorrectionCard answerResult={differentiateCompIncorrect} questionNumber={18} size="md" />
 				</div>
 			{/if}
 		</div>

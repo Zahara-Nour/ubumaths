@@ -260,6 +260,38 @@ export type EquationOperation =
 	| {
 			readonly kind: 'inequality-conclude-truth';
 			readonly truth: boolean;
+	  }
+
+	// =============================================================================
+	// Quadratic inequality pipeline kinds (palier 2b)
+	// =============================================================================
+	/**
+	 * Sign table for a quadratic polynomial `ax² + bx + c`.
+	 *
+	 * Carries the structural data needed to render the table :
+	 * - `a` — coefficient dominant (drives the sign at ±∞)
+	 * - `roots` — 0, 1, or 2 exact roots (corresponding to Δ < 0, Δ = 0, Δ > 0)
+	 * - `variable` — the unknown name (for column header)
+	 *
+	 * The renderer turns this into a `\begin{array}{c|...}` LaTeX block (lycée)
+	 * and an ASCII table for CLI output.
+	 */
+	| {
+			readonly kind: 'quadratic-sign-table';
+			readonly a: MathNode;
+			readonly roots: readonly MathNode[];
+			readonly variable: string;
+	  }
+	/**
+	 * Final step of a quadratic inequality : reads the solution set from
+	 * the sign table and the operator. Carries both a human-readable
+	 * description (`"]2, 3["`) and the structural `Domain` (from
+	 * `solveInequality`, palier 1) so consumers can post-process.
+	 */
+	| {
+			readonly kind: 'inequality-conclude-quadratic';
+			readonly relation: '<' | '>' | '<=' | '>=' | '!=';
+			readonly solutionDescription: string;
 	  };
 
 // =============================================================================
@@ -394,6 +426,16 @@ export interface QuadraticEquationStepsOptions {
 	 */
 	readonly includeSubSteps?: boolean;
 	/** Variable to solve for. Auto-detected if omitted. */
+	readonly variable?: string;
+}
+
+/**
+ * Options for `generateQuadraticInequalitySteps` (palier 2b). Same shape as
+ * `QuadraticEquationStepsOptions` — reuses the `STRATEGIES_QUADRATIC` table.
+ */
+export interface QuadraticInequalityStepsOptions {
+	readonly level: QuadraticSchoolLevel;
+	readonly includeSubSteps?: boolean;
 	readonly variable?: string;
 }
 

@@ -18,7 +18,9 @@ import {
 	linearEquationDemo,
 	linearInequalityFlipDemo,
 	linearInequalityTwoSidesDemo,
-	quadraticEquationDemo
+	quadraticEquationDemo,
+	quadraticInequalityClassicDemo,
+	quadraticInequalityNegativeADemo
 } from './fixtures/generated-steps-demo';
 
 /** Compact serializable view of a RenderedStep tree (no implementation noise). */
@@ -220,6 +222,53 @@ describe('Mode B end-to-end demos', () => {
 			return out;
 		})(steps);
 		expect(allSchoolLevels.every((lvl) => lvl === 'lycee')).toBe(true);
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('1ère spécialité quadratic inequality — produces lycee steps with sign table + conclusion', () => {
+		const result = generateInstance(quadraticInequalityClassicDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('compute-discriminant');
+		expect(rules).toContain('discriminant-positive');
+		expect(rules).toContain('apply-quadratic-formula');
+		expect(rules).toContain('quadratic-sign-table');
+		expect(rules).toContain('inequality-conclude-quadratic');
+
+		const allSchoolLevels = (function collect(arr: typeof steps): string[] {
+			const out: string[] = [];
+			for (const s of arr ?? []) {
+				if (s.schoolLevel) out.push(s.schoolLevel);
+				if (s.subSteps) out.push(...collect(s.subSteps));
+			}
+			return out;
+		})(steps);
+		expect(allSchoolLevels.every((lvl) => lvl === 'lycee')).toBe(true);
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('1ère spécialité quadratic inequality with a < 0 — produces lycee steps', () => {
+		const result = generateInstance(quadraticInequalityNegativeADemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('quadratic-sign-table');
+		expect(rules).toContain('inequality-conclude-quadratic');
 
 		const summary = steps!.map(summarize);
 		expect(summary).toMatchSnapshot();

@@ -993,6 +993,15 @@ export type GeneratedSteps =
 			readonly options?: GeneratedStepsOptions;
 	  }
 	| {
+			readonly kind: 'quadratic-inequality';
+			/**
+			 * Template quadratic inequality — supports `{{a}}`, `{{eval:...}}`, etc.
+			 * Calls `pedagogical-solve/quadratic-inequality`.
+			 */
+			readonly inequality: string;
+			readonly options?: GeneratedStepsOptions;
+	  }
+	| {
 			readonly kind: 'differentiate';
 			/** Template expression of the function `f(x)` to differentiate. */
 			readonly expression: string;

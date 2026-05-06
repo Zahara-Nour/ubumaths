@@ -43,6 +43,7 @@ import {
 	UnsupportedInequalityDegree,
 	PedagogicalInequalityError
 } from '$lib/mathAST/pedagogical-solve/linear-inequality';
+import { generateQuadraticInequalitySteps } from '$lib/mathAST/pedagogical-solve/quadratic-inequality';
 import { InequalityNotSolvable } from '$lib/mathAST/solve/inequality/types';
 import type { LinearSchoolLevel, QuadraticSchoolLevel } from '$lib/mathAST/pedagogical-solve/types';
 
@@ -114,6 +115,14 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				break;
 			case 'linear-inequality':
 				renderedSteps = renderLinearInequality({
+					inequality: generatedSteps.inequality,
+					instance,
+					schoolLevel,
+					verbosity
+				});
+				break;
+			case 'quadratic-inequality':
+				renderedSteps = renderQuadraticInequality({
 					inequality: generatedSteps.inequality,
 					instance,
 					schoolLevel,
@@ -301,6 +310,55 @@ function renderLinearInequality({
 	const renderer = new LinearEquationRenderer();
 	const renderOptions: PedagogicalRenderOptions = {
 		schoolLevel: linearLevel,
+		verbosity
+	};
+	return renderer.renderAll(steps, renderOptions);
+}
+
+interface QuadraticInequalityDispatch {
+	readonly inequality: string;
+	readonly instance: QuestionInstance;
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+}
+
+function renderQuadraticInequality({
+	inequality,
+	instance,
+	schoolLevel,
+	verbosity
+}: QuadraticInequalityDispatch): readonly RenderedStep[] | null {
+	const node = parseExpression(inequality, instance);
+	if (node === null) return null;
+
+	if (node.type !== 'relation') return null;
+	const relationNode = node as RelationNode;
+
+	// `QuadraticSchoolLevel` excludes 'primaire' AND 'college'. Bump those levels
+	// to 'lycee' so a misplaced declaration still produces output.
+	const quadraticLevel: QuadraticSchoolLevel =
+		schoolLevel === 'primaire' || schoolLevel === 'college' ? 'lycee' : schoolLevel;
+
+	let steps;
+	try {
+		steps = generateQuadraticInequalitySteps(relationNode, { level: quadraticLevel });
+	} catch (err) {
+		// V1 scope refusals (degree ≥ 3, parametric coefficients, equality,
+		// quadratic-not-implemented) → silent fallback to Mode A.
+		if (
+			err instanceof UnsupportedInequalityDegree ||
+			err instanceof InequalityNotSolvable ||
+			err instanceof PedagogicalInequalityError ||
+			err instanceof PedagogicalQuadraticNotImplemented
+		) {
+			return null;
+		}
+		throw err;
+	}
+
+	const renderer = new QuadraticEquationRenderer();
+	const renderOptions: PedagogicalRenderOptions = {
+		schoolLevel: quadraticLevel,
 		verbosity
 	};
 	return renderer.renderAll(steps, renderOptions);
