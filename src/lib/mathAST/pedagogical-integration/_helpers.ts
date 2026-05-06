@@ -56,7 +56,10 @@ export function createContext(
 		variable: resolvedVariable,
 		level: options.level,
 		strategy: STRATEGIES_INTEGRATION[options.level],
-		maxRecursionDepth: options.maxRecursionDepth ?? 5,
+		// V1.1 — bumped from 5 to 10 to support tabular IPP (∫x^n·e^x dx for
+		// n up to ~5). Cyclic IPP itself only needs depth ~3 ; the bump is
+		// purely for sequential IPPs that decrement the polynomial degree.
+		maxRecursionDepth: options.maxRecursionDepth ?? 10,
 		currentDepth: 0,
 		signal: options.signal,
 		startTime: Date.now(),
@@ -171,6 +174,8 @@ function defaultDescription(rule: PedagogicalIntegrationRule): string {
 			return 'Choix de u et dv';
 		case 'apply-parts-formula':
 			return 'Formule de l’intégration par parties';
+		case 'apply-cyclic-ipp':
+			return 'Résolution algébrique (IPP cyclique)';
 		case 'add-constant':
 			return "Constante d'intégration";
 		case 'simplify-result':
@@ -789,6 +794,155 @@ function isTranscendentalOfVariable(node: MathNode, variable: string): boolean {
 		}
 	}
 	return false;
+}
+
+// =============================================================================
+// Cyclic IPP detection (V1.1)
+// =============================================================================
+
+/**
+ * Detect a cyclic-IPP pattern : `∫ e^(αx) · sin(βx) dx` or
+ * `∫ e^(αx) · cos(βx) dx`. After two integration-by-parts the integrand
+ * reappears (up to a constant factor), so the pedagogical narrative resolves
+ * the algebraic equation `I = expression - k·I → I = expression / (1 - k)`
+ * directly.
+ *
+ * Returns `true` when the integrand is `f · g` with one factor an exponential
+ * (function form `exp(...)` or `superscript(e, ...)`) and the other a
+ * sine/cosine, both depending on the variable. The actual u, v, du, v', du'
+ * computation lives in `integrateCyclicIPP` (pipeline.ts) — this detector
+ * only gates the dispatcher.
+ */
+export function isCyclicIppPattern(integrand: MathNode, variable: string): boolean {
+	const { inner } = unwrapSign(integrand);
+	if (inner.type !== 'multiplication') return false;
+	const { left, right } = inner;
+	const leftExp = isExpOfVariableExpr(left, variable);
+	const rightExp = isExpOfVariableExpr(right, variable);
+	const leftTrig = isSinOrCosOfVariableExpr(left, variable);
+	const rightTrig = isSinOrCosOfVariableExpr(right, variable);
+	return (leftExp && rightTrig) || (rightExp && leftTrig);
+}
+
+/**
+ * Strip a leading `opposite(...)` wrapper, returning the sign and the
+ * underlying expression. Used by cyclic IPP : after the first IPP, the new
+ * integrand is `v · du` which often comes back wrapped in `opposite` (since
+ * `v = -cos(x)` for instance).
+ */
+export function unwrapSign(node: MathNode): { sign: 1 | -1; inner: MathNode } {
+	if (node.type === 'opposite') return { sign: -1, inner: node.operand };
+	return { sign: 1, inner: node };
+}
+
+/**
+ * Pick out the exponential factor of a cyclic-IPP integrand. Looks through
+ * a leading opposite. Caller MUST have already passed `isCyclicIppPattern`.
+ */
+export function pickExpFactor(integrand: MathNode, variable: string): MathNode {
+	const { inner } = unwrapSign(integrand);
+	if (inner.type !== 'multiplication') {
+		throw new Error('pickExpFactor: not a multiplication after unwrap');
+	}
+	return isExpOfVariableExpr(inner.left, variable) ? inner.left : inner.right;
+}
+
+/**
+ * Pick out the trig (sin/cos) factor. Looks through a leading opposite.
+ */
+export function pickTrigFactor(integrand: MathNode, variable: string): MathNode {
+	const { inner } = unwrapSign(integrand);
+	if (inner.type !== 'multiplication') {
+		throw new Error('pickTrigFactor: not a multiplication after unwrap');
+	}
+	return isSinOrCosOfVariableExpr(inner.left, variable) ? inner.left : inner.right;
+}
+
+function isExpOfVariableExpr(node: MathNode, variable: string): boolean {
+	if (!containsVariable(node, variable)) return false;
+	if (node.type === 'function' && node.name === 'exp' && node.args.length === 1) {
+		return true;
+	}
+	if (node.type === 'superscript') {
+		const base = node.base;
+		if (
+			(base.type === 'constant' && base.constant === 'euler') ||
+			(base.type === 'variable' && base.name === 'e')
+		) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function isSinOrCosOfVariableExpr(node: MathNode, variable: string): boolean {
+	if (
+		node.type === 'function' &&
+		(node.name === 'sin' || node.name === 'cos') &&
+		node.args.length === 1 &&
+		!node.power &&
+		!node.isInverse
+	) {
+		return containsVariable(node.args[0], variable);
+	}
+	return false;
+}
+
+// =============================================================================
+// arctan / arcsin detection (V1.1, supérieur)
+// =============================================================================
+
+/**
+ * Detect `1/(1+x²)` — a candidate for `apply-known-primitive` returning
+ * `arctan(x)`. Returns the recognized form name or `null`.
+ *
+ * V1.1 supports only the unit form `1/(1+x²)`. The general form
+ * `1/(a²+x²) → (1/a)·arctan(x/a)` is V2.
+ */
+export function matchArctanForm(
+	integrand: MathNode,
+	variable: string
+): { kind: 'arctan-unit' } | null {
+	if (integrand.type !== 'division') return null;
+	if (!isOne(integrand.numerator)) return null;
+	const denom = integrand.denominator;
+	if (denom.type !== 'addition') return null;
+	const { left, right } = denom;
+	const isLeftOne = isOne(left);
+	const isRightOne = isOne(right);
+	if (!isLeftOne && !isRightOne) return null;
+	const xSquared = isLeftOne ? right : left;
+	if (xSquared.type !== 'superscript') return null;
+	if (!isExactVariable(xSquared.base, variable)) return null;
+	const n = getNumericValue(xSquared.superscript);
+	if (n !== 2) return null;
+	return { kind: 'arctan-unit' };
+}
+
+/**
+ * Detect `1/√(1-x²)` — a candidate for `apply-known-primitive` returning
+ * `arcsin(x)`. Returns the recognized form name or `null`.
+ *
+ * V1.1 supports only the unit form `1/√(1-x²)`. The general form
+ * `1/√(a²-x²) → arcsin(x/a)` is V2.
+ */
+export function matchArcsinForm(
+	integrand: MathNode,
+	variable: string
+): { kind: 'arcsin-unit' } | null {
+	if (integrand.type !== 'division') return null;
+	if (!isOne(integrand.numerator)) return null;
+	const denom = integrand.denominator;
+	if (denom.type !== 'function' || denom.name !== 'sqrt' || denom.args.length !== 1) return null;
+	const inside = denom.args[0];
+	if (inside.type !== 'subtraction') return null;
+	if (!isOne(inside.left)) return null;
+	const xSquared = inside.right;
+	if (xSquared.type !== 'superscript') return null;
+	if (!isExactVariable(xSquared.base, variable)) return null;
+	const n = getNumericValue(xSquared.superscript);
+	if (n !== 2) return null;
+	return { kind: 'arcsin-unit' };
 }
 
 // =============================================================================

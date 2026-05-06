@@ -56,16 +56,24 @@ import {
 	containsVariable,
 	createContext,
 	flattenSum,
+	isCyclicIppPattern,
 	isExactVariable,
 	isReciprocalOfVariable,
+	matchArcsinForm,
+	matchArctanForm,
 	matchKnownPrimitive,
 	matchPowerOfVariable,
+	pickExpFactor,
+	pickTrigFactor,
 	tryDetectComposite,
 	tryDetectParts,
 	tryExtractConstant,
+	unwrapSign,
 	withDeeperRecursion
 } from './_helpers';
 import type { CompositeMatch, DispatchContext, PartsMatch } from './_helpers';
+import { findProportionalityConstant } from '../integration/patterns';
+import { arcsinRule, arctanRule } from '../integration/rules';
 import { PedagogicalIntegrationNotImplemented } from './types';
 import type {
 	IntegrationBindings,
@@ -428,6 +436,19 @@ function integrateNode(integrand: MathNode, ctx: DispatchContext): DispatchResul
 		return integrateKnownPrimitive(integrand, knownFn, ctx);
 	}
 
+	// 4b. Inverse-trig primitives (V1.1, supérieur uniquement) :
+	//     `1/(1+x²) → arctan(x)` and `1/√(1-x²) → arcsin(x)`.
+	if (ctx.strategy.enableInverseTrig) {
+		const arctanForm = matchArctanForm(integrand, ctx.variable);
+		if (arctanForm) {
+			return integrateInverseTrig(integrand, 'arctan', ctx);
+		}
+		const arcsinForm = matchArcsinForm(integrand, ctx.variable);
+		if (arcsinForm) {
+			return integrateInverseTrig(integrand, 'arcsin', ctx);
+		}
+	}
+
 	// 5. Composite forms (u'·f(u)).
 	if (ctx.strategy.enableComposite) {
 		const composite = tryDetectComposite(integrand, ctx.variable);
@@ -462,7 +483,16 @@ function integrateNode(integrand: MathNode, ctx: DispatchContext): DispatchResul
 	// The four `identify-substitution` / `compute-du` / `apply-substitution` /
 	// `substitute-back` rules remain in the type union for V2 reach.
 
-	// 9. Integration by parts (lycée Tle spé + sup).
+	// 9a. Cyclic IPP (V1.1) — `∫e^(αx)·sin(βx) dx`, `∫e^(αx)·cos(βx) dx`.
+	//     MUST be tried BEFORE regular IPP : the LIATE template (Template B
+	//     polynomial × transcendental) doesn't match exp×sin (neither factor
+	//     is polynomial), so regular IPP would never fire ; but the cyclic
+	//     pattern detector handles the case via algebraic resolution.
+	if (ctx.strategy.enableCyclicParts && isCyclicIppPattern(integrand, ctx.variable)) {
+		return integrateCyclicIPP(integrand, ctx);
+	}
+
+	// 9b. Integration by parts (lycée Tle spé + sup).
 	if (ctx.strategy.enablePartsSimple) {
 		const parts = tryDetectParts(integrand, ctx.variable);
 		if (parts) {
@@ -776,6 +806,182 @@ function integrateByParts(
 		subSteps: vduSub.steps
 	});
 	return { antiderivative, steps: [identify, choose, apply] };
+}
+
+/**
+ * V1.1 — `∫1/(1+x²) dx = arctan(x)` and `∫1/√(1-x²) dx = arcsin(x)`. Sup
+ * only. Single-step `apply-known-primitive` with the inverse-trig
+ * antiderivative computed via `arctanRule` / `arcsinRule` from
+ * `integration/rules.ts`.
+ */
+function integrateInverseTrig(
+	integrand: MathNode,
+	kind: 'arctan' | 'arcsin',
+	ctx: DispatchContext
+): DispatchResult {
+	const arg = variableNode(ctx.variable);
+	const antiderivative = kind === 'arctan' ? arctanRule(arg) : arcsinRule(arg);
+	const step = buildStep(ctx, {
+		rule: 'apply-known-primitive',
+		before: integrand,
+		after: antiderivative,
+		variable: ctx.variable
+	});
+	return { antiderivative, steps: [step] };
+}
+
+/**
+ * V1.1 — Cyclic IPP for `∫e^(αx)·sin(βx) dx` and `∫e^(αx)·cos(βx) dx`.
+ *
+ * After two integration-by-parts steps, the integrand reappears (up to a
+ * constant factor `k`). We resolve the algebraic equation directly :
+ *
+ *     I = u₀·v₀ - I₁
+ *     I₁ = u₁·v₁ - I₂
+ *     I₂ = k · I  (the cycle)
+ *
+ *   ⇒ I = u₀·v₀ - (u₁·v₁ - k·I) = u₀·v₀ - u₁·v₁ + k·I
+ *   ⇒ I·(1 - k) = u₀·v₀ - u₁·v₁
+ *   ⇒ I = (u₀·v₀ - u₁·v₁) / (1 - k)
+ *
+ * For the canonical `∫e^x·sin(x) dx` case : k = -1, denominator = 2,
+ * I = e^x·(sin(x) - cos(x)) / 2.
+ *
+ * Pedagogical narrative (5 steps) :
+ *   1. `identify-parts` — « On utilise l'IPP cyclique. »
+ *   2. `choose-u-dv` — u₀, dv₀, du₀, v₀
+ *   3. `apply-parts-formula` — IPP1 produces uv₀ + ∫f₁·dx
+ *   4. `choose-u-dv` (2nd) — u₁, dv₁, du₁, v₁
+ *   5. `apply-cyclic-ipp` — algebraic resolution
+ */
+function integrateCyclicIPP(integrand: MathNode, ctx: DispatchContext): DispatchResult {
+	// Pick u₀ = exp factor, dv₀ = trig factor (LIATE-friendly).
+	const u0 = pickExpFactor(integrand, ctx.variable);
+	const dv0 = pickTrigFactor(integrand, ctx.variable);
+
+	let du0: MathNode;
+	try {
+		du0 = differentiate(u0, { variable: ctx.variable });
+	} catch {
+		throw new PedagogicalIntegrationNotImplemented(integrand, 'cyclic IPP: cannot compute du₀');
+	}
+	const recurCtx = withDeeperRecursion(ctx);
+	let v0Sub: DispatchResult;
+	try {
+		v0Sub = integrateNode(dv0, recurCtx);
+	} catch {
+		throw new PedagogicalIntegrationNotImplemented(integrand, 'cyclic IPP: cannot integrate dv₀');
+	}
+	const v0 = v0Sub.antiderivative;
+
+	// Inner integrand f₁ = v₀ · du₀, simplified.
+	const f1Raw = simplifiedMultiply(v0, du0);
+	let f1 = f1Raw;
+	try {
+		f1 = denormalize(normalize(f1Raw));
+	} catch {
+		/* keep raw */
+	}
+
+	// f₁ may come back as `opposite(multiplication(...))` (because v₀ = -cos
+	// has propagated its sign). Extract the sign factor c₁ and the clean
+	// product g₁ for the second IPP.
+	const { sign: c1, inner: g1 } = unwrapSign(f1);
+	if (g1.type !== 'multiplication' || !isCyclicIppPattern(g1, ctx.variable)) {
+		throw new PedagogicalIntegrationNotImplemented(
+			integrand,
+			'cyclic IPP: inner integrand f₁ is not a cyclic pattern'
+		);
+	}
+	const u1 = pickExpFactor(g1, ctx.variable);
+	const dv1 = pickTrigFactor(g1, ctx.variable);
+
+	let du1: MathNode;
+	try {
+		du1 = differentiate(u1, { variable: ctx.variable });
+	} catch {
+		throw new PedagogicalIntegrationNotImplemented(integrand, 'cyclic IPP: cannot compute du₁');
+	}
+	let v1Sub: DispatchResult;
+	try {
+		v1Sub = integrateNode(dv1, recurCtx);
+	} catch {
+		throw new PedagogicalIntegrationNotImplemented(integrand, 'cyclic IPP: cannot integrate dv₁');
+	}
+	const v1 = v1Sub.antiderivative;
+
+	// h = v₁ · du₁ (the integrand of the second-IPP's residual ∫ v₁·du₁ dx).
+	// We compare h to the ORIGINAL integrand to detect the cycle.
+	const hRaw = simplifiedMultiply(v1, du1);
+	let h = hRaw;
+	try {
+		h = denormalize(normalize(hRaw));
+	} catch {
+		/* keep raw */
+	}
+
+	const k2 = findProportionalityConstant(h, integrand);
+	if (k2 === null) {
+		throw new PedagogicalIntegrationNotImplemented(
+			integrand,
+			'cyclic IPP: residual integrand is not proportional to the original'
+		);
+	}
+
+	// Algebraic resolution :
+	//     I = u₀v₀ - I₁
+	//     I₁ = c₁·K₁ where K₁ = u₁v₁ - K₂  and  K₂ = k₂·I
+	//   ⇒ I = u₀v₀ - c₁·(u₁v₁ - k₂·I) = u₀v₀ - c₁·u₁v₁ + c₁·k₂·I
+	//   ⇒ I·(1 - c₁·k₂) = u₀v₀ - c₁·u₁v₁
+	const denomValue = 1 - c1 * k2;
+	if (Math.abs(denomValue) < 1e-12) {
+		throw new PedagogicalIntegrationNotImplemented(
+			integrand,
+			'cyclic IPP: degenerate cycle (1 - c₁·k₂ ≈ 0)'
+		);
+	}
+	const u0v0 = simplifiedMultiply(u0, v0);
+	const u1v1Raw = simplifiedMultiply(u1, v1);
+	const u1v1Signed = c1 === 1 ? u1v1Raw : opposite(u1v1Raw);
+	const numerator = subtract(u0v0, u1v1Signed);
+	const antiderivative = simplifiedDivide(numerator, numericNode(denomValue));
+
+	const identify = buildStep(ctx, {
+		rule: 'identify-parts',
+		before: integrand,
+		after: integrand,
+		variable: ctx.variable,
+		bindings: { u: u0, dv: dv0 }
+	});
+	const choose1 = buildStep(ctx, {
+		rule: 'choose-u-dv',
+		before: integrand,
+		after: integrand,
+		variable: ctx.variable,
+		bindings: { u: u0, dv: dv0, du: du0, v: v0 }
+	});
+	const apply1 = buildStep(ctx, {
+		rule: 'apply-parts-formula',
+		before: integrand,
+		after: subtract(u0v0, f1),
+		variable: ctx.variable,
+		bindings: { u: u0, v: v0, du: du0 }
+	});
+	const choose2 = buildStep(ctx, {
+		rule: 'choose-u-dv',
+		before: f1,
+		after: f1,
+		variable: ctx.variable,
+		bindings: { u: u1, dv: dv1, du: du1, v: v1 }
+	});
+	const cyclic = buildStep(ctx, {
+		rule: 'apply-cyclic-ipp',
+		before: integrand,
+		after: antiderivative,
+		variable: ctx.variable,
+		bindings: { u: u0, v: v0, u2: u1, v2: v1 }
+	});
+	return { antiderivative, steps: [identify, choose1, apply1, choose2, cyclic] };
 }
 
 // =============================================================================

@@ -62,8 +62,8 @@ import type { Verbosity } from '../common/verbosity';
  * `add-constant`) — they describe the same conceptual step but live in
  * separate string-union types so a renderer can never mix the two by mistake.
  * Other kinds are pedagogy-only (`apply-composite-exp`, `apply-power-rule`,
- * `apply-known-primitive`, `apply-fundamental-theorem`, …) and have no
- * algorithmic counterpart.
+ * `apply-known-primitive`, `apply-fundamental-theorem`, `apply-cyclic-ipp`,
+ * …) and have no algorithmic counterpart.
  */
 export type PedagogicalIntegrationRule =
 	// ---- Identification (always emitted first when `includeIdentify`) ----
@@ -95,6 +95,7 @@ export type PedagogicalIntegrationRule =
 	| 'identify-parts'
 	| 'choose-u-dv'
 	| 'apply-parts-formula'
+	| 'apply-cyclic-ipp' // V1.1 — ∫e^(αx)·sin(βx)·dx via algebraic resolution after 2 IPPs
 	// ---- Final ----
 	| 'add-constant' // « + C »
 	| 'simplify-result';
@@ -304,6 +305,18 @@ export interface IntegrationGenerationStrategy {
 	readonly enablePartsSimple: boolean;
 	readonly enableUSubstitution: boolean;
 	readonly enableComposite: boolean;
+	/**
+	 * V1.1 — Enable cyclic IPP resolution for `∫ e^(αx)·sin(βx) dx` /
+	 * `∫ e^(αx)·cos(βx) dx`. Active at both lycée (Tle spé) and supérieur ;
+	 * the cyclic case is iconic in Tle spé exam exercises.
+	 */
+	readonly enableCyclicParts: boolean;
+	/**
+	 * V1.1 — Enable inverse trig primitives `∫1/(1+x²) dx = arctan(x)` and
+	 * `∫1/√(1-x²) dx = arcsin(x)`. Reserved to supérieur (post-bac
+	 * programme) ; Tle spé does not introduce arctan/arcsin.
+	 */
+	readonly enableInverseTrig: boolean;
 }
 
 /**
@@ -323,7 +336,9 @@ export const STRATEGIES_INTEGRATION: Readonly<
 		formatBoundsExplicit: true,
 		enablePartsSimple: true,
 		enableUSubstitution: false,
-		enableComposite: true
+		enableComposite: true,
+		enableCyclicParts: true,
+		enableInverseTrig: false
 	},
 	superieur: {
 		includeAddConstant: false,
@@ -331,7 +346,9 @@ export const STRATEGIES_INTEGRATION: Readonly<
 		formatBoundsExplicit: false,
 		enablePartsSimple: true,
 		enableUSubstitution: true,
-		enableComposite: true
+		enableComposite: true,
+		enableCyclicParts: true,
+		enableInverseTrig: true
 	}
 };
 

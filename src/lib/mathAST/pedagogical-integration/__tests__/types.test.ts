@@ -171,7 +171,9 @@ describe('pedagogical-integration types', () => {
 			formatBoundsExplicit: true,
 			enablePartsSimple: true, // Q3 user override: IPP enabled in lycée per Tle spé programme
 			enableUSubstitution: false,
-			enableComposite: true
+			enableComposite: true,
+			enableCyclicParts: true, // V1.1 — iconic Tle spé pattern
+			enableInverseTrig: false // V1.1 — arctan/arcsin reserved to supérieur
 		});
 
 		expect(STRATEGIES_INTEGRATION.superieur).toEqual({
@@ -180,7 +182,9 @@ describe('pedagogical-integration types', () => {
 			formatBoundsExplicit: false,
 			enablePartsSimple: true,
 			enableUSubstitution: true,
-			enableComposite: true
+			enableComposite: true,
+			enableCyclicParts: true,
+			enableInverseTrig: true
 		});
 	});
 
@@ -252,6 +256,7 @@ describe('pedagogical-integration types', () => {
 			'identify-parts',
 			'choose-u-dv',
 			'apply-parts-formula',
+			'apply-cyclic-ipp',
 			// Final
 			'add-constant',
 			'simplify-result'
@@ -260,7 +265,7 @@ describe('pedagogical-integration types', () => {
 		// Count sentinel — matches the union cardinality. Useful as a quick
 		// human-readable check ; the real exhaustiveness guarantee is the
 		// `_MissingFromAllRules` compile-time check below.
-		expect(allRules).toHaveLength(24);
+		expect(allRules).toHaveLength(25);
 
 		// Compile-time exhaustiveness check : if any rule of
 		// `PedagogicalIntegrationRule` is not in `allRules`, the type

@@ -20,6 +20,7 @@ import {
 	opposite,
 	power,
 	sin,
+	sqrt,
 	subtract,
 	variable
 } from '../../factory';
@@ -410,11 +411,14 @@ describe('pedagogical-integration pipeline — notImplemented cases', () => {
 		);
 	});
 
-	it('refuses cyclic IPP: ∫e^x · sin(x) dx', () => {
-		const integrand = implicitMultiply(exp(x()), sin(x()));
-		expect(() => generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' })).toThrow(
-			PedagogicalIntegrationNotImplemented
-		);
+	it('refuses tabular-style 5-deep IPP via cyclic guard', () => {
+		// Synthetic case: artificially low maxRecursionDepth forces the guard
+		// to fire on a deeply-nested IPP. ∫x⁴·e^x dx requires 4 IPPs ; with
+		// depth limit 2, the inner recursion bails.
+		const integrand = implicitMultiply(power(x(), number('4')), exp(x()));
+		expect(() =>
+			generatePedagogicalIntegrationSteps(integrand, { level: 'lycee', maxRecursionDepth: 2 })
+		).toThrow(PedagogicalIntegrationNotImplemented);
 	});
 
 	it('error carries the integrand', () => {
@@ -426,6 +430,128 @@ describe('pedagogical-integration pipeline — notImplemented cases', () => {
 			expect(e).toBeInstanceOf(PedagogicalIntegrationNotImplemented);
 			expect((e as PedagogicalIntegrationNotImplemented).integrand).toBeDefined();
 		}
+	});
+});
+
+describe('pedagogical-integration pipeline — V1.1 tabular IPP (sequential)', () => {
+	it('integrates ∫x²·e^x dx (2 IPPs)', () => {
+		const integrand = implicitMultiply(power(x(), number('2')), exp(x()));
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' });
+		expect(rules(result.steps)).toContain('apply-parts-formula');
+	});
+
+	it('integrates ∫x³·e^x dx (3 IPPs) — was blocked by maxRecursionDepth=5', () => {
+		const integrand = implicitMultiply(power(x(), number('3')), exp(x()));
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' });
+		expect(rules(result.steps)).toContain('apply-parts-formula');
+	});
+
+	it('integrates ∫x⁴·e^x dx (4 IPPs)', () => {
+		const integrand = implicitMultiply(power(x(), number('4')), exp(x()));
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' });
+		expect(rules(result.steps)).toContain('apply-parts-formula');
+	});
+
+	it('integrates ∫x²·sin(x) dx and ∫x²·cos(x) dx', () => {
+		const sinCase = generatePedagogicalIntegrationSteps(
+			implicitMultiply(power(x(), number('2')), sin(x())),
+			{ level: 'lycee' }
+		);
+		const cosCase = generatePedagogicalIntegrationSteps(
+			implicitMultiply(power(x(), number('2')), cos(x())),
+			{ level: 'lycee' }
+		);
+		expect(rules(sinCase.steps)).toContain('apply-parts-formula');
+		expect(rules(cosCase.steps)).toContain('apply-parts-formula');
+	});
+});
+
+describe('pedagogical-integration pipeline — V1.1 cyclic IPP', () => {
+	it('integrates ∫e^x · sin(x) dx via cyclic IPP', () => {
+		const integrand = implicitMultiply(exp(x()), sin(x()));
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' });
+		expect(rules(result.steps)).toContain('apply-cyclic-ipp');
+		// Antiderivative should reference exp, sin, AND cos (the (sin - cos)/2 form).
+		const latex = toLatex(result.antiderivative);
+		expect(latex).toContain('exp');
+		expect(latex).toContain('sin');
+		expect(latex).toContain('cos');
+	});
+
+	it('integrates ∫e^x · cos(x) dx via cyclic IPP', () => {
+		const integrand = implicitMultiply(exp(x()), cos(x()));
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' });
+		expect(rules(result.steps)).toContain('apply-cyclic-ipp');
+	});
+
+	it('integrates ∫sin(x) · e^x dx (symmetric order)', () => {
+		const integrand = implicitMultiply(sin(x()), exp(x()));
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' });
+		expect(rules(result.steps)).toContain('apply-cyclic-ipp');
+	});
+
+	it('emits the 5-step cyclic narrative', () => {
+		const integrand = implicitMultiply(exp(x()), sin(x()));
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
+		const ruleSeq = rules(result.steps);
+		// Exact expected sequence: identify-parts, choose-u-dv, apply-parts-formula,
+		// choose-u-dv, apply-cyclic-ipp.
+		expect(ruleSeq).toEqual([
+			'identify-parts',
+			'choose-u-dv',
+			'apply-parts-formula',
+			'choose-u-dv',
+			'apply-cyclic-ipp'
+		]);
+	});
+
+	it('cyclic IPP also works at supérieur', () => {
+		const integrand = implicitMultiply(exp(x()), cos(x()));
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
+		expect(rules(result.steps)).toContain('apply-cyclic-ipp');
+	});
+});
+
+describe('pedagogical-integration pipeline — V1.1 arctan/arcsin (sup only)', () => {
+	it('integrates ∫1/(1+x²) dx → arctan(x) at supérieur', () => {
+		const integrand = divide(number('1'), add(power(x(), number('2')), number('1')), 'fraction');
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
+		expect(rules(result.steps)).toContain('apply-known-primitive');
+		expect(toLatex(result.antiderivative)).toContain('arctan');
+	});
+
+	it('integrates ∫1/(x²+1) dx → arctan(x) (commutative form)', () => {
+		const integrand = divide(number('1'), add(number('1'), power(x(), number('2'))), 'fraction');
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
+		expect(toLatex(result.antiderivative)).toContain('arctan');
+	});
+
+	it('still refuses ∫1/(1+x²) dx at lycée (out of Tle spé scope)', () => {
+		const integrand = divide(number('1'), add(power(x(), number('2')), number('1')), 'fraction');
+		expect(() => generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' })).toThrow(
+			PedagogicalIntegrationNotImplemented
+		);
+	});
+
+	it('integrates ∫1/√(1-x²) dx → arcsin(x) at supérieur', () => {
+		const integrand = divide(
+			number('1'),
+			sqrt(subtract(number('1'), power(x(), number('2')))),
+			'fraction'
+		);
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
+		expect(toLatex(result.antiderivative)).toContain('arcsin');
+	});
+
+	it('still refuses ∫1/√(1-x²) dx at lycée', () => {
+		const integrand = divide(
+			number('1'),
+			sqrt(subtract(number('1'), power(x(), number('2')))),
+			'fraction'
+		);
+		expect(() => generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' })).toThrow(
+			PedagogicalIntegrationNotImplemented
+		);
 	});
 });
 
