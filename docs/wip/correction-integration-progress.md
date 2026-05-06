@@ -212,10 +212,10 @@ Commit : `c7ea40154`.
 | 5   | `23485641a` | Phase 5 | progress doc final + quality checks                       |
 | 6   | `c7ea40154` | Phase 6 | debug page `/dashboard/admin/debug/correction-mode-b`     |
 
-## Extensions post-MVP — 6 nouveaux kinds
+## Extensions post-MVP — 7 nouveaux kinds
 
 Le scope V1 listait 2 kinds (`arithmetic` + `linear-equation`). Depuis la
-livraison initiale, **6 nouveaux kinds** ont été ajoutés via des prompts
+livraison initiale, **7 nouveaux kinds** ont été ajoutés via des prompts
 distincts qui réutilisent l'infrastructure Mode B existante sans la modifier
 en profondeur (discriminator étendu, case dispatch ajouté dans
 `correction-generator.ts`, fixtures + page debug étendues) :
@@ -264,9 +264,17 @@ en profondeur (discriminator étendu, case dispatch ajouté dans
   deg(P) ≥ deg(Q), Q degré ≥ 3, facteurs quadratiques irréductibles,
   trig-substitution, intégrales impropres, fonctions par morceaux,
   paramétriques.
+- **`kind: 'simplify'`** (`simplify-stepper-progress.md`) — simplification
+  d'expressions selon un `intent` requis (`'factoriser'` |
+  `'developper'` | `'reduire'` | `'auto'`). Architecture **Option C′**
+  (pipeline manuel à la `pedagogical-arithmetic`, réutilise rule sets
+  pattern + normalize StepRecorder, sans `rewrite()`). Pas de bump : 4
+  niveaux distincts (la simplification est enseignée dès le primaire).
+  Catch `PedagogicalSimplifyNotImplemented` → fallback Mode A
+  (matrices, inéquations, piecewise, logical, `auto` ambigu).
 
 **État actuel :** la page debug `/dashboard/admin/debug/correction-mode-b`
-expose **13 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
+expose **15 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 `linearEquationDemo` (4e équation linéaire),
 `differentiatePolynomialDemo` + `differentiateCompositionDemo`
 (1ère/Tle spé), `quadraticEquationDemo` (Tle spé),
@@ -275,7 +283,8 @@ expose **13 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 `quadraticInequalityNegativeADemo` (1ère/Tle spé),
 `rationalInequalitySimpleDemo` + `rationalInequalityQuadDenomDemo`
 (1ère/Tle spé), `integrateIndefiniteDemo` + `integrateDefiniteDemo`
-(Tle spé).
+(Tle spé), `simplifyDistributionDemo` (4e) +
+`simplifyTrigDemo` (1ère spé).
 
 Ces 6 extensions valident que l'architecture Mode B est suffisamment
 robuste pour accueillir de nouveaux pipelines pédagogiques sans refactoring
