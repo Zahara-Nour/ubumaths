@@ -643,6 +643,17 @@ export interface QuestionInstance {
 		displayLatex?: string;
 		/** Answer format in LaTeX with \placeholder[N]{} (absent if expression has inline ?) */
 		answerFormat?: string;
+		/**
+		 * Custom-format expression value (post variable resolution), parsable by
+		 * `parseCustomSafe`. Consumed by Mode B `kind: 'arithmetic-from-blank'`
+		 * to reuse the named expression without duplicating it on the correction.
+		 *
+		 * Optional because mock/test fixtures can construct `expressions[]`
+		 * directly without going through `instance-generator.ts` (e.g.
+		 * `target-extractor.test.ts`). Absence triggers a silent Mode A fallback
+		 * in the `arithmetic-from-blank` dispatcher.
+		 */
+		value?: string;
 	}[];
 
 	// ---- Multiple Choice (resolved) ----
@@ -1054,6 +1065,19 @@ export type GeneratedSteps =
 			readonly enableLogExp?: boolean;
 			/** Override default for absolute-value identities. Default true. */
 			readonly enableAbs?: boolean;
+			readonly options?: GeneratedStepsOptions;
+	  }
+	| {
+			readonly kind: 'arithmetic-from-blank';
+			/**
+			 * Name of the expression variable to consume (e.g. `'expression1'`).
+			 * The expression is looked up in `instance.expressions[]` (built from
+			 * variables matching the convention `expression*`). Removes the need
+			 * to duplicate the arithmetic expression on the correction.
+			 *
+			 * Calls `pedagogical-arithmetic` on the resolved `value`.
+			 */
+			readonly expressionName: string;
 			readonly options?: GeneratedStepsOptions;
 	  };
 

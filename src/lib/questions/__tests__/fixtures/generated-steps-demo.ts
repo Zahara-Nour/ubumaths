@@ -625,3 +625,43 @@ export const simplifyTrigDemo: QuestionTemplate = {
 	domain: 'Identités trigonométriques',
 	level: 1
 };
+
+/**
+ * Demo question : `2 + 3 × 4 = ?` for primaire (CM2), variant of
+ * `additionGroupingDemo` using `kind: 'arithmetic-from-blank'`.
+ *
+ * The arithmetic expression is declared once in the statement via the
+ * `{{expression1}}` placeholder (rewritten as `<<expr:expression1>>` by
+ * `insertExpressionMarkers`), and the correction simply references it by
+ * `expressionName: 'expression1'`. No duplicate authoring of the expression on
+ * the correction side — the runtime looks up `instance.expressions[].value`.
+ */
+export const arithmeticFromBlankDemo: QuestionTemplate = {
+	id: 'demo-arithmetic-from-blank-primaire',
+	title: 'Calcul avec expression nommée (CM2)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown('Calcule ${{expression1}} = ?$'),
+			variables: [
+				{ name: 'a', expression: '2' },
+				{ name: 'b', expression: '3' },
+				{ name: 'c', expression: '4' },
+				{ name: 'expression1', expression: '{{a}}+{{b}}*{{c}}' }
+			],
+			blanks: [{ expectedAnswer: '{{eval:a+b*c}}' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Excellent !') },
+				generatedSteps: {
+					kind: 'arithmetic-from-blank',
+					expressionName: 'expression1',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['CM2'],
+	theme: 'Arithmétique',
+	domain: 'Calcul mental',
+	level: 1
+};

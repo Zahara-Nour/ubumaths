@@ -349,7 +349,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						name: exprName,
 						latex: convertToLatex(variable.value),
 						displayLatex: variable.displayValue ?? undefined,
-						answerFormat: blankResult.answerFormats?.[exprName]
+						answerFormat: blankResult.answerFormats?.[exprName],
+						value: variable.value
 					});
 				}
 			}

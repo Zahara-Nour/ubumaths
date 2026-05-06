@@ -629,3 +629,147 @@ describe("generateCorrection — kind: 'integrate'", () => {
 		expect(result.correction?._renderedSteps).toBeUndefined();
 	});
 });
+
+// =============================================================================
+// arithmetic-from-blank — kind that reuses a named expression already declared
+// in the statement (via `<<expr:NAME>>` markers / `expression*` variables) so
+// the author doesn't duplicate the expression on the correction.
+// =============================================================================
+
+describe("generateCorrection — kind: 'arithmetic-from-blank'", () => {
+	function makeInstanceWithExpressions(args: {
+		grades?: readonly GradeCode[];
+		expressions: readonly { name: string; value: string }[];
+		correction: QuestionInstance['correction'];
+	}): QuestionInstance {
+		return {
+			...makeInstance({ grades: args.grades, correction: args.correction }),
+			expressions: args.expressions.map((e) => ({
+				name: e.name,
+				latex: e.value, // close enough for tests — not asserted on
+				value: e.value
+			}))
+		};
+	}
+
+	it('looks up the named expression and produces _renderedSteps', () => {
+		const instance = makeInstanceWithExpressions({
+			grades: ['CM2'],
+			expressions: [{ name: 'expression1', value: '2+3*4' }],
+			correction: {
+				generatedSteps: {
+					kind: 'arithmetic-from-blank',
+					expressionName: 'expression1'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+		expect(result.correction?._renderedSteps?.length).toBeGreaterThan(0);
+	});
+
+	it('targets the right expression among multiple named ones', () => {
+		const instance = makeInstanceWithExpressions({
+			grades: ['CM2'],
+			expressions: [
+				{ name: 'expression1', value: '2+3' },
+				{ name: 'expression2', value: '5*6' }
+			],
+			correction: {
+				generatedSteps: {
+					kind: 'arithmetic-from-blank',
+					expressionName: 'expression2'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const allLatex = (result.correction?._renderedSteps ?? [])
+			.map((s) => s.expressionLatex ?? '')
+			.join(' ');
+		// 5*6 → 30 ; the rendered LaTeX must mention 30 (and not 5 in a way that
+		// would suggest the wrong expression was used).
+		expect(allLatex).toMatch(/30/);
+	});
+
+	it('falls back silently when the expressionName is not declared', () => {
+		const instance = makeInstanceWithExpressions({
+			grades: ['CM2'],
+			expressions: [{ name: 'expression1', value: '2+3' }],
+			correction: {
+				generatedSteps: {
+					kind: 'arithmetic-from-blank',
+					expressionName: 'expressionFoo'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it('falls back silently when the expression has no value (mock fixture)', () => {
+		const instance: QuestionInstance = {
+			...makeInstance({
+				grades: ['CM2'],
+				correction: {
+					generatedSteps: {
+						kind: 'arithmetic-from-blank',
+						expressionName: 'expression1'
+					}
+				}
+			}),
+			// No `value` field on the expression — simulates a test fixture or
+			// a stale instance built before the value-population was added.
+			expressions: [{ name: 'expression1', latex: '2+3' }]
+		};
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it('falls back silently when the expression value is not parsable', () => {
+		const instance = makeInstanceWithExpressions({
+			grades: ['CM2'],
+			expressions: [{ name: 'expression1', value: '2+++' }],
+			correction: {
+				generatedSteps: {
+					kind: 'arithmetic-from-blank',
+					expressionName: 'expression1'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it('refuses a relation node silently (consistent with kind: arithmetic)', () => {
+		const instance = makeInstanceWithExpressions({
+			grades: ['CM2'],
+			expressions: [{ name: 'expression1', value: 'x = 5' }],
+			correction: {
+				generatedSteps: {
+					kind: 'arithmetic-from-blank',
+					expressionName: 'expression1'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it('honours an explicit schoolLevel override', () => {
+		const instance = makeInstanceWithExpressions({
+			grades: ['CM2'],
+			expressions: [{ name: 'expression1', value: '2+3*4' }],
+			correction: {
+				generatedSteps: {
+					kind: 'arithmetic-from-blank',
+					expressionName: 'expression1',
+					options: { schoolLevel: 'lycee' }
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const steps = result.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+	});
+});

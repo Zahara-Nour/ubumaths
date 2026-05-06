@@ -13,6 +13,7 @@ import { describe, it, expect } from 'vitest';
 import { generateInstance } from '../generator/instance-generator';
 import {
 	additionGroupingDemo,
+	arithmeticFromBlankDemo,
 	differentiateCompositionDemo,
 	differentiatePolynomialDemo,
 	integrateDefiniteDemo,
@@ -423,6 +424,28 @@ describe('Mode B end-to-end demos', () => {
 
 		const rules = steps!.map((s) => s.rule);
 		expect(rules).toContain('pythagorean');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('CM2 arithmetic-from-blank — produces primaire steps reusing the named expression', () => {
+		const result = generateInstance(arithmeticFromBlankDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		// Sanity : the runtime populated expressions[].value with the resolved
+		// custom-format expression — that is what the correction-generator
+		// looked up to drive the pipeline.
+		expect(result.instance.expressions?.[0].name).toBe('expression1');
+		expect(result.instance.expressions?.[0].value).toBe('2+3*4');
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		// Every step must be tagged primaire (CM2 → primaire via auto-mapping).
+		expect(steps!.every((s) => s.schoolLevel === 'primaire')).toBe(true);
 
 		const summary = steps!.map(summarize);
 		expect(summary).toMatchSnapshot();
