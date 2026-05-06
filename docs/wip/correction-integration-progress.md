@@ -212,10 +212,10 @@ Commit : `c7ea40154`.
 | 5   | `23485641a` | Phase 5 | progress doc final + quality checks                       |
 | 6   | `c7ea40154` | Phase 6 | debug page `/dashboard/admin/debug/correction-mode-b`     |
 
-## Extensions post-MVP — 5 nouveaux kinds
+## Extensions post-MVP — 6 nouveaux kinds
 
 Le scope V1 listait 2 kinds (`arithmetic` + `linear-equation`). Depuis la
-livraison initiale, **5 nouveaux kinds** ont été ajoutés via des prompts
+livraison initiale, **6 nouveaux kinds** ont été ajoutés via des prompts
 distincts qui réutilisent l'infrastructure Mode B existante sans la modifier
 en profondeur (discriminator étendu, case dispatch ajouté dans
 `correction-generator.ts`, fixtures + page debug étendues) :
@@ -252,19 +252,28 @@ en profondeur (discriminator étendu, case dispatch ajouté dans
   dénominateurs distincts coprimes). Catch
   `InequalityNotSolvable` / `UnsupportedRationalInequality` →
   fallback Mode A.
+- **`kind: 'integrate'`** (`integration-stepper-progress.md`) — primitives
+  et intégrales définies. Champ `definite?: { lower, upper }` (LaTeX)
+  optionnel pour intégrales définies (trio `apply-fundamental-theorem` +
+  `substitute-bounds` + `simplify-bounds-result`). Bumps
+  `primaire | college → lycee` (l'intégration n'est pas au syllabus avant
+  Terminale). Catch `PedagogicalIntegrationNotImplemented` (partial-fractions,
+  trig-substitution, IPP cyclique, paramétriques) → fallback Mode A
+  silencieux.
 
 **État actuel :** la page debug `/dashboard/admin/debug/correction-mode-b`
-expose **12 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
+expose **13 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 `linearEquationDemo` (4e équation linéaire),
 `differentiatePolynomialDemo` + `differentiateCompositionDemo`
 (1ère/Tle spé), `quadraticEquationDemo` (Tle spé),
 `linearInequalityFlipDemo` + `linearInequalityTwoSidesDemo`
 (2nde/1ère), `quadraticInequalityClassicDemo` +
 `quadraticInequalityNegativeADemo` (1ère/Tle spé),
-`rationalInequalitySimpleDemo` + `rationalInequalityQuadDenomDemo` +
-`rationalInequalityMultiFracDemo` (1ère/Tle spé).
+`rationalInequalitySimpleDemo` + `rationalInequalityQuadDenomDemo`
+(1ère/Tle spé), `integrateIndefiniteDemo` + `integrateDefiniteDemo`
+(Tle spé).
 
-Ces 5 extensions valident que l'architecture Mode B est suffisamment
+Ces 6 extensions valident que l'architecture Mode B est suffisamment
 robuste pour accueillir de nouveaux pipelines pédagogiques sans refactoring
 de la glue. Le pattern `(types/Zod loose+strict/correction-generator
 case/fixtures/page debug card)` est devenu reproductible mécaniquement.
