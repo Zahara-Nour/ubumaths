@@ -16,6 +16,8 @@
 		additionGroupingDemo,
 		differentiateCompositionDemo,
 		differentiatePolynomialDemo,
+		integrateDefiniteDemo,
+		integrateIndefiniteDemo,
 		linearEquationDemo,
 		linearInequalityFlipDemo,
 		linearInequalityTwoSidesDemo,
@@ -46,6 +48,8 @@
 	const rationalIneqQuadDenomResult = generateInstance(rationalInequalityQuadDenomDemo, 1);
 	const differentiatePolyResult = generateInstance(differentiatePolynomialDemo, 1);
 	const differentiateCompResult = generateInstance(differentiateCompositionDemo, 1);
+	const integrateIndefiniteResult = generateInstance(integrateIndefiniteDemo, 1);
+	const integrateDefiniteResult = generateInstance(integrateDefiniteDemo, 1);
 
 	function buildAnswerResult(
 		result: ReturnType<typeof generateInstance>,
@@ -91,6 +95,10 @@
 	const differentiatePolyIncorrect = buildAnswerResult(differentiatePolyResult, 1, false);
 	const differentiateCompCorrect = buildAnswerResult(differentiateCompResult, 0, true);
 	const differentiateCompIncorrect = buildAnswerResult(differentiateCompResult, 1, false);
+	const integrateIndefiniteCorrect = buildAnswerResult(integrateIndefiniteResult, 0, true);
+	const integrateIndefiniteIncorrect = buildAnswerResult(integrateIndefiniteResult, 1, false);
+	const integrateDefiniteCorrect = buildAnswerResult(integrateDefiniteResult, 0, true);
+	const integrateDefiniteIncorrect = buildAnswerResult(integrateDefiniteResult, 1, false);
 
 	// ============================================================================
 	// Raw step inspector
@@ -144,6 +152,16 @@
 	const differentiateCompSteps = $derived(
 		differentiateCompResult.success
 			? differentiateCompResult.instance.correction?._renderedSteps
+			: undefined
+	);
+	const integrateIndefiniteSteps = $derived(
+		integrateIndefiniteResult.success
+			? integrateIndefiniteResult.instance.correction?._renderedSteps
+			: undefined
+	);
+	const integrateDefiniteSteps = $derived(
+		integrateDefiniteResult.success
+			? integrateDefiniteResult.instance.correction?._renderedSteps
 			: undefined
 	);
 </script>
@@ -254,6 +272,26 @@
 					<span class="text-red-600">✗ {differentiateCompResult.errors.join(', ')}</span>
 				{/if}
 			</div>
+			<div>
+				<span class="font-mono">integrateIndefiniteDemo</span> :
+				{#if integrateIndefiniteResult.success}
+					<span class="text-green-600"
+						>✓ {integrateIndefiniteSteps?.length ?? 0} étape(s) générée(s) (top-level)</span
+					>
+				{:else}
+					<span class="text-red-600">✗ {integrateIndefiniteResult.errors.join(', ')}</span>
+				{/if}
+			</div>
+			<div>
+				<span class="font-mono">integrateDefiniteDemo</span> :
+				{#if integrateDefiniteResult.success}
+					<span class="text-green-600"
+						>✓ {integrateDefiniteSteps?.length ?? 0} étape(s) générée(s) (top-level)</span
+					>
+				{:else}
+					<span class="text-red-600">✗ {integrateDefiniteResult.errors.join(', ')}</span>
+				{/if}
+			</div>
 			<Button variant="outline" size="sm" onclick={() => (showJson = !showJson)}>
 				{showJson ? 'Masquer' : 'Afficher'} le JSON brut des RenderedStep[]
 			</Button>
@@ -268,7 +306,9 @@
 							quadraticInequalityClassic: quadraticIneqClassicSteps,
 							quadraticInequalityNegativeA: quadraticIneqNegativeASteps,
 							differentiatePolynomial: differentiatePolySteps,
-							differentiateComposition: differentiateCompSteps
+							differentiateComposition: differentiateCompSteps,
+							integrateIndefinite: integrateIndefiniteSteps,
+							integrateDefinite: integrateDefiniteSteps
 						},
 						null,
 						2
@@ -427,6 +467,32 @@
 				<Card.Content>
 					{#if differentiateCompSteps}
 						<GeneratedStepsCorrection steps={differentiateCompSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>Tle spé — primitive d'un polynôme (indéfinie)</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if integrateIndefiniteSteps}
+						<GeneratedStepsCorrection steps={integrateIndefiniteSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>Tle spé — intégrale définie e^x sur [0;1]</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if integrateDefiniteSteps}
+						<GeneratedStepsCorrection steps={integrateDefiniteSteps} />
 					{:else}
 						<p class="text-muted-foreground">Aucune étape générée.</p>
 					{/if}
@@ -623,6 +689,34 @@
 				<div>
 					<h3 class="mb-2 text-lg font-medium">Terminale spé — réponse incorrecte (composition)</h3>
 					<CorrectionCard answerResult={differentiateCompIncorrect} questionNumber={22} size="md" />
+				</div>
+			{/if}
+			{#if integrateIndefiniteCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — primitive (indéfinie) — correcte</h3>
+					<CorrectionCard answerResult={integrateIndefiniteCorrect} questionNumber={23} size="md" />
+				</div>
+			{/if}
+			{#if integrateIndefiniteIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — primitive (indéfinie) — incorrecte</h3>
+					<CorrectionCard
+						answerResult={integrateIndefiniteIncorrect}
+						questionNumber={24}
+						size="md"
+					/>
+				</div>
+			{/if}
+			{#if integrateDefiniteCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — intégrale définie — correcte</h3>
+					<CorrectionCard answerResult={integrateDefiniteCorrect} questionNumber={25} size="md" />
+				</div>
+			{/if}
+			{#if integrateDefiniteIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — intégrale définie — incorrecte</h3>
+					<CorrectionCard answerResult={integrateDefiniteIncorrect} questionNumber={26} size="md" />
 				</div>
 			{/if}
 		</div>
