@@ -9,15 +9,15 @@ Créer un module `src/lib/mathAST/pedagogical-simplify/` qui implémente un step
 
 ## État global
 
-| Phase | Status          | Commit    | Notes                                                             |
-| ----- | --------------- | --------- | ----------------------------------------------------------------- |
-| 0     | ✅ Spec validée | —         | Q1-Q10 tranchées, Option C′ retenue après analyse empirique       |
-| 1     | ✅ Livrée       | (à venir) | Types + intent dispatcher + categorize, 108 tests verts (it.each) |
-| 2     | ⏳ À venir      | —         | Pipeline manuel + bridge normalize StepRecorder + rule binomial   |
-| 3     | ⏳ À venir      | —         | Renderer + descriptions FR 4 niveaux                              |
-| 4     | ⏳ À venir      | —         | Démos catégorisées + CLI                                          |
-| 5     | ⏳ À venir      | —         | Mode B `kind: 'simplify'` + 2 fixtures + page debug               |
-| 6     | ⏳ À venir      | —         | Quality checks + doc finale + commit                              |
+| Phase | Status          | Commit      | Notes                                                                                                                          |
+| ----- | --------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 0     | ✅ Spec validée | —           | Q1-Q10 tranchées, Option C′ retenue après analyse empirique                                                                    |
+| 1     | ✅ Livrée       | `8fc5c8f86` | Types + intent dispatcher + categorize, 109 tests verts (it.each)                                                              |
+| 2     | ✅ Livrée       | (à venir)   | Pipeline manuel + bridge normalize StepRecorder + rule binomial + descriptions FR + timeoutMs, 47 nouveaux tests (156 cumulés) |
+| 3     | ⏳ À venir      | —           | Renderer + descriptions FR 4 niveaux                                                                                           |
+| 4     | ⏳ À venir      | —           | Démos catégorisées + CLI                                                                                                       |
+| 5     | ⏳ À venir      | —           | Mode B `kind: 'simplify'` + 2 fixtures + page debug                                                                            |
+| 6     | ⏳ À venir      | —           | Quality checks + doc finale + commit                                                                                           |
 
 ## Décisions architecturales (Phase 0 — validées)
 
@@ -148,6 +148,45 @@ Cas : matrices, équations, hyperboliques, cubes, produits non-binomiaux, niveau
 - `as const` array + sentinel pour les catégories (pas seulement sentinel)
 - `globalBefore`/`globalAfter` présents dans le step (populés en Phase 2)
 - Numeric factoring rules (`diff-squares-numeric`, `sum-cubes-numeric`, `diff-cubes-numeric`) exclues d'`auto` (ambiguïté pédagogique : `x²-4` doit-il être factorisé ?)
+
+## Phase 2 — Livraison
+
+### Fichiers livrés
+
+- `src/lib/mathAST/pedagogical-simplify/pipeline.ts` (~280 LOC)
+  - `generatePedagogicalSimplifySteps(node, options)` entry point
+  - `rejectUnsupported` walker (matrices, inéquations → throw)
+  - `resolveFlags` defaults par `schoolLevel`
+  - `runPatternLoop` (Phase A — boucle manuelle `applyRulesDeepOnceTracked`)
+  - `runNormalizePass` (Phase B — bridge `normalize()` + `StepRecorder`)
+- `src/lib/mathAST/pedagogical-simplify/pedagogical-rules/distribute-binomial-product.ts` (~110 LOC)
+  - 1 rule pattern unique pour `(a±b)(c±d)` → 4 termes pré-distribués
+  - Priority `-1` pour laisser passer les identités remarquables d'abord
+- `src/lib/mathAST/pedagogical-simplify/pedagogical-rules/index.ts` (barrel)
+- `src/lib/mathAST/pedagogical-simplify/__tests__/pipeline.test.ts` (29 tests)
+- `src/lib/mathAST/pedagogical-simplify/__tests__/distribute-binomial-product.test.ts` (10 tests)
+- Patch `intent-rules.ts` : intègre `distributeBinomialProduct` dans `'developper'` + categorize map
+
+### Tests cumulés Phase 1 + 2
+
+- **156 tests verts** (109 Phase 1 + 47 Phase 2)
+- 0 régression sur `simplify/` + `pattern/` + `normal/` (2525 tests adjacents)
+
+### Code review fixes appliqués (Phase 2)
+
+- **Should-fix #1 — tree walker** : `rejectUnsupported` rejette désormais `piecewise`, `logical`, `logical-not` outright (et non pas par walk profond). Évite que des matrices/inéquations cachées dans une condition piecewise glissent à travers.
+- **Should-fix #2 — `timeoutMs`** : wired up via `composeAbortSignal` (cleanup via `dispose` dans un `finally`). `timeoutMs <= 0` = abort immédiat (sémantique testable).
+- **Should-fix #3 — descriptions FR** : nouveau module `descriptions-fr.ts` avec `PATTERN_RULE_DESCRIPTIONS` pour les rules pattern + fallback sur `normal/rule-descriptions-fr.ts` pour les rules normalize. Plus aucune description `"Règle: <name>"` brute dans les steps.
+- **Nitpick #6 — concurrence** : `nextId` déplacé dans une closure (`createStepFactory`) pour éliminer le risque de corruption en cas d'appels concurrents (`Promise.all` côté serveur).
+- **Test coverage** : assertion stricte ajoutée pour `(a-b)(c-d)` (vérifie le sign table par output exact), tests pour piecewise/logical/timeoutMs reject + tests descriptions FR.
+
+### Limitation connue V1 — `reduire` peut développer
+
+`normalize()` canonicalise les polynômes, ce qui inclut le développement de `(x+1)²` en `x²+2x+1`. Sous l'intent `reduire`, le pattern `expand-sum-squared` est exclu du rule set, mais normalize l'expansera en Phase B. C'est documenté dans `pipeline.test.ts` et accepté pédagogiquement (la forme développée EST une forme tidied-up canonique). Seul `factoriser` préserve la forme factorisée (parce qu'il skippe normalize).
+
+### Notation `\sin^2(x)` vs `\sin(x)^2`
+
+Le parser distingue les deux : `\sin^2(x)` produit un `FunctionNode` avec `power: 2`, `\sin(x)^2` produit un `SuperscriptNode` au-dessus du `FunctionNode`. La rule `pythagorean` (et toutes les rules trig) sont écrites pour la 1re forme. **Tous les inputs trig doivent utiliser la notation `\sin^2(x)`.**
 
 ## Documents de référence
 
