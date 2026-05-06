@@ -190,10 +190,14 @@ describe('palier 3 — D. forme non-standard', () => {
 // =============================================================================
 
 describe('palier 3 — E. erreurs', () => {
-	it('11. 1/x + 1/(x−1) < 0 → InequalityNotSolvable (multi-fraction)', () => {
-		expect(() =>
-			generateRationalInequalitySteps(ineq('1/x + 1/(x - 1) < 0'), { level: 'lycee' })
-		).toThrow(InequalityNotSolvable);
+	it('11. 1/x + 1/(x−1) < 0 (V2) — supported via combine-fractions step', () => {
+		// V2 supports this : the pipeline now emits a `combine-fractions` step
+		// before the standard rational pipeline. V1 used to throw.
+		const steps = generateRationalInequalitySteps(ineq('1/x + 1/(x - 1) < 0'), {
+			level: 'lycee'
+		});
+		const kinds = flatten(steps).map((s) => s.operation?.kind);
+		expect(kinds).toContain('combine-fractions');
 	});
 
 	it('13. (mx+1)/(x−2) < 0 → InequalityNotSolvable (paramétrique)', () => {
@@ -337,6 +341,86 @@ describe('palier 3 — structure des étapes', () => {
 // =============================================================================
 // Smoke superieur
 // =============================================================================
+
+// =============================================================================
+// V2 — Multi-fractions + fraction côté droit
+// =============================================================================
+
+describe('palier 3 V2 — multi-fractions (sum/diff of two linear fractions)', () => {
+	it('V2.1. 1/x + 1/(x-1) < 0 → ]−∞ ; 0[ ∪ ]1/2 ; 1[', () => {
+		const steps = generateRationalInequalitySteps(ineq('1/x + 1/(x - 1) < 0'), {
+			level: 'lycee'
+		});
+		const kinds = flatten(steps).map((s) => s.operation?.kind);
+		expect(kinds).toContain('combine-fractions');
+		expect(kinds).toContain('rational-sign-table');
+		const concl = getConclude(steps);
+		// Critical points : 0, 1/2, 1
+		expect(concl.solutionDescription).toMatch(/0/);
+		expect(concl.solutionDescription).toMatch(/1/);
+		expect(concl.solutionDescription).toMatch(/∪|\\cup|cup/i);
+	});
+
+	it('V2.2. 1/x − 1/(x-1) > 0 → ]0 ; 1[', () => {
+		const steps = generateRationalInequalitySteps(ineq('1/x - 1/(x - 1) > 0'), {
+			level: 'lycee'
+		});
+		const kinds = flatten(steps).map((s) => s.operation?.kind);
+		expect(kinds).toContain('combine-fractions');
+		const concl = getConclude(steps);
+		expect(concl.solutionDescription).toMatch(/\]\s*0\s*[;,]\s*1\s*\[/);
+	});
+
+	it('V2.3. 2/x + 3/(x-2) < 0 — different numerators', () => {
+		const steps = generateRationalInequalitySteps(ineq('2/x + 3/(x - 2) < 0'), {
+			level: 'lycee'
+		});
+		const kinds = flatten(steps).map((s) => s.operation?.kind);
+		expect(kinds).toContain('combine-fractions');
+		const combine = findOp(steps, 'combine-fractions');
+		expect(combine).not.toBeNull();
+		expect(combine!.combined).toBeDefined();
+	});
+});
+
+describe('palier 3 V2 — fraction sur côté droit', () => {
+	it('V2.5. x < 1/(x-3) — standardize then combine', () => {
+		const steps = generateRationalInequalitySteps(ineq('x < 1/(x - 3)'), { level: 'lycee' });
+		const kinds = flatten(steps).map((s) => s.operation?.kind);
+		// Should standardize (right ≠ 0) and combine
+		expect(kinds).toContain('combine-fractions');
+		expect(kinds).toContain('rational-sign-table');
+	});
+});
+
+describe('palier 3 V2 — polynôme + fraction', () => {
+	it('V2.6. x + 1/(x-1) < 0 — polynomial term + fraction', () => {
+		const steps = generateRationalInequalitySteps(ineq('x + 1/(x - 1) < 0'), {
+			level: 'lycee'
+		});
+		const kinds = flatten(steps).map((s) => s.operation?.kind);
+		expect(kinds).toContain('combine-fractions');
+		const combine = findOp(steps, 'combine-fractions');
+		expect(combine).not.toBeNull();
+		// Combined : (x(x-1) + 1) / (x-1) = (x² - x + 1) / (x-1)
+		// x² - x + 1 has Δ = 1 - 4 = -3 < 0, so P > 0 always
+		// Sign of P/Q = sign of Q = sign of (x - 1)
+		// For < 0: x < 1 → ]−∞ ; 1[
+		const concl = getConclude(steps);
+		expect(concl.solutionDescription).toMatch(/1/);
+	});
+});
+
+describe('palier 3 V2 — V1 régression : single fraction toujours OK', () => {
+	it('V1 (x−1)/(x−3) < 0 ne doit pas émettre combine-fractions', () => {
+		const steps = generateRationalInequalitySteps(ineq('(x - 1)/(x - 3) < 0'), {
+			level: 'lycee'
+		});
+		const kinds = flatten(steps).map((s) => s.operation?.kind);
+		expect(kinds).not.toContain('combine-fractions');
+		expect(kinds).toContain('identify-rational');
+	});
+});
 
 describe('palier 3 — smoke superieur', () => {
 	it('superieur produit aussi un conclude correct', () => {

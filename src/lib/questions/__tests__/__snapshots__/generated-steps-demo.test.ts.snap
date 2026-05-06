@@ -260,6 +260,67 @@ exports[`Mode B end-to-end demos > 1ère spécialité rational inequality (palie
 ]
 `;
 
+exports[`Mode B end-to-end demos > 1ère spécialité rational inequality V2 (multi-fractions) — produces combine-fractions step 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-equation",
+    "schoolLevel": "lycee",
+    "title": "Inéquation rationnelle",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "combine-fractions",
+    "schoolLevel": "lycee",
+    "title": "On réduit au même dénominateur",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "identify-rational",
+    "schoolLevel": "lycee",
+    "title": "On reconnaît la forme P(x) / Q(x)",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 4,
+    "rule": "rational-domain-restriction",
+    "schoolLevel": "lycee",
+    "title": "Domaine de définition : on exclut les zéros du dénominateur",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 5,
+    "rule": "rational-locate-roots",
+    "schoolLevel": "lycee",
+    "title": "Racines du numérateur et zéros du dénominateur",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 6,
+    "rule": "rational-sign-table",
+    "schoolLevel": "lycee",
+    "title": "On dresse le tableau de signes combiné de P(x), Q(x) et P(x)/Q(x)",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 7,
+    "rule": "inequality-conclude-rational",
+    "schoolLevel": "lycee",
+    "title": "Solution : S = ]-∞ ; 0[ ∪ ]\\dfrac{1}{2} ; 1[",
+  },
+]
+`;
+
 exports[`Mode B end-to-end demos > 4e linear equation — produces college steps 1`] = `
 [
   {

@@ -303,18 +303,22 @@ function determineProductSign(
 		return 'positive'; // Empty product = 1
 	}
 
+	// Special case : single `opposite(...)` factor — handled BEFORE the mapping
+	// to avoid infinite recursion. `analyzeExpressionStructure` returns
+	// `{ type: 'product', components: [expr] }` for an `opposite` node so that
+	// the sign analysis can negate the inner sign here ; mapping
+	// `determineSignOnInterval` over `[opposite(...)]` would recurse forever.
+	if (factors.length === 1 && isOpposite(factors[0])) {
+		const innerSign = determineSignOnInterval(factors[0].operand, variable, interval);
+		return negateSign(innerSign);
+	}
+
 	const factorSigns: Sign[] = factors.map((factor) =>
 		determineSignOnInterval(factor, variable, interval)
 	);
 
 	// Use the sign rule for products
 	if (factorSigns.length === 1) {
-		// Handle negation
-		const factor = factors[0];
-		if (isOpposite(factor)) {
-			const innerSign = determineSignOnInterval(factor.operand, variable, interval);
-			return negateSign(innerSign);
-		}
 		return factorSigns[0];
 	}
 

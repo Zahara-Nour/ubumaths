@@ -405,6 +405,44 @@ export const rationalInequalityQuadDenomDemo: QuestionTemplate = {
 };
 
 /**
+ * Demo question : `1/x + 1/(x − 1) < 0` for 1ère spécialité maths (palier 3 V2).
+ *
+ * Mode B declares a `rational-inequality` correction with a multi-fraction
+ * input. The pipeline emits a `combine-fractions` step before the standard
+ * rational pipeline, showing the « réduction au même dénominateur » work :
+ * `1/x + 1/(x-1) = (x-1)/(x²-x) + x/(x²-x) = (2x-1)/(x²-x)`. Then standard
+ * sign-table analysis. Solution : `]−∞ ; 0[ ∪ ]1/2 ; 1[`.
+ */
+export const rationalInequalityMultiFracDemo: QuestionTemplate = {
+	id: 'demo-rational-inequality-multifrac-1ere',
+	title: 'Inéquation rationnelle multi-fractions (1ère spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'Résous dans $\\mathbb{R}$ : $\\dfrac{1}{x} + \\dfrac{1}{x - 1} < 0$. $S = ?$'
+			),
+			blanks: [{ expectedAnswer: ']-\\infty ; 0[ \\cup ]1/2 ; 1[' }],
+			correction: {
+				feedback: {
+					correct: templateMarkdown('Bravo ! Étape clé : réduction au même dénominateur.')
+				},
+				generatedSteps: {
+					kind: 'rational-inequality',
+					inequality: '1/x + 1/(x - 1) < 0',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['1_SPE'],
+	theme: 'Algèbre',
+	domain: 'Inéquations',
+	subdomain: 'Rationnelles',
+	level: 4
+};
+
+/**
  * Demo question : `f(x) = sin(2x)` for Terminale spécialité maths.
  *
  * Mode B declares a `differentiate` correction with a composition. The
