@@ -85,6 +85,8 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'identify-parts': () => 'Intégration par parties',
 	'choose-u-dv': (b) => `Choix : u = ${bind(b, 'u')}, dv = ${bind(b, 'dv')}`,
 	'apply-parts-formula': () => "Formule de l'IPP : ∫u dv = uv − ∫v du",
+	'apply-cyclic-ipp': () =>
+		"IPP cyclique : on retrouve l'intégrale de départ, on résout l'équation",
 	// ---- Final ----
 	'add-constant': () => "On ajoute la constante d'intégration C",
 	'simplify-result': () => 'Simplification du résultat'
@@ -113,6 +115,7 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'identify-parts': () => '\\int u\\,dv',
 	'choose-u-dv': (b) => `u = ${bind(b, 'u')},\\ dv = ${bind(b, 'dv')}`,
 	'apply-parts-formula': () => '\\int u\\,dv = uv - \\int v\\,du',
+	'apply-cyclic-ipp': () => 'I\\,(1 - k) = u_0 v_0 - u_1 v_1',
 	'add-constant': () => '+ C',
 	'simplify-result': () => 'Simplification'
 };
@@ -165,6 +168,8 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		`On pose u = ${bind(b, 'u')} et dv = ${bind(b, 'dv')}, d'où du = ${bind(b, 'du')} dx et v = ${bind(b, 'v')}.`,
 	'apply-parts-formula': () =>
 		"On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.",
+	'apply-cyclic-ipp': () =>
+		"Après deux IPP successives, l'intégrale de départ I réapparaît dans le second membre. On obtient une équation du type I = expression − k·I, qu'on résout pour I : I = expression / (1 − k).",
 	'add-constant': () =>
 		'Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.'
 };
@@ -203,6 +208,7 @@ const DEFAULT_DESCRIPTIONS: Record<PedagogicalIntegrationRule, string> = {
 	'identify-parts': 'Identification des parties',
 	'choose-u-dv': 'Choix de u et dv',
 	'apply-parts-formula': "Formule de l'intégration par parties",
+	'apply-cyclic-ipp': 'Résolution algébrique (IPP cyclique)',
 	'add-constant': "Constante d'intégration",
 	'simplify-result': 'Simplification'
 };
