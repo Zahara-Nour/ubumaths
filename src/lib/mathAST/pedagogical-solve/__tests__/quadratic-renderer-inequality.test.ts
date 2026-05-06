@@ -90,7 +90,8 @@ describe('QuadraticEquationRenderer — discriminant titles in inequality contex
 	});
 
 	it('Δ < 0 says "pas de racine" for inequalities', () => {
-		const steps = generateQuadraticInequalitySteps(ineq('x^2 + 1 < 0'), { level: 'lycee' });
+		// Use a non-fast-path expression (b ≠ 0) so the Δ pipeline is exercised.
+		const steps = generateQuadraticInequalitySteps(ineq('x^2 + x + 1 < 0'), { level: 'lycee' });
 		const rendered = renderer.renderAll(steps, {
 			verbosity: 'detailed',
 			schoolLevel: 'lycee'
@@ -133,7 +134,8 @@ describe('QuadraticEquationRenderer — quadratic-sign-table', () => {
 	});
 
 	it('shows zero entries (Δ < 0): single-sign table', () => {
-		const steps = generateQuadraticInequalitySteps(ineq('x^2 + 1 < 0'), { level: 'lycee' });
+		// Non-fast-path (b ≠ 0) so the standard Δ pipeline emits a sign table.
+		const steps = generateQuadraticInequalitySteps(ineq('x^2 + x + 1 < 0'), { level: 'lycee' });
 		const rendered = renderer.renderAll(steps, {
 			verbosity: 'detailed',
 			schoolLevel: 'lycee'
@@ -178,27 +180,26 @@ describe('QuadraticEquationRenderer — inequality-conclude-quadratic', () => {
 		expect(concl!.expressionLatex).toMatch(/S\s*=/);
 	});
 
-	it('produces "S = ∅" / "\\emptyset" for x² + 1 < 0', () => {
+	it('produces "S = ∅" / "\\emptyset" for x² + 1 < 0 (palier 2c fast path)', () => {
 		const steps = generateQuadraticInequalitySteps(ineq('x^2 + 1 < 0'), { level: 'lycee' });
 		const rendered = renderer.renderAll(steps, {
 			verbosity: 'detailed',
 			schoolLevel: 'lycee'
 		});
-		const concl = rendered.find((r) => r.rule === 'inequality-conclude-quadratic');
+		// b = 0 → palier 2c fast path → conclude-from-isolated-square.
+		const concl = rendered.find((r) => r.rule === 'inequality-conclude-from-isolated-square');
 		expect(concl).toBeDefined();
-		// In the title (Unicode-safe)
 		expect(concl!.title).toMatch(/∅|\\emptyset/);
-		// In the expressionLatex (LaTeX-escaped)
 		expect(concl!.expressionLatex).toMatch(/\\emptyset/);
 	});
 
-	it('produces "S = ℝ" / "\\mathbb{R}" for x² + 1 > 0', () => {
+	it('produces "S = ℝ" / "\\mathbb{R}" for x² + 1 > 0 (palier 2c fast path)', () => {
 		const steps = generateQuadraticInequalitySteps(ineq('x^2 + 1 > 0'), { level: 'lycee' });
 		const rendered = renderer.renderAll(steps, {
 			verbosity: 'detailed',
 			schoolLevel: 'lycee'
 		});
-		const concl = rendered.find((r) => r.rule === 'inequality-conclude-quadratic');
+		const concl = rendered.find((r) => r.rule === 'inequality-conclude-from-isolated-square');
 		expect(concl!.title).toMatch(/ℝ|\\mathbb\{R\}/);
 		expect(concl!.expressionLatex).toMatch(/\\mathbb\{R\}/);
 	});

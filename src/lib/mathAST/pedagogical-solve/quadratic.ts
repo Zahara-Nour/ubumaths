@@ -338,7 +338,18 @@ export {
 	buildDiscriminantSignStep as _buildDiscriminantSignStep,
 	buildApplyQuadraticFormulaStep as _buildApplyQuadraticFormulaStep,
 	buildSimplifySolutionsStep as _buildSimplifySolutionsStep,
-	tryExtractGcd as _tryExtractGcd
+	tryExtractGcd as _tryExtractGcd,
+	detectCase as _detectCase,
+	tryDetectFactored as _tryDetectFactored,
+	extractLinearCoefficients as _extractLinearCoefficients,
+	solveLinearFactor as _solveLinearFactor
+};
+export type {
+	DetectedCase as _DetectedCase,
+	DetectedStandard as _DetectedStandard,
+	DetectedBZero as _DetectedBZero,
+	DetectedCZero as _DetectedCZero,
+	DetectedFactored as _DetectedFactored
 };
 
 function buildIdentifyEquationStep(equation: RelationNode, idGen: () => number): EquationStep {
