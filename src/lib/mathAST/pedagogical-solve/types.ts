@@ -292,6 +292,22 @@ export type EquationOperation =
 			readonly kind: 'inequality-conclude-quadratic';
 			readonly relation: '<' | '>' | '<=' | '>=' | '!=';
 			readonly solutionDescription: string;
+	  }
+	/**
+	 * Final step of a `b = 0` quadratic inequality after the `isolate-square`
+	 * step has reduced the form to `x² ⊻ k`. The renderer formats the
+	 * conclusion directly without going through a sign table — this is the
+	 * pedagogical fast-path used by palier 2c when `b = 0`.
+	 *
+	 * The renderer reads `solutionDescription` (Unicode-safe, post-processed
+	 * by `escapeLatexBacktickFreeText`) for both the title and the LaTeX
+	 * expression. `relation` is the inequality's operator AS DISPLAYED on the
+	 * isolated form (already flipped if `a < 0`).
+	 */
+	| {
+			readonly kind: 'inequality-conclude-from-isolated-square';
+			readonly relation: '<' | '>' | '<=' | '>=' | '!=';
+			readonly solutionDescription: string;
 	  };
 
 // =============================================================================

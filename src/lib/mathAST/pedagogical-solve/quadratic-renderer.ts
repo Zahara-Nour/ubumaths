@@ -128,7 +128,10 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'no-real-solution': () => 'Pas de solution réelle',
 		'recognize-no-linear-term': () => 'Le coefficient de x est nul : on isole le carré',
 		'recognize-no-constant-term': () => 'Le terme constant est nul : on factorise par x',
-		'recognize-factored': () => 'L’équation est déjà sous forme factorisée',
+		'recognize-factored': (_op, step) =>
+			isInequalityStep(step)
+				? 'L’inéquation est déjà sous forme factorisée'
+				: 'L’équation est déjà sous forme factorisée',
 		'isolate-square': () => 'On isole le carré',
 		'extract-square-root': () => 'On extrait la racine carrée',
 		'factor-common-x': (_op, step) => `On factorise par ${variableOf(step)}`,
@@ -143,6 +146,13 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'inequality-conclude-quadratic': (op) => {
 			const description = (op as EquationOperation & { kind: 'inequality-conclude-quadratic' })
 				.solutionDescription;
+			return `Solution : S = ${description}`;
+		},
+		// === Palier 2c — fast path b = 0 ===
+		'inequality-conclude-from-isolated-square': (op) => {
+			const description = (
+				op as EquationOperation & { kind: 'inequality-conclude-from-isolated-square' }
+			).solutionDescription;
 			return `Solution : S = ${description}`;
 		}
 	},
@@ -178,6 +188,13 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'inequality-conclude-quadratic': (op) => {
 			const description = (op as EquationOperation & { kind: 'inequality-conclude-quadratic' })
 				.solutionDescription;
+			return `S = ${description}`;
+		},
+		// === Palier 2c — fast path b = 0 ===
+		'inequality-conclude-from-isolated-square': (op) => {
+			const description = (
+				op as EquationOperation & { kind: 'inequality-conclude-from-isolated-square' }
+			).solutionDescription;
 			return `S = ${description}`;
 		}
 	}
@@ -243,7 +260,10 @@ const EXPLANATIONS: Record<
 		'quadratic-sign-table': () =>
 			'Le tableau de signes synthétise le signe du polynôme sur chaque intervalle déterminé par les racines. Le polynôme est du signe de a à l’extérieur des racines et du signe opposé entre les racines (cas Δ > 0).',
 		'inequality-conclude-quadratic': () =>
-			'On lit la solution dans le tableau : on garde les intervalles où le signe satisfait l’opérateur de l’inéquation.'
+			'On lit la solution dans le tableau : on garde les intervalles où le signe satisfait l’opérateur de l’inéquation.',
+		// === Palier 2c — fast paths ===
+		'inequality-conclude-from-isolated-square': () =>
+			'Comme x² ≥ 0 toujours, on raisonne directement sur la valeur isolée à droite : selon son signe et l’opérateur, la solution est ∅, ℝ, ou un intervalle borné par ±√k.'
 	},
 	superieur: {
 		// Compact one-liners for supérieur — students at this level know the
@@ -258,7 +278,8 @@ const EXPLANATIONS: Record<
 		'recognize-factored': () => 'Produit de facteurs nul.',
 		'zero-product': () => 'A · B = 0 ⇒ A = 0 ∨ B = 0.',
 		'quadratic-sign-table': () => 'Signe(P) = signe(a) à l’extérieur des racines.',
-		'inequality-conclude-quadratic': () => 'Lecture du tableau pour l’opérateur donné.'
+		'inequality-conclude-quadratic': () => 'Lecture du tableau pour l’opérateur donné.',
+		'inequality-conclude-from-isolated-square': () => 'x² ≥ 0 ⇒ déduction directe sans tableau.'
 	}
 };
 
@@ -397,6 +418,10 @@ function formatExpressionLatex(step: EquationStep): string {
 		case 'inequality-conclude-quadratic':
 			return formatConcludeQuadratic(op);
 
+		// -------- Palier 2c — fast path b = 0 conclude --------
+		case 'inequality-conclude-from-isolated-square':
+			return formatConcludeFromIsolatedSquare(op);
+
 		// -------- Linear kinds (cross-pipeline misuse) — fallback to plain equation --------
 		default:
 			return fmt(step.before);
@@ -409,21 +434,26 @@ function formatExpressionLatex(step: EquationStep): string {
  * a single line when either condition fails.
  */
 function alignedTransformation(step: EquationStep): string {
-	const rel = step.before.type === 'relation' ? step.before.relation : '=';
+	// Each line carries its OWN relation operator. For flip-aware steps (palier
+	// 2c b=0 fast path divides by `a < 0`), the after-line uses the flipped
+	// operator, while the before-line keeps the original. For non-flip steps,
+	// both relations are equal and the rendering is unchanged.
+	const relBefore = step.before.type === 'relation' ? step.before.relation : '=';
+	const relAfter = step.after.type === 'relation' ? step.after.relation : '=';
 	const bL = step.before.type === 'relation' ? fmt(step.before.left) : fmt(step.before);
 	const bR = step.before.type === 'relation' ? fmt(step.before.right) : '';
 	const aL = step.after.type === 'relation' ? fmt(step.after.left) : fmt(step.after);
 	const aR = step.after.type === 'relation' ? fmt(step.after.right) : '';
 
-	if (bL === aL && bR === aR) {
+	if (bL === aL && bR === aR && relBefore === relAfter) {
 		// No actual transformation — display once.
-		return `${bL} ${rel} ${bR}`;
+		return `${bL} ${relBefore} ${bR}`;
 	}
 
 	return [
 		'\\begin{aligned}',
-		`  ${bL} &${rel} ${bR} \\\\`,
-		`  ${aL} &${rel} ${aR}`,
+		`  ${bL} &${relBefore} ${bR} \\\\`,
+		`  ${aL} &${relAfter} ${aR}`,
 		'\\end{aligned}'
 	].join(' ');
 }
@@ -618,6 +648,16 @@ function formatSignTable(op: EquationOperation & { kind: 'quadratic-sign-table' 
 /** `S = ]2 ; 3[` etc. — the description is computed by the inequality module. */
 function formatConcludeQuadratic(
 	op: EquationOperation & { kind: 'inequality-conclude-quadratic' }
+): string {
+	return `S = ${escapeLatexBacktickFreeText(op.solutionDescription)}`;
+}
+
+/**
+ * Palier 2c — fast path conclusion when `b = 0`. Same Unicode-to-LaTeX
+ * post-processing as `formatConcludeQuadratic`.
+ */
+function formatConcludeFromIsolatedSquare(
+	op: EquationOperation & { kind: 'inequality-conclude-from-isolated-square' }
 ): string {
 	return `S = ${escapeLatexBacktickFreeText(op.solutionDescription)}`;
 }

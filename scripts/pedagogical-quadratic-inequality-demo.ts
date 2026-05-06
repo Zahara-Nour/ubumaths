@@ -14,12 +14,15 @@
  *   pnpm tsx scripts/pedagogical-quadratic-inequality-demo.ts --latex        # raw LaTeX
  *
  * Categories :
- *   dpos    Δ > 0 — two distinct real roots
- *   dnul    Δ = 0 — double root
- *   dneg    Δ < 0 — no real root
- *   neg-a   coefficient a < 0 (signs inverted in the table)
- *   degen   degenerate cases (a = 0 → linear delegation)
- *   noteq   `≠` operator
+ *   dpos      Δ > 0 — two distinct real roots
+ *   dnul      Δ = 0 — double root
+ *   dneg      Δ < 0 — no real root
+ *   neg-a     coefficient a < 0 (signs inverted in the table)
+ *   special   b = 0 — fast path via isolate-square (palier 2c)
+ *   c-zero    c = 0 — fast path via factor-x (palier 2c)
+ *   factored  already factored — fast path no Δ (palier 2c)
+ *   noteq     `≠` operator
+ *   degen     degenerate cases (a = 0 → linear delegation)
  */
 
 import { QuadraticEquationRenderer } from '../src/lib/mathAST/pedagogical-solve/quadratic-renderer';
@@ -149,14 +152,24 @@ const CASES: readonly { category: string; label: string; latex: string }[] = [
 	{ category: 'neg-a', label: '13. −x² + 5x − 6 > 0', latex: '-x^2 + 5x - 6 > 0' },
 	{ category: 'neg-a', label: '14. −x² − 1 > 0', latex: '-x^2 - 1 > 0' },
 
-	// Special : b = 0
+	// Special : b = 0 (palier 2c fast path — isolate-square)
 	{ category: 'special', label: '15. 2x² − 8 < 0', latex: '2x^2 - 8 < 0' },
+	{ category: 'special', label: '16. x² + 1 < 0 (Δ<0 + b=0)', latex: 'x^2 + 1 < 0' },
+	{ category: 'special', label: '17. x² + 1 ≥ 0 (toujours ℝ)', latex: 'x^2 + 1 \\geq 0' },
+
+	// c = 0 (palier 2c fast path — factor-x)
+	{ category: 'c-zero', label: '18. x² − 5x < 0', latex: 'x^2 - 5x < 0' },
+	{ category: 'c-zero', label: '19. x² + 3x ≥ 0', latex: 'x^2 + 3x \\geq 0' },
+
+	// Already factored (palier 2c fast path — no Δ, no standardize)
+	{ category: 'factored', label: '20. (x − 1)(x − 3) < 0', latex: '(x - 1)(x - 3) < 0' },
+	{ category: 'factored', label: '21. (2x + 4)(x − 1) > 0', latex: '(2x + 4)(x - 1) > 0' },
 
 	// Operator !=
-	{ category: 'noteq', label: '16. x² − 5x + 6 ≠ 0', latex: 'x^2 - 5x + 6 \\neq 0' },
+	{ category: 'noteq', label: '22. x² − 5x + 6 ≠ 0', latex: 'x^2 - 5x + 6 \\neq 0' },
 
 	// Degenerate (a = 0 → linear delegation)
-	{ category: 'degen', label: '17. 0·x² − 2x + 4 ≥ 0', latex: '-2x + 4 \\geq 0' }
+	{ category: 'degen', label: '23. 0·x² − 2x + 4 ≥ 0', latex: '-2x + 4 \\geq 0' }
 ];
 
 const VALID_CATEGORIES = new Set(CASES.map((c) => c.category));
@@ -203,13 +216,25 @@ function present(
 	// Use the dispatcher so a = 0 transparently delegates to linear.
 	const steps = generateInequalitySteps(expr, { level });
 
-	// Decide which renderer to use based on the steps' rules — inelegant but
-	// robust to delegation. Quadratic step rules include 'compute-discriminant'
-	// or 'quadratic-sign-table'; otherwise the linear renderer handles it.
-	const isQuadraticSteps = steps.some(
-		(s) =>
-			s.operation.kind === 'compute-discriminant' || s.operation.kind === 'quadratic-sign-table'
-	);
+	// Decide which renderer to use based on the operation kinds present.
+	// `superieur` doesn't emit `identify-equation`, so we look at the union of
+	// quadratic-specific kinds (palier 2b standard path + palier 2c fast paths).
+	const QUAD_KINDS = new Set<string>([
+		'compute-discriminant',
+		'discriminant-positive',
+		'discriminant-zero',
+		'discriminant-negative',
+		'apply-quadratic-formula',
+		'quadratic-sign-table',
+		'inequality-conclude-quadratic',
+		'inequality-conclude-from-isolated-square',
+		'recognize-no-linear-term',
+		'recognize-no-constant-term',
+		'recognize-factored',
+		'isolate-square',
+		'factor-common-x'
+	]);
+	const isQuadraticSteps = steps.some((s) => s.operation?.kind && QUAD_KINDS.has(s.operation.kind));
 	const renderer = isQuadraticSteps ? quadRenderer : linearRenderer;
 	const rendered = renderer.renderAll(steps, {
 		verbosity: 'detailed',
