@@ -272,9 +272,19 @@ en profondeur (discriminator étendu, case dispatch ajouté dans
   niveaux distincts (la simplification est enseignée dès le primaire).
   Catch `PedagogicalSimplifyNotImplemented` → fallback Mode A
   (matrices, inéquations, piecewise, logical, `auto` ambigu).
+- **`kind: 'arithmetic-from-blank'`** (`arithmetic-from-blank-progress.md`) —
+  variante de `kind: 'arithmetic'` qui réutilise une expression nommée
+  (variable `expression*` + marker `<<expr:NAME>>` détecté en amont par
+  `assign-blank-indices.ts`) au lieu de la dupliquer dans
+  `correction.generatedSteps.expression`. L'auteur passe juste
+  `expressionName: string`, le runtime lookup dans `instance.expressions[]`
+  étendu d'un nouveau champ `value` (expression custom post-résolution).
+  Pas de pipeline dédié — délègue à `pedagogical-arithmetic` via
+  `renderArithmetic`. Fallback silencieux si name inconnu / value
+  non-parsable / relation node.
 
 **État actuel :** la page debug `/dashboard/admin/debug/correction-mode-b`
-expose **15 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
+expose **16 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 `linearEquationDemo` (4e équation linéaire),
 `differentiatePolynomialDemo` + `differentiateCompositionDemo`
 (1ère/Tle spé), `quadraticEquationDemo` (Tle spé),
@@ -284,9 +294,10 @@ expose **15 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 `rationalInequalitySimpleDemo` + `rationalInequalityQuadDenomDemo`
 (1ère/Tle spé), `integrateIndefiniteDemo` + `integrateDefiniteDemo`
 (Tle spé), `simplifyDistributionDemo` (4e) +
-`simplifyTrigDemo` (1ère spé).
+`simplifyTrigDemo` (1ère spé), `arithmeticFromBlankDemo` (CM2,
+expression nommée).
 
-Ces 6 extensions valident que l'architecture Mode B est suffisamment
+Ces 7 extensions valident que l'architecture Mode B est suffisamment
 robuste pour accueillir de nouveaux pipelines pédagogiques sans refactoring
 de la glue. Le pattern `(types/Zod loose+strict/correction-generator
 case/fixtures/page debug card)` est devenu reproductible mécaniquement.

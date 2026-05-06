@@ -173,6 +173,14 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 					verbosity
 				});
 				break;
+			case 'arithmetic-from-blank':
+				renderedSteps = renderArithmeticFromBlank({
+					expressionName: generatedSteps.expressionName,
+					instance,
+					schoolLevel,
+					verbosity
+				});
+				break;
 		}
 
 		if (renderedSteps === null) return instance;
@@ -215,6 +223,56 @@ function renderArithmetic({
 
 	// Refuse a relation node in the arithmetic kind — the author meant to use
 	// `linear-equation`. Silent fallback so a swap-of-kind doesn't crash the UI.
+	if (node.type === 'relation') return null;
+
+	const target = extractPedagogicalTarget(instance);
+	const result = generatePedagogicalArithmeticSteps(node, {
+		schoolLevel,
+		target,
+		verbosity
+	});
+
+	const renderer = new PedagogicalArithmeticRenderer();
+	const renderOptions: PedagogicalRenderOptions = { schoolLevel, verbosity };
+	return renderer.renderAll(result.steps, renderOptions);
+}
+
+interface ArithmeticFromBlankDispatch {
+	readonly expressionName: string;
+	readonly instance: QuestionInstance;
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+}
+
+/**
+ * Reuse a named expression already declared in the statement (via the
+ * `<<expr:NAME>>` marker convention) instead of requiring the author to
+ * duplicate it on the correction.
+ *
+ * `expr.value` is captured post variable resolution by `instance-generator.ts`,
+ * so we parse it directly with `parseCustomSafe` instead of going through
+ * `parseExpression` — the latter would re-run `resolveExpression`, which also
+ * runs `resolveColorReferences` and could mutate a string that happens to
+ * resemble a color/template reference. Direct parsing keeps the contract crisp.
+ *
+ * Silent fallback to Mode A on any of:
+ *   - expressionName not declared on `instance.expressions[]`
+ *   - `expr.value` undefined (test mocks may omit it)
+ *   - parse failure
+ *   - parsed node is a relation (use `linear-equation` / `quadratic-equation`)
+ */
+function renderArithmeticFromBlank({
+	expressionName,
+	instance,
+	schoolLevel,
+	verbosity
+}: ArithmeticFromBlankDispatch): readonly RenderedStep[] | null {
+	const expr = instance.expressions?.find((e) => e.name === expressionName);
+	if (!expr || !expr.value) return null;
+
+	const parseResult = parseCustomSafe(expr.value.trim());
+	const node = parseResult.ast;
+	if (!node) return null;
 	if (node.type === 'relation') return null;
 
 	const target = extractPedagogicalTarget(instance);

@@ -218,7 +218,7 @@ describe('Fill-in-blanks: expression convention', () => {
 		expect(result.instance.statement).toContain('<<expr:expression1>>');
 	});
 
-	it('should populate instance.expressions[] with name, latex, and answerFormat', () => {
+	it('should populate instance.expressions[] with name, latex, value, and answerFormat', () => {
 		const template = makeFillInTemplate({
 			statement: templateMarkdown('$${{expression1}}$$'),
 			variables: [
@@ -241,6 +241,31 @@ describe('Fill-in-blanks: expression convention', () => {
 		expect(result.instance.expressions![0].latex.length).toBeGreaterThan(0);
 		// answerFormat "?" → \placeholder[0]{}
 		expect(result.instance.expressions![0].answerFormat).toContain('\\placeholder[0]{}');
+		// value is the custom-format expression post variable resolution
+		expect(result.instance.expressions![0].value).toBe('2+3');
+	});
+
+	it('should populate instance.expressions[].value with custom format (no LaTeX)', () => {
+		// Custom format keeps `*` (LaTeX would render `\times`); value must be parsable
+		// by parseCustomSafe and consumable by pedagogical-arithmetic.
+		const template = makeFillInTemplate({
+			statement: templateMarkdown('$${{expression1}}$$'),
+			variables: [
+				{ name: 'a', expression: '2' },
+				{ name: 'b', expression: '3' },
+				{ name: 'c', expression: '4' },
+				{ name: 'expression1', expression: '{{a}}+{{b}}*{{c}}' }
+			],
+			blanks: [{ expectedAnswer: '{{eval:a+b*c}}' }]
+		});
+
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.expressions![0].value).toBe('2+3*4');
+		// LaTeX contains \times, value does not — they are different formats
+		expect(result.instance.expressions![0].value).not.toContain('\\times');
 	});
 
 	it('should use default answerFormat "?" when no answerFormats entry exists', () => {

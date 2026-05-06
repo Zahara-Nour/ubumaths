@@ -136,6 +136,38 @@ describe('generatedStepsSchema', () => {
 		});
 		expect(result.success).toBe(false);
 	});
+
+	it('accepts arithmetic-from-blank with expressionName', () => {
+		const result = generatedStepsSchema.safeParse({
+			kind: 'arithmetic-from-blank',
+			expressionName: 'expression1'
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts arithmetic-from-blank with options', () => {
+		const result = generatedStepsSchema.safeParse({
+			kind: 'arithmetic-from-blank',
+			expressionName: 'expression1',
+			options: { schoolLevel: 'lycee', verbosity: 'summarized' }
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('rejects arithmetic-from-blank without expressionName', () => {
+		const result = generatedStepsSchema.safeParse({
+			kind: 'arithmetic-from-blank'
+		});
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects arithmetic-from-blank with empty expressionName', () => {
+		const result = generatedStepsSchema.safeParse({
+			kind: 'arithmetic-from-blank',
+			expressionName: ''
+		});
+		expect(result.success).toBe(false);
+	});
 });
 
 describe('generatedStepsOptionsSchema', () => {

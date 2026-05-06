@@ -487,6 +487,27 @@ exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps wi
 ]
 `;
 
+exports[`Mode B end-to-end demos > CM2 arithmetic-from-blank — produces primaire steps reusing the named expression 1`] = `
+[
+  {
+    "hasExplanation": false,
+    "hasExpressionLatex": true,
+    "id": 0,
+    "rule": "evaluate-binary-mul",
+    "schoolLevel": "primaire",
+    "title": "On multiplie 3 par 4",
+  },
+  {
+    "hasExplanation": false,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "evaluate-binary-add",
+    "schoolLevel": "primaire",
+    "title": "On additionne 2 et 12",
+  },
+]
+`;
+
 exports[`Mode B end-to-end demos > Terminale spécialité composition differentiation — produces sin + linear-coefficient sub-step 1`] = `
 [
   {

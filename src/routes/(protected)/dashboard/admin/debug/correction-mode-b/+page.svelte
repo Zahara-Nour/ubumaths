@@ -14,6 +14,7 @@
 	import { generateInstance } from '$lib/questions/generator/instance-generator';
 	import {
 		additionGroupingDemo,
+		arithmeticFromBlankDemo,
 		differentiateCompositionDemo,
 		differentiatePolynomialDemo,
 		integrateDefiniteDemo,
@@ -54,6 +55,7 @@
 	const integrateDefiniteResult = generateInstance(integrateDefiniteDemo, 1);
 	const simplifyDistributionResult = generateInstance(simplifyDistributionDemo, 1);
 	const simplifyTrigResult = generateInstance(simplifyTrigDemo, 1);
+	const arithmeticFromBlankResult = generateInstance(arithmeticFromBlankDemo, 1);
 
 	function buildAnswerResult(
 		result: ReturnType<typeof generateInstance>,
@@ -107,6 +109,8 @@
 	const simplifyDistributionIncorrect = buildAnswerResult(simplifyDistributionResult, 1, false);
 	const simplifyTrigCorrect = buildAnswerResult(simplifyTrigResult, 0, true);
 	const simplifyTrigIncorrect = buildAnswerResult(simplifyTrigResult, 1, false);
+	const arithmeticFromBlankCorrect = buildAnswerResult(arithmeticFromBlankResult, 0, true);
+	const arithmeticFromBlankIncorrect = buildAnswerResult(arithmeticFromBlankResult, 1, false);
 
 	// ============================================================================
 	// Raw step inspector
@@ -179,6 +183,11 @@
 	);
 	const simplifyTrigSteps = $derived(
 		simplifyTrigResult.success ? simplifyTrigResult.instance.correction?._renderedSteps : undefined
+	);
+	const arithmeticFromBlankSteps = $derived(
+		arithmeticFromBlankResult.success
+			? arithmeticFromBlankResult.instance.correction?._renderedSteps
+			: undefined
 	);
 </script>
 
@@ -328,6 +337,16 @@
 					<span class="text-red-600">✗ {simplifyTrigResult.errors.join(', ')}</span>
 				{/if}
 			</div>
+			<div>
+				<span class="font-mono">arithmeticFromBlankDemo</span> :
+				{#if arithmeticFromBlankResult.success}
+					<span class="text-green-600"
+						>✓ {arithmeticFromBlankSteps?.length ?? 0} étape(s) générée(s) (top-level)</span
+					>
+				{:else}
+					<span class="text-red-600">✗ {arithmeticFromBlankResult.errors.join(', ')}</span>
+				{/if}
+			</div>
 			<Button variant="outline" size="sm" onclick={() => (showJson = !showJson)}>
 				{showJson ? 'Masquer' : 'Afficher'} le JSON brut des RenderedStep[]
 			</Button>
@@ -346,7 +365,8 @@
 							integrateIndefinite: integrateIndefiniteSteps,
 							integrateDefinite: integrateDefiniteSteps,
 							simplifyDistribution: simplifyDistributionSteps,
-							simplifyTrig: simplifyTrigSteps
+							simplifyTrig: simplifyTrigSteps,
+							arithmeticFromBlank: arithmeticFromBlankSteps
 						},
 						null,
 						2
@@ -557,6 +577,19 @@
 				<Card.Content>
 					{#if simplifyTrigSteps}
 						<GeneratedStepsCorrection steps={simplifyTrigSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>CM2 — arithmétique via expression nommée (from-blank)</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if arithmeticFromBlankSteps}
+						<GeneratedStepsCorrection steps={arithmeticFromBlankSteps} />
 					{:else}
 						<p class="text-muted-foreground">Aucune étape générée.</p>
 					{/if}
@@ -813,6 +846,22 @@
 				<div>
 					<h3 class="mb-2 text-lg font-medium">1ère spé — sin²+cos² — incorrecte</h3>
 					<CorrectionCard answerResult={simplifyTrigIncorrect} questionNumber={30} size="md" />
+				</div>
+			{/if}
+			{#if arithmeticFromBlankCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">CM2 — from-blank — correcte</h3>
+					<CorrectionCard answerResult={arithmeticFromBlankCorrect} questionNumber={31} size="md" />
+				</div>
+			{/if}
+			{#if arithmeticFromBlankIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">CM2 — from-blank — incorrecte</h3>
+					<CorrectionCard
+						answerResult={arithmeticFromBlankIncorrect}
+						questionNumber={32}
+						size="md"
+					/>
 				</div>
 			{/if}
 		</div>
