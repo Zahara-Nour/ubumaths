@@ -12,7 +12,8 @@
 | 3   | `a974787d7` | fix(pedagogical-solve): renderer aligned-block uses flipped operator on after-line   |
 | 4   | `533aa6259` | feat(questions): wire 'linear-inequality' kind end-to-end + CLI pretty-print         |
 | 5   | `02522eebb` | docs(wip): consolidate palier 2a progress doc                                        |
-| 6   | _pending_   | fix(sign): split intervals at excludedPoints natively + remove inequality workaround |
+| 6   | `1cf5690e9` | fix(sign): split intervals at excludedPoints natively + remove inequality workaround |
+| 7   | `184af30a9` | style(sign): move PARTITION_DEDUPE_TOLERANCE after all imports                       |
 
 ## Livrable
 
