@@ -9,16 +9,23 @@
  *  2. Normalize step names (from `normal/normalize.ts`) — already documented
  *     in `normal/rule-descriptions-fr.ts`.
  *
- * The Phase 3 pedagogical renderer will rewrite these per `SchoolLevel`. This
- * module provides a default neutral French sentence used as the
- * `step.description` field when steps are emitted by the pipeline (Phase 2),
- * so consumers reading the raw recorder output do not see the generic
- * `"Règle: <name>"` fallback.
+ * Two output spaces are populated :
+ *
+ *  - `getPedagogicalSimplifyRuleDescription(name)` — neutral pedagogical
+ *    sentence stamped on every emitted `PedagogicalSimplifyStep`. Used by
+ *    the pipeline (Phase 2). Single dictionary, no school-level adaptation.
+ *
+ *  - `TITLES[level][rule]` and `EXPLANATIONS[level][rule]` — school-level-
+ *    adapted strings consumed by the Phase 3 renderer. Populated only for
+ *    rules that materially benefit from a level-specific phrasing ; the
+ *    renderer falls back through `lycee → step.description` for the rest.
  *
  * @module mathAST/pedagogical-simplify/descriptions-fr
  */
 
+import type { SchoolLevel } from '../common/step-renderer-base';
 import { getRuleDescription as getNormalizeRuleDescription } from '../normal/step-recorder';
+import type { PedagogicalSimplifyStep } from './types';
 
 /**
  * Default French descriptions for the pattern rules used by the pedagogical
@@ -122,4 +129,189 @@ export function getPedagogicalSimplifyRuleDescription(name: string): string {
 	// Falls back to the normalize-side dictionary, which itself returns
 	// `"Règle : <name>"` for truly unknown names.
 	return getNormalizeRuleDescription(name);
+}
+
+// =============================================================================
+// School-level adapted titles & explanations (Phase 3 renderer)
+// =============================================================================
+
+export type TitleFn = (step: PedagogicalSimplifyStep) => string;
+export type ExplainFn = (step: PedagogicalSimplifyStep) => string | undefined;
+
+type RuleFnMap<F> = Partial<Record<string, F>>;
+
+/**
+ * `lycee` is the default level-vocabulary anchor : every other level
+ * references it via fallback. Aim for a teacher-correct French sentence
+ * that reads well in the corresponding `EXPLANATIONS` table.
+ */
+const LYCEE_TITLES: RuleFnMap<TitleFn> = {
+	// distribution
+	'expand-sum-squared': () => 'On développe (a+b)² avec l’identité remarquable',
+	'expand-diff-squared': () => 'On développe (a-b)² avec l’identité remarquable',
+	'product-to-diff-squares': () => 'On reconnaît (a+b)(a-b) = a² - b²',
+	'distribute-binomial-product': () => 'On distribue le produit des deux binômes',
+	// factorisation
+	'diff-squares-symbolic': () => 'On factorise avec a² - b² = (a+b)(a-b)',
+	'diff-squares-numeric': () => 'On factorise avec a² - b² = (a+b)(a-b)',
+	'perfect-square-trinomial': () => 'On reconnaît un trinôme carré parfait',
+	'sum-cubes-symbolic': () => 'On factorise a³ + b³',
+	'diff-cubes-symbolic': () => 'On factorise a³ - b³',
+	// trig
+	pythagorean: () => 'On utilise sin²(x) + cos²(x) = 1',
+	'sin-negative': () => 'sin est impaire : sin(-x) = -sin(x)',
+	'cos-negative': () => 'cos est paire : cos(-x) = cos(x)',
+	'sin-period-2pi': () => 'sin est 2π-périodique',
+	'cos-period-2pi': () => 'cos est 2π-périodique',
+	'sin-over-cos': () => 'sin(x)/cos(x) = tan(x)',
+	// log/exp
+	'ln-exp': () => 'ln et exp sont réciproques : ln(eˣ) = x',
+	'exp-ln': () => 'ln et exp sont réciproques : exp(ln(x)) = x',
+	'ln-product': () => 'ln(a·b) = ln(a) + ln(b)',
+	'ln-quotient': () => 'ln(a/b) = ln(a) - ln(b)',
+	'ln-pow': () => 'ln(aⁿ) = n·ln(a)',
+	// abs
+	'abs-negation': () => '|-x| = |x|',
+	'abs-product': () => '|a·b| = |a|·|b|',
+	// puissances
+	'same-base-mul': () => 'aᵐ · aⁿ = aᵐ⁺ⁿ',
+	'pow-of-pow': () => '(aᵐ)ⁿ = aᵐⁿ',
+	// radicaux
+	'sqrt-product': () => '√(a·b) = √a · √b',
+	'sqrt-square': () => '√(a²) = |a|',
+	// normalize-side (frequent)
+	'combine-like-terms': () => 'On regroupe les termes semblables',
+	'simplify-fraction': () => 'On réduit la fraction',
+	'radical-simplify': () => 'On simplifie le radical',
+	'sqrt-extract-perfect-square': () => 'On extrait le carré parfait du radical',
+	'expand-power': () => 'On développe la puissance',
+	'trig-known-value': () => 'On évalue la valeur trigonométrique connue',
+	'trig-pi-shift': () => 'On utilise la périodicité π'
+};
+
+const COLLEGE_TITLES: RuleFnMap<TitleFn> = {
+	'expand-sum-squared': () => 'On utilise (a+b)² = a² + 2ab + b²',
+	'expand-diff-squared': () => 'On utilise (a-b)² = a² - 2ab + b²',
+	'product-to-diff-squares': () => 'On utilise (a+b)(a-b) = a² - b²',
+	'distribute-binomial-product': () => 'On distribue chaque terme',
+	'diff-squares-numeric': () => 'On factorise avec l’identité a² - b²',
+	'perfect-square-trinomial': () => 'On reconnaît a² ± 2ab + b² = (a±b)²',
+	'combine-like-terms': () => 'On regroupe les termes en x',
+	'simplify-fraction': () => 'On simplifie la fraction'
+};
+
+const PRIMAIRE_TITLES: RuleFnMap<TitleFn> = {
+	'combine-like-terms': () => 'On regroupe les nombres',
+	'simplify-fraction': () => 'On rend la fraction plus simple',
+	'abs-negation': () => 'L’opposé d’un nombre a la même distance à zéro',
+	'additive-identity-left': () => 'Ajouter zéro ne change rien',
+	'multiplicative-identity-left': () => 'Multiplier par 1 ne change rien'
+};
+
+const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
+	'expand-sum-squared': () => 'Identité (a+b)²',
+	'expand-diff-squared': () => 'Identité (a-b)²',
+	'product-to-diff-squares': () => 'Identité a² - b²',
+	'distribute-binomial-product': () => 'Distribution',
+	'diff-squares-symbolic': () => 'Factorisation a² - b²',
+	'perfect-square-trinomial': () => 'Trinôme carré parfait',
+	pythagorean: () => 'Pythagore',
+	'sin-negative': () => 'Imparité de sin',
+	'cos-negative': () => 'Parité de cos',
+	'ln-product': () => 'ln additif',
+	'ln-quotient': () => 'ln soustractif',
+	'ln-pow': () => 'ln·n',
+	'abs-negation': () => '|-x| = |x|',
+	'same-base-mul': () => 'aᵐ⁺ⁿ',
+	'sqrt-product': () => '√(ab)',
+	'combine-like-terms': () => 'Termes semblables',
+	'simplify-fraction': () => 'Réduction',
+	'radical-simplify': () => 'Radical'
+};
+
+const TITLES: Record<SchoolLevel, RuleFnMap<TitleFn>> = {
+	primaire: PRIMAIRE_TITLES,
+	college: COLLEGE_TITLES,
+	lycee: LYCEE_TITLES,
+	superieur: SUPERIEUR_TITLES
+};
+
+const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
+	'expand-sum-squared': () => 'Le carré d’une somme : (a+b)² = a² + 2ab + b².',
+	'expand-diff-squared': () => 'Le carré d’une différence : (a-b)² = a² - 2ab + b².',
+	'product-to-diff-squares': () => 'Le produit (a+b)(a-b) est la différence des carrés a² - b².',
+	'distribute-binomial-product': () =>
+		'On multiplie chaque terme du premier binôme par chaque terme du second.',
+	'diff-squares-numeric': () =>
+		'On reconnaît une différence de deux carrés : a² - b² = (a+b)(a-b).',
+	'perfect-square-trinomial': () =>
+		'On reconnaît un trinôme du second degré qui est le carré parfait d’un binôme.',
+	pythagorean: () => 'L’identité fondamentale : pour tout x réel, sin²(x) + cos²(x) = 1.',
+	'sin-negative': () => 'La fonction sinus est impaire : sin(-x) = -sin(x).',
+	'cos-negative': () => 'La fonction cosinus est paire : cos(-x) = cos(x).',
+	'ln-product': () => 'Le logarithme transforme un produit en somme : ln(a·b) = ln(a) + ln(b).',
+	'ln-pow': () => 'Le logarithme d’une puissance : ln(aⁿ) = n·ln(a).',
+	'abs-negation': () => 'La valeur absolue d’un nombre et de son opposé sont égales.',
+	'combine-like-terms': () =>
+		'On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.',
+	'simplify-fraction': () => 'On divise numérateur et dénominateur par leur PGCD.',
+	'radical-simplify': () => 'On extrait du radical les facteurs qui sont des carrés parfaits.',
+	'sqrt-extract-perfect-square': () =>
+		'On extrait du radical les facteurs qui sont des carrés parfaits.'
+};
+
+const COLLEGE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
+	'expand-sum-squared': () =>
+		'On utilise la première identité remarquable : (a+b)² = a² + 2ab + b².',
+	'expand-diff-squared': () =>
+		'On utilise la deuxième identité remarquable : (a-b)² = a² - 2ab + b².',
+	'product-to-diff-squares': () =>
+		'On utilise la troisième identité remarquable : (a+b)(a-b) = a² - b².',
+	'distribute-binomial-product': () =>
+		'On distribue : chaque terme du premier facteur multiplie chaque terme du second.',
+	'combine-like-terms': () => 'Les termes en x se regroupent entre eux, ceux en x² entre eux, etc.',
+	'simplify-fraction': () => 'On divise le numérateur et le dénominateur par un même nombre.'
+};
+
+const PRIMAIRE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
+	'combine-like-terms': () =>
+		'On regroupe les nombres et les lettres pour avoir une expression plus courte.',
+	'simplify-fraction': () =>
+		'Une fraction peut s’écrire avec des nombres plus petits si on divise le haut et le bas par le même nombre.'
+};
+
+const EXPLANATIONS: Record<SchoolLevel, RuleFnMap<ExplainFn>> = {
+	primaire: PRIMAIRE_EXPLANATIONS,
+	college: COLLEGE_EXPLANATIONS,
+	lycee: LYCEE_EXPLANATIONS,
+	superieur: {} // sup is intentionally terse — title only, no explanation
+};
+
+/**
+ * Resolve the school-level-adapted title for a step, with fallback :
+ *   `TITLES[level][rule]` → `TITLES.lycee[rule]` → `step.description`
+ *
+ * Returns the title as a string ; the renderer wraps it into a
+ * `RenderedStep`.
+ */
+export function lookupTitle(level: SchoolLevel, step: PedagogicalSimplifyStep): string {
+	const fn =
+		TITLES[level]?.[step.rule] ??
+		TITLES.lycee?.[step.rule] ??
+		((s: PedagogicalSimplifyStep) => s.description);
+	return fn(step);
+}
+
+/**
+ * Resolve the school-level-adapted explanation for a step. Returns
+ * `undefined` when no entry exists (e.g. always at `superieur`, often at
+ * other levels for less-pedagogical rules) so the renderer can omit the
+ * field rather than fall back to the title.
+ */
+export function lookupExplanation(
+	level: SchoolLevel,
+	step: PedagogicalSimplifyStep
+): string | undefined {
+	const fn = EXPLANATIONS[level]?.[step.rule] ?? EXPLANATIONS.lycee?.[step.rule];
+	return fn ? fn(step) : undefined;
 }
