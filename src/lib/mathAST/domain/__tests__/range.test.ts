@@ -1301,11 +1301,16 @@ describe('computeRange()', () => {
 			expect(result.range).toBeNull();
 		});
 
-		it('sqrt(x² + 1) on [-2, 2] returns null (composition not handled)', () => {
+		it('sqrt(x² + 1) on [-2, 2] returns a finite range — composition now handled via rational solver', () => {
 			const expr = func('sqrt', [add(power(variable('x'), number('2')), number('1'))]);
 			const result = computeRange(expr, 'x', { domain: closedIntervalDomain(-2, 2) });
-			// sqrt(x²+1) is differentiable, but the solver may fail on the nested composition
-			expect(result.range).toBeNull();
+			// Derivative is `x / sqrt(x²+1)`. The critical point at x = 0
+			// requires the rational solver `tryRationalDecomposition` added in
+			// 2026-05-06 — see solve/rational.ts. Before that fix, solve()
+			// failed on the rational form and computeRange returned null;
+			// now it produces the correct range [1, √5].
+			expect(result.range).not.toBeNull();
+			expect(result.range?.kind).toBe('interval_set');
 		});
 	});
 });

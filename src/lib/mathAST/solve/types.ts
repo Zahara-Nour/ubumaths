@@ -29,6 +29,7 @@ export type EquationType =
 	| 'linear' // ax + b = 0
 	| 'quadratic' // ax^2 + bx + c = 0
 	| 'polynomial' // higher degree polynomials
+	| 'rational' // P(x) / Q(x) = 0 — solved by P(x) = 0 minus extraneous roots
 	| 'exponential' // involving exp/e^x
 	| 'logarithmic' // involving ln/log
 	| 'trigonometric' // involving sin/cos/tan

@@ -81,6 +81,7 @@ import type { Solution, PeriodicSolutionFamily } from './types';
 import { getRuleDescription } from './descriptions-fr';
 import { computeDomain } from '../domain/compute';
 import { promoteEulerInRelation } from './promote-euler';
+import { tryRationalDecomposition, createRationalDepthState } from './rational';
 import type { Domain } from '../domain/types';
 import {
 	containsNode,
@@ -1194,6 +1195,28 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Try radical decomposition (√x, ∛x, x^(p/q))
 	if (!result) {
 		result = tryRadicalDecomposition(expr, variable, opts);
+	}
+
+	// Try rational decomposition (P(x)/Q(x) = 0). Runs after the polynomial-
+	// shaped paths above (product, trig, exp/log, radical) so that
+	// already-polynomial expressions take their proper specialized route ;
+	// rational acts as the catch-all for anything `normalize` reduces to a
+	// fraction with the variable in the denominator.
+	//
+	// A fresh depth-state box is created per top-level invocation — the box
+	// is passed into `tryRationalDecomposition` (rather than using a module-
+	// level counter) so that re-entrancy from sign/range modules and
+	// parallel test workers cannot observe stale state.
+	if (!result) {
+		const rationalRecorder = createStepRecorder();
+		result = tryRationalDecomposition(
+			expr,
+			variable,
+			opts,
+			rationalRecorder,
+			solve,
+			createRationalDepthState()
+		);
 	}
 
 	// Try transcendental solver directly before classification.
