@@ -1,0 +1,330 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pedagogical-simplify-demo — snapshots > combinaison > 2x + 3x 1`] = `
+"# 2x + 3x — intent=reduire — 2x + 3x
+
+## lycee (verbosity=detailed)
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{2 x + 3 x} & \\\\ = 5 x \\end{aligned}
+=> 5 x"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > combinaison > 3x + 2y + x - y 1`] = `
+"# 3x + 2y + x - y — intent=reduire — 3x + 2y + x - y
+
+## lycee (verbosity=detailed)
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{3 x + 2 y + x - y} & \\\\ = 4 x + y \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{3 x + 2 y + x - y} & \\\\ = 4 x + y \\end{aligned}
+=> 4 x + y"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > combinaison > 5x² - 2x² 1`] = `
+"# 5x² - 2x² — intent=reduire — 5x^2 - 2x^2
+
+## lycee (verbosity=detailed)
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{5 x^2 - 2 x^2} & \\\\ = 3 x^2 \\end{aligned}
+=> 3 x^2"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > distribution > (2x+3)(x-1) 1`] = `
+"# (2x+3)(x-1) — intent=developper — (2x+3)(x-1)
+
+## lycee (verbosity=detailed)
+- [distribute-binomial-product] On distribue le produit des deux binômes
+  · On multiplie chaque terme du premier binôme par chaque terme du second.
+  \\begin{aligned} \\textcolor{blue}{\\left( 2 x + 3 \\right) \\left( x - 1 \\right)} & \\\\ = 2 x x - 2 x 1 + 3 x - 3 1 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{2 x x - 2 x 1 + 3 x - 3 1} & \\\\ = 2 x^2 + x - 3 \\end{aligned}
+=> 2 x^2 + x - 3"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > distribution > (x+1)(x-1) 1`] = `
+"# (x+1)(x-1) — intent=developper — (x+1)(x-1)
+
+## lycee (verbosity=detailed)
+- [product-to-diff-squares] On reconnaît (a+b)(a-b) = a² - b²
+  · Le produit (a+b)(a-b) est la différence des carrés a² - b².
+  \\begin{aligned} \\textcolor{blue}{\\left( x + 1 \\right) \\left( x - 1 \\right)} & \\\\ = x^2 - 1^2 \\end{aligned}
+- [expand-power] On développe la puissance
+  \\begin{aligned} \\textcolor{blue}{x^2 - 1^2} & \\\\ = x^2 - 1 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{x^2 - 1^2} & \\\\ = x^2 - 1 \\end{aligned}
+=> x^2 - 1"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > distribution > (x+1)² 1`] = `
+"# (x+1)² — intent=developper — (x+1)^2
+
+## lycee (verbosity=detailed)
+- [expand-sum-squared] On développe (a+b)² avec l’identité remarquable
+  · Le carré d’une somme : (a+b)² = a² + 2ab + b².
+  \\begin{aligned} \\textcolor{blue}{\\left( x + 1 \\right)^2} & \\\\ = x^2 + 2 x 1 + 1^2 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{x^2 + 2 x 1 + 1^2} & \\\\ = x^2 + 2 x + 1 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{x^2 + 2 x 1 + 1^2} & \\\\ = x^2 + 2 x + 1 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{x^2 + 2 x 1 + 1^2} & \\\\ = x^2 + 2 x + 1 \\end{aligned}
+- [expand-power] On développe la puissance
+  \\begin{aligned} \\textcolor{blue}{x^2 + 2 x 1 + 1^2} & \\\\ = x^2 + 2 x + 1 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{x^2 + 2 x 1 + 1^2} & \\\\ = x^2 + 2 x + 1 \\end{aligned}
+=> x^2 + 2 x + 1"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > distribution > (x-1)² 1`] = `
+"# (x-1)² — intent=developper — (x-1)^2
+
+## lycee (verbosity=detailed)
+- [expand-diff-squared] On développe (a-b)² avec l’identité remarquable
+  · Le carré d’une différence : (a-b)² = a² - 2ab + b².
+  \\begin{aligned} \\textcolor{blue}{\\left( x - 1 \\right)^2} & \\\\ = x^2 - 2 x 1 + 1^2 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{x^2 - 2 x 1 + 1^2} & \\\\ = x^2 - 2 x + 1 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{x^2 - 2 x 1 + 1^2} & \\\\ = x^2 - 2 x + 1 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{x^2 - 2 x 1 + 1^2} & \\\\ = x^2 - 2 x + 1 \\end{aligned}
+- [expand-power] On développe la puissance
+  \\begin{aligned} \\textcolor{blue}{x^2 - 2 x 1 + 1^2} & \\\\ = x^2 - 2 x + 1 \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{x^2 - 2 x 1 + 1^2} & \\\\ = x^2 - 2 x + 1 \\end{aligned}
+=> x^2 - 2 x + 1"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > factorisation > x² + 2x + 1 1`] = `
+"# x² + 2x + 1 — intent=factoriser — x^2 + 2x + 1
+
+## lycee (verbosity=detailed)
+- [perfect-square-trinomial] On reconnaît un trinôme carré parfait
+  · On reconnaît un trinôme du second degré qui est le carré parfait d’un binôme.
+  \\begin{aligned} \\textcolor{blue}{x^2 + 2 x + 1} & \\\\ = \\left( x + 1 \\right)^2 \\end{aligned}
+=> \\left( x + 1 \\right)^2"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > factorisation > x² + 6x + 9 1`] = `
+"# x² + 6x + 9 — intent=factoriser — x^2 + 6x + 9
+
+## lycee (verbosity=detailed)
+- [perfect-square-trinomial] On reconnaît un trinôme carré parfait
+  · On reconnaît un trinôme du second degré qui est le carré parfait d’un binôme.
+  \\begin{aligned} \\textcolor{blue}{x^2 + 6 x + 9} & \\\\ = \\left( x + 3 \\right)^2 \\end{aligned}
+=> \\left( x + 3 \\right)^2"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > factorisation > x² - 4 1`] = `
+"# x² - 4 — intent=factoriser — x^2 - 4
+
+## lycee (verbosity=detailed)
+- [diff-squares-numeric] On factorise avec a² - b² = (a+b)(a-b)
+  · On reconnaît une différence de deux carrés : a² - b² = (a+b)(a-b).
+  \\begin{aligned} \\textcolor{blue}{x^2 - 4} & \\\\ = \\left( x + 2 \\right) \\left( x - 2 \\right) \\end{aligned}
+=> \\left( x + 2 \\right) \\left( x - 2 \\right)"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > factorisation > x³ - 8 1`] = `
+"# x³ - 8 — intent=factoriser — x^3 - 8
+
+## lycee (verbosity=detailed)
+- [diff-cubes-numeric] Factorisation : a³ - b³ = (a-b)(a² + ab + b²)
+  \\begin{aligned} \\textcolor{blue}{x^3 - 8} & \\\\ = \\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
+=> \\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right)"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > fractions > (2x+4)/2 1`] = `
+"# (2x+4)/2 — intent=reduire — \\frac{2x+4}{2}
+
+## lycee (verbosity=detailed)
+- [simplify-fraction] On réduit la fraction
+  · On divise numérateur et dénominateur par leur PGCD.
+  \\begin{aligned} \\textcolor{blue}{\\dfrac{2 x + 4}{2}} & \\\\ = x + 2 \\end{aligned}
+=> x + 2"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > fractions > 1/2 + 1/3 1`] = `
+"# 1/2 + 1/3 — intent=reduire — \\frac{1}{2} + \\frac{1}{3}
+
+## lycee (verbosity=detailed)
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{\\dfrac{1}{2} + \\dfrac{1}{3}} & \\\\ = \\dfrac{5}{6} \\end{aligned}
+=> \\dfrac{5}{6}"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > fractions > 6/8 1`] = `
+"# 6/8 — intent=reduire — \\frac{6}{8}
+
+## lycee (verbosity=detailed)
+- [simplify-fraction] On réduit la fraction
+  · On divise numérateur et dénominateur par leur PGCD.
+  \\begin{aligned} \\textcolor{blue}{\\dfrac{6}{8}} & \\\\ = \\dfrac{3}{4} \\end{aligned}
+=> \\dfrac{3}{4}"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > identites-log-exp > e^(ln x) 1`] = `
+"# e^(ln x) — intent=reduire — e^{\\ln(x)}
+
+## lycee (verbosity=detailed)
+(no steps — already simplified for this intent)
+=> e^{\\ln\\left( x \\right)}"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > identites-log-exp > ln(2·3) 1`] = `
+"# ln(2·3) — intent=reduire — \\ln(2 \\cdot 3)
+
+## lycee (verbosity=detailed)
+- [ln-product] ln(a·b) = ln(a) + ln(b)
+  · Le logarithme transforme un produit en somme : ln(a·b) = ln(a) + ln(b).
+  \\begin{aligned} \\textcolor{blue}{\\ln\\left( 2 \\cdot 3 \\right)} & \\\\ = \\ln\\left( 2 \\right) + \\ln\\left( 3 \\right) \\end{aligned}
+=> \\ln\\left( 2 \\right) + \\ln\\left( 3 \\right)"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > identites-log-exp > ln(eˣ) 1`] = `
+"# ln(eˣ) — intent=reduire — \\ln(e^x)
+
+## lycee (verbosity=detailed)
+- [ln-pow] ln(aⁿ) = n·ln(a)
+  · Le logarithme d’une puissance : ln(aⁿ) = n·ln(a).
+  \\begin{aligned} \\textcolor{blue}{\\ln\\left( e^x \\right)} & \\\\ = x \\ln\\left( e \\right) \\end{aligned}
+=> x \\ln\\left( e \\right)"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > identites-trig > sin(-x) 1`] = `
+"# sin(-x) — intent=reduire — \\sin(-x)
+
+## lycee (verbosity=detailed)
+- [odd-function-parity] Règle: odd-function-parity
+  \\begin{aligned} \\textcolor{blue}{\\sin\\left( -x \\right)} & \\\\ = -\\sin\\left( x \\right) \\end{aligned}
+=> -\\sin\\left( x \\right)"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > identites-trig > sin(x + 2π) 1`] = `
+"# sin(x + 2π) — intent=reduire — \\sin(x + 2\\pi)
+
+## lycee (verbosity=detailed)
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{\\sin\\left( x + 2 \\pi \\right)} & \\\\ = \\sin\\left( x \\right) \\end{aligned}
+- [trig-pi-shift] On utilise la périodicité π
+  \\begin{aligned} \\textcolor{blue}{\\sin\\left( x + 2 \\pi \\right)} & \\\\ = \\sin\\left( x \\right) \\end{aligned}
+=> \\sin\\left( x \\right)"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > identites-trig > sin²(x) + cos²(x) 1`] = `
+"# sin²(x) + cos²(x) — intent=reduire — \\sin^2(x) + \\cos^2(x)
+
+## lycee (verbosity=detailed)
+- [pythagorean] On utilise sin²(x) + cos²(x) = 1
+  · L’identité fondamentale : pour tout x réel, sin²(x) + cos²(x) = 1.
+  \\begin{aligned} \\textcolor{blue}{\\sin^2\\left( x \\right) + \\cos^2\\left( x \\right)} & \\\\ = 1 \\end{aligned}
+=> 1"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > puissances > (x²)³ 1`] = `
+"# (x²)³ — intent=reduire — (x^2)^3
+
+## lycee (verbosity=detailed)
+- [expand-power] On développe la puissance
+  \\begin{aligned} \\textcolor{blue}{\\left( x^2 \\right)^3} & \\\\ = x^6 \\end{aligned}
+=> x^6"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > puissances > 2³ · 2⁵ 1`] = `
+"# 2³ · 2⁵ — intent=reduire — 2^3 \\cdot 2^5
+
+## lycee (verbosity=detailed)
+- [same-base-mul] aᵐ · aⁿ = aᵐ⁺ⁿ
+  \\begin{aligned} \\textcolor{blue}{2^3 \\cdot 2^5} & \\\\ = 2^{3 + 5} \\end{aligned}
+=> 2^{3 + 5}"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > puissances > x² · x³ 1`] = `
+"# x² · x³ — intent=reduire — x^2 \\cdot x^3
+
+## lycee (verbosity=detailed)
+- [same-base-mul] aᵐ · aⁿ = aᵐ⁺ⁿ
+  \\begin{aligned} \\textcolor{blue}{x^2 \\cdot x^3} & \\\\ = x^{2 + 3} \\end{aligned}
+=> x^{2 + 3}"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > radicaux > √2 · √3 1`] = `
+"# √2 · √3 — intent=reduire — \\sqrt{2} \\cdot \\sqrt{3}
+
+## lycee (verbosity=detailed)
+- [sqrt-product] √(a·b) = √a · √b
+  \\begin{aligned} \\textcolor{blue}{\\sqrt{2} \\cdot \\sqrt{3}} & \\\\ = \\sqrt{2 3} \\end{aligned}
+- [combine-like-terms] On regroupe les termes semblables
+  · On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.
+  \\begin{aligned} \\textcolor{blue}{\\sqrt{2 3}} & \\\\ = \\sqrt{6} \\end{aligned}
+=> \\sqrt{6}"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > radicaux > √8 1`] = `
+"# √8 — intent=reduire — \\sqrt{8}
+
+## lycee (verbosity=detailed)
+- [radical-simplify] On simplifie le radical
+  · On extrait du radical les facteurs qui sont des carrés parfaits.
+  \\begin{aligned} \\textcolor{blue}{\\sqrt{8}} & \\\\ = 2 \\sqrt{2} \\end{aligned}
+=> 2 \\sqrt{2}"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > radicaux > √50 1`] = `
+"# √50 — intent=reduire — \\sqrt{50}
+
+## lycee (verbosity=detailed)
+- [radical-simplify] On simplifie le radical
+  · On extrait du radical les facteurs qui sont des carrés parfaits.
+  \\begin{aligned} \\textcolor{blue}{\\sqrt{50}} & \\\\ = 5 \\sqrt{2} \\end{aligned}
+=> 5 \\sqrt{2}"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > valeur-absolue > ||x|| 1`] = `
+"# ||x|| — intent=reduire — ||x||
+
+## lycee (verbosity=detailed)
+- [abs-idempotent] Simplification : ||x|| = |x|
+  \\begin{aligned} \\textcolor{blue}{\\left| \\left| x \\right| \\right|} & \\\\ = \\left| x \\right| \\end{aligned}
+=> \\left| x \\right|"
+`;
+
+exports[`pedagogical-simplify-demo — snapshots > valeur-absolue > |-x| 1`] = `
+"# |-x| — intent=reduire — |-x|
+
+## lycee (verbosity=detailed)
+- [even-function-parity] Règle: even-function-parity
+  \\begin{aligned} \\textcolor{blue}{\\left| -x \\right|} & \\\\ = \\left| x \\right| \\end{aligned}
+=> \\left| x \\right|"
+`;
