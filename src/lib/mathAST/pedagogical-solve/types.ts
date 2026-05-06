@@ -355,6 +355,14 @@ export type EquationOperation =
 			readonly denominator: MathNode;
 			readonly numeratorRoots: readonly MathNode[];
 			readonly denominatorZeros: readonly MathNode[];
+			/**
+			 * Multiplicity of each root, parallel arrays to `numeratorRoots` /
+			 * `denominatorZeros`. The renderer flips the sign on the corresponding
+			 * row only at odd-multiplicity roots (a double root is a tangent — the
+			 * polynomial does not change sign across it).
+			 */
+			readonly numeratorMultiplicities: readonly number[];
+			readonly denominatorMultiplicities: readonly number[];
 			readonly leadingCoefP: MathNode;
 			readonly leadingCoefQ: MathNode;
 			/**

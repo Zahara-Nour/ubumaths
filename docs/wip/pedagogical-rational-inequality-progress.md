@@ -1,6 +1,6 @@
 # Palier 3 — Pedagogical Rational Inequality Stepper — Progress
 
-## Status: COMPLETE — 2026-05-06
+## Status: V1 COMPLETE — 2026-05-06 ; V1.1 polish — 2026-05-06
 
 Follow-up of palier 2c (`d010fb263`). Adds the pedagogical step-by-step
 resolution for rational inequalities `P(x)/Q(x) ⊻ 0` according to the standard
@@ -131,24 +131,54 @@ npx eslint <files…>                  # 0 errors
 pnpm check:incremental               # 0 new errors
 ```
 
-## Quality debt (V1.1+)
+## V1.1 polish — livré 2026-05-06
 
-Du code review, déférés :
+**D — Degenerate canon retry to polynomial (test only, not a bug)** :
+le dispatcher `generateInequalitySteps` route déjà correctement
+`(x²-1)/(x-1) < 0` (canon → `x+1`, degré 1 → linear pipeline) et
+`(x³-1)/(x-1) < 0` (canon → `x²+x+1`, degré 2 → quadratic pipeline).
+Le throw dans `generateRationalInequalitySteps` (appel direct) reste
+correct comme contrat. Message d'erreur clarifié pour pointer vers le
+dispatcher. **+2 tests dispatcher**.
 
-- **Fraction sur le côté droit** (`x < 1/(x-3)`) : V1 rejette via le check
-  `unwrap(left).type === 'division'`. V1.1 pourrait swap les côtés ou
-  standardize avant détection.
-- **Multi-fraction** (`1/x + 1/(x-1) < 0`) : V1 rejette. V1.1 pourrait ajouter
-  une étape pédagogique « réduction au même dénominateur ».
-- **Racines doubles** : V1 rejette (`(x-1)²/(x-2) < 0`). V1.1 nécessite
-  multiplicity tracking dans le sign-walk.
-- **`_describeDomain` underscore** : pattern « cross-module private », mieux
-  serait de promouvoir vers `_helpers.ts`. V1.1 cleanup.
-- **Coincident root + denominator zero** : pas testé, le merge path dans
-  `formatRationalSignTable` n'est pas exercé. Edge case improbable post-canon.
+**E — `_describeDomain` promu dans `_helpers.ts`** : `describeDomain` +
+helpers privés (`isInfinite`, `latexBound`, `formatInterval`) déplacés
+dans `_helpers.ts` comme export public. Les pipelines quadratique et
+rationnel partagent maintenant l'implémentation. Nettoyage : suppression
+de l'export `_describeDomain` de `quadratic-inequality.ts`, suppression
+des imports `Domain`/`IntervalSet`/`toLatex` devenus inutiles.
+
+**B — Racines doubles supportées dans le tableau de signes** : ajout des
+champs `numeratorMultiplicities` et `denominatorMultiplicities` dans
+l'op `rational-sign-table`. Le pipeline calcule la multiplicité depuis le
+shortfall `degree − rootsCount` (V1.1 supporte deg ≤ 2 → mult 1 ou 2).
+Le renderer ne flippe le signe qu'aux racines de multiplicité **impaire**
+(une racine double est une tangente, le polynôme ne change pas de signe).
+Test #16 mis à jour : `(x²-2x+1)/(x-3) < 0` → solution `]−∞ ; 1[ ∪ ]1 ; 3[`.
+
+**F+G — Garde défensif** : `formatRationalSignTable` retourne désormais
+un sentinel `\text{tableau de signes (N valeurs symboliques non
+évaluables, hors V1)}` si `computeNumericValue` échoue sur une racine
+(cas paramétrique slipped past upstream guards).
+
+### Test results V1.1
+
+- `pedagogical-solve` : **353 → 355** (+2 tests dispatcher)
+- `mathAST` : **12731 passing** (+2 vs 12729 baseline)
+- Mode B snapshots : **14/14** inchangés
+
+## Quality debt restante (V2+)
+
+- **Fraction sur le côté droit** (`x < 1/(x-3)`) : V1.1 rejette toujours via
+  le check `unwrap(left).type === 'division'`. V2 pourrait swap les côtés
+  ou standardize avant détection.
+- **Multi-fraction** (`1/x + 1/(x-1) < 0`) : V1.1 rejette. V2 pourrait
+  ajouter une étape pédagogique « réduction au même dénominateur ».
+- **Coincident root + denominator zero** : V1.1 a le merge path testé en
+  unit test mais pas via un cas end-to-end. Edge case improbable post-canon.
 
 ## Next paliers
 
 - **2d** — coefficients paramétriques (`mx² + nx + p ⊻ 0`, m libre)
-- **V1.1** — étape « réduction au même dénominateur » pour multi-fractions
-- **V1.1** — racines doubles dans rational sign table (multiplicity)
+- **V2** — étape « réduction au même dénominateur » pour multi-fractions
+- **V2** — fraction sur le côté droit, swap automatique

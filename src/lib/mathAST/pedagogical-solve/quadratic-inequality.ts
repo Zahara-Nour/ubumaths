@@ -31,7 +31,6 @@
  */
 
 import type { MathNode, RelationNode } from '../types';
-import type { Domain, IntervalSet } from '../domain/types';
 import type { EquationStep, QuadraticInequalityStepsOptions } from './types';
 import { STRATEGIES_QUADRATIC } from './types';
 import {
@@ -51,13 +50,13 @@ import { extractQuadraticCoefficients } from '../solve/solvers/quadratic';
 import { computeNumericValue } from '../solve/numeric-value';
 import {
 	canon,
+	describeDomain,
 	flipRelation,
 	isConstantCoefficient,
 	isZero,
 	makeStep,
 	renumberSteps
 } from './_helpers';
-import { toLatex } from '../latex-generator';
 import {
 	_buildStandardizeStep,
 	_buildIdentifyCoefficientsStep,
@@ -81,11 +80,6 @@ import { InequalityNotSolvable } from '../solve/inequality/types';
 // Re-export for convenience (consumers throw + catch through these from a
 // single import).
 export { UnsupportedInequalityDegree, PedagogicalInequalityError };
-
-// Internal helpers exposed (palier 3 reuse pattern, mirror of quadratic.ts).
-// Exported with underscore prefix to mark "internal across the pedagogical-solve
-// barrier" — not for external consumers.
-export { describeDomain as _describeDomain };
 
 // =============================================================================
 // Internal types
@@ -365,117 +359,8 @@ function buildConcludeStep(
 	});
 }
 
-/**
- * Convert a `Domain` into a human-readable French description :
- *   - empty           → "∅"
- *   - universal       → "ℝ"
- *   - interval set    → "]a ; b[", "]a ; b[ ∪ ]c ; d[", "{a}", "ℝ \\ {a, b}"
- *
- * Used by both `inequality-conclude-quadratic.solutionDescription` and the
- * step description.
- */
-function describeDomain(domain: Domain): string {
-	if (domain.kind === 'empty') return '∅';
-	if (domain.kind === 'universal') return 'ℝ';
-	if (domain.kind !== 'interval_set') return 'ℝ';
-
-	const set = domain as IntervalSet;
-	const intervals = set.intervals;
-	const excluded = set.excludedPoints;
-
-	// === All-real shapes ===
-	// (a) `[(]-∞, +∞[)]` with no excluded points → "ℝ"
-	if (
-		intervals.length === 1 &&
-		excluded.length === 0 &&
-		isInfinite(intervals[0].lower.value, 'lower') &&
-		isInfinite(intervals[0].upper.value, 'upper')
-	) {
-		return 'ℝ';
-	}
-	// (b) `[(]-∞, +∞[)]` with excluded points → "ℝ \ {a, b}"
-	if (
-		intervals.length === 1 &&
-		isInfinite(intervals[0].lower.value, 'lower') &&
-		isInfinite(intervals[0].upper.value, 'upper') &&
-		excluded.length > 0
-	) {
-		const points = excluded.map((ep) => latexBound(ep.value)).join(' ; ');
-		return `ℝ \\ {${points}}`;
-	}
-	// (c) Multi-interval covering all of ℝ minus a few points :
-	//     `]-∞, a[ ∪ ]a, +∞[`     → "ℝ \ {a}"
-	//     `]-∞, a[ ∪ ]a, b[ ∪ ]b, +∞[` → "ℝ \ {a, b}"
-	if (excluded.length === 0 && intervals.length >= 2) {
-		const allOpen = intervals.every(
-			(int) => int.lower.type === 'open' && int.upper.type === 'open'
-		);
-		const firstStartsAtMinusInf = isInfinite(intervals[0].lower.value, 'lower');
-		const lastEndsAtPlusInf = isInfinite(intervals[intervals.length - 1].upper.value, 'upper');
-		// Detect contiguity : upper[i] == lower[i+1] (open both sides → single
-		// excluded point between consecutive intervals).
-		let contiguous = true;
-		const missingPoints: MathNode[] = [];
-		for (let i = 0; i < intervals.length - 1; i++) {
-			const upper = intervals[i].upper.value;
-			const nextLower = intervals[i + 1].lower.value;
-			if (latexBound(upper) !== latexBound(nextLower)) {
-				contiguous = false;
-				break;
-			}
-			missingPoints.push(upper);
-		}
-		if (allOpen && firstStartsAtMinusInf && lastEndsAtPlusInf && contiguous) {
-			const pts = missingPoints.map(latexBound).join(' ; ');
-			return `ℝ \\ {${pts}}`;
-		}
-	}
-
-	// === Single closed-degenerate interval `[a, a]` — display as `{a}` ===
-	if (intervals.length === 1 && excluded.length === 0) {
-		const int = intervals[0];
-		if (
-			int.lower.type === 'closed' &&
-			int.upper.type === 'closed' &&
-			!isInfinite(int.lower.value, 'lower') &&
-			!isInfinite(int.upper.value, 'upper')
-		) {
-			const lo = latexBound(int.lower.value);
-			const hi = latexBound(int.upper.value);
-			if (lo === hi) return `{${lo}}`;
-		}
-	}
-
-	// === Generic union of intervals ===
-	const parts = intervals.map((int) => formatInterval(int));
-	return parts.join(' ∪ ');
-}
-
-function isInfinite(value: MathNode, side: 'lower' | 'upper'): boolean {
-	if (value.type !== 'infinity') return false;
-	const sign = (value as { sign?: string }).sign;
-	if (side === 'lower') return sign === 'negative';
-	return sign === 'positive' || sign === undefined;
-}
-
-function latexBound(node: MathNode): string {
-	if (node.type === 'infinity') {
-		const sign = (node as { sign?: string }).sign;
-		return sign === 'negative' ? '-∞' : '+∞';
-	}
-	return toLatex(node).replace(/\\infty/g, '∞');
-}
-
-function formatInterval(int: {
-	lower: { value: MathNode; type: 'open' | 'closed' };
-	upper: { value: MathNode; type: 'open' | 'closed' };
-}): string {
-	const lo = isInfinite(int.lower.value, 'lower') ? '-∞' : latexBound(int.lower.value);
-	const hi = isInfinite(int.upper.value, 'upper') ? '+∞' : latexBound(int.upper.value);
-	const lb = int.lower.type === 'closed' ? '[' : ']';
-	const rb = int.upper.type === 'closed' ? ']' : '[';
-	return `${lb}${lo} ; ${hi}${rb}`;
-}
+// `describeDomain` (and helpers `isInfinite`, `latexBound`, `formatInterval`)
+// moved to `_helpers.ts` (V1.1 polish — shared with rational-inequality.ts).
 
 // =============================================================================
 // Main entry point

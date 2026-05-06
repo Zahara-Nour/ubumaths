@@ -209,22 +209,59 @@ describe('palier 3 — E. erreurs', () => {
 	});
 
 	it('15. (x²−1)/(x−1) < 0 — canon simplifies to polynomial → InequalityNotSolvable (V1)', () => {
-		// After canon, `(x²-1)/(x-1)` simplifies to `x+1` — no longer rational.
-		// V1 throws ; the dispatcher in `generateInequalitySteps` retries on the
-		// polynomial form via the linear pipeline (covered by the dispatcher tests).
+		// Direct call to `generateRationalInequalitySteps` throws ; the
+		// dispatcher in `generateInequalitySteps` (palier 1+ entry point) routes
+		// the canonical polynomial form to the polynomial pipeline (covered by
+		// the "dispatcher routes degenerate canon to polynomial" test below).
 		expect(() =>
 			generateRationalInequalitySteps(ineq('(x^2 - 1)/(x - 1) < 0'), { level: 'lycee' })
 		).toThrow(InequalityNotSolvable);
 	});
 
-	it('16. Double root in numerator → InequalityNotSolvable (V1 simple roots only)', () => {
-		// `x² - 2x + 1 = (x-1)²` has double root at 1 ; V1 sign-table renderer
-		// assumes simple roots, so we reject upstream.
-		expect(() =>
-			generateRationalInequalitySteps(ineq('(x^2 - 2x + 1)/(x - 3) < 0'), {
-				level: 'lycee'
-			})
-		).toThrow(InequalityNotSolvable);
+	it('16. Double root in numerator (V1.1) — supported, sign does not flip across the double root', () => {
+		// `x² - 2x + 1 = (x-1)²` has double root at 1. P ≥ 0 always (zero at 1).
+		// Q = x-3 changes sign at 3. So P/Q < 0 ⇔ Q < 0 (and x ≠ 1 from numerator).
+		// Solution : `]−∞ ; 1[ ∪ ]1 ; 3[`.
+		const steps = generateRationalInequalitySteps(ineq('(x^2 - 2x + 1)/(x - 3) < 0'), {
+			level: 'lycee'
+		});
+		const tab = findOp(steps, 'rational-sign-table');
+		expect(tab).not.toBeNull();
+		expect(tab!.numeratorRoots.length).toBe(1);
+		expect(tab!.numeratorMultiplicities).toEqual([2]);
+		expect(tab!.degP).toBe(2);
+		const concl = getConclude(steps);
+		// Solution should be `]−∞ ; 1[ ∪ ]1 ; 3[`
+		expect(concl.solutionDescription).toMatch(/1/);
+		expect(concl.solutionDescription).toMatch(/3/);
+		expect(concl.solutionDescription).toMatch(/∪|\\cup|cup/i);
+	});
+});
+
+// =============================================================================
+// Dispatcher integration — degenerate canon retry
+// =============================================================================
+
+describe('palier 3 — dispatcher integration', () => {
+	it('dispatcher routes (x²-1)/(x-1) < 0 to the polynomial pipeline (canon → x+1)', async () => {
+		// The high-level `generateInequalitySteps` should route this to the
+		// linear pipeline (after canon simplifies to `x + 1 < 0`), not throw.
+		const { generateInequalitySteps } = await import('../index');
+		const steps = generateInequalitySteps(ineq('(x^2 - 1)/(x - 1) < 0'), { level: 'lycee' });
+		const kinds = flatten(steps).map((s) => s.operation?.kind);
+		// Polynomial path emits identify-equation but NO rational-* kinds.
+		expect(kinds).not.toContain('rational-sign-table');
+		expect(kinds).not.toContain('inequality-conclude-rational');
+	});
+
+	it('dispatcher routes (x³-1)/(x-1) < 0 to the quadratic pipeline (canon → x²+x+1)', async () => {
+		const { generateInequalitySteps } = await import('../index');
+		const steps = generateInequalitySteps(ineq('(x^3 - 1)/(x - 1) < 0'), { level: 'lycee' });
+		const kinds = flatten(steps).map((s) => s.operation?.kind);
+		// Quadratic path : compute-discriminant + quadratic-sign-table
+		expect(kinds).toContain('compute-discriminant');
+		expect(kinds).toContain('quadratic-sign-table');
+		expect(kinds).not.toContain('rational-sign-table');
 	});
 });
 

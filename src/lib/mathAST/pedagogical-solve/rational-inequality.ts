@@ -27,7 +27,6 @@
  */
 
 import type { MathNode, RelationNode } from '../types';
-import type { Domain } from '../domain/types';
 import type { EquationStep, RationalInequalityStepsOptions } from './types';
 import { STRATEGIES_RATIONAL } from './types';
 import { number, relation, subtract } from '../factory';
@@ -38,8 +37,14 @@ import { extractLinearForm } from '../analysis/coefficient-utils';
 import { solve } from '../solve/solve';
 import { solveInequality } from '../solve/inequality';
 import { computeNumericValue } from '../solve/numeric-value';
-import { canon, isConstantCoefficient, isZero, makeStep, renumberSteps } from './_helpers';
-import { _describeDomain } from './quadratic-inequality';
+import {
+	canon,
+	describeDomain,
+	isConstantCoefficient,
+	isZero,
+	makeStep,
+	renumberSteps
+} from './_helpers';
 import {
 	generateLinearInequalitySteps,
 	UnsupportedInequalityDegree,
@@ -287,6 +292,8 @@ function buildRationalSignTableStep(
 	denominator: MathNode,
 	numeratorRoots: readonly MathNode[],
 	denominatorZeros: readonly MathNode[],
+	numeratorMultiplicities: readonly number[],
+	denominatorMultiplicities: readonly number[],
 	leadingCoefP: MathNode,
 	leadingCoefQ: MathNode,
 	degP: number,
@@ -306,6 +313,8 @@ function buildRationalSignTableStep(
 			denominator,
 			numeratorRoots,
 			denominatorZeros,
+			numeratorMultiplicities,
+			denominatorMultiplicities,
 			leadingCoefP,
 			leadingCoefQ,
 			degP,
@@ -315,13 +324,43 @@ function buildRationalSignTableStep(
 	});
 }
 
+/**
+ * Compute multiplicities for the roots returned by `solve()`. The solver
+ * deduplicates roots, so we infer multiplicity from the degree shortfall :
+ * - degree 1, 1 root → [1]
+ * - degree 2, 2 roots → [1, 1]
+ * - degree 2, 1 root → [2] (double root, Δ=0)
+ * - degree 2, 0 roots → [] (Δ<0, no real root)
+ * - degree 0, 0 roots → []
+ *
+ * For higher degrees (out of V1 scope) or any other shape, throws — the
+ * caller's `degP`/`degQ` validation should already exclude these.
+ */
+function computeMultiplicities(roots: readonly MathNode[], degree: number): readonly number[] {
+	if (roots.length === 0) return [];
+	if (roots.length === degree) {
+		// Each root simple.
+		return roots.map(() => 1);
+	}
+	if (degree === 2 && roots.length === 1) {
+		// Δ = 0 → unique root with multiplicity 2.
+		return [2];
+	}
+	// Anything else (e.g. degree ≥ 3, or unexpected) is rejected upstream by
+	// the degree guard ; this branch is defensive.
+	throw new InequalityNotSolvable(
+		`Multiplicité non déductible (degré=${degree}, racines distinctes=${roots.length}).`,
+		'Hors scope V1.'
+	);
+}
+
 function buildConcludeRationalStep(
 	originalIneq: RelationNode,
 	op: InequalityOp,
 	idGen: () => number
 ): EquationStep {
 	const result = solveInequality(originalIneq);
-	const solutionDescription = _describeDomain(result.solution as Domain);
+	const solutionDescription = describeDomain(result.solution);
 	return makeStep({
 		id: idGen(),
 		rule: 'inequality-conclude-rational',
@@ -400,12 +439,14 @@ export function generateRationalInequalitySteps(
 	const canonForm = canon(subtract(inequality.left, inequality.right));
 	const rationalForm = tryExtractRationalForm(canonForm);
 	if (rationalForm === null) {
-		// After canonicalisation, the form is no longer a fraction — could be
-		// a polynomial after cancellation (e.g. `(x²-1)/(x-1) < 0` simplifies
-		// to `x+1 < 0`). The dispatcher should retry on the polynomial form ;
-		// we throw a typed error to signal "not a rational inequality at all".
+		// After canonicalisation, the form is no longer a fraction — could be a
+		// polynomial after cancellation (e.g. `(x²-1)/(x-1) < 0` simplifies to
+		// `x+1 < 0`). The top-level `generateInequalitySteps` dispatcher handles
+		// these naturally because `getPolynomialDegree(canon)` returns a number,
+		// routing to the polynomial pipeline. Direct callers of this function
+		// receive a typed error so they can re-route via the dispatcher.
 		throw new InequalityNotSolvable(
-			'La forme canonique n’est pas une fraction P/Q — relancer via le pipeline polynomial.',
+			'Forme dégénérée : la fraction se simplifie en un polynôme. Utiliser `generateInequalitySteps` qui re-route automatiquement.',
 			'Cas dégénéré : numérateur et dénominateur se simplifient.'
 		);
 	}
@@ -435,27 +476,13 @@ export function generateRationalInequalitySteps(
 		);
 	}
 
-	// 6. Find numerator roots + denominator zeros (silent calculation)
+	// 6. Find numerator roots + denominator zeros (silent calculation).
+	// Multiplicities are computed from the degree shortfall (V1.1 — supports
+	// double roots in the renderer's sign walk).
 	const numeratorRoots = findPolynomialZeros(numerator, variable, degP);
 	const denominatorZeros = findPolynomialZeros(denominator, variable, degQ);
-
-	// 6b. V1 guard : reject double roots. A degree-2 polynomial with exactly
-	// 1 distinct real root means a double root (Δ=0), which would make the
-	// sign-table renderer flip incorrectly. V1 supports only simple roots
-	// (Δ ≠ 0) ; a double root is V1.1+ and would need multiplicity tracking
-	// in the sign walk.
-	if (degP === 2 && numeratorRoots.length === 1) {
-		throw new InequalityNotSolvable(
-			'Le numérateur a une racine double — non supporté en V1.',
-			'Hors scope V1 (le tableau de signes ne change pas de signe au passage d’une racine double).'
-		);
-	}
-	if (degQ === 2 && denominatorZeros.length === 1) {
-		throw new InequalityNotSolvable(
-			'Le dénominateur a un zéro double — non supporté en V1.',
-			'Hors scope V1.'
-		);
-	}
+	const numeratorMultiplicities = computeMultiplicities(numeratorRoots, degP);
+	const denominatorMultiplicities = computeMultiplicities(denominatorZeros, degQ);
 
 	// 7. Extract leading coefficients (for sign-arithmetic in the renderer)
 	const leadingCoefP = extractLeadingCoefficient(numerator, variable, degP);
@@ -479,6 +506,8 @@ export function generateRationalInequalitySteps(
 			denominator,
 			numeratorRoots,
 			denominatorZeros,
+			numeratorMultiplicities,
+			denominatorMultiplicities,
 			leadingCoefP,
 			leadingCoefQ,
 			degP,
