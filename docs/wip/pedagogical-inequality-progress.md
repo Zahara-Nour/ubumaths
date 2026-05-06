@@ -18,6 +18,8 @@
 | 9   | `16c417e79` | fix(solve): recognize e^x shapes as exponential + re-enable inequality test 14       |
 | 10  | `e7e2df0df` | docs(wip): record commit 9 (transcendental fix) in progress docs                     |
 | 11  | `218e2ad9d` | fix(sign): lower MAX_SAMPLE_BOUND from 1e6 to 100 — fixes transcendental tails       |
+| 12  | `f9472dfd3` | docs(wip): record commit 11                                                          |
+| 13  | `79783e215` | feat(solve): add tryRationalDecomposition for P(x)/Q(x) = 0 equations                |
 
 ## Livrable
 
@@ -443,7 +445,12 @@ pleinement validés.
   signes + 6 sous-cas selon signe(a) × signe(Δ)). À spécifier avec une
   nouvelle Phase 0 TDD.
 - **Reste palier 2c/d** : paramétrique (V2, scope ouvert).
-- **Solveur rationnel** : `solve(1/x − 1 = 0)` ne trouve toujours pas
-  x=1 (ce n'était pas dans les 3 limitations originales mais reste un
-  gap connu — voir les tests `analyze-excluded-points` qui le
-  documentent).
+- ~~**Solveur rationnel** : `solve(1/x − 1 = 0)` ne trouve toujours pas x=1~~
+  **Fixé le 2026-05-06** (commit `79783e215`). Nouveau module
+  `solve/rational.ts` exploite la canonicalisation `normalize` qui réduit
+  toute expression rationnelle à une fraction unique `P(x)/Q(x)`. Le
+  solver résout `P(x) = 0` puis filtre les racines étrangères qui annulent
+  Q(x). Bonus : `computeRange(sqrt(x²+1), [-2, 2])` qui retournait `null`
+  retourne maintenant `[1, √5]` (le point critique x=0, racine de
+  l'équation rationnelle `x/sqrt(x²+1) = 0`, est désormais trouvé).
+  Tous les gaps connus en début de session sont **levés**.
