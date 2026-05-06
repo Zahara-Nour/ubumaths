@@ -198,11 +198,11 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 - **Unités impériales + affines** (Celsius/Fahrenheit, foot, pound, mile, gallon) → livré, voir `units-imperial-affine-progress.md`
 - **Unités d'aire** (a, ha, acre) — bonus débloqué par dérivées → livré, voir `units-area-progress.md`
 - **Intégration aux corrections de questions** (`QuestionCorrection.generatedSteps` Mode B) → livré, voir `correction-integration-progress.md`. Inclut :
-  - Schéma type `GeneratedSteps` discriminé (`kind: 'arithmetic' | 'linear-equation' | 'differentiate'`)
+  - Schéma type `GeneratedSteps` discriminé (`kind: 'arithmetic' | 'linear-equation' | 'differentiate' | 'quadratic-equation' | 'linear-inequality' | 'quadratic-inequality'`)
   - `generateCorrection()` avec auto-call dans `generateInstance()` (early-return strict si absent)
   - Composant Svelte `<GeneratedStepsCorrection>` + extension `CorrectionCard.svelte`
   - Mapping `gradeLevelToSchoolLevel` (CP-CM2 → primaire, 6-3 → college, 2-T → lycee)
-  - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (4 fixtures : arithmetic + linear-equation + differentiate × 2)
+  - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (9 fixtures : arithmetic + linear-equation + differentiate × 2 + quadratic-equation + linear-inequality × 2 + quadratic-inequality × 2)
 - **Stepper pédagogique pour équations du second degré** (`kind: 'quadratic-equation'`) → livré V1 + V1.1, voir `quadratic-stepper-progress.md`. Inclut :
 
   - Pipeline `pedagogical-solve/quadratic.ts` couvrant 4 cas (standard Δ>0/=0/<0, b=0, c=0, factorisé) + standardisation auto vers `… = 0`
@@ -219,6 +219,7 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - **V2 prompt rédigé** : `docs/wip/quadratic-stepper-v2-prompt.md` (paramétriques + discussion sur paramètre, ~14-16h tunnel)
 
 - **Stepper pédagogique pour différentiation** (`kind: 'differentiate'`) → livré, voir `differentiation-stepper-progress.md`. Inclut :
+
   - Pipeline parallèle `pedagogical-differentiation/` (Option 2 retenue plutôt que dual renderer sur `differentiate.ts`)
   - 34 règles couvertes (sum, product, quotient, chain, sin/cos/tan, exp, ln, puissances entières/rationnelles, etc.)
   - 13 phases V1 + 3 raffinements V1.1 (constant folding, `f/c` → linear-coefficient, notation Leibniz)
@@ -228,14 +229,50 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - Bugs critiques corrigés : `\sin^2(x)` (FunctionNode.power) + `(+x)`/`((x))` (transparent wrappers)
   - V1.1 : `(2x+3x)' → 5` (fold), `(x²/5)' → 2x/5` (linear-coefficient), option `notation: 'leibniz'` sur le renderer
 
+- **Solveur algorithmique d'inéquations** (palier 1, prérequis des steppers inéquations) → livré, voir `solve-inequality-progress.md`. Inclut :
+
+  - API `solveInequality(relation, options?)` exposée depuis `$lib/mathAST/solve` ; bornes du domaine en MathNode symbolique exact (radicaux, fractions, π preservés)
+  - Wrapper sur `analyzeSign` du module `sign/` ; opérateurs supportés `< > <= >= !=` ; rejet `=` ; rejet coefs paramétriques (variables libres ≠ inconnue) → `InequalityNotSolvable`
+  - Statuts `complete | partial | no-solution | all-real | empty-domain` ; carries `SignAnalysisResult` brut pour debug et palier 2
+  - 25/25 tests verts (test 14 `e^x − 1 > 0` ré-activé après les 3 fix upstream)
+  - Commits : `4e335a233`, `53a713a53`
+  - **3 fix upstream débloqués par ce travail** :
+    - `1cf5690e9` `sign/splitDomainAtZeros` partitionne nativement aux excludedPoints (workaround `expandExcludedPoints` supprimé)
+    - `16c417e79` solveur transcendantal reconnaît `e^x` (parsé `superscript{base:var('e')}` au lieu de `function('exp')`) ; 3 couches : classifier + matcher + `promoteEulerInRelation`
+    - `218e2ad9d` `sign/MAX_SAMPLE_BOUND` 1e6 → 100 (évite overflow `e^1e6 → ∞` et underflow rationnel `1/(1e6·999999) < tolerance`)
+  - **Bonus solveur rationnel** (`79783e215`) : `solve/rational.ts` exploite `normalize` → `P(x)/Q(x)` ; résout P=0 puis filtre racines étrangères annulant Q ; débloque `computeRange(sqrt(x²+1), [-2, 2])` qui retourne maintenant `[1, √5]` (point critique x=0 trouvé)
+
+- **Stepper pédagogique pour inéquations linéaires** (palier 2a, `kind: 'linear-inequality'`) → livré, voir `pedagogical-inequality-progress.md`. Inclut :
+
+  - Pipeline `pedagogical-solve/linear-inequality.ts` + dispatcher `generateInequalitySteps` (route degré 0/1 → linear, ≥2 → throw `UnsupportedInequalityDegree`)
+  - Helper `divideBothSidesWithFlip` + champ `flipOperator?` sur `divide-both-sides`/`multiply-both-sides`/`add-both-sides` ; retournement explicite `< → >`, `≥ → ≤` etc. quand divisor < 0 (op `!=` jamais retournée)
+  - Op `inequality-conclude-truth` pour cas constant (a=0) → `S = ℝ` ou contradiction
+  - Renderer V2 polyvalent (équation/inéquation, pas de duplication) : `isInequalityStep`, `flipNote`, `divideExplanation`/`multiplyExplanation` adaptés, `identifyEquationTitle` retourne « Inéquation du premier degré »
+  - Bug fix renderer aligned-block (`a974787d7`) : split `relBefore`/`relAfter` ; sans ça, `-x < 3` divisé par −1 affichait `x < -3` au lieu de `x > -3`
+  - CLI `scripts/pedagogical-inequality-demo.ts` (custom + ANSI bold-blue + flag `--latex`/`--both`)
+  - 13 commits : `fbecbaa05`, `fbe49b80f`, `a974787d7`, `533aa6259`, `02522eebb`, `1cf5690e9`, `184af30a9`, `5bc2d55a2`, `16c417e79`, `e7e2df0df`, `218e2ad9d`, `f9472dfd3`, `79783e215`
+  - Tests : 22 pipeline + 28 renderer (V2 + 5 régressions flip) + 2 fixtures Mode B snapshot
+  - 2 fixtures Mode B : `linearInequalityFlipDemo` (`−2x ≥ 6`) + `linearInequalityTwoSidesDemo` (`2x+1 < x+5`)
+
+- **Stepper pédagogique pour inéquations quadratiques** (palier 2b, `kind: 'quadratic-inequality'`) → livré, voir `pedagogical-quadratic-inequality-progress.md`. Inclut :
+  - Pipeline `pedagogical-solve/quadratic-inequality.ts` (~340 LOC) ; stratégie discriminant Δ + tableau de signes ; 6 sous-cas (signe(a) × signe(Δ))
+  - Dispatcher étendu : `generateInequalitySteps` route degré 2 → quadratic ; auto-délégation linear quand a=0
+  - Renderer V2 polyvalent étendu : dual-form TITLES + EXPLANATIONS, sign-table LaTeX, conclusion render
+  - 2 fixes correctness post code-review : `\setminus` LaTeX rendering (`ℝ \ {2}` → `\mathbb{R} \setminus \{2\}`) + tri racines irrationnelles via full `computeNumericValue` (lite version retournait `MAX_SAFE_INTEGER` pour `(1+√5)/2`)
+  - CLI `scripts/pedagogical-quadratic-inequality-demo.ts` (6 catégories de démos)
+  - Commits : `f32893cff`, `86952a9c1`
+  - Tests : +50 (31 inequality + 19 renderer V2) ; total pedagogical-solve : 317 tests verts
+  - 2 fixtures Mode B : `quadraticInequalityClassicDemo` + `quadraticInequalityNegativeADemo`
+
 #### 🔴 Toujours à faire
 
 **Élargissement de couverture**
 
 - Renderers pédagogiques pour les autres domaines : integration, limits, matrix, domain
 - Pipeline pédagogique pour simplification d'expression
-- `kind: 'solve'` algorithmique dans Mode B (pedagogical-solve V1.0 supporte linéaire + quadratique ; cubic/quartic/transcendental hors scope)
+- `kind: 'solve'` algorithmique dans Mode B (pedagogical-solve V1.0 supporte linéaire + quadratique pour équations ET inéquations ; cubic/quartic/transcendental hors scope)
 - `kind: 'arithmetic-from-blank'` (V1 a skippé pour éviter duplication d'expression entre `expectedAnswer` et `generatedSteps.expression`)
+- Inéquations paramétriques (palier 2c/d), inéquations rationnelles, inéquations transcendantes — V2 ; spec à rédiger
 
 **Idées Poincaré**
 
