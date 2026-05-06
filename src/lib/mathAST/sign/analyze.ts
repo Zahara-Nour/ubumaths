@@ -63,16 +63,6 @@ import type {
 	SignAnalysisOptions
 } from './types';
 import { DEFAULT_SIGN_OPTIONS, SignAnalysisError } from './types';
-
-/**
- * Tolerance for considering two partition points (zero / excluded) as the
- * same coordinate during merge+dedupe. Aligned with `DEFAULT_SIGN_OPTIONS.tolerance`
- * — a custom tolerance passed via `analyzeSignOptions` is NOT propagated here
- * (the dedupe is internal to interval splitting, downstream of zero finding).
- * If callers ever start needing different tolerances at this layer, plumb it
- * through `splitIntervalAtPoints`.
- */
-const PARTITION_DEDUPE_TOLERANCE = DEFAULT_SIGN_OPTIONS.tolerance;
 import { computeDomain } from '../domain/compute';
 import { findZeros, sortZerosByValue, getUniqueZeros } from './helpers/zeros';
 import { determineSignOnInterval } from './helpers/interval-sign';
@@ -86,6 +76,16 @@ import {
 } from '$lib/math/intervals/factory';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { shouldIncludeStep } from '../common/verbosity';
+
+/**
+ * Tolerance for considering two partition points (zero / excluded) as the
+ * same coordinate during merge+dedupe. Aligned with `DEFAULT_SIGN_OPTIONS.tolerance`
+ * — a custom tolerance passed via `analyzeSignOptions` is NOT propagated here
+ * (the dedupe is internal to interval splitting, downstream of zero finding).
+ * If callers ever start needing different tolerances at this layer, plumb it
+ * through `splitIntervalAtPoints`.
+ */
+const PARTITION_DEDUPE_TOLERANCE = DEFAULT_SIGN_OPTIONS.tolerance;
 
 // =============================================================================
 // Main Analysis Function
