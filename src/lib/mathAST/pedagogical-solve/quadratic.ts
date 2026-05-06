@@ -46,12 +46,11 @@ import {
 	subtract,
 	variable as varNode
 } from '../factory';
-import { getVariables } from '../eval/substitute';
 import { nodesEqual } from '../normal/hash';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { extractQuadraticCoefficients } from '../solve/solvers/quadratic';
 import { computeNumericValue } from '../solve/numeric-value';
-import { canon, isZero, makeStep, renumberSteps } from './_helpers';
+import { canon, isConstantCoefficient, isZero, makeStep, renumberSteps } from './_helpers';
 
 // =============================================================================
 // Errors
@@ -123,11 +122,6 @@ function tryDetectFactored(left: MathNode, variable: string): readonly MathNode[
 	const rd = getPolynomialDegree(rf, variable);
 	if (ld !== 1 || rd !== 1) return null;
 	return [lf, rf];
-}
-
-/** True when a coefficient contains no variable other than the implicit unknown. */
-function isConstantCoefficient(coeff: MathNode): boolean {
-	return getVariables(coeff).size === 0;
 }
 
 /**
