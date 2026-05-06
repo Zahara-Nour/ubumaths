@@ -1,0 +1,1427 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pedagogical-integration demo cases > category: definie > renders (int_0^1 e^x dx) 1`] = `
+"
+###### (int_0^1 e^x dx) ######
+
+Expression: e^x from 0 to 1
+
+========== LYCEE (summarized) ==========
+- [identify-definite-integral] Identification de l'intégrale définie
+  \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+- [apply-fundamental-theorem] Théorème fondamental du calcul intégral
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
+- [substitute-bounds] Évaluation aux bornes
+  \\begin{aligned} & \\textcolor{blue}{\\left[\\exp\\left( x \\right)\\right]_{0}^{1}} \\\\ & = \\exp\\left( 1 \\right) - \\exp\\left( 0 \\right) \\end{aligned}
+- [simplify-bounds-result] Calcul de la valeur
+  \\begin{aligned} & \\textcolor{blue}{\\exp\\left( 1 \\right) - \\exp\\left( 0 \\right)} \\\\ & = \\exponentialE - 1 \\end{aligned}
+Antiderivative: \\exp\\left( x \\right)
+Value: \\exponentialE - 1
+
+========== LYCEE (detailed) ==========
+- [identify-definite-integral] Identification de l'intégrale définie
+  · Une intégrale définie ∫_a^b f(x) dx se calcule via une primitive F : on évalue [F(x)]_a^b = F(b) − F(a).
+  \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+- [apply-fundamental-theorem] Théorème fondamental du calcul intégral
+  · On note F la primitive trouvée : F(x) = \\exp\\left( x \\right). L'intégrale vaut [F(x)]_a^b.
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
+- [substitute-bounds] Évaluation aux bornes
+  · On évalue F aux bornes : F(borne haute) − F(borne basse), avec F(x) = \\exp\\left( x \\right).
+  \\begin{aligned} & \\textcolor{blue}{\\left[\\exp\\left( x \\right)\\right]_{0}^{1}} \\\\ & = \\exp\\left( 1 \\right) - \\exp\\left( 0 \\right) \\end{aligned}
+- [simplify-bounds-result] Calcul de la valeur
+  · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
+  \\begin{aligned} & \\textcolor{blue}{\\exp\\left( 1 \\right) - \\exp\\left( 0 \\right)} \\\\ & = \\exponentialE - 1 \\end{aligned}
+Antiderivative: \\exp\\left( x \\right)
+Value: \\exponentialE - 1
+
+========== SUPERIEUR (summarized) ==========
+- [apply-known-primitive] Primitive
+  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+- [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
+- [simplify-bounds-result] Valeur
+  \\begin{aligned} & \\textcolor{blue}{\\exp\\left( 1 \\right) - \\exp\\left( 0 \\right)} \\\\ & = \\exponentialE - 1 \\end{aligned}
+Antiderivative: \\exp\\left( x \\right)
+Value: \\exponentialE - 1
+
+========== SUPERIEUR (detailed) ==========
+- [apply-known-primitive] Primitive
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+- [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
+  · On note F la primitive trouvée : F(x) = \\exp\\left( x \\right). L'intégrale vaut [F(x)]_a^b.
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} e^x\\,dx} \\\\ & = \\left[\\exp\\left( x \\right)\\right]_{0}^{1} \\end{aligned}
+- [simplify-bounds-result] Valeur
+  · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
+  \\begin{aligned} & \\textcolor{blue}{\\exp\\left( 1 \\right) - \\exp\\left( 0 \\right)} \\\\ & = \\exponentialE - 1 \\end{aligned}
+Antiderivative: \\exp\\left( x \\right)
+Value: \\exponentialE - 1
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: definie > renders (int_0^1 x dx) 1`] = `
+"
+###### (int_0^1 x dx) ######
+
+Expression: x from 0 to 1
+
+========== LYCEE (summarized) ==========
+- [identify-definite-integral] Identification de l'intégrale définie
+  \\textcolor{blue}{\\int_{0}^{1} x\\,dx}
+- [apply-power-rule] Règle de la puissance
+  \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+- [apply-fundamental-theorem] Théorème fondamental du calcul intégral
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} x\\,dx} \\\\ & = \\left[\\dfrac{x^2}{2}\\right]_{0}^{1} \\end{aligned}
+- [substitute-bounds] Évaluation aux bornes
+  \\begin{aligned} & \\textcolor{blue}{\\left[\\dfrac{x^2}{2}\\right]_{0}^{1}} \\\\ & = \\dfrac{1^2}{2} - \\dfrac{0^2}{2} \\end{aligned}
+- [simplify-bounds-result] Calcul de la valeur
+  \\begin{aligned} & \\textcolor{blue}{\\dfrac{1^2}{2} - \\dfrac{0^2}{2}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+Antiderivative: \\dfrac{x^2}{2}
+Value: \\dfrac{1}{2}
+
+========== LYCEE (detailed) ==========
+- [identify-definite-integral] Identification de l'intégrale définie
+  · Une intégrale définie ∫_a^b f(x) dx se calcule via une primitive F : on évalue [F(x)]_a^b = F(b) − F(a).
+  \\textcolor{blue}{\\int_{0}^{1} x\\,dx}
+- [apply-power-rule] Règle de la puissance
+  · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
+  \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+- [apply-fundamental-theorem] Théorème fondamental du calcul intégral
+  · On note F la primitive trouvée : F(x) = \\dfrac{x^2}{2}. L'intégrale vaut [F(x)]_a^b.
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} x\\,dx} \\\\ & = \\left[\\dfrac{x^2}{2}\\right]_{0}^{1} \\end{aligned}
+- [substitute-bounds] Évaluation aux bornes
+  · On évalue F aux bornes : F(borne haute) − F(borne basse), avec F(x) = \\dfrac{x^2}{2}.
+  \\begin{aligned} & \\textcolor{blue}{\\left[\\dfrac{x^2}{2}\\right]_{0}^{1}} \\\\ & = \\dfrac{1^2}{2} - \\dfrac{0^2}{2} \\end{aligned}
+- [simplify-bounds-result] Calcul de la valeur
+  · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
+  \\begin{aligned} & \\textcolor{blue}{\\dfrac{1^2}{2} - \\dfrac{0^2}{2}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+Antiderivative: \\dfrac{x^2}{2}
+Value: \\dfrac{1}{2}
+
+========== SUPERIEUR (summarized) ==========
+- [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+  \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+- [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} x\\,dx} \\\\ & = \\left[\\dfrac{x^2}{2}\\right]_{0}^{1} \\end{aligned}
+- [simplify-bounds-result] Valeur
+  \\begin{aligned} & \\textcolor{blue}{\\dfrac{1^2}{2} - \\dfrac{0^2}{2}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+Antiderivative: \\dfrac{x^2}{2}
+Value: \\dfrac{1}{2}
+
+========== SUPERIEUR (detailed) ==========
+- [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+  · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
+  \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+- [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
+  · On note F la primitive trouvée : F(x) = \\dfrac{x^2}{2}. L'intégrale vaut [F(x)]_a^b.
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{1} x\\,dx} \\\\ & = \\left[\\dfrac{x^2}{2}\\right]_{0}^{1} \\end{aligned}
+- [simplify-bounds-result] Valeur
+  · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
+  \\begin{aligned} & \\textcolor{blue}{\\dfrac{1^2}{2} - \\dfrac{0^2}{2}} \\\\ & = \\dfrac{1}{2} \\end{aligned}
+Antiderivative: \\dfrac{x^2}{2}
+Value: \\dfrac{1}{2}
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: definie > renders (int_0^2 x^2 dx) 1`] = `
+"
+###### (int_0^2 x^2 dx) ######
+
+Expression: x^2 from 0 to 2
+
+========== LYCEE (summarized) ==========
+- [identify-definite-integral] Identification de l'intégrale définie
+  \\textcolor{blue}{\\int_{0}^{2} x^2\\,dx}
+- [apply-power-rule] Règle de la puissance
+  \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+- [apply-fundamental-theorem] Théorème fondamental du calcul intégral
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{2} x^2\\,dx} \\\\ & = \\left[\\dfrac{x^3}{3}\\right]_{0}^{2} \\end{aligned}
+- [substitute-bounds] Évaluation aux bornes
+  \\begin{aligned} & \\textcolor{blue}{\\left[\\dfrac{x^3}{3}\\right]_{0}^{2}} \\\\ & = \\dfrac{2^3}{3} - \\dfrac{0^3}{3} \\end{aligned}
+- [simplify-bounds-result] Calcul de la valeur
+  \\begin{aligned} & \\textcolor{blue}{\\dfrac{2^3}{3} - \\dfrac{0^3}{3}} \\\\ & = \\dfrac{8}{3} \\end{aligned}
+Antiderivative: \\dfrac{x^3}{3}
+Value: \\dfrac{8}{3}
+
+========== LYCEE (detailed) ==========
+- [identify-definite-integral] Identification de l'intégrale définie
+  · Une intégrale définie ∫_a^b f(x) dx se calcule via une primitive F : on évalue [F(x)]_a^b = F(b) − F(a).
+  \\textcolor{blue}{\\int_{0}^{2} x^2\\,dx}
+- [apply-power-rule] Règle de la puissance
+  · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 2 (et n ≠ -1).
+  \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+- [apply-fundamental-theorem] Théorème fondamental du calcul intégral
+  · On note F la primitive trouvée : F(x) = \\dfrac{x^3}{3}. L'intégrale vaut [F(x)]_a^b.
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{2} x^2\\,dx} \\\\ & = \\left[\\dfrac{x^3}{3}\\right]_{0}^{2} \\end{aligned}
+- [substitute-bounds] Évaluation aux bornes
+  · On évalue F aux bornes : F(borne haute) − F(borne basse), avec F(x) = \\dfrac{x^3}{3}.
+  \\begin{aligned} & \\textcolor{blue}{\\left[\\dfrac{x^3}{3}\\right]_{0}^{2}} \\\\ & = \\dfrac{2^3}{3} - \\dfrac{0^3}{3} \\end{aligned}
+- [simplify-bounds-result] Calcul de la valeur
+  · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
+  \\begin{aligned} & \\textcolor{blue}{\\dfrac{2^3}{3} - \\dfrac{0^3}{3}} \\\\ & = \\dfrac{8}{3} \\end{aligned}
+Antiderivative: \\dfrac{x^3}{3}
+Value: \\dfrac{8}{3}
+
+========== SUPERIEUR (summarized) ==========
+- [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+  \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+- [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{2} x^2\\,dx} \\\\ & = \\left[\\dfrac{x^3}{3}\\right]_{0}^{2} \\end{aligned}
+- [simplify-bounds-result] Valeur
+  \\begin{aligned} & \\textcolor{blue}{\\dfrac{2^3}{3} - \\dfrac{0^3}{3}} \\\\ & = \\dfrac{8}{3} \\end{aligned}
+Antiderivative: \\dfrac{x^3}{3}
+Value: \\dfrac{8}{3}
+
+========== SUPERIEUR (detailed) ==========
+- [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+  · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 2 (et n ≠ -1).
+  \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+- [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
+  · On note F la primitive trouvée : F(x) = \\dfrac{x^3}{3}. L'intégrale vaut [F(x)]_a^b.
+  \\begin{aligned} & \\textcolor{blue}{\\int_{0}^{2} x^2\\,dx} \\\\ & = \\left[\\dfrac{x^3}{3}\\right]_{0}^{2} \\end{aligned}
+- [simplify-bounds-result] Valeur
+  · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
+  \\begin{aligned} & \\textcolor{blue}{\\dfrac{2^3}{3} - \\dfrac{0^3}{3}} \\\\ & = \\dfrac{8}{3} \\end{aligned}
+Antiderivative: \\dfrac{x^3}{3}
+Value: \\dfrac{8}{3}
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: definie > renders (int_1^e 1/x dx) 1`] = `
+"
+###### (int_1^e 1/x dx) ######
+
+Expression: \\dfrac{1}{x} from 1 to e
+
+========== LYCEE (summarized) ==========
+- [identify-definite-integral] Identification de l'intégrale définie
+  \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
+- [apply-fundamental-theorem] Théorème fondamental du calcul intégral
+  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e} \\end{aligned}
+- [substitute-bounds] Évaluation aux bornes
+  \\begin{aligned} & \\textcolor{blue}{\\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e}} \\\\ & = \\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right) \\end{aligned}
+- [simplify-bounds-result] Calcul de la valeur
+  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = \\ln\\left( e \\right) \\end{aligned}
+Antiderivative: \\ln\\left( \\left| x \\right| \\right)
+Value: \\ln\\left( e \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-definite-integral] Identification de l'intégrale définie
+  · Une intégrale définie ∫_a^b f(x) dx se calcule via une primitive F : on évalue [F(x)]_a^b = F(b) − F(a).
+  \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
+- [apply-fundamental-theorem] Théorème fondamental du calcul intégral
+  · On note F la primitive trouvée : F(x) = \\ln\\left( \\left| x \\right| \\right). L'intégrale vaut [F(x)]_a^b.
+  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e} \\end{aligned}
+- [substitute-bounds] Évaluation aux bornes
+  · On évalue F aux bornes : F(borne haute) − F(borne basse), avec F(x) = \\ln\\left( \\left| x \\right| \\right).
+  \\begin{aligned} & \\textcolor{blue}{\\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e}} \\\\ & = \\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right) \\end{aligned}
+- [simplify-bounds-result] Calcul de la valeur
+  · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
+  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = \\ln\\left( e \\right) \\end{aligned}
+Antiderivative: \\ln\\left( \\left| x \\right| \\right)
+Value: \\ln\\left( e \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-known-primitive] Primitive
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
+- [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
+  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e} \\end{aligned}
+- [simplify-bounds-result] Valeur
+  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = \\ln\\left( e \\right) \\end{aligned}
+Antiderivative: \\ln\\left( \\left| x \\right| \\right)
+Value: \\ln\\left( e \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-known-primitive] Primitive
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
+- [apply-fundamental-theorem] \\int_a^b f\\,dx = \\left[F\\right]_a^b
+  · On note F la primitive trouvée : F(x) = \\ln\\left( \\left| x \\right| \\right). L'intégrale vaut [F(x)]_a^b.
+  \\begin{aligned} & \\textcolor{blue}{\\int_{1}^{e} \\dfrac{1}{x}\\,dx} \\\\ & = \\left[\\ln\\left( \\left| x \\right| \\right)\\right]_{1}^{e} \\end{aligned}
+- [simplify-bounds-result] Valeur
+  · On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).
+  \\begin{aligned} & \\textcolor{blue}{\\ln\\left( \\left| e \\right| \\right) - \\ln\\left( \\left| 1 \\right| \\right)} \\\\ & = \\ln\\left( e \\right) \\end{aligned}
+Antiderivative: \\ln\\left( \\left| x \\right| \\right)
+Value: \\ln\\left( e \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: forme-composee-exp > renders (2x e^{x^2}) 1`] = `
+"
+###### (2x e^{x^2}) ######
+
+Expression: 2x e^{x^2}
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx}
+- [apply-composite-exp] Forme u'·eᵘ
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\exp\\left( x^2 \\right) + C}
+Antiderivative: \\exp\\left( x^2 \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx}
+- [apply-composite-exp] Forme u'·eᵘ
+  · On reconnaît la forme u'·e^u avec u = x^2, dont une primitive est e^u.
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\exp\\left( x^2 \\right) + C}
+Antiderivative: \\exp\\left( x^2 \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-composite-exp] \\int u'e^u\\,dx = e^u
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
+Antiderivative: \\exp\\left( x^2 \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-composite-exp] \\int u'e^u\\,dx = e^u
+  · On reconnaît la forme u'·e^u avec u = x^2, dont une primitive est e^u.
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x e^{x^2}\\,dx} \\\\ & = \\exp\\left( x^2 \\right) \\end{aligned}
+Antiderivative: \\exp\\left( x^2 \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: forme-composee-exp > renders (e^{2x}) 1`] = `
+"
+###### (e^{2x}) ######
+
+Expression: e^{2x}
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int e^{2 x}\\,dx}
+- [apply-composite-exp] Forme u'·eᵘ
+  \\begin{aligned} & \\textcolor{blue}{\\int e^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} + C}
+Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int e^{2 x}\\,dx}
+- [apply-composite-exp] Forme u'·eᵘ
+  · On reconnaît la forme u'·e^u avec u = 2 x, dont une primitive est e^u.
+  \\begin{aligned} & \\textcolor{blue}{\\int e^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} + C}
+Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+
+========== SUPERIEUR (summarized) ==========
+- [apply-composite-exp] \\int u'e^u\\,dx = e^u
+  \\begin{aligned} & \\textcolor{blue}{\\int e^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
+Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+
+========== SUPERIEUR (detailed) ==========
+- [apply-composite-exp] \\int u'e^u\\,dx = e^u
+  · On reconnaît la forme u'·e^u avec u = 2 x, dont une primitive est e^u.
+  \\begin{aligned} & \\textcolor{blue}{\\int e^{2 x}\\,dx} \\\\ & = 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2} \\end{aligned}
+Antiderivative: 0.5 \\dfrac{\\exp\\left( 2 x \\right)}{2}
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: forme-composee-exp > renders (e^{3x + 1}) 1`] = `
+"
+###### (e^{3x + 1}) ######
+
+Expression: e^{3x + 1}
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int e^{3 x + 1}\\,dx}
+- [apply-composite-exp] Forme u'·eᵘ
+  \\begin{aligned} & \\textcolor{blue}{\\int e^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{0.3333333333333333 \\exp\\left( 3 x + 1 \\right) + C}
+Antiderivative: 0.3333333333333333 \\exp\\left( 3 x + 1 \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int e^{3 x + 1}\\,dx}
+- [apply-composite-exp] Forme u'·eᵘ
+  · On reconnaît la forme u'·e^u avec u = 3 x + 1, dont une primitive est e^u.
+  \\begin{aligned} & \\textcolor{blue}{\\int e^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{0.3333333333333333 \\exp\\left( 3 x + 1 \\right) + C}
+Antiderivative: 0.3333333333333333 \\exp\\left( 3 x + 1 \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-composite-exp] \\int u'e^u\\,dx = e^u
+  \\begin{aligned} & \\textcolor{blue}{\\int e^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
+Antiderivative: 0.3333333333333333 \\exp\\left( 3 x + 1 \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-composite-exp] \\int u'e^u\\,dx = e^u
+  · On reconnaît la forme u'·e^u avec u = 3 x + 1, dont une primitive est e^u.
+  \\begin{aligned} & \\textcolor{blue}{\\int e^{3 x + 1}\\,dx} \\\\ & = 0.3333333333333333 \\exp\\left( 3 x + 1 \\right) \\end{aligned}
+Antiderivative: 0.3333333333333333 \\exp\\left( 3 x + 1 \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: forme-composee-ln > renders (1 / (2x + 1)) 1`] = `
+"
+###### (1 / (2x + 1)) ######
+
+Expression: \\dfrac{1}{2x + 1}
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int \\dfrac{1}{2 x + 1}\\,dx}
+- [apply-composite-ln] Forme u'/u
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{2 x + 1}\\,dx} \\\\ & = 0.5 \\ln\\left( \\left| 2 x + 1 \\right| \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{0.5 \\ln\\left( \\left| 2 x + 1 \\right| \\right) + C}
+Antiderivative: 0.5 \\ln\\left( \\left| 2 x + 1 \\right| \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int \\dfrac{1}{2 x + 1}\\,dx}
+- [apply-composite-ln] Forme u'/u
+  · On reconnaît la forme u'/u avec u = 2 x + 1, dont une primitive est ln|u|.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{2 x + 1}\\,dx} \\\\ & = 0.5 \\ln\\left( \\left| 2 x + 1 \\right| \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{0.5 \\ln\\left( \\left| 2 x + 1 \\right| \\right) + C}
+Antiderivative: 0.5 \\ln\\left( \\left| 2 x + 1 \\right| \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-composite-ln] \\int \\dfrac{u'}{u}\\,dx = \\ln|u|
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{2 x + 1}\\,dx} \\\\ & = 0.5 \\ln\\left( \\left| 2 x + 1 \\right| \\right) \\end{aligned}
+Antiderivative: 0.5 \\ln\\left( \\left| 2 x + 1 \\right| \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-composite-ln] \\int \\dfrac{u'}{u}\\,dx = \\ln|u|
+  · On reconnaît la forme u'/u avec u = 2 x + 1, dont une primitive est ln|u|.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{2 x + 1}\\,dx} \\\\ & = 0.5 \\ln\\left( \\left| 2 x + 1 \\right| \\right) \\end{aligned}
+Antiderivative: 0.5 \\ln\\left( \\left| 2 x + 1 \\right| \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: forme-composee-ln > renders (2x / (x^2 + 1)) 1`] = `
+"
+###### (2x / (x^2 + 1)) ######
+
+Expression: \\dfrac{2x}{x^2 + 1}
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int \\dfrac{2 x}{x^2 + 1}\\,dx}
+- [apply-composite-ln] Forme u'/u
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{2 x}{x^2 + 1}\\,dx} \\\\ & = \\ln\\left( \\left| x^2 + 1 \\right| \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\ln\\left( \\left| x^2 + 1 \\right| \\right) + C}
+Antiderivative: \\ln\\left( \\left| x^2 + 1 \\right| \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int \\dfrac{2 x}{x^2 + 1}\\,dx}
+- [apply-composite-ln] Forme u'/u
+  · On reconnaît la forme u'/u avec u = x^2 + 1, dont une primitive est ln|u|.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{2 x}{x^2 + 1}\\,dx} \\\\ & = \\ln\\left( \\left| x^2 + 1 \\right| \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\ln\\left( \\left| x^2 + 1 \\right| \\right) + C}
+Antiderivative: \\ln\\left( \\left| x^2 + 1 \\right| \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-composite-ln] \\int \\dfrac{u'}{u}\\,dx = \\ln|u|
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{2 x}{x^2 + 1}\\,dx} \\\\ & = \\ln\\left( \\left| x^2 + 1 \\right| \\right) \\end{aligned}
+Antiderivative: \\ln\\left( \\left| x^2 + 1 \\right| \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-composite-ln] \\int \\dfrac{u'}{u}\\,dx = \\ln|u|
+  · On reconnaît la forme u'/u avec u = x^2 + 1, dont une primitive est ln|u|.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{2 x}{x^2 + 1}\\,dx} \\\\ & = \\ln\\left( \\left| x^2 + 1 \\right| \\right) \\end{aligned}
+Antiderivative: \\ln\\left( \\left| x^2 + 1 \\right| \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: forme-composee-ln > renders (3x^2 / (x^3 - 7)) 1`] = `
+"
+###### (3x^2 / (x^3 - 7)) ######
+
+Expression: \\dfrac{3x^2}{x^3 - 7}
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int \\dfrac{3 x^2}{x^3 - 7}\\,dx}
+- [apply-composite-ln] Forme u'/u
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{3 x^2}{x^3 - 7}\\,dx} \\\\ & = \\ln\\left( \\left| x^3 - 7 \\right| \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\ln\\left( \\left| x^3 - 7 \\right| \\right) + C}
+Antiderivative: \\ln\\left( \\left| x^3 - 7 \\right| \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int \\dfrac{3 x^2}{x^3 - 7}\\,dx}
+- [apply-composite-ln] Forme u'/u
+  · On reconnaît la forme u'/u avec u = x^3 - 7, dont une primitive est ln|u|.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{3 x^2}{x^3 - 7}\\,dx} \\\\ & = \\ln\\left( \\left| x^3 - 7 \\right| \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\ln\\left( \\left| x^3 - 7 \\right| \\right) + C}
+Antiderivative: \\ln\\left( \\left| x^3 - 7 \\right| \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-composite-ln] \\int \\dfrac{u'}{u}\\,dx = \\ln|u|
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{3 x^2}{x^3 - 7}\\,dx} \\\\ & = \\ln\\left( \\left| x^3 - 7 \\right| \\right) \\end{aligned}
+Antiderivative: \\ln\\left( \\left| x^3 - 7 \\right| \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-composite-ln] \\int \\dfrac{u'}{u}\\,dx = \\ln|u|
+  · On reconnaît la forme u'/u avec u = x^3 - 7, dont une primitive est ln|u|.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{3 x^2}{x^3 - 7}\\,dx} \\\\ & = \\ln\\left( \\left| x^3 - 7 \\right| \\right) \\end{aligned}
+Antiderivative: \\ln\\left( \\left| x^3 - 7 \\right| \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: linearite > renders (3 sin(x) + 2 cos(x)) 1`] = `
+"
+###### (3 sin(x) + 2 cos(x)) ######
+
+Expression: 3 \\sin(x) + 2 \\cos(x)
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int 3 \\sin\\left( x \\right) + 2 \\cos\\left( x \\right)\\,dx}
+- [apply-linearity-sum] Linéarité de l’intégrale
+  \\begin{aligned} & \\textcolor{blue}{\\int 3 \\sin\\left( x \\right) + 2 \\cos\\left( x \\right)\\,dx} \\\\ & = 3 -\\cos\\left( x \\right) + 2 \\sin\\left( x \\right) \\end{aligned}
+  - [extract-constant] On sort la constante 3
+    \\begin{aligned} & \\textcolor{blue}{\\int 3 \\sin\\left( x \\right)\\,dx} \\\\ & = 3 -\\cos\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive usuelle
+      \\begin{aligned} & \\textcolor{blue}{\\int \\sin\\left( x \\right)\\,dx} \\\\ & = -\\cos\\left( x \\right) \\end{aligned}
+  - [extract-constant] On sort la constante 2
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 \\cos\\left( x \\right)\\,dx} \\\\ & = 2 \\sin\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive usuelle
+      \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{3 -\\cos\\left( x \\right) + 2 \\sin\\left( x \\right) + C}
+Antiderivative: 3 -\\cos\\left( x \\right) + 2 \\sin\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int 3 \\sin\\left( x \\right) + 2 \\cos\\left( x \\right)\\,dx}
+- [apply-linearity-sum] Linéarité de l’intégrale
+  · L'intégrale est linéaire : ∫(f+g) dx = ∫f dx + ∫g dx. On intègre chaque terme séparément.
+  \\begin{aligned} & \\textcolor{blue}{\\int 3 \\sin\\left( x \\right) + 2 \\cos\\left( x \\right)\\,dx} \\\\ & = 3 -\\cos\\left( x \\right) + 2 \\sin\\left( x \\right) \\end{aligned}
+  - [extract-constant] On sort la constante 3
+    · Une constante multiplicative sort de l'intégrale : ∫3·f(x) dx = 3·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 3 \\sin\\left( x \\right)\\,dx} \\\\ & = 3 -\\cos\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive usuelle
+      · On reconnaît une primitive de référence (table des primitives usuelles).
+      \\begin{aligned} & \\textcolor{blue}{\\int \\sin\\left( x \\right)\\,dx} \\\\ & = -\\cos\\left( x \\right) \\end{aligned}
+  - [extract-constant] On sort la constante 2
+    · Une constante multiplicative sort de l'intégrale : ∫2·f(x) dx = 2·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 \\cos\\left( x \\right)\\,dx} \\\\ & = 2 \\sin\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive usuelle
+      · On reconnaît une primitive de référence (table des primitives usuelles).
+      \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{3 -\\cos\\left( x \\right) + 2 \\sin\\left( x \\right) + C}
+Antiderivative: 3 -\\cos\\left( x \\right) + 2 \\sin\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-linearity-sum] \\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx
+  \\begin{aligned} & \\textcolor{blue}{\\int 3 \\sin\\left( x \\right) + 2 \\cos\\left( x \\right)\\,dx} \\\\ & = 3 -\\cos\\left( x \\right) + 2 \\sin\\left( x \\right) \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    \\begin{aligned} & \\textcolor{blue}{\\int 3 \\sin\\left( x \\right)\\,dx} \\\\ & = 3 -\\cos\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive
+      \\begin{aligned} & \\textcolor{blue}{\\int \\sin\\left( x \\right)\\,dx} \\\\ & = -\\cos\\left( x \\right) \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 \\cos\\left( x \\right)\\,dx} \\\\ & = 2 \\sin\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive
+      \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+Antiderivative: 3 -\\cos\\left( x \\right) + 2 \\sin\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-linearity-sum] \\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx
+  · L'intégrale est linéaire : ∫(f+g) dx = ∫f dx + ∫g dx. On intègre chaque terme séparément.
+  \\begin{aligned} & \\textcolor{blue}{\\int 3 \\sin\\left( x \\right) + 2 \\cos\\left( x \\right)\\,dx} \\\\ & = 3 -\\cos\\left( x \\right) + 2 \\sin\\left( x \\right) \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    · Une constante multiplicative sort de l'intégrale : ∫3·f(x) dx = 3·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 3 \\sin\\left( x \\right)\\,dx} \\\\ & = 3 -\\cos\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive
+      · On reconnaît une primitive de référence (table des primitives usuelles).
+      \\begin{aligned} & \\textcolor{blue}{\\int \\sin\\left( x \\right)\\,dx} \\\\ & = -\\cos\\left( x \\right) \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    · Une constante multiplicative sort de l'intégrale : ∫2·f(x) dx = 2·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 \\cos\\left( x \\right)\\,dx} \\\\ & = 2 \\sin\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive
+      · On reconnaît une primitive de référence (table des primitives usuelles).
+      \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+Antiderivative: 3 -\\cos\\left( x \\right) + 2 \\sin\\left( x \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: linearite > renders (5 e^x) 1`] = `
+"
+###### (5 e^x) ######
+
+Expression: 5 e^x
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int 5 e^x\\,dx}
+- [extract-constant] On sort la constante 5
+  \\begin{aligned} & \\textcolor{blue}{\\int 5 e^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
+  - [apply-known-primitive] Primitive usuelle
+    \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{5 \\exp\\left( x \\right) + C}
+Antiderivative: 5 \\exp\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int 5 e^x\\,dx}
+- [extract-constant] On sort la constante 5
+  · Une constante multiplicative sort de l'intégrale : ∫5·f(x) dx = 5·∫f(x) dx.
+  \\begin{aligned} & \\textcolor{blue}{\\int 5 e^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
+  - [apply-known-primitive] Primitive usuelle
+    · On reconnaît une primitive de référence (table des primitives usuelles).
+    \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{5 \\exp\\left( x \\right) + C}
+Antiderivative: 5 \\exp\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+  \\begin{aligned} & \\textcolor{blue}{\\int 5 e^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
+  - [apply-known-primitive] Primitive
+    \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+Antiderivative: 5 \\exp\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+  · Une constante multiplicative sort de l'intégrale : ∫5·f(x) dx = 5·∫f(x) dx.
+  \\begin{aligned} & \\textcolor{blue}{\\int 5 e^x\\,dx} \\\\ & = 5 \\exp\\left( x \\right) \\end{aligned}
+  - [apply-known-primitive] Primitive
+    · On reconnaît une primitive de référence (table des primitives usuelles).
+    \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+Antiderivative: 5 \\exp\\left( x \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: linearite > renders (x/4) 1`] = `
+"
+###### (x/4) ######
+
+Expression: \\dfrac{x}{4}
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int \\dfrac{x}{4}\\,dx}
+- [extract-constant] On sort la constante \\dfrac{1}{4}
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{x}{4}\\,dx} \\\\ & = \\dfrac{1}{4} \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-power-rule] Règle de la puissance
+    \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\dfrac{1}{4} \\dfrac{x^2}{2} + C}
+Antiderivative: \\dfrac{1}{4} \\dfrac{x^2}{2}
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int \\dfrac{x}{4}\\,dx}
+- [extract-constant] On sort la constante \\dfrac{1}{4}
+  · Une constante multiplicative sort de l'intégrale : ∫\\dfrac{1}{4}·f(x) dx = \\dfrac{1}{4}·∫f(x) dx.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{x}{4}\\,dx} \\\\ & = \\dfrac{1}{4} \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-power-rule] Règle de la puissance
+    · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
+    \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\dfrac{1}{4} \\dfrac{x^2}{2} + C}
+Antiderivative: \\dfrac{1}{4} \\dfrac{x^2}{2}
+
+========== SUPERIEUR (summarized) ==========
+- [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{x}{4}\\,dx} \\\\ & = \\dfrac{1}{4} \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+    \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+Antiderivative: \\dfrac{1}{4} \\dfrac{x^2}{2}
+
+========== SUPERIEUR (detailed) ==========
+- [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+  · Une constante multiplicative sort de l'intégrale : ∫\\dfrac{1}{4}·f(x) dx = \\dfrac{1}{4}·∫f(x) dx.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{x}{4}\\,dx} \\\\ & = \\dfrac{1}{4} \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+    · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
+    \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+Antiderivative: \\dfrac{1}{4} \\dfrac{x^2}{2}
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: parts-simple > renders (ln(x)) 1`] = `
+"
+###### (ln(x)) ######
+
+Expression: \\ln(x)
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx}
+- [identify-parts] Intégration par parties
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) \\end{aligned}
+- [choose-u-dv] Choix : u = \\ln\\left( x \\right), dv = 1
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) \\end{aligned}
+- [apply-parts-formula] Formule de l'IPP : ∫u dv = uv − ∫v du
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) x - x \\end{aligned}
+  - [apply-constant-rule] Primitive d'une constante
+    \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\ln\\left( x \\right) x - x + C}
+Antiderivative: \\ln\\left( x \\right) x - x
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx}
+- [identify-parts] Intégration par parties
+  · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) \\end{aligned}
+- [choose-u-dv] Choix : u = \\ln\\left( x \\right), dv = 1
+  · On pose u = \\ln\\left( x \\right) et dv = 1, d'où du = \\dfrac{1}{x} dx et v = x.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) \\end{aligned}
+- [apply-parts-formula] Formule de l'IPP : ∫u dv = uv − ∫v du
+  · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) x - x \\end{aligned}
+  - [apply-constant-rule] Primitive d'une constante
+    · Une constante c admet la primitive c·x : ∫1 dx = 1·x.
+    \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\ln\\left( x \\right) x - x + C}
+Antiderivative: \\ln\\left( x \\right) x - x
+
+========== SUPERIEUR (summarized) ==========
+- [identify-parts] \\int u\\,dv
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) \\end{aligned}
+- [choose-u-dv] u = \\ln\\left( x \\right),\\ dv = 1
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) \\end{aligned}
+- [apply-parts-formula] \\int u\\,dv = uv - \\int v\\,du
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) x - x \\end{aligned}
+  - [apply-constant-rule] \\int c\\,dx = cx
+    \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
+Antiderivative: \\ln\\left( x \\right) x - x
+
+========== SUPERIEUR (detailed) ==========
+- [identify-parts] \\int u\\,dv
+  · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) \\end{aligned}
+- [choose-u-dv] u = \\ln\\left( x \\right),\\ dv = 1
+  · On pose u = \\ln\\left( x \\right) et dv = 1, d'où du = \\dfrac{1}{x} dx et v = x.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) \\end{aligned}
+- [apply-parts-formula] \\int u\\,dv = uv - \\int v\\,du
+  · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
+  \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) x - x \\end{aligned}
+  - [apply-constant-rule] \\int c\\,dx = cx
+    · Une constante c admet la primitive c·x : ∫1 dx = 1·x.
+    \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
+Antiderivative: \\ln\\left( x \\right) x - x
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: parts-simple > renders (x e^x) 1`] = `
+"
+###### (x e^x) ######
+
+Expression: x e^x
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int x e^x\\,dx}
+- [identify-parts] Intégration par parties
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+- [choose-u-dv] Choix : u = x, dv = e^x
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+- [apply-parts-formula] Formule de l'IPP : ∫u dv = uv − ∫v du
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
+  - [apply-known-primitive] Primitive usuelle
+    \\begin{aligned} & \\textcolor{blue}{\\int \\exp\\left( x \\right)\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{x \\exp\\left( x \\right) - \\exp\\left( x \\right) + C}
+Antiderivative: x \\exp\\left( x \\right) - \\exp\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int x e^x\\,dx}
+- [identify-parts] Intégration par parties
+  · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+- [choose-u-dv] Choix : u = x, dv = e^x
+  · On pose u = x et dv = e^x, d'où du = 1 dx et v = \\exp\\left( x \\right).
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+- [apply-parts-formula] Formule de l'IPP : ∫u dv = uv − ∫v du
+  · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
+  - [apply-known-primitive] Primitive usuelle
+    · On reconnaît une primitive de référence (table des primitives usuelles).
+    \\begin{aligned} & \\textcolor{blue}{\\int \\exp\\left( x \\right)\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{x \\exp\\left( x \\right) - \\exp\\left( x \\right) + C}
+Antiderivative: x \\exp\\left( x \\right) - \\exp\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [identify-parts] \\int u\\,dv
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+- [choose-u-dv] u = x,\\ dv = e^x
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+- [apply-parts-formula] \\int u\\,dv = uv - \\int v\\,du
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
+  - [apply-known-primitive] Primitive
+    \\begin{aligned} & \\textcolor{blue}{\\int \\exp\\left( x \\right)\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+Antiderivative: x \\exp\\left( x \\right) - \\exp\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [identify-parts] \\int u\\,dv
+  · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+- [choose-u-dv] u = x,\\ dv = e^x
+  · On pose u = x et dv = e^x, d'où du = 1 dx et v = \\exp\\left( x \\right).
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x e^x \\end{aligned}
+- [apply-parts-formula] \\int u\\,dv = uv - \\int v\\,du
+  · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
+  \\begin{aligned} & \\textcolor{blue}{\\int x e^x\\,dx} \\\\ & = x \\exp\\left( x \\right) - \\exp\\left( x \\right) \\end{aligned}
+  - [apply-known-primitive] Primitive
+    · On reconnaît une primitive de référence (table des primitives usuelles).
+    \\begin{aligned} & \\textcolor{blue}{\\int \\exp\\left( x \\right)\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+Antiderivative: x \\exp\\left( x \\right) - \\exp\\left( x \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: parts-simple > renders (x sin(x)) 1`] = `
+"
+###### (x sin(x)) ######
+
+Expression: x \\sin(x)
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
+- [identify-parts] Intégration par parties
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x \\sin\\left( x \\right) \\end{aligned}
+- [choose-u-dv] Choix : u = x, dv = \\sin\\left( x \\right)
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x \\sin\\left( x \\right) \\end{aligned}
+- [apply-parts-formula] Formule de l'IPP : ∫u dv = uv − ∫v du
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x -\\cos\\left( x \\right) - -\\sin\\left( x \\right) \\end{aligned}
+  - [extract-constant] On sort la constante -1
+    \\begin{aligned} & \\textcolor{blue}{\\int -\\cos\\left( x \\right)\\,dx} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive usuelle
+      \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{x -\\cos\\left( x \\right) - -\\sin\\left( x \\right) + C}
+Antiderivative: x -\\cos\\left( x \\right) - -\\sin\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
+- [identify-parts] Intégration par parties
+  · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x \\sin\\left( x \\right) \\end{aligned}
+- [choose-u-dv] Choix : u = x, dv = \\sin\\left( x \\right)
+  · On pose u = x et dv = \\sin\\left( x \\right), d'où du = 1 dx et v = -\\cos\\left( x \\right).
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x \\sin\\left( x \\right) \\end{aligned}
+- [apply-parts-formula] Formule de l'IPP : ∫u dv = uv − ∫v du
+  · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x -\\cos\\left( x \\right) - -\\sin\\left( x \\right) \\end{aligned}
+  - [extract-constant] On sort la constante -1
+    · Une constante multiplicative sort de l'intégrale : ∫-1·f(x) dx = -1·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int -\\cos\\left( x \\right)\\,dx} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive usuelle
+      · On reconnaît une primitive de référence (table des primitives usuelles).
+      \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{x -\\cos\\left( x \\right) - -\\sin\\left( x \\right) + C}
+Antiderivative: x -\\cos\\left( x \\right) - -\\sin\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [identify-parts] \\int u\\,dv
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x \\sin\\left( x \\right) \\end{aligned}
+- [choose-u-dv] u = x,\\ dv = \\sin\\left( x \\right)
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x \\sin\\left( x \\right) \\end{aligned}
+- [apply-parts-formula] \\int u\\,dv = uv - \\int v\\,du
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x -\\cos\\left( x \\right) - -\\sin\\left( x \\right) \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    \\begin{aligned} & \\textcolor{blue}{\\int -\\cos\\left( x \\right)\\,dx} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive
+      \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+Antiderivative: x -\\cos\\left( x \\right) - -\\sin\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [identify-parts] \\int u\\,dv
+  · L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x \\sin\\left( x \\right) \\end{aligned}
+- [choose-u-dv] u = x,\\ dv = \\sin\\left( x \\right)
+  · On pose u = x et dv = \\sin\\left( x \\right), d'où du = 1 dx et v = -\\cos\\left( x \\right).
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x \\sin\\left( x \\right) \\end{aligned}
+- [apply-parts-formula] \\int u\\,dv = uv - \\int v\\,du
+  · On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.
+  \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = x -\\cos\\left( x \\right) - -\\sin\\left( x \\right) \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    · Une constante multiplicative sort de l'intégrale : ∫-1·f(x) dx = -1·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int -\\cos\\left( x \\right)\\,dx} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
+    - [apply-known-primitive] Primitive
+      · On reconnaît une primitive de référence (table des primitives usuelles).
+      \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+Antiderivative: x -\\cos\\left( x \\right) - -\\sin\\left( x \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: polynomial > renders (2x^4 + 5x^2 + 7) 1`] = `
+"
+###### (2x^4 + 5x^2 + 7) ######
+
+Expression: 2x^4 + 5x^2 + 7
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int 2 x^4 + 5 x^2 + 7\\,dx}
+- [apply-linearity-sum] Linéarité de l’intégrale
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x^4 + 5 x^2 + 7\\,dx} \\\\ & = 2 \\dfrac{x^5}{5} + 5 \\dfrac{x^3}{3} + 7 x \\end{aligned}
+  - [extract-constant] On sort la constante 2
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 x^4\\,dx} \\\\ & = 2 \\dfrac{x^5}{5} \\end{aligned}
+    - [apply-power-rule] Règle de la puissance
+      \\begin{aligned} & \\textcolor{blue}{\\int x^4\\,dx} \\\\ & = \\dfrac{x^5}{5} \\end{aligned}
+  - [extract-constant] On sort la constante 5
+    \\begin{aligned} & \\textcolor{blue}{\\int 5 x^2\\,dx} \\\\ & = 5 \\dfrac{x^3}{3} \\end{aligned}
+    - [apply-power-rule] Règle de la puissance
+      \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+  - [apply-constant-rule] Primitive d'une constante
+    \\begin{aligned} & \\textcolor{blue}{\\int 7\\,dx} \\\\ & = 7 x \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{2 \\dfrac{x^5}{5} + 5 \\dfrac{x^3}{3} + 7 x + C}
+Antiderivative: 2 \\dfrac{x^5}{5} + 5 \\dfrac{x^3}{3} + 7 x
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int 2 x^4 + 5 x^2 + 7\\,dx}
+- [apply-linearity-sum] Linéarité de l’intégrale
+  · L'intégrale est linéaire : ∫(f+g) dx = ∫f dx + ∫g dx. On intègre chaque terme séparément.
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x^4 + 5 x^2 + 7\\,dx} \\\\ & = 2 \\dfrac{x^5}{5} + 5 \\dfrac{x^3}{3} + 7 x \\end{aligned}
+  - [extract-constant] On sort la constante 2
+    · Une constante multiplicative sort de l'intégrale : ∫2·f(x) dx = 2·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 x^4\\,dx} \\\\ & = 2 \\dfrac{x^5}{5} \\end{aligned}
+    - [apply-power-rule] Règle de la puissance
+      · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 4 (et n ≠ -1).
+      \\begin{aligned} & \\textcolor{blue}{\\int x^4\\,dx} \\\\ & = \\dfrac{x^5}{5} \\end{aligned}
+  - [extract-constant] On sort la constante 5
+    · Une constante multiplicative sort de l'intégrale : ∫5·f(x) dx = 5·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 5 x^2\\,dx} \\\\ & = 5 \\dfrac{x^3}{3} \\end{aligned}
+    - [apply-power-rule] Règle de la puissance
+      · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 2 (et n ≠ -1).
+      \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+  - [apply-constant-rule] Primitive d'une constante
+    · Une constante c admet la primitive c·x : ∫7 dx = 7·x.
+    \\begin{aligned} & \\textcolor{blue}{\\int 7\\,dx} \\\\ & = 7 x \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{2 \\dfrac{x^5}{5} + 5 \\dfrac{x^3}{3} + 7 x + C}
+Antiderivative: 2 \\dfrac{x^5}{5} + 5 \\dfrac{x^3}{3} + 7 x
+
+========== SUPERIEUR (summarized) ==========
+- [apply-linearity-sum] \\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x^4 + 5 x^2 + 7\\,dx} \\\\ & = 2 \\dfrac{x^5}{5} + 5 \\dfrac{x^3}{3} + 7 x \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 x^4\\,dx} \\\\ & = 2 \\dfrac{x^5}{5} \\end{aligned}
+    - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+      \\begin{aligned} & \\textcolor{blue}{\\int x^4\\,dx} \\\\ & = \\dfrac{x^5}{5} \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    \\begin{aligned} & \\textcolor{blue}{\\int 5 x^2\\,dx} \\\\ & = 5 \\dfrac{x^3}{3} \\end{aligned}
+    - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+      \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+  - [apply-constant-rule] \\int c\\,dx = cx
+    \\begin{aligned} & \\textcolor{blue}{\\int 7\\,dx} \\\\ & = 7 x \\end{aligned}
+Antiderivative: 2 \\dfrac{x^5}{5} + 5 \\dfrac{x^3}{3} + 7 x
+
+========== SUPERIEUR (detailed) ==========
+- [apply-linearity-sum] \\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx
+  · L'intégrale est linéaire : ∫(f+g) dx = ∫f dx + ∫g dx. On intègre chaque terme séparément.
+  \\begin{aligned} & \\textcolor{blue}{\\int 2 x^4 + 5 x^2 + 7\\,dx} \\\\ & = 2 \\dfrac{x^5}{5} + 5 \\dfrac{x^3}{3} + 7 x \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    · Une constante multiplicative sort de l'intégrale : ∫2·f(x) dx = 2·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 x^4\\,dx} \\\\ & = 2 \\dfrac{x^5}{5} \\end{aligned}
+    - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+      · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 4 (et n ≠ -1).
+      \\begin{aligned} & \\textcolor{blue}{\\int x^4\\,dx} \\\\ & = \\dfrac{x^5}{5} \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    · Une constante multiplicative sort de l'intégrale : ∫5·f(x) dx = 5·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 5 x^2\\,dx} \\\\ & = 5 \\dfrac{x^3}{3} \\end{aligned}
+    - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+      · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 2 (et n ≠ -1).
+      \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+  - [apply-constant-rule] \\int c\\,dx = cx
+    · Une constante c admet la primitive c·x : ∫7 dx = 7·x.
+    \\begin{aligned} & \\textcolor{blue}{\\int 7\\,dx} \\\\ & = 7 x \\end{aligned}
+Antiderivative: 2 \\dfrac{x^5}{5} + 5 \\dfrac{x^3}{3} + 7 x
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: polynomial > renders (3x^2 + 2x + 1) 1`] = `
+"
+###### (3x^2 + 2x + 1) ######
+
+Expression: 3x^2 + 2x + 1
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int 3 x^2 + 2 x + 1\\,dx}
+- [apply-linearity-sum] Linéarité de l’intégrale
+  \\begin{aligned} & \\textcolor{blue}{\\int 3 x^2 + 2 x + 1\\,dx} \\\\ & = 3 \\dfrac{x^3}{3} + 2 \\dfrac{x^2}{2} + x \\end{aligned}
+  - [extract-constant] On sort la constante 3
+    \\begin{aligned} & \\textcolor{blue}{\\int 3 x^2\\,dx} \\\\ & = 3 \\dfrac{x^3}{3} \\end{aligned}
+    - [apply-power-rule] Règle de la puissance
+      \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+  - [extract-constant] On sort la constante 2
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 x\\,dx} \\\\ & = 2 \\dfrac{x^2}{2} \\end{aligned}
+    - [apply-power-rule] Règle de la puissance
+      \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-constant-rule] Primitive d'une constante
+    \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{3 \\dfrac{x^3}{3} + 2 \\dfrac{x^2}{2} + x + C}
+Antiderivative: 3 \\dfrac{x^3}{3} + 2 \\dfrac{x^2}{2} + x
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int 3 x^2 + 2 x + 1\\,dx}
+- [apply-linearity-sum] Linéarité de l’intégrale
+  · L'intégrale est linéaire : ∫(f+g) dx = ∫f dx + ∫g dx. On intègre chaque terme séparément.
+  \\begin{aligned} & \\textcolor{blue}{\\int 3 x^2 + 2 x + 1\\,dx} \\\\ & = 3 \\dfrac{x^3}{3} + 2 \\dfrac{x^2}{2} + x \\end{aligned}
+  - [extract-constant] On sort la constante 3
+    · Une constante multiplicative sort de l'intégrale : ∫3·f(x) dx = 3·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 3 x^2\\,dx} \\\\ & = 3 \\dfrac{x^3}{3} \\end{aligned}
+    - [apply-power-rule] Règle de la puissance
+      · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 2 (et n ≠ -1).
+      \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+  - [extract-constant] On sort la constante 2
+    · Une constante multiplicative sort de l'intégrale : ∫2·f(x) dx = 2·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 x\\,dx} \\\\ & = 2 \\dfrac{x^2}{2} \\end{aligned}
+    - [apply-power-rule] Règle de la puissance
+      · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
+      \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-constant-rule] Primitive d'une constante
+    · Une constante c admet la primitive c·x : ∫1 dx = 1·x.
+    \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{3 \\dfrac{x^3}{3} + 2 \\dfrac{x^2}{2} + x + C}
+Antiderivative: 3 \\dfrac{x^3}{3} + 2 \\dfrac{x^2}{2} + x
+
+========== SUPERIEUR (summarized) ==========
+- [apply-linearity-sum] \\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx
+  \\begin{aligned} & \\textcolor{blue}{\\int 3 x^2 + 2 x + 1\\,dx} \\\\ & = 3 \\dfrac{x^3}{3} + 2 \\dfrac{x^2}{2} + x \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    \\begin{aligned} & \\textcolor{blue}{\\int 3 x^2\\,dx} \\\\ & = 3 \\dfrac{x^3}{3} \\end{aligned}
+    - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+      \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 x\\,dx} \\\\ & = 2 \\dfrac{x^2}{2} \\end{aligned}
+    - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+      \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-constant-rule] \\int c\\,dx = cx
+    \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
+Antiderivative: 3 \\dfrac{x^3}{3} + 2 \\dfrac{x^2}{2} + x
+
+========== SUPERIEUR (detailed) ==========
+- [apply-linearity-sum] \\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx
+  · L'intégrale est linéaire : ∫(f+g) dx = ∫f dx + ∫g dx. On intègre chaque terme séparément.
+  \\begin{aligned} & \\textcolor{blue}{\\int 3 x^2 + 2 x + 1\\,dx} \\\\ & = 3 \\dfrac{x^3}{3} + 2 \\dfrac{x^2}{2} + x \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    · Une constante multiplicative sort de l'intégrale : ∫3·f(x) dx = 3·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 3 x^2\\,dx} \\\\ & = 3 \\dfrac{x^3}{3} \\end{aligned}
+    - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+      · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 2 (et n ≠ -1).
+      \\begin{aligned} & \\textcolor{blue}{\\int x^2\\,dx} \\\\ & = \\dfrac{x^3}{3} \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    · Une constante multiplicative sort de l'intégrale : ∫2·f(x) dx = 2·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 2 x\\,dx} \\\\ & = 2 \\dfrac{x^2}{2} \\end{aligned}
+    - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+      · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
+      \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-constant-rule] \\int c\\,dx = cx
+    · Une constante c admet la primitive c·x : ∫1 dx = 1·x.
+    \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
+Antiderivative: 3 \\dfrac{x^3}{3} + 2 \\dfrac{x^2}{2} + x
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: polynomial > renders (x^3 - 4x) 1`] = `
+"
+###### (x^3 - 4x) ######
+
+Expression: x^3 - 4x
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int x^3 - 4 x\\,dx}
+- [apply-linearity-sum] Linéarité de l’intégrale
+  \\begin{aligned} & \\textcolor{blue}{\\int x^3 - 4 x\\,dx} \\\\ & = \\dfrac{x^4}{4} - 4 \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-power-rule] Règle de la puissance
+    \\begin{aligned} & \\textcolor{blue}{\\int x^3\\,dx} \\\\ & = \\dfrac{x^4}{4} \\end{aligned}
+  - [extract-constant] On sort la constante 4
+    \\begin{aligned} & \\textcolor{blue}{\\int 4 x\\,dx} \\\\ & = 4 \\dfrac{x^2}{2} \\end{aligned}
+    - [apply-power-rule] Règle de la puissance
+      \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\dfrac{x^4}{4} - 4 \\dfrac{x^2}{2} + C}
+Antiderivative: \\dfrac{x^4}{4} - 4 \\dfrac{x^2}{2}
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int x^3 - 4 x\\,dx}
+- [apply-linearity-sum] Linéarité de l’intégrale
+  · L'intégrale est linéaire : ∫(f+g) dx = ∫f dx + ∫g dx. On intègre chaque terme séparément.
+  \\begin{aligned} & \\textcolor{blue}{\\int x^3 - 4 x\\,dx} \\\\ & = \\dfrac{x^4}{4} - 4 \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-power-rule] Règle de la puissance
+    · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 3 (et n ≠ -1).
+    \\begin{aligned} & \\textcolor{blue}{\\int x^3\\,dx} \\\\ & = \\dfrac{x^4}{4} \\end{aligned}
+  - [extract-constant] On sort la constante 4
+    · Une constante multiplicative sort de l'intégrale : ∫4·f(x) dx = 4·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 4 x\\,dx} \\\\ & = 4 \\dfrac{x^2}{2} \\end{aligned}
+    - [apply-power-rule] Règle de la puissance
+      · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
+      \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\dfrac{x^4}{4} - 4 \\dfrac{x^2}{2} + C}
+Antiderivative: \\dfrac{x^4}{4} - 4 \\dfrac{x^2}{2}
+
+========== SUPERIEUR (summarized) ==========
+- [apply-linearity-sum] \\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx
+  \\begin{aligned} & \\textcolor{blue}{\\int x^3 - 4 x\\,dx} \\\\ & = \\dfrac{x^4}{4} - 4 \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+    \\begin{aligned} & \\textcolor{blue}{\\int x^3\\,dx} \\\\ & = \\dfrac{x^4}{4} \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    \\begin{aligned} & \\textcolor{blue}{\\int 4 x\\,dx} \\\\ & = 4 \\dfrac{x^2}{2} \\end{aligned}
+    - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+      \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+Antiderivative: \\dfrac{x^4}{4} - 4 \\dfrac{x^2}{2}
+
+========== SUPERIEUR (detailed) ==========
+- [apply-linearity-sum] \\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx
+  · L'intégrale est linéaire : ∫(f+g) dx = ∫f dx + ∫g dx. On intègre chaque terme séparément.
+  \\begin{aligned} & \\textcolor{blue}{\\int x^3 - 4 x\\,dx} \\\\ & = \\dfrac{x^4}{4} - 4 \\dfrac{x^2}{2} \\end{aligned}
+  - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+    · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 3 (et n ≠ -1).
+    \\begin{aligned} & \\textcolor{blue}{\\int x^3\\,dx} \\\\ & = \\dfrac{x^4}{4} \\end{aligned}
+  - [extract-constant] \\int cf\\,dx = c\\int f\\,dx
+    · Une constante multiplicative sort de l'intégrale : ∫4·f(x) dx = 4·∫f(x) dx.
+    \\begin{aligned} & \\textcolor{blue}{\\int 4 x\\,dx} \\\\ & = 4 \\dfrac{x^2}{2} \\end{aligned}
+    - [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+      · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
+      \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+Antiderivative: \\dfrac{x^4}{4} - 4 \\dfrac{x^2}{2}
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: usuelles > renders (1/x) 1`] = `
+"
+###### (1/x) ######
+
+Expression: \\dfrac{1}{x}
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\ln\\left( \\left| x \\right| \\right) + C}
+Antiderivative: \\ln\\left( \\left| x \\right| \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\ln\\left( \\left| x \\right| \\right) + C}
+Antiderivative: \\ln\\left( \\left| x \\right| \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-known-primitive] Primitive
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
+Antiderivative: \\ln\\left( \\left| x \\right| \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-known-primitive] Primitive
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int \\dfrac{1}{x}\\,dx} \\\\ & = \\ln\\left( \\left| x \\right| \\right) \\end{aligned}
+Antiderivative: \\ln\\left( \\left| x \\right| \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: usuelles > renders (constante 5) 1`] = `
+"
+###### (constante 5) ######
+
+Expression: 5
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int 5\\,dx}
+- [apply-constant-rule] Primitive d'une constante
+  \\begin{aligned} & \\textcolor{blue}{\\int 5\\,dx} \\\\ & = 5 x \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{5 x + C}
+Antiderivative: 5 x
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int 5\\,dx}
+- [apply-constant-rule] Primitive d'une constante
+  · Une constante c admet la primitive c·x : ∫5 dx = 5·x.
+  \\begin{aligned} & \\textcolor{blue}{\\int 5\\,dx} \\\\ & = 5 x \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{5 x + C}
+Antiderivative: 5 x
+
+========== SUPERIEUR (summarized) ==========
+- [apply-constant-rule] \\int c\\,dx = cx
+  \\begin{aligned} & \\textcolor{blue}{\\int 5\\,dx} \\\\ & = 5 x \\end{aligned}
+Antiderivative: 5 x
+
+========== SUPERIEUR (detailed) ==========
+- [apply-constant-rule] \\int c\\,dx = cx
+  · Une constante c admet la primitive c·x : ∫5 dx = 5·x.
+  \\begin{aligned} & \\textcolor{blue}{\\int 5\\,dx} \\\\ & = 5 x \\end{aligned}
+Antiderivative: 5 x
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: usuelles > renders (cos(x)) 1`] = `
+"
+###### (cos(x)) ######
+
+Expression: \\cos(x)
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\sin\\left( x \\right) + C}
+Antiderivative: \\sin\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\sin\\left( x \\right) + C}
+Antiderivative: \\sin\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-known-primitive] Primitive
+  \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+Antiderivative: \\sin\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-known-primitive] Primitive
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
+Antiderivative: \\sin\\left( x \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: usuelles > renders (e^x) 1`] = `
+"
+###### (e^x) ######
+
+Expression: e^x
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int e^x\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\exp\\left( x \\right) + C}
+Antiderivative: \\exp\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int e^x\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\exp\\left( x \\right) + C}
+Antiderivative: \\exp\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-known-primitive] Primitive
+  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+Antiderivative: \\exp\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-known-primitive] Primitive
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int e^x\\,dx} \\\\ & = \\exp\\left( x \\right) \\end{aligned}
+Antiderivative: \\exp\\left( x \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: usuelles > renders (sin(x)) 1`] = `
+"
+###### (sin(x)) ######
+
+Expression: \\sin(x)
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int \\sin\\left( x \\right)\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  \\begin{aligned} & \\textcolor{blue}{\\int \\sin\\left( x \\right)\\,dx} \\\\ & = -\\cos\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{-\\cos\\left( x \\right) + C}
+Antiderivative: -\\cos\\left( x \\right)
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int \\sin\\left( x \\right)\\,dx}
+- [apply-known-primitive] Primitive usuelle
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int \\sin\\left( x \\right)\\,dx} \\\\ & = -\\cos\\left( x \\right) \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{-\\cos\\left( x \\right) + C}
+Antiderivative: -\\cos\\left( x \\right)
+
+========== SUPERIEUR (summarized) ==========
+- [apply-known-primitive] Primitive
+  \\begin{aligned} & \\textcolor{blue}{\\int \\sin\\left( x \\right)\\,dx} \\\\ & = -\\cos\\left( x \\right) \\end{aligned}
+Antiderivative: -\\cos\\left( x \\right)
+
+========== SUPERIEUR (detailed) ==========
+- [apply-known-primitive] Primitive
+  · On reconnaît une primitive de référence (table des primitives usuelles).
+  \\begin{aligned} & \\textcolor{blue}{\\int \\sin\\left( x \\right)\\,dx} \\\\ & = -\\cos\\left( x \\right) \\end{aligned}
+Antiderivative: -\\cos\\left( x \\right)
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: usuelles > renders (x) 1`] = `
+"
+###### (x) ######
+
+Expression: x
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int x\\,dx}
+- [apply-power-rule] Règle de la puissance
+  \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\dfrac{x^2}{2} + C}
+Antiderivative: \\dfrac{x^2}{2}
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int x\\,dx}
+- [apply-power-rule] Règle de la puissance
+  · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
+  \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\dfrac{x^2}{2} + C}
+Antiderivative: \\dfrac{x^2}{2}
+
+========== SUPERIEUR (summarized) ==========
+- [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+  \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+Antiderivative: \\dfrac{x^2}{2}
+
+========== SUPERIEUR (detailed) ==========
+- [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+  · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 1 (et n ≠ -1).
+  \\begin{aligned} & \\textcolor{blue}{\\int x\\,dx} \\\\ & = \\dfrac{x^2}{2} \\end{aligned}
+Antiderivative: \\dfrac{x^2}{2}
+"
+`;
+
+exports[`pedagogical-integration demo cases > category: usuelles > renders (x^3) 1`] = `
+"
+###### (x^3) ######
+
+Expression: x^3
+
+========== LYCEE (summarized) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  \\textcolor{blue}{\\int x^3\\,dx}
+- [apply-power-rule] Règle de la puissance
+  \\begin{aligned} & \\textcolor{blue}{\\int x^3\\,dx} \\\\ & = \\dfrac{x^4}{4} \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  \\textcolor{blue}{\\dfrac{x^4}{4} + C}
+Antiderivative: \\dfrac{x^4}{4}
+
+========== LYCEE (detailed) ==========
+- [identify-integrand] Identification de la primitive à calculer
+  · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
+  \\textcolor{blue}{\\int x^3\\,dx}
+- [apply-power-rule] Règle de la puissance
+  · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 3 (et n ≠ -1).
+  \\begin{aligned} & \\textcolor{blue}{\\int x^3\\,dx} \\\\ & = \\dfrac{x^4}{4} \\end{aligned}
+- [add-constant] On ajoute la constante d'intégration C
+  · Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.
+  \\textcolor{blue}{\\dfrac{x^4}{4} + C}
+Antiderivative: \\dfrac{x^4}{4}
+
+========== SUPERIEUR (summarized) ==========
+- [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+  \\begin{aligned} & \\textcolor{blue}{\\int x^3\\,dx} \\\\ & = \\dfrac{x^4}{4} \\end{aligned}
+Antiderivative: \\dfrac{x^4}{4}
+
+========== SUPERIEUR (detailed) ==========
+- [apply-power-rule] \\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}
+  · (x^n)' = n·x^(n-1), donc ∫x^n dx = \\dfrac{x^{n+1}}{n+1} avec n = 3 (et n ≠ -1).
+  \\begin{aligned} & \\textcolor{blue}{\\int x^3\\,dx} \\\\ & = \\dfrac{x^4}{4} \\end{aligned}
+Antiderivative: \\dfrac{x^4}{4}
+"
+`;
