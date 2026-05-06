@@ -441,9 +441,13 @@ pleinement validés.
 
 ## Suite
 
-- **Palier 2b** : pédagogique quadratique numérique (Δ + tableau de
-  signes + 6 sous-cas selon signe(a) × signe(Δ)). À spécifier avec une
-  nouvelle Phase 0 TDD.
+- ~~**Palier 2b** : pédagogique quadratique numérique~~ **Livré le
+  2026-05-06** (commit `f32893cff`). Voir
+  `docs/wip/pedagogical-quadratic-inequality-progress.md` pour le détail.
+  Pipeline Δ + tableau de signes, 6 sous-cas (a sign × Δ sign), Mode B
+  end-to-end, CLI demo. +50 tests (31 inequality + 19 renderer V2).
+  2 fixes correctness post code review : `\setminus` LaTeX rendering +
+  irrational-root sorting via full `computeNumericValue`.
 - **Reste palier 2c/d** : paramétrique (V2, scope ouvert).
 - ~~**Solveur rationnel** : `solve(1/x − 1 = 0)` ne trouve toujours pas x=1~~
   **Fixé le 2026-05-06** (commit `79783e215`). Nouveau module
