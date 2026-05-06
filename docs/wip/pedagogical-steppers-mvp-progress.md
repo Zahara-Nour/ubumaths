@@ -198,11 +198,11 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 - **Unités impériales + affines** (Celsius/Fahrenheit, foot, pound, mile, gallon) → livré, voir `units-imperial-affine-progress.md`
 - **Unités d'aire** (a, ha, acre) — bonus débloqué par dérivées → livré, voir `units-area-progress.md`
 - **Intégration aux corrections de questions** (`QuestionCorrection.generatedSteps` Mode B) → livré, voir `correction-integration-progress.md`. Inclut :
-  - Schéma type `GeneratedSteps` discriminé (`kind: 'arithmetic' | 'linear-equation' | 'differentiate' | 'quadratic-equation' | 'linear-inequality' | 'quadratic-inequality' | 'rational-inequality' | 'integrate'`)
+  - Schéma type `GeneratedSteps` discriminé (`kind: 'arithmetic' | 'linear-equation' | 'differentiate' | 'quadratic-equation' | 'linear-inequality' | 'quadratic-inequality' | 'rational-inequality' | 'integrate' | 'simplify'`) — **9 kinds**
   - `generateCorrection()` avec auto-call dans `generateInstance()` (early-return strict si absent)
   - Composant Svelte `<GeneratedStepsCorrection>` + extension `CorrectionCard.svelte`
   - Mapping `gradeLevelToSchoolLevel` (CP-CM2 → primaire, 6-3 → college, 2-T → lycee)
-  - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (13 fixtures : arithmetic + linear-equation + differentiate × 2 + quadratic-equation + linear-inequality × 2 + quadratic-inequality × 2 + rational-inequality × 2 + integrate × 2 ; la `rationalInequalityMultiFracDemo` V2 est en snapshot test mais pas affichée)
+  - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (15 fixtures : arithmetic + linear-equation + differentiate × 2 + quadratic-equation + linear-inequality × 2 + quadratic-inequality × 2 + rational-inequality × 2 + integrate × 2 + simplify × 2 ; la `rationalInequalityMultiFracDemo` V2 est en snapshot test mais pas affichée)
 - **Stepper pédagogique pour équations du second degré** (`kind: 'quadratic-equation'`) → livré V1 + V1.1, voir `quadratic-stepper-progress.md`. Inclut :
 
   - Pipeline `pedagogical-solve/quadratic.ts` couvrant 4 cas (standard Δ>0/=0/<0, b=0, c=0, factorisé) + standardisation auto vers `… = 0`
@@ -291,6 +291,7 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - Commits : `0a4751a5d` (Phase 1 types), `e576400da` (Phase 2 pipeline), `0fe7ca6c0` (Phase 3 renderer), `fd6a6381b` (Phase 4 démos+CLI), `4a3bf5e57` (Phase 5 Mode B), `76824564e` (Phase 6 docs), `fdef883ed` (V1.1), `d5445601e` (V2)
 
 - **Stepper pédagogique pour inéquations rationnelles** (palier 3, `kind: 'rational-inequality'`) → livré V1+V1.1+V2, voir `pedagogical-rational-inequality-progress.md`. Inclut :
+
   - Pipeline `pedagogical-solve/rational-inequality.ts` (~430 LOC) pour `P(x)/Q(x) ⊻ 0` selon la méthode standard française : domaine de définition, racines de P, zéros de Q, tableau de signes combiné 4 lignes (`x | P | Q | P/Q` avec `||` aux zéros de Q), lecture de S
   - 5 nouvelles op kinds : `identify-rational`, `rational-domain-restriction`, `rational-locate-roots`, `rational-sign-table`, `inequality-conclude-rational`
   - Dispatcher étendu : route vers le pipeline rationnel quand `getPolynomialDegree` retourne null ET `collectDenominators` non-vide
@@ -302,12 +303,27 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - Tests : V1 +22 → 353, V1.1 +2 → 355, V2 +6 → 361 ; total pedagogical-solve : 331 → 361
   - 3 fixtures Mode B : `rationalInequalitySimpleDemo` + `rationalInequalityQuadDenomDemo` + `rationalInequalityMultiFracDemo` (V2)
 
+- **Stepper pédagogique pour simplification** (`kind: 'simplify'`) → livré 2026-05-06, voir `simplify-stepper-progress.md`. Inclut :
+
+  - Architecture **Option C′** (variante d'Option C — pipeline manuel à la `pedagogical-arithmetic`, réutilise rule sets pattern + normalize StepRecorder, pas de `rewrite()`). Décidée après analyse empirique : `simplify()` actuel produit la mauvaise réponse pédagogique pour 4 cas-test V1 sur 9.
+  - Flag `intent` requis (`'factoriser' | 'developper' | 'reduire' | 'auto'`) qui dirige le set de rules actives ; pas de défaut, pas de cost-fixpoint.
+  - 4 niveaux scolaires distincts (pas de bump : la simplification est enseignée dès le primaire).
+  - 9 catégories pédagogiques + fallback `'autre'` (10 au total via `as const` array + sentinel).
+  - Réutilise normalize() pour combine-like-terms / fractions / radicaux / puissances / canonisation polynomiale.
+  - Nouvelle rule pédagogique `distribute-binomial-product` pour `(ax+b)(cx+d)` (priority -1 pour laisser passer les identités remarquables d'abord).
+  - Renderer 4 niveaux (PRIMAIRE/COLLEGE/LYCEE/SUPERIEUR_TITLES + EXPLANATIONS, fallback chain `level → lycee → step.description`).
+  - 9 catégories de démos × 28 cas snapshot + CLI `scripts/pedagogical-simplify-demo.ts` (--latex / --custom + ANSI bold-blue).
+  - 6 commits : `8fc5c8f86` (Phase 1 types+intent), `a7fdf91af` (Phase 2 pipeline+normalize bridge+rule binomial+timeoutMs), `bae477451` (Phase 3 renderer+TITLES/EXPLANATIONS), `138f6d99b` (Phase 4 démos+CLI), `8b4c8ce39` (Phase 5 Mode B + 2 fixtures + page debug 13→15).
+  - 222 tests verts spécifiques au feature (109 Phase 1 + 47 Phase 2 + 18 Phase 3 + 29 Phase 4 + 19 Phase 5).
+  - Mode B `kind: 'simplify'` intégré : 8 → 9 kinds. Catch `PedagogicalSimplifyNotImplemented` (matrices, inéquations, piecewise, logical) → fallback Mode A silencieux.
+  - Limitations V1 : binomial × binomial uniquement (pas de trinôme × binôme, pas de cube), hyperboliques exclues (`enableHyperbolic: false` par défaut), sub-steps reportés en V2.
+  - Limitation honnête documentée : `reduire` peut développer `(x+1)²` parce que normalize canonise les polynômes (le pattern `expand-sum-squared` n'est pas dans le rule set, mais normalize fait le travail). Acceptable pédagogiquement.
+
 #### 🔴 Toujours à faire
 
 **Élargissement de couverture**
 
-- Renderers pédagogiques pour les autres domaines : limits, matrix, domain (intégration livrée 2026-05-06)
-- Pipeline pédagogique pour simplification d'expression
+- Renderers pédagogiques pour les autres domaines : limits, matrix, domain (intégration livrée 2026-05-06, simplification livrée 2026-05-06)
 - `kind: 'solve'` algorithmique dans Mode B (pedagogical-solve V1.0 supporte linéaire + quadratique pour équations ET inéquations ; cubic/quartic/transcendental hors scope)
 - `kind: 'arithmetic-from-blank'` (V1 a skippé pour éviter duplication d'expression entre `expectedAnswer` et `generatedSteps.expression`)
 - **Palier 2d** — coefficients paramétriques quadratiques (`mx² + nx + p ⊻ 0`, m libre) : « discuter selon m » du programme Tle ; gros morceau, multi-sessions, complexité ↑↑ (disjonction de cas dans le tableau de signes)
