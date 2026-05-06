@@ -37,6 +37,12 @@ import {
 	PedagogicalIntegrationRenderer
 } from '$lib/mathAST/pedagogical-integration';
 import type { IntegrationSchoolLevel } from '$lib/mathAST/pedagogical-integration';
+import { generatePedagogicalSimplifySteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
+import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
+import {
+	PedagogicalSimplifyNotImplemented,
+	type SimplifyIntent
+} from '$lib/mathAST/pedagogical-simplify/types';
 import { generateLinearEquationSteps } from '$lib/mathAST/pedagogical-solve/linear';
 import { LinearEquationRenderer } from '$lib/mathAST/pedagogical-solve/linear-renderer';
 import {
@@ -149,6 +155,19 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 					expression: generatedSteps.expression,
 					variable: generatedSteps.variable,
 					definite: generatedSteps.definite,
+					instance,
+					schoolLevel,
+					verbosity
+				});
+				break;
+			case 'simplify':
+				renderedSteps = renderSimplify({
+					expression: generatedSteps.expression,
+					intent: generatedSteps.intent,
+					variable: generatedSteps.variable,
+					enableTrig: generatedSteps.enableTrig,
+					enableLogExp: generatedSteps.enableLogExp,
+					enableAbs: generatedSteps.enableAbs,
 					instance,
 					schoolLevel,
 					verbosity
@@ -526,6 +545,55 @@ function renderIntegrate({
 		schoolLevel: integrationLevel,
 		verbosity
 	};
+	return renderer.renderAll(result.steps, renderOptions);
+}
+
+interface SimplifyDispatch {
+	readonly expression: string;
+	readonly intent: SimplifyIntent;
+	readonly variable?: string;
+	readonly enableTrig?: boolean;
+	readonly enableLogExp?: boolean;
+	readonly enableAbs?: boolean;
+	readonly instance: QuestionInstance;
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+}
+
+function renderSimplify({
+	expression,
+	intent,
+	variable,
+	enableTrig,
+	enableLogExp,
+	enableAbs,
+	instance,
+	schoolLevel,
+	verbosity
+}: SimplifyDispatch): readonly RenderedStep[] | null {
+	const node = parseExpression(expression, instance);
+	if (node === null) return null;
+
+	let result;
+	try {
+		result = generatePedagogicalSimplifySteps(node, {
+			intent,
+			schoolLevel,
+			variable,
+			enableTrig,
+			enableLogExp,
+			enableAbs,
+			verbosity
+		});
+	} catch (err) {
+		// V1 scope refusals (matrices, inequations, piecewise…) → silent
+		// fallback to Mode A. Anything else re-throws upstream.
+		if (err instanceof PedagogicalSimplifyNotImplemented) return null;
+		throw err;
+	}
+
+	const renderer = new PedagogicalSimplifyRenderer();
+	const renderOptions: PedagogicalRenderOptions = { schoolLevel, verbosity };
 	return renderer.renderAll(result.steps, renderOptions);
 }
 

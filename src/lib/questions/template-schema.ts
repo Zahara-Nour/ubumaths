@@ -197,6 +197,17 @@ const generatedStepsIntegrate = z.object({
 	options: generatedStepsOptionsSchema.optional()
 });
 
+const generatedStepsSimplify = z.object({
+	kind: z.literal('simplify'),
+	expression: z.string().min(1),
+	intent: z.enum(['factoriser', 'developper', 'reduire', 'auto']),
+	variable: z.string().min(1).optional(),
+	enableTrig: z.boolean().optional(),
+	enableLogExp: z.boolean().optional(),
+	enableAbs: z.boolean().optional(),
+	options: generatedStepsOptionsSchema.optional()
+});
+
 export const generatedStepsSchema = z.discriminatedUnion('kind', [
 	generatedStepsArithmetic,
 	generatedStepsLinearEquation,
@@ -205,7 +216,8 @@ export const generatedStepsSchema = z.discriminatedUnion('kind', [
 	generatedStepsLinearInequality,
 	generatedStepsQuadraticInequality,
 	generatedStepsRationalInequality,
-	generatedStepsIntegrate
+	generatedStepsIntegrate,
+	generatedStepsSimplify
 ]);
 
 /**
@@ -389,6 +401,19 @@ const generatedStepsIntegrateStrictZ = z
 	})
 	.strict();
 
+const generatedStepsSimplifyStrictZ = z
+	.object({
+		kind: z.literal('simplify'),
+		expression: z.string().min(1),
+		intent: z.enum(['factoriser', 'developper', 'reduire', 'auto']),
+		variable: z.string().min(1).optional(),
+		enableTrig: z.boolean().optional(),
+		enableLogExp: z.boolean().optional(),
+		enableAbs: z.boolean().optional(),
+		options: generatedStepsOptionsStrictZ.optional()
+	})
+	.strict();
+
 const generatedStepsStrictZ = z.discriminatedUnion('kind', [
 	generatedStepsArithmeticStrictZ,
 	generatedStepsLinearEquationStrictZ,
@@ -397,7 +422,8 @@ const generatedStepsStrictZ = z.discriminatedUnion('kind', [
 	generatedStepsLinearInequalityStrictZ,
 	generatedStepsQuadraticInequalityStrictZ,
 	generatedStepsRationalInequalityStrictZ,
-	generatedStepsIntegrateStrictZ
+	generatedStepsIntegrateStrictZ,
+	generatedStepsSimplifyStrictZ
 ]);
 
 const correctionStrictZ = z

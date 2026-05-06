@@ -25,7 +25,9 @@ import {
 	quadraticInequalityNegativeADemo,
 	rationalInequalitySimpleDemo,
 	rationalInequalityQuadDenomDemo,
-	rationalInequalityMultiFracDemo
+	rationalInequalityMultiFracDemo,
+	simplifyDistributionDemo,
+	simplifyTrigDemo
 } from './fixtures/generated-steps-demo';
 
 /** Compact serializable view of a RenderedStep tree (no implementation noise). */
@@ -383,6 +385,44 @@ describe('Mode B end-to-end demos', () => {
 		expect(rules).toContain('apply-fundamental-theorem');
 		expect(rules).toContain('substitute-bounds');
 		expect(rules).toContain('simplify-bounds-result');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('4e simplify distribution — produces a product-to-diff-squares step', () => {
+		const result = generateInstance(simplifyDistributionDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		// Every step must be tagged college (4e → college via auto-mapping).
+		expect(steps!.every((s) => s.schoolLevel === 'college')).toBe(true);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('product-to-diff-squares');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('1ère simplify trig — produces a pythagorean step', () => {
+		const result = generateInstance(simplifyTrigDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		// Every step must be tagged lycee (1_SPE → lycee via auto-mapping).
+		expect(steps!.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('pythagorean');
 
 		const summary = steps!.map(summarize);
 		expect(summary).toMatchSnapshot();

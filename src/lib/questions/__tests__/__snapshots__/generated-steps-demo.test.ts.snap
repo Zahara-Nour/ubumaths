@@ -1,5 +1,18 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Mode B end-to-end demos > 1ère simplify trig — produces a pythagorean step 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "pythagorean",
+    "schoolLevel": "lycee",
+    "title": "On utilise sin²(x) + cos²(x) = 1",
+  },
+]
+`;
+
 exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation — produces lycee steps 1`] = `
 [
   {
@@ -404,6 +417,35 @@ exports[`Mode B end-to-end demos > 4e linear inequality with x on both sides —
     "rule": "subtract-both-sides",
     "schoolLevel": "college",
     "title": "On soustrait 1 aux deux membres",
+  },
+]
+`;
+
+exports[`Mode B end-to-end demos > 4e simplify distribution — produces a product-to-diff-squares step 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "product-to-diff-squares",
+    "schoolLevel": "college",
+    "title": "On utilise (a+b)(a-b) = a² - b²",
+  },
+  {
+    "hasExplanation": false,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "expand-power",
+    "schoolLevel": "college",
+    "title": "On développe la puissance",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "combine-like-terms",
+    "schoolLevel": "college",
+    "title": "On regroupe les termes en x",
   },
 ]
 `;

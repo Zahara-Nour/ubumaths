@@ -25,7 +25,9 @@
 		quadraticInequalityClassicDemo,
 		quadraticInequalityNegativeADemo,
 		rationalInequalitySimpleDemo,
-		rationalInequalityQuadDenomDemo
+		rationalInequalityQuadDenomDemo,
+		simplifyDistributionDemo,
+		simplifyTrigDemo
 	} from '$lib/questions/__tests__/fixtures/generated-steps-demo';
 	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
@@ -50,6 +52,8 @@
 	const differentiateCompResult = generateInstance(differentiateCompositionDemo, 1);
 	const integrateIndefiniteResult = generateInstance(integrateIndefiniteDemo, 1);
 	const integrateDefiniteResult = generateInstance(integrateDefiniteDemo, 1);
+	const simplifyDistributionResult = generateInstance(simplifyDistributionDemo, 1);
+	const simplifyTrigResult = generateInstance(simplifyTrigDemo, 1);
 
 	function buildAnswerResult(
 		result: ReturnType<typeof generateInstance>,
@@ -99,6 +103,10 @@
 	const integrateIndefiniteIncorrect = buildAnswerResult(integrateIndefiniteResult, 1, false);
 	const integrateDefiniteCorrect = buildAnswerResult(integrateDefiniteResult, 0, true);
 	const integrateDefiniteIncorrect = buildAnswerResult(integrateDefiniteResult, 1, false);
+	const simplifyDistributionCorrect = buildAnswerResult(simplifyDistributionResult, 0, true);
+	const simplifyDistributionIncorrect = buildAnswerResult(simplifyDistributionResult, 1, false);
+	const simplifyTrigCorrect = buildAnswerResult(simplifyTrigResult, 0, true);
+	const simplifyTrigIncorrect = buildAnswerResult(simplifyTrigResult, 1, false);
 
 	// ============================================================================
 	// Raw step inspector
@@ -163,6 +171,14 @@
 		integrateDefiniteResult.success
 			? integrateDefiniteResult.instance.correction?._renderedSteps
 			: undefined
+	);
+	const simplifyDistributionSteps = $derived(
+		simplifyDistributionResult.success
+			? simplifyDistributionResult.instance.correction?._renderedSteps
+			: undefined
+	);
+	const simplifyTrigSteps = $derived(
+		simplifyTrigResult.success ? simplifyTrigResult.instance.correction?._renderedSteps : undefined
 	);
 </script>
 
@@ -292,6 +308,26 @@
 					<span class="text-red-600">✗ {integrateDefiniteResult.errors.join(', ')}</span>
 				{/if}
 			</div>
+			<div>
+				<span class="font-mono">simplifyDistributionDemo</span> :
+				{#if simplifyDistributionResult.success}
+					<span class="text-green-600"
+						>✓ {simplifyDistributionSteps?.length ?? 0} étape(s) générée(s) (top-level)</span
+					>
+				{:else}
+					<span class="text-red-600">✗ {simplifyDistributionResult.errors.join(', ')}</span>
+				{/if}
+			</div>
+			<div>
+				<span class="font-mono">simplifyTrigDemo</span> :
+				{#if simplifyTrigResult.success}
+					<span class="text-green-600"
+						>✓ {simplifyTrigSteps?.length ?? 0} étape(s) générée(s) (top-level)</span
+					>
+				{:else}
+					<span class="text-red-600">✗ {simplifyTrigResult.errors.join(', ')}</span>
+				{/if}
+			</div>
 			<Button variant="outline" size="sm" onclick={() => (showJson = !showJson)}>
 				{showJson ? 'Masquer' : 'Afficher'} le JSON brut des RenderedStep[]
 			</Button>
@@ -308,7 +344,9 @@
 							differentiatePolynomial: differentiatePolySteps,
 							differentiateComposition: differentiateCompSteps,
 							integrateIndefinite: integrateIndefiniteSteps,
-							integrateDefinite: integrateDefiniteSteps
+							integrateDefinite: integrateDefiniteSteps,
+							simplifyDistribution: simplifyDistributionSteps,
+							simplifyTrig: simplifyTrigSteps
 						},
 						null,
 						2
@@ -493,6 +531,32 @@
 				<Card.Content>
 					{#if integrateDefiniteSteps}
 						<GeneratedStepsCorrection steps={integrateDefiniteSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>4e — développement (x+a)(x-a)</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if simplifyDistributionSteps}
+						<GeneratedStepsCorrection steps={simplifyDistributionSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>1ère spé — sin²(x) + cos²(x)</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if simplifyTrigSteps}
+						<GeneratedStepsCorrection steps={simplifyTrigSteps} />
 					{:else}
 						<p class="text-muted-foreground">Aucune étape générée.</p>
 					{/if}
@@ -717,6 +781,38 @@
 				<div>
 					<h3 class="mb-2 text-lg font-medium">Tle spé — intégrale définie — incorrecte</h3>
 					<CorrectionCard answerResult={integrateDefiniteIncorrect} questionNumber={26} size="md" />
+				</div>
+			{/if}
+			{#if simplifyDistributionCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">4e — développement (x+a)(x-a) — correcte</h3>
+					<CorrectionCard
+						answerResult={simplifyDistributionCorrect}
+						questionNumber={27}
+						size="md"
+					/>
+				</div>
+			{/if}
+			{#if simplifyDistributionIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">4e — développement (x+a)(x-a) — incorrecte</h3>
+					<CorrectionCard
+						answerResult={simplifyDistributionIncorrect}
+						questionNumber={28}
+						size="md"
+					/>
+				</div>
+			{/if}
+			{#if simplifyTrigCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">1ère spé — sin²+cos² — correcte</h3>
+					<CorrectionCard answerResult={simplifyTrigCorrect} questionNumber={29} size="md" />
+				</div>
+			{/if}
+			{#if simplifyTrigIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">1ère spé — sin²+cos² — incorrecte</h3>
+					<CorrectionCard answerResult={simplifyTrigIncorrect} questionNumber={30} size="md" />
 				</div>
 			{/if}
 		</div>
