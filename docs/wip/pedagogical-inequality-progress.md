@@ -14,6 +14,8 @@
 | 5   | `02522eebb` | docs(wip): consolidate palier 2a progress doc                                        |
 | 6   | `1cf5690e9` | fix(sign): split intervals at excludedPoints natively + remove inequality workaround |
 | 7   | `184af30a9` | style(sign): move PARTITION_DEDUPE_TOLERANCE after all imports                       |
+| 8   | `5bc2d55a2` | docs(wip): record commits 6+7 in palier 2a progress doc                              |
+| 9   | `16c417e79` | fix(solve): recognize e^x shapes as exponential + re-enable inequality test 14       |
 
 ## Livrable
 
@@ -332,11 +334,64 @@ Nouveau fichier `__tests__/analyze-excluded-points.test.ts` (7 tests) :
 | Régression questions (Mode B + correction-gen)     | **40 pass / 0 fail**                       |
 | ESLint + `pnpm check:incremental`                  | **0 nouvelle erreur**                      |
 
+## Upstream fix transcendental classification (2026-05-06, commit `16c417e79`)
+
+`parseLatex('e^x')` produit un `superscript { base: var('e'), … }`, pas un
+`function('exp', [x])`. Conséquence : la pile de classification
+(`containsTranscendental` / `getTranscendentalType`) ignorait totalement
+`e^x` et tombait sur `'unknown'`, court-circuitant `solveExponential`.
+
+### Fix en 3 couches
+
+1. **Classifier** (`analysis/expression-classify.ts`) : nouveau helper
+   `isEulerSuperscript(node)` détecte `e^u` (base = `euler()` ou
+   `var('e')`) **uniquement quand l'exposant contient au moins une
+   variable**. Le garde-fou `getVariables(node.superscript).size > 0`
+   est critique : sans lui, `e^2` (≈7.389) serait classé comme
+   transcendantal et `x² + 1 = e²` ne se résoudrait plus comme
+   quadratique.
+2. **Pattern matcher** (`solve/solvers/transcendental.ts`) :
+   `tryTranscendentalPatterns` tente maintenant `P.lit(euler())` ET
+   `P.var('e')` comme base de l'exp pattern (defense-in-depth pour
+   les appelants qui ne passent pas par la promotion).
+3. **Pré-traitement** (`solve/promote-euler.ts`) : nouvelle fonction
+   `promoteEulerInRelation(rel)` qui réécrit `var('e')` en `euler()`
+   uniquement quand `e` est en position de base d'un superscript. Applié
+   à l'entrée de `solve()` et `solveInequality()` — sans cela,
+   `detectVariable(e^x − 1)` retournerait null (vu 2 variables `{e, x}`)
+   et router vers `handleConstantEquation`.
+
+### Bonus : ordre des branches `computeStatus` révisé
+
+L'ordre V1 `no-solution > partial` (issu d'un retour de code review)
+masquait la nature partielle quand `analyzeSign` ne pouvait pas
+déterminer le signe sur une queue (sampling `e^1e6` overflows). Reverti
+à `partial > no-solution` — plus honnête. La cas-edge "solution vide
+
+- unknowns ailleurs" est désormais accepté comme `'partial'` (avec
+  warnings + signTable disponibles pour le caller).
+
+### Test 14 ré-activé
+
+`it.skip('e^x − 1 > 0')` du palier 1 est ré-activé. Il assert maintenant
+`status='partial'` (la solution `]0, +∞[` reste hors d'atteinte sans le
+fix sampling — limitation #3).
+
+### Vérifications
+
+| Étape                                     | Résultat                                                                                       |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Tests exponential-shapes (nouveaux)       | **13 pass / 0 fail** (couvre `e^x − c`, `a·e^x + b`, `e^(ax+b)`, no-solution, regression poly) |
+| Régression mathAST entier                 | **12631 pass / 18 skip / 3 todo / 0 fail** (+26 nouveaux)                                      |
+| Régression Mode B (correction-gen + demo) | **40 pass / 0 fail**                                                                           |
+| ESLint + `pnpm check:incremental`         | **0 nouvelle erreur**                                                                          |
+
 ## Suite
 
 - **Palier 2b** : pédagogique quadratique numérique (Δ + tableau de signes + 6 sous-cas selon signe(a) × signe(Δ)). À spécifier avec une nouvelle Phase 0 TDD.
-- **Upstream solve** : `solve(a·e^x + b = 0)` (pour réactiver le test 14
-  skippé) et `solve(1/x − 1 = 0)` (pour mieux résoudre les rationnelles).
-- **Upstream sign sampling** : `MAX_SAMPLE_BOUND = 1e6` provoque des
-  faux 'zero' sur transcendantes — adapter au type d'expression.
+- **Limitation upstream #2 — `solve(1/x − 1 = 0)`** : pas encore résolu. Solveur rationnel à ajouter.
+- **Limitation upstream #3 — `MAX_SAMPLE_BOUND = 1e6`** : provoque des
+  faux 'zero' / 'unknown' sur transcendantes — adapter au type
+  d'expression. Bloque encore la précision de `]0, +∞[` pour
+  `e^x − 1 > 0`.
 - **Reste palier 2c/d** : paramétrique (V2, scope ouvert).

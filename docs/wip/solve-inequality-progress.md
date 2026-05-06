@@ -123,9 +123,17 @@ mais expliquent certaines limitations utilisateur.
    d'un `IntervalSet`.~~ **Fixé le 2026-05-06** (cf.
    `docs/wip/pedagogical-inequality-progress.md` § « Upstream fix `sign/splitDomainAtZeros` »).
    Le workaround `expandExcludedPoints` du wrapper est supprimé.
-2. **`solve/solvers/transcendental.ts`** ne reconnaît pas `a·e^x + b = 0`
-   (devrait reformuler en `e^x = −b/a` puis appliquer `x = ln(−b/a)`). Idem
-   probablement pour `a·ln(x) + b = 0`. À investiguer.
+2. ~~**`solve/solvers/transcendental.ts`** ne reconnaît pas `a·e^x + b = 0`~~
+   **Fixé le 2026-05-06** (commit `16c417e79`). Le solveur transcendantal
+   AVAIT déjà la logique — c'était la classification qui ne reconnaissait
+   pas `e^x` (parsé comme `superscript { base: var('e'), … }`). Trois
+   couches : classifier (avec garde-fou `getVariables(u).size > 0` pour
+   éviter de prendre `e^2` pour transcendantal), pattern matcher (accepte
+   les deux formes `euler()` et `var('e')`), pré-traitement
+   `promoteEulerInRelation` à l'entrée de `solve()`/`solveInequality()`.
+   Le test 14 (`e^x − 1 > 0`) du palier 1 est ré-activé avec
+   status='partial' (la solution `]0, +∞[` complète attend le fix de la
+   limitation #3 ci-dessous).
 3. **`sign/helpers/sampling.ts`** : `MAX_SAMPLE_BOUND = 1e6` provoque overflow/
    underflow sur exp/ln aux bornes, donnant des résultats faux pour les
    transcendantes sur ℝ non borné. Stratégie possible : adapter la borne au
