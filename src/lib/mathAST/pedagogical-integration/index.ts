@@ -10,6 +10,12 @@
 
 export { generatePedagogicalIntegrationSteps } from './pipeline';
 
+export { PedagogicalIntegrationRenderer } from './renderer';
+export type { IntegrationRenderOptions } from './renderer';
+
+export { EXPLANATIONS, TITLES, getDefaultDescription } from './descriptions-fr';
+export type { ExplainFn, TitleFn } from './descriptions-fr';
+
 export { PedagogicalIntegrationNotImplemented, STRATEGIES_INTEGRATION } from './types';
 
 export type {
