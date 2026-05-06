@@ -80,6 +80,7 @@ import { isZeroNode } from './solvers/polynomial';
 import type { Solution, PeriodicSolutionFamily } from './types';
 import { getRuleDescription } from './descriptions-fr';
 import { computeDomain } from '../domain/compute';
+import { promoteEulerInRelation } from './promote-euler';
 import type { Domain } from '../domain/types';
 import {
 	containsNode,
@@ -1108,11 +1109,17 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		);
 	}
 
+	// Promote bare `e` (parsed as variable) to `euler()` in superscript bases.
+	// Without this, `detectVariable(e^x - 1 = 0)` would see `{e, x}` and return
+	// null, falling into the constant-equation path even though x is the obvious
+	// unknown. See `solve/promote-euler.ts` for the rationale.
+	const promotedEq = promoteEulerInRelation(equation);
+
 	// Convert to standard form: f(x) = 0
-	const expr = toStandardForm(equation);
+	const expr = toStandardForm(promotedEq);
 
 	// Detect variable if not specified
-	const variable = opts.variable ?? detectVariable(equation);
+	const variable = opts.variable ?? detectVariable(promotedEq);
 
 	// Handle constant equations (no variable)
 	if (!variable) {

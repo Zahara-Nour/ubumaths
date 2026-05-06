@@ -214,15 +214,20 @@ describe('solveInequality — restriction de domaine', () => {
 // =============================================================================
 
 describe('solveInequality — transcendantes', () => {
-	// Test 14 documents a known V1 limitation:
-	// solve() does not detect x=0 as a zero of `e^x - 1` (gap in the
-	// transcendental solver), and analyzeSign's sampling at ±1e6 underflows to
-	// 0 → e^0-1 = -1 → reports the whole R as 'negative'. solveInequality
-	// therefore returns 'no-solution'. To get the correct ]0, +∞[, fix solve
-	// (handle a·e^x + b = 0 → x = ln(-b/a)) or analyzeSign sampling.
-	it.skip('14. e^x − 1 > 0 → ]0, +∞[ (skipped: upstream solve gap)', () => {
+	// Re-enabled 2026-05-06 after the upstream classification + euler-promotion
+	// fix taught solve() that `e^x` (parsed as a superscript with `e` as a
+	// regular variable) is exponential. The expected solution `]0, +∞[` is
+	// not yet returned because sampling at ±1e6 overflows on `e^1e6` and
+	// produces 'unknown' on the right tail — limit. #3 (MAX_SAMPLE_BOUND).
+	// The status `'partial'` correctly signals the partially-decided result.
+	it('14. e^x − 1 > 0 → status partial (expected ]0, +∞[ pending sampling fix)', () => {
 		const result = solveInequality(ineq('e^x - 1 > 0'));
-		expect(['complete', 'partial']).toContain(result.status);
+		expect(result.status).toBe('partial');
+		// At least the negative side ]-∞, 0[ should be classified as `negative`
+		// (sampling at -1e6 gives e^(-1e6) - 1 ≈ -1, no overflow).
+		expect(result.signTable?.signedIntervals.length).toBeGreaterThanOrEqual(3);
+		expect(result.signTable?.zeros.length).toBe(1);
+		expect(result.signTable?.zeros[0].approximate).toBeCloseTo(0, 6);
 	});
 
 	it('15. sin(x) ≥ 0 sur [0, 2π] (via options.domain)', () => {

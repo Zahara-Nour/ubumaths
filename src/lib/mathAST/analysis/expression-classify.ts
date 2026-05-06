@@ -120,6 +120,37 @@ function isTranscendentalFunction(name: string): boolean {
 }
 
 /**
+ * True for `e^u` superscript shapes WHERE `u` contains at least one
+ * variable. The parser does NOT produce `function('exp', [u])`; the
+ * function-only check would otherwise classify `e^x − 1 = 0` as
+ * `'unknown'` and bypass `solveExponential`.
+ *
+ * Two base AST flavours accepted :
+ * - `{ type: 'constant', constant: 'euler' }` — produced by
+ *   `\exponentialE^u` LaTeX or by manual AST construction.
+ * - `{ type: 'variable', name: 'e' }` — produced by `parseLatex('e^u')`.
+ *   The parser keeps `e` as a regular variable (so users can use `e` for
+ *   physics quantities), but the `e^x` superscript shape is overwhelmingly
+ *   Euler in practice.
+ *
+ * The `getVariables(u).size > 0` guard is essential : `e^2` (constant
+ * exponent) is just a number ≈ 7.389, not transcendental. Misclassifying
+ * `x² + 1 = e²` as transcendental would route it to `solveExponential`
+ * (which can't handle it) instead of `solveQuadratic` (which solves it
+ * trivially).
+ */
+function isEulerSuperscript(node: MathNode): boolean {
+	if (node.type !== 'superscript') return false;
+	const base = node.base;
+	const isEulerBase =
+		(base.type === 'constant' && base.constant === 'euler') ||
+		(base.type === 'variable' && base.name === 'e');
+	if (!isEulerBase) return false;
+	// Only transcendental when the exponent depends on at least one variable.
+	return getVariables(node.superscript).size > 0;
+}
+
+/**
  * Check if expression contains transcendental functions.
  */
 export function containsTranscendental(node: MathNode): boolean {
@@ -129,6 +160,8 @@ export function containsTranscendental(node: MathNode): boolean {
 		if (found) return n;
 
 		if (isFunction(n) && isTranscendentalFunction(n.name)) {
+			found = true;
+		} else if (isEulerSuperscript(n)) {
 			found = true;
 		}
 
@@ -157,6 +190,8 @@ export function getTranscendentalType(
 			} else if (n.name === 'ln' || n.name === 'log') {
 				result = 'logarithmic';
 			}
+		} else if (isEulerSuperscript(n)) {
+			result = 'exponential';
 		}
 
 		return n;

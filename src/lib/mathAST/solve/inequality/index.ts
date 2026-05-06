@@ -33,6 +33,7 @@ import { denormalize, normalize } from '../../normal';
 import { getVariables } from '../../eval/substitute';
 import { isEmpty as isDomainEmpty, union, difference } from '../../domain/algebra';
 import { emptyDomain, intervalSet } from '../../domain/factory';
+import { promoteEulerInRelation } from '../promote-euler';
 
 const INEQUALITY_OPS: ReadonlySet<InequalityOp> = new Set(['<', '>', '<=', '>=', '!=']);
 
@@ -77,9 +78,14 @@ export function solveInequality(
 	}
 	const inequalityOp = op as InequalityOp;
 
-	const expression = canon(subtract(relation.left, relation.right));
+	// Promote bare `e` (parsed as a regular variable) to `euler()` when it
+	// appears as the base of a superscript. Without this, `detectVariable`
+	// treats `e^x - 1 > 0` as having two unknowns `{e, x}` and returns null,
+	// short-circuiting into the constant-inequality path.
+	const promoted = promoteEulerInRelation(relation);
+	const expression = canon(subtract(promoted.left, promoted.right));
 
-	const variable = options.variable ?? detectVariable(relation);
+	const variable = options.variable ?? detectVariable(promoted);
 	if (variable === null) {
 		return resolveConstantInequality(expression, inequalityOp);
 	}
@@ -213,22 +219,28 @@ function matchesOperator(sign: SignedInterval['sign'], op: InequalityOp): boolea
 /**
  * Pick the right `InequalityStatus` from the resolved solution.
  *
- * Branch order matches the spec (`solve-inequality-spec.md`, step 9):
- * `empty-domain` → `no-solution` → `partial` → `all-real` → `complete`.
+ * Branch order: `empty-domain` → `partial` → `no-solution` → `all-real` →
+ * `complete`. `partial` is reported BEFORE `no-solution` when at least one
+ * sub-interval has an undetermined sign — even if the known part of the
+ * solution is empty.
  *
- * Crucially, `no-solution` must be checked before `partial`: a 'partial' result
- * with an actually-empty solution is contradictory information for the caller.
- * If every known signed interval failed to match the operator (or there was
- * none), the solution is empty regardless of any `'unknown'` regions; reporting
- * `'no-solution'` is the more useful answer. The spec accepts a slight loss of
- * precision here (a hidden `'unknown'` region might in theory contain
- * solutions), but `signTable` and `warnings` still expose the unresolved
- * regions so the caller can inspect them.
+ * Rationale (revised 2026-05-06): the V1 spec listed `no-solution` first,
+ * but real-world cases like `e^x − 1 > 0` (sampling overflows on the right
+ * tail and reports `'unknown'` for `]0, +∞[`) expose the issue. The known
+ * portion of the solution is empty, but the actual answer `]0, +∞[` lives
+ * inside the unknown region. Reporting `'no-solution'` would actively
+ * mislead the caller — `'partial'` honestly says "we couldn't decide on
+ * some regions; check `signTable` and `warnings`".
+ *
+ * Edge case: a genuinely empty solution that ALSO has an unknown region
+ * elsewhere will report `'partial'`. This is acceptable — the caller can
+ * inspect the matching intervals to confirm; reporting `'no-solution'`
+ * would hide the unresolved region.
  */
 function computeStatus(domain: Domain, solution: Domain, hasUnknown: boolean): InequalityStatus {
 	if (isDomainEmpty(domain)) return 'empty-domain';
-	if (isDomainEmpty(solution)) return 'no-solution';
 	if (hasUnknown) return 'partial';
+	if (isDomainEmpty(solution)) return 'no-solution';
 	if (isDomainEmpty(difference(domain, solution))) return 'all-real';
 	return 'complete';
 }
