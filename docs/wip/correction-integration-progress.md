@@ -7,12 +7,13 @@
 ## Objectif global
 
 Permettre aux questions de déclarer une **correction Mode B** :
-les étapes pédagogiques sont générées automatiquement par un des 6
+les étapes pédagogiques sont générées automatiquement par un des 7
 pipelines (`pedagogical-arithmetic`, `pedagogical-solve/linear`,
 `pedagogical-solve/quadratic`, `pedagogical-solve/linear-inequality`,
-`pedagogical-solve/quadratic-inequality`, `pedagogical-differentiation`)
-au lieu d'être écrites à la main par l'auteur. Le composant Svelte
-`<GeneratedStepsCorrection>` (Phase 3) les affiche aux élèves.
+`pedagogical-solve/quadratic-inequality`, `pedagogical-solve/rational-inequality`,
+`pedagogical-differentiation`) au lieu d'être écrites à la main par l'auteur.
+Le composant Svelte `<GeneratedStepsCorrection>` (Phase 3) les affiche
+aux élèves.
 
 ## Décisions architecturales validées (Phase 0)
 
@@ -211,10 +212,10 @@ Commit : `c7ea40154`.
 | 5   | `23485641a` | Phase 5 | progress doc final + quality checks                       |
 | 6   | `c7ea40154` | Phase 6 | debug page `/dashboard/admin/debug/correction-mode-b`     |
 
-## Extensions post-MVP — 4 nouveaux kinds
+## Extensions post-MVP — 5 nouveaux kinds
 
 Le scope V1 listait 2 kinds (`arithmetic` + `linear-equation`). Depuis la
-livraison initiale, **4 nouveaux kinds** ont été ajoutés via des prompts
+livraison initiale, **5 nouveaux kinds** ont été ajoutés via des prompts
 distincts qui réutilisent l'infrastructure Mode B existante sans la modifier
 en profondeur (discriminator étendu, case dispatch ajouté dans
 `correction-generator.ts`, fixtures + page debug étendues) :
@@ -236,21 +237,34 @@ en profondeur (discriminator étendu, case dispatch ajouté dans
   adaptés). Catch `UnsupportedInequalityDegree` /
   `InequalityNotSolvable` / `PedagogicalInequalityError`.
 - **`kind: 'quadratic-inequality'`** (`pedagogical-quadratic-inequality-progress.md`,
-  palier 2b) — inéquations du second degré via discriminant Δ + tableau
+  palier 2b + 2c) — inéquations du second degré via discriminant Δ + tableau
   de signes ; 6 sous-cas (signe(a) × signe(Δ)). Auto-délégation au
-  pipeline linéaire quand a = 0. Renderer V2 étendu avec sign-table
-  LaTeX et conclusion render.
+  pipeline linéaire quand a = 0. Palier 2c (`d010fb263`) ajoute 3 fast
+  paths qui évitent Δ : `b = 0` (isolate-square), `c = 0` (factor-x),
+  forme déjà factorisée. Renderer V2 étendu avec sign-table LaTeX et
+  conclusion render.
+- **`kind: 'rational-inequality'`** (`pedagogical-rational-inequality-progress.md`,
+  palier 3 V1 + V1.1 + V2) — inéquations rationnelles `P(x)/Q(x) ⊻ 0`
+  selon la méthode standard française : domaine de définition, racines
+  de P, zéros de Q, tableau de signes combiné 4 lignes
+  (`x | P | Q | P/Q` avec `||` aux zéros de Q), lecture de S. V2 ajoute
+  l'étape `combine-fractions` pour `1/x + 1/(x-1) < 0` (cap 2
+  dénominateurs distincts coprimes). Catch
+  `InequalityNotSolvable` / `UnsupportedRationalInequality` →
+  fallback Mode A.
 
 **État actuel :** la page debug `/dashboard/admin/debug/correction-mode-b`
-expose **9 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
-`linearEquationDemo` (4e équation linéaire), `differentiatePolynomialDemo`
+expose **12 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
+`linearEquationDemo` (4e équation linéaire),
+`differentiatePolynomialDemo` + `differentiateCompositionDemo`
+(1ère/Tle spé), `quadraticEquationDemo` (Tle spé),
+`linearInequalityFlipDemo` + `linearInequalityTwoSidesDemo`
+(2nde/1ère), `quadraticInequalityClassicDemo` +
+`quadraticInequalityNegativeADemo` (1ère/Tle spé),
+`rationalInequalitySimpleDemo` + `rationalInequalityQuadDenomDemo` +
+`rationalInequalityMultiFracDemo` (1ère/Tle spé).
 
-- `differentiateCompositionDemo` (1ère/Tle spé), `quadraticEquationDemo`
-  (Tle spé), `linearInequalityFlipDemo` + `linearInequalityTwoSidesDemo`
-  (2nde/1ère), `quadraticInequalityClassicDemo` +
-  `quadraticInequalityNegativeADemo` (1ère/Tle spé).
-
-Ces 4 extensions valident que l'architecture Mode B est suffisamment
+Ces 5 extensions valident que l'architecture Mode B est suffisamment
 robuste pour accueillir de nouveaux pipelines pédagogiques sans refactoring
 de la glue. Le pattern `(types/Zod loose+strict/correction-generator
 case/fixtures/page debug card)` est devenu reproductible mécaniquement.
@@ -278,11 +292,15 @@ debug (Phase 6). L'UI elle-même reste à améliorer dans une session ultérieur
   `generatedSteps.expression` (`{{a}}+{{b}}`) devient gênante en pratique.
 - **`kind: 'solve'` (algorithmique générique)** : pas couvert. Le
   pedagogical-solve V1.0 supporte linéaire + quadratique pour équations
-  ET inéquations (cf. extensions ci-dessus) ; cubic / quartic /
-  transcendental restent hors scope.
-- **Inéquations paramétriques / rationnelles / transcendantes** :
-  paliers 2c/d, hors scope V1 (spec à rédiger). Le solveur algorithmique
-  `solveInequality` rejette les paramétriques avec `InequalityNotSolvable`.
+  ET inéquations + rationnelles pour inéquations (cf. extensions
+  ci-dessus) ; cubic / quartic / transcendental restent hors scope.
+- **Palier 2d — coefficients paramétriques quadratiques** (`mx² + nx + p ⊻ 0`,
+  m libre) : « discuter selon m » du programme Tle, hors scope V1
+  (multi-sessions, complexité ↑↑ disjonction de cas dans le tableau de
+  signes). Le solveur algorithmique `solveInequality` rejette les
+  paramétriques avec `InequalityNotSolvable`.
+- **Palier 3 V3 — extensions rationnelles** : 3+ fractions, dénominateur
+  quadratique, PGCD polynomial non-trivial, fractions imbriquées.
 - **Composant interactif (étape par étape)** : V1 passive uniquement.
 - **UI éditeur de questions** : écriture JSON manuelle pour V1.
 - **Hybridation Mode A + Mode B** : Mode A prioritaire si les deux présents.
