@@ -273,6 +273,20 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - Commit : `d010fb263`
   - Tests : +14 (13 spec + 1 flip regression) ; total pedagogical-solve : 317 → 331
 
+- **Stepper pédagogique pour intégration** (`kind: 'integrate'`) → livré V1, voir `integration-stepper-progress.md`. Inclut :
+
+  - Module `pedagogical-integration/` (~3000 LOC) parallèle à `integration/integrate.ts` (intact). Décision Option 2 (clone architectural de `pedagogical-differentiation/`).
+  - 24 rules pédagogiques : `apply-power-rule`, `apply-constant-rule`, `apply-known-primitive` (e^x/sin/cos/tan/1/x), 5 formes composées (`apply-composite-{exp,ln,sin,cos,power}`), trio FTC (`apply-fundamental-theorem`, `substitute-bounds`, `simplify-bounds-result`), `apply-linearity-sum`, `extract-constant`, IPP (`identify-parts`, `choose-u-dv`, `apply-parts-formula`), `add-constant`, `simplify-result`, et `identify-{integrand,definite-integral}` + 4 rules u-substitution réservées V2
+  - Détecteurs de formes composées (`tryDetectCompositeExp/Ln/Sin/Cos/Power`) gérant les formes « bare » (`sin(2x)`, `e^(ax+b)`) via rebalancing implicite `1/u'` quand u' est constant
+  - Réutilise `differentiate()` (algo) pour calculer u'(x), `findProportionalityConstant()` (`integration/patterns.ts`) pour la détection, `normalize/denormalize` (`normal/`) pour folder `x · (1/x) → 1` dans IPP
+  - Pipeline IPP simple (LIATE-style) : polynôme × {ln, exp, sin, cos}, ln(x) seul ; cyclique IPP (∫e^x·sin(x)) refusée silencieusement, IPP tabulaire (∫x³·e^x) couverte par cyclic guard `currentDepth >= maxRecursionDepth`
+  - Niveaux : `lycee` + `superieur` (type `IntegrationSchoolLevel = Exclude<SchoolLevel, 'primaire' | 'college'>` analogue à `QuadraticSchoolLevel`). **Q3 utilisateur** : IPP activée AUSSI au lycée (Tle spé maths 2025).
+  - 7 catégories de démos × 26 cas snapshot (usuelles, polynomial, linearite, forme-composee-ln, forme-composee-exp, definie, parts-simple)
+  - CLI standalone `scripts/pedagogical-integration-demo.ts` avec ANSI bold-blue + cleanup LaTeX résiduel
+  - Mode B : 6 nouveaux tests `correction-generator.test.ts` + 2 fixtures end-to-end (`integrateIndefiniteDemo` + `integrateDefiniteDemo`) + page debug 11→13 fixtures
+  - Total : 110 tests module + 8 tests questions = 118 tests spécifiques au feature
+  - Commits : `0a4751a5d` (Phase 1 types), `e576400da` (Phase 2 pipeline), `0fe7ca6c0` (Phase 3 renderer), `fd6a6381b` (Phase 4 démos+CLI), `4a3bf5e57` (Phase 5 Mode B)
+
 - **Stepper pédagogique pour inéquations rationnelles** (palier 3, `kind: 'rational-inequality'`) → livré V1+V1.1+V2, voir `pedagogical-rational-inequality-progress.md`. Inclut :
   - Pipeline `pedagogical-solve/rational-inequality.ts` (~430 LOC) pour `P(x)/Q(x) ⊻ 0` selon la méthode standard française : domaine de définition, racines de P, zéros de Q, tableau de signes combiné 4 lignes (`x | P | Q | P/Q` avec `||` aux zéros de Q), lecture de S
   - 5 nouvelles op kinds : `identify-rational`, `rational-domain-restriction`, `rational-locate-roots`, `rational-sign-table`, `inequality-conclude-rational`
@@ -289,7 +303,7 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 
 **Élargissement de couverture**
 
-- Renderers pédagogiques pour les autres domaines : integration, limits, matrix, domain
+- Renderers pédagogiques pour les autres domaines : limits, matrix, domain (intégration livrée 2026-05-06)
 - Pipeline pédagogique pour simplification d'expression
 - `kind: 'solve'` algorithmique dans Mode B (pedagogical-solve V1.0 supporte linéaire + quadratique pour équations ET inéquations ; cubic/quartic/transcendental hors scope)
 - `kind: 'arithmetic-from-blank'` (V1 a skippé pour éviter duplication d'expression entre `expectedAnswer` et `generatedSteps.expression`)
