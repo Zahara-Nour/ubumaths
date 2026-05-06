@@ -188,6 +188,40 @@ Cas : matrices, équations, hyperboliques, cubes, produits non-binomiaux, niveau
 
 Le parser distingue les deux : `\sin^2(x)` produit un `FunctionNode` avec `power: 2`, `\sin(x)^2` produit un `SuperscriptNode` au-dessus du `FunctionNode`. La rule `pythagorean` (et toutes les rules trig) sont écrites pour la 1re forme. **Tous les inputs trig doivent utiliser la notation `\sin^2(x)`.**
 
+## Roadmap V2 (capturée — pas démarrée)
+
+V1 livré et arrêté ici. V2 candidates par ordre de coût croissant :
+
+### Couverture étendue (~5-7h cumul)
+
+- **Cubes** : `(a+b)³`, `a³ ± b³` factoring/expanding. Les rules existent dans `algebraic-identities.ts` (`sumCubesSymbolic`, `diffCubesSymbolic`) — il faut les ajouter au dispatcher `'developper'` (côté expand) et à la categorize map sous `'distribution'`. Plus descriptions FR. ~1-2h.
+- **Trinôme × binôme** : `(a+b+c)(d+e)`. Nouvelle rule pédagogique (~50 LOC + tests + descriptions FR). ~2h.
+- **Hyperboliques** : ajouter 10ᵉ catégorie pédagogique `'identites-hyp'` (ou les mapper sur `'identites-trig'`). Le dispatcher gère déjà le flag `enableHyperbolic`, et le test négatif Phase 1 cassera (signal explicite qu'il faut bumper). ~1h.
+- **Polynôme × polynôme général** : `(a+b)(c+d)(e+f)`, `(a+b)^n` pour n ≥ 3. Plus complexe. ~3-4h.
+
+### Profondeur pédagogique (~7-9h cumul)
+
+- **Sub-steps arborescents** : grouper N steps adjacents même catégorie sous un parent (« On distribue » + 4 enfants `step a·c`, `step a·d`, …). Demande post-engine grouping + extension renderer recursion. ~3-4h.
+- **Bindings sur steps** : actuellement jamais peuplés ; utiles pour des descriptions paramétrées du type _« Avec a = 2x, b = 3 »_. ~2h.
+- **TITLES coverage** : on a ~30 entrées, le prompt initial visait ~80. Surtout pour primaire/sup où le fallback lycée est parfois inadapté. ~1-2h.
+- **Per-iteration globalBefore/After** dans `runPatternLoop` (Phase A) : actuellement plusieurs steps d'une même itération partagent le même snapshot. Pour `(x+1)² + (x-1)²`, le renderer ne peut pas montrer le state intermédiaire. ~2h.
+
+### UX / infrastructure (~4h cumul)
+
+- **`auto` plus malin** : détecter si l'expression est un polynôme degré 2 avec racines rationnelles → factoriser, sinon laisser. ~1h.
+- **Démos multi-niveaux** : 28 cas × 4 niveaux = 112 snapshots au lieu de 28. Détecte les régressions sur les overrides primaire/college/sup. ~1h.
+- **Notation trig (radians/degrés)** : option renderer pour adapter `sin(π/2)` vs `sin(90°)`. ~2h.
+
+### Cas refusés à élargir (V2.1+)
+
+- **Décomposition en éléments simples** (chevauche avec `pedagogical-integration` qui l'a déjà partiellement)
+- **Coefficients paramétriques** (`(mx+n)²` avec m,n libres) — gros morceau, similaire au palier 2d quadratique
+- **Simplification d'équations** (`x² + 2x + 1 = 0 → (x+1)² = 0`) — chevauche avec `pedagogical-solve`, à border
+
+### Reco V2 minimal (~6-8h)
+
+Couverture extension (cubes + trinôme × binôme + hyperboliques) + sub-steps + per-iteration globalBefore/After. Le reste en V2.1 / V3 selon priorité.
+
 ## Documents de référence
 
 - `docs/wip/simplify-stepper-prompt.md` — prompt source
@@ -195,3 +229,16 @@ Le parser distingue les deux : `\sin^2(x)` produit un `FunctionNode` avec `power
 - `src/lib/mathAST/pedagogical-arithmetic/pipeline.ts` — modèle de pipeline manuel
 - `src/lib/mathAST/normal/rule-descriptions-fr.ts` — descriptions FR à réutiliser
 - `src/lib/mathAST/pattern/rule-sets/algebraic-identities.ts` — rules expand-\* à activer
+
+## Récap final V1
+
+| Phase | Commit                    | Tests     | LOC source |
+| ----- | ------------------------- | --------- | ---------- |
+| 1     | `8fc5c8f86`               | 109       | ~470       |
+| 2     | `a7fdf91af`               | +47 (156) | ~600       |
+| 3     | `bae477451`               | +18 (174) | ~510       |
+| 4     | `138f6d99b`               | +29 (203) | ~250       |
+| 5     | `8b4c8ce39`               | +19 (222) | ~370       |
+| 6     | `c5da30601` + `db59a6c3b` | (docs)    | —          |
+
+**V1 total** : 7 commits, 222 tests verts, ~2200 LOC source, 0 régression sur ~2500 tests adjacents.
