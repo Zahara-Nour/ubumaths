@@ -448,7 +448,23 @@ pleinement validés.
   end-to-end, CLI demo. +50 tests (31 inequality + 19 renderer V2).
   2 fixes correctness post code review : `\setminus` LaTeX rendering +
   irrational-root sorting via full `computeNumericValue`.
-- **Reste palier 2c/d** : paramétrique (V2, scope ouvert).
+- ~~**Palier 2c** : fast paths quadratiques (`b=0`, `c=0`, factorisé)~~
+  **Livré le 2026-05-06** (commit `d010fb263`). Voir
+  `docs/wip/pedagogical-quadratic-inequality-2c-progress.md`. 3 sous-pipelines
+  qui évitent Δ ; nouvelle op kind `inequality-conclude-from-isolated-square` ;
+  bug critique `alignedTransformation` fixé (operator flip pour a < 0).
+  +14 tests, pedagogical-solve 317 → 331.
+- ~~**Palier 3** : pédagogique inéquations rationnelles~~ **Livré le
+  2026-05-06** (commits `ecc8e2eaf` V1, `73bb9dbc2` V1.1, `e37195b68` V2).
+  Voir `docs/wip/pedagogical-rational-inequality-progress.md`. Pipeline
+  `P(x)/Q(x) ⊻ 0` avec tableau de signes combiné 4 lignes (`x | P | Q | P/Q`
+  - `||` aux zéros de Q). V1.1 ajoute racines doubles avec multiplicity
+    tracking. V2 ajoute multi-fractions (`1/x + 1/(x-1) < 0` etc.) via
+    l'étape `combine-fractions` (« réduction au même dénominateur »).
+    Bug palier 1 trouvé+corrigé : `determineProductSign` recursait à l'infini
+    sur `opposite(N)`. +30 tests, pedagogical-solve 331 → 361.
+- **Reste palier 2d** : coefficients paramétriques quadratiques (gros, multi-sessions).
+- **Reste palier 3 V3** : 3+ fractions, dénominateur quadratique, PGCD polynomial non-trivial.
 - ~~**Solveur rationnel** : `solve(1/x − 1 = 0)` ne trouve toujours pas x=1~~
   **Fixé le 2026-05-06** (commit `79783e215`). Nouveau module
   `solve/rational.ts` exploite la canonicalisation `normalize` qui réduit

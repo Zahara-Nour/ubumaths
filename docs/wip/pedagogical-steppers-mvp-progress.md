@@ -255,6 +255,7 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - 2 fixtures Mode B : `linearInequalityFlipDemo` (`−2x ≥ 6`) + `linearInequalityTwoSidesDemo` (`2x+1 < x+5`)
 
 - **Stepper pédagogique pour inéquations quadratiques** (palier 2b, `kind: 'quadratic-inequality'`) → livré, voir `pedagogical-quadratic-inequality-progress.md`. Inclut :
+
   - Pipeline `pedagogical-solve/quadratic-inequality.ts` (~340 LOC) ; stratégie discriminant Δ + tableau de signes ; 6 sous-cas (signe(a) × signe(Δ))
   - Dispatcher étendu : `generateInequalitySteps` route degré 2 → quadratic ; auto-délégation linear quand a=0
   - Renderer V2 polyvalent étendu : dual-form TITLES + EXPLANATIONS, sign-table LaTeX, conclusion render
@@ -264,6 +265,26 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - Tests : +50 (31 inequality + 19 renderer V2) ; total pedagogical-solve : 317 tests verts
   - 2 fixtures Mode B : `quadraticInequalityClassicDemo` + `quadraticInequalityNegativeADemo`
 
+- **Fast paths quadratiques** (palier 2c) → livré, voir `pedagogical-quadratic-inequality-2c-progress.md`. Inclut :
+
+  - 3 sous-pipelines fast path qui évitent Δ : `b = 0` (isolate-square), `c = 0` (factor-x), forme déjà factorisée (recognize-factored)
+  - Nouvelle op kind `inequality-conclude-from-isolated-square` pour le cas `b = 0` (conclusion directe sans tableau de signes)
+  - Bug critique trouvé en code review : `alignedTransformation` du quadratic-renderer utilisait `step.before.relation` pour les deux lignes du bloc aligné, faux quand `a < 0` (operator flip). Même fix que palier 2a (`a974787d7`)
+  - Commit : `d010fb263`
+  - Tests : +14 (13 spec + 1 flip regression) ; total pedagogical-solve : 317 → 331
+
+- **Stepper pédagogique pour inéquations rationnelles** (palier 3, `kind: 'rational-inequality'`) → livré V1+V1.1+V2, voir `pedagogical-rational-inequality-progress.md`. Inclut :
+  - Pipeline `pedagogical-solve/rational-inequality.ts` (~430 LOC) pour `P(x)/Q(x) ⊻ 0` selon la méthode standard française : domaine de définition, racines de P, zéros de Q, tableau de signes combiné 4 lignes (`x | P | Q | P/Q` avec `||` aux zéros de Q), lecture de S
+  - 5 nouvelles op kinds : `identify-rational`, `rational-domain-restriction`, `rational-locate-roots`, `rational-sign-table`, `inequality-conclude-rational`
+  - Dispatcher étendu : route vers le pipeline rationnel quand `getPolynomialDegree` retourne null ET `collectDenominators` non-vide
+  - **V1.1 polish** : `describeDomain` promu dans `_helpers.ts` (partagé quadratic + rationnel) ; double roots supportées dans le tableau de signes (multiplicity tracking)
+  - **V2 multi-fractions** : nouvelle op kind `combine-fractions` pour `1/x + 1/(x-1) < 0`, `x < 1/(x-3)`, `x + 1/(x-1) < 0` ; étape « réduction au même dénominateur » avec affichage 3-ligne (original sum / adjusted fractions / combined)
+  - **Bug palier 1 critique fixé** : `determineProductSign` recursait à l'infini sur `opposite(N)` (cause : `factors.map` exécuté avant le check `length === 1 && isOpposite`) — ex: `-1/x > 0` stack-overflow
+  - CLI `scripts/pedagogical-rational-inequality-demo.ts` (7 catégories : simple, constP, quad-num, quad-denom, non-std, noteq, multi-frac)
+  - Commits : `ecc8e2eaf` (V1), `73bb9dbc2` (V1.1), `e37195b68` (V2)
+  - Tests : V1 +22 → 353, V1.1 +2 → 355, V2 +6 → 361 ; total pedagogical-solve : 331 → 361
+  - 3 fixtures Mode B : `rationalInequalitySimpleDemo` + `rationalInequalityQuadDenomDemo` + `rationalInequalityMultiFracDemo` (V2)
+
 #### 🔴 Toujours à faire
 
 **Élargissement de couverture**
@@ -272,7 +293,8 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 - Pipeline pédagogique pour simplification d'expression
 - `kind: 'solve'` algorithmique dans Mode B (pedagogical-solve V1.0 supporte linéaire + quadratique pour équations ET inéquations ; cubic/quartic/transcendental hors scope)
 - `kind: 'arithmetic-from-blank'` (V1 a skippé pour éviter duplication d'expression entre `expectedAnswer` et `generatedSteps.expression`)
-- Inéquations paramétriques (palier 2c/d), inéquations rationnelles, inéquations transcendantes — V2 ; spec à rédiger
+- **Palier 2d** — coefficients paramétriques quadratiques (`mx² + nx + p ⊻ 0`, m libre) : « discuter selon m » du programme Tle ; gros morceau, multi-sessions, complexité ↑↑ (disjonction de cas dans le tableau de signes)
+- **Palier 3 V3** — extensions rationnelles : 3+ fractions, dénominateur quadratique, PGCD polynomial non-trivial, fractions imbriquées
 
 **Idées Poincaré**
 
