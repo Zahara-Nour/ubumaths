@@ -214,20 +214,16 @@ describe('solveInequality — restriction de domaine', () => {
 // =============================================================================
 
 describe('solveInequality — transcendantes', () => {
-	// Re-enabled 2026-05-06 after the upstream classification + euler-promotion
-	// fix taught solve() that `e^x` (parsed as a superscript with `e` as a
-	// regular variable) is exponential. The expected solution `]0, +∞[` is
-	// not yet returned because sampling at ±1e6 overflows on `e^1e6` and
-	// produces 'unknown' on the right tail — limit. #3 (MAX_SAMPLE_BOUND).
-	// The status `'partial'` correctly signals the partially-decided result.
-	it('14. e^x − 1 > 0 → status partial (expected ]0, +∞[ pending sampling fix)', () => {
+	it('14. e^x − 1 > 0 → ]0, +∞[', () => {
 		const result = solveInequality(ineq('e^x - 1 > 0'));
-		expect(result.status).toBe('partial');
-		// At least the negative side ]-∞, 0[ should be classified as `negative`
-		// (sampling at -1e6 gives e^(-1e6) - 1 ≈ -1, no overflow).
-		expect(result.signTable?.signedIntervals.length).toBeGreaterThanOrEqual(3);
-		expect(result.signTable?.zeros.length).toBe(1);
-		expect(result.signTable?.zeros[0].approximate).toBeCloseTo(0, 6);
+		expect(result.status).toBe('complete');
+		expect(result.solution.kind).toBe('interval_set');
+		const set = result.solution as IntervalSet;
+		const found = set.intervals.find(
+			(it) => endpointLatex(it.lower) === '0' && endpointLatex(it.upper) === '+infinity'
+		);
+		expect(found).toBeDefined();
+		expect(found!.lower.type).toBe('open');
 	});
 
 	it('15. sin(x) ≥ 0 sur [0, 2π] (via options.domain)', () => {
