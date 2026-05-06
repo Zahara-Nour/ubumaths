@@ -17,7 +17,7 @@ Créer un module `src/lib/mathAST/pedagogical-simplify/` qui implémente un step
 | 3     | ✅ Livrée       | `bae477451` | Renderer + descriptions FR 4 niveaux + LaTeX 2-line, 18 nouveaux tests (174 cumulés)                                           |
 | 4     | ✅ Livrée       | `138f6d99b` | 9 catégories de démos × 28 cas + CLI standalone, 29 nouveaux tests (203 cumulés)                                               |
 | 5     | ✅ Livrée       | `8b4c8ce39` | Mode B `kind: 'simplify'` (9 kinds) + 2 fixtures + page debug (15 cartes), 2 nouveaux tests fixtures (222 cumulés)             |
-| 6     | ⏳ À venir      | —           | Quality checks + doc finale + commit                                                                                           |
+| 6     | ✅ Livrée       | `c5da30601` | Quality checks (eslint clean, check:incremental 0 erreur simplify) + docs MAJ (MVP + correction-integration) + commit final    |
 
 ## Décisions architecturales (Phase 0 — validées)
 
