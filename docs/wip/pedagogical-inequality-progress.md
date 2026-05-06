@@ -16,6 +16,8 @@
 | 7   | `184af30a9` | style(sign): move PARTITION_DEDUPE_TOLERANCE after all imports                       |
 | 8   | `5bc2d55a2` | docs(wip): record commits 6+7 in palier 2a progress doc                              |
 | 9   | `16c417e79` | fix(solve): recognize e^x shapes as exponential + re-enable inequality test 14       |
+| 10  | `e7e2df0df` | docs(wip): record commit 9 (transcendental fix) in progress docs                     |
+| 11  | `218e2ad9d` | fix(sign): lower MAX_SAMPLE_BOUND from 1e6 to 100 — fixes transcendental tails       |
 
 ## Livrable
 
@@ -386,12 +388,62 @@ fix sampling — limitation #3).
 | Régression Mode B (correction-gen + demo) | **40 pass / 0 fail**                                                                           |
 | ESLint + `pnpm check:incremental`         | **0 nouvelle erreur**                                                                          |
 
+## Upstream fix `MAX_SAMPLE_BOUND` (2026-05-06, commit `218e2ad9d`)
+
+`sign/helpers/sampling.ts:MAX_SAMPLE_BOUND` était à `1e6`, ce qui cassait
+silencieusement deux cas :
+
+1. **Exponentielles** : `e^1e6 → Infinity`, tous les samples étaient
+   skippés (filtre `Number.isFinite`), résultat `'unknown'` sur la queue
+   droite. `e^x − 1 > 0` retournait du `'partial'` avec seulement le
+   côté gauche décidé.
+2. **Rationnelles aux queues non bornées** : `1/(x·(x−1))` à `x=1e6`
+   donne `≈ 1e-12 < tolerance (1e-10)` → classé `'zero'` à tort
+   (la fonction est strictement positive sur `]1, +∞[`).
+
+**Fix** : abaisser à `100`. À cette borne, `e^100 ≈ 2.7e43` (largement
+dans `Number`) et `1/(100·99) ≈ 1e-4` (au-dessus de la tolérance).
+
+**Test 14 désormais 'complete'** avec solution `]0, +∞[` — l'objectif
+de la spec V1 enfin atteint après les 3 limitations levées.
+
+### Trade-off documenté dans la JSDoc
+
+Polynômes de degré > 150 dépasseraient `Number.MAX_VALUE` à `x=100`
+(`100^200 ≈ 1e400`). Pour l'analyse de signe entre zéros c'est toujours
+ok (tout sample fini suffit). Une future borne adaptative
+(transcendantal → petite, sinon → grande) pourrait être ajoutée si
+besoin.
+
+### Vérifications
+
+| Étape                                                                      | Résultat                                      |
+| -------------------------------------------------------------------------- | --------------------------------------------- |
+| Test 14 (`e^x − 1 > 0`)                                                    | **'complete'** avec `]0, +∞[`                 |
+| Régression mathAST entier                                                  | **12631 pass / 18 skip / 3 todo / 0 fail**    |
+| Régression Mode B                                                          | **40 pass / 0 fail**                          |
+| Régression cos(x) sur ℝ (multiple changements de signe dans `[-100, 100]`) | **toujours 'unknown'**, comportement inchangé |
+| ESLint + `pnpm check:incremental`                                          | **0 nouvelle erreur**                         |
+
+## Bilan des 3 limitations upstream
+
+| #   | Limitation                                           | Statut                        |
+| --- | ---------------------------------------------------- | ----------------------------- |
+| 1   | `sign/splitDomainAtZeros` ignorait `excludedPoints`  | **Fixé** (commit `1cf5690e9`) |
+| 2   | `solve` ne reconnaissait pas `e^x` comme exponentiel | **Fixé** (commit `16c417e79`) |
+| 3   | `MAX_SAMPLE_BOUND` causait overflow/underflow à 1e6  | **Fixé** (commit `218e2ad9d`) |
+
+Toutes les limitations identifiées en début de session sont **levées**.
+Le palier 1 (`solveInequality`) est désormais à 25/25 tests
+pleinement validés.
+
 ## Suite
 
-- **Palier 2b** : pédagogique quadratique numérique (Δ + tableau de signes + 6 sous-cas selon signe(a) × signe(Δ)). À spécifier avec une nouvelle Phase 0 TDD.
-- **Limitation upstream #2 — `solve(1/x − 1 = 0)`** : pas encore résolu. Solveur rationnel à ajouter.
-- **Limitation upstream #3 — `MAX_SAMPLE_BOUND = 1e6`** : provoque des
-  faux 'zero' / 'unknown' sur transcendantes — adapter au type
-  d'expression. Bloque encore la précision de `]0, +∞[` pour
-  `e^x − 1 > 0`.
+- **Palier 2b** : pédagogique quadratique numérique (Δ + tableau de
+  signes + 6 sous-cas selon signe(a) × signe(Δ)). À spécifier avec une
+  nouvelle Phase 0 TDD.
 - **Reste palier 2c/d** : paramétrique (V2, scope ouvert).
+- **Solveur rationnel** : `solve(1/x − 1 = 0)` ne trouve toujours pas
+  x=1 (ce n'était pas dans les 3 limitations originales mais reste un
+  gap connu — voir les tests `analyze-excluded-points` qui le
+  documentent).
