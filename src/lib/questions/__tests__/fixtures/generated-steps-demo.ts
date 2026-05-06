@@ -334,6 +334,77 @@ export const quadraticInequalityNegativeADemo: QuestionTemplate = {
 };
 
 /**
+ * Demo question : `(x − 1)/(x − 3) < 0` for 1ère spécialité maths (palier 3).
+ *
+ * Mode B declares a `rational-inequality` correction. The pipeline emits the
+ * lycée-level resolution : identify P/Q → domaine → racines/zéros → tableau de
+ * signes combiné → S = ]1 ; 3[.
+ */
+export const rationalInequalitySimpleDemo: QuestionTemplate = {
+	id: 'demo-rational-inequality-simple-1ere',
+	title: 'Inéquation rationnelle simple (1ère spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'Résous dans $\\mathbb{R}$ : $\\dfrac{x - {{a}}}{x - {{b}}} < 0$. $S = ?$'
+			),
+			variables: [
+				{ name: 'a', expression: '1' },
+				{ name: 'b', expression: '3' }
+			],
+			blanks: [{ expectedAnswer: ']1 ; 3[' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Excellent ! Tableau de signes au point.') },
+				generatedSteps: {
+					kind: 'rational-inequality',
+					inequality: '(x-{{a}})/(x-{{b}})<0',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['1_SPE'],
+	theme: 'Algèbre',
+	domain: 'Inéquations',
+	subdomain: 'Rationnelles',
+	level: 3
+};
+
+/**
+ * Demo question : `x/(x² − 1) ≥ 0` for Terminale spécialité maths (palier 3).
+ *
+ * Plus complexe : numérateur de degré 1, dénominateur de degré 2 (deux zéros à
+ * exclure). Solution : `]−1 ; 0] ∪ ]1 ; +∞[`.
+ */
+export const rationalInequalityQuadDenomDemo: QuestionTemplate = {
+	id: 'demo-rational-inequality-quaddenom-tle',
+	title: 'Inéquation rationnelle avec dénominateur du 2nd degré (Tle spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'Résous dans $\\mathbb{R}$ : $\\dfrac{x}{x^2 - 1} \\geq 0$. $S = ?$'
+			),
+			blanks: [{ expectedAnswer: ']-1 ; 0] \\cup ]1 ; +\\infty[' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Bravo ! Attention aux valeurs interdites.') },
+				generatedSteps: {
+					kind: 'rational-inequality',
+					inequality: 'x/(x^2 - 1) >= 0',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['T_SPE'],
+	theme: 'Algèbre',
+	domain: 'Inéquations',
+	subdomain: 'Rationnelles',
+	level: 4
+};
+
+/**
  * Demo question : `f(x) = sin(2x)` for Terminale spécialité maths.
  *
  * Mode B declares a `differentiate` correction with a composition. The

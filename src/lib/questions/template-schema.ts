@@ -178,13 +178,20 @@ const generatedStepsQuadraticInequality = z.object({
 	options: generatedStepsOptionsSchema.optional()
 });
 
+const generatedStepsRationalInequality = z.object({
+	kind: z.literal('rational-inequality'),
+	inequality: z.string().min(1),
+	options: generatedStepsOptionsSchema.optional()
+});
+
 export const generatedStepsSchema = z.discriminatedUnion('kind', [
 	generatedStepsArithmetic,
 	generatedStepsLinearEquation,
 	generatedStepsQuadraticEquation,
 	generatedStepsDifferentiate,
 	generatedStepsLinearInequality,
-	generatedStepsQuadraticInequality
+	generatedStepsQuadraticInequality,
+	generatedStepsRationalInequality
 ]);
 
 /**
@@ -344,13 +351,22 @@ const generatedStepsQuadraticInequalityStrictZ = z
 	})
 	.strict();
 
+const generatedStepsRationalInequalityStrictZ = z
+	.object({
+		kind: z.literal('rational-inequality'),
+		inequality: z.string().min(1),
+		options: generatedStepsOptionsStrictZ.optional()
+	})
+	.strict();
+
 const generatedStepsStrictZ = z.discriminatedUnion('kind', [
 	generatedStepsArithmeticStrictZ,
 	generatedStepsLinearEquationStrictZ,
 	generatedStepsQuadraticEquationStrictZ,
 	generatedStepsDifferentiateStrictZ,
 	generatedStepsLinearInequalityStrictZ,
-	generatedStepsQuadraticInequalityStrictZ
+	generatedStepsQuadraticInequalityStrictZ,
+	generatedStepsRationalInequalityStrictZ
 ]);
 
 const correctionStrictZ = z

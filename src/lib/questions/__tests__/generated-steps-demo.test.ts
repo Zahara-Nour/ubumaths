@@ -20,7 +20,9 @@ import {
 	linearInequalityTwoSidesDemo,
 	quadraticEquationDemo,
 	quadraticInequalityClassicDemo,
-	quadraticInequalityNegativeADemo
+	quadraticInequalityNegativeADemo,
+	rationalInequalitySimpleDemo,
+	rationalInequalityQuadDenomDemo
 } from './fixtures/generated-steps-demo';
 
 /** Compact serializable view of a RenderedStep tree (no implementation noise). */
@@ -269,6 +271,43 @@ describe('Mode B end-to-end demos', () => {
 		const rules = steps!.map((s) => s.rule);
 		expect(rules).toContain('quadratic-sign-table');
 		expect(rules).toContain('inequality-conclude-quadratic');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('1ère spécialité rational inequality (palier 3) — produces lycee steps with rational-sign-table + conclusion', () => {
+		const result = generateInstance(rationalInequalitySimpleDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('identify-rational');
+		expect(rules).toContain('rational-domain-restriction');
+		expect(rules).toContain('rational-locate-roots');
+		expect(rules).toContain('rational-sign-table');
+		expect(rules).toContain('inequality-conclude-rational');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('Terminale spécialité rational inequality with quadratic denominator — multi-zero forbidden values', () => {
+		const result = generateInstance(rationalInequalityQuadDenomDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('rational-sign-table');
+		expect(rules).toContain('inequality-conclude-rational');
 
 		const summary = steps!.map(summarize);
 		expect(summary).toMatchSnapshot();

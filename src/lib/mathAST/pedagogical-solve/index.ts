@@ -83,6 +83,9 @@ function bumpForQuadratic(level: SchoolLevel): QuadraticSchoolLevel {
 	return level === 'primaire' || level === 'college' ? 'lycee' : level;
 }
 
+// Rational inequalities use the same level mapping as quadratic.
+const bumpForRational = bumpForQuadratic;
+
 // =============================================================================
 // Dispatcher
 // =============================================================================
@@ -148,8 +151,15 @@ import {
 	PedagogicalInequalityError
 } from './linear-inequality';
 import { generateQuadraticInequalitySteps } from './quadratic-inequality';
+import { generateRationalInequalitySteps } from './rational-inequality';
 import { InequalityNotSolvable } from '../solve/inequality/types';
-import type { LinearInequalityStepsOptions, QuadraticInequalityStepsOptions } from './types';
+import { collectDenominators } from '../solve/rational';
+import type {
+	LinearInequalityStepsOptions,
+	QuadraticInequalityStepsOptions,
+	QuadraticSchoolLevel,
+	RationalInequalityStepsOptions
+} from './types';
 
 /**
  * Options accepted by `generateInequalitySteps`. `level` accepts any
@@ -205,6 +215,18 @@ export function generateInequalitySteps(
 	const degree = getPolynomialDegree(standardForm, variable);
 
 	if (degree === null) {
+		// Could be rational. Route to the rational pipeline if the standard form
+		// has at least one variable-bearing denominator (palier 3).
+		if (collectDenominators(standardForm, variable).length > 0) {
+			const rationalOpts: RationalInequalityStepsOptions = {
+				level: bumpForRational(options.level),
+				...(options.includeSubSteps !== undefined && {
+					includeSubSteps: options.includeSubSteps
+				}),
+				...(options.variable !== undefined && { variable: options.variable })
+			};
+			return generateRationalInequalitySteps(inequality, rationalOpts);
+		}
 		throw new UnsupportedInequalityDegree(null);
 	}
 	if (degree >= 3) {
@@ -242,6 +264,7 @@ export {
 	generateQuadraticEquationSteps,
 	generateLinearInequalitySteps,
 	generateQuadraticInequalitySteps,
+	generateRationalInequalitySteps,
 	PedagogicalQuadraticNotImplemented,
 	UnsupportedInequalityDegree,
 	PedagogicalInequalityError,
@@ -258,10 +281,12 @@ export type {
 	LinearEquationStepsOptions,
 	LinearInequalityStepsOptions,
 	QuadraticInequalityStepsOptions,
+	RationalInequalityStepsOptions,
 	LinearSchoolLevel,
 	QuadraticEquationStepsOptions,
 	QuadraticGenerationStrategy,
-	QuadraticSchoolLevel
+	QuadraticSchoolLevel,
+	RationalSchoolLevel
 } from './types';
 
-export { STRATEGIES, STRATEGIES_QUADRATIC } from './types';
+export { STRATEGIES, STRATEGIES_QUADRATIC, STRATEGIES_RATIONAL } from './types';
