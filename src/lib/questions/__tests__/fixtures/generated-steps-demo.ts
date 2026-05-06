@@ -258,6 +258,82 @@ export const linearInequalityTwoSidesDemo: QuestionTemplate = {
 };
 
 /**
+ * Demo question : `x² − 5x + 6 < 0` for 1ère spécialité maths.
+ *
+ * Mode B declares a `quadratic-inequality` correction. The pipeline emits the
+ * lycée-level resolution : identify a, b, c → compute Δ = 1 → discriminant
+ * positive → apply formula → simplify roots {2, 3} → sign table → S = ]2 ; 3[.
+ */
+export const quadraticInequalityClassicDemo: QuestionTemplate = {
+	id: 'demo-quadratic-inequality-classic-1ere',
+	title: 'Inéquation du second degré (Δ > 0, 1ère spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'Résous dans $\\mathbb{R}$ : $x^2 - {{b}}x + {{c}} < 0$. $S = ?$'
+			),
+			variables: [
+				{ name: 'b', expression: '5' },
+				{ name: 'c', expression: '6' }
+			],
+			blanks: [{ expectedAnswer: ']2 ; 3[' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Excellent !') },
+				generatedSteps: {
+					kind: 'quadratic-inequality',
+					inequality: 'x^2-{{b}}*x+{{c}}<0',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['1_SPE'],
+	theme: 'Algèbre',
+	domain: 'Inéquations',
+	subdomain: 'Second degré',
+	level: 2
+};
+
+/**
+ * Demo question : `−x² + 5x − 6 > 0` for 1ère spécialité maths (a < 0).
+ *
+ * Mode B declares a `quadratic-inequality` correction. With a < 0, the sign
+ * table is inverted, so the strict inequality `> 0` selects the interior
+ * between the roots : S = ]2 ; 3[.
+ */
+export const quadraticInequalityNegativeADemo: QuestionTemplate = {
+	id: 'demo-quadratic-inequality-negativea-1ere',
+	title: 'Inéquation du second degré avec a < 0 (1ère spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'Résous dans $\\mathbb{R}$ : $-x^2 + {{b}}x - {{c}} > 0$. $S = ?$'
+			),
+			variables: [
+				{ name: 'b', expression: '5' },
+				{ name: 'c', expression: '6' }
+			],
+			blanks: [{ expectedAnswer: ']2 ; 3[' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Bravo ! Attention à $a < 0$.') },
+				generatedSteps: {
+					kind: 'quadratic-inequality',
+					inequality: '-x^2+{{b}}*x-{{c}}>0',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['1_SPE'],
+	theme: 'Algèbre',
+	domain: 'Inéquations',
+	subdomain: 'Second degré',
+	level: 3
+};
+
+/**
  * Demo question : `f(x) = sin(2x)` for Terminale spécialité maths.
  *
  * Mode B declares a `differentiate` correction with a composition. The

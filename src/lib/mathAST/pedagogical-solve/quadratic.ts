@@ -331,6 +331,22 @@ function buildStandardizeStep(
 	return { step, after };
 }
 
+// Internal helpers exported for the inequality pipeline (palier 2b). Each
+// builder takes `equation` (a RelationNode that may carry any operator) and
+// produces a step whose `before`/`after` preserve that operator. The naming
+// keeps the equation-only legacy spelling (no rename to avoid touching every
+// caller).
+export {
+	buildStandardizeStep as _buildStandardizeStep,
+	buildIdentifyCoefficientsStep as _buildIdentifyCoefficientsStep,
+	computeDiscriminantValue as _computeDiscriminantValue,
+	buildComputeDiscriminantStep as _buildComputeDiscriminantStep,
+	buildDiscriminantSignStep as _buildDiscriminantSignStep,
+	buildApplyQuadraticFormulaStep as _buildApplyQuadraticFormulaStep,
+	buildSimplifySolutionsStep as _buildSimplifySolutionsStep,
+	tryExtractGcd as _tryExtractGcd
+};
+
 function buildIdentifyEquationStep(equation: RelationNode, idGen: () => number): EquationStep {
 	return makeStep({
 		id: idGen(),

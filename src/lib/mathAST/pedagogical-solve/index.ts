@@ -147,8 +147,9 @@ import {
 	UnsupportedInequalityDegree,
 	PedagogicalInequalityError
 } from './linear-inequality';
+import { generateQuadraticInequalitySteps } from './quadratic-inequality';
 import { InequalityNotSolvable } from '../solve/inequality/types';
-import type { LinearInequalityStepsOptions } from './types';
+import type { LinearInequalityStepsOptions, QuadraticInequalityStepsOptions } from './types';
 
 /**
  * Options accepted by `generateInequalitySteps`. `level` accepts any
@@ -164,20 +165,18 @@ export interface InequalityStepsOptions {
 /**
  * Generate pedagogical steps for solving any supported inequality. Routes by
  * polynomial degree of `f − g`:
- * - **No variable detected** (constant inequality `0 < 1`, etc.) → routed
- *   to the linear pipeline, which emits a single `inequality-conclude-truth`
- *   step (this is *not* a `null`-degree non-polynomial — it's a constant
- *   that has trivial truth value).
+ * - **No variable detected** (constant inequality `0 < 1`, etc.) → linear
+ *   pipeline (emits an `inequality-conclude-truth` step).
  * - **Degree 0 or 1** → `generateLinearInequalitySteps`.
- * - **Degree ≥ 2** → throws `UnsupportedInequalityDegree(degree)` (palier 2b
- *   will handle quadratic).
- * - **Non-polynomial in the unknown** (`getPolynomialDegree` returns `null`
- *   despite a variable being present, e.g. `\sin(x) < 0`) → throws
- *   `UnsupportedInequalityDegree(null)`. Use `solveInequality` from
- *   `solve/inequality` for transcendental inputs (no pedagogical steps).
+ * - **Degree 2** → `generateQuadraticInequalitySteps` (palier 2b).
+ * - **Degree ≥ 3** → throws `UnsupportedInequalityDegree(degree)`.
+ * - **Non-polynomial** (`getPolynomialDegree` returns `null`, e.g.
+ *   `sin(x) < 0`) → throws `UnsupportedInequalityDegree(null)`. Use
+ *   `solveInequality` from `solve/inequality` for transcendental inputs
+ *   (returns a Domain — no pedagogical steps).
  *
  * @throws PedagogicalInequalityError if `relation === '='`.
- * @throws UnsupportedInequalityDegree on degree ≥ 2 or non-polynomial.
+ * @throws UnsupportedInequalityDegree on degree ≥ 3 or non-polynomial.
  * @throws InequalityNotSolvable on parametric coefficients (delegated).
  */
 export function generateInequalitySteps(
@@ -192,12 +191,7 @@ export function generateInequalitySteps(
 
 	const variable = options.variable ?? detectVariable(inequality);
 
-	// Constant inequality (no variable) — route directly to linear, which
-	// emits the conclude-truth step. We deliberately do NOT throw
-	// `UnsupportedInequalityDegree(null)` here: a missing variable means the
-	// expression is a constant, which has a trivial truth value. The "null
-	// degree" error is reserved for cases where a variable IS present but
-	// the expression is not polynomial in it (e.g. `sin(x) < 0`).
+	// Constant inequality (no variable) — route directly to linear.
 	if (variable === null) {
 		return generateLinearInequalitySteps(inequality, {
 			level: bumpForLinear(options.level),
@@ -211,13 +205,24 @@ export function generateInequalitySteps(
 	const degree = getPolynomialDegree(standardForm, variable);
 
 	if (degree === null) {
-		// Variable present but expression is non-polynomial.
 		throw new UnsupportedInequalityDegree(null);
 	}
-	if (degree >= 2) {
+	if (degree >= 3) {
 		throw new UnsupportedInequalityDegree(degree);
 	}
 
+	if (degree === 2) {
+		const quadraticOpts: QuadraticInequalityStepsOptions = {
+			level: bumpForQuadratic(options.level),
+			...(options.includeSubSteps !== undefined && {
+				includeSubSteps: options.includeSubSteps
+			}),
+			...(options.variable !== undefined && { variable: options.variable })
+		};
+		return generateQuadraticInequalitySteps(inequality, quadraticOpts);
+	}
+
+	// Degree 0 or 1
 	const linearOpts: LinearInequalityStepsOptions = {
 		level: bumpForLinear(options.level),
 		...(options.includeSubSteps !== undefined && {
@@ -236,6 +241,7 @@ export {
 	generateLinearEquationSteps,
 	generateQuadraticEquationSteps,
 	generateLinearInequalitySteps,
+	generateQuadraticInequalitySteps,
 	PedagogicalQuadraticNotImplemented,
 	UnsupportedInequalityDegree,
 	PedagogicalInequalityError,
@@ -251,6 +257,7 @@ export type {
 	GenerationStrategy,
 	LinearEquationStepsOptions,
 	LinearInequalityStepsOptions,
+	QuadraticInequalityStepsOptions,
 	LinearSchoolLevel,
 	QuadraticEquationStepsOptions,
 	QuadraticGenerationStrategy,

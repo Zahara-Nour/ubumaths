@@ -20,6 +20,7 @@ import type {
 	SchoolLevel
 } from '../common/step-renderer-base';
 import { toLatex } from '../latex-generator';
+import { computeNumericValue } from '../solve/numeric-value';
 import type { MathNode } from '../types';
 import type { EquationStep, EquationOperation, QuadraticSchoolLevel } from './types';
 
@@ -33,6 +34,15 @@ type ExplanationFn = (op: EquationOperation, step: EquationStep) => string;
 /** Render a MathNode to LaTeX with the implicit-mult literal space removed. */
 function fmt(node: MathNode): string {
 	return toLatex(node).replace(/(\d|\})\s+([a-zA-Z\\])/g, '$1$2');
+}
+
+/**
+ * True when the step transforms an inequality (relation operator other than
+ * `=`). Used to branch TITLES/EXPLANATIONS between equation- and inequality-
+ * specific phrasing — same pattern as `linear-renderer.ts:isInequalityStep`.
+ */
+function isInequalityStep(step: EquationStep): boolean {
+	return step.before.type === 'relation' && step.before.relation !== '=';
 }
 
 /**
@@ -81,18 +91,39 @@ function discriminantSymbol(numericValue: number | undefined): '>' | '=' | '<' {
 
 const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kind'], TitleFn>>> = {
 	lycee: {
-		'identify-equation': () => 'Équation du second degré',
-		standardize: () => 'On met l’équation sous la forme `ax² + bx + c = 0`',
+		'identify-equation': (_op, step) =>
+			isInequalityStep(step) ? 'Inéquation du second degré' : 'Équation du second degré',
+		standardize: (_op, step) =>
+			isInequalityStep(step)
+				? 'On met l’inéquation sous la forme `ax² + bx + c ⊻ 0`'
+				: 'On met l’équation sous la forme `ax² + bx + c = 0`',
 		'identify-coefficients': () => 'On identifie les coefficients a, b et c',
 		'compute-discriminant': () => 'On calcule le discriminant Δ = b² − 4ac',
-		'discriminant-positive': () => 'Δ > 0 : deux solutions distinctes',
-		'discriminant-zero': () => 'Δ = 0 : une solution double',
-		'discriminant-negative': () => 'Δ < 0 : pas de solution réelle',
-		'apply-quadratic-formula': (op) =>
-			(op as EquationOperation & { kind: 'apply-quadratic-formula' }).case === 'double'
-				? 'On applique la formule : x = −b / (2a)'
-				: 'On applique la formule : x = (−b ± √Δ) / (2a)',
-		'simplify-solutions': () => 'On simplifie les solutions',
+		'discriminant-positive': (_op, step) =>
+			isInequalityStep(step)
+				? 'Δ > 0 : le polynôme admet deux racines distinctes'
+				: 'Δ > 0 : deux solutions distinctes',
+		'discriminant-zero': (_op, step) =>
+			isInequalityStep(step)
+				? 'Δ = 0 : le polynôme admet une racine double'
+				: 'Δ = 0 : une solution double',
+		'discriminant-negative': (_op, step) =>
+			isInequalityStep(step)
+				? 'Δ < 0 : le polynôme n’a pas de racine réelle'
+				: 'Δ < 0 : pas de solution réelle',
+		'apply-quadratic-formula': (op, step) => {
+			const kind = (op as EquationOperation & { kind: 'apply-quadratic-formula' }).case;
+			// Equation phrasing (preserved verbatim for snapshot stability) ; the
+			// inequality context only swaps the implicit noun "solutions" → "racines"
+			// inside the explanation field, not the title.
+			if (kind === 'double') {
+				return 'On applique la formule : x = −b / (2a)';
+			}
+			void step;
+			return 'On applique la formule : x = (−b ± √Δ) / (2a)';
+		},
+		'simplify-solutions': (_op, step) =>
+			isInequalityStep(step) ? 'On simplifie les racines' : 'On simplifie les solutions',
 		'read-solutions': () => 'Solutions',
 		'no-real-solution': () => 'Pas de solution réelle',
 		'recognize-no-linear-term': () => 'Le coefficient de x est nul : on isole le carré',
@@ -106,11 +137,18 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'factor-gcd': (op) => {
 			const g = (op as EquationOperation & { kind: 'factor-gcd' }).gcd;
 			return `On divise les deux membres par ${fmt(g)} (PGCD)`;
+		},
+		// === Quadratic inequality kinds (palier 2b) ===
+		'quadratic-sign-table': () => 'On dresse le tableau de signes',
+		'inequality-conclude-quadratic': (op) => {
+			const description = (op as EquationOperation & { kind: 'inequality-conclude-quadratic' })
+				.solutionDescription;
+			return `Solution : S = ${description}`;
 		}
 	},
 	superieur: {
-		// Identify-equation deliberately omitted at supérieur (the level-strategy
-		// skips it). Standardize prefix is also more compact.
+		'identify-equation': (_op, step) =>
+			isInequalityStep(step) ? 'Inéquation du second degré' : 'Équation du second degré',
 		standardize: () => 'Forme standard',
 		'identify-coefficients': () => 'Coefficients a, b, c',
 		'compute-discriminant': (op) => {
@@ -134,6 +172,13 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'factor-gcd': (op) => {
 			const g = (op as EquationOperation & { kind: 'factor-gcd' }).gcd;
 			return `Simplification (÷ ${fmt(g)})`;
+		},
+		// === Quadratic inequality kinds (palier 2b) ===
+		'quadratic-sign-table': () => 'Tableau de signes',
+		'inequality-conclude-quadratic': (op) => {
+			const description = (op as EquationOperation & { kind: 'inequality-conclude-quadratic' })
+				.solutionDescription;
+			return `S = ${description}`;
 		}
 	}
 };
@@ -147,23 +192,36 @@ const EXPLANATIONS: Record<
 	Partial<Record<EquationOperation['kind'], ExplanationFn>>
 > = {
 	lycee: {
-		'identify-equation': () =>
-			'Une équation du second degré s’écrit ax² + bx + c = 0 avec a ≠ 0. On va calculer le discriminant pour déterminer le nombre de solutions.',
+		'identify-equation': (_op, step) =>
+			isInequalityStep(step)
+				? 'Une inéquation du second degré s’écrit ax² + bx + c ⊻ 0 avec a ≠ 0 (où ⊻ ∈ {<, >, ≤, ≥, ≠}). On calcule le discriminant pour déterminer les racines, puis on dresse le tableau de signes pour lire la solution.'
+				: 'Une équation du second degré s’écrit ax² + bx + c = 0 avec a ≠ 0. On va calculer le discriminant pour déterminer le nombre de solutions.',
 		standardize: () =>
-			'On déplace tous les termes dans le membre de gauche : f(x) − g(x) = 0. La nouvelle équation est équivalente à la précédente.',
+			'On déplace tous les termes dans le membre de gauche : f(x) − g(x) ⊻ 0. La nouvelle relation est équivalente à la précédente.',
 		'identify-coefficients': () =>
 			'a est le coefficient de x², b celui de x, c le terme constant. Ils servent ensuite au calcul du discriminant.',
 		'compute-discriminant': () =>
-			'Le discriminant Δ = b² − 4ac détermine le nombre de solutions réelles : Δ > 0 (deux), Δ = 0 (une double), Δ < 0 (aucune).',
-		'discriminant-positive': () =>
-			'Le discriminant est strictement positif : l’équation possède deux solutions réelles distinctes données par la formule quadratique.',
-		'discriminant-zero': () =>
-			'Le discriminant est nul : l’équation possède une unique solution dite double, x = −b / (2a).',
-		'discriminant-negative': () =>
-			'Le discriminant est strictement négatif : l’équation n’a pas de solution réelle. Dans ℝ, S = ∅.',
-		'apply-quadratic-formula': () =>
-			'On substitue les valeurs de a, b et Δ dans la formule pour obtenir les solutions brutes (avant simplification).',
-		'simplify-solutions': () => 'On réduit chaque solution à sa forme canonique.',
+			'Le discriminant Δ = b² − 4ac détermine le nombre de racines réelles du polynôme : Δ > 0 (deux), Δ = 0 (une double), Δ < 0 (aucune).',
+		'discriminant-positive': (_op, step) =>
+			isInequalityStep(step)
+				? 'Le discriminant est strictement positif : le polynôme possède deux racines réelles distinctes. Elles serviront à dresser le tableau de signes.'
+				: 'Le discriminant est strictement positif : l’équation possède deux solutions réelles distinctes données par la formule quadratique.',
+		'discriminant-zero': (_op, step) =>
+			isInequalityStep(step)
+				? 'Le discriminant est nul : le polynôme admet une racine double. Le polynôme est du signe de a sauf en cette racine, où il s’annule.'
+				: 'Le discriminant est nul : l’équation possède une unique solution dite double, x = −b / (2a).',
+		'discriminant-negative': (_op, step) =>
+			isInequalityStep(step)
+				? 'Le discriminant est strictement négatif : le polynôme n’a pas de racine réelle. Le polynôme garde un signe constant (celui de a) sur tout ℝ.'
+				: 'Le discriminant est strictement négatif : l’équation n’a pas de solution réelle. Dans ℝ, S = ∅.',
+		'apply-quadratic-formula': (_op, step) =>
+			isInequalityStep(step)
+				? 'On substitue les valeurs de a, b et Δ dans la formule pour obtenir les racines du polynôme (avant simplification).'
+				: 'On substitue les valeurs de a, b et Δ dans la formule pour obtenir les solutions brutes (avant simplification).',
+		'simplify-solutions': (_op, step) =>
+			isInequalityStep(step)
+				? 'On réduit chaque racine à sa forme canonique.'
+				: 'On réduit chaque solution à sa forme canonique.',
 		'read-solutions': () => 'On donne l’ensemble des solutions sous la forme S = { … }.',
 		'no-real-solution': () => 'Dans ℝ, l’équation n’admet aucune solution. On note S = ∅.',
 		'factor-gcd': () =>
@@ -180,7 +238,12 @@ const EXPLANATIONS: Record<
 		'factor-common-x': () => 'On met x en facteur : ax² + bx = x(ax + b).',
 		'zero-product': () => 'Si A · B = 0, alors A = 0 ou B = 0.',
 		'solve-each-factor': () =>
-			'On résout indépendamment chaque équation linéaire issue du produit nul.'
+			'On résout indépendamment chaque équation linéaire issue du produit nul.',
+		// === Quadratic inequality kinds (palier 2b) ===
+		'quadratic-sign-table': () =>
+			'Le tableau de signes synthétise le signe du polynôme sur chaque intervalle déterminé par les racines. Le polynôme est du signe de a à l’extérieur des racines et du signe opposé entre les racines (cas Δ > 0).',
+		'inequality-conclude-quadratic': () =>
+			'On lit la solution dans le tableau : on garde les intervalles où le signe satisfait l’opérateur de l’inéquation.'
 	},
 	superieur: {
 		// Compact one-liners for supérieur — students at this level know the
@@ -193,7 +256,9 @@ const EXPLANATIONS: Record<
 		'recognize-no-linear-term': () => 'ax² + c = 0 ⇒ x² = −c/a.',
 		'recognize-no-constant-term': () => 'ax² + bx = 0 ⇒ x(ax + b) = 0.',
 		'recognize-factored': () => 'Produit de facteurs nul.',
-		'zero-product': () => 'A · B = 0 ⇒ A = 0 ∨ B = 0.'
+		'zero-product': () => 'A · B = 0 ⇒ A = 0 ∨ B = 0.',
+		'quadratic-sign-table': () => 'Signe(P) = signe(a) à l’extérieur des racines.',
+		'inequality-conclude-quadratic': () => 'Lecture du tableau pour l’opérateur donné.'
 	}
 };
 
@@ -325,6 +390,12 @@ function formatExpressionLatex(step: EquationStep): string {
 			return formatZeroProduct(op);
 		case 'solve-each-factor':
 			return formatSolveEachFactor(op);
+
+		// -------- Quadratic inequality kinds (palier 2b) --------
+		case 'quadratic-sign-table':
+			return formatSignTable(op);
+		case 'inequality-conclude-quadratic':
+			return formatConcludeQuadratic(op);
 
 		// -------- Linear kinds (cross-pipeline misuse) — fallback to plain equation --------
 		default:
@@ -471,4 +542,134 @@ function formatSolveEachFactor(op: EquationOperation & { kind: 'solve-each-facto
 		(p) => `  ${fmt(p.factor)} = 0 &\\;\\Longleftrightarrow\\; x = ${fmt(p.value)}`
 	);
 	return ['\\begin{aligned}', lines.join(' \\\\\n'), '\\end{aligned}'].join(' ');
+}
+
+/**
+ * Format the quadratic sign table as a LaTeX `\begin{array}` block.
+ *
+ * Layout :
+ * - Header row with `x`, then alternating roots and the labels `-\infty` /
+ *   `+\infty` at the boundaries.
+ * - Body row with the polynomial label on the left, then alternating signs
+ *   (`+`, `-`, `0`) on the intervals and roots.
+ *
+ * Sign rules :
+ * - 2 roots (Δ > 0) : signe(a), 0, signe(−a), 0, signe(a)
+ * - 1 root (Δ = 0)  : signe(a), 0, signe(a)
+ * - 0 roots (Δ < 0) : signe(a) on the whole line
+ */
+function formatSignTable(op: EquationOperation & { kind: 'quadratic-sign-table' }): string {
+	const aValue = computeNumericValueLite(op.a);
+	const aSign = aValue !== null && aValue < 0 ? '-' : '+';
+	const oppSign = aSign === '+' ? '-' : '+';
+	const polyLabel = formatQuadraticPolynomialLabel(op);
+
+	const sortedRoots = sortRoots(op.roots);
+	const numRoots = sortedRoots.length;
+
+	if (numRoots === 0) {
+		// Δ < 0 : single sign over all ℝ
+		return [
+			'\\begin{array}{|c|ccc|}',
+			'\\hline',
+			`${op.variable} & -\\infty & & +\\infty \\\\`,
+			'\\hline',
+			`${polyLabel} & & ${aSign} & \\\\`,
+			'\\hline',
+			'\\end{array}'
+		].join(' ');
+	}
+
+	if (numRoots === 1) {
+		// Δ = 0 : signe(a), 0, signe(a)
+		const r0 = fmt(sortedRoots[0]);
+		return [
+			'\\begin{array}{|c|ccccc|}',
+			'\\hline',
+			`${op.variable} & -\\infty & & ${r0} & & +\\infty \\\\`,
+			'\\hline',
+			`${polyLabel} & & ${aSign} & 0 & ${aSign} & \\\\`,
+			'\\hline',
+			'\\end{array}'
+		].join(' ');
+	}
+
+	// numRoots === 2 : Δ > 0
+	const r1 = fmt(sortedRoots[0]);
+	const r2 = fmt(sortedRoots[1]);
+	return [
+		'\\begin{array}{|c|ccccccc|}',
+		'\\hline',
+		`${op.variable} & -\\infty & & ${r1} & & ${r2} & & +\\infty \\\\`,
+		'\\hline',
+		`${polyLabel} & & ${aSign} & 0 & ${oppSign} & 0 & ${aSign} & \\\\`,
+		'\\hline',
+		'\\end{array}'
+	].join(' ');
+}
+
+/** `S = ]2 ; 3[` etc. — the description is computed by the inequality module. */
+function formatConcludeQuadratic(
+	op: EquationOperation & { kind: 'inequality-conclude-quadratic' }
+): string {
+	return `S = ${escapeLatexBacktickFreeText(op.solutionDescription)}`;
+}
+
+/**
+ * Build a short LaTeX label for the polynomial `ax² + bx + c` to use as the
+ * row header in the sign table. Falls back to a generic `P(x)` if the
+ * coefficient `a` is non-trivial enough that re-printing would clutter the
+ * table.
+ */
+function formatQuadraticPolynomialLabel(
+	op: EquationOperation & { kind: 'quadratic-sign-table' }
+): string {
+	// Always use the generic `P(x)` label for the table — the explicit polynomial
+	// has already been displayed in earlier steps and would crowd the array.
+	return `P(${op.variable})`;
+}
+
+/**
+ * Lightweight numeric extraction — returns `null` if the node isn't a simple
+ * integer/decimal/opposite. Avoids importing the full `computeNumericValue`
+ * machinery since we only need to decide the SIGN of `a`.
+ */
+function computeNumericValueLite(node: MathNode): number | null {
+	if (node.type === 'number') return parseFloat(node.value);
+	if (node.type === 'opposite' && (node as { operand: MathNode }).operand.type === 'number') {
+		return -parseFloat(((node as { operand: MathNode }).operand as { value: string }).value);
+	}
+	return null;
+}
+
+/** Sort roots by approximate numeric value (smallest first). Uses the full
+ *  `computeNumericValue` so irrational forms like `(1 + \sqrt{5}) / 2` are
+ *  ordered correctly — `computeNumericValueLite` only handles integers. */
+function sortRoots(roots: readonly MathNode[]): MathNode[] {
+	const withVals = roots.map((r) => ({
+		node: r,
+		value: computeNumericValue(r) ?? Number.MAX_SAFE_INTEGER
+	}));
+	withVals.sort((a, b) => a.value - b.value);
+	return withVals.map((w) => w.node);
+}
+
+/**
+ * The `solutionDescription` carries Unicode characters like `∅`, `ℝ`, `∪`
+ * that are LaTeX-safe in math mode but need a small post-processing pass to
+ * harmonise with the rest of the renderer's output. Currently a no-op — kept
+ * as a hook for future escaping needs (e.g. converting `∪` to `\cup`).
+ */
+function escapeLatexBacktickFreeText(s: string): string {
+	// Escape literal `{` / `}` first (they come from set notation like `{2}` and
+	// are unrelated to any LaTeX braces — those are introduced AFTER, by the
+	// Unicode → macro substitutions below).
+	return s
+		.replace(/\{/g, '\\{')
+		.replace(/\}/g, '\\}')
+		.replace(/∪/g, '\\cup')
+		.replace(/∅/g, '\\emptyset')
+		.replace(/ℝ\s*\\\s*/g, '\\mathbb{R} \\setminus ')
+		.replace(/ℝ/g, '\\mathbb{R}')
+		.replace(/∞/g, '\\infty');
 }
