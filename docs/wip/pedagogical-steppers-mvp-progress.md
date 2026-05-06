@@ -198,11 +198,11 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 - **Unités impériales + affines** (Celsius/Fahrenheit, foot, pound, mile, gallon) → livré, voir `units-imperial-affine-progress.md`
 - **Unités d'aire** (a, ha, acre) — bonus débloqué par dérivées → livré, voir `units-area-progress.md`
 - **Intégration aux corrections de questions** (`QuestionCorrection.generatedSteps` Mode B) → livré, voir `correction-integration-progress.md`. Inclut :
-  - Schéma type `GeneratedSteps` discriminé (`kind: 'arithmetic' | 'linear-equation' | 'differentiate' | 'quadratic-equation' | 'linear-inequality' | 'quadratic-inequality' | 'rational-inequality'`)
+  - Schéma type `GeneratedSteps` discriminé (`kind: 'arithmetic' | 'linear-equation' | 'differentiate' | 'quadratic-equation' | 'linear-inequality' | 'quadratic-inequality' | 'rational-inequality' | 'integrate'`)
   - `generateCorrection()` avec auto-call dans `generateInstance()` (early-return strict si absent)
   - Composant Svelte `<GeneratedStepsCorrection>` + extension `CorrectionCard.svelte`
   - Mapping `gradeLevelToSchoolLevel` (CP-CM2 → primaire, 6-3 → college, 2-T → lycee)
-  - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (12 fixtures : arithmetic + linear-equation + differentiate × 2 + quadratic-equation + linear-inequality × 2 + quadratic-inequality × 2 + rational-inequality × 3)
+  - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (13 fixtures : arithmetic + linear-equation + differentiate × 2 + quadratic-equation + linear-inequality × 2 + quadratic-inequality × 2 + rational-inequality × 2 + integrate × 2 ; la `rationalInequalityMultiFracDemo` V2 est en snapshot test mais pas affichée)
 - **Stepper pédagogique pour équations du second degré** (`kind: 'quadratic-equation'`) → livré V1 + V1.1, voir `quadratic-stepper-progress.md`. Inclut :
 
   - Pipeline `pedagogical-solve/quadratic.ts` couvrant 4 cas (standard Δ>0/=0/<0, b=0, c=0, factorisé) + standardisation auto vers `… = 0`
