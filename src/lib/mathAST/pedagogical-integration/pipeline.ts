@@ -108,13 +108,78 @@ export function generatePedagogicalIntegrationSteps(
 	integrand: MathNode,
 	options: PedagogicalIntegrationOptions
 ): PedagogicalIntegrationResult {
-	const resolvedVariable = options.variable ?? detectVariable(integrand) ?? 'x';
+	const resolvedVariable = options.variable ?? resolveIntegrationVariable(integrand);
 	const ctx = createContext(options, resolvedVariable);
 
 	if (options.definite) {
 		return generateDefiniteSteps(integrand, ctx, options.definite);
 	}
 	return generateIndefiniteSteps(integrand, ctx);
+}
+
+/**
+ * Resolve the integration variable from the integrand. Wraps the algorithmic
+ * `detectVariable` and adds a workaround for the « `e^x` parses as
+ * `superscript(variable('e'), variable('x'))` » quirk : when detectVariable
+ * throws « multiple variables » and one of them is the conventional Euler
+ * constant `e`, treat `e` as a constant and pick the other variable.
+ */
+function resolveIntegrationVariable(integrand: MathNode): string {
+	try {
+		return detectVariable(integrand) ?? 'x';
+	} catch {
+		const names = collectVariableNames(integrand);
+		const nonEuler = names.filter((n) => n !== 'e');
+		if (nonEuler.length === 1) return nonEuler[0];
+		if (nonEuler.length === 0) return 'x';
+		throw new PedagogicalIntegrationNotImplemented(
+			integrand,
+			`Multiple integration variables (${names.join(', ')}) — please specify via options.variable`
+		);
+	}
+}
+
+function collectVariableNames(node: MathNode): readonly string[] {
+	const out = new Set<string>();
+	const walk = (n: MathNode): void => {
+		switch (n.type) {
+			case 'variable':
+				out.add(n.name);
+				return;
+			case 'addition':
+			case 'subtraction':
+			case 'multiplication':
+				walk(n.left);
+				walk(n.right);
+				return;
+			case 'division':
+				walk(n.numerator);
+				walk(n.denominator);
+				return;
+			case 'opposite':
+			case 'positive':
+				walk(n.operand);
+				return;
+			case 'delimiter':
+				walk(n.content);
+				return;
+			case 'superscript':
+				walk(n.base);
+				walk(n.superscript);
+				return;
+			case 'subscript':
+				walk(n.base);
+				walk(n.subscript);
+				return;
+			case 'function':
+				n.args.forEach(walk);
+				return;
+			default:
+				return;
+		}
+	};
+	walk(node);
+	return Array.from(out);
 }
 
 // =============================================================================
