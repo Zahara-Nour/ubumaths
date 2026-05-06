@@ -293,6 +293,78 @@ describe('LinearEquationRenderer — inequality-conclude-truth', () => {
 });
 
 // =============================================================================
+// 6.5 — Aligned-block uses the FLIPPED operator on the after-line (regression)
+// =============================================================================
+
+describe('LinearEquationRenderer — aligned block flipped operator', () => {
+	it('college divide-both-sides with flip: after-line uses flipped relation', () => {
+		const steps = generateLinearInequalitySteps(ineq('-x < 3'), { level: 'college' });
+		const rendered = renderer.renderAll(steps, {
+			verbosity: 'detailed',
+			schoolLevel: 'college'
+		});
+		const divide = rendered.find((r) => r.rule === 'divide-both-sides');
+		expect(divide).toBeDefined();
+		// The aligned block shows two lines: before with original `<`, after
+		// with flipped `>`. The after-line `x > -3` must contain `>` and not
+		// `<` (the bug was using before.relation on both lines).
+		const latex = divide!.expressionLatex!;
+		// Contains `x > -3` (flipped) somewhere
+		expect(latex).toMatch(/x\s*&?\s*>\s*-3/);
+	});
+
+	it('lycée simplify-coefficient with flip: result uses flipped relation', () => {
+		const steps = generateLinearInequalitySteps(ineq('-x < 3'), { level: 'lycee' });
+		const rendered = renderer.renderAll(steps, {
+			verbosity: 'detailed',
+			schoolLevel: 'lycee'
+		});
+		const simplify = rendered.find((r) => r.rule === 'simplify-coefficient');
+		expect(simplify).toBeDefined();
+		// The single-line result must show `x > -3` not `x < -3`
+		expect(simplify!.expressionLatex).toMatch(/x\s*>\s*-3/);
+		expect(simplify!.expressionLatex).not.toMatch(/x\s*<\s*-3/);
+	});
+
+	it('college divide-both-sides with flip on ≥: after-line shows ≤', () => {
+		const steps = generateLinearInequalitySteps(ineq('-2x \\geq 6'), { level: 'college' });
+		const rendered = renderer.renderAll(steps, {
+			verbosity: 'detailed',
+			schoolLevel: 'college'
+		});
+		const divide = rendered.find((r) => r.rule === 'divide-both-sides');
+		const latex = divide!.expressionLatex!;
+		// After-line: `x \leq -3` (flipped from \geq)
+		expect(latex).toMatch(/x\s*&?\s*\\leq\s*-3/);
+	});
+
+	it('non-flip case: both lines use the same operator (regression)', () => {
+		const steps = generateLinearInequalitySteps(ineq('2x + 3 < 7'), { level: 'college' });
+		const rendered = renderer.renderAll(steps, {
+			verbosity: 'detailed',
+			schoolLevel: 'college'
+		});
+		const divide = rendered.find((r) => r.rule === 'divide-both-sides');
+		const latex = divide!.expressionLatex!;
+		// Both lines should contain `<`, none should contain `>`
+		expect(latex).toMatch(/</);
+		expect(latex).not.toMatch(/>/);
+	});
+
+	it('equation case: aligned block unchanged (regression)', () => {
+		const steps = generateLinearEquationSteps(eq('2x + 3 = 7'), { level: 'college' });
+		const rendered = renderer.renderAll(steps, {
+			verbosity: 'detailed',
+			schoolLevel: 'college'
+		});
+		const divide = rendered.find((r) => r.rule === 'divide-both-sides');
+		const latex = divide!.expressionLatex!;
+		// Equation: both lines use `=`
+		expect((latex.match(/=/g) ?? []).length).toBeGreaterThanOrEqual(2);
+	});
+});
+
+// =============================================================================
 // 7 — Smoke: full pipeline render does not throw
 // =============================================================================
 

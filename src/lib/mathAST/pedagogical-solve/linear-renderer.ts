@@ -427,12 +427,20 @@ function relToLatex(rel: string): string {
 
 export function formatTransformationLines(step: EquationStep): readonly string[] | null {
 	const op = step.operation;
-	const rel = step.before.type === 'relation' ? relToLatex(step.before.relation) : '=';
+	// `relBefore` is used on the upper line of the aligned block ("operation
+	// being applied"); `relAfter` is used on the lower line ("simplified
+	// result"). They differ for inequality steps where `flipOperator: true`
+	// — e.g. `-x < 3` divided by -1 yields `\dfrac{-x}{-1} < \dfrac{3}{-1}`
+	// (before line, original operator) on the upper line and `x > -3`
+	// (after line, flipped operator) on the lower line. For all
+	// non-flip cases (equations, positive divisor), they are equal.
+	const relBefore = step.before.type === 'relation' ? relToLatex(step.before.relation) : '=';
+	const relAfter = step.after.type === 'relation' ? relToLatex(step.after.relation) : '=';
 	const bL = step.before.type === 'relation' ? fmt(step.before.left) : fmt(step.before);
 	const bR = step.before.type === 'relation' ? fmt(step.before.right) : '';
 	const aL = step.after.type === 'relation' ? fmt(step.after.left) : fmt(step.after);
 	const aR = step.after.type === 'relation' ? fmt(step.after.right) : '';
-	const beforeEqualsAfter = bL === aL && bR === aR;
+	const beforeEqualsAfter = bL === aL && bR === aR && relBefore === relAfter;
 
 	// Info-only ops: identify-equation, read-solution, inequality-conclude-truth
 	// → no transformation block (the title carries the message).
@@ -455,14 +463,15 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 		if (beforeEqualsAfter) return null;
 		return [
 			'\\begin{aligned}',
-			`  ${bL} &${rel} ${bR} \\\\`,
-			`  ${aL} &${rel} ${aR}`,
+			`  ${bL} &${relBefore} ${bR} \\\\`,
+			`  ${aL} &${relAfter} ${aR}`,
 			'\\end{aligned}'
 		];
 	}
 
 	// `transpose-terms` (lycée+) — show reorganized form with BOTH operands
-	// in color simultaneously, and the simplified result.
+	// in color simultaneously, and the simplified result. Transpose never
+	// flips the operator (it is an addition on both sides).
 	if (op.kind === 'transpose-terms') {
 		if (step.before.type !== 'relation') return null;
 		const variable = variableOf(step);
@@ -476,8 +485,8 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 			op.constantOperand !== null ? ' ' + formatColoredAddend(op.constantOperand) : '';
 		return [
 			'\\begin{aligned}',
-			`  ${leftRemainder}${leftAddend} &${rel} ${rightRemainder}${rightAddend} \\\\`,
-			`  ${aL} &${rel} ${aR}`,
+			`  ${leftRemainder}${leftAddend} &${relBefore} ${rightRemainder}${rightAddend} \\\\`,
+			`  ${aL} &${relAfter} ${aR}`,
 			'\\end{aligned}'
 		];
 	}
@@ -485,8 +494,10 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 	// `simplify-coefficient` (lycée+) — display only the result equation
 	// (single line, no transformation block). The division operation is
 	// implicit in the title ("On termine en simplifiant le coefficient de x").
+	// Use the AFTER relation so the flipped operator shows correctly when
+	// `flipOperator: true` (e.g. `x > -3` for `-x < 3` divided by -1).
 	if (op.kind === 'simplify-coefficient') {
-		return [`${aL} ${rel} ${aR}`];
+		return [`${aL} ${relAfter} ${aR}`];
 	}
 
 	// Atomic transformation ops with a colored operand (college style). The
@@ -525,8 +536,8 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 	}
 	return [
 		'\\begin{aligned}',
-		`  ${leftApplied} &${rel} ${rightApplied} \\\\`,
-		`  ${aL} &${rel} ${aR}`,
+		`  ${leftApplied} &${relBefore} ${rightApplied} \\\\`,
+		`  ${aL} &${relAfter} ${aR}`,
 		'\\end{aligned}'
 	];
 }
