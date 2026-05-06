@@ -554,3 +554,74 @@ export const integrateDefiniteDemo: QuestionTemplate = {
 	subdomain: 'Intégrales définies',
 	level: 2
 };
+
+/**
+ * Demo question : « Développe et réduis $(x+{{a}})(x-{{a}})$. » for collège.
+ *
+ * Mode B declares a `simplify` correction with `intent: 'developper'`. The
+ * pipeline recognises the conjugate identity and emits one
+ * `product-to-diff-squares` step ; normalize then settles the canonical form.
+ */
+export const simplifyDistributionDemo: QuestionTemplate = {
+	id: 'demo-simplify-distribution-college',
+	title: 'Développer un produit conjugué (4e)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown('Développe et réduis $(x+{{a}})(x-{{a}}) = ?$'),
+			variables: [{ name: 'a', expression: '3' }],
+			blanks: [{ expectedAnswer: 'x^2 - {{eval:a*a}}' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Excellent — c’est l’identité a²−b² !') },
+				generatedSteps: {
+					kind: 'simplify',
+					expression: '(x+{{a}})(x-{{a}})',
+					intent: 'developper',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['4'],
+	theme: 'Calcul littéral',
+	domain: 'Identités remarquables',
+	level: 1
+};
+
+/**
+ * Demo question : « Simplifie $\\sin^2(x) + \\cos^2(x)$. » for lycée 1ère.
+ *
+ * Mode B declares a `simplify` correction with `intent: 'reduire'`. The
+ * pipeline applies the Pythagorean identity in a single step.
+ */
+export const simplifyTrigDemo: QuestionTemplate = {
+	id: 'demo-simplify-trig-lycee',
+	title: 'Identité de Pythagore (1ère)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown('Simplifie $\\sin^2(x) + \\cos^2(x) = ?$'),
+			variables: [],
+			blanks: [{ expectedAnswer: '1' }],
+			correction: {
+				feedback: {
+					correct: templateMarkdown('C’est l’identité fondamentale de la trigonométrie.')
+				},
+				generatedSteps: {
+					kind: 'simplify',
+					// `parseCustomSafe` (used by correction-generator) accepts the
+					// `sin^2(x)` shorthand which yields a `FunctionNode` with
+					// `power: 2`, the form the pythagorean pattern matches. The
+					// statement above uses LaTeX `\sin^2(x)` for the human view.
+					expression: 'sin^2(x) + cos^2(x)',
+					intent: 'reduire',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['1_SPE'],
+	theme: 'Trigonométrie',
+	domain: 'Identités trigonométriques',
+	level: 1
+};

@@ -1032,6 +1032,29 @@ export type GeneratedSteps =
 			 */
 			readonly definite?: { readonly lower: string; readonly upper: string };
 			readonly options?: GeneratedStepsOptions;
+	  }
+	| {
+			readonly kind: 'simplify';
+			/** Template expression to simplify. */
+			readonly expression: string;
+			/**
+			 * Required pedagogical intent — drives rule selection.
+			 * - `'factoriser'` : push toward factored form
+			 * - `'developper'` : push toward expanded form
+			 * - `'reduire'`    : tidy up (combine-like-terms, fractions, radicals,
+			 *                    unambiguous identities) — no factoring/expansion
+			 * - `'auto'`       : `reduire` + unambiguous factoring/expansion only
+			 */
+			readonly intent: 'factoriser' | 'developper' | 'reduire' | 'auto';
+			/** Variable hint for descriptions (e.g. `'x'`, `'t'`). */
+			readonly variable?: string;
+			/** Override school-level default for trig identities. */
+			readonly enableTrig?: boolean;
+			/** Override school-level default for log/exp identities. */
+			readonly enableLogExp?: boolean;
+			/** Override default for absolute-value identities. Default true. */
+			readonly enableAbs?: boolean;
+			readonly options?: GeneratedStepsOptions;
 	  };
 
 /**
