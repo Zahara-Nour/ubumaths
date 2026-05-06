@@ -31,6 +31,7 @@ import {
 	sqrtRules,
 	trigSimplifyRules
 } from '../pattern/rule-sets';
+import { distributeBinomialProduct } from './pedagogical-rules';
 import type { PedagogicalSimplifyCategory, SimplifyIntent } from './types';
 
 // =============================================================================
@@ -122,7 +123,11 @@ export function selectRulesForIntent(
 			return { rules, useNormalize: false };
 		}
 		case 'developper': {
-			const rules = dedupeByName([...algebraicExpandingRules, ...identitiesAndUtilities]);
+			const rules = dedupeByName([
+				...algebraicExpandingRules,
+				distributeBinomialProduct,
+				...identitiesAndUtilities
+			]);
 			return { rules, useNormalize: true };
 		}
 		case 'reduire': {
@@ -197,8 +202,7 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['expand-sum-squared', 'distribution'],
 	['expand-diff-squared', 'distribution'],
 	['product-to-diff-squares', 'distribution'],
-	// Phase 2 will add:
-	// ['distribute-binomial-product', 'distribution'],
+	['distribute-binomial-product', 'distribution'],
 
 	// ---- identites-trig -------------------------------------------------------
 	['pythagorean', 'identites-trig'],
