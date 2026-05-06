@@ -134,11 +134,15 @@ mais expliquent certaines limitations utilisateur.
    Le test 14 (`e^x − 1 > 0`) du palier 1 est ré-activé avec
    status='partial' (la solution `]0, +∞[` complète attend le fix de la
    limitation #3 ci-dessous).
-3. **`sign/helpers/sampling.ts`** : `MAX_SAMPLE_BOUND = 1e6` provoque overflow/
-   underflow sur exp/ln aux bornes, donnant des résultats faux pour les
-   transcendantes sur ℝ non borné. Stratégie possible : adapter la borne au
-   type de fonction détecté, ou exiger `options.domain` borné pour les
-   expressions contenant exp/ln/trig.
+3. ~~**`sign/helpers/sampling.ts`** : `MAX_SAMPLE_BOUND = 1e6`~~
+   **Fixé le 2026-05-06** (commit `218e2ad9d`). Constante abaissée à `100` —
+   suffisant pour exp (`e^100 ≈ 2.7e43`), rationnels (`1/(100·99) ≈ 1e-4`,
+   au-dessus de la tolérance), trig (cos(x) sur ℝ continue à signaler
+   'unknown' grâce à la diversité de signes dans `[-100, 100]`).
+   Trade-off : polynômes de degré > 150 dépassent `Number.MAX_VALUE` à
+   x=100, mais l'analyse de signe ne nécessite qu'un sample fini.
+   **Conséquence** : test 14 (`e^x − 1 > 0`) passe maintenant avec
+   status='complete' et solution `]0, +∞[` complète.
 
 ## Suite (palier 2 — à rediscuter)
 
