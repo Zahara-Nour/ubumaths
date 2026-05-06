@@ -77,33 +77,48 @@ generateLinearInequalitySteps(ineq, opts)
 4. **JSDoc `relToLatex`** clarifie qu'il ne couvre que les 5 opérateurs émis par les pipelines linéaires (pas le `RelationType` étendu).
 5. **Imports inutilisés supprimés** dans `linear-inequality.ts` (`relation`) et le test (`lastRelationLatex`).
 
-## Limitations V1 documentées
+## Renderer pour inéquations — V2 livré (2026-05-06)
 
-### Renderer pour inéquations
+Les limitations V1 du renderer sont **levées**. Le `LinearEquationRenderer` est
+maintenant polyvalent (équation/inéquation) sans duplication — l'extension est
+faite par branchement sur `step.before.relation !== '='` et `op.flipOperator`,
+plutôt que par création d'un `LinearInequalityRenderer` dédié.
 
-L'existant `LinearEquationRenderer` est réutilisé tel quel (Q-P2-F validée).
-Une fonction `relToLatex` a été ajoutée à `linear-renderer.ts:formatTransformationLines`
-pour mapper correctement `<=` / `>=` / `!=` en `\leq` / `\geq` / `\neq` dans
-l'aligned block.
+### V1 → V2
 
-**Limitations connues** :
+| Limitation V1                                                                                             | Solution V2                                                                                  |
+| --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| TITLES sans note « (changement de sens) »                                                                 | Helper `flipNote(op)` ajoute la note quand `flipOperator: true`                              |
+| EXPLANATIONS parlent de « l'égalité » même pour inéquations                                               | Helper `divideExplanation`/`multiplyExplanation` branchent sur `isInequalityStep`            |
+| `inequality-conclude-truth` sans TITLE/EXPLANATION                                                        | `inequalityConcludeTruthTitle` + `inequalityConcludeTruthExplanation`, ajoutés aux 3 niveaux |
+| `identify-equation` dit « Équation » pour les inéquations                                                 | `identifyEquationTitle` retourne « Inéquation du premier degré » via `isInequalityStep`      |
+| `formatTransformationLines` rendait l'aligned block pour `inequality-conclude-truth` (rien à transformer) | Ajout au filtre info-only                                                                    |
 
-- Les **titres** générés par les `TITLES` de `linear-renderer.ts` restent ceux
-  des équations (« On divise les deux membres par −2 ») — pas de note
-  pédagogique « (changement de sens) » pour les cas `flipOperator: true`.
-  Le `description` du step lui-même contient bien cette note (cf.
-  `linear-inequality.ts:222-226`), mais le renderer la remplace par sa propre
-  TITLE function.
-- Les **explanations** parlent de « L'égalité est préservée » même pour les
-  inéquations, ce qui est sémantiquement faux.
+### Helpers ajoutés
 
-**Pour V2** : créer un `LinearInequalityRenderer` qui surcharge les `TITLES` et
-`EXPLANATIONS` pour les kinds `divide-both-sides`, `multiply-both-sides`,
-`simplify-coefficient` (en lisant `op.flipOperator`) et pour la nouvelle kind
-`inequality-conclude-truth`. Le test 17 (`!=`) confirme que `flipOperator` est
-correctement à `false`/`undefined`, donc le code data-side est déjà prêt.
+- `isInequalityStep(step)` — `true` si `step.before.relation !== '='`
+- `preservedNoun(step)` — « l'inégalité » ou « l'égalité » avec élision
+- `flipNote(op)` — chaîne « (changement de sens car X est négatif) » ou vide
+- `inequalityConcludeTruthTitle` / `inequalityConcludeTruthExplanation`
+- `divideExplanation` / `multiplyExplanation` — adaptés au type d'opérateur
 
-## Vérifications
+### Tests renderer V2
+
+Nouveau fichier `__tests__/linear-renderer-inequality.test.ts` (23 tests) :
+
+- TITLES « changement de sens » présent ssi `flipOperator: true`
+- EXPLANATIONS adaptées (inégalité vs égalité)
+- `inequality-conclude-truth` rendu avec mention « S = ℝ » ou « contradiction »
+- `formatTransformationLines` retourne `null` pour la conclude-truth (info-only)
+- Régression équation : titres et explications inchangés (vérifiés via 13 tests existants `linear-renderer.test.ts`)
+
+### Décisions issues du code review V2
+
+1. **Lycée `add-both-sides` simplifié** : remplacement de la comparaison fragile
+   `preservedNoun(step) === "l'inégalité"` par `isInequalityStep(step)` direct
+   (résistant à un futur renommage de `preservedNoun`).
+
+## Vérifications V1
 
 | Étape                                       | Résultat                                                                                        |
 | ------------------------------------------- | ----------------------------------------------------------------------------------------------- |
@@ -113,6 +128,17 @@ correctement à `false`/`undefined`, donc le code data-side est déjà prêt.
 | ESLint (fichiers nouveaux et modifiés)      | **0 erreur**                                                                                    |
 | `pnpm check:incremental`                    | **0 nouvelle erreur** (les 9 erreurs existantes sont pré-existantes en `slides/demo`/`extern/`) |
 
+## Vérifications V2 (renderer)
+
+| Étape                                                    | Résultat                                                  |
+| -------------------------------------------------------- | --------------------------------------------------------- |
+| Tests renderer V2 (`linear-renderer-inequality.test.ts`) | **23 pass / 0 fail**                                      |
+| Régression renderer équation (`linear-renderer.test.ts`) | **13 pass / 0 fail**                                      |
+| Régression pedagogical-solve total                       | **262 pass / 0 fail**                                     |
+| Régression mathAST entier                                | **12605 pass / 19 skip / 3 todo / 0 fail** (+23 nouveaux) |
+| ESLint                                                   | **0 erreur**                                              |
+| `pnpm check:incremental`                                 | **0 nouvelle erreur**                                     |
+
 ## Documents produits
 
 - `docs/wip/pedagogical-inequality-spec.md` — spec figée
@@ -121,5 +147,4 @@ correctement à `false`/`undefined`, donc le code data-side est déjà prêt.
 ## Suite
 
 - **Palier 2b** : pédagogique quadratique numérique (Δ + tableau de signes + 6 sous-cas selon signe(a) × signe(Δ)). À spécifier avec une nouvelle Phase 0 TDD.
-- **Renderer V2 dédié** (`LinearInequalityRenderer`) : pour titres/explanations adaptés. Petit effort, gros gain UX. Peut être fait avant ou après 2b.
 - **Reste palier 2c/d** : paramétrique (V2, scope ouvert).

@@ -30,6 +30,20 @@ import { splitSide } from './linear';
 type TitleFn = (op: EquationOperation, step: EquationStep) => string;
 type ExplanationFn = (op: EquationOperation, step: EquationStep) => string;
 
+/**
+ * True when the step transforms an inequality (relation operator other than
+ * `=`). Used to branch TITLES/EXPLANATIONS between equation- and inequality-
+ * specific phrasing without duplicating the whole table per pipeline.
+ */
+function isInequalityStep(step: EquationStep): boolean {
+	return step.before.type === 'relation' && step.before.relation !== '=';
+}
+
+/** Human-readable « l'inégalité » or « l'égalité » with appropriate elision. */
+function preservedNoun(step: EquationStep): string {
+	return isInequalityStep(step) ? "l'inégalité" : "l'égalité";
+}
+
 function fmt(node: { type: string } & object): string {
 	// `toLatex` emits a literal space for implicit multiplication (`5 x`) for
 	// LaTeX source readability. In our pedagogical operand strings (titles
@@ -48,21 +62,63 @@ function operandStr(op: EquationOperation): string {
 }
 
 /**
- * Title for `identify-equation` — guards against cross-pipeline misuse.
+ * Title for `identify-equation` — guards against cross-pipeline misuse and
+ * adapts the wording for inequalities ("Inéquation du premier degré").
  *
- * The linear renderer hardcodes "Équation du premier degré" but the
+ * The linear renderer hardcoded "Équation du premier degré" but the
  * `EquationOperation` union now allows `equationType: 'linear' | 'quadratic'`
  * (Phase 1 of the quadratic stepper). Silently mis-labeling a quadratic step
  * as first-degree would be confusing, so we throw instead and force the
  * caller to wire `QuadraticEquationRenderer` for quadratic pipelines.
  */
-const identifyEquationTitle: TitleFn = (op) => {
+const identifyEquationTitle: TitleFn = (op, step) => {
 	if (op.kind === 'identify-equation' && op.equationType !== 'linear') {
 		throw new Error(
 			`LinearEquationRenderer: cannot render an identify-equation step with equationType='${op.equationType}'. Use QuadraticEquationRenderer.`
 		);
 	}
-	return 'Équation du premier degré';
+	return isInequalityStep(step) ? 'Inéquation du premier degré' : 'Équation du premier degré';
+};
+
+/**
+ * Format the title for `divide-both-sides`, `multiply-both-sides`, and
+ * `simplify-coefficient` operations, appending the « (changement de sens) »
+ * pedagogical note when `flipOperator: true`.
+ *
+ * Note placement is at the end of the title to match the wording standard
+ * « On divise les deux membres par −2 (changement de sens car −2 est négatif) ».
+ */
+function flipNote(op: EquationOperation): string {
+	if (
+		(op.kind === 'divide-both-sides' ||
+			op.kind === 'multiply-both-sides' ||
+			op.kind === 'simplify-coefficient') &&
+		op.flipOperator
+	) {
+		const operand = op.kind === 'simplify-coefficient' ? fmt(op.coefficient) : fmt(op.operand);
+		return ` (changement de sens car ${operand} est négatif)`;
+	}
+	return '';
+}
+
+/**
+ * Title for `inequality-conclude-truth`. The wording adapts to `truth`:
+ * - `true`  → "L'inéquation est toujours vraie : S = ℝ"
+ * - `false` → "L'inéquation est une contradiction : S = ∅"
+ */
+const inequalityConcludeTruthTitle: TitleFn = (op) => {
+	if (op.kind !== 'inequality-conclude-truth') return '';
+	return op.truth
+		? "L'inéquation est toujours vraie : S = ℝ (tout réel est solution)"
+		: "L'inéquation est une contradiction : S = ∅ (aucune solution)";
+};
+
+/** Explanation for `inequality-conclude-truth`. */
+const inequalityConcludeTruthExplanation: ExplanationFn = (op) => {
+	if (op.kind !== 'inequality-conclude-truth') return '';
+	return op.truth
+		? "Cette forme constante est vraie pour toute valeur de l'inconnue. La solution est donc l'ensemble des réels ℝ."
+		: "Cette forme constante est fausse, indépendamment de l'inconnue. Aucune valeur ne satisfait l'inéquation : la solution est l'ensemble vide ∅.";
 };
 
 const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind'], TitleFn>>> = {
@@ -71,15 +127,17 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 		'identify-equation': identifyEquationTitle,
 		'add-both-sides': (op) => `On ajoute ${operandStr(op)} aux deux membres`,
 		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)} aux deux membres`,
-		'multiply-both-sides': (op) => `On multiplie les deux membres par ${operandStr(op)}`,
-		'divide-both-sides': (op) => `On divise les deux membres par ${operandStr(op)}`,
+		'multiply-both-sides': (op) =>
+			`On multiplie les deux membres par ${operandStr(op)}${flipNote(op)}`,
+		'divide-both-sides': (op) => `On divise les deux membres par ${operandStr(op)}${flipNote(op)}`,
 		simplify: () => 'On simplifie',
 		'group-variable-terms': (op) =>
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
 		'group-constants': () => 'On regroupe les constantes',
 		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
 		'read-solution': (op) =>
-			`Solution : ${(op as { variable: string }).variable} = ${operandStr(op)}`
+			`Solution : ${(op as { variable: string }).variable} = ${operandStr(op)}`,
+		'inequality-conclude-truth': inequalityConcludeTruthTitle
 	},
 	// Lycée : « aux deux membres » devient implicite, notation S = { … } pour la solution.
 	// Utilise transpose-terms (combiné) et simplify-coefficient (compact) à la place
@@ -88,18 +146,19 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 		'identify-equation': identifyEquationTitle,
 		'add-both-sides': (op) => `On ajoute ${operandStr(op)}`,
 		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)}`,
-		'multiply-both-sides': (op) => `On multiplie par ${operandStr(op)}`,
-		'divide-both-sides': (op) => `On divise par ${operandStr(op)}`,
+		'multiply-both-sides': (op) => `On multiplie par ${operandStr(op)}${flipNote(op)}`,
+		'divide-both-sides': (op) => `On divise par ${operandStr(op)}${flipNote(op)}`,
 		'transpose-terms': (_op, step) =>
 			`On isole les termes en ${variableOf(step)} dans le membre de gauche`,
-		'simplify-coefficient': (_op, step) =>
-			`On termine en simplifiant le coefficient de ${variableOf(step)}`,
+		'simplify-coefficient': (op, step) =>
+			`On termine en simplifiant le coefficient de ${variableOf(step)}${flipNote(op)}`,
 		simplify: () => 'On simplifie',
 		'group-variable-terms': (op) =>
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
 		'group-constants': () => 'On regroupe les constantes',
 		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
-		'read-solution': (op) => `S = { ${operandStr(op)} }`
+		'read-solution': (op) => `S = { ${operandStr(op)} }`,
+		'inequality-conclude-truth': inequalityConcludeTruthTitle
 	},
 	// Supérieur : vocabulaire identique au lycée — la différence est structurelle
 	// (mergeAll regroupe tout en une seule étape avec drill-down vers les détails).
@@ -107,18 +166,19 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 		'identify-equation': identifyEquationTitle,
 		'add-both-sides': (op) => `On ajoute ${operandStr(op)}`,
 		'subtract-both-sides': (op) => `On soustrait ${operandStr(op)}`,
-		'multiply-both-sides': (op) => `On multiplie par ${operandStr(op)}`,
-		'divide-both-sides': (op) => `On divise par ${operandStr(op)}`,
+		'multiply-both-sides': (op) => `On multiplie par ${operandStr(op)}${flipNote(op)}`,
+		'divide-both-sides': (op) => `On divise par ${operandStr(op)}${flipNote(op)}`,
 		'transpose-terms': (_op, step) =>
 			`On isole les termes en ${variableOf(step)} dans le membre de gauche`,
-		'simplify-coefficient': (_op, step) =>
-			`On termine en simplifiant le coefficient de ${variableOf(step)}`,
+		'simplify-coefficient': (op, step) =>
+			`On termine en simplifiant le coefficient de ${variableOf(step)}${flipNote(op)}`,
 		simplify: () => 'On simplifie',
 		'group-variable-terms': (op) =>
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
 		'group-constants': () => 'On regroupe les constantes',
 		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
-		'read-solution': (op) => `S = { ${operandStr(op)} }`
+		'read-solution': (op) => `S = { ${operandStr(op)} }`,
+		'inequality-conclude-truth': inequalityConcludeTruthTitle
 	}
 };
 
@@ -146,45 +206,89 @@ function variableOf(step: EquationStep): string {
 	return find(step.before as { type: string } & object) ?? 'x';
 }
 
+/**
+ * Explanation for `divide-both-sides` and `multiply-both-sides` adapted to
+ * the operator kind (equation vs inequality) and the flip flag.
+ *
+ * For inequalities with `flipOperator: true`, the explanation explicitly
+ * states the pedagogical rule: dividing/multiplying by a negative number
+ * reverses the inequality direction.
+ */
+function divideExplanation(op: EquationOperation, step: EquationStep): string {
+	if (op.kind !== 'divide-both-sides') return '';
+	const operand = operandStr(op);
+	if (isInequalityStep(step)) {
+		if (op.flipOperator) {
+			return `On divise les deux membres par ${operand} pour isoler ${variableOf(step)}. Comme ${operand} est négatif, l'opérateur de l'inéquation est retourné (changement de sens : < devient >, ≤ devient ≥, etc.).`;
+		}
+		return `On divise les deux membres par ${operand} pour isoler ${variableOf(step)}. ${operand} est positif, donc l'inéquation est préservée.`;
+	}
+	return `On divise les deux membres par ${operand} pour isoler ${variableOf(step)}. L'égalité est préservée tant que ${operand} ≠ 0.`;
+}
+
+function multiplyExplanation(op: EquationOperation, step: EquationStep): string {
+	if (op.kind !== 'multiply-both-sides') return '';
+	const operand = operandStr(op);
+	if (isInequalityStep(step)) {
+		if (op.flipOperator) {
+			return `On multiplie les deux membres par ${operand}. Comme ${operand} est négatif, l'opérateur de l'inéquation est retourné (changement de sens).`;
+		}
+		return `On multiplie les deux membres par ${operand}. ${operand} est positif, donc l'inéquation est préservée.`;
+	}
+	return `On multiplie les deux membres par ${operand}. L'égalité est préservée car ${operand} ≠ 0.`;
+}
+
 const EXPLANATIONS: Record<
 	LinearSchoolLevel,
 	Partial<Record<EquationOperation['kind'], ExplanationFn>>
 > = {
 	college: {
-		'identify-equation': () =>
-			"Une équation du premier degré s'écrit ax + b = 0. On va isoler x étape par étape.",
-		'add-both-sides': (op) =>
-			`On ajoute ${operandStr(op)} aux deux membres : l'égalité est préservée car on ajoute la même quantité de chaque côté.`,
-		'subtract-both-sides': (op) =>
-			`On soustrait ${operandStr(op)} aux deux membres : l'égalité est préservée.`,
-		'divide-both-sides': (op) =>
-			`On divise les deux membres par ${operandStr(op)} pour isoler x. L'égalité est préservée tant que ${operandStr(op)} ≠ 0.`,
-		'multiply-both-sides': (op) =>
-			`On multiplie les deux membres par ${operandStr(op)}. L'égalité est préservée car ${operandStr(op)} ≠ 0.`,
-		'reduce-to-canonical': () =>
-			'On regroupe les termes en x à gauche et les constantes à droite pour atteindre la forme ax = b.',
-		'read-solution': () => "L'inconnue est isolée : on lit directement la solution."
+		'identify-equation': (_op, step) =>
+			isInequalityStep(step)
+				? "Une inéquation du premier degré s'écrit ax + b ⊻ 0 (avec ⊻ ∈ {<, >, ≤, ≥, ≠}). On isole x étape par étape, en respectant la règle clé : multiplier ou diviser par un nombre négatif retourne l'opérateur."
+				: "Une équation du premier degré s'écrit ax + b = 0. On va isoler x étape par étape.",
+		'add-both-sides': (op, step) =>
+			`On ajoute ${operandStr(op)} aux deux membres : ${preservedNoun(step)} est préservée car on ajoute la même quantité de chaque côté.`,
+		'subtract-both-sides': (op, step) =>
+			`On soustrait ${operandStr(op)} aux deux membres : ${preservedNoun(step)} est préservée.`,
+		'divide-both-sides': divideExplanation,
+		'multiply-both-sides': multiplyExplanation,
+		'reduce-to-canonical': (_op, step) =>
+			`On regroupe les termes en x à gauche et les constantes à droite pour atteindre la forme ax ${isInequalityStep(step) ? '⊻' : '='} b.`,
+		'read-solution': () => "L'inconnue est isolée : on lit directement la solution.",
+		'inequality-conclude-truth': inequalityConcludeTruthExplanation
 	},
 	lycee: {
-		'identify-equation': () => 'Forme canonique ax + b = 0 avec a ≠ 0.',
-		'add-both-sides': (op) =>
-			`Addition de ${operandStr(op)} : transformation équivalente (l'ensemble des solutions est préservé).`,
+		'identify-equation': (_op, step) =>
+			isInequalityStep(step)
+				? `Forme canonique ax + b ⊻ 0 avec a ≠ 0 et ⊻ ∈ {<, >, ≤, ≥, ≠}. La règle clé : si on divise (ou multiplie) par un négatif, on retourne l'opérateur.`
+				: 'Forme canonique ax + b = 0 avec a ≠ 0.',
+		'add-both-sides': (op, step) =>
+			isInequalityStep(step)
+				? `Addition de ${operandStr(op)} : transformation équivalente (l'inégalité est préservée).`
+				: `Addition de ${operandStr(op)} : transformation équivalente (l'ensemble des solutions est préservé).`,
 		'subtract-both-sides': (op) =>
 			`Soustraction de ${operandStr(op)} : transformation équivalente.`,
-		'divide-both-sides': (op) => `Division par ${operandStr(op)} ≠ 0 : transformation équivalente.`,
-		'multiply-both-sides': (op) =>
-			`Multiplication par ${operandStr(op)} ≠ 0 : transformation équivalente.`,
-		'reduce-to-canonical': () =>
-			'Réduction à la forme ax = b par transformations équivalentes successives.',
-		'read-solution': () => 'Solution unique S = { −b/a }.'
+		'divide-both-sides': divideExplanation,
+		'multiply-both-sides': multiplyExplanation,
+		'reduce-to-canonical': (_op, step) =>
+			`Réduction à la forme ax ${isInequalityStep(step) ? '⊻' : '='} b par transformations équivalentes successives.`,
+		'read-solution': () => 'Solution unique S = { −b/a }.',
+		'inequality-conclude-truth': inequalityConcludeTruthExplanation
 	},
 	superieur: {
+		'identify-equation': (_op, step) =>
+			isInequalityStep(step)
+				? 'Inéquation linéaire ax + b ⊻ 0 — résolution par transformations équivalentes (le sens est préservé sauf division par un négatif).'
+				: 'Équation linéaire ax + b = 0.',
 		'add-both-sides': () => 'Translation : opération inversible préservant le noyau.',
 		'subtract-both-sides': () => 'Translation : opération inversible préservant le noyau.',
-		'divide-both-sides': () => 'Multiplication par a⁻¹ ∈ ℝ*.',
-		'multiply-both-sides': () => 'Opération bijective sur ℝ.',
-		'reduce-to-canonical': () => 'Forme canonique : ax + b = 0.',
-		'read-solution': () => 'S = { −b·a⁻¹ }.'
+		'divide-both-sides': divideExplanation,
+		'multiply-both-sides': multiplyExplanation,
+		'reduce-to-canonical': (_op, step) =>
+			isInequalityStep(step) ? 'Forme canonique : ax + b ⊻ 0.' : 'Forme canonique : ax + b = 0.',
+		'read-solution': () => 'S = { −b·a⁻¹ }.',
+		'inequality-conclude-truth': inequalityConcludeTruthExplanation
 	}
 };
 
@@ -330,8 +434,14 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 	const aR = step.after.type === 'relation' ? fmt(step.after.right) : '';
 	const beforeEqualsAfter = bL === aL && bR === aR;
 
-	// Info-only ops: identify-equation, read-solution → no transformation
-	if (!op || op.kind === 'identify-equation' || op.kind === 'read-solution') {
+	// Info-only ops: identify-equation, read-solution, inequality-conclude-truth
+	// → no transformation block (the title carries the message).
+	if (
+		!op ||
+		op.kind === 'identify-equation' ||
+		op.kind === 'read-solution' ||
+		op.kind === 'inequality-conclude-truth'
+	) {
 		return null;
 	}
 
