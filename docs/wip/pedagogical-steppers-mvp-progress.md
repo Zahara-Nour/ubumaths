@@ -198,11 +198,11 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 - **Unités impériales + affines** (Celsius/Fahrenheit, foot, pound, mile, gallon) → livré, voir `units-imperial-affine-progress.md`
 - **Unités d'aire** (a, ha, acre) — bonus débloqué par dérivées → livré, voir `units-area-progress.md`
 - **Intégration aux corrections de questions** (`QuestionCorrection.generatedSteps` Mode B) → livré, voir `correction-integration-progress.md`. Inclut :
-  - Schéma type `GeneratedSteps` discriminé (`kind: 'arithmetic' | 'linear-equation' | 'differentiate' | 'quadratic-equation' | 'linear-inequality' | 'quadratic-inequality' | 'rational-inequality' | 'integrate' | 'simplify'`) — **9 kinds**
+  - Schéma type `GeneratedSteps` discriminé (`kind: 'arithmetic' | 'linear-equation' | 'differentiate' | 'quadratic-equation' | 'linear-inequality' | 'quadratic-inequality' | 'rational-inequality' | 'integrate' | 'simplify' | 'arithmetic-from-blank'`) — **10 kinds**
   - `generateCorrection()` avec auto-call dans `generateInstance()` (early-return strict si absent)
   - Composant Svelte `<GeneratedStepsCorrection>` + extension `CorrectionCard.svelte`
   - Mapping `gradeLevelToSchoolLevel` (CP-CM2 → primaire, 6-3 → college, 2-T → lycee)
-  - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (15 fixtures : arithmetic + linear-equation + differentiate × 2 + quadratic-equation + linear-inequality × 2 + quadratic-inequality × 2 + rational-inequality × 2 + integrate × 2 + simplify × 2 ; la `rationalInequalityMultiFracDemo` V2 est en snapshot test mais pas affichée)
+  - Page debug `/dashboard/admin/debug/correction-mode-b` pour validation visuelle (16 fixtures : arithmetic + linear-equation + differentiate × 2 + quadratic-equation + linear-inequality × 2 + quadratic-inequality × 2 + rational-inequality × 2 + integrate × 2 + simplify × 2 + arithmetic-from-blank ; la `rationalInequalityMultiFracDemo` V2 est en snapshot test mais pas affichée)
 - **Stepper pédagogique pour équations du second degré** (`kind: 'quadratic-equation'`) → livré V1 + V1.1, voir `quadratic-stepper-progress.md`. Inclut :
 
   - Pipeline `pedagogical-solve/quadratic.ts` couvrant 4 cas (standard Δ>0/=0/<0, b=0, c=0, factorisé) + standardisation auto vers `… = 0`
@@ -319,15 +319,24 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
   - Limitations V1 : binomial × binomial uniquement (pas de trinôme × binôme, pas de cube), hyperboliques exclues (`enableHyperbolic: false` par défaut), sub-steps reportés en V2.
   - Limitation honnête documentée : `reduire` peut développer `(x+1)²` parce que normalize canonise les polynômes (le pattern `expand-sum-squared` n'est pas dans le rule set, mais normalize fait le travail). Acceptable pédagogiquement.
 
+- **Mode B `kind: 'arithmetic-from-blank'`** → livré 2026-05-06, voir `arithmetic-from-blank-progress.md`. Inclut :
+  - Élimination de la duplication entre l'expression d'arithmétique présente dans le `statement` Mode B et celle dupliquée dans `correction.generatedSteps.expression`
+  - **Décision architecturale élégante** : pas de refacto `InstanceBlank` (B0 du prompt original skip). Le mécanisme `instance.expressions[]` existait déjà avec `{ name, latex, displayLatex?, answerFormat? }` — il manquait juste `value?: string` (optionnel, format custom post-résolution variables). Auteur référence l'expression nommée par son nom (le marker `<<expr:NAME>>` déjà détecté en amont par `assign-blank-indices.ts`).
+  - Discriminator étendu 9 → 10 kinds. Page debug 15 → 16 fixtures.
+  - 3 fixes code review Opus : (1) Critical `value: string` rendu optionnel (cassait 8 sites de tests), (2) bypass `parseExpression` via `parseCustomSafe` direct (évite re-running `resolveExpression` sur string déjà résolue), (3) `console.warn` retiré pour cohérence avec les 9 autres kinds (silent fallback).
+  - 1 commit : `02af36796` (13 fichiers, +602/-8 lignes)
+  - +14 tests cumulés (2 generation-fill-blanks + 4 template-schema Zod + 7 correction-generator + 1 snapshot demo) ; 0 régression sur ~600 tests questions
+  - 1 fixture Mode B : `arithmeticFromBlankDemo` (CM2, calcul `2+3*4`, statement avec `{{expression1}}`)
+
 #### 🔴 Toujours à faire
 
 **Élargissement de couverture**
 
 - Renderers pédagogiques pour les autres domaines : limits, matrix, domain (intégration livrée 2026-05-06, simplification livrée 2026-05-06)
-- `kind: 'solve'` algorithmique dans Mode B (pedagogical-solve V1.0 supporte linéaire + quadratique pour équations ET inéquations ; cubic/quartic/transcendental hors scope)
-- `kind: 'arithmetic-from-blank'` (V1 a skippé pour éviter duplication d'expression entre `expectedAnswer` et `generatedSteps.expression`)
+- ~~`kind: 'solve'` algorithmique dans Mode B~~ — **skippé volontairement** par décision utilisateur 2026-05-06 (« hypothèse Option A pure était fragile, et le besoin produit Tle spé / sup pas vital »). À ne pas re-proposer sans nouveau besoin produit.
 - **Palier 2d** — coefficients paramétriques quadratiques (`mx² + nx + p ⊻ 0`, m libre) : « discuter selon m » du programme Tle ; gros morceau, multi-sessions, complexité ↑↑ (disjonction de cas dans le tableau de signes)
 - **Palier 3 V3** — extensions rationnelles : 3+ fractions, dénominateur quadratique, PGCD polynomial non-trivial, fractions imbriquées
+- **TODO indépendant** : `InstanceBlank.expressionName` propagation via `assign-blank-indices.ts` (cf. TODO #1 du prompt arithmétique). Indépendant de `arithmetic-from-blank` qui a trouvé une voie alternative via `instance.expressions[].value`. Reste utile pour rendre le 3e arg `expressionName?` de `extractPedagogicalTarget` redondant.
 
 **Idées Poincaré**
 
