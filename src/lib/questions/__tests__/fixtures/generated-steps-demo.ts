@@ -475,3 +475,82 @@ export const differentiateCompositionDemo: QuestionTemplate = {
 	subdomain: 'Composition',
 	level: 2
 };
+
+/**
+ * Demo question : « Calculer une primitive de `f(x) = 3x² + 2x + 1` » for
+ * Terminale spécialité maths.
+ *
+ * Mode B declares an `integrate` correction (indefinite). The pipeline emits
+ * a `apply-linearity-sum` top step with three power-rule / constant-rule
+ * sub-derivations, plus the trailing `add-constant`.
+ */
+export const integrateIndefiniteDemo: QuestionTemplate = {
+	id: 'demo-integrate-indefinite-tle',
+	title: 'Primitive d’un polynôme (Tle spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'Détermine une primitive de $f(x) = 3x^2 + {{b}}x + {{c}}$ : $F(x) = ?$'
+			),
+			variables: [
+				{ name: 'b', expression: '2' },
+				{ name: 'c', expression: '1' }
+			],
+			blanks: [{ expectedAnswer: 'x^3 + x^2 + x' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Bravo ! N’oublie pas le « + C ».') },
+				generatedSteps: {
+					kind: 'integrate',
+					expression: '3*x^2 + {{b}}*x + {{c}}',
+					variable: 'x',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['T_SPE'],
+	theme: 'Analyse',
+	domain: 'Intégration',
+	subdomain: 'Primitives',
+	level: 1
+};
+
+/**
+ * Demo question : « Calculer $\int_0^1 e^x \, dx$ » for Terminale spécialité.
+ *
+ * Mode B declares an `integrate` correction with definite bounds. The pipeline
+ * emits the fundamental-theorem trio: identify-definite-integral →
+ * apply-known-primitive (e^x) → apply-fundamental-theorem → substitute-bounds
+ * → simplify-bounds-result. Antiderivative = e^x ; value = e − 1.
+ */
+export const integrateDefiniteDemo: QuestionTemplate = {
+	id: 'demo-integrate-definite-tle',
+	title: 'Intégrale définie : exponentielle (Tle spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown('Calcule $\\displaystyle \\int_{{{a}}}^{{{b}}} e^x \\, dx = ?$'),
+			variables: [
+				{ name: 'a', expression: '0' },
+				{ name: 'b', expression: '1' }
+			],
+			blanks: [{ expectedAnswer: 'e - 1' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Excellent !') },
+				generatedSteps: {
+					kind: 'integrate',
+					expression: 'e^x',
+					variable: 'x',
+					definite: { lower: '{{a}}', upper: '{{b}}' },
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['T_SPE'],
+	theme: 'Analyse',
+	domain: 'Intégration',
+	subdomain: 'Intégrales définies',
+	level: 2
+};

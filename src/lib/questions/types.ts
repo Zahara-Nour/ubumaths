@@ -1017,6 +1017,21 @@ export type GeneratedSteps =
 			/** Differentiation variable. Defaults to `'x'` when omitted. */
 			readonly variable?: string;
 			readonly options?: GeneratedStepsOptions;
+	  }
+	| {
+			readonly kind: 'integrate';
+			/** Template expression of the integrand `f(x)` to integrate. */
+			readonly expression: string;
+			/** Integration variable. Auto-detected when omitted. */
+			readonly variable?: string;
+			/**
+			 * Definite-integral bounds. When provided, the renderer emits the
+			 * fundamental-theorem trio (apply-fundamental-theorem,
+			 * substitute-bounds, simplify-bounds-result) on top of the indefinite
+			 * pipeline. Both bounds are LaTeX template strings.
+			 */
+			readonly definite?: { readonly lower: string; readonly upper: string };
+			readonly options?: GeneratedStepsOptions;
 	  };
 
 /**

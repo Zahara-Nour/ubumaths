@@ -31,6 +31,12 @@ import { PedagogicalArithmeticRenderer } from '$lib/mathAST/pedagogical-arithmet
 import { extractPedagogicalTarget } from '$lib/mathAST/pedagogical-arithmetic/target-extractor';
 import { generatePedagogicalDifferentiationSteps } from '$lib/mathAST/pedagogical-differentiation/pipeline';
 import { PedagogicalDifferentiationRenderer } from '$lib/mathAST/pedagogical-differentiation/renderer';
+import {
+	generatePedagogicalIntegrationSteps,
+	PedagogicalIntegrationNotImplemented,
+	PedagogicalIntegrationRenderer
+} from '$lib/mathAST/pedagogical-integration';
+import type { IntegrationSchoolLevel } from '$lib/mathAST/pedagogical-integration';
 import { generateLinearEquationSteps } from '$lib/mathAST/pedagogical-solve/linear';
 import { LinearEquationRenderer } from '$lib/mathAST/pedagogical-solve/linear-renderer';
 import {
@@ -133,6 +139,16 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 			case 'rational-inequality':
 				renderedSteps = renderRationalInequality({
 					inequality: generatedSteps.inequality,
+					instance,
+					schoolLevel,
+					verbosity
+				});
+				break;
+			case 'integrate':
+				renderedSteps = renderIntegrate({
+					expression: generatedSteps.expression,
+					variable: generatedSteps.variable,
+					definite: generatedSteps.definite,
 					instance,
 					schoolLevel,
 					verbosity
@@ -450,6 +466,66 @@ function renderDifferentiate({
 
 	const renderer = new PedagogicalDifferentiationRenderer();
 	const renderOptions: PedagogicalRenderOptions = { schoolLevel, verbosity };
+	return renderer.renderAll(result.steps, renderOptions);
+}
+
+interface IntegrateDispatch {
+	readonly expression: string;
+	readonly variable?: string;
+	readonly definite?: { readonly lower: string; readonly upper: string };
+	readonly instance: QuestionInstance;
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+}
+
+function renderIntegrate({
+	expression,
+	variable,
+	definite,
+	instance,
+	schoolLevel,
+	verbosity
+}: IntegrateDispatch): readonly RenderedStep[] | null {
+	const node = parseExpression(expression, instance);
+	if (node === null) return null;
+
+	// Integration expects an expression — refuse a relation silently.
+	if (node.type === 'relation') return null;
+
+	// `IntegrationSchoolLevel` excludes `primaire` and `college` (integration
+	// is not on the syllabus before Terminale). Bump those levels to `lycee`
+	// so a misplaced declaration still produces something useful.
+	const integrationLevel: IntegrationSchoolLevel =
+		schoolLevel === 'primaire' || schoolLevel === 'college' ? 'lycee' : schoolLevel;
+
+	let definiteParsed: { lower: MathNode; upper: MathNode } | undefined;
+	if (definite) {
+		const lowerNode = parseExpression(definite.lower, instance);
+		const upperNode = parseExpression(definite.upper, instance);
+		if (lowerNode === null || upperNode === null) return null;
+		definiteParsed = { lower: lowerNode, upper: upperNode };
+	}
+
+	let result;
+	try {
+		result = generatePedagogicalIntegrationSteps(node, {
+			level: integrationLevel,
+			variable,
+			verbosity,
+			definite: definiteParsed
+		});
+	} catch (err) {
+		// V1 scope refusals (partial fractions, cyclic IPP, parametric…) →
+		// silent fallback to Mode A. Anything else re-throws upstream.
+		if (err instanceof PedagogicalIntegrationNotImplemented) return null;
+		throw err;
+	}
+
+	const renderer = new PedagogicalIntegrationRenderer();
+	const renderOptions: PedagogicalRenderOptions = {
+		schoolLevel: integrationLevel,
+		verbosity
+	};
 	return renderer.renderAll(result.steps, renderOptions);
 }
 

@@ -242,7 +242,7 @@ export function matchKnownPrimitive(
 	if (node.type === 'superscript') {
 		const base = node.base;
 		if (
-			(base.type === 'constant' && base.constant === 'e') ||
+			(base.type === 'constant' && base.constant === 'euler') ||
 			(base.type === 'variable' && base.name === 'e')
 		) {
 			if (isExactVariable(node.superscript, variable)) {
@@ -474,7 +474,7 @@ function extractExpInner(node: MathNode, variable: string): MathNode | null {
 	} else if (node.type === 'superscript') {
 		const base = node.base;
 		if (
-			(base.type === 'constant' && base.constant === 'e') ||
+			(base.type === 'constant' && base.constant === 'euler') ||
 			(base.type === 'variable' && base.name === 'e')
 		) {
 			u = node.superscript;
@@ -782,7 +782,7 @@ function isTranscendentalOfVariable(node: MathNode, variable: string): boolean {
 	if (node.type === 'superscript') {
 		const base = node.base;
 		const isE =
-			(base.type === 'constant' && base.constant === 'e') ||
+			(base.type === 'constant' && base.constant === 'euler') ||
 			(base.type === 'variable' && base.name === 'e');
 		if (isE && isExactVariable(node.superscript, variable)) {
 			return true;

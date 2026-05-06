@@ -15,6 +15,8 @@ import {
 	additionGroupingDemo,
 	differentiateCompositionDemo,
 	differentiatePolynomialDemo,
+	integrateDefiniteDemo,
+	integrateIndefiniteDemo,
 	linearEquationDemo,
 	linearInequalityFlipDemo,
 	linearInequalityTwoSidesDemo,
@@ -344,6 +346,43 @@ describe('Mode B end-to-end demos', () => {
 		expect(steps![0].subSteps).toBeDefined();
 		expect(steps![0].subSteps!.length).toBeGreaterThan(0);
 		expect(steps![0].subSteps![0].rule).toBe('linear-coefficient');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('Terminale spécialité indefinite integration — produces linearity sum + power-rule sub-steps', () => {
+		const result = generateInstance(integrateIndefiniteDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('apply-linearity-sum');
+		expect(rules).toContain('add-constant');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('Terminale spécialité definite integration — produces fundamental-theorem trio', () => {
+		const result = generateInstance(integrateDefiniteDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('identify-definite-integral');
+		expect(rules).toContain('apply-known-primitive');
+		expect(rules).toContain('apply-fundamental-theorem');
+		expect(rules).toContain('substitute-bounds');
+		expect(rules).toContain('simplify-bounds-result');
 
 		const summary = steps!.map(summarize);
 		expect(summary).toMatchSnapshot();

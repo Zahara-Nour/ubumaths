@@ -468,6 +468,126 @@ exports[`Mode B end-to-end demos > Terminale spécialité composition differenti
 ]
 `;
 
+exports[`Mode B end-to-end demos > Terminale spécialité definite integration — produces fundamental-theorem trio 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-definite-integral",
+    "schoolLevel": "lycee",
+    "title": "Identification de l'intégrale définie",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "apply-known-primitive",
+    "schoolLevel": "lycee",
+    "title": "Primitive usuelle",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "apply-fundamental-theorem",
+    "schoolLevel": "lycee",
+    "title": "Théorème fondamental du calcul intégral",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 4,
+    "rule": "substitute-bounds",
+    "schoolLevel": "lycee",
+    "title": "Évaluation aux bornes",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 5,
+    "rule": "simplify-bounds-result",
+    "schoolLevel": "lycee",
+    "title": "Calcul de la valeur",
+  },
+]
+`;
+
+exports[`Mode B end-to-end demos > Terminale spécialité indefinite integration — produces linearity sum + power-rule sub-steps 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-integrand",
+    "schoolLevel": "lycee",
+    "title": "Identification de la primitive à calculer",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 7,
+    "rule": "apply-linearity-sum",
+    "schoolLevel": "lycee",
+    "subSteps": [
+      {
+        "hasExplanation": true,
+        "hasExpressionLatex": true,
+        "id": 3,
+        "rule": "extract-constant",
+        "schoolLevel": "lycee",
+        "subSteps": [
+          {
+            "hasExplanation": true,
+            "hasExpressionLatex": true,
+            "id": 2,
+            "rule": "apply-power-rule",
+            "schoolLevel": "lycee",
+            "title": "Règle de la puissance",
+          },
+        ],
+        "title": "On sort la constante 3",
+      },
+      {
+        "hasExplanation": true,
+        "hasExpressionLatex": true,
+        "id": 5,
+        "rule": "extract-constant",
+        "schoolLevel": "lycee",
+        "subSteps": [
+          {
+            "hasExplanation": true,
+            "hasExpressionLatex": true,
+            "id": 4,
+            "rule": "apply-power-rule",
+            "schoolLevel": "lycee",
+            "title": "Règle de la puissance",
+          },
+        ],
+        "title": "On sort la constante 2",
+      },
+      {
+        "hasExplanation": true,
+        "hasExpressionLatex": true,
+        "id": 6,
+        "rule": "apply-constant-rule",
+        "schoolLevel": "lycee",
+        "title": "Primitive d'une constante",
+      },
+    ],
+    "title": "Linéarité de l’intégrale",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 8,
+    "rule": "add-constant",
+    "schoolLevel": "lycee",
+    "title": "On ajoute la constante d'intégration C",
+  },
+]
+`;
+
 exports[`Mode B end-to-end demos > Terminale spécialité rational inequality with quadratic denominator — multi-zero forbidden values 1`] = `
 [
   {

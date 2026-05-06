@@ -525,3 +525,105 @@ describe("generateCorrection — kind: 'differentiate'", () => {
 		expect(top?.expressionLatex).toContain('\\end{aligned}');
 	});
 });
+
+describe("generateCorrection — kind: 'integrate'", () => {
+	it('produces _renderedSteps for an indefinite polynomial primitive', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'integrate',
+					expression: '3*x^2 + 2*x + 1'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+		expect(result.correction?._renderedSteps?.length).toBeGreaterThan(0);
+	});
+
+	it('produces the fundamental-theorem trio for a definite integral', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'integrate',
+					expression: 'e^x',
+					definite: { lower: '0', upper: '1' }
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const rules = (result.correction?._renderedSteps ?? []).map((s) => s.rule);
+		expect(rules).toContain('apply-fundamental-theorem');
+		expect(rules).toContain('substitute-bounds');
+		expect(rules).toContain('simplify-bounds-result');
+	});
+
+	it('substitutes template variables in both the integrand and the bounds', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			resolvedVariables: [
+				{ name: 'a', value: '0' },
+				{ name: 'b', value: '2' },
+				{ name: 'k', value: '3' }
+			],
+			correction: {
+				generatedSteps: {
+					kind: 'integrate',
+					expression: '{{k}}*x^2',
+					definite: { lower: '{{a}}', upper: '{{b}}' }
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+		const rules = (result.correction?._renderedSteps ?? []).map((s) => s.rule);
+		expect(rules).toContain('substitute-bounds');
+	});
+
+	it('bumps a primaire-grade fixture to lycée (integration not in primaire syllabus)', () => {
+		const instance = makeInstance({
+			grades: ['CM2'],
+			correction: {
+				generatedSteps: {
+					kind: 'integrate',
+					expression: 'x^2'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const steps = result.correction?._renderedSteps ?? [];
+		// All rendered steps must be tagged at lycée after the bump.
+		expect(steps.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+	});
+
+	it('returns instance unchanged when integrand is not parsable', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'integrate',
+					expression: '!!!invalid$$$('
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it('falls back silently when the integrand is out of V1 scope', () => {
+		// Partial-fractions case `1/(x²-1)` — V2.
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'integrate',
+					expression: '1/(x^2 - 1)'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+});
