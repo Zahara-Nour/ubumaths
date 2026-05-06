@@ -5,12 +5,14 @@
 
 ## Commits
 
-| #   | Hash        | Sujet                                                                              |
-| --- | ----------- | ---------------------------------------------------------------------------------- |
-| 1   | `fbecbaa05` | feat(pedagogical-solve): palier 2a — linear inequality stepper                     |
-| 2   | `fbe49b80f` | feat(pedagogical-solve): renderer V2 — lift V1 inequality limitations              |
-| 3   | `a974787d7` | fix(pedagogical-solve): renderer aligned-block uses flipped operator on after-line |
-| 4   | `533aa6259` | feat(questions): wire 'linear-inequality' kind end-to-end + CLI pretty-print       |
+| #   | Hash        | Sujet                                                                                |
+| --- | ----------- | ------------------------------------------------------------------------------------ |
+| 1   | `fbecbaa05` | feat(pedagogical-solve): palier 2a — linear inequality stepper                       |
+| 2   | `fbe49b80f` | feat(pedagogical-solve): renderer V2 — lift V1 inequality limitations                |
+| 3   | `a974787d7` | fix(pedagogical-solve): renderer aligned-block uses flipped operator on after-line   |
+| 4   | `533aa6259` | feat(questions): wire 'linear-inequality' kind end-to-end + CLI pretty-print         |
+| 5   | `02522eebb` | docs(wip): consolidate palier 2a progress doc                                        |
+| 6   | _pending_   | fix(sign): split intervals at excludedPoints natively + remove inequality workaround |
 
 ## Livrable
 
@@ -255,9 +257,85 @@ pnpm dev -- --port 5175
 - `docs/wip/pedagogical-inequality-spec.md` — spec figée
 - `docs/wip/pedagogical-inequality-progress.md` — ce document
 
+## Upstream fix `sign/splitDomainAtZeros` aux excludedPoints (2026-05-06)
+
+Le workaround `expandExcludedPoints` créé pour le palier 1 est **supprimé**.
+`analyzeSign` partitionne maintenant nativement aux points exclus du domaine.
+
+### Avant / Après
+
+Avant le fix, `analyzeSign(1/x)` produisait un seul `signedInterval` `]−∞, +∞[`
+avec `sign='unknown'` parce que `splitDomainAtZeros` itérait uniquement
+`domain.intervals` et ignorait `excludedPoints`. Le wrapper `solveInequality`
+compensait avec un helper privé `expandExcludedPoints` qui pré-éclatait les
+intervalles avant l'appel à `analyzeSign`.
+
+Après le fix : tous les consommateurs (`variations`, tableaux de signes,
+`solveInequality`, futurs paliers) profitent de la partition native.
+
+### Implémentation
+
+- Nouveau type interne `PartitionPoint { value, approximate, isZero }`
+  unifiant zéros et points exclus.
+- Nouveau helper `splitIntervalAtPoints(int, zeros, excluded)` qui remplace
+  l'ancien `splitIntervalAtZeros`. Logique identique, mais les points exclus
+  ouvrent une lacune (open endpoints des deux côtés) **sans** émettre de
+  sous-intervalle ponctuel `{p}`.
+- Nouveau helper `mergeAndSortPartitionPoints(zeros, excluded)` — merge,
+  tri par approximation, déduplication (un zéro qui coïncide avec un point
+  exclu est traité comme exclu — l'expression est indéfinie là, pas
+  identiquement nulle).
+- `splitIntervalSetAtZeros` lit maintenant `domain.excludedPoints` (avec
+  fallback `?? []` pour compat avec le `intervalSet` de
+  `$lib/math/intervals/factory` qui ne porte pas le champ).
+- `splitDomainAtZeros` route les branches universal / condition_domain /
+  periodic_exclusion vers `splitIntervalAtPoints` avec `excluded[]` vide
+  (uniformité).
+
+### Tests
+
+Nouveau fichier `__tests__/analyze-excluded-points.test.ts` (7 tests) :
+
+- `1/x` → 2 intervalles `]−∞, 0[ negative` et `]0, +∞[ positive`
+- `1/(x − 2)` → split à 2 (open endpoints)
+- `1/(x(x − 1))` → 3 partitions à 0 et 1 (signes approximatifs documentés
+  comme limitation upstream du sampling)
+- `1/x − 1` → split à 0 ; le zéro à x=1 n'est pas détecté (limitation
+  upstream `solve` transcendantal)
+- 3 régressions : `x² − 4`, `ln(x)`, `x − 2` inchangés
+
+### Suppression du workaround
+
+`solve/inequality/index.ts` : suppression de `expandExcludedPoints`,
+`splitIntervalAtExcluded`, et de l'import de `computeDomain`,
+`endpointToNumber`, `interval`, `openEndpoint`, `intervalSet` (de
+`intervals/factory`), `IntervalSet`, `Endpoint`, `Interval`. La fonction
+`solveInequality` passe maintenant `options.domain` directement à
+`analyzeSign`.
+
+### Décisions issues du code review
+
+1. **Tolérance de dedupe** colocée au top du fichier (`PARTITION_DEDUPE_TOLERANCE`),
+   alignée sur `DEFAULT_SIGN_OPTIONS.tolerance` — évite la divergence avec la
+   tolérance de `getUniqueZeros`.
+2. **`isValidSplitPoint` redondant mais conservé** comme défense-en-profondeur
+   contre une future divergence entre les filtres et la logique de split.
+   Documenté en commentaire.
+
+### Vérifications
+
+| Étape                                              | Résultat                                   |
+| -------------------------------------------------- | ------------------------------------------ |
+| Tests sign (incl. excluded-points + trig-periodic) | **149 pass / 0 fail**                      |
+| Régression mathAST entier                          | **12617 pass / 19 skip / 3 todo / 0 fail** |
+| Régression questions (Mode B + correction-gen)     | **40 pass / 0 fail**                       |
+| ESLint + `pnpm check:incremental`                  | **0 nouvelle erreur**                      |
+
 ## Suite
 
 - **Palier 2b** : pédagogique quadratique numérique (Δ + tableau de signes + 6 sous-cas selon signe(a) × signe(Δ)). À spécifier avec une nouvelle Phase 0 TDD.
+- **Upstream solve** : `solve(a·e^x + b = 0)` (pour réactiver le test 14
+  skippé) et `solve(1/x − 1 = 0)` (pour mieux résoudre les rationnelles).
+- **Upstream sign sampling** : `MAX_SAMPLE_BOUND = 1e6` provoque des
+  faux 'zero' sur transcendantes — adapter au type d'expression.
 - **Reste palier 2c/d** : paramétrique (V2, scope ouvert).
-- **Renderer hors-ligne LaTeX** : la page debug rend correctement sauf si la
-  visualisation MathLive a besoin de patches — à vérifier en navigateur.

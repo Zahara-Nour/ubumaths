@@ -119,10 +119,10 @@ Re-exportée depuis `$lib/mathAST/solve` :
 Ces gaps sont signalés ici pour le suivi ; ils ne bloquent pas la livraison V1
 mais expliquent certaines limitations utilisateur.
 
-1. **`sign/analyze.ts:splitDomainAtZeros`** ne découpe pas aux `excludedPoints`
-   d'un `IntervalSet`. Le wrapper compense via `expandExcludedPoints`, mais le
-   fix correct devrait être dans `sign` pour que `analyzeSign` soit cohérent
-   sur tous les appelants (variations, etc.).
+1. ~~**`sign/analyze.ts:splitDomainAtZeros`** ne découpe pas aux `excludedPoints`
+   d'un `IntervalSet`.~~ **Fixé le 2026-05-06** (cf.
+   `docs/wip/pedagogical-inequality-progress.md` § « Upstream fix `sign/splitDomainAtZeros` »).
+   Le workaround `expandExcludedPoints` du wrapper est supprimé.
 2. **`solve/solvers/transcendental.ts`** ne reconnaît pas `a·e^x + b = 0`
    (devrait reformuler en `e^x = −b/a` puis appliquer `x = ln(−b/a)`). Idem
    probablement pour `a·ln(x) + b = 0`. À investiguer.

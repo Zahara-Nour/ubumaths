@@ -63,6 +63,16 @@ import type {
 	SignAnalysisOptions
 } from './types';
 import { DEFAULT_SIGN_OPTIONS, SignAnalysisError } from './types';
+
+/**
+ * Tolerance for considering two partition points (zero / excluded) as the
+ * same coordinate during merge+dedupe. Aligned with `DEFAULT_SIGN_OPTIONS.tolerance`
+ * — a custom tolerance passed via `analyzeSignOptions` is NOT propagated here
+ * (the dedupe is internal to interval splitting, downstream of zero finding).
+ * If callers ever start needing different tolerances at this layer, plumb it
+ * through `splitIntervalAtPoints`.
+ */
+const PARTITION_DEDUPE_TOLERANCE = DEFAULT_SIGN_OPTIONS.tolerance;
 import { computeDomain } from '../domain/compute';
 import { findZeros, sortZerosByValue, getUniqueZeros } from './helpers/zeros';
 import { determineSignOnInterval } from './helpers/interval-sign';
@@ -302,9 +312,10 @@ function splitDomainAtZeros(domain: Domain, zeros: readonly ZeroInfo[]): SubInte
 
 	// Handle universal domain - treat as ]-infinity, +infinity[
 	if (domain.kind === 'universal') {
-		return splitIntervalAtZeros(
+		return splitIntervalAtPoints(
 			interval(negInfinityEndpoint(), posInfinityEndpoint()),
-			zeros.filter((z) => z.approximate !== undefined)
+			zeros.filter((z) => z.approximate !== undefined),
+			[]
 		);
 	}
 
@@ -317,9 +328,10 @@ function splitDomainAtZeros(domain: Domain, zeros: readonly ZeroInfo[]): SubInte
 	// For periodic exclusions, we'd need special handling; for now, treat as universal
 	if (domain.kind === 'periodic_exclusion' || domain.kind === 'condition_domain') {
 		// Fall back to treating as universal domain
-		return splitIntervalAtZeros(
+		return splitIntervalAtPoints(
 			interval(negInfinityEndpoint(), posInfinityEndpoint()),
-			zeros.filter((z) => z.approximate !== undefined)
+			zeros.filter((z) => z.approximate !== undefined),
+			[]
 		);
 	}
 
@@ -327,7 +339,32 @@ function splitDomainAtZeros(domain: Domain, zeros: readonly ZeroInfo[]): SubInte
 }
 
 /**
- * Split an interval set at zeros.
+ * A point at which an interval should be split. Either a zero of the
+ * expression (which produces a `{z}` point sub-interval marked
+ * `isZeroPoint: true`) or an excluded point of the domain (which only opens
+ * a gap, no point sub-interval is emitted).
+ *
+ * Used to unify the zero-and-discontinuity partitioning logic.
+ */
+interface PartitionPoint {
+	readonly value: MathNode;
+	readonly approximate: number;
+	readonly isZero: boolean;
+}
+
+/**
+ * Split an interval set at zeros AND at the domain's excluded points.
+ *
+ * Excluded points (e.g. 0 for 1/x, 2 for 1/(x-2)) are treated as
+ * additional split points — their numeric value opens a gap with open
+ * endpoints on both sides — but no `{p}` point sub-interval is emitted
+ * (the expression is not defined at p, so it cannot be marked `sign='zero'`).
+ *
+ * Zeros and excluded points are merged into a single sorted list of
+ * `PartitionPoint`s before iteration. If a zero coincides with an excluded
+ * point (degenerate case like an undefined removable singularity), the
+ * excluded-point semantics win — no zero-point interval is emitted at that
+ * coordinate.
  */
 function splitIntervalSetAtZeros(
 	domain: IntervalSet,
@@ -335,10 +372,15 @@ function splitIntervalSetAtZeros(
 ): SubIntervalInfo[] {
 	const result: SubIntervalInfo[] = [];
 
+	// Tolerate domains constructed via the bare `intervals/factory.ts:intervalSet`
+	// (no `excludedPoints` field) — that variant predates the domain-level
+	// `excludedPoints` extension and is still used in some test helpers and
+	// older call sites.
+	const allExcluded = domain.excludedPoints ?? [];
 	for (const int of domain.intervals) {
-		// Filter zeros that are in this interval
 		const zerosInInterval = zeros.filter((z) => isZeroInInterval(z, int));
-		const subIntervals = splitIntervalAtZeros(int, zerosInInterval);
+		const excludedInInterval = allExcluded.filter((ep) => isExcludedPointInInterval(ep.value, int));
+		const subIntervals = splitIntervalAtPoints(int, zerosInInterval, excludedInInterval);
 		result.push(...subIntervals);
 	}
 
@@ -346,63 +388,132 @@ function splitIntervalSetAtZeros(
 }
 
 /**
- * Split a single interval at zeros.
+ * Split a single interval at zeros and excluded points combined. Both kinds
+ * partition the interval; only zeros emit a `{z}` point sub-interval.
  */
-function splitIntervalAtZeros(int: Interval, zeros: readonly ZeroInfo[]): SubIntervalInfo[] {
-	// No zeros - return the original interval
-	if (zeros.length === 0) {
+function splitIntervalAtPoints(
+	int: Interval,
+	zeros: readonly ZeroInfo[],
+	excluded: readonly { readonly value: MathNode }[]
+): SubIntervalInfo[] {
+	const partitionPoints = mergeAndSortPartitionPoints(zeros, excluded);
+
+	if (partitionPoints.length === 0) {
 		return [{ interval: int, isZeroPoint: false }];
 	}
 
 	const result: SubIntervalInfo[] = [];
-
-	// Get numeric bounds for comparison
 	const lowerBound = endpointToNumber(int.lower.value);
 	const upperBound = endpointToNumber(int.upper.value);
 
-	// Sort zeros by approximate value
-	const sortedZeros = [...zeros]
-		.filter((z) => z.approximate !== undefined)
-		.sort((a, b) => a.approximate! - b.approximate!);
-
 	let currentLower = int.lower;
 
-	for (let i = 0; i < sortedZeros.length; i++) {
-		const zero = sortedZeros[i];
-		const zeroValue = zero.approximate!;
-
-		// Skip if zero is at or beyond the lower bound (depending on type)
-		if (!isValidSplitPoint(zeroValue, lowerBound, upperBound, int)) {
+	for (const pp of partitionPoints) {
+		// Defensive re-check : the upstream filters
+		// (`isZeroInInterval` / `isExcludedPointInInterval`) already guarantee
+		// the point lies strictly inside `int`. Keep this guard as a safety
+		// net against future divergence between filter and split logic — the
+		// cost is negligible vs. the risk of silently dropping a valid split.
+		if (!isValidSplitPoint(pp.approximate, lowerBound, upperBound, int)) {
 			continue;
 		}
 
-		// Create interval from current lower to zero (open at zero)
-		const zeroEndpoint = openEndpoint(zero.value);
-		const intervalToZero = interval(currentLower, zeroEndpoint);
+		const pointEndpoint = openEndpoint(pp.value);
+		const intervalToPoint = interval(currentLower, pointEndpoint);
 
-		// Only add if interval is non-degenerate
-		if (!isEmptyInterval(intervalToZero)) {
-			result.push({ interval: intervalToZero, isZeroPoint: false });
+		if (!isEmptyInterval(intervalToPoint)) {
+			result.push({ interval: intervalToPoint, isZeroPoint: false });
 		}
 
-		// Create point interval for the zero itself
-		result.push({
-			interval: pointInterval(zero.value),
-			isZeroPoint: true,
-			zeroValue: zero.value
-		});
+		// Only zeros produce a `{p}` point sub-interval. Excluded points
+		// just open a gap and move on.
+		if (pp.isZero) {
+			result.push({
+				interval: pointInterval(pp.value),
+				isZeroPoint: true,
+				zeroValue: pp.value
+			});
+		}
 
-		// Update current lower to just after zero
-		currentLower = openEndpoint(zero.value);
+		currentLower = openEndpoint(pp.value);
 	}
 
-	// Create final interval from last zero to upper bound
 	const finalInterval = interval(currentLower, int.upper);
 	if (!isEmptyInterval(finalInterval)) {
 		result.push({ interval: finalInterval, isZeroPoint: false });
 	}
 
 	return result;
+}
+
+/**
+ * Merge zeros and excluded points into a single sorted list of
+ * `PartitionPoint`s. Deduplicates by approximate value (within a small
+ * tolerance) — when a zero and an excluded point coincide, the excluded
+ * semantics win (no zero-point interval emitted).
+ */
+function mergeAndSortPartitionPoints(
+	zeros: readonly ZeroInfo[],
+	excluded: readonly { readonly value: MathNode }[]
+): PartitionPoint[] {
+	const points: PartitionPoint[] = [];
+
+	for (const z of zeros) {
+		if (z.approximate === undefined) continue;
+		points.push({ value: z.value, approximate: z.approximate, isZero: true });
+	}
+	for (const ep of excluded) {
+		const approx = endpointToNumber(ep.value);
+		if (!Number.isFinite(approx)) continue;
+		points.push({ value: ep.value, approximate: approx, isZero: false });
+	}
+
+	points.sort((a, b) => a.approximate - b.approximate);
+
+	// Deduplicate: when a zero coincides with an excluded point (within
+	// `PARTITION_DEDUPE_TOLERANCE`, defined at module top), keep only the
+	// excluded point — the expression is undefined there, so no
+	// `sign='zero'` interval makes sense.
+	const deduped: PartitionPoint[] = [];
+	for (const pp of points) {
+		const last = deduped[deduped.length - 1];
+		if (
+			last !== undefined &&
+			Math.abs(last.approximate - pp.approximate) < PARTITION_DEDUPE_TOLERANCE
+		) {
+			// Same coordinate — prefer the excluded variant.
+			if (last.isZero && !pp.isZero) {
+				deduped[deduped.length - 1] = pp;
+			}
+			continue;
+		}
+		deduped.push(pp);
+	}
+
+	return deduped;
+}
+
+/**
+ * Check if an excluded point lies strictly inside `int`. Mirrors
+ * `isZeroInInterval` (numeric path).
+ */
+function isExcludedPointInInterval(value: MathNode, int: Interval): boolean {
+	const v = endpointToNumber(value);
+	if (!Number.isFinite(v)) return false;
+	const lower = endpointToNumber(int.lower.value);
+	const upper = endpointToNumber(int.upper.value);
+
+	if (int.lower.type === 'closed') {
+		if (v < lower) return false;
+	} else {
+		if (v <= lower) return false;
+	}
+	if (int.upper.type === 'closed') {
+		if (v > upper) return false;
+	} else {
+		if (v >= upper) return false;
+	}
+	return true;
 }
 
 /**

@@ -15,8 +15,7 @@
  */
 
 import type { MathNode, RelationNode } from '../../types';
-import type { Domain, IntervalSet } from '../../domain/types';
-import type { Endpoint, Interval } from '$lib/math/intervals/types';
+import type { Domain } from '../../domain/types';
 import type { SignAnalysisResult, SignedInterval } from '../../sign/types';
 import {
 	SolveInequalityError,
@@ -34,9 +33,6 @@ import { denormalize, normalize } from '../../normal';
 import { getVariables } from '../../eval/substitute';
 import { isEmpty as isDomainEmpty, union, difference } from '../../domain/algebra';
 import { emptyDomain, intervalSet } from '../../domain/factory';
-import { computeDomain } from '../../domain/compute';
-import { interval, openEndpoint } from '$lib/math/intervals/factory';
-import { endpointToNumber } from '$lib/math/intervals/endpoint';
 
 const INEQUALITY_OPS: ReadonlySet<InequalityOp> = new Set(['<', '>', '<=', '>=', '!=']);
 
@@ -90,19 +86,9 @@ export function solveInequality(
 
 	rejectIfParametric(expression, variable);
 
-	// `analyzeSign` partitions the domain at the zeros of `expression`, but it
-	// does NOT split at excluded points (it iterates `domain.intervals` only).
-	// For inequalities involving rational/log functions where the discontinuity
-	// is encoded in `excludedPoints` (e.g. 1/x → R \ {0}), this leaves the whole
-	// real line as a single 'unknown' interval. We normalize the domain here:
-	// excluded points are converted into open-interval splits before passing to
-	// `analyzeSign`, restoring the expected piecewise behaviour.
-	const explicitDomain = options.domain ?? computeDomain(expression, variable).domain;
-	const normalizedDomain = expandExcludedPoints(explicitDomain);
-
 	const signResult = analyzeSign(expression, {
 		variable,
-		domain: normalizedDomain,
+		domain: options.domain,
 		numericFallback: options.numericFallback ?? true,
 		tolerance: options.tolerance,
 		strictMode: false
@@ -245,60 +231,6 @@ function computeStatus(domain: Domain, solution: Domain, hasUnknown: boolean): I
 	if (hasUnknown) return 'partial';
 	if (isDomainEmpty(difference(domain, solution))) return 'all-real';
 	return 'complete';
-}
-
-/**
- * Expand `excludedPoints` of an `IntervalSet` into open-interval splits so that
- * `analyzeSign`'s `splitDomainAtZeros` produces sensible sub-intervals around
- * discontinuities. Idempotent for domains without excluded points.
- *
- * Input  : intervals = [int], excludedPoints = [p1, …, pn]
- * Output : intervals split at each pi (each pi excluded with an open endpoint),
- *          excludedPoints emptied.
- *
- * Excluded points outside the intervals are dropped silently (they cannot be
- * part of the solution either way, so this is a benign simplification).
- *
- * Non-`interval_set` domains (`empty`, `universal`, `condition_domain`,
- * `periodic_exclusion`) are returned unchanged. Only `IntervalSet` carries
- * `excludedPoints` in this codebase, so there is nothing to do for the others;
- * `analyzeSign` handles them through its own logic.
- */
-function expandExcludedPoints(domain: Domain): Domain {
-	if (domain.kind !== 'interval_set') return domain;
-	const set = domain as IntervalSet;
-	if (set.excludedPoints.length === 0) return domain;
-
-	const newIntervals: Interval[] = [];
-	for (const int of set.intervals) {
-		newIntervals.push(...splitIntervalAtExcluded(int, set.excludedPoints));
-	}
-	return intervalSet(newIntervals, []);
-}
-
-function splitIntervalAtExcluded(
-	int: Interval,
-	excluded: readonly { value: MathNode }[]
-): Interval[] {
-	// Sort excluded points that fall within this interval, ascending.
-	const lowerN = endpointToNumber(int.lower.value);
-	const upperN = endpointToNumber(int.upper.value);
-	const inside = excluded
-		.map((ep) => ({ value: ep.value, num: endpointToNumber(ep.value) }))
-		.filter((ep) => Number.isFinite(ep.num) && ep.num > lowerN && ep.num < upperN)
-		.sort((a, b) => a.num - b.num);
-
-	if (inside.length === 0) return [int];
-
-	const result: Interval[] = [];
-	let currentLower: Endpoint = int.lower;
-	for (const ep of inside) {
-		const upperEp = openEndpoint(ep.value);
-		result.push(interval(currentLower, upperEp));
-		currentLower = openEndpoint(ep.value);
-	}
-	result.push(interval(currentLower, int.upper));
-	return result;
 }
 
 function buildWarnings(signWarnings: readonly string[] | undefined, hasUnknown: boolean): string[] {
