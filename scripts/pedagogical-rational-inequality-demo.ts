@@ -14,6 +14,7 @@
  *   noteq       opérateur ≠
  *   constP      P constant (1/(x-2) etc.)
  *   non-std     forme non-standard, canonisable
+ *   multi-frac  V2 — somme/différence de 2 fractions (réduction au même dénominateur)
  *
  * Usage :
  *   pnpm tsx scripts/pedagogical-rational-inequality-demo.ts                # all (pretty)
@@ -139,7 +140,13 @@ const CASES: readonly { category: string; label: string; latex: string }[] = [
 	{ category: 'non-std', label: '10. (x − 1)/(x − 3) < 1', latex: '(x - 1)/(x - 3) < 1' },
 
 	// Operator !=
-	{ category: 'noteq', label: '11. (2x + 1)/(x − 1) ≠ 0', latex: '(2x + 1)/(x - 1) \\neq 0' }
+	{ category: 'noteq', label: '11. (2x + 1)/(x − 1) ≠ 0', latex: '(2x + 1)/(x - 1) \\neq 0' },
+
+	// V2 — multi-fractions (palier 3 V2)
+	{ category: 'multi-frac', label: '12. 1/x + 1/(x − 1) < 0', latex: '1/x + 1/(x - 1) < 0' },
+	{ category: 'multi-frac', label: '13. 1/x − 1/(x − 1) > 0', latex: '1/x - 1/(x - 1) > 0' },
+	{ category: 'multi-frac', label: '14. x + 1/(x − 1) < 0', latex: 'x + 1/(x - 1) < 0' },
+	{ category: 'multi-frac', label: '15. x < 1/(x − 3)', latex: 'x < 1/(x - 3)' }
 ];
 
 const VALID_CATEGORIES = new Set(CASES.map((c) => c.category));

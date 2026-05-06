@@ -316,6 +316,37 @@ export type EquationOperation =
 	// Palier 3 — Rational inequality kinds
 	// =============================================================================
 	/**
+	 * Palier 3 V2 — « réduction au même dénominateur » step. Used when the
+	 * input has multiple fractions (e.g. `1/x + 1/(x-1) < 0`) or a polynomial
+	 * term combined with a fraction (e.g. `x + 1/(x-1) < 0`). The renderer
+	 * formats the pedagogical work : original sum → adjusted fractions over
+	 * the common denominator → combined fraction.
+	 *
+	 * `originalTerms[i].denominator === null` for a polynomial term (no
+	 * fraction wrapper) ; otherwise it's the AST of the term's denominator.
+	 */
+	| {
+			readonly kind: 'combine-fractions';
+			readonly originalTerms: readonly {
+				readonly numerator: MathNode;
+				readonly denominator: MathNode | null;
+				readonly sign: '+' | '-';
+			}[];
+			/**
+			 * Numerators after each term has been multiplied by its « missing
+			 * factor » (the product of the OTHER distinct denominators). Parallel
+			 * to `originalTerms`. The renderer uses this for the middle aligned
+			 * line `(adj₁)/D + (adj₂)/D = …`.
+			 */
+			readonly adjustedNumerators: readonly MathNode[];
+			readonly commonDenominator: MathNode;
+			readonly combinedNumerator: MathNode;
+			readonly combined: {
+				readonly numerator: MathNode;
+				readonly denominator: MathNode;
+			};
+	  }
+	/**
 	 * Palier 3 — recognise the rational form `P(x)/Q(x) ⊻ 0`. Carries the
 	 * extracted numerator and denominator MathNodes for the renderer to display.
 	 */

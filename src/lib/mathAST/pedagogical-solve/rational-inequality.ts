@@ -29,9 +29,11 @@
 import type { MathNode, RelationNode } from '../types';
 import type { EquationStep, RationalInequalityStepsOptions } from './types';
 import { STRATEGIES_RATIONAL } from './types';
-import { number, relation, subtract } from '../factory';
+import { add, implicitMultiply, number, opposite, relation, subtract } from '../factory';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
-import { getVariables } from '../eval/substitute';
+import { getVariables, hasVariable } from '../eval/substitute';
+import { flattenSumShallow } from '../flatten';
+import { nodesEqual } from '../normal/hash';
 import { extractQuadraticCoefficients } from '../solve/solvers/quadratic';
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { solve } from '../solve/solve';
@@ -85,6 +87,117 @@ function tryExtractRationalForm(
 	return {
 		numerator: top.numerator,
 		denominator: top.denominator
+	};
+}
+
+// =============================================================================
+// V2 — Multi-fraction support
+// =============================================================================
+
+/**
+ * A classified term from the top-level sum/subtraction structure.
+ * - `denominator === null` ⇒ polynomial term (no fraction wrapper)
+ * - `denominator !== null` ⇒ fraction term `numerator / denominator`
+ */
+type ClassifiedTerm = {
+	readonly numerator: MathNode;
+	readonly denominator: MathNode | null;
+	readonly sign: '+' | '-';
+};
+
+/**
+ * Walk the top-level sum/subtraction structure of a node and classify each
+ * term as a fraction (division with variable in denominator) or a polynomial
+ * term. Used by the `combine-fractions` detection.
+ */
+function collectFractionTerms(node: MathNode, variable: string): ClassifiedTerm[] {
+	const flat = flattenSumShallow(node);
+	const out: ClassifiedTerm[] = [];
+	for (const { sign, term } of flat) {
+		const t = unwrap(term);
+		// Skip literal zero terms (e.g. when `inequality.right = 0` produces a
+		// `- 0` in the flattened sum).
+		if (t.type === 'number' && t.value === '0') continue;
+		if (t.type === 'division' && hasVariable(t.denominator, variable)) {
+			out.push({ numerator: t.numerator, denominator: t.denominator, sign });
+		} else {
+			out.push({ numerator: t, denominator: null, sign });
+		}
+	}
+	return out;
+}
+
+/**
+ * Compute the common denominator and combined numerator for V2 multi-fraction
+ * input. V2 cap : at most 2 distinct fraction denominators, both linear, no
+ * polynomial gcd reduction.
+ *
+ * Returns `null` if the V2 cap is exceeded (caller falls back to V1 path or
+ * throws).
+ */
+function combineFractions(terms: readonly ClassifiedTerm[]): {
+	readonly originalTerms: readonly ClassifiedTerm[];
+	readonly adjustedNumerators: readonly MathNode[];
+	readonly commonDenominator: MathNode;
+	readonly combinedNumerator: MathNode;
+	readonly combined: { readonly numerator: MathNode; readonly denominator: MathNode };
+} | null {
+	// Collect distinct fraction denominators (modulo structural equality).
+	const fractionTerms = terms.filter((t) => t.denominator !== null);
+	if (fractionTerms.length === 0) return null; // No fractions → not our case
+	const distinctDenoms: MathNode[] = [];
+	for (const t of fractionTerms) {
+		if (t.denominator === null) continue;
+		if (!distinctDenoms.some((d) => nodesEqual(d, t.denominator!))) {
+			distinctDenoms.push(t.denominator);
+		}
+	}
+	// V2 cap : up to 2 distinct denominators, all coprime (no GCD reduction).
+	if (distinctDenoms.length > 2) return null;
+
+	// Common denominator = product of distinct denominators (coprime assumption).
+	const commonDenominator =
+		distinctDenoms.length === 1
+			? distinctDenoms[0]
+			: canon(implicitMultiply(distinctDenoms[0], distinctDenoms[1]));
+
+	// For each term, multiply its numerator by the « missing » factor so its
+	// fraction sits on the common denominator.
+	const adjustedNumerators: MathNode[] = [];
+	let combinedNumerator: MathNode = number('0');
+	for (const t of terms) {
+		let missingFactor: MathNode;
+		if (t.denominator === null) {
+			missingFactor = commonDenominator;
+		} else {
+			const otherDenoms = distinctDenoms.filter((d) => !nodesEqual(d, t.denominator!));
+			if (otherDenoms.length === 0) {
+				missingFactor = number('1');
+			} else if (otherDenoms.length === 1) {
+				missingFactor = otherDenoms[0];
+			} else {
+				// V2 caps at 2 distinct, so this branch is unreachable.
+				return null;
+			}
+		}
+		// Guard : `numerator × 1` should display as just `numerator` ; canon may
+		// or may not strip the `× 1` depending on AST shape, so we short-circuit.
+		const adjustedNum =
+			missingFactor.type === 'number' && missingFactor.value === '1'
+				? t.numerator
+				: canon(implicitMultiply(t.numerator, missingFactor));
+		adjustedNumerators.push(adjustedNum);
+		const signed = t.sign === '+' ? adjustedNum : opposite(adjustedNum);
+		combinedNumerator = add(combinedNumerator, signed);
+	}
+	combinedNumerator = canon(combinedNumerator);
+
+	return {
+		originalTerms: terms,
+		adjustedNumerators,
+		commonDenominator,
+		combinedNumerator,
+		combined: { numerator: combinedNumerator, denominator: commonDenominator }
 	};
 }
 
@@ -231,6 +344,28 @@ function buildIdentifyEquationStep(originalIneq: RelationNode, idGen: () => numb
 		before: originalIneq,
 		after: originalIneq,
 		operation: { kind: 'identify-equation', equationType: 'rational' }
+	});
+}
+
+function buildCombineFractionsStep(
+	originalIneq: RelationNode,
+	combination: NonNullable<ReturnType<typeof combineFractions>>,
+	idGen: () => number
+): EquationStep {
+	return makeStep({
+		id: idGen(),
+		rule: 'combine-fractions',
+		description: 'On réduit au même dénominateur',
+		before: originalIneq,
+		after: originalIneq,
+		operation: {
+			kind: 'combine-fractions',
+			originalTerms: combination.originalTerms,
+			adjustedNumerators: combination.adjustedNumerators,
+			commonDenominator: combination.commonDenominator,
+			combinedNumerator: combination.combinedNumerator,
+			combined: combination.combined
+		}
 	});
 }
 
@@ -423,16 +558,35 @@ export function generateRationalInequalitySteps(
 		);
 	}
 
-	// 3. Reject multi-fraction at the source (left side must be a single
-	//    division before canonicalisation, mod delimiter wrapping). This guards
-	//    against `1/x + 1/(x-1) < 0` whose canon is a single fraction but whose
-	//    pedagogy requires a "common denominator" step (V1 hors scope).
+	// 3. Detect the input shape :
+	//    - Already a single fraction P/Q with rhs = 0 → V1 direct path
+	//    - Multiple fractions, or polynomial+fraction, or rhs ≠ 0 → V2 needs
+	//      a `combine-fractions` step before identifying P/Q.
 	const leftUnwrapped = unwrap(inequality.left);
-	if (leftUnwrapped.type !== 'division') {
-		throw new InequalityNotSolvable(
-			'Inéquation rationnelle non réduite à une seule fraction P/Q — non supporté en V1.',
-			'Réduire au même dénominateur manuellement avant de relancer.'
-		);
+	const rightIsZero = isZero(inequality.right);
+	const isV1DirectPath = leftUnwrapped.type === 'division' && rightIsZero;
+
+	let combinationData: ReturnType<typeof combineFractions> | null = null;
+	if (!isV1DirectPath) {
+		// V2 — try to combine fractions.
+		const rawStandardForm = subtract(inequality.left, inequality.right);
+		const terms = collectFractionTerms(rawStandardForm, variable);
+		const fractionTermCount = terms.filter((t) => t.denominator !== null).length;
+		if (fractionTermCount === 0) {
+			// No fractions found — not a rational inequality at all (e.g. someone
+			// called this on a polynomial). Re-route via the dispatcher.
+			throw new InequalityNotSolvable(
+				'Aucun terme fractionnaire détecté — utiliser `generateInequalitySteps`.',
+				'Cas dégénéré.'
+			);
+		}
+		combinationData = combineFractions(terms);
+		if (combinationData === null) {
+			throw new InequalityNotSolvable(
+				'Inéquation rationnelle complexe (V2 supporte au plus 2 dénominateurs distincts coprimes).',
+				'Hors scope V2.'
+			);
+		}
 	}
 
 	// 4. Standardise to canonical P/Q form (subtract right side, simplify).
@@ -495,6 +649,11 @@ export function generateRationalInequalitySteps(
 
 	if (strategy.includeIdentify) {
 		result.push(buildIdentifyEquationStep(inequality, idGen));
+	}
+	// V2 — emit the « réduction au même dénominateur » step BEFORE
+	// `identify-rational` when the input wasn't already a single P/Q.
+	if (combinationData !== null) {
+		result.push(buildCombineFractionsStep(inequality, combinationData, idGen));
 	}
 	result.push(buildIdentifyRationalStep(inequality, numerator, denominator, idGen));
 	result.push(buildDomainRestrictionStep(inequality, denominatorZeros, variable, idGen));

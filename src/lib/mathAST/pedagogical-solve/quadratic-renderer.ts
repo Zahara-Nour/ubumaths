@@ -161,6 +161,7 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 			return `Solution : S = ${description}`;
 		},
 		// === Palier 3 — Rational inequality ===
+		'combine-fractions': () => 'On réduit au même dénominateur',
 		'identify-rational': () => 'On reconnaît la forme P(x) / Q(x)',
 		'rational-domain-restriction': () =>
 			'Domaine de définition : on exclut les zéros du dénominateur',
@@ -220,6 +221,7 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 			return `S = ${description}`;
 		},
 		// === Palier 3 — Rational inequality ===
+		'combine-fractions': () => 'Réduction au même dénominateur',
 		'identify-rational': () => 'P(x) / Q(x)',
 		'rational-domain-restriction': () => 'Domaine',
 		'rational-locate-roots': () => 'Racines & zéros',
@@ -297,6 +299,8 @@ const EXPLANATIONS: Record<
 		'inequality-conclude-from-isolated-square': () =>
 			'Comme x² ≥ 0 toujours, on raisonne directement sur la valeur isolée à droite : selon son signe et l’opérateur, la solution est ∅, ℝ, ou un intervalle borné par ±√k.',
 		// === Palier 3 — Rational ===
+		'combine-fractions': () =>
+			'Pour comparer plusieurs fractions à zéro, on les réduit au même dénominateur. Le dénominateur commun est le produit des dénominateurs distincts ; chaque numérateur est ajusté en le multipliant par les dénominateurs des autres fractions.',
 		'identify-rational': () =>
 			'Une inéquation rationnelle s’écrit P(x)/Q(x) ⊻ 0. La fraction n’est définie que là où le dénominateur Q(x) ≠ 0.',
 		'rational-domain-restriction': () =>
@@ -324,6 +328,7 @@ const EXPLANATIONS: Record<
 		'inequality-conclude-quadratic': () => 'Lecture du tableau pour l’opérateur donné.',
 		'inequality-conclude-from-isolated-square': () => 'x² ≥ 0 ⇒ déduction directe sans tableau.',
 		// === Palier 3 — Rational ===
+		'combine-fractions': () => 'Mise au même dénominateur.',
 		'identify-rational': () => 'Forme P(x)/Q(x) ⊻ 0.',
 		'rational-domain-restriction': () => 'Exclusion des zéros du dénominateur.',
 		'rational-locate-roots': () => 'Racines (P) et zéros (Q).',
@@ -472,6 +477,8 @@ function formatExpressionLatex(step: EquationStep): string {
 			return formatConcludeFromIsolatedSquare(op);
 
 		// -------- Palier 3 — Rational kinds --------
+		case 'combine-fractions':
+			return formatCombineFractions(op);
 		case 'identify-rational':
 			return formatIdentifyRational(op);
 		case 'rational-domain-restriction':
@@ -787,6 +794,49 @@ function escapeLatexBacktickFreeText(s: string): string {
 // =============================================================================
 
 /** `\dfrac{P(x)}{Q(x)}` */
+/**
+ * Palier 3 V2 — pedagogical layout of the « réduction au même dénominateur »
+ * step. Shows the original sum, then the adjusted fractions over the common
+ * denominator, then the combined fraction.
+ *
+ * Layout :
+ *   <original_term_1> + <original_term_2> + …
+ *   = <adjusted_num_1>/D + <adjusted_num_2>/D + …
+ *   = <combined_numerator>/D
+ */
+function formatCombineFractions(op: EquationOperation & { kind: 'combine-fractions' }): string {
+	const lines: string[] = ['\\begin{aligned}'];
+	const D = fmt(op.commonDenominator);
+
+	// Line 1 : original sum.
+	const origParts = op.originalTerms.map((t, i) => {
+		const sign = t.sign === '-' ? '-' : i === 0 ? '' : '+';
+		const body =
+			t.denominator === null
+				? fmt(t.numerator)
+				: `\\dfrac{${fmt(t.numerator)}}{${fmt(t.denominator)}}`;
+		return sign ? `${sign} ${body}` : body;
+	});
+	lines.push(`& ${origParts.join(' ')} \\\\`);
+
+	// Line 2 : adjusted fractions, all over D (skip if there's only 1 term).
+	if (op.originalTerms.length > 1) {
+		const adjParts = op.originalTerms.map((t, i) => {
+			const sign = t.sign === '-' ? '-' : i === 0 ? '' : '+';
+			// Use the precomputed adjusted numerator from the pipeline.
+			const adjNum = fmt(op.adjustedNumerators[i] ?? t.numerator);
+			const body = `\\dfrac{${adjNum}}{${D}}`;
+			return sign ? `${sign} ${body}` : body;
+		});
+		lines.push(`= & ${adjParts.join(' ')} \\\\`);
+	}
+
+	// Line 3 : combined fraction.
+	lines.push(`= & \\dfrac{${fmt(op.combinedNumerator)}}{${D}}`);
+	lines.push('\\end{aligned}');
+	return lines.join(' ');
+}
+
 function formatIdentifyRational(op: EquationOperation & { kind: 'identify-rational' }): string {
 	return `P(x) = ${fmt(op.numerator)}, \\quad Q(x) = ${fmt(op.denominator)}`;
 }

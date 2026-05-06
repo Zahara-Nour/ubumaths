@@ -22,7 +22,8 @@ import {
 	quadraticInequalityClassicDemo,
 	quadraticInequalityNegativeADemo,
 	rationalInequalitySimpleDemo,
-	rationalInequalityQuadDenomDemo
+	rationalInequalityQuadDenomDemo,
+	rationalInequalityMultiFracDemo
 } from './fixtures/generated-steps-demo';
 
 /** Compact serializable view of a RenderedStep tree (no implementation noise). */
@@ -306,6 +307,24 @@ describe('Mode B end-to-end demos', () => {
 		expect(steps!.length).toBeGreaterThan(0);
 
 		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('rational-sign-table');
+		expect(rules).toContain('inequality-conclude-rational');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('1ère spécialité rational inequality V2 (multi-fractions) — produces combine-fractions step', () => {
+		const result = generateInstance(rationalInequalityMultiFracDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('combine-fractions');
 		expect(rules).toContain('rational-sign-table');
 		expect(rules).toContain('inequality-conclude-rational');
 

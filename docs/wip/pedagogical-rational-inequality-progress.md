@@ -1,6 +1,6 @@
 # Palier 3 — Pedagogical Rational Inequality Stepper — Progress
 
-## Status: V1 COMPLETE — 2026-05-06 ; V1.1 polish — 2026-05-06
+## Status: V1 COMPLETE — 2026-05-06 ; V1.1 polish — 2026-05-06 ; V2 multi-fractions — 2026-05-06
 
 Follow-up of palier 2c (`d010fb263`). Adds the pedagogical step-by-step
 resolution for rational inequalities `P(x)/Q(x) ⊻ 0` according to the standard
@@ -167,7 +167,50 @@ un sentinel `\text{tableau de signes (N valeurs symboliques non
 - `mathAST` : **12731 passing** (+2 vs 12729 baseline)
 - Mode B snapshots : **14/14** inchangés
 
-## Quality debt restante (V2+)
+## V2 — Multi-fractions livré 2026-05-06
+
+**Spec** : `docs/wip/pedagogical-rational-inequality-v2-spec.md` (7 V2
+comportements + 4 OUT V3+).
+
+**Étape pédagogique nouvelle** : `combine-fractions` — emise AVANT
+`identify-rational` quand l'input n'est pas déjà une fraction unique
+(multi-fraction OU fraction sur côté droit OU polynôme + fraction).
+
+Le renderer formate un bloc `\begin{aligned}` 3 lignes :
+
+```
+1/x + 1/(x-1)
+= (x-1)/(x²-x) + x/(x²-x)
+= (2x-1)/(x²-x)
+```
+
+**Helpers** : `collectFractionTerms(node, variable)` walks la structure
+top-level sum/diff et classifie chaque terme (fraction vs polynomial).
+`combineFractions(terms)` calcule le dénominateur commun (produit des
+dénominateurs distincts, V2 cap à 2) + les numérateurs ajustés (numerator ×
+missing factor) + le numérateur combiné (somme signée canonisée).
+
+**Cap V2** : au plus 2 dénominateurs distincts coprimes (pas de PGCD
+polynomial). 3+ fractions ou dénominateurs en commun → throw V3 hors scope.
+
+**Bug palier 1 surfacé + corrigé** : `determineProductSign` dans
+`sign/helpers/interval-sign.ts` recursait à l'infini sur `opposite(N)`
+(ex: `-1/x > 0` stack-overflow). Cause : le `factors.map(determineSignOnInterval)`
+s'exécutait AVANT le check `length === 1 && isOpposite`, recursant
+infiniment. Fix : check spécial AVANT le map.
+
+**Code review fixes** (3 minor) :
+
+1. Guard `× 1` quand `missingFactor === 1` (cas même dénominateur).
+2. Renderer LaTeX : suppression de l'espace de tête quand sign est vide.
+3. Type annotation `NonNullable<>` au lieu de `& object`.
+
+**Tests V2** : 7 nouveaux + V1 régression. Pedagogical-solve 355 → 361.
+mathAST 12737 (+6 vs 12731). +1 fixture Mode B (`rationalInequalityMultiFracDemo`)
+
+- 1 snapshot test (Mode B 14 → 15).
+
+## Quality debt restante (V3+)
 
 - **Fraction sur le côté droit** (`x < 1/(x-3)`) : V1.1 rejette toujours via
   le check `unwrap(left).type === 'division'`. V2 pourrait swap les côtés
