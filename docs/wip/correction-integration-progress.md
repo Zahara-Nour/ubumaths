@@ -2,14 +2,16 @@
 
 > Source : `docs/wip/correction-integration-prompt.md`
 > Branche : `main`
-> Dernière mise à jour : 2026-05-05
+> Dernière mise à jour : 2026-05-06
 
 ## Objectif global
 
 Permettre aux questions de déclarer une **correction Mode B** :
-les étapes pédagogiques sont générées automatiquement par
-`pedagogical-arithmetic` ou `pedagogical-solve/linear` au lieu d'être
-écrites à la main par l'auteur. Le composant Svelte
+les étapes pédagogiques sont générées automatiquement par un des 6
+pipelines (`pedagogical-arithmetic`, `pedagogical-solve/linear`,
+`pedagogical-solve/quadratic`, `pedagogical-solve/linear-inequality`,
+`pedagogical-solve/quadratic-inequality`, `pedagogical-differentiation`)
+au lieu d'être écrites à la main par l'auteur. Le composant Svelte
 `<GeneratedStepsCorrection>` (Phase 3) les affiche aux élèves.
 
 ## Décisions architecturales validées (Phase 0)
