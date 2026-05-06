@@ -257,9 +257,13 @@ en profondeur (discriminator étendu, case dispatch ajouté dans
   optionnel pour intégrales définies (trio `apply-fundamental-theorem` +
   `substitute-bounds` + `simplify-bounds-result`). Bumps
   `primaire | college → lycee` (l'intégration n'est pas au syllabus avant
-  Terminale). Catch `PedagogicalIntegrationNotImplemented` (partial-fractions,
-  trig-substitution, IPP cyclique, paramétriques) → fallback Mode A
-  silencieux.
+  Terminale). Catch `PedagogicalIntegrationNotImplemented` → fallback Mode A
+  silencieux. **V1+V1.1+V2 livrés** : 27 rules pédagogiques au total
+  incluant IPP cyclique (`∫eˣ·sin(x) dx`), arctan/arcsin (sup), partial-
+  fractions simples (Q quadratique Δ>0). Cas refusés : racines répétées,
+  deg(P) ≥ deg(Q), Q degré ≥ 3, facteurs quadratiques irréductibles,
+  trig-substitution, intégrales impropres, fonctions par morceaux,
+  paramétriques.
 
 **État actuel :** la page debug `/dashboard/admin/debug/correction-mode-b`
 expose **13 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
