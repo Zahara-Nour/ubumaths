@@ -16,6 +16,9 @@ import { isNumber, isVariable, isOne, isZero } from '../guards';
 import { hashMathNode } from '../normal/hash';
 import { findProportionalityConstant } from '../integration/patterns';
 import { getNumericValue } from '../common/numeric';
+import { extractQuadraticCoefficients as extractQuadraticCoefficientsImpl } from '../solve/solvers/quadratic';
+import { normalize as normalizeMathNode } from '../normal/normalize';
+import { denormalize as denormalizeMathNode } from '../normal/denormalize';
 import type {
 	IntegrationGenerationStrategy,
 	IntegrationSchoolLevel,
@@ -176,6 +179,10 @@ function defaultDescription(rule: PedagogicalIntegrationRule): string {
 			return 'Formule de l’intégration par parties';
 		case 'apply-cyclic-ipp':
 			return 'Résolution algébrique (IPP cyclique)';
+		case 'decompose-rational':
+			return 'Décomposition en éléments simples';
+		case 'apply-partial-fractions':
+			return 'Intégration des éléments simples';
 		case 'add-constant':
 			return "Constante d'intégration";
 		case 'simplify-result':
@@ -797,6 +804,140 @@ function isTranscendentalOfVariable(node: MathNode, variable: string): boolean {
 }
 
 // =============================================================================
+// Partial-fractions detection (V2)
+// =============================================================================
+
+/**
+ * Result of partial-fractions detection : `∫ P(x)/Q(x) dx` where Q is
+ * quadratic with two distinct real roots r₁, r₂ and deg(P) < deg(Q) = 2.
+ *
+ * The decomposition is `P/Q = A/(x-r₁) + B/(x-r₂)` with coefficients computed
+ * via the « method of roots » : `A = P(r₁) / (aQ·(r₁-r₂))`,
+ * `B = P(r₂) / (aQ·(r₂-r₁))`, where `aQ` is the leading coefficient of Q.
+ */
+export interface PartialFractionsMatch {
+	readonly numerator: MathNode;
+	readonly denominator: MathNode;
+	readonly r1: number;
+	readonly r2: number;
+	readonly A: number;
+	readonly B: number;
+	readonly aQ: number; // leading coefficient of Q (typically 1, sometimes -1)
+}
+
+/**
+ * Detect a partial-fractions integrand `∫ P(x)/Q(x) dx` :
+ *  - integrand is a division
+ *  - both P and Q are polynomials in `variable`
+ *  - deg(Q) = 2 (quadratic), deg(P) < 2
+ *  - Q has two distinct real roots (Δ > 0)
+ *  - rational roots only (V2 simple — irrational roots could be matched but
+ *    produce ugly antiderivatives ; we reject them and let the user fall to
+ *    the algorithmic integrator)
+ *  - no cancellation between P and Q (else the form should reduce to a
+ *    composite-ln or a simpler primitive)
+ *
+ * Returns `null` when the form does not match.
+ */
+export function tryDetectPartialFractions(
+	integrand: MathNode,
+	variable: string
+): PartialFractionsMatch | null {
+	if (integrand.type !== 'division') return null;
+
+	// Expand P, Q via normalize/denormalize so factored forms like
+	// `(x-1)(x+1)` get folded to `x² - 1` before coefficient extraction.
+	let P = integrand.numerator;
+	let Q = integrand.denominator;
+	try {
+		P = denormalizeMathNode(normalizeMathNode(P));
+		Q = denormalizeMathNode(normalizeMathNode(Q));
+	} catch {
+		return null;
+	}
+
+	if (!containsVariable(Q, variable)) return null;
+
+	// Q must be quadratic with numeric coefficients.
+	const Qcoeffs = quadraticCoefs(Q, variable);
+	if (!Qcoeffs) return null;
+	const { a: aQ, b: bQ, c: cQ } = Qcoeffs;
+	if (aQ === 0) return null; // not actually quadratic
+
+	// Discriminant Δ = b² - 4ac. Must be > 0 for two distinct real roots.
+	const delta = bQ * bQ - 4 * aQ * cQ;
+	if (delta <= 0) return null;
+	const sqrtDelta = Math.sqrt(delta);
+
+	// Reject irrational roots in V2 simple : the antiderivative would contain
+	// `√Δ` numerically, which we don't render cleanly. Allow only roots that
+	// round-trip exactly through Number.isInteger(2·root·aQ).
+	const r1 = (-bQ + sqrtDelta) / (2 * aQ);
+	const r2 = (-bQ - sqrtDelta) / (2 * aQ);
+	if (!isRationalLike(r1) || !isRationalLike(r2)) return null;
+
+	// P must be a polynomial in `variable` of degree ≤ 1. We allow constant
+	// numerators (deg 0) and linear numerators (deg 1).
+	const Pcoeffs = quadraticCoefs(P, variable);
+	if (!Pcoeffs) return null;
+	const { a: aP, b: bP, c: cP } = Pcoeffs;
+	if (aP !== 0) return null; // deg(P) >= 2 — out of V2 scope
+
+	// Coefficients via the method of roots :
+	//   P/Q = A/(x-r₁) + B/(x-r₂)
+	//   A = P(r₁) / (aQ · (r₁ - r₂))
+	//   B = P(r₂) / (aQ · (r₂ - r₁))
+	const Pr1 = bP * r1 + cP;
+	const Pr2 = bP * r2 + cP;
+	const A = Pr1 / (aQ * (r1 - r2));
+	const B = Pr2 / (aQ * (r2 - r1));
+
+	// Reject degenerate cases (one coefficient near zero — the rational
+	// simplifies and another rule would handle it).
+	if (Math.abs(A) < 1e-12 || Math.abs(B) < 1e-12) return null;
+
+	return { numerator: P, denominator: Q, r1, r2, A, B, aQ };
+}
+
+/**
+ * Extract numeric quadratic coefficients (a, b, c) from a polynomial in
+ * `variable` of degree ≤ 2. Returns null if any coefficient is non-numeric
+ * (parametric) or if the expression has a term of degree > 2.
+ *
+ * Internal helper for `tryDetectPartialFractions`. Wraps
+ * `extractQuadraticCoefficients` from `solve/solvers/quadratic.ts` and
+ * resolves each coefficient to a JavaScript number.
+ */
+function quadraticCoefs(
+	expr: MathNode,
+	variable: string
+): { a: number; b: number; c: number } | null {
+	const coeffs = extractQuadraticCoefficientsImpl(expr, variable);
+	if (!coeffs) return null;
+	const a = getNumericValue(coeffs.a);
+	const b = getNumericValue(coeffs.b);
+	const c = getNumericValue(coeffs.c);
+	if (a === null || b === null || c === null) return null;
+	return { a, b, c };
+}
+
+/**
+ * Numeric heuristic : a value is « rational-like » when it has a small
+ * denominator after rounding. Cuts off at 10⁻⁶ for the rounding tolerance and
+ * 1000 for the max denominator. Used to reject irrational roots in
+ * partial-fractions decomposition.
+ */
+function isRationalLike(value: number): boolean {
+	if (!Number.isFinite(value)) return false;
+	const tolerance = 1e-6;
+	for (let den = 1; den <= 1000; den++) {
+		const num = Math.round(value * den);
+		if (Math.abs(value * den - num) < tolerance) return true;
+	}
+	return false;
+}
+
+// =============================================================================
 // Cyclic IPP detection (V1.1)
 // =============================================================================
 
@@ -893,56 +1034,75 @@ function isSinOrCosOfVariableExpr(node: MathNode, variable: string): boolean {
 // =============================================================================
 
 /**
- * Detect `1/(1+x²)` — a candidate for `apply-known-primitive` returning
- * `arctan(x)`. Returns the recognized form name or `null`.
+ * Detect `1/(c+x²)` (or `1/(x²+c)`) where `c > 0` is a positive numeric
+ * constant — a candidate for `apply-known-primitive` returning `arctan(x)`
+ * (when c=1) or `(1/a)·arctan(x/a)` (when c=a², a > 0).
  *
- * V1.1 supports only the unit form `1/(1+x²)`. The general form
- * `1/(a²+x²) → (1/a)·arctan(x/a)` is V2.
+ * Returns `{ a }` where `a = √c` as a MathNode (number for rational squares,
+ * `sqrt(c)` otherwise). Returns null when the form does not match.
+ *
+ * V2 — extended from the V1.1 unit form `1/(1+x²)` to any positive constant.
  */
-export function matchArctanForm(
-	integrand: MathNode,
-	variable: string
-): { kind: 'arctan-unit' } | null {
+export function matchArctanForm(integrand: MathNode, variable: string): { a: MathNode } | null {
 	if (integrand.type !== 'division') return null;
 	if (!isOne(integrand.numerator)) return null;
 	const denom = integrand.denominator;
 	if (denom.type !== 'addition') return null;
 	const { left, right } = denom;
-	const isLeftOne = isOne(left);
-	const isRightOne = isOne(right);
-	if (!isLeftOne && !isRightOne) return null;
-	const xSquared = isLeftOne ? right : left;
-	if (xSquared.type !== 'superscript') return null;
-	if (!isExactVariable(xSquared.base, variable)) return null;
-	const n = getNumericValue(xSquared.superscript);
+	const leftHasVar = containsVariable(left, variable);
+	const rightHasVar = containsVariable(right, variable);
+	// Exactly one side must contain x (the x² term), the other must be a
+	// positive constant.
+	if (leftHasVar === rightHasVar) return null;
+	const constantSide = leftHasVar ? right : left;
+	const xSquaredSide = leftHasVar ? left : right;
+	if (xSquaredSide.type !== 'superscript') return null;
+	if (!isExactVariable(xSquaredSide.base, variable)) return null;
+	const n = getNumericValue(xSquaredSide.superscript);
 	if (n !== 2) return null;
-	return { kind: 'arctan-unit' };
+	const cValue = getNumericValue(constantSide);
+	if (cValue === null || cValue <= 0) return null;
+	// a = √c. For perfect squares emit a rational ; otherwise emit `sqrt(c)`.
+	const aValue = Math.sqrt(cValue);
+	const a: MathNode =
+		Number.isInteger(aValue) && aValue * aValue === cValue
+			? { type: 'number', value: String(aValue) }
+			: { type: 'function', name: 'sqrt', args: [constantSide] };
+	return { a };
 }
 
 /**
- * Detect `1/√(1-x²)` — a candidate for `apply-known-primitive` returning
- * `arcsin(x)`. Returns the recognized form name or `null`.
+ * Detect `1/√(c-x²)` where `c > 0` is a positive numeric constant — a
+ * candidate for `apply-known-primitive` returning `arcsin(x)` (when c=1) or
+ * `arcsin(x/a)` (when c=a², a > 0).
  *
- * V1.1 supports only the unit form `1/√(1-x²)`. The general form
- * `1/√(a²-x²) → arcsin(x/a)` is V2.
+ * Returns `{ a }` where `a = √c` as a MathNode. Returns null when the form
+ * does not match.
+ *
+ * V2 — extended from the V1.1 unit form `1/√(1-x²)`.
  */
-export function matchArcsinForm(
-	integrand: MathNode,
-	variable: string
-): { kind: 'arcsin-unit' } | null {
+export function matchArcsinForm(integrand: MathNode, variable: string): { a: MathNode } | null {
 	if (integrand.type !== 'division') return null;
 	if (!isOne(integrand.numerator)) return null;
 	const denom = integrand.denominator;
 	if (denom.type !== 'function' || denom.name !== 'sqrt' || denom.args.length !== 1) return null;
 	const inside = denom.args[0];
 	if (inside.type !== 'subtraction') return null;
-	if (!isOne(inside.left)) return null;
-	const xSquared = inside.right;
-	if (xSquared.type !== 'superscript') return null;
-	if (!isExactVariable(xSquared.base, variable)) return null;
-	const n = getNumericValue(xSquared.superscript);
+	const constantSide = inside.left;
+	const xSquaredSide = inside.right;
+	if (containsVariable(constantSide, variable)) return null;
+	const cValue = getNumericValue(constantSide);
+	if (cValue === null || cValue <= 0) return null;
+	if (xSquaredSide.type !== 'superscript') return null;
+	if (!isExactVariable(xSquaredSide.base, variable)) return null;
+	const n = getNumericValue(xSquaredSide.superscript);
 	if (n !== 2) return null;
-	return { kind: 'arcsin-unit' };
+	const aValue = Math.sqrt(cValue);
+	const a: MathNode =
+		Number.isInteger(aValue) && aValue * aValue === cValue
+			? { type: 'number', value: String(aValue) }
+			: { type: 'function', name: 'sqrt', args: [constantSide] };
+	return { a };
 }
 
 // =============================================================================

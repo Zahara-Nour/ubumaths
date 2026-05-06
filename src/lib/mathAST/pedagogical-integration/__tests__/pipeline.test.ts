@@ -393,10 +393,11 @@ describe('pedagogical-integration pipeline — strategy differences', () => {
 });
 
 describe('pedagogical-integration pipeline — notImplemented cases', () => {
-	it('refuses partial-fractions: ∫1/(x²-1) dx', () => {
+	it('refuses partial-fractions with irrational roots: ∫1/(x²-3) dx', () => {
+		// `x² - 3 = 0` has roots ±√3 (irrational) — outside V2 simple scope.
 		const integrand = divide(
 			number('1'),
-			subtract(power(x(), number('2')), number('1')),
+			subtract(power(x(), number('2')), number('3')),
 			'fraction'
 		);
 		expect(() => generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' })).toThrow(
@@ -552,6 +553,160 @@ describe('pedagogical-integration pipeline — V1.1 arctan/arcsin (sup only)', (
 		expect(() => generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' })).toThrow(
 			PedagogicalIntegrationNotImplemented
 		);
+	});
+});
+
+describe('pedagogical-integration pipeline — V2 partial fractions', () => {
+	it('integrates ∫1/(x²-1) dx via partial fractions', () => {
+		const integrand = divide(
+			number('1'),
+			subtract(power(x(), number('2')), number('1')),
+			'fraction'
+		);
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' });
+		const ruleSeq = rules(result.steps);
+		expect(ruleSeq).toContain('decompose-rational');
+		expect(ruleSeq).toContain('apply-partial-fractions');
+		// Antiderivative should contain two ln terms.
+		const latex = toLatex(result.antiderivative);
+		expect(latex).toContain('\\ln');
+	});
+
+	it('integrates ∫1/(x²-3x+2) dx (Q = (x-1)(x-2))', () => {
+		// x² - 3x + 2 = (x-1)(x-2), roots r₁=1, r₂=2.
+		// Decomposition : 1/((x-1)(x-2)) = -1/(x-1) + 1/(x-2)
+		// Antiderivative : -ln|x-1| + ln|x-2|.
+		const denom = add(
+			subtract(power(x(), number('2')), implicitMultiply(number('3'), x())),
+			number('2')
+		);
+		const integrand = divide(number('1'), denom, 'fraction');
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' });
+		expect(rules(result.steps)).toContain('decompose-rational');
+	});
+
+	it('integrates ∫(2x+3)/((x-1)(x+2)) dx with linear numerator (expanded form)', () => {
+		// Q = (x-1)(x+2) = x² + x - 2, roots r₁=1, r₂=-2.
+		// P = 2x + 3.
+		// A = P(1)/(r₁-r₂) = 5/3, B = P(-2)/(r₂-r₁) = -1/(-3) = 1/3.
+		const denom = subtract(add(power(x(), number('2')), x()), number('2'));
+		const numerator = add(implicitMultiply(number('2'), x()), number('3'));
+		const integrand = divide(numerator, denom, 'fraction');
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' });
+		expect(rules(result.steps)).toContain('decompose-rational');
+		expect(rules(result.steps)).toContain('apply-partial-fractions');
+	});
+
+	it('partial-fractions also works at supérieur', () => {
+		const integrand = divide(
+			number('1'),
+			subtract(power(x(), number('2')), number('1')),
+			'fraction'
+		);
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
+		expect(rules(result.steps)).toContain('decompose-rational');
+	});
+
+	it('does NOT trigger on `2x/(x²-1)` — composite-ln catches it first', () => {
+		// numerator 2x = derivative of (x²-1), so this is the canonical
+		// composite-ln pattern. Must NOT route to partial-fractions.
+		const integrand = divide(
+			implicitMultiply(number('2'), x()),
+			subtract(power(x(), number('2')), number('1')),
+			'fraction'
+		);
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' });
+		expect(rules(result.steps)).toContain('apply-composite-ln');
+		expect(rules(result.steps)).not.toContain('decompose-rational');
+	});
+
+	it('refuses Δ < 0: ∫1/(x²+x+1) dx', () => {
+		// Δ = 1 - 4 = -3 < 0, no real roots.
+		const integrand = divide(
+			number('1'),
+			add(add(power(x(), number('2')), x()), number('1')),
+			'fraction'
+		);
+		expect(() => generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' })).toThrow(
+			PedagogicalIntegrationNotImplemented
+		);
+	});
+
+	it('refuses Δ = 0 (repeated root): ∫1/(x-1)² dx', () => {
+		// (x-1)² = x² - 2x + 1, Δ = 4 - 4 = 0. Repeated root r=1.
+		// V2 simple supports only distinct roots ; repeated would need a
+		// different decomposition with `1/(x-1)² → -1/(x-1)`.
+		const denom = add(
+			subtract(power(x(), number('2')), implicitMultiply(number('2'), x())),
+			number('1')
+		);
+		const integrand = divide(number('1'), denom, 'fraction');
+		expect(() => generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' })).toThrow(
+			PedagogicalIntegrationNotImplemented
+		);
+	});
+});
+
+describe('pedagogical-integration pipeline — V2 arctan/arcsin général (a≠1)', () => {
+	it('integrates ∫1/(4+x²) dx → (1/2)·arctan(x/2) at supérieur', () => {
+		const integrand = divide(number('1'), add(number('4'), power(x(), number('2'))), 'fraction');
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
+		expect(rules(result.steps)).toContain('apply-known-primitive');
+		const latex = toLatex(result.antiderivative);
+		expect(latex).toContain('arctan');
+		expect(latex).toContain('2');
+	});
+
+	it('integrates ∫1/(9+x²) dx → (1/3)·arctan(x/3)', () => {
+		const integrand = divide(number('1'), add(number('9'), power(x(), number('2'))), 'fraction');
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
+		const latex = toLatex(result.antiderivative);
+		expect(latex).toContain('arctan');
+		expect(latex).toContain('3');
+	});
+
+	it('integrates ∫1/(x²+4) dx (commutative form)', () => {
+		const integrand = divide(number('1'), add(power(x(), number('2')), number('4')), 'fraction');
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
+		expect(toLatex(result.antiderivative)).toContain('arctan');
+	});
+
+	it('integrates ∫1/√(4-x²) dx → arcsin(x/2)', () => {
+		const integrand = divide(
+			number('1'),
+			sqrt(subtract(number('4'), power(x(), number('2')))),
+			'fraction'
+		);
+		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
+		const latex = toLatex(result.antiderivative);
+		expect(latex).toContain('arcsin');
+		expect(latex).toContain('2');
+	});
+
+	it('refuses general arctan form at lycée (out of Tle spé scope)', () => {
+		const integrand = divide(number('1'), add(number('4'), power(x(), number('2'))), 'fraction');
+		expect(() => generatePedagogicalIntegrationSteps(integrand, { level: 'lycee' })).toThrow(
+			PedagogicalIntegrationNotImplemented
+		);
+	});
+
+	it('does not match arctan form for `c ≤ 0` (e.g. `1/(0+x²)`)', () => {
+		// Arctan form requires c > 0 ; `0+x²` reduces to `x²` and should not be
+		// detected as arctan even at supérieur. We verify by checking that the
+		// arctan detector returns null on this synthetic shape.
+		const arctanShape = divide(number('1'), add(number('0'), power(x(), number('2'))), 'fraction');
+		// Direct call : matchArctanForm should return null because c=0.
+		// We cannot import internal helpers in this test file, so we instead
+		// run the pipeline and verify the antiderivative does NOT contain arctan
+		// (it'll either throw or use another rule).
+		let usedArctan = false;
+		try {
+			const result = generatePedagogicalIntegrationSteps(arctanShape, { level: 'superieur' });
+			usedArctan = toLatex(result.antiderivative).includes('arctan');
+		} catch {
+			usedArctan = false;
+		}
+		expect(usedArctan).toBe(false);
 	});
 });
 

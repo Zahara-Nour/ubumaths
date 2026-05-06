@@ -11,16 +11,17 @@ Créer un module `src/lib/mathAST/pedagogical-integration/` qui implémente un d
 
 ## État global
 
-| Phase    | Status     | Commit      | Notes                                                                                            |
-| -------- | ---------- | ----------- | ------------------------------------------------------------------------------------------------ |
-| 0        | ✅ Validée | —           | Q1-Q10 validées par utilisateur. **Q3 override** : IPP activée AUSSI au lycée (Tle spé)          |
-| 1        | ✅ Livrée  | `0a4751a5d` | 14 tests : types + isolation (BaseStep + GenericTechnicalRenderer)                               |
-| 2        | ✅ Livrée  | `e576400da` | 52 tests pipeline : primitives, linéarité, formes composées, definite, IPP, opposite             |
-| 3        | ✅ Livrée  | `0fe7ca6c0` | 18 tests renderer : TITLES/EXPLANATIONS lycée+sup, LaTeX 2-lignes, bump primaire/college         |
-| 4        | ✅ Livrée  | `fd6a6381b` | 26 snapshots × 7 catégories de démos + CLI standalone `scripts/pedagogical-integration-demo.ts`  |
-| 5        | ✅ Livrée  | `4a3bf5e57` | Mode B `kind: 'integrate'` + 6 tests correction-generator + 2 fixtures + page debug 11→13        |
-| 6        | ✅ Livrée  | `76824564e` | Quality checks + docs progress                                                                   |
-| **V1.1** | ✅ Livrée  | (next)      | **IPP cyclique + arctan/arcsin + tabular IPP** : 25 rules (24+`apply-cyclic-ipp`), 14 tests V1.1 |
+| Phase    | Status     | Commit      | Notes                                                                                                                            |
+| -------- | ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 0        | ✅ Validée | —           | Q1-Q10 validées par utilisateur. **Q3 override** : IPP activée AUSSI au lycée (Tle spé)                                          |
+| 1        | ✅ Livrée  | `0a4751a5d` | 14 tests : types + isolation (BaseStep + GenericTechnicalRenderer)                                                               |
+| 2        | ✅ Livrée  | `e576400da` | 52 tests pipeline : primitives, linéarité, formes composées, definite, IPP, opposite                                             |
+| 3        | ✅ Livrée  | `0fe7ca6c0` | 18 tests renderer : TITLES/EXPLANATIONS lycée+sup, LaTeX 2-lignes, bump primaire/college                                         |
+| 4        | ✅ Livrée  | `fd6a6381b` | 26 snapshots × 7 catégories de démos + CLI standalone `scripts/pedagogical-integration-demo.ts`                                  |
+| 5        | ✅ Livrée  | `4a3bf5e57` | Mode B `kind: 'integrate'` + 6 tests correction-generator + 2 fixtures + page debug 11→13                                        |
+| 6        | ✅ Livrée  | `76824564e` | Quality checks + docs progress                                                                                                   |
+| **V1.1** | ✅ Livrée  | `fdef883ed` | **IPP cyclique + arctan/arcsin + tabular IPP** : 25 rules (24+`apply-cyclic-ipp`), 14 tests V1.1                                 |
+| **V2**   | ✅ Livrée  | (next)      | **Partial-fractions simples + arctan/arcsin général** : 27 rules (+`decompose-rational`, `apply-partial-fractions`), 13 tests V2 |
 
 ## Décisions architecturales (Phase 0 — validées)
 
@@ -172,14 +173,56 @@ de profondeur (un pour intégrer dv, un pour intégrer vDu) et les
 `extract-constant` en cascade ajoutent encore. **Fix** : default bumpé à
 `10` (couvre confortablement n ≤ 5). 4 tests dédiés.
 
-## Limitations connues V1.1
+## V2 — Partial-fractions + arctan/arcsin général
 
-1. **Partial-fractions** (`∫1/(x²-1) dx`) — V2.
-2. **trig-substitution** (`∫√(1-x²) dx` etc.) — supérieur avancé, V2.
-3. **arctan/arcsin général** (`1/(a²+x²)`, `1/√(a²-x²)` avec a≠1) — V2.
-4. **Intégrales impropres**, **fonctions par morceaux**, **intégrales paramétriques** — hors scope.
-5. **`1·x²` literally** : ne trigger pas `extract-constant` (c=1 rejeté). Cas pathologique en pratique.
-6. **Constantes paramétriques** (`∫(ax+b) dx` où a,b sont des paramètres) — V2 (analogue quadratic V2).
+Deux extensions livrées dans le tunnel V2 :
+
+### A. Partial-fractions simples (lycée Tle spé option + supérieur)
+
+`∫P(x)/Q(x) dx` où Q est quadratique avec **deux racines réelles distinctes
+rationnelles** (Δ > 0) et `deg(P) < 2`. Décomposition en éléments simples
+via la « méthode des racines » :
+
+```
+P(r₁) / (aQ · (r₁ - r₂)) = A,    P(r₂) / (aQ · (r₂ - r₁)) = B
+∫ P/Q dx = A·ln|x-r₁| + B·ln|x-r₂|
+```
+
+Deux nouvelles rules : `decompose-rational` (étape algébrique) +
+`apply-partial-fractions` (intégration des éléments simples). Détecteur
+`tryDetectPartialFractions` : pré-traitement via `normalize/denormalize`
+pour expandre `(x-1)(x+1) → x²-1`, puis `extractQuadraticCoefficients`
+de `solve/solvers/quadratic.ts` pour extraire (a, b, c) numériques.
+Filtre `isRationalLike` (heuristique 1/d avec d ≤ 1000) pour rejeter les
+racines irrationnelles. Stratégie : `enablePartialFractions: true` aux
+deux niveaux. Cas refusés : Δ ≤ 0, deg(P) ≥ 2, racines irrationnelles,
+cancellation (catché par composite-ln en amont).
+
+### B. arctan/arcsin général (a ≠ 1)
+
+Étendu à `1/(c+x²) → (1/a)·arctan(x/a)` et `1/√(c-x²) → arcsin(x/a)`
+avec `a = √c` (a > 0 réel). `arctanRule` / `arcsinRule` de
+`integration/rules.ts` gèrent déjà les deux cas (unit a=1 et général).
+Stratégie : `enableInverseTrig: true` au supérieur uniquement. 6 tests
+V2 dédiés.
+
+## Limitations connues V2
+
+1. **Partial-fractions racines répétées** (`1/(x-1)²`) — V2.1 ou V3.
+2. **Partial-fractions deg(P) ≥ deg(Q)** (nécessite division euclidienne
+   préalable) — V2.1.
+3. **Partial-fractions racines irrationnelles** — rejetées par
+   `isRationalLike` (rendu trop lourd pédagogiquement avec `√Δ`).
+4. **Partial-fractions Q degré ≥ 3** (3+ facteurs linéaires) — V2.1.
+5. **Partial-fractions facteur quadratique irréductible** (mène à arctan)
+   — V2.2.
+6. **trig-substitution** (`∫√(1-x²) dx` etc.) — supérieur avancé, hors V2.
+7. **Intégrales impropres**, **fonctions par morceaux**, **intégrales
+   paramétriques** — hors scope.
+8. **`1·x²` literally** : ne trigger pas `extract-constant` (c=1 rejeté).
+   Cas pathologique en pratique.
+9. **Constantes paramétriques** (`∫(ax+b) dx` où a,b sont des paramètres)
+   — V2.1 (analogue quadratic V2).
 
 ## Pistes d'amélioration (V2)
 

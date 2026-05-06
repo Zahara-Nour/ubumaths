@@ -87,6 +87,9 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'apply-parts-formula': () => "Formule de l'IPP : ∫u dv = uv − ∫v du",
 	'apply-cyclic-ipp': () =>
 		"IPP cyclique : on retrouve l'intégrale de départ, on résout l'équation",
+	'decompose-rational': (b) =>
+		`Décomposition en éléments simples : on cherche A et B tels que la fraction se décompose en A/(x − ${bind(b, 'r1')}) + B/(x − ${bind(b, 'r2')})`,
+	'apply-partial-fractions': () => 'Intégration de chaque terme : ∫A/(x − r) dx = A·ln|x − r|',
 	// ---- Final ----
 	'add-constant': () => "On ajoute la constante d'intégration C",
 	'simplify-result': () => 'Simplification du résultat'
@@ -116,6 +119,8 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'choose-u-dv': (b) => `u = ${bind(b, 'u')},\\ dv = ${bind(b, 'dv')}`,
 	'apply-parts-formula': () => '\\int u\\,dv = uv - \\int v\\,du',
 	'apply-cyclic-ipp': () => 'I\\,(1 - k) = u_0 v_0 - u_1 v_1',
+	'decompose-rational': () => '\\dfrac{P(x)}{Q(x)} = \\dfrac{A}{x-r_1} + \\dfrac{B}{x-r_2}',
+	'apply-partial-fractions': () => '\\int \\dfrac{A}{x-r}\\,dx = A\\ln|x-r|',
 	'add-constant': () => '+ C',
 	'simplify-result': () => 'Simplification'
 };
@@ -170,6 +175,10 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		"On applique la formule ∫u dv = uv − ∫v du, puis on calcule l'intégrale restante.",
 	'apply-cyclic-ipp': () =>
 		"Après deux IPP successives, l'intégrale de départ I réapparaît dans le second membre. On obtient une équation du type I = expression − k·I, qu'on résout pour I : I = expression / (1 − k).",
+	'decompose-rational': (b) =>
+		`On factorise le dénominateur : Q(x) = (x − ${bind(b, 'r1')})(x − ${bind(b, 'r2')}). Puis on décompose P(x)/Q(x) = A/(x − ${bind(b, 'r1')}) + B/(x − ${bind(b, 'r2')}). On trouve A = ${bind(b, 'A')} et B = ${bind(b, 'B')} (méthode des racines : substituer x = ${bind(b, 'r1')} et x = ${bind(b, 'r2')}).`,
+	'apply-partial-fractions': () =>
+		"Chaque terme A/(x − r) s'intègre en A·ln|x − r|. La somme des deux logarithmes donne la primitive cherchée.",
 	'add-constant': () =>
 		'Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.'
 };
@@ -209,6 +218,8 @@ const DEFAULT_DESCRIPTIONS: Record<PedagogicalIntegrationRule, string> = {
 	'choose-u-dv': 'Choix de u et dv',
 	'apply-parts-formula': "Formule de l'intégration par parties",
 	'apply-cyclic-ipp': 'Résolution algébrique (IPP cyclique)',
+	'decompose-rational': 'Décomposition en éléments simples',
+	'apply-partial-fractions': 'Intégration des éléments simples',
 	'add-constant': "Constante d'intégration",
 	'simplify-result': 'Simplification'
 };
