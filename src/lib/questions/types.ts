@@ -1002,6 +1002,15 @@ export type GeneratedSteps =
 			readonly options?: GeneratedStepsOptions;
 	  }
 	| {
+			readonly kind: 'rational-inequality';
+			/**
+			 * Template rational inequality `P(x)/Q(x) ⊻ 0` — supports `{{a}}`,
+			 * `{{eval:...}}`, etc. Calls `pedagogical-solve/rational-inequality`.
+			 */
+			readonly inequality: string;
+			readonly options?: GeneratedStepsOptions;
+	  }
+	| {
 			readonly kind: 'differentiate';
 			/** Template expression of the function `f(x)` to differentiate. */
 			readonly expression: string;

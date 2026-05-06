@@ -50,7 +50,10 @@ export type EquationOperation =
 	// Shared kinds
 	// =============================================================================
 	/** Initial classification — no transformation, just labels the equation. */
-	| { readonly kind: 'identify-equation'; readonly equationType: 'linear' | 'quadratic' }
+	| {
+			readonly kind: 'identify-equation';
+			readonly equationType: 'linear' | 'quadratic' | 'rational';
+	  }
 	/** Simplify a side (collecting like terms, evaluating arithmetic). */
 	| { readonly kind: 'simplify'; readonly side: 'left' | 'right' | 'both' }
 
@@ -308,6 +311,70 @@ export type EquationOperation =
 			readonly kind: 'inequality-conclude-from-isolated-square';
 			readonly relation: '<' | '>' | '<=' | '>=' | '!=';
 			readonly solutionDescription: string;
+	  }
+	// =============================================================================
+	// Palier 3 — Rational inequality kinds
+	// =============================================================================
+	/**
+	 * Palier 3 — recognise the rational form `P(x)/Q(x) ⊻ 0`. Carries the
+	 * extracted numerator and denominator MathNodes for the renderer to display.
+	 */
+	| {
+			readonly kind: 'identify-rational';
+			readonly numerator: MathNode;
+			readonly denominator: MathNode;
+	  }
+	/**
+	 * Palier 3 — list the values where the denominator vanishes. These are the
+	 * forbidden values of the variable, displayed as `D = ℝ \ {z₁, …, zₙ}`.
+	 */
+	| {
+			readonly kind: 'rational-domain-restriction';
+			readonly excluded: readonly MathNode[];
+			readonly variable: string;
+	  }
+	/**
+	 * Palier 3 — locate the roots of the numerator (where the fraction equals
+	 * zero) and the zeros of the denominator (forbidden, double-bar in the sign
+	 * table). The renderer formats both lists.
+	 */
+	| {
+			readonly kind: 'rational-locate-roots';
+			readonly numeratorRoots: readonly MathNode[];
+			readonly denominatorZeros: readonly MathNode[];
+	  }
+	/**
+	 * Palier 3 — combined sign table for `P(x)/Q(x)`. Four rows : `x`, `P(x)`,
+	 * `Q(x)`, and `P(x)/Q(x)`. Double-bars in the bottom row at columns where
+	 * `Q` vanishes (the fraction is undefined there). The renderer computes
+	 * sign alternation from `leadingCoefP` and `leadingCoefQ` plus root parities.
+	 */
+	| {
+			readonly kind: 'rational-sign-table';
+			readonly numerator: MathNode;
+			readonly denominator: MathNode;
+			readonly numeratorRoots: readonly MathNode[];
+			readonly denominatorZeros: readonly MathNode[];
+			readonly leadingCoefP: MathNode;
+			readonly leadingCoefQ: MathNode;
+			/**
+			 * Actual polynomial degree of P and Q (used by the renderer to compute
+			 * the sign at −∞ via `leadSign × (−1)^degree`). Distinct from
+			 * `numeratorRoots.length` because complex roots are not in that array.
+			 */
+			readonly degP: number;
+			readonly degQ: number;
+			readonly variable: string;
+	  }
+	/**
+	 * Palier 3 — read the solution domain from the rational sign table. Mirrors
+	 * `inequality-conclude-quadratic` field shape but kept distinct so the
+	 * narrative remains explicit and tests can assert on rule names.
+	 */
+	| {
+			readonly kind: 'inequality-conclude-rational';
+			readonly relation: '<' | '>' | '<=' | '>=' | '!=';
+			readonly solutionDescription: string;
 	  };
 
 // =============================================================================
@@ -484,4 +551,42 @@ export const STRATEGIES_QUADRATIC: Readonly<
 > = {
 	lycee: { includeIdentify: true, emitSeparateDiscriminantSign: true },
 	superieur: { includeIdentify: false, emitSeparateDiscriminantSign: false }
+};
+
+// =============================================================================
+// Palier 3 — Rational inequalities
+// =============================================================================
+
+/**
+ * School levels supported by the rational inequality pipeline.
+ *
+ * Matches `QuadraticSchoolLevel` because rational inequalities are taught in
+ * 1ère and Terminale spécialité maths — same audience as quadratic.
+ */
+export type RationalSchoolLevel = QuadraticSchoolLevel;
+
+/**
+ * Options for `generateRationalInequalitySteps`. Mirrors
+ * `QuadraticInequalityStepsOptions`.
+ */
+export interface RationalInequalityStepsOptions {
+	readonly level: RationalSchoolLevel;
+	readonly includeSubSteps?: boolean;
+	readonly variable?: string;
+}
+
+/**
+ * Per-level strategy for the rational pipeline. Same shape as the quadratic
+ * strategy : `includeIdentify` toggles the leading `identify-equation` step
+ * (true at lycée, false at supérieur).
+ */
+export interface RationalGenerationStrategy {
+	readonly includeIdentify: boolean;
+}
+
+export const STRATEGIES_RATIONAL: Readonly<
+	Record<RationalSchoolLevel, RationalGenerationStrategy>
+> = {
+	lycee: { includeIdentify: true },
+	superieur: { includeIdentify: false }
 };

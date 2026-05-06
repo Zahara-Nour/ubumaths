@@ -44,6 +44,7 @@ import {
 	PedagogicalInequalityError
 } from '$lib/mathAST/pedagogical-solve/linear-inequality';
 import { generateQuadraticInequalitySteps } from '$lib/mathAST/pedagogical-solve/quadratic-inequality';
+import { generateRationalInequalitySteps } from '$lib/mathAST/pedagogical-solve/rational-inequality';
 import { InequalityNotSolvable } from '$lib/mathAST/solve/inequality/types';
 import type { LinearSchoolLevel, QuadraticSchoolLevel } from '$lib/mathAST/pedagogical-solve/types';
 
@@ -123,6 +124,14 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 				break;
 			case 'quadratic-inequality':
 				renderedSteps = renderQuadraticInequality({
+					inequality: generatedSteps.inequality,
+					instance,
+					schoolLevel,
+					verbosity
+				});
+				break;
+			case 'rational-inequality':
+				renderedSteps = renderRationalInequality({
 					inequality: generatedSteps.inequality,
 					instance,
 					schoolLevel,
@@ -359,6 +368,54 @@ function renderQuadraticInequality({
 	const renderer = new QuadraticEquationRenderer();
 	const renderOptions: PedagogicalRenderOptions = {
 		schoolLevel: quadraticLevel,
+		verbosity
+	};
+	return renderer.renderAll(steps, renderOptions);
+}
+
+interface RationalInequalityDispatch {
+	readonly inequality: string;
+	readonly instance: QuestionInstance;
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+}
+
+function renderRationalInequality({
+	inequality,
+	instance,
+	schoolLevel,
+	verbosity
+}: RationalInequalityDispatch): readonly RenderedStep[] | null {
+	const node = parseExpression(inequality, instance);
+	if (node === null) return null;
+
+	if (node.type !== 'relation') return null;
+	const relationNode = node as RelationNode;
+
+	// Rational fractions are taught at lycée + ; bump lower levels.
+	const rationalLevel: QuadraticSchoolLevel =
+		schoolLevel === 'primaire' || schoolLevel === 'college' ? 'lycee' : schoolLevel;
+
+	let steps;
+	try {
+		steps = generateRationalInequalitySteps(relationNode, { level: rationalLevel });
+	} catch (err) {
+		// V1 scope refusals → silent fallback to Mode A.
+		if (
+			err instanceof UnsupportedInequalityDegree ||
+			err instanceof InequalityNotSolvable ||
+			err instanceof PedagogicalInequalityError
+		) {
+			return null;
+		}
+		throw err;
+	}
+
+	// Reuses `QuadraticEquationRenderer` (now polyvalent — handles rational
+	// kinds since palier 3).
+	const renderer = new QuadraticEquationRenderer();
+	const renderOptions: PedagogicalRenderOptions = {
+		schoolLevel: rationalLevel,
 		verbosity
 	};
 	return renderer.renderAll(steps, renderOptions);

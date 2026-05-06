@@ -82,6 +82,11 @@ import { InequalityNotSolvable } from '../solve/inequality/types';
 // single import).
 export { UnsupportedInequalityDegree, PedagogicalInequalityError };
 
+// Internal helpers exposed (palier 3 reuse pattern, mirror of quadratic.ts).
+// Exported with underscore prefix to mark "internal across the pedagogical-solve
+// barrier" — not for external consumers.
+export { describeDomain as _describeDomain };
+
 // =============================================================================
 // Internal types
 // =============================================================================

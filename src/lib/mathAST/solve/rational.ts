@@ -190,7 +190,7 @@ export function tryRationalDecomposition(
  * `variable`. Returns the ORIGINAL (non-normalized) denominators so that
  * extraneous-root filtering is based on the user's actual fraction shape.
  */
-function collectDenominators(expr: MathNode, variable: string): MathNode[] {
+export function collectDenominators(expr: MathNode, variable: string): MathNode[] {
 	const denominators: MathNode[] = [];
 	mapNode(expr, (n) => {
 		if (n.type === 'division' && hasVariable(n.denominator, variable)) {

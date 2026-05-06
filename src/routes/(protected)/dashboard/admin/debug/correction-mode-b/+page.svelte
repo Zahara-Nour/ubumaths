@@ -21,7 +21,9 @@
 		linearInequalityTwoSidesDemo,
 		quadraticEquationDemo,
 		quadraticInequalityClassicDemo,
-		quadraticInequalityNegativeADemo
+		quadraticInequalityNegativeADemo,
+		rationalInequalitySimpleDemo,
+		rationalInequalityQuadDenomDemo
 	} from '$lib/questions/__tests__/fixtures/generated-steps-demo';
 	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
@@ -40,6 +42,8 @@
 	const quadraticResult = generateInstance(quadraticEquationDemo, 1);
 	const quadraticIneqClassicResult = generateInstance(quadraticInequalityClassicDemo, 1);
 	const quadraticIneqNegativeAResult = generateInstance(quadraticInequalityNegativeADemo, 1);
+	const rationalIneqSimpleResult = generateInstance(rationalInequalitySimpleDemo, 1);
+	const rationalIneqQuadDenomResult = generateInstance(rationalInequalityQuadDenomDemo, 1);
 	const differentiatePolyResult = generateInstance(differentiatePolynomialDemo, 1);
 	const differentiateCompResult = generateInstance(differentiateCompositionDemo, 1);
 
@@ -79,6 +83,10 @@
 	const quadraticIneqClassicIncorrect = buildAnswerResult(quadraticIneqClassicResult, 1, false);
 	const quadraticIneqNegativeACorrect = buildAnswerResult(quadraticIneqNegativeAResult, 0, true);
 	const quadraticIneqNegativeAIncorrect = buildAnswerResult(quadraticIneqNegativeAResult, 1, false);
+	const rationalIneqSimpleCorrect = buildAnswerResult(rationalIneqSimpleResult, 0, true);
+	const rationalIneqSimpleIncorrect = buildAnswerResult(rationalIneqSimpleResult, 1, false);
+	const rationalIneqQuadDenomCorrect = buildAnswerResult(rationalIneqQuadDenomResult, 0, true);
+	const rationalIneqQuadDenomIncorrect = buildAnswerResult(rationalIneqQuadDenomResult, 1, false);
 	const differentiatePolyCorrect = buildAnswerResult(differentiatePolyResult, 0, true);
 	const differentiatePolyIncorrect = buildAnswerResult(differentiatePolyResult, 1, false);
 	const differentiateCompCorrect = buildAnswerResult(differentiateCompResult, 0, true);
@@ -116,6 +124,16 @@
 	const quadraticIneqNegativeASteps = $derived(
 		quadraticIneqNegativeAResult.success
 			? quadraticIneqNegativeAResult.instance.correction?._renderedSteps
+			: undefined
+	);
+	const rationalIneqSimpleSteps = $derived(
+		rationalIneqSimpleResult.success
+			? rationalIneqSimpleResult.instance.correction?._renderedSteps
+			: undefined
+	);
+	const rationalIneqQuadDenomSteps = $derived(
+		rationalIneqQuadDenomResult.success
+			? rationalIneqQuadDenomResult.instance.correction?._renderedSteps
 			: undefined
 	);
 	const differentiatePolySteps = $derived(
@@ -365,6 +383,32 @@
 
 			<Card.Root>
 				<Card.Header>
+					<Card.Title>1ère spé — inéquation rationnelle (P/Q linéaires)</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if rationalIneqSimpleSteps}
+						<GeneratedStepsCorrection steps={rationalIneqSimpleSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
+					<Card.Title>Tle spé — inéquation rationnelle (Q quadratique)</Card.Title>
+				</Card.Header>
+				<Card.Content>
+					{#if rationalIneqQuadDenomSteps}
+						<GeneratedStepsCorrection steps={rationalIneqQuadDenomSteps} />
+					{:else}
+						<p class="text-muted-foreground">Aucune étape générée.</p>
+					{/if}
+				</Card.Content>
+			</Card.Root>
+
+			<Card.Root>
+				<Card.Header>
 					<Card.Title>1ère spé — dérivée polynomiale</Card.Title>
 				</Card.Header>
 				<Card.Content>
@@ -513,28 +557,72 @@
 					/>
 				</div>
 			{/if}
+			{#if rationalIneqSimpleCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">
+						1ère spé — inéquation rationnelle simple — correcte
+					</h3>
+					<CorrectionCard answerResult={rationalIneqSimpleCorrect} questionNumber={15} size="md" />
+				</div>
+			{/if}
+			{#if rationalIneqSimpleIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">
+						1ère spé — inéquation rationnelle simple — incorrecte
+					</h3>
+					<CorrectionCard
+						answerResult={rationalIneqSimpleIncorrect}
+						questionNumber={16}
+						size="md"
+					/>
+				</div>
+			{/if}
+			{#if rationalIneqQuadDenomCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">
+						Tle spé — inéquation rationnelle (Q quadratique) — correcte
+					</h3>
+					<CorrectionCard
+						answerResult={rationalIneqQuadDenomCorrect}
+						questionNumber={17}
+						size="md"
+					/>
+				</div>
+			{/if}
+			{#if rationalIneqQuadDenomIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">
+						Tle spé — inéquation rationnelle (Q quadratique) — incorrecte
+					</h3>
+					<CorrectionCard
+						answerResult={rationalIneqQuadDenomIncorrect}
+						questionNumber={18}
+						size="md"
+					/>
+				</div>
+			{/if}
 			{#if differentiatePolyCorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">1ère spé — réponse correcte (polynôme)</h3>
-					<CorrectionCard answerResult={differentiatePolyCorrect} questionNumber={15} size="md" />
+					<CorrectionCard answerResult={differentiatePolyCorrect} questionNumber={19} size="md" />
 				</div>
 			{/if}
 			{#if differentiatePolyIncorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">1ère spé — réponse incorrecte (polynôme)</h3>
-					<CorrectionCard answerResult={differentiatePolyIncorrect} questionNumber={16} size="md" />
+					<CorrectionCard answerResult={differentiatePolyIncorrect} questionNumber={20} size="md" />
 				</div>
 			{/if}
 			{#if differentiateCompCorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">Terminale spé — réponse correcte (composition)</h3>
-					<CorrectionCard answerResult={differentiateCompCorrect} questionNumber={17} size="md" />
+					<CorrectionCard answerResult={differentiateCompCorrect} questionNumber={21} size="md" />
 				</div>
 			{/if}
 			{#if differentiateCompIncorrect}
 				<div>
 					<h3 class="mb-2 text-lg font-medium">Terminale spé — réponse incorrecte (composition)</h3>
-					<CorrectionCard answerResult={differentiateCompIncorrect} questionNumber={18} size="md" />
+					<CorrectionCard answerResult={differentiateCompIncorrect} questionNumber={22} size="md" />
 				</div>
 			{/if}
 		</div>

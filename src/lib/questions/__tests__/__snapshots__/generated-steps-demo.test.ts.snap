@@ -207,6 +207,59 @@ exports[`Mode B end-to-end demos > 1ère spécialité quadratic inequality — p
 ]
 `;
 
+exports[`Mode B end-to-end demos > 1ère spécialité rational inequality (palier 3) — produces lycee steps with rational-sign-table + conclusion 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-equation",
+    "schoolLevel": "lycee",
+    "title": "Inéquation rationnelle",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "identify-rational",
+    "schoolLevel": "lycee",
+    "title": "On reconnaît la forme P(x) / Q(x)",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "rational-domain-restriction",
+    "schoolLevel": "lycee",
+    "title": "Domaine de définition : on exclut les zéros du dénominateur",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 4,
+    "rule": "rational-locate-roots",
+    "schoolLevel": "lycee",
+    "title": "Racines du numérateur et zéros du dénominateur",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 5,
+    "rule": "rational-sign-table",
+    "schoolLevel": "lycee",
+    "title": "On dresse le tableau de signes combiné de P(x), Q(x) et P(x)/Q(x)",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 6,
+    "rule": "inequality-conclude-rational",
+    "schoolLevel": "lycee",
+    "title": "Solution : S = ]1 ; 3[",
+  },
+]
+`;
+
 exports[`Mode B end-to-end demos > 4e linear equation — produces college steps 1`] = `
 [
   {
@@ -350,6 +403,59 @@ exports[`Mode B end-to-end demos > Terminale spécialité composition differenti
       },
     ],
     "title": "Dérivée de sinus",
+  },
+]
+`;
+
+exports[`Mode B end-to-end demos > Terminale spécialité rational inequality with quadratic denominator — multi-zero forbidden values 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-equation",
+    "schoolLevel": "lycee",
+    "title": "Inéquation rationnelle",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "identify-rational",
+    "schoolLevel": "lycee",
+    "title": "On reconnaît la forme P(x) / Q(x)",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "rational-domain-restriction",
+    "schoolLevel": "lycee",
+    "title": "Domaine de définition : on exclut les zéros du dénominateur",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 4,
+    "rule": "rational-locate-roots",
+    "schoolLevel": "lycee",
+    "title": "Racines du numérateur et zéros du dénominateur",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 5,
+    "rule": "rational-sign-table",
+    "schoolLevel": "lycee",
+    "title": "On dresse le tableau de signes combiné de P(x), Q(x) et P(x)/Q(x)",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 6,
+    "rule": "inequality-conclude-rational",
+    "schoolLevel": "lycee",
+    "title": "Solution : S = ]-1 ; 0] ∪ ]1 ; +∞[",
   },
 ]
 `;

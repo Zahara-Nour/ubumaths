@@ -91,8 +91,13 @@ function discriminantSymbol(numericValue: number | undefined): '>' | '=' | '<' {
 
 const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kind'], TitleFn>>> = {
 	lycee: {
-		'identify-equation': (_op, step) =>
-			isInequalityStep(step) ? 'Inéquation du second degré' : 'Équation du second degré',
+		'identify-equation': (op, step) => {
+			const eqType = (op as EquationOperation & { kind: 'identify-equation' }).equationType;
+			if (eqType === 'rational') {
+				return 'Inéquation rationnelle';
+			}
+			return isInequalityStep(step) ? 'Inéquation du second degré' : 'Équation du second degré';
+		},
 		standardize: (_op, step) =>
 			isInequalityStep(step)
 				? 'On met l’inéquation sous la forme `ax² + bx + c ⊻ 0`'
@@ -154,11 +159,28 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 				op as EquationOperation & { kind: 'inequality-conclude-from-isolated-square' }
 			).solutionDescription;
 			return `Solution : S = ${description}`;
+		},
+		// === Palier 3 — Rational inequality ===
+		'identify-rational': () => 'On reconnaît la forme P(x) / Q(x)',
+		'rational-domain-restriction': () =>
+			'Domaine de définition : on exclut les zéros du dénominateur',
+		'rational-locate-roots': () => 'Racines du numérateur et zéros du dénominateur',
+		'rational-sign-table': () =>
+			'On dresse le tableau de signes combiné de P(x), Q(x) et P(x)/Q(x)',
+		'inequality-conclude-rational': (op) => {
+			const description = (op as EquationOperation & { kind: 'inequality-conclude-rational' })
+				.solutionDescription;
+			return `Solution : S = ${description}`;
 		}
 	},
 	superieur: {
-		'identify-equation': (_op, step) =>
-			isInequalityStep(step) ? 'Inéquation du second degré' : 'Équation du second degré',
+		'identify-equation': (op, step) => {
+			const eqType = (op as EquationOperation & { kind: 'identify-equation' }).equationType;
+			if (eqType === 'rational') {
+				return 'Inéquation rationnelle';
+			}
+			return isInequalityStep(step) ? 'Inéquation du second degré' : 'Équation du second degré';
+		},
 		standardize: () => 'Forme standard',
 		'identify-coefficients': () => 'Coefficients a, b, c',
 		'compute-discriminant': (op) => {
@@ -195,6 +217,16 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 			const description = (
 				op as EquationOperation & { kind: 'inequality-conclude-from-isolated-square' }
 			).solutionDescription;
+			return `S = ${description}`;
+		},
+		// === Palier 3 — Rational inequality ===
+		'identify-rational': () => 'P(x) / Q(x)',
+		'rational-domain-restriction': () => 'Domaine',
+		'rational-locate-roots': () => 'Racines & zéros',
+		'rational-sign-table': () => 'Tableau de signes',
+		'inequality-conclude-rational': (op) => {
+			const description = (op as EquationOperation & { kind: 'inequality-conclude-rational' })
+				.solutionDescription;
 			return `S = ${description}`;
 		}
 	}
@@ -263,7 +295,18 @@ const EXPLANATIONS: Record<
 			'On lit la solution dans le tableau : on garde les intervalles où le signe satisfait l’opérateur de l’inéquation.',
 		// === Palier 2c — fast paths ===
 		'inequality-conclude-from-isolated-square': () =>
-			'Comme x² ≥ 0 toujours, on raisonne directement sur la valeur isolée à droite : selon son signe et l’opérateur, la solution est ∅, ℝ, ou un intervalle borné par ±√k.'
+			'Comme x² ≥ 0 toujours, on raisonne directement sur la valeur isolée à droite : selon son signe et l’opérateur, la solution est ∅, ℝ, ou un intervalle borné par ±√k.',
+		// === Palier 3 — Rational ===
+		'identify-rational': () =>
+			'Une inéquation rationnelle s’écrit P(x)/Q(x) ⊻ 0. La fraction n’est définie que là où le dénominateur Q(x) ≠ 0.',
+		'rational-domain-restriction': () =>
+			'On exclut du domaine les valeurs qui annulent le dénominateur — la fraction n’y est pas définie.',
+		'rational-locate-roots': () =>
+			'Le numérateur s’annule en ses racines (la fraction y vaut 0). Le dénominateur s’annule en ses zéros (la fraction y est indéfinie).',
+		'rational-sign-table': () =>
+			'On porte le signe de P(x) et de Q(x) sur chaque intervalle, puis on en déduit le signe du quotient. Une double-barre marque les valeurs interdites.',
+		'inequality-conclude-rational': () =>
+			'On lit dans la dernière ligne les intervalles où le signe satisfait l’opérateur de l’inéquation, en excluant les zéros du dénominateur.'
 	},
 	superieur: {
 		// Compact one-liners for supérieur — students at this level know the
@@ -279,7 +322,13 @@ const EXPLANATIONS: Record<
 		'zero-product': () => 'A · B = 0 ⇒ A = 0 ∨ B = 0.',
 		'quadratic-sign-table': () => 'Signe(P) = signe(a) à l’extérieur des racines.',
 		'inequality-conclude-quadratic': () => 'Lecture du tableau pour l’opérateur donné.',
-		'inequality-conclude-from-isolated-square': () => 'x² ≥ 0 ⇒ déduction directe sans tableau.'
+		'inequality-conclude-from-isolated-square': () => 'x² ≥ 0 ⇒ déduction directe sans tableau.',
+		// === Palier 3 — Rational ===
+		'identify-rational': () => 'Forme P(x)/Q(x) ⊻ 0.',
+		'rational-domain-restriction': () => 'Exclusion des zéros du dénominateur.',
+		'rational-locate-roots': () => 'Racines (P) et zéros (Q).',
+		'rational-sign-table': () => 'Signe(P/Q) = signe(P) · signe(Q) ; double-barre aux zéros de Q.',
+		'inequality-conclude-rational': () => 'Lecture du tableau pour l’opérateur donné.'
 	}
 };
 
@@ -421,6 +470,18 @@ function formatExpressionLatex(step: EquationStep): string {
 		// -------- Palier 2c — fast path b = 0 conclude --------
 		case 'inequality-conclude-from-isolated-square':
 			return formatConcludeFromIsolatedSquare(op);
+
+		// -------- Palier 3 — Rational kinds --------
+		case 'identify-rational':
+			return formatIdentifyRational(op);
+		case 'rational-domain-restriction':
+			return formatDomainRestriction(op);
+		case 'rational-locate-roots':
+			return formatLocateRoots(op);
+		case 'rational-sign-table':
+			return formatRationalSignTable(op);
+		case 'inequality-conclude-rational':
+			return formatConcludeRational(op);
 
 		// -------- Linear kinds (cross-pipeline misuse) — fallback to plain equation --------
 		default:
@@ -719,4 +780,148 @@ function escapeLatexBacktickFreeText(s: string): string {
 		.replace(/ℝ\s*\\\s*/g, '\\mathbb{R} \\setminus ')
 		.replace(/ℝ/g, '\\mathbb{R}')
 		.replace(/∞/g, '\\infty');
+}
+
+// =============================================================================
+// Palier 3 — Rational inequality formatters
+// =============================================================================
+
+/** `\dfrac{P(x)}{Q(x)}` */
+function formatIdentifyRational(op: EquationOperation & { kind: 'identify-rational' }): string {
+	return `P(x) = ${fmt(op.numerator)}, \\quad Q(x) = ${fmt(op.denominator)}`;
+}
+
+/** `D = \mathbb{R} \setminus \{z_1 ; z_2\}` (or `\mathbb{R}` if no exclusions). */
+function formatDomainRestriction(
+	op: EquationOperation & { kind: 'rational-domain-restriction' }
+): string {
+	if (op.excluded.length === 0) {
+		return 'D = \\mathbb{R}';
+	}
+	const points = op.excluded.map(fmt).join(' \\,;\\, ');
+	return `D = \\mathbb{R} \\setminus \\{${points}\\}`;
+}
+
+/** Aligned-list of numerator roots and denominator zeros. */
+function formatLocateRoots(op: EquationOperation & { kind: 'rational-locate-roots' }): string {
+	const lines: string[] = ['\\begin{aligned}'];
+	if (op.numeratorRoots.length === 0) {
+		lines.push('  \\text{Racines de } P(x)\\,&: \\text{aucune (le polynôme ne s’annule pas)} \\\\');
+	} else {
+		const roots = op.numeratorRoots.map(fmt).join(' \\,,\\, ');
+		lines.push(`  \\text{Racines de } P(x)\\,&: ${roots} \\\\`);
+	}
+	if (op.denominatorZeros.length === 0) {
+		lines.push('  \\text{Zéros de } Q(x)\\,&: \\text{aucun}');
+	} else {
+		const zeros = op.denominatorZeros.map(fmt).join(' \\,,\\, ');
+		lines.push(`  \\text{Zéros de } Q(x)\\,&: ${zeros}`);
+	}
+	lines.push('\\end{aligned}');
+	return lines.join(' ');
+}
+
+/** `S = ]a ; b[ ∪ …` — same shape as `formatConcludeQuadratic`. */
+function formatConcludeRational(
+	op: EquationOperation & { kind: 'inequality-conclude-rational' }
+): string {
+	return `S = ${escapeLatexBacktickFreeText(op.solutionDescription)}`;
+}
+
+/**
+ * Build the 4-row rational sign table : `x | P(x) | Q(x) | P(x)/Q(x)`.
+ *
+ * Sign computation : for each row, the sign at +∞ is given by the sign of the
+ * leading coefficient (positive for an even-degree polynomial with positive
+ * leading coef, etc.). The sign FLIPS at each root of that row's polynomial.
+ * The quotient row is the product of the P and Q signs per interval, with
+ * `0` at numerator roots and `||` (double-bar, undefined) at denominator zeros.
+ */
+function formatRationalSignTable(op: EquationOperation & { kind: 'rational-sign-table' }): string {
+	type Critical = { node: MathNode; value: number; isP: boolean; isQ: boolean };
+
+	// 1. Collect critical points (numerator roots + denominator zeros), tagged.
+	const criticals: Critical[] = [];
+	for (const r of op.numeratorRoots) {
+		const v = computeNumericValue(r);
+		if (v === null) continue;
+		criticals.push({ node: r, value: v, isP: true, isQ: false });
+	}
+	for (const z of op.denominatorZeros) {
+		const v = computeNumericValue(z);
+		if (v === null) continue;
+		// Merge if a root and a zero coincide (rare but possible after canon).
+		const same = criticals.find((c) => Math.abs(c.value - v) < 1e-9);
+		if (same) {
+			same.isQ = true;
+		} else {
+			criticals.push({ node: z, value: v, isP: false, isQ: true });
+		}
+	}
+	criticals.sort((a, b) => a.value - b.value);
+
+	// 2. Determine starting sign (at -∞) for P and Q.
+	// `op.degP`/`op.degQ` are the actual polynomial degrees, distinct from the
+	// number of distinct real roots (e.g. degree 2 with Δ < 0 has 0 real roots).
+	const pLead = computeNumericValue(op.leadingCoefP);
+	const qLead = computeNumericValue(op.leadingCoefQ);
+	function signAtMinusInf(leadSign: '+' | '-', degree: number): '+' | '-' {
+		// At +∞, sign = leadSign. At -∞, sign = leadSign × (-1)^degree.
+		if (degree % 2 === 0) return leadSign;
+		return leadSign === '+' ? '-' : '+';
+	}
+	const pLeadSign: '+' | '-' = pLead !== null && pLead < 0 ? '-' : '+';
+	const qLeadSign: '+' | '-' = qLead !== null && qLead < 0 ? '-' : '+';
+	let pSign = signAtMinusInf(pLeadSign, op.degP);
+	let qSign = signAtMinusInf(qLeadSign, op.degQ);
+	const flip = (s: '+' | '-'): '+' | '-' => (s === '+' ? '-' : '+');
+
+	// 3. Build each row column-by-column.
+	//    Layout : `x | -∞ | gap | c1 | gap | c2 | ... | +∞`
+	//    where each gap shows the sign on that interval, and each ci shows
+	//    `0` (root of that row's polynomial) or `||` (denom zero in P/Q row).
+	const variable = op.variable;
+	const xRow: string[] = [variable, '-\\infty'];
+	const pRow: string[] = ['P(' + variable + ')', ''];
+	const qRow: string[] = ['Q(' + variable + ')', ''];
+	const fracRow: string[] = [`\\dfrac{P(${variable})}{Q(${variable})}`, ''];
+
+	for (const c of criticals) {
+		// Interval cell : current signs
+		xRow.push('');
+		pRow.push(pSign);
+		qRow.push(qSign);
+		fracRow.push(quotientSign(pSign, qSign));
+		// Critical point cell : the value
+		xRow.push(fmt(c.node));
+		pRow.push(c.isP ? '0' : '');
+		qRow.push(c.isQ ? '0' : '');
+		// Quotient row : `||` if denom zero, `0` if num root only, else current sign
+		if (c.isQ) fracRow.push('||');
+		else if (c.isP) fracRow.push('0');
+		else fracRow.push('');
+		// Flip signs as we cross the critical point
+		if (c.isP) pSign = flip(pSign);
+		if (c.isQ) qSign = flip(qSign);
+	}
+	// Final interval to +∞
+	xRow.push('');
+	pRow.push(pSign);
+	qRow.push(qSign);
+	fracRow.push(quotientSign(pSign, qSign));
+	xRow.push('+\\infty');
+	pRow.push('');
+	qRow.push('');
+	fracRow.push('');
+
+	// 4. Assemble LaTeX : `\begin{array}{|c|...|}` with 1 + 2*N + 1 columns.
+	const numColumns = xRow.length;
+	const colSpec = '|c|' + 'c'.repeat(numColumns - 2) + '|';
+	const rows = [xRow, pRow, qRow, fracRow].map((r) => r.join(' & ')).join(' \\\\\n\\hline\n');
+	return `\\begin{array}{${colSpec}}\n\\hline\n${rows} \\\\\n\\hline\n\\end{array}`;
+}
+
+/** Multiplicative sign rule : `+ * + = +`, `- * - = +`, mixed = `-`. */
+function quotientSign(p: '+' | '-', q: '+' | '-'): '+' | '-' {
+	return p === q ? '+' : '-';
 }
