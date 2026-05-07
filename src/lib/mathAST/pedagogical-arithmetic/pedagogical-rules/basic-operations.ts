@@ -537,10 +537,88 @@ export const simplifyDivOne: PedagogicalArithmeticRule = {
 // Aggregated export
 // =============================================================================
 
+// =============================================================================
+// simplifyAddOpposite (Track E, opt-in via needsSignsStrict, priority 25)
+// =============================================================================
+
+/**
+ * `add(x, opposite(y)) → subtract(x, y)` — strips the cosmetic `+(-` motif.
+ * Right-opposite ONLY (decision E-1): `(-3) + 5` is left untouched (would
+ * require commutativity reordering, out of scope V1).
+ *
+ * Fizzles when `y` is itself an `opposite` (decision Q2) to avoid producing
+ * `5 - (-3)` which is worse than the input. The single-level guard is
+ * transitive for any depth ≥ 2 of nested opposites: a chain
+ * `opposite(opposite(...))` always exposes another `opposite` as its top
+ * operand, so the guard catches every case where firing would reintroduce
+ * a `-(-` motif. Cosmetic transforms upstream are responsible for
+ * collapsing double-opposites first.
+ *
+ * Priority 25 — strictly lower than `reduceFraction` (30) and trivials (50)
+ * because signs cosmetics are the LAST cosmetic step (after all structural
+ * simplifications and fraction reductions). Numeric inputs like `5 + (-3)`
+ * never reach this rule: `evaluateBinaryAdd` (priority 100) accepts
+ * `opposite(number)` as a numeric atom and resolves the addition directly.
+ * The rule is pedagogically useful only when evaluation is impossible
+ * (variables, e.g. `2x + (-3x) → 2x - 3x`).
+ *
+ * **Why not `P.parse('x + -y')`** — the `+` matcher is commutative, so
+ * the parsed pattern would also match `(-3) + 5` (binding `x=5, y=3`),
+ * violating E-1. We use a wildcard + manual structural check on
+ * `node.right` to bind specifically to the **right-positioned** opposite.
+ *
+ * Driven by `target.strictCosmetics.signs === 'strict'` — added as a
+ * terminal rule by `loadPedagogicalRules` only when `needsSignsStrict: true`.
+ * Not in `BASIC_OPERATION_RULES` (the default-loaded family).
+ */
+function applyAddOpposite(node: MathNode): MathNode | null {
+	if (!isAddition(node)) return null;
+	const right = node.right;
+	if (!isOpposite(right)) return null;
+	// Q2: avoid producing `x - (-y)` when y is already opposite.
+	if (isOpposite(right.operand)) return null;
+	return subtract(node.left, right.operand);
+}
+
+export const simplifyAddOpposite: PedagogicalArithmeticRule = {
+	name: 'simplify-add-opposite',
+	rule: createRule(
+		P._('s'),
+		(bindings) => {
+			const s = bindingNode(bindings, 's');
+			if (!s) return number('0');
+			return applyAddOpposite(s) ?? s;
+		},
+		{
+			name: 'simplify-add-opposite',
+			condition: (bindings) => {
+				const s = bindingNode(bindings, 's');
+				if (!s) return false;
+				return applyAddOpposite(s) !== null;
+			}
+		}
+	),
+	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
+	priority: 25,
+	descriptions: {
+		primaire: () => 'On remplace + (-y) par - y',
+		college: () => "On simplifie l'addition d'un opposé (+ (-y) → - y)",
+		lycee: () => '+ (-y) → - y',
+		superieur: () => '+(-)→-'
+	},
+	explanations: {
+		college: () =>
+			"Pour éviter d'écrire `+(-y)`, on remplace l'addition d'un opposé par une soustraction directe."
+	}
+};
+
 /**
  * Ordered collection of basic-operation rules — exported for `loadPedagogicalRules`
  * (Phase 8). Order does NOT determine application priority — that is taken from
  * each rule's `priority` field at engine setup time.
+ *
+ * Note: `simplifyAddOpposite` is intentionally **excluded** here (opt-in via
+ * `needsSignsStrict` — Track E decision E-1).
  */
 export const BASIC_OPERATION_RULES: readonly PedagogicalArithmeticRule[] = [
 	groupParentheses,
