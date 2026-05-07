@@ -204,4 +204,13 @@ export interface PedagogicalArithmeticOptions {
 	 * want the formal `|x|` (e.g. lycée+ proofs) opt in explicitly.
 	 */
 	readonly enableSquareRootOfSquare?: boolean;
+
+	/**
+	 * Track B — sub-level discriminator for `'college'`. When `'early'`
+	 * (typically 5e/4e), the pipeline uses direct multiplication for
+	 * common-denominator (`(a·d)/(b·d) + (c·b)/(b·d)`) — PGCD/LCM are not
+	 * yet on the curriculum. When `'late'` (3e, default), uses LCM
+	 * (`toCommonDenominator`). Has no effect outside `schoolLevel === 'college'`.
+	 */
+	readonly collegeSubLevel?: 'early' | 'late';
 }

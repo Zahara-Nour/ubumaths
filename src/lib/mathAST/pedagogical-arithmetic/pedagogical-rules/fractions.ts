@@ -194,7 +194,10 @@ export const toCommonDenominator: PedagogicalArithmeticRule = {
 			condition: (bindings) => applyToCommonDenominator(bindings) !== null
 		}
 	),
-	// Not pertinent for primaire (fractions à dénominateurs distincts pas au programme)
+	// LCM/PGCD path is collège+ only — the algorithm requires PGCD, which is
+	// not on the primaire curriculum. Fractions à dénominateurs distincts at
+	// primaire (when present) use the direct cross-product instead, via
+	// `toCommonDenominatorMultiply` below.
 	applicableLevels: ['college', 'lycee', 'superieur'],
 	priority: 130,
 	descriptions: {
@@ -205,6 +208,74 @@ export const toCommonDenominator: PedagogicalArithmeticRule = {
 	explanations: {
 		college: () =>
 			'Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).'
+	}
+};
+
+// =============================================================================
+// toCommonDenominatorMultiply (priority 130) — Track B (early-college variant)
+// =============================================================================
+
+/**
+ * `a/b + c/d → (a·d)/(b·d) + (c·b)/(b·d)` — direct product instead of LCM.
+ * Pedagogically simpler for primaire and early-college (5e/4e) where PGCD
+ * is not yet on the curriculum. The result is the SAME numerical fraction
+ * as the LCM path, but the intermediate denominator is the product `b·d`
+ * (which may then need further reduction via `reduceFraction`).
+ *
+ * Discriminated by `LoadRulesOptions.collegeSubLevel`:
+ *   - `'early'` (collège 5e/4e) → multiply, LCM excluded
+ *   - `'late'` (collège 3e, default) → LCM, multiply excluded
+ *
+ * At `'primaire'`, only this rule is loaded (LCM is excluded by its own
+ * `applicableLevels`). At `'lycée'`/`'superieur'`, only LCM is loaded
+ * (multiply excluded by its `applicableLevels`).
+ *
+ * Same priority (130) as `toCommonDenominator` — discrimination happens at
+ * the loader, not via priority. Preconditions identical: two fractions
+ * with distinct denominators (else `addSameDenominator` handles it).
+ */
+function applyToCommonDenominatorMultiply(bindings: MatchBindings): MathNode | null {
+	const left = bindingNode(bindings, 'l');
+	const right = bindingNode(bindings, 'r');
+	if (!left || !right) return null;
+	const lf = asIntegerFraction(left);
+	const rf = asIntegerFraction(right);
+	if (!lf || !rf) return null;
+	if (lf.d === rf.d) return null; // same denom → other rule handles
+	const product = lf.d * rf.d;
+	// Cross-multiply: (a · d) / (b · d) and (c · b) / (b · d).
+	const newLeft = unreducedFractionNode(lf.n * rf.d, product);
+	const newRight = unreducedFractionNode(rf.n * lf.d, product);
+	return add(newLeft, newRight);
+}
+
+export const toCommonDenominatorMultiply: PedagogicalArithmeticRule = {
+	name: 'to-common-denominator-multiply',
+	rule: createRule(
+		P.parse('l + r'),
+		(bindings) =>
+			applyToCommonDenominatorMultiply(bindings) ?? (bindingNode(bindings, 'l') as MathNode),
+		{
+			name: 'to-common-denominator-multiply',
+			condition: (bindings) => applyToCommonDenominatorMultiply(bindings) !== null
+		}
+	),
+	// `'primaire'` is intentional here: the direct cross-product method is
+	// pedagogically acceptable at this level (no PGCD required, just two
+	// multiplications). It complements `toCommonDenominator` which excludes
+	// primaire because PGCD/LCM are not on the curriculum. At collège, the
+	// loader discriminates between the two via `collegeSubLevel` (decision B-1).
+	applicableLevels: ['primaire', 'college'],
+	priority: 130,
+	descriptions: {
+		primaire: () => "On multiplie haut et bas par l'autre dénominateur",
+		college: () => 'On amène au même dénominateur en multipliant directement'
+	},
+	explanations: {
+		primaire: () =>
+			"Pour additionner deux fractions, on les écrit avec le même dénominateur : on multiplie chaque fraction par le dénominateur de l'autre.",
+		college: () =>
+			"Pour additionner deux fractions à dénominateurs différents, on les multiplie chacune par l'autre dénominateur (méthode directe — sans PGCD)."
 	}
 };
 
@@ -339,6 +410,7 @@ export const reduceFraction: PedagogicalArithmeticRule = {
 
 export const FRACTION_RULES: readonly PedagogicalArithmeticRule[] = [
 	toCommonDenominator,
+	toCommonDenominatorMultiply,
 	divideFractions,
 	addSameDenominator,
 	multiplyFractions,
