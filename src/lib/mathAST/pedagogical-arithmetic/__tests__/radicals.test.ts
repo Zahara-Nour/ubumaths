@@ -129,8 +129,11 @@ describe('radicals rules', () => {
 	});
 
 	describe('RADICAL_RULES export', () => {
-		it('contains 2 rules (extract + multiply)', () => {
-			expect(RADICAL_RULES).toHaveLength(2);
+		it('contains 3 rules (extract + multiply + rationalize-denominator)', () => {
+			// simplifyRootOfSquare is opt-in (decision C-1) and intentionally
+			// NOT in RADICAL_RULES — added by the loader only when the flag
+			// is set.
+			expect(RADICAL_RULES).toHaveLength(3);
 		});
 	});
 });

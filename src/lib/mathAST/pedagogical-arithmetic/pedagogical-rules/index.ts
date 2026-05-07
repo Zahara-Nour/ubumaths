@@ -16,7 +16,7 @@ import type { TargetForm } from '../../pedagogical-evaluate/types';
 import type { PedagogicalArithmeticRule } from '../types';
 import { BASIC_OPERATION_RULES } from './basic-operations';
 import { FRACTION_RULES, reduceFraction } from './fractions';
-import { RADICAL_RULES } from './radicals';
+import { RADICAL_RULES, simplifyRootOfSquare } from './radicals';
 import { POWER_RULES } from './powers';
 import { SCIENTIFIC_NOTATION_RULES, toScientificNotation } from './scientific-notation';
 
@@ -42,6 +42,7 @@ export const ALL_RULES_BY_NAME: ReadonlyMap<string, PedagogicalArithmeticRule> =
 		...BASIC_OPERATION_RULES,
 		...FRACTION_RULES,
 		...RADICAL_RULES,
+		simplifyRootOfSquare, // opt-in rule, but kept in lookup for renderer
 		...POWER_RULES,
 		...SCIENTIFIC_NOTATION_RULES
 	].map((rule) => [rule.name, rule])
@@ -63,6 +64,12 @@ export interface LoadRulesOptions {
 
 	/** Force a final scientific-notation conversion */
 	readonly needsScientificFinal?: boolean;
+
+	/**
+	 * Track C — opt-in to `simplify-square-root-of-square` (`√(x²) → |x|`).
+	 * Off by default (decision C-1).
+	 */
+	readonly enableSquareRootOfSquare?: boolean;
 }
 
 /**
@@ -123,6 +130,17 @@ export function loadPedagogicalRules(
 		}
 	}
 	// Phase 8 — pattern-driven post-processing per `targetForm`.
+
+	// Track C — opt-in `simplify-square-root-of-square` (decision C-1). Off
+	// by default to avoid producing |x| for authors whose questions
+	// implicitly assume x ≥ 0. The rule is intentionally absent from
+	// RADICAL_RULES, so no `filtered.includes` guard is needed here.
+	if (
+		options.enableSquareRootOfSquare &&
+		simplifyRootOfSquare.applicableLevels.includes(options.schoolLevel)
+	) {
+		terminals.push(simplifyRootOfSquare);
+	}
 
 	return [...filtered, ...terminals];
 }
