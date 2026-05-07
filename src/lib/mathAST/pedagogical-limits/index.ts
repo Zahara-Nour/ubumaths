@@ -24,3 +24,10 @@ export type {
 	PedagogicalLimitStatus,
 	PedagogicalLimitStep
 } from './types';
+
+// Pipeline (typed entry point)
+export { generatePedagogicalLimitSteps } from './pipeline';
+
+// Dispatch (LaTeX-string entry point used by Mode B)
+export { dispatchPedagogicalLimit } from './dispatch';
+export type { PedagogicalLimitDispatchOptions } from './dispatch';
