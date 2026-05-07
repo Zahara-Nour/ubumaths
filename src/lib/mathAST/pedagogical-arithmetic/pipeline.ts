@@ -292,14 +292,15 @@ export function generatePedagogicalArithmeticSteps(
 	node: MathNode,
 	options: PedagogicalArithmeticOptions
 ): PedagogicalArithmeticResult {
-	const { schoolLevel, target, signal, timeoutMs } = options;
+	const { schoolLevel, target, signal, timeoutMs, enableSquareRootOfSquare } = options;
 
 	// 1. ---------------------------------------------------------------- rules
 	const pedagogicalRules = loadPedagogicalRules({
 		schoolLevel,
 		targetForm: target?.structure,
 		needsReducedFractions: target?.strictCosmetics?.reducedFractions === 'strict',
-		needsScientificFinal: target?.structure === 'scientific'
+		needsScientificFinal: target?.structure === 'scientific',
+		enableSquareRootOfSquare
 	});
 
 	const collected: PedagogicalArithmeticStep[] = [];

@@ -195,4 +195,13 @@ export interface PedagogicalArithmeticOptions {
 
 	/** Wall-clock budget in ms */
 	readonly timeoutMs?: number;
+
+	/**
+	 * Track C — enables the `simplify-square-root-of-square` rule
+	 * (`√(x²) → |x|`). Off by default (decision C-1) because the rule
+	 * produces an absolute value that may surprise authors whose questions
+	 * implicitly assume `x ≥ 0` (lengths, magnitudes, norms). Authors who
+	 * want the formal `|x|` (e.g. lycée+ proofs) opt in explicitly.
+	 */
+	readonly enableSquareRootOfSquare?: boolean;
 }

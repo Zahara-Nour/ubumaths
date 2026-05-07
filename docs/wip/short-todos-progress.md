@@ -73,7 +73,74 @@ Plus 1 suggestion adoptée : test e2e mixed marker + plain blank.
 
 ---
 
-## Track B, C, D, E, F — En attente
+## Track C — `rationalize-denominator` + `simplify-square-root-of-square` ✅ Livré
+
+**Date** : 2026-05-07
+**Effort réel** : ~1.5h (estimation prompt révisée : 3-4h — gain via
+décisions arbitrées en amont)
+**Tests ajoutés** : 27 (13 rationalize + 14 simplifyRootOfSquare)
+**Régressions** : 0 (1 test existant `RADICAL_RULES.length` mis à jour
+2 → 3, intentionnel)
+
+### Décisions arbitrées (pré-implémentation)
+
+- **C-1** : `simplifyRootOfSquare` opt-in via flag
+  `enableSquareRootOfSquare?: boolean`. Off par défaut.
+- **C-2** : précondition « radicand non carré parfait » sur
+  `rationalizeDenominator` (`simplifyRadical(n, 2n).radicand === 1n`
+  identifie les carrés parfaits). Pas de jeu de priorités.
+- **2A** : path B (rationalize first) abandonné. Le rule engine est
+  bottom-up (`mapNode` from leaves up), donc `extractPerfectSquare` fire
+  sur `√8` avant que `rationalizeDenominator` puisse matcher `1/√8` au
+  top-level. Résultat V1 : `1/√8 → 1/(2√2)`. Élargir à `c/(k·√n)` est
+  out of scope.
+- **3A** : `simplifyRootOfSquare` skip TOUS les littéraux numériques
+  (y compris `0`). Cohérent avec « rule cible expressions symboliques ».
+
+### Fichiers modifiés
+
+| Fichier                                                                | Changement                                                                                                                                                                                   |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/mathAST/pedagogical-arithmetic/pedagogical-rules/radicals.ts` | Ajout `rationalizeDenominator` (priority 105, college+) et `simplifyRootOfSquare` (priority 90, lycée+, opt-in). Helper `asSqrtRadicand` durci avec garde `!node`. JSDoc module mise à jour. |
+| `src/lib/mathAST/pedagogical-arithmetic/pedagogical-rules/index.ts`    | Ajout `enableSquareRootOfSquare?` à `LoadRulesOptions`. `simplifyRootOfSquare` injectée comme terminal quand le flag est `true` ET schoolLevel match. Inclusion dans `ALL_RULES_BY_NAME`.    |
+| `src/lib/mathAST/pedagogical-arithmetic/pipeline.ts`                   | Propagation de `options.enableSquareRootOfSquare` au loader.                                                                                                                                 |
+| `src/lib/mathAST/pedagogical-arithmetic/types.ts`                      | `enableSquareRootOfSquare?: boolean` dans `PedagogicalArithmeticOptions`.                                                                                                                    |
+
+### Tests ajoutés
+
+| Fichier                                            | Tests                                                                                                        |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `__tests__/rationalize-denominator.test.ts`        | 13 (basic non-square, signed numerator, precondition C-2, rational denom, √n/√n V1, metadata, e2e bottom-up) |
+| `__tests__/simplify-square-root-of-square.test.ts` | 14 (avec flag, sans flag, exposant ≠ 2, opt-in via loader, non-overlap avec extractPerfectSquare, metadata)  |
+| `__tests__/radicals.test.ts`                       | 1 ligne modifiée : `RADICAL_RULES.length` 2 → 3 (intentionnel)                                               |
+
+### Code review
+
+`code-reviewer` (Opus). Verdict : « Ready to merge, pending two minor
+fixes ». Les 2 fixes appliqués post-review :
+
+1. `rationalize-denominator.test.ts:13` : coverage bullet désormais
+   reflète path A (`1/√8 → 1/(2√2)`) au lieu de l'ancien path B
+   (`√2/4`) abandonné.
+2. `index.ts:141` : retiré le guard `!filtered.includes(simplifyRootOfSquare)`
+   redondant (la rule n'est jamais dans `filtered` puisqu'elle est
+   exclue de `RADICAL_RULES`).
+
+### Quality checks
+
+- ESLint : clean sur les 7 fichiers modifiés
+- TypeScript : `pnpm check:incremental` → 0 erreur (filtered slides/extern)
+- Tests Track C : 27/27 verts
+- Tests régression : `pedagogical-arithmetic` 283/283, `mathAST` complet
+  13363/13363 (0 régression)
+
+### Commit
+
+À créer.
+
+---
+
+## Track B, D, E, F — En attente
 
 Statut : non démarrés.
 
@@ -86,4 +153,5 @@ Statut : non démarrés.
 - `docs/wip/short-todos-progress.md` (ce fichier)
 - Commits :
   - `4e24ed457` — révision short-todos-prompt
-  - Track A — à venir
+  - `4629911e1` — Track A
+  - Track C — à venir
