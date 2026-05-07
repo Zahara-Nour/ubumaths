@@ -300,7 +300,8 @@ export function generatePedagogicalArithmeticSteps(
 		targetForm: target?.structure,
 		needsReducedFractions: target?.strictCosmetics?.reducedFractions === 'strict',
 		needsScientificFinal: target?.structure === 'scientific',
-		enableSquareRootOfSquare
+		enableSquareRootOfSquare,
+		needsSignsStrict: target?.strictCosmetics?.signs === 'strict'
 	});
 
 	const collected: PedagogicalArithmeticStep[] = [];

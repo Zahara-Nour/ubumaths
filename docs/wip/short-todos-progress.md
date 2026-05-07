@@ -140,7 +140,81 @@ fixes ». Les 2 fixes appliqués post-review :
 
 ---
 
-## Track B, D, E, F — En attente
+## Track E — Cohérence `signs: 'strict'` ✅ Livré
+
+**Date** : 2026-05-07
+**Effort réel** : ~30 min (estimation prompt révisée : 1h — le câblage
+`strictCosmetics.signs` était déjà fait, ne restait qu'à ajouter la rule
+
+- propagation)
+  **Tests ajoutés** : 18 (cas right-opposite, left-opposite no-fire E-1,
+  nested opposite Q2, loader gating, e2e numérique court-circuit + e2e
+  variables fire)
+  **Régressions** : 0
+
+### Décisions arbitrées (pré-implémentation)
+
+- **E-1** : `simplifyAddOpposite` fire uniquement à droite. `(-3) + 5`
+  reste tel quel (réordonnancement par commutativité hors scope V1).
+- **Q1** : `(-3) + (-5)` fire et produit `(-3) - 5` (left opposite
+  préservé, right opposite éliminé).
+- **Q2** : fizzle si `y` est lui-même un opposite (évite `5 - (-(-3))`
+  pire que `5 + (-(-3))`).
+
+### Fichiers modifiés
+
+| Fichier                                                                        | Changement                                                                                                                                                                                                                                                      |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/mathAST/pedagogical-arithmetic/pedagogical-rules/basic-operations.ts` | Ajout rule `simplifyAddOpposite` (priority 25, all levels). Pattern `P._('s')` + condition manuelle (intentionnellement PAS `P.parse('x + -y')` — le matcher `+` est commutatif et matcherait aussi `(-3) + 5`, violant E-1). PAS dans `BASIC_OPERATION_RULES`. |
+| `src/lib/mathAST/pedagogical-arithmetic/pedagogical-rules/index.ts`            | Ajout `needsSignsStrict?` à `LoadRulesOptions`. Injection terminale conditionnelle. Inclusion dans `ALL_RULES_BY_NAME`.                                                                                                                                         |
+| `src/lib/mathAST/pedagogical-arithmetic/pipeline.ts`                           | Propagation `needsSignsStrict: target?.strictCosmetics?.signs === 'strict'` au loader.                                                                                                                                                                          |
+
+### Tests ajoutés
+
+| Fichier                          | Tests                                                                                                                   |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `__tests__/signs-strict.test.ts` | 18 (right-opposite fires, no-fire cases, Q2 nested, metadata, loader gating, e2e variables + e2e numeric short-circuit) |
+
+### Observation pédagogique importante
+
+Pour les **inputs numériques** (`5 + (-3)`), `evaluateBinaryAdd`
+(priority 100) accepte `opposite(number)` comme atome numérique et
+résoud à `2` directement, court-circuitant `simplifyAddOpposite`
+(priority 25). La rule cosmétique est **pédagogiquement utile** seulement
+quand l'évaluation est impossible (variables, ex: `2x + (-3x) → 2x - 3x`).
+Test e2e dédié pour pin le contrat numérique.
+
+### Code review
+
+`code-reviewer` (Opus). 4 retours :
+
+1. **Issue 1 (Important)** — Pattern `P._('s')` au lieu de `P.parse('x + -y')`.
+   Tentative de refactor → **rejetée** : le matcher `+` est commutatif,
+   `P.parse('x + -y')` matche aussi `(-3) + 5` violant E-1. Justification
+   documentée dans la JSDoc (« Why not `P.parse('x + -y')` »).
+2. **Issue 2 (Minor)** — Clarification Q2 transitive pour multi-nesting.
+   JSDoc enrichie.
+3. **Issue 3 (Suggestion)** — Documenter pourquoi priority 25.
+   JSDoc enrichie avec « strictly lower than reduceFraction (30) /
+   trivials (50) because signs cosmetics are the LAST cosmetic step ».
+4. **Issue 4 (Suggestion)** — Test e2e numérique pour pin contrat
+   short-circuit. Ajouté : `5 + (-3) → 2` avec signs strict, vérifie
+   pas de step `simplify-add-opposite`.
+
+### Quality checks
+
+- ESLint : clean sur les 4 fichiers modifiés
+- TypeScript : `pnpm check:incremental` → 0 erreur
+- Tests Track E : 18/18 verts
+- Tests régression : `pedagogical-arithmetic` 301/301 (0 régression)
+
+### Commit
+
+À créer.
+
+---
+
+## Track B, D, F — En attente
 
 Statut : non démarrés.
 
@@ -154,4 +228,5 @@ Statut : non démarrés.
 - Commits :
   - `4e24ed457` — révision short-todos-prompt
   - `4629911e1` — Track A
-  - Track C — à venir
+  - `bff974c95` — Track C
+  - Track E — à venir

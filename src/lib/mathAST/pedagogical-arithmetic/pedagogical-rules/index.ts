@@ -14,7 +14,7 @@
 import type { SchoolLevel } from '../../common/step-renderer-base';
 import type { TargetForm } from '../../pedagogical-evaluate/types';
 import type { PedagogicalArithmeticRule } from '../types';
-import { BASIC_OPERATION_RULES } from './basic-operations';
+import { BASIC_OPERATION_RULES, simplifyAddOpposite } from './basic-operations';
 import { FRACTION_RULES, reduceFraction } from './fractions';
 import { RADICAL_RULES, simplifyRootOfSquare } from './radicals';
 import { POWER_RULES } from './powers';
@@ -40,9 +40,10 @@ export type { PedagogicalArithmeticRule } from '../types';
 export const ALL_RULES_BY_NAME: ReadonlyMap<string, PedagogicalArithmeticRule> = new Map(
 	[
 		...BASIC_OPERATION_RULES,
+		simplifyAddOpposite, // opt-in (Track E) — kept in lookup for renderer
 		...FRACTION_RULES,
 		...RADICAL_RULES,
-		simplifyRootOfSquare, // opt-in rule, but kept in lookup for renderer
+		simplifyRootOfSquare, // opt-in (Track C) — kept in lookup for renderer
 		...POWER_RULES,
 		...SCIENTIFIC_NOTATION_RULES
 	].map((rule) => [rule.name, rule])
@@ -70,6 +71,13 @@ export interface LoadRulesOptions {
 	 * Off by default (decision C-1).
 	 */
 	readonly enableSquareRootOfSquare?: boolean;
+
+	/**
+	 * Track E — when true, append `simplifyAddOpposite` (`a + (-b) → a - b`)
+	 * as a terminal rule. Driven by `target.strictCosmetics.signs === 'strict'`
+	 * — fires only on right-opposite (decision E-1).
+	 */
+	readonly needsSignsStrict?: boolean;
 }
 
 /**
@@ -140,6 +148,16 @@ export function loadPedagogicalRules(
 		simplifyRootOfSquare.applicableLevels.includes(options.schoolLevel)
 	) {
 		terminals.push(simplifyRootOfSquare);
+	}
+
+	// Track E — opt-in `simplify-add-opposite` (decision E-1). Driven by
+	// `target.strictCosmetics.signs === 'strict'`. Right-opposite only.
+	// The rule is intentionally absent from BASIC_OPERATION_RULES.
+	if (
+		options.needsSignsStrict &&
+		simplifyAddOpposite.applicableLevels.includes(options.schoolLevel)
+	) {
+		terminals.push(simplifyAddOpposite);
 	}
 
 	return [...filtered, ...terminals];
