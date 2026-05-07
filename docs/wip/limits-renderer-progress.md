@@ -165,10 +165,6 @@ Conclusions :
 3. **Nice-to-have** : `SUPERIEUR_TITLES.apply-lhopital` LaTeX brut → prose-only.
 4. **Nice-to-have** : test `apply-known-limit` title delegation ajouté.
 
-### ⏳ Phase 4 — Démos + script CLI (à venir)
-
-Cible : `demo-cases/` (7 catégories, ~20 cas) + `scripts/pedagogical-limits-demo.ts`.
-
 ### ⏸️ Phase 4 — Démos catégorisées + script CLI (REPORTÉ V1.1)
 
 Skipée pour V1 final (livraison prioritaire). Le `dispatchPedagogicalLimit` permet déjà des appels manuels. À reprendre en V1.1 avec les stratégies non-implémentées (rationalization, one-sided, squeeze, lhopital).
@@ -199,9 +195,38 @@ Skipée pour V1 final (livraison prioritaire). Le `dispatchPedagogicalLimit` per
 
 **Régression** : 0 sur 132 tests pertinents (`correction-generator` 52, `generated-steps-demo` 22, `template-schema` 58). 11 échecs pré-existants non liés à ce tunnel (cf. doc `arithmetic-from-blank`).
 
-### ⏳ Phase 6 — Quality + doc final (à venir)
+### ✅ Phase 6 — Quality + doc final
 
-Cible : ESLint, `pnpm check:incremental`, svelte-autofixer, tests régression, MAJ docs.
+**One-line patch `limits/step-recorder.ts`** :
+
+- Ajout de l'entrée manquante `'derivative-definition'` dans `RULE_DESCRIPTIONS: Readonly<Record<LimitRule, string>>`. La rule était émise par `composition.ts:1581` pour des cas comme `(x²−4)/(x−2)` à x=2 mais sans description FR ; le typage `Record<K, V>` aurait dû refuser l'absence (15 kinds, 14 entrées) mais TS a laissé passer. Patch indépendant du renderer pédago, profite à tous les consommateurs de `getRuleDescription` du module limits/ original.
+
+**Quality gates** :
+
+- ESLint sur tous les fichiers modifiés : **0 erreur, 0 warning**
+- `pnpm check:incremental` (TypeScript + Svelte, ~30s) : **0 nouvelle erreur** (9 préexistantes filtrées dans `slides/demo` et `extern/`, identique au baseline)
+- Tests cumulés sur les suites pertinentes : **685 verts**
+  - `pedagogical-limits` : 104 (Phase 1+2+3)
+  - `limits/` : 507 (régression 0)
+  - `correction-generator` : 52 (incl. +9 'limit')
+  - `generated-steps-demo` : 22 (incl. +2 snapshots limit)
+- 0 régression sur les 11 tests pré-existants instables (variable-resolver, color-integration, test-exact-repro, e2e-fill-blanks-pipeline) — non liés à ce tunnel.
+
+**Limitations connues V1** :
+
+1. Stratégies pédagogiques NON implémentées (V1.1+) : `rationalization` (cas `(√(x+1)−1)/x`), `one-sided` / asymptotes verticales, `squeeze` / théorème des gendarmes, `lhopital` (sup uniquement), `composition` profonde. Pour ces cas, `dispatchPedagogicalLimit` throw `PedagogicalLimitNotImplemented` → silent fallback Mode A côté `correction-generator`.
+2. Phase 4 (démos catégorisées + script CLI standalone) reportée V1.1.
+3. Le pipeline accepte les options `verbosity`/`signal`/`timeoutMs` mais ne les honore pas encore (TODO `pipeline.ts:118`).
+4. Pas de support pour les limites de suites définies par récurrence ni pour les limites paramétriques formelles.
+
+**Pistes V1.1+** :
+
+- Implémenter `rationalization` (réutiliser `tryRationalization` de `limits/algebraic.ts` ou ré-implémenter pédagogiquement).
+- Implémenter `one-sided` pour les asymptotes verticales (`1/x` en `0⁺`/`0⁻`, `ln x` en `0⁺`).
+- Implémenter `squeeze` / gendarmes (heuristique restreinte : `f(x) borné × g(x) → 0`).
+- Implémenter `lhopital` (sup uniquement) — réutiliser `limits/lhopital.ts`.
+- Phase 4 : démos catégorisées (`scripts/pedagogical-limits-demo.ts` CLI), snapshots stables.
+- Honorer `verbosity` au niveau pipeline (filtrer les steps émis).
 
 ## Tests cumulés
 

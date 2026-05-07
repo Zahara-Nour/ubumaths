@@ -282,9 +282,23 @@ en profondeur (discriminator étendu, case dispatch ajouté dans
   Pas de pipeline dédié — délègue à `pedagogical-arithmetic` via
   `renderArithmetic`. Fallback silencieux si name inconnu / value
   non-parsable / relation node.
+- **`kind: 'limit'`** (`limits-renderer-progress.md`) — limites de fonctions
+  (Tle spé maths + sup CPGE). Architecture **Option B** (pipeline parallèle)
+  retenue après spike empirique en Phase 0 démontrant qu'`evaluateLimit()`
+  ne produit que 1-2 méta-steps techniques jamais les sous-étapes
+  pédagogiques attendues (factor numérateur → factor dénominateur →
+  simplifier → substituer). Bumps `primaire | college → lycée`. Stratégies
+  V1 implémentées : `direct-substitution`, `apply-known-limit` (réutilise
+  `matchKnownLimit` de `limits/`), `factorisation 0/0` (avec sous-étapes
+  via `asPolynomial` + `syntheticDivide` Horner), `infinity-analysis`
+  (factor dominant). Vocabulary adaptive : `'gendarmes'` lycée vs
+  `'squeeze'` sup. L'Hôpital désactivée au lycée. Reconnaissance de
+  `\\infty` / `+\\infty` / `-\\infty` / `oo` / `+oo` / `-oo`. Catch
+  `PedagogicalLimitNotImplemented` → fallback Mode A silencieux.
+  V1.1+ : `rationalization`, `one-sided`, `squeeze`, `lhopital` (sup).
 
 **État actuel :** la page debug `/dashboard/admin/debug/correction-mode-b`
-expose **16 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
+expose **19 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 `linearEquationDemo` (4e équation linéaire),
 `differentiatePolynomialDemo` + `differentiateCompositionDemo`
 (1ère/Tle spé), `quadraticEquationDemo` (Tle spé),
@@ -295,12 +309,14 @@ expose **16 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 (1ère/Tle spé), `integrateIndefiniteDemo` + `integrateDefiniteDemo`
 (Tle spé), `simplifyDistributionDemo` (4e) +
 `simplifyTrigDemo` (1ère spé), `arithmeticFromBlankDemo` (CM2,
-expression nommée).
+expression nommée), `limitFactorisationDemo` + `limitInfinityDemo`
+(Tle spé limites).
 
-Ces 7 extensions valident que l'architecture Mode B est suffisamment
-robuste pour accueillir de nouveaux pipelines pédagogiques sans refactoring
-de la glue. Le pattern `(types/Zod loose+strict/correction-generator
-case/fixtures/page debug card)` est devenu reproductible mécaniquement.
+Ces 8 extensions (10 → 11 kinds) valident que l'architecture Mode B est
+suffisamment robuste pour accueillir de nouveaux pipelines pédagogiques
+sans refactoring de la glue. Le pattern `(types/Zod loose+strict/
+correction-generator case/fixtures/page debug card)` est devenu
+reproductible mécaniquement.
 
 ## Risques connus / TODOs futurs (post-V1)
 
