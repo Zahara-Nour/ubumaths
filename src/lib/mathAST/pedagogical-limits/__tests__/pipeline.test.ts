@@ -335,6 +335,69 @@ describe('pipeline — rationalisation', () => {
 });
 
 // =============================================================================
+// One-sided / vertical asymptotes
+// =============================================================================
+
+describe('pipeline — one-sided / vertical asymptotes', () => {
+	it('1/x at x=0 (both) → does-not-exist (signs opposés)', () => {
+		const expr = divide(number('1'), variable('x'));
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'lycee'
+		});
+
+		expect(result.status).toBe('does-not-exist');
+		expect(result.value).toBeNull();
+		const rules = flatRules(result.steps);
+		expect(rules).toContain('analyze-left-limit');
+		expect(rules).toContain('analyze-right-limit');
+		expect(rules).toContain('compare-one-sided');
+	});
+
+	it('1/x² at x=0 (both) → +∞ (mêmes signes)', () => {
+		const expr = divide(number('1'), power(variable('x'), number('2')));
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'lycee'
+		});
+
+		expect(result.status).toBe('infinite');
+		expect(result.value).toMatchObject({ type: 'infinity', sign: 'positive' });
+		const rules = flatRules(result.steps);
+		expect(rules).toContain('compare-one-sided');
+		expect(rules).toContain('conclude-infinite');
+	});
+
+	it('1/(x−1)² at x=1 (both) → +∞', () => {
+		const expr = divide(number('1'), power(subtract(variable('x'), number('1')), number('2')));
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('1'),
+			schoolLevel: 'lycee'
+		});
+
+		expect(result.status).toBe('infinite');
+		expect(result.value).toMatchObject({ type: 'infinity', sign: 'positive' });
+	});
+
+	it('declines on continuous functions (no singularity)', () => {
+		// x² + 1 at x=0 — defined and finite, must NOT trigger one-sided.
+		const expr = add(power(variable('x'), number('2')), number('1'));
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'lycee'
+		});
+
+		const rules = flatRules(result.steps);
+		expect(rules).not.toContain('analyze-left-limit');
+		expect(rules).toContain('apply-direct-substitution');
+	});
+});
+
+// =============================================================================
 // Infinity-analysis
 // =============================================================================
 

@@ -35,6 +35,7 @@ import type { MathNode } from '../types';
 import type { LimitDirection, IndeterminateForm } from '../limits/types';
 import { detectIndeterminateForm } from '../limits/indeterminate';
 import { infinity } from '../factory';
+import type { LimitDirection as _LimitDirection } from '../limits/types';
 import { matchKnownLimit, getKnownLimitValue } from '../limits/known-limits';
 import {
 	asPolynomial,
@@ -237,6 +238,16 @@ export function generatePedagogicalLimitSteps(
 		const infRes = tryInfinityAnalysis(expression, ctx);
 		if (infRes !== null) {
 			return finalize(ctx, [...headerSteps, ...infRes.steps], infRes);
+		}
+	}
+
+	// Strategy 6 — one-sided / vertical asymptotes (singular point with finite
+	// approach). Detected when direct substitution yielded null (singularity)
+	// AND the residual is not 0/0 nor ∞/∞ (those cascaded through 3-4-5 above).
+	if (!isAtInfinity(ctx.approach)) {
+		const oneSided = tryOneSided(expression, ctx);
+		if (oneSided !== null) {
+			return finalize(ctx, [...headerSteps, ...oneSided.steps], oneSided);
 		}
 	}
 
@@ -625,6 +636,197 @@ function buildDominantTerm(coeff: number, degree: number, varName: string): Math
 function formatNumber(x: number): string {
 	if (Number.isInteger(x)) return String(x);
 	return String(Number(x.toFixed(6)));
+}
+
+// =============================================================================
+// Strategy: one-sided / vertical asymptotes
+// =============================================================================
+
+/** Magnitude beyond which we declare a numerical evaluation "divergent".
+ *  Tuned for `1/x`-class poles probed with `ε = 1e−6` (gives `|val| ≈ 1e6`).
+ *  10⁵ is large enough to skip numerical noise and small enough that
+ *  `1/x`-class poles register, while finite-but-large limits (e.g. `e^{20} ≈ 5e8`)
+ *  evaluated at smooth points stay below the bar at the probe distance. */
+const DIVERGENCE_THRESHOLD = 1e5;
+
+/** Numeric epsilon used to probe `a ± ε` and detect divergence by sign. */
+const ONE_SIDED_EPSILON = 1e-6;
+
+/**
+ * Singular-point analysis : when the expression is undefined at the approach
+ * point but defined on at least one side, classify the limit as `+∞`, `−∞`,
+ * or `does-not-exist`.
+ *
+ * V1.1.b scope : numerical heuristic on `expression(a ± ε)`. Covers the
+ * iconic Tle cases :
+ *
+ * - `1/x` à `0⁺`         → `+∞`
+ * - `1/x` à `0⁻`         → `−∞`
+ * - `1/x` à `0` (both)   → does-not-exist (signs opposés)
+ * - `1/x²` à `0` (both)  → `+∞` (mêmes signes)
+ * - `1/(x−1)²` à `1`     → `+∞`
+ *
+ * Limitations V1.1.b :
+ * - Lent à diverger (e.g. `ln(x)` à `0⁺`) : peut être manqué selon le
+ *   threshold. Acceptable pour V1.1.
+ * - Faux positif théorique sur des fonctions à très forte croissance
+ *   finie. Très improbable en pratique.
+ */
+function tryOneSided(expression: MathNode, ctx: PipelineContext): StrategyResult {
+	if (!isNumber(ctx.approach)) return null;
+	const a = parseFloat(ctx.approach.value);
+	if (!Number.isFinite(a)) return null;
+
+	// Defined at the approach point ? Direct substitution would have caught
+	// it ; declining lets the upstream throw NotImplemented for genuinely
+	// unsupported cases.
+	const valAtA = evaluateAtPoint(expression, ctx.variable, a);
+	if (valAtA !== null && Number.isFinite(valAtA)) return null;
+
+	// Probe each side numerically.
+	const leftVal = evaluateAtPoint(expression, ctx.variable, a - ONE_SIDED_EPSILON);
+	const rightVal = evaluateAtPoint(expression, ctx.variable, a + ONE_SIDED_EPSILON);
+
+	const leftSign = classifyDivergence(leftVal);
+	const rightSign = classifyDivergence(rightVal);
+
+	const wantBoth = ctx.direction === 'both';
+	const wantLeft = ctx.direction === 'left' || wantBoth;
+	const wantRight = ctx.direction === 'right' || wantBoth;
+
+	// At least one requested side must diverge for this strategy to apply.
+	if (wantLeft && wantRight) {
+		if (leftSign === 0 && rightSign === 0) return null;
+	} else if (wantLeft && leftSign === 0) {
+		return null;
+	} else if (wantRight && rightSign === 0) {
+		return null;
+	}
+
+	const steps: PedagogicalLimitStep[] = [];
+
+	const leftStep = wantLeft
+		? makeStep(ctx, {
+				rule: 'analyze-left-limit',
+				description: `Étude de la limite à gauche en ${a} : ${describeSide(leftSign, ctx.variable, a, '−')}`,
+				before: expression,
+				after: signNodeFromSign(leftSign),
+				verbosityLevel: 'detailed',
+				bindings: { side: { type: 'variable', name: 'left' } as MathNode }
+			})
+		: null;
+	const rightStep = wantRight
+		? makeStep(ctx, {
+				rule: 'analyze-right-limit',
+				description: `Étude de la limite à droite en ${a} : ${describeSide(rightSign, ctx.variable, a, '+')}`,
+				before: expression,
+				after: signNodeFromSign(rightSign),
+				verbosityLevel: 'detailed',
+				bindings: { side: { type: 'variable', name: 'right' } as MathNode }
+			})
+		: null;
+
+	if (leftStep) steps.push(leftStep);
+	if (rightStep) steps.push(rightStep);
+
+	let value: MathNode;
+	let status: PedagogicalLimitStatus;
+	let conclusionRule: PedagogicalLimitRule;
+	let conclusionDesc: string;
+
+	if (wantBoth) {
+		if (leftSign !== 0 && rightSign !== 0 && leftSign === rightSign) {
+			// Same divergence on both sides → infinite limit.
+			value = signNodeFromSign(leftSign);
+			status = 'infinite';
+			conclusionRule = 'conclude-infinite';
+			conclusionDesc = `Les limites à gauche et à droite tendent vers la même infinité : la limite vaut ${leftSign > 0 ? '+∞' : '−∞'}`;
+			steps.push(
+				makeStep(ctx, {
+					rule: 'compare-one-sided',
+					description: 'Comparaison des limites unilatérales : signes identiques',
+					before: expression,
+					after: value,
+					verbosityLevel: 'detailed',
+					bindings: { left: signNodeFromSign(leftSign), right: signNodeFromSign(rightSign) }
+				})
+			);
+		} else if (leftSign !== rightSign) {
+			// Opposite signs (or one-sided defined finite) → does-not-exist.
+			value = number('0');
+			status = 'does-not-exist';
+			conclusionRule = 'conclude-does-not-exist';
+			conclusionDesc =
+				'Les limites à gauche et à droite diffèrent : la limite n’existe pas en ce point';
+			steps.push(
+				makeStep(ctx, {
+					rule: 'compare-one-sided',
+					description: 'Comparaison des limites unilatérales : signes différents',
+					before: expression,
+					after: expression,
+					verbosityLevel: 'detailed',
+					bindings: {
+						left: signNodeFromSign(leftSign),
+						right: signNodeFromSign(rightSign)
+					}
+				})
+			);
+			// `does-not-exist` signals null value at the result level.
+			return {
+				steps,
+				value: null,
+				status,
+				indeterminateForm: 'none'
+			};
+		} else {
+			return null;
+		}
+	} else {
+		// One-sided request : pick the matching side.
+		const sign = ctx.direction === 'left' ? leftSign : rightSign;
+		if (sign === 0) return null;
+		value = signNodeFromSign(sign);
+		status = 'infinite';
+		conclusionRule = 'conclude-infinite';
+		conclusionDesc = `La limite à ${ctx.direction === 'left' ? 'gauche' : 'droite'} vaut ${sign > 0 ? '+∞' : '−∞'}`;
+	}
+
+	steps.push(
+		makeStep(ctx, {
+			rule: conclusionRule,
+			description: conclusionDesc,
+			before: expression,
+			after: value,
+			verbosityLevel: 'summarized',
+			globalAfter: value
+		})
+	);
+
+	return { steps, value, status, indeterminateForm: 'none' };
+}
+
+/** Numeric divergence classifier. Returns +1, −1, or 0 (= not divergent). */
+function classifyDivergence(val: number | null): number {
+	if (val === null || !Number.isFinite(val)) return 0;
+	if (Math.abs(val) < DIVERGENCE_THRESHOLD) return 0;
+	return val > 0 ? 1 : -1;
+}
+
+/** Build the `±∞` MathNode (or `0` when `sign === 0`, defensive default). */
+function signNodeFromSign(sign: number): MathNode {
+	if (sign > 0) return infinity('positive');
+	if (sign < 0) return infinity('negative');
+	return number('0');
+}
+
+function describeSide(
+	sign: number,
+	_variable: string,
+	_approach: number,
+	sideMark: string
+): string {
+	if (sign === 0) return `valeur finie (${sideMark})`;
+	return sign > 0 ? `+∞ (${sideMark})` : `−∞ (${sideMark})`;
 }
 
 // =============================================================================
