@@ -62,8 +62,14 @@
 	let settingsOpen = $state(false);
 
 	// Functions
+	// Route every Run trigger (toolbar button, Ctrl+Enter in the editor) through
+	// the debug-aware handler so it does the right thing in both modes:
+	//   - "Exécuter" mode → plain pythonStore.execute()
+	//   - "Debug" mode    → start a debug session
+	// Defined as a forward reference; the actual implementation lives below
+	// next to the other debug handlers.
 	function handleExecute(): void {
-		pythonStore.execute();
+		handleDebugRun();
 	}
 
 	function handleClear(): void {

@@ -77,7 +77,8 @@
 
 	<div class="h-6 w-px bg-border" aria-hidden="true"></div>
 
-	<!-- Run/Continue button -->
+	<!-- Run / Continue button — only when in debug mode. The plain "Exécuter"
+	     action lives in PythonToolbar above; we don't duplicate it here. -->
 	{#if isDebugging}
 		{#if isPaused}
 			<Button
@@ -102,17 +103,6 @@
 				<span class="hidden sm:inline">Déboguer</span>
 			</Button>
 		{/if}
-	{:else}
-		<Button
-			variant="default"
-			size="sm"
-			onclick={onRun}
-			disabled={disabled || isRunning}
-			aria-label="Exécuter le code"
-		>
-			<Play class="size-4" />
-			<span class="hidden sm:inline">Exécuter</span>
-		</Button>
 	{/if}
 
 	<!-- Debug step controls (only shown in debug mode) -->
