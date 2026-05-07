@@ -257,8 +257,8 @@ pnpm tsx scripts/pedagogical-limits-demo.ts --latex factorisation          # raw
 
 - ✅ V1.1.a — `rationalization` livrée.
 - ✅ V1.1.b — `one-sided` / asymptotes verticales livrée.
+- ✅ V1.1.c — `lhopital` (sup) livrée.
 - Implémenter `squeeze` / gendarmes (heuristique restreinte : `f(x) borné × g(x) → 0`).
-- Implémenter `lhopital` (sup uniquement) — réutiliser `limits/lhopital.ts`.
 - ✅ Phase 4 : démos + CLI livrée post-V1.
 - Honorer `verbosity` au niveau pipeline (filtrer les steps émis).
 
@@ -324,6 +324,36 @@ pnpm tsx scripts/pedagogical-limits-demo.ts --latex factorisation          # raw
 - Faux positif théorique sur fonctions à très forte croissance finie. Très improbable en pratique.
 
 **Tests cumulés post-V1.1.b** : 144 verts (137 + 4 pipeline + 3 demo snapshots). 0 régression sur 507 tests `limits/`.
+
+### ✅ V1.1.c — Stratégie L'Hôpital (sup uniquement)
+
+**Fichiers modifiés** :
+
+- `pipeline.ts` : ajout `tryLhopital` (~80 LOC) appelé si `strategy.enableLhopital === true && (indForm === '0/0' || indForm === '∞/∞') && isDivision`. Strategy 6 entre infinity-analysis et one-sided. Cascade ajoutée dans `recurse` pour les cas où la 1re passe ne ferme pas la limite.
+- Imports : `differentiate` du module `differentiation/`.
+- `__tests__/pipeline.test.ts` : +4 tests (sin(x²)/x sup, (e^x − 1)/x sup, throw lycée sur sin(x²)/x, décline sur continues).
+- `demo-cases/lhopital-superieur.ts` : 3 cas (`schoolLevels: ['superieur']`).
+- `__tests__/pedagogical-limits-demo.test.ts` : +3 snapshots.
+
+**Algorithme** :
+
+1. Vérifier division + indForm 0/0 ou ∞/∞.
+2. Calculer `f' = differentiate(numerator)` et `g' = differentiate(denominator)` (algorithmique pur, pas pédagogique — l'auteur peut invoquer `kind: 'differentiate'` séparément pour le trace de dérivée).
+3. Construire `f' / g'` et émettre `detect-indeterminate-form` + parent `apply-lhopital`.
+4. Recurse sur `f' / g'` (cap depth 3, support cascade L'Hôpital itérée).
+
+**Cas couverts** :
+
+- `sin(x²)/x` à 0 sup → 0 (lycée throw : pas de known-limit, pas factorisable, pas rationalisable)
+- `(e^x − 1)/x` à 0 sup → 1
+- `sin(2x)/sin(3x)` à 0 sup → 2/3
+
+**Limitations V1.1.c** :
+
+- Single-pass cascade : les cas L'Hôpital itéré (e.g. forme 0/0 après f'/g' encore) sont supportés via le depth-cap mais non spécifiquement testés.
+- Pas de protection contre `f' = 0 AND g' = 0` au point ; une 2e itération via `recurse` est tentée mais peut échouer si `differentiate` produit des nœuds inattendus.
+
+**Tests cumulés post-V1.1.c** : 151 verts (144 + 4 pipeline + 3 demo snapshots). 0 régression.
 
 ## Tests cumulés
 

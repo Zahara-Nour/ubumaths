@@ -13,6 +13,7 @@ import { DIRECT_SUBSTITUTION } from './direct-substitution';
 import { FACTORISATION } from './factorisation';
 import { INFINITY_ANALYSIS } from './infinity-analysis';
 import { KNOWN_LIMITS_CASES } from './known-limits';
+import { LHOPITAL_SUPERIEUR } from './lhopital-superieur';
 import { ONE_SIDED_ASYMPTOTES } from './one-sided-asymptotes';
 import { RATIONALISATION } from './rationalisation';
 
@@ -22,7 +23,8 @@ export const ALL_CATEGORIES: readonly DemoCategory[] = [
 	FACTORISATION,
 	RATIONALISATION,
 	INFINITY_ANALYSIS,
-	ONE_SIDED_ASYMPTOTES
+	ONE_SIDED_ASYMPTOTES,
+	LHOPITAL_SUPERIEUR
 ];
 
 export {
@@ -30,6 +32,7 @@ export {
 	FACTORISATION,
 	INFINITY_ANALYSIS,
 	KNOWN_LIMITS_CASES,
+	LHOPITAL_SUPERIEUR,
 	ONE_SIDED_ASYMPTOTES,
 	RATIONALISATION
 };

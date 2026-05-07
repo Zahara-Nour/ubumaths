@@ -335,6 +335,80 @@ describe('pipeline — rationalisation', () => {
 });
 
 // =============================================================================
+// L'Hôpital (sup uniquement)
+// =============================================================================
+
+describe("pipeline — L'Hôpital (sup)", () => {
+	function sqrt(node: import('../../types').MathNode): import('../../types').MathNode {
+		return { type: 'function', name: 'sqrt', args: [node] };
+	}
+
+	it('sin(x²)/x at x=0 → 0 (sup)', () => {
+		const expr = divide(
+			{ type: 'function', name: 'sin', args: [power(variable('x'), number('2'))] },
+			variable('x')
+		);
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'superieur'
+		});
+
+		expect(result.status).toBe('exact');
+		expect(result.value).toMatchObject({ type: 'number', value: '0' });
+		const rules = flatRules(result.steps);
+		expect(rules).toContain('apply-lhopital');
+	});
+
+	it('(e^x − 1)/x at x=0 → 1 (sup, lhopital)', () => {
+		const expr = divide(
+			subtract({ type: 'function', name: 'exp', args: [variable('x')] }, number('1')),
+			variable('x')
+		);
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'superieur'
+		});
+
+		expect(result.status).toBe('exact');
+		expect(result.value).toMatchObject({ type: 'number', value: '1' });
+	});
+
+	it("throws at lycée when only L'Hôpital would close the limit", () => {
+		// sin(x²)/x : pas de known-limit, pas factorisable, pas rationalisable.
+		// Au lycée, doit throw NotImplemented.
+		const expr = divide(
+			{ type: 'function', name: 'sin', args: [power(variable('x'), number('2'))] },
+			variable('x')
+		);
+		expect(() =>
+			generatePedagogicalLimitSteps(expr, {
+				variable: 'x',
+				approach: number('0'),
+				schoolLevel: 'lycee'
+			})
+		).toThrow(PedagogicalLimitNotImplemented);
+	});
+
+	it('declines on continuous functions (no indeterminate form)', () => {
+		// x² + 1 at x=0 : direct-substitution → 1, lhopital ne doit PAS s'activer
+		const expr = add(power(variable('x'), number('2')), number('1'));
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'superieur'
+		});
+
+		const rules = flatRules(result.steps);
+		expect(rules).not.toContain('apply-lhopital');
+	});
+
+	// Avoid unused import warning when sqrt is exercised by future cases.
+	void sqrt;
+});
+
+// =============================================================================
 // One-sided / vertical asymptotes
 // =============================================================================
 

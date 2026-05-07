@@ -35,7 +35,7 @@ import type { MathNode } from '../types';
 import type { LimitDirection, IndeterminateForm } from '../limits/types';
 import { detectIndeterminateForm } from '../limits/indeterminate';
 import { infinity } from '../factory';
-import type { LimitDirection as _LimitDirection } from '../limits/types';
+import { differentiate } from '../differentiation/differentiate';
 import { matchKnownLimit, getKnownLimitValue } from '../limits/known-limits';
 import {
 	asPolynomial,
@@ -241,7 +241,19 @@ export function generatePedagogicalLimitSteps(
 		}
 	}
 
-	// Strategy 6 — one-sided / vertical asymptotes (singular point with finite
+	// Strategy 6 — L'Hôpital (sup uniquement, 0/0 or ∞/∞)
+	if (
+		ctx.strategy.enableLhopital &&
+		(indForm === '0/0' || indForm === '∞/∞') &&
+		isDivision(expression)
+	) {
+		const lhopital = tryLhopital(expression, ctx, indForm);
+		if (lhopital !== null) {
+			return finalize(ctx, [...headerSteps, ...lhopital.steps], lhopital);
+		}
+	}
+
+	// Strategy 7 — one-sided / vertical asymptotes (singular point with finite
 	// approach). Detected when direct substitution yielded null (singularity)
 	// AND the residual is not 0/0 nor ∞/∞ (those cascaded through 3-4-5 above).
 	if (!isAtInfinity(ctx.approach)) {
@@ -530,6 +542,87 @@ function tryRationalisation(
 
 	return {
 		steps: [detectStep, multiplyStep, ...recursed.steps],
+		value: recursed.value,
+		status: recursed.status,
+		indeterminateForm: indForm
+	};
+}
+
+// =============================================================================
+// Strategy: L'Hôpital (sup uniquement)
+// =============================================================================
+
+/**
+ * Apply L'Hôpital's rule for `0/0` or `∞/∞` indeterminate forms : derive
+ * numerator and denominator with respect to the variable, then recurse on
+ * the new quotient.
+ *
+ * **Sup uniquement** — locked behind `STRATEGIES_LIMITS.lycee.enableLhopital
+ * === false`. The pipeline checks this gate before calling.
+ *
+ * Reuses the algorithmic `differentiate()` orchestrator from
+ * `differentiation/`. Pedagogical sub-derivations (showing each step of
+ * `f'(x)`) are **not** generated here — the L'Hôpital step focuses on the
+ * limit logic and treats the derivatives as black-box symbols. Authors who
+ * need the full derivative trace can invoke `kind: 'differentiate'` on
+ * the same expression separately.
+ *
+ * Limitations V1.1.c :
+ * - Single-pass : recurses once on `f'/g'`. If the residual is still 0/0
+ *   or ∞/∞, the recursion will hit `tryLhopital` again via the depth-limited
+ *   `recurse()` cascade (same depth budget as factorisation/rationalisation).
+ * - No protection against the `f' = 0` AND `g' = 0` corner case (would
+ *   require iterative L'Hôpital with derivative-of-derivative, deferred to V1.2).
+ */
+function tryLhopital(
+	expression: MathNode,
+	ctx: PipelineContext,
+	indForm: IndeterminateForm,
+	depth = 0
+): StrategyResult {
+	if (!isDivision(expression)) return null;
+
+	let numDeriv: MathNode;
+	let denDeriv: MathNode;
+	try {
+		numDeriv = differentiate(expression.numerator, { variable: ctx.variable, simplify: true });
+		denDeriv = differentiate(expression.denominator, { variable: ctx.variable, simplify: true });
+	} catch {
+		// `differentiate` may throw on unsupported nodes ; decline silently
+		// so the pipeline can fall through to other strategies.
+		return null;
+	}
+
+	const newQuotient = divide(numDeriv, denDeriv, 'fraction');
+
+	// detect-indeterminate-form (informational decoration)
+	const detectStep = makeStep(ctx, {
+		rule: 'detect-indeterminate-form',
+		description: `Forme indéterminée ${indForm} reconnue`,
+		before: expression,
+		after: expression,
+		verbosityLevel: 'detailed',
+		indeterminateForm: indForm
+	});
+
+	// Parent: apply-lhopital
+	const lhopitalStep = makeStep(ctx, {
+		rule: 'apply-lhopital',
+		description:
+			indForm === '0/0'
+				? "Application de la règle de L'Hôpital : (0/0) ⇒ lim f/g = lim f'/g'"
+				: "Application de la règle de L'Hôpital : (∞/∞) ⇒ lim f/g = lim f'/g'",
+		before: expression,
+		after: newQuotient,
+		verbosityLevel: 'summarized',
+		bindings: { numeratorDerivative: numDeriv, denominatorDerivative: denDeriv }
+	});
+
+	// Recurse on f'/g' — direct substitution is the typical closer.
+	const recursed = recurse(newQuotient, ctx, depth + 1);
+
+	return {
+		steps: [detectStep, lhopitalStep, ...recursed.steps],
 		value: recursed.value,
 		status: recursed.status,
 		indeterminateForm: indForm
@@ -881,6 +974,19 @@ function recurse(
 		const factored = tryFactorisation(expression, ctx, indForm, depth + 1);
 		if (factored !== null) {
 			return { steps: factored.steps, value: factored.value, status: factored.status };
+		}
+	}
+
+	// L'Hôpital cascade (sup) — for residual 0/0 or ∞/∞ that factorisation
+	// can't lift (e.g. transcendental expressions).
+	if (
+		ctx.strategy.enableLhopital &&
+		(indForm === '0/0' || indForm === '∞/∞') &&
+		isDivision(expression)
+	) {
+		const lhopital = tryLhopital(expression, ctx, indForm, depth + 1);
+		if (lhopital !== null) {
+			return { steps: lhopital.steps, value: lhopital.value, status: lhopital.status };
 		}
 	}
 
