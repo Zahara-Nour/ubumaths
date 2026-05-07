@@ -734,3 +734,68 @@ export const limitInfinityDemo: QuestionTemplate = {
 	domain: 'Limites',
 	level: 1
 };
+
+/**
+ * Demo question : domaine de définition de √x / (x − 1) (1ère spé maths).
+ *
+ * Composition d'une racine carrée et d'une division : émet 3 steps
+ * (sqrt_constraint, division_constraint, intersection).
+ */
+export const domainSqrtFractionDemo: QuestionTemplate = {
+	id: 'demo-domain-sqrt-fraction-lycee',
+	title: 'Domaine de définition √x / (x − 1) (1ère spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'Déterminer le domaine de définition de $f(x) = \\dfrac{\\sqrt{x}}{x - 1}$. $D_f = ?$'
+			),
+			variables: [],
+			blanks: [{ expectedAnswer: '[0;1[ \\cup ]1;+\\infty[' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Bravo !') },
+				generatedSteps: {
+					kind: 'domain',
+					expression: '\\dfrac{\\sqrt{x}}{x - 1}',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['1_SPE'],
+	theme: 'Analyse',
+	domain: 'Fonctions',
+	level: 1
+};
+
+/**
+ * Demo question : domaine de définition de arcsin(2x) (Tle spé maths).
+ *
+ * Contrainte de l'arc sinus : -1 ≤ 2x ≤ 1 → x ∈ [-1/2 ; 1/2].
+ */
+export const domainArcsinDemo: QuestionTemplate = {
+	id: 'demo-domain-arcsin-lycee',
+	title: 'Domaine de définition arcsin(2x) (Tle spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'Déterminer le domaine de définition de $f(x) = \\arcsin(2x)$. $D_f = ?$'
+			),
+			variables: [],
+			blanks: [{ expectedAnswer: '[-1/2;1/2]' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Bravo !') },
+				generatedSteps: {
+					kind: 'domain',
+					expression: '\\arcsin(2x)',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['T_SPE'],
+	theme: 'Analyse',
+	domain: 'Fonctions',
+	level: 1
+};

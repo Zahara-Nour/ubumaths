@@ -20,6 +20,8 @@ import {
 	integrateIndefiniteDemo,
 	limitFactorisationDemo,
 	limitInfinityDemo,
+	domainSqrtFractionDemo,
+	domainArcsinDemo,
 	linearEquationDemo,
 	linearInequalityFlipDemo,
 	linearInequalityTwoSidesDemo,
@@ -485,6 +487,39 @@ describe('Mode B end-to-end demos', () => {
 		const rules = steps!.map((s) => s.rule);
 		expect(rules).toContain('identify-dominant-term');
 		expect(rules).toContain('conclude');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('1ère spé domain — sqrt+division+intersection on √x/(x-1)', () => {
+		const result = generateInstance(domainSqrtFractionDemo, 1);
+		expect(result.success).toBe(true);
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBe(3);
+		expect(steps!.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toEqual(['sqrt_constraint', 'division_constraint', 'intersection']);
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('Tle spé domain — arcsin(2x) → contrainte -1 ≤ 2x ≤ 1', () => {
+		const result = generateInstance(domainArcsinDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+		expect(steps!.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('arcsin_constraint');
 
 		const summary = steps!.map(summarize);
 		expect(summary).toMatchSnapshot();

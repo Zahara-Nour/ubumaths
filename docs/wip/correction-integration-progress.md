@@ -291,6 +291,7 @@ en profondeur (discriminator étendu, case dispatch ajouté dans
   **8 stratégies pédagogiques** au total (V1 + V1.1) :
   `direct-substitution`, `apply-known-limit` (réutilise `matchKnownLimit`
   de `limits/`), `factorisation 0/0` (avec sous-étapes via `asPolynomial`
+
   - `syntheticDivide` Horner), `rationalisation` (V1.1.a, conjugué + eager
     simplification du `(x − a)` commun), `infinity-analysis` (factor
     dominant), `lhopital` (V1.1.c, sup uniquement, réutilise
@@ -303,8 +304,22 @@ en profondeur (discriminator étendu, case dispatch ajouté dans
     `-\\infty` / `oo` / `+oo` / `-oo`. Catch
     `PedagogicalLimitNotImplemented` → fallback Mode A silencieux.
 
+- **`kind: 'domain'`** (livré 2026-05-07 — V1 MVP, Option C
+  instrumentation directe) : domaine de définition de fonctions
+  composites. Couvre 5 rules (sqrt, ln/log, division, arcsin/arccos,
+  intersection). Format aligned 3-lignes (Expression / Contrainte /
+  Domaine). Vocabulary adaptive : lycée didactique vs supérieur
+  compact (« √u défini ⟺ u ≥ 0 »). Architecture : instrumentation
+  légère de `domain/compute.ts` (~70 LOC, 3 sites) plutôt que pipeline
+  parallèle — l'infrastructure `DomainStepRecorder` +
+  `DOMAIN_RULE_TEMPLATES` était pré-câblée mais n'avait jamais été
+  branchée. Catch `PedagogicalDomainNotImplemented` → fallback
+  Mode A silencieux. V1.1 : `tan`/`cot`, `preimage_quadratic`,
+  `composition`, hyperboliques inverses (sup), `union`/`complement`/
+  `difference`. Voir `domain-renderer-progress.md`.
+
 **État actuel :** la page debug `/dashboard/admin/debug/correction-mode-b`
-expose **19 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
+expose **20 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 `linearEquationDemo` (4e équation linéaire),
 `differentiatePolynomialDemo` + `differentiateCompositionDemo`
 (1ère/Tle spé), `quadraticEquationDemo` (Tle spé),
@@ -316,13 +331,17 @@ expose **19 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 (Tle spé), `simplifyDistributionDemo` (4e) +
 `simplifyTrigDemo` (1ère spé), `arithmeticFromBlankDemo` (CM2,
 expression nommée), `limitFactorisationDemo` + `limitInfinityDemo`
-(Tle spé limites).
+(Tle spé limites), `domainSqrtFractionDemo` (1ère spé) +
+`domainArcsinDemo` (Tle spé domaines).
 
-Ces 8 extensions (10 → 11 kinds) valident que l'architecture Mode B est
+Ces 9 extensions (10 → 12 kinds) valident que l'architecture Mode B est
 suffisamment robuste pour accueillir de nouveaux pipelines pédagogiques
 sans refactoring de la glue. Le pattern `(types/Zod loose+strict/
 correction-generator case/fixtures/page debug card)` est devenu
-reproductible mécaniquement.
+reproductible mécaniquement. Le module `domain` se distingue par son
+architecture **Option C (instrumentation directe)** plutôt que pipeline
+parallèle, démontrant que la glue accommode aussi cette variante quand
+l'infrastructure est pré-câblée.
 
 ## Risques connus / TODOs futurs (post-V1)
 

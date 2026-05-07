@@ -223,6 +223,13 @@ const generatedStepsLimit = z.object({
 	options: generatedStepsOptionsSchema.optional()
 });
 
+const generatedStepsDomain = z.object({
+	kind: z.literal('domain'),
+	expression: z.string().min(1),
+	variable: z.string().min(1).optional(),
+	options: generatedStepsOptionsSchema.optional()
+});
+
 export const generatedStepsSchema = z.discriminatedUnion('kind', [
 	generatedStepsArithmetic,
 	generatedStepsLinearEquation,
@@ -234,7 +241,8 @@ export const generatedStepsSchema = z.discriminatedUnion('kind', [
 	generatedStepsIntegrate,
 	generatedStepsSimplify,
 	generatedStepsArithmeticFromBlank,
-	generatedStepsLimit
+	generatedStepsLimit,
+	generatedStepsDomain
 ]);
 
 /**
@@ -450,6 +458,15 @@ const generatedStepsLimitStrictZ = z
 	})
 	.strict();
 
+const generatedStepsDomainStrictZ = z
+	.object({
+		kind: z.literal('domain'),
+		expression: z.string().min(1),
+		variable: z.string().min(1).optional(),
+		options: generatedStepsOptionsStrictZ.optional()
+	})
+	.strict();
+
 const generatedStepsStrictZ = z.discriminatedUnion('kind', [
 	generatedStepsArithmeticStrictZ,
 	generatedStepsLinearEquationStrictZ,
@@ -461,7 +478,8 @@ const generatedStepsStrictZ = z.discriminatedUnion('kind', [
 	generatedStepsIntegrateStrictZ,
 	generatedStepsSimplifyStrictZ,
 	generatedStepsArithmeticFromBlankStrictZ,
-	generatedStepsLimitStrictZ
+	generatedStepsLimitStrictZ,
+	generatedStepsDomainStrictZ
 ]);
 
 const correctionStrictZ = z

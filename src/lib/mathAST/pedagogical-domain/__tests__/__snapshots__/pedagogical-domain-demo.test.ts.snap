@@ -1,0 +1,461 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Pedagogical domain demo cases (LaTeX format) > arcs-trigo > renders: arccos(x/2) 1`] = `
+"
+###### arccos(x/2) ######
+
+Expression: \\arccos\\left(\\dfrac{x}{2}\\right) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [arccos_constraint] Contrainte de l’arc cosinus
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{\\dfrac{x}{2}} \\\\ &\\text{Contrainte : } -1 \\leq \\dfrac{x}{2} \\leq 1 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== LYCEE (detailed) ==========
+- [arccos_constraint] Contrainte de l’arc cosinus
+  · Pour que arccos(\\dfrac{x}{2}) soit défini, il faut -1 ≤ \\dfrac{x}{2} ≤ 1
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{\\dfrac{x}{2}} \\\\ &\\text{Contrainte : } -1 \\leq \\dfrac{x}{2} \\leq 1 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== SUPERIEUR (summarized) ==========
+- [arccos_constraint] arccos u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{\\dfrac{x}{2}} \\\\ &\\text{Contrainte : } -1 \\leq \\dfrac{x}{2} \\leq 1 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== SUPERIEUR (detailed) ==========
+- [arccos_constraint] arccos u défini
+  · Pour que arccos(\\dfrac{x}{2}) soit défini, il faut -1 ≤ \\dfrac{x}{2} ≤ 1
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{\\dfrac{x}{2}} \\\\ &\\text{Contrainte : } -1 \\leq \\dfrac{x}{2} \\leq 1 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > arcs-trigo > renders: arcsin(x) 1`] = `
+"
+###### arcsin(x) ######
+
+Expression: \\arcsin(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [arcsin_constraint] Contrainte de l’arc sinus
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } -1 \\leq x \\leq 1 \\\\ &\\text{Domaine : } [-1 ; 1] \\end{aligned}
+Domaine final: [-1 ; 1]
+
+========== LYCEE (detailed) ==========
+- [arcsin_constraint] Contrainte de l’arc sinus
+  · Pour que arcsin(x) soit défini, il faut -1 ≤ x ≤ 1
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } -1 \\leq x \\leq 1 \\\\ &\\text{Domaine : } [-1 ; 1] \\end{aligned}
+Domaine final: [-1 ; 1]
+
+========== SUPERIEUR (summarized) ==========
+- [arcsin_constraint] arcsin u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } -1 \\leq x \\leq 1 \\\\ &\\text{Domaine : } [-1 ; 1] \\end{aligned}
+Domaine final: [-1 ; 1]
+
+========== SUPERIEUR (detailed) ==========
+- [arcsin_constraint] arcsin u défini
+  · Pour que arcsin(x) soit défini, il faut -1 ≤ x ≤ 1
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } -1 \\leq x \\leq 1 \\\\ &\\text{Domaine : } [-1 ; 1] \\end{aligned}
+Domaine final: [-1 ; 1]
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > compositions-mixtes > renders: 1 / √(x + 1) 1`] = `
+"
+###### 1 / √(x + 1) ######
+
+Expression: \\dfrac{1}{\\sqrt{x + 1}} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sqrt_constraint] Contrainte de la racine carrée
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 1} \\\\ &\\text{Contrainte : } x + 1 \\geq 0 \\\\ &\\text{Domaine : } [-1 ; +\\infty[ \\end{aligned}
+Domaine final: [-1 ; +∞[
+
+========== LYCEE (detailed) ==========
+- [sqrt_constraint] Contrainte de la racine carrée
+  · Pour que √(x + 1) soit définie, il faut x + 1 ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 1} \\\\ &\\text{Contrainte : } x + 1 \\geq 0 \\\\ &\\text{Domaine : } [-1 ; +\\infty[ \\end{aligned}
+Domaine final: [-1 ; +∞[
+
+========== SUPERIEUR (summarized) ==========
+- [sqrt_constraint] √u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 1} \\\\ &\\text{Contrainte : } x + 1 \\geq 0 \\\\ &\\text{Domaine : } [-1 ; +\\infty[ \\end{aligned}
+Domaine final: [-1 ; +∞[
+
+========== SUPERIEUR (detailed) ==========
+- [sqrt_constraint] √u défini
+  · Pour que √(x + 1) soit définie, il faut x + 1 ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 1} \\\\ &\\text{Contrainte : } x + 1 \\geq 0 \\\\ &\\text{Domaine : } [-1 ; +\\infty[ \\end{aligned}
+Domaine final: [-1 ; +∞[
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > compositions-mixtes > renders: ln(x) / x 1`] = `
+"
+###### ln(x) / x ######
+
+Expression: \\dfrac{\\ln(x)}{x} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [ln_constraint] Contrainte du logarithme népérien
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x > 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\end{aligned}
+- [division_constraint] Contrainte de la division
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+- [intersection] Intersection des contraintes
+  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+Domaine final: ]0 ; +∞[ \\ {0}
+
+========== LYCEE (detailed) ==========
+- [ln_constraint] Contrainte du logarithme népérien
+  · Pour que ln(x) soit défini, il faut x > 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x > 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\end{aligned}
+- [division_constraint] Contrainte de la division
+  · Pour que la division soit définie, il faut x ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+- [intersection] Intersection des contraintes
+  · Le domaine de définition est l’intersection de toutes les contraintes individuelles.
+  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+Domaine final: ]0 ; +∞[ \\ {0}
+
+========== SUPERIEUR (summarized) ==========
+- [ln_constraint] ln u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x > 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\end{aligned}
+- [division_constraint] u ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+- [intersection] Intersection
+  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+Domaine final: ]0 ; +∞[ \\ {0}
+
+========== SUPERIEUR (detailed) ==========
+- [ln_constraint] ln u défini
+  · Pour que ln(x) soit défini, il faut x > 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x > 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\end{aligned}
+- [division_constraint] u ≠ 0
+  · Pour que la division soit définie, il faut x ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+- [intersection] Intersection
+  · D = ⋂ contraintes.
+  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+Domaine final: ]0 ; +∞[ \\ {0}
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > compositions-mixtes > renders: √x / (x − 1) 1`] = `
+"
+###### √x / (x − 1) ######
+
+Expression: \\dfrac{\\sqrt{x}}{x - 1} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sqrt_constraint] Contrainte de la racine carrée
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
+- [division_constraint] Contrainte de la division
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+- [intersection] Intersection des contraintes
+  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+Domaine final: [0 ; +∞[ \\ {1}
+
+========== LYCEE (detailed) ==========
+- [sqrt_constraint] Contrainte de la racine carrée
+  · Pour que √(x) soit définie, il faut x ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
+- [division_constraint] Contrainte de la division
+  · Pour que la division soit définie, il faut x - 1 ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+- [intersection] Intersection des contraintes
+  · Le domaine de définition est l’intersection de toutes les contraintes individuelles.
+  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+Domaine final: [0 ; +∞[ \\ {1}
+
+========== SUPERIEUR (summarized) ==========
+- [sqrt_constraint] √u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
+- [division_constraint] u ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+- [intersection] Intersection
+  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+Domaine final: [0 ; +∞[ \\ {1}
+
+========== SUPERIEUR (detailed) ==========
+- [sqrt_constraint] √u défini
+  · Pour que √(x) soit définie, il faut x ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
+- [division_constraint] u ≠ 0
+  · Pour que la division soit définie, il faut x - 1 ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+- [intersection] Intersection
+  · D = ⋂ contraintes.
+  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+Domaine final: [0 ; +∞[ \\ {1}
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > fractions > renders: (2x)/(x² + 1) (universel) 1`] = `
+"
+###### (2x)/(x² + 1) (universel) ######
+
+Expression: \\dfrac{2x}{x^2 + 1} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [universal] Domaine universel
+  \\begin{aligned} &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== LYCEE (detailed) ==========
+- [universal] Domaine universel
+  · Aucune restriction particulière : le domaine est ℝ.
+  \\begin{aligned} &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== SUPERIEUR (summarized) ==========
+- [universal] D = ℝ
+  \\begin{aligned} &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== SUPERIEUR (detailed) ==========
+- [universal] D = ℝ
+  · Pas de restriction : D = ℝ.
+  \\begin{aligned} &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > fractions > renders: 1/(x + 2) 1`] = `
+"
+###### 1/(x + 2) ######
+
+Expression: \\dfrac{1}{x + 2} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [division_constraint] Contrainte de la division
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {-2} \\end{aligned}
+Domaine final: ℝ \\ {-2}
+
+========== LYCEE (detailed) ==========
+- [division_constraint] Contrainte de la division
+  · Pour que la division soit définie, il faut x + 2 ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {-2} \\end{aligned}
+Domaine final: ℝ \\ {-2}
+
+========== SUPERIEUR (summarized) ==========
+- [division_constraint] u ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {-2} \\end{aligned}
+Domaine final: ℝ \\ {-2}
+
+========== SUPERIEUR (detailed) ==========
+- [division_constraint] u ≠ 0
+  · Pour que la division soit définie, il faut x + 2 ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {-2} \\end{aligned}
+Domaine final: ℝ \\ {-2}
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > fractions > renders: 1/x 1`] = `
+"
+###### 1/x ######
+
+Expression: \\dfrac{1}{x} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [division_constraint] Contrainte de la division
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0} \\end{aligned}
+Domaine final: ℝ \\ {0}
+
+========== LYCEE (detailed) ==========
+- [division_constraint] Contrainte de la division
+  · Pour que la division soit définie, il faut x ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0} \\end{aligned}
+Domaine final: ℝ \\ {0}
+
+========== SUPERIEUR (summarized) ==========
+- [division_constraint] u ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0} \\end{aligned}
+Domaine final: ℝ \\ {0}
+
+========== SUPERIEUR (detailed) ==========
+- [division_constraint] u ≠ 0
+  · Pour que la division soit définie, il faut x ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0} \\end{aligned}
+Domaine final: ℝ \\ {0}
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > logarithmes > renders: ln(5) (constante, universel) 1`] = `
+"
+###### ln(5) (constante, universel) ######
+
+Expression: \\ln(5) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [ln_constraint] Contrainte du logarithme népérien
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{5} \\\\ &\\text{Contrainte : } 5 > 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== LYCEE (detailed) ==========
+- [ln_constraint] Contrainte du logarithme népérien
+  · Pour que ln(5) soit défini, il faut 5 > 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{5} \\\\ &\\text{Contrainte : } 5 > 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== SUPERIEUR (summarized) ==========
+- [ln_constraint] ln u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{5} \\\\ &\\text{Contrainte : } 5 > 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== SUPERIEUR (detailed) ==========
+- [ln_constraint] ln u défini
+  · Pour que ln(5) soit défini, il faut 5 > 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{5} \\\\ &\\text{Contrainte : } 5 > 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > logarithmes > renders: ln(x − 1) 1`] = `
+"
+###### ln(x − 1) ######
+
+Expression: \\ln(x - 1) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [ln_constraint] Contrainte du logarithme népérien
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 > 0 \\\\ &\\text{Domaine : } ]1 ; +\\infty[ \\end{aligned}
+Domaine final: ]1 ; +∞[
+
+========== LYCEE (detailed) ==========
+- [ln_constraint] Contrainte du logarithme népérien
+  · Pour que ln(x - 1) soit défini, il faut x - 1 > 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 > 0 \\\\ &\\text{Domaine : } ]1 ; +\\infty[ \\end{aligned}
+Domaine final: ]1 ; +∞[
+
+========== SUPERIEUR (summarized) ==========
+- [ln_constraint] ln u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 > 0 \\\\ &\\text{Domaine : } ]1 ; +\\infty[ \\end{aligned}
+Domaine final: ]1 ; +∞[
+
+========== SUPERIEUR (detailed) ==========
+- [ln_constraint] ln u défini
+  · Pour que ln(x - 1) soit défini, il faut x - 1 > 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 > 0 \\\\ &\\text{Domaine : } ]1 ; +\\infty[ \\end{aligned}
+Domaine final: ]1 ; +∞[
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > logarithmes > renders: log(2x + 1) 1`] = `
+"
+###### log(2x + 1) ######
+
+Expression: \\log(2x + 1) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [log_constraint] Contrainte du logarithme
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x + 1} \\\\ &\\text{Contrainte : } 2 x + 1 > 0 \\\\ &\\text{Domaine : } ]-0.5 ; +\\infty[ \\end{aligned}
+Domaine final: ]-0.5 ; +∞[
+
+========== LYCEE (detailed) ==========
+- [log_constraint] Contrainte du logarithme
+  · Pour que log(2 x + 1) soit défini, il faut 2 x + 1 > 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x + 1} \\\\ &\\text{Contrainte : } 2 x + 1 > 0 \\\\ &\\text{Domaine : } ]-0.5 ; +\\infty[ \\end{aligned}
+Domaine final: ]-0.5 ; +∞[
+
+========== SUPERIEUR (summarized) ==========
+- [log_constraint] log u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x + 1} \\\\ &\\text{Contrainte : } 2 x + 1 > 0 \\\\ &\\text{Domaine : } ]-0.5 ; +\\infty[ \\end{aligned}
+Domaine final: ]-0.5 ; +∞[
+
+========== SUPERIEUR (detailed) ==========
+- [log_constraint] log u défini
+  · Pour que log(2 x + 1) soit défini, il faut 2 x + 1 > 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x + 1} \\\\ &\\text{Contrainte : } 2 x + 1 > 0 \\\\ &\\text{Domaine : } ]-0.5 ; +\\infty[ \\end{aligned}
+Domaine final: ]-0.5 ; +∞[
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > racines > renders: √(2x + 3) 1`] = `
+"
+###### √(2x + 3) ######
+
+Expression: \\sqrt{2x + 3} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sqrt_constraint] Contrainte de la racine carrée
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x + 3} \\\\ &\\text{Contrainte : } 2 x + 3 \\geq 0 \\\\ &\\text{Domaine : } [-1.5 ; +\\infty[ \\end{aligned}
+Domaine final: [-1.5 ; +∞[
+
+========== LYCEE (detailed) ==========
+- [sqrt_constraint] Contrainte de la racine carrée
+  · Pour que √(2 x + 3) soit définie, il faut 2 x + 3 ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x + 3} \\\\ &\\text{Contrainte : } 2 x + 3 \\geq 0 \\\\ &\\text{Domaine : } [-1.5 ; +\\infty[ \\end{aligned}
+Domaine final: [-1.5 ; +∞[
+
+========== SUPERIEUR (summarized) ==========
+- [sqrt_constraint] √u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x + 3} \\\\ &\\text{Contrainte : } 2 x + 3 \\geq 0 \\\\ &\\text{Domaine : } [-1.5 ; +\\infty[ \\end{aligned}
+Domaine final: [-1.5 ; +∞[
+
+========== SUPERIEUR (detailed) ==========
+- [sqrt_constraint] √u défini
+  · Pour que √(2 x + 3) soit définie, il faut 2 x + 3 ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x + 3} \\\\ &\\text{Contrainte : } 2 x + 3 \\geq 0 \\\\ &\\text{Domaine : } [-1.5 ; +\\infty[ \\end{aligned}
+Domaine final: [-1.5 ; +∞[
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > racines > renders: √(x − 2) 1`] = `
+"
+###### √(x − 2) ######
+
+Expression: \\sqrt{x - 2} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sqrt_constraint] Contrainte de la racine carrée
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 2} \\\\ &\\text{Contrainte : } x - 2 \\geq 0 \\\\ &\\text{Domaine : } [2 ; +\\infty[ \\end{aligned}
+Domaine final: [2 ; +∞[
+
+========== LYCEE (detailed) ==========
+- [sqrt_constraint] Contrainte de la racine carrée
+  · Pour que √(x - 2) soit définie, il faut x - 2 ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 2} \\\\ &\\text{Contrainte : } x - 2 \\geq 0 \\\\ &\\text{Domaine : } [2 ; +\\infty[ \\end{aligned}
+Domaine final: [2 ; +∞[
+
+========== SUPERIEUR (summarized) ==========
+- [sqrt_constraint] √u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 2} \\\\ &\\text{Contrainte : } x - 2 \\geq 0 \\\\ &\\text{Domaine : } [2 ; +\\infty[ \\end{aligned}
+Domaine final: [2 ; +∞[
+
+========== SUPERIEUR (detailed) ==========
+- [sqrt_constraint] √u défini
+  · Pour que √(x - 2) soit définie, il faut x - 2 ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 2} \\\\ &\\text{Contrainte : } x - 2 \\geq 0 \\\\ &\\text{Domaine : } [2 ; +\\infty[ \\end{aligned}
+Domaine final: [2 ; +∞[
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > racines > renders: √(x² + 1) (universel) 1`] = `
+"
+###### √(x² + 1) (universel) ######
+
+Expression: \\sqrt{x^2 + 1} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [sqrt_constraint] Contrainte de la racine carrée
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x^2 + 1} \\\\ &\\text{Contrainte : } x^2 + 1 \\geq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== LYCEE (detailed) ==========
+- [sqrt_constraint] Contrainte de la racine carrée
+  · Pour que √(x^2 + 1) soit définie, il faut x^2 + 1 ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x^2 + 1} \\\\ &\\text{Contrainte : } x^2 + 1 \\geq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== SUPERIEUR (summarized) ==========
+- [sqrt_constraint] √u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x^2 + 1} \\\\ &\\text{Contrainte : } x^2 + 1 \\geq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+
+========== SUPERIEUR (detailed) ==========
+- [sqrt_constraint] √u défini
+  · Pour que √(x^2 + 1) soit définie, il faut x^2 + 1 ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x^2 + 1} \\\\ &\\text{Contrainte : } x^2 + 1 \\geq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+Domaine final: ℝ
+"
+`;

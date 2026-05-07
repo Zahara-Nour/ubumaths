@@ -48,6 +48,12 @@ import {
 	PedagogicalLimitNotImplemented,
 	PedagogicalLimitRenderer
 } from '$lib/mathAST/pedagogical-limits';
+import {
+	dispatchPedagogicalDomain,
+	PedagogicalDomainNotImplemented,
+	PedagogicalDomainRenderer,
+	type PedagogicalDomainSchoolLevel
+} from '$lib/mathAST/pedagogical-domain';
 import { generateLinearEquationSteps } from '$lib/mathAST/pedagogical-solve/linear';
 import { LinearEquationRenderer } from '$lib/mathAST/pedagogical-solve/linear-renderer';
 import {
@@ -192,6 +198,15 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 					variable: generatedSteps.variable,
 					approach: generatedSteps.approach,
 					direction: generatedSteps.direction,
+					instance,
+					schoolLevel,
+					verbosity
+				});
+				break;
+			case 'domain':
+				renderedSteps = renderDomain({
+					expression: generatedSteps.expression,
+					variable: generatedSteps.variable,
 					instance,
 					schoolLevel,
 					verbosity
@@ -731,6 +746,60 @@ function renderLimit({
 
 	const renderer = new PedagogicalLimitRenderer();
 	const renderOptions: PedagogicalRenderOptions = { schoolLevel: limitLevel, verbosity };
+	return renderer.renderAll(result.steps, renderOptions);
+}
+
+interface DomainDispatch {
+	readonly expression: string;
+	readonly variable?: string;
+	readonly instance: QuestionInstance;
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+}
+
+/**
+ * Render the pedagogical step trace for `kind: 'domain'`.
+ *
+ * Resolves `{{vars}}` template tokens against the instance's resolved
+ * variables (same convention as the other kinds), then dispatches to the
+ * pedagogical pipeline.
+ *
+ * Silent fallback to Mode A on:
+ *   - `PedagogicalDomainNotImplemented` (primaire/college bumped, V1 MVP
+ *     scope refusal, out-of-MVP rule emitted, parse error).
+ * Anything else re-throws to the outer `console.warn` catch.
+ */
+function renderDomain({
+	expression,
+	variable,
+	instance,
+	schoolLevel,
+	verbosity
+}: DomainDispatch): readonly RenderedStep[] | null {
+	// Domain of definition is on the syllabus from 2nde onwards; bump
+	// primaire/college so a misplaced declaration still produces something
+	// useful at the lycée vocabulary level.
+	const domainLevel: PedagogicalDomainSchoolLevel =
+		schoolLevel === 'primaire' || schoolLevel === 'college' ? 'lycee' : schoolLevel;
+
+	const resolvedExpression = resolveExpression(expression, instance.resolvedVariables ?? []).trim();
+
+	let result;
+	try {
+		result = dispatchPedagogicalDomain({
+			expression: resolvedExpression,
+			variable: variable ?? 'x',
+			schoolLevel: domainLevel,
+			verbosity
+		});
+	} catch (err) {
+		// V1 MVP scope refusals → silent fallback to Mode A.
+		if (err instanceof PedagogicalDomainNotImplemented) return null;
+		throw err;
+	}
+
+	const renderer = new PedagogicalDomainRenderer();
+	const renderOptions: PedagogicalRenderOptions = { schoolLevel: domainLevel, verbosity };
 	return renderer.renderAll(result.steps, renderOptions);
 }
 
