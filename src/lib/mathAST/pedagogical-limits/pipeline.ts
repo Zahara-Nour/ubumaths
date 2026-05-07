@@ -42,6 +42,7 @@ import {
 	classifyApproach,
 	divide,
 	evaluateAtPoint,
+	findConjugate,
 	formatApproachShort,
 	formatLinearFactor,
 	isAtInfinity,
@@ -223,7 +224,15 @@ export function generatePedagogicalLimitSteps(
 		}
 	}
 
-	// Strategy 4 — infinity-analysis (approach = ±∞, division of polynomials)
+	// Strategy 4 — rationalisation (0/0 with sqrt in numerator)
+	if (ctx.strategy.enableRationalization && indForm === '0/0' && isDivision(expression)) {
+		const rationalised = tryRationalisation(expression, ctx, indForm);
+		if (rationalised !== null) {
+			return finalize(ctx, [...headerSteps, ...rationalised.steps], rationalised);
+		}
+	}
+
+	// Strategy 5 — infinity-analysis (approach = ±∞, division of polynomials)
 	if (ctx.strategy.enableInfinityAnalysis && isAtInfinity(ctx.approach) && isDivision(expression)) {
 		const infRes = tryInfinityAnalysis(expression, ctx);
 		if (infRes !== null) {
@@ -332,7 +341,8 @@ function tryKnownLimit(expression: MathNode, ctx: PipelineContext): StrategyResu
 function tryFactorisation(
 	expression: MathNode,
 	ctx: PipelineContext,
-	indForm: IndeterminateForm
+	indForm: IndeterminateForm,
+	depth = 0
 ): StrategyResult {
 	if (!isDivision(expression)) return null;
 	if (!isNumber(ctx.approach)) return null;
@@ -396,7 +406,7 @@ function tryFactorisation(
 	});
 
 	// Recurse on the simplified expression — usually direct substitution now works.
-	const recursed = recurse(simplified, ctx);
+	const recursed = recurse(simplified, ctx, depth + 1);
 	const allSteps = [detectStep, parentStep, ...recursed.steps];
 
 	return {
@@ -412,6 +422,107 @@ function isPolynomialRoot(coeffs: PolynomialCoeffs, a: number): boolean {
 	let acc = 0;
 	for (let i = coeffs.length - 1; i >= 0; i--) acc = acc * a + coeffs[i];
 	return Math.abs(acc) < 1e-10;
+}
+
+// =============================================================================
+// Strategy: rationalisation (0/0 with sqrt in numerator)
+// =============================================================================
+
+/**
+ * Multiply numerator and denominator by the conjugate of the numerator to
+ * lift a `0/0` indeterminate form involving square roots.
+ *
+ * Iconic Tle case : `(√(x+1) − 1) / x` at x → 0.
+ *
+ *   Step 1: detect 0/0
+ *   Step 2 (parent): multiply by (√(x+1) + 1)/(√(x+1) + 1)
+ *     → numerator becomes (x+1) − 1 = x
+ *     → denominator becomes x · (√(x+1) + 1)
+ *   Step 3: factor out the common (x − a) ; simplify-after-rationalization
+ *     → 1 / (√(x+1) + 1)
+ *   Step 4: substitute x = 0 → 1/2
+ *
+ * The simplified form is fed back to `recurse()` which closes the limit
+ * via direct substitution (or a further factorisation pass if needed).
+ *
+ * The inline simplification of the `(x − a)` factor IS necessary :
+ * without it, the rationalised form `x / (x · g(x))` retombe sur 0/0
+ * and the polynomial-only `tryFactorisation` declines (denominator
+ * contains a sqrt and is not a polynomial).
+ */
+function tryRationalisation(
+	expression: MathNode,
+	ctx: PipelineContext,
+	indForm: IndeterminateForm,
+	depth = 0
+): StrategyResult {
+	if (!isDivision(expression)) return null;
+	if (!isNumber(ctx.approach)) return null;
+	const a = parseFloat(ctx.approach.value);
+	if (!Number.isFinite(a)) return null;
+
+	const conjugateInfo = findConjugate(expression.numerator);
+	if (!conjugateInfo) return null;
+
+	const { conjugate, expanded } = conjugateInfo;
+
+	// Simplify the common (x − a) factor between `expanded` and the original
+	// denominator. Required because the rationalised form `expanded /
+	// (originalDenom · conjugate)` is typically still 0/0 at x = a (both
+	// `expanded(a)` and `originalDenom(a)` are 0), and the polynomial-only
+	// factorisation strategy can't help (denominator contains a sqrt).
+	const expandedCoeffs = asPolynomial(expanded, ctx.variable);
+	const originalDenomCoeffs = asPolynomial(expression.denominator, ctx.variable);
+	if (!expandedCoeffs || !originalDenomCoeffs) return null;
+	if (!isPolynomialRoot(expandedCoeffs, a)) return null;
+	if (!isPolynomialRoot(originalDenomCoeffs, a)) return null;
+
+	const { quotient: expandedQuot } = syntheticDivide(expandedCoeffs, a);
+	const { quotient: originalDenomQuot } = syntheticDivide(originalDenomCoeffs, a);
+
+	const newNum = polyToNode(expandedQuot, ctx.variable);
+	const newDen = multiply(polyToNode(originalDenomQuot, ctx.variable), conjugate, 'implicit');
+	const simplified = divide(newNum, newDen, 'fraction');
+
+	// detect-indeterminate-form (informational decoration)
+	const detectStep = makeStep(ctx, {
+		rule: 'detect-indeterminate-form',
+		description: `Forme indéterminée ${indForm} reconnue (présence d'une racine carrée)`,
+		before: expression,
+		after: expression,
+		verbosityLevel: 'detailed',
+		indeterminateForm: indForm
+	});
+
+	// Sub-step: simplify-after-rationalization (factors out the (x − a) cancellation)
+	const simplifyStep = makeStep(ctx, {
+		rule: 'simplify-after-rationalization',
+		description: `Simplification du facteur commun ${formatLinearFactor(ctx.variable, a)} après rationalisation`,
+		before: divide(expanded, multiply(expression.denominator, conjugate, 'implicit'), 'fraction'),
+		after: simplified,
+		verbosityLevel: 'detailed'
+	});
+
+	// Parent: multiply-by-conjugate (with the simplification sub-step nested inside)
+	const multiplyStep = makeStep(ctx, {
+		rule: 'multiply-by-conjugate',
+		description: 'Multiplication du numérateur et du dénominateur par le conjugué',
+		before: expression,
+		after: simplified,
+		verbosityLevel: 'summarized',
+		bindings: { conjugate },
+		subSteps: [simplifyStep]
+	});
+
+	// Recurse on the simplified form — direct substitution is now the closer.
+	const recursed = recurse(simplified, ctx, depth + 1);
+
+	return {
+		steps: [detectStep, multiplyStep, ...recursed.steps],
+		value: recursed.value,
+		status: recursed.status,
+		indeterminateForm: indForm
+	};
 }
 
 // =============================================================================
@@ -531,22 +642,44 @@ function formatNumber(x: number): string {
  */
 function recurse(
 	expression: MathNode,
-	ctx: PipelineContext
+	ctx: PipelineContext,
+	depth = 0
 ): {
 	readonly steps: readonly PedagogicalLimitStep[];
 	readonly value: MathNode | null;
 	readonly status: PedagogicalLimitStatus;
 } {
-	// After factorisation, direct substitution is the most common closer.
+	// Hard depth cap to prevent infinite recursion on pathological inputs
+	// (a strategy producing the same indeterminate form repeatedly).
+	if (depth > 3) {
+		throw new PedagogicalLimitNotImplemented(
+			expression,
+			`recursion depth exceeded (${depth}) — pipeline aborted to avoid infinite loop`
+		);
+	}
+
+	// After a sub-strategy (factorisation, rationalisation), direct
+	// substitution is the most common closer.
 	const direct = tryDirectSubstitution(expression, ctx);
 	if (direct !== null) {
 		return { steps: direct.steps, value: direct.value, status: direct.status };
 	}
 
-	// Could fall through to other strategies (known-limit, infinity-analysis…).
+	// Then known-limit pattern matching.
 	const known = tryKnownLimit(expression, ctx);
 	if (known !== null) {
 		return { steps: known.steps, value: known.value, status: known.status };
+	}
+
+	// If the residual still has an indeterminate form, cascade : factorisation
+	// after rationalisation is the standard closer for `(√a − b)/c` cases
+	// (the rationalised numerator and denominator share a `(x − a)` factor).
+	const indForm = detectIndeterminateForm(expression, ctx.variable, ctx.approach, ctx.direction);
+	if (ctx.strategy.enableFactorization && indForm === '0/0' && isDivision(expression)) {
+		const factored = tryFactorisation(expression, ctx, indForm, depth + 1);
+		if (factored !== null) {
+			return { steps: factored.steps, value: factored.value, status: factored.status };
+		}
 	}
 
 	throw new PedagogicalLimitNotImplemented(

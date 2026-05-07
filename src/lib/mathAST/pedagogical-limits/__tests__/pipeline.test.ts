@@ -215,6 +215,126 @@ describe('pipeline — factorisation', () => {
 });
 
 // =============================================================================
+// Rationalisation (0/0 with sqrt in numerator)
+// =============================================================================
+
+describe('pipeline — rationalisation', () => {
+	function sqrt(node: import('../../types').MathNode): import('../../types').MathNode {
+		return { type: 'function', name: 'sqrt', args: [node] };
+	}
+
+	it('(√(x+1) − 1)/x at x = 0 → 1/2', () => {
+		const expr = divide(
+			subtract(sqrt(add(variable('x'), number('1'))), number('1')),
+			variable('x')
+		);
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'lycee'
+		});
+
+		expect(result.status).toBe('exact');
+		// 1/2 numeric — value formatting: numericNode(0.5) → number('0.5')
+		expect(result.value).toMatchObject({ type: 'number', value: '0.5' });
+
+		const rules = flatRules(result.steps);
+		expect(rules).toContain('detect-indeterminate-form');
+		expect(rules).toContain('multiply-by-conjugate');
+		expect(rules).toContain('simplify-after-rationalization');
+		expect(rules).toContain('apply-direct-substitution');
+	});
+
+	it('(√x − 2)/(x − 4) at x = 4 → 1/4', () => {
+		const expr = divide(
+			subtract(sqrt(variable('x')), number('2')),
+			subtract(variable('x'), number('4'))
+		);
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('4'),
+			schoolLevel: 'lycee'
+		});
+
+		expect(result.status).toBe('exact');
+		expect(result.value).toMatchObject({ type: 'number', value: '0.25' });
+	});
+
+	it('(2 − √x)/(4 − x) at x = 4 → 1/4 (b − √a form)', () => {
+		const expr = divide(
+			subtract(number('2'), sqrt(variable('x'))),
+			subtract(number('4'), variable('x'))
+		);
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('4'),
+			schoolLevel: 'lycee'
+		});
+
+		expect(result.status).toBe('exact');
+		expect(result.value).toMatchObject({ type: 'number', value: '0.25' });
+	});
+
+	it('simplify-after-rationalization nests under multiply-by-conjugate', () => {
+		const expr = divide(
+			subtract(sqrt(add(variable('x'), number('1'))), number('1')),
+			variable('x')
+		);
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'lycee'
+		});
+
+		const parent = findRule(result.steps, 'multiply-by-conjugate');
+		expect(parent).toBeDefined();
+		expect(parent?.subSteps).toHaveLength(1);
+		expect(parent?.subSteps?.[0].rule).toBe('simplify-after-rationalization');
+	});
+
+	it('declines on non-sqrt expressions (no conjugate to find)', () => {
+		// Polynomial 0/0 must still go through factorisation, not rationalisation
+		const expr = divide(
+			subtract(power(variable('x'), number('2')), number('4')),
+			subtract(variable('x'), number('2'))
+		);
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('2'),
+			schoolLevel: 'lycee'
+		});
+
+		const rules = flatRules(result.steps);
+		expect(rules).not.toContain('multiply-by-conjugate');
+		expect(rules).toContain('simplify-common-factor');
+	});
+
+	it('handles √a + b additive form via conjugate', () => {
+		// (√x − 2) is equivalent to (-(2 − √x)) ; pick a case that exercises
+		// the additive branch of `findConjugate`. (sqrt(x+4) - 2)/x at x=0
+		// equals 1/4 by rationalisation : (x+4 - 4)/(x · (sqrt(x+4) + 2))
+		// = x/(x · (sqrt(x+4) + 2)) = 1/(sqrt(x+4) + 2) → 1/4.
+		const expr = divide(
+			subtract(
+				{ type: 'function', name: 'sqrt', args: [add(variable('x'), number('4'))] },
+				number('2')
+			),
+			variable('x')
+		);
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'lycee'
+		});
+
+		expect(result.status).toBe('exact');
+		expect(result.value).toMatchObject({ type: 'number', value: '0.25' });
+		const rules = flatRules(result.steps);
+		expect(rules).toContain('multiply-by-conjugate');
+	});
+});
+
+// =============================================================================
 // Infinity-analysis
 // =============================================================================
 

@@ -398,6 +398,127 @@ export function buildLinearFactor(varName: string, a: number): MathNode {
 }
 
 // =============================================================================
+// Conjugate / rationalisation
+// =============================================================================
+
+/**
+ * `true` if `expr` is a square root (either `sqrt(...)` function call or
+ * `(...)^{1/2}` superscript form).
+ */
+export function isSqrt(expr: MathNode): boolean {
+	if (isFunction(expr) && expr.name.toLowerCase() === 'sqrt') return true;
+	if (isSuperscript(expr) && isDivision(expr.superscript)) {
+		const num = expr.superscript.numerator;
+		const den = expr.superscript.denominator;
+		return isNumber(num) && num.value === '1' && isNumber(den) && den.value === '2';
+	}
+	return false;
+}
+
+/** Extract the argument of a square root, or null if `expr` isn't a sqrt.
+ *
+ * Defensive check on the superscript branch : only `^{1/2}` powers are
+ * accepted, not arbitrary `^n`. Without this guard, `getSqrtArg(x^3)`
+ * would silently return `x` even though `x^3` is not a square root.
+ */
+export function getSqrtArg(expr: MathNode): MathNode | null {
+	if (isFunction(expr) && expr.name.toLowerCase() === 'sqrt') {
+		return expr.args[0] ?? null;
+	}
+	if (isSqrt(expr) && isSuperscript(expr)) {
+		return expr.base;
+	}
+	return null;
+}
+
+/**
+ * Look for a conjugate in `expr` (typically the numerator of a fraction with
+ * a 0/0 indeterminate form involving square roots).
+ *
+ * Recognised shapes :
+ *
+ * - `√a − b`  → conjugate `√a + b`,  expanded `a − b²`
+ * - `b − √a`  → conjugate `b + √a`,  expanded `b² − a`
+ * - `√a + b`  → conjugate `√a − b`,  expanded `a − b²`
+ * - `b + √a`  → conjugate `b − √a`,  expanded `b² − a`
+ *
+ * Returns `null` for non-conjugate-able shapes. `b` may be any non-sqrt
+ * sub-expression (typically a number or a polynomial term).
+ *
+ * Mirrors the private `findConjugate` of `limits/algebraic.ts`. Replicating
+ * here keeps the pedagogical pipeline free from a private-import dependency
+ * and lets us extend the supported shapes over time.
+ */
+export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNode } | null {
+	// Transparent unwrap of delimiter nodes (parens emitted by parseCustomSafe).
+	if (expr.type === 'delimiter') return findConjugate(expr.content);
+
+	if (isSubtraction(expr)) {
+		// √a − b → conjugate √a + b ; (√a)² − b² = a − b²
+		if (isSqrt(expr.left) && !isSqrt(expr.right)) {
+			const sqrtArg = getSqrtArg(expr.left);
+			if (sqrtArg) {
+				return {
+					conjugate: add(expr.left, expr.right),
+					expanded: subtract(sqrtArg, squareIfNeeded(expr.right))
+				};
+			}
+		}
+		// b − √a → conjugate b + √a ; b² − a
+		if (!isSqrt(expr.left) && isSqrt(expr.right)) {
+			const sqrtArg = getSqrtArg(expr.right);
+			if (sqrtArg) {
+				return {
+					conjugate: add(expr.left, expr.right),
+					expanded: subtract(squareIfNeeded(expr.left), sqrtArg)
+				};
+			}
+		}
+	}
+
+	if (isAddition(expr)) {
+		// √a + b → conjugate √a − b ; a − b²
+		if (isSqrt(expr.left) && !isSqrt(expr.right)) {
+			const sqrtArg = getSqrtArg(expr.left);
+			if (sqrtArg) {
+				return {
+					conjugate: subtract(expr.left, expr.right),
+					expanded: subtract(sqrtArg, squareIfNeeded(expr.right))
+				};
+			}
+		}
+		// b + √a → conjugate b − √a ; b² − a
+		if (!isSqrt(expr.left) && isSqrt(expr.right)) {
+			const sqrtArg = getSqrtArg(expr.right);
+			if (sqrtArg) {
+				return {
+					conjugate: subtract(expr.left, expr.right),
+					expanded: subtract(squareIfNeeded(expr.left), sqrtArg)
+				};
+			}
+		}
+	}
+
+	return null;
+}
+
+function squareIfNeeded(node: MathNode): MathNode {
+	// Numeric constants : evaluate the square eagerly so the simplified
+	// numerator looks clean (`1²` → `1`, `(2)²` → `4`).
+	if (isNumber(node)) {
+		const v = parseFloat(node.value);
+		if (Number.isFinite(v)) return numericNode(v * v);
+	}
+	// Already x^2 — no need to re-square. Tighten on `^2` specifically so
+	// `x^3` is correctly squared to `x^6` (was a latent bug : the previous
+	// `if (isSuperscript(node)) return node` short-circuited any power).
+	if (isSuperscript(node) && isNumber(node.superscript) && node.superscript.value === '2') {
+		return node;
+	}
+	return power(node, number('2'));
+}
+
+// =============================================================================
 // Direction handling
 // =============================================================================
 
