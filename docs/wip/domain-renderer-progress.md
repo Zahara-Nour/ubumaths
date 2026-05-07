@@ -193,7 +193,7 @@ Format latex (`--latex`) : aligned LaTeX, stable pour snapshots.
 - ✓ 2184 tests `questions/` passent (sauf 11 échecs **pré-existants** sur `main`, validés via `git stash`)
 - ✓ Doc de progression (ce fichier)
 
-## Tableau récapitulatif
+## Tableau récapitulatif (V1 MVP)
 
 | Phase | Status | Fichiers livrés                                                                            | Tests |
 | ----- | ------ | ------------------------------------------------------------------------------------------ | ----- |
@@ -205,7 +205,9 @@ Format latex (`--latex`) : aligned LaTeX, stable pour snapshots.
 | 5     | ✅     | types.ts/template-schema.ts/correction-generator.ts (extensions), 2 fixtures, page debug   | 9 ✓   |
 | 6     | ✅     | doc progress, mises à jour mvp + correction-integration                                    | —     |
 
-**Total** : 80 tests pédagogiques verts (types 10 + instrumentation 20 + dispatch 16 + renderer 20 + demos 14) + 9 tests Mode B (correction-generator 7 + generated-steps-demo 2) = **89 tests** verts pour la V1 MVP.
+**V1 MVP** : 89 tests verts (types 10 + instrumentation 20 + dispatch 16 +
+renderer 20 + demos 14 + Mode B 9). Voir « Cumul des commits » plus bas pour
+V1.1.a.
 
 ## V1.1.a livrée (2026-05-07)
 
@@ -277,20 +279,91 @@ fixture Mode B) + 6 snapshots demo. 938 tests verts au total.
   `tan_constraint`/`sec_constraint`. Source dans `domain/format.ts:223`
   via `toCustom()`. Hors scope pedagogical-domain V1.1.
 
-## Pistes V1.1 explicites
+## Pistes V1.2 (explicites)
 
-1. **Instrumenter périodic_exclusion** dans `compute.ts:432-465` (`getPeriodicExclusionDomain`) → émet `tan_constraint` / `cot_constraint` / `sec_constraint` / `csc_constraint`.
-2. **Instrumenter preimage\_\*** : à brancher dans `solveLinearInequality` / `solveQuadraticInequality` / `solveCubicInequality`. Modifier `domain/preimage.ts` ou ajouter une couche dans compute.ts.
-3. **Instrumenter `composition`** : `analyzeComposition` (compute.ts:113-192) doit émettre un step `composition` qui wrap les sub-steps.
-4. **Wrapper « identification des contraintes »** : pour les cas composites avec ≥ 3 sub-rules, regrouper sous un step parent (cf. `FACTORISATION_CLUSTER_RULES` en `pedagogical-limits/`).
-5. **Hyperboliques inverses** : `arccosh_constraint` (sup), `arctanh_constraint` (sup) — étendre `V1_MVP_FUNCTION_CONSTRAINT_RULES`.
+1. **`preimage_linear/quadratic/cubic`** — émettre la résolution de
+   l'inéquation comme step intermédiaire. Différé en V1.2 : risque de
+   doublonnage avec les constraint rules qui captent déjà le résultat
+   dans `intermediateDomain`. À reconsidérer si un cas pédagogique
+   distinct se présente (ex : montrer la résolution d'inéquation comme
+   exercice indépendant).
+2. **Step `composition` explicite** — la composition est déjà capturée
+   implicitement par la récursion + `intersection` (ex `ln(sqrt(x))`
+   produit `[sqrt_constraint, ln_constraint, intersection]`). Un step
+   parent `composition` ajouterait du méta-bavardage sans valeur
+   pédagogique nette. À reconsidérer pour compositions profondes (≥ 3
+   niveaux) ou avec règle « identification du pattern » dédiée.
+3. **`union/complement/difference`** — `compute.ts` ne les émet jamais
+   naturellement (il fait des `intersection`). Pas de cas pédagogique
+   standard du programme. Différé jusqu'à demande produit.
+4. **Wrapper « identification des contraintes »** — pour les cas
+   composites avec ≥ 3 sub-rules, regrouper sous un step parent (cf.
+   `FACTORISATION_CLUSTER_RULES` en `pedagogical-limits/`). Optimisation
+   visuelle, pas un blocker.
+5. **Bug pré-existant `formatPeriodicExclusionInterval`** : produit
+   `\pi:/2` au lieu de `\pi/2` dans la 3ᵉ ligne `Domaine` des steps
+   `tan_constraint`/`sec_constraint`. Source : `domain/format.ts:223`
+   via `toCustom()`. Affecte uniquement le rendu visuel. Hors scope
+   `pedagogical-domain/`.
 
-## Code review
+## Code reviews effectuées
 
-À faire après livraison : `code-reviewer` (Opus) sur l'ensemble du diff.
+### V1 MVP (`b486c1d59`)
+
+`code-reviewer` (Opus) — verdict : Good, proche d'Excellent. Readiness :
+Needs minor fix.
+
+- **MUST FIX appliqué** (commit `9fbdc92df`) : `intervalToLatex` ne
+  convertissait pas `\ {...}` en `\setminus \{...\}` → LaTeX cassé pour
+  `1/x`, etc.
+- **SHOULD appliqués** (commit `8877ee300`) : extraire `mvp-rules.ts`
+  partagé, test fallback 2-lignes, renommer describe edge-cases,
+  remplacer `preimage ?? undefined` par check explicite.
+
+### V1.1.a (`0912ccb54`)
+
+`code-reviewer` (Opus) — verdict : Good. Readiness : Ready to merge.
+
+- **MUST appliqués** (commit `1fbf39d65`) : commentaire périmé compute.ts
+  reformulé, `buildConstraintLatex default: ''` → `throw Error` pour
+  défense désync mvp-rules.
+- **MINOR appliqués** (même commit) : test arccosh nettoyé, 2 nouveaux
+  tests d'invariants `LYCEE_FORBIDDEN_RULES ⊂
+V1_MVP_FUNCTION_CONSTRAINT_RULES ⊂ V1_MVP_RULES`.
+
+## Cumul des commits V1 + V1.1.a (2026-05-07)
+
+| #   | Commit      | Sujet                                                             |
+| --- | ----------- | ----------------------------------------------------------------- |
+| 1   | `b486c1d59` | feat: V1 MVP renderer pédagogique pour les domaines de définition |
+| 2   | `9fbdc92df` | fix: convertir `\ {...}` de formatInterval en `\setminus \{...\}` |
+| 3   | `8877ee300` | refactor: suite recommandations code review V1 MVP                |
+| 4   | `0912ccb54` | feat: V1.1.a — trig + hyperbolic inverses + power                 |
+| 5   | `1fbf39d65` | refactor: code review V1.1.a — guards + tests invariants          |
+
+**Bilan** : 13 rules instrumentées (V1 MVP : 5 + intersection + universal/empty ;
+V1.1.a : tan/cot/sec/csc, arccosh/arctanh sup, power, even_root). ~130 LOC
+cumul instrumentation `domain/compute.ts`. 0 régression sur ~14000 tests
+`mathAST/`. 938 tests verts dans les zones modifiées.
+
+## État final livré
+
+- **Page debug** : 21 fixtures (42 cards correct/incorrect). URL
+  `http://localhost:5175/dashboard/admin/debug/correction-mode-b`.
+- **CLI démo** : 7 catégories (racines, logarithmes, fractions,
+  arcs-trigo, trigonometriques, puissances, compositions-mixtes), 20 cas
+  total. Lancement : `pnpm tsx scripts/pedagogical-domain-demo.ts`.
+- **Mode B kind: 'domain'** : 12ᵉ kind du discriminator `GeneratedSteps`,
+  Zod lax+strict, glue `correction-generator.ts`.
+- **Tests cumulés** : 89 V1 MVP + 14 V1.1.a + 4 polish post-review = 107
+  tests dédiés au pédagogique domain.
 
 ## Documents produits (final)
 
-1. `docs/wip/domain-renderer-progress.md` (ce fichier)
-2. Mise à jour de `docs/wip/pedagogical-steppers-mvp-progress.md` (12 kinds, 20 fixtures)
-3. Mise à jour de `docs/wip/correction-integration-progress.md` (Mode B `kind: 'domain'` ajouté)
+1. `docs/wip/domain-renderer-prompt.md` (v2 — Option C retenue)
+2. `docs/wip/domain-renderer-progress.md` (ce fichier)
+3. Mise à jour `docs/wip/pedagogical-steppers-mvp-progress.md` (12 kinds,
+   21 fixtures, V1 MVP + V1.1.a livré)
+4. Mise à jour `docs/wip/correction-integration-progress.md` (Mode B
+   `kind: 'domain'` étendu V1.1.a)
+5. Mise à jour de `docs/wip/correction-integration-progress.md` (Mode B `kind: 'domain'` ajouté)
