@@ -34,17 +34,20 @@
 import type { MathNode } from '../types';
 import type { LimitDirection, IndeterminateForm } from '../limits/types';
 import { detectIndeterminateForm } from '../limits/indeterminate';
+import { infinity } from '../factory';
 import { matchKnownLimit, getKnownLimitValue } from '../limits/known-limits';
 import {
 	asPolynomial,
 	buildLinearFactor,
 	classifyApproach,
+	divide,
 	evaluateAtPoint,
 	formatApproachShort,
 	formatLinearFactor,
 	isAtInfinity,
 	isDivision,
 	isNumber,
+	multiply,
 	normalizeDirection,
 	number,
 	numericNode,
@@ -355,12 +358,7 @@ function tryFactorisation(
 		rule: 'factor-numerator',
 		description: `Factorisation du numérateur : ${formatLinearFactor(ctx.variable, a)} est un facteur`,
 		before: expression.numerator,
-		after: {
-			type: 'multiplication',
-			left: factor,
-			right: numAfter,
-			displayStyle: 'implicit'
-		} as MathNode,
+		after: multiply(factor, numAfter, 'implicit'),
 		verbosityLevel: 'detailed',
 		bindings: { factor }
 	});
@@ -370,12 +368,7 @@ function tryFactorisation(
 		rule: 'factor-denominator',
 		description: `Factorisation du dénominateur : ${formatLinearFactor(ctx.variable, a)} est un facteur`,
 		before: expression.denominator,
-		after: {
-			type: 'multiplication',
-			left: factor,
-			right: denAfter,
-			displayStyle: 'implicit'
-		} as MathNode,
+		after: multiply(factor, denAfter, 'implicit'),
 		verbosityLevel: 'detailed',
 		bindings: { factor }
 	});
@@ -391,12 +384,7 @@ function tryFactorisation(
 	});
 
 	// Parent: simplify-common-factor
-	const simplified: MathNode = {
-		type: 'division',
-		numerator: numAfter,
-		denominator: denAfter,
-		displayStyle: 'fraction'
-	};
+	const simplified: MathNode = divide(numAfter, denAfter, 'fraction');
 	const parentStep = makeStep(ctx, {
 		rule: 'simplify-common-factor',
 		description: `Simplification : on divise numérateur et dénominateur par ${formatLinearFactor(ctx.variable, a)}`,
@@ -470,8 +458,7 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 	} else if (numDeg > denDeg) {
 		// Goes to ±∞ ; sign depends on coefficient ratio and approach sign
 		const sign = signAtInfinity(numLead, denLead, numDeg - denDeg, ctx.approach);
-		value =
-			sign > 0 ? { type: 'infinity', sign: 'positive' } : { type: 'infinity', sign: 'negative' };
+		value = sign > 0 ? infinity('positive') : infinity('negative');
 		status = 'infinite';
 		conclusionDesc = `Le degré du numérateur (${numDeg}) dépasse celui du dénominateur (${denDeg}) : la limite est ${sign > 0 ? '+∞' : '−∞'}`;
 	} else {

@@ -140,9 +140,30 @@ Conclusions :
 
 **0 régression** sur les 507 tests existants de `limits/`.
 
-### ⏳ Phase 3 — Descriptions FR + Renderer (à venir)
+### ✅ Phase 3 — Descriptions FR + Renderer
 
-Cible : `descriptions-fr.ts` (~300 LOC) + `renderer.ts` (~200 LOC).
+**Fichiers** :
+
+- `src/lib/mathAST/pedagogical-limits/descriptions-fr.ts` (~250 LOC)
+- `src/lib/mathAST/pedagogical-limits/renderer.ts` (~165 LOC)
+- `src/lib/mathAST/pedagogical-limits/__tests__/renderer.test.ts` (18 tests)
+
+**Descriptions** : 28 rules couvertes lycée + sup. `apply-known-limit` re-utilise `step.description` (=`KnownLimitEntry.descriptionFr`). Vocab adaptive : `'gendarmes'` lycée vs `'squeeze'` sup. Sup compact (sans `identify-limit`, `conclude` minimal).
+
+**Renderer** :
+
+- `formatLimitSubscript` direction-aware (`a^+` / `a^-` / no decoration pour `'both'`).
+- LaTeX 2-lignes `\\begin{aligned}` avec `\\textcolor{blue}{\\lim_{x \\to a^±} f(x)}`.
+- Sub-steps de `FACTORISATION_CLUSTER_RULES − {simplify-common-factor}` (= `FRAGMENT_RULES`) dropent le `\\lim_{...}` (fragment, pas la limite entière).
+- `renderAll` filtre top-level `identify-limit` + `detect-indeterminate-form` au niveau `summarized` ; sub-steps non filtrés.
+- Bump primaire/college → lycée pour vocabulary lookup (defensive).
+
+**Code review** (`code-reviewer` Opus) — 2 Important + 4 Nice-to-have, tous corrigés :
+
+1. **Important** : `[factor-numerator, factor-denominator]` hardcoded → `FRAGMENT_RULES` dérivé de `FACTORISATION_CLUSTER_RULES` (single source of truth).
+2. **Important** : `renderAll` faisait `map → filter` avec cast ; remplacé par `filter → map` pour éviter cast + coût `toLatex` sur steps filtrés.
+3. **Nice-to-have** : `SUPERIEUR_TITLES.apply-lhopital` LaTeX brut → prose-only.
+4. **Nice-to-have** : test `apply-known-limit` title delegation ajouté.
 
 ### ⏳ Phase 4 — Démos + script CLI (à venir)
 
@@ -158,10 +179,11 @@ Cible : ESLint, `pnpm check:incremental`, svelte-autofixer, tests régression, M
 
 ## Tests cumulés
 
-| Phase | Tests ajoutés                                  | Cumul |
-| ----- | ---------------------------------------------- | ----- |
-| 1     | +19 (types)                                    | 19    |
-| 2     | +32 helpers, +18 pipeline, +17 dispatch (= 67) | 86    |
+| Phase | Tests ajoutés                                  | Cumul   |
+| ----- | ---------------------------------------------- | ------- |
+| 1     | +19 (types)                                    | 19      |
+| 2     | +32 helpers, +18 pipeline, +17 dispatch (= 67) | 86      |
+| 3     | +18 renderer                                   | **104** |
 
 ## Documents produits
 

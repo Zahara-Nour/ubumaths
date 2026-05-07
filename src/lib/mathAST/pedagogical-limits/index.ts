@@ -31,3 +31,8 @@ export { generatePedagogicalLimitSteps } from './pipeline';
 // Dispatch (LaTeX-string entry point used by Mode B)
 export { dispatchPedagogicalLimit } from './dispatch';
 export type { PedagogicalLimitDispatchOptions } from './dispatch';
+
+// Renderer + descriptions
+export { PedagogicalLimitRenderer } from './renderer';
+export { EXPLANATIONS, TITLES, getDefaultDescription } from './descriptions-fr';
+export type { ExplainFn, TitleFn } from './descriptions-fr';
