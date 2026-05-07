@@ -704,6 +704,98 @@ exports[`Mode B end-to-end demos > Terminale spécialité rational inequality wi
 ]
 `;
 
+exports[`Mode B end-to-end demos > Tle spé limit — factorisation cluster on (x²−4)/(x−2) at x=2 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-limit",
+    "schoolLevel": "lycee",
+    "title": "On veut calculer la limite de l'expression quand x tend vers 2",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 4,
+    "rule": "detect-indeterminate-form",
+    "schoolLevel": "lycee",
+    "title": "Forme indéterminée 0/0 reconnue",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 5,
+    "rule": "simplify-common-factor",
+    "schoolLevel": "lycee",
+    "subSteps": [
+      {
+        "hasExplanation": true,
+        "hasExpressionLatex": true,
+        "id": 2,
+        "rule": "factor-numerator",
+        "schoolLevel": "lycee",
+        "title": "Factorisation du numérateur",
+      },
+      {
+        "hasExplanation": true,
+        "hasExpressionLatex": true,
+        "id": 3,
+        "rule": "factor-denominator",
+        "schoolLevel": "lycee",
+        "title": "Factorisation du dénominateur",
+      },
+    ],
+    "title": "Simplification du facteur commun",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 6,
+    "rule": "apply-direct-substitution",
+    "schoolLevel": "lycee",
+    "title": "Substitution directe : on remplace x par 2",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 7,
+    "rule": "conclude",
+    "schoolLevel": "lycee",
+    "title": "La limite vaut 4",
+  },
+]
+`;
+
+exports[`Mode B end-to-end demos > Tle spé limit — infinity-analysis on (3x²−x)/(x²+1) at x→+∞ 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "identify-limit",
+    "schoolLevel": "lycee",
+    "title": "On veut calculer la limite de l'expression quand x tend vers +∞",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "identify-dominant-term",
+    "schoolLevel": "lycee",
+    "title": "Étude du comportement à +∞ : on identifie les termes dominants",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "conclude",
+    "schoolLevel": "lycee",
+    "title": "La limite vaut 3",
+  },
+]
+`;
+
 exports[`Mode B end-to-end demos > Tle spécialité quadratic equation — produces lycee steps with discriminant 1`] = `
 [
   {

@@ -214,6 +214,15 @@ const generatedStepsArithmeticFromBlank = z.object({
 	options: generatedStepsOptionsSchema.optional()
 });
 
+const generatedStepsLimit = z.object({
+	kind: z.literal('limit'),
+	expression: z.string().min(1),
+	variable: z.string().min(1).optional(),
+	approach: z.string().min(1),
+	direction: z.enum(['left', 'right', 'both']).optional(),
+	options: generatedStepsOptionsSchema.optional()
+});
+
 export const generatedStepsSchema = z.discriminatedUnion('kind', [
 	generatedStepsArithmetic,
 	generatedStepsLinearEquation,
@@ -224,7 +233,8 @@ export const generatedStepsSchema = z.discriminatedUnion('kind', [
 	generatedStepsRationalInequality,
 	generatedStepsIntegrate,
 	generatedStepsSimplify,
-	generatedStepsArithmeticFromBlank
+	generatedStepsArithmeticFromBlank,
+	generatedStepsLimit
 ]);
 
 /**
@@ -429,6 +439,17 @@ const generatedStepsArithmeticFromBlankStrictZ = z
 	})
 	.strict();
 
+const generatedStepsLimitStrictZ = z
+	.object({
+		kind: z.literal('limit'),
+		expression: z.string().min(1),
+		variable: z.string().min(1).optional(),
+		approach: z.string().min(1),
+		direction: z.enum(['left', 'right', 'both']).optional(),
+		options: generatedStepsOptionsStrictZ.optional()
+	})
+	.strict();
+
 const generatedStepsStrictZ = z.discriminatedUnion('kind', [
 	generatedStepsArithmeticStrictZ,
 	generatedStepsLinearEquationStrictZ,
@@ -439,7 +460,8 @@ const generatedStepsStrictZ = z.discriminatedUnion('kind', [
 	generatedStepsRationalInequalityStrictZ,
 	generatedStepsIntegrateStrictZ,
 	generatedStepsSimplifyStrictZ,
-	generatedStepsArithmeticFromBlankStrictZ
+	generatedStepsArithmeticFromBlankStrictZ,
+	generatedStepsLimitStrictZ
 ]);
 
 const correctionStrictZ = z

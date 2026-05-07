@@ -43,6 +43,11 @@ import {
 	PedagogicalSimplifyNotImplemented,
 	type SimplifyIntent
 } from '$lib/mathAST/pedagogical-simplify/types';
+import {
+	dispatchPedagogicalLimit,
+	PedagogicalLimitNotImplemented,
+	PedagogicalLimitRenderer
+} from '$lib/mathAST/pedagogical-limits';
 import { generateLinearEquationSteps } from '$lib/mathAST/pedagogical-solve/linear';
 import { LinearEquationRenderer } from '$lib/mathAST/pedagogical-solve/linear-renderer';
 import {
@@ -176,6 +181,17 @@ export function generateCorrection(instance: QuestionInstance): QuestionInstance
 			case 'arithmetic-from-blank':
 				renderedSteps = renderArithmeticFromBlank({
 					expressionName: generatedSteps.expressionName,
+					instance,
+					schoolLevel,
+					verbosity
+				});
+				break;
+			case 'limit':
+				renderedSteps = renderLimit({
+					expression: generatedSteps.expression,
+					variable: generatedSteps.variable,
+					approach: generatedSteps.approach,
+					direction: generatedSteps.direction,
 					instance,
 					schoolLevel,
 					verbosity
@@ -652,6 +668,69 @@ function renderSimplify({
 
 	const renderer = new PedagogicalSimplifyRenderer();
 	const renderOptions: PedagogicalRenderOptions = { schoolLevel, verbosity };
+	return renderer.renderAll(result.steps, renderOptions);
+}
+
+interface LimitDispatch {
+	readonly expression: string;
+	readonly variable?: string;
+	readonly approach: string;
+	readonly direction?: 'left' | 'right' | 'both';
+	readonly instance: QuestionInstance;
+	readonly schoolLevel: SchoolLevel;
+	readonly verbosity: 'summarized' | 'detailed';
+}
+
+/**
+ * Render the pedagogical step trace for `kind: 'limit'`.
+ *
+ * `dispatchPedagogicalLimit` accepts the LaTeX-like custom-syntax strings
+ * directly (handled by `parseCustomSafe` internally), so we do NOT pre-parse
+ * here — we DO resolve the `{{vars}}` template tokens against the instance's
+ * resolved variables, mirroring the convention of the other `kind`s.
+ *
+ * Silent fallback to Mode A on:
+ *   - `PedagogicalLimitNotImplemented` (primaire/college, L'Hôpital required
+ *     at lycée, V1 strategy refusal, parse error in expression/approach).
+ * Anything else re-throws to the outer `console.warn` catch.
+ */
+function renderLimit({
+	expression,
+	variable,
+	approach,
+	direction,
+	instance,
+	schoolLevel,
+	verbosity
+}: LimitDispatch): readonly RenderedStep[] | null {
+	// Limits are not on the syllabus before Tle ; bump primaire/college so
+	// a misplaced declaration still produces something useful at the lycée
+	// vocabulary level.
+	const limitLevel: SchoolLevel =
+		schoolLevel === 'primaire' || schoolLevel === 'college' ? 'lycee' : schoolLevel;
+
+	const resolvedExpression = resolveExpression(expression, instance.resolvedVariables ?? []).trim();
+	const resolvedApproach = resolveExpression(approach, instance.resolvedVariables ?? []).trim();
+
+	let result;
+	try {
+		result = dispatchPedagogicalLimit({
+			expression: resolvedExpression,
+			variable: variable ?? 'x',
+			approach: resolvedApproach,
+			direction,
+			schoolLevel: limitLevel,
+			verbosity
+		});
+	} catch (err) {
+		// V1 scope refusals (L'Hôpital at lycée, parse error, no strategy
+		// applied, …) → silent fallback to Mode A. Anything else re-throws.
+		if (err instanceof PedagogicalLimitNotImplemented) return null;
+		throw err;
+	}
+
+	const renderer = new PedagogicalLimitRenderer();
+	const renderOptions: PedagogicalRenderOptions = { schoolLevel: limitLevel, verbosity };
 	return renderer.renderAll(result.steps, renderOptions);
 }
 

@@ -1079,6 +1079,22 @@ export type GeneratedSteps =
 			 */
 			readonly expressionName: string;
 			readonly options?: GeneratedStepsOptions;
+	  }
+	| {
+			readonly kind: 'limit';
+			/** Custom-syntax expression of `f(x)` (e.g. `'(x^2-4)/(x-2)'`). */
+			readonly expression: string;
+			/** Variable approaching the limit. Default: `'x'`. */
+			readonly variable?: string;
+			/**
+			 * Approach point as a custom-syntax string. Recognised infinity
+			 * spellings: `'\\infty'`, `'+\\infty'`, `'-\\infty'`, `'oo'`, `'+oo'`,
+			 * `'-oo'`. Otherwise parsed via `parseCustomSafe`.
+			 */
+			readonly approach: string;
+			/** Direction of approach. Default: `'both'`. */
+			readonly direction?: 'left' | 'right' | 'both';
+			readonly options?: GeneratedStepsOptions;
 	  };
 
 /**

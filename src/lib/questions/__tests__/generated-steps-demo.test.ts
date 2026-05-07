@@ -18,6 +18,8 @@ import {
 	differentiatePolynomialDemo,
 	integrateDefiniteDemo,
 	integrateIndefiniteDemo,
+	limitFactorisationDemo,
+	limitInfinityDemo,
 	linearEquationDemo,
 	linearInequalityFlipDemo,
 	linearInequalityTwoSidesDemo,
@@ -446,6 +448,43 @@ describe('Mode B end-to-end demos', () => {
 
 		// Every step must be tagged primaire (CM2 → primaire via auto-mapping).
 		expect(steps!.every((s) => s.schoolLevel === 'primaire')).toBe(true);
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('Tle spé limit — factorisation cluster on (x²−4)/(x−2) at x=2', () => {
+		const result = generateInstance(limitFactorisationDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+		expect(steps!.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('simplify-common-factor');
+		expect(rules).toContain('apply-direct-substitution');
+		expect(rules).toContain('conclude');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('Tle spé limit — infinity-analysis on (3x²−x)/(x²+1) at x→+∞', () => {
+		const result = generateInstance(limitInfinityDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+		expect(steps!.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('identify-dominant-term');
+		expect(rules).toContain('conclude');
 
 		const summary = steps!.map(summarize);
 		expect(summary).toMatchSnapshot();
