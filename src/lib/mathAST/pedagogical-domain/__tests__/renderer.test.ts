@@ -184,6 +184,26 @@ describe('PedagogicalDomainRenderer — format aligned 3-lignes', () => {
 		expect(rendered.expressionLatex).toContain('\\infty');
 		expect(rendered.expressionLatex).not.toContain('∞');
 	});
+
+	it('converts the backslash + braces of excluded points to LaTeX \\setminus \\{...\\}', () => {
+		// `1/x` → domain ℝ \ {0} from formatInterval. The renderer must produce
+		// `\\mathbb{R} \\setminus \\{0\\}`, not `\\mathbb{R} \\ {0}` (broken LaTeX).
+		const expr = parseLatex('\\dfrac{1}{x}');
+		const result = generatePedagogicalDomainSteps(expr, { schoolLevel: 'lycee' });
+		const rendered = renderer.render(result.steps[0], RENDER_OPTIONS_LYCEE);
+		expect(rendered.expressionLatex).toContain('\\setminus');
+		expect(rendered.expressionLatex).toContain('\\{0\\}');
+		expect(rendered.expressionLatex).not.toMatch(/\\mathbb\{R\} \\ \{/);
+	});
+
+	it('handles multi-point exclusions ℝ \\ {a, b} → \\mathbb{R} \\setminus \\{a, b\\}', () => {
+		// `1/((x-1)(x+2))` → domain ℝ \ {-2, 1}.
+		const expr = parseLatex('\\dfrac{1}{(x - 1)(x + 2)}');
+		const result = generatePedagogicalDomainSteps(expr, { schoolLevel: 'lycee' });
+		const rendered = renderer.render(result.steps[0], RENDER_OPTIONS_LYCEE);
+		expect(rendered.expressionLatex).toContain('\\setminus');
+		expect(rendered.expressionLatex).toMatch(/\\\{[^{}]*\\\}/); // \{...\} block
+	});
 });
 
 describe('PedagogicalDomainRenderer — renderAll', () => {
