@@ -63,28 +63,22 @@ describe('generatePedagogicalDomainSteps — V1.1.a rules', () => {
 		expect(result.steps[0].rule).toBe('tan_constraint');
 	});
 
+	// `arccosh` is unknown to the LaTeX parser but recognised by the algebra
+	// engine, so we hand-build the MathNode directly for these tests rather
+	// than parsing.
+	const arccoshExpr = {
+		type: 'function' as const,
+		name: 'arccosh',
+		args: [{ type: 'variable' as const, name: 'x' }]
+	};
+
 	it('refuses arccosh(x) at lycée (out of syllabus)', () => {
-		const expr = parseLatex('\\sqrt{x - 2}'); // placeholder LaTeX
-		// Use parseCustomSafe for arccosh which the LaTeX parser doesn't know.
-		// Inline import via dynamic require would be heavy — simpler to use
-		// a representative function-node directly.
-		const arccoshExpr = {
-			type: 'function' as const,
-			name: 'arccosh',
-			args: [{ type: 'variable' as const, name: 'x' }]
-		};
 		expect(() => generatePedagogicalDomainSteps(arccoshExpr, { schoolLevel: 'lycee' })).toThrow(
 			PedagogicalDomainNotImplemented
 		);
-		expect(expr).toBeTruthy();
 	});
 
 	it('accepts arccosh(x) at supérieur', () => {
-		const arccoshExpr = {
-			type: 'function' as const,
-			name: 'arccosh',
-			args: [{ type: 'variable' as const, name: 'x' }]
-		};
 		expect(() =>
 			generatePedagogicalDomainSteps(arccoshExpr, { schoolLevel: 'superieur' })
 		).not.toThrow();
