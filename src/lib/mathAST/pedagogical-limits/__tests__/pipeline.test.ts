@@ -19,10 +19,23 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { add, divide, infinity, multiply, number, power, subtract, variable } from '../../factory';
+import {
+	add,
+	divide as divideFactory,
+	infinity,
+	multiply,
+	number,
+	power,
+	subtract,
+	variable
+} from '../../factory';
+import type { MathNode } from '../../types';
 import { generatePedagogicalLimitSteps } from '../pipeline';
 import { PedagogicalLimitNotImplemented } from '../types';
 import type { PedagogicalLimitStep } from '../types';
+
+/** Test helper: default to fraction style so we don't sprinkle the 3rd arg. */
+const divide = (n: MathNode, d: MathNode) => divideFactory(n, d, 'fraction');
 
 // =============================================================================
 // Helpers used across tests
