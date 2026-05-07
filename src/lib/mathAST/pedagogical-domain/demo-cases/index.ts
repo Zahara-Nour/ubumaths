@@ -13,14 +13,26 @@ import { ARCS_TRIGO } from './arcs-trigo';
 import { COMPOSITIONS_MIXTES } from './compositions-mixtes';
 import { FRACTIONS } from './fractions';
 import { LOGARITHMES } from './logarithmes';
+import { PUISSANCES } from './puissances';
 import { RACINES } from './racines';
+import { TRIGONOMETRIQUES } from './trigonometriques';
 
 export const ALL_CATEGORIES: readonly DemoCategory[] = [
 	RACINES,
 	LOGARITHMES,
 	FRACTIONS,
 	ARCS_TRIGO,
+	TRIGONOMETRIQUES,
+	PUISSANCES,
 	COMPOSITIONS_MIXTES
 ];
 
-export { ARCS_TRIGO, COMPOSITIONS_MIXTES, FRACTIONS, LOGARITHMES, RACINES };
+export {
+	ARCS_TRIGO,
+	COMPOSITIONS_MIXTES,
+	FRACTIONS,
+	LOGARITHMES,
+	PUISSANCES,
+	RACINES,
+	TRIGONOMETRIQUES
+};

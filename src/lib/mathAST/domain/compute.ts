@@ -56,6 +56,7 @@ import {
 function buildConstraintLatex(rule: DomainRule, argLatex: string): string {
 	switch (rule) {
 		case 'sqrt_constraint':
+		case 'even_root_constraint':
 			return `${argLatex} \\geq 0`;
 		case 'ln_constraint':
 		case 'log_constraint':
@@ -64,7 +65,18 @@ function buildConstraintLatex(rule: DomainRule, argLatex: string): string {
 		case 'arccos_constraint':
 			return `-1 \\leq ${argLatex} \\leq 1`;
 		case 'division_constraint':
+		case 'power_constraint':
 			return `${argLatex} \\neq 0`;
+		case 'tan_constraint':
+		case 'sec_constraint':
+			return `${argLatex} \\neq \\dfrac{\\pi}{2} + k\\pi, \\; k \\in \\mathbb{Z}`;
+		case 'cot_constraint':
+		case 'csc_constraint':
+			return `${argLatex} \\neq k\\pi, \\; k \\in \\mathbb{Z}`;
+		case 'arccosh_constraint':
+			return `${argLatex} \\geq 1`;
+		case 'arctanh_constraint':
+			return `-1 < ${argLatex} < 1`;
 		default:
 			return '';
 	}
@@ -468,7 +480,27 @@ function computeFunctionDomain(
 	// For simple argument (just the variable), return PeriodicExclusion directly
 	const periodicDomain = getPeriodicExclusionDomain(node.name, arg, variable);
 	if (periodicDomain) {
-		return intersect(domain, periodicDomain);
+		const result = intersect(domain, periodicDomain);
+
+		// Pedagogical recording (V1.1): emit tan/cot/sec/csc constraint step.
+		if (options.showSteps && options.recorder) {
+			const trigRule = getConstraintRuleForFunction(node.name);
+			if (trigRule && V1_MVP_FUNCTION_CONSTRAINT_RULES.has(trigRule)) {
+				const argLatex = toLatex(arg);
+				options.recorder.recordWithTemplate(
+					trigRule,
+					argLatex,
+					buildConstraintLatex(trigRule, argLatex),
+					{ expr: argLatex },
+					{
+						intermediateDomain: result,
+						verbosityLevel: 'summarized'
+					}
+				);
+			}
+		}
+
+		return result;
 	}
 
 	// Odd-index roots (cbrt, sqrt[3], sqrt[5], ...) are defined on all of ℝ
@@ -666,6 +698,21 @@ function computePowerDomain(
 				domain,
 				zeros.map((z) => numericNode(z))
 			);
+
+			// Pedagogical recording (V1.1): emit a `power_constraint` step.
+			if (options.showSteps && options.recorder) {
+				const baseLatex = toLatex(node.base);
+				options.recorder.recordWithTemplate(
+					'power_constraint',
+					baseLatex,
+					buildConstraintLatex('power_constraint', baseLatex),
+					{ expr: baseLatex },
+					{
+						intermediateDomain: domain,
+						verbosityLevel: 'summarized'
+					}
+				);
+			}
 		}
 	}
 
@@ -682,6 +729,21 @@ function computePowerDomain(
 			);
 			if (preimage) {
 				domain = intersect(domain, preimage);
+			}
+
+			// Pedagogical recording (V1.1): emit an `even_root_constraint` step.
+			if (options.showSteps && options.recorder) {
+				const baseLatex = toLatex(node.base);
+				options.recorder.recordWithTemplate(
+					'even_root_constraint',
+					baseLatex,
+					buildConstraintLatex('even_root_constraint', baseLatex),
+					{ expr: baseLatex },
+					{
+						intermediateDomain: preimage === null ? undefined : preimage,
+						verbosityLevel: 'summarized'
+					}
+				);
 			}
 		}
 	}

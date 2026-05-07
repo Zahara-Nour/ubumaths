@@ -22,6 +22,7 @@ import {
 	limitInfinityDemo,
 	domainSqrtFractionDemo,
 	domainArcsinDemo,
+	domainTanDemo,
 	linearEquationDemo,
 	linearInequalityFlipDemo,
 	linearInequalityTwoSidesDemo,
@@ -520,6 +521,22 @@ describe('Mode B end-to-end demos', () => {
 
 		const rules = steps!.map((s) => s.rule);
 		expect(rules).toContain('arcsin_constraint');
+
+		const summary = steps!.map(summarize);
+		expect(summary).toMatchSnapshot();
+	});
+
+	it('Tle spé domain — tan(x) → contrainte x ≠ π/2 + kπ (V1.1)', () => {
+		const result = generateInstance(domainTanDemo, 1);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		const steps = result.instance.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.length).toBeGreaterThan(0);
+
+		const rules = steps!.map((s) => s.rule);
+		expect(rules).toContain('tan_constraint');
 
 		const summary = steps!.map(summarize);
 		expect(summary).toMatchSnapshot();

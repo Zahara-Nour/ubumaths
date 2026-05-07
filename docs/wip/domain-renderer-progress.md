@@ -207,15 +207,75 @@ Format latex (`--latex`) : aligned LaTeX, stable pour snapshots.
 
 **Total** : 80 tests pédagogiques verts (types 10 + instrumentation 20 + dispatch 16 + renderer 20 + demos 14) + 9 tests Mode B (correction-generator 7 + generated-steps-demo 2) = **89 tests** verts pour la V1 MVP.
 
-## Limitations connues V1 MVP (scope V1.1)
+## V1.1.a livrée (2026-05-07)
 
-- **`tan(x)`/`cot(x)`/`sec(x)`/`csc(x)`** : silencieusement traités comme `universal` parce que `compute.ts` retourne un `periodic_exclusion` sans qu'aucun step soit émis pour ces rules. À implémenter en V1.1 (instrumentation `getPeriodicExclusionDomain` + recordings `tan_constraint`).
-- **`preimage_quadratic`**, `preimage_cubic`, `preimage_general` : non instrumentés (la résolution d'inéquation n'émet pas de step). À implémenter en V1.1.
-- **`composition` / `composition_range_analysis`** : non instrumentés. À implémenter en V1.1.
-- **`union`, `complement`, `difference`** : non émis (pas de cas pédagogique V1).
-- **`arccosh`, `arctanh`, `arcosh`, `artanh`** : non instrumentés (sup uniquement, V1.1).
-- **`even_root_constraint`, `power_constraint`** : non instrumentés (V1.1).
-- **`1/√(x+1)`** : domain retourné `[-1, +∞[` (closed at -1) au lieu de `]-1, +∞[` (open). Limitation de l'engine `domain/` existant (la division exclue les zeros mais √u=0 quand u=0 n'est pas tracé). Pas un bug de mon instrumentation.
+Extension du V1 MVP avec 8 nouvelles rules sans pipeline parallèle, suite à
+la même architecture d'instrumentation directe.
+
+**Nouvelles rules instrumentées dans `compute.ts`** :
+
+- `tan_constraint`, `cot_constraint`, `sec_constraint`, `csc_constraint`
+  (periodic_exclusion) — site `computeFunctionDomain` après
+  `getPeriodicExclusionDomain()`
+- `arccosh_constraint`, `arctanh_constraint` (sup uniquement, refusés au
+  lycée via `LYCEE_FORBIDDEN_RULES` dans `dispatch.ts`) — site
+  `computeFunctionDomain` (déjà couvert par `getConstraintRuleForFunction`)
+- `power_constraint` (base⁻ⁿ, n négatif entier) — site `computePowerDomain`
+- `even_root_constraint` (base^(1/2n)) — site `computePowerDomain`
+
+**Nouveaux fichiers / extensions** :
+
+- `src/lib/mathAST/domain/mvp-rules.ts` — `LYCEE_FORBIDDEN_RULES` ajouté ;
+  `V1_MVP_FUNCTION_CONSTRAINT_RULES` étendu (5 → 11 rules) ; `V1_MVP_RULES`
+  étendu pour couvrir power + even_root
+- `src/lib/mathAST/domain/compute.ts` — `buildConstraintLatex()` étendu pour
+  tan/cot/sec/csc + arccosh/arctanh + power + even_root ; 3 nouveaux sites
+  d'instrumentation (~60 LOC)
+- `src/lib/mathAST/pedagogical-domain/descriptions-fr.ts` — TITLES +
+  EXPLANATIONS pour les 8 nouvelles rules (lycée + supérieur)
+- `src/lib/mathAST/pedagogical-domain/dispatch.ts` —
+  `assertLevelAllowsRules()` : throw `PedagogicalDomainNotImplemented` si
+  rule arccosh/arctanh + niveau lycée
+- `src/lib/mathAST/pedagogical-domain/renderer.ts` — `intervalToLatex`
+  étendu (`·` → `\\cdot`, `∈` → `\\in`, `ℤ` → `\\mathbb{Z}`, `ℕ` → `\\mathbb{N}`)
+- 2 nouvelles catégories démo : `trigonometriques` (3 cas), `puissances`
+  (3 cas). Total : 14 → 20 cas
+- 1 nouvelle fixture Mode B : `domainTanDemo` (`f(x) = tan(x)` Tle spé)
+- Page debug : 20 → 21 fixtures (40 → 42 cards)
+
+**Composition** : déjà gérée implicitement par la récursion +
+`intersection`. Ex `ln(sqrt(x))` produit naturellement
+`[sqrt_constraint, ln_constraint, intersection]` sans step `composition`
+dédié. Aucun work supplémentaire.
+
+**preimage_linear / preimage_quadratic / preimage_cubic** : différé en
+V1.2. Risque de doublonnage avec les constraint rules MVP qui captent déjà
+le résultat dans `intermediateDomain`. À implémenter quand un cas
+pédagogique distinct le justifie.
+
+**Tests** : +6 instrumentation + 2 dispatch (refus lycée arccosh/arctanh + 1
+fixture Mode B) + 6 snapshots demo. 938 tests verts au total.
+
+## Limitations connues V1.1 (scope V1.2)
+
+- **`preimage_linear/quadratic/cubic`** : non instrumentés. Risque de
+  doublonnage avec les constraint rules MVP (l'`intermediateDomain` du
+  step parent capte déjà le résultat de la résolution). Différé en V1.2
+  quand un cas pédagogique distinct le justifie.
+- **`composition` step explicite** : la composition est déjà capturée
+  implicitement par la récursion + `intersection`. Un step `composition`
+  dédié serait redondant — différé jusqu'à un cas pédagogique avéré
+  (ex : composition profonde > 2 niveaux).
+- **`union`, `complement`, `difference`** : non émis (pas de cas
+  pédagogique V1.1).
+- **`1/√(x+1)`** : domain retourné `[-1, +∞[` (closed at -1) au lieu de
+  `]-1, +∞[` (open). Limitation de l'engine `domain/` existant (la
+  division exclue les zeros mais √u=0 quand u=0 n'est pas tracé). Pas
+  un bug de mon instrumentation.
+- **Bug pré-existant `formatPeriodicExclusionInterval`** : produit
+  `\\pi:/2` au lieu de `\\pi/2` pour la 3e ligne `Domaine` des steps
+  `tan_constraint`/`sec_constraint`. Source dans `domain/format.ts:223`
+  via `toCustom()`. Hors scope pedagogical-domain V1.1.
 
 ## Pistes V1.1 explicites
 

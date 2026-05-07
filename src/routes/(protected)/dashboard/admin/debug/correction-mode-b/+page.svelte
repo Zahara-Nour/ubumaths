@@ -23,6 +23,7 @@
 		limitInfinityDemo,
 		domainSqrtFractionDemo,
 		domainArcsinDemo,
+		domainTanDemo,
 		linearEquationDemo,
 		linearInequalityFlipDemo,
 		linearInequalityTwoSidesDemo,
@@ -64,6 +65,7 @@
 	const limitInfinityResult = generateInstance(limitInfinityDemo, 1);
 	const domainSqrtFractionResult = generateInstance(domainSqrtFractionDemo, 1);
 	const domainArcsinResult = generateInstance(domainArcsinDemo, 1);
+	const domainTanResult = generateInstance(domainTanDemo, 1);
 
 	function buildAnswerResult(
 		result: ReturnType<typeof generateInstance>,
@@ -127,6 +129,8 @@
 	const domainSqrtFractionIncorrect = buildAnswerResult(domainSqrtFractionResult, 1, false);
 	const domainArcsinCorrect = buildAnswerResult(domainArcsinResult, 0, true);
 	const domainArcsinIncorrect = buildAnswerResult(domainArcsinResult, 1, false);
+	const domainTanCorrect = buildAnswerResult(domainTanResult, 0, true);
+	const domainTanIncorrect = buildAnswerResult(domainTanResult, 1, false);
 
 	// ============================================================================
 	// Raw step inspector
@@ -934,6 +938,18 @@
 				<div>
 					<h3 class="mb-2 text-lg font-medium">Tle spé — domaine arcsin(2x) — incorrecte</h3>
 					<CorrectionCard answerResult={domainArcsinIncorrect} questionNumber={40} size="md" />
+				</div>
+			{/if}
+			{#if domainTanCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — domaine tan(x) (V1.1) — correcte</h3>
+					<CorrectionCard answerResult={domainTanCorrect} questionNumber={41} size="md" />
+				</div>
+			{/if}
+			{#if domainTanIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — domaine tan(x) (V1.1) — incorrecte</h3>
+					<CorrectionCard answerResult={domainTanIncorrect} questionNumber={42} size="md" />
 				</div>
 			{/if}
 		</div>

@@ -746,6 +746,19 @@ exports[`Mode B end-to-end demos > Tle spé domain — arcsin(2x) → contrainte
 ]
 `;
 
+exports[`Mode B end-to-end demos > Tle spé domain — tan(x) → contrainte x ≠ π/2 + kπ (V1.1) 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "tan_constraint",
+    "schoolLevel": "lycee",
+    "title": "Contrainte de la tangente",
+  },
+]
+`;
+
 exports[`Mode B end-to-end demos > Tle spé limit — factorisation cluster on (x²−4)/(x−2) at x=2 1`] = `
 [
   {
