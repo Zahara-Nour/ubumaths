@@ -255,8 +255,8 @@ pnpm tsx scripts/pedagogical-limits-demo.ts --latex factorisation          # raw
 
 **Pistes V1.1+** :
 
-- ✅ V1.1.a — `rationalization` livrée (commit ci-dessous).
-- Implémenter `one-sided` pour les asymptotes verticales (`1/x` en `0⁺`/`0⁻`, `ln x` en `0⁺`).
+- ✅ V1.1.a — `rationalization` livrée.
+- ✅ V1.1.b — `one-sided` / asymptotes verticales livrée.
 - Implémenter `squeeze` / gendarmes (heuristique restreinte : `f(x) borné × g(x) → 0`).
 - Implémenter `lhopital` (sup uniquement) — réutiliser `limits/lhopital.ts`.
 - ✅ Phase 4 : démos + CLI livrée post-V1.
@@ -289,6 +289,41 @@ pnpm tsx scripts/pedagogical-limits-demo.ts --latex factorisation          # raw
 4. **Nice-to-have** : test `√a+b` form ajouté (pipeline + helpers).
 
 **Tests cumulés post-V1.1.a** : 137 verts (V1+Phase 4 = 118, +9 helpers conjugate, +6 pipeline rationalisation, +3 demo snapshots, +1 √a+b form). 0 régression.
+
+### ✅ V1.1.b — Stratégie one-sided / asymptotes verticales
+
+**Fichiers modifiés** :
+
+- `pipeline.ts` : ajout `tryOneSided` (~120 LOC) + helpers `classifyDivergence`, `signNodeFromSign`, `describeSide`. Nouvelle constante `DIVERGENCE_THRESHOLD = 1e5` + `ONE_SIDED_EPSILON = 1e-6`.
+- Pipeline : Strategy 6 ajoutée après infinity-analysis, gate sur `!isAtInfinity(approach)`.
+- `__tests__/pipeline.test.ts` : +4 tests (1/x both, 1/x², 1/(x−1)², décline sur continue).
+- `demo-cases/one-sided-asymptotes.ts` : 3 cas.
+- `__tests__/pedagogical-limits-demo.test.ts` : +3 snapshots (via auto-discovery via `ALL_CATEGORIES`).
+
+**Algorithme heuristique** :
+
+1. Si `valAtA` (substitution directe) est null (singularité) → continue ; sinon décline.
+2. Probe `evaluateAtPoint(expr, var, a ± ε)` à `ε = 1e−6`.
+3. `classifyDivergence(val) = sign(val)` si `|val| > 1e5`, sinon `0`.
+4. Si `direction === 'both'` :
+   - leftSign === rightSign (≠ 0) → `conclude-infinite` avec ce signe.
+   - leftSign ≠ rightSign → `conclude-does-not-exist` (signs opposés).
+5. Si `direction === 'left'` ou `'right'` → ±∞ selon le sign détecté.
+
+**Cas couverts** :
+
+- `1/x` à 0⁺ → +∞ (via `apply-known-limit` upstream — pas tryOneSided)
+- `1/x` à 0⁻ → −∞ (idem)
+- `1/x` à 0 (both) → does-not-exist (tryOneSided, signs opposés)
+- `1/x²` à 0 (both) → +∞ (tryOneSided, mêmes signes)
+- `1/(x−1)²` à 1 (both) → +∞ (tryOneSided)
+
+**Limitations V1.1.b** :
+
+- Divergences lentes non détectées (`ln(x)` à 0⁺ : `ln(1e−6) ≈ −14`, sous le threshold). À traiter en V1.2 via détection symbolique.
+- Faux positif théorique sur fonctions à très forte croissance finie. Très improbable en pratique.
+
+**Tests cumulés post-V1.1.b** : 144 verts (137 + 4 pipeline + 3 demo snapshots). 0 régression sur 507 tests `limits/`.
 
 ## Tests cumulés
 

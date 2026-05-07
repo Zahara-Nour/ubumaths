@@ -646,6 +646,167 @@ Status: exact, Value: 1
 "
 `;
 
+exports[`pedagogical-limits demo cases > category: one-sided-asymptotes > renders 1/(x−1)² à x=1 (both) 1`] = `
+"
+###### 1/(x−1)² à x=1 (both) ######
+
+Expression: 1/((x-1)^2), x → 1 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [analyze-left-limit] Étude de la limite à gauche en 1
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en 1
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison des limites à gauche et à droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [conclude-infinite] La limite vaut +∞
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+Status: infinite, Value: +\\infty
+
+========== LYCEE (detailed) ==========
+- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 1
+  · On commence par observer la forme de l'expression pour choisir une technique adaptée.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)} \\end{aligned}
+- [analyze-left-limit] Étude de la limite à gauche en 1
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en 1
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison des limites à gauche et à droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [conclude-infinite] La limite vaut +∞
+  · Le résultat est une limite infinie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+Status: infinite, Value: +\\infty
+
+========== SUPERIEUR (summarized) ==========
+- [analyze-left-limit] \\lim_{x \\to 1^-}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] \\lim_{x \\to 1^+}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison gauche/droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [conclude-infinite] = +∞
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+Status: infinite, Value: +\\infty
+
+========== SUPERIEUR (detailed) ==========
+- [analyze-left-limit] \\lim_{x \\to 1^-}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] \\lim_{x \\to 1^+}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison gauche/droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [conclude-infinite] = +∞
+  · Le résultat est une limite infinie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+Status: infinite, Value: +\\infty
+"
+`;
+
+exports[`pedagogical-limits demo cases > category: one-sided-asymptotes > renders 1/x à x=0 (both — signes opposés → n’existe pas) 1`] = `
+"
+###### 1/x à x=0 (both — signes opposés → n’existe pas) ######
+
+Expression: 1/x, x → 0 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [analyze-left-limit] Étude de la limite à gauche en 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison des limites à gauche et à droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Status: does-not-exist, Value: ∅ (does not exist)
+
+========== LYCEE (detailed) ==========
+- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+  · On commence par observer la forme de l'expression pour choisir une technique adaptée.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+- [analyze-left-limit] Étude de la limite à gauche en 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison des limites à gauche et à droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Status: does-not-exist, Value: ∅ (does not exist)
+
+========== SUPERIEUR (summarized) ==========
+- [analyze-left-limit] \\lim_{x \\to 0^-}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
+- [analyze-right-limit] \\lim_{x \\to 0^+}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison gauche/droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Status: does-not-exist, Value: ∅ (does not exist)
+
+========== SUPERIEUR (detailed) ==========
+- [analyze-left-limit] \\lim_{x \\to 0^-}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
+- [analyze-right-limit] \\lim_{x \\to 0^+}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison gauche/droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\\\ & = \\dfrac{1}{x} \\end{aligned}
+Status: does-not-exist, Value: ∅ (does not exist)
+"
+`;
+
+exports[`pedagogical-limits demo cases > category: one-sided-asymptotes > renders 1/x² à x=0 (both — mêmes signes → +∞) 1`] = `
+"
+###### 1/x² à x=0 (both — mêmes signes → +∞) ######
+
+Expression: 1/(x^2), x → 0 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [analyze-left-limit] Étude de la limite à gauche en 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison des limites à gauche et à droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [conclude-infinite] La limite vaut +∞
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+Status: infinite, Value: +\\infty
+
+========== LYCEE (detailed) ==========
+- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+  · On commence par observer la forme de l'expression pour choisir une technique adaptée.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = \\dfrac{1}{\\left( x^2 \\right)} \\end{aligned}
+- [analyze-left-limit] Étude de la limite à gauche en 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] Étude de la limite à droite en 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison des limites à gauche et à droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [conclude-infinite] La limite vaut +∞
+  · Le résultat est une limite infinie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+Status: infinite, Value: +\\infty
+
+========== SUPERIEUR (summarized) ==========
+- [analyze-left-limit] \\lim_{x \\to 0^-}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] \\lim_{x \\to 0^+}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison gauche/droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [conclude-infinite] = +∞
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+Status: infinite, Value: +\\infty
+
+========== SUPERIEUR (detailed) ==========
+- [analyze-left-limit] \\lim_{x \\to 0^-}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [analyze-right-limit] \\lim_{x \\to 0^+}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [compare-one-sided] Comparaison gauche/droite
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+- [conclude-infinite] = +∞
+  · Le résultat est une limite infinie.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
+Status: infinite, Value: +\\infty
+"
+`;
+
 exports[`pedagogical-limits demo cases > category: rationalisation > renders (2−√x)/(4−x) à x=4 (forme b − √a) 1`] = `
 "
 ###### (2−√x)/(4−x) à x=4 (forme b − √a) ######

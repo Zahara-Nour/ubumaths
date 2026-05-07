@@ -13,6 +13,7 @@ import { DIRECT_SUBSTITUTION } from './direct-substitution';
 import { FACTORISATION } from './factorisation';
 import { INFINITY_ANALYSIS } from './infinity-analysis';
 import { KNOWN_LIMITS_CASES } from './known-limits';
+import { ONE_SIDED_ASYMPTOTES } from './one-sided-asymptotes';
 import { RATIONALISATION } from './rationalisation';
 
 export const ALL_CATEGORIES: readonly DemoCategory[] = [
@@ -20,7 +21,8 @@ export const ALL_CATEGORIES: readonly DemoCategory[] = [
 	KNOWN_LIMITS_CASES,
 	FACTORISATION,
 	RATIONALISATION,
-	INFINITY_ANALYSIS
+	INFINITY_ANALYSIS,
+	ONE_SIDED_ASYMPTOTES
 ];
 
 export {
@@ -28,5 +30,6 @@ export {
 	FACTORISATION,
 	INFINITY_ANALYSIS,
 	KNOWN_LIMITS_CASES,
+	ONE_SIDED_ASYMPTOTES,
 	RATIONALISATION
 };
