@@ -214,7 +214,58 @@ Test e2e dédié pour pin le contrat numérique.
 
 ---
 
-## Track B, D, F — En attente
+## Track F — Format `--both` dans snapshots démo ✅ Livré
+
+**Date** : 2026-05-07
+**Effort réel** : ~10 min (estimation prompt révisée : 1-1.5h —
+`presentExpression` supportait déjà `format: 'both'`, ne restait qu'à
+ajouter un `it.each` parallèle)
+**Snapshots ajoutés** : 34 `[both]` (custom + LaTeX stacked)
+**Régressions** : 0
+
+### Décision arbitrée (pré-implémentation)
+
+- **F-1** : option A — même fichier `.snap`, snapshots `[both]` ajoutés
+  EN PLUS des `custom` existants (pas de fichier dédié). Évite duplication
+  de structure.
+
+### Fichier modifié
+
+| Fichier                                                                                | Changement                                                                                 |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `src/lib/mathAST/pedagogical-arithmetic/__tests__/pedagogical-arithmetic-demo.test.ts` | Ajout `it.each` second avec format `'both'`, label `<original> [both]`. JSDoc mise à jour. |
+| `__snapshots__/pedagogical-arithmetic-demo.test.ts.snap`                               | 34 nouveaux snapshots `[both]` ajoutés (à 34 existants `custom`). Total : 68.              |
+
+### Hors scope V1 (confirmé)
+
+- Pas d'extension aux modules consommateurs (`pedagogical-solve/`,
+  `pedagogical-differentiation/`, `pedagogical-integration/`,
+  `pedagogical-simplify/`, `pedagogical-limits/`, `pedagogical-domain/`).
+  À ajouter quand l'utilité est avérée.
+
+### Quality checks
+
+- ESLint : clean
+- Tests Track F : 68/68 verts (34 custom + 34 both)
+- Tests régression : `pedagogical-arithmetic` 335/335 (0 régression)
+- Snapshots stables sur deuxième run (idempotents)
+
+### Note importante
+
+Track F livré APRÈS Track E (respect du couplage F→E annoncé dans le
+prompt révisé). Les snapshots `[both]` reflètent donc le pipeline final
+incluant `simplifyAddOpposite`. Cela dit, les démos courantes ne
+déclenchent pas la rule (pas de `target.strictCosmetics.signs === 'strict'`
+dans les test cases), donc en pratique pas de différence visible avec un
+hypothétique snapshot pré-E.
+
+### Commit
+
+À créer.
+
+---
+
+## Track B, D — En attente
 
 Statut : non démarrés.
 
@@ -229,4 +280,5 @@ Statut : non démarrés.
   - `4e24ed457` — révision short-todos-prompt
   - `4629911e1` — Track A
   - `bff974c95` — Track C
-  - Track E — à venir
+  - `f7c58fe6d` — Track E
+  - Track F — à venir

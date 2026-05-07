@@ -1,5 +1,23 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`snapshot — answer-format-scenarios > '5 × 10^6 with format "? × 10^?" → fra…' [both] 1`] = `
+"
+###### 5 × 10^6 with format "? × 10^?" → fragment = 5 (mantissa) ######
+
+target: {"answerFormat":"? \\\\times 10^?"}
+
+========== COLLEGE (detailed) ==========
+[0] On calcule
+    │ @blue{5*10^6}
+    │ = 5000000
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5 \\times 10^6} \\\\
+    │   & = 5000000
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — answer-format-scenarios > '5 × 10^6 with format "? × 10^?" → fra…' 1`] = `
 "
 ###### 5 × 10^6 with format "? × 10^?" → fragment = 5 (mantissa) ######
@@ -10,6 +28,24 @@ target: {"answerFormat":"? \\\\times 10^?"}
 [0] On calcule
     │ @blue{5*10^6}
     │ = 5000000
+"
+`;
+
+exports[`snapshot — answer-format-scenarios > '10^6 with format "10^?" → fragment = 6' [both] 1`] = `
+"
+###### 10^6 with format "10^?" → fragment = 6 ######
+
+target: {"answerFormat":"10^?"}
+
+========== COLLEGE (detailed) ==========
+[0] On calcule
+    │ @blue{10^6}
+    │ = 1000000
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{10^6} \\\\
+    │   & = 1000000
+    │ \\end{aligned}
 "
 `;
 
@@ -26,6 +62,25 @@ target: {"answerFormat":"10^?"}
 "
 `;
 
+exports[`snapshot — answer-format-scenarios > '√8 with format "?√?" — fragment extra…' [both] 1`] = `
+"
+###### √8 with format "?√?" — fragment extraction skipped (template-mismatch) ######
+
+target: {"answerFormat":"?\\\\sqrt{?}"}
+
+========== COLLEGE (detailed) ==========
+[0] On extrait le facteur carré parfait sous la racine
+    │ @blue{sqrt(8)}
+    │ = 2sqrt(2)
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\sqrt{8}} \\\\
+    │   & = 2 \\sqrt{2}
+    │ \\end{aligned}
+    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+"
+`;
+
 exports[`snapshot — answer-format-scenarios > '√8 with format "?√?" — fragment extra…' 1`] = `
 "
 ###### √8 with format "?√?" — fragment extraction skipped (template-mismatch) ######
@@ -37,6 +92,57 @@ target: {"answerFormat":"?\\\\sqrt{?}"}
     │ @blue{sqrt(8)}
     │ = 2sqrt(2)
     │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+"
+`;
+
+exports[`snapshot — basic > '(2 + 3) × (4 − 1) (deux parenthèses)' [both] 1`] = `
+"
+###### (2 + 3) × (4 − 1) (deux parenthèses) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 2 et 3
+    │ (@blue{2+3})*(4-1)
+    │ = 5*(4-1)
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\left(\\textcolor{blue}{2 + 3}\\right) \\times \\left(4 - 1\\right) \\\\
+    │   & = 5 \\times \\left( 4 - 1 \\right)
+    │ \\end{aligned}
+[1] On soustrait 1 de 4
+    │ 5*(@blue{4-1})
+    │ = 5*3
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 5 \\times \\left(\\textcolor{blue}{4 - 1}\\right) \\\\
+    │   & = 5 \\times 3
+    │ \\end{aligned}
+[2] On multiplie 5 par 3
+    │ @blue{5*3}
+    │ = 15
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5 \\times 3} \\\\
+    │   & = 15
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] On effectue les calculs entre parenthèses
+    │ @blue{(2+3)}*@blue{(4-1)}
+    │ = 5*3
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\left( 2 + 3 \\right)} \\times \\textcolor{blue}{\\left( 4 - 1 \\right)} \\\\
+    │   & = 5 \\times 3
+    │ \\end{aligned}
+    │ (En présence de parenthèses, on commence par calculer ce qu'il y a à l'intérieur.)
+[1] Multiplication
+    │ @blue{5*3}
+    │ = 15
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5 \\times 3} \\\\
+    │   & = 15
+    │ \\end{aligned}
 "
 `;
 
@@ -66,6 +172,49 @@ exports[`snapshot — basic > '(2 + 3) × (4 − 1) (deux parenthèses)' 1`] = `
 "
 `;
 
+exports[`snapshot — basic > '(2 + 3) × 4 (parenthèses)' [both] 1`] = `
+"
+###### (2 + 3) × 4 (parenthèses) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 2 et 3
+    │ (@blue{2+3})*4
+    │ = 5*4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\left(\\textcolor{blue}{2 + 3}\\right) \\times 4 \\\\
+    │   & = 5 \\times 4
+    │ \\end{aligned}
+[1] On multiplie 5 par 4
+    │ @blue{5*4}
+    │ = 20
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5 \\times 4} \\\\
+    │   & = 20
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] On effectue les calculs entre parenthèses
+    │ @blue{(2+3)}*4
+    │ = 5*4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\left( 2 + 3 \\right)} \\times 4 \\\\
+    │   & = 5 \\times 4
+    │ \\end{aligned}
+    │ (En présence de parenthèses, on commence par calculer ce qu'il y a à l'intérieur.)
+[1] Multiplication
+    │ @blue{5*4}
+    │ = 20
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5 \\times 4} \\\\
+    │   & = 20
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — basic > '(2 + 3) × 4 (parenthèses)' 1`] = `
 "
 ###### (2 + 3) × 4 (parenthèses) ######
@@ -86,6 +235,49 @@ exports[`snapshot — basic > '(2 + 3) × 4 (parenthèses)' 1`] = `
 [1] Multiplication
     │ @blue{5*4}
     │ = 20
+"
+`;
+
+exports[`snapshot — basic > '(15 + 5) ÷ 4 (parenthèses + division)' [both] 1`] = `
+"
+###### (15 + 5) ÷ 4 (parenthèses + division) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 15 et 5
+    │ (@blue{15+5}):/4
+    │ = 20:/4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\left(\\textcolor{blue}{15 + 5}\\right) \\div 4 \\\\
+    │   & = 20 / 4
+    │ \\end{aligned}
+[1] On divise 20 par 4
+    │ @blue{20:/4}
+    │ = 5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{20 / 4} \\\\
+    │   & = 5
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] On effectue les calculs entre parenthèses
+    │ @blue{(15+5)}:/4
+    │ = 20:/4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\left( 15 + 5 \\right)} \\div 4 \\\\
+    │   & = 20 / 4
+    │ \\end{aligned}
+    │ (En présence de parenthèses, on commence par calculer ce qu'il y a à l'intérieur.)
+[1] Division
+    │ @blue{20:/4}
+    │ = 5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{20 / 4} \\\\
+    │   & = 5
+    │ \\end{aligned}
 "
 `;
 
@@ -112,6 +304,48 @@ exports[`snapshot — basic > '(15 + 5) ÷ 4 (parenthèses + division)' 1`] = `
 "
 `;
 
+exports[`snapshot — basic > '2 + 3 × 4 (priorité)' [both] 1`] = `
+"
+###### 2 + 3 × 4 (priorité) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On multiplie 3 par 4
+    │ 2+@blue{3*4}
+    │ = 2+12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 2 + \\textcolor{blue}{3 \\times 4} \\\\
+    │   & = 2 + 12
+    │ \\end{aligned}
+[1] On additionne 2 et 12
+    │ @blue{2+12}
+    │ = 14
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{2 + 12} \\\\
+    │   & = 14
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] Multiplication
+    │ 2+@blue{3*4}
+    │ = 2+12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 2 + \\textcolor{blue}{3 \\times 4} \\\\
+    │   & = 2 + 12
+    │ \\end{aligned}
+[1] Addition
+    │ @blue{2+12}
+    │ = 14
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{2 + 12} \\\\
+    │   & = 14
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — basic > '2 + 3 × 4 (priorité)' 1`] = `
 "
 ###### 2 + 3 × 4 (priorité) ######
@@ -131,6 +365,73 @@ exports[`snapshot — basic > '2 + 3 × 4 (priorité)' 1`] = `
 [1] Addition
     │ @blue{2+12}
     │ = 14
+"
+`;
+
+exports[`snapshot — basic > '2 + 3 × 4 + 5 × 6 (regroupement)' [both] 1`] = `
+"
+###### 2 + 3 × 4 + 5 × 6 (regroupement) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On multiplie 3 par 4
+    │ 2+@blue{3*4}+5*6
+    │ = 2+12+5*6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 2 + \\textcolor{blue}{3 \\times 4} + 5 \\times 6 \\\\
+    │   & = 2 + 12 + 5 \\times 6
+    │ \\end{aligned}
+[1] On additionne 2 et 12
+    │ @blue{2+12}+5*6
+    │ = 14+5*6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{2 + 12} + 5 \\times 6 \\\\
+    │   & = 14 + 5 \\times 6
+    │ \\end{aligned}
+[2] On multiplie 5 par 6
+    │ 14+@blue{5*6}
+    │ = 14+30
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 14 + \\textcolor{blue}{5 \\times 6} \\\\
+    │   & = 14 + 30
+    │ \\end{aligned}
+[3] On additionne 14 et 30
+    │ @blue{14+30}
+    │ = 44
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{14 + 30} \\\\
+    │   & = 44
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] On effectue d'abord les multiplications et divisions
+    │ 2+@blue{3*4}+@blue{5*6}
+    │ = 2+12+30
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 2 + \\textcolor{blue}{3 \\times 4} + \\textcolor{blue}{5 \\times 6} \\\\
+    │   & = 2 + 12 + 30
+    │ \\end{aligned}
+    │ (En l'absence de parenthèses, les multiplications et divisions sont effectuées avant les additions et soustractions.)
+[1] Addition
+    │ @blue{2+12}+30
+    │ = 14+30
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{2 + 12} + 30 \\\\
+    │   & = 14 + 30
+    │ \\end{aligned}
+[2] Addition
+    │ @blue{14+30}
+    │ = 44
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{14 + 30} \\\\
+    │   & = 44
+    │ \\end{aligned}
 "
 `;
 
@@ -166,6 +467,32 @@ exports[`snapshot — basic > '2 + 3 × 4 + 5 × 6 (regroupement)' 1`] = `
 "
 `;
 
+exports[`snapshot — basic > '2 + 3' [both] 1`] = `
+"
+###### 2 + 3 ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 2 et 3
+    │ @blue{2+3}
+    │ = 5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{2 + 3} \\\\
+    │   & = 5
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] Addition
+    │ @blue{2+3}
+    │ = 5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{2 + 3} \\\\
+    │   & = 5
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — basic > '2 + 3' 1`] = `
 "
 ###### 2 + 3 ######
@@ -179,6 +506,49 @@ exports[`snapshot — basic > '2 + 3' 1`] = `
 [0] Addition
     │ @blue{2+3}
     │ = 5
+"
+`;
+
+exports[`snapshot — basic > '2 × (3 + 4) (parenthèses)' [both] 1`] = `
+"
+###### 2 × (3 + 4) (parenthèses) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 3 et 4
+    │ 2*(@blue{3+4})
+    │ = 2*7
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 2 \\times \\left(\\textcolor{blue}{3 + 4}\\right) \\\\
+    │   & = 2 \\times 7
+    │ \\end{aligned}
+[1] On multiplie 2 par 7
+    │ @blue{2*7}
+    │ = 14
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{2 \\times 7} \\\\
+    │   & = 14
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] On effectue les calculs entre parenthèses
+    │ 2*@blue{(3+4)}
+    │ = 2*7
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 2 \\times \\textcolor{blue}{\\left( 3 + 4 \\right)} \\\\
+    │   & = 2 \\times 7
+    │ \\end{aligned}
+    │ (En présence de parenthèses, on commence par calculer ce qu'il y a à l'intérieur.)
+[1] Multiplication
+    │ @blue{2*7}
+    │ = 14
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{2 \\times 7} \\\\
+    │   & = 14
+    │ \\end{aligned}
 "
 `;
 
@@ -205,6 +575,48 @@ exports[`snapshot — basic > '2 × (3 + 4) (parenthèses)' 1`] = `
 "
 `;
 
+exports[`snapshot — basic > '6 + 12 ÷ 3 (priorité division)' [both] 1`] = `
+"
+###### 6 + 12 ÷ 3 (priorité division) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On divise 12 par 3
+    │ 6+@blue{12:/3}
+    │ = 6+4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 6 + \\textcolor{blue}{12 / 3} \\\\
+    │   & = 6 + 4
+    │ \\end{aligned}
+[1] On additionne 6 et 4
+    │ @blue{6+4}
+    │ = 10
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{6 + 4} \\\\
+    │   & = 10
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] Division
+    │ 6+@blue{12:/3}
+    │ = 6+4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 6 + \\textcolor{blue}{12 / 3} \\\\
+    │   & = 6 + 4
+    │ \\end{aligned}
+[1] Addition
+    │ @blue{6+4}
+    │ = 10
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{6 + 4} \\\\
+    │   & = 10
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — basic > '6 + 12 ÷ 3 (priorité division)' 1`] = `
 "
 ###### 6 + 12 ÷ 3 (priorité division) ######
@@ -224,6 +636,49 @@ exports[`snapshot — basic > '6 + 12 ÷ 3 (priorité division)' 1`] = `
 [1] Addition
     │ @blue{6+4}
     │ = 10
+"
+`;
+
+exports[`snapshot — basic > '10 − (3 + 2) (parenthèses en soustrac…' [both] 1`] = `
+"
+###### 10 − (3 + 2) (parenthèses en soustraction) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 3 et 2
+    │ 10-(@blue{3+2})
+    │ = 10-5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 10 - \\left(\\textcolor{blue}{3 + 2}\\right) \\\\
+    │   & = 10 - 5
+    │ \\end{aligned}
+[1] On soustrait 5 de 10
+    │ @blue{10-5}
+    │ = 5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{10 - 5} \\\\
+    │   & = 5
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] On effectue les calculs entre parenthèses
+    │ 10-@blue{(3+2)}
+    │ = 10-5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 10 - \\textcolor{blue}{\\left( 3 + 2 \\right)} \\\\
+    │   & = 10 - 5
+    │ \\end{aligned}
+    │ (En présence de parenthèses, on commence par calculer ce qu'il y a à l'intérieur.)
+[1] Soustraction
+    │ @blue{10-5}
+    │ = 5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{10 - 5} \\\\
+    │   & = 5
+    │ \\end{aligned}
 "
 `;
 
@@ -250,6 +705,48 @@ exports[`snapshot — basic > '10 − (3 + 2) (parenthèses en soustrac…' 1`] 
 "
 `;
 
+exports[`snapshot — basic > '10 − 7 + 3' [both] 1`] = `
+"
+###### 10 − 7 + 3 ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On soustrait 7 de 10
+    │ @blue{10-7}+3
+    │ = 3+3
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{10 - 7} + 3 \\\\
+    │   & = 3 + 3
+    │ \\end{aligned}
+[1] On additionne 3 et 3
+    │ @blue{3+3}
+    │ = 6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{3 + 3} \\\\
+    │   & = 6
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] Soustraction
+    │ @blue{10-7}+3
+    │ = 3+3
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{10 - 7} + 3 \\\\
+    │   & = 3 + 3
+    │ \\end{aligned}
+[1] Addition
+    │ @blue{3+3}
+    │ = 6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{3 + 3} \\\\
+    │   & = 6
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — basic > '10 − 7 + 3' 1`] = `
 "
 ###### 10 − 7 + 3 ######
@@ -272,6 +769,32 @@ exports[`snapshot — basic > '10 − 7 + 3' 1`] = `
 "
 `;
 
+exports[`snapshot — basic > '12 ÷ 3 (division simple)' [both] 1`] = `
+"
+###### 12 ÷ 3 (division simple) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On divise 12 par 3
+    │ @blue{12:/3}
+    │ = 4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{12 / 3} \\\\
+    │   & = 4
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] Division
+    │ @blue{12:/3}
+    │ = 4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{12 / 3} \\\\
+    │   & = 4
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — basic > '12 ÷ 3 (division simple)' 1`] = `
 "
 ###### 12 ÷ 3 (division simple) ######
@@ -285,6 +808,48 @@ exports[`snapshot — basic > '12 ÷ 3 (division simple)' 1`] = `
 [0] Division
     │ @blue{12:/3}
     │ = 4
+"
+`;
+
+exports[`snapshot — basic > '20 ÷ 4 − 3 (division puis soustractio…' [both] 1`] = `
+"
+###### 20 ÷ 4 − 3 (division puis soustraction) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On divise 20 par 4
+    │ @blue{20:/4}-3
+    │ = 5-3
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{20 / 4} - 3 \\\\
+    │   & = 5 - 3
+    │ \\end{aligned}
+[1] On soustrait 3 de 5
+    │ @blue{5-3}
+    │ = 2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5 - 3} \\\\
+    │   & = 2
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] Division
+    │ @blue{20:/4}-3
+    │ = 5-3
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{20 / 4} - 3 \\\\
+    │   & = 5 - 3
+    │ \\end{aligned}
+[1] Soustraction
+    │ @blue{5-3}
+    │ = 2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5 - 3} \\\\
+    │   & = 2
+    │ \\end{aligned}
 "
 `;
 
@@ -307,6 +872,90 @@ exports[`snapshot — basic > '20 ÷ 4 − 3 (division puis soustractio…' 1`] 
 [1] Soustraction
     │ @blue{5-3}
     │ = 2
+"
+`;
+
+exports[`snapshot — basic > '24 ÷ (6 + 2) × 3 + (15 + 5) ÷ 4 (cas …' [both] 1`] = `
+"
+###### 24 ÷ (6 + 2) × 3 + (15 + 5) ÷ 4 (cas complet) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On additionne 6 et 2
+    │ 24:/(@blue{6+2})*3+(15+5):/4
+    │ = 24:/8*3+(15+5):/4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 24 \\div \\left(\\textcolor{blue}{6 + 2}\\right) \\times 3 + \\left(15 + 5\\right) \\div 4 \\\\
+    │   & = 24 / 8 \\times 3 + \\left( 15 + 5 \\right) / 4
+    │ \\end{aligned}
+[1] On additionne 15 et 5
+    │ 24:/8*3+(@blue{15+5}):/4
+    │ = 24:/8*3+20:/4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 24 \\div 8 \\times 3 + \\left(\\textcolor{blue}{15 + 5}\\right) \\div 4 \\\\
+    │   & = 24 / 8 \\times 3 + 20 / 4
+    │ \\end{aligned}
+[2] On divise 24 par 8
+    │ @blue{24:/8}*3+20:/4
+    │ = 3*3+20:/4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{24 / 8} \\times 3 + 20 \\div 4 \\\\
+    │   & = 3 \\times 3 + 20 / 4
+    │ \\end{aligned}
+[3] On multiplie 3 par 3
+    │ @blue{3*3}+20:/4
+    │ = 9+20:/4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{3 \\times 3} + 20 \\div 4 \\\\
+    │   & = 9 + 20 / 4
+    │ \\end{aligned}
+[4] On divise 20 par 4
+    │ 9+@blue{20:/4}
+    │ = 9+5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 9 + \\textcolor{blue}{20 / 4} \\\\
+    │   & = 9 + 5
+    │ \\end{aligned}
+[5] On additionne 9 et 5
+    │ @blue{9+5}
+    │ = 14
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{9 + 5} \\\\
+    │   & = 14
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] On effectue les calculs entre parenthèses
+    │ 24:/@blue{(6+2)}*3+@blue{(15+5)}:/4
+    │ = 24:/8*3+20:/4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 24 \\div \\textcolor{blue}{\\left( 6 + 2 \\right)} \\times 3 + \\textcolor{blue}{\\left( 15 + 5 \\right)} \\div 4 \\\\
+    │   & = 24 / 8 \\times 3 + 20 / 4
+    │ \\end{aligned}
+    │ (En présence de parenthèses, on commence par calculer ce qu'il y a à l'intérieur.)
+[1] On effectue d'abord les multiplications et divisions
+    │ @blue{24:/8*3}+@blue{20:/4}
+    │ = 9+5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{24 / 8 \\times 3} + \\textcolor{blue}{20 / 4} \\\\
+    │   & = 9 + 5
+    │ \\end{aligned}
+    │ (En l'absence de parenthèses, les multiplications et divisions sont effectuées avant les additions et soustractions.)
+[2] Addition
+    │ @blue{9+5}
+    │ = 14
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{9 + 5} \\\\
+    │   & = 14
+    │ \\end{aligned}
 "
 `;
 
@@ -349,6 +998,57 @@ exports[`snapshot — basic > '24 ÷ (6 + 2) × 3 + (15 + 5) ÷ 4 (cas …' 1`] 
 "
 `;
 
+exports[`snapshot — basic > '24 ÷ 6 + 2 × 3 (combine division + mu…' [both] 1`] = `
+"
+###### 24 ÷ 6 + 2 × 3 (combine division + multiplication) ######
+
+========== PRIMAIRE (detailed) ==========
+[0] On divise 24 par 6
+    │ @blue{24:/6}+2*3
+    │ = 4+2*3
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{24 / 6} + 2 \\times 3 \\\\
+    │   & = 4 + 2 \\times 3
+    │ \\end{aligned}
+[1] On multiplie 2 par 3
+    │ 4+@blue{2*3}
+    │ = 4+6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 4 + \\textcolor{blue}{2 \\times 3} \\\\
+    │   & = 4 + 6
+    │ \\end{aligned}
+[2] On additionne 4 et 6
+    │ @blue{4+6}
+    │ = 10
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{4 + 6} \\\\
+    │   & = 10
+    │ \\end{aligned}
+
+========== COLLEGE (detailed) ==========
+[0] On effectue d'abord les multiplications et divisions
+    │ @blue{24:/6}+@blue{2*3}
+    │ = 4+6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{24 / 6} + \\textcolor{blue}{2 \\times 3} \\\\
+    │   & = 4 + 6
+    │ \\end{aligned}
+    │ (En l'absence de parenthèses, les multiplications et divisions sont effectuées avant les additions et soustractions.)
+[1] Addition
+    │ @blue{4+6}
+    │ = 10
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{4 + 6} \\\\
+    │   & = 10
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — basic > '24 ÷ 6 + 2 × 3 (combine division + mu…' 1`] = `
 "
 ###### 24 ÷ 6 + 2 × 3 (combine division + multiplication) ######
@@ -375,6 +1075,30 @@ exports[`snapshot — basic > '24 ÷ 6 + 2 × 3 (combine division + mu…' 1`] =
 "
 `;
 
+exports[`snapshot — fractions > '(2/3) ÷ (5/7) (division)' [both] 1`] = `
+"
+###### (2/3) ÷ (5/7) (division) ######
+
+========== COLLEGE (detailed) ==========
+[0] Diviser par une fraction, c'est multiplier par son inverse
+    │ @blue{{2/3}/{5/7}}
+    │ = 2/3*7/5
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{\\dfrac{2}{3}}{\\dfrac{5}{7}}} \\\\
+    │   & = \\dfrac{2}{3} \\times \\dfrac{7}{5}
+    │ \\end{aligned}
+[1] On multiplie les numérateurs entre eux et les dénominateurs entre eux
+    │ @blue{2/3*7/5}
+    │ = 14/15
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{3} \\times \\dfrac{7}{5}} \\\\
+    │   & = \\dfrac{14}{15}
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — fractions > '(2/3) ÷ (5/7) (division)' 1`] = `
 "
 ###### (2/3) ÷ (5/7) (division) ######
@@ -386,6 +1110,474 @@ exports[`snapshot — fractions > '(2/3) ÷ (5/7) (division)' 1`] = `
 [1] On multiplie les numérateurs entre eux et les dénominateurs entre eux
     │ @blue{2/3*7/5}
     │ = 14/15
+"
+`;
+
+exports[`snapshot — fractions > '1/3 + 1/6 (PGCD = 6)' [both] 1`] = `
+"
+###### 1/3 + 1/6 (PGCD = 6) ######
+
+target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"strict"}}
+
+========== COLLEGE (detailed) ==========
+[0] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[1] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[2] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[3] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[4] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[5] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[6] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[7] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[8] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[9] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[10] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[11] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[12] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[13] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[14] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[15] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[16] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[17] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[18] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[19] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[20] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[21] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[22] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[23] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[24] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[25] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[26] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[27] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[28] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[29] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[30] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[31] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[32] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[33] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[34] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[35] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[36] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[37] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[38] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[39] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[40] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[41] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[42] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[43] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[44] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[45] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[46] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[47] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[48] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[49] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[50] On calcule
+    │ @blue{1/3+1/6}
+    │ = 1/2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{1}{2}
+    │ \\end{aligned}
 "
 `;
 
@@ -602,6 +1794,474 @@ target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"s
 "
 `;
 
+exports[`snapshot — fractions > '1/4 + 1/6 (PGCD = 12)' [both] 1`] = `
+"
+###### 1/4 + 1/6 (PGCD = 12) ######
+
+target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"strict"}}
+
+========== COLLEGE (detailed) ==========
+[0] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[1] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[2] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[3] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[4] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[5] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[6] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[7] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[8] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[9] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[10] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[11] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[12] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[13] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[14] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[15] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[16] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[17] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[18] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[19] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[20] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[21] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[22] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[23] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[24] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[25] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[26] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[27] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[28] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[29] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[30] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[31] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[32] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[33] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[34] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[35] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[36] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[37] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[38] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[39] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[40] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[41] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[42] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[43] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[44] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[45] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[46] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[47] On simplifie la fraction
+    │ 1/4+@blue{2/12}
+    │ = 1/4+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\dfrac{1}{4} + \\textcolor{blue}{\\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[48] On met les fractions au même dénominateur
+    │ @blue{1/4+1/6}
+    │ = 3/12+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{3}{12} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[49] On simplifie la fraction
+    │ @blue{3/12}+2/12
+    │ = 1/4+2/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{3}{12}} + \\dfrac{2}{12} \\\\
+    │   & = \\dfrac{1}{4} + \\dfrac{2}{12}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[50] On calcule
+    │ @blue{1/4+2/12}
+    │ = 5/12
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{4} + \\dfrac{2}{12}} \\\\
+    │   & = \\dfrac{5}{12}
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — fractions > '1/4 + 1/6 (PGCD = 12)' 1`] = `
 "
 ###### 1/4 + 1/6 (PGCD = 12) ######
@@ -815,6 +2475,22 @@ target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"s
 "
 `;
 
+exports[`snapshot — fractions > '2/3 × 5/7 (multiplication)' [both] 1`] = `
+"
+###### 2/3 × 5/7 (multiplication) ######
+
+========== COLLEGE (detailed) ==========
+[0] On multiplie les numérateurs entre eux et les dénominateurs entre eux
+    │ @blue{2/3*5/7}
+    │ = 10/21
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{3} \\times \\dfrac{5}{7}} \\\\
+    │   & = \\dfrac{10}{21}
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — fractions > '2/3 × 5/7 (multiplication)' 1`] = `
 "
 ###### 2/3 × 5/7 (multiplication) ######
@@ -823,6 +2499,25 @@ exports[`snapshot — fractions > '2/3 × 5/7 (multiplication)' 1`] = `
 [0] On multiplie les numérateurs entre eux et les dénominateurs entre eux
     │ @blue{2/3*5/7}
     │ = 10/21
+"
+`;
+
+exports[`snapshot — fractions > '2/4 réduction stricte' [both] 1`] = `
+"
+###### 2/4 réduction stricte ######
+
+target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"strict"}}
+
+========== COLLEGE (detailed) ==========
+[0] On simplifie la fraction
+    │ @blue{2/4}
+    │ = 1/2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{4}} \\\\
+    │   & = \\dfrac{1}{2}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
 "
 `;
 
@@ -840,6 +2535,23 @@ target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"s
 "
 `;
 
+exports[`snapshot — radicals > '√2 × √3 → √6' [both] 1`] = `
+"
+###### √2 × √3 → √6 ######
+
+========== COLLEGE (detailed) ==========
+[0] On multiplie les racines (la racine du produit)
+    │ @blue{sqrt(2)*sqrt(3)}
+    │ = sqrt(6)
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\sqrt{2} \\times \\sqrt{3}} \\\\
+    │   & = \\sqrt{6}
+    │ \\end{aligned}
+    │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). On extrait ensuite l'éventuel carré parfait.)
+"
+`;
+
 exports[`snapshot — radicals > '√2 × √3 → √6' 1`] = `
 "
 ###### √2 × √3 → √6 ######
@@ -849,6 +2561,31 @@ exports[`snapshot — radicals > '√2 × √3 → √6' 1`] = `
     │ @blue{sqrt(2)*sqrt(3)}
     │ = sqrt(6)
     │ (Pour deux nombres positifs a et b, √a × √b = √(a × b). On extrait ensuite l'éventuel carré parfait.)
+"
+`;
+
+exports[`snapshot — radicals > '√2 × √8 → 4 (collapse complet)' [both] 1`] = `
+"
+###### √2 × √8 → 4 (collapse complet) ######
+
+========== COLLEGE (detailed) ==========
+[0] On extrait le facteur carré parfait sous la racine
+    │ sqrt(2)*@blue{sqrt(8)}
+    │ = sqrt(2)*2sqrt(2)
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\sqrt{2} \\times \\textcolor{blue}{\\sqrt{8}} \\\\
+    │   & = \\sqrt{2} \\times 2 \\sqrt{2}
+    │ \\end{aligned}
+    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+[1] On calcule
+    │ @blue{sqrt(2)*2sqrt(2)}
+    │ = 4
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\sqrt{2} \\times 2 \\sqrt{2}} \\\\
+    │   & = 4
+    │ \\end{aligned}
 "
 `;
 
@@ -867,6 +2604,23 @@ exports[`snapshot — radicals > '√2 × √8 → 4 (collapse complet)' 1`] = `
 "
 `;
 
+exports[`snapshot — radicals > '√8 → 2√2' [both] 1`] = `
+"
+###### √8 → 2√2 ######
+
+========== COLLEGE (detailed) ==========
+[0] On extrait le facteur carré parfait sous la racine
+    │ @blue{sqrt(8)}
+    │ = 2sqrt(2)
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\sqrt{8}} \\\\
+    │   & = 2 \\sqrt{2}
+    │ \\end{aligned}
+    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+"
+`;
+
 exports[`snapshot — radicals > '√8 → 2√2' 1`] = `
 "
 ###### √8 → 2√2 ######
@@ -875,6 +2629,23 @@ exports[`snapshot — radicals > '√8 → 2√2' 1`] = `
 [0] On extrait le facteur carré parfait sous la racine
     │ @blue{sqrt(8)}
     │ = 2sqrt(2)
+    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+"
+`;
+
+exports[`snapshot — radicals > '√18 → 3√2' [both] 1`] = `
+"
+###### √18 → 3√2 ######
+
+========== COLLEGE (detailed) ==========
+[0] On extrait le facteur carré parfait sous la racine
+    │ @blue{sqrt(18)}
+    │ = 3sqrt(2)
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\sqrt{18}} \\\\
+    │   & = 3 \\sqrt{2}
+    │ \\end{aligned}
     │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
 "
 `;
@@ -891,6 +2662,23 @@ exports[`snapshot — radicals > '√18 → 3√2' 1`] = `
 "
 `;
 
+exports[`snapshot — radicals > '√45 → 3√5' [both] 1`] = `
+"
+###### √45 → 3√5 ######
+
+========== COLLEGE (detailed) ==========
+[0] On extrait le facteur carré parfait sous la racine
+    │ @blue{sqrt(45)}
+    │ = 3sqrt(5)
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\sqrt{45}} \\\\
+    │   & = 3 \\sqrt{5}
+    │ \\end{aligned}
+    │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+"
+`;
+
 exports[`snapshot — radicals > '√45 → 3√5' 1`] = `
 "
 ###### √45 → 3√5 ######
@@ -900,6 +2688,73 @@ exports[`snapshot — radicals > '√45 → 3√5' 1`] = `
     │ @blue{sqrt(45)}
     │ = 3sqrt(5)
     │ (On décompose le nombre sous la racine en produit incluant un carré parfait, puis on extrait celui-ci.)
+"
+`;
+
+exports[`snapshot — scientific > '(3 × 10⁴) × (2 × 10⁻²) → 6 × 10²' [both] 1`] = `
+"
+###### (3 × 10⁴) × (2 × 10⁻²) → 6 × 10² ######
+
+target: {"structure":"scientific"}
+
+========== COLLEGE (detailed) ==========
+[0] On écrit la puissance comme un produit
+    │ 3*@blue{10^4}*2*10^{-2}
+    │ = 3*10*10*10*10*2*10^{-2}
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 3 \\times \\textcolor{blue}{10^4} \\times 2 \\times 10^{-2} \\\\
+    │   & = 3 \\times 10 \\times 10 \\times 10 \\times 10 \\times 2 \\times 10^{-2}
+    │ \\end{aligned}
+[1] Multiplication
+    │ 3*@blue{10*10}*10*10*2*10^{-2}
+    │ = 3*100*10*10*2*10^{-2}
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 3 \\times \\textcolor{blue}{10 \\times 10} \\times 10 \\times 10 \\times 2 \\times 10^{-2} \\\\
+    │   & = 3 \\times 100 \\times 10 \\times 10 \\times 2 \\times 10^{-2}
+    │ \\end{aligned}
+[2] Multiplication
+    │ 3*@blue{100*10}*10*2*10^{-2}
+    │ = 3*1000*10*2*10^{-2}
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 3 \\times \\textcolor{blue}{100 \\times 10} \\times 10 \\times 2 \\times 10^{-2} \\\\
+    │   & = 3 \\times 1000 \\times 10 \\times 2 \\times 10^{-2}
+    │ \\end{aligned}
+[3] Multiplication
+    │ 3*@blue{1000*10}*2*10^{-2}
+    │ = 3*10000*2*10^{-2}
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 3 \\times \\textcolor{blue}{1000 \\times 10} \\times 2 \\times 10^{-2} \\\\
+    │   & = 3 \\times 10000 \\times 2 \\times 10^{-2}
+    │ \\end{aligned}
+[4] Multiplication
+    │ @blue{3*10000}*2*10^{-2}
+    │ = 30000*2*10^{-2}
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{3 \\times 10000} \\times 2 \\times 10^{-2} \\\\
+    │   & = 30000 \\times 2 \\times 10^{-2}
+    │ \\end{aligned}
+[5] On calcule
+    │ @blue{30000*2*10^{-2}}
+    │ = 600
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{30000 \\times 2 \\times 10^{-2}} \\\\
+    │   & = 600
+    │ \\end{aligned}
+[6] On écrit en notation scientifique
+    │ @blue{600}
+    │ = 6*10^2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{600} \\\\
+    │   & = 6 \\times 10^2
+    │ \\end{aligned}
+    │ (On déplace la virgule pour obtenir un nombre entre 1 et 10, en compensant par une puissance de 10.)
 "
 `;
 
@@ -931,6 +2786,89 @@ target: {"structure":"scientific"}
 [6] On écrit en notation scientifique
     │ @blue{600}
     │ = 6*10^2
+    │ (On déplace la virgule pour obtenir un nombre entre 1 et 10, en compensant par une puissance de 10.)
+"
+`;
+
+exports[`snapshot — scientific > '(5 × 10³) × (4 × 10²) → 2 × 10⁶ (over…' [both] 1`] = `
+"
+###### (5 × 10³) × (4 × 10²) → 2 × 10⁶ (overflow re-norm) ######
+
+target: {"structure":"scientific"}
+
+========== COLLEGE (detailed) ==========
+[0] On écrit la puissance comme un produit
+    │ 5*@blue{10^3}*4*10^2
+    │ = 5*10*10*10*4*10^2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 5 \\times \\textcolor{blue}{10^3} \\times 4 \\times 10^{2} \\\\
+    │   & = 5 \\times 10 \\times 10 \\times 10 \\times 4 \\times 10^2
+    │ \\end{aligned}
+[1] Multiplication
+    │ 5*@blue{10*10}*10*4*10^2
+    │ = 5*100*10*4*10^2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 5 \\times \\textcolor{blue}{10 \\times 10} \\times 10 \\times 4 \\times 10^{2} \\\\
+    │   & = 5 \\times 100 \\times 10 \\times 4 \\times 10^2
+    │ \\end{aligned}
+[2] Multiplication
+    │ 5*@blue{100*10}*4*10^2
+    │ = 5*1000*4*10^2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 5 \\times \\textcolor{blue}{100 \\times 10} \\times 4 \\times 10^{2} \\\\
+    │   & = 5 \\times 1000 \\times 4 \\times 10^2
+    │ \\end{aligned}
+[3] Multiplication
+    │ @blue{5*1000}*4*10^2
+    │ = 5000*4*10^2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5 \\times 1000} \\times 4 \\times 10^{2} \\\\
+    │   & = 5000 \\times 4 \\times 10^2
+    │ \\end{aligned}
+[4] On écrit la puissance comme un produit
+    │ 5000*4*@blue{10^2}
+    │ = 5000*4*10*10
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 5000 \\times 4 \\times \\textcolor{blue}{10^2} \\\\
+    │   & = 5000 \\times 4 \\times 10 \\times 10
+    │ \\end{aligned}
+[5] Multiplication
+    │ 5000*4*@blue{10*10}
+    │ = 5000*4*100
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 5000 \\times 4 \\times \\textcolor{blue}{10 \\times 10} \\\\
+    │   & = 5000 \\times 4 \\times 100
+    │ \\end{aligned}
+[6] Multiplication
+    │ 5000*@blue{4*100}
+    │ = 5000*400
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & 5000 \\times \\textcolor{blue}{4 \\times 100} \\\\
+    │   & = 5000 \\times 400
+    │ \\end{aligned}
+[7] Multiplication
+    │ @blue{5000*400}
+    │ = 2000000
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5000 \\times 400} \\\\
+    │   & = 2000000
+    │ \\end{aligned}
+[8] On écrit en notation scientifique
+    │ @blue{2000000}
+    │ = 2*10^6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{2000000} \\\\
+    │   & = 2 \\times 10^6
+    │ \\end{aligned}
     │ (On déplace la virgule pour obtenir un nombre entre 1 et 10, en compensant par une puissance de 10.)
 "
 `;
@@ -973,6 +2911,24 @@ target: {"structure":"scientific"}
 "
 `;
 
+exports[`snapshot — scientific > '0.000037 → 3.7 × 10⁻⁵' [both] 1`] = `
+"
+###### 0.000037 → 3.7 × 10⁻⁵ ######
+
+target: {"structure":"scientific"}
+
+========== COLLEGE (detailed) ==========
+[0] On calcule
+    │ @blue{0.000037}
+    │ = 37/1000000
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{0.000037} \\\\
+    │   & = \\dfrac{37}{1000000}
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — scientific > '0.000037 → 3.7 × 10⁻⁵' 1`] = `
 "
 ###### 0.000037 → 3.7 × 10⁻⁵ ######
@@ -983,6 +2939,25 @@ target: {"structure":"scientific"}
 [0] On calcule
     │ @blue{0.000037}
     │ = 37/1000000
+"
+`;
+
+exports[`snapshot — scientific > '5 000 000 → 5 × 10⁶' [both] 1`] = `
+"
+###### 5 000 000 → 5 × 10⁶ ######
+
+target: {"structure":"scientific"}
+
+========== COLLEGE (detailed) ==========
+[0] On écrit en notation scientifique
+    │ @blue{5000000}
+    │ = 5*10^6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5000000} \\\\
+    │   & = 5 \\times 10^6
+    │ \\end{aligned}
+    │ (On déplace la virgule pour obtenir un nombre entre 1 et 10, en compensant par une puissance de 10.)
 "
 `;
 
@@ -997,6 +2972,474 @@ target: {"structure":"scientific"}
     │ @blue{5000000}
     │ = 5*10^6
     │ (On déplace la virgule pour obtenir un nombre entre 1 et 10, en compensant par une puissance de 10.)
+"
+`;
+
+exports[`snapshot — target-form-scenarios > '1/3 + 1/6 + reduced-fraction strict →…' [both] 1`] = `
+"
+###### 1/3 + 1/6 + reduced-fraction strict → 1/2 ######
+
+target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"strict"}}
+
+========== COLLEGE (detailed) ==========
+[0] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[1] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[2] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[3] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[4] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[5] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[6] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[7] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[8] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[9] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[10] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[11] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[12] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[13] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[14] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[15] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[16] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[17] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[18] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[19] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[20] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[21] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[22] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[23] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[24] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[25] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[26] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[27] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[28] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[29] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[30] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[31] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[32] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[33] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[34] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[35] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[36] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[37] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[38] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[39] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[40] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[41] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[42] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[43] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[44] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[45] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[46] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[47] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[48] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[49] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[50] On calcule
+    │ @blue{1/3+1/6}
+    │ = 1/2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{1}{2}
+    │ \\end{aligned}
 "
 `;
 
@@ -1213,6 +3656,472 @@ target: {"structure":"reduced-fraction","strictCosmetics":{"reducedFractions":"s
 "
 `;
 
+exports[`snapshot — target-form-scenarios > '1/3 + 1/6 sans target → 3/6 (non rédu…' [both] 1`] = `
+"
+###### 1/3 + 1/6 sans target → 3/6 (non réduit) ######
+
+========== COLLEGE (detailed) ==========
+[0] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[1] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[2] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[3] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[4] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[5] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[6] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[7] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[8] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[9] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[10] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[11] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[12] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[13] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[14] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[15] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[16] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[17] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[18] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[19] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[20] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[21] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[22] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[23] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[24] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[25] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[26] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[27] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[28] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[29] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[30] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[31] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[32] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[33] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[34] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[35] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[36] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[37] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[38] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[39] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[40] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[41] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[42] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[43] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[44] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[45] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[46] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[47] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[48] On met les fractions au même dénominateur
+    │ @blue{1/3+1/6}
+    │ = 2/6+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{2}{6} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (Pour additionner deux fractions, on les écrit avec le même dénominateur (le PPCM des dénominateurs).)
+[49] On simplifie la fraction
+    │ @blue{2/6}+1/6
+    │ = 1/3+1/6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{2}{6}} + \\dfrac{1}{6} \\\\
+    │   & = \\dfrac{1}{3} + \\dfrac{1}{6}
+    │ \\end{aligned}
+    │ (On divise numérateur et dénominateur par leur PGCD.)
+[50] On calcule
+    │ @blue{1/3+1/6}
+    │ = 1/2
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{\\dfrac{1}{3} + \\dfrac{1}{6}} \\\\
+    │   & = \\dfrac{1}{2}
+    │ \\end{aligned}
+"
+`;
+
 exports[`snapshot — target-form-scenarios > '1/3 + 1/6 sans target → 3/6 (non rédu…' 1`] = `
 "
 ###### 1/3 + 1/6 sans target → 3/6 (non réduit) ######
@@ -1421,6 +4330,25 @@ exports[`snapshot — target-form-scenarios > '1/3 + 1/6 sans target → 3/6 (no
 [50] On calcule
     │ @blue{1/3+1/6}
     │ = 1/2
+"
+`;
+
+exports[`snapshot — target-form-scenarios > '5000000 + scientific target → 5 × 10⁶' [both] 1`] = `
+"
+###### 5000000 + scientific target → 5 × 10⁶ ######
+
+target: {"structure":"scientific"}
+
+========== COLLEGE (detailed) ==========
+[0] On écrit en notation scientifique
+    │ @blue{5000000}
+    │ = 5*10^6
+    ├ (latex)
+    │ \\begin{aligned}
+    │   & \\textcolor{blue}{5000000} \\\\
+    │   & = 5 \\times 10^6
+    │ \\end{aligned}
+    │ (On déplace la virgule pour obtenir un nombre entre 1 et 10, en compensant par une puissance de 10.)
 "
 `;
 
