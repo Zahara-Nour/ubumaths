@@ -516,16 +516,16 @@ Après : `(6+2), (15+5), 24÷8, 3×3, 20÷4, 9+5` (toutes parens d'abord).
 
 ### TODOs post-prompt à reprendre dans des sessions ultérieures
 
-| Item                                                                                                  | Effort    | Notes                                                               |
-| ----------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------- |
-| Populer `expressionName` dans `InstanceBlank` via `assign-blank-indices.ts`                           | ~2-3h     | Rend le 3e arg de `extractPedagogicalTarget` redondant              |
-| ~~Intégration aux corrections de questions~~ (`QuestionCorrection.generatedSteps` + composant Svelte) | ~~~6-8h~~ | ✅ **Livré 2026-05-05** — voir `correction-integration-progress.md` |
-| Variantes fractions par sous-niveau (early-college multiplication vs late-college PGCD)               | ~2-3h     | Affinage pédagogique                                                |
-| `rationalize-denominator` + `simplify-square-root-of-square` (radicaux avancés)                       | ~3-4h     | Niveau 3 lycée+                                                     |
-| Decimal mantissas dans `multiplyScientific` / `addScientificSamePower`                                | ~2-3h     | Support mantisses non-entières                                      |
-| Cohérence `signs: 'strict'` en post-processing (`5 + (-3) → 5 - 3`)                                   | ~2h       | Étape pédagogique finale conditionnelle                             |
-| Format `--both` dans snapshots démo (custom + LaTeX côte à côte)                                      | ~1h       | Lisibilité du dev                                                   |
-| Réglage espacement par niveau (primaire plus aéré ?)                                                  | ~1-2h     | À évaluer après retour utilisateur                                  |
+| Item                                                                                                  | Effort    | Notes                                                                          |
+| ----------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------ |
+| ~~Populer `expressionName` dans `InstanceBlank` via `assign-blank-indices.ts`~~                       | ~~~2-3h~~ | ✅ **Livré 2026-05-07** Track A (`4629911e1`) — voir `short-todos-progress.md` |
+| ~~Intégration aux corrections de questions~~ (`QuestionCorrection.generatedSteps` + composant Svelte) | ~~~6-8h~~ | ✅ **Livré 2026-05-05** — voir `correction-integration-progress.md`            |
+| ~~Variantes fractions par sous-niveau (early-college multiplication vs late-college PGCD)~~           | ~~~2-3h~~ | ✅ **Livré 2026-05-07** Track B (`7d0c5b5d4`) — voir `short-todos-progress.md` |
+| ~~`rationalize-denominator` + `simplify-square-root-of-square` (radicaux avancés)~~                   | ~~~3-4h~~ | ✅ **Livré 2026-05-07** Track C (`bff974c95`) — voir `short-todos-progress.md` |
+| ~~Decimal mantissas dans `multiplyScientific` / `addScientificSamePower`~~                            | ~~~2-3h~~ | ✅ **Livré 2026-05-07** Track D (`ce885a2c7`) — voir `short-todos-progress.md` |
+| ~~Cohérence `signs: 'strict'` en post-processing (`5 + (-3) → 5 - 3`)~~                               | ~~~2h~~   | ✅ **Livré 2026-05-07** Track E (`f7c58fe6d`) — voir `short-todos-progress.md` |
+| ~~Format `--both` dans snapshots démo (custom + LaTeX côte à côte)~~                                  | ~~~1h~~   | ✅ **Livré 2026-05-07** Track F (`3ddaddd12`) — voir `short-todos-progress.md` |
+| Réglage espacement par niveau (primaire plus aéré ?)                                                  | ~1-2h     | À évaluer après retour utilisateur                                             |
 
 ### Hors scope ce prompt et liés à ce travail
 

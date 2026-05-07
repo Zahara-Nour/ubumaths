@@ -378,20 +378,69 @@ Confirmation reviewer : aucun `Number()` / `parseFloat()` / float arithmetic dan
 
 ### Commit
 
-À créer.
+`ce885a2c7`.
 
 ---
 
-## Documents produits dans ce tunnel
+## 🎉 Tunnel complet — récapitulatif final
 
-À compléter à la fin du tunnel.
+**Date de clôture** : 2026-05-07
 
-- `docs/wip/short-todos-progress.md` (ce fichier)
-- Commits :
-  - `4e24ed457` — révision short-todos-prompt
-  - `4629911e1` — Track A
-  - `bff974c95` — Track C
-  - `f7c58fe6d` — Track E
-  - `3ddaddd12` — Track F
-  - `7d0c5b5d4` — Track B
-  - Track D — à venir
+### Synthèse des 6 tracks livrés
+
+| Track     | Sujet                                             | Estimé     | Réel      | Commit                            | Tests                    |
+| --------- | ------------------------------------------------- | ---------- | --------- | --------------------------------- | ------------------------ |
+| A         | `expressionName` dans `InstanceBlank`             | 3-4h       | ~1.5h     | `4629911e1`                       | 14                       |
+| C         | rationalize-denominator + simplify-root-of-square | 3-4h       | ~1.5h     | `bff974c95`                       | 27                       |
+| E         | `signs: 'strict'` (`+ (-y) → - y`)                | 1h         | ~30 min   | `f7c58fe6d`                       | 18                       |
+| F         | snapshots format `--both`                         | 1-1.5h     | ~10 min   | `3ddaddd12`                       | 34 snaps                 |
+| B         | fractions early-college (multiplication directe)  | 3-5h       | ~1h       | `7d0c5b5d4`                       | 18                       |
+| D         | decimal mantissas dans scientific-notation        | 3-4h       | ~30 min   | `ce885a2c7`                       | 15                       |
+| **Total** |                                                   | **14-19h** | **~5.5h** | **6 commits + 1 prompt revision** | **126 tests + 34 snaps** |
+
+### Indicateurs de qualité
+
+- **0 régression** sur 13447 tests mathAST + 367 tests pedagogical-arithmetic
+- **6 code reviews** (Opus) — toutes « Ready to merge » avec fixes mineurs appliqués
+- **ESLint et TypeScript clean** sur tous les fichiers modifiés
+- **Aucun `Co-Authored-By: Claude`** dans les commits (préférence utilisateur respectée)
+
+### Décisions arbitrées en amont (gain de temps majeur)
+
+Toutes les ambiguïtés du prompt initial ont été tranchées dans le commit
+de révision `4e24ed457` AVANT de commencer l'implémentation :
+
+- **C-1** : `simplifyRootOfSquare` opt-in via flag (default OFF)
+- **C-2** : précondition « radicand non carré parfait » sur rationalize
+- **B-1** : option orthogonale `collegeSubLevel?`, pas d'extension SchoolLevel
+- **E-1** : `simplifyAddOpposite` fire à droite uniquement
+- **F-1** : snapshots `[both]` dans le même `.snap` file
+- **2A** : path A pour `1/√8 → 1/(2√2)` (rule engine bottom-up)
+- **3A** : `simplifyRootOfSquare` skip TOUS les littéraux numériques
+
+Effort réel **3-4× moins** que l'estimation maximale grâce à ces
+décisions précises + découvertes (sub-task 2 du Track B non-applicable).
+
+### Documents produits
+
+1. `docs/wip/short-todos-prompt.md` — prompt source (révisé `4e24ed457`)
+2. `docs/wip/short-todos-progress.md` — ce document
+3. `docs/wip/pedagogical-arithmetic-progress.md` — TODOs post-prompt
+   marqués comme livrés (table mise à jour avec hashes des commits)
+
+### Commits du tunnel
+
+- `4e24ed457` — révision short-todos-prompt (corrections + arbitrage 5 décisions)
+- `4629911e1` — Track A (`feat(questions)`)
+- `bff974c95` — Track C (`feat(pedagogical-arithmetic)`)
+- `f7c58fe6d` — Track E (`feat(pedagogical-arithmetic)`)
+- `3ddaddd12` — Track F (`test(pedagogical-arithmetic)`)
+- `7d0c5b5d4` — Track B (`feat(pedagogical-arithmetic)`)
+- `ce885a2c7` — Track D (`feat(pedagogical-arithmetic)`)
+
+### Hors scope V1 (à reprendre si besoin)
+
+- Track C path B (`1/√8 → √2/4` canonique) — exigerait match `c/(k·√n)` post-extract
+- Track E left-opposite `(-3) + 5 → 5 - 3` — exigerait commutativity reordering
+- Track F extension aux modules consommateurs (pedagogical-solve, etc.)
+- Réglage espacement par niveau (TODO encore ouvert dans `pedagogical-arithmetic-progress.md`)
