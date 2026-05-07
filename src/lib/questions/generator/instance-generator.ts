@@ -302,6 +302,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					? resolveExpression(normalized, resolvedVariables, seed)
 					: normalized;
 
+				// `i` matches the blank counter assigned by `assignBlankIndices`
+				// (left-to-right, consecutive, 0-based). If that contract changes,
+				// this lookup silently returns undefined.
+				const expressionName = blankResult.expressionNameByIndex?.[i];
 				const resolved: InstanceBlank = {
 					expectedAnswer,
 					type: blankResult.blankTypes[i],
@@ -309,7 +313,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					requiredForm: blank.requiredForm ?? resolvedVariation.blankDefaults?.requiredForm,
 					validationRules: blank.validationRules ?? resolvedVariation.validationRules,
 					unit: blank.unit ?? resolvedVariation.blankDefaults?.unit,
-					pool: blank.pool
+					pool: blank.pool,
+					...(expressionName !== undefined && { expressionName })
 				};
 				if (blank.prefilled) {
 					resolved.prefilled = resolveExpression(

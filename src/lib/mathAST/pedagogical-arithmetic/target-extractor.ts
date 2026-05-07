@@ -13,13 +13,16 @@
  * Design rationale (Phase 0 Q9, Q10) — see
  * `docs/wip/pedagogical-arithmetic-prompt.md` :
  *
- * - **Q9** (`expressionName`) : `InstanceBlank` has no `expressionName`
- *   field today. The signature accepts an explicit 3rd argument
- *   `expressionName?: string`. The caller (typically a Svelte correction
- *   component) knows the mapping `blank → expression` via
- *   `instance.expressions[]`. A future refactor can populate
- *   `InstanceBlank.expressionName` directly in `assign-blank-indices.ts` to
- *   make the 3rd arg redundant.
+ * - **Q9** (`expressionName`) : `InstanceBlank.expressionName` is now populated
+ *   by `assign-blank-indices.ts` (Track A) for blanks originating from a
+ *   `<<expr:NAME>>` marker. The 3rd argument `expressionName?: string` remains
+ *   supported for two reasons:
+ *     1. Pattern 3 — callers without a blank (e.g. global correction analysis)
+ *        still need to specify which expression to look up.
+ *     2. Override — explicit caller-provided name wins over `blank.expressionName`
+ *        when both are present.
+ *   When the 3rd arg is omitted and a blank is provided, the resolver
+ *   auto-deduces from `blank.expressionName`.
  *
  * - **Q10** (`structure: TargetForm`) : the `RequiredForm` field on the
  *   variation/blank is a *user-facing* form choice. The pedagogical
@@ -74,8 +77,9 @@ import { classifyAnswerFormat } from './answer-format-parser';
  *                       drive cosmetic and form constraints).
  * @param expressionName Optional name of the expression linked to this blank.
  *                       Used to look up `instance.expressions[*].answerFormat`.
- *                       The caller is responsible for knowing this mapping —
- *                       see Q9 in the prompt.
+ *                       When omitted and `blank.expressionName` is set, the
+ *                       latter is used (Track A auto-deduction). When provided
+ *                       explicitly, it overrides `blank.expressionName`.
  */
 export function extractPedagogicalTarget(
 	instance: QuestionInstance,
@@ -87,7 +91,8 @@ export function extractPedagogicalTarget(
 	const validationRules: readonly ValidationRule[] | undefined =
 		blank?.validationRules ?? instance.validationRules;
 	const unit = blank?.unit;
-	const answerFormat = lookupAnswerFormat(instance, expressionName);
+	const effectiveExpressionName = expressionName ?? blank?.expressionName;
+	const answerFormat = lookupAnswerFormat(instance, effectiveExpressionName);
 	const strictCosmetics = filterStrictMode(instance.options?.constraints);
 	const structure = deriveTargetForm({
 		requiredForm,

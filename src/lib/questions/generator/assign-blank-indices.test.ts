@@ -234,4 +234,73 @@ describe('assignBlankIndices', () => {
 			expect(result.totalBlanks).toBe(0);
 		});
 	});
+
+	describe('expressionNameByIndex — track A propagation map', () => {
+		it('maps the single blank from <<expr:NAME>> + answerFormats[NAME]=? to the expression name', () => {
+			const result = assignBlankIndices('$$<<expr:expression1>>5+3$$', {
+				expression1: '?'
+			});
+			expect(result.expressionNameByIndex).toEqual({ 0: 'expression1' });
+			expect(result.totalBlanks).toBe(1);
+		});
+
+		it('maps both blanks when answerFormat contains multiple ?', () => {
+			const result = assignBlankIndices('$$<<expr:expression1>>foo$$', {
+				expression1: '? \\times 10^{?}'
+			});
+			expect(result.expressionNameByIndex).toEqual({
+				0: 'expression1',
+				1: 'expression1'
+			});
+			expect(result.totalBlanks).toBe(2);
+		});
+
+		it('leaves expressionNameByIndex undefined when no marker is present', () => {
+			const result = assignBlankIndices('$? + ?$', {});
+			expect(result.expressionNameByIndex).toBeUndefined();
+			expect(result.totalBlanks).toBe(2);
+		});
+
+		it('leaves expressionNameByIndex undefined when marker NAME is unknown to answerFormats (silent fallback)', () => {
+			const result = assignBlankIndices('$<<expr:expression99>>2 + ?$', {
+				expression1: '?'
+			});
+			// Marker did not match any answerFormat entry → fallback path.
+			// The `?` in math content is replaced as a regular blank (no marker
+			// reservation), so the resulting blank is unmapped.
+			expect(result.expressionNameByIndex).toBeUndefined();
+			expect(result.totalBlanks).toBe(1);
+		});
+
+		it('isolates indices across multiple zones with distinct markers', () => {
+			const result = assignBlankIndices('$$<<expr:expression1>>a$$ et $$<<expr:expression2>>b$$', {
+				expression1: '?',
+				expression2: '?'
+			});
+			expect(result.expressionNameByIndex).toEqual({
+				0: 'expression1',
+				1: 'expression2'
+			});
+		});
+
+		it('handles ? inside math content of an expression marker (the ? IS the blank)', () => {
+			// `<<expr:expression1>>(-3) \times ? = -12` with answerFormat '?' →
+			// the `?` in math content reuses the same index reserved by the
+			// answerFormat path, so it stays mapped to `expression1`.
+			const result = assignBlankIndices('$<<expr:expression1>>(-3) \\times ? = -12$', {
+				expression1: '?'
+			});
+			expect(result.expressionNameByIndex).toEqual({ 0: 'expression1' });
+			expect(result.totalBlanks).toBe(1);
+		});
+
+		it('does not pollute later non-marker zones with the marker mapping', () => {
+			// Marker zone first (index 0 mapped), then plain math zone (index 1
+			// must NOT be mapped to expression1).
+			const result = assignBlankIndices('$$<<expr:expression1>>x$$ et $?$', { expression1: '?' });
+			expect(result.expressionNameByIndex).toEqual({ 0: 'expression1' });
+			// Index 1 (the bare `?` in second math zone) is not in the map.
+			expect(result.expressionNameByIndex?.[1]).toBeUndefined();
+		});
+	});
 });
