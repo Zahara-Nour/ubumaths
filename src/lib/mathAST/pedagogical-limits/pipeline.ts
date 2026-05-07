@@ -263,6 +263,16 @@ export function generatePedagogicalLimitSteps(
 		}
 	}
 
+	// Strategy 8 — squeeze / théorème des gendarmes (heuristique numérique :
+	// expression bornée tendant vers 0 quand x → a). Activée pour les cas
+	// type x·sin(1/x), x²·cos(1/x), …
+	if (ctx.strategy.enableSqueeze && !isAtInfinity(ctx.approach)) {
+		const squeezed = trySqueeze(expression, ctx);
+		if (squeezed !== null) {
+			return finalize(ctx, [...headerSteps, ...squeezed.steps], squeezed);
+		}
+	}
+
 	// Nothing worked. At lycée this routinely means a case that would have
 	// required L'Hôpital ; surface the constraint in the error message.
 	const reason =
@@ -920,6 +930,158 @@ function describeSide(
 ): string {
 	if (sign === 0) return `valeur finie (${sideMark})`;
 	return sign > 0 ? `+∞ (${sideMark})` : `−∞ (${sideMark})`;
+}
+
+// =============================================================================
+// Strategy: squeeze / théorème des gendarmes
+// =============================================================================
+
+/** Probe distances for the squeeze numerical heuristic. Decreasing scales
+ *  let us check both boundedness (max value at coarse) and convergence to 0
+ *  (max value at fine). */
+const SQUEEZE_PROBES: readonly number[] = [1e-2, 1e-3, 1e-4, 1e-5];
+
+/** Maximum allowed magnitude across all probes (boundedness check). Tuned
+ *  for `bounded(x) × x^k` patterns where bounded ≤ ~10 (covers sin/cos and
+ *  small composite functions). */
+const SQUEEZE_BOUNDED_THRESHOLD = 100;
+
+/** Maximum allowed magnitude at the finest probe (convergence check). The
+ *  expression must be at most this far from 0 at `ε = 1e-5`. */
+const SQUEEZE_CONVERGENCE_THRESHOLD = 1e-2;
+
+/**
+ * Théorème des gendarmes (squeeze) — heuristique numérique restreinte.
+ *
+ * Cas iconiques Tle / sup :
+ *
+ * - `x · sin(1/x)` à x → 0 : `−|x| ≤ x sin(1/x) ≤ |x|`, donc → 0
+ * - `x² · cos(1/x)` à x → 0 : `−|x²| ≤ x² cos(1/x) ≤ x²`, donc → 0
+ *
+ * Heuristique : si `evaluate(a)` est null (singularité ou indeterminée),
+ * et que `evaluate(a ± ε)` reste borné (≤ 100) à toutes les échelles
+ * probées, ET tend vers 0 (≤ 10⁻²) à la plus fine échelle, on conclut
+ * que la limite est 0 par encadrement.
+ *
+ * Vocabulary adaptive : `'gendarmes'` au lycée, `'squeeze'` au sup.
+ *
+ * Limitations V1.1.d :
+ * - Ne couvre que la limite `0` (pas les cas `f → ℓ ≠ 0` où l'encadrement
+ *   serait `ℓ − ε ≤ g ≤ ℓ + ε`).
+ * - Faux positif théorique sur fonctions à très petite oscillation
+ *   (e.g. `sin(x)/x²` qui est NaN à 0 mais oscille avec magnitude `1/x²` —
+ *   probe à `ε = 1e-5` donne `|sin(1e-5)/1e-10| ≈ 1e5` : rejeté par le
+ *   threshold de boundedness).
+ */
+function trySqueeze(expression: MathNode, ctx: PipelineContext): StrategyResult {
+	if (!isNumber(ctx.approach)) return null;
+	const a = parseFloat(ctx.approach.value);
+	if (!Number.isFinite(a)) return null;
+
+	// Direct-sub doit avoir échoué upstream (sinon on ne tombe pas ici).
+	const valAtA = evaluateAtPoint(expression, ctx.variable, a);
+	if (valAtA !== null && Number.isFinite(valAtA)) return null;
+
+	// Restreindre aux cas pédagogiquement « gendarmes » : on exige la
+	// présence d'une fonction bornée (sin/cos/tan) dont l'argument diverge
+	// au point étudié. Sans ce garde, l'heuristique numérique attrape des
+	// cas qui sont en réalité de la known-limit ou de la factorisation
+	// (e.g. sin(x²)/x à 0, dont la limite vaut 0 mais ne se prouve pas
+	// par encadrement au lycée).
+	if (!hasBoundedFactorWithDivergentArg(expression, ctx.variable, a)) return null;
+
+	// Probe à plusieurs distances décroissantes des deux côtés.
+	const allProbes: number[] = [];
+	for (const eps of SQUEEZE_PROBES) {
+		const left = evaluateAtPoint(expression, ctx.variable, a - eps);
+		const right = evaluateAtPoint(expression, ctx.variable, a + eps);
+		if (left === null || !Number.isFinite(left)) return null;
+		if (right === null || !Number.isFinite(right)) return null;
+		allProbes.push(left, right);
+	}
+
+	// Boundedness : aucune valeur ne diverge.
+	const maxAbs = Math.max(...allProbes.map(Math.abs));
+	if (maxAbs > SQUEEZE_BOUNDED_THRESHOLD) return null;
+
+	// Convergence : à la plus fine échelle (eps = 1e-5), |valeur| < 10⁻².
+	const finestPair = allProbes.slice(-2).map(Math.abs);
+	if (Math.max(...finestPair) > SQUEEZE_CONVERGENCE_THRESHOLD) return null;
+
+	const value = number('0');
+	const vocab = ctx.strategy.squeezeVocab;
+	const theoremName = vocab === 'gendarmes' ? 'des gendarmes' : "d'encadrement (squeeze)";
+
+	const identifyStep = makeStep(ctx, {
+		rule: 'identify-bounds',
+		description: "Encadrement de l'expression par deux fonctions tendant vers 0",
+		before: expression,
+		after: expression,
+		verbosityLevel: 'detailed'
+	});
+
+	const squeezeStep = makeStep(ctx, {
+		rule: 'apply-squeeze',
+		description: `Application du théorème ${theoremName} : la limite vaut 0`,
+		before: expression,
+		after: value,
+		verbosityLevel: 'summarized',
+		bindings: { commonLimit: value },
+		globalAfter: value
+	});
+
+	return {
+		steps: [identifyStep, squeezeStep],
+		value,
+		status: 'exact',
+		indeterminateForm: 'none'
+	};
+}
+
+/**
+ * `true` if `expr` contains at least one bounded-function call (`sin`,
+ * `cos`, `tan`, `abs`) whose argument diverges or oscillates at the
+ * approach point — i.e. `evaluateAtPoint(arg, varName, a)` returns null
+ * or non-finite. This is the pedagogical signal that "encadrement" is
+ * the right approach.
+ */
+function hasBoundedFactorWithDivergentArg(expr: MathNode, varName: string, a: number): boolean {
+	if (expr.type === 'delimiter') return hasBoundedFactorWithDivergentArg(expr.content, varName, a);
+
+	if (expr.type === 'function') {
+		const name = expr.name.toLowerCase();
+		if (name === 'sin' || name === 'cos' || name === 'tan' || name === 'abs') {
+			const arg = expr.args[0];
+			if (arg) {
+				const argVal = evaluateAtPoint(arg, varName, a);
+				if (argVal === null || !Number.isFinite(argVal)) return true;
+			}
+		}
+	}
+
+	if (expr.type === 'multiplication' || expr.type === 'addition' || expr.type === 'subtraction') {
+		return (
+			hasBoundedFactorWithDivergentArg(expr.left, varName, a) ||
+			hasBoundedFactorWithDivergentArg(expr.right, varName, a)
+		);
+	}
+
+	if (expr.type === 'division') {
+		return (
+			hasBoundedFactorWithDivergentArg(expr.numerator, varName, a) ||
+			hasBoundedFactorWithDivergentArg(expr.denominator, varName, a)
+		);
+	}
+
+	if (expr.type === 'superscript') {
+		return hasBoundedFactorWithDivergentArg(expr.base, varName, a);
+	}
+
+	if (expr.type === 'opposite' || expr.type === 'positive') {
+		return hasBoundedFactorWithDivergentArg(expr.operand, varName, a);
+	}
+
+	return false;
 }
 
 // =============================================================================

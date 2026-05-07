@@ -1055,3 +1055,85 @@ Status: exact, Value: 0.25
 Status: exact, Value: 0.25
 "
 `;
+
+exports[`pedagogical-limits demo cases > category: squeeze-gendarmes > renders x · sin(1/x) à x=0 (cas iconique du théorème des gendarmes) 1`] = `
+"
+###### x · sin(1/x) à x=0 (cas iconique du théorème des gendarmes) ######
+
+Expression: x*sin(1/x), x → 0 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [identify-bounds] Encadrement de l'expression
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = x \\times \\sin\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+- [apply-squeeze] Application du théorème des gendarmes
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
+Status: exact, Value: 0
+
+========== LYCEE (detailed) ==========
+- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+  · On commence par observer la forme de l'expression pour choisir une technique adaptée.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = x \\times \\sin\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+- [identify-bounds] Encadrement de l'expression
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = x \\times \\sin\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+- [apply-squeeze] Application du théorème des gendarmes
+  · Si f ≤ g ≤ h et f, h tendent vers la même limite ℓ, alors g aussi.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
+Status: exact, Value: 0
+
+========== SUPERIEUR (summarized) ==========
+- [identify-bounds] Encadrement
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = x \\times \\sin\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+- [apply-squeeze] Théorème d'encadrement (squeeze)
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
+Status: exact, Value: 0
+
+========== SUPERIEUR (detailed) ==========
+- [identify-bounds] Encadrement
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = x \\times \\sin\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+- [apply-squeeze] Théorème d'encadrement (squeeze)
+  · Théorème d'encadrement : si f ≤ g ≤ h et lim f = lim h = ℓ, alors lim g = ℓ.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} x \\times \\sin\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
+Status: exact, Value: 0
+"
+`;
+
+exports[`pedagogical-limits demo cases > category: squeeze-gendarmes > renders x² · cos(1/x) à x=0 1`] = `
+"
+###### x² · cos(1/x) à x=0 ######
+
+Expression: (x^2)*cos(1/x), x → 0 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [identify-bounds] Encadrement de l'expression
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+- [apply-squeeze] Application du théorème des gendarmes
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
+Status: exact, Value: 0
+
+========== LYCEE (detailed) ==========
+- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+  · On commence par observer la forme de l'expression pour choisir une technique adaptée.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+- [identify-bounds] Encadrement de l'expression
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+- [apply-squeeze] Application du théorème des gendarmes
+  · Si f ≤ g ≤ h et f, h tendent vers la même limite ℓ, alors g aussi.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
+Status: exact, Value: 0
+
+========== SUPERIEUR (summarized) ==========
+- [identify-bounds] Encadrement
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+- [apply-squeeze] Théorème d'encadrement (squeeze)
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
+Status: exact, Value: 0
+
+========== SUPERIEUR (detailed) ==========
+- [identify-bounds] Encadrement
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right) \\end{aligned}
+- [apply-squeeze] Théorème d'encadrement (squeeze)
+  · Théorème d'encadrement : si f ≤ g ≤ h et lim f = lim h = ℓ, alors lim g = ℓ.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\left( x^2 \\right) \\times \\cos\\left( \\dfrac{1}{x} \\right)} \\\\ & = 0 \\end{aligned}
+Status: exact, Value: 0
+"
+`;

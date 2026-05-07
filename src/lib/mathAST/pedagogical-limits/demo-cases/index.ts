@@ -16,6 +16,7 @@ import { KNOWN_LIMITS_CASES } from './known-limits';
 import { LHOPITAL_SUPERIEUR } from './lhopital-superieur';
 import { ONE_SIDED_ASYMPTOTES } from './one-sided-asymptotes';
 import { RATIONALISATION } from './rationalisation';
+import { SQUEEZE_GENDARMES } from './squeeze-gendarmes';
 
 export const ALL_CATEGORIES: readonly DemoCategory[] = [
 	DIRECT_SUBSTITUTION,
@@ -24,6 +25,7 @@ export const ALL_CATEGORIES: readonly DemoCategory[] = [
 	RATIONALISATION,
 	INFINITY_ANALYSIS,
 	ONE_SIDED_ASYMPTOTES,
+	SQUEEZE_GENDARMES,
 	LHOPITAL_SUPERIEUR
 ];
 
@@ -34,5 +36,6 @@ export {
 	KNOWN_LIMITS_CASES,
 	LHOPITAL_SUPERIEUR,
 	ONE_SIDED_ASYMPTOTES,
-	RATIONALISATION
+	RATIONALISATION,
+	SQUEEZE_GENDARMES
 };
