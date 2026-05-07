@@ -335,6 +335,61 @@ describe('pipeline — rationalisation', () => {
 });
 
 // =============================================================================
+// Squeeze / théorème des gendarmes
+// =============================================================================
+
+describe('pipeline — squeeze / gendarmes', () => {
+	it('x · sin(1/x) at x=0 → 0', () => {
+		const expr = multiply(
+			variable('x'),
+			{ type: 'function', name: 'sin', args: [divide(number('1'), variable('x'))] },
+			'implicit'
+		);
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'lycee'
+		});
+
+		expect(result.status).toBe('exact');
+		expect(result.value).toMatchObject({ type: 'number', value: '0' });
+		const rules = flatRules(result.steps);
+		expect(rules).toContain('identify-bounds');
+		expect(rules).toContain('apply-squeeze');
+	});
+
+	it('x² · cos(1/x) at x=0 → 0', () => {
+		const expr = multiply(
+			power(variable('x'), number('2')),
+			{ type: 'function', name: 'cos', args: [divide(number('1'), variable('x'))] },
+			'implicit'
+		);
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'superieur'
+		});
+
+		expect(result.status).toBe('exact');
+		expect(result.value).toMatchObject({ type: 'number', value: '0' });
+	});
+
+	it('declines on diverging expressions (1/x stays one-sided)', () => {
+		// Already covered by the one-sided suite, but anchor: squeeze NEVER
+		// fires when there's a divergence (one-sided handles it first).
+		const expr = divide(number('1'), variable('x'));
+		const result = generatePedagogicalLimitSteps(expr, {
+			variable: 'x',
+			approach: number('0'),
+			schoolLevel: 'lycee'
+		});
+		const rules = flatRules(result.steps);
+		expect(rules).not.toContain('apply-squeeze');
+		expect(rules).toContain('compare-one-sided');
+	});
+});
+
+// =============================================================================
 // L'Hôpital (sup uniquement)
 // =============================================================================
 

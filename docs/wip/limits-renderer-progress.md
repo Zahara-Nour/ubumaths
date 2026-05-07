@@ -258,7 +258,7 @@ pnpm tsx scripts/pedagogical-limits-demo.ts --latex factorisation          # raw
 - ✅ V1.1.a — `rationalization` livrée.
 - ✅ V1.1.b — `one-sided` / asymptotes verticales livrée.
 - ✅ V1.1.c — `lhopital` (sup) livrée.
-- Implémenter `squeeze` / gendarmes (heuristique restreinte : `f(x) borné × g(x) → 0`).
+- ✅ V1.1.d — `squeeze` / gendarmes livrée.
 - ✅ Phase 4 : démos + CLI livrée post-V1.
 - Honorer `verbosity` au niveau pipeline (filtrer les steps émis).
 
@@ -354,6 +354,88 @@ pnpm tsx scripts/pedagogical-limits-demo.ts --latex factorisation          # raw
 - Pas de protection contre `f' = 0 AND g' = 0` au point ; une 2e itération via `recurse` est tentée mais peut échouer si `differentiate` produit des nœuds inattendus.
 
 **Tests cumulés post-V1.1.c** : 151 verts (144 + 4 pipeline + 3 demo snapshots). 0 régression.
+
+### ✅ V1.1.d — Stratégie squeeze / théorème des gendarmes
+
+**Fichiers modifiés** :
+
+- `pipeline.ts` : ajout `trySqueeze` (~80 LOC) + helper `hasBoundedFactorWithDivergentArg`. Constantes `SQUEEZE_PROBES`, `SQUEEZE_BOUNDED_THRESHOLD = 100`, `SQUEEZE_CONVERGENCE_THRESHOLD = 1e−2`. Strategy 8 dans le main dispatcher après one-sided.
+- `__tests__/pipeline.test.ts` : +3 tests (x sin(1/x), x² cos(1/x), décline sur 1/x).
+- `demo-cases/squeeze-gendarmes.ts` : 2 cas.
+- `__tests__/pedagogical-limits-demo.test.ts` : +2 snapshots.
+
+**Algorithme heuristique** :
+
+1. Si `evaluate(a)` est null (singularité) → continue ; sinon décline.
+2. **Pédagogie-guard** : exige la présence d'au moins une fonction bornée (`sin`, `cos`, `tan`, `abs`) dans l'expression dont l'argument diverge ou oscille au point étudié (= `evaluate(arg, var, a)` retourne null ou non-finite). Sans ce garde, l'heuristique numérique attraperait `sin(x²)/x` à 0 (lim = 0) qui est en réalité une known-limit / factorisation.
+3. Probe `evaluateAtPoint(expr, var, a±ε)` à `ε ∈ [1e−2, 1e−3, 1e−4, 1e−5]` (8 valeurs).
+4. Boundedness : `max|val| ≤ 100`.
+5. Convergence : à `ε = 1e−5`, `max|val| ≤ 10⁻²`.
+6. Si tous les checks OK → `identify-bounds` + `apply-squeeze` → `value = 0`, `status = exact`.
+
+**Vocab adaptive** :
+
+- lycée : « théorème des gendarmes »
+- sup : « théorème d'encadrement (squeeze) »
+
+**Cas couverts** :
+
+- `x · sin(1/x)` à 0 → 0 (sin(1/0) = NaN ⇒ argument divergent ⇒ accepted)
+- `x² · cos(1/x)` à 0 → 0 (idem)
+
+**Cas rejetés (bonne précision pédagogique)** :
+
+- `sin(x²)/x` à 0 (sin(0)=0 défini ⇒ pas d'argument divergent ⇒ rejected → throw lycée)
+- `1/x` à 0 (one-sided l'attrape avant)
+- `x` à 0 (direct-sub l'attrape avant)
+
+**Limitations V1.1.d** :
+
+- Ne couvre que les limites valant 0 (pas les cas `f → ℓ ≠ 0` où l'encadrement serait `ℓ − ε ≤ g ≤ ℓ + ε`).
+- Argument-divergence guard restreint à `sin/cos/tan/abs` ; ne reconnaît pas d'autres fonctions bornées custom.
+
+**Tests cumulés post-V1.1.d** : 156 verts (151 + 3 pipeline + 2 demo snapshots). 0 régression.
+
+---
+
+## Récap V1.1 complet
+
+**8 stratégies pédagogiques au total** dans `pedagogical-limits/pipeline.ts` :
+
+1. direct-substitution (V1)
+2. apply-known-limit (V1)
+3. factorisation 0/0 avec sub-steps (V1)
+4. rationalisation (V1.1.a)
+5. infinity-analysis (V1)
+6. lhopital (V1.1.c, sup uniquement)
+7. one-sided / asymptotes verticales (V1.1.b)
+8. squeeze / gendarmes (V1.1.d)
+
+**Pipeline order** : direct → known → factorisation → rationalisation → infinity-analysis → lhopital (sup) → one-sided → squeeze. Cascade dans `recurse` pour les résiduels (factorisation après rationalisation, lhopital après lhopital itéré).
+
+**Démos catégorisées** : 8 catégories, 22 cas démo, 22 snapshots stables.
+
+**Couverture pédagogique Tle spé / sup** :
+
+| Programme Tle spé                    | Couvert                      |
+| ------------------------------------ | ---------------------------- |
+| Limite par substitution directe      | ✅                           |
+| Limites de référence (sin x/x, etc.) | ✅ via known-limit           |
+| Forme indéterminée 0/0 polynomiale   | ✅ via factorisation         |
+| Forme indéterminée 0/0 avec sqrt     | ✅ via rationalisation       |
+| Limites à l'infini (ratios poly)     | ✅ via infinity-analysis     |
+| Asymptotes verticales (1/x, etc.)    | ✅ via one-sided             |
+| Théorème des gendarmes               | ✅ via squeeze (heuristique) |
+| Limites de suites par récurrence     | ❌ V1.2                      |
+
+| Programme sup CPGE        | Couvert |
+| ------------------------- | ------- |
+| Tout le programme Tle     | ✅      |
+| L'Hôpital                 | ✅      |
+| Vocab « squeeze theorem » | ✅      |
+| Composition profonde      | ❌ V1.2 |
+| Critère de Cauchy         | ❌ V1.2 |
+| Équivalents asymptotiques | ❌ V1.2 |
 
 ## Tests cumulés
 
