@@ -38,7 +38,8 @@
 import type { MathNode } from '../types';
 import type { SchoolLevel } from '../common/step-renderer-base';
 import type { Verbosity } from '../common/verbosity';
-import type { Domain, EnhancedDomainStep, DomainRule } from '../domain';
+import type { Domain, EnhancedDomainStep } from '../domain';
+import { V1_MVP_RULES as V1_MVP_RULES_SHARED } from '../domain/mvp-rules';
 
 // =============================================================================
 // School Level
@@ -54,7 +55,7 @@ import type { Domain, EnhancedDomainStep, DomainRule } from '../domain';
 export type PedagogicalDomainSchoolLevel = Exclude<SchoolLevel, 'primaire' | 'college'>;
 
 // =============================================================================
-// V1 MVP Rule Set
+// V1 MVP Rule Set (re-export from shared `domain/mvp-rules.ts`)
 // =============================================================================
 
 /**
@@ -62,20 +63,10 @@ export type PedagogicalDomainSchoolLevel = Exclude<SchoolLevel, 'primaire' | 'co
  * to decide whether to throw `PedagogicalDomainNotImplemented` and by the
  * renderer to look up titles/explanations.
  *
- * `intersection` is included because composite cases (e.g. `√x / (x-1)`)
- * combine multiple constraint rules into a final intersection step.
+ * Re-exported from `domain/mvp-rules.ts` (single source of truth, kept in
+ * `domain/` to avoid the circular dep `domain/` → `pedagogical-domain/`).
  */
-export const V1_MVP_RULES: ReadonlySet<DomainRule> = new Set<DomainRule>([
-	'sqrt_constraint',
-	'ln_constraint',
-	'log_constraint',
-	'division_constraint',
-	'arcsin_constraint',
-	'arccos_constraint',
-	'intersection',
-	'universal',
-	'empty'
-]);
+export const V1_MVP_RULES = V1_MVP_RULES_SHARED;
 
 // =============================================================================
 // Generation Strategy (per school level)

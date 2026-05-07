@@ -55,25 +55,20 @@ describe('generatePedagogicalDomainSteps — universal cases', () => {
 	});
 });
 
-describe('generatePedagogicalDomainSteps — out of MVP scope', () => {
-	it('throws on tan(x) (V1.1 scope)', () => {
-		// tan(x) returns a periodic_exclusion domain; the recorder emits no step
-		// for tan_constraint in V1, so we synthesize universal — but tan is
-		// constrained, so universal is wrong. Detection: the dispatcher does
-		// not currently throw for tan, because no out-of-MVP rule lands in the
-		// trace (V1 instrumentation simply skips tan). The exhaustivity check
-		// is left to V1.1 (where tan_constraint will be a recordable rule
-		// against which we can throw if not in scope).
+describe('generatePedagogicalDomainSteps — edge cases (V1 limitations)', () => {
+	it('treats tan(x) as universal (V1 limitation, fixed in V1.1)', () => {
+		// `tan(x)` returns a periodic_exclusion domain in `compute.ts`; the
+		// recorder emits no step for `tan_constraint` in V1, so the dispatcher
+		// does not throw (no out-of-MVP rule in the trace) and synthesizes a
+		// `universal` step — incorrect for tan but consistent with the V1
+		// contract « throw iff a non-MVP rule appears in the trace ».
 		//
-		// For V1, the contract is: « si une rule out-of-MVP apparaît dans la
-		// trace, on throw ». If no out-of-MVP rule is in the trace (because
-		// the recorder is silent for tan), we don't throw — fall back to
-		// universal. This is the documented V1 limitation.
+		// V1.1 will instrument `tan_constraint` directly and throw cleanly
+		// (see `docs/wip/domain-renderer-progress.md` Limitations connues V1).
 		const expr = parseLatex('\\tan(x)');
 		const result = generatePedagogicalDomainSteps(expr, { schoolLevel: 'lycee' });
-		// V1 limitation: tan(x) is silently treated as universal. V1.1 will
-		// instrument tan_constraint and throw cleanly.
 		expect(result.steps).toHaveLength(1);
+		expect(result.steps[0].rule).toBe('universal');
 	});
 });
 
