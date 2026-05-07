@@ -78,6 +78,14 @@ export interface LoadRulesOptions {
 	 * — fires only on right-opposite (decision E-1).
 	 */
 	readonly needsSignsStrict?: boolean;
+
+	/**
+	 * Track B — sub-level for `'college'`: discriminates between
+	 * `toCommonDenominator` (LCM, default `'late'`) and
+	 * `toCommonDenominatorMultiply` (direct product, `'early'`). No effect
+	 * when `schoolLevel !== 'college'`.
+	 */
+	readonly collegeSubLevel?: 'early' | 'late';
 }
 
 /**
@@ -107,9 +115,25 @@ export function loadPedagogicalRules(
 		// arithmetic contexts)
 	];
 
-	const filtered = allFamilies.filter((rule) =>
-		rule.applicableLevels.includes(options.schoolLevel)
-	);
+	const filtered = allFamilies.filter((rule) => {
+		if (!rule.applicableLevels.includes(options.schoolLevel)) return false;
+
+		// Track B — at collège, discriminate between LCM and direct multiply
+		// based on collegeSubLevel (default 'late' → LCM, 'early' → multiply).
+		// At other school levels, applicableLevels already enforces uniqueness.
+		if (options.schoolLevel === 'college') {
+			if (rule.name === 'to-common-denominator') {
+				// LCM rule: only at college 'late' (default).
+				return options.collegeSubLevel !== 'early';
+			}
+			if (rule.name === 'to-common-denominator-multiply') {
+				// Direct-multiply rule: only at college 'early'.
+				return options.collegeSubLevel === 'early';
+			}
+		}
+
+		return true;
+	});
 
 	const terminals: PedagogicalArithmeticRule[] = [];
 	// Phase 4 — when `target.structure === 'reduced-fraction'` or strict

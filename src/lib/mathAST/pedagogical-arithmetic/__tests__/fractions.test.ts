@@ -194,8 +194,8 @@ describe('fractions rules', () => {
 	});
 
 	describe('FRACTION_RULES export', () => {
-		it('contains all 5 rules', () => {
-			expect(FRACTION_RULES).toHaveLength(5);
+		it('contains all 6 rules (incl. toCommonDenominatorMultiply — Track B)', () => {
+			expect(FRACTION_RULES).toHaveLength(6);
 		});
 
 		it('addSameDenominator and multiplyFractions have priority 110', () => {

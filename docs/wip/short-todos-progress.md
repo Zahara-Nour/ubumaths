@@ -265,9 +265,74 @@ hypothétique snapshot pré-E.
 
 ---
 
-## Track B, D — En attente
+## Track B — Variantes fractions early-college ✅ Livré
 
-Statut : non démarrés.
+**Date** : 2026-05-07
+**Effort réel** : ~1h (estimation prompt révisée : 3-5h — plus rapide
+grâce à : la sous-tâche 2 du prompt étant non-applicable
+[`toCommonDenominator.applicableLevels` excluait déjà `'primaire'`], et
+décisions arbitrées en amont)
+**Tests ajoutés** : 18 (17 nouveaux + 1 update `FRACTION_RULES.length`)
+**Régressions** : 0
+
+### Décision arbitrée (pré-implémentation)
+
+- **B-1** : option orthogonale `collegeSubLevel?: 'early' | 'late'`,
+  PAS d'extension de `SchoolLevel`. Default `'late'` (compat — comportement
+  actuel inchangé).
+
+### Découverte importante
+
+La sous-tâche 2 du prompt (« retirer `'primaire'` de `toCommonDenominator.applicableLevels` »)
+était **non-applicable** : le code source à `fractions.ts:198` excluait
+déjà primaire (`['college', 'lycee', 'superieur']`). Track B se réduit
+donc à : ajouter la nouvelle rule + plumbing.
+
+### Fichiers modifiés
+
+| Fichier                                                                 | Changement                                                                                                                                                                                        |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/mathAST/pedagogical-arithmetic/pedagogical-rules/fractions.ts` | Ajout rule `toCommonDenominatorMultiply` (priority 130, `['primaire', 'college']`). Ajout dans `FRACTION_RULES`. Commentaire `toCommonDenominator` mis à jour pour mentionner la complémentarité. |
+| `src/lib/mathAST/pedagogical-arithmetic/pedagogical-rules/index.ts`     | Ajout `collegeSubLevel?` à `LoadRulesOptions`. Filtre étendu : à collège, discrimination LCM/multiply via `collegeSubLevel`.                                                                      |
+| `src/lib/mathAST/pedagogical-arithmetic/pipeline.ts`                    | Propagation `collegeSubLevel` au loader.                                                                                                                                                          |
+| `src/lib/mathAST/pedagogical-arithmetic/types.ts`                       | `collegeSubLevel?: 'early' \| 'late'` dans `PedagogicalArithmeticOptions`.                                                                                                                        |
+| `src/lib/mathAST/pedagogical-arithmetic/__tests__/fractions.test.ts`    | Update : `FRACTION_RULES.length` 5 → 6 (intentionnel).                                                                                                                                            |
+
+### Tests ajoutés
+
+| Fichier                             | Tests                                                                                                                             |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `__tests__/fractions-early.test.ts` | 18 (cross-product, signed numerator Q4, same-denom no-fire, metadata, loader gating tous niveaux × collegeSubLevel, e2e pipeline) |
+
+### Code review
+
+`code-reviewer` (Opus). Verdict : « Ready to merge with one documentation
+fix ». 2 fixes appliqués post-review :
+
+1. **Important** — Inconsistance `applicableLevels: ['primaire', 'college']`
+   vs commentaire de `toCommonDenominator` (« primaire pas au programme »).
+   Résolution : commentaire de `toCommonDenominator` mis à jour pour
+   reconnaître la complémentarité, et commentaire ajouté sur `toCommonDenominatorMultiply`
+   expliquant l'inclusion intentionnelle de primaire (méthode acceptable
+   sans PGCD).
+2. **Minor** — Test gap signe. Ajouté : test `(-1)/3 + 1/6 → -6/18 + 3/18`
+   vérifiant la préservation du signe via cross-product.
+
+### Quality checks
+
+- ESLint : clean
+- Tests Track B : 18/18 verts
+- Tests régression : `pedagogical-arithmetic` 353/353 (0 régression)
+
+### Commit
+
+À créer.
+
+---
+
+## Track D — En attente
+
+Statut : non démarré.
 
 ---
 
@@ -281,4 +346,5 @@ Statut : non démarrés.
   - `4629911e1` — Track A
   - `bff974c95` — Track C
   - `f7c58fe6d` — Track E
-  - Track F — à venir
+  - `3ddaddd12` — Track F
+  - Track B — à venir
