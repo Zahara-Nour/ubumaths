@@ -773,3 +773,173 @@ describe("generateCorrection — kind: 'arithmetic-from-blank'", () => {
 		expect(steps!.every((s) => s.schoolLevel === 'lycee')).toBe(true);
 	});
 });
+
+// =============================================================================
+// limit — pedagogical step trace for limit evaluation (Tle spé + sup)
+// =============================================================================
+
+describe("generateCorrection — kind: 'limit'", () => {
+	it('produces _renderedSteps for direct substitution', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'limit',
+					expression: 'x^2 + 2*x',
+					approach: '3'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+		expect(result.correction?._renderedSteps?.length).toBeGreaterThan(0);
+
+		const rules = (result.correction?._renderedSteps ?? []).map((s) => s.rule);
+		expect(rules).toContain('apply-direct-substitution');
+	});
+
+	it('produces the factorisation cluster for (x²−4)/(x−2) at x=2', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'limit',
+					expression: '(x^2-4)/(x-2)',
+					approach: '2'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const top = result.correction?._renderedSteps ?? [];
+		const rules = top.map((s) => s.rule);
+		expect(rules).toContain('simplify-common-factor');
+		const parent = top.find((s) => s.rule === 'simplify-common-factor');
+		expect(parent?.subSteps?.map((s) => s.rule)).toEqual([
+			'factor-numerator',
+			'factor-denominator'
+		]);
+	});
+
+	it('handles infinity-analysis with \\infty approach spelling', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'limit',
+					expression: '(3*x^2-x)/(x^2+1)',
+					approach: '\\infty'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const rules = (result.correction?._renderedSteps ?? []).map((s) => s.rule);
+		expect(rules).toContain('identify-dominant-term');
+		expect(rules).toContain('conclude');
+	});
+
+	it('substitutes template {{vars}} in the expression and the approach', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			resolvedVariables: [
+				{ name: 'a', value: '4' },
+				{ name: 'p', value: '2' }
+			],
+			correction: {
+				generatedSteps: {
+					kind: 'limit',
+					expression: '(x^2-{{a}})/(x-{{p}})',
+					approach: '{{p}}'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const rules = (result.correction?._renderedSteps ?? []).map((s) => s.rule);
+		// After resolution: (x²−4)/(x−2) at x=2 → factorisation cluster.
+		expect(rules).toContain('simplify-common-factor');
+	});
+
+	it('bumps a CM2-grade fixture to lycée (limits not in primaire syllabus)', () => {
+		const instance = makeInstance({
+			grades: ['CM2'],
+			correction: {
+				generatedSteps: {
+					kind: 'limit',
+					expression: 'x + 1',
+					approach: '2'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const steps = result.correction?._renderedSteps ?? [];
+		expect(steps.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+	});
+
+	it('returns instance unchanged when expression is not parsable', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'limit',
+					expression: '!!!invalid$$$(',
+					approach: '0'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it("falls back silently when no strategy applies (e.g. L'Hôpital required at lycée)", () => {
+		// `sin(x^2)/x` at x → 0 : not a known-limit, not a polynomial division,
+		// solvable only via L'Hôpital — locked at lycée.
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'limit',
+					expression: 'sin(x^2)/x',
+					approach: '0'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it('honours an explicit direction = right', () => {
+		const instance = makeInstance({
+			grades: ['T_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'limit',
+					expression: 'x + 1',
+					approach: '0',
+					direction: 'right'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+		// Direction is propagated to the LaTeX subscript on the rendered step.
+		const first = result.correction?._renderedSteps?.[0];
+		expect(first?.expressionLatex).toContain('x \\to 0^+');
+	});
+
+	it('honours an explicit schoolLevel override', () => {
+		const instance = makeInstance({
+			grades: ['CM2'],
+			correction: {
+				generatedSteps: {
+					kind: 'limit',
+					expression: 'x + 1',
+					approach: '2',
+					options: { schoolLevel: 'superieur' }
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const steps = result.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.every((s) => s.schoolLevel === 'superieur')).toBe(true);
+	});
+});

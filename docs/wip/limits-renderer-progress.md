@@ -169,9 +169,35 @@ Conclusions :
 
 Cible : `demo-cases/` (7 catégories, ~20 cas) + `scripts/pedagogical-limits-demo.ts`.
 
-### ⏳ Phase 5 — Glue Mode B `kind: 'limit'` (à venir)
+### ⏸️ Phase 4 — Démos catégorisées + script CLI (REPORTÉ V1.1)
 
-Cible : étendre `correction-generator.ts` + `template-schema.ts` + 2 fixtures + page debug (17 → 19 cards).
+Skipée pour V1 final (livraison prioritaire). Le `dispatchPedagogicalLimit` permet déjà des appels manuels. À reprendre en V1.1 avec les stratégies non-implémentées (rationalization, one-sided, squeeze, lhopital).
+
+### ✅ Phase 5 — Glue Mode B `kind: 'limit'`
+
+**Fichiers modifiés** :
+
+- `src/lib/questions/types.ts` — branche `'limit'` dans `GeneratedSteps` (10 → 11 kinds).
+- `src/lib/questions/template-schema.ts` — schemas Zod lax + strict pour `kind: 'limit'`.
+- `src/lib/questions/generator/correction-generator.ts` — case `'limit'` dans le switch + fonction `renderLimit` (silent fallback sur `PedagogicalLimitNotImplemented`, bump primaire/college → lycée, propage `direction` + `verbosity`).
+- `src/lib/questions/__tests__/fixtures/generated-steps-demo.ts` — 2 nouvelles fixtures :
+  - `limitFactorisationDemo` : `(x²−4)/(x−2)` à x=2 (factorisation)
+  - `limitInfinityDemo` : `(3x²−x)/(x²+1)` à x→+∞ (infinity-analysis)
+- `src/lib/questions/__tests__/generated-steps-demo.test.ts` — 2 snapshots (factorisation cluster + infinity-analysis).
+- `src/routes/(protected)/dashboard/admin/debug/correction-mode-b/+page.svelte` — 2 imports + 2 generateInstance + 4 cards visuelles (correct/incorrect × 2 fixtures), 17 → 19 fixtures total.
+
+**Tests** :
+
+- `correction-generator.test.ts` : +9 tests dédiés `limit` (43 → 52). Couverture : direct, factorisation, infinity, template `{{vars}}` substitution, bump primaire→lycée, parse error fallback, `sin(x²)/x` → throw NotImplemented (lycée pas L'Hôpital), direction='right' propagé, override schoolLevel.
+- `generated-steps-demo.test.ts` : +2 snapshots (factorisation + infinity).
+
+**Décisions Phase 5** :
+
+- Resolve `{{vars}}` via `resolveExpression` AVANT d'envoyer à `dispatchPedagogicalLimit` — cohérent avec les autres kinds.
+- Refus L'Hôpital lycée géré au niveau `pedagogical-limits/types.ts` `STRATEGIES_LIMITS.lycee.enableLhopital === false` ; le pipeline throw `PedagogicalLimitNotImplemented` quand aucune stratégie ne s'applique → silent fallback Mode A.
+- `\\infty`, `+\\infty`, `-\\infty`, `oo`, `+oo`, `-oo` reconnus côté `dispatchPedagogicalLimit`.
+
+**Régression** : 0 sur 132 tests pertinents (`correction-generator` 52, `generated-steps-demo` 22, `template-schema` 58). 11 échecs pré-existants non liés à ce tunnel (cf. doc `arithmetic-from-blank`).
 
 ### ⏳ Phase 6 — Quality + doc final (à venir)
 
@@ -179,11 +205,12 @@ Cible : ESLint, `pnpm check:incremental`, svelte-autofixer, tests régression, M
 
 ## Tests cumulés
 
-| Phase | Tests ajoutés                                  | Cumul   |
-| ----- | ---------------------------------------------- | ------- |
-| 1     | +19 (types)                                    | 19      |
-| 2     | +32 helpers, +18 pipeline, +17 dispatch (= 67) | 86      |
-| 3     | +18 renderer                                   | **104** |
+| Phase | Tests ajoutés                                      | Cumul   |
+| ----- | -------------------------------------------------- | ------- |
+| 1     | +19 (types)                                        | 19      |
+| 2     | +32 helpers, +18 pipeline, +17 dispatch (= 67)     | 86      |
+| 3     | +18 renderer                                       | 104     |
+| 5     | +9 correction-generator (limit), +2 demo snapshots | **115** |
 
 ## Documents produits
 

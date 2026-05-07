@@ -19,6 +19,8 @@
 		differentiatePolynomialDemo,
 		integrateDefiniteDemo,
 		integrateIndefiniteDemo,
+		limitFactorisationDemo,
+		limitInfinityDemo,
 		linearEquationDemo,
 		linearInequalityFlipDemo,
 		linearInequalityTwoSidesDemo,
@@ -56,6 +58,8 @@
 	const simplifyDistributionResult = generateInstance(simplifyDistributionDemo, 1);
 	const simplifyTrigResult = generateInstance(simplifyTrigDemo, 1);
 	const arithmeticFromBlankResult = generateInstance(arithmeticFromBlankDemo, 1);
+	const limitFactorisationResult = generateInstance(limitFactorisationDemo, 1);
+	const limitInfinityResult = generateInstance(limitInfinityDemo, 1);
 
 	function buildAnswerResult(
 		result: ReturnType<typeof generateInstance>,
@@ -111,6 +115,10 @@
 	const simplifyTrigIncorrect = buildAnswerResult(simplifyTrigResult, 1, false);
 	const arithmeticFromBlankCorrect = buildAnswerResult(arithmeticFromBlankResult, 0, true);
 	const arithmeticFromBlankIncorrect = buildAnswerResult(arithmeticFromBlankResult, 1, false);
+	const limitFactorisationCorrect = buildAnswerResult(limitFactorisationResult, 0, true);
+	const limitFactorisationIncorrect = buildAnswerResult(limitFactorisationResult, 1, false);
+	const limitInfinityCorrect = buildAnswerResult(limitInfinityResult, 0, true);
+	const limitInfinityIncorrect = buildAnswerResult(limitInfinityResult, 1, false);
 
 	// ============================================================================
 	// Raw step inspector
@@ -862,6 +870,34 @@
 						questionNumber={32}
 						size="md"
 					/>
+				</div>
+			{/if}
+			{#if limitFactorisationCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — limite factorisation — correcte</h3>
+					<CorrectionCard answerResult={limitFactorisationCorrect} questionNumber={33} size="md" />
+				</div>
+			{/if}
+			{#if limitFactorisationIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — limite factorisation — incorrecte</h3>
+					<CorrectionCard
+						answerResult={limitFactorisationIncorrect}
+						questionNumber={34}
+						size="md"
+					/>
+				</div>
+			{/if}
+			{#if limitInfinityCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — limite à l'infini — correcte</h3>
+					<CorrectionCard answerResult={limitInfinityCorrect} questionNumber={35} size="md" />
+				</div>
+			{/if}
+			{#if limitInfinityIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — limite à l'infini — incorrecte</h3>
+					<CorrectionCard answerResult={limitInfinityIncorrect} questionNumber={36} size="md" />
 				</div>
 			{/if}
 		</div>

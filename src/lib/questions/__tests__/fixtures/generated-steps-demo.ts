@@ -665,3 +665,72 @@ export const arithmeticFromBlankDemo: QuestionTemplate = {
 	domain: 'Calcul mental',
 	level: 1
 };
+
+/**
+ * Demo question : limite (x²−4)/(x−2) quand x → 2 (Tle spé maths).
+ *
+ * Cas iconique de Tle spé : forme indéterminée 0/0 → factorisation par
+ * (x − 2) → simplification → substitution directe → 4. Le pipeline
+ * `pedagogical-limits` émet `detect-indeterminate-form` + parent
+ * `simplify-common-factor` avec sous-étapes `factor-numerator` /
+ * `factor-denominator` + `apply-direct-substitution` + `conclude`.
+ */
+export const limitFactorisationDemo: QuestionTemplate = {
+	id: 'demo-limit-factorisation-lycee',
+	title: 'Limite par factorisation (Tle spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown('$\\displaystyle\\lim_{x \\to 2} \\dfrac{x^2 - 4}{x - 2} = ?$'),
+			variables: [{ name: 'a', expression: '4' }],
+			blanks: [{ expectedAnswer: '4' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Bravo !') },
+				generatedSteps: {
+					kind: 'limit',
+					expression: '(x^2-{{a}})/(x-2)',
+					approach: '2',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['T_SPE'],
+	theme: 'Analyse',
+	domain: 'Limites',
+	level: 1
+};
+
+/**
+ * Demo question : limite (3x²−x)/(x²+1) quand x → +∞ (Tle spé maths).
+ *
+ * Étude du comportement à l'infini : ratio des coefficients dominants
+ * (numérateur et dénominateur de même degré 2) → 3/1 = 3.
+ */
+export const limitInfinityDemo: QuestionTemplate = {
+	id: 'demo-limit-infinity-lycee',
+	title: "Limite à l'infini par dominance (Tle spé)",
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'$\\displaystyle\\lim_{x \\to +\\infty} \\dfrac{3x^2 - x}{x^2 + 1} = ?$'
+			),
+			variables: [{ name: 'k', expression: '3' }],
+			blanks: [{ expectedAnswer: '3' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Bravo !') },
+				generatedSteps: {
+					kind: 'limit',
+					expression: '({{k}}*x^2-x)/(x^2+1)',
+					approach: '\\infty',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['T_SPE'],
+	theme: 'Analyse',
+	domain: 'Limites',
+	level: 1
+};
