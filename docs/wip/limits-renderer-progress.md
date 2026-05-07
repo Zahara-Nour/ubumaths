@@ -255,12 +255,40 @@ pnpm tsx scripts/pedagogical-limits-demo.ts --latex factorisation          # raw
 
 **Pistes V1.1+** :
 
-- Implémenter `rationalization` (réutiliser `tryRationalization` de `limits/algebraic.ts` ou ré-implémenter pédagogiquement).
+- ✅ V1.1.a — `rationalization` livrée (commit ci-dessous).
 - Implémenter `one-sided` pour les asymptotes verticales (`1/x` en `0⁺`/`0⁻`, `ln x` en `0⁺`).
 - Implémenter `squeeze` / gendarmes (heuristique restreinte : `f(x) borné × g(x) → 0`).
 - Implémenter `lhopital` (sup uniquement) — réutiliser `limits/lhopital.ts`.
-- Phase 4 : démos catégorisées (`scripts/pedagogical-limits-demo.ts` CLI), snapshots stables.
+- ✅ Phase 4 : démos + CLI livrée post-V1.
 - Honorer `verbosity` au niveau pipeline (filtrer les steps émis).
+
+### ✅ V1.1.a — Stratégie rationalisation
+
+**Fichiers modifiés** :
+
+- `helpers.ts` : `isSqrt`, `getSqrtArg`, `findConjugate` (4 shapes : `√a−b`, `b−√a`, `√a+b`, `b+√a`), `squareIfNeeded` (eager numeric square).
+- `pipeline.ts` : ajout `tryRationalisation` (~80 LOC) + élargissement `recurse` (depth-cap à 3 + cascade `tryFactorisation` sur 0/0 résiduel).
+- `__tests__/pipeline.test.ts` : +6 tests (rationalisation + cas additif).
+- `__tests__/helpers.test.ts` : +9 tests (conjugate / sqrt helpers).
+- `demo-cases/rationalisation.ts` : 3 cas (`(√(x+1)−1)/x`, `(√x−2)/(x−4)`, `(2−√x)/(4−x)`).
+- `__tests__/pedagogical-limits-demo.test.ts` : +3 snapshots.
+
+**Algorithme** :
+
+1. Détecter `findConjugate(numerator)` ; refuser si pas de sqrt exploitable.
+2. Calculer `expanded = (√a)² − b² = a − b²` (ou inverse selon shape).
+3. **Eager simplification du `(x − a)` commun** : `expanded(a) = 0` et `originalDenom(a) = 0` (forme 0/0). Synthetic divide les deux par `(x − a)` → `expandedSimplified / (denomSimplified · conjugate)`. Nécessaire car le rationalisé brut reste 0/0 et `tryFactorisation` exige des polynômes (le dénominateur contient un sqrt).
+4. Émettre `detect-indeterminate-form` + parent `multiply-by-conjugate` avec sub-step `simplify-after-rationalization`.
+5. Recurse vers `tryDirectSubstitution`.
+
+**Code review** (`code-reviewer` Opus) — 3 Important + 3 Nice-to-have, **fixes appliqués** :
+
+1. **Important** : `squareIfNeeded(x³)` retournait `x³` au lieu de `x⁶` (over-broad sur `isSuperscript`) ; resserré à `^2` strict.
+2. **Important** : `getSqrtArg(x³)` retournait `x` au lieu de null (manquait guard `isSqrt(expr)`) ; ajouté.
+3. **Important** : `tryRationalisation` hardcodait `recurse(simplified, ctx, 1)` au lieu de `depth + 1` ; ajout du paramètre `depth` cohérent avec `tryFactorisation`.
+4. **Nice-to-have** : test `√a+b` form ajouté (pipeline + helpers).
+
+**Tests cumulés post-V1.1.a** : 137 verts (V1+Phase 4 = 118, +9 helpers conjugate, +6 pipeline rationalisation, +3 demo snapshots, +1 √a+b form). 0 régression.
 
 ## Tests cumulés
 

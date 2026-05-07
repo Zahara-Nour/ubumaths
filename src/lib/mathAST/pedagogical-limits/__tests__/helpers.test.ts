@@ -34,10 +34,13 @@ import {
 	buildLinearFactor,
 	classifyApproach,
 	evaluateAtPoint,
+	findConjugate,
 	formatApproachShort,
 	formatLinearFactor,
+	getSqrtArg,
 	isAtInfinity,
 	isRootAt,
+	isSqrt,
 	normalizeDirection,
 	polyToNode,
 	syntheticDivide
@@ -257,5 +260,76 @@ describe('helpers — direction', () => {
 		expect(normalizeDirection('left')).toBe('left');
 		expect(normalizeDirection('right')).toBe('right');
 		expect(normalizeDirection('both')).toBe('both');
+	});
+});
+
+describe('helpers — conjugate / rationalisation', () => {
+	function sqrtNode(arg: import('../../types').MathNode) {
+		return { type: 'function' as const, name: 'sqrt', args: [arg] };
+	}
+
+	it('isSqrt detects sqrt(x) function call', () => {
+		expect(isSqrt(sqrtNode(variable('x')))).toBe(true);
+	});
+
+	it('isSqrt rejects non-sqrt nodes', () => {
+		expect(isSqrt(variable('x'))).toBe(false);
+		expect(isSqrt(power(variable('x'), number('2')))).toBe(false);
+		expect(isSqrt(power(variable('x'), number('3')))).toBe(false);
+	});
+
+	it('getSqrtArg returns sqrt argument', () => {
+		const arg = add(variable('x'), number('1'));
+		const result = getSqrtArg(sqrtNode(arg));
+		expect(result).toBe(arg);
+	});
+
+	it('getSqrtArg refuses arbitrary superscripts (not just ^{1/2})', () => {
+		// Without the isSqrt guard, getSqrtArg(x^3) would silently return `x`.
+		expect(getSqrtArg(power(variable('x'), number('3')))).toBeNull();
+	});
+
+	it('findConjugate handles √a − b form', () => {
+		const expr = subtract(sqrtNode(add(variable('x'), number('1'))), number('1'));
+		const result = findConjugate(expr);
+		expect(result).not.toBeNull();
+		// expanded should be (x+1) − 1² = (x+1) − 1
+		expect(result?.expanded).toBeDefined();
+	});
+
+	it('findConjugate handles b − √a form', () => {
+		const expr = subtract(number('2'), sqrtNode(variable('x')));
+		const result = findConjugate(expr);
+		expect(result).not.toBeNull();
+	});
+
+	it('findConjugate handles √a + b form', () => {
+		const expr = add(sqrtNode(add(variable('x'), number('4'))), number('2'));
+		const result = findConjugate(expr);
+		expect(result).not.toBeNull();
+	});
+
+	it('findConjugate handles b + √a form', () => {
+		const expr = add(number('2'), sqrtNode(variable('x')));
+		const result = findConjugate(expr);
+		expect(result).not.toBeNull();
+	});
+
+	it('findConjugate refuses non-conjugate-able expressions', () => {
+		expect(findConjugate(variable('x'))).toBeNull();
+		expect(findConjugate(power(variable('x'), number('2')))).toBeNull();
+		// two sqrts — not handled in V1.1.a
+		expect(findConjugate(subtract(sqrtNode(variable('x')), sqrtNode(variable('y'))))).toBeNull();
+	});
+
+	it('findConjugate transparent unwraps delimiter nodes', () => {
+		const inner = subtract(sqrtNode(variable('x')), number('1'));
+		const wrapped = {
+			type: 'delimiter' as const,
+			delimiters: 'parentheses' as const,
+			content: inner
+		};
+		const result = findConjugate(wrapped);
+		expect(result).not.toBeNull();
 	});
 });

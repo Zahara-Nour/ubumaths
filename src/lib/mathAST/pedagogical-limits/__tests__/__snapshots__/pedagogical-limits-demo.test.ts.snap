@@ -645,3 +645,171 @@ Status: exact, Value: 1
 Status: exact, Value: 1
 "
 `;
+
+exports[`pedagogical-limits demo cases > category: rationalisation > renders (2−√x)/(4−x) à x=4 (forme b − √a) 1`] = `
+"
+###### (2−√x)/(4−x) à x=4 (forme b − √a) ######
+
+Expression: (2-sqrt(x))/(4-x), x → 4 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace x par 4
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+- [conclude] La limite vaut 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+Status: exact, Value: 0.25
+
+========== LYCEE (detailed) ==========
+- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 4
+  · On commence par observer la forme de l'expression pour choisir une technique adaptée.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée 0/0 reconnue
+  · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)} \\end{aligned}
+- [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+  - [simplify-after-rationalization] Simplification après rationalisation
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{4 - x}{\\left( 4 - x \\right) 2 + \\sqrt{x}}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace x par 4
+  · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+- [conclude] La limite vaut 0.25
+  · On peut maintenant conclure.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+Status: exact, Value: 0.25
+
+========== SUPERIEUR (summarized) ==========
+- [multiply-by-conjugate] Multiplication par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+- [apply-direct-substitution] Continuité : substitution directe
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+Status: exact, Value: 0.25
+
+========== SUPERIEUR (detailed) ==========
+- [detect-indeterminate-form] Forme indéterminée 0/0
+  · On peut tenter L'Hôpital ou un développement asymptotique.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)} \\end{aligned}
+- [multiply-by-conjugate] Multiplication par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( 2 - \\sqrt{x} \\right)}{\\left( 4 - x \\right)}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+  - [simplify-after-rationalization] Simplification post-rationalisation
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{4 - x}{\\left( 4 - x \\right) 2 + \\sqrt{x}}} \\\\ & = \\dfrac{-1}{-1 2 + \\sqrt{x}} \\end{aligned}
+- [apply-direct-substitution] Continuité : substitution directe
+  · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{-1}{-1 2 + \\sqrt{x}}} \\\\ & = 0.25 \\end{aligned}
+Status: exact, Value: 0.25
+"
+`;
+
+exports[`pedagogical-limits demo cases > category: rationalisation > renders (√(x+1)−1)/x à x=0 (forme √a − b) 1`] = `
+"
+###### (√(x+1)−1)/x à x=0 (forme √a − b) ######
+
+Expression: (sqrt(x+1)-1)/x, x → 0 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace x par 0
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+- [conclude] La limite vaut 0.5
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+Status: exact, Value: 0.5
+
+========== LYCEE (detailed) ==========
+- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 0
+  · On commence par observer la forme de l'expression pour choisir une technique adaptée.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée 0/0 reconnue
+  · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x} \\end{aligned}
+- [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+  - [simplify-after-rationalization] Simplification après rationalisation
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{x + 1 - 1}{x \\sqrt{x + 1} + 1}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace x par 0
+  · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+- [conclude] La limite vaut 0.5
+  · On peut maintenant conclure.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+Status: exact, Value: 0.5
+
+========== SUPERIEUR (summarized) ==========
+- [multiply-by-conjugate] Multiplication par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+- [apply-direct-substitution] Continuité : substitution directe
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+Status: exact, Value: 0.5
+
+========== SUPERIEUR (detailed) ==========
+- [detect-indeterminate-form] Forme indéterminée 0/0
+  · On peut tenter L'Hôpital ou un développement asymptotique.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x} \\end{aligned}
+- [multiply-by-conjugate] Multiplication par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( \\sqrt{x + 1} - 1 \\right)}{x}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+  - [simplify-after-rationalization] Simplification post-rationalisation
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{x + 1 - 1}{x \\sqrt{x + 1} + 1}} \\\\ & = \\dfrac{1}{1 \\sqrt{x + 1} + 1} \\end{aligned}
+- [apply-direct-substitution] Continuité : substitution directe
+  · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{1 \\sqrt{x + 1} + 1}} \\\\ & = 0.5 \\end{aligned}
+Status: exact, Value: 0.5
+"
+`;
+
+exports[`pedagogical-limits demo cases > category: rationalisation > renders (√x−2)/(x−4) à x=4 1`] = `
+"
+###### (√x−2)/(x−4) à x=4 ######
+
+Expression: (sqrt(x)-2)/(x-4), x → 4 (variable: x)
+
+========== LYCEE (summarized) ==========
+- [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace x par 4
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+- [conclude] La limite vaut 0.25
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+Status: exact, Value: 0.25
+
+========== LYCEE (detailed) ==========
+- [identify-limit] On veut calculer la limite de l'expression quand x tend vers 4
+  · On commence par observer la forme de l'expression pour choisir une technique adaptée.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)} \\end{aligned}
+- [detect-indeterminate-form] Forme indéterminée 0/0 reconnue
+  · Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)} \\end{aligned}
+- [multiply-by-conjugate] Rationalisation : on multiplie par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+  - [simplify-after-rationalization] Simplification après rationalisation
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{x - 4}{\\left( x - 4 \\right) \\sqrt{x} + 2}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+- [apply-direct-substitution] Substitution directe : on remplace x par 4
+  · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+- [conclude] La limite vaut 0.25
+  · On peut maintenant conclure.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+Status: exact, Value: 0.25
+
+========== SUPERIEUR (summarized) ==========
+- [multiply-by-conjugate] Multiplication par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+- [apply-direct-substitution] Continuité : substitution directe
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+Status: exact, Value: 0.25
+
+========== SUPERIEUR (detailed) ==========
+- [detect-indeterminate-form] Forme indéterminée 0/0
+  · On peut tenter L'Hôpital ou un développement asymptotique.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)} \\end{aligned}
+- [multiply-by-conjugate] Multiplication par le conjugué
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{\\left( \\sqrt{x} - 2 \\right)}{\\left( x - 4 \\right)}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+  - [simplify-after-rationalization] Simplification post-rationalisation
+    \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{x - 4}{\\left( x - 4 \\right) \\sqrt{x} + 2}} \\\\ & = \\dfrac{1}{1 \\sqrt{x} + 2} \\end{aligned}
+- [apply-direct-substitution] Continuité : substitution directe
+  · L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 4} \\dfrac{1}{1 \\sqrt{x} + 2}} \\\\ & = 0.25 \\end{aligned}
+Status: exact, Value: 0.25
+"
+`;
