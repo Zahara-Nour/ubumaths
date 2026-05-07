@@ -85,9 +85,60 @@ Conclusions :
 
 **Tests** : 19/19 verts.
 
-### ⏳ Phase 2 — Pipeline pédagogique (à venir)
+### ✅ Phase 2 — Pipeline pédagogique
 
-Cible : `pipeline.ts` (~700-1000 LOC) + `dispatch.ts` (~100 LOC). Stratégies pédagogiques par technique.
+**Fichiers** :
+
+- `src/lib/mathAST/pedagogical-limits/helpers.ts` (~370 LOC, nouveau)
+- `src/lib/mathAST/pedagogical-limits/pipeline.ts` (~440 LOC, nouveau)
+- `src/lib/mathAST/pedagogical-limits/dispatch.ts` (~140 LOC, nouveau)
+- `src/lib/mathAST/pedagogical-limits/__tests__/helpers.test.ts` (32 tests)
+- `src/lib/mathAST/pedagogical-limits/__tests__/pipeline.test.ts` (18 tests)
+- `src/lib/mathAST/pedagogical-limits/__tests__/dispatch.test.ts` (17 tests)
+
+**Stratégies pédagogiques implémentées V1** :
+
+- `direct-substitution` (lycée + sup) — substitue `varName = a` ; si valeur finie, succès.
+- `apply-known-limit` (lycée + sup) — réutilise `matchKnownLimit` + `getKnownLimitValue` du module limits/.
+- **Factorisation 0/0** (lycée + sup) — `asPolynomial` extrait coefficients ; `syntheticDivide` (Horner) divise par `(x − a)` ; émet `detect-indeterminate-form` + parent `simplify-common-factor` avec sous-étapes `factor-numerator` et `factor-denominator` ; recurse pour conclure.
+- **infinity-analysis** (lycée + sup) — extrait coefficients num/den, compare degrés, ratio des leading coefficients (`numDeg = denDeg`) / dominance numérateur (`+∞` ou `−∞`) / dominance dénominateur (`0`). Sign at `−∞` corrigé selon parité de `degDelta`.
+
+**NON implémentées en V1 (à faire en V1.1+)** :
+
+- `rationalization` (cas `(√(x+1)−1)/x`)
+- `one-sided` / asymptotes verticales
+- `squeeze` / théorème des gendarmes
+- `lhopital` (sup uniquement)
+- `composition` profonde
+
+**Helpers réutilisables** :
+
+- `evaluateAtPoint(expr, varName, value)` : eval numérique, supporte poly + sin/cos/exp/ln/sqrt.
+- `asPolynomial(expr, varName)` : extrait coeffs `[a₀, a₁, …]`. Refuse non-polynômes.
+- `syntheticDivide(coeffs, a)` : Horner, retourne `{ quotient, remainder }`.
+- `polyToNode(coeffs, varName)` : reconstruit l'AST cosmétique (encode `−x²` via `opposite()`).
+- `formatApproachShort`, `formatLinearFactor`, `buildLinearFactor`, `classifyApproach`, `normalizeDirection`.
+
+**Code review post-Phase 2** (`code-reviewer` Opus) — 1 Critical + 3 Important + 4 Nice-to-have, **tous corrigés** :
+
+1. **Critical** : `helpers.ts:368` `approach.argument` → `approach.operand` (TS error + bug runtime sur approach négatif).
+2. **Important** : import `isRootAt` inutilisé dans `pipeline.ts` retiré.
+3. **Important** : `polyToNode` encodait `−x²` via `subtract(0, x²)` au lieu de `opposite(x²)` ; corrigé pour respecter la convention canonique du codebase.
+4. **Important** : `tryInfinityAnalysis` annonçait `indeterminateForm: '∞/∞'` même quand `numDeg < denDeg` (cas trivial → 0). Corrigé : `'∞/∞'` uniquement quand `numDeg > denDeg` (vrai cas indéterminé résolu par dominance).
+5. **TODO Phase 3** ajouté pour `verbosity` / `signal` / `timeoutMs` (acceptés par l'API mais pas encore honorés).
+6. Tests ajoutés : `polyToNode` shape vérifiant `opposite()` ; `dispatch` propagation de `verbosity`.
+
+**Tests cumulés Phase 1+2** :
+
+| Suite                  | Tests  |
+| ---------------------- | ------ |
+| `types.test.ts`        | 19     |
+| `helpers.test.ts`      | 32     |
+| `pipeline.test.ts`     | 18     |
+| `dispatch.test.ts`     | 17     |
+| **Total nouveau code** | **86** |
+
+**0 régression** sur les 507 tests existants de `limits/`.
 
 ### ⏳ Phase 3 — Descriptions FR + Renderer (à venir)
 
@@ -107,9 +158,10 @@ Cible : ESLint, `pnpm check:incremental`, svelte-autofixer, tests régression, M
 
 ## Tests cumulés
 
-| Phase | Tests ajoutés | Cumul |
-| ----- | ------------- | ----- |
-| 1     | +19 (types)   | 19    |
+| Phase | Tests ajoutés                                  | Cumul |
+| ----- | ---------------------------------------------- | ----- |
+| 1     | +19 (types)                                    | 19    |
+| 2     | +32 helpers, +18 pipeline, +17 dispatch (= 67) | 86    |
 
 ## Documents produits
 
