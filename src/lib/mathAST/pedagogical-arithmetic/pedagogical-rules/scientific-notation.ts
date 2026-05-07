@@ -1,5 +1,5 @@
 /**
- * Pedagogical Rules — Scientific Notation (Phase 6)
+ * Pedagogical Rules — Scientific Notation (Phase 6 + Track D)
  *
  * Conversions between decimal/integer literals and scientific notation
  * (`a × 10ⁿ` with `1 ≤ |a| < 10`), plus arithmetic on scientific forms.
@@ -9,6 +9,12 @@
  *   (so 3.7 stays 3.7, not 3.7 × 10⁰).
  * - **`multiplyScientific`** — `(a × 10ᵐ) × (b × 10ⁿ) → (a·b) × 10^(m+n)`.
  * - **`addScientificSamePower`** — `a × 10ⁿ + b × 10ⁿ → (a+b) × 10ⁿ`.
+ *
+ * Track D — decimal mantissas: `multiply` and `addSamePower` now support
+ * arbitrary decimal mantissas (`2.5 × 10⁴`, `0.001 × 10⁰`, …) without float
+ * drift. The internal `Mantissa = { digits: bigint, decimalPos: number }`
+ * representation lets all arithmetic stay exact (bigint multiplication +
+ * digit alignment for addition + multi-pass renormalization).
  *
  * @module mathAST/pedagogical-arithmetic/pedagogical-rules/scientific-notation
  */
@@ -67,6 +73,133 @@ function scientificNode(aLiteral: string, aSign: 1 | -1, n: bigint): MathNode {
 	const aNode = aSign === -1 ? opposite(number(aLiteral)) : number(aLiteral);
 	const exponent = n < 0n ? opposite(number((-n).toString())) : number(n.toString());
 	return multiply(aNode, superscript(number('10'), exponent), 'cross');
+}
+
+// =============================================================================
+// Decimal-mantissa helpers (Track D)
+// =============================================================================
+
+/**
+ * Internal representation of a decimal mantissa: `digits / 10^decimalPos`.
+ * Sign is carried separately. All arithmetic uses bigint — zero float drift.
+ *
+ * Examples:
+ *   '2.5'   → { digits: 25n, decimalPos: 1 }
+ *   '5'     → { digits: 5n,  decimalPos: 0 }
+ *   '0.001' → { digits: 1n,  decimalPos: 3 }
+ */
+interface Mantissa {
+	digits: bigint;
+	decimalPos: number;
+}
+
+/** Parse a non-negative decimal literal into its `Mantissa` form. */
+function parseMantissa(literal: string): Mantissa | null {
+	if (!/^\d+(\.\d+)?$/.test(literal)) return null;
+	const dot = literal.indexOf('.');
+	if (dot < 0) {
+		// integer
+		return { digits: BigInt(literal), decimalPos: 0 };
+	}
+	const intPart = literal.slice(0, dot);
+	const fracPart = literal.slice(dot + 1);
+	const concat = (intPart + fracPart).replace(/^0+/, '') || '0';
+	return { digits: BigInt(concat), decimalPos: fracPart.length };
+}
+
+/**
+ * Format a `Mantissa` back to its canonical decimal string. Strips trailing
+ * zeros after the decimal point and the dot itself when nothing remains.
+ *
+ * Examples:
+ *   { 25n,  1 } → '2.5'
+ *   { 125n, 2 } → '1.25'
+ *   { 5n,   0 } → '5'
+ *   { 50n,  1 } → '5'
+ *   { 100n, 2 } → '1'
+ */
+function formatMantissa(m: Mantissa): string {
+	const digitStr = m.digits.toString();
+	if (m.decimalPos === 0) return digitStr;
+	if (digitStr.length <= m.decimalPos) {
+		// e.g. digits=5, decimalPos=2 → '0.05'
+		const padded = digitStr.padStart(m.decimalPos, '0');
+		const trimmed = ('0.' + padded).replace(/0+$/, '').replace(/\.$/, '');
+		return trimmed === '' || trimmed === '0.' ? '0' : trimmed;
+	}
+	const intPart = digitStr.slice(0, digitStr.length - m.decimalPos);
+	const fracPart = digitStr.slice(digitStr.length - m.decimalPos).replace(/0+$/, '');
+	return fracPart ? intPart + '.' + fracPart : intPart;
+}
+
+/** `(a · 10⁻ᵖ) × (b · 10⁻ᵠ) = (a·b) · 10⁻⁽ᵖ⁺ᵠ⁾`. */
+function multiplyMantissas(a: Mantissa, b: Mantissa): Mantissa {
+	return { digits: a.digits * b.digits, decimalPos: a.decimalPos + b.decimalPos };
+}
+
+/**
+ * Add two mantissas with their respective signs. Result carries its own sign.
+ * Aligns decimalPos by scaling the smaller-precision operand.
+ *
+ * Returns `{ mantissa: Mantissa, sign: 1 | -1 | 0 }` (sign 0 = exact zero).
+ */
+function addSignedMantissas(
+	a: Mantissa,
+	aSign: 1 | -1,
+	b: Mantissa,
+	bSign: 1 | -1
+): { mantissa: Mantissa; sign: 1 | -1 | 0 } {
+	const targetPos = Math.max(a.decimalPos, b.decimalPos);
+	const aScaled = a.digits * 10n ** BigInt(targetPos - a.decimalPos);
+	const bScaled = b.digits * 10n ** BigInt(targetPos - b.decimalPos);
+	const sum = aScaled * BigInt(aSign) + bScaled * BigInt(bSign);
+	if (sum === 0n) return { mantissa: { digits: 0n, decimalPos: 0 }, sign: 0 };
+	const sign: 1 | -1 = sum < 0n ? -1 : 1;
+	return { mantissa: { digits: sum < 0n ? -sum : sum, decimalPos: targetPos }, sign };
+}
+
+/**
+ * Renormalise `mantissa × 10^exponent` so that `1 ≤ |mantissa| < 10`.
+ * Loops over multiple passes for deep underflow (e.g. `0.001 × 10⁰` needs
+ * 3 passes to reach `1 × 10⁻³`). Mantissa value is `digits / 10^decimalPos`.
+ *
+ * **Note**: the overflow path increments `decimalPos` without reducing
+ * `digits`, so the returned `Mantissa` may be non-minimal (e.g. result
+ * `10` may be represented as `{ digits: 10n, decimalPos: 1 }` rather than
+ * `{ digits: 1n, decimalPos: 0 }`). `formatMantissa` handles both forms
+ * correctly. Callers MUST treat normalize as the terminal step — feeding
+ * its output back into `multiplyMantissas` would inflate `digits`
+ * unnecessarily, although still correct.
+ *
+ * Returns `null` when mantissa is zero (caller short-circuits).
+ */
+function normalizeScientific(
+	mantissa: Mantissa,
+	exponent: bigint
+): { mantissa: Mantissa; exponent: bigint } | null {
+	if (mantissa.digits === 0n) return null;
+	let m = mantissa;
+	let e = exponent;
+
+	// Normalize exponent up while |m| ≥ 10. Numerically: digits ≥ 10^(decimalPos+1).
+	// Each pass: increment decimalPos (= divide value by 10), increment e.
+	while (m.digits >= 10n ** BigInt(m.decimalPos + 1)) {
+		m = { digits: m.digits, decimalPos: m.decimalPos + 1 };
+		e = e + 1n;
+	}
+
+	// Normalize exponent down while |m| < 1. Numerically: digits < 10^decimalPos.
+	// Each pass: decrement decimalPos when possible (= multiply by 10), or
+	// equivalently, divide digits by 10 if trailing zero. We keep digits
+	// constant and decrement decimalPos when decimalPos > 0; otherwise we
+	// can't go lower without scaling digits up. But digits >= 1, so once
+	// decimalPos == 0, |m| >= 1 always.
+	while (m.decimalPos > 0 && m.digits < 10n ** BigInt(m.decimalPos)) {
+		m = { digits: m.digits, decimalPos: m.decimalPos - 1 };
+		e = e - 1n;
+	}
+
+	return { mantissa: m, exponent: e };
 }
 
 /** Lookup binding as a `MathNode`. */
@@ -191,10 +324,8 @@ export const toScientificNotation: PedagogicalArithmeticRule = {
 /**
  * `(a × 10ᵐ) × (b × 10ⁿ) → (a·b) × 10^(m+n)`.
  *
- * Mantissa product is computed as a decimal-string multiplication when both
- * mantissas are integer-only ; for decimal mantissas we currently ignore
- * the rule and let the broader pipeline handle it (out of scope for the
- * MVP). This keeps the rule deterministic and free of float pitfalls.
+ * Track D: supports decimal mantissas exactly via the `Mantissa` bigint
+ * representation and `normalizeScientific`. No float drift.
  */
 function applyMultiplyScientific(bindings: MatchBindings): MathNode | null {
 	const left = bindingNode(bindings, 'l');
@@ -204,25 +335,19 @@ function applyMultiplyScientific(bindings: MatchBindings): MathNode | null {
 	const rs = asScientific(right);
 	if (!ls || !rs) return null;
 
-	// For now : only integer mantissas (no decimal point). Avoid float drift.
-	if (ls.aLiteral.includes('.') || rs.aLiteral.includes('.')) return null;
+	const lm = parseMantissa(ls.aLiteral);
+	const rm = parseMantissa(rs.aLiteral);
+	if (!lm || !rm) return null;
 
-	const a = BigInt(ls.aLiteral) * BigInt(rs.aLiteral);
-	const finalSign = ls.aSign * rs.aSign;
-	if (a === 0n) return null;
+	const productMantissa = multiplyMantissas(lm, rm);
+	if (productMantissa.digits === 0n) return null;
 
-	// `a` may exceed 10 (e.g. 5*4=20). Re-normalize once : split off a power
-	// of 10. We avoid recursion : only one pass.
-	const aStr = (a < 0n ? -a : a).toString();
-	const overflow = aStr.length - 1;
-	const newExponent = ls.n + rs.n + BigInt(overflow);
-	const mantissaStr =
-		overflow === 0
-			? aStr
-			: aStr[0] + (aStr.length > 1 ? '.' + aStr.slice(1).replace(/0+$/, '') : '');
-	// Drop trailing dot if the rest was all zeros
-	const cleanMantissa = mantissaStr.endsWith('.') ? mantissaStr.slice(0, -1) : mantissaStr;
-	return scientificNode(cleanMantissa, (finalSign === -1 ? -1 : 1) as 1 | -1, newExponent);
+	const finalSign = (ls.aSign * rs.aSign === -1 ? -1 : 1) as 1 | -1;
+	const baseExponent = ls.n + rs.n;
+	const normalized = normalizeScientific(productMantissa, baseExponent);
+	if (!normalized) return null;
+
+	return scientificNode(formatMantissa(normalized.mantissa), finalSign, normalized.exponent);
 }
 
 export const multiplyScientific: PedagogicalArithmeticRule = {
@@ -249,9 +374,10 @@ export const multiplyScientific: PedagogicalArithmeticRule = {
 // =============================================================================
 
 /**
- * `a × 10ⁿ + b × 10ⁿ → (a+b) × 10ⁿ`. Only fires when exponents match
- * AND both mantissas are integer literals (decimal mantissas would require
- * decimal-string addition, out of scope for the MVP).
+ * `a × 10ⁿ + b × 10ⁿ → (a+b) × 10ⁿ`. Fires when exponents match.
+ *
+ * Track D: supports decimal mantissas exactly (signed bigint addition with
+ * decimalPos alignment, then renormalization).
  */
 function applyAddScientificSamePower(bindings: MatchBindings): MathNode | null {
 	const left = bindingNode(bindings, 'l');
@@ -261,13 +387,18 @@ function applyAddScientificSamePower(bindings: MatchBindings): MathNode | null {
 	const rs = asScientific(right);
 	if (!ls || !rs) return null;
 	if (ls.n !== rs.n) return null;
-	if (ls.aLiteral.includes('.') || rs.aLiteral.includes('.')) return null;
-	const sumLeft = BigInt(ls.aLiteral) * BigInt(ls.aSign);
-	const sumRight = BigInt(rs.aLiteral) * BigInt(rs.aSign);
-	const sum = sumLeft + sumRight;
-	if (sum === 0n) return number('0');
-	const sign: 1 | -1 = sum < 0n ? -1 : 1;
-	return scientificNode((sign === -1n ? -sum : sum).toString(), sign, ls.n);
+
+	const lm = parseMantissa(ls.aLiteral);
+	const rm = parseMantissa(rs.aLiteral);
+	if (!lm || !rm) return null;
+
+	const { mantissa, sign } = addSignedMantissas(lm, ls.aSign, rm, rs.aSign);
+	if (sign === 0) return number('0');
+
+	const normalized = normalizeScientific(mantissa, ls.n);
+	if (!normalized) return number('0');
+
+	return scientificNode(formatMantissa(normalized.mantissa), sign, normalized.exponent);
 }
 
 export const addScientificSamePower: PedagogicalArithmeticRule = {
