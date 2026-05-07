@@ -32,7 +32,8 @@ const RULE_DESCRIPTIONS: Readonly<Record<LimitRule, string>> = {
 	product: "Limite d'un produit",
 	quotient: "Limite d'un quotient",
 	composition: "Limite d'une composée",
-	'abs-simplification': 'Simplification de la valeur absolue'
+	'abs-simplification': 'Simplification de la valeur absolue',
+	'derivative-definition': "Définition de la dérivée comme limite : lim [f(x)−f(a)]/(x−a) = f'(a)"
 };
 
 /**
