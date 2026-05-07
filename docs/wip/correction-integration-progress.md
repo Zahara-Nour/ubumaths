@@ -287,15 +287,21 @@ en profondeur (discriminator étendu, case dispatch ajouté dans
   retenue après spike empirique en Phase 0 démontrant qu'`evaluateLimit()`
   ne produit que 1-2 méta-steps techniques jamais les sous-étapes
   pédagogiques attendues (factor numérateur → factor dénominateur →
-  simplifier → substituer). Bumps `primaire | college → lycée`. Stratégies
-  V1 implémentées : `direct-substitution`, `apply-known-limit` (réutilise
-  `matchKnownLimit` de `limits/`), `factorisation 0/0` (avec sous-étapes
-  via `asPolynomial` + `syntheticDivide` Horner), `infinity-analysis`
-  (factor dominant). Vocabulary adaptive : `'gendarmes'` lycée vs
-  `'squeeze'` sup. L'Hôpital désactivée au lycée. Reconnaissance de
-  `\\infty` / `+\\infty` / `-\\infty` / `oo` / `+oo` / `-oo`. Catch
-  `PedagogicalLimitNotImplemented` → fallback Mode A silencieux.
-  V1.1+ : `rationalization`, `one-sided`, `squeeze`, `lhopital` (sup).
+  simplifier → substituer). Bumps `primaire | college → lycée`.
+  **8 stratégies pédagogiques** au total (V1 + V1.1) :
+  `direct-substitution`, `apply-known-limit` (réutilise `matchKnownLimit`
+  de `limits/`), `factorisation 0/0` (avec sous-étapes via `asPolynomial`
+  - `syntheticDivide` Horner), `rationalisation` (V1.1.a, conjugué + eager
+    simplification du `(x − a)` commun), `infinity-analysis` (factor
+    dominant), `lhopital` (V1.1.c, sup uniquement, réutilise
+    `differentiate()` du module differentiation/), `one-sided` /
+    asymptotes verticales (V1.1.b, heuristique numérique
+    `DIVERGENCE_THRESHOLD = 1e5`), `squeeze` / gendarmes (V1.1.d,
+    heuristique avec garde sin/cos à argument divergent). Vocabulary
+    adaptive : `'gendarmes'` lycée vs `'squeeze'` sup. L'Hôpital
+    désactivée au lycée. Reconnaissance de `\\infty` / `+\\infty` /
+    `-\\infty` / `oo` / `+oo` / `-oo`. Catch
+    `PedagogicalLimitNotImplemented` → fallback Mode A silencieux.
 
 **État actuel :** la page debug `/dashboard/admin/debug/correction-mode-b`
 expose **19 fixtures** : `additionGroupingDemo` (CM2 arithmétique),

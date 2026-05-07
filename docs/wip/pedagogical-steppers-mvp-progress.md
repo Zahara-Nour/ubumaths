@@ -332,7 +332,7 @@ Total : ~2400 LOC ajoutées, ~265 retirées, 4 commits intermédiaires + ce comm
 
 **Élargissement de couverture**
 
-- Renderers pédagogiques pour les autres domaines : matrix, domain (intégration livrée 2026-05-06, simplification livrée 2026-05-06, **limits livré 2026-05-07** Option B pipeline parallèle — voir `limits-renderer-progress.md`)
+- Renderers pédagogiques pour les autres domaines : matrix, domain (intégration livrée 2026-05-06, simplification livrée 2026-05-06, **limits livré 2026-05-07** V1 + V1.1 — Option B pipeline parallèle, 8 stratégies au total : direct-substitution, known-limit, factorisation, rationalisation, infinity-analysis, lhopital (sup), one-sided, squeeze/gendarmes — voir `limits-renderer-progress.md`)
 - ~~`kind: 'solve'` algorithmique dans Mode B~~ — **skippé volontairement** par décision utilisateur 2026-05-06 (« hypothèse Option A pure était fragile, et le besoin produit Tle spé / sup pas vital »). À ne pas re-proposer sans nouveau besoin produit.
 - **Palier 2d** — coefficients paramétriques quadratiques (`mx² + nx + p ⊻ 0`, m libre) : « discuter selon m » du programme Tle ; gros morceau, multi-sessions, complexité ↑↑ (disjonction de cas dans le tableau de signes)
 - **Palier 3 V3** — extensions rationnelles : 3+ fractions, dénominateur quadratique, PGCD polynomial non-trivial, fractions imbriquées
