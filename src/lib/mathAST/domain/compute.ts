@@ -51,7 +51,14 @@ import {
 /**
  * Build the LaTeX constraint string for a function constraint rule.
  *
- * Returns the right-hand side of « expr ⟹ <constraint> ».
+ * Returns the right-hand side of « expr ⟹ <constraint> ». Throws on a
+ * rule that is in `V1_MVP_RULES` but missing from this switch — guards
+ * against silent desync between `mvp-rules.ts` and this generator.
+ *
+ * Rules outside `V1_MVP_RULES` (e.g. composition, preimage_*) are
+ * intentionally not handled and reach the throw branch — the dispatcher
+ * is responsible for refusing them upstream before they reach a recorder
+ * call site.
  */
 function buildConstraintLatex(rule: DomainRule, argLatex: string): string {
 	switch (rule) {
@@ -78,7 +85,7 @@ function buildConstraintLatex(rule: DomainRule, argLatex: string): string {
 		case 'arctanh_constraint':
 			return `-1 < ${argLatex} < 1`;
 		default:
-			return '';
+			throw new Error(`buildConstraintLatex: unsupported rule "${rule}" — sync with mvp-rules.ts`);
 	}
 }
 
@@ -535,10 +542,13 @@ function computeFunctionDomain(
 		domain = intersect(domain, preimage);
 	}
 
-	// Pedagogical recording (V1 MVP): emit a constraint step for sqrt, ln,
-	// log, arcsin, arccos. Other constrained functions (tan, arccosh, etc.)
-	// are out of V1 scope — silent; the upstream pedagogical dispatcher
-	// refuses those cases with PedagogicalDomainNotImplemented.
+	// Pedagogical recording (V1 + V1.1.a): emit a constraint step for any
+	// rule in `V1_MVP_FUNCTION_CONSTRAINT_RULES` — sqrt, ln, log, arcsin,
+	// arccos (V1) plus arccosh, arctanh (V1.1.a, refused at lycée by the
+	// dispatcher). The trigonometric V1.1.a rules (tan, cot, sec, csc) are
+	// emitted earlier in the periodic_exclusion branch above. Rules outside
+	// the MVP set are silent here; the upstream pedagogical dispatcher
+	// refuses those cases via `assertOnlyMvpRules`.
 	if (options.showSteps && options.recorder) {
 		const constraintRule = getConstraintRuleForFunction(node.name);
 		if (constraintRule && V1_MVP_FUNCTION_CONSTRAINT_RULES.has(constraintRule)) {

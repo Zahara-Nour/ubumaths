@@ -8,6 +8,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { PedagogicalDomainNotImplemented, STRATEGIES_DOMAIN, V1_MVP_RULES } from '../types';
+import { LYCEE_FORBIDDEN_RULES, V1_MVP_FUNCTION_CONSTRAINT_RULES } from '../../domain/mvp-rules';
 import type {
 	DomainGenerationStrategy,
 	PedagogicalDomainOptions,
@@ -80,6 +81,28 @@ describe('V1_MVP_RULES', () => {
 		expect(V1_MVP_RULES.has('complement')).toBe(false);
 		expect(V1_MVP_RULES.has('difference')).toBe(false);
 		expect(V1_MVP_RULES.has('periodic_exclusion')).toBe(false);
+	});
+});
+
+describe('Set invariants', () => {
+	// LYCEE_FORBIDDEN_RULES must be a subset of V1_MVP_FUNCTION_CONSTRAINT_RULES.
+	// Otherwise the dispatcher would refuse expressions for which the recorder
+	// never emits a step — silently incorrect behaviour at lycée.
+	it('LYCEE_FORBIDDEN_RULES ⊂ V1_MVP_FUNCTION_CONSTRAINT_RULES', () => {
+		for (const rule of LYCEE_FORBIDDEN_RULES) {
+			expect(V1_MVP_FUNCTION_CONSTRAINT_RULES.has(rule)).toBe(true);
+		}
+	});
+
+	// V1_MVP_FUNCTION_CONSTRAINT_RULES must be a subset of V1_MVP_RULES.
+	// The function-constraint set drives `compute.ts` emission; the broader
+	// V1_MVP_RULES drives the dispatcher's out-of-MVP refusal. A rule emitted
+	// at compute time but absent from V1_MVP_RULES would be refused by the
+	// dispatcher — silent crash.
+	it('V1_MVP_FUNCTION_CONSTRAINT_RULES ⊂ V1_MVP_RULES', () => {
+		for (const rule of V1_MVP_FUNCTION_CONSTRAINT_RULES) {
+			expect(V1_MVP_RULES.has(rule)).toBe(true);
+		}
 	});
 });
 
