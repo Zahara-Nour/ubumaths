@@ -11,6 +11,12 @@
 
 import type { MathNode } from '../types';
 import type { Domain, DomainResult, DomainStep, IntervalSet } from './types';
+import type { DomainRule } from './enhanced-step-types';
+import { getConstraintRuleForFunction } from './enhanced-step-types';
+import type { DomainStepRecorder } from './domain-step-recorder';
+import { createDomainStepRecorder, getNullRecorder } from './domain-step-recorder';
+import { toLatex } from '../latex-generator';
+import type { Verbosity } from '../common/verbosity';
 import {
 	universalDomain,
 	intervalDomain,
@@ -36,6 +42,48 @@ import {
 	findZeros,
 	classifyExpression
 } from './preimage';
+
+// =============================================================================
+// V1 MVP Pedagogical Recorder Set
+// =============================================================================
+
+/**
+ * Function constraint rules emitted by the V1 MVP pedagogical recorder.
+ *
+ * Kept here (rather than imported from `pedagogical-domain/`) to avoid a
+ * circular dependency between `domain/` and `pedagogical-domain/`. The
+ * canonical V1 MVP rule set lives in `pedagogical-domain/types.ts` —
+ * `V1_MVP_RULES`. Both sets must stay in sync.
+ */
+const V1_MVP_FUNCTION_CONSTRAINT_RULES: ReadonlySet<DomainRule> = new Set<DomainRule>([
+	'sqrt_constraint',
+	'ln_constraint',
+	'log_constraint',
+	'arcsin_constraint',
+	'arccos_constraint'
+]);
+
+/**
+ * Build the LaTeX constraint string for a function constraint rule.
+ *
+ * Returns the right-hand side of « expr ⟹ <constraint> ».
+ */
+function buildConstraintLatex(rule: DomainRule, argLatex: string): string {
+	switch (rule) {
+		case 'sqrt_constraint':
+			return `${argLatex} \\geq 0`;
+		case 'ln_constraint':
+		case 'log_constraint':
+			return `${argLatex} > 0`;
+		case 'arcsin_constraint':
+		case 'arccos_constraint':
+			return `-1 \\leq ${argLatex} \\leq 1`;
+		case 'division_constraint':
+			return `${argLatex} \\neq 0`;
+		default:
+			return '';
+	}
+}
 
 // =============================================================================
 // Range Helper Functions (use builtin range registry)
@@ -198,6 +246,30 @@ function analyzeComposition(
 export interface ComputeDomainOptions {
 	/** Show computation steps for pedagogical display */
 	showSteps?: boolean;
+
+	/**
+	 * Verbosity level for the pedagogical recorder. Default: `'summarized'`.
+	 *
+	 * Only affects `EnhancedDomainStep` emission via the recorder — has no
+	 * effect on the legacy `DomainStep[]` returned in `result.steps`.
+	 */
+	verbosity?: Verbosity;
+
+	/**
+	 * Optional pedagogical recorder for capturing `EnhancedDomainStep[]`.
+	 *
+	 * When `showSteps: true` and no recorder is provided, `computeDomain`
+	 * instantiates a fresh one. Callers that need access to the recorded
+	 * `EnhancedDomainStep[]` should provide their own recorder and read
+	 * `recorder.getStepsFiltered(verbosity)` after the call.
+	 *
+	 * V1 MVP: only emits steps for the 5 MVP rules (sqrt, ln/log, division,
+	 * arcsin/arccos) plus `intersection` for composite cases. All other
+	 * function constraints (tan, arccosh, etc.) and operations (composition,
+	 * preimage_*) are silent — the caller is responsible for refusing those
+	 * cases via `PedagogicalDomainNotImplemented`.
+	 */
+	recorder?: DomainStepRecorder;
 }
 
 // =============================================================================
@@ -223,7 +295,32 @@ export function computeDomain(
 	options: ComputeDomainOptions = {}
 ): DomainResult {
 	const steps: DomainStep[] = [];
-	const domain = computeDomainNode(expr, variable, steps, options);
+	// Wire a recorder when showSteps is true so the pedagogical infrastructure
+	// (DomainStepRecorder + EnhancedDomainStep) gets populated. Otherwise use
+	// the singleton null recorder so internal code can call it unconditionally
+	// without paying any cost.
+	const recorder =
+		options.recorder ?? (options.showSteps ? createDomainStepRecorder() : getNullRecorder());
+	const internalOptions: ComputeDomainOptions = { ...options, recorder };
+	const constraintCountBefore = recorder.length;
+	const domain = computeDomainNode(expr, variable, steps, internalOptions);
+
+	// Top-level `intersection` step: if more than one constraint was emitted
+	// for this expression and the final domain is constrained (not universal),
+	// record an `intersection` step so the renderer can summarize the
+	// combination of constraints.
+	const constraintsEmitted = recorder.length - constraintCountBefore;
+	if (
+		options.showSteps &&
+		constraintsEmitted > 1 &&
+		domain.kind !== 'universal' &&
+		domain.kind !== 'empty'
+	) {
+		recorder.record('intersection', toLatex(expr), '', {
+			intermediateDomain: domain,
+			verbosityLevel: 'summarized'
+		});
+	}
 
 	return {
 		domain,
@@ -344,6 +441,24 @@ function computeDivisionDomain(
 		);
 	}
 
+	// Pedagogical recording (V1 MVP): emit a `division_constraint` step when
+	// the denominator has zeros to exclude. The intermediateDomain captures
+	// the post-exclusion state (i.e. what the renderer should display as the
+	// "Domaine" line when this step is rendered in isolation).
+	if (options.showSteps && options.recorder && zeros.length > 0) {
+		const denomLatex = toLatex(node.denominator);
+		options.recorder.recordWithTemplate(
+			'division_constraint',
+			denomLatex,
+			buildConstraintLatex('division_constraint', denomLatex),
+			{ expr: denomLatex },
+			{
+				intermediateDomain: domain,
+				verbosityLevel: 'summarized'
+			}
+		);
+	}
+
 	return domain;
 }
 
@@ -401,6 +516,27 @@ function computeFunctionDomain(
 	const preimage = computePreimage(arg, funcDomain, variable);
 	if (preimage) {
 		domain = intersect(domain, preimage);
+	}
+
+	// Pedagogical recording (V1 MVP): emit a constraint step for sqrt, ln,
+	// log, arcsin, arccos. Other constrained functions (tan, arccosh, etc.)
+	// are out of V1 scope — silent; the upstream pedagogical dispatcher
+	// refuses those cases with PedagogicalDomainNotImplemented.
+	if (options.showSteps && options.recorder) {
+		const constraintRule = getConstraintRuleForFunction(node.name);
+		if (constraintRule && V1_MVP_FUNCTION_CONSTRAINT_RULES.has(constraintRule)) {
+			const argLatex = toLatex(arg);
+			options.recorder.recordWithTemplate(
+				constraintRule,
+				argLatex,
+				buildConstraintLatex(constraintRule, argLatex),
+				{ expr: argLatex },
+				{
+					intermediateDomain: preimage ?? undefined,
+					verbosityLevel: 'summarized'
+				}
+			);
+		}
 	}
 
 	// Handle nested function compositions using range analysis

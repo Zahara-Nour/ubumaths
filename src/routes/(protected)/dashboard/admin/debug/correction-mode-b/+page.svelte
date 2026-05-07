@@ -21,6 +21,8 @@
 		integrateIndefiniteDemo,
 		limitFactorisationDemo,
 		limitInfinityDemo,
+		domainSqrtFractionDemo,
+		domainArcsinDemo,
 		linearEquationDemo,
 		linearInequalityFlipDemo,
 		linearInequalityTwoSidesDemo,
@@ -60,6 +62,8 @@
 	const arithmeticFromBlankResult = generateInstance(arithmeticFromBlankDemo, 1);
 	const limitFactorisationResult = generateInstance(limitFactorisationDemo, 1);
 	const limitInfinityResult = generateInstance(limitInfinityDemo, 1);
+	const domainSqrtFractionResult = generateInstance(domainSqrtFractionDemo, 1);
+	const domainArcsinResult = generateInstance(domainArcsinDemo, 1);
 
 	function buildAnswerResult(
 		result: ReturnType<typeof generateInstance>,
@@ -119,6 +123,10 @@
 	const limitFactorisationIncorrect = buildAnswerResult(limitFactorisationResult, 1, false);
 	const limitInfinityCorrect = buildAnswerResult(limitInfinityResult, 0, true);
 	const limitInfinityIncorrect = buildAnswerResult(limitInfinityResult, 1, false);
+	const domainSqrtFractionCorrect = buildAnswerResult(domainSqrtFractionResult, 0, true);
+	const domainSqrtFractionIncorrect = buildAnswerResult(domainSqrtFractionResult, 1, false);
+	const domainArcsinCorrect = buildAnswerResult(domainArcsinResult, 0, true);
+	const domainArcsinIncorrect = buildAnswerResult(domainArcsinResult, 1, false);
 
 	// ============================================================================
 	// Raw step inspector
@@ -898,6 +906,34 @@
 				<div>
 					<h3 class="mb-2 text-lg font-medium">Tle spé — limite à l'infini — incorrecte</h3>
 					<CorrectionCard answerResult={limitInfinityIncorrect} questionNumber={36} size="md" />
+				</div>
+			{/if}
+			{#if domainSqrtFractionCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">1ère spé — domaine √x/(x−1) — correcte</h3>
+					<CorrectionCard answerResult={domainSqrtFractionCorrect} questionNumber={37} size="md" />
+				</div>
+			{/if}
+			{#if domainSqrtFractionIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">1ère spé — domaine √x/(x−1) — incorrecte</h3>
+					<CorrectionCard
+						answerResult={domainSqrtFractionIncorrect}
+						questionNumber={38}
+						size="md"
+					/>
+				</div>
+			{/if}
+			{#if domainArcsinCorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — domaine arcsin(2x) — correcte</h3>
+					<CorrectionCard answerResult={domainArcsinCorrect} questionNumber={39} size="md" />
+				</div>
+			{/if}
+			{#if domainArcsinIncorrect}
+				<div>
+					<h3 class="mb-2 text-lg font-medium">Tle spé — domaine arcsin(2x) — incorrecte</h3>
+					<CorrectionCard answerResult={domainArcsinIncorrect} questionNumber={40} size="md" />
 				</div>
 			{/if}
 		</div>

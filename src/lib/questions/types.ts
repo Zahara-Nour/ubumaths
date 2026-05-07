@@ -1095,6 +1095,14 @@ export type GeneratedSteps =
 			/** Direction of approach. Default: `'both'`. */
 			readonly direction?: 'left' | 'right' | 'both';
 			readonly options?: GeneratedStepsOptions;
+	  }
+	| {
+			readonly kind: 'domain';
+			/** LaTeX expression of `f(x)` to compute the domain of (e.g. `'\\sqrt{x - 2}'`). */
+			readonly expression: string;
+			/** Variable. Default: `'x'`. */
+			readonly variable?: string;
+			readonly options?: GeneratedStepsOptions;
 	  };
 
 /**

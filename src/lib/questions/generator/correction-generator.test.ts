@@ -943,3 +943,113 @@ describe("generateCorrection — kind: 'limit'", () => {
 		expect(steps!.every((s) => s.schoolLevel === 'superieur')).toBe(true);
 	});
 });
+
+describe("generateCorrection — kind: 'domain'", () => {
+	it('produces _renderedSteps for sqrt(x-2)', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'domain',
+					expression: '\\sqrt{x - 2}'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+		const rules = (result.correction?._renderedSteps ?? []).map((s) => s.rule);
+		expect(rules).toContain('sqrt_constraint');
+	});
+
+	it('produces a sqrt+division+intersection chain for √x/(x-1)', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'domain',
+					expression: '\\dfrac{\\sqrt{x}}{x - 1}'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const rules = (result.correction?._renderedSteps ?? []).map((s) => s.rule);
+		expect(rules).toEqual(['sqrt_constraint', 'division_constraint', 'intersection']);
+	});
+
+	it('substitutes template {{vars}} in the expression', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			resolvedVariables: [{ name: 'a', value: '3' }],
+			correction: {
+				generatedSteps: {
+					kind: 'domain',
+					expression: '\\sqrt{x - {{a}}}'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const rules = (result.correction?._renderedSteps ?? []).map((s) => s.rule);
+		expect(rules).toContain('sqrt_constraint');
+	});
+
+	it('bumps a CM2-grade fixture to lycée', () => {
+		const instance = makeInstance({
+			grades: ['CM2'],
+			correction: {
+				generatedSteps: {
+					kind: 'domain',
+					expression: '\\sqrt{x}'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const steps = result.correction?._renderedSteps ?? [];
+		expect(steps.every((s) => s.schoolLevel === 'lycee')).toBe(true);
+	});
+
+	it('returns instance unchanged when expression is not parsable', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'domain',
+					expression: '\\sqrt{x +'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+	});
+
+	it('honours an explicit variable', () => {
+		const instance = makeInstance({
+			grades: ['1_SPE'],
+			correction: {
+				generatedSteps: {
+					kind: 'domain',
+					expression: '\\sqrt{y - 1}',
+					variable: 'y'
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeDefined();
+	});
+
+	it('honours an explicit schoolLevel override', () => {
+		const instance = makeInstance({
+			grades: ['CM2'],
+			correction: {
+				generatedSteps: {
+					kind: 'domain',
+					expression: '\\sqrt{x}',
+					options: { schoolLevel: 'superieur' }
+				}
+			}
+		});
+		const result = generateCorrection(instance);
+		const steps = result.correction?._renderedSteps;
+		expect(steps).toBeDefined();
+		expect(steps!.every((s) => s.schoolLevel === 'superieur')).toBe(true);
+	});
+});

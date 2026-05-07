@@ -13,6 +13,35 @@ exports[`Mode B end-to-end demos > 1ère simplify trig — produces a pythagorea
 ]
 `;
 
+exports[`Mode B end-to-end demos > 1ère spé domain — sqrt+division+intersection on √x/(x-1) 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "sqrt_constraint",
+    "schoolLevel": "lycee",
+    "title": "Contrainte de la racine carrée",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 2,
+    "rule": "division_constraint",
+    "schoolLevel": "lycee",
+    "title": "Contrainte de la division",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "intersection",
+    "schoolLevel": "lycee",
+    "title": "Intersection des contraintes",
+  },
+]
+`;
+
 exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation — produces lycee steps 1`] = `
 [
   {
@@ -700,6 +729,19 @@ exports[`Mode B end-to-end demos > Terminale spécialité rational inequality wi
     "rule": "inequality-conclude-rational",
     "schoolLevel": "lycee",
     "title": "Solution : S = ]-1 ; 0] ∪ ]1 ; +∞[",
+  },
+]
+`;
+
+exports[`Mode B end-to-end demos > Tle spé domain — arcsin(2x) → contrainte -1 ≤ 2x ≤ 1 1`] = `
+[
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 1,
+    "rule": "arcsin_constraint",
+    "schoolLevel": "lycee",
+    "title": "Contrainte de l’arc sinus",
   },
 ]
 `;
