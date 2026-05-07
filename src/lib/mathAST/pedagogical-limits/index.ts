@@ -36,3 +36,8 @@ export type { PedagogicalLimitDispatchOptions } from './dispatch';
 export { PedagogicalLimitRenderer } from './renderer';
 export { EXPLANATIONS, TITLES, getDefaultDescription } from './descriptions-fr';
 export type { ExplainFn, TitleFn } from './descriptions-fr';
+
+// Demo helpers (consumed by snapshot tests + CLI)
+export { presentLimit } from './demo-helpers';
+export type { DemoCase, DemoCategory, DemoFormat } from './demo-helpers';
+export { ALL_CATEGORIES } from './demo-cases';

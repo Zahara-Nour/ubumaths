@@ -165,9 +165,43 @@ Conclusions :
 3. **Nice-to-have** : `SUPERIEUR_TITLES.apply-lhopital` LaTeX brut → prose-only.
 4. **Nice-to-have** : test `apply-known-limit` title delegation ajouté.
 
-### ⏸️ Phase 4 — Démos catégorisées + script CLI (REPORTÉ V1.1)
+### ✅ Phase 4 — Démos catégorisées + script CLI (livrée post-V1)
 
-Skipée pour V1 final (livraison prioritaire). Le `dispatchPedagogicalLimit` permet déjà des appels manuels. À reprendre en V1.1 avec les stratégies non-implémentées (rationalization, one-sided, squeeze, lhopital).
+**Fichiers** :
+
+- `src/lib/mathAST/pedagogical-limits/demo-helpers.ts` (~190 LOC) — `DemoCase`, `DemoCategory`, `DemoFormat`, `presentLimit(testCase, format='latex'|'custom')`.
+- `src/lib/mathAST/pedagogical-limits/demo-cases/` :
+  - `direct-substitution.ts` (3 cas)
+  - `known-limits.ts` (3 cas : sin(x)/x, (1−cos(x))/x², ln(1+x)/x)
+  - `factorisation.ts` (4 cas : (x²−4)/(x−2), (x³−1)/(x−1), (x³−8)/(x−2), (x²−x−6)/(x−3))
+  - `infinity-analysis.ts` (4 cas : numDeg=denDeg, numDeg>denDeg en +∞, numDeg<denDeg, signe à −∞)
+  - `index.ts` (`ALL_CATEGORIES`)
+  - **Total : 14 cas, 4 catégories** (V1 strategies seulement)
+- `src/lib/mathAST/pedagogical-limits/__tests__/pedagogical-limits-demo.test.ts` — 14 snapshots stables (`toMatchSnapshot()`).
+- `scripts/pedagogical-limits-demo.ts` (~120 LOC) — CLI standalone, filter par catégorie, flags `--latex` / `--custom`, ANSI highlight TTY-only.
+
+**Format CLI** :
+
+- Default `'custom'` : ASCII/Unicode-friendly, `lim_{x→a} f(x)` puis `@blue{...}` rewrité en ANSI bold-blue sur TTY.
+- `--latex` : LaTeX brut (mêmes blocs `\\begin{aligned}` que le snapshot test).
+- Substitutions cosmétiques `\\infty` → `∞`, `\\to` → `→`, `\\lim` → `lim`, etc.
+
+**Code review** (`code-reviewer` Opus) — 2 Important + 2 Minor, **fixes appliqués** :
+
+1. **Important** : `formatStepExpression` hardcodait la liste `[factor-numerator, factor-denominator]` ; remplacé par `FACTORISATION_CLUSTER_RULES.has(raw.rule) && raw.rule !== 'simplify-common-factor'` (single source of truth, V1.1 cluster extensions auto-couvertes — même dérivation que `FRAGMENT_RULES` dans `renderer.ts`).
+2. **Important** : `formatNode(null, format)` documenté en JSDoc — la nullité provient du statut `'does-not-exist'`, divergence légitime d'avec les siblings integration/differentiation qui n'ont jamais ce cas.
+3. **Minor** : regex `ansiHighlight` `[^{}]*` corrigée en `(?:[^{}]|\{[^{}]*\})*` pour matcher les `lim_{...}` avec sous-braces (bug actif sur le CLI limits, pré-existant dans les CLIs siblings — le pattern à 1 niveau de nesting suffit pour `lim_{x→a}`).
+
+**Usage** :
+
+```bash
+pnpm tsx scripts/pedagogical-limits-demo.ts                                # all categories
+pnpm tsx scripts/pedagogical-limits-demo.ts factorisation                  # one
+pnpm tsx scripts/pedagogical-limits-demo.ts factorisation infinity-analysis  # several
+pnpm tsx scripts/pedagogical-limits-demo.ts --latex factorisation          # raw LaTeX
+```
+
+**Tests** : 14/14 snapshots, 0 régression sur les 104 tests V1 antérieurs.
 
 ### ✅ Phase 5 — Glue Mode B `kind: 'limit'`
 
@@ -235,7 +269,8 @@ Skipée pour V1 final (livraison prioritaire). Le `dispatchPedagogicalLimit` per
 | 1     | +19 (types)                                        | 19      |
 | 2     | +32 helpers, +18 pipeline, +17 dispatch (= 67)     | 86      |
 | 3     | +18 renderer                                       | 104     |
-| 5     | +9 correction-generator (limit), +2 demo snapshots | **115** |
+| 5     | +9 correction-generator (limit), +2 demo snapshots | 115     |
+| 4     | +14 demo snapshots (post-V1)                       | **129** |
 
 ## Documents produits
 
