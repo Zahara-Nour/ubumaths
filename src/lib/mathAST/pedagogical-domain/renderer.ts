@@ -55,21 +55,29 @@ function effectiveSchoolLevel(level: SchoolLevel): PedagogicalDomainSchoolLevel 
  * Convert the `formatInterval` Unicode output into LaTeX.
  *
  * `formatInterval` returns French-style notation with Unicode glyphs
- * (`∞`, `ℝ`, `∅`, `≥`, `∪`, `∩`, …). For embedding inside LaTeX inside
- * `\begin{aligned}`, we map those to their LaTeX commands.
+ * (`∞`, `ℝ`, `∅`, `≥`, `∪`, `∩`, …) and pseudo-LaTeX for excluded points
+ * (`ℝ \ {0}` for `1/x`, `[0 ; +∞[ \ {1}` for `√x/(x-1)`, etc.). For
+ * embedding inside `\begin{aligned}`, we map those to LaTeX commands and
+ * convert the `\ {...}` pseudo-syntax into `\setminus \{...\}`.
  */
 function intervalToLatex(domainStr: string): string {
-	return domainStr
-		.replace(/∞/g, '\\infty')
-		.replace(/ℝ/g, '\\mathbb{R}')
-		.replace(/∅/g, '\\emptyset')
-		.replace(/≤/g, '\\leq')
-		.replace(/≥/g, '\\geq')
-		.replace(/≠/g, '\\neq')
-		.replace(/∪/g, '\\cup')
-		.replace(/∩/g, '\\cap')
-		.replace(/×/g, '\\times')
-		.replace(/π/g, '\\pi');
+	return (
+		domainStr
+			.replace(/∞/g, '\\infty')
+			.replace(/ℝ/g, '\\mathbb{R}')
+			.replace(/∅/g, '\\emptyset')
+			.replace(/≤/g, '\\leq')
+			.replace(/≥/g, '\\geq')
+			.replace(/≠/g, '\\neq')
+			.replace(/∪/g, '\\cup')
+			.replace(/∩/g, '\\cap')
+			.replace(/×/g, '\\times')
+			.replace(/π/g, '\\pi')
+			// Excluded points: `\ {a, b}` → `\setminus \{a, b\}`. Run after the
+			// other replacements so we only match the literal backslash-space-brace
+			// produced by `formatInterval` (cf. format.ts:137).
+			.replace(/\\ \{([^{}]*)\}/g, '\\setminus \\{$1\\}')
+	);
 }
 
 /**

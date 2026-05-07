@@ -100,9 +100,9 @@ Expression: \\dfrac{\\ln(x)}{x} (variable: x)
 - [ln_constraint] Contrainte du logarithme népérien
   \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x > 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\end{aligned}
 - [division_constraint] Contrainte de la division
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\setminus \\{0\\} \\end{aligned}
 - [intersection] Intersection des contraintes
-  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\setminus \\{0\\} \\end{aligned}
 Domaine final: ]0 ; +∞[ \\ {0}
 
 ========== LYCEE (detailed) ==========
@@ -111,19 +111,19 @@ Domaine final: ]0 ; +∞[ \\ {0}
   \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x > 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\end{aligned}
 - [division_constraint] Contrainte de la division
   · Pour que la division soit définie, il faut x ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\setminus \\{0\\} \\end{aligned}
 - [intersection] Intersection des contraintes
   · Le domaine de définition est l’intersection de toutes les contraintes individuelles.
-  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\setminus \\{0\\} \\end{aligned}
 Domaine final: ]0 ; +∞[ \\ {0}
 
 ========== SUPERIEUR (summarized) ==========
 - [ln_constraint] ln u défini
   \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x > 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\end{aligned}
 - [division_constraint] u ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\setminus \\{0\\} \\end{aligned}
 - [intersection] Intersection
-  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\setminus \\{0\\} \\end{aligned}
 Domaine final: ]0 ; +∞[ \\ {0}
 
 ========== SUPERIEUR (detailed) ==========
@@ -132,10 +132,10 @@ Domaine final: ]0 ; +∞[ \\ {0}
   \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x > 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\end{aligned}
 - [division_constraint] u ≠ 0
   · Pour que la division soit définie, il faut x ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } ]0 ; +\\infty[ \\setminus \\{0\\} \\end{aligned}
 - [intersection] Intersection
   · D = ⋂ contraintes.
-  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Domaine : } ]0 ; +\\infty[ \\setminus \\{0\\} \\end{aligned}
 Domaine final: ]0 ; +∞[ \\ {0}
 "
 `;
@@ -150,9 +150,9 @@ Expression: \\dfrac{\\sqrt{x}}{x - 1} (variable: x)
 - [sqrt_constraint] Contrainte de la racine carrée
   \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
 - [division_constraint] Contrainte de la division
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\setminus \\{1\\} \\end{aligned}
 - [intersection] Intersection des contraintes
-  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\setminus \\{1\\} \\end{aligned}
 Domaine final: [0 ; +∞[ \\ {1}
 
 ========== LYCEE (detailed) ==========
@@ -161,19 +161,19 @@ Domaine final: [0 ; +∞[ \\ {1}
   \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
 - [division_constraint] Contrainte de la division
   · Pour que la division soit définie, il faut x - 1 ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\setminus \\{1\\} \\end{aligned}
 - [intersection] Intersection des contraintes
   · Le domaine de définition est l’intersection de toutes les contraintes individuelles.
-  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\setminus \\{1\\} \\end{aligned}
 Domaine final: [0 ; +∞[ \\ {1}
 
 ========== SUPERIEUR (summarized) ==========
 - [sqrt_constraint] √u défini
   \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
 - [division_constraint] u ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\setminus \\{1\\} \\end{aligned}
 - [intersection] Intersection
-  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\setminus \\{1\\} \\end{aligned}
 Domaine final: [0 ; +∞[ \\ {1}
 
 ========== SUPERIEUR (detailed) ==========
@@ -182,10 +182,10 @@ Domaine final: [0 ; +∞[ \\ {1}
   \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
 - [division_constraint] u ≠ 0
   · Pour que la division soit définie, il faut x - 1 ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x - 1} \\\\ &\\text{Contrainte : } x - 1 \\neq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\setminus \\{1\\} \\end{aligned}
 - [intersection] Intersection
   · D = ⋂ contraintes.
-  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\ {1} \\end{aligned}
+  \\begin{aligned} &\\text{Domaine : } [0 ; +\\infty[ \\setminus \\{1\\} \\end{aligned}
 Domaine final: [0 ; +∞[ \\ {1}
 "
 `;
@@ -228,24 +228,24 @@ Expression: \\dfrac{1}{x + 2} (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [division_constraint] Contrainte de la division
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {-2} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{-2\\} \\end{aligned}
 Domaine final: ℝ \\ {-2}
 
 ========== LYCEE (detailed) ==========
 - [division_constraint] Contrainte de la division
   · Pour que la division soit définie, il faut x + 2 ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {-2} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{-2\\} \\end{aligned}
 Domaine final: ℝ \\ {-2}
 
 ========== SUPERIEUR (summarized) ==========
 - [division_constraint] u ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {-2} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{-2\\} \\end{aligned}
 Domaine final: ℝ \\ {-2}
 
 ========== SUPERIEUR (detailed) ==========
 - [division_constraint] u ≠ 0
   · Pour que la division soit définie, il faut x + 2 ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {-2} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x + 2} \\\\ &\\text{Contrainte : } x + 2 \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{-2\\} \\end{aligned}
 Domaine final: ℝ \\ {-2}
 "
 `;
@@ -258,24 +258,24 @@ Expression: \\dfrac{1}{x} (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [division_constraint] Contrainte de la division
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{0\\} \\end{aligned}
 Domaine final: ℝ \\ {0}
 
 ========== LYCEE (detailed) ==========
 - [division_constraint] Contrainte de la division
   · Pour que la division soit définie, il faut x ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{0\\} \\end{aligned}
 Domaine final: ℝ \\ {0}
 
 ========== SUPERIEUR (summarized) ==========
 - [division_constraint] u ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{0\\} \\end{aligned}
 Domaine final: ℝ \\ {0}
 
 ========== SUPERIEUR (detailed) ==========
 - [division_constraint] u ≠ 0
   · Pour que la division soit définie, il faut x ≠ 0
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0} \\end{aligned}
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{0\\} \\end{aligned}
 Domaine final: ℝ \\ {0}
 "
 `;
