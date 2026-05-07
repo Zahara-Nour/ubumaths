@@ -330,9 +330,55 @@ fix ». 2 fixes appliqués post-review :
 
 ---
 
-## Track D — En attente
+## Track D — Decimal mantissas dans scientific-notation ✅ Livré
 
-Statut : non démarré.
+**Date** : 2026-05-07
+**Effort réel** : ~30 min (estimation prompt révisée : 3-4h — gain via
+décision arbitrée en amont sur la représentation `{ digits: bigint,
+decimalPos: number }`)
+**Tests ajoutés** : 15
+**Régressions** : 0
+
+### Décision arbitrée (pré-implémentation)
+
+Représentation unique `Mantissa = { digits: bigint, decimalPos: number }`
+(significand + position du point depuis la droite). Sign porté séparément
+(cohérent avec `aSign: 1 | -1` actuel). Toute l'arithmétique en bigint —
+**zéro float drift**.
+
+### Fichiers modifiés
+
+| Fichier                                                                           | Changement                                                                                                                                                                                                                                                                      |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/mathAST/pedagogical-arithmetic/pedagogical-rules/scientific-notation.ts` | Ajout 5 helpers (`parseMantissa`, `formatMantissa`, `multiplyMantissas`, `addSignedMantissas`, `normalizeScientific`). `applyMultiplyScientific` et `applyAddScientificSamePower` réécrits pour supporter mantissas décimales. JSDoc module + commentaire ligne 207 mis à jour. |
+
+### Tests ajoutés
+
+| Fichier                                         | Tests                                                                                                                                                                                                                                             |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `__tests__/scientific-notation-decimal.test.ts` | 15 (basic decimal product, renormalize up/down, deep underflow `(0.001 × 10⁰) × 1 → 1 × 10⁻³`, no float drift `(0.1)² → 1 × 10⁰`, signed decimal, zero-mantissa guard, addition + renormalize, opposite-sign cancellation, 2 régressions integer) |
+
+### Code review
+
+`code-reviewer` (Opus). Verdict : « Ready to merge with one test title
+fix ». 3 fixes appliqués post-review :
+
+1. **Minor** — Test title obsolète : `'no float drift: (0.1 × 10¹)² → 1 × 10⁻¹'` (faux) corrigé en `'... → 1 × 10⁰'`.
+2. **Minor (note documentaire)** — JSDoc `normalizeScientific` enrichie pour expliquer que la représentation après normalize peut être non-minimale (ex: `10 → {digits:10n, decimalPos:1}` au lieu de `{1n, 0}`). Avertissement caller : terminal step uniquement.
+3. **Suggestion (test)** — Ajout test « zero-mantissa guard » : `(0 × 10³) × (2 × 10²)` ne fire pas (rule fizzle). Documente l'intent.
+
+Confirmation reviewer : aucun `Number()` / `parseFloat()` / float arithmetic dans le code path. Float drift requirement satisfait.
+
+### Quality checks
+
+- ESLint : clean
+- Tests Track D : 15/15 verts
+- Tests régression : `pedagogical-arithmetic` 367/367, mathAST complet
+  13447/13447 (0 régression)
+
+### Commit
+
+À créer.
 
 ---
 
@@ -347,4 +393,5 @@ Statut : non démarré.
   - `bff974c95` — Track C
   - `f7c58fe6d` — Track E
   - `3ddaddd12` — Track F
-  - Track B — à venir
+  - `7d0c5b5d4` — Track B
+  - Track D — à venir
