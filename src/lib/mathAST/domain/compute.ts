@@ -15,6 +15,7 @@ import type { DomainRule } from './enhanced-step-types';
 import { getConstraintRuleForFunction } from './enhanced-step-types';
 import type { DomainStepRecorder } from './domain-step-recorder';
 import { createDomainStepRecorder, getNullRecorder } from './domain-step-recorder';
+import { V1_MVP_FUNCTION_CONSTRAINT_RULES } from './mvp-rules';
 import { toLatex } from '../latex-generator';
 import type { Verbosity } from '../common/verbosity';
 import {
@@ -44,24 +45,8 @@ import {
 } from './preimage';
 
 // =============================================================================
-// V1 MVP Pedagogical Recorder Set
+// Pedagogical Recorder Helpers
 // =============================================================================
-
-/**
- * Function constraint rules emitted by the V1 MVP pedagogical recorder.
- *
- * Kept here (rather than imported from `pedagogical-domain/`) to avoid a
- * circular dependency between `domain/` and `pedagogical-domain/`. The
- * canonical V1 MVP rule set lives in `pedagogical-domain/types.ts` —
- * `V1_MVP_RULES`. Both sets must stay in sync.
- */
-const V1_MVP_FUNCTION_CONSTRAINT_RULES: ReadonlySet<DomainRule> = new Set<DomainRule>([
-	'sqrt_constraint',
-	'ln_constraint',
-	'log_constraint',
-	'arcsin_constraint',
-	'arccos_constraint'
-]);
 
 /**
  * Build the LaTeX constraint string for a function constraint rule.
@@ -526,13 +511,16 @@ function computeFunctionDomain(
 		const constraintRule = getConstraintRuleForFunction(node.name);
 		if (constraintRule && V1_MVP_FUNCTION_CONSTRAINT_RULES.has(constraintRule)) {
 			const argLatex = toLatex(arg);
+			// `computePreimage` returns `Domain | null`. When null (argument too
+			// complex to invert), omit `intermediateDomain` so the renderer
+			// falls back to the 2-line format.
 			options.recorder.recordWithTemplate(
 				constraintRule,
 				argLatex,
 				buildConstraintLatex(constraintRule, argLatex),
 				{ expr: argLatex },
 				{
-					intermediateDomain: preimage ?? undefined,
+					intermediateDomain: preimage === null ? undefined : preimage,
 					verbosityLevel: 'summarized'
 				}
 			);

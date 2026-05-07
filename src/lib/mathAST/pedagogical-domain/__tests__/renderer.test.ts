@@ -204,6 +204,26 @@ describe('PedagogicalDomainRenderer — format aligned 3-lignes', () => {
 		expect(rendered.expressionLatex).toContain('\\setminus');
 		expect(rendered.expressionLatex).toMatch(/\\\{[^{}]*\\\}/); // \{...\} block
 	});
+
+	it('falls back to 2-lines when intermediateDomain is undefined', () => {
+		// Synthesize a step without `intermediateDomain` — covers the case
+		// where `computePreimage` returned null (argument too complex to
+		// invert). The renderer must produce Expression + Contrainte only,
+		// no Domaine line.
+		const stepWithoutDomain = {
+			id: 1,
+			rule: 'sqrt_constraint' as const,
+			description: 'sqrt constraint',
+			expression: 'f(x)',
+			constraint: 'f(x) \\geq 0',
+			reasoning: 'placeholder',
+			verbosityLevel: 'summarized' as const
+		};
+		const rendered = renderer.render(stepWithoutDomain, RENDER_OPTIONS_LYCEE);
+		expect(rendered.expressionLatex).toContain('\\text{Expression : }');
+		expect(rendered.expressionLatex).toContain('\\text{Contrainte : }');
+		expect(rendered.expressionLatex).not.toContain('\\text{Domaine : }');
+	});
 });
 
 describe('PedagogicalDomainRenderer — renderAll', () => {
