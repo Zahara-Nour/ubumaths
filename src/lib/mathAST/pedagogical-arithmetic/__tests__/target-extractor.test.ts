@@ -130,6 +130,49 @@ describe('extractPedagogicalTarget', () => {
 		});
 	});
 
+	describe('expressionName deduction from blank (Track A)', () => {
+		it('deduces expressionName from blank.expressionName when 3rd arg is omitted', () => {
+			const instance = buildInstance({
+				expressions: [{ name: 'expression1', latex: '5', answerFormat: '10^?' }]
+			});
+			const blank = buildBlank({ expressionName: 'expression1' });
+			const target = extractPedagogicalTarget(instance, blank);
+			expect(target.answerFormat).toBe('10^?');
+		});
+
+		it('explicit 3rd arg wins over blank.expressionName when both are provided', () => {
+			const instance = buildInstance({
+				expressions: [
+					{ name: 'expression1', latex: '5', answerFormat: '10^?' },
+					{ name: 'expression2', latex: '12', answerFormat: '?' }
+				]
+			});
+			const blank = buildBlank({ expressionName: 'expression1' });
+			// Caller explicitly passes 'expression2' — must win.
+			const target = extractPedagogicalTarget(instance, blank, 'expression2');
+			expect(target.answerFormat).toBe('?');
+		});
+
+		it('returns undefined when neither blank.expressionName nor 3rd arg are set', () => {
+			const instance = buildInstance({
+				expressions: [{ name: 'expression1', latex: '5', answerFormat: '10^?' }]
+			});
+			const blank = buildBlank({ expressionName: undefined });
+			const target = extractPedagogicalTarget(instance, blank);
+			expect(target.answerFormat).toBeUndefined();
+		});
+
+		it('preserves pattern 3 (caller without blank, 3rd arg only) — regression guard', () => {
+			// Pattern 3 from the prompt: callers may invoke with no blank but
+			// an explicit expressionName — must keep working without changes.
+			const instance = buildInstance({
+				expressions: [{ name: 'expression1', latex: '5', answerFormat: '10^?' }]
+			});
+			const target = extractPedagogicalTarget(instance, undefined, 'expression1');
+			expect(target.answerFormat).toBe('10^?');
+		});
+	});
+
 	describe('strict-cosmetics filter', () => {
 		it('keeps only strict modes', () => {
 			const constraints: ConstraintOptions = {

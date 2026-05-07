@@ -352,6 +352,90 @@ describe('Fill-in-blanks: expression convention', () => {
 		expect(result.instance.expressions![0].answerFormat).toContain('\\placeholder[0]{}');
 		expect(result.instance.expressions![1].answerFormat).toContain('\\placeholder[1]{}');
 	});
+
+	// =========================================================================
+	// Track A — InstanceBlank.expressionName propagation (end-to-end)
+	// =========================================================================
+
+	it('populates blank.expressionName from <<expr:NAME>> marker (single blank)', () => {
+		const template = makeFillInTemplate({
+			statement: templateMarkdown('$${{expression1}}$$'),
+			variables: [
+				{ name: 'a', expression: '2' },
+				{ name: 'b', expression: '3' },
+				{ name: 'expression1', expression: '{{a}}+{{b}}' }
+			],
+			answerFormats: { expression1: '?' },
+			blanks: [{ expectedAnswer: '{{eval:a+b}}' }]
+		});
+
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.blanks).toHaveLength(1);
+		expect(result.instance.blanks![0].expressionName).toBe('expression1');
+	});
+
+	it('populates expressionName on each blank when answerFormat has multiple ?', () => {
+		const template = makeFillInTemplate({
+			statement: templateMarkdown('$${{expression1}}$$'),
+			variables: [
+				{ name: 'a', expression: '2' },
+				{ name: 'b', expression: '3' },
+				{ name: 'expression1', expression: '{{a}}*10^{{b}}' }
+			],
+			answerFormats: { expression1: '? \\times 10^{?}' },
+			blanks: [{ expectedAnswer: '{{eval:a}}' }, { expectedAnswer: '{{eval:b}}' }]
+		});
+
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.blanks).toHaveLength(2);
+		expect(result.instance.blanks![0].expressionName).toBe('expression1');
+		expect(result.instance.blanks![1].expressionName).toBe('expression1');
+	});
+
+	it('leaves expressionName undefined for blanks unrelated to a marker', () => {
+		const template = makeFillInTemplate({
+			statement: templateMarkdown('$?+5=10$'),
+			blanks: [{ expectedAnswer: '5' }]
+		});
+
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.blanks).toHaveLength(1);
+		expect(result.instance.blanks![0].expressionName).toBeUndefined();
+	});
+
+	it('mixes marker blank and plain blank — only the marker blank carries expressionName', () => {
+		// Mixed statement: one expression-marker blank + one plain math `?` blank.
+		// Verifies the marker mapping does NOT pollute non-marker blanks.
+		const template = makeFillInTemplate({
+			statement: templateMarkdown('$${{expression1}}$$ et $?$'),
+			variables: [
+				{ name: 'a', expression: '2' },
+				{ name: 'b', expression: '3' },
+				{ name: 'expression1', expression: '{{a}}+{{b}}' }
+			],
+			answerFormats: { expression1: '?' },
+			blanks: [{ expectedAnswer: '{{eval:a+b}}' }, { expectedAnswer: '7' }]
+		});
+
+		const result = generateInstance(template, 42);
+		expect(result.success).toBe(true);
+		if (!result.success) return;
+
+		expect(result.instance.blanks).toHaveLength(2);
+		// Index 0 is the marker blank → carries expressionName.
+		expect(result.instance.blanks![0].expressionName).toBe('expression1');
+		// Index 1 is the plain `?` blank → no expressionName.
+		expect(result.instance.blanks![1].expressionName).toBeUndefined();
+	});
 });
 
 // ============================================================================

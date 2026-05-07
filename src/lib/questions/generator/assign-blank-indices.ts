@@ -27,11 +27,26 @@ export interface AssignBlankIndicesResult {
 	totalBlanks: number;
 	/** Type of each blank in order: 'math' for ? in $...$, 'text' for [_] in text */
 	blankTypes: ('math' | 'text')[];
+	/**
+	 * Map blank index → expression name for blanks that originate from a
+	 * `<<expr:NAME>>` marker (either the `?` in `answerFormats[NAME]` or the
+	 * `?` in the matching math content). Allows downstream consumers (notably
+	 * `instance-generator.ts`) to populate `InstanceBlank.expressionName` so
+	 * pedagogical pipelines can look up the linked answerFormat without the
+	 * caller having to know the mapping.
+	 *
+	 * Undefined when no `<<expr:NAME>>` marker matched a known answerFormat.
+	 */
+	expressionNameByIndex?: Record<number, string>;
 }
 
 /**
  * Regex to match expression markers in math zones: <<expr:NAME>>
- * NAME starts with "expression" followed by alphanumeric characters.
+ * NAME MUST start with the literal string "expression" (e.g. `expression1`,
+ * `expression2`, `expressionA`) — markers like `<<expr:foo>>` or
+ * `<<expr:myVar>>` will NOT match and will fall through silently to the
+ * regular `?` replacement path. Authors must follow the `expression*`
+ * variable convention.
  */
 const EXPR_MARKER_REGEX = /^<<expr:(expression[a-zA-Z0-9]*)>>/;
 
@@ -55,6 +70,7 @@ export function assignBlankIndices(
 	let counter = 0;
 	const blankTypes: ('math' | 'text')[] = [];
 	const modifiedAnswerFormats = answerFormats ? { ...answerFormats } : undefined;
+	const expressionNameByIndex: Record<number, string> = {};
 
 	// Split statement into math zones and text zones, preserving order.
 	// We need to process left-to-right, handling math zones and text zones differently.
@@ -77,6 +93,7 @@ export function assignBlankIndices(
 					if (char === '?') {
 						modifiedFormat += `\\placeholder[${counter}]{}`;
 						indices.push(counter);
+						expressionNameByIndex[counter] = exprName;
 						counter++;
 						blankTypes.push('math');
 					} else {
@@ -140,11 +157,13 @@ export function assignBlankIndices(
 		}
 	}
 
+	const hasExpressionMapping = Object.keys(expressionNameByIndex).length > 0;
 	return {
 		statement: resultParts.join(''),
 		...(modifiedAnswerFormats !== undefined && { answerFormats: modifiedAnswerFormats }),
 		totalBlanks: counter,
-		blankTypes
+		blankTypes,
+		...(hasExpressionMapping && { expressionNameByIndex })
 	};
 }
 

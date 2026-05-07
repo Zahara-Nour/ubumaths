@@ -543,6 +543,19 @@ export interface InstanceBlank {
 	/** Resolved pre-filled value */
 	prefilled?: string;
 
+	/**
+	 * Name of the `<<expr:NAME>>` expression this blank originates from, when
+	 * applicable. Populated by `instance-generator.ts` from
+	 * `AssignBlankIndicesResult.expressionNameByIndex`. Lets pedagogical
+	 * pipelines (`extractPedagogicalTarget`) look up the linked `answerFormat`
+	 * via `instance.expressions[]` without the caller having to know the
+	 * mapping — complements the legacy 3rd-arg pattern (caller-without-blank
+	 * pattern still requires the explicit arg).
+	 *
+	 * Undefined for blanks unrelated to a `<<expr:NAME>>` marker.
+	 */
+	expressionName?: string;
+
 	// --- Math blank validation (merged from blankDefaults + per-blank override) ---
 	precision?: PrecisionType;
 	requiredForm?: RequiredForm;
