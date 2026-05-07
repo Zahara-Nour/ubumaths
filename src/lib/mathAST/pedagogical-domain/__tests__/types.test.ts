@@ -61,12 +61,24 @@ describe('V1_MVP_RULES', () => {
 		expect(V1_MVP_RULES.has('empty')).toBe(true);
 	});
 
-	it('excludes V1.1 rules', () => {
-		expect(V1_MVP_RULES.has('tan_constraint')).toBe(false);
+	it('includes V1.1.a rules (trig, hyperbolic inverses, power)', () => {
+		expect(V1_MVP_RULES.has('tan_constraint')).toBe(true);
+		expect(V1_MVP_RULES.has('cot_constraint')).toBe(true);
+		expect(V1_MVP_RULES.has('sec_constraint')).toBe(true);
+		expect(V1_MVP_RULES.has('csc_constraint')).toBe(true);
+		expect(V1_MVP_RULES.has('arccosh_constraint')).toBe(true);
+		expect(V1_MVP_RULES.has('arctanh_constraint')).toBe(true);
+		expect(V1_MVP_RULES.has('power_constraint')).toBe(true);
+		expect(V1_MVP_RULES.has('even_root_constraint')).toBe(true);
+	});
+
+	it('still excludes V1.1.b rules (preimage, composition, set ops)', () => {
 		expect(V1_MVP_RULES.has('preimage_quadratic')).toBe(false);
+		expect(V1_MVP_RULES.has('preimage_cubic')).toBe(false);
 		expect(V1_MVP_RULES.has('composition')).toBe(false);
-		expect(V1_MVP_RULES.has('arccosh_constraint')).toBe(false);
 		expect(V1_MVP_RULES.has('union')).toBe(false);
+		expect(V1_MVP_RULES.has('complement')).toBe(false);
+		expect(V1_MVP_RULES.has('difference')).toBe(false);
 		expect(V1_MVP_RULES.has('periodic_exclusion')).toBe(false);
 	});
 });

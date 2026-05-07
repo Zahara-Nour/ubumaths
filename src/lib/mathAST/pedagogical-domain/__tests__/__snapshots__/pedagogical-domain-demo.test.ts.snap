@@ -370,6 +370,96 @@ Domaine final: ]-0.5 ; +∞[
 "
 `;
 
+exports[`Pedagogical domain demo cases (LaTeX format) > puissances > renders: (x-1)^(-2) 1`] = `
+"
+###### (x-1)^(-2) ######
+
+Expression: (x - 1)^{-2} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [power_constraint] Contrainte de la puissance négative
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ &\\text{Contrainte : } \\left( x - 1 \\right) \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{1\\} \\end{aligned}
+Domaine final: ℝ \\ {1}
+
+========== LYCEE (detailed) ==========
+- [power_constraint] Contrainte de la puissance négative
+  · Pour que (\\left( x - 1 \\right))⁻ⁿ soit définie, il faut \\left( x - 1 \\right) ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ &\\text{Contrainte : } \\left( x - 1 \\right) \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{1\\} \\end{aligned}
+Domaine final: ℝ \\ {1}
+
+========== SUPERIEUR (summarized) ==========
+- [power_constraint] u^(-n) défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ &\\text{Contrainte : } \\left( x - 1 \\right) \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{1\\} \\end{aligned}
+Domaine final: ℝ \\ {1}
+
+========== SUPERIEUR (detailed) ==========
+- [power_constraint] u^(-n) défini
+  · Pour que (\\left( x - 1 \\right))⁻ⁿ soit définie, il faut \\left( x - 1 \\right) ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{\\left( x - 1 \\right)} \\\\ &\\text{Contrainte : } \\left( x - 1 \\right) \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{1\\} \\end{aligned}
+Domaine final: ℝ \\ {1}
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > puissances > renders: x^(1/2) (racine paire fractionnaire) 1`] = `
+"
+###### x^(1/2) (racine paire fractionnaire) ######
+
+Expression: x^{1/2} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [even_root_constraint] Contrainte de la racine paire
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
+Domaine final: [0 ; +∞[
+
+========== LYCEE (detailed) ==========
+- [even_root_constraint] Contrainte de la racine paire
+  · Pour que (x)^(1/2n) soit définie, il faut x ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
+Domaine final: [0 ; +∞[
+
+========== SUPERIEUR (summarized) ==========
+- [even_root_constraint] u^(1/2n) défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
+Domaine final: [0 ; +∞[
+
+========== SUPERIEUR (detailed) ==========
+- [even_root_constraint] u^(1/2n) défini
+  · Pour que (x)^(1/2n) soit définie, il faut x ≥ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\geq 0 \\\\ &\\text{Domaine : } [0 ; +\\infty[ \\end{aligned}
+Domaine final: [0 ; +∞[
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > puissances > renders: x⁻¹ (puissance négative entière) 1`] = `
+"
+###### x⁻¹ (puissance négative entière) ######
+
+Expression: x^{-1} (variable: x)
+
+========== LYCEE (summarized) ==========
+- [power_constraint] Contrainte de la puissance négative
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{0\\} \\end{aligned}
+Domaine final: ℝ \\ {0}
+
+========== LYCEE (detailed) ==========
+- [power_constraint] Contrainte de la puissance négative
+  · Pour que (x)⁻ⁿ soit définie, il faut x ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{0\\} \\end{aligned}
+Domaine final: ℝ \\ {0}
+
+========== SUPERIEUR (summarized) ==========
+- [power_constraint] u^(-n) défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{0\\} \\end{aligned}
+Domaine final: ℝ \\ {0}
+
+========== SUPERIEUR (detailed) ==========
+- [power_constraint] u^(-n) défini
+  · Pour que (x)⁻ⁿ soit définie, il faut x ≠ 0
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\setminus \\{0\\} \\end{aligned}
+Domaine final: ℝ \\ {0}
+"
+`;
+
 exports[`Pedagogical domain demo cases (LaTeX format) > racines > renders: √(2x + 3) 1`] = `
 "
 ###### √(2x + 3) ######
@@ -457,5 +547,95 @@ Domaine final: ℝ
   · Pour que √(x^2 + 1) soit définie, il faut x^2 + 1 ≥ 0
   \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x^2 + 1} \\\\ &\\text{Contrainte : } x^2 + 1 \\geq 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
 Domaine final: ℝ
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > trigonometriques > renders: cot(x) 1`] = `
+"
+###### cot(x) ######
+
+Expression: \\cot(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [cot_constraint] Contrainte de la cotangente
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {k\\cdot \\pi : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {k·\\pi : k ∈ ℤ}
+
+========== LYCEE (detailed) ==========
+- [cot_constraint] Contrainte de la cotangente
+  · Pour que cot(x) soit définie, il faut x ≠ kπ
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {k\\cdot \\pi : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {k·\\pi : k ∈ ℤ}
+
+========== SUPERIEUR (summarized) ==========
+- [cot_constraint] cot u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {k\\cdot \\pi : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {k·\\pi : k ∈ ℤ}
+
+========== SUPERIEUR (detailed) ==========
+- [cot_constraint] cot u défini
+  · Pour que cot(x) soit définie, il faut x ≠ kπ
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {k\\cdot \\pi : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {k·\\pi : k ∈ ℤ}
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > trigonometriques > renders: tan(2x) 1`] = `
+"
+###### tan(2x) ######
+
+Expression: \\tan(2x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [tan_constraint] Contrainte de la tangente
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x} \\\\ &\\text{Contrainte : } 2 x \\neq \\dfrac{\\pi}{2} + k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0.7853981633974483 + k\\cdot 1.5707963267948966 : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {0.7853981633974483 + k·1.5707963267948966 : k ∈ ℤ}
+
+========== LYCEE (detailed) ==========
+- [tan_constraint] Contrainte de la tangente
+  · Pour que tan(2 x) soit définie, il faut 2 x ≠ π/2 + kπ
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x} \\\\ &\\text{Contrainte : } 2 x \\neq \\dfrac{\\pi}{2} + k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0.7853981633974483 + k\\cdot 1.5707963267948966 : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {0.7853981633974483 + k·1.5707963267948966 : k ∈ ℤ}
+
+========== SUPERIEUR (summarized) ==========
+- [tan_constraint] tan u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x} \\\\ &\\text{Contrainte : } 2 x \\neq \\dfrac{\\pi}{2} + k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0.7853981633974483 + k\\cdot 1.5707963267948966 : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {0.7853981633974483 + k·1.5707963267948966 : k ∈ ℤ}
+
+========== SUPERIEUR (detailed) ==========
+- [tan_constraint] tan u défini
+  · Pour que tan(2 x) soit définie, il faut 2 x ≠ π/2 + kπ
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{2 x} \\\\ &\\text{Contrainte : } 2 x \\neq \\dfrac{\\pi}{2} + k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {0.7853981633974483 + k\\cdot 1.5707963267948966 : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {0.7853981633974483 + k·1.5707963267948966 : k ∈ ℤ}
+"
+`;
+
+exports[`Pedagogical domain demo cases (LaTeX format) > trigonometriques > renders: tan(x) 1`] = `
+"
+###### tan(x) ######
+
+Expression: \\tan(x) (variable: x)
+
+========== LYCEE (summarized) ==========
+- [tan_constraint] Contrainte de la tangente
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq \\dfrac{\\pi}{2} + k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {\\pi:/2 + k\\cdot \\pi : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {\\pi:/2 + k·\\pi : k ∈ ℤ}
+
+========== LYCEE (detailed) ==========
+- [tan_constraint] Contrainte de la tangente
+  · Pour que tan(x) soit définie, il faut x ≠ π/2 + kπ
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq \\dfrac{\\pi}{2} + k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {\\pi:/2 + k\\cdot \\pi : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {\\pi:/2 + k·\\pi : k ∈ ℤ}
+
+========== SUPERIEUR (summarized) ==========
+- [tan_constraint] tan u défini
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq \\dfrac{\\pi}{2} + k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {\\pi:/2 + k\\cdot \\pi : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {\\pi:/2 + k·\\pi : k ∈ ℤ}
+
+========== SUPERIEUR (detailed) ==========
+- [tan_constraint] tan u défini
+  · Pour que tan(x) soit définie, il faut x ≠ π/2 + kπ
+  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{x} \\\\ &\\text{Contrainte : } x \\neq \\dfrac{\\pi}{2} + k\\pi, \\; k \\in \\mathbb{Z} \\\\ &\\text{Domaine : } \\mathbb{R} \\ {\\pi:/2 + k\\cdot \\pi : k \\in \\mathbb{Z}} \\end{aligned}
+Domaine final: ℝ \\ {\\pi:/2 + k·\\pi : k ∈ ℤ}
 "
 `;

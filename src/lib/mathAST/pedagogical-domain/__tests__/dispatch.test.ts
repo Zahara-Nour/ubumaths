@@ -55,20 +55,39 @@ describe('generatePedagogicalDomainSteps — universal cases', () => {
 	});
 });
 
-describe('generatePedagogicalDomainSteps — edge cases (V1 limitations)', () => {
-	it('treats tan(x) as universal (V1 limitation, fixed in V1.1)', () => {
-		// `tan(x)` returns a periodic_exclusion domain in `compute.ts`; the
-		// recorder emits no step for `tan_constraint` in V1, so the dispatcher
-		// does not throw (no out-of-MVP rule in the trace) and synthesizes a
-		// `universal` step — incorrect for tan but consistent with the V1
-		// contract « throw iff a non-MVP rule appears in the trace ».
-		//
-		// V1.1 will instrument `tan_constraint` directly and throw cleanly
-		// (see `docs/wip/domain-renderer-progress.md` Limitations connues V1).
+describe('generatePedagogicalDomainSteps — V1.1.a rules', () => {
+	it('emits tan_constraint for tan(x) at lycée', () => {
 		const expr = parseLatex('\\tan(x)');
 		const result = generatePedagogicalDomainSteps(expr, { schoolLevel: 'lycee' });
 		expect(result.steps).toHaveLength(1);
-		expect(result.steps[0].rule).toBe('universal');
+		expect(result.steps[0].rule).toBe('tan_constraint');
+	});
+
+	it('refuses arccosh(x) at lycée (out of syllabus)', () => {
+		const expr = parseLatex('\\sqrt{x - 2}'); // placeholder LaTeX
+		// Use parseCustomSafe for arccosh which the LaTeX parser doesn't know.
+		// Inline import via dynamic require would be heavy — simpler to use
+		// a representative function-node directly.
+		const arccoshExpr = {
+			type: 'function' as const,
+			name: 'arccosh',
+			args: [{ type: 'variable' as const, name: 'x' }]
+		};
+		expect(() => generatePedagogicalDomainSteps(arccoshExpr, { schoolLevel: 'lycee' })).toThrow(
+			PedagogicalDomainNotImplemented
+		);
+		expect(expr).toBeTruthy();
+	});
+
+	it('accepts arccosh(x) at supérieur', () => {
+		const arccoshExpr = {
+			type: 'function' as const,
+			name: 'arccosh',
+			args: [{ type: 'variable' as const, name: 'x' }]
+		};
+		expect(() =>
+			generatePedagogicalDomainSteps(arccoshExpr, { schoolLevel: 'superieur' })
+		).not.toThrow();
 	});
 });
 

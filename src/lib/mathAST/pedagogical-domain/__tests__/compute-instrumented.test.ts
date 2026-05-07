@@ -12,6 +12,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { parseLatex } from '$lib/mathAST/parser';
+import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { computeDomain, createDomainStepRecorder, getNullRecorder } from '$lib/mathAST/domain';
 
 describe('compute.ts instrumentation — sqrt_constraint', () => {
@@ -155,15 +156,64 @@ describe('compute.ts instrumentation — composite cases (intersection)', () => 
 	});
 });
 
-describe('compute.ts instrumentation — out-of-MVP rules are silent', () => {
-	it('does NOT emit a step for tan(x) (V1.1 scope)', () => {
+describe('compute.ts instrumentation — V1.1 rules', () => {
+	it('emits tan_constraint for tan(x)', () => {
 		const expr = parseLatex('\\tan(x)');
 		const recorder = createDomainStepRecorder();
 		computeDomain(expr, 'x', { showSteps: true, recorder });
-		// tan_constraint is not in V1 MVP, so no step emitted.
 		const steps = recorder.getSteps();
-		const tanSteps = steps.filter((s) => s.rule === 'tan_constraint');
-		expect(tanSteps).toHaveLength(0);
+		expect(steps).toHaveLength(1);
+		expect(steps[0].rule).toBe('tan_constraint');
+		expect(steps[0].constraint).toContain('\\dfrac{\\pi}{2}');
+	});
+
+	it('emits cot_constraint for cot(x)', () => {
+		const expr = parseLatex('\\cot(x)');
+		const recorder = createDomainStepRecorder();
+		computeDomain(expr, 'x', { showSteps: true, recorder });
+		const steps = recorder.getSteps();
+		expect(steps[0].rule).toBe('cot_constraint');
+	});
+
+	it('emits arccosh_constraint for arccosh(x)', () => {
+		const parsed = parseCustomSafe('arccosh(x)');
+		expect(parsed.ast).toBeTruthy();
+		const recorder = createDomainStepRecorder();
+		computeDomain(parsed.ast!, 'x', { showSteps: true, recorder });
+		const steps = recorder.getSteps();
+		const arccoshSteps = steps.filter((s) => s.rule === 'arccosh_constraint');
+		expect(arccoshSteps.length).toBeGreaterThan(0);
+		expect(arccoshSteps[0].constraint).toContain('\\geq 1');
+	});
+
+	it('emits arctanh_constraint for arctanh(x)', () => {
+		const parsed = parseCustomSafe('arctanh(x)');
+		expect(parsed.ast).toBeTruthy();
+		const recorder = createDomainStepRecorder();
+		computeDomain(parsed.ast!, 'x', { showSteps: true, recorder });
+		const steps = recorder.getSteps();
+		const arctanhSteps = steps.filter((s) => s.rule === 'arctanh_constraint');
+		expect(arctanhSteps.length).toBeGreaterThan(0);
+	});
+
+	it('emits power_constraint for x^(-1)', () => {
+		const expr = parseLatex('x^{-1}');
+		const recorder = createDomainStepRecorder();
+		computeDomain(expr, 'x', { showSteps: true, recorder });
+		const steps = recorder.getSteps();
+		const powerSteps = steps.filter((s) => s.rule === 'power_constraint');
+		expect(powerSteps.length).toBeGreaterThan(0);
+		expect(powerSteps[0].constraint).toContain('\\neq 0');
+	});
+
+	it('emits even_root_constraint for x^(1/2)', () => {
+		const expr = parseLatex('x^{1/2}');
+		const recorder = createDomainStepRecorder();
+		computeDomain(expr, 'x', { showSteps: true, recorder });
+		const steps = recorder.getSteps();
+		const rootSteps = steps.filter((s) => s.rule === 'even_root_constraint');
+		expect(rootSteps.length).toBeGreaterThan(0);
+		expect(rootSteps[0].constraint).toContain('\\geq 0');
 	});
 });
 

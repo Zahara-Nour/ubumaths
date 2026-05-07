@@ -65,6 +65,8 @@ function intervalToLatex(domainStr: string): string {
 		domainStr
 			.replace(/∞/g, '\\infty')
 			.replace(/ℝ/g, '\\mathbb{R}')
+			.replace(/ℤ/g, '\\mathbb{Z}')
+			.replace(/ℕ/g, '\\mathbb{N}')
 			.replace(/∅/g, '\\emptyset')
 			.replace(/≤/g, '\\leq')
 			.replace(/≥/g, '\\geq')
@@ -72,7 +74,9 @@ function intervalToLatex(domainStr: string): string {
 			.replace(/∪/g, '\\cup')
 			.replace(/∩/g, '\\cap')
 			.replace(/×/g, '\\times')
+			.replace(/·/g, '\\cdot ')
 			.replace(/π/g, '\\pi')
+			.replace(/∈/g, '\\in')
 			// Excluded points: `\ {a, b}` → `\setminus \{a, b\}`. Run after the
 			// other replacements so we only match the literal backslash-space-brace
 			// produced by `formatInterval` (cf. format.ts:137).

@@ -304,22 +304,24 @@ en profondeur (discriminator étendu, case dispatch ajouté dans
     `-\\infty` / `oo` / `+oo` / `-oo`. Catch
     `PedagogicalLimitNotImplemented` → fallback Mode A silencieux.
 
-- **`kind: 'domain'`** (livré 2026-05-07 — V1 MVP, Option C
+- **`kind: 'domain'`** (livré 2026-05-07 — V1 MVP + V1.1.a, Option C
   instrumentation directe) : domaine de définition de fonctions
-  composites. Couvre 5 rules (sqrt, ln/log, division, arcsin/arccos,
-  intersection). Format aligned 3-lignes (Expression / Contrainte /
-  Domaine). Vocabulary adaptive : lycée didactique vs supérieur
-  compact (« √u défini ⟺ u ≥ 0 »). Architecture : instrumentation
-  légère de `domain/compute.ts` (~70 LOC, 3 sites) plutôt que pipeline
-  parallèle — l'infrastructure `DomainStepRecorder` +
-  `DOMAIN_RULE_TEMPLATES` était pré-câblée mais n'avait jamais été
-  branchée. Catch `PedagogicalDomainNotImplemented` → fallback
-  Mode A silencieux. V1.1 : `tan`/`cot`, `preimage_quadratic`,
-  `composition`, hyperboliques inverses (sup), `union`/`complement`/
-  `difference`. Voir `domain-renderer-progress.md`.
+  composites. **V1 MVP** couvre 5 rules (sqrt, ln/log, division,
+  arcsin/arccos, intersection). **V1.1.a** étend avec 8 rules :
+  tan/cot/sec/csc (periodic*exclusion), arccosh/arctanh (sup uniquement,
+  refusés au lycée), power_constraint, even_root_constraint. Format
+  aligned 3-lignes (Expression / Contrainte / Domaine). Vocabulary
+  adaptive : lycée didactique vs supérieur compact (« √u défini ⟺ u ≥ 0 »).
+  Architecture : instrumentation légère de `domain/compute.ts` (~130 LOC
+  cumul V1+V1.1.a, 5 sites) plutôt que pipeline parallèle —
+  l'infrastructure `DomainStepRecorder` + `DOMAIN_RULE_TEMPLATES` était
+  pré-câblée mais n'avait jamais été branchée. Catch
+  `PedagogicalDomainNotImplemented` → fallback Mode A silencieux. V1.2 :
+  preimage*\*, composition explicite, union/complement/difference. Voir
+  `domain-renderer-progress.md`.
 
 **État actuel :** la page debug `/dashboard/admin/debug/correction-mode-b`
-expose **20 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
+expose **21 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 `linearEquationDemo` (4e équation linéaire),
 `differentiatePolynomialDemo` + `differentiateCompositionDemo`
 (1ère/Tle spé), `quadraticEquationDemo` (Tle spé),
@@ -332,7 +334,7 @@ expose **20 fixtures** : `additionGroupingDemo` (CM2 arithmétique),
 `simplifyTrigDemo` (1ère spé), `arithmeticFromBlankDemo` (CM2,
 expression nommée), `limitFactorisationDemo` + `limitInfinityDemo`
 (Tle spé limites), `domainSqrtFractionDemo` (1ère spé) +
-`domainArcsinDemo` (Tle spé domaines).
+`domainArcsinDemo` + `domainTanDemo` (Tle spé domaines V1+V1.1).
 
 Ces 9 extensions (10 → 12 kinds) valident que l'architecture Mode B est
 suffisamment robuste pour accueillir de nouveaux pipelines pédagogiques

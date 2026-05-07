@@ -41,6 +41,12 @@ const LYCEE_TITLES: Partial<Record<DomainRule, TitleFn>> = {
 	division_constraint: () => 'Contrainte de la division',
 	arcsin_constraint: () => 'Contrainte de l’arc sinus',
 	arccos_constraint: () => 'Contrainte de l’arc cosinus',
+	tan_constraint: () => 'Contrainte de la tangente',
+	cot_constraint: () => 'Contrainte de la cotangente',
+	sec_constraint: () => 'Contrainte de la sécante',
+	csc_constraint: () => 'Contrainte de la cosécante',
+	power_constraint: () => 'Contrainte de la puissance négative',
+	even_root_constraint: () => 'Contrainte de la racine paire',
 	intersection: () => 'Intersection des contraintes',
 	universal: () => 'Domaine universel',
 	empty: () => 'Domaine vide'
@@ -56,6 +62,14 @@ const SUPERIEUR_TITLES: Partial<Record<DomainRule, TitleFn>> = {
 	division_constraint: () => 'u ≠ 0',
 	arcsin_constraint: () => 'arcsin u défini',
 	arccos_constraint: () => 'arccos u défini',
+	tan_constraint: () => 'tan u défini',
+	cot_constraint: () => 'cot u défini',
+	sec_constraint: () => 'sec u défini',
+	csc_constraint: () => 'csc u défini',
+	arccosh_constraint: () => 'arccosh u défini',
+	arctanh_constraint: () => 'arctanh u défini',
+	power_constraint: () => 'u^(-n) défini',
+	even_root_constraint: () => 'u^(1/2n) défini',
 	intersection: () => 'Intersection',
 	universal: () => 'D = ℝ',
 	empty: () => 'D = ∅'
@@ -89,6 +103,17 @@ const LYCEE_EXPLANATIONS: Partial<Record<DomainRule, ExplainFn>> = {
 		step.reasoning ?? 'L’arc sinus n’est défini que pour des arguments dans [-1 ; 1].',
 	arccos_constraint: (step) =>
 		step.reasoning ?? 'L’arc cosinus n’est défini que pour des arguments dans [-1 ; 1].',
+	tan_constraint: (step) =>
+		step.reasoning ?? 'La tangente n’est pas définie aux multiples de π/2 + kπ.',
+	cot_constraint: (step) =>
+		step.reasoning ?? 'La cotangente n’est pas définie aux multiples de kπ.',
+	sec_constraint: (step) =>
+		step.reasoning ?? 'La sécante n’est pas définie aux multiples de π/2 + kπ.',
+	csc_constraint: (step) => step.reasoning ?? 'La cosécante n’est pas définie aux multiples de kπ.',
+	power_constraint: (step) =>
+		step.reasoning ?? 'Une puissance d’exposant négatif nécessite une base non nulle.',
+	even_root_constraint: (step) =>
+		step.reasoning ?? 'Une racine paire nécessite un argument positif ou nul.',
 	intersection: () =>
 		'Le domaine de définition est l’intersection de toutes les contraintes individuelles.',
 	universal: () => 'Aucune restriction particulière : le domaine est ℝ.',
@@ -105,6 +130,14 @@ const SUPERIEUR_EXPLANATIONS: Partial<Record<DomainRule, ExplainFn>> = {
 	division_constraint: (step) => step.reasoning ?? '1/u défini ⟺ u ≠ 0.',
 	arcsin_constraint: (step) => step.reasoning ?? 'arcsin u défini ⟺ |u| ≤ 1.',
 	arccos_constraint: (step) => step.reasoning ?? 'arccos u défini ⟺ |u| ≤ 1.',
+	tan_constraint: (step) => step.reasoning ?? 'tan u défini ⟺ u ≠ π/2 + kπ.',
+	cot_constraint: (step) => step.reasoning ?? 'cot u défini ⟺ u ≠ kπ.',
+	sec_constraint: (step) => step.reasoning ?? 'sec u défini ⟺ u ≠ π/2 + kπ.',
+	csc_constraint: (step) => step.reasoning ?? 'csc u défini ⟺ u ≠ kπ.',
+	arccosh_constraint: (step) => step.reasoning ?? 'arccosh u défini ⟺ u ≥ 1.',
+	arctanh_constraint: (step) => step.reasoning ?? 'arctanh u défini ⟺ |u| < 1.',
+	power_constraint: (step) => step.reasoning ?? 'u⁻ⁿ défini ⟺ u ≠ 0.',
+	even_root_constraint: (step) => step.reasoning ?? 'u^(1/2n) défini ⟺ u ≥ 0.',
 	intersection: () => 'D = ⋂ contraintes.',
 	universal: () => 'Pas de restriction : D = ℝ.',
 	empty: () => 'Contraintes incompatibles : D = ∅.'

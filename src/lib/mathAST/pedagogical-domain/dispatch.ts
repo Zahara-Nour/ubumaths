@@ -18,6 +18,7 @@ import type { MathNode } from '../types';
 import { parseLatexSafe } from '../parser';
 import { computeDomain, createDomainStepRecorder } from '../domain';
 import type { Domain, DomainRule, EnhancedDomainStep } from '../domain';
+import { LYCEE_FORBIDDEN_RULES } from '../domain/mvp-rules';
 import {
 	PedagogicalDomainNotImplemented,
 	V1_MVP_RULES,
@@ -76,6 +77,7 @@ export function generatePedagogicalDomainSteps(
 
 	const allSteps = recorder.getSteps();
 	assertOnlyMvpRules(allSteps, expression);
+	assertLevelAllowsRules(allSteps, schoolLevel, expression);
 
 	const filtered = recorder.getStepsFiltered(verbosity);
 
@@ -141,6 +143,31 @@ function assertOnlyMvpRules(steps: readonly EnhancedDomainStep[], expression: Ma
 		throw new PedagogicalDomainNotImplemented(
 			expression,
 			`out-of-MVP rules in trace: ${outOfScope.join(', ')}`
+		);
+	}
+}
+
+/**
+ * Throws when the trace contains rules that are out of syllabus at the
+ * requested level. Currently only enforced for `lycee`: hyperbolic
+ * inverses (`arccosh`, `arctanh`) are post-bac topics.
+ */
+function assertLevelAllowsRules(
+	steps: readonly EnhancedDomainStep[],
+	schoolLevel: PedagogicalDomainSchoolLevel,
+	expression: MathNode
+): void {
+	if (schoolLevel !== 'lycee') return;
+	const forbidden: DomainRule[] = [];
+	for (const step of steps) {
+		if (LYCEE_FORBIDDEN_RULES.has(step.rule)) {
+			forbidden.push(step.rule);
+		}
+	}
+	if (forbidden.length > 0) {
+		throw new PedagogicalDomainNotImplemented(
+			expression,
+			`rules out of lycée syllabus: ${forbidden.join(', ')}`
 		);
 	}
 }

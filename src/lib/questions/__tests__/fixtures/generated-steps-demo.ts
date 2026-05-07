@@ -769,6 +769,38 @@ export const domainSqrtFractionDemo: QuestionTemplate = {
 };
 
 /**
+ * Demo question : domaine de définition de tan(x) (Tle spé maths, V1.1).
+ *
+ * Contrainte de la tangente : x ≠ π/2 + kπ.
+ */
+export const domainTanDemo: QuestionTemplate = {
+	id: 'demo-domain-tan-lycee',
+	title: 'Domaine de définition tan(x) (Tle spé)',
+	status: 'published',
+	variations: [
+		{
+			statement: templateMarkdown(
+				'Déterminer le domaine de définition de $f(x) = \\tan(x)$. $D_f = ?$'
+			),
+			variables: [],
+			blanks: [{ expectedAnswer: 'R\\setminus{\\pi/2+k\\pi,k\\in Z}' }],
+			correction: {
+				feedback: { correct: templateMarkdown('Bravo !') },
+				generatedSteps: {
+					kind: 'domain',
+					expression: '\\tan(x)',
+					options: { schoolLevel: 'auto' }
+				}
+			}
+		}
+	],
+	grades: ['T_SPE'],
+	theme: 'Analyse',
+	domain: 'Fonctions',
+	level: 1
+};
+
+/**
  * Demo question : domaine de définition de arcsin(2x) (Tle spé maths).
  *
  * Contrainte de l'arc sinus : -1 ≤ 2x ≤ 1 → x ∈ [-1/2 ; 1/2].
