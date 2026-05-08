@@ -12,9 +12,20 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
-	import { FileCode, FolderOpen, Trash2, Loader2, RefreshCw, Clock, BookOpen } from 'lucide-svelte';
+	import {
+		FileCode,
+		FolderOpen,
+		Trash2,
+		Loader2,
+		RefreshCw,
+		Clock,
+		BookOpen,
+		Library
+	} from 'lucide-svelte';
 	import { pythonStore, type PythonFile } from '$lib/stores/pythonPlayground.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import LibraryBrowser from './library/LibraryBrowser.svelte';
+	import type { PythonExample } from '$lib/data/python-examples/types';
 	import type { Database } from '$lib/types/database';
 
 	// Types
@@ -191,6 +202,13 @@
 		}
 	}
 
+	function handleLoadExample(example: PythonExample): void {
+		pythonStore.loadExample(example.code);
+		toaster.success(`Exemple "${example.title}" chargé`);
+		open = false;
+		onFileOpened?.();
+	}
+
 	function formatDate(dateString: string): string {
 		const date = new Date(dateString);
 		return date.toLocaleDateString('fr-FR', {
@@ -204,17 +222,19 @@
 </script>
 
 <Dialog.Root bind:open>
-	<Dialog.Content class="max-h-[85vh] overflow-hidden sm:max-w-2xl">
+	<Dialog.Content class="max-h-[90vh] overflow-hidden sm:max-w-4xl">
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<FolderOpen class="size-5" />
-				Mes fichiers Python
+				Fichiers Python
 			</Dialog.Title>
-			<Dialog.Description>Gerez vos fichiers Python sauvegardes dans le cloud.</Dialog.Description>
+			<Dialog.Description
+				>Vos fichiers cloud, fichiers assignés et bibliothèque d'exemples.</Dialog.Description
+			>
 		</Dialog.Header>
 
 		<Tabs.Root bind:value={activeTab} class="mt-4">
-			<Tabs.List class="grid w-full {isStudent ? 'grid-cols-2' : 'grid-cols-1'}">
+			<Tabs.List class="grid w-full {isStudent ? 'grid-cols-3' : 'grid-cols-2'}">
 				<Tabs.Trigger value="my-files">
 					<FileCode class="mr-2 size-4" />
 					Mes fichiers ({myFiles.length})
@@ -222,9 +242,13 @@
 				{#if isStudent}
 					<Tabs.Trigger value="assigned">
 						<BookOpen class="mr-2 size-4" />
-						Fichiers assignes ({assignedFiles.length})
+						Fichiers assignés ({assignedFiles.length})
 					</Tabs.Trigger>
 				{/if}
+				<Tabs.Trigger value="library">
+					<Library class="mr-2 size-4" />
+					Bibliothèque
+				</Tabs.Trigger>
 			</Tabs.List>
 
 			<Tabs.Content value="my-files" class="mt-4 max-h-[50vh] overflow-y-auto">
@@ -373,6 +397,10 @@
 					{/if}
 				</Tabs.Content>
 			{/if}
+
+			<Tabs.Content value="library" class="mt-4">
+				<LibraryBrowser onLoad={handleLoadExample} />
+			</Tabs.Content>
 		</Tabs.Root>
 
 		<Dialog.Footer class="mt-4">

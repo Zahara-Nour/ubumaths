@@ -600,6 +600,19 @@ class PythonPlaygroundStore {
 	}
 
 	/**
+	 * Load a static example from the library into the editor.
+	 * The example is treated as a fresh draft (not a cloud file), so the user
+	 * can modify it freely and save it later as a new personal file.
+	 */
+	loadExample(code: string): void {
+		this.code = code;
+		this.currentFile = null;
+		this._lastSavedCode = '';
+		this.cloudError = null;
+		this.clearOutput();
+	}
+
+	/**
 	 * Save current code to cloud (create new or update existing).
 	 * If currentFile exists, updates it. Otherwise creates a new file.
 	 *

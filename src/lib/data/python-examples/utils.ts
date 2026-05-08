@@ -13,7 +13,10 @@ export function filterExamples(
 	const q = query.trim().toLowerCase();
 	return examples.filter((ex) => {
 		const matchesQuery =
-			!q || ex.title.toLowerCase().includes(q) || ex.description.toLowerCase().includes(q);
+			!q ||
+			ex.title.toLowerCase().includes(q) ||
+			ex.description.toLowerCase().includes(q) ||
+			ex.tags.some((t) => t.toLowerCase().includes(q));
 		const matchesTags = selectedTags.length === 0 || selectedTags.some((t) => ex.tags.includes(t));
 		return matchesQuery && matchesTags;
 	});
