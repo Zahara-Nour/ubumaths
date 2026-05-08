@@ -31,6 +31,7 @@ INSERT INTO python_exercises (
     starter_code,
     solution_code,
     validation_config,
+    level,
     tags,
     author_id,
     is_public
@@ -65,6 +66,7 @@ SELECT
             {"args": [100, 200], "expected": 300}
         ]
     }'::jsonb,
+    'lycee',
     ARRAY['arithmétique', 'débutant', 'fonctions'],
     first_teacher.id,
     TRUE

@@ -1786,11 +1786,69 @@ export type Database = {
 					}
 				];
 			};
+			construction_demo_scripts: {
+				Row: {
+					author_id: string;
+					created_at: string | null;
+					dsl_script: string;
+					id: string;
+					name: string;
+					updated_at: string | null;
+				};
+				Insert: {
+					author_id: string;
+					created_at?: string | null;
+					dsl_script: string;
+					id?: string;
+					name: string;
+					updated_at?: string | null;
+				};
+				Update: {
+					author_id?: string;
+					created_at?: string | null;
+					dsl_script?: string;
+					id?: string;
+					name?: string;
+					updated_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'construction_demo_scripts_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'construction_demo_scripts_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'construction_demo_scripts_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'construction_demo_scripts_author_id_fkey';
+						columns: ['author_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			constructions: {
 				Row: {
 					author_id: string | null;
 					created_at: string | null;
 					description: string | null;
+					dsl_script: string | null;
+					format: string;
 					id: string;
 					is_public: boolean | null;
 					script: Json;
@@ -1802,6 +1860,8 @@ export type Database = {
 					author_id?: string | null;
 					created_at?: string | null;
 					description?: string | null;
+					dsl_script?: string | null;
+					format?: string;
 					id?: string;
 					is_public?: boolean | null;
 					script: Json;
@@ -1813,6 +1873,8 @@ export type Database = {
 					author_id?: string | null;
 					created_at?: string | null;
 					description?: string | null;
+					dsl_script?: string | null;
+					format?: string;
 					id?: string;
 					is_public?: boolean | null;
 					script?: Json;
@@ -7877,10 +7939,10 @@ export type Database = {
 					author_id: string;
 					created_at: string;
 					description: string | null;
-					difficulty: string;
 					id: string;
 					instructions: string | null;
 					is_public: boolean | null;
+					level: string;
 					solution_code: string;
 					starter_code: string | null;
 					tags: string[] | null;
@@ -7892,10 +7954,10 @@ export type Database = {
 					author_id: string;
 					created_at?: string;
 					description?: string | null;
-					difficulty: string;
 					id?: string;
 					instructions?: string | null;
 					is_public?: boolean | null;
+					level?: string;
 					solution_code: string;
 					starter_code?: string | null;
 					tags?: string[] | null;
@@ -7907,10 +7969,10 @@ export type Database = {
 					author_id?: string;
 					created_at?: string;
 					description?: string | null;
-					difficulty?: string;
 					id?: string;
 					instructions?: string | null;
 					is_public?: boolean | null;
+					level?: string;
 					solution_code?: string;
 					starter_code?: string | null;
 					tags?: string[] | null;

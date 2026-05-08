@@ -80,6 +80,9 @@ export interface ValidationResult {
 	execution_time_ms: number;
 }
 
+/** Class level — same vocabulary as the python-examples-library tags. */
+export type ExerciseLevel = 'college' | 'lycee' | 'nsi' | 'etudiant';
+
 export interface PythonExercise {
 	id: string;
 	title: string;
@@ -88,6 +91,7 @@ export interface PythonExercise {
 	starter_code: string | null;
 	solution_code: string;
 	validation_config: ValidationConfig;
+	level: ExerciseLevel;
 	tags: string[];
 	author_id: string;
 	is_public: boolean;
