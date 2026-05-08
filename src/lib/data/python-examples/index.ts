@@ -34,7 +34,7 @@ import fractionsPgcd from './files/maths/fractions-pgcd.py?raw';
 
 import matplotlibCourbe from './files/visualisation/matplotlib-courbe.py?raw';
 import matplotlibHistogramme from './files/visualisation/matplotlib-histogramme.py?raw';
-import plotlyInteractif from './files/visualisation/plotly-interactif.py?raw';
+import matplotlibScatterCorrelation from './files/visualisation/matplotlib-scatter-correlation.py?raw';
 
 import triBulles from './files/algorithmes/tri-bulles.py?raw';
 import rechercheDichotomique from './files/algorithmes/recherche-dichotomique.py?raw';
@@ -274,12 +274,12 @@ export const PYTHON_EXAMPLES: PythonExample[] = [
 		code: matplotlibHistogramme
 	},
 	{
-		id: 'plotly-interactif',
-		title: 'Plotly : graphique interactif',
-		description: 'Courbe avec hover, légende et template moderne',
+		id: 'matplotlib-scatter-correlation',
+		title: 'Matplotlib : nuage de points + régression',
+		description: 'Ajustement affine y = ax + b sur des données et coefficient de corrélation',
 		category: 'visualisation',
-		tags: ['plotly', 'superieur'],
-		code: plotlyInteractif
+		tags: ['matplotlib', 'numpy', 'statistics', 'lycee'],
+		code: matplotlibScatterCorrelation
 	},
 
 	// ---- Algorithmes ----

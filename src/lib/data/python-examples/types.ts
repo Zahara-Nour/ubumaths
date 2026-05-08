@@ -64,7 +64,6 @@ export const EXAMPLE_TAGS = [
 	'statistics',
 	// visualisation
 	'matplotlib',
-	'plotly',
 	// algorithmes
 	'tri',
 	'recherche',
