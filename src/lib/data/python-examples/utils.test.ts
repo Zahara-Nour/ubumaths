@@ -55,6 +55,12 @@ describe('filterExamples', () => {
 		expect(ids).toContain('tri-bulles');
 	});
 
+	it('matches tag substring', () => {
+		const result = filterExamples(examples, 'numpy', []);
+		expect(result).toHaveLength(1);
+		expect(result[0].id).toBe('numpy-vecteurs');
+	});
+
 	it('trims whitespace in query', () => {
 		const result = filterExamples(examples, '   listes   ', []);
 		expect(result).toHaveLength(1);
