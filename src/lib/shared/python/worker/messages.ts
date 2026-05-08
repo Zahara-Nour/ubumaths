@@ -272,11 +272,45 @@ export const validateMessageSchema = z.object({
 // =============================================================================
 
 /**
+ * Output comparison — discriminated union (exact / text / numeric).
+ * See `src/lib/types/python-exercises.ts` for the API surface and
+ * `src/lib/shared/python/validation/output-compare.ts` for the engine.
+ */
+const epsilonSchema = z.number().min(0).max(1).finite();
+
+export const exactComparisonSchema = z.object({
+	kind: z.literal('exact')
+});
+
+export const textComparisonSchema = z.object({
+	kind: z.literal('text'),
+	whitespace: z.enum(['strict', 'collapsed', 'lines']),
+	case_insensitive: z.boolean().optional().default(false),
+	trim_trailing_newline: z.boolean().optional().default(true)
+});
+
+export const numericComparisonSchema = z.object({
+	kind: z.literal('numeric'),
+	shape: z.enum(['flat', 'lines', 'grid']),
+	eps_abs: epsilonSchema,
+	eps_rel: epsilonSchema,
+	non_numeric: z.enum(['match', 'ignore']).optional().default('match'),
+	accept_comma_decimal: z.boolean().optional().default(false)
+});
+
+export const outputComparisonSchema = z.discriminatedUnion('kind', [
+	exactComparisonSchema,
+	textComparisonSchema,
+	numericComparisonSchema
+]);
+
+/**
  * Output test case schema
  */
 export const outputTestCaseSchema = z.object({
 	input: z.string().max(100_000),
-	expected_output: z.string().max(100_000)
+	expected_output: z.string().max(100_000),
+	comparison: outputComparisonSchema.optional()
 });
 
 /**
@@ -285,7 +319,7 @@ export const outputTestCaseSchema = z.object({
 export const outputValidationConfigSchema = z.object({
 	type: z.literal('output'),
 	test_cases: z.array(outputTestCaseSchema).min(1).max(50),
-	ignore_whitespace: z.boolean().optional().default(false),
+	comparison: outputComparisonSchema,
 	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
 });
 
@@ -346,6 +380,7 @@ export const astValidationConfigSchema = z.object({
 	type: z.literal('ast'),
 	requirements: z.array(astRequirementSchema).min(1).max(20),
 	output_tests: z.array(outputTestCaseSchema).max(50).optional(),
+	output_comparison: outputComparisonSchema.optional(),
 	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
 });
 
@@ -616,6 +651,7 @@ export const testCaseResultSchema = z.object({
 	input: z.string().optional(),
 	expected: z.string().optional(),
 	actual: z.string().optional(),
+	diff: z.string().optional(),
 	error: z.string().optional()
 });
 

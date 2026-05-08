@@ -99,11 +99,38 @@ export interface ValidationResult {
 export type ValidationStrategyType = 'output' | 'unit_test' | 'ast';
 
 /**
+ * Output comparison strategy — discriminated union of three intents.
+ */
+export interface ExactComparison {
+	kind: 'exact';
+}
+
+export interface TextComparison {
+	kind: 'text';
+	whitespace: 'strict' | 'collapsed' | 'lines';
+	case_insensitive?: boolean;
+	trim_trailing_newline?: boolean;
+}
+
+export interface NumericComparison {
+	kind: 'numeric';
+	shape: 'flat' | 'lines' | 'grid';
+	eps_abs: number;
+	eps_rel: number;
+	non_numeric?: 'match' | 'ignore';
+	accept_comma_decimal?: boolean;
+}
+
+export type OutputComparison = ExactComparison | TextComparison | NumericComparison;
+
+/**
  * Output test case
  */
 export interface OutputTestCase {
 	input: string;
 	expected_output: string;
+	/** Optional per-case override of the global comparison strategy. */
+	comparison?: OutputComparison;
 }
 
 /**
@@ -112,7 +139,7 @@ export interface OutputTestCase {
 export interface OutputValidationConfig {
 	type: 'output';
 	test_cases: OutputTestCase[];
-	ignore_whitespace?: boolean;
+	comparison: OutputComparison;
 	timeout_ms?: number;
 }
 
@@ -163,6 +190,7 @@ export interface ASTValidationConfig {
 	type: 'ast';
 	requirements: ASTRequirement[];
 	output_tests?: OutputTestCase[];
+	output_comparison?: OutputComparison;
 	timeout_ms?: number;
 }
 
@@ -182,6 +210,8 @@ export interface TestCaseResult {
 	input?: string;
 	expected?: string;
 	actual?: string;
+	/** Human-readable explanation when `passed === false`. Localised in French. */
+	diff?: string;
 	error?: string;
 }
 

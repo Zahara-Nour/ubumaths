@@ -32,10 +32,44 @@ const timestampSchema = z.string().datetime();
 // Validation Strategy Schemas
 const validationStrategyTypeSchema = z.enum(['output', 'unit_test', 'ast']);
 
+// =============================================================================
+// Output comparison — discriminated union (exact / text / numeric).
+// Defensive bound on epsilons: > 1 makes no pedagogical sense.
+// =============================================================================
+
+const epsilonSchema = z.number().min(0).max(1).finite();
+
+const exactComparisonSchema = z.object({
+	kind: z.literal('exact')
+});
+
+const textComparisonSchema = z.object({
+	kind: z.literal('text'),
+	whitespace: z.enum(['strict', 'collapsed', 'lines']),
+	case_insensitive: z.boolean().optional().default(false),
+	trim_trailing_newline: z.boolean().optional().default(true)
+});
+
+const numericComparisonSchema = z.object({
+	kind: z.literal('numeric'),
+	shape: z.enum(['flat', 'lines', 'grid']),
+	eps_abs: epsilonSchema,
+	eps_rel: epsilonSchema,
+	non_numeric: z.enum(['match', 'ignore']).optional().default('match'),
+	accept_comma_decimal: z.boolean().optional().default(false)
+});
+
+export const outputComparisonSchema = z.discriminatedUnion('kind', [
+	exactComparisonSchema,
+	textComparisonSchema,
+	numericComparisonSchema
+]);
+
 // Output Comparison Config
 const outputTestCaseSchema = z.object({
 	input: z.string().max(CODE_MAX),
-	expected_output: z.string().max(CODE_MAX)
+	expected_output: z.string().max(CODE_MAX),
+	comparison: outputComparisonSchema.optional()
 });
 
 const outputValidationConfigSchema = z.object({
@@ -45,7 +79,7 @@ const outputValidationConfigSchema = z.object({
 		.min(TEST_CASES_MIN)
 		.max(TEST_CASES_MAX)
 		.describe('Output test cases'),
-	ignore_whitespace: z.boolean().optional().default(false),
+	comparison: outputComparisonSchema.describe('Default comparison applied to every test case'),
 	timeout_ms: z.number().int().min(TIMEOUT_MIN).max(TIMEOUT_MAX).optional().default(5000)
 });
 
@@ -106,6 +140,9 @@ const astValidationConfigSchema = z.object({
 		.max(TEST_CASES_MAX)
 		.optional()
 		.describe('Optional output tests to run after AST validation'),
+	output_comparison: outputComparisonSchema
+		.optional()
+		.describe('Comparison strategy for output_tests (defaults to exact when output_tests are set)'),
 	timeout_ms: z.number().int().min(TIMEOUT_MIN).max(TIMEOUT_MAX).optional().default(5000)
 });
 
@@ -122,6 +159,7 @@ const testCaseResultSchema = z.object({
 	input: z.string().optional(),
 	expected: z.string().optional(),
 	actual: z.string().optional(),
+	diff: z.string().optional(),
 	error: z.string().optional()
 });
 

@@ -6,16 +6,50 @@
 // Validation Strategy Types
 export type ValidationStrategyType = 'output' | 'unit_test' | 'ast';
 
-// Output Comparison Config
+// =============================================================================
+// Output Comparison — discriminated union of three intents.
+//
+// `exact`   — byte-for-byte identical.
+// `text`    — text comparison with controlled normalization (whitespace, case).
+// `numeric` — token-by-token numeric comparison with absolute/relative tolerance.
+//
+// The intent is the API surface the author actually thinks about; raw axes
+// (tokenization × per-unit compare × whitespace handling) are folded into
+// each kind to avoid 40 nonsensical combinations.
+// =============================================================================
+
+export interface ExactComparison {
+	kind: 'exact';
+}
+
+export interface TextComparison {
+	kind: 'text';
+	whitespace: 'strict' | 'collapsed' | 'lines';
+	case_insensitive?: boolean;
+	trim_trailing_newline?: boolean;
+}
+
+export interface NumericComparison {
+	kind: 'numeric';
+	shape: 'flat' | 'lines' | 'grid';
+	eps_abs: number;
+	eps_rel: number;
+	non_numeric?: 'match' | 'ignore';
+	accept_comma_decimal?: boolean;
+}
+
+export type OutputComparison = ExactComparison | TextComparison | NumericComparison;
+
 export interface OutputTestCase {
 	input: string;
 	expected_output: string;
+	comparison?: OutputComparison;
 }
 
 export interface OutputValidationConfig {
 	type: 'output';
 	test_cases: OutputTestCase[];
-	ignore_whitespace?: boolean;
+	comparison: OutputComparison;
 	timeout_ms?: number;
 }
 
@@ -53,6 +87,7 @@ export interface ASTValidationConfig {
 	type: 'ast';
 	requirements: ASTRequirement[];
 	output_tests?: OutputTestCase[];
+	output_comparison?: OutputComparison;
 	timeout_ms?: number;
 }
 
@@ -68,6 +103,8 @@ export interface TestCaseResult {
 	input?: string;
 	expected?: string;
 	actual?: string;
+	/** Human-readable explanation when `passed === false`. Localised in French. */
+	diff?: string;
 	error?: string;
 }
 
