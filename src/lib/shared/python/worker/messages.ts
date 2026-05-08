@@ -310,15 +310,22 @@ export const outputComparisonSchema = z.discriminatedUnion('kind', [
 export const outputTestCaseSchema = z.object({
 	input: z.string().max(100_000),
 	expected_output: z.string().max(100_000),
-	comparison: outputComparisonSchema.optional()
+	comparison: outputComparisonSchema.optional(),
+	hidden: z.boolean().optional().default(false)
 });
+
+const AT_LEAST_ONE_VISIBLE = 'Au moins un test doit être visible';
 
 /**
  * Output validation config schema
  */
 export const outputValidationConfigSchema = z.object({
 	type: z.literal('output'),
-	test_cases: z.array(outputTestCaseSchema).min(1).max(50),
+	test_cases: z
+		.array(outputTestCaseSchema)
+		.min(1)
+		.max(50)
+		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE),
 	comparison: outputComparisonSchema,
 	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
 });
@@ -328,7 +335,8 @@ export const outputValidationConfigSchema = z.object({
  */
 export const unitTestCaseSchema = z.object({
 	args: z.array(z.unknown()).max(20),
-	expected: z.unknown()
+	expected: z.unknown(),
+	hidden: z.boolean().optional().default(false)
 });
 
 /**
@@ -341,7 +349,11 @@ export const unitTestValidationConfigSchema = z.object({
 		.min(1)
 		.max(100)
 		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Function name must be a valid Python identifier'),
-	test_cases: z.array(unitTestCaseSchema).min(1).max(50),
+	test_cases: z
+		.array(unitTestCaseSchema)
+		.min(1)
+		.max(50)
+		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE),
 	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
 });
 
@@ -379,7 +391,11 @@ export const astRequirementSchema = z.object({
 export const astValidationConfigSchema = z.object({
 	type: z.literal('ast'),
 	requirements: z.array(astRequirementSchema).min(1).max(20),
-	output_tests: z.array(outputTestCaseSchema).max(50).optional(),
+	output_tests: z
+		.array(outputTestCaseSchema)
+		.max(50)
+		.refine((cases) => cases.length === 0 || cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
+		.optional(),
 	output_comparison: outputComparisonSchema.optional(),
 	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
 });
@@ -652,7 +668,8 @@ export const testCaseResultSchema = z.object({
 	expected: z.string().optional(),
 	actual: z.string().optional(),
 	diff: z.string().optional(),
-	error: z.string().optional()
+	error: z.string().optional(),
+	hidden: z.boolean().optional()
 });
 
 /**
