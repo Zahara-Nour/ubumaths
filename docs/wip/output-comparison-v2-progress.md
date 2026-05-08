@@ -106,4 +106,46 @@ L'exo 4 (factorielle, ast sans output_tests) et l'exo 3 (unit_test) ne sont pas 
 
 **Application :** `pnpm db:migrate` côté utilisateur. Aucune migration des bases déjà en prod n'est nécessaire (validation_config restait JSONB côté DB ; seul le code applicatif change).
 
-## Phase 7 — Quality checks ⏳
+## Phase 7 — Quality checks ✅
+
+**Vérifications passées :**
+
+- `mcp__svelte__svelte-autofixer` sur `ExerciseStrategyEditor.svelte` et `ExerciseValidationResult.svelte` — 0 issues, 0 suggestions.
+- `pnpm check:incremental` — toutes les erreurs résiduelles sont dans `slides/demo` ou `extern/` (préexistantes, filtrées par le script).
+- `npx eslint <14 fichiers modifiés>` — 0 problèmes.
+- `pnpm test:server output-compare.test.ts` — **50/50** ✅
+- `pnpm test:client ExerciseValidationResult.svelte.test.ts` — **7/7** ✅ (incluant le nouveau test diff)
+- `pnpm test:client base-executor.svelte.test.ts` — **14/14** ✅
+- `pnpm test:client exercise-validation-real.svelte.test.ts` (Pyodide réel) — **14/14** ✅
+
+**Commits livrés (6) :**
+
+1. `76b62d8f9` — Phase 1 : types + Zod
+2. `c903c8a4a` — Phase 2 : moteur JS pur + 50 tests
+3. `d74188645` — Phase 3 : intégration worker + tests Pyodide
+4. `be028e3de` — Phase 4 : UI auteur (UX β)
+5. `ca9ecb7b3` — Phase 5 : UI résultat (diff)
+6. `7c488cd1e` — Phase 6 : migration UPDATE des seeds
+
+## Application en local
+
+L'utilisateur doit lancer :
+
+```bash
+pnpm db:migrate    # applique 20260508180000_update_seeds_for_output_v2.sql
+pnpm dev -- --port 5175  # tester l'UI
+```
+
+## Vérifications manuelles à faire
+
+1. Naviguer `/python-exercises/new` → tester chaque preset du `<MySelect>` "Comparaison".
+2. Cliquer "Personnaliser…" → vérifier que les sous-champs apparaissent selon le `kind`.
+3. Saisir `print(2**0.5)` comme solution + `1.41` comme attendu → cliquer "Vérifier" :
+   - preset "Exact" → ❌ avec diff "Sortie différente…"
+   - preset "Nombres (large, 1e-3)" → ✅
+   - preset "Nombres (précis, 1e-9)" → ❌ avec diff précisant l'écart.
+4. Naviguer `/python-exercises/[id]` (un seed migré) → cliquer "Valider" → vérifier l'absence de régression.
+
+## Documents produits
+
+- `docs/wip/output-comparison-v2-progress.md` (ce document).
