@@ -69,4 +69,31 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - L'`error` Python est affichée à côté du label, en rouge — utile pour distinguer un crash d'un mauvais résultat (acceptable pour le MVP, cf risque B4).
 - Svelte autofixer : 0 issues, 0 suggestions.
 
-## Phase 5 — Quality checks ⏳
+## Phase 5 — Quality checks ✅
+
+**Vérifications passées :**
+
+- `mcp__svelte__svelte-autofixer` sur ExerciseStrategyEditor.svelte et ExerciseValidationResult.svelte — 0 issues, 0 suggestions.
+- `pnpm check:incremental` — toutes erreurs résiduelles dans `slides/demo` et `extern/` (préexistantes, filtrées).
+- `npx eslint <9 fichiers>` — 0 problème.
+- Tests Pyodide-réel : **17/17** ✅ (3 nouveaux : output passé caché, output échoué caché numeric, unit_test passé caché).
+- Tests svelte-browser : **22/22** ✅ (8 ExerciseValidationResult dont le nouveau hidden + 14 base-executor).
+
+**Commits livrés (4) :**
+
+1. `c028b34fd` — Phase 1 : types + Zod (hidden field + refine)
+2. `232bdf3f6` — Phase 2 : worker redaction (`redactIfHidden`) + 3 tests Pyodide
+3. `f86b4ecb8` — Phase 3 : UI auteur (toggle Caché par carte)
+4. `4a8ed3f68` — Phase 4 : UI résultat (rendu opaque sans détails)
+
+## Vérifications manuelles à faire
+
+1. `pnpm dev -- --port 5175`, naviguer `/python-exercises/new`.
+2. Choisir stratégie `output`. Ajouter 2 cas : un visible, un caché. Saisir solution. Cliquer "Vérifier" → un détail visible, un opaque "(caché)" avec cadenas.
+3. Tenter de cocher "Caché" sur les deux cas et soumettre via POST direct (curl ou bouton Créer) → 400 "Au moins un test doit être visible".
+4. Pareil pour `unit_test`.
+5. Ouvrir DevTools → Network ou Workers → vérifier que la réponse `validation-exercise-result` contient bien `{ passed, hidden: true }` sans `input`/`expected`/`actual`/`diff` pour le test caché.
+
+## Documents produits
+
+- `docs/wip/hidden-tests-progress.md` (ce document).
