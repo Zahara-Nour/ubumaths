@@ -7,23 +7,29 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	updateExerciseSchema,
 	type UpdateExerciseInput
 } from '$lib/server/validation/python-exercises';
 import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
-import type { Database } from '$lib/types/database';
 import { validateUuidParam } from '$lib/server/validation/params';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
 /**
  * GET /api/python-exercises/[id]
- * Get exercise by ID
+ * Get exercise by ID.
  *
- * Teachers: See all fields
- * Students: See without solution_code (only if assigned)
+ * Visibility is enforced by RLS:
+ *   - anon                     → public exercises only (migration 20260508125858)
+ *   - student authenticated    → own + public + assigned-to-them
+ *   - teacher authenticated    → own + public
+ *
+ * If the row is not visible to the caller, RLS filters it and Supabase returns
+ * null → we respond 404 (rather than 403, to avoid leaking existence).
+ *
+ * The endpoint strips `solution_code` for any caller who is not the author.
+ * RLS controls row visibility but cannot mask columns; that's our job.
  *
  * @param id - Exercise UUID
  * @returns Exercise data
@@ -32,61 +38,29 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const exerciseId = validateUuidParam(params.id);
 	const { user, supabase } = locals;
 
-	if (!user) {
-		throw error(401, 'Non authentifié');
-	}
-
-	// Get user role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile) {
-		throw error(403, 'Profil utilisateur introuvable');
-	}
-
-	// Fetch exercise
-	const { data: exercise, error: exerciseError } = await supabase
+	const { data: exercise, error: fetchError } = await supabase
 		.from('python_exercises')
 		.select('*')
 		.eq('id', exerciseId)
-		.single();
+		.maybeSingle();
 
-	if (exerciseError || !exercise) {
+	if (fetchError) {
+		console.error('Failed to fetch exercise:', fetchError);
+		throw error(500, "Erreur lors de la récupération de l'exercice");
+	}
+
+	if (!exercise) {
+		// Either does not exist OR not visible to caller via RLS — same response
 		throw error(404, 'Exercice introuvable');
 	}
 
-	// For students, verify they have access and exclude solution_code
-	if (profile.role === 'student') {
-		// Check if student has access (via assignment)
-		const { data: assignments } = await supabase
-			.from('python_exercise_assignments')
-			.select('id')
-			.eq('exercise_id', exerciseId)
-			.or(`student_id.eq.${user.id},class_id.in.(${await getStudentClassIds(supabase, user.id)})`)
-			.limit(1);
-
-		if (!assignments || assignments.length === 0) {
-			throw error(403, "Vous n'avez pas accès à cet exercice");
-		}
-
-		// Remove solution_code
-		const { solution_code: _solution_code, ...studentView } = exercise;
-		return json({ exercise: studentView as PythonExerciseStudentView });
-	}
-
-	// Teachers can see full exercise if they own it or if it's public
-	if (profile.role === 'teacher') {
-		if (exercise.author_id !== user.id && !exercise.is_public) {
-			throw error(403, "Vous n'avez pas accès à cet exercice");
-		}
-
+	// Author sees full exercise (including solution_code); everyone else stripped.
+	if (user && exercise.author_id === user.id) {
 		return json({ exercise: exercise as PythonExercise });
 	}
 
-	throw error(403, 'Rôle utilisateur non autorisé');
+	const { solution_code: _solution_code, ...studentView } = exercise;
+	return json({ exercise: studentView as PythonExerciseStudentView });
 };
 
 /**
@@ -216,23 +190,3 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	return json({ success: true });
 };
-
-/**
- * Helper function to get student's class IDs
- */
-async function getStudentClassIds(
-	supabase: SupabaseClient<Database>,
-	studentId: string
-): Promise<string> {
-	const { data: classes } = await supabase
-		.from('class_members')
-		.select('class_id')
-		.eq('student_id', studentId)
-		.eq('status', 'active');
-
-	if (!classes || classes.length === 0) {
-		return '';
-	}
-
-	return classes.map((c: { class_id: string }) => c.class_id).join(',');
-}
