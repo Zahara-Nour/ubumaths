@@ -59,10 +59,27 @@ const numericComparisonSchema = z.object({
 	accept_comma_decimal: z.boolean().optional().default(false)
 });
 
+const COMPARATOR_CODE_MAX = 10_000;
+const COMPARATOR_TIMEOUT_MIN = 100;
+const COMPARATOR_TIMEOUT_MAX = 10_000;
+
+const customComparisonSchema = z.object({
+	kind: z.literal('custom'),
+	code: z.string().min(1).max(COMPARATOR_CODE_MAX),
+	timeout_ms: z
+		.number()
+		.int()
+		.min(COMPARATOR_TIMEOUT_MIN)
+		.max(COMPARATOR_TIMEOUT_MAX)
+		.optional()
+		.default(2000)
+});
+
 export const outputComparisonSchema = z.discriminatedUnion('kind', [
 	exactComparisonSchema,
 	textComparisonSchema,
-	numericComparisonSchema
+	numericComparisonSchema,
+	customComparisonSchema
 ]);
 
 // Output Comparison Config

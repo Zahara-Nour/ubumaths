@@ -121,7 +121,18 @@ export interface NumericComparison {
 	accept_comma_decimal?: boolean;
 }
 
-export type OutputComparison = ExactComparison | TextComparison | NumericComparison;
+/** Custom Python comparator (special-judge style). */
+export interface CustomComparison {
+	kind: 'custom';
+	code: string;
+	timeout_ms?: number;
+}
+
+export type OutputComparison =
+	| ExactComparison
+	| TextComparison
+	| NumericComparison
+	| CustomComparison;
 
 /**
  * Output test case
