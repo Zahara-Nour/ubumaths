@@ -1,6 +1,6 @@
 # Python — Index chronologique des progressions
 
-Récapitulatif chronologique des jalons de l'écosystème Python d'UbuMaths (~95+ commits, 2025-12-04 → 2026-05-09).
+Récapitulatif chronologique des jalons de l'écosystème Python d'UbuMaths (~100+ commits, 2025-12-04 → 2026-05-09).
 
 > Pour la vue thématique par sous-système, voir [../README.md](../README.md).
 
@@ -258,30 +258,46 @@ Branchement de `POST /submit` à l'UI élève. Soumissions assignées **et** lib
 
 → [free-practice-submissions-progress.md](../../wip/free-practice-submissions-progress.md)
 
-**Reste à faire** : Bloc B (mastery automatique), Bloc C (dashboard), comparateur custom, page édition.
+---
+
+## 2026-05-09 — Exercises Comparateur Python custom (special judge)
+
+4e variante au discriminated union `OutputComparison` : `{ kind: 'custom', code, timeout_ms? }`. Le prof écrit une fonction Python `compare(expected, actual, stdin) -> bool | dict` exécutée en namespace isolé pour chaque test case. Débloque les exos à solutions multiples valides, sortie non ordonnée, vérification structurelle. Niveau honneur (cohérent avec hidden tests).
+
+| Commit      | Description                                                       |
+| ----------- | ----------------------------------------------------------------- |
+| `786532831` | feat : types + zod CustomComparison                               |
+| `b44cce46c` | feat : compareWithCustomScript dans worker + 5 tests Pyodide-réel |
+| `abf112c8b` | feat : 9e preset "Comparateur Python (avancé)" dans l'éditeur     |
+| `e06428c21` | docs : doc de progression                                         |
+
+→ [custom-comparator-progress.md](../../wip/custom-comparator-progress.md)
+
+**Reste à faire** : Bloc B (mastery automatique), Bloc C (dashboard), page édition, dashboard résultats teacher, tests API étendus, normalisation tags, custom comparator V2 (unit_test + server-side strict).
 
 ---
 
 ## Récap par thème
 
-| Thème              | Docs principaux                                                                                                  |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| Playground         | playground-progress, playground-improvements, phase1-4                                                           |
-| Sub-systems        | autocomplete, lazy-loading, phase3-url-sharing, files                                                            |
-| Refactor commun    | executor-pattern, worker-multicontext, shared-types, validation                                                  |
-| Notebook (12 docs) | notebook-complete, implementation, ui-\*, migration, routes, import, export, sharing, readonly, test-enhancement |
-| Debugger           | debugger-progress (Phases 1-6, heap viz incluse)                                                                 |
-| Exercises          | exercises-api-progress, validation-implementation, output-v2, hidden-tests, free-practice-submissions            |
-| Examples Library   | examples-library-progress                                                                                        |
+| Thème              | Docs principaux                                                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Playground         | playground-progress, playground-improvements, phase1-4                                                                   |
+| Sub-systems        | autocomplete, lazy-loading, phase3-url-sharing, files                                                                    |
+| Refactor commun    | executor-pattern, worker-multicontext, shared-types, validation                                                          |
+| Notebook (12 docs) | notebook-complete, implementation, ui-\*, migration, routes, import, export, sharing, readonly, test-enhancement         |
+| Debugger           | debugger-progress (Phases 1-6, heap viz incluse)                                                                         |
+| Exercises          | exercises-api-progress, validation-implementation, output-v2, hidden-tests, free-practice-submissions, custom-comparator |
+| Examples Library   | examples-library-progress                                                                                                |
 
 ---
 
 ## Métriques
 
-- **Commits totaux** : ~95+ (depuis 2025-12-04)
+- **Commits totaux** : ~100+ (depuis 2025-12-04)
 - **Migrations DB** : 11 (4 initiales + 7 sur exercises Python : public anon, level, tags, seeds, output V2, public submissions)
-- **Tests** : 400+ (45 store + 36 output + 124+ debug + 25 library + 59 import/export + 50 output-compare + 17 Pyodide-réel exercises + 11 server tests exercises + autres)
+- **Tests** : 400+ (45 store + 36 output + 124+ debug + 25 library + 59 import/export + 50 output-compare + 22 Pyodide-réel exercises + 11 server tests exercises + autres)
 - **Exemples curés** : 100 (10 catégories)
 - **Composants Svelte** : ~28 (playground + notebook + debug + exercises)
 - **API endpoints** : ~22 (incluant `/my-submissions`, `/python-tags`)
 - **Exercices seedés** : 5 (1 par stratégie + ast+output_tests)
+- **Stratégies de comparaison output** : 4 (`exact`, `text`, `numeric`, `custom`) avec 8 presets dans l'éditeur

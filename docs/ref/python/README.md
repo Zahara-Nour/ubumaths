@@ -204,7 +204,8 @@ Système d'exercices Python complet : création teacher, soumission élève (ass
    - `exact` : octet-pour-octet
    - `text` : whitespace souple, casse optionnelle
    - `numeric` : tolérance abs+rel, shapes flat/lines/grid, support virgule décimale
-   - 7 presets nommés + panneau "Personnaliser" pour exposer tous les axes
+   - `custom` : _special judge_ — fonction Python `compare(expected, actual, stdin)` exécutée en namespace isolé pour chaque test case (débloque les solutions multiples valides, sortie non ordonnée, vérification structurelle)
+   - 8 presets nommés + panneau "Personnaliser" pour exposer tous les axes
 2. **Unit test** — la solution élève doit définir une fonction nommée, comparée par appel positionnel
 3. **AST analysis** — vérifie la structure du code (boucle, récursion, classe, no_print, etc.) avec `output_tests` optionnels après les checks AST
 
@@ -259,6 +260,7 @@ Sur la page consultation, un panneau historique repliable affiche les 10 derniè
 - [../../wip/output-comparison-v2-progress.md](../../wip/output-comparison-v2-progress.md) — refonte API output (presets + tolérance numérique)
 - [../../wip/hidden-tests-progress.md](../../wip/hidden-tests-progress.md) — tests cachés
 - [../../wip/free-practice-submissions-progress.md](../../wip/free-practice-submissions-progress.md) — bouton Soumettre + soumissions libres + historique
+- [../../wip/custom-comparator-progress.md](../../wip/custom-comparator-progress.md) — comparateur Python custom (special-judge)
 
 ### TODO
 
@@ -266,9 +268,9 @@ Sur la page consultation, un panneau historique repliable affiche les 10 derniè
 - [ ] Dashboard résultats teacher (API `/results` existe, UI manque)
 - [ ] Mastery automatique (Bloc B : statut `mastered`/`needs_review`/`not_worked` dérivé des soumissions)
 - [ ] Dashboard "Ma progression" élève (Bloc C, V2)
-- [ ] Comparateur custom Python (special judge style)
 - [ ] Tests API plus larges (POST/PUT/DELETE/assign : 0% aujourd'hui ; GET et `/my-submissions` couverts à 11 tests)
 - [ ] Normaliser `tags` vers table de jonction (cohérent avec exos math, gros chantier)
+- [ ] Custom comparator V2 : étendre à `unit_test`, server-side validation pour tests vraiment cachés
 
 ---
 
@@ -367,7 +369,7 @@ Helpers `SECURITY DEFINER` partagés : `is_teacher_of_student`, `is_student_in_c
 
 ## Index chronologique
 
-→ Voir [progress/INDEX.md](./progress/INDEX.md) pour le récap chronologique de tous les jalons (~95+ commits, 2025-12-04 → 2026-05-09).
+→ Voir [progress/INDEX.md](./progress/INDEX.md) pour le récap chronologique de tous les jalons (~100+ commits, 2025-12-04 → 2026-05-09).
 
 ---
 
