@@ -43,6 +43,10 @@ export type {
 
 	// Exercise validation types
 	ValidationStrategyType,
+	ExactComparison,
+	TextComparison,
+	NumericComparison,
+	OutputComparison,
 	OutputTestCase,
 	OutputValidationConfig,
 	UnitTestCase,
@@ -214,6 +218,10 @@ export {
 	validationResultSchema as workerValidationResultSchema,
 
 	// Exercise validation schemas
+	exactComparisonSchema,
+	textComparisonSchema,
+	numericComparisonSchema,
+	outputComparisonSchema,
 	outputTestCaseSchema,
 	outputValidationConfigSchema,
 	unitTestCaseSchema,
