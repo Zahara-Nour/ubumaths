@@ -85,4 +85,34 @@ Un commentaire dans le panneau renvoie le prof vers ce bouton (texte "Pour véri
 
 Svelte autofixer : 0 issue, 0 suggestion (après remplacement de `{'{'}`/`{'}'}` par les entités HTML `&lbrace;`/`&rbrace;`).
 
-## Phase 5 — Quality checks ⏳
+## Phase 5 — Quality checks ✅
+
+**Vérifications passées :**
+
+- `mcp__svelte__svelte-autofixer` sur `ExerciseStrategyEditor.svelte` — 0 issue (suggestion `{'{'}` corrigée par entités HTML).
+- `pnpm check:incremental` — toutes erreurs résiduelles dans `slides/demo` et `extern/` (préexistantes, filtrées).
+- `npx eslint <8 fichiers>` — 0 problème.
+- `pnpm test:server` (3 fichiers, 61 tests) ✅
+- `pnpm test:client exercise-validation-real.svelte.test.ts` (Pyodide-réel, 22 tests) ✅
+
+**Commits livrés (4) :**
+
+1. `786532831` — Phase 1 : types + Zod CustomComparison
+2. `b44cce46c` — Phase 2 : compareWithCustomScript + 5 tests Pyodide-réel
+3. (pas de commit Phase 3 — décision no-op documentée)
+4. `abf112c8b` — Phase 4 : preset "Comparateur Python (avancé)" dans l'éditeur
+
+## Vérifications manuelles à faire
+
+1. `pnpm dev -- --port 5175`, naviguer `/python-exercises/new` (teacher).
+2. Stratégie `output` → preset "Comparateur Python (avancé)" → un panneau s'ouvre avec un textarea pré-rempli.
+3. Modifier le code (par exemple : `def compare(...): return True`), saisir un test case.
+4. Cliquer "Vérifier" → verdict basé sur le comparateur.
+5. Recharger la page de création (le state est perdu, normal).
+6. Créer un exo, ouvrir la page consultation `/python-exercises/[id]` (élève).
+7. Cliquer "Vérifier" → résultat conforme au comparateur. Cliquer "Soumettre" → idem, soumission persistée.
+8. Tester le timeout : comparateur avec `while True: pass` → erreur "comparateur a dépassé le temps imparti" après ~2 s.
+
+## Documents produits
+
+- `docs/wip/custom-comparator-progress.md` (ce document).
