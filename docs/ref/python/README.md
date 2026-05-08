@@ -8,14 +8,14 @@ L'ensemble fonctionne **100% client-side** via Pyodide (CPython 3.12 compilé en
 
 ## Vue d'ensemble — 6 sous-systèmes
 
-| Sous-système                            | Route               | Description                                          | Statut                   |
-| --------------------------------------- | ------------------- | ---------------------------------------------------- | ------------------------ |
-| [Playground](#1-playground)             | `/python`           | Éditeur + REPL Python type "Le Serpentarium"         | ✅                       |
-| [Notebook](#2-notebook)                 | `/python-notebook`  | Cellules code/markdown façon Jupyter/Colab           | ✅                       |
-| [Debugger](#3-debugger)                 | _(dans Playground)_ | Step-by-step + heap visualization style Python Tutor | ✅                       |
-| [Exercises](#4-exercises)               | `/api/python-...`   | API exercices avec 3 stratégies de validation        | ⚠️ API only (UI à faire) |
-| [Examples Library](#5-examples-library) | _(dans Playground)_ | 100 exemples curés en 10 catégories                  | ✅                       |
-| [Cloud Files](#6-cloud-files)           | _(dans Playground)_ | Sauvegarde DB + assignation enseignant→classe        | ✅                       |
+| Sous-système                            | Route               | Description                                          | Statut |
+| --------------------------------------- | ------------------- | ---------------------------------------------------- | ------ |
+| [Playground](#1-playground)             | `/python`           | Éditeur + REPL Python type "Le Serpentarium"         | ✅     |
+| [Notebook](#2-notebook)                 | `/python-notebook`  | Cellules code/markdown façon Jupyter/Colab           | ✅     |
+| [Debugger](#3-debugger)                 | _(dans Playground)_ | Step-by-step + heap visualization style Python Tutor | ✅     |
+| [Exercises](#4-exercises)               | `/python-exercises` | API + UI exercices avec 3 stratégies de validation   | ✅     |
+| [Examples Library](#5-examples-library) | _(dans Playground)_ | 100 exemples curés en 10 catégories                  | ✅     |
+| [Cloud Files](#6-cloud-files)           | _(dans Playground)_ | Sauvegarde DB + assignation enseignant→classe        | ✅     |
 
 ---
 
@@ -194,47 +194,81 @@ Système complet de débogage step-by-step avec **visualisation mémoire style P
 
 ## 4. Exercises
 
-**API REST complète, UI à construire.**
+**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher), `/python-exercises/[id]` (consultation publique avec soumission élève).
 
-Système d'exercices Python pour enseignants avec 3 stratégies de validation côté client.
+Système d'exercices Python complet : création teacher, soumission élève (assignée + libre), validation côté client via Pyodide isolé, persistance des tentatives.
 
 ### Stratégies de validation
 
-1. **Output match** — comparer `stdout` à une référence
-2. **Unit test** — exécuter des tests pytest-style
-3. **AST analysis** — vérifier la structure du code (présence de boucle, fonction, etc.)
+1. **Output** — comparer `stdout` à une référence avec une stratégie expressive (`comparison`) :
+   - `exact` : octet-pour-octet
+   - `text` : whitespace souple, casse optionnelle
+   - `numeric` : tolérance abs+rel, shapes flat/lines/grid, support virgule décimale
+   - 7 presets nommés + panneau "Personnaliser" pour exposer tous les axes
+2. **Unit test** — la solution élève doit définir une fonction nommée, comparée par appel positionnel
+3. **AST analysis** — vérifie la structure du code (boucle, récursion, classe, no_print, etc.) avec `output_tests` optionnels après les checks AST
+
+### Tests cachés
+
+Chaque test case (`output` ou `unit_test`) supporte un flag `hidden?: boolean`. Quand `true`, le worker redacte `input`/`expected`/`actual`/`diff` avant de renvoyer le résultat — l'élève voit le verdict mais pas l'oracle. Anti-hardcoding et anti-reverse-engineering. Zod refuse une config dont tous les test_cases sont cachés (au moins 1 visible obligatoire).
+
+### Soumissions
+
+- **Mode assigné** : un teacher assigne un exo à une classe ou un élève via `POST /[id]/assign` (`due_date`, `max_attempts`). L'élève soumet via le bouton "Soumettre" qui consomme une tentative.
+- **Mode libre** : tout élève authentifié peut soumettre sur un exo `is_public: true` sans assignment (`assignment_id: null`). Trace persistée mais pas de `max_attempts` ni `due_date`.
+- **Anonyme** : bouton "Soumettre" grisé avec tooltip _"Connecte-toi pour suivre tes progrès"_. Bouton "Vérifier" reste actif (Pyodide local, pas de trace).
+- **Teacher** : bouton "Soumettre" caché ; testing via "Vérifier".
+
+Sur la page consultation, un panneau historique repliable affiche les 10 dernières tentatives de l'élève (icône succès/échec + numéro + date relative + badge "Libre" si applicable + bouton "Charger ce code").
 
 ### Endpoints
 
-| Endpoint                     | Action                                                                |
-| ---------------------------- | --------------------------------------------------------------------- |
-| `POST /api/python-exercises` | Créer (enseignant)                                                    |
-| `GET /api/python-exercises`  | Lister (filtres : difficulty, tags, is_public, author_id, pagination) |
-| `GET/PUT/DELETE /[id]`       | Auteur uniquement, étudiants sans `solution_code`                     |
-| `POST /[id]/assign`          | Assigner classe ou élève (due_date, max_attempts)                     |
-| `POST /[id]/submit`          | Soumettre solution (rate limit 10/min via trigger)                    |
-| `GET /[id]/results`          | Résultats agrégés par élève                                           |
+| Endpoint                                        | Action                                                                            |
+| ----------------------------------------------- | --------------------------------------------------------------------------------- |
+| `POST /api/python-exercises`                    | Créer (teacher)                                                                   |
+| `GET /api/python-exercises`                     | Lister (filtres : level, tags, is_public, author_id, pagination)                  |
+| `GET/PUT/DELETE /api/python-exercises/[id]`     | Auteur full ; autres : sans `solution_code` (RLS + strip API)                     |
+| `POST /api/python-exercises/[id]/assign`        | Assigner classe ou élève (due_date, max_attempts)                                 |
+| `POST /api/python-exercises/[id]/submit`        | Soumettre solution (mode assigné OU libre si `is_public: true`)                   |
+| `GET /api/python-exercises/[id]/my-submissions` | Soumissions de l'élève (RLS filtre : student → ses propres ; teacher → vue large) |
+| `GET /api/python-exercises/[id]/results`        | Résultats agrégés (teacher)                                                       |
+| `GET/POST /api/python-tags`                     | Vocabulaire des tags Python (séparé des math `tags`)                              |
 
 ### Sécurité
 
 - Triggers DB : `auto_submission_attempt_number`, `enforce_max_attempts`, `submission_rate_limit`
 - Submissions immutables (no UPDATE)
-- Étudiants ne voient jamais `solution_code`
-- Validation 100% Zod (UUID, structures de validation, résultats)
+- Étudiants ne voient jamais `solution_code` (RLS + strip API)
+- Validation 100% Zod (UUID, output comparison discriminated union, hidden refine "au moins 1 visible")
+- Isolation namespace Pyodide : chaque validation tourne dans un dict Python neuf (commit `4d39ceaf5`)
+- Tests cachés : redaction côté worker avant `postMessage` (les fields ne traversent pas la frontière)
+
+### Composants UI
+
+- `ExerciseStrategyEditor.svelte` — éditeur teacher unifié pour les 3 stratégies (sélecteur preset + panneau personnalisé pour `output`, JSON drafts pour `unit_test`, requirements pour `ast`)
+- `ExerciseValidationResult.svelte` — affichage du résultat (banner + AST issues + détails `<details>` par test case, mode opaque pour les tests cachés)
+- Composants Pyodide partagés : `PythonEditor`, `PythonOutput`, `PlaygroundExecutor`
 
 ### Progression
 
-- [progress/python-exercises-api-progress.md](./progress/python-exercises-api-progress.md) — endpoints + sécurité
+- [progress/python-exercises-api-progress.md](./progress/python-exercises-api-progress.md) — endpoints initiaux + sécurité
 - [progress/python-validation-implementation.md](./progress/python-validation-implementation.md) — runner client
 - [progress/python-shared-types.md](./progress/python-shared-types.md) — types partagés
+- [../../wip/python-exercises-executor-progress.md](../../wip/python-exercises-executor-progress.md) — exposition `validateExercise`
+- [../../wip/python-exercises-namespace-isolation-progress.md](../../wip/python-exercises-namespace-isolation-progress.md) — fix isolation
+- [../../wip/output-comparison-v2-progress.md](../../wip/output-comparison-v2-progress.md) — refonte API output (presets + tolérance numérique)
+- [../../wip/hidden-tests-progress.md](../../wip/hidden-tests-progress.md) — tests cachés
+- [../../wip/free-practice-submissions-progress.md](../../wip/free-practice-submissions-progress.md) — bouton Soumettre + soumissions libres + historique
 
 ### TODO
 
-- [ ] Frontend : formulaire création exercice (enseignant)
-- [ ] Frontend : liste exercices + assignation
-- [ ] Frontend : UI soumission élève
-- [ ] Frontend : dashboard résultats enseignant
-- [ ] Tests endpoints (0% couverture actuelle)
+- [ ] Page d'édition d'exercices existants (PUT existe, route `/edit` à créer)
+- [ ] Dashboard résultats teacher (API `/results` existe, UI manque)
+- [ ] Mastery automatique (Bloc B : statut `mastered`/`needs_review`/`not_worked` dérivé des soumissions)
+- [ ] Dashboard "Ma progression" élève (Bloc C, V2)
+- [ ] Comparateur custom Python (special judge style)
+- [ ] Tests API plus larges (POST/PUT/DELETE/assign : 0% aujourd'hui ; GET et `/my-submissions` couverts à 11 tests)
+- [ ] Normaliser `tags` vers table de jonction (cohérent avec exos math, gros chantier)
 
 ---
 
@@ -311,14 +345,21 @@ Stockage Supabase des fichiers Python avec assignation enseignant→classe.
 
 ---
 
-## Schémas DB (4 migrations)
+## Schémas DB (8 migrations principales)
 
-| Migration                                            | Tables                                                                                           |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `20251205100000_create_python_files.sql`             | `python_files`, `python_file_assignments`                                                        |
-| `20251205160000_add_python_settings_to_profiles.sql` | `profiles.python_settings` (JSONB)                                                               |
-| `20251206010000_create_python_exercises.sql`         | `python_exercises`, `python_exercise_assignments`, `python_exercise_submissions` (avec triggers) |
-| `20251206020000_create_python_notebooks.sql`         | `python_notebooks`, `python_notebook_assignments`                                                |
+| Migration                                                     | Tables / changes                                                                                 |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `20251205100000_create_python_files.sql`                      | `python_files`, `python_file_assignments`                                                        |
+| `20251205160000_add_python_settings_to_profiles.sql`          | `profiles.python_settings` (JSONB)                                                               |
+| `20251206010000_create_python_exercises.sql`                  | `python_exercises`, `python_exercise_assignments`, `python_exercise_submissions` (avec triggers) |
+| `20251206020000_create_python_notebooks.sql`                  | `python_notebooks`, `python_notebook_assignments`                                                |
+| `20260508114655_python_exercise_assignments_unique.sql`       | Unique constraints sur assignments (class XOR student)                                           |
+| `20260508125858_python_exercises_public_anon.sql`             | RLS : anon peut lire les exos `is_public: true`                                                  |
+| `20260508154124_drop_difficulty.sql` + `155447_add_level.sql` | Refonte `difficulty` → `level` (college/lycee/nsi/etudiant)                                      |
+| `20260508162152_create_python_tags.sql`                       | `python_tags` (vocabulaire Python séparé des math `tags`)                                        |
+| `20260508163407_seed_python_exercises_samples.sql`            | 5 exos seed (1 par stratégie + ast+output_tests)                                                 |
+| `20260508180000_update_seeds_for_output_v2.sql`               | Adapte les seeds à la nouvelle API `comparison`                                                  |
+| `20260509002840_allow_public_python_submissions.sql`          | RLS : élève peut soumettre librement sur exos publics (sans assignment)                          |
 
 Helpers `SECURITY DEFINER` partagés : `is_teacher_of_student`, `is_student_in_class`, `is_teacher_of_class`, `is_admin`, `is_file_assigned_to_student`, `is_notebook_assigned_to_student`, `count_user_python_files`, `count_user_notebooks`.
 
@@ -326,7 +367,7 @@ Helpers `SECURITY DEFINER` partagés : `is_teacher_of_student`, `is_student_in_c
 
 ## Index chronologique
 
-→ Voir [progress/INDEX.md](./progress/INDEX.md) pour le récap chronologique de tous les jalons (~68 commits, 2025-12-04 → 2026-05-08).
+→ Voir [progress/INDEX.md](./progress/INDEX.md) pour le récap chronologique de tous les jalons (~95+ commits, 2025-12-04 → 2026-05-09).
 
 ---
 
@@ -371,7 +412,7 @@ Service Worker active : 0 réseau au 2e chargement.
 ## Lacunes connues / TODO
 
 - [ ] Breakpoints gutter CodeMirror (clic pour toggle, F9 raccourci)
-- [ ] Frontend complet exercices (formulaire, liste, soumission, dashboard)
+- [ ] Exercices : page d'édition (PUT existe), dashboard résultats teacher (API existe), mastery automatique (Bloc B), dashboard élève (Bloc C)
 - [ ] Drag-and-drop cellules notebook (boutons up/down seulement actuellement)
 - [ ] a11y SVG canvas debug : 25 warnings supprimés via `svelte-ignore`, vraie accessibilité clavier/screen-reader pas implémentée — voir `docs/ref/warning-svelte.md`
 - [ ] Tests composants notebook (existent pour utils import/export, pas pour les `.svelte`)

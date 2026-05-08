@@ -1,6 +1,6 @@
 # Python — Index chronologique des progressions
 
-Récapitulatif chronologique des jalons de l'écosystème Python d'UbuMaths (~68 commits, 2025-12-04 → 2026-05-08).
+Récapitulatif chronologique des jalons de l'écosystème Python d'UbuMaths (~95+ commits, 2025-12-04 → 2026-05-09).
 
 > Pour la vue thématique par sous-système, voir [../README.md](../README.md).
 
@@ -187,6 +187,81 @@ Bibliothèque d'exemples curés intégrée au playground.
 
 ---
 
+## 2026-05-08 — Exercises UI MVP (création + consultation + tags)
+
+Mise en place des routes utilisateur pour les exos Python : création teacher, consultation publique, séparation des tags Python des math tags, refonte du modèle de niveau.
+
+| Commit      | Description                                                           |
+| ----------- | --------------------------------------------------------------------- |
+| `cb04a3cd0` | feat : expose `validateExercise` via BasePythonExecutor               |
+| `c192cdd59` | test : 12 tests d'intégration Pyodide réel (3 stratégies + isolation) |
+| `4d39ceaf5` | **fix : isolation namespace Pyodide entre playground et validations** |
+| `c587ad36a` | fix : unique constraints sur assignments                              |
+| `526632239` | feat : RLS — accès anon aux exos publics                              |
+| `74c93e015` | feat : composants partagés (ValidationResult + StrategyEditor)        |
+| `80c7adae9` | feat : page consultation `/python-exercises/[id]`                     |
+| `f0a315507` | fix : rendu markdown sur la page consultation                         |
+| `225697441` | feat : formulaire création + page liste + landing                     |
+| `10a945785` | fix : suppression du champ `difficulty` + crash checkbox bind         |
+| `993613847` | feat : champ `level` (college/lycee/nsi/etudiant)                     |
+| `832075eee` | feat : table dédiée `python_tags` (séparée des math tags)             |
+| `ca737a540` | chore : 5 exercices seedés (1 par stratégie)                          |
+
+→ [python-exercises-executor-progress.md](../../wip/python-exercises-executor-progress.md)
+→ [python-exercises-namespace-isolation-progress.md](../../wip/python-exercises-namespace-isolation-progress.md)
+
+---
+
+## 2026-05-08 — Exercises Output V2 (presets + tolérance numérique)
+
+Refonte de la stratégie `output` : remplacement du booléen `ignore_whitespace` par un discriminated union expressive `comparison: exact | text | numeric` avec presets, tolérance numérique abs+rel, shapes (flat/lines/grid), feedback `diff` détaillé.
+
+| Commit      | Description                                                        |
+| ----------- | ------------------------------------------------------------------ |
+| `76b62d8f9` | feat : types + zod schemas                                         |
+| `c903c8a4a` | feat : moteur JS pur de comparaison + 50 tests TDD                 |
+| `d74188645` | feat : worker utilise compareOutputs (+ 2 tests Pyodide numérique) |
+| `be028e3de` | feat : éditeur UX β (presets + panneau personnalisé)               |
+| `ca9ecb7b3` | feat : affichage `diff` côté élève                                 |
+| `7c488cd1e` | chore : migration UPDATE des seeds                                 |
+| `1b6a1f08e` | docs : doc de progression                                          |
+
+→ [output-comparison-v2-progress.md](../../wip/output-comparison-v2-progress.md)
+
+---
+
+## 2026-05-08 — Exercises Tests cachés
+
+Champ `hidden?: boolean` sur `OutputTestCase` et `UnitTestCase`. Quand `true`, le worker redacte `input`/`expected`/`actual`/`diff` côté Pyodide avant `postMessage` — l'élève voit le verdict mais pas l'oracle. Anti-hardcoding et anti-reverse-engineering. Zod refuse une config dont tous les test_cases sont cachés.
+
+| Commit      | Description                                           |
+| ----------- | ----------------------------------------------------- |
+| `c028b34fd` | feat : types + zod schemas (avec refine)              |
+| `232bdf3f6` | feat : `redactIfHidden` côté worker + 3 tests Pyodide |
+| `f86b4ecb8` | feat : toggle "Caché" dans l'éditeur                  |
+| `4a8ed3f68` | feat : rendu opaque (cadenas + label) côté résultat   |
+| `a3dee1b7a` | docs : doc de progression                             |
+
+→ [hidden-tests-progress.md](../../wip/hidden-tests-progress.md)
+
+---
+
+## 2026-05-09 — Exercises Soumissions persistées (Bloc A)
+
+Branchement de `POST /submit` à l'UI élève. Soumissions assignées **et** libres (sur exos publics, sans assignment). Bouton "Soumettre" séparé du "Vérifier". Panneau historique. Endpoint `GET /my-submissions`.
+
+| Commit      | Description                                                            |
+| ----------- | ---------------------------------------------------------------------- |
+| `dc3375dc1` | feat : RLS publique + `/submit` relâchée + `/my-submissions` (6 tests) |
+| `bf6479131` | feat : bouton Soumettre + panneau historique côté élève                |
+| `f47577619` | docs : doc de progression                                              |
+
+→ [free-practice-submissions-progress.md](../../wip/free-practice-submissions-progress.md)
+
+**Reste à faire** : Bloc B (mastery automatique), Bloc C (dashboard), comparateur custom, page édition.
+
+---
+
 ## Récap par thème
 
 | Thème              | Docs principaux                                                                                                  |
@@ -196,16 +271,17 @@ Bibliothèque d'exemples curés intégrée au playground.
 | Refactor commun    | executor-pattern, worker-multicontext, shared-types, validation                                                  |
 | Notebook (12 docs) | notebook-complete, implementation, ui-\*, migration, routes, import, export, sharing, readonly, test-enhancement |
 | Debugger           | debugger-progress (Phases 1-6, heap viz incluse)                                                                 |
-| Exercises          | exercises-api-progress, validation-implementation                                                                |
+| Exercises          | exercises-api-progress, validation-implementation, output-v2, hidden-tests, free-practice-submissions            |
 | Examples Library   | examples-library-progress                                                                                        |
 
 ---
 
 ## Métriques
 
-- **Commits totaux** : ~68 (depuis 2025-12-04)
-- **Migrations DB** : 4
-- **Tests** : 350+ (45 store + 36 output + 124+ debug + 25 library + 59 import/export + autres)
+- **Commits totaux** : ~95+ (depuis 2025-12-04)
+- **Migrations DB** : 11 (4 initiales + 7 sur exercises Python : public anon, level, tags, seeds, output V2, public submissions)
+- **Tests** : 400+ (45 store + 36 output + 124+ debug + 25 library + 59 import/export + 50 output-compare + 17 Pyodide-réel exercises + 11 server tests exercises + autres)
 - **Exemples curés** : 100 (10 catégories)
-- **Composants Svelte** : ~25 (playground + notebook + debug)
-- **API endpoints** : ~20
+- **Composants Svelte** : ~28 (playground + notebook + debug + exercises)
+- **API endpoints** : ~22 (incluant `/my-submissions`, `/python-tags`)
+- **Exercices seedés** : 5 (1 par stratégie + ast+output_tests)
