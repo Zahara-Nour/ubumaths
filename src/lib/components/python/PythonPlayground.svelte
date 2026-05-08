@@ -46,7 +46,9 @@
 	let isSaving = $derived(pythonStore.isSaving);
 
 	// Debug derived state
-	let _isDebugging = $derived(debugStore.isDebugging);
+	let isDebugging = $derived(debugStore.isDebugging);
+	let isDebugPaused = $derived(debugStore.isPaused);
+	let isDebugRunning = $derived(debugStore.isRunning);
 	let isDebugActive = $derived(debugStore.sessionState !== 'idle');
 
 	// Fullscreen state
@@ -63,13 +65,22 @@
 
 	// Functions
 	// Route every Run trigger (toolbar button, Ctrl+Enter in the editor) through
-	// the debug-aware handler so it does the right thing in both modes:
-	//   - "Exécuter" mode → plain pythonStore.execute()
-	//   - "Debug" mode    → start a debug session
-	// Defined as a forward reference; the actual implementation lives below
-	// next to the other debug handlers.
+	// the debug-aware handler so it does the right thing in all states:
+	//   - Execute mode               → plain pythonStore.execute()
+	//   - Debug mode + idle          → start a debug session
+	//   - Debug mode + paused        → continue (resume until next breakpoint)
 	function handleExecute(): void {
-		handleDebugRun();
+		if (debugStore.isDebugging && debugStore.isPaused) {
+			handleDebugStep('continue');
+		} else {
+			handleDebugRun();
+		}
+	}
+
+	function handleToggleDebug(): void {
+		// Don't allow toggling while a debug session is mid-flight
+		if (debugStore.isRunning) return;
+		debugStore.toggleMode();
 	}
 
 	function handleClear(): void {
@@ -300,6 +311,7 @@
 	<!-- Toolbar -->
 	<PythonToolbar
 		onExecute={handleExecute}
+		onToggleDebug={handleToggleDebug}
 		onClear={handleClear}
 		onCopy={handleCopy}
 		onReset={handleReset}
@@ -313,6 +325,9 @@
 		onOpenSettings={handleOpenSettings}
 		{canExecute}
 		{isExecuting}
+		{isDebugging}
+		{isDebugPaused}
+		{isDebugRunning}
 		{isModified}
 		{isFullscreen}
 		{isLoggedIn}
@@ -322,15 +337,16 @@
 		fontSize={pythonStore.fontSize}
 	/>
 
-	<!-- Debug Toolbar -->
-	<div class="border-b border-border px-4 py-2">
-		<DebugToolbar
-			onRun={handleDebugRun}
-			onStep={handleDebugStep}
-			onStop={handleDebugStop}
-			disabled={!canExecute || isExecuting}
-		/>
-	</div>
+	<!-- Debug Toolbar (only visible in debug mode) -->
+	{#if isDebugging}
+		<div class="border-b border-border px-4 py-2">
+			<DebugToolbar
+				onStep={handleDebugStep}
+				onStop={handleDebugStop}
+				disabled={!canExecute || isExecuting}
+			/>
+		</div>
+	{/if}
 
 	<!-- Main content area -->
 	<!-- Mobile: stacked layout -->

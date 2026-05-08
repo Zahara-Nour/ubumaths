@@ -4,6 +4,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import {
 		Play,
+		Bug,
 		Loader2,
 		Trash2,
 		Copy,
@@ -25,6 +26,7 @@
 	// Props
 	let {
 		onExecute,
+		onToggleDebug,
 		onClear,
 		onCopy,
 		onReset,
@@ -38,6 +40,9 @@
 		onOpenSettings,
 		canExecute,
 		isExecuting,
+		isDebugging = false,
+		isDebugPaused = false,
+		isDebugRunning = false,
 		isModified = false,
 		isFullscreen = false,
 		fontSize = 14,
@@ -47,6 +52,7 @@
 		isSaving = false
 	}: {
 		onExecute: () => void;
+		onToggleDebug: () => void;
 		onClear: () => void;
 		onCopy: () => void;
 		onReset: () => void;
@@ -60,6 +66,9 @@
 		onOpenSettings?: () => void;
 		canExecute: boolean;
 		isExecuting: boolean;
+		isDebugging?: boolean;
+		isDebugPaused?: boolean;
+		isDebugRunning?: boolean;
 		isModified?: boolean;
 		isFullscreen?: boolean;
 		fontSize?: number;
@@ -68,6 +77,18 @@
 		isModifiedFromCloud?: boolean;
 		isSaving?: boolean;
 	} = $props();
+
+	// Derived state for execute/debug button
+	let executeBusy = $derived(isExecuting || isDebugRunning);
+	let executeDisabled = $derived(!canExecute || executeBusy);
+	let executeLabel = $derived(
+		!isDebugging
+			? 'Exécuter (Ctrl+Entrée)'
+			: isDebugPaused
+				? "Continuer l'exécution (F5)"
+				: 'Démarrer le débogage (F5)'
+	);
+	let debugToggleDisabled = $derived(!canExecute || executeBusy);
 
 	// State
 	let copySuccess = $state(false);
@@ -84,27 +105,34 @@
 </script>
 
 <div class="flex items-center gap-2 border-b border-border bg-muted/30 px-4 py-2">
-	<!-- Execute button -->
+	<!-- Execute button (icon-only, morphs into Continue/Start-Debug in debug mode) -->
 	<Button
 		variant="default"
-		size="sm"
+		size="icon"
 		onclick={onExecute}
-		disabled={!canExecute || isExecuting}
-		class="gap-2"
+		disabled={executeDisabled}
+		aria-label={executeLabel}
+		title={executeLabel}
 	>
-		{#if isExecuting}
+		{#if executeBusy}
 			<Loader2 class="size-4 animate-spin" />
-			<span>Exécution...</span>
 		{:else}
 			<Play class="size-4" />
-			<span>Exécuter</span>
 		{/if}
 	</Button>
 
-	<!-- Keyboard shortcut hint (hidden on mobile) -->
-	<kbd class="hidden rounded bg-muted px-2 py-1 font-mono text-xs text-muted-foreground sm:inline">
-		Ctrl+Entrée
-	</kbd>
+	<!-- Debug mode toggle (replaces the switch) -->
+	<Button
+		variant={isDebugging ? 'destructive' : 'ghost'}
+		size="icon"
+		onclick={onToggleDebug}
+		disabled={debugToggleDisabled}
+		aria-label={isDebugging ? 'Désactiver le mode débogage' : 'Activer le mode débogage'}
+		aria-pressed={isDebugging}
+		title={isDebugging ? 'Désactiver le mode débogage' : 'Activer le mode débogage'}
+	>
+		<Bug class="size-4" />
+	</Button>
 
 	<Separator orientation="vertical" class="mx-2 h-6" />
 

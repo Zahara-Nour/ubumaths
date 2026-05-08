@@ -1023,6 +1023,10 @@ def _ubumaths_debug_generator(code, breakpoints_json):
 
         current_depth = len(call_stack) + 1  # +1 for module level
 
+        # run-to-end ignores everything, including breakpoints
+        if mode == 'run-to-end':
+            return False, None
+
         # Check breakpoints first
         for bp in breakpoints:
             if bp.get('enabled', True) and bp.get('lineNumber') == lineno:
@@ -1052,9 +1056,6 @@ def _ubumaths_debug_generator(code, breakpoints_json):
 
         if mode == 'continue':
             # Only breakpoints (checked above)
-            return False, None
-
-        if mode == 'run-to-end':
             return False, None
 
         return False, None
