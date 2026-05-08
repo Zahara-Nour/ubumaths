@@ -1,6 +1,8 @@
-# Python Playground - Architecture
+# Python Ecosystem - Architecture
 
-Detailed architecture documentation for the Python Playground feature.
+Detailed architecture documentation for the Python ecosystem (Playground, Notebook, Debugger).
+
+> **Cette doc couvre l'architecture transversale.** Pour les détails du Playground spécifiquement, voir [components.md](./components.md), [store.md](./store.md), [worker.md](./worker.md). Pour la vue ecosystem, voir [README.md](./README.md).
 
 ## System Design
 
@@ -10,7 +12,82 @@ Detailed architecture documentation for the Python Playground feature.
 2. **Type safety**: Full TypeScript with Zod validation for worker messages
 3. **Reactive state**: Svelte 5 runes for automatic UI updates
 4. **Progressive enhancement**: Fallback textarea if CodeMirror fails to load
-5. **Offline-capable**: Pyodide cached by browser after first load
+5. **Offline-capable**: Pyodide cached by browser after first load (Service Worker)
+6. **Single Pyodide, multiple namespaces**: Multi-context worker partage un seul Pyodide entre playground et notebooks
+7. **Reusable executor**: Pattern `BasePythonExecutor` permet de réutiliser la logique d'exécution dans différents contextes (playground vs notebook)
+
+## Executor Pattern (refactor 2025-12-06)
+
+Pour mutualiser la logique entre Playground et Notebook (et pouvoir greffer le Debugger), un pattern d'executor a été extrait :
+
+```
+                    ┌─────────────────────────┐
+                    │   BasePythonExecutor    │
+                    │       (abstract)        │
+                    │                         │
+                    │ - initPyodide()         │
+                    │ - execute(code)         │
+                    │ - cancel()              │
+                    │ - requestCompletion()   │
+                    │ - startDebugSession()   │
+                    │ - debugStep()           │
+                    │ - destroy()             │
+                    │ - onDebugSnapshot()  ◄──┼─ hooks protégés
+                    │ - onDebugPaused()    ◄──┼─ pour sous-classes
+                    │ - onDebugFinished()  ◄──┘
+                    └────────────┬────────────┘
+                                 │
+                ┌────────────────┴────────────────┐
+                │                                 │
+    ┌───────────▼───────────┐         ┌───────────▼───────────┐
+    │  PlaygroundExecutor   │         │   NotebookExecutor    │
+    │                       │         │                       │
+    │ contextId: undefined  │         │ contextId:            │
+    │ (reset entre exec)    │         │   notebook_${id}      │
+    │                       │         │ (variables persistent)│
+    │                       │         │                       │
+    │ onDebugSnapshot →     │         │ resetKernel() vide    │
+    │   debugStore.push()   │         │   le namespace        │
+    └───────────────────────┘         └───────────────────────┘
+```
+
+**Avantages** :
+
+- Le debugger fonctionne **dans le playground** sans dupliquer la logique
+- Le notebook a sa propre logique de cellules tout en réutilisant l'init Pyodide / autocomplete
+- Les stores (`pythonPlayground.svelte`, `notebookStore.svelte`) wrappent leur executor
+
+→ Voir [progress/python-executor-pattern.md](./progress/python-executor-pattern.md)
+
+## Multi-Context Worker
+
+Un seul Pyodide est chargé en mémoire. Chaque "contexte" (playground, notebook A, notebook B) a son propre **namespace Python isolé** :
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      pyodide.worker.ts                      │
+│                                                             │
+│   Pyodide instance (~10MB initial, +5-8MB par package)      │
+│                                                             │
+│   contexts: Map<contextId, PyDict>                          │
+│   ├─ undefined          → playground namespace              │
+│   ├─ notebook_abc-123   → cellules notebook abc-123         │
+│   └─ notebook_def-456   → cellules notebook def-456         │
+│                                                             │
+│   execute(code, contextId) :                                │
+│     ns = contexts.get(contextId) || createNew()             │
+│     pyodide.runPython(code, { globals: ns })                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Avantages** :
+
+- 1 seule init Pyodide, peu importe le nombre de notebooks ouverts
+- Variables persistent entre cellules d'un même notebook
+- Cancel/timeout par execution, pas par contexte
+- `resetKernel(contextId)` recrée juste le namespace, pas Pyodide
+
+→ Voir [progress/python-worker-multicontext.md](./progress/python-worker-multicontext.md)
 
 ### Technology Choices
 

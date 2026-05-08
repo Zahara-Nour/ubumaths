@@ -2,20 +2,21 @@
 
 ## Statut actuel
 
-**Phase** : Finale - Quality Checks - Terminee
-**Derniere mise a jour** : 2024-12-23
+**Phase** : ✅ Toutes phases terminees (1-6 incluses, heap viz Python Tutor livree)
+**Derniere mise a jour** : 2026-05-02 (Phase 6 — Heap Visualization)
+**Initialement livre** : 2025-12-23 (Phases 1-5)
 
 ## Phases
 
-| Phase  | Description            | Statut  |
-| ------ | ---------------------- | ------- |
-| 1      | Types et Messages      | Termine |
-| 2      | Python Tracer (Worker) | Termine |
-| 3      | Store et Executor      | Termine |
-| 4      | Composants UI          | Termine |
-| 5      | Integration            | Termine |
-| 6      | Visualisation Heap     | Termine |
-| Finale | Quality Checks         | Termine |
+| Phase  | Description                                  | Date livraison | Statut  |
+| ------ | -------------------------------------------- | -------------- | ------- |
+| 1      | Types et Messages                            | 2025-12        | Termine |
+| 2      | Python Tracer (Worker, approche generateur)  | 2025-12        | Termine |
+| 3      | Store et Executor                            | 2025-12-23     | Termine |
+| 4      | Composants UI (Toolbar, Variables, Stack...) | 2025-12        | Termine |
+| 5      | Integration Playground                       | 2025-12        | Termine |
+| 6      | Visualisation Heap (Python Tutor style)      | 2026-05-02     | Termine |
+| Finale | Quality Checks                               | 2026-05-02     | Termine |
 
 ---
 

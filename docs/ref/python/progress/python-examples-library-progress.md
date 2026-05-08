@@ -1,6 +1,6 @@
 # Python Examples Library — progression
 
-## Statut : Catalogue étendu à 100 exemples (extension v2)
+## Statut : ✅ TERMINÉ — Catalogue de 100 exemples (extension v2 livrée 2026-05-08)
 
 ## Objectif
 
