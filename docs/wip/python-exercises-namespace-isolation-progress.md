@@ -62,11 +62,24 @@ Le type `PyodideInterface.runPython`/`runPythonAsync` accepte désormais le para
 | `npx svelte-check` sur fichiers modifiés        | 0 erreur                    |
 | `npx eslint` sur fichiers modifiés              | 0 erreur, 0 warning         |
 
-### Limite : pas de tests d'intégration Pyodide
+### Couverture par tests d'intégration Pyodide réel (étape 3)
 
-Le projet n'a aucun test qui exécute Pyodide réellement (cf. `pyodide.worker.debug.test.ts` lignes 12-44 : les tests sont des spécifications, pas des exécutions). La couverture E2E est documentée comme TODO Playwright.
+L'isolation et le comportement des 3 stratégies sont désormais **vérifiés automatiquement** par `src/lib/shared/python/execution/exercise-validation-real.svelte.test.ts` (étape 3 du plan, livrée juste après cette étape). 12 tests couvrent :
 
-**Vérification manuelle requise après merge** (`pnpm dev -- --port 5175`) :
+- 3 tests `output` (pass / mismatch / `ignore_whitespace`)
+- 3 tests `unit_test` (pass / function-not-defined / wrong-impl)
+- 3 tests `ast` (pass / requirement-fail / `output_tests` combiné)
+- **3 tests d'isolation** (D.1 / D.2 / D.3 ci-dessous)
+
+Les tests utilisent **Pyodide réel** dans le projet `client` (chromium via Playwright). Pyodide chargé une fois en `beforeAll` (~5-15s), puis 12 tests en ~7s. Total : ~12s.
+
+#### Scénarios d'isolation couverts
+
+- **D.1** : code élève sans `factorielle` après que le playground en a défini une → `valid: false`, "fonction non définie" (avant fix : faux positif)
+- **D.2** : variable `_ubumaths_validation_marker` créée dans la validation → invisible depuis le playground (avant fix : visible)
+- **D.3** : `double` défini en validation 1, code élève vide en validation 2 → validation 2 échoue (avant fix : passait à cause de la fuite)
+
+Si jamais le test `client` est cassé sur une machine sans Internet (CDN Pyodide), les 4 scénarios manuels suivants reproduisent l'équivalent dans le playground UI une fois l'UI élève livrée (étape 4) :
 
 #### Test A — pas de pollution Playground → Validation (`unit_test`)
 
@@ -97,7 +110,7 @@ Tester chaque stratégie sur un cas qui doit passer :
 
 ## Prochaines étapes (du plan d'origine)
 
-3. **Tests des 3 stratégies de validation** côté worker — désormais avec garantie d'isolation, on peut écrire des tests E2E Playwright (TODO indépendant)
+3. ✅ **Tests des 3 stratégies de validation** côté worker — livrés (`exercise-validation-real.svelte.test.ts`, 12 tests).
 4. **UI élève** `/python-exercises/[id]`
 5. **UI enseignant** : création / liste / dashboard résultats
 
