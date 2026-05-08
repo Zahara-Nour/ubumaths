@@ -1,6 +1,6 @@
 # Python Examples Library — progression
 
-## Statut : Phase 5 — QA en cours (à valider en navigateur par l'utilisateur)
+## Statut : Catalogue étendu à 100 exemples (extension v2)
 
 ## Objectif
 
@@ -54,12 +54,35 @@ Ajouter une bibliothèque d'exemples Python statiques (read-only) accessible via
   - Garde anti double-click sur "Charger"
 - `src/lib/components/python/library/LibraryBrowser.svelte` : bandeau "Aperçu — lecture seule" + `aria-readonly` sur le `<pre>`
 
+## Extension v2 (2026-05-08) : 30 → 100 exemples
+
+Catégorie `hasard` (nouvelle) ajoutée. Schéma étendu avec tags supplémentaires :
+`graphe`, `arbre`, `complexite`, `match`, `decorateurs`, `generators`, `encapsulation`,
+`simulation`, `3d`. 70 nouveaux fichiers `.py`.
+
+| Catégorie              | v1     | Extension v2 | Total   |
+| ---------------------- | ------ | ------------ | ------- |
+| Bases                  | 8      | +9           | 17      |
+| Fonctions              | 4      | +7           | 11      |
+| OOP                    | 3      | +5           | 8       |
+| Strings                | 2      | +5           | 7       |
+| Exceptions             | 2      | +3           | 5       |
+| I/O                    | 2      | +3           | 5       |
+| Maths                  | 4      | +9           | 13      |
+| Visualisation          | 3      | +6           | 9       |
+| Algorithmes            | 2      | +12          | 14      |
+| **Hasard** _(nouveau)_ | 0      | +11          | 11      |
+| **Total**              | **30** | **+70**      | **100** |
+
 ## Récap commits
 
 1. `259bfa1c2` — feat(python/examples): schema + filter utilities
 2. `6a6a95a54` — feat(python/examples): 30 curated examples across 9 categories
 3. `7c6f2e0f2` — feat(python/examples): library tab in PythonFileManager
 4. `990a0c06a` — feat(python/examples): load with confirmation when editor is modified
+5. `b0d1874e1` — feat(python/examples): replace plotly with scatter+regression example
+6. `26b388183` — fix(python/output): drop misleading hardcoded module list in error
+7. _(à venir)_ feat(python/examples): expand catalog to 100 examples + hasard category
 
 ## Tests
 

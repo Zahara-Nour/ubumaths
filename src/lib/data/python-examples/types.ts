@@ -9,7 +9,8 @@ export const EXAMPLE_CATEGORIES = [
 	'io',
 	'maths',
 	'visualisation',
-	'algorithmes'
+	'algorithmes',
+	'hasard'
 ] as const;
 
 export type ExampleCategory = (typeof EXAMPLE_CATEGORIES)[number];
@@ -67,6 +68,16 @@ export const EXAMPLE_TAGS = [
 	// algorithmes
 	'tri',
 	'recherche',
+	'graphe',
+	'arbre',
+	'complexite',
+	// concepts transverses
+	'match',
+	'decorateurs',
+	'generators',
+	'encapsulation',
+	'simulation',
+	'3d',
 	// niveaux
 	'college',
 	'lycee',
