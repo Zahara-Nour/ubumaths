@@ -50,6 +50,23 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - `testCase.hidden ?? false` au rendu pour gérer l'absence du champ sur les exos existants.
 - Svelte autofixer : 0 issues, 0 suggestions.
 
-## Phase 4 — UI résultat ⏳
+## Phase 4 — UI résultat ✅
+
+**Fichiers modifiés :**
+
+- `src/lib/components/python/exercises/ExerciseValidationResult.svelte` :
+  - Import de l'icône `Lock` depuis lucide-svelte.
+  - Branche `{#if testCase.hidden}` qui rend une simple `<div>` (pas de `<details>`) avec icône cadenas + verdict + label "Test N (caché)" en muted. L'`error` reste affichée (cf B4).
+  - Le branchement `{:else}` conserve le rendu `<details>` actuel pour les tests visibles.
+- `src/lib/components/python/exercises/ExerciseValidationResult.svelte.test.ts` : ajout d'un 8e test qui vérifie le rendu opaque (présence de "Test 2 (caché)").
+
+**Vérifié :** 8/8 tests svelte-browser passent.
+
+**Décisions :**
+
+- Une `<div>` plate (pas un `<details>` désactivé) : sémantiquement plus correct, plus simple à styler, accessibilité meilleure (rien de cliquable).
+- Cadenas `<Lock>` + texte "(caché)" + couleur muted : trois signaux redondants pour que l'élève saisisse immédiatement la nature du test.
+- L'`error` Python est affichée à côté du label, en rouge — utile pour distinguer un crash d'un mauvais résultat (acceptable pour le MVP, cf risque B4).
+- Svelte autofixer : 0 issues, 0 suggestions.
 
 ## Phase 5 — Quality checks ⏳
