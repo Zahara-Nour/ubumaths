@@ -12,7 +12,7 @@
 	 */
 
 	import type { ExerciseValidationResult } from '$lib/shared/python';
-	import { CheckCircle2, XCircle, AlertTriangle, Loader2 } from 'lucide-svelte';
+	import { CheckCircle2, XCircle, AlertTriangle, Loader2, Lock } from 'lucide-svelte';
 
 	type Props = {
 		/** Validation result, or null when no validation has run yet */
@@ -101,58 +101,80 @@
 			<ul class="space-y-1">
 				{#each result.test_results as testCase, i (i)}
 					<li>
-						<details class="rounded-md border border-border bg-card">
-							<summary class="flex cursor-pointer items-center gap-2 p-2 text-sm hover:bg-muted/50">
+						{#if testCase.hidden}
+							<!-- Hidden tests show only verdict + lock icon. No <details>, no I/O. -->
+							<div
+								class="flex items-center gap-2 rounded-md border border-border bg-muted/40 p-2 text-sm"
+							>
+								<Lock class="h-4 w-4 shrink-0 text-muted-foreground" />
 								{#if testCase.passed}
 									<CheckCircle2 class="h-4 w-4 shrink-0 text-green-600 dark:text-green-400" />
 								{:else}
 									<XCircle class="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
 								{/if}
-								<span class="truncate">
-									Test {i + 1}{#if testCase.input}
-										&nbsp;·&nbsp;<code class="text-xs">{testCase.input.trim() || '∅'}</code>
-									{/if}
-								</span>
-							</summary>
-							<dl class="space-y-1 border-t border-border p-3 text-xs">
-								{#if testCase.input !== undefined}
-									<div class="grid grid-cols-[6rem_1fr] gap-2">
-										<dt class="font-medium text-muted-foreground">Entrée</dt>
-										<dd>
-											<code class="break-all">{testCase.input || '(vide)'}</code>
-										</dd>
-									</div>
-								{/if}
-								{#if testCase.expected !== undefined}
-									<div class="grid grid-cols-[6rem_1fr] gap-2">
-										<dt class="font-medium text-muted-foreground">Attendu</dt>
-										<dd>
-											<code class="break-all">{testCase.expected}</code>
-										</dd>
-									</div>
-								{/if}
-								{#if testCase.actual !== undefined}
-									<div class="grid grid-cols-[6rem_1fr] gap-2">
-										<dt class="font-medium text-muted-foreground">Obtenu</dt>
-										<dd>
-											<code class="break-all">{testCase.actual}</code>
-										</dd>
-									</div>
-								{/if}
-								{#if testCase.diff}
-									<div class="grid grid-cols-[6rem_1fr] gap-2 text-amber-700 dark:text-amber-400">
-										<dt class="font-medium">Indice</dt>
-										<dd>{testCase.diff}</dd>
-									</div>
-								{/if}
+								<span class="truncate text-muted-foreground">Test {i + 1} (caché)</span>
 								{#if testCase.error}
-									<div class="grid grid-cols-[6rem_1fr] gap-2 text-red-700 dark:text-red-400">
-										<dt class="font-medium">Erreur</dt>
-										<dd>{testCase.error}</dd>
-									</div>
+									<span class="ml-2 truncate text-xs text-red-700 dark:text-red-400">
+										{testCase.error}
+									</span>
 								{/if}
-							</dl>
-						</details>
+							</div>
+						{:else}
+							<details class="rounded-md border border-border bg-card">
+								<summary
+									class="flex cursor-pointer items-center gap-2 p-2 text-sm hover:bg-muted/50"
+								>
+									{#if testCase.passed}
+										<CheckCircle2 class="h-4 w-4 shrink-0 text-green-600 dark:text-green-400" />
+									{:else}
+										<XCircle class="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
+									{/if}
+									<span class="truncate">
+										Test {i + 1}{#if testCase.input}
+											&nbsp;·&nbsp;<code class="text-xs">{testCase.input.trim() || '∅'}</code>
+										{/if}
+									</span>
+								</summary>
+								<dl class="space-y-1 border-t border-border p-3 text-xs">
+									{#if testCase.input !== undefined}
+										<div class="grid grid-cols-[6rem_1fr] gap-2">
+											<dt class="font-medium text-muted-foreground">Entrée</dt>
+											<dd>
+												<code class="break-all">{testCase.input || '(vide)'}</code>
+											</dd>
+										</div>
+									{/if}
+									{#if testCase.expected !== undefined}
+										<div class="grid grid-cols-[6rem_1fr] gap-2">
+											<dt class="font-medium text-muted-foreground">Attendu</dt>
+											<dd>
+												<code class="break-all">{testCase.expected}</code>
+											</dd>
+										</div>
+									{/if}
+									{#if testCase.actual !== undefined}
+										<div class="grid grid-cols-[6rem_1fr] gap-2">
+											<dt class="font-medium text-muted-foreground">Obtenu</dt>
+											<dd>
+												<code class="break-all">{testCase.actual}</code>
+											</dd>
+										</div>
+									{/if}
+									{#if testCase.diff}
+										<div class="grid grid-cols-[6rem_1fr] gap-2 text-amber-700 dark:text-amber-400">
+											<dt class="font-medium">Indice</dt>
+											<dd>{testCase.diff}</dd>
+										</div>
+									{/if}
+									{#if testCase.error}
+										<div class="grid grid-cols-[6rem_1fr] gap-2 text-red-700 dark:text-red-400">
+											<dt class="font-medium">Erreur</dt>
+											<dd>{testCase.error}</dd>
+										</div>
+									{/if}
+								</dl>
+							</details>
+						{/if}
 					</li>
 				{/each}
 			</ul>

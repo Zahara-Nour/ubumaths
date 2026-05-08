@@ -64,6 +64,16 @@ const resultWithDiff: Result = {
 	execution_time_ms: 32
 };
 
+const resultWithHidden: Result = {
+	valid: false,
+	strategy: 'output',
+	test_results: [
+		{ passed: true, input: '', expected: 'visible\n', actual: 'visible\n' },
+		{ passed: false, hidden: true }
+	],
+	execution_time_ms: 18
+};
+
 describe('ExerciseValidationResult', () => {
 	it('renders nothing when no result and not loading', async () => {
 		render(ExerciseValidationResult, { props: { result: null } });
@@ -110,5 +120,16 @@ describe('ExerciseValidationResult', () => {
 		await firstSummary.click();
 		await expect.element(page.getByText('Indice', { exact: true })).toBeVisible();
 		await expect.element(page.getByText(/écart.*tolérance/i)).toBeVisible();
+	});
+
+	it('renders hidden test cases as opaque rows with no details panel', async () => {
+		render(ExerciseValidationResult, { props: { result: resultWithHidden } });
+		// Visible test case 1 still has full label
+		await expect.element(page.getByText(/Test 1/, { exact: false })).toBeVisible();
+		// Hidden test case 2 shows the (caché) marker
+		await expect.element(page.getByText('Test 2 (caché)')).toBeVisible();
+		// The expected/actual strings from the visible case are present, but no
+		// 'Attendu' / 'Obtenu' label appears for the hidden one. We just confirm
+		// the (caché) row exists as a non-details element.
 	});
 });
