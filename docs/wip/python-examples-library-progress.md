@@ -82,7 +82,7 @@ Catégorie `hasard` (nouvelle) ajoutée. Schéma étendu avec tags supplémentai
 4. `990a0c06a` — feat(python/examples): load with confirmation when editor is modified
 5. `b0d1874e1` — feat(python/examples): replace plotly with scatter+regression example
 6. `26b388183` — fix(python/output): drop misleading hardcoded module list in error
-7. _(à venir)_ feat(python/examples): expand catalog to 100 examples + hasard category
+7. `641f961b3` — feat(python/examples): expand catalog to 100 examples + hasard category
 
 ## Tests
 
