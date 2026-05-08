@@ -69,8 +69,11 @@ export const outputComparisonSchema = z.discriminatedUnion('kind', [
 const outputTestCaseSchema = z.object({
 	input: z.string().max(CODE_MAX),
 	expected_output: z.string().max(CODE_MAX),
-	comparison: outputComparisonSchema.optional()
+	comparison: outputComparisonSchema.optional(),
+	hidden: z.boolean().optional().default(false)
 });
+
+const AT_LEAST_ONE_VISIBLE = 'Au moins un test doit être visible';
 
 const outputValidationConfigSchema = z.object({
 	type: z.literal('output'),
@@ -78,6 +81,7 @@ const outputValidationConfigSchema = z.object({
 		.array(outputTestCaseSchema)
 		.min(TEST_CASES_MIN)
 		.max(TEST_CASES_MAX)
+		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
 		.describe('Output test cases'),
 	comparison: outputComparisonSchema.describe('Default comparison applied to every test case'),
 	timeout_ms: z.number().int().min(TIMEOUT_MIN).max(TIMEOUT_MAX).optional().default(5000)
@@ -86,7 +90,8 @@ const outputValidationConfigSchema = z.object({
 // Unit Test Config
 const unitTestCaseSchema = z.object({
 	args: z.array(z.unknown()).max(20).describe('Function arguments'),
-	expected: z.unknown().describe('Expected return value')
+	expected: z.unknown().describe('Expected return value'),
+	hidden: z.boolean().optional().default(false)
 });
 
 const unitTestValidationConfigSchema = z.object({
@@ -100,6 +105,7 @@ const unitTestValidationConfigSchema = z.object({
 		.array(unitTestCaseSchema)
 		.min(TEST_CASES_MIN)
 		.max(TEST_CASES_MAX)
+		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
 		.describe('Unit test cases'),
 	timeout_ms: z.number().int().min(TIMEOUT_MIN).max(TIMEOUT_MAX).optional().default(5000)
 });
@@ -138,6 +144,7 @@ const astValidationConfigSchema = z.object({
 	output_tests: z
 		.array(outputTestCaseSchema)
 		.max(TEST_CASES_MAX)
+		.refine((cases) => cases.length === 0 || cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
 		.optional()
 		.describe('Optional output tests to run after AST validation'),
 	output_comparison: outputComparisonSchema
@@ -160,7 +167,8 @@ const testCaseResultSchema = z.object({
 	expected: z.string().optional(),
 	actual: z.string().optional(),
 	diff: z.string().optional(),
-	error: z.string().optional()
+	error: z.string().optional(),
+	hidden: z.boolean().optional()
 });
 
 export const validationResultSchema = z.object({

@@ -44,6 +44,8 @@ export interface OutputTestCase {
 	input: string;
 	expected_output: string;
 	comparison?: OutputComparison;
+	/** When true, the worker redacts input/expected/actual/diff before returning to the main thread. */
+	hidden?: boolean;
 }
 
 export interface OutputValidationConfig {
@@ -57,6 +59,8 @@ export interface OutputValidationConfig {
 export interface UnitTestCase {
 	args: unknown[];
 	expected: unknown;
+	/** When true, the worker redacts args/expected/actual before returning to the main thread. */
+	hidden?: boolean;
 }
 
 export interface UnitTestValidationConfig {
@@ -106,6 +110,8 @@ export interface TestCaseResult {
 	/** Human-readable explanation when `passed === false`. Localised in French. */
 	diff?: string;
 	error?: string;
+	/** True when the source test case had `hidden: true` — sensitive fields are redacted. */
+	hidden?: boolean;
 }
 
 export interface ValidationResult {

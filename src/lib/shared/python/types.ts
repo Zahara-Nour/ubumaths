@@ -131,6 +131,8 @@ export interface OutputTestCase {
 	expected_output: string;
 	/** Optional per-case override of the global comparison strategy. */
 	comparison?: OutputComparison;
+	/** When true, the worker redacts input/expected/actual/diff from the result. */
+	hidden?: boolean;
 }
 
 /**
@@ -149,6 +151,8 @@ export interface OutputValidationConfig {
 export interface UnitTestCase {
 	args: unknown[];
 	expected: unknown;
+	/** When true, the worker redacts args/expected/actual from the result. */
+	hidden?: boolean;
 }
 
 /**
@@ -213,6 +217,8 @@ export interface TestCaseResult {
 	/** Human-readable explanation when `passed === false`. Localised in French. */
 	diff?: string;
 	error?: string;
+	/** True when the source test case had `hidden: true` — sensitive fields are redacted. */
+	hidden?: boolean;
 }
 
 /**
