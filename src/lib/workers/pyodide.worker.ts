@@ -2057,6 +2057,12 @@ async function validateExercise(
 	const startTime = performance.now();
 	const timeout = config.timeout_ms || 5000;
 
+	// Fresh isolated namespace per validation. Student code, test scaffolding
+	// (stdin/stdout redirects, function lookups, AST checks) all execute here
+	// — this prevents leakage to/from the playground's main namespace and
+	// between consecutive validations.
+	const namespace = pyodide.runPython('dict()') as PyProxy;
+
 	try {
 		// Set up timeout
 		const timeoutPromise = new Promise<never>((_, reject) => {
@@ -2067,11 +2073,11 @@ async function validateExercise(
 		const validationPromise = (async () => {
 			switch (config.type) {
 				case 'output':
-					return await validateOutputComparison(code, config);
+					return await validateOutputComparison(code, config, namespace);
 				case 'unit_test':
-					return await validateUnitTests(code, config);
+					return await validateUnitTests(code, config, namespace);
 				case 'ast':
-					return await validateAST(code, config);
+					return await validateAST(code, config, namespace);
 			}
 		})();
 
@@ -2113,15 +2119,25 @@ async function validateExercise(
 				id
 			});
 		}
+	} finally {
+		// Free the isolated namespace PyProxy
+		if (typeof (namespace as { destroy?: () => void }).destroy === 'function') {
+			(namespace as { destroy: () => void }).destroy();
+		}
 	}
 }
 
 /**
- * Validate using output comparison strategy
+ * Validate using output comparison strategy.
+ *
+ * @param namespace Isolated Python dict where the student code runs and
+ *   `_ubumaths_test_*` scaffolding lives. Must be a fresh empty dict
+ *   provided by the caller; not shared with the playground namespace.
  */
 async function validateOutputComparison(
 	code: string,
-	config: OutputValidationConfig
+	config: OutputValidationConfig,
+	namespace: PyProxy
 ): Promise<ExerciseValidationResult> {
 	if (!pyodide) {
 		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
@@ -2132,8 +2148,11 @@ async function validateOutputComparison(
 
 	for (const testCase of config.test_cases) {
 		try {
-			// Set up stdin redirection with test input
-			await pyodide.runPythonAsync(`
+			// Set up stdin redirection with test input.
+			// Note: sys.stdin/stdout swap is global Python state; restored on
+			// every path (success and error) below.
+			await pyodide.runPythonAsync(
+				`
 import sys
 from io import StringIO
 
@@ -2143,18 +2162,23 @@ _ubumaths_old_stdin = sys.stdin
 _ubumaths_old_stdout = sys.stdout
 sys.stdin = _ubumaths_test_stdin
 sys.stdout = _ubumaths_test_stdout
-`);
+`,
+				{ globals: namespace }
+			);
 
-			// Execute student code
-			await pyodide.runPythonAsync(code);
+			// Execute student code in the isolated namespace
+			await pyodide.runPythonAsync(code, { globals: namespace });
 
 			// Capture output
-			const actualOutput = (await pyodide.runPythonAsync(`
+			const actualOutput = (await pyodide.runPythonAsync(
+				`
 _actual = _ubumaths_test_stdout.getvalue()
 sys.stdin = _ubumaths_old_stdin
 sys.stdout = _ubumaths_old_stdout
 _actual
-`)) as string;
+`,
+				{ globals: namespace }
+			)) as string;
 
 			// Compare outputs
 			const expected = config.ignore_whitespace
@@ -2180,12 +2204,16 @@ _actual
 				error: error instanceof Error ? error.message : String(error)
 			});
 
-			// Clean up on error
+			// Restore sys.stdin/stdout even on error
 			try {
-				await pyodide.runPythonAsync(`
+				await pyodide.runPythonAsync(
+					`
+import sys
 sys.stdin = _ubumaths_old_stdin
 sys.stdout = _ubumaths_old_stdout
-`);
+`,
+					{ globals: namespace }
+				);
 			} catch {
 				// Ignore cleanup errors
 			}
@@ -2201,11 +2229,16 @@ sys.stdout = _ubumaths_old_stdout
 }
 
 /**
- * Validate using unit test strategy
+ * Validate using unit test strategy.
+ *
+ * @param namespace Isolated Python dict where the student-defined function
+ *   lives and is invoked. Test args/expected are also injected into this
+ *   namespace via `namespace.set(...)` so they don't leak to globals.
  */
 async function validateUnitTests(
 	code: string,
-	config: UnitTestValidationConfig
+	config: UnitTestValidationConfig,
+	namespace: PyProxy
 ): Promise<ExerciseValidationResult> {
 	if (!pyodide) {
 		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
@@ -2215,13 +2248,14 @@ async function validateUnitTests(
 	let allPassed = true;
 
 	try {
-		// Execute student code to define the function
-		await pyodide.runPythonAsync(code);
+		// Execute student code to define the function in the isolated namespace
+		await pyodide.runPythonAsync(code, { globals: namespace });
 
-		// Verify function exists
-		const functionExists = (await pyodide.runPythonAsync(
-			`'${config.function_name}' in dir()`
-		)) as boolean;
+		// Verify the function exists *in the isolated namespace*. dir() with no
+		// args in our globals returns the namespace's keys.
+		const functionExists = (await pyodide.runPythonAsync(`'${config.function_name}' in dir()`, {
+			globals: namespace
+		})) as boolean;
 
 		if (!functionExists) {
 			return {
@@ -2240,12 +2274,13 @@ async function validateUnitTests(
 		// Run test cases
 		for (const testCase of config.test_cases) {
 			try {
-				// Set up test in Python
-				pyodide.globals.set('_ubumaths_test_args', testCase.args);
-				pyodide.globals.set('_ubumaths_test_expected', testCase.expected);
+				// Inject test args/expected into the isolated namespace
+				namespace.set('_ubumaths_test_args', testCase.args);
+				namespace.set('_ubumaths_test_expected', testCase.expected);
 
-				// Call function and compare result
-				const result = (await pyodide.runPythonAsync(`
+				// Call function and compare result, all within the namespace
+				const result = (await pyodide.runPythonAsync(
+					`
 import json
 _args = _ubumaths_test_args
 _expected = _ubumaths_test_expected
@@ -2256,7 +2291,9 @@ _passed = _actual == _expected
     'actual': _actual,
     'expected': _expected
 }
-`)) as PyProxy;
+`,
+					{ globals: namespace }
+				)) as PyProxy;
 
 				const jsResult = result.toJs() as {
 					passed: boolean;
@@ -2278,9 +2315,9 @@ _passed = _actual == _expected
 					input: `${config.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`
 				});
 
-				// Clean up globals
-				pyodide.globals.delete('_ubumaths_test_args');
-				pyodide.globals.delete('_ubumaths_test_expected');
+				// Clean up test args/expected from namespace
+				namespace.delete('_ubumaths_test_args');
+				namespace.delete('_ubumaths_test_expected');
 			} catch (error) {
 				allPassed = false;
 				testResults.push({
@@ -2290,12 +2327,12 @@ _passed = _actual == _expected
 					error: error instanceof Error ? error.message : String(error)
 				});
 
-				// Clean up globals on error
+				// Clean up test args/expected on error too
 				try {
-					pyodide.globals.delete('_ubumaths_test_args');
-					pyodide.globals.delete('_ubumaths_test_expected');
+					namespace.delete('_ubumaths_test_args');
+					namespace.delete('_ubumaths_test_expected');
 				} catch {
-					// Ignore cleanup errors
+					// Ignore cleanup errors (key may not exist)
 				}
 			}
 		}
@@ -2322,11 +2359,18 @@ _passed = _actual == _expected
 }
 
 /**
- * Validate using AST analysis strategy
+ * Validate using AST analysis strategy.
+ *
+ * @param namespace Isolated Python dict. AST analysis itself only inspects the
+ *   parsed code and doesn't execute it, so isolation is not strictly required
+ *   for the AST checks alone. But the optional `output_tests` follow-up runs
+ *   the student code, and *that* must be isolated — same namespace passed
+ *   through to `validateOutputComparison` below.
  */
 async function validateAST(
 	code: string,
-	config: ASTValidationConfig
+	config: ASTValidationConfig,
+	namespace: PyProxy
 ): Promise<ExerciseValidationResult> {
 	if (!pyodide) {
 		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
@@ -2337,11 +2381,12 @@ async function validateAST(
 	// Check AST requirements
 	for (const requirement of config.requirements) {
 		try {
-			pyodide.globals.set('_ubumaths_ast_code', code);
-			pyodide.globals.set('_ubumaths_ast_requirement_type', requirement.type);
-			pyodide.globals.set('_ubumaths_ast_requirement_name', requirement.name || '');
+			namespace.set('_ubumaths_ast_code', code);
+			namespace.set('_ubumaths_ast_requirement_type', requirement.type);
+			namespace.set('_ubumaths_ast_requirement_name', requirement.name || '');
 
-			const passed = (await pyodide.runPythonAsync(`
+			const passed = (await pyodide.runPythonAsync(
+				`
 import ast
 
 _code = _ubumaths_ast_code
@@ -2441,19 +2486,25 @@ except SyntaxError:
     _passed = False
 
 _passed
-`)) as boolean;
+`,
+				{ globals: namespace }
+			)) as boolean;
 
-			pyodide.globals.delete('_ubumaths_ast_code');
-			pyodide.globals.delete('_ubumaths_ast_requirement_type');
-			pyodide.globals.delete('_ubumaths_ast_requirement_name');
+			namespace.delete('_ubumaths_ast_code');
+			namespace.delete('_ubumaths_ast_requirement_type');
+			namespace.delete('_ubumaths_ast_requirement_name');
 
 			if (!passed) {
 				astIssues.push(requirement.message);
 			}
 		} catch (error) {
-			pyodide.globals.delete('_ubumaths_ast_code');
-			pyodide.globals.delete('_ubumaths_ast_requirement_type');
-			pyodide.globals.delete('_ubumaths_ast_requirement_name');
+			try {
+				namespace.delete('_ubumaths_ast_code');
+				namespace.delete('_ubumaths_ast_requirement_type');
+				namespace.delete('_ubumaths_ast_requirement_name');
+			} catch {
+				// Ignore cleanup errors (key may not exist)
+			}
 
 			astIssues.push(
 				`${requirement.message} (erreur: ${error instanceof Error ? error.message : String(error)})`
@@ -2472,7 +2523,10 @@ _passed
 			timeout_ms: config.timeout_ms
 		};
 
-		const outputResult = await validateOutputComparison(code, outputConfig);
+		// Reuse the same isolated namespace for the output tests so the AST-level
+		// vars (_ubumaths_ast_*) coexist with the output-level vars (_ubumaths_test_*).
+		// Both batches `delete` their own keys; no cross-contamination expected.
+		const outputResult = await validateOutputComparison(code, outputConfig, namespace);
 		testResults = outputResult.test_results;
 		outputTestsPassed = outputResult.valid;
 	}

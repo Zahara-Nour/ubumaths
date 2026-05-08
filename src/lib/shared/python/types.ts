@@ -600,8 +600,14 @@ export interface PyodideInterface {
 		code: string,
 		options?: { messageCallback?: (msg: string) => void }
 	): Promise<void>;
-	runPythonAsync(code: string): Promise<unknown>;
-	runPython(code: string): unknown;
+	runPythonAsync(
+		code: string,
+		options?: { globals?: PyProxy; locals?: PyProxy; filename?: string }
+	): Promise<unknown>;
+	runPython(
+		code: string,
+		options?: { globals?: PyProxy; locals?: PyProxy; filename?: string }
+	): unknown;
 	globals: PyProxy;
 	FS: {
 		writeFile(path: string, data: string | Uint8Array): void;
