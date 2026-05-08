@@ -45,6 +45,13 @@
 		disabled?: boolean;
 		maxSelections?: number;
 		onchange?: (value: string[]) => void;
+		/**
+		 * API path to fetch / create tags from. Defaults to the generic
+		 * math-exercise tag endpoint. Pass '/api/python-tags' to target the
+		 * python-specific table instead. The endpoint must accept the same
+		 * payloads as the default one.
+		 */
+		apiPath?: string;
 	}
 
 	let {
@@ -52,7 +59,8 @@
 		placeholder = 'Ajouter des tags',
 		disabled = false,
 		maxSelections,
-		onchange
+		onchange,
+		apiPath: tagsApiPath = '/api/tags'
 	}: Props = $props();
 
 	// Helper to update value - calls onchange if provided, otherwise mutates bindable
@@ -104,7 +112,7 @@
 		loadError = null;
 
 		try {
-			const response = await fetch('/api/tags');
+			const response = await fetch(tagsApiPath);
 			if (!response.ok) {
 				throw new Error('Failed to fetch tags');
 			}
@@ -128,7 +136,7 @@
 		isCreating = true;
 
 		try {
-			const response = await fetch('/api/tags', {
+			const response = await fetch(tagsApiPath, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ name: trimmedName })
