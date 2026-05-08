@@ -1,6 +1,6 @@
 # Python Examples Library — progression
 
-## Statut : Phase 4 terminée — Phase 5 (QA navigateur) à démarrer
+## Statut : Phase 5 — QA en cours (à valider en navigateur par l'utilisateur)
 
 ## Objectif
 
@@ -53,3 +53,29 @@ Ajouter une bibliothèque d'exemples Python statiques (read-only) accessible via
   - `$effect` qui clear `pendingExample` quand le dialog se ferme par n'importe quel chemin (X, Escape, overlay)
   - Garde anti double-click sur "Charger"
 - `src/lib/components/python/library/LibraryBrowser.svelte` : bandeau "Aperçu — lecture seule" + `aria-readonly` sur le `<pre>`
+
+## Récap commits
+
+1. `259bfa1c2` — feat(python/examples): schema + filter utilities
+2. `6a6a95a54` — feat(python/examples): 30 curated examples across 9 categories
+3. `7c6f2e0f2` — feat(python/examples): library tab in PythonFileManager
+4. `990a0c06a` — feat(python/examples): load with confirmation when editor is modified
+
+## Tests
+
+- 25 tests verts (`pnpm test:server src/lib/data/python-examples/`)
+- `pnpm check:incremental` : pas de régression (mêmes 9 erreurs/46 warnings préexistantes)
+- ESLint : propre sur tous les fichiers modifiés
+- Svelte autofixer : aucune issue sur `LibraryBrowser.svelte` ni `PythonFileManager.svelte`
+
+## À tester en navigateur (port 5175)
+
+- [ ] Onglet "Bibliothèque" visible dans le dialog "Ouvrir un fichier"
+- [ ] Recherche full-text fonctionne (titre, description, tag)
+- [ ] Chips de tags toggleables (active/inactive en couleurs distinctes)
+- [ ] Aperçu côté droit affiche bien le code de l'exemple sélectionné
+- [ ] Bouton "Charger" sur un éditeur vide → chargement direct, dialog se ferme
+- [ ] Bouton "Charger" avec code modifié → modal de confirmation, charge si confirmé, annule si refusé
+- [ ] Modal de confirmation fermée par X/Escape → `pendingExample` clearé (pas de chargement fantôme)
+- [ ] Onglet "Mes fichiers" toujours fonctionnel (régression)
+- [ ] Onglet "Fichiers assignés" (pour élève) toujours fonctionnel (régression)
