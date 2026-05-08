@@ -161,7 +161,7 @@
 		moduleNotFound: {
 			pattern: /ModuleNotFoundError:\s*No module named '([^']+)'/i,
 			message:
-				"Module non trouvé : '$1' n'est pas disponible. Modules disponibles : numpy, matplotlib, sympy"
+				"Module non trouvé : '$1' n'est pas disponible dans cet environnement Python. Vérifiez l'orthographe."
 		},
 		attributeError: {
 			pattern: /AttributeError:\s*(.+)/i,

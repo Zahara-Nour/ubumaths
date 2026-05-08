@@ -57,7 +57,7 @@ const ERROR_TRANSLATIONS: Record<string, { pattern: RegExp; message: string }> =
 	moduleNotFound: {
 		pattern: /ModuleNotFoundError:\s*No module named '([^']+)'/i,
 		message:
-			"Module non trouvé : '$1' n'est pas disponible. Modules disponibles : numpy, matplotlib, sympy"
+			"Module non trouvé : '$1' n'est pas disponible dans cet environnement Python. Vérifiez l'orthographe."
 	},
 	attributeError: {
 		pattern: /AttributeError:\s*(.+)/i,
@@ -306,7 +306,7 @@ describe('PythonOutput Pedagogic Error Messages', () => {
 			const result = getPedagogicMessage(error);
 
 			expect(result).toBe(
-				"Module non trouvé : 'pandas' n'est pas disponible. Modules disponibles : numpy, matplotlib, sympy"
+				"Module non trouvé : 'pandas' n'est pas disponible dans cet environnement Python. Vérifiez l'orthographe."
 			);
 		});
 
