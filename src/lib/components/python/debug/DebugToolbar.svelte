@@ -2,16 +2,14 @@
 	/**
 	 * Debug Toolbar Component
 	 *
-	 * Provides controls for switching between Execute/Debug mode and debug actions.
-	 * Shows step controls, history navigation, and execution status.
+	 * Shows step controls, history navigation, stop button, and execution status.
+	 * Only rendered when debug mode is active. Mode toggle and Run/Continue
+	 * live in PythonToolbar (the primary action bar above).
 	 */
 
 	// Imports
 	import { debugStore } from '$lib/stores/pythonDebug.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Switch } from '$lib/components/ui/switch';
-	import { Label } from '$lib/components/ui/label';
-	import Play from '@lucide/svelte/icons/play';
 	import Pause from '@lucide/svelte/icons/pause';
 	import StepForward from '@lucide/svelte/icons/step-forward';
 	import StepBack from '@lucide/svelte/icons/step-back';
@@ -23,8 +21,6 @@
 
 	// Types
 	interface Props {
-		/** Callback when run button is clicked */
-		onRun: () => void;
 		/** Callback for step actions */
 		onStep: (action: DebugStepAction) => void;
 		/** Callback when stop button is clicked */
@@ -34,13 +30,12 @@
 	}
 
 	// Props
-	let { onRun, onStep, onStop, disabled = false }: Props = $props();
+	let { onStep, onStop, disabled = false }: Props = $props();
 
 	// Derived state
 	let canStep = $derived(debugStore.canStep());
 	let isPaused = $derived(debugStore.isPaused);
 	let isRunning = $derived(debugStore.isRunning);
-	let isDebugging = $derived(debugStore.isDebugging);
 	let canStepBack = $derived(debugStore.canStepBack);
 	let canStepForward = $derived(debugStore.canStepForward);
 	// Display position: 1 = oldest, N = most recent (historyIndex 0 = most recent snapshot)
@@ -49,10 +44,6 @@
 	);
 
 	// Functions
-	function handleModeToggle() {
-		debugStore.toggleMode();
-	}
-
 	function handleStepBack() {
 		debugStore.stepBack();
 	}
@@ -63,147 +54,103 @@
 </script>
 
 <div class="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-muted/30 p-3">
-	<!-- Mode switch: Execute / Debug -->
-	<div class="flex items-center gap-2">
-		<Label class="text-sm font-medium text-muted-foreground">
-			{isDebugging ? 'Debug' : 'Exécuter'}
-		</Label>
-		<Switch
-			checked={isDebugging}
-			onCheckedChange={handleModeToggle}
-			disabled={disabled || isRunning}
-		/>
+	<!-- Debug step controls -->
+	<div class="flex items-center gap-1">
+		<!-- Step (into) -->
+		<Button
+			variant="outline"
+			size="icon-sm"
+			onclick={() => onStep('step')}
+			disabled={disabled || !canStep}
+			aria-label="Pas suivant (entrer dans les fonctions)"
+			title="Pas"
+		>
+			<ArrowRight class="size-4" />
+		</Button>
+
+		<!-- Step over -->
+		<Button
+			variant="outline"
+			size="icon-sm"
+			onclick={() => onStep('step-over')}
+			disabled={disabled || !canStep}
+			aria-label="Pas suivant (sans entrer dans les fonctions)"
+			title="Pas (ignorer fonctions)"
+		>
+			<StepForward class="size-4" />
+		</Button>
+
+		<!-- Step out -->
+		<Button
+			variant="outline"
+			size="icon-sm"
+			onclick={() => onStep('step-out')}
+			disabled={disabled || !canStep}
+			aria-label="Sortir de la fonction"
+			title="Sortir"
+		>
+			<ArrowUpRight class="size-4" />
+		</Button>
+
+		<!-- Run to end -->
+		<Button
+			variant="outline"
+			size="icon-sm"
+			onclick={() => onStep('run-to-end')}
+			disabled={disabled || !canStep}
+			aria-label="Exécuter jusqu'à la fin"
+			title="Exécuter jusqu'à la fin"
+		>
+			<SkipForward class="size-4" />
+		</Button>
 	</div>
 
 	<div class="h-6 w-px bg-border" aria-hidden="true"></div>
 
-	<!-- Run / Continue button — only when in debug mode. The plain "Exécuter"
-	     action lives in PythonToolbar above; we don't duplicate it here. -->
-	{#if isDebugging}
-		{#if isPaused}
-			<Button
-				variant="default"
-				size="sm"
-				onclick={() => onStep('continue')}
-				{disabled}
-				aria-label="Continuer l'exécution"
-			>
-				<Play class="size-4" />
-				<span class="hidden sm:inline">Continuer</span>
-			</Button>
-		{:else}
-			<Button
-				variant="default"
-				size="sm"
-				onclick={onRun}
-				disabled={disabled || isRunning}
-				aria-label="Démarrer le débogage"
-			>
-				<Play class="size-4" />
-				<span class="hidden sm:inline">Déboguer</span>
-			</Button>
-		{/if}
-	{/if}
-
-	<!-- Debug step controls (only shown in debug mode) -->
-	{#if isDebugging}
-		<div class="flex items-center gap-1">
-			<!-- Step (into) -->
-			<Button
-				variant="outline"
-				size="icon-sm"
-				onclick={() => onStep('step')}
-				disabled={disabled || !canStep}
-				aria-label="Pas suivant (entrer dans les fonctions)"
-				title="Pas"
-			>
-				<ArrowRight class="size-4" />
-			</Button>
-
-			<!-- Step over -->
-			<Button
-				variant="outline"
-				size="icon-sm"
-				onclick={() => onStep('step-over')}
-				disabled={disabled || !canStep}
-				aria-label="Pas suivant (sans entrer dans les fonctions)"
-				title="Pas (ignorer fonctions)"
-			>
-				<StepForward class="size-4" />
-			</Button>
-
-			<!-- Step out -->
-			<Button
-				variant="outline"
-				size="icon-sm"
-				onclick={() => onStep('step-out')}
-				disabled={disabled || !canStep}
-				aria-label="Sortir de la fonction"
-				title="Sortir"
-			>
-				<ArrowUpRight class="size-4" />
-			</Button>
-
-			<!-- Run to end -->
-			<Button
-				variant="outline"
-				size="icon-sm"
-				onclick={() => onStep('run-to-end')}
-				disabled={disabled || !canStep}
-				aria-label="Exécuter jusqu'à la fin"
-				title="Exécuter jusqu'à la fin"
-			>
-				<SkipForward class="size-4" />
-			</Button>
-		</div>
-
-		<div class="h-6 w-px bg-border" aria-hidden="true"></div>
-
-		<!-- History navigation -->
-		<div class="flex items-center gap-1">
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				onclick={handleStepBack}
-				disabled={disabled || !canStepBack}
-				aria-label="Pas précédent dans l'historique"
-				title="Reculer"
-			>
-				<StepBack class="size-4" />
-			</Button>
-
-			{#if debugStore.snapshotCount > 0}
-				<span class="min-w-[4rem] text-center text-xs text-muted-foreground">
-					Pas {currentPosition}/{debugStore.snapshotCount}
-				</span>
-			{/if}
-
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				onclick={handleStepForward}
-				disabled={disabled || !canStepForward}
-				aria-label="Pas suivant dans l'historique"
-				title="Avancer"
-			>
-				<StepForward class="size-4" />
-			</Button>
-		</div>
-
-		<div class="h-6 w-px bg-border" aria-hidden="true"></div>
-
-		<!-- Stop button -->
+	<!-- History navigation -->
+	<div class="flex items-center gap-1">
 		<Button
-			variant="destructive"
+			variant="ghost"
 			size="icon-sm"
-			onclick={onStop}
-			disabled={disabled || debugStore.sessionState === 'idle'}
-			aria-label="Arrêter le débogage"
-			title="Arrêter"
+			onclick={handleStepBack}
+			disabled={disabled || !canStepBack}
+			aria-label="Pas précédent dans l'historique"
+			title="Reculer"
 		>
-			<Square class="size-4" />
+			<StepBack class="size-4" />
 		</Button>
-	{/if}
+
+		{#if debugStore.snapshotCount > 0}
+			<span class="min-w-[4rem] text-center text-xs text-muted-foreground">
+				Pas {currentPosition}/{debugStore.snapshotCount}
+			</span>
+		{/if}
+
+		<Button
+			variant="ghost"
+			size="icon-sm"
+			onclick={handleStepForward}
+			disabled={disabled || !canStepForward}
+			aria-label="Pas suivant dans l'historique"
+			title="Avancer"
+		>
+			<StepForward class="size-4" />
+		</Button>
+	</div>
+
+	<div class="h-6 w-px bg-border" aria-hidden="true"></div>
+
+	<!-- Stop button -->
+	<Button
+		variant="destructive"
+		size="icon-sm"
+		onclick={onStop}
+		disabled={disabled || debugStore.sessionState === 'idle'}
+		aria-label="Arrêter le débogage"
+		title="Arrêter"
+	>
+		<Square class="size-4" />
+	</Button>
 
 	<!-- Status indicator -->
 	{#if isRunning}

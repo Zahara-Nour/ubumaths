@@ -11,7 +11,6 @@
  * </script>
  *
  * <DebugToolbar
- *   onRun={handleRun}
  *   onStep={handleStep}
  *   onStop={handleStop}
  * />
