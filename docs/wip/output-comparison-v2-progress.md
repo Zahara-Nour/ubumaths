@@ -93,6 +93,17 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - Couleur amber : niveau intermédiaire entre l'absence de feedback (gris muted) et l'erreur runtime (rouge).
 - Pas d'usage `<details open>` automatique — l'élève clique pour révéler ; ça évite de submerger d'info quand de nombreux tests échouent.
 
-## Phase 6 — Migration seeds ⏳
+## Phase 6 — Migration seeds ✅
+
+**Fichier créé :** `supabase/migrations/20260508180000_update_seeds_for_output_v2.sql`.
+
+**Stratégie :** deux `UPDATE` JSONB idempotents.
+
+1. Pour les exos `output` (1, 2) : retire `ignore_whitespace` et ajoute `comparison: { kind: 'exact' }`. La clause `WHERE validation_config->'comparison' IS NULL` empêche la double-application.
+2. Pour l'exo `ast` avec `output_tests` (5) : ajoute `output_comparison: { kind: 'exact' }`. Idempotence via `WHERE validation_config->'output_comparison' IS NULL`.
+
+L'exo 4 (factorielle, ast sans output_tests) et l'exo 3 (unit_test) ne sont pas concernés.
+
+**Application :** `pnpm db:migrate` côté utilisateur. Aucune migration des bases déjà en prod n'est nécessaire (validation_config restait JSONB côté DB ; seul le code applicatif change).
 
 ## Phase 7 — Quality checks ⏳
