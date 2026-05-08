@@ -119,9 +119,7 @@
 		<!-- Left: instructions -->
 		<section class="space-y-4 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto">
 			{#if exercise.instructions}
-				<div class="prose prose-sm max-w-none dark:prose-invert">
-					<MarkdownRenderer content={exercise.instructions} />
-				</div>
+				<MarkdownRenderer content={exercise.instructions} />
 			{:else}
 				<p class="text-sm text-muted-foreground">Pas d'instructions fournies.</p>
 			{/if}
