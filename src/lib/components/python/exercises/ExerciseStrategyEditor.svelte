@@ -90,6 +90,7 @@
 		| 'numeric-medium'
 		| 'numeric-loose'
 		| 'numeric-lines'
+		| 'custom-python'
 		| 'custom';
 
 	const comparisonPresetItems: { value: PresetKey; label: string }[] = [
@@ -100,8 +101,22 @@
 		{ value: 'numeric-medium', label: 'Nombres (1e-6)' },
 		{ value: 'numeric-loose', label: 'Nombres (large, 1e-3)' },
 		{ value: 'numeric-lines', label: 'Tableau de nombres (ligne par ligne)' },
+		{ value: 'custom-python', label: 'Comparateur Python (avancé)' },
 		{ value: 'custom', label: 'Personnaliser…' }
 	];
+
+	const DEFAULT_CUSTOM_COMPARATOR_CODE = `def compare(expected, actual, stdin):
+    """Retourne True si la sortie de l'élève est valide, False sinon.
+
+    Optionnel : retourne un dict {'passed': bool, 'diff': str} pour un
+    retour détaillé qui sera affiché à l'élève (sauf si le test est caché).
+
+    - expected : la sortie attendue (str)
+    - actual   : la sortie produite par l'élève (str)
+    - stdin    : l'entrée du test case (str)
+    """
+    return actual.strip() == expected.strip()
+`;
 
 	const kindItems: { value: 'exact' | 'text' | 'numeric'; label: string }[] = [
 		{ value: 'exact', label: 'Exact' },
@@ -139,7 +154,8 @@
 		'numeric-tight': { kind: 'numeric', shape: 'flat', eps_abs: 1e-9, eps_rel: 1e-9 },
 		'numeric-medium': { kind: 'numeric', shape: 'flat', eps_abs: 1e-6, eps_rel: 1e-6 },
 		'numeric-loose': { kind: 'numeric', shape: 'flat', eps_abs: 1e-3, eps_rel: 1e-3 },
-		'numeric-lines': { kind: 'numeric', shape: 'lines', eps_abs: 1e-6, eps_rel: 1e-6 }
+		'numeric-lines': { kind: 'numeric', shape: 'lines', eps_abs: 1e-6, eps_rel: 1e-6 },
+		'custom-python': { kind: 'custom', code: DEFAULT_CUSTOM_COMPARATOR_CODE, timeout_ms: 2000 }
 	};
 
 	/**
@@ -147,6 +163,8 @@
 	 * Comparison is done by structural equality on the known fields of each preset.
 	 */
 	function detectPreset(cmp: OutputComparison): PresetKey {
+		if (cmp.kind === 'custom') return 'custom-python';
+
 		if (cmp.kind === 'exact') return 'exact';
 
 		if (cmp.kind === 'text') {
@@ -205,6 +223,21 @@
 		} else {
 			config.comparison = { kind: 'numeric', shape: 'flat', eps_abs: 1e-6, eps_rel: 1e-6 };
 		}
+	}
+
+	/**
+	 * Bidirectional access to the custom comparator code/timeout_ms.
+	 * Reads narrow when the comparison is actually `custom`; writes spread the
+	 * mutated value back into a fresh CustomComparison object.
+	 */
+	function setCustomCode(code: string) {
+		if (config.type !== 'output' || config.comparison.kind !== 'custom') return;
+		config.comparison = { ...config.comparison, code };
+	}
+
+	function setCustomTimeout(timeoutMs: number) {
+		if (config.type !== 'output' || config.comparison.kind !== 'custom') return;
+		config.comparison = { ...config.comparison, timeout_ms: timeoutMs };
 	}
 
 	// ===========================================================================
@@ -377,6 +410,54 @@
 					onchange={handlePresetChange}
 				/>
 			</div>
+
+			<!-- Custom Python comparator panel — special-judge style -->
+			{#if selectedPreset === 'custom-python' && outputConfig.comparison.kind === 'custom'}
+				<div class="space-y-3 rounded-md border border-border bg-muted/30 p-4">
+					<p class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+						Comparateur Python (avancé)
+					</p>
+					<p class="text-xs text-muted-foreground">
+						Définis une fonction <code>compare(expected, actual, stdin)</code> qui retourne
+						<code>True</code>/<code>False</code> ou un dict
+						<code>&lbrace;'passed': bool, 'diff'?: str&rbrace;</code>. Elle s'exécute dans Pyodide
+						pour chaque cas de test, dans un namespace isolé.
+					</p>
+					<div>
+						<label class="mb-1 block text-sm font-medium" for="cmp-custom-code">
+							Code Python du comparateur
+						</label>
+						<textarea
+							id="cmp-custom-code"
+							class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+							rows="14"
+							value={outputConfig.comparison.code}
+							oninput={(e) => setCustomCode((e.target as HTMLTextAreaElement).value)}
+						></textarea>
+					</div>
+					<div>
+						<label class="mb-1 block text-sm font-medium" for="cmp-custom-timeout">
+							Délai d'exécution maximum par cas (ms)
+						</label>
+						<Input
+							id="cmp-custom-timeout"
+							type="number"
+							min="100"
+							max="10000"
+							step="100"
+							value={outputConfig.comparison.timeout_ms ?? 2000}
+							oninput={(e) => {
+								const v = parseInt((e.target as HTMLInputElement).value, 10);
+								if (!isNaN(v) && v >= 100 && v <= 10000) setCustomTimeout(v);
+							}}
+						/>
+					</div>
+					<p class="text-xs text-muted-foreground">
+						Pour vérifier que le comparateur tourne, clique sur <strong>Vérifier</strong> au-dessus du
+						formulaire — ta solution sera évaluée par ton comparateur sur tous les cas de test.
+					</p>
+				</div>
+			{/if}
 
 			<!-- Custom panel — shown when no preset matches -->
 			{#if selectedPreset === 'custom'}
