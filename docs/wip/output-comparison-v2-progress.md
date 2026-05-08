@@ -80,7 +80,18 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - `MyCheckbox` utilisé via `onchange` (alias documenté de `onCheckedChange`).
 - Svelte autofixer : 0 issues, 0 suggestions.
 
-## Phase 5 — UI résultat (diff) ⏳
+## Phase 5 — UI résultat (diff) ✅
+
+**Fichiers modifiés :**
+
+- `src/lib/components/python/exercises/ExerciseValidationResult.svelte` : ajout d'un bloc `{#if testCase.diff}` dans le `<dl>` du panneau ouvert, étiqueté "Indice" en amber pour le distinguer visuellement de "Erreur" (qui reste rouge).
+- `src/lib/components/python/exercises/ExerciseValidationResult.svelte.test.ts` : ajout d'un 7e test `'shows the diff message when present on a failed test case'` qui ouvre le `<details>` et vérifie que "Indice" + le motif `écart.*tolérance` sont affichés.
+
+**Décisions :**
+
+- Étiquette "Indice" plutôt que "Diff" — plus parlant pour un élève francophone.
+- Couleur amber : niveau intermédiaire entre l'absence de feedback (gris muted) et l'erreur runtime (rouge).
+- Pas d'usage `<details open>` automatique — l'élève clique pour révéler ; ça évite de submerger d'info quand de nombreux tests échouent.
 
 ## Phase 6 — Migration seeds ⏳
 

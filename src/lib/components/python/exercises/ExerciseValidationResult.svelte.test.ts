@@ -49,6 +49,21 @@ const errorResult: Result = {
 	execution_time_ms: 5000
 };
 
+const resultWithDiff: Result = {
+	valid: false,
+	strategy: 'output',
+	test_results: [
+		{
+			passed: false,
+			input: '',
+			expected: '1.41',
+			actual: '1.4142135623730951',
+			diff: 'Token 1 : attendu 1.41, obtenu 1.4142135623730951 — écart 4.214e-3 > tolérance 1.000e-6.'
+		}
+	],
+	execution_time_ms: 32
+};
+
 describe('ExerciseValidationResult', () => {
 	it('renders nothing when no result and not loading', async () => {
 		render(ExerciseValidationResult, { props: { result: null } });
@@ -84,5 +99,16 @@ describe('ExerciseValidationResult', () => {
 		render(ExerciseValidationResult, { props: { result: errorResult } });
 		await expect.element(page.getByText('Erreur', { exact: true })).toBeVisible();
 		await expect.element(page.getByText("Délai d'exécution dépassé")).toBeVisible();
+	});
+
+	it('shows the diff message when present on a failed test case', async () => {
+		render(ExerciseValidationResult, { props: { result: resultWithDiff } });
+		// The detail panel needs to be open to read the diff — open the first <details>
+		const summaries = page.getByRole('group');
+		const firstSummary = summaries.first();
+		// Force-open by clicking the summary
+		await firstSummary.click();
+		await expect.element(page.getByText('Indice', { exact: true })).toBeVisible();
+		await expect.element(page.getByText(/écart.*tolérance/i)).toBeVisible();
 	});
 });
