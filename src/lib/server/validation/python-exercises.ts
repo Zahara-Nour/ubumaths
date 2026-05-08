@@ -134,9 +134,6 @@ export const validationResultSchema = z.object({
 	execution_time_ms: z.number().int().min(0)
 });
 
-// Exercise Difficulty
-const exerciseDifficultySchema = z.enum(['easy', 'medium', 'hard']);
-
 // Create Exercise Schema
 export const createExerciseSchema = z.object({
 	title: z
@@ -168,7 +165,6 @@ export const createExerciseSchema = z.object({
 		.max(CODE_MAX)
 		.describe('Solution code (required, 1-100000 chars)'),
 	validation_config: validationConfigSchema.describe('Validation strategy and configuration'),
-	difficulty: exerciseDifficultySchema.describe('Exercise difficulty level'),
 	tags: z
 		.array(z.string().min(1).max(50))
 		.max(TAGS_MAX)
@@ -186,7 +182,6 @@ export const updateExerciseSchema = z.object({
 	starter_code: z.string().max(CODE_MAX).nullable().optional(),
 	solution_code: z.string().min(CODE_MIN).max(CODE_MAX).optional(),
 	validation_config: validationConfigSchema.optional(),
-	difficulty: exerciseDifficultySchema.optional(),
 	tags: z.array(z.string().min(1).max(50)).max(TAGS_MAX).optional(),
 	is_public: z.boolean().optional()
 });
@@ -226,7 +221,6 @@ export const submitExerciseSchema = z.object({
 
 // Query parameter schemas
 export const listExercisesQuerySchema = z.object({
-	difficulty: exerciseDifficultySchema.optional(),
 	tags: z
 		.string()
 		.optional()

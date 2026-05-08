@@ -13,7 +13,7 @@
 	/>
 </svelte:head>
 
-<main class="container mx-auto max-w-3xl p-4 py-8">
+<div class="container mx-auto max-w-3xl p-4 py-8">
 	<header class="mb-6">
 		<h1 class="mb-2 text-3xl font-bold">Exercices Python</h1>
 		<p class="text-muted-foreground">
@@ -61,4 +61,4 @@
 			La création d'exercices est réservée aux enseignants.
 		</p>
 	{/if}
-</main>
+</div>

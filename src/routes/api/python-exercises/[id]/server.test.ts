@@ -36,7 +36,6 @@ const fullExercise = {
 		function_name: 'add',
 		test_cases: [{ args: [1, 2], expected: 3 }]
 	},
-	difficulty: 'easy',
 	tags: ['arithmetic'],
 	author_id: AUTHOR_ID,
 	is_public: true,

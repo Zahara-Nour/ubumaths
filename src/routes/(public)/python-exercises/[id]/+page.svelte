@@ -24,14 +24,6 @@
 		executor?.state === 'loading-pyodide' || executor?.state === 'loading-packages'
 	);
 
-	const difficultyLabel = $derived(
-		exercise.difficulty === 'easy'
-			? 'Facile'
-			: exercise.difficulty === 'medium'
-				? 'Moyen'
-				: 'Difficile'
-	);
-
 	onMount(() => {
 		if (!browser) return;
 
@@ -93,23 +85,16 @@
 	{/if}
 </svelte:head>
 
-<main class="container mx-auto p-4">
+<div class="container mx-auto p-4">
 	<header class="mb-4">
 		<h1 class="mb-2 text-2xl font-bold">{exercise.title}</h1>
-		<div class="flex flex-wrap items-center gap-2">
-			<Badge
-				variant={exercise.difficulty === 'easy'
-					? 'secondary'
-					: exercise.difficulty === 'medium'
-						? 'default'
-						: 'destructive'}
-			>
-				{difficultyLabel}
-			</Badge>
-			{#each exercise.tags as tag (tag)}
-				<Badge variant="outline">{tag}</Badge>
-			{/each}
-		</div>
+		{#if exercise.tags.length > 0}
+			<div class="flex flex-wrap items-center gap-2">
+				{#each exercise.tags as tag (tag)}
+					<Badge variant="outline">{tag}</Badge>
+				{/each}
+			</div>
+		{/if}
 		{#if exercise.description}
 			<p class="mt-2 text-sm text-muted-foreground">{exercise.description}</p>
 		{/if}
@@ -162,4 +147,4 @@
 			<ExerciseValidationResult result={validationResult} loading={isValidating} />
 		</section>
 	</div>
-</main>
+</div>
