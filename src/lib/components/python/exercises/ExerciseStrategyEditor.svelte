@@ -528,16 +528,28 @@
 					<div class="rounded-md border border-border p-3">
 						<div class="mb-2 flex items-center justify-between">
 							<span class="text-sm font-medium">Cas de test {i + 1}</span>
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onclick={() => removeOutputCase(i)}
-								disabled={outputConfig.test_cases.length <= 1}
-								aria-label="Supprimer le cas {i + 1}"
-							>
-								<Trash2 class="h-4 w-4" />
-							</Button>
+							<div class="flex items-center gap-3">
+								<MyCheckbox
+									checked={testCase.hidden ?? false}
+									onchange={(v) => {
+										if (config.type !== 'output') return;
+										const updated = [...config.test_cases];
+										updated[i] = { ...updated[i], hidden: v };
+										config.test_cases = updated;
+									}}
+									label="Caché"
+								/>
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									onclick={() => removeOutputCase(i)}
+									disabled={outputConfig.test_cases.length <= 1}
+									aria-label="Supprimer le cas {i + 1}"
+								>
+									<Trash2 class="h-4 w-4" />
+								</Button>
+							</div>
 						</div>
 						<div class="grid gap-2 sm:grid-cols-2">
 							<div>
@@ -587,20 +599,32 @@
 				/>
 			</div>
 			<div class="space-y-2">
-				{#each unitConfig.test_cases as _testCase, i (i)}
+				{#each unitConfig.test_cases as testCase, i (i)}
 					<div class="rounded-md border border-border p-3">
 						<div class="mb-2 flex items-center justify-between">
 							<span class="text-sm font-medium">Cas de test {i + 1}</span>
-							<Button
-								type="button"
-								variant="ghost"
-								size="sm"
-								onclick={() => removeUnitCase(i)}
-								disabled={unitConfig.test_cases.length <= 1}
-								aria-label="Supprimer le cas {i + 1}"
-							>
-								<Trash2 class="h-4 w-4" />
-							</Button>
+							<div class="flex items-center gap-3">
+								<MyCheckbox
+									checked={testCase.hidden ?? false}
+									onchange={(v) => {
+										if (config.type !== 'unit_test') return;
+										const updated = [...config.test_cases];
+										updated[i] = { ...updated[i], hidden: v };
+										config.test_cases = updated;
+									}}
+									label="Caché"
+								/>
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									onclick={() => removeUnitCase(i)}
+									disabled={unitConfig.test_cases.length <= 1}
+									aria-label="Supprimer le cas {i + 1}"
+								>
+									<Trash2 class="h-4 w-4" />
+								</Button>
+							</div>
 						</div>
 						<div class="grid gap-2 sm:grid-cols-2">
 							<div>

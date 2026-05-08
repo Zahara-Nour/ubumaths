@@ -36,7 +36,19 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - La redaction est faite **dans le worker** : les champs sensibles ne traversent jamais le `postMessage`. Même DevTools → Network → onglet "Workers" ne les verra pas.
 - L'`error` est conservé (pas redacté) pour qu'un crash Python reste lisible. Risque acceptable : un message d'erreur Python ne révèle généralement pas l'attendu.
 
-## Phase 3 — UI auteur ⏳
+## Phase 3 — UI auteur ✅
+
+**Fichier modifié :** `src/lib/components/python/exercises/ExerciseStrategyEditor.svelte`.
+
+- Branche `output` : ajout d'un `<MyCheckbox label="Caché">` à droite du nom du test, avant le bouton supprimer. Bind via `onchange` (pour mutation immutable du tableau).
+- Branche `unit_test` : pareil. Renommage de `_testCase` en `testCase` puisqu'on l'utilise désormais (`testCase.hidden`).
+- Pas de section séparée, pas de réorganisation : le toggle est local à chaque carte.
+
+**Décisions :**
+
+- `onchange` callback (pas `bind:checked` direct) pour reconstruire le tableau via spread et garantir la réactivité Svelte 5 sur l'array config.test_cases.
+- `testCase.hidden ?? false` au rendu pour gérer l'absence du champ sur les exos existants.
+- Svelte autofixer : 0 issues, 0 suggestions.
 
 ## Phase 4 — UI résultat ⏳
 
