@@ -188,6 +188,52 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 			},
 			TEST_TIMEOUT_MS
 		);
+
+		it(
+			'hidden output test passing: input/expected/actual/diff are redacted',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					type: 'output',
+					comparison: { kind: 'exact' },
+					test_cases: [
+						{ input: '', expected_output: 'visible\n' },
+						{ input: '', expected_output: 'secret\n', hidden: true }
+					]
+				};
+				const result = await executor.validateExercise('print("visible")\nprint("secret")', config);
+				// First test (visible) — full data
+				expect(result.test_results[0].passed).toBe(false); // print prints both → mismatch
+				// Second test (hidden) — only passed + hidden, nothing else
+				const hidden = result.test_results[1];
+				expect(hidden.hidden).toBe(true);
+				expect(hidden.input).toBeUndefined();
+				expect(hidden.expected).toBeUndefined();
+				expect(hidden.actual).toBeUndefined();
+				expect(hidden.diff).toBeUndefined();
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'hidden output test failing: diff is redacted too',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					type: 'output',
+					comparison: { kind: 'numeric', shape: 'flat', eps_abs: 1e-9, eps_rel: 1e-9 },
+					test_cases: [
+						{ input: '', expected_output: '1.0' },
+						{ input: '', expected_output: '99.0', hidden: true }
+					]
+				};
+				const result = await executor.validateExercise('print(1.0)', config);
+				const hidden = result.test_results[1];
+				expect(hidden.passed).toBe(false);
+				expect(hidden.hidden).toBe(true);
+				expect(hidden.diff).toBeUndefined();
+				expect(hidden.expected).toBeUndefined();
+			},
+			TEST_TIMEOUT_MS
+		);
 	});
 
 	// ===========================================================================
@@ -258,6 +304,32 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 				expect(result.test_results).toHaveLength(2);
 				expect(result.test_results[0].passed).toBe(false); // 1*2 = 2 ≠ 3
 				expect(result.test_results[1].passed).toBe(true); // 2*2 = 4 = 4 (lucky)
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'hidden unit_test case redacts args/expected/actual',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					type: 'unit_test',
+					function_name: 'square',
+					test_cases: [
+						{ args: [3], expected: 9 },
+						{ args: [42], expected: 1764, hidden: true }
+					]
+				};
+				const result = await executor.validateExercise(
+					'def square(n):\n    return n * n\n',
+					config
+				);
+				expect(result.valid).toBe(true);
+				const hidden = result.test_results[1];
+				expect(hidden.passed).toBe(true);
+				expect(hidden.hidden).toBe(true);
+				expect(hidden.input).toBeUndefined();
+				expect(hidden.expected).toBeUndefined();
+				expect(hidden.actual).toBeUndefined();
 			},
 			TEST_TIMEOUT_MS
 		);

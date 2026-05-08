@@ -18,7 +18,23 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - Le `.refine()` sur `output_tests` (AST) tolère un array vide (la stratégie ast peut n'avoir aucun output_test). Si non vide, au moins un visible.
 - Pas de modification du barrel `index.ts` : les nouveaux champs optionnels se propagent automatiquement via les exports existants.
 
-## Phase 2 — Worker redaction ⏳
+## Phase 2 — Worker redaction ✅
+
+**Fichiers modifiés :**
+
+- `src/lib/workers/pyodide.worker.ts` :
+  - Helper `redactIfHidden(result, hidden)` : retourne `{ passed, hidden: true, error? }` quand `hidden=true`, sinon retourne `result` tel quel.
+  - `validateOutputComparison` : 4 sites de `testResults.push(...)` (succès + catch) enveloppés dans `redactIfHidden`.
+  - `validateUnitTests` : pareil (succès + catch).
+  - `validateAST.output_tests` : passe par `validateOutputComparison`, propagation automatique.
+- `src/lib/shared/python/execution/exercise-validation-real.svelte.test.ts` : ajout de 3 tests Pyodide-réel (output passé caché, output échoué caché avec mode numeric, unit_test passé caché).
+
+**Vérifié :** 17/17 tests Pyodide-réel passent.
+
+**Décisions :**
+
+- La redaction est faite **dans le worker** : les champs sensibles ne traversent jamais le `postMessage`. Même DevTools → Network → onglet "Workers" ne les verra pas.
+- L'`error` est conservé (pas redacté) pour qu'un crash Python reste lisible. Risque acceptable : un message d'erreur Python ne révèle généralement pas l'attendu.
 
 ## Phase 3 — UI auteur ⏳
 
