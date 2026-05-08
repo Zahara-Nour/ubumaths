@@ -215,6 +215,121 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		);
 
 		it(
+			'custom comparator: returns True → passed',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					type: 'output',
+					comparison: {
+						kind: 'custom',
+						code: 'def compare(expected, actual, stdin):\n    return actual.strip() == expected.strip()\n'
+					},
+					test_cases: [{ input: '', expected_output: 'hello' }]
+				};
+				const result = await executor.validateExercise('print("hello")', config);
+				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'custom comparator: returns dict with diff → diff surfaced',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					type: 'output',
+					comparison: {
+						kind: 'custom',
+						code: `def compare(expected, actual, stdin):
+    e = set(expected.split())
+    a = set(actual.split())
+    if e == a:
+        return {'passed': True}
+    missing = e - a
+    extra = a - e
+    msg = []
+    if missing: msg.append(f"manque: {sorted(missing)}")
+    if extra: msg.append(f"en trop: {sorted(extra)}")
+    return {'passed': False, 'diff': ', '.join(msg)}
+`
+					},
+					test_cases: [{ input: '', expected_output: '1 2 3' }]
+				};
+				// Order-independent: prints "3 1 2" should still pass.
+				const okResult = await executor.validateExercise('print("3 1 2")', config);
+				expect(okResult.valid).toBe(true);
+
+				const badResult = await executor.validateExercise('print("1 2 4")', config);
+				expect(badResult.valid).toBe(false);
+				expect(badResult.test_results[0].diff).toMatch(/manque|en trop/);
+			},
+			TEST_TIMEOUT_MS * 2
+		);
+
+		it(
+			'custom comparator: crash inside compare() → reports error',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					type: 'output',
+					comparison: {
+						kind: 'custom',
+						code: 'def compare(expected, actual, stdin):\n    return 1/0\n'
+					},
+					test_cases: [{ input: '', expected_output: 'x' }]
+				};
+				const result = await executor.validateExercise('print("x")', config);
+				expect(result.valid).toBe(false);
+				expect(result.test_results[0].error).toMatch(/comparateur|division/i);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'custom comparator: missing compare function → clear error',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					type: 'output',
+					comparison: {
+						kind: 'custom',
+						code: '# no compare function defined\nx = 42\n'
+					},
+					test_cases: [{ input: '', expected_output: 'x' }]
+				};
+				const result = await executor.validateExercise('print("x")', config);
+				expect(result.valid).toBe(false);
+				expect(result.test_results[0].error).toMatch(/compare/i);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'custom comparator: isolated from student namespace',
+			async () => {
+				// The student leaks an attractive nuisance into globals; if the
+				// comparator's namespace were shared, it could read it.
+				const config: ExerciseValidationConfig = {
+					type: 'output',
+					comparison: {
+						kind: 'custom',
+						code: `def compare(expected, actual, stdin):
+    # Try to read a name set by student code; it must NOT be visible.
+    try:
+        leak = student_secret  # noqa: F821
+        return {'passed': False, 'diff': f'leak: {leak}'}
+    except NameError:
+        return {'passed': True}
+`
+					},
+					test_cases: [{ input: '', expected_output: 'ok' }]
+				};
+				const result = await executor.validateExercise(
+					'student_secret = "WIN"\nprint("ok")\n',
+					config
+				);
+				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
 			'hidden output test failing: diff is redacted too',
 			async () => {
 				const config: ExerciseValidationConfig = {

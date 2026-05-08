@@ -2129,6 +2129,116 @@ async function validateExercise(
 }
 
 /**
+ * Run a teacher-defined Python `compare(expected, actual, stdin)` function in
+ * an isolated namespace, normalise its return value, and enforce a dedicated
+ * timeout. The comparator's namespace is separate from the student's: neither
+ * can see the other's locals.
+ *
+ * Accepts either a bool return (treated as `{ passed: bool }`) or a dict with
+ * `passed` (and optionally `diff`/`error`). Anything else degrades to a clear
+ * `passed: false` with an explanatory error.
+ */
+async function compareWithCustomScript(
+	code: string,
+	expected: string,
+	actual: string,
+	stdin: string,
+	timeoutMs: number
+): Promise<{ passed: boolean; diff?: string; error?: string }> {
+	if (!pyodide) {
+		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
+	}
+
+	const namespace = pyodide.runPython('dict()') as PyProxy;
+
+	try {
+		// Load the comparator code into the isolated namespace.
+		try {
+			await pyodide.runPythonAsync(code, { globals: namespace });
+		} catch (e) {
+			return {
+				passed: false,
+				error: `Erreur dans le comparateur : ${e instanceof Error ? e.message : String(e)}`
+			};
+		}
+
+		// Verify that `compare` exists and is callable.
+		const hasCompare = (await pyodide.runPythonAsync(`'compare' in dir() and callable(compare)`, {
+			globals: namespace
+		})) as boolean;
+		if (!hasCompare) {
+			return {
+				passed: false,
+				error: "Le comparateur doit définir une fonction 'compare(expected, actual, stdin)'."
+			};
+		}
+
+		// Inject args into the namespace (no string interpolation, safe).
+		namespace.set('_ubumaths_cmp_expected', expected);
+		namespace.set('_ubumaths_cmp_actual', actual);
+		namespace.set('_ubumaths_cmp_stdin', stdin);
+
+		const compareCall = pyodide.runPythonAsync(
+			`
+import json as _ubumaths_json
+_ubumaths_raw = compare(_ubumaths_cmp_expected, _ubumaths_cmp_actual, _ubumaths_cmp_stdin)
+if isinstance(_ubumaths_raw, bool):
+    _ubumaths_payload = {'passed': _ubumaths_raw}
+elif isinstance(_ubumaths_raw, dict):
+    _ubumaths_payload = {
+        'passed': bool(_ubumaths_raw.get('passed', False)),
+    }
+    if 'diff' in _ubumaths_raw and _ubumaths_raw['diff'] is not None:
+        _ubumaths_payload['diff'] = str(_ubumaths_raw['diff'])
+    if 'error' in _ubumaths_raw and _ubumaths_raw['error'] is not None:
+        _ubumaths_payload['error'] = str(_ubumaths_raw['error'])
+else:
+    _ubumaths_payload = {'passed': False, 'error': "Le comparateur doit retourner True/False ou un dict {'passed': ..., 'diff'?: ...}."}
+_ubumaths_json.dumps(_ubumaths_payload)
+`,
+			{ globals: namespace }
+		);
+
+		const timeoutPromise = new Promise<never>((_, reject) =>
+			setTimeout(() => reject(new Error('CompareTimeout')), timeoutMs)
+		);
+
+		const jsonStr = (await Promise.race([compareCall, timeoutPromise])) as string;
+
+		try {
+			namespace.delete('_ubumaths_cmp_expected');
+			namespace.delete('_ubumaths_cmp_actual');
+			namespace.delete('_ubumaths_cmp_stdin');
+		} catch {
+			// Ignore cleanup errors (keys may not exist on early failure)
+		}
+
+		const parsed = JSON.parse(jsonStr) as {
+			passed?: boolean;
+			diff?: string;
+			error?: string;
+		};
+		return {
+			passed: parsed.passed === true,
+			...(parsed.diff ? { diff: parsed.diff } : {}),
+			...(parsed.error ? { error: parsed.error } : {})
+		};
+	} catch (e) {
+		if (e instanceof Error && e.message === 'CompareTimeout') {
+			return { passed: false, error: 'Le comparateur a dépassé le temps imparti.' };
+		}
+		return {
+			passed: false,
+			error: `Erreur dans le comparateur : ${e instanceof Error ? e.message : String(e)}`
+		};
+	} finally {
+		if (typeof (namespace as { destroy?: () => void }).destroy === 'function') {
+			(namespace as { destroy: () => void }).destroy();
+		}
+	}
+}
+
+/**
  * Strip sensitive fields (input/expected/actual/diff) from a TestCaseResult
  * when the source test case is hidden. The student-visible result then only
  * contains `passed`, `hidden: true`, and `error` if there was a runtime crash.
@@ -2196,9 +2306,20 @@ _actual
 				{ globals: namespace }
 			)) as string;
 
-			// Compare outputs using the V2 engine (per-case override falls back to global)
+			// Compare outputs. Custom comparators run a teacher-defined Python
+			// `compare()` in an isolated namespace; everything else uses the
+			// JS-pure engine.
 			const cmp = testCase.comparison ?? config.comparison;
-			const compareResult = compareOutputs(testCase.expected_output, actualOutput, cmp);
+			const compareResult =
+				cmp.kind === 'custom'
+					? await compareWithCustomScript(
+							cmp.code,
+							testCase.expected_output,
+							actualOutput,
+							testCase.input,
+							cmp.timeout_ms ?? 2000
+						)
+					: compareOutputs(testCase.expected_output, actualOutput, cmp);
 			allPassed = allPassed && compareResult.passed;
 
 			testResults.push(
@@ -2208,7 +2329,8 @@ _actual
 						input: testCase.input,
 						expected: testCase.expected_output,
 						actual: actualOutput,
-						...(compareResult.diff ? { diff: compareResult.diff } : {})
+						...(compareResult.diff ? { diff: compareResult.diff } : {}),
+						...(compareResult.error ? { error: compareResult.error } : {})
 					},
 					testCase.hidden === true
 				)
