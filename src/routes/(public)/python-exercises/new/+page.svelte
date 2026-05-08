@@ -47,7 +47,7 @@
 		validation_config: {
 			type: 'output',
 			test_cases: [{ input: '', expected_output: '' }],
-			ignore_whitespace: false
+			comparison: { kind: 'exact' }
 		},
 		level: 'lycee',
 		tags: [],

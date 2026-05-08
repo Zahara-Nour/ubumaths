@@ -60,7 +60,25 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - L'isolation namespace est préservée (le `comparison` est purement client-side, ne touche pas au `dict()` Python).
 - Le `diff` est ajouté conditionnellement au `TestCaseResult` (spread de `{}` si absent) pour ne pas polluer les sérialisations.
 
-## Phase 4 — UI auteur (UX β) ⏳
+## Phase 4 — UI auteur (UX β) ✅
+
+**Fichiers modifiés :**
+
+- `src/lib/components/python/exercises/ExerciseStrategyEditor.svelte` :
+  - Suppression complète de `ignore_whitespace` (init + onMount + template).
+  - `setStrategy('output')` initialise `comparison: { kind: 'exact' }`.
+  - Ajout d'un sélecteur preset `<MySelect>` "Comparaison" avec 8 valeurs (7 presets + "Personnaliser…").
+  - Ajout d'un panneau "Configuration personnalisée" révélé quand `selectedPreset === 'custom'` : sélecteur `kind` (exact/text/numeric) + champs conditionnels (whitespace/case/trim pour text ; shape/eps_abs/eps_rel/non_numeric/accept_comma_decimal pour numeric).
+  - `detectPreset(cmp)` : mapping inverse strict pour rester cohérent après reload (un comparison qui matche un preset s'affiche comme tel).
+  - `setKind(kind)` : réinitialise les champs au changement de kind pour éviter les vestiges.
+- `src/routes/(public)/python-exercises/new/+page.svelte` : `validation_config` initial utilise `comparison: { kind: 'exact' }`.
+
+**Décisions :**
+
+- UX β : 7 presets pédagogiques + "Personnaliser…" pour les cas avancés.
+- `detectPreset` strict (pas de fuzzy match) pour éviter qu'une config légèrement différente d'un preset masque l'écart.
+- `MyCheckbox` utilisé via `onchange` (alias documenté de `onCheckedChange`).
+- Svelte autofixer : 0 issues, 0 suggestions.
 
 ## Phase 5 — UI résultat (diff) ⏳
 
