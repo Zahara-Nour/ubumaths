@@ -1,6 +1,6 @@
 # Python Examples Library — progression
 
-## Statut : Phase 3 terminée — Phase 4 à démarrer
+## Statut : Phase 4 terminée — Phase 5 (QA navigateur) à démarrer
 
 ## Objectif
 
@@ -44,3 +44,12 @@ Ajouter une bibliothèque d'exemples Python statiques (read-only) accessible via
 - `src/lib/stores/pythonPlayground.svelte.ts` — méthode `loadExample(code)` ajoutée
 - `src/lib/data/python-examples/utils.ts` — `filterExamples` étend la recherche aux tags
 - `src/lib/data/python-examples/utils.test.ts` — +1 test (recherche par tag)
+
+### Phase 4
+
+- `src/lib/components/python/PythonFileManager.svelte` :
+  - `handleLoadExample` checke `pythonStore.isModified` → confirmation modale via ConfirmDialog
+  - State `pendingExample` + `confirmLoadOpen`
+  - `$effect` qui clear `pendingExample` quand le dialog se ferme par n'importe quel chemin (X, Escape, overlay)
+  - Garde anti double-click sur "Charger"
+- `src/lib/components/python/library/LibraryBrowser.svelte` : bandeau "Aperçu — lecture seule" + `aria-readonly` sur le `<pre>`

@@ -25,6 +25,7 @@
 	import { pythonStore, type PythonFile } from '$lib/stores/pythonPlayground.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import LibraryBrowser from './library/LibraryBrowser.svelte';
+	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import type { PythonExample } from '$lib/data/python-examples/types';
 	import type { Database } from '$lib/types/database';
 
@@ -56,6 +57,8 @@
 	let isLoading = $state(false);
 	let deleteConfirmId = $state<string | null>(null);
 	let isDeleting = $state(false);
+	let confirmLoadOpen = $state(false);
+	let pendingExample = $state<PythonExample | null>(null);
 
 	// Derived
 	let _isTeacher = $derived(profile?.role === 'teacher' || profile?.role === 'admin');
@@ -203,10 +206,38 @@
 	}
 
 	function handleLoadExample(example: PythonExample): void {
+		if (confirmLoadOpen) return; // ignore re-clicks while a confirm is pending
+		if (pythonStore.isModified) {
+			pendingExample = example;
+			confirmLoadOpen = true;
+			return;
+		}
+		applyLoadExample(example);
+	}
+
+	// Bits-UI's Dialog can close via X / Escape / overlay click without firing
+	// onCancel — this $effect ensures pendingExample is always cleaned up when
+	// the confirm dialog closes by any path.
+	$effect(() => {
+		if (!confirmLoadOpen) pendingExample = null;
+	});
+
+	function applyLoadExample(example: PythonExample): void {
 		pythonStore.loadExample(example.code);
 		toaster.success(`Exemple "${example.title}" chargé`);
 		open = false;
 		onFileOpened?.();
+	}
+
+	function confirmLoadExample(): void {
+		if (pendingExample) {
+			applyLoadExample(pendingExample);
+			pendingExample = null;
+		}
+	}
+
+	function cancelLoadExample(): void {
+		pendingExample = null;
 	}
 
 	function formatDate(dateString: string): string {
@@ -408,3 +439,14 @@
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
+
+<ConfirmDialog
+	bind:open={confirmLoadOpen}
+	title="Modifications non sauvegardées"
+	description="Charger cet exemple va remplacer votre code actuel non sauvegardé. Continuer ?"
+	confirmLabel="Charger l'exemple"
+	cancelLabel="Annuler"
+	variant="destructive"
+	onConfirm={confirmLoadExample}
+	onCancel={cancelLoadExample}
+/>
