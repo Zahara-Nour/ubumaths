@@ -80,9 +80,6 @@ export interface ValidationResult {
 	execution_time_ms: number;
 }
 
-// Exercise Types
-export type ExerciseDifficulty = 'easy' | 'medium' | 'hard';
-
 export interface PythonExercise {
 	id: string;
 	title: string;
@@ -91,7 +88,6 @@ export interface PythonExercise {
 	starter_code: string | null;
 	solution_code: string;
 	validation_config: ValidationConfig;
-	difficulty: ExerciseDifficulty;
 	tags: string[];
 	author_id: string;
 	is_public: boolean;

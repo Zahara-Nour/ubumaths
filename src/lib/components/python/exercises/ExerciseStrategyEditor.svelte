@@ -43,7 +43,11 @@
 	function setStrategy(type: string) {
 		if (type === config.type) return;
 		if (type === 'output') {
-			config = { type: 'output', test_cases: [{ input: '', expected_output: '' }] };
+			config = {
+				type: 'output',
+				test_cases: [{ input: '', expected_output: '' }],
+				ignore_whitespace: false
+			};
 		} else if (type === 'unit_test') {
 			config = {
 				type: 'unit_test',
@@ -86,6 +90,11 @@
 	// (e.g. editing an exercise loaded from the API). Subsequent transitions are
 	// handled in setStrategy / addUnitCase / removeUnitCase.
 	onMount(() => {
+		// Normalise optional flags so bind:checked never targets undefined
+		// (Svelte 5 refuses bind:value={undefined} when the prop has a fallback).
+		if (config.type === 'output' && config.ignore_whitespace === undefined) {
+			config.ignore_whitespace = false;
+		}
 		if (config.type === 'unit_test') {
 			unitDrafts = config.test_cases.map((tc) => ({
 				args: JSON.stringify(tc.args),

@@ -7,7 +7,6 @@
 	import ExerciseStrategyEditor from '$lib/components/python/exercises/ExerciseStrategyEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import {
 		PlaygroundExecutor,
@@ -16,12 +15,6 @@
 	} from '$lib/shared/python';
 	import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-svelte';
 
-	const difficultyItems = [
-		{ value: 'easy', label: 'Facile' },
-		{ value: 'medium', label: 'Moyen' },
-		{ value: 'hard', label: 'Difficile' }
-	];
-
 	type FormState = {
 		title: string;
 		description: string;
@@ -29,8 +22,7 @@
 		starter_code: string;
 		solution_code: string;
 		validation_config: ExerciseValidationConfig;
-		tags: string; // comma-separated, transformed on submit
-		difficulty: 'easy' | 'medium' | 'hard';
+		tags: string;
 		is_public: boolean;
 	};
 
@@ -40,9 +32,12 @@
 		instructions: '',
 		starter_code: '',
 		solution_code: '',
-		validation_config: { type: 'output', test_cases: [{ input: '', expected_output: '' }] },
+		validation_config: {
+			type: 'output',
+			test_cases: [{ input: '', expected_output: '' }],
+			ignore_whitespace: false
+		},
 		tags: '',
-		difficulty: 'easy',
 		is_public: true
 	});
 
@@ -112,7 +107,6 @@
 					solution_code: form.solution_code,
 					validation_config: form.validation_config,
 					tags: tagsArray,
-					difficulty: form.difficulty,
 					is_public: form.is_public
 				})
 			});
@@ -131,35 +125,44 @@
 		}
 	}
 
-	// Reset verify result whenever solution_code or validation_config changes —
-	// the user's last verification is no longer trustworthy after edits.
 	$effect(() => {
 		void form.solution_code;
 		void form.validation_config;
 		verifyResult = null;
 	});
+
+	const instructionsPlaceholder =
+		'# Énoncé\n\nÉcris une fonction `add(a, b)` qui retourne a + b.\n\n## Exemples\n\n- `add(1, 2)` doit retourner `3`';
 </script>
 
 <svelte:head>
 	<title>Créer un exercice Python – UbuMaths</title>
 </svelte:head>
 
-<main class="container mx-auto p-4">
-	<header class="mb-4">
+<div class="container mx-auto max-w-3xl p-4">
+	<header class="mb-6">
 		<h1 class="text-2xl font-bold">Créer un exercice Python</h1>
-		<p class="text-sm text-muted-foreground">
-			Renseigne les champs ci-dessous, vérifie que ta solution passe la validation, puis crée
-			l'exercice. Tu obtiens un lien partageable.
+		<p class="mt-1 text-sm text-muted-foreground">
+			Remplis le formulaire, vérifie que ta solution passe la validation, puis crée l'exercice. Tu
+			obtiens un lien partageable.
 		</p>
 	</header>
 
-	<div class="grid gap-6 lg:grid-cols-2">
-		<!-- Left column: metadata + instructions -->
-		<section class="space-y-4">
+	<form
+		class="space-y-6"
+		onsubmit={(e) => {
+			e.preventDefault();
+			handleCreate();
+		}}
+	>
+		<!-- Métadonnées -->
+		<fieldset class="space-y-3">
+			<legend class="text-base font-semibold">Présentation</legend>
+
 			<div>
-				<label class="mb-1 block text-sm font-medium" for="ex-title"
-					>Titre <span class="text-red-500">*</span></label
-				>
+				<label for="ex-title" class="mb-1 block text-sm font-medium">
+					Titre <span class="text-destructive">*</span>
+				</label>
 				<Input
 					id="ex-title"
 					bind:value={form.title}
@@ -169,120 +172,129 @@
 			</div>
 
 			<div>
-				<label class="mb-1 block text-sm font-medium" for="ex-desc">Description courte</label>
+				<label for="ex-desc" class="mb-1 block text-sm font-medium">Description courte</label>
 				<Input
 					id="ex-desc"
 					bind:value={form.description}
-					placeholder="Phrase de présentation (optionnel)"
+					placeholder="Optionnel — phrase de présentation affichée sous le titre"
 				/>
 			</div>
 
 			<div>
-				<label class="mb-1 block text-sm font-medium" for="ex-instr">
-					Instructions (markdown supporté)
+				<label for="ex-instr" class="mb-1 block text-sm font-medium">
+					Instructions <span class="text-xs font-normal text-muted-foreground">(markdown)</span>
 				</label>
 				<textarea
 					id="ex-instr"
-					class="block w-full rounded-md border border-border bg-background px-2 py-1 text-sm"
-					rows="6"
+					class="block min-h-32 w-full rounded-md border border-border bg-background p-2 font-mono text-sm shadow-sm focus:border-ring focus:ring-2 focus:ring-ring/30 focus:outline-none"
+					rows="8"
 					bind:value={form.instructions}
-					placeholder="# Énoncé&#10;&#10;Écris une fonction `add(a, b)` qui retourne a + b."
+					placeholder={instructionsPlaceholder}
 				></textarea>
 			</div>
 
-			<div class="grid gap-3 sm:grid-cols-2">
-				<div>
-					<label class="mb-1 block text-sm font-medium" for="ex-difficulty">Difficulté</label>
-					<MySelect
-						id="ex-difficulty"
-						items={difficultyItems}
-						value={form.difficulty}
-						onchange={(v) => (form.difficulty = v as FormState['difficulty'])}
-					/>
-				</div>
-				<div>
-					<label class="mb-1 block text-sm font-medium" for="ex-tags"
-						>Tags (séparés par des virgules)</label
+			<div>
+				<label for="ex-tags" class="mb-1 block text-sm font-medium">
+					Tags <span class="text-xs font-normal text-muted-foreground"
+						>(séparés par des virgules)</span
 					>
-					<Input id="ex-tags" bind:value={form.tags} placeholder="ex: arithmétique, débutant" />
-				</div>
+				</label>
+				<Input id="ex-tags" bind:value={form.tags} placeholder="arithmétique, débutant" />
 			</div>
 
 			<MyCheckbox
 				bind:checked={form.is_public}
-				label="Exercice public (accessible à tous via le lien)"
+				label="Public — accessible à tous via le lien (sinon : seulement toi)"
 			/>
-		</section>
+		</fieldset>
 
-		<!-- Right column: code + validation_config + verify + submit -->
-		<section class="space-y-4">
+		<!-- Code -->
+		<fieldset class="space-y-3">
+			<legend class="text-base font-semibold">Code</legend>
+
 			<div>
 				<label class="mb-1 block text-sm font-medium" for="ex-starter">
-					Code initial (vu par l'élève)
+					Code initial <span class="text-xs font-normal text-muted-foreground"
+						>(vu par l'élève au démarrage)</span
+					>
 				</label>
-				<div class="rounded-md border border-border">
+				<div class="h-40 overflow-hidden rounded-md border border-border">
 					<PythonEditor bind:value={form.starter_code} {executor} />
 				</div>
 			</div>
 
 			<div>
 				<label class="mb-1 block text-sm font-medium" for="ex-solution">
-					Solution de référence <span class="text-red-500">*</span>
+					Solution de référence <span class="text-destructive">*</span>
 				</label>
 				<p class="mb-1 text-xs text-muted-foreground">
 					Sert à vérifier que la validation passe avec une solution correcte. Jamais montrée à
 					l'élève.
 				</p>
-				<div class="rounded-md border border-border">
+				<div class="h-40 overflow-hidden rounded-md border border-border">
 					<PythonEditor bind:value={form.solution_code} {executor} />
 				</div>
 			</div>
+		</fieldset>
 
-			<div class="rounded-md border border-border bg-muted/20 p-3">
-				<h2 class="mb-2 font-medium">Stratégie de validation</h2>
-				<ExerciseStrategyEditor bind:config={form.validation_config} />
-			</div>
+		<!-- Validation -->
+		<fieldset class="space-y-3">
+			<legend class="text-base font-semibold">Validation</legend>
+			<ExerciseStrategyEditor bind:config={form.validation_config} />
+		</fieldset>
 
-			<div class="space-y-2 rounded-md border border-border p-3">
-				<div class="flex flex-wrap items-center gap-2">
-					<Button onclick={handleVerify} disabled={!pyodideReady || isVerifying}>
-						{#if isVerifying}
-							<Loader2 class="mr-1 h-4 w-4 animate-spin" />
-						{:else}
-							<CheckCircle2 class="mr-1 h-4 w-4" />
-						{/if}
-						Vérifier ma solution
-					</Button>
-					{#if !pyodideReady}
-						<span class="text-xs text-muted-foreground">
-							Chargement de Python… {executor?.loadingProgress ?? 0}%
-						</span>
+		<!-- Vérif + soumission -->
+		<fieldset class="space-y-3 rounded-md border border-border bg-muted/20 p-4">
+			<legend class="px-2 text-base font-semibold">Vérification</legend>
+
+			<div class="flex flex-wrap items-center gap-2">
+				<Button
+					type="button"
+					onclick={handleVerify}
+					disabled={!pyodideReady || isVerifying}
+					variant="outline"
+				>
+					{#if isVerifying}
+						<Loader2 class="mr-1 h-4 w-4 animate-spin" />
+					{:else}
+						<CheckCircle2 class="mr-1 h-4 w-4" />
 					{/if}
-				</div>
-				<ExerciseValidationResult result={verifyResult} loading={isVerifying} />
-				{#if verifyResult && !verifyResult.valid}
-					<p class="text-xs text-amber-700 dark:text-amber-400">
-						La solution doit passer la validation avant que tu puisses créer l'exercice.
-					</p>
+					Vérifier ma solution
+				</Button>
+				{#if !pyodideReady}
+					<span class="text-xs text-muted-foreground">
+						Chargement de Python… {executor?.loadingProgress ?? 0}%
+					</span>
 				{/if}
 			</div>
 
-			{#if createError}
-				<div
-					class="flex items-start gap-2 rounded-md border border-red-500 bg-red-50 p-3 text-sm dark:bg-red-950/40"
-					role="alert"
-				>
-					<AlertTriangle class="mt-0.5 h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
-					<span>{createError}</span>
-				</div>
-			{/if}
+			<ExerciseValidationResult result={verifyResult} loading={isVerifying} />
 
-			<Button class="w-full" onclick={handleCreate} disabled={!canCreate}>
+			{#if verifyResult && !verifyResult.valid}
+				<p class="text-xs text-amber-700 dark:text-amber-400">
+					La solution doit passer la validation avant que tu puisses créer l'exercice.
+				</p>
+			{/if}
+		</fieldset>
+
+		{#if createError}
+			<div
+				class="flex items-start gap-2 rounded-md border border-destructive bg-destructive/10 p-3 text-sm"
+				role="alert"
+			>
+				<AlertTriangle class="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+				<span>{createError}</span>
+			</div>
+		{/if}
+
+		<div class="flex items-center justify-end gap-2">
+			<Button type="button" variant="outline" href="/python-exercises">Annuler</Button>
+			<Button type="submit" disabled={!canCreate}>
 				{#if isCreating}
 					<Loader2 class="mr-1 h-4 w-4 animate-spin" />
 				{/if}
 				Créer l'exercice
 			</Button>
-		</section>
-	</div>
-</main>
+		</div>
+	</form>
+</div>

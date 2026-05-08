@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const { data: exercises, error: fetchError } = await supabase
 		.from('python_exercises')
-		.select('id, title, description, difficulty, tags, is_public, created_at, updated_at')
+		.select('id, title, description, tags, is_public, created_at, updated_at')
 		.eq('author_id', user.id)
 		.order('created_at', { ascending: false });
 
@@ -42,14 +42,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	return {
 		exercises: (exercises ?? []) as Pick<
 			PythonExercise,
-			| 'id'
-			| 'title'
-			| 'description'
-			| 'difficulty'
-			| 'tags'
-			| 'is_public'
-			| 'created_at'
-			| 'updated_at'
+			'id' | 'title' | 'description' | 'tags' | 'is_public' | 'created_at' | 'updated_at'
 		>[]
 	};
 };

@@ -17,14 +17,6 @@
 		return `${window.location.protocol}//${window.location.host}`;
 	});
 
-	function difficultyLabel(d: 'easy' | 'medium' | 'hard'): string {
-		return d === 'easy' ? 'Facile' : d === 'medium' ? 'Moyen' : 'Difficile';
-	}
-
-	function difficultyVariant(d: 'easy' | 'medium' | 'hard') {
-		return d === 'easy' ? 'secondary' : d === 'medium' ? 'default' : 'destructive';
-	}
-
 	async function handleCopyLink(id: string) {
 		const url = `${baseUrl}/python-exercises/${id}`;
 		try {
@@ -77,7 +69,7 @@
 	<title>Mes exercices Python – UbuMaths</title>
 </svelte:head>
 
-<main class="container mx-auto p-4">
+<div class="container mx-auto p-4">
 	<header class="mb-4 flex flex-wrap items-center justify-between gap-2">
 		<div>
 			<h1 class="text-2xl font-bold">Mes exercices Python</h1>
@@ -107,9 +99,6 @@
 								<a href="/python-exercises/{exercise.id}" class="font-medium hover:underline">
 									{exercise.title}
 								</a>
-								<Badge variant={difficultyVariant(exercise.difficulty)}>
-									{difficultyLabel(exercise.difficulty)}
-								</Badge>
 								{#if !exercise.is_public}
 									<Badge variant="outline">Privé</Badge>
 								{/if}
@@ -159,7 +148,7 @@
 			{/each}
 		</ul>
 	{/if}
-</main>
+</div>
 
 {#if exerciseToDelete}
 	<ConfirmDialog
