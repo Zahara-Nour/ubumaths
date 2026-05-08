@@ -97,6 +97,7 @@ function findMessage<T = unknown>(type: string): T | undefined {
 function makeOutputConfig(timeoutMs?: number): ExerciseValidationConfig {
 	return {
 		type: 'output',
+		comparison: { kind: 'exact' },
 		test_cases: [{ input: '', expected_output: 'hi\n' }],
 		...(timeoutMs !== undefined ? { timeout_ms: timeoutMs } : {})
 	};
