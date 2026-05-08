@@ -134,6 +134,9 @@ export const validationResultSchema = z.object({
 	execution_time_ms: z.number().int().min(0)
 });
 
+// Class level
+const exerciseLevelSchema = z.enum(['college', 'lycee', 'nsi', 'etudiant']);
+
 // Create Exercise Schema
 export const createExerciseSchema = z.object({
 	title: z
@@ -165,6 +168,7 @@ export const createExerciseSchema = z.object({
 		.max(CODE_MAX)
 		.describe('Solution code (required, 1-100000 chars)'),
 	validation_config: validationConfigSchema.describe('Validation strategy and configuration'),
+	level: exerciseLevelSchema.describe('Class level: college, lycee, nsi, etudiant'),
 	tags: z
 		.array(z.string().min(1).max(50))
 		.max(TAGS_MAX)
@@ -182,6 +186,7 @@ export const updateExerciseSchema = z.object({
 	starter_code: z.string().max(CODE_MAX).nullable().optional(),
 	solution_code: z.string().min(CODE_MIN).max(CODE_MAX).optional(),
 	validation_config: validationConfigSchema.optional(),
+	level: exerciseLevelSchema.optional(),
 	tags: z.array(z.string().min(1).max(50)).max(TAGS_MAX).optional(),
 	is_public: z.boolean().optional()
 });
@@ -221,6 +226,7 @@ export const submitExerciseSchema = z.object({
 
 // Query parameter schemas
 export const listExercisesQuerySchema = z.object({
+	level: exerciseLevelSchema.optional(),
 	tags: z
 		.string()
 		.optional()

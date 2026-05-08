@@ -8,12 +8,22 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import {
 		PlaygroundExecutor,
 		type ExerciseValidationConfig,
 		type ExerciseValidationResult as Result
 	} from '$lib/shared/python';
 	import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-svelte';
+
+	const levelItems = [
+		{ value: 'college', label: 'Collège' },
+		{ value: 'lycee', label: 'Lycée' },
+		{ value: 'nsi', label: 'NSI' },
+		{ value: 'etudiant', label: 'Étudiant' }
+	];
+
+	type Level = 'college' | 'lycee' | 'nsi' | 'etudiant';
 
 	type FormState = {
 		title: string;
@@ -22,6 +32,7 @@
 		starter_code: string;
 		solution_code: string;
 		validation_config: ExerciseValidationConfig;
+		level: Level;
 		tags: string;
 		is_public: boolean;
 	};
@@ -37,6 +48,7 @@
 			test_cases: [{ input: '', expected_output: '' }],
 			ignore_whitespace: false
 		},
+		level: 'lycee',
 		tags: '',
 		is_public: true
 	});
@@ -106,6 +118,7 @@
 					starter_code: form.starter_code.trim() || null,
 					solution_code: form.solution_code,
 					validation_config: form.validation_config,
+					level: form.level,
 					tags: tagsArray,
 					is_public: form.is_public
 				})
@@ -193,13 +206,26 @@
 				></textarea>
 			</div>
 
-			<div>
-				<label for="ex-tags" class="mb-1 block text-sm font-medium">
-					Tags <span class="text-xs font-normal text-muted-foreground"
-						>(séparés par des virgules)</span
-					>
-				</label>
-				<Input id="ex-tags" bind:value={form.tags} placeholder="arithmétique, débutant" />
+			<div class="grid gap-3 sm:grid-cols-2">
+				<div>
+					<label for="ex-level" class="mb-1 block text-sm font-medium">
+						Niveau <span class="text-destructive">*</span>
+					</label>
+					<MySelect
+						id="ex-level"
+						items={levelItems}
+						value={form.level}
+						onchange={(v) => (form.level = v as Level)}
+					/>
+				</div>
+				<div>
+					<label for="ex-tags" class="mb-1 block text-sm font-medium">
+						Tags <span class="text-xs font-normal text-muted-foreground"
+							>(séparés par des virgules)</span
+						>
+					</label>
+					<Input id="ex-tags" bind:value={form.tags} placeholder="arithmétique, débutant" />
+				</div>
 			</div>
 
 			<MyCheckbox

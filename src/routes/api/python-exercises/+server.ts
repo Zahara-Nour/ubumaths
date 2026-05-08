@@ -25,6 +25,7 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * Students: See exercises assigned to them (without solution_code)
  *
  * Query params:
+ * - level: 'college' | 'lycee' | 'nsi' | 'etudiant'
  * - tags: comma-separated string
  * - is_public: 'true' | 'false'
  * - author_id: UUID (filter by author)
@@ -51,6 +52,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	// Validate query parameters
 	const queryValidation = listExercisesQuerySchema.safeParse({
+		level: url.searchParams.get('level'),
 		tags: url.searchParams.get('tags'),
 		is_public: url.searchParams.get('is_public'),
 		author_id: url.searchParams.get('author_id'),
@@ -65,7 +67,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(400, `Paramètres de requête invalides: ${errorMsg}`);
 	}
 
-	const { tags, is_public, author_id, limit, offset } = queryValidation.data;
+	const { level, tags, is_public, author_id, limit, offset } = queryValidation.data;
 
 	// Build query based on role
 	let query = supabase.from('python_exercises').select('*', { count: 'exact' });
@@ -81,6 +83,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		}
 
 		// Apply additional filters
+		if (level) {
+			query = query.eq('level', level);
+		}
 		if (tags && tags.length > 0) {
 			query = query.overlaps('tags', tags);
 		}
@@ -117,6 +122,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		query = query.in('id', exerciseIds);
 
 		// Apply filters
+		if (level) {
+			query = query.eq('level', level);
+		}
 		if (tags && tags.length > 0) {
 			query = query.overlaps('tags', tags);
 		}
@@ -203,6 +211,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			starter_code: data.starter_code || null,
 			solution_code: data.solution_code,
 			validation_config: data.validation_config,
+			level: data.level,
 			tags: data.tags,
 			author_id: user.id,
 			is_public: data.is_public

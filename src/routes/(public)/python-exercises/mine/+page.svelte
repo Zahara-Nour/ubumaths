@@ -17,6 +17,10 @@
 		return `${window.location.protocol}//${window.location.host}`;
 	});
 
+	function levelLabel(l: 'college' | 'lycee' | 'nsi' | 'etudiant'): string {
+		return l === 'college' ? 'Collège' : l === 'lycee' ? 'Lycée' : l === 'nsi' ? 'NSI' : 'Étudiant';
+	}
+
 	async function handleCopyLink(id: string) {
 		const url = `${baseUrl}/python-exercises/${id}`;
 		try {
@@ -99,6 +103,7 @@
 								<a href="/python-exercises/{exercise.id}" class="font-medium hover:underline">
 									{exercise.title}
 								</a>
+								<Badge>{levelLabel(exercise.level)}</Badge>
 								{#if !exercise.is_public}
 									<Badge variant="outline">Privé</Badge>
 								{/if}

@@ -24,6 +24,16 @@
 		executor?.state === 'loading-pyodide' || executor?.state === 'loading-packages'
 	);
 
+	const levelLabel = $derived(
+		exercise.level === 'college'
+			? 'Collège'
+			: exercise.level === 'lycee'
+				? 'Lycée'
+				: exercise.level === 'nsi'
+					? 'NSI'
+					: 'Étudiant'
+	);
+
 	onMount(() => {
 		if (!browser) return;
 
@@ -88,13 +98,12 @@
 <div class="container mx-auto p-4">
 	<header class="mb-4">
 		<h1 class="mb-2 text-2xl font-bold">{exercise.title}</h1>
-		{#if exercise.tags.length > 0}
-			<div class="flex flex-wrap items-center gap-2">
-				{#each exercise.tags as tag (tag)}
-					<Badge variant="outline">{tag}</Badge>
-				{/each}
-			</div>
-		{/if}
+		<div class="flex flex-wrap items-center gap-2">
+			<Badge>{levelLabel}</Badge>
+			{#each exercise.tags as tag (tag)}
+				<Badge variant="outline">{tag}</Badge>
+			{/each}
+		</div>
 		{#if exercise.description}
 			<p class="mt-2 text-sm text-muted-foreground">{exercise.description}</p>
 		{/if}
