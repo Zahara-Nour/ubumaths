@@ -1,6 +1,14 @@
 # Python Playground - Progression
 
-## Statut: TERMINÉ
+## Statut: ✅ TERMINÉ — MVP livré (2025-12-04)
+
+> **Note** : ce document décrit le **MVP initial** (Phases 1-7). Pour les améliorations ultérieures (toolbar, partage URL, fullscreen, splitter, LaTeX SymPy, autocomplétion, font size, cloud storage, thèmes, examples library, debugger), voir :
+>
+> - [python-playground-improvements.md](./python-playground-improvements.md) — 10 phases d'amélioration (2025-12-05)
+> - [python-files-progress.md](./python-files-progress.md) — Cloud storage + assignation classe (2025-12-05)
+> - [python-debugger-progress.md](./python-debugger-progress.md) — Debugger + heap viz (2025-12 → 2026-05)
+> - [python-examples-library-progress.md](./python-examples-library-progress.md) — Bibliothèque 100 exemples (2026-05-08)
+> - [INDEX.md](./INDEX.md) — Récap chronologique complet
 
 Environnement Python interactif pour UbuMaths utilisant Pyodide (Python dans le navigateur).
 
