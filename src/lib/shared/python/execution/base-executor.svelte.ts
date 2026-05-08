@@ -21,7 +21,9 @@ import type {
 	ToWorkerMessage,
 	FromWorkerMessage,
 	CompletionItem,
-	WorkerBreakpoint
+	WorkerBreakpoint,
+	ExerciseValidationConfig,
+	ExerciseValidationResult
 } from '$lib/shared/python';
 import { PYODIDE_CONFIG, fromWorkerMessageSchema } from '$lib/shared/python';
 import type {
@@ -58,12 +60,24 @@ interface PendingCompletion {
 	timeout: ReturnType<typeof setTimeout>;
 }
 
+/**
+ * Configuration for pending exercise validation requests
+ */
+interface PendingExerciseValidation {
+	resolve: (result: ExerciseValidationResult) => void;
+	reject: (error: Error) => void;
+	timeout: ReturnType<typeof setTimeout>;
+}
+
 // =============================================================================
 // Constants
 // =============================================================================
 
 /** Buffer time to ensure worker timeout fires before main thread timeout (ms) */
 const TIMEOUT_BUFFER_MS = 5000;
+
+/** Default exercise validation timeout when config.timeout_ms is omitted (ms) */
+const DEFAULT_EXERCISE_TIMEOUT_MS = 5000;
 
 /** Timeout for autocomplete requests (ms) */
 const AUTOCOMPLETE_TIMEOUT_MS = 500;
@@ -179,6 +193,9 @@ export abstract class BasePythonExecutor {
 
 	/** Last autocomplete request ID for cancellation */
 	private lastAutocompleteRequestId: string | null = null;
+
+	/** Pending exercise validation requests, keyed by request id */
+	private pendingExerciseValidations = new Map<string, PendingExerciseValidation>();
 
 	// ===========================================================================
 	// Debug State
@@ -334,6 +351,13 @@ export abstract class BasePythonExecutor {
 		}
 		this.pendingCompletions.clear();
 
+		// Reject all pending exercise validation requests
+		for (const [, pending] of this.pendingExerciseValidations) {
+			clearTimeout(pending.timeout);
+			pending.reject(new Error('Worker destroyed'));
+		}
+		this.pendingExerciseValidations.clear();
+
 		// Clean up debug session state
 		this.debugExecutionId = null;
 		this.debugStartTime = 0;
@@ -488,6 +512,10 @@ export abstract class BasePythonExecutor {
 				}
 				break;
 
+			case 'validation-exercise-result':
+				this.handleExerciseValidationResult(message.id, message.result);
+				break;
+
 			// Context-related messages (for notebook mode)
 			case 'context-created':
 			case 'context-destroyed':
@@ -584,6 +612,80 @@ export abstract class BasePythonExecutor {
 		this.plotlyData = null;
 		this.executionTime = 0;
 		this.errorLine = null;
+	}
+
+	// ===========================================================================
+	// Exercise Validation
+	// ===========================================================================
+
+	/**
+	 * Validate Python code against an exercise validation config.
+	 *
+	 * Runs the validation in the Pyodide worker via the `validate-exercise` message.
+	 * Supports the three strategies (output / unit_test / ast) defined by
+	 * `ExerciseValidationConfig`.
+	 *
+	 * The executor's reactive state (stdout, stderr, plotData, state...) is **not**
+	 * touched by this method. The result is only delivered through the returned
+	 * promise. Calling this while a normal `execute()` is in flight is allowed —
+	 * the executor's `state` stays `'executing'` and the validation runs in
+	 * parallel from the main-thread point of view (the worker serializes them).
+	 *
+	 * @param code - Python code to validate
+	 * @param config - Validation strategy configuration
+	 * @returns Promise resolving to the validation result. Failed validations
+	 *   resolve normally (with `valid: false`) — the promise only rejects when
+	 *   Pyodide is not ready, the worker is destroyed, or the safety-net timeout
+	 *   fires.
+	 */
+	validateExercise(
+		code: string,
+		config: ExerciseValidationConfig
+	): Promise<ExerciseValidationResult> {
+		return new Promise((resolve, reject) => {
+			// Pyodide must be loaded; ready OR executing both qualify since the
+			// worker can route a `validate-exercise` message in parallel with an
+			// in-flight `execute` (distinct ids, single-threaded worker queue).
+			const pyodideLoaded = this.state === 'ready' || this.state === 'executing';
+			if (!pyodideLoaded || !this.worker) {
+				reject(new Error("Pyodide n'est pas prêt"));
+				return;
+			}
+
+			const id = `validate-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+			const timeoutMs = (config.timeout_ms ?? DEFAULT_EXERCISE_TIMEOUT_MS) + TIMEOUT_BUFFER_MS;
+
+			const timeout = setTimeout(() => {
+				if (this.pendingExerciseValidations.has(id)) {
+					this.pendingExerciseValidations.delete(id);
+					reject(new Error("Délai d'exécution dépassé"));
+				}
+			}, timeoutMs);
+
+			this.pendingExerciseValidations.set(id, { resolve, reject, timeout });
+
+			this.postToWorker({
+				type: 'validate-exercise',
+				code,
+				config,
+				id
+			});
+		});
+	}
+
+	/**
+	 * Handle exercise validation result from worker.
+	 * Looks up the pending request by id and resolves its promise.
+	 */
+	private handleExerciseValidationResult(id: string, result: ExerciseValidationResult): void {
+		const pending = this.pendingExerciseValidations.get(id);
+		if (!pending) {
+			console.warn('[BasePythonExecutor] Received validation-exercise-result for unknown id:', id);
+			return;
+		}
+		clearTimeout(pending.timeout);
+		this.pendingExerciseValidations.delete(id);
+		pending.resolve(result);
 	}
 
 	// ===========================================================================
