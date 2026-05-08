@@ -298,10 +298,17 @@ export const numericComparisonSchema = z.object({
 	accept_comma_decimal: z.boolean().optional().default(false)
 });
 
+export const customComparisonSchema = z.object({
+	kind: z.literal('custom'),
+	code: z.string().min(1).max(10_000),
+	timeout_ms: z.number().int().min(100).max(10_000).optional().default(2000)
+});
+
 export const outputComparisonSchema = z.discriminatedUnion('kind', [
 	exactComparisonSchema,
 	textComparisonSchema,
-	numericComparisonSchema
+	numericComparisonSchema,
+	customComparisonSchema
 ]);
 
 /**

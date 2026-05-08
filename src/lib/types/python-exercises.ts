@@ -38,7 +38,24 @@ export interface NumericComparison {
 	accept_comma_decimal?: boolean;
 }
 
-export type OutputComparison = ExactComparison | TextComparison | NumericComparison;
+/**
+ * Special-judge style comparator. The author provides a Python function
+ *   compare(expected: str, actual: str, stdin: str) -> bool | dict
+ * which the worker runs in an isolated namespace for each test case.
+ * Returning `True` is equivalent to `{'passed': True}`. Returning
+ * `{'passed': False, 'diff': '...'}` surfaces a custom diff to the student.
+ */
+export interface CustomComparison {
+	kind: 'custom';
+	code: string;
+	timeout_ms?: number;
+}
+
+export type OutputComparison =
+	| ExactComparison
+	| TextComparison
+	| NumericComparison
+	| CustomComparison;
 
 export interface OutputTestCase {
 	input: string;
