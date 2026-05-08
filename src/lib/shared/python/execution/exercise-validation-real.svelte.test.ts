@@ -96,10 +96,11 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 
 	describe('output strategy', () => {
 		it(
-			'passes when stdout matches expected_output',
+			'exact: passes when stdout matches byte-for-byte',
 			async () => {
 				const config: ExerciseValidationConfig = {
 					type: 'output',
+					comparison: { kind: 'exact' },
 					test_cases: [{ input: '', expected_output: 'hello\n' }]
 				};
 				const result = await executor.validateExercise('print("hello")', config);
@@ -114,10 +115,11 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		);
 
 		it(
-			'fails when stdout does not match',
+			'exact: fails when stdout does not match, with diff message',
 			async () => {
 				const config: ExerciseValidationConfig = {
 					type: 'output',
+					comparison: { kind: 'exact' },
 					test_cases: [{ input: '', expected_output: 'ok\n' }]
 				};
 				const result = await executor.validateExercise('print("ko")', config);
@@ -126,21 +128,63 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 				expect(result.test_results[0].passed).toBe(false);
 				expect(result.test_results[0].actual).toBe('ko\n');
 				expect(result.test_results[0].expected).toBe('ok\n');
+				expect(result.test_results[0].diff).toBeDefined();
 			},
 			TEST_TIMEOUT_MS
 		);
 
 		it(
-			'ignore_whitespace strips leading/trailing whitespace before comparing',
+			'text/collapsed: ignores leading/trailing/internal whitespace differences',
 			async () => {
 				const config: ExerciseValidationConfig = {
 					type: 'output',
-					test_cases: [{ input: '', expected_output: '  ok  ' }],
-					ignore_whitespace: true
+					comparison: { kind: 'text', whitespace: 'collapsed' },
+					test_cases: [{ input: '', expected_output: '  ok  ' }]
 				};
 				const result = await executor.validateExercise('print("ok", end="")', config);
 
 				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'numeric: tolerance accepts long-decimal output of math.sqrt',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					type: 'output',
+					comparison: {
+						kind: 'numeric',
+						shape: 'flat',
+						eps_abs: 1e-2,
+						eps_rel: 1e-2
+					},
+					test_cases: [{ input: '', expected_output: '1.41' }]
+				};
+				const result = await executor.validateExercise('import math\nprint(math.sqrt(2))', config);
+
+				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'numeric: tighter tolerance rejects same case, with informative diff',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					type: 'output',
+					comparison: {
+						kind: 'numeric',
+						shape: 'flat',
+						eps_abs: 1e-9,
+						eps_rel: 1e-9
+					},
+					test_cases: [{ input: '', expected_output: '1.41' }]
+				};
+				const result = await executor.validateExercise('import math\nprint(math.sqrt(2))', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results[0].diff).toMatch(/écart|tolérance/i);
 			},
 			TEST_TIMEOUT_MS
 		);
@@ -266,7 +310,8 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 							message: 'Définis greet(name)'
 						}
 					],
-					output_tests: [{ input: '', expected_output: 'hello\n' }]
+					output_tests: [{ input: '', expected_output: 'hello\n' }],
+					output_comparison: { kind: 'exact' }
 				};
 
 				// AST passes (greet defined) AND output matches
@@ -327,6 +372,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 				// inside the validation namespace.
 				const config: ExerciseValidationConfig = {
 					type: 'output',
+					comparison: { kind: 'exact' },
 					test_cases: [{ input: '', expected_output: 'done\n' }]
 				};
 				await executor.validateExercise(

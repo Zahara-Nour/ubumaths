@@ -43,7 +43,22 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - `accept_comma_decimal` : `1,41` parsé comme `1.41`.
 - Helpers `formatNumber` / `quote` pour limiter la verbosité du diff (3 sig fig pour les très petits/gros nombres, troncature à 50 chars pour les strings).
 
-## Phase 3 — Intégration worker ⏳
+## Phase 3 — Intégration worker ✅
+
+**Fichiers modifiés :**
+
+- `src/lib/workers/pyodide.worker.ts` :
+  - Import de `compareOutputs` depuis le moteur V2.
+  - `validateOutputComparison` (lignes ~2137-2229) : remplace `expected === actual` (avec `ignore_whitespace`) par `compareOutputs(expected, actualOutput, cmp)`. Applique la surcharge `testCase.comparison ?? config.comparison`. Inclut `diff` dans le `TestCaseResult` quand non vide.
+  - `validateAST` (output_tests, lignes ~2517-2530) : passe `output_comparison ?? { kind: 'exact' }` à la sous-config output.
+- `src/lib/shared/python/execution/exercise-validation-real.svelte.test.ts` (Pyodide réel) : refactor des 3 tests output → 5 tests V2 (exact match/mismatch + text/collapsed + numeric loose/tight). Mise à jour du test ast/output_tests pour fournir `output_comparison`. Mise à jour du test isolation pour ajouter `comparison`.
+- `src/lib/shared/python/execution/base-executor.svelte.test.ts` : `makeOutputConfig` ajoute `comparison: { kind: 'exact' }`.
+
+**Décisions :**
+
+- `compareOutputs` est pure JS — aucun round-trip Python pour la comparaison. Le scaffolding stdin/stdout reste côté Python.
+- L'isolation namespace est préservée (le `comparison` est purement client-side, ne touche pas au `dict()` Python).
+- Le `diff` est ajouté conditionnellement au `TestCaseResult` (spread de `{}` si absent) pour ne pas polluer les sérialisations.
 
 ## Phase 4 — UI auteur (UX β) ⏳
 

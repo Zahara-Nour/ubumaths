@@ -34,6 +34,7 @@ import {
 	ERROR_MESSAGES,
 	toWorkerMessageSchema
 } from '$lib/shared/python';
+import { compareOutputs } from '$lib/shared/python/validation/output-compare';
 
 // =============================================================================
 // Package Tracking for Lazy Loading
@@ -2180,20 +2181,17 @@ _actual
 				{ globals: namespace }
 			)) as string;
 
-			// Compare outputs
-			const expected = config.ignore_whitespace
-				? testCase.expected_output.trim()
-				: testCase.expected_output;
-			const actual = config.ignore_whitespace ? actualOutput.trim() : actualOutput;
-
-			const passed = expected === actual;
-			allPassed = allPassed && passed;
+			// Compare outputs using the V2 engine (per-case override falls back to global)
+			const cmp = testCase.comparison ?? config.comparison;
+			const compareResult = compareOutputs(testCase.expected_output, actualOutput, cmp);
+			allPassed = allPassed && compareResult.passed;
 
 			testResults.push({
-				passed,
+				passed: compareResult.passed,
 				input: testCase.input,
 				expected: testCase.expected_output,
-				actual: actualOutput
+				actual: actualOutput,
+				...(compareResult.diff ? { diff: compareResult.diff } : {})
 			});
 		} catch (error) {
 			allPassed = false;
@@ -2520,6 +2518,7 @@ _passed
 		const outputConfig: OutputValidationConfig = {
 			type: 'output',
 			test_cases: config.output_tests,
+			comparison: config.output_comparison ?? { kind: 'exact' },
 			timeout_ms: config.timeout_ms
 		};
 
