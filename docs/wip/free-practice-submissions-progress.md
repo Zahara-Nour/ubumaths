@@ -40,4 +40,39 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - Bouton "Soumettre" `disabled` plutôt que caché pour les anon : laisse le tooltip transmettre l'incitation à se connecter.
 - Svelte autofixer : 0 issue, 1 suggestion ignorée (le `$effect` localStorage est un side-effect légitime, pattern préexistant du projet).
 
-## Phase 3 — Quality checks ⏳
+## Phase 3 — Quality checks ✅
+
+**Vérifications passées :**
+
+- `mcp__svelte__svelte-autofixer` sur `+page.svelte` — 0 issue, 1 suggestion ignorée (legitimate side-effect).
+- `pnpm check:incremental` — toutes erreurs résiduelles dans `slides/demo` et `extern/` (préexistantes, filtrées).
+- `npx eslint <5 fichiers>` — 0 problème.
+- `pnpm test:server` :
+  - `[id]/server.test.ts` : 5/5 ✅ (existants — pas de régression)
+  - `[id]/my-submissions/server.test.ts` : 6/6 ✅ (nouveaux)
+
+**Commits livrés (2) :**
+
+1. `dc3375dc1` — Phase 1 : migration RLS publique + relax `/submit` + nouveau `/my-submissions` + 6 tests
+2. `bf6479131` — Phase 2 : bouton "Soumettre" + panneau historique + init code depuis dernière soumission
+
+## Application en local
+
+L'utilisateur doit lancer :
+
+```bash
+pnpm db:migrate    # applique 20260509002840_allow_public_python_submissions.sql
+pnpm dev -- --port 5175
+```
+
+## Vérifications manuelles
+
+1. **Élève authentifié, exo public sans assignment** : ouvrir un exo seedé. Le bouton "Soumettre" apparaît actif. Cliquer → toast success/info, le panneau historique apparaît avec `Tentative #1 · Libre`.
+2. **Anon** : navigation privée, ouvrir le même exo → bouton "Soumettre" grisé, tooltip _"Connecte-toi pour suivre tes progrès"_.
+3. **Prof authentifié** : pas de bouton "Soumettre", "Vérifier" présent.
+4. **Exo non public sans assignment** : POST direct via curl → 403.
+5. **Recharger la page** après une soumission : l'éditeur charge le code de la dernière soumission (priorité sur localStorage).
+
+## Documents produits
+
+- `docs/wip/free-practice-submissions-progress.md` (ce document).
