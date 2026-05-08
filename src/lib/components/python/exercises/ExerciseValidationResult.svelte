@@ -139,6 +139,12 @@
 										</dd>
 									</div>
 								{/if}
+								{#if testCase.diff}
+									<div class="grid grid-cols-[6rem_1fr] gap-2 text-amber-700 dark:text-amber-400">
+										<dt class="font-medium">Indice</dt>
+										<dd>{testCase.diff}</dd>
+									</div>
+								{/if}
 								{#if testCase.error}
 									<div class="grid grid-cols-[6rem_1fr] gap-2 text-red-700 dark:text-red-400">
 										<dt class="font-medium">Erreur</dt>
