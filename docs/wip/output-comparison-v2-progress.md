@@ -26,9 +26,22 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - Le code TypeScript ne tient pas : `pyodide.worker.ts`, `ExerciseStrategyEditor.svelte`, `new/+page.svelte`, et les tests Pyodide-réel référencent encore `ignore_whitespace`. Ces erreurs sont réparées en Phases 3, 4, 5.
 - Les quality checks sont reportés à la Phase 7 (conformément au plan).
 
-## Phase 2 — Moteur JS pur (TDD) ⏳
+## Phase 2 — Moteur JS pur (TDD) ✅
 
-À venir : `src/lib/shared/python/validation/output-compare.ts` + tests Vitest.
+**Fichiers créés :**
+
+- `src/lib/shared/python/validation/output-compare.ts` (~270 LOC) — `compareOutputs(expected, actual, cmp): { passed, diff? }`. Pas de dépendance Pyodide.
+- `src/lib/shared/python/validation/output-compare.test.ts` (~370 LOC, **50 tests** verts) — couvre les comportements B1–B20 + 3 cas Python-réels.
+
+**Décisions :**
+
+- Comparaison faite intégralement en JS (pas de round-trip Python).
+- `numericEqual` gère NaN, Inf±, -0 explicitement.
+- Diff localisé en français : token + valeurs + écart calculé + tolérance.
+- Tokenisation `flat` : `\s+`. `lines` : ligne par ligne, vides ignorées. `grid` : lignes × tokens, dimensions vérifiées.
+- `non_numeric: 'ignore'` filtre les tokens non-numériques des deux côtés (mode `flat` typique).
+- `accept_comma_decimal` : `1,41` parsé comme `1.41`.
+- Helpers `formatNumber` / `quote` pour limiter la verbosité du diff (3 sig fig pour les très petits/gros nombres, troncature à 50 chars pour les strings).
 
 ## Phase 3 — Intégration worker ⏳
 
