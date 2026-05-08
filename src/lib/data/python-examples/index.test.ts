@@ -4,7 +4,7 @@ import { validateExamples } from './utils';
 
 describe('PYTHON_EXAMPLES catalog', () => {
 	it('contains the expected initial volume', () => {
-		expect(PYTHON_EXAMPLES.length).toBeGreaterThanOrEqual(30);
+		expect(PYTHON_EXAMPLES.length).toBeGreaterThanOrEqual(100);
 	});
 
 	it('passes full schema + uniqueness validation', () => {
