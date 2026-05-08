@@ -135,9 +135,15 @@
 					</div>
 					<Button size="sm" onclick={() => onLoad(selected)} class="shrink-0">Charger</Button>
 				</div>
+				<div
+					class="flex items-center gap-1 border-b bg-muted/20 px-3 py-1 text-[10px] tracking-wide text-muted-foreground uppercase"
+				>
+					<span>Aperçu — lecture seule</span>
+				</div>
 				<pre
 					class="flex-1 overflow-auto bg-muted/30 p-3 font-mono text-xs leading-relaxed"
-					aria-label="Aperçu du code"><code>{selected.code}</code></pre>
+					aria-label="Aperçu du code (lecture seule)"
+					aria-readonly="true"><code>{selected.code}</code></pre>
 			{:else}
 				<div
 					class="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-muted-foreground"
