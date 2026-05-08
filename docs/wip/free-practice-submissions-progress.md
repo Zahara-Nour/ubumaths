@@ -21,6 +21,23 @@ Plan : `~/.claude/plans/shimmying-cooking-hamster.md`.
 - En écriture (`/submit`), la décision "pas d'assignment + exo non public → 403" reste applicative pour retourner une erreur explicite plutôt que laisser RLS échouer avec un message générique.
 - Idempotence migration : `DROP POLICY IF EXISTS` + `CREATE POLICY` (au cas où).
 
-## Phase 2 — UI page consultation ⏳
+## Phase 2 — UI page consultation ✅
+
+**Fichiers modifiés :**
+
+- `src/routes/(public)/python-exercises/[id]/+page.server.ts` — load enrichi : fetch parallèle exercice + soumissions + role profil. Retourne `{ exercise, submissions, canSubmit, isAuthenticated }`. Pour anon : `submissions: []`, `canSubmit: false`. Ignore les erreurs sur `/my-submissions` pour ne pas casser le rendu de l'exercice.
+- `src/routes/(public)/python-exercises/[id]/+page.svelte` — refondu :
+  - Init `code` : dernière soumission > localStorage > starter_code.
+  - Nouveau handler `handleSubmit()` : exécute la validation locale, POST sur `/submit` avec le résultat, toast + `invalidateAll()` pour rafraîchir les soumissions.
+  - Helper `runValidation()` factorise la logique entre "Vérifier" et "Soumettre".
+  - Nouveau bouton "Soumettre" : caché pour les profs, grisé+title pour anon, actif pour les élèves.
+  - Panneau historique `<details open>` : itère sur les soumissions, badge "Libre" si `assignment_id === null`, bouton "Charger ce code" qui réécrit l'éditeur, format date relative en français.
+
+**Décisions :**
+
+- `invalidateAll()` plutôt qu'un re-fetch manuel : SvelteKit re-rendra automatiquement la page avec les soumissions à jour.
+- L'init `code` depuis la dernière soumission n'écrase pas le localStorage existant — le `$effect` continue de mettre à jour localStorage pendant l'édition. Si un élève a un brouillon non soumis dans localStorage et revient après une soumission, il verra le code soumis et perdra le brouillon. Acceptable : la soumission est la "vérité" la plus récente.
+- Bouton "Soumettre" `disabled` plutôt que caché pour les anon : laisse le tooltip transmettre l'incitation à se connecter.
+- Svelte autofixer : 0 issue, 1 suggestion ignorée (le `$effect` localStorage est un side-effect légitime, pattern préexistant du projet).
 
 ## Phase 3 — Quality checks ⏳
