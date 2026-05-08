@@ -15,7 +15,8 @@
 		ExerciseValidationConfig,
 		OutputValidationConfig,
 		UnitTestValidationConfig,
-		ASTValidationConfig
+		ASTValidationConfig,
+		OutputComparison
 	} from '$lib/shared/python';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
@@ -46,7 +47,7 @@
 			config = {
 				type: 'output',
 				test_cases: [{ input: '', expected_output: '' }],
-				ignore_whitespace: false
+				comparison: { kind: 'exact' }
 			};
 		} else if (type === 'unit_test') {
 			config = {
@@ -78,6 +79,135 @@
 	}
 
 	// ===========================================================================
+	// output comparison preset logic
+	// ===========================================================================
+
+	type PresetKey =
+		| 'exact'
+		| 'text-collapsed'
+		| 'text-ci'
+		| 'numeric-tight'
+		| 'numeric-medium'
+		| 'numeric-loose'
+		| 'numeric-lines'
+		| 'custom';
+
+	const comparisonPresetItems: { value: PresetKey; label: string }[] = [
+		{ value: 'exact', label: 'Exact (octet par octet)' },
+		{ value: 'text-collapsed', label: 'Texte (espaces souples)' },
+		{ value: 'text-ci', label: 'Texte (ignorant la casse)' },
+		{ value: 'numeric-tight', label: 'Nombres (précis, 1e-9)' },
+		{ value: 'numeric-medium', label: 'Nombres (1e-6)' },
+		{ value: 'numeric-loose', label: 'Nombres (large, 1e-3)' },
+		{ value: 'numeric-lines', label: 'Tableau de nombres (ligne par ligne)' },
+		{ value: 'custom', label: 'Personnaliser…' }
+	];
+
+	const kindItems: { value: 'exact' | 'text' | 'numeric'; label: string }[] = [
+		{ value: 'exact', label: 'Exact' },
+		{ value: 'text', label: 'Texte' },
+		{ value: 'numeric', label: 'Numérique' }
+	];
+
+	const whitespaceItems: { value: 'strict' | 'collapsed' | 'lines'; label: string }[] = [
+		{ value: 'strict', label: 'Strict' },
+		{ value: 'collapsed', label: 'Espaces écrasés' },
+		{ value: 'lines', label: 'Ligne par ligne, trim' }
+	];
+
+	const shapeItems: { value: 'flat' | 'lines' | 'grid'; label: string }[] = [
+		{ value: 'flat', label: 'À plat' },
+		{ value: 'lines', label: 'Une valeur par ligne' },
+		{ value: 'grid', label: 'Grille rectangulaire' }
+	];
+
+	const nonNumericItems: { value: 'match' | 'ignore'; label: string }[] = [
+		{ value: 'match', label: 'Doivent correspondre' },
+		{ value: 'ignore', label: 'Ignorés' }
+	];
+
+	/** Map a preset key to its canonical comparison object. */
+	const presetToComparison: Record<Exclude<PresetKey, 'custom'>, OutputComparison> = {
+		exact: { kind: 'exact' },
+		'text-collapsed': { kind: 'text', whitespace: 'collapsed', trim_trailing_newline: true },
+		'text-ci': {
+			kind: 'text',
+			whitespace: 'collapsed',
+			case_insensitive: true,
+			trim_trailing_newline: true
+		},
+		'numeric-tight': { kind: 'numeric', shape: 'flat', eps_abs: 1e-9, eps_rel: 1e-9 },
+		'numeric-medium': { kind: 'numeric', shape: 'flat', eps_abs: 1e-6, eps_rel: 1e-6 },
+		'numeric-loose': { kind: 'numeric', shape: 'flat', eps_abs: 1e-3, eps_rel: 1e-3 },
+		'numeric-lines': { kind: 'numeric', shape: 'lines', eps_abs: 1e-6, eps_rel: 1e-6 }
+	};
+
+	/**
+	 * Return the preset key that exactly matches `cmp`, or 'custom' if none match.
+	 * Comparison is done by structural equality on the known fields of each preset.
+	 */
+	function detectPreset(cmp: OutputComparison): PresetKey {
+		if (cmp.kind === 'exact') return 'exact';
+
+		if (cmp.kind === 'text') {
+			const { whitespace, case_insensitive, trim_trailing_newline } = cmp;
+			// text-ci: collapsed + case_insensitive + trim_trailing_newline
+			if (
+				whitespace === 'collapsed' &&
+				case_insensitive === true &&
+				trim_trailing_newline === true
+			) {
+				return 'text-ci';
+			}
+			// text-collapsed: collapsed + no case_insensitive + trim_trailing_newline
+			if (whitespace === 'collapsed' && !case_insensitive && trim_trailing_newline === true) {
+				return 'text-collapsed';
+			}
+			return 'custom';
+		}
+
+		if (cmp.kind === 'numeric') {
+			const { shape, eps_abs, eps_rel, non_numeric, accept_comma_decimal } = cmp;
+			// Only match presets that have no extra options set
+			if (non_numeric !== undefined || accept_comma_decimal !== undefined) return 'custom';
+			if (shape === 'flat' && eps_abs === 1e-9 && eps_rel === 1e-9) return 'numeric-tight';
+			if (shape === 'flat' && eps_abs === 1e-6 && eps_rel === 1e-6) return 'numeric-medium';
+			if (shape === 'flat' && eps_abs === 1e-3 && eps_rel === 1e-3) return 'numeric-loose';
+			if (shape === 'lines' && eps_abs === 1e-6 && eps_rel === 1e-6) return 'numeric-lines';
+			return 'custom';
+		}
+
+		return 'custom';
+	}
+
+	/**
+	 * Handle preset selector changes.
+	 * When 'custom' is selected we keep the current comparison unchanged and just
+	 * reveal the custom panel — so the user can fine-tune from wherever they are.
+	 */
+	function handlePresetChange(value: string) {
+		if (config.type !== 'output') return;
+		if (value === 'custom') return; // keep current comparison, open panel
+		const preset = value as Exclude<PresetKey, 'custom'>;
+		config.comparison = { ...presetToComparison[preset] };
+	}
+
+	/**
+	 * Switch the comparison kind inside the custom panel, resetting to sensible
+	 * defaults for the new kind so no vestigial fields remain.
+	 */
+	function setKind(kind: 'exact' | 'text' | 'numeric') {
+		if (config.type !== 'output') return;
+		if (kind === 'exact') {
+			config.comparison = { kind: 'exact' };
+		} else if (kind === 'text') {
+			config.comparison = { kind: 'text', whitespace: 'collapsed', trim_trailing_newline: true };
+		} else {
+			config.comparison = { kind: 'numeric', shape: 'flat', eps_abs: 1e-6, eps_rel: 1e-6 };
+		}
+	}
+
+	// ===========================================================================
 	// unit_test strategy helpers
 	// JSON is edited via local string drafts; the config only sees parsed values
 	// on blur (or on Add). Invalid JSON shows an inline error.
@@ -90,11 +220,6 @@
 	// (e.g. editing an exercise loaded from the API). Subsequent transitions are
 	// handled in setStrategy / addUnitCase / removeUnitCase.
 	onMount(() => {
-		// Normalise optional flags so bind:checked never targets undefined
-		// (Svelte 5 refuses bind:value={undefined} when the prop has a fallback).
-		if (config.type === 'output' && config.ignore_whitespace === undefined) {
-			config.ignore_whitespace = false;
-		}
 		if (config.type === 'unit_test') {
 			unitDrafts = config.test_cases.map((tc) => ({
 				args: JSON.stringify(tc.args),
@@ -219,6 +344,11 @@
 		config.type === 'unit_test' ? (config as UnitTestValidationConfig) : null
 	);
 	const astConfig = $derived(config.type === 'ast' ? (config as ASTValidationConfig) : null);
+
+	// Detect which preset key matches the current comparison object (or 'custom')
+	const selectedPreset = $derived(
+		outputConfig ? detectPreset(outputConfig.comparison) : ('exact' as PresetKey)
+	);
 </script>
 
 <div class="space-y-4">
@@ -236,11 +366,163 @@
 
 	<!-- ============================================================== output -->
 	{#if outputConfig}
-		<div class="space-y-2">
-			<MyCheckbox
-				bind:checked={outputConfig.ignore_whitespace}
-				label="Ignorer les espaces en début/fin"
-			/>
+		<div class="space-y-4">
+			<!-- Comparison preset selector -->
+			<div>
+				<label class="mb-1 block text-sm font-medium" for="comparison-preset">Comparaison</label>
+				<MySelect
+					id="comparison-preset"
+					items={comparisonPresetItems}
+					value={selectedPreset}
+					onchange={handlePresetChange}
+				/>
+			</div>
+
+			<!-- Custom panel — shown when no preset matches -->
+			{#if selectedPreset === 'custom'}
+				<div class="space-y-4 rounded-md border border-border bg-muted/30 p-4">
+					<p class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+						Configuration personnalisée
+					</p>
+
+					<!-- Kind selector -->
+					<div>
+						<label class="mb-1 block text-sm font-medium" for="cmp-kind">Type</label>
+						<MySelect
+							id="cmp-kind"
+							items={kindItems}
+							value={outputConfig.comparison.kind}
+							onchange={(v) => setKind(v as 'exact' | 'text' | 'numeric')}
+						/>
+					</div>
+
+					<!-- text options -->
+					{#if outputConfig.comparison.kind === 'text'}
+						<div>
+							<label class="mb-1 block text-sm font-medium" for="cmp-whitespace">Whitespace</label>
+							<MySelect
+								id="cmp-whitespace"
+								items={whitespaceItems}
+								value={outputConfig.comparison.whitespace}
+								onchange={(v) => {
+									if (config.type !== 'output' || config.comparison.kind !== 'text') return;
+									config.comparison = {
+										...config.comparison,
+										whitespace: v as 'strict' | 'collapsed' | 'lines'
+									};
+								}}
+							/>
+						</div>
+						<MyCheckbox
+							checked={outputConfig.comparison.kind === 'text'
+								? (outputConfig.comparison.case_insensitive ?? false)
+								: false}
+							onchange={(v) => {
+								if (config.type !== 'output' || config.comparison.kind !== 'text') return;
+								config.comparison = { ...config.comparison, case_insensitive: v };
+							}}
+							label="Ignorer la casse"
+						/>
+						<MyCheckbox
+							checked={outputConfig.comparison.kind === 'text'
+								? (outputConfig.comparison.trim_trailing_newline ?? false)
+								: false}
+							onchange={(v) => {
+								if (config.type !== 'output' || config.comparison.kind !== 'text') return;
+								config.comparison = { ...config.comparison, trim_trailing_newline: v };
+							}}
+							label="Tolérer le saut de ligne final"
+						/>
+					{/if}
+
+					<!-- numeric options -->
+					{#if outputConfig.comparison.kind === 'numeric'}
+						<div>
+							<label class="mb-1 block text-sm font-medium" for="cmp-shape">Forme</label>
+							<MySelect
+								id="cmp-shape"
+								items={shapeItems}
+								value={outputConfig.comparison.shape}
+								onchange={(v) => {
+									if (config.type !== 'output' || config.comparison.kind !== 'numeric') return;
+									config.comparison = {
+										...config.comparison,
+										shape: v as 'flat' | 'lines' | 'grid'
+									};
+								}}
+							/>
+						</div>
+						<div class="grid gap-3 sm:grid-cols-2">
+							<div>
+								<label class="mb-1 block text-sm font-medium" for="cmp-eps-abs">
+									Tolérance absolue (eps_abs)
+								</label>
+								<Input
+									id="cmp-eps-abs"
+									type="number"
+									step="any"
+									value={outputConfig.comparison.eps_abs}
+									oninput={(e) => {
+										if (config.type !== 'output' || config.comparison.kind !== 'numeric') return;
+										const v = parseFloat((e.target as HTMLInputElement).value);
+										if (!isNaN(v)) config.comparison = { ...config.comparison, eps_abs: v };
+									}}
+								/>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium" for="cmp-eps-rel">
+									Tolérance relative (eps_rel)
+								</label>
+								<Input
+									id="cmp-eps-rel"
+									type="number"
+									step="any"
+									value={outputConfig.comparison.eps_rel}
+									oninput={(e) => {
+										if (config.type !== 'output' || config.comparison.kind !== 'numeric') return;
+										const v = parseFloat((e.target as HTMLInputElement).value);
+										if (!isNaN(v)) config.comparison = { ...config.comparison, eps_rel: v };
+									}}
+								/>
+							</div>
+						</div>
+						<div>
+							<label class="mb-1 block text-sm font-medium" for="cmp-non-numeric">
+								Tokens non numériques
+							</label>
+							<MySelect
+								id="cmp-non-numeric"
+								items={nonNumericItems}
+								value={outputConfig.comparison.non_numeric ?? 'match'}
+								onchange={(v) => {
+									if (config.type !== 'output' || config.comparison.kind !== 'numeric') return;
+									config.comparison = {
+										...config.comparison,
+										non_numeric: v as 'match' | 'ignore'
+									};
+								}}
+							/>
+						</div>
+						<MyCheckbox
+							checked={outputConfig.comparison.kind === 'numeric'
+								? (outputConfig.comparison.accept_comma_decimal ?? false)
+								: false}
+							onchange={(v) => {
+								if (config.type !== 'output' || config.comparison.kind !== 'numeric') return;
+								config.comparison = { ...config.comparison, accept_comma_decimal: v };
+							}}
+							label="Accepter la virgule comme séparateur décimal"
+						/>
+					{/if}
+
+					<!-- exact: nothing to configure -->
+					{#if outputConfig.comparison.kind === 'exact'}
+						<p class="text-sm text-muted-foreground">Aucune option à configurer.</p>
+					{/if}
+				</div>
+			{/if}
+
+			<!-- Test cases -->
 			<div class="space-y-2">
 				{#each outputConfig.test_cases as testCase, i (i)}
 					<div class="rounded-md border border-border p-3">
