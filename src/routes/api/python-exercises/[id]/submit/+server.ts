@@ -82,46 +82,63 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	const validationResult = validationResultValidation.data;
 
-	// Verify student has access to this exercise
-	// Student must have an assignment (class or individual)
+	// Resolve the most specific assignment, if any. A student may submit either:
+	//   (a) under an assignment they belong to (class or individual), or
+	//   (b) freely on a public exercise (assignment_id stays null).
+	// Case (b) requires the exercise to be public — verified just below if no
+	// assignment is found.
 	const { data: assignments } = await supabase
 		.from('python_exercise_assignments')
 		.select('id, class_id, student_id, max_attempts, due_date')
 		.eq('exercise_id', exerciseId)
 		.or(`student_id.eq.${user.id},class_id.in.(${await getStudentClassIds(supabase, user.id)})`);
 
-	if (!assignments || assignments.length === 0) {
-		throw error(403, "Vous n'avez pas accès à cet exercice");
-	}
+	const assignment =
+		assignments && assignments.length > 0
+			? assignments.find((a) => a.student_id === user.id) || assignments[0]
+			: null;
 
-	// Find the most specific assignment (individual takes precedence over class)
-	const assignment = assignments.find((a) => a.student_id === user.id) || assignments[0];
+	// No assignment → only allowed if the exercise itself is public (free practice).
+	if (!assignment) {
+		const { data: exercise, error: exErr } = await supabase
+			.from('python_exercises')
+			.select('is_public')
+			.eq('id', exerciseId)
+			.single();
 
-	// Check if assignment has passed due date (warning, not blocking)
-	if (assignment.due_date) {
-		const dueDate = new Date(assignment.due_date);
-		if (dueDate < new Date()) {
-			console.warn(`Student ${user.id} submitting after due date for exercise ${exerciseId}`);
+		if (exErr || !exercise) {
+			throw error(404, 'Exercice introuvable');
+		}
+		if (!exercise.is_public) {
+			throw error(403, "Vous n'avez pas accès à cet exercice");
 		}
 	}
 
-	// Check max attempts if specified
-	if (assignment.max_attempts) {
-		// Count existing submissions for this exercise
-		const { count: submissionCount, error: countError } = await supabase
-			.from('python_exercise_submissions')
-			.select('*', { count: 'exact', head: true })
-			.eq('exercise_id', exerciseId)
-			.eq('student_id', user.id)
-			.eq('assignment_id', assignment.id);
-
-		if (countError) {
-			console.error('Failed to count submissions:', countError);
-			throw error(500, 'Erreur lors de la vérification du nombre de tentatives');
+	// Assignment-only checks: due date warning + max attempts enforcement
+	if (assignment) {
+		if (assignment.due_date) {
+			const dueDate = new Date(assignment.due_date);
+			if (dueDate < new Date()) {
+				console.warn(`Student ${user.id} submitting after due date for exercise ${exerciseId}`);
+			}
 		}
 
-		if (submissionCount !== null && submissionCount >= assignment.max_attempts) {
-			throw error(400, `Nombre maximum de tentatives atteint (${assignment.max_attempts})`);
+		if (assignment.max_attempts) {
+			const { count: submissionCount, error: countError } = await supabase
+				.from('python_exercise_submissions')
+				.select('*', { count: 'exact', head: true })
+				.eq('exercise_id', exerciseId)
+				.eq('student_id', user.id)
+				.eq('assignment_id', assignment.id);
+
+			if (countError) {
+				console.error('Failed to count submissions:', countError);
+				throw error(500, 'Erreur lors de la vérification du nombre de tentatives');
+			}
+
+			if (submissionCount !== null && submissionCount >= assignment.max_attempts) {
+				throw error(400, `Nombre maximum de tentatives atteint (${assignment.max_attempts})`);
+			}
 		}
 	}
 
@@ -134,13 +151,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	const nextAttemptNumber = (attemptCount || 0) + 1;
 
-	// Create submission
-	// Note: attempt_number is auto-set by trigger, but we include it for clarity
+	// Create submission. assignment_id is null for free-practice on public exos.
+	// Note: attempt_number is auto-set by trigger, but we include it for clarity.
 	const { data: submission, error: submissionError } = await supabase
 		.from('python_exercise_submissions')
 		.insert({
 			exercise_id: exerciseId,
-			assignment_id: assignment.id,
+			assignment_id: assignment?.id ?? null,
 			student_id: user.id,
 			code: data.code,
 			validation_result: validationResult,
