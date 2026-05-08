@@ -2129,6 +2129,21 @@ async function validateExercise(
 }
 
 /**
+ * Strip sensitive fields (input/expected/actual/diff) from a TestCaseResult
+ * when the source test case is hidden. The student-visible result then only
+ * contains `passed`, `hidden: true`, and `error` if there was a runtime crash.
+ *
+ * Done in the worker (not on the main thread) so the redacted fields never
+ * cross the postMessage boundary — even DevTools won't see them.
+ */
+function redactIfHidden(result: TestCaseResult, hidden: boolean): TestCaseResult {
+	if (!hidden) return result;
+	const redacted: TestCaseResult = { passed: result.passed, hidden: true };
+	if (result.error !== undefined) redacted.error = result.error;
+	return redacted;
+}
+
+/**
  * Validate using output comparison strategy.
  *
  * @param namespace Isolated Python dict where the student code runs and
@@ -2186,21 +2201,31 @@ _actual
 			const compareResult = compareOutputs(testCase.expected_output, actualOutput, cmp);
 			allPassed = allPassed && compareResult.passed;
 
-			testResults.push({
-				passed: compareResult.passed,
-				input: testCase.input,
-				expected: testCase.expected_output,
-				actual: actualOutput,
-				...(compareResult.diff ? { diff: compareResult.diff } : {})
-			});
+			testResults.push(
+				redactIfHidden(
+					{
+						passed: compareResult.passed,
+						input: testCase.input,
+						expected: testCase.expected_output,
+						actual: actualOutput,
+						...(compareResult.diff ? { diff: compareResult.diff } : {})
+					},
+					testCase.hidden === true
+				)
+			);
 		} catch (error) {
 			allPassed = false;
-			testResults.push({
-				passed: false,
-				input: testCase.input,
-				expected: testCase.expected_output,
-				error: error instanceof Error ? error.message : String(error)
-			});
+			testResults.push(
+				redactIfHidden(
+					{
+						passed: false,
+						input: testCase.input,
+						expected: testCase.expected_output,
+						error: error instanceof Error ? error.message : String(error)
+					},
+					testCase.hidden === true
+				)
+			);
 
 			// Restore sys.stdin/stdout even on error
 			try {
@@ -2306,24 +2331,34 @@ _passed = _actual == _expected
 
 				allPassed = allPassed && jsResult.passed;
 
-				testResults.push({
-					passed: jsResult.passed,
-					expected: JSON.stringify(jsResult.expected),
-					actual: JSON.stringify(jsResult.actual),
-					input: `${config.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`
-				});
+				testResults.push(
+					redactIfHidden(
+						{
+							passed: jsResult.passed,
+							expected: JSON.stringify(jsResult.expected),
+							actual: JSON.stringify(jsResult.actual),
+							input: `${config.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`
+						},
+						testCase.hidden === true
+					)
+				);
 
 				// Clean up test args/expected from namespace
 				namespace.delete('_ubumaths_test_args');
 				namespace.delete('_ubumaths_test_expected');
 			} catch (error) {
 				allPassed = false;
-				testResults.push({
-					passed: false,
-					input: `${config.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`,
-					expected: JSON.stringify(testCase.expected),
-					error: error instanceof Error ? error.message : String(error)
-				});
+				testResults.push(
+					redactIfHidden(
+						{
+							passed: false,
+							input: `${config.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`,
+							expected: JSON.stringify(testCase.expected),
+							error: error instanceof Error ? error.message : String(error)
+						},
+						testCase.hidden === true
+					)
+				);
 
 				// Clean up test args/expected on error too
 				try {
