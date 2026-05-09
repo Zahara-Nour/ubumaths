@@ -330,6 +330,19 @@ Remplacement des colonnes `tags TEXT[]` par tables de jonction N-N. `exercises.t
 
 ---
 
+## 2026-05-09 — Exercises Dashboard élève "Ma progression"
+
+Route `/python-exercises/my-progress` : pendant côté élève des vues prof. L'élève voit tous les exos qu'il a touchés (submission, mastery row, ou assignment). Auth : students only (les profs sont redirigés vers `/python-exercises/mine`). UI miroir des dashboards prof avec 4 cards stats, filtres niveau + statut, table sortable, badges DB-aligned. Bouton "Ma progression" ajouté sur la page consultation pour les élèves (cohabite avec "Voir les résultats" pour les profs).
+
+| Commit      | Description                                                          |
+| ----------- | -------------------------------------------------------------------- |
+| `d55358fe6` | feat : route + server load (7 tests TDD) + UI cards + table sortable |
+| `3becb938a` | feat : bouton "Ma progression" sur la page consultation              |
+
+→ [python-exercises-my-progress-progress.md](../../wip/python-exercises-my-progress-progress.md)
+
+---
+
 ## 2026-05-09 — Exercises Mastery 3-status alignée DB
 
 Refacto follow-up du Bloc C : remplacement du bucket applicatif `in_progress` par `needs_review` (qui est l'état DB sticky réel). Les pages prof (résultats par exo, vue par élève cross-exos) affichent désormais les **mêmes 3 statuts que la DB** — `mastered` / `needs_review` / `not_started` — avec les mêmes labels et couleurs que la page consultation côté élève. Élimine l'incohérence prof/élève (même donnée, mots différents) et supprime une couche d'abstraction artificielle. 5 tests ajustés.
