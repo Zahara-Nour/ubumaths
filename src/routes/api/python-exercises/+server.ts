@@ -279,14 +279,17 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(500, "Erreur lors de la création de l'exercice");
 	}
 
-	// Resolve tag names to ids (auto-create missing) and populate the junction
+	// Resolve tag names to ids (auto-create missing) and populate the junction.
+	// If this fails, rollback by deleting the orphan exercise so the response
+	// reflects the real DB state (otherwise we'd return tags that aren't attached).
 	if (data.tags && data.tags.length > 0) {
 		try {
 			const tagIds = await resolveTagsToIds(supabase, data.tags, 'python_tags');
 			await syncExerciseTagJunction(supabase, exercise.id, tagIds, 'python_exercise_tags');
 		} catch (e) {
-			console.error('Failed to attach tags to new exercise:', e);
-			// The exercise was created — return it but log the tag failure.
+			console.error('Failed to attach tags to new exercise — rolling back:', e);
+			await supabase.from('python_exercises').delete().eq('id', exercise.id);
+			throw error(500, "Erreur lors de l'attachement des tags");
 		}
 	}
 
