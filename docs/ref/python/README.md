@@ -194,7 +194,7 @@ Système complet de débogage step-by-step avec **visualisation mémoire style P
 
 ## 4. Exercises
 
-**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher avec liens éditer/copier/supprimer), `/python-exercises/[id]` (consultation publique avec soumission élève), `/python-exercises/[id]/edit` (édition teacher author-only), `/python-exercises/[id]/results` (suivi élèves teacher : auteur OU prof ayant assigné), `/python-exercises/[id]/results/[student_id]` (drill-down sur les soumissions d'un élève précis : code + verdict détaillé).
+**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher avec liens éditer/copier/supprimer), `/python-exercises/[id]` (consultation publique avec soumission élève), `/python-exercises/[id]/edit` (édition teacher author-only), `/python-exercises/[id]/results` (suivi élèves teacher : auteur OU prof ayant assigné), `/python-exercises/[id]/results/[student_id]` (drill-down sur les soumissions d'un élève précis : code + verdict détaillé), `/python-exercises/students/[student_id]` (vue cross-exos pour un élève donné : tous les exos pertinents pour ce prof).
 
 Système d'exercices Python complet : création teacher, soumission élève (assignée + libre), validation côté client via Pyodide isolé, persistance des tentatives.
 
@@ -281,6 +281,7 @@ Les colonnes `tags TEXT[]` ont été remplacées par des tables de jonction N-N 
 - [../../wip/tags-normalization-progress.md](../../wip/tags-normalization-progress.md) — colonnes `tags TEXT[]` → tables de jonction (math + Python)
 - [../../wip/python-exercises-results-page-progress.md](../../wip/python-exercises-results-page-progress.md) — page résultats prof (Bloc C)
 - [../../wip/python-exercises-drill-down-progress.md](../../wip/python-exercises-drill-down-progress.md) — drill-down soumissions par élève
+- [../../wip/python-exercises-per-student-progress.md](../../wip/python-exercises-per-student-progress.md) — vue par élève cross-exos
 
 ### TODO
 
