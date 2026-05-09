@@ -194,7 +194,7 @@ Système complet de débogage step-by-step avec **visualisation mémoire style P
 
 ## 4. Exercises
 
-**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher avec liens éditer/copier/supprimer), `/python-exercises/[id]` (consultation publique avec soumission élève), `/python-exercises/[id]/edit` (édition teacher author-only).
+**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher avec liens éditer/copier/supprimer), `/python-exercises/[id]` (consultation publique avec soumission élève), `/python-exercises/[id]/edit` (édition teacher author-only), `/python-exercises/[id]/results` (suivi élèves teacher : auteur OU prof ayant assigné).
 
 Système d'exercices Python complet : création teacher, soumission élève (assignée + libre), validation côté client via Pyodide isolé, persistance des tentatives.
 
@@ -222,6 +222,20 @@ Chaque test case (`output` ou `unit_test`) supporte un flag `hidden?: boolean`. 
 
 Sur la page consultation, un panneau historique repliable affiche les 10 dernières tentatives de l'élève (icône succès/échec + numéro + date relative + badge "Libre" si applicable + bouton "Charger ce code").
 
+### Mastery automatique (Bloc B)
+
+Statut sticky `mastered` (au moins 1 soumission correcte) ou `needs_review` (a essayé sans réussir), absence de row = `not_worked`. Auto-dérivé via trigger DB sur INSERT dans `python_exercise_submissions` (UPSERT `ON CONFLICT DO UPDATE WHERE status != 'mastered'` — sticky-mastered : une fois acquis, jamais reverti). Endpoints `GET /mastery` (global) et `GET /[id]/mastery` (par exo). Badge "Maîtrisé" / "À retravailler" sur la page consultation.
+
+### Page résultats prof (Bloc C)
+
+Route `/python-exercises/[id]/results` accessible aux profs auteur **OU** ayant assigné cet exo (le `eq('assigned_by', user.id)` est le seul gate authz côté load). Compose 4 sources DB en `StudentRow[]` : assignments + class_members + submissions + mastery. UI : 4 cards stats (élèves concernés / mastered / in_progress / not_started + % maîtrise), filtre par classe (MySelect, visible si >1 classe), table sortable par nom / tentatives / dernière activité, badges colorés.
+
+Mapping mastery applicatif à 3 valeurs : `mastered` / `in_progress` / `not_started` (le `needs_review` DB collapsé en `in_progress`, documenté inline). Bouton "Voir les résultats" sur la page consultation, visible uniquement aux profs avec accès (`canViewResults` calculé au load).
+
+### Tags normalisation (math + Python)
+
+Les colonnes `tags TEXT[]` ont été remplacées par des tables de jonction N-N : `exercise_tags(exercise_id, tag_id)` et `python_exercise_tags(...)`. Catalogues `tags` et `python_tags` deviennent référentiels (FK CASCADE/RESTRICT). Le contrat API reste `tags: string[]` (résolution serveur via `tags-resolution.ts`). Auto-create silencieux des tags absents du catalogue à l'INSERT/UPDATE. Échec de sync junction → rollback INSERT (math + Python POST) ou 500 sur UPDATE (PUT).
+
 ### Endpoints
 
 | Endpoint                                        | Action                                                                            |
@@ -233,6 +247,8 @@ Sur la page consultation, un panneau historique repliable affiche les 10 derniè
 | `POST /api/python-exercises/[id]/submit`        | Soumettre solution (mode assigné OU libre si `is_public: true`)                   |
 | `GET /api/python-exercises/[id]/my-submissions` | Soumissions de l'élève (RLS filtre : student → ses propres ; teacher → vue large) |
 | `GET /api/python-exercises/[id]/results`        | Résultats agrégés (teacher)                                                       |
+| `GET /api/python-exercises/mastery`             | Mastery globale de l'élève sur tous les exos                                      |
+| `GET /api/python-exercises/[id]/mastery`        | Mastery de l'élève sur un exo                                                     |
 | `GET/POST /api/python-tags`                     | Vocabulaire des tags Python (séparé des math `tags`)                              |
 
 ### Sécurité
@@ -262,14 +278,18 @@ Sur la page consultation, un panneau historique repliable affiche les 10 derniè
 - [../../wip/hidden-tests-progress.md](../../wip/hidden-tests-progress.md) — tests cachés
 - [../../wip/free-practice-submissions-progress.md](../../wip/free-practice-submissions-progress.md) — bouton Soumettre + soumissions libres + historique
 - [../../wip/custom-comparator-progress.md](../../wip/custom-comparator-progress.md) — comparateur Python custom (special-judge)
+- [../../wip/tags-normalization-progress.md](../../wip/tags-normalization-progress.md) — colonnes `tags TEXT[]` → tables de jonction (math + Python)
+- [../../wip/python-exercises-results-page-progress.md](../../wip/python-exercises-results-page-progress.md) — page résultats prof (Bloc C)
 
 ### TODO
 
-- [ ] Dashboard résultats teacher (API `/results` existe, UI manque)
-- [ ] Mastery automatique (Bloc B : statut `mastered`/`needs_review`/`not_worked` dérivé des soumissions)
-- [ ] Dashboard "Ma progression" élève (Bloc C, V2)
-- [ ] Tests API : couverture étendue (63 tests sur tous les endpoints principaux). Reste à faire : couverture détaillée des filtres `tags`/`is_public`/`author_id`/`level` sur GET list, et transitions complexes (e.g. due_date passé)
-- [ ] Normaliser `tags` vers table de jonction (cohérent avec exos math, gros chantier)
+- [ ] Dashboard "Ma progression" élève (V2)
+- [ ] Drill-down sur une soumission depuis la page résultats prof (code + output)
+- [ ] Vue "par élève" (cross-exos pour un élève donné)
+- [ ] Export CSV des résultats
+- [ ] Realtime sur `python_exercise_submissions` (notification prof live)
+- [ ] Distinction visible `needs_review` vs `in_progress` sur la page résultats (4e statut, V2)
+- [ ] Tests API : couverture détaillée des filtres `tags`/`is_public`/`author_id`/`level` sur GET list, transitions complexes (e.g. due_date passé)
 - [ ] Custom comparator V2 : étendre à `unit_test`, server-side validation pour tests vraiment cachés
 
 ---
@@ -349,19 +369,22 @@ Stockage Supabase des fichiers Python avec assignation enseignant→classe.
 
 ## Schémas DB (8 migrations principales)
 
-| Migration                                                     | Tables / changes                                                                                 |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `20251205100000_create_python_files.sql`                      | `python_files`, `python_file_assignments`                                                        |
-| `20251205160000_add_python_settings_to_profiles.sql`          | `profiles.python_settings` (JSONB)                                                               |
-| `20251206010000_create_python_exercises.sql`                  | `python_exercises`, `python_exercise_assignments`, `python_exercise_submissions` (avec triggers) |
-| `20251206020000_create_python_notebooks.sql`                  | `python_notebooks`, `python_notebook_assignments`                                                |
-| `20260508114655_python_exercise_assignments_unique.sql`       | Unique constraints sur assignments (class XOR student)                                           |
-| `20260508125858_python_exercises_public_anon.sql`             | RLS : anon peut lire les exos `is_public: true`                                                  |
-| `20260508154124_drop_difficulty.sql` + `155447_add_level.sql` | Refonte `difficulty` → `level` (college/lycee/nsi/etudiant)                                      |
-| `20260508162152_create_python_tags.sql`                       | `python_tags` (vocabulaire Python séparé des math `tags`)                                        |
-| `20260508163407_seed_python_exercises_samples.sql`            | 5 exos seed (1 par stratégie + ast+output_tests)                                                 |
-| `20260508180000_update_seeds_for_output_v2.sql`               | Adapte les seeds à la nouvelle API `comparison`                                                  |
-| `20260509002840_allow_public_python_submissions.sql`          | RLS : élève peut soumettre librement sur exos publics (sans assignment)                          |
+| Migration                                                           | Tables / changes                                                                                 |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| `20251205100000_create_python_files.sql`                            | `python_files`, `python_file_assignments`                                                        |
+| `20251205160000_add_python_settings_to_profiles.sql`                | `profiles.python_settings` (JSONB)                                                               |
+| `20251206010000_create_python_exercises.sql`                        | `python_exercises`, `python_exercise_assignments`, `python_exercise_submissions` (avec triggers) |
+| `20251206020000_create_python_notebooks.sql`                        | `python_notebooks`, `python_notebook_assignments`                                                |
+| `20260508114655_python_exercise_assignments_unique.sql`             | Unique constraints sur assignments (class XOR student)                                           |
+| `20260508125858_python_exercises_public_anon.sql`                   | RLS : anon peut lire les exos `is_public: true`                                                  |
+| `20260508154124_drop_difficulty.sql` + `155447_add_level.sql`       | Refonte `difficulty` → `level` (college/lycee/nsi/etudiant)                                      |
+| `20260508162152_create_python_tags.sql`                             | `python_tags` (vocabulaire Python séparé des math `tags`)                                        |
+| `20260508163407_seed_python_exercises_samples.sql`                  | 5 exos seed (1 par stratégie + ast+output_tests)                                                 |
+| `20260508180000_update_seeds_for_output_v2.sql`                     | Adapte les seeds à la nouvelle API `comparison`                                                  |
+| `20260509002840_allow_public_python_submissions.sql`                | RLS : élève peut soumettre librement sur exos publics (sans assignment)                          |
+| `20260509091440_create_python_exercise_mastery.sql`                 | `python_exercise_mastery` (sticky `mastered`/`needs_review`) + trigger UPSERT auto sur INSERT    |
+| `20260509094828_normalize_exercise_tags.sql`                        | Jonctions `exercise_tags` + `python_exercise_tags` (drop `tags TEXT[]` des deux tables d'exos)   |
+| `20260509104544_fix_exercise_functions_after_tag_normalization.sql` | Reconstruction des 4 RPC `get\_\*\_exercise[s                                                    | \_assignments]`(refs`e.tags`+`e.difficulty`) |
 
 Helpers `SECURITY DEFINER` partagés : `is_teacher_of_student`, `is_student_in_class`, `is_teacher_of_class`, `is_admin`, `is_file_assigned_to_student`, `is_notebook_assigned_to_student`, `count_user_python_files`, `count_user_notebooks`.
 
@@ -414,7 +437,7 @@ Service Worker active : 0 réseau au 2e chargement.
 ## Lacunes connues / TODO
 
 - [ ] Breakpoints gutter CodeMirror (clic pour toggle, F9 raccourci)
-- [ ] Exercices : page d'édition (PUT existe), dashboard résultats teacher (API existe), mastery automatique (Bloc B), dashboard élève (Bloc C)
+- [ ] Exercices : dashboard "Ma progression" élève (V2), drill-down soumission, export CSV, realtime
 - [ ] Drag-and-drop cellules notebook (boutons up/down seulement actuellement)
 - [ ] a11y SVG canvas debug : 25 warnings supprimés via `svelte-ignore`, vraie accessibilité clavier/screen-reader pas implémentée — voir `docs/ref/warning-svelte.md`
 - [ ] Tests composants notebook (existent pour utils import/export, pas pour les `.svelte`)

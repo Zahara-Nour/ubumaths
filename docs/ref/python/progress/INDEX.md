@@ -297,28 +297,74 @@ Couverture des 7 endpoints API principaux du module python-exercises (création,
 | `523ace9a1` | test : POST assign (11 tests, dont scénarios class XOR student et duplication PG23505) |
 | `1153a04b7` | test : GET results (8 tests, dont agrégation best_attempt/latest_attempt)              |
 
-**Reste à faire** : Bloc B (mastery automatique), Bloc C (dashboard), page édition, dashboard résultats teacher, normalisation tags, custom comparator V2 (unit_test + server-side strict), couverture détaillée des filtres GET list.
+**Reste à faire** : custom comparator V2 (unit_test + server-side strict), couverture détaillée des filtres GET list, drill-down soumissions, vue par élève, export CSV, realtime.
+
+---
+
+## 2026-05-09 — Exercises Mastery automatique (Bloc B)
+
+Statut sticky `mastered` / `needs_review` (absence = `not_worked`) auto-dérivé des soumissions via trigger DB. Sticky-mastered : une fois acquis, jamais reverti (UPSERT `ON CONFLICT DO UPDATE WHERE status != 'mastered'`). Endpoints `GET /mastery` (global) et `GET /[id]/mastery` (par exo). Badge "Maîtrisé" / "À retravailler" affiché sur la page consultation côté élève.
+
+| Commit      | Description                                                             |
+| ----------- | ----------------------------------------------------------------------- |
+| `b85f1068f` | feat : table `python_exercise_mastery` + trigger UPSERT auto sur INSERT |
+| `bd1340b2e` | feat : endpoints global + per-exercise + 12 tests serveur               |
+| `fc2bdb6c1` | feat : badge mastery côté consultation `/python-exercises/[id]`         |
+
+---
+
+## 2026-05-09 — Exercises Tags normalisation (math + Python)
+
+Remplacement des colonnes `tags TEXT[]` par tables de jonction N-N. `exercises.tags` → `exercise_tags(exercise_id, tag_id)` ; `python_exercises.tags` → `python_exercise_tags(...)`. Catalogues `tags` et `python_tags` deviennent référentiels (FK CASCADE/RESTRICT). API contract préservé (`tags: string[]`) via résolution serveur. Auto-create silencieux des tags absents du catalogue à l'INSERT.
+
+| Commit      | Description                                                                 |
+| ----------- | --------------------------------------------------------------------------- |
+| `49980f4e3` | feat : migration création jonctions + data migration + drop colonnes        |
+| `ac5693cdd` | feat : helpers `tags-resolution.ts` + APIs math + Python utilisent jonction |
+| `5468f5e18` | fix : reconstruction de 4 fonctions SQL référençant `e.tags` droppé         |
+| `1ba4f33ad` | fix : retrait `e.difficulty` (droppé en 20260121) des mêmes fonctions       |
+| `40c4cdbcb` | fix : propage les échecs de sync junction (rollback INSERT, 500 sur PUT)    |
+| `c84c99b1c` | test : 19 tests sur `tags-resolution.ts`                                    |
+
+→ [tags-normalization-progress.md](../../wip/tags-normalization-progress.md)
+
+---
+
+## 2026-05-09 — Exercises Page résultats prof (Bloc C)
+
+Route `/python-exercises/[id]/results` (auteur OU prof ayant assigné). Server load compose 4 sources DB en `StudentRow[]` : assignments + class_members + submissions + mastery. UI : 4 cards stats (total / mastered / in_progress / not_started + % maîtrise), filtre par classe (MySelect), table sortable par nom / tentatives / dernière activité, badges mastery. Lien "Voir les résultats" sur la page exo, visible uniquement aux profs avec accès.
+
+Mapping mastery applicatif à 3 valeurs (`mastered` / `in_progress` / `not_started`) — `needs_review` DB collapsé en `in_progress`.
+
+| Commit      | Description                                                             |
+| ----------- | ----------------------------------------------------------------------- |
+| `7b3e2ff89` | feat : server load TDD (14 tests, auth + merge + dédup + short-circuit) |
+| `cf6ee807b` | feat : UI cards stats + table sortable + filtre classe                  |
+| `e6820ea64` | feat : bouton "Voir les résultats" sur la page consultation             |
+| `57fdadf1e` | docs : doc de progression                                               |
+
+→ [python-exercises-results-page-progress.md](../../wip/python-exercises-results-page-progress.md)
 
 ---
 
 ## Récap par thème
 
-| Thème              | Docs principaux                                                                                                                     |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Playground         | playground-progress, playground-improvements, phase1-4                                                                              |
-| Sub-systems        | autocomplete, lazy-loading, phase3-url-sharing, files                                                                               |
-| Refactor commun    | executor-pattern, worker-multicontext, shared-types, validation                                                                     |
-| Notebook (12 docs) | notebook-complete, implementation, ui-\*, migration, routes, import, export, sharing, readonly, test-enhancement                    |
-| Debugger           | debugger-progress (Phases 1-6, heap viz incluse)                                                                                    |
-| Exercises          | exercises-api-progress, validation-implementation, output-v2, hidden-tests, free-practice-submissions, custom-comparator, edit-page |
-| Examples Library   | examples-library-progress                                                                                                           |
+| Thème              | Docs principaux                                                                                                                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Playground         | playground-progress, playground-improvements, phase1-4                                                                                                                                           |
+| Sub-systems        | autocomplete, lazy-loading, phase3-url-sharing, files                                                                                                                                            |
+| Refactor commun    | executor-pattern, worker-multicontext, shared-types, validation                                                                                                                                  |
+| Notebook (12 docs) | notebook-complete, implementation, ui-\*, migration, routes, import, export, sharing, readonly, test-enhancement                                                                                 |
+| Debugger           | debugger-progress (Phases 1-6, heap viz incluse)                                                                                                                                                 |
+| Exercises          | exercises-api-progress, validation-implementation, output-v2, hidden-tests, free-practice-submissions, custom-comparator, edit-page, mastery (Bloc B), tags-normalization, results-page (Bloc C) |
+| Examples Library   | examples-library-progress                                                                                                                                                                        |
 
 ---
 
 ## Métriques
 
 - **Commits totaux** : ~100+ (depuis 2025-12-04)
-- **Migrations DB** : 11 (4 initiales + 7 sur exercises Python : public anon, level, tags, seeds, output V2, public submissions)
+- **Migrations DB** : 14 (4 initiales + 10 sur exercises Python : public anon, level, tags, seeds, output V2, public submissions, mastery + trigger, tags normalisation jonctions, fix RPC functions, fix difficulty drop)
 - **Tests** : 450+ (45 store + 36 output + 124+ debug + 25 library + 59 import/export + 50 output-compare + 22 Pyodide-réel exercises + 63 server tests exercises + autres)
 - **Exemples curés** : 100 (10 catégories)
 - **Composants Svelte** : ~29 (playground + notebook + debug + exercises, dont ExerciseForm extrait)
