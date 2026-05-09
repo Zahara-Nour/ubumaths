@@ -175,6 +175,20 @@ export interface PythonExerciseAssignment {
 	exercise?: PythonExerciseStudentView;
 }
 
+// =============================================================================
+// Mastery (auto-derived from submissions, sticky-mastered)
+// =============================================================================
+
+export type PythonMasteryStatus = 'mastered' | 'needs_review';
+
+export interface PythonExerciseMastery {
+	id: string;
+	student_id: string;
+	exercise_id: string;
+	status: PythonMasteryStatus;
+	updated_at: string;
+}
+
 export interface PythonExerciseSubmission {
 	id: string;
 	exercise_id: string;
