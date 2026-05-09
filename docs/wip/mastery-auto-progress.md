@@ -40,6 +40,47 @@ Les 4 comportements (B2-B5) sont commentés explicitement dans le SQL pour qu'un
 - Pas de `?exercise_id=` sur l'endpoint global — pour ce filtrage, utiliser le mono-endpoint (plus efficace côté DB et plus explicite).
 - Le `targetStudent = student_id ?? user.id` couvre les deux cas : élève voit son propre statut sans paramètre, prof passe `?student_id=X`. La RLS empêche un élève de fouiller chez les autres (ligne `pem_select_own` filtre sur `auth.uid() = student_id`).
 
-## Phase 4 — UI badge ⏳
+## Phase 4 — UI badge ✅
 
-## Phase 5 — Quality checks ⏳
+**Fichiers modifiés :**
+
+- `src/routes/(public)/python-exercises/[id]/+page.server.ts` — fetch parallèle de `/api/python-exercises/[id]/mastery` quand authentifié, retourne `masteryStatus` dans PageData. Fallback gracieux à `null` en cas d'erreur (pour ne pas casser le rendu de la page exercice).
+- `src/routes/(public)/python-exercises/[id]/+page.svelte` — badge vert "Maîtrisé" ou ambre "À retravailler" dans le header, à côté du level et des tags.
+
+**Décisions :**
+
+- `masteryStatus` n'est non-null que pour les students (le profil teacher reçoit `null` pour ne pas afficher de badge incohérent — il n'a pas de propre mastery).
+- Le badge se rafraîchit naturellement après une soumission grâce à `invalidateAll()` déjà présent dans `handleSubmit`.
+
+## Phase 5 — Quality checks ✅
+
+**Vérifications passées :**
+
+- `mcp__svelte__svelte-autofixer` sur `+page.svelte` modifié — 0 issue, 0 suggestion.
+- `pnpm check:incremental` — 0 nouvelle erreur (les 9 préexistantes restent dans `slides/demo` et `extern/`).
+- `npx eslint <fichiers modifiés>` — 0 problème.
+- `pnpm test:server src/routes/api/python-exercises` — **75/75** ✅ (63 préexistants + 12 nouveaux mastery, pas de régression).
+
+**Commits livrés (3) :**
+
+1. `b85f1068f` — Phase 1 : migration table + RLS + trigger sticky-mastered
+2. `bd1340b2e` — Phases 2+3 : types + zod + 2 endpoints + 12 tests
+3. `<this>` — Phase 4 : UI badge + Phase 5 docs finale
+
+## Vérifications manuelles à faire
+
+L'utilisateur doit :
+
+1. `pnpm db:migrate` (applique `20260509091440_create_python_exercise_mastery.sql`).
+2. `pnpm dev -- --port 5175`, connecté **comme élève** :
+   - **B3** : ouvrir un exo public, "Soumettre" une réponse fausse → recharger → badge ambre "À retravailler".
+   - **B4** : "Soumettre" une réponse correcte → recharger → badge vert "Maîtrisé".
+   - **B5 (sticky)** : re-soumettre une réponse fausse → recharger → badge reste vert.
+   - **B2** : nouveau exo, soumission correcte directe → badge vert.
+3. **Comme prof** : pas de badge sur la page consultation (cohérent — le prof n'a pas de mastery).
+4. **Anon** : pas de badge.
+5. (Optionnel) Supabase Studio → table `python_exercise_mastery` → vérifier les rows et les `updated_at` après chaque action.
+
+## Documents produits
+
+- `docs/wip/mastery-auto-progress.md` (ce document).

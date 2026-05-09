@@ -177,6 +177,11 @@
 			{#each exercise.tags as tag (tag)}
 				<Badge variant="outline">{tag}</Badge>
 			{/each}
+			{#if data.masteryStatus === 'mastered'}
+				<Badge class="bg-green-500 text-white hover:bg-green-600">Maîtrisé</Badge>
+			{:else if data.masteryStatus === 'needs_review'}
+				<Badge class="bg-amber-500 text-white hover:bg-amber-600">À retravailler</Badge>
+			{/if}
 		</div>
 		{#if exercise.description}
 			<p class="mt-2 text-sm text-muted-foreground">{exercise.description}</p>
