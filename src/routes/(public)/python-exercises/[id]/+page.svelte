@@ -10,7 +10,16 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { PlaygroundExecutor, type ExerciseValidationResult as Result } from '$lib/shared/python';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Play, CheckCircle2, RotateCcw, Send, History, XCircle, BarChart3 } from 'lucide-svelte';
+	import {
+		Play,
+		CheckCircle2,
+		RotateCcw,
+		Send,
+		History,
+		XCircle,
+		BarChart3,
+		LineChart
+	} from 'lucide-svelte';
 
 	let { data } = $props();
 	const exercise = $derived(data.exercise);
@@ -173,12 +182,20 @@
 	<header class="mb-4">
 		<div class="flex items-start justify-between gap-4">
 			<h1 class="mb-2 text-2xl font-bold">{exercise.title}</h1>
-			{#if data.canViewResults}
-				<Button variant="outline" size="sm" href="/python-exercises/{exercise.id}/results">
-					<BarChart3 class="mr-1 h-4 w-4" />
-					Voir les résultats
-				</Button>
-			{/if}
+			<div class="flex items-center gap-2">
+				{#if canSubmit}
+					<Button variant="outline" size="sm" href="/python-exercises/my-progress">
+						<LineChart class="mr-1 h-4 w-4" />
+						Ma progression
+					</Button>
+				{/if}
+				{#if data.canViewResults}
+					<Button variant="outline" size="sm" href="/python-exercises/{exercise.id}/results">
+						<BarChart3 class="mr-1 h-4 w-4" />
+						Voir les résultats
+					</Button>
+				{/if}
+			</div>
 		</div>
 		<div class="flex flex-wrap items-center gap-2">
 			<Badge>{levelLabel}</Badge>
