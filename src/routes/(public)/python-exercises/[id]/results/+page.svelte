@@ -290,7 +290,14 @@
 					<Table.Body>
 						{#each sortedRows as row (row.student.id)}
 							<Table.Row>
-								<Table.Cell class="font-medium">{fullName(row)}</Table.Cell>
+								<Table.Cell class="font-medium">
+									<a
+										href="/python-exercises/{data.exercise.id}/results/{row.student.id}"
+										class="text-primary hover:underline"
+									>
+										{fullName(row)}
+									</a>
+								</Table.Cell>
 								<Table.Cell class="text-center">
 									<Badge class={statusBadgeClass(row.mastery_status)}>
 										{statusLabel(row.mastery_status)}
