@@ -194,7 +194,7 @@ Système complet de débogage step-by-step avec **visualisation mémoire style P
 
 ## 4. Exercises
 
-**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher avec liens éditer/copier/supprimer), `/python-exercises/[id]` (consultation publique avec soumission élève), `/python-exercises/[id]/edit` (édition teacher author-only), `/python-exercises/[id]/results` (suivi élèves teacher : auteur OU prof ayant assigné).
+**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher avec liens éditer/copier/supprimer), `/python-exercises/[id]` (consultation publique avec soumission élève), `/python-exercises/[id]/edit` (édition teacher author-only), `/python-exercises/[id]/results` (suivi élèves teacher : auteur OU prof ayant assigné), `/python-exercises/[id]/results/[student_id]` (drill-down sur les soumissions d'un élève précis : code + verdict détaillé).
 
 Système d'exercices Python complet : création teacher, soumission élève (assignée + libre), validation côté client via Pyodide isolé, persistance des tentatives.
 
@@ -280,11 +280,11 @@ Les colonnes `tags TEXT[]` ont été remplacées par des tables de jonction N-N 
 - [../../wip/custom-comparator-progress.md](../../wip/custom-comparator-progress.md) — comparateur Python custom (special-judge)
 - [../../wip/tags-normalization-progress.md](../../wip/tags-normalization-progress.md) — colonnes `tags TEXT[]` → tables de jonction (math + Python)
 - [../../wip/python-exercises-results-page-progress.md](../../wip/python-exercises-results-page-progress.md) — page résultats prof (Bloc C)
+- [../../wip/python-exercises-drill-down-progress.md](../../wip/python-exercises-drill-down-progress.md) — drill-down soumissions par élève
 
 ### TODO
 
 - [ ] Dashboard "Ma progression" élève (V2)
-- [ ] Drill-down sur une soumission depuis la page résultats prof (code + output)
 - [ ] Vue "par élève" (cross-exos pour un élève donné)
 - [ ] Export CSV des résultats
 - [ ] Realtime sur `python_exercise_submissions` (notification prof live)
@@ -437,7 +437,7 @@ Service Worker active : 0 réseau au 2e chargement.
 ## Lacunes connues / TODO
 
 - [ ] Breakpoints gutter CodeMirror (clic pour toggle, F9 raccourci)
-- [ ] Exercices : dashboard "Ma progression" élève (V2), drill-down soumission, export CSV, realtime
+- [ ] Exercices : dashboard "Ma progression" élève (V2), export CSV, realtime
 - [ ] Drag-and-drop cellules notebook (boutons up/down seulement actuellement)
 - [ ] a11y SVG canvas debug : 25 warnings supprimés via `svelte-ignore`, vraie accessibilité clavier/screen-reader pas implémentée — voir `docs/ref/warning-svelte.md`
 - [ ] Tests composants notebook (existent pour utils import/export, pas pour les `.svelte`)

@@ -330,6 +330,19 @@ Remplacement des colonnes `tags TEXT[]` par tables de jonction N-N. `exercises.t
 
 ---
 
+## 2026-05-09 — Exercises Drill-down soumissions élève
+
+Route `/python-exercises/[id]/results/[student_id]` : le prof clique sur un nom dans la table résultats et arrive sur la page détail de cet élève (code soumis + verdict détaillé pour chaque tentative). Auth = même garde-fous que `/results` + scope check additionnel (l'élève doit être dans une classe du prof OU assigné directement). Submissions complètes (LIMIT 50), affichage en cards expandables avec PythonEditor read-only et `ExerciseValidationResult` réutilisé.
+
+| Commit      | Description                                                              |
+| ----------- | ------------------------------------------------------------------------ |
+| `a1b6970b0` | feat : route + server load (9 tests TDD) + UI cards expandables          |
+| `633c1f5bd` | feat : nom de l'élève dans la table résultats devient un lien drill-down |
+
+→ [python-exercises-drill-down-progress.md](../../wip/python-exercises-drill-down-progress.md)
+
+---
+
 ## 2026-05-09 — Exercises Page résultats prof (Bloc C)
 
 Route `/python-exercises/[id]/results` (auteur OU prof ayant assigné). Server load compose 4 sources DB en `StudentRow[]` : assignments + class_members + submissions + mastery. UI : 4 cards stats (total / mastered / in_progress / not_started + % maîtrise), filtre par classe (MySelect), table sortable par nom / tentatives / dernière activité, badges mastery. Lien "Voir les résultats" sur la page exo, visible uniquement aux profs avec accès.
