@@ -36,6 +36,11 @@ export interface TeacherClass {
 	name: string;
 }
 
+export interface ClassMembership {
+	student_id: string;
+	class_id: string;
+}
+
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) throw redirect(303, '/auth/signin');
@@ -119,12 +124,23 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	const studentIdsArr = Array.from(studentIds);
 
+	// Pass through the raw membership rows so the page can filter by class
+	// without an extra round-trip. Students assigned directly (no class) won't
+	// appear here, which matches the UI: the per-class filter shows class
+	// members only.
+	const classMembers: ClassMembership[] = (classMembersRaw ?? [])
+		.filter((m): m is { student_id: string; class_id: string } =>
+			Boolean(m.student_id && m.class_id)
+		)
+		.map((m) => ({ student_id: m.student_id, class_id: m.class_id }));
+
 	if (studentIdsArr.length === 0) {
 		// No students in scope → empty table; still return the shell.
 		return {
 			exercise,
 			rows: [] as StudentRow[],
-			teacherClasses
+			teacherClasses,
+			classMembers
 		};
 	}
 
@@ -201,5 +217,5 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		];
 	});
 
-	return { exercise, rows, teacherClasses };
+	return { exercise, rows, teacherClasses, classMembers };
 };
