@@ -1,3 +1,14 @@
 {
-	"crons": []
+	"crons": [],
+	"headers": [
+		{
+			"source": "/upsilon-simulator/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=2592000"
+				}
+			]
+		}
+	]
 }
