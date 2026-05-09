@@ -23,7 +23,12 @@
 		items = [
 			{ label: 'Accueil', href: '/', icon: Home },
 			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
-			{ label: 'Python', href: '/python', icon: Terminal },
+			{
+				label: 'Python',
+				href: '/python',
+				icon: Terminal,
+				roles: ['student', 'teacher']
+			},
 			{
 				label: 'Worksheets',
 				href: '/dashboard/teacher/contenu/worksheets',
