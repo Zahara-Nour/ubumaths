@@ -196,7 +196,9 @@ Système complet de débogage step-by-step avec **visualisation mémoire style P
 
 **Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher avec liens éditer/copier/supprimer), `/python-exercises/[id]` (consultation publique avec soumission élève), `/python-exercises/[id]/edit` (édition teacher author-only), `/python-exercises/[id]/results` (suivi élèves teacher : auteur OU prof ayant assigné), `/python-exercises/[id]/results/[student_id]` (drill-down sur les soumissions d'un élève précis : code + verdict détaillé), `/python-exercises/students/[student_id]` (vue cross-exos pour un élève donné : tous les exos pertinents pour ce prof), `/python-exercises/my-progress` (dashboard élève : tous les exos sur lesquels j'ai une trace — submission, mastery, ou assignment).
 
-Système d'exercices Python complet : création teacher, soumission élève (assignée + libre), validation côté client via Pyodide isolé, persistance des tentatives.
+Système d'exercices Python complet : création teacher, soumission élève (assignée + libre), validation côté client via Pyodide isolé, persistance des tentatives, mastery sticky, dashboards prof (résultats par exo, drill-down soumissions, vue par élève cross-exos) et dashboard élève ("Ma progression").
+
+> **État (2026-05-09)** : module pédagogiquement complet. Les éléments de la section TODO sont du backlog low-priority à reprendre après feedback prof réel — pas de nouvelle pédagogie à débloquer.
 
 ### Stratégies de validation
 
@@ -283,12 +285,12 @@ Les colonnes `tags TEXT[]` ont été remplacées par des tables de jonction N-N 
 - [../../wip/python-exercises-drill-down-progress.md](../../wip/python-exercises-drill-down-progress.md) — drill-down soumissions par élève
 - [../../wip/python-exercises-per-student-progress.md](../../wip/python-exercises-per-student-progress.md) — vue par élève cross-exos
 
-### TODO
+### Backlog (low priority — attendre feedback prof)
 
-- [ ] Export CSV des résultats
-- [ ] Realtime sur `python_exercise_submissions` (notification prof live)
-- [ ] Tests API : couverture détaillée des filtres `tags`/`is_public`/`author_id`/`level` sur GET list, transitions complexes (e.g. due_date passé)
-- [ ] Custom comparator V2 : étendre à `unit_test`, server-side validation pour tests vraiment cachés
+- [ ] **Export CSV** des résultats — utile en réunion parents, ratio valeur/effort moyen
+- [ ] **Realtime** sur `python_exercise_submissions` — gadget UX, F5 fait l'affaire
+- [ ] **Tests API filtres GET list** (`tags`/`is_public`/`author_id`/`level`) — qualité technique pure, à traiter si bug remonte
+- [ ] **Custom comparator V2** — étendre `custom` à `unit_test`, server-side validation pour tests vraiment cachés. Niche : profs Python avancés avec besoin custom (logique non-equality)
 
 ---
 

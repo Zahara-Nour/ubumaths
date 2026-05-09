@@ -330,6 +330,23 @@ Remplacement des colonnes `tags TEXT[]` par tables de jonction N-N. `exercises.t
 
 ---
 
+## 2026-05-09 — Bilan de la journée
+
+~13 commits sur le module python-exercises ont fermé l'arc pédagogique :
+
+1. **Bloc C — résultats prof** (`/[id]/results`) : table par élève + cards stats
+2. **Drill-down soumissions** (`/[id]/results/[student_id]`) : code + verdict détaillé pour chaque tentative
+3. **Vue prof per-student cross-exos** (`/students/[student_id]`) : tous les exos de cet élève dans mon scope
+4. **Dashboard élève** (`/my-progress`) : tous les exos sur lesquels j'ai une trace
+5. **Refacto mastery 3 statuts** : alignement DB (mastered / needs_review / not_started) côté prof + élève
+6. **Tags normalisation** : drop colonnes `TEXT[]`, jonctions N-N, fix RPCs cassées (e.tags + e.difficulty droppés)
+
+État final du module : **complet pédagogiquement**. Backlog restant (CSV, realtime, custom V2) = low priority, à reprendre après feedback prof réel.
+
+→ Voir les sections par feature ci-dessous, et [README.md](../README.md#4-exercises) pour le récap thématique.
+
+---
+
 ## 2026-05-09 — Exercises Dashboard élève "Ma progression"
 
 Route `/python-exercises/my-progress` : pendant côté élève des vues prof. L'élève voit tous les exos qu'il a touchés (submission, mastery row, ou assignment). Auth : students only (les profs sont redirigés vers `/python-exercises/mine`). UI miroir des dashboards prof avec 4 cards stats, filtres niveau + statut, table sortable, badges DB-aligned. Bouton "Ma progression" ajouté sur la page consultation pour les élèves (cohabite avec "Voir les résultats" pour les profs).
