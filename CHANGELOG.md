@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.86](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.85...v0.8.86) (2026-05-09)
+
+### ✨ Features
+
+- **upsilon:** add public Upsilon calculator simulator route ([22b7ef3](https://github.com/Zahara-Nour/ubumaths/commit/22b7ef3d8f95758ee6faef8033bf572748e2a22b))
+- **upsilon:** cache /upsilon-simulator/\* for 30 days on Vercel ([e72da88](https://github.com/Zahara-Nour/ubumaths/commit/e72da88aab2126c1c8c4d6a750a874557242efd5))
+- **upsilon:** rebuild simulator on emsdk 4.0.23 (4.6 MB) + cache-bust v2 ([7b3343e](https://github.com/Zahara-Nour/ubumaths/commit/7b3343efd9d378b4e69d13fe99ca1fb10e5c76bd))
+- **upsilon:** sync iframe simulator with light/dark theme ([64547fd](https://github.com/Zahara-Nour/ubumaths/commit/64547fdb4358e72d5cad3003253007ec4c0336e1))
+
+### 📚 Documentation
+
+- **upsilon:** document 2026-05-09 rebuild and theme sync upstream ([635ce95](https://github.com/Zahara-Nour/ubumaths/commit/635ce957ae37cdc70a85e601b74834642e283752)), closes [#3](https://github.com/Zahara-Nour/ubumaths/issues/3) [#1](https://github.com/Zahara-Nour/ubumaths/issues/1)
+
 ### [0.8.85](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.84...v0.8.85) (2026-05-09)
 
 ### ⚡ Performance Improvements
