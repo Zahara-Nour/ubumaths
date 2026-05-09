@@ -349,6 +349,19 @@ body {
   margin: 0;
   padding: 0;
   text-align: center;
+  transition: background-color 0.2s ease;
+}
+body.dark {
+  background: #18181b;
+}
+body.dark a.action {
+  border-color: #a1a1aa;
+}
+body.dark a.action:hover {
+  background-color: rgba(255,255,255,0.125);
+}
+body.dark a.action svg path {
+  fill: #d4d4d8;
 }
 .col-fullscreen {
   display: none;
@@ -547,14 +560,15 @@ Calculator(Module);
     </script>
     <script>
 document.getElementById("action-fullscreen").addEventListener("click", function(e){
-  if (document.body.className == "fullscreen") {
-    document.body.className = "";
-  } else {
-    document.body.className = "fullscreen";
-  }
+  document.body.classList.toggle("fullscreen");
 });
 document.getElementById("action-screenshot").addEventListener("click", function(e) {
   Module.downloadScreenshot();
+});
+window.addEventListener("message", function(e){
+  if (e.data && e.data.type === "ubumaths-theme") {
+    document.body.classList.toggle("dark", e.data.dark === true);
+  }
 });
     </script>
     <!--<script async src="https://www.numworks.com/simulator/update.js"></script>-->

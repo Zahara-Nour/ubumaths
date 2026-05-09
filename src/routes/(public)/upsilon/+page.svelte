@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { Calculator, Maximize2, Minimize2, ExternalLink } from 'lucide-svelte';
+	import { theme } from '$lib/stores/theme.svelte';
 
 	let isLoaded = $state(false);
 	let isFullscreen = $state(false);
+	let iframeEl: HTMLIFrameElement | null = $state(null);
 
 	function loadSimulator() {
 		isLoaded = true;
@@ -16,9 +18,21 @@
 		if (e.key === 'Escape' && isFullscreen) isFullscreen = false;
 	}
 
+	function syncIframeTheme() {
+		iframeEl?.contentWindow?.postMessage(
+			{ type: 'ubumaths-theme', dark: theme.dark },
+			window.location.origin
+		);
+	}
+
 	$effect(() => {
 		document.body.classList.toggle('overflow-hidden', isFullscreen);
 		return () => document.body.classList.remove('overflow-hidden');
+	});
+
+	$effect(() => {
+		void theme.dark;
+		syncIframeTheme();
 	});
 </script>
 
@@ -81,10 +95,12 @@
 				{/if}
 			</button>
 			<iframe
+				bind:this={iframeEl}
 				src="/upsilon-simulator/simulator.html"
 				title="Calculatrice graphique Upsilon"
 				class="h-[85vh] w-full rounded-lg border-0"
 				allow="clipboard-write"
+				onload={syncIframeTheme}
 			></iframe>
 		</div>
 	{/if}
