@@ -50,14 +50,15 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(403, 'Profil utilisateur introuvable');
 	}
 
-	// Validate query parameters
+	// Validate query parameters. `searchParams.get(absent)` returns null, but
+	// the schema fields are .optional() (= undefined-tolerant), so coerce null → undefined.
 	const queryValidation = listExercisesQuerySchema.safeParse({
-		level: url.searchParams.get('level'),
-		tags: url.searchParams.get('tags'),
-		is_public: url.searchParams.get('is_public'),
-		author_id: url.searchParams.get('author_id'),
-		limit: url.searchParams.get('limit'),
-		offset: url.searchParams.get('offset')
+		level: url.searchParams.get('level') ?? undefined,
+		tags: url.searchParams.get('tags') ?? undefined,
+		is_public: url.searchParams.get('is_public') ?? undefined,
+		author_id: url.searchParams.get('author_id') ?? undefined,
+		limit: url.searchParams.get('limit') ?? undefined,
+		offset: url.searchParams.get('offset') ?? undefined
 	});
 
 	if (!queryValidation.success) {
