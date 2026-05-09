@@ -330,6 +330,16 @@ Remplacement des colonnes `tags TEXT[]` par tables de jonction N-N. `exercises.t
 
 ---
 
+## 2026-05-09 — Exercises Mastery 3-status alignée DB
+
+Refacto follow-up du Bloc C : remplacement du bucket applicatif `in_progress` par `needs_review` (qui est l'état DB sticky réel). Les pages prof (résultats par exo, vue par élève cross-exos) affichent désormais les **mêmes 3 statuts que la DB** — `mastered` / `needs_review` / `not_started` — avec les mêmes labels et couleurs que la page consultation côté élève. Élimine l'incohérence prof/élève (même donnée, mots différents) et supprime une couche d'abstraction artificielle. 5 tests ajustés.
+
+| Commit      | Description                                                      |
+| ----------- | ---------------------------------------------------------------- |
+| `2a6b82883` | refactor : align teacher mastery labels with the DB (3 statuses) |
+
+---
+
 ## 2026-05-09 — Exercises Vue par élève cross-exos
 
 Route `/python-exercises/students/[student_id]` : vue d'ensemble pour un prof sur un élève donné, agrégeant tous les exos qui le concernent (exos qu'il a écrits ET sur lesquels l'élève a soumis, plus les exos qu'il a assignés directement ou via une classe contenant l'élève). Filtre niveau, tri colonnes, table avec lien drill-down, 4 cards stats globales. Lien "Voir tous ses exos" ajouté dans le header du drill-down `/results/[student_id]`.
