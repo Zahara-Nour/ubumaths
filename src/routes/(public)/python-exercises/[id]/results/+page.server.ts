@@ -16,7 +16,7 @@ import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 
-export type MasteryStatus = 'mastered' | 'in_progress' | 'not_started';
+export type MasteryStatus = 'mastered' | 'needs_review' | 'not_started';
 
 export interface StudentRow {
 	student: {
@@ -187,13 +187,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	);
 
 	// 10. Merge.
-	// We deliberately collapse the DB's `needs_review` into the applicative
-	// `in_progress` bucket: the dashboard surfaces three statuses to the teacher
-	// (mastered / in_progress / not_started). Any sticky non-mastered DB row
-	// + any in-flight attempts both read as "in_progress" — the prof sees a
-	// student who has tried, regardless of whether the trigger has stamped
-	// needs_review. If we ever need to distinguish "tried and failed" from
-	// "currently working", introduce a 4th value here.
+	// Mapping mirrors the DB's three observable states:
+	//   - 'mastered'      ← DB mastery row stamped 'mastered' (sticky)
+	//   - 'needs_review'  ← DB row 'needs_review' OR submissions exist without
+	//                       a row yet (defensive: an INSERT submission almost
+	//                       always triggers a mastery row, but if the trigger
+	//                       lagged we still want the prof to see the activity)
+	//   - 'not_started'   ← no row, no submissions
 	const rows: StudentRow[] = studentIdsArr.flatMap((sid) => {
 		const prof = profilesById.get(sid);
 		if (!prof) return [];
@@ -202,8 +202,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		const status: MasteryStatus =
 			mastery === 'mastered'
 				? 'mastered'
-				: subs.length > 0 || mastery === 'needs_review'
-					? 'in_progress'
+				: mastery === 'needs_review' || subs.length > 0
+					? 'needs_review'
 					: 'not_started';
 		const last = subs[0];
 		return [

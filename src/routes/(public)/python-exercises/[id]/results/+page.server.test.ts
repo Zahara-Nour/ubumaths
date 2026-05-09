@@ -179,7 +179,7 @@ describe('load (merge logic)', () => {
 		});
 	});
 
-	it('marks a student with submissions but no mastery row as in_progress', async () => {
+	it('marks a student with submissions but no mastery row as needs_review', async () => {
 		const { load } = await import('./+page.server');
 		const supabase = createMockSupabase();
 		mockSuccess(supabase, { role: 'teacher' });
@@ -220,14 +220,14 @@ describe('load (merge logic)', () => {
 		} as any);
 
 		expect(result.rows[0]).toMatchObject({
-			mastery_status: 'in_progress',
+			mastery_status: 'needs_review',
 			total_attempts: 2,
 			last_attempt_at: '2026-05-09T10:00:00Z',
 			last_attempt_correct: false
 		});
 	});
 
-	it('marks a student with mastery=needs_review and no submissions as in_progress', async () => {
+	it('marks a student with mastery=needs_review and no submissions as needs_review', async () => {
 		const { load } = await import('./+page.server');
 		const supabase = createMockSupabase();
 		mockSuccess(supabase, { role: 'teacher' });
@@ -250,7 +250,7 @@ describe('load (merge logic)', () => {
 			locals
 		} as any);
 
-		expect(result.rows[0].mastery_status).toBe('in_progress');
+		expect(result.rows[0].mastery_status).toBe('needs_review');
 		expect(result.rows[0].total_attempts).toBe(0);
 	});
 
