@@ -9,8 +9,14 @@
 -- with "column tags does not exist".
 --
 -- Rebuild each function to reconstruct `tags TEXT[]` from the new junction
--- (exercise_tags + tags catalog). The return signature is preserved, so
--- application code consuming these functions doesn't change.
+-- (exercise_tags + tags catalog).
+--
+-- We also drop `difficulty TEXT` from the return signature: the underlying
+-- `exercises.difficulty` column was removed in 20260121231051 (replaced by
+-- `category`), so these functions had been broken on two columns since then.
+-- No application code reads `.difficulty` on exercise rows; remove it cleanly
+-- rather than aliasing `e.category as difficulty` and lying about the type.
+-- After this migration, run `pnpm db:types` to refresh the TS shape.
 --
 -- Performance: each row triggers a small lateral subquery; OK for typical
 -- assignment lists (≤ a few hundred rows). If volume grows, swap to a JOIN
@@ -46,7 +52,6 @@ RETURNS TABLE (
     shared JSONB,
     variables JSONB,
     distribution_mode TEXT,
-    difficulty TEXT,
     tags TEXT[],
     grades TEXT[],
     assignment_id UUID,
@@ -70,7 +75,6 @@ AS $$
         e.shared,
         e.variables,
         e.distribution_mode,
-        e.difficulty,
         COALESCE(
             ARRAY(
                 SELECT t.name FROM exercise_tags et
@@ -135,7 +139,6 @@ RETURNS TABLE (
     variables JSONB,
     distribution_mode TEXT,
     exercise_is_public BOOLEAN,
-    difficulty TEXT,
     tags TEXT[],
     grades TEXT[],
     exercise_creator_id UUID,
@@ -167,7 +170,6 @@ AS $$
         e.variables,
         e.distribution_mode,
         e.is_public as exercise_is_public,
-        e.difficulty,
         COALESCE(
             ARRAY(
                 SELECT t.name FROM exercise_tags et
@@ -228,7 +230,6 @@ RETURNS TABLE (
     variables JSONB,
     distribution_mode TEXT,
     exercise_is_public BOOLEAN,
-    difficulty TEXT,
     tags TEXT[],
     grades TEXT[],
     exercise_creator_id UUID,
@@ -260,7 +261,6 @@ AS $$
         e.variables,
         e.distribution_mode,
         e.is_public as exercise_is_public,
-        e.difficulty,
         COALESCE(
             ARRAY(
                 SELECT t.name FROM exercise_tags et
@@ -315,7 +315,6 @@ RETURNS TABLE (
     variables JSONB,
     distribution_mode TEXT,
     exercise_is_public BOOLEAN,
-    difficulty TEXT,
     tags TEXT[],
     grades TEXT[],
     exercise_creator_id UUID,
@@ -347,7 +346,6 @@ AS $$
         e.variables,
         e.distribution_mode,
         e.is_public as exercise_is_public,
-        e.difficulty,
         COALESCE(
             ARRAY(
                 SELECT t.name FROM exercise_tags et
