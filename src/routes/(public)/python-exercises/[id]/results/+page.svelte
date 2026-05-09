@@ -80,7 +80,7 @@
 	const stats = $derived({
 		total: data.rows.length,
 		mastered: data.rows.filter((r) => r.mastery_status === 'mastered').length,
-		in_progress: data.rows.filter((r) => r.mastery_status === 'in_progress').length,
+		needs_review: data.rows.filter((r) => r.mastery_status === 'needs_review').length,
 		not_started: data.rows.filter((r) => r.mastery_status === 'not_started').length
 	});
 
@@ -90,7 +90,7 @@
 		switch (status) {
 			case 'mastered':
 				return 'bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100';
-			case 'in_progress':
+			case 'needs_review':
 				return 'bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900 dark:text-amber-100';
 			case 'not_started':
 				return 'bg-gray-100 text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300';
@@ -101,8 +101,8 @@
 		switch (status) {
 			case 'mastered':
 				return 'Maîtrisé';
-			case 'in_progress':
-				return 'En cours';
+			case 'needs_review':
+				return 'À retravailler';
 			case 'not_started':
 				return 'Pas commencé';
 		}
@@ -181,11 +181,11 @@
 
 		<Card.Root>
 			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">En cours</Card.Title>
+				<Card.Title class="text-sm font-medium">À retravailler</Card.Title>
 				<Clock class="h-4 w-4 text-amber-600 dark:text-amber-400" />
 			</Card.Header>
 			<Card.Content>
-				<div class="text-2xl font-bold">{stats.in_progress}</div>
+				<div class="text-2xl font-bold">{stats.needs_review}</div>
 			</Card.Content>
 		</Card.Root>
 

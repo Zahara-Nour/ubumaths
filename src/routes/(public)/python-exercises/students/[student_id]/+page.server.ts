@@ -18,7 +18,7 @@ import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 
-export type MasteryStatus = 'mastered' | 'in_progress' | 'not_started';
+export type MasteryStatus = 'mastered' | 'needs_review' | 'not_started';
 
 export interface ExerciseSummary {
 	id: string;
@@ -200,8 +200,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		const status: MasteryStatus =
 			mastery === 'mastered'
 				? 'mastered'
-				: subs.length > 0 || mastery === 'needs_review'
-					? 'in_progress'
+				: mastery === 'needs_review' || subs.length > 0
+					? 'needs_review'
 					: 'not_started';
 		const last = subs[0]; // submissions are desc-sorted globally; subs are pushed in same order
 		return {
