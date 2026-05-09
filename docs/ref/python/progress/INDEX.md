@@ -330,6 +330,19 @@ Remplacement des colonnes `tags TEXT[]` par tables de jonction N-N. `exercises.t
 
 ---
 
+## 2026-05-09 — Exercises Vue par élève cross-exos
+
+Route `/python-exercises/students/[student_id]` : vue d'ensemble pour un prof sur un élève donné, agrégeant tous les exos qui le concernent (exos qu'il a écrits ET sur lesquels l'élève a soumis, plus les exos qu'il a assignés directement ou via une classe contenant l'élève). Filtre niveau, tri colonnes, table avec lien drill-down, 4 cards stats globales. Lien "Voir tous ses exos" ajouté dans le header du drill-down `/results/[student_id]`.
+
+| Commit      | Description                                                          |
+| ----------- | -------------------------------------------------------------------- |
+| `3633a2072` | feat : route + server load (8 tests TDD) + UI cards + table sortable |
+| `1a6e7b6d5` | feat : bouton "Voir tous ses exos" sur drill-down                    |
+
+→ [python-exercises-per-student-progress.md](../../wip/python-exercises-per-student-progress.md)
+
+---
+
 ## 2026-05-09 — Exercises Drill-down soumissions élève
 
 Route `/python-exercises/[id]/results/[student_id]` : le prof clique sur un nom dans la table résultats et arrive sur la page détail de cet élève (code soumis + verdict détaillé pour chaque tentative). Auth = même garde-fous que `/results` + scope check additionnel (l'élève doit être dans une classe du prof OU assigné directement). Submissions complètes (LIMIT 50), affichage en cards expandables avec PythonEditor read-only et `ExerciseValidationResult` réutilisé.
