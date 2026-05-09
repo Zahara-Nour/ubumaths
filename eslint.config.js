@@ -14,7 +14,7 @@ const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 export default defineConfig(
 	includeIgnoreFile(gitignorePath),
 	{
-		ignores: ['externe/**']
+		ignores: ['externe/**', 'static/upsilon-simulator/**']
 	},
 	js.configs.recommended,
 	...ts.configs.recommended,

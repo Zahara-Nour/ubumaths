@@ -7,8 +7,8 @@
 		FileSpreadsheet,
 		BookOpen,
 		PenTool,
-		Terminal
-		// Calculator,
+		Terminal,
+		Calculator
 		// CalculatorIcon,
 		// LineChart
 	} from 'lucide-svelte';
@@ -29,6 +29,7 @@
 				icon: Terminal,
 				roles: ['student', 'teacher']
 			},
+			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
 			{
 				label: 'Worksheets',
 				href: '/dashboard/teacher/contenu/worksheets',
