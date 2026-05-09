@@ -73,7 +73,7 @@
 				Lancer le simulateur
 			</button>
 			<p class="text-xs text-muted-foreground">
-				Le simulateur charge environ 11 Mo. Premier chargement plus long, puis mis en cache par le
+				Le simulateur charge environ 5 Mo. Premier chargement plus long, puis mis en cache par le
 				navigateur.
 			</p>
 		</div>
@@ -96,7 +96,7 @@
 			</button>
 			<iframe
 				bind:this={iframeEl}
-				src="/upsilon-simulator/simulator.html"
+				src="/upsilon-simulator/simulator.html?v=2"
 				title="Calculatrice graphique Upsilon"
 				class="h-[85vh] w-full rounded-lg border-0"
 				allow="clipboard-write"
