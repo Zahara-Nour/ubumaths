@@ -273,7 +273,21 @@ Branchement de `POST /submit` à l'UI élève. Soumissions assignées **et** lib
 
 → [custom-comparator-progress.md](../../wip/custom-comparator-progress.md)
 
-**Reste à faire** : Bloc B (mastery automatique), Bloc C (dashboard), page édition, dashboard résultats teacher, tests API étendus, normalisation tags, custom comparator V2 (unit_test + server-side strict).
+---
+
+## 2026-05-09 — Exercises Tests API étendus (couverture 0% → ~90%)
+
+Couverture des 7 endpoints API principaux du module python-exercises (création, listing, lecture, modification, suppression, assignation, soumission, résultats). 52 nouveaux tests serveur ajoutés (en plus des 11 préexistants : 5 GET[id] + 6 my-submissions), pour un total de **63 tests** sur l'API. 2 bugs latents fixés en passant : `searchParams.get(absent)` retournait `null` au lieu de `undefined` attendu par Zod `.optional()` sur GET liste et GET results.
+
+| Commit      | Description                                                                            |
+| ----------- | -------------------------------------------------------------------------------------- |
+| `a52b72431` | test : POST + GET list (11 tests) + fix coercion null→undefined Zod                    |
+| `449885f04` | test : PUT + DELETE (13 nouveaux tests sur le fichier [id]/server.test.ts)             |
+| `6033e163b` | test : POST submit (9 tests, helper `mockCount` pour les queries `count: 'exact'`)     |
+| `523ace9a1` | test : POST assign (11 tests, dont scénarios class XOR student et duplication PG23505) |
+| `1153a04b7` | test : GET results (8 tests, dont agrégation best_attempt/latest_attempt)              |
+
+**Reste à faire** : Bloc B (mastery automatique), Bloc C (dashboard), page édition, dashboard résultats teacher, normalisation tags, custom comparator V2 (unit_test + server-side strict), couverture détaillée des filtres GET list.
 
 ---
 
@@ -295,7 +309,7 @@ Branchement de `POST /submit` à l'UI élève. Soumissions assignées **et** lib
 
 - **Commits totaux** : ~100+ (depuis 2025-12-04)
 - **Migrations DB** : 11 (4 initiales + 7 sur exercises Python : public anon, level, tags, seeds, output V2, public submissions)
-- **Tests** : 400+ (45 store + 36 output + 124+ debug + 25 library + 59 import/export + 50 output-compare + 22 Pyodide-réel exercises + 11 server tests exercises + autres)
+- **Tests** : 450+ (45 store + 36 output + 124+ debug + 25 library + 59 import/export + 50 output-compare + 22 Pyodide-réel exercises + 63 server tests exercises + autres)
 - **Exemples curés** : 100 (10 catégories)
 - **Composants Svelte** : ~28 (playground + notebook + debug + exercises)
 - **API endpoints** : ~22 (incluant `/my-submissions`, `/python-tags`)
