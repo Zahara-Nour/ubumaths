@@ -275,6 +275,16 @@ Branchement de `POST /submit` à l'UI élève. Soumissions assignées **et** lib
 
 ---
 
+## 2026-05-09 — Exercises Page d'édition (extraction ExerciseForm)
+
+Nouvelle route `/python-exercises/[id]/edit` (author-only). Pour la créer sans dupliquer 250 LOC, extraction du formulaire de `/new` en composant réutilisable `ExerciseForm.svelte` qui prend `initialForm`, `mode: 'create' | 'edit'`, `cancelHref?` et `onSubmit`. La page `/new` passe de 322 → 56 LOC. Bouton crayon "Modifier" ajouté sur `/mine`.
+
+| Commit      | Description                                                |
+| ----------- | ---------------------------------------------------------- |
+| `5a3ae80b9` | feat : ExerciseForm + /edit/[id] + bouton crayon sur /mine |
+
+---
+
 ## 2026-05-09 — Exercises Tests API étendus (couverture 0% → ~90%)
 
 Couverture des 7 endpoints API principaux du module python-exercises (création, listing, lecture, modification, suppression, assignation, soumission, résultats). 52 nouveaux tests serveur ajoutés (en plus des 11 préexistants : 5 GET[id] + 6 my-submissions), pour un total de **63 tests** sur l'API. 2 bugs latents fixés en passant : `searchParams.get(absent)` retournait `null` au lieu de `undefined` attendu par Zod `.optional()` sur GET liste et GET results.
@@ -293,15 +303,15 @@ Couverture des 7 endpoints API principaux du module python-exercises (création,
 
 ## Récap par thème
 
-| Thème              | Docs principaux                                                                                                          |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| Playground         | playground-progress, playground-improvements, phase1-4                                                                   |
-| Sub-systems        | autocomplete, lazy-loading, phase3-url-sharing, files                                                                    |
-| Refactor commun    | executor-pattern, worker-multicontext, shared-types, validation                                                          |
-| Notebook (12 docs) | notebook-complete, implementation, ui-\*, migration, routes, import, export, sharing, readonly, test-enhancement         |
-| Debugger           | debugger-progress (Phases 1-6, heap viz incluse)                                                                         |
-| Exercises          | exercises-api-progress, validation-implementation, output-v2, hidden-tests, free-practice-submissions, custom-comparator |
-| Examples Library   | examples-library-progress                                                                                                |
+| Thème              | Docs principaux                                                                                                                     |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Playground         | playground-progress, playground-improvements, phase1-4                                                                              |
+| Sub-systems        | autocomplete, lazy-loading, phase3-url-sharing, files                                                                               |
+| Refactor commun    | executor-pattern, worker-multicontext, shared-types, validation                                                                     |
+| Notebook (12 docs) | notebook-complete, implementation, ui-\*, migration, routes, import, export, sharing, readonly, test-enhancement                    |
+| Debugger           | debugger-progress (Phases 1-6, heap viz incluse)                                                                                    |
+| Exercises          | exercises-api-progress, validation-implementation, output-v2, hidden-tests, free-practice-submissions, custom-comparator, edit-page |
+| Examples Library   | examples-library-progress                                                                                                           |
 
 ---
 
@@ -311,7 +321,7 @@ Couverture des 7 endpoints API principaux du module python-exercises (création,
 - **Migrations DB** : 11 (4 initiales + 7 sur exercises Python : public anon, level, tags, seeds, output V2, public submissions)
 - **Tests** : 450+ (45 store + 36 output + 124+ debug + 25 library + 59 import/export + 50 output-compare + 22 Pyodide-réel exercises + 63 server tests exercises + autres)
 - **Exemples curés** : 100 (10 catégories)
-- **Composants Svelte** : ~28 (playground + notebook + debug + exercises)
+- **Composants Svelte** : ~29 (playground + notebook + debug + exercises, dont ExerciseForm extrait)
 - **API endpoints** : ~22 (incluant `/my-submissions`, `/python-tags`)
 - **Exercices seedés** : 5 (1 par stratégie + ast+output_tests)
 - **Stratégies de comparaison output** : 4 (`exact`, `text`, `numeric`, `custom`) avec 8 presets dans l'éditeur

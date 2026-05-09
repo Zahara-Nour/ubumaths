@@ -194,7 +194,7 @@ Système complet de débogage step-by-step avec **visualisation mémoire style P
 
 ## 4. Exercises
 
-**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher), `/python-exercises/[id]` (consultation publique avec soumission élève).
+**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher avec liens éditer/copier/supprimer), `/python-exercises/[id]` (consultation publique avec soumission élève), `/python-exercises/[id]/edit` (édition teacher author-only).
 
 Système d'exercices Python complet : création teacher, soumission élève (assignée + libre), validation côté client via Pyodide isolé, persistance des tentatives.
 
@@ -246,6 +246,7 @@ Sur la page consultation, un panneau historique repliable affiche les 10 derniè
 
 ### Composants UI
 
+- `ExerciseForm.svelte` — formulaire réutilisable création + édition (props `initialForm`, `mode: 'create' | 'edit'`, `cancelHref?`, `onSubmit`). Possède son propre executor Pyodide pour le bouton "Vérifier" et clone `initialForm` au mount pour éviter l'aliasing parent. Exporte `ExerciseFormState` + `emptyExerciseForm()` depuis son `<script module>`.
 - `ExerciseStrategyEditor.svelte` — éditeur teacher unifié pour les 3 stratégies (sélecteur preset + panneau personnalisé pour `output`, JSON drafts pour `unit_test`, requirements pour `ast`)
 - `ExerciseValidationResult.svelte` — affichage du résultat (banner + AST issues + détails `<details>` par test case, mode opaque pour les tests cachés)
 - Composants Pyodide partagés : `PythonEditor`, `PythonOutput`, `PlaygroundExecutor`
@@ -264,7 +265,6 @@ Sur la page consultation, un panneau historique repliable affiche les 10 derniè
 
 ### TODO
 
-- [ ] Page d'édition d'exercices existants (PUT existe, route `/edit` à créer)
 - [ ] Dashboard résultats teacher (API `/results` existe, UI manque)
 - [ ] Mastery automatique (Bloc B : statut `mastered`/`needs_review`/`not_worked` dérivé des soumissions)
 - [ ] Dashboard "Ma progression" élève (Bloc C, V2)
