@@ -285,8 +285,6 @@ Les colonnes `tags TEXT[]` ont été remplacées par des tables de jonction N-N 
 
 ### TODO
 
-- [ ] Dashboard "Ma progression" élève (V2)
-- [ ] Vue "par élève" (cross-exos pour un élève donné)
 - [ ] Export CSV des résultats
 - [ ] Realtime sur `python_exercise_submissions` (notification prof live)
 - [ ] Tests API : couverture détaillée des filtres `tags`/`is_public`/`author_id`/`level` sur GET list, transitions complexes (e.g. due_date passé)
@@ -437,7 +435,7 @@ Service Worker active : 0 réseau au 2e chargement.
 ## Lacunes connues / TODO
 
 - [ ] Breakpoints gutter CodeMirror (clic pour toggle, F9 raccourci)
-- [ ] Exercices : dashboard "Ma progression" élève (V2), export CSV, realtime
+- [ ] Exercices : export CSV, realtime, custom comparator V2
 - [ ] Drag-and-drop cellules notebook (boutons up/down seulement actuellement)
 - [ ] a11y SVG canvas debug : 25 warnings supprimés via `svelte-ignore`, vraie accessibilité clavier/screen-reader pas implémentée — voir `docs/ref/warning-svelte.md`
 - [ ] Tests composants notebook (existent pour utils import/export, pas pour les `.svelte`)
