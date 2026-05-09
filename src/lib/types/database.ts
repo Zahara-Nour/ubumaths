@@ -2894,6 +2894,36 @@ export type Database = {
 					}
 				];
 			};
+			exercise_tags: {
+				Row: {
+					exercise_id: string;
+					tag_id: string;
+				};
+				Insert: {
+					exercise_id: string;
+					tag_id: string;
+				};
+				Update: {
+					exercise_id?: string;
+					tag_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'exercise_tags_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'exercise_tags_tag_id_fkey';
+						columns: ['tag_id'];
+						isOneToOne: false;
+						referencedRelation: 'tags';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			exercise_templates: {
 				Row: {
 					created_at: string;
@@ -2970,7 +3000,6 @@ export type Database = {
 					shared: Json | null;
 					slug: string | null;
 					source: string | null;
-					tags: string[];
 					title: string | null;
 					topic: string | null;
 					updated_at: string;
@@ -2990,7 +3019,6 @@ export type Database = {
 					shared?: Json | null;
 					slug?: string | null;
 					source?: string | null;
-					tags?: string[];
 					title?: string | null;
 					topic?: string | null;
 					updated_at?: string;
@@ -3010,7 +3038,6 @@ export type Database = {
 					shared?: Json | null;
 					slug?: string | null;
 					source?: string | null;
-					tags?: string[];
 					title?: string | null;
 					topic?: string | null;
 					updated_at?: string;
@@ -7852,6 +7879,66 @@ export type Database = {
 					}
 				];
 			};
+			python_exercise_mastery: {
+				Row: {
+					exercise_id: string;
+					id: string;
+					status: string;
+					student_id: string;
+					updated_at: string;
+				};
+				Insert: {
+					exercise_id: string;
+					id?: string;
+					status: string;
+					student_id: string;
+					updated_at?: string;
+				};
+				Update: {
+					exercise_id?: string;
+					id?: string;
+					status?: string;
+					student_id?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'python_exercise_mastery_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'python_exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_mastery_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_mastery_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_mastery_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_mastery_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			python_exercise_submissions: {
 				Row: {
 					assignment_id: string | null;
@@ -7934,6 +8021,36 @@ export type Database = {
 					}
 				];
 			};
+			python_exercise_tags: {
+				Row: {
+					exercise_id: string;
+					tag_id: string;
+				};
+				Insert: {
+					exercise_id: string;
+					tag_id: string;
+				};
+				Update: {
+					exercise_id?: string;
+					tag_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'python_exercise_tags_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'python_exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_exercise_tags_tag_id_fkey';
+						columns: ['tag_id'];
+						isOneToOne: false;
+						referencedRelation: 'python_tags';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			python_exercises: {
 				Row: {
 					author_id: string;
@@ -7945,7 +8062,6 @@ export type Database = {
 					level: string;
 					solution_code: string;
 					starter_code: string | null;
-					tags: string[] | null;
 					title: string;
 					updated_at: string;
 					validation_config: Json;
@@ -7960,7 +8076,6 @@ export type Database = {
 					level?: string;
 					solution_code: string;
 					starter_code?: string | null;
-					tags?: string[] | null;
 					title: string;
 					updated_at?: string;
 					validation_config: Json;
@@ -7975,7 +8090,6 @@ export type Database = {
 					level?: string;
 					solution_code?: string;
 					starter_code?: string | null;
-					tags?: string[] | null;
 					title?: string;
 					updated_at?: string;
 					validation_config?: Json;
@@ -8277,6 +8391,27 @@ export type Database = {
 						referencedColumns: ['student_id'];
 					}
 				];
+			};
+			python_tags: {
+				Row: {
+					created_at: string;
+					created_by: string | null;
+					id: string;
+					name: string;
+				};
+				Insert: {
+					created_at?: string;
+					created_by?: string | null;
+					id?: string;
+					name: string;
+				};
+				Update: {
+					created_at?: string;
+					created_by?: string | null;
+					id?: string;
+					name?: string;
+				};
+				Relationships: [];
 			};
 			question_templates: {
 				Row: {
@@ -13582,7 +13717,6 @@ export type Database = {
 					assigned_to_type: string;
 					class_id: string;
 					class_name: string;
-					difficulty: string;
 					distribution_mode: string;
 					exercise_creator_id: string;
 					exercise_id: string;
@@ -13887,7 +14021,6 @@ export type Database = {
 					assigned_to_type: string;
 					class_id: string;
 					class_name: string;
-					difficulty: string;
 					distribution_mode: string;
 					exercise_creator_id: string;
 					exercise_id: string;
@@ -13987,7 +14120,6 @@ export type Database = {
 					assignment_id: string;
 					assignment_type: string;
 					completed_at: string;
-					difficulty: string;
 					distribution_mode: string;
 					exercise_id: string;
 					exercise_title: string;
@@ -14095,7 +14227,6 @@ export type Database = {
 					assigned_to_type: string;
 					class_id: string;
 					class_name: string;
-					difficulty: string;
 					distribution_mode: string;
 					exercise_creator_id: string;
 					exercise_id: string;
