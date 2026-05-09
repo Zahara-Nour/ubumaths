@@ -1,24 +1,22 @@
 /**
- * GET /api/python-exercises/[id] — Tests
- * =======================================
+ * GET / PUT / DELETE /api/python-exercises/[id] — Tests
+ * ======================================================
  *
- * Verifies the visibility / strip behavior of the GET endpoint after the
- * 20260508125858_python_exercises_public_anon migration:
- *
- *   - anon access to a public exercise → 200, solution_code stripped
- *   - any caller, RLS-filtered row (returns null) → 404
- *   - authenticated non-author + public → 200, solution_code stripped
- *   - authenticated author → 200, full exercise (solution_code included)
- *   - Supabase error → 500
- *
- * RLS does the row-visibility filtering; this endpoint is responsible for
- * stripping the `solution_code` column for any caller who is not the author.
+ * GET   — visibility/strip rules (RLS for row, strip solution_code for non-author).
+ * PUT   — author-only update with Zod validation.
+ * DELETE — author-only deletion (CASCADE handles assignments + submissions).
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect } from 'vitest';
-import { createMockSupabase, createMockLocals, mockSuccess, mockError } from '$tests/helpers';
+import {
+	createMockSupabase,
+	createMockLocals,
+	createMockRequest,
+	mockSuccess,
+	mockError
+} from '$tests/helpers';
 
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-446655440003';
 const AUTHOR_ID = '550e8400-e29b-41d4-a716-446655440001';
@@ -127,5 +125,188 @@ describe('GET /api/python-exercises/[id]', () => {
 				locals
 			} as any)
 		).rejects.toMatchObject({ status: 500 });
+	});
+});
+
+describe('PUT /api/python-exercises/[id]', () => {
+	const validUpdate = { title: 'Updated title' };
+
+	it('returns 401 when not authenticated', async () => {
+		const { PUT } = await import('./+server');
+		const supabase = createMockSupabase();
+		const locals = createMockLocals(undefined, supabase);
+		await expect(
+			PUT({
+				params: { id: EXERCISE_ID },
+				locals,
+				request: createMockRequest(validUpdate)
+			} as any)
+		).rejects.toMatchObject({ status: 401 });
+	});
+
+	it('returns 403 when caller is not a teacher', async () => {
+		const { PUT } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'student' }, 'single');
+		const locals = createMockLocals(OTHER_USER_ID, supabase);
+		await expect(
+			PUT({
+				params: { id: EXERCISE_ID },
+				locals,
+				request: createMockRequest(validUpdate)
+			} as any)
+		).rejects.toMatchObject({ status: 403 });
+	});
+
+	it('returns 404 when exercise does not exist', async () => {
+		const { PUT } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'teacher' }, 'single'); // profile
+		mockError(supabase, 'not found', 'single'); // existing exercise lookup
+		const locals = createMockLocals(AUTHOR_ID, supabase);
+		await expect(
+			PUT({
+				params: { id: EXERCISE_ID },
+				locals,
+				request: createMockRequest(validUpdate)
+			} as any)
+		).rejects.toMatchObject({ status: 404 });
+	});
+
+	it('returns 403 when caller is teacher but not the author', async () => {
+		const { PUT } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'teacher' }, 'single');
+		mockSuccess(supabase, { author_id: AUTHOR_ID }, 'single'); // belongs to someone else
+		const locals = createMockLocals(OTHER_USER_ID, supabase);
+		await expect(
+			PUT({
+				params: { id: EXERCISE_ID },
+				locals,
+				request: createMockRequest(validUpdate)
+			} as any)
+		).rejects.toMatchObject({ status: 403 });
+	});
+
+	it('returns 400 when payload is malformed (Zod fail)', async () => {
+		const { PUT } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'teacher' }, 'single');
+		mockSuccess(supabase, { author_id: AUTHOR_ID }, 'single');
+		const locals = createMockLocals(AUTHOR_ID, supabase);
+		// title is too long (> TITLE_MAX = 200)
+		const tooLong = { title: 'x'.repeat(300) };
+		await expect(
+			PUT({
+				params: { id: EXERCISE_ID },
+				locals,
+				request: createMockRequest(tooLong)
+			} as any)
+		).rejects.toMatchObject({ status: 400 });
+	});
+
+	it('updates and returns the new row when caller is the author', async () => {
+		const { PUT } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'teacher' }, 'single');
+		mockSuccess(supabase, { author_id: AUTHOR_ID }, 'single');
+		mockSuccess(supabase, { ...fullExercise, title: 'Updated title' }, 'single'); // update returning
+		const locals = createMockLocals(AUTHOR_ID, supabase);
+
+		const response = await PUT({
+			params: { id: EXERCISE_ID },
+			locals,
+			request: createMockRequest(validUpdate)
+		} as any);
+
+		expect(response.status).toBe(200);
+		const data = (await response.json()) as { exercise: { title: string } };
+		expect(data.exercise.title).toBe('Updated title');
+	});
+
+	it('returns 500 when Supabase update fails', async () => {
+		const { PUT } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'teacher' }, 'single');
+		mockSuccess(supabase, { author_id: AUTHOR_ID }, 'single');
+		mockError(supabase, 'db down', 'single');
+		const locals = createMockLocals(AUTHOR_ID, supabase);
+		await expect(
+			PUT({
+				params: { id: EXERCISE_ID },
+				locals,
+				request: createMockRequest(validUpdate)
+			} as any)
+		).rejects.toMatchObject({ status: 500 });
+	});
+});
+
+describe('DELETE /api/python-exercises/[id]', () => {
+	it('returns 401 when not authenticated', async () => {
+		const { DELETE } = await import('./+server');
+		const supabase = createMockSupabase();
+		const locals = createMockLocals(undefined, supabase);
+		await expect(DELETE({ params: { id: EXERCISE_ID }, locals } as any)).rejects.toMatchObject({
+			status: 401
+		});
+	});
+
+	it('returns 403 when caller is not a teacher', async () => {
+		const { DELETE } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'student' }, 'single');
+		const locals = createMockLocals(OTHER_USER_ID, supabase);
+		await expect(DELETE({ params: { id: EXERCISE_ID }, locals } as any)).rejects.toMatchObject({
+			status: 403
+		});
+	});
+
+	it('returns 404 when exercise does not exist', async () => {
+		const { DELETE } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'teacher' }, 'single');
+		mockError(supabase, 'not found', 'single');
+		const locals = createMockLocals(AUTHOR_ID, supabase);
+		await expect(DELETE({ params: { id: EXERCISE_ID }, locals } as any)).rejects.toMatchObject({
+			status: 404
+		});
+	});
+
+	it('returns 403 when teacher is not the author', async () => {
+		const { DELETE } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'teacher' }, 'single');
+		mockSuccess(supabase, { author_id: AUTHOR_ID }, 'single');
+		const locals = createMockLocals(OTHER_USER_ID, supabase);
+		await expect(DELETE({ params: { id: EXERCISE_ID }, locals } as any)).rejects.toMatchObject({
+			status: 403
+		});
+	});
+
+	it('deletes and returns success when caller is the author', async () => {
+		const { DELETE } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'teacher' }, 'single');
+		mockSuccess(supabase, { author_id: AUTHOR_ID }, 'single');
+		// the actual delete query is awaited implicitly → 'then'
+		mockSuccess(supabase, null, 'then');
+		const locals = createMockLocals(AUTHOR_ID, supabase);
+
+		const response = await DELETE({ params: { id: EXERCISE_ID }, locals } as any);
+		expect(response.status).toBe(200);
+		const data = (await response.json()) as { success: boolean };
+		expect(data.success).toBe(true);
+	});
+
+	it('returns 500 when delete fails', async () => {
+		const { DELETE } = await import('./+server');
+		const supabase = createMockSupabase();
+		mockSuccess(supabase, { role: 'teacher' }, 'single');
+		mockSuccess(supabase, { author_id: AUTHOR_ID }, 'single');
+		mockError(supabase, 'db error', 'then');
+		const locals = createMockLocals(AUTHOR_ID, supabase);
+		await expect(DELETE({ params: { id: EXERCISE_ID }, locals } as any)).rejects.toMatchObject({
+			status: 500
+		});
 	});
 });
