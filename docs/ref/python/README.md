@@ -194,7 +194,7 @@ Système complet de débogage step-by-step avec **visualisation mémoire style P
 
 ## 4. Exercises
 
-**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher avec liens éditer/copier/supprimer), `/python-exercises/[id]` (consultation publique avec soumission élève), `/python-exercises/[id]/edit` (édition teacher author-only), `/python-exercises/[id]/results` (suivi élèves teacher : auteur OU prof ayant assigné), `/python-exercises/[id]/results/[student_id]` (drill-down sur les soumissions d'un élève précis : code + verdict détaillé), `/python-exercises/students/[student_id]` (vue cross-exos pour un élève donné : tous les exos pertinents pour ce prof).
+**Routes** : `/python-exercises` (landing public), `/python-exercises/new` (création teacher), `/python-exercises/mine` (mes exos teacher avec liens éditer/copier/supprimer), `/python-exercises/[id]` (consultation publique avec soumission élève), `/python-exercises/[id]/edit` (édition teacher author-only), `/python-exercises/[id]/results` (suivi élèves teacher : auteur OU prof ayant assigné), `/python-exercises/[id]/results/[student_id]` (drill-down sur les soumissions d'un élève précis : code + verdict détaillé), `/python-exercises/students/[student_id]` (vue cross-exos pour un élève donné : tous les exos pertinents pour ce prof), `/python-exercises/my-progress` (dashboard élève : tous les exos sur lesquels j'ai une trace — submission, mastery, ou assignment).
 
 Système d'exercices Python complet : création teacher, soumission élève (assignée + libre), validation côté client via Pyodide isolé, persistance des tentatives.
 
