@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { PythonExerciseStudentView } from '$lib/types/python-exercises';
+import type { PythonExerciseStudentView, PythonMasteryStatus } from '$lib/types/python-exercises';
 
 interface SubmissionSummary {
 	id: string;
@@ -40,10 +40,17 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 				.catch(() => null)
 		: Promise.resolve(null);
 
-	const [exerciseRes, submissionsPayload, role] = await Promise.all([
+	const masteryFetch: Promise<{ status: PythonMasteryStatus | null }> = locals.user
+		? fetch(`/api/python-exercises/${params.id}/mastery`)
+				.then((r) => (r.ok ? r.json() : { status: null }))
+				.catch(() => ({ status: null }))
+		: Promise.resolve({ status: null });
+
+	const [exerciseRes, submissionsPayload, role, masteryPayload] = await Promise.all([
 		exerciseFetch,
 		submissionsFetch,
-		profileFetch
+		profileFetch,
+		masteryFetch
 	]);
 
 	if (exerciseRes.status === 404) {
@@ -59,6 +66,7 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 		exercise,
 		submissions: submissionsPayload.submissions,
 		canSubmit: role === 'student',
-		isAuthenticated: Boolean(locals.user)
+		isAuthenticated: Boolean(locals.user),
+		masteryStatus: role === 'student' ? masteryPayload.status : null
 	};
 };
