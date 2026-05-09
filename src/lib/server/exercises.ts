@@ -331,13 +331,20 @@ export async function createExercise(
 		return { data: null, error };
 	}
 
-	// Attach tags via the junction (auto-creates missing catalog rows)
+	// Attach tags via the junction (auto-creates missing catalog rows).
+	// If this fails, rollback by deleting the orphan exercise — otherwise the row
+	// stays in the DB without its declared tags, which is silently inconsistent.
 	if (tagNames.length > 0 && data) {
 		try {
 			const tagIds = await resolveTagsToIds(supabase, tagNames, 'tags');
 			await syncExerciseTagJunction(supabase, data.id, tagIds, 'exercise_tags');
 		} catch (e) {
-			console.error('Failed to attach tags to new exercise:', e);
+			console.error('Failed to attach tags to new exercise — rolling back:', e);
+			await supabase.from('exercises').delete().eq('id', data.id);
+			return {
+				data: null,
+				error: e instanceof Error ? e : new Error('Failed to attach tags to exercise')
+			};
 		}
 	}
 
@@ -432,12 +439,19 @@ export async function updateExercise(
 	}
 
 	// Sync tags via the junction if the caller supplied any.
+	// On failure we cannot rollback the row update cleanly, so we surface the
+	// error to the caller and let them retry — better than silently storing the
+	// row with stale junction state.
 	if (tagsUpdate !== undefined && data) {
 		try {
 			const tagIds = await resolveTagsToIds(supabase, tagsUpdate, 'tags');
 			await syncExerciseTagJunction(supabase, data.id, tagIds, 'exercise_tags');
 		} catch (e) {
 			console.error('Failed to sync tags on update:', e);
+			return {
+				data: null,
+				error: e instanceof Error ? e : new Error('Failed to sync tags for exercise')
+			};
 		}
 	}
 

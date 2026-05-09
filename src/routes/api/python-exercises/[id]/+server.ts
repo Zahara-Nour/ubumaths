@@ -154,13 +154,16 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, "Erreur lors de la mise à jour de l'exercice");
 	}
 
-	// Sync tags via the junction if the caller sent any
+	// Sync tags via the junction if the caller sent any.
+	// On failure we surface a 500 — the row update has already been committed,
+	// but reporting success while the junction is stale would lie to the caller.
 	if (tagsUpdate !== undefined) {
 		try {
 			const tagIds = await resolveTagsToIds(supabase, tagsUpdate, 'python_tags');
 			await syncExerciseTagJunction(supabase, exerciseId, tagIds, 'python_exercise_tags');
 		} catch (e) {
 			console.error('Failed to sync tags on update:', e);
+			throw error(500, 'Erreur lors de la synchronisation des tags');
 		}
 	}
 
