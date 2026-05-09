@@ -64,13 +64,25 @@ Contenu (en transaction atomique) :
 - `npx eslint <fichiers modifiés>` — 0 problème.
 - Tests serveur : 90/90 verts.
 
-**Vérification manuelle après `pnpm db:migrate`** :
+**Étapes obligatoires après `pnpm db:migrate`** :
 
-1. `SELECT COUNT(*) FROM exercise_tags` et `SELECT COUNT(*) FROM python_exercise_tags` (devraient avoir au moins les associations des seeds).
-2. `\d exercises` et `\d python_exercises` ne doivent plus contenir `tags`.
-3. Naviguer `/python-exercises/[id]` d'un exo seedé → tags affichés correctement.
-4. Créer un nouvel exo avec un tag inexistant → vérifier en DB : nouvelle row dans `python_tags`, association dans `python_exercise_tags`.
-5. Filtrer `/python-exercises?tags=for` → liste cohérente.
+1. `pnpm db:types` — régénère `src/lib/types/database.ts` (la colonne `tags` y est encore listée tant que ce n'est pas fait, ce qui peut masquer des erreurs TS).
+2. `SELECT COUNT(*) FROM exercise_tags` et `SELECT COUNT(*) FROM python_exercise_tags` (devraient avoir au moins les associations des seeds).
+3. `\d exercises` et `\d python_exercises` ne doivent plus contenir `tags`.
+4. Naviguer `/python-exercises/[id]` d'un exo seedé → tags affichés correctement.
+5. Créer un nouvel exo avec un tag inexistant → vérifier en DB : nouvelle row dans `python_tags`, association dans `python_exercise_tags`.
+6. Filtrer `/python-exercises?tags=for` → liste cohérente.
+
+## Phase 5 — Code review follow-up ✅
+
+Issues identifiées par le code review (commit `5468f5e18` + ce commit) :
+
+- **Issue 1 (critique) — fonctions SQL cassées par DROP COLUMN**. 4 fonctions SECURITY DEFINER (`get_student_exercises`, `get_my_exercise_assignments`, `get_teacher_exercise_assignments`, `get_all_exercise_assignments`) référençaient encore `e.tags`. Migration `20260509104544_fix_exercise_functions_after_tag_normalization.sql` les rebuild avec une lateral subquery sur `exercise_tags + tags`. Commit `5468f5e18`.
+- **Issue 3 — échec silencieux de `syncExerciseTagJunction`**. Le bloc `try { ... } catch (e) { console.error }` laissait l'exo créé/mis à jour avec une jonction incohérente, et l'API mentait dans la réponse. Désormais :
+  - `createExercise` (math) + POST Python : rollback (delete l'orphan) + erreur 500.
+  - `updateExercise` (math) + PUT Python : erreur 500 (l'update du row est déjà commit, mais on évite de mentir).
+- **Issue 8 — pas de tests sur `tags-resolution.ts`**. Ajout de `src/lib/server/tags-resolution.test.ts` (19 tests) couvrant les 4 fonctions exportées (input vide, all-existing, auto-create, race condition, dedup, terminaux d'erreur).
+- **Issue 9 — `pnpm db:types` non mentionné**. Ajouté en tête de la liste de vérification post-migration ci-dessus.
 
 ## Documents produits
 
