@@ -14,6 +14,11 @@ import {
 } from '$lib/server/validation/python-exercises';
 import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
 import type { Database } from '$lib/types/database';
+import {
+	fetchExerciseIdsByAnyTag,
+	resolveTagsToIds,
+	syncExerciseTagJunction
+} from '$lib/server/tags-resolution';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -70,8 +75,29 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	const { level, tags, is_public, author_id, limit, offset } = queryValidation.data;
 
-	// Build query based on role
-	let query = supabase.from('python_exercises').select('*', { count: 'exact' });
+	// Pre-resolve tag filter to a list of exercise_ids via the junction.
+	// (Replaces the previous .overlaps('tags', tags) on the array column.)
+	let tagFilteredIds: string[] | null = null;
+	if (tags && tags.length > 0) {
+		tagFilteredIds = await fetchExerciseIdsByAnyTag(
+			supabase,
+			tags,
+			'python_exercise_tags',
+			'python_tags'
+		);
+		if (tagFilteredIds.length === 0) {
+			return json({
+				exercises: [],
+				pagination: { limit, offset, total: 0 }
+			});
+		}
+	}
+
+	// Build query based on role.
+	// We pull tag names via the junction in the same SELECT for the response shape.
+	let query = supabase
+		.from('python_exercises')
+		.select('*, python_exercise_tags(python_tags(name))', { count: 'exact' });
 
 	if (profile.role === 'teacher') {
 		// Teachers see their exercises + public exercises
@@ -87,8 +113,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		if (level) {
 			query = query.eq('level', level);
 		}
-		if (tags && tags.length > 0) {
-			query = query.overlaps('tags', tags);
+		if (tagFilteredIds !== null) {
+			query = query.in('id', tagFilteredIds);
 		}
 		if (is_public !== undefined) {
 			query = query.eq('is_public', is_public);
@@ -120,14 +146,22 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			});
 		}
 
-		query = query.in('id', exerciseIds);
+		// Intersect assigned exercises with tag-filtered ids if applicable
+		const finalIds =
+			tagFilteredIds !== null
+				? exerciseIds.filter((id) => tagFilteredIds!.includes(id))
+				: exerciseIds;
+		if (finalIds.length === 0) {
+			return json({
+				exercises: [],
+				pagination: { limit, offset, total: 0 }
+			});
+		}
+		query = query.in('id', finalIds);
 
 		// Apply filters
 		if (level) {
 			query = query.eq('level', level);
-		}
-		if (tags && tags.length > 0) {
-			query = query.overlaps('tags', tags);
 		}
 	} else {
 		throw error(403, 'Rôle utilisateur non autorisé');
@@ -144,12 +178,33 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(500, 'Erreur lors de la récupération des exercices');
 	}
 
+	// Reshape: flatten the nested junction (python_exercise_tags > python_tags)
+	// back to a plain `tags: string[]` so the API contract is unchanged.
+	const flattened = (exercises ?? []).map((row) => {
+		const nested = (row as Record<string, unknown>).python_exercise_tags;
+		const tagNames: string[] = Array.isArray(nested)
+			? nested
+					.map((j) => {
+						const tag = (j as Record<string, unknown>).python_tags;
+						return tag && typeof tag === 'object' && 'name' in tag
+							? (tag as { name: string }).name
+							: null;
+					})
+					.filter((n): n is string => Boolean(n))
+					.sort()
+			: [];
+		// Strip the nested key, replace with flat array
+		const { python_exercise_tags: _stripped, ...rest } = row as Record<string, unknown>;
+		return { ...(rest as Record<string, unknown>), tags: tagNames };
+	});
+
 	// For students, exclude solution_code
-	let responseData: (PythonExercise | PythonExerciseStudentView)[] = exercises || [];
+	let responseData: (PythonExercise | PythonExerciseStudentView)[] =
+		flattened as unknown as PythonExercise[];
 	if (profile.role === 'student') {
-		responseData = (exercises || []).map((ex) => {
-			const { solution_code: _solution_code, ...rest } = ex;
-			return rest as PythonExerciseStudentView;
+		responseData = flattened.map((ex) => {
+			const { solution_code: _solution_code, ...rest } = ex as Record<string, unknown>;
+			return rest as unknown as PythonExerciseStudentView;
 		});
 	}
 
@@ -202,7 +257,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	const data = validation.data as CreateExerciseInput;
 
-	// Insert exercise
+	// Insert exercise (without tags — handled separately via the junction)
 	const { data: exercise, error: insertError } = await supabase
 		.from('python_exercises')
 		.insert({
@@ -213,7 +268,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			solution_code: data.solution_code,
 			validation_config: data.validation_config,
 			level: data.level,
-			tags: data.tags,
 			author_id: user.id,
 			is_public: data.is_public
 		})
@@ -225,7 +279,18 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(500, "Erreur lors de la création de l'exercice");
 	}
 
-	return json({ exercise }, { status: 201 });
+	// Resolve tag names to ids (auto-create missing) and populate the junction
+	if (data.tags && data.tags.length > 0) {
+		try {
+			const tagIds = await resolveTagsToIds(supabase, data.tags, 'python_tags');
+			await syncExerciseTagJunction(supabase, exercise.id, tagIds, 'python_exercise_tags');
+		} catch (e) {
+			console.error('Failed to attach tags to new exercise:', e);
+			// The exercise was created — return it but log the tag failure.
+		}
+	}
+
+	return json({ exercise: { ...exercise, tags: data.tags ?? [] } }, { status: 201 });
 };
 
 /**

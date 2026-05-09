@@ -13,6 +13,11 @@ import {
 } from '$lib/server/validation/python-exercises';
 import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/python-exercises';
 import { validateUuidParam } from '$lib/server/validation/params';
+import {
+	fetchTagNamesForExercise,
+	resolveTagsToIds,
+	syncExerciseTagJunction
+} from '$lib/server/tags-resolution';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -54,13 +59,24 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Exercice introuvable');
 	}
 
+	// Fetch tags from the junction. RLS on the junction allows SELECT for everyone,
+	// so this works for anon, students, and the author alike.
+	const tags = await fetchTagNamesForExercise(
+		supabase,
+		exerciseId,
+		'python_exercise_tags',
+		'python_tags'
+	).catch(() => []);
+
+	const exerciseWithTags = { ...exercise, tags };
+
 	// Author sees full exercise (including solution_code); everyone else stripped.
 	if (user && exercise.author_id === user.id) {
-		return json({ exercise: exercise as PythonExercise });
+		return json({ exercise: exerciseWithTags as unknown as PythonExercise });
 	}
 
-	const { solution_code: _solution_code, ...studentView } = exercise;
-	return json({ exercise: studentView as PythonExerciseStudentView });
+	const { solution_code: _solution_code, ...studentView } = exerciseWithTags;
+	return json({ exercise: studentView as unknown as PythonExerciseStudentView });
 };
 
 /**
@@ -117,9 +133,15 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, `Validation échouée: ${errorMsg}`);
 	}
 
-	const { id: _id, ...updateData } = validation.data as UpdateExerciseInput;
+	const {
+		id: _id,
+		tags: tagsUpdate,
+		...updateData
+	} = validation.data as UpdateExerciseInput & {
+		tags?: string[];
+	};
 
-	// Update exercise
+	// Update exercise (tags are handled separately via the junction)
 	const { data: updatedExercise, error: updateError } = await supabase
 		.from('python_exercises')
 		.update(updateData)
@@ -132,7 +154,25 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, "Erreur lors de la mise à jour de l'exercice");
 	}
 
-	return json({ exercise: updatedExercise });
+	// Sync tags via the junction if the caller sent any
+	if (tagsUpdate !== undefined) {
+		try {
+			const tagIds = await resolveTagsToIds(supabase, tagsUpdate, 'python_tags');
+			await syncExerciseTagJunction(supabase, exerciseId, tagIds, 'python_exercise_tags');
+		} catch (e) {
+			console.error('Failed to sync tags on update:', e);
+		}
+	}
+
+	// Return exercise with current tag set
+	const tags = await fetchTagNamesForExercise(
+		supabase,
+		exerciseId,
+		'python_exercise_tags',
+		'python_tags'
+	).catch(() => []);
+
+	return json({ exercise: { ...updatedExercise, tags } });
 };
 
 /**

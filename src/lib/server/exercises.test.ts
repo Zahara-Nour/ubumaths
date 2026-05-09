@@ -7,7 +7,7 @@
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, type Mock } from 'vitest';
 import {
 	getExercises,
 	getExercise,
@@ -18,6 +18,17 @@ import {
 } from './exercises';
 import type { Database } from '$lib/types/database';
 
+// Stub the tag-resolution helpers so tests don't need to mock junction queries.
+// Individual tests that need specific return values can override via mockResolvedValueOnce.
+vi.mock('$lib/server/tags-resolution', () => ({
+	resolveTagsToIds: vi.fn().mockResolvedValue([]),
+	syncExerciseTagJunction: vi.fn().mockResolvedValue(undefined),
+	fetchTagNamesForExercise: vi.fn().mockResolvedValue([]),
+	fetchExerciseIdsByAnyTag: vi.fn().mockResolvedValue([])
+}));
+
+import { fetchExerciseIdsByAnyTag, fetchTagNamesForExercise } from '$lib/server/tags-resolution';
+
 type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
 
 // Mock Supabase client
@@ -25,15 +36,20 @@ const createMockSupabase = () => {
 	const mockQuery = {
 		select: vi.fn().mockReturnThis(),
 		eq: vi.fn().mockReturnThis(),
-		contains: vi.fn().mockReturnThis(),
+		not: vi.fn().mockReturnThis(),
+		neq: vi.fn().mockReturnThis(),
+		in: vi.fn().mockReturnThis(),
+		or: vi.fn().mockReturnThis(),
 		overlaps: vi.fn().mockReturnThis(),
 		textSearch: vi.fn().mockReturnThis(),
 		order: vi.fn().mockReturnThis(),
 		range: vi.fn().mockReturnThis(),
 		single: vi.fn().mockReturnThis(),
+		maybeSingle: vi.fn().mockReturnThis(),
 		insert: vi.fn().mockReturnThis(),
 		update: vi.fn().mockReturnThis(),
-		delete: vi.fn().mockReturnThis()
+		delete: vi.fn().mockReturnThis(),
+		upsert: vi.fn().mockReturnThis()
 	};
 
 	return {
@@ -92,28 +108,33 @@ describe('getExercises', () => {
 
 	it('should apply category filter', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		mockSupabase.__mockQuery.single.mockResolvedValue({ data: [], error: null, count: 0 });
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null, count: 0 });
 
 		await getExercises(mockSupabase, { category: 'automatisme' });
 
 		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('category', 'automatisme');
 	});
 
-	it('should apply tags filter', async () => {
+	it('should apply tags filter via junction (fetchExerciseIdsByAnyTag)', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		mockSupabase.__mockQuery.single.mockResolvedValue({ data: [], error: null, count: 0 });
+		// fetchExerciseIdsByAnyTag returns matching ids; then .in() restricts the query.
+		(fetchExerciseIdsByAnyTag as Mock).mockResolvedValueOnce(['ex-1', 'ex-2']);
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null, count: 0 });
 
 		await getExercises(mockSupabase, { tags: ['algèbre', 'équations'] });
 
-		expect(mockSupabase.__mockQuery.contains).toHaveBeenCalledWith('tags', [
-			'algèbre',
-			'équations'
-		]);
+		expect(fetchExerciseIdsByAnyTag).toHaveBeenCalledWith(
+			mockSupabase,
+			['algèbre', 'équations'],
+			'exercise_tags',
+			'tags'
+		);
+		expect(mockSupabase.__mockQuery.in).toHaveBeenCalledWith('id', ['ex-1', 'ex-2']);
 	});
 
 	it('should apply grades filter with overlaps', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		mockSupabase.__mockQuery.single.mockResolvedValue({ data: [], error: null, count: 0 });
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null, count: 0 });
 
 		await getExercises(mockSupabase, { grades: ['3', '2'] });
 
@@ -134,7 +155,7 @@ describe('getExercises', () => {
 
 	it('should enforce max limit of 100', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		mockSupabase.__mockQuery.single.mockResolvedValue({ data: [], error: null, count: 0 });
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null, count: 0 });
 
 		const result = await getExercises(mockSupabase, {}, { page: 1, limit: 200 });
 
@@ -144,14 +165,14 @@ describe('getExercises', () => {
 });
 
 describe('getExercise', () => {
-	it('should fetch a single exercise by ID', async () => {
+	it('should fetch a single exercise by ID and include tags from junction', async () => {
 		const mockSupabase = createMockSupabase() as any;
 		const mockExercise: ExerciseRow = {
 			id: 'ex-123',
 			title: 'Test Exercise',
 			source: 'Test Book',
 			category: 'automatisme',
-			tags: ['algèbre'],
+			tags: [], // column is dropped in DB; value from junction via fetchTagNamesForExercise
 			grades: ['3'],
 			topic: 'Algèbre',
 			created_at: '2024-01-01T00:00:00Z',
@@ -174,12 +195,15 @@ describe('getExercise', () => {
 		};
 
 		mockSupabase.__mockQuery.single.mockResolvedValue({ data: mockExercise, error: null });
+		// Simulate the junction returning a resolved tag name.
+		(fetchTagNamesForExercise as Mock).mockResolvedValueOnce(['algèbre']);
 
 		const result = await getExercise(mockSupabase, 'ex-123');
 
 		expect(mockSupabase.from).toHaveBeenCalledWith('exercises');
 		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('id', 'ex-123');
-		expect(result.data).toEqual(mockExercise);
+		// Tags come from the junction helper, not the row column.
+		expect(result.data?.tags).toEqual(['algèbre']);
 		expect(result.error).toBeNull();
 	});
 
@@ -244,16 +268,18 @@ describe('createExercise', () => {
 		const result = await createExercise(mockSupabase, newExercise, 'user-123');
 
 		expect(mockSupabase.from).toHaveBeenCalledWith('exercises');
+		// `tags` is stripped from the INSERT — it goes through the junction instead.
 		expect(mockSupabase.__mockQuery.insert).toHaveBeenCalledWith({
-			...newExercise,
+			category: newExercise.category,
 			distribution_mode: 'on_demand', // Default value
 			variables: undefined, // Empty variables array becomes undefined
 			created_by: 'user-123',
 			slug: expect.any(String), // Auto-generated slug
 			shared: undefined, // Passed through (JSONB)
-			variations: undefined // Passed through (JSONB)
+			variations: newExercise.variations // Passed through (JSONB)
 		});
-		expect(result.data).toEqual(createdExercise);
+		// Result carries `tags` from the original input (merged in after junction sync).
+		expect(result.data).toMatchObject({ id: createdExercise.id, tags: newExercise.tags });
 		expect(result.error).toBeNull();
 	});
 });
@@ -302,7 +328,7 @@ describe('updateExercise', () => {
 
 		expect(result.error).toBeNull();
 		expect(result.data?.title).toBe('Updated Title');
-		expect(result.data?.category).toBe(3);
+		expect(result.data?.category).toBe('automatisme');
 	});
 
 	it('should reject update from non-owner', async () => {
@@ -436,7 +462,7 @@ describe('deleteExercise', () => {
 describe('getTeacherExercises', () => {
 	it('should fetch exercises for a specific teacher', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		mockSupabase.__mockQuery.single.mockResolvedValue({ data: [], error: null, count: 0 });
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null, count: 0 });
 
 		await getTeacherExercises(mockSupabase, 'teacher-123');
 
@@ -444,9 +470,10 @@ describe('getTeacherExercises', () => {
 		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('created_by', 'teacher-123');
 	});
 
-	it('should combine teacher filter with other filters', async () => {
+	it('should combine teacher filter with other filters, using junction for tags', async () => {
 		const mockSupabase = createMockSupabase() as any;
-		mockSupabase.__mockQuery.single.mockResolvedValue({ data: [], error: null, count: 0 });
+		(fetchExerciseIdsByAnyTag as Mock).mockResolvedValueOnce(['ex-1']);
+		mockSupabase.__mockQuery.range.mockResolvedValue({ data: [], error: null, count: 0 });
 
 		await getTeacherExercises(mockSupabase, 'teacher-123', {
 			category: 'automatisme',
@@ -455,6 +482,13 @@ describe('getTeacherExercises', () => {
 
 		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('created_by', 'teacher-123');
 		expect(mockSupabase.__mockQuery.eq).toHaveBeenCalledWith('category', 'automatisme');
-		expect(mockSupabase.__mockQuery.contains).toHaveBeenCalledWith('tags', ['algèbre']);
+		// Tags are resolved via the junction, not via .contains() on a column.
+		expect(fetchExerciseIdsByAnyTag).toHaveBeenCalledWith(
+			mockSupabase,
+			['algèbre'],
+			'exercise_tags',
+			'tags'
+		);
+		expect(mockSupabase.__mockQuery.in).toHaveBeenCalledWith('id', ['ex-1']);
 	});
 });
