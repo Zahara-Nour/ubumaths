@@ -76,10 +76,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		throw error(403, "Vous n'avez pas accès aux résultats de cet exercice");
 	}
 
-	// Validate query parameters
+	// Validate query parameters. Coerce null → undefined for .optional() fields.
 	const queryValidation = resultsQuerySchema.safeParse({
-		class_id: url.searchParams.get('class_id'),
-		student_id: url.searchParams.get('student_id')
+		class_id: url.searchParams.get('class_id') ?? undefined,
+		student_id: url.searchParams.get('student_id') ?? undefined
 	});
 
 	if (!queryValidation.success) {
