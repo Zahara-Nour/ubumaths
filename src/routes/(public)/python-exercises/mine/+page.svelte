@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import { ExternalLink, Trash2, Plus, Copy } from 'lucide-svelte';
+	import { ExternalLink, Trash2, Plus, Copy, Pencil } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	let { data } = $props();
@@ -136,6 +136,15 @@
 								title="Ouvrir l'exercice"
 							>
 								<ExternalLink class="h-4 w-4" />
+							</Button>
+							<Button
+								variant="ghost"
+								size="sm"
+								href="/python-exercises/{exercise.id}/edit"
+								aria-label="Modifier l'exercice"
+								title="Modifier l'exercice"
+							>
+								<Pencil class="h-4 w-4" />
 							</Button>
 							<Button
 								variant="ghost"
