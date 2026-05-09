@@ -268,7 +268,7 @@ Sur la page consultation, un panneau historique repliable affiche les 10 derniè
 - [ ] Dashboard résultats teacher (API `/results` existe, UI manque)
 - [ ] Mastery automatique (Bloc B : statut `mastered`/`needs_review`/`not_worked` dérivé des soumissions)
 - [ ] Dashboard "Ma progression" élève (Bloc C, V2)
-- [ ] Tests API plus larges (POST/PUT/DELETE/assign : 0% aujourd'hui ; GET et `/my-submissions` couverts à 11 tests)
+- [ ] Tests API : couverture étendue (63 tests sur tous les endpoints principaux). Reste à faire : couverture détaillée des filtres `tags`/`is_public`/`author_id`/`level` sur GET list, et transitions complexes (e.g. due_date passé)
 - [ ] Normaliser `tags` vers table de jonction (cohérent avec exos math, gros chantier)
 - [ ] Custom comparator V2 : étendre à `unit_test`, server-side validation pour tests vraiment cachés
 
