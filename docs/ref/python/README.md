@@ -228,9 +228,9 @@ Statut sticky `mastered` (au moins 1 soumission correcte) ou `needs_review` (a e
 
 ### Page résultats prof (Bloc C)
 
-Route `/python-exercises/[id]/results` accessible aux profs auteur **OU** ayant assigné cet exo (le `eq('assigned_by', user.id)` est le seul gate authz côté load). Compose 4 sources DB en `StudentRow[]` : assignments + class_members + submissions + mastery. UI : 4 cards stats (élèves concernés / mastered / in_progress / not_started + % maîtrise), filtre par classe (MySelect, visible si >1 classe), table sortable par nom / tentatives / dernière activité, badges colorés.
+Route `/python-exercises/[id]/results` accessible aux profs auteur **OU** ayant assigné cet exo (le `eq('assigned_by', user.id)` est le seul gate authz côté load). Compose 4 sources DB en `StudentRow[]` : assignments + class_members + submissions + mastery. UI : 4 cards stats (élèves concernés / mastered / needs_review / not_started + % maîtrise), filtre par classe (MySelect, visible si >1 classe), table sortable par nom / tentatives / dernière activité, badges colorés.
 
-Mapping mastery applicatif à 3 valeurs : `mastered` / `in_progress` / `not_started` (le `needs_review` DB collapsé en `in_progress`, documenté inline). Bouton "Voir les résultats" sur la page consultation, visible uniquement aux profs avec accès (`canViewResults` calculé au load).
+Mapping mastery à 3 valeurs alignées sur la DB : `mastered` (sticky DB) / `needs_review` ("À retravailler", DB row OR submissions sans row) / `not_started` (rien). Mêmes mots et mêmes couleurs côté élève (page consultation) que côté prof. Bouton "Voir les résultats" sur la page consultation, visible uniquement aux profs avec accès (`canViewResults` calculé au load).
 
 ### Tags normalisation (math + Python)
 
@@ -289,7 +289,6 @@ Les colonnes `tags TEXT[]` ont été remplacées par des tables de jonction N-N 
 - [ ] Vue "par élève" (cross-exos pour un élève donné)
 - [ ] Export CSV des résultats
 - [ ] Realtime sur `python_exercise_submissions` (notification prof live)
-- [ ] Distinction visible `needs_review` vs `in_progress` sur la page résultats (4e statut, V2)
 - [ ] Tests API : couverture détaillée des filtres `tags`/`is_public`/`author_id`/`level` sur GET list, transitions complexes (e.g. due_date passé)
 - [ ] Custom comparator V2 : étendre à `unit_test`, server-side validation pour tests vraiment cachés
 
