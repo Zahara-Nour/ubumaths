@@ -62,11 +62,31 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 
 	const { exercise } = (await exerciseRes.json()) as { exercise: PythonExerciseStudentView };
 
+	// Show the "Voir les résultats" link only to teachers who can actually load
+	// the page: author OR has at least one assignment they created for this exo.
+	// Mirrors the authz of /python-exercises/[id]/results/+page.server.ts.
+	let canViewResults = false;
+	if (role === 'teacher' && locals.user) {
+		const isAuthor = (exercise as { author_id?: string }).author_id === locals.user.id;
+		if (isAuthor) {
+			canViewResults = true;
+		} else {
+			const { data: ownAssignments } = await locals.supabase
+				.from('python_exercise_assignments')
+				.select('id')
+				.eq('exercise_id', params.id)
+				.eq('assigned_by', locals.user.id)
+				.limit(1);
+			canViewResults = Boolean(ownAssignments && ownAssignments.length > 0);
+		}
+	}
+
 	return {
 		exercise,
 		submissions: submissionsPayload.submissions,
 		canSubmit: role === 'student',
 		isAuthenticated: Boolean(locals.user),
-		masteryStatus: role === 'student' ? masteryPayload.status : null
+		masteryStatus: role === 'student' ? masteryPayload.status : null,
+		canViewResults
 	};
 };
