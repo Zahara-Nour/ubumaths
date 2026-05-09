@@ -317,6 +317,29 @@ export const exerciseIdParamSchema = z.object({
 	id: uuidSchema
 });
 
+// =============================================================================
+// Mastery query params
+// =============================================================================
+
+const MASTERY_LIMIT_MIN = 1;
+const MASTERY_LIMIT_MAX = 500;
+const MASTERY_LIMIT_DEFAULT = 100;
+
+export const pythonMasteryQuerySchema = z.object({
+	student_id: uuidSchema.optional(),
+	limit: z.coerce
+		.number()
+		.int()
+		.min(MASTERY_LIMIT_MIN)
+		.max(MASTERY_LIMIT_MAX)
+		.optional()
+		.default(MASTERY_LIMIT_DEFAULT)
+});
+
+export const pythonMasterySingleQuerySchema = z.object({
+	student_id: uuidSchema.optional()
+});
+
 // Type exports for use in route handlers
 export type CreateExerciseInput = z.infer<typeof createExerciseSchema>;
 export type UpdateExerciseInput = z.infer<typeof updateExerciseSchema>;
