@@ -18,6 +18,15 @@ import {
 } from './exercise-import-export';
 import type { Exercise } from '$lib/exercises/types';
 
+// Stub tag-resolution helpers: importExerciseFromJSON calls createExercise()
+// which uses resolveTagsToIds + syncExerciseTagJunction after the DB insert.
+vi.mock('$lib/server/tags-resolution', () => ({
+	resolveTagsToIds: vi.fn().mockResolvedValue([]),
+	syncExerciseTagJunction: vi.fn().mockResolvedValue(undefined),
+	fetchTagNamesForExercise: vi.fn().mockResolvedValue([]),
+	fetchExerciseIdsByAnyTag: vi.fn().mockResolvedValue([])
+}));
+
 // Sample exercise for testing (with variations - single source of truth)
 const sampleExercise: Exercise = {
 	id: 'ex-123',
