@@ -4,7 +4,15 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
 	import ExerciseValidationResult from '$lib/components/python/exercises/ExerciseValidationResult.svelte';
-	import { ArrowLeft, CheckCircle2, XCircle, ChevronDown, ChevronRight, Copy } from 'lucide-svelte';
+	import {
+		ArrowLeft,
+		CheckCircle2,
+		XCircle,
+		ChevronDown,
+		ChevronRight,
+		Copy,
+		LayoutGrid
+	} from 'lucide-svelte';
 	import type { ExerciseValidationResult as ValidationResult } from '$lib/shared/python';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
@@ -61,17 +69,21 @@
 
 <div class="container mx-auto max-w-5xl px-4 py-8">
 	<!-- Header -->
-	<div class="mb-8 flex items-center gap-4">
+	<div class="mb-8 flex items-start gap-4">
 		<Button variant="ghost" size="icon" href="/python-exercises/{data.exercise.id}/results">
 			<ArrowLeft class="h-5 w-5" />
 		</Button>
-		<div>
+		<div class="flex-1">
 			<p class="text-sm text-muted-foreground">{data.exercise.title}</p>
 			<h1 class="text-3xl font-bold tracking-tight">{fullName()}</h1>
 			{#if data.student.email}
 				<p class="mt-1 text-sm text-muted-foreground">{data.student.email}</p>
 			{/if}
 		</div>
+		<Button variant="outline" size="sm" href="/python-exercises/students/{data.student.id}">
+			<LayoutGrid class="mr-1 h-4 w-4" />
+			Voir tous ses exos
+		</Button>
 	</div>
 
 	<!-- Submissions list -->
