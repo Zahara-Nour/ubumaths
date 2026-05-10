@@ -377,6 +377,11 @@ const behaviorOutputSchema = z.object({
 	comparison: outputComparisonSchema
 });
 
+const unitTestToleranceSchema = z.object({
+	eps_abs: epsilonSchema,
+	eps_rel: epsilonSchema
+});
+
 const behaviorUnitTestSchema = z.object({
 	kind: z.literal('unit_test'),
 	function_name: z
@@ -388,7 +393,8 @@ const behaviorUnitTestSchema = z.object({
 		.array(unitTestCaseSchema)
 		.min(1)
 		.max(50)
-		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
+		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE),
+	tolerance: unitTestToleranceSchema.optional()
 });
 
 export const behaviorCheckSchema = z.discriminatedUnion('kind', [
