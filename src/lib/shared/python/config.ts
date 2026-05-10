@@ -20,9 +20,9 @@ export const PYODIDE_CONFIG = {
 	INITIAL_PACKAGES: [] as const,
 	/** Execution timeout in milliseconds (30 seconds) */
 	TIMEOUT_MS: 30000,
-	/** Maximum code length in characters (100KB) */
+	/** Maximum code length in characters (100KB), enforced by codeSchema on every worker message */
 	MAX_CODE_LENGTH: 100_000,
-	/** Maximum number of lines per execution */
+	/** Maximum number of lines — default for validate-code only; the execute path does not check it */
 	MAX_LINES: 5000
 } as const;
 
