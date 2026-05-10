@@ -5,9 +5,9 @@
 
 ---
 
-## État actuel : Phases 1 à 5 terminées
+## État actuel : Phases 1 à 6 terminées
 
-Phases 6–7 restantes.
+Phase 7 (quality gates final) restante.
 
 ---
 
@@ -271,17 +271,55 @@ Phases 6–7 restantes.
 - ✅ `mcp__svelte__svelte-autofixer` sur
   `ExerciseValidationResult.svelte` → 0 issue.
 
-### Prochaines étapes (Phase 6)
+## Phase 6 — Cleanup legacy schemas (terminée)
 
-- Suppression des schémas Zod `*Legacy` (server-side et worker messages).
-- Suppression des types TypeScript Legacy (`ExerciseValidationConfig`,
-  `ExerciseValidationResult`, `OutputValidationConfig`,
-  `UnitTestValidationConfig`, `ASTValidationConfig`,
-  `ValidationStrategyType` côté `shared/python/types.ts` et
-  `types/python-exercises.ts`).
-- Optionnel : renommer V2 → noms canoniques (`ExerciseValidationConfig`,
-  `ExerciseValidationResult`, `ValidationConfig`, `ValidationResult`).
-- Mise à jour de `docs/ref/python/`.
+### Décisions
+
+- **Suppression complète des schémas `*Legacy`** côté `messages.ts` et
+  `validation/python-exercises.ts` (avec leurs types inférés).
+- **Suppression des anciens types TS** :
+  `OutputValidationConfig` / `UnitTestValidationConfig` /
+  `ASTValidationConfig` / `ValidationStrategyType` / l'union legacy
+  `ValidationConfig` / `ValidationResult` (avec `strategy`) — côté
+  `shared/python/types.ts` ET `types/python-exercises.ts`.
+- **Rename V2 → noms canoniques** : `ExerciseValidationConfigV2` →
+  `ExerciseValidationConfig`, `ExerciseValidationResultV2` →
+  `ExerciseValidationResult`, idem pour `ValidationConfigV2` /
+  `ValidationResultV2` côté `types/python-exercises.ts`. Les noms sont
+  maintenant à nouveau canoniques sans suffixe.
+- **Re-exports `index.ts`** nettoyés pour ne plus exposer de Legacy ni
+  de V2.
+- **Tests** : suppression du describe block « legacy schemas remain
+  accepting old shape » dans `python-exercises.test.ts` (4 tests
+  retirés). Reste 20 tests Zod (round-trip / refine / edge cases).
+
+### Fichiers livrés
+
+- `src/lib/server/validation/python-exercises.ts` : suppression de
+  `validationConfigSchemaLegacy` / `validationResultSchemaLegacy` et
+  leurs sous-schémas (output/unitTest/ast). Suppression de
+  `validationStrategyTypeSchema`.
+- `src/lib/shared/python/worker/messages.ts` : idem côté worker.
+- `src/lib/shared/python/types.ts` : suppression des anciens types,
+  rename V2 → canonique.
+- `src/lib/types/python-exercises.ts` : réécrit, propre.
+- `src/lib/shared/python/index.ts` : re-exports nettoyés.
+- `src/lib/server/validation/python-exercises.test.ts` : 20 tests
+  (suppression des 4 tests legacy).
+- 10 fichiers consommateurs renommés (V2 → canonique) via sed :
+  worker, executor, tests, components, routes.
+
+### Tests / qualité
+
+- ✅ `pnpm check:incremental` → baseline 9/46 préservé (1573 fichiers).
+- ✅ `pnpm test:server` (python-exercises + shared/python) → 296/296.
+
+### Prochaines étapes (Phase 7)
+
+- ESLint sur les fichiers modifiés tout au long du refactor.
+- Audit sécurité (`security-auditor`) — focus worker isolation et
+  injection via comparator code.
+- Mise à jour de `docs/ref/python/` (si applicable).
 - Doc de progression finale listant tous les commits.
 
 ### Commits
@@ -292,4 +330,5 @@ Phases 6–7 restantes.
 | 2   | b58b54582 | feat(python-exercises): refactor worker to AST + behavior pipeline       |
 | 3   | e7ad5d710 | feat(python-exercises): migrate validation_config to ast+behavior schema |
 | 4   | a40f8b4df | feat(python-exercises): redesign strategy editor with form + behavior UI |
-| 5   | _à venir_ | feat(python-exercises): update consumers for new ValidationConfig shape  |
+| 5   | b2111d3fd | feat(python-exercises): update consumers for new ValidationConfig shape  |
+| 6   | _à venir_ | chore(python-exercises): remove legacy ValidationConfig schema           |

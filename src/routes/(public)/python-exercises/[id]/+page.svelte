@@ -8,10 +8,7 @@
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import {
-		PlaygroundExecutor,
-		type ExerciseValidationResultV2 as Result
-	} from '$lib/shared/python';
+	import { PlaygroundExecutor, type ExerciseValidationResult as Result } from '$lib/shared/python';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		Play,

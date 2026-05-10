@@ -20,7 +20,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { BasePythonExecutor, type ExerciseValidationConfigV2 } from '$lib/shared/python';
+import { BasePythonExecutor, type ExerciseValidationConfig } from '$lib/shared/python';
 
 // =============================================================================
 // Test harness
@@ -99,7 +99,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'exact: passes when stdout matches byte-for-byte',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: { kind: 'exact' },
@@ -121,7 +121,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'exact: fails when stdout does not match, with diff message',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: { kind: 'exact' },
@@ -143,7 +143,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'text/collapsed: ignores leading/trailing/internal whitespace differences',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: { kind: 'text', whitespace: 'collapsed' },
@@ -160,7 +160,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'numeric: tolerance accepts long-decimal output of math.sqrt',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: {
@@ -182,7 +182,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'numeric: tighter tolerance rejects same case, with informative diff',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: {
@@ -205,7 +205,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'hidden output test passing: input/expected/actual/diff are redacted',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: { kind: 'exact' },
@@ -232,7 +232,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'custom comparator: returns True → passed',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: {
@@ -251,7 +251,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'custom comparator: returns dict with diff → diff surfaced',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: {
@@ -286,7 +286,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'custom comparator: crash inside compare() → reports error',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: {
@@ -306,7 +306,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'custom comparator: missing compare function → clear error',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: {
@@ -328,7 +328,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 			async () => {
 				// The student leaks an attractive nuisance into globals; if the
 				// comparator's namespace were shared, it could read it.
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: {
@@ -357,7 +357,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'hidden output test failing: diff is redacted too',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: { kind: 'numeric', shape: 'flat', eps_abs: 1e-9, eps_rel: 1e-9 },
@@ -386,7 +386,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'passes when student function returns expected values',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'unit_test',
 						function_name: 'add',
@@ -413,7 +413,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			"reports a clear error when the function isn't defined",
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'unit_test',
 						function_name: 'add',
@@ -434,7 +434,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'fails per test case when student function returns wrong values',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'unit_test',
 						function_name: 'add',
@@ -461,7 +461,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'hidden unit_test case redacts args/expected/actual',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'unit_test',
 						function_name: 'square',
@@ -495,7 +495,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'passes when AST requirement is satisfied',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					ast_requirements: [{ type: 'uses_loop', message: 'Tu dois utiliser une boucle' }]
 				};
 				const result = await executor.validateExercise('for i in range(3):\n    pass\n', config);
@@ -511,7 +511,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'fails with the configured message when requirement is not met',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					ast_requirements: [{ type: 'uses_loop', message: 'Tu dois utiliser une boucle' }]
 				};
 				const result = await executor.validateExercise('pass', config);
@@ -526,7 +526,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'runs behavior after AST checks pass and combines both verdicts',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					ast_requirements: [
 						{
 							type: 'defines_function',
@@ -581,7 +581,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 
 				// Now validate WITHOUT defining factorielle in the student code.
 				// Before the namespace isolation fix, this passed (false positive).
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'unit_test',
 						function_name: 'factorielle',
@@ -601,7 +601,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 			async () => {
 				// Run a validation that intentionally creates a marker variable
 				// inside the validation namespace.
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: { kind: 'exact' },
@@ -626,7 +626,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'no leakage between consecutive validations',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'unit_test',
 						function_name: 'double',
@@ -658,7 +658,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'case 1: AST + behavior all pass → valid, failed_layer null, behavior_kind set',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					ast_requirements: [{ type: 'uses_loop', message: 'Use a loop' }],
 					behavior: {
 						kind: 'output',
@@ -683,7 +683,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'case 2: AST fails → short-circuit, behavior_kind still surfaced',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					ast_requirements: [{ type: 'uses_loop', message: 'Use a loop' }],
 					behavior: {
 						kind: 'output',
@@ -705,7 +705,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'case 3: AST passes, behavior fails → failed_layer behavior, ast_issues empty',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					ast_requirements: [{ type: 'uses_loop', message: 'Use a loop' }],
 					behavior: {
 						kind: 'unit_test',
@@ -730,7 +730,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'case 4: AST only (no behavior) → behavior_kind undefined',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					ast_requirements: [{ type: 'defines_function', name: 'f', message: 'Define f' }]
 				};
 				const ok = await executor.validateExercise('def f():\n    pass\n', config);
@@ -751,7 +751,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'case 5: behavior only (no AST) → ast_issues absent, behavior_kind set',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'unit_test',
 						function_name: 'double',
@@ -771,7 +771,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'case 6: SyntaxError with AST configured → failed_layer ast, dedicated message',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					ast_requirements: [{ type: 'uses_loop', message: 'Use a loop' }],
 					behavior: {
 						kind: 'output',
@@ -794,7 +794,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'case 7: SyntaxError without AST → behavior layer surfaces the error',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: { kind: 'exact' },
@@ -817,7 +817,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'case 9: custom comparator runs inside the behavior layer with AST',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					ast_requirements: [{ type: 'no_print', message: 'No print()' }],
 					behavior: {
 						kind: 'output',
@@ -844,7 +844,7 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 		it(
 			'case 8: infinite-loop student code → executor rejects with timeout error',
 			async () => {
-				const config: ExerciseValidationConfigV2 = {
+				const config: ExerciseValidationConfig = {
 					behavior: {
 						kind: 'output',
 						comparison: { kind: 'exact' },

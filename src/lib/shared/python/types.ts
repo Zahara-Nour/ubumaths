@@ -94,11 +94,6 @@ export interface ValidationResult {
 // =============================================================================
 
 /**
- * Validation strategy types
- */
-export type ValidationStrategyType = 'output' | 'unit_test' | 'ast';
-
-/**
  * Output comparison strategy — discriminated union of three intents.
  */
 export interface ExactComparison {
@@ -147,16 +142,6 @@ export interface OutputTestCase {
 }
 
 /**
- * Output comparison validation config
- */
-export interface OutputValidationConfig {
-	type: 'output';
-	test_cases: OutputTestCase[];
-	comparison: OutputComparison;
-	timeout_ms?: number;
-}
-
-/**
  * Unit test case
  */
 export interface UnitTestCase {
@@ -164,16 +149,6 @@ export interface UnitTestCase {
 	expected: unknown;
 	/** When true, the worker redacts args/expected/actual from the result. */
 	hidden?: boolean;
-}
-
-/**
- * Unit test validation config
- */
-export interface UnitTestValidationConfig {
-	type: 'unit_test';
-	function_name: string;
-	test_cases: UnitTestCase[];
-	timeout_ms?: number;
 }
 
 /**
@@ -199,25 +174,6 @@ export interface ASTRequirement {
 }
 
 /**
- * AST validation config
- */
-export interface ASTValidationConfig {
-	type: 'ast';
-	requirements: ASTRequirement[];
-	output_tests?: OutputTestCase[];
-	output_comparison?: OutputComparison;
-	timeout_ms?: number;
-}
-
-/**
- * Union type for exercise validation configs
- */
-export type ExerciseValidationConfig =
-	| OutputValidationConfig
-	| UnitTestValidationConfig
-	| ASTValidationConfig;
-
-/**
  * Test case result
  */
 export interface TestCaseResult {
@@ -232,27 +188,13 @@ export interface TestCaseResult {
 	hidden?: boolean;
 }
 
-/**
- * Exercise validation result
- */
-export interface ExerciseValidationResult {
-	valid: boolean;
-	strategy: ValidationStrategyType;
-	test_results: TestCaseResult[];
-	ast_issues?: string[];
-	error?: string;
-	execution_time_ms: number;
-}
-
 // =============================================================================
-// New ValidationConfig shape — orthogonal AST checks + behavior layer
-// See docs/wip/python-validation-refactor-spec.md
+// ValidationConfig — orthogonal AST checks + behavior layer
 //
 // NOTE: these types are mirrored in `src/lib/types/python-exercises.ts`
-// (under names `BehaviorCheck`, `ValidationConfigV2`, `ValidationResultV2`).
-// The duplication exists because `shared/python/types.ts` must stay free of
-// server-only imports for the worker bundle. Keep both files in sync —
-// Phase 6 cleanup consolidates.
+// (`BehaviorCheck`, `ValidationConfig`, `ValidationResult`). The duplication
+// exists because `shared/python/types.ts` must stay free of server-only
+// imports for the worker bundle. Keep both files in sync.
 // =============================================================================
 
 /**
@@ -275,18 +217,18 @@ export type BehaviorCheck =
  * Exercise validation config — orthogonal AST checks + behavior layer.
  * At least one of `ast_requirements` (non-empty) and `behavior` must be present.
  */
-export interface ExerciseValidationConfigV2 {
+export interface ExerciseValidationConfig {
 	ast_requirements?: ASTRequirement[];
 	behavior?: BehaviorCheck;
 	timeout_ms?: number;
 }
 
 /**
- * Result of running the new pipeline.
+ * Result of running the validation pipeline.
  * `failed_layer` indicates which orthogonal axis failed (or null on success).
  * `behavior_kind` is set whenever a behavior was configured (succeeded or not).
  */
-export interface ExerciseValidationResultV2 {
+export interface ExerciseValidationResult {
 	valid: boolean;
 	failed_layer: 'ast' | 'behavior' | null;
 	behavior_kind?: 'output' | 'unit_test';

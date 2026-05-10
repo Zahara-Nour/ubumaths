@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * Editor for the new ValidationConfigV2 shape (`{ ast_requirements?,
+	 * Editor for the new ValidationConfig shape (`{ ast_requirements?,
 	 * behavior?, timeout_ms? }`). Two independent panels — "Forme du code"
 	 * (AST checks) and "Comportement attendu" (output / unit_test) — each can
 	 * be enabled or disabled separately, and at least one is required (server
@@ -8,7 +8,7 @@
 	 */
 
 	import type { ASTRequirement, BehaviorCheck, OutputComparison } from '$lib/shared/python';
-	import type { ValidationConfigV2 } from '$lib/types/python-exercises';
+	import type { ValidationConfig } from '$lib/types/python-exercises';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -18,7 +18,7 @@
 	import ASTRequirementsPanel from './ASTRequirementsPanel.svelte';
 
 	type Props = {
-		config: ValidationConfigV2;
+		config: ValidationConfig;
 	};
 
 	let { config = $bindable() }: Props = $props();

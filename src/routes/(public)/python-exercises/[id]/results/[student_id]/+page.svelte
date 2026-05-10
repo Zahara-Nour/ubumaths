@@ -13,7 +13,7 @@
 		Copy,
 		LayoutGrid
 	} from 'lucide-svelte';
-	import type { ExerciseValidationResultV2 as ValidationResult } from '$lib/shared/python';
+	import type { ExerciseValidationResult as ValidationResult } from '$lib/shared/python';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 

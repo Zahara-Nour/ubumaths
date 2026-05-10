@@ -16,8 +16,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 // pythonPlayground.svelte.test.ts (indirectly, via the store module).
 import {
 	BasePythonExecutor,
-	type ExerciseValidationConfigV2,
-	type ExerciseValidationResultV2
+	type ExerciseValidationConfig,
+	type ExerciseValidationResult
 } from '$lib/shared/python';
 
 // =============================================================================
@@ -93,8 +93,8 @@ function findMessage<T = unknown>(type: string): T | undefined {
 	return MockWorker.messages.find((m) => (m as { type: string }).type === type) as T | undefined;
 }
 
-/** Build a minimal valid ExerciseValidationConfigV2 (output behavior). */
-function makeOutputConfig(timeoutMs?: number): ExerciseValidationConfigV2 {
+/** Build a minimal valid ExerciseValidationConfig (output behavior). */
+function makeOutputConfig(timeoutMs?: number): ExerciseValidationConfig {
 	return {
 		behavior: {
 			kind: 'output',
@@ -105,10 +105,8 @@ function makeOutputConfig(timeoutMs?: number): ExerciseValidationConfigV2 {
 	};
 }
 
-/** Build a minimal valid ExerciseValidationResultV2. */
-function makeResult(
-	overrides: Partial<ExerciseValidationResultV2> = {}
-): ExerciseValidationResultV2 {
+/** Build a minimal valid ExerciseValidationResult. */
+function makeResult(overrides: Partial<ExerciseValidationResult> = {}): ExerciseValidationResult {
 	return {
 		valid: true,
 		failed_layer: null,

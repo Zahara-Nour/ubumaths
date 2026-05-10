@@ -14,12 +14,12 @@
 	 *      only verdict + lock icon.
 	 */
 
-	import type { ExerciseValidationResultV2 } from '$lib/shared/python';
+	import type { ExerciseValidationResult } from '$lib/shared/python';
 	import { CheckCircle2, XCircle, AlertTriangle, Loader2, Lock } from 'lucide-svelte';
 
 	type Props = {
 		/** Validation result, or null when no validation has run yet */
-		result: ExerciseValidationResultV2 | null;
+		result: ExerciseValidationResult | null;
 		/** Whether a validation is currently in flight (shows a spinner) */
 		loading?: boolean;
 	};

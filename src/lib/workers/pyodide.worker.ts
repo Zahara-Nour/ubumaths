@@ -20,8 +20,8 @@ import type {
 	ValidationResult,
 	ValidationIssue,
 	BehaviorCheck,
-	ExerciseValidationConfigV2,
-	ExerciseValidationResultV2,
+	ExerciseValidationConfig,
+	ExerciseValidationResult,
 	TestCaseResult,
 	ASTRequirement
 } from '$lib/shared/python';
@@ -2051,7 +2051,7 @@ async function validateCode(code: string, config: ValidationConfig, id: string):
  */
 async function validateExercise(
 	code: string,
-	config: ExerciseValidationConfigV2,
+	config: ExerciseValidationConfig,
 	id: string
 ): Promise<void> {
 	if (!pyodide) {
@@ -2080,7 +2080,7 @@ async function validateExercise(
 			setTimeout(() => reject(new Error('Timeout')), timeout);
 		});
 
-		const validationPromise: Promise<ExerciseValidationResultV2> = (async () => {
+		const validationPromise: Promise<ExerciseValidationResult> = (async () => {
 			let astIssues: string[] | undefined;
 
 			if (hasAST) {
