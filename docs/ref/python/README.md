@@ -8,14 +8,14 @@ L'ensemble fonctionne **100% client-side** via Pyodide (CPython 3.12 compilé en
 
 ## Vue d'ensemble — 6 sous-systèmes
 
-| Sous-système                            | Route               | Description                                          | Statut |
-| --------------------------------------- | ------------------- | ---------------------------------------------------- | ------ |
-| [Playground](#1-playground)             | `/python`           | Éditeur + REPL Python type "Le Serpentarium"         | ✅     |
-| [Notebook](#2-notebook)                 | `/python-notebook`  | Cellules code/markdown façon Jupyter/Colab           | ✅     |
-| [Debugger](#3-debugger)                 | _(dans Playground)_ | Step-by-step + heap visualization style Python Tutor | ✅     |
-| [Exercises](#4-exercises)               | `/python-exercises` | API + UI exercices avec 3 stratégies de validation   | ✅     |
-| [Examples Library](#5-examples-library) | _(dans Playground)_ | 100 exemples curés en 10 catégories                  | ✅     |
-| [Cloud Files](#6-cloud-files)           | _(dans Playground)_ | Sauvegarde DB + assignation enseignant→classe        | ✅     |
+| Sous-système                            | Route               | Description                                                        | Statut |
+| --------------------------------------- | ------------------- | ------------------------------------------------------------------ | ------ |
+| [Playground](#1-playground)             | `/python`           | Éditeur + REPL Python type "Le Serpentarium"                       | ✅     |
+| [Notebook](#2-notebook)                 | `/python-notebook`  | Cellules code/markdown façon Jupyter/Colab                         | ✅     |
+| [Debugger](#3-debugger)                 | _(dans Playground)_ | Step-by-step + heap visualization style Python Tutor               | ✅     |
+| [Exercises](#4-exercises)               | `/python-exercises` | API + UI exercices avec validation V2 (AST + behavior orthogonaux) | ✅     |
+| [Examples Library](#5-examples-library) | _(dans Playground)_ | 100 exemples curés en 10 catégories                                | ✅     |
+| [Cloud Files](#6-cloud-files)           | _(dans Playground)_ | Sauvegarde DB + assignation enseignant→classe                      | ✅     |
 
 ---
 
