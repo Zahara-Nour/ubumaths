@@ -8,7 +8,7 @@ import type { RequestHandler } from './$types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
 	submitExerciseSchema,
-	validationResultSchema,
+	validationResultSchemaLegacy,
 	type SubmitExerciseInput
 } from '$lib/server/validation/python-exercises';
 import type { Database } from '$lib/types/database';
@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, 'Le résultat de validation est requis');
 	}
 
-	const validationResultValidation = validationResultSchema.safeParse(body.validation_result);
+	const validationResultValidation = validationResultSchemaLegacy.safeParse(body.validation_result);
 	if (!validationResultValidation.success) {
 		const errorMsg = validationResultValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)

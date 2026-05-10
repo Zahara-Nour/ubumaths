@@ -59,6 +59,11 @@ export type {
 	TestCaseResult,
 	ExerciseValidationResult,
 
+	// New ValidationConfig shape (AST + behavior pipeline)
+	BehaviorCheck,
+	ExerciseValidationConfigV2,
+	ExerciseValidationResultV2,
+
 	// Messages to worker
 	InitMessage,
 	ExecuteMessage,
@@ -225,15 +230,27 @@ export {
 	customComparisonSchema,
 	outputComparisonSchema,
 	outputTestCaseSchema,
-	outputValidationConfigSchema,
+	outputValidationConfigSchemaLegacy,
 	unitTestCaseSchema,
-	unitTestValidationConfigSchema,
+	unitTestValidationConfigSchemaLegacy,
 	astRequirementTypeSchema,
 	astRequirementSchema,
-	astValidationConfigSchema,
-	exerciseValidationConfigSchema,
+	astValidationConfigSchemaLegacy,
+	exerciseValidationConfigSchemaLegacy,
+	exerciseValidationResultSchemaLegacy,
+	exerciseValidationResultMessageSchemaLegacy,
+	validateExerciseMessageSchemaLegacy,
 	testCaseResultSchema,
 	validationStrategyTypeSchema,
+
+	// New schemas (AST + behavior pipeline).
+	// Phase 1 transition: these are exported for Phase 2 to consume, but
+	// `toWorkerMessageSchema` and `fromWorkerMessageSchema` still register
+	// the *Legacy variants. Phase 2 swaps them.
+	behaviorCheckSchema,
+	failedLayerSchema,
+	behaviorKindSchema,
+	exerciseValidationConfigSchema,
 	exerciseValidationResultSchema
 } from './worker/messages';
 
