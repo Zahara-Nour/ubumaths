@@ -40,9 +40,11 @@ const validExercisePayload = {
 	starter_code: 'pass',
 	solution_code: 'print("hi")',
 	validation_config: {
-		type: 'output',
-		test_cases: [{ input: '', expected_output: 'hi\n' }],
-		comparison: { kind: 'exact' }
+		behavior: {
+			kind: 'output',
+			test_cases: [{ input: '', expected_output: 'hi\n' }],
+			comparison: { kind: 'exact' }
+		}
 	},
 	level: 'lycee',
 	tags: ['print'],

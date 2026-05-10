@@ -10,12 +10,13 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from '@vitest/browser/context';
-import type { ExerciseValidationResult as Result } from '$lib/shared/python';
+import type { ExerciseValidationResultV2 as Result } from '$lib/shared/python';
 import ExerciseValidationResult from './ExerciseValidationResult.svelte';
 
 const validResult: Result = {
 	valid: true,
-	strategy: 'output',
+	failed_layer: null,
+	behavior_kind: 'output',
 	test_results: [
 		{ passed: true, input: '', expected: 'hello\n', actual: 'hello\n' },
 		{ passed: true, input: '', expected: 'world\n', actual: 'world\n' }
@@ -25,7 +26,8 @@ const validResult: Result = {
 
 const invalidResult: Result = {
 	valid: false,
-	strategy: 'output',
+	failed_layer: 'behavior',
+	behavior_kind: 'output',
 	test_results: [
 		{ passed: true, input: '', expected: 'ok\n', actual: 'ok\n' },
 		{ passed: false, input: '5', expected: '25\n', actual: '10\n' }
@@ -35,7 +37,7 @@ const invalidResult: Result = {
 
 const astFailResult: Result = {
 	valid: false,
-	strategy: 'ast',
+	failed_layer: 'ast',
 	test_results: [],
 	ast_issues: ['Tu dois utiliser une boucle', "N'utilise pas print()"],
 	execution_time_ms: 5
@@ -43,7 +45,8 @@ const astFailResult: Result = {
 
 const errorResult: Result = {
 	valid: false,
-	strategy: 'unit_test',
+	failed_layer: null,
+	behavior_kind: 'unit_test',
 	test_results: [],
 	error: "Délai d'exécution dépassé",
 	execution_time_ms: 5000
@@ -51,7 +54,8 @@ const errorResult: Result = {
 
 const resultWithDiff: Result = {
 	valid: false,
-	strategy: 'output',
+	failed_layer: 'behavior',
+	behavior_kind: 'output',
 	test_results: [
 		{
 			passed: false,
@@ -66,7 +70,8 @@ const resultWithDiff: Result = {
 
 const resultWithHidden: Result = {
 	valid: false,
-	strategy: 'output',
+	failed_layer: 'behavior',
+	behavior_kind: 'output',
 	test_results: [
 		{ passed: true, input: '', expected: 'visible\n', actual: 'visible\n' },
 		{ passed: false, hidden: true }

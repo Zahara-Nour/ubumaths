@@ -5,9 +5,9 @@
 
 ---
 
-## État actuel : Phases 1 à 4 terminées
+## État actuel : Phases 1 à 5 terminées
 
-Phases 5–7 restantes.
+Phases 6–7 restantes.
 
 ---
 
@@ -211,19 +211,78 @@ Phases 5–7 restantes.
 - ✅ `pnpm test:client src/lib/components/python/exercises/ExerciseValidationResult.svelte.test.ts`
   → 8/8.
 
-### Prochaines étapes (Phase 5)
+## Phase 5 — Consommateurs (terminée)
 
-- Bascule des consommateurs sur V2 :
-  - `src/routes/(public)/python-exercises/[id]/+page.svelte`
-    (`isUnitTest` → `config.behavior?.kind === 'unit_test'`).
-  - `src/routes/(public)/python-exercises/[id]/results/[student_id]/+page.svelte`
-    (rendu du résultat).
-  - `src/lib/components/python/exercises/ExerciseValidationResult.svelte`
-    (props + rendu de `failed_layer` / `behavior_kind` / `ast_issues`).
-  - API endpoints + tests : bascule de `validationConfigSchema` /
-    `validationResultSchema` sur les nouveaux schémas.
-- Suppression du schéma `validationResultSchemaLegacy` dans
-  `/api/python-exercises/[id]/submit/+server.ts`.
+### Décisions
+
+- **`ExerciseValidationResult.svelte`** : passé sur `ExerciseValidationResultV2`.
+  Ajout d'un `failureSubline` dérivé de `failed_layer` / `behavior_kind` :
+  « Vérifications de forme non satisfaites » / « Tests de fonction
+  échoués » / « Sortie attendue non obtenue ». Le rendu des `ast_issues`
+  était déjà conditionnel sur la longueur du tableau, donc compatible
+  avec la nouvelle convention (« vide quand AST passe »).
+- **Viewer** (`[id]/+page.svelte`) : `isUnitTest` désormais dérivé de
+  `config.behavior?.kind === 'unit_test'`, ce qui découple la présence du
+  panneau « Tester ma fonction » de la combinaison AST + behavior. Le
+  fallback de `runValidation` produit un résultat V2.
+- **Page résultats** (`[id]/results/[student_id]/+page.svelte`) : import
+  type passé à `ExerciseValidationResultV2`.
+- **API submit** : `validationResultSchemaLegacy` → `validationResultSchema`
+  (nouveau). Tous les fixtures de tests migrent au passage.
+- **`createExerciseSchema` / `updateExerciseSchema`** : bascule de
+  `validationConfigSchemaLegacy` vers `validationConfigSchema` (nouveau)
+  pour les API endpoints `/api/python-exercises` POST / PATCH.
+
+### Fichiers livrés
+
+1. `src/lib/components/python/exercises/ExerciseValidationResult.svelte`
+   - Type `ExerciseValidationResultV2` + `failureSubline` dérivé.
+2. `src/lib/components/python/exercises/ExerciseValidationResult.svelte.test.ts`
+   - 7 fixtures migrés vers V2.
+3. `src/routes/(public)/python-exercises/[id]/+page.svelte`
+   - `isUnitTest` / `callFunctionName` dérivés de `behavior?.kind`.
+   - Test de fonction synthétisé en `{ behavior: { kind: 'unit_test', ... } }`.
+   - Catch du `runValidation` produit un V2.
+4. `src/routes/(public)/python-exercises/[id]/results/[student_id]/+page.svelte`
+   - Type alias `ExerciseValidationResultV2 as ValidationResult`.
+5. `src/routes/(public)/python-exercises/[id]/results/[student_id]/page.server.test.ts`
+   - 2 fixtures migrés.
+6. `src/routes/api/python-exercises/[id]/submit/+server.ts`
+   - `validationResultSchema` (nouveau).
+7. `src/routes/api/python-exercises/[id]/submit/server.test.ts`
+   - `validResult` migré (failed_layer / behavior_kind).
+8. `src/routes/api/python-exercises/server.test.ts`
+   - `validExercisePayload.validation_config` migré.
+9. `src/routes/api/python-exercises/[id]/server.test.ts`
+   - `fullExercise.validation_config` migré.
+10. `src/routes/api/python-exercises/[id]/my-submissions/server.test.ts`
+    - 2 fixtures `validation_result` migrés.
+11. `src/lib/server/validation/python-exercises.ts`
+    - `createExerciseSchema` / `updateExerciseSchema` pointent vers
+      `validationConfigSchema` (nouveau).
+
+### Tests / qualité
+
+- ✅ `pnpm test:server src/routes/api/python-exercises src/lib/server/validation/python-exercises.test.ts src/routes/(public)/python-exercises`
+  → 137/137.
+- ✅ `pnpm test:client src/lib/components/python/exercises/ExerciseValidationResult.svelte.test.ts`
+  → 8/8.
+- ✅ `pnpm check:incremental` → baseline 9/46 préservé.
+- ✅ `mcp__svelte__svelte-autofixer` sur
+  `ExerciseValidationResult.svelte` → 0 issue.
+
+### Prochaines étapes (Phase 6)
+
+- Suppression des schémas Zod `*Legacy` (server-side et worker messages).
+- Suppression des types TypeScript Legacy (`ExerciseValidationConfig`,
+  `ExerciseValidationResult`, `OutputValidationConfig`,
+  `UnitTestValidationConfig`, `ASTValidationConfig`,
+  `ValidationStrategyType` côté `shared/python/types.ts` et
+  `types/python-exercises.ts`).
+- Optionnel : renommer V2 → noms canoniques (`ExerciseValidationConfig`,
+  `ExerciseValidationResult`, `ValidationConfig`, `ValidationResult`).
+- Mise à jour de `docs/ref/python/`.
+- Doc de progression finale listant tous les commits.
 
 ### Commits
 
@@ -232,4 +291,5 @@ Phases 5–7 restantes.
 | 1   | 8b9e6b139 | feat(python-exercises): add new ValidationConfig types                   |
 | 2   | b58b54582 | feat(python-exercises): refactor worker to AST + behavior pipeline       |
 | 3   | e7ad5d710 | feat(python-exercises): migrate validation_config to ast+behavior schema |
-| 4   | _à venir_ | feat(python-exercises): redesign strategy editor with form + behavior UI |
+| 4   | a40f8b4df | feat(python-exercises): redesign strategy editor with form + behavior UI |
+| 5   | _à venir_ | feat(python-exercises): update consumers for new ValidationConfig shape  |

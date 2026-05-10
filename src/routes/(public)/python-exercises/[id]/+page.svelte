@@ -8,7 +8,10 @@
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import { PlaygroundExecutor, type ExerciseValidationResult as Result } from '$lib/shared/python';
+	import {
+		PlaygroundExecutor,
+		type ExerciseValidationResultV2 as Result
+	} from '$lib/shared/python';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		Play,
@@ -43,10 +46,10 @@
 	let callError = $state<string | null>(null);
 	let isCalling = $state(false);
 	let callHistory = $state<CallEntry[]>([]);
-	const isUnitTest = $derived(exercise.validation_config.type === 'unit_test');
+	const isUnitTest = $derived(exercise.validation_config.behavior?.kind === 'unit_test');
 	const callFunctionName = $derived(
-		isUnitTest && 'function_name' in exercise.validation_config
-			? exercise.validation_config.function_name
+		exercise.validation_config.behavior?.kind === 'unit_test'
+			? exercise.validation_config.behavior.function_name
 			: ''
 	);
 
@@ -107,7 +110,8 @@
 		} catch (e) {
 			return {
 				valid: false,
-				strategy: exercise.validation_config.type,
+				failed_layer: null,
+				behavior_kind: exercise.validation_config.behavior?.kind,
 				test_results: [],
 				error: e instanceof Error ? e.message : String(e),
 				execution_time_ms: 0
@@ -202,9 +206,11 @@
 			// is unset on purpose: we don't care if it passes — we only read `actual`
 			// from the test result, which is the JSON-stringified return value.
 			const result = await executor.validateExercise(code, {
-				type: 'unit_test',
-				function_name: callFunctionName,
-				test_cases: [{ args, expected: null, hidden: false }],
+				behavior: {
+					kind: 'unit_test',
+					function_name: callFunctionName,
+					test_cases: [{ args, expected: null, hidden: false }]
+				},
 				timeout_ms: 5000
 			});
 

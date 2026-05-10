@@ -34,7 +34,8 @@ const studentProfile = {
 
 const validResult = {
 	valid: true,
-	strategy: 'output' as const,
+	failed_layer: null,
+	behavior_kind: 'output' as const,
 	test_results: [{ passed: true }],
 	execution_time_ms: 12
 };

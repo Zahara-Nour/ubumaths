@@ -19,7 +19,13 @@ const studentRows = [
 	{
 		id: 'sub-1',
 		code: 'print(1)',
-		validation_result: { valid: true, strategy: 'output', test_results: [], execution_time_ms: 5 },
+		validation_result: {
+			valid: true,
+			failed_layer: null,
+			behavior_kind: 'output',
+			test_results: [],
+			execution_time_ms: 5
+		},
 		is_correct: true,
 		attempt_number: 2,
 		execution_time_ms: 5,
@@ -30,7 +36,13 @@ const studentRows = [
 	{
 		id: 'sub-0',
 		code: 'print(0)',
-		validation_result: { valid: false, strategy: 'output', test_results: [], execution_time_ms: 4 },
+		validation_result: {
+			valid: false,
+			failed_layer: 'behavior',
+			behavior_kind: 'output',
+			test_results: [],
+			execution_time_ms: 4
+		},
 		is_correct: false,
 		attempt_number: 1,
 		execution_time_ms: 4,

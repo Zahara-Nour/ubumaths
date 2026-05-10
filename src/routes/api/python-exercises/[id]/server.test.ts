@@ -40,9 +40,11 @@ const fullExercise = {
 	starter_code: 'def add(a, b):\n    pass\n',
 	solution_code: 'def add(a, b):\n    return a + b\n',
 	validation_config: {
-		type: 'unit_test',
-		function_name: 'add',
-		test_cases: [{ args: [1, 2], expected: 3 }]
+		behavior: {
+			kind: 'unit_test',
+			function_name: 'add',
+			test_cases: [{ args: [1, 2], expected: 3 }]
+		}
 	},
 	level: 'lycee',
 	tags: ['arithmetic'],
