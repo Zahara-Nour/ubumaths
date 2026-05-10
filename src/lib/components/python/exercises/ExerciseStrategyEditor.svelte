@@ -1,85 +1,95 @@
 <script lang="ts">
 	/**
-	 * Editor for ExerciseValidationConfig (the discriminated union of the three
-	 * validation strategies: output, unit_test, ast).
-	 *
-	 * Two-way binds `config`. Switching strategy resets the config to a sensible
-	 * default for that type. For unit_test, args/expected are edited as JSON
-	 * strings in textareas with inline parse errors — they commit to the config
-	 * on blur to avoid clobbering mid-typing.
+	 * Editor for the new ValidationConfigV2 shape (`{ ast_requirements?,
+	 * behavior?, timeout_ms? }`). Two independent panels — "Forme du code"
+	 * (AST checks) and "Comportement attendu" (output / unit_test) — each can
+	 * be enabled or disabled separately, and at least one is required (server
+	 * Zod refine catches the empty case; we surface inline guidance here).
 	 */
 
-	import type {
-		ASTRequirement,
-		ASTRequirementType,
-		ExerciseValidationConfig,
-		OutputValidationConfig,
-		UnitTestValidationConfig,
-		ASTValidationConfig,
-		OutputComparison
-	} from '$lib/shared/python';
+	import type { ASTRequirement, BehaviorCheck, OutputComparison } from '$lib/shared/python';
+	import type { ValidationConfigV2 } from '$lib/types/python-exercises';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Plus, Trash2 } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import ASTRequirementsPanel from './ASTRequirementsPanel.svelte';
 
 	type Props = {
-		config: ExerciseValidationConfig;
+		config: ValidationConfigV2;
 	};
 
 	let { config = $bindable() }: Props = $props();
 
 	// ===========================================================================
-	// Strategy switcher
+	// AST toggle
 	// ===========================================================================
 
-	const strategyItems = [
-		{ value: 'output', label: 'Comparaison de sortie (stdout)' },
-		{ value: 'unit_test', label: 'Test de fonction' },
-		{ value: 'ast', label: 'Analyse syntaxique (AST)' }
-	];
+	const astEnabled = $derived(Boolean(config.ast_requirements?.length));
 
-	function setStrategy(type: string) {
-		if (type === config.type) return;
-		if (type === 'output') {
+	function toggleAst(checked: boolean) {
+		if (checked) {
 			config = {
-				type: 'output',
-				test_cases: [{ input: '', expected_output: '' }],
-				comparison: { kind: 'exact' }
+				...config,
+				ast_requirements: [{ type: 'uses_loop', message: 'Tu dois utiliser une boucle' }]
 			};
-		} else if (type === 'unit_test') {
-			config = {
-				type: 'unit_test',
-				function_name: '',
-				test_cases: [{ args: [], expected: null }]
-			};
-			unitDrafts = [{ args: '[]', expected: 'null' }];
-		} else if (type === 'ast') {
-			config = {
-				type: 'ast',
-				requirements: [{ type: 'uses_loop', message: 'Tu dois utiliser une boucle' }]
-			};
+		} else {
+			const { ast_requirements: _drop, ...rest } = config;
+			void _drop;
+			config = rest;
 		}
 	}
 
 	// ===========================================================================
-	// output strategy helpers
+	// Behavior selector
 	// ===========================================================================
 
-	function addOutputCase() {
-		if (config.type !== 'output') return;
-		config.test_cases = [...config.test_cases, { input: '', expected_output: '' }];
-	}
+	type BehaviorChoice = 'none' | 'output' | 'unit_test';
 
-	function removeOutputCase(i: number) {
-		if (config.type !== 'output' || config.test_cases.length <= 1) return;
-		config.test_cases = config.test_cases.filter((_, idx) => idx !== i);
+	const behaviorChoiceItems: { value: BehaviorChoice; label: string }[] = [
+		{ value: 'none', label: 'Aucun' },
+		{ value: 'output', label: 'Sortie stdout' },
+		{ value: 'unit_test', label: 'Test de fonction' }
+	];
+
+	const behaviorChoice = $derived<BehaviorChoice>(config.behavior?.kind ?? 'none');
+
+	function setBehaviorChoice(choice: string) {
+		const next = choice as BehaviorChoice;
+		if (next === behaviorChoice) return;
+		if (next === 'none') {
+			const { behavior: _drop, ...rest } = config;
+			void _drop;
+			config = rest;
+			return;
+		}
+		if (next === 'output') {
+			config = {
+				...config,
+				behavior: {
+					kind: 'output',
+					test_cases: [{ input: '', expected_output: '' }],
+					comparison: { kind: 'exact' }
+				}
+			};
+			return;
+		}
+		// unit_test
+		config = {
+			...config,
+			behavior: {
+				kind: 'unit_test',
+				function_name: '',
+				test_cases: [{ args: [], expected: null }]
+			}
+		};
+		unitDrafts = [{ args: '[]', expected: 'null' }];
 	}
 
 	// ===========================================================================
-	// output comparison preset logic
+	// Output comparison preset logic (unchanged from previous editor)
 	// ===========================================================================
 
 	type PresetKey =
@@ -141,7 +151,6 @@
 		{ value: 'ignore', label: 'Ignorés' }
 	];
 
-	/** Map a preset key to its canonical comparison object. */
 	const presetToComparison: Record<Exclude<PresetKey, 'custom'>, OutputComparison> = {
 		exact: { kind: 'exact' },
 		'text-collapsed': { kind: 'text', whitespace: 'collapsed', trim_trailing_newline: true },
@@ -158,18 +167,12 @@
 		'custom-python': { kind: 'custom', code: DEFAULT_CUSTOM_COMPARATOR_CODE, timeout_ms: 2000 }
 	};
 
-	/**
-	 * Return the preset key that exactly matches `cmp`, or 'custom' if none match.
-	 * Comparison is done by structural equality on the known fields of each preset.
-	 */
 	function detectPreset(cmp: OutputComparison): PresetKey {
 		if (cmp.kind === 'custom') return 'custom-python';
-
 		if (cmp.kind === 'exact') return 'exact';
 
 		if (cmp.kind === 'text') {
 			const { whitespace, case_insensitive, trim_trailing_newline } = cmp;
-			// text-ci: collapsed + case_insensitive + trim_trailing_newline
 			if (
 				whitespace === 'collapsed' &&
 				case_insensitive === true &&
@@ -177,7 +180,6 @@
 			) {
 				return 'text-ci';
 			}
-			// text-collapsed: collapsed + no case_insensitive + trim_trailing_newline
 			if (whitespace === 'collapsed' && !case_insensitive && trim_trailing_newline === true) {
 				return 'text-collapsed';
 			}
@@ -186,7 +188,6 @@
 
 		if (cmp.kind === 'numeric') {
 			const { shape, eps_abs, eps_rel, non_numeric, accept_comma_decimal } = cmp;
-			// Only match presets that have no extra options set
 			if (non_numeric !== undefined || accept_comma_decimal !== undefined) return 'custom';
 			if (shape === 'flat' && eps_abs === 1e-9 && eps_rel === 1e-9) return 'numeric-tight';
 			if (shape === 'flat' && eps_abs === 1e-6 && eps_rel === 1e-6) return 'numeric-medium';
@@ -198,63 +199,91 @@
 		return 'custom';
 	}
 
-	/**
-	 * Handle preset selector changes.
-	 * When 'custom' is selected we keep the current comparison unchanged and just
-	 * reveal the custom panel — so the user can fine-tune from wherever they are.
-	 */
+	function isOutputBehavior(
+		b: BehaviorCheck | undefined
+	): b is Extract<BehaviorCheck, { kind: 'output' }> {
+		return b?.kind === 'output';
+	}
+
+	function isUnitTestBehavior(
+		b: BehaviorCheck | undefined
+	): b is Extract<BehaviorCheck, { kind: 'unit_test' }> {
+		return b?.kind === 'unit_test';
+	}
+
+	function updateOutputBehavior(
+		mutator: (
+			b: Extract<BehaviorCheck, { kind: 'output' }>
+		) => Extract<BehaviorCheck, { kind: 'output' }>
+	) {
+		if (!isOutputBehavior(config.behavior)) return;
+		config = { ...config, behavior: mutator(config.behavior) };
+	}
+
+	function updateUnitTestBehavior(
+		mutator: (
+			b: Extract<BehaviorCheck, { kind: 'unit_test' }>
+		) => Extract<BehaviorCheck, { kind: 'unit_test' }>
+	) {
+		if (!isUnitTestBehavior(config.behavior)) return;
+		config = { ...config, behavior: mutator(config.behavior) };
+	}
+
 	function handlePresetChange(value: string) {
-		if (config.type !== 'output') return;
 		if (value === 'custom') return; // keep current comparison, open panel
 		const preset = value as Exclude<PresetKey, 'custom'>;
-		config.comparison = { ...presetToComparison[preset] };
+		updateOutputBehavior((b) => ({ ...b, comparison: { ...presetToComparison[preset] } }));
 	}
 
-	/**
-	 * Switch the comparison kind inside the custom panel, resetting to sensible
-	 * defaults for the new kind so no vestigial fields remain.
-	 */
 	function setKind(kind: 'exact' | 'text' | 'numeric') {
-		if (config.type !== 'output') return;
-		if (kind === 'exact') {
-			config.comparison = { kind: 'exact' };
-		} else if (kind === 'text') {
-			config.comparison = { kind: 'text', whitespace: 'collapsed', trim_trailing_newline: true };
-		} else {
-			config.comparison = { kind: 'numeric', shape: 'flat', eps_abs: 1e-6, eps_rel: 1e-6 };
-		}
+		updateOutputBehavior((b) => {
+			let comparison: OutputComparison;
+			if (kind === 'exact') comparison = { kind: 'exact' };
+			else if (kind === 'text')
+				comparison = { kind: 'text', whitespace: 'collapsed', trim_trailing_newline: true };
+			else comparison = { kind: 'numeric', shape: 'flat', eps_abs: 1e-6, eps_rel: 1e-6 };
+			return { ...b, comparison };
+		});
 	}
 
-	/**
-	 * Bidirectional access to the custom comparator code/timeout_ms.
-	 * Reads narrow when the comparison is actually `custom`; writes spread the
-	 * mutated value back into a fresh CustomComparison object.
-	 */
 	function setCustomCode(code: string) {
-		if (config.type !== 'output' || config.comparison.kind !== 'custom') return;
-		config.comparison = { ...config.comparison, code };
+		updateOutputBehavior((b) => {
+			if (b.comparison.kind !== 'custom') return b;
+			return { ...b, comparison: { ...b.comparison, code } };
+		});
 	}
 
 	function setCustomTimeout(timeoutMs: number) {
-		if (config.type !== 'output' || config.comparison.kind !== 'custom') return;
-		config.comparison = { ...config.comparison, timeout_ms: timeoutMs };
+		updateOutputBehavior((b) => {
+			if (b.comparison.kind !== 'custom') return b;
+			return { ...b, comparison: { ...b.comparison, timeout_ms: timeoutMs } };
+		});
+	}
+
+	function addOutputCase() {
+		updateOutputBehavior((b) => ({
+			...b,
+			test_cases: [...b.test_cases, { input: '', expected_output: '' }]
+		}));
+	}
+
+	function removeOutputCase(i: number) {
+		updateOutputBehavior((b) => {
+			if (b.test_cases.length <= 1) return b;
+			return { ...b, test_cases: b.test_cases.filter((_, idx) => idx !== i) };
+		});
 	}
 
 	// ===========================================================================
-	// unit_test strategy helpers
-	// JSON is edited via local string drafts; the config only sees parsed values
-	// on blur (or on Add). Invalid JSON shows an inline error.
+	// unit_test JSON drafts (parse on blur, surface inline error)
 	// ===========================================================================
 
 	let unitDrafts: { args: string; expected: string; argsErr?: string; expectedErr?: string }[] =
 		$state([]);
 
-	// Seed drafts when the component first mounts with an existing unit_test config
-	// (e.g. editing an exercise loaded from the API). Subsequent transitions are
-	// handled in setStrategy / addUnitCase / removeUnitCase.
 	onMount(() => {
-		if (config.type === 'unit_test') {
-			unitDrafts = config.test_cases.map((tc) => ({
+		if (isUnitTestBehavior(config.behavior)) {
+			unitDrafts = config.behavior.test_cases.map((tc) => ({
 				args: JSON.stringify(tc.args),
 				expected: JSON.stringify(tc.expected)
 			}));
@@ -262,7 +291,7 @@
 	});
 
 	function commitUnitDraft(i: number) {
-		if (config.type !== 'unit_test') return;
+		if (!isUnitTestBehavior(config.behavior)) return;
 		const d = unitDrafts[i];
 		let argsErr: string | undefined;
 		let expectedErr: string | undefined;
@@ -288,522 +317,476 @@
 		unitDrafts[i] = { ...d, argsErr, expectedErr };
 
 		if (parsedArgs !== null && expectedOk) {
-			const updated = [...config.test_cases];
-			updated[i] = { args: parsedArgs, expected: parsedExpected };
-			config.test_cases = updated;
+			updateUnitTestBehavior((b) => {
+				const updated = [...b.test_cases];
+				updated[i] = { ...updated[i], args: parsedArgs as unknown[], expected: parsedExpected };
+				return { ...b, test_cases: updated };
+			});
 		}
 	}
 
 	function addUnitCase() {
-		if (config.type !== 'unit_test') return;
-		config.test_cases = [...config.test_cases, { args: [], expected: null }];
+		updateUnitTestBehavior((b) => ({
+			...b,
+			test_cases: [...b.test_cases, { args: [], expected: null }]
+		}));
 		unitDrafts = [...unitDrafts, { args: '[]', expected: 'null' }];
 	}
 
 	function removeUnitCase(i: number) {
-		if (config.type !== 'unit_test' || config.test_cases.length <= 1) return;
-		config.test_cases = config.test_cases.filter((_, idx) => idx !== i);
+		updateUnitTestBehavior((b) => {
+			if (b.test_cases.length <= 1) return b;
+			return { ...b, test_cases: b.test_cases.filter((_, idx) => idx !== i) };
+		});
 		unitDrafts = unitDrafts.filter((_, idx) => idx !== i);
 	}
 
 	// ===========================================================================
-	// ast strategy helpers
+	// Bindable wrapper for AST requirements (so the panel can $bindable)
 	// ===========================================================================
 
-	const astTypeItems: { value: ASTRequirementType; label: string }[] = [
-		{ value: 'uses_loop', label: 'Utilise une boucle (for/while)' },
-		{ value: 'defines_function', label: 'Définit une fonction' },
-		{ value: 'no_print', label: 'Pas de print()' },
-		{ value: 'uses_recursion', label: 'Utilise la récursion' },
-		{ value: 'defines_class', label: 'Définit une classe' },
-		{ value: 'uses_list_comprehension', label: 'Utilise une compréhension de liste' },
-		{ value: 'no_global_variables', label: 'Pas de variables globales' },
-		{ value: 'uses_import', label: 'Importe un module' }
-	];
-
-	function defaultMessageFor(type: ASTRequirementType, name?: string): string {
-		switch (type) {
-			case 'uses_loop':
-				return 'Tu dois utiliser une boucle';
-			case 'defines_function':
-				return name ? `Définis la fonction \`${name}\`` : 'Tu dois définir une fonction';
-			case 'no_print':
-				return "N'utilise pas print()";
-			case 'uses_recursion':
-				return 'Ta fonction doit être récursive';
-			case 'defines_class':
-				return name ? `Définis la classe \`${name}\`` : 'Tu dois définir une classe';
-			case 'uses_list_comprehension':
-				return 'Utilise une compréhension de liste';
-			case 'no_global_variables':
-				return "N'utilise pas de variables globales";
-			case 'uses_import':
-				return name ? `Importe le module \`${name}\`` : 'Tu dois importer un module';
-		}
+	function setAstRequirements(next: ASTRequirement[]) {
+		config = { ...config, ast_requirements: next };
 	}
 
-	function astSupportsName(type: ASTRequirementType): boolean {
-		return type === 'defines_function' || type === 'defines_class' || type === 'uses_import';
-	}
-
-	function addAstRequirement() {
-		if (config.type !== 'ast') return;
-		const next: ASTRequirement = { type: 'uses_loop', message: defaultMessageFor('uses_loop') };
-		config.requirements = [...config.requirements, next];
-	}
-
-	function removeAstRequirement(i: number) {
-		if (config.type !== 'ast' || config.requirements.length <= 1) return;
-		config.requirements = config.requirements.filter((_, idx) => idx !== i);
-	}
-
-	function setAstType(i: number, type: ASTRequirementType) {
-		if (config.type !== 'ast') return;
-		const updated = [...config.requirements];
-		const current = updated[i];
-		updated[i] = {
-			type,
-			name: astSupportsName(type) ? current.name : undefined,
-			message: defaultMessageFor(type, current.name)
-		};
-		config.requirements = updated;
-	}
-
-	// Local cast-down for clearer per-strategy template branching
-	const outputConfig = $derived(
-		config.type === 'output' ? (config as OutputValidationConfig) : null
-	);
-	const unitConfig = $derived(
-		config.type === 'unit_test' ? (config as UnitTestValidationConfig) : null
-	);
-	const astConfig = $derived(config.type === 'ast' ? (config as ASTValidationConfig) : null);
-
-	// Detect which preset key matches the current comparison object (or 'custom')
 	const selectedPreset = $derived(
-		outputConfig ? detectPreset(outputConfig.comparison) : ('exact' as PresetKey)
+		isOutputBehavior(config.behavior)
+			? detectPreset(config.behavior.comparison)
+			: ('exact' as PresetKey)
 	);
+
+	// Validation hint for the parent: at least one of the two layers must be active.
+	const hasAtLeastOneLayer = $derived(astEnabled || behaviorChoice !== 'none');
 </script>
 
-<div class="space-y-4">
-	<div>
-		<label class="mb-1 block text-sm font-medium" for="strategy-select"
-			>Stratégie de validation</label
-		>
-		<MySelect
-			id="strategy-select"
-			items={strategyItems}
-			value={config.type}
-			onchange={setStrategy}
+<div class="space-y-6">
+	<!-- ============================================================== AST -->
+	<fieldset class="space-y-3 rounded-md border border-border p-4">
+		<legend class="px-2 text-base font-semibold">Forme du code</legend>
+		<MyCheckbox
+			checked={astEnabled}
+			onchange={toggleAst}
+			label="Activer les vérifications de forme (AST)"
 		/>
-	</div>
+		{#if astEnabled && config.ast_requirements}
+			<p class="text-xs text-muted-foreground">
+				Le code de l'élève est analysé sans être exécuté. Si une exigence n'est pas remplie, le
+				comportement attendu n'est pas testé.
+			</p>
+			<ASTRequirementsPanel requirements={config.ast_requirements} onchange={setAstRequirements} />
+		{/if}
+	</fieldset>
 
-	<!-- ============================================================== output -->
-	{#if outputConfig}
-		<div class="space-y-4">
-			<!-- Comparison preset selector -->
-			<div>
-				<label class="mb-1 block text-sm font-medium" for="comparison-preset">Comparaison</label>
-				<MySelect
-					id="comparison-preset"
-					items={comparisonPresetItems}
-					value={selectedPreset}
-					onchange={handlePresetChange}
-				/>
-			</div>
+	<!-- ============================================================== Behavior -->
+	<fieldset class="space-y-3 rounded-md border border-border p-4">
+		<legend class="px-2 text-base font-semibold">Comportement attendu</legend>
+		<div>
+			<label class="mb-1 block text-sm font-medium" for="behavior-kind">Type</label>
+			<MySelect
+				id="behavior-kind"
+				items={behaviorChoiceItems}
+				value={behaviorChoice}
+				onchange={setBehaviorChoice}
+			/>
+		</div>
 
-			<!-- Custom Python comparator panel — special-judge style -->
-			{#if selectedPreset === 'custom-python' && outputConfig.comparison.kind === 'custom'}
-				<div class="space-y-3 rounded-md border border-border bg-muted/30 p-4">
-					<p class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-						Comparateur Python (avancé)
-					</p>
-					<p class="text-xs text-muted-foreground">
-						Définis une fonction <code>compare(expected, actual, stdin)</code> qui retourne
-						<code>True</code>/<code>False</code> ou un dict
-						<code>&lbrace;'passed': bool, 'diff'?: str&rbrace;</code>. Elle s'exécute dans Pyodide
-						pour chaque cas de test, dans un namespace isolé.
-					</p>
-					<div>
-						<label class="mb-1 block text-sm font-medium" for="cmp-custom-code">
-							Code Python du comparateur
-						</label>
-						<textarea
-							id="cmp-custom-code"
-							class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
-							rows="14"
-							value={outputConfig.comparison.code}
-							oninput={(e) => setCustomCode((e.target as HTMLTextAreaElement).value)}
-						></textarea>
-					</div>
-					<div>
-						<label class="mb-1 block text-sm font-medium" for="cmp-custom-timeout">
-							Délai d'exécution maximum par cas (ms)
-						</label>
-						<Input
-							id="cmp-custom-timeout"
-							type="number"
-							min="100"
-							max="10000"
-							step="100"
-							value={outputConfig.comparison.timeout_ms ?? 2000}
-							oninput={(e) => {
-								const v = parseInt((e.target as HTMLInputElement).value, 10);
-								if (!isNaN(v) && v >= 100 && v <= 10000) setCustomTimeout(v);
-							}}
-						/>
-					</div>
-					<p class="text-xs text-muted-foreground">
-						Pour vérifier que le comparateur tourne, clique sur <strong>Vérifier</strong> au-dessus du
-						formulaire — ta solution sera évaluée par ton comparateur sur tous les cas de test.
-					</p>
+		<!-- ............................................................. output -->
+		{#if isOutputBehavior(config.behavior)}
+			{@const outputBehavior = config.behavior}
+			<div class="space-y-4">
+				<div>
+					<label class="mb-1 block text-sm font-medium" for="comparison-preset">Comparaison</label>
+					<MySelect
+						id="comparison-preset"
+						items={comparisonPresetItems}
+						value={selectedPreset}
+						onchange={handlePresetChange}
+					/>
 				</div>
-			{/if}
 
-			<!-- Custom panel — shown when no preset matches -->
-			{#if selectedPreset === 'custom'}
-				<div class="space-y-4 rounded-md border border-border bg-muted/30 p-4">
-					<p class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-						Configuration personnalisée
-					</p>
-
-					<!-- Kind selector -->
-					<div>
-						<label class="mb-1 block text-sm font-medium" for="cmp-kind">Type</label>
-						<MySelect
-							id="cmp-kind"
-							items={kindItems}
-							value={outputConfig.comparison.kind}
-							onchange={(v) => setKind(v as 'exact' | 'text' | 'numeric')}
-						/>
-					</div>
-
-					<!-- text options -->
-					{#if outputConfig.comparison.kind === 'text'}
+				{#if selectedPreset === 'custom-python' && outputBehavior.comparison.kind === 'custom'}
+					{@const customCmp = outputBehavior.comparison}
+					<div class="space-y-3 rounded-md border border-border bg-muted/30 p-4">
+						<p class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+							Comparateur Python (avancé)
+						</p>
+						<p class="text-xs text-muted-foreground">
+							Définis une fonction <code>compare(expected, actual, stdin)</code> qui retourne
+							<code>True</code>/<code>False</code> ou un dict
+							<code>&lbrace;'passed': bool, 'diff'?: str&rbrace;</code>. Elle s'exécute dans Pyodide
+							pour chaque cas de test, dans un namespace isolé.
+						</p>
 						<div>
-							<label class="mb-1 block text-sm font-medium" for="cmp-whitespace">Whitespace</label>
-							<MySelect
-								id="cmp-whitespace"
-								items={whitespaceItems}
-								value={outputConfig.comparison.whitespace}
-								onchange={(v) => {
-									if (config.type !== 'output' || config.comparison.kind !== 'text') return;
-									config.comparison = {
-										...config.comparison,
-										whitespace: v as 'strict' | 'collapsed' | 'lines'
-									};
-								}}
-							/>
-						</div>
-						<MyCheckbox
-							checked={outputConfig.comparison.kind === 'text'
-								? (outputConfig.comparison.case_insensitive ?? false)
-								: false}
-							onchange={(v) => {
-								if (config.type !== 'output' || config.comparison.kind !== 'text') return;
-								config.comparison = { ...config.comparison, case_insensitive: v };
-							}}
-							label="Ignorer la casse"
-						/>
-						<MyCheckbox
-							checked={outputConfig.comparison.kind === 'text'
-								? (outputConfig.comparison.trim_trailing_newline ?? false)
-								: false}
-							onchange={(v) => {
-								if (config.type !== 'output' || config.comparison.kind !== 'text') return;
-								config.comparison = { ...config.comparison, trim_trailing_newline: v };
-							}}
-							label="Tolérer le saut de ligne final"
-						/>
-					{/if}
-
-					<!-- numeric options -->
-					{#if outputConfig.comparison.kind === 'numeric'}
-						<div>
-							<label class="mb-1 block text-sm font-medium" for="cmp-shape">Forme</label>
-							<MySelect
-								id="cmp-shape"
-								items={shapeItems}
-								value={outputConfig.comparison.shape}
-								onchange={(v) => {
-									if (config.type !== 'output' || config.comparison.kind !== 'numeric') return;
-									config.comparison = {
-										...config.comparison,
-										shape: v as 'flat' | 'lines' | 'grid'
-									};
-								}}
-							/>
-						</div>
-						<div class="grid gap-3 sm:grid-cols-2">
-							<div>
-								<label class="mb-1 block text-sm font-medium" for="cmp-eps-abs">
-									Tolérance absolue (eps_abs)
-								</label>
-								<Input
-									id="cmp-eps-abs"
-									type="number"
-									step="any"
-									value={outputConfig.comparison.eps_abs}
-									oninput={(e) => {
-										if (config.type !== 'output' || config.comparison.kind !== 'numeric') return;
-										const v = parseFloat((e.target as HTMLInputElement).value);
-										if (!isNaN(v)) config.comparison = { ...config.comparison, eps_abs: v };
-									}}
-								/>
-							</div>
-							<div>
-								<label class="mb-1 block text-sm font-medium" for="cmp-eps-rel">
-									Tolérance relative (eps_rel)
-								</label>
-								<Input
-									id="cmp-eps-rel"
-									type="number"
-									step="any"
-									value={outputConfig.comparison.eps_rel}
-									oninput={(e) => {
-										if (config.type !== 'output' || config.comparison.kind !== 'numeric') return;
-										const v = parseFloat((e.target as HTMLInputElement).value);
-										if (!isNaN(v)) config.comparison = { ...config.comparison, eps_rel: v };
-									}}
-								/>
-							</div>
-						</div>
-						<div>
-							<label class="mb-1 block text-sm font-medium" for="cmp-non-numeric">
-								Tokens non numériques
+							<label class="mb-1 block text-sm font-medium" for="cmp-custom-code">
+								Code Python du comparateur
 							</label>
-							<MySelect
-								id="cmp-non-numeric"
-								items={nonNumericItems}
-								value={outputConfig.comparison.non_numeric ?? 'match'}
-								onchange={(v) => {
-									if (config.type !== 'output' || config.comparison.kind !== 'numeric') return;
-									config.comparison = {
-										...config.comparison,
-										non_numeric: v as 'match' | 'ignore'
-									};
+							<textarea
+								id="cmp-custom-code"
+								class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+								rows="14"
+								value={customCmp.code}
+								oninput={(e) => setCustomCode((e.target as HTMLTextAreaElement).value)}
+							></textarea>
+						</div>
+						<div>
+							<label class="mb-1 block text-sm font-medium" for="cmp-custom-timeout">
+								Délai d'exécution maximum par cas (ms)
+							</label>
+							<Input
+								id="cmp-custom-timeout"
+								type="number"
+								min="100"
+								max="10000"
+								step="100"
+								value={customCmp.timeout_ms ?? 2000}
+								oninput={(e) => {
+									const v = parseInt((e.target as HTMLInputElement).value, 10);
+									if (!isNaN(v) && v >= 100 && v <= 10000) setCustomTimeout(v);
 								}}
 							/>
 						</div>
-						<MyCheckbox
-							checked={outputConfig.comparison.kind === 'numeric'
-								? (outputConfig.comparison.accept_comma_decimal ?? false)
-								: false}
-							onchange={(v) => {
-								if (config.type !== 'output' || config.comparison.kind !== 'numeric') return;
-								config.comparison = { ...config.comparison, accept_comma_decimal: v };
-							}}
-							label="Accepter la virgule comme séparateur décimal"
-						/>
-					{/if}
-
-					<!-- exact: nothing to configure -->
-					{#if outputConfig.comparison.kind === 'exact'}
-						<p class="text-sm text-muted-foreground">Aucune option à configurer.</p>
-					{/if}
-				</div>
-			{/if}
-
-			<!-- Test cases -->
-			<div class="space-y-2">
-				{#each outputConfig.test_cases as testCase, i (i)}
-					<div class="rounded-md border border-border p-3">
-						<div class="mb-2 flex items-center justify-between">
-							<span class="text-sm font-medium">Cas de test {i + 1}</span>
-							<div class="flex items-center gap-3">
-								<MyCheckbox
-									checked={testCase.hidden ?? false}
-									onchange={(v) => {
-										if (config.type !== 'output') return;
-										const updated = [...config.test_cases];
-										updated[i] = { ...updated[i], hidden: v };
-										config.test_cases = updated;
-									}}
-									label="Caché"
-								/>
-								<Button
-									type="button"
-									variant="ghost"
-									size="sm"
-									onclick={() => removeOutputCase(i)}
-									disabled={outputConfig.test_cases.length <= 1}
-									aria-label="Supprimer le cas {i + 1}"
-								>
-									<Trash2 class="h-4 w-4" />
-								</Button>
-							</div>
-						</div>
-						<div class="grid gap-2 sm:grid-cols-2">
-							<div>
-								<label class="mb-1 block text-xs text-muted-foreground" for="case-input-{i}">
-									Entrée stdin (optionnel)
-								</label>
-								<textarea
-									id="case-input-{i}"
-									class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
-									rows="2"
-									bind:value={testCase.input}
-								></textarea>
-							</div>
-							<div>
-								<label class="mb-1 block text-xs text-muted-foreground" for="case-expected-{i}">
-									Sortie attendue
-								</label>
-								<textarea
-									id="case-expected-{i}"
-									class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
-									rows="2"
-									bind:value={testCase.expected_output}
-								></textarea>
-							</div>
-						</div>
 					</div>
-				{/each}
-			</div>
-			<Button type="button" variant="outline" size="sm" onclick={addOutputCase}>
-				<Plus class="mr-1 h-4 w-4" /> Ajouter un cas
-			</Button>
-		</div>
-	{/if}
+				{/if}
 
-	<!-- =========================================================== unit_test -->
-	{#if unitConfig}
-		<div class="space-y-3">
-			<div>
-				<label class="mb-1 block text-sm font-medium" for="function-name">
-					Nom de la fonction
-				</label>
-				<Input
-					id="function-name"
-					bind:value={unitConfig.function_name}
-					placeholder="ex: add"
-					autocomplete="off"
-				/>
-			</div>
-			<div class="space-y-2">
-				{#each unitConfig.test_cases as testCase, i (i)}
-					<div class="rounded-md border border-border p-3">
-						<div class="mb-2 flex items-center justify-between">
-							<span class="text-sm font-medium">Cas de test {i + 1}</span>
-							<div class="flex items-center gap-3">
-								<MyCheckbox
-									checked={testCase.hidden ?? false}
-									onchange={(v) => {
-										if (config.type !== 'unit_test') return;
-										const updated = [...config.test_cases];
-										updated[i] = { ...updated[i], hidden: v };
-										config.test_cases = updated;
-									}}
-									label="Caché"
-								/>
-								<Button
-									type="button"
-									variant="ghost"
-									size="sm"
-									onclick={() => removeUnitCase(i)}
-									disabled={unitConfig.test_cases.length <= 1}
-									aria-label="Supprimer le cas {i + 1}"
-								>
-									<Trash2 class="h-4 w-4" />
-								</Button>
-							</div>
-						</div>
-						<div class="grid gap-2 sm:grid-cols-2">
-							<div>
-								<label class="mb-1 block text-xs text-muted-foreground" for="unit-args-{i}">
-									Arguments (JSON, ex: <code>[1, 2]</code>)
-								</label>
-								<textarea
-									id="unit-args-{i}"
-									class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
-									class:border-red-500={unitDrafts[i]?.argsErr}
-									rows="2"
-									bind:value={unitDrafts[i].args}
-									onblur={() => commitUnitDraft(i)}
-								></textarea>
-								{#if unitDrafts[i]?.argsErr}
-									<p class="mt-1 text-xs text-red-600">{unitDrafts[i].argsErr}</p>
-								{/if}
-							</div>
-							<div>
-								<label class="mb-1 block text-xs text-muted-foreground" for="unit-expected-{i}">
-									Résultat attendu (JSON, ex: <code>3</code>)
-								</label>
-								<textarea
-									id="unit-expected-{i}"
-									class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
-									class:border-red-500={unitDrafts[i]?.expectedErr}
-									rows="2"
-									bind:value={unitDrafts[i].expected}
-									onblur={() => commitUnitDraft(i)}
-								></textarea>
-								{#if unitDrafts[i]?.expectedErr}
-									<p class="mt-1 text-xs text-red-600">{unitDrafts[i].expectedErr}</p>
-								{/if}
-							</div>
-						</div>
-					</div>
-				{/each}
-			</div>
-			<Button type="button" variant="outline" size="sm" onclick={addUnitCase}>
-				<Plus class="mr-1 h-4 w-4" /> Ajouter un cas
-			</Button>
-		</div>
-	{/if}
+				{#if selectedPreset === 'custom'}
+					<div class="space-y-4 rounded-md border border-border bg-muted/30 p-4">
+						<p class="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+							Configuration personnalisée
+						</p>
 
-	<!-- ================================================================ ast -->
-	{#if astConfig}
-		<div class="space-y-2">
-			{#each astConfig.requirements as req, i (i)}
-				<div class="rounded-md border border-border p-3">
-					<div class="mb-2 flex items-center justify-between">
-						<span class="text-sm font-medium">Exigence {i + 1}</span>
-						<Button
-							type="button"
-							variant="ghost"
-							size="sm"
-							onclick={() => removeAstRequirement(i)}
-							disabled={astConfig.requirements.length <= 1}
-							aria-label="Supprimer l'exigence {i + 1}"
-						>
-							<Trash2 class="h-4 w-4" />
-						</Button>
-					</div>
-					<div class="space-y-2">
 						<div>
-							<label class="mb-1 block text-xs text-muted-foreground" for="ast-type-{i}">Type</label
-							>
+							<label class="mb-1 block text-sm font-medium" for="cmp-kind">Type</label>
 							<MySelect
-								id="ast-type-{i}"
-								items={astTypeItems}
-								value={req.type}
-								onchange={(v) => setAstType(i, v as ASTRequirementType)}
+								id="cmp-kind"
+								items={kindItems}
+								value={outputBehavior.comparison.kind}
+								onchange={(v) => setKind(v as 'exact' | 'text' | 'numeric')}
 							/>
 						</div>
-						{#if astSupportsName(req.type)}
+
+						{#if outputBehavior.comparison.kind === 'text'}
+							{@const textCmp = outputBehavior.comparison}
 							<div>
-								<label class="mb-1 block text-xs text-muted-foreground" for="ast-name-{i}">
-									Nom (optionnel) — ex: <code>factorielle</code>
-								</label>
-								<Input
-									id="ast-name-{i}"
-									bind:value={req.name}
-									placeholder="laisser vide pour accepter n'importe quel nom"
-									autocomplete="off"
+								<label class="mb-1 block text-sm font-medium" for="cmp-whitespace">Whitespace</label
+								>
+								<MySelect
+									id="cmp-whitespace"
+									items={whitespaceItems}
+									value={textCmp.whitespace}
+									onchange={(v) =>
+										updateOutputBehavior((b) =>
+											b.comparison.kind === 'text'
+												? {
+														...b,
+														comparison: {
+															...b.comparison,
+															whitespace: v as 'strict' | 'collapsed' | 'lines'
+														}
+													}
+												: b
+										)}
 								/>
 							</div>
+							<MyCheckbox
+								checked={textCmp.case_insensitive ?? false}
+								onchange={(v) =>
+									updateOutputBehavior((b) =>
+										b.comparison.kind === 'text'
+											? { ...b, comparison: { ...b.comparison, case_insensitive: v } }
+											: b
+									)}
+								label="Ignorer la casse"
+							/>
+							<MyCheckbox
+								checked={textCmp.trim_trailing_newline ?? false}
+								onchange={(v) =>
+									updateOutputBehavior((b) =>
+										b.comparison.kind === 'text'
+											? { ...b, comparison: { ...b.comparison, trim_trailing_newline: v } }
+											: b
+									)}
+								label="Tolérer le saut de ligne final"
+							/>
 						{/if}
-						<div>
-							<label class="mb-1 block text-xs text-muted-foreground" for="ast-msg-{i}">
-								Message d'erreur affiché à l'élève
-							</label>
-							<Input id="ast-msg-{i}" bind:value={req.message} autocomplete="off" />
-						</div>
+
+						{#if outputBehavior.comparison.kind === 'numeric'}
+							{@const numCmp = outputBehavior.comparison}
+							<div>
+								<label class="mb-1 block text-sm font-medium" for="cmp-shape">Forme</label>
+								<MySelect
+									id="cmp-shape"
+									items={shapeItems}
+									value={numCmp.shape}
+									onchange={(v) =>
+										updateOutputBehavior((b) =>
+											b.comparison.kind === 'numeric'
+												? {
+														...b,
+														comparison: {
+															...b.comparison,
+															shape: v as 'flat' | 'lines' | 'grid'
+														}
+													}
+												: b
+										)}
+								/>
+							</div>
+							<div class="grid gap-3 sm:grid-cols-2">
+								<div>
+									<label class="mb-1 block text-sm font-medium" for="cmp-eps-abs">
+										Tolérance absolue (eps_abs)
+									</label>
+									<Input
+										id="cmp-eps-abs"
+										type="number"
+										step="any"
+										value={numCmp.eps_abs}
+										oninput={(e) => {
+											const v = parseFloat((e.target as HTMLInputElement).value);
+											if (!isNaN(v))
+												updateOutputBehavior((b) =>
+													b.comparison.kind === 'numeric'
+														? { ...b, comparison: { ...b.comparison, eps_abs: v } }
+														: b
+												);
+										}}
+									/>
+								</div>
+								<div>
+									<label class="mb-1 block text-sm font-medium" for="cmp-eps-rel">
+										Tolérance relative (eps_rel)
+									</label>
+									<Input
+										id="cmp-eps-rel"
+										type="number"
+										step="any"
+										value={numCmp.eps_rel}
+										oninput={(e) => {
+											const v = parseFloat((e.target as HTMLInputElement).value);
+											if (!isNaN(v))
+												updateOutputBehavior((b) =>
+													b.comparison.kind === 'numeric'
+														? { ...b, comparison: { ...b.comparison, eps_rel: v } }
+														: b
+												);
+										}}
+									/>
+								</div>
+							</div>
+							<div>
+								<label class="mb-1 block text-sm font-medium" for="cmp-non-numeric">
+									Tokens non numériques
+								</label>
+								<MySelect
+									id="cmp-non-numeric"
+									items={nonNumericItems}
+									value={numCmp.non_numeric ?? 'match'}
+									onchange={(v) =>
+										updateOutputBehavior((b) =>
+											b.comparison.kind === 'numeric'
+												? {
+														...b,
+														comparison: {
+															...b.comparison,
+															non_numeric: v as 'match' | 'ignore'
+														}
+													}
+												: b
+										)}
+								/>
+							</div>
+							<MyCheckbox
+								checked={numCmp.accept_comma_decimal ?? false}
+								onchange={(v) =>
+									updateOutputBehavior((b) =>
+										b.comparison.kind === 'numeric'
+											? { ...b, comparison: { ...b.comparison, accept_comma_decimal: v } }
+											: b
+									)}
+								label="Accepter la virgule comme séparateur décimal"
+							/>
+						{/if}
+
+						{#if outputBehavior.comparison.kind === 'exact'}
+							<p class="text-sm text-muted-foreground">Aucune option à configurer.</p>
+						{/if}
 					</div>
+				{/if}
+
+				<div class="space-y-2">
+					{#each outputBehavior.test_cases as testCase, i (i)}
+						<div class="rounded-md border border-border p-3">
+							<div class="mb-2 flex items-center justify-between">
+								<span class="text-sm font-medium">Cas de test {i + 1}</span>
+								<div class="flex items-center gap-3">
+									<MyCheckbox
+										checked={testCase.hidden ?? false}
+										onchange={(v) =>
+											updateOutputBehavior((b) => {
+												const updated = [...b.test_cases];
+												updated[i] = { ...updated[i], hidden: v };
+												return { ...b, test_cases: updated };
+											})}
+										label="Caché"
+									/>
+									<Button
+										type="button"
+										variant="ghost"
+										size="sm"
+										onclick={() => removeOutputCase(i)}
+										disabled={outputBehavior.test_cases.length <= 1}
+										aria-label="Supprimer le cas {i + 1}"
+									>
+										<Trash2 class="h-4 w-4" />
+									</Button>
+								</div>
+							</div>
+							<div class="grid gap-2 sm:grid-cols-2">
+								<div>
+									<label class="mb-1 block text-xs text-muted-foreground" for="case-input-{i}">
+										Entrée stdin (optionnel)
+									</label>
+									<textarea
+										id="case-input-{i}"
+										class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+										rows="2"
+										value={testCase.input}
+										oninput={(e) =>
+											updateOutputBehavior((b) => {
+												const updated = [...b.test_cases];
+												updated[i] = {
+													...updated[i],
+													input: (e.target as HTMLTextAreaElement).value
+												};
+												return { ...b, test_cases: updated };
+											})}
+									></textarea>
+								</div>
+								<div>
+									<label class="mb-1 block text-xs text-muted-foreground" for="case-expected-{i}">
+										Sortie attendue
+									</label>
+									<textarea
+										id="case-expected-{i}"
+										class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+										rows="2"
+										value={testCase.expected_output}
+										oninput={(e) =>
+											updateOutputBehavior((b) => {
+												const updated = [...b.test_cases];
+												updated[i] = {
+													...updated[i],
+													expected_output: (e.target as HTMLTextAreaElement).value
+												};
+												return { ...b, test_cases: updated };
+											})}
+									></textarea>
+								</div>
+							</div>
+						</div>
+					{/each}
 				</div>
-			{/each}
-			<Button type="button" variant="outline" size="sm" onclick={addAstRequirement}>
-				<Plus class="mr-1 h-4 w-4" /> Ajouter une exigence
-			</Button>
-		</div>
+				<Button type="button" variant="outline" size="sm" onclick={addOutputCase}>
+					<Plus class="mr-1 h-4 w-4" /> Ajouter un cas
+				</Button>
+			</div>
+		{/if}
+
+		<!-- .......................................................... unit_test -->
+		{#if isUnitTestBehavior(config.behavior)}
+			{@const utBehavior = config.behavior}
+			<div class="space-y-3">
+				<div>
+					<label class="mb-1 block text-sm font-medium" for="function-name">
+						Nom de la fonction
+					</label>
+					<Input
+						id="function-name"
+						value={utBehavior.function_name}
+						oninput={(e) =>
+							updateUnitTestBehavior((b) => ({
+								...b,
+								function_name: (e.target as HTMLInputElement).value
+							}))}
+						placeholder="ex: add"
+						autocomplete="off"
+					/>
+				</div>
+				<div class="space-y-2">
+					{#each utBehavior.test_cases as testCase, i (i)}
+						<div class="rounded-md border border-border p-3">
+							<div class="mb-2 flex items-center justify-between">
+								<span class="text-sm font-medium">Cas de test {i + 1}</span>
+								<div class="flex items-center gap-3">
+									<MyCheckbox
+										checked={testCase.hidden ?? false}
+										onchange={(v) =>
+											updateUnitTestBehavior((b) => {
+												const updated = [...b.test_cases];
+												updated[i] = { ...updated[i], hidden: v };
+												return { ...b, test_cases: updated };
+											})}
+										label="Caché"
+									/>
+									<Button
+										type="button"
+										variant="ghost"
+										size="sm"
+										onclick={() => removeUnitCase(i)}
+										disabled={utBehavior.test_cases.length <= 1}
+										aria-label="Supprimer le cas {i + 1}"
+									>
+										<Trash2 class="h-4 w-4" />
+									</Button>
+								</div>
+							</div>
+							<div class="grid gap-2 sm:grid-cols-2">
+								<div>
+									<label class="mb-1 block text-xs text-muted-foreground" for="unit-args-{i}">
+										Arguments (JSON, ex&nbsp;: <code>[1, 2]</code>)
+									</label>
+									<textarea
+										id="unit-args-{i}"
+										class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+										class:border-red-500={unitDrafts[i]?.argsErr}
+										rows="2"
+										bind:value={unitDrafts[i].args}
+										onblur={() => commitUnitDraft(i)}
+									></textarea>
+									{#if unitDrafts[i]?.argsErr}
+										<p class="mt-1 text-xs text-red-600">{unitDrafts[i].argsErr}</p>
+									{/if}
+								</div>
+								<div>
+									<label class="mb-1 block text-xs text-muted-foreground" for="unit-expected-{i}">
+										Résultat attendu (JSON, ex&nbsp;: <code>3</code>)
+									</label>
+									<textarea
+										id="unit-expected-{i}"
+										class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+										class:border-red-500={unitDrafts[i]?.expectedErr}
+										rows="2"
+										bind:value={unitDrafts[i].expected}
+										onblur={() => commitUnitDraft(i)}
+									></textarea>
+									{#if unitDrafts[i]?.expectedErr}
+										<p class="mt-1 text-xs text-red-600">{unitDrafts[i].expectedErr}</p>
+									{/if}
+								</div>
+							</div>
+						</div>
+					{/each}
+				</div>
+				<Button type="button" variant="outline" size="sm" onclick={addUnitCase}>
+					<Plus class="mr-1 h-4 w-4" /> Ajouter un cas
+				</Button>
+			</div>
+		{/if}
+	</fieldset>
+
+	{#if !hasAtLeastOneLayer}
+		<p class="text-sm text-amber-700 dark:text-amber-400" role="alert">
+			Active au moins une vérification de forme ou un comportement attendu.
+		</p>
 	{/if}
 </div>

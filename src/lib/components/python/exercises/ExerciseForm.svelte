@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { ExerciseValidationConfig } from '$lib/shared/python';
+	import type { ValidationConfigV2 } from '$lib/types/python-exercises';
 
 	export type Level = 'college' | 'lycee' | 'nsi' | 'etudiant';
 
@@ -9,7 +9,7 @@
 		instructions: string;
 		starter_code: string;
 		solution_code: string;
-		validation_config: ExerciseValidationConfig;
+		validation_config: ValidationConfigV2;
 		level: Level;
 		tags: string[];
 		source: string;
@@ -25,9 +25,11 @@
 			starter_code: '',
 			solution_code: '',
 			validation_config: {
-				type: 'output',
-				test_cases: [{ input: '', expected_output: '' }],
-				comparison: { kind: 'exact' }
+				behavior: {
+					kind: 'output',
+					test_cases: [{ input: '', expected_output: '' }],
+					comparison: { kind: 'exact' }
+				}
 			},
 			level: 'lycee',
 			tags: [],
@@ -61,7 +63,10 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import { PlaygroundExecutor, type ExerciseValidationResult as Result } from '$lib/shared/python';
+	import {
+		PlaygroundExecutor,
+		type ExerciseValidationResultV2 as Result
+	} from '$lib/shared/python';
 	import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-svelte';
 
 	type Props = {
@@ -132,7 +137,8 @@
 		} catch (e) {
 			verifyResult = {
 				valid: false,
-				strategy: form.validation_config.type,
+				failed_layer: null,
+				behavior_kind: form.validation_config.behavior?.kind,
 				test_results: [],
 				error: e instanceof Error ? e.message : String(e),
 				execution_time_ms: 0
