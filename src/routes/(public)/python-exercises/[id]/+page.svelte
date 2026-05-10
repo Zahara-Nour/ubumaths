@@ -19,7 +19,8 @@
 		XCircle,
 		BarChart3,
 		LineChart,
-		FunctionSquare
+		FunctionSquare,
+		Link2
 	} from 'lucide-svelte';
 
 	let { data } = $props();
@@ -233,6 +234,17 @@
 		}
 	}
 
+	async function handleCopyLink() {
+		if (!browser) return;
+		const url = `${window.location.protocol}//${window.location.host}/python-exercises/${exercise.id}`;
+		try {
+			await navigator.clipboard.writeText(url);
+			toaster.success('Lien copié');
+		} catch {
+			toaster.error('Impossible de copier le lien');
+		}
+	}
+
 	function handleLoadSubmission(submissionCode: string) {
 		code = submissionCode;
 		validationResult = null;
@@ -264,6 +276,12 @@
 		<div class="flex items-start justify-between gap-4">
 			<h1 class="mb-2 text-2xl font-bold">{exercise.title}</h1>
 			<div class="flex items-center gap-2">
+				{#if isTeacher}
+					<Button variant="outline" size="sm" onclick={handleCopyLink}>
+						<Link2 class="mr-1 h-4 w-4" />
+						Copier le lien
+					</Button>
+				{/if}
 				{#if canSubmit}
 					<Button variant="outline" size="sm" href="/python-exercises/my-progress">
 						<LineChart class="mr-1 h-4 w-4" />
@@ -309,9 +327,11 @@
 			</div>
 
 			<div class="flex flex-wrap gap-2">
-				<Button onclick={handleRun} disabled={!pyodideReady || isValidating || isSubmitting}>
-					<Play class="mr-1 h-4 w-4" /> Run
-				</Button>
+				{#if !isUnitTest}
+					<Button onclick={handleRun} disabled={!pyodideReady || isValidating || isSubmitting}>
+						<Play class="mr-1 h-4 w-4" /> Run
+					</Button>
+				{/if}
 				<Button onclick={handleValidate} disabled={!pyodideReady || isValidating || isSubmitting}>
 					<CheckCircle2 class="mr-1 h-4 w-4" /> Vérifier
 				</Button>
@@ -338,15 +358,17 @@
 				{/if}
 			</div>
 
-			<PythonOutput
-				stdout={executor?.stdout ?? ''}
-				stderr={executor?.stderr ?? ''}
-				plotData={executor?.plotData ?? null}
-				latexOutput={executor?.latexOutput ?? null}
-				plotlyData={executor?.plotlyData ?? null}
-				errorLine={executor?.errorLine ?? null}
-				executionTime={executor?.executionTime ?? 0}
-			/>
+			{#if !isUnitTest}
+				<PythonOutput
+					stdout={executor?.stdout ?? ''}
+					stderr={executor?.stderr ?? ''}
+					plotData={executor?.plotData ?? null}
+					latexOutput={executor?.latexOutput ?? null}
+					plotlyData={executor?.plotlyData ?? null}
+					errorLine={executor?.errorLine ?? null}
+					executionTime={executor?.executionTime ?? 0}
+				/>
+			{/if}
 
 			{#if isUnitTest}
 				<div class="rounded-md border border-border bg-card p-3">
