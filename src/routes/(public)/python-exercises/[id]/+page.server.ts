@@ -65,9 +65,12 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 	// Show the "Voir les résultats" link only to teachers who can actually load
 	// the page: author OR has at least one assignment they created for this exo.
 	// Mirrors the authz of /python-exercises/[id]/results/+page.server.ts.
+	const isAuthor =
+		role === 'teacher' &&
+		locals.user !== null &&
+		(exercise as { author_id?: string }).author_id === locals.user.id;
 	let canViewResults = false;
 	if (role === 'teacher' && locals.user) {
-		const isAuthor = (exercise as { author_id?: string }).author_id === locals.user.id;
 		if (isAuthor) {
 			canViewResults = true;
 		} else {
@@ -87,6 +90,7 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 		canSubmit: role === 'student',
 		isAuthenticated: Boolean(locals.user),
 		masteryStatus: role === 'student' ? masteryPayload.status : null,
-		canViewResults
+		canViewResults,
+		canEdit: isAuthor
 	};
 };

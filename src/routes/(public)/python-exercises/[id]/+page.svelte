@@ -20,7 +20,8 @@
 		BarChart3,
 		LineChart,
 		FunctionSquare,
-		Link2
+		Link2,
+		Pencil
 	} from 'lucide-svelte';
 
 	let { data } = $props();
@@ -283,6 +284,12 @@
 					<Button variant="outline" size="sm" onclick={handleCopyLink}>
 						<Link2 class="mr-1 h-4 w-4" />
 						Copier le lien
+					</Button>
+				{/if}
+				{#if data.canEdit}
+					<Button variant="outline" size="sm" href="/python-exercises/{exercise.id}/edit">
+						<Pencil class="mr-1 h-4 w-4" />
+						Modifier
 					</Button>
 				{/if}
 				{#if canSubmit}
