@@ -1,22 +1,25 @@
 <script lang="ts">
 	/**
-	 * Display the result of an exercise validation run.
+	 * Display the result of an exercise validation run (new V2 shape:
+	 * `failed_layer` / `behavior_kind` / `ast_issues`).
 	 *
 	 * Three layers, in order:
-	 *   1. Header banner — green (valid), red (invalid), amber (error)
-	 *   2. AST issues — list of `ast_issues` messages (only for ast strategy)
+	 *   1. Header banner — green (valid), red (invalid), amber (error). The
+	 *      sub-line names the layer that failed when relevant.
+	 *   2. AST issues — list of `ast_issues` messages whenever AST checks
+	 *      were run (the array is empty if AST passed; we only render when
+	 *      it has at least one entry).
 	 *   3. Test cases — collapsible <details>, compact when closed, full
-	 *      input/expected/actual/error when open
-	 *
-	 * Result shape comes from the worker via BasePythonExecutor.validateExercise.
+	 *      input/expected/actual/error when open. Hidden test cases show
+	 *      only verdict + lock icon.
 	 */
 
-	import type { ExerciseValidationResult } from '$lib/shared/python';
+	import type { ExerciseValidationResultV2 } from '$lib/shared/python';
 	import { CheckCircle2, XCircle, AlertTriangle, Loader2, Lock } from 'lucide-svelte';
 
 	type Props = {
 		/** Validation result, or null when no validation has run yet */
-		result: ExerciseValidationResult | null;
+		result: ExerciseValidationResultV2 | null;
 		/** Whether a validation is currently in flight (shows a spinner) */
 		loading?: boolean;
 	};
@@ -28,6 +31,18 @@
 
 	const hasGlobalError = $derived(Boolean(result?.error));
 	const hasAstIssues = $derived(result?.ast_issues !== undefined && result.ast_issues.length > 0);
+
+	/** Localised label for `failed_layer` to surface in the failure banner. */
+	const failureSubline = $derived.by(() => {
+		if (!result || result.valid) return '';
+		if (result.failed_layer === 'ast') return 'Vérifications de forme non satisfaites';
+		if (result.failed_layer === 'behavior') {
+			if (result.behavior_kind === 'unit_test') return 'Tests de fonction échoués';
+			if (result.behavior_kind === 'output') return 'Sortie attendue non obtenue';
+			return 'Comportement attendu non vérifié';
+		}
+		return '';
+	});
 </script>
 
 {#if loading}
@@ -75,6 +90,9 @@
 				<XCircle class="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
 				<div>
 					<div class="font-medium text-red-900 dark:text-red-100">Validation échouée</div>
+					{#if failureSubline}
+						<div class="text-sm text-red-800 dark:text-red-200">{failureSubline}</div>
+					{/if}
 					{#if totalCount > 0}
 						<div class="text-sm text-red-800 dark:text-red-200">
 							{passedCount}/{totalCount} tests passent

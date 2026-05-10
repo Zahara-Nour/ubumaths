@@ -306,7 +306,7 @@ export const createExerciseSchema = z.object({
 		.min(CODE_MIN)
 		.max(CODE_MAX)
 		.describe('Solution code (required, 1-100000 chars)'),
-	validation_config: validationConfigSchemaLegacy.describe('Validation strategy and configuration'),
+	validation_config: validationConfigSchema.describe('Validation strategy and configuration'),
 	level: exerciseLevelSchema.describe('Class level: college, lycee, nsi, etudiant'),
 	tags: z
 		.array(z.string().min(1).max(50))
@@ -330,7 +330,7 @@ export const updateExerciseSchema = z.object({
 	instructions: z.string().max(INSTRUCTIONS_MAX).nullable().optional(),
 	starter_code: z.string().max(CODE_MAX).nullable().optional(),
 	solution_code: z.string().min(CODE_MIN).max(CODE_MAX).optional(),
-	validation_config: validationConfigSchemaLegacy.optional(),
+	validation_config: validationConfigSchema.optional(),
 	level: exerciseLevelSchema.optional(),
 	tags: z.array(z.string().min(1).max(50)).max(TAGS_MAX).optional(),
 	source: z.string().max(SOURCE_MAX).nullable().optional(),

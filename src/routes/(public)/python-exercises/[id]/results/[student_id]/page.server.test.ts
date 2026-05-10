@@ -178,7 +178,7 @@ describe('drill-down load (data)', () => {
 				{
 					id: 's2',
 					code: 'print("v2")',
-					validation_result: { valid: true, strategy: 'output' },
+					validation_result: { valid: true, failed_layer: null, behavior_kind: 'output' },
 					is_correct: true,
 					attempt_number: 2,
 					assignment_id: 'a1',
@@ -188,7 +188,7 @@ describe('drill-down load (data)', () => {
 				{
 					id: 's1',
 					code: 'print("v1")',
-					validation_result: { valid: false, strategy: 'output' },
+					validation_result: { valid: false, failed_layer: 'behavior', behavior_kind: 'output' },
 					is_correct: false,
 					attempt_number: 1,
 					assignment_id: 'a1',
