@@ -33,11 +33,10 @@ if (!supabaseUrl || !supabaseServiceKey) {
 	process.exit(1);
 }
 
-const exerciseId = process.argv[2];
-if (!exerciseId) {
-	console.error('Usage: pnpm tsx scripts/test-exercise-round-trip.ts <UUID>');
-	process.exit(1);
-}
+// First arg: a UUID, "--all" to test every exercise, or omitted (defaults to --all).
+const arg = process.argv[2];
+const testAll = !arg || arg === '--all';
+const exerciseId = testAll ? null : arg;
 
 // =============================================================================
 // Client-side transform replication (must mirror src/...)
@@ -86,59 +85,50 @@ function buildPutBody(form: ReturnType<typeof buildInitialForm>, exerciseId: str
 // Main
 // =============================================================================
 
-async function main() {
-	const supabase = createClient(supabaseUrl!, supabaseServiceKey!, {
-		auth: { autoRefreshToken: false, persistSession: false }
-	});
+type SupabaseClient = ReturnType<typeof createClient>;
+type DiffEntry = { field: string; before: unknown; after: unknown };
+type TestResult = {
+	id: string;
+	title: string;
+	diffs: DiffEntry[];
+	backupPath: string;
+};
 
-	console.log(`🔍 Round-trip test for exercise ${exerciseId}`);
-	console.log('   (read-only — no DB writes)\n');
-
-	// 1. Fetch current row + tags
+async function testOne(supabase: SupabaseClient, id: string): Promise<TestResult> {
 	const { data: row, error: rowErr } = await supabase
 		.from('python_exercises')
 		.select('*')
-		.eq('id', exerciseId)
+		.eq('id', id)
 		.maybeSingle();
 
-	if (rowErr) {
-		console.error('❌ DB error:', rowErr.message);
-		process.exit(1);
-	}
-	if (!row) {
-		console.error(`❌ Exercise ${exerciseId} not found`);
-		process.exit(1);
-	}
+	if (rowErr) throw new Error(`DB error on ${id}: ${rowErr.message}`);
+	if (!row) throw new Error(`Exercise ${id} not found`);
 
 	const { data: tagJoin, error: tagErr } = await supabase
 		.from('python_exercise_tags')
 		.select('python_tags(name)')
-		.eq('exercise_id', exerciseId);
+		.eq('exercise_id', id);
 
-	if (tagErr) {
-		console.error('❌ DB tag error:', tagErr.message);
-		process.exit(1);
-	}
+	if (tagErr) throw new Error(`DB tag error on ${id}: ${tagErr.message}`);
 
 	const tagNames: string[] = (tagJoin ?? [])
 		.map((j: { python_tags: { name: string } | null }) => j.python_tags?.name ?? null)
 		.filter((n): n is string => Boolean(n))
 		.sort();
 
-	const exerciseWithTags = { ...row, tags: tagNames };
+	const exerciseWithTags = { ...(row as Record<string, unknown>), tags: tagNames };
 
-	// 2. Backup (insurance — even though we don't write here)
+	// Backup (insurance — even though this script never writes)
 	const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-	const backupPath = `/tmp/exo-${exerciseId}-backup-${timestamp}.json`;
+	const backupPath = `/tmp/exo-${id}-backup-${timestamp}.json`;
 	writeFileSync(backupPath, JSON.stringify(exerciseWithTags, null, 2));
-	console.log(`💾 Backup saved: ${backupPath}\n`);
 
-	// 3. Simulate client transforms
+	// Simulate client transforms
 	const initialForm = buildInitialForm(exerciseWithTags);
-	const putBody = buildPutBody(initialForm, exerciseId);
+	const putBody = buildPutBody(initialForm, id);
 
-	// 4. Build the "would-be DB row after save" by applying the PUT body to
-	//    the original row (= what `update(updateData)` does, column by column).
+	// Build the "would-be DB row after save" by applying the PUT body to
+	// the original row (= what `update(updateData)` does, column by column).
 	const wouldBeRow = {
 		...exerciseWithTags,
 		title: putBody.title,
@@ -153,7 +143,6 @@ async function main() {
 		tags: [...putBody.tags].sort() // junction sync produces a sorted set
 	};
 
-	// 5. Field-by-field diff
 	const fields = [
 		'title',
 		'description',
@@ -167,33 +156,109 @@ async function main() {
 		'tags'
 	] as const;
 
-	const diffs: { field: string; before: unknown; after: unknown }[] = [];
-
+	const diffs: DiffEntry[] = [];
 	for (const field of fields) {
 		const before = (exerciseWithTags as Record<string, unknown>)[field];
 		const after = (wouldBeRow as Record<string, unknown>)[field];
-		const beforeJson = JSON.stringify(before);
-		const afterJson = JSON.stringify(after);
-		if (beforeJson !== afterJson) {
+		if (JSON.stringify(before) !== JSON.stringify(after)) {
 			diffs.push({ field, before, after });
 		}
 	}
 
-	if (diffs.length === 0) {
+	return {
+		id,
+		title: row.title as string,
+		diffs,
+		backupPath
+	};
+}
+
+function reportSingle(result: TestResult): boolean {
+	console.log(`💾 Backup saved: ${result.backupPath}\n`);
+	if (result.diffs.length === 0) {
 		console.log('✅ No drift detected — save-without-changes is a no-op.\n');
 		console.log('   The form preserves all fields exactly. Safe to edit.');
-		process.exit(0);
+		return true;
 	}
-
-	console.log(`⚠️  Drift detected on ${diffs.length} field(s):\n`);
-	for (const d of diffs) {
+	console.log(`⚠️  Drift detected on ${result.diffs.length} field(s):\n`);
+	for (const d of result.diffs) {
 		console.log(`  • ${d.field}`);
 		console.log(`    BEFORE: ${truncate(JSON.stringify(d.before))}`);
 		console.log(`    AFTER:  ${truncate(JSON.stringify(d.after))}`);
 		console.log();
 	}
 	console.log('Likely cause: client-side trim, empty-string→null, or junction sort.');
-	console.log(`Restore reference: ${backupPath}`);
+	console.log(`Restore reference: ${result.backupPath}`);
+	return false;
+}
+
+async function main() {
+	const supabase = createClient(supabaseUrl!, supabaseServiceKey!, {
+		auth: { autoRefreshToken: false, persistSession: false }
+	});
+
+	if (!testAll && exerciseId) {
+		console.log(`🔍 Round-trip test for exercise ${exerciseId}`);
+		console.log('   (read-only — no DB writes)\n');
+		const result = await testOne(supabase, exerciseId);
+		const ok = reportSingle(result);
+		process.exit(ok ? 0 : 1);
+	}
+
+	// --all mode
+	console.log('🔍 Round-trip test for ALL exercises (read-only)\n');
+	const { data: rows, error } = await supabase
+		.from('python_exercises')
+		.select('id, title')
+		.order('created_at', { ascending: true });
+
+	if (error) {
+		console.error('❌ DB error fetching exercise list:', error.message);
+		process.exit(1);
+	}
+
+	const all = rows ?? [];
+	console.log(`Found ${all.length} exercise(s).\n`);
+
+	const failures: TestResult[] = [];
+	let i = 0;
+	for (const r of all) {
+		i++;
+		const id = r.id as string;
+		const title = r.title as string;
+		try {
+			const result = await testOne(supabase, id);
+			if (result.diffs.length === 0) {
+				console.log(`  [${i}/${all.length}] ✅ ${title.padEnd(50)}  ${id}`);
+			} else {
+				console.log(
+					`  [${i}/${all.length}] ⚠️  ${title.padEnd(50)}  ${id}  (${result.diffs.length} field${result.diffs.length > 1 ? 's' : ''})`
+				);
+				failures.push(result);
+			}
+		} catch (e) {
+			console.log(
+				`  [${i}/${all.length}] ❌ ${title.padEnd(50)}  ${id}  (${e instanceof Error ? e.message : String(e)})`
+			);
+		}
+	}
+
+	console.log();
+	if (failures.length === 0) {
+		console.log(`✅ All ${all.length} exercise(s) pass round-trip — safe to edit.`);
+		process.exit(0);
+	}
+
+	console.log(`⚠️  ${failures.length} / ${all.length} exercise(s) drift on save:\n`);
+	for (const result of failures) {
+		console.log(`──────── ${result.title} (${result.id}) ────────`);
+		for (const d of result.diffs) {
+			console.log(`  • ${d.field}`);
+			console.log(`    BEFORE: ${truncate(JSON.stringify(d.before))}`);
+			console.log(`    AFTER:  ${truncate(JSON.stringify(d.after))}`);
+		}
+		console.log();
+	}
 	process.exit(1);
 }
 
