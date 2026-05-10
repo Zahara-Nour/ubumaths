@@ -14,7 +14,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Plus, Trash2 } from 'lucide-svelte';
-	import { onMount } from 'svelte';
 	import ASTRequirementsPanel from './ASTRequirementsPanel.svelte';
 
 	type Props = {
@@ -278,17 +277,19 @@
 	// unit_test JSON drafts (parse on blur, surface inline error)
 	// ===========================================================================
 
+	// Initialize synchronously from the initial config so that the first render
+	// already has matching draft entries for each test_case (otherwise the
+	// {#each utBehavior.test_cases} loop binds against unitDrafts[i].args before
+	// onMount populates the array — TypeError on edit page).
 	let unitDrafts: { args: string; expected: string; argsErr?: string; expectedErr?: string }[] =
-		$state([]);
-
-	onMount(() => {
-		if (isUnitTestBehavior(config.behavior)) {
-			unitDrafts = config.behavior.test_cases.map((tc) => ({
-				args: JSON.stringify(tc.args),
-				expected: JSON.stringify(tc.expected)
-			}));
-		}
-	});
+		$state(
+			isUnitTestBehavior(config.behavior)
+				? config.behavior.test_cases.map((tc) => ({
+						args: JSON.stringify(tc.args),
+						expected: JSON.stringify(tc.expected)
+					}))
+				: []
+		);
 
 	function commitUnitDraft(i: number) {
 		if (!isUnitTestBehavior(config.behavior)) return;
