@@ -153,7 +153,7 @@
 				// Start debug session - set store state BEFORE executor
 				const breakpoints = debugStore.getBreakpointsForWorker();
 				debugStore.startSession();
-				pythonStore.executor.startDebugSession(pythonStore.code, breakpoints);
+				pythonStore.startDebugSession(pythonStore.code, breakpoints);
 			} catch (error) {
 				console.error('[PythonPlayground] Debug start failed:', error);
 				toaster.error('Erreur lors du démarrage du débogage');
@@ -169,7 +169,7 @@
 		if (!debugStore.canStep()) return;
 		try {
 			debugStore.resumeSession(action !== 'continue' && action !== 'run-to-end');
-			pythonStore.executor.debugStep(action);
+			pythonStore.debugStep(action);
 		} catch (error) {
 			console.error('[PythonPlayground] Debug step failed:', error);
 			toaster.error('Erreur lors du débogage');
@@ -179,7 +179,7 @@
 
 	function handleDebugStop(): void {
 		try {
-			pythonStore.executor.stopDebugSession();
+			pythonStore.stopDebugSession();
 		} catch (error) {
 			console.error('[PythonPlayground] Debug stop failed:', error);
 		} finally {
@@ -364,7 +364,7 @@
 					disabled={isExecuting}
 					fontSize={pythonStore.fontSize}
 					theme={pythonStore.editorTheme}
-					executor={pythonStore.executor}
+					executor={pythonStore}
 					onExecute={handleExecute}
 					onSave={handleSave}
 				/>
@@ -445,7 +445,7 @@
 					disabled={isExecuting}
 					fontSize={pythonStore.fontSize}
 					theme={pythonStore.editorTheme}
-					executor={pythonStore.executor}
+					executor={pythonStore}
 					onExecute={handleExecute}
 					onSave={handleSave}
 				/>

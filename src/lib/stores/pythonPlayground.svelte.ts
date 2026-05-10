@@ -15,7 +15,8 @@
 import { browser } from '$app/environment';
 import LZString from 'lz-string';
 import { PlaygroundExecutor } from '$lib/shared/python';
-import type { CompletionItem } from '$lib/shared/python';
+import type { CompletionItem, WorkerBreakpoint } from '$lib/shared/python';
+import type { DebugStepAction } from '$lib/shared/python/debug/types';
 import type { Database } from '$lib/types/database';
 
 // =============================================================================
@@ -214,11 +215,6 @@ class PythonPlaygroundStore {
 		return this._executor.plotlyData;
 	}
 
-	/** Expose executor for completion provider access */
-	get executor() {
-		return this._executor;
-	}
-
 	/** Whether Pyodide is ready for execution (forwarded from executor) */
 	get isReady() {
 		return this._executor.isReady;
@@ -388,6 +384,27 @@ class PythonPlaygroundStore {
 	 */
 	requestCompletion(code: string, cursor: number): Promise<CompletionItem[]> {
 		return this._executor.requestCompletion(code, cursor);
+	}
+
+	/**
+	 * Start a debug session with the given code and breakpoints.
+	 */
+	startDebugSession(code: string, breakpoints: WorkerBreakpoint[]): void {
+		this._executor.startDebugSession(code, breakpoints);
+	}
+
+	/**
+	 * Send a step command during an active debug session.
+	 */
+	debugStep(action: DebugStepAction): void {
+		this._executor.debugStep(action);
+	}
+
+	/**
+	 * Stop the current debug session.
+	 */
+	stopDebugSession(): void {
+		this._executor.stopDebugSession();
 	}
 
 	/**
