@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import ExerciseForm, {
-		type ExerciseFormState,
-		type Level
+		buildInitialForm,
+		buildSubmitBody,
+		type ExerciseFormState
 	} from '$lib/components/python/exercises/ExerciseForm.svelte';
 
 	let { data } = $props();
@@ -13,40 +14,11 @@
 	// svelte-ignore state_referenced_locally
 	const initialForm: ExerciseFormState = buildInitialForm(data.exercise);
 
-	function buildInitialForm(ex: typeof data.exercise): ExerciseFormState {
-		return {
-			title: ex.title,
-			description: ex.description ?? '',
-			instructions: ex.instructions ?? '',
-			starter_code: ex.starter_code ?? '',
-			solution_code: ex.solution_code,
-			validation_config: ex.validation_config,
-			level: ex.level as Level,
-			tags: ex.tags,
-			source: ex.source ?? '',
-			is_public: ex.is_public
-		};
-	}
-
 	async function handleUpdate(form: ExerciseFormState) {
 		const res = await fetch(`/api/python-exercises/${data.exercise.id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				id: data.exercise.id,
-				title: form.title.trim(),
-				// Preserve multi-line content as-is (esp. trailing newlines for
-				// code/markdown). Only collapse whitespace-only fields to null.
-				description: form.description.trim() === '' ? null : form.description,
-				instructions: form.instructions.trim() === '' ? null : form.instructions,
-				starter_code: form.starter_code.trim() === '' ? null : form.starter_code,
-				solution_code: form.solution_code,
-				validation_config: form.validation_config,
-				level: form.level,
-				tags: form.tags,
-				source: form.source.trim() === '' ? null : form.source.trim(),
-				is_public: form.is_public
-			})
+			body: JSON.stringify({ id: data.exercise.id, ...buildSubmitBody(form) })
 		});
 
 		if (!res.ok) {
