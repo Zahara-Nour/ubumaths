@@ -35,14 +35,16 @@
 			body: JSON.stringify({
 				id: data.exercise.id,
 				title: form.title.trim(),
-				description: form.description.trim() || null,
-				instructions: form.instructions.trim() || null,
-				starter_code: form.starter_code.trim() || null,
+				// Preserve multi-line content as-is (esp. trailing newlines for
+				// code/markdown). Only collapse whitespace-only fields to null.
+				description: form.description.trim() === '' ? null : form.description,
+				instructions: form.instructions.trim() === '' ? null : form.instructions,
+				starter_code: form.starter_code.trim() === '' ? null : form.starter_code,
 				solution_code: form.solution_code,
 				validation_config: form.validation_config,
 				level: form.level,
 				tags: form.tags,
-				source: form.source.trim() || null,
+				source: form.source.trim() === '' ? null : form.source.trim(),
 				is_public: form.is_public
 			})
 		});
