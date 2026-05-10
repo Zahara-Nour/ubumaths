@@ -19,12 +19,11 @@ import type {
 	ValidationConfig,
 	ValidationResult,
 	ValidationIssue,
-	ExerciseValidationConfig,
-	ExerciseValidationResult,
+	BehaviorCheck,
+	ExerciseValidationConfigV2,
+	ExerciseValidationResultV2,
 	TestCaseResult,
-	OutputValidationConfig,
-	UnitTestValidationConfig,
-	ASTValidationConfig
+	ASTRequirement
 } from '$lib/shared/python';
 import {
 	PYODIDE_CONFIG,
@@ -2039,11 +2038,20 @@ async function validateCode(code: string, config: ValidationConfig, id: string):
 // =============================================================================
 
 /**
- * Validate Python exercise code using various strategies
+ * Validate Python exercise code with the orthogonal AST + behavior pipeline.
+ *
+ * Pipeline:
+ *   1. If `config.ast_requirements` is non-empty → check syntax then run AST
+ *      checks. If anything fails, short-circuit with `failed_layer: 'ast'`.
+ *   2. Otherwise (or after AST passes): if `config.behavior` is defined,
+ *      run it and report `failed_layer: 'behavior'` on failure.
+ *
+ * `behavior_kind` is set on the result whenever behavior was configured —
+ * even when AST short-circuits — so callers can render a stable label.
  */
 async function validateExercise(
 	code: string,
-	config: ExerciseValidationConfig,
+	config: ExerciseValidationConfigV2,
 	id: string
 ): Promise<void> {
 	if (!pyodide) {
@@ -2064,27 +2072,69 @@ async function validateExercise(
 	// between consecutive validations.
 	const namespace = pyodide.runPython('dict()') as PyProxy;
 
+	const behaviorKind = config.behavior?.kind;
+	const hasAST = (config.ast_requirements?.length ?? 0) > 0;
+
 	try {
-		// Set up timeout
 		const timeoutPromise = new Promise<never>((_, reject) => {
 			setTimeout(() => reject(new Error('Timeout')), timeout);
 		});
 
-		// Run validation based on strategy type
-		const validationPromise = (async () => {
-			switch (config.type) {
-				case 'output':
-					return await validateOutputComparison(code, config, namespace);
-				case 'unit_test':
-					return await validateUnitTests(code, config, namespace);
-				case 'ast':
-					return await validateAST(code, config, namespace);
+		const validationPromise: Promise<ExerciseValidationResultV2> = (async () => {
+			let astIssues: string[] | undefined;
+
+			if (hasAST) {
+				const requirements = config.ast_requirements as ASTRequirement[];
+				const syntaxIssue = await detectSyntaxError(code, namespace);
+				if (syntaxIssue) {
+					return {
+						valid: false,
+						failed_layer: 'ast',
+						behavior_kind: behaviorKind,
+						ast_issues: [`Erreur de syntaxe Python : ${syntaxIssue}`],
+						test_results: [],
+						execution_time_ms: 0
+					};
+				}
+
+				astIssues = await runASTChecks(code, requirements, namespace);
+
+				if (astIssues.length > 0) {
+					return {
+						valid: false,
+						failed_layer: 'ast',
+						behavior_kind: behaviorKind,
+						ast_issues: astIssues,
+						test_results: [],
+						execution_time_ms: 0
+					};
+				}
 			}
+
+			if (config.behavior) {
+				const { valid, test_results } = await runBehavior(code, config.behavior, namespace);
+				return {
+					valid,
+					failed_layer: valid ? null : 'behavior',
+					behavior_kind: config.behavior.kind,
+					ast_issues: astIssues,
+					test_results,
+					execution_time_ms: 0
+				};
+			}
+
+			// AST-only success
+			return {
+				valid: true,
+				failed_layer: null,
+				behavior_kind: undefined,
+				ast_issues: astIssues,
+				test_results: [],
+				execution_time_ms: 0
+			};
 		})();
 
 		const result = await Promise.race([validationPromise, timeoutPromise]);
-
-		// Add execution time
 		result.execution_time_ms = Math.round(performance.now() - startTime);
 
 		postMessage({
@@ -2094,36 +2144,81 @@ async function validateExercise(
 		});
 	} catch (error) {
 		const executionTime = Math.round(performance.now() - startTime);
+		const isTimeout = error instanceof Error && error.message === 'Timeout';
 
-		if (error instanceof Error && error.message === 'Timeout') {
-			postMessage({
-				type: 'validation-exercise-result',
-				result: {
-					valid: false,
-					strategy: config.type,
-					test_results: [],
-					error: "Delai d'execution depasse",
-					execution_time_ms: executionTime
-				},
-				id
-			});
-		} else {
-			postMessage({
-				type: 'validation-exercise-result',
-				result: {
-					valid: false,
-					strategy: config.type,
-					test_results: [],
-					error: error instanceof Error ? error.message : String(error),
-					execution_time_ms: executionTime
-				},
-				id
-			});
-		}
+		postMessage({
+			type: 'validation-exercise-result',
+			result: {
+				valid: false,
+				failed_layer: null,
+				behavior_kind: behaviorKind,
+				test_results: [],
+				error: isTimeout
+					? "Délai d'exécution dépassé"
+					: error instanceof Error
+						? error.message
+						: String(error),
+				execution_time_ms: executionTime
+			},
+			id
+		});
 	} finally {
-		// Free the isolated namespace PyProxy
 		if (typeof (namespace as { destroy?: () => void }).destroy === 'function') {
 			(namespace as { destroy: () => void }).destroy();
+		}
+	}
+}
+
+/**
+ * Run the behavior layer of the new pipeline. Dispatches by `kind` and
+ * returns `{ valid, test_results }` — the surrounding pipeline owns the
+ * `failed_layer` / `behavior_kind` fields.
+ */
+async function runBehavior(
+	code: string,
+	behavior: BehaviorCheck,
+	namespace: PyProxy
+): Promise<{ valid: boolean; test_results: TestCaseResult[] }> {
+	if (behavior.kind === 'output') {
+		return runOutputBehavior(code, behavior, namespace);
+	}
+	return runUnitTestBehavior(code, behavior, namespace);
+}
+
+/**
+ * Detect a Python SyntaxError without raising. Returns the formatted error
+ * message on failure, or `null` if the code parses cleanly. Used as a
+ * pre-check before AST requirements so a SyntaxError surfaces once with a
+ * dedicated message rather than being absorbed by every requirement check.
+ */
+async function detectSyntaxError(code: string, namespace: PyProxy): Promise<string | null> {
+	if (!pyodide) {
+		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
+	}
+
+	namespace.set('_ubumaths_syntax_code', code);
+	try {
+		const message = (await pyodide.runPythonAsync(
+			`
+import ast as _ubumaths_ast
+
+_msg = None
+try:
+    _ubumaths_ast.parse(_ubumaths_syntax_code)
+except SyntaxError as _e:
+    _line = _e.lineno or 0
+    _detail = _e.msg or 'erreur de syntaxe'
+    _msg = f"ligne {_line} : {_detail}"
+_msg
+`,
+			{ globals: namespace }
+		)) as string | null;
+		return message ?? null;
+	} finally {
+		try {
+			namespace.delete('_ubumaths_syntax_code');
+		} catch {
+			// Ignore cleanup errors
 		}
 	}
 }
@@ -2260,11 +2355,11 @@ function redactIfHidden(result: TestCaseResult, hidden: boolean): TestCaseResult
  *   `_ubumaths_test_*` scaffolding lives. Must be a fresh empty dict
  *   provided by the caller; not shared with the playground namespace.
  */
-async function validateOutputComparison(
+async function runOutputBehavior(
 	code: string,
-	config: OutputValidationConfig,
+	behavior: Extract<BehaviorCheck, { kind: 'output' }>,
 	namespace: PyProxy
-): Promise<ExerciseValidationResult> {
+): Promise<{ valid: boolean; test_results: TestCaseResult[] }> {
 	if (!pyodide) {
 		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
 	}
@@ -2272,7 +2367,7 @@ async function validateOutputComparison(
 	const testResults: TestCaseResult[] = [];
 	let allPassed = true;
 
-	for (const testCase of config.test_cases) {
+	for (const testCase of behavior.test_cases) {
 		try {
 			// Set up stdin redirection with test input.
 			// Note: sys.stdin/stdout swap is global Python state; restored on
@@ -2309,7 +2404,7 @@ _actual
 			// Compare outputs. Custom comparators run a teacher-defined Python
 			// `compare()` in an isolated namespace; everything else uses the
 			// JS-pure engine.
-			const cmp = testCase.comparison ?? config.comparison;
+			const cmp = testCase.comparison ?? behavior.comparison;
 			const compareResult =
 				cmp.kind === 'custom'
 					? await compareWithCustomScript(
@@ -2367,24 +2462,22 @@ sys.stdout = _ubumaths_old_stdout
 
 	return {
 		valid: allPassed,
-		strategy: 'output',
-		test_results: testResults,
-		execution_time_ms: 0 // Will be set by caller
+		test_results: testResults
 	};
 }
 
 /**
- * Validate using unit test strategy.
+ * Run the unit-test behavior layer.
  *
  * @param namespace Isolated Python dict where the student-defined function
  *   lives and is invoked. Test args/expected are also injected into this
  *   namespace via `namespace.set(...)` so they don't leak to globals.
  */
-async function validateUnitTests(
+async function runUnitTestBehavior(
 	code: string,
-	config: UnitTestValidationConfig,
+	behavior: Extract<BehaviorCheck, { kind: 'unit_test' }>,
 	namespace: PyProxy
-): Promise<ExerciseValidationResult> {
+): Promise<{ valid: boolean; test_results: TestCaseResult[] }> {
 	if (!pyodide) {
 		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
 	}
@@ -2398,26 +2491,24 @@ async function validateUnitTests(
 
 		// Verify the function exists *in the isolated namespace*. dir() with no
 		// args in our globals returns the namespace's keys.
-		const functionExists = (await pyodide.runPythonAsync(`'${config.function_name}' in dir()`, {
+		const functionExists = (await pyodide.runPythonAsync(`'${behavior.function_name}' in dir()`, {
 			globals: namespace
 		})) as boolean;
 
 		if (!functionExists) {
 			return {
 				valid: false,
-				strategy: 'unit_test',
 				test_results: [
 					{
 						passed: false,
-						error: `La fonction '${config.function_name}' n'est pas definie`
+						error: `La fonction '${behavior.function_name}' n'est pas definie`
 					}
-				],
-				execution_time_ms: 0
+				]
 			};
 		}
 
 		// Run test cases
-		for (const testCase of config.test_cases) {
+		for (const testCase of behavior.test_cases) {
 			try {
 				// Inject test args/expected into the isolated namespace
 				namespace.set('_ubumaths_test_args', testCase.args);
@@ -2429,7 +2520,7 @@ async function validateUnitTests(
 import json
 _args = _ubumaths_test_args
 _expected = _ubumaths_test_expected
-_actual = ${config.function_name}(*_args)
+_actual = ${behavior.function_name}(*_args)
 _passed = _actual == _expected
 {
     'passed': _passed,
@@ -2459,7 +2550,7 @@ _passed = _actual == _expected
 							passed: jsResult.passed,
 							expected: JSON.stringify(jsResult.expected),
 							actual: JSON.stringify(jsResult.actual),
-							input: `${config.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`
+							input: `${behavior.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`
 						},
 						testCase.hidden === true
 					)
@@ -2474,7 +2565,7 @@ _passed = _actual == _expected
 					redactIfHidden(
 						{
 							passed: false,
-							input: `${config.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`,
+							input: `${behavior.function_name}(${testCase.args.map((a) => JSON.stringify(a)).join(', ')})`,
 							expected: JSON.stringify(testCase.expected),
 							error: error instanceof Error ? error.message : String(error)
 						},
@@ -2494,47 +2585,43 @@ _passed = _actual == _expected
 	} catch (error) {
 		return {
 			valid: false,
-			strategy: 'unit_test',
 			test_results: [
 				{
 					passed: false,
 					error: error instanceof Error ? error.message : String(error)
 				}
-			],
-			execution_time_ms: 0
+			]
 		};
 	}
 
 	return {
 		valid: allPassed,
-		strategy: 'unit_test',
-		test_results: testResults,
-		execution_time_ms: 0
+		test_results: testResults
 	};
 }
 
 /**
- * Validate using AST analysis strategy.
+ * Run AST structural checks against the parsed code, returning the list of
+ * issues (one entry per failed requirement). An empty array means every
+ * requirement passed.
  *
- * @param namespace Isolated Python dict. AST analysis itself only inspects the
+ * @param namespace Isolated Python dict. AST analysis only inspects the
  *   parsed code and doesn't execute it, so isolation is not strictly required
- *   for the AST checks alone. But the optional `output_tests` follow-up runs
- *   the student code, and *that* must be isolated — same namespace passed
- *   through to `validateOutputComparison` below.
+ *   here, but reusing the namespace keeps the pipeline coherent in case
+ *   behavior runs next.
  */
-async function validateAST(
+async function runASTChecks(
 	code: string,
-	config: ASTValidationConfig,
+	requirements: ASTRequirement[],
 	namespace: PyProxy
-): Promise<ExerciseValidationResult> {
+): Promise<string[]> {
 	if (!pyodide) {
 		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
 	}
 
 	const astIssues: string[] = [];
 
-	// Check AST requirements
-	for (const requirement of config.requirements) {
+	for (const requirement of requirements) {
 		try {
 			namespace.set('_ubumaths_ast_code', code);
 			namespace.set('_ubumaths_ast_requirement_type', requirement.type);
@@ -2667,33 +2754,7 @@ _passed
 		}
 	}
 
-	// If AST validation passed and there are output tests, run them
-	let testResults: TestCaseResult[] = [];
-	let outputTestsPassed = true;
-
-	if (astIssues.length === 0 && config.output_tests && config.output_tests.length > 0) {
-		const outputConfig: OutputValidationConfig = {
-			type: 'output',
-			test_cases: config.output_tests,
-			comparison: config.output_comparison ?? { kind: 'exact' },
-			timeout_ms: config.timeout_ms
-		};
-
-		// Reuse the same isolated namespace for the output tests so the AST-level
-		// vars (_ubumaths_ast_*) coexist with the output-level vars (_ubumaths_test_*).
-		// Both batches `delete` their own keys; no cross-contamination expected.
-		const outputResult = await validateOutputComparison(code, outputConfig, namespace);
-		testResults = outputResult.test_results;
-		outputTestsPassed = outputResult.valid;
-	}
-
-	return {
-		valid: astIssues.length === 0 && outputTestsPassed,
-		strategy: 'ast',
-		test_results: testResults,
-		ast_issues: astIssues.length > 0 ? astIssues : undefined,
-		execution_time_ms: 0
-	};
+	return astIssues;
 }
 
 // =============================================================================

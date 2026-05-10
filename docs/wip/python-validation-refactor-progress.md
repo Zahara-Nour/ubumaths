@@ -5,9 +5,9 @@
 
 ---
 
-## État actuel : Phase 1 terminée
+## État actuel : Phases 1 et 2 terminées
 
-Phases 2–7 restantes.
+Phases 3–7 restantes.
 
 ---
 
@@ -68,18 +68,72 @@ Phases 2–7 restantes.
   régression)
 - ✅ `pnpm test:server src/lib/shared/python` → 163 / 163
 
-### Prochaines étapes (Phase 2)
+## Phase 2 — Worker refactor (terminée)
 
-- Refactorer `validateExerciseCode()` dans `src/lib/workers/pyodide.worker.ts`
-  pour pipeline AST → behavior avec short-circuit.
-- Worker n'accepte que la nouvelle forme : remettre
-  `validateExerciseMessageSchema` (sans Legacy) dans `toWorkerMessageSchema`.
-- Idem pour `exerciseValidationResultMessageSchema` côté
-  `fromWorkerMessageSchema`.
-- Tests des 9 cas du tableau de la spec.
+### Décisions
+
+- **Pipeline strict** : `validateExercise` exécute AST puis behavior, avec
+  short-circuit sur échec AST. Aucune tolérance au format legacy côté worker.
+- **Pré-check syntaxe** : si `ast_requirements` est non vide, un seul
+  `ast.parse()` détecte les `SyntaxError` AVANT la boucle des requirements,
+  pour produire un message dédié « Erreur de syntaxe Python : ligne N : ... ».
+  Sans AST, la behavior layer fait surfacer le runtime error naturellement.
+- **`behavior_kind`** : présent dans le résultat dès que `config.behavior` est
+  défini, même quand AST short-circuit. Permet à l'UI d'afficher un libellé
+  stable.
+- **Limite Python interrompible** : `pyodide.runPythonAsync` n'est pas
+  interruptible depuis JS sans `SharedArrayBuffer` ; en pratique le timeout
+  worker (Promise.race) ne peut pas tuer une boucle infinie. C'est le
+  safety-net de l'executor (`pendingExerciseValidation.timeout`) qui rejette
+  la promesse. Le test case 8 reflète ce comportement réel (rejet de
+  promesse) et est placé en dernier pour ne pas bloquer la suite.
+
+### Fichiers modifiés
+
+1. `src/lib/workers/pyodide.worker.ts`
+   - `validateExercise()` reécrite pour le pipeline AST → behavior.
+   - Helpers extraits : `runASTChecks`, `runBehavior`, `runOutputBehavior`,
+     `runUnitTestBehavior`, `detectSyntaxError`.
+   - Imports de types passés à `ExerciseValidationConfigV2`,
+     `ExerciseValidationResultV2`, `BehaviorCheck`, `ASTRequirement`.
+2. `src/lib/shared/python/worker/messages.ts`
+   - `toWorkerMessageSchema` utilise `validateExerciseMessageSchema` (nouveau).
+   - `fromWorkerMessageSchema` utilise `exerciseValidationResultMessageSchema`
+     (nouveau). Les variantes Legacy restent exportées (pour Phase 6).
+3. `src/lib/shared/python/index.ts`
+   - Commentaire de transition mis à jour.
+4. `src/lib/shared/python/execution/base-executor.svelte.ts`
+   - `validateExercise` : signature en `ExerciseValidationConfigV2` →
+     `Promise<ExerciseValidationResultV2>`.
+5. `src/lib/shared/python/execution/exercise-validation-real.svelte.test.ts`
+   - Tous les configs migrés vers la nouvelle forme (`behavior` / `ast_requirements`).
+   - Nouvelle section « E. AST + behavior pipeline matrix » : 9 cas du
+     tableau de la spec.
+6. `src/lib/shared/python/execution/base-executor.svelte.test.ts`
+   - Helpers `makeOutputConfig` / `makeResult` migrés vers V2.
+
+### Tests
+
+- ✅ `pnpm test:server src/lib/shared/python` → 187 / 187
+- ✅ `pnpm test:server src/routes/api/python-exercises` → 75 / 75
+- ✅ `pnpm test:client src/lib/shared/python/execution/base-executor.svelte.test.ts`
+  → 14 / 14
+- ✅ `pnpm test:client src/lib/shared/python/execution/exercise-validation-real.svelte.test.ts`
+  → 31 / 31 (dont les 9 cas matrix)
+- ✅ `pnpm check:incremental` → baseline 9 / 46 préservé.
+
+### Prochaines étapes (Phase 3)
+
+- Migration DB : SQL `UPDATE python_exercises SET validation_config = ...`
+  avec `CASE WHEN type = '…'` pour les 3 formes anciennes.
+- Migration `down` (transformation inverse).
+- Réécriture du seed `20260508163407_seed_python_exercises_samples.sql`.
+- Script `scripts/validate-python-exercises-migration.ts` qui parse old + new
+  pour chaque exo et vérifie l'équivalence sémantique.
 
 ### Commits
 
-| #   | Hash      | Message                                                |
-| --- | --------- | ------------------------------------------------------ |
-| 1   | _à venir_ | feat(python-exercises): add new ValidationConfig types |
+| #   | Hash      | Message                                                            |
+| --- | --------- | ------------------------------------------------------------------ |
+| 1   | 8b9e6b139 | feat(python-exercises): add new ValidationConfig types             |
+| 2   | _à venir_ | feat(python-exercises): refactor worker to AST + behavior pipeline |

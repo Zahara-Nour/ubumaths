@@ -22,8 +22,8 @@ import type {
 	FromWorkerMessage,
 	CompletionItem,
 	WorkerBreakpoint,
-	ExerciseValidationConfig,
-	ExerciseValidationResult
+	ExerciseValidationConfigV2,
+	ExerciseValidationResultV2
 } from '$lib/shared/python';
 import { PYODIDE_CONFIG, fromWorkerMessageSchema } from '$lib/shared/python';
 import type {
@@ -64,7 +64,7 @@ interface PendingCompletion {
  * Configuration for pending exercise validation requests
  */
 interface PendingExerciseValidation {
-	resolve: (result: ExerciseValidationResult) => void;
+	resolve: (result: ExerciseValidationResultV2) => void;
 	reject: (error: Error) => void;
 	timeout: ReturnType<typeof setTimeout>;
 }
@@ -622,8 +622,7 @@ export abstract class BasePythonExecutor {
 	 * Validate Python code against an exercise validation config.
 	 *
 	 * Runs the validation in the Pyodide worker via the `validate-exercise` message.
-	 * Supports the three strategies (output / unit_test / ast) defined by
-	 * `ExerciseValidationConfig`.
+	 * The config is the new AST + behavior shape (`ExerciseValidationConfigV2`).
 	 *
 	 * The executor's reactive state (stdout, stderr, plotData, state...) is **not**
 	 * touched by this method. The result is only delivered through the returned
@@ -632,7 +631,7 @@ export abstract class BasePythonExecutor {
 	 * parallel from the main-thread point of view (the worker serializes them).
 	 *
 	 * @param code - Python code to validate
-	 * @param config - Validation strategy configuration
+	 * @param config - Validation config (ast_requirements + behavior)
 	 * @returns Promise resolving to the validation result. Failed validations
 	 *   resolve normally (with `valid: false`) — the promise only rejects when
 	 *   Pyodide is not ready, the worker is destroyed, or the safety-net timeout
@@ -640,8 +639,8 @@ export abstract class BasePythonExecutor {
 	 */
 	validateExercise(
 		code: string,
-		config: ExerciseValidationConfig
-	): Promise<ExerciseValidationResult> {
+		config: ExerciseValidationConfigV2
+	): Promise<ExerciseValidationResultV2> {
 		return new Promise((resolve, reject) => {
 			// Pyodide must be loaded; ready OR executing both qualify since the
 			// worker can route a `validate-exercise` message in parallel with an
@@ -677,7 +676,7 @@ export abstract class BasePythonExecutor {
 	 * Handle exercise validation result from worker.
 	 * Looks up the pending request by id and resolves its promise.
 	 */
-	private handleExerciseValidationResult(id: string, result: ExerciseValidationResult): void {
+	private handleExerciseValidationResult(id: string, result: ExerciseValidationResultV2): void {
 		const pending = this.pendingExerciseValidations.get(id);
 		if (!pending) {
 			console.warn('[BasePythonExecutor] Received validation-exercise-result for unknown id:', id);

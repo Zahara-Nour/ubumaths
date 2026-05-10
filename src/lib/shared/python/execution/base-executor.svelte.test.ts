@@ -16,8 +16,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 // pythonPlayground.svelte.test.ts (indirectly, via the store module).
 import {
 	BasePythonExecutor,
-	type ExerciseValidationConfig,
-	type ExerciseValidationResult
+	type ExerciseValidationConfigV2,
+	type ExerciseValidationResultV2
 } from '$lib/shared/python';
 
 // =============================================================================
@@ -93,21 +93,26 @@ function findMessage<T = unknown>(type: string): T | undefined {
 	return MockWorker.messages.find((m) => (m as { type: string }).type === type) as T | undefined;
 }
 
-/** Build a minimal valid ExerciseValidationConfig (output strategy). */
-function makeOutputConfig(timeoutMs?: number): ExerciseValidationConfig {
+/** Build a minimal valid ExerciseValidationConfigV2 (output behavior). */
+function makeOutputConfig(timeoutMs?: number): ExerciseValidationConfigV2 {
 	return {
-		type: 'output',
-		comparison: { kind: 'exact' },
-		test_cases: [{ input: '', expected_output: 'hi\n' }],
+		behavior: {
+			kind: 'output',
+			comparison: { kind: 'exact' },
+			test_cases: [{ input: '', expected_output: 'hi\n' }]
+		},
 		...(timeoutMs !== undefined ? { timeout_ms: timeoutMs } : {})
 	};
 }
 
-/** Build a minimal valid ExerciseValidationResult. */
-function makeResult(overrides: Partial<ExerciseValidationResult> = {}): ExerciseValidationResult {
+/** Build a minimal valid ExerciseValidationResultV2. */
+function makeResult(
+	overrides: Partial<ExerciseValidationResultV2> = {}
+): ExerciseValidationResultV2 {
 	return {
 		valid: true,
-		strategy: 'output',
+		failed_layer: null,
+		behavior_kind: 'output',
 		test_results: [{ passed: true, input: '', expected: 'hi\n', actual: 'hi\n' }],
 		execution_time_ms: 12,
 		...overrides

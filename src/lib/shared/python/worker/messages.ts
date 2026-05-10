@@ -540,9 +540,7 @@ export const toWorkerMessageSchema = z.discriminatedUnion('type', [
 	destroyContextMessageSchema,
 	resetContextMessageSchema,
 	validateMessageSchema,
-	// Phase 1 transition: worker still validates legacy-shape exercise configs
-	// until Phase 2 swaps it for `validateExerciseMessageSchema` (new shape).
-	validateExerciseMessageSchemaLegacy,
+	validateExerciseMessageSchema,
 	debugStartMessageSchema,
 	debugStepMessageSchema,
 	debugStopMessageSchema
@@ -859,9 +857,7 @@ export const fromWorkerMessageSchema = z.discriminatedUnion('type', [
 	contextDestroyedMessageSchema,
 	contextResetMessageSchema,
 	validationResultMessageSchema,
-	// Phase 1 transition: worker still emits legacy-shape exercise results
-	// until Phase 2 swaps it for `exerciseValidationResultMessageSchema`.
-	exerciseValidationResultMessageSchemaLegacy,
+	exerciseValidationResultMessageSchema,
 	debugSnapshotMessageSchema,
 	debugPausedMessageSchema,
 	debugFinishedMessageSchema
