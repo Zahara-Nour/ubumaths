@@ -93,7 +93,14 @@ const outputTestCaseSchema = z.object({
 
 const AT_LEAST_ONE_VISIBLE = 'Au moins un test doit être visible';
 
-const outputValidationConfigSchema = z.object({
+// =============================================================================
+// LEGACY discriminated-union schemas (type: 'output' | 'unit_test' | 'ast')
+// Kept in parallel during the refactor to ast_requirements + behavior shape.
+// To be removed in Phase 6 once consumers and DB are migrated.
+// See docs/wip/python-validation-refactor-spec.md.
+// =============================================================================
+
+const outputValidationConfigSchemaLegacy = z.object({
 	type: z.literal('output'),
 	test_cases: z
 		.array(outputTestCaseSchema)
@@ -112,7 +119,7 @@ const unitTestCaseSchema = z.object({
 	hidden: z.boolean().optional().default(false)
 });
 
-const unitTestValidationConfigSchema = z.object({
+const unitTestValidationConfigSchemaLegacy = z.object({
 	type: z.literal('unit_test'),
 	function_name: z
 		.string()
@@ -152,7 +159,7 @@ const astRequirementSchema = z.object({
 	message: z.string().min(1).max(MESSAGE_MAX).describe('Error message to show on failure')
 });
 
-const astValidationConfigSchema = z.object({
+const astValidationConfigSchemaLegacy = z.object({
 	type: z.literal('ast'),
 	requirements: z
 		.array(astRequirementSchema)
@@ -171,11 +178,11 @@ const astValidationConfigSchema = z.object({
 	timeout_ms: z.number().int().min(TIMEOUT_MIN).max(TIMEOUT_MAX).optional().default(5000)
 });
 
-// Discriminated union for all validation configs
-export const validationConfigSchema = z.discriminatedUnion('type', [
-	outputValidationConfigSchema,
-	unitTestValidationConfigSchema,
-	astValidationConfigSchema
+// Legacy discriminated union for all validation configs
+export const validationConfigSchemaLegacy = z.discriminatedUnion('type', [
+	outputValidationConfigSchemaLegacy,
+	unitTestValidationConfigSchemaLegacy,
+	astValidationConfigSchemaLegacy
 ]);
 
 // Validation Result Schemas (for submission responses)
@@ -189,11 +196,79 @@ const testCaseResultSchema = z.object({
 	hidden: z.boolean().optional()
 });
 
-export const validationResultSchema = z.object({
+export const validationResultSchemaLegacy = z.object({
 	valid: z.boolean(),
 	strategy: validationStrategyTypeSchema,
 	test_results: z.array(testCaseResultSchema),
 	ast_issues: z.array(z.string()).optional(),
+	error: z.string().optional(),
+	execution_time_ms: z.number().int().min(0)
+});
+
+// =============================================================================
+// New schemas: orthogonal AST checks + behavior layer
+// =============================================================================
+
+const AT_LEAST_ONE_LAYER =
+	'Au moins une vérification de forme ou un comportement attendu doit être défini';
+
+const behaviorOutputSchema = z.object({
+	kind: z.literal('output'),
+	test_cases: z
+		.array(outputTestCaseSchema)
+		.min(TEST_CASES_MIN)
+		.max(TEST_CASES_MAX)
+		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
+		.describe('Output test cases'),
+	comparison: outputComparisonSchema.describe('Default comparison applied to every test case')
+});
+
+const behaviorUnitTestSchema = z.object({
+	kind: z.literal('unit_test'),
+	function_name: z
+		.string()
+		.min(FUNCTION_NAME_MIN)
+		.max(FUNCTION_NAME_MAX)
+		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Function name must be a valid Python identifier'),
+	test_cases: z
+		.array(unitTestCaseSchema)
+		.min(TEST_CASES_MIN)
+		.max(TEST_CASES_MAX)
+		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
+		.describe('Unit test cases')
+});
+
+export const behaviorCheckSchema = z.discriminatedUnion('kind', [
+	behaviorOutputSchema,
+	behaviorUnitTestSchema
+]);
+
+export const validationConfigSchema = z
+	.object({
+		ast_requirements: z
+			.array(astRequirementSchema)
+			.min(REQUIREMENTS_MIN)
+			.max(REQUIREMENTS_MAX)
+			.optional()
+			.describe('Structural AST checks (uses_loop, defines_function, …)'),
+		behavior: behaviorCheckSchema
+			.optional()
+			.describe('Runtime behavior verified on submitted code (output or unit_test)'),
+		timeout_ms: z.number().int().min(TIMEOUT_MIN).max(TIMEOUT_MAX).optional().default(5000)
+	})
+	.refine((cfg) => Boolean(cfg.ast_requirements?.length) || cfg.behavior !== undefined, {
+		message: AT_LEAST_ONE_LAYER
+	});
+
+const failedLayerSchema = z.union([z.literal('ast'), z.literal('behavior'), z.null()]);
+const behaviorKindSchema = z.enum(['output', 'unit_test']);
+
+export const validationResultSchema = z.object({
+	valid: z.boolean(),
+	failed_layer: failedLayerSchema,
+	behavior_kind: behaviorKindSchema.optional(),
+	ast_issues: z.array(z.string()).optional(),
+	test_results: z.array(testCaseResultSchema),
 	error: z.string().optional(),
 	execution_time_ms: z.number().int().min(0)
 });
@@ -231,7 +306,7 @@ export const createExerciseSchema = z.object({
 		.min(CODE_MIN)
 		.max(CODE_MAX)
 		.describe('Solution code (required, 1-100000 chars)'),
-	validation_config: validationConfigSchema.describe('Validation strategy and configuration'),
+	validation_config: validationConfigSchemaLegacy.describe('Validation strategy and configuration'),
 	level: exerciseLevelSchema.describe('Class level: college, lycee, nsi, etudiant'),
 	tags: z
 		.array(z.string().min(1).max(50))
@@ -255,7 +330,7 @@ export const updateExerciseSchema = z.object({
 	instructions: z.string().max(INSTRUCTIONS_MAX).nullable().optional(),
 	starter_code: z.string().max(CODE_MAX).nullable().optional(),
 	solution_code: z.string().min(CODE_MIN).max(CODE_MAX).optional(),
-	validation_config: validationConfigSchema.optional(),
+	validation_config: validationConfigSchemaLegacy.optional(),
 	level: exerciseLevelSchema.optional(),
 	tags: z.array(z.string().min(1).max(50)).max(TAGS_MAX).optional(),
 	source: z.string().max(SOURCE_MAX).nullable().optional(),

@@ -245,6 +245,58 @@ export interface ExerciseValidationResult {
 }
 
 // =============================================================================
+// New ValidationConfig shape — orthogonal AST checks + behavior layer
+// See docs/wip/python-validation-refactor-spec.md
+//
+// NOTE: these types are mirrored in `src/lib/types/python-exercises.ts`
+// (under names `BehaviorCheck`, `ValidationConfigV2`, `ValidationResultV2`).
+// The duplication exists because `shared/python/types.ts` must stay free of
+// server-only imports for the worker bundle. Keep both files in sync —
+// Phase 6 cleanup consolidates.
+// =============================================================================
+
+/**
+ * Behavior check — discriminated union on `kind`.
+ * Defines what runtime behavior is verified on submitted code.
+ */
+export type BehaviorCheck =
+	| {
+			kind: 'output';
+			test_cases: OutputTestCase[];
+			comparison: OutputComparison;
+	  }
+	| {
+			kind: 'unit_test';
+			function_name: string;
+			test_cases: UnitTestCase[];
+	  };
+
+/**
+ * Exercise validation config — orthogonal AST checks + behavior layer.
+ * At least one of `ast_requirements` (non-empty) and `behavior` must be present.
+ */
+export interface ExerciseValidationConfigV2 {
+	ast_requirements?: ASTRequirement[];
+	behavior?: BehaviorCheck;
+	timeout_ms?: number;
+}
+
+/**
+ * Result of running the new pipeline.
+ * `failed_layer` indicates which orthogonal axis failed (or null on success).
+ * `behavior_kind` is set whenever a behavior was configured (succeeded or not).
+ */
+export interface ExerciseValidationResultV2 {
+	valid: boolean;
+	failed_layer: 'ast' | 'behavior' | null;
+	behavior_kind?: 'output' | 'unit_test';
+	ast_issues?: string[];
+	test_results: TestCaseResult[];
+	error?: string;
+	execution_time_ms: number;
+}
+
+// =============================================================================
 // Messages: Main Thread -> Worker (Extended)
 // =============================================================================
 

@@ -118,6 +118,42 @@ export type ValidationConfig =
 	| UnitTestValidationConfig
 	| ASTValidationConfig;
 
+// =============================================================================
+// New ValidationConfig shape — orthogonal AST checks + behavior layer
+// See docs/wip/python-validation-refactor-spec.md
+//
+// NOTE: these types are mirrored in `src/lib/shared/python/types.ts`
+// (under names `BehaviorCheck`, `ExerciseValidationConfigV2`,
+// `ExerciseValidationResultV2`) to avoid pulling server-only modules into the
+// worker bundle. Keep both definitions in sync — Phase 6 cleanup consolidates.
+// =============================================================================
+
+/**
+ * Behavior check — discriminated union on `kind`.
+ * Defines what runtime behavior is verified on submitted code.
+ */
+export type BehaviorCheck =
+	| {
+			kind: 'output';
+			test_cases: OutputTestCase[];
+			comparison: OutputComparison;
+	  }
+	| {
+			kind: 'unit_test';
+			function_name: string;
+			test_cases: UnitTestCase[];
+	  };
+
+/**
+ * Exercise validation config — orthogonal AST checks + behavior layer.
+ * At least one of `ast_requirements` (non-empty) and `behavior` must be present.
+ */
+export interface ValidationConfigV2 {
+	ast_requirements?: ASTRequirement[];
+	behavior?: BehaviorCheck;
+	timeout_ms?: number;
+}
+
 // Validation Result Types
 export interface TestCaseResult {
 	passed: boolean;
@@ -137,6 +173,21 @@ export interface ValidationResult {
 	test_results: TestCaseResult[];
 	ast_issues?: string[]; // For AST validation
 	error?: string; // Global error (timeout, crash, etc.)
+	execution_time_ms: number;
+}
+
+/**
+ * Result of running the new AST + behavior pipeline.
+ * `failed_layer` indicates which orthogonal axis failed (or null on success).
+ * `behavior_kind` is set whenever a behavior was configured (succeeded or not).
+ */
+export interface ValidationResultV2 {
+	valid: boolean;
+	failed_layer: 'ast' | 'behavior' | null;
+	behavior_kind?: 'output' | 'unit_test';
+	ast_issues?: string[];
+	test_results: TestCaseResult[];
+	error?: string;
 	execution_time_ms: number;
 }
 
