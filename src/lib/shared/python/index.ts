@@ -243,10 +243,8 @@ export {
 	testCaseResultSchema,
 	validationStrategyTypeSchema,
 
-	// New schemas (AST + behavior pipeline).
-	// Phase 1 transition: these are exported for Phase 2 to consume, but
-	// `toWorkerMessageSchema` and `fromWorkerMessageSchema` still register
-	// the *Legacy variants. Phase 2 swaps them.
+	// New schemas (AST + behavior pipeline) — registered in
+	// `toWorkerMessageSchema` and `fromWorkerMessageSchema` since Phase 2.
 	behaviorCheckSchema,
 	failedLayerSchema,
 	behaviorKindSchema,
