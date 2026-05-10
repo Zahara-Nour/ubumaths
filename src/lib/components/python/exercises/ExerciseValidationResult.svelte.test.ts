@@ -10,7 +10,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from '@vitest/browser/context';
-import type { ExerciseValidationResultV2 as Result } from '$lib/shared/python';
+import type { ExerciseValidationResult as Result } from '$lib/shared/python';
 import ExerciseValidationResult from './ExerciseValidationResult.svelte';
 
 const validResult: Result = {

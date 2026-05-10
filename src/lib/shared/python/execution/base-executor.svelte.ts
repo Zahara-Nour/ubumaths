@@ -22,8 +22,8 @@ import type {
 	FromWorkerMessage,
 	CompletionItem,
 	WorkerBreakpoint,
-	ExerciseValidationConfigV2,
-	ExerciseValidationResultV2
+	ExerciseValidationConfig,
+	ExerciseValidationResult
 } from '$lib/shared/python';
 import { PYODIDE_CONFIG, fromWorkerMessageSchema } from '$lib/shared/python';
 import type {
@@ -64,7 +64,7 @@ interface PendingCompletion {
  * Configuration for pending exercise validation requests
  */
 interface PendingExerciseValidation {
-	resolve: (result: ExerciseValidationResultV2) => void;
+	resolve: (result: ExerciseValidationResult) => void;
 	reject: (error: Error) => void;
 	timeout: ReturnType<typeof setTimeout>;
 }
@@ -622,7 +622,7 @@ export abstract class BasePythonExecutor {
 	 * Validate Python code against an exercise validation config.
 	 *
 	 * Runs the validation in the Pyodide worker via the `validate-exercise` message.
-	 * The config is the new AST + behavior shape (`ExerciseValidationConfigV2`).
+	 * The config is the new AST + behavior shape (`ExerciseValidationConfig`).
 	 *
 	 * The executor's reactive state (stdout, stderr, plotData, state...) is **not**
 	 * touched by this method. The result is only delivered through the returned
@@ -639,8 +639,8 @@ export abstract class BasePythonExecutor {
 	 */
 	validateExercise(
 		code: string,
-		config: ExerciseValidationConfigV2
-	): Promise<ExerciseValidationResultV2> {
+		config: ExerciseValidationConfig
+	): Promise<ExerciseValidationResult> {
 		return new Promise((resolve, reject) => {
 			// Pyodide must be loaded; ready OR executing both qualify since the
 			// worker can route a `validate-exercise` message in parallel with an
@@ -676,7 +676,7 @@ export abstract class BasePythonExecutor {
 	 * Handle exercise validation result from worker.
 	 * Looks up the pending request by id and resolves its promise.
 	 */
-	private handleExerciseValidationResult(id: string, result: ExerciseValidationResultV2): void {
+	private handleExerciseValidationResult(id: string, result: ExerciseValidationResult): void {
 		const pending = this.pendingExerciseValidations.get(id);
 		if (!pending) {
 			console.warn('[BasePythonExecutor] Received validation-exercise-result for unknown id:', id);

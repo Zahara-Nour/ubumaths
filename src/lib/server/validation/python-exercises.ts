@@ -30,9 +30,6 @@ const SOURCE_MAX = 200;
 const uuidSchema = z.string().uuid();
 const timestampSchema = z.string().datetime();
 
-// Validation Strategy Schemas
-const validationStrategyTypeSchema = z.enum(['output', 'unit_test', 'ast']);
-
 // =============================================================================
 // Output comparison — discriminated union (exact / text / numeric).
 // Defensive bound on epsilons: > 1 makes no pedagogical sense.
@@ -93,46 +90,11 @@ const outputTestCaseSchema = z.object({
 
 const AT_LEAST_ONE_VISIBLE = 'Au moins un test doit être visible';
 
-// =============================================================================
-// LEGACY discriminated-union schemas (type: 'output' | 'unit_test' | 'ast')
-// Kept in parallel during the refactor to ast_requirements + behavior shape.
-// To be removed in Phase 6 once consumers and DB are migrated.
-// See docs/wip/python-validation-refactor-spec.md.
-// =============================================================================
-
-const outputValidationConfigSchemaLegacy = z.object({
-	type: z.literal('output'),
-	test_cases: z
-		.array(outputTestCaseSchema)
-		.min(TEST_CASES_MIN)
-		.max(TEST_CASES_MAX)
-		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
-		.describe('Output test cases'),
-	comparison: outputComparisonSchema.describe('Default comparison applied to every test case'),
-	timeout_ms: z.number().int().min(TIMEOUT_MIN).max(TIMEOUT_MAX).optional().default(5000)
-});
-
 // Unit Test Config
 const unitTestCaseSchema = z.object({
 	args: z.array(z.unknown()).max(20).describe('Function arguments'),
 	expected: z.unknown().describe('Expected return value'),
 	hidden: z.boolean().optional().default(false)
-});
-
-const unitTestValidationConfigSchemaLegacy = z.object({
-	type: z.literal('unit_test'),
-	function_name: z
-		.string()
-		.min(FUNCTION_NAME_MIN)
-		.max(FUNCTION_NAME_MAX)
-		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Function name must be a valid Python identifier'),
-	test_cases: z
-		.array(unitTestCaseSchema)
-		.min(TEST_CASES_MIN)
-		.max(TEST_CASES_MAX)
-		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
-		.describe('Unit test cases'),
-	timeout_ms: z.number().int().min(TIMEOUT_MIN).max(TIMEOUT_MAX).optional().default(5000)
 });
 
 // AST Requirement Types
@@ -159,32 +121,6 @@ const astRequirementSchema = z.object({
 	message: z.string().min(1).max(MESSAGE_MAX).describe('Error message to show on failure')
 });
 
-const astValidationConfigSchemaLegacy = z.object({
-	type: z.literal('ast'),
-	requirements: z
-		.array(astRequirementSchema)
-		.min(REQUIREMENTS_MIN)
-		.max(REQUIREMENTS_MAX)
-		.describe('AST requirements'),
-	output_tests: z
-		.array(outputTestCaseSchema)
-		.max(TEST_CASES_MAX)
-		.refine((cases) => cases.length === 0 || cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
-		.optional()
-		.describe('Optional output tests to run after AST validation'),
-	output_comparison: outputComparisonSchema
-		.optional()
-		.describe('Comparison strategy for output_tests (defaults to exact when output_tests are set)'),
-	timeout_ms: z.number().int().min(TIMEOUT_MIN).max(TIMEOUT_MAX).optional().default(5000)
-});
-
-// Legacy discriminated union for all validation configs
-export const validationConfigSchemaLegacy = z.discriminatedUnion('type', [
-	outputValidationConfigSchemaLegacy,
-	unitTestValidationConfigSchemaLegacy,
-	astValidationConfigSchemaLegacy
-]);
-
 // Validation Result Schemas (for submission responses)
 const testCaseResultSchema = z.object({
 	passed: z.boolean(),
@@ -196,17 +132,8 @@ const testCaseResultSchema = z.object({
 	hidden: z.boolean().optional()
 });
 
-export const validationResultSchemaLegacy = z.object({
-	valid: z.boolean(),
-	strategy: validationStrategyTypeSchema,
-	test_results: z.array(testCaseResultSchema),
-	ast_issues: z.array(z.string()).optional(),
-	error: z.string().optional(),
-	execution_time_ms: z.number().int().min(0)
-});
-
 // =============================================================================
-// New schemas: orthogonal AST checks + behavior layer
+// Validation schemas: orthogonal AST checks + behavior layer
 // =============================================================================
 
 const AT_LEAST_ONE_LAYER =

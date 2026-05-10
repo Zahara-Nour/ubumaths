@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { ValidationConfigV2 } from '$lib/types/python-exercises';
+	import type { ValidationConfig } from '$lib/types/python-exercises';
 
 	export type Level = 'college' | 'lycee' | 'nsi' | 'etudiant';
 
@@ -9,7 +9,7 @@
 		instructions: string;
 		starter_code: string;
 		solution_code: string;
-		validation_config: ValidationConfigV2;
+		validation_config: ValidationConfig;
 		level: Level;
 		tags: string[];
 		source: string;
@@ -63,10 +63,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import {
-		PlaygroundExecutor,
-		type ExerciseValidationResultV2 as Result
-	} from '$lib/shared/python';
+	import { PlaygroundExecutor, type ExerciseValidationResult as Result } from '$lib/shared/python';
 	import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-svelte';
 
 	type Props = {

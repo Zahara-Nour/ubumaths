@@ -42,27 +42,19 @@ export type {
 	ValidationResult,
 
 	// Exercise validation types
-	ValidationStrategyType,
 	ExactComparison,
 	TextComparison,
 	NumericComparison,
 	CustomComparison,
 	OutputComparison,
 	OutputTestCase,
-	OutputValidationConfig,
 	UnitTestCase,
-	UnitTestValidationConfig,
 	ASTRequirementType,
 	ASTRequirement,
-	ASTValidationConfig,
+	BehaviorCheck,
 	ExerciseValidationConfig,
 	TestCaseResult,
 	ExerciseValidationResult,
-
-	// New ValidationConfig shape (AST + behavior pipeline)
-	BehaviorCheck,
-	ExerciseValidationConfigV2,
-	ExerciseValidationResultV2,
 
 	// Messages to worker
 	InitMessage,
@@ -223,28 +215,17 @@ export {
 	validationIssueSchema as workerValidationIssueSchema,
 	validationResultSchema as workerValidationResultSchema,
 
-	// Exercise validation schemas
+	// Exercise validation schemas (AST + behavior pipeline)
 	exactComparisonSchema,
 	textComparisonSchema,
 	numericComparisonSchema,
 	customComparisonSchema,
 	outputComparisonSchema,
 	outputTestCaseSchema,
-	outputValidationConfigSchemaLegacy,
 	unitTestCaseSchema,
-	unitTestValidationConfigSchemaLegacy,
 	astRequirementTypeSchema,
 	astRequirementSchema,
-	astValidationConfigSchemaLegacy,
-	exerciseValidationConfigSchemaLegacy,
-	exerciseValidationResultSchemaLegacy,
-	exerciseValidationResultMessageSchemaLegacy,
-	validateExerciseMessageSchemaLegacy,
 	testCaseResultSchema,
-	validationStrategyTypeSchema,
-
-	// New schemas (AST + behavior pipeline) — registered in
-	// `toWorkerMessageSchema` and `fromWorkerMessageSchema` since Phase 2.
 	behaviorCheckSchema,
 	failedLayerSchema,
 	behaviorKindSchema,

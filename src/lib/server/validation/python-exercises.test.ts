@@ -7,9 +7,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	behaviorCheckSchema,
 	validationConfigSchema,
-	validationConfigSchemaLegacy,
-	validationResultSchema,
-	validationResultSchemaLegacy
+	validationResultSchema
 } from './python-exercises';
 
 const exactComparison = { kind: 'exact' as const };
@@ -245,43 +243,5 @@ describe('validationResultSchema (new shape)', () => {
 			execution_time_ms: 5
 		};
 		expect(validationResultSchema.safeParse(result).success).toBe(false);
-	});
-});
-
-describe('legacy schemas remain accepting old shape', () => {
-	it('legacy validationConfigSchema accepts type=output', () => {
-		const cfg = {
-			type: 'output',
-			test_cases: validOutputBehavior.test_cases,
-			comparison: exactComparison
-		};
-		expect(validationConfigSchemaLegacy.safeParse(cfg).success).toBe(true);
-	});
-
-	it('legacy validationConfigSchema accepts type=unit_test', () => {
-		const cfg = {
-			type: 'unit_test',
-			function_name: 'add',
-			test_cases: validUnitTestBehavior.test_cases
-		};
-		expect(validationConfigSchemaLegacy.safeParse(cfg).success).toBe(true);
-	});
-
-	it('legacy validationConfigSchema accepts type=ast', () => {
-		const cfg = {
-			type: 'ast',
-			requirements: [validAstRequirement]
-		};
-		expect(validationConfigSchemaLegacy.safeParse(cfg).success).toBe(true);
-	});
-
-	it('legacy validationResultSchema accepts result with strategy field', () => {
-		const result = {
-			valid: true,
-			strategy: 'output',
-			test_results: [{ passed: true }],
-			execution_time_ms: 1
-		};
-		expect(validationResultSchemaLegacy.safeParse(result).success).toBe(true);
 	});
 });

@@ -1,10 +1,9 @@
 /**
- * TypeScript types for Python exercises system
- * Supports output comparison, unit testing, and AST analysis validation
+ * TypeScript types for Python exercises system.
+ * Validation is modelled as two orthogonal layers:
+ *   - `ast_requirements`: structural checks on the parsed code
+ *   - `behavior`: runtime check (`output` or `unit_test`)
  */
-
-// Validation Strategy Types
-export type ValidationStrategyType = 'output' | 'unit_test' | 'ast';
 
 // =============================================================================
 // Output Comparison — discriminated union of three intents.
@@ -65,26 +64,12 @@ export interface OutputTestCase {
 	hidden?: boolean;
 }
 
-export interface OutputValidationConfig {
-	type: 'output';
-	test_cases: OutputTestCase[];
-	comparison: OutputComparison;
-	timeout_ms?: number;
-}
-
 // Unit Test Config
 export interface UnitTestCase {
 	args: unknown[];
 	expected: unknown;
 	/** When true, the worker redacts args/expected/actual before returning to the main thread. */
 	hidden?: boolean;
-}
-
-export interface UnitTestValidationConfig {
-	type: 'unit_test';
-	function_name: string;
-	test_cases: UnitTestCase[];
-	timeout_ms?: number;
 }
 
 // AST Requirement Types
@@ -104,28 +89,13 @@ export interface ASTRequirement {
 	message: string;
 }
 
-export interface ASTValidationConfig {
-	type: 'ast';
-	requirements: ASTRequirement[];
-	output_tests?: OutputTestCase[];
-	output_comparison?: OutputComparison;
-	timeout_ms?: number;
-}
-
-// Union type for all validation configs
-export type ValidationConfig =
-	| OutputValidationConfig
-	| UnitTestValidationConfig
-	| ASTValidationConfig;
-
 // =============================================================================
-// New ValidationConfig shape — orthogonal AST checks + behavior layer
-// See docs/wip/python-validation-refactor-spec.md
+// ValidationConfig — orthogonal AST checks + behavior layer.
 //
 // NOTE: these types are mirrored in `src/lib/shared/python/types.ts`
-// (under names `BehaviorCheck`, `ExerciseValidationConfigV2`,
-// `ExerciseValidationResultV2`) to avoid pulling server-only modules into the
-// worker bundle. Keep both definitions in sync — Phase 6 cleanup consolidates.
+// (`BehaviorCheck`, `ExerciseValidationConfig`, `ExerciseValidationResult`)
+// to avoid pulling server-only modules into the worker bundle. Keep both
+// files in sync.
 // =============================================================================
 
 /**
@@ -145,10 +115,10 @@ export type BehaviorCheck =
 	  };
 
 /**
- * Exercise validation config — orthogonal AST checks + behavior layer.
- * At least one of `ast_requirements` (non-empty) and `behavior` must be present.
+ * Exercise validation config. At least one of `ast_requirements`
+ * (non-empty) and `behavior` must be present.
  */
-export interface ValidationConfigV2 {
+export interface ValidationConfig {
 	ast_requirements?: ASTRequirement[];
 	behavior?: BehaviorCheck;
 	timeout_ms?: number;
@@ -167,21 +137,12 @@ export interface TestCaseResult {
 	hidden?: boolean;
 }
 
-export interface ValidationResult {
-	valid: boolean;
-	strategy: ValidationStrategyType;
-	test_results: TestCaseResult[];
-	ast_issues?: string[]; // For AST validation
-	error?: string; // Global error (timeout, crash, etc.)
-	execution_time_ms: number;
-}
-
 /**
- * Result of running the new AST + behavior pipeline.
+ * Result of running the validation pipeline.
  * `failed_layer` indicates which orthogonal axis failed (or null on success).
  * `behavior_kind` is set whenever a behavior was configured (succeeded or not).
  */
-export interface ValidationResultV2 {
+export interface ValidationResult {
 	valid: boolean;
 	failed_layer: 'ast' | 'behavior' | null;
 	behavior_kind?: 'output' | 'unit_test';

@@ -324,47 +324,12 @@ export const outputTestCaseSchema = z.object({
 const AT_LEAST_ONE_VISIBLE = 'Au moins un test doit être visible';
 
 /**
- * LEGACY output validation config schema (type: 'output').
- * Kept during the refactor to ast_requirements + behavior shape.
- * To be removed in Phase 6.
- */
-export const outputValidationConfigSchemaLegacy = z.object({
-	type: z.literal('output'),
-	test_cases: z
-		.array(outputTestCaseSchema)
-		.min(1)
-		.max(50)
-		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE),
-	comparison: outputComparisonSchema,
-	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
-});
-
-/**
  * Unit test case schema
  */
 export const unitTestCaseSchema = z.object({
 	args: z.array(z.unknown()).max(20),
 	expected: z.unknown(),
 	hidden: z.boolean().optional().default(false)
-});
-
-/**
- * LEGACY unit test validation config schema (type: 'unit_test').
- * Kept during the refactor. To be removed in Phase 6.
- */
-export const unitTestValidationConfigSchemaLegacy = z.object({
-	type: z.literal('unit_test'),
-	function_name: z
-		.string()
-		.min(1)
-		.max(100)
-		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Function name must be a valid Python identifier'),
-	test_cases: z
-		.array(unitTestCaseSchema)
-		.min(1)
-		.max(50)
-		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE),
-	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
 });
 
 /**
@@ -395,35 +360,8 @@ export const astRequirementSchema = z.object({
 	message: z.string().min(1).max(500)
 });
 
-/**
- * LEGACY AST validation config schema (type: 'ast').
- * Kept during the refactor. To be removed in Phase 6.
- */
-export const astValidationConfigSchemaLegacy = z.object({
-	type: z.literal('ast'),
-	requirements: z.array(astRequirementSchema).min(1).max(20),
-	output_tests: z
-		.array(outputTestCaseSchema)
-		.max(50)
-		.refine((cases) => cases.length === 0 || cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
-		.optional(),
-	output_comparison: outputComparisonSchema.optional(),
-	timeout_ms: z.number().int().min(100).max(60_000).optional().default(5000)
-});
-
-/**
- * LEGACY exercise validation config — discriminated union on `type`.
- * Kept during the refactor. To be removed in Phase 6.
- */
-export const exerciseValidationConfigSchemaLegacy = z.discriminatedUnion('type', [
-	outputValidationConfigSchemaLegacy,
-	unitTestValidationConfigSchemaLegacy,
-	astValidationConfigSchemaLegacy
-]);
-
 // =============================================================================
-// New schemas: orthogonal AST checks + behavior layer
-// See docs/wip/python-validation-refactor-spec.md
+// Validation schemas: orthogonal AST checks + behavior layer
 // =============================================================================
 
 const AT_LEAST_ONE_LAYER =
@@ -473,24 +411,12 @@ export const exerciseValidationConfigSchema = z
 	});
 
 /**
- * Validate exercise message schema (new shape).
+ * Validate exercise message schema.
  */
 export const validateExerciseMessageSchema = z.object({
 	type: z.literal('validate-exercise'),
 	code: codeSchema,
 	config: exerciseValidationConfigSchema,
-	id: executionIdSchema
-});
-
-/**
- * LEGACY validate exercise message schema — kept during the refactor for
- * tooling that still emits old-shape messages. Phase 2 worker switches to
- * `validateExerciseMessageSchema` (new shape) only.
- */
-export const validateExerciseMessageSchemaLegacy = z.object({
-	type: z.literal('validate-exercise'),
-	code: codeSchema,
-	config: exerciseValidationConfigSchemaLegacy,
 	id: executionIdSchema
 });
 
@@ -748,25 +674,7 @@ export const testCaseResultSchema = z.object({
 });
 
 /**
- * Validation strategy type schema
- */
-export const validationStrategyTypeSchema = z.enum(['output', 'unit_test', 'ast']);
-
-/**
- * LEGACY exercise validation result schema (with `strategy` field).
- * Kept during the refactor. To be removed in Phase 6.
- */
-export const exerciseValidationResultSchemaLegacy = z.object({
-	valid: z.boolean(),
-	strategy: validationStrategyTypeSchema,
-	test_results: z.array(testCaseResultSchema),
-	ast_issues: z.array(z.string()).optional(),
-	error: z.string().optional(),
-	execution_time_ms: z.number().int().min(0)
-});
-
-/**
- * New exercise validation result schema — `failed_layer` indicates which
+ * Exercise validation result schema. `failed_layer` indicates which
  * orthogonal axis (ast / behavior) failed (or null on success).
  */
 export const failedLayerSchema = z.union([z.literal('ast'), z.literal('behavior'), z.null()]);
@@ -784,21 +692,11 @@ export const exerciseValidationResultSchema = z.object({
 });
 
 /**
- * Exercise validation result message schema (new shape).
+ * Exercise validation result message schema.
  */
 export const exerciseValidationResultMessageSchema = z.object({
 	type: z.literal('validation-exercise-result'),
 	result: exerciseValidationResultSchema,
-	id: executionIdSchema
-});
-
-/**
- * LEGACY exercise validation result message schema — kept during the refactor
- * so the Phase 1 worker (still on legacy shape) keeps validating.
- */
-export const exerciseValidationResultMessageSchemaLegacy = z.object({
-	type: z.literal('validation-exercise-result'),
-	result: exerciseValidationResultSchemaLegacy,
 	id: executionIdSchema
 });
 
@@ -884,24 +782,12 @@ export type ValidationIssueSchema = z.infer<typeof validationIssueSchema>;
 export type ValidationResultSchema = z.infer<typeof validationResultSchema>;
 export type ValidationResultMessageSchema = z.infer<typeof validationResultMessageSchema>;
 export type OutputTestCaseSchema = z.infer<typeof outputTestCaseSchema>;
-export type OutputValidationConfigSchemaLegacy = z.infer<typeof outputValidationConfigSchemaLegacy>;
 export type UnitTestCaseSchema = z.infer<typeof unitTestCaseSchema>;
-export type UnitTestValidationConfigSchemaLegacy = z.infer<
-	typeof unitTestValidationConfigSchemaLegacy
->;
 export type ASTRequirementTypeSchema = z.infer<typeof astRequirementTypeSchema>;
 export type ASTRequirementSchema = z.infer<typeof astRequirementSchema>;
-export type ASTValidationConfigSchemaLegacy = z.infer<typeof astValidationConfigSchemaLegacy>;
-export type ExerciseValidationConfigSchemaLegacy = z.infer<
-	typeof exerciseValidationConfigSchemaLegacy
->;
 export type BehaviorCheckSchema = z.infer<typeof behaviorCheckSchema>;
 export type ExerciseValidationConfigSchema = z.infer<typeof exerciseValidationConfigSchema>;
 export type TestCaseResultSchema = z.infer<typeof testCaseResultSchema>;
-export type ValidationStrategyTypeSchema = z.infer<typeof validationStrategyTypeSchema>;
-export type ExerciseValidationResultSchemaLegacy = z.infer<
-	typeof exerciseValidationResultSchemaLegacy
->;
 export type ExerciseValidationResultSchema = z.infer<typeof exerciseValidationResultSchema>;
 export type ExerciseValidationResultMessageSchema = z.infer<
 	typeof exerciseValidationResultMessageSchema
