@@ -161,6 +161,11 @@ const behaviorOutputSchema = z.object({
 	comparison: outputComparisonSchema.describe('Default comparison applied to every test case')
 });
 
+const unitTestToleranceSchema = z.object({
+	eps_abs: epsilonSchema,
+	eps_rel: epsilonSchema
+});
+
 const behaviorUnitTestSchema = z.object({
 	kind: z.literal('unit_test'),
 	function_name: z
@@ -173,7 +178,12 @@ const behaviorUnitTestSchema = z.object({
 		.min(TEST_CASES_MIN)
 		.max(TEST_CASES_MAX)
 		.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
-		.describe('Unit test cases')
+		.describe('Unit test cases'),
+	tolerance: unitTestToleranceSchema
+		.optional()
+		.describe(
+			'Optional numeric tolerance for float comparisons (use for transcendentals: math.exp, math.log, ...)'
+		)
 });
 
 export const behaviorCheckSchema = z.discriminatedUnion('kind', [
