@@ -5,9 +5,9 @@
 
 ---
 
-## État actuel : Phases 1 et 2 terminées
+## État actuel : Phases 1 à 3 terminées
 
-Phases 3–7 restantes.
+Phases 4–7 restantes.
 
 ---
 
@@ -122,18 +122,61 @@ Phases 3–7 restantes.
   → 31 / 31 (dont les 9 cas matrix)
 - ✅ `pnpm check:incremental` → baseline 9 / 46 préservé.
 
-### Prochaines étapes (Phase 3)
+## Phase 3 — DB migration + validation script (terminée)
 
-- Migration DB : SQL `UPDATE python_exercises SET validation_config = ...`
-  avec `CASE WHEN type = '…'` pour les 3 formes anciennes.
-- Migration `down` (transformation inverse).
-- Réécriture du seed `20260508163407_seed_python_exercises_samples.sql`.
-- Script `scripts/validate-python-exercises-migration.ts` qui parse old + new
-  pour chaque exo et vérifie l'équivalence sémantique.
+### Décisions
+
+- **Migration idempotente** : la `WHERE validation_config ? 'type'` évite les
+  doubles transformations. Re-run = no-op après le premier passage.
+- **Default `comparison: { kind: 'exact' }`** quand `output_comparison`
+  n'est pas spécifié dans un AST + output_tests legacy (cohérent avec
+  l'ancien comportement de `validateAST` du worker).
+- **Down migration documentée en commentaire** dans le fichier de migration
+  (pas de fichier séparé). Inclut un garde `RAISE EXCEPTION` pour
+  `ast_requirements + behavior.unit_test` (combinaison non représentable en
+  legacy).
+- **Seed canonique** (`20260508163407`) réécrit en nouvelle forme directement
+  pour que `db:reset` produise du data propre. Les autres seeds (les 4
+  ajouts récents) restent en ancienne forme et sont transformés par la
+  Phase 3 migration au runtime — fonctionnel mais à uniformiser plus tard.
+- **Patch obsolète** `20260508180000_update_seeds_for_output_v2.sql` reste
+  en place mais devient un no-op (n'a plus de rows `type='output'` à
+  patcher après la réécriture du seed).
+
+### Fichiers livrés
+
+1. `supabase/migrations/20260510130000_refactor_python_validation_config.sql`
+   - UPDATE avec `CASE WHEN validation_config->>'type' = '…'` pour les 3
+     types legacy ; gère `ast` avec ou sans `output_tests`.
+   - Down migration documentée en commentaire (paste-and-run en cas de
+     rollback).
+2. `supabase/migrations/20260508163407_seed_python_exercises_samples.sql`
+   - 5 exos seedés réécrits en nouvelle forme (`behavior` /
+     `ast_requirements`).
+3. `scripts/validate-python-exercises-migration.ts`
+   - Parse chaque row avec `validationConfigSchema` (nouveau) et avec
+     `validationConfigSchemaLegacy` ; échoue si une row valide en legacy
+     (= migration partielle) ou invalide en nouveau.
+
+### Application
+
+- ✅ `pnpm db:migrate` → migration appliquée à la base remote.
+- ✅ `pnpm tsx scripts/validate-python-exercises-migration.ts`
+  → `12 ok / 0 invalid / 0 still-legacy / 12 total`.
+- ✅ `pnpm test:server` → 99/99 (aucune régression sur l'API).
+
+### Prochaines étapes (Phase 4)
+
+- Refonte `ExerciseStrategyEditor.svelte` en deux panneaux indépendants
+  (« Forme du code » / « Comportement attendu »).
+- Extraction `ASTRequirementsPanel.svelte`.
+- Mise à jour de `ExerciseForm.svelte` ligne 135
+  (`form.validation_config.type` → `form.validation_config.behavior?.kind`).
 
 ### Commits
 
-| #   | Hash      | Message                                                            |
-| --- | --------- | ------------------------------------------------------------------ |
-| 1   | 8b9e6b139 | feat(python-exercises): add new ValidationConfig types             |
-| 2   | _à venir_ | feat(python-exercises): refactor worker to AST + behavior pipeline |
+| #   | Hash      | Message                                                                  |
+| --- | --------- | ------------------------------------------------------------------------ |
+| 1   | 8b9e6b139 | feat(python-exercises): add new ValidationConfig types                   |
+| 2   | b58b54582 | feat(python-exercises): refactor worker to AST + behavior pipeline       |
+| 3   | _à venir_ | feat(python-exercises): migrate validation_config to ast+behavior schema |

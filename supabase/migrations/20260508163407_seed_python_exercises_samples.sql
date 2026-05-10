@@ -45,11 +45,13 @@ SELECT
     'for i in range(0, 11, 2):' || E'\n' ||
         '    print(i)' || E'\n',
     '{
-        "type": "output",
-        "test_cases": [
-            {"input": "", "expected_output": "0\n2\n4\n6\n8\n10\n"}
-        ],
-        "ignore_whitespace": false
+        "behavior": {
+            "kind": "output",
+            "test_cases": [
+                {"input": "", "expected_output": "0\n2\n4\n6\n8\n10\n"}
+            ],
+            "comparison": {"kind": "exact"}
+        }
     }'::jsonb,
     'college',
     ARRAY['for', 'print'],
@@ -82,14 +84,16 @@ SELECT
     'n = int(input())' || E'\n' ||
         'print(n * n)' || E'\n',
     '{
-        "type": "output",
-        "test_cases": [
-            {"input": "5",  "expected_output": "25\n"},
-            {"input": "0",  "expected_output": "0\n"},
-            {"input": "-7", "expected_output": "49\n"},
-            {"input": "12", "expected_output": "144\n"}
-        ],
-        "ignore_whitespace": false
+        "behavior": {
+            "kind": "output",
+            "test_cases": [
+                {"input": "5",  "expected_output": "25\n"},
+                {"input": "0",  "expected_output": "0\n"},
+                {"input": "-7", "expected_output": "49\n"},
+                {"input": "12", "expected_output": "144\n"}
+            ],
+            "comparison": {"kind": "exact"}
+        }
     }'::jsonb,
     'college',
     ARRAY['input', 'print', 'types'],
@@ -126,15 +130,17 @@ SELECT
     'def inverse(s):' || E'\n' ||
         '    return s[::-1]' || E'\n',
     '{
-        "type": "unit_test",
-        "function_name": "inverse",
-        "test_cases": [
-            {"args": ["abc"],     "expected": "cba"},
-            {"args": [""],        "expected": ""},
-            {"args": ["a"],       "expected": "a"},
-            {"args": ["bonjour"], "expected": "ruojnob"},
-            {"args": ["RaCONTaR"], "expected": "RaTNOCaR"}
-        ]
+        "behavior": {
+            "kind": "unit_test",
+            "function_name": "inverse",
+            "test_cases": [
+                {"args": ["abc"],      "expected": "cba"},
+                {"args": [""],         "expected": ""},
+                {"args": ["a"],        "expected": "a"},
+                {"args": ["bonjour"],  "expected": "ruojnob"},
+                {"args": ["RaCONTaR"], "expected": "RaTNOCaR"}
+            ]
+        }
     }'::jsonb,
     'lycee',
     ARRAY['methodes-string', 'slicing'],
@@ -174,8 +180,7 @@ SELECT
         '        return 1' || E'\n' ||
         '    return n * factorielle(n - 1)' || E'\n',
     '{
-        "type": "ast",
-        "requirements": [
+        "ast_requirements": [
             {"type": "defines_function", "name": "factorielle", "message": "Tu dois définir une fonction `factorielle`"},
             {"type": "uses_recursion", "message": "Ta fonction doit être récursive (s''appeler elle-même)"},
             {"type": "no_print", "message": "N''utilise pas `print`, retourne la valeur avec `return`"}
@@ -221,13 +226,16 @@ SELECT
         '        premiers.append(n)' || E'\n' ||
         'print('' ''.join(str(p) for p in premiers))' || E'\n',
     '{
-        "type": "ast",
-        "requirements": [
+        "ast_requirements": [
             {"type": "uses_loop", "message": "Utilise une boucle (for ou while)"}
         ],
-        "output_tests": [
-            {"input": "", "expected_output": "2 3 5 7 11 13 17 19\n"}
-        ]
+        "behavior": {
+            "kind": "output",
+            "test_cases": [
+                {"input": "", "expected_output": "2 3 5 7 11 13 17 19\n"}
+            ],
+            "comparison": {"kind": "exact"}
+        }
     }'::jsonb,
     'lycee',
     ARRAY['for', 'if', 'list', 'print'],
