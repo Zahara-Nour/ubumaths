@@ -346,6 +346,45 @@ Text after`;
 		}
 	});
 
+	it('should parse inline code nested inside italic', () => {
+		const markdown = 'note: *use `exp(x)` from math*';
+		const ast = parseMarkdown(markdown);
+		expect(ast.children).toHaveLength(1);
+		expect(ast.children[0].type).toBe('paragraph');
+		if (ast.children[0].type !== 'paragraph') return;
+
+		// "note: " + italic{"use ", code{"exp(x)"}, " from math"}
+		const children = ast.children[0].children;
+		// Each text node carries `italic: true` for the italic span; the
+		// `exp(x)` segment should ALSO have `code: true`.
+		const codeNode = children.find((n) => n.type === 'text' && n.code === true);
+		expect(codeNode).toBeDefined();
+		if (codeNode && codeNode.type === 'text') {
+			expect(codeNode.content).toBe('exp(x)');
+			expect(codeNode.italic).toBe(true);
+			expect(codeNode.code).toBe(true);
+		}
+
+		// Surrounding italic plain text should also have italic flag
+		const italicPlain = children.filter((n) => n.type === 'text' && n.italic === true && !n.code);
+		expect(italicPlain.length).toBeGreaterThanOrEqual(1);
+	});
+
+	it('should parse inline code nested inside bold', () => {
+		const markdown = '**call `seuil()` here**';
+		const ast = parseMarkdown(markdown);
+		expect(ast.children[0].type).toBe('paragraph');
+		if (ast.children[0].type !== 'paragraph') return;
+
+		const codeNode = ast.children[0].children.find((n) => n.type === 'text' && n.code === true);
+		expect(codeNode).toBeDefined();
+		if (codeNode && codeNode.type === 'text') {
+			expect(codeNode.content).toBe('seuil()');
+			expect(codeNode.bold).toBe(true);
+			expect(codeNode.code).toBe(true);
+		}
+	});
+
 	it('should parse text formatting - code', () => {
 		const markdown = 'This is `code` text';
 		const ast = parseMarkdown(markdown);

@@ -1187,6 +1187,23 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 		/(`[^`]+`)|(-\/-)(.+?)-\/-|(==)(.+?)==|(\*\*\*)(.+?)\*\*\*|(___)(.+?)___|(\*\*|__)([^*_]+)\10|(\*|_)([^*_]+)\12/g;
 	let match: RegExpExecArray | null;
 
+	/**
+	 * Apply a set of inline-formatting flags to the parsed tree of `content`.
+	 * Recurses so that an italic span (or bold, strike, highlight) containing
+	 * `\`code\`` keeps the code formatting. Without this, the outer regex
+	 * captures `*foo \`bar\` baz*` as a single italic text node and the
+	 * backticks survive as literal text.
+	 */
+	const applyFormat = (
+		content: string,
+		flags: Partial<
+			Pick<InlineNode & { type: 'text' }, 'bold' | 'italic' | 'strikethrough' | 'highlight'>
+		>
+	): InlineNode[] => {
+		const inner = parseTextFormattingSegment(content);
+		return inner.map((node) => (node.type === 'text' ? { ...node, ...flags } : node));
+	};
+
 	while ((match = formatRegex.exec(text)) !== null) {
 		// Add unformatted text before this match
 		if (match.index > position) {
@@ -1197,8 +1214,8 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 		}
 
 		if (match[1]) {
-			// Code: `content`
-			const content = match[1].slice(1, -1); // Remove backticks
+			// Code: `content` — leaf, never recurses (backtick content is literal)
+			const content = match[1].slice(1, -1);
 			nodes.push({
 				type: 'text',
 				content,
@@ -1206,48 +1223,22 @@ function parseTextFormattingSegment(text: string): InlineNode[] {
 			});
 		} else if (match[2] && match[3]) {
 			// Strikethrough: -/-content-/-
-			nodes.push({
-				type: 'text',
-				content: match[3],
-				strikethrough: true
-			});
+			nodes.push(...applyFormat(match[3], { strikethrough: true }));
 		} else if (match[4] && match[5]) {
 			// Highlight: ==content==
-			nodes.push({
-				type: 'text',
-				content: match[5],
-				highlight: true
-			});
+			nodes.push(...applyFormat(match[5], { highlight: true }));
 		} else if (match[6] && match[7]) {
 			// Bold+Italic: ***content***
-			nodes.push({
-				type: 'text',
-				content: match[7],
-				bold: true,
-				italic: true
-			});
+			nodes.push(...applyFormat(match[7], { bold: true, italic: true }));
 		} else if (match[8] && match[9]) {
 			// Bold+Italic: ___content___
-			nodes.push({
-				type: 'text',
-				content: match[9],
-				bold: true,
-				italic: true
-			});
+			nodes.push(...applyFormat(match[9], { bold: true, italic: true }));
 		} else if (match[10] && match[11]) {
 			// Bold: **content** or __content__
-			nodes.push({
-				type: 'text',
-				content: match[11],
-				bold: true
-			});
+			nodes.push(...applyFormat(match[11], { bold: true }));
 		} else if (match[12] && match[13]) {
 			// Italic: *content* or _content_
-			nodes.push({
-				type: 'text',
-				content: match[13],
-				italic: true
-			});
+			nodes.push(...applyFormat(match[13], { italic: true }));
 		}
 
 		position = match.index + match[0].length;
