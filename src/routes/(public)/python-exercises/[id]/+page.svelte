@@ -50,6 +50,12 @@
 			? exercise.validation_config.behavior.function_name
 			: ''
 	);
+	// True when every declared test_case has no positional args — the function
+	// is a no-arg function and the input field is useless.
+	const callTakesArgs = $derived(
+		exercise.validation_config.behavior?.kind === 'unit_test' &&
+			exercise.validation_config.behavior.test_cases.some((tc) => tc.args.length > 0)
+	);
 
 	const pyodideReady = $derived(executor?.state === 'ready');
 	const isLoadingPyodide = $derived(
@@ -278,7 +284,7 @@
 <div class="container mx-auto p-4">
 	<header class="mb-4">
 		<div class="flex items-start justify-between gap-4">
-			<h1 class="mb-2 text-2xl font-bold">{exercise.title}</h1>
+			<h1 class="mb-2 text-3xl font-bold">{exercise.title}</h1>
 			<div class="flex items-center gap-2">
 				{#if isTeacher}
 					<Button variant="outline" size="sm" onclick={handleCopyLink}>
@@ -318,7 +324,9 @@
 			{/if}
 		</div>
 		{#if exercise.description}
-			<p class="mt-2 text-sm text-muted-foreground">{exercise.description}</p>
+			<div class="mt-2 text-muted-foreground">
+				<MarkdownRenderer content={exercise.description} />
+			</div>
 		{/if}
 		{#if exercise.source}
 			<p class="mt-1 text-xs text-muted-foreground">
@@ -400,13 +408,15 @@
 						}}
 					>
 						<span class="font-mono text-sm">{callFunctionName}(</span>
-						<input
-							type="text"
-							bind:value={callInput}
-							placeholder="ex: 4   ou   1, 2   ou   [1,2,3]"
-							class="flex-1 rounded-md border border-border bg-background px-2 py-1 font-mono text-sm focus:border-primary focus:outline-none"
-							disabled={!pyodideReady || isCalling}
-						/>
+						{#if callTakesArgs}
+							<input
+								type="text"
+								bind:value={callInput}
+								placeholder="ex: 4   ou   1, 2   ou   [1,2,3]"
+								class="flex-1 rounded-md border border-border bg-background px-2 py-1 font-mono text-sm focus:border-primary focus:outline-none"
+								disabled={!pyodideReady || isCalling}
+							/>
+						{/if}
 						<span class="font-mono text-sm">)</span>
 						<Button
 							type="submit"
