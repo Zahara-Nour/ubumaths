@@ -1,42 +1,16 @@
 <script lang="ts" module>
-	import type { ValidationConfig } from '$lib/types/python-exercises';
-
-	export type Level = 'college' | 'lycee' | 'nsi' | 'etudiant';
-
-	export type ExerciseFormState = {
-		title: string;
-		description: string;
-		instructions: string;
-		starter_code: string;
-		solution_code: string;
-		validation_config: ValidationConfig;
-		level: Level;
-		tags: string[];
-		source: string;
-		is_public: boolean;
-	};
-
-	/** Empty form, ready to bind on /new. */
-	export function emptyExerciseForm(): ExerciseFormState {
-		return {
-			title: '',
-			description: '',
-			instructions: '',
-			starter_code: '',
-			solution_code: '',
-			validation_config: {
-				behavior: {
-					kind: 'output',
-					test_cases: [{ input: '', expected_output: '' }],
-					comparison: { kind: 'exact' }
-				}
-			},
-			level: 'lycee',
-			tags: [],
-			source: '',
-			is_public: true
-		};
-	}
+	// Re-export the form-state helpers so existing consumers
+	// (`import { emptyExerciseForm } from '.../ExerciseForm.svelte'`) still
+	// resolve. The actual definitions live in `form-mapping.ts` to keep them
+	// importable from non-Svelte contexts (e.g. the round-trip test script).
+	export {
+		emptyExerciseForm,
+		buildInitialForm,
+		buildSubmitBody,
+		type ExerciseFormState,
+		type ExerciseSource,
+		type Level
+	} from './form-mapping';
 </script>
 
 <script lang="ts">

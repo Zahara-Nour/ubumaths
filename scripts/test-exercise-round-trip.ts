@@ -22,6 +22,11 @@
 import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
 import { writeFileSync } from 'fs';
+import {
+	buildInitialForm,
+	buildSubmitBody,
+	type ExerciseSource
+} from '../src/lib/components/python/exercises/form-mapping';
 
 dotenv.config();
 
@@ -39,51 +44,11 @@ const testAll = !arg || arg === '--all';
 const exerciseId = testAll ? null : arg;
 
 // =============================================================================
-// Client-side transform replication (must mirror src/...)
-// =============================================================================
-
-/**
- * Mirrors `buildInitialForm` in
- * src/routes/(public)/python-exercises/[id]/edit/+page.svelte
- */
-function buildInitialForm(ex: Record<string, unknown>) {
-	return {
-		title: ex.title as string,
-		description: (ex.description as string | null) ?? '',
-		instructions: (ex.instructions as string | null) ?? '',
-		starter_code: (ex.starter_code as string | null) ?? '',
-		solution_code: ex.solution_code as string,
-		validation_config: ex.validation_config,
-		level: ex.level as string,
-		tags: (ex.tags as string[]) ?? [],
-		source: (ex.source as string | null) ?? '',
-		is_public: ex.is_public as boolean
-	};
-}
-
-/**
- * Mirrors the body assembled by `handleUpdate` in
- * src/routes/(public)/python-exercises/[id]/edit/+page.svelte
- */
-function buildPutBody(form: ReturnType<typeof buildInitialForm>, exerciseId: string) {
-	return {
-		id: exerciseId,
-		title: form.title.trim(),
-		description: form.description.trim() === '' ? null : form.description,
-		instructions: form.instructions.trim() === '' ? null : form.instructions,
-		starter_code: form.starter_code.trim() === '' ? null : form.starter_code,
-		solution_code: form.solution_code,
-		validation_config: form.validation_config,
-		level: form.level,
-		tags: form.tags,
-		source: form.source.trim() === '' ? null : form.source.trim(),
-		is_public: form.is_public
-	};
-}
-
-// =============================================================================
 // Main
 // =============================================================================
+//
+// `buildInitialForm` and `buildSubmitBody` are imported from the same module
+// the UI uses, so this test cannot drift from the form code.
 
 type SupabaseClient = ReturnType<typeof createClient>;
 type DiffEntry = { field: string; before: unknown; after: unknown };
@@ -116,16 +81,19 @@ async function testOne(supabase: SupabaseClient, id: string): Promise<TestResult
 		.filter((n): n is string => Boolean(n))
 		.sort();
 
-	const exerciseWithTags = { ...(row as Record<string, unknown>), tags: tagNames };
+	const exerciseWithTags = {
+		...(row as Record<string, unknown>),
+		tags: tagNames
+	} as ExerciseSource & Record<string, unknown>;
 
 	// Backup (insurance — even though this script never writes)
 	const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 	const backupPath = `/tmp/exo-${id}-backup-${timestamp}.json`;
 	writeFileSync(backupPath, JSON.stringify(exerciseWithTags, null, 2));
 
-	// Simulate client transforms
+	// Simulate client transforms — same functions the UI uses
 	const initialForm = buildInitialForm(exerciseWithTags);
-	const putBody = buildPutBody(initialForm, id);
+	const putBody = buildSubmitBody(initialForm);
 
 	// Build the "would-be DB row after save" by applying the PUT body to
 	// the original row (= what `update(updateData)` does, column by column).
