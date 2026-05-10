@@ -122,13 +122,24 @@ const astRequirementSchema = z.object({
 });
 
 // Validation Result Schemas (for submission responses)
+//
+// These shapes round-trip from the worker through the client to the API
+// `submit` endpoint, where they are persisted verbatim into a JSONB column.
+// The .max() bounds protect the DB and the rendering layer from a malicious
+// client posting megabyte-scale strings.
+const TEST_RESULT_FIELD_MAX = 10_000;
+const TEST_RESULT_ERROR_MAX = 2_000;
+const AST_ISSUES_MAX = 20;
+const AST_ISSUE_LENGTH_MAX = 500;
+const RESULT_ERROR_MAX = 500;
+
 const testCaseResultSchema = z.object({
 	passed: z.boolean(),
-	input: z.string().optional(),
-	expected: z.string().optional(),
-	actual: z.string().optional(),
-	diff: z.string().optional(),
-	error: z.string().optional(),
+	input: z.string().max(TEST_RESULT_FIELD_MAX).optional(),
+	expected: z.string().max(TEST_RESULT_FIELD_MAX).optional(),
+	actual: z.string().max(TEST_RESULT_FIELD_MAX).optional(),
+	diff: z.string().max(TEST_RESULT_FIELD_MAX).optional(),
+	error: z.string().max(TEST_RESULT_ERROR_MAX).optional(),
 	hidden: z.boolean().optional()
 });
 
@@ -194,9 +205,9 @@ export const validationResultSchema = z.object({
 	valid: z.boolean(),
 	failed_layer: failedLayerSchema,
 	behavior_kind: behaviorKindSchema.optional(),
-	ast_issues: z.array(z.string()).optional(),
-	test_results: z.array(testCaseResultSchema),
-	error: z.string().optional(),
+	ast_issues: z.array(z.string().max(AST_ISSUE_LENGTH_MAX)).max(AST_ISSUES_MAX).optional(),
+	test_results: z.array(testCaseResultSchema).max(TEST_CASES_MAX),
+	error: z.string().max(RESULT_ERROR_MAX).optional(),
 	execution_time_ms: z.number().int().min(0)
 });
 

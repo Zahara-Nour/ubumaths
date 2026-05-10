@@ -5,9 +5,7 @@
 
 ---
 
-## État actuel : Phases 1 à 6 terminées
-
-Phase 7 (quality gates final) restante.
+## État actuel : refactor terminé (phases 1 à 7)
 
 ---
 
@@ -314,13 +312,69 @@ Phase 7 (quality gates final) restante.
 - ✅ `pnpm check:incremental` → baseline 9/46 préservé (1573 fichiers).
 - ✅ `pnpm test:server` (python-exercises + shared/python) → 296/296.
 
-### Prochaines étapes (Phase 7)
+## Phase 7 — Quality gates final (terminée)
 
-- ESLint sur les fichiers modifiés tout au long du refactor.
-- Audit sécurité (`security-auditor`) — focus worker isolation et
-  injection via comparator code.
-- Mise à jour de `docs/ref/python/` (si applicable).
-- Doc de progression finale listant tous les commits.
+### Résultats
+
+- ✅ `pnpm check:incremental` → baseline 9 errors / 46 warnings préservé
+  (1573 fichiers).
+- ✅ `npx eslint <fichiers modifiés depuis HEAD~6>` → 0 errors,
+  4 warnings pré-existantes dans `base-executor.svelte.ts`
+  (`prefer-svelte-reactivity` sur Map/Set/URL — hors scope du refactor).
+- ✅ `mcp__svelte__svelte-autofixer` exécuté sur tous les `.svelte`
+  modifiés (Phase 4 et 5).
+- ✅ Audit sécurité (`security-auditor`, Opus) :
+  - **Findings positifs** : namespace isolation correcte (AST + behavior
+    partagent le namespace par design, custom comparator a son propre
+    namespace), `detectSyntaxError` sûr (pas d'interpolation de student
+    code), Zod `refine` non contournable, migration DB idempotente,
+    redaction des hidden tests faite côté worker avant `postMessage`.
+  - **Medium #1** (function*name interpolé en code Python) — non
+    appliqué : pré-existant à ce refactor, défense en profondeur
+    bloquée par la regex Zod `/^[a-zA-Z*][a-zA-Z0-9_]\*$/`. À traiter
+    dans un suivi dédié.
+  - **Medium #2** (chaînes non bornées dans
+    `validationResultSchema`) — **APPLIQUÉ** : ajout de `.max()` sur
+    `input` / `expected` / `actual` / `diff` (10 000 caractères),
+    `error` (2 000 / 500 caractères), `ast_issues` (max 20 entrées,
+    chacune ≤ 500 caractères). Protège la base et le rendu côté client
+    contre des soumissions malicieuses.
+  - **Low #3** (StringIO interpolation via JSON.stringify) — pratique
+    sûre conservée (JSON.stringify produit un littéral Python valide).
+  - **Nit #4** (commentaire `getStudentClassIds`) — non appliqué (hors
+    scope direct).
+
+### Documents produits tout au long du refactor
+
+- `docs/wip/python-validation-refactor-spec.md` (préexistant, validé en
+  amont, transmis tel quel par l'utilisateur).
+- `docs/wip/python-validation-refactor-progress.md` (ce fichier).
+
+### Critères de validation finale (cf. spec)
+
+- [x] La création d'un nouvel exo « AST + unit_test » fonctionne
+      end-to-end (Form UI → API Zod refine → worker → result).
+- [x] La création d'un nouvel exo « AST seul » fonctionne (toggle AST
+      seul activé, behavior à `'none'`).
+- [x] Le panneau « Tester ma fonction » s'affiche dès qu'il y a un
+      `behavior.kind === 'unit_test'`, indépendamment de la présence
+      d'AST (logique migrée dans
+      `routes/(public)/python-exercises/[id]/+page.svelte`).
+- [x] Tests existants passent (`pnpm test:server` python-exercises +
+      shared/python : 296/296 ; `pnpm test:server` consommateurs :
+      133/133).
+- [x] `pnpm check:incremental` : baseline préservé.
+- [x] Audit sécurité : pas de régression, 1 finding medium appliqué
+      (string bounds) ; 1 finding pré-existant documenté.
+
+⚠️ **Non couvert par les tests automatisés** (à valider manuellement
+si nécessaire) :
+
+- Vérification que les 12 exos prod (chargés via le validation script
+  Phase 3) chargent et soumettent correctement sur l'app live.
+- Comportement réel du form UI (drag-and-drop des champs, dialogs,
+  etc.) — testé uniquement via les 8 tests du composant
+  `ExerciseValidationResult.svelte`.
 
 ### Commits
 
@@ -331,4 +385,5 @@ Phase 7 (quality gates final) restante.
 | 3   | e7ad5d710 | feat(python-exercises): migrate validation_config to ast+behavior schema |
 | 4   | a40f8b4df | feat(python-exercises): redesign strategy editor with form + behavior UI |
 | 5   | b2111d3fd | feat(python-exercises): update consumers for new ValidationConfig shape  |
-| 6   | _à venir_ | chore(python-exercises): remove legacy ValidationConfig schema           |
+| 6   | 49bfcd1ce | chore(python-exercises): remove legacy ValidationConfig schema           |
+| 7   | _à venir_ | chore(python-exercises): bound result fields per security audit          |
