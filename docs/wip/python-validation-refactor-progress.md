@@ -5,9 +5,9 @@
 
 ---
 
-## État actuel : Phases 1 à 3 terminées
+## État actuel : Phases 1 à 4 terminées
 
-Phases 4–7 restantes.
+Phases 5–7 restantes.
 
 ---
 
@@ -165,13 +165,65 @@ Phases 4–7 restantes.
   → `12 ok / 0 invalid / 0 still-legacy / 12 total`.
 - ✅ `pnpm test:server` → 99/99 (aucune régression sur l'API).
 
-### Prochaines étapes (Phase 4)
+## Phase 4 — Form UI refonte (terminée)
 
-- Refonte `ExerciseStrategyEditor.svelte` en deux panneaux indépendants
-  (« Forme du code » / « Comportement attendu »).
-- Extraction `ASTRequirementsPanel.svelte`.
-- Mise à jour de `ExerciseForm.svelte` ligne 135
-  (`form.validation_config.type` → `form.validation_config.behavior?.kind`).
+### Décisions
+
+- **Panneaux indépendants** : `ExerciseStrategyEditor.svelte` est désormais
+  organisé en deux `<fieldset>` (« Forme du code » / « Comportement attendu »),
+  chacun activable séparément. La case AST contrôle directement la présence
+  de `config.ast_requirements` ; le selector de behavior contrôle
+  `config.behavior` (none / output / unit_test).
+- **Garde inline** : si les deux panneaux sont désactivés, un message rouge
+  apparaît (« Active au moins une vérification de forme ou un comportement
+  attendu »). Le serveur Zod bloque aussi côté API (refine).
+- **Pattern callback (pas de `$bindable`)** pour `ASTRequirementsPanel` :
+  l'enfant reçoit `requirements` + `onchange(next)`. Plus simple à câbler
+  côté parent quand le tableau peut être `undefined` (état désactivé).
+- **`ExerciseForm.svelte`** : `validation_config` typé `ValidationConfigV2` ;
+  `emptyExerciseForm()` produit la nouvelle forme directement ; le catch du
+  `validateExercise` construit un résultat V2 (`failed_layer: null`,
+  `behavior_kind: form.validation_config.behavior?.kind`).
+- **`ExerciseValidationResult.svelte` non touché en Phase 4** — il reste
+  typé sur l'ancien `ExerciseValidationResult`. Phase 5 le bascule vers V2
+  avec rendu adapté à `failed_layer` / `behavior_kind` / `ast_issues`.
+
+### Fichiers livrés
+
+1. **Nouveau** `src/lib/components/python/exercises/ASTRequirementsPanel.svelte`
+   - 152 lignes, isolé, prop `requirements` + callback `onchange`.
+2. `src/lib/components/python/exercises/ExerciseStrategyEditor.svelte`
+   - Réécrit complètement (790 lignes). Toggle AST + selector behavior
+     indépendants. Logique des presets de comparaison conservée.
+3. `src/lib/components/python/exercises/ExerciseForm.svelte`
+   - `validation_config: ValidationConfigV2`. `emptyExerciseForm()` produit
+     `{ behavior: { kind: 'output', ... } }`. Catch du verify aligné sur V2.
+
+### Tests / qualité
+
+- ✅ `mcp__svelte__svelte-autofixer` sur `ASTRequirementsPanel.svelte`,
+  `ExerciseStrategyEditor.svelte` et `ExerciseForm.svelte` → 0 issue
+  (1 pré-existant signalé sur `$effect` resetting `verifyResult`, non lié au
+  refactor).
+- ✅ `pnpm check:incremental` → baseline 9/46 préservé (1573 fichiers,
+  +1 pour `ASTRequirementsPanel.svelte`).
+- ✅ `pnpm test:server src/routes/api/python-exercises` → 99/99.
+- ✅ `pnpm test:client src/lib/components/python/exercises/ExerciseValidationResult.svelte.test.ts`
+  → 8/8.
+
+### Prochaines étapes (Phase 5)
+
+- Bascule des consommateurs sur V2 :
+  - `src/routes/(public)/python-exercises/[id]/+page.svelte`
+    (`isUnitTest` → `config.behavior?.kind === 'unit_test'`).
+  - `src/routes/(public)/python-exercises/[id]/results/[student_id]/+page.svelte`
+    (rendu du résultat).
+  - `src/lib/components/python/exercises/ExerciseValidationResult.svelte`
+    (props + rendu de `failed_layer` / `behavior_kind` / `ast_issues`).
+  - API endpoints + tests : bascule de `validationConfigSchema` /
+    `validationResultSchema` sur les nouveaux schémas.
+- Suppression du schéma `validationResultSchemaLegacy` dans
+  `/api/python-exercises/[id]/submit/+server.ts`.
 
 ### Commits
 
@@ -179,4 +231,5 @@ Phases 4–7 restantes.
 | --- | --------- | ------------------------------------------------------------------------ |
 | 1   | 8b9e6b139 | feat(python-exercises): add new ValidationConfig types                   |
 | 2   | b58b54582 | feat(python-exercises): refactor worker to AST + behavior pipeline       |
-| 3   | _à venir_ | feat(python-exercises): migrate validation_config to ast+behavior schema |
+| 3   | e7ad5d710 | feat(python-exercises): migrate validation_config to ast+behavior schema |
+| 4   | _à venir_ | feat(python-exercises): redesign strategy editor with form + behavior UI |
