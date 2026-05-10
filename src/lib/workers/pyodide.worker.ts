@@ -2513,28 +2513,53 @@ async function runUnitTestBehavior(
 				// Inject test args/expected into the isolated namespace
 				namespace.set('_ubumaths_test_args', testCase.args);
 				namespace.set('_ubumaths_test_expected', testCase.expected);
+				namespace.set('_ubumaths_eps_abs', behavior.tolerance?.eps_abs ?? 0);
+				namespace.set('_ubumaths_eps_rel', behavior.tolerance?.eps_rel ?? 0);
 
 				// Call function and compare result, all within the namespace.
-				// Tuples are normalized to lists recursively so that a function
-				// returning `(u, n)` can be compared against an expected JSON
-				// array `[u, n]` (Python's `(1, 2) == [1, 2]` is False otherwise,
-				// forcing exos to either return lists — Bac-deviating — or fall
-				// back to print-based output validation).
+				// Recursive comparison handles:
+				//   - tuple ↔ list (Pyodide tuples vs JSON arrays)
+				//   - dict ↔ dict (same keys, value-wise)
+				//   - numeric tolerance (when behavior.tolerance is set, e.g.
+				//     for transcendentals like math.exp / math.log that aren't
+				//     mandated correctly-rounded by IEEE 754 — bit-level drift
+				//     between Pyodide and the test author's environment).
+				//   - everything else: strict `==`.
 				const result = (await pyodide.runPythonAsync(
 					`
-import json
-def _ubumaths_normalize(v):
-    if isinstance(v, tuple):
-        return [_ubumaths_normalize(x) for x in v]
-    if isinstance(v, list):
-        return [_ubumaths_normalize(x) for x in v]
-    if isinstance(v, dict):
-        return {k: _ubumaths_normalize(x) for k, x in v.items()}
-    return v
+def _ubumaths_to_py(v):
+    """Force-convert a Pyodide JsProxy (JS array/object) into a real
+    Python list/dict so that subsequent isinstance(..., (list, dict))
+    checks recognise it. Plain Python values pass through."""
+    return v.to_py() if hasattr(v, 'to_py') else v
+
+def _ubumaths_compare(a, b, eps_abs, eps_rel):
+    a = _ubumaths_to_py(a)
+    b = _ubumaths_to_py(b)
+    if isinstance(a, (tuple, list)) and isinstance(b, (tuple, list)):
+        if len(a) != len(b):
+            return False
+        return all(_ubumaths_compare(x, y, eps_abs, eps_rel) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        if set(a.keys()) != set(b.keys()):
+            return False
+        return all(_ubumaths_compare(a[k], b[k], eps_abs, eps_rel) for k in a)
+    # Booleans must be excluded from the numeric branch (bool is a subclass of int)
+    if (
+        isinstance(a, (int, float))
+        and isinstance(b, (int, float))
+        and not isinstance(a, bool)
+        and not isinstance(b, bool)
+    ):
+        diff = abs(a - b)
+        threshold = max(eps_abs, eps_rel * max(abs(a), abs(b)))
+        return diff <= threshold
+    return a == b
+
 _args = _ubumaths_test_args
 _expected = _ubumaths_test_expected
 _actual = ${behavior.function_name}(*_args)
-_passed = _ubumaths_normalize(_actual) == _expected
+_passed = _ubumaths_compare(_actual, _expected, _ubumaths_eps_abs, _ubumaths_eps_rel)
 {
     'passed': _passed,
     'actual': _actual,
@@ -2572,6 +2597,8 @@ _passed = _ubumaths_normalize(_actual) == _expected
 				// Clean up test args/expected from namespace
 				namespace.delete('_ubumaths_test_args');
 				namespace.delete('_ubumaths_test_expected');
+				namespace.delete('_ubumaths_eps_abs');
+				namespace.delete('_ubumaths_eps_rel');
 			} catch (error) {
 				allPassed = false;
 				testResults.push(
@@ -2590,6 +2617,8 @@ _passed = _ubumaths_normalize(_actual) == _expected
 				try {
 					namespace.delete('_ubumaths_test_args');
 					namespace.delete('_ubumaths_test_expected');
+					namespace.delete('_ubumaths_eps_abs');
+					namespace.delete('_ubumaths_eps_rel');
 				} catch {
 					// Ignore cleanup errors (key may not exist)
 				}
