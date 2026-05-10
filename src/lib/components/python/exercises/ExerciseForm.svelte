@@ -130,7 +130,12 @@
 		isVerifying = true;
 		submitError = null;
 		try {
-			verifyResult = await executor.validateExercise(form.solution_code, form.validation_config);
+			// Snapshot the $state proxy: postMessage to the Pyodide worker fails
+			// with "could not be cloned" on Svelte 5 reactive proxies.
+			verifyResult = await executor.validateExercise(
+				form.solution_code,
+				$state.snapshot(form.validation_config)
+			);
 		} catch (e) {
 			verifyResult = {
 				valid: false,
