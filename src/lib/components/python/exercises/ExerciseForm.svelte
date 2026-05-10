@@ -12,6 +12,7 @@
 		validation_config: ExerciseValidationConfig;
 		level: Level;
 		tags: string[];
+		source: string;
 		is_public: boolean;
 	};
 
@@ -30,6 +31,7 @@
 			},
 			level: 'lycee',
 			tags: [],
+			source: '',
 			is_public: true
 		};
 	}
@@ -191,6 +193,16 @@
 				id="ex-desc"
 				bind:value={form.description}
 				placeholder="Optionnel — phrase de présentation affichée sous le titre"
+			/>
+		</div>
+
+		<div>
+			<label for="ex-source" class="mb-1 block text-sm font-medium">Source</label>
+			<Input
+				id="ex-source"
+				bind:value={form.source}
+				placeholder="Optionnel — ex : Bac Polynésie 09/2024 Q2.b"
+				maxlength={200}
 			/>
 		</div>
 

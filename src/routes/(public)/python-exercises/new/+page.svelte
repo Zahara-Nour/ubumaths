@@ -20,6 +20,7 @@
 				validation_config: form.validation_config,
 				level: form.level,
 				tags: form.tags,
+				source: form.source.trim() || null,
 				is_public: form.is_public
 			})
 		});

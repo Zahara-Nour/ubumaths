@@ -153,6 +153,7 @@ export interface PythonExercise {
 	validation_config: ValidationConfig;
 	level: ExerciseLevel;
 	tags: string[];
+	source: string | null;
 	author_id: string;
 	is_public: boolean;
 	created_at: string;

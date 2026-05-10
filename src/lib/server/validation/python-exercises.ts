@@ -24,6 +24,7 @@ const FUNCTION_NAME_MAX = 100;
 const DESCRIPTION_MAX = 5000;
 const INSTRUCTIONS_MAX = 10000;
 const MESSAGE_MAX = 500;
+const SOURCE_MAX = 200;
 
 // Base schemas
 const uuidSchema = z.string().uuid();
@@ -237,6 +238,12 @@ export const createExerciseSchema = z.object({
 		.max(TAGS_MAX)
 		.default([])
 		.describe('Exercise tags (max 10)'),
+	source: z
+		.string()
+		.max(SOURCE_MAX)
+		.nullable()
+		.optional()
+		.describe('Free-text source of the exercise (e.g. "Bac Polynésie 09/2024")'),
 	is_public: z.boolean().default(false).describe('Whether exercise is publicly visible')
 });
 
@@ -251,6 +258,7 @@ export const updateExerciseSchema = z.object({
 	validation_config: validationConfigSchema.optional(),
 	level: exerciseLevelSchema.optional(),
 	tags: z.array(z.string().min(1).max(50)).max(TAGS_MAX).optional(),
+	source: z.string().max(SOURCE_MAX).nullable().optional(),
 	is_public: z.boolean().optional()
 });
 
