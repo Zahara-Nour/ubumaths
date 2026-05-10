@@ -212,7 +212,11 @@ Système d'exercices Python complet : création teacher, soumission élève (ass
      - `numeric` : tolérance abs+rel, shapes flat/lines/grid, support virgule décimale
      - `custom` : _special judge_ — fonction Python `compare(expected, actual, stdin)` exécutée en namespace isolé pour chaque test case
      - 8 presets nommés + panneau "Personnaliser"
-   - **`'unit_test'`** — appel positionnel d'une fonction nommée, comparé via égalité Python `==`
+   - **`'unit_test'`** — appel positionnel d'une fonction nommée, comparé via une fonction Python récursive `_ubumaths_compare` :
+     - tuple ↔ list (la fonction peut retourner un tuple, l'attendu est une liste JSON — comparaison structurelle)
+     - dict ↔ dict (clés + valeurs récursives)
+     - numérique : tolérance configurable via le champ optionnel `tolerance: { eps_abs, eps_rel }` (compare avec `|a-b| ≤ max(eps_abs, eps_rel * max(|a|, |b|))`). Indispensable pour les algorithmes utilisant des transcendantales (`math.exp`, `math.log`) qui ne sont **pas** mandatées correctly-rounded par IEEE 754 — Pyodide et l'environnement de référence peuvent diverger de quelques ULP.
+     - sinon `==` strict (string, bool, None)
 
 **Pipeline** : si AST échoue → on s'arrête (`failed_layer: 'ast'`) ; sinon on exécute le behavior (`failed_layer: 'behavior'` ou `null` si tout passe). `ValidationResult.behavior_kind` indique quel kind a tourné.
 
@@ -279,6 +283,36 @@ Les colonnes `tags TEXT[]` ont été remplacées par des tables de jonction N-N 
 - **Panneau "Tester ma fonction"** (page consultation `/python-exercises/[id]`) — visible quand `behavior?.kind === 'unit_test'`. L'élève appelle la fonction avec des args personnalisés sans écrire de `print()`. Les args sont parsés en JSON après wrap `[...]` (donc `4` ou `1, 2` ou `[1,2,3]` marchent). Historique des 5 derniers appels. Implémenté en réutilisant `executor.validateExercise()` avec un test case unique à `expected: null` pour lire `actual` (zéro changement worker).
 - **Bouton "Copier le lien"** sur la page consultation, visible aux teachers : copie l'URL publique de l'exo.
 - Composants Pyodide partagés : `PythonEditor`, `PythonOutput`, `PlaygroundExecutor`
+
+### Module `form-mapping.ts`
+
+`src/lib/components/python/exercises/form-mapping.ts` centralise les transformations DB row ↔ ExerciseFormState ↔ PUT body (`buildInitialForm`, `buildSubmitBody`, `emptyExerciseForm`). Les pages create/edit et le script de round-trip importent les **mêmes fonctions** — pas de duplication, pas de drift silencieux possible.
+
+Sémantique trim (vue par le test de round-trip) :
+
+- `title`, `source` : single-line, `.trim()` (espaces accidentels coupés)
+- `description`, `instructions`, `starter_code` : multi-line, **préservés byte-for-byte** (les newlines finaux des codes Python sont conservés). Seul le check vide → `null` utilise `.trim() === ''`.
+- `solution_code` : préservé byte-for-byte, jamais touché.
+
+### Test de round-trip — `scripts/test-exercise-round-trip.ts`
+
+Script lecture-seule qui :
+
+1. Lit chaque exercice (admin Supabase) + tags du junction
+2. Sauvegarde la row dans `/tmp/exo-<UUID>-backup-<timestamp>.json`
+3. Simule la chaîne `buildInitialForm → buildSubmitBody`
+4. Diff la row originale vs ce qui serait sauvegardé champ par champ
+
+```bash
+pnpm tsx scripts/test-exercise-round-trip.ts          # tous les exos
+pnpm tsx scripts/test-exercise-round-trip.ts <UUID>   # un seul
+```
+
+Une diff vide garantit qu'éditer-puis-sauvegarder-sans-changement ne mute pas la DB. Cas surface attrapé par cette protection : un `.trim() || null` qui grignotait les `\n` finaux du `starter_code` (commit `77235b4a7`).
+
+### Corpus seedé
+
+À ce jour, **30+ exercices Bac** sont seedés en DB via les migrations `20260510*_seed_*.sql` — couvre les principales académies françaises (Métropole, Polynésie, Asie, Centres étrangers, Amérique du Nord/Sud, Madagascar, Nouvelle Calédonie) sur 2021-2025. Type d'algorithmes couverts : suites arithmético-géométriques, suites quadratiques, sommes partielles, séries, intégrales, suites entrelacées, modèles compartimentaux. Tous les exos passent le round-trip test.
 
 ### Progression
 
