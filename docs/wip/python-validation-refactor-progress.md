@@ -386,4 +386,4 @@ si nécessaire) :
 | 4   | a40f8b4df | feat(python-exercises): redesign strategy editor with form + behavior UI |
 | 5   | b2111d3fd | feat(python-exercises): update consumers for new ValidationConfig shape  |
 | 6   | 49bfcd1ce | chore(python-exercises): remove legacy ValidationConfig schema           |
-| 7   | _à venir_ | chore(python-exercises): bound result fields per security audit          |
+| 7   | 1cb988fb7 | chore(python-exercises): bound result fields per security audit          |
