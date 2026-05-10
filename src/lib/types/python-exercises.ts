@@ -102,6 +102,22 @@ export interface ASTRequirement {
  * Behavior check — discriminated union on `kind`.
  * Defines what runtime behavior is verified on submitted code.
  */
+/**
+ * Numeric tolerance for unit_test float comparisons.
+ *
+ * `eps_abs` and `eps_rel` are combined: `|actual - expected| ≤ max(eps_abs,
+ * eps_rel * max(|actual|, |expected|))`. Use when the function uses
+ * non-correctly-rounded transcendentals (math.exp, math.log, ...) so that
+ * a bit-level Pyodide ↔ JS drift doesn't fail an otherwise correct answer.
+ *
+ * When `tolerance` is undefined, comparison is strict (a single ULP off
+ * fails). For sqrt-/mult-/add-only algorithms, leave it undefined.
+ */
+export interface UnitTestTolerance {
+	eps_abs: number;
+	eps_rel: number;
+}
+
 export type BehaviorCheck =
 	| {
 			kind: 'output';
@@ -112,6 +128,7 @@ export type BehaviorCheck =
 			kind: 'unit_test';
 			function_name: string;
 			test_cases: UnitTestCase[];
+			tolerance?: UnitTestTolerance;
 	  };
 
 /**

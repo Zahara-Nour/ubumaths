@@ -201,6 +201,16 @@ export interface TestCaseResult {
  * Behavior check — discriminated union on `kind`.
  * Defines what runtime behavior is verified on submitted code.
  */
+/**
+ * Numeric tolerance for unit_test float comparisons. See UnitTestTolerance
+ * in $lib/types/python-exercises.ts for the full doc — kept in sync here
+ * to avoid pulling server-only types into the worker bundle.
+ */
+export interface UnitTestTolerance {
+	eps_abs: number;
+	eps_rel: number;
+}
+
 export type BehaviorCheck =
 	| {
 			kind: 'output';
@@ -211,6 +221,7 @@ export type BehaviorCheck =
 			kind: 'unit_test';
 			function_name: string;
 			test_cases: UnitTestCase[];
+			tolerance?: UnitTestTolerance;
 	  };
 
 /**
