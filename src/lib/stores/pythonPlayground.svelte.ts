@@ -499,7 +499,9 @@ class PythonPlaygroundStore {
 			// Save immediately
 			const serialized: SerializedPlaygroundState = {
 				code: this.code,
-				showPedagogicErrors: this.showPedagogicErrors
+				showPedagogicErrors: this.showPedagogicErrors,
+				fontSize: this.fontSize,
+				editorTheme: this.editorTheme
 			};
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
 			this._lastSavedCode = this.code;
