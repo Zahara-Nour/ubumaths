@@ -310,6 +310,12 @@
 		{#if exercise.description}
 			<p class="mt-2 text-sm text-muted-foreground">{exercise.description}</p>
 		{/if}
+		{#if exercise.source}
+			<p class="mt-1 text-xs text-muted-foreground">
+				<span class="font-medium">Source :</span>
+				{exercise.source}
+			</p>
+		{/if}
 	</header>
 
 	<div class="grid gap-4 lg:grid-cols-2">

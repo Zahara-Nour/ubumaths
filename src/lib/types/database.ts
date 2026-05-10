@@ -8061,6 +8061,7 @@ export type Database = {
 					is_public: boolean | null;
 					level: string;
 					solution_code: string;
+					source: string | null;
 					starter_code: string | null;
 					title: string;
 					updated_at: string;
@@ -8075,6 +8076,7 @@ export type Database = {
 					is_public?: boolean | null;
 					level?: string;
 					solution_code: string;
+					source?: string | null;
 					starter_code?: string | null;
 					title: string;
 					updated_at?: string;
@@ -8089,6 +8091,7 @@ export type Database = {
 					is_public?: boolean | null;
 					level?: string;
 					solution_code?: string;
+					source?: string | null;
 					starter_code?: string | null;
 					title?: string;
 					updated_at?: string;

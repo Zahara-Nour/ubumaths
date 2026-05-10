@@ -268,6 +268,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			solution_code: data.solution_code,
 			validation_config: data.validation_config,
 			level: data.level,
+			source: data.source || null,
 			author_id: user.id,
 			is_public: data.is_public
 		})

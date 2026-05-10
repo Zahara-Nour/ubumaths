@@ -23,6 +23,7 @@
 			validation_config: ex.validation_config,
 			level: ex.level as Level,
 			tags: ex.tags,
+			source: ex.source ?? '',
 			is_public: ex.is_public
 		};
 	}
@@ -32,7 +33,7 @@
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
-				id: exercise.id,
+				id: data.exercise.id,
 				title: form.title.trim(),
 				description: form.description.trim() || null,
 				instructions: form.instructions.trim() || null,
@@ -41,6 +42,7 @@
 				validation_config: form.validation_config,
 				level: form.level,
 				tags: form.tags,
+				source: form.source.trim() || null,
 				is_public: form.is_public
 			})
 		});
