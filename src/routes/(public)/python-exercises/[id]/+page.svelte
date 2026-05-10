@@ -18,7 +18,8 @@
 		History,
 		XCircle,
 		BarChart3,
-		LineChart
+		LineChart,
+		FunctionSquare
 	} from 'lucide-svelte';
 
 	let { data } = $props();
@@ -33,6 +34,20 @@
 	let validationResult = $state<Result | null>(null);
 	let isValidating = $state(false);
 	let isSubmitting = $state(false);
+
+	// "Tester ma fonction" panel (only for unit_test exercises)
+	type CallEntry = { input: string; ok: boolean; output: string };
+	let callInput = $state('');
+	let callResult = $state<string | null>(null);
+	let callError = $state<string | null>(null);
+	let isCalling = $state(false);
+	let callHistory = $state<CallEntry[]>([]);
+	const isUnitTest = $derived(exercise.validation_config.type === 'unit_test');
+	const callFunctionName = $derived(
+		isUnitTest && 'function_name' in exercise.validation_config
+			? exercise.validation_config.function_name
+			: ''
+	);
 
 	const pyodideReady = $derived(executor?.state === 'ready');
 	const isLoadingPyodide = $derived(
@@ -152,6 +167,72 @@
 		validationResult = null;
 	}
 
+	/**
+	 * Parse user-typed args expression into a JSON array.
+	 * Wraps the input as `[<input>]` so a single value or comma-separated values
+	 * both work. Accepts JSON syntax (true/false/null, not True/False/None).
+	 */
+	function parseCallArgs(input: string): unknown[] {
+		const trimmed = input.trim();
+		if (trimmed === '') return [];
+		const wrapped = `[${trimmed}]`;
+		const parsed = JSON.parse(wrapped);
+		if (!Array.isArray(parsed)) {
+			throw new Error("Le résultat n'est pas une liste d'arguments");
+		}
+		return parsed;
+	}
+
+	async function handleCallFunction() {
+		if (!executor || !pyodideReady || !callFunctionName) return;
+		callResult = null;
+		callError = null;
+		isCalling = true;
+		try {
+			let args: unknown[];
+			try {
+				args = parseCallArgs(callInput);
+			} catch (e) {
+				callError = `Arguments invalides : ${e instanceof Error ? e.message : String(e)}`;
+				return;
+			}
+
+			// Synthesize a unit_test config with a single test case where `expected`
+			// is unset on purpose: we don't care if it passes — we only read `actual`
+			// from the test result, which is the JSON-stringified return value.
+			const result = await executor.validateExercise(code, {
+				type: 'unit_test',
+				function_name: callFunctionName,
+				test_cases: [{ args, expected: null, hidden: false }],
+				timeout_ms: 5000
+			});
+
+			const tc = result.test_results[0];
+			if (!tc) {
+				callError = result.error ?? 'Aucun résultat';
+				return;
+			}
+
+			if (tc.error) {
+				callError = tc.error;
+				callHistory = [{ input: callInput, ok: false, output: tc.error }, ...callHistory].slice(
+					0,
+					5
+				);
+			} else if (typeof tc.actual === 'string') {
+				callResult = tc.actual;
+				callHistory = [{ input: callInput, ok: true, output: tc.actual }, ...callHistory].slice(
+					0,
+					5
+				);
+			} else {
+				callError = 'Résultat indisponible';
+			}
+		} finally {
+			isCalling = false;
+		}
+	}
+
 	function handleLoadSubmission(submissionCode: string) {
 		code = submissionCode;
 		validationResult = null;
@@ -266,6 +347,79 @@
 				errorLine={executor?.errorLine ?? null}
 				executionTime={executor?.executionTime ?? 0}
 			/>
+
+			{#if isUnitTest}
+				<div class="rounded-md border border-border bg-card p-3">
+					<div class="mb-2 flex items-center gap-2 text-sm font-medium">
+						<FunctionSquare class="h-4 w-4 text-primary" />
+						Tester ma fonction
+					</div>
+					<form
+						class="flex flex-wrap items-center gap-2"
+						onsubmit={(e) => {
+							e.preventDefault();
+							handleCallFunction();
+						}}
+					>
+						<span class="font-mono text-sm">{callFunctionName}(</span>
+						<input
+							type="text"
+							bind:value={callInput}
+							placeholder="ex: 4   ou   1, 2   ou   [1,2,3]"
+							class="flex-1 rounded-md border border-border bg-background px-2 py-1 font-mono text-sm focus:border-primary focus:outline-none"
+							disabled={!pyodideReady || isCalling}
+						/>
+						<span class="font-mono text-sm">)</span>
+						<Button
+							type="submit"
+							size="sm"
+							disabled={!pyodideReady || isCalling || isValidating || isSubmitting}
+						>
+							<Play class="mr-1 h-4 w-4" />
+							{isCalling ? 'Appel…' : 'Appeler'}
+						</Button>
+					</form>
+
+					{#if callResult !== null}
+						<div
+							class="mt-3 rounded-md border border-green-500/30 bg-green-500/10 p-2 font-mono text-sm"
+						>
+							<span class="text-muted-foreground">→</span>
+							<span class="ml-1 text-green-700 dark:text-green-300">{callResult}</span>
+						</div>
+					{/if}
+					{#if callError !== null}
+						<div
+							class="mt-3 rounded-md border border-red-500/30 bg-red-500/10 p-2 font-mono text-sm text-red-700 dark:text-red-300"
+						>
+							<span class="mr-1">✕</span>{callError}
+						</div>
+					{/if}
+
+					{#if callHistory.length > 0}
+						<details class="mt-3 text-sm">
+							<summary class="cursor-pointer text-muted-foreground hover:text-foreground">
+								Historique ({callHistory.length})
+							</summary>
+							<ul class="mt-2 space-y-1 font-mono text-xs">
+								{#each callHistory as entry, i (i)}
+									<li class="flex items-baseline gap-2">
+										<span class="text-muted-foreground">{callFunctionName}({entry.input})</span>
+										<span
+											class={entry.ok
+												? 'text-green-600 dark:text-green-400'
+												: 'text-red-600 dark:text-red-400'}
+										>
+											{entry.ok ? '→' : '✕'}
+										</span>
+										<span class="break-all">{entry.output}</span>
+									</li>
+								{/each}
+							</ul>
+						</details>
+					{/if}
+				</div>
+			{/if}
 
 			<ExerciseValidationResult result={validationResult} loading={isValidating || isSubmitting} />
 
