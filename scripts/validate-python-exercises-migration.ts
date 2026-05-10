@@ -3,10 +3,10 @@
  * Validate the Phase 3 python_exercises migration.
  *
  * Connects to Supabase, fetches every row in `python_exercises`, and parses
- * `validation_config` against both:
- *   - the new schema (`validationConfigSchema`) — must succeed
- *   - the legacy schema (`validationConfigSchemaLegacy`) — must FAIL (otherwise
- *     the row never got migrated)
+ * `validation_config` against the new schema (`validationConfigSchema`).
+ * Also surfaces any row that still has a top-level `type` field — that's
+ * the discriminator of the legacy `{ type: 'output' | 'unit_test' | 'ast' }`
+ * shape, so its presence means the migration didn't reach the row.
  *
  * Reports any rows where parsing fails. Exit code 1 on any failure.
  *
@@ -21,10 +21,7 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import path from 'path';
-import {
-	validationConfigSchema,
-	validationConfigSchemaLegacy
-} from '../src/lib/server/validation/python-exercises';
+import { validationConfigSchema } from '../src/lib/server/validation/python-exercises';
 import type { Database } from '../src/lib/types/database';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -75,18 +72,18 @@ async function main(): Promise<void> {
 			continue;
 		}
 
-		// Sanity: a row that parses as legacy means it still has the old `type`
-		// discriminator field. The new schema's refine accepts {ast_requirements}
-		// or {behavior} — neither has `type` at the top level, so a row passing
-		// the legacy schema but failing the new schema would already be flagged
-		// above. Conversely, the legacy schema rejects rows without `type`, so
-		// a successful new-shape parse implies the legacy parse fails. We still
-		// check explicitly to surface any unexpected overlap.
-		const legacyShape = validationConfigSchemaLegacy.safeParse(config);
-		if (legacyShape.success) {
+		// Belt-and-suspenders: surface any row that still carries the legacy
+		// `type` discriminator. The new schema doesn't reject it (Zod ignores
+		// extra fields by default on `z.object`), so a row that satisfies the
+		// new shape AND has a top-level `type` is one the migration missed.
+		if (
+			config !== null &&
+			typeof config === 'object' &&
+			'type' in (config as Record<string, unknown>)
+		) {
 			stillLegacy++;
 			console.warn(
-				`⚠️  [${row.id}] ${row.title} — parses as both new AND legacy (unexpected overlap)`
+				`⚠️  [${row.id}] ${row.title} — has top-level "type" field (legacy discriminator)`
 			);
 			continue;
 		}

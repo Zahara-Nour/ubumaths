@@ -1,9 +1,12 @@
 <script lang="ts">
 	/**
 	 * Editor for the `ast_requirements` array of a python exercise validation
-	 * config. Two-way binds the array via `$bindable`. Each requirement has a
-	 * type, an optional `name` (for `defines_function`/`defines_class`/
-	 * `uses_import`), and a student-facing error message.
+	 * config. Receives `requirements` as a regular prop and notifies the
+	 * parent of every change via the `onchange` callback (no `$bindable`).
+	 *
+	 * Each requirement has a type, an optional `name` (for
+	 * `defines_function`/`defines_class`/`uses_import`), and a
+	 * student-facing error message.
 	 *
 	 * The parent component owns the wrapper layout (panel header, enable
 	 * toggle, etc.) — this component only renders the list of requirements
