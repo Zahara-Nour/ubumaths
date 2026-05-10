@@ -2,6 +2,75 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.87](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.86...v0.8.87) (2026-05-10)
+
+### 🐛 Bug Fixes
+
+- **markdown:** scale MathBlock with nav-bar font-size + size larger than inline ([201ac22](https://github.com/Zahara-Nour/ubumaths/commit/201ac2265632b56da00bd4e225f20abff81695f7))
+- **python-exercises:** initialize unitDrafts synchronously to fix edit page crash ([25694ba](https://github.com/Zahara-Nour/ubumaths/commit/25694ba54afa0d561cae1710774a18f821a5a891))
+- **python-exercises:** normalize tuples to lists in unit_test comparison ([debb0d1](https://github.com/Zahara-Nour/ubumaths/commit/debb0d1f3753b27d346e7b04ec614a7ad8a7d934))
+- **python-exercises:** preserve trailing whitespace in multi-line fields on save ([77235b4](https://github.com/Zahara-Nour/ubumaths/commit/77235b4a745e8b9662c612d8d50edcf402ef0c65))
+- **python-exercises:** repair migration validation script post-cleanup ([0ed34c7](https://github.com/Zahara-Nour/ubumaths/commit/0ed34c7fb52348366e15454ed14cb8d49091198a))
+- **python-exercises:** snapshot \$state proxy before postMessage to worker ([e10afd9](https://github.com/Zahara-Nour/ubumaths/commit/e10afd9abda131a3ed2094dab5075796884c815e))
+- **python-exercises:** tolerant unit_test comparison via recursive helper ([dbc071b](https://github.com/Zahara-Nour/ubumaths/commit/dbc071b660c1b1e85d3b825357436f1bfe40f625))
+- **python-exercises:** use junction table for tags on /python-exercises/mine ([876df53](https://github.com/Zahara-Nour/ubumaths/commit/876df535047b254f88e2bdc4e16346778a41dfce))
+- **python:** persist fontSize and editorTheme in saveCode() ([21b4030](https://github.com/Zahara-Nour/ubumaths/commit/21b4030ed62300ea6495df3930a4cc8460add083))
+- **ubumark:** parse inline code recursively inside emphasis ([47c7429](https://github.com/Zahara-Nour/ubumaths/commit/47c74290bb0f2067b1df3ae3ffc511d17534c694))
+
+### ✨ Features
+
+- **python-exercises:** add "Modifier" button on viewer for the author ([4947c10](https://github.com/Zahara-Nour/ubumaths/commit/4947c10f99a7b0a8ba03ddf34016cb5fdc16d59a))
+- **python-exercises:** add "Tester ma fonction" panel for unit_test exercises ([c36008f](https://github.com/Zahara-Nour/ubumaths/commit/c36008f0acd2998e6c1955aad50bcdc1cf6a40c9))
+- **python-exercises:** add `source` field to indicate exercise origin ([5dc6469](https://github.com/Zahara-Nour/ubumaths/commit/5dc6469a23aea15b1723f880c2c6f6082fbe52a7))
+- **python-exercises:** add new ValidationConfig types ([8b9e6b1](https://github.com/Zahara-Nour/ubumaths/commit/8b9e6b1391965ece743d3ab24f803cc73d857a62))
+- **python-exercises:** add UnitTestTolerance type ([c4944c7](https://github.com/Zahara-Nour/ubumaths/commit/c4944c781cceffe71abad8799d65c07879b4b415))
+- **python-exercises:** copy-link button and unit_test UI cleanup ([f92e7c8](https://github.com/Zahara-Nour/ubumaths/commit/f92e7c828a6f65760ee4d8b14add92b0e246d091))
+- **python-exercises:** demote heading levels in instructions ([fbce8fe](https://github.com/Zahara-Nour/ubumaths/commit/fbce8fe597d1e6ad03bc48f241de8f1598d8fb12))
+- **python-exercises:** improve UI on the exercise viewer ([74b3923](https://github.com/Zahara-Nour/ubumaths/commit/74b39235e1113fcd2998c1a7613c6d36db997710))
+- **python-exercises:** migrate tuple-returning exos from output to unit_test ([5306090](https://github.com/Zahara-Nour/ubumaths/commit/53060903ac8fef81eb28e73e849782ca5996cf4b))
+- **python-exercises:** migrate validation_config to ast+behavior schema ([e7ad5d7](https://github.com/Zahara-Nour/ubumaths/commit/e7ad5d710fbfc0dd78dcd543fbec5fb3a257bd19))
+- **python-exercises:** redesign strategy editor with form + behavior UI ([a40f8b4](https://github.com/Zahara-Nour/ubumaths/commit/a40f8b4df0d0da9385b432cf08b9250408726774))
+- **python-exercises:** refactor worker to AST + behavior pipeline ([b58b545](https://github.com/Zahara-Nour/ubumaths/commit/b58b545820ca70e5847df30d872c65bd169899c5))
+- **python-exercises:** seed "Alerte chlore" from Bac Métropole 06/2024 (sujet 2) ([e945def](https://github.com/Zahara-Nour/ubumaths/commit/e945def981e89acc886a29fe3c7a1dc03cc1e14e))
+- **python-exercises:** seed "Approximation de ln(2)" from Bac Centres étrangers 06/2024 ([232dd22](https://github.com/Zahara-Nour/ubumaths/commit/232dd22c619e31e3741c2808731122e2ddfae5ed))
+- **python-exercises:** seed "Bactérie suite(n)" from Bac Asie 05/2022 sujet 2 ([4c8830a](https://github.com/Zahara-Nour/ubumaths/commit/4c8830ac8567fa8f68e623a56feee469fcf8d99b))
+- **python-exercises:** seed "Briggs" exercise from Bac Amérique du Nord 05/2025 ([8667cf1](https://github.com/Zahara-Nour/ubumaths/commit/8667cf1b6e1c7147706be394aea85d6943d9659c))
+- **python-exercises:** seed "Croisement de populations" from Bac Centres étrangers 06/2025 ([9b27c0a](https://github.com/Zahara-Nour/ubumaths/commit/9b27c0a51e33274440906eefdb7b828104424b1f))
+- **python-exercises:** seed "Décongélation gâteaux" from Bac Métropole 06/2021 ([72f5a44](https://github.com/Zahara-Nour/ubumaths/commit/72f5a44d2f32475e1f408f6053ebeebf46c80516))
+- **python-exercises:** seed "Désintégration polonium noyaux(n)" from Bac Asie 03/2023 ([733ac5f](https://github.com/Zahara-Nour/ubumaths/commit/733ac5f1a1c4e5bee813e9e0c710d477bf5e3d57))
+- **python-exercises:** seed "Médicament efficace()" from Bac Asie 05/2022 ([573ac45](https://github.com/Zahara-Nour/ubumaths/commit/573ac45eaba895bbc2440fabfc9c085859cc0d4b))
+- **python-exercises:** seed "Panneaux solaires" from Bac Centres étrangers 06/2021 ([598ac1e](https://github.com/Zahara-Nour/ubumaths/commit/598ac1ecf8cea526f3d4d5af92bdde0a506dca6b))
+- **python-exercises:** seed "population(S)" from Bac Amérique du Sud 09/2022 sujet 2 ([25cf065](https://github.com/Zahara-Nour/ubumaths/commit/25cf065114071ef51e54e3b9e670197ae290bb24))
+- **python-exercises:** seed "Posidonie — seuil de 14 ha" from Bac Métropole 06/2025 ([a53fb1c](https://github.com/Zahara-Nour/ubumaths/commit/a53fb1c5a5a8f11fe2fdee15e20d821b6120a61b))
+- **python-exercises:** seed "Seuil — probabilité de gagner" from Bac Asie 06/2024 ([40b67ed](https://github.com/Zahara-Nour/ubumaths/commit/40b67ed0d39745bf422bcafbe984545096670ab6))
+- **python-exercises:** seed "Seuil 10⁷ — 5u-4n-3" from Bac Nouvelle Calédonie 08/2023 ([fba1859](https://github.com/Zahara-Nour/ubumaths/commit/fba1859372d2b118daea5a4d9c9d83585cc8d5fe))
+- **python-exercises:** seed "Seuil 1280 clubs" from Bac Amérique du Nord 03/2023 ([fa19679](https://github.com/Zahara-Nour/ubumaths/commit/fa196790125746d0103f6927cf76fbe0efa4252a))
+- **python-exercises:** seed "Seuil 2u-u²" from Bac Amérique du Nord 05/2024 (sujet 2) ([62fde50](https://github.com/Zahara-Nour/ubumaths/commit/62fde50a750e8fe113e51db35b0533d2fae6cad2))
+- **python-exercises:** seed "Seuil divergente 3u²/4 - 2u + 3" from Bac Polynésie 09/2023 ([7042fb2](https://github.com/Zahara-Nour/ubumaths/commit/7042fb27dd48c09808fb68a9174a2ebe01b0809d))
+- **python-exercises:** seed "Seuil homographique 4u/(1+3u)" from Bac Métropole 09/2021 ([1895e8e](https://github.com/Zahara-Nour/ubumaths/commit/1895e8e33887d27060e888997692f0c8603c2206))
+- **python-exercises:** seed "Seuil ln(u²+1)" exercise from Bac Métropole 06/2024 ([cd95c61](https://github.com/Zahara-Nour/ubumaths/commit/cd95c61fb79e3399bcdaa3b41338a71fb1be0ca7))
+- **python-exercises:** seed "Suite 1/(n+1) liste(k)" from Bac Polynésie 05/2022 ([219fb32](https://github.com/Zahara-Nour/ubumaths/commit/219fb32d63c7e2be3af95a6cacdbbf43f06ab80d))
+- **python-exercises:** seed "Suite d'intégrales I_n" from Bac Amérique du Nord 05/2024 ([2279889](https://github.com/Zahara-Nour/ubumaths/commit/2279889bfaae465c1af55887a4cd3090297f5ae3))
+- **python-exercises:** seed "Suite homographique terme(n)" from Bac Nouvelle Calédonie 08/2023 ([4c9571a](https://github.com/Zahara-Nour/ubumaths/commit/4c9571a6d70fccb04c220354cc2611ed360c8814))
+- **python-exercises:** seed "Suite homographique" from Bac Polynésie 06/2024 ([e312104](https://github.com/Zahara-Nour/ubumaths/commit/e312104c393ad7f7c1a61a17c67f56395f482388))
+- **python-exercises:** seed "Suite n/eⁿ" from Bac Métropole 09/2023 ([01805f3](https://github.com/Zahara-Nour/ubumaths/commit/01805f3030561af324c3fdf93a0e8e34f07984a1))
+- **python-exercises:** seed "Suite quadratique u²/5" from Bac Amérique du Sud 09/2022 ([51f4db8](https://github.com/Zahara-Nour/ubumaths/commit/51f4db8a2a3cc8d462ee93739558ec1ec4135bdc))
+- **python-exercises:** seed "Suite u_n = 5u + 2n - 1" from Bac Amérique du Sud 09/2023 ([4c38d24](https://github.com/Zahara-Nour/ubumaths/commit/4c38d246769aead589f3057cb4d4c52baed40cbc))
+- **python-exercises:** seed "termes(a_n,b_n)" from Bac Madagascar 05/2022 ([a13efcb](https://github.com/Zahara-Nour/ubumaths/commit/a13efcbace2a24e4101566b3277af8dfeedeb217))
+- **python-exercises:** seed 3 terminale spé "algorithme de seuil" exercises ([ff96028](https://github.com/Zahara-Nour/ubumaths/commit/ff96028c85424134f321a37ac6683f2c256b69a2))
+- **python-exercises:** seed pyramide(n) exercise from Bac Polynésie 2024 ([f5ba555](https://github.com/Zahara-Nour/ubumaths/commit/f5ba555e5423dce55e081eb149369bec8a602574))
+- **python-exercises:** set tolerance on transcendental-using exos ([92ac768](https://github.com/Zahara-Nour/ubumaths/commit/92ac7682d12774bdcb6f3054eb881aae7fbee382))
+- **python-exercises:** update consumers for new ValidationConfig shape ([b2111d3](https://github.com/Zahara-Nour/ubumaths/commit/b2111d3fd4b498a8068c41a32fc9579cba8d14c2))
+- **python-exercises:** zod schema for unit_test tolerance ([7bd4160](https://github.com/Zahara-Nour/ubumaths/commit/7bd4160198ce860c7296a91fe364f00113c37513))
+
+### 📚 Documentation
+
+- **python-exercises:** mark Phase 7 commit hash in progress doc ([d5a5d6b](https://github.com/Zahara-Nour/ubumaths/commit/d5a5d6bbafb22003513bd8c942d9b0ac1a5ed2e2))
+- **python:** align overview table with V2 validation wording ([253fd4e](https://github.com/Zahara-Nour/ubumaths/commit/253fd4e4eef4d78fa7f8aadf0843427cc72168eb))
+- **python:** clarify MAX_LINES is only enforced via validate-code ([c565578](https://github.com/Zahara-Nour/ubumaths/commit/c5655780b720ae7194d1ce0d3d6b04467977d47d))
+- **python:** document tolerance, form-mapping module, round-trip test, corpus ([2fc66de](https://github.com/Zahara-Nour/ubumaths/commit/2fc66de79682f762d21dff72449293a484308a2d))
+- **python:** update reference doc for V2 validation, source field, "Tester ma fonction" panel ([24eb9d8](https://github.com/Zahara-Nour/ubumaths/commit/24eb9d82b3e5a3884e298660f228998ebed34c57))
+
 ### [0.8.86](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.85...v0.8.86) (2026-05-09)
 
 ### ✨ Features
