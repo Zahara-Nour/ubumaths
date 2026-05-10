@@ -200,16 +200,25 @@ Système d'exercices Python complet : création teacher, soumission élève (ass
 
 > **État (2026-05-09)** : module pédagogiquement complet. Les éléments de la section TODO sont du backlog low-priority à reprendre après feedback prof réel — pas de nouvelle pédagogie à débloquer.
 
-### Stratégies de validation
+### Validation V2 — couches orthogonales (refactor 2026-05-10)
 
-1. **Output** — comparer `stdout` à une référence avec une stratégie expressive (`comparison`) :
-   - `exact` : octet-pour-octet
-   - `text` : whitespace souple, casse optionnelle
-   - `numeric` : tolérance abs+rel, shapes flat/lines/grid, support virgule décimale
-   - `custom` : _special judge_ — fonction Python `compare(expected, actual, stdin)` exécutée en namespace isolé pour chaque test case (débloque les solutions multiples valides, sortie non ordonnée, vérification structurelle)
-   - 8 presets nommés + panneau "Personnaliser" pour exposer tous les axes
-2. **Unit test** — la solution élève doit définir une fonction nommée, comparée par appel positionnel
-3. **AST analysis** — vérifie la structure du code (boucle, récursion, classe, no_print, etc.) avec `output_tests` optionnels après les checks AST
+`ValidationConfig` combine **deux axes indépendants**. Au moins l'un des deux doit être présent.
+
+1. **`ast_requirements?`** — pré-check structurel sans exécution (`uses_loop`, `uses_recursion`, `defines_function`, `defines_class`, `uses_list_comprehension`, `no_global_variables`, `no_print`, `uses_import`).
+2. **`behavior?`** — comportement runtime, discriminated union sur `kind` :
+   - **`'output'`** — comparer `stdout` à une référence avec une stratégie expressive (`comparison`) :
+     - `exact` : octet-pour-octet
+     - `text` : whitespace souple, casse optionnelle
+     - `numeric` : tolérance abs+rel, shapes flat/lines/grid, support virgule décimale
+     - `custom` : _special judge_ — fonction Python `compare(expected, actual, stdin)` exécutée en namespace isolé pour chaque test case
+     - 8 presets nommés + panneau "Personnaliser"
+   - **`'unit_test'`** — appel positionnel d'une fonction nommée, comparé via égalité Python `==`
+
+**Pipeline** : si AST échoue → on s'arrête (`failed_layer: 'ast'`) ; sinon on exécute le behavior (`failed_layer: 'behavior'` ou `null` si tout passe). `ValidationResult.behavior_kind` indique quel kind a tourné.
+
+**Avant V2** (jusqu'au 2026-05-09) : 3 stratégies mutuellement exclusives (`output` | `unit_test` | `ast`), avec `ast + output_tests` comme seule combinaison possible. Le V2 supprime cette asymétrie : `ast + unit_test` est maintenant possible (cas typique : exo Bac avec fonction + défense `uses_loop`).
+
+→ Voir [../../wip/python-validation-refactor-spec.md](../../wip/python-validation-refactor-spec.md) et [../../wip/python-validation-refactor-progress.md](../../wip/python-validation-refactor-progress.md)
 
 ### Tests cachés
 
@@ -264,9 +273,11 @@ Les colonnes `tags TEXT[]` ont été remplacées par des tables de jonction N-N 
 
 ### Composants UI
 
-- `ExerciseForm.svelte` — formulaire réutilisable création + édition (props `initialForm`, `mode: 'create' | 'edit'`, `cancelHref?`, `onSubmit`). Possède son propre executor Pyodide pour le bouton "Vérifier" et clone `initialForm` au mount pour éviter l'aliasing parent. Exporte `ExerciseFormState` + `emptyExerciseForm()` depuis son `<script module>`.
-- `ExerciseStrategyEditor.svelte` — éditeur teacher unifié pour les 3 stratégies (sélecteur preset + panneau personnalisé pour `output`, JSON drafts pour `unit_test`, requirements pour `ast`)
-- `ExerciseValidationResult.svelte` — affichage du résultat (banner + AST issues + détails `<details>` par test case, mode opaque pour les tests cachés)
+- `ExerciseForm.svelte` — formulaire réutilisable création + édition (props `initialForm`, `mode: 'create' | 'edit'`, `cancelHref?`, `onSubmit`). Possède son propre executor Pyodide pour le bouton "Vérifier" et clone `initialForm` au mount pour éviter l'aliasing parent. Exporte `ExerciseFormState` + `emptyExerciseForm()` depuis son `<script module>`. Inclut un champ `source` libre (200 chars) pour indiquer l'origine de l'exercice (ex : "Bac Polynésie 09/2024 Q2.b").
+- `ExerciseStrategyEditor.svelte` — éditeur teacher unifié pour la config V2 (deux sections orthogonales : AST requirements + Behavior). Pour `output` : sélecteur preset + panneau personnalisé. Pour `unit_test` : JSON drafts pour args/expected.
+- `ExerciseValidationResult.svelte` — affichage du résultat (banner + AST issues + détails `<details>` par test case, mode opaque pour les tests cachés). Adapté V2 : surface `failed_layer` (`'ast'` / `'behavior'` / `null`) et `behavior_kind`.
+- **Panneau "Tester ma fonction"** (page consultation `/python-exercises/[id]`) — visible quand `behavior?.kind === 'unit_test'`. L'élève appelle la fonction avec des args personnalisés sans écrire de `print()`. Les args sont parsés en JSON après wrap `[...]` (donc `4` ou `1, 2` ou `[1,2,3]` marchent). Historique des 5 derniers appels. Implémenté en réutilisant `executor.validateExercise()` avec un test case unique à `expected: null` pour lire `actual` (zéro changement worker).
+- **Bouton "Copier le lien"** sur la page consultation, visible aux teachers : copie l'URL publique de l'exo.
 - Composants Pyodide partagés : `PythonEditor`, `PythonOutput`, `PlaygroundExecutor`
 
 ### Progression
@@ -369,22 +380,30 @@ Stockage Supabase des fichiers Python avec assignation enseignant→classe.
 
 ## Schémas DB (8 migrations principales)
 
-| Migration                                                           | Tables / changes                                                                                 |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------- |
-| `20251205100000_create_python_files.sql`                            | `python_files`, `python_file_assignments`                                                        |
-| `20251205160000_add_python_settings_to_profiles.sql`                | `profiles.python_settings` (JSONB)                                                               |
-| `20251206010000_create_python_exercises.sql`                        | `python_exercises`, `python_exercise_assignments`, `python_exercise_submissions` (avec triggers) |
-| `20251206020000_create_python_notebooks.sql`                        | `python_notebooks`, `python_notebook_assignments`                                                |
-| `20260508114655_python_exercise_assignments_unique.sql`             | Unique constraints sur assignments (class XOR student)                                           |
-| `20260508125858_python_exercises_public_anon.sql`                   | RLS : anon peut lire les exos `is_public: true`                                                  |
-| `20260508154124_drop_difficulty.sql` + `155447_add_level.sql`       | Refonte `difficulty` → `level` (college/lycee/nsi/etudiant)                                      |
-| `20260508162152_create_python_tags.sql`                             | `python_tags` (vocabulaire Python séparé des math `tags`)                                        |
-| `20260508163407_seed_python_exercises_samples.sql`                  | 5 exos seed (1 par stratégie + ast+output_tests)                                                 |
-| `20260508180000_update_seeds_for_output_v2.sql`                     | Adapte les seeds à la nouvelle API `comparison`                                                  |
-| `20260509002840_allow_public_python_submissions.sql`                | RLS : élève peut soumettre librement sur exos publics (sans assignment)                          |
-| `20260509091440_create_python_exercise_mastery.sql`                 | `python_exercise_mastery` (sticky `mastered`/`needs_review`) + trigger UPSERT auto sur INSERT    |
-| `20260509094828_normalize_exercise_tags.sql`                        | Jonctions `exercise_tags` + `python_exercise_tags` (drop `tags TEXT[]` des deux tables d'exos)   |
-| `20260509104544_fix_exercise_functions_after_tag_normalization.sql` | Reconstruction des 4 RPC `get\_\*\_exercise[s                                                    | \_assignments]`(refs`e.tags`+`e.difficulty`) |
+| Migration                                                                   | Tables / changes                                                                                                       |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `20251205100000_create_python_files.sql`                                    | `python_files`, `python_file_assignments`                                                                              |
+| `20251205160000_add_python_settings_to_profiles.sql`                        | `profiles.python_settings` (JSONB)                                                                                     |
+| `20251206010000_create_python_exercises.sql`                                | `python_exercises`, `python_exercise_assignments`, `python_exercise_submissions` (avec triggers)                       |
+| `20251206020000_create_python_notebooks.sql`                                | `python_notebooks`, `python_notebook_assignments`                                                                      |
+| `20260508114655_python_exercise_assignments_unique.sql`                     | Unique constraints sur assignments (class XOR student)                                                                 |
+| `20260508125858_python_exercises_public_anon.sql`                           | RLS : anon peut lire les exos `is_public: true`                                                                        |
+| `20260508154124_drop_difficulty.sql` + `155447_add_level.sql`               | Refonte `difficulty` → `level` (college/lycee/nsi/etudiant)                                                            |
+| `20260508162152_create_python_tags.sql`                                     | `python_tags` (vocabulaire Python séparé des math `tags`)                                                              |
+| `20260508163407_seed_python_exercises_samples.sql`                          | 5 exos seed (1 par stratégie + ast+output_tests)                                                                       |
+| `20260508180000_update_seeds_for_output_v2.sql`                             | Adapte les seeds à la nouvelle API `comparison`                                                                        |
+| `20260509002840_allow_public_python_submissions.sql`                        | RLS : élève peut soumettre librement sur exos publics (sans assignment)                                                |
+| `20260509091440_create_python_exercise_mastery.sql`                         | `python_exercise_mastery` (sticky `mastered`/`needs_review`) + trigger UPSERT auto sur INSERT                          |
+| `20260509094828_normalize_exercise_tags.sql`                                | Jonctions `exercise_tags` + `python_exercise_tags` (drop `tags TEXT[]` des deux tables d'exos)                         |
+| `20260509104544_fix_exercise_functions_after_tag_normalization.sql`         | Reconstruction des 4 RPC `get\_\*\_exercise[s                                                                          | \_assignments]`(refs`e.tags`+`e.difficulty`) |
+| `20260510071340_seed_terminale_seuil_exercises.sql`                         | 3 exos seuil terminale spé (suite arithmético-géométrique, géométrique, somme partielle ζ(2))                          |
+| `20260510073029_seed_pyramide_bac_polynesie_2024.sql`                       | Exo Bac Polynésie 09/2024 (somme des carrés via boucle for)                                                            |
+| `20260510093300_add_source_to_python_exercises.sql`                         | Colonne `source TEXT` (max 200, nullable) — origine de l'exercice                                                      |
+| `20260510093301_backfill_source_seeded_exercises.sql`                       | Backfill `source` sur les 4 exos déjà seedés                                                                           |
+| `20260510094757_seed_croisement_populations_bac_centres_etrangers_2025.sql` | Bac Centres étrangers 06/2025 (script module-level avec `print(2025+n)`)                                               |
+| `20260510095758_seed_posidonie_bac_metropole_2025.sql`                      | Bac Métropole 06/2025 (algo de seuil sur la posidonie)                                                                 |
+| `20260510130000_refactor_python_validation_config.sql`                      | **Refactor V2** : convertit les `validation_config` JSONB legacy (`{type: 'ast'                                        | 'output'                                     | 'unit_test'}`) vers la forme orthogonale (`{ast_requirements, behavior}`) via CASE/WHEN. 12 rows migrées. |
+| `20260510130100_seed_briggs_bac_amerique_nord_2025.sql`                     | Bac Amérique du Nord 05/2025 (premier exo nativement V2 : AST `defines_function` + `uses_loop` + `behavior.unit_test`) |
 
 Helpers `SECURITY DEFINER` partagés : `is_teacher_of_student`, `is_student_in_class`, `is_teacher_of_class`, `is_admin`, `is_file_assigned_to_student`, `is_notebook_assigned_to_student`, `count_user_python_files`, `count_user_notebooks`.
 
