@@ -2514,14 +2514,27 @@ async function runUnitTestBehavior(
 				namespace.set('_ubumaths_test_args', testCase.args);
 				namespace.set('_ubumaths_test_expected', testCase.expected);
 
-				// Call function and compare result, all within the namespace
+				// Call function and compare result, all within the namespace.
+				// Tuples are normalized to lists recursively so that a function
+				// returning `(u, n)` can be compared against an expected JSON
+				// array `[u, n]` (Python's `(1, 2) == [1, 2]` is False otherwise,
+				// forcing exos to either return lists — Bac-deviating — or fall
+				// back to print-based output validation).
 				const result = (await pyodide.runPythonAsync(
 					`
 import json
+def _ubumaths_normalize(v):
+    if isinstance(v, tuple):
+        return [_ubumaths_normalize(x) for x in v]
+    if isinstance(v, list):
+        return [_ubumaths_normalize(x) for x in v]
+    if isinstance(v, dict):
+        return {k: _ubumaths_normalize(x) for k, x in v.items()}
+    return v
 _args = _ubumaths_test_args
 _expected = _ubumaths_test_expected
 _actual = ${behavior.function_name}(*_args)
-_passed = _actual == _expected
+_passed = _ubumaths_normalize(_actual) == _expected
 {
     'passed': _passed,
     'actual': _actual,
