@@ -56,7 +56,14 @@
 
 	:global(.math-block-static) {
 		display: inline-block;
-		font-size: 1em;
+		/* Slightly larger than inline math so display-mode formulas read as
+		   "display style" (LaTeX convention). MathLive's <math-div> renders
+		   smaller than <math-span> at the same em.
+
+		   Use rem * --font-scale so the block math responds to the nav-bar
+		   font-size buttons. The wrapping <div> isn't a <p>/<li>, so the
+		   `main p, main li` scaling rule in app.css doesn't reach here. */
+		font-size: calc(1.05rem * var(--font-scale, 1));
 		line-height: 1.4;
 	}
 </style>
