@@ -63,7 +63,7 @@
 		FileText,
 		Book,
 		Layers,
-		FileSpreadsheet,
+		ListTodo,
 		ShieldAlert,
 		Package,
 		Trash2,
@@ -151,7 +151,7 @@
 			const studentLinks = [
 				...commonLinks,
 				{ href: '/dashboard/student/cours', label: 'Cours', icon: Book },
-				{ href: '/dashboard/student/worksheets', label: 'Mes Fiches', icon: FileSpreadsheet },
+				{ href: '/dashboard/student/work', label: 'Mon travail', icon: ListTodo },
 				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
 				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle }
 				// { href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
@@ -232,9 +232,14 @@
 		if (href === '/dashboard/teacher/moderation') {
 			return page.url.pathname.startsWith('/dashboard/teacher/moderation');
 		}
-		// For student worksheets pages, match any /dashboard/student/worksheets/* route
-		if (href === '/dashboard/student/worksheets') {
-			return page.url.pathname.startsWith('/dashboard/student/worksheets');
+		// For "Mon travail", highlight on the inbox page itself AND on any
+		// downstream page the inbox links to (worksheets is the only one whose
+		// student-facing list lives under /dashboard/student/*).
+		if (href === '/dashboard/student/work') {
+			return (
+				page.url.pathname.startsWith('/dashboard/student/work') ||
+				page.url.pathname.startsWith('/dashboard/student/worksheets')
+			);
 		}
 		// For bug reports page, match /dashboard/bug-reports
 		if (href === '/dashboard/bug-reports') {

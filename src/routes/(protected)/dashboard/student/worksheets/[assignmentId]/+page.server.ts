@@ -13,19 +13,9 @@ import { z } from 'zod';
 // Validation schema for the assignment ID param
 const assignmentIdSchema = z.string().uuid();
 
-/**
- * Local type for the slice of `worksheet_instances` we read here.
- * `submitted_at` is in the DB (migration 20250123000000_worksheets.sql) but
- * missing from the generated `database.ts`. Same workaround as
- * `src/lib/server/student-inbox.ts` and `mark-done/+server.ts`.
- */
-interface InstanceSubmittedRow {
-	submitted_at: string | null;
-}
-
 export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	// Only students can view worksheets
-	const { user } = await requireRole(locals, 'student');
+	await requireRole(locals, 'student');
 
 	// Validate assignment ID
 	const validation = assignmentIdSchema.safeParse(params.assignmentId);
@@ -48,24 +38,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	const worksheet = await response.json();
 
-	// Fetch `submitted_at` for this (worksheet, student) pair so we can show
-	// the current state of the "J'ai fait" toggle. Done here (not in the API)
-	// to avoid touching the API response schema; the API focuses on rendering.
-	let submittedAt: string | null = null;
-	if (worksheet?.worksheet_id) {
-		const { data: instance } = await locals.supabase
-			.from('worksheet_instances')
-			.select('submitted_at')
-			.eq('worksheet_id', worksheet.worksheet_id)
-			.eq('student_id', user.id)
-			.maybeSingle();
-
-		const typed = instance as unknown as InstanceSubmittedRow | null;
-		submittedAt = typed?.submitted_at ?? null;
-	}
-
 	return {
-		worksheet,
-		submittedAt
+		worksheet
 	};
 };

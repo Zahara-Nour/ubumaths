@@ -144,7 +144,6 @@ afterEach(() => {
  *   - worksheet_assignments (up to 2x: class + direct)
  *   - worksheet_assignment_students (1x)
  *   - worksheets (1x, only when worksheet rows exist)
- *   - worksheet_instances (1x, only when worksheet rows exist)
  *   - python_exercise_assignments (1x)
  *   - python_exercises (1x, only when python rows exist)
  *   - python_exercise_submissions (1x, only when python rows exist)
@@ -257,7 +256,6 @@ describe('getStudentWorkInbox — A1 (direct + class fan-out)', () => {
 			{ id: 'w-1', title: 'Fiche classe' },
 			{ id: 'w-2', title: 'Fiche directe' }
 		]);
-		mock.enqueue('worksheet_instances', []);
 
 		// Python direct (1 item)
 		mock.enqueue('python_exercise_assignments', [
@@ -487,44 +485,11 @@ describe('getStudentWorkInbox — S3 (exercise done)', () => {
 	});
 });
 
-describe('getStudentWorkInbox — S4 (worksheet done)', () => {
-	it('marks worksheet as done when submitted_at is non null', async () => {
-		const mock = createMockSupabase();
-		mock.enqueue('class_members', []);
-		mock.enqueue('assessment_assignments', []);
-		mock.enqueue('exercise_assignments', []);
-		// classIds empty -> no class-scoped worksheet_assignments query.
-		mock.enqueue('worksheet_assignment_students', [{ assignment_id: 'wa-1' }]);
-		mock.enqueue('worksheet_assignments', [
-			{
-				id: 'wa-1',
-				worksheet_id: 'w-1',
-				class_id: null,
-				assigned_at: ISO.twoDaysAgo,
-				closes_at: null,
-				status: 'active',
-				title: 'Fiche',
-				created_by: 'teacher-1',
-				created_at: ISO.twoDaysAgo
-			}
-		]);
-		mock.enqueue('worksheets', [{ id: 'w-1', title: 'Fiche' }]);
-		mock.enqueue('worksheet_instances', [
-			{
-				worksheet_id: 'w-1',
-				student_id: STUDENT,
-				submitted_at: ISO.yesterday,
-				accessed_at: ISO.twoDaysAgo
-			}
-		]);
-		mock.enqueue('python_exercise_assignments', []);
-
-		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
-		expect(inbox.doneRecently).toHaveLength(1);
-		expect(inbox.doneRecently[0].source).toBe('worksheet');
-		expect(inbox.doneRecently[0].viewed).toBe(true);
-	});
-});
+// S4 removed: worksheets are view-only by project design (migration
+// `20251212125938_simplify_worksheet_assignments.sql`). They never reach
+// `status: 'done'` — they stay as `todo` until the class deadline passes
+// or the teacher revokes the assignment. The aggregator returns the same
+// shape regardless of student activity on the worksheet.
 
 describe('getStudentWorkInbox — T1 (5-bucket bucketing)', () => {
 	it('places one item in each of the 5 sections given the right inputs', async () => {
@@ -796,8 +761,7 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 				worksheet_id: 'w-shared',
 				class_id: CLASS_A,
 				assigned_at: ISO.tenDaysAgo,
-				closes_at: null,
-				due_at: ISO.threeDaysFromNow,
+				closes_at: ISO.threeDaysFromNow,
 				available_from: null,
 				status: 'active',
 				title: null,
@@ -812,8 +776,7 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 				worksheet_id: 'w-shared',
 				class_id: null,
 				assigned_at: ISO.twoDaysAgo,
-				closes_at: null,
-				due_at: ISO.threeDaysFromNow,
+				closes_at: ISO.threeDaysFromNow,
 				available_from: null,
 				status: 'active',
 				title: 'Fiche directe',
@@ -822,7 +785,6 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 			}
 		]);
 		mock.enqueue('worksheets', [{ id: 'w-shared', title: 'Fiche partagee' }]);
-		mock.enqueue('worksheet_instances', []);
 		mock.enqueue('python_exercise_assignments', []);
 		mock.enqueue('classes', [{ id: CLASS_A, name: '3eme A' }]);
 
