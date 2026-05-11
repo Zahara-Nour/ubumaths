@@ -42,6 +42,8 @@
  */
 
 import type { PageServerLoad } from './$types';
+import { getStudentWorkInbox } from '$lib/server/student-inbox';
+import type { StudentWorkInbox } from '$lib/types/student-inbox';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Get profile from locals (loaded in hooks.server.ts)
@@ -121,7 +123,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	if (profile.role === 'student') {
 		// Execute queries in parallel for better performance
-		const [riddleCount, exercisesData, achievementsData] = await Promise.all([
+		const [riddleCount, exercisesData, achievementsData, inbox] = await Promise.all([
 			// Get count of successfully solved riddles
 			supabase
 				.from('riddle_attempts')
@@ -175,7 +177,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 				`
 				)
 				.eq('student_id', profile.id)
-				.order('unlocked_at', { ascending: false })
+				.order('unlocked_at', { ascending: false }),
+			// Fetch unified work inbox (aggregates all 4 assignment sources)
+			getStudentWorkInbox(supabase, profile.id)
 		]);
 
 		riddlesSolved = riddleCount.count || 0;
@@ -226,7 +230,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			recentExercises,
 			academicPeriods,
 			minesweeperAchievements,
-			achievementStats
+			achievementStats,
+			inbox
 		};
 	}
 
@@ -238,6 +243,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		recentExercises,
 		academicPeriods,
 		minesweeperAchievements: null,
-		achievementStats: null
+		achievementStats: null,
+		inbox: null as StudentWorkInbox | null
 	};
 };
