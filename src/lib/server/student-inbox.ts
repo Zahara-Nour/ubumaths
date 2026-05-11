@@ -198,6 +198,10 @@ async function fetchAssessmentItems(
 
 	const { data: assignmentsRaw, error: assignmentsErr } = await query;
 	logError('assessment.assignments', assignmentsErr);
+	// Supabase types the embedded `assessment` relation as `never` when a
+	// filter is applied on it (`.eq('assessment.status', ...)`); we cast to
+	// the joined shape and rely on the explicit `a.assessment !== null` filter
+	// below to handle rows where the join was rejected by that filter.
 	const assignments = (assignmentsRaw ?? []) as unknown as AssessmentAssignmentJoined[];
 	const valid = assignments.filter((a) => a.assessment !== null);
 	if (valid.length === 0) return [];

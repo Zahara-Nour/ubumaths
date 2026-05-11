@@ -32,7 +32,7 @@ export interface WorkItem {
 	/** ISO timestamp. null means "no deadline". */
 	dueAt: string | null;
 	status: WorkStatus;
-	/** true when the student has opened the item at least once. Only tracked for exercises and worksheets. */
+	/** true when the student has opened the item at least once. Today only tracked for exercises (via `exercise_completions.last_viewed_at`); the 3 other sources hard-code `false`. */
 	viewed: boolean;
 	/** ISO timestamp of completion. Drives the "Fait recemment" bucket. */
 	doneAt: string | null;

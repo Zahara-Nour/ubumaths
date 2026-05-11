@@ -37,6 +37,13 @@
 
 	// Non-urgent means the student has work but nothing pressing
 	const hasNonUrgentOnly = $derived(urgentItems.length === 0 && totalCount > 0);
+
+	// Pre-computed to avoid a multi-expression text node — prettier was breaking
+	// `{totalCount} {ternary}` interpolations across multiple lines, which made
+	// the rendered DOM text contain a literal newline between number and noun.
+	const nonUrgentMessage = $derived(
+		`Rien d'urgent ! Tu as ${totalCount} ${totalCount > 1 ? 'éléments' : 'élément'} en cours.`
+	);
 </script>
 
 <Card.Root>
@@ -71,10 +78,7 @@
 		{:else if hasNonUrgentOnly}
 			<!-- Has work, but nothing with an imminent deadline -->
 			<p class="py-4 text-sm text-muted-foreground">
-				<span
-					>Rien d'urgent ! Tu as {totalCount}
-					{totalCount > 1 ? 'éléments' : 'élément'} en cours.</span
-				>
+				<span>{nonUrgentMessage}</span>
 				<a
 					href={resolve('/dashboard/student/work' as '/')}
 					class="font-medium text-foreground underline underline-offset-2 hover:no-underline"
