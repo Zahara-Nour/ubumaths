@@ -53,7 +53,7 @@ Centraliser dans une seule surface (page + widget home) tout le travail assigné
 | ------------------------------------------ | --------- | ----------------------------- |
 | 0 — Spec TDD                               | ✅ Validé | —                             |
 | 1 — Backend agrégateur + types + tests     | ✅ Done   | `backend-developer` (Opus)    |
-| 2 — "J'ai fait" worksheets & exos (API+UI) | ⏳        | `fullstack-developer` (Opus)  |
+| 2 — "J'ai fait" worksheets & exos (API+UI) | ✅ Done   | `fullstack-developer` (Opus)  |
 | 3 — Page `/dashboard/student/travail`      | ⏳        | `frontend-developer` (Opus)   |
 | 4 — Widget home + nav                      | ⏳        | `frontend-developer` (Sonnet) |
 | 5 — Quality checks + commit final          | ⏳        | manuel                        |
@@ -160,3 +160,75 @@ Items reportés (non-blockers) :
 - Casts `as unknown as X` (sites multiples) : nettoyage de qualité à faire en Phase 2, n'affecte pas la correction
 - Discriminated union `WorkItem` (`{status:'done', doneAt: string} | {status:'todo', doneAt: null}`) : refactor potentiel pour Phase 3
 - Mock per-table queue : assertion d'ordre des appels (fragile mais OK pour V1)
+
+## Phase 2 livré (2026-05-11)
+
+### Fichiers créés
+
+| Fichier                                                                     | Rôle                                                                                             |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `src/routes/api/student/worksheets/[assignmentId]/mark-done/+server.ts`     | POST (mark done) + DELETE (unmark) — toggle paper-worksheet self-déclaré                         |
+| `src/routes/api/student/worksheets/[assignmentId]/mark-done/server.test.ts` | 11 tests : auth (401/403), accès (404), POST ghost+update+idempotence, DELETE revert+idempotence |
+
+### Fichiers modifiés
+
+| Fichier                                                                              | Rôle                                                                    |
+| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `src/routes/(protected)/dashboard/student/worksheets/[assignmentId]/+page.server.ts` | Ajout requête `worksheet_instances.submitted_at` pour seed le toggle UI |
+| `src/routes/(protected)/dashboard/student/worksheets/[assignmentId]/+page.svelte`    | Ajout bouton "J'ai fait" / "Marquer comme non fait" + handler optimiste |
+
+### Tests
+
+11 tests, tous passent (`pnpm test:server src/routes/api/student/worksheets/[assignmentId]/mark-done/server.test.ts`).
+Couverture :
+
+- 401 unauthenticated (POST + DELETE)
+- 403 non-student (POST + DELETE)
+- 404 quand `can_access_assignment` retourne false (POST)
+- POST crée un ghost (`variant_seed=0`, `instance_data={}`, `status='submitted'`) si pas d'instance
+- POST update une instance existante en préservant `variant_seed` (pas réécrit)
+- POST idempotent : 2e appel → UPDATE, pas INSERT
+- DELETE clear `submitted_at` + revert status à `in_progress` (si `accessed_at` set)
+- DELETE revert status à `generated` (si `accessed_at` null — cas ghost)
+- DELETE idempotent : pas d'instance → 200 avec `instance: null`
+
+### Décision : "ghost instance" on-the-fly
+
+Validée avant Phase 2 par l'utilisateur. Pour les worksheets papier (le professeur génère le PDF côté enseignant et l'élève travaille au crayon, pas de flux online), il n'existe pas de `worksheet_instances` row pour ce couple `(worksheet, student)`. Le schema requiert `variant_seed INTEGER NOT NULL CHECK >= 0` et `instance_data JSONB NOT NULL DEFAULT '{}'`. Plutôt qu'ajouter une migration pour rendre ces champs nullable, on synthétise une ligne "ghost" minimale :
+
+- `variant_seed = 0`
+- `instance_data = {}`
+- `status = 'submitted'`
+- `submitted_at = NOW()`
+
+Cette forme cohabite proprement avec les vraies instances générées par le flux teacher (`/api/worksheets/[id]/instances`). Le DELETE revert le statut à `generated` (si ghost, `accessed_at = null`) ou `in_progress` (si l'élève avait aussi ouvert la version en ligne au moins une fois).
+
+### Décision : `submitted_at` côté page server, pas via l'API
+
+L'API existante `GET /api/student/worksheets/[assignmentId]` ne retourne pas `submitted_at` (focalisée sur le rendu d'exercices). Plutôt qu'élargir son schéma de réponse Zod et toucher à `StudentWorksheetView`, j'ai ajouté une 2e requête isolée dans `+page.server.ts` qui lit juste `submitted_at`. Une seule requête supplémentaire `.maybeSingle()` sur `worksheet_instances` — coût négligeable, isolation maximale.
+
+### Workaround `database.ts`
+
+Même problème que Phase 1 : `worksheet_instances.submitted_at` et `accessed_at` existent en base (migration `20250123000000_worksheets.sql:246`) mais sont absents du `database.ts` régénéré. Workaround appliqué :
+
+- `+server.ts` : interface locale `InstanceLookupRow { id, variant_seed, accessed_at, submitted_at, status }` + cast `as unknown as InstanceLookupRow | null` sur la lecture
+- `+page.server.ts` : interface locale `InstanceSubmittedRow { submitted_at: string | null }` + même cast
+
+Si à terme `database.ts` est régénéré avec ces colonnes, ou si on étend `database-helpers.ts` avec un `WorksheetInstance` type, ces casts peuvent disparaître. Pas bloquant en V1.
+
+### Hypothèses à valider par l'humain
+
+1. **Statut revert** : DELETE revert à `in_progress` si `accessed_at` set, sinon `generated`. C'est ma lecture du contrat schema (`status_check` CHECK IN ('generated', 'in_progress', 'submitted', 'graded')). Si la UX réelle attend autre chose (par exemple toujours revert à `generated`), simple à changer.
+2. **Pas d'invalidation `data.submittedAt` après toggle** : on update juste l'état local `isDone`. Si l'élève recharge la page après toggle, le nouveau `submittedAt` est fetché côté serveur (cohérent). Le `// svelte-ignore state_referenced_locally` mirror le pattern de l'exercise page (`+page.svelte:14`).
+3. **Toast text** : J'ai choisi "Marqué comme fait !" et "Marque retirée" pour être courts et clairs ; texte à ajuster si l'équipe préfère autre chose.
+
+### Ambiguïtés résolues
+
+- **Empty-body schema** : utilisé `z.object({}).strict()` pour POST. Validation lenient sur le `request.json()` (catch → `{}`) puis strict sur le schema → toute clé en plus = 400. Defense-in-depth.
+- **`error.code === '23505'` race recovery** : si 2 POST arrivent en parallèle et que le 1er INSERT gagne, le 2e attrape la PG unique violation et re-lit l'instance créée, traitant le call comme un no-op. Évite un faux 500 visible côté élève.
+- **404 vs 403 sur RLS denied** : retourné 404 ("Devoir non trouve") pour ne pas leak l'existence de l'assignation à un élève non ciblé. Pattern emprunté à `routes/api/student/worksheets/[assignmentId]/+server.ts:219`.
+
+### Items pour Phase 3+ (non-blockers)
+
+- Si la widget home / page travail veut afficher un compteur "X faits cette semaine", il faudra exposer `worksheet_instances.submitted_at` quelque part — l'aggregator du Phase 1 le lit déjà via `WorksheetInstanceRow`, donc OK.
+- Pas d'optimistic à invalider après reload : un revisit après toggle re-lit `submittedAt` côté serveur via `+page.server.ts`. Si à terme on veut mettre à jour live l'inbox d'un autre onglet, il faudra Realtime ou refetch ; hors scope Phase 2.

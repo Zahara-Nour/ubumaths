@@ -3,10 +3,11 @@
 	import ExerciseListItem from '$lib/components/student/worksheets/ExerciseListItem.svelte';
 	import ExerciseModal from '$lib/components/student/worksheets/ExerciseModal.svelte';
 	import StudentReportsPanel from '$lib/components/worksheets/student/StudentReportsPanel.svelte';
+	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { FileText, AlertTriangle, Star } from 'lucide-svelte';
+	import { FileText, AlertTriangle, Star, CircleCheck, RotateCcw, Loader2 } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
 	import type { StudentErrorReportView, StudentExerciseView } from '$lib/types/worksheets';
@@ -23,6 +24,12 @@
 	let sections = $derived(worksheet.sections ?? []);
 	let exerciseCount = $derived(exercises.length);
 	let assignmentId = $derived(worksheet.assignment_id);
+
+	// "J'ai fait" toggle state — seeded by the load function, then driven by the toggle.
+	// We don't reset on `data` changes because optimistic updates need to win over reloads.
+	// svelte-ignore state_referenced_locally
+	let isDone = $state(data.submittedAt !== null);
+	let togglingDone = $state(false);
 
 	// Group exercises by section
 	let groupedExercises = $derived.by(() => {
@@ -214,6 +221,42 @@
 		// Force reactivity
 		reportsMap = new Map(reportsMap);
 	}
+
+	/**
+	 * Toggle the "Fait" flag for this worksheet via the mark-done API.
+	 * Optimistic UI: flip the local state first, roll back on error.
+	 */
+	async function handleToggleDone() {
+		if (togglingDone) return;
+		togglingDone = true;
+		const wasDone = isDone;
+		const targetDone = !wasDone;
+		isDone = targetDone; // optimistic
+
+		try {
+			const response = await fetch(`/api/student/worksheets/${assignmentId}/mark-done`, {
+				method: targetDone ? 'POST' : 'DELETE',
+				headers: targetDone ? { 'Content-Type': 'application/json' } : undefined,
+				body: targetDone ? '{}' : undefined
+			});
+
+			if (!response.ok) {
+				isDone = wasDone; // rollback
+				toaster.error(
+					targetDone ? 'Erreur lors du marquage comme fait' : 'Erreur lors du retrait de la marque'
+				);
+				return;
+			}
+
+			toaster.success(targetDone ? 'Marqué comme fait !' : 'Marque retirée');
+		} catch (err) {
+			isDone = wasDone; // rollback on network error
+			console.error('Toggle done failed:', err);
+			toaster.error('Erreur réseau, réessaie plus tard');
+		} finally {
+			togglingDone = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -225,6 +268,28 @@
 
 	<!-- Header -->
 	<WorksheetHeader {worksheet} />
+
+	<!-- "J'ai fait" toggle -->
+	<div class="mt-4 flex justify-end">
+		<Button
+			variant={isDone ? 'outline' : 'default'}
+			size="sm"
+			onclick={handleToggleDone}
+			disabled={togglingDone}
+			class="gap-2"
+		>
+			{#if togglingDone}
+				<Loader2 class="h-4 w-4 animate-spin" />
+				<span>Mise à jour...</span>
+			{:else if isDone}
+				<RotateCcw class="h-4 w-4" />
+				<span>Marquer comme non fait</span>
+			{:else}
+				<CircleCheck class="h-4 w-4" />
+				<span>J'ai fait</span>
+			{/if}
+		</Button>
+	</div>
 
 	<!-- Content Tabs -->
 	<section class="mt-8">
