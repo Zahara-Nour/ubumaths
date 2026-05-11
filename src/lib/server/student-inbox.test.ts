@@ -297,6 +297,17 @@ describe('getStudentWorkInbox — A1 (direct + class fan-out)', () => {
 		// Worksheet path always queries class-scoped + direct-by-id (when student has direct links)
 		expect(mock.calls('worksheet_assignments')).toBe(2);
 		expect(mock.calls('python_exercise_assignments')).toBe(1);
+
+		// Worksheet invariant: aggregator never derives "done"/"viewed" for
+		// worksheets — project decision after `20251212125938_simplify_worksheet_assignments.sql`.
+		// Guards against accidental re-introduction of completion fields.
+		const worksheets = allItems.filter((i) => i.source === 'worksheet');
+		expect(worksheets).toHaveLength(2);
+		for (const w of worksheets) {
+			expect(w.status).toBe('todo');
+			expect(w.viewed).toBe(false);
+			expect(w.doneAt).toBeNull();
+		}
 	});
 });
 

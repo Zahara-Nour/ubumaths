@@ -24,6 +24,8 @@
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import { ClipboardList, BookOpen, FileText, Code, GraduationCap, Clock } from 'lucide-svelte';
 	import { resolve } from '$app/paths';
+	import { formatDistanceToNow } from 'date-fns';
+	import { fr } from 'date-fns/locale';
 	import { formatDeadline } from '$lib/utils/dates';
 	import { cn } from '$lib/utils';
 	import type { WorkItem, WorkSource } from '$lib/types/student-inbox';
@@ -75,24 +77,19 @@
 	const meta = $derived(SOURCE_META[item.source]);
 	const SourceIcon = $derived(meta.icon);
 
-	// Assessment-specific CTA: "Reprendre" once the student has at least
-	// opened (created a session) but not completed. `item.viewed` is always
-	// false today for assessments (the aggregator doesn't expose a viewed
-	// signal there yet), so this is wired but inert for now — kept for
-	// forward compatibility with a later last_viewed_at field.
-	const ctaLabel = $derived(
-		item.source === 'assessment' && item.viewed && item.status === 'todo' ? 'Reprendre' : meta.cta
-	);
+	const ctaLabel = $derived(meta.cta);
 
-	// Shown only when the item is in the "todo" state AND the student has
-	// already opened it (currently exercise + worksheet only).
+	// `viewed` is currently only ever true for exercises (the other 3 sources
+	// don't expose a tracking column to the aggregator).
 	const showViewedDot = $derived(item.viewed && item.status === 'todo');
 
 	// Due-date / done-date line. When status === 'done' the item lives in
-	// "Fait cette semaine" and we show "Fait <relative>" instead.
+	// "Fait cette semaine"; `formatDeadline` returns "Expiré" for past dates
+	// which would render as "Fait Expiré", so we use `formatDistanceToNow`
+	// for the done case (returns e.g. "il y a 2 jours").
 	const dateLabel = $derived.by(() => {
 		if (item.status === 'done' && item.doneAt) {
-			return `Fait ${formatDeadline(item.doneAt, 'detailed')}`;
+			return `Fait ${formatDistanceToNow(new Date(item.doneAt), { locale: fr, addSuffix: true })}`;
 		}
 		if (item.dueAt) {
 			return formatDeadline(item.dueAt, 'detailed');

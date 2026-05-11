@@ -5,7 +5,7 @@
  * Covers the source-aware rendering of a single inbox item:
  * 1. Title is rendered
  * 2. Source-specific badge label
- * 3. Source-specific CTA verb (including "Reprendre" for assessment when viewed)
+ * 3. Source-specific CTA verb
  * 4. Viewed dot indicator (only when viewed && status === 'todo')
  * 5. "Fait <relative>" date label when status === 'done'
  */
@@ -99,13 +99,6 @@ describe('WorkItemCard - CTA verb per source', () => {
 			await expect.element(page.getByText(expectedCta, { exact: true })).toBeVisible();
 		});
 	}
-
-	it('renders "Reprendre" instead of "Commencer" for an assessment marked viewed', async () => {
-		const item = makeItem('assessment', { viewed: true });
-		render(WorkItemCard, { props: { item } });
-
-		await expect.element(page.getByText('Reprendre', { exact: true })).toBeVisible();
-	});
 });
 
 // =============================================================================
@@ -148,11 +141,10 @@ describe('WorkItemCard - done date label', () => {
 		const item = makeItem('worksheet', { status: 'done', doneAt, dueAt: null });
 		render(WorkItemCard, { props: { item } });
 
-		// `formatDeadline(doneAt, 'detailed')` for a past timestamp returns "Échue"
-		// in the 'compact' branch ('Expiré' in detailed). We just verify the
-		// "Fait " prefix is present — the relative value is delegated to the
-		// shared formatter which has its own tests.
-		await expect.element(page.getByText(/^Fait /)).toBeVisible();
+		// We render "Fait <relative>" via date-fns `formatDistanceToNow` (French
+		// locale, addSuffix:true → "il y a 2 jours"). Assert on the prefix; the
+		// formatter has its own tests upstream.
+		await expect.element(page.getByText(/^Fait il y a /)).toBeVisible();
 	});
 
 	it('does NOT show any date line when both dueAt and doneAt are null', async () => {
