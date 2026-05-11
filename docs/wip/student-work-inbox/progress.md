@@ -232,3 +232,79 @@ Si à terme `database.ts` est régénéré avec ces colonnes, ou si on étend `d
 
 - Si la widget home / page travail veut afficher un compteur "X faits cette semaine", il faudra exposer `worksheet_instances.submitted_at` quelque part — l'aggregator du Phase 1 le lit déjà via `WorksheetInstanceRow`, donc OK.
 - Pas d'optimistic à invalider après reload : un revisit après toggle re-lit `submittedAt` côté serveur via `+page.server.ts`. Si à terme on veut mettre à jour live l'inbox d'un autre onglet, il faudra Realtime ou refetch ; hors scope Phase 2.
+
+## Phase 3 livré (2026-05-11)
+
+### Fichiers créés
+
+| Fichier                                                         | LOC | Rôle                                                                            |
+| --------------------------------------------------------------- | --: | ------------------------------------------------------------------------------- |
+| `src/routes/(protected)/dashboard/student/work/+page.server.ts` |  22 | Loader : `requireRole('student')` + `getStudentWorkInbox` (zero transformation) |
+| `src/routes/(protected)/dashboard/student/work/+page.svelte`    | 135 | Page rendant les 5 sections + empty-state                                       |
+| `src/lib/components/student-inbox/WorkInboxSection.svelte`      |  96 | Section titrée, mode always-open OU collapsible                                 |
+| `src/lib/components/student-inbox/WorkItemCard.svelte`          | 169 | Carte unitaire d'item (badge + titre + classe + date + CTA)                     |
+| `src/lib/components/student-inbox/WorkItemCard.svelte.test.ts`  | 165 | 15 tests vitest browser sur le rendu de la carte                                |
+
+### Tests
+
+15 tests, tous passent (`pnpm test:client src/lib/components/student-inbox/WorkItemCard.svelte.test.ts`).
+
+Couverture :
+
+- Title : rendu du `item.title`
+- Badge par source : 4 cas paramétrés (assessment="Test", exercise="Exercice", worksheet="Fiche", python="Python")
+- CTA par source : 4 cas paramétrés + 1 cas spécial (assessment viewed → "Reprendre")
+- Viewed indicator : 3 cas (viewed+todo → visible ; viewed=false → absent ; status=done → absent même si viewed=true)
+- Done date label : 2 cas (status=done → préfixe "Fait " ; null+null → pas de ligne)
+
+### Décisions visuelles
+
+- **Badges** :
+  - `assessment` → variant `destructive` (rouge) + icône `ClipboardList`
+  - `exercise` → variant `default` (primary) + icône `BookOpen`
+  - `worksheet` → variant `secondary` + icône `FileText`
+  - `python` → variant `outline` + icône `Code`
+- **Section "En retard"** : `border-l-4 border-destructive` avec icône `AlertTriangle`, header texte rouge. Toujours expanded.
+- **Section "Fait cette semaine"** : items rendus avec `opacity-60`. Collapsible, collapsed par défaut.
+- **Layout carte** : stack vertical sur mobile (`flex-col`), horizontal sur `sm:` et plus (`sm:flex-row`). CTA toujours à droite/dernière position.
+- **Card cliquable entière** : le card est un `<a>` qui couvre tout le clic-target. Le bouton CTA à l'intérieur est un `<span>` _décoratif_ stylé via `buttonVariants` (nested `<a>` invalide HTML, single interactive ancestor pour les lecteurs d'écran).
+- **Viewed indicator** : `•` U+2022 en `text-primary/50`, attribut `title=` pour le tooltip natif (pas de Shadcn Tooltip — overkill ici).
+- **Empty state E1** : Card en bordure dashed, icône `Inbox` centrée, 2 boutons CTA "Pratique d'exercices" → `/dashboard/student/exercises` et "Exercices Python" → `/python-exercises`.
+- **Largeur max page** : `max-w-4xl` (plus étroit que le `max-w-7xl` des worksheets — choix éditorial : c'est une liste verticale de cartes, pas une grille, donc une colonne lisible suffit).
+
+### Ambiguïtés résolues
+
+1. **"Reprendre" pour assessment viewed** : la spec dit `Commencer/Reprendre` pour assessment. Le champ `item.viewed` est aujourd'hui toujours `false` côté agrégateur pour les assessments (Phase 1 ne lit pas `test_sessions.created_at` comme signal `viewed`). J'ai câblé la logique côté carte de sorte que dès que l'agrégateur populate `viewed=true` pour assessment, le CTA bascule automatiquement. Le test en `viewed:true` force la valeur pour démontrer le comportement.
+2. **Conflit "carte = lien + bouton = lien"** : la spec dit "wrap in `<a>`" ET "ensure the inner CTA Button also has the link" puis "don't nest interactive elements". J'ai tranché : seul l'ancre extérieure est interactive, le CTA intérieur est un `<span>` décoratif. Rationnel : nested `<a>` violent HTML, et un `<button>` enfant interceperait les clics (déclenchant l'ancre par bubbling mais en dégradant l'expérience clavier). Le span garde le rendu visuel attendu via `buttonVariants` + `cn`.
+3. **Empty-state copy** : la spec dit "Rien d'assigné pour le moment". Ajout d'un sous-texte "Profitez-en pour vous entraîner !" pour adoucir la formulation (sinon ça sonne sec). Modifiable.
+4. **Title page** : "Mon travail" (singulier, comme la spec). H1 + `<title>` cohérents.
+
+### Surprises / éléments demandant un œil humain
+
+1. **`resolve()` requis sur tous les `<a href>`** : le svelte-autofixer impose `resolve(item.href as '/')` pour les hrefs dynamiques (typed routes SvelteKit). Le pattern est utilisé dans `Header.svelte:379`. La cast `as '/'` est cosmétique (un type widening) — à terme, un type `Route` pourrait être inféré depuis `item.href`. Pour `WorkItemCard`, j'ai importé `resolve` depuis `$app/paths`.
+2. **`page.getByLabel` n'existe pas** dans le `@vitest/browser/context` API : j'ai dû utiliser `getByTitle` pour le viewed dot (le span a `aria-label` ET `title`). L'attribut `title=` est nécessaire pour ce test ; il sert aussi de tooltip natif visible au survol.
+3. **Tailwind class merging** : j'ai ajouté `cn(buttonVariants(...), 'w-full sm:w-auto')` pour appliquer l'override responsive sur le CTA décoratif. Pattern standard ailleurs dans le codebase.
+
+### T4 ("Fermé" badge) — toujours différé
+
+Comme en Phase 1 et 2, le T4 est différé. Raisons :
+
+- Aucun champ `closesAt` n'existe encore sur `WorkItem` ; les assessments n'ont pas de colonne `closes_at` exposée (juste `settings.deadline` qui sert déjà à `dueAt`).
+- La section "En retard" (rouge, en haut, toujours visible) couvre déjà le besoin visuel principal "ce travail est passé l'échéance".
+- Le badge "Fermé" supposerait une distinction _hard cutoff_ vs _soft deadline_ qui n'existe pas dans le modèle actuel pour 3 des 4 sources.
+
+Pour revisiter T4 plus tard : étendre `WorkItem` avec un champ `closesAt: string | null`, exposer la colonne worksheet `closes_at` (déjà lue côté agrégateur pour le fallback `dueAt`), et reproduire la sémantique pour les autres sources (probablement via `*_assignments.optional_deadline`/`due_date` côté hard).
+
+### Pas (encore) fait — Phase 4
+
+- Pas d'entrée Sidebar pour `/dashboard/student/work` (la page est joignable directement à l'URL pour validation visuelle).
+- Pas de widget home (3-5 items "À faire prioritaire").
+- Pas de tests pour `WorkInboxSection.svelte` (composition pure de cartes ; pas de logique à isoler).
+- Pas de tests pour `+page.server.ts` (le loader est 3 lignes ; les `requireRole` et `getStudentWorkInbox` sont déjà testés ailleurs).
+
+### Quality checks restants (à passer par humain en Phase 5)
+
+- `npx eslint <les 4 fichiers nouveaux>` (pas exécuté côté agent — règle CLAUDE.md)
+- `pnpm check:incremental` (idem)
+- Vérification visuelle réelle de la page (mobile + desktop, dark mode, empty state, sections collapsibles)
+- Test E2E manuel avec un compte élève réel ayant des items de chaque source
