@@ -71,8 +71,10 @@
 		{:else if hasNonUrgentOnly}
 			<!-- Has work, but nothing with an imminent deadline -->
 			<p class="py-4 text-sm text-muted-foreground">
-				Rien d'urgent ! Tu as {totalCount}
-				{totalCount > 1 ? 'éléments' : 'élément'} en cours.
+				<span
+					>Rien d'urgent ! Tu as {totalCount}
+					{totalCount > 1 ? 'éléments' : 'élément'} en cours.</span
+				>
 				<a
 					href={resolve('/dashboard/student/work' as '/')}
 					class="font-medium text-foreground underline underline-offset-2 hover:no-underline"

@@ -337,24 +337,17 @@ async function fetchExerciseItems(
 type WorksheetAssignmentRow = Tables<'worksheet_assignments'>;
 
 /**
- * `worksheet_instances` has `submitted_at` and `accessed_at` columns in the DB
- * (see migration 20250123000000_worksheets.sql) but they are missing from the
- * generated `database.ts`. We select them via a typed shape locally.
+ * Worksheets are view-only by design (migration `20251212125938_simplify_worksheet_assignments.sql`
+ * dropped `submitted_at`, `accessed_at` and `due_at`). No submission, no
+ * self-declared completion: each worksheet surfaces as `todo` with `closes_at`
+ * as its deadline, and stays in the inbox until the class deadline passes or
+ * the teacher revokes the assignment.
  */
-interface WorksheetInstanceRow {
-	worksheet_id: string;
-	student_id: string;
-	submitted_at: string | null;
-	accessed_at: string | null;
-}
-
 async function fetchWorksheetItems(
 	supabase: TypedSupabaseClient,
 	userId: string,
 	classIds: string[]
 ): Promise<WorkItem[]> {
-	// `available_from` filter mirrors `routes/api/student/worksheets/+server.ts:79`:
-	// future-scheduled worksheets must not surface in the student inbox.
 	const nowIso = new Date().toISOString();
 	const availabilityClause = `available_from.is.null,available_from.lte.${nowIso}`;
 
@@ -389,8 +382,8 @@ async function fetchWorksheetItems(
 	logError('worksheet.classAssignments', classAssignmentsRes.error);
 	logError('worksheet.directAssignments', directAssignmentsRes.error);
 
-	const classAssignments = (classAssignmentsRes.data ?? []) as WorksheetAssignmentRow[];
-	const directAssignments = (directAssignmentsRes.data ?? []) as WorksheetAssignmentRow[];
+	const classAssignments = classAssignmentsRes.data ?? [];
+	const directAssignments = directAssignmentsRes.data ?? [];
 
 	const assignments: WorksheetAssignmentRow[] = [...classAssignments, ...directAssignments];
 	if (assignments.length === 0) return [];
@@ -400,32 +393,16 @@ async function fetchWorksheetItems(
 		new Set(assignments.map((a) => a.class_id).filter((id): id is string => id !== null))
 	);
 
-	const [worksheetsRes, instancesRes, classNames] = await Promise.all([
+	const [worksheetsRes, classNames] = await Promise.all([
 		supabase.from('worksheets').select('id, title').in('id', worksheetIds),
-		supabase
-			.from('worksheet_instances')
-			.select('worksheet_id, student_id, submitted_at, accessed_at')
-			.eq('student_id', userId)
-			.in('worksheet_id', worksheetIds) as unknown as Promise<{
-			data: WorksheetInstanceRow[] | null;
-			error: { message?: string } | null;
-		}>,
 		fetchClassNames(supabase, referencedClassIds)
 	]);
 	logError('worksheet.worksheets', worksheetsRes.error);
-	logError('worksheet.instances', instancesRes.error);
 
-	const worksheetById = new Map(
-		(worksheetsRes.data ?? []).map((row) => [row.id, row as Tables<'worksheets'>])
-	);
-	const instanceByWorksheet = new Map(
-		(instancesRes.data ?? []).map((row) => [row.worksheet_id, row])
-	);
+	const worksheetById = new Map((worksheetsRes.data ?? []).map((row) => [row.id, row]));
 
 	return assignments.map<WorkItem>((assignment) => {
 		const worksheet = worksheetById.get(assignment.worksheet_id);
-		const instance = instanceByWorksheet.get(assignment.worksheet_id);
-		const doneAt = instance?.submitted_at ?? null;
 		return {
 			source: 'worksheet' satisfies WorkSource,
 			itemId: assignment.worksheet_id,
@@ -433,12 +410,10 @@ async function fetchWorksheetItems(
 			title: assignment.title ?? worksheet?.title ?? '',
 			classId: assignment.class_id,
 			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
-			// `due_at` is the pedagogical deadline (soft), `closes_at` is the hard cutoff;
-			// prefer `due_at`, fall back to `closes_at` when only the hard cutoff is set.
-			dueAt: assignment.due_at ?? assignment.closes_at,
-			status: doneAt ? 'done' : 'todo',
-			viewed: instance?.accessed_at != null,
-			doneAt,
+			dueAt: assignment.closes_at,
+			status: 'todo',
+			viewed: false,
+			doneAt: null,
 			href: `/dashboard/student/worksheets/${assignment.id}`,
 			assignedAt: assignment.assigned_at
 		};

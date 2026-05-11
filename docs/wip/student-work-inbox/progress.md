@@ -49,14 +49,14 @@ Centraliser dans une seule surface (page + widget home) tout le travail assigné
 
 ## Phases
 
-| Phase                                      | Statut    | Agent                         |
-| ------------------------------------------ | --------- | ----------------------------- |
-| 0 — Spec TDD                               | ✅ Validé | —                             |
-| 1 — Backend agrégateur + types + tests     | ✅ Done   | `backend-developer` (Opus)    |
-| 2 — "J'ai fait" worksheets & exos (API+UI) | ✅ Done   | `fullstack-developer` (Opus)  |
-| 3 — Page `/dashboard/student/travail`      | ⏳        | `frontend-developer` (Opus)   |
-| 4 — Widget home + nav                      | ⏳        | `frontend-developer` (Sonnet) |
-| 5 — Quality checks + commit final          | ⏳        | manuel                        |
+| Phase                                      | Statut                                    | Agent                         |
+| ------------------------------------------ | ----------------------------------------- | ----------------------------- |
+| 0 — Spec TDD                               | ✅ Validé                                 | —                             |
+| 1 — Backend agrégateur + types + tests     | ✅ Done                                   | `backend-developer` (Opus)    |
+| 2 — "J'ai fait" worksheets & exos (API+UI) | ❌ Revert (worksheet half) — voir cleanup |                               |
+| 3 — Page `/dashboard/student/work`         | ✅ Done                                   | `frontend-developer` (Opus)   |
+| 4 — Widget home + nav                      | ✅ Done                                   | `frontend-developer` (Sonnet) |
+| 5 — Cleanup post-review                    | ✅ Done                                   | manuel                        |
 
 ## Type cible (WorkItem)
 
@@ -359,3 +359,32 @@ Le template initial avait une interpolation multiligne `{totalCount}\n\t\t\t\t{.
 - `pnpm check:incremental` (idem)
 - Vérification visuelle du widget sur le dashboard (mobile + desktop, dark mode, 3 états)
 - Test E2E avec un compte élève réel
+
+## Cleanup post-review (2026-05-11)
+
+Code review holistique sur les 4 phases a remonté **2 vrais bugs critiques** :
+
+1. **Migration `20251212125938_simplify_worksheet_assignments.sql`** (Dec 2025) a explicitement supprimé `worksheet_assignments.due_at`, `worksheet_instances.submitted_at`, `worksheet_instances.accessed_at`, `worksheet_instances.time_spent_seconds`. Commentaire de la migration : _"Remove submission-related columns since worksheets are view-only (PDF/online). **No student submissions expected.**"_
+
+   Phase 1 avait bien remonté en hypothèse 1 que ces colonnes étaient "absentes de `database.ts`". Le bon réflexe était d'aller lire les migrations récentes, pas de contourner avec un cast local. Le projet a explicitement abandonné le tracking de complétion worksheet par décision design — mon "J'ai fait" Phase 2 était un ajout non demandé qui contredisait cette décision.
+
+2. **Nav drift** dans `dashboard/+layout.svelte:154` — l'entrée "Mes Fiches" propre au dashboard n'avait pas été mise à jour pendant Phase 4 (seuls le rail Sidebar global et le Header mobile l'avaient été).
+
+### Actions de cleanup
+
+- **Phase 2 revert complet** : suppression de `src/routes/api/student/worksheets/[assignmentId]/mark-done/` (API + tests), restauration de la page worksheet détail à son état pré-Phase-2 (via `git checkout 26be17ecf -- <fichiers>`).
+- **Phase 1 worksheet fetcher simplifié** : plus de query sur `worksheet_instances`, plus d'interface locale `WorksheetInstanceRow`, plus de cast `as unknown as`. Le `WorkItem` worksheet a maintenant `status: 'todo'`, `viewed: false`, `doneAt: null` toujours — cohérent avec le design "view-only".
+- **`dueAt` worksheet** : utilise `closes_at` uniquement (seule colonne deadline existante).
+- **Tests Phase 1 adaptés** : test S4 supprimé entièrement, références à `worksheet_instances`/`submitted_at`/`accessed_at`/`due_at` retirées des autres tests.
+- **`dashboard/+layout.svelte`** : "Mes Fiches" → "Mon travail" avec `ListTodo`, et active matcher étendu pour highlighter aussi sur `/dashboard/student/worksheets/*`.
+- **Bug template InboxWidget** : interpolation `{totalCount} {... ? ... : ...}` collée sur une ligne (le bug avait été corrigé par l'agent en Phase 4 puis re-cassé par prettier).
+
+### Tests après cleanup
+
+- 14 tests serveur sur `student-inbox.test.ts` + 1 skip T4 (Phase 2 mark-done retirée)
+- 24 tests client (15 WorkItemCard + 9 InboxWidget)
+- Total : 38 + 1 skip
+
+### Comportement worksheet final
+
+Une worksheet assignée surface dans l'inbox dans la section correspondant à `closes_at` (En retard / Cette semaine / Plus tard / Sans échéance). Elle reste visible jusqu'à `closes_at + 30j` (archivage T3) ou jusqu'à révocation par le prof. **Aucun mécanisme de complétion** : c'est cohérent avec le design "view-only" du projet. Si un besoin de "marquer comme fait" émerge plus tard, la décision projet devra être revisitée explicitement avant implémentation.
