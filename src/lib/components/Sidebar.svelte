@@ -8,7 +8,8 @@
 		BookOpen,
 		PenTool,
 		Terminal,
-		Calculator
+		Calculator,
+		ListTodo
 		// CalculatorIcon,
 		// LineChart
 	} from 'lucide-svelte';
@@ -37,9 +38,9 @@
 				roles: ['teacher']
 			},
 			{
-				label: 'Mes Fiches',
-				href: '/dashboard/student/worksheets',
-				icon: FileSpreadsheet,
+				label: 'Mon travail',
+				href: '/dashboard/student/work',
+				icon: ListTodo,
 				roles: ['student']
 			},
 			{

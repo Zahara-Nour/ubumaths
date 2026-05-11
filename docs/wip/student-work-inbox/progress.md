@@ -308,3 +308,54 @@ Pour revisiter T4 plus tard : étendre `WorkItem` avec un champ `closesAt: strin
 - `pnpm check:incremental` (idem)
 - Vérification visuelle réelle de la page (mobile + desktop, dark mode, empty state, sections collapsibles)
 - Test E2E manuel avec un compte élève réel ayant des items de chaque source
+
+## Phase 4 livré (2026-05-11)
+
+### Fichiers créés
+
+| Fichier                                                       | LOC | Rôle                                                               |
+| ------------------------------------------------------------- | --: | ------------------------------------------------------------------ |
+| `src/lib/components/student-inbox/InboxWidget.svelte`         |  76 | Widget home — 5 items urgents max, 3 états (urgent / calme / vide) |
+| `src/lib/components/student-inbox/InboxWidget.svelte.test.ts` |  95 | 9 tests vitest browser couvrant les 3 états + slicing + compteur   |
+
+### Fichiers modifiés
+
+| Fichier                                                    | Modification                                                                   |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `src/routes/(protected)/dashboard/+page.server.ts`         | Ajout import + fetch `getStudentWorkInbox` en parallèle des queries student    |
+| `src/routes/(protected)/dashboard/StudentDashboard.svelte` | Import `InboxWidget`, rendu conditionnel au-dessus de `RewardsBlock`           |
+| `src/lib/components/Sidebar.svelte`                        | "Mes Fiches" → "Mon travail", icône `ListTodo`, href `/dashboard/student/work` |
+| `src/lib/components/Header.svelte`                         | Même remplacement pour le drawer mobile                                        |
+
+### Tests
+
+9 tests, tous passent (`pnpm test:client src/lib/components/student-inbox/InboxWidget.svelte.test.ts`).
+
+Couverture :
+
+- Header "Mon travail" rendu dans tous les cas
+- Lien "Voir tout (N)" présent quand totalCount > 0, absent quand 0
+- Tri late > thisWeek ; slicing à `maxItems=3` (4e item absent du DOM)
+- Message "Rien d'urgent" quand urgentItems = 0 et totalCount > 0
+- Comptage pluriel correct "2 éléments en cours"
+- Empty state "Rien d'assigné" quand totalCount = 0
+- Absence de cartes WorkItemCard en empty state
+
+### Décisions
+
+- **Icône nav** : `ListTodo` (lucide-svelte) — cohérente avec le type de contenu, pas encore utilisée ailleurs dans la nav.
+- **"Mes Fiches" remplacé** (pas ajouté en doublon) : décision validée par l'utilisateur avant la phase. L'URL `/dashboard/student/worksheets` reste accessible directement et via l'inbox.
+- **Widget placement** : au-dessus de `RewardsBlock` dans `StudentDashboard.svelte`. Les blocs commentés (SRS, exercices récents, achievements) sont laissés en l'état.
+- **Rendu conditionnel `{#if data.inbox}`** : le champ est `null` pour les rôles non-student (retour de `+page.server.ts`). Le composant n'est rendu que pour les étudiants.
+- **Fetch parallèle** : `getStudentWorkInbox` ajouté comme 4e élément de `Promise.all` dans le bloc `if (profile.role === 'student')`. Aucune régression sur les autres queries.
+
+### Bug découvert et corrigé
+
+Le template initial avait une interpolation multiligne `{totalCount}\n\t\t\t\t{... ? ... : ...}` qui produisait un nœud texte avec un retour à la ligne entre le nombre et "éléments". Le test `/2 éléments en cours/` échouait car le DOM contenait `2\n\t\t\t\téléments`. Corrigé en collant les deux expressions sur une seule ligne : `{totalCount} {totalCount > 1 ? 'éléments' : 'élément'} en cours.`
+
+### Quality checks restants (à passer par humain en Phase 5)
+
+- `npx eslint <fichiers modifiés phase 4>` (pas exécuté côté agent)
+- `pnpm check:incremental` (idem)
+- Vérification visuelle du widget sur le dashboard (mobile + desktop, dark mode, 3 états)
+- Test E2E avec un compte élève réel

@@ -60,7 +60,8 @@
 		Mail,
 		Home,
 		Gamepad2,
-		FileSpreadsheet
+		FileSpreadsheet,
+		ListTodo
 	} from 'lucide-svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import { resolve } from '$app/paths';
@@ -113,9 +114,9 @@
 				roles: ['teacher']
 			},
 			{
-				label: 'Mes Fiches',
-				href: '/dashboard/student/worksheets',
-				icon: FileSpreadsheet,
+				label: 'Mon travail',
+				href: '/dashboard/student/work',
+				icon: ListTodo,
 				roles: ['student']
 			}
 		]

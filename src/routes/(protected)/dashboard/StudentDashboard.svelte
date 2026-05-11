@@ -35,6 +35,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import RewardsBlock from '$lib/components/RewardsBlock.svelte';
+	import InboxWidget from '$lib/components/student-inbox/InboxWidget.svelte';
 	// import AchievementsWidget from '$lib/components/game/minesweeper/AchievementsWidget.svelte';
 	// import { Button } from '$lib/components/ui/button';
 	// import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '$lib/utils/dates';
@@ -68,6 +69,11 @@
 </script>
 
 <div class="space-y-6">
+	<!-- WORK INBOX WIDGET: urgent assignments (late + this week) -->
+	{#if data.inbox}
+		<InboxWidget inbox={data.inbox} maxItems={5} />
+	{/if}
+
 	<!-- REWARDS BLOCK -->
 	<!--
 		Summary of rewards: Gidouilles, VIP Cards, and Riddles
