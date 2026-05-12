@@ -388,3 +388,61 @@ Code review holistique sur les 4 phases a remonté **2 vrais bugs critiques** :
 ### Comportement worksheet final
 
 Une worksheet assignée surface dans l'inbox dans la section correspondant à `closes_at` (En retard / Cette semaine / Plus tard / Sans échéance). Elle reste visible jusqu'à `closes_at + 30j` (archivage T3) ou jusqu'à révocation par le prof. **Aucun mécanisme de complétion** : c'est cohérent avec le design "view-only" du projet. Si un besoin de "marquer comme fait" émerge plus tard, la décision projet devra être revisitée explicitement avant implémentation.
+
+## Polish post-review #2 (2026-05-11, commit `37a43aea7`)
+
+Second code review (sur l'état post-cleanup) a confirmé les 2 blockers fixés et remonté 2 vrais bugs + quelques minors.
+
+### Bugs corrigés
+
+1. **"Fait Expiré"** — `WorkItemCard` rendait `Fait Expiré` pour tous les items "done" parce que `formatDeadline(doneAt, 'detailed')` retourne le littéral `Expiré` pour toute date passée, et `doneAt` est par construction toujours dans le passé. Remplacé par `formatDistanceToNow(date, { locale: fr, addSuffix: true })` → rend `Fait il y a 2 jours`. Assertion test resserrée de `/^Fait /` à `/^Fait il y a /` pour attraper la régression à l'avenir.
+2. **Branche morte `viewed → 'Reprendre'`** — `WorkItemCard` proposait `Reprendre` pour les assessments avec `viewed: true`, mais l'agrégateur force `viewed: false` pour toutes les sources sauf `exercise`. Branche supprimée + test associé retiré + JSDoc sur `WorkItem.viewed` corrigée pour refléter la réalité (`exercises only`).
+
+### Minors
+
+- **Coverage gap** — A1 asserte maintenant l'invariant worksheet : `status === 'todo'`, `viewed === false`, `doneAt === null` pour chaque item worksheet. Garde-fou contre une éventuelle réintroduction silencieuse de colonnes de complétion.
+- **Cast `as unknown as AssessmentAssignmentJoined`** — commentaire inline ajouté expliquant que Supabase type l'embed `assessment` comme `never` quand un filtre est appliqué dessus (`.eq('assessment.status', 'published')`), d'où le cast.
+- **InboxWidget interpolation** — la chaîne `"Rien d'urgent ! Tu as N éléments en cours."` est désormais calculée en `$derived` côté JS plutôt qu'interpolée dans le template, ce qui empêche prettier de re-casser le rendu en insérant un saut de ligne entre `{totalCount}` et `{... ? ... : ...}` (le bug avait déjà été corrigé deux fois et ressuscitait à chaque format pass).
+
+### Tests finaux
+
+- **14 server** sur `student-inbox.test.ts` (+ 1 skip T4)
+- **23 client** : 14 sur `WorkItemCard` (un de moins après suppression du test "Reprendre"), 9 sur `InboxWidget`
+- **Total : 37 + 1 skip**
+
+### Quality checks finaux
+
+- `pnpm check:incremental` → **9 ERRORS / 46 WARNINGS** (baseline préservée, aucune nouvelle erreur introduite par les 6 commits)
+- `eslint` + `prettier` appliqués par lint-staged à chaque commit
+- `svelte-autofixer` MCP exécuté sur tous les `.svelte` modifiés via les agents Phase 3 + Phase 4
+
+## État final du feature
+
+| Phase                              | Commit      | Statut                           |
+| ---------------------------------- | ----------- | -------------------------------- |
+| 1 — Backend agrégateur             | `26be17ecf` | ✅                               |
+| 2 — "J'ai fait" worksheets         | `9392e6a8e` | ❌ Revert (incorrect par design) |
+| 3 — Page `/dashboard/student/work` | `34f8b5f96` | ✅                               |
+| 4 — Widget home + nav              | `dfde19018` | ✅                               |
+| 5a — Cleanup post-review #1        | `c74b805fe` | ✅                               |
+| 5b — Polish post-review #2         | `37a43aea7` | ✅                               |
+
+**Comportement final pour l'élève** :
+
+- Le rail Sidebar et le mobile Header montrent "Mon travail" (icône `ListTodo`) → page `/dashboard/student/work`
+- Le dashboard d'accueil affiche un widget "Mon travail" au-dessus du `RewardsBlock` (3 états : items urgents / "Rien d'urgent" / vide)
+- La page liste les items dans 5 sections (En retard / Cette semaine / Plus tard / Sans échéance / Fait cette semaine), avec auto-expand de "Sans échéance" si seule peuplée (E2), et empty-state dédié quand tout est vide (E1)
+- Chaque item a un badge type (Test / Exercice / Fiche / Python) et un CTA adapté (Commencer / Travailler / Consulter / Coder)
+- Les exercices à l'unité gardent leur mécanisme `exercise_completions.completed_at` existant (toggle "Marquer comme fait" sur la page détail)
+- Les worksheets sont view-only par design projet : surface dans l'inbox, deadline = `closes_at`, status toujours `todo`, archivage silencieux après `closes_at + 30j`
+
+### Vérification manuelle restante
+
+À faire par l'utilisateur dans un navigateur réel (je ne peux pas valider visuellement) :
+
+- Login élève avec et sans assignations
+- Widget home dans les 3 états (urgent / non-urgent / vide)
+- Page `/dashboard/student/work` : 5 sections, collapsibles, empty state
+- Responsive mobile + desktop + dark mode
+- Click sur chaque type d'item → bonne destination
+- Navigation depuis l'inbox vers une worksheet → "Mon travail" reste highlighté dans la sidebar
