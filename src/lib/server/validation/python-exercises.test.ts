@@ -41,6 +41,11 @@ const validUnitTestBehavior = {
 	]
 };
 
+const validVariableCheckBehavior = {
+	kind: 'variable_check' as const,
+	expected_vars: { x: 6, y: 7 }
+};
+
 describe('validationConfigSchema (new shape)', () => {
 	describe('valid configs round-trip', () => {
 		it('accepts AST-only config', () => {
@@ -168,9 +173,10 @@ describe('validationConfigSchema (new shape)', () => {
 });
 
 describe('behaviorCheckSchema', () => {
-	it('discriminates output from unit_test', () => {
+	it('discriminates output, unit_test and variable_check', () => {
 		expect(behaviorCheckSchema.safeParse(validOutputBehavior).success).toBe(true);
 		expect(behaviorCheckSchema.safeParse(validUnitTestBehavior).success).toBe(true);
+		expect(behaviorCheckSchema.safeParse(validVariableCheckBehavior).success).toBe(true);
 	});
 
 	it('rejects output behavior missing comparison', () => {
@@ -189,6 +195,65 @@ describe('behaviorCheckSchema', () => {
 		};
 		const result = behaviorCheckSchema.safeParse(broken);
 		expect(result.success).toBe(false);
+	});
+
+	describe('variable_check', () => {
+		it('accepts a simple expected_vars map', () => {
+			const ok = { kind: 'variable_check', expected_vars: { x: 6 } };
+			expect(behaviorCheckSchema.safeParse(ok).success).toBe(true);
+		});
+
+		it('accepts None (null) as expected value', () => {
+			const ok = { kind: 'variable_check', expected_vars: { x: null } };
+			expect(behaviorCheckSchema.safeParse(ok).success).toBe(true);
+		});
+
+		it('accepts nested structures (list, dict)', () => {
+			const ok = {
+				kind: 'variable_check',
+				expected_vars: { xs: [1, 2, 3], meta: { name: 'Alice', age: 12 } }
+			};
+			expect(behaviorCheckSchema.safeParse(ok).success).toBe(true);
+		});
+
+		it('accepts optional tolerance', () => {
+			const ok = {
+				kind: 'variable_check',
+				expected_vars: { x: 3.14 },
+				tolerance: { eps_abs: 1e-6, eps_rel: 1e-6 }
+			};
+			expect(behaviorCheckSchema.safeParse(ok).success).toBe(true);
+		});
+
+		it('rejects empty expected_vars', () => {
+			const broken = { kind: 'variable_check', expected_vars: {} };
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('rejects a variable name that is not a Python identifier', () => {
+			const broken = { kind: 'variable_check', expected_vars: { '1x': 5 } };
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('rejects a variable name with a dash', () => {
+			const broken = { kind: 'variable_check', expected_vars: { 'a-b': 5 } };
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('rejects more than 50 variables', () => {
+			const expected_vars: Record<string, number> = {};
+			for (let i = 0; i < 51; i++) expected_vars[`v${i}`] = i;
+			const broken = { kind: 'variable_check', expected_vars };
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('accepts valid identifiers with underscores and digits', () => {
+			const ok = {
+				kind: 'variable_check',
+				expected_vars: { _x: 1, snake_case: 2, abc123: 3 }
+			};
+			expect(behaviorCheckSchema.safeParse(ok).success).toBe(true);
+		});
 	});
 });
 
@@ -222,6 +287,26 @@ describe('validationResultSchema (new shape)', () => {
 			behavior_kind: 'unit_test',
 			test_results: [{ passed: false, error: 'Wrong answer' }],
 			execution_time_ms: 33
+		};
+		expect(validationResultSchema.safeParse(result).success).toBe(true);
+	});
+
+	it('accepts a variable_check result', () => {
+		const result = {
+			valid: false,
+			failed_layer: 'behavior',
+			behavior_kind: 'variable_check',
+			test_results: [
+				{ passed: true, input: 'x', expected: '6', actual: '6' },
+				{
+					passed: false,
+					input: 'y',
+					expected: '7',
+					actual: '8',
+					diff: 'attendu 7, obtenu 8'
+				}
+			],
+			execution_time_ms: 27
 		};
 		expect(validationResultSchema.safeParse(result).success).toBe(true);
 	});

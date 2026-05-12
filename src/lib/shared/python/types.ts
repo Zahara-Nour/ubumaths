@@ -222,6 +222,18 @@ export type BehaviorCheck =
 			function_name: string;
 			test_cases: UnitTestCase[];
 			tolerance?: UnitTestTolerance;
+	  }
+	| {
+			kind: 'variable_check';
+			/**
+			 * Map of variable name → expected value. After the student's code is
+			 * executed in a fresh namespace, each named variable is looked up
+			 * and compared against the expected value via the recursive engine
+			 * in `validation/variable-compare.ts`. Type-strict for scalars
+			 * (`True ≠ 1`, `"5" ≠ 5`); tuple ≡ list at the JSON boundary.
+			 */
+			expected_vars: Record<string, unknown>;
+			tolerance?: UnitTestTolerance;
 	  };
 
 /**
@@ -242,7 +254,7 @@ export interface ExerciseValidationConfig {
 export interface ExerciseValidationResult {
 	valid: boolean;
 	failed_layer: 'ast' | 'behavior' | null;
-	behavior_kind?: 'output' | 'unit_test';
+	behavior_kind?: 'output' | 'unit_test' | 'variable_check';
 	ast_issues?: string[];
 	test_results: TestCaseResult[];
 	error?: string;

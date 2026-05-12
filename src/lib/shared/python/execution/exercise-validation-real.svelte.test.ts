@@ -650,6 +650,278 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 	});
 
 	// ===========================================================================
+	// D. Behavior: variable_check
+	// Placed BEFORE the matrix describe because the matrix's `case 8` runs an
+	// infinite-loop student program that, even after the worker rejects its
+	// promise, leaves the Pyodide thread spinning — every subsequent
+	// `validate-exercise` message then times out client-side. Keep new
+	// behavior suites above that case.
+	// ===========================================================================
+
+	describe('variable_check behavior', () => {
+		it(
+			'passes when expected variable matches',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { x: 6 }
+					}
+				};
+				const result = await executor.validateExercise('x = 2 * 3', config);
+
+				expect(result.valid).toBe(true);
+				expect(result.failed_layer).toBeNull();
+				expect(result.behavior_kind).toBe('variable_check');
+				expect(result.test_results).toHaveLength(1);
+				expect(result.test_results[0].passed).toBe(true);
+				expect(result.test_results[0].input).toBe('x');
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'reports missing variable with a French diff',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { x: 6 }
+					}
+				};
+				const result = await executor.validateExercise('y = 1', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.failed_layer).toBe('behavior');
+				expect(result.test_results[0].passed).toBe(false);
+				expect(result.test_results[0].diff).toMatch(/n'est pas définie/);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'reports type mismatch (str vs int)',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { x: 5 }
+					}
+				};
+				const result = await executor.validateExercise('x = "5"', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results[0].passed).toBe(false);
+				expect(result.test_results[0].diff).toMatch(/[Tt]ype/);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'returns one result per expected variable, mix of pass and fail',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { x: 6, y: 7, z: 8 }
+					}
+				};
+				const result = await executor.validateExercise('x = 6\ny = 1\nz = 8', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results).toHaveLength(3);
+				const byName = Object.fromEntries(result.test_results.map((r) => [r.input, r]));
+				expect(byName.x.passed).toBe(true);
+				expect(byName.y.passed).toBe(false);
+				expect(byName.z.passed).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'accepts None (null) as expected value',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { x: null }
+					}
+				};
+				const result = await executor.validateExercise('x = None', config);
+
+				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'compares lists element by element',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { xs: [1, 2, 3] }
+					}
+				};
+				const result = await executor.validateExercise('xs = [1, 2, 3]', config);
+
+				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'compares dicts (key set + values)',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { meta: { name: 'Alice', age: 12 } }
+					}
+				};
+				const result = await executor.validateExercise(
+					'meta = {"name": "Alice", "age": 12}',
+					config
+				);
+
+				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'compares nested dicts (Pyodide dict_converter recursion check)',
+			async () => {
+				// Locks the assumption that `toJs({ dict_converter })` recurses
+				// into nested dicts. If a future Pyodide release regresses this,
+				// the test surfaces it before students see "obtenu map" diffs.
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { data: { inner: { a: 1, b: 2 } } }
+					}
+				};
+				const result = await executor.validateExercise(
+					'data = {"inner": {"a": 1, "b": 2}}',
+					config
+				);
+
+				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'variable shadowing a Python builtin is detected via dir(), not the builtin',
+			async () => {
+				// `list` is a Python builtin. `'list' in dir()` is False at
+				// top-level of a freshly-created namespace — so even if the
+				// student never assigns `list`, the lookup must report it
+				// missing rather than returning the builtin type proxy.
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { list: [1, 2, 3] }
+					}
+				};
+				const result = await executor.validateExercise('# no list assignment\n', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results[0].diff).toMatch(/n'est pas définie/);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'variable shadowing a Python builtin: student assignment wins',
+			async () => {
+				// If the student DOES assign to the shadowed name, eval(name)
+				// resolves to the student's value (Python LEGB rule), not the
+				// builtin.
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { list: [1, 2, 3] }
+					}
+				};
+				const result = await executor.validateExercise('list = [1, 2, 3]', config);
+
+				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'numeric tolerance accepts 0.1 + 0.2 vs 0.3',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { x: 0.3 }
+					}
+				};
+				const result = await executor.validateExercise('x = 0.1 + 0.2', config);
+
+				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'runtime error in student code → single global error result',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { x: 6, y: 7 }
+					}
+				};
+				const result = await executor.validateExercise('raise ValueError("oops")', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results).toHaveLength(1);
+				expect(result.test_results[0].passed).toBe(false);
+				expect(result.test_results[0].error).toMatch(/ValueError|oops/);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'set produced by student → type mismatch diff (list expected)',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'variable_check',
+						expected_vars: { xs: [1, 2, 3] }
+					}
+				};
+				const result = await executor.validateExercise('xs = {1, 2, 3}', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results[0].diff).toMatch(/[Tt]ype.*set/i);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'fresh namespace: variables from previous validation do not leak',
+			async () => {
+				// First validation defines `x`. Second validation must not see it.
+				await executor.validateExercise('x = 999', {
+					behavior: { kind: 'variable_check', expected_vars: { x: 999 } }
+				});
+
+				const secondResult = await executor.validateExercise('y = 1', {
+					behavior: { kind: 'variable_check', expected_vars: { x: 999 } }
+				});
+				expect(secondResult.valid).toBe(false);
+				expect(secondResult.test_results[0].diff).toMatch(/n'est pas définie/);
+			},
+			TEST_TIMEOUT_MS
+		);
+	});
+
+	// ===========================================================================
 	// E. AST + behavior matrix (9 cases from the refactor spec)
 	// ===========================================================================
 

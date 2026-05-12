@@ -186,9 +186,35 @@ const behaviorUnitTestSchema = z.object({
 		)
 });
 
+const PY_IDENTIFIER_RE = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+const EXPECTED_VARS_MAX = 50;
+
+const expectedVarsSchema = z
+	.record(z.string(), z.unknown())
+	.refine((obj) => Object.keys(obj).length >= 1, {
+		message: 'Au moins une variable doit être vérifiée'
+	})
+	.refine((obj) => Object.keys(obj).length <= EXPECTED_VARS_MAX, {
+		message: `Maximum ${EXPECTED_VARS_MAX} variables`
+	})
+	.refine((obj) => Object.keys(obj).every((k) => PY_IDENTIFIER_RE.test(k)), {
+		message: 'Nom de variable Python invalide'
+	});
+
+const behaviorVariableCheckSchema = z.object({
+	kind: z.literal('variable_check'),
+	expected_vars: expectedVarsSchema.describe(
+		'Map of variable name → expected JSON value (None=null). Type-strict for scalars.'
+	),
+	tolerance: unitTestToleranceSchema
+		.optional()
+		.describe('Optional numeric tolerance for float comparisons.')
+});
+
 export const behaviorCheckSchema = z.discriminatedUnion('kind', [
 	behaviorOutputSchema,
-	behaviorUnitTestSchema
+	behaviorUnitTestSchema,
+	behaviorVariableCheckSchema
 ]);
 
 export const validationConfigSchema = z
@@ -209,7 +235,7 @@ export const validationConfigSchema = z
 	});
 
 const failedLayerSchema = z.union([z.literal('ast'), z.literal('behavior'), z.null()]);
-const behaviorKindSchema = z.enum(['output', 'unit_test']);
+const behaviorKindSchema = z.enum(['output', 'unit_test', 'variable_check']);
 
 export const validationResultSchema = z.object({
 	valid: z.boolean(),

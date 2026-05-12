@@ -34,6 +34,10 @@ import {
 	toWorkerMessageSchema
 } from '$lib/shared/python';
 import { compareOutputs } from '$lib/shared/python/validation/output-compare';
+import {
+	compareValue,
+	type VariableCompareOptions
+} from '$lib/shared/python/validation/variable-compare';
 
 // =============================================================================
 // Package Tracking for Lazy Loading
@@ -2182,7 +2186,10 @@ async function runBehavior(
 	if (behavior.kind === 'output') {
 		return runOutputBehavior(code, behavior, namespace);
 	}
-	return runUnitTestBehavior(code, behavior, namespace);
+	if (behavior.kind === 'unit_test') {
+		return runUnitTestBehavior(code, behavior, namespace);
+	}
+	return runVariableCheckBehavior(code, behavior, namespace);
 }
 
 /**
@@ -2640,6 +2647,162 @@ _passed = _ubumaths_compare(_actual, _expected, _ubumaths_eps_abs, _ubumaths_eps
 		valid: allPassed,
 		test_results: testResults
 	};
+}
+
+/**
+ * Run the variable_check behavior layer.
+ *
+ * Executes the student's code once in `namespace`, then for each entry in
+ * `behavior.expected_vars` looks up the variable, converts its Pyodide value
+ * to a plain JS structure (`toJs({ dict_converter: Object.fromEntries })`),
+ * and compares against the teacher's declared value via the recursive engine
+ * in `validation/variable-compare.ts`.
+ *
+ * One `TestCaseResult` is emitted per expected variable (Q2 = all errors
+ * surfaced, no short-circuit). A failure to execute the student's code is a
+ * single global error result. The student's `input` field carries the
+ * variable name so the result UI can label each row.
+ *
+ * @param namespace Isolated Python dict (a fresh one is created per
+ *   `validateExercise` invocation by the surrounding pipeline).
+ */
+async function runVariableCheckBehavior(
+	code: string,
+	behavior: Extract<BehaviorCheck, { kind: 'variable_check' }>,
+	namespace: PyProxy
+): Promise<{ valid: boolean; test_results: TestCaseResult[] }> {
+	if (!pyodide) {
+		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
+	}
+
+	// 1. Execute student code once. A runtime error here is a single global
+	//    failure (no point checking variables — they may not be assigned).
+	try {
+		await pyodide.runPythonAsync(code, { globals: namespace });
+	} catch (error) {
+		return {
+			valid: false,
+			test_results: [
+				{
+					passed: false,
+					error: error instanceof Error ? error.message : String(error)
+				}
+			]
+		};
+	}
+
+	const testResults: TestCaseResult[] = [];
+	let allPassed = true;
+	const opts: VariableCompareOptions = behavior.tolerance ?? {};
+
+	for (const [name, expected] of Object.entries(behavior.expected_vars)) {
+		const expectedDisplay = serializeForDisplay(expected);
+		try {
+			namespace.set('_ubumaths_var_name', name);
+
+			// Look up the variable inside the isolated namespace.
+			// `dir()` with no args lists the namespace's keys when invoked
+			// under `pyodide.runPythonAsync(code, { globals: namespace })`.
+			// Using `eval(name)` rather than `globals()[name]` keeps the
+			// helper symmetrical with how the student would inspect the
+			// value in a REPL.
+			const lookup = (await pyodide.runPythonAsync(
+				`
+_ubumaths_name = _ubumaths_var_name
+if _ubumaths_name in dir():
+    _ubumaths_lookup_result = {'exists': True, 'value': eval(_ubumaths_name)}
+else:
+    _ubumaths_lookup_result = {'exists': False, 'value': None}
+_ubumaths_lookup_result
+`,
+				{ globals: namespace }
+			)) as PyProxy;
+
+			const jsLookup = (
+				lookup as PyProxy & {
+					toJs: (opts: { dict_converter: typeof Object.fromEntries }) => unknown;
+				}
+			).toJs({ dict_converter: Object.fromEntries }) as {
+				exists: boolean;
+				value: unknown;
+			};
+
+			if (typeof (lookup as { destroy?: () => void }).destroy === 'function') {
+				(lookup as { destroy: () => void }).destroy();
+			}
+			// Clean up the three scratch names the snippet wrote into the
+			// student's namespace (same approach as the AST checker — keeps
+			// the student's namespace pristine between iterations and avoids
+			// surprising hits when `dir()` is consulted later).
+			namespace.delete('_ubumaths_var_name');
+			namespace.delete('_ubumaths_name');
+			namespace.delete('_ubumaths_lookup_result');
+
+			if (!jsLookup.exists) {
+				allPassed = false;
+				testResults.push({
+					passed: false,
+					input: name,
+					expected: expectedDisplay,
+					diff: `La variable '${name}' n'est pas définie dans ton code.`
+				});
+				continue;
+			}
+
+			// Pyodide converts Python `None` to `undefined` when crossing the JS
+			// boundary. The comparator treats `null` (= JSON for None) and
+			// `undefined` as different types, so normalise here — at this point
+			// `exists === true` guarantees the variable was assigned, so an
+			// `undefined` slot can only mean the student wrote `x = None`.
+			const actualJs = jsLookup.value === undefined ? null : jsLookup.value;
+
+			const cmpResult = compareValue(expected, actualJs, opts);
+			allPassed = allPassed && cmpResult.passed;
+			testResults.push({
+				passed: cmpResult.passed,
+				input: name,
+				expected: expectedDisplay,
+				actual: serializeForDisplay(actualJs),
+				...(cmpResult.diff ? { diff: cmpResult.diff } : {})
+			});
+		} catch (error) {
+			try {
+				namespace.delete('_ubumaths_var_name');
+				namespace.delete('_ubumaths_name');
+				namespace.delete('_ubumaths_lookup_result');
+			} catch {
+				// Ignore cleanup errors
+			}
+			allPassed = false;
+			testResults.push({
+				passed: false,
+				input: name,
+				expected: expectedDisplay,
+				error: error instanceof Error ? error.message : String(error)
+			});
+		}
+	}
+
+	return { valid: allPassed, test_results: testResults };
+}
+
+/**
+ * Serialise a value for display in the validation result UI. Handles `Set`
+ * (becomes an array preview) and `Map` (becomes a plain-object preview) so
+ * that the JSON encoder doesn't choke. Anything else falls through to
+ * `JSON.stringify`. On encoder failure (cyclic, PyProxy, …) returns the raw
+ * string form so the UI never shows `undefined`.
+ */
+function serializeForDisplay(v: unknown): string {
+	try {
+		return JSON.stringify(v, (_, value) => {
+			if (value instanceof Set) return Array.from(value);
+			if (value instanceof Map) return Object.fromEntries(value);
+			return value;
+		});
+	} catch {
+		return String(v);
+	}
 }
 
 /**

@@ -39,10 +39,15 @@
 		if (result.failed_layer === 'behavior') {
 			if (result.behavior_kind === 'unit_test') return 'Tests de fonction échoués';
 			if (result.behavior_kind === 'output') return 'Sortie attendue non obtenue';
+			if (result.behavior_kind === 'variable_check') return 'Valeurs de variables incorrectes';
 			return 'Comportement attendu non vérifié';
 		}
 		return '';
 	});
+
+	const isVariableCheck = $derived(result?.behavior_kind === 'variable_check');
+	const rowNoun = $derived(isVariableCheck ? 'Variable' : 'Test');
+	const inputLabel = $derived(isVariableCheck ? 'Variable' : 'Entrée');
 </script>
 
 {#if loading}
@@ -130,7 +135,7 @@
 								{:else}
 									<XCircle class="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
 								{/if}
-								<span class="truncate text-muted-foreground">Test {i + 1} (caché)</span>
+								<span class="truncate text-muted-foreground">{rowNoun} {i + 1} (caché)</span>
 								{#if testCase.error}
 									<span class="ml-2 truncate text-xs text-red-700 dark:text-red-400">
 										{testCase.error}
@@ -148,7 +153,8 @@
 										<XCircle class="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
 									{/if}
 									<span class="truncate">
-										Test {i + 1}{#if testCase.input}
+										{rowNoun}
+										{i + 1}{#if testCase.input}
 											&nbsp;·&nbsp;<code class="text-xs">{testCase.input.trim() || '∅'}</code>
 										{/if}
 									</span>
@@ -156,7 +162,7 @@
 								<dl class="space-y-1 border-t border-border p-3 text-xs">
 									{#if testCase.input !== undefined}
 										<div class="grid grid-cols-[6rem_1fr] gap-2">
-											<dt class="font-medium text-muted-foreground">Entrée</dt>
+											<dt class="font-medium text-muted-foreground">{inputLabel}</dt>
 											<dd>
 												<code class="break-all">{testCase.input || '(vide)'}</code>
 											</dd>

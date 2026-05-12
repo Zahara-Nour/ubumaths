@@ -129,6 +129,19 @@ export type BehaviorCheck =
 			function_name: string;
 			test_cases: UnitTestCase[];
 			tolerance?: UnitTestTolerance;
+	  }
+	| {
+			kind: 'variable_check';
+			/**
+			 * Map of variable name → expected value. After executing the
+			 * student's code in a fresh namespace, each named variable is
+			 * looked up and compared via the recursive engine in
+			 * `validation/variable-compare.ts`. Type-strict for scalars;
+			 * tuple ≡ list at the JSON boundary (Pyodide `toJs` collapses
+			 * them to `Array`).
+			 */
+			expected_vars: Record<string, unknown>;
+			tolerance?: UnitTestTolerance;
 	  };
 
 /**
@@ -162,7 +175,7 @@ export interface TestCaseResult {
 export interface ValidationResult {
 	valid: boolean;
 	failed_layer: 'ast' | 'behavior' | null;
-	behavior_kind?: 'output' | 'unit_test';
+	behavior_kind?: 'output' | 'unit_test' | 'variable_check';
 	ast_issues?: string[];
 	test_results: TestCaseResult[];
 	error?: string;
