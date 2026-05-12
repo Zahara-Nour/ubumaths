@@ -45,15 +45,18 @@
 	// Behavior selector
 	// ===========================================================================
 
-	type BehaviorChoice = 'none' | 'output' | 'unit_test';
+	type BehaviorChoice = 'none' | 'output' | 'unit_test' | 'variable_check';
 
 	const behaviorChoiceItems: { value: BehaviorChoice; label: string }[] = [
 		{ value: 'none', label: 'Aucun' },
 		{ value: 'output', label: 'Sortie stdout' },
-		{ value: 'unit_test', label: 'Test de fonction' }
+		{ value: 'unit_test', label: 'Test de fonction' },
+		{ value: 'variable_check', label: 'Valeurs de variables' }
 	];
 
 	const behaviorChoice = $derived<BehaviorChoice>(config.behavior?.kind ?? 'none');
+
+	const PY_IDENTIFIER_RE = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
 	function setBehaviorChoice(choice: string) {
 		const next = choice as BehaviorChoice;
@@ -75,16 +78,27 @@
 			};
 			return;
 		}
-		// unit_test
+		if (next === 'unit_test') {
+			config = {
+				...config,
+				behavior: {
+					kind: 'unit_test',
+					function_name: '',
+					test_cases: [{ args: [], expected: null }]
+				}
+			};
+			unitDrafts = [{ args: '[]', expected: 'null' }];
+			return;
+		}
+		// variable_check
 		config = {
 			...config,
 			behavior: {
-				kind: 'unit_test',
-				function_name: '',
-				test_cases: [{ args: [], expected: null }]
+				kind: 'variable_check',
+				expected_vars: { x: 0 }
 			}
 		};
-		unitDrafts = [{ args: '[]', expected: 'null' }];
+		varDrafts = [{ name: 'x', valueDraft: '0' }];
 	}
 
 	// ===========================================================================
@@ -210,6 +224,12 @@
 		return b?.kind === 'unit_test';
 	}
 
+	function isVariableCheckBehavior(
+		b: BehaviorCheck | undefined
+	): b is Extract<BehaviorCheck, { kind: 'variable_check' }> {
+		return b?.kind === 'variable_check';
+	}
+
 	function updateOutputBehavior(
 		mutator: (
 			b: Extract<BehaviorCheck, { kind: 'output' }>
@@ -225,6 +245,15 @@
 		) => Extract<BehaviorCheck, { kind: 'unit_test' }>
 	) {
 		if (!isUnitTestBehavior(config.behavior)) return;
+		config = { ...config, behavior: mutator(config.behavior) };
+	}
+
+	function updateVariableCheckBehavior(
+		mutator: (
+			b: Extract<BehaviorCheck, { kind: 'variable_check' }>
+		) => Extract<BehaviorCheck, { kind: 'variable_check' }>
+	) {
+		if (!isVariableCheckBehavior(config.behavior)) return;
 		config = { ...config, behavior: mutator(config.behavior) };
 	}
 
@@ -340,6 +369,89 @@
 			return { ...b, test_cases: b.test_cases.filter((_, idx) => idx !== i) };
 		});
 		unitDrafts = unitDrafts.filter((_, idx) => idx !== i);
+	}
+
+	// ===========================================================================
+	// variable_check drafts — one row per `(name, value-as-JSON)`. The committed
+	// `expected_vars` Record is rebuilt from the drafts on every commit (so a
+	// rename or value edit replaces the previous entry). Rows whose name fails
+	// the Python-identifier check, whose value fails JSON parsing, or that
+	// collide with another row are silently excluded from the rebuilt Record
+	// — the inline error tells the teacher why.
+	// ===========================================================================
+
+	let varDrafts: {
+		name: string;
+		valueDraft: string;
+		nameErr?: string;
+		valueErr?: string;
+	}[] = $state(
+		isVariableCheckBehavior(config.behavior)
+			? Object.entries(config.behavior.expected_vars).map(([name, value]) => ({
+					name,
+					valueDraft: JSON.stringify(value)
+				}))
+			: []
+	);
+
+	function rebuildExpectedVars(): Record<string, unknown> | null {
+		const out: Record<string, unknown> = {};
+		for (const d of varDrafts) {
+			if (!PY_IDENTIFIER_RE.test(d.name)) continue;
+			if (Object.prototype.hasOwnProperty.call(out, d.name)) continue;
+			try {
+				out[d.name] = JSON.parse(d.valueDraft);
+			} catch {
+				continue;
+			}
+		}
+		// Schema requires at least one valid entry; surface the empty case to
+		// callers by returning null rather than committing an invalid config.
+		return Object.keys(out).length > 0 ? out : null;
+	}
+
+	function commitVarDraft(i: number) {
+		if (!isVariableCheckBehavior(config.behavior)) return;
+		const d = varDrafts[i];
+		let nameErr: string | undefined;
+		let valueErr: string | undefined;
+
+		if (d.name.length === 0) {
+			nameErr = 'Nom requis';
+		} else if (!PY_IDENTIFIER_RE.test(d.name)) {
+			nameErr = 'Nom de variable Python invalide';
+		} else if (varDrafts.some((dd, idx) => idx !== i && dd.name === d.name)) {
+			nameErr = 'Nom déjà utilisé';
+		}
+
+		try {
+			JSON.parse(d.valueDraft);
+		} catch (e) {
+			valueErr = e instanceof Error ? e.message : String(e);
+		}
+
+		varDrafts[i] = { ...d, nameErr, valueErr };
+
+		const newVars = rebuildExpectedVars();
+		if (newVars !== null) {
+			updateVariableCheckBehavior((b) => ({ ...b, expected_vars: newVars }));
+		}
+	}
+
+	function addVarEntry() {
+		// Start with `valueDraft: 'null'` so JSON.parse succeeds out of the box
+		// — the teacher only has to fill in the name, value can stay `null`
+		// if that genuinely is what they expect (e.g. `x = None`).
+		varDrafts = [...varDrafts, { name: '', valueDraft: 'null' }];
+	}
+
+	function removeVarEntry(i: number) {
+		if (varDrafts.length <= 1) return;
+		varDrafts = varDrafts.filter((_, idx) => idx !== i);
+		const newVars = rebuildExpectedVars();
+		if (newVars !== null) {
+			updateVariableCheckBehavior((b) => ({ ...b, expected_vars: newVars }));
+		}
 	}
 
 	// ===========================================================================
@@ -780,6 +892,74 @@
 				</div>
 				<Button type="button" variant="outline" size="sm" onclick={addUnitCase}>
 					<Plus class="mr-1 h-4 w-4" /> Ajouter un cas
+				</Button>
+			</div>
+		{/if}
+
+		<!-- ..................................................... variable_check -->
+		{#if isVariableCheckBehavior(config.behavior)}
+			<div class="space-y-3">
+				<p class="text-xs text-muted-foreground">
+					Après exécution du code de l'élève, chaque variable listée ci-dessous doit exister dans le
+					namespace avec la valeur attendue. La valeur est saisie en JSON (ex&nbsp;:
+					<code>6</code>, <code>"hello"</code>, <code>[1, 2]</code>, <code>null</code> pour
+					<code>None</code>).
+				</p>
+				<div class="space-y-2">
+					{#each varDrafts as draft, i (i)}
+						<div class="rounded-md border border-border p-3">
+							<div class="mb-2 flex items-center justify-between">
+								<span class="text-sm font-medium">Variable {i + 1}</span>
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									onclick={() => removeVarEntry(i)}
+									disabled={varDrafts.length <= 1}
+									aria-label="Supprimer la variable {i + 1}"
+								>
+									<Trash2 class="h-4 w-4" />
+								</Button>
+							</div>
+							<div class="grid gap-2 sm:grid-cols-[12rem_1fr]">
+								<div>
+									<label class="mb-1 block text-xs text-muted-foreground" for="var-name-{i}">
+										Nom
+									</label>
+									<Input
+										id="var-name-{i}"
+										class={draft.nameErr ? 'border-red-500' : ''}
+										bind:value={varDrafts[i].name}
+										onblur={() => commitVarDraft(i)}
+										placeholder="ex: x"
+										autocomplete="off"
+									/>
+									{#if draft.nameErr}
+										<p class="mt-1 text-xs text-red-600">{draft.nameErr}</p>
+									{/if}
+								</div>
+								<div>
+									<label class="mb-1 block text-xs text-muted-foreground" for="var-value-{i}">
+										Valeur attendue (JSON)
+									</label>
+									<textarea
+										id="var-value-{i}"
+										class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+										class:border-red-500={draft.valueErr}
+										rows="2"
+										bind:value={varDrafts[i].valueDraft}
+										onblur={() => commitVarDraft(i)}
+									></textarea>
+									{#if draft.valueErr}
+										<p class="mt-1 text-xs text-red-600">{draft.valueErr}</p>
+									{/if}
+								</div>
+							</div>
+						</div>
+					{/each}
+				</div>
+				<Button type="button" variant="outline" size="sm" onclick={addVarEntry}>
+					<Plus class="mr-1 h-4 w-4" /> Ajouter une variable
 				</Button>
 			</div>
 		{/if}
