@@ -64,6 +64,7 @@
 		Book,
 		Layers,
 		ListTodo,
+		Code,
 		ShieldAlert,
 		Package,
 		Trash2,
@@ -184,6 +185,7 @@
 				{ href: '/dashboard/teacher/classes', label: 'Classes', icon: GraduationCap },
 				{ href: '/dashboard/teacher/cours', label: 'Cours', icon: Book },
 				{ href: '/dashboard/teacher/contenu', label: 'Contenu', icon: Layers },
+				{ href: '/python-exercises/mine', label: 'Python', icon: Code },
 				{
 					href: '/dashboard/teacher/gamification',
 					label: 'Gamification',
