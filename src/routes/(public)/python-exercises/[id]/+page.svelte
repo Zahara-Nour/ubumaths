@@ -432,17 +432,55 @@
 
 		<section class="space-y-3">
 			<div class="overflow-hidden rounded-md border border-border">
-				<!-- Toolbar — single "Réinitialiser" icon button, uniform across
-				     locked-zones and free-edit modes. Branch chosen by
-				     `handleResetEditor` (lockedResetFn vs setting code to the
-				     starter_code). -->
-				<div class="flex items-center justify-end border-b border-border bg-muted/30 px-2 py-1">
+				<!-- Toolbar — left side carries the "Appeler" form for unit_test
+				     exercises (function-name notation + optional args input +
+				     icon-only Play button). Right side: "Réinitialiser" icon
+				     button (uniform across locked-zones and free-edit modes,
+				     branch chosen by `handleResetEditor`). -->
+				<div class="flex items-center gap-2 border-b border-border bg-muted/30 px-2 py-1">
+					{#if isUnitTest}
+						<form
+							class="flex min-w-0 flex-1 flex-wrap items-center gap-1"
+							onsubmit={(e) => {
+								e.preventDefault();
+								handleCallFunction();
+							}}
+						>
+							<span class="font-mono text-xs">{callFunctionName}(</span>
+							{#if callTakesArgs}
+								<input
+									type="text"
+									bind:value={callInput}
+									placeholder="ex: 4   ou   1, 2   ou   [1,2,3]"
+									class="min-w-0 flex-1 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-xs focus:border-primary focus:outline-none"
+									disabled={!pyodideReady || isCalling}
+								/>
+							{/if}
+							<span class="font-mono text-xs">)</span>
+							{#snippet appelerIconBtn()}
+								<button
+									type="submit"
+									title={isCalling ? 'Appel en cours…' : `Appeler ${callFunctionName}`}
+									aria-label="Appeler la fonction"
+									disabled={!pyodideReady ||
+										isCalling ||
+										isValidating ||
+										isSubmitting ||
+										zonesBlocked}
+									class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									<Play class="h-4 w-4" />
+								</button>
+							{/snippet}
+							{@render zonesTooltipWrap(appelerIconBtn)}
+						</form>
+					{/if}
 					<button
 						type="button"
 						onclick={handleResetEditor}
 						title="Réinitialiser le code"
 						aria-label="Réinitialiser le code"
-						class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+						class="ml-auto rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
 					>
 						<RotateCcw class="h-4 w-4" />
 					</button>
@@ -515,47 +553,12 @@
 				/>
 			{/if}
 
-			{#if isUnitTest}
+			{#if isUnitTest && (callResult !== null || callError !== null || callHistory.length > 0)}
 				<div class="rounded-md border border-border bg-card p-3">
 					<div class="mb-2 flex items-center gap-2 text-sm font-medium">
 						<FunctionSquare class="h-4 w-4 text-primary" />
 						Tester ma fonction
 					</div>
-					<form
-						class="flex flex-wrap items-center gap-2"
-						onsubmit={(e) => {
-							e.preventDefault();
-							handleCallFunction();
-						}}
-					>
-						<span class="font-mono text-sm">{callFunctionName}(</span>
-						{#if callTakesArgs}
-							<input
-								type="text"
-								bind:value={callInput}
-								placeholder="ex: 4   ou   1, 2   ou   [1,2,3]"
-								class="flex-1 rounded-md border border-border bg-background px-2 py-1 font-mono text-sm focus:border-primary focus:outline-none"
-								disabled={!pyodideReady || isCalling}
-							/>
-						{/if}
-						<span class="font-mono text-sm">)</span>
-						{#snippet appelerBtn()}
-							<Button
-								type="submit"
-								size="sm"
-								disabled={!pyodideReady ||
-									isCalling ||
-									isValidating ||
-									isSubmitting ||
-									zonesBlocked}
-							>
-								<Play class="mr-1 h-4 w-4" />
-								{isCalling ? 'Appel…' : 'Appeler'}
-							</Button>
-						{/snippet}
-						{@render zonesTooltipWrap(appelerBtn)}
-					</form>
-
 					{#if callResult !== null}
 						<div
 							class="mt-3 rounded-md border border-green-500/30 bg-green-500/10 p-2 font-mono text-sm"
