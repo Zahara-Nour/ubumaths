@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.89](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.88...v0.8.89) (2026-05-13)
+
+### 🐛 Bug Fixes
+
+- **python-exercises:** apply oneDark theme to LockedPythonEditor in dark mode ([7e95aa4](https://github.com/Zahara-Nour/ubumaths/commit/7e95aa48c128d4ba6d6853ef011b6e02142c7656))
+
 ### [0.8.88](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.87...v0.8.88) (2026-05-13)
 
 ### 🐛 Bug Fixes
