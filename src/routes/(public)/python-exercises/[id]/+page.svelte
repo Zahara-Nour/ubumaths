@@ -347,18 +347,20 @@
 -->
 {#snippet zonesTooltipWrap(button: import('svelte').Snippet)}
 	{#if zonesBlocked}
-		<Tooltip.Root>
-			<Tooltip.Trigger>
-				{#snippet child({ props })}
-					<span {...props} class="inline-block">
-						{@render button()}
-					</span>
-				{/snippet}
-			</Tooltip.Trigger>
-			<Tooltip.Content>
-				<p>Complète toutes les zones surlignées avant de tester.</p>
-			</Tooltip.Content>
-		</Tooltip.Root>
+		<Tooltip.Provider delayDuration={100}>
+			<Tooltip.Root>
+				<Tooltip.Trigger>
+					{#snippet child({ props })}
+						<span {...props} class="inline-block">
+							{@render button()}
+						</span>
+					{/snippet}
+				</Tooltip.Trigger>
+				<Tooltip.Content>
+					<p>Complète toutes les zones surlignées avant de tester.</p>
+				</Tooltip.Content>
+			</Tooltip.Root>
+		</Tooltip.Provider>
 	{:else}
 		{@render button()}
 	{/if}
