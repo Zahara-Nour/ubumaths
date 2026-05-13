@@ -1,4 +1,3 @@
-◇ injected env (12) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
 -- Migration: Convert 19 STRONG Bac exercises from unit_test
 --            to reference_solution (fixed sentinels + generator).
 -- Created: 2026-05-13

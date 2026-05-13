@@ -11,7 +11,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import type { Database } from '../src/lib/types/database';
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env'), quiet: true });
 
 const supabaseUrl = process.env.PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
