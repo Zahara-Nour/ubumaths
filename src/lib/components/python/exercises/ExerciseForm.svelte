@@ -29,8 +29,10 @@
 
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
+	import type { SupabaseClient } from '@supabase/supabase-js';
 	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
 	import LockedPythonEditor from '$lib/components/python/LockedPythonEditor.svelte';
+	import ExerciseRichTextEditor from '$lib/components/exercises/ExerciseRichTextEditor.svelte';
 	import { parseTemplate } from '$lib/utils/locked-zones';
 	import ExerciseValidationResult from './ExerciseValidationResult.svelte';
 	import ExerciseStrategyEditor from './ExerciseStrategyEditor.svelte';
@@ -48,9 +50,16 @@
 		/** Where the Cancel button leads. Defaults sensible by mode if omitted. */
 		cancelHref?: string;
 		onSubmit: (form: ExerciseFormState) => Promise<void>;
+		/**
+		 * Optional Supabase client + user id forwarded to the rich-text
+		 * editor for image uploads. When omitted the editor still works but
+		 * the image upload button surfaces an error toast.
+		 */
+		supabase?: SupabaseClient;
+		userId?: string;
 	};
 
-	let { initialForm, mode, cancelHref, onSubmit }: Props = $props();
+	let { initialForm, mode, cancelHref, onSubmit, supabase, userId }: Props = $props();
 
 	// Clone the prop so subsequent mutations don't accidentally alias the
 	// parent's object. The form is consumed once at mount time; the parent
@@ -110,9 +119,6 @@
 		{ value: 'nsi', label: 'NSI' },
 		{ value: 'etudiant', label: 'Étudiant' }
 	];
-
-	const instructionsPlaceholder =
-		'# Énoncé\n\nÉcris une fonction `add(a, b)` qui retourne a + b.\n\n## Exemples\n\n- `add(1, 2)` doit retourner `3`';
 
 	onMount(() => {
 		if (!browser) return;
@@ -218,16 +224,8 @@
 		</div>
 
 		<div>
-			<label for="ex-instr" class="mb-1 block text-sm font-medium">
-				Instructions <span class="text-xs font-normal text-muted-foreground">(markdown)</span>
-			</label>
-			<textarea
-				id="ex-instr"
-				class="block min-h-32 w-full rounded-md border border-border bg-background p-2 font-mono text-sm shadow-sm focus:border-ring focus:ring-2 focus:ring-ring/30 focus:outline-none"
-				rows="8"
-				bind:value={form.instructions}
-				placeholder={instructionsPlaceholder}
-			></textarea>
+			<span class="mb-1 block text-sm font-medium">Instructions</span>
+			<ExerciseRichTextEditor bind:value={form.instructions} {supabase} {userId} />
 		</div>
 
 		<div>

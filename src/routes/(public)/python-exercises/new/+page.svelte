@@ -6,6 +6,8 @@
 		type ExerciseFormState
 	} from '$lib/components/python/exercises/ExerciseForm.svelte';
 
+	let { data } = $props();
+
 	const initialForm = emptyExerciseForm();
 
 	async function handleCreate(form: ExerciseFormState) {
@@ -38,5 +40,11 @@
 		</p>
 	</header>
 
-	<ExerciseForm {initialForm} mode="create" onSubmit={handleCreate} />
+	<ExerciseForm
+		{initialForm}
+		mode="create"
+		onSubmit={handleCreate}
+		supabase={data.supabase}
+		userId={data.user?.id}
+	/>
 </div>
