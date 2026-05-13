@@ -28,7 +28,7 @@
 | 1     | Parser + reconstruction (utilitaires purs) | ✅ Complétée (38 tests) |
 | 2     | CodeMirror zones éditables côté élève      | ✅ Complétée            |
 | 3     | Surlignage + boutons reset                 | ✅ Complétée            |
-| 4     | UI teacher (prévisualisation + aide)       | À faire                 |
+| 4     | UI teacher (prévisualisation + aide)       | ✅ Complétée            |
 | 5     | Zod refine + tests intégration             | À faire                 |
 | 6     | Quality checks finaux + doc finale         | À faire                 |
 
@@ -104,10 +104,29 @@ renderDefaults(template: string): { rendered: string; zones: RenderZone[]; error
 - `npx eslint` : 0 issue sur les fichiers modifiés.
 - `svelte-autofixer` : 0 issue sur la portion locked-zones du composant.
 
+## Phase 4 — état final
+
+### Ajouts dans `ExerciseForm.svelte`
+
+- **Aide à la syntaxe** : `<details>` repliable sous le textarea `starter_code` qui décrit la syntaxe des marqueurs avec un exemple. Caché par défaut (ne pollue pas l'UI quand le teacher n'utilise pas la feature).
+- **Validation en direct des marqueurs** : `$derived` qui parse `form.starter_code` à chaque keystroke. Si erreurs → banner rouge listant les messages + précision « tant que mal formé, l'exercice s'ouvre en mode dégradé côté élève ».
+- **Prévisualisation côté élève** : si markers détectés et zéro erreur, un `LockedPythonEditor` est instancié juste sous le textarea, montrant exactement ce que l'élève verra (zones surlignées, boutons reset, toolbar). Le composant est re-mounted via `{#key form.starter_code}` à chaque modif pour rester synchrone.
+
+### Détails
+
+- Le `bind:value` du preview écrit dans une variable locale ignorée (`_starterPreviewSink`) — la valeur reconstruite n'est utile que dans le contexte élève.
+- Pas de debounce sur le `{#key ...}` : le remount lazy-load les modules CodeMirror (cache après 1er load), donc ne coûte que la création d'un EditorView. Acceptable.
+
+### Quality
+
+- `pnpm check:incremental` : 9 errors / 47 warnings (inchangé vs Phase 3).
+- `npx eslint` : 0 issue sur le fichier modifié.
+
 ## Fichiers modifiés (au fur et à mesure)
 
 - ✅ `src/lib/utils/locked-zones.ts`
 - ✅ `src/lib/utils/locked-zones.test.ts`
 - ✅ `src/lib/components/python/LockedPythonEditor.svelte`
+- ✅ `src/lib/components/python/exercises/ExerciseForm.svelte`
 - ✅ `src/routes/(public)/python-exercises/[id]/+page.svelte`
 - ✅ `docs/wip/python-locked-zones-progress.md`

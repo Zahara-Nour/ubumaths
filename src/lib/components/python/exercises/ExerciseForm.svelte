@@ -30,6 +30,8 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
+	import LockedPythonEditor from '$lib/components/python/LockedPythonEditor.svelte';
+	import { parseTemplate } from '$lib/utils/locked-zones';
 	import ExerciseValidationResult from './ExerciseValidationResult.svelte';
 	import ExerciseStrategyEditor from './ExerciseStrategyEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -63,6 +65,17 @@
 	let submitError = $state<string | null>(null);
 
 	const pyodideReady = $derived(executor?.state === 'ready');
+
+	// Live parse of the starter_code template to drive the locked-zones
+	// preview / error panel just below the textarea. The teacher sees the
+	// markers as they type them; malformed ones surface a red banner so
+	// they can be fixed before the exercise is published.
+	const starterParse = $derived(parseTemplate(form.starter_code));
+	const hasStarterMarkers = $derived(starterParse.markers.length > 0);
+	const hasStarterErrors = $derived(starterParse.errors.length > 0);
+	// Preview-only sink — `bind:value` on the LockedPythonEditor below
+	// requires a writable target; we ignore the reconstructed code here.
+	let _starterPreviewSink = $state('');
 	const verifyOk = $derived(verifyResult?.valid === true);
 	const canSubmit = $derived(
 		verifyOk &&
@@ -241,6 +254,57 @@
 			<div class="h-40 overflow-hidden rounded-md border border-border">
 				<PythonEditor bind:value={form.starter_code} {executor} />
 			</div>
+			<details class="mt-2 text-xs text-muted-foreground">
+				<summary class="cursor-pointer hover:text-foreground">
+					Zones modifiables uniquement (optionnel) — syntaxe
+				</summary>
+				<div class="mt-2 space-y-1 rounded-md border border-border bg-muted/30 p-3">
+					<p>
+						Insère des marqueurs <code>{'{{nom | "valeur"}}'}</code> dans le code initial pour délimiter
+						les seules zones que l'élève pourra modifier (le reste est verrouillé). Les marqueurs tiennent
+						sur une seule ligne, le nom doit être un identifiant Python.
+					</p>
+					<p>Exemple&nbsp;:</p>
+					<pre class="rounded bg-background p-2 font-mono text-[11px]">{`while {{cond | "False"}}:
+    A = {{update | "..."}}    # à compléter
+    n = n + 1`}</pre>
+					<p>
+						À la soumission, le code envoyé à Pyodide est reconstruit en remplaçant chaque marqueur
+						par la valeur saisie par l'élève (ou par la valeur par défaut s'il l'a laissée telle
+						quelle).
+					</p>
+				</div>
+			</details>
+
+			{#if hasStarterErrors}
+				<div
+					role="alert"
+					class="mt-2 rounded-md border border-red-500 bg-red-50 p-3 text-xs dark:bg-red-950/40"
+				>
+					<div class="mb-1 font-medium text-red-900 dark:text-red-100">Marqueurs mal formés</div>
+					<ul class="list-disc pl-5 text-red-800 dark:text-red-200">
+						{#each starterParse.errors as err, i (i)}
+							<li>{err.message}</li>
+						{/each}
+					</ul>
+					<p class="mt-1 text-red-700 dark:text-red-300">
+						Tant que les marqueurs sont en erreur, l'exercice s'ouvrira en édition libre côté élève
+						(mode dégradé).
+					</p>
+				</div>
+			{:else if hasStarterMarkers}
+				<div class="mt-2">
+					<p class="mb-1 text-xs text-muted-foreground">
+						Aperçu côté élève ({starterParse.markers.length}
+						{starterParse.markers.length > 1 ? 'zones modifiables' : 'zone modifiable'})
+					</p>
+					{#key form.starter_code}
+						<div class="h-40 overflow-hidden rounded-md border border-border bg-muted/10">
+							<LockedPythonEditor template={form.starter_code} bind:value={_starterPreviewSink} />
+						</div>
+					{/key}
+				</div>
+			{/if}
 		</div>
 
 		<div>
