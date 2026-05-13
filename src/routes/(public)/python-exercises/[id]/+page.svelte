@@ -446,8 +446,8 @@
 								handleCallFunction();
 							}}
 						>
-							<span class="font-mono text-xs">{callFunctionName}(</span>
 							{#if callTakesArgs}
+								<span class="font-mono text-xs">{callFunctionName}(</span>
 								<input
 									type="text"
 									bind:value={callInput}
@@ -455,8 +455,8 @@
 									class="min-w-0 flex-1 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-xs focus:border-primary focus:outline-none"
 									disabled={!pyodideReady || isCalling}
 								/>
+								<span class="font-mono text-xs">)</span>
 							{/if}
-							<span class="font-mono text-xs">)</span>
 							{#snippet appelerIconBtn()}
 								<button
 									type="submit"
