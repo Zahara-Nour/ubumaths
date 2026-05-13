@@ -47,5 +47,7 @@
 		mode="edit"
 		cancelHref={`/python-exercises/${data.exercise.id}`}
 		onSubmit={handleUpdate}
+		supabase={data.supabase}
+		userId={data.user?.id}
 	/>
 </div>
