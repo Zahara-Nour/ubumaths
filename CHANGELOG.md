@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.88](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.87...v0.8.88) (2026-05-13)
+
+### 🐛 Bug Fixes
+
+- **migrations:** strip dotenv stdout banner from generated SQL ([7911375](https://github.com/Zahara-Nour/ubumaths/commit/791137582112e00621aa7db54b71499c83939e7e))
+- **python-exercises:** restore ln(2) and termes to unit_test ([5cf6bc1](https://github.com/Zahara-Nour/ubumaths/commit/5cf6bc1ba16e7dab1aaa209948daf9536effe122))
+- **student-inbox:** polish from second code review ([37a43ae](https://github.com/Zahara-Nour/ubumaths/commit/37a43aea75bda82118df7818c3a65a57e88926f1))
+- **student-inbox:** revert worksheet completion tracking ([c74b805](https://github.com/Zahara-Nour/ubumaths/commit/c74b805fe29b0966b76ad45a46620c0e0b090edf))
+
+### ✨ Features
+
+- **dashboard:** add Python exercises icon to teacher sidebar ([f6eec46](https://github.com/Zahara-Nour/ubumaths/commit/f6eec46b72ecd8fef0dc84e17800910cbc223b46))
+- **python-exercises:** add reference_solution validation strategy ([b107cd0](https://github.com/Zahara-Nour/ubumaths/commit/b107cd08a94b079b2927bea03c56a0cc8b9154f8))
+- **python-exercises:** add variable_check validation strategy ([ff65f09](https://github.com/Zahara-Nour/ubumaths/commit/ff65f093999d28a2af72b735925188c5230693d4))
+- **python-exercises:** debounce preview + final docs (Phase 6) ([4cc2072](https://github.com/Zahara-Nour/ubumaths/commit/4cc2072cdaffe30feb9bd0bffa29b126a81f6d45))
+- **python-exercises:** locked-zones codemirror editor + page integration (Phase 2) ([3d090cb](https://github.com/Zahara-Nour/ubumaths/commit/3d090cbabc89c79842c689de9c21bbc630139656))
+- **python-exercises:** locked-zones template utilities (Phase 1) ([cc82a5e](https://github.com/Zahara-Nour/ubumaths/commit/cc82a5eef88dd00df82d8e70eb6a9a2f069601e6))
+- **python-exercises:** per-zone reset widgets + global toolbar (Phase 3) ([6591441](https://github.com/Zahara-Nour/ubumaths/commit/6591441997fac7647daa0cc570a1ba966093c966))
+- **python-exercises:** teacher preview + syntax help for locked zones (Phase 4) ([aa8a40d](https://github.com/Zahara-Nour/ubumaths/commit/aa8a40d516087389824d06e208fcae7f71bd4761))
+- **python-exercises:** zod refine for locked-zones markers (Phase 5) ([b14c779](https://github.com/Zahara-Nour/ubumaths/commit/b14c7794547590ef4d2253ce6da07a87d48f8f53))
+- **student-inbox:** add mark-done toggle for paper worksheets ([9392e6a](https://github.com/Zahara-Nour/ubumaths/commit/9392e6a8e9221024527f6cfadf90345ede0944e7))
+- **student-inbox:** backend aggregator for unified work view ([26be17e](https://github.com/Zahara-Nour/ubumaths/commit/26be17ecf7d02e88693cc94c51a1274e2f0b2700))
+- **student-inbox:** home widget + sidebar entry for unified work view ([dfde190](https://github.com/Zahara-Nour/ubumaths/commit/dfde19018c38e682dc5c9ad443f403c76b24ed2d))
+- **student-inbox:** unified work page at /dashboard/student/work ([34f8b5f](https://github.com/Zahara-Nour/ubumaths/commit/34f8b5f96019327b43d294704c679f3439871f0d))
+
+### 📚 Documentation
+
+- **python-exercises:** document the 5 validation strategies + locked zones ([c12272f](https://github.com/Zahara-Nour/ubumaths/commit/c12272ff3848150e0c0219e3f2244d8bca8d31f1))
+- **student-inbox:** document polish session + final state ([efb630a](https://github.com/Zahara-Nour/ubumaths/commit/efb630ada8e69e8898317dffba426837978cc903)), closes [#2](https://github.com/Zahara-Nour/ubumaths/issues/2)
+
 ### [0.8.87](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.86...v0.8.87) (2026-05-10)
 
 ### 🐛 Bug Fixes
