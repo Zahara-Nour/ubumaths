@@ -73,12 +73,17 @@ function transformStarter(starter: string): TransformResult {
 		if (!line.includes('à compléter')) return line;
 
 		// Pattern: `while <expr>:    # à compléter ...`
+		// Force the default to "False" — always runtime-safe (loop doesn't
+		// execute on first iteration). Some original starters used
+		// `while ...:` (Ellipsis), which is truthy and would cause an
+		// infinite loop the moment the student clicks Run / Vérifier
+		// without first replacing the zone.
 		const whileMatch = line.match(/^(\s*)while\s+(.*?):(\s+#\s*à compléter.*)$/);
 		if (whileMatch) {
-			const [, indent, expr, rest] = whileMatch;
+			const [, indent, , rest] = whileMatch;
 			const id = makeId('cond');
 			zoneCount += 1;
-			return `${indent}while {{${id} | "${escapeDefault(expr.trim())}"}}:${rest}`;
+			return `${indent}while {{${id} | "False"}}:${rest}`;
 		}
 
 		// Pattern: `<indent><var> = <expr>    # à compléter ...`
