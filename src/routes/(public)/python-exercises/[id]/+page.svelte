@@ -195,16 +195,18 @@
 		}
 	}
 
-	function handleResetToStarter() {
-		// In locked-zones mode, the LockedPythonEditor owns its zone
-		// state; the per-zone reset buttons (Phase 3) are the proper UX.
-		// Until then, a page reload is the simplest way to restore the
-		// initial defaults.
-		if (lockedZonesActive) {
-			window.location.reload();
-			return;
+	// Function reference exposed by `LockedPythonEditor` via $bindable.
+	// In locked-zones mode it dispatches a CodeMirror transaction that
+	// resets every zone to its default; null when the regular PythonEditor
+	// is mounted instead.
+	let lockedResetFn = $state.raw<(() => void) | null>(null);
+
+	function handleResetEditor() {
+		if (lockedZonesActive && lockedResetFn) {
+			lockedResetFn();
+		} else {
+			code = exercise.starter_code ?? '';
 		}
-		code = exercise.starter_code ?? '';
 		validationResult = null;
 	}
 
@@ -378,11 +380,27 @@
 		</section>
 
 		<section class="space-y-3">
-			<div class="rounded-md border border-border">
+			<div class="overflow-hidden rounded-md border border-border">
+				<!-- Toolbar — single "Réinitialiser" icon button, uniform across
+				     locked-zones and free-edit modes. Branch chosen by
+				     `handleResetEditor` (lockedResetFn vs setting code to the
+				     starter_code). -->
+				<div class="flex items-center justify-end border-b border-border bg-muted/30 px-2 py-1">
+					<button
+						type="button"
+						onclick={handleResetEditor}
+						title="Réinitialiser le code"
+						aria-label="Réinitialiser le code"
+						class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+					>
+						<RotateCcw class="h-4 w-4" />
+					</button>
+				</div>
 				{#if lockedZonesActive}
 					<LockedPythonEditor
 						template={exercise.starter_code ?? ''}
 						bind:value={code}
+						bind:resetAll={lockedResetFn}
 						onExecute={handleRun}
 					/>
 				{:else}
@@ -410,10 +428,6 @@
 						{isSubmitting ? 'Envoi…' : 'Soumettre'}
 					</Button>
 				{/if}
-
-				<Button variant="outline" onclick={handleResetToStarter}>
-					<RotateCcw class="mr-1 h-4 w-4" /> Réinitialiser
-				</Button>
 
 				{#if isLoadingPyodide}
 					<span class="self-center text-xs text-muted-foreground">
