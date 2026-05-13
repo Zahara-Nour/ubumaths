@@ -35,7 +35,8 @@
 		value = $bindable(''),
 		onExecute = () => {},
 		fontSize = 14,
-		resetAll = $bindable<(() => void) | null>(null)
+		resetAll = $bindable<(() => void) | null>(null),
+		hasUnmodifiedZones = $bindable<boolean>(false)
 	}: {
 		template: string;
 		value?: string;
@@ -48,6 +49,15 @@
 		 * uniformly in locked-zones mode and free-edit mode.
 		 */
 		resetAll?: (() => void) | null;
+		/**
+		 * Bindable: `true` whenever at least one zone still holds its
+		 * initial default value. The exercise page reads this to block
+		 * Run / Vérifier / Soumettre / Appeler while the student hasn't
+		 * actually filled in the placeholders — the defaults are
+		 * pedagogical (`...`, `False`, …) but generally not runnable as
+		 * intended (e.g. `while ...:` is an infinite loop in Python).
+		 */
+		hasUnmodifiedZones?: boolean;
 	} = $props();
 
 	let editorContainer: HTMLDivElement | null = null;
@@ -86,6 +96,10 @@
 
 			const initialZones = render.zones;
 			defaultsById = Object.fromEntries(initialZones.map((z) => [z.id, z.defaultValue]));
+			// At mount every zone is at its default → student hasn't touched
+			// anything yet. Set unconditionally; the updater re-evaluates on
+			// the first docChange.
+			hasUnmodifiedZones = initialZones.length > 0;
 
 			// The reconstructed value the parent component should see while
 			// the student types. Emit the initial state synchronously so the
@@ -155,21 +169,40 @@
 			// it — clearer to bypass the filter outright).
 			const resetAnnotation = Annotation.define<boolean>();
 
-			const zoneMark = Decoration.mark({ class: 'cm-lockedZone' });
-			const zonesDecorations = EditorView.decorations.compute([zonesField], (state) => {
-				const zones = state.field(zonesField);
-				// Collapsed zones (empty after the student deleted everything)
-				// must not produce zero-length decorations: `Decoration.mark`
-				// requires `from < to`. Decorations are also sorted by
-				// position defensively — zones are inserted in document
-				// order but a future edit could in principle invert two
-				// adjacent ones.
+			// Decorations recompute on every docChange so the
+			// `cm-lockedZone--unmodified` style turns off as soon as the
+			// student touches a zone. We use a StateField (not the simpler
+			// `decorations.compute([facet], ...)` form) because the marker
+			// class depends on the document content, not just on the zone
+			// positions.
+			const zoneMarkPlain = Decoration.mark({ class: 'cm-lockedZone' });
+			const zoneMarkUnmodified = Decoration.mark({
+				class: 'cm-lockedZone cm-lockedZone--unmodified'
+			});
+
+			interface ZoneDecoState {
+				doc: { sliceString(from: number, to: number): string };
+				field<T>(f: { create: (...args: unknown[]) => T }): T;
+			}
+			const buildZoneDecorations = (state: ZoneDecoState) => {
+				const zones = state.field(zonesField as never) as LiveZone[];
 				return Decoration.set(
 					zones
 						.filter((z) => z.renderedStart < z.renderedEnd)
 						.sort((a, b) => a.renderedStart - b.renderedStart)
-						.map((z) => zoneMark.range(z.renderedStart, z.renderedEnd))
+						.map((z) => {
+							const current = state.doc.sliceString(z.renderedStart, z.renderedEnd);
+							const mark = current === defaultsById[z.id] ? zoneMarkUnmodified : zoneMarkPlain;
+							return mark.range(z.renderedStart, z.renderedEnd);
+						})
 				);
+			};
+
+			const zonesDecorationsField = StateField.define({
+				create: (state) => buildZoneDecorations(state as ZoneDecoState),
+				update: (deco, tr) =>
+					tr.docChanged ? buildZoneDecorations(tr.state as ZoneDecoState) : deco,
+				provide: (f) => EditorView.decorations.from(f)
 			});
 
 			// Transaction filter: a change is allowed iff:
@@ -222,16 +255,24 @@
 				return tr;
 			});
 
-			// Emit the reconstructed code on every doc change.
+			// Emit the reconstructed code on every doc change. Also recompute
+			// `hasUnmodifiedZones` so the parent page can block Run /
+			// Vérifier / Soumettre / Appeler while the student still has
+			// placeholders left untouched (most defaults — `...`, `False`
+			// — are not meaningful enough to execute).
 			const updater = EditorView.updateListener.of((update) => {
 				if (!update.docChanged) return;
 				const state = update.state;
 				const zones = state.field(zonesField);
 				const values: Record<string, string> = {};
+				let anyUnmodified = false;
 				for (const z of zones) {
-					values[z.id] = state.doc.sliceString(z.renderedStart, z.renderedEnd);
+					const current = state.doc.sliceString(z.renderedStart, z.renderedEnd);
+					values[z.id] = current;
+					if (current === defaultsById[z.id]) anyUnmodified = true;
 				}
 				value = reconstructCode(template, values);
+				hasUnmodifiedZones = anyUnmodified;
 			});
 
 			// Expose the global reset helper to the parent via $bindable.
@@ -264,7 +305,7 @@
 				syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
 				...(themeExtension ? [themeExtension] : []),
 				zonesField,
-				zonesDecorations,
+				zonesDecorationsField,
 				lockedFilter,
 				updater,
 				keymap.of([
@@ -393,5 +434,20 @@
 	:global(.dark .cm-lockedZone) {
 		background-color: rgba(96, 165, 250, 0.18);
 		outline-color: rgba(96, 165, 250, 0.65);
+	}
+
+	/* Zone still holding its initial default (e.g. `...`, `False`). The
+	   exercise page blocks every action while this state is present, so
+	   the colour shift is a "you must touch me" cue rather than a hard
+	   error. Amber → modified turns to the regular blue once the
+	   student types anything different from the default. */
+	:global(.cm-lockedZone--unmodified) {
+		background-color: rgba(245, 158, 11, 0.18);
+		outline: 1px dashed rgba(217, 119, 6, 0.7);
+	}
+
+	:global(.dark .cm-lockedZone--unmodified) {
+		background-color: rgba(251, 191, 36, 0.22);
+		outline-color: rgba(251, 191, 36, 0.75);
 	}
 </style>

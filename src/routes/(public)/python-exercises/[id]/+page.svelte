@@ -127,6 +127,7 @@
 
 	function handleRun() {
 		if (!executor || !pyodideReady) return;
+		if (!ensureZonesCompleted()) return;
 		validationResult = null;
 		executor.execute(code);
 	}
@@ -149,6 +150,7 @@
 
 	async function handleValidate() {
 		if (!executor || !pyodideReady) return;
+		if (!ensureZonesCompleted()) return;
 		isValidating = true;
 		try {
 			validationResult = await runValidation();
@@ -159,6 +161,7 @@
 
 	async function handleSubmit() {
 		if (!executor || !pyodideReady || !canSubmit) return;
+		if (!ensureZonesCompleted()) return;
 		isSubmitting = true;
 		try {
 			const result = await runValidation();
@@ -201,6 +204,20 @@
 	// is mounted instead.
 	let lockedResetFn = $state.raw<(() => void) | null>(null);
 
+	// True whenever the LockedPythonEditor still has at least one zone
+	// at its initial default value. Used to block every "run / submit /
+	// call" action so the student doesn't trigger an infinite loop with
+	// e.g. `while ...:` (Ellipsis is truthy in Python).
+	let hasUnmodifiedZones = $state(false);
+
+	function ensureZonesCompleted(): boolean {
+		if (lockedZonesActive && hasUnmodifiedZones) {
+			toaster.warning('Complète d’abord toutes les zones surlignées avant de tester.');
+			return false;
+		}
+		return true;
+	}
+
 	function handleResetEditor() {
 		if (lockedZonesActive && lockedResetFn) {
 			lockedResetFn();
@@ -228,6 +245,7 @@
 
 	async function handleCallFunction() {
 		if (!executor || !pyodideReady || !callFunctionName) return;
+		if (!ensureZonesCompleted()) return;
 		callResult = null;
 		callError = null;
 		isCalling = true;
@@ -401,6 +419,7 @@
 						template={exercise.starter_code ?? ''}
 						bind:value={code}
 						bind:resetAll={lockedResetFn}
+						bind:hasUnmodifiedZones
 						onExecute={handleRun}
 					/>
 				{:else}
