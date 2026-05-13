@@ -29,18 +29,25 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { theme as appTheme } from '$lib/stores/theme.svelte';
 	import { loadThemeExtension, resolveEffectiveTheme } from './editor-theme';
-	import { RotateCcw } from 'lucide-svelte';
 
 	let {
 		template,
 		value = $bindable(''),
 		onExecute = () => {},
-		fontSize = 14
+		fontSize = 14,
+		resetAll = $bindable<(() => void) | null>(null)
 	}: {
 		template: string;
 		value?: string;
 		onExecute?: () => void;
 		fontSize?: number;
+		/**
+		 * Bindable: parent receives a function that resets every editable
+		 * zone to its default value (no page reload). Bound by the
+		 * exercise page so the toolbar's "Réinitialiser" button works
+		 * uniformly in locked-zones mode and free-edit mode.
+		 */
+		resetAll?: (() => void) | null;
 	} = $props();
 
 	let editorContainer: HTMLDivElement | null = null;
@@ -48,7 +55,6 @@
 	let isLoading = $state(true);
 	let loadError = $state<string | null>(null);
 	let parseErrors = $state<ParseError[]>([]);
-	let zoneCount = $state(0);
 
 	// Track the resolved theme so we can re-init CodeMirror when the user
 	// toggles dark mode (same pattern as PythonEditor). The locked editor
@@ -63,11 +69,6 @@
 	// so reset operations can look up the original placeholder regardless
 	// of how the live zone has been edited.
 	let defaultsById: Record<string, string> = {};
-
-	// Reset-all helper populated inside `initEditor`. The per-zone "↺"
-	// widgets dispatch their own reset via CodeMirror's domEventHandlers,
-	// so we only need to expose the global one to the toolbar button.
-	let resetAllFn: (() => void) | null = $state.raw(null);
 
 	async function initEditor(): Promise<void> {
 		if (!browser || !editorContainer) return;
@@ -84,7 +85,6 @@
 			}
 
 			const initialZones = render.zones;
-			zoneCount = initialZones.length;
 			defaultsById = Object.fromEntries(initialZones.map((z) => [z.id, z.defaultValue]));
 
 			// The reconstructed value the parent component should see while
@@ -234,8 +234,10 @@
 				value = reconstructCode(template, values);
 			});
 
-			// Expose the global reset helper to the Svelte template.
-			resetAllFn = () => {
+			// Expose the global reset helper to the parent via $bindable.
+			// The exercise page wires this into its toolbar "Réinitialiser"
+			// button — same UI control in both locked and free-edit modes.
+			resetAll = () => {
 				if (!editor) return;
 				const zones = editor.state.field(zonesField);
 				// Apply per-zone changes inside a single transaction so the
@@ -334,56 +336,38 @@
 	});
 </script>
 
-<div class="flex h-full w-full flex-col" style="--editor-font-size: {fontSize}px">
-	{#if !isLoading && !loadError && parseErrors.length === 0 && zoneCount > 0}
+<div
+	class="relative h-full w-full"
+	style="--editor-font-size: {fontSize}px"
+	bind:this={editorContainer}
+>
+	{#if isLoading}
+		<div class="flex h-full items-center justify-center">
+			<div class="flex flex-col items-center gap-2">
+				<div
+					class="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent"
+				></div>
+				<span class="text-sm text-muted-foreground">Chargement de l'éditeur…</span>
+			</div>
+		</div>
+	{:else if loadError}
+		<div class="p-4 text-sm text-destructive">{loadError}</div>
+	{:else if parseErrors.length > 0}
 		<div
-			class="flex items-center justify-between gap-3 border-b border-border bg-muted/30 px-3 py-1.5 text-xs"
+			role="alert"
+			class="m-4 rounded-md border border-red-500 bg-red-50 p-3 text-sm dark:bg-red-950/40"
 		>
-			<span class="text-muted-foreground">
-				{zoneCount}
-				{zoneCount > 1 ? 'zones modifiables' : 'zone modifiable'} (surlignées)
-			</span>
-			<button
-				type="button"
-				class="inline-flex items-center gap-1 rounded px-2 py-0.5 text-primary hover:bg-primary/10"
-				onclick={() => resetAllFn?.()}
-				title="Restaurer toutes les zones à leur valeur par défaut"
-			>
-				<RotateCcw class="h-3 w-3" />
-				Tout réinitialiser
-			</button>
+			<div class="mb-2 font-medium text-red-900 dark:text-red-100">
+				Cet exercice est mal configuré
+			</div>
+			<ul class="list-disc pl-5 text-red-800 dark:text-red-200">
+				{#each parseErrors as err (err.index)}
+					<li>{err.message}</li>
+				{/each}
+			</ul>
+			<p class="mt-2 text-xs text-red-700 dark:text-red-300">Signale-le à ton enseignant·e.</p>
 		</div>
 	{/if}
-
-	<div class="relative flex-1" bind:this={editorContainer}>
-		{#if isLoading}
-			<div class="flex h-full items-center justify-center">
-				<div class="flex flex-col items-center gap-2">
-					<div
-						class="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent"
-					></div>
-					<span class="text-sm text-muted-foreground">Chargement de l'éditeur…</span>
-				</div>
-			</div>
-		{:else if loadError}
-			<div class="p-4 text-sm text-destructive">{loadError}</div>
-		{:else if parseErrors.length > 0}
-			<div
-				role="alert"
-				class="m-4 rounded-md border border-red-500 bg-red-50 p-3 text-sm dark:bg-red-950/40"
-			>
-				<div class="mb-2 font-medium text-red-900 dark:text-red-100">
-					Cet exercice est mal configuré
-				</div>
-				<ul class="list-disc pl-5 text-red-800 dark:text-red-200">
-					{#each parseErrors as err (err.index)}
-						<li>{err.message}</li>
-					{/each}
-				</ul>
-				<p class="mt-2 text-xs text-red-700 dark:text-red-300">Signale-le à ton enseignant·e.</p>
-			</div>
-		{/if}
-	</div>
 </div>
 
 <style>
