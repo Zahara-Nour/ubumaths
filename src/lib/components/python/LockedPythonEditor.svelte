@@ -27,6 +27,8 @@
 	import type { Extension } from '@codemirror/state';
 	import { renderDefaults, reconstructCode, type ParseError } from '$lib/utils/locked-zones';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { theme as appTheme } from '$lib/stores/theme.svelte';
+	import { loadThemeExtension, resolveEffectiveTheme } from './editor-theme';
 	import { RotateCcw } from 'lucide-svelte';
 
 	let {
@@ -47,6 +49,15 @@
 	let loadError = $state<string | null>(null);
 	let parseErrors = $state<ParseError[]>([]);
 	let zoneCount = $state(0);
+
+	// Track the resolved theme so we can re-init CodeMirror when the user
+	// toggles dark mode (same pattern as PythonEditor). The locked editor
+	// follows the app theme automatically — there is no user-facing theme
+	// picker on the exercise viewer.
+	const effectiveTheme = $derived(resolveEffectiveTheme('default', appTheme.dark));
+	// svelte-ignore state_referenced_locally
+	let currentTheme = $state(effectiveTheme);
+	let isReinitializing = $state(false);
 
 	// Stable map of `id → default value`. Lives across the entire mount
 	// so reset operations can look up the original placeholder regardless
@@ -108,6 +119,13 @@
 			// The component may have been destroyed while we were awaiting
 			// the lazy-load. Bail out cleanly without producing a misleading
 			// "Échec du chargement" error.
+			if (!editorContainer) return;
+
+			// Resolve + load the theme extension (light by default, oneDark
+			// when the app is in dark mode). Tracked separately so we can
+			// re-init the editor if the user toggles the app theme.
+			const themeExtension = await loadThemeExtension(effectiveTheme);
+			currentTheme = effectiveTheme;
 			if (!editorContainer) return;
 
 			// Zone shape stored in the state field — positions get remapped
@@ -283,7 +301,11 @@
 				history(),
 				bracketMatching(),
 				python(),
+				// `defaultHighlightStyle` provides syntax-token colours on
+				// fallback; the theme extension (loaded above) supplies the
+				// background + adjusted token colours for dark themes.
 				syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+				...(themeExtension ? [themeExtension] : []),
 				zonesField,
 				zonesDecorations,
 				widgetClickHandler,
@@ -328,6 +350,26 @@
 
 	onMount(() => {
 		initEditor();
+	});
+
+	// Re-init when the app dark-mode toggle resolves to a different theme.
+	// Same pattern as PythonEditor: destroy + recreate the EditorView so the
+	// new theme extension takes effect. Cheap because CodeMirror modules
+	// are already cached after the first `initEditor`.
+	$effect(() => {
+		const next = effectiveTheme;
+		if (next !== currentTheme && editor && !isReinitializing) {
+			isReinitializing = true;
+			editor.destroy();
+			editor = null;
+			initEditor()
+				.catch((err) => {
+					console.error('[LockedPythonEditor] re-init after theme change failed:', err);
+				})
+				.finally(() => {
+					isReinitializing = false;
+				});
+		}
 	});
 
 	onDestroy(() => {
