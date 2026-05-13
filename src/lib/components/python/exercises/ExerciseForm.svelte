@@ -70,7 +70,23 @@
 	// preview / error panel just below the textarea. The teacher sees the
 	// markers as they type them; malformed ones surface a red banner so
 	// they can be fixed before the exercise is published.
-	const starterParse = $derived(parseTemplate(form.starter_code));
+	//
+	// `debouncedStarterCode` lags `form.starter_code` by ~500ms so the
+	// LockedPythonEditor preview doesn't get remounted on every keystroke
+	// (each remount destroys + recreates an EditorView, flashing a
+	// spinner). The error banner uses the debounced value too — without
+	// it, every intermediate keystroke inside a marker would flash a red
+	// "malformed" message before the teacher finishes the syntax.
+	let debouncedStarterCode = $state(initialForm.starter_code ?? '');
+	$effect(() => {
+		const code = form.starter_code;
+		const timer = setTimeout(() => {
+			debouncedStarterCode = code;
+		}, 500);
+		return () => clearTimeout(timer);
+	});
+
+	const starterParse = $derived(parseTemplate(debouncedStarterCode));
 	const hasStarterMarkers = $derived(starterParse.markers.length > 0);
 	const hasStarterErrors = $derived(starterParse.errors.length > 0);
 	// Preview-only sink — `bind:value` on the LockedPythonEditor below
@@ -298,9 +314,12 @@
 						Aperçu côté élève ({starterParse.markers.length}
 						{starterParse.markers.length > 1 ? 'zones modifiables' : 'zone modifiable'})
 					</p>
-					{#key form.starter_code}
+					{#key debouncedStarterCode}
 						<div class="h-40 overflow-hidden rounded-md border border-border bg-muted/10">
-							<LockedPythonEditor template={form.starter_code} bind:value={_starterPreviewSink} />
+							<LockedPythonEditor
+								template={debouncedStarterCode}
+								bind:value={_starterPreviewSink}
+							/>
 						</div>
 					{/key}
 				</div>

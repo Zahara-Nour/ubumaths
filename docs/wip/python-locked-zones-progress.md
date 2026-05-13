@@ -30,7 +30,7 @@
 | 3     | Surlignage + boutons reset                 | ✅ Complétée            |
 | 4     | UI teacher (prévisualisation + aide)       | ✅ Complétée            |
 | 5     | Zod refine + tests intégration             | ✅ Complétée            |
-| 6     | Quality checks finaux + doc finale         | À faire                 |
+| 6     | Quality checks finaux + doc finale         | ✅ Complétée            |
 
 > **Note** : éditeur de code = **CodeMirror** (pas Monaco). Mentions « Monaco » dans les phases ci-dessus à interpréter comme CodeMirror.
 
@@ -147,13 +147,55 @@ renderDefaults(template: string): { rendered: string; zones: RenderZone[]; error
 - `pnpm check:incremental` : 9 errors / 47 warnings (inchangé).
 - `npx eslint` : 0 issue.
 
-## Fichiers modifiés (au fur et à mesure)
+## Phase 6 — état final
 
-- ✅ `src/lib/utils/locked-zones.ts`
-- ✅ `src/lib/utils/locked-zones.test.ts`
-- ✅ `src/lib/components/python/LockedPythonEditor.svelte`
-- ✅ `src/lib/components/python/exercises/ExerciseForm.svelte`
-- ✅ `src/lib/server/validation/python-exercises.ts`
-- ✅ `src/lib/server/validation/python-exercises.test.ts`
-- ✅ `src/routes/(public)/python-exercises/[id]/+page.svelte`
-- ✅ `docs/wip/python-locked-zones-progress.md`
+### Code review final (groupé Phases 3+4+5)
+
+- **#1 Remount du preview à chaque keystroke** → fix : debounce 500ms via `$state debouncedStarterCode` + `$effect` avec `setTimeout`. Le `{#key}` block et le `parseTemplate` utilisent maintenant la version debounced. Plus de flicker pendant la frappe.
+- **#2 Click handler shift/middle-click** → noté, non-critique. Acceptable en l'état.
+- **#3 Reset-all transaction batch** → confirmé safe : zones triées par construction, mapPos préserve l'ordre, pas de chevauchement.
+- **#4 Import server-side de `parseTemplate`** → confirmé safe (aucune dépendance browser).
+- **#5 `superRefine` + `optional().nullable()`** → composition correcte, le guard `starter == null` couvre les deux cas.
+- **#6 Tests UI manquants** → reporté V2. Reco du reviewer : extraire le predicate `isChangeAllowed(changes, zones)` du closure CodeMirror en fonction pure testable, puis tester la fonction plutôt que le composant. Plus cost-effective que vitest-browser-svelte.
+
+### Décisions reportées à V2
+
+- Persistance localStorage des valeurs par zone (Phase 2 trade-off).
+- Extraction du predicate de filter pour testabilité unitaire (review final #6).
+- Migration des starters BAC existants vers la syntaxe `{{id | "default"}}` (recommandation initiale Q4 : séparée, ad-hoc, ~5 min/exo × 30 = 2.5h).
+
+### Quality finale
+
+- **Tests serveur** : 89 passants (38 locked-zones + 51 python-exercises validation).
+- **Tests client** : aucun nouveau (le composant Svelte CodeMirror est testé manuellement).
+- **`pnpm check:incremental`** : 9 errors / 48 warnings (vs baseline 46). Le +2 warnings n'est pas identifié sur les fichiers Phase 1-5 par grep ciblé — probable cascade svelte-check, à investiguer hors scope feature.
+- **`npx eslint`** sur tous les fichiers modifiés : 0 issue.
+- **`svelte-autofixer`** : 0 issue sur les portions locked-zones.
+
+### Compatibilité finale
+
+- **Rétro** : exos sans marqueurs continuent de fonctionner en édition libre (path PythonEditor inchangé).
+- **Orthogonale aux 5 stratégies** (`output`, `unit_test`, `variable_check`, `reference_solution`, `ast_requirements`) : le code reconstruit est envoyé au worker exactement comme avant.
+- **Anti-bypass** : verrouillage UI uniquement. Un élève motivé peut contourner via DevTools — acceptable car aucun résultat n'a de poids académique officiel. La feature protège contre la triche paresseuse (`return 7`).
+
+## Fichiers modifiés (état final)
+
+| Fichier                                                   | Type                              |
+| --------------------------------------------------------- | --------------------------------- |
+| `src/lib/utils/locked-zones.ts`                           | NOUVEAU (parser + reconstruction) |
+| `src/lib/utils/locked-zones.test.ts`                      | NOUVEAU (38 tests)                |
+| `src/lib/components/python/LockedPythonEditor.svelte`     | NOUVEAU (composant CodeMirror)    |
+| `src/lib/components/python/exercises/ExerciseForm.svelte` | MODIFIÉ (preview + aide)          |
+| `src/lib/server/validation/python-exercises.ts`           | MODIFIÉ (Zod refine)              |
+| `src/lib/server/validation/python-exercises.test.ts`      | MODIFIÉ (+ 8 tests)               |
+| `src/routes/(public)/python-exercises/[id]/+page.svelte`  | MODIFIÉ (switch éditeur)          |
+| `docs/wip/python-locked-zones-progress.md`                | NOUVEAU (ce fichier)              |
+
+## Commits
+
+- `cc82a5eef` — Phase 1 : parser + reconstruction utilitaires purs
+- `3d090cbab` — Phase 2 : LockedPythonEditor + intégration page élève
+- `659144199` — Phase 3 : widgets reset par zone + toolbar globale
+- `aa8a40d51` — Phase 4 : preview teacher + aide syntaxe
+- `b14c77945` — Phase 5 : Zod refine côté serveur + 8 tests
+- (à venir) — Phase 6 : debounce preview + doc finale
