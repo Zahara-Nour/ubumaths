@@ -199,3 +199,50 @@ renderDefaults(template: string): { rendered: string; zones: RenderZone[]; error
 - `aa8a40d51` — Phase 4 : preview teacher + aide syntaxe
 - `b14c77945` — Phase 5 : Zod refine côté serveur + 8 tests
 - (à venir) — Phase 6 : debounce preview + doc finale
+
+## Patch V1.1 — Garde-fou UI et déplacement du bouton « Appeler » (2026-05-14)
+
+### Contexte
+
+Régression remontée par l'utilisateur sur l'exo BAC `d535f6ae-d8bf-4daa-9d04-0176866f6d34` (Décongélation, validation `unit_test`) : un clic sur « Appeler » avant de remplir la zone du `while` déclenchait un timeout 5 s côté worker Pyodide. Cause racine : `bool(Ellipsis) is True` en Python — le placeholder pédagogique `while ...:` est un `while True:` exécutable qui boucle à l'infini.
+
+### Approche retenue (Option A)
+
+Préserver le placeholder pédagogique `...` (signal visuel « à compléter » très clair) et bloquer côté UI toute exécution tant que des zones sont à leur valeur par défaut. Justification utilisateur : « Quel est l'intérêt de faire un essai sans que tout ne soit complété ? ».
+
+### Changements
+
+1. **`LockedPythonEditor`** — nouveau prop `$bindable hasUnmodifiedZones: boolean`. Une `StateField` recompute les décorations à chaque `docChange` et applique `cm-lockedZone--unmodified` (fond ambre + outline pointillé) tant que le contenu d'une zone égale son `defaultValue`. L'updater calcule `anyUnmodified` à chaque keystroke et le remonte au parent.
+
+2. **Page consultation `+page.svelte`** — `zonesBlocked = $derived(lockedZonesActive && hasUnmodifiedZones)`. Tous les boutons d'action (Run / Vérifier / Soumettre / Appeler) intègrent `zonesBlocked` dans leur `disabled`. Quand `zonesBlocked` est vrai, chaque bouton est enveloppé dans un `bits-ui` `Tooltip.Provider > Tooltip.Root` (snippet réutilisable `zonesTooltipWrap`) qui affiche au survol « Complète toutes les zones surlignées avant de tester. ». Le tooltip-trigger sit sur un `<span>` parent (workaround standard pour les boutons disabled qui ne propagent pas hover).
+
+3. **Garde silencieuse `ensureZonesCompleted()`** — conservée pour le raccourci clavier Ctrl+Enter de CodeMirror qui contourne l'attribut `disabled` du bouton. Plus de toast : le tooltip prend le relais en feedback visuel.
+
+4. **Migration `20260514011041_restore_locked_zones_while_ellipsis_default.sql`** — revert idempotent du fix précédent (`20260514010325`) qui forçait `"False"` sur les zones `while`. Restaure le placeholder original (`...`) maintenant que la sécurité runtime vient du blocage UI.
+
+5. **Scripts** — `scripts/generate-bac-locked-zones-migration.ts` ne réécrit plus l'expression captée sur le `while` ; commentaire explicatif ajouté.
+
+### Déplacement « Appeler » dans la toolbar de l'éditeur
+
+Même session, follow-up UX. Le formulaire d'appel d'une fonction (`funcname(args)` + bouton) vivait sous l'éditeur dans un panneau dédié « Tester ma fonction ». Déplacé dans la toolbar au-dessus de l'éditeur :
+
+- `flex items-center gap-2` : à gauche le formulaire d'appel (uniquement `isUnitTest`), à droite le bouton Réinitialiser (`ml-auto`).
+- **Bouton « Appeler » réduit à l'icône `Play`** (`title="Appeler funcname"`, aria-label explicite). Plus de label "Appeler" / "Appel…" texte.
+- **`funcname(...)`** affiché **uniquement si `callTakesArgs`** (au moins un test_case avec des args positionnels). Pour les fonctions parameterless, seule l'icône est rendue — la décoration `funcname()` était redondante avec le tooltip.
+- Le panneau « Tester ma fonction » sous l'éditeur ne contient plus que le résultat / l'erreur / l'historique, et n'apparaît que lorsque l'élève a déjà appelé la fonction au moins une fois.
+
+### Fichiers modifiés
+
+- `src/lib/components/python/LockedPythonEditor.svelte` — `hasUnmodifiedZones` bindable, `StateField` décorations, CSS `.cm-lockedZone--unmodified`.
+- `src/routes/(public)/python-exercises/[id]/+page.svelte` — `zonesBlocked` derived, snippet `zonesTooltipWrap` (Tooltip.Provider + Tooltip.Root + child-snippet pattern), boutons enveloppés conditionnellement, déplacement du formulaire d'appel dans la toolbar, panneau résultats conditionné sur la présence de contenu.
+- `scripts/generate-bac-locked-zones-migration.ts` — préserve le placeholder original (commentaire explicatif).
+- `supabase/migrations/20260514011041_restore_locked_zones_while_ellipsis_default.sql` — NOUVEAU.
+- `docs/ref/python/README.md` — description « Tester ma fonction » mise à jour.
+
+### Commits de ce patch
+
+- `dd245f769` — feat : block run/submit while locked zones are untouched
+- `c69a4cbdb` — feat : disable run/submit/call buttons with tooltip on unfilled zones
+- `24560f61f` — fix : wrap zones tooltip in Tooltip.Provider (contexte bits-ui v2)
+- `124e7dc53` — feat : move call-function form into the editor toolbar
+- `6fe28ba4a` — fix : hide function-name notation when the call takes no args
