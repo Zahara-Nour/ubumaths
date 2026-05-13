@@ -27,7 +27,7 @@
 | ----- | ------------------------------------------ | ----------------------- |
 | 1     | Parser + reconstruction (utilitaires purs) | ✅ Complétée (38 tests) |
 | 2     | CodeMirror zones éditables côté élève      | ✅ Complétée            |
-| 3     | Surlignage + boutons reset                 | À faire                 |
+| 3     | Surlignage + boutons reset                 | ✅ Complétée            |
 | 4     | UI teacher (prévisualisation + aide)       | À faire                 |
 | 5     | Zod refine + tests intégration             | À faire                 |
 | 6     | Quality checks finaux + doc finale         | À faire                 |
@@ -83,6 +83,26 @@ renderDefaults(template: string): { rendered: string; zones: RenderZone[]; error
 
 - Exo sans marqueurs (la plupart actuellement) → `lockedZonesActive` retourne `false` → `PythonEditor` classique inchangé.
 - Exo avec marqueurs malformés → `LockedPythonEditor` affiche un banner rouge « Cet exercice est mal configuré » avec la liste des erreurs.
+
+## Phase 3 — état final
+
+### Ajouts dans `LockedPythonEditor.svelte`
+
+- **Widget `ZoneResetWidget`** : bouton inline `↺` placé juste après chaque zone via `Decoration.widget({ side: 1 })`. Click handler centralisé via `EditorView.domEventHandlers({ click })` qui regarde `target.dataset.zoneId` et dispatche une transaction de reset.
+- **Annotation `resetAnnotation`** : les transactions de reset portent cette annotation et le `transactionFilter` les laisse passer sans vérifier les ranges (le contenu inséré est garanti propre — c'est le default original du teacher).
+- **Toolbar au-dessus de l'éditeur** : compteur de zones + bouton « ↺ Tout réinitialiser » qui dispatche un `editor.dispatch({ changes: [...all], annotations: resetAnnotation.of(true) })` en une seule transaction (position-mapping reste cohérent).
+- **CSS** : `.cm-zoneResetBtn` discret (couleur primary 70%, hover renforcé, focus-visible avec outline). Variante dark mode.
+
+### Reste à faire
+
+- Persistance localStorage des valeurs par zone : reportée en V2 (cf. Phase 2 notes).
+- Badge « valeur par défaut » : skipé, le surlignage des zones suffit visuellement.
+
+### Quality
+
+- `pnpm check:incremental` : 9 errors / 47 warnings (vs 46 baseline → +1 warning sur un fichier inchangé, vraisemblablement effet cascade de svelte-check qui n'apparaît sur aucun des fichiers Phase 3 dans le grep).
+- `npx eslint` : 0 issue sur les fichiers modifiés.
+- `svelte-autofixer` : 0 issue sur la portion locked-zones du composant.
 
 ## Fichiers modifiés (au fur et à mesure)
 
