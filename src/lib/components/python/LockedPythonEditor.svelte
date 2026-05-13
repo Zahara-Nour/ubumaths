@@ -96,24 +96,19 @@
 			}
 			value = reconstructCode(template, initialValues);
 
-			// Lazy-load CodeMirror modules + the per-zone reset widget
-			// (extracted to its own module so the class is declared at
-			// top-level, avoiding Svelte's `perf_avoid_nested_class`
-			// warning on the in-function class definition).
+			// Lazy-load CodeMirror modules.
 			const [
 				{ EditorView, keymap, lineNumbers, Decoration },
 				{ EditorState, StateField, Annotation },
 				{ python },
 				{ defaultHighlightStyle, syntaxHighlighting, bracketMatching },
-				{ history, defaultKeymap, historyKeymap },
-				{ ZoneResetWidget }
+				{ history, defaultKeymap, historyKeymap }
 			] = await Promise.all([
 				import('@codemirror/view'),
 				import('@codemirror/state'),
 				import('@codemirror/lang-python'),
 				import('@codemirror/language'),
-				import('@codemirror/commands'),
-				import('./locked-zone-widget')
+				import('@codemirror/commands')
 			]);
 
 			// The component may have been destroyed while we were awaiting
@@ -163,33 +158,18 @@
 			const zoneMark = Decoration.mark({ class: 'cm-lockedZone' });
 			const zonesDecorations = EditorView.decorations.compute([zonesField], (state) => {
 				const zones = state.field(zonesField);
-				// Build a flat list of (position, decoration) entries, then
-				// sort by position before handing it to `Decoration.set` —
-				// the API requires sorted-by-from input. Mark decorations
-				// must have `from < to`; widget decorations are point
-				// decorations (`from === to`) and can share a position with
-				// the end of a mark.
-				type Entry = { from: number; to: number; deco: ReturnType<typeof zoneMark.range> };
-				const entries: Entry[] = [];
-				for (const z of zones) {
-					if (z.renderedStart < z.renderedEnd) {
-						entries.push({
-							from: z.renderedStart,
-							to: z.renderedEnd,
-							deco: zoneMark.range(z.renderedStart, z.renderedEnd)
-						});
-					}
-					entries.push({
-						from: z.renderedEnd,
-						to: z.renderedEnd,
-						deco: Decoration.widget({
-							widget: new ZoneResetWidget(z.id),
-							side: 1
-						}).range(z.renderedEnd)
-					});
-				}
-				entries.sort((a, b) => a.from - b.from || a.to - b.to);
-				return Decoration.set(entries.map((e) => e.deco));
+				// Collapsed zones (empty after the student deleted everything)
+				// must not produce zero-length decorations: `Decoration.mark`
+				// requires `from < to`. Decorations are also sorted by
+				// position defensively — zones are inserted in document
+				// order but a future edit could in principle invert two
+				// adjacent ones.
+				return Decoration.set(
+					zones
+						.filter((z) => z.renderedStart < z.renderedEnd)
+						.sort((a, b) => a.renderedStart - b.renderedStart)
+						.map((z) => zoneMark.range(z.renderedStart, z.renderedEnd))
+				);
 			});
 
 			// Transaction filter: a change is allowed iff:
@@ -254,31 +234,6 @@
 				value = reconstructCode(template, values);
 			});
 
-			// Click handler for the reset widgets. Looks up the clicked
-			// button's `data-zone-id`, finds the current position of that
-			// zone in the state, and dispatches an annotated transaction.
-			const widgetClickHandler = EditorView.domEventHandlers({
-				click(event, view) {
-					const target = event.target as HTMLElement | null;
-					if (!target || !target.classList.contains('cm-zoneResetBtn')) return false;
-					const id = target.dataset.zoneId;
-					if (!id) return false;
-					const zones = view.state.field(zonesField);
-					const z = zones.find((zone) => zone.id === id);
-					if (!z) return false;
-					view.dispatch({
-						changes: {
-							from: z.renderedStart,
-							to: z.renderedEnd,
-							insert: defaultsById[id] ?? ''
-						},
-						annotations: resetAnnotation.of(true)
-					});
-					event.preventDefault();
-					return true;
-				}
-			});
-
 			// Expose the global reset helper to the Svelte template.
 			resetAllFn = () => {
 				if (!editor) return;
@@ -308,7 +263,6 @@
 				...(themeExtension ? [themeExtension] : []),
 				zonesField,
 				zonesDecorations,
-				widgetClickHandler,
 				lockedFilter,
 				updater,
 				keymap.of([
@@ -455,47 +409,5 @@
 	:global(.dark .cm-lockedZone) {
 		background-color: rgba(96, 165, 250, 0.18);
 		outline-color: rgba(96, 165, 250, 0.65);
-	}
-
-	/* Inline per-zone reset button — a discreet "↺" placed just after the
-	   zone end. Stays inside the editor's natural text flow so it scrolls
-	   with the line and is keyboard-reachable via Tab. */
-	:global(.cm-zoneResetBtn) {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		margin-left: 2px;
-		padding: 0 4px;
-		font-size: 11px;
-		line-height: 1;
-		color: rgba(59, 130, 246, 0.7);
-		background: transparent;
-		border: 1px solid rgba(59, 130, 246, 0.3);
-		border-radius: 3px;
-		cursor: pointer;
-		vertical-align: baseline;
-		user-select: none;
-	}
-
-	:global(.cm-zoneResetBtn:hover) {
-		color: rgba(59, 130, 246, 1);
-		background: rgba(59, 130, 246, 0.08);
-		border-color: rgba(59, 130, 246, 0.5);
-	}
-
-	:global(.cm-zoneResetBtn:focus-visible) {
-		outline: 2px solid rgba(59, 130, 246, 0.8);
-		outline-offset: 1px;
-	}
-
-	:global(.dark .cm-zoneResetBtn) {
-		color: rgba(96, 165, 250, 0.8);
-		border-color: rgba(96, 165, 250, 0.35);
-	}
-
-	:global(.dark .cm-zoneResetBtn:hover) {
-		color: rgba(96, 165, 250, 1);
-		background: rgba(96, 165, 250, 0.12);
-		border-color: rgba(96, 165, 250, 0.6);
 	}
 </style>
