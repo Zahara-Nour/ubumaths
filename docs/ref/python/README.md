@@ -217,10 +217,31 @@ Système d'exercices Python complet : création teacher, soumission élève (ass
      - dict ↔ dict (clés + valeurs récursives)
      - numérique : tolérance configurable via le champ optionnel `tolerance: { eps_abs, eps_rel }` (compare avec `|a-b| ≤ max(eps_abs, eps_rel * max(|a|, |b|))`). Indispensable pour les algorithmes utilisant des transcendantales (`math.exp`, `math.log`) qui ne sont **pas** mandatées correctly-rounded par IEEE 754 — Pyodide et l'environnement de référence peuvent diverger de quelques ULP.
      - sinon `==` strict (string, bool, None)
+   - **`'variable_check'`** — vérifie la valeur de variables du namespace après exécution du code de l'élève, sans imposer `print(...)`. Le teacher déclare `expected_vars: { x: 6, y: 7 }`, l'élève écrit `x = 2 * 3; y = x + 1` et c'est tout. Comparateur JS pur récursif (`validation/variable-compare.ts`) avec tolérance numérique, types stricts pour scalaires (`True ≠ 1`), tuple ≡ list au niveau JSON. Surface volontairement minimaliste : pas de stdin, pas de `setup_vars`, pas de `test_cases` multiples (utiliser `unit_test` pour ça). 42 tests unit + 13 tests Pyodide réels.
+   - **`'reference_solution'`** — test différentiel : le teacher fournit une solution de référence cachée (`reference_code`), et le worker compare la fonction de l'élève contre elle sur un mix de **cas fixes** (sentinelles teacher-curated, `expected` hardcodé) et de **cas générés aléatoirement** (couverture large, reproductible via `seed`). Au moins un des deux doit être présent. Cas fixes : toutes les erreurs remontées. Cas générés : stop au 1er échec (focus contre-exemple style Hypothesis). Args deep-copiés via `copy.deepcopy` avant chaque appel pour ne pas que reference et student se contaminent mutuellement. 13 tests Pyodide réels.
 
-**Pipeline** : si AST échoue → on s'arrête (`failed_layer: 'ast'`) ; sinon on exécute le behavior (`failed_layer: 'behavior'` ou `null` si tout passe). `ValidationResult.behavior_kind` indique quel kind a tourné.
+**Pipeline** : si AST échoue → on s'arrête (`failed_layer: 'ast'`) ; sinon on exécute le behavior (`failed_layer: 'behavior'` ou `null` si tout passe). `ValidationResult.behavior_kind` indique quel kind a tourné (`'output' | 'unit_test' | 'variable_check' | 'reference_solution'`).
 
 **Avant V2** (jusqu'au 2026-05-09) : 3 stratégies mutuellement exclusives (`output` | `unit_test` | `ast`), avec `ast + output_tests` comme seule combinaison possible. Le V2 supprime cette asymétrie : `ast + unit_test` est maintenant possible (cas typique : exo Bac avec fonction + défense `uses_loop`).
+
+**Évolutions V2.1-V2.2** (2026-05-12 → 2026-05-13) : ajout de `variable_check` (4ème stratégie, anti-`print` boilerplate) puis `reference_solution` (5ème stratégie, test différentiel avec generator reproductible). Les deux suivent le même pattern orthogonal : combinables avec `ast_requirements`, types Zod + tests serveur + tests Pyodide réels.
+
+### Locked zones — mode d'édition (orthogonal aux 5 stratégies)
+
+**Ajouté 2026-05-13**. Mode d'édition où le teacher déclare des marqueurs `{{id | "default"}}` dans `starter_code` ; l'éditeur élève (`LockedPythonEditor.svelte` basé sur CodeMirror 6) rend ces zones surlignées + éditables, et **verrouille tout le reste** via `EditorState.transactionFilter`. Anti-triche paresseuse type `return 7` sur les exos `seuil()` parameterless.
+
+| Élément                          | Description                                                                                                             |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Parser (`utils/locked-zones.ts`) | `parseTemplate`, `reconstructCode`, `renderDefaults` — utilitaires purs, 38 tests                                       |
+| Composant élève                  | `LockedPythonEditor.svelte` — read-only outside zones, undo/redo passthrough, toast sur paste rejeté, bouton ↺ par zone |
+| Composant teacher                | Preview live dans `ExerciseForm.svelte` (debounce 500ms), aide à la syntaxe, banner rouge si marqueurs malformés        |
+| Server gate                      | `superRefine` sur `createExerciseSchema` + `updateExerciseSchema` — refuse les marqueurs malformés au save              |
+| Stockage                         | Marqueurs inline dans `starter_code` (TEXT) — aucun schéma DB additionnel                                               |
+| Single-line uniquement (V1)      | Le `transactionFilter` rejette les inserts contenant `\n`. Couvre 100% des `# à compléter` actuels du corpus Bac.       |
+| Anti-bypass                      | UI uniquement (free-tier Vercel : pas de validation serveur). Acceptable car aucun résultat n'a de poids académique.    |
+| Compatibilité                    | Orthogonal aux 5 stratégies. Exo sans marqueurs = `PythonEditor` classique (rétro-compat).                              |
+
+→ Voir [../../wip/python-locked-zones-progress.md](../../wip/python-locked-zones-progress.md)
 
 → Voir [../../wip/python-validation-refactor-spec.md](../../wip/python-validation-refactor-spec.md) et [../../wip/python-validation-refactor-progress.md](../../wip/python-validation-refactor-progress.md)
 
@@ -313,6 +334,18 @@ Une diff vide garantit qu'éditer-puis-sauvegarder-sans-changement ne mute pas l
 ### Corpus seedé
 
 À ce jour, **30+ exercices Bac** sont seedés en DB via les migrations `20260510*_seed_*.sql` — couvre les principales académies françaises (Métropole, Polynésie, Asie, Centres étrangers, Amérique du Nord/Sud, Madagascar, Nouvelle Calédonie) sur 2021-2025. Type d'algorithmes couverts : suites arithmético-géométriques, suites quadratiques, sommes partielles, séries, intégrales, suites entrelacées, modèles compartimentaux. Tous les exos passent le round-trip test.
+
+**Migrations de stratégies (2026-05-12 → 2026-05-13)** :
+
+- `20260512234300_convert_bac_output_to_variable_check.sql` puis correctif `20260512235348_restore_tuple_exos_to_unit_test.sql` — convertit `panneaux` (script module-level) vers `variable_check`, restaure `ln(2)` et `termes` en `unit_test` (un overshoot du premier coup).
+- `20260513112515_convert_bac_strong_to_reference_solution.sql` — convertit les 19 Bac avec fonction-à-paramètres de `unit_test` vers `reference_solution` (fixed cases conservés en sentinelles + generator adapté au domaine).
+- `20260513215211_add_locked_zones_to_bac.sql` — wrap automatique des `# à compléter` de 27 Bac avec des marqueurs `{{id | "default"}}` (5 patterns regex : `while`, `var =`, `return`, `for ... in range()`, `...` orphelin).
+
+**Scripts d'audit utilisables** :
+
+- `scripts/audit-bac-exercises-for-reference-solution.ts` — classifie chaque Bac en STRONG/WEAK/NO candidate pour `reference_solution`.
+- `scripts/audit-bac-locked-zones-candidates.ts` — détecte les exos avec `# à compléter` dans leur starter (candidats locked-zones).
+- `scripts/generate-bac-reference-solution-migration.ts` + `scripts/generate-bac-locked-zones-migration.ts` — émettent leurs migrations à partir de la DB live.
 
 ### Progression
 
