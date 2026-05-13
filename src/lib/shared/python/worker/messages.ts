@@ -422,11 +422,52 @@ const behaviorVariableCheckSchema = z.object({
 	tolerance: unitTestToleranceSchema.optional()
 });
 
-export const behaviorCheckSchema = z.discriminatedUnion('kind', [
-	behaviorOutputSchema,
-	behaviorUnitTestSchema,
-	behaviorVariableCheckSchema
-]);
+const REFERENCE_CODE_MAX = 5000;
+const GENERATOR_CODE_MAX = 1000;
+const REFERENCE_FIXED_CASES_MAX = 50;
+const REFERENCE_GENERATOR_COUNT_MAX = 200;
+
+const behaviorReferenceSolutionSchema = z.object({
+	kind: z.literal('reference_solution'),
+	function_name: z
+		.string()
+		.min(1)
+		.max(100)
+		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Function name must be a valid Python identifier'),
+	reference_code: z.string().min(1).max(REFERENCE_CODE_MAX),
+	fixed: z
+		.object({
+			cases: z
+				.array(unitTestCaseSchema)
+				.min(1)
+				.max(REFERENCE_FIXED_CASES_MAX)
+				.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
+		})
+		.optional(),
+	generator: z
+		.object({
+			code: z.string().min(1).max(GENERATOR_CODE_MAX),
+			count: z.number().int().min(1).max(REFERENCE_GENERATOR_COUNT_MAX),
+			seed: z.number().int()
+		})
+		.optional(),
+	tolerance: unitTestToleranceSchema.optional()
+});
+
+// discriminatedUnion does not accept `.refine()`-wrapped sub-schemas. The
+// "at least one of fixed/generator" rule for `reference_solution` is
+// therefore enforced at the union level (no-op for the other variants).
+export const behaviorCheckSchema = z
+	.discriminatedUnion('kind', [
+		behaviorOutputSchema,
+		behaviorUnitTestSchema,
+		behaviorVariableCheckSchema,
+		behaviorReferenceSolutionSchema
+	])
+	.refine(
+		(b) => b.kind !== 'reference_solution' || b.fixed !== undefined || b.generator !== undefined,
+		{ message: 'Au moins une stratégie (cas fixes ou générateur) doit être configurée' }
+	);
 
 /**
  * Exercise validation config — new shape with orthogonal AST + behavior layers.
@@ -711,7 +752,12 @@ export const testCaseResultSchema = z.object({
  */
 export const failedLayerSchema = z.union([z.literal('ast'), z.literal('behavior'), z.null()]);
 
-export const behaviorKindSchema = z.enum(['output', 'unit_test', 'variable_check']);
+export const behaviorKindSchema = z.enum([
+	'output',
+	'unit_test',
+	'variable_check',
+	'reference_solution'
+]);
 
 export const exerciseValidationResultSchema = z.object({
 	valid: z.boolean(),

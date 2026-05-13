@@ -142,6 +142,26 @@ export type BehaviorCheck =
 			 */
 			expected_vars: Record<string, unknown>;
 			tolerance?: UnitTestTolerance;
+	  }
+	| {
+			kind: 'reference_solution';
+			/**
+			 * Differential testing against a hidden teacher implementation.
+			 * `fixed` cases (with hardcoded `expected`) act as sentinels that
+			 * also validate the teacher's reference. `generator` produces
+			 * `count` random inputs (seeded for reproducibility); for each,
+			 * `expected = reference(*args)` and is compared to the student's
+			 * output. At least one of `fixed` or `generator` must be present.
+			 */
+			function_name: string;
+			reference_code: string;
+			fixed?: { cases: UnitTestCase[] };
+			generator?: {
+				code: string;
+				count: number;
+				seed: number;
+			};
+			tolerance?: UnitTestTolerance;
 	  };
 
 /**
@@ -175,7 +195,7 @@ export interface TestCaseResult {
 export interface ValidationResult {
 	valid: boolean;
 	failed_layer: 'ast' | 'behavior' | null;
-	behavior_kind?: 'output' | 'unit_test' | 'variable_check';
+	behavior_kind?: 'output' | 'unit_test' | 'variable_check' | 'reference_solution';
 	ast_issues?: string[];
 	test_results: TestCaseResult[];
 	error?: string;

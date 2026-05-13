@@ -922,6 +922,310 @@ describe('Exercise validation strategies (real Pyodide)', () => {
 	});
 
 	// ===========================================================================
+	// D-bis. Behavior: reference_solution
+	// Placed BEFORE the matrix describe for the same reason as variable_check
+	// (case 8 infinite-loop blocks the worker forever).
+	// ===========================================================================
+
+	describe('reference_solution behavior', () => {
+		const refMediane =
+			'def mediane(L):\n    L = sorted(L)\n    n = len(L)\n    if n % 2:\n        return L[n // 2]\n    return (L[n // 2 - 1] + L[n // 2]) / 2\n';
+
+		it(
+			'fixed cases — passes when student matches expected on all cases',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'mediane',
+						reference_code: refMediane,
+						fixed: {
+							cases: [
+								{ args: [[1, 2, 3]], expected: 2 },
+								{ args: [[1, 2, 3, 4]], expected: 2.5 }
+							]
+						}
+					}
+				};
+				const result = await executor.validateExercise(refMediane, config);
+
+				expect(result.valid).toBe(true);
+				expect(result.behavior_kind).toBe('reference_solution');
+				expect(result.test_results).toHaveLength(2);
+				expect(result.test_results.every((r) => r.passed)).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'fixed cases — reports all failures (no short-circuit)',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'mediane',
+						reference_code: refMediane,
+						fixed: {
+							cases: [
+								{ args: [[1, 2, 3]], expected: 2 },
+								{ args: [[1, 2, 3, 4]], expected: 2.5 }
+							]
+						}
+					}
+				};
+				// Student always returns 0 — both cases fail.
+				const studentCode = 'def mediane(L):\n    return 0\n';
+				const result = await executor.validateExercise(studentCode, config);
+
+				expect(result.valid).toBe(false);
+				expect(result.failed_layer).toBe('behavior');
+				expect(result.test_results).toHaveLength(2);
+				expect(result.test_results.every((r) => !r.passed)).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'generator — student matching reference produces one synthetic OK result',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'mediane',
+						reference_code: refMediane,
+						generator: {
+							code: '([__import__("random").randint(0, 100) for _ in range(__import__("random").randint(1, 20))],)',
+							count: 10,
+							seed: 42
+						}
+					}
+				};
+				const result = await executor.validateExercise(refMediane, config);
+
+				expect(result.valid).toBe(true);
+				expect(result.test_results).toHaveLength(1);
+				expect(result.test_results[0].passed).toBe(true);
+				expect(result.test_results[0].input).toMatch(/10 cas générés.*seed=42/);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'generator — student differing surfaces a counter-example and stops',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'mediane',
+						reference_code: refMediane,
+						generator: {
+							code: '([__import__("random").randint(0, 100) for _ in range(__import__("random").randint(2, 20))],)',
+							count: 20,
+							seed: 7
+						}
+					}
+				};
+				// Naive student: forgets to sort, returns middle element.
+				const studentCode = 'def mediane(L):\n    return L[len(L) // 2]\n';
+				const result = await executor.validateExercise(studentCode, config);
+
+				expect(result.valid).toBe(false);
+				// At most one counter-example reported (stop at first failure).
+				expect(result.test_results).toHaveLength(1);
+				expect(result.test_results[0].passed).toBe(false);
+				expect(result.test_results[0].input).toMatch(/mediane\(/);
+				expect(result.test_results[0].expected).toBeDefined();
+				expect(result.test_results[0].actual).toBeDefined();
+				expect(result.test_results[0].diff).toMatch(/divergent/);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'reproducibility — same seed yields the same counter-example',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'mediane',
+						reference_code: refMediane,
+						generator: {
+							code: '([__import__("random").randint(0, 100) for _ in range(__import__("random").randint(2, 20))],)',
+							count: 20,
+							seed: 7
+						}
+					}
+				};
+				const studentCode = 'def mediane(L):\n    return L[len(L) // 2]\n';
+				const r1 = await executor.validateExercise(studentCode, config);
+				const r2 = await executor.validateExercise(studentCode, config);
+
+				expect(r1.test_results[0].input).toBe(r2.test_results[0].input);
+				expect(r1.test_results[0].actual).toBe(r2.test_results[0].actual);
+			},
+			TEST_TIMEOUT_MS * 2
+		);
+
+		it(
+			'fixed + generator combined — runs fixed first, then generator (no synthetic)',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'mediane',
+						reference_code: refMediane,
+						fixed: {
+							cases: [{ args: [[1, 2, 3]], expected: 2 }]
+						},
+						generator: {
+							code: '([__import__("random").randint(0, 100) for _ in range(__import__("random").randint(1, 10))],)',
+							count: 5,
+							seed: 1
+						}
+					}
+				};
+				const result = await executor.validateExercise(refMediane, config);
+
+				expect(result.valid).toBe(true);
+				// Synthetic generator OK is suppressed when fixed cases are
+				// present (otherwise the counter would double-count: 1
+				// synthetic = 5 actual cases).
+				expect(result.test_results).toHaveLength(1);
+				expect(result.test_results[0].input).toMatch(/mediane\(\[1,2,3\]\)/);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'reference_code with SyntaxError → single global error',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'f',
+						reference_code: 'def f(x:\n  return x\n', // SyntaxError
+						fixed: { cases: [{ args: [1], expected: 1 }] }
+					}
+				};
+				const result = await executor.validateExercise('def f(x): return x', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results).toHaveLength(1);
+				expect(result.test_results[0].error).toMatch(/Solution de référence/);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'reference function not defined → single global error',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'mediane',
+						reference_code: 'def other(L): return 0\n', // wrong name
+						fixed: { cases: [{ args: [[1]], expected: 1 }] }
+					}
+				};
+				const result = await executor.validateExercise('def mediane(L): return L[0]', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results[0].error).toMatch(
+					/n'est pas définie dans la solution de référence/
+				);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'student function not defined → single global error',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'mediane',
+						reference_code: refMediane,
+						fixed: { cases: [{ args: [[1]], expected: 1 }] }
+					}
+				};
+				const result = await executor.validateExercise('x = 42  # no function', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results[0].error).toMatch(/'mediane'.*n'est pas définie/);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'generator returning a non-tuple → teacher error',
+			async () => {
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'f',
+						reference_code: 'def f(x): return x\n',
+						generator: { code: '42', count: 3, seed: 1 } // returns int, not tuple
+					}
+				};
+				const result = await executor.validateExercise('def f(x): return x', config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results[0].error).toMatch(/tuple/);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'tolerance applied to numeric leaves',
+			async () => {
+				// Student returns 0.1 + 0.2 (≈ 0.30000000000000004), reference returns 0.3.
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'f',
+						reference_code: 'def f(): return 0.3\n',
+						fixed: { cases: [{ args: [], expected: 0.3 }] },
+						tolerance: { eps_abs: 1e-9, eps_rel: 1e-9 }
+					}
+				};
+				const result = await executor.validateExercise('def f(): return 0.1 + 0.2', config);
+
+				expect(result.valid).toBe(true);
+			},
+			TEST_TIMEOUT_MS
+		);
+
+		it(
+			'deepcopy — student mutating args in place does not contaminate reference',
+			async () => {
+				// If we did NOT deepcopy, the student's `L.sort()` would also
+				// sort the reference's args, hiding the fact that the student
+				// does the wrong thing on unsorted input.
+				const config: ExerciseValidationConfig = {
+					behavior: {
+						kind: 'reference_solution',
+						function_name: 'first',
+						reference_code: 'def first(L):\n    return L[0]\n',
+						generator: {
+							code: '([3, 1, 2],)', // fixed list, returns (L,)
+							count: 1,
+							seed: 1
+						}
+					}
+				};
+				// Student mutates and returns wrong answer.
+				const studentCode = 'def first(L):\n    L.sort()\n    return L[0]\n';
+				const result = await executor.validateExercise(studentCode, config);
+
+				expect(result.valid).toBe(false);
+				expect(result.test_results[0].expected).toMatch(/3/);
+				expect(result.test_results[0].actual).toMatch(/1/);
+			},
+			TEST_TIMEOUT_MS
+		);
+	});
+
+	// ===========================================================================
 	// E. AST + behavior matrix (9 cases from the refactor spec)
 	// ===========================================================================
 
