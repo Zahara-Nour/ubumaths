@@ -10,6 +10,7 @@
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { PlaygroundExecutor, type ExerciseValidationResult as Result } from '$lib/shared/python';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
@@ -210,12 +211,15 @@
 	// e.g. `while ...:` (Ellipsis is truthy in Python).
 	let hasUnmodifiedZones = $state(false);
 
+	// Action buttons (Run / Vérifier / Soumettre / Appeler) are disabled
+	// and decorated with a tooltip whenever the student hasn't yet filled
+	// in every editable zone. Silent guard for the editor's Ctrl+Enter
+	// keyboard shortcut — that path bypasses the `disabled` attribute,
+	// so the handler still no-ops via `ensureZonesCompleted`.
+	const zonesBlocked = $derived(lockedZonesActive && hasUnmodifiedZones);
+
 	function ensureZonesCompleted(): boolean {
-		if (lockedZonesActive && hasUnmodifiedZones) {
-			toaster.warning('Complète d’abord toutes les zones surlignées avant de tester.');
-			return false;
-		}
-		return true;
+		return !zonesBlocked;
 	}
 
 	function handleResetEditor() {
@@ -333,6 +337,33 @@
 	{/if}
 </svelte:head>
 
+<!--
+	Wraps an action button in a Tooltip whenever `zonesBlocked` is true so
+	the student gets a hover explanation ("Complète toutes les zones …")
+	on the disabled button. When zones are filled in, the button renders
+	as-is without the tooltip wrapper. Each call site passes its button
+	via a snippet (`runBtn`, `verifierBtn`, …) so the same Button props
+	and click handlers stay co-located with their button definition.
+-->
+{#snippet zonesTooltipWrap(button: import('svelte').Snippet)}
+	{#if zonesBlocked}
+		<Tooltip.Root>
+			<Tooltip.Trigger>
+				{#snippet child({ props })}
+					<span {...props} class="inline-block">
+						{@render button()}
+					</span>
+				{/snippet}
+			</Tooltip.Trigger>
+			<Tooltip.Content>
+				<p>Complète toutes les zones surlignées avant de tester.</p>
+			</Tooltip.Content>
+		</Tooltip.Root>
+	{:else}
+		{@render button()}
+	{/if}
+{/snippet}
+
 <div class="container mx-auto p-4">
 	<header class="mb-4">
 		<div class="flex items-start justify-between gap-4">
@@ -428,24 +459,39 @@
 			</div>
 
 			<div class="flex flex-wrap gap-2">
-				{#if !isUnitTest}
-					<Button onclick={handleRun} disabled={!pyodideReady || isValidating || isSubmitting}>
+				{#snippet runBtn()}
+					<Button
+						onclick={handleRun}
+						disabled={!pyodideReady || isValidating || isSubmitting || zonesBlocked}
+					>
 						<Play class="mr-1 h-4 w-4" /> Run
 					</Button>
-				{/if}
-				<Button onclick={handleValidate} disabled={!pyodideReady || isValidating || isSubmitting}>
-					<CheckCircle2 class="mr-1 h-4 w-4" /> Vérifier
-				</Button>
-
-				{#if !isTeacher}
+				{/snippet}
+				{#snippet verifierBtn()}
+					<Button
+						onclick={handleValidate}
+						disabled={!pyodideReady || isValidating || isSubmitting || zonesBlocked}
+					>
+						<CheckCircle2 class="mr-1 h-4 w-4" /> Vérifier
+					</Button>
+				{/snippet}
+				{#snippet soumettreBtn()}
 					<Button
 						onclick={handleSubmit}
-						disabled={!pyodideReady || isValidating || isSubmitting || !canSubmit}
+						disabled={!pyodideReady || isValidating || isSubmitting || !canSubmit || zonesBlocked}
 						title={isAuthenticated ? undefined : 'Connecte-toi pour suivre tes progrès'}
 					>
 						<Send class="mr-1 h-4 w-4" />
 						{isSubmitting ? 'Envoi…' : 'Soumettre'}
 					</Button>
+				{/snippet}
+
+				{#if !isUnitTest}
+					{@render zonesTooltipWrap(runBtn)}
+				{/if}
+				{@render zonesTooltipWrap(verifierBtn)}
+				{#if !isTeacher}
+					{@render zonesTooltipWrap(soumettreBtn)}
 				{/if}
 
 				{#if isLoadingPyodide}
@@ -491,14 +537,21 @@
 							/>
 						{/if}
 						<span class="font-mono text-sm">)</span>
-						<Button
-							type="submit"
-							size="sm"
-							disabled={!pyodideReady || isCalling || isValidating || isSubmitting}
-						>
-							<Play class="mr-1 h-4 w-4" />
-							{isCalling ? 'Appel…' : 'Appeler'}
-						</Button>
+						{#snippet appelerBtn()}
+							<Button
+								type="submit"
+								size="sm"
+								disabled={!pyodideReady ||
+									isCalling ||
+									isValidating ||
+									isSubmitting ||
+									zonesBlocked}
+							>
+								<Play class="mr-1 h-4 w-4" />
+								{isCalling ? 'Appel…' : 'Appeler'}
+							</Button>
+						{/snippet}
+						{@render zonesTooltipWrap(appelerBtn)}
 					</form>
 
 					{#if callResult !== null}
