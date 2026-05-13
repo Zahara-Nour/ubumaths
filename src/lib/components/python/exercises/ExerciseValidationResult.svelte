@@ -40,6 +40,8 @@
 			if (result.behavior_kind === 'unit_test') return 'Tests de fonction échoués';
 			if (result.behavior_kind === 'output') return 'Sortie attendue non obtenue';
 			if (result.behavior_kind === 'variable_check') return 'Valeurs de variables incorrectes';
+			if (result.behavior_kind === 'reference_solution')
+				return 'Ta solution diffère de la solution de référence';
 			return 'Comportement attendu non vérifié';
 		}
 		return '';

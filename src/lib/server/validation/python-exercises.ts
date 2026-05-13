@@ -211,11 +211,58 @@ const behaviorVariableCheckSchema = z.object({
 		.describe('Optional numeric tolerance for float comparisons.')
 });
 
-export const behaviorCheckSchema = z.discriminatedUnion('kind', [
-	behaviorOutputSchema,
-	behaviorUnitTestSchema,
-	behaviorVariableCheckSchema
-]);
+const REFERENCE_CODE_MAX = 5000;
+const GENERATOR_CODE_MAX = 1000;
+const REFERENCE_FIXED_CASES_MAX = 50;
+const REFERENCE_GENERATOR_COUNT_MAX = 200;
+
+const behaviorReferenceSolutionSchema = z.object({
+	kind: z.literal('reference_solution'),
+	function_name: z
+		.string()
+		.min(FUNCTION_NAME_MIN)
+		.max(FUNCTION_NAME_MAX)
+		.regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, 'Function name must be a valid Python identifier'),
+	reference_code: z
+		.string()
+		.min(1)
+		.max(REFERENCE_CODE_MAX)
+		.describe('Python source defining the hidden teacher solution.'),
+	fixed: z
+		.object({
+			cases: z
+				.array(unitTestCaseSchema)
+				.min(1)
+				.max(REFERENCE_FIXED_CASES_MAX)
+				.refine((cases) => cases.some((tc) => !tc.hidden), AT_LEAST_ONE_VISIBLE)
+		})
+		.optional()
+		.describe('Hardcoded sentinel cases (teacher-supplied expected values).'),
+	generator: z
+		.object({
+			code: z.string().min(1).max(GENERATOR_CODE_MAX),
+			count: z.number().int().min(1).max(REFERENCE_GENERATOR_COUNT_MAX),
+			seed: z.number().int()
+		})
+		.optional()
+		.describe('Python expression returning a tuple of args; called `count` times with seeded RNG.'),
+	tolerance: unitTestToleranceSchema.optional()
+});
+
+// discriminatedUnion does not accept refined sub-schemas; the "at least
+// one of fixed/generator" rule for reference_solution is enforced at
+// the union level (no-op for other variants).
+export const behaviorCheckSchema = z
+	.discriminatedUnion('kind', [
+		behaviorOutputSchema,
+		behaviorUnitTestSchema,
+		behaviorVariableCheckSchema,
+		behaviorReferenceSolutionSchema
+	])
+	.refine(
+		(b) => b.kind !== 'reference_solution' || b.fixed !== undefined || b.generator !== undefined,
+		{ message: 'Au moins une stratégie (cas fixes ou générateur) doit être configurée' }
+	);
 
 export const validationConfigSchema = z
 	.object({
@@ -235,7 +282,7 @@ export const validationConfigSchema = z
 	});
 
 const failedLayerSchema = z.union([z.literal('ast'), z.literal('behavior'), z.null()]);
-const behaviorKindSchema = z.enum(['output', 'unit_test', 'variable_check']);
+const behaviorKindSchema = z.enum(['output', 'unit_test', 'variable_check', 'reference_solution']);
 
 export const validationResultSchema = z.object({
 	valid: z.boolean(),

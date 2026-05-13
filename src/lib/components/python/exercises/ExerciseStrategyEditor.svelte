@@ -45,13 +45,14 @@
 	// Behavior selector
 	// ===========================================================================
 
-	type BehaviorChoice = 'none' | 'output' | 'unit_test' | 'variable_check';
+	type BehaviorChoice = 'none' | 'output' | 'unit_test' | 'variable_check' | 'reference_solution';
 
 	const behaviorChoiceItems: { value: BehaviorChoice; label: string }[] = [
 		{ value: 'none', label: 'Aucun' },
 		{ value: 'output', label: 'Sortie stdout' },
 		{ value: 'unit_test', label: 'Test de fonction' },
-		{ value: 'variable_check', label: 'Valeurs de variables' }
+		{ value: 'variable_check', label: 'Valeurs de variables' },
+		{ value: 'reference_solution', label: 'Solution de référence' }
 	];
 
 	const behaviorChoice = $derived<BehaviorChoice>(config.behavior?.kind ?? 'none');
@@ -90,15 +91,32 @@
 			unitDrafts = [{ args: '[]', expected: 'null' }];
 			return;
 		}
-		// variable_check
+		if (next === 'variable_check') {
+			config = {
+				...config,
+				behavior: {
+					kind: 'variable_check',
+					expected_vars: { x: 0 }
+				}
+			};
+			varDrafts = [{ name: 'x', valueDraft: '0' }];
+			return;
+		}
+		// reference_solution — start with one fixed case so the form is
+		// immediately submittable; the teacher can toggle the generator
+		// section on once they've written their reference_code.
 		config = {
 			...config,
 			behavior: {
-				kind: 'variable_check',
-				expected_vars: { x: 0 }
+				kind: 'reference_solution',
+				function_name: '',
+				reference_code: '',
+				fixed: {
+					cases: [{ args: [], expected: null }]
+				}
 			}
 		};
-		varDrafts = [{ name: 'x', valueDraft: '0' }];
+		refFixedDrafts = [{ args: '[]', expected: 'null' }];
 	}
 
 	// ===========================================================================
@@ -230,6 +248,12 @@
 		return b?.kind === 'variable_check';
 	}
 
+	function isReferenceSolutionBehavior(
+		b: BehaviorCheck | undefined
+	): b is Extract<BehaviorCheck, { kind: 'reference_solution' }> {
+		return b?.kind === 'reference_solution';
+	}
+
 	function updateOutputBehavior(
 		mutator: (
 			b: Extract<BehaviorCheck, { kind: 'output' }>
@@ -256,6 +280,22 @@
 		if (!isVariableCheckBehavior(config.behavior)) return;
 		config = { ...config, behavior: mutator(config.behavior) };
 	}
+
+	function updateReferenceSolutionBehavior(
+		mutator: (
+			b: Extract<BehaviorCheck, { kind: 'reference_solution' }>
+		) => Extract<BehaviorCheck, { kind: 'reference_solution' }>
+	) {
+		if (!isReferenceSolutionBehavior(config.behavior)) return;
+		config = { ...config, behavior: mutator(config.behavior) };
+	}
+
+	// Placeholders extracted to constants so the textarea placeholder
+	// attribute can preserve real newlines and escaped quotes without
+	// tripping svelte/no-useless-mustaches on a literal-string interpolation.
+	const REF_CODE_PLACEHOLDER =
+		'def mediane(L):\n    L = sorted(L)\n    n = len(L)\n    if n % 2:\n        return L[n // 2]\n    return (L[n // 2 - 1] + L[n // 2]) / 2';
+	const REF_GEN_CODE_PLACEHOLDER = '(__import__("random").randint(0, 100),)';
 
 	function handlePresetChange(value: string) {
 		if (value === 'custom') return; // keep current comparison, open panel
@@ -453,6 +493,141 @@
 			updateVariableCheckBehavior((b) => ({ ...b, expected_vars: newVars }));
 		}
 	}
+
+	// ===========================================================================
+	// reference_solution drafts. Same JSON-on-blur pattern as unit_test for
+	// the `fixed.cases` rows. The generator block uses raw inputs (no JSON
+	// drafts): code is Python source, count and seed are numeric inputs.
+	// ===========================================================================
+
+	let refFixedDrafts: {
+		args: string;
+		expected: string;
+		argsErr?: string;
+		expectedErr?: string;
+	}[] = $state(
+		isReferenceSolutionBehavior(config.behavior) && config.behavior.fixed
+			? config.behavior.fixed.cases.map((tc) => ({
+					args: JSON.stringify(tc.args),
+					expected: JSON.stringify(tc.expected)
+				}))
+			: []
+	);
+
+	function commitRefFixedDraft(i: number) {
+		if (!isReferenceSolutionBehavior(config.behavior)) return;
+		const d = refFixedDrafts[i];
+		let argsErr: string | undefined;
+		let expectedErr: string | undefined;
+
+		let parsedArgs: unknown[] | null = null;
+		try {
+			const v = JSON.parse(d.args);
+			if (!Array.isArray(v)) throw new Error('args doit être un tableau JSON, ex: [1, 2]');
+			parsedArgs = v;
+		} catch (e) {
+			argsErr = e instanceof Error ? e.message : String(e);
+		}
+
+		let parsedExpected: unknown = undefined;
+		let expectedOk = false;
+		try {
+			parsedExpected = JSON.parse(d.expected);
+			expectedOk = true;
+		} catch (e) {
+			expectedErr = e instanceof Error ? e.message : String(e);
+		}
+
+		refFixedDrafts[i] = { ...d, argsErr, expectedErr };
+
+		if (parsedArgs !== null && expectedOk) {
+			updateReferenceSolutionBehavior((b) => {
+				const updated = [...(b.fixed?.cases ?? [])];
+				updated[i] = {
+					...updated[i],
+					args: parsedArgs as unknown[],
+					expected: parsedExpected
+				};
+				return { ...b, fixed: { cases: updated } };
+			});
+		}
+	}
+
+	function addRefFixedCase() {
+		updateReferenceSolutionBehavior((b) => ({
+			...b,
+			fixed: {
+				cases: [...(b.fixed?.cases ?? []), { args: [], expected: null }]
+			}
+		}));
+		refFixedDrafts = [...refFixedDrafts, { args: '[]', expected: 'null' }];
+	}
+
+	function removeRefFixedCase(i: number) {
+		updateReferenceSolutionBehavior((b) => {
+			const cases = b.fixed?.cases ?? [];
+			if (cases.length <= 1) return b;
+			return { ...b, fixed: { cases: cases.filter((_, idx) => idx !== i) } };
+		});
+		refFixedDrafts = refFixedDrafts.filter((_, idx) => idx !== i);
+	}
+
+	// "Activer les cas fixes" toggle — preserves whatever drafts existed
+	// before turning off (so toggling back on doesn't wipe the teacher's
+	// work). When turning off, removes `fixed` from the config; when on,
+	// re-adds `fixed.cases` with a fresh empty case if none was kept.
+	const refFixedEnabled = $derived(
+		isReferenceSolutionBehavior(config.behavior) && config.behavior.fixed !== undefined
+	);
+
+	function toggleRefFixed(checked: boolean) {
+		if (!isReferenceSolutionBehavior(config.behavior)) return;
+		if (checked) {
+			updateReferenceSolutionBehavior((b) => ({
+				...b,
+				fixed: b.fixed ?? { cases: [{ args: [], expected: null }] }
+			}));
+			if (refFixedDrafts.length === 0) {
+				refFixedDrafts = [{ args: '[]', expected: 'null' }];
+			}
+		} else {
+			updateReferenceSolutionBehavior((b) => {
+				const { fixed: _drop, ...rest } = b;
+				void _drop;
+				return rest as Extract<BehaviorCheck, { kind: 'reference_solution' }>;
+			});
+		}
+	}
+
+	const refGeneratorEnabled = $derived(
+		isReferenceSolutionBehavior(config.behavior) && config.behavior.generator !== undefined
+	);
+
+	function toggleRefGenerator(checked: boolean) {
+		if (!isReferenceSolutionBehavior(config.behavior)) return;
+		if (checked) {
+			updateReferenceSolutionBehavior((b) => ({
+				...b,
+				generator: b.generator ?? {
+					code: '(__import__("random").randint(0, 100),)',
+					count: 20,
+					seed: 42
+				}
+			}));
+		} else {
+			updateReferenceSolutionBehavior((b) => {
+				const { generator: _drop, ...rest } = b;
+				void _drop;
+				return rest as Extract<BehaviorCheck, { kind: 'reference_solution' }>;
+			});
+		}
+	}
+
+	// At least one of the two subsections must be active. Surfaced as an
+	// inline warning (the server Zod refine catches the empty case too).
+	const refSubsectionsOk = $derived(
+		!isReferenceSolutionBehavior(config.behavior) || refFixedEnabled || refGeneratorEnabled
+	);
 
 	// ===========================================================================
 	// Bindable wrapper for AST requirements (so the panel can $bindable)
@@ -961,6 +1136,225 @@
 				<Button type="button" variant="outline" size="sm" onclick={addVarEntry}>
 					<Plus class="mr-1 h-4 w-4" /> Ajouter une variable
 				</Button>
+			</div>
+		{/if}
+
+		<!-- .................................................. reference_solution -->
+		{#if isReferenceSolutionBehavior(config.behavior)}
+			{@const refBehavior = config.behavior}
+			<div class="space-y-4">
+				<p class="text-xs text-muted-foreground">
+					Test différentiel : fournis ta solution (cachée à l'élève) et le worker compare la
+					fonction de l'élève à la tienne sur des cas fixes (sentinelles que tu choisis) et/ou des
+					cas générés aléatoirement (couverture large, reproductible via le seed).
+				</p>
+
+				<div>
+					<label class="mb-1 block text-sm font-medium" for="ref-function-name">
+						Nom de la fonction
+					</label>
+					<Input
+						id="ref-function-name"
+						value={refBehavior.function_name}
+						oninput={(e) =>
+							updateReferenceSolutionBehavior((b) => ({
+								...b,
+								function_name: (e.target as HTMLInputElement).value
+							}))}
+						placeholder="ex: mediane"
+						autocomplete="off"
+					/>
+				</div>
+
+				<div>
+					<label class="mb-1 block text-sm font-medium" for="ref-code">
+						Solution de référence (Python)
+					</label>
+					<textarea
+						id="ref-code"
+						class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+						rows="8"
+						value={refBehavior.reference_code}
+						placeholder={REF_CODE_PLACEHOLDER}
+						oninput={(e) =>
+							updateReferenceSolutionBehavior((b) => ({
+								...b,
+								reference_code: (e.target as HTMLTextAreaElement).value
+							}))}
+					></textarea>
+					<p class="mt-1 text-xs text-muted-foreground">
+						Cachée à l'élève. C'est ta solution officielle ; elle sera comparée à celle de l'élève
+						sur chaque cas.
+					</p>
+				</div>
+
+				<!-- Toggle: cas fixes -->
+				<div class="rounded-md border border-border p-3">
+					<MyCheckbox
+						checked={refFixedEnabled}
+						onchange={toggleRefFixed}
+						label="Cas fixes (sentinelles que tu écris à la main)"
+					/>
+					{#if refFixedEnabled && refBehavior.fixed}
+						{@const fixedBehavior = refBehavior.fixed}
+						<div class="mt-3 space-y-2">
+							{#each fixedBehavior.cases as testCase, i (i)}
+								<div class="rounded-md border border-border p-3">
+									<div class="mb-2 flex items-center justify-between">
+										<span class="text-sm font-medium">Cas fixe {i + 1}</span>
+										<div class="flex items-center gap-3">
+											<MyCheckbox
+												checked={testCase.hidden ?? false}
+												onchange={(v) =>
+													updateReferenceSolutionBehavior((b) => {
+														const cases = [...(b.fixed?.cases ?? [])];
+														cases[i] = { ...cases[i], hidden: v };
+														return { ...b, fixed: { cases } };
+													})}
+												label="Caché"
+											/>
+											<Button
+												type="button"
+												variant="ghost"
+												size="sm"
+												onclick={() => removeRefFixedCase(i)}
+												disabled={fixedBehavior.cases.length <= 1}
+												aria-label="Supprimer le cas {i + 1}"
+											>
+												<Trash2 class="h-4 w-4" />
+											</Button>
+										</div>
+									</div>
+									<div class="grid gap-2 sm:grid-cols-2">
+										<div>
+											<label class="mb-1 block text-xs text-muted-foreground" for="ref-args-{i}">
+												Arguments (JSON, ex&nbsp;: <code>[[1, 2, 3]]</code>)
+											</label>
+											<textarea
+												id="ref-args-{i}"
+												class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+												class:border-red-500={refFixedDrafts[i]?.argsErr}
+												rows="2"
+												bind:value={refFixedDrafts[i].args}
+												onblur={() => commitRefFixedDraft(i)}
+											></textarea>
+											{#if refFixedDrafts[i]?.argsErr}
+												<p class="mt-1 text-xs text-red-600">{refFixedDrafts[i].argsErr}</p>
+											{/if}
+										</div>
+										<div>
+											<label
+												class="mb-1 block text-xs text-muted-foreground"
+												for="ref-expected-{i}"
+											>
+												Résultat attendu (JSON)
+											</label>
+											<textarea
+												id="ref-expected-{i}"
+												class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+												class:border-red-500={refFixedDrafts[i]?.expectedErr}
+												rows="2"
+												bind:value={refFixedDrafts[i].expected}
+												onblur={() => commitRefFixedDraft(i)}
+											></textarea>
+											{#if refFixedDrafts[i]?.expectedErr}
+												<p class="mt-1 text-xs text-red-600">
+													{refFixedDrafts[i].expectedErr}
+												</p>
+											{/if}
+										</div>
+									</div>
+								</div>
+							{/each}
+							<Button type="button" variant="outline" size="sm" onclick={addRefFixedCase}>
+								<Plus class="mr-1 h-4 w-4" /> Ajouter un cas
+							</Button>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Toggle: générateur -->
+				<div class="rounded-md border border-border p-3">
+					<MyCheckbox
+						checked={refGeneratorEnabled}
+						onchange={toggleRefGenerator}
+						label="Générateur (cas aléatoires reproductibles)"
+					/>
+					{#if refGeneratorEnabled && refBehavior.generator}
+						{@const gen = refBehavior.generator}
+						<div class="mt-3 space-y-3">
+							<div>
+								<label class="mb-1 block text-xs text-muted-foreground" for="ref-gen-code">
+									Code Python (expression qui retourne un tuple d'arguments)
+								</label>
+								<textarea
+									id="ref-gen-code"
+									class="block w-full rounded-md border border-border bg-background px-2 py-1 font-mono text-xs"
+									rows="3"
+									value={gen.code}
+									placeholder={REF_GEN_CODE_PLACEHOLDER}
+									oninput={(e) =>
+										updateReferenceSolutionBehavior((b) => ({
+											...b,
+											generator: b.generator
+												? { ...b.generator, code: (e.target as HTMLTextAreaElement).value }
+												: b.generator
+										}))}
+								></textarea>
+								<p class="mt-1 text-xs text-muted-foreground">
+									Doit retourner un tuple : <code>(a,)</code> pour 1 argument,
+									<code>(a, b)</code> pour 2.
+								</p>
+							</div>
+							<div class="grid gap-3 sm:grid-cols-2">
+								<div>
+									<label class="mb-1 block text-xs text-muted-foreground" for="ref-gen-count">
+										Nombre de cas (1-200)
+									</label>
+									<Input
+										id="ref-gen-count"
+										type="number"
+										min="1"
+										max="200"
+										value={gen.count}
+										oninput={(e) => {
+											const v = parseInt((e.target as HTMLInputElement).value, 10);
+											if (!isNaN(v) && v >= 1 && v <= 200)
+												updateReferenceSolutionBehavior((b) => ({
+													...b,
+													generator: b.generator ? { ...b.generator, count: v } : b.generator
+												}));
+										}}
+									/>
+								</div>
+								<div>
+									<label class="mb-1 block text-xs text-muted-foreground" for="ref-gen-seed">
+										Seed (reproductibilité)
+									</label>
+									<Input
+										id="ref-gen-seed"
+										type="number"
+										value={gen.seed}
+										oninput={(e) => {
+											const v = parseInt((e.target as HTMLInputElement).value, 10);
+											if (!isNaN(v))
+												updateReferenceSolutionBehavior((b) => ({
+													...b,
+													generator: b.generator ? { ...b.generator, seed: v } : b.generator
+												}));
+										}}
+									/>
+								</div>
+							</div>
+						</div>
+					{/if}
+				</div>
+
+				{#if !refSubsectionsOk}
+					<p class="text-sm text-amber-700 dark:text-amber-400" role="alert">
+						Active au moins une stratégie (cas fixes ou générateur).
+					</p>
+				{/if}
 			</div>
 		{/if}
 	</fieldset>

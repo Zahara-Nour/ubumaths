@@ -46,6 +46,29 @@ const validVariableCheckBehavior = {
 	expected_vars: { x: 6, y: 7 }
 };
 
+const validReferenceSolutionFixed = {
+	kind: 'reference_solution' as const,
+	function_name: 'mediane',
+	reference_code: 'def mediane(L):\n    return sorted(L)[len(L) // 2]\n',
+	fixed: {
+		cases: [
+			{ args: [[1, 2, 3]], expected: 2 },
+			{ args: [[1]], expected: 1 }
+		]
+	}
+};
+
+const validReferenceSolutionGenerator = {
+	kind: 'reference_solution' as const,
+	function_name: 'mediane',
+	reference_code: 'def mediane(L):\n    return sorted(L)[len(L) // 2]\n',
+	generator: {
+		code: '([1, 2, 3],)',
+		count: 10,
+		seed: 42
+	}
+};
+
 describe('validationConfigSchema (new shape)', () => {
 	describe('valid configs round-trip', () => {
 		it('accepts AST-only config', () => {
@@ -255,6 +278,95 @@ describe('behaviorCheckSchema', () => {
 			expect(behaviorCheckSchema.safeParse(ok).success).toBe(true);
 		});
 	});
+
+	describe('reference_solution', () => {
+		it('accepts fixed-only config', () => {
+			expect(behaviorCheckSchema.safeParse(validReferenceSolutionFixed).success).toBe(true);
+		});
+
+		it('accepts generator-only config', () => {
+			expect(behaviorCheckSchema.safeParse(validReferenceSolutionGenerator).success).toBe(true);
+		});
+
+		it('accepts fixed + generator combined', () => {
+			const both = {
+				...validReferenceSolutionFixed,
+				generator: validReferenceSolutionGenerator.generator
+			};
+			expect(behaviorCheckSchema.safeParse(both).success).toBe(true);
+		});
+
+		it('accepts optional tolerance', () => {
+			const withTolerance = {
+				...validReferenceSolutionFixed,
+				tolerance: { eps_abs: 1e-6, eps_rel: 1e-6 }
+			};
+			expect(behaviorCheckSchema.safeParse(withTolerance).success).toBe(true);
+		});
+
+		it('rejects when neither fixed nor generator is present', () => {
+			const broken = {
+				kind: 'reference_solution',
+				function_name: 'f',
+				reference_code: 'def f(x): return x'
+			};
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('rejects empty reference_code', () => {
+			const broken = { ...validReferenceSolutionFixed, reference_code: '' };
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('rejects invalid function_name', () => {
+			const broken = { ...validReferenceSolutionFixed, function_name: '1bad' };
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('rejects fixed cases all hidden', () => {
+			const broken = {
+				...validReferenceSolutionFixed,
+				fixed: {
+					cases: [{ args: [[1]], expected: 1, hidden: true }]
+				}
+			};
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('rejects generator with count < 1', () => {
+			const broken = {
+				...validReferenceSolutionGenerator,
+				generator: { ...validReferenceSolutionGenerator.generator, count: 0 }
+			};
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('rejects generator with count > 200', () => {
+			const broken = {
+				...validReferenceSolutionGenerator,
+				generator: { ...validReferenceSolutionGenerator.generator, count: 201 }
+			};
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('rejects generator missing seed', () => {
+			const broken = {
+				kind: 'reference_solution',
+				function_name: 'f',
+				reference_code: 'def f(x): return x',
+				generator: { code: '(1,)', count: 5 }
+			};
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+
+		it('rejects reference_code exceeding 5000 chars', () => {
+			const broken = {
+				...validReferenceSolutionFixed,
+				reference_code: 'a'.repeat(5001)
+			};
+			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
+		});
+	});
 });
 
 describe('validationResultSchema (new shape)', () => {
@@ -307,6 +419,26 @@ describe('validationResultSchema (new shape)', () => {
 				}
 			],
 			execution_time_ms: 27
+		};
+		expect(validationResultSchema.safeParse(result).success).toBe(true);
+	});
+
+	it('accepts a reference_solution result', () => {
+		const result = {
+			valid: false,
+			failed_layer: 'behavior',
+			behavior_kind: 'reference_solution',
+			test_results: [
+				{ passed: true, input: 'mediane([1, 2, 3])', expected: '2', actual: '2' },
+				{
+					passed: false,
+					input: 'mediane([3, 7])',
+					expected: '5',
+					actual: '7',
+					diff: 'attendu 5, obtenu 7'
+				}
+			],
+			execution_time_ms: 412
 		};
 		expect(validationResultSchema.safeParse(result).success).toBe(true);
 	});

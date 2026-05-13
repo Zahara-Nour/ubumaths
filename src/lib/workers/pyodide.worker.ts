@@ -2189,7 +2189,10 @@ async function runBehavior(
 	if (behavior.kind === 'unit_test') {
 		return runUnitTestBehavior(code, behavior, namespace);
 	}
-	return runVariableCheckBehavior(code, behavior, namespace);
+	if (behavior.kind === 'variable_check') {
+		return runVariableCheckBehavior(code, behavior, namespace);
+	}
+	return runReferenceSolutionBehavior(code, behavior, namespace);
 }
 
 /**
@@ -2802,6 +2805,445 @@ function serializeForDisplay(v: unknown): string {
 		});
 	} catch {
 		return String(v);
+	}
+}
+
+/**
+ * Run the reference_solution behavior layer (differential testing).
+ *
+ * Two phases:
+ *   1. `fixed` cases — teacher-supplied `(args, expected)` pairs, run like
+ *      `unit_test`. All errors are surfaced (no short-circuit) because the
+ *      teacher chose those cases deliberately; the student deserves to see
+ *      each verdict.
+ *   2. `generator` cases — the teacher provides a Python expression that
+ *      returns a tuple of args. We seed `random` with `seed + i` for each
+ *      iteration (reproducibility across students). Both the reference
+ *      function and the student function are called with deep-copied args
+ *      (Q4: avoids in-place mutation contaminating the other call). We
+ *      STOP at the first failure (Q1: counter-example focus, à la
+ *      Hypothesis) and surface one explicit `TestCaseResult`. If all
+ *      `count` generated cases pass, we emit a single synthetic
+ *      "passed" result so the UI reflects that work happened.
+ *
+ * Reference code runs in a separate namespace (`refNs`) so the student's
+ * code cannot inspect or shadow the teacher's helpers. The reference
+ * function object is then injected back into the student's namespace
+ * under `_ubumaths_ref_func` for the per-case snippets to invoke side by
+ * side.
+ *
+ * @param namespace Isolated Python dict for the student code.
+ */
+async function runReferenceSolutionBehavior(
+	code: string,
+	behavior: Extract<BehaviorCheck, { kind: 'reference_solution' }>,
+	namespace: PyProxy
+): Promise<{ valid: boolean; test_results: TestCaseResult[] }> {
+	if (!pyodide) {
+		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
+	}
+
+	const fnName = behavior.function_name;
+	const epsAbs = behavior.tolerance?.eps_abs ?? 0;
+	const epsRel = behavior.tolerance?.eps_rel ?? 0;
+	const testResults: TestCaseResult[] = [];
+	let allPassed = true;
+
+	// 1. Sandbox namespace for the teacher reference. Cleaned up in `finally`.
+	const refNs = pyodide.runPython('dict()') as PyProxy;
+
+	try {
+		// 2. Load reference_code into refNs. Errors here are teacher-side
+		//    bugs: surface a single global error and stop everything.
+		try {
+			await pyodide.runPythonAsync(behavior.reference_code, { globals: refNs });
+		} catch (error) {
+			return {
+				valid: false,
+				test_results: [
+					{
+						passed: false,
+						error: `Solution de référence : ${
+							error instanceof Error ? error.message : String(error)
+						}`
+					}
+				]
+			};
+		}
+
+		const refExists = (await pyodide.runPythonAsync(`'${fnName}' in dir()`, {
+			globals: refNs
+		})) as boolean;
+		if (!refExists) {
+			return {
+				valid: false,
+				test_results: [
+					{
+						passed: false,
+						error: `La fonction '${fnName}' n'est pas définie dans la solution de référence`
+					}
+				]
+			};
+		}
+
+		// 3. Load student code into the validation namespace.
+		try {
+			await pyodide.runPythonAsync(code, { globals: namespace });
+		} catch (error) {
+			return {
+				valid: false,
+				test_results: [
+					{
+						passed: false,
+						error: error instanceof Error ? error.message : String(error)
+					}
+				]
+			};
+		}
+
+		const studentExists = (await pyodide.runPythonAsync(`'${fnName}' in dir()`, {
+			globals: namespace
+		})) as boolean;
+		if (!studentExists) {
+			return {
+				valid: false,
+				test_results: [
+					{
+						passed: false,
+						error: `La fonction '${fnName}' n'est pas définie`
+					}
+				]
+			};
+		}
+
+		// 4. Inject the reference function + helpers into the student
+		//    namespace so per-case snippets can call both side by side.
+		const refFunc = refNs.get(fnName) as unknown;
+		namespace.set('_ubumaths_ref_func', refFunc as never);
+		namespace.set('_ubumaths_eps_abs', epsAbs);
+		namespace.set('_ubumaths_eps_rel', epsRel);
+
+		await pyodide.runPythonAsync(
+			`
+import copy as _ubumaths_copy
+import random as _ubumaths_random
+
+def _ubumaths_to_py(v):
+    return v.to_py() if hasattr(v, 'to_py') else v
+
+def _ubumaths_compare(a, b, eps_abs, eps_rel):
+    a = _ubumaths_to_py(a)
+    b = _ubumaths_to_py(b)
+    if isinstance(a, (tuple, list)) and isinstance(b, (tuple, list)):
+        if len(a) != len(b):
+            return False
+        return all(_ubumaths_compare(x, y, eps_abs, eps_rel) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        if set(a.keys()) != set(b.keys()):
+            return False
+        return all(_ubumaths_compare(a[k], b[k], eps_abs, eps_rel) for k in a)
+    if (
+        isinstance(a, (int, float))
+        and isinstance(b, (int, float))
+        and not isinstance(a, bool)
+        and not isinstance(b, bool)
+    ):
+        diff = abs(a - b)
+        threshold = max(eps_abs, eps_rel * max(abs(a), abs(b)))
+        return diff <= threshold
+    return a == b
+`,
+			{ globals: namespace }
+		);
+
+		// 5. Run fixed cases — all errors surfaced (no short-circuit).
+		if (behavior.fixed) {
+			for (const tc of behavior.fixed.cases) {
+				const result = await runOneFixedRefCase(fnName, tc, namespace);
+				allPassed = allPassed && result.passed;
+				testResults.push(
+					redactIfHidden(
+						{
+							passed: result.passed,
+							input: `${fnName}(${tc.args.map((a) => JSON.stringify(a)).join(', ')})`,
+							expected: JSON.stringify(tc.expected),
+							...(result.actualJson !== undefined ? { actual: result.actualJson } : {}),
+							...(result.diff ? { diff: result.diff } : {}),
+							...(result.error ? { error: result.error } : {})
+						},
+						tc.hidden === true
+					)
+				);
+			}
+		}
+
+		// 6. Run generator cases — STOP at first failure (Q1).
+		if (behavior.generator) {
+			const generator = behavior.generator;
+			let aborted = false;
+
+			for (let i = 0; i < generator.count; i++) {
+				const result = await runOneGeneratorRefCase(
+					fnName,
+					generator.code,
+					generator.seed + i,
+					namespace
+				);
+
+				if (result.kind === 'teacher_error') {
+					// Generator or reference threw — global teacher-side error.
+					testResults.push({ passed: false, error: result.error });
+					allPassed = false;
+					aborted = true;
+					break;
+				}
+
+				if (result.kind === 'student_error') {
+					testResults.push({
+						passed: false,
+						input: `${fnName}(${result.argsRepr})`,
+						error: result.error
+					});
+					allPassed = false;
+					aborted = true;
+					break;
+				}
+
+				if (!result.passed) {
+					testResults.push({
+						passed: false,
+						input: `${fnName}(${result.argsRepr})`,
+						expected: result.expectedRepr,
+						actual: result.actualRepr,
+						diff: 'La solution de référence et ta fonction divergent sur cette entrée.'
+					});
+					allPassed = false;
+					aborted = true;
+					break;
+				}
+			}
+
+			// All generated cases passed.
+			// Only emit a synthetic OK when the generator is the sole source
+			// of tests — otherwise the fixed cases already populate the
+			// counter, and adding a synthetic row would make "N/N tests
+			// passent" double-count (1 synthetic = 20 actual cases).
+			if (!aborted && !behavior.fixed) {
+				testResults.push({
+					passed: true,
+					input: `(${generator.count} cas générés, seed=${generator.seed})`
+				});
+			}
+		}
+
+		// Cleanup the helpers injected into the student namespace.
+		try {
+			namespace.delete('_ubumaths_ref_func');
+			namespace.delete('_ubumaths_eps_abs');
+			namespace.delete('_ubumaths_eps_rel');
+		} catch {
+			// Ignore cleanup errors
+		}
+
+		return { valid: allPassed, test_results: testResults };
+	} finally {
+		if (typeof (refNs as { destroy?: () => void }).destroy === 'function') {
+			(refNs as { destroy: () => void }).destroy();
+		}
+	}
+}
+
+/**
+ * Run a single fixed-case for the reference_solution layer. Behaves like
+ * the unit_test path: inject args + expected into the namespace, call the
+ * student function, compare via `_ubumaths_compare` (already injected by
+ * the caller), and return `{passed, actualJson?, diff?, error?}`.
+ */
+async function runOneFixedRefCase(
+	fnName: string,
+	tc: { args: unknown[]; expected: unknown },
+	namespace: PyProxy
+): Promise<{ passed: boolean; actualJson?: string; diff?: string; error?: string }> {
+	if (!pyodide) {
+		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
+	}
+
+	try {
+		namespace.set('_ubumaths_fc_args', tc.args);
+		namespace.set('_ubumaths_fc_expected', tc.expected);
+
+		const result = (await pyodide.runPythonAsync(
+			`
+_ubumaths_fc_actual = ${fnName}(*_ubumaths_fc_args)
+_ubumaths_fc_passed = _ubumaths_compare(_ubumaths_fc_actual, _ubumaths_fc_expected, _ubumaths_eps_abs, _ubumaths_eps_rel)
+{'passed': _ubumaths_fc_passed, 'actual': _ubumaths_fc_actual}
+`,
+			{ globals: namespace }
+		)) as PyProxy;
+
+		const jsResult = result.toJs() as { passed: boolean; actual: unknown };
+		if (typeof (result as { destroy?: () => void }).destroy === 'function') {
+			(result as { destroy: () => void }).destroy();
+		}
+
+		namespace.delete('_ubumaths_fc_args');
+		namespace.delete('_ubumaths_fc_expected');
+		namespace.delete('_ubumaths_fc_actual');
+		namespace.delete('_ubumaths_fc_passed');
+
+		return {
+			passed: jsResult.passed,
+			actualJson: JSON.stringify(jsResult.actual),
+			...(jsResult.passed
+				? {}
+				: {
+						diff: `attendu ${JSON.stringify(tc.expected)}, obtenu ${JSON.stringify(jsResult.actual)}`
+					})
+		};
+	} catch (error) {
+		try {
+			namespace.delete('_ubumaths_fc_args');
+			namespace.delete('_ubumaths_fc_expected');
+			namespace.delete('_ubumaths_fc_actual');
+			namespace.delete('_ubumaths_fc_passed');
+		} catch {
+			// Ignore cleanup
+		}
+		return {
+			passed: false,
+			error: error instanceof Error ? error.message : String(error)
+		};
+	}
+}
+
+type GeneratorCaseResult =
+	| {
+			kind: 'compared';
+			passed: boolean;
+			argsRepr: string;
+			expectedRepr: string;
+			actualRepr: string;
+	  }
+	| {
+			kind: 'student_error';
+			argsRepr: string;
+			error: string;
+	  }
+	| {
+			kind: 'teacher_error';
+			error: string;
+	  };
+
+/**
+ * Run a single generated case: seed RNG, build args via the teacher's
+ * generator code, deep-copy them, call reference and student
+ * side-by-side, compare. Reference-side failures (bad generator,
+ * reference throws) are flagged `teacher_error`; student-side failures
+ * are `student_error`.
+ */
+async function runOneGeneratorRefCase(
+	fnName: string,
+	generatorCode: string,
+	seedValue: number,
+	namespace: PyProxy
+): Promise<GeneratorCaseResult> {
+	if (!pyodide) {
+		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
+	}
+
+	namespace.set('_ubumaths_seed_value', seedValue);
+
+	// Step A — generate args + call reference (teacher-side errors flagged here).
+	let argsRepr: string;
+	try {
+		const phaseA = (await pyodide.runPythonAsync(
+			`
+_ubumaths_random.seed(_ubumaths_seed_value)
+
+def _ubumaths_gen_inputs():
+    return ${generatorCode}
+
+_ubumaths_args = _ubumaths_gen_inputs()
+if not isinstance(_ubumaths_args, tuple):
+    raise TypeError('Le générateur doit renvoyer un tuple d\\'arguments (utilise une virgule, ex: (x,))')
+
+_ubumaths_ref_args = _ubumaths_copy.deepcopy(_ubumaths_args)
+_ubumaths_expected = _ubumaths_ref_func(*_ubumaths_ref_args)
+{'args_repr': repr(_ubumaths_args), 'expected_repr': repr(_ubumaths_expected)}
+`,
+			{ globals: namespace }
+		)) as PyProxy;
+
+		const phaseAjs = phaseA.toJs() as { args_repr: string; expected_repr: string };
+		if (typeof (phaseA as { destroy?: () => void }).destroy === 'function') {
+			(phaseA as { destroy: () => void }).destroy();
+		}
+		argsRepr = phaseAjs.args_repr;
+
+		// Step B — call student with a fresh deepcopy (Q4) and compare.
+		try {
+			const phaseB = (await pyodide.runPythonAsync(
+				`
+_ubumaths_stu_args = _ubumaths_copy.deepcopy(_ubumaths_args)
+_ubumaths_actual = ${fnName}(*_ubumaths_stu_args)
+_ubumaths_passed = _ubumaths_compare(_ubumaths_actual, _ubumaths_expected, _ubumaths_eps_abs, _ubumaths_eps_rel)
+{'passed': _ubumaths_passed, 'actual_repr': repr(_ubumaths_actual)}
+`,
+				{ globals: namespace }
+			)) as PyProxy;
+
+			const phaseBjs = phaseB.toJs() as { passed: boolean; actual_repr: string };
+			if (typeof (phaseB as { destroy?: () => void }).destroy === 'function') {
+				(phaseB as { destroy: () => void }).destroy();
+			}
+
+			// Cleanup namespace from per-case scratch variables (best-effort).
+			cleanupGenCaseScratch(namespace);
+
+			return {
+				kind: 'compared',
+				passed: phaseBjs.passed,
+				argsRepr,
+				expectedRepr: phaseAjs.expected_repr,
+				actualRepr: phaseBjs.actual_repr
+			};
+		} catch (error) {
+			cleanupGenCaseScratch(namespace);
+			return {
+				kind: 'student_error',
+				argsRepr,
+				error: error instanceof Error ? error.message : String(error)
+			};
+		}
+	} catch (error) {
+		cleanupGenCaseScratch(namespace);
+		const message = error instanceof Error ? error.message : String(error);
+		return {
+			kind: 'teacher_error',
+			error: `Solution de référence ou générateur (seed=${seedValue}) : ${message}`
+		};
+	}
+}
+
+function cleanupGenCaseScratch(namespace: PyProxy): void {
+	// `_ubumaths_gen_inputs` is the `def` injected per case — without
+	// deleting it here, the function persists in the student's namespace
+	// past the validation run, holding a closure over `_ubumaths_ref_func`.
+	for (const k of [
+		'_ubumaths_seed_value',
+		'_ubumaths_args',
+		'_ubumaths_ref_args',
+		'_ubumaths_stu_args',
+		'_ubumaths_expected',
+		'_ubumaths_actual',
+		'_ubumaths_passed',
+		'_ubumaths_gen_inputs'
+	]) {
+		try {
+			namespace.delete(k);
+		} catch {
+			// Ignore — variable may not exist if the snippet failed early.
+		}
 	}
 }
 

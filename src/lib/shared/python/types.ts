@@ -234,6 +234,25 @@ export type BehaviorCheck =
 			 */
 			expected_vars: Record<string, unknown>;
 			tolerance?: UnitTestTolerance;
+	  }
+	| {
+			kind: 'reference_solution';
+			/**
+			 * Differential testing: the teacher provides a hidden reference
+			 * implementation; the worker compares the student's function
+			 * against it on a mix of fixed cases (teacher-curated sentinels)
+			 * and randomly-generated cases (broad coverage). At least one of
+			 * `fixed` or `generator` must be present.
+			 */
+			function_name: string;
+			reference_code: string;
+			fixed?: { cases: UnitTestCase[] };
+			generator?: {
+				code: string;
+				count: number;
+				seed: number;
+			};
+			tolerance?: UnitTestTolerance;
 	  };
 
 /**
@@ -254,7 +273,7 @@ export interface ExerciseValidationConfig {
 export interface ExerciseValidationResult {
 	valid: boolean;
 	failed_layer: 'ast' | 'behavior' | null;
-	behavior_kind?: 'output' | 'unit_test' | 'variable_check';
+	behavior_kind?: 'output' | 'unit_test' | 'variable_check' | 'reference_solution';
 	ast_issues?: string[];
 	test_results: TestCaseResult[];
 	error?: string;
