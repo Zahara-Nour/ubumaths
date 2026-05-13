@@ -3,6 +3,8 @@
 	import { browser } from '$app/environment';
 	import { invalidateAll } from '$app/navigation';
 	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
+	import LockedPythonEditor from '$lib/components/python/LockedPythonEditor.svelte';
+	import { parseTemplate } from '$lib/utils/locked-zones';
 	import PythonOutput from '$lib/components/python/PythonOutput.svelte';
 	import ExerciseValidationResult from '$lib/components/python/exercises/ExerciseValidationResult.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
@@ -57,6 +59,17 @@
 			exercise.validation_config.behavior.test_cases.some((tc) => tc.args.length > 0)
 	);
 
+	// Locked-zones mode detection: if the starter_code contains valid
+	// `{{id}}` / `{{id | "default"}}` markers, switch to the
+	// LockedPythonEditor where the student can only edit those zones.
+	// Malformed markers fall back to free-edit mode (the locked editor
+	// would also refuse to mount and show a configuration warning).
+	const lockedZonesActive = $derived.by(() => {
+		const tpl = exercise.starter_code ?? '';
+		const result = parseTemplate(tpl);
+		return result.markers.length > 0 && result.errors.length === 0;
+	});
+
 	const pyodideReady = $derived(executor?.state === 'ready');
 	const isLoadingPyodide = $derived(
 		executor?.state === 'loading-pyodide' || executor?.state === 'loading-packages'
@@ -79,10 +92,17 @@
 	onMount(() => {
 		if (!browser) return;
 
-		// Initialise editor: last submitted code > localStorage > starter_code
-		const saved = localStorage.getItem(localStorageKey);
-		const lastSubmittedCode = submissions.length > 0 ? submissions[0].code : null;
-		code = lastSubmittedCode ?? saved ?? exercise.starter_code ?? '';
+		// Initialise editor: last submitted code > localStorage > starter_code.
+		// In locked-zones mode, the LockedPythonEditor seeds `code` itself
+		// from the template defaults at mount — restoring a reconstructed
+		// string would skip the per-zone state the editor expects. V1
+		// trade-off: no session restoration in locked-zones mode (Phase 3
+		// can add it via a zone-values localStorage entry).
+		if (!lockedZonesActive) {
+			const saved = localStorage.getItem(localStorageKey);
+			const lastSubmittedCode = submissions.length > 0 ? submissions[0].code : null;
+			code = lastSubmittedCode ?? saved ?? exercise.starter_code ?? '';
+		}
 
 		// Pre-load Pyodide so the first Run/Vérifier click is snappy.
 		executor = new PlaygroundExecutor();
@@ -93,9 +113,13 @@
 		executor?.destroy();
 	});
 
-	// Auto-persist code to localStorage on every change.
+	// Auto-persist code to localStorage on every change. Disabled in
+	// locked-zones mode for V1 (the saved string is the reconstructed
+	// code, which the LockedPythonEditor cannot consume directly —
+	// it expects zone values).
 	$effect(() => {
 		if (!browser) return;
+		if (lockedZonesActive) return;
 		if (code) {
 			localStorage.setItem(localStorageKey, code);
 		}
@@ -172,6 +196,14 @@
 	}
 
 	function handleResetToStarter() {
+		// In locked-zones mode, the LockedPythonEditor owns its zone
+		// state; the per-zone reset buttons (Phase 3) are the proper UX.
+		// Until then, a page reload is the simplest way to restore the
+		// initial defaults.
+		if (lockedZonesActive) {
+			window.location.reload();
+			return;
+		}
 		code = exercise.starter_code ?? '';
 		validationResult = null;
 	}
@@ -347,7 +379,15 @@
 
 		<section class="space-y-3">
 			<div class="rounded-md border border-border">
-				<PythonEditor bind:value={code} {executor} onExecute={handleRun} />
+				{#if lockedZonesActive}
+					<LockedPythonEditor
+						template={exercise.starter_code ?? ''}
+						bind:value={code}
+						onExecute={handleRun}
+					/>
+				{:else}
+					<PythonEditor bind:value={code} {executor} onExecute={handleRun} />
+				{/if}
 			</div>
 
 			<div class="flex flex-wrap gap-2">
@@ -493,13 +533,21 @@
 								{#if sub.assignment_id === null}
 									<Badge variant="outline" class="text-xs">Libre</Badge>
 								{/if}
-								<button
-									type="button"
-									class="ml-auto text-xs text-primary hover:underline"
-									onclick={() => handleLoadSubmission(sub.code)}
-								>
-									Charger ce code
-								</button>
+								<!--
+									"Charger ce code" wouldn't work in locked-zones mode
+									(the saved string is the reconstructed code, not a
+									Record<id, value>) — hide it there. Phase 3 can wire
+									it back up once submissions store the zone values.
+								-->
+								{#if !lockedZonesActive}
+									<button
+										type="button"
+										class="ml-auto text-xs text-primary hover:underline"
+										onclick={() => handleLoadSubmission(sub.code)}
+									>
+										Charger ce code
+									</button>
+								{/if}
 							</li>
 						{/each}
 					</ul>

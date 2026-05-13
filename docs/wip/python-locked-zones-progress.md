@@ -26,7 +26,7 @@
 | Phase | Description                                | Statut                  |
 | ----- | ------------------------------------------ | ----------------------- |
 | 1     | Parser + reconstruction (utilitaires purs) | ✅ Complétée (38 tests) |
-| 2     | CodeMirror zones éditables côté élève      | À faire                 |
+| 2     | CodeMirror zones éditables côté élève      | ✅ Complétée            |
 | 3     | Surlignage + boutons reset                 | À faire                 |
 | 4     | UI teacher (prévisualisation + aide)       | À faire                 |
 | 5     | Zod refine + tests intégration             | À faire                 |
@@ -58,8 +58,36 @@ reconstructCode(template: string, values: Record<string, string>): string
 renderDefaults(template: string): { rendered: string; zones: RenderZone[]; errors: ParseError[] }
 ```
 
+## Phase 2 — état final
+
+### Fichiers
+
+- `src/lib/components/python/LockedPythonEditor.svelte` (NOUVEAU) — composant CodeMirror dédié, `StateField<LiveZone[]>` pour les positions courantes, `transactionFilter` qui rejette les changements hors zones + newlines, `EditorView.decorations.compute` pour le surlignage des zones.
+- `src/routes/(public)/python-exercises/[id]/+page.svelte` (modifié) — détection `lockedZonesActive` via `parseTemplate`, switch entre `LockedPythonEditor` et `PythonEditor`, désactivation de la persistance localStorage + bouton "Charger ce code" en mode locked.
+
+### Findings du code-reviewer adressés
+
+- **B2 Undo/redo bloqué** → bypass du filter pour `tr.isUserEvent('undo' | 'redo')`. Sans ça, undo silently stripped après une rejection de paste — UX cassée.
+- **B3 Paste mixte silently dropped** → toast d'avertissement via `toaster.warning(...)` avec message localisé selon la raison (newline vs hors zone). Évite le « keyboard cassé » perçu.
+- **I2 Race lazy-load + onDestroy** → guard `if (!editorContainer) return` après le `await Promise.all([...])`. Bail clean si le composant est démonté pendant le chargement.
+- **I3 Sort + filter décorations** → `zones.filter(z.start < z.end).sort(...)` avant `Decoration.set`. Évite le crash sur zone collapsed (from === to) et un éventuel out-of-order après mapPos.
+- **I4 "Charger ce code" silent fail** → bouton masqué en mode locked (la string saved est reconstruite, pas un Record<id, value>).
+- **N1 fontSize hardcodé** → retiré du `EditorView.theme`, le CSS variable `--editor-font-size` du container fait déjà le job.
+
+### Décisions reportées à V2 (acceptables pour V1)
+
+- I1 : `reconstructCode` re-parse le template à chaque keystroke. Mesure d'abord avant d'optimiser (cacher les markers).
+- Restauration localStorage en mode locked : Phase 3 stockera un `Record<id, value>` séparé.
+
+### Compatibilité
+
+- Exo sans marqueurs (la plupart actuellement) → `lockedZonesActive` retourne `false` → `PythonEditor` classique inchangé.
+- Exo avec marqueurs malformés → `LockedPythonEditor` affiche un banner rouge « Cet exercice est mal configuré » avec la liste des erreurs.
+
 ## Fichiers modifiés (au fur et à mesure)
 
 - ✅ `src/lib/utils/locked-zones.ts`
 - ✅ `src/lib/utils/locked-zones.test.ts`
+- ✅ `src/lib/components/python/LockedPythonEditor.svelte`
+- ✅ `src/routes/(public)/python-exercises/[id]/+page.svelte`
 - ✅ `docs/wip/python-locked-zones-progress.md`
