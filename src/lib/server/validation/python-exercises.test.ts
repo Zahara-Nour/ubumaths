@@ -6,9 +6,24 @@
 import { describe, it, expect } from 'vitest';
 import {
 	behaviorCheckSchema,
+	createExerciseSchema,
+	updateExerciseSchema,
 	validationConfigSchema,
 	validationResultSchema
 } from './python-exercises';
+
+const validCreatePayload = {
+	title: 'Médiane',
+	solution_code: 'def f(L):\n    return sorted(L)[len(L) // 2]\n',
+	validation_config: {
+		behavior: {
+			kind: 'unit_test',
+			function_name: 'f',
+			test_cases: [{ args: [[1, 2, 3]], expected: 2, hidden: false }]
+		}
+	},
+	level: 'lycee' as const
+};
 
 const exactComparison = { kind: 'exact' as const };
 
@@ -366,6 +381,81 @@ describe('behaviorCheckSchema', () => {
 			};
 			expect(behaviorCheckSchema.safeParse(broken).success).toBe(false);
 		});
+	});
+});
+
+describe('createExerciseSchema / updateExerciseSchema — locked-zones markers', () => {
+	it('accepts a payload with no starter_code', () => {
+		const ok = createExerciseSchema.safeParse(validCreatePayload);
+		expect(ok.success).toBe(true);
+	});
+
+	it('accepts a payload with a starter_code containing no markers', () => {
+		const r = createExerciseSchema.safeParse({
+			...validCreatePayload,
+			starter_code: 'x = 5\nprint(x)\n'
+		});
+		expect(r.success).toBe(true);
+	});
+
+	it('accepts a payload with well-formed locked-zone markers', () => {
+		const r = createExerciseSchema.safeParse({
+			...validCreatePayload,
+			starter_code:
+				'while {{cond | "False"}}:\n    A = {{update | "..."}}    # à compléter\n    n = n + 1\n'
+		});
+		expect(r.success).toBe(true);
+	});
+
+	it('rejects a payload with a malformed marker (invalid id)', () => {
+		const r = createExerciseSchema.safeParse({
+			...validCreatePayload,
+			starter_code: 'x = {{1bad}}'
+		});
+		expect(r.success).toBe(false);
+		if (!r.success) {
+			expect(r.error.issues.some((i) => i.path.includes('starter_code'))).toBe(true);
+		}
+	});
+
+	it('rejects a payload with a duplicate marker id', () => {
+		const r = createExerciseSchema.safeParse({
+			...validCreatePayload,
+			starter_code: 'a = {{x}}\nb = {{x}}'
+		});
+		expect(r.success).toBe(false);
+		if (!r.success) {
+			expect(r.error.issues.some((i) => i.message.toLowerCase().includes('plusieurs fois'))).toBe(
+				true
+			);
+		}
+	});
+
+	it('rejects a payload with an unterminated marker', () => {
+		const r = createExerciseSchema.safeParse({
+			...validCreatePayload,
+			starter_code: 'x = {{cond'
+		});
+		expect(r.success).toBe(false);
+	});
+
+	it('updateExerciseSchema applies the same locked-zone validation', () => {
+		const r = updateExerciseSchema.safeParse({
+			id: '00000000-0000-0000-0000-000000000000',
+			starter_code: 'x = {{1bad}}'
+		});
+		expect(r.success).toBe(false);
+		if (!r.success) {
+			expect(r.error.issues.some((i) => i.path.includes('starter_code'))).toBe(true);
+		}
+	});
+
+	it('updateExerciseSchema accepts well-formed markers', () => {
+		const r = updateExerciseSchema.safeParse({
+			id: '00000000-0000-0000-0000-000000000000',
+			starter_code: 'while {{cond | "False"}}:\n    pass\n'
+		});
+		expect(r.success).toBe(true);
 	});
 });
 

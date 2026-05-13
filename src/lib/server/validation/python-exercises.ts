@@ -4,6 +4,7 @@
  */
 
 import { z } from 'zod';
+import { parseTemplate } from '$lib/utils/locked-zones';
 
 // Constants for validation bounds
 const TIMEOUT_MIN = 100;
@@ -297,66 +298,95 @@ export const validationResultSchema = z.object({
 // Class level
 const exerciseLevelSchema = z.enum(['college', 'lycee', 'nsi', 'etudiant']);
 
+// Locked-zones markers inside starter_code (`{{id | "default"}}`) must be
+// well-formed before the exercise can be saved — otherwise the student
+// editor would silently fall back to free-edit mode, defeating the point
+// of locking. A `.refine()` on each schema (create + update) parses the
+// starter_code and rejects the payload if any marker error is reported.
+const lockedZonesStarterRefine = (
+	starter: string | null | undefined
+): { valid: true } | { valid: false; message: string } => {
+	if (starter == null) return { valid: true };
+	const { errors } = parseTemplate(starter);
+	if (errors.length === 0) return { valid: true };
+	const summary = errors.map((e) => e.message).join(' / ');
+	return { valid: false, message: `Marqueur(s) malformé(s) dans starter_code : ${summary}` };
+};
+
 // Create Exercise Schema
-export const createExerciseSchema = z.object({
-	title: z
-		.string()
-		.min(TITLE_MIN)
-		.max(TITLE_MAX)
-		.describe('Exercise title (required, 1-200 chars)'),
-	description: z
-		.string()
-		.max(DESCRIPTION_MAX)
-		.nullable()
-		.optional()
-		.describe('Exercise description (optional, max 5000 chars)'),
-	instructions: z
-		.string()
-		.max(INSTRUCTIONS_MAX)
-		.nullable()
-		.optional()
-		.describe('Exercise instructions (optional, max 10000 chars)'),
-	starter_code: z
-		.string()
-		.max(CODE_MAX)
-		.nullable()
-		.optional()
-		.describe('Initial code provided to student (optional)'),
-	solution_code: z
-		.string()
-		.min(CODE_MIN)
-		.max(CODE_MAX)
-		.describe('Solution code (required, 1-100000 chars)'),
-	validation_config: validationConfigSchema.describe('Validation strategy and configuration'),
-	level: exerciseLevelSchema.describe('Class level: college, lycee, nsi, etudiant'),
-	tags: z
-		.array(z.string().min(1).max(50))
-		.max(TAGS_MAX)
-		.default([])
-		.describe('Exercise tags (max 10)'),
-	source: z
-		.string()
-		.max(SOURCE_MAX)
-		.nullable()
-		.optional()
-		.describe('Free-text source of the exercise (e.g. "Bac Polynésie 09/2024")'),
-	is_public: z.boolean().default(false).describe('Whether exercise is publicly visible')
-});
+export const createExerciseSchema = z
+	.object({
+		title: z
+			.string()
+			.min(TITLE_MIN)
+			.max(TITLE_MAX)
+			.describe('Exercise title (required, 1-200 chars)'),
+		description: z
+			.string()
+			.max(DESCRIPTION_MAX)
+			.nullable()
+			.optional()
+			.describe('Exercise description (optional, max 5000 chars)'),
+		instructions: z
+			.string()
+			.max(INSTRUCTIONS_MAX)
+			.nullable()
+			.optional()
+			.describe('Exercise instructions (optional, max 10000 chars)'),
+		starter_code: z
+			.string()
+			.max(CODE_MAX)
+			.nullable()
+			.optional()
+			.describe('Initial code provided to student (optional)'),
+		solution_code: z
+			.string()
+			.min(CODE_MIN)
+			.max(CODE_MAX)
+			.describe('Solution code (required, 1-100000 chars)'),
+		validation_config: validationConfigSchema.describe('Validation strategy and configuration'),
+		level: exerciseLevelSchema.describe('Class level: college, lycee, nsi, etudiant'),
+		tags: z
+			.array(z.string().min(1).max(50))
+			.max(TAGS_MAX)
+			.default([])
+			.describe('Exercise tags (max 10)'),
+		source: z
+			.string()
+			.max(SOURCE_MAX)
+			.nullable()
+			.optional()
+			.describe('Free-text source of the exercise (e.g. "Bac Polynésie 09/2024")'),
+		is_public: z.boolean().default(false).describe('Whether exercise is publicly visible')
+	})
+	.superRefine((data, ctx) => {
+		const r = lockedZonesStarterRefine(data.starter_code);
+		if (!r.valid) {
+			ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['starter_code'], message: r.message });
+		}
+	});
 
 // Update Exercise Schema (all fields optional except id)
-export const updateExerciseSchema = z.object({
-	id: uuidSchema,
-	title: z.string().min(TITLE_MIN).max(TITLE_MAX).optional(),
-	description: z.string().max(DESCRIPTION_MAX).nullable().optional(),
-	instructions: z.string().max(INSTRUCTIONS_MAX).nullable().optional(),
-	starter_code: z.string().max(CODE_MAX).nullable().optional(),
-	solution_code: z.string().min(CODE_MIN).max(CODE_MAX).optional(),
-	validation_config: validationConfigSchema.optional(),
-	level: exerciseLevelSchema.optional(),
-	tags: z.array(z.string().min(1).max(50)).max(TAGS_MAX).optional(),
-	source: z.string().max(SOURCE_MAX).nullable().optional(),
-	is_public: z.boolean().optional()
-});
+export const updateExerciseSchema = z
+	.object({
+		id: uuidSchema,
+		title: z.string().min(TITLE_MIN).max(TITLE_MAX).optional(),
+		description: z.string().max(DESCRIPTION_MAX).nullable().optional(),
+		instructions: z.string().max(INSTRUCTIONS_MAX).nullable().optional(),
+		starter_code: z.string().max(CODE_MAX).nullable().optional(),
+		solution_code: z.string().min(CODE_MIN).max(CODE_MAX).optional(),
+		validation_config: validationConfigSchema.optional(),
+		level: exerciseLevelSchema.optional(),
+		tags: z.array(z.string().min(1).max(50)).max(TAGS_MAX).optional(),
+		source: z.string().max(SOURCE_MAX).nullable().optional(),
+		is_public: z.boolean().optional()
+	})
+	.superRefine((data, ctx) => {
+		const r = lockedZonesStarterRefine(data.starter_code);
+		if (!r.valid) {
+			ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['starter_code'], message: r.message });
+		}
+	});
 
 // Assign Exercise Schema
 export const assignExerciseSchema = z.object({
