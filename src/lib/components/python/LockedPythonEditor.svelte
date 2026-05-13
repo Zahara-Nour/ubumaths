@@ -85,19 +85,24 @@
 			}
 			value = reconstructCode(template, initialValues);
 
-			// Lazy-load CodeMirror modules.
+			// Lazy-load CodeMirror modules + the per-zone reset widget
+			// (extracted to its own module so the class is declared at
+			// top-level, avoiding Svelte's `perf_avoid_nested_class`
+			// warning on the in-function class definition).
 			const [
-				{ EditorView, keymap, lineNumbers, Decoration, WidgetType },
+				{ EditorView, keymap, lineNumbers, Decoration },
 				{ EditorState, StateField, Annotation },
 				{ python },
 				{ defaultHighlightStyle, syntaxHighlighting, bracketMatching },
-				{ history, defaultKeymap, historyKeymap }
+				{ history, defaultKeymap, historyKeymap },
+				{ ZoneResetWidget }
 			] = await Promise.all([
 				import('@codemirror/view'),
 				import('@codemirror/state'),
 				import('@codemirror/lang-python'),
 				import('@codemirror/language'),
-				import('@codemirror/commands')
+				import('@codemirror/commands'),
+				import('./locked-zone-widget')
 			]);
 
 			// The component may have been destroyed while we were awaiting
@@ -136,34 +141,6 @@
 			// the zone, but the helper transaction also widens or shrinks
 			// it — clearer to bypass the filter outright).
 			const resetAnnotation = Annotation.define<boolean>();
-
-			// Per-zone "↺" reset button rendered as an inline widget right
-			// after the zone's end position. Clicking it dispatches a
-			// reset transaction that restores the zone's original default.
-			class ZoneResetWidget extends WidgetType {
-				zoneId: string;
-				constructor(zoneId: string) {
-					super();
-					this.zoneId = zoneId;
-				}
-				toDOM(): HTMLElement {
-					const btn = document.createElement('button');
-					btn.type = 'button';
-					btn.className = 'cm-zoneResetBtn';
-					btn.dataset.zoneId = this.zoneId;
-					btn.title = 'Réinitialiser cette zone';
-					btn.setAttribute('aria-label', 'Réinitialiser cette zone');
-					btn.textContent = '↺';
-					return btn;
-				}
-				ignoreEvent(): boolean {
-					// Let CodeMirror's domEventHandlers receive the click.
-					return false;
-				}
-				eq(other: ZoneResetWidget): boolean {
-					return other.zoneId === this.zoneId;
-				}
-			}
 
 			const zoneMark = Decoration.mark({ class: 'cm-lockedZone' });
 			const zonesDecorations = EditorView.decorations.compute([zonesField], (state) => {
