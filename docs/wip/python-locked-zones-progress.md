@@ -29,7 +29,7 @@
 | 2     | CodeMirror zones éditables côté élève      | ✅ Complétée            |
 | 3     | Surlignage + boutons reset                 | ✅ Complétée            |
 | 4     | UI teacher (prévisualisation + aide)       | ✅ Complétée            |
-| 5     | Zod refine + tests intégration             | À faire                 |
+| 5     | Zod refine + tests intégration             | ✅ Complétée            |
 | 6     | Quality checks finaux + doc finale         | À faire                 |
 
 > **Note** : éditeur de code = **CodeMirror** (pas Monaco). Mentions « Monaco » dans les phases ci-dessus à interpréter comme CodeMirror.
@@ -122,11 +122,38 @@ renderDefaults(template: string): { rendered: string; zones: RenderZone[]; error
 - `pnpm check:incremental` : 9 errors / 47 warnings (inchangé vs Phase 3).
 - `npx eslint` : 0 issue sur le fichier modifié.
 
+## Phase 5 — état final
+
+### Ajouts dans `python-exercises.ts` (server)
+
+- **Helper `lockedZonesStarterRefine`** : appelle `parseTemplate(starter_code)` (le même utilitaire que les composants Svelte). Si erreurs, retourne `{ valid: false, message: ... }` avec la liste des erreurs concaténées.
+- **`createExerciseSchema.superRefine`** : appelle le helper, ajoute une issue Zod avec `path: ['starter_code']` et le message en cas d'erreur.
+- **`updateExerciseSchema.superRefine`** : même refine appliquée aux updates partiels (le `starter_code` est optionnel donc `null`/`undefined` est OK).
+
+### Tests
+
+- 8 nouveaux tests dans `python-exercises.test.ts` :
+  - payload sans `starter_code` accepté
+  - `starter_code` sans marqueur accepté
+  - marqueurs bien formés acceptés
+  - marqueur malformé (id invalide) rejeté avec issue sur `starter_code`
+  - id dupliqué rejeté avec message en français (« plusieurs fois »)
+  - marqueur non terminé rejeté
+  - `updateExerciseSchema` applique le même refine
+
+### Quality
+
+- `pnpm test:server` : 51 tests (43 préexistants + 8 nouveaux), tous passent.
+- `pnpm check:incremental` : 9 errors / 47 warnings (inchangé).
+- `npx eslint` : 0 issue.
+
 ## Fichiers modifiés (au fur et à mesure)
 
 - ✅ `src/lib/utils/locked-zones.ts`
 - ✅ `src/lib/utils/locked-zones.test.ts`
 - ✅ `src/lib/components/python/LockedPythonEditor.svelte`
 - ✅ `src/lib/components/python/exercises/ExerciseForm.svelte`
+- ✅ `src/lib/server/validation/python-exercises.ts`
+- ✅ `src/lib/server/validation/python-exercises.test.ts`
 - ✅ `src/routes/(public)/python-exercises/[id]/+page.svelte`
 - ✅ `docs/wip/python-locked-zones-progress.md`
