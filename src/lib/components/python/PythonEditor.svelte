@@ -21,7 +21,7 @@
 	import { pythonStore, type EditorTheme } from '$lib/stores/pythonPlayground.svelte';
 	import { theme as appTheme } from '$lib/stores/theme.svelte';
 	import type { CompletionItem, CompletionProvider } from '$lib/shared/python';
-	import { resolveEffectiveTheme } from './editor-theme';
+	import { loadThemeExtension, resolveEffectiveTheme } from './editor-theme';
 
 	// Props
 	let {
@@ -141,69 +141,6 @@
 
 	// Prevent race conditions during theme switch
 	let isReinitializing = $state(false);
-
-	/**
-	 * Load theme extension based on theme name
-	 * Each theme sets its own background color
-	 */
-	async function loadThemeExtension(themeName: EditorTheme): Promise<Extension | null> {
-		const { EditorView } = await import('@codemirror/view');
-
-		switch (themeName) {
-			case 'default':
-				// Default light theme with white background
-				return EditorView.theme({
-					'&': { backgroundColor: '#ffffff' },
-					'.cm-gutters': { backgroundColor: '#ffffff' }
-				});
-			case 'oneDark': {
-				const { oneDark } = await import('@codemirror/theme-one-dark');
-				return oneDark;
-			}
-			case 'dracula': {
-				const { dracula } = await import('@uiw/codemirror-theme-dracula');
-				return dracula;
-			}
-			case 'github': {
-				const { githubLight } = await import('@uiw/codemirror-theme-github');
-				return githubLight;
-			}
-			case 'githubDark': {
-				const { githubDark } = await import('@uiw/codemirror-theme-github');
-				return githubDark;
-			}
-			case 'nord': {
-				const { nord } = await import('@uiw/codemirror-theme-nord');
-				return nord;
-			}
-			case 'solarizedLight': {
-				const { solarizedLight } = await import('@uiw/codemirror-theme-solarized');
-				return solarizedLight;
-			}
-			case 'solarizedDark': {
-				const { solarizedDark } = await import('@uiw/codemirror-theme-solarized');
-				return solarizedDark;
-			}
-			case 'material': {
-				const { materialLight } = await import('@uiw/codemirror-theme-material');
-				return materialLight;
-			}
-			case 'materialDark': {
-				const { materialDark } = await import('@uiw/codemirror-theme-material');
-				return materialDark;
-			}
-			case 'vscode': {
-				const { vscodeLightInit } = await import('@uiw/codemirror-theme-vscode');
-				return vscodeLightInit();
-			}
-			case 'vscodeDark': {
-				const { vscodeDark } = await import('@uiw/codemirror-theme-vscode');
-				return vscodeDark;
-			}
-			default:
-				return null;
-		}
-	}
 
 	// Update value from editor
 	function updateValue(newValue: string): void {
