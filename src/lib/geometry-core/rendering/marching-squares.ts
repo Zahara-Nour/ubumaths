@@ -102,7 +102,39 @@ function edgePoint(
 }
 
 /**
+ * Cache for marching-squares results.
+ *
+ * The implicit-curve renderer is in the hot path: it re-runs marching squares
+ * (40 000 evaluations on a 200×200 grid) every time the SVG `{@const}` block
+ * re-evaluates — i.e. every `version++`, every pan, every zoom. For drags
+ * that don't touch the implicit curve (most of them), the result is
+ * identical to the previous frame.
+ *
+ * Cache key: the curve's compiled function (object identity, stable as
+ * long as the GeoImplicitCurve element isn't replaced). Cache value:
+ * the last viewport+gridSize+result. Since `GeoImplicitCurve` is autonomous
+ * (`dependsOn: readonly []`), the compiled function is strictly pure of
+ * (x, y) — caching by fn identity is sound.
+ *
+ * WeakMap auto-releases entries when the implicit-curve element is replaced
+ * (its compiled fn becomes unreachable from the figure → GC reclaims both).
+ */
+interface MarchingSquaresCacheEntry {
+	readonly viewportKey: string;
+	readonly gridSize: number;
+	readonly result: SampledCurve[];
+}
+const cache = new WeakMap<CompiledFn, MarchingSquaresCacheEntry>();
+
+function viewportKey(viewport: Viewport): string {
+	return `${viewport.xMin}|${viewport.xMax}|${viewport.yMin}|${viewport.yMax}`;
+}
+
+/**
  * Run the marching squares algorithm on F(x,y) over the given viewport.
+ *
+ * Memoised by (fn, viewport, gridSize). Same arguments → returns the cached
+ * SampledCurve[] reference (callers must not mutate). See cache notes above.
  *
  * @param fn - Compiled implicit function F(x,y)
  * @param viewport - Mathematical coordinate range
@@ -113,6 +145,22 @@ export function marchingSquares(
 	fn: CompiledFn,
 	viewport: Viewport,
 	gridSize: number = DEFAULT_GRID_SIZE
+): SampledCurve[] {
+	const key = viewportKey(viewport);
+	const cached = cache.get(fn);
+	if (cached && cached.viewportKey === key && cached.gridSize === gridSize) {
+		return cached.result;
+	}
+
+	const result = computeMarchingSquares(fn, viewport, gridSize);
+	cache.set(fn, { viewportKey: key, gridSize, result });
+	return result;
+}
+
+function computeMarchingSquares(
+	fn: CompiledFn,
+	viewport: Viewport,
+	gridSize: number
 ): SampledCurve[] {
 	const nx = gridSize;
 	const ny = gridSize;
