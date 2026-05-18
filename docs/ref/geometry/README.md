@@ -101,7 +101,8 @@ Top 3 optimisations prioritaires :
    reporte (refonte API multi-intersections necessaire).
 
 Autres hotspots : Newton 2D 8×8 starts dans intersections paramétriques,
-`marchingSquares` 200×200 sans cache, `version` global dans
+~~`marchingSquares` 200×200 sans cache~~ **FAIT 2026-05-18** (WeakMap cache par fn+viewport+gridSize),
+`version` global dans
 `GeometryCanvas.svelte` qui declenche le recalcul de tout.
 
 ### 5. [security.md](./security.md) — Audit securite

@@ -122,16 +122,24 @@ paramétrique × paramétrique. Chaque `newtonStep` appelle `eval1(t1)` et
 nouvel objet à chaque itération (ligne 87-96). Soit ~5120 allocations d'objets
 intermédiaires par appel.
 
-### 2.5 `marchingSquares` sur grille 200×200 à chaque viewport change — HIGH IMPACT
+### 2.5 ~~`marchingSquares` sur grille 200×200 à chaque viewport change~~ — **CORRIGÉ 2026-05-18**
 
-**Fichier** : `rendering/marching-squares.ts:112-155`
+**Fichier** : `rendering/marching-squares.ts`
 
-`marchingSquares()` évalue la fonction implicite sur 201×201 = 40 401 points,
-puis construit des segments. Il est appelé depuis `implicitCurveToSVG()` via
-`{@const svg = implicitCurveToSVG(...)}` dans le template Svelte (GeometryCanvas
-ligne 1591) **sans aucun cache**. Chaque pan, zoom, ou changement de `version`
-(drag d'un point quelconque) relance ce calcul complet, même si la courbe
-implicite elle-même n'a pas changé.
+> **Statut : FIXED.** `marchingSquares` est désormais mémoïsée via une
+> WeakMap module-level keyed par `CompiledFn`, avec viewport+gridSize en
+> sous-clé. Pour les drags qui ne touchent pas la courbe implicite (cas le
+> plus courant) : viewport identique → cache hit → ~40 000 évaluations
+> évitées par tick. Cache invalidé naturellement quand le `GeoImplicitCurve`
+> est remplacé (WeakMap GC). Sain car les courbes implicites sont
+> autonomes (`dependsOn: readonly []`), donc `compiledFn` est strictement
+> pure de `(x, y)`. 7 tests dédiés dans
+> `rendering/__tests__/marching-squares-cache.test.ts`.
+
+**Description historique** : `marchingSquares()` évaluait la fonction
+implicite sur 201×201 = 40 401 points sans cache. Chaque pan, zoom, ou
+changement de `version` (drag d'un point quelconque) relançait ce calcul
+complet, même si la courbe implicite elle-même n'avait pas changé.
 
 ### 2.6 `locusToSVG` et `computeLocusCurveSampling` dans le rendu SVG — HIGH IMPACT
 
@@ -205,6 +213,7 @@ pas ce même pattern.
 - `compiledXSecond`, `compiledYSecond` sur `GeoParametricCurve` (ajoutés 2026-05-18) — pré-compilés dans `Figure.createParametricCurve`, lus tels quels par `parametric-calculus.ts:getSecondDerivatives`.
 - `compiledFn` et `compiledDerivative` sur `GeoFunction` — idem.
 - `compiledFn` sur `GeoImplicitCurve` — compilé une fois.
+- `marchingSquares` (ajouté 2026-05-18) — WeakMap keyed par `CompiledFn`, avec viewport+gridSize en sous-clé. Cache hit pour tous les renders où ni la courbe ni le viewport ne changent.
 
 ### Ce qui manque de cache
 
@@ -213,10 +222,6 @@ changement de `version`, même si la courbe et le viewport n'ont pas changé.
 Un cache `{ version: number; viewportKey: string; path: string }` par courbe
 éviterait les 300+ évaluations à chaque tick d'un slider qui ne touche pas
 cette courbe.
-
-**Marching squares** (`marching-squares.ts`) : résultat recalculé à chaque
-rendu. Un cache keyed sur `(viewport.xMin, viewport.xMax, viewport.yMin,
-viewport.yMax, gridSize)` + version de l'élément implicite serait efficace.
 
 **Locus curve** : résultat recalculé à chaque rendu sans vérifier si le driver
 a bougé. Un cache keyed sur la position du driver (ou le `version` propre de
@@ -395,15 +400,19 @@ la courbe et le viewport n'ont pas changé.
 
 ---
 
-### 4. Cache de marching squares par courbe implicite — HIGH / MOYEN EFFORT
+### 4. ~~Cache de marching squares par courbe implicite~~ — **CORRIGÉ 2026-05-18**
 
-**Fichier** : `rendering/svg-primitives.ts:1975-2001`, `graph/figure.ts`
+**Fichier** : `rendering/marching-squares.ts`
 
-`implicitCurveToSVG()` est appelé sans aucun cache. Même logique que #3 :
-stocker `{ viewportKey, paths }` sur la Figure, invalider uniquement quand
-l'élément ou le viewport change.
+> **Statut : FIXED.** Cache implémenté directement dans `marchingSquares`
+> (pas sur la Figure). WeakMap module-level keyed par `CompiledFn` (object
+> identity ; auto-invalidée quand l'élément est remplacé), avec viewport et
+> gridSize en sous-clé. Plus simple que le plan initial (cache sur Figure)
+> : pas de couplage Figure ↔ rendering, pas de gestion de cycle de vie
+> manuelle (WeakMap GC l'entrée automatiquement). 7 tests de
+> régression dans `marching-squares-cache.test.ts`.
 
-Gain attendu : suppression de 40 000 évaluations de fonction implicite par
+Gain réel : suppression de 40 000 évaluations de fonction implicite par
 pan/zoom/drag qui ne touche pas la courbe.
 
 ---
