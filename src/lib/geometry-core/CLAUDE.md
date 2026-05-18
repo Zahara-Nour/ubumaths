@@ -53,7 +53,7 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
 - **`version: $state(0)`** dans `GeometryCanvas.svelte:207-212` : declenche le recalcul de TOUTES les courbes a chaque mutation, meme triviale.
 - **`extendLineToViewport`** dupliquee dans `svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts` (mot pour mot). Toute correction doit etre triple-appliquee.
 - **3 interfaces `NewtonConfig` distinctes** dans `parametric-newton.ts`, `parametric-intersection.ts`, `parametric-intersection-1d.ts` avec noms de champs differents (`tolerance` vs `convergenceTolerance`, `numStarts` vs `numStartsPerAxis`).
-- **`GeoOsculatingCircle`** dans l'union `GeoElement` mais absent des renderers SVG/TikZ/Typst — rendu uniquement dans `GeometryCanvas.svelte`. Export muet.
+- **`GeoOsculatingCircle`** rendu dans les 4 surfaces (canvas + SVG + TikZ + Typst) depuis 2026-05-18 via helper `osculatingCircleToSVG` et branches dedies. Si tu ajoutes un nouveau type `Geo*` qui produit un visuel, **verifier les 3 exporters** (`svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts`) en plus du canvas — pas de garde TypeScript ne te le rappellera.
 - **`graph` ↔ `dsl`** : plus de cycle depuis 2026-05-18. `singularity-warn` a ete deplace vers `$lib/mathAST/analysis/`. **Regle a maintenir** : `graph/` ne doit JAMAIS importer en valeur depuis `dsl/`. Si tu en as besoin, le helper appartient probablement a `$lib/mathAST/analysis/` ou a un nouveau dossier partage `geometry-core/analysis/`.
 - **9 erreurs preexistantes svelte-check** (~46 warnings). Baseline stable, ne pas commenter, juste verifier que mes modifs n'augmentent pas le compteur.
 
@@ -74,7 +74,11 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
 2. Type guard `isNewElement` dans le meme fichier
 3. Ajouter au union `GeoElement`
 4. Branche dans `graph/compute-position.ts` (sinon position jamais calculee)
-5. Branches dans `rendering/svg-primitives.ts`, `rendering/export-tikz.ts`, `rendering/export-typst.ts` (sinon export muet — piege classique)
+5. **Les 4 surfaces de rendu** (piege documente — `GeoOsculatingCircle` etait omis des exports avant 2026-05-18) :
+   - `GeometryCanvas.svelte` (canvas interactif)
+   - `rendering/svg-primitives.ts` + branche dans `rendering/export-svg.ts`
+   - `rendering/export-tikz.ts`
+   - `rendering/export-typst.ts`
 6. Si interactif : handler dans `interaction/`
 
 ### Ajouter une intersection

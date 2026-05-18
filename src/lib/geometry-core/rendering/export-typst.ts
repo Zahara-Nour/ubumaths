@@ -203,6 +203,13 @@ export function exportToTypst(
 			lines.push(
 				`  circle(${c(cc.ux, cc.uy)}, radius: ${Math.round(cc.r * 1000) / 1000}, stroke: ${stroke}, fill: none)`
 			);
+		} else if (el.type === 'osculatingCircle') {
+			const centre = figure.getPosition(el.id);
+			const radius = figure.getOsculatingCircleRadius(el.id);
+			if (!centre || radius === null || !Number.isFinite(radius)) continue;
+			lines.push(
+				`  circle(${c(geoToNumber(centre.x), geoToNumber(centre.y))}, radius: ${Math.round(radius * 1000) / 1000}, stroke: ${stroke}, fill: none)`
+			);
 		}
 	}
 

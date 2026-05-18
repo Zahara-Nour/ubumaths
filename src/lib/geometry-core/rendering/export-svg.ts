@@ -18,6 +18,7 @@ import {
 	rayToSVG,
 	vectorToSVG,
 	circleToSVG,
+	osculatingCircleToSVG,
 	arcToSVG,
 	sectorToSVG,
 	annulusToSVG,
@@ -219,17 +220,21 @@ export function exportToSVG(
 		}
 	}
 
-	// Pass 2: circles
+	// Pass 2: circles (including osculating circles)
 	for (const el of elements) {
 		if (!el.visible) continue;
 		if (
 			el.type !== 'circleByRadius' &&
 			el.type !== 'circleByPoint' &&
-			el.type !== 'circleBy3Points'
+			el.type !== 'circleBy3Points' &&
+			el.type !== 'osculatingCircle'
 		)
 			continue;
 		const sty = resolveStyle(el, figure.defaults);
-		const svg = circleToSVG(el.id, figure, transformer);
+		const svg =
+			el.type === 'osculatingCircle'
+				? osculatingCircleToSVG(el.id, figure, transformer)
+				: circleToSVG(el.id, figure, transformer);
 		if (!svg) continue;
 		if (useRough(sty, el.type)) {
 			lines.push(roughHTML(roughCircle(rc!, svg, roughOpts(el.id, sty)), sty.opacity));

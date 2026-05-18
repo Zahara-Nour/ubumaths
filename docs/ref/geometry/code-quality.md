@@ -142,13 +142,13 @@ Le prefixe `Geo` pour tous les types d'elements (`GeoFreePoint`, `GeoParametricC
 
 ## 5. Gestion d'erreurs
 
-### 5.1 GeoOsculatingCircle : rendu absent dans svg-primitives
+### 5.1 ~~GeoOsculatingCircle : rendu absent dans svg-primitives~~ — **CORRIGE 2026-05-18**
 
-**Severity: Critical**
+**Severity: ~~Critical~~ Resolved**
 
-`GeoOsculatingCircle` est un type membre de l'union `GeoElement` (ajouté dans `types/elements.ts` ligne 902, inclus dans l'union ligne 1306). Le rendu SVG de ce type **n'est pas implemente dans `svg-primitives.ts`** — aucun `case` ou branche ne le traite. Le rendu est geré en dur dans `GeometryCanvas.svelte` (lignes 1073–1095) via `figure.getPosition()` et `figure.getOsculatingCircleRadius()`. Les exports TikZ et Typst n'ont pas non plus de cas pour ce type.
+> **Statut : FIXED.** Helper `osculatingCircleToSVG` ajoute dans `svg-primitives.ts` (suit la signature de `circleToSVG`). Branches `else if (el.type === 'osculatingCircle')` ajoutees dans le Pass 2 (cercles) de `export-svg.ts`, `export-tikz.ts`, `export-typst.ts`. Les cercles osculateurs sont desormais exportes correctement dans les 3 formats. Cas degeneres (κ ≈ 0, γ' ≈ 0) silencieusement omis dans tous les exports (coherent avec le canvas). 6 tests dedies dans `rendering/__tests__/osculating-circle-export.test.ts`.
 
-Consequence : les exports SVG/TikZ/Typst silencieusement omettent les cercles osculateurs. C'est une regression de feature invisible.
+**Description historique** : `GeoOsculatingCircle` etait un type membre de l'union `GeoElement` (`types/elements.ts:902`) mais le rendu n'etait implemente que dans `GeometryCanvas.svelte` (canvas interactif), pas dans les 3 modules d'export. Consequence : les exports SVG/TikZ/Typst omettaient silencieusement les cercles osculateurs — regression de feature invisible.
 
 ### 5.2 Deux strategies d'erreur incompatibles dans figure.ts
 
@@ -359,10 +359,12 @@ Le fichier `src/lib/geometry-core/index.ts` reexporte la totalite des neuf sous-
 
 La base de code geometry-core est **fonctionnellement robuste** (1 500+ tests, pas de TODO/FIXME, couverture etendue) mais presente une **dette structurelle significative** accumulee sur 5 mois de livraisons rapides et paralleles.
 
-Le probleme le plus urgent restant est :
+**Les deux problemes critiques initialement identifies sont corriges (2026-05-18)** :
 
-1. ~~**Le cycle de dependance `graph/figure.ts` -> `dsl/singularity-warn.ts`**~~ **CORRIGE 2026-05-18** (move vers `$lib/mathAST/analysis/`).
+1. ~~**Le cycle de dependance `graph/figure.ts` -> `dsl/singularity-warn.ts`**~~ **CORRIGE** (move vers `$lib/mathAST/analysis/`).
 
-2. **L'absence de rendu SVG/TikZ/Typst pour `GeoOsculatingCircle`** dans les modules d'export. Les cercles osculateurs ne sont rendus que dans `GeometryCanvas.svelte` (canvas interactif). Un export SVG/TikZ produit un figure silencieusement incomplete.
+2. ~~**L'absence de rendu SVG/TikZ/Typst pour `GeoOsculatingCircle`**~~ **CORRIGE** (helper `osculatingCircleToSVG` + branches dans les 3 exporters).
+
+Reste a faire dans la dette critique : casser le switch `_executeBuiltinInner` (2 045 lignes, 62 cases) dans `dsl/builtins.ts` — section 4 ci-dessus. Effort estime 1-2 jours.
 
 Les points 3 a 10 sont de la dette de maintenabilite sans impact fonctionnel immediat, mais ils ralentiront l'ajout de nouveaux types d'elements et augmentent le risque de regression silencieuse.

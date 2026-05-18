@@ -220,6 +220,13 @@ export function exportToTikZ(
 			lines.push(
 				`  \\draw[${opts}] ${coord(cc.ux, cc.uy)} circle (${Math.round(cc.r * 1000) / 1000});`
 			);
+		} else if (el.type === 'osculatingCircle') {
+			const centre = figure.getPosition(el.id);
+			const radius = figure.getOsculatingCircleRadius(el.id);
+			if (!centre || radius === null || !Number.isFinite(radius)) continue;
+			lines.push(
+				`  \\draw[${opts}] ${coord(geoToNumber(centre.x), geoToNumber(centre.y))} circle (${Math.round(radius * 1000) / 1000});`
+			);
 		}
 	}
 
