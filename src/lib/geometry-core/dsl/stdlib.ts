@@ -43,40 +43,8 @@ macro hauteur(A, B, C):
 # polygone unique (au lieu d'un array de points). Sommets accessibles
 # via sommet(p, i) et sommets(p).
 
-# ─── Corde ───────────────────────────────────────────────────
-
-macro corde(c, d):
-    P1 = intersection(c, d, 1)
-    masque(P1)
-    P2 = intersection(c, d, 2)
-    masque(P2)
-    s = segment(P1, P2)
-    retourne s
-
-# ─── Cercles remarquables ────────────────────────────────────
-
-macro cercle_circonscrit(A, B, C):
-    d1 = mediatrice(A, B)
-    masque(d1)
-    d2 = mediatrice(B, C)
-    masque(d2)
-    O = intersection(d1, d2)
-    masque(O)
-    c = cercle(O, passant=A)
-    retourne c
-
-macro cercle_inscrit(A, B, C):
-    b1 = bissectrice(A, B, C)
-    masque(b1)
-    b2 = bissectrice(B, C, A)
-    masque(b2)
-    I = intersection(b1, b2)
-    masque(I)
-    ab = droite(A, B)
-    masque(ab)
-    r = distance(I, ab)
-    c = cercle(I, rayon=r)
-    retourne c
+# NOTE : corde, cercle_circonscrit, cercle_inscrit ont été migrés
+# en builtins (dsl/builtins.ts).
 
 # ─── Points remarquables du triangle ───────────────────────
 
@@ -111,13 +79,5 @@ macro droite_euler(A, B, C):
     d = droite(G, H)
     retourne d
 
-macro cercle_euler(A, B, C):
-    M1 = milieu(A, B)
-    masque(M1)
-    M2 = milieu(B, C)
-    masque(M2)
-    M3 = milieu(A, C)
-    masque(M3)
-    c = cercle_circonscrit(M1, M2, M3)
-    retourne c
+# NOTE : cercle_euler migré en builtin.
 `;

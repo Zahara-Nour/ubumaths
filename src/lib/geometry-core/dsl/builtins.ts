@@ -4619,6 +4619,163 @@ function handleEtoile(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('etoile', handleEtoile);
 
+// ─── 16. corde(c, d) → segment ──────────────────────────────────────
+
+function handleCorde(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`corde()\` attend 2 arguments (cercle, droite), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'corde(c, d)',
+						description:
+							'corde du cercle `c` par la droite `d` (segment entre les deux intersections)'
+					}
+				]
+			},
+			line
+		);
+	const arg1 = pos[0];
+	const arg2 = pos[1];
+	const id1 = requireElement(arg1, 'arg1', line);
+	const id2 = requireElement(arg2, 'arg2', line);
+	const type1 = arg1.type === 'element' ? arg1.elementType : undefined;
+	const type2 = arg2.type === 'element' ? arg2.elementType : undefined;
+	let circleId: string;
+	let lineId: string;
+	if (type1 === 'cercle' && (type2 === 'droite' || type2 === 'segment' || type2 === 'demidroite')) {
+		circleId = id1;
+		lineId = id2;
+	} else if (
+		type2 === 'cercle' &&
+		(type1 === 'droite' || type1 === 'segment' || type1 === 'demidroite')
+	) {
+		circleId = id2;
+		lineId = id1;
+	} else {
+		throw new DslRuntimeError(
+			{
+				summary: '`corde()` attend un cercle et une droite (ou segment / demi-droite).',
+				hint: 'Vérifiez que vous passez bien un `cercle()` et une `droite()`.'
+			},
+			line
+		);
+	}
+	const P1 = figure.createIntersectionLC(lineId, circleId, 0, { visible: false });
+	const P2 = figure.createIntersectionLC(lineId, circleId, 1, { visible: false });
+	const id = figure.createSegment(P1, P2, { label });
+	return { figureId: id, symbolType: 'segment' };
+}
+HANDLERS.set('corde', handleCorde);
+
+// ─── 17. cercle_circonscrit(A, B, C) → cercle ───────────────────────
+
+/** Compute the circumcenter of three points via Cramer's formula. Returns null if collinear. */
+function computeCircumcenter(
+	A: { x: number; y: number },
+	B: { x: number; y: number },
+	C: { x: number; y: number }
+): { x: number; y: number } | null {
+	const D = 2 * (A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y));
+	if (Math.abs(D) < 1e-12) return null;
+	const Asq = A.x * A.x + A.y * A.y;
+	const Bsq = B.x * B.x + B.y * B.y;
+	const Csq = C.x * C.x + C.y * C.y;
+	const Ox = (Asq * (B.y - C.y) + Bsq * (C.y - A.y) + Csq * (A.y - B.y)) / D;
+	const Oy = (Asq * (C.x - B.x) + Bsq * (A.x - C.x) + Csq * (B.x - A.x)) / D;
+	return { x: Ox, y: Oy };
+}
+
+function handleCercleCirconscrit(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'cercle_circonscrit', {
+		syntax: 'cercle_circonscrit(A, B, C)',
+		description: 'cercle passant par les 3 points ; centre via `centre(c)`'
+	});
+	const [A, B, C] = coords;
+	const O = computeCircumcenter(A, B, C);
+	if (!O)
+		throw new DslRuntimeError(
+			{
+				summary:
+					'`cercle_circonscrit(A, B, C)` : les 3 points sont alignés, le cercle n’existe pas.'
+			},
+			line
+		);
+	const Oid = createHiddenPoint(figure, O.x, O.y);
+	const id = figure.createCircleByPoint(Oid, ids[0], { label });
+	return { figureId: id, symbolType: 'cercle' };
+}
+HANDLERS.set('cercle_circonscrit', handleCercleCirconscrit);
+
+// ─── 18. cercle_inscrit(A, B, C) → cercle ───────────────────────────
+
+function handleCercleInscrit(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'cercle_inscrit', {
+		syntax: 'cercle_inscrit(A, B, C)',
+		description: 'cercle inscrit au triangle `ABC` ; centre via `centre(c)`'
+	});
+	const [A, B, C] = coords;
+	const a = Math.hypot(B.x - C.x, B.y - C.y);
+	const b = Math.hypot(C.x - A.x, C.y - A.y);
+	const c = Math.hypot(A.x - B.x, A.y - B.y);
+	const perim = a + b + c;
+	if (perim < 1e-15)
+		throw new DslRuntimeError(
+			{ summary: '`cercle_inscrit(A, B, C)` : les 3 points sont confondus.' },
+			line
+		);
+	const Ix = (a * A.x + b * B.x + c * C.x) / perim;
+	const Iy = (a * A.y + b * B.y + c * C.y) / perim;
+	const s = perim / 2;
+	const areaSqr = s * (s - a) * (s - b) * (s - c);
+	if (areaSqr <= 0)
+		throw new DslRuntimeError(
+			{
+				summary:
+					'`cercle_inscrit(A, B, C)` : triangle dégénéré (les 3 points sont alignés ou confondus).'
+			},
+			line
+		);
+	const r = Math.sqrt(areaSqr) / s;
+	const Iid = createHiddenPoint(figure, Ix, Iy);
+	const id = figure.createCircleByRadius(Iid, numeric(r), { label });
+	return { figureId: id, symbolType: 'cercle' };
+}
+HANDLERS.set('cercle_inscrit', handleCercleInscrit);
+
+// ─── 19. cercle_euler(A, B, C) → cercle ─────────────────────────────
+
+function handleCercleEuler(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'cercle_euler', {
+		syntax: 'cercle_euler(A, B, C)',
+		description: 'cercle des neuf points du triangle `ABC` ; centre via `centre(c)`'
+	});
+	const [A, B, C] = coords;
+	const O = computeCircumcenter(A, B, C);
+	if (!O)
+		throw new DslRuntimeError(
+			{
+				summary: '`cercle_euler(A, B, C)` : les 3 points sont alignés, le cercle n’existe pas.'
+			},
+			line
+		);
+	const Hx = A.x + B.x + C.x - 2 * O.x;
+	const Hy = A.y + B.y + C.y - 2 * O.y;
+	const Ex = (O.x + Hx) / 2;
+	const Ey = (O.y + Hy) / 2;
+	const R = Math.hypot(A.x - O.x, A.y - O.y);
+	const r = R / 2;
+	const Eid = createHiddenPoint(figure, Ex, Ey);
+	const id = figure.createCircleByRadius(Eid, numeric(r), { label });
+	return { figureId: id, symbolType: 'cercle' };
+}
+HANDLERS.set('cercle_euler', handleCercleEuler);
+
 function _executeBuiltinInner(
 	name: string,
 	pos: ResolvedValue[],
@@ -4732,7 +4889,11 @@ export const BUILTIN_NAMES = new Set([
 	'carre',
 	'losange',
 	'polygone_regulier',
-	'etoile'
+	'etoile',
+	'corde',
+	'cercle_circonscrit',
+	'cercle_inscrit',
+	'cercle_euler'
 ]);
 
 /** Math functions that return numbers. */
