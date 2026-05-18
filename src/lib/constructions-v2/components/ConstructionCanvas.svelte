@@ -368,22 +368,23 @@
 								y1={pt.cy}
 								x2={pt.cx}
 								y2={origin.y}
-								stroke="#999"
-								stroke-width="1"
-								stroke-dasharray="4 3"
-								opacity={op * 0.7}
+								stroke="#3b82f6"
+								stroke-width="1.5"
+								stroke-dasharray="6 4"
+								opacity={op}
 							/>
 							<text
 								x={pt.cx}
-								y={origin.y + (yMath > 0 ? 14 : -6)}
-								fill="#666"
+								y={origin.y + (yMath > 0 ? 16 : -6)}
+								fill="#1e40af"
 								stroke="white"
-								stroke-width="2.5"
+								stroke-width="3"
 								paint-order="stroke"
-								font-size="11"
+								font-size="13"
+								font-weight="500"
 								font-family="KaTeX_Main, serif"
 								text-anchor="middle"
-								opacity={op * 0.85}>{xLabel}</text
+								opacity={op}>{xLabel}</text
 							>
 						{/if}
 						{#if Math.abs(xMath) > 1e-9}
@@ -392,22 +393,23 @@
 								y1={pt.cy}
 								x2={origin.x}
 								y2={pt.cy}
-								stroke="#999"
-								stroke-width="1"
-								stroke-dasharray="4 3"
-								opacity={op * 0.7}
+								stroke="#3b82f6"
+								stroke-width="1.5"
+								stroke-dasharray="6 4"
+								opacity={op}
 							/>
 							<text
-								x={origin.x + (xMath > 0 ? -6 : 6)}
+								x={origin.x + (xMath > 0 ? -8 : 8)}
 								y={pt.cy + 4}
-								fill="#666"
+								fill="#1e40af"
 								stroke="white"
-								stroke-width="2.5"
+								stroke-width="3"
 								paint-order="stroke"
-								font-size="11"
+								font-size="13"
+								font-weight="500"
 								font-family="KaTeX_Main, serif"
 								text-anchor={xMath > 0 ? 'end' : 'start'}
-								opacity={op * 0.85}>{yLabel}</text
+								opacity={op}>{yLabel}</text
 							>
 						{/if}
 					{/if}
