@@ -256,17 +256,32 @@ Audit complet du module + corrections en 12 commits (~1 jour de travail), du plu
 | `871f53be9` | Builtin handlers commit 1/2 — infra + 10 plus gros cases extraits          |
 | `016bc86e1` | Builtin handlers commit 2/2 — 49 cases restants, switch supprime           |
 
+### Phase 4 — Feedback runtime errors (4 commits, journee +1)
+
+Surfacage des erreurs runtime DSL dans `/construction-demo` et `ScriptEditor`. Avant : silence en cas d'echec d'execution, l'apercu restait fige sur l'etat precedent. Apres : panneau d'erreur riche (titre, ligne source, summary + hint + liste de formes acceptees), badge sur le canvas, figure partielle preservee.
+
+| Hash        | Sujet                                                                       |
+| ----------- | --------------------------------------------------------------------------- |
+| `b157885f2` | feat(constructions-v2) : UX runtime errors + executor resilient + `details` |
+| `8bcff578b` | feat(geometry-core/dsl) : 30 builtins de base migrés vers details           |
+| `e0e4db674` | feat(geometry-core/dsl) : calculus + coniques (10 builtins)                 |
+| `0ca030d10` | feat(geometry-core/dsl) : trace + courbe + texte (finition)                 |
+
+Voir [`docs/wip/dsl-structured-errors-progress.md`](../../wip/dsl-structured-errors-progress.md) pour le detail technique. ~50 builtins migres sur ~60, retro-compatibilite preservee (string flat encore accepte).
+
 ### Bilan chiffre
 
-| Avant                                           | Apres                                             |
-| ----------------------------------------------- | ------------------------------------------------- |
-| Severite dette critique : Major (3 items)       | Resolved (0 item)                                 |
-| `_executeBuiltinInner` : 2 045 lignes, 62 cases | 27 lignes, dispatcher Map                         |
-| `marchingSquares` : 40 000 evals/render         | Cache hit en drag commun                          |
-| Newton drag : 8 starts × 20 iter                | 1 start (warm) + 2 bornes                         |
-| Cycle `graph` → `dsl`                           | Plus aucune fleche source-level                   |
-| `GeoOsculatingCircle` exports                   | Muets → corrects en SVG/TikZ/Typst                |
-| Tests                                           | 2 986 → 2 988 (+5 fichiers nouveaux, -2 deplaces) |
+| Avant                                           | Apres                                                |
+| ----------------------------------------------- | ---------------------------------------------------- |
+| Severite dette critique : Major (3 items)       | Resolved (0 item)                                    |
+| `_executeBuiltinInner` : 2 045 lignes, 62 cases | 27 lignes, dispatcher Map                            |
+| `marchingSquares` : 40 000 evals/render         | Cache hit en drag commun                             |
+| Newton drag : 8 starts × 20 iter                | 1 start (warm) + 2 bornes                            |
+| Cycle `graph` → `dsl`                           | Plus aucune fleche source-level                      |
+| `GeoOsculatingCircle` exports                   | Muets → corrects en SVG/TikZ/Typst                   |
+| `DslRuntimeError` : string flat                 | `{ summary, hint, forms }` typé (50 builtins migres) |
+| Erreurs runtime dans `/construction-demo`       | Silencieuses → panneau riche + figure partielle      |
+| Tests                                           | 2 986 → 2 988 (+5 fichiers nouveaux, -2 deplaces)    |
 
 ### Recommandation prochaine session
 
