@@ -162,12 +162,12 @@ describe('courbe — parametric (D. errors)', () => {
 
 	it('D3. throws when both equations are in x', () => {
 		const script = `c = courbe("x = cos(t)", "x = sin(t)", t_min=0, t_max=1)`;
-		expect(() => runDsl(script)).toThrow(/équation en x.*y/);
+		expect(() => runDsl(script)).toThrow(/équation en `?x`?.*`?y`?/);
 	});
 
 	it('D4. throws when both equations are in y', () => {
 		const script = `c = courbe("y = cos(t)", "y = sin(t)", t_min=0, t_max=1)`;
-		expect(() => runDsl(script)).toThrow(/équation en x.*y/);
+		expect(() => runDsl(script)).toThrow(/équation en `?x`?.*`?y`?/);
 	});
 
 	it('D5. throws when LHS is z (not x or y)', () => {
