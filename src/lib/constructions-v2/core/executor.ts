@@ -15,7 +15,8 @@ import {
 	isCircleByRadius,
 	isCircleByPoint,
 	isArcByAngles,
-	isArcByPoints
+	isArcByPoints,
+	isPointElement
 } from '$lib/geometry-core/types/elements';
 import { SymbolTable } from '$lib/geometry-core/dsl/symbol-table';
 import type { ResolvedArgs, ResolvedValue } from '$lib/geometry-core/dsl/builtins';
@@ -150,7 +151,7 @@ export class ConstructionExecutor {
 				.filter((el) => DRAWABLE_TYPES.has(el.type))
 				.map((el) => el.id);
 			this._lastStepNewPointIds = newElements
-				.filter((el) => el.type === 'freePoint' || el.type === 'dependentPoint')
+				.filter((el) => isPointElement(el) && el.visible !== false)
 				.map((el) => el.id);
 			this.autoShowInstruments(sizeBefore);
 		} else {
@@ -639,9 +640,7 @@ export class ConstructionExecutor {
 				const newElements = fig.getAllElements().slice(sizeBefore);
 
 				const hasDrawable = newElements.some((el) => DRAWABLE_TYPES.has(el.type));
-				const hasPoint = newElements.some(
-					(el) => el.type === 'freePoint' || el.type === 'dependentPoint'
-				);
+				const hasPoint = newElements.some((el) => isPointElement(el) && el.visible !== false);
 				if (!hasDrawable) {
 					const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
 					const stepDur = hasPoint
