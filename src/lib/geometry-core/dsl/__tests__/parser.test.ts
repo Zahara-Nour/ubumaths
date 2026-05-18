@@ -349,4 +349,17 @@ describe('parser — errors', () => {
 	it('throws if named args before positional', () => {
 		expect(() => parse('cercle(rayon=3, O)')).toThrow(DslParseError);
 	});
+
+	it('throws when source exceeds 100 000 characters (defence-in-depth length guard)', () => {
+		const longSource = 'A = point(0, 0)\n'.repeat(7_000);
+		expect(longSource.length).toBeGreaterThan(100_000);
+		expect(() => parse(longSource)).toThrow(DslParseError);
+		expect(() => parse(longSource)).toThrow(/trop long/);
+	});
+
+	it('accepts a script just under the 100 000 limit', () => {
+		const justUnder = 'A = point(0, 0)\n'.repeat(6_000);
+		expect(justUnder.length).toBeLessThan(100_000);
+		expect(() => parse(justUnder)).not.toThrow();
+	});
 });

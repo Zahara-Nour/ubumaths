@@ -158,6 +158,12 @@ const RESERVED_NAMES = new Set(['\\pi', 'e']);
 const PARSE_CACHE = new Map<string, MathNode>();
 /** Strings known to fail `parseCustom` — avoid retrying them. */
 const PARSE_FAILURE_CACHE = new Set<string>();
+/**
+ * Cap on the number of distinct expressions kept in each cache. A crafted script
+ * with unique sub-expressions per iteration could otherwise grow these maps
+ * without bound across long-lived sessions (live-preview).
+ */
+const PARSE_CACHE_MAX = 5_000;
 
 function assertNameNotReserved(name: string, line: number): void {
 	if (RESERVED_NAMES.has(name)) {
@@ -431,9 +437,11 @@ class Interpreter {
 			try {
 				node = parseCustom(rawSource);
 			} catch {
+				if (PARSE_FAILURE_CACHE.size >= PARSE_CACHE_MAX) PARSE_FAILURE_CACHE.clear();
 				PARSE_FAILURE_CACHE.add(rawSource);
 				return null;
 			}
+			if (PARSE_CACHE.size >= PARSE_CACHE_MAX) PARSE_CACHE.clear();
 			PARSE_CACHE.set(rawSource, node);
 		}
 
