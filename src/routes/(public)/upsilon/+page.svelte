@@ -48,11 +48,7 @@
 
 <main class="container mx-auto p-4">
 	<div class="mb-6">
-		<h1 class="text-2xl font-bold text-foreground">Calculatrice graphique Upsilon</h1>
-		<p class="text-muted-foreground">
-			Simulateur web complet de la calculatrice graphique Upsilon (fork d'Epsilon par NumWorks).
-			Calcul, graphique, suite, statistiques, probabilités, équations, RPN, Python…
-		</p>
+		<h1 class="text-2xl font-bold text-foreground">Calculatrice</h1>
 	</div>
 
 	{#if !isLoaded}
@@ -72,10 +68,6 @@
 				<Calculator class="h-5 w-5" />
 				Lancer le simulateur
 			</button>
-			<p class="text-xs text-muted-foreground">
-				Le simulateur charge environ 5 Mo. Premier chargement plus long, puis mis en cache par le
-				navigateur.
-			</p>
 		</div>
 	{:else}
 		<div
@@ -97,7 +89,7 @@
 			<iframe
 				bind:this={iframeEl}
 				src="/upsilon-simulator/simulator.html?v=2"
-				title="Calculatrice graphique Upsilon"
+				title="Calculatrice"
 				class="h-[85vh] w-full rounded-lg border-0"
 				allow="clipboard-write"
 				onload={syncIframeTheme}
