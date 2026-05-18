@@ -4129,6 +4129,199 @@ function handleTrace(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('trace', handleTrace);
 
+// ════════════════════════════════════════════════════════════════════
+// Stdlib builtins — migrated from dsl/stdlib.ts
+// ════════════════════════════════════════════════════════════════════
+//
+// These builtins replace the former stdlib macros. Each produces a single
+// primary object; intermediate computed points are created directly with
+// `visible: false` (no createElement+masque round-trip).
+//
+// The DSL `macro foo(...): ...` mechanism remains intact, reserved for
+// user-defined construction recordings.
+
+/** Create a free point at the given math coordinates, hidden from the figure. */
+function createHiddenPoint(figure: Figure, x: number, y: number): string {
+	return figure.createFreePoint({ x: numeric(x), y: numeric(y) }, { visible: false });
+}
+
+/** Resolve a positional point arg to its math (x, y) coordinates. */
+function pointXY(
+	figure: Figure,
+	val: ResolvedValue,
+	name: string,
+	line: number
+): { x: number; y: number } {
+	const id = requireElement(val, name, line);
+	const pos = figure.getPosition(id);
+	if (!pos) throw new DslRuntimeError({ summary: `Position de \`${name}\` introuvable.` }, line);
+	return { x: geoToNumber(pos.x), y: geoToNumber(pos.y) };
+}
+
+/** Require N positional point args and return their IDs + math coords. */
+function requireNPoints(
+	ctx: BuiltinCtx,
+	expected: number,
+	names: string[],
+	macroName: string,
+	syntaxForm: { syntax: string; description: string }
+): { ids: string[]; coords: { x: number; y: number }[] } {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== expected)
+		throw new DslRuntimeError(
+			{
+				summary: `\`${macroName}()\` attend ${expected} points (${names.join(', ')}), ${pos.length} argument(s) reçu(s).`,
+				forms: [syntaxForm]
+			},
+			line
+		);
+	const ids: string[] = [];
+	const coords: { x: number; y: number }[] = [];
+	for (let i = 0; i < expected; i++) {
+		const id = requireElement(pos[i], names[i], line);
+		const xy = pointXY(figure, pos[i], names[i], line);
+		ids.push(id);
+		coords.push(xy);
+	}
+	return { ids, coords };
+}
+
+// ─── 1. mediatrice(A, B) → droite ───────────────────────────────────
+
+function handleMediatrice(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { coords } = requireNPoints(ctx, 2, ['A', 'B'], 'mediatrice', {
+		syntax: 'mediatrice(A, B)',
+		description: 'médiatrice du segment `[AB]`'
+	});
+	const [A, B] = coords;
+	const mx = (A.x + B.x) / 2;
+	const my = (A.y + B.y) / 2;
+	// Perpendicular direction to AB : rotate (Bx-Ax, By-Ay) by 90° → (-(By-Ay), Bx-Ax)
+	const nx = -(B.y - A.y);
+	const ny = B.x - A.x;
+	if (nx * nx + ny * ny < 1e-30)
+		throw new DslRuntimeError(
+			{
+				summary:
+					'`mediatrice(A, B)` : les points `A` et `B` sont confondus, la médiatrice n’est pas définie.'
+			},
+			line
+		);
+	const M = createHiddenPoint(figure, mx, my);
+	const H = createHiddenPoint(figure, mx + nx, my + ny);
+	const id = figure.createLine(M, H, { label });
+	return { figureId: id, symbolType: 'droite' };
+}
+HANDLERS.set('mediatrice', handleMediatrice);
+
+// ─── 2. perpendiculaire(P, A, B) → droite ───────────────────────────
+
+function handlePerpendiculaire(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 3, ['P', 'A', 'B'], 'perpendiculaire', {
+		syntax: 'perpendiculaire(P, A, B)',
+		description: 'droite passant par `P`, perpendiculaire à la droite `(AB)`'
+	});
+	const [P, A, B] = coords;
+	const Pid = ids[0];
+	const dx = B.x - A.x;
+	const dy = B.y - A.y;
+	if (dx * dx + dy * dy < 1e-30)
+		throw new DslRuntimeError(
+			{ summary: '`perpendiculaire(P, A, B)` : `A` et `B` sont confondus, direction indéfinie.' },
+			line
+		);
+	const nx = -dy;
+	const ny = dx;
+	const Q = createHiddenPoint(figure, P.x + nx, P.y + ny);
+	const id = figure.createLine(Pid, Q, { label });
+	return { figureId: id, symbolType: 'droite' };
+}
+HANDLERS.set('perpendiculaire', handlePerpendiculaire);
+
+// ─── 3. parallele(P, A, B) → droite ─────────────────────────────────
+
+function handleParallele(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 3, ['P', 'A', 'B'], 'parallele', {
+		syntax: 'parallele(P, A, B)',
+		description: 'droite passant par `P`, parallèle à la droite `(AB)`'
+	});
+	const [P, A, B] = coords;
+	const Pid = ids[0];
+	const dx = B.x - A.x;
+	const dy = B.y - A.y;
+	if (dx * dx + dy * dy < 1e-30)
+		throw new DslRuntimeError(
+			{ summary: '`parallele(P, A, B)` : `A` et `B` sont confondus, direction indéfinie.' },
+			line
+		);
+	const Q = createHiddenPoint(figure, P.x + dx, P.y + dy);
+	const id = figure.createLine(Pid, Q, { label });
+	return { figureId: id, symbolType: 'droite' };
+}
+HANDLERS.set('parallele', handleParallele);
+
+// ─── 4. mediane(A, B, C) → segment ──────────────────────────────────
+
+function handleMediane(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, label } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'mediane', {
+		syntax: 'mediane(A, B, C)',
+		description: 'médiane du triangle `ABC` issue de `A` (segment vers le milieu de `[BC]`)'
+	});
+	const [, B, C] = coords;
+	const Aid = ids[0];
+	const Mx = (B.x + C.x) / 2;
+	const My = (B.y + C.y) / 2;
+	const M = createHiddenPoint(figure, Mx, My);
+	const id = figure.createSegment(Aid, M, { label });
+	return { figureId: id, symbolType: 'segment' };
+}
+HANDLERS.set('mediane', handleMediane);
+
+// ─── 5. bissectrice(A, V, B) → droite ───────────────────────────────
+
+function handleBissectrice(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'V', 'B'], 'bissectrice', {
+		syntax: 'bissectrice(A, V, B)',
+		description: 'bissectrice de l’angle `AVB` (sommet `V`)'
+	});
+	const [A, V, B] = coords;
+	const Vid = ids[1];
+	const uX = A.x - V.x;
+	const uY = A.y - V.y;
+	const wX = B.x - V.x;
+	const wY = B.y - V.y;
+	const uLen = Math.hypot(uX, uY);
+	const wLen = Math.hypot(wX, wY);
+	if (uLen < 1e-15 || wLen < 1e-15)
+		throw new DslRuntimeError(
+			{
+				summary:
+					'`bissectrice(A, V, B)` : `A` ou `B` est confondu avec `V`, l’angle n’est pas défini.'
+			},
+			line
+		);
+	// Unit vectors from V toward A and B ; bisector direction = sum of unit vectors.
+	const bx = uX / uLen + wX / wLen;
+	const by = uY / uLen + wY / wLen;
+	if (bx * bx + by * by < 1e-15)
+		throw new DslRuntimeError(
+			{
+				summary:
+					'`bissectrice(A, V, B)` : `A`, `V`, `B` sont alignés et opposés depuis `V` — bissectrice indéterminée (deux directions possibles).'
+			},
+			line
+		);
+	const D = createHiddenPoint(figure, V.x + bx, V.y + by);
+	const id = figure.createLine(Vid, D, { label });
+	return { figureId: id, symbolType: 'droite' };
+}
+HANDLERS.set('bissectrice', handleBissectrice);
+
 function _executeBuiltinInner(
 	name: string,
 	pos: ResolvedValue[],
@@ -4227,7 +4420,12 @@ export const BUILTIN_NAMES = new Set([
 	'sommet',
 	'sommets',
 	'montre',
-	'masque'
+	'masque',
+	'mediatrice',
+	'perpendiculaire',
+	'parallele',
+	'mediane',
+	'bissectrice'
 ]);
 
 /** Math functions that return numbers. */
