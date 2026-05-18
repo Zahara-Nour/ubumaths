@@ -49,9 +49,19 @@ describe('translate', () => {
 		expect(isExact(result.y)).toBe(true);
 	});
 
-	it('result is numeric when vector is numeric', () => {
+	it('translate(exact, numeric-integer-vector) lifts integer to exact', () => {
+		// Since 2026-05-19: mixing exact with integer-numeric promotes the
+		// integer to a NumberNode so the result stays exact. This keeps
+		// `point(0,0)` + symbolic computations on the exact track.
 		const result = translate(pt(1, 2), numPt(3, 4));
+		expect(isExact(result.x)).toBe(true);
+		expect(geoToNumber(result.x)).toBe(4);
+	});
+
+	it('translate(exact, numeric-float-vector) stays numeric', () => {
+		const result = translate(pt(1, 2), numPt(0.5, 1.5));
 		expect(isNumeric(result.x)).toBe(true);
+		expect(geoToNumber(result.x)).toBeCloseTo(1.5, 10);
 	});
 
 	it('translates origin by itself stays at origin', () => {
@@ -187,9 +197,14 @@ describe('rotate', () => {
 		expect(isExact(result.y)).toBe(true);
 	});
 
-	it('result is numeric when point is numeric', () => {
+	it('rotate(numeric-integer-point, exact-center, exact-angle) lifts to exact', () => {
+		// Integer numeric source coords are lifted to NumberNodes during the
+		// exact arithmetic in `rotate`, keeping the result exact (cf. binaryOp
+		// in geo-arithmetic.ts).
 		const result = rotate(numPt(1, 0), pt(0, 0), piOver(2));
-		expect(isNumeric(result.x)).toBe(true);
+		expect(isExact(result.x)).toBe(true);
+		expect(geoToNumber(result.x)).toBeCloseTo(0, 10);
+		expect(geoToNumber(result.y)).toBeCloseTo(1, 10);
 	});
 });
 
@@ -429,10 +444,18 @@ describe('dilate', () => {
 		expect(isExact(result.y)).toBe(true);
 	});
 
-	it('result is numeric when factor is numeric', () => {
+	it('dilate(exact, exact, numeric-integer-factor) lifts to exact', () => {
 		const result = dilate(pt(3, 4), pt(0, 0), numeric(2));
+		expect(isExact(result.x)).toBe(true);
+		expect(isExact(result.y)).toBe(true);
+		expect(geoToNumber(result.x)).toBe(6);
+		expect(geoToNumber(result.y)).toBe(8);
+	});
+
+	it('dilate(exact, exact, numeric-float-factor) stays numeric', () => {
+		const result = dilate(pt(3, 4), pt(0, 0), numeric(2.5));
 		expect(isNumeric(result.x)).toBe(true);
-		expect(isNumeric(result.y)).toBe(true);
+		expect(geoToNumber(result.x)).toBe(7.5);
 	});
 
 	it('dilate with exact fraction factor', () => {

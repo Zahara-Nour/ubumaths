@@ -67,33 +67,52 @@ describe('exact + exact = exact', () => {
 });
 
 // =============================================================================
-// Propagation: exact + numeric = numeric
+// Propagation: exact + integer-numeric = exact (NEW contract since 2026-05-19)
+//
+// Architectural rule: GeoValue is exact by default in this module ; the
+// `numeric` kind exists only for drag positions (pointer events emit floats).
+// When mixing an exact operand with a numeric integer, the integer is lifted
+// to a NumberNode so the result stays exact — keeping `point(0,0)` + symbolic
+// computations on the exact track. Non-integer numerics (floats like 2.5)
+// remain numeric to avoid 17-digit MathNode explosion.
 // =============================================================================
 
-describe('exact + numeric = numeric', () => {
-	it('geoAdd(exact(3), numeric(4)) -> numeric(7)', () => {
+describe('exact + integer-numeric = exact (integer lifted)', () => {
+	it('geoAdd(exact(3), numeric(4)) -> exact(7) — integer lifted', () => {
 		const result = geoAdd(exact(number('3')), numeric(4));
-		expect(isNumeric(result)).toBe(true);
+		expect(isExact(result)).toBe(true);
 		expect(geoToNumber(result)).toBe(7);
 	});
 
-	it('geoMul(numeric(2), exact(3)) -> numeric(6)', () => {
+	it('geoMul(numeric(2), exact(3)) -> exact(6) — integer lifted', () => {
 		const result = geoMul(numeric(2), exact(number('3')));
-		expect(isNumeric(result)).toBe(true);
+		expect(isExact(result)).toBe(true);
 		expect(geoToNumber(result)).toBe(6);
 	});
 
-	it('geoSub(exact(10), numeric(3)) -> numeric(7)', () => {
+	it('geoSub(exact(10), numeric(3)) -> exact(7) — integer lifted', () => {
 		const result = geoSub(exact(number('10')), numeric(3));
-		expect(isNumeric(result)).toBe(true);
+		expect(isExact(result)).toBe(true);
 		expect(geoToNumber(result)).toBe(7);
 	});
 
-	it('geoDiv(numeric(6), exact(2)) -> numeric(3)', () => {
+	it('geoDiv(numeric(6), exact(2)) -> exact(3) — integer lifted', () => {
 		const result = geoDiv(numeric(6), exact(number('2')));
 		expect(result).not.toBeNull();
-		expect(isNumeric(result!)).toBe(true);
+		expect(isExact(result!)).toBe(true);
 		expect(geoToNumber(result!)).toBe(3);
+	});
+
+	it('geoAdd(exact(3), numeric(2.5)) -> numeric(5.5) — non-integer numeric stays numeric', () => {
+		const result = geoAdd(exact(number('3')), numeric(2.5));
+		expect(isNumeric(result)).toBe(true);
+		expect(geoToNumber(result)).toBe(5.5);
+	});
+
+	it('geoMul(numeric(0.5), exact(sqrt(3))) -> numeric — non-integer numeric stays numeric', () => {
+		const result = geoMul(numeric(0.5), exact(sqrt(number('3'))));
+		expect(isNumeric(result)).toBe(true);
+		expect(geoToNumber(result)).toBeCloseTo(Math.sqrt(3) / 2, 10);
 	});
 });
 
@@ -182,10 +201,10 @@ describe('geoDiv edge cases', () => {
 		expect(geoDiv(exact(number('0')), exact(number('0')))).toBeNull();
 	});
 
-	it('geoDiv exact / numeric -> numeric', () => {
+	it('geoDiv exact / integer-numeric -> exact (lifted)', () => {
 		const result = geoDiv(exact(number('6')), numeric(2));
 		expect(result).not.toBeNull();
-		expect(isNumeric(result!)).toBe(true);
+		expect(isExact(result!)).toBe(true);
 		expect(geoToNumber(result!)).toBe(3);
 	});
 

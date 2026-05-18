@@ -283,13 +283,16 @@ describe('recompute', () => {
 		expect(geoToNumber(c.getPosition(mid)!.x)).toBe(10);
 	});
 
-	it('midpoint of numeric parents is numeric', () => {
+	it('midpoint of float-numeric parent is numeric', () => {
+		// Real drag positions are non-integer floats. Since 2026-05-19, integer
+		// numerics are lifted to exact during arithmetic, so to see a numeric
+		// midpoint we drag to non-integer coords.
 		const c = new Figure();
 		const a = c.createFreePoint(point(0, 0));
 		const b = c.createFreePoint(point(10, 0));
 		const mid = c.createMidpoint(a, b);
 
-		c.movePoint(a, numeric(2), numeric(4));
+		c.movePoint(a, numeric(2.5), numeric(4.7));
 		c.recompute();
 		const pos = c.getPosition(mid)!;
 		expect(isNumeric(pos.x)).toBe(true);

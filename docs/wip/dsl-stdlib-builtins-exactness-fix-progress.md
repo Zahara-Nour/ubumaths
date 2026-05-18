@@ -1,7 +1,9 @@
 # Fix exactness + dynamism in stdlib builtins (post-migration)
 
 > Session : 2026-05-19
-> Statut : **LIVRÉ** (1 commit + 1 test file)
+> Statut : **LIVRÉ** (2 commits + 1 test file)
+>
+> Le 1er commit (`200fd892c`) rétablissait la **dynamique** (drag-propagation) via les factories. Le 2ᵉ commit complète la **propagation d'exactitude** à travers le pipeline DSL → arithmétique → factories.
 
 ## Contexte
 
@@ -85,13 +87,72 @@ La migration utilisait systématiquement la 1ʳᵉ famille pour des points qui a
 - ESLint clean
 - `pnpm check:incremental` : 9 errors / 46 warnings (baseline préexistante stable)
 
-## Note sur l'exactitude
+## 2ᵉ commit : exactitude bout-en-bout dans le pipeline DSL
 
-L'exactitude `kind === 'exact'` n'est préservée que si les sources sont exactes. Or le DSL actuel évalue `point(2·sqrt(3), 0)` en **numérique** (parser/evaluator converti en number avant d'atteindre `toGeoValue`). Donc même avec le fix, un point DSL a `kind: 'numeric'` et tous ses dérivés aussi.
+Le 1er commit corrigeait la dynamique des dérivés mais l'exactitude restait perdue parce que :
 
-Cela ne remet pas en cause le fix : à l'instant où le DSL préservera l'exactitude des expressions symboliques saisies (autre chantier), les nouveaux builtins propageront automatiquement l'exactitude à tous leurs dérivés, sans modification. C'est le but architectural de cette correction.
+1. **Le DSL convertissait tout en `numeric`** : `tryEvaluateAsMathExpr` retournait `{type: 'nombre', value: fn(staticBindings)}` même pour des nodes symboliques comme `2*sqrt(3)`. L'AST exact était jeté.
+2. **`toGeoValue(nombre)` utilisait `numeric(val.value)`** : même pour des entiers comme `0`, le résultat était `{kind: 'numeric', value: 0}`. Donc `point(0, 0)` était numeric.
+3. **`binaryOp` dégradait `exact + numeric → numeric`** : pour préserver l'exactitude on a besoin que `geoAdd(numeric(0), exact(sqrt(3)))` reste exact.
 
-Les tests de correction numérique de cette session valident la **propagation correcte des valeurs** indépendamment du kind.
+**Contrat architectural correct** (établi cette session) :
+
+- `GeoValue` est **exact par défaut**. Le kind `numeric` existe **uniquement pour le drag** (pointer events qui émettent des flottants depuis les pixels écran).
+- `point(0, 0)`, `point(2, 3)`, `point(2*sqrt(3), 0)` : tous exact.
+- Drag d'un point libre par souris : `figure.movePoint(id, numeric(3.5), numeric(2.7))` produit numeric.
+- `exact ⊕ exact` → exact
+- `exact ⊕ (numeric entier)` → exact (entier lifté en `NumberNode`)
+- `exact ⊕ (numeric non-entier)` → numeric (préserve la sémantique de drag)
+
+### Modifications
+
+**`dsl/interpreter.ts`** :
+
+- `tryEvaluateAsMathExpr` static path : si le node contient `MathConstant` (π, e) ou `Function` (sqrt, cos, sin, …) après `simplifyExact`, retourne `{type: 'geoValue', value: exact(node)}`. Sinon retourne `nombre` (rétro-compat avec les builtins qui font `pos[i].type === 'nombre'` pour brancher).
+- `toGeoValue(nombre)` : utilise `geoFromNumber(val.value)` qui produit `exact(numericNode(n))` pour les entiers, `numeric(n)` pour les flottants. C'est la clé qui rend `point(0, 0)` exact.
+- Helper `nodeHasSymbolicContent(node)` : walk le node via `findNodes` pour détecter constantes/fonctions symboliques.
+- `substitute` sur les `staticBindings` pour résoudre les free vars avant le test symbolique. Try/catch pour les bindings non-finis (Infinity dans le test `inf`).
+
+**`compute/geo-arithmetic.ts`** :
+
+- `binaryOp` (utilisé par `geoAdd/Sub/Mul`) et `geoDiv` : nouveau cas — si un opérande est exact et l'autre est un numeric ENTIER, le numeric est lifté en `NumberNode` et l'opération reste exacte. Pour les non-entiers (floats), on garde le path numeric (sinon `simplifyExact` génère des NumberNode à 17 chiffres).
+
+**`dsl/builtins.ts:resolveAndValidateBounds`** : validation `t_min < t_max` utilise `geoToNumber` peu importe le kind (avant : ne déclenchait que pour `kind === 'numeric'`). Sinon le check était silencieusement ignoré pour les bornes exact.
+
+**`dsl/builtins.ts:requireNumber`** : accepte maintenant `geoValue` et convertit via `geoToNumber` (au lieu de throw).
+
+### Tests mis à jour (contrat changé)
+
+5 fichiers de tests vérifiaient l'ancien contrat "exact + numeric = numeric" — mis à jour pour le nouveau contrat :
+
+- `compute/__tests__/geo-arithmetic.test.ts` : section "exact + integer-numeric = exact (integer lifted)", + 2 cas float restant numeric.
+- `geometry/__tests__/transformations.test.ts` : `translate`, `rotate`, `dilate` avec mix exact+integer → exact.
+- `graph/__tests__/figure-dependent-points.test.ts` : drag tests utilisent maintenant des floats (3.4, -5.2) plutôt que des entiers.
+- `graph/__tests__/figure.test.ts` : `midpoint of float-numeric parent is numeric`.
+- `dsl/__tests__/courbe-{parametric,polar}.test.ts` : assertions `toEqual(numeric(0))` remplacées par `geoToNumber(...).toBe(0)` (entier devient exact).
+- `dsl/__tests__/scalar-dsl.test.ts` : assertions `pos.x.kind === 'numeric' ? pos.x.value : 0` remplacées par `geoToNumber(pos.x)`.
+
+### Tests ajoutés
+
+`builtins-exactness-dynamism.test.ts` : nouveau test `point(2*sqrt(3), 0) produces an exact FreePoint` + 3 tests `kind === 'exact'` sur les sous-produits (mediatrice, parallelogramme, etc.).
+
+### Résultats
+
+- Tests d'exactitude + dynamism : **14/14 ✓**
+- Suite geometry-core : **3069/3069 ✓** (148 fichiers, 0 régression)
+- Suite consommateurs (constructions-v2, grapheur) : **351/351 ✓**
+- ESLint clean
+- `pnpm check:incremental` : 9 errors / 46 warnings (baseline stable)
+
+### Exemple bout-en-bout
+
+```
+A = point(0, 0)           → A.x.kind === 'exact', A.x.node = NumberNode(0)
+B = point(2*sqrt(3), 0)   → B.x.kind === 'exact', B.x.node = 2*sqrt(3)
+M = milieu(A, B)          → M.x.kind === 'exact', M.x = sqrt(3) (simplifié)
+t = triangle_equilateral(A, B)
+                          → 3rd vertex C.y.kind === 'exact', C.y = sqrt(3)
+```
 
 ## Fichiers modifiés
 

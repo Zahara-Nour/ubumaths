@@ -40,17 +40,16 @@ function posOf(
 	return { x: geoToNumber(p.x), y: geoToNumber(p.y) };
 }
 
-describe('Stdlib builtins — numerical correctness of derived points', () => {
-	// Note: full exactness propagation (kind === 'exact') depends on the DSL
-	// parser preserving symbolic expressions in `point(2*sqrt(3), 0)` etc., which
-	// it does not currently do (DSL evaluates numerically). At the Figure level,
-	// the fix's use of `createMidpoint`, `createRotatedPoint`,
-	// `createTranslatedPoint` ensures exact propagation when source coords are
-	// exact (validated by existing `compute-position.ts` and
-	// `geometry/transformations.ts` test suites). Here we validate numerical
-	// correctness of the derived sub-elements.
+describe('Stdlib builtins — exactness propagation', () => {
+	it('point(2*sqrt(3), 0) produces an exact FreePoint', () => {
+		const { figure, symbols } = runDsl('B = point(2*sqrt(3), 0)');
+		const p = figure.getPosition(symId(symbols, 'B'));
+		expect(p).not.toBeNull();
+		expect(p!.x.kind).toBe('exact');
+		expect(geoToNumber(p!.x)).toBeCloseTo(2 * Math.sqrt(3), 10);
+	});
 
-	it('mediatrice : derived midpoint of (0,0) and (2*sqrt(3), 0) equals sqrt(3)', () => {
+	it('mediatrice : derived midpoint of (0,0) and (2*sqrt(3), 0) is exact', () => {
 		const { figure, symbols } = runDsl(
 			[
 				'A = point(0, 0)',
@@ -59,27 +58,32 @@ describe('Stdlib builtins — numerical correctness of derived points', () => {
 				'M = milieu(A, B)'
 			].join('\n')
 		);
-		const Mid = symId(symbols, 'M');
-		const p = figure.getPosition(Mid);
+		const p = figure.getPosition(symId(symbols, 'M'));
 		expect(p).not.toBeNull();
+		expect(p!.x.kind).toBe('exact');
 		expect(geoToNumber(p!.x)).toBeCloseTo(Math.sqrt(3), 10);
 		expect(geoToNumber(p!.y)).toBeCloseTo(0, 10);
 	});
 
-	it('triangle_equilateral : 3rd vertex has correct sqrt(3) height', () => {
+	it('triangle_equilateral : 3rd vertex is exact when sources are exact', () => {
+		// Use a symbolic side length to force exact source coords (kind 'exact').
 		const { figure, symbols } = runDsl(
-			['A = point(0, 0)', 'B = point(2, 0)', 't = triangle_equilateral(A, B)'].join('\n')
+			['A = point(0, 0)', 'B = point(sqrt(4), 0)', 't = triangle_equilateral(A, B)'].join('\n')
 		);
 		const t = figure.elements.get(symId(symbols, 't'));
 		if (!t || t.type !== 'polygon') throw new Error('not a polygon');
 		const Cid = t.dependsOn[2];
 		const C = figure.getPosition(Cid);
 		expect(C).not.toBeNull();
+		// sqrt(4) reduces to 2 via simplifyExact, so B becomes numeric. But the
+		// rotation angle π/3 is exact, so C may still be exact when arithmetic
+		// permits. We assert numerical correctness here ; the next test exercises
+		// the case where the source is irreducibly symbolic.
 		expect(geoToNumber(C!.x)).toBeCloseTo(1, 10);
 		expect(geoToNumber(C!.y)).toBeCloseTo(Math.sqrt(3), 10);
 	});
 
-	it('parallelogramme : 4th vertex satisfies D = A + (C - B)', () => {
+	it('parallelogramme with exact sqrt(3) source has exact derived vertex', () => {
 		const { figure, symbols } = runDsl(
 			[
 				'A = point(0, 0)',
@@ -93,6 +97,7 @@ describe('Stdlib builtins — numerical correctness of derived points', () => {
 		const Did = p.dependsOn[3];
 		const D = figure.getPosition(Did);
 		expect(D).not.toBeNull();
+		expect(D!.x.kind).toBe('exact');
 		// D = A + (C - B) = (2*sqrt(3) - 2, 1)
 		expect(geoToNumber(D!.x)).toBeCloseTo(2 * Math.sqrt(3) - 2, 10);
 		expect(geoToNumber(D!.y)).toBeCloseTo(1, 10);

@@ -34,9 +34,10 @@
 
 import { Figure } from '../graph/figure';
 import type { GeoValue } from '../types/geo-value';
-import { numeric } from '../types/geo-value';
+import { numeric, exact } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { geoToNumber } from '../compute/to-number';
+import { simplifyExact, geoFromNumber } from '../compute/geo-arithmetic';
 import { DslRuntimeError } from './errors';
 import { SymbolTable } from './symbol-table';
 import type { SymbolEntry } from './symbol-table';
@@ -54,10 +55,32 @@ import { MacroRegistry } from './macro-registry';
 import { STDLIB_MACROS } from './stdlib';
 import { parse } from './parser';
 import { isMathPureExpr } from './math-pure-expr';
-import { parseCustom, getVariables } from '$lib/mathAST';
+import {
+	parseCustom,
+	getVariables,
+	findNodes,
+	isMathConstant,
+	isFunction,
+	isNumber,
+	substitute
+} from '$lib/mathAST';
 import type { MathNode } from '$lib/mathAST';
 import { compile } from '$lib/mathAST/eval/compile';
 import { applyAngleMode, type AngleMode } from './apply-angle-mode';
+
+/**
+ * A MathAST node is "symbolic" if it contains a math constant (π, e, …) or a
+ * function call (sqrt, cos, sin, exp, log, …) whose numerical evaluation would
+ * lose information. Pure arithmetic of NumberNodes (`3 + 2`, `1/2`, `-7`) is
+ * NOT symbolic — the float representation is exact.
+ *
+ * Used by `tryEvaluateAsMathExpr` to decide whether to return a `number` or an
+ * exact `GeoValue`, so derived builtins (mediatrice, rotation, …) propagate
+ * symbolic exactness through their factory methods.
+ */
+function nodeHasSymbolicContent(node: MathNode): boolean {
+	return findNodes(node, (n) => isMathConstant(n) || isFunction(n)).length > 0;
+}
 
 /** Check if a resolved value is a vector element reference. */
 function isVectorValue(val: ResolvedValue): boolean {
@@ -523,13 +546,41 @@ class Interpreter {
 			return null;
 		}
 
-		// Static path: no scalar deps → return a number directly.
+		// Static path: no scalar deps. Two cases :
+		//   (a) Node is symbolic (contains π, e, sqrt, cos, …) → return an exact
+		//       GeoValue so builtins like `point(2*sqrt(3), 0)` keep the
+		//       symbolic form through `createFreePoint` → `compute-position.ts` →
+		//       `geometry/transformations.ts` (geoCos/geoSin know remarkable
+		//       angles exactly). This is what makes
+		//       `milieu(point(0,0), point(2*sqrt(3),0))` evaluate to an exact
+		//       `sqrt(3)` rather than `1.7320508…`.
+		//   (b) Node is pure number arithmetic (`3 + 2`, `1/2`, …) → return a
+		//       plain `nombre`. Faster, and preserves the original semantics
+		//       expected by the rest of the DSL (`requireNumber`, `for …`, etc.).
 		if (scalarDeps.length === 0) {
 			let value: number;
 			try {
 				value = fn(staticBindings);
 			} catch {
 				return null;
+			}
+			// Free variables that resolved to numbers must be substituted into the
+			// node so the returned GeoValue is self-contained (no dangling refs).
+			// Non-finite bindings (Infinity, NaN) can't be represented as exact
+			// nodes — fall back to the numeric path in that case.
+			let exactNode: MathNode | null = node;
+			if (Object.keys(staticBindings).length > 0) {
+				try {
+					exactNode = substitute(node, staticBindings);
+				} catch {
+					exactNode = null;
+				}
+			}
+			if (exactNode !== null) {
+				exactNode = simplifyExact(exactNode);
+				if (nodeHasSymbolicContent(exactNode) && !isNumber(exactNode)) {
+					return { type: 'geoValue', value: exact(exactNode) };
+				}
 			}
 			return { type: 'nombre', value };
 		}
@@ -1032,7 +1083,15 @@ class Interpreter {
 	}
 
 	private toGeoValue(val: ResolvedValue, line: number): GeoValue {
-		if (val.type === 'nombre') return numeric(val.value);
+		// Architectural contract: GeoValue is exact by default. The `numeric`
+		// kind only exists for drag positions (pointer events, where coords are
+		// floats from screen pixels). DSL literals like `point(0, 0)` or
+		// `point(2, 3)` must produce exact GeoValue so all derived computations
+		// keep exactness (mediatrice, rotation, circumcenter, …).
+		// `geoFromNumber` returns `exact(numericNode(n))` for integers and
+		// `numeric(n)` for non-integer floats (to avoid 17-digit MathNode
+		// explosion from float-to-string conversion).
+		if (val.type === 'nombre') return geoFromNumber(val.value);
 		if (val.type === 'geoValue') return val.value;
 		throw new DslRuntimeError('Valeur numerique attendue', line);
 	}

@@ -15,7 +15,8 @@ import { runDsl } from '../index';
 import { DslRuntimeError } from '../errors';
 import type { GeoParametricCurve } from '../../types/elements';
 import { isParametricCurve } from '../../types/elements';
-import { numeric } from '../../types/geo-value';
+import type { GeoValue } from '../../types/geo-value';
+import { geoToNumber } from '../../compute/to-number';
 
 // =============================================================================
 // A. Nominal creation
@@ -35,8 +36,10 @@ describe('courbe — parametric (A. nominal creation)', () => {
 		expect(pc.parameter).toBe('t');
 		expect(pc.equationX).toBe('x = cos(t)');
 		expect(pc.equationY).toBe('y = sin(t)');
-		expect(pc.tMin).toEqual(numeric(0));
-		expect(pc.tMax).toEqual(numeric(2 * Math.PI));
+		// Since 2026-05-19, integer DSL literals (0) produce exact GeoValues ;
+		// non-integer floats (2*Math.PI) remain numeric. Compare numerically.
+		expect(geoToNumber(pc.tMin as GeoValue)).toBe(0);
+		expect(geoToNumber(pc.tMax as GeoValue)).toBeCloseTo(2 * Math.PI, 10);
 	});
 
 	it('A2. creates a parametric parabola (t, t^2)', () => {
