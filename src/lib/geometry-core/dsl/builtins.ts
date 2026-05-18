@@ -52,7 +52,20 @@ import { differentiate } from '$lib/mathAST/differentiation';
 import { numeric } from '../types/geo-value';
 import { applyTransformationToElement } from './transform-apply';
 import type { GeoElement } from '../types/elements';
-import { isPointElement } from '../types/elements';
+import {
+	isPointElement,
+	isCircle,
+	isCircleBy3Points,
+	isSegment,
+	isRay,
+	isPolygon,
+	isArcByAngles,
+	isArcByPoints,
+	isSector,
+	isAnnulus,
+	isConicPolar,
+	isQuadraticCurve
+} from '../types/elements';
 import { applyAngleMode } from './apply-angle-mode';
 import { interpretAreaBuiltin } from './area-builtin-helper';
 
@@ -1623,12 +1636,34 @@ function twoPointsArityError(
 
 function handleMilieu(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
+	// Form 1: milieu(s) where s is a segment — midpoint of an existing segment
+	if (pos.length === 1) {
+		const sId = requireElement(pos[0], 'segment', line);
+		const el = figure.getElementById(sId);
+		if (!el || !isSegment(el))
+			throw new DslRuntimeError(
+				{
+					summary: '`milieu()` : avec 1 argument, doit recevoir un segment.',
+					forms: [
+						{ syntax: 'milieu(A, B)', description: 'milieu des points `A` et `B`' },
+						{ syntax: 'milieu(s)', description: 'milieu du segment `s`' }
+					]
+				},
+				line
+			);
+		const id = figure.createMidpoint(el.startId, el.endId, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	// Form 2: milieu(A, B) — existing
 	if (pos.length !== 2)
-		throw twoPointsArityError(
-			'milieu',
-			'A, B',
-			pos.length,
-			{ syntax: 'milieu(A, B)', description: 'milieu du segment `[AB]`' },
+		throw new DslRuntimeError(
+			{
+				summary: `\`milieu()\` attend 1 (un segment) ou 2 (deux points) arguments, ${pos.length} reçu(s).`,
+				forms: [
+					{ syntax: 'milieu(A, B)', description: 'milieu des points `A` et `B`' },
+					{ syntax: 'milieu(s)', description: 'milieu du segment `s`' }
+				]
+			},
 			line
 		);
 	const id = figure.createMidpoint(
@@ -2706,6 +2741,257 @@ function handleRayon(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('rayon', handleRayon);
 
+// ─── Accesseurs purs ───────────────────────────────────────────
+// Ces builtins ne créent rien : ils retournent une référence à un élément
+// déjà existant dans la figure. Aucun effet visuel.
+
+function handleCentre(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 1)
+		throw new DslRuntimeError(
+			{
+				summary: `\`centre()\` attend 1 argument, ${pos.length} reçu(s).`,
+				forms: [
+					{ syntax: 'centre(c)', description: 'centre du cercle, arc, secteur ou conique `c`' },
+					{
+						syntax: 'centre(quad)',
+						description: 'intersection des diagonales d’un quadrilatère'
+					}
+				]
+			},
+			line
+		);
+	const elId = requireElement(pos[0], 'objet', line);
+	const el = figure.getElementById(elId);
+	if (!el)
+		throw new DslRuntimeError({ summary: `\`centre()\` : élément \`${elId}\` introuvable.` }, line);
+
+	// Direct centerId for circles (except 3-point), arcs, sectors, annulus, conicPolar
+	if (
+		(isCircle(el) && !isCircleBy3Points(el)) ||
+		isArcByAngles(el) ||
+		isArcByPoints(el) ||
+		isSector(el) ||
+		isAnnulus(el) ||
+		isConicPolar(el)
+	) {
+		// All these have a centerId field
+		const centerId = (el as unknown as { centerId: string }).centerId;
+		// Re-expose with optional label override via createMidpoint-like "alias" point ?
+		// Simpler: return the existing center as-is. If the user wants to apply a label,
+		// they can `montre(centre(c), label="O")` after.
+		return { figureId: centerId, symbolType: 'point' };
+	}
+
+	// 3-point circle: no stored center, must compute it
+	if (isCircleBy3Points(el)) {
+		throw new DslRuntimeError(
+			{
+				summary: '`centre()` : non supporté pour un cercle défini par 3 points.',
+				hint:
+					'Utilisez `cercle_circonscrit(A, B, C)` (qui expose le centre via `centre(c)`) ' +
+					'plutôt que `cercle(A, B, C)` direct.'
+			},
+			line
+		);
+	}
+
+	// Quadrilateral polygon: intersection of diagonals
+	if (isPolygon(el)) {
+		const verts = el.dependsOn;
+		if (verts.length !== 4) {
+			throw new DslRuntimeError(
+				{
+					summary: `\`centre()\` : non défini pour un polygone à ${verts.length} sommets.`,
+					hint: '`centre()` n’est défini que pour les quadrilatères (intersection des diagonales).'
+				},
+				line
+			);
+		}
+		// Intersection of (verts[0] verts[2]) and (verts[1] verts[3]) — create two
+		// hidden diagonals then take the LL intersection. The diagonals are needed
+		// because Figure's intersection API operates on line-like elements.
+		const diag1 = figure.createLine(verts[0], verts[2]);
+		figure.hideElement(diag1);
+		const diag2 = figure.createLine(verts[1], verts[3]);
+		figure.hideElement(diag2);
+		const id = figure.createIntersectionLL(diag1, diag2, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+
+	if (isQuadraticCurve(el)) {
+		// Conic center (for ellipse, hyperbola — parabola has no center)
+		throw new DslRuntimeError(
+			{
+				summary: '`centre()` sur conique : non encore implémenté pour les courbes quadratiques.',
+				hint: 'Pour ellipse/hyperbole, le centre se calcule via les axes — utilisez `axes(c)`.'
+			},
+			line
+		);
+	}
+
+	if (isSegment(el)) {
+		throw new DslRuntimeError(
+			{
+				summary: '`centre()` : pas défini pour un segment.',
+				hint: 'Pour le milieu d’un segment, utilisez `milieu(s)`.'
+			},
+			line
+		);
+	}
+
+	throw new DslRuntimeError(
+		{
+			summary: `\`centre()\` : non défini pour le type \`${el.type}\`.`,
+			hint: 'Accepte : cercle, arc, secteur, anneau, conique polaire, quadrilatère.'
+		},
+		line
+	);
+}
+HANDLERS.set('centre', handleCentre);
+
+/** Returns the (p1, p2) endpoints of a segment-like element in creation order. */
+function getSegmentLikeEndpoints(el: GeoElement): { p1: string; p2: string } | null {
+	if (isSegment(el)) return { p1: el.startId, p2: el.endId };
+	if (isRay(el)) return { p1: el.originId, p2: el.throughId };
+	return null;
+}
+
+function handleExtremite(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`extremite()\` attend 2 arguments, ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'extremite(s, 1)',
+						description: '1ʳᵉ extrémité du segment (1er point passé à `segment()`)'
+					},
+					{
+						syntax: 'extremite(s, 2)',
+						description: '2ᵉ extrémité du segment (2ᵉ point ou point calculé)'
+					}
+				]
+			},
+			line
+		);
+	const sId = requireElement(pos[0], 'segment', line);
+	const el = figure.getElementById(sId);
+	const endpoints = el ? getSegmentLikeEndpoints(el) : null;
+	if (!endpoints)
+		throw new DslRuntimeError(
+			{
+				summary: '`extremite()` : le 1er argument doit être un segment ou une demi-droite.'
+			},
+			line
+		);
+	const i = requireNumber(pos[1], 'index', line);
+	if (i !== 1 && i !== 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`extremite()\` : l’index doit être 1 ou 2, reçu ${i}.`,
+				hint: '1 = 1er point passé à `segment()`, 2 = 2ᵉ point.'
+			},
+			line
+		);
+	return { figureId: i === 1 ? endpoints.p1 : endpoints.p2, symbolType: 'point' };
+}
+HANDLERS.set('extremite', handleExtremite);
+
+function handleExtremites(ctx: BuiltinCtx): BuiltinMultiResult {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== 1)
+		throw new DslRuntimeError(
+			{
+				summary: `\`extremites()\` attend 1 argument (un segment), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'extremites(s)',
+						description: 'retourne le tuple `(p1, p2)` des deux extrémités du segment'
+					}
+				]
+			},
+			line
+		);
+	const sId = requireElement(pos[0], 'segment', line);
+	const el = figure.getElementById(sId);
+	const endpoints = el ? getSegmentLikeEndpoints(el) : null;
+	if (!endpoints)
+		throw new DslRuntimeError(
+			{
+				summary: '`extremites()` : l’argument doit être un segment ou une demi-droite.'
+			},
+			line
+		);
+	return {
+		elements: [
+			{ figureId: endpoints.p1, symbolType: 'point' },
+			{ figureId: endpoints.p2, symbolType: 'point' }
+		]
+	};
+}
+HANDLERS.set('extremites', handleExtremites);
+
+function handleSommet(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`sommet()\` attend 2 arguments (poly, i), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'sommet(p, i)',
+						description: 'i-ième sommet du polygone (1-indexé, dans l’ordre de création)'
+					}
+				]
+			},
+			line
+		);
+	const polyId = requireElement(pos[0], 'polygone', line);
+	const el = figure.getElementById(polyId);
+	if (!el || !isPolygon(el))
+		throw new DslRuntimeError(
+			{ summary: '`sommet()` : le 1er argument doit être un polygone.' },
+			line
+		);
+	const i = requireNumber(pos[1], 'index', line);
+	if (!Number.isInteger(i) || i < 1 || i > el.dependsOn.length)
+		throw new DslRuntimeError(
+			{
+				summary: `\`sommet()\` : l’index doit être un entier entre 1 et ${el.dependsOn.length}, reçu ${i}.`
+			},
+			line
+		);
+	return { figureId: el.dependsOn[i - 1], symbolType: 'point' };
+}
+HANDLERS.set('sommet', handleSommet);
+
+function handleSommets(ctx: BuiltinCtx): BuiltinMultiResult {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== 1)
+		throw new DslRuntimeError(
+			{
+				summary: `\`sommets()\` attend 1 argument (un polygone), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'sommets(p)',
+						description: 'retourne le tuple de tous les sommets, dans l’ordre de création'
+					}
+				]
+			},
+			line
+		);
+	const polyId = requireElement(pos[0], 'polygone', line);
+	const el = figure.getElementById(polyId);
+	if (!el || !isPolygon(el))
+		throw new DslRuntimeError({ summary: '`sommets()` : l’argument doit être un polygone.' }, line);
+	return {
+		elements: el.dependsOn.map((vId) => ({ figureId: vId, symbolType: 'point' as SymbolType }))
+	};
+}
+HANDLERS.set('sommets', handleSommets);
+
 function handleSlider(ctx: BuiltinCtx): BuiltinResult {
 	const { named, figure, line, label } = ctx;
 	const minVal = requireNumber(named.get('min') ?? { type: 'nombre', value: 0 }, 'min', line);
@@ -3641,7 +3927,12 @@ export const BUILTIN_NAMES = new Set([
 	'slider',
 	'secteur',
 	'couronne',
-	'puissance'
+	'puissance',
+	'centre',
+	'extremite',
+	'extremites',
+	'sommet',
+	'sommets'
 ]);
 
 /** Math functions that return numbers. */
