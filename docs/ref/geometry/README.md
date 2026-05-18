@@ -269,6 +269,23 @@ Surfacage des erreurs runtime DSL dans `/construction-demo` et `ScriptEditor`. A
 
 Voir [`docs/wip/dsl-structured-errors-progress.md`](../../wip/dsl-structured-errors-progress.md) pour le detail technique. ~50 builtins migres sur ~60, retro-compatibilite preservee (string flat encore accepte).
 
+### Phase 6 — Migration complète stdlib → builtins (6 commits, journee +3)
+
+23 macros de `dsl/stdlib.ts` converties en builtins TypeScript dans `dsl/builtins.ts`. Chaque builtin produit 1 objet principal ; les sous-produits (points intermédiaires) sont créés directement invisibles. Calculs directs (formules de Cramer pour les circumcircles, Euler pour l'orthocenter, Héron pour l'inradius). Plus de cascade de macros via le DSL.
+
+| Hash        | Sujet                                                                               |
+| ----------- | ----------------------------------------------------------------------------------- |
+| `2f85f5677` | feat(dsl) : 5 lignes (mediatrice, perpendiculaire, parallele, mediane, bissectrice) |
+| `d4deb76ae` | feat(dsl) : 4 triangles (triangle, triangle_equilateral/isocele/rectangle)          |
+| `137cfafc7` | feat(dsl) : 4 quadrilatères (parallelogramme, rectangle, carre, losange)            |
+| `f6779041d` | feat(dsl)! : 2 polygones itératifs (polygone_regulier, etoile) — BREAKING           |
+| `7c9248c6d` | feat(dsl) : corde + 3 cercles dérivés (circonscrit, inscrit, Euler)                 |
+| ce commit   | feat(dsl) : 4 points remarquables + cleanup `stdlib.ts` + docs                      |
+
+Le mécanisme `macro foo(...): ...` du DSL reste intact, désormais réservé aux constructions définies par l'utilisateur (paradigme Cabri / CarMetal / GeoGebra Custom Tools). `dsl/stdlib.ts` se réduit à `export const STDLIB_MACROS = "";`.
+
+Voir [`docs/wip/dsl-stdlib-to-builtins-progress.md`](../../wip/dsl-stdlib-to-builtins-progress.md). 1799/1799 tests pass.
+
 ### Phase 5 — Refonte sémantique du DSL : un builtin = un objet (5 commits, journee +2)
 
 Élimination des retours tuples des macros stdlib au profit d'un design **un builtin = un objet principal + accesseurs explicites**. Plus de `(M, d) = mediatrice(A, B)` — désormais `d = mediatrice(A, B)` puis `M = milieu(A, B)`. Les sous-produits internes des macros (centres dérivés, points intermédiaires) sont `masque()`-d par défaut ; l'utilisateur révèle via `montre()`.
