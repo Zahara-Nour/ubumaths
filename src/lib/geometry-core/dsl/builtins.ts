@@ -1388,13 +1388,25 @@ function handleTexte(ctx: BuiltinCtx): BuiltinResult {
 		const x = (pos[0] as { type: 'nombre'; value: number }).value;
 		const y = (pos[1] as { type: 'nombre'; value: number }).value;
 		if (pos[2].type !== 'string')
-			throw new DslRuntimeError('texte(): le 3e argument doit etre une chaine', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`texte()` : le 3ᵉ argument doit être une chaîne (le texte à afficher).',
+					hint: 'Exemple : `texte(0, 0, "Bonjour")` — n’oubliez pas les guillemets.'
+				},
+				line
+			);
 		template = (pos[2] as { type: 'string'; value: string }).value;
 		positioning = { position: { x, y } };
 	} else if (pos[0].type === 'element') {
 		const anchorId = requireElement(pos[0], 'anchor', line);
 		if (pos[1].type !== 'string')
-			throw new DslRuntimeError('texte(): le 2e argument doit etre une chaine', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`texte()` : le 2ᵉ argument doit être une chaîne (le texte à afficher).',
+					hint: 'Exemple : `texte(P, "label")` — n’oubliez pas les guillemets.'
+				},
+				line
+			);
 		template = (pos[1] as { type: 'string'; value: string }).value;
 		const dx = named.has('dx')
 			? (named.get('dx')! as { type: 'nombre'; value: number }).value
@@ -1457,13 +1469,25 @@ function handleRtexte(ctx: BuiltinCtx): BuiltinResult {
 		const x = (pos[0] as { type: 'nombre'; value: number }).value;
 		const y = (pos[1] as { type: 'nombre'; value: number }).value;
 		if (pos[2].type !== 'string')
-			throw new DslRuntimeError('rtexte(): le 3e argument doit etre une chaine', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`rtexte()` : le 3ᵉ argument doit être une chaîne (ubumark).',
+					hint: 'Exemple : `rtexte(0, 0, "**gras** _italique_")`.'
+				},
+				line
+			);
 		rtTemplate = (pos[2] as { type: 'string'; value: string }).value;
 		rtPositioning = { position: { x, y } };
 	} else if (pos[0].type === 'element') {
 		const anchorId = requireElement(pos[0], 'anchor', line);
 		if (pos[1].type !== 'string')
-			throw new DslRuntimeError('rtexte(): le 2e argument doit etre une chaine', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`rtexte()` : le 2ᵉ argument doit être une chaîne (ubumark).',
+					hint: 'Exemple : `rtexte(P, "**important**")`.'
+				},
+				line
+			);
 		rtTemplate = (pos[1] as { type: 'string'; value: string }).value;
 		const dx = named.has('dx')
 			? (named.get('dx')! as { type: 'nombre'; value: number }).value
@@ -2004,7 +2028,13 @@ function handleSymetrie(ctx: BuiltinCtx): BuiltinResult {
 		const tId = figure.createReflectionOverLine(p1, p2);
 		return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
 	}
-	throw new DslRuntimeError("symetrie() necessite 'centre' ou 'axe'", line);
+	throw new DslRuntimeError(
+		{
+			summary: '`symetrie()` : il faut préciser `centre=...` ou `axe=...`.',
+			hint: 'Exemples : `symetrie(M, centre=O)` ou `symetrie(M, axe=d)`.'
+		},
+		line
+	);
 }
 HANDLERS.set('symetrie', handleSymetrie);
 
@@ -2498,13 +2528,25 @@ function handleMtexte(ctx: BuiltinCtx): BuiltinResult {
 		const x = (pos[0] as { type: 'nombre'; value: number }).value;
 		const y = (pos[1] as { type: 'nombre'; value: number }).value;
 		if (pos[2].type !== 'string')
-			throw new DslRuntimeError('mtexte(): le 3e argument doit etre une chaine', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`mtexte()` : le 3ᵉ argument doit être une chaîne (code LaTeX).',
+					hint: 'Exemple : `mtexte(0, 0, "\\\\frac{a}{b}")`.'
+				},
+				line
+			);
 		mtTemplate = (pos[2] as { type: 'string'; value: string }).value;
 		mtPositioning = { position: { x, y } };
 	} else if (pos[0].type === 'element') {
 		const anchorId = requireElement(pos[0], 'anchor', line);
 		if (pos[1].type !== 'string')
-			throw new DslRuntimeError('mtexte(): le 2e argument doit etre une chaine', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`mtexte()` : le 2ᵉ argument doit être une chaîne (code LaTeX).',
+					hint: 'Exemple : `mtexte(P, "\\\\vec{AB}")`.'
+				},
+				line
+			);
 		mtTemplate = (pos[1] as { type: 'string'; value: string }).value;
 		const dx = named.has('dx')
 			? (named.get('dx')! as { type: 'nombre'; value: number }).value
@@ -3470,15 +3512,38 @@ HANDLERS.set('polaire', handlePolaire);
 function handleTrace(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 1) {
-		throw new DslRuntimeError('trace() attend 1 argument (point)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`trace()\` attend 1 argument (un point), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'trace(M)',
+						description: 'trace dynamique du point `M` (s’allonge quand `M` bouge)'
+					}
+				]
+			},
+			line
+		);
 	}
 	const trackedId = requireElement(pos[0], 'point', line);
 	const trackedEl = figure.getElementById(trackedId);
 	if (!trackedEl) {
-		throw new DslRuntimeError(`trace(): point "${trackedId}" introuvable`, line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`trace()\` : point \`${trackedId}\` introuvable.`,
+				hint: 'Vérifiez que la variable a bien été définie au-dessus.'
+			},
+			line
+		);
 	}
 	if (!isPointElement(trackedEl)) {
-		throw new DslRuntimeError("trace(): l'argument doit etre un point", line);
+		throw new DslRuntimeError(
+			{
+				summary: '`trace()` : l’argument doit être un point.',
+				hint: 'Pour le lieu d’un point qui dépend d’un autre, voir aussi `lieu()`.'
+			},
+			line
+		);
 	}
 	const trId = figure.createTrace(trackedId, { label });
 	return { figureId: trId, symbolType: 'trace' as SymbolType };
@@ -3748,7 +3813,13 @@ function createCurveFromEquation(
 	const compiledFn = compile(F);
 	const testVal = compiledFn({ x: 0, y: 0 });
 	if (isNaN(testVal)) {
-		throw new DslRuntimeError('courbe(): impossible de compiler F(x,y) pour cette équation', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`courbe()` : impossible de compiler `F(x, y)` pour cette équation.',
+				hint: 'Vérifiez la syntaxe de l’équation et que toutes les variables sont reconnues.'
+			},
+			line
+		);
 	}
 
 	return createImplicitCurve(F, compiledFn, equation, figure, label);
@@ -4231,7 +4302,13 @@ function createParametricCurveFromEquations(
 	const { lhs: lhs2, rhs: rhs2 } = parseParametricEquation(eq2, '2ème', line);
 
 	if (lhs1 === lhs2) {
-		throw new DslRuntimeError('courbe(): il faut une équation en x et une en y', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`courbe()` paramétrique : il faut une équation en `x` et une en `y`.',
+				hint: 'Exemple : `courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*pi)`.'
+			},
+			line
+		);
 	}
 
 	// Apply the active angle mode to wrap any trig calls in each equation.
@@ -4289,7 +4366,13 @@ function createParametricCurveFromEquations(
 	const paramOverride = named.get('param');
 	if (paramOverride !== undefined) {
 		if (paramOverride.type !== 'string') {
-			throw new DslRuntimeError('courbe(): param doit être une chaîne de caractères', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`courbe()` : l’argument nommé `param` doit être une chaîne de caractères.',
+					hint: 'Exemple : `courbe("x = u^2", "y = u", param="u", t_min=0, t_max=1)`.'
+				},
+				line
+			);
 		}
 		parameterName = paramOverride.value;
 		if (parameterName === 'x' || parameterName === 'y') {
@@ -4306,7 +4389,13 @@ function createParametricCurveFromEquations(
 		}
 	} else {
 		if (candidates.length === 0) {
-			throw new DslRuntimeError('courbe(): aucune variable de paramètre détectée', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`courbe()` paramétrique : aucune variable de paramètre détectée.',
+					hint: 'Le paramètre par défaut est `t`. Si vous utilisez un autre nom, précisez-le : `courbe(..., param="u", ...)`.'
+				},
+				line
+			);
 		}
 		if (candidates.length >= 2) {
 			throw new DslRuntimeError(
