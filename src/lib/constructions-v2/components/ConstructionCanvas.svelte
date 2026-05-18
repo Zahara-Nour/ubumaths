@@ -21,6 +21,8 @@
 	} from '../core/render-helpers';
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
 	import { pointToSVG, resolveStyle } from '$lib/geometry-core/rendering/svg-primitives';
+	import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+	import { isFreePoint } from '$lib/geometry-core/types/elements';
 
 	interface Props {
 		figure: Figure;
@@ -353,6 +355,62 @@
 				{#if pt && sty}
 					{@const s = pointScale}
 					{@const op = pointAnimProgress}
+					{#if el && isFreePoint(el)}
+						{@const origin = transformer.mathToSvg(0, 0)}
+						{@const xMath = geoToNumber(el.position.x)}
+						{@const yMath = geoToNumber(el.position.y)}
+						{@const xLabel = Number.isInteger(xMath) ? String(xMath) : xMath.toFixed(2)}
+						{@const yLabel = Number.isInteger(yMath) ? String(yMath) : yMath.toFixed(2)}
+						<!-- Projection segments on the axes (only for new freePoints) -->
+						{#if Math.abs(yMath) > 1e-9}
+							<line
+								x1={pt.cx}
+								y1={pt.cy}
+								x2={pt.cx}
+								y2={origin.y}
+								stroke="#999"
+								stroke-width="1"
+								stroke-dasharray="4 3"
+								opacity={op * 0.7}
+							/>
+							<text
+								x={pt.cx}
+								y={origin.y + (yMath > 0 ? 14 : -6)}
+								fill="#666"
+								stroke="white"
+								stroke-width="2.5"
+								paint-order="stroke"
+								font-size="11"
+								font-family="KaTeX_Main, serif"
+								text-anchor="middle"
+								opacity={op * 0.85}>{xLabel}</text
+							>
+						{/if}
+						{#if Math.abs(xMath) > 1e-9}
+							<line
+								x1={pt.cx}
+								y1={pt.cy}
+								x2={origin.x}
+								y2={pt.cy}
+								stroke="#999"
+								stroke-width="1"
+								stroke-dasharray="4 3"
+								opacity={op * 0.7}
+							/>
+							<text
+								x={origin.x + (xMath > 0 ? -6 : 6)}
+								y={pt.cy + 4}
+								fill="#666"
+								stroke="white"
+								stroke-width="2.5"
+								paint-order="stroke"
+								font-size="11"
+								font-family="KaTeX_Main, serif"
+								text-anchor={xMath > 0 ? 'end' : 'start'}
+								opacity={op * 0.85}>{yLabel}</text
+							>
+						{/if}
+					{/if}
 					<g transform="translate({pt.cx}, {pt.cy}) scale({s})" opacity={op}>
 						{#if sty.pointShape === 'dot'}
 							<circle r={sty.pointSize} fill={sty.color} />
