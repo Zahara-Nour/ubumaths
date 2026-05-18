@@ -78,27 +78,13 @@ Aucun commentaire `TODO`, `FIXME`, `HACK` ou `XXX` n'existe dans les fichiers so
 
 ## 3. Cohesion et couplage
 
-### 3.1 Dependance circulaire graph <-> dsl
+### 3.1 ~~Dependance circulaire graph <-> dsl~~ — **CORRIGE 2026-05-18**
 
-**Severity: Critical**
+**Severity: ~~Critical~~ Resolved**
 
-`graph/figure.ts` (ligne 142) importe depuis `dsl/singularity-warn.ts` :
+> **Statut : FIXED.** `singularity-warn.ts` a ete deplace de `geometry-core/dsl/` vers `$lib/mathAST/analysis/` (sa famille naturelle — il etait deja purement mathAST, ses imports vont uniquement vers `$lib/mathAST/*`). Les 4 references (`graph/figure.ts`, `dsl/area-builtin-helper.ts`, 2 fichiers de tests) pointent maintenant vers le nouvel emplacement. Re-export ajoute dans `mathAST/analysis/index.ts`. 94 tests passent (singularity-warn, integrale, aire, integral-area-between), 0 regression. Plus aucune fleche `graph -> dsl` au niveau source.
 
-```typescript
-import { classifyDiscontinuitiesForRange } from '../dsl/singularity-warn';
-```
-
-Simultanement, tout le sous-dossier `dsl/` importe massivement depuis `graph/figure.ts` :
-
-- `dsl/builtins.ts` ligne 7 : `import type { Figure } from '../graph/figure'`
-- `dsl/interpreter.ts` ligne 35 : `import { Figure } from '../graph/figure'`
-- `dsl/area-builtin-helper.ts` ligne 14 : `import type { Figure } from '../graph/figure'`
-- `dsl/serializer.ts` ligne 8 : `import type { Figure } from '../graph/figure'`
-- `dsl/transform-apply.ts` ligne 7 : `import type { Figure } from '../graph/figure'`
-
-Cela cree un cycle `graph -> dsl -> graph`. Il ne provoque pas d'erreur d'import car TypeScript supporte les cycles sur `import type`, mais c'est une dette architecturale. Si `singularity-warn.ts` venait a importer autre chose de `graph/`, un cycle de valeur apparaitrait et casserait le build.
-
-La solution propre est de deplacer `singularity-warn.ts` dans un dossier partagé — soit `graph/` (ou il est semantiquement lie a `createIntegralArea`), soit un nouveau dossier `analysis/` — et de supprimer le couplage inverse.
+**Description historique** : `graph/figure.ts` importait `classifyDiscontinuitiesForRange` depuis `dsl/singularity-warn.ts`, tandis que tout `dsl/` importait massivement `Figure` depuis `graph/`. Le cycle ne provoquait pas d'erreur grace aux `import type` (erases au build) et au fait que `singularity-warn` n'avait aucune dep transitive vers `graph/`. Mais l'architecture etait fragile : un seul ajout de value import de `singularity-warn` vers `graph/` aurait casse le build a l'execution.
 
 ### 3.2 graph/figure.ts — God Object
 
@@ -373,9 +359,9 @@ Le fichier `src/lib/geometry-core/index.ts` reexporte la totalite des neuf sous-
 
 La base de code geometry-core est **fonctionnellement robuste** (1 500+ tests, pas de TODO/FIXME, couverture etendue) mais presente une **dette structurelle significative** accumulee sur 5 mois de livraisons rapides et paralleles.
 
-Les deux problemes les plus urgents sont :
+Le probleme le plus urgent restant est :
 
-1. **Le cycle de dependance `graph/figure.ts` -> `dsl/singularity-warn.ts` -> `[mathAST]`** alors que `dsl/` importe `graph/figure.ts`. Actuellement non-bloquant grace aux `import type`, mais fragile.
+1. ~~**Le cycle de dependance `graph/figure.ts` -> `dsl/singularity-warn.ts`**~~ **CORRIGE 2026-05-18** (move vers `$lib/mathAST/analysis/`).
 
 2. **L'absence de rendu SVG/TikZ/Typst pour `GeoOsculatingCircle`** dans les modules d'export. Les cercles osculateurs ne sont rendus que dans `GeometryCanvas.svelte` (canvas interactif). Un export SVG/TikZ produit un figure silencieusement incomplete.
 

@@ -14,7 +14,7 @@ import { numeric, type ScalarParam } from '../../types/geo-value';
 import type { MathNode } from '$lib/mathAST/types';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { subtract } from '$lib/mathAST/factory';
-import { getAllDiscontinuities } from '../../dsl/singularity-warn';
+import { getAllDiscontinuities } from '$lib/mathAST/analysis/singularity-warn';
 
 interface GeoIntegralAreaShape {
 	type: 'integralArea';
