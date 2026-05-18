@@ -27,10 +27,14 @@ function makeParamCircle(): GeoParametricCurve {
 	const yExpr = parseCustom('sin(t)');
 	const xPrime = parseCustom('-sin(t)');
 	const yPrime = parseCustom('cos(t)');
+	const xSecond = parseCustom('-cos(t)');
+	const ySecond = parseCustom('-sin(t)');
 	const cx: CompiledFn = compile(xExpr);
 	const cy: CompiledFn = compile(yExpr);
 	const cxp: CompiledFn = compile(xPrime);
 	const cyp: CompiledFn = compile(yPrime);
+	const cxs: CompiledFn = compile(xSecond);
+	const cys: CompiledFn = compile(ySecond);
 	return {
 		type: 'parametricCurve',
 		id: 'pc_test_1',
@@ -42,6 +46,8 @@ function makeParamCircle(): GeoParametricCurve {
 		compiledY: cy,
 		compiledXPrime: cxp,
 		compiledYPrime: cyp,
+		compiledXSecond: cxs,
+		compiledYSecond: cys,
 		parameter: 't',
 		tMin: numeric(0),
 		tMax: numeric(2 * Math.PI),
@@ -112,7 +118,9 @@ describe('GeoParametricCurve — type and structure', () => {
 			xDerivative: null,
 			yDerivative: null,
 			compiledXPrime: null,
-			compiledYPrime: null
+			compiledYPrime: null,
+			compiledXSecond: null,
+			compiledYSecond: null
 		};
 		expect(fallback.xDerivative).toBeNull();
 		expect(fallback.yDerivative).toBeNull();

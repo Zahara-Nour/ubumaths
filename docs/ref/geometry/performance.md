@@ -56,24 +56,25 @@ Pour les courbes paramétriques, cela déclenche
 
 ## 2. Hotspots identifiés
 
-### 2.1 Recompilation des dérivées secondes à chaque appel — HIGH IMPACT
+### 2.1 ~~Recompilation des dérivées secondes à chaque appel~~ — **CORRIGÉ 2026-05-18**
 
 **Fichier** : `graph/parametric-calculus.ts:75-95`
 
-```typescript
-function getSecondDerivatives(curve: GeoParametricCurve) {
-	// V1 — no caching.
-	const xSecond = differentiate(curve.xDerivative, { variable: curve.parameter, simplify: true });
-	const ySecond = differentiate(curve.yDerivative, { variable: curve.parameter, simplify: true });
-	return { compiledXSecond: compile(xSecond), compiledYSecond: compile(ySecond) };
-}
-```
+> **Statut : FIXED.** `GeoParametricCurve` expose désormais `compiledXSecond`
+> et `compiledYSecond`, compilés une seule fois dans
+> `Figure.createParametricCurve` (try/catch → null en cas d'échec).
+> `getSecondDerivatives()` est devenu une simple lecture du cache (3 lignes
+> au lieu de 18). Tests de régression dans
+> `graph/__tests__/figure-parametric.test.ts`. Pour un drag continu à 60 fps
+> sur 1 cercle osculateur : ~240 appels `differentiate+compile/sec` → 0.
 
-`differentiate()` + `compile()` sur deux expressions AST à chaque appel de
-`computeCurvature()` ou `computeOsculatingCircle()`. Si un cercle osculateur
-est rendu dans la figure, ce chemin est atteint via `computeElementPosition()`
-→ `computeOsculatingCircle()` → `computeCurvature()` → `getSecondDerivatives()`
-à chaque `recompute()`, soit à chaque tick de drag ou de slider.
+**Description historique** : `differentiate()` + `compile()` sur deux
+expressions AST à chaque appel de `computeCurvature()` ou
+`computeOsculatingCircle()`. Si un cercle osculateur est rendu dans la
+figure, ce chemin était atteint via `computeElementPosition()` →
+`computeOsculatingCircle()` → `computeCurvature()` →
+`getSecondDerivatives()` à chaque `recompute()`, soit à chaque tick de drag
+ou de slider.
 
 ### 2.2 Objet d'environnement alloué à chaque évaluation de curve — MEDIUM IMPACT
 
@@ -200,15 +201,11 @@ pas ce même pattern.
 ### Ce qui est déjà compilé et mis en cache (OK)
 
 - `compiledX`, `compiledY`, `compiledXPrime`, `compiledYPrime` sur `GeoParametricCurve` — compilés une fois à la création, réutilisés.
+- `compiledXSecond`, `compiledYSecond` sur `GeoParametricCurve` (ajoutés 2026-05-18) — pré-compilés dans `Figure.createParametricCurve`, lus tels quels par `parametric-calculus.ts:getSecondDerivatives`.
 - `compiledFn` et `compiledDerivative` sur `GeoFunction` — idem.
 - `compiledFn` sur `GeoImplicitCurve` — compilé une fois.
 
 ### Ce qui manque de cache
-
-**Dérivées secondes** (`parametric-calculus.ts:75-95`) : `compiledXSecond` et
-`compiledYSecond` pourraient être ajoutés sur `GeoParametricCurve` au même
-titre que `compiledXPrime`. Cela éviterait `differentiate()` + `compile()` à
-chaque recompute pour les éléments `osculatingCircle` et `curvature`.
 
 **SVG path des courbes paramétriques** : le path SVG est recalculé à chaque
 changement de `version`, même si la courbe et le viewport n'ont pas changé.
@@ -351,19 +348,22 @@ identifiés sont :
 
 ## 9. Top 10 optimisations prioritaires
 
-### 1. Mettre en cache les dérivées secondes sur GeoParametricCurve — HIGH / FAIBLE EFFORT
+### 1. ~~Mettre en cache les dérivées secondes sur GeoParametricCurve~~ — **CORRIGÉ 2026-05-18**
 
-**Fichiers** : `graph/parametric-calculus.ts:75-95`,
-`types/elements.ts` (définition de `GeoParametricCurve`),
-`graph/figure.ts` (méthode `createParametricCurve`)
+**Fichiers** : `graph/parametric-calculus.ts`,
+`types/elements.ts` (`GeoParametricCurve`),
+`graph/figure.ts` (`createParametricCurve`)
 
-Ajouter `compiledXSecond?: CompiledFn` et `compiledYSecond?: CompiledFn` sur
-`GeoParametricCurve`, calculés une fois à la création (dans `figure.ts`, à
-côté de `compiledXPrime`/`compiledYPrime`). `getSecondDerivatives()` devient
-un accès direct au lieu d'un `differentiate()` + `compile()`.
-
-Gain attendu : suppression de 2 `differentiate()` + 2 `compile()` à chaque
-`recompute()` pour chaque `GeoOsculatingCircle` ou `GeoScalar('curvature')`.
+> **Statut : FIXED.** `compiledXSecond` / `compiledYSecond` ajoutés au type
+> (non-optionnels, `CompiledFn | null`). Pré-compilés dans
+> `Figure.createParametricCurve` (try/catch → `null` en cas d'échec).
+> `getSecondDerivatives()` est passé de 18 lignes (différentier+compiler) à
+> 3 lignes (lecture cache). Élimine 2 `differentiate()` + 2 `compile()` à
+> chaque `recompute()` pour chaque `GeoOsculatingCircle` ou
+> `GeoScalar('curvature')`. Tests de régression :
+> `graph/__tests__/figure-parametric.test.ts` (+2 tests : eager compilation
+>
+> - fallback `null` quand premières dérivées absentes).
 
 ---
 

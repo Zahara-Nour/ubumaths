@@ -124,6 +124,7 @@ import { classifyConic } from '../geometry/conic-classify';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import { compile } from '$lib/mathAST/eval/compile';
+import { differentiate } from '$lib/mathAST/differentiation';
 import {
 	subtract,
 	implicitMultiply,
@@ -2074,6 +2075,22 @@ export class Figure {
 	): string {
 		const id = this.generateId('pc');
 		const deps = [...dependencies];
+		// Pre-compile second derivatives so curvature / osculating-circle hot paths
+		// don't re-differentiate+compile per recompute() tick. Silent fallback to
+		// null on any failure — callers already handle the null case.
+		let compiledXSecond: CompiledFn | null = null;
+		let compiledYSecond: CompiledFn | null = null;
+		if (xDerivative && yDerivative) {
+			try {
+				const xSecond = differentiate(xDerivative, { variable: parameter, simplify: true });
+				const ySecond = differentiate(yDerivative, { variable: parameter, simplify: true });
+				compiledXSecond = compile(xSecond);
+				compiledYSecond = compile(ySecond);
+			} catch {
+				compiledXSecond = null;
+				compiledYSecond = null;
+			}
+		}
 		const element: GeoParametricCurve = {
 			type: 'parametricCurve',
 			id,
@@ -2085,6 +2102,8 @@ export class Figure {
 			compiledY,
 			compiledXPrime,
 			compiledYPrime,
+			compiledXSecond,
+			compiledYSecond,
 			parameter,
 			tMin,
 			tMax,

@@ -92,8 +92,8 @@ Angles morts critiques :
 
 Top 3 optimisations prioritaires :
 
-1. **Cache derivees secondes** (`parametric-calculus.ts:75-95`) — `cercle_osculateur`
-   recompile a chaque tick. Gain fort, effort faible.
+1. ~~**Cache derivees secondes** (`parametric-calculus.ts:75-95`) — `cercle_osculateur`
+   recompile a chaque tick.~~ **FAIT 2026-05-18**.
 2. **Supprimer les spreads** (`figure.ts:4399-4418`) — ~1 200 allocations
    `{ ...scalarBindings, [param]: t }` par courbe par rendu. Effort faible.
 3. **Warm-start Newton** (`parametric-newton.ts` + `intersection-1d.ts`) —
@@ -154,8 +154,8 @@ impact/effort :
 1. **[SECURITE HIGH]** Remplacer `new Function()` par `compile()` dans
    `src/lib/utils/game/challenge-variables.ts:68-76`.
    _Hors module mais critique._
-2. **[PERF HIGH / EFFORT FAIBLE]** Cache des derivees secondes pour
-   `cercle_osculateur`/`courbure` (`parametric-calculus.ts:75-95`).
+2. ~~**[PERF HIGH / EFFORT FAIBLE]** Cache des derivees secondes pour
+   `cercle_osculateur`/`courbure` (`parametric-calculus.ts:75-95`).~~ **FAIT 2026-05-18** (`compiledXSecond`/`compiledYSecond` sur `GeoParametricCurve`).
 3. **[PERF HIGH / EFFORT FAIBLE]** Eliminer les spreads dans
    `computeParametricCurveSampling` (`figure.ts:4399-4418`).
 4. **[QUALITE CRITIQUE]** Casser `_executeBuiltinInner` (`dsl/builtins.ts:345-2389`)

@@ -9,9 +9,9 @@
  *   - computeOsculatingCircle(curve, bindings, t0) → { centerX, centerY, radius }
  *     or null when κ ≈ 0 (straight line) or γ' ≈ 0 (cusp).
  *
- * The second derivatives x'' and y'' are computed on the fly from the curve's
- * stored xDerivative / yDerivative `MathNode`s. V1 recompiles them at every
- * call — acceptable since these helpers are not called inside hot loops.
+ * The second derivatives x'' and y'' are pre-compiled in
+ * `Figure.createParametricCurve` and read directly from
+ * `curve.compiledXSecond` / `curve.compiledYSecond` — see `getSecondDerivatives`.
  *
  * Conventions:
  *   - κ = (x'·y'' − y'·x'') / (x'² + y'²)^(3/2)  (signed)
@@ -20,8 +20,7 @@
  */
 
 import type { GeoParametricCurve } from '../types/elements';
-import { differentiate } from '$lib/mathAST/differentiation';
-import { compile, type CompiledFn } from '$lib/mathAST/eval/compile';
+import type { CompiledFn } from '$lib/mathAST/eval/compile';
 
 const SPEED_EPS_SQ = 1e-20; // ‖γ'‖² below this → degenerate
 const KAPPA_EPS = 1e-10; // |κ| below this → straight line (no osculating circle)
@@ -65,33 +64,25 @@ export function computeArcLength(
 }
 
 /**
- * Compile the second derivatives (x''(t), y''(t)) from the curve's stored
- * first-derivative ASTs. Returns null when first derivatives are missing or
- * differentiation/compilation fails.
+ * Return the curve's pre-compiled second derivatives (x''(t), y''(t)).
  *
- * V1 — no caching. The second-derivative compute is one differentiate + one
- * compile per call, both fast for the simple expressions we see in practice.
+ * Since 2026-05-18, second derivatives are eagerly compiled in
+ * `Figure.createParametricCurve` and stored as `compiledXSecond` /
+ * `compiledYSecond`. This getter is now a trivial read — the previous V1
+ * re-differentiated and re-compiled on every call, which was a hot-path
+ * cost for `cercle_osculateur` and `courbure` (one recompute per tick).
+ *
+ * Returns null when either compiled second derivative is absent (the curve
+ * had no first derivatives, or eager compilation failed).
  */
 function getSecondDerivatives(
 	curve: GeoParametricCurve
 ): { compiledXSecond: CompiledFn; compiledYSecond: CompiledFn } | null {
-	if (!curve.xDerivative || !curve.yDerivative) return null;
-	try {
-		const xSecond = differentiate(curve.xDerivative, {
-			variable: curve.parameter,
-			simplify: true
-		});
-		const ySecond = differentiate(curve.yDerivative, {
-			variable: curve.parameter,
-			simplify: true
-		});
-		return {
-			compiledXSecond: compile(xSecond),
-			compiledYSecond: compile(ySecond)
-		};
-	} catch {
-		return null;
-	}
+	if (!curve.compiledXSecond || !curve.compiledYSecond) return null;
+	return {
+		compiledXSecond: curve.compiledXSecond,
+		compiledYSecond: curve.compiledYSecond
+	};
 }
 
 /**
