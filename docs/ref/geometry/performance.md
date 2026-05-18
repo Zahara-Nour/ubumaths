@@ -372,6 +372,8 @@ identifiés sont :
 
 ## 9. Top 10 optimisations prioritaires
 
+> **Etat 2026-05-18** : 6 corrigés (#1 #2 #4 + #7-locus + sampling parametric + warm-start partiel #5). Restants formellement listés ci-dessous mais avec un **ROI maintenant marginal** : la plupart des chemins coûteux sont memoïsés, le profil de charge réel a changé. **Stop sur la perf en aveugle.** Prochaine étape recommandée : profiler une figure stress (slider animant un locus + parametric + intersection paramétrique) avec DevTools pour identifier le bottleneck _réel_ post-cache (probablement Svelte reactivity ou paint navigateur, plus du code geometry-core). Sans profiling, items #3, #6 et #5-intersection-1d ne valent pas l'effort d'implémentation par rapport à leur gain marginal.
+
 ### 1. ~~Mettre en cache les dérivées secondes sur GeoParametricCurve~~ — **CORRIGÉ 2026-05-18**
 
 **Fichiers** : `graph/parametric-calculus.ts`,
@@ -405,16 +407,20 @@ identifiés sont :
 
 ---
 
-### 3. Cache du SVG path par courbe paramétrique — HIGH / MOYEN EFFORT
+### 3. Cache du SVG path par courbe paramétrique — MARGINAL POST-2026-05-18
 
-**Fichier** : `graph/figure.ts` (ajouter un cache), `rendering/svg-primitives.ts`
+**Fichier** : `rendering/svg-primitives.ts:2007-2030`
 
-Stocker sur la `Figure` un cache `Map<string, { version: number; viewportKey: string; path: string; closed: boolean }>`. La clé `viewportKey` peut être `${xMin.toFixed(4)},${xMax.toFixed(4)},${yMin.toFixed(4)},${yMax.toFixed(4)}`. La `version` est un compteur propre à cet élément (incrémenté uniquement quand la courbe ou ses dépendances changent).
-
-Un drag sur un point libre qui ne touche pas la courbe paramétrique ne devrait pas invalider ce cache.
-
-Gain attendu : suppression de 300+ évaluations de courbe par rendu lorsque
-la courbe et le viewport n'ont pas changé.
+> **Statut : différé**, ROI maintenant insuffisant. La description originale
+> parlait de 300+ "évaluations de courbe" — c'était en réalité le coût du
+> sampler, qui est **désormais memoïsé** (QW #6 dans `figure.ts`). Le
+> _vrai_ coût restant ici est uniquement la conversion `SampledCurve → SVG
+path string` (mathToSvg sur ~300 points + emission Catmull-Rom). Ordre
+> de grandeur **~50-200 µs par courbe par render**, à comparer au cache
+> hit qui consomme déjà ~10 µs. Le rapport gain/effort tombe sous 1.
+>
+> À reconsidérer uniquement si un profil flame chart montre que le
+> path-string emission domine, ce qui est très improbable après QW #4-#6.
 
 ---
 
@@ -464,28 +470,38 @@ animant des intersections paramétriques (3 intersections × 320 évaluations
 
 ---
 
-### 6. Version granulaire par élément pour le rendu SVG — HIGH / ÉLEVÉ EFFORT
+### 6. Version granulaire par élément pour le rendu SVG — MARGINAL POST-2026-05-18
 
 **Fichier** : `src/lib/components/geometry/GeometryCanvas.svelte`
 
-Remplacer le `version: $state(0)` global par une `Map<string, $state(number)>`
-par élément (ou par groupe de dépendances). `{@const svg = parametricCurveToSVG(...)}` ne se recalculerait que si la version propre à cet élément change.
-
-Cela demande d'exposer de la Figure une API `getElementVersion(id): number`
-ou d'utiliser un `$state` Svelte dans un `Map<string, object>` partagé.
-La complexité d'implémentation est élevée (refactoring du template Svelte +
-API Figure), mais le gain est maximal pour les figures complexes.
+> **Statut : différé**, ROI fortement réduit. Avant QW #4-#6 c'était LE
+> gros structurel : `version++` global faisait tout recalculer. Maintenant
+> que les chemins coûteux (marching squares, locus, sampling parametric)
+> sont memoïsés, un `version++` typique fait surtout des cache hits + de
+> la stringification SVG. Estimation post-cache : ~5 ms pour 50 éléments
+> par render — déjà largement dominé par Svelte reactivity et le paint
+> navigateur, pas par notre code.
+>
+> **Coût d'implémentation** : 1-2 jours pleins, refactor `GeometryCanvas.svelte`
+>
+> - API Figure + tous les sites de mutation, risque élevé de bugs de
+>   stale rendering si un increment est manqué.
+>
+> **À reconsidérer** uniquement si le profiling montre que Svelte
+> reactivity domine — auquel cas il faudrait aussi évaluer des
+> approches alternatives (sub-components avec dependsOn explicite).
 
 ---
 
-### 7. Mettre en cache le locus calculé — MEDIUM / MOYEN EFFORT
+### 7. ~~Mettre en cache le locus calculé~~ — **CORRIGÉ 2026-05-18**
 
-**Fichier** : `rendering/svg-primitives.ts:2007-2030`
+**Fichier** : `graph/compute-locus.ts`
 
-`locusToSVG()` recompute le locus à chaque rendu. Stocker le résultat dans un
-cache `Map<string, { driverVersion: number; path: string }>` où `driverVersion`
-est la version (position) du driver point. Invalider uniquement quand le driver
-bouge.
+> **Statut : FIXED.** WeakMap keyed par `GeoLocus`, sous-clé = snapshot des
+> positions/scalaires de `locus.dependsOn` + viewport. Plus simple que le
+> plan initial (cache par `driverVersion`) — la closure `dependsOn` est
+> déjà calculée à la création du locus. 6 tests dédiés dans
+> `graph/__tests__/locus-cache.test.ts`.
 
 ---
 
