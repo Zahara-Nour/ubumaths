@@ -285,6 +285,26 @@ function applyInlineStyle(
 	if (Object.keys(style).length > 0) {
 		figure.updateStyle(elId, style);
 	}
+	// Visibility is a top-level field on GeoElement (not in `style`), handled separately.
+	if (named.has('visible')) {
+		const vis = namedToBoolean(named.get('visible')!, 'visible', line);
+		if (vis) figure.showElement(elId);
+		else figure.hideElement(elId);
+	}
+}
+
+/**
+ * Coerce a DSL named-arg value to boolean. Booleans (`vrai` / `faux`) are
+ * coerced to numbers (1/0) by the interpreter, so we accept nombre only.
+ */
+function namedToBoolean(val: ResolvedValue, argName: string, line: number): boolean {
+	if (val.type === 'nombre') return val.value !== 0;
+	throw new DslRuntimeError(
+		{
+			summary: `\`${argName}\` doit être un booléen (\`vrai\`/\`faux\`) ou un nombre (\`0\`/\`1\`).`
+		},
+		line
+	);
 }
 
 export type { AngleMode } from './apply-angle-mode';
@@ -3206,6 +3226,56 @@ function handleStyle(ctx: BuiltinCtx): null {
 }
 HANDLERS.set('style', handleStyle);
 
+// ─── Verbes de visibilité ──────────────────────────────────────
+
+function handleMontre(ctx: BuiltinCtx): null {
+	const { pos, named, figure, line } = ctx;
+	if (pos.length !== 1)
+		throw new DslRuntimeError(
+			{
+				summary: `\`montre()\` attend 1 argument (l’élément à afficher), ${pos.length} reçu(s).`,
+				forms: [
+					{ syntax: 'montre(O)', description: 'rend l’élément visible' },
+					{
+						syntax: 'montre(O, couleur="rouge", forme="croix")',
+						description: 'visible + applique le style en un coup'
+					}
+				]
+			},
+			line
+		);
+	const elId = requireElement(pos[0], 'element', line);
+	const el = figure.getElementById(elId);
+	if (!el)
+		throw new DslRuntimeError({ summary: `\`montre()\` : élément \`${elId}\` introuvable.` }, line);
+	figure.showElement(elId);
+	// Apply any additional style args in one shot.
+	if (named.size > 0) {
+		applyInlineStyle(figure, elId, named, line);
+	}
+	return null;
+}
+HANDLERS.set('montre', handleMontre);
+
+function handleMasque(ctx: BuiltinCtx): null {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== 1)
+		throw new DslRuntimeError(
+			{
+				summary: `\`masque()\` attend 1 argument (l’élément à cacher), ${pos.length} reçu(s).`,
+				forms: [{ syntax: 'masque(O)', description: 'rend l’élément invisible' }]
+			},
+			line
+		);
+	const elId = requireElement(pos[0], 'element', line);
+	const el = figure.getElementById(elId);
+	if (!el)
+		throw new DslRuntimeError({ summary: `\`masque()\` : élément \`${elId}\` introuvable.` }, line);
+	figure.hideElement(elId);
+	return null;
+}
+HANDLERS.set('masque', handleMasque);
+
 const LONGUEUR_FORMS = [
 	{
 		syntax: 'longueur(c)',
@@ -3932,7 +4002,9 @@ export const BUILTIN_NAMES = new Set([
 	'extremite',
 	'extremites',
 	'sommet',
-	'sommets'
+	'sommets',
+	'montre',
+	'masque'
 ]);
 
 /** Math functions that return numbers. */
