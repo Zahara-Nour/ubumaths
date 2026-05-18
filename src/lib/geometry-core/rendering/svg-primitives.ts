@@ -323,6 +323,28 @@ export function circleToSVG(
 	return null;
 }
 
+/**
+ * Convert an osculating-circle element to SVG circle attributes.
+ *
+ * Returns null when the element is missing, isn't an osculating circle,
+ * has no resolved centre (γ(t0) outside curve domain), or no finite radius
+ * (cusp / inflection). Matches the canvas branch in `GeometryCanvas.svelte`.
+ */
+export function osculatingCircleToSVG(
+	id: string,
+	figure: Figure,
+	transformer: CoordinateTransformer
+): CircleSVG | null {
+	const el = figure.getElementById(id);
+	if (!el || el.type !== 'osculatingCircle') return null;
+	const centre = figure.getPosition(id);
+	const radius = figure.getOsculatingCircleRadius(id);
+	if (!centre || radius === null || !Number.isFinite(radius)) return null;
+	const svgC = transformer.mathToSvg(geoToNumber(centre.x), geoToNumber(centre.y));
+	const rPx = Math.abs(radius * transformer.scaleX);
+	return { cx: svgC.x, cy: svgC.y, r: rPx };
+}
+
 function circleByRadiusToSVG(
 	circle: GeoCircleByRadius,
 	figure: Figure,

@@ -158,8 +158,8 @@ Pour chaque sous-dossier du module, les documents qui en parlent :
    `computeParametricCurveSampling` (`figure.ts:4399-4418`).~~ **FAIT 2026-05-18** (pattern mutable-env applique aux 3 sites de figure.ts).
 4. **[QUALITE CRITIQUE]** Casser `_executeBuiltinInner` (`dsl/builtins.ts:345-2389`)
    en handlers par builtin (1 fichier par primitive).
-5. **[QUALITE CRITIQUE]** Ajouter le rendu de `GeoOsculatingCircle` dans
-   `svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts`.
+5. ~~**[QUALITE CRITIQUE]** Ajouter le rendu de `GeoOsculatingCircle` dans
+   `svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts`.~~ **FAIT 2026-05-18** (helper `osculatingCircleToSVG` + branches dans les 3 exporters).
 6. **[TESTS]** Ajouter des tests unitaires directs pour `bezier.ts` (`parametric-newton.ts` couvert depuis 2026-05-18).
 7. ~~**[SECURITE MEDIUM]** Borner `PARSE_CACHE` dans `dsl/interpreter.ts`.~~ **FAIT 2026-05-18** (plafond 5 000 entrees).
 8. ~~**[SECURITE LOW]** Garde de longueur DSL dans `parse()`.~~ **FAIT 2026-05-18** (100 000 caracteres max).
