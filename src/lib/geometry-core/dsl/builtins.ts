@@ -411,19 +411,109 @@ export type BuiltinHandler = (
  */
 const HANDLERS = new Map<string, BuiltinHandler>();
 
+const POINT_FORMS = [
+	{ syntax: 'point(x, y)', description: 'point libre aux coordonnées `(x, y)`' },
+	{
+		syntax: 'point(s.value, 0)',
+		description: 'point dont l’abscisse suit la valeur du slider `s`'
+	},
+	{
+		syntax: 'point(A, longueur=5, angle=30)',
+		description: 'point à `5` unités de `A`, angle 30°'
+	},
+	{
+		syntax: 'point(A, longueur=5, direction=B)',
+		description: 'point à `5` unités de `A`, dans la direction de `B`'
+	},
+	{
+		syntax: 'point(A, longueur=5, vecteur=u)',
+		description: 'point à `5` unités de `A`, dans la direction du vecteur `u`'
+	}
+];
+
+/**
+ * Compute a unit direction (dx, dy) from the named-arg variants supported
+ * by point() and segment(): angle=θ (in current angle mode), direction=B
+ * (towards a point), vecteur=u (along a vector).
+ */
+function resolveDirection(
+	ctx: BuiltinCtx,
+	Apos: { x: GeoValue; y: GeoValue }
+): { dx: number; dy: number } {
+	const { named, figure, line, angleMode } = ctx;
+	if (named.has('angle')) {
+		const angleVal = requireNumber(named.get('angle')!, 'angle', line);
+		const rad = toRadians(angleVal, angleMode);
+		return { dx: Math.cos(rad), dy: Math.sin(rad) };
+	}
+	if (named.has('direction')) {
+		const Bid = requireElement(named.get('direction')!, 'direction', line);
+		const Bpos = figure.getPosition(Bid);
+		if (!Bpos)
+			throw new DslRuntimeError(
+				{ summary: '`direction=` : impossible de résoudre la position du point cible.' },
+				line
+			);
+		const ddx = geoToNumber(Bpos.x) - geoToNumber(Apos.x);
+		const ddy = geoToNumber(Bpos.y) - geoToNumber(Apos.y);
+		const norm = Math.sqrt(ddx * ddx + ddy * ddy);
+		if (norm < 1e-15)
+			throw new DslRuntimeError(
+				{
+					summary: '`direction=` : les deux points sont confondus, direction indéterminée.'
+				},
+				line
+			);
+		return { dx: ddx / norm, dy: ddy / norm };
+	}
+	if (named.has('vecteur')) {
+		const Vid = requireElement(named.get('vecteur')!, 'vecteur', line);
+		const vc = figure.getVectorComponents(Vid);
+		if (!vc)
+			throw new DslRuntimeError(
+				{ summary: '`vecteur=` : composantes du vecteur non résolues.' },
+				line
+			);
+		const vdx = geoToNumber(vc.dx);
+		const vdy = geoToNumber(vc.dy);
+		const norm = Math.sqrt(vdx * vdx + vdy * vdy);
+		if (norm < 1e-15)
+			throw new DslRuntimeError(
+				{ summary: '`vecteur=` : vecteur nul, direction indéterminée.' },
+				line
+			);
+		return { dx: vdx / norm, dy: vdy / norm };
+	}
+	// Default : horizontal (angle = 0)
+	return { dx: 1, dy: 0 };
+}
+
 function handlePoint(ctx: BuiltinCtx): BuiltinResult {
-	const { pos, figure, toGeoValue, line, label } = ctx;
+	const { pos, named, figure, toGeoValue, line, label } = ctx;
+
+	// Form 2: point(A, longueur=L, ...) — polar offset from an existing point
+	if (pos.length === 1 && pos[0].type === 'element' && named.has('longueur')) {
+		const Aid = requireElement(pos[0], 'A', line);
+		const Apos = figure.getPosition(Aid);
+		if (!Apos)
+			throw new DslRuntimeError(
+				{ summary: '`point()` : impossible de résoudre la position du point de référence.' },
+				line
+			);
+		const L = requireNumber(named.get('longueur')!, 'longueur', line);
+		const dir = resolveDirection(ctx, Apos);
+		const x = geoToNumber(Apos.x) + dir.dx * L;
+		const y = geoToNumber(Apos.y) + dir.dy * L;
+		const id = figure.createFreePoint({ x: numeric(x), y: numeric(y) }, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+
+	// Form 1: point(x, y) — absolute coordinates (existing)
 	if (pos.length !== 2)
 		throw new DslRuntimeError(
 			{
 				summary: `\`point()\` attend 2 arguments (abscisse, ordonnée), ${pos.length} reçu(s).`,
-				forms: [
-					{ syntax: 'point(x, y)', description: 'point libre aux coordonnées `(x, y)`' },
-					{
-						syntax: 'point(s.value, 0)',
-						description: 'point dont l’abscisse suit la valeur du slider `s`'
-					}
-				]
+				forms: POINT_FORMS
 			},
 			line
 		);
@@ -1695,14 +1785,54 @@ function handleMilieu(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('milieu', handleMilieu);
 
+const SEGMENT_FORMS = [
+	{ syntax: 'segment(A, B)', description: 'segment `[AB]` entre deux points existants' },
+	{
+		syntax: 'segment(A, longueur=5, angle=30)',
+		description: 'segment depuis `A`, longueur 5, angle 30°'
+	},
+	{
+		syntax: 'segment(A, longueur=5, direction=B)',
+		description: 'segment depuis `A`, longueur 5, vers `B`'
+	},
+	{
+		syntax: 'segment(A, longueur=5, vecteur=u)',
+		description: 'segment depuis `A`, longueur 5, dans la direction de `u`'
+	}
+];
+
 function handleSegment(ctx: BuiltinCtx): BuiltinResult {
-	const { pos, figure, line, label } = ctx;
+	const { pos, named, figure, line, label } = ctx;
+
+	// Form 2: segment(A, longueur=L, ...) — anonymous endpoint, returns the segment
+	if (pos.length === 1 && pos[0].type === 'element' && named.has('longueur')) {
+		const Aid = requireElement(pos[0], 'A', line);
+		const Apos = figure.getPosition(Aid);
+		if (!Apos)
+			throw new DslRuntimeError(
+				{
+					summary: '`segment()` : impossible de résoudre la position du point de départ.'
+				},
+				line
+			);
+		const L = requireNumber(named.get('longueur')!, 'longueur', line);
+		const dir = resolveDirection(ctx, Apos);
+		const x = geoToNumber(Apos.x) + dir.dx * L;
+		const y = geoToNumber(Apos.y) + dir.dy * L;
+		// The endpoint is a byproduct — created visible by default, but the user
+		// can hide it via `extremite(s, 2)` + `masque(...)` if desired.
+		const Bid = figure.createFreePoint({ x: numeric(x), y: numeric(y) });
+		const id = figure.createSegment(Aid, Bid, { label });
+		return { figureId: id, symbolType: 'segment' };
+	}
+
+	// Form 1: segment(A, B) — two existing points (existing)
 	if (pos.length !== 2)
-		throw twoPointsArityError(
-			'segment',
-			'extrémités A, B',
-			pos.length,
-			{ syntax: 'segment(A, B)', description: 'segment `[AB]` reliant les deux points' },
+		throw new DslRuntimeError(
+			{
+				summary: `\`segment()\` : combinaison d'arguments non reconnue (${pos.length} positionnels).`,
+				forms: SEGMENT_FORMS
+			},
 			line
 		);
 	const id = figure.createSegment(
