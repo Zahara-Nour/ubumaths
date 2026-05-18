@@ -1498,14 +1498,32 @@ HANDLERS.set('rtexte', handleRtexte);
 function handleLieu(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 2) {
-		throw new DslRuntimeError('lieu() attend 2 arguments (traceur, conducteur)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`lieu()\` attend 2 arguments (traceur, conducteur), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'lieu(M, P)',
+						description:
+							'trace de `M` lorsque `P` parcourt sa courbe support (P doit être un `point_sur`)'
+					}
+				]
+			},
+			line
+		);
 	}
 	const tracerId = requireElement(pos[0], 'traceur', line);
 	const driverId = requireElement(pos[1], 'conducteur', line);
 
 	const driverEl = figure.getElementById(driverId);
 	if (!driverEl) {
-		throw new DslRuntimeError(`lieu(): conducteur "${driverId}" introuvable`, line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`lieu()\` : conducteur \`${driverId}\` introuvable.`,
+				hint: 'Vérifiez que la variable passée en 2ᵉ argument a bien été définie.'
+			},
+			line
+		);
 	}
 	const driverOnPath =
 		driverEl.type === 'pointOnCurve' ||
@@ -1516,12 +1534,24 @@ function handleLieu(ctx: BuiltinCtx): BuiltinResult {
 		driverEl.type === 'pointOnArc' ||
 		driverEl.type === 'pointOnParametricCurve';
 	if (!driverOnPath) {
-		throw new DslRuntimeError('lieu(): le conducteur doit etre un point_sur', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`lieu()` : le conducteur doit être un point placé sur une courbe.',
+				hint: 'Créez-le avec `P = point_sur(courbe, t)` puis utilisez `P` comme conducteur.'
+			},
+			line
+		);
 	}
 
 	const tracerEl = figure.getElementById(tracerId);
 	if (!tracerEl) {
-		throw new DslRuntimeError(`lieu(): traceur "${tracerId}" introuvable`, line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`lieu()\` : traceur \`${tracerId}\` introuvable.`,
+				hint: 'Vérifiez que la variable passée en 1er argument a bien été définie.'
+			},
+			line
+		);
 	}
 
 	const visited = new Set<string>();
@@ -2947,7 +2977,10 @@ function handleCourbure(ctx: BuiltinCtx): BuiltinResult {
 	const kcEl = figure.getElementById(kcId);
 	if (!kcEl || kcEl.type !== 'parametricCurve') {
 		throw new DslRuntimeError(
-			'courbure(): le premier argument doit etre une courbe parametrique',
+			{
+				summary: '`courbure()` : le 1er argument doit être une courbe paramétrique.',
+				hint: 'Créez-la avec `c = courbe("x = ...", "y = ...", t_min=..., t_max=...)`.'
+			},
 			line
 		);
 	}
@@ -2960,13 +2993,27 @@ HANDLERS.set('courbure', handleCourbure);
 function handleCercleOsculateur(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, toGeoValue, line, label } = ctx;
 	if (pos.length !== 2) {
-		throw new DslRuntimeError('cercle_osculateur() attend 2 arguments (c, t0)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`cercle_osculateur()\` attend 2 arguments (c, t0), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'cercle_osculateur(c, t0)',
+						description: 'cercle osculateur de la courbe paramétrique `c` au paramètre `t0`'
+					}
+				]
+			},
+			line
+		);
 	}
 	const ocCurveId = requireElement(pos[0], 'courbe', line);
 	const ocCurveEl = figure.getElementById(ocCurveId);
 	if (!ocCurveEl || ocCurveEl.type !== 'parametricCurve') {
 		throw new DslRuntimeError(
-			'cercle_osculateur(): le premier argument doit etre une courbe parametrique',
+			{
+				summary: '`cercle_osculateur()` : le 1er argument doit être une courbe paramétrique.',
+				hint: 'Le cercle osculateur n’est défini que pour les courbes paramétriques.'
+			},
 			line
 		);
 	}
@@ -2979,19 +3026,42 @@ HANDLERS.set('cercle_osculateur', handleCercleOsculateur);
 function handleDerivee(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 1) {
-		throw new DslRuntimeError('derivee() attend 1 argument (une fonction)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`derivee()\` attend 1 argument (une fonction), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'derivee(f)',
+						description: "fonction dérivée `f'` de la fonction `y = f(x)`"
+					}
+				]
+			},
+			line
+		);
 	}
 	const dFnId = requireElement(pos[0], 'fonction', line);
 	const dFnEl = figure.getElementById(dFnId);
 	if (!dFnEl || dFnEl.type !== 'function') {
-		throw new DslRuntimeError("derivee(): l'argument doit être une courbe y = f(x)", line);
+		throw new DslRuntimeError(
+			{
+				summary: '`derivee()` : l’argument doit être une courbe `y = f(x)`.',
+				hint: 'Créez-la avec `f = courbe("x^2 - 1")` puis passez-la ici.'
+			},
+			line
+		);
 	}
 
 	let fPrimePrime: MathNode;
 	try {
 		fPrimePrime = differentiate(dFnEl.derivative, { variable: 'x', simplify: true });
 	} catch {
-		throw new DslRuntimeError('derivee(): impossible de calculer la dérivée seconde', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`derivee()` : impossible de calculer la dérivée seconde.',
+				hint: 'La fonction n’est probablement pas dérivable deux fois sur l’intervalle.'
+			},
+			line
+		);
 	}
 
 	let dCompiledDerivative: CompiledFn;
@@ -2999,7 +3069,10 @@ function handleDerivee(ctx: BuiltinCtx): BuiltinResult {
 		dCompiledDerivative = compile(fPrimePrime);
 	} catch (e) {
 		throw new DslRuntimeError(
-			`derivee(): impossible de compiler la dérivée — ${e instanceof Error ? e.message : ''}`,
+			{
+				summary: '`derivee()` : impossible de compiler la dérivée.',
+				hint: e instanceof Error ? e.message : 'Erreur interne lors de la compilation.'
+			},
 			line
 		);
 	}
@@ -3024,12 +3097,29 @@ function handleIntegrale(
 ): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 3) {
-		throw new DslRuntimeError('integrale() attend 3 arguments (f, a, b)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`integrale()\` attend 3 arguments (f, a, b), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'integrale(f, a, b)',
+						description: 'aire signée entre `y = f(x)` et l’axe `Ox` sur `[a ; b]`'
+					}
+				]
+			},
+			line
+		);
 	}
 	const intFnId = requireElement(pos[0], 'fonction', line);
 	const intFnEl = figure.getElementById(intFnId);
 	if (!intFnEl || intFnEl.type !== 'function') {
-		throw new DslRuntimeError('integrale(): le 1er argument doit etre une courbe y = f(x)', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`integrale()` : le 1er argument doit être une courbe `y = f(x)`.',
+				hint: 'Créez-la avec `f = courbe("x^2 - 1")` puis intégrez-la.'
+			},
+			line
+		);
 	}
 	return interpretAreaBuiltin({
 		name: 'integrale',
@@ -3049,17 +3139,40 @@ function handleAireEntre(
 ): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 4) {
-		throw new DslRuntimeError('aire_entre() attend 4 arguments (f, g, a, b)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`aire_entre()\` attend 4 arguments (f, g, a, b), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'aire_entre(f, g, a, b)',
+						description: 'aire positive entre `y = f(x)` et `y = g(x)` sur `[a ; b]`'
+					}
+				]
+			},
+			line
+		);
 	}
 	const fnId = requireElement(pos[0], 'fonction 1', line);
 	const fnEl = figure.getElementById(fnId);
 	if (!fnEl || fnEl.type !== 'function') {
-		throw new DslRuntimeError('aire_entre(): le 1er argument doit etre une courbe y = f(x)', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`aire_entre()` : le 1er argument doit être une courbe `y = f(x)`.',
+				hint: 'Les deux arguments doivent être des courbes cartésiennes définies au-dessus.'
+			},
+			line
+		);
 	}
 	const gnId = requireElement(pos[1], 'fonction 2', line);
 	const gnEl = figure.getElementById(gnId);
 	if (!gnEl || gnEl.type !== 'function') {
-		throw new DslRuntimeError('aire_entre(): le 2e argument doit etre une courbe y = g(x)', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`aire_entre()` : le 2ᵉ argument doit être une courbe `y = g(x)`.',
+				hint: 'Les deux arguments doivent être des courbes cartésiennes définies au-dessus.'
+			},
+			line
+		);
 	}
 	return interpretAreaBuiltin({
 		name: 'aire_entre',
@@ -3079,19 +3192,43 @@ HANDLERS.set('aire_entre', handleAireEntre);
 function handleAsymptotes(ctx: BuiltinCtx): BuiltinMultiResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 1) {
-		throw new DslRuntimeError('asymptotes() attend 1 argument (conique)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`asymptotes()\` attend 1 argument (une conique), ${pos.length} reçu(s).`,
+				forms: [{ syntax: 'asymptotes(h)', description: 'les deux asymptotes de l’hyperbole `h`' }]
+			},
+			line
+		);
 	}
 	const asymCurveId = requireElement(pos[0], 'conique', line);
 	const asymCurveEl = figure.getElementById(asymCurveId);
 	if (!asymCurveEl || asymCurveEl.type !== 'quadraticCurve') {
-		throw new DslRuntimeError("asymptotes(): l'argument doit etre une conique", line);
+		throw new DslRuntimeError(
+			{
+				summary: '`asymptotes()` : l’argument doit être une conique.',
+				hint: 'Créez-la avec `c = courbe("x^2/4 - y^2/9 = 1")`.'
+			},
+			line
+		);
 	}
 	if (asymCurveEl.conic.type !== 'hyperbola') {
-		throw new DslRuntimeError('asymptotes(): la conique doit etre une hyperbole', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`asymptotes()` : la conique doit être une hyperbole.',
+				hint: 'Les ellipses, paraboles et cercles n’ont pas d’asymptotes.'
+			},
+			line
+		);
 	}
 	const asymLines = asymptoteLines(asymCurveEl.conic);
 	if (!asymLines) {
-		throw new DslRuntimeError('asymptotes(): impossible de calculer les asymptotes', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`asymptotes()` : impossible de calculer les asymptotes.',
+				hint: 'Cas dégénéré : l’hyperbole est singulière (deux droites sécantes).'
+			},
+			line
+		);
 	}
 	const asymResults: BuiltinResult[] = asymLines.map((al, i) => {
 		const lbl = label ? (asymLines.length > 1 ? `${label}${i + 1}` : label) : undefined;
@@ -3113,19 +3250,48 @@ HANDLERS.set('asymptotes', handleAsymptotes);
 function handleAxes(ctx: BuiltinCtx): BuiltinMultiResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 1) {
-		throw new DslRuntimeError('axes() attend 1 argument (conique)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`axes()\` attend 1 argument (une conique), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'axes(c)',
+						description: 'axes de symétrie de la conique `c` (ellipse, hyperbole, parabole)'
+					}
+				]
+			},
+			line
+		);
 	}
 	const axesCurveId = requireElement(pos[0], 'conique', line);
 	const axesCurveEl = figure.getElementById(axesCurveId);
 	if (!axesCurveEl || axesCurveEl.type !== 'quadraticCurve') {
-		throw new DslRuntimeError("axes(): l'argument doit etre une conique", line);
+		throw new DslRuntimeError(
+			{
+				summary: '`axes()` : l’argument doit être une conique.',
+				hint: 'Créez-la avec `c = courbe("x^2/4 + y^2/9 = 1")`.'
+			},
+			line
+		);
 	}
 	if (axesCurveEl.conic.type === 'circle') {
-		throw new DslRuntimeError("axes(): un cercle a une infinite d'axes de symetrie", line);
+		throw new DslRuntimeError(
+			{
+				summary: '`axes()` : un cercle a une infinité d’axes de symétrie.',
+				hint: 'Cette fonction n’est définie que pour les coniques non circulaires.'
+			},
+			line
+		);
 	}
 	const axLines = computeAxisLines(axesCurveEl.conic);
 	if (!axLines || axLines.length === 0) {
-		throw new DslRuntimeError('axes(): impossible de calculer les axes', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`axes()` : impossible de calculer les axes de cette conique.',
+				hint: 'Cas dégénéré : la conique est probablement singulière.'
+			},
+			line
+		);
 	}
 	const axResults: BuiltinResult[] = axLines.map((al, i) => {
 		const lbl = label ? (axLines.length > 1 ? `${label}${i + 1}` : label) : undefined;
@@ -3147,19 +3313,37 @@ HANDLERS.set('axes', handleAxes);
 function handleDirectrice(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 1) {
-		throw new DslRuntimeError('directrice() attend 1 argument (conique)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`directrice()\` attend 1 argument (une parabole), ${pos.length} reçu(s).`,
+				forms: [{ syntax: 'directrice(p)', description: 'directrice de la parabole `p`' }]
+			},
+			line
+		);
 	}
 	const dirCurveId = requireElement(pos[0], 'conique', line);
 	const dirCurveEl = figure.getElementById(dirCurveId);
 	if (!dirCurveEl || dirCurveEl.type !== 'quadraticCurve') {
-		throw new DslRuntimeError("directrice(): l'argument doit etre une conique", line);
+		throw new DslRuntimeError(
+			{ summary: '`directrice()` : l’argument doit être une conique.' },
+			line
+		);
 	}
 	if (dirCurveEl.conic.type !== 'parabola') {
-		throw new DslRuntimeError('directrice(): la conique doit etre une parabole', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`directrice()` : la conique doit être une parabole.',
+				hint: 'Seules les paraboles ont une directrice unique.'
+			},
+			line
+		);
 	}
 	const dirLine = computeDirectrixLine(dirCurveEl.conic);
 	if (!dirLine) {
-		throw new DslRuntimeError('directrice(): impossible de calculer la directrice', line);
+		throw new DslRuntimeError(
+			{ summary: '`directrice()` : impossible de calculer la directrice (parabole dégénérée).' },
+			line
+		);
 	}
 	const dPt1Id = figure.createFreePoint(
 		{ x: numeric(dirLine.p1.x), y: numeric(dirLine.p1.y) },
@@ -3177,16 +3361,30 @@ HANDLERS.set('directrice', handleDirectrice);
 function handleFoyers(ctx: BuiltinCtx): BuiltinMultiResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 1) {
-		throw new DslRuntimeError('foyers() attend 1 argument (conique)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`foyers()\` attend 1 argument (une conique), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'foyers(c)',
+						description: 'foyers de la conique `c` (ellipse, hyperbole, parabole)'
+					}
+				]
+			},
+			line
+		);
 	}
 	const foyersCurveId = requireElement(pos[0], 'conique', line);
 	const foyersCurveEl = figure.getElementById(foyersCurveId);
 	if (!foyersCurveEl || foyersCurveEl.type !== 'quadraticCurve') {
-		throw new DslRuntimeError("foyers(): l'argument doit etre une conique", line);
+		throw new DslRuntimeError({ summary: '`foyers()` : l’argument doit être une conique.' }, line);
 	}
 	const foci = computeFociPoints(foyersCurveEl.conic);
 	if (!foci || foci.length === 0) {
-		throw new DslRuntimeError('foyers(): impossible de calculer les foyers', line);
+		throw new DslRuntimeError(
+			{ summary: '`foyers()` : impossible de calculer les foyers (conique dégénérée).' },
+			line
+		);
 	}
 	const fociResults: BuiltinResult[] = foci.map((f, i) => {
 		const lbl = label ? (foci.length > 1 ? `${label}${i + 1}` : label) : undefined;
@@ -3203,16 +3401,30 @@ HANDLERS.set('foyers', handleFoyers);
 function handleExcentricite(ctx: BuiltinCtx): BuiltinScalarResult {
 	const { pos, figure, line } = ctx;
 	if (pos.length !== 1) {
-		throw new DslRuntimeError('excentricite() attend 1 argument (conique)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`excentricite()\` attend 1 argument (une conique), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'excentricite(c)',
+						description: 'excentricité scalaire de la conique `c`'
+					}
+				]
+			},
+			line
+		);
 	}
 	const eccCurveId = requireElement(pos[0], 'conique', line);
 	const eccCurveEl = figure.getElementById(eccCurveId);
 	if (!eccCurveEl || eccCurveEl.type !== 'quadraticCurve') {
-		throw new DslRuntimeError("excentricite(): l'argument doit etre une conique", line);
+		throw new DslRuntimeError(
+			{ summary: '`excentricite()` : l’argument doit être une conique.' },
+			line
+		);
 	}
 	const ecc = computeEccentricity(eccCurveEl.conic);
 	if (isNaN(ecc)) {
-		throw new DslRuntimeError('excentricite(): conique degeneree', line);
+		throw new DslRuntimeError({ summary: '`excentricite()` : conique dégénérée.' }, line);
 	}
 	return { scalarValue: ecc } as BuiltinScalarResult;
 }
@@ -3221,17 +3433,34 @@ HANDLERS.set('excentricite', handleExcentricite);
 function handlePolaire(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 2) {
-		throw new DslRuntimeError('polaire() attend 2 arguments (point, conique)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`polaire()\` attend 2 arguments (point, conique), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'polaire(M, c)',
+						description: 'polaire du point `M` par rapport à la conique `c`'
+					}
+				]
+			},
+			line
+		);
 	}
 	const polPointId = requireElement(pos[0], 'point', line);
 	const polCurveId = requireElement(pos[1], 'conique', line);
 	const polPointEl = figure.getElementById(polPointId);
 	if (!polPointEl || !isPointElement(polPointEl)) {
-		throw new DslRuntimeError('polaire(): le premier argument doit etre un point', line);
+		throw new DslRuntimeError(
+			{ summary: '`polaire()` : le 1er argument doit être un point.' },
+			line
+		);
 	}
 	const polCurveEl = figure.getElementById(polCurveId);
 	if (!polCurveEl || polCurveEl.type !== 'quadraticCurve') {
-		throw new DslRuntimeError('polaire(): le deuxieme argument doit etre une conique', line);
+		throw new DslRuntimeError(
+			{ summary: '`polaire()` : le 2ᵉ argument doit être une conique.' },
+			line
+		);
 	}
 	const polId = figure.createConicPolar(polCurveId, polPointId, { label });
 	return { figureId: polId, symbolType: 'polaire' };
