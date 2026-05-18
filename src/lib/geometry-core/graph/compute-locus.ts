@@ -47,8 +47,59 @@ interface DriverParamInfo {
 // =============================================================================
 
 /**
+ * Cache for `computeLocusCurve` results.
+ *
+ * Locus sampling does N + adaptive refinement passes through the driver→tracer
+ * sub-graph; rerunning it on every Svelte `version++` (any drag, any slider
+ * tick) is wasteful when nothing in the locus's dependency chain has actually
+ * changed.
+ *
+ * Cache key: a snapshot of the positions and scalar values of every element
+ * in `locus.dependsOn` (which the figure builder fills with the full transitive
+ * closure of driver + tracer ancestors), plus the viewport (used for unbounded
+ * driver paths). Same snapshot → identical sampling result, so it is sound to
+ * return the same `SampledCurve` reference.
+ *
+ * WeakMap auto-releases the entry when the `GeoLocus` element is replaced
+ * (immutable elements: any change produces a new object).
+ */
+interface LocusCacheEntry {
+	readonly key: string;
+	readonly result: SampledCurve | null;
+}
+const locusCache = new WeakMap<GeoLocus, LocusCacheEntry>();
+
+function buildLocusCacheKey(
+	locus: GeoLocus,
+	positions: ReadonlyMap<string, GeoPoint>,
+	scalarValues: ReadonlyMap<string, number> | undefined,
+	viewport: Viewport
+): string {
+	// Snapshot every position / scalar referenced by the locus's transitive
+	// dependency set. Order is fixed by `locus.dependsOn` (insertion order from
+	// createLocus), so two snapshots with the same coordinates produce the same
+	// string. `geoToNumber` collapses exact and numeric to a single float
+	// representation — same numeric value ⇒ same locus result.
+	const parts: string[] = [];
+	for (const depId of locus.dependsOn) {
+		const p = positions.get(depId);
+		if (p) {
+			parts.push(`${depId}=${geoToNumber(p.x)},${geoToNumber(p.y)}`);
+		}
+		const v = scalarValues?.get(depId);
+		if (v !== undefined) parts.push(`${depId}=s${v}`);
+	}
+	parts.push(`vp=${viewport.xMin}|${viewport.xMax}|${viewport.yMin}|${viewport.yMax}`);
+	return parts.join(';');
+}
+
+/**
  * Compute the locus curve by sampling the tracer's position
  * as the driver moves along its path.
+ *
+ * Memoised by (locus, positions of dependsOn, scalar values of dependsOn,
+ * viewport). On cache hit returns the same SampledCurve reference (callers
+ * must not mutate).
  *
  * @param locus - The GeoLocus element definition
  * @param elements - All elements in the figure (read-only)
@@ -57,6 +108,22 @@ interface DriverParamInfo {
  * @returns SampledCurve ready for Catmull-Rom rendering, or null if computation fails
  */
 export function computeLocusCurve(
+	locus: GeoLocus,
+	elements: ReadonlyMap<string, GeoElement>,
+	positions: ReadonlyMap<string, GeoPoint>,
+	viewport: Viewport,
+	scalarValues?: ReadonlyMap<string, number>
+): SampledCurve | null {
+	const cacheKey = buildLocusCacheKey(locus, positions, scalarValues, viewport);
+	const cached = locusCache.get(locus);
+	if (cached && cached.key === cacheKey) return cached.result;
+
+	const result = computeLocusCurveUncached(locus, elements, positions, viewport, scalarValues);
+	locusCache.set(locus, { key: cacheKey, result });
+	return result;
+}
+
+function computeLocusCurveUncached(
 	locus: GeoLocus,
 	elements: ReadonlyMap<string, GeoElement>,
 	positions: ReadonlyMap<string, GeoPoint>,

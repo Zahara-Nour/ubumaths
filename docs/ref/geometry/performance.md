@@ -141,15 +141,23 @@ implicite sur 201×201 = 40 401 points sans cache. Chaque pan, zoom, ou
 changement de `version` (drag d'un point quelconque) relançait ce calcul
 complet, même si la courbe implicite elle-même n'avait pas changé.
 
-### 2.6 `locusToSVG` et `computeLocusCurveSampling` dans le rendu SVG — HIGH IMPACT
+### 2.6 ~~`locusToSVG` et `computeLocusCurveSampling` dans le rendu SVG~~ — **CORRIGÉ 2026-05-18**
 
-**Fichier** : `rendering/svg-primitives.ts:2007-2030` + `graph/compute-locus.ts`
+**Fichier** : `graph/compute-locus.ts`
 
-`locusToSVG()` appelle `computeLocusCurveForElement()` qui exécute le pipeline
-complet : `N + adaptive_refinement` évaluations du sous-graphe. Par défaut
-`locus.numSamples` est fixe, mais le raffinement adaptatif peut multiplier ce
-nombre. Ce calcul est relancé à chaque changement de `version`, même lorsque
-les éléments du sous-graphe n'ont pas bougé.
+> **Statut : FIXED.** `computeLocusCurve` est désormais mémoïsée par WeakMap
+> keyed par `GeoLocus`. La clé secondaire est un snapshot stringifié de
+> `(positions, scalarValues, viewport)` filtré par `locus.dependsOn` — la
+> closure transitive driver + tracer déjà calculée par `createLocus`.
+> `geoToNumber` est utilisé pour collapser exact/numeric en float. Si rien
+> dans la chaîne ne bouge entre deux frames (drag d'un point sans rapport),
+> cache hit → on évite N + raffinement adaptatif évaluations du sous-graphe.
+> 6 tests dédiés dans `graph/__tests__/locus-cache.test.ts`.
+
+**Description historique** : `locusToSVG()` appelait
+`computeLocusCurveForElement()` qui exécutait le pipeline complet :
+`N + adaptive_refinement` évaluations du sous-graphe à chaque changement de
+`version`, même lorsque les éléments du sous-graphe n'avaient pas bougé.
 
 ### 2.7 `computeParametricCurveSampling` relancé pour chaque viewport change — MEDIUM IMPACT
 
@@ -214,6 +222,7 @@ pas ce même pattern.
 - `compiledFn` et `compiledDerivative` sur `GeoFunction` — idem.
 - `compiledFn` sur `GeoImplicitCurve` — compilé une fois.
 - `marchingSquares` (ajouté 2026-05-18) — WeakMap keyed par `CompiledFn`, avec viewport+gridSize en sous-clé. Cache hit pour tous les renders où ni la courbe ni le viewport ne changent.
+- `computeLocusCurve` (ajouté 2026-05-18) — WeakMap keyed par `GeoLocus`, avec snapshot stringifié de `(positions, scalarValues, viewport)` filtré par `locus.dependsOn`. Cache hit quand rien dans la chaîne driver→tracer ne bouge.
 
 ### Ce qui manque de cache
 
@@ -222,10 +231,6 @@ changement de `version`, même si la courbe et le viewport n'ont pas changé.
 Un cache `{ version: number; viewportKey: string; path: string }` par courbe
 éviterait les 300+ évaluations à chaque tick d'un slider qui ne touche pas
 cette courbe.
-
-**Locus curve** : résultat recalculé à chaque rendu sans vérifier si le driver
-a bougé. Un cache keyed sur la position du driver (ou le `version` propre de
-ce sous-graphe) serait approprié.
 
 ---
 
