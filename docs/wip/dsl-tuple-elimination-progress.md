@@ -17,12 +17,12 @@ Voir le plan complet pour les détails de conception.
 | 1   | `feat(dsl): accessors centre/extremite/extremites/milieu(s)/sommet/sommets`    | ✅ c8f0f3693 |
 | 2   | `feat(dsl): montre + masque + visible support in style`                        | ✅ 9f1a59fbb |
 | 3   | `feat(dsl): point(A, longueur=...) + segment(A, longueur=...)`                 | ✅ 6e81a1cc4 |
-| 4-6 | `refactor(stdlib): full migration to single-object returns` (BREAKING, MERGED) | ✅ EN COURS  |
-| 7   | `docs: full refresh post-refactor`                                             | ⏳           |
+| 4-6 | `refactor(stdlib): full migration to single-object returns` (BREAKING, MERGED) | ✅ 75e827e1a |
+| 7   | `docs: full refresh post-refactor`                                             | ✅ EN COURS  |
 
 ## Phase courante
 
-Commits 4-5-6 fusionnés (interdépendances de macros). Reste : commit 7 (docs). Tests : 1781/1781 (1617 + 120 v2 + 21 + 10 + 14 + 25-1 net post-migration).
+Refonte complète livrée. Tests : 1781/1781. Statut : LIVRÉ.
 
 ### Décision : merge des commits 4-5-6
 

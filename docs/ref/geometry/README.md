@@ -269,19 +269,35 @@ Surfacage des erreurs runtime DSL dans `/construction-demo` et `ScriptEditor`. A
 
 Voir [`docs/wip/dsl-structured-errors-progress.md`](../../wip/dsl-structured-errors-progress.md) pour le detail technique. ~50 builtins migres sur ~60, retro-compatibilite preservee (string flat encore accepte).
 
+### Phase 5 — Refonte sémantique du DSL : un builtin = un objet (5 commits, journee +2)
+
+Élimination des retours tuples des macros stdlib au profit d'un design **un builtin = un objet principal + accesseurs explicites**. Plus de `(M, d) = mediatrice(A, B)` — désormais `d = mediatrice(A, B)` puis `M = milieu(A, B)`. Les sous-produits internes des macros (centres dérivés, points intermédiaires) sont `masque()`-d par défaut ; l'utilisateur révèle via `montre()`.
+
+| Hash        | Sujet                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------- |
+| `c8f0f3693` | feat(dsl) : accessors `centre`, `extremite`, `extremites`, `milieu(s)`, `sommet`, `sommets` |
+| `9f1a59fbb` | feat(dsl) : verbes `montre` / `masque` + `style(elem, visible=...)`                         |
+| `6e81a1cc4` | feat(dsl) : `point(A, longueur=L, ...)` + `segment(A, longueur=L, ...)`                     |
+| `75e827e1a` | refactor(stdlib)! : 14 macros migrées vers retour unique (BREAKING)                         |
+| ce commit   | docs : CLAUDE.md + ref docs + progress                                                      |
+
+Voir [`docs/wip/dsl-tuple-elimination-progress.md`](../../wip/dsl-tuple-elimination-progress.md) pour le detail. 1781/1781 tests pass.
+
 ### Bilan chiffre
 
-| Avant                                           | Apres                                                |
-| ----------------------------------------------- | ---------------------------------------------------- |
-| Severite dette critique : Major (3 items)       | Resolved (0 item)                                    |
-| `_executeBuiltinInner` : 2 045 lignes, 62 cases | 27 lignes, dispatcher Map                            |
-| `marchingSquares` : 40 000 evals/render         | Cache hit en drag commun                             |
-| Newton drag : 8 starts × 20 iter                | 1 start (warm) + 2 bornes                            |
-| Cycle `graph` → `dsl`                           | Plus aucune fleche source-level                      |
-| `GeoOsculatingCircle` exports                   | Muets → corrects en SVG/TikZ/Typst                   |
-| `DslRuntimeError` : string flat                 | `{ summary, hint, forms }` typé (50 builtins migres) |
-| Erreurs runtime dans `/construction-demo`       | Silencieuses → panneau riche + figure partielle      |
-| Tests                                           | 2 986 → 2 988 (+5 fichiers nouveaux, -2 deplaces)    |
+| Avant                                           | Apres                                                                         |
+| ----------------------------------------------- | ----------------------------------------------------------------------------- |
+| Severite dette critique : Major (3 items)       | Resolved (0 item)                                                             |
+| `_executeBuiltinInner` : 2 045 lignes, 62 cases | 27 lignes, dispatcher Map                                                     |
+| `marchingSquares` : 40 000 evals/render         | Cache hit en drag commun                                                      |
+| Newton drag : 8 starts × 20 iter                | 1 start (warm) + 2 bornes                                                     |
+| Cycle `graph` → `dsl`                           | Plus aucune fleche source-level                                               |
+| `GeoOsculatingCircle` exports                   | Muets → corrects en SVG/TikZ/Typst                                            |
+| `DslRuntimeError` : string flat                 | `{ summary, hint, forms }` typé (50 builtins migres)                          |
+| Erreurs runtime dans `/construction-demo`       | Silencieuses → panneau riche + figure partielle                               |
+| Retours tuples macros stdlib                    | Un objet principal + accesseurs (`centre`, `sommet`, `extremite`, ...)        |
+| Visibilité côté DSL                             | Plus de `style(.., visible=...)` workarounds — verbes `montre()` / `masque()` |
+| Tests                                           | 2 986 → 3 035 (+47 accessors/visibility/polar net)                            |
 
 ### Recommandation prochaine session
 
