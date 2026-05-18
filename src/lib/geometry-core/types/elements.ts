@@ -1052,6 +1052,14 @@ export interface GeoParametricCurve extends GeoElementBase {
 	readonly compiledXPrime: CompiledFn | null;
 	/** Compiled dy/dt (or null). */
 	readonly compiledYPrime: CompiledFn | null;
+	/**
+	 * Compiled d²x/dt² (or null if first derivatives are absent or second
+	 * differentiation failed). Eagerly compiled in `createParametricCurve` so
+	 * curvature / osculating-circle hot paths don't re-differentiate per tick.
+	 */
+	readonly compiledXSecond: CompiledFn | null;
+	/** Compiled d²y/dt² (or null). */
+	readonly compiledYSecond: CompiledFn | null;
 	/** Parameter variable name (e.g. "t", "theta", "u"). */
 	readonly parameter: string;
 	/** Lower bound — can be a fixed GeoValue or a ScalarRef (slider/scalar). */

@@ -44,7 +44,7 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
 
 - **Parser unary minus inconsistency** : `-3y` parse comme `opposite(3)*y` au lieu de `opposite(3*y)`. Affecte l'analyse structurelle. Voir `docs/ref/geometry/parser-unary-minus-inconsistency.md`.
 - **`PARSE_CACHE` plafonne a 5 000** (`dsl/interpreter.ts:158-164`) : depuis 2026-05-18. Si tu modifies la logique de cache, conserve les `if (size >= PARSE_CACHE_MAX) .clear()` aux 2 sites d'insertion.
-- **Pas de cache des derivees secondes** (`graph/parametric-calculus.ts:75-95`) : `cercle_osculateur` et `courbure` recompilent a chaque tick. Limitation V1 connue.
+- **Derivees secondes pre-compilees** (`compiledXSecond`/`compiledYSecond` sur `GeoParametricCurve`) : depuis 2026-05-18. `getSecondDerivatives()` dans `parametric-calculus.ts` lit le cache. Si tu ajoutes un nouveau site de construction de `GeoParametricCurve` hors `Figure.createParametricCurve`, n'oublie pas de pre-compiler ces 2 champs (sinon `cercle_osculateur` et `courbure` retournent silencieusement `null`).
 - **`version: $state(0)`** dans `GeometryCanvas.svelte:207-212` : declenche le recalcul de TOUTES les courbes a chaque mutation, meme triviale.
 - **`extendLineToViewport`** dupliquee dans `svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts` (mot pour mot). Toute correction doit etre triple-appliquee.
 - **3 interfaces `NewtonConfig` distinctes** dans `parametric-newton.ts`, `parametric-intersection.ts`, `parametric-intersection-1d.ts` avec noms de champs differents (`tolerance` vs `convergenceTolerance`, `numStarts` vs `numStartsPerAxis`).

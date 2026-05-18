@@ -99,6 +99,44 @@ describe('figure.createParametricCurve — basic creation', () => {
 		expect(el.compiledX({ t: 0 })).toBeCloseTo(1, 10);
 		expect(el.compiledY({ t: Math.PI / 2 })).toBeCloseTo(1, 10);
 	});
+
+	it('eagerly compiles second derivatives so curvature hot paths skip re-differentiation', () => {
+		// Performance optimization (2026-05-18): compiledXSecond/compiledYSecond
+		// are populated at creation time. For (cos t, sin t), x'' = -cos t and
+		// y'' = -sin t.
+		const figure = new Figure();
+		const id = createCircle(figure);
+		const el = figure.getElementById(id) as GeoParametricCurve;
+		expect(el.compiledXSecond).not.toBeNull();
+		expect(el.compiledYSecond).not.toBeNull();
+		expect(el.compiledXSecond!({ t: 0 })).toBeCloseTo(-1, 10);
+		expect(el.compiledYSecond!({ t: Math.PI / 2 })).toBeCloseTo(-1, 10);
+	});
+
+	it('leaves compiledXSecond / compiledYSecond null when first derivatives are missing', () => {
+		const figure = new Figure();
+		const xExpr = parseCustom('cos(t)');
+		const yExpr = parseCustom('sin(t)');
+		const id = figure.createParametricCurve(
+			xExpr,
+			yExpr,
+			null,
+			null,
+			compile(xExpr),
+			compile(yExpr),
+			null,
+			null,
+			't',
+			numeric(0),
+			numeric(2 * Math.PI),
+			'x = cos(t)',
+			'y = sin(t)',
+			[]
+		);
+		const el = figure.getElementById(id) as GeoParametricCurve;
+		expect(el.compiledXSecond).toBeNull();
+		expect(el.compiledYSecond).toBeNull();
+	});
 });
 
 // =============================================================================
