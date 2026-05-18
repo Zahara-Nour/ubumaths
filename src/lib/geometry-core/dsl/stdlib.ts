@@ -35,46 +35,8 @@ macro hauteur(A, B, C):
 # NOTE : triangle, triangle_equilateral, triangle_isocele, triangle_rectangle
 # ont été migrés en builtins (dsl/builtins.ts).
 
-# ─── Quadrilateres ───────────────────────────────────────────
-
-macro parallelogramme(A, B, C):
-    D = translation(A, vecteur=(B, C))
-    masque(D)
-    p = polygone(A, B, C, D)
-    retourne p
-
-macro rectangle(A, B, largeur=2):
-    H = rotation(B, centre=A, angle=90)
-    masque(H)
-    dax = H.x - A.x
-    day = H.y - A.y
-    la = sqrt(dax * dax + day * day)
-    dx = dax / la * largeur
-    dy = day / la * largeur
-    C = point(B.x + dx, B.y + dy)
-    masque(C)
-    D = point(A.x + dx, A.y + dy)
-    masque(D)
-    p = polygone(A, B, C, D)
-    angle_droit(D, A, B)
-    retourne p
-
-macro carre(A, B):
-    C = rotation(A, centre=B, angle=90)
-    masque(C)
-    D = rotation(B, centre=A, angle=-90)
-    masque(D)
-    p = polygone(A, B, C, D)
-    angle_droit(D, A, B)
-    retourne p
-
-macro losange(A, B, angle=60):
-    C = rotation(A, centre=B, angle=angle)
-    masque(C)
-    D = translation(C, vecteur=(B, A))
-    masque(D)
-    p = polygone(A, B, C, D)
-    retourne p
+# NOTE : parallelogramme, rectangle, carre, losange ont été migrés
+# en builtins (dsl/builtins.ts).
 
 # ─── Polygones ───────────────────────────────────────────────
 

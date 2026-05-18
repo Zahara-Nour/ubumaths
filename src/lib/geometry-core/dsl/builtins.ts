@@ -4406,6 +4406,107 @@ function handleTriangleRectangle(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('triangle_rectangle', handleTriangleRectangle);
 
+// ─── 10. parallelogramme(A, B, C) → polygone ────────────────────────
+
+function handleParallelogramme(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, label } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'parallelogramme', {
+		syntax: 'parallelogramme(A, B, C)',
+		description:
+			'parallélogramme `ABCD` ; le 4ᵉ sommet `D` calculé pour que `ABCD` soit un parallélogramme'
+	});
+	const [A, B, C] = coords;
+	// D = A + (C - B), so that ABCD has AB parallel to DC and AD parallel to BC.
+	const Dx = A.x + (C.x - B.x);
+	const Dy = A.y + (C.y - B.y);
+	const D = createHiddenPoint(figure, Dx, Dy);
+	const id = figure.createPolygon([ids[0], ids[1], ids[2], D], { label });
+	return { figureId: id, symbolType: 'polygone' };
+}
+HANDLERS.set('parallelogramme', handleParallelogramme);
+
+// ─── 11. rectangle(A, B, largeur=2) → polygone + marque ─────────────
+
+function handleRectangle(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, named, line, label } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 2, ['A', 'B'], 'rectangle', {
+		syntax: 'rectangle(A, B, largeur=2)',
+		description: 'rectangle de côté `[AB]` et de largeur donnée (perpendiculaire à `AB`)'
+	});
+	const largeur = named.has('largeur') ? requireNumber(named.get('largeur')!, 'largeur', line) : 2;
+	const [A, B] = coords;
+	const px = -(B.y - A.y);
+	const py = B.x - A.x;
+	const norm = Math.hypot(px, py);
+	if (norm < 1e-15)
+		throw new DslRuntimeError(
+			{ summary: '`rectangle(A, B, …)` : `A` et `B` sont confondus, direction indéfinie.' },
+			line
+		);
+	const dx = (px / norm) * largeur;
+	const dy = (py / norm) * largeur;
+	const C = createHiddenPoint(figure, B.x + dx, B.y + dy);
+	const D = createHiddenPoint(figure, A.x + dx, A.y + dy);
+	const polyId = figure.createPolygon([ids[0], ids[1], C, D], { label });
+	figure.createAngleMark(D, ids[0], ids[1], { rightAngle: true });
+	return { figureId: polyId, symbolType: 'polygone' };
+}
+HANDLERS.set('rectangle', handleRectangle);
+
+// ─── 12. carre(A, B) → polygone + marque ────────────────────────────
+
+function handleCarre(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 2, ['A', 'B'], 'carre', {
+		syntax: 'carre(A, B)',
+		description: 'carré `ABCD` de côté `[AB]` ; `C` et `D` calculés par rotations de ±90°'
+	});
+	const [A, B] = coords;
+	if (Math.hypot(B.x - A.x, B.y - A.y) < 1e-15)
+		throw new DslRuntimeError(
+			{ summary: '`carre(A, B)` : `A` et `B` sont confondus, côté nul.' },
+			line
+		);
+	const r90 = Math.PI / 2;
+	// Preserve original macro semantics :
+	// C = rotation of A around B by 90°
+	// D = rotation of B around A by -90°
+	const Cx = B.x + (A.x - B.x) * Math.cos(r90) - (A.y - B.y) * Math.sin(r90);
+	const Cy = B.y + (A.x - B.x) * Math.sin(r90) + (A.y - B.y) * Math.cos(r90);
+	const Dx = A.x + (B.x - A.x) * Math.cos(-r90) - (B.y - A.y) * Math.sin(-r90);
+	const Dy = A.y + (B.x - A.x) * Math.sin(-r90) + (B.y - A.y) * Math.cos(-r90);
+	const C = createHiddenPoint(figure, Cx, Cy);
+	const D = createHiddenPoint(figure, Dx, Dy);
+	const polyId = figure.createPolygon([ids[0], ids[1], C, D], { label });
+	figure.createAngleMark(D, ids[0], ids[1], { rightAngle: true });
+	return { figureId: polyId, symbolType: 'polygone' };
+}
+HANDLERS.set('carre', handleCarre);
+
+// ─── 13. losange(A, B, angle=60) → polygone ─────────────────────────
+
+function handleLosange(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, named, line, label, angleMode } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 2, ['A', 'B'], 'losange', {
+		syntax: 'losange(A, B, angle=60)',
+		description: 'losange `ABCD` de côté `[AB]` ; `C` rotation de `A` autour de `B` par `angle`'
+	});
+	const angleDeg = named.has('angle') ? requireNumber(named.get('angle')!, 'angle', line) : 60;
+	const [A, B] = coords;
+	const rad = toRadians(angleDeg, angleMode);
+	// C = rotation of A around B by `angle`
+	const Cx = B.x + (A.x - B.x) * Math.cos(rad) - (A.y - B.y) * Math.sin(rad);
+	const Cy = B.y + (A.x - B.x) * Math.sin(rad) + (A.y - B.y) * Math.cos(rad);
+	// D = translation of C by (B → A) = C + (A - B)
+	const Dx = Cx + (A.x - B.x);
+	const Dy = Cy + (A.y - B.y);
+	const C = createHiddenPoint(figure, Cx, Cy);
+	const D = createHiddenPoint(figure, Dx, Dy);
+	const id = figure.createPolygon([ids[0], ids[1], C, D], { label });
+	return { figureId: id, symbolType: 'polygone' };
+}
+HANDLERS.set('losange', handleLosange);
+
 function _executeBuiltinInner(
 	name: string,
 	pos: ResolvedValue[],
@@ -4513,7 +4614,11 @@ export const BUILTIN_NAMES = new Set([
 	'triangle',
 	'triangle_equilateral',
 	'triangle_isocele',
-	'triangle_rectangle'
+	'triangle_rectangle',
+	'parallelogramme',
+	'rectangle',
+	'carre',
+	'losange'
 ]);
 
 /** Math functions that return numbers. */
