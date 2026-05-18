@@ -3,6 +3,14 @@
  *
  * These are written as DSL scripts and auto-loaded into the interpreter.
  * Each macro creates geometric elements using the builtin functions.
+ *
+ * ──────────────────────────────────────────────────────────────────────
+ * Convention de retour : **un macro = un objet principal**.
+ * Les sous-produits (points dérivés, points intermédiaires de construction)
+ * sont accessibles via les accesseurs (`centre`, `extremite`, `milieu`,
+ * `sommet`, `sommets`). Les byproducts non significatifs sont rendus
+ * invisibles par défaut.
+ * ──────────────────────────────────────────────────────────────────────
  */
 
 export const STDLIB_MACROS = `
@@ -10,117 +18,124 @@ export const STDLIB_MACROS = `
 
 macro mediatrice(A, B):
     M = milieu(A, B)
+    masque(M)
     H = rotation(A, centre=M, angle=90)
+    masque(H)
     d = droite(M, H)
-    retourne (M, d)
+    retourne d
 
 macro mediane(A, B, C):
     M = milieu(B, C)
+    masque(M)
     s = segment(A, M)
-    retourne (M, s)
+    retourne s
 
 macro hauteur(A, B, C):
     P = translation(A, vecteur=(B, C))
+    masque(P)
     Q = rotation(P, centre=A, angle=90)
+    masque(Q)
     d = droite(A, Q)
     bc = droite(B, C)
+    masque(bc)
     F = intersection(d, bc)
-    retourne (F, d)
+    masque(F)
+    retourne d
 
 macro perpendiculaire(P, A, B):
     Q = translation(P, vecteur=(A, B))
+    masque(Q)
     R = rotation(Q, centre=P, angle=90)
+    masque(R)
     d = droite(P, R)
     retourne d
 
 macro parallele(P, A, B):
     Q = translation(P, vecteur=(A, B))
+    masque(Q)
     d = droite(P, Q)
     retourne d
 
 macro bissectrice(A, V, B):
     c = cercle(V, passant=A)
+    masque(c)
     B2 = intersection(c, demidroite(V, B), 2)
+    masque(B2)
     M = milieu(A, B2)
+    masque(M)
     d = droite(V, M)
     retourne d
 
 # ─── Triangles ───────────────────────────────────────────────
 
 macro triangle(A, B, C):
-    segment(A, B)
-    segment(B, C)
-    segment(C, A)
+    t = polygone(A, B, C)
+    retourne t
 
 macro triangle_equilateral(A, B):
     C = rotation(B, centre=A, angle=60)
-    segment(A, B)
-    segment(B, C)
-    segment(C, A)
-    retourne C
+    masque(C)
+    t = polygone(A, B, C)
+    retourne t
 
 macro triangle_isocele(A, B, angle=40):
     demi = angle / 2
     M = milieu(A, B)
+    masque(M)
     H = rotation(A, centre=M, angle=90)
+    masque(H)
     C = rotation(M, centre=A, angle=90 - demi)
-    segment(A, B)
-    segment(A, C)
-    segment(B, C)
-    retourne C
+    masque(C)
+    t = polygone(A, B, C)
+    retourne t
 
 macro triangle_rectangle(A, B, angle=45):
     C = rotation(B, centre=A, angle=angle)
-    segment(A, B)
-    segment(A, C)
-    segment(B, C)
+    masque(C)
+    t = polygone(A, B, C)
     angle_droit(B, A, C)
-    retourne C
+    retourne t
 
 # ─── Quadrilateres ───────────────────────────────────────────
 
 macro parallelogramme(A, B, C):
     D = translation(A, vecteur=(B, C))
-    segment(A, B)
-    segment(B, C)
-    segment(C, D)
-    segment(D, A)
-    retourne D
+    masque(D)
+    p = polygone(A, B, C, D)
+    retourne p
 
 macro rectangle(A, B, largeur=2):
     H = rotation(B, centre=A, angle=90)
+    masque(H)
     dax = H.x - A.x
     day = H.y - A.y
     la = sqrt(dax * dax + day * day)
     dx = dax / la * largeur
     dy = day / la * largeur
     C = point(B.x + dx, B.y + dy)
+    masque(C)
     D = point(A.x + dx, A.y + dy)
-    segment(A, B)
-    segment(B, C)
-    segment(C, D)
-    segment(D, A)
+    masque(D)
+    p = polygone(A, B, C, D)
     angle_droit(D, A, B)
-    retourne (C, D)
+    retourne p
 
 macro carre(A, B):
     C = rotation(A, centre=B, angle=90)
+    masque(C)
     D = rotation(B, centre=A, angle=-90)
-    segment(A, B)
-    segment(B, C)
-    segment(C, D)
-    segment(D, A)
+    masque(D)
+    p = polygone(A, B, C, D)
     angle_droit(D, A, B)
-    retourne (C, D)
+    retourne p
 
 macro losange(A, B, angle=60):
     C = rotation(A, centre=B, angle=angle)
+    masque(C)
     D = translation(C, vecteur=(B, A))
-    segment(A, B)
-    segment(B, C)
-    segment(C, D)
-    segment(D, A)
-    retourne (C, D)
+    masque(D)
+    p = polygone(A, B, C, D)
+    retourne p
 
 # ─── Polygones ───────────────────────────────────────────────
 
@@ -144,38 +159,56 @@ macro etoile(centre, rayon, n, saut=2):
 
 macro corde(c, d):
     P1 = intersection(c, d, 1)
+    masque(P1)
     P2 = intersection(c, d, 2)
+    masque(P2)
     s = segment(P1, P2)
-    retourne (P1, P2, s)
+    retourne s
 
 # ─── Cercles remarquables ────────────────────────────────────
 
 macro cercle_circonscrit(A, B, C):
-    (M1, d1) = mediatrice(A, B)
-    (M2, d2) = mediatrice(B, C)
+    d1 = mediatrice(A, B)
+    masque(d1)
+    d2 = mediatrice(B, C)
+    masque(d2)
     O = intersection(d1, d2)
+    masque(O)
     c = cercle(O, passant=A)
-    retourne (O, c)
+    retourne c
 
 macro cercle_inscrit(A, B, C):
     b1 = bissectrice(A, B, C)
+    masque(b1)
     b2 = bissectrice(B, C, A)
+    masque(b2)
     I = intersection(b1, b2)
-    r = distance(I, droite(A, B))
+    masque(I)
+    ab = droite(A, B)
+    masque(ab)
+    r = distance(I, ab)
     c = cercle(I, rayon=r)
-    retourne (I, c)
+    retourne c
 
 # ─── Points remarquables du triangle ───────────────────────
 
 macro centre_gravite(A, B, C):
     M = milieu(B, C)
+    masque(M)
     N = milieu(A, C)
-    G = intersection(droite(A, M), droite(B, N))
+    masque(N)
+    d1 = droite(A, M)
+    masque(d1)
+    d2 = droite(B, N)
+    masque(d2)
+    G = intersection(d1, d2)
     retourne G
 
 macro orthocentre(A, B, C):
-    (F1, h1) = hauteur(A, B, C)
-    (F2, h2) = hauteur(B, A, C)
+    h1 = hauteur(A, B, C)
+    masque(h1)
+    h2 = hauteur(B, A, C)
+    masque(h2)
     H = intersection(h1, h2)
     retourne H
 
@@ -184,14 +217,19 @@ macro orthocentre(A, B, C):
 macro droite_euler(A, B, C):
     # Undefined for equilateral triangles (G = H coincide)
     G = centre_gravite(A, B, C)
+    masque(G)
     H = orthocentre(A, B, C)
+    masque(H)
     d = droite(G, H)
     retourne d
 
 macro cercle_euler(A, B, C):
     M1 = milieu(A, B)
+    masque(M1)
     M2 = milieu(B, C)
+    masque(M2)
     M3 = milieu(A, C)
-    (O, c) = cercle_circonscrit(M1, M2, M3)
-    retourne (O, c)
+    masque(M3)
+    c = cercle_circonscrit(M1, M2, M3)
+    retourne c
 `;
