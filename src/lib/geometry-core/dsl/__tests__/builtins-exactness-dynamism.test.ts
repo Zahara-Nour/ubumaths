@@ -41,7 +41,33 @@ function posOf(
 }
 
 describe('Stdlib builtins — exactness propagation', () => {
-	it('point(2*sqrt(3), 0) produces an exact FreePoint', () => {
+	it('point(0, 0) produces an exact FreePoint (integer literal)', () => {
+		const { figure, symbols } = runDsl('A = point(0, 0)');
+		const p = figure.getPosition(symId(symbols, 'A'));
+		expect(p).not.toBeNull();
+		expect(p!.x.kind).toBe('exact');
+		expect(p!.y.kind).toBe('exact');
+	});
+
+	it('point(2.5, 3) produces an exact FreePoint (decimal literal)', () => {
+		const { figure, symbols } = runDsl('A = point(2.5, 3)');
+		const p = figure.getPosition(symId(symbols, 'A'));
+		expect(p).not.toBeNull();
+		expect(p!.x.kind).toBe('exact');
+		expect(p!.y.kind).toBe('exact');
+		expect(geoToNumber(p!.x)).toBe(2.5);
+		expect(geoToNumber(p!.y)).toBe(3);
+	});
+
+	it('point(1/3, 0) produces an exact FreePoint (rational)', () => {
+		const { figure, symbols } = runDsl('A = point(1/3, 0)');
+		const p = figure.getPosition(symId(symbols, 'A'));
+		expect(p).not.toBeNull();
+		expect(p!.x.kind).toBe('exact');
+		expect(geoToNumber(p!.x)).toBeCloseTo(1 / 3, 15);
+	});
+
+	it('point(2*sqrt(3), 0) produces an exact FreePoint (symbolic)', () => {
 		const { figure, symbols } = runDsl('B = point(2*sqrt(3), 0)');
 		const p = figure.getPosition(symId(symbols, 'B'));
 		expect(p).not.toBeNull();

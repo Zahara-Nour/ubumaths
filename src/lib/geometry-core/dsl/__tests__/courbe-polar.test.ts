@@ -23,7 +23,7 @@ import { describe, it, expect } from 'vitest';
 import { runDsl, serializeDsl } from '../index';
 import type { GeoParametricCurve } from '../../types/elements';
 import { isParametricCurve } from '../../types/elements';
-import { numeric, type GeoValue } from '../../types/geo-value';
+import type { GeoValue } from '../../types/geo-value';
 import { geoToNumber } from '../../compute/to-number';
 
 // =============================================================================
@@ -329,8 +329,9 @@ describe('courbe — polar (G. edge cases)', () => {
 		const script = `c = courbe("r = 1 + cos(theta)", theta_min=${-Math.PI}, theta_max=${Math.PI})`;
 		const pc = getPolarCurve(script);
 		expect(pc.polar).toBe(true);
-		expect(pc.tMin).toEqual(numeric(-Math.PI));
-		expect(pc.tMax).toEqual(numeric(Math.PI));
+		// Since 2026-05-19, finite DSL literals produce exact GeoValues.
+		expect(geoToNumber(pc.tMin as GeoValue)).toBeCloseTo(-Math.PI, 10);
+		expect(geoToNumber(pc.tMax as GeoValue)).toBeCloseTo(Math.PI, 10);
 		// r(-π) = 1 + cos(-π) = 0 → x = 0, y = 0
 		expect(pc.compiledX({ theta: -Math.PI })).toBeCloseTo(0, 6);
 		expect(pc.compiledY({ theta: -Math.PI })).toBeCloseTo(0, 6);

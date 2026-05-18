@@ -37,7 +37,7 @@ import type { GeoValue } from '../types/geo-value';
 import { numeric, exact } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { geoToNumber } from '../compute/to-number';
-import { simplifyExact, geoFromNumber } from '../compute/geo-arithmetic';
+import { simplifyExact } from '../compute/geo-arithmetic';
 import { DslRuntimeError } from './errors';
 import { SymbolTable } from './symbol-table';
 import type { SymbolEntry } from './symbol-table';
@@ -55,32 +55,11 @@ import { MacroRegistry } from './macro-registry';
 import { STDLIB_MACROS } from './stdlib';
 import { parse } from './parser';
 import { isMathPureExpr } from './math-pure-expr';
-import {
-	parseCustom,
-	getVariables,
-	findNodes,
-	isMathConstant,
-	isFunction,
-	isNumber,
-	substitute
-} from '$lib/mathAST';
+import { parseCustom, getVariables, substitute } from '$lib/mathAST';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import type { MathNode } from '$lib/mathAST';
 import { compile } from '$lib/mathAST/eval/compile';
 import { applyAngleMode, type AngleMode } from './apply-angle-mode';
-
-/**
- * A MathAST node is "symbolic" if it contains a math constant (π, e, …) or a
- * function call (sqrt, cos, sin, exp, log, …) whose numerical evaluation would
- * lose information. Pure arithmetic of NumberNodes (`3 + 2`, `1/2`, `-7`) is
- * NOT symbolic — the float representation is exact.
- *
- * Used by `tryEvaluateAsMathExpr` to decide whether to return a `number` or an
- * exact `GeoValue`, so derived builtins (mediatrice, rotation, …) propagate
- * symbolic exactness through their factory methods.
- */
-function nodeHasSymbolicContent(node: MathNode): boolean {
-	return findNodes(node, (n) => isMathConstant(n) || isFunction(n)).length > 0;
-}
 
 /** Check if a resolved value is a vector element reference. */
 function isVectorValue(val: ResolvedValue): boolean {
@@ -557,6 +536,17 @@ class Interpreter {
 		//   (b) Node is pure number arithmetic (`3 + 2`, `1/2`, …) → return a
 		//       plain `nombre`. Faster, and preserves the original semantics
 		//       expected by the rest of the DSL (`requireNumber`, `for …`, etc.).
+		// Static path: no scalar deps. Always return an exact GeoValue built
+		// from the simplified AST. The module's architectural contract is :
+		// every DSL literal stays exact — `point(0, 0)`, `point(2.5, 3)`,
+		// `point(2*sqrt(3), 0)` all produce exact coordinates. The `numeric`
+		// kind exists only for drag positions (pointer events feeding
+		// `figure.movePoint`).
+		//
+		// We fall back to `{type: 'nombre', value}` only when the AST cannot
+		// be carried (Infinity/NaN static binding, simplification failure) —
+		// downstream `toGeoValue` will then re-wrap via `numericNode` (still
+		// exact when finite), or numeric for non-finite drag positions.
 		if (scalarDeps.length === 0) {
 			let value: number;
 			try {
@@ -564,10 +554,13 @@ class Interpreter {
 			} catch {
 				return null;
 			}
-			// Free variables that resolved to numbers must be substituted into the
-			// node so the returned GeoValue is self-contained (no dangling refs).
-			// Non-finite bindings (Infinity, NaN) can't be represented as exact
-			// nodes — fall back to the numeric path in that case.
+			// Non-finite results (1/0 → Infinity, 0/0 → NaN) follow IEEE 754
+			// via the numeric path : an exact node `division(1, 0)` would
+			// evaluate to NaN on `geoToNumber`, breaking divergent integrals
+			// and other DSL idioms that rely on Infinity propagation.
+			if (!Number.isFinite(value)) {
+				return { type: 'nombre', value };
+			}
 			let exactNode: MathNode | null = node;
 			if (Object.keys(staticBindings).length > 0) {
 				try {
@@ -577,9 +570,11 @@ class Interpreter {
 				}
 			}
 			if (exactNode !== null) {
-				exactNode = simplifyExact(exactNode);
-				if (nodeHasSymbolicContent(exactNode) && !isNumber(exactNode)) {
+				try {
+					exactNode = simplifyExact(exactNode);
 					return { type: 'geoValue', value: exact(exactNode) };
+				} catch {
+					// Fall through to numeric on simplification failure.
 				}
 			}
 			return { type: 'nombre', value };
@@ -1084,14 +1079,15 @@ class Interpreter {
 
 	private toGeoValue(val: ResolvedValue, line: number): GeoValue {
 		// Architectural contract: GeoValue is exact by default. The `numeric`
-		// kind only exists for drag positions (pointer events, where coords are
-		// floats from screen pixels). DSL literals like `point(0, 0)` or
-		// `point(2, 3)` must produce exact GeoValue so all derived computations
-		// keep exactness (mediatrice, rotation, circumcenter, …).
-		// `geoFromNumber` returns `exact(numericNode(n))` for integers and
-		// `numeric(n)` for non-integer floats (to avoid 17-digit MathNode
-		// explosion from float-to-string conversion).
-		if (val.type === 'nombre') return geoFromNumber(val.value);
+		// kind only exists for drag positions (pointer events, where the float
+		// comes from screen pixels and can have arbitrary IEEE-754 precision).
+		// DSL literals like `point(0, 0)`, `point(2.5, 3)`, `point(2*sqrt(3), 0)`
+		// must all produce exact GeoValue so derived computations stay exact.
+		//
+		// For trivial number primitives (`2`, `2.5`, `1/2`) the parser feeds
+		// a clean float here ; `numericNode(n)` produces `number(n.toString())`
+		// which parses back exactly via `extractRational` (5/2 for 2.5).
+		if (val.type === 'nombre') return exact(numericNode(val.value));
 		if (val.type === 'geoValue') return val.value;
 		throw new DslRuntimeError('Valeur numerique attendue', line);
 	}

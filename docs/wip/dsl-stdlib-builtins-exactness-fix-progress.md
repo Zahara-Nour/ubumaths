@@ -1,9 +1,11 @@
 # Fix exactness + dynamism in stdlib builtins (post-migration)
 
 > Session : 2026-05-19
-> Statut : **LIVRÉ** (2 commits + 1 test file)
+> Statut : **LIVRÉ** (3 commits + 1 test file)
 >
-> Le 1er commit (`200fd892c`) rétablissait la **dynamique** (drag-propagation) via les factories. Le 2ᵉ commit complète la **propagation d'exactitude** à travers le pipeline DSL → arithmétique → factories.
+> - Commit 1 (`200fd892c`) : rétablit la **dynamique** (drag-propagation) via les factory methods.
+> - Commit 2 (`4ffe79c6b`) : propage l'**exactitude** pour les entiers (`point(0, 0)` exact, lift integer dans binaryOp).
+> - Commit 3 (ce commit) : **toute valeur DSL finie est exacte** — décimaux (`2.5`), rationnels (`1/3`), symboliques (`sqrt(3)`). Le `numeric` reste exclusivement pour le drag (pointer events à coords arbitraires) et pour `1/0 → Infinity` (IEEE 754).
 
 ## Contexte
 
@@ -153,6 +155,53 @@ M = milieu(A, B)          → M.x.kind === 'exact', M.x = sqrt(3) (simplifié)
 t = triangle_equilateral(A, B)
                           → 3rd vertex C.y.kind === 'exact', C.y = sqrt(3)
 ```
+
+## 3ᵉ commit : exactitude universelle pour les valeurs DSL finies
+
+Après le 2ᵉ commit, l'exactitude était préservée pour les entiers (via lift dans `binaryOp`) mais perdue pour les décimaux (`point(2.5, 3)` produisait `numeric(2.5)`). Cause racine : `geoFromNumber(2.5)` voyait `Number.isInteger(2.5) === false` et tombait sur `numeric(2.5)`, par optimisation défensive contre les float JS imprécis (commentaire "avoids 17-digit MathNode explosion").
+
+Cette optimisation était cohérente pour les valeurs venant d'un drag (où la précision est arbitraire) mais s'appliquait à tort aux **littéraux DSL** où l'utilisateur écrit `2.5` (string), parsé en float `2.5` (exactement représentable), reconverti via `numericNode(value.toString()) = number("2.5")` proprement.
+
+### Modifications
+
+**`dsl/interpreter.ts:toGeoValue`** : passe de `geoFromNumber(val.value)` à `exact(numericNode(val.value))`. Tout littéral DSL devient exact, peu importe entier ou non-entier. Le seul cas où ça se dégrade : valeur non-finie (Infinity, NaN) — voir `tryEvaluateAsMathExpr` ci-dessous.
+
+**`dsl/interpreter.ts:tryEvaluateAsMathExpr`** : simplifié. Au lieu de tester `nodeHasSymbolicContent`, retourne maintenant **toujours** `geoValue exact` après `simplifyExact`. Le helper `nodeHasSymbolicContent` est supprimé (avec ses imports `findNodes`, `isMathConstant`, `isFunction`, `isNumber`).
+
+**Exception IEEE 754** : si `value = fn(staticBindings)` est non-finie (`1/0 → Infinity`, `0/0 → NaN`), on garde le path `nombre` au lieu de produire un `exact(division(1, 0))` qui évaluerait NaN via `geoToNumber`. Ça préserve les idioms DSL existants (`integrale(f, -inf, inf)`, divergent integrals, etc.).
+
+**`dsl/builtins.ts`** : 4 branches `pos[i].type === 'nombre'` (dans `image`, `texte`, `rtexte`, `mtexte`) passent à `isNumericLikeArg(pos[i])` qui accepte `nombre || geoValue`. La valeur est extraite via `requireNumber` (qui gère déjà les deux types depuis le 2ᵉ commit). 8 casts brutaux `(named.get('dx')! as { type: 'nombre'; value: number }).value` remplacés par `requireNumber(named.get('dx')!, 'dx', line)` (touchait `dx`/`dy` des images dans 4 endroits).
+
+**`dsl/area-builtin-helper.ts:resolveBoundParam`** : accepte maintenant les `geoValue` (pour `aire(f, -1, 1)`, `integrale(f, 0, 1)`, etc.) et les convertit via `geoToNumber`. Avant, ces builtins refusaient les arguments DSL exacts.
+
+### Tests ajoutés
+
+- `point(0, 0)` → exact (cas entier)
+- `point(2.5, 3)` → exact (cas décimal)
+- `point(1/3, 0)` → exact (cas rationnel)
+- `point(2*sqrt(3), 0)` → exact (cas symbolique)
+
+### Tests mis à jour
+
+- `courbe-polar.test.ts G1` : `expect(pc.tMin).toEqual(numeric(-π))` → `geoToNumber(pc.tMin).toBeCloseTo(-π)` (-π est désormais exact).
+
+### Résultats
+
+- Suite geometry-core + consumers : **3423/3423 ✓** (159 fichiers, 0 régression)
+- ESLint clean
+- `pnpm check:incremental` : 9 errors / 46 warnings (baseline préexistante)
+
+### Réponse à "pourquoi pas dès le début ?"
+
+L'historique de `compute/geo-arithmetic.ts` montre que le contrat **exact-par-défaut** existait au niveau de l'arithmétique (`geoAdd/Sub/Mul/Div` ont toujours su propager exact). Mais le DSL avait été conçu indépendamment avec un design **"nombre par défaut"** :
+
+1. Le parser DSL parsait `2` ou `2.5` en `{kind: 'number', value: 2.5}` puis l'évaluateur produisait `{type: 'nombre', value}` partout.
+2. `toGeoValue(nombre)` wrappait via `numeric(value)`.
+3. `tryEvaluateAsMathExpr` (ajouté plus tard pour le routing mathAST réactif) jetait l'AST exact pour retourner un number.
+
+Les deux mondes ne se rejoignaient jamais : l'utilisateur DSL n'avait pas accès au mode exact, et le mode exact n'était utilisable que via l'API `Figure` directe.
+
+Ce 3ᵉ commit unifie les deux : **tout littéral DSL fini est exact**. Le `numeric` reste pour ce qui est intrinsèquement approximé (positions de drag pixel, `1/0 → Infinity`).
 
 ## Fichiers modifiés
 
