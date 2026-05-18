@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
 	import { parseDsl } from '$lib/geometry-core/dsl';
+	import { DslRuntimeError } from '$lib/geometry-core/dsl/errors';
+	import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
 	import { Figure } from '$lib/geometry-core/graph/figure';
 	import { ConstructionExecutor } from '../core/executor';
 	import type {
@@ -16,6 +18,13 @@
 	import TimelineSlider from './TimelineSlider.svelte';
 	import SpeedControl from './SpeedControl.svelte';
 
+	interface RuntimeErrorInfo {
+		message: string;
+		line: number | null;
+		stepIndex: number | null;
+		details: DslRuntimeErrorDetails | null;
+	}
+
 	interface Props {
 		script: string;
 		title?: string;
@@ -27,6 +36,8 @@
 		showGrid?: boolean;
 		showControls?: boolean;
 		class?: string;
+		/** Notified when a runtime error occurs (or null when cleared). */
+		onRuntimeError?: (err: RuntimeErrorInfo | null) => void;
 	}
 
 	let {
@@ -38,7 +49,8 @@
 		seekToEnd = false,
 		showGrid = true,
 		showControls = true,
-		class: className = ''
+		class: className = '',
+		onRuntimeError
 	}: Props = $props();
 
 	// Reactive state owned by this component
@@ -86,6 +98,9 @@
 	const executor = new ConstructionExecutor();
 	let timeline: Timeline | null = null;
 
+	// Runtime errors raised during executor.load() or .step()
+	let runtimeError = $state<RuntimeErrorInfo | null>(null);
+
 	// Parse script — $derived for pure computation
 	let parseResult = $derived.by(() => {
 		try {
@@ -95,6 +110,16 @@
 			return { valid: false as const, error: e instanceof Error ? e.message : String(e) };
 		}
 	});
+
+	function extractLineNumber(msg: string): number | null {
+		const m = msg.match(/Ligne\s+(\d+)/i);
+		return m ? parseInt(m[1], 10) : null;
+	}
+
+	function setRuntimeError(err: RuntimeErrorInfo | null) {
+		runtimeError = err;
+		onRuntimeError?.(err);
+	}
 
 	// ─── Event handlers (UI event → handler → update $state → DOM) ───
 
@@ -123,8 +148,25 @@
 			compassPrevRadius = executor.compassPrevRadius;
 			compassCurRadius = executor.compassCurRadius;
 			syncState();
-		} catch {
-			// Script may be invalid during editing — ignore runtime errors
+			// Preserve the runtime error if it was captured at load() time
+			// (the timeline only contains valid steps, so this branch always succeeds
+			// even when the script as a whole is broken).
+			if (!executor.loadError) {
+				setRuntimeError(null);
+			}
+		} catch (e) {
+			// Show the partial figure (everything built before the failing step).
+			animatingIds = [];
+			animatingPointIds = [];
+			syncState();
+			const message = e instanceof Error ? e.message : String(e);
+			const details = e instanceof DslRuntimeError ? e.details : null;
+			setRuntimeError({
+				message,
+				line: extractLineNumber(message),
+				stepIndex,
+				details
+			});
 		}
 	}
 
@@ -178,8 +220,31 @@
 	function loadScript(scriptText: string): boolean {
 		try {
 			executor.load(scriptText);
-		} catch {
+		} catch (e) {
+			// parseDsl threw (syntactic error). The timeline cannot be built at all.
+			const message = e instanceof Error ? e.message : String(e);
+			const details = e instanceof DslRuntimeError ? e.details : null;
+			setRuntimeError({
+				message,
+				line: extractLineNumber(message),
+				stepIndex: null,
+				details
+			});
 			return false;
+		}
+		// executor.load() succeeded structurally, but the pre-execution pass may have
+		// caught a runtime error mid-way. The timeline still has the durations of all
+		// the steps that DID succeed before the failure.
+		const loadErr = executor.loadError;
+		if (loadErr) {
+			setRuntimeError({
+				message: loadErr.message,
+				line: loadErr.line,
+				stepIndex: loadErr.stepIndex,
+				details: loadErr.details
+			});
+		} else {
+			setRuntimeError(null);
 		}
 		syncState();
 		timeline?.destroy();
@@ -214,26 +279,41 @@
 
 <div class="construction-player {className}">
 	{#if parseResult.error}
+		<!-- Parse errors are fatal: the script is unparsable, we cannot show anything. -->
 		<div
-			class="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive"
+			class="flex items-center justify-center rounded-md border border-destructive/30 bg-destructive/5 text-sm text-destructive/70"
+			style="width: {width}px; height: {height}px"
 		>
-			<p class="font-medium">Erreur dans le script</p>
-			<p class="mt-1 font-mono text-xs">{parseResult.error}</p>
+			<div class="px-4 text-center">
+				<p class="font-medium">Script non parsable</p>
+				<p class="mt-1 text-xs opacity-80">Voir le détail sous l'éditeur.</p>
+			</div>
 		</div>
 	{:else}
 		{#if title}
 			<h3 class="mb-2 text-sm font-medium">{title}</h3>
 		{/if}
 
-		<ConstructionCanvas
-			figure={currentFigure}
-			instrumentStates={currentInstrumentStates}
-			{animation}
-			{figureVersion}
-			{width}
-			{height}
-			{showGrid}
-		/>
+		<div class="relative">
+			<ConstructionCanvas
+				figure={currentFigure}
+				instrumentStates={currentInstrumentStates}
+				{animation}
+				{figureVersion}
+				{width}
+				{height}
+				{showGrid}
+			/>
+
+			{#if runtimeError}
+				<!-- Subtle in-canvas badge: signals the figure is partial without hiding it. -->
+				<div
+					class="pointer-events-none absolute top-2 right-2 rounded-md border border-destructive/50 bg-destructive/10 px-2 py-1 text-xs font-medium text-destructive backdrop-blur-sm"
+				>
+					⚠ Exécution interrompue
+				</div>
+			{/if}
+		</div>
 
 		{#if currentInstruction}
 			<div class="mt-2 rounded-md bg-muted p-2 text-sm text-muted-foreground">
