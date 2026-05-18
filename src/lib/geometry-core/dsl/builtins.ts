@@ -380,7 +380,20 @@ const HANDLERS = new Map<string, BuiltinHandler>();
 
 function handlePoint(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, toGeoValue, line, label } = ctx;
-	if (pos.length !== 2) throw new DslRuntimeError('point() attend 2 arguments (x, y)', line);
+	if (pos.length !== 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`point()\` attend 2 arguments (abscisse, ordonnée), ${pos.length} reçu(s).`,
+				forms: [
+					{ syntax: 'point(x, y)', description: 'point libre aux coordonnées `(x, y)`' },
+					{
+						syntax: 'point(s.value, 0)',
+						description: 'point dont l’abscisse suit la valeur du slider `s`'
+					}
+				]
+			},
+			line
+		);
 	const xParam = toScalarParam(pos[0], toGeoValue, line);
 	const yParam = toScalarParam(pos[1], toGeoValue, line);
 	if (isScalarRef(xParam) || isScalarRef(yParam)) {
@@ -392,10 +405,52 @@ function handlePoint(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('point', handlePoint);
 
+const INTERSECTION_FORMS = [
+	{
+		syntax: 'intersection(d1, d2)',
+		description: 'intersection de deux droites, segments ou demi-droites'
+	},
+	{
+		syntax: 'intersection(d, c, k)',
+		description: 'intersection droite × cercle, `k = 1` ou `2`'
+	},
+	{
+		syntax: 'intersection(c1, c2, k)',
+		description: 'intersection cercle × cercle, `k = 1` ou `2`'
+	},
+	{
+		syntax: 'intersection(d, q, k)',
+		description: 'intersection droite × conique (`k = 1` ou `2`)'
+	},
+	{
+		syntax: 'intersection(q1, q2, k)',
+		description: 'intersection conique × conique (`k = 1..4`)'
+	},
+	{
+		syntax: 'intersection(d, f, k)',
+		description: 'intersection droite × fonction `y = f(x)`'
+	},
+	{
+		syntax: 'intersection(f1, f2, k)',
+		description: 'intersection de deux fonctions `y = f(x)` et `y = g(x)`'
+	},
+	{
+		syntax: 'intersection(c1, c2, k)',
+		description: 'courbes paramétriques (k = numéro de solution)'
+	}
+];
+
 function handleIntersection(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length < 2 || pos.length > 3)
-		throw new DslRuntimeError('intersection() attend 2 ou 3 arguments', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`intersection()\` attend 2 ou 3 arguments, ${pos.length} reçu(s).`,
+				hint: 'Le 3ᵉ argument `k` choisit la solution quand plusieurs sont possibles (cercle × cercle, conique, fonction).',
+				forms: INTERSECTION_FORMS
+			},
+			line
+		);
 
 	const arg1 = pos[0];
 	const arg2 = pos[1];
@@ -434,13 +489,25 @@ function handleIntersection(ctx: BuiltinCtx): BuiltinResult {
 	// Parametric × parametric branch (V1 scope: includes polar curves).
 	if (isParam1 && isParam2) {
 		if (id1 === id2) {
-			throw new DslRuntimeError('intersection(): les deux courbes doivent etre distinctes', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`intersection()` : les deux courbes doivent être distinctes.',
+					hint: 'Pour les points fixes d’une courbe paramétrique, utilisez `point_sur(c, t)` plutôt qu’une intersection avec elle-même.'
+				},
+				line
+			);
 		}
 		let kVal = 1;
 		if (pos.length === 3) {
 			const kRaw = requireNumber(pos[2], 'k', line);
 			if (!Number.isInteger(kRaw) || kRaw < 1) {
-				throw new DslRuntimeError('intersection(): k doit etre un entier >= 1', line);
+				throw new DslRuntimeError(
+					{
+						summary: '`intersection()` : `k` doit être un entier ≥ 1.',
+						hint: '`k` désigne la k-ième solution. Exemple : `intersection(c1, c2, 2)` pour la 2ᵉ intersection.'
+					},
+					line
+				);
 			}
 			kVal = kRaw;
 		}
@@ -468,7 +535,13 @@ function handleIntersection(ctx: BuiltinCtx): BuiltinResult {
 			if (pos.length === 3) {
 				const kRaw = requireNumber(pos[2], 'k', line);
 				if (!Number.isInteger(kRaw) || kRaw < 1) {
-					throw new DslRuntimeError('intersection(): k doit etre un entier >= 1', line);
+					throw new DslRuntimeError(
+						{
+							summary: '`intersection()` : `k` doit être un entier ≥ 1.',
+							hint: '`k` désigne la k-ième solution.'
+						},
+						line
+					);
 				}
 				kVal = kRaw;
 			}
@@ -499,13 +572,19 @@ function handleIntersection(ctx: BuiltinCtx): BuiltinResult {
 	// Reject implicit curves (not functions, not conics, not parametric)
 	if (isCourbeType(type1) && !isQuad1 && !isFunc1 && !isParam1) {
 		throw new DslRuntimeError(
-			'intersection(): les courbes implicites ne sont pas supportees',
+			{
+				summary: '`intersection()` : les courbes implicites ne sont pas supportées.',
+				hint: 'Convertissez la courbe en forme paramétrique ou en fonction `y = f(x)` si possible.'
+			},
 			line
 		);
 	}
 	if (isCourbeType(type2) && !isQuad2 && !isFunc2 && !isParam2) {
 		throw new DslRuntimeError(
-			'intersection(): les courbes implicites ne sont pas supportees',
+			{
+				summary: '`intersection()` : les courbes implicites ne sont pas supportées.',
+				hint: 'Convertissez la courbe en forme paramétrique ou en fonction `y = f(x)` si possible.'
+			},
 			line
 		);
 	}
@@ -513,17 +592,33 @@ function handleIntersection(ctx: BuiltinCtx): BuiltinResult {
 	// Reject mixed parametric × non-parametric combos
 	if (isParam1 || isParam2) {
 		throw new DslRuntimeError(
-			'intersection(): combinaison courbe parametrique / autre type non supportee (V1: parametrique x parametrique uniquement)',
+			{
+				summary:
+					'`intersection()` : combinaison non supportée entre courbe paramétrique et cet autre type.',
+				hint: 'Les courbes paramétriques peuvent être croisées avec : autres paramétriques, droites, segments, demi-droites, cercles, fonctions `y = f(x)`.'
+			},
 			line
 		);
 	}
 
 	// Reject unsupported combos: function + circle/conic
 	if ((isFunc1 && isCircleType(type2)) || (isCircleType(type1) && isFunc2)) {
-		throw new DslRuntimeError('intersection(): combinaison fonction/cercle non supportee', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`intersection()` : combinaison fonction × cercle non supportée.',
+				hint: 'Convertissez le cercle en courbe paramétrique : `c = courbe("(r*cos(t); r*sin(t))", t_min=0, t_max=2*pi)`.'
+			},
+			line
+		);
 	}
 	if ((isFunc1 && isQuad2) || (isQuad1 && isFunc2)) {
-		throw new DslRuntimeError('intersection(): combinaison fonction/conique non supportee', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`intersection()` : combinaison fonction × conique non supportée.',
+				hint: 'Convertissez la conique en courbe paramétrique pour utiliser cette intersection.'
+			},
+			line
+		);
 	}
 
 	const isQQ =
@@ -544,9 +639,21 @@ function handleIntersection(ctx: BuiltinCtx): BuiltinResult {
 	if (pos.length === 3) {
 		dslIndex = requireNumber(pos[2], 'index', line);
 		if (!Number.isInteger(dslIndex) || dslIndex < 1)
-			throw new DslRuntimeError('intersection(): index doit etre >= 1', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`intersection()` : l’index doit être un entier ≥ 1.',
+					hint: 'L’index choisit laquelle des solutions retourner (1, 2, …).'
+				},
+				line
+			);
 		if (maxIndex !== null && dslIndex > maxIndex)
-			throw new DslRuntimeError(`intersection(): index doit etre entre 1 et ${maxIndex}`, line);
+			throw new DslRuntimeError(
+				{
+					summary: `\`intersection()\` : l’index doit être entre 1 et ${maxIndex}.`,
+					hint: `Cette combinaison admet au plus ${maxIndex} point(s) d’intersection.`
+				},
+				line
+			);
 	}
 
 	if (isLineType(type1) && isLineType(type2)) {
@@ -611,27 +718,70 @@ function handleIntersection(ctx: BuiltinCtx): BuiltinResult {
 		return { figureId: id, symbolType: 'point' };
 	}
 	throw new DslRuntimeError(
-		'intersection(): combinaison non supportee (attendu: droite/droite, droite/cercle, cercle/cercle, droite/conique, conique/conique, droite/fonction, ou fonction/fonction)',
+		{
+			summary: '`intersection()` : combinaison de types non supportée.',
+			forms: INTERSECTION_FORMS
+		},
 		line
 	);
 }
 HANDLERS.set('intersection', handleIntersection);
 
+const IMAGE_FORMS = [
+	{
+		syntax: 'image("url", x, y, largeur=w)',
+		description: 'image positionnée au point `(x, y)`, largeur `w`'
+	},
+	{
+		syntax: 'image("url", A, largeur=w)',
+		description: 'image ancrée au point existant `A`'
+	},
+	{
+		syntax: 'image("url", A, B, largeur=w)',
+		description: 'image entre deux points `A` et `B`'
+	}
+];
+
 function handleImage(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, line, label } = ctx;
-	if (pos.length < 2) throw new DslRuntimeError('image() attend au moins 2 arguments', line);
+	if (pos.length < 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`image()\` attend au moins 2 arguments, ${pos.length} reçu(s).`,
+				forms: IMAGE_FORMS
+			},
+			line
+		);
 	if (pos[0].type !== 'string')
-		throw new DslRuntimeError('image(): le 1er argument doit etre une URL (chaine)', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`image()` : le 1er argument doit être une URL (chaîne entre guillemets).',
+				hint: 'Exemple : `image("https://exemple.fr/photo.png", 0, 0, largeur=4)`.'
+			},
+			line
+		);
 	const imgUrl = (pos[0] as { type: 'string'; value: string }).value;
 	if (!/^https?:\/\/|^\//.test(imgUrl))
-		throw new DslRuntimeError('image(): URL doit commencer par http://, https://, ou /', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`image()` : l’URL doit commencer par `http://`, `https://` ou `/`.',
+				hint: 'Les chemins relatifs ne sont pas acceptés.'
+			},
+			line
+		);
 
 	let imgLayer: 'fond' | 'avant' | undefined;
 	if (named.has('couche')) {
 		const cv = named.get('couche')!;
 		const layerStr = cv.type === 'string' ? cv.value : '';
 		if (layerStr !== 'fond' && layerStr !== 'avant')
-			throw new DslRuntimeError('image(): couche doit etre "fond" ou "avant"', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`image()` : `couche` doit valoir `"fond"` ou `"avant"`.',
+					hint: '`"fond"` place l’image derrière la figure, `"avant"` la place devant.'
+				},
+				line
+			);
 		imgLayer = layerStr;
 	}
 
@@ -647,7 +797,13 @@ function handleImage(ctx: BuiltinCtx): BuiltinResult {
 
 	if (pos.length >= 3 && pos[1].type === 'nombre' && pos[2].type === 'nombre') {
 		if (!named.has('largeur'))
-			throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`image()` : l’argument nommé `largeur=...` est obligatoire.',
+					hint: 'Exemple : `image("url", 0, 0, largeur=4)`.'
+				},
+				line
+			);
 		imgWidth = requireNumber(named.get('largeur')!, 'largeur', line);
 		imgHeight = named.has('hauteur')
 			? requireNumber(named.get('hauteur')!, 'hauteur', line)
@@ -663,7 +819,13 @@ function handleImage(ctx: BuiltinCtx): BuiltinResult {
 		imgPositioning = { point1Id, point2Id };
 	} else if (pos[1].type === 'element') {
 		if (!named.has('largeur'))
-			throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`image()` : l’argument nommé `largeur=...` est obligatoire.',
+					hint: 'Exemple : `image("url", 0, 0, largeur=4)`.'
+				},
+				line
+			);
 		imgWidth = requireNumber(named.get('largeur')!, 'largeur', line);
 		imgHeight = named.has('hauteur')
 			? requireNumber(named.get('hauteur')!, 'hauteur', line)
@@ -681,7 +843,10 @@ function handleImage(ctx: BuiltinCtx): BuiltinResult {
 		};
 	} else {
 		throw new DslRuntimeError(
-			'image() attend: image("url", x, y, largeur=...) ou image("url", point, largeur=...) ou image("url", pointA, pointB)',
+			{
+				summary: '`image()` : combinaison d’arguments non reconnue.',
+				forms: IMAGE_FORMS
+			},
 			line
 		);
 	}
@@ -780,7 +945,27 @@ function handleCourbe(
 		);
 	}
 	throw new DslRuntimeError(
-		'courbe() attend 1 ou 2 arguments string (1 = équation cartésienne, 2 = équations paramétriques x= et y=)',
+		{
+			summary: '`courbe()` attend 1 ou 2 arguments de type chaîne.',
+			forms: [
+				{
+					syntax: 'courbe("x^2 - 1")',
+					description: 'courbe cartésienne `y = f(x)`'
+				},
+				{
+					syntax: 'courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*pi)',
+					description: 'courbe paramétrique (2 équations)'
+				},
+				{
+					syntax: 'courbe("r = 1 + cos(theta)", theta_min=0, theta_max=2*pi)',
+					description: 'courbe polaire `r = f(θ)`'
+				},
+				{
+					syntax: 'courbe("x^2 + y^2 = 1")',
+					description: 'courbe implicite (ou conique)'
+				}
+			]
+		},
 		line
 	);
 }
@@ -789,7 +974,26 @@ HANDLERS.set('courbe', handleCourbe);
 function handleTangente(ctx: BuiltinCtx): BuiltinResult | BuiltinMultiResult {
 	const { pos, figure, toGeoValue, line, label, angleMode } = ctx;
 	if (pos.length !== 2) {
-		throw new DslRuntimeError('tangente() attend 2 arguments (f, P ou x0)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`tangente()\` attend 2 arguments, ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'tangente(f, x0)',
+						description: 'tangente à `y = f(x)` au point d’abscisse `x0`'
+					},
+					{
+						syntax: 'tangente(f, P)',
+						description: 'tangente à `y = f(x)` au point `P` (situé sur la courbe)'
+					},
+					{
+						syntax: 'tangente(c, t0)',
+						description: 'tangente à une courbe paramétrique `c` au paramètre `t0`'
+					}
+				]
+			},
+			line
+		);
 	}
 	const tFnId = requireElement(pos[0], 'fonction', line);
 	const tFnEl = figure.getElementById(tFnId);
@@ -817,7 +1021,11 @@ function handleTangente(ctx: BuiltinCtx): BuiltinResult | BuiltinMultiResult {
 			const ptEl = figure.getElementById(ptId);
 			if (!ptEl || ptEl.type !== 'pointOnQuadraticCurve') {
 				throw new DslRuntimeError(
-					'tangente(): le deuxieme argument doit etre un point_sur ou un nombre',
+					{
+						summary:
+							'`tangente()` : le 2ᵉ argument doit être un nombre (abscisse) ou un point placé via `point_sur()`.',
+						hint: 'Pour un point quelconque sur la courbe, créez-le d’abord avec `point_sur(f, x0)`.'
+					},
 					line
 				);
 			}
@@ -834,7 +1042,13 @@ function handleTangente(ctx: BuiltinCtx): BuiltinResult | BuiltinMultiResult {
 	}
 
 	if (!tFnEl || tFnEl.type !== 'function') {
-		throw new DslRuntimeError('tangente(): le premier argument doit etre une courbe', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`tangente()` : le 1er argument doit être une courbe.',
+				hint: 'Acceptées : fonction `y = f(x)`, conique, ou courbe paramétrique.'
+			},
+			line
+		);
 	}
 
 	if (pos[1].type === 'element') {
@@ -856,15 +1070,36 @@ function handleTangente(ctx: BuiltinCtx): BuiltinResult | BuiltinMultiResult {
 }
 HANDLERS.set('tangente', handleTangente);
 
+const POINT_SUR_FORMS = [
+	{ syntax: 'point_sur(segment)', description: 'milieu du segment (t=0.5)' },
+	{ syntax: 'point_sur(segment, t)', description: 't ∈ [0;1] : 0 = A, 1 = B' },
+	{ syntax: 'point_sur(droite, t)', description: 'point paramétré sur la droite (t = abscisse)' },
+	{ syntax: 'point_sur(cercle, θ)', description: 'point d’angle θ sur le cercle' },
+	{ syntax: 'point_sur(courbe, x0)', description: 'point d’abscisse x0 sur `y = f(x)`' },
+	{ syntax: 'point_sur(c, t0)', description: 'point au paramètre t0 sur courbe paramétrique' }
+];
+
 function handlePointSur(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, toGeoValue, line, label, angleMode } = ctx;
 	if (pos.length < 1 || pos.length > 2) {
-		throw new DslRuntimeError('point_sur() attend 1-2 arguments (objet, param?)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`point_sur()\` attend 1 ou 2 arguments, ${pos.length} reçu(s).`,
+				forms: POINT_SUR_FORMS
+			},
+			line
+		);
 	}
 	const psId = requireElement(pos[0], 'objet', line);
 	const psEl = figure.getElementById(psId);
 	if (!psEl) {
-		throw new DslRuntimeError('point_sur(): objet introuvable', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`point_sur()` : objet introuvable.',
+				hint: 'Vérifiez que la variable passée en 1er argument a bien été définie au-dessus.'
+			},
+			line
+		);
 	}
 
 	if (psEl.type === 'segment') {
@@ -924,7 +1159,11 @@ function handlePointSur(ctx: BuiltinCtx): BuiltinResult {
 	}
 
 	throw new DslRuntimeError(
-		'point_sur(): le premier argument doit etre un segment, droite, demidroite, cercle, arc ou courbe',
+		{
+			summary: '`point_sur()` : type d’objet non supporté pour le 1er argument.',
+			hint: 'Acceptés : segment, droite, demi-droite, cercle, arc ou courbe (cartésienne / paramétrique).',
+			forms: POINT_SUR_FORMS
+		},
 		line
 	);
 }
@@ -933,7 +1172,23 @@ HANDLERS.set('point_sur', handlePointSur);
 function handleCriticalPoints(ctx: BuiltinCtx): BuiltinMultiResult | BuiltinResult {
 	const { name, pos, named, figure, line, label } = ctx;
 	if (pos.length !== 1) {
-		throw new DslRuntimeError(`${name}() attend 1 argument (f)`, line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`${name}()\` attend 1 argument (une fonction), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: `${name}(f)`,
+						description:
+							name === 'zeros'
+								? 'zéros de `f` sur l’intervalle de recherche'
+								: name === 'extrema'
+									? 'extrema (min/max) de `f`'
+									: 'points d’inflexion de `f`'
+					}
+				]
+			},
+			line
+		);
 	}
 	const cpFnId = requireElement(pos[0], 'fonction', line);
 	const cpFnEl = figure.getElementById(cpFnId);
@@ -943,7 +1198,13 @@ function handleCriticalPoints(ctx: BuiltinCtx): BuiltinMultiResult | BuiltinResu
 	}
 
 	if (!cpFnEl || cpFnEl.type !== 'function') {
-		throw new DslRuntimeError(`${name}(): le premier argument doit etre une courbe`, line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`${name}()\` : le 1er argument doit être une courbe \`y = f(x)\`.`,
+				hint: 'Créez la courbe avec `f = courbe("x^2 - 3")` puis passez-la ici.'
+			},
+			line
+		);
 	}
 
 	const xMin = FUNCTION_SEARCH_XMIN;
@@ -969,7 +1230,13 @@ function handleCriticalPoints(ctx: BuiltinCtx): BuiltinMultiResult | BuiltinResu
 			d2 = differentiate(cpFnEl.derivative, { variable: 'x', simplify: true });
 			cd2 = compile(d2);
 		} catch {
-			throw new DslRuntimeError('inflections(): impossible de calculer la derivee seconde', line);
+			throw new DslRuntimeError(
+				{
+					summary: '`inflections()` : impossible de calculer la dérivée seconde.',
+					hint: 'La fonction n’est probablement pas dérivable deux fois sur l’intervalle.'
+				},
+				line
+			);
 		}
 		points = findCriticalInflections(
 			cpFnEl.expression,
@@ -998,10 +1265,32 @@ HANDLERS.set('zeros', handleCriticalPoints);
 HANDLERS.set('extrema', handleCriticalPoints);
 HANDLERS.set('inflections', handleCriticalPoints);
 
+const TRANSLATION_FORMS = [
+	{
+		syntax: 'translation(vecteur=u)',
+		description: 'transformation par le vecteur `u`'
+	},
+	{
+		syntax: 'translation(vecteur=(A, B))',
+		description: 'transformation par le vecteur `AB` (tuple de 2 points)'
+	},
+	{
+		syntax: 'translation(M, vecteur=u)',
+		description: 'image du point ou de l’objet `M` par la translation'
+	}
+];
+
 function handleTranslation(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, line, label } = ctx;
 	const vecteurArg = named.get('vecteur');
-	if (!vecteurArg) throw new DslRuntimeError('translation() requiert vecteur=...', line);
+	if (!vecteurArg)
+		throw new DslRuntimeError(
+			{
+				summary: '`translation()` : l’argument nommé `vecteur=...` est obligatoire.',
+				forms: TRANSLATION_FORMS
+			},
+			line
+		);
 
 	if (pos.length === 0) {
 		if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
@@ -1009,7 +1298,14 @@ function handleTranslation(ctx: BuiltinCtx): BuiltinResult {
 			return { figureId: id, symbolType: 'transformation' };
 		}
 		const tuple = requireTuple(vecteurArg, 'vecteur', line);
-		if (tuple.length !== 2) throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
+		if (tuple.length !== 2)
+			throw new DslRuntimeError(
+				{
+					summary: '`vecteur` doit être un tuple de 2 points `(A, B)`.',
+					hint: 'Exemple : `vecteur=(A, B)` pour le vecteur `AB`.'
+				},
+				line
+			);
 		const id = figure.createTranslation(
 			requireElement(tuple[0], 'vecteur.1', line),
 			requireElement(tuple[1], 'vecteur.2', line),
@@ -1026,7 +1322,14 @@ function handleTranslation(ctx: BuiltinCtx): BuiltinResult {
 			return { figureId: id, symbolType: 'point' };
 		}
 		const tuple = requireTuple(vecteurArg, 'vecteur', line);
-		if (tuple.length !== 2) throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
+		if (tuple.length !== 2)
+			throw new DslRuntimeError(
+				{
+					summary: '`vecteur` doit être un tuple de 2 points `(A, B)`.',
+					hint: 'Exemple : `vecteur=(A, B)` pour le vecteur `AB`.'
+				},
+				line
+			);
 		const id = figure.createTranslatedPoint(
 			sourceId,
 			requireElement(tuple[0], 'vecteur.1', line),
@@ -1040,7 +1343,14 @@ function handleTranslation(ctx: BuiltinCtx): BuiltinResult {
 		tId = figure.createTranslationByVector(vecteurArg.figureId!);
 	} else {
 		const tuple = requireTuple(vecteurArg, 'vecteur', line);
-		if (tuple.length !== 2) throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
+		if (tuple.length !== 2)
+			throw new DslRuntimeError(
+				{
+					summary: '`vecteur` doit être un tuple de 2 points `(A, B)`.',
+					hint: 'Exemple : `vecteur=(A, B)` pour le vecteur `AB`.'
+				},
+				line
+			);
 		tId = figure.createTranslation(
 			requireElement(tuple[0], 'vecteur.1', line),
 			requireElement(tuple[1], 'vecteur.2', line)
@@ -1052,7 +1362,20 @@ HANDLERS.set('translation', handleTranslation);
 
 function handleTexte(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, line, label, symbols } = ctx;
-	if (pos.length < 2) throw new DslRuntimeError('texte() attend au moins 2 arguments', line);
+	if (pos.length < 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`texte()\` attend au moins 2 arguments, ${pos.length} reçu(s).`,
+				forms: [
+					{ syntax: 'texte(x, y, "Hello")', description: 'texte positionné en `(x, y)`' },
+					{
+						syntax: 'texte(P, "label", dx=0.2, dy=-0.1)',
+						description: 'texte ancré au point `P` avec décalage'
+					}
+				]
+			},
+			line
+		);
 
 	let template: string;
 	let positioning: {
@@ -1107,7 +1430,23 @@ HANDLERS.set('texte', handleTexte);
 
 function handleRtexte(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, line, label, symbols } = ctx;
-	if (pos.length < 2) throw new DslRuntimeError('rtexte() attend au moins 2 arguments', line);
+	if (pos.length < 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`rtexte()\` attend au moins 2 arguments, ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'rtexte(x, y, "**gras** _italique_")',
+						description: 'texte ubumark positionné en `(x, y)`'
+					},
+					{
+						syntax: 'rtexte(P, "texte", dx=..., dy=...)',
+						description: 'texte ubumark ancré au point `P` avec décalage'
+					}
+				]
+			},
+			line
+		);
 	let rtTemplate: string;
 	let rtPositioning: {
 		anchorId?: string;
@@ -1212,9 +1551,32 @@ function handleLieu(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('lieu', handleLieu);
 
+function twoPointsArityError(
+	name: string,
+	noun: string,
+	received: number,
+	form: { syntax: string; description: string },
+	line: number
+): DslRuntimeError {
+	return new DslRuntimeError(
+		{
+			summary: `\`${name}()\` attend 2 points (${noun}), ${received} argument(s) reçu(s).`,
+			forms: [form]
+		},
+		line
+	);
+}
+
 function handleMilieu(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
-	if (pos.length !== 2) throw new DslRuntimeError('milieu() attend 2 arguments (A, B)', line);
+	if (pos.length !== 2)
+		throw twoPointsArityError(
+			'milieu',
+			'A, B',
+			pos.length,
+			{ syntax: 'milieu(A, B)', description: 'milieu du segment `[AB]`' },
+			line
+		);
 	const id = figure.createMidpoint(
 		requireElement(pos[0], 'arg1', line),
 		requireElement(pos[1], 'arg2', line),
@@ -1226,7 +1588,14 @@ HANDLERS.set('milieu', handleMilieu);
 
 function handleSegment(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
-	if (pos.length !== 2) throw new DslRuntimeError('segment() attend 2 arguments (A, B)', line);
+	if (pos.length !== 2)
+		throw twoPointsArityError(
+			'segment',
+			'extrémités A, B',
+			pos.length,
+			{ syntax: 'segment(A, B)', description: 'segment `[AB]` reliant les deux points' },
+			line
+		);
 	const id = figure.createSegment(
 		requireElement(pos[0], 'arg1', line),
 		requireElement(pos[1], 'arg2', line),
@@ -1238,7 +1607,14 @@ HANDLERS.set('segment', handleSegment);
 
 function handleDroite(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
-	if (pos.length !== 2) throw new DslRuntimeError('droite() attend 2 arguments (A, B)', line);
+	if (pos.length !== 2)
+		throw twoPointsArityError(
+			'droite',
+			'A, B',
+			pos.length,
+			{ syntax: 'droite(A, B)', description: 'droite `(AB)` passant par les deux points' },
+			line
+		);
 	const id = figure.createLine(
 		requireElement(pos[0], 'arg1', line),
 		requireElement(pos[1], 'arg2', line),
@@ -1250,7 +1626,17 @@ HANDLERS.set('droite', handleDroite);
 
 function handleDemidroite(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
-	if (pos.length !== 2) throw new DslRuntimeError('demidroite() attend 2 arguments (A, B)', line);
+	if (pos.length !== 2)
+		throw twoPointsArityError(
+			'demidroite',
+			'origine, direction',
+			pos.length,
+			{
+				syntax: 'demidroite(O, A)',
+				description: "demi-droite d'origine `O` dans la direction de `A`"
+			},
+			line
+		);
 	const id = figure.createRay(
 		requireElement(pos[0], 'arg1', line),
 		requireElement(pos[1], 'arg2', line),
@@ -1260,9 +1646,31 @@ function handleDemidroite(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('demidroite', handleDemidroite);
 
+const VECTEUR_FORMS = [
+	{
+		syntax: 'vecteur(A, B)',
+		description: 'vecteur lié de l’origine `A` vers `B`'
+	},
+	{
+		syntax: 'vecteur(dx, dy)',
+		description: 'vecteur libre de composantes `(dx, dy)`'
+	},
+	{
+		syntax: 'vecteur(dx, dy, ancre=(x, y))',
+		description: 'vecteur libre ancré au point `(x, y)`'
+	}
+];
+
 function handleVecteur(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, toGeoValue, line, label } = ctx;
-	if (pos.length !== 2) throw new DslRuntimeError('vecteur() attend 2 arguments', line);
+	if (pos.length !== 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`vecteur()\` attend 2 arguments positionnels, ${pos.length} reçu(s).`,
+				forms: VECTEUR_FORMS
+			},
+			line
+		);
 	const arg0 = pos[0];
 	const arg1 = pos[1];
 	const isNumericLike = (a: ResolvedValue) => a.type === 'nombre' || a.type === 'geoValue';
@@ -1272,7 +1680,14 @@ function handleVecteur(ctx: BuiltinCtx): BuiltinResult {
 		let anchor: { x: GeoValue; y: GeoValue } | undefined;
 		if (named.has('ancre')) {
 			const tuple = requireTuple(named.get('ancre')!, 'ancre', line);
-			if (tuple.length !== 2) throw new DslRuntimeError('ancre attend un tuple de 2 nombres', line);
+			if (tuple.length !== 2)
+				throw new DslRuntimeError(
+					{
+						summary: '`ancre` doit être un tuple de 2 nombres `(x, y)`.',
+						hint: 'Exemple : `vecteur(2, 3, ancre=(0, 0))`.'
+					},
+					line
+				);
 			anchor = { x: toGeoValue(tuple[0], line), y: toGeoValue(tuple[1], line) };
 		}
 		const id = figure.createFreeVector(dx, dy, anchor, { label });
@@ -1290,7 +1705,14 @@ HANDLERS.set('vecteur', handleVecteur);
 
 function handleNorme(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
-	if (pos.length !== 1) throw new DslRuntimeError('norme() attend 1 argument (vecteur)', line);
+	if (pos.length !== 1)
+		throw new DslRuntimeError(
+			{
+				summary: `\`norme()\` attend 1 argument (un vecteur), ${pos.length} reçu(s).`,
+				forms: [{ syntax: 'norme(u)', description: 'norme `‖u‖` du vecteur `u`' }]
+			},
+			line
+		);
 	const nVecId = requireElement(pos[0], 'vecteur', line);
 	const id = figure.createScalarNorme(nVecId, { label });
 	return { figureId: id, symbolType: 'scalar' };
@@ -1300,13 +1722,30 @@ HANDLERS.set('norme', handleNorme);
 function handleProduitScalaire(ctx: BuiltinCtx): BuiltinScalarResult {
 	const { pos, figure, line } = ctx;
 	if (pos.length !== 2)
-		throw new DslRuntimeError('produit_scalaire() attend 2 arguments (u, v)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`produit_scalaire()\` attend 2 arguments (deux vecteurs), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'produit_scalaire(u, v)',
+						description: 'produit scalaire `u · v` des deux vecteurs'
+					}
+				]
+			},
+			line
+		);
 	const psV1 = requireElement(pos[0], 'u', line);
 	const psV2 = requireElement(pos[1], 'v', line);
 	const psC1 = figure.getVectorComponents(psV1);
 	const psC2 = figure.getVectorComponents(psV2);
 	if (!psC1 || !psC2)
-		throw new DslRuntimeError('produit_scalaire(): composantes non resolues', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`produit_scalaire()` : impossible de résoudre les composantes des vecteurs.',
+				hint: 'Vérifiez que les deux arguments sont bien des vecteurs définis.'
+			},
+			line
+		);
 	const dot =
 		geoToNumber(psC1.dx) * geoToNumber(psC2.dx) + geoToNumber(psC1.dy) * geoToNumber(psC2.dy);
 	return { scalarValue: dot };
@@ -1316,12 +1755,30 @@ HANDLERS.set('produit_scalaire', handleProduitScalaire);
 function handleAngleVecteurs(ctx: BuiltinCtx): BuiltinScalarResult {
 	const { pos, figure, line, angleMode } = ctx;
 	if (pos.length !== 2)
-		throw new DslRuntimeError('angle_vecteurs() attend 2 arguments (u, v)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`angle_vecteurs()\` attend 2 arguments (deux vecteurs), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'angle_vecteurs(u, v)',
+						description: 'angle orienté `(u, v)` entre les deux vecteurs'
+					}
+				]
+			},
+			line
+		);
 	const avV1 = requireElement(pos[0], 'u', line);
 	const avV2 = requireElement(pos[1], 'v', line);
 	const avC1 = figure.getVectorComponents(avV1);
 	const avC2 = figure.getVectorComponents(avV2);
-	if (!avC1 || !avC2) throw new DslRuntimeError('angle_vecteurs(): composantes non resolues', line);
+	if (!avC1 || !avC2)
+		throw new DslRuntimeError(
+			{
+				summary: '`angle_vecteurs()` : impossible de résoudre les composantes des vecteurs.',
+				hint: 'Vérifiez que les deux arguments sont bien des vecteurs définis.'
+			},
+			line
+		);
 	const ax1 = geoToNumber(avC1.dx),
 		ay1 = geoToNumber(avC1.dy);
 	const ax2 = geoToNumber(avC2.dx),
@@ -1330,7 +1787,13 @@ function handleAngleVecteurs(ctx: BuiltinCtx): BuiltinScalarResult {
 	const len1 = Math.sqrt(ax1 * ax1 + ay1 * ay1);
 	const len2 = Math.sqrt(ax2 * ax2 + ay2 * ay2);
 	if (len1 < 1e-15 || len2 < 1e-15)
-		throw new DslRuntimeError('angle_vecteurs(): vecteur nul', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`angle_vecteurs()` : l’un des vecteurs est nul, l’angle n’est pas défini.',
+				hint: 'Vérifiez que les deux vecteurs ont des composantes non nulles.'
+			},
+			line
+		);
 	const cosA = Math.max(-1, Math.min(1, dotProd / (len1 * len2)));
 	const angleRad = Math.acos(cosA);
 	return {
@@ -1434,7 +1897,19 @@ HANDLERS.set('cercle', handleCercle);
 
 function handlePolygone(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
-	if (pos.length < 3) throw new DslRuntimeError('polygone() attend au moins 3 sommets', line);
+	if (pos.length < 3)
+		throw new DslRuntimeError(
+			{
+				summary: `\`polygone()\` attend au moins 3 sommets, ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'polygone(A, B, C, ...)',
+						description: 'polygone défini par la liste ordonnée de ses sommets'
+					}
+				]
+			},
+			line
+		);
 	const vertexIds = pos.map((p, i) => requireElement(p, `sommet ${i + 1}`, line));
 	const id = figure.createPolygon(vertexIds as [string, string, string, ...string[]], { label });
 	return { figureId: id, symbolType: 'polygone' };
@@ -1454,7 +1929,30 @@ function handleSymetrie(ctx: BuiltinCtx): BuiltinResult {
 			const id = figure.createReflectionOverLine(p1, p2, { label });
 			return { figureId: id, symbolType: 'transformation' };
 		}
-		throw new DslRuntimeError("symetrie() necessite 'centre' ou 'axe'", line);
+		throw new DslRuntimeError(
+			{
+				summary: '`symetrie()` : il faut préciser un `centre` ou un `axe`.',
+				forms: [
+					{
+						syntax: 'symetrie(centre=O)',
+						description: 'transformation : symétrie centrale de centre `O`'
+					},
+					{
+						syntax: 'symetrie(axe=d)',
+						description: 'transformation : symétrie axiale par rapport à la droite `d`'
+					},
+					{
+						syntax: 'symetrie(M, centre=O)',
+						description: 'image directe de `M` par la symétrie centrale'
+					},
+					{
+						syntax: 'symetrie(M, axe=d)',
+						description: 'image directe de `M` par la symétrie axiale'
+					}
+				]
+			},
+			line
+		);
 	}
 	const sourceId = requireElement(pos[0], 'source', line);
 	const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
@@ -1550,7 +2048,23 @@ HANDLERS.set('homothetie', handleHomothetie);
 function handleProjection(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, line, label } = ctx;
 	const droiteArg = named.get('axe');
-	if (!droiteArg) throw new DslRuntimeError("projection() necessite 'axe'", line);
+	if (!droiteArg)
+		throw new DslRuntimeError(
+			{
+				summary: '`projection()` : l’argument nommé `axe=...` est obligatoire.',
+				forms: [
+					{
+						syntax: 'projection(axe=d)',
+						description: 'projection orthogonale sur la droite `d`'
+					},
+					{
+						syntax: 'projection(M, axe=d)',
+						description: 'image directe de `M` par la projection sur `d`'
+					}
+				]
+			},
+			line
+		);
 	const { p1, p2 } = resolveAxeArg(droiteArg, figure, line);
 	if (pos.length === 0) {
 		const id = figure.createProjection(p1, p2, { label });
@@ -1593,7 +2107,23 @@ HANDLERS.set('inversion', handleInversion);
 function handleAffinite(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, toGeoValue, line, label } = ctx;
 	const axeArg = named.get('axe');
-	if (!axeArg) throw new DslRuntimeError("affinite() necessite 'axe'", line);
+	if (!axeArg)
+		throw new DslRuntimeError(
+			{
+				summary: '`affinite()` : l’argument nommé `axe=...` est obligatoire.',
+				forms: [
+					{
+						syntax: 'affinite(axe=d, rapport=k)',
+						description: 'transformation : affinité orthogonale d’axe `d` et de rapport `k`'
+					},
+					{
+						syntax: 'affinite(M, axe=d, rapport=k)',
+						description: 'image directe de `M` par l’affinité'
+					}
+				]
+			},
+			line
+		);
 	const { p1, p2 } = resolveAxeArg(axeArg, figure, line);
 	const factor = toGeoValue(named.get('rapport') ?? { type: 'nombre', value: 1 }, line);
 	if (pos.length === 0) {
@@ -1655,17 +2185,35 @@ HANDLERS.set('similitude', handleSimilitude);
 function handleTransforme(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 2)
-		throw new DslRuntimeError('transforme() attend 2 arguments (transformation, objet)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`transforme()\` attend 2 arguments (transformation, objet), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'transforme(t, M)',
+						description: 'image directe de `M` par la transformation `t`'
+					}
+				],
+				hint: 'Créez la transformation en amont (`t = rotation(centre=O, angle=60)`) puis appliquez-la.'
+			},
+			line
+		);
 	const transformArg = pos[0];
 	if (transformArg.type !== 'element' || transformArg.elementType !== 'transformation')
 		throw new DslRuntimeError(
-			'transforme(): le premier argument doit etre une transformation',
+			{
+				summary: '`transforme()` : le 1er argument doit être une transformation.',
+				hint: 'Utilisez `rotation()`, `translation()`, `symetrie()`, `homothetie()`, `affinite()`, `inversion()`, `similitude()` ou `compose()`.'
+			},
 			line
 		);
 	const sourceArg = pos[1];
 	if (sourceArg.type !== 'element')
 		throw new DslRuntimeError(
-			'transforme(): le second argument doit etre un element geometrique',
+			{
+				summary: '`transforme()` : le 2ᵉ argument doit être un élément géométrique.',
+				hint: 'Acceptés : point, segment, droite, cercle, polygone, courbe…'
+			},
 			line
 		);
 	const result = applyTransformationToElement(
@@ -1683,13 +2231,27 @@ HANDLERS.set('transforme', handleTransforme);
 function handleCompose(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length < 2)
-		throw new DslRuntimeError('compose() attend au moins 2 transformations', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`compose()\` attend au moins 2 transformations, ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'compose(t1, t2, ...)',
+						description: 'composition appliquée de gauche à droite : `t1` puis `t2` puis ...'
+					}
+				]
+			},
+			line
+		);
 	const transformIds: string[] = [];
 	for (let i = 0; i < pos.length; i++) {
 		const arg = pos[i];
 		if (arg.type !== 'element' || arg.elementType !== 'transformation')
 			throw new DslRuntimeError(
-				`compose(): l'argument ${i + 1} doit etre une transformation`,
+				{
+					summary: `\`compose()\` : l’argument ${i + 1} doit être une transformation.`,
+					hint: 'Tous les arguments doivent être des transformations (rotation, symétrie, translation…).'
+				},
 				line
 			);
 		transformIds.push(arg.figureId!);
@@ -1702,7 +2264,23 @@ HANDLERS.set('compose', handleCompose);
 function handleMarqueAngle(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, line, label } = ctx;
 	if (pos.length < 3)
-		throw new DslRuntimeError('marque_angle() attend 3 arguments (P1, V, P2)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`marque_angle()\` attend 3 points (P1, V, P2), ${pos.length} reçu(s).`,
+				hint: 'Le 2ᵉ argument est le sommet de l’angle.',
+				forms: [
+					{
+						syntax: 'marque_angle(P1, V, P2)',
+						description: 'marque visuelle de l’angle ∠P1·V·P2 au sommet `V`'
+					},
+					{
+						syntax: 'marque_angle(P1, V, P2, arcs=2)',
+						description: 'marque à double arc (égalité d’angles), `arcs ∈ {1, 2, 3}`'
+					}
+				]
+			},
+			line
+		);
 	const arcCount = named.has('arcs')
 		? (requireNumber(named.get('arcs')!, 'arcs', line) as 1 | 2 | 3)
 		: 1;
@@ -1719,7 +2297,18 @@ HANDLERS.set('marque_angle', handleMarqueAngle);
 function handleAngleDroit(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length < 3)
-		throw new DslRuntimeError('angle_droit() attend 3 arguments (P1, V, P2)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`angle_droit()\` attend 3 points (P1, V, P2), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'angle_droit(P1, V, P2)',
+						description: 'marque d’angle droit (équerre) au sommet `V`'
+					}
+				]
+			},
+			line
+		);
 	const id = figure.createAngleMark(
 		requireElement(pos[0], 'P1', line),
 		requireElement(pos[1], 'V', line),
@@ -1732,7 +2321,23 @@ HANDLERS.set('angle_droit', handleAngleDroit);
 
 function handleMarqueSegment(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, line, label } = ctx;
-	if (pos.length < 2) throw new DslRuntimeError('marque_segment() attend 2 arguments (A, B)', line);
+	if (pos.length < 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`marque_segment()\` attend 2 points (A, B), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'marque_segment(A, B)',
+						description: 'marque (un trait) sur le segment `[AB]`'
+					},
+					{
+						syntax: 'marque_segment(A, B, marques=2)',
+						description: 'marques multiples (égalité de segments), `marques ∈ {1, 2, 3}`'
+					}
+				]
+			},
+			line
+		);
 	const markCount = named.has('traits')
 		? (requireNumber(named.get('traits')!, 'traits', line) as 1 | 2 | 3)
 		: 1;
@@ -1747,7 +2352,23 @@ HANDLERS.set('marque_segment', handleMarqueSegment);
 
 function handleMesure(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
-	if (pos.length < 2) throw new DslRuntimeError('mesure() attend au moins 2 arguments', line);
+	if (pos.length < 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`mesure()\` attend au moins 2 arguments (position, expression), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'mesure(x, y, "distance(A, B)")',
+						description: 'affichage d’une mesure formatée à la position `(x, y)`'
+					},
+					{
+						syntax: 'mesure(P, "AB = {distance(A,B)}")',
+						description: 'mesure ancrée au point `P` avec template `{...}`'
+					}
+				]
+			},
+			line
+		);
 	const targetIds = pos.map((p, i) => requireElement(p, `arg${i + 1}`, line));
 
 	let scalarId: string;
@@ -1796,7 +2417,22 @@ function handleAire(
 	}
 
 	if (pos.length < 3)
-		throw new DslRuntimeError('aire() attend au moins 3 arguments (points)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`aire()\` attend au moins 3 points, ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'aire(A, B, C, ...)',
+						description: 'aire signée du polygone formé par les points donnés'
+					},
+					{
+						syntax: 'aire(f, x_min, x_max)',
+						description: 'aire entre la courbe `y = f(x)` et l’axe `Ox` sur `[x_min ; x_max]`'
+					}
+				]
+			},
+			line
+		);
 	const pointIds = pos.map((p, i) => requireElement(p, `point${i + 1}`, line));
 	const id = figure.createScalarArea(pointIds, { label });
 	return { figureId: id, symbolType: 'scalar' };
@@ -1805,7 +2441,23 @@ HANDLERS.set('aire', handleAire);
 
 function handleMtexte(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, line, label, symbols } = ctx;
-	if (pos.length < 2) throw new DslRuntimeError('mtexte() attend au moins 2 arguments', line);
+	if (pos.length < 2)
+		throw new DslRuntimeError(
+			{
+				summary: `\`mtexte()\` attend au moins 2 arguments (position, code LaTeX), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'mtexte(x, y, "\\\\frac{a}{b}")',
+						description: 'texte LaTeX positionné en `(x, y)`'
+					},
+					{
+						syntax: 'mtexte(P, "\\\\vec{AB}")',
+						description: 'texte LaTeX ancré au point `P`'
+					}
+				]
+			},
+			line
+		);
 	let mtTemplate: string;
 	let mtPositioning: {
 		anchorId?: string;
@@ -1904,7 +2556,18 @@ HANDLERS.set('angle', handleAngle);
 function handlePerimetre(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length < 3)
-		throw new DslRuntimeError('perimetre() attend au moins 3 arguments (points)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`perimetre()\` attend au moins 3 points, ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'perimetre(A, B, C, ...)',
+						description: 'périmètre du polygone formé par les points'
+					}
+				]
+			},
+			line
+		);
 	const perimPointIds = pos.map((p, i) => requireElement(p, `point${i + 1}`, line));
 	const id = figure.createScalarPerimeter(perimPointIds, { label });
 	return { figureId: id, symbolType: 'scalar' };
@@ -1914,7 +2577,18 @@ HANDLERS.set('perimetre', handlePerimetre);
 function handlePente(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 1)
-		throw new DslRuntimeError('pente() attend 1 argument (droite, segment ou demidroite)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`pente()\` attend 1 argument, ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'pente(d)',
+						description: 'coefficient directeur de la droite, du segment ou de la demi-droite `d`'
+					}
+				]
+			},
+			line
+		);
 	const penteArg = pos[0];
 	if (
 		penteArg.type !== 'element' ||
@@ -1922,7 +2596,13 @@ function handlePente(ctx: BuiltinCtx): BuiltinResult {
 			penteArg.elementType !== 'segment' &&
 			penteArg.elementType !== 'demidroite')
 	)
-		throw new DslRuntimeError('pente() attend une droite, un segment ou une demi-droite', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`pente()` : l’argument doit être une droite, un segment ou une demi-droite.',
+				hint: 'Pour mesurer la pente entre deux points, créez d’abord la droite : `d = droite(A, B)`.'
+			},
+			line
+		);
 	const penteLineId = penteArg.figureId;
 	const id = figure.createScalarSlope(penteLineId, { label });
 	return { figureId: id, symbolType: 'scalar' };
@@ -1931,10 +2611,23 @@ HANDLERS.set('pente', handlePente);
 
 function handleRayon(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
-	if (pos.length !== 1) throw new DslRuntimeError('rayon() attend 1 argument (cercle)', line);
+	if (pos.length !== 1)
+		throw new DslRuntimeError(
+			{
+				summary: `\`rayon()\` attend 1 argument (un cercle), ${pos.length} reçu(s).`,
+				forms: [{ syntax: 'rayon(c)', description: 'rayon scalaire du cercle `c`' }]
+			},
+			line
+		);
 	const rayonArg = pos[0];
 	if (rayonArg.type !== 'element' || rayonArg.elementType !== 'cercle')
-		throw new DslRuntimeError('rayon() attend un cercle', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`rayon()` : l’argument doit être un cercle.',
+				hint: 'Acceptés : `cercle(O, rayon=r)`, `cercle(O, passant=A)` ou `cercle(A, B, C)`.'
+			},
+			line
+		);
 	const rayonCircleId = rayonArg.figureId;
 	const id = figure.createScalarRadius(rayonCircleId, { label });
 	return { figureId: id, symbolType: 'scalar' };
@@ -1956,6 +2649,17 @@ function handleSlider(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('slider', handleSlider);
 
+const ARC_FORMS = [
+	{
+		syntax: 'arc(A, O, B)',
+		description: 'arc de cercle de centre `O`, de `A` à `B` (sens trigonométrique)'
+	},
+	{
+		syntax: 'arc(O, rayon=r, debut=0, fin=90)',
+		description: 'arc de centre `O`, rayon `r`, angles `début`/`fin`'
+	}
+];
+
 function handleArc(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, toGeoValue, line, label, angleMode } = ctx;
 	if (pos.length === 3) {
@@ -1968,7 +2672,13 @@ function handleArc(ctx: BuiltinCtx): BuiltinResult {
 	if (pos.length === 1) {
 		const centerId = requireElement(pos[0], 'centre', line);
 		if (!named.has('rayon'))
-			throw new DslRuntimeError("arc() avec 1 argument necessite 'rayon'", line);
+			throw new DslRuntimeError(
+				{
+					summary: '`arc()` avec 1 argument : l’argument nommé `rayon=...` est obligatoire.',
+					forms: ARC_FORMS
+				},
+				line
+			);
 		const radius = toGeoValue(named.get('rayon')!, line);
 		const startVal = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
 		const endVal = named.has('fin')
@@ -1982,11 +2692,25 @@ function handleArc(ctx: BuiltinCtx): BuiltinResult {
 		return { figureId: id, symbolType: 'arc' };
 	}
 	throw new DslRuntimeError(
-		'arc() attend soit 3 arguments (A, O, B) soit 1 argument + rayon/debut/fin',
+		{
+			summary: `\`arc()\` : ${pos.length} arguments positionnels reçus, attendu 1 (centre) ou 3 (A, O, B).`,
+			forms: ARC_FORMS
+		},
 		line
 	);
 }
 HANDLERS.set('arc', handleArc);
+
+const SECTEUR_FORMS = [
+	{
+		syntax: 'secteur(O, A, B)',
+		description: 'secteur circulaire de centre `O`, bords `OA` et `OB`'
+	},
+	{
+		syntax: 'secteur(O, rayon=r, debut=0, fin=90)',
+		description: 'secteur de centre `O`, rayon `r`, angles `début`/`fin`'
+	}
+];
 
 function handleSecteur(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, toGeoValue, line, label, angleMode } = ctx;
@@ -2000,7 +2724,13 @@ function handleSecteur(ctx: BuiltinCtx): BuiltinResult {
 	if (pos.length === 1) {
 		const centerId = requireElement(pos[0], 'centre', line);
 		if (!named.has('rayon'))
-			throw new DslRuntimeError("secteur() avec 1 argument necessite 'rayon'", line);
+			throw new DslRuntimeError(
+				{
+					summary: '`secteur()` avec 1 argument : l’argument nommé `rayon=...` est obligatoire.',
+					forms: SECTEUR_FORMS
+				},
+				line
+			);
 		const radius = toScalarParam(named.get('rayon')!, toGeoValue, line);
 		const startVal = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
 		const endVal = named.has('fin')
@@ -2014,25 +2744,53 @@ function handleSecteur(ctx: BuiltinCtx): BuiltinResult {
 		return { figureId: id, symbolType: 'secteur' as SymbolType };
 	}
 	throw new DslRuntimeError(
-		'secteur() attend soit 3 arguments (O, A, B) soit 1 argument + rayon/debut/fin',
+		{
+			summary: `\`secteur()\` : ${pos.length} arguments positionnels reçus, attendu 1 (centre) ou 3 (O, A, B).`,
+			forms: SECTEUR_FORMS
+		},
 		line
 	);
 }
 HANDLERS.set('secteur', handleSecteur);
 
+const COURONNE_FORMS = [
+	{
+		syntax: 'couronne(O, r1=2, r2=3)',
+		description: 'anneau de centre `O`, rayon intérieur `r1`, extérieur `r2`'
+	}
+];
+
 function handleCouronne(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, toGeoValue, line, label } = ctx;
 	if (pos.length !== 1)
-		throw new DslRuntimeError('couronne() attend 1 argument positionnel (centre)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`couronne()\` attend 1 argument positionnel (centre), ${pos.length} reçu(s).`,
+				forms: COURONNE_FORMS
+			},
+			line
+		);
 	const centerId = requireElement(pos[0], 'centre', line);
 	if (!named.has('r1') || !named.has('r2'))
-		throw new DslRuntimeError("couronne() necessite 'r1' et 'r2'", line);
+		throw new DslRuntimeError(
+			{
+				summary: '`couronne()` : les arguments nommés `r1=...` et `r2=...` sont obligatoires.',
+				forms: COURONNE_FORMS
+			},
+			line
+		);
 	const r1 = toScalarParam(named.get('r1')!, toGeoValue, line);
 	const r2 = toScalarParam(named.get('r2')!, toGeoValue, line);
 	const r1Num = typeof r1 === 'object' && 'scalarRef' in r1 ? null : geoToNumber(r1);
 	const r2Num = typeof r2 === 'object' && 'scalarRef' in r2 ? null : geoToNumber(r2);
 	if (r1Num !== null && r2Num !== null && r1Num >= r2Num)
-		throw new DslRuntimeError('couronne(): r1 doit etre inferieur a r2', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`couronne()` : `r1` doit être strictement inférieur à `r2`.',
+				hint: '`r1` est le rayon intérieur, `r2` le rayon extérieur.'
+			},
+			line
+		);
 	const id = figure.createAnnulus(centerId, r1, r2, { label });
 	return { figureId: id, symbolType: 'couronne' as SymbolType };
 }
@@ -2041,11 +2799,28 @@ HANDLERS.set('couronne', handleCouronne);
 function handlePuissance(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length !== 2)
-		throw new DslRuntimeError('puissance() attend 2 arguments (point, cercle)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`puissance()\` attend 2 arguments (point, cercle), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'puissance(M, c)',
+						description: 'puissance du point `M` par rapport au cercle `c`'
+					}
+				]
+			},
+			line
+		);
 	const pointId = requireElement(pos[0], 'point', line);
 	const circleArg = pos[1];
 	if (circleArg.type !== 'element' || circleArg.elementType !== 'cercle')
-		throw new DslRuntimeError('puissance() attend un cercle comme 2e argument', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`puissance()` : le 2ᵉ argument doit être un cercle.',
+				hint: 'Exemple : `puissance(M, c)` où `c = cercle(O, rayon=r)`.'
+			},
+			line
+		);
 	const circleId = circleArg.figureId;
 	const id = figure.createScalarPower(pointId, circleId, { label });
 	return { figureId: id, symbolType: 'scalar' };
@@ -2055,30 +2830,74 @@ HANDLERS.set('puissance', handlePuissance);
 function handleStyle(ctx: BuiltinCtx): null {
 	const { pos, named, figure, line } = ctx;
 	if (pos.length < 1)
-		throw new DslRuntimeError('style() attend au moins 1 argument (element)', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`style()` attend au moins 1 argument (l’élément à styler).',
+				forms: [
+					{
+						syntax: 'style(P, couleur="red", taille=4)',
+						description: 'modifie le style visuel d’un élément existant'
+					}
+				]
+			},
+			line
+		);
 	const elId = requireElement(pos[0], 'element', line);
 	applyInlineStyle(figure, elId, named, line);
 	return null;
 }
 HANDLERS.set('style', handleStyle);
 
+const LONGUEUR_FORMS = [
+	{
+		syntax: 'longueur(c)',
+		description: 'longueur d’arc totale de la courbe paramétrique `c`'
+	},
+	{
+		syntax: 'longueur(c, t1, t2)',
+		description: 'longueur d’arc de `c` sur l’intervalle `[t1 ; t2]`'
+	}
+];
+
 function handleLongueur(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, toGeoValue, line, label } = ctx;
 	if (pos.length === 0) {
-		throw new DslRuntimeError('longueur() attend 1 ou 3 arguments (c) ou (c, t1, t2)', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`longueur()` : aucun argument fourni.',
+				forms: LONGUEUR_FORMS
+			},
+			line
+		);
 	}
 	if (pos.length === 2) {
-		throw new DslRuntimeError('longueur(): t1 et t2 doivent etre fournis ensemble', line);
+		throw new DslRuntimeError(
+			{
+				summary: '`longueur()` : `t1` et `t2` doivent être fournis ensemble.',
+				hint: 'Utilisez `longueur(c)` pour la longueur totale, ou `longueur(c, t1, t2)` pour un sous-intervalle.',
+				forms: LONGUEUR_FORMS
+			},
+			line
+		);
 	}
 	if (pos.length > 3) {
-		throw new DslRuntimeError('longueur() attend 1 ou 3 arguments (c) ou (c, t1, t2)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`longueur()\` : ${pos.length} arguments reçus, attendu 1 ou 3.`,
+				forms: LONGUEUR_FORMS
+			},
+			line
+		);
 	}
 
 	const lcId = requireElement(pos[0], 'courbe', line);
 	const lcEl = figure.getElementById(lcId);
 	if (!lcEl || lcEl.type !== 'parametricCurve') {
 		throw new DslRuntimeError(
-			'longueur(): le premier argument doit etre une courbe parametrique',
+			{
+				summary: '`longueur()` : le 1er argument doit être une courbe paramétrique.',
+				hint: 'Pour mesurer un segment, utilisez `distance(A, B)`. Convertissez vos courbes au format paramétrique si besoin.'
+			},
 			line
 		);
 	}
@@ -2092,7 +2911,13 @@ function handleLongueur(ctx: BuiltinCtx): BuiltinResult {
 			const t1Num = geoToNumber(tMinParam);
 			const t2Num = geoToNumber(tMaxParam);
 			if (Number.isFinite(t1Num) && Number.isFinite(t2Num) && t1Num >= t2Num) {
-				throw new DslRuntimeError('longueur(): t2 doit etre superieur a t1', line);
+				throw new DslRuntimeError(
+					{
+						summary: '`longueur()` : `t2` doit être strictement supérieur à `t1`.',
+						hint: '`t1` est la borne inférieure, `t2` la borne supérieure.'
+					},
+					line
+				);
 			}
 		}
 	}
@@ -2105,7 +2930,18 @@ HANDLERS.set('longueur', handleLongueur);
 function handleCourbure(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, toGeoValue, line, label } = ctx;
 	if (pos.length !== 2) {
-		throw new DslRuntimeError('courbure() attend 2 arguments (c, t0)', line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`courbure()\` attend 2 arguments (c, t0), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'courbure(c, t0)',
+						description: 'courbure signée de la courbe paramétrique `c` au paramètre `t0`'
+					}
+				]
+			},
+			line
+		);
 	}
 	const kcId = requireElement(pos[0], 'courbe', line);
 	const kcEl = figure.getElementById(kcId);

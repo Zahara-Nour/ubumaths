@@ -394,7 +394,7 @@ describe('parametric calculus — DSL errors (E)', () => {
 			runC(
 				`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI})\n` + `L = longueur(c, 1)`
 			)
-		).toThrow(/t1 et t2/);
+		).toThrow(/`?t1`? et `?t2`?/);
 	});
 
 	it('E2. longueur(c, 2, 1) with t1 >= t2 → DslRuntimeError mentioning "t2 doit etre superieur"', () => {
@@ -404,7 +404,7 @@ describe('parametric calculus — DSL errors (E)', () => {
 				`c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=${TWO_PI})\n` +
 					`L = longueur(c, 2, 1)`
 			)
-		).toThrow(/t2 doit etre superieur/);
+		).toThrow(/`?t2`? doit (etre|être) (strictement )?sup(e|é)rieur/);
 	});
 });
 

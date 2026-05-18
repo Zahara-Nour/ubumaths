@@ -161,7 +161,7 @@ describe('transforme() — errors', () => {
 			runDsl(
 				['O = point(0, 0)', 'r = rotation(angle=90, centre=O)', 'B = transforme(r, 42)'].join('\n')
 			)
-		).toThrow(/element/);
+		).toThrow(/(e|é)l(e|é)ment/);
 	});
 
 	it('throws with wrong number of arguments', () => {
