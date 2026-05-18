@@ -21,20 +21,22 @@ courbes cartesiennes/parametriques/polaires, transformations, intersections.
 
 ## Chiffres cles (2026-05-18)
 
-| Indicateur                   | Valeur         |
-| ---------------------------- | -------------- |
-| Fichiers TS total            | 209            |
-| Fichiers source (hors tests) | 69             |
-| Fichiers de test             | 144            |
-| Tests Vitest                 | 3 019          |
-| Sous-dossiers fonctionnels   | 9              |
-| Lignes source (estimation)   | ~67 800        |
-| Lignes test (estimation)     | ~38 700        |
-| Posture securite globale     | **Acceptable** |
-| Severite dette technique     | **Major**      |
+| Indicateur                   | Valeur                        |
+| ---------------------------- | ----------------------------- |
+| Fichiers TS total            | 208                           |
+| Fichiers source (hors tests) | 65                            |
+| Fichiers de test             | 143                           |
+| Tests Vitest                 | 2 988                         |
+| Sous-dossiers fonctionnels   | 9                             |
+| Lignes source (estimation)   | ~67 000                       |
+| Lignes test (estimation)     | ~38 700                       |
+| Posture securite globale     | **Acceptable**                |
+| Severite dette critique      | **Resolved** (3/3 corriges)   |
+| Hot paths principaux         | **Memoises** (6/6 quick wins) |
 
 > Chiffres verifies via `find src/lib/geometry-core -name "*.ts"` et
 > `grep -rE "^\s*(it\|test)\(" --include="*.test.ts"`.
+> Le delta vs l'audit initial (209 TS / 69 src / 140 test / 2 986 tests) s'explique par : `singularity-warn.ts` + 2 tests deplaces vers `$lib/mathAST/analysis/` ; +5 nouveaux fichiers de test livres en session (parametric-newton, marching-squares-cache, locus-cache, parametric-sampling-cache, osculating-circle-export).
 
 ---
 
@@ -145,9 +147,17 @@ Pour chaque sous-dossier du module, les documents qui en parlent :
 
 ## Action items prioritaires (cross-cutting)
 
-> **Session 2026-05-18 close.** 9 items adressés (5 perf + 2 securite + 1 partiel + tests parametric-newton/bezier ajoutes partiellement). Reste en cours : 1 SECURITE HIGH hors module, 2 QUALITE CRITIQUE (`_executeBuiltinInner` switch + `GeoOsculatingCircle` renderers), 1 TESTS (`bezier.ts`), et 1 PERF partiel (`intersection-1d` warm-start, jugé non rentable seul).
+> **Session 2026-05-18 close — bilan final.**
 >
-> **Etat perf** : 6 quick wins livrees, hot paths principaux memoises. **Pas d'autre optim sans profiling reel** — items restants (#3 SVG path, #6 version granulaire, #5 intersection-1d) ont un ROI marginal post-cache. Voir `performance.md` section 9 pour le detail.
+> **12 commits livres.** Tous les items critiques de l'audit (3/3) sont resolus, et 6/6 quick wins perf sont livrees. Le module est dans un etat tres sain — le seul item HIGH restant est hors scope geometry-core (`new Function()` dans `src/lib/utils/game/challenge-variables.ts:68-76`).
+>
+> **Critiques (3/3)** : cycle `graph`↔`dsl` brise (`singularity-warn` deplace vers `$lib/mathAST/analysis/`) · `GeoOsculatingCircle` rendu dans les 3 exporters · `_executeBuiltinInner` switch de 2 045 lignes → dispatcher Map de 27 lignes (62 handlers extraits).
+>
+> **Quick wins perf (6/6)** : cache derivees secondes · mutable-env spreads · warm-start Newton drag · cache `marchingSquares` (40 000 evals/render evites) · cache `computeLocusCurve` · cache `computeParametricCurveSampling`.
+>
+> **Securite** : posture **Acceptable** confirmee. 2 fixes MEDIUM/LOW livres (cap `PARSE_CACHE`, garde longueur DSL). 1 HIGH hors module documente.
+>
+> **Reste en queue** : 1 SECURITE HIGH hors module (challenge-variables.ts) · 1 TESTS (bezier.ts unit tests) · 1 PERF partiel jugé non rentable seul (warm-start intersection-1d) · items perf #3 #6 differes (ROI marginal post-caching, recommandation : profiling reel avant tout autre travail).
 
 1. **[SECURITE HIGH]** Remplacer `new Function()` par `compile()` dans
    `src/lib/utils/game/challenge-variables.ts:68-76`.
@@ -212,6 +222,61 @@ docs/ref/<module-name>/
   fondamental.
 - **code-quality.md / tests.md / performance.md / security.md** : audit
   complet recommande **tous les 3-6 mois** ou avant une release majeure.
+
+---
+
+## Journal de session 2026-05-18
+
+Audit complet du module + corrections en 12 commits (~1 jour de travail), du plus impactant au plus structurel.
+
+### Phase 1 — Audit (1 commit)
+
+| Hash        | Sujet                                                                                                     |
+| ----------- | --------------------------------------------------------------------------------------------------------- |
+| `3f78f8597` | Suite d'audit (5 docs + README + `CLAUDE.md`) ; +2 fixes securite (`PARSE_CACHE` cap, garde longueur DSL) |
+
+### Phase 2 — Perf (7 commits)
+
+| Hash        | Sujet                                                                |
+| ----------- | -------------------------------------------------------------------- |
+| `91a17e4b9` | Cache derivees secondes (QW #1) — recompilation evitee a chaque tick |
+| `f081c179f` | Mutable env spreads (QW #2) — ~1 200 allocations/render evitees      |
+| `b4ec15cfa` | Warm-start Newton drag closest-point (QW #3) — 8:1 reduction         |
+| `dff2cf706` | Memoize `marchingSquares` (QW #4) — 40 000 evals/render evites       |
+| `7c2e9fea0` | Memoize `computeLocusCurve` (QW #5)                                  |
+| `e6b6f7d89` | Memoize `computeParametricCurveSampling` (QW #6)                     |
+| `cd5ea137b` | Close perf session — doc des items differes comme marginaux          |
+
+### Phase 3 — Dette technique critique (4 commits)
+
+| Hash        | Sujet                                                                      |
+| ----------- | -------------------------------------------------------------------------- |
+| `1fe34c9c2` | Cycle `graph`↔`dsl` brise (`singularity-warn` → `$lib/mathAST/analysis/`) |
+| `d7bb2a1e1` | `GeoOsculatingCircle` rendu dans SVG / TikZ / Typst (bug export muet)      |
+| `871f53be9` | Builtin handlers commit 1/2 — infra + 10 plus gros cases extraits          |
+| `016bc86e1` | Builtin handlers commit 2/2 — 49 cases restants, switch supprime           |
+
+### Bilan chiffre
+
+| Avant                                           | Apres                                             |
+| ----------------------------------------------- | ------------------------------------------------- |
+| Severite dette critique : Major (3 items)       | Resolved (0 item)                                 |
+| `_executeBuiltinInner` : 2 045 lignes, 62 cases | 27 lignes, dispatcher Map                         |
+| `marchingSquares` : 40 000 evals/render         | Cache hit en drag commun                          |
+| Newton drag : 8 starts × 20 iter                | 1 start (warm) + 2 bornes                         |
+| Cycle `graph` → `dsl`                           | Plus aucune fleche source-level                   |
+| `GeoOsculatingCircle` exports                   | Muets → corrects en SVG/TikZ/Typst                |
+| Tests                                           | 2 986 → 2 988 (+5 fichiers nouveaux, -2 deplaces) |
+
+### Recommandation prochaine session
+
+**Pas de travail aveugle.** Le module est tres sain. Les prochaines optims devraient etre guidees par un profiling reel (Chrome DevTools sur une figure stress : slider animant locus + parametric + intersection parametrique × parametrique). Voir `performance.md` section 9 "Stop sur la perf en aveugle".
+
+Items restants non resolus, documentes mais non urgents :
+
+- `[SECURITE HIGH]` `new Function()` dans `src/lib/utils/game/challenge-variables.ts:68-76` — **hors scope geometry-core**, mais critique pour la securite du site.
+- `[TESTS]` unit tests pour `rendering/bezier.ts` (Catmull-Rom, 414 lignes sans test direct).
+- `[PERF marginal]` warm-start `parametric-intersection-1d.ts` (refonte API multi-roots), cache SVG path final, version granulaire par element — tous ROI insuffisant sans evidence de bottleneck.
 
 ---
 
