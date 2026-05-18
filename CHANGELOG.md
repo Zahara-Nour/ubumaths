@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.91](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.90...v0.8.91) (2026-05-18)
+
+### ✨ Features
+
+- **python-exercises:** block run/submit while locked zones are untouched ([dd245f7](https://github.com/Zahara-Nour/ubumaths/commit/dd245f769fb4f2dcc86f14cb90c0d76598770c6d))
+- **python-exercises:** disable run/submit/call buttons with tooltip on unfilled zones ([c69a4cb](https://github.com/Zahara-Nour/ubumaths/commit/c69a4cbdb88cc455e20cdf059f97da34e71d1b5d))
+- **python-exercises:** move call-function form into the editor toolbar ([124e7dc](https://github.com/Zahara-Nour/ubumaths/commit/124e7dc5373b7b76dd4ae41fbe1442a86e7358fc))
+- **python-exercises:** use ExerciseRichTextEditor for instructions field ([2a2ab7d](https://github.com/Zahara-Nour/ubumaths/commit/2a2ab7d2e4e186e09d94c0ff7407eba3f0761280))
+
+### 🐛 Bug Fixes
+
+- **python-exercises:** force "false" as default of locked-zone while ([2bae8fb](https://github.com/Zahara-Nour/ubumaths/commit/2bae8fbaec5a3ec65411e7253d167b2a8cd0f89c))
+- **python-exercises:** hide function-name notation when the call takes no args ([6fe28ba](https://github.com/Zahara-Nour/ubumaths/commit/6fe28ba4a5ddc17b411cafa8fe02b77744d3564d))
+- **python-exercises:** wrap zones tooltip in Tooltip.Provider ([24560f6](https://github.com/Zahara-Nour/ubumaths/commit/24560f61fa1815297b7820db31377dc0e9a9ab3b))
+
+### 📚 Documentation
+
+- **python-exercises:** document V1.1 UX patch (zones-blocked guard + toolbar call form) ([e91c74f](https://github.com/Zahara-Nour/ubumaths/commit/e91c74fb503366403755afbe064909464f4cd46e))
+
 ### [0.8.90](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.89...v0.8.90) (2026-05-13)
 
 ### [0.8.89](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.88...v0.8.89) (2026-05-13)
