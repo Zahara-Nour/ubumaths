@@ -23,7 +23,9 @@ import {
 	negativeInfinity as negInfinityNode
 } from '../factory';
 import { numericNode } from '../common/numeric';
-import { evaluateLimit } from '../limits';
+// Direct import (bypassing the limits barrel) to avoid a Rollup chunk-cycle
+// warning between `limits/index.ts` and `limits/evaluate.ts`.
+import { evaluateLimit } from '../limits/evaluate';
 import { getEndpoints, buildInterval } from '$lib/math/intervals';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { tryConvertConditionToInterval } from './algebra';

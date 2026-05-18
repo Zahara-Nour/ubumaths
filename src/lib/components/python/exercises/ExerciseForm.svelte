@@ -86,6 +86,7 @@
 	// spinner). The error banner uses the debounced value too — without
 	// it, every intermediate keystroke inside a marker would flash a red
 	// "malformed" message before the teacher finishes the syntax.
+	// svelte-ignore state_referenced_locally
 	let debouncedStarterCode = $state(initialForm.starter_code ?? '');
 	$effect(() => {
 		const code = form.starter_code;

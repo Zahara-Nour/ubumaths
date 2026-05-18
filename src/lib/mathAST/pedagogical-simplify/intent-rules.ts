@@ -23,14 +23,18 @@
 import type { Rule } from '../pattern/types';
 import {
 	absSimplifyRules,
-	algebraicFactoringRules,
-	algebraicExpandingRules,
 	hypSimplifyRules,
 	logExpRules,
 	powerRules,
 	sqrtRules,
 	trigSimplifyRules
 } from '../pattern/rule-sets';
+// Direct import (bypassing the rule-sets barrel) to avoid a Rollup chunk-cycle
+// warning between `rule-sets/index.ts` and `algebraic-identities.ts`.
+import {
+	algebraicFactoringRules,
+	algebraicExpandingRules
+} from '../pattern/rule-sets/algebraic-identities';
 import { distributeBinomialProduct } from './pedagogical-rules';
 import type { PedagogicalSimplifyCategory, SimplifyIntent } from './types';
 
