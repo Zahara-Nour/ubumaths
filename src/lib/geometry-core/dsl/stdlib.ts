@@ -38,23 +38,10 @@ macro hauteur(A, B, C):
 # NOTE : parallelogramme, rectangle, carre, losange ont été migrés
 # en builtins (dsl/builtins.ts).
 
-# ─── Polygones ───────────────────────────────────────────────
-
-macro polygone_regulier(centre, rayon, n):
-    P[0] = point(centre.x + rayon, centre.y)
-    pour i de 1 a n - 1:
-        P[i] = rotation(P[0], centre=centre, angle=i * 360 / n)
-    pour i de 0 a n - 1:
-        segment(P[i], P[(i + 1) % n])
-    retourne P
-
-macro etoile(centre, rayon, n, saut=2):
-    P[0] = point(centre.x + rayon, centre.y)
-    pour i de 1 a n - 1:
-        P[i] = rotation(P[0], centre=centre, angle=i * 360 / n)
-    pour i de 0 a n - 1:
-        segment(P[i], P[(i + saut) % n])
-    retourne P
+# NOTE : polygone_regulier et etoile ont été migrés en builtins
+# (dsl/builtins.ts). Breaking change : ils retournent maintenant un
+# polygone unique (au lieu d'un array de points). Sommets accessibles
+# via sommet(p, i) et sommets(p).
 
 # ─── Corde ───────────────────────────────────────────────────
 

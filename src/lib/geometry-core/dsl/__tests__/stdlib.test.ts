@@ -247,46 +247,61 @@ describe('stdlib — losange', () => {
 });
 
 describe('stdlib — polygone_regulier', () => {
-	it('creates hexagon with 6 segments', () => {
-		const { figure } = runDsl(['O = point(0, 0)', 'P = polygone_regulier(O, 3, 6)'].join('\n'));
-		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(6);
+	it('hexagon has a polygon with 6 vertices', () => {
+		const { figure, symbols } = runDsl(
+			['O = point(0, 0)', 'p = polygone_regulier(O, 3, 6)'].join('\n')
+		);
+		expect(symbols.get('p')!.type).toBe('polygone');
+		const polyId = symbols.get('p')!.figureId!;
+		const el = figure.getElementById(polyId) as { dependsOn: readonly string[] };
+		expect(el.dependsOn.length).toBe(6);
 	});
 
-	it('creates pentagon with 5 segments', () => {
-		const { figure } = runDsl(['O = point(0, 0)', 'P = polygone_regulier(O, 3, 5)'].join('\n'));
-		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(5);
+	it('pentagon has a polygon with 5 vertices', () => {
+		const { figure, symbols } = runDsl(
+			['O = point(0, 0)', 'p = polygone_regulier(O, 3, 5)'].join('\n')
+		);
+		const el = figure.getElementById(symbols.get('p')!.figureId!) as {
+			dependsOn: readonly string[];
+		};
+		expect(el.dependsOn.length).toBe(5);
 	});
 
 	it('all vertices equidistant from center', () => {
 		const { figure, symbols } = runDsl(
-			['O = point(0, 0)', 'P = polygone_regulier(O, 3, 6)'].join('\n')
+			['O = point(0, 0)', 'p = polygone_regulier(O, 3, 6)'].join('\n')
 		);
 		const o = pos(figure, symbols, 'O');
-		// P is a list, access P[0] through P[5]
-		for (let i = 0; i < 6; i++) {
-			const entry = symbols.getIndexed('P', i);
-			if (!entry?.figureId) continue;
-			const p = figure.getPosition(entry.figureId);
-			if (!p) continue;
-			const d = dist(o, { x: geoToNumber(p.x), y: geoToNumber(p.y) });
+		const polyEl = figure.getElementById(symbols.get('p')!.figureId!) as {
+			dependsOn: readonly string[];
+		};
+		for (const vId of polyEl.dependsOn) {
+			const v = figure.getPosition(vId)!;
+			const d = dist(o, { x: geoToNumber(v.x), y: geoToNumber(v.y) });
 			expect(d).toBeCloseTo(3, 2);
 		}
 	});
 });
 
 describe('stdlib — etoile', () => {
-	it('creates 5-pointed star', () => {
-		const { figure } = runDsl(['O = point(0, 0)', 'P = etoile(O, 3, 5)'].join('\n'));
-		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(5);
+	it('creates 5-pointed star polygon with 5 vertex slots in the star order', () => {
+		const { figure, symbols } = runDsl(['O = point(0, 0)', 'p = etoile(O, 3, 5)'].join('\n'));
+		expect(symbols.get('p')!.type).toBe('polygone');
+		const el = figure.getElementById(symbols.get('p')!.figureId!) as {
+			dependsOn: readonly string[];
+		};
+		expect(el.dependsOn.length).toBe(5);
+		void figure;
 	});
 
-	it('creates 6-pointed star (Star of David)', () => {
-		const { figure } = runDsl(['O = point(0, 0)', 'P = etoile(O, 3, 6)'].join('\n'));
-		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(6);
+	it('creates degenerate inner triangle when gcd(saut, n)>1 (n=6, saut=2 → 3 distinct vertices)', () => {
+		const { figure, symbols } = runDsl(['O = point(0, 0)', 'p = etoile(O, 3, 6)'].join('\n'));
+		// For n=6, saut=2 → cycle is 0, 2, 4 then closes back to 0
+		expect(symbols.get('p')!.type).toBe('polygone');
+		const el = figure.getElementById(symbols.get('p')!.figureId!) as {
+			dependsOn: readonly string[];
+		};
+		expect(el.dependsOn.length).toBe(3);
 	});
 });
 
