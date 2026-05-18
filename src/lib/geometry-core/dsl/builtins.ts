@@ -29,7 +29,8 @@ import {
 	compile,
 	toCustom,
 	getVariables,
-	substitute
+	substitute,
+	piConstant
 } from '$lib/mathAST';
 import type { MathNode, CompiledFn } from '$lib/mathAST';
 import {
@@ -4140,11 +4141,6 @@ HANDLERS.set('trace', handleTrace);
 // The DSL `macro foo(...): ...` mechanism remains intact, reserved for
 // user-defined construction recordings.
 
-/** Create a free point at the given math coordinates, hidden from the figure. */
-function createHiddenPoint(figure: Figure, x: number, y: number): string {
-	return figure.createFreePoint({ x: numeric(x), y: numeric(y) }, { visible: false });
-}
-
 /** Resolve a positional point arg to its math (x, y) coordinates. */
 function pointXY(
 	figure: Figure,
@@ -4186,21 +4182,116 @@ function requireNPoints(
 	return { ids, coords };
 }
 
+/**
+ * Exact rotation angle = (num/denom) * pi (in radians).
+ *
+ * For remarkable values (pi/2, pi/3, pi/4, pi/6), MathAST evaluate(mode:'exact')
+ * knows cos/sin exactly, so `figure.createRotatedPoint(P, C, exactPiFraction(...))`
+ * keeps the derived point's coordinates exact when the source coordinates are exact.
+ *
+ * cf. `geometry/transformations.ts` (geoCos / geoSin).
+ */
+function exactPiFraction(num: number, denom: number): GeoValue {
+	if (num === 0) return numeric(0);
+	let numerator: MathNode;
+	if (num === 1) numerator = piConstant();
+	else if (num === -1) numerator = opposite(piConstant());
+	else numerator = multiply(mathNumber(num), piConstant(), 'implicit');
+	if (denom === 1) return exact(numerator);
+	return exact(divide(numerator, mathNumber(denom), 'fraction'));
+}
+
+/** Pre-built constants for the most common angles. */
+const PI_OVER_2 = exactPiFraction(1, 2);
+const PI_OVER_3 = exactPiFraction(1, 3);
+const NEG_PI_OVER_2 = exactPiFraction(-1, 2);
+
+/** Create a hidden derived point and ensure it is not visible. */
+function createHiddenMidpoint(figure: Figure, aId: string, bId: string): string {
+	const id = figure.createMidpoint(aId, bId);
+	figure.hideElement(id);
+	return id;
+}
+
+function createHiddenRotatedPoint(
+	figure: Figure,
+	sourceId: string,
+	centerId: string,
+	angle: ScalarParam
+): string {
+	const id = figure.createRotatedPoint(sourceId, centerId, angle, { visible: false });
+	return id;
+}
+
+function createHiddenTranslatedPoint(
+	figure: Figure,
+	sourceId: string,
+	vectorStartId: string,
+	vectorEndId: string
+): string {
+	const id = figure.createTranslatedPoint(sourceId, vectorStartId, vectorEndId, { visible: false });
+	return id;
+}
+
+function createHiddenLine(figure: Figure, aId: string, bId: string): string {
+	const id = figure.createLine(aId, bId);
+	figure.hideElement(id);
+	return id;
+}
+
+function createHiddenIntersectionLL(figure: Figure, l1Id: string, l2Id: string): string {
+	const id = figure.createIntersectionLL(l1Id, l2Id);
+	figure.hideElement(id);
+	return id;
+}
+
+/** Build the perpendicular bisector of [AB] as a hidden dynamic line. */
+function buildPerpendicularBisector(figure: Figure, aId: string, bId: string): string {
+	const M = createHiddenMidpoint(figure, aId, bId);
+	const H = createHiddenRotatedPoint(figure, aId, M, PI_OVER_2);
+	return createHiddenLine(figure, M, H);
+}
+
+/** Build the altitude from vertex A in triangle ABC as a hidden dynamic line. */
+function buildAltitudeFromA(figure: Figure, aId: string, bId: string, cId: string): string {
+	// Translate A by vector BC → Q  (so vec AQ = BC, line AQ // line BC)
+	const Q = createHiddenTranslatedPoint(figure, aId, bId, cId);
+	// Rotate Q around A by π/2 → R  (so AR ⊥ AQ, hence AR ⊥ BC)
+	const R = createHiddenRotatedPoint(figure, Q, aId, PI_OVER_2);
+	return createHiddenLine(figure, aId, R);
+}
+
+/** Build the angular bisector at vertex V of angle AVB as a hidden dynamic line (compass construction). */
+function buildAngularBisector(figure: Figure, aId: string, vId: string, bId: string): string {
+	const dVA = figure.createScalarDistance(vId, aId);
+	const dVB = figure.createScalarDistance(vId, bId);
+	const ratio = figure.createScalarExpression(
+		(s) => {
+			const a = s.get(dVA);
+			const b = s.get(dVB);
+			if (a == null || b == null || b === 0) return 1;
+			return a / b;
+		},
+		[dVA, dVB]
+	);
+	const Bprime = figure.createDilatedPoint(bId, vId, { scalarRef: ratio }, { visible: false });
+	const M = createHiddenMidpoint(figure, aId, Bprime);
+	return createHiddenLine(figure, vId, M);
+}
+
 // ─── 1. mediatrice(A, B) → droite ───────────────────────────────────
 
 function handleMediatrice(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
-	const { coords } = requireNPoints(ctx, 2, ['A', 'B'], 'mediatrice', {
+	const { ids, coords } = requireNPoints(ctx, 2, ['A', 'B'], 'mediatrice', {
 		syntax: 'mediatrice(A, B)',
 		description: 'médiatrice du segment `[AB]`'
 	});
+	const [Aid, Bid] = ids;
 	const [A, B] = coords;
-	const mx = (A.x + B.x) / 2;
-	const my = (A.y + B.y) / 2;
-	// Perpendicular direction to AB : rotate (Bx-Ax, By-Ay) by 90° → (-(By-Ay), Bx-Ax)
-	const nx = -(B.y - A.y);
-	const ny = B.x - A.x;
-	if (nx * nx + ny * ny < 1e-30)
+	const ddx = B.x - A.x;
+	const ddy = B.y - A.y;
+	if (ddx * ddx + ddy * ddy < 1e-30)
 		throw new DslRuntimeError(
 			{
 				summary:
@@ -4208,8 +4299,9 @@ function handleMediatrice(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	const M = createHiddenPoint(figure, mx, my);
-	const H = createHiddenPoint(figure, mx + nx, my + ny);
+	// M = midpoint(A, B), H = rotation of A around M by π/2 → H is on the perpendicular at M
+	const M = createHiddenMidpoint(figure, Aid, Bid);
+	const H = createHiddenRotatedPoint(figure, Aid, M, PI_OVER_2);
 	const id = figure.createLine(M, H, { label });
 	return { figureId: id, symbolType: 'droite' };
 }
@@ -4223,8 +4315,8 @@ function handlePerpendiculaire(ctx: BuiltinCtx): BuiltinResult {
 		syntax: 'perpendiculaire(P, A, B)',
 		description: 'droite passant par `P`, perpendiculaire à la droite `(AB)`'
 	});
-	const [P, A, B] = coords;
-	const Pid = ids[0];
+	const [Pid, Aid, Bid] = ids;
+	const [, A, B] = coords;
 	const dx = B.x - A.x;
 	const dy = B.y - A.y;
 	if (dx * dx + dy * dy < 1e-30)
@@ -4232,10 +4324,10 @@ function handlePerpendiculaire(ctx: BuiltinCtx): BuiltinResult {
 			{ summary: '`perpendiculaire(P, A, B)` : `A` et `B` sont confondus, direction indéfinie.' },
 			line
 		);
-	const nx = -dy;
-	const ny = dx;
-	const Q = createHiddenPoint(figure, P.x + nx, P.y + ny);
-	const id = figure.createLine(Pid, Q, { label });
+	// Q = P + (B - A) → (PQ) // (AB). Then R = rotation of Q around P by π/2 → (PR) ⊥ (AB).
+	const Q = createHiddenTranslatedPoint(figure, Pid, Aid, Bid);
+	const R = createHiddenRotatedPoint(figure, Q, Pid, PI_OVER_2);
+	const id = figure.createLine(Pid, R, { label });
 	return { figureId: id, symbolType: 'droite' };
 }
 HANDLERS.set('perpendiculaire', handlePerpendiculaire);
@@ -4248,8 +4340,8 @@ function handleParallele(ctx: BuiltinCtx): BuiltinResult {
 		syntax: 'parallele(P, A, B)',
 		description: 'droite passant par `P`, parallèle à la droite `(AB)`'
 	});
-	const [P, A, B] = coords;
-	const Pid = ids[0];
+	const [Pid, Aid, Bid] = ids;
+	const [, A, B] = coords;
 	const dx = B.x - A.x;
 	const dy = B.y - A.y;
 	if (dx * dx + dy * dy < 1e-30)
@@ -4257,7 +4349,8 @@ function handleParallele(ctx: BuiltinCtx): BuiltinResult {
 			{ summary: '`parallele(P, A, B)` : `A` et `B` sont confondus, direction indéfinie.' },
 			line
 		);
-	const Q = createHiddenPoint(figure, P.x + dx, P.y + dy);
+	// Q = P + (B - A): (PQ) parallèle à (AB).
+	const Q = createHiddenTranslatedPoint(figure, Pid, Aid, Bid);
 	const id = figure.createLine(Pid, Q, { label });
 	return { figureId: id, symbolType: 'droite' };
 }
@@ -4267,21 +4360,25 @@ HANDLERS.set('parallele', handleParallele);
 
 function handleMediane(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, label } = ctx;
-	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'mediane', {
+	const { ids } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'mediane', {
 		syntax: 'mediane(A, B, C)',
 		description: 'médiane du triangle `ABC` issue de `A` (segment vers le milieu de `[BC]`)'
 	});
-	const [, B, C] = coords;
-	const Aid = ids[0];
-	const Mx = (B.x + C.x) / 2;
-	const My = (B.y + C.y) / 2;
-	const M = createHiddenPoint(figure, Mx, My);
+	const [Aid, Bid, Cid] = ids;
+	const M = createHiddenMidpoint(figure, Bid, Cid);
 	const id = figure.createSegment(Aid, M, { label });
 	return { figureId: id, symbolType: 'segment' };
 }
 HANDLERS.set('mediane', handleMediane);
 
 // ─── 5. bissectrice(A, V, B) → droite ───────────────────────────────
+//
+// Compass construction (dynamic) :
+//   B' = dilation of B around V by ratio |VA|/|VB|  →  on the half-line (V,B), |VB'| = |VA|
+//   M  = midpoint(A, B')                            →  M is on the angular bisector
+//   bisector = line(V, M)
+//
+// All intermediates use factory methods, so a drag of A, V, or B propagates correctly.
 
 function handleBissectrice(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
@@ -4289,8 +4386,8 @@ function handleBissectrice(ctx: BuiltinCtx): BuiltinResult {
 		syntax: 'bissectrice(A, V, B)',
 		description: 'bissectrice de l’angle `AVB` (sommet `V`)'
 	});
+	const [Aid, Vid, Bid] = ids;
 	const [A, V, B] = coords;
-	const Vid = ids[1];
 	const uX = A.x - V.x;
 	const uY = A.y - V.y;
 	const wX = B.x - V.x;
@@ -4305,10 +4402,12 @@ function handleBissectrice(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	// Unit vectors from V toward A and B ; bisector direction = sum of unit vectors.
-	const bx = uX / uLen + wX / wLen;
-	const by = uY / uLen + wY / wLen;
-	if (bx * bx + by * by < 1e-15)
+	// Cross-direction check (opposed half-lines → ambiguous bisector)
+	const uHatX = uX / uLen;
+	const uHatY = uY / uLen;
+	const wHatX = wX / wLen;
+	const wHatY = wY / wLen;
+	if ((uHatX + wHatX) ** 2 + (uHatY + wHatY) ** 2 < 1e-15)
 		throw new DslRuntimeError(
 			{
 				summary:
@@ -4316,8 +4415,20 @@ function handleBissectrice(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	const D = createHiddenPoint(figure, V.x + bx, V.y + by);
-	const id = figure.createLine(Vid, D, { label });
+	const dVA = figure.createScalarDistance(Vid, Aid);
+	const dVB = figure.createScalarDistance(Vid, Bid);
+	const ratio = figure.createScalarExpression(
+		(scalars) => {
+			const a = scalars.get(dVA);
+			const b = scalars.get(dVB);
+			if (a == null || b == null || b === 0) return 1;
+			return a / b;
+		},
+		[dVA, dVB]
+	);
+	const Bprime = figure.createDilatedPoint(Bid, Vid, { scalarRef: ratio }, { visible: false });
+	const M = createHiddenMidpoint(figure, Aid, Bprime);
+	const id = figure.createLine(Vid, M, { label });
 	return { figureId: id, symbolType: 'droite' };
 }
 HANDLERS.set('bissectrice', handleBissectrice);
@@ -4338,19 +4449,20 @@ HANDLERS.set('triangle', handleTriangle);
 // ─── 7. triangle_equilateral(A, B) → polygone ───────────────────────
 
 function handleTriangleEquilateral(ctx: BuiltinCtx): BuiltinResult {
-	const { figure, label } = ctx;
+	const { figure, line, label } = ctx;
 	const { ids, coords } = requireNPoints(ctx, 2, ['A', 'B'], 'triangle_equilateral', {
 		syntax: 'triangle_equilateral(A, B)',
 		description: 'triangle équilatéral de côté `[AB]` (3ᵉ sommet calculé par rotation à 60°)'
 	});
 	const [A, B] = coords;
-	// C = rotation of B around A by 60° (counter-clockwise)
-	const rad = Math.PI / 3;
-	const dx = B.x - A.x;
-	const dy = B.y - A.y;
-	const Cx = A.x + dx * Math.cos(rad) - dy * Math.sin(rad);
-	const Cy = A.y + dx * Math.sin(rad) + dy * Math.cos(rad);
-	const C = createHiddenPoint(figure, Cx, Cy);
+	if (Math.hypot(B.x - A.x, B.y - A.y) < 1e-15)
+		throw new DslRuntimeError(
+			{ summary: '`triangle_equilateral(A, B)` : `A` et `B` sont confondus, côté nul.' },
+			line
+		);
+	// C = rotation of B around A by π/3 (counter-clockwise). Exact angle preserves
+	// exactness of derived coordinates when A and B have exact coordinates.
+	const C = createHiddenRotatedPoint(figure, ids[1], ids[0], PI_OVER_3);
 	const id = figure.createPolygon([ids[0], ids[1], C], { label });
 	return { figureId: id, symbolType: 'polygone' };
 }
@@ -4366,17 +4478,17 @@ function handleTriangleIsocele(ctx: BuiltinCtx): BuiltinResult {
 	});
 	const angleDeg = named.has('angle') ? requireNumber(named.get('angle')!, 'angle', line) : 40;
 	const [A, B] = coords;
+	if (Math.hypot(B.x - A.x, B.y - A.y) < 1e-15)
+		throw new DslRuntimeError(
+			{ summary: '`triangle_isocele(A, B, …)` : `A` et `B` sont confondus, côté nul.' },
+			line
+		);
 	// Preserve original macro semantics: C = rotation of midpoint(A,B) around A
 	// by (90 - angle/2) — interpreted in current angle mode.
-	const Mx = (A.x + B.x) / 2;
-	const My = (A.y + B.y) / 2;
+	const M = createHiddenMidpoint(figure, ids[0], ids[1]);
 	const rotAngleVal = 90 - angleDeg / 2;
 	const rad = toRadians(rotAngleVal, angleMode);
-	const dx = Mx - A.x;
-	const dy = My - A.y;
-	const Cx = A.x + dx * Math.cos(rad) - dy * Math.sin(rad);
-	const Cy = A.y + dx * Math.sin(rad) + dy * Math.cos(rad);
-	const C = createHiddenPoint(figure, Cx, Cy);
+	const C = createHiddenRotatedPoint(figure, M, ids[0], numeric(rad));
 	const id = figure.createPolygon([ids[0], ids[1], C], { label });
 	return { figureId: id, symbolType: 'polygone' };
 }
@@ -4393,14 +4505,14 @@ function handleTriangleRectangle(ctx: BuiltinCtx): BuiltinResult {
 	});
 	const angleDeg = named.has('angle') ? requireNumber(named.get('angle')!, 'angle', line) : 45;
 	const [A, B] = coords;
+	if (Math.hypot(B.x - A.x, B.y - A.y) < 1e-15)
+		throw new DslRuntimeError(
+			{ summary: '`triangle_rectangle(A, B, …)` : `A` et `B` sont confondus, côté nul.' },
+			line
+		);
 	const rad = toRadians(angleDeg, angleMode);
-	const dx = B.x - A.x;
-	const dy = B.y - A.y;
-	const Cx = A.x + dx * Math.cos(rad) - dy * Math.sin(rad);
-	const Cy = A.y + dx * Math.sin(rad) + dy * Math.cos(rad);
-	const C = createHiddenPoint(figure, Cx, Cy);
+	const C = createHiddenRotatedPoint(figure, ids[1], ids[0], numeric(rad));
 	const polyId = figure.createPolygon([ids[0], ids[1], C], { label });
-	// Right-angle mark at A
 	figure.createAngleMark(ids[1], ids[0], C, { rightAngle: true });
 	return { figureId: polyId, symbolType: 'polygone' };
 }
@@ -4410,22 +4522,25 @@ HANDLERS.set('triangle_rectangle', handleTriangleRectangle);
 
 function handleParallelogramme(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, label } = ctx;
-	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'parallelogramme', {
+	const { ids } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'parallelogramme', {
 		syntax: 'parallelogramme(A, B, C)',
 		description:
 			'parallélogramme `ABCD` ; le 4ᵉ sommet `D` calculé pour que `ABCD` soit un parallélogramme'
 	});
-	const [A, B, C] = coords;
-	// D = A + (C - B), so that ABCD has AB parallel to DC and AD parallel to BC.
-	const Dx = A.x + (C.x - B.x);
-	const Dy = A.y + (C.y - B.y);
-	const D = createHiddenPoint(figure, Dx, Dy);
-	const id = figure.createPolygon([ids[0], ids[1], ids[2], D], { label });
+	const [Aid, Bid, Cid] = ids;
+	// D = A + (C - B). createTranslatedPoint(source=A, vector=B→C) does exactly that.
+	const D = createHiddenTranslatedPoint(figure, Aid, Bid, Cid);
+	const id = figure.createPolygon([Aid, Bid, Cid, D], { label });
 	return { figureId: id, symbolType: 'polygone' };
 }
 HANDLERS.set('parallelogramme', handleParallelogramme);
 
 // ─── 11. rectangle(A, B, largeur=2) → polygone + marque ─────────────
+//
+// Dynamic construction :
+//   Q = rotation of B around A by π/2     (vec AQ = perp(AB) of length |AB|)
+//   D = dilation of Q around A by largeur/|AB|  (D = A + perp_unit(AB) * largeur)
+//   C = translation of D by vec(A → B)    (C = D + (B - A))
 
 function handleRectangle(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, named, line, label } = ctx;
@@ -4435,20 +4550,26 @@ function handleRectangle(ctx: BuiltinCtx): BuiltinResult {
 	});
 	const largeur = named.has('largeur') ? requireNumber(named.get('largeur')!, 'largeur', line) : 2;
 	const [A, B] = coords;
-	const px = -(B.y - A.y);
-	const py = B.x - A.x;
-	const norm = Math.hypot(px, py);
-	if (norm < 1e-15)
+	const [Aid, Bid] = ids;
+	if (Math.hypot(B.x - A.x, B.y - A.y) < 1e-15)
 		throw new DslRuntimeError(
 			{ summary: '`rectangle(A, B, …)` : `A` et `B` sont confondus, direction indéfinie.' },
 			line
 		);
-	const dx = (px / norm) * largeur;
-	const dy = (py / norm) * largeur;
-	const C = createHiddenPoint(figure, B.x + dx, B.y + dy);
-	const D = createHiddenPoint(figure, A.x + dx, A.y + dy);
-	const polyId = figure.createPolygon([ids[0], ids[1], C, D], { label });
-	figure.createAngleMark(D, ids[0], ids[1], { rightAngle: true });
+	const Q = createHiddenRotatedPoint(figure, Bid, Aid, PI_OVER_2);
+	const dAB = figure.createScalarDistance(Aid, Bid);
+	const scaleRatio = figure.createScalarExpression(
+		(scalars) => {
+			const d = scalars.get(dAB);
+			if (d == null || d === 0) return 0;
+			return largeur / d;
+		},
+		[dAB]
+	);
+	const D = figure.createDilatedPoint(Q, Aid, { scalarRef: scaleRatio }, { visible: false });
+	const C = createHiddenTranslatedPoint(figure, D, Aid, Bid);
+	const polyId = figure.createPolygon([Aid, Bid, C, D], { label });
+	figure.createAngleMark(D, Aid, Bid, { rightAngle: true });
 	return { figureId: polyId, symbolType: 'polygone' };
 }
 HANDLERS.set('rectangle', handleRectangle);
@@ -4462,23 +4583,18 @@ function handleCarre(ctx: BuiltinCtx): BuiltinResult {
 		description: 'carré `ABCD` de côté `[AB]` ; `C` et `D` calculés par rotations de ±90°'
 	});
 	const [A, B] = coords;
+	const [Aid, Bid] = ids;
 	if (Math.hypot(B.x - A.x, B.y - A.y) < 1e-15)
 		throw new DslRuntimeError(
 			{ summary: '`carre(A, B)` : `A` et `B` sont confondus, côté nul.' },
 			line
 		);
-	const r90 = Math.PI / 2;
-	// Preserve original macro semantics :
-	// C = rotation of A around B by 90°
-	// D = rotation of B around A by -90°
-	const Cx = B.x + (A.x - B.x) * Math.cos(r90) - (A.y - B.y) * Math.sin(r90);
-	const Cy = B.y + (A.x - B.x) * Math.sin(r90) + (A.y - B.y) * Math.cos(r90);
-	const Dx = A.x + (B.x - A.x) * Math.cos(-r90) - (B.y - A.y) * Math.sin(-r90);
-	const Dy = A.y + (B.x - A.x) * Math.sin(-r90) + (B.y - A.y) * Math.cos(-r90);
-	const C = createHiddenPoint(figure, Cx, Cy);
-	const D = createHiddenPoint(figure, Dx, Dy);
-	const polyId = figure.createPolygon([ids[0], ids[1], C, D], { label });
-	figure.createAngleMark(D, ids[0], ids[1], { rightAngle: true });
+	// C = rotation of A around B by +π/2 ; D = rotation of B around A by -π/2.
+	// Exact angles preserve exactness when A and B are exact.
+	const C = createHiddenRotatedPoint(figure, Aid, Bid, PI_OVER_2);
+	const D = createHiddenRotatedPoint(figure, Bid, Aid, NEG_PI_OVER_2);
+	const polyId = figure.createPolygon([Aid, Bid, C, D], { label });
+	figure.createAngleMark(D, Aid, Bid, { rightAngle: true });
 	return { figureId: polyId, symbolType: 'polygone' };
 }
 HANDLERS.set('carre', handleCarre);
@@ -4493,16 +4609,17 @@ function handleLosange(ctx: BuiltinCtx): BuiltinResult {
 	});
 	const angleDeg = named.has('angle') ? requireNumber(named.get('angle')!, 'angle', line) : 60;
 	const [A, B] = coords;
+	const [Aid, Bid] = ids;
+	if (Math.hypot(B.x - A.x, B.y - A.y) < 1e-15)
+		throw new DslRuntimeError(
+			{ summary: '`losange(A, B, …)` : `A` et `B` sont confondus, côté nul.' },
+			line
+		);
 	const rad = toRadians(angleDeg, angleMode);
-	// C = rotation of A around B by `angle`
-	const Cx = B.x + (A.x - B.x) * Math.cos(rad) - (A.y - B.y) * Math.sin(rad);
-	const Cy = B.y + (A.x - B.x) * Math.sin(rad) + (A.y - B.y) * Math.cos(rad);
-	// D = translation of C by (B → A) = C + (A - B)
-	const Dx = Cx + (A.x - B.x);
-	const Dy = Cy + (A.y - B.y);
-	const C = createHiddenPoint(figure, Cx, Cy);
-	const D = createHiddenPoint(figure, Dx, Dy);
-	const id = figure.createPolygon([ids[0], ids[1], C, D], { label });
+	// C = rotation of A around B by `angle` ; D = translation of C by (B → A) = C + (A - B).
+	const C = createHiddenRotatedPoint(figure, Aid, Bid, numeric(rad));
+	const D = createHiddenTranslatedPoint(figure, C, Bid, Aid);
+	const id = figure.createPolygon([Aid, Bid, C, D], { label });
 	return { figureId: id, symbolType: 'polygone' };
 }
 HANDLERS.set('losange', handleLosange);
@@ -4524,7 +4641,7 @@ function handlePolygoneRegulier(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	const Oxy = pointXY(figure, pos[0], 'O', line);
+	const Oid = requireElement(pos[0], 'O', line);
 	const r = requireNumber(pos[1], 'rayon', line);
 	const n = requireNumber(pos[2], 'n', line);
 	if (!Number.isInteger(n) || n < 3)
@@ -4537,12 +4654,23 @@ function handlePolygoneRegulier(ctx: BuiltinCtx): BuiltinResult {
 			{ summary: '`polygone_regulier()` : le rayon doit être strictement positif.' },
 			line
 		);
-	const vertexIds: string[] = [];
-	for (let i = 0; i < n; i++) {
-		const theta = (2 * Math.PI * i) / n;
-		const x = Oxy.x + r * Math.cos(theta);
-		const y = Oxy.y + r * Math.sin(theta);
-		vertexIds.push(createHiddenPoint(figure, x, y));
+	// P[0] = (O.x + r, O.y) as a dynamic computed point.
+	// P[i] = rotation of P[0] around O by 2πi/n — dynamic via createRotatedPoint.
+	const oxScalar = figure.createScalarCoordinate(Oid, 'x');
+	const oyScalar = figure.createScalarCoordinate(Oid, 'y');
+	const oxPlusR = figure.createScalarExpression(
+		(scalars) => (scalars.get(oxScalar) ?? 0) + r,
+		[oxScalar]
+	);
+	const P0 = figure.createComputedPoint(
+		{ scalarRef: oxPlusR },
+		{ scalarRef: oyScalar },
+		{ visible: false }
+	);
+	const vertexIds: string[] = [P0];
+	for (let i = 1; i < n; i++) {
+		const angle = exactPiFraction(2 * i, n);
+		vertexIds.push(createHiddenRotatedPoint(figure, P0, Oid, angle));
 	}
 	const id = figure.createPolygon(vertexIds as [string, string, string, ...string[]], { label });
 	return { figureId: id, symbolType: 'polygone' };
@@ -4567,7 +4695,7 @@ function handleEtoile(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	const Oxy = pointXY(figure, pos[0], 'O', line);
+	const Oid = requireElement(pos[0], 'O', line);
 	const r = requireNumber(pos[1], 'rayon', line);
 	const n = requireNumber(pos[2], 'n', line);
 	const saut = named.has('saut') ? requireNumber(named.get('saut')!, 'saut', line) : 2;
@@ -4586,12 +4714,22 @@ function handleEtoile(ctx: BuiltinCtx): BuiltinResult {
 			{ summary: '`etoile()` : le rayon doit être strictement positif.' },
 			line
 		);
-	const rawPoints: string[] = [];
-	for (let i = 0; i < n; i++) {
-		const theta = (2 * Math.PI * i) / n;
-		const x = Oxy.x + r * Math.cos(theta);
-		const y = Oxy.y + r * Math.sin(theta);
-		rawPoints.push(createHiddenPoint(figure, x, y));
+	// Build n vertices on the circle centered at O, radius r, as dynamic derived points.
+	const oxScalar = figure.createScalarCoordinate(Oid, 'x');
+	const oyScalar = figure.createScalarCoordinate(Oid, 'y');
+	const oxPlusR = figure.createScalarExpression(
+		(scalars) => (scalars.get(oxScalar) ?? 0) + r,
+		[oxScalar]
+	);
+	const P0 = figure.createComputedPoint(
+		{ scalarRef: oxPlusR },
+		{ scalarRef: oyScalar },
+		{ visible: false }
+	);
+	const rawPoints: string[] = [P0];
+	for (let i = 1; i < n; i++) {
+		const angle = exactPiFraction(2 * i, n);
+		rawPoints.push(createHiddenRotatedPoint(figure, P0, Oid, angle));
 	}
 	// Visit order : 0, saut, 2*saut, ... mod n until we return to 0.
 	// For gcd(saut, n)=1 this yields all n vertices in a single star polyline.
@@ -4695,8 +4833,8 @@ function handleCercleCirconscrit(ctx: BuiltinCtx): BuiltinResult {
 		description: 'cercle passant par les 3 points ; centre via `centre(c)`'
 	});
 	const [A, B, C] = coords;
-	const O = computeCircumcenter(A, B, C);
-	if (!O)
+	const [Aid, Bid, Cid] = ids;
+	if (!computeCircumcenter(A, B, C))
 		throw new DslRuntimeError(
 			{
 				summary:
@@ -4704,8 +4842,12 @@ function handleCercleCirconscrit(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	const Oid = createHiddenPoint(figure, O.x, O.y);
-	const id = figure.createCircleByPoint(Oid, ids[0], { label });
+	// Circumcenter = intersection of two perpendicular bisectors. All hidden,
+	// fully dynamic via factory methods.
+	const bisAB = buildPerpendicularBisector(figure, Aid, Bid);
+	const bisBC = buildPerpendicularBisector(figure, Bid, Cid);
+	const O = createHiddenIntersectionLL(figure, bisAB, bisBC);
+	const id = figure.createCircleByPoint(O, Aid, { label });
 	return { figureId: id, symbolType: 'cercle' };
 }
 HANDLERS.set('cercle_circonscrit', handleCercleCirconscrit);
@@ -4714,25 +4856,21 @@ HANDLERS.set('cercle_circonscrit', handleCercleCirconscrit);
 
 function handleCercleInscrit(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
-	const { coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'cercle_inscrit', {
+	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'cercle_inscrit', {
 		syntax: 'cercle_inscrit(A, B, C)',
 		description: 'cercle inscrit au triangle `ABC` ; centre via `centre(c)`'
 	});
 	const [A, B, C] = coords;
+	const [Aid, Bid, Cid] = ids;
 	const a = Math.hypot(B.x - C.x, B.y - C.y);
 	const b = Math.hypot(C.x - A.x, C.y - A.y);
 	const c = Math.hypot(A.x - B.x, A.y - B.y);
-	const perim = a + b + c;
-	if (perim < 1e-15)
+	if (a + b + c < 1e-15)
 		throw new DslRuntimeError(
 			{ summary: '`cercle_inscrit(A, B, C)` : les 3 points sont confondus.' },
 			line
 		);
-	const Ix = (a * A.x + b * B.x + c * C.x) / perim;
-	const Iy = (a * A.y + b * B.y + c * C.y) / perim;
-	const s = perim / 2;
-	const areaSqr = s * (s - a) * (s - b) * (s - c);
-	if (areaSqr <= 0)
+	if (!computeCircumcenter(A, B, C))
 		throw new DslRuntimeError(
 			{
 				summary:
@@ -4740,9 +4878,14 @@ function handleCercleInscrit(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	const r = Math.sqrt(areaSqr) / s;
-	const Iid = createHiddenPoint(figure, Ix, Iy);
-	const id = figure.createCircleByRadius(Iid, numeric(r), { label });
+	// Incenter = intersection of two angular bisectors. Radius = distance from
+	// incenter to any side. Fully dynamic.
+	const bisA = buildAngularBisector(figure, Bid, Aid, Cid);
+	const bisB = buildAngularBisector(figure, Aid, Bid, Cid);
+	const I = createHiddenIntersectionLL(figure, bisA, bisB);
+	const sideAB = createHiddenLine(figure, Aid, Bid);
+	const rScalar = figure.createScalarDistancePointLine(I, sideAB);
+	const id = figure.createCircleByRadius(I, { scalarRef: rScalar }, { label });
 	return { figureId: id, symbolType: 'cercle' };
 }
 HANDLERS.set('cercle_inscrit', handleCercleInscrit);
@@ -4751,27 +4894,31 @@ HANDLERS.set('cercle_inscrit', handleCercleInscrit);
 
 function handleCercleEuler(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
-	const { coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'cercle_euler', {
+	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'cercle_euler', {
 		syntax: 'cercle_euler(A, B, C)',
 		description: 'cercle des neuf points du triangle `ABC` ; centre via `centre(c)`'
 	});
 	const [A, B, C] = coords;
-	const O = computeCircumcenter(A, B, C);
-	if (!O)
+	const [Aid, Bid, Cid] = ids;
+	if (!computeCircumcenter(A, B, C))
 		throw new DslRuntimeError(
 			{
 				summary: '`cercle_euler(A, B, C)` : les 3 points sont alignés, le cercle n’existe pas.'
 			},
 			line
 		);
-	const Hx = A.x + B.x + C.x - 2 * O.x;
-	const Hy = A.y + B.y + C.y - 2 * O.y;
-	const Ex = (O.x + Hx) / 2;
-	const Ey = (O.y + Hy) / 2;
-	const R = Math.hypot(A.x - O.x, A.y - O.y);
-	const r = R / 2;
-	const Eid = createHiddenPoint(figure, Ex, Ey);
-	const id = figure.createCircleByRadius(Eid, numeric(r), { label });
+	// Euler circle center = midpoint of (circumcenter, orthocenter).
+	// Radius = circumradius / 2.
+	const bisAB = buildPerpendicularBisector(figure, Aid, Bid);
+	const bisBC = buildPerpendicularBisector(figure, Bid, Cid);
+	const O = createHiddenIntersectionLL(figure, bisAB, bisBC);
+	const altA = buildAltitudeFromA(figure, Aid, Bid, Cid);
+	const altB = buildAltitudeFromA(figure, Bid, Aid, Cid);
+	const H = createHiddenIntersectionLL(figure, altA, altB);
+	const E = createHiddenMidpoint(figure, O, H);
+	const R = figure.createScalarDistance(O, Aid);
+	const halfR = figure.createScalarExpression((s) => (s.get(R) ?? 0) / 2, [R]);
+	const id = figure.createCircleByRadius(E, { scalarRef: halfR }, { label });
 	return { figureId: id, symbolType: 'cercle' };
 }
 HANDLERS.set('cercle_euler', handleCercleEuler);
@@ -4780,14 +4927,15 @@ HANDLERS.set('cercle_euler', handleCercleEuler);
 
 function handleCentreGravite(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, label } = ctx;
-	const { coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'centre_gravite', {
+	const { ids } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'centre_gravite', {
 		syntax: 'centre_gravite(A, B, C)',
 		description: 'centre de gravité (centroïde) du triangle `ABC`'
 	});
-	const [A, B, C] = coords;
-	const Gx = (A.x + B.x + C.x) / 3;
-	const Gy = (A.y + B.y + C.y) / 3;
-	const id = figure.createFreePoint({ x: numeric(Gx), y: numeric(Gy) }, { label });
+	const [Aid, Bid, Cid] = ids;
+	// G divides the median from A to midpoint(B, C) in ratio 2:1 from A.
+	// G = dilation of midpoint(B, C) around A by factor 2/3.
+	const M_BC = createHiddenMidpoint(figure, Bid, Cid);
+	const id = figure.createDilatedPoint(M_BC, Aid, numeric(2 / 3), { label });
 	return { figureId: id, symbolType: 'point' };
 }
 HANDLERS.set('centre_gravite', handleCentreGravite);
@@ -4796,14 +4944,13 @@ HANDLERS.set('centre_gravite', handleCentreGravite);
 
 function handleOrthocentre(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
-	const { coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'orthocentre', {
+	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'orthocentre', {
 		syntax: 'orthocentre(A, B, C)',
 		description: 'orthocentre du triangle `ABC` (intersection des hauteurs)'
 	});
 	const [A, B, C] = coords;
-	// Euler relation : H = A + B + C - 2·O where O = circumcenter
-	const O = computeCircumcenter(A, B, C);
-	if (!O)
+	const [Aid, Bid, Cid] = ids;
+	if (!computeCircumcenter(A, B, C))
 		throw new DslRuntimeError(
 			{
 				summary:
@@ -4811,9 +4958,10 @@ function handleOrthocentre(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	const Hx = A.x + B.x + C.x - 2 * O.x;
-	const Hy = A.y + B.y + C.y - 2 * O.y;
-	const id = figure.createFreePoint({ x: numeric(Hx), y: numeric(Hy) }, { label });
+	// H = intersection of two altitudes. Fully dynamic via factory methods.
+	const altA = buildAltitudeFromA(figure, Aid, Bid, Cid);
+	const altB = buildAltitudeFromA(figure, Bid, Aid, Cid);
+	const id = figure.createIntersectionLL(altA, altB, { label });
 	return { figureId: id, symbolType: 'point' };
 }
 HANDLERS.set('orthocentre', handleOrthocentre);
@@ -4827,8 +4975,8 @@ function handleHauteur(ctx: BuiltinCtx): BuiltinResult {
 		description:
 			'hauteur issue de `A` dans le triangle `ABC` (perpendiculaire à `(BC)` passant par `A`)'
 	});
-	const [A, B, C] = coords;
-	const Aid = ids[0];
+	const [, B, C] = coords;
+	const [Aid, Bid, Cid] = ids;
 	const dx = C.x - B.x;
 	const dy = C.y - B.y;
 	if (dx * dx + dy * dy < 1e-30)
@@ -4836,10 +4984,11 @@ function handleHauteur(ctx: BuiltinCtx): BuiltinResult {
 			{ summary: '`hauteur(A, B, C)` : `B` et `C` sont confondus, direction `(BC)` indéfinie.' },
 			line
 		);
-	const nx = -dy;
-	const ny = dx;
-	const Q = createHiddenPoint(figure, A.x + nx, A.y + ny);
-	const id = figure.createLine(Aid, Q, { label });
+	// Q = A + (C - B) (line AQ parallel to BC), then R = rotation of Q around A by π/2
+	// (line AR perpendicular to BC). Altitude = (A, R).
+	const Q = createHiddenTranslatedPoint(figure, Aid, Bid, Cid);
+	const R = createHiddenRotatedPoint(figure, Q, Aid, PI_OVER_2);
+	const id = figure.createLine(Aid, R, { label });
 	return { figureId: id, symbolType: 'droite' };
 }
 HANDLERS.set('hauteur', handleHauteur);
@@ -4848,12 +4997,13 @@ HANDLERS.set('hauteur', handleHauteur);
 
 function handleDroiteEuler(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
-	const { coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'droite_euler', {
+	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'droite_euler', {
 		syntax: 'droite_euler(A, B, C)',
 		description:
 			'droite d’Euler du triangle `ABC` (passe par centroïde, orthocentre, centre du cercle circonscrit)'
 	});
 	const [A, B, C] = coords;
+	const [Aid, Bid, Cid] = ids;
 	const O = computeCircumcenter(A, B, C);
 	if (!O)
 		throw new DslRuntimeError(
@@ -4876,9 +5026,13 @@ function handleDroiteEuler(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	const Gid = createHiddenPoint(figure, Gx, Gy);
-	const Hid = createHiddenPoint(figure, Hx, Hy);
-	const id = figure.createLine(Gid, Hid, { label });
+	// G = centroid (via dilation pattern). H = orthocenter (intersection of altitudes).
+	const M_BC = createHiddenMidpoint(figure, Bid, Cid);
+	const G = figure.createDilatedPoint(M_BC, Aid, numeric(2 / 3), { visible: false });
+	const altA = buildAltitudeFromA(figure, Aid, Bid, Cid);
+	const altB = buildAltitudeFromA(figure, Bid, Aid, Cid);
+	const H = createHiddenIntersectionLL(figure, altA, altB);
+	const id = figure.createLine(G, H, { label });
 	return { figureId: id, symbolType: 'droite' };
 }
 HANDLERS.set('droite_euler', handleDroiteEuler);
