@@ -22,7 +22,27 @@ Voir le plan complet pour les détails de conception.
 
 ## Phase courante
 
-Refonte complète livrée. Tests : 1781/1781. Statut : LIVRÉ.
+Refonte complète livrée + amélioration des messages d'erreur (post-livraison). Tests : 1799/1799. Statut : LIVRÉ.
+
+## Messages d'erreur post-migration (commit suivant)
+
+Après la migration, les anciens patterns produisent des messages génériques. Améliorations livrées :
+
+1. **Destructuration intelligente** (`interpreter.ts`) : quand `(M, d) = mediatrice(A, B)` après migration, le message identifie la macro fautive et donne le NOUVEAU pattern :
+
+   - `mediatrice` → « Forme actuelle : `d = mediatrice(A, B)` ; le milieu via `M = milieu(A, B)`. »
+   - `cercle_circonscrit/inscrit/euler` → pointe vers `centre(c)`.
+   - `rectangle/carre/losange/parallelogramme` → pointe vers `sommets(p)` ou `sommet(p, i)`.
+   - `triangle_*` → pointe vers `sommet(t, 3)` ou `sommets(t)`.
+   - `corde` → pointe vers `extremite(s, 1/2)`.
+
+2. **Conflits de direction** (`resolveDirection`) : `point(A, longueur=5, angle=30, direction=B)` est désormais détecté comme ambigu, avec un message clair listant les 3 args incompatibles.
+
+3. **Cross-references dans les accesseurs** : `extremite(c)` sur cercle pointe vers `centre(c)`. `sommet(s)` sur segment pointe vers `extremite(s, i)`. `milieu(c)` sur cercle pointe vers `centre(c)`. `milieu(d)` sur droite explique pourquoi (longueur infinie).
+
+4. **`requireElement` et `requireNumber` restructurés** : messages incluent le TYPE reçu (`nombre`, `chaîne`, `tuple`...) avec un hint contextuel.
+
+Tests dédiés : `dsl/__tests__/error-hints.test.ts` (18 cas).
 
 ### Décision : merge des commits 4-5-6
 
