@@ -7,6 +7,8 @@
 
 import { parseDsl, createStepper } from '$lib/geometry-core/dsl';
 import type { DslStepper, DirectiveHandler } from '$lib/geometry-core/dsl';
+import { DslRuntimeError } from '$lib/geometry-core/dsl/errors';
+import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
 import { Figure } from '$lib/geometry-core/graph/figure';
 import type { GeoElement } from '$lib/geometry-core/types/elements';
 import {
@@ -98,9 +100,19 @@ export class ConstructionExecutor {
 	private _lastCompassRadius = 0;
 	/** Current compass radius. */
 	private _compassCurRadius = 0;
+	/** Runtime error captured during the pre-execution pass in calculateStepDurations.
+	 *  When set, only steps 0..stepIndex-1 are considered valid; the timeline is built
+	 *  from those, and the caller can display the error without losing the partial figure. */
+	private _loadError: {
+		message: string;
+		line: number | null;
+		stepIndex: number;
+		details: DslRuntimeErrorDetails | null;
+	} | null = null;
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
+		this._loadError = null;
 		this._program = parseDsl(script);
 		this._speedFactor = 1;
 		this._currentInstruction = null;
@@ -111,6 +123,16 @@ export class ConstructionExecutor {
 		};
 		this.stepper = createStepper(this._program, undefined, handler);
 		this._stepDurations = this.calculateStepDurations();
+	}
+
+	/** Runtime error captured during load(), or null if the script pre-executed cleanly. */
+	get loadError(): {
+		message: string;
+		line: number | null;
+		stepIndex: number;
+		details: DslRuntimeErrorDetails | null;
+	} | null {
+		return this._loadError;
 	}
 
 	/** Execute one step. Returns false when done. */
@@ -588,184 +610,205 @@ export class ConstructionExecutor {
 		const steps = tempStepper.steps;
 
 		for (let i = 0; i < steps.length; i++) {
-			const stmt = steps[i];
-			if (stmt.kind === 'directive') {
-				if (stmt.name === 'pause') {
-					const arg = stmt.args[0];
-					durations.push(arg?.kind === 'number' ? arg.value : DEFAULT_PAUSE_DURATION);
-				} else {
-					durations.push(0);
+			const durationsLenBefore = durations.length;
+			const phasesLenBefore = this._stepPhases.length;
+			try {
+				const stmt = steps[i];
+				if (stmt.kind === 'directive') {
+					if (stmt.name === 'pause') {
+						const arg = stmt.args[0];
+						durations.push(arg?.kind === 'number' ? arg.value : DEFAULT_PAUSE_DURATION);
+					} else {
+						durations.push(0);
+					}
+					this._stepPhases.push({
+						movePhaseEnd: 0,
+						drawPhaseStart: 0,
+						drawPhaseEnd: 1,
+						pausePhaseStart: 1,
+						moveDurationMs: 0
+					});
+					tempStepper.step();
+					continue;
 				}
-				this._stepPhases.push({
-					movePhaseEnd: 0,
-					drawPhaseStart: 0,
-					drawPhaseEnd: 1,
-					pausePhaseStart: 1,
-					moveDurationMs: 0
-				});
+
+				// Geometric step: measure before/after to get distance
+				const sizeBefore = tempStepper.figure.size;
 				tempStepper.step();
-				continue;
-			}
+				const fig = tempStepper.figure;
+				const newElements = fig.getAllElements().slice(sizeBefore);
 
-			// Geometric step: measure before/after to get distance
-			const sizeBefore = tempStepper.figure.size;
-			tempStepper.step();
-			const fig = tempStepper.figure;
-			const newElements = fig.getAllElements().slice(sizeBefore);
-
-			const hasDrawable = newElements.some((el) => DRAWABLE_TYPES.has(el.type));
-			const hasPoint = newElements.some(
-				(el) => el.type === 'freePoint' || el.type === 'dependentPoint'
-			);
-			if (!hasDrawable) {
-				const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
-				const stepDur = hasPoint
-					? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
-					: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
-				durations.push(stepDur);
-				this._stepPhases.push({
-					movePhaseEnd: 0,
-					drawPhaseStart: 0,
-					drawPhaseEnd: 1,
-					pausePhaseStart: 1,
-					moveDurationMs: 0
-				});
-				continue;
-			}
-
-			// Calculate draw duration from distance
-			let drawDuration = DEFAULT_STEP_DURATION;
-			let instrumentTarget: { type: string; x: number; y: number } | null = null;
-
-			for (const el of newElements) {
-				if (!DRAWABLE_TYPES.has(el.type)) continue;
-
-				if (el.type === 'segment') {
-					const p1 = fig.getPosition(el.startId);
-					const p2 = fig.getPosition(el.endId);
-					if (p1 && p2) {
-						const x1 = geoToNumber(p1.x),
-							y1 = geoToNumber(p1.y);
-						const x2 = geoToNumber(p2.x),
-							y2 = geoToNumber(p2.y);
-						const distPx = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2) * PPU;
-						drawDuration = Math.round(distPx * MS_PER_PIXEL);
-						instrumentTarget = { type: 'ruler', x: x1, y: y1 };
-					}
-				} else if (isArcByAngles(el)) {
-					const center = fig.getPosition(el.centerId);
-					if (center) {
-						const r = geoToNumber(el.radius);
-						const sweep = Math.abs(geoToNumber(el.endAngle) - geoToNumber(el.startAngle));
-						drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
-						instrumentTarget = {
-							type: 'compass',
-							x: geoToNumber(center.x),
-							y: geoToNumber(center.y)
-						};
-					}
-				} else if (isArcByPoints(el)) {
-					const center = fig.getPosition(el.centerId);
-					const start = fig.getPosition(el.startId);
-					const end = fig.getPosition(el.endId);
-					if (center && start && end) {
-						const cx = geoToNumber(center.x),
-							cy = geoToNumber(center.y);
-						const r = Math.sqrt(
-							(geoToNumber(start.x) - cx) ** 2 + (geoToNumber(start.y) - cy) ** 2
-						);
-						const a1 = Math.atan2(geoToNumber(start.y) - cy, geoToNumber(start.x) - cx);
-						const a2 = Math.atan2(geoToNumber(end.y) - cy, geoToNumber(end.x) - cx);
-						let sweep = a2 - a1;
-						if (sweep < 0) sweep += 2 * Math.PI;
-						drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
-						instrumentTarget = { type: 'compass', x: cx, y: cy };
-					}
-				} else if (isCircleByRadius(el)) {
-					const center = fig.getPosition(el.centerId);
-					if (center) {
-						const r = geoToNumber(el.radius);
-						drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
-						instrumentTarget = {
-							type: 'compass',
-							x: geoToNumber(center.x),
-							y: geoToNumber(center.y)
-						};
-					}
-				} else if (isCircleByPoint(el)) {
-					const center = fig.getPosition(el.centerId);
-					const edge = fig.getPosition(el.edgePointId);
-					if (center && edge) {
-						const cx = geoToNumber(center.x),
-							cy = geoToNumber(center.y);
-						const r = Math.sqrt((geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2);
-						drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
-						instrumentTarget = { type: 'compass', x: cx, y: cy };
-					}
+				const hasDrawable = newElements.some((el) => DRAWABLE_TYPES.has(el.type));
+				const hasPoint = newElements.some(
+					(el) => el.type === 'freePoint' || el.type === 'dependentPoint'
+				);
+				if (!hasDrawable) {
+					const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
+					const stepDur = hasPoint
+						? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
+						: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
+					durations.push(stepDur);
+					this._stepPhases.push({
+						movePhaseEnd: 0,
+						drawPhaseStart: 0,
+						drawPhaseEnd: 1,
+						pausePhaseStart: 1,
+						moveDurationMs: 0
+					});
+					continue;
 				}
+
+				// Calculate draw duration from distance
+				let drawDuration = DEFAULT_STEP_DURATION;
+				let instrumentTarget: { type: string; x: number; y: number } | null = null;
+
+				for (const el of newElements) {
+					if (!DRAWABLE_TYPES.has(el.type)) continue;
+
+					if (el.type === 'segment') {
+						const p1 = fig.getPosition(el.startId);
+						const p2 = fig.getPosition(el.endId);
+						if (p1 && p2) {
+							const x1 = geoToNumber(p1.x),
+								y1 = geoToNumber(p1.y);
+							const x2 = geoToNumber(p2.x),
+								y2 = geoToNumber(p2.y);
+							const distPx = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2) * PPU;
+							drawDuration = Math.round(distPx * MS_PER_PIXEL);
+							instrumentTarget = { type: 'ruler', x: x1, y: y1 };
+						}
+					} else if (isArcByAngles(el)) {
+						const center = fig.getPosition(el.centerId);
+						if (center) {
+							const r = geoToNumber(el.radius);
+							const sweep = Math.abs(geoToNumber(el.endAngle) - geoToNumber(el.startAngle));
+							drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
+							instrumentTarget = {
+								type: 'compass',
+								x: geoToNumber(center.x),
+								y: geoToNumber(center.y)
+							};
+						}
+					} else if (isArcByPoints(el)) {
+						const center = fig.getPosition(el.centerId);
+						const start = fig.getPosition(el.startId);
+						const end = fig.getPosition(el.endId);
+						if (center && start && end) {
+							const cx = geoToNumber(center.x),
+								cy = geoToNumber(center.y);
+							const r = Math.sqrt(
+								(geoToNumber(start.x) - cx) ** 2 + (geoToNumber(start.y) - cy) ** 2
+							);
+							const a1 = Math.atan2(geoToNumber(start.y) - cy, geoToNumber(start.x) - cx);
+							const a2 = Math.atan2(geoToNumber(end.y) - cy, geoToNumber(end.x) - cx);
+							let sweep = a2 - a1;
+							if (sweep < 0) sweep += 2 * Math.PI;
+							drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
+							instrumentTarget = { type: 'compass', x: cx, y: cy };
+						}
+					} else if (isCircleByRadius(el)) {
+						const center = fig.getPosition(el.centerId);
+						if (center) {
+							const r = geoToNumber(el.radius);
+							drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
+							instrumentTarget = {
+								type: 'compass',
+								x: geoToNumber(center.x),
+								y: geoToNumber(center.y)
+							};
+						}
+					} else if (isCircleByPoint(el)) {
+						const center = fig.getPosition(el.centerId);
+						const edge = fig.getPosition(el.edgePointId);
+						if (center && edge) {
+							const cx = geoToNumber(center.x),
+								cy = geoToNumber(center.y);
+							const r = Math.sqrt(
+								(geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2
+							);
+							drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
+							instrumentTarget = { type: 'compass', x: cx, y: cy };
+						}
+					}
+					break;
+				}
+
+				drawDuration = Math.max(
+					MIN_STEP_DURATION,
+					Math.min(MAX_STEP_DURATION, Math.round(drawDuration / speedFactor))
+				);
+
+				// Calculate move duration from instrument distance + rotation
+				let moveDuration = 0;
+				if (instrumentTarget) {
+					const prev = instrumentPos[instrumentTarget.type] ?? { x: -8, y: 6, rotation: 0 };
+					const dx = instrumentTarget.x - prev.x;
+					const dy = instrumentTarget.y - prev.y;
+					const dist = Math.sqrt(dx * dx + dy * dy);
+					const cruiseMs = Math.round(
+						(dist * PPU * MS_PER_PIXEL) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
+					);
+
+					// Compute start angle for this element (to know the rotation target)
+					const startAngleDeg = this.computeStartAngleForStep(newElements, fig);
+					let rotDelta = startAngleDeg - prev.rotation;
+					while (rotDelta > 180) rotDelta -= 360;
+					while (rotDelta < -180) rotDelta += 360;
+					const rotMs = Math.round(
+						(Math.abs(rotDelta) * MS_PER_DEGREE) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
+					);
+
+					const totalCruiseMs = Math.max(cruiseMs, rotMs);
+					moveDuration = Math.max(
+						600,
+						totalCruiseMs <= INSTRUMENT_RAMP_MS ? totalCruiseMs : totalCruiseMs + INSTRUMENT_RAMP_MS
+					);
+
+					// Compute end angle for tracking (where compass finishes after drawing)
+					const endAngleDeg = this.computeEndAngleForStep(newElements, fig);
+					instrumentPos[instrumentTarget.type] = {
+						x: instrumentTarget.x,
+						y: instrumentTarget.y,
+						rotation: endAngleDeg
+					};
+				}
+
+				// Add compass raise/lower durations for compass steps
+				const isCompass = instrumentTarget?.type === 'compass';
+				const raiseDuration = isCompass ? COMPASS_RAISE_MS : 0;
+				const lowerDuration = isCompass ? COMPASS_LOWER_MS : 0;
+
+				const totalDuration =
+					moveDuration + raiseDuration + drawDuration + lowerDuration + AUTO_PAUSE_BETWEEN_STEPS;
+				durations.push(totalDuration);
+				const moveEnd = moveDuration / totalDuration;
+				const drawStart = (moveDuration + raiseDuration) / totalDuration;
+				const drawEnd = (moveDuration + raiseDuration + drawDuration) / totalDuration;
+				const pauseStart =
+					(moveDuration + raiseDuration + drawDuration + lowerDuration) / totalDuration;
+				this._stepPhases.push({
+					movePhaseEnd: moveEnd,
+					drawPhaseStart: drawStart,
+					drawPhaseEnd: drawEnd,
+					pausePhaseStart: pauseStart,
+					moveDurationMs: moveDuration
+				});
+			} catch (e) {
+				// Pre-execution failed at step i. Rollback any partial entries pushed
+				// during this iteration, store the error info, stop the pass.
+				durations.length = durationsLenBefore;
+				this._stepPhases.length = phasesLenBefore;
+				const message = e instanceof Error ? e.message : String(e);
+				const m = message.match(/Ligne\s+(\d+)/i);
+				const details = e instanceof DslRuntimeError ? e.details : null;
+				this._loadError = {
+					message,
+					line: m ? parseInt(m[1], 10) : null,
+					stepIndex: i,
+					details
+				};
 				break;
 			}
-
-			drawDuration = Math.max(
-				MIN_STEP_DURATION,
-				Math.min(MAX_STEP_DURATION, Math.round(drawDuration / speedFactor))
-			);
-
-			// Calculate move duration from instrument distance + rotation
-			let moveDuration = 0;
-			if (instrumentTarget) {
-				const prev = instrumentPos[instrumentTarget.type] ?? { x: -8, y: 6, rotation: 0 };
-				const dx = instrumentTarget.x - prev.x;
-				const dy = instrumentTarget.y - prev.y;
-				const dist = Math.sqrt(dx * dx + dy * dy);
-				const cruiseMs = Math.round(
-					(dist * PPU * MS_PER_PIXEL) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
-				);
-
-				// Compute start angle for this element (to know the rotation target)
-				const startAngleDeg = this.computeStartAngleForStep(newElements, fig);
-				let rotDelta = startAngleDeg - prev.rotation;
-				while (rotDelta > 180) rotDelta -= 360;
-				while (rotDelta < -180) rotDelta += 360;
-				const rotMs = Math.round(
-					(Math.abs(rotDelta) * MS_PER_DEGREE) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
-				);
-
-				const totalCruiseMs = Math.max(cruiseMs, rotMs);
-				moveDuration = Math.max(
-					600,
-					totalCruiseMs <= INSTRUMENT_RAMP_MS ? totalCruiseMs : totalCruiseMs + INSTRUMENT_RAMP_MS
-				);
-
-				// Compute end angle for tracking (where compass finishes after drawing)
-				const endAngleDeg = this.computeEndAngleForStep(newElements, fig);
-				instrumentPos[instrumentTarget.type] = {
-					x: instrumentTarget.x,
-					y: instrumentTarget.y,
-					rotation: endAngleDeg
-				};
-			}
-
-			// Add compass raise/lower durations for compass steps
-			const isCompass = instrumentTarget?.type === 'compass';
-			const raiseDuration = isCompass ? COMPASS_RAISE_MS : 0;
-			const lowerDuration = isCompass ? COMPASS_LOWER_MS : 0;
-
-			const totalDuration =
-				moveDuration + raiseDuration + drawDuration + lowerDuration + AUTO_PAUSE_BETWEEN_STEPS;
-			durations.push(totalDuration);
-			const moveEnd = moveDuration / totalDuration;
-			const drawStart = (moveDuration + raiseDuration) / totalDuration;
-			const drawEnd = (moveDuration + raiseDuration + drawDuration) / totalDuration;
-			const pauseStart =
-				(moveDuration + raiseDuration + drawDuration + lowerDuration) / totalDuration;
-			this._stepPhases.push({
-				movePhaseEnd: moveEnd,
-				drawPhaseStart: drawStart,
-				drawPhaseEnd: drawEnd,
-				pausePhaseStart: pauseStart,
-				moveDurationMs: moveDuration
-			});
 		}
 
 		return durations;

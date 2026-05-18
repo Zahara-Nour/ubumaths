@@ -1339,6 +1339,15 @@ function handleAngleVecteurs(ctx: BuiltinCtx): BuiltinScalarResult {
 }
 HANDLERS.set('angle_vecteurs', handleAngleVecteurs);
 
+const CERCLE_FORMS = [
+	{ syntax: 'cercle(centre, rayon=r)', description: 'cercle de centre `centre` et de rayon `r`' },
+	{
+		syntax: 'cercle(centre, passant=P)',
+		description: 'cercle de centre `centre` passant par le point `P`'
+	},
+	{ syntax: 'cercle(A, B, C)', description: 'cercle circonscrit aux 3 points A, B, C' }
+];
+
 function handleCercle(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, toGeoValue, line, label } = ctx;
 	if (pos.length === 3) {
@@ -1357,13 +1366,45 @@ function handleCercle(ctx: BuiltinCtx): BuiltinResult {
 				cy = geoToNumber(pp3.y);
 			const D = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
 			if (Math.abs(D) < 1e-12)
-				throw new DslRuntimeError('cercle(A, B, C): les 3 points sont alignes', line);
+				throw new DslRuntimeError(
+					{
+						summary: 'Les 3 points sont alignés, le cercle circonscrit n’existe pas.',
+						hint: 'Vérifiez que les trois points ne sont pas tous sur la même droite.'
+					},
+					line
+				);
 		}
 		const id = figure.createCircleBy3Points(p1Id, p2Id, p3Id, { label });
 		return { figureId: id, symbolType: 'cercle' };
 	}
-	if (pos.length !== 1)
-		throw new DslRuntimeError('cercle() attend 1 argument (centre) ou 3 arguments (A, B, C)', line);
+	if (pos.length === 2) {
+		throw new DslRuntimeError(
+			{
+				summary: '`cercle()` ne peut pas être appelé avec 2 arguments positionnels.',
+				hint: 'Pour un cercle de centre `A` passant par `B`, utilisez la syntaxe nommée : `cercle(A, passant=B)`.',
+				forms: CERCLE_FORMS
+			},
+			line
+		);
+	}
+	if (pos.length === 0) {
+		throw new DslRuntimeError(
+			{
+				summary: '`cercle()` a été appelé sans argument.',
+				forms: CERCLE_FORMS
+			},
+			line
+		);
+	}
+	if (pos.length !== 1) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`cercle()\` a reçu ${pos.length} arguments positionnels, attendu 1 (centre) ou 3 (A, B, C).`,
+				forms: CERCLE_FORMS
+			},
+			line
+		);
+	}
 	const centerId = requireElement(pos[0], 'centre', line);
 	if (named.has('rayon')) {
 		const radius = toScalarParam(named.get('rayon')!, toGeoValue, line);
@@ -1375,7 +1416,19 @@ function handleCercle(ctx: BuiltinCtx): BuiltinResult {
 		const id = figure.createCircleByPoint(centerId, edgeId, { label });
 		return { figureId: id, symbolType: 'cercle' };
 	}
-	throw new DslRuntimeError("cercle() necessite 'rayon' ou 'passant'", line);
+	const namedKeys = [...named.keys()];
+	const hint =
+		namedKeys.length > 0
+			? `Argument nommé reçu : ${namedKeys.map((k) => `\`${k}\``).join(', ')}. Seuls \`rayon\` et \`passant\` sont reconnus.`
+			: 'Un centre seul ne suffit pas à définir un cercle : précisez le rayon ou un point sur le cercle.';
+	throw new DslRuntimeError(
+		{
+			summary: '`cercle()` : il manque un rayon ou un point.',
+			hint,
+			forms: CERCLE_FORMS
+		},
+		line
+	);
 }
 HANDLERS.set('cercle', handleCercle);
 

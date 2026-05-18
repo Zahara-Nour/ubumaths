@@ -12,7 +12,9 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { parseDsl } from '$lib/geometry-core/dsl';
+	import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
 	import ConstructionPlayer from './ConstructionPlayer.svelte';
+	import InlineFormatted from './InlineFormatted.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { EditorView } from '@codemirror/view';
 	import type { Extension } from '@codemirror/state';
@@ -33,6 +35,13 @@
 		class: className = ''
 	}: Props = $props();
 
+	interface RuntimeErrorInfo {
+		message: string;
+		line: number | null;
+		stepIndex: number | null;
+		details: DslRuntimeErrorDetails | null;
+	}
+
 	let editorContainer = $state<HTMLDivElement | null>(null);
 	let editor = $state.raw<EditorView | null>(null);
 	let isLoading = $state(true);
@@ -40,26 +49,46 @@
 
 	// Validation
 	let validationErrors = $state<string[]>([]);
-	let errorLines = $state<number[]>([]);
+	let parseErrorLines = $state<number[]>([]);
+	let runtimeError = $state<RuntimeErrorInfo | null>(null);
 	let validationTimeoutId: number | null = null;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let errorLineEffectType: { of: (value: number[]) => any } | null = null;
+
+	function refreshErrorHighlight(): void {
+		const lines = [...parseErrorLines];
+		const rtLine = runtimeError?.line ?? null;
+		if (rtLine !== null && !lines.includes(rtLine)) {
+			lines.push(rtLine);
+		}
+		updateErrorHighlight(lines);
+	}
 
 	function validateScript(script: string): void {
 		try {
 			parseDsl(script);
 			validationErrors = [];
-			errorLines = [];
-			updateErrorHighlight([]);
+			parseErrorLines = [];
 		} catch (e) {
 			if (e instanceof Error) {
 				const lineMatch = e.message.match(/Ligne (\d+)/i);
 				const line = lineMatch ? parseInt(lineMatch[1], 10) : null;
 				validationErrors = [e.message];
-				errorLines = line ? [line] : [];
-				updateErrorHighlight(errorLines);
+				parseErrorLines = line ? [line] : [];
 			}
 		}
+		refreshErrorHighlight();
+	}
+
+	function handleRuntimeError(err: RuntimeErrorInfo | null): void {
+		runtimeError = err;
+		refreshErrorHighlight();
+	}
+
+	function getSourceLine(lineNumber: number | null): string | null {
+		if (lineNumber === null || lineNumber < 1) return null;
+		const lines = value.split('\n');
+		return lines[lineNumber - 1] ?? null;
 	}
 
 	function scheduleValidation(content: string): void {
@@ -371,10 +400,76 @@
 			</div>
 
 			{#if validationErrors.length > 0}
-				<div class="mt-1 rounded-md border border-destructive/30 bg-destructive/10 p-2">
+				<div class="mt-1 rounded-md border border-destructive/40 bg-destructive/5 p-3">
+					<p class="text-xs font-medium text-destructive">Erreur de syntaxe</p>
 					{#each validationErrors as err, i (i)}
-						<p class="text-xs text-destructive">{err}</p>
+						<pre class="mt-1 font-mono text-xs whitespace-pre-wrap text-foreground">{err}</pre>
 					{/each}
+				</div>
+			{:else if runtimeError}
+				{@const srcLine = getSourceLine(runtimeError.line)}
+				{@const details = runtimeError.details}
+				<div class="mt-1 rounded-md border border-destructive/40 bg-destructive/5 p-3">
+					<!-- Header: title + step badge -->
+					<div class="flex items-baseline justify-between gap-2">
+						<p class="text-sm font-medium text-destructive">Erreur d'exécution</p>
+						<div class="flex items-center gap-2 text-xs text-muted-foreground">
+							{#if runtimeError.line !== null}
+								<span>ligne {runtimeError.line}</span>
+							{/if}
+							{#if runtimeError.stepIndex !== null}
+								<span>·</span>
+								<span>étape {runtimeError.stepIndex + 1}</span>
+							{/if}
+						</div>
+					</div>
+
+					<!-- Source line excerpt -->
+					{#if srcLine !== null}
+						<div
+							class="mt-2 overflow-x-auto rounded border border-border/60 bg-background p-2 font-mono text-xs text-foreground"
+						>
+							<span class="text-muted-foreground select-none">{runtimeError.line} │ </span>{srcLine}
+						</div>
+					{/if}
+
+					<!-- Structured message: summary + hint + accepted forms -->
+					{#if details}
+						<p class="mt-3 text-sm text-foreground">
+							<InlineFormatted text={details.summary} />
+						</p>
+						{#if details.hint}
+							<p class="mt-2 text-xs text-muted-foreground">
+								<InlineFormatted text={details.hint} />
+							</p>
+						{/if}
+						{#if details.forms && details.forms.length > 0}
+							<div class="mt-3">
+								<p class="text-xs font-medium text-muted-foreground">Formes acceptées</p>
+								<ul class="mt-1 space-y-1">
+									{#each details.forms as form, i (i)}
+										<li class="flex items-start gap-2 text-xs">
+											<code
+												class="shrink-0 rounded bg-muted px-1.5 py-0.5 font-mono text-foreground"
+												>{form.syntax}</code
+											>
+											<span class="text-muted-foreground">
+												<InlineFormatted text={form.description} />
+											</span>
+										</li>
+									{/each}
+								</ul>
+							</div>
+						{/if}
+					{:else}
+						<!-- Fallback: legacy flat-string error -->
+						<pre
+							class="mt-2 font-mono text-xs whitespace-pre-wrap text-foreground">{runtimeError.message}</pre>
+					{/if}
+
+					<p class="mt-3 text-[11px] text-muted-foreground italic">
+						Les instructions précédentes ont été exécutées ; les suivantes sont ignorées.
+					</p>
 				</div>
 			{:else if value.trim().length > 0}
 				<p class="mt-1 text-xs text-green-600">Script valide</p>
@@ -390,6 +485,7 @@
 				showGrid={true}
 				showControls={true}
 				seekToEnd={true}
+				onRuntimeError={handleRuntimeError}
 			/>
 		</div>
 	</div>
