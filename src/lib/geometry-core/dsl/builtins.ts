@@ -4776,6 +4776,113 @@ function handleCercleEuler(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('cercle_euler', handleCercleEuler);
 
+// ─── 20. centre_gravite(A, B, C) → point ────────────────────────────
+
+function handleCentreGravite(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, label } = ctx;
+	const { coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'centre_gravite', {
+		syntax: 'centre_gravite(A, B, C)',
+		description: 'centre de gravité (centroïde) du triangle `ABC`'
+	});
+	const [A, B, C] = coords;
+	const Gx = (A.x + B.x + C.x) / 3;
+	const Gy = (A.y + B.y + C.y) / 3;
+	const id = figure.createFreePoint({ x: numeric(Gx), y: numeric(Gy) }, { label });
+	return { figureId: id, symbolType: 'point' };
+}
+HANDLERS.set('centre_gravite', handleCentreGravite);
+
+// ─── 21. orthocentre(A, B, C) → point ───────────────────────────────
+
+function handleOrthocentre(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'orthocentre', {
+		syntax: 'orthocentre(A, B, C)',
+		description: 'orthocentre du triangle `ABC` (intersection des hauteurs)'
+	});
+	const [A, B, C] = coords;
+	// Euler relation : H = A + B + C - 2·O where O = circumcenter
+	const O = computeCircumcenter(A, B, C);
+	if (!O)
+		throw new DslRuntimeError(
+			{
+				summary:
+					'`orthocentre(A, B, C)` : les 3 points sont alignés, l’orthocentre n’est pas défini (à l’infini).'
+			},
+			line
+		);
+	const Hx = A.x + B.x + C.x - 2 * O.x;
+	const Hy = A.y + B.y + C.y - 2 * O.y;
+	const id = figure.createFreePoint({ x: numeric(Hx), y: numeric(Hy) }, { label });
+	return { figureId: id, symbolType: 'point' };
+}
+HANDLERS.set('orthocentre', handleOrthocentre);
+
+// ─── 22. hauteur(A, B, C) → droite ──────────────────────────────────
+
+function handleHauteur(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'hauteur', {
+		syntax: 'hauteur(A, B, C)',
+		description:
+			'hauteur issue de `A` dans le triangle `ABC` (perpendiculaire à `(BC)` passant par `A`)'
+	});
+	const [A, B, C] = coords;
+	const Aid = ids[0];
+	const dx = C.x - B.x;
+	const dy = C.y - B.y;
+	if (dx * dx + dy * dy < 1e-30)
+		throw new DslRuntimeError(
+			{ summary: '`hauteur(A, B, C)` : `B` et `C` sont confondus, direction `(BC)` indéfinie.' },
+			line
+		);
+	const nx = -dy;
+	const ny = dx;
+	const Q = createHiddenPoint(figure, A.x + nx, A.y + ny);
+	const id = figure.createLine(Aid, Q, { label });
+	return { figureId: id, symbolType: 'droite' };
+}
+HANDLERS.set('hauteur', handleHauteur);
+
+// ─── 23. droite_euler(A, B, C) → droite ─────────────────────────────
+
+function handleDroiteEuler(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, line, label } = ctx;
+	const { coords } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'droite_euler', {
+		syntax: 'droite_euler(A, B, C)',
+		description:
+			'droite d’Euler du triangle `ABC` (passe par centroïde, orthocentre, centre du cercle circonscrit)'
+	});
+	const [A, B, C] = coords;
+	const O = computeCircumcenter(A, B, C);
+	if (!O)
+		throw new DslRuntimeError(
+			{
+				summary:
+					'`droite_euler(A, B, C)` : les 3 points sont alignés, la droite d’Euler n’est pas définie.'
+			},
+			line
+		);
+	const Gx = (A.x + B.x + C.x) / 3;
+	const Gy = (A.y + B.y + C.y) / 3;
+	const Hx = A.x + B.x + C.x - 2 * O.x;
+	const Hy = A.y + B.y + C.y - 2 * O.y;
+	if (Math.hypot(Hx - Gx, Hy - Gy) < 1e-10)
+		throw new DslRuntimeError(
+			{
+				summary:
+					'`droite_euler(A, B, C)` : le triangle est équilatéral, `G = H = O`, la droite n’est pas définie.',
+				hint: 'Pour un triangle équilatéral, les trois points remarquables coïncident — la droite d’Euler dégénère en un point.'
+			},
+			line
+		);
+	const Gid = createHiddenPoint(figure, Gx, Gy);
+	const Hid = createHiddenPoint(figure, Hx, Hy);
+	const id = figure.createLine(Gid, Hid, { label });
+	return { figureId: id, symbolType: 'droite' };
+}
+HANDLERS.set('droite_euler', handleDroiteEuler);
+
 function _executeBuiltinInner(
 	name: string,
 	pos: ResolvedValue[],
@@ -4893,7 +5000,11 @@ export const BUILTIN_NAMES = new Set([
 	'corde',
 	'cercle_circonscrit',
 	'cercle_inscrit',
-	'cercle_euler'
+	'cercle_euler',
+	'centre_gravite',
+	'orthocentre',
+	'hauteur',
+	'droite_euler'
 ]);
 
 /** Math functions that return numbers. */
