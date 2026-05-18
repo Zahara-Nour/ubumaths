@@ -14,21 +14,11 @@
  */
 
 export const STDLIB_MACROS = `
-# ─── Constructions fondamentales ─────────────────────────────
+# NOTE : mediatrice, perpendiculaire, parallele, mediane, bissectrice
+# ont été migrés en builtins (dsl/builtins.ts). hauteur reste macro
+# pour l'instant — sera migré dans le commit 6.
 
-macro mediatrice(A, B):
-    M = milieu(A, B)
-    masque(M)
-    H = rotation(A, centre=M, angle=90)
-    masque(H)
-    d = droite(M, H)
-    retourne d
-
-macro mediane(A, B, C):
-    M = milieu(B, C)
-    masque(M)
-    s = segment(A, M)
-    retourne s
+# ─── Constructions fondamentales (hauteur seule restante) ────
 
 macro hauteur(A, B, C):
     P = translation(A, vecteur=(B, C))
@@ -40,30 +30,6 @@ macro hauteur(A, B, C):
     masque(bc)
     F = intersection(d, bc)
     masque(F)
-    retourne d
-
-macro perpendiculaire(P, A, B):
-    Q = translation(P, vecteur=(A, B))
-    masque(Q)
-    R = rotation(Q, centre=P, angle=90)
-    masque(R)
-    d = droite(P, R)
-    retourne d
-
-macro parallele(P, A, B):
-    Q = translation(P, vecteur=(A, B))
-    masque(Q)
-    d = droite(P, Q)
-    retourne d
-
-macro bissectrice(A, V, B):
-    c = cercle(V, passant=A)
-    masque(c)
-    B2 = intersection(c, demidroite(V, B), 2)
-    masque(B2)
-    M = milieu(A, B2)
-    masque(M)
-    d = droite(V, M)
     retourne d
 
 # ─── Triangles ───────────────────────────────────────────────
