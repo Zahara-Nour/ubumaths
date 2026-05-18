@@ -1,8 +1,8 @@
 # Constructions-v2 — Progression
 
-> Derniere mise a jour : 2026-04-25
+> Derniere mise a jour : 2026-05-18
 
-## Etat : 7 phases terminees + element Arc ajoute
+## Etat : 7 phases terminees + element Arc + phase 9 erreurs runtime
 
 ## Phase 1 : Directives DSL (TERMINEE)
 
@@ -73,20 +73,40 @@
 - Convertisseurs mis a jour (cercle → arc quand angles disponibles)
 - Tests : 23 (figure, SVG, DSL)
 
+## Phase 9 : Feedback runtime errors (TERMINEE — 2026-05-18)
+
+Surfacage des erreurs DSL d'execution dans `/construction-demo` et `ScriptEditor`. Avant : l'editeur affichait "Script valide" tandis que l'apercu restait vide ou figé en silence quand un builtin throw. Maintenant : panneau rouge enrichi sous l'editeur avec ligne source, message structure et liste de formes acceptees + badge `⚠ Execution interrompue` sur le canvas + figure partielle preservee.
+
+3 changements bundles :
+
+1. **`DslRuntimeError` structurée** (`geometry-core/dsl/errors.ts`) : nouveau type `DslRuntimeErrorDetails { summary, hint?, forms? }`. Constructeur a 2 overloads (string OU objet), retro-compatible avec ~150 sites legacy. ~50 builtins migres (cercle, point, intersection, courbe, tangente, transformations, calculus, coniques, etc.) avec hints et listes de formes contextuelles.
+
+2. **`ConstructionExecutor.load()` resilient** : `calculateStepDurations()` capture les erreurs par iteration, rollback les entrees partielles et stocke `_loadError = { message, line, stepIndex, details }`. La timeline est construite avec les durations des steps valides uniquement. Permet au player de scruber jusqu'au dernier step valide et d'afficher la figure partielle. **Breaking interne** : `executor.load()` ne throw plus pour les `DslRuntimeError`, le caller doit lire `executor.loadError`.
+
+3. **UI** :
+   - `ConstructionPlayer.svelte` : nouveau callback `onRuntimeError`, badge non intrusif sur le canvas, canvas + controles preserves quand erreur runtime.
+   - `ScriptEditor.svelte` : panneau d'erreur unifie sous l'editeur (parse + runtime), titre rouge mais corps texte normal, source line excerpt, surlignage gutter persistant.
+   - Nouveau composant `InlineFormatted.svelte` (50 LOC) : mini-parseur backticks + bold pour le rendu inline-code des messages d'erreur (eviter de charger le full markdown renderer).
+
+Commits : `b157885f2` (UX + executor), `8bcff578b` (30 builtins de base), `e0e4db674` (calculus + coniques), `0ca030d10` (trace + courbe + texte). Tests : 1737/1737 (1617 DSL + 120 v2), 0 regression.
+
+**Reste** : ~150 throws plats dans `builtins.ts` (helpers internes, compile failures profondes) migrables au cas par cas selon les usages reels.
+
 ## Resume des tests
 
-| Module                     | Tests  |
-| -------------------------- | ------ |
-| DSL directives             | 21     |
-| DSL stepper                | 16     |
-| Executor                   | 14     |
-| Timeline                   | 18     |
-| Animator                   | 18     |
-| Positioning                | 8      |
-| Converter                  | 13     |
-| Arc (figure+SVG+DSL)       | 23     |
-| **Total constructions-v2** | **71** |
-| geometry-core (total)      | 1173+  |
+| Module                     | Tests   |
+| -------------------------- | ------- |
+| DSL directives             | 21      |
+| DSL stepper                | 16      |
+| Executor                   | 16      |
+| Timeline                   | 18      |
+| Animator                   | 23      |
+| Positioning                | 8       |
+| Converter                  | 40      |
+| Render-helpers             | 15      |
+| Arc (figure+SVG+DSL)       | 23      |
+| **Total constructions-v2** | **120** |
+| geometry-core/dsl total    | 1617    |
 
 ## Structure finale
 

@@ -55,6 +55,8 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
 - **3 interfaces `NewtonConfig` distinctes** dans `parametric-newton.ts`, `parametric-intersection.ts`, `parametric-intersection-1d.ts` avec noms de champs differents (`tolerance` vs `convergenceTolerance`, `numStarts` vs `numStartsPerAxis`).
 - **`GeoOsculatingCircle`** rendu dans les 4 surfaces (canvas + SVG + TikZ + Typst) depuis 2026-05-18 via helper `osculatingCircleToSVG` et branches dedies. Si tu ajoutes un nouveau type `Geo*` qui produit un visuel, **verifier les 3 exporters** (`svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts`) en plus du canvas — pas de garde TypeScript ne te le rappellera.
 - **`graph` ↔ `dsl`** : plus de cycle depuis 2026-05-18. `singularity-warn` a ete deplace vers `$lib/mathAST/analysis/`. **Regle a maintenir** : `graph/` ne doit JAMAIS importer en valeur depuis `dsl/`. Si tu en as besoin, le helper appartient probablement a `$lib/mathAST/analysis/` ou a un nouveau dossier partage `geometry-core/analysis/`.
+- **`DslRuntimeError` accepte un objet `details` structure** depuis 2026-05-18 : `new DslRuntimeError({ summary, hint?, forms? }, line)`. Le constructeur a 2 overloads (string OU objet) → backward compatible avec ~150 sites legacy. Le champ `details: DslRuntimeErrorDetails | null` est exposé sur l'instance pour le rendu UI riche (voir `dsl/errors.ts`). **Pour un nouveau builtin, toujours utiliser la forme structuree** : elle alimente le panneau d'erreur du player `constructions-v2` qui rend `summary` + `hint` + liste de `forms` avec inline-code styling. La forme plate ne fait que tomber sur un `<pre>` brut.
+- **`ConstructionExecutor.load()` ne throw PLUS pour les erreurs runtime** depuis 2026-05-18. Il capture l'erreur dans `_loadError` et retourne normalement, avec `_stepDurations` ne contenant que les durations des steps valides. Le caller doit lire `executor.loadError` apres `load()` et propager. Pattern dans `ConstructionPlayer.svelte:loadScript`. Seules les `DslParseError` (syntaxe) sont encore propagees par `load()`.
 - **9 erreurs preexistantes svelte-check** (~46 warnings). Baseline stable, ne pas commenter, juste verifier que mes modifs n'augmentent pas le compteur.
 
 ---
@@ -68,6 +70,18 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
 3. **Factory method** dans `graph/figure.ts`
 4. **Tests** : `dsl/__tests__/builtins-<xxx>.test.ts` ou un fichier theme
 5. **Mise a jour `BUILTIN_NAMES`** (Set en bas de `dsl/builtins.ts`) ET `dsl/stdlib.ts` si exposition stdlib
+6. **Erreurs structurees obligatoires** : utiliser `new DslRuntimeError({ summary, hint?, forms? }, line)` plutot que la string flat. Voir `handleCercle` comme reference (`dsl/builtins.ts:1820`). Pattern :
+   ```ts
+   throw new DslRuntimeError(
+   	{
+   		summary: `\`nom()\` : ${problemeConcret}.`,
+   		hint: "Suggestion d'action concrete.",
+   		forms: [{ syntax: 'nom(A, B)', description: 'description en `inline code` quand utile' }]
+   	},
+   	line
+   );
+   ```
+   Le panneau d'erreur dans `/construction-demo` rend ces champs avec inline-code styling et liste a puces. La string flat fonctionne toujours (backward compat) mais s'affiche brute dans un `<pre>`.
 
 ### Ajouter un type `Geo*` (`GeoNewElement`)
 
