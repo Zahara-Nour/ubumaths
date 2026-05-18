@@ -46,6 +46,20 @@ const DEFAULT_CONFIG: NewtonConfig = {
 /**
  * Find the parameter t in [t_min, t_max] whose curve point γ(t) is closest to
  * (cursorX, cursorY). Returns null if every start is singular.
+ *
+ * When `warmStartT` is provided (typically the previous frame's t during a
+ * continuous drag), Newton is first run from that single start. If it
+ * yields a valid candidate, the result is returned without running the
+ * 8-start scan — a ~8× reduction in work for the common interactive case.
+ *
+ * Newton finds stationary points of distance², which include local maxima
+ * (e.g. cursor far below a half-circle, started from the apex). To avoid
+ * getting stuck on such a max, the warm-start branch also evaluates γ at
+ * both bounds and picks whichever candidate has smallest distance.
+ *
+ * The full multi-start path is taken when warm-start is absent, out of
+ * [tMin, tMax], non-finite, or its Newton run produces no valid candidate
+ * (singular start, NaN divergence).
  */
 export function findClosestParameterOnCurve(
 	curveEl: GeoParametricCurve,
@@ -54,7 +68,8 @@ export function findClosestParameterOnCurve(
 	scalarBindings: Record<string, number>,
 	tMin: number,
 	tMax: number,
-	config?: Partial<NewtonConfig>
+	config?: Partial<NewtonConfig>,
+	warmStartT?: number
 ): number | null {
 	const cfg = { ...DEFAULT_CONFIG, ...config };
 
@@ -81,19 +96,20 @@ export function findClosestParameterOnCurve(
 		};
 	};
 
-	let bestT: number | null = null;
-	let bestDist = Infinity;
-
-	const N = Math.max(2, cfg.numStarts);
-	const step = (tMax - tMin) / (N - 1);
-
-	for (let i = 0; i < N; i++) {
-		const t0 = tMin + i * step;
-
-		// Skip singular start (‖γ'‖ ≈ 0): Newton would divide by ~0.
+	/**
+	 * Run Newton iterations from a single starting t0. Returns the final
+	 * clamped t and the squared distance ‖γ(t) − cursor‖², or null if the
+	 * start is singular or iterations diverge to NaN.
+	 */
+	const runFromStart = (t0: number): { t: number; distSq: number } | null => {
 		const g0 = evalGammaPrime(t0);
-		const speed0 = Math.sqrt(g0.dx * g0.dx + g0.dy * g0.dy);
-		if (!Number.isFinite(speed0) || speed0 < cfg.singularityThreshold) continue;
+		const speed0Sq = g0.dx * g0.dx + g0.dy * g0.dy;
+		if (
+			!Number.isFinite(speed0Sq) ||
+			speed0Sq < cfg.singularityThreshold * cfg.singularityThreshold
+		) {
+			return null;
+		}
 
 		// Newton iterations on f(t) = (γ(t) − cursor)·γ'(t),
 		// f'(t) ≈ ‖γ'(t)‖² (curvature term ignored).
@@ -125,23 +141,64 @@ export function findClosestParameterOnCurve(
 			if (!Number.isFinite(t)) break;
 		}
 
-		// Even if the iteration did not formally converge below tolerance, we
-		// still accept the final t as a candidate (clamped) — multi-start
-		// minimisation chooses the best one. This is essential for the
-		// "cursor unreachable" case where no perpendicular root exists.
 		const tClamped = Math.max(tMin, Math.min(tMax, t));
-		if (!Number.isFinite(tClamped)) continue;
+		if (!Number.isFinite(tClamped)) return null;
 
 		const pFinal = evalGamma(tClamped);
-		if (!Number.isFinite(pFinal.x) || !Number.isFinite(pFinal.y)) continue;
+		if (!Number.isFinite(pFinal.x) || !Number.isFinite(pFinal.y)) return null;
 
 		const dx = pFinal.x - cursorX;
 		const dy = pFinal.y - cursorY;
-		const dist = Math.sqrt(dx * dx + dy * dy);
+		return { t: tClamped, distSq: dx * dx + dy * dy };
+	};
 
-		if (dist < bestDist) {
-			bestDist = dist;
-			bestT = tClamped;
+	// Warm-start fast path: try the caller's hint first. Newton finds
+	// stationary points of distance, which include MAXIMA (e.g. cursor far
+	// below a half-circle, started from the apex). To avoid getting stuck on
+	// such a max, we also evaluate the two boundary points and pick the
+	// candidate with smallest distance. This adds 2 evaluations (cheap) and
+	// handles the "cursor unreachable" edge case cleanly. For continuous
+	// drag with cursor near the curve the warm-start result almost always
+	// wins (no extra Newton work), giving the intended ~8× speedup.
+	if (
+		warmStartT !== undefined &&
+		Number.isFinite(warmStartT) &&
+		warmStartT >= tMin &&
+		warmStartT <= tMax
+	) {
+		const warm = runFromStart(warmStartT);
+		if (warm !== null) {
+			let bestT = warm.t;
+			let bestDistSq = warm.distSq;
+			for (const tBound of [tMin, tMax]) {
+				const p = evalGamma(tBound);
+				if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) continue;
+				const bx = p.x - cursorX;
+				const by = p.y - cursorY;
+				const dSq = bx * bx + by * by;
+				if (dSq < bestDistSq) {
+					bestDistSq = dSq;
+					bestT = tBound;
+				}
+			}
+			return bestT;
+		}
+	}
+
+	// Multi-start fallback (initial click, or warm-start started in a singular region).
+	let bestT: number | null = null;
+	let bestDistSq = Infinity;
+
+	const N = Math.max(2, cfg.numStarts);
+	const step = (tMax - tMin) / (N - 1);
+
+	for (let i = 0; i < N; i++) {
+		const t0 = tMin + i * step;
+		const result = runFromStart(t0);
+		if (result === null) continue;
+		if (result.distSq < bestDistSq) {
+			bestDistSq = result.distSq;
+			bestT = result.t;
 		}
 	}
 

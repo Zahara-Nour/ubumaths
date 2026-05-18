@@ -96,9 +96,9 @@ Top 3 optimisations prioritaires :
    recompile a chaque tick.~~ **FAIT 2026-05-18**.
 2. ~~**Supprimer les spreads** (`figure.ts:4399-4418`) — ~1 200 allocations
    `{ ...scalarBindings, [param]: t }` par courbe par rendu. Effort faible.~~ **FAIT 2026-05-18** (pattern mutable-env, 3 sites).
-3. **Warm-start Newton** (`parametric-newton.ts` + `intersection-1d.ts`) —
-   utiliser le `t` precedent pour reduire 16 starts → 1 en interaction
-   continue. Reduction 16:1.
+3. **Warm-start Newton** — partiellement corrige 2026-05-18 :
+   ✅ `parametric-newton.ts` (drag `point_sur`) ; ⏳ `intersection-1d.ts`
+   reporte (refonte API multi-intersections necessaire).
 
 Autres hotspots : Newton 2D 8×8 starts dans intersections paramétriques,
 `marchingSquares` 200×200 sans cache, `version` global dans
@@ -166,7 +166,8 @@ impact/effort :
    `parametric-newton.ts` et `bezier.ts`.
 7. ~~**[SECURITE MEDIUM]** Borner `PARSE_CACHE` dans `dsl/interpreter.ts`.~~ **FAIT 2026-05-18** (plafond 5 000 entrees).
 8. ~~**[SECURITE LOW]** Garde de longueur DSL dans `parse()`.~~ **FAIT 2026-05-18** (100 000 caracteres max).
-9. **[PERF MEDIUM]** Warm-start Newton dans les drags continus.
+9. **[PERF MEDIUM]** ✅ Warm-start Newton dans les drags continus —
+   `findClosestParameterOnCurve` accepte `warmStartT` (2026-05-18). Reste a faire pour `parametric-intersection-1d.ts` (multi-intersections, API a revoir).
 
 ---
 

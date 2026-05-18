@@ -2666,7 +2666,23 @@ export class Figure {
 			}
 		}
 
-		const newT = findClosestParameterOnCurve(curveEl, cursorX, cursorY, scalarBindings, tMin, tMax);
+		// Warm-start: previous frame's t is an excellent starting guess during
+		// continuous drag (skips 7 of 8 multi-starts when Newton converges).
+		// findClosestParameterOnCurve handles the local-maximum edge case by
+		// also comparing the warm-start result to the bounds.
+		const previousT = resolveScalarParam(el.t, this.scalarValues);
+		const warmStartT = Number.isFinite(previousT) ? previousT : undefined;
+
+		const newT = findClosestParameterOnCurve(
+			curveEl,
+			cursorX,
+			cursorY,
+			scalarBindings,
+			tMin,
+			tMax,
+			undefined,
+			warmStartT
+		);
 
 		// All starts singular → drag silently ignored.
 		if (newT === null) return;

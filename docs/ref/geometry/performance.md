@@ -408,24 +408,32 @@ pan/zoom/drag qui ne touche pas la courbe.
 
 ---
 
-### 5. Warm-start Newton pour les intersections et `point_sur` — MEDIUM / MOYEN EFFORT
+### 5. Warm-start Newton — PARTIELLEMENT CORRIGÉ 2026-05-18
 
 **Fichiers** :
 
-- `graph/parametric-newton.ts:50-149`
-- `graph/parametric-intersection-1d.ts:64-154`
-- Types `GeoIntersectionParametricLine`, `GeoPointOnParametricCurve`
+- ✅ `graph/parametric-newton.ts:50-149` — **CORRIGÉ 2026-05-18**
+- ⏳ `graph/parametric-intersection-1d.ts:64-154` — encore à faire
 
-Ajouter un champ `_lastT?: number` sur les éléments concernés (stocké hors
-de la structure immuable, dans une `Map` privée de la Figure). Si ce champ
-est défini et que le slider/point n'a bougé que de peu, utiliser uniquement
-1-2 starts Newton autour de `lastT` au lieu des 16 (ou 8×8).
+**Statut closest-point (drag `point_sur`)** : `findClosestParameterOnCurve`
+accepte désormais un paramètre `warmStartT?: number` (8e argument).
+`movePointOnParametricCurveFromCursor` (`figure.ts`) passe `el.t` résolu en
+tant que hint pendant le drag continu. Newton tourne 1 fois depuis le hint
+au lieu de 8 multi-starts. Garde-fou : comparaison avec `γ(tMin)` et
+`γ(tMax)` pour éviter le piège des maxima locaux de distance (cas H6,
+cursor sous une demi-courbe). Tests unitaires dans
+`graph/__tests__/parametric-newton.test.ts` (8 tests dédiés).
 
-Implémentation conservatrice : si `|currentSliderValue - lastSliderValue| < threshold`,
-limiter `numStarts = 1` avec `t0 = lastT`. Sinon, fallback aux 16 starts.
+**À faire — warm-start intersection-1d** : la fonction
+`findParametricLineIntersections` retourne _toutes_ les intersections,
+donc le hint doit être un _array_ de t précédents (un par intersection).
+API plus complexe : nécessite de cacher l'historique des t sur la Figure
+(par exemple `Map<intersectionId, readonly number[]>`) et de modifier la
+signature. Différer à un commit séparé.
 
-Gain attendu : réduction de 16:1 du coût Newton sur un slider en mouvement
-continu — le cas le plus courant en production (animation de slider).
+Gain restant attendu : réduction de 16:1 du coût Newton sur un slider
+animant des intersections paramétriques (3 intersections × 320 évaluations
+→ 3 × 20 ≈ 60 évaluations).
 
 ---
 
