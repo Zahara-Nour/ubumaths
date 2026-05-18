@@ -25,7 +25,23 @@ import type {
 	DslDirective
 } from './types';
 
+/**
+ * Hard cap on DSL source length. The server-side Zod validation already caps
+ * `dsl_script` at 50 000 (constructions) or 100 000 (demo scripts); this
+ * client-side guard is defence in depth against pathological inputs that
+ * could exhaust memory or stack-overflow the recursive-descent parser before
+ * reaching the server.
+ */
+const MAX_DSL_SOURCE_LENGTH = 100_000;
+
 export function parse(source: string): DslProgram {
+	if (source.length > MAX_DSL_SOURCE_LENGTH) {
+		throw new DslParseError(
+			`Script DSL trop long (${source.length} caractères, max ${MAX_DSL_SOURCE_LENGTH})`,
+			1,
+			1
+		);
+	}
 	const tokens = tokenize(source);
 	const parser = new Parser(tokens);
 	const program = parser.parseProgram();
