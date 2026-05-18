@@ -190,7 +190,7 @@ T = triangle_equilateral(A, B)
 	</div>
 
 	{#if EditorComponent}
-		<EditorComponent bind:value={script} width={500} height={450} />
+		<EditorComponent bind:value={script} width={500} height={450} interactive />
 	{:else}
 		<div class="flex h-[450px] items-center justify-center rounded-md border">
 			<p class="text-muted-foreground">Chargement de l'editeur...</p>

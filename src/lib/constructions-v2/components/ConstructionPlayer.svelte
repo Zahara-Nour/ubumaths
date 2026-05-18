@@ -38,6 +38,12 @@
 		class?: string;
 		/** Notified when a runtime error occurs (or null when cleared). */
 		onRuntimeError?: (err: RuntimeErrorInfo | null) => void;
+		/**
+		 * Allow dragging points / labels on the canvas. Disabled by default
+		 * (player is in playback mode). Drag is auto-suspended while the
+		 * timeline is playing, even when this is true.
+		 */
+		interactive?: boolean;
 	}
 
 	let {
@@ -50,7 +56,8 @@
 		showGrid = true,
 		showControls = true,
 		class: className = '',
-		onRuntimeError
+		onRuntimeError,
+		interactive = false
 	}: Props = $props();
 
 	// Reactive state owned by this component
@@ -303,6 +310,7 @@
 				{width}
 				{height}
 				{showGrid}
+				interactive={interactive && !tl.isPlaying}
 			/>
 
 			{#if runtimeError}

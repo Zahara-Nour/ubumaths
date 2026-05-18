@@ -25,6 +25,8 @@
 		width?: number;
 		height?: number;
 		class?: string;
+		/** Allow point drag on the preview canvas. Auto-suspended during playback. */
+		interactive?: boolean;
 	}
 
 	let {
@@ -32,7 +34,8 @@
 		onSave,
 		width = 500,
 		height = 400,
-		class: className = ''
+		class: className = '',
+		interactive = false
 	}: Props = $props();
 
 	interface RuntimeErrorInfo {
@@ -485,6 +488,7 @@
 				showGrid={true}
 				showControls={true}
 				seekToEnd={true}
+				{interactive}
 				onRuntimeError={handleRuntimeError}
 			/>
 		</div>
