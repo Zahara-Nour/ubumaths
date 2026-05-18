@@ -4507,6 +4507,118 @@ function handleLosange(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('losange', handleLosange);
 
+// ─── 14. polygone_regulier(O, r, n) → polygone (BREAKING) ───────────
+
+function handlePolygoneRegulier(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 3)
+		throw new DslRuntimeError(
+			{
+				summary: `\`polygone_regulier()\` attend 3 arguments (centre, rayon, n), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'polygone_regulier(O, r, n)',
+						description: 'polygone régulier à `n` sommets, centré en `O`, rayon `r`'
+					}
+				]
+			},
+			line
+		);
+	const Oxy = pointXY(figure, pos[0], 'O', line);
+	const r = requireNumber(pos[1], 'rayon', line);
+	const n = requireNumber(pos[2], 'n', line);
+	if (!Number.isInteger(n) || n < 3)
+		throw new DslRuntimeError(
+			{ summary: `\`polygone_regulier()\` : \`n\` doit être un entier ≥ 3, reçu ${n}.` },
+			line
+		);
+	if (r <= 0)
+		throw new DslRuntimeError(
+			{ summary: '`polygone_regulier()` : le rayon doit être strictement positif.' },
+			line
+		);
+	const vertexIds: string[] = [];
+	for (let i = 0; i < n; i++) {
+		const theta = (2 * Math.PI * i) / n;
+		const x = Oxy.x + r * Math.cos(theta);
+		const y = Oxy.y + r * Math.sin(theta);
+		vertexIds.push(createHiddenPoint(figure, x, y));
+	}
+	const id = figure.createPolygon(vertexIds as [string, string, string, ...string[]], { label });
+	return { figureId: id, symbolType: 'polygone' };
+}
+HANDLERS.set('polygone_regulier', handlePolygoneRegulier);
+
+// ─── 15. etoile(O, r, n, saut=2) → polygone (BREAKING) ──────────────
+
+function handleEtoile(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label } = ctx;
+	if (pos.length !== 3)
+		throw new DslRuntimeError(
+			{
+				summary: `\`etoile()\` attend 3 arguments positionnels (centre, rayon, n), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'etoile(O, r, n, saut=2)',
+						description:
+							'polygone étoilé à `n` sommets, centré en `O`, rayon `r` ; `saut` détermine la forme'
+					}
+				]
+			},
+			line
+		);
+	const Oxy = pointXY(figure, pos[0], 'O', line);
+	const r = requireNumber(pos[1], 'rayon', line);
+	const n = requireNumber(pos[2], 'n', line);
+	const saut = named.has('saut') ? requireNumber(named.get('saut')!, 'saut', line) : 2;
+	if (!Number.isInteger(n) || n < 5)
+		throw new DslRuntimeError(
+			{ summary: `\`etoile()\` : \`n\` doit être un entier ≥ 5, reçu ${n}.` },
+			line
+		);
+	if (!Number.isInteger(saut) || saut < 2 || saut >= n)
+		throw new DslRuntimeError(
+			{ summary: `\`etoile()\` : \`saut\` doit être un entier entre 2 et n-1, reçu ${saut}.` },
+			line
+		);
+	if (r <= 0)
+		throw new DslRuntimeError(
+			{ summary: '`etoile()` : le rayon doit être strictement positif.' },
+			line
+		);
+	const rawPoints: string[] = [];
+	for (let i = 0; i < n; i++) {
+		const theta = (2 * Math.PI * i) / n;
+		const x = Oxy.x + r * Math.cos(theta);
+		const y = Oxy.y + r * Math.sin(theta);
+		rawPoints.push(createHiddenPoint(figure, x, y));
+	}
+	// Visit order : 0, saut, 2*saut, ... mod n until we return to 0.
+	// For gcd(saut, n)=1 this yields all n vertices in a single star polyline.
+	// For gcd != 1, the cycle closes early (e.g. n=6, saut=2 → 0, 2, 4 then
+	// back to 0) and we produce a smaller polygon (the "degenerate" inner
+	// component of the star figure).
+	const orderedIds: string[] = [];
+	const visited = new Set<number>();
+	let idx = 0;
+	while (!visited.has(idx)) {
+		visited.add(idx);
+		orderedIds.push(rawPoints[idx]);
+		idx = (idx + saut) % n;
+	}
+	if (orderedIds.length < 3)
+		throw new DslRuntimeError(
+			{
+				summary: `\`etoile()\` : la combinaison n=${n}, saut=${saut} produit moins de 3 sommets distincts.`,
+				hint: 'Choisissez un `saut` tel que `gcd(saut, n) < n/3` pour obtenir une étoile non-dégénérée.'
+			},
+			line
+		);
+	const id = figure.createPolygon(orderedIds as [string, string, string, ...string[]], { label });
+	return { figureId: id, symbolType: 'polygone' };
+}
+HANDLERS.set('etoile', handleEtoile);
+
 function _executeBuiltinInner(
 	name: string,
 	pos: ResolvedValue[],
@@ -4618,7 +4730,9 @@ export const BUILTIN_NAMES = new Set([
 	'parallelogramme',
 	'rectangle',
 	'carre',
-	'losange'
+	'losange',
+	'polygone_regulier',
+	'etoile'
 ]);
 
 /** Math functions that return numbers. */
