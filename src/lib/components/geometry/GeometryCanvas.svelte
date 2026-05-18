@@ -86,6 +86,12 @@
 		hiddenElementIds?: Set<string>;
 		/** Rendering mode: 'normal' (clean SVG), 'rough' (hand-drawn), 'mixed' (per-element). */
 		renderMode?: 'normal' | 'rough' | 'mixed';
+		/**
+		 * Notified whenever the local viewport changes (pan, zoom).
+		 * Lets a wrapping canvas (e.g. construction overlay) keep an overlay in sync
+		 * with the user's zoom/pan state. The viewport object is in math coords.
+		 */
+		onViewportChange?: (viewport: Viewport, pixelsPerUnit: number) => void;
 	}
 
 	let {
@@ -101,7 +107,8 @@
 		snapOnRelease = false,
 		externalVersion = 0,
 		hiddenElementIds,
-		renderMode = 'normal'
+		renderMode = 'normal',
+		onViewportChange
 	}: Props = $props();
 
 	let svgRef: SVGSVGElement | undefined = $state();
@@ -167,6 +174,11 @@
 	});
 
 	let transformer: CoordinateTransformer = $derived(createTransformer(viewport, width, height));
+
+	// Notify a wrapper component (e.g. construction overlay) when the viewport changes.
+	$effect(() => {
+		onViewportChange?.(viewport, ppu);
+	});
 
 	let gridStep = $derived(computeGridStep(ppu));
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
 	import { createTransformer } from '$lib/geometry-core/viewport/viewport';
+	import type { Viewport } from '$lib/geometry-core/viewport/types';
 	import {
 		Ruler,
 		Compass,
@@ -45,15 +46,25 @@
 		class: className = ''
 	}: Props = $props();
 
-	// Match GeometryCanvas viewport (center=0,0, pixelsPerUnit=40)
-	const PPU = 40;
-	let viewport = $derived({
-		xMin: -width / (2 * PPU),
-		xMax: width / (2 * PPU),
-		yMin: -height / (2 * PPU),
-		yMax: height / (2 * PPU)
+	// Viewport synced from GeometryCanvas via onViewportChange callback below.
+	// Default matches GeometryCanvas's defaults (center=0,0, pixelsPerUnit=40) so
+	// instruments/overlay are positioned correctly on first paint, before the
+	// callback fires.
+	const INITIAL_PPU = 40;
+	// svelte-ignore state_referenced_locally
+	let viewport = $state<Viewport>({
+		xMin: -width / (2 * INITIAL_PPU),
+		xMax: width / (2 * INITIAL_PPU),
+		yMin: -height / (2 * INITIAL_PPU),
+		yMax: height / (2 * INITIAL_PPU)
 	});
+	let pixelsPerUnit = $state(INITIAL_PPU);
 	let transformer = $derived(createTransformer(viewport, width, height));
+
+	function handleViewportChange(v: Viewport, ppu: number) {
+		viewport = v;
+		pixelsPerUnit = ppu;
+	}
 
 	// IDs to hide from GeometryCanvas during animation (drawables + points being animated)
 	// Drawables are unhidden once drawing is complete (raw progress >= drawPhaseEnd),
@@ -268,6 +279,7 @@
 		{interactive}
 		{hiddenElementIds}
 		externalVersion={figureVersion}
+		onViewportChange={handleViewportChange}
 	/>
 
 	<!-- Animation overlay: partial elements being drawn -->
@@ -422,14 +434,7 @@
 						transform="translate({rpos?.x ?? 0}, {rpos?.y ?? 0}) rotate({rpos?.rotation ?? 0})"
 						opacity={state.opacity}
 					>
-						<Ruler
-							x={0}
-							y={0}
-							rotation={0}
-							scale={state.scale}
-							pixelsPerUnit={PPU}
-							visible={true}
-						/>
+						<Ruler x={0} y={0} rotation={0} scale={state.scale} {pixelsPerUnit} visible={true} />
 					</g>
 				{:else if state.type === 'compass'}
 					{@const cpos = instrumentPositions['compass']}
