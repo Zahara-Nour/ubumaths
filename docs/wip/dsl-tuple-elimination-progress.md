@@ -15,8 +15,8 @@ Voir le plan complet pour les détails de conception.
 | #   | Commit                                                                                   | Statut       |
 | --- | ---------------------------------------------------------------------------------------- | ------------ |
 | 1   | `feat(dsl): accessors centre/extremite/extremites/milieu(s)/sommet/sommets`              | ✅ c8f0f3693 |
-| 2   | `feat(dsl): montre + masque + visible support in style`                                  | ✅ EN COURS  |
-| 3   | `feat(dsl): point(A, longueur=...) + segment(A, longueur=...)`                           | ⏳           |
+| 2   | `feat(dsl): montre + masque + visible support in style`                                  | ✅ 9f1a59fbb |
+| 3   | `feat(dsl): point(A, longueur=...) + segment(A, longueur=...)`                           | ✅ EN COURS  |
 | 4   | `refactor(stdlib): cercle_circonscrit/inscrit/euler → return cercle` (BREAKING)          | ⏳           |
 | 5   | `refactor(stdlib): rectangle/carre/losange/parallelogramme → return polygone` (BREAKING) | ⏳           |
 | 6   | `refactor(stdlib): mediatrice → droite, triangle_* → polygone` (BREAKING)                | ⏳           |
@@ -24,7 +24,7 @@ Voir le plan complet pour les détails de conception.
 
 ## Phase courante
 
-Commit 2 livré. Reste : commits 3-7. Tests : 1768/1768 (1617 DSL + 120 v2 + 21 accessors + 10 visibility).
+Commit 3 livré. Reste : commits 4-7 (breaking changes stdlib). Tests : 1782/1782 (1617 DSL + 120 v2 + 21 accessors + 10 visibility + 14 polar).
 
 ## Notes implémentation
 
@@ -40,3 +40,11 @@ Commit 2 livré. Reste : commits 3-7. Tests : 1768/1768 (1617 DSL + 120 v2 + 21 
 - Booleans DSL (`vrai`/`faux`) sont coercés en `nombre` (1/0) par l'interpréteur (interpreter.ts:519). Helper `namedToBoolean` accepte `nombre` uniquement.
 - `montre(O, ...styleArgs)` = show + apply remaining style. `masque(O)` = hide-only.
 - `style(O, visible=vrai)` fonctionne aussi (mutateur pur, accepte tous les args).
+
+### Commit 3 — `point(A, longueur=...)` + `segment(A, longueur=...)`
+
+- Nouveau helper `resolveDirection(ctx, Apos)` qui résout (dx, dy) unitaire depuis `angle=`, `direction=` ou `vecteur=`. Sans direction explicite → angle=0 par défaut (horizontal).
+- `point(A, longueur=L, ...)` retourne le nouveau point (idiomatique : `B = point(A, longueur=5, angle=30)`).
+- `segment(A, longueur=L, ...)` crée le point d'extrémité comme byproduct visible (la suppression silencieuse rendrait la figure incomplète), retourne le segment. L'utilisateur récupère l'endpoint via `extremite(s, 2)`.
+- `angle=` respecte le `@mode("deg"|"rad")` actif via `toRadians(val, angleMode)`.
+- Erreurs structurées : `direction=` avec point confondu → "indéterminée" ; `vecteur=` nul → idem.
