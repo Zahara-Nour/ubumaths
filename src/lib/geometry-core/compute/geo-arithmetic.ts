@@ -26,8 +26,17 @@ export function simplifyExact(node: MathNode): MathNode {
 
 /**
  * Apply a binary operation.
- * If both operands are exact, build MathNode tree and simplify.
- * Otherwise, compute numerically.
+ *
+ * - exact ⊕ exact     → exact
+ * - exact ⊕ integer   → exact (the integer is lifted to a NumberNode)
+ * - integer ⊕ exact   → exact (idem)
+ * - anything else     → numeric
+ *
+ * The integer-lifting promotes exactness through `point(0, 0)` + `point(2*sqrt(3), 0)` :
+ * the DSL emits `numeric(0)` for the literal `0`, but `geoAdd(numeric(0), exact(sqrt(3)))`
+ * should still propagate exactness for the derived midpoint, rotation, etc.
+ * Non-integer numerics are not lifted because converting a float to a NumberNode
+ * can produce a 17-digit literal that defeats `simplifyExact` (cf. `geoFromNumber`).
  */
 function binaryOp(
 	a: GeoValue,
@@ -37,6 +46,12 @@ function binaryOp(
 ): GeoValue {
 	if (isExact(a) && isExact(b)) {
 		return exact(simplifyExact(exactOp(a.node, b.node)));
+	}
+	if (isExact(a) && !isExact(b) && Number.isInteger(b.value)) {
+		return exact(simplifyExact(exactOp(a.node, numericNode(b.value))));
+	}
+	if (isExact(b) && !isExact(a) && Number.isInteger(a.value)) {
+		return exact(simplifyExact(exactOp(numericNode(a.value), b.node)));
 	}
 	return numeric(numericOp(geoToNumber(a), geoToNumber(b)));
 }
@@ -73,6 +88,12 @@ export function geoDiv(a: GeoValue, b: GeoValue): GeoValue | null {
 
 	if (isExact(a) && isExact(b)) {
 		return exact(simplifyExact(divide(a.node, b.node, 'fraction')));
+	}
+	if (isExact(a) && !isExact(b) && Number.isInteger(b.value)) {
+		return exact(simplifyExact(divide(a.node, numericNode(b.value), 'fraction')));
+	}
+	if (isExact(b) && !isExact(a) && Number.isInteger(a.value)) {
+		return exact(simplifyExact(divide(numericNode(a.value), b.node, 'fraction')));
 	}
 	return numeric(geoToNumber(a) / geoToNumber(b));
 }

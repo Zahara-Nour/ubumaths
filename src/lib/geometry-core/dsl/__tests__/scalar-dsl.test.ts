@@ -204,8 +204,7 @@ describe('DSL: scalar as parameter', () => {
 		const pos = r.figure.getPosition(sym(r, 'P')!.figureId!);
 		expect(pos).not.toBeNull();
 		// factor = 1 + 3/5 = 1.6, source = (1,0), center = (0,0) → (1.6, 0)
-		const x = pos!.x.kind === 'numeric' ? pos!.x.value : 0;
-		expect(x).toBeCloseTo(1.6, 5);
+		expect(geoToNumber(pos!.x)).toBeCloseTo(1.6, 5);
 	});
 
 	it('rotation with slider angle (degrees)', () => {
@@ -220,10 +219,8 @@ describe('DSL: scalar as parameter', () => {
 		const pos = r.figure.getPosition(sym(r, 'R')!.figureId!);
 		expect(pos).not.toBeNull();
 		// 90 degrees: (1,0) → (0,1)
-		const x = pos!.x.kind === 'numeric' ? pos!.x.value : 0;
-		const y = pos!.y.kind === 'numeric' ? pos!.y.value : 0;
-		expect(x).toBeCloseTo(0, 3);
-		expect(y).toBeCloseTo(1, 3);
+		expect(geoToNumber(pos!.x)).toBeCloseTo(0, 3);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(1, 3);
 	});
 });
 
@@ -354,10 +351,8 @@ describe('DSL: similitude with scalar', () => {
 		// 90deg rotation + factor 2: (1,0) -> (0,1)*2 = (0,2)
 		const pos = r.figure.getPosition(sym(r, 'P')!.figureId!);
 		expect(pos).not.toBeNull();
-		const x = pos!.x.kind === 'numeric' ? pos!.x.value : 999;
-		const y = pos!.y.kind === 'numeric' ? pos!.y.value : 999;
-		expect(x).toBeCloseTo(0, 2);
-		expect(y).toBeCloseTo(2, 2);
+		expect(geoToNumber(pos!.x)).toBeCloseTo(0, 2);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(2, 2);
 	});
 });
 

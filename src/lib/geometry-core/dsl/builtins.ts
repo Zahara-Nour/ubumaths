@@ -193,14 +193,11 @@ function requireElement(val: ResolvedValue, name: string, line: number): string 
 function requireNumber(val: ResolvedValue, name: string, line: number): number {
 	if (val.type === 'nombre') return val.value;
 	if (val.type === 'geoValue') {
-		// This should already be a number
-		throw new DslRuntimeError(
-			{
-				summary: `\`${name}\` doit être un nombre, valeur exacte reçue.`,
-				hint: 'Convertissez la valeur exacte en nombre via une expression numérique (ex. `2*3.14` au lieu de `2*pi`).'
-			},
-			line
-		);
+		// Exact GeoValues (e.g. `2*sqrt(3)`) are evaluated to their numeric
+		// representation here. Callers that require a strict integer (n in
+		// `polygone_regulier(O, r, n)`) should validate downstream via
+		// Number.isInteger().
+		return geoToNumber(val.value);
 	}
 	const got =
 		val.type === 'element'
@@ -5643,9 +5640,18 @@ function resolveAndValidateBounds(
 	const tMin = resolveTBoundArg(tMinRaw, keyMin, toGeoValue, line);
 	const tMax = resolveTBoundArg(tMaxRaw, keyMax, toGeoValue, line);
 
-	const tMinNum = !isScalarRef(tMin) && tMin.kind === 'numeric' ? tMin.value : null;
-	const tMaxNum = !isScalarRef(tMax) && tMax.kind === 'numeric' ? tMax.value : null;
-	if (tMinNum !== null && tMaxNum !== null && tMinNum >= tMaxNum) {
+	// Static check: when both bounds resolve to concrete GeoValues (numeric or
+	// exact — exact comes from DSL literals like `0` or `2*pi`), validate
+	// tMin < tMax. ScalarRefs (sliders) are skipped: their value isn't known until recompute.
+	const tMinNum = !isScalarRef(tMin) ? geoToNumber(tMin) : null;
+	const tMaxNum = !isScalarRef(tMax) ? geoToNumber(tMax) : null;
+	if (
+		tMinNum !== null &&
+		tMaxNum !== null &&
+		Number.isFinite(tMinNum) &&
+		Number.isFinite(tMaxNum) &&
+		tMinNum >= tMaxNum
+	) {
 		throw new DslRuntimeError(errorMessages.inverted, line);
 	}
 	return { tMin, tMax };

@@ -23,7 +23,8 @@ import { describe, it, expect } from 'vitest';
 import { runDsl, serializeDsl } from '../index';
 import type { GeoParametricCurve } from '../../types/elements';
 import { isParametricCurve } from '../../types/elements';
-import { numeric } from '../../types/geo-value';
+import { numeric, type GeoValue } from '../../types/geo-value';
+import { geoToNumber } from '../../compute/to-number';
 
 // =============================================================================
 // Helper type for accessing polar-specific fields before they are declared in
@@ -72,9 +73,9 @@ describe('courbe — polar (A. nominal creation)', () => {
 		expect(pc.equationR).toBe('2*cos(theta)');
 		// parameter must be 'theta'
 		expect(pc.parameter).toBe('theta');
-		// bounds
-		expect(pc.tMin).toEqual(numeric(0));
-		expect(pc.tMax).toEqual(numeric(Math.PI));
+		// bounds (since 2026-05-19, integer DSL literals → exact, floats → numeric)
+		expect(geoToNumber(pc.tMin as GeoValue)).toBe(0);
+		expect(geoToNumber(pc.tMax as GeoValue)).toBeCloseTo(Math.PI, 10);
 	});
 
 	it('A2. r = 1 - cos(theta) on [0, 2π] creates a cardioid, x/y values correct at theta=0', () => {

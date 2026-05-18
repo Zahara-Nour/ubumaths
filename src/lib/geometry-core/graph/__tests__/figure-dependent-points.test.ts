@@ -52,7 +52,10 @@ describe('createIntersectionLL', () => {
 		expect(geoEqual(pos.y, geoFromNumber(0))).toBe(true);
 	});
 
-	it('intersection becomes numeric when parent is dragged', () => {
+	it('intersection becomes numeric when parent is dragged with float coords', () => {
+		// Drag positions from pointer events are typically non-integer floats.
+		// Since 2026-05-19 : integer numerics are lifted to exact during
+		// arithmetic, so to actually see a numeric result we drag to float coords.
 		const f = new Figure();
 		const a = f.createFreePoint(pt(-5, 0));
 		const b = f.createFreePoint(pt(5, 0));
@@ -62,12 +65,11 @@ describe('createIntersectionLL', () => {
 		const seg2 = f.createSegment(c, d);
 		const inter = f.createIntersectionLL(seg1, seg2);
 
-		// Initially exact
 		expect(isExact(f.getPosition(inter)!.x)).toBe(true);
 
-		// Drag -> numeric
-		f.movePoint(c, numeric(3), numeric(-5));
-		f.movePoint(d, numeric(3), numeric(5));
+		// Drag to non-integer floats → result is numeric (no exact lift).
+		f.movePoint(c, numeric(3.4), numeric(-5.2));
+		f.movePoint(d, numeric(3.4), numeric(5.7));
 		f.recompute();
 		expect(isNumeric(f.getPosition(inter)!.x)).toBe(true);
 	});
@@ -287,7 +289,10 @@ describe('createReflectedPoint', () => {
 		expect(isExact(pos.y)).toBe(true);
 	});
 
-	it('reflected point becomes numeric after drag', () => {
+	it('reflected point becomes numeric after drag with float coords', () => {
+		// Real drag positions are non-integer floats from pointer events.
+		// Since 2026-05-19 : integer numerics are lifted to exact during
+		// arithmetic, so to actually see a numeric result we drag to floats.
 		const f = new Figure();
 		const p = f.createFreePoint(pt(3, 4));
 		const center = f.createFreePoint(pt(0, 0));
@@ -295,7 +300,7 @@ describe('createReflectedPoint', () => {
 
 		expect(isExact(f.getPosition(reflected)!.x)).toBe(true);
 
-		f.movePoint(p, numeric(5), numeric(2));
+		f.movePoint(p, numeric(5.3), numeric(2.7));
 		f.recompute();
 		expect(isNumeric(f.getPosition(reflected)!.x)).toBe(true);
 	});
