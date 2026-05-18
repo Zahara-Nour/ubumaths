@@ -18,7 +18,10 @@ import type { MathNode } from '$lib/mathAST';
 import { subtract } from '$lib/mathAST';
 import type { Discontinuity } from '$lib/mathAST/analysis';
 import { DslRuntimeError } from './errors';
-import { warnIfSingularitySuspected, getAllDiscontinuities } from './singularity-warn';
+import {
+	warnIfSingularitySuspected,
+	getAllDiscontinuities
+} from '$lib/mathAST/analysis/singularity-warn';
 import type { ResolvedValue } from './builtins';
 import { PROBE_T_MAX } from '$lib/mathAST/integration/improper';
 

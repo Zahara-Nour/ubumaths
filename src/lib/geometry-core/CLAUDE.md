@@ -54,7 +54,7 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
 - **`extendLineToViewport`** dupliquee dans `svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts` (mot pour mot). Toute correction doit etre triple-appliquee.
 - **3 interfaces `NewtonConfig` distinctes** dans `parametric-newton.ts`, `parametric-intersection.ts`, `parametric-intersection-1d.ts` avec noms de champs differents (`tolerance` vs `convergenceTolerance`, `numStarts` vs `numStartsPerAxis`).
 - **`GeoOsculatingCircle`** dans l'union `GeoElement` mais absent des renderers SVG/TikZ/Typst — rendu uniquement dans `GeometryCanvas.svelte`. Export muet.
-- **`graph` ↔ `dsl`** : cycle de dependance fragile (`figure.ts:142` importe `singularity-warn` depuis dsl). Tient grace aux `import type`. Une importation de valeur casse le build.
+- **`graph` ↔ `dsl`** : plus de cycle depuis 2026-05-18. `singularity-warn` a ete deplace vers `$lib/mathAST/analysis/`. **Regle a maintenir** : `graph/` ne doit JAMAIS importer en valeur depuis `dsl/`. Si tu en as besoin, le helper appartient probablement a `$lib/mathAST/analysis/` ou a un nouveau dossier partage `geometry-core/analysis/`.
 - **9 erreurs preexistantes svelte-check** (~46 warnings). Baseline stable, ne pas commenter, juste verifier que mes modifs n'augmentent pas le compteur.
 
 ---

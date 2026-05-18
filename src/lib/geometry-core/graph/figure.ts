@@ -140,7 +140,7 @@ import { integrateDefinite, numericIntegrate } from '$lib/mathAST/integration';
 import { improperIntegrate, PROBE_T_MAX } from '$lib/mathAST/integration/improper';
 import { findRoots } from '$lib/mathAST/analysis/roots';
 import type { Discontinuity } from '$lib/mathAST/analysis';
-import { classifyDiscontinuitiesForRange } from '../dsl/singularity-warn';
+import { classifyDiscontinuitiesForRange } from '$lib/mathAST/analysis/singularity-warn';
 import { UndoManager } from './undo-redo';
 import type { Delta } from './undo-redo';
 import { computeElementPosition, resolveScalarParam, buildCurveBindings } from './compute-position';

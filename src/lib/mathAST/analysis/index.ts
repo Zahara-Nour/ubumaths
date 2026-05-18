@@ -212,3 +212,14 @@ export {
 	describePeriodicNonDifferentiability,
 	summarizeDifferentiabilityResult
 } from './differentiability-steps';
+
+// Range-relative discontinuity classification (used by integrale/aire builtins
+// and by figure.ts for function-curve rendering). Moved from geometry-core/dsl/
+// on 2026-05-18 to break a source-level graph→dsl import cycle.
+export {
+	getAllDiscontinuities,
+	classifyDiscontinuitiesForRange,
+	analyzeRangeContinuity,
+	warnIfSingularitySuspected,
+	type RangeDiscontinuity
+} from './singularity-warn';
