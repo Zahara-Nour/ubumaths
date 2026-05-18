@@ -4322,6 +4322,90 @@ function handleBissectrice(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('bissectrice', handleBissectrice);
 
+// ─── 6. triangle(A, B, C) → polygone ────────────────────────────────
+
+function handleTriangle(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, label } = ctx;
+	const { ids } = requireNPoints(ctx, 3, ['A', 'B', 'C'], 'triangle', {
+		syntax: 'triangle(A, B, C)',
+		description: 'triangle (polygone à 3 sommets)'
+	});
+	const id = figure.createPolygon(ids as [string, string, string], { label });
+	return { figureId: id, symbolType: 'polygone' };
+}
+HANDLERS.set('triangle', handleTriangle);
+
+// ─── 7. triangle_equilateral(A, B) → polygone ───────────────────────
+
+function handleTriangleEquilateral(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, label } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 2, ['A', 'B'], 'triangle_equilateral', {
+		syntax: 'triangle_equilateral(A, B)',
+		description: 'triangle équilatéral de côté `[AB]` (3ᵉ sommet calculé par rotation à 60°)'
+	});
+	const [A, B] = coords;
+	// C = rotation of B around A by 60° (counter-clockwise)
+	const rad = Math.PI / 3;
+	const dx = B.x - A.x;
+	const dy = B.y - A.y;
+	const Cx = A.x + dx * Math.cos(rad) - dy * Math.sin(rad);
+	const Cy = A.y + dx * Math.sin(rad) + dy * Math.cos(rad);
+	const C = createHiddenPoint(figure, Cx, Cy);
+	const id = figure.createPolygon([ids[0], ids[1], C], { label });
+	return { figureId: id, symbolType: 'polygone' };
+}
+HANDLERS.set('triangle_equilateral', handleTriangleEquilateral);
+
+// ─── 8. triangle_isocele(A, B, angle=40) → polygone ─────────────────
+
+function handleTriangleIsocele(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, named, line, label, angleMode } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 2, ['A', 'B'], 'triangle_isocele', {
+		syntax: 'triangle_isocele(A, B, angle=40)',
+		description: 'triangle isocèle (préserve la sémantique de la macro originale)'
+	});
+	const angleDeg = named.has('angle') ? requireNumber(named.get('angle')!, 'angle', line) : 40;
+	const [A, B] = coords;
+	// Preserve original macro semantics: C = rotation of midpoint(A,B) around A
+	// by (90 - angle/2) — interpreted in current angle mode.
+	const Mx = (A.x + B.x) / 2;
+	const My = (A.y + B.y) / 2;
+	const rotAngleVal = 90 - angleDeg / 2;
+	const rad = toRadians(rotAngleVal, angleMode);
+	const dx = Mx - A.x;
+	const dy = My - A.y;
+	const Cx = A.x + dx * Math.cos(rad) - dy * Math.sin(rad);
+	const Cy = A.y + dx * Math.sin(rad) + dy * Math.cos(rad);
+	const C = createHiddenPoint(figure, Cx, Cy);
+	const id = figure.createPolygon([ids[0], ids[1], C], { label });
+	return { figureId: id, symbolType: 'polygone' };
+}
+HANDLERS.set('triangle_isocele', handleTriangleIsocele);
+
+// ─── 9. triangle_rectangle(A, B, angle=45) → polygone + marque ──────
+
+function handleTriangleRectangle(ctx: BuiltinCtx): BuiltinResult {
+	const { figure, named, line, label, angleMode } = ctx;
+	const { ids, coords } = requireNPoints(ctx, 2, ['A', 'B'], 'triangle_rectangle', {
+		syntax: 'triangle_rectangle(A, B, angle=45)',
+		description:
+			'triangle rectangle en `A` ; `angle` détermine l’angle BAC (3ᵉ sommet par rotation)'
+	});
+	const angleDeg = named.has('angle') ? requireNumber(named.get('angle')!, 'angle', line) : 45;
+	const [A, B] = coords;
+	const rad = toRadians(angleDeg, angleMode);
+	const dx = B.x - A.x;
+	const dy = B.y - A.y;
+	const Cx = A.x + dx * Math.cos(rad) - dy * Math.sin(rad);
+	const Cy = A.y + dx * Math.sin(rad) + dy * Math.cos(rad);
+	const C = createHiddenPoint(figure, Cx, Cy);
+	const polyId = figure.createPolygon([ids[0], ids[1], C], { label });
+	// Right-angle mark at A
+	figure.createAngleMark(ids[1], ids[0], C, { rightAngle: true });
+	return { figureId: polyId, symbolType: 'polygone' };
+}
+HANDLERS.set('triangle_rectangle', handleTriangleRectangle);
+
 function _executeBuiltinInner(
 	name: string,
 	pos: ResolvedValue[],
@@ -4425,7 +4509,11 @@ export const BUILTIN_NAMES = new Set([
 	'perpendiculaire',
 	'parallele',
 	'mediane',
-	'bissectrice'
+	'bissectrice',
+	'triangle',
+	'triangle_equilateral',
+	'triangle_isocele',
+	'triangle_rectangle'
 ]);
 
 /** Math functions that return numbers. */
