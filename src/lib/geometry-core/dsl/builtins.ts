@@ -342,6 +342,876 @@ function toScalarParam(
 	return toGeoValue(val, line);
 }
 
+/**
+ * Context passed to every extracted builtin handler.
+ *
+ * Mirrors the arguments of `_executeBuiltinInner`. Handlers read from the
+ * context instead of capturing free variables, so each one is a top-level
+ * function that can be unit-tested in isolation.
+ *
+ * `name` is included for the shared `zeros`/`extrema`/`inflections` handler;
+ * most handlers ignore it.
+ */
+export interface BuiltinCtx {
+	readonly name: string;
+	readonly pos: ResolvedValue[];
+	readonly named: Map<string, ResolvedValue>;
+	readonly figure: Figure;
+	readonly toGeoValue: (v: ResolvedValue, line: number) => GeoValue;
+	readonly toGeoPoint: (x: ResolvedValue, y: ResolvedValue, line: number) => GeoPoint;
+	readonly line: number;
+	readonly label?: string;
+	readonly symbols?: SymbolTable;
+	readonly angleMode: AngleMode;
+}
+
+export type BuiltinHandler = (
+	ctx: BuiltinCtx
+) => BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null;
+
+/**
+ * Dispatch table for builtins. Populated incrementally as cases are extracted
+ * out of the legacy switch in `_executeBuiltinInner`. When a builtin name is
+ * registered here, the switch fallthrough is skipped.
+ *
+ * Migration started 2026-05-18 — track progress in code-quality.md section 4.
+ */
+const HANDLERS = new Map<string, BuiltinHandler>();
+
+function handlePoint(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, toGeoValue, line, label } = ctx;
+	if (pos.length !== 2) throw new DslRuntimeError('point() attend 2 arguments (x, y)', line);
+	const xParam = toScalarParam(pos[0], toGeoValue, line);
+	const yParam = toScalarParam(pos[1], toGeoValue, line);
+	if (isScalarRef(xParam) || isScalarRef(yParam)) {
+		const id = figure.createComputedPoint(xParam, yParam, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	const id = figure.createFreePoint({ x: xParam, y: yParam }, { label });
+	return { figureId: id, symbolType: 'point' };
+}
+HANDLERS.set('point', handlePoint);
+
+function handleIntersection(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length < 2 || pos.length > 3)
+		throw new DslRuntimeError('intersection() attend 2 ou 3 arguments', line);
+
+	const arg1 = pos[0];
+	const arg2 = pos[1];
+	const id1 = requireElement(arg1, 'arg1', line);
+	const id2 = requireElement(arg2, 'arg2', line);
+	const type1 = arg1.type === 'element' ? arg1.elementType : undefined;
+	const type2 = arg2.type === 'element' ? arg2.elementType : undefined;
+
+	const isLineType = (t: string | undefined) =>
+		t === 'droite' || t === 'segment' || t === 'demidroite';
+	const isCircleType = (t: string | undefined) => t === 'cercle';
+	const isCourbeType = (t: string | undefined) => t === 'courbe';
+
+	const isQuadraticCourbe = (figureId: string): boolean => {
+		const el = figure.getElementById(figureId);
+		return !!el && el.type === 'quadraticCurve';
+	};
+
+	const isQuad1 = isCourbeType(type1) && isQuadraticCourbe(id1);
+	const isQuad2 = isCourbeType(type2) && isQuadraticCourbe(id2);
+
+	const isFunctionCourbe = (figureId: string): boolean => {
+		const el = figure.getElementById(figureId);
+		return !!el && el.type === 'function';
+	};
+	const isFunc1 = isCourbeType(type1) && isFunctionCourbe(id1);
+	const isFunc2 = isCourbeType(type2) && isFunctionCourbe(id2);
+
+	const isParametricCourbe = (figureId: string): boolean => {
+		const el = figure.getElementById(figureId);
+		return !!el && el.type === 'parametricCurve';
+	};
+	const isParam1 = isCourbeType(type1) && isParametricCourbe(id1);
+	const isParam2 = isCourbeType(type2) && isParametricCourbe(id2);
+
+	// Parametric × parametric branch (V1 scope: includes polar curves).
+	if (isParam1 && isParam2) {
+		if (id1 === id2) {
+			throw new DslRuntimeError('intersection(): les deux courbes doivent etre distinctes', line);
+		}
+		let kVal = 1;
+		if (pos.length === 3) {
+			const kRaw = requireNumber(pos[2], 'k', line);
+			if (!Number.isInteger(kRaw) || kRaw < 1) {
+				throw new DslRuntimeError('intersection(): k doit etre un entier >= 1', line);
+			}
+			kVal = kRaw;
+		}
+		const ptId = figure.createIntersectionParametric(id1, id2, kVal, { label });
+		return { figureId: ptId, symbolType: 'point' };
+	}
+
+	// V2 (B3) + V3: parametric × {droite, cercle, fonction, segment, demidroite}.
+	const isDroiteOnly = (t: string | undefined) => t === 'droite';
+	const isSegmentOnly = (t: string | undefined) => t === 'segment';
+	const isRayOnly = (t: string | undefined) => t === 'demidroite';
+	if (isParam1 || isParam2) {
+		const paramId = isParam1 ? id1 : id2;
+		const otherType = isParam1 ? type2 : type1;
+		const otherId = isParam1 ? id2 : id1;
+		const otherIsFunc = isParam1 ? isFunc2 : isFunc1;
+
+		const otherIsDroite = isDroiteOnly(otherType);
+		const otherIsCircle = isCircleType(otherType);
+		const otherIsSegment = isSegmentOnly(otherType);
+		const otherIsRay = isRayOnly(otherType);
+
+		if (otherIsDroite || otherIsCircle || otherIsFunc || otherIsSegment || otherIsRay) {
+			let kVal = 1;
+			if (pos.length === 3) {
+				const kRaw = requireNumber(pos[2], 'k', line);
+				if (!Number.isInteger(kRaw) || kRaw < 1) {
+					throw new DslRuntimeError('intersection(): k doit etre un entier >= 1', line);
+				}
+				kVal = kRaw;
+			}
+			if (otherIsDroite) {
+				const ptId = figure.createIntersectionParametricLine(paramId, otherId, kVal, { label });
+				return { figureId: ptId, symbolType: 'point' };
+			}
+			if (otherIsCircle) {
+				const ptId = figure.createIntersectionParametricCircle(paramId, otherId, kVal, { label });
+				return { figureId: ptId, symbolType: 'point' };
+			}
+			if (otherIsSegment) {
+				const ptId = figure.createIntersectionParametricSegment(paramId, otherId, kVal, {
+					label
+				});
+				return { figureId: ptId, symbolType: 'point' };
+			}
+			if (otherIsRay) {
+				const ptId = figure.createIntersectionParametricRay(paramId, otherId, kVal, { label });
+				return { figureId: ptId, symbolType: 'point' };
+			}
+			// otherIsFunc
+			const ptId = figure.createIntersectionParametricFunction(paramId, otherId, kVal, { label });
+			return { figureId: ptId, symbolType: 'point' };
+		}
+	}
+
+	// Reject implicit curves (not functions, not conics, not parametric)
+	if (isCourbeType(type1) && !isQuad1 && !isFunc1 && !isParam1) {
+		throw new DslRuntimeError(
+			'intersection(): les courbes implicites ne sont pas supportees',
+			line
+		);
+	}
+	if (isCourbeType(type2) && !isQuad2 && !isFunc2 && !isParam2) {
+		throw new DslRuntimeError(
+			'intersection(): les courbes implicites ne sont pas supportees',
+			line
+		);
+	}
+
+	// Reject mixed parametric × non-parametric combos
+	if (isParam1 || isParam2) {
+		throw new DslRuntimeError(
+			'intersection(): combinaison courbe parametrique / autre type non supportee (V1: parametrique x parametrique uniquement)',
+			line
+		);
+	}
+
+	// Reject unsupported combos: function + circle/conic
+	if ((isFunc1 && isCircleType(type2)) || (isCircleType(type1) && isFunc2)) {
+		throw new DslRuntimeError('intersection(): combinaison fonction/cercle non supportee', line);
+	}
+	if ((isFunc1 && isQuad2) || (isQuad1 && isFunc2)) {
+		throw new DslRuntimeError('intersection(): combinaison fonction/conique non supportee', line);
+	}
+
+	const isQQ =
+		(isQuad1 && isQuad2) || (isQuad1 && isCircleType(type2)) || (isCircleType(type1) && isQuad2);
+	const isLF = (isLineType(type1) && isFunc2) || (isFunc1 && isLineType(type2));
+	const isFF = isFunc1 && isFunc2;
+
+	let maxIndex: number | null;
+	if (isLF || isFF) {
+		maxIndex = null;
+	} else if (isQQ) {
+		maxIndex = 4;
+	} else {
+		maxIndex = 2;
+	}
+
+	let dslIndex = 1;
+	if (pos.length === 3) {
+		dslIndex = requireNumber(pos[2], 'index', line);
+		if (!Number.isInteger(dslIndex) || dslIndex < 1)
+			throw new DslRuntimeError('intersection(): index doit etre >= 1', line);
+		if (maxIndex !== null && dslIndex > maxIndex)
+			throw new DslRuntimeError(`intersection(): index doit etre entre 1 et ${maxIndex}`, line);
+	}
+
+	if (isLineType(type1) && isLineType(type2)) {
+		const id = figure.createIntersectionLL(id1, id2, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	if (isLineType(type1) && isCircleType(type2)) {
+		const id = figure.createIntersectionLC(id1, id2, (dslIndex - 1) as 0 | 1, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	if (isCircleType(type1) && isLineType(type2)) {
+		const id = figure.createIntersectionLC(id2, id1, (dslIndex - 1) as 0 | 1, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	if (isCircleType(type1) && isCircleType(type2)) {
+		const id = figure.createIntersectionCC(id1, id2, (dslIndex - 1) as 0 | 1, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	if (isLineType(type1) && isQuad2) {
+		const id = figure.createIntersectionLQ(id1, id2, (dslIndex - 1) as 0 | 1, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	if (isQuad1 && isLineType(type2)) {
+		const id = figure.createIntersectionLQ(id2, id1, (dslIndex - 1) as 0 | 1, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	if (isQQ) {
+		const id = figure.createIntersectionQQ(id1, id2, (dslIndex - 1) as 0 | 1 | 2 | 3, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	if (isLineType(type1) && isFunc2) {
+		const id = figure.createIntersectionLF(
+			id1,
+			id2,
+			dslIndex - 1,
+			FUNCTION_SEARCH_XMIN,
+			FUNCTION_SEARCH_XMAX,
+			{ label }
+		);
+		return { figureId: id, symbolType: 'point' };
+	}
+	if (isFunc1 && isLineType(type2)) {
+		const id = figure.createIntersectionLF(
+			id2,
+			id1,
+			dslIndex - 1,
+			FUNCTION_SEARCH_XMIN,
+			FUNCTION_SEARCH_XMAX,
+			{ label }
+		);
+		return { figureId: id, symbolType: 'point' };
+	}
+	if (isFF) {
+		const id = figure.createIntersectionFF(
+			id1,
+			id2,
+			dslIndex - 1,
+			FUNCTION_SEARCH_XMIN,
+			FUNCTION_SEARCH_XMAX,
+			{ label }
+		);
+		return { figureId: id, symbolType: 'point' };
+	}
+	throw new DslRuntimeError(
+		'intersection(): combinaison non supportee (attendu: droite/droite, droite/cercle, cercle/cercle, droite/conique, conique/conique, droite/fonction, ou fonction/fonction)',
+		line
+	);
+}
+HANDLERS.set('intersection', handleIntersection);
+
+function handleImage(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label } = ctx;
+	if (pos.length < 2) throw new DslRuntimeError('image() attend au moins 2 arguments', line);
+	if (pos[0].type !== 'string')
+		throw new DslRuntimeError('image(): le 1er argument doit etre une URL (chaine)', line);
+	const imgUrl = (pos[0] as { type: 'string'; value: string }).value;
+	if (!/^https?:\/\/|^\//.test(imgUrl))
+		throw new DslRuntimeError('image(): URL doit commencer par http://, https://, ou /', line);
+
+	let imgLayer: 'fond' | 'avant' | undefined;
+	if (named.has('couche')) {
+		const cv = named.get('couche')!;
+		const layerStr = cv.type === 'string' ? cv.value : '';
+		if (layerStr !== 'fond' && layerStr !== 'avant')
+			throw new DslRuntimeError('image(): couche doit etre "fond" ou "avant"', line);
+		imgLayer = layerStr;
+	}
+
+	let imgPositioning: {
+		anchorId?: string;
+		anchorOffset?: { dx: number; dy: number };
+		position?: { x: number; y: number };
+		point1Id?: string;
+		point2Id?: string;
+	};
+	let imgWidth: number;
+	let imgHeight: number | undefined;
+
+	if (pos.length >= 3 && pos[1].type === 'nombre' && pos[2].type === 'nombre') {
+		if (!named.has('largeur'))
+			throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
+		imgWidth = requireNumber(named.get('largeur')!, 'largeur', line);
+		imgHeight = named.has('hauteur')
+			? requireNumber(named.get('hauteur')!, 'hauteur', line)
+			: undefined;
+		const x = (pos[1] as { type: 'nombre'; value: number }).value;
+		const y = (pos[2] as { type: 'nombre'; value: number }).value;
+		imgPositioning = { position: { x, y } };
+	} else if (pos.length >= 3 && pos[1].type === 'element' && pos[2].type === 'element') {
+		const point1Id = requireElement(pos[1], 'point1', line);
+		const point2Id = requireElement(pos[2], 'point2', line);
+		imgWidth = 0;
+		imgHeight = undefined;
+		imgPositioning = { point1Id, point2Id };
+	} else if (pos[1].type === 'element') {
+		if (!named.has('largeur'))
+			throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
+		imgWidth = requireNumber(named.get('largeur')!, 'largeur', line);
+		imgHeight = named.has('hauteur')
+			? requireNumber(named.get('hauteur')!, 'hauteur', line)
+			: undefined;
+		const anchorId = requireElement(pos[1], 'anchor', line);
+		const dx = named.has('dx')
+			? (named.get('dx')! as { type: 'nombre'; value: number }).value
+			: undefined;
+		const dy = named.has('dy')
+			? (named.get('dy')! as { type: 'nombre'; value: number }).value
+			: undefined;
+		imgPositioning = {
+			anchorId,
+			anchorOffset: dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
+		};
+	} else {
+		throw new DslRuntimeError(
+			'image() attend: image("url", x, y, largeur=...) ou image("url", point, largeur=...) ou image("url", pointA, pointB)',
+			line
+		);
+	}
+
+	const imgRotation = named.has('rotation')
+		? requireNumber(named.get('rotation')!, 'rotation', line)
+		: undefined;
+	const imgFlipped = named.has('miroir')
+		? (() => {
+				const v = named.get('miroir')!;
+				if (v.type === 'nombre') return v.value !== 0;
+				if (v.type === 'string') return v.value === 'vrai';
+				return false;
+			})()
+		: undefined;
+
+	const imgId = figure.createImage(imgUrl, imgWidth, imgHeight, imgPositioning, {
+		label,
+		layer: imgLayer,
+		rotation: imgRotation,
+		flipped: imgFlipped || undefined
+	});
+	return { figureId: imgId, symbolType: 'image' };
+}
+HANDLERS.set('image', handleImage);
+
+function handleCourbe(
+	ctx: BuiltinCtx
+): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
+	const { pos, named, figure, toGeoValue, line, label, symbols, angleMode } = ctx;
+	const looksPolar = (s: string): boolean => /^\s*r\s*=/.test(s);
+	const hasThetaBound = named.has('theta_min') || named.has('theta_max');
+
+	// D5: two positional strings where one looks polar → reject.
+	if (
+		pos.length === 2 &&
+		pos[0].type === 'string' &&
+		pos[1].type === 'string' &&
+		(looksPolar(pos[0].value) || looksPolar(pos[1].value))
+	) {
+		throw new DslRuntimeError(
+			'courbe(): "r = ..." attendu seul (pas avec une équation x= ou y=)',
+			line
+		);
+	}
+
+	if (pos.length === 1 && pos[0].type === 'string') {
+		const polarLike = looksPolar(pos[0].value);
+		if (polarLike || hasThetaBound) {
+			return createPolarCurveFromEquation(
+				pos[0].value,
+				named,
+				figure,
+				line,
+				label,
+				toGeoValue,
+				symbols
+			);
+		}
+		if (named.has('t_min') || named.has('t_max')) {
+			throw new DslRuntimeError(
+				"courbe(): t_min/t_max ne s'applique qu'à une courbe paramétrique (2 équations)",
+				line
+			);
+		}
+		let equationStr = pos[0].value;
+		if (named.has('x_min') || named.has('x_max')) {
+			const equationAlreadyHasDomain = /\b(sur|avec)\b/.test(equationStr);
+			if (equationAlreadyHasDomain) {
+				throw new DslRuntimeError(
+					'courbe(): combiner x_min/x_max avec un suffixe "sur"/"avec" n\'est pas supporté',
+					line
+				);
+			}
+			const xMinStr = named.has('x_min')
+				? String(requireNumber(named.get('x_min')!, 'x_min', line))
+				: '-infini';
+			const xMaxStr = named.has('x_max')
+				? String(requireNumber(named.get('x_max')!, 'x_max', line))
+				: '+infini';
+			equationStr = `${equationStr} sur [${xMinStr} ; ${xMaxStr}]`;
+		}
+		return createCurveFromEquation(equationStr, figure, line, label, angleMode, symbols);
+	}
+	if (pos.length === 2 && pos[0].type === 'string' && pos[1].type === 'string') {
+		return createParametricCurveFromEquations(
+			pos[0].value,
+			pos[1].value,
+			named,
+			figure,
+			line,
+			label,
+			toGeoValue,
+			symbols,
+			angleMode
+		);
+	}
+	throw new DslRuntimeError(
+		'courbe() attend 1 ou 2 arguments string (1 = équation cartésienne, 2 = équations paramétriques x= et y=)',
+		line
+	);
+}
+HANDLERS.set('courbe', handleCourbe);
+
+function handleTangente(ctx: BuiltinCtx): BuiltinResult | BuiltinMultiResult {
+	const { pos, figure, toGeoValue, line, label, angleMode } = ctx;
+	if (pos.length !== 2) {
+		throw new DslRuntimeError('tangente() attend 2 arguments (f, P ou x0)', line);
+	}
+	const tFnId = requireElement(pos[0], 'fonction', line);
+	const tFnEl = figure.getElementById(tFnId);
+
+	if (tFnEl && tFnEl.type === 'parametricCurve') {
+		const tParam = toScalarParam(pos[1], toGeoValue, line);
+		let result;
+		try {
+			result = figure.createTangentToParametric(tFnId, tParam, { label });
+		} catch (e) {
+			const msg = e instanceof Error ? e.message : String(e);
+			throw new DslRuntimeError(`tangente(): ${msg}`, line);
+		}
+		return {
+			elements: [
+				{ figureId: result.tangentId, symbolType: 'tangente' },
+				{ figureId: result.vectorId, symbolType: 'vecteur' }
+			]
+		} as BuiltinMultiResult;
+	}
+
+	if (tFnEl && tFnEl.type === 'quadraticCurve') {
+		if (pos[1].type === 'element') {
+			const ptId = pos[1].figureId;
+			const ptEl = figure.getElementById(ptId);
+			if (!ptEl || ptEl.type !== 'pointOnQuadraticCurve') {
+				throw new DslRuntimeError(
+					'tangente(): le deuxieme argument doit etre un point_sur ou un nombre',
+					line
+				);
+			}
+			const tgId = figure.createTangentToQuadratic(tFnId, { pointOnCurveId: ptId }, { label });
+			return { figureId: tgId, symbolType: 'tangente' };
+		} else {
+			const tRaw = requireNumber(pos[1], 'param', line);
+			const conicType = tFnEl.conic.type;
+			const t =
+				conicType === 'circle' || conicType === 'ellipse' ? toRadians(tRaw, angleMode) : tRaw;
+			const tgId = figure.createTangentToQuadratic(tFnId, { t }, { label });
+			return { figureId: tgId, symbolType: 'tangente' };
+		}
+	}
+
+	if (!tFnEl || tFnEl.type !== 'function') {
+		throw new DslRuntimeError('tangente(): le premier argument doit etre une courbe', line);
+	}
+
+	if (pos[1].type === 'element') {
+		const ptId = pos[1].figureId;
+		const ptEl = figure.getElementById(ptId);
+		if (!ptEl || ptEl.type !== 'pointOnCurve') {
+			throw new DslRuntimeError(
+				'tangente(): le deuxieme argument doit etre un point_sur ou un nombre',
+				line
+			);
+		}
+		const tgId = figure.createTangentLine(tFnId, { pointOnCurveId: ptId }, { label });
+		return { figureId: tgId, symbolType: 'tangente' };
+	} else {
+		const x0Val = toGeoValue(pos[1], line);
+		const tgId = figure.createTangentLine(tFnId, { x0: x0Val }, { label });
+		return { figureId: tgId, symbolType: 'tangente' };
+	}
+}
+HANDLERS.set('tangente', handleTangente);
+
+function handlePointSur(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, toGeoValue, line, label, angleMode } = ctx;
+	if (pos.length < 1 || pos.length > 2) {
+		throw new DslRuntimeError('point_sur() attend 1-2 arguments (objet, param?)', line);
+	}
+	const psId = requireElement(pos[0], 'objet', line);
+	const psEl = figure.getElementById(psId);
+	if (!psEl) {
+		throw new DslRuntimeError('point_sur(): objet introuvable', line);
+	}
+
+	if (psEl.type === 'segment') {
+		const t = pos.length >= 2 ? requireNumber(pos[1], 't', line) : 0.5;
+		const ptId = figure.createPointOnSegment(psId, t, { label });
+		return { figureId: ptId, symbolType: 'point' };
+	}
+
+	if (psEl.type === 'line' || psEl.type === 'ray') {
+		const t = pos.length >= 2 ? requireNumber(pos[1], 't', line) : 0;
+		const ptId = figure.createPointOnLine(psId, t, { label });
+		return { figureId: ptId, symbolType: 'point' };
+	}
+
+	if (
+		psEl.type === 'circleByRadius' ||
+		psEl.type === 'circleByPoint' ||
+		psEl.type === 'circleBy3Points'
+	) {
+		const angleVal = pos.length >= 2 ? requireNumber(pos[1], 'angle', line) : 0;
+		const theta = toRadians(angleVal, angleMode);
+		const ptId = figure.createPointOnCircle(psId, theta, { label });
+		return { figureId: ptId, symbolType: 'point' };
+	}
+
+	if (psEl.type === 'arcByAngles' || psEl.type === 'arcByPoints') {
+		const t = pos.length >= 2 ? requireNumber(pos[1], 't', line) : 0.5;
+		const ptId = figure.createPointOnArc(psId, t, { label });
+		return { figureId: ptId, symbolType: 'point' };
+	}
+
+	if (psEl.type === 'quadraticCurve') {
+		const tRaw = pos.length >= 2 ? requireNumber(pos[1], 'param', line) : 0;
+		const conicType = psEl.conic.type;
+		const t = conicType === 'circle' || conicType === 'ellipse' ? toRadians(tRaw, angleMode) : tRaw;
+		const ptId = figure.createPointOnQuadraticCurve(psId, t, { label });
+		return { figureId: ptId, symbolType: 'point' };
+	}
+
+	if (psEl.type === 'function') {
+		const x0Val =
+			pos.length >= 2 ? toGeoValue(pos[1], line) : toGeoValue({ type: 'nombre', value: 0 }, line);
+		const ptId = figure.createPointOnCurve(psId, x0Val, { label });
+		return { figureId: ptId, symbolType: 'point' };
+	}
+
+	if (psEl.type === 'parametricCurve') {
+		if (pos.length < 2) {
+			throw new DslRuntimeError(
+				'point_sur(): paramètre t requis pour une courbe paramétrique',
+				line
+			);
+		}
+		const tParam = toScalarParam(pos[1], toGeoValue, line);
+		const ptId = figure.createPointOnParametricCurve(psId, tParam, { label });
+		return { figureId: ptId, symbolType: 'point' };
+	}
+
+	throw new DslRuntimeError(
+		'point_sur(): le premier argument doit etre un segment, droite, demidroite, cercle, arc ou courbe',
+		line
+	);
+}
+HANDLERS.set('point_sur', handlePointSur);
+
+function handleCriticalPoints(ctx: BuiltinCtx): BuiltinMultiResult | BuiltinResult {
+	const { name, pos, named, figure, line, label } = ctx;
+	if (pos.length !== 1) {
+		throw new DslRuntimeError(`${name}() attend 1 argument (f)`, line);
+	}
+	const cpFnId = requireElement(pos[0], 'fonction', line);
+	const cpFnEl = figure.getElementById(cpFnId);
+
+	if (cpFnEl && cpFnEl.type === 'quadraticCurve' && name === 'zeros') {
+		return createQuadraticZeros(cpFnEl, cpFnId, figure, line, label, named);
+	}
+
+	if (!cpFnEl || cpFnEl.type !== 'function') {
+		throw new DslRuntimeError(`${name}(): le premier argument doit etre une courbe`, line);
+	}
+
+	const xMin = FUNCTION_SEARCH_XMIN;
+	const xMax = FUNCTION_SEARCH_XMAX;
+
+	let points: import('$lib/mathAST/analysis').CriticalPoint[];
+
+	if (name === 'zeros') {
+		points = findCriticalZeros(cpFnEl.expression, cpFnEl.compiledFn, 'x', xMin, xMax);
+	} else if (name === 'extrema') {
+		points = findCriticalExtrema(
+			cpFnEl.expression,
+			cpFnEl.derivative,
+			cpFnEl.compiledFn,
+			cpFnEl.compiledDerivative,
+			'x',
+			xMin,
+			xMax
+		);
+	} else {
+		let d2, cd2;
+		try {
+			d2 = differentiate(cpFnEl.derivative, { variable: 'x', simplify: true });
+			cd2 = compile(d2);
+		} catch {
+			throw new DslRuntimeError('inflections(): impossible de calculer la derivee seconde', line);
+		}
+		points = findCriticalInflections(
+			cpFnEl.expression,
+			cpFnEl.derivative,
+			cpFnEl.compiledFn,
+			cpFnEl.compiledDerivative,
+			cd2,
+			'x',
+			xMin,
+			xMax
+		);
+	}
+
+	const elements: BuiltinResult[] = points.map((pt, i) => {
+		const ptLabel = label ? (points.length > 1 ? `${label}${i + 1}` : label) : undefined;
+		const ptId = figure.createPointOnCurve(cpFnId, numeric(pt.xNumeric), {
+			draggable: false,
+			label: ptLabel
+		});
+		return { figureId: ptId, symbolType: 'point' as SymbolType };
+	});
+
+	return { elements } as BuiltinMultiResult;
+}
+HANDLERS.set('zeros', handleCriticalPoints);
+HANDLERS.set('extrema', handleCriticalPoints);
+HANDLERS.set('inflections', handleCriticalPoints);
+
+function handleTranslation(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label } = ctx;
+	const vecteurArg = named.get('vecteur');
+	if (!vecteurArg) throw new DslRuntimeError('translation() requiert vecteur=...', line);
+
+	if (pos.length === 0) {
+		if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
+			const id = figure.createTranslationByVector(vecteurArg.figureId!, { label });
+			return { figureId: id, symbolType: 'transformation' };
+		}
+		const tuple = requireTuple(vecteurArg, 'vecteur', line);
+		if (tuple.length !== 2) throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
+		const id = figure.createTranslation(
+			requireElement(tuple[0], 'vecteur.1', line),
+			requireElement(tuple[1], 'vecteur.2', line),
+			{ label }
+		);
+		return { figureId: id, symbolType: 'transformation' };
+	}
+
+	const sourceId = requireElement(pos[0], 'source', line);
+	const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+	if (sourceEl.elementType === 'point') {
+		if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
+			const id = figure.createTranslatedPointByVector(sourceId, vecteurArg.figureId!, { label });
+			return { figureId: id, symbolType: 'point' };
+		}
+		const tuple = requireTuple(vecteurArg, 'vecteur', line);
+		if (tuple.length !== 2) throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
+		const id = figure.createTranslatedPoint(
+			sourceId,
+			requireElement(tuple[0], 'vecteur.1', line),
+			requireElement(tuple[1], 'vecteur.2', line),
+			{ label }
+		);
+		return { figureId: id, symbolType: 'point' };
+	}
+	let tId: string;
+	if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
+		tId = figure.createTranslationByVector(vecteurArg.figureId!);
+	} else {
+		const tuple = requireTuple(vecteurArg, 'vecteur', line);
+		if (tuple.length !== 2) throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
+		tId = figure.createTranslation(
+			requireElement(tuple[0], 'vecteur.1', line),
+			requireElement(tuple[1], 'vecteur.2', line)
+		);
+	}
+	return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+}
+HANDLERS.set('translation', handleTranslation);
+
+function handleTexte(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label, symbols } = ctx;
+	if (pos.length < 2) throw new DslRuntimeError('texte() attend au moins 2 arguments', line);
+
+	let template: string;
+	let positioning: {
+		anchorId?: string;
+		anchorOffset?: { dx: number; dy: number };
+		position?: { x: number; y: number };
+	};
+
+	if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
+		const x = (pos[0] as { type: 'nombre'; value: number }).value;
+		const y = (pos[1] as { type: 'nombre'; value: number }).value;
+		if (pos[2].type !== 'string')
+			throw new DslRuntimeError('texte(): le 3e argument doit etre une chaine', line);
+		template = (pos[2] as { type: 'string'; value: string }).value;
+		positioning = { position: { x, y } };
+	} else if (pos[0].type === 'element') {
+		const anchorId = requireElement(pos[0], 'anchor', line);
+		if (pos[1].type !== 'string')
+			throw new DslRuntimeError('texte(): le 2e argument doit etre une chaine', line);
+		template = (pos[1] as { type: 'string'; value: string }).value;
+		const dx = named.has('dx')
+			? (named.get('dx')! as { type: 'nombre'; value: number }).value
+			: undefined;
+		const dy = named.has('dy')
+			? (named.get('dy')! as { type: 'nombre'; value: number }).value
+			: undefined;
+		positioning = {
+			anchorId,
+			anchorOffset: dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
+		};
+	} else {
+		throw new DslRuntimeError(
+			'texte() attend: texte(x, y, "text") ou texte(point, "text", dx=..., dy=...)',
+			line
+		);
+	}
+
+	const scalarRefs: string[] = [];
+	template = template.replace(/\{(\w+)/g, (_match, refName: string) => {
+		const refSym = symbols?.get(refName);
+		if (refSym?.figureId && refSym.type === 'scalar') {
+			scalarRefs.push(refSym.figureId);
+			return `{${refSym.figureId}`;
+		}
+		return `{${refName}`;
+	});
+
+	const textId = figure.createText(template, scalarRefs, positioning, { label });
+	return { figureId: textId, symbolType: 'text' };
+}
+HANDLERS.set('texte', handleTexte);
+
+function handleRtexte(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label, symbols } = ctx;
+	if (pos.length < 2) throw new DslRuntimeError('rtexte() attend au moins 2 arguments', line);
+	let rtTemplate: string;
+	let rtPositioning: {
+		anchorId?: string;
+		anchorOffset?: { dx: number; dy: number };
+		position?: { x: number; y: number };
+	};
+	if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
+		const x = (pos[0] as { type: 'nombre'; value: number }).value;
+		const y = (pos[1] as { type: 'nombre'; value: number }).value;
+		if (pos[2].type !== 'string')
+			throw new DslRuntimeError('rtexte(): le 3e argument doit etre une chaine', line);
+		rtTemplate = (pos[2] as { type: 'string'; value: string }).value;
+		rtPositioning = { position: { x, y } };
+	} else if (pos[0].type === 'element') {
+		const anchorId = requireElement(pos[0], 'anchor', line);
+		if (pos[1].type !== 'string')
+			throw new DslRuntimeError('rtexte(): le 2e argument doit etre une chaine', line);
+		rtTemplate = (pos[1] as { type: 'string'; value: string }).value;
+		const dx = named.has('dx')
+			? (named.get('dx')! as { type: 'nombre'; value: number }).value
+			: undefined;
+		const dy = named.has('dy')
+			? (named.get('dy')! as { type: 'nombre'; value: number }).value
+			: undefined;
+		rtPositioning = {
+			anchorId,
+			anchorOffset: dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
+		};
+	} else {
+		throw new DslRuntimeError(
+			'rtexte() attend: rtexte(x, y, "ubumark") ou rtexte(point, "ubumark", dx=..., dy=...)',
+			line
+		);
+	}
+	const rtScalarRefs: string[] = [];
+	rtTemplate = rtTemplate.replace(/\{(\w+)/g, (_match, refName: string) => {
+		const refSym = symbols?.get(refName);
+		if (refSym?.figureId && refSym.type === 'scalar') {
+			rtScalarRefs.push(refSym.figureId);
+			return `{${refSym.figureId}`;
+		}
+		return `{${refName}`;
+	});
+	const rtId = figure.createRichText(rtTemplate, rtScalarRefs, rtPositioning, { label });
+	return { figureId: rtId, symbolType: 'richText' };
+}
+HANDLERS.set('rtexte', handleRtexte);
+
+function handleLieu(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2) {
+		throw new DslRuntimeError('lieu() attend 2 arguments (traceur, conducteur)', line);
+	}
+	const tracerId = requireElement(pos[0], 'traceur', line);
+	const driverId = requireElement(pos[1], 'conducteur', line);
+
+	const driverEl = figure.getElementById(driverId);
+	if (!driverEl) {
+		throw new DslRuntimeError(`lieu(): conducteur "${driverId}" introuvable`, line);
+	}
+	const driverOnPath =
+		driverEl.type === 'pointOnCurve' ||
+		driverEl.type === 'pointOnQuadraticCurve' ||
+		driverEl.type === 'pointOnSegment' ||
+		driverEl.type === 'pointOnLine' ||
+		driverEl.type === 'pointOnCircle' ||
+		driverEl.type === 'pointOnArc' ||
+		driverEl.type === 'pointOnParametricCurve';
+	if (!driverOnPath) {
+		throw new DslRuntimeError('lieu(): le conducteur doit etre un point_sur', line);
+	}
+
+	const tracerEl = figure.getElementById(tracerId);
+	if (!tracerEl) {
+		throw new DslRuntimeError(`lieu(): traceur "${tracerId}" introuvable`, line);
+	}
+
+	const visited = new Set<string>();
+	const queue = [tracerId];
+	let dependsOnDriver = false;
+	while (queue.length > 0) {
+		const id = queue.shift()!;
+		if (id === driverId) {
+			dependsOnDriver = true;
+			break;
+		}
+		if (visited.has(id)) continue;
+		visited.add(id);
+		const el = figure.getElementById(id);
+		if (el) {
+			for (const pid of el.dependsOn) {
+				queue.push(pid);
+			}
+		}
+	}
+	if (!dependsOnDriver) {
+		throw new DslRuntimeError(`lieu(): le traceur ne depend pas du conducteur`, line);
+	}
+
+	const locId = figure.createLocus(driverId, tracerId, { label });
+	return { figureId: locId, symbolType: 'lieu' as SymbolType };
+}
+HANDLERS.set('lieu', handleLieu);
+
 function _executeBuiltinInner(
 	name: string,
 	pos: ResolvedValue[],
@@ -354,19 +1224,25 @@ function _executeBuiltinInner(
 	symbols?: SymbolTable,
 	angleMode: AngleMode = 'deg'
 ): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
-	switch (name) {
-		case 'point': {
-			if (pos.length !== 2) throw new DslRuntimeError('point() attend 2 arguments (x, y)', line);
-			const xParam = toScalarParam(pos[0], toGeoValue, line);
-			const yParam = toScalarParam(pos[1], toGeoValue, line);
-			if (isScalarRef(xParam) || isScalarRef(yParam)) {
-				const id = figure.createComputedPoint(xParam, yParam, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			const id = figure.createFreePoint({ x: xParam, y: yParam }, { label });
-			return { figureId: id, symbolType: 'point' };
-		}
+	// Dispatch to the extracted handler table if registered.
+	const handler = HANDLERS.get(name);
+	if (handler) {
+		return handler({
+			name,
+			pos,
+			named,
+			figure,
+			toGeoValue,
+			toGeoPoint,
+			line,
+			label,
+			symbols,
+			angleMode
+		});
+	}
 
+	// Legacy switch — cases will be migrated to HANDLERS one batch at a time.
+	switch (name) {
 		case 'milieu': {
 			if (pos.length !== 2) throw new DslRuntimeError('milieu() attend 2 arguments (A, B)', line);
 			const id = figure.createMidpoint(
@@ -619,64 +1495,6 @@ function _executeBuiltinInner(
 			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
 		}
 
-		case 'translation': {
-			const vecteurArg = named.get('vecteur');
-			if (!vecteurArg) throw new DslRuntimeError('translation() requiert vecteur=...', line);
-
-			// 0 positional args → create transformation object
-			if (pos.length === 0) {
-				if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
-					const id = figure.createTranslationByVector(vecteurArg.figureId!, { label });
-					return { figureId: id, symbolType: 'transformation' };
-				}
-				const tuple = requireTuple(vecteurArg, 'vecteur', line);
-				if (tuple.length !== 2)
-					throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
-				const id = figure.createTranslation(
-					requireElement(tuple[0], 'vecteur.1', line),
-					requireElement(tuple[1], 'vecteur.2', line),
-					{ label }
-				);
-				return { figureId: id, symbolType: 'transformation' };
-			}
-
-			// 1+ positional args → direct application
-			const sourceId = requireElement(pos[0], 'source', line);
-			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
-			if (sourceEl.elementType === 'point') {
-				if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
-					const id = figure.createTranslatedPointByVector(sourceId, vecteurArg.figureId!, {
-						label
-					});
-					return { figureId: id, symbolType: 'point' };
-				}
-				const tuple = requireTuple(vecteurArg, 'vecteur', line);
-				if (tuple.length !== 2)
-					throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
-				const id = figure.createTranslatedPoint(
-					sourceId,
-					requireElement(tuple[0], 'vecteur.1', line),
-					requireElement(tuple[1], 'vecteur.2', line),
-					{ label }
-				);
-				return { figureId: id, symbolType: 'point' };
-			}
-			// Non-point: create temp transformation, delegate
-			let tId: string;
-			if (vecteurArg.type === 'element' && vecteurArg.elementType === 'vecteur') {
-				tId = figure.createTranslationByVector(vecteurArg.figureId!);
-			} else {
-				const tuple = requireTuple(vecteurArg, 'vecteur', line);
-				if (tuple.length !== 2)
-					throw new DslRuntimeError('vecteur attend un tuple de 2 points', line);
-				tId = figure.createTranslation(
-					requireElement(tuple[0], 'vecteur.1', line),
-					requireElement(tuple[1], 'vecteur.2', line)
-				);
-			}
-			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
-		}
-
 		case 'homothetie': {
 			const centerId = requireElement(
 				named.get('centre') ?? { type: 'nombre', value: 0 },
@@ -855,266 +1673,6 @@ function _executeBuiltinInner(
 			return { figureId: id, symbolType: 'transformation' };
 		}
 
-		case 'intersection': {
-			if (pos.length < 2 || pos.length > 3)
-				throw new DslRuntimeError('intersection() attend 2 ou 3 arguments', line);
-
-			const arg1 = pos[0];
-			const arg2 = pos[1];
-			const id1 = requireElement(arg1, 'arg1', line);
-			const id2 = requireElement(arg2, 'arg2', line);
-			const type1 = arg1.type === 'element' ? arg1.elementType : undefined;
-			const type2 = arg2.type === 'element' ? arg2.elementType : undefined;
-
-			const isLineType = (t: string | undefined) =>
-				t === 'droite' || t === 'segment' || t === 'demidroite';
-			const isCircleType = (t: string | undefined) => t === 'cercle';
-			const isCourbeType = (t: string | undefined) => t === 'courbe';
-
-			// Check if a 'courbe' element is actually a quadraticCurve (not GeoFunction/GeoImplicitCurve)
-			const isQuadraticCourbe = (figureId: string): boolean => {
-				const el = figure.getElementById(figureId);
-				return !!el && el.type === 'quadraticCurve';
-			};
-
-			// Detect quadratic curves and functions among 'courbe' elements
-			const isQuad1 = isCourbeType(type1) && isQuadraticCourbe(id1);
-			const isQuad2 = isCourbeType(type2) && isQuadraticCourbe(id2);
-
-			const isFunctionCourbe = (figureId: string): boolean => {
-				const el = figure.getElementById(figureId);
-				return !!el && el.type === 'function';
-			};
-			const isFunc1 = isCourbeType(type1) && isFunctionCourbe(id1);
-			const isFunc2 = isCourbeType(type2) && isFunctionCourbe(id2);
-
-			// Detect parametric curves (polar curves are also parametric internally).
-			const isParametricCourbe = (figureId: string): boolean => {
-				const el = figure.getElementById(figureId);
-				return !!el && el.type === 'parametricCurve';
-			};
-			const isParam1 = isCourbeType(type1) && isParametricCourbe(id1);
-			const isParam2 = isCourbeType(type2) && isParametricCourbe(id2);
-
-			// Parametric × parametric branch (V1 scope: includes polar curves).
-			// Routed before the implicit-curve rejection below.
-			if (isParam1 && isParam2) {
-				if (id1 === id2) {
-					throw new DslRuntimeError(
-						'intersection(): les deux courbes doivent etre distinctes',
-						line
-					);
-				}
-				let kVal = 1;
-				if (pos.length === 3) {
-					const kRaw = requireNumber(pos[2], 'k', line);
-					if (!Number.isInteger(kRaw) || kRaw < 1) {
-						throw new DslRuntimeError('intersection(): k doit etre un entier >= 1', line);
-					}
-					kVal = kRaw;
-				}
-				const ptId = figure.createIntersectionParametric(id1, id2, kVal, { label });
-				return { figureId: ptId, symbolType: 'point' };
-			}
-
-			// V2 (B3) + V3: parametric × {droite, cercle, fonction, segment, demidroite}.
-			// Auto-swap supported. quadraticCurve remains hors scope (E2 must still throw).
-			const isDroiteOnly = (t: string | undefined) => t === 'droite';
-			const isSegmentOnly = (t: string | undefined) => t === 'segment';
-			const isRayOnly = (t: string | undefined) => t === 'demidroite';
-			if (isParam1 || isParam2) {
-				const paramId = isParam1 ? id1 : id2;
-				const otherType = isParam1 ? type2 : type1;
-				const otherId = isParam1 ? id2 : id1;
-				const otherIsFunc = isParam1 ? isFunc2 : isFunc1;
-
-				const otherIsDroite = isDroiteOnly(otherType);
-				const otherIsCircle = isCircleType(otherType);
-				const otherIsSegment = isSegmentOnly(otherType);
-				const otherIsRay = isRayOnly(otherType);
-
-				if (otherIsDroite || otherIsCircle || otherIsFunc || otherIsSegment || otherIsRay) {
-					let kVal = 1;
-					if (pos.length === 3) {
-						const kRaw = requireNumber(pos[2], 'k', line);
-						if (!Number.isInteger(kRaw) || kRaw < 1) {
-							throw new DslRuntimeError('intersection(): k doit etre un entier >= 1', line);
-						}
-						kVal = kRaw;
-					}
-					if (otherIsDroite) {
-						const ptId = figure.createIntersectionParametricLine(paramId, otherId, kVal, {
-							label
-						});
-						return { figureId: ptId, symbolType: 'point' };
-					}
-					if (otherIsCircle) {
-						const ptId = figure.createIntersectionParametricCircle(paramId, otherId, kVal, {
-							label
-						});
-						return { figureId: ptId, symbolType: 'point' };
-					}
-					if (otherIsSegment) {
-						const ptId = figure.createIntersectionParametricSegment(paramId, otherId, kVal, {
-							label
-						});
-						return { figureId: ptId, symbolType: 'point' };
-					}
-					if (otherIsRay) {
-						const ptId = figure.createIntersectionParametricRay(paramId, otherId, kVal, {
-							label
-						});
-						return { figureId: ptId, symbolType: 'point' };
-					}
-					// otherIsFunc
-					const ptId = figure.createIntersectionParametricFunction(paramId, otherId, kVal, {
-						label
-					});
-					return { figureId: ptId, symbolType: 'point' };
-				}
-				// Fall through to the rejection below — preserves error behaviour
-				// for quadraticCurve combos (E2).
-			}
-
-			// Reject implicit curves (not functions, not conics, not parametric)
-			if (isCourbeType(type1) && !isQuad1 && !isFunc1 && !isParam1) {
-				throw new DslRuntimeError(
-					'intersection(): les courbes implicites ne sont pas supportees',
-					line
-				);
-			}
-			if (isCourbeType(type2) && !isQuad2 && !isFunc2 && !isParam2) {
-				throw new DslRuntimeError(
-					'intersection(): les courbes implicites ne sont pas supportees',
-					line
-				);
-			}
-
-			// Reject mixed parametric × non-parametric combos (V1 scope: parametric × parametric only).
-			if (isParam1 || isParam2) {
-				throw new DslRuntimeError(
-					'intersection(): combinaison courbe parametrique / autre type non supportee (V1: parametrique x parametrique uniquement)',
-					line
-				);
-			}
-
-			// Reject unsupported combos: function + circle/conic
-			if ((isFunc1 && isCircleType(type2)) || (isCircleType(type1) && isFunc2)) {
-				throw new DslRuntimeError(
-					'intersection(): combinaison fonction/cercle non supportee',
-					line
-				);
-			}
-			if ((isFunc1 && isQuad2) || (isQuad1 && isFunc2)) {
-				throw new DslRuntimeError(
-					'intersection(): combinaison fonction/conique non supportee',
-					line
-				);
-			}
-
-			// Determine combination and validate index
-			const isQQ =
-				(isQuad1 && isQuad2) ||
-				(isQuad1 && isCircleType(type2)) ||
-				(isCircleType(type1) && isQuad2);
-			const isLF = (isLineType(type1) && isFunc2) || (isFunc1 && isLineType(type2));
-			const isFF = isFunc1 && isFunc2;
-
-			// Index validation: LF/FF have no max (unbounded), others are bounded
-			let maxIndex: number | null;
-			if (isLF || isFF) {
-				maxIndex = null; // unbounded
-			} else if (isQQ) {
-				maxIndex = 4;
-			} else {
-				maxIndex = 2;
-			}
-
-			let dslIndex = 1;
-			if (pos.length === 3) {
-				dslIndex = requireNumber(pos[2], 'index', line);
-				if (!Number.isInteger(dslIndex) || dslIndex < 1)
-					throw new DslRuntimeError('intersection(): index doit etre >= 1', line);
-				if (maxIndex !== null && dslIndex > maxIndex)
-					throw new DslRuntimeError(`intersection(): index doit etre entre 1 et ${maxIndex}`, line);
-			}
-
-			// LL
-			if (isLineType(type1) && isLineType(type2)) {
-				const id = figure.createIntersectionLL(id1, id2, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			// LC / CL
-			if (isLineType(type1) && isCircleType(type2)) {
-				const id = figure.createIntersectionLC(id1, id2, (dslIndex - 1) as 0 | 1, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			if (isCircleType(type1) && isLineType(type2)) {
-				const id = figure.createIntersectionLC(id2, id1, (dslIndex - 1) as 0 | 1, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			// CC
-			if (isCircleType(type1) && isCircleType(type2)) {
-				const id = figure.createIntersectionCC(id1, id2, (dslIndex - 1) as 0 | 1, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			// LQ / QL
-			if (isLineType(type1) && isQuad2) {
-				const id = figure.createIntersectionLQ(id1, id2, (dslIndex - 1) as 0 | 1, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			if (isQuad1 && isLineType(type2)) {
-				const id = figure.createIntersectionLQ(id2, id1, (dslIndex - 1) as 0 | 1, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			// QQ (conic+conic, circle+conic, conic+circle)
-			if (isQQ) {
-				const id = figure.createIntersectionQQ(id1, id2, (dslIndex - 1) as 0 | 1 | 2 | 3, {
-					label
-				});
-				return { figureId: id, symbolType: 'point' };
-			}
-			// LF / FL (line + function, swap auto)
-			if (isLineType(type1) && isFunc2) {
-				const id = figure.createIntersectionLF(
-					id1,
-					id2,
-					dslIndex - 1,
-					FUNCTION_SEARCH_XMIN,
-					FUNCTION_SEARCH_XMAX,
-					{ label }
-				);
-				return { figureId: id, symbolType: 'point' };
-			}
-			if (isFunc1 && isLineType(type2)) {
-				const id = figure.createIntersectionLF(
-					id2,
-					id1,
-					dslIndex - 1,
-					FUNCTION_SEARCH_XMIN,
-					FUNCTION_SEARCH_XMAX,
-					{ label }
-				);
-				return { figureId: id, symbolType: 'point' };
-			}
-			// FF (function + function)
-			if (isFF) {
-				const id = figure.createIntersectionFF(
-					id1,
-					id2,
-					dslIndex - 1,
-					FUNCTION_SEARCH_XMIN,
-					FUNCTION_SEARCH_XMAX,
-					{ label }
-				);
-				return { figureId: id, symbolType: 'point' };
-			}
-			throw new DslRuntimeError(
-				'intersection(): combinaison non supportee (attendu: droite/droite, droite/cercle, cercle/cercle, droite/conique, conique/conique, droite/fonction, ou fonction/fonction)',
-				line
-			);
-		}
-
 		case 'marque_angle': {
 			if (pos.length < 3)
 				throw new DslRuntimeError('marque_angle() attend 3 arguments (P1, V, P2)', line);
@@ -1182,65 +1740,6 @@ function _executeBuiltinInner(
 				{ autoPosition, autoTargetIds: targetIds },
 				{ label }
 			);
-			return { figureId: textId, symbolType: 'text' };
-		}
-
-		case 'texte': {
-			// texte(x, y, "template") — free position
-			// texte(point, "template", dx=..., dy=...) — anchored
-			if (pos.length < 2) throw new DslRuntimeError('texte() attend au moins 2 arguments', line);
-
-			let template: string;
-			let positioning: {
-				anchorId?: string;
-				anchorOffset?: { dx: number; dy: number };
-				position?: { x: number; y: number };
-			};
-
-			if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
-				// texte(x, y, "template")
-				const x = (pos[0] as { type: 'nombre'; value: number }).value;
-				const y = (pos[1] as { type: 'nombre'; value: number }).value;
-				if (pos[2].type !== 'string')
-					throw new DslRuntimeError('texte(): le 3e argument doit etre une chaine', line);
-				template = (pos[2] as { type: 'string'; value: string }).value;
-				positioning = { position: { x, y } };
-			} else if (pos[0].type === 'element') {
-				// texte(point, "template", dx=..., dy=...)
-				const anchorId = requireElement(pos[0], 'anchor', line);
-				if (pos[1].type !== 'string')
-					throw new DslRuntimeError('texte(): le 2e argument doit etre une chaine', line);
-				template = (pos[1] as { type: 'string'; value: string }).value;
-				const dx = named.has('dx')
-					? (named.get('dx')! as { type: 'nombre'; value: number }).value
-					: undefined;
-				const dy = named.has('dy')
-					? (named.get('dy')! as { type: 'nombre'; value: number }).value
-					: undefined;
-				positioning = {
-					anchorId,
-					anchorOffset:
-						dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
-				};
-			} else {
-				throw new DslRuntimeError(
-					'texte() attend: texte(x, y, "text") ou texte(point, "text", dx=..., dy=...)',
-					line
-				);
-			}
-
-			// Extract scalar references from the template — replace symbolic names with figure IDs
-			const scalarRefs: string[] = [];
-			template = template.replace(/\{(\w+)/g, (_match, refName: string) => {
-				const refSym = symbols.get(refName);
-				if (refSym?.figureId && refSym.type === 'scalar') {
-					scalarRefs.push(refSym.figureId);
-					return `{${refSym.figureId}`;
-				}
-				return `{${refName}`;
-			});
-
-			const textId = figure.createText(template, scalarRefs, positioning, { label });
 			return { figureId: textId, symbolType: 'text' };
 		}
 
@@ -1328,159 +1827,6 @@ function _executeBuiltinInner(
 			});
 			const mtId = figure.createMathText(mtTemplate, mtScalarRefs, mtPositioning, { label });
 			return { figureId: mtId, symbolType: 'mathText' };
-		}
-
-		case 'rtexte': {
-			if (pos.length < 2) throw new DslRuntimeError('rtexte() attend au moins 2 arguments', line);
-			let rtTemplate: string;
-			let rtPositioning: {
-				anchorId?: string;
-				anchorOffset?: { dx: number; dy: number };
-				position?: { x: number; y: number };
-			};
-			if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
-				const x = (pos[0] as { type: 'nombre'; value: number }).value;
-				const y = (pos[1] as { type: 'nombre'; value: number }).value;
-				if (pos[2].type !== 'string')
-					throw new DslRuntimeError('rtexte(): le 3e argument doit etre une chaine', line);
-				rtTemplate = (pos[2] as { type: 'string'; value: string }).value;
-				rtPositioning = { position: { x, y } };
-			} else if (pos[0].type === 'element') {
-				const anchorId = requireElement(pos[0], 'anchor', line);
-				if (pos[1].type !== 'string')
-					throw new DslRuntimeError('rtexte(): le 2e argument doit etre une chaine', line);
-				rtTemplate = (pos[1] as { type: 'string'; value: string }).value;
-				const dx = named.has('dx')
-					? (named.get('dx')! as { type: 'nombre'; value: number }).value
-					: undefined;
-				const dy = named.has('dy')
-					? (named.get('dy')! as { type: 'nombre'; value: number }).value
-					: undefined;
-				rtPositioning = {
-					anchorId,
-					anchorOffset:
-						dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
-				};
-			} else {
-				throw new DslRuntimeError(
-					'rtexte() attend: rtexte(x, y, "ubumark") ou rtexte(point, "ubumark", dx=..., dy=...)',
-					line
-				);
-			}
-			const rtScalarRefs: string[] = [];
-			rtTemplate = rtTemplate.replace(/\{(\w+)/g, (_match, refName: string) => {
-				const refSym = symbols?.get(refName);
-				if (refSym?.figureId && refSym.type === 'scalar') {
-					rtScalarRefs.push(refSym.figureId);
-					return `{${refSym.figureId}`;
-				}
-				return `{${refName}`;
-			});
-			const rtId = figure.createRichText(rtTemplate, rtScalarRefs, rtPositioning, { label });
-			return { figureId: rtId, symbolType: 'richText' };
-		}
-
-		case 'image': {
-			// image("url", x, y, largeur=W)                    — free position
-			// image("url", x, y, largeur=W, hauteur=H)         — free + height
-			// image("url", point, largeur=W, dx=D, dy=E)       — anchored to 1 point
-			// image("url", pointA, pointB)                      — rectangle between 2 points
-			// All modes support couche="fond"|"avant" (default avant)
-			if (pos.length < 2) throw new DslRuntimeError('image() attend au moins 2 arguments', line);
-			if (pos[0].type !== 'string')
-				throw new DslRuntimeError('image(): le 1er argument doit etre une URL (chaine)', line);
-			const imgUrl = (pos[0] as { type: 'string'; value: string }).value;
-			// Security: only allow http(s) and relative URLs (block javascript:, data:, etc.)
-			if (!/^https?:\/\/|^\//.test(imgUrl))
-				throw new DslRuntimeError('image(): URL doit commencer par http://, https://, ou /', line);
-
-			// Read optional couche param
-			let imgLayer: 'fond' | 'avant' | undefined;
-			if (named.has('couche')) {
-				const cv = named.get('couche')!;
-				const layerStr = cv.type === 'string' ? cv.value : '';
-				if (layerStr !== 'fond' && layerStr !== 'avant')
-					throw new DslRuntimeError('image(): couche doit etre "fond" ou "avant"', line);
-				imgLayer = layerStr;
-			}
-
-			let imgPositioning: {
-				anchorId?: string;
-				anchorOffset?: { dx: number; dy: number };
-				position?: { x: number; y: number };
-				point1Id?: string;
-				point2Id?: string;
-			};
-			let imgWidth: number;
-			let imgHeight: number | undefined;
-
-			if (pos.length >= 3 && pos[1].type === 'nombre' && pos[2].type === 'nombre') {
-				// image("url", x, y, largeur=W)
-				if (!named.has('largeur'))
-					throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
-				imgWidth = requireNumber(named.get('largeur')!, 'largeur', line);
-				imgHeight = named.has('hauteur')
-					? requireNumber(named.get('hauteur')!, 'hauteur', line)
-					: undefined;
-				const x = (pos[1] as { type: 'nombre'; value: number }).value;
-				const y = (pos[2] as { type: 'nombre'; value: number }).value;
-				imgPositioning = { position: { x, y } };
-			} else if (pos.length >= 3 && pos[1].type === 'element' && pos[2].type === 'element') {
-				// image("url", pointA, pointB) — 2-point rectangle mode
-				const point1Id = requireElement(pos[1], 'point1', line);
-				const point2Id = requireElement(pos[2], 'point2', line);
-				imgWidth = 0; // width is computed from points at render time
-				imgHeight = undefined;
-				imgPositioning = { point1Id, point2Id };
-			} else if (pos[1].type === 'element') {
-				// image("url", point, largeur=W, dx=..., dy=...)
-				if (!named.has('largeur'))
-					throw new DslRuntimeError('image(): largeur=... est obligatoire', line);
-				imgWidth = requireNumber(named.get('largeur')!, 'largeur', line);
-				imgHeight = named.has('hauteur')
-					? requireNumber(named.get('hauteur')!, 'hauteur', line)
-					: undefined;
-				const anchorId = requireElement(pos[1], 'anchor', line);
-				const dx = named.has('dx')
-					? (named.get('dx')! as { type: 'nombre'; value: number }).value
-					: undefined;
-				const dy = named.has('dy')
-					? (named.get('dy')! as { type: 'nombre'; value: number }).value
-					: undefined;
-				imgPositioning = {
-					anchorId,
-					anchorOffset:
-						dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
-				};
-			} else {
-				throw new DslRuntimeError(
-					'image() attend: image("url", x, y, largeur=...) ou image("url", point, largeur=...) ou image("url", pointA, pointB)',
-					line
-				);
-			}
-
-			// Read optional visual transform params (from serialized transformed images)
-			// NOTE: rotation= is in RADIANS (unlike angle= in rotation() which is in degrees).
-			// These are internal serialization params, not intended for direct user input.
-			const imgRotation = named.has('rotation')
-				? requireNumber(named.get('rotation')!, 'rotation', line)
-				: undefined;
-			const imgFlipped = named.has('miroir')
-				? (() => {
-						const v = named.get('miroir')!;
-						if (v.type === 'nombre') return v.value !== 0;
-						if (v.type === 'string') return v.value === 'vrai';
-						return false;
-					})()
-				: undefined;
-
-			const imgId = figure.createImage(imgUrl, imgWidth, imgHeight, imgPositioning, {
-				label,
-				layer: imgLayer,
-				rotation: imgRotation,
-				flipped: imgFlipped || undefined
-			});
-			return { figureId: imgId, symbolType: 'image' };
 		}
 
 		case 'distance': {
@@ -1677,158 +2023,6 @@ function _executeBuiltinInner(
 			const elId = requireElement(pos[0], 'element', line);
 			applyInlineStyle(figure, elId, named, line);
 			return null; // style() returns nothing
-		}
-
-		case 'courbe': {
-			// Detect polar form: any string starts with "r =" / "r=".
-			const looksPolar = (s: string): boolean => /^\s*r\s*=/.test(s);
-			const hasThetaBound = named.has('theta_min') || named.has('theta_max');
-
-			// D5: two positional strings where one looks polar → reject.
-			if (
-				pos.length === 2 &&
-				pos[0].type === 'string' &&
-				pos[1].type === 'string' &&
-				(looksPolar(pos[0].value) || looksPolar(pos[1].value))
-			) {
-				throw new DslRuntimeError(
-					'courbe(): "r = ..." attendu seul (pas avec une équation x= ou y=)',
-					line
-				);
-			}
-
-			// 1 string positional → could be polar (with theta_min/theta_max), cartesian, or
-			// the polar branch may need to fire because the string starts with "r =" even
-			// without bounds (D1 reports the missing bounds error).
-			if (pos.length === 1 && pos[0].type === 'string') {
-				const polarLike = looksPolar(pos[0].value);
-				if (polarLike || hasThetaBound) {
-					return createPolarCurveFromEquation(
-						pos[0].value,
-						named,
-						figure,
-						line,
-						label,
-						toGeoValue,
-						symbols
-					);
-				}
-				if (named.has('t_min') || named.has('t_max')) {
-					throw new DslRuntimeError(
-						"courbe(): t_min/t_max ne s'applique qu'à une courbe paramétrique (2 équations)",
-						line
-					);
-				}
-				// `x_min`/`x_max` named args: optional domain restriction for y=f(x)
-				// curves (closed bounds). Same semantics as `sur [x_min ; x_max]`.
-				let equationStr = pos[0].value;
-				if (named.has('x_min') || named.has('x_max')) {
-					const equationAlreadyHasDomain = /\b(sur|avec)\b/.test(equationStr);
-					if (equationAlreadyHasDomain) {
-						throw new DslRuntimeError(
-							'courbe(): combiner x_min/x_max avec un suffixe "sur"/"avec" n\'est pas supporté',
-							line
-						);
-					}
-					const xMinStr = named.has('x_min')
-						? String(requireNumber(named.get('x_min')!, 'x_min', line))
-						: '-infini';
-					const xMaxStr = named.has('x_max')
-						? String(requireNumber(named.get('x_max')!, 'x_max', line))
-						: '+infini';
-					equationStr = `${equationStr} sur [${xMinStr} ; ${xMaxStr}]`;
-				}
-				return createCurveFromEquation(equationStr, figure, line, label, angleMode, symbols);
-			}
-			// 2 strings positional → parametric curve.
-			if (pos.length === 2 && pos[0].type === 'string' && pos[1].type === 'string') {
-				return createParametricCurveFromEquations(
-					pos[0].value,
-					pos[1].value,
-					named,
-					figure,
-					line,
-					label,
-					toGeoValue,
-					symbols,
-					angleMode
-				);
-			}
-			throw new DslRuntimeError(
-				'courbe() attend 1 ou 2 arguments string (1 = équation cartésienne, 2 = équations paramétriques x= et y=)',
-				line
-			);
-		}
-
-		case 'tangente': {
-			if (pos.length !== 2) {
-				throw new DslRuntimeError('tangente() attend 2 arguments (f, P ou x0)', line);
-			}
-			const tFnId = requireElement(pos[0], 'fonction', line);
-			const tFnEl = figure.getElementById(tFnId);
-
-			// Parametric curve branch — returns 2 elements (line, vector).
-			if (tFnEl && tFnEl.type === 'parametricCurve') {
-				const tParam = toScalarParam(pos[1], toGeoValue, line);
-				let result;
-				try {
-					result = figure.createTangentToParametric(tFnId, tParam, { label });
-				} catch (e) {
-					const msg = e instanceof Error ? e.message : String(e);
-					throw new DslRuntimeError(`tangente(): ${msg}`, line);
-				}
-				return {
-					elements: [
-						{ figureId: result.tangentId, symbolType: 'tangente' },
-						{ figureId: result.vectorId, symbolType: 'vecteur' }
-					]
-				} as BuiltinMultiResult;
-			}
-
-			if (tFnEl && tFnEl.type === 'quadraticCurve') {
-				// Tangent to quadratic curve
-				if (pos[1].type === 'element') {
-					const ptId = pos[1].figureId;
-					const ptEl = figure.getElementById(ptId);
-					if (!ptEl || ptEl.type !== 'pointOnQuadraticCurve') {
-						throw new DslRuntimeError(
-							'tangente(): le deuxieme argument doit etre un point_sur ou un nombre',
-							line
-						);
-					}
-					const tgId = figure.createTangentToQuadratic(tFnId, { pointOnCurveId: ptId }, { label });
-					return { figureId: tgId, symbolType: 'tangente' };
-				} else {
-					const tRaw = requireNumber(pos[1], 'param', line);
-					const conicType = tFnEl.conic.type;
-					const t =
-						conicType === 'circle' || conicType === 'ellipse' ? toRadians(tRaw, angleMode) : tRaw;
-					const tgId = figure.createTangentToQuadratic(tFnId, { t }, { label });
-					return { figureId: tgId, symbolType: 'tangente' };
-				}
-			}
-
-			if (!tFnEl || tFnEl.type !== 'function') {
-				throw new DslRuntimeError('tangente(): le premier argument doit etre une courbe', line);
-			}
-
-			// Second arg: pointOnCurve (dynamic) or number (fixed x₀)
-			if (pos[1].type === 'element') {
-				const ptId = pos[1].figureId;
-				const ptEl = figure.getElementById(ptId);
-				if (!ptEl || ptEl.type !== 'pointOnCurve') {
-					throw new DslRuntimeError(
-						'tangente(): le deuxieme argument doit etre un point_sur ou un nombre',
-						line
-					);
-				}
-				const tgId = figure.createTangentLine(tFnId, { pointOnCurveId: ptId }, { label });
-				return { figureId: tgId, symbolType: 'tangente' };
-			} else {
-				const x0Val = toGeoValue(pos[1], line);
-				const tgId = figure.createTangentLine(tFnId, { x0: x0Val }, { label });
-				return { figureId: tgId, symbolType: 'tangente' };
-			}
 		}
 
 		case 'longueur': {
@@ -2163,208 +2357,6 @@ function _executeBuiltinInner(
 			}
 			const polId = figure.createConicPolar(polCurveId, polPointId, { label });
 			return { figureId: polId, symbolType: 'polaire' };
-		}
-
-		case 'point_sur': {
-			if (pos.length < 1 || pos.length > 2) {
-				throw new DslRuntimeError('point_sur() attend 1-2 arguments (objet, param?)', line);
-			}
-			const psId = requireElement(pos[0], 'objet', line);
-			const psEl = figure.getElementById(psId);
-			if (!psEl) {
-				throw new DslRuntimeError('point_sur(): objet introuvable', line);
-			}
-
-			if (psEl.type === 'segment') {
-				const t = pos.length >= 2 ? requireNumber(pos[1], 't', line) : 0.5;
-				const ptId = figure.createPointOnSegment(psId, t, { label });
-				return { figureId: ptId, symbolType: 'point' };
-			}
-
-			if (psEl.type === 'line' || psEl.type === 'ray') {
-				const t = pos.length >= 2 ? requireNumber(pos[1], 't', line) : 0;
-				const ptId = figure.createPointOnLine(psId, t, { label });
-				return { figureId: ptId, symbolType: 'point' };
-			}
-
-			if (
-				psEl.type === 'circleByRadius' ||
-				psEl.type === 'circleByPoint' ||
-				psEl.type === 'circleBy3Points'
-			) {
-				const angleVal = pos.length >= 2 ? requireNumber(pos[1], 'angle', line) : 0;
-				const theta = toRadians(angleVal, angleMode);
-				const ptId = figure.createPointOnCircle(psId, theta, { label });
-				return { figureId: ptId, symbolType: 'point' };
-			}
-
-			if (psEl.type === 'arcByAngles' || psEl.type === 'arcByPoints') {
-				const t = pos.length >= 2 ? requireNumber(pos[1], 't', line) : 0.5;
-				const ptId = figure.createPointOnArc(psId, t, { label });
-				return { figureId: ptId, symbolType: 'point' };
-			}
-
-			if (psEl.type === 'quadraticCurve') {
-				const tRaw = pos.length >= 2 ? requireNumber(pos[1], 'param', line) : 0;
-				const conicType = psEl.conic.type;
-				const t =
-					conicType === 'circle' || conicType === 'ellipse' ? toRadians(tRaw, angleMode) : tRaw;
-				const ptId = figure.createPointOnQuadraticCurve(psId, t, { label });
-				return { figureId: ptId, symbolType: 'point' };
-			}
-
-			if (psEl.type === 'function') {
-				const x0Val =
-					pos.length >= 2
-						? toGeoValue(pos[1], line)
-						: toGeoValue({ type: 'nombre', value: 0 }, line);
-				const ptId = figure.createPointOnCurve(psId, x0Val, { label });
-				return { figureId: ptId, symbolType: 'point' };
-			}
-
-			if (psEl.type === 'parametricCurve') {
-				if (pos.length < 2) {
-					throw new DslRuntimeError(
-						'point_sur(): paramètre t requis pour une courbe paramétrique',
-						line
-					);
-				}
-				const tParam = toScalarParam(pos[1], toGeoValue, line);
-				const ptId = figure.createPointOnParametricCurve(psId, tParam, { label });
-				return { figureId: ptId, symbolType: 'point' };
-			}
-
-			throw new DslRuntimeError(
-				'point_sur(): le premier argument doit etre un segment, droite, demidroite, cercle, arc ou courbe',
-				line
-			);
-		}
-
-		case 'zeros':
-		case 'extrema':
-		case 'inflections': {
-			if (pos.length !== 1) {
-				throw new DslRuntimeError(`${name}() attend 1 argument (f)`, line);
-			}
-			const cpFnId = requireElement(pos[0], 'fonction', line);
-			const cpFnEl = figure.getElementById(cpFnId);
-
-			// zeros() on quadratic curve: solve Ax² + Dx + F = 0 (y=0)
-			if (cpFnEl && cpFnEl.type === 'quadraticCurve' && name === 'zeros') {
-				return createQuadraticZeros(cpFnEl, cpFnId, figure, line, label, named);
-			}
-
-			if (!cpFnEl || cpFnEl.type !== 'function') {
-				throw new DslRuntimeError(`${name}(): le premier argument doit etre une courbe`, line);
-			}
-
-			const xMin = FUNCTION_SEARCH_XMIN;
-			const xMax = FUNCTION_SEARCH_XMAX;
-
-			let points: import('$lib/mathAST/analysis').CriticalPoint[];
-
-			if (name === 'zeros') {
-				points = findCriticalZeros(cpFnEl.expression, cpFnEl.compiledFn, 'x', xMin, xMax);
-			} else if (name === 'extrema') {
-				points = findCriticalExtrema(
-					cpFnEl.expression,
-					cpFnEl.derivative,
-					cpFnEl.compiledFn,
-					cpFnEl.compiledDerivative,
-					'x',
-					xMin,
-					xMax
-				);
-			} else {
-				// inflections: need f''
-				let d2, cd2;
-				try {
-					d2 = differentiate(cpFnEl.derivative, { variable: 'x', simplify: true });
-					cd2 = compile(d2);
-				} catch {
-					throw new DslRuntimeError(
-						'inflections(): impossible de calculer la derivee seconde',
-						line
-					);
-				}
-				points = findCriticalInflections(
-					cpFnEl.expression,
-					cpFnEl.derivative,
-					cpFnEl.compiledFn,
-					cpFnEl.compiledDerivative,
-					cd2,
-					'x',
-					xMin,
-					xMax
-				);
-			}
-
-			// Create non-draggable GeoPointOnCurve for each critical point
-			const elements: BuiltinResult[] = points.map((pt, i) => {
-				const ptLabel = label ? (points.length > 1 ? `${label}${i + 1}` : label) : undefined;
-				const ptId = figure.createPointOnCurve(cpFnId, numeric(pt.xNumeric), {
-					draggable: false,
-					label: ptLabel
-				});
-				return { figureId: ptId, symbolType: 'point' as SymbolType };
-			});
-
-			return { elements } as BuiltinMultiResult;
-		}
-
-		case 'lieu': {
-			if (pos.length !== 2) {
-				throw new DslRuntimeError('lieu() attend 2 arguments (traceur, conducteur)', line);
-			}
-			const tracerId = requireElement(pos[0], 'traceur', line);
-			const driverId = requireElement(pos[1], 'conducteur', line);
-
-			const driverEl = figure.getElementById(driverId);
-			if (!driverEl) {
-				throw new DslRuntimeError(`lieu(): conducteur "${driverId}" introuvable`, line);
-			}
-			const driverOnPath =
-				driverEl.type === 'pointOnCurve' ||
-				driverEl.type === 'pointOnQuadraticCurve' ||
-				driverEl.type === 'pointOnSegment' ||
-				driverEl.type === 'pointOnLine' ||
-				driverEl.type === 'pointOnCircle' ||
-				driverEl.type === 'pointOnArc' ||
-				driverEl.type === 'pointOnParametricCurve';
-			if (!driverOnPath) {
-				throw new DslRuntimeError('lieu(): le conducteur doit etre un point_sur', line);
-			}
-
-			const tracerEl = figure.getElementById(tracerId);
-			if (!tracerEl) {
-				throw new DslRuntimeError(`lieu(): traceur "${tracerId}" introuvable`, line);
-			}
-
-			// Verify tracer depends on driver (walk dependsOn chain)
-			const visited = new Set<string>();
-			const queue = [tracerId];
-			let dependsOnDriver = false;
-			while (queue.length > 0) {
-				const id = queue.shift()!;
-				if (id === driverId) {
-					dependsOnDriver = true;
-					break;
-				}
-				if (visited.has(id)) continue;
-				visited.add(id);
-				const el = figure.getElementById(id);
-				if (el) {
-					for (const pid of el.dependsOn) {
-						queue.push(pid);
-					}
-				}
-			}
-			if (!dependsOnDriver) {
-				throw new DslRuntimeError(`lieu(): le traceur ne depend pas du conducteur`, line);
-			}
-
-			const locId = figure.createLocus(driverId, tracerId, { label });
-			return { figureId: locId, symbolType: 'lieu' as SymbolType };
 		}
 
 		case 'trace': {
