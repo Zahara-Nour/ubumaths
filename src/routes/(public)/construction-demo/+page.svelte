@@ -30,7 +30,9 @@ T = triangle_equilateral(A, B)
 
 @pause(300)
 @instruction("Tracer la mediatrice de [AB]")
-(M, d) = mediatrice(A, B)
+d = mediatrice(A, B)
+M = milieu(A, B)
+montre(M)
 
 @pause(500)
 @instruction("Construction terminee !")

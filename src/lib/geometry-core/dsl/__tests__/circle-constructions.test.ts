@@ -352,7 +352,9 @@ describe('corde() — chord', () => {
 				'O = point(0, 0)',
 				'c = cercle(O, rayon=5)',
 				'd = droite(point(-5, 0), point(5, 0))',
-				'(P1, P2, s) = corde(c, d)'
+				's = corde(c, d)',
+				'P1 = extremite(s, 1)',
+				'P2 = extremite(s, 2)'
 			].join('\n')
 		);
 		expect(symbols.get('s')!.type).toBe('segment');
@@ -366,7 +368,9 @@ describe('corde() — chord', () => {
 				'O = point(0, 0)',
 				'c = cercle(O, rayon=5)',
 				'd = droite(point(0, 3), point(1, 3))',
-				'(P1, P2, s) = corde(c, d)'
+				's = corde(c, d)',
+				'P1 = extremite(s, 1)',
+				'P2 = extremite(s, 2)'
 			].join('\n')
 		);
 		const o = pos(figure, symbols, 'O');
@@ -389,7 +393,9 @@ describe('corde() — edge cases', () => {
 				'O = point(0, 0)',
 				'c = cercle(O, rayon=5)',
 				'd = droite(point(-10, 0), point(10, 0))',
-				'(P1, P2, s) = corde(c, d)'
+				's = corde(c, d)',
+				'P1 = extremite(s, 1)',
+				'P2 = extremite(s, 2)'
 			].join('\n')
 		);
 		const p1 = pos(figure, symbols, 'P1');
@@ -403,7 +409,9 @@ describe('corde() — edge cases', () => {
 				'O = point(0, 0)',
 				'c = cercle(O, rayon=5)',
 				'd = droite(point(0, 4), point(1, 4))',
-				'(P1, P2, s) = corde(c, d)'
+				's = corde(c, d)',
+				'P1 = extremite(s, 1)',
+				'P2 = extremite(s, 2)'
 			].join('\n')
 		);
 		const p1 = pos(figure, symbols, 'P1');

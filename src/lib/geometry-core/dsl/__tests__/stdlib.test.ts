@@ -19,29 +19,34 @@ function dist(p1: { x: number; y: number }, p2: { x: number; y: number }): numbe
 }
 
 describe('stdlib — mediatrice', () => {
-	it('midpoint is at center of segment', () => {
+	it('midpoint accessible via milieu(A, B)', () => {
 		const { figure, symbols } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', '(M, d) = mediatrice(A, B)'].join('\n')
+			['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B)', 'M = milieu(A, B)'].join('\n')
 		);
 		const m = pos(figure, symbols, 'M');
 		expect(m.x).toBeCloseTo(2);
 		expect(m.y).toBeCloseTo(0);
+		expect(symbols.get('d')!.type).toBe('droite');
 	});
 
-	it('line is perpendicular to AB', () => {
+	it('returns a droite', () => {
 		const { symbols } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', '(M, d) = mediatrice(A, B)'].join('\n')
+			['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B)'].join('\n')
 		);
 		expect(symbols.get('d')!.type).toBe('droite');
 	});
 });
 
 describe('stdlib — mediane', () => {
-	it('creates midpoint and segment', () => {
+	it('returns segment from A to midpoint of BC', () => {
 		const { figure, symbols } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', 'C = point(2, 4)', '(M, s) = mediane(A, B, C)'].join(
-				'\n'
-			)
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'C = point(2, 4)',
+				's = mediane(A, B, C)',
+				'M = milieu(B, C)'
+			].join('\n')
 		);
 		const m = pos(figure, symbols, 'M');
 		expect(m.x).toBeCloseTo(3);
@@ -51,14 +56,11 @@ describe('stdlib — mediane', () => {
 });
 
 describe('stdlib — hauteur', () => {
-	it('creates perpendicular line from A to BC', () => {
+	it('returns droite (perpendicular through A to BC)', () => {
 		const { symbols } = runDsl(
-			['A = point(0, 4)', 'B = point(0, 0)', 'C = point(4, 0)', '(F, d) = hauteur(A, B, C)'].join(
-				'\n'
-			)
+			['A = point(0, 4)', 'B = point(0, 0)', 'C = point(4, 0)', 'd = hauteur(A, B, C)'].join('\n')
 		);
 		expect(symbols.get('d')!.type).toBe('droite');
-		expect(symbols.get('F')!.type).toBe('point');
 	});
 });
 
@@ -97,31 +99,38 @@ describe('stdlib — bissectrice', () => {
 });
 
 describe('stdlib — triangle', () => {
-	it('creates 3 segments', () => {
-		const { figure } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', 'C = point(2, 3)', 'triangle(A, B, C)'].join('\n')
+	it('returns a polygone with 3 sommets', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(4, 0)', 'C = point(2, 3)', 't = triangle(A, B, C)'].join('\n')
 		);
-		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(3);
+		expect(symbols.get('t')!.type).toBe('polygone');
+		const polys = figure.getAllElements().filter((e) => e.type === 'polygon');
+		expect(polys).toHaveLength(1);
 	});
 
-	it('segments are visible (side-effect elements in macros stay visible)', () => {
+	it('polygon is visible by default', () => {
 		const { figure } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', 'C = point(2, 3)', 'triangle(A, B, C)'].join('\n')
+			['A = point(0, 0)', 'B = point(4, 0)', 'C = point(2, 3)', 't = triangle(A, B, C)'].join('\n')
 		);
-		const visibleSegs = figure.getAllElements().filter((e) => e.type === 'segment' && e.visible);
-		expect(visibleSegs).toHaveLength(3);
+		const visiblePolys = figure.getAllElements().filter((e) => e.type === 'polygon' && e.visible);
+		expect(visiblePolys).toHaveLength(1);
 	});
 });
 
 describe('stdlib — triangle_equilateral', () => {
 	it('creates equilateral triangle with 3 equal sides', () => {
 		const { figure, symbols } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', 'C = triangle_equilateral(A, B)'].join('\n')
+			['A = point(0, 0)', 'B = point(4, 0)', 't = triangle_equilateral(A, B)'].join('\n')
 		);
 		const a = pos(figure, symbols, 'A');
 		const b = pos(figure, symbols, 'B');
-		const c = pos(figure, symbols, 'C');
+		// 3rd vertex via the polygon's dependsOn
+		const cId = symbols.get('t')!.figureId!;
+		const tEl = figure.getElementById(cId);
+		expect(tEl?.type).toBe('polygon');
+		const vertIds = (tEl as { dependsOn: readonly string[] }).dependsOn;
+		const cPos = figure.getPosition(vertIds[2])!;
+		const c = { x: geoToNumber(cPos.x), y: geoToNumber(cPos.y) };
 		const ab = dist(a, b);
 		const bc = dist(b, c);
 		const ca = dist(c, a);
@@ -129,97 +138,110 @@ describe('stdlib — triangle_equilateral', () => {
 		expect(ca).toBeCloseTo(ab, 3);
 	});
 
-	it('creates 3 segments', () => {
-		const { figure } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', 'C = triangle_equilateral(A, B)'].join('\n')
+	it('returns a polygone', () => {
+		const { symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(4, 0)', 't = triangle_equilateral(A, B)'].join('\n')
 		);
-		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(3);
+		expect(symbols.get('t')!.type).toBe('polygone');
 	});
 });
 
 describe('stdlib — triangle_isocele', () => {
-	it('creates isosceles triangle', () => {
-		const { figure } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', 'C = triangle_isocele(A, B, angle=50)'].join('\n')
+	it('returns a polygone', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(4, 0)', 't = triangle_isocele(A, B, angle=50)'].join('\n')
 		);
-		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(3);
+		expect(symbols.get('t')!.type).toBe('polygone');
+		const polys = figure.getAllElements().filter((e) => e.type === 'polygon');
+		expect(polys).toHaveLength(1);
 	});
 });
 
 describe('stdlib — triangle_rectangle', () => {
-	it('creates right triangle with angle mark', () => {
-		const { figure } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', 'C = triangle_rectangle(A, B)'].join('\n')
+	it('returns polygone with a right-angle mark', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(4, 0)', 't = triangle_rectangle(A, B)'].join('\n')
 		);
-		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(3);
+		expect(symbols.get('t')!.type).toBe('polygone');
+		const polys = figure.getAllElements().filter((e) => e.type === 'polygon');
+		expect(polys).toHaveLength(1);
 		const marks = figure.getAllElements().filter((e) => e.type === 'angleMark');
 		expect(marks).toHaveLength(1);
 	});
 });
 
 describe('stdlib — parallelogramme', () => {
-	it('creates 4 segments and returns D', () => {
+	it('returns a polygone with 4 sommets', () => {
 		const { figure, symbols } = runDsl(
 			[
 				'A = point(0, 0)',
 				'B = point(4, 0)',
 				'C = point(5, 3)',
-				'D = parallelogramme(A, B, C)'
+				'p = parallelogramme(A, B, C)'
 			].join('\n')
 		);
-		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(4);
-		const d = pos(figure, symbols, 'D');
-		// D = A + (C - B) = (0,0) + (1,3) = (1,3)
-		expect(d.x).toBeCloseTo(1);
-		expect(d.y).toBeCloseTo(3);
+		expect(symbols.get('p')!.type).toBe('polygone');
+		const polyId = symbols.get('p')!.figureId!;
+		const el = figure.getElementById(polyId) as { dependsOn: readonly string[] };
+		expect(el.dependsOn.length).toBe(4);
+		// 4th vertex computed = (1, 3)
+		const dPos = figure.getPosition(el.dependsOn[3])!;
+		expect(geoToNumber(dPos.x)).toBeCloseTo(1);
+		expect(geoToNumber(dPos.y)).toBeCloseTo(3);
 	});
 });
 
 describe('stdlib — rectangle', () => {
-	it('creates rectangle with 4 segments and right angle', () => {
-		const { figure } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', '(C, D) = rectangle(A, B, largeur=3)'].join('\n')
+	it('returns a polygone with right-angle mark', () => {
+		const { figure, symbols } = runDsl(
+			['A = point(0, 0)', 'B = point(4, 0)', 'p = rectangle(A, B, largeur=3)'].join('\n')
 		);
-		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(4);
+		expect(symbols.get('p')!.type).toBe('polygone');
+		const polys = figure.getAllElements().filter((e) => e.type === 'polygon');
+		expect(polys).toHaveLength(1);
 		const marks = figure.getAllElements().filter((e) => e.type === 'angleMark');
-		expect(marks).toHaveLength(1); // right angle at A
+		expect(marks).toHaveLength(1);
 	});
 });
 
 describe('stdlib — carre', () => {
 	it('creates square with 4 equal sides', () => {
 		const { figure, symbols } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', '(C, D) = carre(A, B)'].join('\n')
+			['A = point(0, 0)', 'B = point(4, 0)', 'p = carre(A, B)'].join('\n')
 		);
-		const a = pos(figure, symbols, 'A');
-		const b = pos(figure, symbols, 'B');
-		const c = pos(figure, symbols, 'C');
-		const d = pos(figure, symbols, 'D');
-		const ab = dist(a, b);
-		const bc = dist(b, c);
-		const cd = dist(c, d);
-		const da = dist(d, a);
-		expect(bc).toBeCloseTo(ab, 3);
-		expect(cd).toBeCloseTo(ab, 3);
-		expect(da).toBeCloseTo(ab, 3);
+		expect(symbols.get('p')!.type).toBe('polygone');
+		const polyId = symbols.get('p')!.figureId!;
+		const el = figure.getElementById(polyId) as { dependsOn: readonly string[] };
+		const verts = el.dependsOn.map((id) => {
+			const p = figure.getPosition(id)!;
+			return { x: geoToNumber(p.x), y: geoToNumber(p.y) };
+		});
+		const sides = [
+			dist(verts[0], verts[1]),
+			dist(verts[1], verts[2]),
+			dist(verts[2], verts[3]),
+			dist(verts[3], verts[0])
+		];
+		expect(sides[1]).toBeCloseTo(sides[0], 3);
+		expect(sides[2]).toBeCloseTo(sides[0], 3);
+		expect(sides[3]).toBeCloseTo(sides[0], 3);
 	});
 });
 
 describe('stdlib — losange', () => {
 	it('creates rhombus with 4 equal sides', () => {
 		const { figure, symbols } = runDsl(
-			['A = point(0, 0)', 'B = point(4, 0)', '(C, D) = losange(A, B, angle=60)'].join('\n')
+			['A = point(0, 0)', 'B = point(4, 0)', 'p = losange(A, B, angle=60)'].join('\n')
 		);
-		const a = pos(figure, symbols, 'A');
-		const b = pos(figure, symbols, 'B');
-		const c = pos(figure, symbols, 'C');
-		const ab = dist(a, b);
-		const bc = dist(b, c);
+		expect(symbols.get('p')!.type).toBe('polygone');
+		const polyId = symbols.get('p')!.figureId!;
+		const el = figure.getElementById(polyId) as { dependsOn: readonly string[] };
+		const verts = el.dependsOn.map((id) => {
+			const p = figure.getPosition(id)!;
+			return { x: geoToNumber(p.x), y: geoToNumber(p.y) };
+		});
+		const ab = dist(verts[0], verts[1]);
+		const bc = dist(verts[1], verts[2]);
 		expect(bc).toBeCloseTo(ab, 3);
 	});
 });
@@ -269,17 +291,18 @@ describe('stdlib — etoile', () => {
 });
 
 describe('stdlib — cercle_circonscrit', () => {
-	it('creates circumscribed circle through all 3 vertices', () => {
+	it('returns the cercle, centre via centre(c)', () => {
 		const { figure, symbols } = runDsl(
 			[
 				'A = point(0, 0)',
 				'B = point(4, 0)',
 				'C = point(2, 3)',
-				'(O, c) = cercle_circonscrit(A, B, C)'
+				'c = cercle_circonscrit(A, B, C)',
+				'O = centre(c)'
 			].join('\n')
 		);
-		expect(symbols.get('O')!.type).toBe('point');
 		expect(symbols.get('c')!.type).toBe('cercle');
+		expect(symbols.get('O')!.type).toBe('point');
 
 		// O should be equidistant from A, B, C
 		const o = pos(figure, symbols, 'O');
@@ -296,13 +319,13 @@ describe('stdlib — cercle_circonscrit', () => {
 
 describe('stdlib — composition', () => {
 	it('mediatrice inside cercle_circonscrit', () => {
-		// cercle_circonscrit uses mediatrice internally
 		const { symbols } = runDsl(
 			[
 				'A = point(0, 0)',
 				'B = point(6, 0)',
 				'C = point(3, 5)',
-				'(O, c) = cercle_circonscrit(A, B, C)'
+				'c = cercle_circonscrit(A, B, C)',
+				'O = centre(c)'
 			].join('\n')
 		);
 		expect(symbols.get('O')).toBeDefined();
@@ -316,13 +339,16 @@ describe('stdlib — composition', () => {
 				'B = point(6, 0)',
 				'C = point(2, 5)',
 				'triangle(A, B, C)',
-				'(Ma, sa) = mediane(A, B, C)',
-				'(Mb, sb) = mediane(B, C, A)',
-				'(Mc, sc) = mediane(C, A, B)'
+				'sa = mediane(A, B, C)',
+				'sb = mediane(B, C, A)',
+				'sc = mediane(C, A, B)'
 			].join('\n')
 		);
+		// Triangle is a polygon (no longer 3 segments). Medians are 3 segments.
 		const segs = figure.getAllElements().filter((e) => e.type === 'segment');
-		expect(segs).toHaveLength(6); // 3 sides + 3 medians
+		expect(segs).toHaveLength(3);
+		const polys = figure.getAllElements().filter((e) => e.type === 'polygon');
+		expect(polys).toHaveLength(1);
 	});
 
 	it('macro internal elements are hidden', () => {
@@ -334,26 +360,10 @@ describe('stdlib — composition', () => {
 		const visiblePoints = figure
 			.getAllElements()
 			.filter((e) => (e.type === 'freePoint' || e.type === 'intersectionLL') && e.visible);
-		// Only A, B, C, H should be visible — not the internal P, Q points from hauteur()
+		// Only A, B, C, H should be visible — not the internal P, Q, F points from hauteur()
 		expect(visiblePoints).toHaveLength(4);
 		const labels = visiblePoints.map((e) => e.label).sort();
 		expect(labels).toEqual(['A', 'B', 'C', 'H']);
-	});
-
-	it('macro returned elements have correct labels', () => {
-		const { figure } = runDsl(
-			[
-				'A = point(0, 0)',
-				'B = point(6, 0)',
-				'C = point(2, 5)',
-				'(O, cc) = cercle_circonscrit(A, B, C)'
-			].join('\n')
-		);
-		const visiblePoints = figure
-			.getAllElements()
-			.filter((e) => (e.type === 'freePoint' || e.type === 'intersectionLL') && e.visible);
-		const labels = visiblePoints.map((e) => e.label).sort();
-		expect(labels).toEqual(['A', 'B', 'C', 'O']);
 	});
 
 	it('triangle with new remarkable elements', () => {
@@ -363,20 +373,19 @@ describe('stdlib — composition', () => {
 				'B = point(6, 0)',
 				'C = point(2, 5)',
 				'triangle(A, B, C)',
-				'(O, cc) = cercle_circonscrit(A, B, C)',
+				'cc = cercle_circonscrit(A, B, C)',
 				'G = centre_gravite(A, B, C)',
 				'H = orthocentre(A, B, C)',
-				'(I, ci) = cercle_inscrit(A, B, C)',
+				'ci = cercle_inscrit(A, B, C)',
 				'de = droite_euler(A, B, C)',
-				'(Oe, ce) = cercle_euler(A, B, C)'
+				'ce = cercle_euler(A, B, C)'
 			].join('\n')
 		);
-		// All symbols exist
 		expect(symbols.get('G')).toBeDefined();
 		expect(symbols.get('H')).toBeDefined();
-		expect(symbols.get('I')).toBeDefined();
+		expect(symbols.get('cc')).toBeDefined();
+		expect(symbols.get('ci')).toBeDefined();
 		expect(symbols.get('de')).toBeDefined();
-		expect(symbols.get('Oe')).toBeDefined();
 		expect(symbols.get('ce')).toBeDefined();
 	});
 
@@ -387,14 +396,14 @@ describe('stdlib — composition', () => {
 				'B = point(6, 0)',
 				'C = point(2, 5)',
 				'triangle(A, B, C)',
-				'(O, cc) = cercle_circonscrit(A, B, C)',
-				'(FA, hA) = hauteur(A, B, C)',
-				'(FB, hB) = hauteur(B, C, A)',
+				'cc = cercle_circonscrit(A, B, C)',
+				'hA = hauteur(A, B, C)',
+				'hB = hauteur(B, C, A)',
 				'bA = bissectrice(B, A, C)'
 			].join('\n')
 		);
 		const lines = figure.getAllElements().filter((e) => e.type === 'line');
-		expect(lines.length).toBeGreaterThanOrEqual(3); // mediatrices + hauteurs + bissectrice
+		expect(lines.length).toBeGreaterThanOrEqual(3);
 	});
 });
 
@@ -519,7 +528,8 @@ describe('stdlib — cercle_inscrit', () => {
 				'A = point(0, 0)',
 				'B = point(3, 0)',
 				'C = point(0, 4)',
-				'(I, c) = cercle_inscrit(A, B, C)'
+				'c = cercle_inscrit(A, B, C)',
+				'I = centre(c)'
 			].join('\n')
 		);
 		const i = pos(figure, symbols, 'I');
@@ -536,7 +546,8 @@ describe('stdlib — cercle_inscrit', () => {
 				'A = point(0, 0)',
 				'B = point(6, 0)',
 				'C = point(2, 5)',
-				'(I, c) = cercle_inscrit(A, B, C)',
+				'c = cercle_inscrit(A, B, C)',
+				'I = centre(c)',
 				'd1 = distance(I, droite(A, B))',
 				'd2 = distance(I, droite(B, C))',
 				'd3 = distance(I, droite(A, C))'
@@ -559,7 +570,8 @@ describe('stdlib — droite_euler', () => {
 				'C = point(2, 5)',
 				'G = centre_gravite(A, B, C)',
 				'H = orthocentre(A, B, C)',
-				'(O, cc) = cercle_circonscrit(A, B, C)',
+				'cc = cercle_circonscrit(A, B, C)',
+				'O = centre(cc)',
 				'de = droite_euler(A, B, C)'
 			].join('\n')
 		);
@@ -594,7 +606,8 @@ describe('stdlib — cercle_euler', () => {
 				'M1 = milieu(A, B)',
 				'M2 = milieu(B, C)',
 				'M3 = milieu(A, C)',
-				'(Oe, ce) = cercle_euler(A, B, C)'
+				'ce = cercle_euler(A, B, C)',
+				'Oe = centre(ce)'
 			].join('\n')
 		);
 		const oe = pos(figure, symbols, 'Oe');
@@ -608,17 +621,18 @@ describe('stdlib — cercle_euler', () => {
 		expect(r2).toBeCloseTo(r3, 5);
 	});
 
-	it('returns center and circle', () => {
+	it('returns the circle, centre via centre(ce)', () => {
 		const { symbols } = runDsl(
 			[
 				'A = point(0, 0)',
 				'B = point(6, 0)',
 				'C = point(2, 5)',
-				'(Oe, ce) = cercle_euler(A, B, C)'
+				'ce = cercle_euler(A, B, C)',
+				'Oe = centre(ce)'
 			].join('\n')
 		);
-		expect(symbols.get('Oe')!.type).toBe('point');
 		expect(symbols.get('ce')!.type).toBe('cercle');
+		expect(symbols.get('Oe')!.type).toBe('point');
 	});
 
 	it('Euler circle radius is half the circumradius', () => {
@@ -627,8 +641,10 @@ describe('stdlib — cercle_euler', () => {
 				'A = point(0, 0)',
 				'B = point(6, 0)',
 				'C = point(2, 5)',
-				'(O, cc) = cercle_circonscrit(A, B, C)',
-				'(Oe, ce) = cercle_euler(A, B, C)',
+				'cc = cercle_circonscrit(A, B, C)',
+				'O = centre(cc)',
+				'ce = cercle_euler(A, B, C)',
+				'Oe = centre(ce)',
 				'M1 = milieu(A, B)'
 			].join('\n')
 		);
@@ -672,7 +688,7 @@ describe('stdlib — edge cases: equilateral triangle', () => {
 
 	it('cercle_inscrit center coincides with centroid for equilateral', () => {
 		const { figure, symbols } = runDsl(
-			equilateral + '\nG = centre_gravite(A, B, C)\n(I, c) = cercle_inscrit(A, B, C)'
+			equilateral + '\nG = centre_gravite(A, B, C)\nc = cercle_inscrit(A, B, C)\nI = centre(c)'
 		);
 		const g = pos(figure, symbols, 'G');
 		const i = pos(figure, symbols, 'I');
@@ -683,7 +699,7 @@ describe('stdlib — edge cases: equilateral triangle', () => {
 	it('cercle_euler radius is half circumradius for equilateral', () => {
 		const { figure, symbols } = runDsl(
 			equilateral +
-				'\n(O, cc) = cercle_circonscrit(A, B, C)\n(Oe, ce) = cercle_euler(A, B, C)\nM1 = milieu(A, B)'
+				'\ncc = cercle_circonscrit(A, B, C)\nO = centre(cc)\nce = cercle_euler(A, B, C)\nOe = centre(ce)\nM1 = milieu(A, B)'
 		);
 		const o = pos(figure, symbols, 'O');
 		const a = pos(figure, symbols, 'A');
@@ -723,7 +739,8 @@ describe('stdlib — edge cases: isosceles triangle', () => {
 				'A = point(-3, 0)',
 				'B = point(3, 0)',
 				'C = point(0, 5)',
-				'(I, c) = cercle_inscrit(A, B, C)'
+				'c = cercle_inscrit(A, B, C)',
+				'I = centre(c)'
 			].join('\n')
 		);
 		const i = pos(figure, symbols, 'I');
@@ -750,7 +767,8 @@ describe('stdlib — edge cases: right triangle', () => {
 				'A = point(0, 0)',
 				'B = point(5, 0)',
 				'C = point(0, 12)',
-				'(I, c) = cercle_inscrit(A, B, C)'
+				'c = cercle_inscrit(A, B, C)',
+				'I = centre(c)'
 			].join('\n')
 		);
 		const i = pos(figure, symbols, 'I');
@@ -767,7 +785,8 @@ describe('stdlib — edge cases: right triangle', () => {
 				'C = point(0, 8)',
 				'G = centre_gravite(A, B, C)',
 				'H = orthocentre(A, B, C)',
-				'(O, cc) = cercle_circonscrit(A, B, C)'
+				'cc = cercle_circonscrit(A, B, C)',
+				'O = centre(cc)'
 			].join('\n')
 		);
 		const g = pos(figure, symbols, 'G');
