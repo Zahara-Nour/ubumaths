@@ -165,7 +165,26 @@ export interface BuiltinScalarResult {
 
 function requireElement(val: ResolvedValue, name: string, line: number): string {
 	if (val.type !== 'element') {
-		throw new DslRuntimeError(`"${name}" n'est pas un element geometrique`, line);
+		const got =
+			val.type === 'nombre'
+				? `nombre \`${val.value}\``
+				: val.type === 'string'
+					? `chaîne \`"${val.value}"\``
+					: val.type === 'tuple'
+						? `tuple (${val.elements.length} éléments)`
+						: val.type === 'geoValue'
+							? 'valeur exacte'
+							: 'valeur inconnue';
+		throw new DslRuntimeError(
+			{
+				summary: `\`${name}\` doit être un élément géométrique, ${got} reçu.`,
+				hint:
+					val.type === 'nombre'
+						? 'Pour passer un nombre à un builtin qui attend un point, utilisez `point(x, y)` d’abord.'
+						: 'Vérifiez le type de la variable passée — elle doit avoir été créée par un builtin (`point`, `cercle`, …).'
+			},
+			line
+		);
 	}
 	return val.figureId;
 }
@@ -174,9 +193,28 @@ function requireNumber(val: ResolvedValue, name: string, line: number): number {
 	if (val.type === 'nombre') return val.value;
 	if (val.type === 'geoValue') {
 		// This should already be a number
-		throw new DslRuntimeError(`"${name}" est une valeur exacte, nombre attendu`, line);
+		throw new DslRuntimeError(
+			{
+				summary: `\`${name}\` doit être un nombre, valeur exacte reçue.`,
+				hint: 'Convertissez la valeur exacte en nombre via une expression numérique (ex. `2*3.14` au lieu de `2*pi`).'
+			},
+			line
+		);
 	}
-	throw new DslRuntimeError(`"${name}" n'est pas un nombre`, line);
+	const got =
+		val.type === 'element'
+			? `un élément géométrique`
+			: val.type === 'string'
+				? `une chaîne`
+				: val.type === 'tuple'
+					? `un tuple`
+					: 'une valeur non numérique';
+	throw new DslRuntimeError(
+		{
+			summary: `\`${name}\` doit être un nombre, ${got} reçu.`
+		},
+		line
+	);
 }
 
 function requireTuple(val: ResolvedValue, name: string, line: number): ResolvedValue[] {
@@ -441,6 +479,19 @@ function resolveDirection(
 	Apos: { x: GeoValue; y: GeoValue }
 ): { dx: number; dy: number } {
 	const { named, figure, line, angleMode } = ctx;
+
+	// Detect ambiguous direction args : at most one of {angle, direction, vecteur}.
+	const directionKeys = ['angle', 'direction', 'vecteur'].filter((k) => named.has(k));
+	if (directionKeys.length > 1) {
+		throw new DslRuntimeError(
+			{
+				summary: `Direction ambigüe : \`${directionKeys.join('=`, `')}=\` ne peuvent pas être combinés.`,
+				hint: 'Choisissez **un seul** argument parmi `angle=`, `direction=` ou `vecteur=` pour spécifier la direction.'
+			},
+			line
+		);
+	}
+
 	if (named.has('angle')) {
 		const angleVal = requireNumber(named.get('angle')!, 'angle', line);
 		const rad = toRadians(angleVal, angleMode);
@@ -1750,10 +1801,25 @@ function handleMilieu(ctx: BuiltinCtx): BuiltinResult {
 	if (pos.length === 1) {
 		const sId = requireElement(pos[0], 'segment', line);
 		const el = figure.getElementById(sId);
-		if (!el || !isSegment(el))
+		if (!el || !isSegment(el)) {
+			const hintForType: Record<string, string> = {
+				circleByRadius: 'Pour le centre d’un cercle, utilisez `centre(c)`.',
+				circleByPoint: 'Pour le centre d’un cercle, utilisez `centre(c)`.',
+				circleBy3Points:
+					'Pour le centre d’un cercle, utilisez `cercle_circonscrit()` qui expose `centre()`.',
+				ray: 'Une demi-droite n’a pas de milieu (longueur infinie).',
+				line: 'Une droite n’a pas de milieu (longueur infinie).',
+				polygon:
+					'Pour le centre d’un polygone à 4 sommets, utilisez `centre(p)` (intersection des diagonales).',
+				freePoint: 'Vous avez passé un seul point. Pour le milieu de deux points : `milieu(A, B)`.',
+				dependentPoint:
+					'Vous avez passé un seul point. Pour le milieu de deux points : `milieu(A, B)`.'
+			};
+			const elType = el?.type ?? '?';
 			throw new DslRuntimeError(
 				{
 					summary: '`milieu()` : avec 1 argument, doit recevoir un segment.',
+					hint: hintForType[elType] ?? `Type reçu : \`${elType}\`.`,
 					forms: [
 						{ syntax: 'milieu(A, B)', description: 'milieu des points `A` et `B`' },
 						{ syntax: 'milieu(s)', description: 'milieu du segment `s`' }
@@ -1761,6 +1827,7 @@ function handleMilieu(ctx: BuiltinCtx): BuiltinResult {
 				},
 				line
 			);
+		}
 		const id = figure.createMidpoint(el.startId, el.endId, { label });
 		return { figureId: id, symbolType: 'point' };
 	}
@@ -3029,13 +3096,26 @@ function handleExtremite(ctx: BuiltinCtx): BuiltinResult {
 	const sId = requireElement(pos[0], 'segment', line);
 	const el = figure.getElementById(sId);
 	const endpoints = el ? getSegmentLikeEndpoints(el) : null;
-	if (!endpoints)
+	if (!endpoints) {
+		const hintForType: Record<string, string> = {
+			circleByRadius: 'Pour un cercle, le centre s’obtient avec `centre(c)`.',
+			circleByPoint: 'Pour un cercle, le centre s’obtient avec `centre(c)`.',
+			circleBy3Points: 'Pour un cercle, utilisez `cercle_circonscrit(...)` qui expose `centre()`.',
+			polygon: 'Pour un polygone, utilisez `sommet(p, i)` ou `sommets(p)`.',
+			line: 'Pour une droite, il n’y a pas d’extrémités (longueur infinie).',
+			arcByAngles: 'Pour un arc, le centre s’obtient avec `centre(a)`.',
+			arcByPoints: 'Pour un arc, le centre s’obtient avec `centre(a)`.',
+			vectorByPoints: 'Pour un vecteur, ses points sont accessibles via la définition d’origine.'
+		};
+		const elType = el?.type ?? '?';
 		throw new DslRuntimeError(
 			{
-				summary: '`extremite()` : le 1er argument doit être un segment ou une demi-droite.'
+				summary: '`extremite()` : le 1er argument doit être un segment ou une demi-droite.',
+				hint: hintForType[elType] ?? `Type reçu : \`${elType}\`.`
 			},
 			line
 		);
+	}
 	const i = requireNumber(pos[1], 'index', line);
 	if (i !== 1 && i !== 2)
 		throw new DslRuntimeError(
@@ -3100,11 +3180,24 @@ function handleSommet(ctx: BuiltinCtx): BuiltinResult {
 		);
 	const polyId = requireElement(pos[0], 'polygone', line);
 	const el = figure.getElementById(polyId);
-	if (!el || !isPolygon(el))
+	if (!el || !isPolygon(el)) {
+		const hintForType: Record<string, string> = {
+			segment: 'Pour les extrémités d’un segment, utilisez `extremite(s, 1)` ou `extremite(s, 2)`.',
+			ray: 'Pour les extrémités d’une demi-droite, utilisez `extremite(r, 1)` ou `extremite(r, 2)`.',
+			circleByRadius: 'Un cercle n’a pas de sommets ; pour son centre utilisez `centre(c)`.',
+			circleByPoint: 'Un cercle n’a pas de sommets ; pour son centre utilisez `centre(c)`.',
+			triangle:
+				'Les triangles stdlib retournent maintenant un polygone : `t = triangle_equilateral(A, B)` puis `sommet(t, 3)`.'
+		};
+		const elType = el?.type ?? '?';
 		throw new DslRuntimeError(
-			{ summary: '`sommet()` : le 1er argument doit être un polygone.' },
+			{
+				summary: '`sommet()` : le 1er argument doit être un polygone.',
+				hint: hintForType[elType] ?? `Type reçu : \`${elType}\`.`
+			},
 			line
 		);
+	}
 	const i = requireNumber(pos[1], 'index', line);
 	if (!Number.isInteger(i) || i < 1 || i > el.dependsOn.length)
 		throw new DslRuntimeError(

@@ -287,11 +287,62 @@ class Interpreter {
 				const inMacro = this.macros.insideMacro;
 				const value = this.evaluateExpr(stmt.value, stmt.line);
 				if (value.type !== 'tuple') {
-					throw new DslRuntimeError('La destructuration necessite un tuple', stmt.line);
+					// Detect old-style tuple destructuring after the stdlib migration
+					// (mediatrice, cercle_circonscrit, rectangle, etc. now return single
+					// objects). Give a helpful hint pointing to the new pattern.
+					const rhs =
+						stmt.value.kind === 'call' && 'name' in stmt.value
+							? (stmt.value as { name: string }).name
+							: null;
+					const MIGRATED_MACROS_HINTS: Record<string, string> = {
+						mediatrice:
+							'Forme actuelle : `d = mediatrice(A, B)` ; le milieu via `M = milieu(A, B)`.',
+						mediane: 'Forme actuelle : `s = mediane(A, B, C)` ; le milieu via `M = milieu(B, C)`.',
+						hauteur:
+							'Forme actuelle : `d = hauteur(A, B, C)` ; le pied via `F = intersection(d, droite(B, C))`.',
+						cercle_circonscrit:
+							'Forme actuelle : `c = cercle_circonscrit(A, B, C)` ; le centre via `O = centre(c)`.',
+						cercle_inscrit:
+							'Forme actuelle : `c = cercle_inscrit(A, B, C)` ; le centre via `I = centre(c)`.',
+						cercle_euler:
+							'Forme actuelle : `c = cercle_euler(A, B, C)` ; le centre via `O = centre(c)`.',
+						corde:
+							'Forme actuelle : `s = corde(c, d)` ; les extrémités via `extremite(s, 1)` et `extremite(s, 2)`.',
+						rectangle:
+							'Forme actuelle : `p = rectangle(A, B, largeur=...)` ; les sommets via `sommets(p)` ou `sommet(p, i)`.',
+						carre:
+							'Forme actuelle : `p = carre(A, B)` ; les sommets via `sommets(p)` ou `sommet(p, i)`.',
+						losange:
+							'Forme actuelle : `p = losange(A, B, angle=...)` ; les sommets via `sommets(p)` ou `sommet(p, i)`.',
+						parallelogramme:
+							'Forme actuelle : `p = parallelogramme(A, B, C)` ; les sommets via `sommets(p)` ou `sommet(p, i)`.',
+						triangle_equilateral:
+							'Forme actuelle : `t = triangle_equilateral(A, B)` ; le 3ᵉ sommet via `sommet(t, 3)`.',
+						triangle_isocele:
+							'Forme actuelle : `t = triangle_isocele(A, B[, angle=...])` ; les sommets via `sommets(t)` ou `sommet(t, i)`.',
+						triangle_rectangle:
+							'Forme actuelle : `t = triangle_rectangle(A, B[, angle=...])` ; les sommets via `sommets(t)` ou `sommet(t, i)`.'
+					};
+					const migrationHint =
+						rhs && rhs in MIGRATED_MACROS_HINTS ? MIGRATED_MACROS_HINTS[rhs] : null;
+					throw new DslRuntimeError(
+						{
+							summary: migrationHint
+								? `\`${rhs}()\` ne retourne plus un tuple — la destructuration n'est plus la bonne forme.`
+								: 'La destructuration nécessite une valeur de type tuple.',
+							hint:
+								migrationHint ??
+								'Vérifiez que le builtin appelé à droite retourne bien un tuple. Depuis 2026-05-18, les macros stdlib (`mediatrice`, `cercle_circonscrit`, `rectangle`…) retournent un objet unique — utilisez les accesseurs (`centre`, `milieu`, `sommet`, `extremite`) pour récupérer les sous-parties.'
+						},
+						stmt.line
+					);
 				}
 				if (value.elements.length !== stmt.names.length) {
 					throw new DslRuntimeError(
-						`Attendu ${stmt.names.length} valeurs, recu ${value.elements.length}`,
+						{
+							summary: `Destructuration : ${stmt.names.length} variable(s) à gauche, ${value.elements.length} valeur(s) à droite.`,
+							hint: 'Les noms à gauche du `=` doivent correspondre exactement au nombre d’éléments retournés.'
+						},
 						stmt.line
 					);
 				}
