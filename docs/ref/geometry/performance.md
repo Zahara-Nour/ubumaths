@@ -76,7 +76,7 @@ figure, ce chemin était atteint via `computeElementPosition()` →
 `getSecondDerivatives()` à chaque `recompute()`, soit à chaque tick de drag
 ou de slider.
 
-### 2.2 Objet d'environnement alloué à chaque évaluation de curve — MEDIUM IMPACT
+### 2.2 ~~Objet d'environnement alloué à chaque évaluation de curve~~ — **CORRIGÉ 2026-05-18**
 
 **Fichiers** :
 
@@ -84,17 +84,18 @@ ou de slider.
 - `graph/figure.ts:2888-2891` (dans `createTangentToParametric`)
 - `graph/figure.ts:2609` (dans `queryParametricCurveAtCursor`)
 
-```typescript
-const v = pc.compiledX({ ...scalarBindings, [param]: t }); // nouvel objet par appel
-```
+> **Statut : FIXED.** Les 3 sites ont été convertis au pattern mutable-env
+> (un seul objet `env: Record<string, number>` partagé, paramètre muté
+> in-place avant chaque évaluation). Élimine ~1200+ allocations d'objets
+> par rendu de courbe paramétrique dans le sampler. Pattern identique à
+> `parametric-newton.ts:69`. Safe en JS single-threaded car chaque closure
+> mute `env[param]` juste avant `compiledX(env)`.
 
-`computeParametricCurveSampling` crée 4 closures (`xFn`, `yFn`, `xPrime`,
-`yPrime`) qui allouent `{ ...scalarBindings, [param]: t }` à **chaque**
-évaluation du sampler. Avec 300 points par courbe + sampler adaptatif, cela
-représente potentiellement ~1200+ allocations d'objets par rendu de courbe.
-Comparer avec la technique mutable-env déjà utilisée dans
-`parametric-newton.ts:69` (objet partagé, paramètre muté in-place) — elle est
-absente de ce chemin.
+**Description historique** : `computeParametricCurveSampling` créait 4
+closures (`xFn`, `yFn`, `xPrime`, `yPrime`) qui allouaient
+`{ ...scalarBindings, [param]: t }` à **chaque** évaluation du sampler.
+Avec 300 points par courbe + sampler adaptatif, ~1200+ allocations
+d'objets par rendu de courbe.
 
 ### 2.3 Newton 1D 16 starts × chaque `intersection()` paramétrique — MEDIUM IMPACT
 
@@ -367,30 +368,17 @@ identifiés sont :
 
 ---
 
-### 2. Remplacer les spreads d'env par un objet mutable dans `computeParametricCurveSampling` — HIGH / FAIBLE EFFORT
+### 2. ~~Remplacer les spreads d'env par un objet mutable dans `computeParametricCurveSampling`~~ — **CORRIGÉ 2026-05-18**
 
-**Fichier** : `graph/figure.ts:4390-4418`
+**Fichiers** : `graph/figure.ts` — `computeParametricCurveSampling`,
+`createTangentToParametric`, `queryParametricCurveAtCursor`
 
-Remplacer :
-
-```typescript
-const v = pc.compiledX({ ...scalarBindings, [param]: t });
-```
-
-par :
-
-```typescript
-const env: Record<string, number> = { ...scalarBindings }; // une seule fois
-const xFn = (t: number): number | null => {
-	env[param] = t; // mutation in-place
-	const v = pc.compiledX(env);
-	return Number.isFinite(v) ? v : null;
-};
-```
-
-Ce pattern existe déjà dans `parametric-newton.ts:69` et
-`parametric-intersection-1d.ts:164-176`. Le porter ici supprime ~1200
-allocations d'objets par courbe par rendu (300 points × 4 fonctions compilées).
+> **Statut : FIXED.** Les 3 sites convertis au pattern mutable-env. Le sampler
+> partage maintenant un seul `env` entre `xFn`/`yFn`/`xPrime`/`yPrime`,
+> mutant `env[param]` avant chaque évaluation. Supprime ~1200+ allocations
+> par rendu de courbe paramétrique. Pattern aligné avec
+> `parametric-newton.ts:69` et `parametric-intersection-1d.ts:164-176`.
+> 661 tests parametric/graph/dsl/rendering passent, 0 régression.
 
 ---
 
