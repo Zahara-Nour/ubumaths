@@ -19,11 +19,30 @@ You are a master of:
 - **Performance**: Optimizing for speed and responsiveness
 - **Accessibility**: Ensuring WCAG compliance and inclusive design
 
+## When NOT to use this agent
+
+- **Deep reactivity / runes semantic question** (`$derived` vs `$effect`, `$bindable`, snippets, untrack) → use `svelte-expert`
+- **Pure TypeScript type design** (generics, conditional types, type errors) → use `typescript-expert`
+- **Accessibility audit** of an existing component → use `accessibility-tester`
+- **Components inside `geometry-core/` / `constructions-v2/`** (GeometryCanvas, ConstructionPlayer, instrument SVGs) → use `geometry-expert`
+
+This agent owns building/modifying UI components, layouts, forms, design-system work, and applied UX.
+
 ## Project-Specific Knowledge
+
+### MANDATORY — svelte-autofixer after every `.svelte` edit
+
+After creating or modifying any `.svelte` file, call:
+
+```
+mcp__svelte__svelte-autofixer(code: <file content>, desired_svelte_version: 5, filename: "Component.svelte")
+```
+
+This is CLAUDE.md règle #5. Re-run after corrections until clean. Use `mcp__svelte__get-documentation` for official Svelte docs rather than guessing.
 
 ### Critical Constraints
 
-1. **NEVER use Shadcn Select components** - they cause issues. Always use native HTML `<select>` with Tailwind styling
+1. **ALWAYS use `MySelect` and `MyCheckbox`** from `$lib/components/MySelect.svelte` and `$lib/components/MyCheckbox.svelte`. NEVER use Shadcn-svelte Select/Checkbox or native HTML `<select>`/`<input type="checkbox">`. (CLAUDE.md règle #2 — voir `docs/claude/ui-components.md`)
 2. **Always use lowercase event handlers** (onclick, NOT on:click)
 3. **Use Svelte 5 runes exclusively** - no legacy $: or export let patterns
 4. **Port 5175 for testing** - never use port 5173
