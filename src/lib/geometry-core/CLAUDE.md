@@ -57,6 +57,9 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
 - **`graph` ↔ `dsl`** : plus de cycle depuis 2026-05-18. `singularity-warn` a ete deplace vers `$lib/mathAST/analysis/`. **Regle a maintenir** : `graph/` ne doit JAMAIS importer en valeur depuis `dsl/`. Si tu en as besoin, le helper appartient probablement a `$lib/mathAST/analysis/` ou a un nouveau dossier partage `geometry-core/analysis/`.
 - **`DslRuntimeError` accepte un objet `details` structure** depuis 2026-05-18 : `new DslRuntimeError({ summary, hint?, forms? }, line)`. Le constructeur a 2 overloads (string OU objet) → backward compatible avec ~150 sites legacy. Le champ `details: DslRuntimeErrorDetails | null` est exposé sur l'instance pour le rendu UI riche (voir `dsl/errors.ts`). **Pour un nouveau builtin, toujours utiliser la forme structuree** : elle alimente le panneau d'erreur du player `constructions-v2` qui rend `summary` + `hint` + liste de `forms` avec inline-code styling. La forme plate ne fait que tomber sur un `<pre>` brut.
 - **`ConstructionExecutor.load()` ne throw PLUS pour les erreurs runtime** depuis 2026-05-18. Il capture l'erreur dans `_loadError` et retourne normalement, avec `_stepDurations` ne contenant que les durations des steps valides. Le caller doit lire `executor.loadError` apres `load()` et propager. Pattern dans `ConstructionPlayer.svelte:loadScript`. Seules les `DslParseError` (syntaxe) sont encore propagees par `load()`.
+- **Convention de retour DSL : un builtin = un objet principal** (depuis 2026-05-18). Les macros stdlib retournent l'objet sémantique (cercle, droite, polygone, segment). Les sous-parties s'obtiennent via accesseurs purs : `centre(c)`, `extremite(s, i)`, `extremites(s)`, `milieu(s)`, `sommet(p, i)`, `sommets(p)`, `rayon(c)`. **Tuples acceptés seulement quand le résultat est intrinsèquement pluriel** (`sommets`, `extremites`, `foyers`). Pour un nouveau macro qui crée plusieurs objets, `masque()` les byproducts et retourner l'objet principal — l'utilisateur révélera ce qui l'intéresse via `montre()` ou un accesseur.
+- **Verbes `montre` / `masque` pour la visibilité** (depuis 2026-05-18). `montre(elem, ...styleArgs)` rend visible + applique le style en un coup. `masque(elem)` cache. `style(elem, visible=vrai/faux)` est aussi accepté (style() est le mutateur pur). Pour un nouveau builtin qui crée un sous-produit invisible, ne pas forcer la visibilité par option — laisser l'utilisateur appeler `montre()` explicitement.
+- **Pattern `point(A, longueur=L, ...)` et `segment(A, longueur=L, ...)`** (depuis 2026-05-18). Trois modes de direction : `angle=θ` (mode actif), `direction=B` (vers un point), `vecteur=u` (le long d'un vecteur). Helper centralisé `resolveDirection(ctx, Apos)` dans `dsl/builtins.ts`. Si tu ajoutes un nouveau builtin avec un concept de direction, réutilise ce helper.
 - **9 erreurs preexistantes svelte-check** (~46 warnings). Baseline stable, ne pas commenter, juste verifier que mes modifs n'augmentent pas le compteur.
 
 ---
@@ -82,6 +85,19 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
    );
    ```
    Le panneau d'erreur dans `/construction-demo` rend ces champs avec inline-code styling et liste a puces. La string flat fonctionne toujours (backward compat) mais s'affiche brute dans un `<pre>`.
+7. **Si le builtin crée plusieurs éléments**, retourner UN seul (le principal sémantique), et `masque()` les byproducts. Documenter les accesseurs nécessaires pour récupérer les autres (ex : `centre(c)`, `sommet(p, i)`). Ne jamais retourner un tuple sauf si le résultat est intrinsèquement pluriel (collection de N items).
+8. **Si le builtin accepte une direction** (pour un offset polaire ou angulaire), réutiliser le helper `resolveDirection(ctx, anchorPos)` qui gère uniformément `angle=`, `direction=`, `vecteur=`. Pas de duplication.
+
+### Ajouter un accesseur (pattern pur, depuis 2026-05-18)
+
+Un accesseur retourne une référence à un élément existant, sans effet visuel. Exemple type : `centre(c)`, `extremite(s, i)`, `sommet(p, i)`.
+
+1. Handler top-level dans `dsl/builtins.ts` qui ne fait QUE :
+   - Type-check l'argument principal (`isCircle(el)`, `isPolygon(el)`, etc.)
+   - Lit la sous-partie demandée (`el.centerId`, `el.dependsOn[i-1]`, etc.)
+   - Retourne `{ figureId: ..., symbolType: 'point' }` sans créer d'élément
+2. Pour les cas inattendus, throw `DslRuntimeError` avec `hint` qui pointe vers le bon builtin (ex : `centre(s)` → hint « utilise `milieu(s)` à la place »).
+3. Versions plurielles : retourner `BuiltinMultiResult` (tuple). Voir `handleExtremites`, `handleSommets`.
 
 ### Ajouter un type `Geo*` (`GeoNewElement`)
 
