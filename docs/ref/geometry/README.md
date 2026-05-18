@@ -94,8 +94,8 @@ Top 3 optimisations prioritaires :
 
 1. ~~**Cache derivees secondes** (`parametric-calculus.ts:75-95`) — `cercle_osculateur`
    recompile a chaque tick.~~ **FAIT 2026-05-18**.
-2. **Supprimer les spreads** (`figure.ts:4399-4418`) — ~1 200 allocations
-   `{ ...scalarBindings, [param]: t }` par courbe par rendu. Effort faible.
+2. ~~**Supprimer les spreads** (`figure.ts:4399-4418`) — ~1 200 allocations
+   `{ ...scalarBindings, [param]: t }` par courbe par rendu. Effort faible.~~ **FAIT 2026-05-18** (pattern mutable-env, 3 sites).
 3. **Warm-start Newton** (`parametric-newton.ts` + `intersection-1d.ts`) —
    utiliser le `t` precedent pour reduire 16 starts → 1 en interaction
    continue. Reduction 16:1.
@@ -156,8 +156,8 @@ impact/effort :
    _Hors module mais critique._
 2. ~~**[PERF HIGH / EFFORT FAIBLE]** Cache des derivees secondes pour
    `cercle_osculateur`/`courbure` (`parametric-calculus.ts:75-95`).~~ **FAIT 2026-05-18** (`compiledXSecond`/`compiledYSecond` sur `GeoParametricCurve`).
-3. **[PERF HIGH / EFFORT FAIBLE]** Eliminer les spreads dans
-   `computeParametricCurveSampling` (`figure.ts:4399-4418`).
+3. ~~**[PERF HIGH / EFFORT FAIBLE]** Eliminer les spreads dans
+   `computeParametricCurveSampling` (`figure.ts:4399-4418`).~~ **FAIT 2026-05-18** (pattern mutable-env applique aux 3 sites de figure.ts).
 4. **[QUALITE CRITIQUE]** Casser `_executeBuiltinInner` (`dsl/builtins.ts:345-2389`)
    en handlers par builtin (1 fichier par primitive).
 5. **[QUALITE CRITIQUE]** Ajouter le rendu de `GeoOsculatingCircle` dans

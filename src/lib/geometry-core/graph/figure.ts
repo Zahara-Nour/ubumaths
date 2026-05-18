@@ -2625,9 +2625,11 @@ export class Figure {
 		const t = findClosestParameterOnCurve(curveEl, cursorX, cursorY, scalarBindings, tMin, tMax);
 		if (t === null) return null;
 
-		const env = { ...scalarBindings, [curveEl.parameter]: t };
-		const x = curveEl.compiledX(env);
-		const y = curveEl.compiledY(env);
+		// findClosestParameterOnCurve copies scalarBindings internally, so it's safe
+		// to mutate it here for the final γ(t) evaluation (saves one spread).
+		scalarBindings[curveEl.parameter] = t;
+		const x = curveEl.compiledX(scalarBindings);
+		const y = curveEl.compiledY(scalarBindings);
 		if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
 		return { t, x, y };
 	}
@@ -2895,19 +2897,21 @@ export class Figure {
 		// Inject scalar bindings for any slider/scalar referenced by the curve
 		// (e.g. `a*cos(t)` where `a` is a slider). Without these, free variables
 		// would resolve to NaN/undefined and γ(t0) would be non-finite.
-		const scalarBindings: Record<string, number> = {};
+		// Single mutable env shared across 4 evaluations (saves 4 spreads per call).
+		const env: Record<string, number> = {};
 		for (const depId of curveEl.dependsOn) {
 			const depEl = this.elements.get(depId);
 			if (depEl?.label) {
 				const val = this.scalarValues.get(depId);
-				if (val !== undefined) scalarBindings[depEl.label] = val;
+				if (val !== undefined) env[depEl.label] = val;
 			}
 		}
+		env[param] = t0;
 
-		const px = curveEl.compiledX({ ...scalarBindings, [param]: t0 });
-		const py = curveEl.compiledY({ ...scalarBindings, [param]: t0 });
-		const dx = curveEl.compiledXPrime({ ...scalarBindings, [param]: t0 });
-		const dy = curveEl.compiledYPrime({ ...scalarBindings, [param]: t0 });
+		const px = curveEl.compiledX(env);
+		const py = curveEl.compiledY(env);
+		const dx = curveEl.compiledXPrime(env);
+		const dy = curveEl.compiledYPrime(env);
 
 		if (!Number.isFinite(px) || !Number.isFinite(py)) {
 			throw new Error(`tangente non définie au point γ(t0) — γ(t0) non fini`);
@@ -4406,31 +4410,39 @@ export class Figure {
 		const param = pc.parameter;
 		// Bindings for slider/scalar values referenced inside x(t) or y(t).
 		// Matches the function-curve renderer pattern in svg-primitives.ts.
-		const scalarBindings: Record<string, number> = {};
+		// A single mutable env object is shared by all 4 closures (xFn/yFn/xPrime/yPrime)
+		// to avoid ~1200+ object allocations per render (300 samples × 4 closures).
+		// Same pattern as parametric-newton.ts:69. Safe in single-threaded JS: each
+		// closure mutates env[param] just before evaluating.
+		const env: Record<string, number> = {};
 		for (const depId of pc.dependsOn) {
 			const depEl = this.elements.get(depId);
 			if (depEl?.label) {
 				const val = this.scalarValues.get(depId);
-				if (val !== undefined) scalarBindings[depEl.label] = val;
+				if (val !== undefined) env[depEl.label] = val;
 			}
 		}
 		const xFn = (t: number): number | null => {
-			const v = pc.compiledX({ ...scalarBindings, [param]: t });
+			env[param] = t;
+			const v = pc.compiledX(env);
 			return Number.isFinite(v) ? v : null;
 		};
 		const yFn = (t: number): number | null => {
-			const v = pc.compiledY({ ...scalarBindings, [param]: t });
+			env[param] = t;
+			const v = pc.compiledY(env);
 			return Number.isFinite(v) ? v : null;
 		};
 		const xPrime = pc.compiledXPrime
 			? (t: number): number | null => {
-					const v = pc.compiledXPrime!({ ...scalarBindings, [param]: t });
+					env[param] = t;
+					const v = pc.compiledXPrime!(env);
 					return Number.isFinite(v) ? v : null;
 				}
 			: null;
 		const yPrime = pc.compiledYPrime
 			? (t: number): number | null => {
-					const v = pc.compiledYPrime!({ ...scalarBindings, [param]: t });
+					env[param] = t;
+					const v = pc.compiledYPrime!(env);
 					return Number.isFinite(v) ? v : null;
 				}
 			: null;
