@@ -250,6 +250,44 @@ function formatScalarValue(value: number, format?: string): string {
 const TRACE_MAX_POINTS = 500;
 const TRACE_EPSILON = 1e-6;
 
+/**
+ * Memoisation for `computeParametricCurveSampling`.
+ *
+ * The sampler runs 300 base samples + adaptive refinement through each curve's
+ * compiled x(t), y(t), x'(t), y'(t). On any Svelte `version++` (drag, slider
+ * tick) the SVG template re-runs `parametricCurveToSVG` for every visible
+ * parametric curve, even ones unrelated to the change. This cache short-
+ * circuits the work when the inputs are identical.
+ *
+ * Cache key (per GeoParametricCurve, identity-keyed via WeakMap):
+ *   resolved tMin/tMax + every scalar binding label/value pair + viewport.
+ *
+ * `GeoParametricCurve.compiledX/Y/etc.` are stable across renders (curves are
+ * immutable; mutation creates a new object), so identity-keyed caching is
+ * sound. Cache auto-invalidates when the curve element is replaced.
+ */
+interface ParametricSamplingCacheEntry {
+	readonly key: string;
+	readonly result: ParametricSampleResult | null;
+}
+const parametricSamplingCache = new WeakMap<GeoParametricCurve, ParametricSamplingCacheEntry>();
+
+function buildParametricSamplingKey(
+	tMin: number,
+	tMax: number,
+	env: Record<string, number>,
+	viewport: Viewport | undefined
+): string {
+	const parts: string[] = [`t=${tMin}|${tMax}`];
+	// Sort keys for deterministic ordering across renders.
+	const keys = Object.keys(env).sort();
+	for (const k of keys) parts.push(`${k}=${env[k]}`);
+	parts.push(
+		viewport ? `vp=${viewport.xMin}|${viewport.xMax}|${viewport.yMin}|${viewport.yMax}` : 'vp=none'
+	);
+	return parts.join(';');
+}
+
 export class Figure {
 	private elements = new Map<string, GeoElement>();
 	private positions = new Map<string, GeoPoint>();
@@ -4438,6 +4476,14 @@ export class Figure {
 				if (val !== undefined) env[depEl.label] = val;
 			}
 		}
+
+		// Cache lookup: same curve + same resolved bounds + same scalar bindings +
+		// same viewport ⇒ identical sampler output. Skips 300+ Catmull-Rom samples
+		// + adaptive refinement on the common drag-of-unrelated-point case.
+		const cacheKey = buildParametricSamplingKey(tMin, tMax, env, viewport);
+		const cached = parametricSamplingCache.get(pc);
+		if (cached && cached.key === cacheKey) return cached.result;
+
 		const xFn = (t: number): number | null => {
 			env[param] = t;
 			const v = pc.compiledX(env);
@@ -4463,7 +4509,9 @@ export class Figure {
 				}
 			: null;
 
-		return sampleParametric2D(xFn, yFn, xPrime, yPrime, tMin, tMax, 300, viewport);
+		const result = sampleParametric2D(xFn, yFn, xPrime, yPrime, tMin, tMax, 300, viewport);
+		parametricSamplingCache.set(pc, { key: cacheKey, result });
+		return result;
 	}
 
 	getLineEquation(id: string): LineEquation | null {

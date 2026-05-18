@@ -159,15 +159,26 @@ complet, même si la courbe implicite elle-même n'avait pas changé.
 `N + adaptive_refinement` évaluations du sous-graphe à chaque changement de
 `version`, même lorsque les éléments du sous-graphe n'avaient pas bougé.
 
-### 2.7 `computeParametricCurveSampling` relancé pour chaque viewport change — MEDIUM IMPACT
+### 2.7 ~~`computeParametricCurveSampling` relancé pour chaque viewport change~~ — **CORRIGÉ 2026-05-18**
 
-**Fichier** : `graph/figure.ts:4376-4420`
+**Fichier** : `graph/figure.ts`
 
-300 points de base + sampler adaptatif sont recalculés à chaque changement de
-`viewport` (pan/zoom) car `parametricCurveToSVG()` est dans un `{@const}`
-évalué sans cache dans le template. Un slider qui bouge et déclenche
-`version++` resamle aussi toutes les courbes paramétriques, même celles qui
-ne dépendent pas du slider.
+> **Statut : FIXED.** Mémoïsation par WeakMap module-level keyed par
+> `GeoParametricCurve`. Sous-clé = `(tMin, tMax, scalar bindings, viewport)`.
+> Pour un drag d'un point sans rapport avec la courbe (la majorité des
+> mousemoves) : viewport identique + scalaires identiques → cache hit →
+> 300 samples + raffinement adaptatif évités par courbe par tick. Cache
+> invalide automatiquement quand le `GeoParametricCurve` est remplacé. 8
+> tests dédiés dans `graph/__tests__/parametric-sampling-cache.test.ts`
+> (hit, miss viewport, miss slider, miss slider-bound, no-viewport,
+> curves indépendantes).
+
+**Description historique** : 300 points de base + sampler adaptatif étaient
+recalculés à chaque changement de `viewport` (pan/zoom) car
+`parametricCurveToSVG()` est dans un `{@const}` évalué sans cache dans le
+template. Un slider qui bougeait et déclenchait `version++` resamlait aussi
+toutes les courbes paramétriques, même celles qui ne dépendaient pas du
+slider.
 
 ### 2.8 `findElementNear` sur chaque `mousemove` sans drag — LOW IMPACT
 
@@ -223,14 +234,16 @@ pas ce même pattern.
 - `compiledFn` sur `GeoImplicitCurve` — compilé une fois.
 - `marchingSquares` (ajouté 2026-05-18) — WeakMap keyed par `CompiledFn`, avec viewport+gridSize en sous-clé. Cache hit pour tous les renders où ni la courbe ni le viewport ne changent.
 - `computeLocusCurve` (ajouté 2026-05-18) — WeakMap keyed par `GeoLocus`, avec snapshot stringifié de `(positions, scalarValues, viewport)` filtré par `locus.dependsOn`. Cache hit quand rien dans la chaîne driver→tracer ne bouge.
+- `computeParametricCurveSampling` (ajouté 2026-05-18) — WeakMap keyed par `GeoParametricCurve`, avec snapshot stringifié de `(tMin, tMax, scalar bindings, viewport)`. Cache hit quand bounds, scalaires et viewport sont identiques.
 
 ### Ce qui manque de cache
 
-**SVG path des courbes paramétriques** : le path SVG est recalculé à chaque
-changement de `version`, même si la courbe et le viewport n'ont pas changé.
-Un cache `{ version: number; viewportKey: string; path: string }` par courbe
-éviterait les 300+ évaluations à chaque tick d'un slider qui ne touche pas
-cette courbe.
+**SVG path string** (`curveToSVGPath` + `parametricCurveToSVG` final step) :
+même quand le sampler retourne un `SampledCurve` mis en cache, la conversion
+en `path` SVG est refaite à chaque rendu. Moins coûteux que le sampling
+(traversée linéaire des points + `mathToSvg` par point), mais reste un O(N)
+sur 300+ points par courbe par tick. Un cache par `(SampledCurve identity,
+transformer state)` finirait le travail.
 
 ---
 
