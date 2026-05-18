@@ -32,35 +32,8 @@ macro hauteur(A, B, C):
     masque(F)
     retourne d
 
-# ─── Triangles ───────────────────────────────────────────────
-
-macro triangle(A, B, C):
-    t = polygone(A, B, C)
-    retourne t
-
-macro triangle_equilateral(A, B):
-    C = rotation(B, centre=A, angle=60)
-    masque(C)
-    t = polygone(A, B, C)
-    retourne t
-
-macro triangle_isocele(A, B, angle=40):
-    demi = angle / 2
-    M = milieu(A, B)
-    masque(M)
-    H = rotation(A, centre=M, angle=90)
-    masque(H)
-    C = rotation(M, centre=A, angle=90 - demi)
-    masque(C)
-    t = polygone(A, B, C)
-    retourne t
-
-macro triangle_rectangle(A, B, angle=45):
-    C = rotation(B, centre=A, angle=angle)
-    masque(C)
-    t = polygone(A, B, C)
-    angle_droit(B, A, C)
-    retourne t
+# NOTE : triangle, triangle_equilateral, triangle_isocele, triangle_rectangle
+# ont été migrés en builtins (dsl/builtins.ts).
 
 # ─── Quadrilateres ───────────────────────────────────────────
 
