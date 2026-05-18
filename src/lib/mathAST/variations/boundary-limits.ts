@@ -16,7 +16,9 @@ import type { MathNode } from '../types';
 import type { Domain, IntervalSet, Interval } from '../domain/types';
 import type { BoundaryLimit, LimitValue } from './types';
 import type { LimitResult, LimitDirection } from '../limits/types';
-import { evaluateLimit } from '../limits';
+// Direct import (bypassing the limits barrel) to avoid a Rollup chunk-cycle
+// warning between `limits/index.ts` and `limits/evaluate.ts`.
+import { evaluateLimit } from '../limits/evaluate';
 import { infinity } from '../factory';
 import { isNumber, isInfinity } from '../guards';
 import {
