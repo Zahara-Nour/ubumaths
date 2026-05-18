@@ -426,7 +426,7 @@ describe('intersection — parametric (G. edge cases)', () => {
 			`P = intersection(c, c)`
 		].join('\n');
 		expect(() => runIntersectionParametric(script)).toThrow(
-			/les deux courbes doivent etre distinctes/
+			/les deux courbes doivent (etre|être) distinctes/
 		);
 	});
 
@@ -436,7 +436,9 @@ describe('intersection — parametric (G. edge cases)', () => {
 			`c2 = courbe("x = cos(t)+1", "y = sin(t)", t_min=0, t_max=${2 * Math.PI})`,
 			`P = intersection(c1, c2, 0)`
 		].join('\n');
-		expect(() => runIntersectionParametric(script)).toThrow(/k doit etre un entier >= 1/);
+		expect(() => runIntersectionParametric(script)).toThrow(
+			/`?k`? doit (etre|être) un entier (>=|≥) 1/
+		);
 	});
 
 	it('G3. k = 1.5 (non-integer) raises DslRuntimeError', () => {
@@ -445,6 +447,8 @@ describe('intersection — parametric (G. edge cases)', () => {
 			`c2 = courbe("x = cos(t)+1", "y = sin(t)", t_min=0, t_max=${2 * Math.PI})`,
 			`P = intersection(c1, c2, 1.5)`
 		].join('\n');
-		expect(() => runIntersectionParametric(script)).toThrow(/k doit etre un entier >= 1/);
+		expect(() => runIntersectionParametric(script)).toThrow(
+			/`?k`? doit (etre|être) un entier (>=|≥) 1/
+		);
 	});
 });

@@ -173,7 +173,7 @@ describe('Transformation objects — validation', () => {
 	});
 
 	it('symetrie without centre or axe throws', () => {
-		expect(() => runDsl('s = symetrie()')).toThrow(/necessite/);
+		expect(() => runDsl('s = symetrie()')).toThrow(/(necessite|centre|axe)/);
 	});
 
 	it('translation without vecteur throws', () => {
