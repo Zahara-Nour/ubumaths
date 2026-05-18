@@ -25,8 +25,8 @@ courbes cartesiennes/parametriques/polaires, transformations, intersections.
 | ---------------------------- | -------------- |
 | Fichiers TS total            | 209            |
 | Fichiers source (hors tests) | 69             |
-| Fichiers de test             | 140            |
-| Tests Vitest                 | 2 986          |
+| Fichiers de test             | 144            |
+| Tests Vitest                 | 3 019          |
 | Sous-dossiers fonctionnels   | 9              |
 | Lignes source (estimation)   | ~67 800        |
 | Lignes test (estimation)     | ~38 700        |
@@ -90,20 +90,16 @@ Angles morts critiques :
 > **Audience** : optimisation rendu temps reel
 > **Analyse** : lecture statique (pas de benchmarks reels)
 
-Top 3 optimisations prioritaires :
+**Session 2026-05-18 : 6 quick wins livrees** (cache derivees secondes, mutable-env spreads, warm-start Newton drag, cache marchingSquares, cache computeLocusCurve, cache computeParametricCurveSampling). Tous les hot paths principaux sont maintenant memoises.
 
-1. ~~**Cache derivees secondes** (`parametric-calculus.ts:75-95`) — `cercle_osculateur`
-   recompile a chaque tick.~~ **FAIT 2026-05-18**.
-2. ~~**Supprimer les spreads** (`figure.ts:4399-4418`) — ~1 200 allocations
-   `{ ...scalarBindings, [param]: t }` par courbe par rendu. Effort faible.~~ **FAIT 2026-05-18** (pattern mutable-env, 3 sites).
-3. **Warm-start Newton** — partiellement corrige 2026-05-18 :
-   ✅ `parametric-newton.ts` (drag `point_sur`) ; ⏳ `intersection-1d.ts`
-   reporte (refonte API multi-intersections necessaire).
+Restants — **non rentables seuls** (analyses dans `performance.md` section 9) :
 
-Autres hotspots : Newton 2D 8×8 starts dans intersections paramétriques,
-~~`marchingSquares` 200×200 sans cache~~ **FAIT 2026-05-18** (WeakMap cache par fn+viewport+gridSize),
-`version` global dans
-`GeometryCanvas.svelte` qui declenche le recalcul de tout.
+- ⏳ **Warm-start `intersection-1d`** — refonte API multi-intersections, ROI marginal post-cache
+- ⏳ **Cache SVG path final** (#3) — gain ~10× plus petit que les caches deja en place
+- ⏳ **Version granulaire par element** (#6) — refonte structurelle, ROI cassee par les caches qu'on vient d'ajouter
+- ⏳ **Newton 2D 8×8 starts** — rare en pratique, gain mesurable seulement sur animations slider × intersection parametrique × parametrique
+
+**Recommandation** : profiler une figure stress (slider animant locus + parametrique + intersections) avant toute autre optim.
 
 ### 5. [security.md](./security.md) — Audit securite
 
@@ -149,8 +145,9 @@ Pour chaque sous-dossier du module, les documents qui en parlent :
 
 ## Action items prioritaires (cross-cutting)
 
-Synthese des actions remontees par les 5 audits, ordonnees par ratio
-impact/effort :
+> **Session 2026-05-18 close.** 9 items adressés (5 perf + 2 securite + 1 partiel + tests parametric-newton/bezier ajoutes partiellement). Reste en cours : 1 SECURITE HIGH hors module, 2 QUALITE CRITIQUE (`_executeBuiltinInner` switch + `GeoOsculatingCircle` renderers), 1 TESTS (`bezier.ts`), et 1 PERF partiel (`intersection-1d` warm-start, jugé non rentable seul).
+>
+> **Etat perf** : 6 quick wins livrees, hot paths principaux memoises. **Pas d'autre optim sans profiling reel** — items restants (#3 SVG path, #6 version granulaire, #5 intersection-1d) ont un ROI marginal post-cache. Voir `performance.md` section 9 pour le detail.
 
 1. **[SECURITE HIGH]** Remplacer `new Function()` par `compile()` dans
    `src/lib/utils/game/challenge-variables.ts:68-76`.
@@ -163,12 +160,13 @@ impact/effort :
    en handlers par builtin (1 fichier par primitive).
 5. **[QUALITE CRITIQUE]** Ajouter le rendu de `GeoOsculatingCircle` dans
    `svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts`.
-6. **[TESTS]** Ajouter des tests unitaires directs pour
-   `parametric-newton.ts` et `bezier.ts`.
+6. **[TESTS]** Ajouter des tests unitaires directs pour `bezier.ts` (`parametric-newton.ts` couvert depuis 2026-05-18).
 7. ~~**[SECURITE MEDIUM]** Borner `PARSE_CACHE` dans `dsl/interpreter.ts`.~~ **FAIT 2026-05-18** (plafond 5 000 entrees).
 8. ~~**[SECURITE LOW]** Garde de longueur DSL dans `parse()`.~~ **FAIT 2026-05-18** (100 000 caracteres max).
-9. **[PERF MEDIUM]** ✅ Warm-start Newton dans les drags continus —
-   `findClosestParameterOnCurve` accepte `warmStartT` (2026-05-18). Reste a faire pour `parametric-intersection-1d.ts` (multi-intersections, API a revoir).
+9. **[PERF MEDIUM]** ✅ Warm-start Newton drag closest-point — FAIT 2026-05-18 (`findClosestParameterOnCurve` accepte `warmStartT`). Partie `intersection-1d` differee (refonte API multi-intersections, ROI marginal post-cache).
+10. ~~**[PERF HIGH]** Cache `marchingSquares` (40k evals/render)~~ **FAIT 2026-05-18** (WeakMap par CompiledFn).
+11. ~~**[PERF HIGH]** Cache `computeLocusCurve`~~ **FAIT 2026-05-18** (WeakMap par GeoLocus + snapshot dependsOn).
+12. ~~**[PERF MEDIUM]** Cache `computeParametricCurveSampling`~~ **FAIT 2026-05-18** (WeakMap par GeoParametricCurve + snapshot bounds/scalars/viewport).
 
 ---
 
