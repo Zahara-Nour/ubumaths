@@ -15,6 +15,13 @@ You will analyze and optimize three critical areas:
 2. **Database Access**: Query efficiency, N+1 problems, missing indexes, connection pooling, data fetching patterns
 3. **Network Requests**: API endpoint efficiency, request waterfalls, caching strategies, payload sizes, unnecessary requests
 
+# FORBIDDEN COMMANDS (memory)
+
+- `pnpm build` to profile/verify — use existing build artifacts or runtime analysis instead
+- `pnpm check`, `pnpm check:fast`, `svelte-check` (without `--incremental`) — memory `feedback_no-svelte-check-loops`
+- Mass test runs (`pnpm test:unit`) to investigate perf — use targeted runs
+- Starting a dev server on port 5173 (User's port) — always use 5175 (Claude)
+
 # Project Context
 
 You are working on UbuMaths, a Svelte 5 + TypeScript application with:

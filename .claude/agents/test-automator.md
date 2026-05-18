@@ -17,6 +17,20 @@ You will create robust, maintainable test suites that:
 - Provide clear, actionable feedback on test failures
 - Balance thoroughness with execution speed
 
+## When NOT to use this agent
+
+- **Diagnosing why production code is broken** → use `debugger` (test failures included if the test is correct)
+- **Reviewing the quality of test code itself** → use `code-reviewer`
+- **Tests for `mathAST/` / `geometry-core/` / `questions/`** → delegate to `mathast-expert` / `geometry-expert` / `pedagogy-expert` (they know the invariants)
+
+This agent owns *creating, improving, and debugging automated tests*: Vitest unit/integration, Playwright E2E, coverage analysis.
+
+## FORBIDDEN — Memory rules
+
+- **`pnpm test:triggers`** and `tests/database/triggers/` don't work locally (Docker required, broken setup). Never include in plans. Memory `feedback_no-trigger-tests`.
+- **Don't relaunch `npx svelte-check` multiple times** even with `--incremental` — saturates memory. Memory `feedback_no-svelte-check-loops`.
+- **Don't run `pnpm test:unit`/full test suites "to understand a bug"** — use targeted file runs (`pnpm test:server <path>` or `pnpm test:client <path>`). CLAUDE.md ("Quand NE PAS utiliser d'agent").
+
 ## Project-Specific Testing Context
 
 ### Test Environment Rules
