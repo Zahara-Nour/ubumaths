@@ -1212,6 +1212,1161 @@ function handleLieu(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('lieu', handleLieu);
 
+function handleMilieu(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2) throw new DslRuntimeError('milieu() attend 2 arguments (A, B)', line);
+	const id = figure.createMidpoint(
+		requireElement(pos[0], 'arg1', line),
+		requireElement(pos[1], 'arg2', line),
+		{ label }
+	);
+	return { figureId: id, symbolType: 'point' };
+}
+HANDLERS.set('milieu', handleMilieu);
+
+function handleSegment(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2) throw new DslRuntimeError('segment() attend 2 arguments (A, B)', line);
+	const id = figure.createSegment(
+		requireElement(pos[0], 'arg1', line),
+		requireElement(pos[1], 'arg2', line),
+		{ label }
+	);
+	return { figureId: id, symbolType: 'segment' };
+}
+HANDLERS.set('segment', handleSegment);
+
+function handleDroite(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2) throw new DslRuntimeError('droite() attend 2 arguments (A, B)', line);
+	const id = figure.createLine(
+		requireElement(pos[0], 'arg1', line),
+		requireElement(pos[1], 'arg2', line),
+		{ label }
+	);
+	return { figureId: id, symbolType: 'droite' };
+}
+HANDLERS.set('droite', handleDroite);
+
+function handleDemidroite(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2) throw new DslRuntimeError('demidroite() attend 2 arguments (A, B)', line);
+	const id = figure.createRay(
+		requireElement(pos[0], 'arg1', line),
+		requireElement(pos[1], 'arg2', line),
+		{ label }
+	);
+	return { figureId: id, symbolType: 'demidroite' };
+}
+HANDLERS.set('demidroite', handleDemidroite);
+
+function handleVecteur(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, toGeoValue, line, label } = ctx;
+	if (pos.length !== 2) throw new DslRuntimeError('vecteur() attend 2 arguments', line);
+	const arg0 = pos[0];
+	const arg1 = pos[1];
+	const isNumericLike = (a: ResolvedValue) => a.type === 'nombre' || a.type === 'geoValue';
+	if (isNumericLike(arg0) && isNumericLike(arg1)) {
+		const dx = toGeoValue(arg0, line);
+		const dy = toGeoValue(arg1, line);
+		let anchor: { x: GeoValue; y: GeoValue } | undefined;
+		if (named.has('ancre')) {
+			const tuple = requireTuple(named.get('ancre')!, 'ancre', line);
+			if (tuple.length !== 2) throw new DslRuntimeError('ancre attend un tuple de 2 nombres', line);
+			anchor = { x: toGeoValue(tuple[0], line), y: toGeoValue(tuple[1], line) };
+		}
+		const id = figure.createFreeVector(dx, dy, anchor, { label });
+		return { figureId: id, symbolType: 'vecteur' };
+	} else {
+		const id = figure.createVectorByPoints(
+			requireElement(arg0, 'arg1', line),
+			requireElement(arg1, 'arg2', line),
+			{ label }
+		);
+		return { figureId: id, symbolType: 'vecteur' };
+	}
+}
+HANDLERS.set('vecteur', handleVecteur);
+
+function handleNorme(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 1) throw new DslRuntimeError('norme() attend 1 argument (vecteur)', line);
+	const nVecId = requireElement(pos[0], 'vecteur', line);
+	const id = figure.createScalarNorme(nVecId, { label });
+	return { figureId: id, symbolType: 'scalar' };
+}
+HANDLERS.set('norme', handleNorme);
+
+function handleProduitScalaire(ctx: BuiltinCtx): BuiltinScalarResult {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== 2)
+		throw new DslRuntimeError('produit_scalaire() attend 2 arguments (u, v)', line);
+	const psV1 = requireElement(pos[0], 'u', line);
+	const psV2 = requireElement(pos[1], 'v', line);
+	const psC1 = figure.getVectorComponents(psV1);
+	const psC2 = figure.getVectorComponents(psV2);
+	if (!psC1 || !psC2)
+		throw new DslRuntimeError('produit_scalaire(): composantes non resolues', line);
+	const dot =
+		geoToNumber(psC1.dx) * geoToNumber(psC2.dx) + geoToNumber(psC1.dy) * geoToNumber(psC2.dy);
+	return { scalarValue: dot };
+}
+HANDLERS.set('produit_scalaire', handleProduitScalaire);
+
+function handleAngleVecteurs(ctx: BuiltinCtx): BuiltinScalarResult {
+	const { pos, figure, line, angleMode } = ctx;
+	if (pos.length !== 2)
+		throw new DslRuntimeError('angle_vecteurs() attend 2 arguments (u, v)', line);
+	const avV1 = requireElement(pos[0], 'u', line);
+	const avV2 = requireElement(pos[1], 'v', line);
+	const avC1 = figure.getVectorComponents(avV1);
+	const avC2 = figure.getVectorComponents(avV2);
+	if (!avC1 || !avC2) throw new DslRuntimeError('angle_vecteurs(): composantes non resolues', line);
+	const ax1 = geoToNumber(avC1.dx),
+		ay1 = geoToNumber(avC1.dy);
+	const ax2 = geoToNumber(avC2.dx),
+		ay2 = geoToNumber(avC2.dy);
+	const dotProd = ax1 * ax2 + ay1 * ay2;
+	const len1 = Math.sqrt(ax1 * ax1 + ay1 * ay1);
+	const len2 = Math.sqrt(ax2 * ax2 + ay2 * ay2);
+	if (len1 < 1e-15 || len2 < 1e-15)
+		throw new DslRuntimeError('angle_vecteurs(): vecteur nul', line);
+	const cosA = Math.max(-1, Math.min(1, dotProd / (len1 * len2)));
+	const angleRad = Math.acos(cosA);
+	return {
+		scalarValue: angleMode === 'deg' ? (angleRad * 180) / Math.PI : angleRad
+	};
+}
+HANDLERS.set('angle_vecteurs', handleAngleVecteurs);
+
+function handleCercle(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, toGeoValue, line, label } = ctx;
+	if (pos.length === 3) {
+		const p1Id = requireElement(pos[0], 'point1', line);
+		const p2Id = requireElement(pos[1], 'point2', line);
+		const p3Id = requireElement(pos[2], 'point3', line);
+		const pp1 = figure.getPosition(p1Id);
+		const pp2 = figure.getPosition(p2Id);
+		const pp3 = figure.getPosition(p3Id);
+		if (pp1 && pp2 && pp3) {
+			const ax = geoToNumber(pp1.x),
+				ay = geoToNumber(pp1.y);
+			const bx = geoToNumber(pp2.x),
+				by = geoToNumber(pp2.y);
+			const cx = geoToNumber(pp3.x),
+				cy = geoToNumber(pp3.y);
+			const D = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
+			if (Math.abs(D) < 1e-12)
+				throw new DslRuntimeError('cercle(A, B, C): les 3 points sont alignes', line);
+		}
+		const id = figure.createCircleBy3Points(p1Id, p2Id, p3Id, { label });
+		return { figureId: id, symbolType: 'cercle' };
+	}
+	if (pos.length !== 1)
+		throw new DslRuntimeError('cercle() attend 1 argument (centre) ou 3 arguments (A, B, C)', line);
+	const centerId = requireElement(pos[0], 'centre', line);
+	if (named.has('rayon')) {
+		const radius = toScalarParam(named.get('rayon')!, toGeoValue, line);
+		const id = figure.createCircleByRadius(centerId, radius, { label });
+		return { figureId: id, symbolType: 'cercle' };
+	}
+	if (named.has('passant')) {
+		const edgeId = requireElement(named.get('passant')!, 'passant', line);
+		const id = figure.createCircleByPoint(centerId, edgeId, { label });
+		return { figureId: id, symbolType: 'cercle' };
+	}
+	throw new DslRuntimeError("cercle() necessite 'rayon' ou 'passant'", line);
+}
+HANDLERS.set('cercle', handleCercle);
+
+function handlePolygone(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length < 3) throw new DslRuntimeError('polygone() attend au moins 3 sommets', line);
+	const vertexIds = pos.map((p, i) => requireElement(p, `sommet ${i + 1}`, line));
+	const id = figure.createPolygon(vertexIds as [string, string, string, ...string[]], { label });
+	return { figureId: id, symbolType: 'polygone' };
+}
+HANDLERS.set('polygone', handlePolygone);
+
+function handleSymetrie(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label } = ctx;
+	if (pos.length === 0) {
+		if (named.has('centre')) {
+			const centerId = requireElement(named.get('centre')!, 'centre', line);
+			const id = figure.createReflection(centerId, { label });
+			return { figureId: id, symbolType: 'transformation' };
+		}
+		if (named.has('axe')) {
+			const { p1, p2 } = resolveAxeArg(named.get('axe')!, figure, line);
+			const id = figure.createReflectionOverLine(p1, p2, { label });
+			return { figureId: id, symbolType: 'transformation' };
+		}
+		throw new DslRuntimeError("symetrie() necessite 'centre' ou 'axe'", line);
+	}
+	const sourceId = requireElement(pos[0], 'source', line);
+	const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+	if (named.has('centre')) {
+		const centerId = requireElement(named.get('centre')!, 'centre', line);
+		if (sourceEl.elementType === 'point') {
+			const id = figure.createReflectedPoint(sourceId, centerId, { label });
+			return { figureId: id, symbolType: 'point' };
+		}
+		const tId = figure.createReflection(centerId);
+		return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+	}
+	if (named.has('axe')) {
+		const { p1, p2 } = resolveAxeArg(named.get('axe')!, figure, line);
+		if (sourceEl.elementType === 'point') {
+			const id = figure.createReflectedOverLine(sourceId, p1, p2, { label });
+			return { figureId: id, symbolType: 'point' };
+		}
+		const tId = figure.createReflectionOverLine(p1, p2);
+		return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+	}
+	throw new DslRuntimeError("symetrie() necessite 'centre' ou 'axe'", line);
+}
+HANDLERS.set('symetrie', handleSymetrie);
+
+function handleRotation(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label, angleMode } = ctx;
+	const centerId = requireElement(
+		named.get('centre') ?? { type: 'nombre', value: 0 },
+		'centre',
+		line
+	);
+	const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
+	let angleRad: ScalarParam;
+	if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
+		const depId = angleArg.figureId;
+		if (angleMode === 'deg') {
+			angleRad = {
+				scalarRef: figure.createScalarExpression(
+					(sv) => ((sv.get(depId) ?? 0) * Math.PI) / 180,
+					[depId]
+				)
+			};
+		} else {
+			angleRad = { scalarRef: depId };
+		}
+	} else {
+		const angleVal = requireNumber(angleArg, 'angle', line);
+		angleRad = { kind: 'numeric', value: toRadians(angleVal, angleMode) };
+	}
+	if (pos.length === 0) {
+		const id = figure.createRotation(centerId, angleRad, { label });
+		return { figureId: id, symbolType: 'transformation' };
+	}
+	const sourceId = requireElement(pos[0], 'source', line);
+	const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+	if (sourceEl.elementType === 'point') {
+		const id = figure.createRotatedPoint(sourceId, centerId, angleRad, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	const tId = figure.createRotation(centerId, angleRad);
+	return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+}
+HANDLERS.set('rotation', handleRotation);
+
+function handleHomothetie(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, toGeoValue, line, label } = ctx;
+	const centerId = requireElement(
+		named.get('centre') ?? { type: 'nombre', value: 0 },
+		'centre',
+		line
+	);
+	const factor = toScalarParam(
+		named.get('rapport') ?? { type: 'nombre', value: 1 },
+		toGeoValue,
+		line
+	);
+	if (pos.length === 0) {
+		const id = figure.createHomothety(centerId, factor, { label });
+		return { figureId: id, symbolType: 'transformation' };
+	}
+	const sourceId = requireElement(pos[0], 'source', line);
+	const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+	if (sourceEl.elementType === 'point') {
+		const id = figure.createDilatedPoint(sourceId, centerId, factor, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	const tId = figure.createHomothety(centerId, factor);
+	return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+}
+HANDLERS.set('homothetie', handleHomothetie);
+
+function handleProjection(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label } = ctx;
+	const droiteArg = named.get('axe');
+	if (!droiteArg) throw new DslRuntimeError("projection() necessite 'axe'", line);
+	const { p1, p2 } = resolveAxeArg(droiteArg, figure, line);
+	if (pos.length === 0) {
+		const id = figure.createProjection(p1, p2, { label });
+		return { figureId: id, symbolType: 'transformation' };
+	}
+	const sourceId = requireElement(pos[0], 'source', line);
+	const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+	if (sourceEl.elementType === 'point') {
+		const id = figure.createProjectedPoint(sourceId, p1, p2, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	const tId = figure.createProjection(p1, p2);
+	return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+}
+HANDLERS.set('projection', handleProjection);
+
+function handleInversion(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, toGeoValue, line, label } = ctx;
+	const centerId = requireElement(
+		named.get('centre') ?? { type: 'nombre', value: 0 },
+		'centre',
+		line
+	);
+	const radius = toGeoValue(named.get('rayon') ?? { type: 'nombre', value: 1 }, line);
+	if (pos.length === 0) {
+		const id = figure.createInversion(centerId, radius, { label });
+		return { figureId: id, symbolType: 'transformation' };
+	}
+	const sourceId = requireElement(pos[0], 'source', line);
+	const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+	if (sourceEl.elementType === 'point') {
+		const id = figure.createInvertedPoint(sourceId, centerId, radius, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	const tId = figure.createInversion(centerId, radius);
+	return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+}
+HANDLERS.set('inversion', handleInversion);
+
+function handleAffinite(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, toGeoValue, line, label } = ctx;
+	const axeArg = named.get('axe');
+	if (!axeArg) throw new DslRuntimeError("affinite() necessite 'axe'", line);
+	const { p1, p2 } = resolveAxeArg(axeArg, figure, line);
+	const factor = toGeoValue(named.get('rapport') ?? { type: 'nombre', value: 1 }, line);
+	if (pos.length === 0) {
+		const id = figure.createAffinity(p1, p2, factor, { label });
+		return { figureId: id, symbolType: 'transformation' };
+	}
+	const sourceId = requireElement(pos[0], 'source', line);
+	const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+	if (sourceEl.elementType === 'point') {
+		const id = figure.createAffinityPoint(sourceId, p1, p2, factor, { label });
+		return { figureId: id, symbolType: 'point' };
+	}
+	const tId = figure.createAffinity(p1, p2, factor);
+	return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+}
+HANDLERS.set('affinite', handleAffinite);
+
+function handleSimilitude(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, toGeoValue, line, label, angleMode } = ctx;
+	const centerId = requireElement(
+		named.get('centre') ?? { type: 'nombre', value: 0 },
+		'centre',
+		line
+	);
+	const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
+	let simAngleRad: ScalarParam;
+	if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
+		const depId = angleArg.figureId;
+		if (angleMode === 'deg') {
+			simAngleRad = {
+				scalarRef: figure.createScalarExpression(
+					(sv) => ((sv.get(depId) ?? 0) * Math.PI) / 180,
+					[depId]
+				)
+			};
+		} else {
+			simAngleRad = { scalarRef: depId };
+		}
+	} else {
+		const angleVal = requireNumber(angleArg, 'angle', line);
+		simAngleRad = { kind: 'numeric', value: toRadians(angleVal, angleMode) };
+	}
+	const simFactor = toScalarParam(
+		named.get('rapport') ?? { type: 'nombre', value: 1 },
+		toGeoValue,
+		line
+	);
+	if (pos.length === 0) {
+		const id = figure.createSimilitude(centerId, simAngleRad, simFactor, { label });
+		return { figureId: id, symbolType: 'transformation' };
+	}
+	const sourceId = requireElement(pos[0], 'source', line);
+	const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
+	const tId = figure.createSimilitude(centerId, simAngleRad, simFactor);
+	return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
+}
+HANDLERS.set('similitude', handleSimilitude);
+
+function handleTransforme(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2)
+		throw new DslRuntimeError('transforme() attend 2 arguments (transformation, objet)', line);
+	const transformArg = pos[0];
+	if (transformArg.type !== 'element' || transformArg.elementType !== 'transformation')
+		throw new DslRuntimeError(
+			'transforme(): le premier argument doit etre une transformation',
+			line
+		);
+	const sourceArg = pos[1];
+	if (sourceArg.type !== 'element')
+		throw new DslRuntimeError(
+			'transforme(): le second argument doit etre un element geometrique',
+			line
+		);
+	const result = applyTransformationToElement(
+		figure,
+		transformArg.figureId!,
+		sourceArg.figureId!,
+		sourceArg.elementType!,
+		{ label }
+	);
+	figure.recordTransformeOrigin(result.figureId, transformArg.figureId!, sourceArg.figureId!);
+	return result;
+}
+HANDLERS.set('transforme', handleTransforme);
+
+function handleCompose(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length < 2)
+		throw new DslRuntimeError('compose() attend au moins 2 transformations', line);
+	const transformIds: string[] = [];
+	for (let i = 0; i < pos.length; i++) {
+		const arg = pos[i];
+		if (arg.type !== 'element' || arg.elementType !== 'transformation')
+			throw new DslRuntimeError(
+				`compose(): l'argument ${i + 1} doit etre une transformation`,
+				line
+			);
+		transformIds.push(arg.figureId!);
+	}
+	const id = figure.createComposition(transformIds, { label });
+	return { figureId: id, symbolType: 'transformation' };
+}
+HANDLERS.set('compose', handleCompose);
+
+function handleMarqueAngle(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label } = ctx;
+	if (pos.length < 3)
+		throw new DslRuntimeError('marque_angle() attend 3 arguments (P1, V, P2)', line);
+	const arcCount = named.has('arcs')
+		? (requireNumber(named.get('arcs')!, 'arcs', line) as 1 | 2 | 3)
+		: 1;
+	const id = figure.createAngleMark(
+		requireElement(pos[0], 'P1', line),
+		requireElement(pos[1], 'V', line),
+		requireElement(pos[2], 'P2', line),
+		{ arcCount, label }
+	);
+	return { figureId: id, symbolType: 'angleMark' };
+}
+HANDLERS.set('marque_angle', handleMarqueAngle);
+
+function handleAngleDroit(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length < 3)
+		throw new DslRuntimeError('angle_droit() attend 3 arguments (P1, V, P2)', line);
+	const id = figure.createAngleMark(
+		requireElement(pos[0], 'P1', line),
+		requireElement(pos[1], 'V', line),
+		requireElement(pos[2], 'P2', line),
+		{ rightAngle: true, label }
+	);
+	return { figureId: id, symbolType: 'angleMark' };
+}
+HANDLERS.set('angle_droit', handleAngleDroit);
+
+function handleMarqueSegment(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label } = ctx;
+	if (pos.length < 2) throw new DslRuntimeError('marque_segment() attend 2 arguments (A, B)', line);
+	const markCount = named.has('traits')
+		? (requireNumber(named.get('traits')!, 'traits', line) as 1 | 2 | 3)
+		: 1;
+	const id = figure.createSegmentMark(
+		requireElement(pos[0], 'A', line),
+		requireElement(pos[1], 'B', line),
+		{ markCount, label }
+	);
+	return { figureId: id, symbolType: 'segmentMark' };
+}
+HANDLERS.set('marque_segment', handleMarqueSegment);
+
+function handleMesure(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length < 2) throw new DslRuntimeError('mesure() attend au moins 2 arguments', line);
+	const targetIds = pos.map((p, i) => requireElement(p, `arg${i + 1}`, line));
+
+	let scalarId: string;
+	let autoPosition: 'midpoint' | 'bisector' | 'centroid';
+	if (pos.length === 2) {
+		scalarId = figure.createScalarDistance(targetIds[0], targetIds[1]);
+		autoPosition = 'midpoint';
+	} else if (pos.length === 3) {
+		scalarId = figure.createScalarAngle(targetIds[0], targetIds[1], targetIds[2]);
+		autoPosition = 'bisector';
+	} else {
+		scalarId = figure.createScalarArea(targetIds);
+		autoPosition = 'centroid';
+	}
+
+	const format = autoPosition === 'bisector' ? ':deg' : ':.2f';
+	const textId = figure.createText(
+		`{${scalarId}${format}}`,
+		[scalarId],
+		{ autoPosition, autoTargetIds: targetIds },
+		{ label }
+	);
+	return { figureId: textId, symbolType: 'text' };
+}
+HANDLERS.set('mesure', handleMesure);
+
+function handleAire(
+	ctx: BuiltinCtx
+): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length === 3 && pos[0].type === 'element') {
+		const candidateEl = figure.getElementById(pos[0].figureId);
+		if (candidateEl && candidateEl.type === 'function') {
+			return interpretAreaBuiltin({
+				name: 'aire',
+				f: { id: pos[0].figureId, expression: candidateEl.expression },
+				lowerArg: pos[1],
+				upperArg: pos[2],
+				signed: false,
+				defaultColor: '#22c55e',
+				line,
+				label,
+				figure
+			});
+		}
+	}
+
+	if (pos.length < 3)
+		throw new DslRuntimeError('aire() attend au moins 3 arguments (points)', line);
+	const pointIds = pos.map((p, i) => requireElement(p, `point${i + 1}`, line));
+	const id = figure.createScalarArea(pointIds, { label });
+	return { figureId: id, symbolType: 'scalar' };
+}
+HANDLERS.set('aire', handleAire);
+
+function handleMtexte(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label, symbols } = ctx;
+	if (pos.length < 2) throw new DslRuntimeError('mtexte() attend au moins 2 arguments', line);
+	let mtTemplate: string;
+	let mtPositioning: {
+		anchorId?: string;
+		anchorOffset?: { dx: number; dy: number };
+		position?: { x: number; y: number };
+	};
+	if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
+		const x = (pos[0] as { type: 'nombre'; value: number }).value;
+		const y = (pos[1] as { type: 'nombre'; value: number }).value;
+		if (pos[2].type !== 'string')
+			throw new DslRuntimeError('mtexte(): le 3e argument doit etre une chaine', line);
+		mtTemplate = (pos[2] as { type: 'string'; value: string }).value;
+		mtPositioning = { position: { x, y } };
+	} else if (pos[0].type === 'element') {
+		const anchorId = requireElement(pos[0], 'anchor', line);
+		if (pos[1].type !== 'string')
+			throw new DslRuntimeError('mtexte(): le 2e argument doit etre une chaine', line);
+		mtTemplate = (pos[1] as { type: 'string'; value: string }).value;
+		const dx = named.has('dx')
+			? (named.get('dx')! as { type: 'nombre'; value: number }).value
+			: undefined;
+		const dy = named.has('dy')
+			? (named.get('dy')! as { type: 'nombre'; value: number }).value
+			: undefined;
+		mtPositioning = {
+			anchorId,
+			anchorOffset: dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
+		};
+	} else {
+		throw new DslRuntimeError(
+			'mtexte() attend: mtexte(x, y, "latex") ou mtexte(point, "latex", dx=..., dy=...)',
+			line
+		);
+	}
+	const mtScalarRefs: string[] = [];
+	mtTemplate = mtTemplate.replace(/\{(\w+)/g, (_match, refName: string) => {
+		const refSym = symbols?.get(refName);
+		if (refSym?.figureId && refSym.type === 'scalar') {
+			mtScalarRefs.push(refSym.figureId);
+			return `{${refSym.figureId}`;
+		}
+		return `{${refName}`;
+	});
+	const mtId = figure.createMathText(mtTemplate, mtScalarRefs, mtPositioning, { label });
+	return { figureId: mtId, symbolType: 'mathText' };
+}
+HANDLERS.set('mtexte', handleMtexte);
+
+function handleDistance(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2)
+		throw new DslRuntimeError(
+			'distance() attend 2 arguments (point, point) ou (point, droite)',
+			line
+		);
+	const arg2 = pos[1];
+	const isLineArg =
+		arg2.type === 'element' &&
+		(arg2.elementType === 'droite' ||
+			arg2.elementType === 'segment' ||
+			arg2.elementType === 'demidroite');
+	if (isLineArg) {
+		const ptId = requireElement(pos[0], 'point', line);
+		const lineId = requireElement(pos[1], 'ligne', line);
+		const id = figure.createScalarDistancePointLine(ptId, lineId, { label });
+		return { figureId: id, symbolType: 'scalar' };
+	}
+	const pt1Id = requireElement(pos[0], 'point1', line);
+	const pt2Id = requireElement(pos[1], 'point2', line);
+	const id = figure.createScalarDistance(pt1Id, pt2Id, { label });
+	return { figureId: id, symbolType: 'scalar' };
+}
+HANDLERS.set('distance', handleDistance);
+
+function handleAngle(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length === 2) {
+		const centerId = requireElement(pos[0], 'centre', line);
+		const pointId = requireElement(pos[1], 'point', line);
+		const id = figure.createScalarPolarAngle(centerId, pointId, { label });
+		return { figureId: id, symbolType: 'scalar' };
+	}
+	if (pos.length !== 3)
+		throw new DslRuntimeError(
+			'angle() attend 2 arguments (O, A) pour angle polaire ou 3 arguments (P, O, Q) pour angle au sommet',
+			line
+		);
+	const aP1Id = requireElement(pos[0], 'P1', line);
+	const aVId = requireElement(pos[1], 'vertex', line);
+	const aP2Id = requireElement(pos[2], 'P2', line);
+	const id = figure.createScalarAngle(aP1Id, aVId, aP2Id, { label });
+	return { figureId: id, symbolType: 'scalar' };
+}
+HANDLERS.set('angle', handleAngle);
+
+function handlePerimetre(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length < 3)
+		throw new DslRuntimeError('perimetre() attend au moins 3 arguments (points)', line);
+	const perimPointIds = pos.map((p, i) => requireElement(p, `point${i + 1}`, line));
+	const id = figure.createScalarPerimeter(perimPointIds, { label });
+	return { figureId: id, symbolType: 'scalar' };
+}
+HANDLERS.set('perimetre', handlePerimetre);
+
+function handlePente(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 1)
+		throw new DslRuntimeError('pente() attend 1 argument (droite, segment ou demidroite)', line);
+	const penteArg = pos[0];
+	if (
+		penteArg.type !== 'element' ||
+		(penteArg.elementType !== 'droite' &&
+			penteArg.elementType !== 'segment' &&
+			penteArg.elementType !== 'demidroite')
+	)
+		throw new DslRuntimeError('pente() attend une droite, un segment ou une demi-droite', line);
+	const penteLineId = penteArg.figureId;
+	const id = figure.createScalarSlope(penteLineId, { label });
+	return { figureId: id, symbolType: 'scalar' };
+}
+HANDLERS.set('pente', handlePente);
+
+function handleRayon(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 1) throw new DslRuntimeError('rayon() attend 1 argument (cercle)', line);
+	const rayonArg = pos[0];
+	if (rayonArg.type !== 'element' || rayonArg.elementType !== 'cercle')
+		throw new DslRuntimeError('rayon() attend un cercle', line);
+	const rayonCircleId = rayonArg.figureId;
+	const id = figure.createScalarRadius(rayonCircleId, { label });
+	return { figureId: id, symbolType: 'scalar' };
+}
+HANDLERS.set('rayon', handleRayon);
+
+function handleSlider(ctx: BuiltinCtx): BuiltinResult {
+	const { named, figure, line, label } = ctx;
+	const minVal = requireNumber(named.get('min') ?? { type: 'nombre', value: 0 }, 'min', line);
+	const maxVal = requireNumber(named.get('max') ?? { type: 'nombre', value: 10 }, 'max', line);
+	const valeur = requireNumber(
+		named.get('valeur') ?? { type: 'nombre', value: (minVal + maxVal) / 2 },
+		'valeur',
+		line
+	);
+	const step = named.has('pas') ? requireNumber(named.get('pas')!, 'pas', line) : undefined;
+	const id = figure.createSlider(minVal, maxVal, valeur, { label, step });
+	return { figureId: id, symbolType: 'scalar' };
+}
+HANDLERS.set('slider', handleSlider);
+
+function handleArc(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, toGeoValue, line, label, angleMode } = ctx;
+	if (pos.length === 3) {
+		const startId = requireElement(pos[0], 'start', line);
+		const centerId = requireElement(pos[1], 'centre', line);
+		const endId = requireElement(pos[2], 'end', line);
+		const id = figure.createArcByPoints(startId, centerId, endId, { label });
+		return { figureId: id, symbolType: 'arc' };
+	}
+	if (pos.length === 1) {
+		const centerId = requireElement(pos[0], 'centre', line);
+		if (!named.has('rayon'))
+			throw new DslRuntimeError("arc() avec 1 argument necessite 'rayon'", line);
+		const radius = toGeoValue(named.get('rayon')!, line);
+		const startVal = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
+		const endVal = named.has('fin')
+			? requireNumber(named.get('fin')!, 'fin', line)
+			: angleMode === 'deg'
+				? 360
+				: 2 * Math.PI;
+		const startRad: GeoValue = { kind: 'numeric', value: toRadians(startVal, angleMode) };
+		const endRad: GeoValue = { kind: 'numeric', value: toRadians(endVal, angleMode) };
+		const id = figure.createArcByAngles(centerId, radius, startRad, endRad, { label });
+		return { figureId: id, symbolType: 'arc' };
+	}
+	throw new DslRuntimeError(
+		'arc() attend soit 3 arguments (A, O, B) soit 1 argument + rayon/debut/fin',
+		line
+	);
+}
+HANDLERS.set('arc', handleArc);
+
+function handleSecteur(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, toGeoValue, line, label, angleMode } = ctx;
+	if (pos.length === 3) {
+		const centerId = requireElement(pos[0], 'centre', line);
+		const startId = requireElement(pos[1], 'start', line);
+		const endId = requireElement(pos[2], 'end', line);
+		const id = figure.createSectorByPoints(centerId, startId, endId, { label });
+		return { figureId: id, symbolType: 'secteur' as SymbolType };
+	}
+	if (pos.length === 1) {
+		const centerId = requireElement(pos[0], 'centre', line);
+		if (!named.has('rayon'))
+			throw new DslRuntimeError("secteur() avec 1 argument necessite 'rayon'", line);
+		const radius = toScalarParam(named.get('rayon')!, toGeoValue, line);
+		const startVal = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
+		const endVal = named.has('fin')
+			? requireNumber(named.get('fin')!, 'fin', line)
+			: angleMode === 'deg'
+				? 360
+				: 2 * Math.PI;
+		const startRad: GeoValue = { kind: 'numeric', value: toRadians(startVal, angleMode) };
+		const endRad: GeoValue = { kind: 'numeric', value: toRadians(endVal, angleMode) };
+		const id = figure.createSectorByAngles(centerId, radius, startRad, endRad, { label });
+		return { figureId: id, symbolType: 'secteur' as SymbolType };
+	}
+	throw new DslRuntimeError(
+		'secteur() attend soit 3 arguments (O, A, B) soit 1 argument + rayon/debut/fin',
+		line
+	);
+}
+HANDLERS.set('secteur', handleSecteur);
+
+function handleCouronne(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, toGeoValue, line, label } = ctx;
+	if (pos.length !== 1)
+		throw new DslRuntimeError('couronne() attend 1 argument positionnel (centre)', line);
+	const centerId = requireElement(pos[0], 'centre', line);
+	if (!named.has('r1') || !named.has('r2'))
+		throw new DslRuntimeError("couronne() necessite 'r1' et 'r2'", line);
+	const r1 = toScalarParam(named.get('r1')!, toGeoValue, line);
+	const r2 = toScalarParam(named.get('r2')!, toGeoValue, line);
+	const r1Num = typeof r1 === 'object' && 'scalarRef' in r1 ? null : geoToNumber(r1);
+	const r2Num = typeof r2 === 'object' && 'scalarRef' in r2 ? null : geoToNumber(r2);
+	if (r1Num !== null && r2Num !== null && r1Num >= r2Num)
+		throw new DslRuntimeError('couronne(): r1 doit etre inferieur a r2', line);
+	const id = figure.createAnnulus(centerId, r1, r2, { label });
+	return { figureId: id, symbolType: 'couronne' as SymbolType };
+}
+HANDLERS.set('couronne', handleCouronne);
+
+function handlePuissance(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2)
+		throw new DslRuntimeError('puissance() attend 2 arguments (point, cercle)', line);
+	const pointId = requireElement(pos[0], 'point', line);
+	const circleArg = pos[1];
+	if (circleArg.type !== 'element' || circleArg.elementType !== 'cercle')
+		throw new DslRuntimeError('puissance() attend un cercle comme 2e argument', line);
+	const circleId = circleArg.figureId;
+	const id = figure.createScalarPower(pointId, circleId, { label });
+	return { figureId: id, symbolType: 'scalar' };
+}
+HANDLERS.set('puissance', handlePuissance);
+
+function handleStyle(ctx: BuiltinCtx): null {
+	const { pos, named, figure, line } = ctx;
+	if (pos.length < 1)
+		throw new DslRuntimeError('style() attend au moins 1 argument (element)', line);
+	const elId = requireElement(pos[0], 'element', line);
+	applyInlineStyle(figure, elId, named, line);
+	return null;
+}
+HANDLERS.set('style', handleStyle);
+
+function handleLongueur(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, toGeoValue, line, label } = ctx;
+	if (pos.length === 0) {
+		throw new DslRuntimeError('longueur() attend 1 ou 3 arguments (c) ou (c, t1, t2)', line);
+	}
+	if (pos.length === 2) {
+		throw new DslRuntimeError('longueur(): t1 et t2 doivent etre fournis ensemble', line);
+	}
+	if (pos.length > 3) {
+		throw new DslRuntimeError('longueur() attend 1 ou 3 arguments (c) ou (c, t1, t2)', line);
+	}
+
+	const lcId = requireElement(pos[0], 'courbe', line);
+	const lcEl = figure.getElementById(lcId);
+	if (!lcEl || lcEl.type !== 'parametricCurve') {
+		throw new DslRuntimeError(
+			'longueur(): le premier argument doit etre une courbe parametrique',
+			line
+		);
+	}
+
+	let tMinParam: ScalarParam | undefined;
+	let tMaxParam: ScalarParam | undefined;
+	if (pos.length === 3) {
+		tMinParam = toScalarParam(pos[1], toGeoValue, line);
+		tMaxParam = toScalarParam(pos[2], toGeoValue, line);
+		if (!isScalarRef(tMinParam) && !isScalarRef(tMaxParam)) {
+			const t1Num = geoToNumber(tMinParam);
+			const t2Num = geoToNumber(tMaxParam);
+			if (Number.isFinite(t1Num) && Number.isFinite(t2Num) && t1Num >= t2Num) {
+				throw new DslRuntimeError('longueur(): t2 doit etre superieur a t1', line);
+			}
+		}
+	}
+
+	const lId = figure.createArcLength(lcId, tMinParam, tMaxParam, { label });
+	return { figureId: lId, symbolType: 'scalar' };
+}
+HANDLERS.set('longueur', handleLongueur);
+
+function handleCourbure(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, toGeoValue, line, label } = ctx;
+	if (pos.length !== 2) {
+		throw new DslRuntimeError('courbure() attend 2 arguments (c, t0)', line);
+	}
+	const kcId = requireElement(pos[0], 'courbe', line);
+	const kcEl = figure.getElementById(kcId);
+	if (!kcEl || kcEl.type !== 'parametricCurve') {
+		throw new DslRuntimeError(
+			'courbure(): le premier argument doit etre une courbe parametrique',
+			line
+		);
+	}
+	const tParam = toScalarParam(pos[1], toGeoValue, line);
+	const kId = figure.createCurvature(kcId, tParam, { label });
+	return { figureId: kId, symbolType: 'scalar' };
+}
+HANDLERS.set('courbure', handleCourbure);
+
+function handleCercleOsculateur(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, toGeoValue, line, label } = ctx;
+	if (pos.length !== 2) {
+		throw new DslRuntimeError('cercle_osculateur() attend 2 arguments (c, t0)', line);
+	}
+	const ocCurveId = requireElement(pos[0], 'courbe', line);
+	const ocCurveEl = figure.getElementById(ocCurveId);
+	if (!ocCurveEl || ocCurveEl.type !== 'parametricCurve') {
+		throw new DslRuntimeError(
+			'cercle_osculateur(): le premier argument doit etre une courbe parametrique',
+			line
+		);
+	}
+	const ocTParam = toScalarParam(pos[1], toGeoValue, line);
+	const ocId = figure.createOsculatingCircle(ocCurveId, ocTParam, { label });
+	return { figureId: ocId, symbolType: 'cercle' };
+}
+HANDLERS.set('cercle_osculateur', handleCercleOsculateur);
+
+function handleDerivee(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 1) {
+		throw new DslRuntimeError('derivee() attend 1 argument (une fonction)', line);
+	}
+	const dFnId = requireElement(pos[0], 'fonction', line);
+	const dFnEl = figure.getElementById(dFnId);
+	if (!dFnEl || dFnEl.type !== 'function') {
+		throw new DslRuntimeError("derivee(): l'argument doit être une courbe y = f(x)", line);
+	}
+
+	let fPrimePrime: MathNode;
+	try {
+		fPrimePrime = differentiate(dFnEl.derivative, { variable: 'x', simplify: true });
+	} catch {
+		throw new DslRuntimeError('derivee(): impossible de calculer la dérivée seconde', line);
+	}
+
+	let dCompiledDerivative: CompiledFn;
+	try {
+		dCompiledDerivative = compile(fPrimePrime);
+	} catch (e) {
+		throw new DslRuntimeError(
+			`derivee(): impossible de compiler la dérivée — ${e instanceof Error ? e.message : ''}`,
+			line
+		);
+	}
+
+	const dEquation = `y = ${toCustom(dFnEl.derivative)}`;
+
+	const dFnNewId = figure.createFunction(
+		dFnEl.derivative,
+		fPrimePrime,
+		dFnEl.compiledDerivative,
+		dCompiledDerivative,
+		dEquation,
+		{ label }
+	);
+
+	return { figureId: dFnNewId, symbolType: 'courbe' };
+}
+HANDLERS.set('derivee', handleDerivee);
+
+function handleIntegrale(
+	ctx: BuiltinCtx
+): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 3) {
+		throw new DslRuntimeError('integrale() attend 3 arguments (f, a, b)', line);
+	}
+	const intFnId = requireElement(pos[0], 'fonction', line);
+	const intFnEl = figure.getElementById(intFnId);
+	if (!intFnEl || intFnEl.type !== 'function') {
+		throw new DslRuntimeError('integrale(): le 1er argument doit etre une courbe y = f(x)', line);
+	}
+	return interpretAreaBuiltin({
+		name: 'integrale',
+		f: { id: intFnId, expression: intFnEl.expression },
+		lowerArg: pos[1],
+		upperArg: pos[2],
+		signed: true,
+		line,
+		label,
+		figure
+	});
+}
+HANDLERS.set('integrale', handleIntegrale);
+
+function handleAireEntre(
+	ctx: BuiltinCtx
+): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 4) {
+		throw new DslRuntimeError('aire_entre() attend 4 arguments (f, g, a, b)', line);
+	}
+	const fnId = requireElement(pos[0], 'fonction 1', line);
+	const fnEl = figure.getElementById(fnId);
+	if (!fnEl || fnEl.type !== 'function') {
+		throw new DslRuntimeError('aire_entre(): le 1er argument doit etre une courbe y = f(x)', line);
+	}
+	const gnId = requireElement(pos[1], 'fonction 2', line);
+	const gnEl = figure.getElementById(gnId);
+	if (!gnEl || gnEl.type !== 'function') {
+		throw new DslRuntimeError('aire_entre(): le 2e argument doit etre une courbe y = g(x)', line);
+	}
+	return interpretAreaBuiltin({
+		name: 'aire_entre',
+		f: { id: fnId, expression: fnEl.expression },
+		g: { id: gnId, expression: gnEl.expression },
+		lowerArg: pos[2],
+		upperArg: pos[3],
+		signed: false,
+		defaultColor: '#fb923c',
+		line,
+		label,
+		figure
+	});
+}
+HANDLERS.set('aire_entre', handleAireEntre);
+
+function handleAsymptotes(ctx: BuiltinCtx): BuiltinMultiResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 1) {
+		throw new DslRuntimeError('asymptotes() attend 1 argument (conique)', line);
+	}
+	const asymCurveId = requireElement(pos[0], 'conique', line);
+	const asymCurveEl = figure.getElementById(asymCurveId);
+	if (!asymCurveEl || asymCurveEl.type !== 'quadraticCurve') {
+		throw new DslRuntimeError("asymptotes(): l'argument doit etre une conique", line);
+	}
+	if (asymCurveEl.conic.type !== 'hyperbola') {
+		throw new DslRuntimeError('asymptotes(): la conique doit etre une hyperbole', line);
+	}
+	const asymLines = asymptoteLines(asymCurveEl.conic);
+	if (!asymLines) {
+		throw new DslRuntimeError('asymptotes(): impossible de calculer les asymptotes', line);
+	}
+	const asymResults: BuiltinResult[] = asymLines.map((al, i) => {
+		const lbl = label ? (asymLines.length > 1 ? `${label}${i + 1}` : label) : undefined;
+		const pt1Id = figure.createFreePoint(
+			{ x: numeric(al.p1.x), y: numeric(al.p1.y) },
+			{ visible: false, draggable: false }
+		);
+		const pt2Id = figure.createFreePoint(
+			{ x: numeric(al.p2.x), y: numeric(al.p2.y) },
+			{ visible: false, draggable: false }
+		);
+		const lineId = figure.createLine(pt1Id, pt2Id, { label: lbl });
+		return { figureId: lineId, symbolType: 'droite' as SymbolType };
+	});
+	return { elements: asymResults } as BuiltinMultiResult;
+}
+HANDLERS.set('asymptotes', handleAsymptotes);
+
+function handleAxes(ctx: BuiltinCtx): BuiltinMultiResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 1) {
+		throw new DslRuntimeError('axes() attend 1 argument (conique)', line);
+	}
+	const axesCurveId = requireElement(pos[0], 'conique', line);
+	const axesCurveEl = figure.getElementById(axesCurveId);
+	if (!axesCurveEl || axesCurveEl.type !== 'quadraticCurve') {
+		throw new DslRuntimeError("axes(): l'argument doit etre une conique", line);
+	}
+	if (axesCurveEl.conic.type === 'circle') {
+		throw new DslRuntimeError("axes(): un cercle a une infinite d'axes de symetrie", line);
+	}
+	const axLines = computeAxisLines(axesCurveEl.conic);
+	if (!axLines || axLines.length === 0) {
+		throw new DslRuntimeError('axes(): impossible de calculer les axes', line);
+	}
+	const axResults: BuiltinResult[] = axLines.map((al, i) => {
+		const lbl = label ? (axLines.length > 1 ? `${label}${i + 1}` : label) : undefined;
+		const pt1Id = figure.createFreePoint(
+			{ x: numeric(al.p1.x), y: numeric(al.p1.y) },
+			{ visible: false, draggable: false }
+		);
+		const pt2Id = figure.createFreePoint(
+			{ x: numeric(al.p2.x), y: numeric(al.p2.y) },
+			{ visible: false, draggable: false }
+		);
+		const lineId = figure.createLine(pt1Id, pt2Id, { label: lbl });
+		return { figureId: lineId, symbolType: 'droite' as SymbolType };
+	});
+	return { elements: axResults } as BuiltinMultiResult;
+}
+HANDLERS.set('axes', handleAxes);
+
+function handleDirectrice(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 1) {
+		throw new DslRuntimeError('directrice() attend 1 argument (conique)', line);
+	}
+	const dirCurveId = requireElement(pos[0], 'conique', line);
+	const dirCurveEl = figure.getElementById(dirCurveId);
+	if (!dirCurveEl || dirCurveEl.type !== 'quadraticCurve') {
+		throw new DslRuntimeError("directrice(): l'argument doit etre une conique", line);
+	}
+	if (dirCurveEl.conic.type !== 'parabola') {
+		throw new DslRuntimeError('directrice(): la conique doit etre une parabole', line);
+	}
+	const dirLine = computeDirectrixLine(dirCurveEl.conic);
+	if (!dirLine) {
+		throw new DslRuntimeError('directrice(): impossible de calculer la directrice', line);
+	}
+	const dPt1Id = figure.createFreePoint(
+		{ x: numeric(dirLine.p1.x), y: numeric(dirLine.p1.y) },
+		{ visible: false, draggable: false }
+	);
+	const dPt2Id = figure.createFreePoint(
+		{ x: numeric(dirLine.p2.x), y: numeric(dirLine.p2.y) },
+		{ visible: false, draggable: false }
+	);
+	const dirLineId = figure.createLine(dPt1Id, dPt2Id, { label });
+	return { figureId: dirLineId, symbolType: 'droite' };
+}
+HANDLERS.set('directrice', handleDirectrice);
+
+function handleFoyers(ctx: BuiltinCtx): BuiltinMultiResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 1) {
+		throw new DslRuntimeError('foyers() attend 1 argument (conique)', line);
+	}
+	const foyersCurveId = requireElement(pos[0], 'conique', line);
+	const foyersCurveEl = figure.getElementById(foyersCurveId);
+	if (!foyersCurveEl || foyersCurveEl.type !== 'quadraticCurve') {
+		throw new DslRuntimeError("foyers(): l'argument doit etre une conique", line);
+	}
+	const foci = computeFociPoints(foyersCurveEl.conic);
+	if (!foci || foci.length === 0) {
+		throw new DslRuntimeError('foyers(): impossible de calculer les foyers', line);
+	}
+	const fociResults: BuiltinResult[] = foci.map((f, i) => {
+		const lbl = label ? (foci.length > 1 ? `${label}${i + 1}` : label) : undefined;
+		const ptId = figure.createFreePoint(
+			{ x: numeric(f.x), y: numeric(f.y) },
+			{ draggable: false, label: lbl }
+		);
+		return { figureId: ptId, symbolType: 'point' as SymbolType };
+	});
+	return { elements: fociResults } as BuiltinMultiResult;
+}
+HANDLERS.set('foyers', handleFoyers);
+
+function handleExcentricite(ctx: BuiltinCtx): BuiltinScalarResult {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== 1) {
+		throw new DslRuntimeError('excentricite() attend 1 argument (conique)', line);
+	}
+	const eccCurveId = requireElement(pos[0], 'conique', line);
+	const eccCurveEl = figure.getElementById(eccCurveId);
+	if (!eccCurveEl || eccCurveEl.type !== 'quadraticCurve') {
+		throw new DslRuntimeError("excentricite(): l'argument doit etre une conique", line);
+	}
+	const ecc = computeEccentricity(eccCurveEl.conic);
+	if (isNaN(ecc)) {
+		throw new DslRuntimeError('excentricite(): conique degeneree', line);
+	}
+	return { scalarValue: ecc } as BuiltinScalarResult;
+}
+HANDLERS.set('excentricite', handleExcentricite);
+
+function handlePolaire(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2) {
+		throw new DslRuntimeError('polaire() attend 2 arguments (point, conique)', line);
+	}
+	const polPointId = requireElement(pos[0], 'point', line);
+	const polCurveId = requireElement(pos[1], 'conique', line);
+	const polPointEl = figure.getElementById(polPointId);
+	if (!polPointEl || !isPointElement(polPointEl)) {
+		throw new DslRuntimeError('polaire(): le premier argument doit etre un point', line);
+	}
+	const polCurveEl = figure.getElementById(polCurveId);
+	if (!polCurveEl || polCurveEl.type !== 'quadraticCurve') {
+		throw new DslRuntimeError('polaire(): le deuxieme argument doit etre une conique', line);
+	}
+	const polId = figure.createConicPolar(polCurveId, polPointId, { label });
+	return { figureId: polId, symbolType: 'polaire' };
+}
+HANDLERS.set('polaire', handlePolaire);
+
+function handleTrace(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 1) {
+		throw new DslRuntimeError('trace() attend 1 argument (point)', line);
+	}
+	const trackedId = requireElement(pos[0], 'point', line);
+	const trackedEl = figure.getElementById(trackedId);
+	if (!trackedEl) {
+		throw new DslRuntimeError(`trace(): point "${trackedId}" introuvable`, line);
+	}
+	if (!isPointElement(trackedEl)) {
+		throw new DslRuntimeError("trace(): l'argument doit etre un point", line);
+	}
+	const trId = figure.createTrace(trackedId, { label });
+	return { figureId: trId, symbolType: 'trace' as SymbolType };
+}
+HANDLERS.set('trace', handleTrace);
+
 function _executeBuiltinInner(
 	name: string,
 	pos: ResolvedValue[],
@@ -1224,1160 +2379,20 @@ function _executeBuiltinInner(
 	symbols?: SymbolTable,
 	angleMode: AngleMode = 'deg'
 ): BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null {
-	// Dispatch to the extracted handler table if registered.
 	const handler = HANDLERS.get(name);
-	if (handler) {
-		return handler({
-			name,
-			pos,
-			named,
-			figure,
-			toGeoValue,
-			toGeoPoint,
-			line,
-			label,
-			symbols,
-			angleMode
-		});
-	}
-
-	// Legacy switch — cases will be migrated to HANDLERS one batch at a time.
-	switch (name) {
-		case 'milieu': {
-			if (pos.length !== 2) throw new DslRuntimeError('milieu() attend 2 arguments (A, B)', line);
-			const id = figure.createMidpoint(
-				requireElement(pos[0], 'arg1', line),
-				requireElement(pos[1], 'arg2', line),
-				{ label }
-			);
-			return { figureId: id, symbolType: 'point' };
-		}
-
-		case 'segment': {
-			if (pos.length !== 2) throw new DslRuntimeError('segment() attend 2 arguments (A, B)', line);
-			const id = figure.createSegment(
-				requireElement(pos[0], 'arg1', line),
-				requireElement(pos[1], 'arg2', line),
-				{ label }
-			);
-			return { figureId: id, symbolType: 'segment' };
-		}
-
-		case 'droite': {
-			if (pos.length !== 2) throw new DslRuntimeError('droite() attend 2 arguments (A, B)', line);
-			const id = figure.createLine(
-				requireElement(pos[0], 'arg1', line),
-				requireElement(pos[1], 'arg2', line),
-				{ label }
-			);
-			return { figureId: id, symbolType: 'droite' };
-		}
-
-		case 'demidroite': {
-			if (pos.length !== 2)
-				throw new DslRuntimeError('demidroite() attend 2 arguments (A, B)', line);
-			const id = figure.createRay(
-				requireElement(pos[0], 'arg1', line),
-				requireElement(pos[1], 'arg2', line),
-				{ label }
-			);
-			return { figureId: id, symbolType: 'demidroite' };
-		}
-
-		case 'vecteur': {
-			if (pos.length !== 2) throw new DslRuntimeError('vecteur() attend 2 arguments', line);
-			// Detect: vecteur(A, B) (bound) vs vecteur(3, 2) or vecteur(sqrt(2), 3) (free)
-			const arg0 = pos[0];
-			const arg1 = pos[1];
-			const isNumericLike = (a: ResolvedValue) => a.type === 'nombre' || a.type === 'geoValue';
-			if (isNumericLike(arg0) && isNumericLike(arg1)) {
-				// Free vector by components (supports exact values like sqrt(2))
-				const dx = toGeoValue(arg0, line);
-				const dy = toGeoValue(arg1, line);
-				// Optional anchor: ancre=(x, y)
-				let anchor: { x: GeoValue; y: GeoValue } | undefined;
-				if (named.has('ancre')) {
-					const tuple = requireTuple(named.get('ancre')!, 'ancre', line);
-					if (tuple.length !== 2)
-						throw new DslRuntimeError('ancre attend un tuple de 2 nombres', line);
-					anchor = { x: toGeoValue(tuple[0], line), y: toGeoValue(tuple[1], line) };
-				}
-				const id = figure.createFreeVector(dx, dy, anchor, { label });
-				return { figureId: id, symbolType: 'vecteur' };
-			} else {
-				// Bound vector by two points
-				const id = figure.createVectorByPoints(
-					requireElement(arg0, 'arg1', line),
-					requireElement(arg1, 'arg2', line),
-					{ label }
-				);
-				return { figureId: id, symbolType: 'vecteur' };
-			}
-		}
-
-		case 'norme': {
-			if (pos.length !== 1) throw new DslRuntimeError('norme() attend 1 argument (vecteur)', line);
-			const nVecId = requireElement(pos[0], 'vecteur', line);
-			const id = figure.createScalarNorme(nVecId, { label });
-			return { figureId: id, symbolType: 'scalar' };
-		}
-
-		case 'produit_scalaire': {
-			if (pos.length !== 2)
-				throw new DslRuntimeError('produit_scalaire() attend 2 arguments (u, v)', line);
-			const psV1 = requireElement(pos[0], 'u', line);
-			const psV2 = requireElement(pos[1], 'v', line);
-			const psC1 = figure.getVectorComponents(psV1);
-			const psC2 = figure.getVectorComponents(psV2);
-			if (!psC1 || !psC2)
-				throw new DslRuntimeError('produit_scalaire(): composantes non resolues', line);
-			const dot =
-				geoToNumber(psC1.dx) * geoToNumber(psC2.dx) + geoToNumber(psC1.dy) * geoToNumber(psC2.dy);
-			return { scalarValue: dot };
-		}
-
-		case 'angle_vecteurs': {
-			if (pos.length !== 2)
-				throw new DslRuntimeError('angle_vecteurs() attend 2 arguments (u, v)', line);
-			const avV1 = requireElement(pos[0], 'u', line);
-			const avV2 = requireElement(pos[1], 'v', line);
-			const avC1 = figure.getVectorComponents(avV1);
-			const avC2 = figure.getVectorComponents(avV2);
-			if (!avC1 || !avC2)
-				throw new DslRuntimeError('angle_vecteurs(): composantes non resolues', line);
-			const ax1 = geoToNumber(avC1.dx),
-				ay1 = geoToNumber(avC1.dy);
-			const ax2 = geoToNumber(avC2.dx),
-				ay2 = geoToNumber(avC2.dy);
-			const dotProd = ax1 * ax2 + ay1 * ay2;
-			const len1 = Math.sqrt(ax1 * ax1 + ay1 * ay1);
-			const len2 = Math.sqrt(ax2 * ax2 + ay2 * ay2);
-			if (len1 < 1e-15 || len2 < 1e-15)
-				throw new DslRuntimeError('angle_vecteurs(): vecteur nul', line);
-			const cosA = Math.max(-1, Math.min(1, dotProd / (len1 * len2)));
-			const angleRad = Math.acos(cosA);
-			return {
-				scalarValue: angleMode === 'deg' ? (angleRad * 180) / Math.PI : angleRad
-			};
-		}
-
-		case 'cercle': {
-			if (pos.length === 3) {
-				// cercle(A, B, C) — circle through 3 points
-				const p1Id = requireElement(pos[0], 'point1', line);
-				const p2Id = requireElement(pos[1], 'point2', line);
-				const p3Id = requireElement(pos[2], 'point3', line);
-				// Check collinearity at creation time
-				const pp1 = figure.getPosition(p1Id);
-				const pp2 = figure.getPosition(p2Id);
-				const pp3 = figure.getPosition(p3Id);
-				if (pp1 && pp2 && pp3) {
-					const ax = geoToNumber(pp1.x),
-						ay = geoToNumber(pp1.y);
-					const bx = geoToNumber(pp2.x),
-						by = geoToNumber(pp2.y);
-					const cx = geoToNumber(pp3.x),
-						cy = geoToNumber(pp3.y);
-					const D = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
-					if (Math.abs(D) < 1e-12)
-						throw new DslRuntimeError('cercle(A, B, C): les 3 points sont alignes', line);
-				}
-				const id = figure.createCircleBy3Points(p1Id, p2Id, p3Id, { label });
-				return { figureId: id, symbolType: 'cercle' };
-			}
-			if (pos.length !== 1)
-				throw new DslRuntimeError(
-					'cercle() attend 1 argument (centre) ou 3 arguments (A, B, C)',
-					line
-				);
-			const centerId = requireElement(pos[0], 'centre', line);
-			if (named.has('rayon')) {
-				const radius = toScalarParam(named.get('rayon')!, toGeoValue, line);
-				const id = figure.createCircleByRadius(centerId, radius, { label });
-				return { figureId: id, symbolType: 'cercle' };
-			}
-			if (named.has('passant')) {
-				const edgeId = requireElement(named.get('passant')!, 'passant', line);
-				const id = figure.createCircleByPoint(centerId, edgeId, { label });
-				return { figureId: id, symbolType: 'cercle' };
-			}
-			throw new DslRuntimeError("cercle() necessite 'rayon' ou 'passant'", line);
-		}
-
-		case 'polygone': {
-			if (pos.length < 3) throw new DslRuntimeError('polygone() attend au moins 3 sommets', line);
-			const vertexIds = pos.map((p, i) => requireElement(p, `sommet ${i + 1}`, line));
-			const id = figure.createPolygon(vertexIds as [string, string, string, ...string[]], {
-				label
-			});
-			return { figureId: id, symbolType: 'polygone' };
-		}
-
-		case 'symetrie': {
-			// 0 positional args → create transformation object
-			if (pos.length === 0) {
-				if (named.has('centre')) {
-					const centerId = requireElement(named.get('centre')!, 'centre', line);
-					const id = figure.createReflection(centerId, { label });
-					return { figureId: id, symbolType: 'transformation' };
-				}
-				if (named.has('axe')) {
-					const { p1, p2 } = resolveAxeArg(named.get('axe')!, figure, line);
-					const id = figure.createReflectionOverLine(p1, p2, { label });
-					return { figureId: id, symbolType: 'transformation' };
-				}
-				throw new DslRuntimeError("symetrie() necessite 'centre' ou 'axe'", line);
-			}
-			// 1+ positional args → direct application
-			const sourceId = requireElement(pos[0], 'source', line);
-			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
-			if (named.has('centre')) {
-				const centerId = requireElement(named.get('centre')!, 'centre', line);
-				if (sourceEl.elementType === 'point') {
-					const id = figure.createReflectedPoint(sourceId, centerId, { label });
-					return { figureId: id, symbolType: 'point' };
-				}
-				const tId = figure.createReflection(centerId);
-				return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
-			}
-			if (named.has('axe')) {
-				const { p1, p2 } = resolveAxeArg(named.get('axe')!, figure, line);
-				if (sourceEl.elementType === 'point') {
-					const id = figure.createReflectedOverLine(sourceId, p1, p2, { label });
-					return { figureId: id, symbolType: 'point' };
-				}
-				const tId = figure.createReflectionOverLine(p1, p2);
-				return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
-			}
-			throw new DslRuntimeError("symetrie() necessite 'centre' ou 'axe'", line);
-		}
-
-		case 'rotation': {
-			const centerId = requireElement(
-				named.get('centre') ?? { type: 'nombre', value: 0 },
-				'centre',
-				line
-			);
-			const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
-			// Convert angle to radians according to the active angle mode.
-			// In 'rad' mode the value is already in radians (no conversion).
-			let angleRad: ScalarParam;
-			if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
-				const depId = angleArg.figureId;
-				if (angleMode === 'deg') {
-					angleRad = {
-						scalarRef: figure.createScalarExpression(
-							(sv) => ((sv.get(depId) ?? 0) * Math.PI) / 180,
-							[depId]
-						)
-					};
-				} else {
-					angleRad = { scalarRef: depId };
-				}
-			} else {
-				const angleVal = requireNumber(angleArg, 'angle', line);
-				angleRad = { kind: 'numeric', value: toRadians(angleVal, angleMode) };
-			}
-			// 0 positional args → create transformation object
-			if (pos.length === 0) {
-				const id = figure.createRotation(centerId, angleRad, { label });
-				return { figureId: id, symbolType: 'transformation' };
-			}
-			// 1+ positional args → direct application
-			const sourceId = requireElement(pos[0], 'source', line);
-			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
-			if (sourceEl.elementType === 'point') {
-				const id = figure.createRotatedPoint(sourceId, centerId, angleRad, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			// Non-point: create temp transformation, delegate
-			const tId = figure.createRotation(centerId, angleRad);
-			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
-		}
-
-		case 'homothetie': {
-			const centerId = requireElement(
-				named.get('centre') ?? { type: 'nombre', value: 0 },
-				'centre',
-				line
-			);
-			const factor = toScalarParam(
-				named.get('rapport') ?? { type: 'nombre', value: 1 },
-				toGeoValue,
-				line
-			);
-			// 0 positional args → create transformation object
-			if (pos.length === 0) {
-				const id = figure.createHomothety(centerId, factor, { label });
-				return { figureId: id, symbolType: 'transformation' };
-			}
-			// 1+ positional args → direct application
-			const sourceId = requireElement(pos[0], 'source', line);
-			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
-			if (sourceEl.elementType === 'point') {
-				const id = figure.createDilatedPoint(sourceId, centerId, factor, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			// Non-point: create temp transformation, delegate
-			const tId = figure.createHomothety(centerId, factor);
-			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
-		}
-
-		case 'projection': {
-			const droiteArg = named.get('axe');
-			if (!droiteArg) throw new DslRuntimeError("projection() necessite 'axe'", line);
-			const { p1, p2 } = resolveAxeArg(droiteArg, figure, line);
-			// 0 positional args → create transformation object
-			if (pos.length === 0) {
-				const id = figure.createProjection(p1, p2, { label });
-				return { figureId: id, symbolType: 'transformation' };
-			}
-			// 1+ positional args → direct application
-			const sourceId = requireElement(pos[0], 'source', line);
-			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
-			if (sourceEl.elementType === 'point') {
-				const id = figure.createProjectedPoint(sourceId, p1, p2, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			const tId = figure.createProjection(p1, p2);
-			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
-		}
-
-		case 'inversion': {
-			const centerId = requireElement(
-				named.get('centre') ?? { type: 'nombre', value: 0 },
-				'centre',
-				line
-			);
-			const radius = toGeoValue(named.get('rayon') ?? { type: 'nombre', value: 1 }, line);
-			// 0 positional args → create transformation object
-			if (pos.length === 0) {
-				const id = figure.createInversion(centerId, radius, { label });
-				return { figureId: id, symbolType: 'transformation' };
-			}
-			// 1+ positional args → direct application
-			const sourceId = requireElement(pos[0], 'source', line);
-			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
-			if (sourceEl.elementType === 'point') {
-				const id = figure.createInvertedPoint(sourceId, centerId, radius, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			const tId = figure.createInversion(centerId, radius);
-			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
-		}
-
-		case 'affinite': {
-			const axeArg = named.get('axe');
-			if (!axeArg) throw new DslRuntimeError("affinite() necessite 'axe'", line);
-			const { p1, p2 } = resolveAxeArg(axeArg, figure, line);
-			const factor = toGeoValue(named.get('rapport') ?? { type: 'nombre', value: 1 }, line);
-			// 0 positional args → create transformation object
-			if (pos.length === 0) {
-				const id = figure.createAffinity(p1, p2, factor, { label });
-				return { figureId: id, symbolType: 'transformation' };
-			}
-			// 1+ positional args → direct application
-			const sourceId = requireElement(pos[0], 'source', line);
-			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
-			if (sourceEl.elementType === 'point') {
-				const id = figure.createAffinityPoint(sourceId, p1, p2, factor, { label });
-				return { figureId: id, symbolType: 'point' };
-			}
-			const tId = figure.createAffinity(p1, p2, factor);
-			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
-		}
-
-		case 'similitude': {
-			const centerId = requireElement(
-				named.get('centre') ?? { type: 'nombre', value: 0 },
-				'centre',
-				line
-			);
-			const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
-			// Convert angle to radians according to the active angle mode.
-			let simAngleRad: ScalarParam;
-			if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
-				const depId = angleArg.figureId;
-				if (angleMode === 'deg') {
-					simAngleRad = {
-						scalarRef: figure.createScalarExpression(
-							(sv) => ((sv.get(depId) ?? 0) * Math.PI) / 180,
-							[depId]
-						)
-					};
-				} else {
-					simAngleRad = { scalarRef: depId };
-				}
-			} else {
-				const angleVal = requireNumber(angleArg, 'angle', line);
-				simAngleRad = { kind: 'numeric', value: toRadians(angleVal, angleMode) };
-			}
-			const simFactor = toScalarParam(
-				named.get('rapport') ?? { type: 'nombre', value: 1 },
-				toGeoValue,
-				line
-			);
-			// 0 positional args → create transformation object
-			if (pos.length === 0) {
-				const id = figure.createSimilitude(centerId, simAngleRad, simFactor, { label });
-				return { figureId: id, symbolType: 'transformation' };
-			}
-			// 1+ positional args → direct application
-			const sourceId = requireElement(pos[0], 'source', line);
-			const sourceEl = pos[0] as { type: 'element'; elementType: SymbolType };
-			const tId = figure.createSimilitude(centerId, simAngleRad, simFactor);
-			return applyTransformationToElement(figure, tId, sourceId, sourceEl.elementType, { label });
-		}
-
-		case 'transforme': {
-			if (pos.length !== 2)
-				throw new DslRuntimeError('transforme() attend 2 arguments (transformation, objet)', line);
-			const transformArg = pos[0];
-			if (transformArg.type !== 'element' || transformArg.elementType !== 'transformation')
-				throw new DslRuntimeError(
-					'transforme(): le premier argument doit etre une transformation',
-					line
-				);
-			const sourceArg = pos[1];
-			if (sourceArg.type !== 'element')
-				throw new DslRuntimeError(
-					'transforme(): le second argument doit etre un element geometrique',
-					line
-				);
-			const result = applyTransformationToElement(
-				figure,
-				transformArg.figureId!,
-				sourceArg.figureId!,
-				sourceArg.elementType!,
-				{ label }
-			);
-			// Record origin for serialization roundtrip
-			figure.recordTransformeOrigin(result.figureId, transformArg.figureId!, sourceArg.figureId!);
-			return result;
-		}
-
-		case 'compose': {
-			if (pos.length < 2)
-				throw new DslRuntimeError('compose() attend au moins 2 transformations', line);
-			const transformIds: string[] = [];
-			for (let i = 0; i < pos.length; i++) {
-				const arg = pos[i];
-				if (arg.type !== 'element' || arg.elementType !== 'transformation')
-					throw new DslRuntimeError(
-						`compose(): l'argument ${i + 1} doit etre une transformation`,
-						line
-					);
-				transformIds.push(arg.figureId!);
-			}
-			const id = figure.createComposition(transformIds, { label });
-			return { figureId: id, symbolType: 'transformation' };
-		}
-
-		case 'marque_angle': {
-			if (pos.length < 3)
-				throw new DslRuntimeError('marque_angle() attend 3 arguments (P1, V, P2)', line);
-			const arcCount = named.has('arcs')
-				? (requireNumber(named.get('arcs')!, 'arcs', line) as 1 | 2 | 3)
-				: 1;
-			const id = figure.createAngleMark(
-				requireElement(pos[0], 'P1', line),
-				requireElement(pos[1], 'V', line),
-				requireElement(pos[2], 'P2', line),
-				{ arcCount, label }
-			);
-			return { figureId: id, symbolType: 'angleMark' };
-		}
-
-		case 'angle_droit': {
-			if (pos.length < 3)
-				throw new DslRuntimeError('angle_droit() attend 3 arguments (P1, V, P2)', line);
-			const id = figure.createAngleMark(
-				requireElement(pos[0], 'P1', line),
-				requireElement(pos[1], 'V', line),
-				requireElement(pos[2], 'P2', line),
-				{ rightAngle: true, label }
-			);
-			return { figureId: id, symbolType: 'angleMark' };
-		}
-
-		case 'marque_segment': {
-			if (pos.length < 2)
-				throw new DslRuntimeError('marque_segment() attend 2 arguments (A, B)', line);
-			const markCount = named.has('traits')
-				? (requireNumber(named.get('traits')!, 'traits', line) as 1 | 2 | 3)
-				: 1;
-			const id = figure.createSegmentMark(
-				requireElement(pos[0], 'A', line),
-				requireElement(pos[1], 'B', line),
-				{ markCount, label }
-			);
-			return { figureId: id, symbolType: 'segmentMark' };
-		}
-
-		case 'mesure': {
-			if (pos.length < 2) throw new DslRuntimeError('mesure() attend au moins 2 arguments', line);
-			const targetIds = pos.map((p, i) => requireElement(p, `arg${i + 1}`, line));
-
-			// Create the appropriate scalar
-			let scalarId: string;
-			let autoPosition: 'midpoint' | 'bisector' | 'centroid';
-			if (pos.length === 2) {
-				scalarId = figure.createScalarDistance(targetIds[0], targetIds[1]);
-				autoPosition = 'midpoint';
-			} else if (pos.length === 3) {
-				scalarId = figure.createScalarAngle(targetIds[0], targetIds[1], targetIds[2]);
-				autoPosition = 'bisector';
-			} else {
-				scalarId = figure.createScalarArea(targetIds);
-				autoPosition = 'centroid';
-			}
-
-			// Create auto-positioned text displaying the scalar value
-			const format = autoPosition === 'bisector' ? ':deg' : ':.2f';
-			const textId = figure.createText(
-				`{${scalarId}${format}}`,
-				[scalarId],
-				{ autoPosition, autoTargetIds: targetIds },
-				{ label }
-			);
-			return { figureId: textId, symbolType: 'text' };
-		}
-
-		case 'aire': {
-			// Overload: `aire(f, a, b)` (3 args, first is a GeoFunction) computes the
-			// geometric area between f and the x-axis on [a, b]. Otherwise falls back
-			// to the polygon-area behavior (`aire(P1, P2, ..., Pn)` for n ≥ 3 points).
-			// Note: if 3 args and pos[0] is an element that is NOT a GeoFunction
-			// (e.g. a circle), the code falls through to the polygon branch, which
-			// will then produce an error about "point1". Acceptable for V1.
-			// See `docs/wip/geometry/aire-study.md` §0 décision 2.
-			if (pos.length === 3 && pos[0].type === 'element') {
-				const candidateEl = figure.getElementById(pos[0].figureId);
-				if (candidateEl && candidateEl.type === 'function') {
-					return interpretAreaBuiltin({
-						name: 'aire',
-						f: { id: pos[0].figureId, expression: candidateEl.expression },
-						lowerArg: pos[1],
-						upperArg: pos[2],
-						signed: false,
-						// Green default (cf. aire-study.md §0 décision 3) to contrast with
-						// integrale's blue on figures showing both. Overridden by applyInlineStyle
-						// when the user passes `couleur=...` (style.color > color in resolveStyle).
-						defaultColor: '#22c55e',
-						line,
-						label,
-						figure
-					});
-				}
-			}
-
-			// Default: polygon area (≥ 3 points).
-			if (pos.length < 3)
-				throw new DslRuntimeError('aire() attend au moins 3 arguments (points)', line);
-			const pointIds = pos.map((p, i) => requireElement(p, `point${i + 1}`, line));
-			const id = figure.createScalarArea(pointIds, { label });
-			return { figureId: id, symbolType: 'scalar' };
-		}
-
-		case 'mtexte': {
-			if (pos.length < 2) throw new DslRuntimeError('mtexte() attend au moins 2 arguments', line);
-			let mtTemplate: string;
-			let mtPositioning: {
-				anchorId?: string;
-				anchorOffset?: { dx: number; dy: number };
-				position?: { x: number; y: number };
-			};
-			if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
-				const x = (pos[0] as { type: 'nombre'; value: number }).value;
-				const y = (pos[1] as { type: 'nombre'; value: number }).value;
-				if (pos[2].type !== 'string')
-					throw new DslRuntimeError('mtexte(): le 3e argument doit etre une chaine', line);
-				mtTemplate = (pos[2] as { type: 'string'; value: string }).value;
-				mtPositioning = { position: { x, y } };
-			} else if (pos[0].type === 'element') {
-				const anchorId = requireElement(pos[0], 'anchor', line);
-				if (pos[1].type !== 'string')
-					throw new DslRuntimeError('mtexte(): le 2e argument doit etre une chaine', line);
-				mtTemplate = (pos[1] as { type: 'string'; value: string }).value;
-				const dx = named.has('dx')
-					? (named.get('dx')! as { type: 'nombre'; value: number }).value
-					: undefined;
-				const dy = named.has('dy')
-					? (named.get('dy')! as { type: 'nombre'; value: number }).value
-					: undefined;
-				mtPositioning = {
-					anchorId,
-					anchorOffset:
-						dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
-				};
-			} else {
-				throw new DslRuntimeError(
-					'mtexte() attend: mtexte(x, y, "latex") ou mtexte(point, "latex", dx=..., dy=...)',
-					line
-				);
-			}
-			const mtScalarRefs: string[] = [];
-			mtTemplate = mtTemplate.replace(/\{(\w+)/g, (_match, refName: string) => {
-				const refSym = symbols?.get(refName);
-				if (refSym?.figureId && refSym.type === 'scalar') {
-					mtScalarRefs.push(refSym.figureId);
-					return `{${refSym.figureId}`;
-				}
-				return `{${refName}`;
-			});
-			const mtId = figure.createMathText(mtTemplate, mtScalarRefs, mtPositioning, { label });
-			return { figureId: mtId, symbolType: 'mathText' };
-		}
-
-		case 'distance': {
-			if (pos.length !== 2)
-				throw new DslRuntimeError(
-					'distance() attend 2 arguments (point, point) ou (point, droite)',
-					line
-				);
-			const arg2 = pos[1];
-			const isLineArg =
-				arg2.type === 'element' &&
-				(arg2.elementType === 'droite' ||
-					arg2.elementType === 'segment' ||
-					arg2.elementType === 'demidroite');
-			if (isLineArg) {
-				const ptId = requireElement(pos[0], 'point', line);
-				const lineId = requireElement(pos[1], 'ligne', line);
-				const id = figure.createScalarDistancePointLine(ptId, lineId, { label });
-				return { figureId: id, symbolType: 'scalar' };
-			}
-			const pt1Id = requireElement(pos[0], 'point1', line);
-			const pt2Id = requireElement(pos[1], 'point2', line);
-			const id = figure.createScalarDistance(pt1Id, pt2Id, { label });
-			return { figureId: id, symbolType: 'scalar' };
-		}
-
-		case 'angle': {
-			if (pos.length === 2) {
-				// angle(O, A) → polar angle of A relative to O (signed, -180..180 degrees)
-				const centerId = requireElement(pos[0], 'centre', line);
-				const pointId = requireElement(pos[1], 'point', line);
-				const id = figure.createScalarPolarAngle(centerId, pointId, { label });
-				return { figureId: id, symbolType: 'scalar' };
-			}
-			if (pos.length !== 3)
-				throw new DslRuntimeError(
-					'angle() attend 2 arguments (O, A) pour angle polaire ou 3 arguments (P, O, Q) pour angle au sommet',
-					line
-				);
-			const aP1Id = requireElement(pos[0], 'P1', line);
-			const aVId = requireElement(pos[1], 'vertex', line);
-			const aP2Id = requireElement(pos[2], 'P2', line);
-			const id = figure.createScalarAngle(aP1Id, aVId, aP2Id, { label });
-			return { figureId: id, symbolType: 'scalar' };
-		}
-
-		case 'perimetre': {
-			if (pos.length < 3)
-				throw new DslRuntimeError('perimetre() attend au moins 3 arguments (points)', line);
-			const perimPointIds = pos.map((p, i) => requireElement(p, `point${i + 1}`, line));
-			const id = figure.createScalarPerimeter(perimPointIds, { label });
-			return { figureId: id, symbolType: 'scalar' };
-		}
-
-		case 'pente': {
-			if (pos.length !== 1)
-				throw new DslRuntimeError(
-					'pente() attend 1 argument (droite, segment ou demidroite)',
-					line
-				);
-			const penteArg = pos[0];
-			if (
-				penteArg.type !== 'element' ||
-				(penteArg.elementType !== 'droite' &&
-					penteArg.elementType !== 'segment' &&
-					penteArg.elementType !== 'demidroite')
-			)
-				throw new DslRuntimeError('pente() attend une droite, un segment ou une demi-droite', line);
-			const penteLineId = penteArg.figureId;
-			const id = figure.createScalarSlope(penteLineId, { label });
-			return { figureId: id, symbolType: 'scalar' };
-		}
-
-		case 'rayon': {
-			if (pos.length !== 1) throw new DslRuntimeError('rayon() attend 1 argument (cercle)', line);
-			const rayonArg = pos[0];
-			if (rayonArg.type !== 'element' || rayonArg.elementType !== 'cercle')
-				throw new DslRuntimeError('rayon() attend un cercle', line);
-			const rayonCircleId = rayonArg.figureId;
-			const id = figure.createScalarRadius(rayonCircleId, { label });
-			return { figureId: id, symbolType: 'scalar' };
-		}
-
-		case 'slider': {
-			const minVal = requireNumber(named.get('min') ?? { type: 'nombre', value: 0 }, 'min', line);
-			const maxVal = requireNumber(named.get('max') ?? { type: 'nombre', value: 10 }, 'max', line);
-			const valeur = requireNumber(
-				named.get('valeur') ?? { type: 'nombre', value: (minVal + maxVal) / 2 },
-				'valeur',
-				line
-			);
-			const step = named.has('pas') ? requireNumber(named.get('pas')!, 'pas', line) : undefined;
-			const id = figure.createSlider(minVal, maxVal, valeur, { label, step });
-			return { figureId: id, symbolType: 'scalar' };
-		}
-
-		case 'arc': {
-			if (pos.length === 3) {
-				// arc(A, O, B) — arc by 3 points (start, center, end)
-				const startId = requireElement(pos[0], 'start', line);
-				const centerId = requireElement(pos[1], 'centre', line);
-				const endId = requireElement(pos[2], 'end', line);
-				const id = figure.createArcByPoints(startId, centerId, endId, { label });
-				return { figureId: id, symbolType: 'arc' };
-			}
-			if (pos.length === 1) {
-				// arc(O, rayon=3, debut=0, fin=90) — angles interpreted per active angleMode.
-				const centerId = requireElement(pos[0], 'centre', line);
-				if (!named.has('rayon'))
-					throw new DslRuntimeError("arc() avec 1 argument necessite 'rayon'", line);
-				const radius = toGeoValue(named.get('rayon')!, line);
-				const startVal = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
-				const endVal = named.has('fin')
-					? requireNumber(named.get('fin')!, 'fin', line)
-					: angleMode === 'deg'
-						? 360
-						: 2 * Math.PI;
-				const startRad: GeoValue = { kind: 'numeric', value: toRadians(startVal, angleMode) };
-				const endRad: GeoValue = { kind: 'numeric', value: toRadians(endVal, angleMode) };
-				const id = figure.createArcByAngles(centerId, radius, startRad, endRad, { label });
-				return { figureId: id, symbolType: 'arc' };
-			}
-			throw new DslRuntimeError(
-				'arc() attend soit 3 arguments (A, O, B) soit 1 argument + rayon/debut/fin',
-				line
-			);
-		}
-
-		case 'secteur': {
-			if (pos.length === 3) {
-				// secteur(O, A, B) — sector by center and two points
-				const centerId = requireElement(pos[0], 'centre', line);
-				const startId = requireElement(pos[1], 'start', line);
-				const endId = requireElement(pos[2], 'end', line);
-				const id = figure.createSectorByPoints(centerId, startId, endId, { label });
-				return { figureId: id, symbolType: 'secteur' as SymbolType };
-			}
-			if (pos.length === 1) {
-				// secteur(O, rayon=3, debut=0, fin=90) — angles per active angleMode.
-				const centerId = requireElement(pos[0], 'centre', line);
-				if (!named.has('rayon'))
-					throw new DslRuntimeError("secteur() avec 1 argument necessite 'rayon'", line);
-				const radius = toScalarParam(named.get('rayon')!, toGeoValue, line);
-				const startVal = named.has('debut') ? requireNumber(named.get('debut')!, 'debut', line) : 0;
-				const endVal = named.has('fin')
-					? requireNumber(named.get('fin')!, 'fin', line)
-					: angleMode === 'deg'
-						? 360
-						: 2 * Math.PI;
-				const startRad: GeoValue = { kind: 'numeric', value: toRadians(startVal, angleMode) };
-				const endRad: GeoValue = { kind: 'numeric', value: toRadians(endVal, angleMode) };
-				const id = figure.createSectorByAngles(centerId, radius, startRad, endRad, { label });
-				return { figureId: id, symbolType: 'secteur' as SymbolType };
-			}
-			throw new DslRuntimeError(
-				'secteur() attend soit 3 arguments (O, A, B) soit 1 argument + rayon/debut/fin',
-				line
-			);
-		}
-
-		case 'couronne': {
-			if (pos.length !== 1)
-				throw new DslRuntimeError('couronne() attend 1 argument positionnel (centre)', line);
-			const centerId = requireElement(pos[0], 'centre', line);
-			if (!named.has('r1') || !named.has('r2'))
-				throw new DslRuntimeError("couronne() necessite 'r1' et 'r2'", line);
-			const r1 = toScalarParam(named.get('r1')!, toGeoValue, line);
-			const r2 = toScalarParam(named.get('r2')!, toGeoValue, line);
-			// Validate r1 < r2 for numeric values
-			const r1Num = typeof r1 === 'object' && 'scalarRef' in r1 ? null : geoToNumber(r1);
-			const r2Num = typeof r2 === 'object' && 'scalarRef' in r2 ? null : geoToNumber(r2);
-			if (r1Num !== null && r2Num !== null && r1Num >= r2Num)
-				throw new DslRuntimeError('couronne(): r1 doit etre inferieur a r2', line);
-			const id = figure.createAnnulus(centerId, r1, r2, { label });
-			return { figureId: id, symbolType: 'couronne' as SymbolType };
-		}
-
-		case 'puissance': {
-			if (pos.length !== 2)
-				throw new DslRuntimeError('puissance() attend 2 arguments (point, cercle)', line);
-			const pointId = requireElement(pos[0], 'point', line);
-			const circleArg = pos[1];
-			if (circleArg.type !== 'element' || circleArg.elementType !== 'cercle')
-				throw new DslRuntimeError('puissance() attend un cercle comme 2e argument', line);
-			const circleId = circleArg.figureId;
-			const id = figure.createScalarPower(pointId, circleId, { label });
-			return { figureId: id, symbolType: 'scalar' };
-		}
-
-		case 'style': {
-			// style(element, couleur=..., forme=..., tirets=...)
-			if (pos.length < 1)
-				throw new DslRuntimeError('style() attend au moins 1 argument (element)', line);
-			const elId = requireElement(pos[0], 'element', line);
-			applyInlineStyle(figure, elId, named, line);
-			return null; // style() returns nothing
-		}
-
-		case 'longueur': {
-			// longueur(c)            → arc length over the curve's own [t_min, t_max]
-			// longueur(c, t1, t2)    → arc length over [t1, t2]
-			if (pos.length === 0) {
-				throw new DslRuntimeError('longueur() attend 1 ou 3 arguments (c) ou (c, t1, t2)', line);
-			}
-			if (pos.length === 2) {
-				throw new DslRuntimeError('longueur(): t1 et t2 doivent etre fournis ensemble', line);
-			}
-			if (pos.length > 3) {
-				throw new DslRuntimeError('longueur() attend 1 ou 3 arguments (c) ou (c, t1, t2)', line);
-			}
-
-			const lcId = requireElement(pos[0], 'courbe', line);
-			const lcEl = figure.getElementById(lcId);
-			if (!lcEl || lcEl.type !== 'parametricCurve') {
-				throw new DslRuntimeError(
-					'longueur(): le premier argument doit etre une courbe parametrique',
-					line
-				);
-			}
-
-			let tMinParam: ScalarParam | undefined;
-			let tMaxParam: ScalarParam | undefined;
-			if (pos.length === 3) {
-				tMinParam = toScalarParam(pos[1], toGeoValue, line);
-				tMaxParam = toScalarParam(pos[2], toGeoValue, line);
-				// Numeric validation only — slider-backed bounds may legitimately
-				// invert at runtime, in which case the scalar resolves to undefined.
-				if (!isScalarRef(tMinParam) && !isScalarRef(tMaxParam)) {
-					const t1Num = geoToNumber(tMinParam);
-					const t2Num = geoToNumber(tMaxParam);
-					if (Number.isFinite(t1Num) && Number.isFinite(t2Num) && t1Num >= t2Num) {
-						throw new DslRuntimeError('longueur(): t2 doit etre superieur a t1', line);
-					}
-				}
-			}
-
-			const lId = figure.createArcLength(lcId, tMinParam, tMaxParam, { label });
-			return { figureId: lId, symbolType: 'scalar' };
-		}
-
-		case 'courbure': {
-			if (pos.length !== 2) {
-				throw new DslRuntimeError('courbure() attend 2 arguments (c, t0)', line);
-			}
-			const kcId = requireElement(pos[0], 'courbe', line);
-			const kcEl = figure.getElementById(kcId);
-			if (!kcEl || kcEl.type !== 'parametricCurve') {
-				throw new DslRuntimeError(
-					'courbure(): le premier argument doit etre une courbe parametrique',
-					line
-				);
-			}
-			const tParam = toScalarParam(pos[1], toGeoValue, line);
-			const kId = figure.createCurvature(kcId, tParam, { label });
-			return { figureId: kId, symbolType: 'scalar' };
-		}
-
-		case 'cercle_osculateur': {
-			if (pos.length !== 2) {
-				throw new DslRuntimeError('cercle_osculateur() attend 2 arguments (c, t0)', line);
-			}
-			const ocCurveId = requireElement(pos[0], 'courbe', line);
-			const ocCurveEl = figure.getElementById(ocCurveId);
-			if (!ocCurveEl || ocCurveEl.type !== 'parametricCurve') {
-				throw new DslRuntimeError(
-					'cercle_osculateur(): le premier argument doit etre une courbe parametrique',
-					line
-				);
-			}
-			const ocTParam = toScalarParam(pos[1], toGeoValue, line);
-			const ocId = figure.createOsculatingCircle(ocCurveId, ocTParam, { label });
-			return { figureId: ocId, symbolType: 'cercle' };
-		}
-
-		case 'derivee': {
-			if (pos.length !== 1) {
-				throw new DslRuntimeError('derivee() attend 1 argument (une fonction)', line);
-			}
-			const dFnId = requireElement(pos[0], 'fonction', line);
-			const dFnEl = figure.getElementById(dFnId);
-			if (!dFnEl || dFnEl.type !== 'function') {
-				throw new DslRuntimeError("derivee(): l'argument doit être une courbe y = f(x)", line);
-			}
-
-			// f' is f.derivative (already symbolically computed at f's creation).
-			// For the new function: expression = f', derivative = f''.
-			let fPrimePrime: MathNode;
-			try {
-				fPrimePrime = differentiate(dFnEl.derivative, { variable: 'x', simplify: true });
-			} catch {
-				throw new DslRuntimeError('derivee(): impossible de calculer la dérivée seconde', line);
-			}
-
-			// Reuse f.compiledDerivative as g's compiledFn: by GeoFunction's invariant,
-			// compiledDerivative === compile(derivative), so calling compile() again would
-			// be redundant.
-			let dCompiledDerivative: CompiledFn;
-			try {
-				dCompiledDerivative = compile(fPrimePrime);
-			} catch (e) {
-				throw new DslRuntimeError(
-					`derivee(): impossible de compiler la dérivée — ${e instanceof Error ? e.message : ''}`,
-					line
-				);
-			}
-
-			const dEquation = `y = ${toCustom(dFnEl.derivative)}`;
-
-			const dFnNewId = figure.createFunction(
-				dFnEl.derivative,
-				fPrimePrime,
-				dFnEl.compiledDerivative,
-				dCompiledDerivative,
-				dEquation,
-				{ label }
-			);
-
-			return { figureId: dFnNewId, symbolType: 'courbe' };
-		}
-
-		case 'integrale': {
-			if (pos.length !== 3) {
-				throw new DslRuntimeError('integrale() attend 3 arguments (f, a, b)', line);
-			}
-			const intFnId = requireElement(pos[0], 'fonction', line);
-			const intFnEl = figure.getElementById(intFnId);
-			if (!intFnEl || intFnEl.type !== 'function') {
-				throw new DslRuntimeError(
-					'integrale(): le 1er argument doit etre une courbe y = f(x)',
-					line
-				);
-			}
-			return interpretAreaBuiltin({
-				name: 'integrale',
-				f: { id: intFnId, expression: intFnEl.expression },
-				lowerArg: pos[1],
-				upperArg: pos[2],
-				signed: true,
-				line,
-				label,
-				figure
-			});
-		}
-
-		case 'aire_entre': {
-			// V3 — aire géométrique entre deux courbes y = f(x) et y = g(x) sur [a, b].
-			// Spec: docs/wip/geometry/aire-entre-study.md
-			if (pos.length !== 4) {
-				throw new DslRuntimeError('aire_entre() attend 4 arguments (f, g, a, b)', line);
-			}
-			const fnId = requireElement(pos[0], 'fonction 1', line);
-			const fnEl = figure.getElementById(fnId);
-			if (!fnEl || fnEl.type !== 'function') {
-				throw new DslRuntimeError(
-					'aire_entre(): le 1er argument doit etre une courbe y = f(x)',
-					line
-				);
-			}
-			const gnId = requireElement(pos[1], 'fonction 2', line);
-			const gnEl = figure.getElementById(gnId);
-			if (!gnEl || gnEl.type !== 'function') {
-				throw new DslRuntimeError(
-					'aire_entre(): le 2e argument doit etre une courbe y = g(x)',
-					line
-				);
-			}
-			return interpretAreaBuiltin({
-				name: 'aire_entre',
-				f: { id: fnId, expression: fnEl.expression },
-				g: { id: gnId, expression: gnEl.expression },
-				lowerArg: pos[2],
-				upperArg: pos[3],
-				signed: false,
-				// Orange (cf. aire-entre-study.md §0 décision 6) — triade
-				// bleu(integrale) / vert(aire) / orange(aire_entre).
-				defaultColor: '#fb923c',
-				line,
-				label,
-				figure
-			});
-		}
-
-		case 'asymptotes': {
-			if (pos.length !== 1) {
-				throw new DslRuntimeError('asymptotes() attend 1 argument (conique)', line);
-			}
-			const asymCurveId = requireElement(pos[0], 'conique', line);
-			const asymCurveEl = figure.getElementById(asymCurveId);
-			if (!asymCurveEl || asymCurveEl.type !== 'quadraticCurve') {
-				throw new DslRuntimeError("asymptotes(): l'argument doit etre une conique", line);
-			}
-			if (asymCurveEl.conic.type !== 'hyperbola') {
-				throw new DslRuntimeError('asymptotes(): la conique doit etre une hyperbole', line);
-			}
-			const asymLines = asymptoteLines(asymCurveEl.conic);
-			if (!asymLines) {
-				throw new DslRuntimeError('asymptotes(): impossible de calculer les asymptotes', line);
-			}
-			const asymResults: BuiltinResult[] = asymLines.map((al, i) => {
-				const lbl = label ? (asymLines.length > 1 ? `${label}${i + 1}` : label) : undefined;
-				const pt1Id = figure.createFreePoint(
-					{ x: numeric(al.p1.x), y: numeric(al.p1.y) },
-					{ visible: false, draggable: false }
-				);
-				const pt2Id = figure.createFreePoint(
-					{ x: numeric(al.p2.x), y: numeric(al.p2.y) },
-					{ visible: false, draggable: false }
-				);
-				const lineId = figure.createLine(pt1Id, pt2Id, { label: lbl });
-				return { figureId: lineId, symbolType: 'droite' as SymbolType };
-			});
-			return { elements: asymResults } as BuiltinMultiResult;
-		}
-
-		case 'axes': {
-			if (pos.length !== 1) {
-				throw new DslRuntimeError('axes() attend 1 argument (conique)', line);
-			}
-			const axesCurveId = requireElement(pos[0], 'conique', line);
-			const axesCurveEl = figure.getElementById(axesCurveId);
-			if (!axesCurveEl || axesCurveEl.type !== 'quadraticCurve') {
-				throw new DslRuntimeError("axes(): l'argument doit etre une conique", line);
-			}
-			if (axesCurveEl.conic.type === 'circle') {
-				throw new DslRuntimeError("axes(): un cercle a une infinite d'axes de symetrie", line);
-			}
-			const axLines = computeAxisLines(axesCurveEl.conic);
-			if (!axLines || axLines.length === 0) {
-				throw new DslRuntimeError('axes(): impossible de calculer les axes', line);
-			}
-			const axResults: BuiltinResult[] = axLines.map((al, i) => {
-				const lbl = label ? (axLines.length > 1 ? `${label}${i + 1}` : label) : undefined;
-				const pt1Id = figure.createFreePoint(
-					{ x: numeric(al.p1.x), y: numeric(al.p1.y) },
-					{ visible: false, draggable: false }
-				);
-				const pt2Id = figure.createFreePoint(
-					{ x: numeric(al.p2.x), y: numeric(al.p2.y) },
-					{ visible: false, draggable: false }
-				);
-				const lineId = figure.createLine(pt1Id, pt2Id, { label: lbl });
-				return { figureId: lineId, symbolType: 'droite' as SymbolType };
-			});
-			return { elements: axResults } as BuiltinMultiResult;
-		}
-
-		case 'directrice': {
-			if (pos.length !== 1) {
-				throw new DslRuntimeError('directrice() attend 1 argument (conique)', line);
-			}
-			const dirCurveId = requireElement(pos[0], 'conique', line);
-			const dirCurveEl = figure.getElementById(dirCurveId);
-			if (!dirCurveEl || dirCurveEl.type !== 'quadraticCurve') {
-				throw new DslRuntimeError("directrice(): l'argument doit etre une conique", line);
-			}
-			if (dirCurveEl.conic.type !== 'parabola') {
-				throw new DslRuntimeError('directrice(): la conique doit etre une parabole', line);
-			}
-			const dirLine = computeDirectrixLine(dirCurveEl.conic);
-			if (!dirLine) {
-				throw new DslRuntimeError('directrice(): impossible de calculer la directrice', line);
-			}
-			const dPt1Id = figure.createFreePoint(
-				{ x: numeric(dirLine.p1.x), y: numeric(dirLine.p1.y) },
-				{ visible: false, draggable: false }
-			);
-			const dPt2Id = figure.createFreePoint(
-				{ x: numeric(dirLine.p2.x), y: numeric(dirLine.p2.y) },
-				{ visible: false, draggable: false }
-			);
-			const dirLineId = figure.createLine(dPt1Id, dPt2Id, { label });
-			return { figureId: dirLineId, symbolType: 'droite' };
-		}
-
-		case 'foyers': {
-			if (pos.length !== 1) {
-				throw new DslRuntimeError('foyers() attend 1 argument (conique)', line);
-			}
-			const foyersCurveId = requireElement(pos[0], 'conique', line);
-			const foyersCurveEl = figure.getElementById(foyersCurveId);
-			if (!foyersCurveEl || foyersCurveEl.type !== 'quadraticCurve') {
-				throw new DslRuntimeError("foyers(): l'argument doit etre une conique", line);
-			}
-			const foci = computeFociPoints(foyersCurveEl.conic);
-			if (!foci || foci.length === 0) {
-				throw new DslRuntimeError('foyers(): impossible de calculer les foyers', line);
-			}
-			const fociResults: BuiltinResult[] = foci.map((f, i) => {
-				const lbl = label ? (foci.length > 1 ? `${label}${i + 1}` : label) : undefined;
-				const ptId = figure.createFreePoint(
-					{ x: numeric(f.x), y: numeric(f.y) },
-					{ draggable: false, label: lbl }
-				);
-				return { figureId: ptId, symbolType: 'point' as SymbolType };
-			});
-			return { elements: fociResults } as BuiltinMultiResult;
-		}
-
-		case 'excentricite': {
-			if (pos.length !== 1) {
-				throw new DslRuntimeError('excentricite() attend 1 argument (conique)', line);
-			}
-			const eccCurveId = requireElement(pos[0], 'conique', line);
-			const eccCurveEl = figure.getElementById(eccCurveId);
-			if (!eccCurveEl || eccCurveEl.type !== 'quadraticCurve') {
-				throw new DslRuntimeError("excentricite(): l'argument doit etre une conique", line);
-			}
-			const ecc = computeEccentricity(eccCurveEl.conic);
-			if (isNaN(ecc)) {
-				throw new DslRuntimeError('excentricite(): conique degeneree', line);
-			}
-			return { scalarValue: ecc } as BuiltinScalarResult;
-		}
-
-		case 'polaire': {
-			if (pos.length !== 2) {
-				throw new DslRuntimeError('polaire() attend 2 arguments (point, conique)', line);
-			}
-			const polPointId = requireElement(pos[0], 'point', line);
-			const polCurveId = requireElement(pos[1], 'conique', line);
-			const polPointEl = figure.getElementById(polPointId);
-			if (!polPointEl || !isPointElement(polPointEl)) {
-				throw new DslRuntimeError('polaire(): le premier argument doit etre un point', line);
-			}
-			const polCurveEl = figure.getElementById(polCurveId);
-			if (!polCurveEl || polCurveEl.type !== 'quadraticCurve') {
-				throw new DslRuntimeError('polaire(): le deuxieme argument doit etre une conique', line);
-			}
-			const polId = figure.createConicPolar(polCurveId, polPointId, { label });
-			return { figureId: polId, symbolType: 'polaire' };
-		}
-
-		case 'trace': {
-			if (pos.length !== 1) {
-				throw new DslRuntimeError('trace() attend 1 argument (point)', line);
-			}
-			const trackedId = requireElement(pos[0], 'point', line);
-			const trackedEl = figure.getElementById(trackedId);
-			if (!trackedEl) {
-				throw new DslRuntimeError(`trace(): point "${trackedId}" introuvable`, line);
-			}
-			if (!isPointElement(trackedEl)) {
-				throw new DslRuntimeError("trace(): l'argument doit etre un point", line);
-			}
-			const trId = figure.createTrace(trackedId, { label });
-			return { figureId: trId, symbolType: 'trace' as SymbolType };
-		}
-
-		default:
-			return null; // Not a builtin — might be a macro
-	}
+	if (!handler) return null; // Not a builtin — might be a macro
+	return handler({
+		name,
+		pos,
+		named,
+		figure,
+		toGeoValue,
+		toGeoPoint,
+		line,
+		label,
+		symbols,
+		angleMode
+	});
 }
 
 /** List of all builtin function names. */

@@ -31,7 +31,7 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
 ## REGLES DURES (ne PAS faire)
 
 1. **Pas d'`eval()` / `new Function()`** dans le pipeline DSL. Utiliser `compile()` depuis `$lib/mathAST/eval/compile`. Le module est verifie clean — ne pas regresser.
-2. **Pas de nouveau `case` dans `_executeBuiltinInner`** (`dsl/builtins.ts:345-2389`). Ce switch fait deja 2 045 lignes (62 branches `case`). Extraire chaque builtin en handler dedie.
+2. **Ajouter un builtin DSL** : creer une `function handleX(ctx: BuiltinCtx)` au niveau module dans `dsl/builtins.ts`, puis `HANDLERS.set('x', handleX)`. **Ne PAS ajouter au switch** — il n'existe plus depuis 2026-05-18 (refactor switch geant → Map dispatcher de 27 lignes). 62 handlers en place, pattern coherent.
 3. **Pas de cast `as GeoXxx`**. 84 type guards sont definis dans `types/elements.ts` (`isFreePoint`, `isCircle`, `isParametricCurve`, etc.) — les utiliser.
 4. **Pas d'`any`**. Si necessaire, `unknown` + type guard.
 5. **Pas modifier `database.ts`** (auto-genere). Pour les types reutilisables : `$lib/types/database-helpers.ts`.
@@ -63,10 +63,11 @@ Entry point : `src/lib/geometry-core/index.ts` (barrel re-export de tous les sou
 
 ### Ajouter un builtin DSL (`point`, `cercle`, ...)
 
-1. Handler dans `dsl/builtins.ts` (eviter le switch — creer un module dedie + entree dans une map de dispatch si possible)
-2. Factory method dans `graph/figure.ts`
-3. Tests : `dsl/__tests__/builtins-<xxx>.test.ts`
-4. Mise a jour `dsl/stdlib.ts` si exposition stdlib
+1. **Handler top-level** dans `dsl/builtins.ts` : `function handleX(ctx: BuiltinCtx) { ... }` qui destructure `ctx` et retourne `BuiltinResult | BuiltinMultiResult | BuiltinScalarResult | null`
+2. **Registration** : `HANDLERS.set('x', handleX);` juste apres la fonction
+3. **Factory method** dans `graph/figure.ts`
+4. **Tests** : `dsl/__tests__/builtins-<xxx>.test.ts` ou un fichier theme
+5. **Mise a jour `BUILTIN_NAMES`** (Set en bas de `dsl/builtins.ts`) ET `dsl/stdlib.ts` si exposition stdlib
 
 ### Ajouter un type `Geo*` (`GeoNewElement`)
 

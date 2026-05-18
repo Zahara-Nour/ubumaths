@@ -50,10 +50,10 @@ Le ratio test/source varie toutefois fortement selon les sous-dossiers (voir sec
 
 **Severity: Critical**
 
-`_executeBuiltinInner` dans `dsl/builtins.ts` : **migration en cours depuis 2026-05-18**. Le switch initial faisait 2 045 lignes (62 cases). Refactor staged en 2 commits :
+~~`_executeBuiltinInner` dans `dsl/builtins.ts`~~ — **CORRIGE 2026-05-18**. Le switch initial de 2 045 lignes (62 cases) a ete entierement extrait en handlers top-level :
 
-- **Commit 1 (2026-05-18)** : infrastructure `BuiltinCtx` / `BuiltinHandler` + Map `HANDLERS` ; 12 cases extraits en handlers top-level (les 10 plus gros : `point`, `intersection` (260L), `image` (103L), `courbe` (81L), `tangente` (71L), `point_sur` (75L), `zeros`/`extrema`/`inflections` (70L shared), `translation` (58L), `texte` (59L), `lieu` (55L), `rtexte` (50L)). 13 entrees dans `HANDLERS` (zeros/extrema/inflections partagent un handler). Le switch fallback reste pour les ~50 cases restants. 1 617 tests DSL passent.
-- **Commit 2 (a venir)** : migrer les 50 cases restants, retirer le switch fallback. Mecanique apres validation du pattern.
+- **Commit 1 (871f53be9)** : infrastructure (`BuiltinCtx`, `BuiltinHandler`, Map `HANDLERS`) + 10 plus gros cases extraits (`intersection` 260L, `image` 103L, `courbe` 81L, `point_sur` 75L, `tangente` 71L, `zeros`/`extrema`/`inflections` 70L shared, `translation`, `texte`, `lieu`, `rtexte`, `point`). 1 617 tests DSL passent.
+- **Commit 2 (a venir)** : 49 cases restants migres. Le switch est totalement supprime. `_executeBuiltinInner` passe de 2 045 lignes a **27 lignes** (juste le dispatcher Map). 62 handlers top-level testables individuellement. La croissance lineaire du switch est cassee — un nouveau builtin = un nouveau handler + 1 entree dans Map, sans impact sur le reste.
 
 `computeElementPosition` dans `graph/compute-position.ts` (lignes 143–878) fait **735 lignes** et contient **55 branchements `if (isXxx)` chainés**. Chaque nouveau type d'element ajoute une clause lineairement.
 
@@ -368,6 +368,6 @@ La base de code geometry-core est **fonctionnellement robuste** (1 500+ tests, p
 
 2. ~~**L'absence de rendu SVG/TikZ/Typst pour `GeoOsculatingCircle`**~~ **CORRIGE** (helper `osculatingCircleToSVG` + branches dans les 3 exporters).
 
-Reste a faire dans la dette critique : casser le switch `_executeBuiltinInner` (2 045 lignes, 62 cases) dans `dsl/builtins.ts` — section 4 ci-dessus. Effort estime 1-2 jours.
+~~Reste a faire dans la dette critique : casser le switch `_executeBuiltinInner`~~ **CORRIGE 2026-05-18** : 62 handlers extraits, dispatcher Map de 27 lignes. **Tous les items critiques sont desormais resolus.**
 
 Les points 3 a 10 sont de la dette de maintenabilite sans impact fonctionnel immediat, mais ils ralentiront l'ajout de nouveaux types d'elements et augmentent le risque de regression silencieuse.

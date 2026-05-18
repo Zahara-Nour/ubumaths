@@ -156,8 +156,8 @@ Pour chaque sous-dossier du module, les documents qui en parlent :
    `cercle_osculateur`/`courbure` (`parametric-calculus.ts:75-95`).~~ **FAIT 2026-05-18** (`compiledXSecond`/`compiledYSecond` sur `GeoParametricCurve`).
 3. ~~**[PERF HIGH / EFFORT FAIBLE]** Eliminer les spreads dans
    `computeParametricCurveSampling` (`figure.ts:4399-4418`).~~ **FAIT 2026-05-18** (pattern mutable-env applique aux 3 sites de figure.ts).
-4. **[QUALITE CRITIQUE]** Casser `_executeBuiltinInner` (`dsl/builtins.ts:345-2389`)
-   en handlers par builtin (1 fichier par primitive).
+4. ~~**[QUALITE CRITIQUE]** Casser `_executeBuiltinInner` (`dsl/builtins.ts:345-2389`)
+   en handlers par builtin.~~ **FAIT 2026-05-18** (2 commits : infra + 62 handlers extraits, dispatcher Map de 27 lignes).
 5. ~~**[QUALITE CRITIQUE]** Ajouter le rendu de `GeoOsculatingCircle` dans
    `svg-primitives.ts`, `export-tikz.ts`, `export-typst.ts`.~~ **FAIT 2026-05-18** (helper `osculatingCircleToSVG` + branches dans les 3 exporters).
 6. **[TESTS]** Ajouter des tests unitaires directs pour `bezier.ts` (`parametric-newton.ts` couvert depuis 2026-05-18).
