@@ -50,7 +50,10 @@ Le ratio test/source varie toutefois fortement selon les sous-dossiers (voir sec
 
 **Severity: Critical**
 
-`_executeBuiltinInner` dans `dsl/builtins.ts` (lignes 345–2389) fait **2 045 lignes** et contient **62 branches `case`**. C'est la plus longue fonction du module. Elle dispatche vers tous les builtins du DSL (point, segment, droite, cercle, courbe, intersection, integrale, etc.) dans un seul `switch`. Aucune extraction logique n'a ete faite malgre les nombreuses livraisons ajoutant des cas successifs.
+`_executeBuiltinInner` dans `dsl/builtins.ts` : **migration en cours depuis 2026-05-18**. Le switch initial faisait 2 045 lignes (62 cases). Refactor staged en 2 commits :
+
+- **Commit 1 (2026-05-18)** : infrastructure `BuiltinCtx` / `BuiltinHandler` + Map `HANDLERS` ; 12 cases extraits en handlers top-level (les 10 plus gros : `point`, `intersection` (260L), `image` (103L), `courbe` (81L), `tangente` (71L), `point_sur` (75L), `zeros`/`extrema`/`inflections` (70L shared), `translation` (58L), `texte` (59L), `lieu` (55L), `rtexte` (50L)). 13 entrees dans `HANDLERS` (zeros/extrema/inflections partagent un handler). Le switch fallback reste pour les ~50 cases restants. 1 617 tests DSL passent.
+- **Commit 2 (a venir)** : migrer les 50 cases restants, retirer le switch fallback. Mecanique apres validation du pattern.
 
 `computeElementPosition` dans `graph/compute-position.ts` (lignes 143–878) fait **735 lignes** et contient **55 branchements `if (isXxx)` chainés**. Chaque nouveau type d'element ajoute une clause lineairement.
 
