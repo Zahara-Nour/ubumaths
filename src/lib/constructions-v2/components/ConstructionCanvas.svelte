@@ -422,7 +422,14 @@
 						transform="translate({rpos?.x ?? 0}, {rpos?.y ?? 0}) rotate({rpos?.rotation ?? 0})"
 						opacity={state.opacity}
 					>
-						<Ruler x={0} y={0} rotation={0} scale={state.scale} visible={true} />
+						<Ruler
+							x={0}
+							y={0}
+							rotation={0}
+							scale={state.scale}
+							pixelsPerUnit={PPU}
+							visible={true}
+						/>
 					</g>
 				{:else if state.type === 'compass'}
 					{@const cpos = instrumentPositions['compass']}

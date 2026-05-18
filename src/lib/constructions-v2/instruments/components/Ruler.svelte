@@ -11,7 +11,6 @@
 	 */
 
 	// Constants from original Regle.js
-	const PIXELS_PER_CM = 30; // 30 pixels per centimeter
 	const HEIGHT_FONT = 9; // Font height for graduations
 	const WIDTH = 57; // Ruler width
 	const RAY = 6; // Corner radius
@@ -21,10 +20,16 @@
 		x?: number;
 		y?: number;
 		rotation?: number;
-		length?: number; // Length in cm (default 15)
+		length?: number; // Length in math units (each major tick = 1 unit)
 		scale?: number;
 		showGraduations?: boolean;
 		visible?: boolean;
+		/**
+		 * Screen pixels per math unit. Major ticks (with label) appear every unit,
+		 * minor ticks every tenth. Must match the host canvas PPU so that placing
+		 * the ruler against a segment of length L reads L on the ruler.
+		 */
+		pixelsPerUnit?: number;
 	}
 
 	// Props with defaults
@@ -32,14 +37,15 @@
 		x = 100,
 		y = 400,
 		rotation = 0,
-		length = 15, // 15 cm by default
+		length = 15, // 15 units by default
 		scale = 1,
 		showGraduations = true,
-		visible = true
+		visible = true,
+		pixelsPerUnit = 40
 	}: Props = $props();
 
 	// Calculate internal length in pixels
-	let internalLength = $derived(length * PIXELS_PER_CM + 15);
+	let internalLength = $derived(length * pixelsPerUnit + 15);
 
 	// Main group transform
 	let mainTransform = $derived(
@@ -47,21 +53,24 @@
 	);
 
 	// Generate graduation marks
+	// Each major tick = 1 math unit (with label).
+	// 10 subdivisions per unit; the 5th is a half-tick.
 	let graduations = $derived.by(() => {
 		const marks: Array<{ x: number; height: number; isMajor: boolean; label?: string }> = [];
 		const totalMarks = length * 10;
+		const stepPx = pixelsPerUnit / 10;
 
 		for (let i = 0; i <= totalMarks; i++) {
-			const xPos = 3 * i; // 3 pixels per mm
-			const isCm = i % 10 === 0;
-			const isHalfCm = i % 5 === 0;
-			const height = isCm ? 12 : isHalfCm ? 9 : 6;
+			const xPos = stepPx * i;
+			const isMajor = i % 10 === 0;
+			const isHalf = i % 5 === 0;
+			const height = isMajor ? 12 : isHalf ? 9 : 6;
 
 			marks.push({
 				x: xPos,
 				height,
-				isMajor: isCm,
-				label: isCm ? String(i / 10) : undefined
+				isMajor,
+				label: isMajor ? String(i / 10) : undefined
 			});
 		}
 
