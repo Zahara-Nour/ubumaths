@@ -111,14 +111,14 @@
 			</g>
 		{/if}
 
-		<!-- Sesamath branding -->
+		<!-- UbuMaths branding -->
 		<text
 			pointer-events="none"
 			x={internalLength / 2 - RAY - 3}
 			y={WIDTH - 5}
 			style="font-family: Arial; font-size: 8pt; font-weight: bold; fill: maroon; text-anchor: middle;"
 		>
-			Sesamath
+			Ubumaths
 		</text>
 	</g>
 {/if}
