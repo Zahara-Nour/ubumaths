@@ -222,6 +222,18 @@ function requireTuple(val: ResolvedValue, name: string, line: number): ResolvedV
 	return val.elements;
 }
 
+/**
+ * A ResolvedValue is "numeric-like" when it represents a scalar coming from
+ * a DSL literal or computation : either `{type: 'nombre', value}` (legacy
+ * fallback path) or `{type: 'geoValue', value}` (exact-by-default path
+ * since 2026-05-19). Used by builtins that branch between numeric-arg
+ * overloads and point-arg overloads (e.g. `image(url, x, y, largeur=W)`
+ * vs `image(url, p1, p2, ...)`).
+ */
+function isNumericLikeArg(val: ResolvedValue): boolean {
+	return val.type === 'nombre' || val.type === 'geoValue';
+}
+
 /** Style named args (couleur, forme, tirets, pointilles, epaisseur) common to all geometry builtins. */
 /** Default search window for function analysis (zeros, extrema, inflections, intersections). */
 const FUNCTION_SEARCH_XMIN = -10;
@@ -967,7 +979,7 @@ function handleImage(ctx: BuiltinCtx): BuiltinResult {
 	let imgWidth: number;
 	let imgHeight: number | undefined;
 
-	if (pos.length >= 3 && pos[1].type === 'nombre' && pos[2].type === 'nombre') {
+	if (pos.length >= 3 && isNumericLikeArg(pos[1]) && isNumericLikeArg(pos[2])) {
 		if (!named.has('largeur'))
 			throw new DslRuntimeError(
 				{
@@ -980,8 +992,8 @@ function handleImage(ctx: BuiltinCtx): BuiltinResult {
 		imgHeight = named.has('hauteur')
 			? requireNumber(named.get('hauteur')!, 'hauteur', line)
 			: undefined;
-		const x = (pos[1] as { type: 'nombre'; value: number }).value;
-		const y = (pos[2] as { type: 'nombre'; value: number }).value;
+		const x = requireNumber(pos[1], 'x', line);
+		const y = requireNumber(pos[2], 'y', line);
 		imgPositioning = { position: { x, y } };
 	} else if (pos.length >= 3 && pos[1].type === 'element' && pos[2].type === 'element') {
 		const point1Id = requireElement(pos[1], 'point1', line);
@@ -1003,12 +1015,8 @@ function handleImage(ctx: BuiltinCtx): BuiltinResult {
 			? requireNumber(named.get('hauteur')!, 'hauteur', line)
 			: undefined;
 		const anchorId = requireElement(pos[1], 'anchor', line);
-		const dx = named.has('dx')
-			? (named.get('dx')! as { type: 'nombre'; value: number }).value
-			: undefined;
-		const dy = named.has('dy')
-			? (named.get('dy')! as { type: 'nombre'; value: number }).value
-			: undefined;
+		const dx = named.has('dx') ? requireNumber(named.get('dx')!, 'dx', line) : undefined;
+		const dy = named.has('dy') ? requireNumber(named.get('dy')!, 'dy', line) : undefined;
 		imgPositioning = {
 			anchorId,
 			anchorOffset: dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
@@ -1556,9 +1564,9 @@ function handleTexte(ctx: BuiltinCtx): BuiltinResult {
 		position?: { x: number; y: number };
 	};
 
-	if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
-		const x = (pos[0] as { type: 'nombre'; value: number }).value;
-		const y = (pos[1] as { type: 'nombre'; value: number }).value;
+	if (pos.length >= 3 && isNumericLikeArg(pos[0]) && isNumericLikeArg(pos[1])) {
+		const x = requireNumber(pos[0], 'x', line);
+		const y = requireNumber(pos[1], 'y', line);
 		if (pos[2].type !== 'string')
 			throw new DslRuntimeError(
 				{
@@ -1580,12 +1588,8 @@ function handleTexte(ctx: BuiltinCtx): BuiltinResult {
 				line
 			);
 		template = (pos[1] as { type: 'string'; value: string }).value;
-		const dx = named.has('dx')
-			? (named.get('dx')! as { type: 'nombre'; value: number }).value
-			: undefined;
-		const dy = named.has('dy')
-			? (named.get('dy')! as { type: 'nombre'; value: number }).value
-			: undefined;
+		const dx = named.has('dx') ? requireNumber(named.get('dx')!, 'dx', line) : undefined;
+		const dy = named.has('dy') ? requireNumber(named.get('dy')!, 'dy', line) : undefined;
 		positioning = {
 			anchorId,
 			anchorOffset: dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
@@ -1637,9 +1641,9 @@ function handleRtexte(ctx: BuiltinCtx): BuiltinResult {
 		anchorOffset?: { dx: number; dy: number };
 		position?: { x: number; y: number };
 	};
-	if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
-		const x = (pos[0] as { type: 'nombre'; value: number }).value;
-		const y = (pos[1] as { type: 'nombre'; value: number }).value;
+	if (pos.length >= 3 && isNumericLikeArg(pos[0]) && isNumericLikeArg(pos[1])) {
+		const x = requireNumber(pos[0], 'x', line);
+		const y = requireNumber(pos[1], 'y', line);
 		if (pos[2].type !== 'string')
 			throw new DslRuntimeError(
 				{
@@ -1661,12 +1665,8 @@ function handleRtexte(ctx: BuiltinCtx): BuiltinResult {
 				line
 			);
 		rtTemplate = (pos[1] as { type: 'string'; value: string }).value;
-		const dx = named.has('dx')
-			? (named.get('dx')! as { type: 'nombre'; value: number }).value
-			: undefined;
-		const dy = named.has('dy')
-			? (named.get('dy')! as { type: 'nombre'; value: number }).value
-			: undefined;
+		const dx = named.has('dx') ? requireNumber(named.get('dx')!, 'dx', line) : undefined;
+		const dy = named.has('dy') ? requireNumber(named.get('dy')!, 'dy', line) : undefined;
 		rtPositioning = {
 			anchorId,
 			anchorOffset: dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined
@@ -2774,9 +2774,9 @@ function handleMtexte(ctx: BuiltinCtx): BuiltinResult {
 		anchorOffset?: { dx: number; dy: number };
 		position?: { x: number; y: number };
 	};
-	if (pos.length >= 3 && pos[0].type === 'nombre' && pos[1].type === 'nombre') {
-		const x = (pos[0] as { type: 'nombre'; value: number }).value;
-		const y = (pos[1] as { type: 'nombre'; value: number }).value;
+	if (pos.length >= 3 && isNumericLikeArg(pos[0]) && isNumericLikeArg(pos[1])) {
+		const x = requireNumber(pos[0], 'x', line);
+		const y = requireNumber(pos[1], 'y', line);
 		if (pos[2].type !== 'string')
 			throw new DslRuntimeError(
 				{
@@ -2798,12 +2798,8 @@ function handleMtexte(ctx: BuiltinCtx): BuiltinResult {
 				line
 			);
 		mtTemplate = (pos[1] as { type: 'string'; value: string }).value;
-		const dx = named.has('dx')
-			? (named.get('dx')! as { type: 'nombre'; value: number }).value
-			: undefined;
-		const dy = named.has('dy')
-			? (named.get('dy')! as { type: 'nombre'; value: number }).value
-			: undefined;
+		const dx = named.has('dx') ? requireNumber(named.get('dx')!, 'dx', line) : undefined;
+		const dy = named.has('dy') ? requireNumber(named.get('dy')!, 'dy', line) : undefined;
 		mtPositioning = {
 			anchorId,
 			anchorOffset: dx !== undefined || dy !== undefined ? { dx: dx ?? 0, dy: dy ?? 0 } : undefined

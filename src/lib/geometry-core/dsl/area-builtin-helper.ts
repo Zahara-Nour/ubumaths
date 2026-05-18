@@ -14,6 +14,7 @@
 import type { Figure } from '../graph/figure';
 import type { ScalarParam } from '../types/geo-value';
 import { numeric } from '../types/geo-value';
+import { geoToNumber } from '../compute/to-number';
 import type { MathNode } from '$lib/mathAST';
 import { subtract } from '$lib/mathAST';
 import type { Discontinuity } from '$lib/mathAST/analysis';
@@ -89,6 +90,18 @@ function resolveBoundParam(
 			);
 		}
 		return { param: numeric(arg.value), numericValue: arg.value };
+	}
+	if (arg.type === 'geoValue') {
+		// Since 2026-05-19 : finite DSL literals are exact GeoValues. Convert
+		// to number and route through the same path.
+		const v = geoToNumber(arg.value);
+		if (!Number.isFinite(v)) {
+			throw new DslRuntimeError(
+				`${builtinName}(): la borne ${boundName} (${v}) n'est pas un nombre valide`,
+				line
+			);
+		}
+		return { param: arg.value, numericValue: v };
 	}
 	if (arg.type === 'element') {
 		const el = figure.getElementById(arg.figureId);
