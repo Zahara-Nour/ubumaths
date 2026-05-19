@@ -283,10 +283,10 @@
 	// Compass opening in pixels — interpolates during the move phase
 	let compassOpeningPx = $derived.by(() => {
 		if (!animation || !animation.autoInstruments.has('compass')) {
-			return (animation?.compassCurRadius ?? 0) * PPU;
+			return (animation?.compassCurRadius ?? 0) * pixelsPerUnit;
 		}
-		const curPx = animation.compassCurRadius * PPU;
-		const prevPx = animation.compassPrevRadius * PPU;
+		const curPx = animation.compassCurRadius * pixelsPerUnit;
+		const prevPx = animation.compassPrevRadius * pixelsPerUnit;
 		if (prevPx === 0 || instrumentMoveProgress >= 1) return curPx;
 		return prevPx + (curPx - prevPx) * instrumentMoveProgress;
 	});
