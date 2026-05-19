@@ -80,6 +80,9 @@ export class ConstructionExecutor {
 	private _speedFactor = 1;
 	private _lastStepNewElementIds: string[] = [];
 	private _lastStepNewPointIds: string[] = [];
+	/** Line / ray ids created in the last step. Animated with a simple fade-in
+	 *  (no progressive trace, since lines are infinite). */
+	private _lastStepNewLineIds: string[] = [];
 	/** Instruments auto-shown for the current step (to hide when step completes). */
 	private _autoInstruments: Set<InstrumentType> = new Set();
 	/** Movement animations for auto-instruments (previous → new position). */
@@ -187,10 +190,14 @@ export class ConstructionExecutor {
 			this._lastStepNewPointIds = newElements
 				.filter((el) => isPointElement(el) && el.visible !== false)
 				.map((el) => el.id);
+			this._lastStepNewLineIds = newElements
+				.filter((el) => (el.type === 'line' || el.type === 'ray') && el.visible !== false)
+				.map((el) => el.id);
 			this.autoShowInstruments(sizeBefore);
 		} else {
 			this._lastStepNewElementIds = [];
 			this._lastStepNewPointIds = [];
+			this._lastStepNewLineIds = [];
 			this._currentDecoratorTriple = null;
 			this._currentVoie = null;
 			this._lastChoreographyResult = null;
@@ -240,9 +247,7 @@ export class ConstructionExecutor {
 	 * the choreography context. V1 supports only identifier args (variables
 	 * referencing previously-created points). Returns null on unresolvable args.
 	 */
-	private resolveCallArgs(
-		callArgs: readonly { readonly kind: string; readonly name?: string }[]
-	): {
+	private resolveCallArgs(callArgs: readonly { readonly kind: string; readonly name?: string }[]): {
 		readonly ids: readonly string[];
 		readonly coords: readonly { x: number; y: number }[];
 	} | null {
@@ -337,6 +342,7 @@ export class ConstructionExecutor {
 		this._instrumentStates.clear();
 		this._lastStepNewElementIds = [];
 		this._lastStepNewPointIds = [];
+		this._lastStepNewLineIds = [];
 		this._autoInstruments.clear();
 		this._instrumentMoves.clear();
 		this._lastInstrumentPositions.clear();
@@ -391,6 +397,11 @@ export class ConstructionExecutor {
 	/** IDs of point elements created during the last step. */
 	get lastStepNewPointIds(): string[] {
 		return this._lastStepNewPointIds;
+	}
+
+	/** IDs of line/ray elements created during the last step (animated via fade-in). */
+	get lastStepNewLineIds(): string[] {
+		return this._lastStepNewLineIds;
 	}
 
 	/** Instrument types that were auto-shown for the current step. */

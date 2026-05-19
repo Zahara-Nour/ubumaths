@@ -20,7 +20,12 @@
 		compassDrawAngle
 	} from '../core/render-helpers';
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
-	import { pointToSVG, resolveStyle } from '$lib/geometry-core/rendering/svg-primitives';
+	import {
+		pointToSVG,
+		resolveStyle,
+		lineToSVG,
+		rayToSVG
+	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 	import { isFreePoint } from '$lib/geometry-core/types/elements';
 
@@ -68,7 +73,7 @@
 		pixelsPerUnit = ppu;
 	}
 
-	// IDs to hide from GeometryCanvas during animation (drawables + points being animated)
+	// IDs to hide from GeometryCanvas during animation (drawables + points + lines being animated)
 	// Drawables are unhidden once drawing is complete (raw progress >= drawPhaseEnd),
 	// even if the compass lower phase is still running.
 	let hiddenElementIds = $derived.by(() => {
@@ -77,14 +82,26 @@
 		const dEnd = animation.drawPhaseEnd;
 		const drawableHidden = animation.animatingIds.size > 0 && p < dEnd;
 		const pointsHidden = animation.animatingPointIds.size > 0;
-		if (!drawableHidden && !pointsHidden) return undefined;
+		const linesHidden = animation.animatingLineIds.size > 0;
+		if (!drawableHidden && !pointsHidden && !linesHidden) return undefined;
 		const ids = new Set<string>();
 		if (drawableHidden) {
 			for (const id of animation.animatingIds) ids.add(id);
 		}
 		for (const id of animation.animatingPointIds) ids.add(id);
+		for (const id of animation.animatingLineIds) ids.add(id);
 		return ids;
 	});
+
+	// Line fade-in : opacity 0 → 1 across the step. Uses the same draw progress
+	// curve as drawable progressive tracing — feels consistent.
+	let lineFadeOpacity = $derived.by(() => {
+		if (!animation || animation.animatingLineIds.size === 0) return 1;
+		return easeInOut(animation.drawProgress);
+	});
+	let animatingLineIdArray = $derived(
+		animation ? [...animation.animatingLineIds] : ([] as string[])
+	);
 
 	// Pencil tip override during drawing animation (SVG coords)
 	// Uses adjusted drawProgress (0 during instrument move phase)
@@ -462,6 +479,45 @@
 							>
 						{/if}
 					</g>
+				{/if}
+			{/each}
+		</svg>
+	{/if}
+
+	<!-- Line/ray fade-in overlay — opacity 0 → 1 since lines are infinite and
+	     don't admit a progressive trace from a start point. -->
+	{#if animation && animation.animatingLineIds.size > 0 && animation.drawProgress < 1}
+		<svg
+			class="lines-overlay"
+			{width}
+			{height}
+			viewBox="0 0 {width} {height}"
+			style="position: absolute; top: 0; left: 0; pointer-events: none;"
+		>
+			{#each animatingLineIdArray as id (id)}
+				{@const el = figure.getElementById(id)}
+				{@const sty = el ? resolveStyle(el, figure.defaults) : null}
+				{@const seg =
+					el?.type === 'line'
+						? lineToSVG(id, figure, transformer, { width, height })
+						: el?.type === 'ray'
+							? rayToSVG(id, figure, transformer, { width, height })
+							: null}
+				{#if seg && sty}
+					<line
+						x1={seg.x1}
+						y1={seg.y1}
+						x2={seg.x2}
+						y2={seg.y2}
+						stroke={sty.color}
+						stroke-width={sty.strokeWidth}
+						stroke-dasharray={sty.dash === 'dashed'
+							? '8 4'
+							: sty.dash === 'dotted'
+								? '2 4'
+								: undefined}
+						opacity={lineFadeOpacity}
+					/>
 				{/if}
 			{/each}
 		</svg>

@@ -68,6 +68,7 @@
 	let currentInstrumentStates = $state(new Map<string, InstrumentState>());
 	let animatingIds = $state<string[]>([]);
 	let animatingPointIds = $state<string[]>([]);
+	let animatingLineIds = $state<string[]>([]);
 	let autoInstruments = $state(new Set<InstrumentType>());
 	let instrumentMoves = $state(new Map<InstrumentType, InstrumentMove>());
 	let movePhaseEnd = $state(0);
@@ -84,11 +85,15 @@
 	let animatingPointIdsSet = $derived(
 		animatingPointIds.length > 0 ? new Set(animatingPointIds) : EMPTY_IDS
 	);
+	let animatingLineIdsSet = $derived(
+		animatingLineIds.length > 0 ? new Set(animatingLineIds) : EMPTY_IDS
+	);
 
 	// Derived animation state — only drawProgress changes every RAF frame.
 	let animation = $derived<DrawAnimationState>({
 		animatingIds: tl.stepProgress < 1 ? animatingIdsSet : EMPTY_IDS,
 		animatingPointIds: tl.stepProgress < 1 ? animatingPointIdsSet : EMPTY_IDS,
+		animatingLineIds: tl.stepProgress < 1 ? animatingLineIdsSet : EMPTY_IDS,
 		drawProgress: tl.stepProgress,
 		autoInstruments,
 		instrumentMoves,
@@ -145,6 +150,7 @@
 			}
 			animatingIds = executor.lastStepNewElementIds;
 			animatingPointIds = executor.lastStepNewPointIds;
+			animatingLineIds = executor.lastStepNewLineIds;
 			autoInstruments = new Set(executor.autoInstruments);
 			instrumentMoves = new Map(executor.instrumentMoves);
 			movePhaseEnd = executor.movePhaseEnd;
@@ -165,6 +171,7 @@
 			// Show the partial figure (everything built before the failing step).
 			animatingIds = [];
 			animatingPointIds = [];
+			animatingLineIds = [];
 			syncState();
 			const message = e instanceof Error ? e.message : String(e);
 			const details = e instanceof DslRuntimeError ? e.details : null;
@@ -201,6 +208,8 @@
 		executor.reset();
 		timeline?.reset();
 		animatingIds = [];
+		animatingPointIds = [];
+		animatingLineIds = [];
 		syncState();
 	}
 
