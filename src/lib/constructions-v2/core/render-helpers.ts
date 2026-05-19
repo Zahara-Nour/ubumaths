@@ -11,6 +11,7 @@
 import type { Figure } from '$lib/geometry-core/graph/figure';
 import type { CoordinateTransformer } from '$lib/geometry-core/viewport/viewport';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import type { ScalarParam } from '$lib/geometry-core/types/geo-value';
 import {
 	isSegment,
 	isArcByAngles,
@@ -22,6 +23,20 @@ import {
 } from '$lib/geometry-core/types/elements';
 import { resolveStyle, type GeoStyleResolved } from '$lib/geometry-core/rendering/svg-primitives';
 import { partialSegment, type Point2D } from './animator';
+
+/**
+ * Resolve a `ScalarParam` (GeoValue or `{scalarRef: id}`) to a number.
+ * Choreographies (Phase 4+) route element fields like radius/startAngle/
+ * endAngle through reactive scalars stored as `scalarRef`, so progressive
+ * rendering needs to look them up in the figure rather than calling
+ * `geoToNumber` directly (which would fail on the scalarRef shape).
+ */
+function scalarParamToNumber(param: ScalarParam, figure: Figure): number {
+	if (typeof param === 'object' && param !== null && 'scalarRef' in param) {
+		return figure.getScalarValue(param.scalarRef) ?? 0;
+	}
+	return geoToNumber(param);
+}
 
 // =============================================================================
 // Partial segment
@@ -79,9 +94,9 @@ export function partialArcSVGPath(
 		if (!center) return null;
 		const cx = geoToNumber(center.x);
 		const cy = geoToNumber(center.y);
-		const r = geoToNumber(el.radius);
-		const startAngle = geoToNumber(el.startAngle);
-		const endAngle = geoToNumber(el.endAngle);
+		const r = scalarParamToNumber(el.radius, figure);
+		const startAngle = scalarParamToNumber(el.startAngle, figure);
+		const endAngle = scalarParamToNumber(el.endAngle, figure);
 		const partialEnd = startAngle + (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
 		const path = buildArcPath(cx, cy, r, startAngle, partialEnd, transformer);
 		if (!path) return null;
@@ -134,7 +149,7 @@ export function partialCircleSVGPath(
 		if (!center) return null;
 		cx = geoToNumber(center.x);
 		cy = geoToNumber(center.y);
-		r = geoToNumber(el.radius);
+		r = scalarParamToNumber(el.radius, figure);
 	} else if (isCircleByPoint(el)) {
 		const center = figure.getPosition(el.centerId);
 		const edge = figure.getPosition(el.edgePointId);
@@ -188,9 +203,9 @@ export function drawingTipPosition(
 			if (!center) continue;
 			const cx = geoToNumber(center.x);
 			const cy = geoToNumber(center.y);
-			const r = geoToNumber(el.radius);
-			const startAngle = geoToNumber(el.startAngle);
-			const endAngle = geoToNumber(el.endAngle);
+			const r = scalarParamToNumber(el.radius, figure);
+			const startAngle = scalarParamToNumber(el.startAngle, figure);
+			const endAngle = scalarParamToNumber(el.endAngle, figure);
 			const angle = startAngle + (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
 			return transformer.mathToSvg(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
 		}
@@ -239,7 +254,7 @@ function circleTipPosition(
 		if (!center) return null;
 		cx = geoToNumber(center.x);
 		cy = geoToNumber(center.y);
-		r = geoToNumber(el.radius);
+		r = scalarParamToNumber(el.radius, figure);
 	} else {
 		const center = figure.getPosition(el.centerId);
 		const edge = figure.getPosition(el.edgePointId);
@@ -275,8 +290,8 @@ export function compassDrawAngle(
 		if (!el) continue;
 
 		if (isArcByAngles(el)) {
-			const startAngle = geoToNumber(el.startAngle);
-			const endAngle = geoToNumber(el.endAngle);
+			const startAngle = scalarParamToNumber(el.startAngle, figure);
+			const endAngle = scalarParamToNumber(el.endAngle, figure);
 			const sweep = (endAngle - startAngle) * Math.max(0, Math.min(1, progress));
 			return -sweep * (180 / Math.PI);
 		}
