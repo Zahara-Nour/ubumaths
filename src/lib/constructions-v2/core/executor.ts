@@ -848,9 +848,15 @@ export class ConstructionExecutor {
 
 				const hasDrawable = newElements.some((el) => DRAWABLE_TYPES.has(el.type));
 				const hasPoint = newElements.some((el) => isPointElement(el) && el.visible !== false);
+				const hasFadeInLine = newElements.some(
+					(el) => (el.type === 'line' || el.type === 'ray') && el.visible !== false
+				);
 				if (!hasDrawable) {
 					const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
-					const stepDur = hasPoint
+					// Points AND fade-in lines/rays both get an auto-pause after their step
+					// to give the user time to see the new element settle into place.
+					const needsPause = hasPoint || hasFadeInLine;
+					const stepDur = needsPause
 						? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
 						: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
 					durations.push(stepDur);
