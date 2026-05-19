@@ -37,33 +37,61 @@ export interface DecoratorTriple {
 }
 
 /**
- * Single animation step inside a choreography.
- *
- * Stays close to the existing `ConstructionExecutor` phase model
- * (instrument move + draw + pause). Phase 3 wires these to the executor's
- * `_stepPhases` machinery.
+ * Discriminator for a sub-step animation. Selects which set of element ids is
+ * animated by the canvas overlay (drawables, points, lines) and which
+ * instrument set is shown.
  */
-export interface ChoreographyStep {
-	/** Optional instrument to move/show during this step. */
+export type SubStepKind = 'compass-draw' | 'ruler-trace' | 'point-fade-in' | 'line-fade-in';
+
+/**
+ * A single sub-step of a decorated statement's choreography.
+ *
+ * One DSL statement decorated with `@euclide` expands into N sequential
+ * sub-steps in the timeline ; each sub-step becomes one entry in
+ * `executor.stepDurations` / `executor.stepPhases` (slider sees them as
+ * individual step entries).
+ *
+ * The choreography returns the full list ; the executor injects each
+ * sub-step's metadata into the animation pipeline at runtime.
+ */
+export interface SubStep {
+	readonly kind: SubStepKind;
+	/** Primary instrument shown during this sub-step (compass, ruler). */
 	readonly instrument?: InstrumentType;
-	/** Target position/rotation/radius of the instrument at end of move phase. */
+	/** Secondary instrument (typically `pencil` when the primary is `ruler`). */
+	readonly secondaryInstrument?: InstrumentType;
+	/** Target position of the primary instrument at end of move phase (math units). */
 	readonly instrumentTarget?: {
-		readonly x?: number;
-		readonly y?: number;
-		readonly rotation?: number;
-		readonly radius?: number;
+		readonly x: number;
+		readonly y: number;
+		readonly rotation: number;
 	};
-	/** Figure element id to draw progressively during the draw phase. */
-	readonly draw?: string;
-	/** Pause in ms after this step (≥ 0). */
-	readonly pause?: number;
-	/** Optional human-readable instruction shown alongside the step. */
+	/**
+	 * Compass-specific : radius in math units for the opening animation.
+	 * Required for `compass-draw` sub-steps. Used by the canvas to interpolate
+	 * the compass opening when moving between sub-steps with different radii.
+	 */
+	readonly compassRadius?: number;
+	/**
+	 * Geometric distance used to scale the draw phase duration (in math units).
+	 * - `compass-draw` : arc length (= radius × sweep in radians).
+	 * - `ruler-trace` : segment length between the 2 endpoints.
+	 * - `point-fade-in` / `line-fade-in` : 0 (uses DEFAULT_STEP_DURATION).
+	 */
+	readonly geometricDistance: number;
+	/** Figure ids of drawables (segment, arc, circle) to animate progressively. */
+	readonly animateDrawableIds: readonly string[];
+	/** Figure ids of points to animate with fade-in + bump. */
+	readonly animatePointIds: readonly string[];
+	/** Figure ids of lines/rays to animate with fade-in. */
+	readonly animateLineIds: readonly string[];
+	/** Optional human-readable instruction shown alongside this sub-step. */
 	readonly instruction?: string;
 }
 
 /**
  * Categorisation of figure elements produced by a choreography. Drives the
- * final visibility pass (Phase 5).
+ * final visibility pass (Phase C / applyFinalVisibility).
  */
 export interface ChoreographyProduced {
 	/** id of the principal element returned by the builtin. */
@@ -72,11 +100,18 @@ export interface ChoreographyProduced {
 	readonly charnieres: readonly string[];
 	/** ids of ephemeral construction traces (compass arcs, ghost lines) — hidden in @squelette, dashed-faded in @complet. */
 	readonly traces: readonly string[];
+	/**
+	 * Ids of auxiliary elements that are purely structural for the choreography
+	 * (e.g. hidden circles used as input to `createIntersectionCC` because the
+	 * intersection helper does not accept arcs). Never made visible by any
+	 * visibility mode.
+	 */
+	readonly hiddenSupport?: readonly string[];
 }
 
 /** Output of a `ChoreographyFn`. */
 export interface ChoreographyResult {
-	readonly steps: readonly ChoreographyStep[];
+	readonly subSteps: readonly SubStep[];
 	readonly produced: ChoreographyProduced;
 }
 

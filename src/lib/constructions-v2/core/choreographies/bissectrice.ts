@@ -15,7 +15,7 @@
 import type { Voie, ChoreographyFn } from './types';
 
 const NOT_YET_IMPLEMENTED: ChoreographyFn = (ctx) => ({
-	steps: [],
+	subSteps: [],
 	produced: { principal: ctx.principalId, charnieres: [], traces: [] }
 });
 
