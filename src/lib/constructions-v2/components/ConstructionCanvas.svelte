@@ -93,20 +93,22 @@
 		return ids;
 	});
 
-	// Line fade-in : opacity 0 → 1 across the step. Uses the same draw progress
-	// curve as drawable progressive tracing — feels consistent.
+	// Line fade-in : opacity 0 → 1 quickly (by t=0.4), then stays at 1 so the
+	// bump (next derived value) is fully visible and not muted by translucency.
 	let lineFadeOpacity = $derived.by(() => {
 		if (!animation || animation.animatingLineIds.size === 0) return 1;
-		return easeInOut(animation.drawProgress);
+		const t = animation.drawProgress;
+		if (t >= 0.4) return 1;
+		return easeInOut(t / 0.4);
 	});
-	// Line stroke-width bump : 0 → 1.5x → 1x (analogous to the point scale bump,
-	// adapted for 1-D elements where width is the natural emphasis dimension).
-	// Overshoot at half-progress then settles to normal width.
+	// Line stroke-width bump : 0 → 3x → 1x. 3x on a 2px default = 6px at apex,
+	// matching the visual punch of the point scale bump (1.3x on a 5-8px radius).
+	// Overshoot at t=0.5 then settles to normal width.
 	let lineStrokeWidthMultiplier = $derived.by(() => {
 		if (!animation || animation.animatingLineIds.size === 0) return 1;
-		const t = lineFadeOpacity;
-		if (t <= 0.5) return t * 2 * 1.5; // 0 → 1.5
-		return 1.5 - (t - 0.5) * 2 * 0.5; // 1.5 → 1.0
+		const t = easeInOut(animation.drawProgress);
+		if (t <= 0.5) return t * 2 * 3; // 0 → 3
+		return 3 - (t - 0.5) * 2 * 2; // 3 → 1.0
 	});
 	let animatingLineIdArray = $derived(
 		animation ? [...animation.animatingLineIds] : ([] as string[])
