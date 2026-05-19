@@ -33,6 +33,7 @@ import type {
 	ChoreographyResult
 } from './choreographies/types';
 import { CHOREOGRAPHED_BUILTINS } from './choreographies/registry';
+import { applyFinalVisibility } from './choreographies/visibility';
 import {
 	DEFAULT_STEP_DURATION,
 	DEFAULT_PAUSE_DURATION,
@@ -135,6 +136,10 @@ export class ConstructionExecutor {
 	private _currentVoie: Voie | null = null;
 	/** Last choreography result (Phase 4) — used by Phase 5 visibility pass. */
 	private _lastChoreographyResult: ChoreographyResult | null = null;
+	/** Visibility decorator value of the last choreographed step. Used to apply
+	 *  final visibility when the NEXT step begins (after the animation of the
+	 *  current step has played out). */
+	private _lastVisibilite: DecoratorTriple['visibilite'] | null = null;
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
@@ -166,6 +171,17 @@ export class ConstructionExecutor {
 		if (!this.stepper) return false;
 		// Hide instruments that were auto-shown for the previous step
 		this.hideAutoInstruments();
+		// Apply final visibility on the elements produced by the PREVIOUS
+		// choreography (now that its animation has finished). This is when
+		// `@squelette` hides the construction traces, `@epure` hides everything
+		// except the principal, etc.
+		if (this._lastChoreographyResult && this._lastVisibilite) {
+			applyFinalVisibility(
+				this.stepper.figure,
+				this._lastChoreographyResult.produced,
+				this._lastVisibilite
+			);
+		}
 		// Resolve decorators on the upcoming statement BEFORE the stepper
 		// advances. This catches `@invalid` and other errors early and exposes
 		// the active triple+voie to the animation pipeline.
@@ -181,11 +197,13 @@ export class ConstructionExecutor {
 			// created before `_lastStepNewElementIds` is computed and the canvas
 			// animation pipeline starts.
 			this._lastChoreographyResult = this.runChoreographyIfAny(upcomingStmt);
+			// Capture the visibility for next step's final-visibility pass.
+			this._lastVisibilite = this._currentDecoratorTriple?.visibilite ?? null;
 			// Track new elements for animation (includes choreography additions)
 			const elements = this.stepper.figure.getAllElements();
 			const newElements = elements.slice(sizeBefore);
 			this._lastStepNewElementIds = newElements
-				.filter((el) => DRAWABLE_TYPES.has(el.type))
+				.filter((el) => DRAWABLE_TYPES.has(el.type) && el.visible !== false)
 				.map((el) => el.id);
 			this._lastStepNewPointIds = newElements
 				.filter((el) => isPointElement(el) && el.visible !== false)
@@ -195,12 +213,23 @@ export class ConstructionExecutor {
 				.map((el) => el.id);
 			this.autoShowInstruments(sizeBefore);
 		} else {
+			// End of the program. Apply visibility for the last choreographed
+			// step before clearing state, so the figure settles into its
+			// final visual form (@squelette/@epure traces hidden, etc.).
+			if (this._lastChoreographyResult && this._lastVisibilite) {
+				applyFinalVisibility(
+					this.stepper.figure,
+					this._lastChoreographyResult.produced,
+					this._lastVisibilite
+				);
+			}
 			this._lastStepNewElementIds = [];
 			this._lastStepNewPointIds = [];
 			this._lastStepNewLineIds = [];
 			this._currentDecoratorTriple = null;
 			this._currentVoie = null;
 			this._lastChoreographyResult = null;
+			this._lastVisibilite = null;
 		}
 		return result;
 	}
@@ -356,6 +385,8 @@ export class ConstructionExecutor {
 		this._stepPhases = [];
 		this._currentDecoratorTriple = null;
 		this._currentVoie = null;
+		this._lastChoreographyResult = null;
+		this._lastVisibilite = null;
 		this._stepDurations = this.calculateStepDurations();
 	}
 
