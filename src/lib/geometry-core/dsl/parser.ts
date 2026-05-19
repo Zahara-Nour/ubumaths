@@ -210,8 +210,11 @@ class Parser {
 			else if (this.peek().type === 'EQUALS') {
 				this.advance(); // =
 				const value = this.parseExpr();
+				const decorators = this.parseTrailingDecorators();
 				this.expectNewline();
-				return { kind: 'assignment', name, value, line };
+				return decorators.length > 0
+					? { kind: 'assignment', name, value, line, decorators }
+					: { kind: 'assignment', name, value, line };
 			}
 			// Not an assignment — backtrack
 			else {
@@ -358,6 +361,37 @@ class Parser {
 			throw new DslParseError(`Attendu fin de ligne, recu ${t.type} '${t.value}'`, t.line, t.col);
 		}
 		if (t.type === 'NEWLINE') this.advance();
+	}
+
+	/**
+	 * Consume trailing `@identifier` tokens (decorators) after an expression.
+	 *
+	 * Returns the list of decorator names (without the `@` prefix), in source
+	 * order. Empty array if no decorators present. Decorators do not accept
+	 * arguments in V1 — a `(` after an `@identifier` raises an error to keep
+	 * the syntax simple and ambiguity-free.
+	 *
+	 * Stops at the first non-AT_DIRECTIVE token (typically NEWLINE/EOF/DEDENT).
+	 * The caller must subsequently call `expectNewline()`.
+	 *
+	 * Used only for assignment-suffix decorators. Statement-level directives
+	 * (whole-line `@pause(...)`, `@instrument(...)`) keep their dedicated
+	 * parser path via `parseDirective()`.
+	 */
+	private parseTrailingDecorators(): string[] {
+		const decorators: string[] = [];
+		while (this.peek().type === 'AT_DIRECTIVE') {
+			const t = this.advance();
+			if (this.peek().type === 'LPAREN') {
+				throw new DslParseError(
+					`Decorateur \`@${t.value}\` avec arguments non supporte en suffixe. Decorateurs autorises : @contrainte, @methode, @visibilite (sans arguments).`,
+					t.line,
+					t.col
+				);
+			}
+			decorators.push(t.value);
+		}
+		return decorators;
 	}
 
 	// ─── Expressions (precedence climbing) ────────────────────
