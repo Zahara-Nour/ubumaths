@@ -373,11 +373,28 @@ export class ConstructionExecutor {
 			instr.rotation = rotation;
 			instr.visible = true;
 			this._autoInstruments.add(subStep.instrument);
-			this._lastInstrumentPositions.set(subStep.instrument, { x, y, rotation });
+
+			// Track POST-draw rotation for `_lastInstrumentPositions` so the
+			// next sub-step's `recordMove` slides from the correct angle.
+			// Matches the legacy `autoShowInstruments` behavior which stores
+			// the end angle (compass rotation after sweeping through the arc).
+			let endRotation = rotation;
+			if (
+				subStep.kind === 'compass-draw' &&
+				subStep.compassRadius !== undefined &&
+				subStep.compassRadius > 0
+			) {
+				const sweepDeg = (subStep.geometricDistance / subStep.compassRadius) * (180 / Math.PI);
+				endRotation = rotation + sweepDeg;
+			}
+			this._lastInstrumentPositions.set(subStep.instrument, { x, y, rotation: endRotation });
 
 			if (subStep.instrument === 'compass' && subStep.compassRadius !== undefined) {
 				this._lastCompassRadius = this._compassCurRadius;
 				this._compassCurRadius = subStep.compassRadius;
+				// Also set compassRadius on the instrument state (legacy
+				// pipeline does this via `compassPosition` → `Object.assign`).
+				instr.compassRadius = subStep.compassRadius;
 			}
 		}
 
