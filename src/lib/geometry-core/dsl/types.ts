@@ -126,6 +126,13 @@ export interface DslAssignment {
 	readonly name: string;
 	readonly value: DslExpr;
 	readonly line: number;
+	/**
+	 * Optional trailing decorators (since 2026-05-19). Captured suffixes like
+	 * `@euclide @arcs_egaux @epure` after the RHS expression. Consumed by
+	 * `constructions-v2` to drive pedagogical choreographies. `geometry-core`
+	 * itself ignores them. Order is preserved.
+	 */
+	readonly decorators?: readonly string[];
 }
 
 export interface DslIndexedAssignment {
