@@ -20,9 +20,19 @@
  *         while the final median line fades in.
  */
 
-import { exact } from '$lib/geometry-core/types/geo-value';
+import { exact, numeric } from '$lib/geometry-core/types/geo-value';
 import { numericNode } from '$lib/mathAST/common/numeric';
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types';
+
+/**
+ * Extension applied to each endpoint of the segment-trace beyond I1 and I2.
+ * The segment serves as the visual surrogate of the median LINE during
+ * the SS4 ruler trace ; lines are infinite (extended to viewport by
+ * `lineToSVG`), so a short I1→I2 segment would look much smaller than the
+ * final line. Extending by 15 math units on each side spans well beyond
+ * any typical canvas viewport (~20 math units wide).
+ */
+const SEGMENT_TRACE_EXTENSION = 15;
 
 /**
  * Build the `arcs_egaux` choreography for a given radius factor.
@@ -121,10 +131,32 @@ function buildArcsEgaux(
 	const I2 = figure.createIntersectionCC(circleA, circleB, 1);
 	figure.hideElement(I2);
 
-	// Auxiliary segment between the 2 intersections — the ruler traces this
-	// in SS4 while the final line fades in.
-	const segmentTrace = figure.createSegment(I1, I2);
+	// Extended endpoints : the ruler traces a segment well past I1/I2 so it
+	// visually matches the infinite median line that gets revealed at the
+	// end of SS4. Without this extension, the segment trace would look
+	// much shorter than the final line (which extends to the viewport).
+	// Points are non-reactive (computed once at creation) ; acceptable
+	// because the segment-trace is hidden after SS4 in `@squelette` mode,
+	// replaced by the reactive principal line.
+	const dirX = segLen > 0 ? (I2x - I1x) / segLen : 0;
+	const dirY = segLen > 0 ? (I2y - I1y) / segLen : 0;
+	const Iext1x = I1x - dirX * SEGMENT_TRACE_EXTENSION;
+	const Iext1y = I1y - dirY * SEGMENT_TRACE_EXTENSION;
+	const Iext2x = I2x + dirX * SEGMENT_TRACE_EXTENSION;
+	const Iext2y = I2y + dirY * SEGMENT_TRACE_EXTENSION;
+	const Iext1 = figure.createFreePoint(
+		{ x: numeric(Iext1x), y: numeric(Iext1y) },
+		{ draggable: false }
+	);
+	figure.hideElement(Iext1);
+	const Iext2 = figure.createFreePoint(
+		{ x: numeric(Iext2x), y: numeric(Iext2y) },
+		{ draggable: false }
+	);
+	figure.hideElement(Iext2);
+	const segmentTrace = figure.createSegment(Iext1, Iext2);
 	figure.hideElement(segmentTrace);
+	const extendedSegLen = segLen + 2 * SEGMENT_TRACE_EXTENSION;
 
 	// ─── Sub-steps ───
 	const arcLength = r * sweepRad;
@@ -162,18 +194,26 @@ function buildArcsEgaux(
 			animateLineIds: [],
 			instruction: 'Les arcs se coupent en deux points'
 		},
-		// SS4 : ruler + pencil trace the segment I1→I2 ; line fades in.
-		// Ruler positioned at I1 (start) rotated toward I2 — same convention
+		// SS4 : ruler + pencil trace the extended segment-trace (spans the
+		// visible portion of the median line). Ruler positioned at Iext1
+		// (start of extended segment) rotated toward Iext2 — same convention
 		// as `rulerPosition` in `instruments/positioning.ts`.
+		//
+		// The principal line is NOT in `animateLineIds` : a fade-in starting
+		// at stepProgress=0 would make it bump in while the ruler is still
+		// moving into place. Instead, `applyFinalVisibility` reveals the line
+		// at the end of SS4 (drained at the next `step()` or by the player
+		// when the timeline reaches the end). The segment-trace fully covers
+		// the visible viewport so the swap is imperceptible in `@squelette`.
 		{
 			kind: 'ruler-trace',
 			instrument: 'ruler',
 			secondaryInstrument: 'pencil',
-			instrumentTarget: { x: I1x, y: I1y, rotation: segRotationDeg },
-			geometricDistance: segLen,
+			instrumentTarget: { x: Iext1x, y: Iext1y, rotation: segRotationDeg },
+			geometricDistance: extendedSegLen,
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
-			animateLineIds: [principalId],
+			animateLineIds: [],
 			instruction: 'Règle sur les 2 points : on trace la médiatrice'
 		}
 	];
@@ -184,7 +224,7 @@ function buildArcsEgaux(
 			principal: principalId,
 			charnieres: [I1, I2],
 			traces: [arc1, arc2, segmentTrace],
-			hiddenSupport: [circleA, circleB, distAB, radiusScalar]
+			hiddenSupport: [circleA, circleB, distAB, radiusScalar, Iext1, Iext2]
 		}
 	};
 }

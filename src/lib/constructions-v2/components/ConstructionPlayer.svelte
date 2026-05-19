@@ -185,7 +185,17 @@
 	}
 
 	function handleTimelineUpdate(state: TimelineState) {
+		// Detect natural end-of-timeline transition (play reaches the end and
+		// stops). Trigger one extra `executor.step()` to drain any pending
+		// final visibility scheduled by the last chorégraphié sub-step
+		// (e.g. `mediatrice @euclide` reveals the median line here).
+		const justEnded =
+			tl.isPlaying && !state.isPlaying && state.progress >= 1 && state.stepCount > 0;
 		tl = state;
+		if (justEnded) {
+			executor.step();
+			syncState();
+		}
 	}
 
 	function handleToggle() {
@@ -215,6 +225,12 @@
 
 	function handleScrub(progress: number) {
 		timeline?.scrubByProgress(progress);
+		// When scrubbing to the very end, drain any pending visibility
+		// (final reveal of the principal line for chorégraphié statements).
+		if (progress >= 1) {
+			executor.step();
+			syncState();
+		}
 	}
 
 	function handleSetPlaybackRate(rate: number) {
@@ -280,6 +296,9 @@
 					timeline?.scrubByProgress(1);
 					// Hide auto-instruments so the final figure shows clean
 					executor.hideAutoInstruments();
+					// Drain any pending visibility from the last chorégraphié
+					// sub-step so the principal line is revealed at end.
+					executor.step();
 					syncState();
 				} else if (autoPlay) {
 					timeline?.play();
