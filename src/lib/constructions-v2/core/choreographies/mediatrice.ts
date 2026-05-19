@@ -39,6 +39,13 @@ function buildArcsEgaux(
 	const [Aid, Bid] = args.ids;
 	const [A, B] = args.coords;
 
+	// Hide the principal line immediately — the builtin creates it visible,
+	// but we want it to fade in only during SS4 (after the arcs and
+	// intersections have appeared). `applySubStepToAnimationState` will
+	// reveal it again at SS4 via `showElement` ; `applyFinalVisibility`
+	// keeps it visible at the end.
+	figure.hideElement(principalId);
+
 	// ─── Geometric data captured at creation time ───
 	const dx = B.x - A.x;
 	const dy = B.y - A.y;
@@ -72,6 +79,9 @@ function buildArcsEgaux(
 	const I2x = midX - perpX * halfChord;
 	const I2y = midY - perpY * halfChord;
 	const segLen = 2 * halfChord;
+	// Ruler convention (`rulerPosition`) : positioned AT the start point,
+	// rotated toward the end. Matches the existing pipeline so the pencil
+	// drawing-tip starts at the segment's start.
 	const segRotationDeg = (Math.atan2(I2y - I1y, I2x - I1x) * 180) / Math.PI;
 
 	// ─── Reactive radius : 0.7 × |AB| (or 1.0 × |AB|) ───
@@ -153,11 +163,13 @@ function buildArcsEgaux(
 			instruction: 'Les arcs se coupent en deux points'
 		},
 		// SS4 : ruler + pencil trace the segment I1→I2 ; line fades in.
+		// Ruler positioned at I1 (start) rotated toward I2 — same convention
+		// as `rulerPosition` in `instruments/positioning.ts`.
 		{
 			kind: 'ruler-trace',
 			instrument: 'ruler',
 			secondaryInstrument: 'pencil',
-			instrumentTarget: { x: midX, y: midY, rotation: segRotationDeg },
+			instrumentTarget: { x: I1x, y: I1y, rotation: segRotationDeg },
 			geometricDistance: segLen,
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
