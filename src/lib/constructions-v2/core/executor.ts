@@ -7,6 +7,7 @@
 
 import { parseDsl, createStepper } from '$lib/geometry-core/dsl';
 import type { DslStepper, DirectiveHandler } from '$lib/geometry-core/dsl';
+import type { DslStatement } from '$lib/geometry-core/dsl/types';
 import { DslRuntimeError } from '$lib/geometry-core/dsl/errors';
 import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
 import { Figure } from '$lib/geometry-core/graph/figure';
@@ -25,7 +26,12 @@ import { createDefaultInstrumentState, DRAWABLE_TYPES } from '../types';
 import { rulerPosition, compassPosition } from '../instruments/positioning';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { resolveDecorators, lookupVoie, DecoratorResolveError } from './choreographies/resolve';
-import type { DecoratorTriple, Voie } from './choreographies/types';
+import type {
+	DecoratorTriple,
+	Voie,
+	ChoreographyCtx,
+	ChoreographyResult
+} from './choreographies/types';
 import { CHOREOGRAPHED_BUILTINS } from './choreographies/registry';
 import {
 	DEFAULT_STEP_DURATION,
@@ -124,6 +130,8 @@ export class ConstructionExecutor {
 	private _currentDecoratorTriple: DecoratorTriple | null = null;
 	/** Voie resolved for the current step (matching `_currentDecoratorTriple`). */
 	private _currentVoie: Voie | null = null;
+	/** Last choreography result (Phase 4) — used by Phase 5 visibility pass. */
+	private _lastChoreographyResult: ChoreographyResult | null = null;
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
@@ -159,10 +167,18 @@ export class ConstructionExecutor {
 		// advances. This catches `@invalid` and other errors early and exposes
 		// the active triple+voie to the animation pipeline.
 		this.resolveCurrentDecorators();
+		// Capture the upcoming statement so we can build the choreography
+		// context after the builtin runs.
+		const upcomingStmt = this.stepper.nextStatement;
 		const sizeBefore = this.stepper.figure.size;
 		const result = this.stepper.step();
 		if (result) {
-			// Track new elements for animation
+			// If the statement is choreographed, invoke the choreography NOW so
+			// any auxiliary elements (compass arcs, intersection points) are
+			// created before `_lastStepNewElementIds` is computed and the canvas
+			// animation pipeline starts.
+			this._lastChoreographyResult = this.runChoreographyIfAny(upcomingStmt);
+			// Track new elements for animation (includes choreography additions)
 			const elements = this.stepper.figure.getAllElements();
 			const newElements = elements.slice(sizeBefore);
 			this._lastStepNewElementIds = newElements
@@ -177,8 +193,72 @@ export class ConstructionExecutor {
 			this._lastStepNewPointIds = [];
 			this._currentDecoratorTriple = null;
 			this._currentVoie = null;
+			this._lastChoreographyResult = null;
 		}
 		return result;
+	}
+
+	/**
+	 * If `_currentVoie` is set (i.e. the just-executed statement was decorated
+	 * with a non-`@direct` constraint), invoke its choreography function and
+	 * return the result. The choreography typically creates auxiliary figure
+	 * elements (compass arcs, intersection points) so the existing animation
+	 * pipeline picks them up via `_lastStepNewElementIds`.
+	 *
+	 * Returns null when no choreography applies.
+	 */
+	private runChoreographyIfAny(stmt: DslStatement | undefined): ChoreographyResult | null {
+		const voie = this._currentVoie;
+		const triple = this._currentDecoratorTriple;
+		if (!voie || !triple || !stmt || stmt.kind !== 'assignment') return null;
+		if (!this.stepper) return null;
+		// Resolve principal id (the variable assigned by the statement) and
+		// builtin args from the symbol table.
+		const principalEntry = this.stepper.symbols.get(stmt.name);
+		if (!principalEntry?.figureId) return null;
+		const callExpr = stmt.value;
+		if (callExpr.kind !== 'call') return null;
+		const args = this.resolveCallArgs(callExpr.args);
+		if (!args) return null;
+		const ctx: ChoreographyCtx = {
+			figure: this.stepper.figure,
+			args,
+			principalId: principalEntry.figureId,
+			visibilite: triple.visibilite,
+			// V1 sub-choreography helper is a no-op stub ; Phase 4 composition
+			// (cercle_circonscrit → 2 mediatrices) will use it.
+			sub: () => ({
+				steps: [],
+				produced: { principal: '', charnieres: [], traces: [] }
+			})
+		};
+		return voie.choreography(ctx);
+	}
+
+	/**
+	 * Resolve a list of DSL call argument expressions to {ids, coords} for
+	 * the choreography context. V1 supports only identifier args (variables
+	 * referencing previously-created points). Returns null on unresolvable args.
+	 */
+	private resolveCallArgs(
+		callArgs: readonly { readonly kind: string; readonly name?: string }[]
+	): {
+		readonly ids: readonly string[];
+		readonly coords: readonly { x: number; y: number }[];
+	} | null {
+		if (!this.stepper) return null;
+		const ids: string[] = [];
+		const coords: { x: number; y: number }[] = [];
+		for (const arg of callArgs) {
+			if (arg.kind !== 'identifier' || !arg.name) return null;
+			const entry = this.stepper.symbols.get(arg.name);
+			if (!entry?.figureId) return null;
+			const pos = this.stepper.figure.getPosition(entry.figureId);
+			if (!pos) return null;
+			ids.push(entry.figureId);
+			coords.push({ x: geoToNumber(pos.x), y: geoToNumber(pos.y) });
+		}
+		return { ids, coords };
 	}
 
 	/**
