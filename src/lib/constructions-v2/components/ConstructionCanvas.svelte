@@ -99,6 +99,15 @@
 		if (!animation || animation.animatingLineIds.size === 0) return 1;
 		return easeInOut(animation.drawProgress);
 	});
+	// Line stroke-width bump : 0 → 1.5x → 1x (analogous to the point scale bump,
+	// adapted for 1-D elements where width is the natural emphasis dimension).
+	// Overshoot at half-progress then settles to normal width.
+	let lineStrokeWidthMultiplier = $derived.by(() => {
+		if (!animation || animation.animatingLineIds.size === 0) return 1;
+		const t = lineFadeOpacity;
+		if (t <= 0.5) return t * 2 * 1.5; // 0 → 1.5
+		return 1.5 - (t - 0.5) * 2 * 0.5; // 1.5 → 1.0
+	});
 	let animatingLineIdArray = $derived(
 		animation ? [...animation.animatingLineIds] : ([] as string[])
 	);
@@ -510,7 +519,7 @@
 						x2={seg.x2}
 						y2={seg.y2}
 						stroke={sty.color}
-						stroke-width={sty.strokeWidth}
+						stroke-width={sty.strokeWidth * lineStrokeWidthMultiplier}
 						stroke-dasharray={sty.dash === 'dashed'
 							? '8 4'
 							: sty.dash === 'dotted'
