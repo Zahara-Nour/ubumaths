@@ -24,6 +24,9 @@ import type { InstrumentType, InstrumentState, InstrumentMove } from '../types';
 import { createDefaultInstrumentState, DRAWABLE_TYPES } from '../types';
 import { rulerPosition, compassPosition } from '../instruments/positioning';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { resolveDecorators, lookupVoie, DecoratorResolveError } from './choreographies/resolve';
+import type { DecoratorTriple, Voie } from './choreographies/types';
+import { CHOREOGRAPHED_BUILTINS } from './choreographies/registry';
 import {
 	DEFAULT_STEP_DURATION,
 	DEFAULT_PAUSE_DURATION,
@@ -110,6 +113,17 @@ export class ConstructionExecutor {
 		stepIndex: number;
 		details: DslRuntimeErrorDetails | null;
 	} | null = null;
+	/**
+	 * Resolved decorator triple for the step currently being prepared, or null
+	 * if the current step has no decorators (mode `@direct` implicit).
+	 *
+	 * Populated by `step()` from `stepper.nextStatement` BEFORE the stepper
+	 * advances. Cleared when the step completes. Consumed by Phase 4 to
+	 * dispatch to the appropriate choreography voie.
+	 */
+	private _currentDecoratorTriple: DecoratorTriple | null = null;
+	/** Voie resolved for the current step (matching `_currentDecoratorTriple`). */
+	private _currentVoie: Voie | null = null;
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
@@ -141,6 +155,10 @@ export class ConstructionExecutor {
 		if (!this.stepper) return false;
 		// Hide instruments that were auto-shown for the previous step
 		this.hideAutoInstruments();
+		// Resolve decorators on the upcoming statement BEFORE the stepper
+		// advances. This catches `@invalid` and other errors early and exposes
+		// the active triple+voie to the animation pipeline.
+		this.resolveCurrentDecorators();
 		const sizeBefore = this.stepper.figure.size;
 		const result = this.stepper.step();
 		if (result) {
@@ -157,8 +175,70 @@ export class ConstructionExecutor {
 		} else {
 			this._lastStepNewElementIds = [];
 			this._lastStepNewPointIds = [];
+			this._currentDecoratorTriple = null;
+			this._currentVoie = null;
 		}
 		return result;
+	}
+
+	/**
+	 * Inspect `stepper.nextStatement` and, if it is a decorated assignment to
+	 * a choreographed builtin, resolve the decorator triple + look up the
+	 * Voie. Stores result in `_currentDecoratorTriple` / `_currentVoie` for
+	 * use by the animation pipeline (Phase 4+).
+	 *
+	 * Errors from `resolveDecorators` (unknown decorator, conflicting
+	 * categories, …) are propagated as `DslRuntimeError` so the existing
+	 * `_loadError` mechanism surfaces them in the player UI.
+	 */
+	private resolveCurrentDecorators(): void {
+		this._currentDecoratorTriple = null;
+		this._currentVoie = null;
+		const stmt = this.stepper?.nextStatement;
+		if (!stmt || stmt.kind !== 'assignment') return;
+		const decorators = stmt.decorators;
+		if (!decorators || decorators.length === 0) return;
+		// Identify the called builtin name : RHS must be a function call.
+		const value = stmt.value;
+		if (value.kind !== 'call') {
+			throw new DslRuntimeError(
+				{
+					summary: `Les décorateurs ne s'appliquent qu'aux appels de builtin (ligne ${stmt.line}).`,
+					hint: 'Exemple : `d = mediatrice(A, B) @euclide`.'
+				},
+				stmt.line
+			);
+		}
+		const builtinName = value.name;
+		if (!CHOREOGRAPHED_BUILTINS.has(builtinName)) {
+			throw new DslRuntimeError(
+				{
+					summary: `Le builtin \`${builtinName}\` n'a pas de chorégraphie déclarée.`,
+					hint: `Builtins V1 : ${[...CHOREOGRAPHED_BUILTINS].join(', ')}.`
+				},
+				stmt.line
+			);
+		}
+		try {
+			const triple = resolveDecorators(decorators, builtinName);
+			this._currentDecoratorTriple = triple;
+			this._currentVoie = lookupVoie(triple, builtinName);
+		} catch (e) {
+			if (e instanceof DecoratorResolveError) {
+				throw new DslRuntimeError({ summary: e.message, hint: e.hint }, stmt.line);
+			}
+			throw e;
+		}
+	}
+
+	/** Currently-active decorator triple (null if step has no decorators). */
+	get currentDecoratorTriple(): DecoratorTriple | null {
+		return this._currentDecoratorTriple;
+	}
+
+	/** Currently-active choreography voie (null if `@direct` or no decorators). */
+	get currentVoie(): Voie | null {
+		return this._currentVoie;
 	}
 
 	/** Execute all remaining steps. */
@@ -188,6 +268,8 @@ export class ConstructionExecutor {
 		this._lastCompassRadius = 0;
 		this._compassCurRadius = 0;
 		this._stepPhases = [];
+		this._currentDecoratorTriple = null;
+		this._currentVoie = null;
 		this._stepDurations = this.calculateStepDurations();
 	}
 
@@ -615,6 +697,40 @@ export class ConstructionExecutor {
 			const phasesLenBefore = this._stepPhases.length;
 			try {
 				const stmt = steps[i];
+				// Validate decorators early (Phase 3) — surfaces `@invalid`,
+				// conflicting categories, etc. via the existing _loadError flow.
+				if (stmt.kind === 'assignment' && stmt.decorators && stmt.decorators.length > 0) {
+					const callValue = stmt.value;
+					if (callValue.kind !== 'call') {
+						throw new DslRuntimeError(
+							{
+								summary: `Les décorateurs ne s'appliquent qu'aux appels de builtin (ligne ${stmt.line}).`,
+								hint: 'Exemple : `d = mediatrice(A, B) @euclide`.'
+							},
+							stmt.line
+						);
+					}
+					if (!CHOREOGRAPHED_BUILTINS.has(callValue.name)) {
+						throw new DslRuntimeError(
+							{
+								summary: `Le builtin \`${callValue.name}\` n'a pas de chorégraphie déclarée.`,
+								hint: `Builtins V1 : ${[...CHOREOGRAPHED_BUILTINS].join(', ')}.`
+							},
+							stmt.line
+						);
+					}
+					try {
+						resolveDecorators(stmt.decorators, callValue.name);
+					} catch (resolveErr) {
+						if (resolveErr instanceof DecoratorResolveError) {
+							throw new DslRuntimeError(
+								{ summary: resolveErr.message, hint: resolveErr.hint },
+								stmt.line
+							);
+						}
+						throw resolveErr;
+					}
+				}
 				if (stmt.kind === 'directive') {
 					if (stmt.name === 'pause') {
 						const arg = stmt.args[0];
