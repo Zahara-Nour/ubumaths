@@ -53,6 +53,9 @@ export interface DrawAnimationState {
 	animatingIds: Set<string>;
 	/** IDs of point elements being created with fade+bump (from the current step). */
 	animatingPointIds: Set<string>;
+	/** IDs of line/ray elements being created with simple fade-in. Lines are
+	 *  infinite, so no progressive trace from a start point — just opacity 0 → 1. */
+	animatingLineIds: Set<string>;
 	/** Progress 0-1 within the current step. */
 	drawProgress: number;
 	/** Instrument types auto-shown for this step (hidden when drawProgress >= 1). */
