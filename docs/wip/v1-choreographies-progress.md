@@ -6,19 +6,20 @@
 
 ## Statut global
 
-| Phase                                          | Statut        | Commit                       | Tests ajoutés |
-| ---------------------------------------------- | ------------- | ---------------------------- | ------------- |
-| Phase 0 — Spécification TDD                    | ✓ livrée      | `e29b7938b` (inclus avec P1) | —             |
-| Phase 1 — Parser décorateurs en suffixe        | ✓ livrée      | `e29b7938b`                  | 22            |
-| Phase 2 — Registre + résolveur                 | ✓ livrée      | `e4daaca76`                  | 23            |
-| Phase 3 — Wiring ConstructionExecutor          | ✓ livrée      | `2ae801cac`                  | 8             |
-| Phase 4 — Chorégraphies concrètes (4 builtins) | ⏸ à démarrer | —                            | —             |
-| Phase 5 — Gestion visibilité finale            | ⏸ à démarrer | —                            | —             |
-| Phase 6 — Documentation auto-générée           | ⏸ à démarrer | —                            | —             |
-| Phase 7 — Validation finale                    | ⏸ à démarrer | —                            | —             |
+| Phase                                       | Statut             | Commit                       | Tests ajoutés |
+| ------------------------------------------- | ------------------ | ---------------------------- | ------------- |
+| Phase 0 — Spécification TDD                 | ✓ livrée           | `e29b7938b` (inclus avec P1) | —             |
+| Phase 1 — Parser décorateurs en suffixe     | ✓ livrée           | `e29b7938b`                  | 22            |
+| Phase 2 — Registre + résolveur              | ✓ livrée           | `e4daaca76`                  | 23            |
+| Phase 3 — Wiring ConstructionExecutor       | ✓ livrée           | `2ae801cac`                  | 8             |
+| Phase 4 — Chorégraphies concrètes — MVP     | ✓ partiel (1 voie) | `881679da6`                  | 3             |
+| Phase 4 — Chorégraphies restantes (6 voies) | ⏸ à démarrer      | —                            | —             |
+| Phase 5 — Gestion visibilité finale         | ⏸ à démarrer      | —                            | —             |
+| Phase 6 — Documentation auto-générée        | ⏸ à démarrer      | —                            | —             |
+| Phase 7 — Validation finale                 | ⏸ à démarrer      | —                            | —             |
 
-**Total tests V1 ajoutés à ce stade** : 53.
-**Suite complète geometry-core + constructions-v2** : 3245/3247 (2 skipped) verts, 0 régression.
+**Total tests V1 ajoutés à ce stade** : 56.
+**Suite complète geometry-core + constructions-v2** : 3248/3250 (2 skipped) verts, 0 régression.
 
 ## Architecture livrée (Phases 0-3)
 
@@ -68,7 +69,42 @@ Structure créée : `src/lib/constructions-v2/core/choreographies/` avec un fich
 - Les scripts avec décorateurs validés (`@euclide`, etc.) sont acceptés au parse + au load. `currentVoie` est résolue.
 - L'animation se déroule encore avec le pipeline par défaut (les chorégraphies retournent `steps: []`). **Pas encore de différence visuelle entre `@direct` et `@euclide`**.
 
-## Phase 4 (à venir) — Notes de design
+## Phase 4 MVP livré (1 voie) — `mediatrice @euclide`
+
+Le wiring complet de la chorégraphie `arcs_egaux` (et sa variante `cercles_rayon_ab`) est livré. Quand le script DSL contient `d = mediatrice(A, B) @euclide` :
+
+1. Le builtin `mediatrice` s'exécute et crée la droite + ses helpers internes hidden.
+2. La chorégraphie `arcs_egaux` est invoquée via `runChoreographyIfAny` dans l'`executor.step()`. Elle crée :
+   - **2 cercles** (compas en A et en B, rayon `0.7 × |AB|` ou `|AB|` selon `@cercles_rayon_ab`).
+   - **2 points d'intersection** (où les cercles se coupent — ils sont sur la médiatrice).
+3. Le pipeline d'animation existant (`_lastStepNewElementIds`, `autoShowInstruments`) prend en charge ces nouveaux drawables : les 2 cercles sont animés progressivement avec le compas.
+
+### Mécanisme implémenté
+
+- `runChoreographyIfAny(stmt)` (executor.ts) : récupère le builtin, construit le `ChoreographyCtx` avec `figure`, `args (ids+coords)`, `principalId`, `visibilite`, et un `sub` stub.
+- `resolveCallArgs(callArgs)` : résout les arguments du builtin (identifiers → figureIds + coords).
+- `_lastChoreographyResult` : stockée pour usage Phase 5.
+
+### Limitations connues (à adresser plus tard)
+
+- **`'line'` n'est pas dans `DRAWABLE_TYPES`** : la médiatrice elle-même apparaît sans animation progressive. Les 2 cercles sont animés mais la droite finale apparaît instantanément. Fix : ajouter `'line'` à `DRAWABLE_TYPES` en V1.1.
+- **Animation parallèle** : les 2 cercles sont animés EN PARALLÈLE (pas séquentiellement A puis B). Pour la séquentialité (vrai pédagogique), il faut le mécanisme de sub-steps (Phase 4 future).
+- **Visibilité finale non appliquée** : les éléments restent visibles à la fin du step, indépendamment de `@epure`/`@squelette`/`@complet`. Phase 5 implémentera `applyFinalVisibility(figure, produced, visibilite)`.
+- **Pas de pre-pass dans `calculateStepDurations`** : les chorégraphies sont appelées uniquement dans `step()`, pas dans le pré-pass qui calcule les durées. Conséquence : la durée du step n'inclut pas le temps d'animation des cercles. C'est imprécis mais fonctionnel pour V1 MVP.
+
+### Test manuel recommandé
+
+Dans `/construction-demo`, taper :
+
+```dsl
+A = point(-3, 0)
+B = point(3, 0)
+d = mediatrice(A, B) @euclide
+```
+
+Comportement attendu : après le step pour `d`, les 2 cercles de compas + la droite + 2 points d'intersection apparaissent. Confirmation visuelle nécessaire avant de continuer aux 6 voies restantes.
+
+## Phase 4 — Voies restantes
 
 La Phase 4 nécessite des décisions architecturales sur **comment intégrer les `ChoreographyStep[]` dans le pipeline d'animation existant**. Deux options identifiées :
 
