@@ -54,18 +54,39 @@ function buildArcsEgaux(
 		};
 	}
 	const rValue = numeric(r);
-	// Two compass arcs centered at A and B with equal radius r.
-	const cercleA = figure.createCircleByRadius(Aid, rValue);
-	const cercleB = figure.createCircleByRadius(Bid, rValue);
-	// Two intersection points (the perpendicular bisector passes through both).
-	const inter1 = figure.createIntersectionCC(cercleA, cercleB, 0);
-	const inter2 = figure.createIntersectionCC(cercleA, cercleB, 1);
+	// Full circles are needed by `createIntersectionCC` to compute the two
+	// intersection points — kept invisible. Only short visible arcs are drawn
+	// so the figure stays uncluttered. (`createCircleByRadius` hardcodes
+	// `visible: true`, so we hide explicitly via `hideElement`.)
+	const cercleAhidden = figure.createCircleByRadius(Aid, rValue);
+	figure.hideElement(cercleAhidden);
+	const cercleBhidden = figure.createCircleByRadius(Bid, rValue);
+	figure.hideElement(cercleBhidden);
+	const inter1 = figure.createIntersectionCC(cercleAhidden, cercleBhidden, 0);
+	const inter2 = figure.createIntersectionCC(cercleAhidden, cercleBhidden, 1);
+	// Visible arcs : ±60° around the direction from each center toward the
+	// other, so each arc clearly crosses through the intersection points.
+	const angleAB = Math.atan2(B.y - A.y, B.x - A.x);
+	const angleBA = angleAB + Math.PI;
+	const arcSpan = Math.PI / 3; // 60° each side → 120° total
+	const arcA = figure.createArcByAngles(
+		Aid,
+		rValue,
+		numeric(angleAB - arcSpan),
+		numeric(angleAB + arcSpan)
+	);
+	const arcB = figure.createArcByAngles(
+		Bid,
+		rValue,
+		numeric(angleBA - arcSpan),
+		numeric(angleBA + arcSpan)
+	);
 	return {
 		steps: [],
 		produced: {
 			principal: principalId,
 			charnieres: [inter1, inter2],
-			traces: [cercleA, cercleB]
+			traces: [arcA, arcB, cercleAhidden, cercleBhidden]
 		}
 	};
 }

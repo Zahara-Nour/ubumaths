@@ -125,7 +125,7 @@ describe('ConstructionExecutor — decorator wiring (Phase 3)', () => {
 });
 
 describe('ConstructionExecutor — choreography produces auxiliary elements (Phase 4)', () => {
-	it('mediatrice @euclide @arcs_egaux creates 2 circles + 2 intersections + 1 line', () => {
+	it('mediatrice @euclide @arcs_egaux creates 2 arcs + 2 intersections + 1 line', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide'].join('\n'));
 		expect(exec.loadError).toBeNull();
@@ -138,13 +138,13 @@ describe('ConstructionExecutor — choreography produces auxiliary elements (Pha
 		// New elements created by the choreography :
 		//   - the line itself (created by mediatrice builtin)
 		//   - 2 hidden internal points (M = midpoint, H = rotated) by mediatrice
-		//   - 2 visible compass circles (by choreography)
+		//   - 2 hidden full circles (by choreography, for intersection compute)
+		//   - 2 visible compass arcs (by choreography)
 		//   - 2 intersection points (by choreography)
-		// = at least 5 new visible elements (line + 2 circles + 2 intersections).
-		expect(sizeAfter - sizeBeforeMediatrice).toBeGreaterThanOrEqual(5);
-		// Drawable elements caught by the animation pipeline (DRAWABLE_TYPES :
-		// segment, arc, circle). 'line' is rendered without progressive drawing.
-		// Choreography adds 2 circles → exactly 2 new drawables.
+		// = 9 new elements total (5 visible + 4 hidden).
+		expect(sizeAfter - sizeBeforeMediatrice).toBeGreaterThanOrEqual(9);
+		// Drawable elements caught by the animation pipeline, filtering hidden :
+		// 2 visible arcs only (the 2 full circles are hidden).
 		const drawables = exec.lastStepNewElementIds;
 		expect(drawables.length).toBe(2);
 		// Sanity : initial state unchanged
