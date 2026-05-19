@@ -527,6 +527,27 @@
 								: undefined}
 						opacity={lineFadeOpacity}
 					/>
+					{#if el?.label}
+						{@const t = el.type === 'line' ? 0.9 : 0.5}
+						{@const mx = seg.x1 + t * (seg.x2 - seg.x1)}
+						{@const my = seg.y1 + t * (seg.y2 - seg.y1)}
+						{@const ldx = seg.x2 - seg.x1}
+						{@const ldy = seg.y2 - seg.y1}
+						{@const llen = Math.sqrt(ldx * ldx + ldy * ldy) || 1}
+						{@const nx = -ldy / llen}
+						{@const ny = ldx / llen}
+						{@const sign = ny > 0 ? -1 : 1}
+						{@const offset = 10 + 5 * Math.abs(nx)}
+						<text
+							x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
+							y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
+							fill={sty.color}
+							stroke="white"
+							stroke-width="3"
+							paint-order="stroke"
+							opacity={lineFadeOpacity}>{el.label}</text
+						>
+					{/if}
 				{/if}
 			{/each}
 		</svg>
