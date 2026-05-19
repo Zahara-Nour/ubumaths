@@ -254,7 +254,7 @@ export class ConstructionExecutor {
 		if (!principalEntry?.figureId) return null;
 		const callExpr = stmt.value;
 		if (callExpr.kind !== 'call') return null;
-		const args = this.resolveCallArgs(callExpr.args);
+		const args = this.resolveCallArgsOn(callExpr.args, this.stepper);
 		if (!args) return null;
 		const ctx: ChoreographyCtx = {
 			figure: this.stepper.figure,
@@ -273,26 +273,73 @@ export class ConstructionExecutor {
 
 	/**
 	 * Resolve a list of DSL call argument expressions to {ids, coords} for
-	 * the choreography context. V1 supports only identifier args (variables
-	 * referencing previously-created points). Returns null on unresolvable args.
+	 * the choreography context, using the provided stepper's figure + symbols.
+	 * V1 supports only identifier args (variables referencing previously-created
+	 * points). Returns null on unresolvable args.
 	 */
-	private resolveCallArgs(callArgs: readonly { readonly kind: string; readonly name?: string }[]): {
+	private resolveCallArgsOn(
+		callArgs: readonly { readonly kind: string; readonly name?: string }[],
+		stepper: DslStepper
+	): {
 		readonly ids: readonly string[];
 		readonly coords: readonly { x: number; y: number }[];
 	} | null {
-		if (!this.stepper) return null;
 		const ids: string[] = [];
 		const coords: { x: number; y: number }[] = [];
 		for (const arg of callArgs) {
 			if (arg.kind !== 'identifier' || !arg.name) return null;
-			const entry = this.stepper.symbols.get(arg.name);
+			const entry = stepper.symbols.get(arg.name);
 			if (!entry?.figureId) return null;
-			const pos = this.stepper.figure.getPosition(entry.figureId);
+			const pos = stepper.figure.getPosition(entry.figureId);
 			if (!pos) return null;
 			ids.push(entry.figureId);
 			coords.push({ x: geoToNumber(pos.x), y: geoToNumber(pos.y) });
 		}
 		return { ids, coords };
+	}
+
+	/**
+	 * Pre-pass equivalent of `runChoreographyIfAny` : invoke the choreography
+	 * on a temporary stepper so the pre-pass sees the auxiliary elements
+	 * (arcs, intersections) it would create. Used by `calculateStepDurations`
+	 * to size each step's duration and phase ratios correctly. Silent on
+	 * resolver errors (the main step() will re-throw them).
+	 */
+	private runChoreographyOnTempStepper(
+		stmt: DslStatement | undefined,
+		tempStepper: DslStepper
+	): void {
+		if (!stmt || stmt.kind !== 'assignment') return;
+		const decorators = stmt.decorators;
+		if (!decorators || decorators.length === 0) return;
+		const callExpr = stmt.value;
+		if (callExpr.kind !== 'call') return;
+		const builtinName = callExpr.name;
+		if (!CHOREOGRAPHED_BUILTINS.has(builtinName)) return;
+		let triple;
+		try {
+			triple = resolveDecorators(decorators, builtinName);
+		} catch {
+			return;
+		}
+		if (triple.contrainte === 'direct') return;
+		const voie = lookupVoie(triple, builtinName);
+		if (!voie) return;
+		const principalEntry = tempStepper.symbols.get(stmt.name);
+		if (!principalEntry?.figureId) return;
+		const args = this.resolveCallArgsOn(callExpr.args, tempStepper);
+		if (!args) return;
+		const ctx: ChoreographyCtx = {
+			figure: tempStepper.figure,
+			args,
+			principalId: principalEntry.figureId,
+			visibilite: triple.visibilite,
+			sub: () => ({
+				steps: [],
+				produced: { principal: '', charnieres: [], traces: [] }
+			})
+		};
+		voie.choreography(ctx);
 	}
 
 	/**
@@ -893,10 +940,17 @@ export class ConstructionExecutor {
 				// Geometric step: measure before/after to get distance
 				const sizeBefore = tempStepper.figure.size;
 				tempStepper.step();
+				// If the statement is choreographed, run the choreography on this
+				// temp stepper too. Otherwise the pre-pass would compute a too-
+				// short step duration (no drawables anticipated) and the compass
+				// instrument wouldn't get its move/draw phases.
+				this.runChoreographyOnTempStepper(stmt, tempStepper);
 				const fig = tempStepper.figure;
 				const newElements = fig.getAllElements().slice(sizeBefore);
 
-				const hasDrawable = newElements.some((el) => DRAWABLE_TYPES.has(el.type));
+				const hasDrawable = newElements.some(
+					(el) => DRAWABLE_TYPES.has(el.type) && el.visible !== false
+				);
 				const hasPoint = newElements.some((el) => isPointElement(el) && el.visible !== false);
 				const hasFadeInLine = newElements.some(
 					(el) => (el.type === 'line' || el.type === 'ray') && el.visible !== false
