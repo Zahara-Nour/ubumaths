@@ -17,7 +17,6 @@
  * Sequential animation (sub-steps) is deferred to V1.1.
  */
 
-import { numeric } from '$lib/geometry-core/types/geo-value';
 import type { Voie, ChoreographyFn } from './types';
 
 /**
@@ -29,13 +28,18 @@ import type { Voie, ChoreographyFn } from './types';
  * `mediatrice` builtin before this choreography ran ; we just add the
  * pedagogical auxiliaries on top.
  *
- * Implementation note : the radius is constructed as a `numeric` GeoValue
- * (not exact). Floats from `radiusFactor * ab` can carry IEEE-754 imprecision
- * (e.g. `0.7 * 6 === 4.199999999999999`), which would balloon into a 16-digit
- * BigInt under `exact()` and slow down subsequent recompute cycles. The
- * auxiliary circles are purely visual (pedagogical traces) — exactness is
- * unnecessary and `numeric` is the appropriate choice.
+ * Implementation note : all auxiliary scalars (radius, angles) are built as
+ * reactive `createScalarExpression` derivations of the source points' x/y
+ * coordinates. This makes the arcs, hidden circles, and intersection points
+ * follow A and B in real time when the user drags either endpoint.
  */
+/**
+ * Arc half-span around the AB direction. 60° on each side = 120° total ;
+ * with a radius ≥ AB/2, this comfortably contains the two perpendicular
+ * bisector intersection points regardless of the chosen `radiusFactor`.
+ */
+const ARC_HALF_SPAN = Math.PI / 3;
+
 function buildArcsEgaux(
 	ctx: Parameters<ChoreographyFn>[0],
 	radiusFactor: number
@@ -44,42 +48,69 @@ function buildArcsEgaux(
 	const [Aid, Bid] = args.ids;
 	const [A, B] = args.coords;
 	const ab = Math.hypot(B.x - A.x, B.y - A.y);
-	const r = radiusFactor * ab;
-	if (!Number.isFinite(r) || r <= 0) {
-		// Degenerate case (A == B) : skip the choreography, the builtin's
+	if (!Number.isFinite(ab) || ab <= 0) {
+		// Degenerate case (A == B) : skip the choreography ; the builtin's
 		// own degeneracy check will have surfaced an error already.
 		return {
 			steps: [],
 			produced: { principal: principalId, charnieres: [], traces: [] }
 		};
 	}
-	const rValue = numeric(r);
+	// All choreography elements built reactively below, so dragging A or B
+	// updates the arcs, hidden circles, and intersection points in real time.
+	const dAB = figure.createScalarDistance(Aid, Bid);
+	const rScalar = figure.createScalarExpression((sv) => radiusFactor * (sv.get(dAB) ?? 0), [dAB]);
+	const Ax = figure.createScalarCoordinate(Aid, 'x');
+	const Ay = figure.createScalarCoordinate(Aid, 'y');
+	const Bx = figure.createScalarCoordinate(Bid, 'x');
+	const By = figure.createScalarCoordinate(Bid, 'y');
+	const angleAB = figure.createScalarExpression(
+		(sv) =>
+			Math.atan2((sv.get(By) ?? 0) - (sv.get(Ay) ?? 0), (sv.get(Bx) ?? 0) - (sv.get(Ax) ?? 0)),
+		[Ax, Ay, Bx, By]
+	);
+	const angleBA = figure.createScalarExpression(
+		(sv) => (sv.get(angleAB) ?? 0) + Math.PI,
+		[angleAB]
+	);
+	const angleA_start = figure.createScalarExpression(
+		(sv) => (sv.get(angleAB) ?? 0) - ARC_HALF_SPAN,
+		[angleAB]
+	);
+	const angleA_end = figure.createScalarExpression(
+		(sv) => (sv.get(angleAB) ?? 0) + ARC_HALF_SPAN,
+		[angleAB]
+	);
+	const angleB_start = figure.createScalarExpression(
+		(sv) => (sv.get(angleBA) ?? 0) - ARC_HALF_SPAN,
+		[angleBA]
+	);
+	const angleB_end = figure.createScalarExpression(
+		(sv) => (sv.get(angleBA) ?? 0) + ARC_HALF_SPAN,
+		[angleBA]
+	);
 	// Full circles are needed by `createIntersectionCC` to compute the two
-	// intersection points — kept invisible. Only short visible arcs are drawn
-	// so the figure stays uncluttered. (`createCircleByRadius` hardcodes
+	// intersection points — kept invisible. (`createCircleByRadius` hardcodes
 	// `visible: true`, so we hide explicitly via `hideElement`.)
-	const cercleAhidden = figure.createCircleByRadius(Aid, rValue);
+	const cercleAhidden = figure.createCircleByRadius(Aid, { scalarRef: rScalar });
 	figure.hideElement(cercleAhidden);
-	const cercleBhidden = figure.createCircleByRadius(Bid, rValue);
+	const cercleBhidden = figure.createCircleByRadius(Bid, { scalarRef: rScalar });
 	figure.hideElement(cercleBhidden);
 	const inter1 = figure.createIntersectionCC(cercleAhidden, cercleBhidden, 0);
 	const inter2 = figure.createIntersectionCC(cercleAhidden, cercleBhidden, 1);
-	// Visible arcs : ±60° around the direction from each center toward the
-	// other, so each arc clearly crosses through the intersection points.
-	const angleAB = Math.atan2(B.y - A.y, B.x - A.x);
-	const angleBA = angleAB + Math.PI;
-	const arcSpan = Math.PI / 3; // 60° each side → 120° total
+	// Visible arcs : reactive radius + reactive angles. Drag A or B and the
+	// arcs adjust their center, radius, and orientation.
 	const arcA = figure.createArcByAngles(
 		Aid,
-		rValue,
-		numeric(angleAB - arcSpan),
-		numeric(angleAB + arcSpan)
+		{ scalarRef: rScalar },
+		{ scalarRef: angleA_start },
+		{ scalarRef: angleA_end }
 	);
 	const arcB = figure.createArcByAngles(
 		Bid,
-		rValue,
-		numeric(angleBA - arcSpan),
-		numeric(angleBA + arcSpan)
+		{ scalarRef: rScalar },
+		{ scalarRef: angleB_start },
+		{ scalarRef: angleB_end }
 	);
 	return {
 		steps: [],
