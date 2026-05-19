@@ -17,8 +17,7 @@
  * Sequential animation (sub-steps) is deferred to V1.1.
  */
 
-import { exact } from '$lib/geometry-core/types/geo-value';
-import { numericNode } from '$lib/mathAST/common/numeric';
+import { numeric } from '$lib/geometry-core/types/geo-value';
 import type { Voie, ChoreographyFn } from './types';
 
 /**
@@ -29,6 +28,13 @@ import type { Voie, ChoreographyFn } from './types';
  * The principal element (the median line itself) was already created by the
  * `mediatrice` builtin before this choreography ran ; we just add the
  * pedagogical auxiliaries on top.
+ *
+ * Implementation note : the radius is constructed as a `numeric` GeoValue
+ * (not exact). Floats from `radiusFactor * ab` can carry IEEE-754 imprecision
+ * (e.g. `0.7 * 6 === 4.199999999999999`), which would balloon into a 16-digit
+ * BigInt under `exact()` and slow down subsequent recompute cycles. The
+ * auxiliary circles are purely visual (pedagogical traces) — exactness is
+ * unnecessary and `numeric` is the appropriate choice.
  */
 function buildArcsEgaux(
 	ctx: Parameters<ChoreographyFn>[0],
@@ -39,7 +45,15 @@ function buildArcsEgaux(
 	const [A, B] = args.coords;
 	const ab = Math.hypot(B.x - A.x, B.y - A.y);
 	const r = radiusFactor * ab;
-	const rValue = exact(numericNode(r));
+	if (!Number.isFinite(r) || r <= 0) {
+		// Degenerate case (A == B) : skip the choreography, the builtin's
+		// own degeneracy check will have surfaced an error already.
+		return {
+			steps: [],
+			produced: { principal: principalId, charnieres: [], traces: [] }
+		};
+	}
+	const rValue = numeric(r);
 	// Two compass arcs centered at A and B with equal radius r.
 	const cercleA = figure.createCircleByRadius(Aid, rValue);
 	const cercleB = figure.createCircleByRadius(Bid, rValue);
