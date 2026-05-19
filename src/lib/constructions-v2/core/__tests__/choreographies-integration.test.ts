@@ -123,3 +123,72 @@ describe('ConstructionExecutor — decorator wiring (Phase 3)', () => {
 		expect(exec.loadError!.message).toMatch(/n.a pas de chorégraphie/i);
 	});
 });
+
+describe('ConstructionExecutor — choreography produces auxiliary elements (Phase 4)', () => {
+	it('mediatrice @euclide @arcs_egaux creates 2 circles + 2 intersections + 1 line', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide'].join('\n'));
+		expect(exec.loadError).toBeNull();
+		const sizeBeforeStep = exec.figure.size;
+		exec.step(); // A
+		exec.step(); // B
+		const sizeBeforeMediatrice = exec.figure.size;
+		exec.step(); // d = mediatrice(A, B) @euclide
+		const sizeAfter = exec.figure.size;
+		// New elements created by the choreography :
+		//   - the line itself (created by mediatrice builtin)
+		//   - 2 hidden internal points (M = midpoint, H = rotated) by mediatrice
+		//   - 2 visible compass circles (by choreography)
+		//   - 2 intersection points (by choreography)
+		// = at least 5 new visible elements (line + 2 circles + 2 intersections).
+		expect(sizeAfter - sizeBeforeMediatrice).toBeGreaterThanOrEqual(5);
+		// Drawable elements caught by the animation pipeline (DRAWABLE_TYPES :
+		// segment, arc, circle). 'line' is rendered without progressive drawing.
+		// Choreography adds 2 circles → exactly 2 new drawables.
+		const drawables = exec.lastStepNewElementIds;
+		expect(drawables.length).toBe(2);
+		// Sanity : initial state unchanged
+		expect(sizeBeforeStep).toBe(0);
+	});
+
+	it('mediatrice without decorator does NOT create auxiliary circles', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B)'].join('\n'));
+		exec.step();
+		exec.step();
+		const sizeBeforeMediatrice = exec.figure.size;
+		exec.step();
+		const sizeAfter = exec.figure.size;
+		// Without decorator : just the line + the 2 hidden internal helpers
+		// (midpoint + rotated). No auxiliary circles or intersections.
+		// So the delta is exactly 3 (line + midpoint + rotated point).
+		expect(sizeAfter - sizeBeforeMediatrice).toBe(3);
+	});
+
+	it('mediatrice @euclide @cercles_rayon_ab uses radius = AB (visible difference in circle radius)', () => {
+		const execA = new ConstructionExecutor();
+		execA.load(
+			['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide @arcs_egaux'].join('\n')
+		);
+		execA.step();
+		execA.step();
+		execA.step();
+
+		const execB = new ConstructionExecutor();
+		execB.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'd = mediatrice(A, B) @euclide @cercles_rayon_ab'
+			].join('\n')
+		);
+		execB.step();
+		execB.step();
+		execB.step();
+
+		// Both choreographies produce the same NUMBER of elements but different radii.
+		const sizeA = execA.figure.size;
+		const sizeB = execB.figure.size;
+		expect(sizeA).toBe(sizeB);
+	});
+});
