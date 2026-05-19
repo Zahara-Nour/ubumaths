@@ -33,7 +33,6 @@ import type {
 	ChoreographyResult
 } from './choreographies/types';
 import { CHOREOGRAPHED_BUILTINS } from './choreographies/registry';
-import { applyFinalVisibility } from './choreographies/visibility';
 import {
 	DEFAULT_STEP_DURATION,
 	DEFAULT_PAUSE_DURATION,
@@ -136,10 +135,6 @@ export class ConstructionExecutor {
 	private _currentVoie: Voie | null = null;
 	/** Last choreography result (Phase 4) — used by Phase 5 visibility pass. */
 	private _lastChoreographyResult: ChoreographyResult | null = null;
-	/** Visibility decorator value of the last choreographed step. Used to apply
-	 *  final visibility when the NEXT step begins (after the animation of the
-	 *  current step has played out). */
-	private _lastVisibilite: DecoratorTriple['visibilite'] | null = null;
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
@@ -171,17 +166,6 @@ export class ConstructionExecutor {
 		if (!this.stepper) return false;
 		// Hide instruments that were auto-shown for the previous step
 		this.hideAutoInstruments();
-		// Apply final visibility on the elements produced by the PREVIOUS
-		// choreography (now that its animation has finished). This is when
-		// `@squelette` hides the construction traces, `@epure` hides everything
-		// except the principal, etc.
-		if (this._lastChoreographyResult && this._lastVisibilite) {
-			applyFinalVisibility(
-				this.stepper.figure,
-				this._lastChoreographyResult.produced,
-				this._lastVisibilite
-			);
-		}
 		// Resolve decorators on the upcoming statement BEFORE the stepper
 		// advances. This catches `@invalid` and other errors early and exposes
 		// the active triple+voie to the animation pipeline.
@@ -193,12 +177,11 @@ export class ConstructionExecutor {
 		const result = this.stepper.step();
 		if (result) {
 			// If the statement is choreographed, invoke the choreography NOW so
-			// any auxiliary elements (compass arcs, intersection points) are
-			// created before `_lastStepNewElementIds` is computed and the canvas
-			// animation pipeline starts.
+			// any auxiliary elements it creates are picked up by the canvas
+			// animation pipeline. Current V1 choreographies are stubs ; concrete
+			// per-builtin animations are deferred to a follow-up session that
+			// will add the sub-steps mechanism.
 			this._lastChoreographyResult = this.runChoreographyIfAny(upcomingStmt);
-			// Capture the visibility for next step's final-visibility pass.
-			this._lastVisibilite = this._currentDecoratorTriple?.visibilite ?? null;
 			// Track new elements for animation (includes choreography additions)
 			const elements = this.stepper.figure.getAllElements();
 			const newElements = elements.slice(sizeBefore);
@@ -213,23 +196,12 @@ export class ConstructionExecutor {
 				.map((el) => el.id);
 			this.autoShowInstruments(sizeBefore);
 		} else {
-			// End of the program. Apply visibility for the last choreographed
-			// step before clearing state, so the figure settles into its
-			// final visual form (@squelette/@epure traces hidden, etc.).
-			if (this._lastChoreographyResult && this._lastVisibilite) {
-				applyFinalVisibility(
-					this.stepper.figure,
-					this._lastChoreographyResult.produced,
-					this._lastVisibilite
-				);
-			}
 			this._lastStepNewElementIds = [];
 			this._lastStepNewPointIds = [];
 			this._lastStepNewLineIds = [];
 			this._currentDecoratorTriple = null;
 			this._currentVoie = null;
 			this._lastChoreographyResult = null;
-			this._lastVisibilite = null;
 		}
 		return result;
 	}
@@ -296,50 +268,6 @@ export class ConstructionExecutor {
 			coords.push({ x: geoToNumber(pos.x), y: geoToNumber(pos.y) });
 		}
 		return { ids, coords };
-	}
-
-	/**
-	 * Pre-pass equivalent of `runChoreographyIfAny` : invoke the choreography
-	 * on a temporary stepper so the pre-pass sees the auxiliary elements
-	 * (arcs, intersections) it would create. Used by `calculateStepDurations`
-	 * to size each step's duration and phase ratios correctly. Silent on
-	 * resolver errors (the main step() will re-throw them).
-	 */
-	private runChoreographyOnTempStepper(
-		stmt: DslStatement | undefined,
-		tempStepper: DslStepper
-	): void {
-		if (!stmt || stmt.kind !== 'assignment') return;
-		const decorators = stmt.decorators;
-		if (!decorators || decorators.length === 0) return;
-		const callExpr = stmt.value;
-		if (callExpr.kind !== 'call') return;
-		const builtinName = callExpr.name;
-		if (!CHOREOGRAPHED_BUILTINS.has(builtinName)) return;
-		let triple;
-		try {
-			triple = resolveDecorators(decorators, builtinName);
-		} catch {
-			return;
-		}
-		if (triple.contrainte === 'direct') return;
-		const voie = lookupVoie(triple, builtinName);
-		if (!voie) return;
-		const principalEntry = tempStepper.symbols.get(stmt.name);
-		if (!principalEntry?.figureId) return;
-		const args = this.resolveCallArgsOn(callExpr.args, tempStepper);
-		if (!args) return;
-		const ctx: ChoreographyCtx = {
-			figure: tempStepper.figure,
-			args,
-			principalId: principalEntry.figureId,
-			visibilite: triple.visibilite,
-			sub: () => ({
-				steps: [],
-				produced: { principal: '', charnieres: [], traces: [] }
-			})
-		};
-		voie.choreography(ctx);
 	}
 
 	/**
@@ -433,7 +361,6 @@ export class ConstructionExecutor {
 		this._currentDecoratorTriple = null;
 		this._currentVoie = null;
 		this._lastChoreographyResult = null;
-		this._lastVisibilite = null;
 		this._stepDurations = this.calculateStepDurations();
 	}
 
@@ -940,11 +867,6 @@ export class ConstructionExecutor {
 				// Geometric step: measure before/after to get distance
 				const sizeBefore = tempStepper.figure.size;
 				tempStepper.step();
-				// If the statement is choreographed, run the choreography on this
-				// temp stepper too. Otherwise the pre-pass would compute a too-
-				// short step duration (no drawables anticipated) and the compass
-				// instrument wouldn't get its move/draw phases.
-				this.runChoreographyOnTempStepper(stmt, tempStepper);
 				const fig = tempStepper.figure;
 				const newElements = fig.getAllElements().slice(sizeBefore);
 

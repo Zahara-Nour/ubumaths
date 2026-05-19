@@ -6,20 +6,33 @@
 
 ## Statut global
 
-| Phase                                       | Statut             | Commit                       | Tests ajoutés |
-| ------------------------------------------- | ------------------ | ---------------------------- | ------------- |
-| Phase 0 — Spécification TDD                 | ✓ livrée           | `e29b7938b` (inclus avec P1) | —             |
-| Phase 1 — Parser décorateurs en suffixe     | ✓ livrée           | `e29b7938b`                  | 22            |
-| Phase 2 — Registre + résolveur              | ✓ livrée           | `e4daaca76`                  | 23            |
-| Phase 3 — Wiring ConstructionExecutor       | ✓ livrée           | `2ae801cac`                  | 8             |
-| Phase 4 — Chorégraphies concrètes — MVP     | ✓ partiel (1 voie) | `881679da6`                  | 3             |
-| Phase 4 — Chorégraphies restantes (6 voies) | ⏸ à démarrer      | —                            | —             |
-| Phase 5 — Gestion visibilité finale         | ⏸ à démarrer      | —                            | —             |
-| Phase 6 — Documentation auto-générée        | ⏸ à démarrer      | —                            | —             |
-| Phase 7 — Validation finale                 | ⏸ à démarrer      | —                            | —             |
+| Phase                                   | Statut                                 | Commit                                                                       | Tests ajoutés |
+| --------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------- | ------------- |
+| Phase 0 — Spécification TDD             | ✓ livrée                               | `e29b7938b` (inclus avec P1)                                                 | —             |
+| Phase 1 — Parser décorateurs en suffixe | ✓ livrée                               | `e29b7938b`                                                                  | 22            |
+| Phase 2 — Registre + résolveur          | ✓ livrée                               | `e4daaca76`                                                                  | 23            |
+| Phase 3 — Wiring ConstructionExecutor   | ✓ livrée                               | `2ae801cac`                                                                  | 8             |
+| Améliorations animation (lines/rays)    | ✓ livrées                              | `259a09154`, `4b5f57913`, `00adc9f68`, `76a162b7d`, `97b5b52f0`, `20400837c` | 0 (UX only)   |
+| Phase 4 — Chorégraphies concrètes       | ⏸ à reprendre (sub-steps nécessaires) | reverted                                                                     | —             |
+| Phase 5 — Gestion visibilité finale     | ⏸ à reprendre (couplée à P4)          | reverted                                                                     | —             |
+| Phase 6 — Documentation auto-générée    | ⏸ à démarrer                          | —                                                                            | —             |
+| Phase 7 — Validation finale             | ⏸ à démarrer                          | —                                                                            | —             |
 
-**Total tests V1 ajoutés à ce stade** : 56.
-**Suite complète geometry-core + constructions-v2** : 3248/3250 (2 skipped) verts, 0 régression.
+**Total tests V1 ajoutés à ce stade** : 53.
+**Suite complète geometry-core + constructions-v2** : 3477/3479 (2 skipped) verts, 0 régression.
+
+## Pourquoi le revert de Phase 4/5
+
+Test manuel dans `/construction-demo` a révélé que l'approche « tout-en-1-step » des chorégraphies V1 produit une animation parallèle (les 2 arcs + la droite tracés ensemble) sans la séquence pédagogique attendue. Pour avoir :
+
+1. Compas en A trace l'arc 1
+2. Compas en B trace l'arc 2
+3. Points d'intersection apparaissent
+4. Règle + crayon tracent la droite
+
+il faut le mécanisme **sub-steps** : un step DSL chorégraphié produit N sous-étapes d'animation distinctes (chacune avec son instrument, durée, phases). C'est un refactor du pipeline `_stepPhases` / timeline / canvas — environ 200-400 lignes — qui n'a pas été fait dans cette session.
+
+Décision : **conserver l'infrastructure** (Phases 0-3 + améliorations animation indépendantes) et **différer Phase 4** à une session dédiée. Le code de chorégraphie active a été retiré ; les voies sont déclarées avec des stubs `NOT_YET_IMPLEMENTED`. Le wiring reste actif (les décorateurs sont parsés, validés, résolus, exposés à l'executor — juste pas consommés visuellement).
 
 ## Architecture livrée (Phases 0-3)
 

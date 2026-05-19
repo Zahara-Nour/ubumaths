@@ -124,71 +124,33 @@ describe('ConstructionExecutor — decorator wiring (Phase 3)', () => {
 	});
 });
 
-describe('ConstructionExecutor — choreography produces auxiliary elements (Phase 4)', () => {
-	it('mediatrice @euclide @arcs_egaux creates 2 arcs + 2 intersections + 1 line', () => {
-		const exec = new ConstructionExecutor();
-		exec.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide'].join('\n'));
-		expect(exec.loadError).toBeNull();
-		const sizeBeforeStep = exec.figure.size;
-		exec.step(); // A
-		exec.step(); // B
-		const sizeBeforeMediatrice = exec.figure.size;
-		exec.step(); // d = mediatrice(A, B) @euclide
-		const sizeAfter = exec.figure.size;
-		// New elements created by the choreography :
-		//   - the line itself (created by mediatrice builtin)
-		//   - 2 hidden internal points (M = midpoint, H = rotated) by mediatrice
-		//   - 2 hidden full circles (by choreography, for intersection compute)
-		//   - 2 visible compass arcs (by choreography)
-		//   - 2 intersection points (by choreography)
-		// = 9 new elements total (5 visible + 4 hidden).
-		expect(sizeAfter - sizeBeforeMediatrice).toBeGreaterThanOrEqual(9);
-		// Drawable elements caught by the animation pipeline, filtering hidden :
-		// 2 visible arcs only (the 2 full circles are hidden).
-		const drawables = exec.lastStepNewElementIds;
-		expect(drawables.length).toBe(2);
-		// Sanity : initial state unchanged
-		expect(sizeBeforeStep).toBe(0);
-	});
+describe('ConstructionExecutor — choreography stubs (Phase 4 deferred)', () => {
+	// Concrete choreography animations (arcs, ruler, sequential sub-steps) are
+	// deferred to a follow-up session. The current voies are NOT_YET_IMPLEMENTED
+	// stubs that return empty steps + the principal element only — so a
+	// `@euclide` step produces the same figure as a plain `@direct` step.
+	// Decorator parsing, resolution, registry lookup, and voie selection
+	// (Phases 1-3) are all live and tested in `choreographies-resolve.test.ts`
+	// and the "decorator wiring" block above.
 
-	it('mediatrice without decorator does NOT create auxiliary circles', () => {
-		const exec = new ConstructionExecutor();
-		exec.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B)'].join('\n'));
-		exec.step();
-		exec.step();
-		const sizeBeforeMediatrice = exec.figure.size;
-		exec.step();
-		const sizeAfter = exec.figure.size;
-		// Without decorator : just the line + the 2 hidden internal helpers
-		// (midpoint + rotated). No auxiliary circles or intersections.
-		// So the delta is exactly 3 (line + midpoint + rotated point).
-		expect(sizeAfter - sizeBeforeMediatrice).toBe(3);
-	});
+	it('mediatrice @euclide currently produces the same elements as undecorated', () => {
+		const execDirect = new ConstructionExecutor();
+		execDirect.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B)'].join('\n'));
+		execDirect.step();
+		execDirect.step();
+		execDirect.step();
+		const sizeDirect = execDirect.figure.size;
 
-	it('mediatrice @euclide @cercles_rayon_ab uses radius = AB (visible difference in circle radius)', () => {
-		const execA = new ConstructionExecutor();
-		execA.load(
-			['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide @arcs_egaux'].join('\n')
+		const execEuclide = new ConstructionExecutor();
+		execEuclide.load(
+			['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide'].join('\n')
 		);
-		execA.step();
-		execA.step();
-		execA.step();
+		execEuclide.step();
+		execEuclide.step();
+		execEuclide.step();
+		const sizeEuclide = execEuclide.figure.size;
 
-		const execB = new ConstructionExecutor();
-		execB.load(
-			[
-				'A = point(0, 0)',
-				'B = point(4, 0)',
-				'd = mediatrice(A, B) @euclide @cercles_rayon_ab'
-			].join('\n')
-		);
-		execB.step();
-		execB.step();
-		execB.step();
-
-		// Both choreographies produce the same NUMBER of elements but different radii.
-		const sizeA = execA.figure.size;
-		const sizeB = execB.figure.size;
-		expect(sizeA).toBe(sizeB);
+		// Same element count : the stub choreography adds nothing.
+		expect(sizeEuclide).toBe(sizeDirect);
 	});
 });
