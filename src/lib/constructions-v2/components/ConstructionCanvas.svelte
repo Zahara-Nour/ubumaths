@@ -110,6 +110,15 @@
 		if (t <= 0.5) return t * 2 * 3; // 0 → 3
 		return 3 - (t - 0.5) * 2 * 2; // 3 → 1.0
 	});
+	// Line label scale bump : exact same curve as `pointScale` for the points.
+	// 0 → 1.3x → 1x. Applied to the label via a `scale()` transform so the text
+	// grows in and settles, matching the visual feel of point labels.
+	let lineLabelScale = $derived.by(() => {
+		if (!animation || animation.animatingLineIds.size === 0) return 1;
+		const t = easeInOut(animation.drawProgress);
+		if (t <= 0.5) return t * 2 * 1.3; // 0 → 1.3
+		return 1.3 - (t - 0.5) * 2 * 0.3; // 1.3 → 1.0
+	});
 	let animatingLineIdArray = $derived(
 		animation ? [...animation.animatingLineIds] : ([] as string[])
 	);
@@ -540,15 +549,19 @@
 						{@const ny = ldx / llen}
 						{@const sign = ny > 0 ? -1 : 1}
 						{@const offset = 10 + 5 * Math.abs(nx)}
-						<text
-							x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
-							y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
-							fill={sty.color}
-							stroke="white"
-							stroke-width="3"
-							paint-order="stroke"
-							opacity={lineFadeOpacity}>{el.label}</text
-						>
+						{@const lx = mx + (el.labelOffset?.dx ?? sign * nx * offset)}
+						{@const ly = my + (el.labelOffset?.dy ?? sign * ny * offset)}
+						<g transform="translate({lx}, {ly}) scale({lineLabelScale})">
+							<text
+								x={0}
+								y={0}
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke"
+								opacity={lineFadeOpacity}>{el.label}</text
+							>
+						</g>
 					{/if}
 				{/if}
 			{/each}
