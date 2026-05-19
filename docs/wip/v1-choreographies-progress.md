@@ -1,25 +1,31 @@
 # V1 chorégraphies — Progression
 
-> Session : 2026-05-19
-> Plan : `/Users/david/.claude/plans/reflective-munching-catmull.md`
+> Session initiale : 2026-05-19 (Phases 0-3 + revert P4/P5)
+> Session reprise : 2026-05-19 (Phases 4 sub-steps + 5 visibilité — MVP `mediatrice`)
+> Plan original : `/Users/david/.claude/plans/reflective-munching-catmull.md`
+> Plan reprise : `/Users/david/.claude/plans/elegant-meandering-dragonfly.md`
 > Spec : `docs/wip/v1-choreographies-phase0-tdd.md`
+> Progress reprise détaillé : `docs/wip/v1-choreographies-substeps-progress.md`
 
 ## Statut global
 
-| Phase                                   | Statut                                 | Commit                                                                       | Tests ajoutés |
-| --------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------- | ------------- |
-| Phase 0 — Spécification TDD             | ✓ livrée                               | `e29b7938b` (inclus avec P1)                                                 | —             |
-| Phase 1 — Parser décorateurs en suffixe | ✓ livrée                               | `e29b7938b`                                                                  | 22            |
-| Phase 2 — Registre + résolveur          | ✓ livrée                               | `e4daaca76`                                                                  | 23            |
-| Phase 3 — Wiring ConstructionExecutor   | ✓ livrée                               | `2ae801cac`                                                                  | 8             |
-| Améliorations animation (lines/rays)    | ✓ livrées                              | `259a09154`, `4b5f57913`, `00adc9f68`, `76a162b7d`, `97b5b52f0`, `20400837c` | 0 (UX only)   |
-| Phase 4 — Chorégraphies concrètes       | ⏸ à reprendre (sub-steps nécessaires) | reverted                                                                     | —             |
-| Phase 5 — Gestion visibilité finale     | ⏸ à reprendre (couplée à P4)          | reverted                                                                     | —             |
-| Phase 6 — Documentation auto-générée    | ⏸ à démarrer                          | —                                                                            | —             |
-| Phase 7 — Validation finale             | ⏸ à démarrer                          | —                                                                            | —             |
+| Phase                                              | Statut        | Commit                                                                       | Tests ajoutés |
+| -------------------------------------------------- | ------------- | ---------------------------------------------------------------------------- | ------------- |
+| Phase 0 — Spécification TDD                        | ✓ livrée      | `e29b7938b` (inclus avec P1)                                                 | —             |
+| Phase 1 — Parser décorateurs en suffixe            | ✓ livrée      | `e29b7938b`                                                                  | 22            |
+| Phase 2 — Registre + résolveur                     | ✓ livrée      | `e4daaca76`                                                                  | 23            |
+| Phase 3 — Wiring ConstructionExecutor              | ✓ livrée      | `2ae801cac`                                                                  | 8             |
+| Améliorations animation (lines/rays)               | ✓ livrées     | `259a09154`, `4b5f57913`, `00adc9f68`, `76a162b7d`, `97b5b52f0`, `20400837c` | 0 (UX only)   |
+| Phase 4 sub-steps + MVP mediatrice — Phase A       | ✓ livrée      | session 2026-05-19 (reprise)                                                 | +0 (refactor) |
+| Phase 4 sub-steps + MVP mediatrice — Phase B       | ✓ livrée      | session 2026-05-19 (reprise)                                                 | +5            |
+| Phase 5 — Gestion visibilité finale                | ✓ livrée      | session 2026-05-19 (reprise)                                                 | +6            |
+| Phase 4 — Autres voies (bissectrice, parallele, …) | ⏸ à démarrer | —                                                                            | —             |
+| Phase 4.5 — `ctx.sub` + `cercle_circonscrit`       | ⏸ à démarrer | —                                                                            | —             |
+| Phase 6 — Documentation auto-générée               | ⏸ à démarrer | —                                                                            | —             |
+| Phase 7 — Validation finale                        | ⏸ à démarrer | —                                                                            | —             |
 
-**Total tests V1 ajoutés à ce stade** : 53.
-**Suite complète geometry-core + constructions-v2** : 3477/3479 (2 skipped) verts, 0 régression.
+**Total tests V1 ajoutés à ce stade** : 64 (53 + 11 cette session).
+**Suite complète constructions-v2** : 155/155 verts (0 régression sur les 144 tests existants).
 
 ## Pourquoi le revert de Phase 4/5
 

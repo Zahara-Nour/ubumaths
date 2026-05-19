@@ -29,10 +29,37 @@ import { resolveDecorators, lookupVoie, DecoratorResolveError } from './choreogr
 import type {
 	DecoratorTriple,
 	Voie,
+	Visibilite,
 	ChoreographyCtx,
-	ChoreographyResult
+	ChoreographyResult,
+	ChoreographyProduced,
+	SubStep
 } from './choreographies/types';
 import { CHOREOGRAPHED_BUILTINS } from './choreographies/registry';
+import { applyFinalVisibility } from './choreographies/visibility';
+
+/**
+ * A single entry in the timeline plan.
+ *
+ * For a non-decorated DSL statement : exactly 1 PlanEntry with
+ * `isStatementBoundary = true`, `isLastEntryOfStatement = true`, and
+ * `subStep = null` (executor falls back to inferring instruments + animated
+ * ids from new figure elements, like the legacy pipeline).
+ *
+ * For a decorated `@euclide` statement : N PlanEntries (one per sub-step
+ * returned by the choreography). The first has `isStatementBoundary = true`
+ * (triggers `stepper.step()` + choreography invocation at runtime) ; the
+ * last has `isLastEntryOfStatement = true` (triggers final visibility).
+ */
+interface PlanEntry {
+	readonly statement: DslStatement;
+	readonly isStatementBoundary: boolean;
+	readonly isLastEntryOfStatement: boolean;
+	readonly decoratorTriple: DecoratorTriple | null;
+	readonly voie: Voie | null;
+	/** Sub-step metadata (null for non-decorated statements). */
+	readonly subStep: SubStep | null;
+}
 import {
 	DEFAULT_STEP_DURATION,
 	DEFAULT_PAUSE_DURATION,
@@ -135,6 +162,30 @@ export class ConstructionExecutor {
 	private _currentVoie: Voie | null = null;
 	/** Last choreography result (Phase 4) — used by Phase 5 visibility pass. */
 	private _lastChoreographyResult: ChoreographyResult | null = null;
+	/**
+	 * Flat list of timeline entries (sub-steps). One entry = one slider
+	 * position. Built by `calculateStepDurations` and consumed by `step()`.
+	 *
+	 * Parallel to `_stepDurations` and `_stepPhases` — same length, same
+	 * indexing.
+	 */
+	private _plan: PlanEntry[] = [];
+	/** Current position in `_plan` (-1 before first step). */
+	private _timelineIndex = -1;
+	/**
+	 * Current sub-step metadata exposed to the canvas. Populated by `step()`
+	 * from `_plan[_timelineIndex].subStep` — null when the current entry has
+	 * no choreography (non-decorated statement).
+	 */
+	private _currentSubStep: SubStep | null = null;
+	/**
+	 * Pending visibility application scheduled by the LAST sub-step of a
+	 * chorégraphié statement. Drained at the start of the FOLLOWING `step()`
+	 * (or when `step()` returns false) so the user sees the final
+	 * construction state after the last sub-step's animation completes.
+	 */
+	private _pendingVisibility: { produced: ChoreographyProduced; visibilite: Visibilite } | null =
+		null;
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
@@ -143,6 +194,18 @@ export class ConstructionExecutor {
 		this._speedFactor = 1;
 		this._currentInstruction = null;
 		this._instrumentStates.clear();
+		this._lastStepNewElementIds = [];
+		this._lastStepNewPointIds = [];
+		this._lastStepNewLineIds = [];
+		this._autoInstruments.clear();
+		this._instrumentMoves.clear();
+		this._lastInstrumentPositions.clear();
+		this._timelineIndex = -1;
+		this._currentSubStep = null;
+		this._pendingVisibility = null;
+		this._currentDecoratorTriple = null;
+		this._currentVoie = null;
+		this._lastChoreographyResult = null;
 
 		const handler: DirectiveHandler = (name, args) => {
 			this.handleDirective(name, args);
@@ -164,79 +227,213 @@ export class ConstructionExecutor {
 	/** Execute one step. Returns false when done. */
 	step(): boolean {
 		if (!this.stepper) return false;
-		// Hide instruments that were auto-shown for the previous step
-		this.hideAutoInstruments();
-		// Resolve decorators on the upcoming statement BEFORE the stepper
-		// advances. This catches `@invalid` and other errors early and exposes
-		// the active triple+voie to the animation pipeline.
-		this.resolveCurrentDecorators();
-		// Capture the upcoming statement so we can build the choreography
-		// context after the builtin runs.
-		const upcomingStmt = this.stepper.nextStatement;
-		const sizeBefore = this.stepper.figure.size;
-		const result = this.stepper.step();
-		if (result) {
-			// If the statement is choreographed, invoke the choreography NOW so
-			// any auxiliary elements it creates are picked up by the canvas
-			// animation pipeline. Current V1 choreographies are stubs ; concrete
-			// per-builtin animations are deferred to a follow-up session that
-			// will add the sub-steps mechanism.
-			this._lastChoreographyResult = this.runChoreographyIfAny(upcomingStmt);
-			// Track new elements for animation (includes choreography additions)
-			const elements = this.stepper.figure.getAllElements();
-			const newElements = elements.slice(sizeBefore);
-			this._lastStepNewElementIds = newElements
-				.filter((el) => DRAWABLE_TYPES.has(el.type) && el.visible !== false)
-				.map((el) => el.id);
-			this._lastStepNewPointIds = newElements
-				.filter((el) => isPointElement(el) && el.visible !== false)
-				.map((el) => el.id);
-			this._lastStepNewLineIds = newElements
-				.filter((el) => (el.type === 'line' || el.type === 'ray') && el.visible !== false)
-				.map((el) => el.id);
-			this.autoShowInstruments(sizeBefore);
-		} else {
+		// Drain any visibility scheduled by the previous step (the last
+		// sub-step of a chorégraphié statement schedules visibility to be
+		// applied just before the next step's animation begins).
+		this.drainPendingVisibility();
+		if (this._timelineIndex + 1 >= this._plan.length) {
 			this._lastStepNewElementIds = [];
 			this._lastStepNewPointIds = [];
 			this._lastStepNewLineIds = [];
 			this._currentDecoratorTriple = null;
 			this._currentVoie = null;
-			this._lastChoreographyResult = null;
+			this._currentSubStep = null;
+			// Keep `_lastChoreographyResult` so callers (tests, debug UI) can
+			// still inspect the final choreography output after `executeAll()`.
+			return false;
 		}
-		return result;
+		// Hide instruments that were auto-shown for the previous step
+		this.hideAutoInstruments();
+		this._timelineIndex++;
+		const entry = this._plan[this._timelineIndex];
+		this._currentSubStep = entry.subStep;
+		this._currentDecoratorTriple = entry.decoratorTriple;
+		this._currentVoie = entry.voie;
+
+		if (entry.isStatementBoundary) {
+			// Advance the DSL stepper exactly once per statement (regardless of
+			// how many sub-steps the choreography expanded into).
+			const sizeBefore = this.stepper.figure.size;
+			const ok = this.stepper.step();
+			if (!ok) {
+				// Stepper exhausted unexpectedly — should not happen since the
+				// pre-pass already validated the program. Bail safely.
+				this._timelineIndex--;
+				return false;
+			}
+			// If chorégraphié, invoke choreography on the runtime figure NOW
+			// so the auxiliary elements (arcs, intersections, segment-trace)
+			// are materialized with deterministic ids matching pre-pass.
+			if (entry.voie && entry.decoratorTriple) {
+				this._lastChoreographyResult = this.invokeChoreographyOn(
+					entry.statement,
+					entry.voie,
+					entry.decoratorTriple,
+					this.stepper
+				);
+			} else {
+				this._lastChoreographyResult = null;
+			}
+			// For non-chorégraphié statements : preserve the legacy behavior
+			// (infer animated ids + instrument positions from newly-created
+			// figure elements).
+			if (!entry.subStep) {
+				const elements = this.stepper.figure.getAllElements();
+				const newElements = elements.slice(sizeBefore);
+				this._lastStepNewElementIds = newElements
+					.filter((el) => DRAWABLE_TYPES.has(el.type) && el.visible !== false)
+					.map((el) => el.id);
+				this._lastStepNewPointIds = newElements
+					.filter((el) => isPointElement(el) && el.visible !== false)
+					.map((el) => el.id);
+				this._lastStepNewLineIds = newElements
+					.filter((el) => (el.type === 'line' || el.type === 'ray') && el.visible !== false)
+					.map((el) => el.id);
+				this.autoShowInstruments(sizeBefore);
+				return true;
+			}
+		}
+
+		// Sub-step driven animation : populate animation state from the
+		// pre-computed sub-step metadata.
+		if (entry.subStep) {
+			this.applySubStepToAnimationState(entry.subStep);
+		}
+
+		// Schedule final visibility application for the next step transition
+		// when this is the LAST sub-step of a chorégraphié statement. The
+		// visibility is intentionally not applied here — it would interfere
+		// with elements currently being animated.
+		if (
+			entry.isLastEntryOfStatement &&
+			entry.decoratorTriple !== null &&
+			this._lastChoreographyResult !== null
+		) {
+			this._pendingVisibility = {
+				produced: this._lastChoreographyResult.produced,
+				visibilite: entry.decoratorTriple.visibilite
+			};
+		}
+		return true;
+	}
+
+	/** Apply any pending visibility (from the last sub-step of a chorégraphié statement). */
+	private drainPendingVisibility(): void {
+		if (!this._pendingVisibility || !this.stepper) return;
+		applyFinalVisibility(
+			this.stepper.figure,
+			this._pendingVisibility.produced,
+			this._pendingVisibility.visibilite
+		);
+		this._pendingVisibility = null;
 	}
 
 	/**
-	 * If `_currentVoie` is set (i.e. the just-executed statement was decorated
-	 * with a non-`@direct` constraint), invoke its choreography function and
-	 * return the result. The choreography typically creates auxiliary figure
-	 * elements (compass arcs, intersection points) so the existing animation
-	 * pipeline picks them up via `_lastStepNewElementIds`.
+	 * Populate the executor's per-step animation state from a sub-step.
 	 *
-	 * Returns null when no choreography applies.
+	 * For chorégraphié sub-steps, the sub-step explicitly declares which
+	 * elements to animate and where instruments should go — bypassing the
+	 * legacy infer-from-new-elements logic of `autoShowInstruments`.
 	 */
-	private runChoreographyIfAny(stmt: DslStatement | undefined): ChoreographyResult | null {
-		const voie = this._currentVoie;
-		const triple = this._currentDecoratorTriple;
-		if (!voie || !triple || !stmt || stmt.kind !== 'assignment') return null;
-		if (!this.stepper) return null;
-		// Resolve principal id (the variable assigned by the statement) and
-		// builtin args from the symbol table.
-		const principalEntry = this.stepper.symbols.get(stmt.name);
+	private applySubStepToAnimationState(subStep: SubStep): void {
+		this._lastStepNewElementIds = [...subStep.animateDrawableIds];
+		this._lastStepNewPointIds = [...subStep.animatePointIds];
+		this._lastStepNewLineIds = [...subStep.animateLineIds];
+		this._autoInstruments.clear();
+		this._instrumentMoves.clear();
+
+		// Reveal the elements that were created hidden by the choreography so
+		// the canvas overlay can animate them. The animation pipeline relies
+		// on `hiddenElementIds` (derived from `_lastStepNew*Ids`) to suppress
+		// the static rendering while the overlay traces them in.
+		if (this.stepper) {
+			const fig = this.stepper.figure;
+			for (const id of subStep.animateDrawableIds) fig.showElement(id);
+			for (const id of subStep.animatePointIds) fig.showElement(id);
+			for (const id of subStep.animateLineIds) fig.showElement(id);
+		}
+
+		// Read pre-computed phase ratios for this timeline entry.
+		const ph = this._stepPhases[this._timelineIndex];
+		if (ph) {
+			this._movePhaseEnd = ph.movePhaseEnd;
+			this._drawPhaseStart = ph.drawPhaseStart;
+			this._drawPhaseEnd = ph.drawPhaseEnd;
+			this._pausePhaseStart = ph.pausePhaseStart;
+			this._moveDurationMs = ph.moveDurationMs;
+		}
+
+		// Position the primary instrument from the sub-step target.
+		if (subStep.instrument && subStep.instrumentTarget) {
+			const { x, y, rotation } = subStep.instrumentTarget;
+			this.recordMove(subStep.instrument, x, y, rotation);
+			const instr = this.ensureInstrument(subStep.instrument);
+			instr.x = x;
+			instr.y = y;
+			instr.rotation = rotation;
+			instr.visible = true;
+			this._autoInstruments.add(subStep.instrument);
+			this._lastInstrumentPositions.set(subStep.instrument, { x, y, rotation });
+
+			if (subStep.instrument === 'compass' && subStep.compassRadius !== undefined) {
+				this._lastCompassRadius = this._compassCurRadius;
+				this._compassCurRadius = subStep.compassRadius;
+			}
+		}
+
+		// Position the secondary instrument (typically pencil following ruler).
+		if (subStep.secondaryInstrument && this.stepper) {
+			const secondary = this.ensureInstrument(subStep.secondaryInstrument);
+			secondary.visible = true;
+			// For ruler-trace, place pencil at the segment's start point so the
+			// drawing tip animation tracks correctly.
+			if (subStep.secondaryInstrument === 'pencil' && subStep.animateDrawableIds.length > 0) {
+				const segId = subStep.animateDrawableIds[0];
+				const seg = this.stepper.figure.getElementById(segId);
+				if (seg && seg.type === 'segment') {
+					const startPos = this.stepper.figure.getPosition(seg.startId);
+					if (startPos) {
+						secondary.x = geoToNumber(startPos.x);
+						secondary.y = geoToNumber(startPos.y);
+					}
+				}
+			}
+			this._autoInstruments.add(subStep.secondaryInstrument);
+		}
+	}
+
+	/**
+	 * Invoke a choreography function on a specific stepper (used by both the
+	 * pre-pass — operates on `tempStepper` — and runtime — operates on
+	 * `this.stepper`). The two invocations create the SAME auxiliary elements
+	 * (with the same ids) because Figure auto-id counters are deterministic
+	 * when the underlying createX calls are issued in the same order.
+	 *
+	 * Returns null when no choreography applies (assignment without call RHS,
+	 * missing symbol, etc.).
+	 */
+	private invokeChoreographyOn(
+		stmt: DslStatement,
+		voie: Voie,
+		triple: DecoratorTriple,
+		stepper: DslStepper
+	): ChoreographyResult | null {
+		if (stmt.kind !== 'assignment') return null;
+		const principalEntry = stepper.symbols.get(stmt.name);
 		if (!principalEntry?.figureId) return null;
 		const callExpr = stmt.value;
 		if (callExpr.kind !== 'call') return null;
-		const args = this.resolveCallArgsOn(callExpr.args, this.stepper);
+		const args = this.resolveCallArgsOn(callExpr.args, stepper);
 		if (!args) return null;
 		const ctx: ChoreographyCtx = {
-			figure: this.stepper.figure,
+			figure: stepper.figure,
 			args,
 			principalId: principalEntry.figureId,
 			visibilite: triple.visibilite,
-			// V1 sub-choreography helper is a no-op stub ; Phase 4 composition
-			// (cercle_circonscrit → 2 mediatrices) will use it.
+			// V1 sub-choreography helper is a no-op stub ; composition
+			// (cercle_circonscrit → 2 mediatrices) is deferred.
 			sub: () => ({
-				steps: [],
+				subSteps: [],
 				produced: { principal: '', charnieres: [], traces: [] }
 			})
 		};
@@ -358,6 +555,10 @@ export class ConstructionExecutor {
 		this._lastCompassRadius = 0;
 		this._compassCurRadius = 0;
 		this._stepPhases = [];
+		this._plan = [];
+		this._timelineIndex = -1;
+		this._currentSubStep = null;
+		this._pendingVisibility = null;
 		this._currentDecoratorTriple = null;
 		this._currentVoie = null;
 		this._lastChoreographyResult = null;
@@ -375,11 +576,26 @@ export class ConstructionExecutor {
 	}
 
 	get currentStepIndex(): number {
-		return this.stepper?.currentIndex ?? -1;
+		return this._timelineIndex;
 	}
 
 	get totalSteps(): number {
-		return this.stepper?.totalSteps ?? 0;
+		return this._plan.length;
+	}
+
+	/** Currently-active sub-step, or null when the entry is non-choreographed. */
+	get currentSubStep(): SubStep | null {
+		return this._currentSubStep;
+	}
+
+	/** Plan entries (one per timeline slot). Exposed for tests + debugging. */
+	get plan(): readonly PlanEntry[] {
+		return this._plan;
+	}
+
+	/** Last choreography result produced by a chorégraphié statement boundary. */
+	get lastChoreographyResult(): ChoreographyResult | null {
+		return this._lastChoreographyResult;
 	}
 
 	get stepDurations(): number[] {
@@ -616,8 +832,9 @@ export class ConstructionExecutor {
 			}
 		}
 
-		// Read pre-calculated phase ratios
-		const stepIdx = this.stepper!.currentIndex;
+		// Read pre-calculated phase ratios using the timeline index (not the
+		// stepper index — they diverge for chorégraphié statements).
+		const stepIdx = this._timelineIndex;
 		if (stepIdx >= 0 && stepIdx < this._stepPhases.length) {
 			const ph = this._stepPhases[stepIdx];
 			this._movePhaseEnd = ph.movePhaseEnd;
@@ -778,13 +995,17 @@ export class ConstructionExecutor {
 	// ─── Duration calculation ────────────────────────────────
 
 	/**
-	 * Pre-simulate all steps to calculate durations.
-	 * Each drawable step duration = moveDuration + drawDuration + AUTO_PAUSE.
-	 * Also stores movePhaseEnd/pausePhaseStart ratios per step for the canvas.
+	 * Pre-simulate all steps to calculate durations and build the timeline plan.
+	 *
+	 * For non-decorated statements : 1 entry per statement (legacy behavior).
+	 * For decorated `@euclide` statements : the choreography is invoked on the
+	 * temporary stepper to capture the sub-steps and create auxiliary elements
+	 * (arcs, intersections, segment-trace). Each sub-step becomes its own
+	 * entry in `_stepDurations` / `_stepPhases` / `_plan` (slider sees them
+	 * as individual step entries).
 	 */
 	private calculateStepDurations(): number[] {
 		if (!this._program) return [];
-		const PPU = 40;
 
 		// Create a temporary stepper to simulate execution
 		let speedFactor = 1;
@@ -798,9 +1019,10 @@ export class ConstructionExecutor {
 
 		const durations: number[] = [];
 		this._stepPhases = [];
+		this._plan = [];
 
-		// Track instrument positions for move distance calculation
-		// Default start position: top-left corner in math coords
+		// Track instrument positions for move distance calculation.
+		// Default start position: top-left corner in math coords.
 		const instrumentPos: Record<string, { x: number; y: number; rotation: number }> = {
 			ruler: { x: -8, y: 6, rotation: 0 },
 			compass: { x: -8, y: 6, rotation: 0 }
@@ -810,10 +1032,13 @@ export class ConstructionExecutor {
 		for (let i = 0; i < steps.length; i++) {
 			const durationsLenBefore = durations.length;
 			const phasesLenBefore = this._stepPhases.length;
+			const planLenBefore = this._plan.length;
 			try {
 				const stmt = steps[i];
-				// Validate decorators early (Phase 3) — surfaces `@invalid`,
-				// conflicting categories, etc. via the existing _loadError flow.
+
+				// ─── Decorator resolution + voie lookup ───
+				let triple: DecoratorTriple | null = null;
+				let voie: Voie | null = null;
 				if (stmt.kind === 'assignment' && stmt.decorators && stmt.decorators.length > 0) {
 					const callValue = stmt.value;
 					if (callValue.kind !== 'call') {
@@ -835,7 +1060,8 @@ export class ConstructionExecutor {
 						);
 					}
 					try {
-						resolveDecorators(stmt.decorators, callValue.name);
+						triple = resolveDecorators(stmt.decorators, callValue.name);
+						voie = lookupVoie(triple, callValue.name);
 					} catch (resolveErr) {
 						if (resolveErr instanceof DecoratorResolveError) {
 							throw new DslRuntimeError(
@@ -846,6 +1072,8 @@ export class ConstructionExecutor {
 						throw resolveErr;
 					}
 				}
+
+				// ─── Directives ───
 				if (stmt.kind === 'directive') {
 					if (stmt.name === 'pause') {
 						const arg = stmt.args[0];
@@ -860,185 +1088,75 @@ export class ConstructionExecutor {
 						pausePhaseStart: 1,
 						moveDurationMs: 0
 					});
+					this._plan.push({
+						statement: stmt,
+						isStatementBoundary: true,
+						isLastEntryOfStatement: true,
+						decoratorTriple: null,
+						voie: null,
+						subStep: null
+					});
 					tempStepper.step();
 					continue;
 				}
 
-				// Geometric step: measure before/after to get distance
+				// ─── Execute the DSL statement on the temp stepper ───
 				const sizeBefore = tempStepper.figure.size;
 				tempStepper.step();
 				const fig = tempStepper.figure;
-				const newElements = fig.getAllElements().slice(sizeBefore);
 
-				const hasDrawable = newElements.some(
-					(el) => DRAWABLE_TYPES.has(el.type) && el.visible !== false
-				);
-				const hasPoint = newElements.some((el) => isPointElement(el) && el.visible !== false);
-				const hasFadeInLine = newElements.some(
-					(el) => (el.type === 'line' || el.type === 'ray') && el.visible !== false
-				);
-				if (!hasDrawable) {
-					const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
-					// Points AND fade-in lines/rays both get an auto-pause after their step
-					// to give the user time to see the new element settle into place.
-					const needsPause = hasPoint || hasFadeInLine;
-					const stepDur = needsPause
-						? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
-						: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
-					durations.push(stepDur);
-					this._stepPhases.push({
-						movePhaseEnd: 0,
-						drawPhaseStart: 0,
-						drawPhaseEnd: 1,
-						pausePhaseStart: 1,
-						moveDurationMs: 0
-					});
-					continue;
-				}
-
-				// Calculate draw duration from distance
-				let drawDuration = DEFAULT_STEP_DURATION;
-				let instrumentTarget: { type: string; x: number; y: number } | null = null;
-
-				for (const el of newElements) {
-					if (!DRAWABLE_TYPES.has(el.type)) continue;
-
-					if (el.type === 'segment') {
-						const p1 = fig.getPosition(el.startId);
-						const p2 = fig.getPosition(el.endId);
-						if (p1 && p2) {
-							const x1 = geoToNumber(p1.x),
-								y1 = geoToNumber(p1.y);
-							const x2 = geoToNumber(p2.x),
-								y2 = geoToNumber(p2.y);
-							const distPx = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2) * PPU;
-							drawDuration = Math.round(distPx * MS_PER_PIXEL);
-							instrumentTarget = { type: 'ruler', x: x1, y: y1 };
+				// ─── Chorégraphié path : expand into N sub-step entries ───
+				if (voie && triple) {
+					const result = this.invokeChoreographyOn(stmt, voie, triple, tempStepper);
+					const subSteps = result?.subSteps ?? [];
+					if (subSteps.length > 0) {
+						for (let j = 0; j < subSteps.length; j++) {
+							const ss = subSteps[j];
+							const timing = this.computeSubStepTiming(ss, speedFactor, instrumentPos);
+							durations.push(timing.totalDuration);
+							this._stepPhases.push(timing.phases);
+							this._plan.push({
+								statement: stmt,
+								isStatementBoundary: j === 0,
+								isLastEntryOfStatement: j === subSteps.length - 1,
+								decoratorTriple: triple,
+								voie,
+								subStep: ss
+							});
+							if (timing.newInstrumentPos) {
+								instrumentPos[timing.newInstrumentPos.type] = {
+									x: timing.newInstrumentPos.x,
+									y: timing.newInstrumentPos.y,
+									rotation: timing.newInstrumentPos.rotation
+								};
+							}
 						}
-					} else if (isArcByAngles(el)) {
-						const center = fig.getPosition(el.centerId);
-						if (center) {
-							const r = this.scalarParamToNumber(el.radius, fig);
-							const sweep = Math.abs(
-								this.scalarParamToNumber(el.endAngle, fig) -
-									this.scalarParamToNumber(el.startAngle, fig)
-							);
-							drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
-							instrumentTarget = {
-								type: 'compass',
-								x: geoToNumber(center.x),
-								y: geoToNumber(center.y)
-							};
-						}
-					} else if (isArcByPoints(el)) {
-						const center = fig.getPosition(el.centerId);
-						const start = fig.getPosition(el.startId);
-						const end = fig.getPosition(el.endId);
-						if (center && start && end) {
-							const cx = geoToNumber(center.x),
-								cy = geoToNumber(center.y);
-							const r = Math.sqrt(
-								(geoToNumber(start.x) - cx) ** 2 + (geoToNumber(start.y) - cy) ** 2
-							);
-							const a1 = Math.atan2(geoToNumber(start.y) - cy, geoToNumber(start.x) - cx);
-							const a2 = Math.atan2(geoToNumber(end.y) - cy, geoToNumber(end.x) - cx);
-							let sweep = a2 - a1;
-							if (sweep < 0) sweep += 2 * Math.PI;
-							drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
-							instrumentTarget = { type: 'compass', x: cx, y: cy };
-						}
-					} else if (isCircleByRadius(el)) {
-						const center = fig.getPosition(el.centerId);
-						if (center) {
-							const r = this.scalarParamToNumber(el.radius, fig);
-							drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
-							instrumentTarget = {
-								type: 'compass',
-								x: geoToNumber(center.x),
-								y: geoToNumber(center.y)
-							};
-						}
-					} else if (isCircleByPoint(el)) {
-						const center = fig.getPosition(el.centerId);
-						const edge = fig.getPosition(el.edgePointId);
-						if (center && edge) {
-							const cx = geoToNumber(center.x),
-								cy = geoToNumber(center.y);
-							const r = Math.sqrt(
-								(geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2
-							);
-							drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
-							instrumentTarget = { type: 'compass', x: cx, y: cy };
-						}
+						continue;
 					}
-					break;
+					// Choreography returned no sub-steps (stub) — fall through to
+					// legacy timing path so the script still progresses.
 				}
 
-				drawDuration = Math.max(
-					MIN_STEP_DURATION,
-					Math.min(MAX_STEP_DURATION, Math.round(drawDuration / speedFactor))
+				// ─── Legacy non-chorégraphié timing ───
+				// `voie` may still be non-null when a decorated statement's
+				// choreography returns no sub-steps (stub) — keep it so the
+				// caller still sees `currentVoie` populated during the step.
+				this.computeLegacyStatementTiming(
+					stmt,
+					triple,
+					voie,
+					sizeBefore,
+					fig,
+					speedFactor,
+					instrumentPos,
+					durations
 				);
-
-				// Calculate move duration from instrument distance + rotation
-				let moveDuration = 0;
-				if (instrumentTarget) {
-					const prev = instrumentPos[instrumentTarget.type] ?? { x: -8, y: 6, rotation: 0 };
-					const dx = instrumentTarget.x - prev.x;
-					const dy = instrumentTarget.y - prev.y;
-					const dist = Math.sqrt(dx * dx + dy * dy);
-					const cruiseMs = Math.round(
-						(dist * PPU * MS_PER_PIXEL) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
-					);
-
-					// Compute start angle for this element (to know the rotation target)
-					const startAngleDeg = this.computeStartAngleForStep(newElements, fig);
-					let rotDelta = startAngleDeg - prev.rotation;
-					while (rotDelta > 180) rotDelta -= 360;
-					while (rotDelta < -180) rotDelta += 360;
-					const rotMs = Math.round(
-						(Math.abs(rotDelta) * MS_PER_DEGREE) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
-					);
-
-					const totalCruiseMs = Math.max(cruiseMs, rotMs);
-					moveDuration = Math.max(
-						600,
-						totalCruiseMs <= INSTRUMENT_RAMP_MS ? totalCruiseMs : totalCruiseMs + INSTRUMENT_RAMP_MS
-					);
-
-					// Compute end angle for tracking (where compass finishes after drawing)
-					const endAngleDeg = this.computeEndAngleForStep(newElements, fig);
-					instrumentPos[instrumentTarget.type] = {
-						x: instrumentTarget.x,
-						y: instrumentTarget.y,
-						rotation: endAngleDeg
-					};
-				}
-
-				// Add compass raise/lower durations for compass steps
-				const isCompass = instrumentTarget?.type === 'compass';
-				const raiseDuration = isCompass ? COMPASS_RAISE_MS : 0;
-				const lowerDuration = isCompass ? COMPASS_LOWER_MS : 0;
-
-				const totalDuration =
-					moveDuration + raiseDuration + drawDuration + lowerDuration + AUTO_PAUSE_BETWEEN_STEPS;
-				durations.push(totalDuration);
-				const moveEnd = moveDuration / totalDuration;
-				const drawStart = (moveDuration + raiseDuration) / totalDuration;
-				const drawEnd = (moveDuration + raiseDuration + drawDuration) / totalDuration;
-				const pauseStart =
-					(moveDuration + raiseDuration + drawDuration + lowerDuration) / totalDuration;
-				this._stepPhases.push({
-					movePhaseEnd: moveEnd,
-					drawPhaseStart: drawStart,
-					drawPhaseEnd: drawEnd,
-					pausePhaseStart: pauseStart,
-					moveDurationMs: moveDuration
-				});
 			} catch (e) {
-				// Pre-execution failed at step i. Rollback any partial entries pushed
-				// during this iteration, store the error info, stop the pass.
+				// Pre-execution failed at step i. Rollback any partial entries
+				// pushed during this iteration, store the error info, stop.
 				durations.length = durationsLenBefore;
 				this._stepPhases.length = phasesLenBefore;
+				this._plan.length = planLenBefore;
 				const message = e instanceof Error ? e.message : String(e);
 				const m = message.match(/Ligne\s+(\d+)/i);
 				const details = e instanceof DslRuntimeError ? e.details : null;
@@ -1053,5 +1171,319 @@ export class ConstructionExecutor {
 		}
 
 		return durations;
+	}
+
+	/**
+	 * Compute duration + phase ratios for a single sub-step + update tracked
+	 * instrument position for subsequent sub-steps.
+	 *
+	 * Mirrors the legacy `calculateStepDurations` timing logic but operates
+	 * on a sub-step's explicit metadata (instrument target, geometric
+	 * distance) instead of inferring from newly-created figure elements.
+	 */
+	private computeSubStepTiming(
+		subStep: SubStep,
+		speedFactor: number,
+		instrumentPos: Record<string, { x: number; y: number; rotation: number }>
+	): {
+		totalDuration: number;
+		phases: {
+			movePhaseEnd: number;
+			drawPhaseStart: number;
+			drawPhaseEnd: number;
+			pausePhaseStart: number;
+			moveDurationMs: number;
+		};
+		newInstrumentPos: { type: InstrumentType; x: number; y: number; rotation: number } | null;
+	} {
+		const PPU = 40;
+
+		// Fade-in sub-steps (no instrument, no progressive trace) use the
+		// short default duration + auto-pause to let the user notice the
+		// elements settle into place.
+		if (subStep.kind === 'point-fade-in' || subStep.kind === 'line-fade-in') {
+			const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
+			const stepDur =
+				Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS;
+			return {
+				totalDuration: stepDur,
+				phases: {
+					movePhaseEnd: 0,
+					drawPhaseStart: 0,
+					drawPhaseEnd: 1,
+					pausePhaseStart: 1,
+					moveDurationMs: 0
+				},
+				newInstrumentPos: null
+			};
+		}
+
+		// Draw duration from explicit geometric distance.
+		const rawDraw = Math.round(subStep.geometricDistance * PPU * MS_PER_PIXEL);
+		const drawDuration = Math.max(
+			MIN_STEP_DURATION,
+			Math.min(MAX_STEP_DURATION, Math.round(rawDraw / speedFactor))
+		);
+
+		// Move duration from instrument position delta.
+		let moveDuration = 0;
+		let newInstrumentPos: {
+			type: InstrumentType;
+			x: number;
+			y: number;
+			rotation: number;
+		} | null = null;
+		if (subStep.instrument && subStep.instrumentTarget) {
+			const prev = instrumentPos[subStep.instrument] ?? { x: -8, y: 6, rotation: 0 };
+			const dx = subStep.instrumentTarget.x - prev.x;
+			const dy = subStep.instrumentTarget.y - prev.y;
+			const dist = Math.sqrt(dx * dx + dy * dy);
+			const cruiseMs = Math.round(
+				(dist * PPU * MS_PER_PIXEL) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
+			);
+			let rotDelta = subStep.instrumentTarget.rotation - prev.rotation;
+			while (rotDelta > 180) rotDelta -= 360;
+			while (rotDelta < -180) rotDelta += 360;
+			const rotMs = Math.round(
+				(Math.abs(rotDelta) * MS_PER_DEGREE) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
+			);
+			const totalCruiseMs = Math.max(cruiseMs, rotMs);
+			moveDuration = Math.max(
+				600,
+				totalCruiseMs <= INSTRUMENT_RAMP_MS ? totalCruiseMs : totalCruiseMs + INSTRUMENT_RAMP_MS
+			);
+
+			// Where the instrument ends up rotation-wise after drawing.
+			// For compass : the angle advances by (geometricDistance / radius) in radians.
+			let endRotation = subStep.instrumentTarget.rotation;
+			if (
+				subStep.kind === 'compass-draw' &&
+				subStep.compassRadius !== undefined &&
+				subStep.compassRadius > 0
+			) {
+				const sweepDeg = (subStep.geometricDistance / subStep.compassRadius) * (180 / Math.PI);
+				endRotation = subStep.instrumentTarget.rotation + sweepDeg;
+			}
+			newInstrumentPos = {
+				type: subStep.instrument,
+				x: subStep.instrumentTarget.x,
+				y: subStep.instrumentTarget.y,
+				rotation: endRotation
+			};
+		}
+
+		const isCompass = subStep.kind === 'compass-draw';
+		const raiseDuration = isCompass ? COMPASS_RAISE_MS : 0;
+		const lowerDuration = isCompass ? COMPASS_LOWER_MS : 0;
+
+		const totalDuration =
+			moveDuration + raiseDuration + drawDuration + lowerDuration + AUTO_PAUSE_BETWEEN_STEPS;
+		const moveEnd = moveDuration / totalDuration;
+		const drawStart = (moveDuration + raiseDuration) / totalDuration;
+		const drawEnd = (moveDuration + raiseDuration + drawDuration) / totalDuration;
+		const pauseStart =
+			(moveDuration + raiseDuration + drawDuration + lowerDuration) / totalDuration;
+
+		return {
+			totalDuration,
+			phases: {
+				movePhaseEnd: moveEnd,
+				drawPhaseStart: drawStart,
+				drawPhaseEnd: drawEnd,
+				pausePhaseStart: pauseStart,
+				moveDurationMs: moveDuration
+			},
+			newInstrumentPos
+		};
+	}
+
+	/**
+	 * Legacy timing path for non-chorégraphié statements. Mirrors the original
+	 * `calculateStepDurations` logic : infer instrument + animation from the
+	 * elements created by the statement, push 1 entry into the timeline.
+	 */
+	private computeLegacyStatementTiming(
+		stmt: DslStatement,
+		triple: DecoratorTriple | null,
+		voie: Voie | null,
+		sizeBefore: number,
+		fig: Figure,
+		speedFactor: number,
+		instrumentPos: Record<string, { x: number; y: number; rotation: number }>,
+		durations: number[]
+	): void {
+		const PPU = 40;
+		const newElements = fig.getAllElements().slice(sizeBefore);
+
+		const hasDrawable = newElements.some(
+			(el) => DRAWABLE_TYPES.has(el.type) && el.visible !== false
+		);
+		const hasPoint = newElements.some((el) => isPointElement(el) && el.visible !== false);
+		const hasFadeInLine = newElements.some(
+			(el) => (el.type === 'line' || el.type === 'ray') && el.visible !== false
+		);
+		if (!hasDrawable) {
+			const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
+			const needsPause = hasPoint || hasFadeInLine;
+			const stepDur = needsPause
+				? Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS
+				: Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
+			durations.push(stepDur);
+			this._stepPhases.push({
+				movePhaseEnd: 0,
+				drawPhaseStart: 0,
+				drawPhaseEnd: 1,
+				pausePhaseStart: 1,
+				moveDurationMs: 0
+			});
+			this._plan.push({
+				statement: stmt,
+				isStatementBoundary: true,
+				isLastEntryOfStatement: true,
+				decoratorTriple: triple,
+				voie,
+				subStep: null
+			});
+			return;
+		}
+
+		// Calculate draw duration from distance.
+		let drawDuration = DEFAULT_STEP_DURATION;
+		let instrumentTarget: { type: string; x: number; y: number } | null = null;
+
+		for (const el of newElements) {
+			if (!DRAWABLE_TYPES.has(el.type)) continue;
+
+			if (el.type === 'segment') {
+				const p1 = fig.getPosition(el.startId);
+				const p2 = fig.getPosition(el.endId);
+				if (p1 && p2) {
+					const x1 = geoToNumber(p1.x),
+						y1 = geoToNumber(p1.y);
+					const x2 = geoToNumber(p2.x),
+						y2 = geoToNumber(p2.y);
+					const distPx = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2) * PPU;
+					drawDuration = Math.round(distPx * MS_PER_PIXEL);
+					instrumentTarget = { type: 'ruler', x: x1, y: y1 };
+				}
+			} else if (isArcByAngles(el)) {
+				const center = fig.getPosition(el.centerId);
+				if (center) {
+					const r = this.scalarParamToNumber(el.radius, fig);
+					const sweep = Math.abs(
+						this.scalarParamToNumber(el.endAngle, fig) -
+							this.scalarParamToNumber(el.startAngle, fig)
+					);
+					drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
+					instrumentTarget = {
+						type: 'compass',
+						x: geoToNumber(center.x),
+						y: geoToNumber(center.y)
+					};
+				}
+			} else if (isArcByPoints(el)) {
+				const center = fig.getPosition(el.centerId);
+				const start = fig.getPosition(el.startId);
+				const end = fig.getPosition(el.endId);
+				if (center && start && end) {
+					const cx = geoToNumber(center.x),
+						cy = geoToNumber(center.y);
+					const r = Math.sqrt((geoToNumber(start.x) - cx) ** 2 + (geoToNumber(start.y) - cy) ** 2);
+					const a1 = Math.atan2(geoToNumber(start.y) - cy, geoToNumber(start.x) - cx);
+					const a2 = Math.atan2(geoToNumber(end.y) - cy, geoToNumber(end.x) - cx);
+					let sweep = a2 - a1;
+					if (sweep < 0) sweep += 2 * Math.PI;
+					drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
+					instrumentTarget = { type: 'compass', x: cx, y: cy };
+				}
+			} else if (isCircleByRadius(el)) {
+				const center = fig.getPosition(el.centerId);
+				if (center) {
+					const r = this.scalarParamToNumber(el.radius, fig);
+					drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
+					instrumentTarget = {
+						type: 'compass',
+						x: geoToNumber(center.x),
+						y: geoToNumber(center.y)
+					};
+				}
+			} else if (isCircleByPoint(el)) {
+				const center = fig.getPosition(el.centerId);
+				const edge = fig.getPosition(el.edgePointId);
+				if (center && edge) {
+					const cx = geoToNumber(center.x),
+						cy = geoToNumber(center.y);
+					const r = Math.sqrt((geoToNumber(edge.x) - cx) ** 2 + (geoToNumber(edge.y) - cy) ** 2);
+					drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
+					instrumentTarget = { type: 'compass', x: cx, y: cy };
+				}
+			}
+			break;
+		}
+
+		drawDuration = Math.max(
+			MIN_STEP_DURATION,
+			Math.min(MAX_STEP_DURATION, Math.round(drawDuration / speedFactor))
+		);
+
+		let moveDuration = 0;
+		if (instrumentTarget) {
+			const prev = instrumentPos[instrumentTarget.type] ?? { x: -8, y: 6, rotation: 0 };
+			const dx = instrumentTarget.x - prev.x;
+			const dy = instrumentTarget.y - prev.y;
+			const dist = Math.sqrt(dx * dx + dy * dy);
+			const cruiseMs = Math.round(
+				(dist * PPU * MS_PER_PIXEL) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
+			);
+
+			const startAngleDeg = this.computeStartAngleForStep(newElements, fig);
+			let rotDelta = startAngleDeg - prev.rotation;
+			while (rotDelta > 180) rotDelta -= 360;
+			while (rotDelta < -180) rotDelta += 360;
+			const rotMs = Math.round(
+				(Math.abs(rotDelta) * MS_PER_DEGREE) / (speedFactor * INSTRUMENT_MOVE_SPEED_FACTOR)
+			);
+
+			const totalCruiseMs = Math.max(cruiseMs, rotMs);
+			moveDuration = Math.max(
+				600,
+				totalCruiseMs <= INSTRUMENT_RAMP_MS ? totalCruiseMs : totalCruiseMs + INSTRUMENT_RAMP_MS
+			);
+
+			const endAngleDeg = this.computeEndAngleForStep(newElements, fig);
+			instrumentPos[instrumentTarget.type] = {
+				x: instrumentTarget.x,
+				y: instrumentTarget.y,
+				rotation: endAngleDeg
+			};
+		}
+
+		const isCompass = instrumentTarget?.type === 'compass';
+		const raiseDuration = isCompass ? COMPASS_RAISE_MS : 0;
+		const lowerDuration = isCompass ? COMPASS_LOWER_MS : 0;
+
+		const totalDuration =
+			moveDuration + raiseDuration + drawDuration + lowerDuration + AUTO_PAUSE_BETWEEN_STEPS;
+		durations.push(totalDuration);
+		const moveEnd = moveDuration / totalDuration;
+		const drawStart = (moveDuration + raiseDuration) / totalDuration;
+		const drawEnd = (moveDuration + raiseDuration + drawDuration) / totalDuration;
+		const pauseStart =
+			(moveDuration + raiseDuration + drawDuration + lowerDuration) / totalDuration;
+		this._stepPhases.push({
+			movePhaseEnd: moveEnd,
+			drawPhaseStart: drawStart,
+			drawPhaseEnd: drawEnd,
+			pausePhaseStart: pauseStart,
+			moveDurationMs: moveDuration
+		});
+		this._plan.push({
+			statement: stmt,
+			isStatementBoundary: true,
+			isLastEntryOfStatement: true,
+			decoratorTriple: triple,
+			voie,
+			subStep: null
+		});
 	}
 }

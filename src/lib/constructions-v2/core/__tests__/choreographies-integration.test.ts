@@ -124,33 +124,104 @@ describe('ConstructionExecutor — decorator wiring (Phase 3)', () => {
 	});
 });
 
-describe('ConstructionExecutor — choreography stubs (Phase 4 deferred)', () => {
-	// Concrete choreography animations (arcs, ruler, sequential sub-steps) are
-	// deferred to a follow-up session. The current voies are NOT_YET_IMPLEMENTED
-	// stubs that return empty steps + the principal element only — so a
-	// `@euclide` step produces the same figure as a plain `@direct` step.
-	// Decorator parsing, resolution, registry lookup, and voie selection
-	// (Phases 1-3) are all live and tested in `choreographies-resolve.test.ts`
-	// and the "decorator wiring" block above.
+describe('ConstructionExecutor — mediatrice @euclide @arcs_egaux (Phase 4 sub-steps)', () => {
+	// The real choreography expands a single decorated DSL statement into 4
+	// sequential sub-step entries in the timeline + creates auxiliary
+	// elements (2 arcs, 2 hidden circles for the intersection, 2 intersection
+	// points, 1 segment-trace, 2 scalars). The principal line is still
+	// created by the builtin (Strategy B).
 
-	it('mediatrice @euclide currently produces the same elements as undecorated', () => {
+	it('mediatrice @euclide expands into 4 sub-step entries', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide'].join('\n'));
+		// 2 point statements + 4 sub-steps for the decorated mediatrice = 6 entries.
+		expect(exec.totalSteps).toBe(6);
+		expect(exec.stepDurations.length).toBe(6);
+	});
+
+	it('mediatrice @euclide creates auxiliary elements (arcs, intersections, segment-trace)', () => {
 		const execDirect = new ConstructionExecutor();
 		execDirect.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B)'].join('\n'));
-		execDirect.step();
-		execDirect.step();
-		execDirect.step();
+		execDirect.executeAll();
 		const sizeDirect = execDirect.figure.size;
 
 		const execEuclide = new ConstructionExecutor();
 		execEuclide.load(
 			['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide'].join('\n')
 		);
-		execEuclide.step();
-		execEuclide.step();
-		execEuclide.step();
+		execEuclide.executeAll();
 		const sizeEuclide = execEuclide.figure.size;
 
-		// Same element count : the stub choreography adds nothing.
-		expect(sizeEuclide).toBe(sizeDirect);
+		// Choreography adds : 2 arcs + 2 hidden circles + 2 intersection points
+		// + 1 segment-trace + 2 scalars (distAB, radiusScalar) = 9 elements.
+		expect(sizeEuclide).toBeGreaterThan(sizeDirect);
+	});
+
+	it('currentSubStep is populated during each sub-step of mediatrice @euclide', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide'].join('\n'));
+		exec.step(); // A
+		expect(exec.currentSubStep).toBeNull();
+		exec.step(); // B
+		expect(exec.currentSubStep).toBeNull();
+		exec.step(); // SS1 : compass at A
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		expect(exec.currentSubStep?.instrument).toBe('compass');
+		exec.step(); // SS2 : compass at B
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS3 : intersections fade-in
+		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
+		expect(exec.currentSubStep?.animatePointIds.length).toBe(2);
+		exec.step(); // SS4 : ruler trace
+		expect(exec.currentSubStep?.kind).toBe('ruler-trace');
+		expect(exec.currentSubStep?.instrument).toBe('ruler');
+		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
+	});
+
+	it('currentDecoratorTriple stays populated across all sub-steps of a decorated statement', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide'].join('\n'));
+		exec.step(); // A
+		exec.step(); // B
+		// Now 4 sub-steps for the decorated statement.
+		for (let i = 0; i < 4; i++) {
+			exec.step();
+			expect(exec.currentDecoratorTriple?.contrainte).toBe('euclide');
+			expect(exec.currentVoie?.id).toBe('arcs_egaux');
+		}
+	});
+
+	it('non-decorated statements still produce 1 entry each (legacy path)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'M = milieu(A, B)',
+				'd = mediatrice(A, B)' // no decorator → legacy
+			].join('\n')
+		);
+		// 4 statements → 4 entries (no choreography expansion).
+		expect(exec.totalSteps).toBe(4);
+		for (const entry of exec.plan) {
+			expect(entry.subStep).toBeNull();
+			expect(entry.isStatementBoundary).toBe(true);
+			expect(entry.isLastEntryOfStatement).toBe(true);
+		}
+	});
+
+	it('cercles_rayon_ab voie also produces 4 sub-steps', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'd = mediatrice(A, B) @euclide @cercles_rayon_ab'
+			].join('\n')
+		);
+		expect(exec.totalSteps).toBe(6); // 2 + 4
+		expect(exec.currentVoie).toBeNull(); // before any step
+		exec.executeAll();
+		expect(exec.figure.size).toBeGreaterThan(5);
 	});
 });
