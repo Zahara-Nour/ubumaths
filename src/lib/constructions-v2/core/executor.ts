@@ -680,7 +680,7 @@ export class ConstructionExecutor {
 			}
 		}
 		if (isArcByAngles(el)) {
-			return geoToNumber(el.startAngle) * (180 / Math.PI);
+			return this.scalarParamToNumber(el.startAngle, fig) * (180 / Math.PI);
 		}
 		if (isArcByPoints(el)) {
 			const center = fig.getPosition(el.centerId);
@@ -730,7 +730,7 @@ export class ConstructionExecutor {
 			return this.computeCompassStartAngle(el, fig); // full circle
 		}
 		if (isArcByAngles(el)) {
-			return geoToNumber(el.endAngle) * (180 / Math.PI);
+			return this.scalarParamToNumber(el.endAngle, fig) * (180 / Math.PI);
 		}
 		if (isArcByPoints(el)) {
 			const center = fig.getPosition(el.centerId);
@@ -748,9 +748,28 @@ export class ConstructionExecutor {
 		return 0;
 	}
 
+	/**
+	 * Convert a `ScalarParam` (either `GeoValue` or `{scalarRef: id}`) to a number.
+	 * Required at every site that reads element fields like `radius`, `startAngle`,
+	 * `endAngle` because choreographies route these through reactive scalars
+	 * (`createScalarExpression`) which are stored as `scalarRef`.
+	 */
+	private scalarParamToNumber(
+		param:
+			| { scalarRef: string }
+			| { kind: 'numeric'; value: number }
+			| { kind: 'exact'; node: unknown },
+		fig: Figure
+	): number {
+		if (typeof param === 'object' && param !== null && 'scalarRef' in param) {
+			return fig.getScalarValue(param.scalarRef) ?? 0;
+		}
+		return geoToNumber(param as Parameters<typeof geoToNumber>[0]);
+	}
+
 	private resolveRadius(el: GeoElement, fig: Figure): number {
 		if (isCircleByRadius(el) || isArcByAngles(el)) {
-			return geoToNumber(el.radius);
+			return this.scalarParamToNumber(el.radius, fig);
 		}
 		if (isCircleByPoint(el)) {
 			const center = fig.getPosition(el.centerId);
@@ -923,8 +942,11 @@ export class ConstructionExecutor {
 					} else if (isArcByAngles(el)) {
 						const center = fig.getPosition(el.centerId);
 						if (center) {
-							const r = geoToNumber(el.radius);
-							const sweep = Math.abs(geoToNumber(el.endAngle) - geoToNumber(el.startAngle));
+							const r = this.scalarParamToNumber(el.radius, fig);
+							const sweep = Math.abs(
+								this.scalarParamToNumber(el.endAngle, fig) -
+									this.scalarParamToNumber(el.startAngle, fig)
+							);
 							drawDuration = Math.round(r * sweep * PPU * MS_PER_PIXEL);
 							instrumentTarget = {
 								type: 'compass',
@@ -952,7 +974,7 @@ export class ConstructionExecutor {
 					} else if (isCircleByRadius(el)) {
 						const center = fig.getPosition(el.centerId);
 						if (center) {
-							const r = geoToNumber(el.radius);
+							const r = this.scalarParamToNumber(el.radius, fig);
 							drawDuration = Math.round(2 * Math.PI * r * PPU * MS_PER_PIXEL);
 							instrumentTarget = {
 								type: 'compass',
