@@ -765,7 +765,7 @@ export interface AngleSVG {
  *
  * Label is built from `angle.showLabel` and `angle.unite` via `formatAngleLabel`.
  * The caller is expected to look up the measure from
- * `figure.getScalarValue(angle.measureScalarId)` and pass it via the public
+ * `figure.getScalarValue(angle.measureScalarIds?.rad)` and pass it via the public
  * `angleToSVG()` signature.
  *
  * Returns null on degenerate input (vertex equal to a side endpoint).

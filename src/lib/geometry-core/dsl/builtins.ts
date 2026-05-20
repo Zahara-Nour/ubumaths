@@ -2260,7 +2260,7 @@ function handleRotation(ctx: BuiltinCtx): BuiltinResult {
 				line
 			);
 		}
-		const cachedId = angleEl.measureScalarId;
+		const cachedId = angleEl.measureScalarIds?.rad;
 		let scalarId: string | undefined;
 		if (cachedId) {
 			const cached = figure.getElementById(cachedId);
@@ -2277,7 +2277,7 @@ function handleRotation(ctx: BuiltinCtx): BuiltinResult {
 			scalarId = figure.createScalarAngleMeasure(angleEl.p1Id, angleEl.vertexId, angleEl.p2Id, {
 				unite: 'rad'
 			});
-			figure.setAngleMeasureScalarId(angleId, scalarId);
+			figure.setAngleMeasureScalarId(angleId, scalarId, 'rad');
 		}
 		angleRad = { scalarRef: scalarId };
 	} else if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
@@ -2636,9 +2636,10 @@ function handleMesure(ctx: BuiltinCtx): BuiltinResult {
 		}
 		if (isAngle(el)) {
 			const unite = readMesureUnite(named, line);
-			// Cache via measureScalarId : if it already exists and its unit matches,
-			// reuse it. Otherwise, create a new derived scalar and cache its id.
-			const cachedId = el.measureScalarId;
+			// Cache via measureScalarIds[unite] : reuse the per-unit slot if it
+			// already holds a valid scalar with the matching kind/unit. Each
+			// unit has its own slot so mixing rad/deg queries does not thrash.
+			const cachedId = el.measureScalarIds?.[unite];
 			if (cachedId) {
 				const cached = figure.getElementById(cachedId);
 				if (
@@ -2654,7 +2655,7 @@ function handleMesure(ctx: BuiltinCtx): BuiltinResult {
 				unite,
 				label
 			});
-			figure.setAngleMeasureScalarId(el.id, scalarId);
+			figure.setAngleMeasureScalarId(el.id, scalarId, unite);
 			return { figureId: scalarId, symbolType: 'scalar' };
 		}
 		// Case D — mesure(u) with 1 vector
@@ -2735,7 +2736,7 @@ function handleMesure(ctx: BuiltinCtx): BuiltinResult {
 			unite,
 			label
 		});
-		figure.setAngleMeasureScalarId(angleId, scalarId);
+		figure.setAngleMeasureScalarId(angleId, scalarId, unite);
 		return { figureId: scalarId, symbolType: 'scalar' };
 	}
 

@@ -398,18 +398,20 @@ describe('figure.createAngle() — V1 factory', () => {
 	});
 });
 
-describe('figure.createAngle — measureScalarId cache', () => {
+describe('figure.createAngle — measureScalarIds per-unit cache', () => {
 	it('createAngle does NOT pre-create the measure scalar (lazy)', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
 		const id = f.createAngle(a, v, b);
-		const el = f.getElementById(id)! as { measureScalarId?: string };
-		expect(el.measureScalarId).toBeUndefined();
+		const el = f.getElementById(id)! as {
+			measureScalarIds?: { rad?: string; deg?: string };
+		};
+		expect(el.measureScalarIds).toBeUndefined();
 	});
 
-	it('setAngleMeasureScalarId stores the scalar id', () => {
+	it('setAngleMeasureScalarId stores the scalar id in the default rad slot', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
@@ -417,8 +419,29 @@ describe('figure.createAngle — measureScalarId cache', () => {
 		const angleId = f.createAngle(a, v, b);
 		const scalarId = f.createScalarAngleMeasure(a, v, b);
 		f.setAngleMeasureScalarId(angleId, scalarId);
-		const el = f.getElementById(angleId)! as { measureScalarId?: string };
-		expect(el.measureScalarId).toBe(scalarId);
+		const el = f.getElementById(angleId)! as {
+			measureScalarIds?: { rad?: string; deg?: string };
+		};
+		expect(el.measureScalarIds?.rad).toBe(scalarId);
+		expect(el.measureScalarIds?.deg).toBeUndefined();
+	});
+
+	it('setAngleMeasureScalarId(angleId, id, "deg") stores in the deg slot independently', () => {
+		const f = new Figure();
+		const a = f.createFreePoint(pt(1, 0));
+		const v = f.createFreePoint(pt(0, 0));
+		const b = f.createFreePoint(pt(0, 1));
+		const angleId = f.createAngle(a, v, b);
+		const radScalar = f.createScalarAngleMeasure(a, v, b, { unite: 'rad' });
+		const degScalar = f.createScalarAngleMeasure(a, v, b, { unite: 'deg' });
+		f.setAngleMeasureScalarId(angleId, radScalar, 'rad');
+		f.setAngleMeasureScalarId(angleId, degScalar, 'deg');
+		const el = f.getElementById(angleId)! as {
+			measureScalarIds?: { rad?: string; deg?: string };
+		};
+		// Both slots populated, neither overwrites the other (regression B1).
+		expect(el.measureScalarIds?.rad).toBe(radScalar);
+		expect(el.measureScalarIds?.deg).toBe(degScalar);
 	});
 
 	it('createScalarAngleMeasure returns correct angle in radians', () => {

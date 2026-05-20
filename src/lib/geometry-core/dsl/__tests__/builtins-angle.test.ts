@@ -213,7 +213,7 @@ describe('mesure(ang) — accessor on GeoAngle', () => {
 		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).toBeCloseTo(Math.PI / 2, 5);
 	});
 
-	it('2 successive calls to mesure(ang) return the same scalar (cache via measureScalarId)', () => {
+	it('2 successive calls to mesure(ang) return the same scalar (cache via measureScalarIds.rad)', () => {
 		const r = run(
 			[
 				'A = point(1, 0)',
@@ -227,6 +227,31 @@ describe('mesure(ang) — accessor on GeoAngle', () => {
 		const id1 = sym(r, 'm1')!.figureId!;
 		const id2 = sym(r, 'm2')!.figureId!;
 		expect(id1).toBe(id2); // same scalar reused
+	});
+
+	it('REGRESSION B1: alternating rad/deg calls do not thrash the cache', () => {
+		// Bug: in v0.9.0 the single-slot measureScalarId was overwritten on
+		// each unit switch, leaking the prior unit scalar. The Map-per-unit
+		// fix in v0.9.1 should preserve both slots.
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'mr1 = mesure(ang)', // rad
+				'md1 = mesure(ang, unite="deg")', // deg
+				'mr2 = mesure(ang)', // rad — should reuse mr1, NOT create new
+				'md2 = mesure(ang, unite="deg")' // deg — should reuse md1
+			].join('\n')
+		);
+		const radId1 = sym(r, 'mr1')!.figureId!;
+		const radId2 = sym(r, 'mr2')!.figureId!;
+		const degId1 = sym(r, 'md1')!.figureId!;
+		const degId2 = sym(r, 'md2')!.figureId!;
+		expect(radId1).toBe(radId2); // rad slot stable across deg interleave
+		expect(degId1).toBe(degId2); // deg slot stable across rad interleave
+		expect(radId1).not.toBe(degId1); // distinct scalars per unit
 	});
 });
 
