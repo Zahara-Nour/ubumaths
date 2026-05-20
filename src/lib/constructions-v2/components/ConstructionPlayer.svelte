@@ -185,14 +185,16 @@
 	}
 
 	function handleTimelineUpdate(state: TimelineState) {
-		// Detect natural end-of-timeline transition (play reaches the end and
-		// stops). Trigger one extra `executor.step()` to drain any pending
-		// final visibility scheduled by the last chorégraphié sub-step
-		// (e.g. `mediatrice @euclide` reveals the median line here).
-		const justEnded =
-			tl.isPlaying && !state.isPlaying && state.progress >= 1 && state.stepCount > 0;
+		// Detect any transition to "timeline at end" (play reaches the end,
+		// step-forward to the last step, or scrub to end). Trigger one extra
+		// `executor.step()` to drain any pending final visibility scheduled
+		// by the last chorégraphié sub-step (e.g. `mediatrice @euclide` is
+		// where `@squelette` / `@epure` / `@complet` get applied).
+		// `executor.step()` is idempotent : it's a no-op if no pending
+		// visibility is set.
+		const justReachedEnd = tl.progress < 1 && state.progress >= 1 && state.stepCount > 0;
 		tl = state;
-		if (justEnded) {
+		if (justReachedEnd) {
 			executor.step();
 			syncState();
 		}
