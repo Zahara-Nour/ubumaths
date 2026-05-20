@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.0...v0.9.1) (2026-05-20)
+
+### 🐛 Bug Fixes
+
+- **geometry-core:** cache mesure par unite + parser script supabase (v0.9.1) ([6a0c9d9](https://github.com/Zahara-Nour/ubumaths/commit/6a0c9d94d45334b8d3e879993e3c14a44af3a751))
+- **geometry-demo:** images et measurements descriptions migrent mesure() polymorphique ([3b947ac](https://github.com/Zahara-Nour/ubumaths/commit/3b947acd7c6adfd24ca1c6d19605b1ceeb7dda32))
+
 ## [0.9.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.91...v0.9.0) (2026-05-20)
 
 ### ⚠ BREAKING CHANGES
