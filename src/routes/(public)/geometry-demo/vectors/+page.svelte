@@ -2,11 +2,17 @@
 	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
 	import DslDemo from '../DslDemo.svelte';
 	import { Figure } from '$lib/geometry-core/graph/figure';
-	import { numeric } from '$lib/geometry-core/types/geo-value';
+	import { exact } from '$lib/geometry-core/types/geo-value';
+	import { numericNode } from '$lib/mathAST';
 	import { runDsl } from '$lib/geometry-core/dsl';
 
 	function pt(x: number, y: number) {
-		return { x: numeric(x), y: numeric(y) };
+		return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
+	}
+
+	/** Exact GeoValue wrapper for a single coordinate (preserves symbolic exactness). */
+	function ex(n: number) {
+		return exact(numericNode(n));
 	}
 
 	// ==========================================================================
@@ -24,11 +30,11 @@
 	vectorFig.createVectorByPoints(vC, vD, { label: 'v', color: '#059669' });
 
 	// Free vectors (by components, draggable as a unit)
-	vectorFig.createFreeVector(numeric(3), numeric(0), pt(1, -3), {
+	vectorFig.createFreeVector(ex(3), ex(0), pt(1, -3), {
 		label: 'i',
 		color: '#6366f1'
 	});
-	vectorFig.createFreeVector(numeric(0), numeric(2), pt(1, -3), {
+	vectorFig.createFreeVector(ex(0), ex(2), pt(1, -3), {
 		label: 'j',
 		color: '#9333ea'
 	});

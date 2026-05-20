@@ -1,11 +1,11 @@
 <script lang="ts">
 	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
 	import { Figure } from '$lib/geometry-core/graph/figure';
-	import { exact, numeric } from '$lib/geometry-core/types/geo-value';
-	import { number, sqrt } from '$lib/mathAST';
+	import { exact } from '$lib/geometry-core/types/geo-value';
+	import { number, numericNode, sqrt } from '$lib/mathAST';
 
 	function pt(x: number, y: number) {
-		return { x: numeric(x), y: numeric(y) };
+		return { x: exact(numericNode(x)), y: exact(numericNode(y)) };
 	}
 
 	const figure = new Figure();
