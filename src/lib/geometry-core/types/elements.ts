@@ -329,6 +329,24 @@ export interface GeoReflectedOverLine extends GeoElementBase {
 	readonly dependsOn: readonly [string, string, string];
 }
 
+/**
+ * Point derived from a `GeoFreeVector`'s anchor or end position.
+ *
+ * - `which='anchor'` → position = (vec.anchorX, vec.anchorY)
+ * - `which='end'`    → position = (vec.anchorX + vec.dx, vec.anchorY + vec.dy)
+ *
+ * Reactive: a drag of the free vector (via `figure.moveFreeVector`) propagates
+ * through `dependsOn: [vectorId]`. Used internally by the `angle(u, v)`
+ * overload when one or both operands are `GeoFreeVector` (V3 A2.x — lifts
+ * the V2/A2 limitation on free-vector anchor reactivity).
+ */
+export interface GeoFreeVectorPoint extends GeoElementBase {
+	readonly type: 'freeVectorPoint';
+	readonly vectorId: string;
+	readonly which: 'anchor' | 'end';
+	readonly dependsOn: readonly [string];
+}
+
 /** Point constrained to a function curve y=f(x). Draggable along x unless draggable=false. */
 export interface GeoPointOnCurve extends GeoElementBase {
 	readonly type: 'pointOnCurve';
@@ -1269,6 +1287,7 @@ export type GeoPointElement =
 	| GeoProjectedPoint
 	| GeoAffinityPoint
 	| GeoInvertedPoint
+	| GeoFreeVectorPoint
 	| GeoPointOnCurve
 	| GeoPointOnQuadraticCurve
 	| GeoPointOnSegment
@@ -1303,6 +1322,7 @@ export type GeoElement =
 	| GeoProjectedPoint
 	| GeoAffinityPoint
 	| GeoInvertedPoint
+	| GeoFreeVectorPoint
 	| GeoAngle
 	| GeoSegmentMark
 	| GeoText
@@ -1444,6 +1464,10 @@ export function isRotatedPoint(el: GeoElement): el is GeoRotatedPoint {
 
 export function isTranslatedPoint(el: GeoElement): el is GeoTranslatedPoint {
 	return el.type === 'translatedPoint';
+}
+
+export function isFreeVectorPoint(el: GeoElement): el is GeoFreeVectorPoint {
+	return el.type === 'freeVectorPoint';
 }
 
 export function isDilatedPoint(el: GeoElement): el is GeoDilatedPoint {

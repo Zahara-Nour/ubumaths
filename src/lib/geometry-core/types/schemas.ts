@@ -213,6 +213,13 @@ const translatedPointSchema = baseElementSchema.extend({
 	dependsOn: z.tuple([z.string(), z.string(), z.string()])
 });
 
+const freeVectorPointSchema = baseElementSchema.extend({
+	type: z.literal('freeVectorPoint'),
+	vectorId: z.string().min(1),
+	which: z.enum(['anchor', 'end']),
+	dependsOn: z.tuple([z.string()])
+});
+
 const dilatedPointSchema = baseElementSchema.extend({
 	type: z.literal('dilatedPoint'),
 	sourceId: z.string().min(1),
@@ -369,6 +376,7 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	translatedPointSchema,
 	dilatedPointSchema,
 	reflectedOverLineSchema,
+	freeVectorPointSchema,
 	angleSchema,
 	segmentMarkSchema,
 	textSchema,

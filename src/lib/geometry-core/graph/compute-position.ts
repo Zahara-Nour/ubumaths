@@ -28,6 +28,8 @@ import {
 	isTranslatedPoint,
 	isDilatedPoint,
 	isReflectedOverLine,
+	isFreeVector,
+	isFreeVectorPoint,
 	isProjectedPoint,
 	isAffinityPoint,
 	isInvertedPoint,
@@ -542,6 +544,25 @@ export function computeElementPosition(
 			return { position: rotate(source, center, angle), hasComputablePosition: true };
 		}
 		return { position: null, hasComputablePosition: true };
+	}
+
+	if (isFreeVectorPoint(el)) {
+		const vec = elements.get(el.vectorId);
+		if (!vec || !isFreeVector(vec)) {
+			return { position: null, hasComputablePosition: true };
+		}
+		const ax = geoToNumber(vec.anchorX);
+		const ay = geoToNumber(vec.anchorY);
+		if (el.which === 'anchor') {
+			return { position: { x: numeric(ax), y: numeric(ay) }, hasComputablePosition: true };
+		}
+		// 'end' : anchor + (dx, dy)
+		const dx = geoToNumber(vec.dx);
+		const dy = geoToNumber(vec.dy);
+		return {
+			position: { x: numeric(ax + dx), y: numeric(ay + dy) },
+			hasComputablePosition: true
+		};
 	}
 
 	if (isTranslatedPoint(el)) {
