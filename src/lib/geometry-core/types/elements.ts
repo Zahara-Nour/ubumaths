@@ -449,6 +449,11 @@ export interface GeoAngle extends GeoElementBase {
 	readonly measureScalarIds?: { readonly rad?: string; readonly deg?: string };
 	/** Arc radius in pixels. Default: 25. */
 	readonly arcRadiusPx?: number;
+	/**
+	 * Spacing in pixels between concentric arcs for `marque='arcs2'|'arcs3'`.
+	 * Default: 6. Ignored for single-arc and right-angle marks.
+	 */
+	readonly arcSpacingPx?: number;
 }
 
 /** Tick marks on a segment to indicate equal lengths. */

@@ -43,7 +43,7 @@ Ajout fonctionnel léger :
 | P0  | Spec TDD + tests rouges                                                                        | **terminée** |
 | P1  | Dette tech D1 (`requireEnumNamed` callerName) + D3 (helper `computeBisectorDirection` partagé) | **terminée** |
 | P2  | Overloads `angle(u,v)` + `angle(seg1,seg2)` + `angle(d1,d2)` (dispatch + points synthétiques)  | **terminée** |
-| P3  | `arcSpacingPx` paramétrable + dette tech B2 (dédup `mesure(A, V, B)` par tuple)                | à faire      |
+| P3  | `arcSpacingPx` paramétrable + dette tech B2 (dédup `mesure(A, V, B)` par tuple)                | **terminée** |
 | P4  | Dette tech B5 (serializer `α → mesure(α)`) + tests intégration + doc V2                        | à faire      |
 
 ---
@@ -387,3 +387,66 @@ L'ancienne forme `angle(A, V, B)` reste, `angle_polaire(O, P)` aussi.
 ### Statut P2
 
 **Terminée.** Prêt pour P3 (`arcSpacingPx` paramétrable + dette tech B2 dédup `mesure(A, V, B)`).
+
+---
+
+## Notes Phase 3
+
+### Partie A — `arcSpacingPx` paramétrable
+
+- **Type** : champ optionnel `readonly arcSpacingPx?: number` ajouté à `GeoAngle` (`types/elements.ts`).
+- **Zod schema** : `arcSpacingPx: z.number().positive().optional()` ajouté (`types/schemas.ts`).
+- **Factory** : `Figure.createAngle` accepte `arcSpacingPx` et le propage sur l'élément créé.
+- **Handler** : `readAngleNamedOptions` (helper extrait en P2) lit `arcSpacingPx` via `requireNumber` puis valide `> 0 ∧ finite` → sinon `DslRuntimeError` structurée. La valeur est ensuite propagée par `buildAngleFromPoints` à `figure.createAngle` — toutes les overloads (`angle(A,V,B)`, `angle(u,v)`, `angle(seg1,seg2)`, `angle(d1,d2)`) en bénéficient automatiquement.
+- **Renderers (3 surfaces)** :
+  - `svg-primitives.ts` : constante renommée `ARC_SPACING_PX_DEFAULT` (exportée). Boucle `for i` lit `arcSpacingPx = angle.arcSpacingPx ?? ARC_SPACING_PX_DEFAULT`.
+  - `export-tikz.ts` : conversion px→math units `(arcSpacingPx / 6) * MARK_SPACING` (proportion calquée sur `arcRadiusPx / 25 * MARK_RADIUS`).
+  - `export-typst.ts` : même conversion.
+- **Pas de renommage côté DSL** (camelCase préservé pour cohérence avec `arcRadiusPx`).
+
+### Partie B — B2 Dédup `mesure(A, V, B)` par tuple
+
+- **Cache `Figure`** : `private hiddenAngleByTriplet = new Map<string, string>()` keyé par `${p1Id}|${vertexId}|${p2Id}` (ordre préservé).
+- **Helper privé `hiddenAngleKey(p1, v, p2)`** : centralise la construction de la clé.
+- **Méthode publique `createHiddenAngleFor(p1, v, p2)`** : retourne l'angle caché en cache si présent et toujours existant (`this.elements.has(existing)` garde-fou anti-suppression), sinon délègue à `createAngle({marque:'aucune'}) + hideElement`, puis enregistre.
+- **`handleMesure` (branche 3 points)** : remplace `createAngle + hideElement` par `figure.createHiddenAngleFor(...)`. Réutilise aussi le cache `measureScalarIds[unite]` sur l'angle caché — si le scalaire existe et matche le `scalarKind/unite`, on le retourne directement (économise scalaire + appel de `setAngleMeasureScalarId`).
+- **`mesure(u, v)` (2 vecteurs)** : dédup non implémentée — la branche crée un scalaire `vectors_angle_measure` direct (pas d'angle intermédiaire). À évaluer en V3 si besoin (clé `(uId, vId, unite)` sur un cache séparé).
+
+### Tests activés
+
+- `builtins-angle.test.ts` :
+  - V2 `arcSpacingPx` named arg : **7 tests** activés (défaut undefined, custom 10/8/4/7 sur les 4 overloads, refus 0 et −5).
+  - V2 B2 dédup : **3 tests** activés (2 appels identiques → même scalarId, 2 triplets différents → scalarIds différents, 3 appels → cache stable).
+- `builtins-angle-overloads.test.ts` :
+  - `arcSpacingPx parameter (semantic) — P3` : **8 tests** activés (default, store, propagation sur les 4 formes, refus 0 et −3).
+- **Total : 18 tests activés**.
+
+### Résultats tests (0 régression)
+
+| Fichier                            | Avant P3             | Après P3                |
+| ---------------------------------- | -------------------- | ----------------------- |
+| `builtins-angle.test.ts`           | 73 passed \| 17 todo | **83 passed \| 7 todo** |
+| `builtins-angle-overloads.test.ts` | 35 passed \| 10 todo | **43 passed \| 2 todo** |
+| `figure-angle.test.ts`             | 39/39 passed         | **39/39 passed**        |
+| `angle-canonical-cases.test.ts`    | 9/9 passed           | **9/9 passed**          |
+
+### Fichiers modifiés
+
+- `src/lib/geometry-core/types/elements.ts` — champ `arcSpacingPx?: number` sur `GeoAngle`.
+- `src/lib/geometry-core/types/schemas.ts` — Zod schema étendu.
+- `src/lib/geometry-core/graph/figure.ts` — cache `hiddenAngleByTriplet` + `createHiddenAngleFor` + `hiddenAngleKey` + signature `createAngle` étendue.
+- `src/lib/geometry-core/dsl/builtins.ts` — `readAngleNamedOptions` lit + valide `arcSpacingPx` ; `buildAngleFromPoints` propage ; `handleMesure` 3-points utilise `createHiddenAngleFor` + cache `measureScalarIds`.
+- `src/lib/geometry-core/rendering/svg-primitives.ts` — `ARC_SPACING_PX` → `ARC_SPACING_PX_DEFAULT` exporté, lecture `angle.arcSpacingPx`.
+- `src/lib/geometry-core/rendering/export-tikz.ts` — conversion px→math units.
+- `src/lib/geometry-core/rendering/export-typst.ts` — conversion px→math units.
+- `src/lib/geometry-core/dsl/__tests__/builtins-angle.test.ts` — 10 `it.todo()` activés.
+- `src/lib/geometry-core/dsl/__tests__/builtins-angle-overloads.test.ts` — 8 `it.todo()` activés.
+
+### Limitations P3 acceptées
+
+1. **Dédup `mesure(u, v)`** : non implémentée (branche 2 vecteurs crée un scalaire direct sans angle intermédiaire). À revoir en V3 si pollution graphe constatée.
+2. **Pas de tests de rendu visuel sur `arcSpacingPx`** : la propagation au rendu est validée par lecture du champ sur l'élément (test sémantique). Un test de rendu pixel-perfect (snapshot SVG) pourrait être ajouté en P4 si jugé nécessaire.
+
+### Statut P3
+
+**Terminée.** Prêt pour P4 (B5 serializer `α → mesure(α)` + tests intégration + doc V2).

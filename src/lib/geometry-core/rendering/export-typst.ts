@@ -401,6 +401,9 @@ export function exportToTypst(
 		const marque = el.marque ?? 'arc';
 		const kind = el.kind ?? 'saillant';
 		const baseR = el.arcRadiusPx ? (el.arcRadiusPx / 25) * MARK_RADIUS : MARK_RADIUS;
+		// Convert px spacing to math units in the same proportion as MARK_RADIUS:
+		// default 6px maps to MARK_SPACING (0.12) — overrides scale linearly.
+		const arcSpacing = el.arcSpacingPx ? (el.arcSpacingPx / 6) * MARK_SPACING : MARK_SPACING;
 		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
 
 		if (marque === 'aucune') {
@@ -428,7 +431,7 @@ export function exportToTypst(
 			const stop = Math.round((angle1Deg + sweep) * 100) / 100;
 
 			for (let i = 0; i < arcCount; i++) {
-				const r = baseR + i * MARK_SPACING;
+				const r = baseR + i * arcSpacing;
 				lines.push(
 					`  arc(${c(vx, vy)}, start: ${start}deg, stop: ${stop}deg, radius: ${Math.round(r * 1000) / 1000}, anchor: "origin", stroke: ${color} + 1pt)`
 				);

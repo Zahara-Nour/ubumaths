@@ -404,6 +404,9 @@ export function exportToTikZ(
 		// for TikZ default; we keep the original `MARK_RADIUS` default but allow
 		// `arcRadiusPx` to scale proportionally.
 		const baseR = el.arcRadiusPx ? (el.arcRadiusPx / 25) * MARK_RADIUS : MARK_RADIUS;
+		// Convert px spacing to math units in the same proportion as MARK_RADIUS:
+		// default 6px maps to MARK_SPACING (0.12) — overrides scale linearly.
+		const arcSpacing = el.arcSpacingPx ? (el.arcSpacingPx / 6) * MARK_SPACING : MARK_SPACING;
 
 		const { name } = hexToTikZColor(resolveStyle(el, figure.defaults).color);
 
@@ -432,7 +435,7 @@ export function exportToTikZ(
 			const endAngle = Math.round((angle1Deg + sweep) * 100) / 100;
 
 			for (let i = 0; i < arcCount; i++) {
-				const r = baseR + i * MARK_SPACING;
+				const r = baseR + i * arcSpacing;
 				const startX = vx + r * Math.cos((startAngle * Math.PI) / 180);
 				const startY = vy + r * Math.sin((startAngle * Math.PI) / 180);
 				lines.push(

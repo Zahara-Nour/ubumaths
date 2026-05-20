@@ -572,14 +572,119 @@ describe('angle(d1, d2) — 2 lines overload (semantic)', () => {
 // =============================================================================
 
 describe('arcSpacingPx parameter (semantic) — P3', () => {
-	it.todo('default value is 6 px when arcSpacingPx is omitted');
-	it.todo('arcSpacingPx=10 is stored on the GeoAngle element');
-	it.todo('arcSpacingPx works on angle(A, V, B) 3-points form');
-	it.todo('arcSpacingPx works on angle(u, v) 2-vectors form');
-	it.todo('arcSpacingPx works on angle(seg1, seg2) 2-segments form');
-	it.todo('arcSpacingPx works on angle(d1, d2) 2-lines form');
-	it.todo('arcSpacingPx=0 throws DslRuntimeError (strictly positive required)');
-	it.todo('arcSpacingPx=-3 throws DslRuntimeError');
+	it('default value is undefined when arcSpacingPx is omitted (renderer falls back to 6)', () => {
+		const r = run(
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'a = angle(A, V, B)'].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBeUndefined();
+	});
+
+	it('arcSpacingPx=10 is stored on the GeoAngle element', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'a = angle(A, V, B, arcSpacingPx=10)'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBe(10);
+	});
+
+	it('arcSpacingPx works on angle(A, V, B) 3-points form', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'a = angle(A, V, B, marque="arcs3", arcSpacingPx=12)'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBe(12);
+		expect(el.marque).toBe('arcs3');
+	});
+
+	it('arcSpacingPx works on angle(u, v) 2-vectors form', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(0, 1)',
+				'u = vecteur(O, A)',
+				'v = vecteur(O, B)',
+				'a = angle(u, v, marque="arcs2", arcSpacingPx=5)'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBe(5);
+	});
+
+	it('arcSpacingPx works on angle(seg1, seg2) 2-segments form', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'C = point(0, 0)',
+				'D = point(0, 1)',
+				's1 = segment(A, B)',
+				's2 = segment(C, D)',
+				'a = angle(s1, s2, arcSpacingPx=9)'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBe(9);
+	});
+
+	it('arcSpacingPx works on angle(d1, d2) 2-lines form', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'C = point(0, 0)',
+				'D = point(1, 1)',
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'a = angle(d1, d2, arcSpacingPx=3)'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBe(3);
+	});
+
+	it('arcSpacingPx=0 throws DslRuntimeError (strictly positive required)', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(1, 0)',
+					'V = point(0, 0)',
+					'B = point(0, 1)',
+					'a = angle(A, V, B, arcSpacingPx=0)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('arcSpacingPx=-3 throws DslRuntimeError', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(1, 0)',
+					'V = point(0, 0)',
+					'B = point(0, 1)',
+					'a = angle(A, V, B, arcSpacingPx=-3)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
 });
 
 // =============================================================================

@@ -727,7 +727,9 @@ export function annulusToSVG(
 // =============================================================================
 
 const ARC_RADIUS_PX_DEFAULT = 25;
-const ARC_SPACING_PX = 6;
+/** Default spacing in pixels between concentric arcs for `marque='arcs2'|'arcs3'`.
+ * Each GeoAngle can override this via `angle.arcSpacingPx`. */
+export const ARC_SPACING_PX_DEFAULT = 6;
 const RIGHT_ANGLE_SIZE_PX = 14;
 const LABEL_OFFSET_PX = 12;
 
@@ -806,6 +808,7 @@ export function angleToSVG(
 	const marque = angle.marque ?? 'arc';
 	const kind = angle.kind ?? 'saillant';
 	const arcRadiusPx = angle.arcRadiusPx ?? ARC_RADIUS_PX_DEFAULT;
+	const arcSpacingPx = angle.arcSpacingPx ?? ARC_SPACING_PX_DEFAULT;
 
 	// Compute unsigned interior angle in math space (positions in MATH units
 	// don't suffer from y-flip; using SVG units gives same magnitude).
@@ -844,7 +847,7 @@ export function angleToSVG(
 
 	const paths: string[] = [];
 	for (let i = 0; i < arcCount; i++) {
-		const r = arcRadiusPx + i * ARC_SPACING_PX;
+		const r = arcRadiusPx + i * arcSpacingPx;
 		paths.push(buildArcPath(svgV.x, svgV.y, r, angle1, angle2, kind));
 	}
 

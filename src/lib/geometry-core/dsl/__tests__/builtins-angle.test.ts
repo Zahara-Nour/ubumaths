@@ -937,13 +937,105 @@ describe('V2 — angle(d1, d2) — 2 lines overload', () => {
 });
 
 describe('V2 — arcSpacingPx named arg', () => {
-	it.todo('angle(A, V, B) without arcSpacingPx uses default 6');
-	it.todo('angle(A, V, B, arcSpacingPx=10) stores 10 on the GeoAngle');
-	it.todo('arcSpacingPx is accepted on angle(u, v) overload');
-	it.todo('arcSpacingPx is accepted on angle(seg1, seg2) overload');
-	it.todo('arcSpacingPx is accepted on angle(d1, d2) overload');
-	it.todo('arcSpacingPx=0 throws DslRuntimeError (must be strictly positive)');
-	it.todo('arcSpacingPx=-5 throws DslRuntimeError');
+	it('angle(A, V, B) without arcSpacingPx uses default (field absent on element)', () => {
+		const r = run(
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'ang = angle(A, V, B)'].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!);
+		expect(el).toBeDefined();
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBeUndefined();
+	});
+
+	it('angle(A, V, B, arcSpacingPx=10) stores 10 on the GeoAngle', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B, arcSpacingPx=10)'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!);
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBe(10);
+	});
+
+	it('arcSpacingPx is accepted on angle(u, v) overload', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(0, 1)',
+				'u = vecteur(O, A)',
+				'v = vecteur(O, B)',
+				'ang = angle(u, v, arcSpacingPx=8)'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!);
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBe(8);
+	});
+
+	it('arcSpacingPx is accepted on angle(seg1, seg2) overload', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'C = point(0, 0)',
+				'D = point(0, 1)',
+				's1 = segment(A, B)',
+				's2 = segment(C, D)',
+				'ang = angle(s1, s2, arcSpacingPx=4)'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!);
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBe(4);
+	});
+
+	it('arcSpacingPx is accepted on angle(d1, d2) overload', () => {
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'C = point(0, 0)',
+				'D = point(1, 1)',
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'ang = angle(d1, d2, arcSpacingPx=7)'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!);
+		if (!el || !isAngle(el)) throw new Error('expected angle');
+		expect(el.arcSpacingPx).toBe(7);
+	});
+
+	it('arcSpacingPx=0 throws DslRuntimeError (must be strictly positive)', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(1, 0)',
+					'V = point(0, 0)',
+					'B = point(0, 1)',
+					'ang = angle(A, V, B, arcSpacingPx=0)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('arcSpacingPx=-5 throws DslRuntimeError', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(1, 0)',
+					'V = point(0, 0)',
+					'B = point(0, 1)',
+					'ang = angle(A, V, B, arcSpacingPx=-5)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
 });
 
 describe('V2 — Dispatch errors', () => {
@@ -1075,9 +1167,57 @@ describe('V2 — Cas dégénérés overloads', () => {
 // =============================================================================
 
 describe('V2 — B2 dédup mesure(A, V, B) by triplet', () => {
-	it.todo('2 successive mesure(A, V, B) calls on same triplet return same scalarId');
-	it.todo('mesure(A, V, B) and mesure(V, A, B) return different scalarIds (different triplets)');
-	it.todo('cache persists across recompute cycles');
+	it('2 successive mesure(A, V, B) calls on same triplet return same scalarId', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'm1 = mesure(A, V, B)',
+				'm2 = mesure(A, V, B)'
+			].join('\n')
+		);
+		const id1 = sym(r, 'm1')!.figureId!;
+		const id2 = sym(r, 'm2')!.figureId!;
+		expect(id1).toBe(id2);
+	});
+
+	it('mesure(A, V, B) and mesure(V, A, B) return different scalarIds (different triplets)', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'm1 = mesure(A, V, B)',
+				'm2 = mesure(V, A, B)'
+			].join('\n')
+		);
+		const id1 = sym(r, 'm1')!.figureId!;
+		const id2 = sym(r, 'm2')!.figureId!;
+		expect(id1).not.toBe(id2);
+	});
+
+	it('cache reuse: 3 successive mesure(A, V, B) calls share the same scalarId', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'm1 = mesure(A, V, B)',
+				'm2 = mesure(A, V, B)',
+				'm3 = mesure(A, V, B)'
+			].join('\n')
+		);
+		const id1 = sym(r, 'm1')!.figureId!;
+		const id2 = sym(r, 'm2')!.figureId!;
+		const id3 = sym(r, 'm3')!.figureId!;
+		expect(id1).toBe(id2);
+		expect(id2).toBe(id3);
+		// Both scalar resolve to a valid scalar element.
+		const el = r.figure.getElementById(id1);
+		expect(el).toBeDefined();
+		expect(el!.type).toBe('scalar');
+	});
 });
 
 // =============================================================================
