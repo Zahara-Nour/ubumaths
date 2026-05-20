@@ -3123,9 +3123,18 @@ function handleAngleVectors(
 	const compU = resolveVectorNumericComponents(u, figure, 'u', line);
 	resolveVectorNumericComponents(v, figure, 'v', line);
 
-	// Degenerate: u === v (same id) → mesure = 0. Build a synthetic triplet
-	// (vertex, p1, p2=duplicate-shifted) so the graph has no duplicate parents.
-	if (u.id === v.id) {
+	// Degenerate cases → mesure = 0. Build a synthetic triplet (vertex, p1,
+	// p2=duplicate-shifted) so the graph has no duplicate parents AND so the
+	// label/fill renderers receive a finite mesure (0) instead of undefined.
+	// Covers :
+	//   - same id (u === v)
+	//   - 2 distinct `vectorByPoints` aligned on the same 2 points
+	//     (u.start === v.start ∧ u.end === v.end) — would otherwise fall into
+	//     Cas B and produce a translated p2 coincident with p1 (B-V2-1 from
+	//     consolidated code-review).
+	const sameSupportingPoints =
+		isVectorByPoints(u) && isVectorByPoints(v) && u.startId === v.startId && u.endId === v.endId;
+	if (u.id === v.id || sameSupportingPoints) {
 		const anchorPos = u.type === 'vectorByPoints' ? figure.getPosition(u.startId) : null;
 		const vx = anchorPos ? geoToNumber(anchorPos.x) : 0;
 		const vy = anchorPos ? geoToNumber(anchorPos.y) : 0;
