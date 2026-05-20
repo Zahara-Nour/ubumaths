@@ -2728,13 +2728,27 @@ function handleMesure(ctx: BuiltinCtx): BuiltinResult {
 			}
 		}
 		const unite = readMesureUnite(named, line);
-		// Create an internal invisible GeoAngle (marque 'aucune', hidden), then
-		// derive the measure scalar from it. createAngle hardcodes visible:true,
-		// so we hide it explicitly via hideElement() right after.
-		const angleId = figure.createAngle(ids[0], ids[1], ids[2], {
-			marque: 'aucune'
-		});
-		figure.hideElement(angleId);
+		// B2 (V2) — Dedup via `createHiddenAngleFor`: the same triplet
+		// (p1, vertex, p2) reuses the same hidden GeoAngle across repeated
+		// `mesure(A, V, B)` calls. We then reuse the per-unit `measureScalarIds`
+		// cache on that angle so the derived scalar is created at most once
+		// per unit.
+		const angleId = figure.createHiddenAngleFor(ids[0], ids[1], ids[2]);
+		const cachedAngle = figure.getElementById(angleId);
+		if (cachedAngle && isAngle(cachedAngle)) {
+			const cachedScalarId = cachedAngle.measureScalarIds?.[unite];
+			if (cachedScalarId) {
+				const cachedScalar = figure.getElementById(cachedScalarId);
+				if (
+					cachedScalar &&
+					cachedScalar.type === 'scalar' &&
+					cachedScalar.scalarKind === 'angle_measure' &&
+					(cachedScalar.unite ?? 'rad') === unite
+				) {
+					return { figureId: cachedScalarId, symbolType: 'scalar' };
+				}
+			}
+		}
 		const scalarId = figure.createScalarAngleMeasure(ids[0], ids[1], ids[2], {
 			unite,
 			label
@@ -2950,7 +2964,7 @@ function requireEnumNamed<T extends string>(
 	return val.value as T;
 }
 
-/** Read all V1 named angle options (marque, orientation, kind, showLabel, unite, arcRadiusPx). */
+/** Read all V1+V2 named angle options (marque, orientation, kind, showLabel, unite, arcRadiusPx, arcSpacingPx). */
 function readAngleNamedOptions(
 	named: Map<string, ResolvedValue>,
 	line: number
@@ -2961,6 +2975,7 @@ function readAngleNamedOptions(
 	showLabel?: 'aucun' | 'nom' | 'mesure' | 'mesure+nom';
 	unite?: 'rad' | 'deg';
 	arcRadiusPx?: number;
+	arcSpacingPx?: number;
 } {
 	const marque = requireEnumNamed<'arc' | 'arcs2' | 'arcs3' | 'carre' | 'aucune'>(
 		named,
@@ -2994,7 +3009,21 @@ function readAngleNamedOptions(
 	const arcRadiusPx = named.has('arcRadiusPx')
 		? requireNumber(named.get('arcRadiusPx')!, 'arcRadiusPx', line)
 		: undefined;
-	return { marque, orientation, kind, showLabel, unite, arcRadiusPx };
+	let arcSpacingPx: number | undefined;
+	if (named.has('arcSpacingPx')) {
+		const raw = requireNumber(named.get('arcSpacingPx')!, 'arcSpacingPx', line);
+		if (!Number.isFinite(raw) || raw <= 0) {
+			throw new DslRuntimeError(
+				{
+					summary: `\`angle()\` : \`arcSpacingPx\` doit être un nombre strictement positif, \`${raw}\` reçu.`,
+					hint: 'Choisis une valeur > 0 (défaut : 6 px).'
+				},
+				line
+			);
+		}
+		arcSpacingPx = raw;
+	}
+	return { marque, orientation, kind, showLabel, unite, arcRadiusPx, arcSpacingPx };
 }
 
 /** Resolve a vector element's (dx, dy) from the live positions; throws on degenerate. */
@@ -3046,7 +3075,8 @@ function buildAngleFromPoints(
 		kind: opts.kind,
 		showLabel: opts.showLabel,
 		unite: opts.unite,
-		arcRadiusPx: opts.arcRadiusPx
+		arcRadiusPx: opts.arcRadiusPx,
+		arcSpacingPx: opts.arcSpacingPx
 	});
 	return { figureId: id, symbolType: 'angle' };
 }

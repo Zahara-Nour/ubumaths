@@ -299,6 +299,13 @@ export class Figure {
 	private tracePoints = new Map<string, Point[]>();
 	private undo_manager = new UndoManager();
 	private _transformeOrigins = new Map<string, { transformId: string; sourceId: string }>();
+	/**
+	 * Cache of hidden `GeoAngle`s created by `mesure(A, V, B)`, keyed by the
+	 * ordered triplet `${p1Id}|${vertexId}|${p2Id}`. Used by
+	 * `createHiddenAngleFor` to avoid creating a new invisible angle (and its
+	 * derived scalar) on every call with the same triplet.
+	 */
+	private hiddenAngleByTriplet = new Map<string, string>();
 
 	constructor(defaults?: FigureDefaults) {
 		this.defaults = defaults ?? {};
@@ -1970,6 +1977,7 @@ export class Figure {
 			showLabel?: 'aucun' | 'nom' | 'mesure' | 'mesure+nom';
 			unite?: 'rad' | 'deg';
 			arcRadiusPx?: number;
+			arcSpacingPx?: number;
 		}
 	): string {
 		const p1 = this.elements.get(p1Id);
@@ -1995,6 +2003,7 @@ export class Figure {
 			showLabel: options?.showLabel ?? 'aucun',
 			unite: options?.unite ?? 'rad',
 			arcRadiusPx: options?.arcRadiusPx,
+			arcSpacingPx: options?.arcSpacingPx,
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
@@ -3636,6 +3645,30 @@ export class Figure {
 			measureScalarIds: { ...current, [unite]: scalarId }
 		};
 		this.elements.set(angleId, updated);
+	}
+
+	/** Internal helper used by `mesure(A, V, B)` to avoid creating a new
+	 * hidden angle on every call with the same triplet. The key encodes
+	 * the ordered (p1, vertex, p2) tuple to preserve orientation. */
+	private hiddenAngleKey(p1Id: string, vertexId: string, p2Id: string): string {
+		return `${p1Id}|${vertexId}|${p2Id}`;
+	}
+
+	/**
+	 * Return the hidden `GeoAngle` cached for the given ordered triplet, or
+	 * create a new one (marque='aucune', visible=false) and cache it. Used by
+	 * `mesure(A, V, B)` to dedupe across repeated calls on the same triplet.
+	 * The cache is local to this Figure instance and guards against stale ids
+	 * (an element may have been removed between two calls).
+	 */
+	createHiddenAngleFor(p1Id: string, vertexId: string, p2Id: string): string {
+		const key = this.hiddenAngleKey(p1Id, vertexId, p2Id);
+		const existing = this.hiddenAngleByTriplet.get(key);
+		if (existing && this.elements.has(existing)) return existing;
+		const id = this.createAngle(p1Id, vertexId, p2Id, { marque: 'aucune' });
+		this.hideElement(id);
+		this.hiddenAngleByTriplet.set(key, id);
+		return id;
 	}
 
 	createScalarNorme(vectorId: string, options?: ElementOptions): string {

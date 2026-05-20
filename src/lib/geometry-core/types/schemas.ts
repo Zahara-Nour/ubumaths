@@ -246,7 +246,8 @@ const angleSchema = baseElementSchema.extend({
 			deg: z.string().optional()
 		})
 		.optional(),
-	arcRadiusPx: z.number().positive().optional()
+	arcRadiusPx: z.number().positive().optional(),
+	arcSpacingPx: z.number().positive().optional()
 });
 
 const segmentMarkSchema = baseElementSchema.extend({
