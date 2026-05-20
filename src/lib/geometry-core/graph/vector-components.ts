@@ -6,9 +6,11 @@
  */
 
 import type { GeoElement } from '../types/elements';
+import { isLine } from '../types/elements';
 import type { GeoPoint } from '../types/primitives';
 import type { GeoValue } from '../types/geo-value';
 import { geoAdd, geoSub, geoMul, geoOpposite } from '../compute/geo-arithmetic';
+import { geoToNumber } from '../compute/to-number';
 
 export function resolveVectorComponents(
 	id: string,
@@ -44,6 +46,26 @@ export function resolveVectorComponents(
 		const c = resolveVectorComponents(el.vectorId, elements, positions);
 		if (!c) return null;
 		return { dx: geoOpposite(c.dx), dy: geoOpposite(c.dy) };
+	}
+	if (el.type === 'vectorOrientedAlongLine') {
+		// Read both line endpoints to compute the (possibly flipped) direction
+		// of `lineId` so dot(dir(lineId), dir(referenceLineId)) ≥ 0.
+		const line = elements.get(el.lineId);
+		const ref = elements.get(el.referenceLineId);
+		if (!line || !isLine(line) || !ref || !isLine(ref)) return null;
+		const lp1 = positions.get(line.point1Id);
+		const lp2 = positions.get(line.point2Id);
+		const rp1 = positions.get(ref.point1Id);
+		const rp2 = positions.get(ref.point2Id);
+		if (!lp1 || !lp2 || !rp1 || !rp2) return null;
+		const ldx = geoSub(lp2.x, lp1.x);
+		const ldy = geoSub(lp2.y, lp1.y);
+		const rdx = geoToNumber(rp2.x) - geoToNumber(rp1.x);
+		const rdy = geoToNumber(rp2.y) - geoToNumber(rp1.y);
+		const lnx = geoToNumber(ldx);
+		const lny = geoToNumber(ldy);
+		const dot = lnx * rdx + lny * rdy;
+		return dot >= 0 ? { dx: ldx, dy: ldy } : { dx: geoOpposite(ldx), dy: geoOpposite(ldy) };
 	}
 	return null;
 }

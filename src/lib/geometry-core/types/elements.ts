@@ -771,12 +771,33 @@ export interface GeoVectorNegate extends GeoElementBase {
 	readonly dependsOn: readonly string[];
 }
 
+/**
+ * Reactive vector along a line, oriented to keep a non-negative dot product
+ * with a reference line's direction. Used internally by `angle(d1, d2)` to
+ * preserve the acute-angle convention dynamically across drags: when the dot
+ * product of the two line directions changes sign, the vector flips so the
+ * angle never crosses π/2.
+ *
+ * Always created with `visible: false`. Not user-facing, not serialized
+ * (skipped by serializer.ts line 64 invisible-element filter), not rendered
+ * (skipped by render loops via the same `el.visible` check).
+ */
+export interface GeoVectorOrientedAlongLine extends GeoElementBase {
+	readonly type: 'vectorOrientedAlongLine';
+	/** Line whose direction the vector follows (point2 - point1, possibly negated). */
+	readonly lineId: string;
+	/** Reference line: the vector is flipped if dot(dir(line), dir(reference)) < 0. */
+	readonly referenceLineId: string;
+	readonly dependsOn: readonly string[];
+}
+
 export type GeoVector =
 	| GeoVectorByPoints
 	| GeoFreeVector
 	| GeoVectorSum
 	| GeoVectorScaled
-	| GeoVectorNegate;
+	| GeoVectorNegate
+	| GeoVectorOrientedAlongLine;
 
 // =============================================================================
 // Arc (two construction variants)
@@ -1704,7 +1725,8 @@ export function isVector(el: GeoElement): el is GeoVector {
 		el.type === 'freeVector' ||
 		el.type === 'vectorSum' ||
 		el.type === 'vectorScaled' ||
-		el.type === 'vectorNegate'
+		el.type === 'vectorNegate' ||
+		el.type === 'vectorOrientedAlongLine'
 	);
 }
 
@@ -1718,6 +1740,10 @@ export function isVectorScaled(el: GeoElement): el is GeoVectorScaled {
 
 export function isVectorNegate(el: GeoElement): el is GeoVectorNegate {
 	return el.type === 'vectorNegate';
+}
+
+export function isVectorOrientedAlongLine(el: GeoElement): el is GeoVectorOrientedAlongLine {
+	return el.type === 'vectorOrientedAlongLine';
 }
 
 // Transformation object type guards

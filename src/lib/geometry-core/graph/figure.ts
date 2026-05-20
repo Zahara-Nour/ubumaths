@@ -71,6 +71,7 @@ import type {
 	GeoVectorSum,
 	GeoVectorScaled,
 	GeoVectorNegate,
+	GeoVectorOrientedAlongLine,
 	type GeoRotation,
 	type GeoReflection,
 	type GeoReflectionOverLine,
@@ -96,6 +97,7 @@ import {
 	isFreePoint,
 	isFreeVector,
 	isCircle,
+	isLine,
 	isLineLike,
 	isPointElement,
 	isQuadraticCurve,
@@ -719,6 +721,56 @@ export class Figure {
 			vectorId,
 			color: this.resolveColor(options),
 			visible: true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.positions.set(id, { x: numeric(0), y: numeric(0) });
+		return id;
+	}
+
+	/**
+	 * Create a reactive vector along `lineId`, oriented so its direction has
+	 * non-negative dot product with `referenceLineId`'s direction. On any drag
+	 * of the support points of either line, the orientation is re-evaluated
+	 * (handled in `resolveVectorComponents`). Used by `angle(d1, d2)` to keep
+	 * the acute-angle convention dynamic.
+	 *
+	 * The vector is created with `visible: false` — it's a construction
+	 * primitive, never rendered nor serialized.
+	 */
+	createVectorOrientedAlongLine(
+		lineId: string,
+		referenceLineId: string,
+		options?: ElementOptions
+	): string {
+		const line = this.elements.get(lineId);
+		if (!line || !isLine(line))
+			throw new Error(`createVectorOrientedAlongLine: "${lineId}" is not a line element`);
+		const ref = this.elements.get(referenceLineId);
+		if (!ref || !isLine(ref))
+			throw new Error(`createVectorOrientedAlongLine: "${referenceLineId}" is not a line element`);
+
+		const deps = [
+			...new Set([
+				lineId,
+				referenceLineId,
+				line.point1Id,
+				line.point2Id,
+				ref.point1Id,
+				ref.point2Id
+			])
+		];
+		const id = this.generateId('vec');
+		const element: GeoVectorOrientedAlongLine = {
+			type: 'vectorOrientedAlongLine',
+			id,
+			lineId,
+			referenceLineId,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
