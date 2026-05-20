@@ -18,7 +18,7 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 | P0  | Spec TDD + tests rouges                                                                | **terminée** |
 | P1  | Types & schemas (rename `GeoAngleMark` → `GeoAngle`)                                   | **terminée** |
 | P2  | Factory `figure.createAngle()` + `compute-position.ts`                                 | **terminée** |
-| P3  | DSL : suppressions + refonte `angle()` + `angle_polaire()`                             | à faire      |
+| P3  | DSL : suppressions + refonte `angle()` + `angle_polaire()`                             | **terminée** |
 | P4  | DSL : accesseurs (`cote`, `sommet`) + surcharges (`mesure`, `bissectrice`, `rotation`) | à faire      |
 | P5  | Rendu sur 4 surfaces (canvas, SVG, TikZ, Typst) + rough                                | à faire      |
 | P6  | Migration 5 sites internes + 38 occurrences tests                                      | à faire      |
@@ -311,12 +311,77 @@ Pour le type `'angle'`, la position de référence retournée est le **vertex** 
 - `graph/__tests__/figure-text.test.ts:137,238` : appellent `f.createScalarAngle(...)` → migration P6 (équivalent `mesure(angle(...))`).
 - `graph/__tests__/figure-angle-mark.test.ts`, `figure-angle.test.ts` : appellent `createAngleMark` → P6.
 
-### Prochaines étapes — P3
+---
 
-- Suppressions handlers (`handleAngleVecteurs`, `handleMarqueAngle`, `handleAngleDroit`) dans `dsl/builtins.ts`.
-- Refonte `handleAngle` : 3 args points → `figure.createAngle(...)` ; 2 args → `DslRuntimeError` structurée.
-- Ajout `handleAnglePolaire(O, P)` → `createScalarPolarAngle`.
-- Mise à jour `BUILTIN_NAMES`, `keywords.ts`, `symbol-table.ts`, `serializer.ts` (rename `'angleMark'` → `'angle'`).
+## Notes Phase 3
+
+### Modifications effectuées
+
+**`src/lib/geometry-core/dsl/builtins.ts`** :
+
+- **Supprimé** `handleAngleVecteurs` + `HANDLERS.set('angle_vecteurs', ...)` (~49 LoC).
+- **Supprimé** `handleMarqueAngle` + `HANDLERS.set('marque_angle', ...)` (~32 LoC).
+- **Supprimé** `handleAngleDroit` + `HANDLERS.set('angle_droit', ...)` (~24 LoC).
+- **Refondu** `handleAngle(ctx)` (~92 LoC après) :
+  - 2 args → throw `DslRuntimeError` structurée pointant vers `angle_polaire(O, P)`.
+  - 3 args → `figure.createAngle(A, V, B, { marque, orientation, kind, showLabel, unite, arcRadiusPx, label })`. Retourne `{ figureId, symbolType: 'angle' }`.
+  - Named args validés via helper `requireEnumNamed<T>(named, key, allowedSet, line)` (8 LoC mutualisés).
+  - Constantes `ANGLE_FORMS`, `ANGLE_MARQUE_VALUES`, `ANGLE_ORIENTATION_VALUES`, `ANGLE_KIND_VALUES`, `ANGLE_SHOWLABEL_VALUES`, `ANGLE_UNITE_VALUES` au top.
+  - Cas `pos.length < 2` ou autres → `DslRuntimeError` structurée avec `ANGLE_FORMS`.
+  - Style inline (`couleur`, `epaisseur`, ...) déjà appliqué automatiquement via `applyInlineStyle` après le handler.
+- **Ajouté** `handleAnglePolaire(ctx)` (~23 LoC) :
+  - 2 args (O, P) → `figure.createScalarPolarAngle(oId, pId, { label })`.
+  - Toute autre arity → `DslRuntimeError` structurée.
+  - Retourne `{ figureId, symbolType: 'scalar' }`.
+- **Migration des 5 sites internes** (cohérence avec la refonte du même fichier) :
+  - `handleTriangleRectangle` (l. 4503) : `createAngleMark({ rightAngle: true })` → `createAngle({ marque: 'carre' })`.
+  - `handleRectangle` (l. 4559) : idem.
+  - `handleCarre` (l. 4584) : idem.
+- **`BUILTIN_NAMES`** : retiré `'angle_vecteurs'`, `'marque_angle'`, `'angle_droit'` ; ajouté `'angle_polaire'`. Conservé `'angle'`.
+- Mis à jour le commentaire de `BuiltinScalarResult` (retiré la mention `angle_vecteurs`).
+
+**`src/lib/geometry-core/dsl/keywords.ts`** :
+
+- Retiré `'marque_angle'`, `'angle_droit'` ; ajouté `'angle'`, `'angle_polaire'` dans la liste annotations.
+
+**`src/lib/geometry-core/dsl/symbol-table.ts`** :
+
+- `SymbolType` : `'angleMark'` → `'angle'`.
+
+**`src/lib/geometry-core/dsl/serializer.ts`** :
+
+- Mapping ID prefix : `'angleMark' → 'am'` → `'angle' → 'ang'` (cohérent avec `generateId('ang')` côté factory).
+- Branche d'émission `case 'angleMark'` → `case 'angle'` : émet `angle(A, V, B[, marque="...", orientation="...", kind="...", showLabel="...", unite="...", arcRadiusPx=N])`. Les champs aux valeurs par défaut sont omis pour rester lisible.
+- Branche scalaire `case 'angle'` : **supprimée** (le scalarKind `'angle'` n'existe plus depuis P2).
+- Branche scalaire `case 'polar_angle'` : émet désormais `angle_polaire(O, P)` au lieu de `angle(O, P)`.
+
+**`src/lib/geometry-core/dsl/interpreter.ts`** :
+
+- Mis à jour le commentaire qui mentionnait `angle_vecteurs()`.
+
+### LoC modifiées
+
+- `builtins.ts` : -120 (suppressions) +120 (refonte + ajout + enum helper + constantes) ≈ net ~0, mais structure beaucoup plus claire.
+- `keywords.ts` : ~4 LoC.
+- `symbol-table.ts` : 1 LoC.
+- `serializer.ts` : ~15 LoC (case `'angleMark'` réécrit, case scalaire simplifié, mapping prefix).
+- `interpreter.ts` : 1 commentaire.
+
+### Casses temporaires restantes (résolution P4/P5/P6)
+
+- `dsl/builtins.ts:2582` (`handleMesure` branche bisector 3 points) appelle encore `figure.createScalarAngle(...)` qui a été supprimé en P2. **Restera cassé jusqu'à P4** (overloads `mesure(α)`, `mesure(A, V, B)`, `mesure(u, v)`).
+- `rendering/svg-primitives.ts` + `export-svg.ts` + `export-tikz.ts` + `export-typst.ts` + `index.ts` (rendering) : dispatch sur `'angleMark'`, fonction `angleMarkToSVG` → P5.
+- Tests `dsl/__tests__/*` qui contiennent encore `angle_droit`, `marque_angle`, `angle_vecteurs` et `'angleMark'` dans des snapshots, ainsi que `figure-angle-mark.test.ts`, `figure-text.test.ts` (appel `createScalarAngle`) → P6.
+
+### Risques résiduels pour P4
+
+- **Aucune référence orpheline à un futur `handleMesure(α)`** : le handler `mesure()` actuel (l. 2563) gère encore les 2/3/N points ; il sera étendu en P4 avec les surcharges (1 arg = angle/vecteur/segment → dispatch via type guards `isAngle`, `isVector`, `isSegment` ; refus explicite pour `isSegment` et 1 vecteur).
+- **Sérialisation** : `case 'scalar'` du serializer émet déjà `mesure(...)` quand un text a `autoTargetIds` (l. ~479-481) — à revérifier en P4 quand `mesure(α)` devra sérialiser proprement vers `mesure(α)` plutôt que vers le 3 points.
+- Le helper `requireEnumNamed` introduit en P3 est réutilisable pour `mesure(α, unite="deg")` en P4.
+
+### Prêt pour P4 ?
+
+Oui. Le DSL surface est cohérent (plus aucune référence aux 3 builtins supprimés ni à `'angleMark'` côté source DSL), `figure.createAngle` est branché, le scalaire polaire est isolé sous `angle_polaire`. Le seul résidu connu (`createScalarAngle` dans `handleMesure`) est documenté et fait partie du périmètre P4.
 
 ---
 

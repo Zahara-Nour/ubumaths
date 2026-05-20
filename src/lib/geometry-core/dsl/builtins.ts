@@ -159,7 +159,7 @@ export interface BuiltinMultiResult {
 	elements: BuiltinResult[];
 }
 
-/** Result for builtins that return a scalar number (norme, produit_scalaire, angle_vecteurs). */
+/** Result for builtins that return a scalar number (norme, produit_scalaire). */
 export interface BuiltinScalarResult {
 	scalarValue: number;
 }
@@ -2056,56 +2056,6 @@ function handleProduitScalaire(ctx: BuiltinCtx): BuiltinScalarResult {
 }
 HANDLERS.set('produit_scalaire', handleProduitScalaire);
 
-function handleAngleVecteurs(ctx: BuiltinCtx): BuiltinScalarResult {
-	const { pos, figure, line, angleMode } = ctx;
-	if (pos.length !== 2)
-		throw new DslRuntimeError(
-			{
-				summary: `\`angle_vecteurs()\` attend 2 arguments (deux vecteurs), ${pos.length} reçu(s).`,
-				forms: [
-					{
-						syntax: 'angle_vecteurs(u, v)',
-						description: 'angle orienté `(u, v)` entre les deux vecteurs'
-					}
-				]
-			},
-			line
-		);
-	const avV1 = requireElement(pos[0], 'u', line);
-	const avV2 = requireElement(pos[1], 'v', line);
-	const avC1 = figure.getVectorComponents(avV1);
-	const avC2 = figure.getVectorComponents(avV2);
-	if (!avC1 || !avC2)
-		throw new DslRuntimeError(
-			{
-				summary: '`angle_vecteurs()` : impossible de résoudre les composantes des vecteurs.',
-				hint: 'Vérifiez que les deux arguments sont bien des vecteurs définis.'
-			},
-			line
-		);
-	const ax1 = geoToNumber(avC1.dx),
-		ay1 = geoToNumber(avC1.dy);
-	const ax2 = geoToNumber(avC2.dx),
-		ay2 = geoToNumber(avC2.dy);
-	const dotProd = ax1 * ax2 + ay1 * ay2;
-	const len1 = Math.sqrt(ax1 * ax1 + ay1 * ay1);
-	const len2 = Math.sqrt(ax2 * ax2 + ay2 * ay2);
-	if (len1 < 1e-15 || len2 < 1e-15)
-		throw new DslRuntimeError(
-			{
-				summary: '`angle_vecteurs()` : l’un des vecteurs est nul, l’angle n’est pas défini.',
-				hint: 'Vérifiez que les deux vecteurs ont des composantes non nulles.'
-			},
-			line
-		);
-	const cosA = Math.max(-1, Math.min(1, dotProd / (len1 * len2)));
-	const angleRad = Math.acos(cosA);
-	return {
-		scalarValue: angleMode === 'deg' ? (angleRad * 180) / Math.PI : angleRad
-	};
-}
-HANDLERS.set('angle_vecteurs', handleAngleVecteurs);
-
 const CERCLE_FORMS = [
 	{ syntax: 'cercle(centre, rayon=r)', description: 'cercle de centre `centre` et de rayon `r`' },
 	{
@@ -2571,64 +2521,6 @@ function handleCompose(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('compose', handleCompose);
 
-function handleMarqueAngle(ctx: BuiltinCtx): BuiltinResult {
-	const { pos, named, figure, line, label } = ctx;
-	if (pos.length < 3)
-		throw new DslRuntimeError(
-			{
-				summary: `\`marque_angle()\` attend 3 points (P1, V, P2), ${pos.length} reçu(s).`,
-				hint: 'Le 2ᵉ argument est le sommet de l’angle.',
-				forms: [
-					{
-						syntax: 'marque_angle(P1, V, P2)',
-						description: 'marque visuelle de l’angle ∠P1·V·P2 au sommet `V`'
-					},
-					{
-						syntax: 'marque_angle(P1, V, P2, arcs=2)',
-						description: 'marque à double arc (égalité d’angles), `arcs ∈ {1, 2, 3}`'
-					}
-				]
-			},
-			line
-		);
-	const arcCount = named.has('arcs')
-		? (requireNumber(named.get('arcs')!, 'arcs', line) as 1 | 2 | 3)
-		: 1;
-	const id = figure.createAngleMark(
-		requireElement(pos[0], 'P1', line),
-		requireElement(pos[1], 'V', line),
-		requireElement(pos[2], 'P2', line),
-		{ arcCount, label }
-	);
-	return { figureId: id, symbolType: 'angleMark' };
-}
-HANDLERS.set('marque_angle', handleMarqueAngle);
-
-function handleAngleDroit(ctx: BuiltinCtx): BuiltinResult {
-	const { pos, figure, line, label } = ctx;
-	if (pos.length < 3)
-		throw new DslRuntimeError(
-			{
-				summary: `\`angle_droit()\` attend 3 points (P1, V, P2), ${pos.length} reçu(s).`,
-				forms: [
-					{
-						syntax: 'angle_droit(P1, V, P2)',
-						description: 'marque d’angle droit (équerre) au sommet `V`'
-					}
-				]
-			},
-			line
-		);
-	const id = figure.createAngleMark(
-		requireElement(pos[0], 'P1', line),
-		requireElement(pos[1], 'V', line),
-		requireElement(pos[2], 'P2', line),
-		{ rightAngle: true, label }
-	);
-	return { figureId: id, symbolType: 'angleMark' };
-}
-HANDLERS.set('angle_droit', handleAngleDroit);
-
 function handleMarqueSegment(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, named, figure, line, label } = ctx;
 	if (pos.length < 2)
@@ -2850,26 +2742,127 @@ function handleDistance(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('distance', handleDistance);
 
-function handleAngle(ctx: BuiltinCtx): BuiltinResult {
-	const { pos, figure, line, label } = ctx;
-	if (pos.length === 2) {
-		const centerId = requireElement(pos[0], 'centre', line);
-		const pointId = requireElement(pos[1], 'point', line);
-		const id = figure.createScalarPolarAngle(centerId, pointId, { label });
-		return { figureId: id, symbolType: 'scalar' };
+const ANGLE_FORMS = [
+	{
+		syntax: 'angle(A, V, B)',
+		description: 'angle géométrique au sommet `V` formé par les côtés `[VA)` et `[VB)`'
+	},
+	{
+		syntax: 'angle_polaire(O, P)',
+		description: 'angle polaire du vecteur `OP` par rapport à l’axe `Ox`'
 	}
-	if (pos.length !== 3)
+];
+
+const ANGLE_MARQUE_VALUES = new Set(['arc', 'arcs2', 'arcs3', 'carre', 'aucune']);
+const ANGLE_ORIENTATION_VALUES = new Set(['direct', 'indirect', 'auto']);
+const ANGLE_KIND_VALUES = new Set(['saillant', 'rentrant']);
+const ANGLE_SHOWLABEL_VALUES = new Set(['aucun', 'nom', 'mesure', 'mesure+nom']);
+const ANGLE_UNITE_VALUES = new Set(['rad', 'deg']);
+
+function requireEnumNamed<T extends string>(
+	named: Map<string, ResolvedValue>,
+	key: string,
+	allowed: Set<string>,
+	line: number
+): T | undefined {
+	if (!named.has(key)) return undefined;
+	const val = named.get(key)!;
+	if (val.type !== 'string' || !allowed.has(val.value)) {
+		const allowedStr = [...allowed].map((v) => `\`"${v}"\``).join(', ');
 		throw new DslRuntimeError(
-			'angle() attend 2 arguments (O, A) pour angle polaire ou 3 arguments (P, O, Q) pour angle au sommet',
+			{
+				summary: `\`angle()\` : valeur invalide pour \`${key}\`.`,
+				hint: `Valeurs autorisées : ${allowedStr}.`
+			},
 			line
 		);
-	const aP1Id = requireElement(pos[0], 'P1', line);
-	const aVId = requireElement(pos[1], 'vertex', line);
-	const aP2Id = requireElement(pos[2], 'P2', line);
-	const id = figure.createScalarAngle(aP1Id, aVId, aP2Id, { label });
-	return { figureId: id, symbolType: 'scalar' };
+	}
+	return val.value as T;
+}
+
+function handleAngle(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label } = ctx;
+	if (pos.length === 2) {
+		throw new DslRuntimeError(
+			{
+				summary: '`angle()` à 2 arguments est obsolète.',
+				hint: "Utilise `angle_polaire(O, P)` pour l'angle polaire d'un vecteur, ou ajoute le 3ᵉ point pour un angle géométrique.",
+				forms: ANGLE_FORMS
+			},
+			line
+		);
+	}
+	if (pos.length !== 3) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`angle()\` attend 3 points (A, V, B), ${pos.length} reçu(s).`,
+				hint: 'Le 2ᵉ argument est le sommet de l’angle.',
+				forms: ANGLE_FORMS
+			},
+			line
+		);
+	}
+	const aP1Id = requireElement(pos[0], 'A', line);
+	const aVId = requireElement(pos[1], 'V', line);
+	const aP2Id = requireElement(pos[2], 'B', line);
+	const marque = requireEnumNamed<'arc' | 'arcs2' | 'arcs3' | 'carre' | 'aucune'>(
+		named,
+		'marque',
+		ANGLE_MARQUE_VALUES,
+		line
+	);
+	const orientation = requireEnumNamed<'direct' | 'indirect' | 'auto'>(
+		named,
+		'orientation',
+		ANGLE_ORIENTATION_VALUES,
+		line
+	);
+	const kind = requireEnumNamed<'saillant' | 'rentrant'>(named, 'kind', ANGLE_KIND_VALUES, line);
+	const showLabel = requireEnumNamed<'aucun' | 'nom' | 'mesure' | 'mesure+nom'>(
+		named,
+		'showLabel',
+		ANGLE_SHOWLABEL_VALUES,
+		line
+	);
+	const unite = requireEnumNamed<'rad' | 'deg'>(named, 'unite', ANGLE_UNITE_VALUES, line);
+	const arcRadiusPx = named.has('arcRadiusPx')
+		? requireNumber(named.get('arcRadiusPx')!, 'arcRadiusPx', line)
+		: undefined;
+	const id = figure.createAngle(aP1Id, aVId, aP2Id, {
+		label,
+		marque,
+		orientation,
+		kind,
+		showLabel,
+		unite,
+		arcRadiusPx
+	});
+	return { figureId: id, symbolType: 'angle' };
 }
 HANDLERS.set('angle', handleAngle);
+
+function handleAnglePolaire(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line, label } = ctx;
+	if (pos.length !== 2) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`angle_polaire()\` attend 2 points (O, P), ${pos.length} reçu(s).`,
+				forms: [
+					{
+						syntax: 'angle_polaire(O, P)',
+						description: 'angle polaire du vecteur `OP` = `atan2(P.y - O.y, P.x - O.x)` en radians'
+					}
+				]
+			},
+			line
+		);
+	}
+	const oId = requireElement(pos[0], 'O', line);
+	const pId = requireElement(pos[1], 'P', line);
+	const id = figure.createScalarPolarAngle(oId, pId, { label });
+	return { figureId: id, symbolType: 'scalar' };
+}
+HANDLERS.set('angle_polaire', handleAnglePolaire);
 
 function handlePerimetre(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
@@ -4506,7 +4499,7 @@ function handleTriangleRectangle(ctx: BuiltinCtx): BuiltinResult {
 	const rad = toRadians(angleDeg, angleMode);
 	const C = createHiddenRotatedPoint(figure, ids[1], ids[0], numeric(rad));
 	const polyId = figure.createPolygon([ids[0], ids[1], C], { label });
-	figure.createAngleMark(ids[1], ids[0], C, { rightAngle: true });
+	figure.createAngle(ids[1], ids[0], C, { marque: 'carre' });
 	return { figureId: polyId, symbolType: 'polygone' };
 }
 HANDLERS.set('triangle_rectangle', handleTriangleRectangle);
@@ -4562,7 +4555,7 @@ function handleRectangle(ctx: BuiltinCtx): BuiltinResult {
 	const D = figure.createDilatedPoint(Q, Aid, { scalarRef: scaleRatio }, { visible: false });
 	const C = createHiddenTranslatedPoint(figure, D, Aid, Bid);
 	const polyId = figure.createPolygon([Aid, Bid, C, D], { label });
-	figure.createAngleMark(D, Aid, Bid, { rightAngle: true });
+	figure.createAngle(D, Aid, Bid, { marque: 'carre' });
 	return { figureId: polyId, symbolType: 'polygone' };
 }
 HANDLERS.set('rectangle', handleRectangle);
@@ -4587,7 +4580,7 @@ function handleCarre(ctx: BuiltinCtx): BuiltinResult {
 	const C = createHiddenRotatedPoint(figure, Aid, Bid, PI_OVER_2);
 	const D = createHiddenRotatedPoint(figure, Bid, Aid, NEG_PI_OVER_2);
 	const polyId = figure.createPolygon([Aid, Bid, C, D], { label });
-	figure.createAngleMark(D, Aid, Bid, { rightAngle: true });
+	figure.createAngle(D, Aid, Bid, { marque: 'carre' });
 	return { figureId: polyId, symbolType: 'polygone' };
 }
 HANDLERS.set('carre', handleCarre);
@@ -5068,7 +5061,6 @@ export const BUILTIN_NAMES = new Set([
 	'vecteur',
 	'norme',
 	'produit_scalaire',
-	'angle_vecteurs',
 	'cercle',
 	'arc',
 	'polygone',
@@ -5083,8 +5075,6 @@ export const BUILTIN_NAMES = new Set([
 	'transforme',
 	'compose',
 	'intersection',
-	'marque_angle',
-	'angle_droit',
 	'marque_segment',
 	'mesure',
 	'texte',
@@ -5115,6 +5105,7 @@ export const BUILTIN_NAMES = new Set([
 	'trace',
 	'distance',
 	'angle',
+	'angle_polaire',
 	'perimetre',
 	'pente',
 	'rayon',

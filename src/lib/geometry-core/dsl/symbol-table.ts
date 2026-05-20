@@ -12,7 +12,7 @@ export type SymbolType =
 	| 'demidroite'
 	| 'cercle'
 	| 'polygone'
-	| 'angleMark'
+	| 'angle'
 	| 'segmentMark'
 	| 'text'
 	| 'mathText'

@@ -169,8 +169,8 @@ function typePrefix(type: string): string {
 			return 'arc';
 		case 'polygon':
 			return 'poly';
-		case 'angleMark':
-			return 'am';
+		case 'angle':
+			return 'ang';
 		case 'segmentMark':
 			return 'sm';
 		case 'text':
@@ -460,12 +460,18 @@ function serializeElement(
 		case 'arcByPoints':
 			return `${n.startsWith('_') ? '' : n + ' = '}arc(${name(idToName, el.startId)}, ${name(idToName, el.centerId)}, ${name(idToName, el.endId)})`;
 
-		case 'angleMark': {
-			if (el.rightAngle) {
-				return `angle_droit(${name(idToName, el.p1Id)}, ${name(idToName, el.vertexId)}, ${name(idToName, el.p2Id)})`;
-			}
-			const arcsPart = el.arcCount > 1 ? `, arcs=${el.arcCount}` : '';
-			return `marque_angle(${name(idToName, el.p1Id)}, ${name(idToName, el.vertexId)}, ${name(idToName, el.p2Id)}${arcsPart})`;
+		case 'angle': {
+			const head = `${n.startsWith('_') ? '' : n + ' = '}angle(${name(idToName, el.p1Id)}, ${name(idToName, el.vertexId)}, ${name(idToName, el.p2Id)}`;
+			const extras: string[] = [];
+			if (el.marque && el.marque !== 'arc') extras.push(`marque="${el.marque}"`);
+			if (el.orientation && el.orientation !== 'auto')
+				extras.push(`orientation="${el.orientation}"`);
+			if (el.kind && el.kind !== 'saillant') extras.push(`kind="${el.kind}"`);
+			if (el.showLabel && el.showLabel !== 'aucun') extras.push(`showLabel="${el.showLabel}"`);
+			if (el.unite && el.unite !== 'rad') extras.push(`unite="${el.unite}"`);
+			if (el.arcRadiusPx !== undefined) extras.push(`arcRadiusPx=${el.arcRadiusPx}`);
+			const extraStr = extras.length > 0 ? ', ' + extras.join(', ') : '';
+			return `${head}${extraStr})`;
 		}
 
 		case 'segmentMark': {
@@ -701,10 +707,8 @@ function serializeElement(
 				case 'distance':
 				case 'distance_point_line':
 					return `${n} = distance(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])})`;
-				case 'angle':
-					return `${n} = angle(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])}, ${name(idToName, el.targetIds[2])})`;
 				case 'polar_angle':
-					return `${n} = angle(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])})`;
+					return `${n} = angle_polaire(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])})`;
 				case 'norme':
 					return `${n} = norme(${name(idToName, el.targetIds[0])})`;
 				case 'area': {
