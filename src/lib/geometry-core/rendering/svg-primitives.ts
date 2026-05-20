@@ -41,8 +41,11 @@ import {
 	isVector
 } from '../types/elements';
 import { computeImageVisualTransform } from '../dsl/transform-apply';
-import { formatAngleLabel } from './angle-label';
-import { computeBisectorDirection } from './bisector-direction';
+import {
+	computeAngleGeometry,
+	projectAngleEndpoints,
+	type AngleRenderGeometry
+} from './angle-geometry-shared';
 
 // =============================================================================
 // Style resolution
@@ -791,81 +794,52 @@ export function angleToSVG(
 	if (!el || !isAngle(el)) return null;
 
 	const angle: GeoAngle = el;
-	const posP1 = figure.getPosition(angle.p1Id);
-	const posV = figure.getPosition(angle.vertexId);
-	const posP2 = figure.getPosition(angle.p2Id);
-	if (!posP1 || !posV || !posP2) return null;
+	const projected = projectAngleEndpoints(angle, figure, (mx, my) => transformer.mathToSvg(mx, my));
+	if (!projected) return null;
 
-	const svgV = transformer.mathToSvg(geoToNumber(posV.x), geoToNumber(posV.y));
-	const svgP1 = transformer.mathToSvg(geoToNumber(posP1.x), geoToNumber(posP1.y));
-	const svgP2 = transformer.mathToSvg(geoToNumber(posP2.x), geoToNumber(posP2.y));
+	// Preserve the historical sub-pixel degenerate guard (stricter than the
+	// 1e-10 hard floor used by `computeAngleGeometry`).
+	const d1xPx = projected.p1X - projected.vertexX;
+	const d1yPx = projected.p1Y - projected.vertexY;
+	const d2xPx = projected.p2X - projected.vertexX;
+	const d2yPx = projected.p2Y - projected.vertexY;
+	if (Math.hypot(d1xPx, d1yPx) < 1e-6 || Math.hypot(d2xPx, d2yPx) < 1e-6) {
+		return null;
+	}
 
-	const d1x = svgP1.x - svgV.x;
-	const d1y = svgP1.y - svgV.y;
-	const d2x = svgP2.x - svgV.x;
-	const d2y = svgP2.y - svgV.y;
-
-	const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
-	const len2 = Math.sqrt(d2x * d2x + d2y * d2y);
-	if (len1 < 1e-6 || len2 < 1e-6) return null; // degenerate
-
-	const u1x = d1x / len1;
-	const u1y = d1y / len1;
-	const u2x = d2x / len2;
-	const u2y = d2y / len2;
-
-	const marque = angle.marque ?? 'arc';
-	const kind = angle.kind ?? 'saillant';
 	const arcRadiusPx = angle.arcRadiusPx ?? ARC_RADIUS_PX_DEFAULT;
 	const arcSpacingPx = angle.arcSpacingPx ?? ARC_SPACING_PX_DEFAULT;
 
-	// Compute unsigned interior angle in math space (positions in MATH units
-	// don't suffer from y-flip; using SVG units gives same magnitude).
-	const cosTheta = Math.max(-1, Math.min(1, (d1x * d2x + d1y * d2y) / (len1 * len2)));
-	const interior = Math.acos(cosTheta); // [0, π]
-	const measureRadians = kind === 'rentrant' ? 2 * Math.PI - interior : interior;
-	const label = formatAngleLabel(angle, measureRadians);
+	const geom: AngleRenderGeometry | null = computeAngleGeometry(angle, projected, {
+		arcRadius: arcRadiusPx,
+		arcSpacing: arcSpacingPx,
+		rightAngleSize: RIGHT_ANGLE_SIZE_PX,
+		labelOffset: LABEL_OFFSET_PX
+	});
+	if (!geom) return null;
 
-	// Bisector direction (averaged unit vectors). For `kind='rentrant'` we
-	// negate so the label sits in the exterior sector.
-	const bisDir = computeBisectorDirection(u1x, u1y, u2x, u2y, kind);
-	const bisX = bisDir ? bisDir.bisX : -u1y;
-	const bisY = bisDir ? bisDir.bisY : u1x;
-	const labelX = svgV.x + bisX * (arcRadiusPx + LABEL_OFFSET_PX);
-	const labelY = svgV.y + bisY * (arcRadiusPx + LABEL_OFFSET_PX);
+	const { vertexX: vx, vertexY: vy, marque, kind, label, labelX, labelY } = geom;
 
 	if (marque === 'aucune') {
-		return { paths: [], vx: svgV.x, vy: svgV.y, label, labelX, labelY };
+		return { paths: [], vx, vy, label, labelX, labelY };
 	}
 
-	if (marque === 'carre') {
-		const s = RIGHT_ANGLE_SIZE_PX;
-		const cx = svgV.x + u1x * s + u2x * s;
-		const cy = svgV.y + u1y * s + u2y * s;
+	if (marque === 'carre' && geom.rightAngle) {
+		const r = geom.rightAngle;
 		const path =
-			`M ${svgV.x + u1x * s} ${svgV.y + u1y * s}` +
-			` L ${cx} ${cy}` +
-			` L ${svgV.x + u2x * s} ${svgV.y + u2y * s}`;
-		return { paths: [path], vx: svgV.x, vy: svgV.y, label, labelX, labelY };
+			`M ${r.startX} ${r.startY}` + ` L ${r.cornerX} ${r.cornerY}` + ` L ${r.endX} ${r.endY}`;
+		return { paths: [path], vx, vy, label, labelX, labelY };
 	}
-
-	const arcCount = marque === 'arcs3' ? 3 : marque === 'arcs2' ? 2 : 1;
-
-	const angle1 = Math.atan2(d1y, d1x);
-	const angle2 = Math.atan2(d2y, d2x);
 
 	const paths: string[] = [];
-	for (let i = 0; i < arcCount; i++) {
-		const r = arcRadiusPx + i * arcSpacingPx;
-		paths.push(buildArcPath(svgV.x, svgV.y, r, angle1, angle2, kind));
+	for (const arc of geom.arcs) {
+		paths.push(buildArcPath(vx, vy, arc.radius, geom.angle1, geom.angle2, kind));
 	}
-
 	// Closed sector path for optional fill (uses OUTER radius so the fill
 	// covers the full visible arc extent).
-	const outerR = arcRadiusPx + (arcCount - 1) * arcSpacingPx;
-	const fillPath = buildSectorPath(svgV.x, svgV.y, outerR, angle1, angle2, kind);
+	const fillPath = buildSectorPath(vx, vy, geom.outerRadius, geom.angle1, geom.angle2, kind);
 
-	return { paths, fillPath, vx: svgV.x, vy: svgV.y, label, labelX, labelY };
+	return { paths, fillPath, vx, vy, label, labelX, labelY };
 }
 
 /**
