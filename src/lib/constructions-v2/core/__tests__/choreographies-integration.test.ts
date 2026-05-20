@@ -485,3 +485,18 @@ describe('ConstructionExecutor — bissectrice(α) @euclide (V3a input dispatch)
 		expect(exec2.currentSubStep?.instrument).toBe('ruler');
 	});
 });
+
+// =============================================================================
+// A1 — transporte @euclide chorégraphie (report d'angle Euclide I.23)
+// =============================================================================
+
+describe('A1 — transporte @euclide chorégraphie', () => {
+	it.todo('transporte(al, Vp, P) @euclide expands into 6 sub-step entries');
+	it.todo(
+		'sub-step kinds: compass-draw × 3, point-fade-in × 2, ruler-trace × 1 (in expected order)'
+	);
+	it.todo('stepDurations.length === totalSteps after load');
+	it.todo("SS3 fade-in apparait A', B', A'' simultanement (3 points)");
+	it.todo("SS5 fade-in apparait B'' (1 point)");
+	it.todo('mesure(beta) ≈ mesure(al) apres execution complete de la choregraphie');
+});
