@@ -199,7 +199,7 @@ describe('exportToTikZ — edge cases', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(-1, 0));
-		f.createAngleMark(a, v, b);
+		f.createAngle(a, v, b);
 		const result = exportToTikZ(f, viewport);
 		expect(result).toContain('arc');
 	});
@@ -209,7 +209,7 @@ describe('exportToTikZ — edge cases', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(1, 0.1));
-		f.createAngleMark(a, v, b);
+		f.createAngle(a, v, b);
 		const result = exportToTikZ(f, viewport);
 		expect(result).toContain('arc');
 	});
@@ -219,7 +219,7 @@ describe('exportToTikZ — edge cases', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b, { rightAngle: true });
+		f.createAngle(a, v, b, { marque: 'carre' });
 		const result = exportToTikZ(f, viewport);
 		expect(result).toContain('% Right angle');
 		// Should have 3 coordinates forming an L shape
@@ -227,12 +227,12 @@ describe('exportToTikZ — edge cases', () => {
 		expect(rightLine).toBeDefined();
 	});
 
-	it('exports 3 arcs for arcCount=3', () => {
+	it('exports 3 arcs for marque=arcs3', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b, { arcCount: 3 });
+		f.createAngle(a, v, b, { marque: 'arcs3' });
 		const result = exportToTikZ(f, viewport);
 		const arcMatches = result.match(/\\draw.*arc\s*\(/g) || [];
 		expect(arcMatches.length).toBe(3);
@@ -347,8 +347,8 @@ describe('exportToTikZ — edge cases', () => {
 		f.createLine(a, b, { color: '#6366f1' });
 		f.createRay(c, a, { color: '#6366f1' });
 		f.createCircleByRadius(a, numeric(2), { color: '#059669' });
-		f.createAngleMark(b, a, c, { color: '#dc2626' });
-		f.createAngleMark(c, b, a, { color: '#dc2626', rightAngle: true });
+		f.createAngle(b, a, c, { color: '#dc2626' });
+		f.createAngle(c, b, a, { color: '#dc2626', marque: 'carre' });
 		f.createSegmentMark(a, b, { color: '#dc2626', markCount: 2 });
 		createMesureText(f, 'distance', [a, b]);
 		createMesureText(f, 'angle', [b, a, c]);

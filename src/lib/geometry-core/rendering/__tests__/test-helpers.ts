@@ -16,7 +16,7 @@ export function createMesureText(
 		scalarId = figure.createScalarDistance(targetIds[0], targetIds[1]);
 		autoPosition = 'midpoint';
 	} else if (type === 'angle') {
-		scalarId = figure.createScalarAngle(targetIds[0], targetIds[1], targetIds[2]);
+		scalarId = figure.createScalarAngleMeasure(targetIds[0], targetIds[1], targetIds[2]);
 		autoPosition = 'bisector';
 	} else {
 		scalarId = figure.createScalarArea(targetIds);

@@ -11,7 +11,7 @@ O = point(0, 0, couleur="rouge")
 B = point(1, 3, couleur="bleu")
 segment(O, A)
 segment(O, B)
-marque_angle(A, O, B)
+angle(A, O, B)
 mesure(A, O, B)`;
 
 	const aireDsl = `A = point(-2, -1, couleur="bleu")

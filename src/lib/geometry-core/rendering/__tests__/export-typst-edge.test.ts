@@ -147,19 +147,19 @@ describe('exportToTypst — edge cases', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b, { rightAngle: true });
+		f.createAngle(a, v, b, { marque: 'carre' });
 		const result = exportToTypst(f, viewport);
 		// Right angle uses line(), not arc()
 		expect(result).toContain('line(');
 		expect(result).not.toContain('arc(');
 	});
 
-	it('exports multiple arcs for arcCount=3', () => {
+	it('exports multiple arcs for marque=arcs3', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b, { arcCount: 3 });
+		f.createAngle(a, v, b, { marque: 'arcs3' });
 		const result = exportToTypst(f, viewport);
 		const arcMatches = result.match(/arc\(/g) || [];
 		expect(arcMatches.length).toBe(3);
@@ -240,7 +240,7 @@ describe('exportToTypst — edge cases', () => {
 		f.createLine(a, b);
 		f.createRay(c, a);
 		f.createCircleByRadius(a, numeric(2));
-		f.createAngleMark(b, a, c);
+		f.createAngle(b, a, c);
 		f.createSegmentMark(a, b, { markCount: 2 });
 		createMesureText(f, 'distance', [a, b]);
 		f.createMidpoint(a, b, { label: 'M' });

@@ -51,7 +51,7 @@ describe('shouldRenderRough', () => {
 			expect(shouldRenderRough('normal', 'arcByAngles', 'rough')).toBe(true);
 			expect(shouldRenderRough('normal', 'arcByPoints', 'rough')).toBe(true);
 			expect(shouldRenderRough('normal', 'polygon', 'rough')).toBe(true);
-			expect(shouldRenderRough('normal', 'angleMark', 'rough')).toBe(true);
+			expect(shouldRenderRough('normal', 'angle', 'rough')).toBe(true);
 			expect(shouldRenderRough('normal', 'segmentMark', 'rough')).toBe(true);
 		});
 

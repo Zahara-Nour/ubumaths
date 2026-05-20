@@ -169,7 +169,7 @@ describe('GeoScalar: angle', () => {
 		const p1 = f.createFreePoint(pt(1, 0));
 		const o = f.createFreePoint(pt(0, 0));
 		const p2 = f.createFreePoint(pt(0, 1));
-		const a = f.createScalarAngle(p1, o, p2);
+		const a = f.createScalarAngleMeasure(p1, o, p2, { unite: 'deg' });
 		expect(f.getScalarValue(a)).toBeCloseTo(90, 5);
 	});
 
@@ -178,7 +178,7 @@ describe('GeoScalar: angle', () => {
 		const p1 = f.createFreePoint(pt(1, 0));
 		const o = f.createFreePoint(pt(0, 0));
 		const p2 = f.createFreePoint(pt(0.5, Math.sqrt(3) / 2));
-		const a = f.createScalarAngle(p1, o, p2);
+		const a = f.createScalarAngleMeasure(p1, o, p2, { unite: 'deg' });
 		expect(f.getScalarValue(a)).toBeCloseTo(60, 3);
 	});
 
@@ -187,7 +187,7 @@ describe('GeoScalar: angle', () => {
 		const p1 = f.createFreePoint(pt(1, 0));
 		const o = f.createFreePoint(pt(0, 0));
 		const p2 = f.createFreePoint(pt(0, 1));
-		const a = f.createScalarAngle(p1, o, p2);
+		const a = f.createScalarAngleMeasure(p1, o, p2, { unite: 'deg' });
 		expect(f.getScalarValue(a)).toBeCloseTo(90, 5);
 
 		// Move p2 to (1,0) direction — angle becomes 0
@@ -493,7 +493,7 @@ describe('GeoScalar: errors', () => {
 		const a = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(1, 0));
 		const seg = f.createSegment(a, b);
-		expect(() => f.createScalarAngle(a, seg, b)).toThrow();
+		expect(() => f.createScalarAngleMeasure(a, seg, b)).toThrow();
 	});
 
 	it('throws on non-vector for norme', () => {
@@ -653,7 +653,7 @@ describe('Angle scalar unit consistency', () => {
 		const p1 = f.createFreePoint(pt(1, 0));
 		const o = f.createFreePoint(pt(0, 0));
 		const p2 = f.createFreePoint(pt(0, 1));
-		const a = f.createScalarAngle(p1, o, p2); // 90 degrees
+		const a = f.createScalarAngleMeasure(p1, o, p2, { unite: 'deg' }); // 90 degrees
 
 		// Using raw angle scalar as rotation angle is in degrees (wrong unit for rotate)
 		// Rotation expects radians, so direct use gives wrong result.

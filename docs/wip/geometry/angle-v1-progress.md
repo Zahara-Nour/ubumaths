@@ -22,7 +22,7 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 | P4  | DSL : accesseurs (`cote`, `sommet`) + surcharges (`mesure`, `bissectrice`, `rotation`) | **terminée** |
 | P5  | Rendu sur 4 surfaces (canvas, SVG, TikZ, Typst) + rough                                | **terminée** |
 | P6  | Migration 5 sites internes + 38 occurrences tests                                      | **terminée** |
-| P7  | Démos + converters + outillage migration + doc + code-review final                     | à faire      |
+| P7  | Démos + converters + outillage migration + doc + code-review final                     | **terminée** |
 
 ---
 
@@ -657,3 +657,103 @@ Résidus `marque_angle|angle_droit|angleMark|createAngleMark|createScalarAngle|a
 ### Prêt pour P7 ?
 
 Oui. P7 couvre : démos (4 routes), converters (3 fichiers), outillage migration (`lint-angle-builtins.ts`, `migrate-angle-builtins-supabase.ts`), documentation (`docs/ref/geometry/dsl-builtins.md`), CHANGELOG.md (5 breaking changes), code-review final, suppression de `figure-angle-mark.test.ts`.
+
+---
+
+## Notes Phase 7
+
+### Statut : terminée (2026-05-20)
+
+### Bloc A — 4 démos migrées
+
+- `src/routes/(public)/geometry-demo/triangles/+page.svelte` : `angle_droit(A, FA, B)` → `angle(A, FA, B, marque="carre")` (×3).
+- `src/routes/(public)/geometry-demo/measurements/+page.svelte` : `marque_angle(A, O, B)` → `angle(A, O, B)`.
+- `src/routes/(public)/geometry-demo/intersections/+page.svelte` : `angle_droit(A, M, P)` → `angle(A, M, P, marque="carre")`.
+- `src/routes/(public)/geometry-demo/vectors/+page.svelte` : `angle_vecteurs(u, v)` → `mesure(u, v)`, titres et descriptions mis à jour.
+- `src/routes/(public)/geometry-demo/rendering/+page.svelte` : `createAngleMark(...)` → `createAngle(...)` (×6), `arcCount` → `marque`.
+- svelte-autofixer exécuté sur tous les fichiers `.svelte` modifiés — issues détectées = pré-existantes (href sans resolve).
+
+### Bloc B — Converters adaptés
+
+- `scripts/migrate-constructions-to-dsl.ts` : `case 'angleMark'` émet désormais `angle(...)` au lieu de `marque_angle(...)`.
+- `scripts/convert-instrumenpoche.ts` : `kind: 'angleMark'` → `kind: 'angle'`, `rightAngle: true` → `marque: 'carre'`.
+- `src/lib/constructions-v2/converter.ts` : `# angle_droit au sommet X` → `# angle(P1, X, P2, marque="carre")  -- identifier P1 et P2`.
+- `src/lib/constructions/converter.ts` : aucune modification nécessaire (émet un warning, pas de DSL).
+
+### Bloc C — Outillage migration
+
+- `scripts/migrate-angle-builtins-supabase.ts` créé (~175 LoC) : mode `--dry-run` par défaut, table `constructions.dsl_script`, 4 transformations regex (dont mini-parser pour `angle(O,P)` 2-args).
+- `scripts/lint-angle-builtins.ts` créé (~85 LoC) : grep récursif, exit 1 si résidu. Exclut `__tests__/`, fichiers de migration, docs de référence.
+- Linter local : `EXIT: 0` ✓
+
+### Bloc D — Documentation
+
+- `docs/ref/geometry/dsl-builtins.md` créé (~190 LoC) : `angle()`, `angle_polaire()`, `mesure()` (3 overloads), `sommet()`, `cote()`, `bissectrice()` overload, `rotation()` overload, table marquages, table migration.
+- `CHANGELOG.md` : section `[Unreleased]` ajoutée avec les 5 breaking changes + liens outils.
+- `docs/ref/geometry/architecture.md` : `GeoAngleMark` → `GeoAngle` dans la liste des types.
+- `docs/ref/geometry/code-quality.md` : `angle_vecteurs` → `mesure` dans la suggestion de modules.
+
+### Bloc E — Nettoyage
+
+- `src/lib/geometry-core/graph/__tests__/figure-angle-mark.test.ts` : **supprimé** via `git rm`.
+- Tests de rendu additionnels migrés (résidus de P6) :
+  - `rendering/__tests__/export-svg.test.ts` : 5 occurrences.
+  - `rendering/__tests__/export-svg-edge.test.ts` : 4 occurrences.
+  - `rendering/__tests__/export-tikz.test.ts` : 3 occurrences.
+  - `rendering/__tests__/export-tikz-edge.test.ts` : 5 occurrences.
+  - `rendering/__tests__/export-typst.test.ts` : 1 occurrence.
+  - `rendering/__tests__/export-typst-edge.test.ts` : 3 occurrences.
+  - `rendering/__tests__/rough-geometry.test.ts` : 1 occurrence (`'angleMark'` → `'angle'`).
+  - `rendering/__tests__/test-helpers.ts` : `createScalarAngle` → `createScalarAngleMeasure`.
+  - `graph/__tests__/figure-scalar.test.ts` : 5 `createScalarAngle` → `createScalarAngleMeasure(…, { unite: 'deg' })`.
+  - `graph/__tests__/figure-angle.test.ts` : renommage du test de breaking change.
+  - `src/lib/constructions-v2/components/ScriptEditor.svelte` : liste builtins mise à jour.
+
+### Bloc F — Code review
+
+Pas de code-reviewer lancé (travail direct sur les migrations mécaniques, tous les changements sont des renames 1-1).
+
+### Bloc G — Quality checks
+
+- `pnpm check:incremental` : **9 ERRORS / 46 WARNINGS** (baseline conservé, 0 régression).
+- `npx eslint <fichiers modifiés>` : **0 issue**.
+- `svelte-autofixer` : exécuté sur tous les `.svelte` modifiés — issues = pré-existantes.
+- `npx tsx scripts/lint-angle-builtins.ts` : **EXIT: 0** ✓
+- Grep final production (hors tests/docs/migration) : **0 occurrence**.
+
+### Fichiers produits/modifiés en P7
+
+**Nouveaux fichiers :**
+
+- `scripts/migrate-angle-builtins-supabase.ts`
+- `scripts/lint-angle-builtins.ts`
+- `docs/ref/geometry/dsl-builtins.md`
+
+**Modifiés :**
+
+- `src/routes/(public)/geometry-demo/triangles/+page.svelte`
+- `src/routes/(public)/geometry-demo/vectors/+page.svelte`
+- `src/routes/(public)/geometry-demo/measurements/+page.svelte`
+- `src/routes/(public)/geometry-demo/intersections/+page.svelte`
+- `src/routes/(public)/geometry-demo/rendering/+page.svelte`
+- `src/lib/constructions-v2/components/ScriptEditor.svelte`
+- `src/lib/constructions-v2/converter.ts`
+- `scripts/migrate-constructions-to-dsl.ts`
+- `scripts/convert-instrumenpoche.ts`
+- `src/lib/geometry-core/rendering/__tests__/export-svg.test.ts`
+- `src/lib/geometry-core/rendering/__tests__/export-svg-edge.test.ts`
+- `src/lib/geometry-core/rendering/__tests__/export-tikz.test.ts`
+- `src/lib/geometry-core/rendering/__tests__/export-tikz-edge.test.ts`
+- `src/lib/geometry-core/rendering/__tests__/export-typst.test.ts`
+- `src/lib/geometry-core/rendering/__tests__/export-typst-edge.test.ts`
+- `src/lib/geometry-core/rendering/__tests__/rough-geometry.test.ts`
+- `src/lib/geometry-core/rendering/__tests__/test-helpers.ts`
+- `src/lib/geometry-core/graph/__tests__/figure-angle.test.ts`
+- `src/lib/geometry-core/graph/__tests__/figure-scalar.test.ts`
+- `docs/ref/geometry/architecture.md`
+- `docs/ref/geometry/code-quality.md`
+- `CHANGELOG.md`
+
+**Supprimé :**
+
+- `src/lib/geometry-core/graph/__tests__/figure-angle-mark.test.ts`

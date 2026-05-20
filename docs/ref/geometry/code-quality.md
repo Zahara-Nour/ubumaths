@@ -201,7 +201,7 @@ Le manque de tests directs sur `builtins.ts` et `transform-apply.ts` est compens
 - `dsl/builtins-curves.ts` — `courbe`, `fonction`, `courbe_piecewise`, `polaire`
 - `dsl/builtins-intersections.ts` — toutes les variantes `intersection()`
 - `dsl/builtins-calculus.ts` — `integrale`, `aire`, `aire_entre`, `longueur`, `courbure`, `cercle_osculateur`
-- `dsl/builtins-vectors.ts` — `vecteur`, `norme`, `produit_scalaire`, `angle_vecteurs`
+- `dsl/builtins-vectors.ts` — `vecteur`, `norme`, `produit_scalaire`, `mesure` (angle between vectors)
 
 `_executeBuiltinInner` devient alors un dispatcher de 100 lignes qui delegue a ces modules.
 
@@ -286,7 +286,7 @@ Les coordonnees (SVG px ou math units) sont parametrisees par `bounds`. Les troi
 - `types/elements-points.ts` — GeoFreePoint, GeoMidpoint, GeoIntersection\*
 - `types/elements-curves.ts` — GeoFunction, GeoParametricCurve, GeoQuadraticCurve, GeoImplicitCurve
 - `types/elements-transforms.ts` — GeoRotation, GeoReflection, GeoTranslation, etc.
-- `types/elements-annotations.ts` — GeoText, GeoAngleMark, GeoSegmentMark, GeoImage
+- `types/elements-annotations.ts` — GeoText, GeoAngle, GeoSegmentMark, GeoImage
 - `types/elements.ts` — re-exporte tout et definit l'union `GeoElement`
 
 ### 9. `dsl/serializer.ts` — Severity: Minor
