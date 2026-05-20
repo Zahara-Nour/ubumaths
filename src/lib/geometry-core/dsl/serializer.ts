@@ -710,10 +710,22 @@ function serializeElement(
 				case 'polar_angle':
 					return `${n} = angle_polaire(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])})`;
 				case 'angle_measure': {
+					const suffix = el.unite === 'deg' ? ', unite="deg"' : '';
+					// B5 — if this scalar was derived from a named GeoAngle (i.e. user wrote
+					// `α = angle(A, V, B); m = mesure(α)`), emit `mesure(α)` to preserve the
+					// explicit link on roundtrip. Hidden angles (created by `mesure(A, V, B)`
+					// direct via `createHiddenAngleFor`) have an auto-generated name starting
+					// with `_` and fall back to the 3-points form.
+					const ownerAngle = figure.findAngleByMeasureScalarId(el.id);
+					if (ownerAngle) {
+						const angleName = idToName.get(ownerAngle.id);
+						if (angleName && !angleName.startsWith('_')) {
+							return `${n} = mesure(${angleName}${suffix})`;
+						}
+					}
 					const aN = name(idToName, el.targetIds[0]);
 					const vN = name(idToName, el.targetIds[1]);
 					const bN = name(idToName, el.targetIds[2]);
-					const suffix = el.unite === 'deg' ? ', unite="deg"' : '';
 					return `${n} = mesure(${aN}, ${vN}, ${bN}${suffix})`;
 				}
 				case 'vectors_angle_measure': {

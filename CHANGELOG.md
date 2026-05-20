@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.1...v0.10.0) (2026-05-20)
+
+### ✨ Features
+
+- **geometry-core:** `angle(u, v)` overload pour 2 vecteurs (V2)
+- **geometry-core:** `angle(seg1, seg2)` overload pour 2 segments sécants (V2)
+- **geometry-core:** `angle(d1, d2)` overload pour 2 droites avec convention angle aigu `[0, π/2]` (V2)
+- **geometry-core:** `arcSpacingPx` named arg paramétrable (default 6 px) sur toutes les formes de `angle(...)` (V2)
+
+### ♻️ Code Refactoring / dette tech
+
+- **geometry-core (D1):** `requireEnumNamed` `callerName` désormais obligatoire (qualité des messages d'erreur)
+- **geometry-core (D3):** helper partagé `computeBisectorDirection` (`rendering/bisector-direction.ts`) entre 4 surfaces de rendu (canvas, SVG, TikZ, Typst)
+- **geometry-core (B2):** dédup automatique de `mesure(A, V, B)` par triplet (cache `hiddenAngleByTriplet` sur la `Figure`) — supprime les angles cachés dupliqués créés par appels successifs
+- **geometry-core (B5):** sérialiseur préserve `α → mesure(α)` au lieu d'inliner `mesure(A, V, B)`, garantissant l'idempotence du roundtrip pour les angles nommés
+
 ### [0.9.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.0...v0.9.1) (2026-05-20)
 
 ### 🐛 Bug Fixes

@@ -17,9 +17,19 @@ import { Figure } from '../../graph/figure';
 import { numeric } from '../../types/geo-value';
 import { angleToSVG } from '../svg-primitives';
 import { createTransformer, DEFAULT_VIEWPORT } from '../../viewport/viewport';
+import { runDsl } from '../../dsl';
+import { isAngle } from '../../types/elements';
+import { geoToNumber } from '../../compute/to-number';
 
 function transformer() {
 	return createTransformer(DEFAULT_VIEWPORT, 800, 600);
+}
+
+/** Look up a figure element by user-given DSL name via the symbol table. */
+function lookup(result: ReturnType<typeof runDsl>, name: string): string {
+	const entry = result.symbols.allEntries().get(name);
+	if (!entry?.figureId) throw new Error(`No element named ${name}`);
+	return entry.figureId;
 }
 
 describe('GeoAngle canonical case — 60° simple (arc)', () => {
@@ -157,5 +167,245 @@ describe('GeoAngle canonical case — reactive measure under drag', () => {
 
 		const after = f.getScalarValue(scalarId);
 		expect(after).toBeCloseTo(Math.PI / 3, 5);
+	});
+});
+
+// =============================================================================
+// V2 — angle(u, v) overload canonical cases (3 cases)
+// =============================================================================
+
+describe('GeoAngle V2 overload — angle(u, v) canonical cases', () => {
+	it('60° between 2 bound vectors sharing origin → produces visible arc', () => {
+		const c = Math.cos(Math.PI / 3);
+		const s = Math.sin(Math.PI / 3);
+		const r = runDsl(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				`B = point(${c}, ${s})`,
+				'u = vecteur(O, A)',
+				'v = vecteur(O, B)',
+				'a = angle(u, v)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const mEntry = r.symbols.allEntries().get('m');
+		expect(mEntry?.figureId).toBeDefined();
+		const measure = r.figure.getScalarValue(mEntry!.figureId!);
+		expect(measure).toBeCloseTo(Math.PI / 3, 5);
+
+		const angId = lookup(r, 'a');
+		const aEl = r.figure.getElementById(angId);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		expect(aEl.visible).toBe(true);
+
+		const svg = angleToSVG(angId, r.figure, transformer());
+		expect(svg).not.toBeNull();
+		expect(svg!.paths.length).toBeGreaterThanOrEqual(1);
+		expect(svg!.paths[0]).toMatch(/^M/);
+		expect(svg!.paths[0]).toContain('A'); // SVG arc command
+	});
+
+	it('mesure ≈ π/2 between 2 orthogonal bound vectors with common origin', () => {
+		const r = runDsl(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(0, 1)',
+				'u = vecteur(O, A)',
+				'v = vecteur(O, B)',
+				'a = angle(u, v)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const mEntry = r.symbols.allEntries().get('m');
+		const measure = r.figure.getScalarValue(mEntry!.figureId!);
+		expect(measure).toBeCloseTo(Math.PI / 2, 5);
+
+		// Vertex must be the shared origin point O (cas a — réutilisé, pas synthétique).
+		const angId = lookup(r, 'a');
+		const aEl = r.figure.getElementById(angId);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		expect(aEl.vertexId).toBe(lookup(r, 'O'));
+	});
+
+	it('mesure ≈ π for antiparallel bound vectors (180° flat angle still renders)', () => {
+		const r = runDsl(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(-1, 0)',
+				'u = vecteur(O, A)',
+				'v = vecteur(O, B)',
+				'a = angle(u, v)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const mEntry = r.symbols.allEntries().get('m');
+		const measure = r.figure.getScalarValue(mEntry!.figureId!);
+		expect(measure).toBeCloseTo(Math.PI, 5);
+
+		const angId = lookup(r, 'a');
+		const svg = angleToSVG(angId, r.figure, transformer());
+		expect(svg).not.toBeNull();
+	});
+});
+
+// =============================================================================
+// V2 — angle(seg1, seg2) overload canonical cases (3 cases)
+// =============================================================================
+
+describe('GeoAngle V2 overload — angle(seg1, seg2) canonical cases', () => {
+	it('right angle between 2 perpendicular segments sharing endpoint → arc renders', () => {
+		const r = runDsl(
+			[
+				'V = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(0, 1)',
+				's1 = segment(V, A)',
+				's2 = segment(V, B)',
+				'a = angle(s1, s2)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const mEntry = r.symbols.allEntries().get('m');
+		const measure = r.figure.getScalarValue(mEntry!.figureId!);
+		expect(measure).toBeCloseTo(Math.PI / 2, 5);
+
+		const angId = lookup(r, 'a');
+		const aEl = r.figure.getElementById(angId);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		// Vertex = shared endpoint V (réutilisé).
+		expect(aEl.vertexId).toBe(lookup(r, 'V'));
+
+		const svg = angleToSVG(angId, r.figure, transformer());
+		expect(svg).not.toBeNull();
+		expect(svg!.paths.length).toBeGreaterThanOrEqual(1);
+	});
+
+	it('disjoint secant segments → synthetic vertex at intersection (0,0)', () => {
+		const r = runDsl(
+			[
+				'A = point(-2, 0)',
+				'B = point(2, 0)',
+				'C = point(0, -2)',
+				'D = point(0, 2)',
+				's1 = segment(A, B)',
+				's2 = segment(C, D)',
+				'a = angle(s1, s2)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const mEntry = r.symbols.allEntries().get('m');
+		const measure = r.figure.getScalarValue(mEntry!.figureId!);
+		expect(measure).toBeCloseTo(Math.PI / 2, 5);
+
+		const angId = lookup(r, 'a');
+		const aEl = r.figure.getElementById(angId);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		const vertexPos = r.figure.getPosition(aEl.vertexId);
+		expect(vertexPos).toBeDefined();
+		expect(geoToNumber(vertexPos!.x)).toBeCloseTo(0, 5);
+		expect(geoToNumber(vertexPos!.y)).toBeCloseTo(0, 5);
+	});
+
+	it('45° between 2 secant segments → arc renders, mesure ≈ π/4', () => {
+		const r = runDsl(
+			[
+				'A = point(-2, 0)',
+				'B = point(2, 0)',
+				'C = point(-1, -1)',
+				'D = point(1, 1)',
+				's1 = segment(A, B)',
+				's2 = segment(C, D)',
+				'a = angle(s1, s2)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const mEntry = r.symbols.allEntries().get('m');
+		const measure = r.figure.getScalarValue(mEntry!.figureId!);
+		expect(measure).toBeCloseTo(Math.PI / 4, 5);
+
+		const angId = lookup(r, 'a');
+		const svg = angleToSVG(angId, r.figure, transformer());
+		expect(svg).not.toBeNull();
+		expect(svg!.paths[0]).toMatch(/^M/);
+		expect(svg!.paths[0]).toContain('A'); // SVG arc command
+	});
+});
+
+// =============================================================================
+// V2 — angle(d1, d2) overload canonical cases (3 cases — acute convention)
+// =============================================================================
+
+describe('GeoAngle V2 overload — angle(d1, d2) canonical cases', () => {
+	it('45° between y=x and y=0 → mesure ≈ π/4 (acute convention)', () => {
+		const r = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'C = point(0, 0)',
+				'D = point(1, 1)',
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'a = angle(d1, d2)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const mEntry = r.symbols.allEntries().get('m');
+		const measure = r.figure.getScalarValue(mEntry!.figureId!);
+		expect(measure).toBeCloseTo(Math.PI / 4, 5);
+
+		const angId = lookup(r, 'a');
+		const aEl = r.figure.getElementById(angId);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		const vertexPos = r.figure.getPosition(aEl.vertexId);
+		expect(geoToNumber(vertexPos!.x)).toBeCloseTo(0, 5);
+		expect(geoToNumber(vertexPos!.y)).toBeCloseTo(0, 5);
+	});
+
+	it('perpendicular lines → mesure = π/2 (boundary of acute convention)', () => {
+		const r = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'C = point(0, 0)',
+				'D = point(0, 1)',
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'a = angle(d1, d2)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const mEntry = r.symbols.allEntries().get('m');
+		const measure = r.figure.getScalarValue(mEntry!.figureId!);
+		expect(measure).toBeCloseTo(Math.PI / 2, 5);
+
+		// Even on a sharp angle, an SVG arc renders (no carre marquage by default).
+		const angId = lookup(r, 'a');
+		const svg = angleToSVG(angId, r.figure, transformer());
+		expect(svg).not.toBeNull();
+	});
+
+	it('120° geometric angle → acute convention returns π/3 (≈ 60°)', () => {
+		// d1 along x-axis, d2 along direction making 120° with x-axis.
+		// Acute convention swaps to give the smaller angle: 180° − 120° = 60° = π/3.
+		const r = runDsl(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'C = point(0, 0)',
+				`D = point(${Math.cos((2 * Math.PI) / 3)}, ${Math.sin((2 * Math.PI) / 3)})`,
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'a = angle(d1, d2)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const mEntry = r.symbols.allEntries().get('m');
+		const measure = r.figure.getScalarValue(mEntry!.figureId!);
+		expect(measure).toBeCloseTo(Math.PI / 3, 5);
+		// Confirm the measure lies in [0, π/2] (acute convention invariant).
+		expect(measure!).toBeLessThanOrEqual(Math.PI / 2 + 1e-9);
 	});
 });
