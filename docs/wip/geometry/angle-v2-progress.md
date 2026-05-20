@@ -44,7 +44,7 @@ Ajout fonctionnel léger :
 | P1  | Dette tech D1 (`requireEnumNamed` callerName) + D3 (helper `computeBisectorDirection` partagé) | **terminée** |
 | P2  | Overloads `angle(u,v)` + `angle(seg1,seg2)` + `angle(d1,d2)` (dispatch + points synthétiques)  | **terminée** |
 | P3  | `arcSpacingPx` paramétrable + dette tech B2 (dédup `mesure(A, V, B)` par tuple)                | **terminée** |
-| P4  | Dette tech B5 (serializer `α → mesure(α)`) + tests intégration + doc V2                        | à faire      |
+| P4  | Dette tech B5 (serializer `α → mesure(α)`) + tests intégration + doc V2                        | **terminée** |
 
 ---
 
@@ -450,3 +450,87 @@ L'ancienne forme `angle(A, V, B)` reste, `angle_polaire(O, P)` aussi.
 ### Statut P3
 
 **Terminée.** Prêt pour P4 (B5 serializer `α → mesure(α)` + tests intégration + doc V2).
+
+---
+
+## Notes Phase 4
+
+### Partie A — B5 serializer préserve `α → mesure(α)`
+
+- **Helper `Figure.findAngleByMeasureScalarId(scalarId)`** ajouté (`graph/figure.ts`, juste après `createHiddenAngleFor`). Itère sur `this.elements.values()`, filtre via `isAngle`, et compare `el.measureScalarIds.rad === scalarId || el.measureScalarIds.deg === scalarId`. Retourne `GeoAngle | undefined`. Type-guard utilisé (pas de cast).
+- **Branche serializer adaptée** (`dsl/serializer.ts:712–728`, case `'angle_measure'`) :
+  - Appel `figure.findAngleByMeasureScalarId(el.id)`.
+  - Si trouvé ET si le nom dans `idToName` ne commence pas par `_` (donc binding utilisateur, pas auto-généré), émission de `${n} = mesure(${angleName}${suffix})`.
+  - Sinon fallback identique à V1 : `mesure(${aN}, ${vN}, ${bN}${suffix})`.
+  - Le suffixe `unite="deg"` est préservé dans les deux branches.
+- **Critère « binding utilisateur »** : on s'appuie sur `idToName` (la même map utilisée pour les autres serializations). Les angles cachés créés par `mesure(A, V, B)` direct via `createHiddenAngleFor` ont un nom auto-généré (préfixe `_ang…`) et tombent donc naturellement dans le fallback.
+
+### Partie B — Tests d'intégration overloads
+
+- **3 nouveaux `describe` blocks** (9 tests) ajoutés à `rendering/__tests__/angle-canonical-cases.test.ts` :
+  - `GeoAngle V2 overload — angle(u, v) canonical cases` (3 tests : 60° bound+bound, π/2 bound+bound, π antiparallel).
+  - `GeoAngle V2 overload — angle(seg1, seg2) canonical cases` (3 tests : extrémité commune π/2, segments sécants disjoints avec vertex synthétique, 45°).
+  - `GeoAngle V2 overload — angle(d1, d2) canonical cases` (3 tests : 45° y=x vs y=0, perpendiculaire π/2, 120° géo → π/3 par swap acute).
+- Tests utilisent `runDsl()` pour exercer le pipeline DSL complet (parse + interpret + measure + rendering).
+- Helper `lookup(result, name)` ajouté pour récupérer un `figureId` via le symbol table.
+- `geoToNumber` importé pour décoder les coordonnées `Vec2<GeoValue>` (corrige `NaN` lors d'un `Number(Fraction)` direct).
+
+### Partie C — Documentation V2
+
+- **`docs/ref/geometry/dsl-builtins.md`** :
+  - Signature `angle()` étendue avec les 3 nouvelles formes.
+  - `arcSpacingPx` ajouté à la table des défauts (6 px).
+  - Nouvelles sous-sections « V2 — overloads » : `angle(u, v)`, `angle(seg1, seg2)`, `angle(d1, d2)` avec exemple DSL pour chaque + note sur convention angle aigu et erreur structurée pour les parallèles.
+  - Sous-section « Notes de réactivité / sérialisation » documentant B2 (dédup `mesure(A, V, B)`), B5 (serializer α→mesure) et la validation de `arcSpacingPx`.
+- **`CHANGELOG.md`** : nouvelle entrée `[0.10.0]` au-dessus de `[0.9.1]` listant les 4 features V2 (3 overloads + arcSpacingPx) et les 4 dette tech (D1/D3/B2/B5).
+
+### Tests B5 activés (`builtins-angle.test.ts`)
+
+3 tests activés (les 2 `.todo()` + 1 supplémentaire pour `unite="deg"`) :
+
+1. Roundtrip `α = angle(...); m = mesure(α)` → re-serialize → conserve `mesure(α)` (idempotent).
+2. `mesure(A, V, B)` direct → reste émis en 3 points (l'angle caché auto-généré n'a pas de nom utilisateur).
+3. `m = mesure(α, unite="deg")` → roundtrip conserve `mesure(α, unite="deg")`.
+
+### Résultats tests finaux (0 régression)
+
+| Fichier                                                | Avant P4            | Après P4                |
+| ------------------------------------------------------ | ------------------- | ----------------------- |
+| `builtins-angle.test.ts`                               | 83 passed \| 7 todo | **86 passed \| 5 todo** |
+| `builtins-angle-overloads.test.ts`                     | 43 passed \| 2 todo | **43 passed \| 2 todo** |
+| `figure-angle.test.ts`                                 | 39/39 passed        | **39/39 passed**        |
+| `rendering/__tests__/angle-canonical-cases.test.ts`    | 9/9 passed          | **18/18 passed**        |
+| `dsl/__tests__/serializer.test.ts` (vérif non régress) | 28/28 passed        | **28/28 passed**        |
+| `dsl/__tests__/roundtrip.test.ts` (vérif non régress)  | 48/48 passed        | **48/48 passed**        |
+
+**Total 4 fichiers angle ciblés** : **186 passed | 7 todo / 193**.
+
+### Quality check incremental
+
+`pnpm check:incremental` : **9 errors / 46 warnings**, identique au baseline pré-existant — **0 régression**.
+
+### Fichiers modifiés P4
+
+- `src/lib/geometry-core/graph/figure.ts` — helper `findAngleByMeasureScalarId` ajouté juste après `createHiddenAngleFor`.
+- `src/lib/geometry-core/dsl/serializer.ts` — branche `scalarKind: 'angle_measure'` adaptée (B5).
+- `src/lib/geometry-core/dsl/__tests__/builtins-angle.test.ts` — 3 tests B5 activés (2 `.todo` + 1 nouveau pour `unite="deg"`).
+- `src/lib/geometry-core/rendering/__tests__/angle-canonical-cases.test.ts` — 9 tests V2 ajoutés (3 par overload).
+- `docs/ref/geometry/dsl-builtins.md` — section `angle()` étendue V2.
+- `CHANGELOG.md` — entrée `[0.10.0]` ajoutée.
+- `docs/wip/geometry/angle-v2-progress.md` — section P4 (cette section).
+
+### Statut P4
+
+**Terminée.** Toutes les phases V2 livrées. **Prêt pour release `v0.10.0`**.
+
+### Récapitulatif global V2 (P0–P4)
+
+| Phase | Livré                                                                                                | Tests ajoutés    |
+| ----- | ---------------------------------------------------------------------------------------------------- | ---------------- |
+| P0    | Spec TDD + ~30 tests `.todo()` rouges                                                                | tests squelettes |
+| P1    | D1 `requireEnumNamed` callerName obligatoire + D3 helper `computeBisectorDirection`                  | 0 (refactor)     |
+| P2    | Dispatch `handleAngle` 3 overloads (vecteurs/segments/droites) + sous-handlers + points synthétiques | 35 + 28          |
+| P3    | `arcSpacingPx` paramétrable (4 surfaces) + B2 dédup `mesure(A, V, B)` (cache par triplet)            | 18               |
+| P4    | B5 serializer `α → mesure(α)` (idempotence) + 9 tests intégration overloads + doc V2 + CHANGELOG     | 12               |
+
+Tous les fichiers progress et docs sont à jour. La release `v0.10.0` peut être déclenchée par l'orchestrator.

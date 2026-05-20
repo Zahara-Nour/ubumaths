@@ -3671,6 +3671,24 @@ export class Figure {
 		return id;
 	}
 
+	/**
+	 * Back-lookup helper: find the GeoAngle whose `measureScalarIds.rad` or
+	 * `measureScalarIds.deg` equals the given scalarId, or undefined if none.
+	 *
+	 * Used by the DSL serializer to emit `mesure(α)` instead of
+	 * `mesure(A, V, B)` when the scalar was derived from a named angle binding,
+	 * preserving idempotent roundtrips (B5).
+	 */
+	findAngleByMeasureScalarId(scalarId: string): GeoAngle | undefined {
+		for (const el of this.elements.values()) {
+			if (!isAngle(el)) continue;
+			const ids = el.measureScalarIds;
+			if (!ids) continue;
+			if (ids.rad === scalarId || ids.deg === scalarId) return el;
+		}
+		return undefined;
+	}
+
 	createScalarNorme(vectorId: string, options?: ElementOptions): string {
 		const vecEl = this.elements.get(vectorId);
 		if (!vecEl || !isVector(vecEl)) {

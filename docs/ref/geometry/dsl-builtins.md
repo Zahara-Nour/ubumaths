@@ -7,21 +7,25 @@ All function names use French identifiers (pedagogical language of the applicati
 
 ## angle()
 
-Creates a `GeoAngle` object — a first-class, **visible** geometric angle defined by three points.
+Creates a `GeoAngle` object — a first-class, **visible** geometric angle. The 3-points form is the primary constructor; V2 adds three overloads for vectors, segments and lines (all returning the same `GeoAngle` type and reusing the same rendering / accessors / surcharges).
 
 ### Signature
 
 ```
-α = angle(A, V, B)
-α = angle(A, V, B, marque="arc"|"arcs2"|"arcs3"|"carre"|"aucune")
-α = angle(A, V, B, orientation="auto"|"direct"|"indirect")
-α = angle(A, V, B, kind="saillant"|"rentrant")
-α = angle(A, V, B, showLabel="aucun"|"nom"|"mesure"|"mesure+nom")
-α = angle(A, V, B, unite="rad"|"deg")
-α = angle(A, V, B, arcRadiusPx=25)
+α = angle(A, V, B)                                  # 3 points (primary)
+α = angle(u, v)                                     # 2 vecteurs       (V2)
+α = angle(seg1, seg2)                               # 2 segments       (V2)
+α = angle(d1, d2)                                   # 2 droites (acute) (V2)
+α = angle(..., marque="arc"|"arcs2"|"arcs3"|"carre"|"aucune")
+α = angle(..., orientation="auto"|"direct"|"indirect")
+α = angle(..., kind="saillant"|"rentrant")
+α = angle(..., showLabel="aucun"|"nom"|"mesure"|"mesure+nom")
+α = angle(..., unite="rad"|"deg")
+α = angle(..., arcRadiusPx=25)
+α = angle(..., arcSpacingPx=6)                      # (V2) spacing between multi-arcs
 ```
 
-All named arguments are optional and combinable.
+All named arguments are optional, combinable, and accepted on every overload.
 
 - **A** — first side point (p1)
 - **V** — vertex (sommit, second argument)
@@ -31,14 +35,15 @@ The angle is measured from the A-side to the B-side going through the interior (
 
 ### Default values
 
-| Field         | Default      | Meaning                                          |
-| ------------- | ------------ | ------------------------------------------------ |
-| `marque`      | `'arc'`      | Render a single arc                              |
-| `kind`        | `'saillant'` | Interior sector (<π)                             |
-| `orientation` | `'auto'`     | Auto-detect CCW vs CW from point positions       |
-| `showLabel`   | `'aucun'`    | No label rendered                                |
-| `unite`       | `'rad'`      | Unit for label display when `showLabel='mesure'` |
-| `arcRadiusPx` | `25`         | Radius of the arc in screen pixels               |
+| Field          | Default      | Meaning                                                 |
+| -------------- | ------------ | ------------------------------------------------------- |
+| `marque`       | `'arc'`      | Render a single arc                                     |
+| `kind`         | `'saillant'` | Interior sector (<π)                                    |
+| `orientation`  | `'auto'`     | Auto-detect CCW vs CW from point positions              |
+| `showLabel`    | `'aucun'`    | No label rendered                                       |
+| `unite`        | `'rad'`      | Unit for label display when `showLabel='mesure'`        |
+| `arcRadiusPx`  | `25`         | Radius of the arc in screen pixels                      |
+| `arcSpacingPx` | `6`          | Spacing in px between concentric arcs (`arcs2`/`arcs3`) |
 
 ### Examples
 
@@ -81,6 +86,62 @@ angle(A, V, B, showLabel="mesure", unite="deg")
 ### Surfaces
 
 Rendered on canvas (interactive), SVG export, TikZ export, and Typst export.
+
+### V2 — overloads
+
+Three new constructors share the same `GeoAngle` output as `angle(A, V, B)`. Internally each builds a 3-points triplet (vertex + p1 + p2), with synthetic invisible points created on demand. Named arguments (`marque`, `arcRadiusPx`, `arcSpacingPx`, ...) work on every overload.
+
+#### `angle(u, v)` — 2 vecteurs
+
+Returns the **unoriented** angle between vectors `u` and `v` in `[0, π]`. When both vectors are bound and share the same origin, that point is reused as the vertex (no synthetic points). Otherwise synthetic invisible `freePoint`s are created at `vertex`, `vertex + u`, `vertex + v`.
+
+```dsl
+O = point(0, 0)
+A = point(1, 0)
+B = point(0, 1)
+u = vecteur(O, A)
+v = vecteur(O, B)
+α = angle(u, v)        # vertex = O (réutilisé), mesure = π/2
+```
+
+> **Limitation V2** : la réactivité au drag des points-source n'est garantie que pour le cas `bound + bound` partageant un point commun. Les autres configurations capturent les composantes au moment de la construction (voir progress doc).
+
+#### `angle(seg1, seg2)` — 2 segments
+
+Vertex = **shared endpoint** if any, sinon **intersection** des droites support (calculée via `intersectLL`). Les segments parallèles non confondus lèvent `DslRuntimeError` (hint : utiliser `angle(d1, d2)`).
+
+```dsl
+V = point(0, 0)
+A = point(1, 0)
+B = point(0, 1)
+s1 = segment(V, A)
+s2 = segment(V, B)
+α = angle(s1, s2)       # vertex = V (réutilisé)
+```
+
+> Pour 2 segments sécants sans extrémité commune, l'intersection est calculée sur les droites support et matérialisée par un `freePoint` invisible. Les segments parallèles lèvent une erreur structurée listant les 4 formes acceptées.
+
+#### `angle(d1, d2)` — 2 droites (convention angle aigu)
+
+Vertex = intersection des 2 droites. La mesure retournée par `mesure(α)` est dans `[0, π/2]` (convention « plus petit angle »). Les droites parallèles ou confondues lèvent `DslRuntimeError`.
+
+```dsl
+A = point(0, 0)
+B = point(1, 0)
+C = point(0, 0)
+D = point(1, 1)
+d1 = droite(A, B)
+d2 = droite(C, D)
+α = angle(d1, d2)       # mesure = π/4 (acute)
+```
+
+> Pour un angle géométrique de 120°, l'overload renvoie **60°** par swap interne sur p2 (`I - unit(d2)` au lieu de `I + unit(d2)`). La représentation reste un triplet de points classique, donc rendu/accesseurs V1 marchent tels quels.
+
+### Notes de réactivité / sérialisation
+
+- **Cache `mesure(A, V, B)` (B2, V2)** — un appel `m = mesure(A, V, B)` réutilise l'angle caché créé pour le même triplet ordonné `(p1, vertex, p2)`. Deux `mesure(A, V, B)` successifs sur le même triplet renvoient donc le **même** `scalarId` (et la même `GeoAngle` interne).
+- **Sérialiseur `α → mesure(α)` (B5, V2)** — si tu écris `α = angle(A, V, B); m = mesure(α)`, le sérialiseur émet bien `m = mesure(α)` (et pas `m = mesure(A, V, B)`), préservant le lien explicite sur roundtrip. Pour `mesure(A, V, B)` direct, le fallback 3-points reste émis (l'angle caché auto-généré n'a pas de nom utilisateur).
+- **`arcSpacingPx`** — valeur strictement positive requise (`0`, valeurs négatives ou `NaN` lèvent `DslRuntimeError`). Lue par les 3 renderers (SVG, TikZ, Typst).
 
 ---
 

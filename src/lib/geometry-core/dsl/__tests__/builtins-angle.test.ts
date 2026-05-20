@@ -1225,8 +1225,53 @@ describe('V2 — B2 dédup mesure(A, V, B) by triplet', () => {
 // =============================================================================
 
 describe('V2 — B5 serializer preserves α → mesure(α)', () => {
-	it.todo(
-		'roundtrip: α=angle(A,V,B); m=mesure(α) → serialize → parse → emits mesure(α) (not mesure(A,V,B))'
-	);
-	it.todo('mesure(A, V, B) direct (no named angle) still serializes to mesure(A, V, B)');
+	it('roundtrip: α=angle(A,V,B); m=mesure(α) → serialize → parse → emits mesure(α) (not mesure(A,V,B))', async () => {
+		const { serialize } = await import('../serializer');
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'alpha = angle(A, V, B)',
+				'm = mesure(alpha)'
+			].join('\n')
+		);
+		const out = serialize(r.figure, r.symbols);
+		// The serialized output must reference `alpha` by name, not inline `A, V, B`.
+		expect(out).toMatch(/m\s*=\s*mesure\(alpha\)/);
+		expect(out).not.toMatch(/m\s*=\s*mesure\(A,\s*V,\s*B\)/);
+
+		// Idempotence: re-parse + re-serialize gives the same output for the m=… line.
+		const r2 = run(out);
+		const out2 = serialize(r2.figure, r2.symbols);
+		expect(out2).toMatch(/m\s*=\s*mesure\(alpha\)/);
+	});
+
+	it('mesure(A, V, B) direct (no named angle) still serializes to mesure(A, V, B)', async () => {
+		const { serialize } = await import('../serializer');
+		const r = run(
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'm = mesure(A, V, B)'].join('\n')
+		);
+		const out = serialize(r.figure, r.symbols);
+		// The hidden angle has an auto-generated name (`_ang…`), so the serializer
+		// keeps the 3-point form. We must NOT see `mesure(_ang…)` or `mesure(alpha)`.
+		expect(out).toMatch(/m\s*=\s*mesure\(A,\s*V,\s*B\)/);
+		expect(out).not.toMatch(/m\s*=\s*mesure\(_/);
+	});
+
+	it('roundtrip with unite="deg" preserves α → mesure(α, unite="deg")', async () => {
+		const { serialize } = await import('../serializer');
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'alpha = angle(A, V, B)',
+				'm = mesure(alpha, unite="deg")'
+			].join('\n')
+		);
+		const out = serialize(r.figure, r.symbols);
+		expect(out).toMatch(/m\s*=\s*mesure\(alpha,\s*unite="deg"\)/);
+		expect(out).not.toMatch(/m\s*=\s*mesure\(A,\s*V,\s*B/);
+	});
 });
