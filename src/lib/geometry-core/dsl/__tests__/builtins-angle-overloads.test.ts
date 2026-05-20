@@ -191,9 +191,22 @@ describe('angle(u, v) — 2 vectors overload (semantic)', () => {
 		expect(scalarValue(r2, 'm')).toBeCloseTo(Math.PI / 2, 6);
 	});
 
-	it.todo('angle(u, v) free + free creates 3 synthetic invisible points (vertex at (0,0))');
-	// Note: free vector creation via `vecteur(dx, dy)` syntax — to be activated
-	// once tests confirm the free-vector entry path works for this case.
+	it('angle(u, v) free + free is reactive: moveFreeVector(u) updates mesure (A2.x)', () => {
+		// 2 vecteurs libres orthogonaux à anchor (0,0) : u = (1,0), v = (0,1) → mesure = π/2
+		const r = run(
+			['u = vecteur(1, 0)', 'v = vecteur(0, 1)', 'a = angle(u, v)', 'm = mesure(a)'].join('\n')
+		);
+		expect(scalarValue(r, 'm')).toBeCloseTo(Math.PI / 2, 5);
+		// Drag u : move anchor to (5, 0), garder dx/dy
+		const uEl = r.figure.getElementById(sym(r, 'u')!.figureId!);
+		expect(uEl?.type).toBe('freeVector');
+		r.figure.beginTransaction();
+		r.figure.moveFreeVector(sym(r, 'u')!.figureId!, numeric(5), numeric(0));
+		r.figure.recompute();
+		r.figure.commit();
+		// dx/dy de u inchangé → mesure inchangée
+		expect(scalarValue(r, 'm')).toBeCloseTo(Math.PI / 2, 5);
+	});
 
 	it('angle(u, v) returns a GeoAngle element (isAngle === true)', () => {
 		const r = run(

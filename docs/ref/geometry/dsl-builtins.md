@@ -104,7 +104,7 @@ v = vecteur(O, B)
 α = angle(u, v)        # vertex = O (réutilisé), mesure = π/2
 ```
 
-> **Réactivité au drag (A2, v0.9.5)** : pleinement réactif pour les cas `bound + bound` (avec ou sans point partagé) — vertex et points témoins implémentés via `createTranslatedPointByVector` (point dérivé du dependency graph). **Limitation résiduelle** : cas avec `freeVector` (vecteur libre avec anchor) reste statique — drag de l'anchor ne propage pas à α. Différé A2.x.
+> **Réactivité au drag (A2 + A2.x)** : **pleinement réactif** pour les 4 combinaisons (bound+bound, bound+free, free+bound, free+free). Implémenté via `createTranslatedPointByVector` (V1) et `createFreeVectorPoint` (A2.x, nouveau type `GeoFreeVectorPoint` qui dépend de `vectorId` et lit `vec.anchorX/Y` ou `+dx/dy`). Le drag d'un point bound OU de l'anchor d'un free vector propage à α via le dependency graph.
 
 #### `angle(seg1, seg2)` — 2 segments
 

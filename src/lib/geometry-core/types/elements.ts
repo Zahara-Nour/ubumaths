@@ -1532,6 +1532,7 @@ export function isPointElement(el: GeoElement): el is GeoPointElement {
 		el.type === 'projectedPoint' ||
 		el.type === 'affinityPoint' ||
 		el.type === 'invertedPoint' ||
+		el.type === 'freeVectorPoint' ||
 		el.type === 'pointOnCurve' ||
 		el.type === 'pointOnQuadraticCurve' ||
 		el.type === 'pointOnSegment' ||
