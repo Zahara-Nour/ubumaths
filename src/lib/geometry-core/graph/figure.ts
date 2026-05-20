@@ -21,6 +21,7 @@ import type {
 	GeoTranslatedPoint,
 	GeoDilatedPoint,
 	GeoReflectedOverLine,
+	GeoFreeVectorPoint,
 	GeoSegment,
 	GeoLine,
 	GeoRay,
@@ -1422,6 +1423,44 @@ export class Figure {
 			dependsOn: deps
 		};
 		this.addElement(id, element, deps);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Create a reactive point at the anchor or end of a `GeoFreeVector`.
+	 * The point's position is recomputed whenever the free vector is moved
+	 * via `moveFreeVector`. Used by `angle(u, v)` overload to give free
+	 * vectors a reactive "vertex" / "endpoint" without storing static
+	 * coordinates (V3 A2.x — lifts the V2/A2 limitation on free vector
+	 * anchor reactivity).
+	 *
+	 * @param vectorId - id of a `GeoFreeVector` element
+	 * @param which - `'anchor'` (vector base) or `'end'` (anchor + dx/dy)
+	 */
+	createFreeVectorPoint(
+		vectorId: string,
+		which: 'anchor' | 'end',
+		options?: ElementOptions
+	): string {
+		const vec = this.elements.get(vectorId);
+		if (!vec || !isFreeVector(vec)) {
+			throw new Error(`createFreeVectorPoint: "${vectorId}" is not a free vector`);
+		}
+		const id = this.generateId('fvp');
+		const element: GeoFreeVectorPoint = {
+			type: 'freeVectorPoint',
+			id,
+			vectorId,
+			which,
+			color: this.resolveColor(options),
+			visible: options?.visible ?? true,
+			label: options?.label,
+			labelOffset: options?.labelOffset,
+			style: this.resolveStyle(options),
+			dependsOn: [vectorId]
+		};
+		this.addElement(id, element, [vectorId]);
 		this.computePosition(id);
 		return id;
 	}
