@@ -24,7 +24,8 @@ import { geoIsZero } from '../compute/compare';
 import { geoToNumber } from '../compute/to-number';
 import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
-import { subtract, add, multiply, number as mathNumber, variable } from '$lib/mathAST/factory';
+import { subtract, add, multiply, variable } from '$lib/mathAST/factory';
+import { numericNode } from '$lib/mathAST/common/numeric';
 import { compile } from '$lib/mathAST/eval/compile';
 import { findRoots } from '$lib/mathAST/analysis/roots';
 
@@ -786,7 +787,7 @@ export function intersectLF(
 	}
 
 	// h(x) = f(x) - (m*x + p)
-	const lineExpr = add(multiply(mathNumber(String(m)), variable('x')), mathNumber(String(p)));
+	const lineExpr = add(multiply(numericNode(m), variable('x')), numericNode(p));
 	const h = subtract(fnExpression, lineExpr);
 	const compiledH = compile(h);
 
