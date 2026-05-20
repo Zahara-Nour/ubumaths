@@ -582,3 +582,85 @@ describe('Cas dégénérés DSL', () => {
 		).toThrow(DslRuntimeError);
 	});
 });
+
+// =============================================================================
+// V2 — Overloads angle(u, v) / angle(seg1, seg2) / angle(d1, d2)
+// =============================================================================
+
+describe('V2 — angle(u, v) — 2 vectors overload', () => {
+	it.todo('angle(u, v) with 2 bound vectors sharing a common point returns a GeoAngle');
+	it.todo('angle(u, v) bound+bound shared vertex reuses the shared point as vertex');
+	it.todo('angle(u, v) bound+bound disjoint creates synthetic hidden points for p2');
+	it.todo('angle(u, v) bound+free creates synthetic hidden point at vertex + free.dx,dy');
+	it.todo('angle(u, v) free+free creates 3 synthetic hidden points (vertex at origin)');
+	it.todo('angle(u, v) all synthetic points have visible=false and draggable=false');
+	it.todo('angle(u, v) is reactive: drag of an anchored point updates mesure');
+	it.todo('angle(u, v) accepts named arg marque="carre"');
+	it.todo('angle(u, v) accepts named arg showLabel="mesure"');
+});
+
+describe('V2 — angle(seg1, seg2) — 2 segments overload', () => {
+	it.todo('angle(s1, s2) with shared endpoint uses that endpoint as vertex');
+	it.todo('angle(s1, s2) secant segments computes intersection as vertex');
+	it.todo('angle(s1, s2) secant segments uses far endpoints as p1/p2');
+	it.todo('angle(s1, s2) parallel segments throws DslRuntimeError');
+	it.todo('angle(s1, s2) parallel error hint mentions angle(d1, d2) for parallel lines');
+	it.todo('angle(s1, s2) parallel error forms list includes the 4 angle constructors');
+	it.todo('angle(s1, s2) is reactive: drag of a segment endpoint updates mesure');
+});
+
+describe('V2 — angle(d1, d2) — 2 lines overload', () => {
+	it.todo('angle(d1, d2) secant lines computes intersection via intersectLL as vertex');
+	it.todo('angle(d1, d2) returns the acute angle by convention (mesure in [0, π/2])');
+	it.todo('angle(d1, d2) swaps p2 when naive measure exceeds π/2 to enforce acute');
+	it.todo('angle(d1, d2) parallel lines throws DslRuntimeError');
+	it.todo('angle(d1, d2) coincident lines throws DslRuntimeError');
+	it.todo('angle(d1, d2) parallel error hint mentions the convention (0 for parallel)');
+	it.todo('angle(d1, d2) is reactive: drag of a line through-point updates mesure');
+});
+
+describe('V2 — arcSpacingPx named arg', () => {
+	it.todo('angle(A, V, B) without arcSpacingPx uses default 6');
+	it.todo('angle(A, V, B, arcSpacingPx=10) stores 10 on the GeoAngle');
+	it.todo('arcSpacingPx is accepted on angle(u, v) overload');
+	it.todo('arcSpacingPx is accepted on angle(seg1, seg2) overload');
+	it.todo('arcSpacingPx is accepted on angle(d1, d2) overload');
+	it.todo('arcSpacingPx=0 throws DslRuntimeError (must be strictly positive)');
+	it.todo('arcSpacingPx=-5 throws DslRuntimeError');
+});
+
+describe('V2 — Dispatch errors', () => {
+	it.todo('angle(u, segment) mix vector+segment throws structured error');
+	it.todo('angle(droite, vecteur) mix line+vector throws structured error');
+	it.todo('dispatch error forms list includes all 4 valid syntaxes');
+	it.todo('angle() with 0 args throws structured error');
+	it.todo('angle(A) with 1 arg throws structured error');
+	it.todo('angle(A, B, C, D) with 4 args throws structured error');
+});
+
+describe('V2 — Cas dégénérés overloads', () => {
+	it.todo('angle(u, u) (same vectors) returns mesure = 0');
+	it.todo('angle(u, -u) (antiparallel vectors) returns mesure = π');
+	it.todo('angle with a zero vector throws DslRuntimeError');
+});
+
+// =============================================================================
+// V2 — Dette tech B2 : dédup mesure(A, V, B) par tuple
+// =============================================================================
+
+describe('V2 — B2 dédup mesure(A, V, B) by triplet', () => {
+	it.todo('2 successive mesure(A, V, B) calls on same triplet return same scalarId');
+	it.todo('mesure(A, V, B) and mesure(V, A, B) return different scalarIds (different triplets)');
+	it.todo('cache persists across recompute cycles');
+});
+
+// =============================================================================
+// V2 — Dette tech B5 : serializer préserve α → mesure(α)
+// =============================================================================
+
+describe('V2 — B5 serializer preserves α → mesure(α)', () => {
+	it.todo(
+		'roundtrip: α=angle(A,V,B); m=mesure(α) → serialize → parse → emits mesure(α) (not mesure(A,V,B))'
+	);
+	it.todo('mesure(A, V, B) direct (no named angle) still serializes to mesure(A, V, B)');
+});
