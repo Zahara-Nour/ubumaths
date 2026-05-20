@@ -71,7 +71,7 @@ import {
 	isVectorByPoints,
 	isLine
 } from '../types/elements';
-import type { GeoVector, GeoSegment, GeoLine, GeoStyle } from '../types/elements';
+import type { GeoVector, GeoSegment, GeoLine } from '../types/elements';
 import { intersectLL } from '../geometry/intersections';
 import { applyAngleMode } from './apply-angle-mode';
 import { interpretAreaBuiltin } from './area-builtin-helper';
@@ -3787,31 +3787,17 @@ function handleTransporte(ctx: BuiltinCtx): BuiltinResult {
 		overrideArcSpacing = raw;
 	}
 
-	// Style fill : héritage depuis α.style + override via `remplissage=` / `opacite_fond=`.
+	// Héritage style : on copie α.style et α.color comme base. Les overrides
+	// inline (`remplissage=`, `opacite_fond=`, `couleur=`, `epaisseur=`, ...)
+	// sont appliqués UNIQUEMENT via `applyInlineStyle` ci-dessous — pas de
+	// double-passe (D-V3a-2 fix). `applyInlineStyle` lit ces named args et
+	// fait l'updateStyle proprement.
 	const inheritedStyle = alphaEl.style;
-	const styleOverride: Record<string, unknown> = {};
-	if (named.has('remplissage')) {
-		const fv = named.get('remplissage')!;
-		const fillStr = fv.type === 'string' ? fv.value : fv.type === 'nombre' ? String(fv.value) : '';
-		styleOverride.fillColor = resolveColorName(fillStr);
-	}
-	if (named.has('opacite_fond')) {
-		styleOverride.fillOpacity = requireNumber(named.get('opacite_fond')!, 'opacite_fond', line);
-	}
-	// Style trait : héritage de couleur trait, opacity, strokeWidth, dash via copy.
-	// Si l'utilisateur passe `couleur=`, on délègue à applyInlineStyle plus loin.
-	const finalStyle: Record<string, unknown> = {
-		...(inheritedStyle ?? {}),
-		...styleOverride
-	};
-	const hasStyle = Object.keys(finalStyle).length > 0;
-
-	// Couleur trait : héritée du α si pas d'override `couleur=`.
-	const inheritedColor = alphaEl.color;
+	const hasInheritedStyle = inheritedStyle !== undefined;
 
 	const angleOptions = {
 		label,
-		color: inheritedColor,
+		color: alphaEl.color,
 		marque: overrideMarque ?? alphaEl.marque,
 		orientation: overrideOrientation ?? alphaEl.orientation,
 		kind: overrideKind ?? alphaEl.kind,
@@ -3819,12 +3805,13 @@ function handleTransporte(ctx: BuiltinCtx): BuiltinResult {
 		unite: overrideUnite ?? alphaEl.unite,
 		arcRadiusPx: overrideArcRadius ?? alphaEl.arcRadiusPx,
 		arcSpacingPx: overrideArcSpacing ?? alphaEl.arcSpacingPx,
-		...(hasStyle ? { style: finalStyle as GeoStyle } : {})
+		...(hasInheritedStyle ? { style: inheritedStyle } : {})
 	};
 
 	const newAngleId = figure.createAngle(p1Id, VprimeId, p2Id, angleOptions);
 
-	// Style commun couleur trait via inline named (`couleur=`, `epaisseur=`, ...).
+	// Single pass — applique tous les inline styles (couleur, remplissage,
+	// opacite_fond, epaisseur, ...) en une seule mutation `updateStyle`.
 	applyInlineStyle(figure, newAngleId, named, line);
 
 	return { figureId: newAngleId, symbolType: 'angle' };

@@ -339,6 +339,15 @@ export interface GeoReflectedOverLine extends GeoElementBase {
  * through `dependsOn: [vectorId]`. Used internally by the `angle(u, v)`
  * overload when one or both operands are `GeoFreeVector` (V3 A2.x — lifts
  * the V2/A2 limitation on free-vector anchor reactivity).
+ *
+ * @internal **USAGE INTERNE UNIQUEMENT.** Ce type est créé par `handleAngleVectors`
+ * pour matérialiser l'anchor/end d'un free vector en tant que point réactif dans
+ * le dependency graph. **Ne PAS retourner ce type depuis les accesseurs publics**
+ * du DSL (`sommet(α)`, `cote(α, i)`, etc.) — l'utilisateur attend des points
+ * « légitimes » (free, midpoint, intersection, …). Si un futur accesseur tombe
+ * dessus, le filtrer / le remplacer par le point sous-jacent ou lever une erreur.
+ * Pas rendu visuellement (les 4 renderers l'ignorent — son seul effet est de
+ * fournir une position calculée au compute-position pour `GeoAngle` dérivés).
  */
 export interface GeoFreeVectorPoint extends GeoElementBase {
 	readonly type: 'freeVectorPoint';
