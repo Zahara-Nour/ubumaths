@@ -3619,16 +3619,22 @@ export class Figure {
 	}
 
 	/**
-	 * Cache the back-reference from a GeoAngle to its derived measure scalar.
-	 * Used by `mesure(α)` to avoid re-creating the scalar on every call.
+	 * Cache the back-reference from a GeoAngle to its derived measure scalar
+	 * for a given unit. Used by `mesure(α)` and `mesure(α, unite=…)` to avoid
+	 * re-creating the scalar on every call. Each unit has its own cache slot
+	 * so mixing rad/deg queries does not thrash the previous entry.
 	 */
-	setAngleMeasureScalarId(angleId: string, scalarId: string): void {
+	setAngleMeasureScalarId(angleId: string, scalarId: string, unite: 'rad' | 'deg' = 'rad'): void {
 		const el = this.elements.get(angleId);
 		if (!el || !isAngle(el)) {
 			throw new Error(`setAngleMeasureScalarId: "${angleId}" is not an angle element`);
 		}
-		if (el.measureScalarId === scalarId) return;
-		const updated: GeoAngle = { ...el, measureScalarId: scalarId };
+		const current = el.measureScalarIds ?? {};
+		if (current[unite] === scalarId) return;
+		const updated: GeoAngle = {
+			...el,
+			measureScalarIds: { ...current, [unite]: scalarId }
+		};
 		this.elements.set(angleId, updated);
 	}
 

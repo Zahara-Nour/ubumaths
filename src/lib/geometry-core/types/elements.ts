@@ -440,8 +440,13 @@ export interface GeoAngle extends GeoElementBase {
 	readonly showLabel?: 'aucun' | 'nom' | 'mesure' | 'mesure+nom';
 	/** Display unit. Default follows global angleMode. */
 	readonly unite?: 'rad' | 'deg';
-	/** Back-reference to a derived measure scalar (cache, set by mesure()). */
-	readonly measureScalarId?: string;
+	/**
+	 * Back-reference cache from the angle to its derived measure scalar(s),
+	 * keyed by unit. Avoids re-creating a scalar on every `mesure(α)` call.
+	 * Per-unit slots prevent thrashing when an author mixes radian and degree
+	 * queries on the same angle.
+	 */
+	readonly measureScalarIds?: { readonly rad?: string; readonly deg?: string };
 	/** Arc radius in pixels. Default: 25. */
 	readonly arcRadiusPx?: number;
 }

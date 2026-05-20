@@ -240,7 +240,12 @@ const angleSchema = baseElementSchema.extend({
 	marque: z.enum(['arc', 'arcs2', 'arcs3', 'carre', 'aucune']).optional(),
 	showLabel: z.enum(['aucun', 'nom', 'mesure', 'mesure+nom']).optional(),
 	unite: z.enum(['rad', 'deg']).optional(),
-	measureScalarId: z.string().optional(),
+	measureScalarIds: z
+		.object({
+			rad: z.string().optional(),
+			deg: z.string().optional()
+		})
+		.optional(),
 	arcRadiusPx: z.number().positive().optional()
 });
 

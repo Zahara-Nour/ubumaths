@@ -42,60 +42,78 @@ const SUPABASE_URL = process.env.SUPABASE_URL ?? '';
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
 
 // ---------------------------------------------------------------------------
-// Regex-based transformations
+// Depth-counting parser for function-call replacements
 // ---------------------------------------------------------------------------
 
 /**
- * Replace `marque_angle(P1, V, P2)` and `marque_angle(P1, V, P2, arcs=N)`.
- * Handles optional spaces around commas and around `arcs=`.
+ * Parse the top-level positional arguments of a function call.
+ *
+ * Given `argsStr` = the content between the outermost parens (no opening
+ * or closing parenthesis), splits on top-level commas while respecting
+ * nested parentheses and brackets. String literals are scanned to avoid
+ * splitting on quoted commas.
+ *
+ * Returns the list of trimmed argument expressions in source order.
+ *
+ * Examples:
+ *   parseArgs("A, B, C")                → ["A", "B", "C"]
+ *   parseArgs("milieu(A,B), V, P")      → ["milieu(A,B)", "V", "P"]
+ *   parseArgs(`P1, V, P2, arcs="2"`)    → ["P1", "V", "P2", `arcs="2"`]
+ *   parseArgs("")                       → []
  */
-function migrateMarqueAngle(src: string): string {
-	// marque_angle(P1, V, P2)               → angle(P1, V, P2)
-	// marque_angle(P1, V, P2, arcs=N)       → angle(P1, V, P2, marque="arcsN")
-	// marque_angle(P1, V, P2, arcs = N)     → angle(P1, V, P2, marque="arcsN")
-	return src.replace(
-		/marque_angle\s*\(\s*([^,\n]+?)\s*,\s*([^,\n]+?)\s*,\s*([^,\n)]+?)\s*(?:,\s*arcs\s*=\s*(\d+)\s*)?\)/g,
-		(_match, p1, v, p2, arcs) => {
-			const arcsAttr = arcs && arcs !== '1' ? `, marque="arcs${arcs}"` : '';
-			return `angle(${p1.trim()}, ${v.trim()}, ${p2.trim()}${arcsAttr})`;
+function parseArgs(argsStr: string): string[] {
+	if (argsStr.trim() === '') return [];
+	const args: string[] = [];
+	let depth = 0;
+	let start = 0;
+	let inString: '"' | "'" | null = null;
+
+	for (let i = 0; i < argsStr.length; i++) {
+		const ch = argsStr[i];
+
+		// Inside a string literal — skip until matching quote, handle escapes
+		if (inString !== null) {
+			if (ch === '\\' && i + 1 < argsStr.length) {
+				i++; // skip escaped character
+				continue;
+			}
+			if (ch === inString) inString = null;
+			continue;
 		}
-	);
+		if (ch === '"' || ch === "'") {
+			inString = ch;
+			continue;
+		}
+
+		if (ch === '(' || ch === '[' || ch === '{') depth++;
+		else if (ch === ')' || ch === ']' || ch === '}') depth--;
+		else if (ch === ',' && depth === 0) {
+			args.push(argsStr.slice(start, i).trim());
+			start = i + 1;
+		}
+	}
+	args.push(argsStr.slice(start).trim());
+	return args;
 }
 
 /**
- * Replace `angle_droit(P1, V, P2)` → `angle(P1, V, P2, marque="carre")`.
- */
-function migrateAngleDroit(src: string): string {
-	return src.replace(
-		/angle_droit\s*\(\s*([^,\n]+?)\s*,\s*([^,\n]+?)\s*,\s*([^)\n]+?)\s*\)/g,
-		(_match, p1, v, p2) => `angle(${p1.trim()}, ${v.trim()}, ${p2.trim()}, marque="carre")`
-	);
-}
-
-/**
- * Replace `angle_vecteurs(u, v)` → `mesure(u, v)`.
- */
-function migrateAngleVecteurs(src: string): string {
-	return src.replace(
-		/angle_vecteurs\s*\(\s*([^,\n]+?)\s*,\s*([^)\n]+?)\s*\)/g,
-		(_match, u, v) => `mesure(${u.trim()}, ${v.trim()})`
-	);
-}
-
-/**
- * Replace the 2-argument form `angle(O, P)` → `angle_polaire(O, P)`.
+ * Replace every top-level call to `funcName(...)` in `src` by the result
+ * of `transform(args)`. The transform receives the parsed top-level
+ * positional arguments and returns the replacement source (typically a
+ * new call expression), or `null` to keep the original call unchanged.
  *
- * The 3-argument form `angle(A, V, B)` must NOT be touched.
+ * The parser uses parenthesis-depth counting so nested calls in arguments
+ * (e.g. `marque_angle(milieu(A,B), V, P)`) are parsed correctly.
  *
- * Strategy: a simple regex that counts commas inside the parentheses.
- * We match `angle(` then read until the closing `)`, counting depth to handle
- * nested calls. A match is kept only if it has exactly 1 top-level comma
- * (i.e. exactly 2 positional arguments).
+ * Word-boundary safety: skips matches preceded by an identifier character,
+ * so `marque_angle` won't match when searching for `angle`.
  */
-function migrateAngle2Args(src: string): string {
-	// We scan character by character rather than use a pure regex so that we can
-	// correctly handle nested parentheses (e.g. `angle(milieu(A,B), C)`).
-	const tag = 'angle(';
+function replaceCalls(
+	src: string,
+	funcName: string,
+	transform: (args: string[]) => string | null
+): string {
+	const tag = funcName + '(';
 	let result = '';
 	let i = 0;
 
@@ -106,57 +124,138 @@ function migrateAngle2Args(src: string): string {
 			break;
 		}
 
-		// Check that "angle" is not part of a longer identifier
-		// (e.g. "angle_polaire", "marque_angle" — already handled above).
+		// Skip if preceded by an identifier character (e.g. "marque_angle"
+		// when searching for "angle")
 		const charBefore = idx > 0 ? src[idx - 1] : '';
 		if (/[\w]/.test(charBefore)) {
-			// Part of a larger identifier — skip past it
 			result += src.slice(i, idx + tag.length);
 			i = idx + tag.length;
 			continue;
 		}
 
-		// Consume everything before this "angle("
+		// Consume everything before this call
 		result += src.slice(i, idx);
 
-		// Parse the argument list from just after "angle("
+		// Find matching closing paren, respecting nested parens and strings
 		let depth = 1;
 		let j = idx + tag.length;
-		let topLevelCommas = 0;
-		const argStart = j;
-
+		let inString: '"' | "'" | null = null;
 		while (j < src.length && depth > 0) {
 			const ch = src[j];
-			if (ch === '(') depth++;
+			if (inString !== null) {
+				if (ch === '\\' && j + 1 < src.length) {
+					j += 2;
+					continue;
+				}
+				if (ch === inString) inString = null;
+			} else if (ch === '"' || ch === "'") {
+				inString = ch;
+			} else if (ch === '(') depth++;
 			else if (ch === ')') {
 				depth--;
 				if (depth === 0) break;
-			} else if (ch === ',' && depth === 1) {
-				topLevelCommas++;
 			}
 			j++;
 		}
 
-		const argsStr = src.slice(argStart, j); // does not include closing ')'
-		i = j + 1; // skip the closing ')'
-
-		if (topLevelCommas === 1) {
-			// Exactly 2 arguments → polar angle
-			result += `angle_polaire(${argsStr})`;
-		} else {
-			// 3 or more arguments → keep as-is
-			result += `angle(${argsStr})`;
+		if (depth !== 0) {
+			// Unmatched paren — bail out, keep rest of source unchanged
+			result += src.slice(idx);
+			break;
 		}
+
+		const argsStr = src.slice(idx + tag.length, j);
+		const args = parseArgs(argsStr);
+		const replacement = transform(args);
+
+		if (replacement === null) {
+			// Keep original
+			result += src.slice(idx, j + 1);
+		} else {
+			result += replacement;
+		}
+		i = j + 1;
 	}
 
 	return result;
+}
+
+// ---------------------------------------------------------------------------
+// Per-builtin transformations
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract a named-arg value from a list of argument strings.
+ * `arcs=2` and `arcs = 2` both match, returning "2".
+ * Returns `null` if not found.
+ */
+function extractNamedArg(args: string[], name: string): string | null {
+	const re = new RegExp(`^${name}\\s*=\\s*(.+)$`);
+	for (const a of args) {
+		const m = a.match(re);
+		if (m) return m[1].trim();
+	}
+	return null;
+}
+
+/**
+ * `marque_angle(P1, V, P2)`             → `angle(P1, V, P2)`
+ * `marque_angle(P1, V, P2, arcs=N)`     → `angle(P1, V, P2, marque="arcsN")`  (N != 1)
+ * `marque_angle(P1, V, P2, arcs=1)`     → `angle(P1, V, P2)`                  (default)
+ */
+function migrateMarqueAngle(src: string): string {
+	return replaceCalls(src, 'marque_angle', (args) => {
+		if (args.length < 3) return null; // unexpected arity, skip
+		const [p1, v, p2] = args;
+		const arcs = extractNamedArg(args.slice(3), 'arcs');
+		const arcsAttr = arcs && arcs !== '1' ? `, marque="arcs${arcs}"` : '';
+		return `angle(${p1}, ${v}, ${p2}${arcsAttr})`;
+	});
+}
+
+/**
+ * `angle_droit(P1, V, P2)` → `angle(P1, V, P2, marque="carre")`
+ */
+function migrateAngleDroit(src: string): string {
+	return replaceCalls(src, 'angle_droit', (args) => {
+		if (args.length !== 3) return null;
+		const [p1, v, p2] = args;
+		return `angle(${p1}, ${v}, ${p2}, marque="carre")`;
+	});
+}
+
+/**
+ * `angle_vecteurs(u, v)` → `mesure(u, v)`
+ */
+function migrateAngleVecteurs(src: string): string {
+	return replaceCalls(src, 'angle_vecteurs', (args) => {
+		if (args.length !== 2) return null;
+		const [u, v] = args;
+		return `mesure(${u}, ${v})`;
+	});
+}
+
+/**
+ * `angle(O, P)` [2-arg form] → `angle_polaire(O, P)`
+ * The 3-argument form `angle(A, V, B)` must NOT be touched.
+ */
+function migrateAngle2Args(src: string): string {
+	return replaceCalls(src, 'angle', (args) => {
+		// Only the strict 2-positional form. Named args (orientation=, kind=, etc.)
+		// only exist in the new 3-args form, so seeing them means we are not
+		// the legacy polar call.
+		if (args.length !== 2) return null;
+		if (args.some((a) => /^\w+\s*=/.test(a))) return null;
+		const [o, p] = args;
+		return `angle_polaire(${o}, ${p})`;
+	});
 }
 
 /**
  * Apply all transformations in the correct order.
  * Order matters: remove the old 3-arg forms before touching plain `angle(`.
  */
-function migrateScript(src: string): string {
+export function migrateScript(src: string): string {
 	let out = src;
 	out = migrateMarqueAngle(out);
 	out = migrateAngleDroit(out);
@@ -164,6 +263,9 @@ function migrateScript(src: string): string {
 	out = migrateAngle2Args(out);
 	return out;
 }
+
+// Re-export internals for unit tests
+export { parseArgs, replaceCalls };
 
 // ---------------------------------------------------------------------------
 // Supabase client & main
@@ -258,7 +360,10 @@ async function main(): Promise<void> {
 	process.exit(errors.length > 0 ? 1 : 0);
 }
 
-main().catch((err) => {
-	console.error('Unexpected error:', err);
-	process.exit(1);
-});
+// Only run main() when invoked as a script, not when imported by tests
+if (import.meta.url === `file://${process.argv[1]}`) {
+	main().catch((err) => {
+		console.error('Unexpected error:', err);
+		process.exit(1);
+	});
+}
