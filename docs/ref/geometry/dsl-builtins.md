@@ -184,6 +184,25 @@ b = transporte(a, W, T)      # nouvel angle 90° au sommet W, dans direction WT,
 - Direction nulle (vecteur nul, ou `P == V'`) → `DslRuntimeError`.
 - `α` plat (mesure = π) ou nul (mesure = 0) : la mesure est préservée telle quelle.
 
+### Chorégraphie `@euclide` (A1, construction Euclide I.23)
+
+Le décorateur `@euclide` anime le report d'angle au compas, comme un prof le ferait au tableau. **6 sub-steps** :
+
+1. **Compass à V** (sommet de α), ouverture `r = 1`. Trace l'arc qui coupe les côtés de α en **A'** et **B'**.
+2. **Compass à V'** (même `r`). Trace l'arc qui coupe le rayon de direction en **A''**.
+3. **Apparition** de A', B', A'' simultanément.
+4. **Compass à A''**, ouverture `|A'B'|` (la corde mesurée à l'étape 1). Trace l'arc.
+5. **Apparition** de B'' (intersection des 2 arcs).
+6. **Règle** trace (V', B'') — le 2ᵉ côté de β.
+
+```dsl
+α = angle(A, V, B)
+V' = point(5, 0)
+β = transporte(α, V', P) @euclide
+```
+
+Implémenté dans `src/lib/constructions-v2/core/choreographies/transporte.ts` (voie unique `compas_report`, défaut). Réutilise les helpers de `bissectrice.ts` (chorégraphie sœur). Pattern d'intersection arc-arc résolu via les points témoins déjà créés par `handleTransporte` (β.p1 et β.p2).
+
 ---
 
 ## angle_polaire()
