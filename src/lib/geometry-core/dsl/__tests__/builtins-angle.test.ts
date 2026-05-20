@@ -1287,17 +1287,48 @@ describe('V2 — B5 serializer preserves α → mesure(α)', () => {
 // Reference : docs/wip/geometry/angle-v3a-progress.md §2.
 
 describe('V3a — fill du secteur angulaire', () => {
-	it.todo('angle(A,V,B,marque="arc",fill_color="red") stocke style.fillColor sur GeoAngle');
-	it.todo(
-		'angle(A,V,B,marque="arcs2",fill_color="blue",opacite_fond=0.3) propage fillColor + fillOpacity'
-	);
-	it.todo(
-		'angle(A,V,B,marque="carre",fill_color="red") : fillColor stocké MAIS ignoré au rendu (convention V3a)'
-	);
-	it.todo(
-		'angle(A,V,B,marque="aucune",fill_color="red") : fillColor stocké MAIS aucun rendu (rien à fermer)'
-	);
-	it.todo('angle sans fill_color (défaut) : style.fillColor undefined, aucun secteur fermé');
+	function makeAngle(args: string): ReturnType<typeof run> {
+		return run(
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', `ang = angle(A, V, B${args})`].join(
+				'\n'
+			)
+		);
+	}
+
+	it('angle(A,V,B,marque="arc",remplissage="rouge") stocke style.fillColor sur GeoAngle', () => {
+		const r = makeAngle(', marque="arc", remplissage="rouge"');
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!);
+		expect(el).toBeDefined();
+		expect(el!.style?.fillColor).toBeDefined();
+	});
+
+	it('angle(arcs2, remplissage, opacite_fond=0.3) propage fillColor + fillOpacity', () => {
+		const r = makeAngle(', marque="arcs2", remplissage="bleu", opacite_fond=0.3');
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!);
+		expect(el!.style?.fillColor).toBeDefined();
+		expect(el!.style?.fillOpacity).toBeCloseTo(0.3, 5);
+	});
+
+	it('angle(marque="carre", remplissage) stocke fillColor — convention V3a : ignoré au rendu', () => {
+		// Stockage cote builtin OK ; le rendu (4 surfaces) skip le fill pour marque='carre'.
+		const r = makeAngle(', marque="carre", remplissage="rouge"');
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!);
+		expect(el!.style?.fillColor).toBeDefined();
+		expect((el as { marque?: string }).marque).toBe('carre');
+	});
+
+	it('angle(marque="aucune", remplissage) stocke fillColor mais aucun rendu (rien à fermer)', () => {
+		const r = makeAngle(', marque="aucune", remplissage="rouge"');
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!);
+		expect(el!.style?.fillColor).toBeDefined();
+		expect((el as { marque?: string }).marque).toBe('aucune');
+	});
+
+	it('angle sans remplissage (défaut) : style.fillColor undefined, aucun secteur fermé', () => {
+		const r = makeAngle('');
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!);
+		expect(el!.style?.fillColor).toBeUndefined();
+	});
 });
 
 // =============================================================================

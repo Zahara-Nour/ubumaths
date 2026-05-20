@@ -1737,6 +1737,15 @@
 						{:else if svg.paths.length > 0}
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
+								{#if svg.fillPath && sty.fillColor}
+									<path
+										d={svg.fillPath}
+										fill={sty.fillColor}
+										fill-opacity={sty.fillOpacity}
+										stroke="none"
+										class="angle-sector-fill"
+									/>
+								{/if}
 								{#each svg.paths as path, i (i)}
 									<path d={path} stroke="transparent" stroke-width="12" fill="none" />
 									<path
