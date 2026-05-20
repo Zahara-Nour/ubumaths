@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.1...v0.9.2) (2026-05-20)
+
+### ✨ Features
+
+- **geometry-core:** angle() overloads vecteurs/segments/droites (V2 P2) ([2a956d9](https://github.com/Zahara-Nour/ubumaths/commit/2a956d96d4ee634f0674e43d497d7d9cb072bd75))
+- **geometry-core:** arcSpacingPx + dedup mesure(A,V,B) (V2 P3) ([588aaa4](https://github.com/Zahara-Nour/ubumaths/commit/588aaa4c0a3036f97ec3bd28565ce0b91e8dd1ab))
+- **geometry-core:** serializer alpha-mesure + doc V2 angle (P4) ([4fd7073](https://github.com/Zahara-Nour/ubumaths/commit/4fd7073902f6f3528a9a3bf6852b32ba2fc9f711))
+- **geometry-core:** spec TDD V2 angle overloads (P0) ([d497bdc](https://github.com/Zahara-Nour/ubumaths/commit/d497bdc2ddc92943f4900771a08348d0a6a3a122))
+
 ## [0.10.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.1...v0.10.0) (2026-05-20)
 
 ### ✨ Features
