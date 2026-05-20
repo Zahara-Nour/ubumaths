@@ -491,12 +491,98 @@ describe('ConstructionExecutor — bissectrice(α) @euclide (V3a input dispatch)
 // =============================================================================
 
 describe('A1 — transporte @euclide chorégraphie', () => {
-	it.todo('transporte(al, Vp, P) @euclide expands into 6 sub-step entries');
-	it.todo(
-		'sub-step kinds: compass-draw × 3, point-fade-in × 2, ruler-trace × 1 (in expected order)'
-	);
-	it.todo('stepDurations.length === totalSteps after load');
-	it.todo("SS3 fade-in apparait A', B', A'' simultanement (3 points)");
-	it.todo("SS5 fade-in apparait B'' (1 point)");
-	it.todo('mesure(beta) ≈ mesure(al) apres execution complete de la choregraphie');
+	// Standard setup : α = angle 90° at V=(0,0), and we transport to V'=(5,0)
+	// with direction P=(6,1). Expected mesure(β) ≈ π/2.
+	const standardScript = [
+		'A = point(3, 0)',
+		'V = point(0, 0)',
+		'B = point(0, 3)',
+		'al = angle(A, V, B)',
+		'Vp = point(5, 0)',
+		'P = point(6, 1)',
+		'be = transporte(al, Vp, P) @euclide'
+	].join('\n');
+
+	it('transporte(al, Vp, P) @euclide expands into 6 sub-step entries', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(standardScript);
+		// 6 plain statements (A, V, B, al, Vp, P) + 6 sub-steps for transporte = 12 entries.
+		expect(exec.totalSteps).toBe(12);
+		expect(exec.stepDurations.length).toBe(12);
+	});
+
+	it('sub-step kinds: compass-draw × 3, point-fade-in × 2, ruler-trace × 1 (in expected order)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(standardScript);
+		// Skip the 6 plain statements
+		for (let i = 0; i < 6; i++) exec.step();
+		// 6 sub-steps follow
+		const kinds: string[] = [];
+		for (let i = 0; i < 6; i++) {
+			exec.step();
+			kinds.push(exec.currentSubStep?.kind ?? 'null');
+		}
+		expect(kinds).toEqual([
+			'compass-draw',
+			'compass-draw',
+			'point-fade-in',
+			'compass-draw',
+			'point-fade-in',
+			'ruler-trace'
+		]);
+	});
+
+	it('stepDurations.length === totalSteps after load', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(standardScript);
+		expect(exec.stepDurations.length).toBe(exec.totalSteps);
+	});
+
+	it("SS3 fade-in apparait A', B', A'' simultanement (3 points)", () => {
+		const exec = new ConstructionExecutor();
+		exec.load(standardScript);
+		for (let i = 0; i < 6 + 2; i++) exec.step(); // 6 statements + SS1 + SS2
+		exec.step(); // SS3
+		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
+		expect(exec.currentSubStep?.animatePointIds.length).toBe(3);
+	});
+
+	it("SS5 fade-in apparait B'' (1 point)", () => {
+		const exec = new ConstructionExecutor();
+		exec.load(standardScript);
+		for (let i = 0; i < 6 + 4; i++) exec.step(); // 6 statements + SS1..SS4
+		exec.step(); // SS5
+		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
+		expect(exec.currentSubStep?.animatePointIds.length).toBe(1);
+	});
+
+	it('mesure(beta) ≈ mesure(al) apres execution complete de la choregraphie', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(standardScript);
+		exec.executeAll();
+		// Both angles created by handleTransporte share the same measure.
+		// We look up via the figure's symbol table.
+		const alphaSym = exec.figure
+			.getAllElements()
+			.find((el) => el.type === 'angle' && el.label === 'al');
+		const betaSym = exec.figure
+			.getAllElements()
+			.find((el) => el.type === 'angle' && el.label === 'be');
+		expect(alphaSym).toBeDefined();
+		expect(betaSym).toBeDefined();
+		const measureAl = exec.figure.createScalarAngleMeasure(
+			(alphaSym as { p1Id: string }).p1Id,
+			(alphaSym as { vertexId: string }).vertexId,
+			(alphaSym as { p2Id: string }).p2Id
+		);
+		const measureBe = exec.figure.createScalarAngleMeasure(
+			(betaSym as { p1Id: string }).p1Id,
+			(betaSym as { vertexId: string }).vertexId,
+			(betaSym as { p2Id: string }).p2Id
+		);
+		expect(exec.figure.getScalarValue(measureBe)).toBeCloseTo(
+			exec.figure.getScalarValue(measureAl)!,
+			5
+		);
+	});
 });
