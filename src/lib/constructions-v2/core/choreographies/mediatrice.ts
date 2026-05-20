@@ -20,8 +20,6 @@
  *         while the final median line fades in.
  */
 
-import { exact, numeric } from '$lib/geometry-core/types/geo-value';
-import { numericNode } from '$lib/mathAST/common/numeric';
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types';
 
 /**
@@ -69,15 +67,14 @@ function buildArcsEgaux(
 
 	// Arc angles (radians) : 120° sweep centered on the AB direction at A,
 	// and on the BA direction at B. The angle values are static (not reactive
-	// to drag in V1 — the radius is reactive via createScalarDistance, but the
-	// angles capture the initial direction).
+	// initial directions used only for the FIRST positioning of the compass
+	// during animation ; arc angles themselves are fully reactive via
+	// `arc1StartScalar`/`arc1EndScalar`/... below.
 	const angleAB = Math.atan2(dy, dx);
 	const angleBA = angleAB + Math.PI;
 	const sweepRad = (2 * Math.PI) / 3; // 120°
 	const arc1Start = angleAB - sweepRad / 2;
-	const arc1End = angleAB + sweepRad / 2;
 	const arc2Start = angleBA - sweepRad / 2;
-	const arc2End = angleBA + sweepRad / 2;
 
 	// Position of the two intersection points (above and below the AB line).
 	// Lies on the perpendicular bisector of AB, at distance √(r² − (|AB|/2)²)
@@ -99,11 +96,47 @@ function buildArcsEgaux(
 	// drawing-tip starts at the segment's start.
 	const segRotationDeg = (Math.atan2(I2y - I1y, I2x - I1x) * 180) / Math.PI;
 
-	// ─── Reactive radius : 0.7 × |AB| (or 1.0 × |AB|) ───
+	// ─── Reactive scalars derived from A, B coordinates ───
+	const Ax = figure.createScalarCoordinate(Aid, 'x');
+	const Ay = figure.createScalarCoordinate(Aid, 'y');
+	const Bx = figure.createScalarCoordinate(Bid, 'x');
+	const By = figure.createScalarCoordinate(Bid, 'y');
+
+	// Reactive radius : 0.7 × |AB| (or 1.0 × |AB|).
 	const distAB = figure.createScalarDistance(Aid, Bid);
 	const radiusScalar = figure.createScalarExpression(
 		(vals) => radiusFactor * (vals.get(distAB) ?? 0),
 		[distAB]
+	);
+
+	// Reactive angleAB : the direction from A to B (radians). Drives the arc
+	// orientation and the perpendicular direction of the segment-trace.
+	const angleABScalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(By) ?? 0) - (vals.get(Ay) ?? 0),
+				(vals.get(Bx) ?? 0) - (vals.get(Ax) ?? 0)
+			),
+		[Ax, Ay, Bx, By]
+	);
+
+	// Reactive arc start/end angles : ±60° around the AB direction (arc 1,
+	// centered at A) and around the BA direction (arc 2, centered at B).
+	const arc1StartScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleABScalar) ?? 0) - sweepRad / 2,
+		[angleABScalar]
+	);
+	const arc1EndScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleABScalar) ?? 0) + sweepRad / 2,
+		[angleABScalar]
+	);
+	const arc2StartScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleABScalar) ?? 0) + Math.PI - sweepRad / 2,
+		[angleABScalar]
+	);
+	const arc2EndScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleABScalar) ?? 0) + Math.PI + sweepRad / 2,
+		[angleABScalar]
 	);
 
 	// ─── Auxiliary elements (created hidden) ───
@@ -112,15 +145,15 @@ function buildArcsEgaux(
 	const arc1 = figure.createArcByAngles(
 		Aid,
 		{ scalarRef: radiusScalar },
-		exact(numericNode(arc1Start)),
-		exact(numericNode(arc1End))
+		{ scalarRef: arc1StartScalar },
+		{ scalarRef: arc1EndScalar }
 	);
 	figure.hideElement(arc1);
 	const arc2 = figure.createArcByAngles(
 		Bid,
 		{ scalarRef: radiusScalar },
-		exact(numericNode(arc2Start)),
-		exact(numericNode(arc2End))
+		{ scalarRef: arc2StartScalar },
+		{ scalarRef: arc2EndScalar }
 	);
 	figure.hideElement(arc2);
 
@@ -136,36 +169,82 @@ function buildArcsEgaux(
 	const I2 = figure.createIntersectionCC(circleA, circleB, 1);
 	figure.hideElement(I2);
 
-	// Segment-trace endpoints : centered on the midpoint of I1/I2 (= the
+	// Segment-trace endpoints : centered on the midpoint of A,B (= the
 	// midpoint of the median line) with total length matching the ruler's
-	// default length (15 math units). The ruler is placed at Iext1 (one
-	// end) ; its body then spans the entire segment-trace, framing it
-	// visually. The 15-unit segment also matches the visible portion of
-	// the principal line on a default 800×600 canvas (viewport ~20×15
-	// math units), so the swap from segment to line at end of SS4 is
-	// imperceptible. The points are non-reactive (computed once) —
-	// acceptable since the segment-trace is hidden after SS4 in
-	// `@squelette` mode, replaced by the reactive principal line.
-	const dirX = segLen > 0 ? (I2x - I1x) / segLen : 0;
-	const dirY = segLen > 0 ? (I2y - I1y) / segLen : 0;
-	const traceLen = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT, segLen * 1.2);
-	const halfTrace = traceLen / 2;
-	const Iext1x = midX - dirX * halfTrace;
-	const Iext1y = midY - dirY * halfTrace;
-	const Iext2x = midX + dirX * halfTrace;
-	const Iext2y = midY + dirY * halfTrace;
-	const Iext1 = figure.createFreePoint(
-		{ x: numeric(Iext1x), y: numeric(Iext1y) },
-		{ draggable: false }
+	// default length (15 math units). Fully reactive : Iext1/Iext2 follow
+	// A and B via scalar expressions. The 15-unit length matches the
+	// visible portion of the principal line on a default 800×600 canvas,
+	// so the swap from segment to line at end of SS4 is imperceptible
+	// (in `@squelette`) and the trace stays aligned with the line on
+	// drag (in `@complet`).
+	const midABxScalar = figure.createScalarExpression(
+		(vals) => ((vals.get(Ax) ?? 0) + (vals.get(Bx) ?? 0)) / 2,
+		[Ax, Bx]
+	);
+	const midAByScalar = figure.createScalarExpression(
+		(vals) => ((vals.get(Ay) ?? 0) + (vals.get(By) ?? 0)) / 2,
+		[Ay, By]
+	);
+	// Perpendicular unit vector to AB : (-sin(angleAB), cos(angleAB)).
+	// halfTrace : max(default/2, 1.2 × halfChord).
+	const halfTraceScalar = figure.createScalarExpression(
+		(vals) => {
+			const d = vals.get(distAB) ?? 0;
+			const r = radiusFactor * d;
+			// halfChord = √(r² − (d/2)²) ; clamp to 0 for degenerate inputs.
+			const half = Math.sqrt(Math.max(0, r * r - (d / 2) * (d / 2)));
+			return Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, half * 1.2);
+		},
+		[distAB]
+	);
+	const Iext1xScalar = figure.createScalarExpression(
+		(vals) => {
+			const angle = vals.get(angleABScalar) ?? 0;
+			return (vals.get(midABxScalar) ?? 0) - Math.sin(angle) * (vals.get(halfTraceScalar) ?? 0);
+		},
+		[midABxScalar, angleABScalar, halfTraceScalar]
+	);
+	const Iext1yScalar = figure.createScalarExpression(
+		(vals) => {
+			const angle = vals.get(angleABScalar) ?? 0;
+			return (vals.get(midAByScalar) ?? 0) + Math.cos(angle) * (vals.get(halfTraceScalar) ?? 0);
+		},
+		[midAByScalar, angleABScalar, halfTraceScalar]
+	);
+	const Iext2xScalar = figure.createScalarExpression(
+		(vals) => {
+			const angle = vals.get(angleABScalar) ?? 0;
+			return (vals.get(midABxScalar) ?? 0) + Math.sin(angle) * (vals.get(halfTraceScalar) ?? 0);
+		},
+		[midABxScalar, angleABScalar, halfTraceScalar]
+	);
+	const Iext2yScalar = figure.createScalarExpression(
+		(vals) => {
+			const angle = vals.get(angleABScalar) ?? 0;
+			return (vals.get(midAByScalar) ?? 0) - Math.cos(angle) * (vals.get(halfTraceScalar) ?? 0);
+		},
+		[midAByScalar, angleABScalar, halfTraceScalar]
+	);
+	const Iext1 = figure.createComputedPoint(
+		{ scalarRef: Iext1xScalar },
+		{ scalarRef: Iext1yScalar }
 	);
 	figure.hideElement(Iext1);
-	const Iext2 = figure.createFreePoint(
-		{ x: numeric(Iext2x), y: numeric(Iext2y) },
-		{ draggable: false }
+	const Iext2 = figure.createComputedPoint(
+		{ scalarRef: Iext2xScalar },
+		{ scalarRef: Iext2yScalar }
 	);
 	figure.hideElement(Iext2);
 	const segmentTrace = figure.createSegment(Iext1, Iext2);
 	figure.hideElement(segmentTrace);
+	// Static initial values for SS4 instrument positioning (animation only
+	// uses these at creation ; drag updates later use the reactive ids).
+	const traceLen = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT, segLen * 1.2);
+	const halfTrace = traceLen / 2;
+	const dirX = segLen > 0 ? (I2x - I1x) / segLen : 0;
+	const dirY = segLen > 0 ? (I2y - I1y) / segLen : 0;
+	const Iext1x = midX - dirX * halfTrace;
+	const Iext1y = midY - dirY * halfTrace;
 
 	// ─── Sub-steps ───
 	const arcLength = r * sweepRad;
@@ -233,7 +312,30 @@ function buildArcsEgaux(
 			principal: principalId,
 			charnieres: [I1, I2],
 			traces: [arc1, arc2, segmentTrace],
-			hiddenSupport: [circleA, circleB, distAB, radiusScalar, Iext1, Iext2]
+			hiddenSupport: [
+				circleA,
+				circleB,
+				distAB,
+				radiusScalar,
+				Ax,
+				Ay,
+				Bx,
+				By,
+				angleABScalar,
+				arc1StartScalar,
+				arc1EndScalar,
+				arc2StartScalar,
+				arc2EndScalar,
+				midABxScalar,
+				midAByScalar,
+				halfTraceScalar,
+				Iext1xScalar,
+				Iext1yScalar,
+				Iext2xScalar,
+				Iext2yScalar,
+				Iext1,
+				Iext2
+			]
 		}
 	};
 }
