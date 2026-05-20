@@ -31,7 +31,7 @@ import {
 	isProjectedPoint,
 	isAffinityPoint,
 	isInvertedPoint,
-	isAngleMark,
+	isAngle,
 	isSegmentMark,
 	isText,
 	isMathText,
@@ -674,7 +674,7 @@ export function computeElementPosition(
 		return { position: null, hasComputablePosition: false, scalarValue: el.value };
 	}
 
-	if (isAngleMark(el)) {
+	if (isAngle(el)) {
 		const vertexPos = positions.get(el.vertexId);
 		return { position: vertexPos ?? null, hasComputablePosition: true };
 	}
@@ -1155,24 +1155,6 @@ function computeScalarValue(
 			const lenAB = Math.sqrt(abx * abx + aby * aby);
 			if (lenAB < 1e-15) return undefined;
 			return Math.abs(abx * apy - aby * apx) / lenAB;
-		}
-		case 'angle': {
-			const [p1Id, vId, p2Id] = el.targetIds;
-			const p1 = positions.get(p1Id);
-			const v = positions.get(vId);
-			const p2 = positions.get(p2Id);
-			if (!p1 || !v || !p2) return undefined;
-			const vax = geoToNumber(p1.x) - geoToNumber(v.x);
-			const vay = geoToNumber(p1.y) - geoToNumber(v.y);
-			const vbx = geoToNumber(p2.x) - geoToNumber(v.x);
-			const vby = geoToNumber(p2.y) - geoToNumber(v.y);
-			const dot = vax * vbx + vay * vby;
-			const lenA = Math.sqrt(vax * vax + vay * vay);
-			const lenB = Math.sqrt(vbx * vbx + vby * vby);
-			if (lenA < 1e-15 || lenB < 1e-15) return undefined;
-			const cosAngle = Math.max(-1, Math.min(1, dot / (lenA * lenB)));
-			const radians = Math.acos(cosAngle);
-			return (radians * 180) / Math.PI;
 		}
 		case 'polar_angle': {
 			const [centerId, pointId] = el.targetIds;
