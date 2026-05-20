@@ -2,43 +2,110 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [Unreleased]
+## [0.9.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.91...v0.9.0) (2026-05-20)
 
-### Breaking Changes — geometry-core GeoAngle V1 (2026-05-20)
+### ⚠ BREAKING CHANGES
 
-The geometry-core DSL angle API has been redesigned around a single, first-class `GeoAngle` object. Five breaking changes are introduced:
+- **geometry-core:** refonte angle DSL + supprime marque_angle/angle_droit/angle_vecteurs (P3)
+- **geometry-core/dsl:** migrate polygone_regulier and etoile to builtins (BREAKING)
+- **geometry-core/dsl:** stdlib macros now return single objects (BREAKING)
 
-1. **`angle(A, V, B)` now returns a visible `GeoAngle`** instead of an invisible scalar.
+### ⚡ Performance Improvements
 
-   - The object is visible by default (consistent with `cercle`, `segment`, `polygone`).
-   - To measure the angle without a visual arc, use `mesure(A, V, B)`.
+- **geometry-core:** cache second derivatives on GeoParametricCurve ([91a17e4](https://github.com/Zahara-Nour/ubumaths/commit/91a17e4b9e3c6cba7f1af002bd014c6646eabf38)), closes [#1](https://github.com/Zahara-Nour/ubumaths/issues/1)
+- **geometry-core:** memoise computeLocusCurve ([7c2e9fe](https://github.com/Zahara-Nour/ubumaths/commit/7c2e9fea02c2ef9fc52c5a3cdbb08310ef58e6e2)), closes [#5](https://github.com/Zahara-Nour/ubumaths/issues/5)
+- **geometry-core:** memoise computeParametricCurveSampling ([e6b6f7d](https://github.com/Zahara-Nour/ubumaths/commit/e6b6f7d89f93f7418f7247900e3fb606a7e2fc5b)), closes [#6](https://github.com/Zahara-Nour/ubumaths/issues/6) [#2](https://github.com/Zahara-Nour/ubumaths/issues/2)
+- **geometry-core:** memoise marchingSquares (avoids 40k evals per render) ([dff2cf7](https://github.com/Zahara-Nour/ubumaths/commit/dff2cf7061f64c021c501b3f3652c2dabb4c81a5)), closes [#4](https://github.com/Zahara-Nour/ubumaths/issues/4)
+- **geometry-core:** replace env spreads with mutable env in parametric hot paths ([f081c17](https://github.com/Zahara-Nour/ubumaths/commit/f081c179f8c398fcb3244a719d0b2c4c5b298718)), closes [#2](https://github.com/Zahara-Nour/ubumaths/issues/2) [#3](https://github.com/Zahara-Nour/ubumaths/issues/3)
+- **geometry-core:** warm-start Newton for point_sur drag (8x → 1x) ([b4ec15c](https://github.com/Zahara-Nour/ubumaths/commit/b4ec15cfaeafb129e758c85cdb39ca3308a6f548)), closes [#3](https://github.com/Zahara-Nour/ubumaths/issues/3)
 
-2. **`angle(O, P)` (2 arguments) is removed** — use `angle_polaire(O, P)` instead.
+### ♻️ Code Refactoring
 
-   - `angle_polaire` returns a `GeoScalar` (polar angle in radians), identical to the old behavior.
+- **geometry-core/dsl:** stdlib macros now return single objects (BREAKING) ([75e827e](https://github.com/Zahara-Nour/ubumaths/commit/75e827e1afb41a2cf4bd88952d0d693a6d112af8))
 
-3. **`marque_angle()` is removed** — use `angle(..., marque="arcN")` instead.
+### ⏪ Reverts
 
-   - `marque_angle(P1, V, P2)` → `angle(P1, V, P2)`
-   - `marque_angle(P1, V, P2, arcs=2)` → `angle(P1, V, P2, marque="arcs2")`
+- **constructions-v2:** defer concrete choreographies + visibility to dedicated session ([379119e](https://github.com/Zahara-Nour/ubumaths/commit/379119eabbe7ca3d11fa0618fd4342fdfdb8c2ed))
 
-4. **`angle_droit()` is removed** — use `angle(..., marque="carre")` instead.
+### 📚 Documentation
 
-   - `angle_droit(P1, V, P2)` → `angle(P1, V, P2, marque="carre")`
+- **constructions-v2:** document V1 mediatrice MVP final state + Phase E polish ([44ad464](https://github.com/Zahara-Nour/ubumaths/commit/44ad464f145582fb027a4f083419866a761f66d0))
+- **constructions-v2:** progress report after V1 choreographies phases 0-3 ([44b7b14](https://github.com/Zahara-Nour/ubumaths/commit/44b7b147064636d7bd553d62e31479e7578d850d))
+- **constructions-v2:** update V1 progress after Phase 4 MVP ([4f56a50](https://github.com/Zahara-Nour/ubumaths/commit/4f56a5060bdd44459d6991003f8e252e2cf3b234))
+- full refresh post tuple-elimination refactor ([53c97e4](https://github.com/Zahara-Nour/ubumaths/commit/53c97e49503289f1079963072f0508c53d9b2a7c))
+- **geometry-core:** add reference audit suite + fix 2 security findings ([3f78f85](https://github.com/Zahara-Nour/ubumaths/commit/3f78f85972cf2643077d4c16637ac427e307fb51))
+- **geometry-core:** close audit session — full retrospective in README ([43e4a01](https://github.com/Zahara-Nour/ubumaths/commit/43e4a014dad314241c148e3e6dfdb13e0e7bab25))
+- **geometry-core:** close perf session — mark remaining items as marginal ([cd5ea13](https://github.com/Zahara-Nour/ubumaths/commit/cd5ea137bdb7139b838e02ff7ce02383ab2a9d39)), closes [#3](https://github.com/Zahara-Nour/ubumaths/issues/3) [#6](https://github.com/Zahara-Nour/ubumaths/issues/6) [#6](https://github.com/Zahara-Nour/ubumaths/issues/6) [#4](https://github.com/Zahara-Nour/ubumaths/issues/4) [-#6](https://github.com/Zahara-Nour/-/issues/6) [#5](https://github.com/Zahara-Nour/ubumaths/issues/5) [#7](https://github.com/Zahara-Nour/ubumaths/issues/7) [#5](https://github.com/Zahara-Nour/ubumaths/issues/5) [#10](https://github.com/Zahara-Nour/ubumaths/issues/10) [-#12](https://github.com/Zahara-Nour/-/issues/12) [#3](https://github.com/Zahara-Nour/ubumaths/issues/3) [#6](https://github.com/Zahara-Nour/ubumaths/issues/6) [#5](https://github.com/Zahara-Nour/ubumaths/issues/5) [#7](https://github.com/Zahara-Nour/ubumaths/issues/7)
+- structured runtime errors session retrospective ([e92fe08](https://github.com/Zahara-Nour/ubumaths/commit/e92fe085b7e751f64bc123c7ddbcc5f83ca4dac8))
 
-5. **`angle_vecteurs(u, v)` is removed** — use `mesure(u, v)` instead.
-   - `mesure(u, v)` returns the unsigned angle between two vectors in `[0, π]`.
+### ✨ Features
 
-Migration tools:
+- **constructions-v2:** add bump effect to line fade-in animation ([4b5f579](https://github.com/Zahara-Nour/ubumaths/commit/4b5f5791375b3e4faf5bd54bd67e475eb95d74ce))
+- **constructions-v2:** bump animation on line/ray label ([76a162b](https://github.com/Zahara-Nour/ubumaths/commit/76a162b7db6904ff806127d0bc5ec256efa0c006))
+- **constructions-v2:** enable interactive drag in /construction-demo ([5fae05e](https://github.com/Zahara-Nour/ubumaths/commit/5fae05eaa5c45ac2116b18d52e5532386c2375e6))
+- **constructions-v2:** fade-in animation for line and ray elements ([259a091](https://github.com/Zahara-Nour/ubumaths/commit/259a09154d5c534ac1e1467f204931e99f5f4c78))
+- **constructions-v2:** full reactivity for mediatrice choreography elements ([e6e2e8e](https://github.com/Zahara-Nour/ubumaths/commit/e6e2e8e0e380a7b0555c348e5f8ea90b4bea0642))
+- **constructions-v2:** implement bissectrice [@euclide](https://github.com/euclide) choreography ([061ee87](https://github.com/Zahara-Nour/ubumaths/commit/061ee87152c94b93195f914fb6f40c04c7463d2e))
+- **constructions-v2:** implement mediatrice choreography (V1 Phase 4 MVP) ([881679d](https://github.com/Zahara-Nour/ubumaths/commit/881679da64494c48aa0e81ab67f89b2f341c2628))
+- **constructions-v2:** introduce choreography registry + decorator resolver ([e4daaca](https://github.com/Zahara-Nour/ubumaths/commit/e4daaca76136d222396a4ac3c71f2cecfcccc0ac))
+- **constructions-v2:** render line/ray label during fade-in animation ([97b5b52](https://github.com/Zahara-Nour/ubumaths/commit/97b5b52f00ac94675973f380e74080642850b521))
+- **constructions-v2:** rich runtime error feedback for DSL execution ([b157885](https://github.com/Zahara-Nour/ubumaths/commit/b157885f2f051ab52a8d4a60d77a55381e1d51ad))
+- **constructions-v2:** show coordinate projections when a freePoint appears ([74a8ded](https://github.com/Zahara-Nour/ubumaths/commit/74a8ded1420edd1c71ad2ca1a722143c148c49b5)), closes [#999](https://github.com/Zahara-Nour/ubumaths/issues/999)
+- **constructions-v2:** sub-steps mechanism + mediatrice [@euclide](https://github.com/euclide) MVP ([3c7aa28](https://github.com/Zahara-Nour/ubumaths/commit/3c7aa285f3f84f3e773fcee739f80811e99e6df4))
+- **constructions-v2:** use short arcs + apply final visibility (Phase 5 MVP) ([0a440f4](https://github.com/Zahara-Nour/ubumaths/commit/0a440f46581cc5cd3f9d61feadcf964265c2079a))
+- **constructions-v2:** wire decorator resolution into ConstructionExecutor ([2ae801c](https://github.com/Zahara-Nour/ubumaths/commit/2ae801cac28c95f8f961ccb77b572219e6583f52))
+- **dsl:** support trailing decorators on assignment statements ([e29b793](https://github.com/Zahara-Nour/ubumaths/commit/e29b7938b68876d793c440e5540258bfbfd57c8d))
+- **geometry-core/dsl:** accessors centre/extremite/extremites/milieu(s)/sommet/sommets ([c8f0f36](https://github.com/Zahara-Nour/ubumaths/commit/c8f0f3693cc73c33056d1d10981992d69d1d7f9d))
+- **geometry-core/dsl:** migrate 4 quadrilateral macros to builtins ([137cfaf](https://github.com/Zahara-Nour/ubumaths/commit/137cfafc7213543781efd8c79a2ea8eba31bcba7))
+- **geometry-core/dsl:** migrate 4 remarkable points + cleanup stdlib + docs ([e87b7ef](https://github.com/Zahara-Nour/ubumaths/commit/e87b7ef4030f91f7fae355fef204a4ade553679e))
+- **geometry-core/dsl:** migrate 4 triangle macros to builtins ([d4deb76](https://github.com/Zahara-Nour/ubumaths/commit/d4deb76aeb06b22b67767d635fb8a0b1693bac01))
+- **geometry-core/dsl:** migrate 5 line/segment macros to builtins ([2f85f56](https://github.com/Zahara-Nour/ubumaths/commit/2f85f5677150ac13918fd890bd7c748a6699cfd7))
+- **geometry-core/dsl:** migrate corde + 3 cercle macros to builtins ([7c9248c](https://github.com/Zahara-Nour/ubumaths/commit/7c9248c6d92b344db9245955f108abe9390cd92e))
+- **geometry-core/dsl:** migrate polygone_regulier and etoile to builtins (BREAKING) ([f677904](https://github.com/Zahara-Nour/ubumaths/commit/f6779041dcdc803dac4e2fe985fe6a6587529f69))
+- **geometry-core/dsl:** montre + masque + visible support in style ([9f1a59f](https://github.com/Zahara-Nour/ubumaths/commit/9f1a59fbbfdf329ba06cc81ee396a25885d9df4b))
+- **geometry-core/dsl:** point(A, longueur=L, ...) + segment(A, longueur=L, ...) ([6e81a1c](https://github.com/Zahara-Nour/ubumaths/commit/6e81a1cc434b69d9390a81bca13efe6c94603aa0))
+- **geometry-core/dsl:** smarter error hints for post-migration misuses ([f8e4670](https://github.com/Zahara-Nour/ubumaths/commit/f8e4670b68c7a9e313be6f87c1eb7e5c20dd0cbe))
+- **geometry-core/dsl:** structured error details for 30+ builtins ([8bcff57](https://github.com/Zahara-Nour/ubumaths/commit/8bcff578b13e20d741db6986824acb9a36211231))
+- **geometry-core/dsl:** structured errors for calculus and conic builtins ([e0e4db6](https://github.com/Zahara-Nour/ubumaths/commit/e0e4db67400810ea36d18e9670b8f1e5bc1cf899))
+- **geometry-core/dsl:** structured errors for trace, courbe and text inputs ([0ca030d](https://github.com/Zahara-Nour/ubumaths/commit/0ca030d1023e900586614570e5fa90186469eaaa))
+- **geometry-core:** accesseurs et surcharges mesure/bissectrice/rotation pour GeoAngle (P4) ([6c1ca68](https://github.com/Zahara-Nour/ubumaths/commit/6c1ca6873332e238d0100b6c71b1095980bc8644))
+- **geometry-core:** refonte angle DSL + supprime marque_angle/angle_droit/angle_vecteurs (P3) ([1e96edb](https://github.com/Zahara-Nour/ubumaths/commit/1e96edbd553dba67c036f4ae375246af3addb521))
+- **geometry-core:** rendu GeoAngle sur 4 surfaces + marque unifiee (P5) ([85ba37f](https://github.com/Zahara-Nour/ubumaths/commit/85ba37fe1c34e9d2abcde1c7aa2a2e3486fcebcd))
+- **geometry-core:** spec TDD GeoAngle V1 (P0) ([287623a](https://github.com/Zahara-Nour/ubumaths/commit/287623a5275e825f0e94005b3622c79962542704))
 
-- Supabase script: `scripts/migrate-angle-builtins-supabase.ts`
-  Run `npx tsx scripts/migrate-angle-builtins-supabase.ts` (dry-run by default).
-- Lint check: `scripts/lint-angle-builtins.ts`
-  Run `npx tsx scripts/lint-angle-builtins.ts` to verify no source file uses the removed builtins.
+### 🐛 Bug Fixes
 
-Full reference: `docs/ref/geometry/dsl-builtins.md`
-
----
+- **constructions-v2:** align ruler graduations with canvas scale ([7733ed6](https://github.com/Zahara-Nour/ubumaths/commit/7733ed61d85a277fa16df2180baac7f356d3d72d))
+- **constructions-v2:** animate appearance for all visible point types ([b24f795](https://github.com/Zahara-Nour/ubumaths/commit/b24f79500a18cd06c98f5da6f3822cc5c95800a4))
+- **constructions-v2:** apply AUTO_PAUSE_BETWEEN_STEPS to line/ray steps ([2040083](https://github.com/Zahara-Nour/ubumaths/commit/20400837c1501f78610d518bd02b4e29ff5c9174))
+- **constructions-v2:** center segment-trace on median midpoint to match ruler ([fd73952](https://github.com/Zahara-Nour/ubumaths/commit/fd739521a1f86eb1306ba471a92ce392872fed79))
+- **constructions-v2:** drain final visibility on any transition to end ([8e6a649](https://github.com/Zahara-Nour/ubumaths/commit/8e6a649a6139ac1c781ee66c5966e7499bbd1c9f))
+- **constructions-v2:** hide segment-trace after animation in [@complet](https://github.com/complet) too ([6c83fca](https://github.com/Zahara-Nour/ubumaths/commit/6c83fcac554adeefcaa7553ab9e3249c6eda625c))
+- **constructions-v2:** make line bump visually match the point bump ([00adc9f](https://github.com/Zahara-Nour/ubumaths/commit/00adc9f683fc5a0a55c9aabe9b4749a885235d20))
+- **constructions-v2:** mediatrice MVP visual issues ([07aac16](https://github.com/Zahara-Nour/ubumaths/commit/07aac16f408e9e5b338728bdbfc7a1d615050238))
+- **constructions-v2:** progressive arc/circle rendering with scalarRef params ([c297ba3](https://github.com/Zahara-Nour/ubumaths/commit/c297ba3f623a16c0d283b0410b11a0d2c34f7d00))
+- **constructions-v2:** reactive arcs in mediatrice choreography + ScalarParam resolution ([8d8be70](https://github.com/Zahara-Nour/ubumaths/commit/8d8be70f517b4ece5c03f4a2e3a23d177664f4a0))
+- **constructions-v2:** run choreography in pre-pass for correct timing ([9e182ef](https://github.com/Zahara-Nour/ubumaths/commit/9e182efa8f82214ee2544b58d6161ff14953eb30))
+- **constructions-v2:** segment-trace spans visible line + visibility on timeline end ([da45289](https://github.com/Zahara-Nour/ubumaths/commit/da452898f98a4641206584aabff20991f8fc46ce))
+- **constructions-v2:** sync animation overlay and instruments with canvas zoom ([e16ac1d](https://github.com/Zahara-Nour/ubumaths/commit/e16ac1dd85760c3a2866546d4d4644cacaa08277))
+- **constructions-v2:** undefined PPU reference in compass opening computation ([a95daa2](https://github.com/Zahara-Nour/ubumaths/commit/a95daa2be0998c9110fa5bc60e0759557c528473))
+- **constructions-v2:** use numeric (not exact) radius in mediatrice choreography ([3605947](https://github.com/Zahara-Nour/ubumaths/commit/360594783a5c132ce23e2ff0ed4139d04a49881a))
+- **dsl:** preserve exactness + dynamism in stdlib builtins ([200fd89](https://github.com/Zahara-Nour/ubumaths/commit/200fd892c838106e7d98cf92a0fd19676a52057d))
+- **geometry-core:** every finite DSL literal is now exact ([540b7fd](https://github.com/Zahara-Nour/ubumaths/commit/540b7fd7eab902e2acfc72ce702e0aca463dad9e))
+- **geometry-core:** exact-by-default contract end-to-end ([4ffe79c](https://github.com/Zahara-Nour/ubumaths/commit/4ffe79c6be4ccade6057c7bd2fd0706f05f61baa))
+- **geometry-core:** geoValueToMathNode utilise numericNode pour les valeurs negatives ([2a2a867](https://github.com/Zahara-Nour/ubumaths/commit/2a2a86708aa37d868ebecd8fadd7f169c41290cf))
+- **geometry-core:** intersectLF utilise numericNode pour la pente negative ([f4a2b17](https://github.com/Zahara-Nour/ubumaths/commit/f4a2b17d0858a29f4afaca3cc878627b9692ab42))
+- **geometry-core:** render GeoOsculatingCircle in SVG / TikZ / Typst exports ([d7bb2a1](https://github.com/Zahara-Nour/ubumaths/commit/d7bb2a1e17904a76941fc0ff7caf4922e70348d8)), closes [#5](https://github.com/Zahara-Nour/ubumaths/issues/5)
+- **geometry-demo:** adapte scripts DSL aux conventions post-2026-05-18 ([b7f3681](https://github.com/Zahara-Nour/ubumaths/commit/b7f36812417db7e7457db06d6929365d6e38dc17))
+- **geometry-demo:** ajoute unite_angle("radians") aux demos FF avec sin/cos ([32cc501](https://github.com/Zahara-Nour/ubumaths/commit/32cc5017c5f8f42bb06d2eb598b6342f849b7a30))
+- **geometry-demo:** masque les droites supports BC/CA/AB dans orthocentre ([c8c5433](https://github.com/Zahara-Nour/ubumaths/commit/c8c54338ee45cf2ca90d025055e8f924483f87b2))
+- **geometry-demo:** measurements utilise distance/aire + texte au lieu de mesure() polymorphique ([039bc45](https://github.com/Zahara-Nour/ubumaths/commit/039bc4598676f6f7731586e8a3dd5fc848b3f703))
+- **geometry-demo:** preserve l exactitude symbolique dans pt() avec numericNode ([413bb9a](https://github.com/Zahara-Nour/ubumaths/commit/413bb9a460068fda296f74f1eadcb299b4dd92bd))
+- **geometry-demo:** rajoute marques angle droit aux pieds des hauteurs (orthocentre) ([6fd77dd](https://github.com/Zahara-Nour/ubumaths/commit/6fd77dd30c52158b1c1a2a3d422cb91d5e42737c))
+- **geometry-demo:** rendering — preserve l exactitude pour les arcs aussi ([e8bbc36](https://github.com/Zahara-Nour/ubumaths/commit/e8bbc362c508f87ff353e9d328cb9b7c3e390dfc))
+- **geometry-demo:** rendering — remplace createMeasure supprime par createScalar\* + createText ([1783c07](https://github.com/Zahara-Nour/ubumaths/commit/1783c07de365838be33342996d55f7c323c45e53))
+- **geometry-demo:** rendering pt() utilise numeric() au lieu de exact(number(x)) ([e2a145d](https://github.com/Zahara-Nour/ubumaths/commit/e2a145d24268ecf1d740446e10827998d86a004f))
+- **geometry-demo:** vectors pt() utilise numeric() au lieu de exact(number(x)) ([bc284e3](https://github.com/Zahara-Nour/ubumaths/commit/bc284e356ebf0adf52e2aa1b8a0ce129c63c1dc9))
 
 ### [0.8.91](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.90...v0.8.91) (2026-05-18)
 
