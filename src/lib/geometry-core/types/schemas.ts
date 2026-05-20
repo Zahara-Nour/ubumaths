@@ -229,14 +229,19 @@ const reflectedOverLineSchema = baseElementSchema.extend({
 	dependsOn: z.tuple([z.string(), z.string(), z.string()])
 });
 
-const angleMarkSchema = baseElementSchema.extend({
-	type: z.literal('angleMark'),
+const angleSchema = baseElementSchema.extend({
+	type: z.literal('angle'),
 	p1Id: z.string().min(1),
 	vertexId: z.string().min(1),
 	p2Id: z.string().min(1),
-	arcCount: z.union([z.literal(1), z.literal(2), z.literal(3)]),
-	rightAngle: z.boolean(),
-	dependsOn: z.tuple([z.string(), z.string(), z.string()])
+	dependsOn: z.tuple([z.string(), z.string(), z.string()]),
+	orientation: z.enum(['direct', 'indirect', 'auto']).optional(),
+	kind: z.enum(['saillant', 'rentrant']).optional(),
+	marque: z.enum(['arc', 'arcs2', 'arcs3', 'carre', 'aucune']).optional(),
+	showLabel: z.enum(['aucun', 'nom', 'mesure', 'mesure+nom']).optional(),
+	unite: z.enum(['rad', 'deg']).optional(),
+	measureScalarId: z.string().optional(),
+	arcRadiusPx: z.number().positive().optional()
 });
 
 const segmentMarkSchema = baseElementSchema.extend({
@@ -358,7 +363,7 @@ export const geoElementSchema = z.discriminatedUnion('type', [
 	translatedPointSchema,
 	dilatedPointSchema,
 	reflectedOverLineSchema,
-	angleMarkSchema,
+	angleSchema,
 	segmentMarkSchema,
 	textSchema,
 	mathTextSchema,
