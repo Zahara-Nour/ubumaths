@@ -2918,7 +2918,7 @@ function requireEnumNamed<T extends string>(
 	key: string,
 	allowed: Set<string>,
 	line: number,
-	callerName: string = 'angle'
+	callerName: string
 ): T | undefined {
 	if (!named.has(key)) return undefined;
 	const val = named.get(key)!;
@@ -2964,22 +2964,31 @@ function handleAngle(ctx: BuiltinCtx): BuiltinResult {
 		named,
 		'marque',
 		ANGLE_MARQUE_VALUES,
-		line
+		line,
+		'angle'
 	);
 	const orientation = requireEnumNamed<'direct' | 'indirect' | 'auto'>(
 		named,
 		'orientation',
 		ANGLE_ORIENTATION_VALUES,
-		line
+		line,
+		'angle'
 	);
-	const kind = requireEnumNamed<'saillant' | 'rentrant'>(named, 'kind', ANGLE_KIND_VALUES, line);
+	const kind = requireEnumNamed<'saillant' | 'rentrant'>(
+		named,
+		'kind',
+		ANGLE_KIND_VALUES,
+		line,
+		'angle'
+	);
 	const showLabel = requireEnumNamed<'aucun' | 'nom' | 'mesure' | 'mesure+nom'>(
 		named,
 		'showLabel',
 		ANGLE_SHOWLABEL_VALUES,
-		line
+		line,
+		'angle'
 	);
-	const unite = requireEnumNamed<'rad' | 'deg'>(named, 'unite', ANGLE_UNITE_VALUES, line);
+	const unite = requireEnumNamed<'rad' | 'deg'>(named, 'unite', ANGLE_UNITE_VALUES, line, 'angle');
 	const arcRadiusPx = named.has('arcRadiusPx')
 		? requireNumber(named.get('arcRadiusPx')!, 'arcRadiusPx', line)
 		: undefined;
