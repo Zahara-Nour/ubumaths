@@ -633,6 +633,141 @@ describe('angle(d1, d2) — 2 lines overload (semantic)', () => {
 		r.figure.commit();
 		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).not.toBeCloseTo(Math.PI / 2, 2);
 	});
+
+	// =============================================================================
+	// B-V2-2 (P1-4) — Convention angle aigu DYNAMIQUE au drag
+	// =============================================================================
+
+	it('static regression: angle(d1, d2) with dot(dir1, dir2) ≥ 0 → mesure ∈ [0, π/2]', () => {
+		// d1 = (1, 0), d2 = (cos(π/4), sin(π/4)) → dot > 0, angle aigu naturel
+		const c = Math.cos(Math.PI / 4);
+		const s = Math.sin(Math.PI / 4);
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				`B = point(${c}, ${s})`,
+				'd1 = droite(O, A)',
+				'd2 = droite(O, B)',
+				'a = angle(d1, d2)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const m = scalarValue(r, 'm');
+		expect(m).toBeGreaterThanOrEqual(0);
+		expect(m).toBeLessThanOrEqual(Math.PI / 2 + 1e-9);
+		expect(m).toBeCloseTo(Math.PI / 4, 6);
+	});
+
+	it('B-V2-2 dynamic acute convention: drag flips dot sign → mesure stays ∈ [0, π/2]', () => {
+		// Init : d1 along x-axis (A=(0,0), B=(1,0))
+		//        d2 with dir (cos(π/4), sin(π/4)) (C=(0,0), D=(cos(π/4), sin(π/4)))
+		// dot(d1.dir, d2.dir) = cos(π/4) > 0 → angle aigu = π/4 (no swap initially).
+		// Then drag D to (-cos(π/4), sin(π/4)) → d2.dir = (-cos(π/4), sin(π/4))
+		// dot = -cos(π/4) < 0. The line still makes a π/4 angle with d1 (in absolute terms),
+		// but the static (figé à construction) version would compute 3π/4 = π - π/4.
+		// With the dynamic vectorOrientedAlongLine, v2 flips automatically → mesure = π/4.
+		const c = Math.cos(Math.PI / 4);
+		const s = Math.sin(Math.PI / 4);
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'C = point(0, 0)',
+				`D = point(${c}, ${s})`,
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'ang = angle(d1, d2)',
+				'm = mesure(ang)'
+			].join('\n')
+		);
+		expect(scalarValue(r, 'm')).toBeCloseTo(Math.PI / 4, 5);
+
+		// Drag D to flip d2.dir → x component negative; the underlying line is the same
+		// SHAPE (still inclined at π/4 from horizontal), but its parametric direction
+		// vector now points "the other way". A static swap would miss this and produce 3π/4.
+		const dId = sym(r, 'D')!.figureId!;
+		r.figure.beginTransaction();
+		r.figure.movePoint(dId, numeric(-c), numeric(s));
+		r.figure.recompute();
+		r.figure.commit();
+
+		const mAfter = scalarValue(r, 'm');
+		expect(mAfter).toBeGreaterThanOrEqual(0);
+		expect(mAfter).toBeLessThanOrEqual(Math.PI / 2 + 1e-9);
+		// The line still makes a π/4 angle with the x-axis (slope ±1), so dynamic
+		// convention should return π/4.
+		expect(mAfter).toBeCloseTo(Math.PI / 4, 5);
+	});
+
+	it('B-V2-2 dynamic acute convention: inverse drag (dot<0 → dot>0) also stays ∈ [0, π/2]', () => {
+		// Init : d2 with dir (-cos(π/4), sin(π/4)) → dot(d1.dir, d2.dir) < 0
+		//        the static path swaps at construction → mesure = π/4 initially.
+		// Drag D to (cos(π/4), sin(π/4)) → dot becomes > 0. Static swap was figé,
+		// so a static version would now NOT swap, computing 3π/4 erroneously.
+		// Dynamic version: v2 reads dot again, doesn't flip, → still π/4.
+		const c = Math.cos(Math.PI / 4);
+		const s = Math.sin(Math.PI / 4);
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'C = point(0, 0)',
+				`D = point(${-c}, ${s})`,
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'ang = angle(d1, d2)',
+				'm = mesure(ang)'
+			].join('\n')
+		);
+		expect(scalarValue(r, 'm')).toBeCloseTo(Math.PI / 4, 5);
+
+		const dId = sym(r, 'D')!.figureId!;
+		r.figure.beginTransaction();
+		r.figure.movePoint(dId, numeric(c), numeric(s));
+		r.figure.recompute();
+		r.figure.commit();
+
+		const mAfter = scalarValue(r, 'm');
+		expect(mAfter).toBeGreaterThanOrEqual(0);
+		expect(mAfter).toBeLessThanOrEqual(Math.PI / 2 + 1e-9);
+		expect(mAfter).toBeCloseTo(Math.PI / 4, 5);
+	});
+
+	it('B-V2-2 dynamic acute convention: drag across multiple angles keeps acute', () => {
+		// Sweep d2's endpoint around a circle. At every position, the angle between
+		// d1 (along x-axis) and d2 should be ≤ π/2.
+		const r = run(
+			[
+				'A = point(0, 0)',
+				'B = point(1, 0)',
+				'C = point(0, 0)',
+				'D = point(1, 0.1)', // initial: nearly along x, dot > 0
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'ang = angle(d1, d2)',
+				'm = mesure(ang)'
+			].join('\n')
+		);
+		const dId = sym(r, 'D')!.figureId!;
+		for (const theta of [
+			Math.PI / 6,
+			Math.PI / 3,
+			(2 * Math.PI) / 3, // → mesure should be π/3 (180° - 120° = 60°)
+			(5 * Math.PI) / 6, // → mesure should be π/6
+			Math.PI - 0.1, // → mesure should be ~0.1
+			-Math.PI / 4,
+			-(3 * Math.PI) / 4
+		]) {
+			r.figure.beginTransaction();
+			r.figure.movePoint(dId, numeric(Math.cos(theta)), numeric(Math.sin(theta)));
+			r.figure.recompute();
+			r.figure.commit();
+			const m = scalarValue(r, 'm');
+			expect(m).toBeGreaterThanOrEqual(-1e-9);
+			expect(m).toBeLessThanOrEqual(Math.PI / 2 + 1e-6);
+		}
+	});
 });
 
 // =============================================================================

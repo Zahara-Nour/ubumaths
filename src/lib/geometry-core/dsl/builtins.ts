@@ -3370,16 +3370,17 @@ function handleAngleLines(
 
 	// p1/p2 : on crée 2 vecteurs cachés alignés avec d1/d2, et 2 points translatés depuis
 	// le vertex via ces vecteurs → pleinement réactifs au drag des points support des droites
-	// ET au drag du vertex. Convention angle aigu : si le produit scalaire des directions est
-	// négatif, on inverse v2 en échangeant ses extrémités (figé à la construction — la mesure
-	// suit le drag mais peut traverser π/2 sans re-swap dynamique, acceptable).
+	// ET au drag du vertex.
+	//
+	// B-V2-2 (P1-4) — Convention angle aigu DYNAMIQUE : v2 est un
+	// `vectorOrientedAlongLine` qui ré-évalue à chaque recompute le signe du
+	// produit scalaire des directions de d1/d2 et flippe son orientation si
+	// nécessaire. Ainsi, si l'utilisateur drag un point support et que dot
+	// change de signe, l'angle reste dans [0, π/2] (la convention "aigu"
+	// devient véritablement réactive plutôt que figée à la construction).
 	const v1Id = figure.createVectorByPoints(d1.point1Id, d1.point2Id, { visible: false });
 	figure.hideElement(v1Id);
-	const dot = d1x * d2x + d1y * d2y;
-	const v2Id =
-		dot >= 0
-			? figure.createVectorByPoints(d2.point1Id, d2.point2Id, { visible: false })
-			: figure.createVectorByPoints(d2.point2Id, d2.point1Id, { visible: false });
+	const v2Id = figure.createVectorOrientedAlongLine(d2.id, d1.id, { visible: false });
 	figure.hideElement(v2Id);
 
 	const p1Id = figure.createTranslatedPointByVector(vertexId, v1Id, { visible: false });
