@@ -157,7 +157,8 @@ style(Q, couleur="rouge")`;
 	// ==========================================================================
 	// Intersection fonction-fonction (FF)
 	// ==========================================================================
-	const intersectionFFDsl = `f = courbe("y = sin(x)", couleur="bleu")
+	const intersectionFFDsl = `unite_angle("radians")
+f = courbe("y = sin(x)", couleur="bleu")
 g = courbe("y = x/3", couleur="vert")
 P = intersection(f, g, 1)
 Q = intersection(f, g, 2)
@@ -195,7 +196,8 @@ style(Q, couleur="rouge")`;
 	// ==========================================================================
 	// FF: deux transcendantes sin(x) et cos(x)
 	// ==========================================================================
-	const intersectionFFTrigDsl = `f = courbe("y = sin(x)", couleur="bleu")
+	const intersectionFFTrigDsl = `unite_angle("radians")
+f = courbe("y = sin(x)", couleur="bleu")
 g = courbe("y = cos(x)", couleur="vert")
 P = intersection(f, g, 1)
 Q = intersection(f, g, 2)
