@@ -158,6 +158,24 @@ describe('angle(u, v) — 2 vectors overload (semantic)', () => {
 		expect(aEl.vertexId).toBe(oSym.figureId);
 	});
 
+	it('D-V2-1 regression: mesure(u, v) calls cache the derived scalar by (u, v, unite)', () => {
+		// 2 successive mesure(u, v) with same args → same scalar id (cache hit).
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(0, 1)',
+				'u = vecteur(O, A)',
+				'v = vecteur(O, B)',
+				'm1 = mesure(u, v)',
+				'm2 = mesure(u, v)'
+			].join('\n')
+		);
+		const id1 = sym(r, 'm1')!.figureId!;
+		const id2 = sym(r, 'm2')!.figureId!;
+		expect(id1).toBe(id2);
+	});
+
 	it('B-V2-1 regression: angle(u, v) when u and v share both endpoints → mesure = 0 (degenerate)', () => {
 		// 2 distinct vectors aligned on same support points. Previously fell
 		// through Cas B → silent mesure=undefined. Now routed to degenerate.

@@ -308,6 +308,15 @@ export class Figure {
 	 */
 	private hiddenAngleByTriplet = new Map<string, string>();
 
+	/**
+	 * Cache of `vectors_angle_measure` scalars keyed by `${vec1Id}|${vec2Id}|${unite}`.
+	 * Symmetric with `measureScalarIds` on `GeoAngle` (D-V2-1 fix from code-review).
+	 * Avoids creating a fresh scalar on every `mesure(u, v)` call with the same
+	 * arguments — typical on DSL pages with multiple text annotations referencing
+	 * the same vector pair.
+	 */
+	private vectorsAngleMeasureCache = new Map<string, string>();
+
 	constructor(defaults?: FigureDefaults) {
 		this.defaults = defaults ?? {};
 	}
@@ -3647,6 +3656,12 @@ export class Figure {
 			throw new Error(`createScalarVectorsAngleMeasure: "${vector1Id}" is not a vector element`);
 		if (!v2 || !isVector(v2))
 			throw new Error(`createScalarVectorsAngleMeasure: "${vector2Id}" is not a vector element`);
+		// D-V2-1 cache : reuse the existing scalar if same (vec1, vec2, unite).
+		const unite = options?.unite ?? 'rad';
+		const cacheKey = `${vector1Id}|${vector2Id}|${unite}`;
+		const cachedId = this.vectorsAngleMeasureCache.get(cacheKey);
+		if (cachedId && this.elements.has(cachedId)) return cachedId;
+
 		const id = this.generateId('sca');
 		const deps = [...new Set([vector1Id, vector2Id, ...v1.dependsOn, ...v2.dependsOn])];
 		const element: GeoScalar = {
@@ -3654,7 +3669,7 @@ export class Figure {
 			scalarKind: 'vectors_angle_measure',
 			id,
 			targetIds: [vector1Id, vector2Id],
-			unite: options?.unite ?? 'rad',
+			unite,
 			color: this.resolveColor(options),
 			visible: options?.visible ?? false,
 			label: options?.label,
@@ -3663,6 +3678,7 @@ export class Figure {
 		};
 		this.addElement(id, element, deps);
 		this.computePosition(id);
+		this.vectorsAngleMeasureCache.set(cacheKey, id);
 		return id;
 	}
 
