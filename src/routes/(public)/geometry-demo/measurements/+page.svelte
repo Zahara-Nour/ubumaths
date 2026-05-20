@@ -4,22 +4,23 @@
 	const distanceDsl = `A = point(-3, -1, couleur="bleu")
 B = point(3, 2, couleur="bleu")
 segment(A, B)
-mesure(A, B)`;
+d = distance(A, B)
+texte(0, 0.8, "AB = {d:.2f}")`;
 
 	const angleDsl = `A = point(3, 0, couleur="bleu")
 O = point(0, 0, couleur="rouge")
 B = point(1, 3, couleur="bleu")
 segment(O, A)
 segment(O, B)
-angle(A, O, B)
-mesure(A, O, B)`;
+angle(A, O, B, showLabel="mesure", unite="deg")`;
 
 	const aireDsl = `A = point(-2, -1, couleur="bleu")
 B = point(3, -1, couleur="bleu")
 C = point(1, 3, couleur="bleu")
 D = point(-3, 2, couleur="bleu")
 polygone(A, B, C, D)
-mesure(A, B, C, D)`;
+s = aire(A, B, C, D)
+texte(0, 1, "aire = {s:.2f}")`;
 
 	const scalarComposeDsl = `A = point(-3, 0, couleur="bleu")
 B = point(3, 0, couleur="bleu")
@@ -27,10 +28,13 @@ C = point(0, 4, couleur="bleu")
 segment(A, B)
 segment(B, C)
 segment(C, A)
-mesure(A, B)
-mesure(B, C)
-mesure(C, A)
-mesure(A, B, C)`;
+ab = distance(A, B)
+bc = distance(B, C)
+ca = distance(C, A)
+texte(0, 0.4, "AB = {ab:.2f}")
+texte(2, 2.2, "BC = {bc:.2f}")
+texte(-2, 2.2, "CA = {ca:.2f}")
+angle(A, B, C, showLabel="mesure", unite="deg")`;
 
 	const distancePointDroiteDsl = `A = point(-3, -1, couleur="bleu")
 B = point(3, 1, couleur="bleu")
