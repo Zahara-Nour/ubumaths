@@ -65,7 +65,9 @@ import {
 	isSector,
 	isAnnulus,
 	isConicPolar,
-	isQuadraticCurve
+	isQuadraticCurve,
+	isAngle,
+	isVector
 } from '../types/elements';
 import { applyAngleMode } from './apply-angle-mode';
 import { interpretAreaBuiltin } from './area-builtin-helper';
@@ -2247,7 +2249,38 @@ function handleRotation(ctx: BuiltinCtx): BuiltinResult {
 	);
 	const angleArg = named.get('angle') ?? { type: 'nombre' as const, value: 0 };
 	let angleRad: ScalarParam;
-	if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
+	if (angleArg.type === 'element' && angleArg.elementType === 'angle') {
+		// Overload: rotation(P, α, centre=O) where α is a GeoAngle.
+		// Derive (or reuse) its measure scalar in radians and use it as the angle.
+		const angleId = angleArg.figureId;
+		const angleEl = figure.getElementById(angleId);
+		if (!angleEl || !isAngle(angleEl)) {
+			throw new DslRuntimeError(
+				{ summary: '`rotation()` : `angle=` doit référencer un angle valide.' },
+				line
+			);
+		}
+		const cachedId = angleEl.measureScalarId;
+		let scalarId: string | undefined;
+		if (cachedId) {
+			const cached = figure.getElementById(cachedId);
+			if (
+				cached &&
+				cached.type === 'scalar' &&
+				cached.scalarKind === 'angle_measure' &&
+				(cached.unite ?? 'rad') === 'rad'
+			) {
+				scalarId = cachedId;
+			}
+		}
+		if (!scalarId) {
+			scalarId = figure.createScalarAngleMeasure(angleEl.p1Id, angleEl.vertexId, angleEl.p2Id, {
+				unite: 'rad'
+			});
+			figure.setAngleMeasureScalarId(angleId, scalarId);
+		}
+		angleRad = { scalarRef: scalarId };
+	} else if (angleArg.type === 'element' && angleArg.elementType === 'scalar') {
 		const depId = angleArg.figureId;
 		if (angleMode === 'deg') {
 			angleRad = {
@@ -2552,48 +2585,168 @@ function handleMarqueSegment(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('marque_segment', handleMarqueSegment);
 
+/** Forms accepted by mesure() — used in error hints. */
+const MESURE_FORMS = [
+	{ syntax: 'mesure(α)', description: 'mesure réactive de l’angle `α` (radians par défaut)' },
+	{
+		syntax: 'mesure(α, unite="deg")',
+		description: 'mesure de l’angle `α` en degrés'
+	},
+	{
+		syntax: 'mesure(A, V, B)',
+		description: 'mesure de l’angle géométrique `AVB` (sommet `V`)'
+	},
+	{
+		syntax: 'mesure(u, v)',
+		description: 'angle non orienté entre deux vecteurs `u` et `v`'
+	}
+];
+
+/**
+ * Read the optional `unite="rad"|"deg"` named arg for mesure(). Default 'rad'.
+ */
+function readMesureUnite(named: Map<string, ResolvedValue>, line: number): 'rad' | 'deg' {
+	const u = requireEnumNamed<'rad' | 'deg'>(named, 'unite', ANGLE_UNITE_VALUES, line, 'mesure');
+	return u ?? 'rad';
+}
+
 function handleMesure(ctx: BuiltinCtx): BuiltinResult {
-	const { pos, figure, line, label } = ctx;
-	if (pos.length < 2)
+	const { pos, named, figure, line, label } = ctx;
+	if (pos.length === 0) {
 		throw new DslRuntimeError(
 			{
-				summary: `\`mesure()\` attend au moins 2 arguments (position, expression), ${pos.length} reçu(s).`,
-				forms: [
-					{
-						syntax: 'mesure(x, y, "distance(A, B)")',
-						description: 'affichage d’une mesure formatée à la position `(x, y)`'
-					},
-					{
-						syntax: 'mesure(P, "AB = {distance(A,B)}")',
-						description: 'mesure ancrée au point `P` avec template `{...}`'
-					}
-				]
+				summary: '`mesure()` attend au moins 1 argument.',
+				forms: MESURE_FORMS
 			},
 			line
 		);
-	const targetIds = pos.map((p, i) => requireElement(p, `arg${i + 1}`, line));
-
-	let scalarId: string;
-	let autoPosition: 'midpoint' | 'bisector' | 'centroid';
-	if (pos.length === 2) {
-		scalarId = figure.createScalarDistance(targetIds[0], targetIds[1]);
-		autoPosition = 'midpoint';
-	} else if (pos.length === 3) {
-		scalarId = figure.createScalarAngle(targetIds[0], targetIds[1], targetIds[2]);
-		autoPosition = 'bisector';
-	} else {
-		scalarId = figure.createScalarArea(targetIds);
-		autoPosition = 'centroid';
 	}
 
-	const format = autoPosition === 'bisector' ? ':deg' : ':.2f';
-	const textId = figure.createText(
-		`{${scalarId}${format}}`,
-		[scalarId],
-		{ autoPosition, autoTargetIds: targetIds },
-		{ label }
+	// Case A — mesure(α) with α = GeoAngle
+	if (pos.length === 1 && pos[0].type === 'element') {
+		const el = figure.getElementById(pos[0].figureId);
+		if (!el) {
+			throw new DslRuntimeError(
+				{
+					summary: '`mesure()` : élément inconnu en argument.',
+					forms: MESURE_FORMS
+				},
+				line
+			);
+		}
+		if (isAngle(el)) {
+			const unite = readMesureUnite(named, line);
+			// Cache via measureScalarId : if it already exists and its unit matches,
+			// reuse it. Otherwise, create a new derived scalar and cache its id.
+			const cachedId = el.measureScalarId;
+			if (cachedId) {
+				const cached = figure.getElementById(cachedId);
+				if (
+					cached &&
+					cached.type === 'scalar' &&
+					cached.scalarKind === 'angle_measure' &&
+					(cached.unite ?? 'rad') === unite
+				) {
+					return { figureId: cachedId, symbolType: 'scalar' };
+				}
+			}
+			const scalarId = figure.createScalarAngleMeasure(el.p1Id, el.vertexId, el.p2Id, {
+				unite,
+				label
+			});
+			figure.setAngleMeasureScalarId(el.id, scalarId);
+			return { figureId: scalarId, symbolType: 'scalar' };
+		}
+		// Case D — mesure(u) with 1 vector
+		if (isVector(el)) {
+			throw new DslRuntimeError(
+				{
+					summary: '`mesure()` n’est pas défini pour un vecteur seul.',
+					hint: 'Utilise `norme(u)` pour la longueur du vecteur ou `angle_polaire(O, u)` pour son angle polaire.',
+					forms: [
+						{ syntax: 'norme(u)', description: 'longueur du vecteur `u`' },
+						{ syntax: 'mesure(u, v)', description: 'angle entre 2 vecteurs' }
+					]
+				},
+				line
+			);
+		}
+		// Case E — mesure(s) with segment
+		if (isSegment(el)) {
+			throw new DslRuntimeError(
+				{
+					summary: '`mesure()` n’est pas défini pour un segment.',
+					hint: 'Utilise `longueur(s)`.',
+					forms: [{ syntax: 'longueur(s)', description: 'longueur du segment `s`' }]
+				},
+				line
+			);
+		}
+		// Case F — other element types (point, circle, line, etc.)
+		throw new DslRuntimeError(
+			{
+				summary: `\`mesure()\` n’est pas défini pour le type \`${el.type}\`.`,
+				hint: '`mesure()` s’applique uniquement aux angles (et accepte les surcharges `(A,V,B)` ou `(u,v)`).',
+				forms: MESURE_FORMS
+			},
+			line
+		);
+	}
+
+	// Case C — mesure(u, v) with 2 vectors
+	if (pos.length === 2 && pos[0].type === 'element' && pos[1].type === 'element') {
+		const e1 = figure.getElementById(pos[0].figureId);
+		const e2 = figure.getElementById(pos[1].figureId);
+		if (e1 && e2 && isVector(e1) && isVector(e2)) {
+			const unite = readMesureUnite(named, line);
+			const scalarId = figure.createScalarVectorsAngleMeasure(e1.id, e2.id, {
+				unite,
+				label
+			});
+			return { figureId: scalarId, symbolType: 'scalar' };
+		}
+	}
+
+	// Case B — mesure(A, V, B) with 3 points → invisible GeoAngle + derived scalar
+	if (pos.length === 3) {
+		const ids = pos.map((p, i) => requireElement(p, `arg${i + 1}`, line));
+		// Validate all 3 are points
+		for (let i = 0; i < 3; i++) {
+			const el = figure.getElementById(ids[i]);
+			if (!el || !isPointElement(el)) {
+				throw new DslRuntimeError(
+					{
+						summary: `\`mesure(A, V, B)\` : l’argument ${i + 1} doit être un point.`,
+						forms: MESURE_FORMS
+					},
+					line
+				);
+			}
+		}
+		const unite = readMesureUnite(named, line);
+		// Create an internal invisible GeoAngle (marque 'aucune', hidden), then
+		// derive the measure scalar from it. createAngle hardcodes visible:true,
+		// so we hide it explicitly via hideElement() right after.
+		const angleId = figure.createAngle(ids[0], ids[1], ids[2], {
+			marque: 'aucune'
+		});
+		figure.hideElement(angleId);
+		const scalarId = figure.createScalarAngleMeasure(ids[0], ids[1], ids[2], {
+			unite,
+			label
+		});
+		figure.setAngleMeasureScalarId(angleId, scalarId);
+		return { figureId: scalarId, symbolType: 'scalar' };
+	}
+
+	// Fallback : Case F — unsupported arity / argument mix
+	throw new DslRuntimeError(
+		{
+			summary: `\`mesure()\` : combinaison d’arguments non reconnue (${pos.length} argument(s)).`,
+			forms: MESURE_FORMS
+		},
+		line
 	);
-	return { figureId: textId, symbolType: 'text' };
 }
 HANDLERS.set('mesure', handleMesure);
 
@@ -2763,7 +2916,8 @@ function requireEnumNamed<T extends string>(
 	named: Map<string, ResolvedValue>,
 	key: string,
 	allowed: Set<string>,
-	line: number
+	line: number,
+	callerName: string = 'angle'
 ): T | undefined {
 	if (!named.has(key)) return undefined;
 	const val = named.get(key)!;
@@ -2771,7 +2925,7 @@ function requireEnumNamed<T extends string>(
 		const allowedStr = [...allowed].map((v) => `\`"${v}"\``).join(', ');
 		throw new DslRuntimeError(
 			{
-				summary: `\`angle()\` : valeur invalide pour \`${key}\`.`,
+				summary: `\`${callerName}()\` : valeur invalide pour \`${key}\`.`,
 				hint: `Valeurs autorisées : ${allowedStr}.`
 			},
 			line
@@ -3152,11 +3306,34 @@ HANDLERS.set('extremites', handleExtremites);
 
 function handleSommet(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line } = ctx;
+	// Allow sommet(α) for angles (1-arg accessor : returns the vertex point).
+	if (pos.length === 1) {
+		const elId = requireElement(pos[0], 'angle', line);
+		const el = figure.getElementById(elId);
+		if (el && isAngle(el)) {
+			return { figureId: el.vertexId, symbolType: 'point' };
+		}
+		throw new DslRuntimeError(
+			{
+				summary: '`sommet()` à 1 argument attend un angle.',
+				hint: 'Pour un polygone, utilise `sommet(p, i)`.',
+				forms: [
+					{ syntax: 'sommet(α)', description: 'point sommet de l’angle `α`' },
+					{
+						syntax: 'sommet(p, i)',
+						description: 'i-ième sommet du polygone `p` (1-indexé)'
+					}
+				]
+			},
+			line
+		);
+	}
 	if (pos.length !== 2)
 		throw new DslRuntimeError(
 			{
-				summary: `\`sommet()\` attend 2 arguments (poly, i), ${pos.length} reçu(s).`,
+				summary: `\`sommet()\` attend 1 ou 2 arguments, ${pos.length} reçu(s).`,
 				forms: [
+					{ syntax: 'sommet(α)', description: 'point sommet de l’angle `α`' },
 					{
 						syntax: 'sommet(p, i)',
 						description: 'i-ième sommet du polygone (1-indexé, dans l’ordre de création)'
@@ -3167,6 +3344,16 @@ function handleSommet(ctx: BuiltinCtx): BuiltinResult {
 		);
 	const polyId = requireElement(pos[0], 'polygone', line);
 	const el = figure.getElementById(polyId);
+	// 2-arg form on an angle is unusual ; route to a friendly error.
+	if (el && isAngle(el)) {
+		throw new DslRuntimeError(
+			{
+				summary: '`sommet(α, i)` n’existe pas pour un angle.',
+				hint: 'Utilise `sommet(α)` pour le sommet et `cote(α, 1)` ou `cote(α, 2)` pour les côtés.'
+			},
+			line
+		);
+	}
 	if (!el || !isPolygon(el)) {
 		const hintForType: Record<string, string> = {
 			segment: 'Pour les extrémités d’un segment, utilisez `extremite(s, 1)` ou `extremite(s, 2)`.',
@@ -3196,6 +3383,50 @@ function handleSommet(ctx: BuiltinCtx): BuiltinResult {
 	return { figureId: el.dependsOn[i - 1], symbolType: 'point' };
 }
 HANDLERS.set('sommet', handleSommet);
+
+function handleCote(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line } = ctx;
+	const COTE_FORMS = [
+		{ syntax: 'cote(α, 1)', description: 'point côté 1 de l’angle (= `p1`)' },
+		{ syntax: 'cote(α, 2)', description: 'point côté 2 de l’angle (= `p2`)' }
+	];
+	if (pos.length !== 2) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`cote()\` attend 2 arguments (α, i), ${pos.length} reçu(s).`,
+				forms: COTE_FORMS
+			},
+			line
+		);
+	}
+	const angleId = requireElement(pos[0], 'α', line);
+	const angleEl = figure.getElementById(angleId);
+	if (!angleEl || !isAngle(angleEl)) {
+		throw new DslRuntimeError(
+			{
+				summary: '`cote()` attend un angle en premier argument.',
+				hint: 'Crée un angle avec `angle(A, V, B)`.',
+				forms: COTE_FORMS
+			},
+			line
+		);
+	}
+	const idx = requireNumber(pos[1], 'index', line);
+	if (!Number.isInteger(idx) || (idx !== 1 && idx !== 2)) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`cote()\` : l’index doit être 1 ou 2, reçu ${idx}.`,
+				forms: COTE_FORMS
+			},
+			line
+		);
+	}
+	return {
+		figureId: idx === 1 ? angleEl.p1Id : angleEl.p2Id,
+		symbolType: 'point'
+	};
+}
+HANDLERS.set('cote', handleCote);
 
 function handleSommets(ctx: BuiltinCtx): BuiltinMultiResult {
 	const { pos, figure, line } = ctx;
@@ -4366,14 +4597,31 @@ HANDLERS.set('mediane', handleMediane);
 //
 // All intermediates use factory methods, so a drag of A, V, or B propagates correctly.
 
-function handleBissectrice(ctx: BuiltinCtx): BuiltinResult {
-	const { figure, line, label } = ctx;
-	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'V', 'B'], 'bissectrice', {
+const BISSECTRICE_FORMS = [
+	{
 		syntax: 'bissectrice(A, V, B)',
 		description: 'bissectrice de l’angle `AVB` (sommet `V`)'
-	});
-	const [Aid, Vid, Bid] = ids;
-	const [A, V, B] = coords;
+	},
+	{
+		syntax: 'bissectrice(α)',
+		description: 'bissectrice de l’angle `α` (équivaut à `bissectrice(p1, V, p2)`)'
+	}
+];
+
+/**
+ * Build the bisector line for points (Aid, Vid, Bid). Throws structured errors
+ * if any pair is coincident or the three points form a flat opposed configuration.
+ */
+function buildBisectorLine(
+	ctx: BuiltinCtx,
+	Aid: string,
+	Vid: string,
+	Bid: string,
+	A: { x: number; y: number },
+	V: { x: number; y: number },
+	B: { x: number; y: number }
+): string {
+	const { figure, line, label } = ctx;
 	const uX = A.x - V.x;
 	const uY = A.y - V.y;
 	const wX = B.x - V.x;
@@ -4388,7 +4636,6 @@ function handleBissectrice(ctx: BuiltinCtx): BuiltinResult {
 			},
 			line
 		);
-	// Cross-direction check (opposed half-lines → ambiguous bisector)
 	const uHatX = uX / uLen;
 	const uHatY = uY / uLen;
 	const wHatX = wX / wLen;
@@ -4414,7 +4661,54 @@ function handleBissectrice(ctx: BuiltinCtx): BuiltinResult {
 	);
 	const Bprime = figure.createDilatedPoint(Bid, Vid, { scalarRef: ratio }, { visible: false });
 	const M = createHiddenMidpoint(figure, Aid, Bprime);
-	const id = figure.createLine(Vid, M, { label });
+	return figure.createLine(Vid, M, { label });
+}
+
+function handleBissectrice(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, figure, line } = ctx;
+	// Overload: bissectrice(α) where α is a GeoAngle.
+	if (pos.length === 1) {
+		const elId = requireElement(pos[0], 'α', line);
+		const el = figure.getElementById(elId);
+		if (!el || !isAngle(el)) {
+			throw new DslRuntimeError(
+				{
+					summary: '`bissectrice()` à 1 argument attend un angle (`GeoAngle`).',
+					forms: BISSECTRICE_FORMS
+				},
+				line
+			);
+		}
+		const A = figure.getPosition(el.p1Id);
+		const V = figure.getPosition(el.vertexId);
+		const B = figure.getPosition(el.p2Id);
+		if (!A || !V || !B) {
+			throw new DslRuntimeError(
+				{ summary: '`bissectrice(α)` : position de l’un des points de `α` introuvable.' },
+				line
+			);
+		}
+		const coords = [A, V, B].map((p) => ({
+			x: geoToNumber(p.x),
+			y: geoToNumber(p.y)
+		}));
+		const id = buildBisectorLine(
+			ctx,
+			el.p1Id,
+			el.vertexId,
+			el.p2Id,
+			coords[0],
+			coords[1],
+			coords[2]
+		);
+		return { figureId: id, symbolType: 'droite' };
+	}
+	// Existing 3-points form.
+	const { ids, coords } = requireNPoints(ctx, 3, ['A', 'V', 'B'], 'bissectrice', {
+		syntax: 'bissectrice(A, V, B)',
+		description: 'bissectrice de l’angle `AVB` (sommet `V`)'
+	});
+	const id = buildBisectorLine(ctx, ids[0], ids[1], ids[2], coords[0], coords[1], coords[2]);
 	return { figureId: id, symbolType: 'droite' };
 }
 HANDLERS.set('bissectrice', handleBissectrice);
@@ -5118,6 +5412,7 @@ export const BUILTIN_NAMES = new Set([
 	'extremites',
 	'sommet',
 	'sommets',
+	'cote',
 	'montre',
 	'masque',
 	'mediatrice',

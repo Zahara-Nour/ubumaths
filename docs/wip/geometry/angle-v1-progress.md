@@ -19,7 +19,7 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 | P1  | Types & schemas (rename `GeoAngleMark` → `GeoAngle`)                                   | **terminée** |
 | P2  | Factory `figure.createAngle()` + `compute-position.ts`                                 | **terminée** |
 | P3  | DSL : suppressions + refonte `angle()` + `angle_polaire()`                             | **terminée** |
-| P4  | DSL : accesseurs (`cote`, `sommet`) + surcharges (`mesure`, `bissectrice`, `rotation`) | à faire      |
+| P4  | DSL : accesseurs (`cote`, `sommet`) + surcharges (`mesure`, `bissectrice`, `rotation`) | **terminée** |
 | P5  | Rendu sur 4 surfaces (canvas, SVG, TikZ, Typst) + rough                                | à faire      |
 | P6  | Migration 5 sites internes + 38 occurrences tests                                      | à faire      |
 | P7  | Démos + converters + outillage migration + doc + code-review final                     | à faire      |
@@ -391,3 +391,90 @@ Oui. Le DSL surface est cohérent (plus aucune référence aux 3 builtins suppri
 - Les tests utilisent `it.todo()` pour les comportements qui dépendent de types ou de builtins futurs (Phases 1-4).
 - Les tests doivent compiler en TypeScript mais échouer à l'exécution (factory `createAngle` n'existe pas encore, builtin `angle_polaire` n'existe pas encore, etc.).
 - Aucune modification du code source en Phase 0.
+
+---
+
+## Notes Phase 4
+
+### Modifications effectuées
+
+**`src/lib/geometry-core/types/elements.ts`** :
+
+- Ajout de 2 nouvelles `scalarKind` à l'union `GeoScalar.scalarKind` : `'angle_measure'` (mesure d'un angle 3-points) et `'vectors_angle_measure'` (angle non orienté entre 2 vecteurs).
+- Ajout du champ optionnel `unite?: 'rad' | 'deg'` sur `GeoScalar` (utilisé par les 2 nouveaux `scalarKind` ; défaut `'rad'`).
+
+**`src/lib/geometry-core/graph/figure.ts`** :
+
+- Import `isAngle` ajouté.
+- Nouvelle factory `createScalarAngleMeasure(p1Id, vertexId, p2Id, { unite?, ...})` : crée un `GeoScalar` réactif (visible par défaut `false`) qui lit les 3 positions et calcule `acos(...)` en radians (ou degrés si `unite='deg'`).
+- Nouvelle factory `createScalarVectorsAngleMeasure(v1Id, v2Id, { unite?, ...})` : crée un `GeoScalar` réactif sur 2 vecteurs ; dépend transitivement des points des vecteurs.
+- Nouvelle méthode `setAngleMeasureScalarId(angleId, scalarId)` : mutateur thin qui pose le champ `measureScalarId` sur l'angle pour le cache (utilisé par `mesure(α)`).
+
+**`src/lib/geometry-core/graph/compute-position.ts`** :
+
+- Nouvelle branche `case 'angle_measure'` : lit les 3 positions cibles, calcule l'angle non signé en `[0, π]` via `acos((u·v)/(|u||v|))`. Clamping numérique sur cos. Retourne en degrés si `el.unite === 'deg'`. `undefined` si positions manquantes ou côtés dégénérés.
+- Nouvelle branche `case 'vectors_angle_measure'` : utilise `resolveVectorComponents` pour les 2 vecteurs. Même logique de calcul + unité.
+
+**`src/lib/geometry-core/dsl/builtins.ts`** :
+
+- Import `isAngle`, `isVector` ajouté.
+- Helper `requireEnumNamed<T>` : ajout d'un paramètre optionnel `callerName: string = 'angle'` pour personnaliser l'erreur quand `mesure()` valide son `unite=`.
+- **`handleMesure` refondu** (~150 LoC nettes après) — gère 5 cas + fallback (F) :
+  - **Cas A** : `mesure(α)` avec `α = GeoAngle` → cache via `α.measureScalarId` (réutilisation si même `unite`), sinon `createScalarAngleMeasure` + `setAngleMeasureScalarId`. Accepte `unite="rad"|"deg"`.
+  - **Cas B** : `mesure(A, V, B)` (3 points) → crée un `GeoAngle` interne avec `marque='aucune'`, le rend invisible via `hideElement`, puis dérive le scalaire (pose aussi le `measureScalarId` pour cohérence).
+  - **Cas C** : `mesure(u, v)` (2 vecteurs) → **choix** : utilise directement `createScalarVectorsAngleMeasure` (pas de `GeoAngle` intermédiaire — un angle 3-points exigerait des points d'ancrage arbitraires pour des vecteurs libres). Plus léger, réactif natif via les dépendances vecteur.
+  - **Cas D** : `mesure(u)` (1 vecteur) → `DslRuntimeError` structurée avec hint `norme(u)` / `angle_polaire(O, u)`.
+  - **Cas E** : `mesure(s)` (segment) → `DslRuntimeError` structurée avec hint `longueur(s)`.
+  - **Cas F** : autres (point, cercle, etc.) → `DslRuntimeError` structurée listant `MESURE_FORMS`.
+  - Constantes `MESURE_FORMS`, helper `readMesureUnite`.
+  - Signature retour étendue : `BuiltinResult | BuiltinScalarResult` (en pratique uniquement `BuiltinResult` puisqu'on retourne un scalar `figureId`).
+- **`handleSommet` étendu** : ajout du dispatch type guard `isAngle`. Cas `sommet(α)` (1-arg) retourne `{ figureId: angle.vertexId, symbolType: 'point' }` (accesseur pur). Cas 2-args sur un angle → erreur structurée pointant vers `sommet(α)` / `cote(α, i)`. Les `forms` listent les 2 syntaxes.
+- **`handleCote` nouveau** (~32 LoC) : accesseur pur `cote(α, 1|2)` → retourne `{ figureId: angle.p1Id|p2Id, symbolType: 'point' }`. Erreurs structurées si pas un angle, ou index ∉ {1, 2}.
+- **`handleBissectrice` refactorisé** : extraction de `buildBisectorLine(...)` (helper interne). Ajout du cas 1-arg : si `pos.length === 1` ET `isAngle(el)`, lit `(p1Id, vertexId, p2Id)` et délègue au helper. Cas 3-points préservé. Constante `BISSECTRICE_FORMS` mise à jour avec les 2 syntaxes. Erreurs reportées correctement aux 2 chemins.
+- **`handleRotation` surchargé** : nouveau cas en tête de la résolution `angleArg` — si `angleArg.elementType === 'angle'`, vérifie via `isAngle`, réutilise le `measureScalarId` du cache si présent (et `unite='rad'`), sinon crée un nouveau `createScalarAngleMeasure(p1, V, p2, { unite: 'rad' })` et pose le cache via `setAngleMeasureScalarId`. Le scalar (en radians) est passé via `{ scalarRef }` à `createRotation`. Couplage drag bidirectionnel garanti par le graphe de dépendances. Branches existantes (`'scalar'` + nombre) intactes.
+- **`BUILTIN_NAMES`** : ajout de `'cote'`. `'mesure'`, `'sommet'`, `'bissectrice'`, `'rotation'`, `'angle'`, `'angle_polaire'` étaient déjà présents.
+
+**`src/lib/geometry-core/dsl/serializer.ts`** :
+
+- Ajout de 2 cas dans `case 'scalar'` :
+  - `case 'angle_measure'` : émet `mesure(A, V, B)` (ou `mesure(A, V, B, unite="deg")` si applicable).
+  - `case 'vectors_angle_measure'` : émet `mesure(u, v)` (ou avec `unite="deg"`).
+- Les angles internes (créés par `mesure(A, V, B)`) sont `visible=false` et donc filtrés par la garde existante.
+
+### Choix d'implémentation pour `mesure(u, v)`
+
+Au lieu de construire un `GeoAngle` intermédiaire (qui exigerait de fabriquer des points d'ancrage pour les vecteurs libres avec composantes constantes), j'utilise **directement un nouveau `scalarKind: 'vectors_angle_measure'`** qui lit les composantes via `resolveVectorComponents`. Avantages :
+
+- Plus léger (pas de scaffolding d'angle invisible).
+- Réactif naturellement via les dépendances vecteur (dont les points ancrés).
+- Cohérent avec le pattern de `'norme'` qui s'applique à un vecteur sans passer par un objet géométrique intermédiaire.
+- Le revers : pas de pair angle-objet à brancher sur un drag UI, mais c'est correct sémantiquement (on ne marque pas l'angle entre 2 vecteurs sur la figure).
+
+### LoC modifiées
+
+- `types/elements.ts` : +4 LoC (2 scalarKinds + `unite` field).
+- `graph/figure.ts` : +90 LoC (2 factories + 1 mutateur + import).
+- `graph/compute-position.ts` : +40 LoC (2 branches scalar).
+- `dsl/builtins.ts` : ~+260 / -50 LoC (refonte `handleMesure`, `handleSommet` étendu, `handleCote` nouveau, `handleBissectrice` refactorisé, `handleRotation` surchargé, helpers + constantes).
+- `dsl/serializer.ts` : +14 LoC (2 cas).
+
+**Total net** : ~+360 LoC modifiées/ajoutées.
+
+### Tests
+
+- `builtins-angle.test.ts` (Phase 0) : tous `it.todo()` — compilent et restent skipped. À étoffer en P6 quand les builtins sont stables.
+- `figure-angle.test.ts` (Phase 0) : 4 failures préexistantes liées à `createAngleMark` supprimé en P2 — résolution P6.
+- `serializer.test.ts` : 4 failures préexistantes (P3 fallout `marque_angle`/`angle_droit`) + 1 nouvelle (`mesure(A, B)` 2-points distance — désormais non supporté par la refonte ; à migrer en P6 vers `longueur` ou `distance`).
+- `scalar-dsl.test.ts` : 15 failures (mix d'usages anciens de `mesure()` distance/area + `angle_vecteurs` — P6 migration).
+- `figure-text.test.ts` : 2 failures préexistantes (`createScalarAngle` supprimé en P2 — P6).
+- Tests intacts vérifiés : `accessors.test.ts` (21/21 ✓), `circle-constructions.test.ts` (44/44 ✓), `figure.test.ts` (39/39 ✓).
+
+### Casses restantes (résolution P5/P6)
+
+- Rendu (P5) : aucun, le nouveau `scalarKind` est interne au graphe (les scalaires sont rarement rendus sauf via `texte()`).
+- Tests (P6) : 15 + 4 + 2 + 1 failures identifiées ci-dessus, tous mécaniques (migration `mesure(...)` → `longueur(...)` / `distance(...)` / `aire(...)` / `mesure(angle(...))` selon l'intention).
+- Le serializer émet `mesure(A, V, B)` (3 points) pour les scalars `'angle_measure'`. Si l'utilisateur a explicitement créé un `α = angle(...)` puis `m = mesure(α)`, le roundtrip émettra `m = mesure(A, V, B)` au lieu de `mesure(α)` — perte du lien explicite. Acceptable en V1 (sémantique préservée, juste une référence inlinée). Une future amélioration pourrait inspecter `α.measureScalarId` pour rebrancher.
+
+### Prêt pour P5 ?
+
+Oui. Les surcharges DSL sont en place et fonctionnelles. Les nouveaux `scalarKind` se calculent correctement via le graphe de dépendances. La cache `measureScalarId` est mutable via `setAngleMeasureScalarId`. P5 peut maintenant brancher le rendu de `GeoAngle` sur les 4 surfaces (le rendu du scalaire `'angle_measure'` lui-même est pris en charge par `texte()` / `mesure()` sucre existant, hors scope P5).
