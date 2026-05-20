@@ -42,6 +42,7 @@ import {
 } from '../types/elements';
 import { computeImageVisualTransform } from '../dsl/transform-apply';
 import { formatAngleLabel } from './angle-label';
+import { computeBisectorDirection } from './bisector-direction';
 
 // =============================================================================
 // Style resolution
@@ -815,22 +816,9 @@ export function angleToSVG(
 
 	// Bisector direction (averaged unit vectors). For `kind='rentrant'` we
 	// negate so the label sits in the exterior sector.
-	let bisX = u1x + u2x;
-	let bisY = u1y + u2y;
-	const bisLen = Math.hypot(bisX, bisY);
-	if (bisLen < 1e-6) {
-		// Sides anti-parallel (flat angle). Use the perpendicular to side 1
-		// so the label still has a stable position.
-		bisX = -u1y;
-		bisY = u1x;
-	} else {
-		bisX /= bisLen;
-		bisY /= bisLen;
-	}
-	if (kind === 'rentrant') {
-		bisX = -bisX;
-		bisY = -bisY;
-	}
+	const bisDir = computeBisectorDirection(u1x, u1y, u2x, u2y, kind);
+	const bisX = bisDir ? bisDir.bisX : -u1y;
+	const bisY = bisDir ? bisDir.bisY : u1x;
 	const labelX = svgV.x + bisX * (arcRadiusPx + LABEL_OFFSET_PX);
 	const labelY = svgV.y + bisY * (arcRadiusPx + LABEL_OFFSET_PX);
 

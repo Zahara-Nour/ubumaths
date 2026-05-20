@@ -44,6 +44,9 @@ export {
 // Angle label helper (shared across canvas / SVG / TikZ / Typst).
 export { formatAngleLabel, unsignedAngleBetween } from './angle-label';
 
+// Bisector direction helper (shared across SVG / TikZ / Typst renderers).
+export { computeBisectorDirection } from './bisector-direction';
+
 // Rough.js rendering
 export {
 	seedFromId,

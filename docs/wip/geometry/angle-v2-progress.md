@@ -40,8 +40,8 @@ Ajout fonctionnel léger :
 
 | #   | Phase                                                                                          | Statut       |
 | --- | ---------------------------------------------------------------------------------------------- | ------------ |
-| P0  | Spec TDD + tests rouges                                                                        | **en cours** |
-| P1  | Dette tech D1 (`requireEnumNamed` callerName) + D3 (helper `computeBisectorDirection` partagé) | à faire      |
+| P0  | Spec TDD + tests rouges                                                                        | **terminée** |
+| P1  | Dette tech D1 (`requireEnumNamed` callerName) + D3 (helper `computeBisectorDirection` partagé) | **terminée** |
 | P2  | Overloads `angle(u,v)` + `angle(seg1,seg2)` + `angle(d1,d2)` (dispatch + points synthétiques)  | à faire      |
 | P3  | `arcSpacingPx` paramétrable + dette tech B2 (dédup `mesure(A, V, B)` par tuple)                | à faire      |
 | P4  | Dette tech B5 (serializer `α → mesure(α)`) + tests intégration + doc V2                        | à faire      |
@@ -287,3 +287,25 @@ Les 3 sites appellent ce helper au lieu de reconstruire le calcul.
 - Tests compilent en TypeScript (imports valides) mais restent skipped à
   l'exécution.
 - Aucune modification du code source en Phase 0.
+
+---
+
+## Notes Phase 1
+
+- **D1 — `requireEnumNamed` callerName obligatoire** : défaut `'angle'` retiré, paramètre rendu obligatoire. 6 sites d'appel mis à jour : 5 dans `handleAngle` (→ `'angle'`) et 1 dans `readMesureUnite` (→ `'mesure'`, déjà explicite).
+- **D3 — Helper `computeBisectorDirection`** : nouveau fichier `rendering/bisector-direction.ts` (~60 LoC). Reproduit exactement la formule des 3 sites originaux (average unit vectors + fallback perpendiculaire si anti-parallèle + négation pour `'rentrant'`). Retourne `null` si vecteur dégénéré (longueur < 1e-10). Réexporté depuis `rendering/index.ts`.
+- **3 sites adaptés** : `svg-primitives.ts:angleToSVG`, `export-tikz.ts` (branche label angle), `export-typst.ts` (branche label angle).
+- **Résultats tests (0 régression)** :
+  - `figure-angle.test.ts` : 39/39 passed
+  - `builtins-angle.test.ts` : 46 passed | 44 todo (skipped P2-P4)
+  - `angle-canonical-cases.test.ts` : 9/9 passed
+  - `export-svg.test.ts` : 31 passed | 1 failed (pré-existant, non lié)
+  - `export-tikz.test.ts` : 26 passed | 1 failed (pré-existant, non lié)
+  - `export-typst.test.ts` : 12/12 passed
+- **Fichiers modifiés** :
+  - `src/lib/geometry-core/dsl/builtins.ts` (D1 : signature + 5 call sites)
+  - `src/lib/geometry-core/rendering/bisector-direction.ts` (nouveau, D3)
+  - `src/lib/geometry-core/rendering/svg-primitives.ts` (D3 : use helper)
+  - `src/lib/geometry-core/rendering/export-tikz.ts` (D3 : use helper)
+  - `src/lib/geometry-core/rendering/export-typst.ts` (D3 : use helper)
+  - `src/lib/geometry-core/rendering/index.ts` (re-export du helper D3)

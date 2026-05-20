@@ -14,6 +14,7 @@ import { geoToNumber } from '../compute/to-number';
 import { circumcircle } from '../geometry/circumcircle';
 import { resolveStyle } from './svg-primitives';
 import { formatAngleLabel, unsignedAngleBetween } from './angle-label';
+import { computeBisectorDirection } from './bisector-direction';
 
 export interface TikZExportOptions {
 	scale?: number;
@@ -450,20 +451,9 @@ export function exportToTikZ(
 				const u1y = d1y / len1;
 				const u2x = d2x / len2;
 				const u2y = d2y / len2;
-				let bx = u1x + u2x;
-				let by = u1y + u2y;
-				const blen = Math.hypot(bx, by);
-				if (blen < 1e-6) {
-					bx = -u1y;
-					by = u1x;
-				} else {
-					bx /= blen;
-					by /= blen;
-				}
-				if (kind === 'rentrant') {
-					bx = -bx;
-					by = -by;
-				}
+				const bisDir = computeBisectorDirection(u1x, u1y, u2x, u2y, kind);
+				const bx = bisDir ? bisDir.bisX : -u1y;
+				const by = bisDir ? bisDir.bisY : u1x;
 				const lx = vx + bx * (baseR + 0.2);
 				const ly = vy + by * (baseR + 0.2);
 				// Use \text{} to render label as-is (handles ° and = uniformly).
