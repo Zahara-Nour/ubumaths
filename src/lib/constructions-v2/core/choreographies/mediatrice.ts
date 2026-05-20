@@ -311,8 +311,17 @@ function buildArcsEgaux(
 		produced: {
 			principal: principalId,
 			charnieres: [I1, I2],
-			traces: [arc1, arc2, segmentTrace],
+			// Arcs only — pedagogically valuable (show the compass gesture).
+			// `segmentTrace` is intentionally NOT here : it would be
+			// redundant with the principal line in `@complet` (geometrically
+			// overlapping), so we keep it hidden after the animation.
+			traces: [arc1, arc2],
 			hiddenSupport: [
+				// Hidden auxiliaries needed only during the animation.
+				segmentTrace,
+				Iext1,
+				Iext2,
+				// Structural plumbing (cercles d'intersection + scalaires).
 				circleA,
 				circleB,
 				distAB,
@@ -332,9 +341,7 @@ function buildArcsEgaux(
 				Iext1xScalar,
 				Iext1yScalar,
 				Iext2xScalar,
-				Iext2yScalar,
-				Iext1,
-				Iext2
+				Iext2yScalar
 			]
 		}
 	};

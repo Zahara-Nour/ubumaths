@@ -101,10 +101,20 @@ export interface ChoreographyProduced {
 	/** ids of ephemeral construction traces (compass arcs, ghost lines) — hidden in @squelette, dashed-faded in @complet. */
 	readonly traces: readonly string[];
 	/**
-	 * Ids of auxiliary elements that are purely structural for the choreography
-	 * (e.g. hidden circles used as input to `createIntersectionCC` because the
-	 * intersection helper does not accept arcs). Never made visible by any
-	 * visibility mode.
+	 * Ids of auxiliary elements that should NEVER be visible after the
+	 * animation, regardless of visibility mode. Two common subcategories :
+	 *
+	 * - **Structural plumbing** : elements needed by the geometry-core API
+	 *   but with no pedagogical value (e.g. hidden circles fed to
+	 *   `createIntersectionCC` because the helper does not accept arcs ;
+	 *   scalar expressions driving reactive coordinates).
+	 *
+	 * - **Animation-only traces** : visible during the ruler/compass gesture
+	 *   but redundant once the principal element is revealed (e.g. a
+	 *   segment-trace that visually duplicates the final line).
+	 *
+	 * In contrast, `traces` is for elements WORTH keeping in `@complet`
+	 * (e.g. compass arcs that show the construction gesture).
 	 */
 	readonly hiddenSupport?: readonly string[];
 }
