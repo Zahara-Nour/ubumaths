@@ -15,8 +15,8 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 
 | #   | Phase                                                                                  | Statut       |
 | --- | -------------------------------------------------------------------------------------- | ------------ |
-| P0  | Spec TDD + tests rouges                                                                | **en cours** |
-| P1  | Types & schemas (rename `GeoAngleMark` → `GeoAngle`)                                   | à faire      |
+| P0  | Spec TDD + tests rouges                                                                | **terminée** |
+| P1  | Types & schemas (rename `GeoAngleMark` → `GeoAngle`)                                   | **terminée** |
 | P2  | Factory `figure.createAngle()` + `compute-position.ts`                                 | à faire      |
 | P3  | DSL : suppressions + refonte `angle()` + `angle_polaire()`                             | à faire      |
 | P4  | DSL : accesseurs (`cote`, `sommet`) + surcharges (`mesure`, `bissectrice`, `rotation`) | à faire      |
@@ -219,6 +219,43 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 - Étude v2 finale : [`docs/wip/geometry/study-angle-object-v2.md`](./study-angle-object-v2.md)
 - Plan d'implémentation : `~/.claude/plans/lucky-watching-fairy.md`
 - MEMORY : `geometry-core-status.md`, `transformation-objects.md`, `vector-implementation.md`
+
+---
+
+## Notes Phase 1
+
+### Modifications effectuées
+
+**`src/lib/geometry-core/types/elements.ts`** (lignes ~426-435 → ~426-451) :
+
+- `interface GeoAngleMark` → `interface GeoAngle` (+12 champs optionnels, -2 champs supprimés : `arcCount`, `rightAngle`)
+- `type: 'angleMark'` → `type: 'angle'`
+- Union `GeoElement` ligne ~1281 : `GeoAngleMark` → `GeoAngle`
+- Type guard `isAngleMark` → `isAngle` (lignes 1504-1506)
+- `scalarKind: 'angle'` **conservé temporairement** avec annotation `@deprecated` : `createScalarAngle` dans `figure.ts:3526-3548` l'instancie encore — sera supprimé en P2 avec la factory.
+
+**`src/lib/geometry-core/types/schemas.ts`** (lignes ~232-240) :
+
+- `angleMarkSchema` → `angleSchema`, `z.literal('angleMark')` → `z.literal('angle')`
+- Supprimés : `arcCount`, `rightAngle`
+- Ajoutés : `orientation`, `kind`, `marque`, `showLabel`, `unite`, `measureScalarId`, `arcRadiusPx` (tous optionnels)
+- Référence dans l'union Zod (ligne ~361) : `angleMarkSchema` → `angleSchema`
+
+**`src/lib/geometry-core/types/index.ts`** :
+
+- Export type `GeoAngleMark` → `GeoAngle`
+- Export value `isAngleMark` → `isAngle`
+
+### Casses temporaires attendues (seront résolues en P2-P6)
+
+- `dsl/builtins.ts` : `isAngleMark`, `GeoAngleMark` non résolus
+- `graph/figure.ts` : `createAngleMark` retourne encore un `GeoAngleMark` inexistant
+- `rendering/svg-primitives.ts` : `isAngleMark`, `'angleMark'`
+- `rendering/export-svg.ts`, `export-tikz.ts`, `export-typst.ts` : dispatch sur `'angleMark'`
+- `graph/__tests__/figure-angle-mark.test.ts` : `GeoAngleMark`
+- `dsl/__tests__/*.test.ts` : occurrences `'angleMark'` dans snapshots
+
+**LoC modifiées** : ~45 LoC (elements.ts : +16 net, schemas.ts : +9 net, index.ts : +2).
 
 ---
 

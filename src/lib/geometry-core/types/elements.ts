@@ -423,15 +423,27 @@ export interface GeoTrace extends GeoElementBase {
 // Annotation types
 // =============================================================================
 
-/** Angle mark (arc or right-angle square) at a vertex defined by three points. */
-export interface GeoAngleMark extends GeoElementBase {
-	readonly type: 'angleMark';
+/** Angle as a first-class object defined by three points (p1, vertex, p2). */
+export interface GeoAngle extends GeoElementBase {
+	readonly type: 'angle';
 	readonly p1Id: string;
 	readonly vertexId: string;
 	readonly p2Id: string;
-	readonly arcCount: 1 | 2 | 3;
-	readonly rightAngle: boolean;
 	readonly dependsOn: readonly [string, string, string];
+	/** CCW orientation. 'auto' flips with the cross-product sign. Default: 'auto'. */
+	readonly orientation?: 'direct' | 'indirect' | 'auto';
+	/** Interior sector (<π) or exterior sector (>π). Default: 'saillant'. */
+	readonly kind?: 'saillant' | 'rentrant';
+	/** Visual mark. Default: 'arc'. */
+	readonly marque?: 'arc' | 'arcs2' | 'arcs3' | 'carre' | 'aucune';
+	/** Label display mode. Default: 'aucun'. */
+	readonly showLabel?: 'aucun' | 'nom' | 'mesure' | 'mesure+nom';
+	/** Display unit. Default follows global angleMode. */
+	readonly unite?: 'rad' | 'deg';
+	/** Back-reference to a derived measure scalar (cache, set by mesure()). */
+	readonly measureScalarId?: string;
+	/** Arc radius in pixels. Default: 25. */
+	readonly arcRadiusPx?: number;
 }
 
 /** Tick marks on a segment to indicate equal lengths. */
@@ -539,6 +551,10 @@ export interface GeoScalar extends GeoElementBase {
 	readonly scalarKind:
 		| 'distance'
 		| 'distance_point_line'
+		/**
+		 * @deprecated Will be removed in P2 when createScalarAngle is deleted from figure.ts.
+		 * New code must NOT instantiate this kind — use GeoAngle + measureScalarId instead.
+		 */
 		| 'angle'
 		| 'polar_angle'
 		| 'area'
@@ -1278,7 +1294,7 @@ export type GeoElement =
 	| GeoProjectedPoint
 	| GeoAffinityPoint
 	| GeoInvertedPoint
-	| GeoAngleMark
+	| GeoAngle
 	| GeoSegmentMark
 	| GeoText
 	| GeoMathText
@@ -1501,8 +1517,8 @@ export function isConicPolar(el: GeoElement): el is GeoConicPolar {
 	return el.type === 'conicPolar';
 }
 
-export function isAngleMark(el: GeoElement): el is GeoAngleMark {
-	return el.type === 'angleMark';
+export function isAngle(el: GeoElement): el is GeoAngle {
+	return el.type === 'angle';
 }
 
 export function isSegmentMark(el: GeoElement): el is GeoSegmentMark {
