@@ -6,12 +6,52 @@
 
 ## Statut
 
-| Phase                            | Statut      |
-| -------------------------------- | ----------- |
-| P0 — Spec TDD + tests rouges     | 🟡 en cours |
-| P1 — `transporte.ts` (cœur)      | ⚪ à faire  |
-| P2 — Registry + activation tests | ⚪ à faire  |
-| P3 — Tests intégration + doc     | ⚪ à faire  |
+| Phase                            | Statut     |
+| -------------------------------- | ---------- |
+| P0 — Spec TDD + tests rouges     | ✅ livrée  |
+| P1 — `transporte.ts` (cœur)      | ✅ livrée  |
+| P2 — Registry + activation tests | ⚪ à faire |
+| P3 — Tests intégration + doc     | ⚪ à faire |
+
+## P1 — résumé livraison
+
+- **Fichier créé** : `src/lib/constructions-v2/core/choreographies/transporte.ts` (~430 LoC).
+- **Une seule voie exportée** : `VOIES_TRANSPORTE_EUCLIDE` = `[{ id: 'compas_report', defaut: true, ... }]`.
+- **Pattern repris** :
+  - Type guards `isAngle` + `isPointElement` (zéro cast, zéro `any`).
+  - `setupTransporteGeometry(ctx)` → `TransporteSetup | null` (défensif, retourne `null` si β ou α manquent).
+  - `buildTransporteEuclide(ctx)` produit 6 sub-steps + classifie `produced` (principal/charnieres/traces/hiddenSupport).
+- **Stratégie A''/B''** :
+  - A'' = `β.p1Id` (déjà = V' + dir puisque r = 1 forcé).
+  - B'' = `β.p2Id` (déjà rotation de A'' autour V' d'angle mesure(α), créé par le builtin V3a).
+  - Donc aucune intersection arc-arc à recalculer côté chorégraphie ; on réutilise les deux `FreePoint` invisibles déjà posés par `handleTransporte`. β est `hideElement`-é immédiatement et révélé par `applyFinalVisibility` à la fin de SS6.
+- **A'/B'** : intersections `createIntersectionLC(rayVA, circleVHidden, k)` avec sélection d'index par probe (compare avec la position attendue analytiquement → choisit l'index correct).
+- **Réactivité** : 11 scalaires + 7 expressions scalaires pour les angles d'arc, le chord |A'B'|, les directions. Tout suit α et V' en cas de drag.
+- **Arcs animés** :
+  - `arcV` : arc spanning A'→B' centré V (sweep réactif).
+  - `arcVp` : petit arc 60° centré V', orienté vers A''.
+  - `arcApp` : petit arc 60° centré A'', rayon = |A'B'| réactif, orienté vers B''.
+- **Segment-trace** : `figure.createSegment(V', B'')` puis `hideElement` → seule animation visible pendant SS6 ; classé en `hiddenSupport` pour éviter le doublonnage avec le 2ᵉ côté de β (révélé par `applyFinalVisibility`).
+- **Sub-steps** : `compass-draw × 3`, `point-fade-in × 2`, `ruler-trace × 1`, ordre conforme au spec ligne 47-54 du présent doc.
+
+### Vérifications
+
+- `pnpm test:server src/lib/constructions-v2/ --run` → **172 passed, 6 todo** (les 6 todos P0 restent en attente d'activation P2).
+- `pnpm check:incremental` → **9 errors / 46 warnings** (baseline préexistante, 0 régression).
+- Pas d'import circulaire `graph` ↔ `dsl` (uniquement `types/elements` + `compute/to-number` + `types/geo-value`).
+- Pas de cast `as Geo*`, pas d'`any`.
+
+### Difficultés rencontrées
+
+- Selection d'index dans `createIntersectionLC` : le ray V→alphaP1 produit toujours 2 candidats algébriques (cercle ∩ droite supportée). Mis en place un probe transparent + comparaison avec la position attendue analytiquement pour choisir `0` ou `1`. Stable tant que le drag ne traverse pas une singularité topologique.
+- `numeric()` (depuis `types/geo-value`) requis pour passer `R_TRANSPORT = 1` à `createCircleByRadius` qui attend un `ScalarParam` ; les `number` purs ne sont pas acceptés.
+- Pas de réutilisation directe possible de `setupCommonGeometry` de bissectrice (signatures et besoins divergent), mais le pattern « scalaires réactifs → expression chain → arc/segment » est calqué fidèlement.
+
+### Prêt pour P2
+
+- Activer les 6 `it.todo()` du fichier `choreographies-integration.test.ts:493-502`.
+- Ajouter une entrée `transporte: { direct: undefined, euclide: VOIES_TRANSPORTE_EUCLIDE, equerre: undefined, mesure: undefined }` dans `registry.ts`.
+- Importer `VOIES_TRANSPORTE_EUCLIDE` en tête de `registry.ts`.
 
 ## Construction au compas (Euclide I.23)
 
