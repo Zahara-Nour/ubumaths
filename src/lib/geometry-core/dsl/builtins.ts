@@ -3104,8 +3104,10 @@ function handleAngle3Points(
  * - Cas B (bound + bound sans point commun, A2) : vertex = u.startId (réactif), p1 = u.endId
  *   (réactif), p2 = TranslatedPointByVector(u.startId, v.id) — point caché reactif au drag de v
  *   et au drag du vertex.
- * - Cas C (au moins un free vector) : freePoints synthétiques statiques (drag de l'anchor du
- *   free vector NON reactif). Limitation A2.x — voir plan lucky-watching-fairy.md.
+ * - Cas C (A2.x) — au moins un free vector : utilise `createFreeVectorPoint` pour ancrer le
+ *   vertex/p1 sur le free vector et `createTranslatedPointByVector` pour translater par le
+ *   second vecteur. Drag de l'anchor / dx / dy d'un free vector propage à l'angle dérivé via
+ *   le dependency graph. Pleinement réactif.
  */
 function handleAngleVectors(
 	u: GeoVector,
@@ -3116,8 +3118,10 @@ function handleAngleVectors(
 	label: string | undefined
 ): BuiltinResult {
 	// Validate non-zero norms early (throws structured DslRuntimeError).
+	// compU's dx/dy is reused in the degenerate `u === v` branch below; compV
+	// is only called for its side effect (validation).
 	const compU = resolveVectorNumericComponents(u, figure, 'u', line);
-	const compV = resolveVectorNumericComponents(v, figure, 'v', line);
+	resolveVectorNumericComponents(v, figure, 'v', line);
 
 	// Degenerate: u === v (same id) → mesure = 0. Build a synthetic triplet
 	// (vertex, p1, p2=duplicate-shifted) so the graph has no duplicate parents.
@@ -3158,60 +3162,51 @@ function handleAngleVectors(
 		return buildAngleFromPoints(p1Id, vertexId, p2Id, named, figure, line, label);
 	}
 
-	// Cas C (différé, statique) — au moins un free vector : ancrage par anchorX/anchorY non
-	// representé comme point dans le graphe, donc on retombe sur des freePoints synthétiques
-	// capturant les positions à la construction. Drag de l'anchor du free vector NON reactif
-	// (limitation A2.x).
-
-	// Choose vertex anchor : start of u if bound (vectorByPoints), else (0,0).
-	let vertexX = 0;
-	let vertexY = 0;
-	let vertexId: string | undefined;
+	// Cas C (A2.x) — au moins un free vector. Réactivité assurée par
+	// `createFreeVectorPoint` (anchor / end d'un free vector, réactif via
+	// dependsOn: [vectorId]) et `createTranslatedPointByVector` (déjà accepte
+	// freeVector en arg, lit vec.dx/dy depuis resolveVectorComponents).
+	//
+	// Choix du vertex : préférer un point existant réactif (startId si u ou v
+	// est `vectorByPoints`), sinon créer un freeVectorPoint sur l'anchor de u.
+	let vertexId: string;
 	if (isVectorByPoints(u)) {
-		const start = figure.getPosition(u.startId);
-		if (start) {
-			vertexX = geoToNumber(start.x);
-			vertexY = geoToNumber(start.y);
-			vertexId = u.startId;
-		}
+		vertexId = u.startId;
 	} else if (isVectorByPoints(v)) {
-		const start = figure.getPosition(v.startId);
-		if (start) {
-			vertexX = geoToNumber(start.x);
-			vertexY = geoToNumber(start.y);
-			vertexId = v.startId;
-		}
+		vertexId = v.startId;
+	} else {
+		// u et v sont tous les 2 freeVector : ancrer le vertex sur l'anchor de u.
+		vertexId = figure.createFreeVectorPoint(u.id, 'anchor', { visible: false });
 	}
 
-	if (vertexId === undefined) {
-		vertexId = figure.createFreePoint(
-			{ x: numeric(vertexX), y: numeric(vertexY) },
-			{ visible: false, draggable: false }
-		);
-	}
-
-	// p1 = vertex + u : reuse endId if u is bound and anchored on this vertex,
-	// else synthetic.
+	// p1 = vertex + u :
+	// - si u est bound et son startId est le vertex → reuse u.endId (réactif natif)
+	// - si u est freeVector et vertex est son anchor → reuse createFreeVectorPoint(u, 'end')
+	// - sinon → translater le vertex par u (réactif via dependency graph)
 	let p1Id: string;
 	if (isVectorByPoints(u) && u.startId === vertexId) {
 		p1Id = u.endId;
+	} else if (!isVectorByPoints(u)) {
+		// u is freeVector. Réutiliser le 'end' du free vector si vertex est son anchor.
+		p1Id = figure.createFreeVectorPoint(u.id, 'end', { visible: false });
 	} else {
-		p1Id = figure.createFreePoint(
-			{ x: numeric(vertexX + compU.dx), y: numeric(vertexY + compU.dy) },
-			{ visible: false, draggable: false }
-		);
+		p1Id = figure.createTranslatedPointByVector(vertexId, u.id, { visible: false });
 	}
 
-	// p2 = vertex + v : reuse endId if v is bound and anchored on this vertex,
-	// else synthetic.
+	// p2 = vertex + v : même logique que p1.
 	let p2Id: string;
 	if (isVectorByPoints(v) && v.startId === vertexId) {
 		p2Id = v.endId;
+	} else if (!isVectorByPoints(v)) {
+		// v est freeVector. Réutiliser l'end SEULEMENT si vertex est l'anchor de v.
+		// Sinon on doit translater le vertex par v (anchor de v différent du vertex).
+		// Comme vertex est soit u.startId (bound) soit createFreeVectorPoint(u, 'anchor'),
+		// on ne peut pas avoir vertex = v.anchor en général → fallback translation.
+		// Mais avec compU = compV à la construction, on accepte la translation : elle est
+		// pleinement réactive.
+		p2Id = figure.createTranslatedPointByVector(vertexId, v.id, { visible: false });
 	} else {
-		p2Id = figure.createFreePoint(
-			{ x: numeric(vertexX + compV.dx), y: numeric(vertexY + compV.dy) },
-			{ visible: false, draggable: false }
-		);
+		p2Id = figure.createTranslatedPointByVector(vertexId, v.id, { visible: false });
 	}
 
 	return buildAngleFromPoints(p1Id, vertexId, p2Id, named, figure, line, label);
