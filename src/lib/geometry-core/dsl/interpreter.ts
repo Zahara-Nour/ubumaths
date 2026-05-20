@@ -792,7 +792,7 @@ class Interpreter {
 				this.angleMode
 			);
 			if (result) {
-				// Scalar result: builtins like norme(), produit_scalaire(), angle_vecteurs()
+				// Scalar result: builtins like norme(), produit_scalaire()
 				if ('scalarValue' in result) {
 					return { type: 'nombre', value: (result as BuiltinScalarResult).scalarValue };
 				}

@@ -21,8 +21,8 @@ export const KEYWORDS = new Set([
 	'inversion',
 	'intersection',
 	// Annotations
-	'marque_angle',
-	'angle_droit',
+	'angle',
+	'angle_polaire',
 	'marque_segment',
 	'mesure',
 	'style',
