@@ -226,8 +226,8 @@ describe('ConstructionExecutor — mediatrice @euclide @arcs_egaux (Phase 4 sub-
 	});
 });
 
-describe('ConstructionExecutor — bissectrice @euclide @arcs_egaux (6 sub-steps)', () => {
-	it('bissectrice @euclide expands into 6 sub-step entries', () => {
+describe('ConstructionExecutor — bissectrice @euclide @arcs_egaux (7 sub-steps)', () => {
+	it('bissectrice @euclide expands into 7 sub-step entries', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -237,11 +237,11 @@ describe('ConstructionExecutor — bissectrice @euclide @arcs_egaux (6 sub-steps
 				'd = bissectrice(A, V, B) @euclide'
 			].join('\n')
 		);
-		// 3 point statements + 6 sub-steps for the decorated bissectrice = 9 entries.
-		expect(exec.totalSteps).toBe(9);
+		// 3 point statements + 7 sub-steps for the decorated bissectrice = 10 entries.
+		expect(exec.totalSteps).toBe(10);
 	});
 
-	it('sub-step kinds follow the expected sequence (cercle, fade-in, 2 arcs, fade-in P, ruler)', () => {
+	it("sub-step kinds follow the expected sequence (2 small arcs at V, fade-in, 2 arcs at A'/B', fade-in P, ruler)", () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -255,20 +255,22 @@ describe('ConstructionExecutor — bissectrice @euclide @arcs_egaux (6 sub-steps
 		exec.step(); // V
 		exec.step(); // B
 		expect(exec.currentSubStep).toBeNull();
-		exec.step(); // SS1 : compass at V (trace cercle)
+		exec.step(); // SS1 : small arc at V near VA
 		expect(exec.currentSubStep?.kind).toBe('compass-draw');
 		expect(exec.currentSubStep?.instrument).toBe('compass');
-		exec.step(); // SS2 : fade-in A', B'
+		exec.step(); // SS2 : small arc at V near VB
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS3 : fade-in A', B'
 		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
 		expect(exec.currentSubStep?.animatePointIds.length).toBe(2);
-		exec.step(); // SS3 : compass at A'
+		exec.step(); // SS4 : compass at A'
 		expect(exec.currentSubStep?.kind).toBe('compass-draw');
-		exec.step(); // SS4 : compass at B'
+		exec.step(); // SS5 : compass at B'
 		expect(exec.currentSubStep?.kind).toBe('compass-draw');
-		exec.step(); // SS5 : fade-in P
+		exec.step(); // SS6 : fade-in P
 		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
 		expect(exec.currentSubStep?.animatePointIds.length).toBe(1);
-		exec.step(); // SS6 : ruler trace
+		exec.step(); // SS7 : ruler trace
 		expect(exec.currentSubStep?.kind).toBe('ruler-trace');
 		expect(exec.currentSubStep?.instrument).toBe('ruler');
 		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
@@ -287,7 +289,7 @@ describe('ConstructionExecutor — bissectrice @euclide @arcs_egaux (6 sub-steps
 		exec.step(); // A
 		exec.step(); // V
 		exec.step(); // B
-		for (let i = 0; i < 6; i++) {
+		for (let i = 0; i < 7; i++) {
 			exec.step();
 			expect(exec.currentVoie?.id).toBe('arcs_egaux');
 			expect(exec.currentDecoratorTriple?.contrainte).toBe('euclide');
@@ -321,8 +323,8 @@ describe('ConstructionExecutor — bissectrice @euclide @arcs_egaux (6 sub-steps
 	});
 });
 
-describe('ConstructionExecutor — bissectrice @euclide @arc_milieu (4 sub-steps)', () => {
-	it('arc_milieu voie produces 4 sub-step entries', () => {
+describe('ConstructionExecutor — bissectrice @euclide @arc_milieu (5 sub-steps)', () => {
+	it('arc_milieu voie produces 5 sub-step entries', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -332,11 +334,11 @@ describe('ConstructionExecutor — bissectrice @euclide @arc_milieu (4 sub-steps
 				'd = bissectrice(A, V, B) @euclide @arc_milieu'
 			].join('\n')
 		);
-		// 3 points + 4 sub-steps = 7 entries.
-		expect(exec.totalSteps).toBe(7);
+		// 3 points + 5 sub-steps = 8 entries.
+		expect(exec.totalSteps).toBe(8);
 	});
 
-	it("sub-step kinds : cercle, fade-in A'B', fade-in M, ruler trace", () => {
+	it("sub-step kinds : 2 small arcs, fade-in A'B', fade-in M, ruler trace", () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -349,15 +351,17 @@ describe('ConstructionExecutor — bissectrice @euclide @arc_milieu (4 sub-steps
 		exec.step(); // A
 		exec.step(); // V
 		exec.step(); // B
-		exec.step(); // SS1
+		exec.step(); // SS1 : small arc near VA
 		expect(exec.currentSubStep?.kind).toBe('compass-draw');
-		exec.step(); // SS2
+		exec.step(); // SS2 : small arc near VB
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS3 : fade-in A', B'
 		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
 		expect(exec.currentSubStep?.animatePointIds.length).toBe(2);
-		exec.step(); // SS3 : M fade-in
+		exec.step(); // SS4 : M fade-in
 		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
 		expect(exec.currentSubStep?.animatePointIds.length).toBe(1);
-		exec.step(); // SS4 : ruler
+		exec.step(); // SS5 : ruler
 		expect(exec.currentSubStep?.kind).toBe('ruler-trace');
 	});
 });
