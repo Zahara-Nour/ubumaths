@@ -37,7 +37,7 @@ n = slider(min=2, max=7, valeur=3, pas=1)
 t = slider(min=0, max=360, valeur=0, pas=1)
 A = point(4, 0)
 B = rotation(A, centre=O, angle=t)
-theta = angle(O, B)
+theta = angle_polaire(O, B)
 k = cos(n * theta)
 C = homothetie(B, centre=O, rapport=k, couleur="orange")
 T = trace(C, couleur="violet")`;

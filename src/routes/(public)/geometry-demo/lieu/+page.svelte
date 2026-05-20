@@ -49,7 +49,7 @@ L = lieu(B, A, couleur="violet")`;
 F2 = point(3, 0, couleur="bleu")
 c = cercle(F1, rayon=8, couleur="gris")
 A = point_sur(c, 0, couleur="rouge")
-(M, med) = mediatrice(A, F2)
+med = mediatrice(A, F2)
 style(med, couleur="gris")
 d = droite(F1, A, couleur="gris")
 P = intersection(med, d, couleur="vert")
@@ -58,7 +58,7 @@ L = lieu(P, A, couleur="violet")`;
 	const rosaceDsl = `O = point(0, 0, couleur="bleu")
 c = cercle(O, rayon=3, couleur="bleu")
 A = point_sur(c, 0, couleur="rouge")
-theta = angle(O, A)
+theta = angle_polaire(O, A)
 k = cos(3 * theta)
 B = homothetie(A, centre=O, rapport=k, couleur="orange")
 L = lieu(B, A, couleur="violet")`;
