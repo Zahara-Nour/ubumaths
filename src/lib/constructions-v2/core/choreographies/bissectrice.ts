@@ -21,7 +21,17 @@ import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types'
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const CERCLE_V_RADIUS_FACTOR = 0.6; // r1 = 0.6 × min(|VA|, |VB|)
 const ARC_RADIUS_FACTOR = 0.7; // r2 = 0.7 × |A'B'|
-const ARC_SWEEP_RAD = (2 * Math.PI) / 3; // 120°
+const ARC_SWEEP_RAD = (2 * Math.PI) / 3; // 120° for arcs at A', B'
+const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° default for the 2 arcs at V
+
+/**
+ * Half-sweep of the small arcs at V (clamped to a fraction of the angle
+ * AVB so the arcs near VA and VB never overlap with the bisector
+ * direction).
+ */
+function smallArcHalfSweep(angleAVB: number): number {
+	return Math.min(SMALL_ARC_SWEEP_RAD / 2, angleAVB * 0.4);
+}
 
 /**
  * Set up the common geometry shared by both voies : reactive A', B'
@@ -167,46 +177,78 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 		[bisDirRawYScalar, bisDirLenScalar]
 	);
 
-	// ArcV : un arc centré en V, balayant exactement l'angle AVB. Beaucoup
-	// plus économe qu'un cercle entier pour trouver A' et B'. L'arc va de
-	// `bisectorAngle − θ/2` à `bisectorAngle + θ/2` (sweep total = θ, l'angle
-	// AVB) et passe donc par les directions VA et VB exactement, créant A'
-	// et B' aux extrémités de l'arc.
-	const bisectorAngleScalar = figure.createScalarExpression(
-		(vals) => Math.atan2(vals.get(bisDirYScalar) ?? 0, vals.get(bisDirXScalar) ?? 0),
-		[bisDirXScalar, bisDirYScalar]
+	// Two small arcs at V, each crossing one side of the angle. The "near
+	// VA" arc is centered on the direction (V → A), small sweep on each
+	// side. Same for the "near VB" arc. Each arc creates one intersection
+	// point with its respective side : A' (on VA) and B' (on VB).
+	// Sweep is clamped to a fraction of the angle AVB so the two arcs
+	// never overlap (they stay close to their respective sides).
+	const angleVAScalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(Ays) ?? 0) - (vals.get(Vy) ?? 0),
+				(vals.get(Axs) ?? 0) - (vals.get(Vx) ?? 0)
+			),
+		[Vx, Vy, Axs, Ays]
 	);
-	const halfAngleAVBScalar = figure.createScalarExpression(
+	const angleVBScalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(Bys) ?? 0) - (vals.get(Vy) ?? 0),
+				(vals.get(Bxs) ?? 0) - (vals.get(Vx) ?? 0)
+			),
+		[Vx, Vy, Bxs, Bys]
+	);
+	const angleAVBScalar = figure.createScalarExpression(
 		(vals) => {
 			const dva = vals.get(dVAScalar) ?? 1;
 			const dvb = vals.get(dVBScalar) ?? 1;
 			const vx = vals.get(Vx) ?? 0;
 			const vy = vals.get(Vy) ?? 0;
-			const vax = (vals.get(Axs) ?? 0) - vx;
-			const vay = (vals.get(Ays) ?? 0) - vy;
-			const vbx = (vals.get(Bxs) ?? 0) - vx;
-			const vby = (vals.get(Bys) ?? 0) - vy;
-			const dot = vax * vbx + vay * vby;
+			const dot =
+				((vals.get(Axs) ?? 0) - vx) * ((vals.get(Bxs) ?? 0) - vx) +
+				((vals.get(Ays) ?? 0) - vy) * ((vals.get(Bys) ?? 0) - vy);
 			const cosAngle = dot / Math.max(dva * dvb, 1e-12);
-			return Math.acos(Math.max(-1, Math.min(1, cosAngle))) / 2;
+			return Math.acos(Math.max(-1, Math.min(1, cosAngle)));
 		},
 		[Vx, Vy, Axs, Ays, Bxs, Bys, dVAScalar, dVBScalar]
 	);
-	const arcVStartScalar = figure.createScalarExpression(
-		(vals) => (vals.get(bisectorAngleScalar) ?? 0) - (vals.get(halfAngleAVBScalar) ?? 0),
-		[bisectorAngleScalar, halfAngleAVBScalar]
+	const halfSweepScalar = figure.createScalarExpression(
+		(vals) => smallArcHalfSweep(vals.get(angleAVBScalar) ?? 0),
+		[angleAVBScalar]
 	);
-	const arcVEndScalar = figure.createScalarExpression(
-		(vals) => (vals.get(bisectorAngleScalar) ?? 0) + (vals.get(halfAngleAVBScalar) ?? 0),
-		[bisectorAngleScalar, halfAngleAVBScalar]
+
+	const arcNearAStartScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleVAScalar) ?? 0) - (vals.get(halfSweepScalar) ?? 0),
+		[angleVAScalar, halfSweepScalar]
 	);
-	const arcV = figure.createArcByAngles(
+	const arcNearAEndScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleVAScalar) ?? 0) + (vals.get(halfSweepScalar) ?? 0),
+		[angleVAScalar, halfSweepScalar]
+	);
+	const arcNearBStartScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleVBScalar) ?? 0) - (vals.get(halfSweepScalar) ?? 0),
+		[angleVBScalar, halfSweepScalar]
+	);
+	const arcNearBEndScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleVBScalar) ?? 0) + (vals.get(halfSweepScalar) ?? 0),
+		[angleVBScalar, halfSweepScalar]
+	);
+
+	const arcNearA = figure.createArcByAngles(
 		Vid,
 		{ scalarRef: r1Scalar },
-		{ scalarRef: arcVStartScalar },
-		{ scalarRef: arcVEndScalar }
+		{ scalarRef: arcNearAStartScalar },
+		{ scalarRef: arcNearAEndScalar }
 	);
-	figure.hideElement(arcV);
+	figure.hideElement(arcNearA);
+	const arcNearB = figure.createArcByAngles(
+		Vid,
+		{ scalarRef: r1Scalar },
+		{ scalarRef: arcNearBStartScalar },
+		{ scalarRef: arcNearBEndScalar }
+	);
+	figure.hideElement(arcNearB);
 
 	const supportScalars = [
 		Vx,
@@ -227,26 +269,33 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 		bisDirLenScalar,
 		bisDirXScalar,
 		bisDirYScalar,
-		bisectorAngleScalar,
-		halfAngleAVBScalar,
-		arcVStartScalar,
-		arcVEndScalar
+		angleVAScalar,
+		angleVBScalar,
+		angleAVBScalar,
+		halfSweepScalar,
+		arcNearAStartScalar,
+		arcNearAEndScalar,
+		arcNearBStartScalar,
+		arcNearBEndScalar
 	];
 
-	// Initial values for SS1 instrument positioning (arc V).
+	// Initial values for the 2 small arcs at V (SS1, SS2).
+	const angleVA_0 = Math.atan2(VAy, VAx);
+	const angleVB_0 = Math.atan2(VBy, VBx);
 	const angleAVB_0 = Math.acos(
 		Math.max(-1, Math.min(1, (VAx * VBx + VAy * VBy) / Math.max(dVA0 * dVB0, 1e-12)))
 	);
-	const halfAngleAVB_0 = angleAVB_0 / 2;
-	const bisectorAngle_0 = Math.atan2(bisDirY0, bisDirX0);
-	const arcVStart_0 = bisectorAngle_0 - halfAngleAVB_0;
-	const arcVLength_0 = r1_0 * angleAVB_0;
+	const halfSweep_0 = smallArcHalfSweep(angleAVB_0);
+	const arcNearAStart_0 = angleVA_0 - halfSweep_0;
+	const arcNearBStart_0 = angleVB_0 - halfSweep_0;
+	const smallArcLength_0 = r1_0 * 2 * halfSweep_0;
 
 	return {
 		// Reactive elements
 		Aprime,
 		Bprime,
-		arcV,
+		arcNearA,
+		arcNearB,
 		// Reactive scalars (for downstream use + hidden support).
 		Vx,
 		Vy,
@@ -273,8 +322,9 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 		BpY0,
 		bisDirX0,
 		bisDirY0,
-		arcVStart_0,
-		arcVLength_0
+		arcNearAStart_0,
+		arcNearBStart_0,
+		smallArcLength_0
 	};
 }
 
@@ -391,7 +441,8 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	const {
 		Aprime,
 		Bprime,
-		arcV,
+		arcNearA,
+		arcNearB,
 		V,
 		r1_0,
 		ApX0,
@@ -400,8 +451,9 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		BpY0,
 		bisDirX0,
 		bisDirY0,
-		arcVStart_0,
-		arcVLength_0,
+		arcNearAStart_0,
+		arcNearBStart_0,
+		smallArcLength_0,
 		ApxScalar,
 		ApyScalar,
 		BpxScalar,
@@ -525,29 +577,40 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	void bisDirY0;
 
 	const subSteps: SubStep[] = [
-		// SS1 : compass at V traces an arc spanning the angle AVB exactly
-		// (so A' and B' are produced at the two arc endpoints).
+		// SS1 : compass at V, small arc near (VA) — intersects (VA) at A'.
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
-			instrumentTarget: { x: V.x, y: V.y, rotation: (arcVStart_0 * 180) / Math.PI },
+			instrumentTarget: { x: V.x, y: V.y, rotation: (arcNearAStart_0 * 180) / Math.PI },
 			compassRadius: r1_0,
-			geometricDistance: arcVLength_0,
-			animateDrawableIds: [arcV],
+			geometricDistance: smallArcLength_0,
+			animateDrawableIds: [arcNearA],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en V, on trace un arc entre les deux côtés'
+			instruction: 'Compas en V, petit arc qui coupe (VA)'
 		},
-		// SS2 : A' and B' fade-in (intersections of arcV with (VA), (VB)).
+		// SS2 : compass stays at V, small arc near (VB) — intersects (VB) at B'.
+		{
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: { x: V.x, y: V.y, rotation: (arcNearBStart_0 * 180) / Math.PI },
+			compassRadius: r1_0,
+			geometricDistance: smallArcLength_0,
+			animateDrawableIds: [arcNearB],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'Compas en V (même ouverture), petit arc qui coupe (VB)'
+		},
+		// SS3 : A' and B' fade-in.
 		{
 			kind: 'point-fade-in',
 			geometricDistance: 0,
 			animateDrawableIds: [],
 			animatePointIds: [Aprime, Bprime],
 			animateLineIds: [],
-			instruction: "L'arc coupe les côtés en A' et B'"
+			instruction: "Les arcs coupent les côtés en A' et B'"
 		},
-		// SS3 : compass at A' traces an arc.
+		// SS4 : compass at A' traces an arc.
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
@@ -559,7 +622,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateLineIds: [],
 			instruction: "Compas en A', on trace l'arc"
 		},
-		// SS4 : compass at B' traces an arc.
+		// SS5 : compass at B' traces an arc.
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
@@ -571,7 +634,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateLineIds: [],
 			instruction: "Compas en B', on trace l'arc"
 		},
-		// SS5 : P fade-in (intersection of arcs, on the bisector).
+		// SS6 : P fade-in (intersection of arcs, on the bisector).
 		{
 			kind: 'point-fade-in',
 			geometricDistance: 0,
@@ -580,7 +643,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateLineIds: [],
 			instruction: 'Les arcs se coupent en P'
 		},
-		// SS6 : ruler + pencil trace the bisector.
+		// SS7 : ruler + pencil trace the bisector.
 		rulerStep.subStep
 	];
 
@@ -589,10 +652,10 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		produced: {
 			principal: principalId,
 			charnieres: [P],
-			// arcV and the 2 arcs are pedagogically valuable (compass
-			// gestures). A' and B' are construction points — per the spec
-			// they are traces (visible in `@complet`, hidden in `@squelette`).
-			traces: [arcV, arcAtAprime, arcAtBprime, Aprime, Bprime],
+			// The 4 arcs (2 small at V, 2 large at A'/B') are pedagogically
+			// valuable (compass gestures). A' and B' are construction points
+			// — per the spec they are traces (visible in `@complet`).
+			traces: [arcNearA, arcNearB, arcAtAprime, arcAtBprime, Aprime, Bprime],
 			hiddenSupport: [
 				...rulerStep.supportIds,
 				dApBpScalar,
@@ -629,15 +692,17 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	const {
 		Aprime,
 		Bprime,
-		arcV,
+		arcNearA,
+		arcNearB,
 		V,
 		r1_0,
 		ApX0,
 		ApY0,
 		BpX0,
 		BpY0,
-		arcVStart_0,
-		arcVLength_0,
+		arcNearAStart_0,
+		arcNearBStart_0,
+		smallArcLength_0,
 		Vx,
 		Vy,
 		supportScalars
@@ -673,28 +738,40 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	);
 
 	const subSteps: SubStep[] = [
-		// SS1 : compass at V traces an arc spanning the angle AVB.
+		// SS1 : compass at V, small arc near (VA).
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
-			instrumentTarget: { x: V.x, y: V.y, rotation: (arcVStart_0 * 180) / Math.PI },
+			instrumentTarget: { x: V.x, y: V.y, rotation: (arcNearAStart_0 * 180) / Math.PI },
 			compassRadius: r1_0,
-			geometricDistance: arcVLength_0,
-			animateDrawableIds: [arcV],
+			geometricDistance: smallArcLength_0,
+			animateDrawableIds: [arcNearA],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en V, on trace un arc entre les deux côtés'
+			instruction: 'Compas en V, petit arc qui coupe (VA)'
 		},
-		// SS2 : A' and B' fade-in.
+		// SS2 : compass stays at V, small arc near (VB).
+		{
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: { x: V.x, y: V.y, rotation: (arcNearBStart_0 * 180) / Math.PI },
+			compassRadius: r1_0,
+			geometricDistance: smallArcLength_0,
+			animateDrawableIds: [arcNearB],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'Compas en V (même ouverture), petit arc qui coupe (VB)'
+		},
+		// SS3 : A' and B' fade-in.
 		{
 			kind: 'point-fade-in',
 			geometricDistance: 0,
 			animateDrawableIds: [],
 			animatePointIds: [Aprime, Bprime],
 			animateLineIds: [],
-			instruction: "L'arc coupe les côtés en A' et B'"
+			instruction: "Les arcs coupent les côtés en A' et B'"
 		},
-		// SS3 : M fade-in (midpoint of A'B').
+		// SS4 : M fade-in (midpoint of A'B').
 		{
 			kind: 'point-fade-in',
 			geometricDistance: 0,
@@ -712,8 +789,8 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		produced: {
 			principal: principalId,
 			charnieres: [M],
-			// arcV : pedagogically valuable. A' B' : construction traces.
-			traces: [arcV, Aprime, Bprime],
+			// 2 small arcs at V : pedagogically valuable. A' B' : construction traces.
+			traces: [arcNearA, arcNearB, Aprime, Bprime],
 			hiddenSupport: [...rulerStep.supportIds, MxScalar, MyScalar, VMScalar, ...supportScalars]
 		}
 	};
