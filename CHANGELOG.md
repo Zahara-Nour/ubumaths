@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.4](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.3...v0.9.4) (2026-05-20)
+
+### 📚 Documentation
+
+- **constructions-v2:** met a jour animation-progress (phase 4 fix instruments resolu) ([57b6db3](https://github.com/Zahara-Nour/ubumaths/commit/57b6db38756b20968a46442a70d0fe6a08ed3868))
+- **wip:** audit cleanup docs/wip 2026-05-20 ([087942a](https://github.com/Zahara-Nour/ubumaths/commit/087942a703b7561b1ff41f6e17faf766590c31da))
+- **wip:** prompt audit cleanup docs/wip ([c18038f](https://github.com/Zahara-Nour/ubumaths/commit/c18038fe26df328cead733a0a5b31c6755575c1e))
+
 ### [0.9.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.2...v0.9.3) (2026-05-20)
 
 ### ✨ Features
