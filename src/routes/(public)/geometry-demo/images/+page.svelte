@@ -12,7 +12,8 @@ image("/game/monsters/dragon_tete.png", -0.5, 1.5, largeur=3)`;
 	const anchoredDsl = `A = point(0, 0, couleur="rouge")
 B = point(4, 2, couleur="bleu")
 segment(A, B)
-mesure(A, B)
+d = distance(A, B)
+texte(2, 1.5, "AB = {d:.2f}")
 image("/game/monsters/griffon_tete.png", A, largeur=2, dx=0.5, dy=0.5)
 image("/game/monsters/lion_tete.png", B, largeur=2, dx=0.5, dy=0.5)`;
 
@@ -42,7 +43,8 @@ texte(P, "P", dx=0.5, dy=-0.5)`;
 A = point(-3, -1, couleur="rouge")
 B = point(3, 1, couleur="rouge")
 segment(A, B, couleur="jaune", epaisseur=3)
-mesure(A, B)
+d = distance(A, B)
+texte(0, 0.5, "{d:.2f}", couleur="jaune")
 C = point(0, 3, couleur="vert")
 segment(A, C, couleur="jaune", epaisseur=3)
 segment(B, C, couleur="jaune", epaisseur=3)`;
