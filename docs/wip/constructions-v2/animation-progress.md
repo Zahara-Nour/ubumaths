@@ -1,34 +1,47 @@
 # Animation drawProgress — Progression
 
-## Statut : Implementation complete, needs visual testing
+## Statut : ✅ COMPLET (Phase 3 + 4 livrées, prompt fix instruments résolu)
 
-## Ce qui a ete fait
+> Dernière mise à jour : 2026-05-20. Le document précédent était obsolète d'environ 1 mois ; vérification du code source effectuée pour mettre à jour le statut.
 
-### Phase 3a : Infrastructure
+## Phase 3 — Infrastructure draw progress (commit `65b634fce`, 2026-04-25)
 
-- `types.ts` : Ajoute `DrawAnimationState` interface et `DRAWABLE_TYPES` set
-- `executor.ts` : Ajoute `lastStepNewElementIds` tracking (IDs des segments/arcs/circles crees a chaque step)
-- `render-helpers.ts` : NOUVEAU fichier — helpers purs pour rendu partiel (segment, arc, circle, pencil tip)
-- `GeometryCanvas.svelte` : Ajoute prop `hiddenElementIds` pour filtrer les elements pendant l'animation
+### 3a. Infrastructure
 
-### Phase 3b : Wiring
+- `types.ts` : `DrawAnimationState` interface + `DRAWABLE_TYPES` set
+- `executor.ts` : `lastStepNewElementIds` tracking (IDs des segments/arcs/circles créés à chaque step)
+- `render-helpers.ts` : helpers purs pour rendu partiel (segment, arc, circle, pencil tip)
+- `GeometryCanvas.svelte` : prop `hiddenElementIds` pour filtrer les éléments pendant l'animation
 
-- `ConstructionPlayer.svelte` : Orchestre l'animation ��� track animatingIds, derive DrawAnimationState depuis stepProgress
-- `ConstructionCanvas.svelte` : Overlay SVG pour elements partiels + pencil tracking
+### 3b. Wiring
 
-### Phase 3c : Tests
+- `ConstructionPlayer.svelte` : orchestration — `animatingIds`, `DrawAnimationState` dérivé du `stepProgress`
+- `ConstructionCanvas.svelte` : overlay SVG pour éléments partiels + pencil tracking
 
-- `render-helpers.test.ts` : 15 tests unitaires couvrant segment/arc/circle partiel + pencil tip
-- 113 tests total (98 existants + 15 nouveaux) — tous passent
-- ESLint + check:incremental : 0 erreur
-- Svelte autofixer : 0 issue
+### 3c. Tests
 
-## Fichiers modifies
+- `render-helpers.test.ts` : 15 tests unitaires (segment/arc/circle partiel + pencil tip)
+- `pnpm test:server src/lib/constructions-v2/` : 172 tests verts au 2026-05-20
+
+## Phase 4 — Fix instruments (résolu dans des commits postérieurs à `65b634fce`)
+
+Le prompt `prompt-fix-instrument-animation.md` listait Bug 1 (« la règle ne se déplace pas à la même vitesse entre deux segments »). **Ce bug est corrigé** :
+
+- `executor.ts:119` : nouveau champ `_lastInstrumentPositions: Map<InstrumentType, {x, y, rotation}>` indépendant de `visible`
+- `executor.ts:760` (`recordMove`) : lit depuis `_lastInstrumentPositions` au lieu de `current.visible`
+- Fallback `(-8, 6)` utilisé uniquement à la première apparition de l'instrument
+- `calculateStepDurations` et `autoShowInstruments` cohérents (utilisent le même tracker)
+
+Bug 2 du prompt (« easing pas pris en compte ») était explicitement marqué « PAS un bug » dans le prompt même.
+
+Le prompt a été **supprimé** (devenu obsolète).
+
+## Fichiers concernés
 
 1. `src/lib/constructions-v2/types.ts`
-2. `src/lib/constructions-v2/core/executor.ts`
-3. `src/lib/constructions-v2/core/render-helpers.ts` (NEW)
-4. `src/lib/constructions-v2/core/__tests__/render-helpers.test.ts` (NEW)
+2. `src/lib/constructions-v2/core/executor.ts` (notamment `_lastInstrumentPositions`, `recordMove`, `calculateStepDurations`, `autoShowInstruments`)
+3. `src/lib/constructions-v2/core/render-helpers.ts`
+4. `src/lib/constructions-v2/core/__tests__/render-helpers.test.ts`
 5. `src/lib/constructions-v2/components/ConstructionPlayer.svelte`
 6. `src/lib/constructions-v2/components/ConstructionCanvas.svelte`
 7. `src/lib/components/geometry/GeometryCanvas.svelte`
@@ -37,17 +50,23 @@
 
 ```
 Timeline (RAF, stepProgress 0-1)
-    |
-ConstructionPlayer (animatingIds + drawProgress)
-    |
+    │
+ConstructionPlayer (animatingIds + drawProgress + autoInstruments)
+    │
 ConstructionCanvas
-    ├── GeometryCanvas: renders all elements EXCEPT those being animated
-    ��── SVG overlay: renders animating elements partially + pencil tracking
+    ├── GeometryCanvas : rend tous les éléments SAUF ceux en cours d'animation
+    └── SVG overlay : rend les éléments animés partiellement + pencil tracking + instruments
 ```
 
-## Prochaines etapes
+## Comportement vérifié
 
-- [ ] Test visuel sur /construction-demo
-- [ ] Duree basee sur la distance (MS_PER_PIXEL \* distance) au lieu de 500ms fixe
-- [ ] Animation 3D compas (raise/lower) pour les arcs
-- [ ] Commit
+- Tracé progressif segments/arcs/cercles avec `drawProgress 0→1` et easing
+- Crayon suit le tracé avec rotation -45°
+- Points apparaissent avec effet fade+bump
+- Durée proportionnelle à la distance (`MS_PER_PIXEL * PPU * distance_math`), clampée
+- Seek/scrub fonctionne
+- Boutons step forward/backward fonctionnent
+- `seekToEnd` affiche la figure finale sans instruments
+- Règle/compas glissent depuis leur dernière position (Bug 1 fixé)
+- Compass raise/lower 3D pour arcs
+- Durée mouvement instruments basée sur distance (pas durée fixe)
