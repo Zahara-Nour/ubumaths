@@ -1,6 +1,7 @@
 # V1 chorégraphies — Phase 4 sub-steps : MVP `mediatrice @euclide`
 
-> Session : 2026-05-19
+> Session initiale : 2026-05-19 — refactor pipeline + chorégraphie + tests
+> Session de polish visuel : 2026-05-20 — corrections suite au test manuel dans `/construction-demo`
 > Plan : `/Users/david/.claude/plans/elegant-meandering-dragonfly.md`
 > Phase reprise après revert `379119eab` de la session précédente.
 
@@ -11,9 +12,12 @@
 | Phase A — Refactor pipeline sub-steps                                 | ✓ livrée | +0 (refactor only) |
 | Phase B — MVP `mediatrice @euclide @arcs_egaux` + `@cercles_rayon_ab` | ✓ livrée | +5                 |
 | Phase C — Visibilité finale (`@squelette`/`@epure`/`@complet`)        | ✓ livrée | +6                 |
-| Phase D — Quality + docs + commit final                               | en cours | —                  |
+| Phase D — Quality + docs + commit final                               | ✓ livrée | —                  |
+| Phase E — Polish visuel (post-test manuel)                            | ✓ livrée | —                  |
 
 **Suite complète constructions-v2** : 155/155 verts (vs 144 avant cette session). 0 régression sur les 144 tests existants.
+
+**Validation visuelle dans `/construction-demo`** : ✓ confirmée par l'utilisateur après les corrections de Phase E.
 
 ## Architecture livrée
 
@@ -138,16 +142,55 @@ Wiring executor (3 tests) : 4. `mediatrice @euclide` (defaut squelette) après `
 | `src/lib/constructions-v2/core/__tests__/choreographies-integration.test.ts` | B     | edit (remplace test "stubs" par 5 tests Phase 4 sub-steps)                                                                                                             |
 | `src/lib/constructions-v2/core/__tests__/visibility.test.ts`                 | C     | new (6 tests visibilité)                                                                                                                                               |
 | `docs/wip/v1-choreographies-substeps-progress.md`                            | D     | new (ce fichier)                                                                                                                                                       |
+| `src/lib/constructions-v2/components/ConstructionCanvas.svelte`              | E     | edit (fix bug `PPU` undefined dans `compassOpeningPx`)                                                                                                                 |
+| `src/lib/constructions-v2/components/ConstructionPlayer.svelte`              | E     | edit (drain `applyFinalVisibility` à la fin du timeline / au scrub / au seekToEnd)                                                                                     |
 
-## Validation visuelle (à confirmer manuellement)
+## Phase E — Polish visuel (post-test manuel, 2026-05-20)
 
-**Pas encore exécutée dans cette session** — la commande recommandée :
+Après livraison des Phases A-D et test manuel par l'utilisateur dans `/construction-demo`, plusieurs bugs visuels ont été détectés et corrigés :
 
-```bash
-pnpm dev -- --port 5175
-```
+### 1. Bug latent `PPU is not defined` (`a95daa2be`)
 
-Puis ouvrir `http://localhost:5175/construction-demo` et coller :
+`ConstructionCanvas.svelte` utilisait la variable `PPU` (non définie) dans la dérivée `compassOpeningPx`. Bug latent qui ne se manifestait pas tant que les anciennes voies V1 étaient des stubs (n'invoquaient pas le compas). La nouvelle chorégraphie `mediatrice @euclide @arcs_egaux` invoque le compas, exposant l'exception et :
+
+- empêchant le rendu du compas (l'overlay `<g>` n'était jamais émis car la dérivée throw avant) ;
+- gelant le slider de la timeline (l'exception interrompt le pipeline de rendu Svelte pendant l'animation des arcs) ;
+- créant l'illusion d'un saut "2/6 → 5/6" car le slider ne reprenait que sur les étapes sans compas.
+
+Fix : remplacer `PPU` par `pixelsPerUnit` (la `$state` réactive du viewport).
+
+### 2. Ligne `d` visible avant le tracé (`07aac16f4`)
+
+La droite principale créée par le builtin `mediatrice` restait visible pendant SS1–SS3, masquant l'effet "construction progressive". Fix : la chorégraphie appelle `figure.hideElement(principalId)` en début, et la ligne n'est révélée qu'à la fin de SS4 par `applyFinalVisibility`.
+
+### 3. Position de la règle (`07aac16f4` + `fd739521a`)
+
+- Premier fix : règle au point I1 (extrémité) au lieu du milieu du segment, suivant la convention de `rulerPosition` (`instruments/positioning.ts`).
+- Deuxième fix : centrage du segment-trace sur le midpoint de I1/I2, longueur fixée à 15 unités math (= longueur par défaut du composant `Ruler`). La règle posée à `Iext1` (extrémité du segment) encadre maintenant exactement le tracé visuel. Sur un canvas par défaut, le segment couvre toute la portion visible de la médiatrice.
+
+### 4. Rotation post-tracé du compas (`07aac16f4`)
+
+`_lastInstrumentPositions` stockait l'angle de DÉBUT du compas au lieu de l'angle de FIN (après le sweep de l'arc). Conséquence : le déplacement du compas entre SS1 et SS2 partait d'un mauvais angle. Maintenant `endRotation = rotation + sweepDeg` est tracké pour les `compass-draw`, comme `autoShowInstruments` legacy.
+
+### 5. Segment-trace = surrogate visuel de la ligne (`da452898f`)
+
+Le segment-trace I1→I2 court ne correspondait pas visuellement à la droite finale (qui s'étend au viewport). La ligne `d` bumpait dès le début de SS4 (le fade-in démarre à `stepProgress=0`, donc pendant le move phase de la règle).
+
+Fix :
+
+- Le segment-trace est étendu pour couvrir 15 unités math (visible portion du viewport par défaut).
+- `principalId` retiré de `animateLineIds` → la ligne reste cachée pendant SS4.
+- `applyFinalVisibility` révèle la ligne à la fin du dernier sub-step ; le swap segment→ligne est imperceptible car les deux sont géométriquement alignés et de même style.
+
+### 6. Drain auto de la visibilité en fin de timeline (`da452898f`)
+
+`_pendingVisibility` se drainait uniquement au `step()` suivant. En autoplay ou scrub vers la fin, plus aucun `step()` n'était appelé donc la ligne ne se révélait jamais. Drain ajouté dans 3 endroits du `ConstructionPlayer` :
+
+- `handleTimelineUpdate` : détecte la transition play→stop à progress=1.
+- `handleScrub(1)` : drain explicite quand on scrub à la fin.
+- `seekToEnd` au load : drain après le `scrubByProgress(1)`.
+
+### Script de validation utilisé
 
 ```dsl
 A = point(-3, 0)
@@ -155,21 +198,19 @@ B = point(3, 0)
 d = mediatrice(A, B) @euclide
 ```
 
-Comportement attendu :
+Comportement attendu (✓ confirmé visuellement) :
 
-1. Slider affiche **6 steps** (2 pour A/B + 4 sub-steps pour la médiatrice).
-2. Step 3 : compas se positionne en A (rotation = angleAB-60°), trace l'arc 1 (120°).
-3. Step 4 : compas se déplace vers B, trace l'arc 2 (120°).
-4. Step 5 : les 2 points d'intersection apparaissent (fade-in + bump).
-5. Step 6 : règle + crayon se positionnent sur (I1, I2), le segment-trace I1→I2 se dessine, la ligne `d` fade-in.
-6. Après step 6 + 1 step supplémentaire (ou drag du slider) : arcs et segment-trace disparaissent (visibilité finale `@squelette`).
+1. Slider affiche **6 étapes** (A, B, SS1, SS2, SS3, SS4) avec durées proportionnelles.
+2. SS1 : compas se positionne en A (rotation = angleAB−60°), trace l'arc 1 (120°).
+3. SS2 : compas se déplace vers B, trace l'arc 2.
+4. SS3 : les 2 points d'intersection apparaissent (fade-in + bump).
+5. SS4 : règle + crayon se positionnent et tracent un segment couvrant la portion visible de la droite ; la ligne `d` apparaît à la fin (révélée par `applyFinalVisibility`).
+6. Visibilité finale : arcs + segment-trace cachés en `@squelette` (défaut), tout caché sauf `d` en `@epure`, tout visible avec traces dashed/opacité réduite en `@complet`.
 
-Variantes à tester :
+Variantes confirmées :
 
-- `@euclide @epure` : tout disparaît sauf la ligne `d`.
-- `@euclide @complet` : tout reste visible, arcs en `dashed` opacité 0.4.
-- `@euclide @cercles_rayon_ab` : rayon = |AB|, arcs plus longs ; sinon comportement identique.
-- Drag de A ou B après animation : arcs (si visibles) suivent grâce à `createScalarDistance`.
+- `@euclide @cercles_rayon_ab` : rayon = |AB|, sinon identique.
+- Drag de A ou B après animation : rayon et droite réactifs ; angles des arcs et segment-trace non réactifs (limitation V1, voir ci-dessous).
 
 ## Limitations connues V1 MVP
 
@@ -186,13 +227,24 @@ Variantes à tester :
 - (V1.1) Rendre les angles des arcs réactifs via `createScalarExpression` sur des direction-scalars.
 - Phase 6 plan original : documentation auto-générée à partir du registre.
 
-## Acceptance criteria (mis à jour)
+## Acceptance criteria (final)
 
 - [x] Plan rédigé et approuvé.
 - [x] Phase A : refactor pipeline sub-steps + tests passent, 0 régression sur tests existants.
 - [x] Phase B : `mediatrice @euclide @arcs_egaux` + `@cercles_rayon_ab` fonctionnent au niveau test (155/155 verts).
 - [x] Phase C : 3 visibilités (`@squelette`, `@epure`, `@complet`) couvertes par tests.
-- [ ] Phase D : doc de progression à jour (en cours), ESLint clean, `pnpm check:incremental` stable, commit final.
+- [x] Phase D : doc de progression à jour, ESLint clean, `pnpm check:incremental` stable, commit final.
+- [x] Phase E : polish visuel post-test manuel (PPU fix, ruler centering, line reveal timing).
 - [x] Aucune modification de `geometry-core/`.
 - [x] Aucune régression sur les 144 tests constructions-v2 existants.
-- [ ] **Validation visuelle dans `/construction-demo`** : à confirmer manuellement par l'utilisateur.
+- [x] **Validation visuelle dans `/construction-demo`** : ✓ confirmée par l'utilisateur.
+
+## Commits livrés
+
+| Commit      | Description                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------ |
+| `3c7aa285f` | feat — sub-steps mechanism + mediatrice @euclide MVP (Phases A+B+C+D)                                  |
+| `07aac16f4` | fix — masquage initial de `d`, règle au point I1, rotation post-tracé du compas                        |
+| `a95daa2be` | fix — `PPU` undefined dans `compassOpeningPx` (bug latent qui bloquait compas + gel slider)            |
+| `da452898f` | fix — segment-trace étendu pour couvrir la portion visible de la ligne + drain visibility en fin de TL |
+| `fd739521a` | fix — centrage du segment-trace sur midpoint I1/I2, longueur alignée avec le composant Ruler           |
