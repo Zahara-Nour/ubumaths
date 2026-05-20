@@ -47,6 +47,10 @@ export { formatAngleLabel, unsignedAngleBetween } from './angle-label';
 // Bisector direction helper (shared across SVG / TikZ / Typst renderers).
 export { computeBisectorDirection } from './bisector-direction';
 
+// Shared clipping helpers for math-coords exporters (TikZ, Typst, ...)
+export type { LineEndpoints } from './viewport-clipping';
+export { extendLineToViewport, extendRayToViewport } from './viewport-clipping';
+
 // Rough.js rendering
 export {
 	seedFromId,
