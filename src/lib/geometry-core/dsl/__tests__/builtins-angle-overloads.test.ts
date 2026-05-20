@@ -158,6 +158,24 @@ describe('angle(u, v) — 2 vectors overload (semantic)', () => {
 		expect(aEl.vertexId).toBe(oSym.figureId);
 	});
 
+	it('B-V2-1 regression: angle(u, v) when u and v share both endpoints → mesure = 0 (degenerate)', () => {
+		// 2 distinct vectors aligned on same support points. Previously fell
+		// through Cas B → silent mesure=undefined. Now routed to degenerate.
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(3, 4)',
+				'u = vecteur(O, A)',
+				'v = vecteur(O, A)', // distinct id but same support
+				'a = angle(u, v)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const value = r.figure.getScalarValue(sym(r, 'm')!.figureId!);
+		expect(value).toBeDefined();
+		expect(value).toBeCloseTo(0, 6);
+	});
+
 	it('angle(u, v) bound vectors NOT sharing common origin builds synthetic vertex', () => {
 		const r = run(
 			[
