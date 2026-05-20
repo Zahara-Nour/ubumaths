@@ -6,12 +6,14 @@
 
 ## Statut
 
-| Phase                            | Statut     |
-| -------------------------------- | ---------- |
-| P0 — Spec TDD + tests rouges     | ✅ livrée  |
-| P1 — `transporte.ts` (cœur)      | ✅ livrée  |
-| P2 — Registry + activation tests | ⚪ à faire |
-| P3 — Tests intégration + doc     | ⚪ à faire |
+| Phase                            | Statut    |
+| -------------------------------- | --------- |
+| P0 — Spec TDD + tests rouges     | ✅ livrée |
+| P1 — `transporte.ts` (cœur)      | ✅ livrée |
+| P2 — Registry + activation tests | ✅ livrée |
+| P3 — Tests intégration + doc     | ✅ livrée |
+
+**Statut global : A1 LIVRÉ** (29 tests verts dont 6 nouveaux transporte). Pas de release ni push.
 
 ## P1 — résumé livraison
 
