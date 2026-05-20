@@ -14,7 +14,7 @@ import {
 	isCircleByRadius,
 	isCircleByPoint,
 	isCircleBy3Points,
-	isAngleMark,
+	isAngle,
 	isSegmentMark,
 	isText,
 	isMathText,
@@ -24,7 +24,7 @@ import {
 	isArcByPoints,
 	isTransformation,
 	type GeoElementBase,
-	type GeoAngleMark,
+	type GeoAngle,
 	type GeoSegmentMark,
 	type GeoText,
 	type GeoMathText,
@@ -41,6 +41,7 @@ import {
 	isVector
 } from '../types/elements';
 import { computeImageVisualTransform } from '../dsl/transform-apply';
+import { formatAngleLabel } from './angle-label';
 
 // =============================================================================
 // Style resolution
@@ -721,46 +722,72 @@ export function annulusToSVG(
 }
 
 // =============================================================================
-// Angle mark rendering
+// Angle rendering (first-class GeoAngle)
 // =============================================================================
 
-const ARC_RADIUS_PX = 25;
+const ARC_RADIUS_PX_DEFAULT = 25;
 const ARC_SPACING_PX = 6;
 const RIGHT_ANGLE_SIZE_PX = 14;
+const LABEL_OFFSET_PX = 12;
 
-export interface AngleMarkSVG {
-	/** SVG path strings for the arc(s) or right-angle square. */
+/**
+ * Geometric data produced for a GeoAngle by `angleToSVG`. Consumed by:
+ *   - SVG export pass for `<path>` emission
+ *   - Canvas component (`GeometryCanvas.svelte`)
+ *   - Rough variant (`rough-geometry.ts` → `roughAngle`)
+ *
+ * For `marque === 'aucune'` the paths array is empty but the label
+ * coordinates remain available.
+ */
+export interface AngleSVG {
+	/** SVG path strings for the arc(s) or right-angle square. Empty when marque='aucune'. */
 	paths: string[];
 	/** Vertex position in SVG coordinates. */
 	vx: number;
 	vy: number;
+	/** Label text, or null if showLabel='aucun' or measure undefined and required. */
+	label: string | null;
+	/** Label center position in SVG coordinates (along the bisector). */
+	labelX: number;
+	labelY: number;
 }
 
 /**
- * Convert an angle mark element to SVG paths.
+ * Convert a `GeoAngle` element to renderable SVG paths.
  *
- * Returns arc path(s) (or a right-angle square) centered at the vertex.
- * Arc radius is fixed in pixels (not math units).
+ * Returns:
+ *   - arc(s) for `marque='arc'|'arcs2'|'arcs3'` (1/2/3 concentric arcs)
+ *   - a small square at the vertex for `marque='carre'`
+ *   - an empty paths array for `marque='aucune'` (label-only rendering)
+ *
+ * `kind='rentrant'` traverses the exterior sector (sweepFlag flipped).
+ * Arc radius defaults to 25px and can be overridden via `angle.arcRadiusPx`.
+ *
+ * Label is built from `angle.showLabel` and `angle.unite` via `formatAngleLabel`.
+ * The caller is expected to look up the measure from
+ * `figure.getScalarValue(angle.measureScalarId)` and pass it via the public
+ * `angleToSVG()` signature.
+ *
+ * Returns null on degenerate input (vertex equal to a side endpoint).
  */
-export function angleMarkToSVG(
+export function angleToSVG(
 	id: string,
 	figure: Figure,
 	transformer: CoordinateTransformer
-): AngleMarkSVG | null {
+): AngleSVG | null {
 	const el = figure.getElementById(id);
-	if (!el || !isAngleMark(el)) return null;
+	if (!el || !isAngle(el)) return null;
 
-	const mark = el as GeoAngleMark;
-	const posP1 = figure.getPosition(mark.p1Id);
-	const posV = figure.getPosition(mark.vertexId);
-	const posP2 = figure.getPosition(mark.p2Id);
+	const angle: GeoAngle = el;
+	const posP1 = figure.getPosition(angle.p1Id);
+	const posV = figure.getPosition(angle.vertexId);
+	const posP2 = figure.getPosition(angle.p2Id);
 	if (!posP1 || !posV || !posP2) return null;
 
 	const svgV = transformer.mathToSvg(geoToNumber(posV.x), geoToNumber(posV.y));
 	const svgP1 = transformer.mathToSvg(geoToNumber(posP1.x), geoToNumber(posP1.y));
 	const svgP2 = transformer.mathToSvg(geoToNumber(posP2.x), geoToNumber(posP2.y));
 
-	// Direction vectors from vertex to p1 and p2 (in SVG space)
 	const d1x = svgP1.x - svgV.x;
 	const d1y = svgP1.y - svgV.y;
 	const d2x = svgP2.x - svgV.x;
@@ -770,14 +797,48 @@ export function angleMarkToSVG(
 	const len2 = Math.sqrt(d2x * d2x + d2y * d2y);
 	if (len1 < 1e-6 || len2 < 1e-6) return null; // degenerate
 
-	// Unit vectors
 	const u1x = d1x / len1;
 	const u1y = d1y / len1;
 	const u2x = d2x / len2;
 	const u2y = d2y / len2;
 
-	if (mark.rightAngle) {
-		// Right-angle square
+	const marque = angle.marque ?? 'arc';
+	const kind = angle.kind ?? 'saillant';
+	const arcRadiusPx = angle.arcRadiusPx ?? ARC_RADIUS_PX_DEFAULT;
+
+	// Compute unsigned interior angle in math space (positions in MATH units
+	// don't suffer from y-flip; using SVG units gives same magnitude).
+	const cosTheta = Math.max(-1, Math.min(1, (d1x * d2x + d1y * d2y) / (len1 * len2)));
+	const interior = Math.acos(cosTheta); // [0, π]
+	const measureRadians = kind === 'rentrant' ? 2 * Math.PI - interior : interior;
+	const label = formatAngleLabel(angle, measureRadians);
+
+	// Bisector direction (averaged unit vectors). For `kind='rentrant'` we
+	// negate so the label sits in the exterior sector.
+	let bisX = u1x + u2x;
+	let bisY = u1y + u2y;
+	const bisLen = Math.hypot(bisX, bisY);
+	if (bisLen < 1e-6) {
+		// Sides anti-parallel (flat angle). Use the perpendicular to side 1
+		// so the label still has a stable position.
+		bisX = -u1y;
+		bisY = u1x;
+	} else {
+		bisX /= bisLen;
+		bisY /= bisLen;
+	}
+	if (kind === 'rentrant') {
+		bisX = -bisX;
+		bisY = -bisY;
+	}
+	const labelX = svgV.x + bisX * (arcRadiusPx + LABEL_OFFSET_PX);
+	const labelY = svgV.y + bisY * (arcRadiusPx + LABEL_OFFSET_PX);
+
+	if (marque === 'aucune') {
+		return { paths: [], vx: svgV.x, vy: svgV.y, label, labelX, labelY };
+	}
+
+	if (marque === 'carre') {
 		const s = RIGHT_ANGLE_SIZE_PX;
 		const cx = svgV.x + u1x * s + u2x * s;
 		const cy = svgV.y + u1y * s + u2y * s;
@@ -785,24 +846,29 @@ export function angleMarkToSVG(
 			`M ${svgV.x + u1x * s} ${svgV.y + u1y * s}` +
 			` L ${cx} ${cy}` +
 			` L ${svgV.x + u2x * s} ${svgV.y + u2y * s}`;
-		return { paths: [path], vx: svgV.x, vy: svgV.y };
+		return { paths: [path], vx: svgV.x, vy: svgV.y, label, labelX, labelY };
 	}
 
-	// Arc(s)
+	const arcCount = marque === 'arcs3' ? 3 : marque === 'arcs2' ? 2 : 1;
+
 	const angle1 = Math.atan2(d1y, d1x);
 	const angle2 = Math.atan2(d2y, d2x);
 
 	const paths: string[] = [];
-	for (let i = 0; i < mark.arcCount; i++) {
-		const r = ARC_RADIUS_PX + i * ARC_SPACING_PX;
-		paths.push(buildArcPath(svgV.x, svgV.y, r, angle1, angle2));
+	for (let i = 0; i < arcCount; i++) {
+		const r = arcRadiusPx + i * ARC_SPACING_PX;
+		paths.push(buildArcPath(svgV.x, svgV.y, r, angle1, angle2, kind));
 	}
 
-	return { paths, vx: svgV.x, vy: svgV.y };
+	return { paths, vx: svgV.x, vy: svgV.y, label, labelX, labelY };
 }
 
 /**
- * Build an SVG arc path from startAngle to endAngle (shortest arc).
+ * Build an SVG arc path from startAngle to endAngle.
+ *
+ * - `kind='saillant'` traces the shortest arc (interior sector).
+ * - `kind='rentrant'` traces the complementary arc (exterior sector, sweepFlag flipped).
+ *
  * Angles are in radians, measured from positive X axis in SVG space.
  */
 function buildArcPath(
@@ -810,13 +876,18 @@ function buildArcPath(
 	cy: number,
 	r: number,
 	startAngle: number,
-	endAngle: number
+	endAngle: number,
+	kind: 'saillant' | 'rentrant'
 ): string {
-	// Normalize the sweep to go from startAngle to endAngle via the shortest path
+	// Normalize the sweep to the shortest path in [-π, π].
 	let sweep = endAngle - startAngle;
-	// Normalize to [-PI, PI]
 	while (sweep > Math.PI) sweep -= 2 * Math.PI;
 	while (sweep < -Math.PI) sweep += 2 * Math.PI;
+
+	if (kind === 'rentrant') {
+		// Take the complementary arc (the long way around).
+		sweep = sweep > 0 ? sweep - 2 * Math.PI : sweep + 2 * Math.PI;
+	}
 
 	const sx = cx + r * Math.cos(startAngle);
 	const sy = cy + r * Math.sin(startAngle);

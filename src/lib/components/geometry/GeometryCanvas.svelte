@@ -21,7 +21,7 @@
 		circleToSVG,
 		circleToPathSVG,
 		arcToSVG,
-		angleMarkToSVG,
+		angleToSVG,
 		segmentMarkToSVG,
 		textToSVG,
 		resolveStyle,
@@ -64,7 +64,7 @@
 		roughCircleHTML,
 		roughArcHTML,
 		roughPolygonHTML,
-		roughAngleMarkHTML,
+		roughAngleHTML,
 		roughSegmentMarkHTML,
 		roughVectorHTML
 	} from '$lib/geometry-core/rendering/rough-geometry';
@@ -1718,23 +1718,23 @@
 				{/if}
 			{/each}
 
-			<!-- Angle marks (between elements and points) -->
-			{#each elements as el (`${el.id}_angm_${version}`)}
-				{#if el.type === 'angleMark'}
-					{@const svg = angleMarkToSVG(el.id, figure, transformer)}
+			<!-- Angles (first-class GeoAngle: arc / arcs2 / arcs3 / carre / aucune, sweep flips for kind='rentrant') -->
+			{#each elements as el (`${el.id}_ang_${version}`)}
+				{#if el.type === 'angle'}
+					{@const svg = angleToSVG(el.id, figure, transformer)}
 					{@const sty = resolveStyle(el, figure.defaults)}
 					{#if svg}
-						{#if isRough(sty, el.type) && rc}
+						{#if isRough(sty, el.type) && rc && svg.paths.length > 0}
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
 								{#each svg.paths as path, i (i)}
 									<path d={path} stroke="transparent" stroke-width="12" fill="none" />
 								{/each}
 								<g opacity={sty.opacity}
-									>{@html roughAngleMarkHTML(rc, svg, getRoughOpts(el.id, sty))}</g
+									>{@html roughAngleHTML(rc, svg, getRoughOpts(el.id, sty))}</g
 								>
 							</g>
-						{:else}
+						{:else if svg.paths.length > 0}
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<g ondblclick={(e) => openPopoverFor(el.id, e)}>
 								{#each svg.paths as path, i (i)}
@@ -1750,6 +1750,21 @@
 									/>
 								{/each}
 							</g>
+						{/if}
+						{#if svg.label}
+							<text
+								x={svg.labelX}
+								y={svg.labelY}
+								fill={sty.color}
+								stroke="white"
+								stroke-width="3"
+								paint-order="stroke"
+								font-size="14"
+								font-family="KaTeX_Main, serif"
+								text-anchor="middle"
+								dominant-baseline="middle"
+								class="angle-label">{svg.label}</text
+							>
 						{/if}
 					{/if}
 				{/if}
