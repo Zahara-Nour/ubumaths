@@ -2,15 +2,10 @@
 	import GeometryCanvas from '$lib/components/geometry/GeometryCanvas.svelte';
 	import DslDemo from '../DslDemo.svelte';
 	import { Figure } from '$lib/geometry-core/graph/figure';
-	import { exact, numeric } from '$lib/geometry-core/types/geo-value';
-	import { number } from '$lib/mathAST';
+	import { numeric } from '$lib/geometry-core/types/geo-value';
 	import { runDsl } from '$lib/geometry-core/dsl';
 
 	function pt(x: number, y: number) {
-		return { x: exact(number(x)), y: exact(number(y)) };
-	}
-
-	function npt(x: number, y: number) {
 		return { x: numeric(x), y: numeric(y) };
 	}
 
@@ -29,11 +24,11 @@
 	vectorFig.createVectorByPoints(vC, vD, { label: 'v', color: '#059669' });
 
 	// Free vectors (by components, draggable as a unit)
-	vectorFig.createFreeVector(numeric(3), numeric(0), npt(1, -3), {
+	vectorFig.createFreeVector(numeric(3), numeric(0), pt(1, -3), {
 		label: 'i',
 		color: '#6366f1'
 	});
-	vectorFig.createFreeVector(numeric(0), numeric(2), npt(1, -3), {
+	vectorFig.createFreeVector(numeric(0), numeric(2), pt(1, -3), {
 		label: 'j',
 		color: '#9333ea'
 	});
