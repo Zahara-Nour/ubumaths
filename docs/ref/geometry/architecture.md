@@ -544,7 +544,14 @@ GeoElement (discriminated union)
     ├── GeoMathText: LaTeX math
     ├── GeoRichText: formatted text
     ├── GeoImage: embedded image
-    ├── GeoAngle: angle arc marker (V1 — unified first-class object)
+    ├── GeoAngle: first-class angle object (V1/V2/V3a)
+    │     - V1 : angle(A, V, B) → objet visible avec arc, marque/kind/orientation/showLabel/unite/arcRadiusPx
+    │     - V2 : overloads angle(u, v), angle(seg, seg), angle(d, d), arcSpacingPx, cache mesure par unité
+    │     - V3a : transporte(α, V', dir) builtin + fill du secteur + chorégraphie bissectrice(α)
+    │     - A2 : drag réactif des overloads (TranslatedPointByVector + IntersectionLL)
+    │     - A2.x : drag réactif cas free vector (GeoFreeVectorPoint)
+    │     - A1 : chorégraphie transporte @euclide animée (Euclide I.23)
+    ├── GeoFreeVectorPoint: point dérivé d'un free vector (anchor ou end), réactif (A2.x)
     └── GeoSegmentMark: perpendicular/parallel mark
 ```
 
