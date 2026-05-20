@@ -142,6 +142,47 @@ d2 = droite(C, D)
 - **Cache `mesure(A, V, B)` (B2, V2)** — un appel `m = mesure(A, V, B)` réutilise l'angle caché créé pour le même triplet ordonné `(p1, vertex, p2)`. Deux `mesure(A, V, B)` successifs sur le même triplet renvoient donc le **même** `scalarId` (et la même `GeoAngle` interne).
 - **Sérialiseur `α → mesure(α)` (B5, V2)** — si tu écris `α = angle(A, V, B); m = mesure(α)`, le sérialiseur émet bien `m = mesure(α)` (et pas `m = mesure(A, V, B)`), préservant le lien explicite sur roundtrip. Pour `mesure(A, V, B)` direct, le fallback 3-points reste émis (l'angle caché auto-généré n'a pas de nom utilisateur).
 - **`arcSpacingPx`** — valeur strictement positive requise (`0`, valeurs négatives ou `NaN` lèvent `DslRuntimeError`). Lue par les 3 renderers (SVG, TikZ, Typst).
+- **`remplissage` du secteur (V3a)** — quand `marque ∈ {'arc', 'arcs2', 'arcs3'}` et `remplissage="couleur"` (avec optionnel `opacite_fond=N`) sont passés, le secteur angulaire est rempli (path fermé `M V L p1_arc A … p2_arc Z`). `marque='carre'` et `marque='aucune'` ignorent silencieusement `remplissage`. La couleur de remplissage est lue depuis `style.fillColor` standard — pas de champ dédié sur `GeoAngle`.
+
+---
+
+## transporte() — report d'angle au compas
+
+Construit un nouveau `GeoAngle` au sommet `V'` de **même mesure** que `α` (sens conservé), orienté dans la direction spécifiée.
+
+### Signatures
+
+```
+β = transporte(α, V')                # direction défaut : axe Ox (1, 0)
+β = transporte(α, V', P)             # direction = unit(P − V')
+β = transporte(α, V', vec=v)         # direction = unit(v)
+β = transporte(α, V', angle=θ)       # direction = (cos θ, sin θ) en mode courant
+```
+
+Les 3 modes de direction (3ᵉ arg point, `vec=`, `angle=`) sont **mutuellement exclusifs** — en passer plus d'un lève `DslRuntimeError` listant les sources en conflit.
+
+### Héritage de style
+
+Le nouvel angle hérite de `marque`, `kind`, `orientation`, `showLabel`, `unite`, `arcRadiusPx`, `arcSpacingPx`, couleur et `fillColor`/`fillOpacity` depuis `α`. Tout named arg passé au `transporte()` override l'héritage.
+
+### Exemple
+
+```dsl
+A = point(1, 0)
+V = point(0, 0)
+B = point(0, 1)              # angle AVB = 90°
+a = angle(A, V, B, marque="arc", remplissage="rouge")
+
+W = point(5, 0)
+T = point(6, 1)              # direction 45° (NE)
+b = transporte(a, W, T)      # nouvel angle 90° au sommet W, dans direction WT, marque et fill hérités
+```
+
+### Cas dégénérés
+
+- `V'` confondu avec sommet de `α` → `DslRuntimeError` (hint : choisir un autre sommet).
+- Direction nulle (vecteur nul, ou `P == V'`) → `DslRuntimeError`.
+- `α` plat (mesure = π) ou nul (mesure = 0) : la mesure est préservée telle quelle.
 
 ---
 
