@@ -229,41 +229,46 @@ describe('roundtrip — intersection', () => {
 });
 
 describe('roundtrip — angle marks', () => {
-	it('simple angle mark', () => {
+	it('simple angle mark (arc)', () => {
 		assertRoundTrip(
-			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'marque_angle(A, V, B)'].join('\n')
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'angle(A, V, B)'].join('\n')
 		);
 	});
 
-	it('angle mark with arcs=2', () => {
+	it('angle mark with marque="arcs2"', () => {
 		const { serialized } = assertRoundTrip(
 			[
 				'A = point(1, 0)',
 				'V = point(0, 0)',
 				'B = point(0, 1)',
-				'marque_angle(A, V, B, arcs=2)'
+				'angle(A, V, B, marque="arcs2")'
 			].join('\n')
 		);
-		expect(serialized).toContain('arcs=2');
+		expect(serialized).toContain('arcs2');
 	});
 
-	it('angle mark with arcs=3', () => {
+	it('angle mark with marque="arcs3"', () => {
 		const { serialized } = assertRoundTrip(
 			[
 				'A = point(1, 0)',
 				'V = point(0, 0)',
 				'B = point(0, 1)',
-				'marque_angle(A, V, B, arcs=3)'
+				'angle(A, V, B, marque="arcs3")'
 			].join('\n')
 		);
-		expect(serialized).toContain('arcs=3');
+		expect(serialized).toContain('arcs3');
 	});
 
-	it('right angle', () => {
+	it('right angle (marque="carre")', () => {
 		const { serialized } = assertRoundTrip(
-			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'angle_droit(A, V, B)'].join('\n')
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'angle(A, V, B, marque="carre")'
+			].join('\n')
 		);
-		expect(serialized).toContain('angle_droit');
+		expect(serialized).toContain('carre');
 	});
 });
 
@@ -288,13 +293,14 @@ describe('roundtrip — segment marks', () => {
 });
 
 describe('roundtrip — measures', () => {
-	it('distance measure', () => {
-		assertRoundTrip(['A = point(0, 0)', 'B = point(3, 4)', 'mesure(A, B)'].join('\n'));
+	it('distance scalar', () => {
+		// mesure(A, B) 2-points is removed; distance() is the scalar form
+		assertRoundTrip(['A = point(0, 0)', 'B = point(3, 4)', 'd = distance(A, B)'].join('\n'));
 	});
 
-	it('angle measure (3 points)', () => {
+	it('angle measure (3 points) via mesure(A, V, B)', () => {
 		assertRoundTrip(
-			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'mesure(A, V, B)'].join('\n')
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'm = mesure(A, V, B)'].join('\n')
 		);
 	});
 });
@@ -310,12 +316,12 @@ describe('roundtrip — complex figures', () => {
 				'segment(B, C)',
 				'segment(C, A)',
 				'M = milieu(A, B)',
-				'marque_angle(B, A, C)',
-				'angle_droit(A, B, C)',
+				'angle(B, A, C)',
+				'angle(A, B, C, marque="carre")',
 				'marque_segment(A, B, traits=1)',
 				'marque_segment(B, C, traits=2)',
 				'marque_segment(C, A, traits=3)',
-				'mesure(A, B)'
+				'd = distance(A, B)'
 			].join('\n')
 		);
 	});
@@ -337,7 +343,7 @@ describe('roundtrip — complex figures', () => {
 				'O = point(0, 0)',
 				'D = symetrie(A, centre=O)',
 				'E = rotation(A, centre=O, angle=60)',
-				'marque_angle(B, A, C)',
+				'angle(B, A, C)',
 				'marque_segment(A, B)'
 			].join('\n')
 		);
@@ -389,7 +395,7 @@ describe('roundtrip — complex figures', () => {
 			'M = milieu(A, B)',
 			'D = rotation(A, centre=M, angle=90)',
 			'c = cercle(M, rayon=2)',
-			'marque_angle(B, A, C, arcs=2)',
+			'angle(B, A, C, marque="arcs2")',
 			'marque_segment(A, B, traits=2)'
 		].join('\n');
 		const { serialized } = assertRoundTrip(script);

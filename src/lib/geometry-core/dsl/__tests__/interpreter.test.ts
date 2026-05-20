@@ -153,19 +153,25 @@ describe('interpreter — transformations', () => {
 });
 
 describe('interpreter — annotations', () => {
-	it('creates angle mark', () => {
+	it('creates angle mark (arc)', () => {
 		const { figure } = run(
-			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'marque_angle(A, V, B)'].join('\n')
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'angle(A, V, B)'].join('\n')
 		);
-		expect(figure.getAllElements().filter((e) => e.type === 'angleMark')).toHaveLength(1);
+		expect(figure.getAllElements().filter((e) => e.type === 'angle')).toHaveLength(1);
 	});
 
-	it('creates right angle', () => {
+	it('creates right angle (marque="carre")', () => {
 		const { figure } = run(
-			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'angle_droit(A, V, B)'].join('\n')
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'angle(A, V, B, marque="carre")'
+			].join('\n')
 		);
-		const marks = figure.getAllElements().filter((e) => e.type === 'angleMark');
+		const marks = figure.getAllElements().filter((e) => e.type === 'angle');
 		expect(marks).toHaveLength(1);
+		expect((marks[0] as { marque: string }).marque).toBe('carre');
 	});
 
 	it('creates segment mark', () => {
@@ -175,9 +181,11 @@ describe('interpreter — annotations', () => {
 		expect(figure.getAllElements().filter((e) => e.type === 'segmentMark')).toHaveLength(1);
 	});
 
-	it('creates distance text via mesure()', () => {
-		const { figure } = run(['A = point(0, 0)', 'B = point(3, 4)', 'mesure(A, B)'].join('\n'));
-		expect(figure.getAllElements().filter((e) => e.type === 'text')).toHaveLength(1);
+	it('creates a distance scalar via distance()', () => {
+		// mesure(A, B) 2-point text is removed; distance() creates a scalar
+		const { figure } = run(['A = point(0, 0)', 'B = point(3, 4)', 'd = distance(A, B)'].join('\n'));
+		const scalars = figure.getAllElements().filter((e) => e.type === 'scalar');
+		expect(scalars.length).toBeGreaterThanOrEqual(1);
 	});
 });
 

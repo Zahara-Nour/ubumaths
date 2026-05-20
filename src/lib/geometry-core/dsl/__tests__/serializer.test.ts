@@ -121,28 +121,28 @@ describe('serializer — individual elements', () => {
 		expect(result).toContain('I = intersection(d1, d2)');
 	});
 
-	it('serializes angle mark', () => {
+	it('serializes angle mark (arc)', () => {
 		const { figure, symbols } = run(
-			'A = point(1, 0)\nV = point(0, 0)\nB = point(0, 1)\nmarque_angle(A, V, B)'
+			'A = point(1, 0)\nV = point(0, 0)\nB = point(0, 1)\nangle(A, V, B)'
 		);
 		const result = serialize(figure, symbols);
-		expect(result).toContain('marque_angle(A, V, B)');
+		expect(result).toContain('angle(A, V, B)');
 	});
 
-	it('serializes angle mark with arcs', () => {
+	it('serializes angle mark with arcs2', () => {
 		const { figure, symbols } = run(
-			'A = point(1, 0)\nV = point(0, 0)\nB = point(0, 1)\nmarque_angle(A, V, B, arcs=2)'
+			'A = point(1, 0)\nV = point(0, 0)\nB = point(0, 1)\nangle(A, V, B, marque="arcs2")'
 		);
 		const result = serialize(figure, symbols);
-		expect(result).toContain('marque_angle(A, V, B, arcs=2)');
+		expect(result).toContain('marque="arcs2"');
 	});
 
-	it('serializes right angle', () => {
+	it('serializes right angle (carre)', () => {
 		const { figure, symbols } = run(
-			'A = point(1, 0)\nV = point(0, 0)\nB = point(0, 1)\nangle_droit(A, V, B)'
+			'A = point(1, 0)\nV = point(0, 0)\nB = point(0, 1)\nangle(A, V, B, marque="carre")'
 		);
 		const result = serialize(figure, symbols);
-		expect(result).toContain('angle_droit(A, V, B)');
+		expect(result).toContain('marque="carre"');
 	});
 
 	it('serializes segment mark', () => {
@@ -153,10 +153,11 @@ describe('serializer — individual elements', () => {
 		expect(result).toContain('marque_segment(A, B, traits=2)');
 	});
 
-	it('serializes measure', () => {
-		const { figure, symbols } = run('A = point(0, 0)\nB = point(3, 4)\nmesure(A, B)');
+	it('serializes distance scalar', () => {
+		// mesure(A, B) 2-points is removed; use distance() for scalar
+		const { figure, symbols } = run('A = point(0, 0)\nB = point(3, 4)\nd = distance(A, B)');
 		const result = serialize(figure, symbols);
-		expect(result).toContain('mesure(A, B)');
+		expect(result).toContain('distance(A, B)');
 	});
 });
 
@@ -226,7 +227,7 @@ describe('serializer — round-trip', () => {
 			'M = milieu(A, B)',
 			'd = droite(A, B)',
 			'c = cercle(A, rayon=2)',
-			'marque_angle(B, A, C)',
+			'angle(B, A, C)',
 			'marque_segment(A, B)'
 		].join('\n');
 		const { roundTripped } = roundTrip(script);
