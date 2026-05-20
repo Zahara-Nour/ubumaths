@@ -210,6 +210,10 @@ export type {
 	UnitOptions
 } from './factory';
 
+// Signed-literal-safe factory (handles negatives via opposite() wrapping).
+// Use this instead of `number()` when the input value may be negative.
+export { numericNode } from './common/numeric';
+
 // =============================================================================
 // Transformation Helpers
 // =============================================================================
