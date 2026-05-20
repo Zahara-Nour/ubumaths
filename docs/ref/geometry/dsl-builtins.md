@@ -104,7 +104,7 @@ v = vecteur(O, B)
 α = angle(u, v)        # vertex = O (réutilisé), mesure = π/2
 ```
 
-> **Limitation V2** : la réactivité au drag des points-source n'est garantie que pour le cas `bound + bound` partageant un point commun. Les autres configurations capturent les composantes au moment de la construction (voir progress doc).
+> **Réactivité au drag (A2, v0.9.5)** : pleinement réactif pour les cas `bound + bound` (avec ou sans point partagé) — vertex et points témoins implémentés via `createTranslatedPointByVector` (point dérivé du dependency graph). **Limitation résiduelle** : cas avec `freeVector` (vecteur libre avec anchor) reste statique — drag de l'anchor ne propage pas à α. Différé A2.x.
 
 #### `angle(seg1, seg2)` — 2 segments
 
@@ -119,11 +119,11 @@ s2 = segment(V, B)
 α = angle(s1, s2)       # vertex = V (réutilisé)
 ```
 
-> Pour 2 segments sécants sans extrémité commune, l'intersection est calculée sur les droites support et matérialisée par un `freePoint` invisible. Les segments parallèles lèvent une erreur structurée listant les 4 formes acceptées.
+> Pour 2 segments sécants sans extrémité commune, l'intersection est matérialisée via `createIntersectionLL` (réactif au drag des 4 endpoints des segments depuis A2 / v0.9.5). Les segments parallèles lèvent une erreur structurée listant les 4 formes acceptées.
 
 #### `angle(d1, d2)` — 2 droites (convention angle aigu)
 
-Vertex = intersection des 2 droites. La mesure retournée par `mesure(α)` est dans `[0, π/2]` (convention « plus petit angle »). Les droites parallèles ou confondues lèvent `DslRuntimeError`.
+Vertex = intersection des 2 droites (via `createIntersectionLL`, réactif au drag des points témoins des droites depuis A2 / v0.9.5). La mesure retournée par `mesure(α)` est dans `[0, π/2]` (convention « plus petit angle »). Les droites parallèles ou confondues lèvent `DslRuntimeError`. Note : le choix p1/p2 pour la convention angle aigu est figé à la construction — la mesure suit le drag mais peut traverser π/2 sans re-swap dynamique.
 
 ```dsl
 A = point(0, 0)
