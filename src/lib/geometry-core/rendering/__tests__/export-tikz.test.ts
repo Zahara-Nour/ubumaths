@@ -152,7 +152,7 @@ describe('exportToTikZ', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b);
+		f.createAngle(a, v, b);
 		const result = exportToTikZ(f, viewport);
 		expect(result).toContain('arc');
 	});
@@ -162,7 +162,7 @@ describe('exportToTikZ', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b, { rightAngle: true });
+		f.createAngle(a, v, b, { marque: 'carre' });
 		const result = exportToTikZ(f, viewport);
 		expect(result).toContain('--');
 		// Right angle should NOT contain arc
@@ -174,12 +174,12 @@ describe('exportToTikZ', () => {
 		}
 	});
 
-	it('exports multiple arcs for arcCount > 1', () => {
+	it('exports multiple arcs for marque=arcs2', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b, { arcCount: 2 });
+		f.createAngle(a, v, b, { marque: 'arcs2' });
 		const result = exportToTikZ(f, viewport);
 		const arcCount = (result.match(/arc\s*\(/g) || []).length;
 		expect(arcCount).toBeGreaterThanOrEqual(2);

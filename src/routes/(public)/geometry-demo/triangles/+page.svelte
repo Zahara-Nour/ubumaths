@@ -24,9 +24,9 @@ triangle(A, B, C)
 style(hA, couleur="gris", trait="tirets")
 style(hB, couleur="gris", trait="tirets")
 style(hC, couleur="gris", trait="tirets")
-angle_droit(A, FA, B)
-angle_droit(B, FB, A)
-angle_droit(C, FC, A)
+angle(A, FA, B, marque="carre")
+angle(B, FB, A, marque="carre")
+angle(C, FC, A, marque="carre")
 H = orthocentre(A, B, C)
 style(H, couleur="rouge")`;
 

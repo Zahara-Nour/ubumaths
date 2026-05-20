@@ -112,15 +112,15 @@ describe('figure.createAngle() — V1 factory', () => {
 		expect(isAngle(el)).toBe(false);
 	});
 
-	it('GeoAngleMark/isAngleMark no longer exist — isAngle is the type guard', () => {
-		// isAngle is the type guard; isAngleMark is removed
+	it('isAngle is the correct type guard (old GeoAngle/isAngle V1)', () => {
+		// V1 breaking change: type is now "angle", old "angleMark" type is removed
 		const f = new Figure();
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
 		const id = f.createAngle(a, v, b);
 		const el = f.getElementById(id)!;
-		expect(el.type).toBe('angle'); // not 'angleMark'
+		expect(el.type).toBe('angle');
 	});
 
 	// ──────────────────────────────────────────────────────────────────────

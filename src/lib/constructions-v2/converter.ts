@@ -35,7 +35,7 @@ interface IepAction {
 	// Multi-point traces (forme="libre")
 	abscisses?: string;
 	ordonnees?: string;
-	// angle_droit specific
+	// angle (right-angle IEP action) specific
 	abscisse_sommet?: string;
 	ordonnee_sommet?: string;
 	abscisse_inter?: string;
@@ -454,18 +454,19 @@ export async function convertXmlToDsl(xml: string): Promise<DslConversionResult>
 
 			case 'angle_droit': {
 				if (mouvement === 'creer') {
-					// Try to emit angle_droit if we can find the 3 points
+					// Emit angle(..., marque="carre") if the 3 points can be identified;
+					// otherwise emit a comment for manual migration.
 					if (action.abscisse_sommet !== undefined && action.ordonnee_sommet !== undefined) {
 						const sx = parseFloat(action.abscisse_sommet);
 						const sy = parseFloat(action.ordonnee_sommet);
 						const vertex = findNearbyPoint(sx, sy);
 						if (vertex) {
-							emitLine(`# angle_droit au sommet ${vertex.name}`);
+							emitLine(`# angle(P1, ${vertex.name}, P2, marque="carre")  -- identifier P1 et P2`);
 						} else {
-							emitLine('# angle_droit (points non identifies)');
+							emitLine('# angle(P1, V, P2, marque="carre")  -- points non identifies');
 						}
 					} else {
-						emitLine('# angle_droit');
+						emitLine('# angle(P1, V, P2, marque="carre")  -- coordonnees manquantes');
 					}
 				}
 				break;

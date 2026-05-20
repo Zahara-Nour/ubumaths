@@ -126,8 +126,8 @@
 		'translation',
 		'homothetie',
 		'intersection',
-		'marque_angle',
-		'angle_droit',
+		'angle',
+		'angle_polaire',
 		'marque_segment',
 		'mesure',
 		'style'

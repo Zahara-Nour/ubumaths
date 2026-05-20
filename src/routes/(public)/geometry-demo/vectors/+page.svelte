@@ -80,7 +80,7 @@ u = vecteur(A, B, couleur="rouge")
 n = norme(u)
 v = vecteur(1, 0, couleur="bleu")
 p = produit_scalaire(u, v)
-a = angle_vecteurs(u, v)`;
+a = mesure(u, v)`;
 
 	// Run scalar DSL separately to display computed values in the description
 	const vectorScalarFig = runDsl(vectorScalarDsl);
@@ -152,8 +152,8 @@ a = angle_vecteurs(u, v)`;
 	<!-- DSL section: scalar builtins -->
 	<DslDemo
 		dsl={vectorScalarDsl}
-		title="Builtins scalaires — norme(), produit_scalaire(), angle_vecteurs()"
-		description="Rouge : u = AB | Bleu : v = (1, 0). norme(u), produit_scalaire(u, v) et angle_vecteurs(u, v) retournent des scalaires reactifs."
+		title="Builtins scalaires — norme(), produit_scalaire(), mesure()"
+		description="Rouge : u = AB | Bleu : v = (1, 0). norme(u), produit_scalaire(u, v) et mesure(u, v) retournent des scalaires reactifs."
 		center={{ x: 0, y: 0 }}
 		pixelsPerUnit={40}
 		width={800}
@@ -163,7 +163,7 @@ a = angle_vecteurs(u, v)`;
 	<!-- Display computed scalar values below the DSL demo -->
 	<p class="mt-2 text-sm text-muted-foreground">
 		norme(u) = {vectorScalarFig.symbols.get('n')?.value?.toFixed(2) ?? '?'} | produit_scalaire(u, v)
-		= {vectorScalarFig.symbols.get('p')?.value?.toFixed(2) ?? '?'} | angle_vecteurs(u, v) = {vectorScalarFig.symbols
+		= {vectorScalarFig.symbols.get('p')?.value?.toFixed(2) ?? '?'} | mesure(u, v) = {vectorScalarFig.symbols
 			.get('a')
 			?.value?.toFixed(1) ?? '?'}°
 	</p>

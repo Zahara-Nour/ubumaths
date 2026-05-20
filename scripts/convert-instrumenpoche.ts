@@ -1297,9 +1297,9 @@ function convertRightAngleAction(
 			ctx.pointMap.set(attrs.id, id);
 		}
 
-		// Create an angle mark
+		// Create an angle (right angle mark)
 		const angleDef: ObjectDef = {
-			kind: 'angleMark',
+			kind: 'angle',
 			id,
 			vertex: {
 				x: attrs.abscisse_sommet ? parseFloat(attrs.abscisse_sommet) : 0,
@@ -1313,7 +1313,7 @@ function convertRightAngleAction(
 				x: attrs.abscisse_inter ? parseFloat(attrs.abscisse_inter) + 20 : 20,
 				y: attrs.ordonnee_inter ? parseFloat(attrs.ordonnee_inter) : 0
 			},
-			rightAngle: true,
+			marque: 'carre',
 			radius: 15,
 			style: {
 				color: convertColor(attrs.couleur)

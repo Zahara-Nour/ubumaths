@@ -54,11 +54,11 @@
 	figure.createReflectedPoint(c, symCenter, { label: "C'", color: '#9333ea' });
 
 	// --- Angle marks ---
-	figure.createAngleMark(b, a, c, { color: '#1e40af' });
-	figure.createAngleMark(c, b, a, { color: '#1e40af', arcCount: 2 });
-	figure.createAngleMark(a, c, b, { color: '#1e40af', arcCount: 3 });
+	figure.createAngle(b, a, c, { color: '#1e40af' });
+	figure.createAngle(c, b, a, { color: '#1e40af', marque: 'arcs2' });
+	figure.createAngle(a, c, b, { color: '#1e40af', marque: 'arcs3' });
 	// Right angle mark at midpoint M (angle AMC ~ 90° in equilateral triangle median)
-	figure.createAngleMark(a, mAB, c, { color: '#dc2626', rightAngle: true });
+	figure.createAngle(a, mAB, c, { color: '#dc2626', marque: 'carre' });
 
 	// --- Segment marks (equal sides of equilateral triangle) ---
 	figure.createSegmentMark(a, b, { color: '#dc2626', markCount: 1 });
@@ -113,8 +113,8 @@
 	const rEdge = roughFig.createFreePoint(npt(2, 0), { label: 'R', color: '#059669' });
 	roughFig.createCircleByPoint(rO, rEdge, { color: '#059669' });
 
-	roughFig.createAngleMark(rB, rA, rC, { color: '#1e40af' });
-	roughFig.createAngleMark(rC, rB, rA, { color: '#1e40af', arcCount: 2 });
+	roughFig.createAngle(rB, rA, rC, { color: '#1e40af' });
+	roughFig.createAngle(rC, rB, rA, { color: '#1e40af', marque: 'arcs2' });
 	roughFig.createSegmentMark(rA, rB, { color: '#dc2626', markCount: 1 });
 	roughFig.createSegmentMark(rB, rC, { color: '#dc2626', markCount: 1 });
 	roughFig.createSegmentMark(rC, rA, { color: '#dc2626', markCount: 1 });

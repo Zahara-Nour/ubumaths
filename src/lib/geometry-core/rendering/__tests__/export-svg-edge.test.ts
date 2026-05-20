@@ -245,7 +245,7 @@ describe('exportToSVG — edge cases', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b);
+		f.createAngle(a, v, b);
 		const result = exportToSVG(f, viewport);
 		const pathLines = result.split('\n').filter((l) => l.includes('<path'));
 		expect(pathLines.length).toBe(1);
@@ -257,7 +257,7 @@ describe('exportToSVG — edge cases', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b, { rightAngle: true });
+		f.createAngle(a, v, b, { marque: 'carre' });
 		const result = exportToSVG(f, viewport);
 		const pathLines = result.split('\n').filter((l) => l.includes('<path'));
 		expect(pathLines.length).toBe(1);
@@ -265,12 +265,12 @@ describe('exportToSVG — edge cases', () => {
 		expect(pathLines[0]).not.toContain(' A ');
 	});
 
-	it('arcCount=2 produces 2 paths', () => {
+	it('marque=arcs2 produces 2 paths', () => {
 		const f = new Figure();
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b, { arcCount: 2 });
+		f.createAngle(a, v, b, { marque: 'arcs2' });
 		const result = exportToSVG(f, viewport);
 		const pathCount = (result.match(/<path/g) || []).length;
 		expect(pathCount).toBe(2);
@@ -411,7 +411,7 @@ describe('exportToSVG — edge cases', () => {
 		const b = f.createFreePoint(pt(3, 4), { label: 'B' });
 		f.createSegment(a, b);
 		f.createCircleByRadius(a, numeric(2));
-		f.createAngleMark(b, a, f.createFreePoint(pt(0, 4)));
+		f.createAngle(b, a, f.createFreePoint(pt(0, 4)));
 		f.createSegmentMark(a, b);
 		createMesureText(f, 'distance', [a, b]);
 

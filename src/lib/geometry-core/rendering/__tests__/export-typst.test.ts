@@ -59,7 +59,7 @@ describe('exportToTypst', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		f.createAngleMark(a, v, b);
+		f.createAngle(a, v, b);
 		const result = exportToTypst(f, viewport);
 		expect(result).toContain('arc(');
 	});

@@ -544,7 +544,7 @@ GeoElement (discriminated union)
     ├── GeoMathText: LaTeX math
     ├── GeoRichText: formatted text
     ├── GeoImage: embedded image
-    ├── GeoAngleMark: angle arc marker
+    ├── GeoAngle: angle arc marker (V1 — unified first-class object)
     └── GeoSegmentMark: perpendicular/parallel mark
 ```
 

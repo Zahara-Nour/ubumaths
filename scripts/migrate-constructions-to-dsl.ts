@@ -244,8 +244,8 @@ function convertJsonToDsl(title: string, steps: OldStep[], canvasW = 800, canvas
 						const p1 = getName(obj.p1);
 						const v = getName(obj.vertex);
 						const p2 = getName(obj.p2);
-						const arcs = obj.arcCount && obj.arcCount > 1 ? `, arcs=${obj.arcCount}` : '';
-						lines.push(`marque_angle(${p1}, ${v}, ${p2}${arcs})`);
+						const arcs = obj.arcCount && obj.arcCount > 1 ? `, marque="arcs${obj.arcCount}"` : '';
+						lines.push(`angle(${p1}, ${v}, ${p2}${arcs})`);
 					}
 					break;
 				}

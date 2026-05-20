@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [Unreleased]
+
+### Breaking Changes — geometry-core GeoAngle V1 (2026-05-20)
+
+The geometry-core DSL angle API has been redesigned around a single, first-class `GeoAngle` object. Five breaking changes are introduced:
+
+1. **`angle(A, V, B)` now returns a visible `GeoAngle`** instead of an invisible scalar.
+
+   - The object is visible by default (consistent with `cercle`, `segment`, `polygone`).
+   - To measure the angle without a visual arc, use `mesure(A, V, B)`.
+
+2. **`angle(O, P)` (2 arguments) is removed** — use `angle_polaire(O, P)` instead.
+
+   - `angle_polaire` returns a `GeoScalar` (polar angle in radians), identical to the old behavior.
+
+3. **`marque_angle()` is removed** — use `angle(..., marque="arcN")` instead.
+
+   - `marque_angle(P1, V, P2)` → `angle(P1, V, P2)`
+   - `marque_angle(P1, V, P2, arcs=2)` → `angle(P1, V, P2, marque="arcs2")`
+
+4. **`angle_droit()` is removed** — use `angle(..., marque="carre")` instead.
+
+   - `angle_droit(P1, V, P2)` → `angle(P1, V, P2, marque="carre")`
+
+5. **`angle_vecteurs(u, v)` is removed** — use `mesure(u, v)` instead.
+   - `mesure(u, v)` returns the unsigned angle between two vectors in `[0, π]`.
+
+Migration tools:
+
+- Supabase script: `scripts/migrate-angle-builtins-supabase.ts`
+  Run `npx tsx scripts/migrate-angle-builtins-supabase.ts` (dry-run by default).
+- Lint check: `scripts/lint-angle-builtins.ts`
+  Run `npx tsx scripts/lint-angle-builtins.ts` to verify no source file uses the removed builtins.
+
+Full reference: `docs/ref/geometry/dsl-builtins.md`
+
+---
+
 ### [0.8.91](https://github.com/Zahara-Nour/ubumaths/compare/v0.8.90...v0.8.91) (2026-05-18)
 
 ### ✨ Features

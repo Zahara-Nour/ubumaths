@@ -48,7 +48,7 @@ style(Q, couleur="rouge")
 med = droite(P, Q, couleur="rouge")
 M = milieu(A, B)
 style(M, couleur="violet")
-angle_droit(A, M, P)`;
+angle(A, M, P, marque="carre")`;
 
 	// ==========================================================================
 	// Intersection mixte — droite + cercle + cercle combinee
