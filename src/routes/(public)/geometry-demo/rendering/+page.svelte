@@ -80,9 +80,21 @@
 	figure.createSegment(arcQ, arcR, { color: '#ea580c' });
 	figure.createArcByPoints(arcP, arcQ, arcR, { color: '#ea580c' });
 
-	// --- Measures ---
-	figure.createMeasure('distance', [a, b], { color: '#6366f1' });
-	figure.createMeasure('angle', [b, a, c], { color: '#1e40af' });
+	// --- Measures (createMeasure supprimé en faveur de createScalar* + createText) ---
+	const distAB = figure.createScalarDistance(a, b);
+	figure.createText(
+		`{${distAB}:.2f}`,
+		[distAB],
+		{ autoPosition: 'midpoint', autoTargetIds: [a, b] },
+		{ color: '#6366f1' }
+	);
+	const angBAC = figure.createScalarAngleMeasure(b, a, c, { unite: 'deg' });
+	figure.createText(
+		`{${angBAC}:.0f}°`,
+		[angBAC],
+		{ autoPosition: 'bisector', autoTargetIds: [b, a, c] },
+		{ color: '#1e40af' }
+	);
 
 	// ==========================================================================
 	// Rough mode demo — same geometric constructions, hand-drawn style
