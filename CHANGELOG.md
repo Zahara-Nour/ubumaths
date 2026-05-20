@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.2...v0.9.3) (2026-05-20)
+
+### ✨ Features
+
+- **constructions-v2:** bissectrice choregraphie accepte geoangle (V3a P3) ([c364086](https://github.com/Zahara-Nour/ubumaths/commit/c364086e00beec2b6df8f8bf55502e9be9ba3ac3))
+- **geometry-core:** builtin transporte(angle) (V3a P1) ([3307704](https://github.com/Zahara-Nour/ubumaths/commit/3307704bd07940324787f0460b2212d7e723a52d))
+- **geometry-core:** fill secteur sur 4 surfaces (V3a P2) ([6ea3eab](https://github.com/Zahara-Nour/ubumaths/commit/6ea3eab86e8e609b09350e6942d6580b6862e9f5))
+- **geometry-core:** spec tdd v3a angle (P0) ([10a0dbf](https://github.com/Zahara-Nour/ubumaths/commit/10a0dbf4845f7dbf84c6ed7d246fe590f402b4d1))
+- **geometry-core:** tests integration + doc v3a (P4) ([233751e](https://github.com/Zahara-Nour/ubumaths/commit/233751e4ce1011428f71d331c89737db03e1b630))
+
 ### [0.9.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.1...v0.9.2) (2026-05-20)
 
 ### ✨ Features
