@@ -42,7 +42,7 @@ Ajout fonctionnel léger :
 | --- | ---------------------------------------------------------------------------------------------- | ------------ |
 | P0  | Spec TDD + tests rouges                                                                        | **terminée** |
 | P1  | Dette tech D1 (`requireEnumNamed` callerName) + D3 (helper `computeBisectorDirection` partagé) | **terminée** |
-| P2  | Overloads `angle(u,v)` + `angle(seg1,seg2)` + `angle(d1,d2)` (dispatch + points synthétiques)  | à faire      |
+| P2  | Overloads `angle(u,v)` + `angle(seg1,seg2)` + `angle(d1,d2)` (dispatch + points synthétiques)  | **terminée** |
 | P3  | `arcSpacingPx` paramétrable + dette tech B2 (dédup `mesure(A, V, B)` par tuple)                | à faire      |
 | P4  | Dette tech B5 (serializer `α → mesure(α)`) + tests intégration + doc V2                        | à faire      |
 
@@ -309,3 +309,81 @@ Les 3 sites appellent ce helper au lieu de reconstruire le calcul.
   - `src/lib/geometry-core/rendering/export-tikz.ts` (D3 : use helper)
   - `src/lib/geometry-core/rendering/export-typst.ts` (D3 : use helper)
   - `src/lib/geometry-core/rendering/index.ts` (re-export du helper D3)
+
+---
+
+## Notes Phase 2
+
+### Refonte `handleAngle` dispatch
+
+- `handleAngle` dispatch maintenant : 3 args → `handleAngle3Points` (V1 inchangé) ; 2 args → dispatch via type guards `isVector` / `isSegment` / `isLine` sur les 2 arguments.
+- 3 sous-handlers privés ajoutés à `dsl/builtins.ts` (pattern handler, pas de switch) :
+  - `handleAngleVectors(u, v, named, figure, line, label)` — 2 vecteurs.
+  - `handleAngleSegments(s1, s2, named, figure, line, label)` — 2 segments.
+  - `handleAngleLines(d1, d2, named, figure, line, label)` — 2 droites (convention angle aigu).
+- 2 helpers factorisés :
+  - `readAngleNamedOptions(named, line)` lit les 6 options nommées (marque, orientation, kind, showLabel, unite, arcRadiusPx) — partagé par tous les sous-handlers.
+  - `buildAngleFromPoints(p1Id, vertexId, p2Id, named, figure, line, label)` — appelle `figure.createAngle` avec les options lues.
+- `resolveVectorNumericComponents(v, figure, argName, line)` valide qu'un vecteur a une norme non nulle (sinon `DslRuntimeError` structurée).
+- `findSharedEndpoint(s1, s2)` + `farthestEndpoint(...)` extraits pour `handleAngleSegments`.
+
+### Construction des 3 points
+
+- **`angle(u, v)` cas (a)** — 2 `vectorByPoints` partageant `startId` : vertex = `u.startId` réutilisé, p1 = `u.endId`, p2 = `v.endId` (aucun freePoint synthétique créé).
+- **`angle(u, v)` cas (b/c/d)** — vertex = `u.startId` si bound (réutilisé), sinon `v.startId` si bound, sinon freePoint synthétique invisible à `(0, 0)`. p1/p2 réutilisés quand le vecteur est ancré sur le vertex, sinon freePoints synthétiques à `vertex + composantes`. Tous synthétiques `{ visible: false, draggable: false }`.
+- **`angle(u, u)`** (id identique) — cas dégénéré géré explicitement (mesure = 0), construit 3 freePoints synthétiques sans collision de parents dans le graphe de dépendances.
+- **`angle(seg1, seg2)`** — `findSharedEndpoint` détecte les 4 cas d'extrémité commune. Sinon `intersectLL` sur les droites support, vertex = freePoint à l'intersection, p1/p2 = extrémités les plus éloignées de l'intersection.
+- **`angle(d1, d2)`** — `intersectLL` sur (d1.point1, d1.point2) × (d2.point1, d2.point2). Vertex = freePoint à l'intersection. p1/p2 = freePoints à `I + unit(d1)` et `I ± unit(d2)`, avec swap de signe sur unit(d2) si le produit scalaire des deux directions normalisées est négatif (convention angle aigu `[0, π/2]`).
+
+### `ANGLE_FORMS` mis à jour
+
+Ajout des 3 nouvelles formes :
+
+```ts
+{ syntax: 'angle(u, v)',       description: 'angle non orienté entre 2 vecteurs u et v (dans [0, π])' },
+{ syntax: 'angle(seg1, seg2)', description: 'angle entre 2 segments sécants (vertex = intersection ou extrémité commune)' },
+{ syntax: 'angle(d1, d2)',     description: 'angle aigu entre 2 droites sécantes (dans [0, π/2])' }
+```
+
+L'ancienne forme `angle(A, V, B)` reste, `angle_polaire(O, P)` aussi.
+
+### Limitations V2 acceptées
+
+1. **Réactivité au drag des vecteurs sources `angle(u, v)`** : les freePoints synthétiques capturent les composantes au moment de la construction, pas via le graphe de dépendances. Drag d'un point source ancré ne propage **pas** vers l'angle. À adresser en V3 si nécessaire (nécessite un nouveau type `GeoComputedPointFromVector` ou similaire).
+2. **Réactivité au drag des points support `angle(d1, d2)` / `angle(seg1, seg2)`** : même limitation, l'intersection est calculée une fois et stockée comme position absolue dans un freePoint.
+3. **`angle(u, v)` free + free** : test laissé en `.todo()` car la création de vecteurs libres `freeVector` via le DSL passe par une syntaxe spécifique non testée ici (à valider en V3 quand le besoin émergera).
+4. **`angle(u, v)` bound + free** : test laissé en `.todo()` pour la même raison.
+5. **`angle(s1, s2)` réactivité drag endpoint** : `.todo()` (V3).
+6. **`angle(d1, d2)` réactivité drag through-point** : `.todo()` (V3).
+
+### Tests
+
+- Tests activés (P2) :
+  - `builtins-angle-overloads.test.ts` : 35 actifs + 10 todos (8 `arcSpacingPx` P3 + 2 limitations V3).
+  - `builtins-angle.test.ts` V2 blocks : 28 activés sur les ~32 tests V2 P2 (4 todos : drag réactif + free+free + bound+free).
+- Résultats tests (0 régression) :
+  - `builtins-angle.test.ts` : **73 passed | 17 todo / 90** (≈ 81 % verts, reste P3/P4 + V3 limitations).
+  - `builtins-angle-overloads.test.ts` : **35 passed | 10 todo / 45** (≈ 78 % verts).
+  - `figure-angle.test.ts` : **39/39 passed** (0 régression V1).
+  - `angle-canonical-cases.test.ts` : **9/9 passed** (0 régression rendu).
+- Échecs hors scope (pré-existants à V2) :
+  - `parser.test.ts` (2 tests) : `angle = ...` et `macro(angle=60)` cassés depuis le V1 commit `1e96edbd5` (mot `angle` devenu KEYWORD).
+  - `trace-demos.test.ts` (1 test) : démo rosace utilisait `angle(O, B)` (forme 2-points obsolète) — cassée depuis V1, message d'erreur légèrement reformulé en V2.
+  - `export-svg.test.ts`, `export-tikz.test.ts`, `export-typst*.test.ts` : tests sur `createMesureText` (helper de test interne), non liés à `handleAngle`.
+
+### Fichiers modifiés
+
+- `src/lib/geometry-core/dsl/builtins.ts` :
+  - Imports : ajout `isLine`, types `GeoVector` / `GeoSegment` / `GeoLine`, helper `intersectLL`.
+  - `ANGLE_FORMS` étendu à 5 entrées.
+  - Sous-handlers `handleAngle3Points` / `handleAngleVectors` / `handleAngleSegments` / `handleAngleLines` ajoutés.
+  - Helpers `readAngleNamedOptions` / `buildAngleFromPoints` / `resolveVectorNumericComponents` / `findSharedEndpoint` / `farthestEndpoint` ajoutés.
+  - `handleAngle` refondu (dispatch via type guards, hint `angle_polaire` préservé pour 2 points).
+- `src/lib/geometry-core/dsl/__tests__/builtins-angle.test.ts` :
+  - V2 describe blocks `angle(u, v)`, `angle(seg1, seg2)`, `angle(d1, d2)`, `Dispatch errors`, `Cas dégénérés` : `it.todo()` convertis en `it()` actifs (28 nouveaux tests).
+- `src/lib/geometry-core/dsl/__tests__/builtins-angle-overloads.test.ts` :
+  - Squelette P0 remplacé par 35 tests sémantiques actifs + 10 `.todo()` ciblés (P3 arcSpacingPx, V3 free+free, V3 drag).
+
+### Statut P2
+
+**Terminée.** Prêt pour P3 (`arcSpacingPx` paramétrable + dette tech B2 dédup `mesure(A, V, B)`).
