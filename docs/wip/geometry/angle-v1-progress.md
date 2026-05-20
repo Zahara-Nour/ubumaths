@@ -17,7 +17,7 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 | --- | -------------------------------------------------------------------------------------- | ------------ |
 | P0  | Spec TDD + tests rouges                                                                | **terminée** |
 | P1  | Types & schemas (rename `GeoAngleMark` → `GeoAngle`)                                   | **terminée** |
-| P2  | Factory `figure.createAngle()` + `compute-position.ts`                                 | à faire      |
+| P2  | Factory `figure.createAngle()` + `compute-position.ts`                                 | **terminée** |
 | P3  | DSL : suppressions + refonte `angle()` + `angle_polaire()`                             | à faire      |
 | P4  | DSL : accesseurs (`cote`, `sommet`) + surcharges (`mesure`, `bissectrice`, `rotation`) | à faire      |
 | P5  | Rendu sur 4 surfaces (canvas, SVG, TikZ, Typst) + rough                                | à faire      |
@@ -256,6 +256,67 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 - `dsl/__tests__/*.test.ts` : occurrences `'angleMark'` dans snapshots
 
 **LoC modifiées** : ~45 LoC (elements.ts : +16 net, schemas.ts : +9 net, index.ts : +2).
+
+---
+
+## Notes Phase 2
+
+### Modifications effectuées
+
+**`src/lib/geometry-core/graph/figure.ts`** :
+
+- Import : `GeoAngleMark` → `GeoAngle` (ligne 27).
+- `createAngleMark(...)` → `createAngle(...)` (lignes 1961-2008) :
+  - Signature étendue avec champs optionnels `marque`, `orientation`, `kind`, `showLabel`, `unite`, `arcRadiusPx`.
+  - Défauts appliqués : `marque='arc'`, `orientation='auto'`, `kind='saillant'`, `showLabel='aucun'`, `unite='rad'`.
+  - ID prefix `'angM'` → `'ang'`.
+  - Suppression des anciens champs `arcCount` et `rightAngle` (n'existent plus dans `GeoAngle`).
+  - `type: 'angleMark'` → `type: 'angle'`.
+  - Préservation des checks `isPointElement` sur les 3 arguments et `dependsOn = [p1Id, vertexId, p2Id]`.
+- **Suppression** de `createScalarAngle` (anciennes lignes 3526-3548). Plus de scalaire de premier ordre pour les angles ; la mesure sera dérivée via `mesure(α)` en P4.
+- **Conservation** de `createScalarPolarAngle` (intacte, sera utilisée par `angle_polaire` en P3).
+
+**`src/lib/geometry-core/graph/compute-position.ts`** :
+
+- Import : `isAngleMark` → `isAngle` (ligne 34).
+- Branche `isAngleMark(el)` → `isAngle(el)` (ligne 677) : retourne `vertexPos` comme position de référence (le rendu calcule lui-même la position du label sur l'arc — pas de baricentre ici pour rester minimal et cohérent avec l'ancien comportement).
+- **Suppression** de la branche `case 'angle':` du switch `scalarKind` (anciennes lignes 1159-1176). Plus aucun scalaire `'angle'` n'existe en aval.
+
+**`src/lib/geometry-core/types/elements.ts`** :
+
+- Suppression du `scalarKind: 'angle'` (avec son annotation `@deprecated` posée en P1) de l'union `GeoScalar.scalarKind`.
+
+### LoC modifiées
+
+- `figure.ts` : ~50 LoC (rename + extension + suppression `createScalarAngle`).
+- `compute-position.ts` : ~22 LoC (rename + suppression branche scalar 'angle').
+- `elements.ts` : ~7 LoC (suppression scalarKind 'angle' + son commentaire).
+
+**Total** : ~80 LoC modifiées/supprimées.
+
+### Choix : `compute-position` retourne `vertex` (pas baricentre)
+
+Pour le type `'angle'`, la position de référence retournée est le **vertex** plutôt qu'un baricentre d'arc. Justification :
+
+- Cohérent avec l'ancien comportement (`createAngleMark` posait déjà `positions.set(id, vertexPos)`).
+- Le rendu (P5) calculera lui-même la position du label sur l'arc à partir de `(vertex, p1, p2, arcRadiusPx)` — c'est une concern de rendu, pas de graph.
+- Évite de figer une dépendance à `arcRadiusPx` dans le graph de position.
+- Le baricentre pourra être ajouté plus tard si nécessaire (extension non-bloquante).
+
+### Casses temporaires attendues (seront résolues en P3-P6)
+
+- `dsl/builtins.ts` : 5+ sites appellent encore `createAngleMark` (dans `triangle_rectangle`, `rectangle`, `carre`, et les handlers `handleMarqueAngle`, `handleAngleDroit`) — **migration en P3 (suppression handlers) puis P6 (sites internes)**.
+- `rendering/svg-primitives.ts` : `isAngleMark`, `'angleMark'` → P5.
+- `rendering/export-svg.ts`, `export-tikz.ts`, `export-typst.ts` : dispatch sur `'angleMark'` → P5.
+- `graph/__tests__/figure-text.test.ts:137,238` : appellent `f.createScalarAngle(...)` → migration P6 (équivalent `mesure(angle(...))`).
+- `graph/__tests__/figure-angle-mark.test.ts`, `figure-angle.test.ts` : appellent `createAngleMark` → P6.
+
+### Prochaines étapes — P3
+
+- Suppressions handlers (`handleAngleVecteurs`, `handleMarqueAngle`, `handleAngleDroit`) dans `dsl/builtins.ts`.
+- Refonte `handleAngle` : 3 args points → `figure.createAngle(...)` ; 2 args → `DslRuntimeError` structurée.
+- Ajout `handleAnglePolaire(O, P)` → `createScalarPolarAngle`.
+- Mise à jour `BUILTIN_NAMES`, `keywords.ts`, `symbol-table.ts`, `serializer.ts` (rename `'angleMark'` → `'angle'`).
 
 ---
 

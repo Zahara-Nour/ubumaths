@@ -24,7 +24,7 @@ import type {
 	GeoSegment,
 	GeoLine,
 	GeoRay,
-	GeoAngleMark,
+	GeoAngle,
 	GeoSegmentMark,
 	GeoText,
 	GeoMathText,
@@ -1958,31 +1958,42 @@ export class Figure {
 
 	// ─── Annotation factories ───────────────────────────────────────
 
-	createAngleMark(
+	createAngle(
 		p1Id: string,
 		vertexId: string,
 		p2Id: string,
-		options?: ElementOptions & { arcCount?: 1 | 2 | 3; rightAngle?: boolean }
+		options?: ElementOptions & {
+			marque?: 'arc' | 'arcs2' | 'arcs3' | 'carre' | 'aucune';
+			orientation?: 'direct' | 'indirect' | 'auto';
+			kind?: 'saillant' | 'rentrant';
+			showLabel?: 'aucun' | 'nom' | 'mesure' | 'mesure+nom';
+			unite?: 'rad' | 'deg';
+			arcRadiusPx?: number;
+		}
 	): string {
 		const p1 = this.elements.get(p1Id);
 		const v = this.elements.get(vertexId);
 		const p2 = this.elements.get(p2Id);
 		if (!p1 || !isPointElement(p1))
-			throw new Error(`createAngleMark: "${p1Id}" is not a point element`);
+			throw new Error(`createAngle: "${p1Id}" is not a point element`);
 		if (!v || !isPointElement(v))
-			throw new Error(`createAngleMark: "${vertexId}" is not a point element`);
+			throw new Error(`createAngle: "${vertexId}" is not a point element`);
 		if (!p2 || !isPointElement(p2))
-			throw new Error(`createAngleMark: "${p2Id}" is not a point element`);
+			throw new Error(`createAngle: "${p2Id}" is not a point element`);
 
-		const id = this.generateId('angM');
-		const element: GeoAngleMark = {
-			type: 'angleMark',
+		const id = this.generateId('ang');
+		const element: GeoAngle = {
+			type: 'angle',
 			id,
 			p1Id,
 			vertexId,
 			p2Id,
-			arcCount: options?.arcCount ?? 1,
-			rightAngle: options?.rightAngle ?? false,
+			marque: options?.marque ?? 'arc',
+			orientation: options?.orientation ?? 'auto',
+			kind: options?.kind ?? 'saillant',
+			showLabel: options?.showLabel ?? 'aucun',
+			unite: options?.unite ?? 'rad',
+			arcRadiusPx: options?.arcRadiusPx,
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
@@ -3519,30 +3530,6 @@ export class Figure {
 			dependsOn: [pointId, lineId]
 		};
 		this.addElement(id, element, [pointId, lineId]);
-		this.computePosition(id);
-		return id;
-	}
-
-	createScalarAngle(
-		p1Id: string,
-		vertexId: string,
-		p2Id: string,
-		options?: ElementOptions
-	): string {
-		this.requirePoints('createScalarAngle', p1Id, vertexId, p2Id);
-		const id = this.generateId('sca');
-		const element: GeoScalar = {
-			type: 'scalar',
-			scalarKind: 'angle',
-			id,
-			targetIds: [p1Id, vertexId, p2Id],
-			color: this.resolveColor(options),
-			visible: options?.visible ?? false,
-			label: options?.label,
-			style: this.resolveStyle(options),
-			dependsOn: [p1Id, vertexId, p2Id]
-		};
-		this.addElement(id, element, [p1Id, vertexId, p2Id]);
 		this.computePosition(id);
 		return id;
 	}

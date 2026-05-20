@@ -551,11 +551,6 @@ export interface GeoScalar extends GeoElementBase {
 	readonly scalarKind:
 		| 'distance'
 		| 'distance_point_line'
-		/**
-		 * @deprecated Will be removed in P2 when createScalarAngle is deleted from figure.ts.
-		 * New code must NOT instantiate this kind — use GeoAngle + measureScalarId instead.
-		 */
-		| 'angle'
 		| 'polar_angle'
 		| 'area'
 		| 'norme'
