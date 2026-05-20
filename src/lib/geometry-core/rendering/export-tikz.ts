@@ -15,6 +15,7 @@ import { circumcircle } from '../geometry/circumcircle';
 import { resolveStyle } from './svg-primitives';
 import { formatAngleLabel, unsignedAngleBetween } from './angle-label';
 import { computeBisectorDirection } from './bisector-direction';
+import { extendLineToViewport, extendRayToViewport } from './viewport-clipping';
 
 export interface TikZExportOptions {
 	scale?: number;
@@ -673,83 +674,6 @@ function imageToTikZ(el: GeoImage, figure: Figure): string | null {
 	const wrappedContent = el.flipped ? `\\reflectbox{${imgContent}}` : imgContent;
 	// Note: URL must be replaced with a local file path for LaTeX compilation
 	return `  \\node[anchor=north west${opacityOpt}${rotateOpt}] at ${coord(mx!, my!)} {${wrappedContent}};`;
-}
-
-// ─── Helpers: clip lines/rays to viewport ───────────────────
-
-function extendLineToViewport(
-	x1: number,
-	y1: number,
-	x2: number,
-	y2: number,
-	vp: Viewport
-): { x1: number; y1: number; x2: number; y2: number } | null {
-	const dx = x2 - x1;
-	const dy = y2 - y1;
-	if (Math.abs(dx) < 1e-15 && Math.abs(dy) < 1e-15) return null;
-
-	const tValues: number[] = [];
-	if (Math.abs(dx) > 1e-15) {
-		tValues.push((vp.xMin - x1) / dx);
-		tValues.push((vp.xMax - x1) / dx);
-	}
-	if (Math.abs(dy) > 1e-15) {
-		tValues.push((vp.yMin - y1) / dy);
-		tValues.push((vp.yMax - y1) / dy);
-	}
-
-	const validTs = tValues.filter((t) => {
-		const px = x1 + t * dx;
-		const py = y1 + t * dy;
-		return (
-			px >= vp.xMin - 0.01 && px <= vp.xMax + 0.01 && py >= vp.yMin - 0.01 && py <= vp.yMax + 0.01
-		);
-	});
-
-	if (validTs.length < 2) return null;
-	const tMin = Math.min(...validTs);
-	const tMax = Math.max(...validTs);
-	return {
-		x1: x1 + tMin * dx,
-		y1: y1 + tMin * dy,
-		x2: x1 + tMax * dx,
-		y2: y1 + tMax * dy
-	};
-}
-
-function extendRayToViewport(
-	ox: number,
-	oy: number,
-	tx: number,
-	ty: number,
-	vp: Viewport
-): { x: number; y: number } | null {
-	const dx = tx - ox;
-	const dy = ty - oy;
-	if (Math.abs(dx) < 1e-15 && Math.abs(dy) < 1e-15) return null;
-
-	const tValues: number[] = [];
-	if (Math.abs(dx) > 1e-15) {
-		tValues.push((vp.xMin - ox) / dx);
-		tValues.push((vp.xMax - ox) / dx);
-	}
-	if (Math.abs(dy) > 1e-15) {
-		tValues.push((vp.yMin - oy) / dy);
-		tValues.push((vp.yMax - oy) / dy);
-	}
-
-	const validTs = tValues.filter((t) => {
-		if (t <= 0) return false;
-		const px = ox + t * dx;
-		const py = oy + t * dy;
-		return (
-			px >= vp.xMin - 0.01 && px <= vp.xMax + 0.01 && py >= vp.yMin - 0.01 && py <= vp.yMax + 0.01
-		);
-	});
-
-	if (validTs.length === 0) return null;
-	const tMax = Math.max(...validTs);
-	return { x: ox + tMax * dx, y: oy + tMax * dy };
 }
 
 /** Sample conic curve as array of point arrays (one per branch). */
