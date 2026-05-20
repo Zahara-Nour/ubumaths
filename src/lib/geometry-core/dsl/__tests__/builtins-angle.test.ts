@@ -1275,3 +1275,57 @@ describe('V2 — B5 serializer preserves α → mesure(α)', () => {
 		expect(out).not.toMatch(/m\s*=\s*mesure\(A,\s*V,\s*B/);
 	});
 });
+
+// =============================================================================
+// V3a — `fill` du secteur angulaire (rendu — squelette P0)
+// =============================================================================
+//
+// Tests rendering détaillés (path SVG, couleur, opacity) iront en P4 dans
+// `rendering/__tests__/angle-canonical-cases.test.ts`. Ici on couvre uniquement
+// le comportement sémantique côté GeoAngle (champ style.fillColor lu).
+//
+// Reference : docs/wip/geometry/angle-v3a-progress.md §2.
+
+describe('V3a — fill du secteur angulaire', () => {
+	it.todo('angle(A,V,B,marque="arc",fill_color="red") stocke style.fillColor sur GeoAngle');
+	it.todo(
+		'angle(A,V,B,marque="arcs2",fill_color="blue",opacite_fond=0.3) propage fillColor + fillOpacity'
+	);
+	it.todo(
+		'angle(A,V,B,marque="carre",fill_color="red") : fillColor stocké MAIS ignoré au rendu (convention V3a)'
+	);
+	it.todo(
+		'angle(A,V,B,marque="aucune",fill_color="red") : fillColor stocké MAIS aucun rendu (rien à fermer)'
+	);
+	it.todo('angle sans fill_color (défaut) : style.fillColor undefined, aucun secteur fermé');
+});
+
+// =============================================================================
+// V3a — Builtin `transporte(α, V', direction)` (squelette P0)
+// =============================================================================
+//
+// Squelette de couverture côté builtins-angle.test.ts (cohérent avec les autres
+// builtins angle). Les ~15 tests sémantiques détaillés vivent dans le fichier
+// dédié `builtins-transporte.test.ts`.
+//
+// Reference : docs/wip/geometry/angle-v3a-progress.md §1.
+
+describe("V3a — transporte(α, V', direction) basic shape", () => {
+	it.todo("transporte(α, V') sans direction retourne un GeoAngle au sommet V' avec d̂ = axe Ox");
+	it.todo("transporte(α, V', P) — 3e arg point : direction = rayon V' → P");
+	it.todo("transporte(α, V', vec=v) — option nommée vecteur : direction = unit(v)");
+	it.todo("transporte(α, V', angle=θ) — option nommée angle polaire : direction = (cos θ, sin θ)");
+	it.todo('transporte preserves mesure(α) : mesure(β) ≈ mesure(α) (radians)');
+	it.todo('transporte preserves sens : α rentrant → β rentrant (kind hérité par défaut)');
+	it.todo(
+		"transporte(α, V') hérite marque, kind, showLabel, unite, arcRadiusPx, arcSpacingPx de α"
+	);
+	it.todo('transporte(α, V\', P, marque="carre") override possible (option locale > héritage)');
+	it.todo('transporte(α, V\', P, fill_color="red") hérite + override style.fillColor');
+	it.todo("transporte(α, V', vec=v, angle=θ) → DslRuntimeError (options mutuellement exclusives)");
+	it.todo('transporte() sans argument → DslRuntimeError structurée (forms listées)');
+	it.todo('transporte(α) avec 1 seul argument → DslRuntimeError structurée');
+	it.todo("transporte(α, V') avec V' == vertex(α) → DslRuntimeError structurée");
+	it.todo("transporte(α, V', P) avec P == V' (direction nulle) → DslRuntimeError structurée");
+	it.todo("transporte(α, V', vec=v) avec ‖v‖ = 0 → DslRuntimeError structurée");
+});

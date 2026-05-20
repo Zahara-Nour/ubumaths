@@ -365,3 +365,26 @@ describe('ConstructionExecutor — bissectrice @euclide @arc_milieu (5 sub-steps
 		expect(exec.currentSubStep?.kind).toBe('ruler-trace');
 	});
 });
+
+// =============================================================================
+// V3a — Chorégraphie `bissectrice(angle) @euclide` (extension d'input)
+// =============================================================================
+//
+// La chorégraphie `bissectrice(A, V, B) @euclide` (V2) accepte en V3a un
+// `GeoAngle` en input via dispatch initial : extrait (p1, vertex, p2) et
+// délègue au flow d'animation existant. Aucune nouvelle animation, juste un
+// nouveau type d'entrée.
+//
+// Reference : docs/wip/geometry/angle-v3a-progress.md §3.
+
+describe('ConstructionExecutor — bissectrice(α) @euclide (V3a input dispatch)', () => {
+	it.todo(
+		'bissectrice(α) @euclide produit le même totalSteps que bissectrice(A,V,B) @euclide sur la même figure'
+	);
+	it.todo(
+		'bissectrice(α) @euclide : stepDurations identiques à bissectrice(A,V,B) @euclide (même timing)'
+	);
+	it.todo(
+		'bissectrice(α) @euclide : extrait correctement (p1, vertex, p2) depuis α = angle(A, V, B)'
+	);
+});
