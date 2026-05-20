@@ -80,7 +80,7 @@ rtexte(-5, 4, "**Distance** AB = $d = {d:.2f}$")`;
 	<DslDemo
 		dsl={distanceDsl}
 		title="Distance entre deux points"
-		description="mesure(A, B) affiche la distance au milieu du segment."
+		description="distance(A, B) calcule le scalaire, texte() l'affiche au milieu du segment."
 		width={600}
 		height={400}
 	/>
@@ -88,7 +88,7 @@ rtexte(-5, 4, "**Distance** AB = $d = {d:.2f}$")`;
 	<DslDemo
 		dsl={angleDsl}
 		title="Angle entre trois points"
-		description="mesure(A, O, B) affiche l'angle au sommet O, sur la bissectrice."
+		description="angle(A, O, B, showLabel=&quot;mesure&quot;, unite=&quot;deg&quot;) affiche la mesure au centre de l'arc."
 		width={600}
 		height={400}
 	/>
@@ -96,7 +96,7 @@ rtexte(-5, 4, "**Distance** AB = $d = {d:.2f}$")`;
 	<DslDemo
 		dsl={aireDsl}
 		title="Aire d'un polygone"
-		description="mesure(A, B, C, D) affiche l'aire au centroide du polygone."
+		description="aire(A, B, C, D) calcule le scalaire, texte() l'affiche au centroide."
 		width={600}
 		height={400}
 	/>
@@ -104,7 +104,7 @@ rtexte(-5, 4, "**Distance** AB = $d = {d:.2f}$")`;
 	<DslDemo
 		dsl={scalarComposeDsl}
 		title="Mesures multiples sur un triangle"
-		description="On peut combiner plusieurs mesure() sur la meme figure : cotes et aire."
+		description="On peut combiner plusieurs distance/angle/aire sur la meme figure : cotes et angle au sommet."
 		width={600}
 		height={450}
 	/>
