@@ -743,6 +743,15 @@ const LABEL_OFFSET_PX = 12;
  * coordinates remain available.
  */
 export interface AngleSVG {
+	/**
+	 * Optional closed sector path (V → arc start → arc → arc end → Z), present
+	 * only when `marque ∈ {'arc', 'arcs2', 'arcs3'}` AND the consumer wants to
+	 * fill the angular sector. The path uses the OUTER arc radius (for
+	 * `arcs2`/`arcs3` the outermost concentric arc) so the fill spans the
+	 * largest visible sector. Empty/undefined for `marque='carre'` or
+	 * `'aucune'`. Consumers ignore this unless a fillColor is set on the angle.
+	 */
+	fillPath?: string;
 	/** SVG path strings for the arc(s) or right-angle square. Empty when marque='aucune'. */
 	paths: string[];
 	/** Vertex position in SVG coordinates. */
@@ -851,7 +860,12 @@ export function angleToSVG(
 		paths.push(buildArcPath(svgV.x, svgV.y, r, angle1, angle2, kind));
 	}
 
-	return { paths, vx: svgV.x, vy: svgV.y, label, labelX, labelY };
+	// Closed sector path for optional fill (uses OUTER radius so the fill
+	// covers the full visible arc extent).
+	const outerR = arcRadiusPx + (arcCount - 1) * arcSpacingPx;
+	const fillPath = buildSectorPath(svgV.x, svgV.y, outerR, angle1, angle2, kind);
+
+	return { paths, fillPath, vx: svgV.x, vy: svgV.y, label, labelX, labelY };
 }
 
 /**
@@ -889,6 +903,26 @@ function buildArcPath(
 	const sweepFlag = sweep > 0 ? 1 : 0;
 
 	return `M ${sx} ${sy} A ${r} ${r} 0 ${largeArc} ${sweepFlag} ${ex} ${ey}`;
+}
+
+/**
+ * Build a closed sector path: V → arc start → arc → arc end → back to V.
+ *
+ * Used to fill the angular sector. Reuses `buildArcPath` to get the
+ * `M sx sy A …` command, then prefixes with `M cx cy L` and suffixes with
+ * `Z` to close the path. The interior is the convex hull of the arc + V.
+ */
+function buildSectorPath(
+	cx: number,
+	cy: number,
+	r: number,
+	startAngle: number,
+	endAngle: number,
+	kind: 'saillant' | 'rentrant'
+): string {
+	const arc = buildArcPath(cx, cy, r, startAngle, endAngle, kind);
+	// `arc` starts with `M sx sy A …`. Insert vertex + line-to before the arc.
+	return arc.replace(/^M /, `M ${cx} ${cy} L `) + ' Z';
 }
 
 // =============================================================================

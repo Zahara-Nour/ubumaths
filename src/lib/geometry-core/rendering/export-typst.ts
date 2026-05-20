@@ -430,6 +430,17 @@ export function exportToTypst(
 			const start = Math.round(angle1Deg * 100) / 100;
 			const stop = Math.round((angle1Deg + sweep) * 100) / 100;
 
+			// Optional sector fill (rendered before arc strokes). Uses OUTER
+			// radius so the fill covers the full visible arc extent.
+			const sty = resolveStyle(el, figure.defaults);
+			if (sty.fillColor) {
+				const fillCol = hexToTypstColor(sty.fillColor);
+				const outerR = baseR + (arcCount - 1) * arcSpacing;
+				lines.push(
+					`  arc(${c(vx, vy)}, start: ${start}deg, stop: ${stop}deg, radius: ${Math.round(outerR * 1000) / 1000}, anchor: "origin", mode: "PIE", fill: ${fillCol}.transparentize(${Math.round((1 - sty.fillOpacity) * 100)}%), stroke: none)`
+				);
+			}
+
 			for (let i = 0; i < arcCount; i++) {
 				const r = baseR + i * arcSpacing;
 				lines.push(

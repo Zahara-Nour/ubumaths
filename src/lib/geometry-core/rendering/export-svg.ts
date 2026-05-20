@@ -338,6 +338,13 @@ export function exportToSVG(
 				lines.push(roughHTML(roughAngle(rc!, svg, roughOpts(el.id, sty)), sty.opacity));
 			}
 		} else {
+			// Optional fill of the angular sector (rendered FIRST so arc strokes
+			// remain visible on top). Only applies to arc-based marques.
+			if (svg.fillPath && sty.fillColor) {
+				lines.push(
+					`  <path d="${svg.fillPath}" fill="${sty.fillColor}" fill-opacity="${sty.fillOpacity}" stroke="none" />`
+				);
+			}
 			for (const path of svg.paths) {
 				lines.push(
 					`  <path d="${path}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}" fill="none" />`

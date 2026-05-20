@@ -434,6 +434,19 @@ export function exportToTikZ(
 			const startAngle = Math.round(angle1Deg * 100) / 100;
 			const endAngle = Math.round((angle1Deg + sweep) * 100) / 100;
 
+			// Optional sector fill (rendered before strokes). Uses OUTER radius
+			// so the fill covers the full visible arc extent.
+			const sty = resolveStyle(el, figure.defaults);
+			if (sty.fillColor) {
+				const { name: fillName } = hexToTikZColor(sty.fillColor);
+				const outerR = baseR + (arcCount - 1) * arcSpacing;
+				const startX = vx + outerR * Math.cos((startAngle * Math.PI) / 180);
+				const startY = vy + outerR * Math.sin((startAngle * Math.PI) / 180);
+				lines.push(
+					`  \\path[fill=${fillName}, fill opacity=${sty.fillOpacity}] ${coord(vx, vy)} -- ${coord(startX, startY)} arc (${startAngle}:${endAngle}:${Math.round(outerR * 1000) / 1000}) -- cycle;`
+				);
+			}
+
 			for (let i = 0; i < arcCount; i++) {
 				const r = baseR + i * arcSpacing;
 				const startX = vx + r * Math.cos((startAngle * Math.PI) / 180);
