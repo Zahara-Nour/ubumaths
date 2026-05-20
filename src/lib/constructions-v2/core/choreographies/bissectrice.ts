@@ -125,10 +125,6 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 	const Bprime = figure.createComputedPoint({ scalarRef: BpxScalar }, { scalarRef: BpyScalar });
 	figure.hideElement(Bprime);
 
-	// CercleV (the first compass trace, drawn at V with radius r1).
-	const cercleV = figure.createCircleByRadius(Vid, { scalarRef: r1Scalar });
-	figure.hideElement(cercleV);
-
 	// Bisector direction (reactive unit vector).
 	const bisDirRawXScalar = figure.createScalarExpression(
 		(vals) => {
@@ -171,6 +167,47 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 		[bisDirRawYScalar, bisDirLenScalar]
 	);
 
+	// ArcV : un arc centré en V, balayant exactement l'angle AVB. Beaucoup
+	// plus économe qu'un cercle entier pour trouver A' et B'. L'arc va de
+	// `bisectorAngle − θ/2` à `bisectorAngle + θ/2` (sweep total = θ, l'angle
+	// AVB) et passe donc par les directions VA et VB exactement, créant A'
+	// et B' aux extrémités de l'arc.
+	const bisectorAngleScalar = figure.createScalarExpression(
+		(vals) => Math.atan2(vals.get(bisDirYScalar) ?? 0, vals.get(bisDirXScalar) ?? 0),
+		[bisDirXScalar, bisDirYScalar]
+	);
+	const halfAngleAVBScalar = figure.createScalarExpression(
+		(vals) => {
+			const dva = vals.get(dVAScalar) ?? 1;
+			const dvb = vals.get(dVBScalar) ?? 1;
+			const vx = vals.get(Vx) ?? 0;
+			const vy = vals.get(Vy) ?? 0;
+			const vax = (vals.get(Axs) ?? 0) - vx;
+			const vay = (vals.get(Ays) ?? 0) - vy;
+			const vbx = (vals.get(Bxs) ?? 0) - vx;
+			const vby = (vals.get(Bys) ?? 0) - vy;
+			const dot = vax * vbx + vay * vby;
+			const cosAngle = dot / Math.max(dva * dvb, 1e-12);
+			return Math.acos(Math.max(-1, Math.min(1, cosAngle))) / 2;
+		},
+		[Vx, Vy, Axs, Ays, Bxs, Bys, dVAScalar, dVBScalar]
+	);
+	const arcVStartScalar = figure.createScalarExpression(
+		(vals) => (vals.get(bisectorAngleScalar) ?? 0) - (vals.get(halfAngleAVBScalar) ?? 0),
+		[bisectorAngleScalar, halfAngleAVBScalar]
+	);
+	const arcVEndScalar = figure.createScalarExpression(
+		(vals) => (vals.get(bisectorAngleScalar) ?? 0) + (vals.get(halfAngleAVBScalar) ?? 0),
+		[bisectorAngleScalar, halfAngleAVBScalar]
+	);
+	const arcV = figure.createArcByAngles(
+		Vid,
+		{ scalarRef: r1Scalar },
+		{ scalarRef: arcVStartScalar },
+		{ scalarRef: arcVEndScalar }
+	);
+	figure.hideElement(arcV);
+
 	const supportScalars = [
 		Vx,
 		Vy,
@@ -189,14 +226,27 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 		bisDirRawYScalar,
 		bisDirLenScalar,
 		bisDirXScalar,
-		bisDirYScalar
+		bisDirYScalar,
+		bisectorAngleScalar,
+		halfAngleAVBScalar,
+		arcVStartScalar,
+		arcVEndScalar
 	];
+
+	// Initial values for SS1 instrument positioning (arc V).
+	const angleAVB_0 = Math.acos(
+		Math.max(-1, Math.min(1, (VAx * VBx + VAy * VBy) / Math.max(dVA0 * dVB0, 1e-12)))
+	);
+	const halfAngleAVB_0 = angleAVB_0 / 2;
+	const bisectorAngle_0 = Math.atan2(bisDirY0, bisDirX0);
+	const arcVStart_0 = bisectorAngle_0 - halfAngleAVB_0;
+	const arcVLength_0 = r1_0 * angleAVB_0;
 
 	return {
 		// Reactive elements
 		Aprime,
 		Bprime,
-		cercleV,
+		arcV,
 		// Reactive scalars (for downstream use + hidden support).
 		Vx,
 		Vy,
@@ -222,7 +272,9 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 		BpX0,
 		BpY0,
 		bisDirX0,
-		bisDirY0
+		bisDirY0,
+		arcVStart_0,
+		arcVLength_0
 	};
 }
 
@@ -339,7 +391,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	const {
 		Aprime,
 		Bprime,
-		cercleV,
+		arcV,
 		V,
 		r1_0,
 		ApX0,
@@ -348,6 +400,8 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		BpY0,
 		bisDirX0,
 		bisDirY0,
+		arcVStart_0,
+		arcVLength_0,
 		ApxScalar,
 		ApyScalar,
 		BpxScalar,
@@ -453,7 +507,6 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	const arcApStart0 = angleApBp0 - ARC_SWEEP_RAD / 2;
 	const arcBpStart0 = angleApBp0 + Math.PI - ARC_SWEEP_RAD / 2;
 	const arcLength = r2_0 * ARC_SWEEP_RAD;
-	const cercleVCircumference = 2 * Math.PI * r1_0;
 	// |VP| initial
 	const halfApBp0 = dApBp0 / 2;
 	const VM0 = Math.sqrt(Math.max(0, r1_0 * r1_0 - halfApBp0 * halfApBp0));
@@ -472,26 +525,27 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	void bisDirY0;
 
 	const subSteps: SubStep[] = [
-		// SS1 : compass at V traces the full circle.
+		// SS1 : compass at V traces an arc spanning the angle AVB exactly
+		// (so A' and B' are produced at the two arc endpoints).
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
-			instrumentTarget: { x: V.x, y: V.y, rotation: 0 },
+			instrumentTarget: { x: V.x, y: V.y, rotation: (arcVStart_0 * 180) / Math.PI },
 			compassRadius: r1_0,
-			geometricDistance: cercleVCircumference,
-			animateDrawableIds: [cercleV],
+			geometricDistance: arcVLength_0,
+			animateDrawableIds: [arcV],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en V, on trace le cercle'
+			instruction: 'Compas en V, on trace un arc entre les deux côtés'
 		},
-		// SS2 : A' and B' fade-in (intersections of cercleV with (VA), (VB)).
+		// SS2 : A' and B' fade-in (intersections of arcV with (VA), (VB)).
 		{
 			kind: 'point-fade-in',
 			geometricDistance: 0,
 			animateDrawableIds: [],
 			animatePointIds: [Aprime, Bprime],
 			animateLineIds: [],
-			instruction: "Le cercle coupe les côtés en A' et B'"
+			instruction: "L'arc coupe les côtés en A' et B'"
 		},
 		// SS3 : compass at A' traces an arc.
 		{
@@ -535,10 +589,10 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		produced: {
 			principal: principalId,
 			charnieres: [P],
-			// cercleV and the 2 arcs are pedagogically valuable (compass
+			// arcV and the 2 arcs are pedagogically valuable (compass
 			// gestures). A' and B' are construction points — per the spec
 			// they are traces (visible in `@complet`, hidden in `@squelette`).
-			traces: [cercleV, arcAtAprime, arcAtBprime, Aprime, Bprime],
+			traces: [arcV, arcAtAprime, arcAtBprime, Aprime, Bprime],
 			hiddenSupport: [
 				...rulerStep.supportIds,
 				dApBpScalar,
@@ -572,8 +626,22 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	const { figure, principalId } = ctx;
 	const common = setupCommonGeometry(ctx);
-	const { Aprime, Bprime, cercleV, V, r1_0, ApX0, ApY0, BpX0, BpY0, Vx, Vy, supportScalars } =
-		common;
+	const {
+		Aprime,
+		Bprime,
+		arcV,
+		V,
+		r1_0,
+		ApX0,
+		ApY0,
+		BpX0,
+		BpY0,
+		arcVStart_0,
+		arcVLength_0,
+		Vx,
+		Vy,
+		supportScalars
+	} = common;
 
 	// M = midpoint(A', B') — reactive via createMidpoint.
 	const M = figure.createMidpoint(Aprime, Bprime);
@@ -595,7 +663,6 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	const Mx0 = (ApX0 + BpX0) / 2;
 	const My0 = (ApY0 + BpY0) / 2;
 	const VM0 = Math.hypot(Mx0 - V.x, My0 - V.y);
-	const cercleVCircumference = 2 * Math.PI * r1_0;
 
 	const rulerStep = buildRulerTraceSubStep(
 		ctx,
@@ -606,17 +673,17 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	);
 
 	const subSteps: SubStep[] = [
-		// SS1 : compass at V traces the full circle.
+		// SS1 : compass at V traces an arc spanning the angle AVB.
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
-			instrumentTarget: { x: V.x, y: V.y, rotation: 0 },
+			instrumentTarget: { x: V.x, y: V.y, rotation: (arcVStart_0 * 180) / Math.PI },
 			compassRadius: r1_0,
-			geometricDistance: cercleVCircumference,
-			animateDrawableIds: [cercleV],
+			geometricDistance: arcVLength_0,
+			animateDrawableIds: [arcV],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en V, on trace le cercle'
+			instruction: 'Compas en V, on trace un arc entre les deux côtés'
 		},
 		// SS2 : A' and B' fade-in.
 		{
@@ -625,7 +692,7 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [],
 			animatePointIds: [Aprime, Bprime],
 			animateLineIds: [],
-			instruction: "Le cercle coupe les côtés en A' et B'"
+			instruction: "L'arc coupe les côtés en A' et B'"
 		},
 		// SS3 : M fade-in (midpoint of A'B').
 		{
@@ -645,8 +712,8 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		produced: {
 			principal: principalId,
 			charnieres: [M],
-			// cercleV : pedagogically valuable. A' B' : construction traces.
-			traces: [cercleV, Aprime, Bprime],
+			// arcV : pedagogically valuable. A' B' : construction traces.
+			traces: [arcV, Aprime, Bprime],
 			hiddenSupport: [...rulerStep.supportIds, MxScalar, MyScalar, VMScalar, ...supportScalars]
 		}
 	};
