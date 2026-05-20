@@ -645,7 +645,7 @@ describe('V2 — angle(u, v) — 2 vectors overload', () => {
 	it.todo('angle(u, v) bound+free creates synthetic hidden point at vertex + free.dx,dy');
 	it.todo('angle(u, v) free+free creates 3 synthetic hidden points (vertex at origin)');
 
-	it('angle(u, v) all synthetic points have visible=false and draggable=false', () => {
+	it('angle(u, v) all internal points are hidden (non-draggable by nature for derived ones)', () => {
 		const r = run(
 			[
 				'O = point(0, 0)',
@@ -659,10 +659,22 @@ describe('V2 — angle(u, v) — 2 vectors overload', () => {
 		);
 		const aEl = r.figure.getElementById(sym(r, 'a')!.figureId!);
 		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
-		// p2 is synthetic
-		const p2El = r.figure.getElementById(aEl.p2Id) as { visible: boolean; draggable?: boolean };
+		// p2 is internal — depuis A2, c'est un translatedPoint réactif (pas un freePoint statique).
+		// Les points dérivés (translatedPoint, intersectionLL) n'ont pas de champ `draggable` :
+		// ils ne sont jamais directement draggables, leur position est calculée.
+		const p2El = r.figure.getElementById(aEl.p2Id) as {
+			visible: boolean;
+			draggable?: boolean;
+			type: string;
+		};
 		expect(p2El.visible).toBe(false);
-		expect(p2El.draggable).toBe(false);
+		// Si freePoint synthétique (fallback cas free vector), draggable doit être false.
+		// Si translatedPoint (cas réactif A2), draggable est absent (point dérivé).
+		if (p2El.type === 'freePoint') {
+			expect(p2El.draggable).toBe(false);
+		} else {
+			expect(p2El.type).toBe('translatedPoint');
+		}
 	});
 
 	it.todo('angle(u, v) is reactive: drag of an anchored point updates mesure');

@@ -68,6 +68,7 @@ import {
 	isQuadraticCurve,
 	isAngle,
 	isVector,
+	isVectorByPoints,
 	isLine
 } from '../types/elements';
 import type { GeoVector, GeoSegment, GeoLine, GeoStyle } from '../types/elements';
@@ -3095,7 +3096,17 @@ function handleAngle3Points(
 	return buildAngleFromPoints(aP1Id, aVId, aP2Id, named, figure, line, label);
 }
 
-/** V2 — angle(u, v) overload (2 vectors). Builds 3 freePoints invisible. */
+/**
+ * V2/A2 — angle(u, v) overload (2 vectors).
+ *
+ * Réactivité au drag des sources :
+ * - Cas A (bound + bound, partage startId) : vertex/p1/p2 = points existants, réactifs natifs.
+ * - Cas B (bound + bound sans point commun, A2) : vertex = u.startId (réactif), p1 = u.endId
+ *   (réactif), p2 = TranslatedPointByVector(u.startId, v.id) — point caché reactif au drag de v
+ *   et au drag du vertex.
+ * - Cas C (au moins un free vector) : freePoints synthétiques statiques (drag de l'anchor du
+ *   free vector NON reactif). Limitation A2.x — voir plan lucky-watching-fairy.md.
+ */
 function handleAngleVectors(
 	u: GeoVector,
 	v: GeoVector,
@@ -3129,8 +3140,8 @@ function handleAngleVectors(
 		return buildAngleFromPoints(p1Id, vertexId, p2Id, named, figure, line, label);
 	}
 
-	// Case (a) — both vectorByPoints sharing a common start point: reuse points.
-	if (u.type === 'vectorByPoints' && v.type === 'vectorByPoints' && u.startId === v.startId) {
+	// Cas A (V2, INCHANGÉ) — both vectorByPoints sharing a common start point: reuse points.
+	if (isVectorByPoints(u) && isVectorByPoints(v) && u.startId === v.startId) {
 		// Also handle the rare case where the two end points coincide (different
 		// vectorByPoints but same endId), which would also duplicate parents.
 		if (u.endId !== v.endId) {
@@ -3138,23 +3149,32 @@ function handleAngleVectors(
 		}
 	}
 
-	// General case (b/c/d) — build synthetic invisible freePoints from numeric
-	// components at the time of construction. Reactivity to drag of the source
-	// vector points is NOT propagated to these synthetic points (V2 limitation,
-	// see progress doc).
+	// Cas B (A2) — both vectorByPoints sans point commun : pleinement réactif.
+	if (isVectorByPoints(u) && isVectorByPoints(v)) {
+		const vertexId = u.startId;
+		const p1Id = u.endId;
+		// p2 = u.startId translaté par v → suit le drag de v ET du vertex.
+		const p2Id = figure.createTranslatedPointByVector(vertexId, v.id, { visible: false });
+		return buildAngleFromPoints(p1Id, vertexId, p2Id, named, figure, line, label);
+	}
+
+	// Cas C (différé, statique) — au moins un free vector : ancrage par anchorX/anchorY non
+	// representé comme point dans le graphe, donc on retombe sur des freePoints synthétiques
+	// capturant les positions à la construction. Drag de l'anchor du free vector NON reactif
+	// (limitation A2.x).
 
 	// Choose vertex anchor : start of u if bound (vectorByPoints), else (0,0).
 	let vertexX = 0;
 	let vertexY = 0;
 	let vertexId: string | undefined;
-	if (u.type === 'vectorByPoints') {
+	if (isVectorByPoints(u)) {
 		const start = figure.getPosition(u.startId);
 		if (start) {
 			vertexX = geoToNumber(start.x);
 			vertexY = geoToNumber(start.y);
 			vertexId = u.startId;
 		}
-	} else if (v.type === 'vectorByPoints') {
+	} else if (isVectorByPoints(v)) {
 		const start = figure.getPosition(v.startId);
 		if (start) {
 			vertexX = geoToNumber(start.x);
@@ -3173,7 +3193,7 @@ function handleAngleVectors(
 	// p1 = vertex + u : reuse endId if u is bound and anchored on this vertex,
 	// else synthetic.
 	let p1Id: string;
-	if (u.type === 'vectorByPoints' && u.startId === vertexId) {
+	if (isVectorByPoints(u) && u.startId === vertexId) {
 		p1Id = u.endId;
 	} else {
 		p1Id = figure.createFreePoint(
@@ -3185,7 +3205,7 @@ function handleAngleVectors(
 	// p2 = vertex + v : reuse endId if v is bound and anchored on this vertex,
 	// else synthetic.
 	let p2Id: string;
-	if (v.type === 'vectorByPoints' && v.startId === vertexId) {
+	if (isVectorByPoints(v) && v.startId === vertexId) {
 		p2Id = v.endId;
 	} else {
 		p2Id = figure.createFreePoint(
@@ -3248,14 +3268,16 @@ function handleAngleSegments(
 	const ix = geoToNumber(inter.x);
 	const iy = geoToNumber(inter.y);
 
-	// p1/p2 = farthest endpoint of each segment from the intersection.
+	// p1/p2 = farthest endpoint of each segment from the intersection (IDs réactifs natifs).
+	// Le choix far/near est figé à la construction mais les positions suivent au drag.
 	const far1Id = farthestEndpoint(s1.startId, s1.endId, p1, p2, ix, iy);
 	const far2Id = farthestEndpoint(s2.startId, s2.endId, p3, p4, ix, iy);
 
-	const vertexId = figure.createFreePoint(
-		{ x: inter.x, y: inter.y },
-		{ visible: false, draggable: false }
-	);
+	// Cas E (A2) — vertex via createIntersectionLL : réactif aux 4 endpoints des 2 segments.
+	// La détection de parallèles ci-dessus (intersectLL direct) reste, car createIntersectionLL
+	// ne throw pas et retourne un id dont la position vaut null si parallèles.
+	const vertexId = figure.createIntersectionLL(s1.id, s2.id, { visible: false });
+	figure.hideElement(vertexId);
 	return buildAngleFromPoints(far1Id, vertexId, far2Id, named, figure, line, label);
 }
 
@@ -3322,10 +3344,7 @@ function handleAngleLines(
 		);
 	}
 
-	const ix = geoToNumber(inter.x);
-	const iy = geoToNumber(inter.y);
-
-	// Unit direction vectors for d1 and d2.
+	// Direction vectors for d1 and d2 (utilisés pour figer le choix angle aigu à construction).
 	const d1x = geoToNumber(p2.x) - geoToNumber(p1.x);
 	const d1y = geoToNumber(p2.y) - geoToNumber(p1.y);
 	const d2x = geoToNumber(p4.x) - geoToNumber(p3.x);
@@ -3340,29 +3359,28 @@ function handleAngleLines(
 			line
 		);
 	}
-	const u1x = d1x / len1;
-	const u1y = d1y / len1;
-	let u2x = d2x / len2;
-	let u2y = d2y / len2;
 
-	// Acute-angle convention: if the angle between u1 and u2 is > π/2, swap u2.
-	if (u1x * u2x + u1y * u2y < 0) {
-		u2x = -u2x;
-		u2y = -u2y;
-	}
+	// A2 — vertex via createIntersectionLL : réactif au drag des 4 points support des 2 droites.
+	const vertexId = figure.createIntersectionLL(d1.id, d2.id, { visible: false });
+	figure.hideElement(vertexId);
 
-	const vertexId = figure.createFreePoint(
-		{ x: inter.x, y: inter.y },
-		{ visible: false, draggable: false }
-	);
-	const p1Id = figure.createFreePoint(
-		{ x: numeric(ix + u1x), y: numeric(iy + u1y) },
-		{ visible: false, draggable: false }
-	);
-	const p2Id = figure.createFreePoint(
-		{ x: numeric(ix + u2x), y: numeric(iy + u2y) },
-		{ visible: false, draggable: false }
-	);
+	// p1/p2 : on crée 2 vecteurs cachés alignés avec d1/d2, et 2 points translatés depuis
+	// le vertex via ces vecteurs → pleinement réactifs au drag des points support des droites
+	// ET au drag du vertex. Convention angle aigu : si le produit scalaire des directions est
+	// négatif, on inverse v2 en échangeant ses extrémités (figé à la construction — la mesure
+	// suit le drag mais peut traverser π/2 sans re-swap dynamique, acceptable).
+	const v1Id = figure.createVectorByPoints(d1.point1Id, d1.point2Id, { visible: false });
+	figure.hideElement(v1Id);
+	const dot = d1x * d2x + d1y * d2y;
+	const v2Id =
+		dot >= 0
+			? figure.createVectorByPoints(d2.point1Id, d2.point2Id, { visible: false })
+			: figure.createVectorByPoints(d2.point2Id, d2.point1Id, { visible: false });
+	figure.hideElement(v2Id);
+
+	const p1Id = figure.createTranslatedPointByVector(vertexId, v1Id, { visible: false });
+	const p2Id = figure.createTranslatedPointByVector(vertexId, v2Id, { visible: false });
+
 	return buildAngleFromPoints(p1Id, vertexId, p2Id, named, figure, line, label);
 }
 
