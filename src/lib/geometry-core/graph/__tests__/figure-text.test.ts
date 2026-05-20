@@ -134,7 +134,7 @@ describe('createText: free position', () => {
 		const a = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const b = f.createFreePoint(pt(0, 1));
-		const ang = f.createScalarAngle(a, v, b);
+		const ang = f.createScalarAngleMeasure(a, v, b, { unite: 'deg' });
 
 		const id = f.createText('{' + ang + ':deg}', [ang], { position: { x: 0, y: 0 } });
 		const resolved = f.resolveTemplate(id);
@@ -235,7 +235,7 @@ describe('createText: auto-positioned', () => {
 		const p1 = f.createFreePoint(pt(1, 0));
 		const v = f.createFreePoint(pt(0, 0));
 		const p2 = f.createFreePoint(pt(0, 1));
-		const ang = f.createScalarAngle(p1, v, p2);
+		const ang = f.createScalarAngleMeasure(p1, v, p2, { unite: 'deg' });
 
 		const id = f.createText('{' + ang + ':deg}', [ang], {
 			autoPosition: 'bisector',

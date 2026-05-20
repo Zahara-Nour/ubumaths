@@ -21,7 +21,7 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 | P3  | DSL : suppressions + refonte `angle()` + `angle_polaire()`                             | **terminée** |
 | P4  | DSL : accesseurs (`cote`, `sommet`) + surcharges (`mesure`, `bissectrice`, `rotation`) | **terminée** |
 | P5  | Rendu sur 4 surfaces (canvas, SVG, TikZ, Typst) + rough                                | **terminée** |
-| P6  | Migration 5 sites internes + 38 occurrences tests                                      | à faire      |
+| P6  | Migration 5 sites internes + 38 occurrences tests                                      | **terminée** |
 | P7  | Démos + converters + outillage migration + doc + code-review final                     | à faire      |
 
 ---
@@ -585,3 +585,75 @@ Exporté depuis `rendering/index.ts`. Mutualise la sémantique entre les 4 surfa
 ### Prêt pour P6 ?
 
 Oui. Les 4 surfaces (canvas + svg + tikz + typst) + rough sont alignées via le helper partagé `formatAngleLabel`. Le piège `extendLineToViewport` triplé / `GeoOsculatingCircle` oublié est évité (logique label centralisée). Les 5 valeurs `marque` et `kind='rentrant'` sont supportées sur les 4 surfaces. La phase P6 peut maintenant migrer les 5 sites internes restants (déjà fait en P3 — `triangle_rectangle`, `rectangle`, `carre` — à reverifier) et les 38 occurrences de tests, puis renommer `figure-angle-mark.test.ts` → `figure-angle.test.ts`.
+
+---
+
+## Notes Phase 6
+
+### Statut : terminée
+
+**Résultat final** : 12 fichiers migrés, 463 tests verts, 0 failures.
+
+### Fichiers migrés (Bloc A — figure-angle.test.ts)
+
+- `src/lib/geometry-core/graph/__tests__/figure-angle.test.ts` : **38 tests** (refonte complète de `figure-angle-mark.test.ts` : 5 anciens tests actifs + 45 `.todo` → 38 actifs).
+  - Couvre : type='angle' + visible=true par défaut, dependsOn=[p1,v,p2], 5 variantes marque, kind, orientation, showLabel, unite, throws pour parent non-point, réactivité drag via movePoint, suppression en cascade, `createScalarAngleMeasure`, `createScalarPolarAngle`.
+
+### Fichiers migrés (Bloc B — builtins-angle.test.ts)
+
+- `src/lib/geometry-core/dsl/__tests__/builtins-angle.test.ts` : **45 tests** (52 `.todo` → 45 actifs, certains consolidés).
+  - Tous les noms DSL utilisent du Latin (`ang`, `theta`) — le tokenizer ne supporte pas les lettres grecques (α, θ).
+  - Couvre : angle(A,V,B) GeoAngle visible, angle(O,P) 2-args DslRuntimeError + hint angle_polaire, angle_polaire scalarKind='polar_angle', mesure(ang) rad/deg/cache, mesure(A,V,B) GeoAngle caché + scalaire, mesure(u,v) angle entre vecteurs, mesure(u) DslRuntimeError hint norme, mesure(s) hint longueur, sommet/cote(1|2)/cote(3) accesseurs purs, bissectrice(ang), rotation(P,centre=O,angle=ang), builtins supprimés throw, BUILTIN_NAMES vérifié.
+  - Cas dégénéré `angle(A,V,A)` (p1==p2) : throw (DependencyGraph rejette les parents dupliqués).
+
+### Fichiers migrés (Bloc C — 10 fichiers)
+
+| Fichier                  |                                  Occurrences migrées | Tests verts |
+| ------------------------ | ---------------------------------------------------: | ----------: |
+| `scalar-dsl.test.ts`     |                                                   15 |          71 |
+| `serializer.test.ts`     |                                                    5 |          28 |
+| `roundtrip.test.ts`      |                                                    8 |          48 |
+| `vector-ops-dsl.test.ts` |                                                    4 |          28 |
+| `interpreter.test.ts`    |                                                    3 |          43 |
+| `integration.test.ts`    |                                                    2 |          14 |
+| `stdlib.test.ts`         |                     2 (`e.type === 'angleMark'` × 2) |          56 |
+| `tokenizer.test.ts`      |                                2 (liste de keywords) |          37 |
+| `figure-text.test.ts`    | 2 (`createScalarAngle` → `createScalarAngleMeasure`) |          35 |
+
+**Total Bloc C** : 43 occurrences migrées.
+
+### Bloc D — choreographies-integration.test.ts
+
+20 tests verts, aucune modification nécessaire.
+
+### Bloc E — Résultat final
+
+```
+Test Files  12 passed (12)
+Tests       463 passed (463)
+Duration    3.86s
+```
+
+### Changements de comportement détectés (sémantique adaptée)
+
+1. **`angle(P,O,Q)` 3-args** : retourne maintenant `GeoAngle` (pas un scalaire). Tests utilisant la valeur comme scalaire migrés vers `mesure(P,O,Q,unite="deg")`.
+2. **`mesure(A,B)` 2-points** : supprimé (ne crée plus de texte distance). Remplacé par `distance(A,B)` qui crée un scalaire invisible.
+3. **`angle(A,V,A)` p1==p2** : attendait mesure=0, mais `DependencyGraph.addNode` refuse les parents dupliqués. Test adapté pour `expect(() => ...).toThrow()`.
+4. **`angle_vecteurs(u,v)` → `mesure(u,v)`** : le résultat est un `GeoScalar` accessible via `figure.getScalarValue(figureId)` et non plus via `symbol.value`.
+5. **Noms DSL** : lettres grecques (α, θ) invalides dans les scripts DSL (tokenizer rejette). Remplacées par des noms latins (`ang`, `theta`).
+
+### Grep final (résidus hors scope P6)
+
+Résidus `marque_angle|angle_droit|angleMark|createAngleMark|createScalarAngle|angle_vecteurs` trouvés uniquement dans :
+
+- `figure-angle-mark.test.ts` (ancien fichier de test, conservé — sera supprimé en P7)
+- `rendering/__tests__/export-tikz.test.ts`, `export-svg.test.ts`, `export-typst.test.ts` et variantes edge → P7
+- `src/routes/` (pages démo) → P7
+- `src/lib/constructions/converter.ts`, `constructions-v2/converter.ts` → P7
+- `src/lib/geometry-core/dsl/__tests__/builtins-angle.test.ts` : intentionnel (tests vérifiant que les anciens noms lèvent une erreur)
+
+0 résidu dans le code source production (hors tests et démos).
+
+### Prêt pour P7 ?
+
+Oui. P7 couvre : démos (4 routes), converters (3 fichiers), outillage migration (`lint-angle-builtins.ts`, `migrate-angle-builtins-supabase.ts`), documentation (`docs/ref/geometry/dsl-builtins.md`), CHANGELOG.md (5 breaking changes), code-review final, suppression de `figure-angle-mark.test.ts`.

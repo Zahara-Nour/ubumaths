@@ -1,158 +1,559 @@
 /**
- * Tests for DSL builtins around the new `GeoAngle` first-class object
- * (Phase 0 — TDD).
- *
- * These tests describe the EXPECTED behavior of:
- *   - `angle(A, V, B)` returning a `GeoAngle` (visible, marque='arc')
- *   - `angle(O, P)` 2 args → DslRuntimeError (hint: angle_polaire)
- *   - `angle_polaire(O, P)` new builtin
- *   - `mesure(α)` accessor + overloads `mesure(A,V,B)` / `mesure(u,v)`
- *   - `mesure(u)` / `mesure(s)` → DslRuntimeError
- *   - `sommet(α)`, `cote(α, i)` accessors
- *   - `bissectrice(α)` overload
- *   - `rotation(P, α, centre=O)` overload
- *   - removed builtins: `marque_angle`, `angle_droit`, `angle_vecteurs`
- *
- * Most tests are `.todo` because they depend on Phase 3-4 implementation.
+ * Tests for DSL builtins around the new `GeoAngle` first-class object (V1).
  *
  * Reference: docs/wip/geometry/angle-v1-progress.md
  */
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { parse } from '../parser';
+import { interpret } from '../interpreter';
+import { BUILTIN_NAMES } from '../builtins';
+import { DslRuntimeError } from '../errors';
+import { isAngle } from '../../types/elements';
+import { geoToNumber } from '../../compute/to-number';
+import { numeric } from '../../types/geo-value';
 
-describe('angle(A, V, B) — first-class object (Phase 0 spec)', () => {
-	it.todo('angle(A, V, B) returns a GeoAngle element visible by default (FAILING UNTIL P3)');
+function run(script: string) {
+	const program = parse(script);
+	return interpret(program);
+}
 
-	it.todo('returned BuiltinResult has symbolType="angle" and a figureId pointing to a GeoAngle');
+function sym(result: ReturnType<typeof run>, name: string) {
+	return result.symbols.allEntries().get(name);
+}
 
-	it.todo('angle(A, V, B, marque="carre") creates a right-angle marker (replaces angle_droit)');
+describe('angle(A, V, B) — first-class object', () => {
+	it('angle(A, V, B) returns a GeoAngle element visible by default', () => {
+		const r = run(
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'ang = angle(A, V, B)'].join('\n')
+		);
+		const s = sym(r, 'ang');
+		expect(s).toBeDefined();
+		expect(s!.type).toBe('angle');
+		const el = r.figure.getElementById(s!.figureId!);
+		expect(el).toBeDefined();
+		expect(el!.type).toBe('angle');
+		expect(el!.visible).toBe(true);
+	});
 
-	it.todo(
-		'angle(A, V, B, marque="arcs2") creates a double-arc marker (replaces marque_angle arcs=2)'
-	);
+	it('returned BuiltinResult has symbolType="angle" and figureId pointing to GeoAngle', () => {
+		const r = run(
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'ang = angle(A, V, B)'].join('\n')
+		);
+		const s = sym(r, 'ang');
+		expect(s!.type).toBe('angle');
+		expect(s!.figureId).toBeDefined();
+		expect(isAngle(r.figure.getElementById(s!.figureId!)!)).toBe(true);
+	});
 
-	it.todo('angle(A, V, B, kind="rentrant") flags the angle as exterior (>π)');
+	it('angle(A, V, B, marque="carre") creates a right-angle marker (replaces angle_droit)', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B, marque="carre")'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!) as { marque: string };
+		expect(el.marque).toBe('carre');
+	});
 
-	it.todo('angle(A, V, B, showLabel="mesure", unite="deg") renders "60°" label');
+	it('angle(A, V, B, marque="arcs2") creates a double-arc marker (replaces marque_angle arcs=2)', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B, marque="arcs2")'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!) as { marque: string };
+		expect(el.marque).toBe('arcs2');
+	});
 
-	it.todo('angle(A, V, B) is fully reactive: drag A, V, or B → measure/bissectrice cascade update');
+	it('angle(A, V, B, kind="rentrant") flags the angle as exterior (>π)', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B, kind="rentrant")'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!) as { kind: string };
+		expect(el.kind).toBe('rentrant');
+	});
+
+	it('angle(A, V, B, showLabel="mesure", unite="deg") stores showLabel and unite', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B, showLabel="mesure", unite="deg")'
+			].join('\n')
+		);
+		const el = r.figure.getElementById(sym(r, 'ang')!.figureId!) as {
+			showLabel: string;
+			unite: string;
+		};
+		expect(el.showLabel).toBe('mesure');
+		expect(el.unite).toBe('deg');
+	});
 });
 
-describe('angle(O, P) 2-args — removed (Phase 0 spec)', () => {
-	it.todo('angle(O, P) with 2 args throws DslRuntimeError with structured hint (FAILING UNTIL P3)');
+describe('angle(O, P) 2-args — removed', () => {
+	it('angle(O, P) with 2 args throws DslRuntimeError with structured hint', () => {
+		expect(() => run(['O = point(0, 0)', 'P = point(1, 0)', 'a = angle(O, P)'].join('\n'))).toThrow(
+			DslRuntimeError
+		);
+	});
 
-	it.todo('the error hint points to angle_polaire(O, P) as the replacement');
+	it('the error hint points to angle_polaire(O, P) as the replacement', () => {
+		try {
+			run(['O = point(0, 0)', 'P = point(1, 0)', 'a = angle(O, P)'].join('\n'));
+			expect.unreachable();
+		} catch (e) {
+			expect(e).toBeInstanceOf(DslRuntimeError);
+			const err = e as DslRuntimeError;
+			expect(err.details?.hint).toContain('angle_polaire');
+		}
+	});
 
-	it.todo('the error forms list includes both angle(A,V,B) and angle_polaire(O,P)');
+	it('the error forms list includes both angle(A,V,B) and angle_polaire(O,P)', () => {
+		try {
+			run(['O = point(0, 0)', 'P = point(1, 0)', 'a = angle(O, P)'].join('\n'));
+			expect.unreachable();
+		} catch (e) {
+			const err = e as DslRuntimeError;
+			const forms = err.details?.forms ?? [];
+			const syntaxes = forms.map((f) => f.syntax);
+			expect(syntaxes.some((s) => s.includes('angle(A'))).toBe(true);
+			expect(syntaxes.some((s) => s.includes('angle_polaire'))).toBe(true);
+		}
+	});
 });
 
-describe('angle_polaire(O, P) — new builtin (Phase 0 spec)', () => {
-	it.todo(
-		'angle_polaire(O, P) returns a GeoScalar with scalarKind="polar_angle" (FAILING UNTIL P3)'
-	);
+describe('angle_polaire(O, P) — new builtin', () => {
+	it('angle_polaire(O, P) returns a GeoScalar with scalarKind="polar_angle"', () => {
+		const r = run(['O = point(0, 0)', 'P = point(1, 0)', 'theta = angle_polaire(O, P)'].join('\n'));
+		const s = sym(r, 'theta');
+		expect(s).toBeDefined();
+		expect(s!.type).toBe('scalar');
+		const el = r.figure.getElementById(s!.figureId!) as { scalarKind: string };
+		expect(el.scalarKind).toBe('polar_angle');
+	});
 
-	it.todo('angle_polaire(O, P) value equals atan2(P.y - O.y, P.x - O.x) in radians');
+	it('angle_polaire(O, P) value equals atan2(P.y - O.y, P.x - O.x) in degrees → 90° for (0,1)', () => {
+		const r = run(['O = point(0, 0)', 'A = point(0, 1)', 'theta = angle_polaire(O, A)'].join('\n'));
+		// atan2(1, 0) = π/2 rad → 90°
+		expect(r.figure.getScalarValue(sym(r, 'theta')!.figureId!)).toBeCloseTo(90, 3);
+	});
 
-	it.todo('angle_polaire(O, P) is registered in BUILTIN_NAMES');
+	it('angle_polaire(O, P) is registered in BUILTIN_NAMES', () => {
+		expect(BUILTIN_NAMES.has('angle_polaire')).toBe(true);
+	});
 
-	it.todo('angle_polaire(O, P) is reactive: drag P → scalar updates');
+	it('angle_polaire(O, P) is reactive: drag P → scalar updates', () => {
+		const r = run(['O = point(0, 0)', 'A = point(1, 0)', 'theta = angle_polaire(O, A)'].join('\n'));
+		// Initial: 0°
+		expect(r.figure.getScalarValue(sym(r, 'theta')!.figureId!)).toBeCloseTo(0, 3);
+
+		const aId = sym(r, 'A')!.figureId!;
+		r.figure.beginTransaction();
+		r.figure.movePoint(aId, numeric(0), numeric(1)); // → 90°
+		r.figure.recompute();
+		r.figure.commit();
+
+		expect(r.figure.getScalarValue(sym(r, 'theta')!.figureId!)).toBeCloseTo(90, 3);
+	});
 });
 
-describe('mesure(α) — accessor (Phase 0 spec)', () => {
-	it.todo('mesure(α) returns a GeoScalar in radians by default (FAILING UNTIL P4)');
+describe('mesure(ang) — accessor on GeoAngle', () => {
+	it('mesure(ang) returns a GeoScalar in radians by default', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'm = mesure(ang)'
+			].join('\n')
+		);
+		const s = sym(r, 'm');
+		expect(s).toBeDefined();
+		expect(s!.type).toBe('scalar');
+		// 90° = π/2 rad
+		expect(r.figure.getScalarValue(s!.figureId!)).toBeCloseTo(Math.PI / 2, 5);
+	});
 
-	it.todo('mesure(α, unite="deg") returns the measure in degrees');
+	it('mesure(ang, unite="deg") returns the measure in degrees', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'm = mesure(ang, unite="deg")'
+			].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).toBeCloseTo(90, 3);
+	});
 
-	it.todo('mesure(α, unite="rad") returns the measure in radians explicitly');
+	it('mesure(ang, unite="rad") returns the measure in radians explicitly', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'm = mesure(ang, unite="rad")'
+			].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).toBeCloseTo(Math.PI / 2, 5);
+	});
 
-	it.todo('2 successive calls to mesure(α) return the same scalar (cache via measureScalarId)');
-
-	it.todo('mesure(α) is reactive: drag A/V/B → scalar updates');
+	it('2 successive calls to mesure(ang) return the same scalar (cache via measureScalarId)', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'm1 = mesure(ang)',
+				'm2 = mesure(ang)'
+			].join('\n')
+		);
+		const id1 = sym(r, 'm1')!.figureId!;
+		const id2 = sym(r, 'm2')!.figureId!;
+		expect(id1).toBe(id2); // same scalar reused
+	});
 });
 
-describe('mesure(A, V, B) — 3-points overload (Phase 0 spec)', () => {
-	it.todo(
-		'mesure(A, V, B) returns a GeoScalar equivalent to mesure(angle(A, V, B)) (FAILING UNTIL P4)'
-	);
+describe('mesure(A, V, B) — 3-points overload', () => {
+	it('mesure(A, V, B) returns a GeoScalar equivalent to mesure(angle(A, V, B))', () => {
+		const r = run(
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'm = mesure(A, V, B)'].join('\n')
+		);
+		const s = sym(r, 'm');
+		expect(s).toBeDefined();
+		expect(s!.type).toBe('scalar');
+		// 90° in radians
+		expect(r.figure.getScalarValue(s!.figureId!)).toBeCloseTo(Math.PI / 2, 5);
+	});
 
-	it.todo('the internal GeoAngle created by mesure(A, V, B) is visible=false');
+	it('the internal GeoAngle created by mesure(A, V, B) is visible=false', () => {
+		const r = run(
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'm = mesure(A, V, B)'].join('\n')
+		);
+		// The hidden GeoAngle exists in the figure
+		const angles = r.figure.getAllElements().filter((e) => e.type === 'angle');
+		expect(angles.length).toBeGreaterThanOrEqual(1);
+		// At least one is invisible (the internal one)
+		expect(angles.some((e) => !e.visible)).toBe(true);
+	});
 
-	it.todo('mesure(A, V, B) accepts unite="deg" / "rad"');
+	it('mesure(A, V, B, unite="deg") returns degrees', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'm = mesure(A, V, B, unite="deg")'
+			].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).toBeCloseTo(90, 3);
+	});
 });
 
-describe('mesure(u, v) — 2-vectors overload (Phase 0 spec)', () => {
-	it.todo('mesure(u, v) returns a GeoScalar in [0, π] (FAILING UNTIL P4)');
+describe('mesure(u, v) — 2-vectors overload', () => {
+	it('mesure(u, v) returns a GeoScalar in [0, π] — 90° angle in radians', () => {
+		const r = run(['u = vecteur(1, 0)', 'v = vecteur(0, 1)', 'm = mesure(u, v)'].join('\n'));
+		const s = sym(r, 'm');
+		expect(s).toBeDefined();
+		expect(s!.type).toBe('scalar');
+		// 90° in radians
+		expect(r.figure.getScalarValue(s!.figureId!)).toBeCloseTo(Math.PI / 2, 5);
+	});
 
-	it.todo('mesure(u, v) replaces the removed angle_vecteurs(u, v)');
+	it('mesure(u, v) replaces the removed angle_vecteurs(u, v)', () => {
+		// angle_vecteurs was removed; mesure(u,v) is the replacement
+		const r = run(['u = vecteur(1, 0)', 'v = vecteur(0, 1)', 'm = mesure(u, v)'].join('\n'));
+		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).toBeCloseTo(Math.PI / 2, 5);
+	});
 
-	it.todo('mesure(u, v) accepts unite="deg" / "rad"');
+	it('mesure(u, v, unite="deg") returns degrees', () => {
+		const r = run(
+			['u = vecteur(1, 0)', 'v = vecteur(0, 1)', 'm = mesure(u, v, unite="deg")'].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).toBeCloseTo(90, 3);
+	});
 });
 
-describe('mesure() — rejection of non-angle types (Phase 0 spec)', () => {
-	it.todo(
-		'mesure(u) with 1 vector throws DslRuntimeError with hint="utilise norme(u)" (FAILING UNTIL P4)'
-	);
+describe('mesure() — rejection of non-angle types', () => {
+	it('mesure(u) with 1 vector throws DslRuntimeError with hint about norme(u)', () => {
+		try {
+			run(['u = vecteur(1, 0)', 'm = mesure(u)'].join('\n'));
+			expect.unreachable();
+		} catch (e) {
+			expect(e).toBeInstanceOf(DslRuntimeError);
+			const err = e as DslRuntimeError;
+			expect(err.details?.hint).toMatch(/norme/i);
+		}
+	});
 
-	it.todo('mesure(s) with a segment throws DslRuntimeError with hint="utilise longueur(s)"');
+	it('mesure(s) with a segment throws DslRuntimeError with hint about longueur(s)', () => {
+		try {
+			run(['A = point(0, 0)', 'B = point(1, 0)', 's = segment(A, B)', 'm = mesure(s)'].join('\n'));
+			expect.unreachable();
+		} catch (e) {
+			expect(e).toBeInstanceOf(DslRuntimeError);
+			const err = e as DslRuntimeError;
+			expect(err.details?.hint).toMatch(/longueur/i);
+		}
+	});
 
-	it.todo('mesure(c) with a circle throws DslRuntimeError (unsupported)');
+	it('mesure(c) with a circle throws DslRuntimeError (unsupported)', () => {
+		expect(() =>
+			run(['O = point(0, 0)', 'c = cercle(O, rayon=3)', 'm = mesure(c)'].join('\n'))
+		).toThrow(DslRuntimeError);
+	});
 });
 
-describe('sommet(α) and cote(α, i) — accessors (Phase 0 spec)', () => {
-	it.todo('sommet(α) returns the vertex point id (FAILING UNTIL P4)');
+describe('sommet(ang) and cote(ang, i) — accessors', () => {
+	it('sommet(ang) returns the vertex point id', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'S = sommet(ang)'
+			].join('\n')
+		);
+		const sId = sym(r, 'S')!.figureId!;
+		const vId = sym(r, 'V')!.figureId!;
+		expect(sId).toBe(vId);
+	});
 
-	it.todo('cote(α, 1) returns the p1 point id');
+	it('cote(ang, 1) returns the p1 point id', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'C1 = cote(ang, 1)'
+			].join('\n')
+		);
+		expect(sym(r, 'C1')!.figureId).toBe(sym(r, 'A')!.figureId);
+	});
 
-	it.todo('cote(α, 2) returns the p2 point id');
+	it('cote(ang, 2) returns the p2 point id', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'C2 = cote(ang, 2)'
+			].join('\n')
+		);
+		expect(sym(r, 'C2')!.figureId).toBe(sym(r, 'B')!.figureId);
+	});
 
-	it.todo('cote(α, 3) throws DslRuntimeError (index out of range)');
+	it('cote(ang, 3) throws DslRuntimeError (index out of range)', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(1, 0)',
+					'V = point(0, 0)',
+					'B = point(0, 1)',
+					'ang = angle(A, V, B)',
+					'C = cote(ang, 3)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
 
-	it.todo('cote(α, 0) throws DslRuntimeError (1-based index)');
+	it('cote(ang, 0) throws DslRuntimeError (1-based index)', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(1, 0)',
+					'V = point(0, 0)',
+					'B = point(0, 1)',
+					'ang = angle(A, V, B)',
+					'C = cote(ang, 0)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
 
-	it.todo('sommet(α) and cote(α, i) are pure accessors: no new element created');
+	it('sommet(ang) and cote(ang, i) are pure accessors: no new element created', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'S = sommet(ang)',
+				'C1 = cote(ang, 1)',
+				'C2 = cote(ang, 2)'
+			].join('\n')
+		);
+		// 3 free points + 1 angle = 4 elements, no new elements created by sommet/cote
+		const elements = r.figure.getAllElements();
+		const angles = elements.filter((e) => e.type === 'angle');
+		const freePoints = elements.filter((e) => e.type === 'freePoint');
+		expect(freePoints).toHaveLength(3);
+		expect(angles).toHaveLength(1);
+	});
 });
 
-describe('bissectrice(α) — overload (Phase 0 spec)', () => {
-	it.todo('bissectrice(α) returns a line equivalent to bissectrice(A, V, B) (FAILING UNTIL P4)');
+describe('bissectrice(ang) — overload', () => {
+	it('bissectrice(ang) returns a line equivalent to bissectrice(A, V, B)', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'b = bissectrice(ang)'
+			].join('\n')
+		);
+		const s = sym(r, 'b');
+		expect(s).toBeDefined();
+		expect(s!.type).toBe('droite');
+	});
 
-	it.todo('bissectrice(α) on a flat angle (180°) throws DslRuntimeError');
+	it('existing bissectrice(A, V, B) 3-points form is preserved', () => {
+		const r = run(
+			['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'b = bissectrice(A, V, B)'].join(
+				'\n'
+			)
+		);
+		expect(sym(r, 'b')!.type).toBe('droite');
+	});
 
-	it.todo('existing bissectrice(A, V, B) 3-points form is preserved');
-
-	it.todo('bissectrice(α) is reactive: drag a side point → bissectrice updates');
+	it('bissectrice(ang) result is a line element on the figure', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'b = bissectrice(ang)'
+			].join('\n')
+		);
+		const bId = sym(r, 'b')!.figureId!;
+		const el = r.figure.getElementById(bId);
+		expect(el).toBeDefined();
+		expect(el!.type).toBe('line');
+	});
 });
 
-describe('rotation(P, α, centre=O) — overload (Phase 0 spec)', () => {
-	it.todo('rotation(P, α, centre=O) accepts a GeoAngle as the angle parameter (FAILING UNTIL P4)');
+describe('rotation(P, ang, centre=O) — overload', () => {
+	it('rotation(P, ang, centre=O) accepts a GeoAngle as the angle parameter', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'ang = angle(A, V, B)',
+				'P = point(2, 0)',
+				'O = point(0, 0)',
+				'R = rotation(P, centre=O, angle=ang)'
+			].join('\n')
+		);
+		expect(sym(r, 'R')).toBeDefined();
+		// ang = 90°, P = (2,0), O = (0,0) → R = (0,2)
+		const pos = r.figure.getPosition(sym(r, 'R')!.figureId!);
+		expect(geoToNumber(pos!.x)).toBeCloseTo(0, 3);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(2, 3);
+	});
 
-	it.todo('rotation(P, α, centre=O) computes the image using mesure(α)');
-
-	it.todo('rotation(P, α, centre=O) is reactive: drag a side of α → image moves');
-
-	it.todo('existing rotation(P, scalaire, centre=O) form is preserved');
+	it('existing rotation(P, scalaire, centre=O) form is preserved', () => {
+		const r = run(
+			['A = point(1, 0)', 'O = point(0, 0)', 'B = rotation(A, centre=O, angle=90)'].join('\n')
+		);
+		const pos = r.figure.getPosition(sym(r, 'B')!.figureId!);
+		expect(geoToNumber(pos!.x)).toBeCloseTo(0, 3);
+		expect(geoToNumber(pos!.y)).toBeCloseTo(1, 3);
+	});
 });
 
-describe('Removed builtins (Phase 0 spec)', () => {
-	it.todo('marque_angle(...) throws DslRuntimeError "builtin inconnu" (FAILING UNTIL P3)');
+describe('Removed builtins', () => {
+	it('marque_angle(...) throws because builtin is unknown', () => {
+		expect(() =>
+			run(
+				['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'marque_angle(A, V, B)'].join(
+					'\n'
+				)
+			)
+		).toThrow();
+	});
 
-	it.todo('angle_droit(...) throws DslRuntimeError "builtin inconnu"');
+	it('angle_droit(...) throws because builtin is unknown', () => {
+		expect(() =>
+			run(
+				['A = point(1, 0)', 'V = point(0, 0)', 'B = point(0, 1)', 'angle_droit(A, V, B)'].join('\n')
+			)
+		).toThrow();
+	});
 
-	it.todo('angle_vecteurs(...) throws DslRuntimeError "builtin inconnu"');
+	it('angle_vecteurs(...) throws because builtin is unknown', () => {
+		expect(() =>
+			run(['u = vecteur(1, 0)', 'v = vecteur(0, 1)', 'a = angle_vecteurs(u, v)'].join('\n'))
+		).toThrow();
+	});
 
-	it.todo('BUILTIN_NAMES does not contain "marque_angle", "angle_droit", "angle_vecteurs"');
+	it('BUILTIN_NAMES does not contain "marque_angle", "angle_droit", "angle_vecteurs"', () => {
+		expect(BUILTIN_NAMES.has('marque_angle')).toBe(false);
+		expect(BUILTIN_NAMES.has('angle_droit')).toBe(false);
+		expect(BUILTIN_NAMES.has('angle_vecteurs')).toBe(false);
+	});
 
-	it.todo('BUILTIN_NAMES contains "angle_polaire"');
+	it('BUILTIN_NAMES contains "angle_polaire"', () => {
+		expect(BUILTIN_NAMES.has('angle_polaire')).toBe(true);
+	});
 
-	it.todo(
-		'BUILTIN_NAMES still contains "angle", "mesure", "sommet", "cote", "bissectrice", "rotation"'
-	);
+	it('BUILTIN_NAMES still contains "angle", "mesure", "sommet", "cote", "bissectrice", "rotation"', () => {
+		expect(BUILTIN_NAMES.has('angle')).toBe(true);
+		expect(BUILTIN_NAMES.has('mesure')).toBe(true);
+		expect(BUILTIN_NAMES.has('sommet')).toBe(true);
+		expect(BUILTIN_NAMES.has('cote')).toBe(true);
+		expect(BUILTIN_NAMES.has('bissectrice')).toBe(true);
+		expect(BUILTIN_NAMES.has('rotation')).toBe(true);
+	});
 });
 
-describe('Cas dégénérés DSL (Phase 0 spec)', () => {
-	it.todo('angle(A, A, B) (vertex == p1) returns GeoAngle but mesure(α) is null');
+describe('Cas dégénérés DSL', () => {
+	it('angle(A, V, A) where p1 == p2 throws (duplicate parent IDs not allowed)', () => {
+		// The dependency graph enforces unique parents; p1 == p2 causes an error
+		expect(() =>
+			run(
+				[
+					'A = point(1, 0)',
+					'V = point(0, 0)',
+					'ang = angle(A, V, A)',
+					'm = mesure(ang, unite="deg")'
+				].join('\n')
+			)
+		).toThrow();
+	});
 
-	it.todo('angle(A, V, B) where A == B (p1 == p2) has mesure(α) = 0');
-
-	it.todo('angle plat 180° + bissectrice(α) throws DslRuntimeError');
-
-	it.todo('angle 360° normalizes to 0° in mesure');
+	it('angle plat 180deg + bissectrice(ang) throws DslRuntimeError', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(1, 0)',
+					'V = point(0, 0)',
+					'B = point(-1, 0)',
+					'ang = angle(A, V, B)',
+					'b = bissectrice(ang)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
 });

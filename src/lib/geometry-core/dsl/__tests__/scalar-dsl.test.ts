@@ -38,10 +38,15 @@ describe('DSL: distance() scalar', () => {
 	});
 });
 
-describe('DSL: angle(P, O, Q) scalar', () => {
-	it('creates a scalar with correct angle value', () => {
+describe('DSL: mesure(A, V, B) angle scalar — 3 points', () => {
+	it('creates a scalar with correct angle value (90°)', () => {
 		const r = run(
-			['P = point(1, 0)', 'O = point(0, 0)', 'Q = point(0, 1)', 'a = angle(P, O, Q)'].join('\n')
+			[
+				'P = point(1, 0)',
+				'O = point(0, 0)',
+				'Q = point(0, 1)',
+				'a = mesure(P, O, Q, unite="deg")'
+			].join('\n')
 		);
 		const s = sym(r, 'a');
 		expect(s).toBeDefined();
@@ -50,40 +55,42 @@ describe('DSL: angle(P, O, Q) scalar', () => {
 	});
 });
 
-describe('DSL: angle(O, A) polar angle scalar', () => {
+describe('DSL: angle_polaire(O, A) polar angle scalar', () => {
 	it('returns 0° for point on positive x-axis', () => {
-		const r = run(['O = point(0, 0)', 'A = point(3, 0)', 'a = angle(O, A)'].join('\n'));
+		const r = run(['O = point(0, 0)', 'A = point(3, 0)', 'a = angle_polaire(O, A)'].join('\n'));
 		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(0, 5);
 	});
 
 	it('returns 90° for point on positive y-axis', () => {
-		const r = run(['O = point(0, 0)', 'A = point(0, 5)', 'a = angle(O, A)'].join('\n'));
+		const r = run(['O = point(0, 0)', 'A = point(0, 5)', 'a = angle_polaire(O, A)'].join('\n'));
 		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(90, 5);
 	});
 
 	it('returns 180° for point on negative x-axis', () => {
-		const r = run(['O = point(0, 0)', 'A = point(-2, 0)', 'a = angle(O, A)'].join('\n'));
+		const r = run(['O = point(0, 0)', 'A = point(-2, 0)', 'a = angle_polaire(O, A)'].join('\n'));
 		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(180, 5);
 	});
 
 	it('returns -90° for point on negative y-axis', () => {
-		const r = run(['O = point(0, 0)', 'A = point(0, -1)', 'a = angle(O, A)'].join('\n'));
+		const r = run(['O = point(0, 0)', 'A = point(0, -1)', 'a = angle_polaire(O, A)'].join('\n'));
 		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(-90, 5);
 	});
 
 	it('returns 45° for point at (1, 1)', () => {
-		const r = run(['O = point(0, 0)', 'A = point(1, 1)', 'a = angle(O, A)'].join('\n'));
+		const r = run(['O = point(0, 0)', 'A = point(1, 1)', 'a = angle_polaire(O, A)'].join('\n'));
 		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(45, 5);
 	});
 
 	it('works with non-origin center', () => {
-		const r = run(['O = point(2, 3)', 'A = point(5, 3)', 'a = angle(O, A)'].join('\n'));
+		const r = run(['O = point(2, 3)', 'A = point(5, 3)', 'a = angle_polaire(O, A)'].join('\n'));
 		expect(r.figure.getScalarValue(sym(r, 'a')!.figureId!)).toBeCloseTo(0, 5);
 	});
 
 	it('can be used in scalar arithmetic', () => {
 		const r = run(
-			['O = point(0, 0)', 'A = point(0, 1)', 'theta = angle(O, A)', 'b = 2 * theta'].join('\n')
+			['O = point(0, 0)', 'A = point(0, 1)', 'theta = angle_polaire(O, A)', 'b = 2 * theta'].join(
+				'\n'
+			)
 		);
 		expect(r.figure.getScalarValue(sym(r, 'b')!.figureId!)).toBeCloseTo(180, 3);
 	});
@@ -94,7 +101,7 @@ describe('DSL: angle(O, A) polar angle scalar', () => {
 				'O = point(0, 0)',
 				'A = point(1, 0)',
 				'P = point(0, 1)',
-				'theta = angle(O, A)',
+				'theta = angle_polaire(O, A)',
 				// theta = 0° for (1,0), so rotation of P by 0° gives P itself
 				'R = rotation(P, centre=O, angle=theta)'
 			].join('\n')
@@ -260,11 +267,12 @@ describe('DSL: distance() vs mesure()', () => {
 		expect(el!.visible).toBe(false);
 	});
 
-	it('mesure() creates visible text element', () => {
-		const r = run(['A = point(0, 0)', 'B = point(3, 4)', 'm = mesure(A, B)'].join('\n'));
+	it('distance() creates invisible scalar (was mesure)', () => {
+		// mesure(A, B) 2-points is no longer a text element; use distance() for scalar
+		const r = run(['A = point(0, 0)', 'B = point(3, 4)', 'm = distance(A, B)'].join('\n'));
 		const el = r.figure.getElementById(sym(r, 'm')!.figureId!);
-		expect(el!.type).toBe('text');
-		expect(el!.visible).toBe(true);
+		expect(el!.visible).toBe(false);
+		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).toBeCloseTo(5, 3);
 	});
 
 	it('distance() can be used as scalar param', () => {
@@ -389,7 +397,7 @@ describe('DSL: math functions on scalars', () => {
 				'P = point(1, 0)',
 				'O = point(0, 0)',
 				'Q = point(0, 1)',
-				'a = angle(P, O, Q)',
+				'a = mesure(P, O, Q, unite="deg")',
 				's = sin(a)'
 			].join('\n')
 		);
@@ -403,7 +411,7 @@ describe('DSL: math functions on scalars', () => {
 				'P = point(1, 0)',
 				'O = point(0, 0)',
 				'Q = point(0, 1)',
-				'a = angle(P, O, Q)',
+				'a = mesure(P, O, Q, unite="deg")',
 				'c = cos(a)'
 			].join('\n')
 		);
@@ -411,7 +419,7 @@ describe('DSL: math functions on scalars', () => {
 		expect(r.figure.getScalarValue(sym(r, 'c')!.figureId!)).toBeCloseTo(0, 10);
 	});
 
-	it('composed: sin(angle(P,O,Q)) * distance(A,B)', () => {
+	it('composed: sin(mesure(P,O,Q)) * distance(A,B)', () => {
 		const r = run(
 			[
 				'P = point(1, 0)',
@@ -419,7 +427,7 @@ describe('DSL: math functions on scalars', () => {
 				'Q = point(0, 1)',
 				'A = point(0, 0)',
 				'B = point(5, 0)',
-				'a = angle(P, O, Q)',
+				'a = mesure(P, O, Q, unite="deg")',
 				'd = distance(A, B)',
 				'r = sin(a) * d'
 			].join('\n')
@@ -452,7 +460,7 @@ describe('DSL: locus dependsOn includes scalar deps', () => {
 // K-bis. Rosace via polar angle + lieu
 // =============================================================================
 
-describe('DSL: rosace via angle(O, A) + lieu', () => {
+describe('DSL: rosace via angle_polaire(O, A) + lieu', () => {
 	it('produces a multi-petal locus (not a circle)', () => {
 		// r = 3*cos(3*theta) → 3-petal rosace
 		// A moves on circle of radius 3, theta = polar angle of A
@@ -462,7 +470,7 @@ describe('DSL: rosace via angle(O, A) + lieu', () => {
 				'O = point(0, 0)',
 				'c = cercle(O, rayon=3)',
 				'A = point_sur(c, 0)',
-				'theta = angle(O, A)',
+				'theta = angle_polaire(O, A)',
 				'k = cos(3 * theta)',
 				'B = homothetie(A, centre=O, rapport=k)',
 				'L = lieu(B, A)'
@@ -549,7 +557,7 @@ describe('DSL: scalar serialization roundtrip', () => {
 		expect(text).toContain('rapport=d');
 	});
 
-	it('roundtrip: angle scalar (3 args)', () => {
+	it('roundtrip: angle (3 args) as GeoAngle object', () => {
 		const script = [
 			'P = point(1, 0)',
 			'O = point(0, 0)',
@@ -559,16 +567,24 @@ describe('DSL: scalar serialization roundtrip', () => {
 		const { figure, symbols } = run(script);
 		const text = serialize(figure, symbols);
 		expect(text).toContain('a = angle(P, O, Q)');
+
+		// Re-parse and check: a is now a GeoAngle
+		const r2 = run(text);
+		const s = r2.symbols.allEntries().get('a');
+		expect(s?.type).toBe('angle');
 	});
 
-	it('roundtrip: polar angle scalar (2 args)', () => {
-		const script = ['O = point(0, 0)', 'A = point(1, 1)', 'theta = angle(O, A)'].join('\n');
+	it('roundtrip: polar angle scalar (angle_polaire)', () => {
+		const script = ['O = point(0, 0)', 'A = point(1, 1)', 'theta = angle_polaire(O, A)'].join('\n');
 		const { figure, symbols } = run(script);
 		const text = serialize(figure, symbols);
-		expect(text).toContain('theta = angle(O, A)');
+		expect(text).toContain('theta = angle_polaire(O, A)');
 
 		const r2 = run(text);
-		expect(r2.figure.getScalarValue(sym(r2, 'theta')!.figureId!)).toBeCloseTo(45, 3);
+		expect(r2.figure.getScalarValue(r2.symbols.allEntries().get('theta')!.figureId!)).toBeCloseTo(
+			45,
+			3
+		);
 	});
 
 	it('roundtrip: norme scalar', () => {

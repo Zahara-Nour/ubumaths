@@ -66,16 +66,15 @@ describe('DSL integration — runDsl', () => {
 				'segment(A, B)',
 				'segment(B, C)',
 				'segment(C, A)',
-				'marque_angle(B, A, C)',
-				'angle_droit(A, B, C)',
+				'angle(B, A, C)',
+				'angle(A, B, C, marque="carre")',
 				'marque_segment(A, B, traits=2)',
-				'mesure(A, B)'
+				'd = distance(A, B)'
 			].join('\n')
 		);
-		const marks = figure.getAllElements().filter((e) => e.type === 'angleMark');
+		const marks = figure.getAllElements().filter((e) => e.type === 'angle');
 		expect(marks).toHaveLength(2);
 		expect(figure.getAllElements().filter((e) => e.type === 'segmentMark')).toHaveLength(1);
-		expect(figure.getAllElements().filter((e) => e.type === 'text')).toHaveLength(1);
 	});
 });
 
@@ -96,7 +95,7 @@ describe('DSL integration — pipeline', () => {
 			'segment(A, B)',
 			'M = milieu(A, B)',
 			'c = cercle(A, rayon=2)',
-			'marque_angle(B, A, C)'
+			'angle(B, A, C)'
 		].join('\n');
 
 		// First pass
@@ -199,7 +198,7 @@ describe('DSL integration — complex use cases', () => {
 				'marque_segment(A, B, traits=1)',
 				'marque_segment(B, C, traits=1)',
 				'marque_segment(C, A, traits=1)',
-				'mesure(A, B)'
+				'd = distance(A, B)'
 			].join('\n')
 		);
 

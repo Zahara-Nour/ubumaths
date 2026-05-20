@@ -165,7 +165,7 @@ describe('stdlib — triangle_rectangle', () => {
 		expect(symbols.get('t')!.type).toBe('polygone');
 		const polys = figure.getAllElements().filter((e) => e.type === 'polygon');
 		expect(polys).toHaveLength(1);
-		const marks = figure.getAllElements().filter((e) => e.type === 'angleMark');
+		const marks = figure.getAllElements().filter((e) => e.type === 'angle');
 		expect(marks).toHaveLength(1);
 	});
 });
@@ -199,7 +199,7 @@ describe('stdlib — rectangle', () => {
 		expect(symbols.get('p')!.type).toBe('polygone');
 		const polys = figure.getAllElements().filter((e) => e.type === 'polygon');
 		expect(polys).toHaveLength(1);
-		const marks = figure.getAllElements().filter((e) => e.type === 'angleMark');
+		const marks = figure.getAllElements().filter((e) => e.type === 'angle');
 		expect(marks).toHaveLength(1);
 	});
 });

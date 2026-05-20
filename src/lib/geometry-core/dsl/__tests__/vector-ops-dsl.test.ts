@@ -233,41 +233,41 @@ p = produit_scalaire(u, v)
 		});
 	});
 
-	describe('angle_vecteurs()', () => {
+	describe('mesure(u, v) — replaces angle_vecteurs()', () => {
 		it('computes angle between orthogonal vectors', () => {
-			const { symbols } = runDsl(`
+			const { figure, symbols } = runDsl(`
 u = vecteur(1, 0)
 v = vecteur(0, 1)
-a = angle_vecteurs(u, v)
+a = mesure(u, v, unite="deg")
 `);
-			expect(symbols.get('a')!.value).toBeCloseTo(90);
+			expect(figure.getScalarValue(symbols.get('a')!.figureId!)).toBeCloseTo(90);
 		});
 
 		it('computes angle between parallel vectors', () => {
-			const { symbols } = runDsl(`
+			const { figure, symbols } = runDsl(`
 u = vecteur(1, 0)
 v = vecteur(2, 0)
-a = angle_vecteurs(u, v)
+a = mesure(u, v, unite="deg")
 `);
-			expect(symbols.get('a')!.value).toBeCloseTo(0);
+			expect(figure.getScalarValue(symbols.get('a')!.figureId!)).toBeCloseTo(0);
 		});
 
 		it('computes angle between opposite vectors', () => {
-			const { symbols } = runDsl(`
+			const { figure, symbols } = runDsl(`
 u = vecteur(1, 0)
 v = vecteur(-1, 0)
-a = angle_vecteurs(u, v)
+a = mesure(u, v, unite="deg")
 `);
-			expect(symbols.get('a')!.value).toBeCloseTo(180);
+			expect(figure.getScalarValue(symbols.get('a')!.figureId!)).toBeCloseTo(180);
 		});
 
 		it('computes 60 degree angle', () => {
-			const { symbols } = runDsl(`
+			const { figure, symbols } = runDsl(`
 u = vecteur(1, 0)
 v = vecteur(0.5, 0.866025)
-a = angle_vecteurs(u, v)
+a = mesure(u, v, unite="deg")
 `);
-			expect(symbols.get('a')!.value).toBeCloseTo(60, 0);
+			expect(figure.getScalarValue(symbols.get('a')!.figureId!)).toBeCloseTo(60, 0);
 		});
 	});
 
