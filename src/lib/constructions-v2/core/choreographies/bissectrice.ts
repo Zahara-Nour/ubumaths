@@ -16,12 +16,52 @@
  * bisector by symmetry of |VA'| = |VB'|).
  */
 
-import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types';
+import type { Voie, ChoreographyFn, ChoreographyCtx, ChoreographyResult, SubStep } from './types';
+import { isAngle } from '$lib/geometry-core/types/elements';
+import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const CERCLE_V_RADIUS_FACTOR = 0.6; // r1 = 0.6 × min(|VA|, |VB|)
 const ARC_RADIUS_FACTOR = 0.7; // r2 = 0.7 × |A'B'|
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° default for the small arcs (at V, A', B')
+
+/**
+ * V3a — `bissectrice(α)` input dispatch.
+ *
+ * When the choreography is invoked with a single `GeoAngle` argument
+ * (forme V3a : `α = angle(A, V, B); d = bissectrice(α) @euclide`), expand
+ * the ctx into the canonical 3-point form `(p1, vertex, p2)` so the rest
+ * of the choreography (designed in V2 for 3 points) runs unchanged.
+ *
+ * Returns the original ctx when the input is already the 3-point form
+ * `bissectrice(A, V, B)`. Returns the original ctx unchanged when the
+ * 1-arg input is not a `GeoAngle` (the builtin layer rejects this case
+ * with a structured error before the choreography runs, so we just bail
+ * out and let the rest of the flow surface whatever runtime error the
+ * builtin produces).
+ */
+function normalizeBissectriceCtx(ctx: ChoreographyCtx): ChoreographyCtx {
+	const { figure, args } = ctx;
+	if (args.ids.length !== 1) return ctx;
+	const angleEl = figure.getElementById(args.ids[0]);
+	if (!angleEl || !isAngle(angleEl)) return ctx;
+	const p1Pos = figure.getPosition(angleEl.p1Id);
+	const vertexPos = figure.getPosition(angleEl.vertexId);
+	const p2Pos = figure.getPosition(angleEl.p2Id);
+	if (!p1Pos || !vertexPos || !p2Pos) return ctx;
+	return {
+		...ctx,
+		args: {
+			ids: [angleEl.p1Id, angleEl.vertexId, angleEl.p2Id],
+			coords: [
+				{ x: geoToNumber(p1Pos.x), y: geoToNumber(p1Pos.y) },
+				{ x: geoToNumber(vertexPos.x), y: geoToNumber(vertexPos.y) },
+				{ x: geoToNumber(p2Pos.x), y: geoToNumber(p2Pos.y) }
+			],
+			named: args.named
+		}
+	};
+}
 
 /**
  * Half-sweep of the small arcs at V (clamped to a fraction of the angle
@@ -808,9 +848,9 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	};
 }
 
-const arcsEgauxChoreography: ChoreographyFn = (ctx) => buildArcsEgaux(ctx);
+const arcsEgauxChoreography: ChoreographyFn = (ctx) => buildArcsEgaux(normalizeBissectriceCtx(ctx));
 
-const arcMilieuChoreography: ChoreographyFn = (ctx) => buildArcMilieu(ctx);
+const arcMilieuChoreography: ChoreographyFn = (ctx) => buildArcMilieu(normalizeBissectriceCtx(ctx));
 
 export const VOIES_BISSECTRICE_EUCLIDE: readonly Voie[] = [
 	{

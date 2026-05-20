@@ -39,7 +39,7 @@ constructeurs + dette tech) avec **3 features pédagogiques** :
 | P0  | Spec TDD + tests rouges                                                                    | terminée     |
 | P1  | Builtin `transporte` + factory (héritage style + 4 signatures direction)                   | **terminée** |
 | P2  | Rendu `fill` du secteur sur 4 surfaces (canvas + SVG + TikZ + Typst)                       | à faire      |
-| P3  | Chorégraphie `bissectrice(angle)` extension (dispatch input `GeoAngle` → flow V2 existant) | à faire      |
+| P3  | Chorégraphie `bissectrice(angle)` extension (dispatch input `GeoAngle` → flow V2 existant) | **terminée** |
 | P4  | Tests intégration + CHANGELOG + doc V3a + release `v0.9.3` (ou `v0.10.1`)                  | à faire      |
 
 ---
@@ -410,7 +410,83 @@ Ces 3 cassures sont antérieures à P1 (commit P0). À traiter séparément
 
 ## Notes Phase 3
 
-(à compléter en fin de P3)
+### Stratégie
+
+Dispatch d'input pur : un helper `normalizeBissectriceCtx(ctx)` au top du fichier
+`bissectrice.ts` détecte le cas `args.ids.length === 1` + élément `GeoAngle`,
+extrait `(p1Id, vertexId, p2Id)` via `el.p1Id/el.vertexId/el.p2Id` (type guard
+`isAngle`), reconstruit `ctx.args` avec les 3 ids + leurs `coords` (via
+`figure.getPosition` + `geoToNumber`), et passe ce nouveau ctx au flow
+existant `buildArcsEgaux` / `buildArcMilieu`. **Aucune nouvelle séquence
+d'animation** — réutilisation 100 % du code V2 (834 LoC inchangés).
+
+Les 2 entry points :
+
+```ts
+const arcsEgauxChoreography: ChoreographyFn = (ctx) => buildArcsEgaux(normalizeBissectriceCtx(ctx));
+const arcMilieuChoreography: ChoreographyFn = (ctx) => buildArcMilieu(normalizeBissectriceCtx(ctx));
+```
+
+Fallback silencieux quand l'input n'est pas un `GeoAngle` (ou ids vides, ou
+positions introuvables) : on retourne le ctx d'origine, le flow V2 lève alors
+son erreur structurée habituelle ou — si valide en 3-points — exécute la
+chorégraphie normale. La validation d'input avait déjà été faite côté builtin
+(`handleBissectrice` rejette les cas non angles à la ligne 5458 de
+`builtins.ts`), donc le dispatch choré peut rester permissif.
+
+### LoC ajoutées
+
+- `bissectrice.ts` : +44 LoC (helper `normalizeBissectriceCtx` + 2 imports + 2
+  appels dans les entry points).
+- `choreographies-integration.test.ts` : +95 LoC (3 tests V3a).
+
+Total : ~140 LoC dans la cible plan ~100.
+
+### Tests activés
+
+3/3 `.todo()` V3a convertis en tests passants :
+
+- `bissectrice(α) @euclide produit le même totalSteps que bissectrice(A,V,B)`
+  → `execAngle.totalSteps === execThreePoints.totalSteps + 1` (le +1 vient du
+  statement `al = angle(A, V, B)` statique sans chorégraphie).
+- `stepDurations identiques (même timing)` → comparaison `slice(3)` vs
+  `slice(4)` des deux exécuteurs : tableau d'identique 7 entrées.
+- `extrait correctement (p1, vertex, p2) depuis α` → vérification que la
+  séquence des `currentSubStep.kind` après l'angle statique reproduit
+  exactement les 7 sous-étapes du flow V2 (compass-draw × 2,
+  point-fade-in × 2 pts, compass-draw × 2, point-fade-in × 1 pt,
+  ruler-trace).
+
+### Résultats
+
+```
+choreographies-integration.test.ts   23 passed (23)   [+3 nouveaux V3a, 0 régression]
+builtins-angle.test.ts              104 passed | 7 todo (111)   [0 régression]
+choreographies-resolve.test.ts       23 passed (23)   [0 régression]
+stdlib.test.ts                       56 passed (56)   [0 régression]
+```
+
+### Limitations
+
+- **Identifiants Unicode dans tests** : le tokenizer DSL refuse `α` comme
+  identifiant (`Caractère inattendu : 'α'`). Tests utilisent `al` à la place.
+  L'idiome `α = angle(...)` reste valide dans la documentation mais pas dans
+  les scripts exécutables — limitation préexistante hors scope V3a.
+- **Pas de validation d'erreur structurée côté choré** : si l'utilisateur
+  appelle `bissectrice(non_angle)`, le builtin `handleBissectrice` rejette
+  d'abord (avant la chorégraphie), donc le dispatch choré n'a pas besoin de
+  dupliquer les `DslRuntimeError`. Comportement vérifié indirectement : le
+  test `non-choreographed` continue de passer.
+
+### Fichiers modifiés
+
+- `src/lib/constructions-v2/core/choreographies/bissectrice.ts` (+44 LoC).
+- `src/lib/constructions-v2/core/__tests__/choreographies-integration.test.ts` (+95 LoC).
+- `docs/wip/geometry/angle-v3a-progress.md` (notes P3 ajoutées).
+
+### Statut
+
+P3 **terminée**. Prêt pour P4 (tests intégration + doc + release).
 
 ---
 

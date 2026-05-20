@@ -378,13 +378,110 @@ describe('ConstructionExecutor — bissectrice @euclide @arc_milieu (5 sub-steps
 // Reference : docs/wip/geometry/angle-v3a-progress.md §3.
 
 describe('ConstructionExecutor — bissectrice(α) @euclide (V3a input dispatch)', () => {
-	it.todo(
-		'bissectrice(α) @euclide produit le même totalSteps que bissectrice(A,V,B) @euclide sur la même figure'
-	);
-	it.todo(
-		'bissectrice(α) @euclide : stepDurations identiques à bissectrice(A,V,B) @euclide (même timing)'
-	);
-	it.todo(
-		'bissectrice(α) @euclide : extrait correctement (p1, vertex, p2) depuis α = angle(A, V, B)'
-	);
+	it('bissectrice(α) @euclide produit le même totalSteps que bissectrice(A,V,B) @euclide sur la même figure', () => {
+		const execThreePoints = new ConstructionExecutor();
+		execThreePoints.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'd = bissectrice(A, V, B) @euclide'
+			].join('\n')
+		);
+		const execAngle = new ConstructionExecutor();
+		execAngle.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'al = angle(A, V, B)',
+				'd = bissectrice(al) @euclide'
+			].join('\n')
+		);
+		// 3 points + 7 sub-steps for the bisector = 10 (3-points form).
+		expect(execThreePoints.totalSteps).toBe(10);
+		// 3 points + 1 angle (statique, sans chorégraphie) + 7 sub-steps = 11.
+		expect(execAngle.totalSteps).toBe(execThreePoints.totalSteps + 1);
+	});
+
+	it('bissectrice(α) @euclide : stepDurations identiques à bissectrice(A,V,B) @euclide (même timing)', () => {
+		const execThreePoints = new ConstructionExecutor();
+		execThreePoints.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'd = bissectrice(A, V, B) @euclide'
+			].join('\n')
+		);
+		const execAngle = new ConstructionExecutor();
+		execAngle.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'al = angle(A, V, B)',
+				'd = bissectrice(al) @euclide'
+			].join('\n')
+		);
+		// The 7 sub-step durations of the bisector animation must match
+		// exactly between the two forms. They are the last 7 entries of
+		// stepDurations in both cases (3-points form : indices 3..9 ;
+		// angle form : indices 4..10).
+		const threePointDurations = execThreePoints.stepDurations.slice(3);
+		const angleDurations = execAngle.stepDurations.slice(4);
+		expect(angleDurations).toEqual(threePointDurations);
+	});
+
+	it('bissectrice(α) @euclide : extrait correctement (p1, vertex, p2) depuis α = angle(A, V, B)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'al = angle(A, V, B)',
+				'd = bissectrice(al) @euclide'
+			].join('\n')
+		);
+		exec.executeAll();
+		exec.step(); // drain visibility
+		const result = exec.lastChoreographyResult;
+		expect(result).not.toBeNull();
+		// The sub-step kinds must match the 7-sub-step bisector sequence
+		// (proof that the choreography ran on the extracted 3-point form,
+		// not on the single angle id).
+		const exec2 = new ConstructionExecutor();
+		exec2.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'al = angle(A, V, B)',
+				'd = bissectrice(al) @euclide'
+			].join('\n')
+		);
+		exec2.step(); // A
+		exec2.step(); // V
+		exec2.step(); // B
+		exec2.step(); // α (static angle, no choreography)
+		expect(exec2.currentSubStep).toBeNull();
+		exec2.step(); // SS1 : small arc at V near VA
+		expect(exec2.currentSubStep?.kind).toBe('compass-draw');
+		exec2.step(); // SS2 : small arc at V near VB
+		expect(exec2.currentSubStep?.kind).toBe('compass-draw');
+		exec2.step(); // SS3 : fade-in A', B'
+		expect(exec2.currentSubStep?.kind).toBe('point-fade-in');
+		expect(exec2.currentSubStep?.animatePointIds.length).toBe(2);
+		exec2.step(); // SS4
+		expect(exec2.currentSubStep?.kind).toBe('compass-draw');
+		exec2.step(); // SS5
+		expect(exec2.currentSubStep?.kind).toBe('compass-draw');
+		exec2.step(); // SS6 : fade-in P
+		expect(exec2.currentSubStep?.kind).toBe('point-fade-in');
+		expect(exec2.currentSubStep?.animatePointIds.length).toBe(1);
+		exec2.step(); // SS7 : ruler trace
+		expect(exec2.currentSubStep?.kind).toBe('ruler-trace');
+		expect(exec2.currentSubStep?.instrument).toBe('ruler');
+	});
 });
