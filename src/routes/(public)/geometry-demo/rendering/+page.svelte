@@ -116,9 +116,15 @@
 	roughFig.createSegmentMark(rC, rA, { color: '#dc2626', markCount: 1 });
 
 	const rK = roughFig.createFreePoint(pt(-4, 3), { label: 'K', color: '#0891b2' });
-	roughFig.createArcByAngles(rK, numeric(2), numeric(0), numeric(Math.PI * 0.8), {
-		color: '#0891b2'
-	});
+	roughFig.createArcByAngles(
+		rK,
+		exact(number('2')),
+		exact(number('0')),
+		exact(numericNode(Math.PI * 0.8)),
+		{
+			color: '#0891b2'
+		}
+	);
 
 	// ==========================================================================
 	// Mixed mode demo — some elements rough, some normal
@@ -153,10 +159,16 @@
 
 	// Rough arc
 	const mArcK = mixedFig.createFreePoint(pt(5, -3), { label: 'K', color: '#0891b2' });
-	mixedFig.createArcByAngles(mArcK, numeric(2), numeric(Math.PI / 4), numeric(Math.PI), {
-		color: '#0891b2',
-		style: { render: 'rough' }
-	});
+	mixedFig.createArcByAngles(
+		mArcK,
+		exact(number('2')),
+		exact(numericNode(Math.PI / 4)),
+		exact(numericNode(Math.PI)),
+		{
+			color: '#0891b2',
+			style: { render: 'rough' }
+		}
+	);
 
 	// ==========================================================================
 	// Parameters showcase — bowing, fillStyle, preserveVertices
