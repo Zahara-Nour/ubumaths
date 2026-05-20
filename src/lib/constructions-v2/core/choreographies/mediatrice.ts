@@ -25,14 +25,19 @@ import { numericNode } from '$lib/mathAST/common/numeric';
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types';
 
 /**
- * Extension applied to each endpoint of the segment-trace beyond I1 and I2.
- * The segment serves as the visual surrogate of the median LINE during
- * the SS4 ruler trace ; lines are infinite (extended to viewport by
- * `lineToSVG`), so a short I1→I2 segment would look much smaller than the
- * final line. Extending by 15 math units on each side spans well beyond
- * any typical canvas viewport (~20 math units wide).
+ * Length of the segment-trace (math units). Matches the default `Ruler`
+ * component length (`length=15` in `Ruler.svelte`), so the ruler exactly
+ * frames the traced segment. The segment is centered on the midpoint of
+ * I1/I2 (= midpoint of the median line) and serves as the visual surrogate
+ * of the principal LINE during the SS4 ruler trace ; lines are infinite
+ * (extended to viewport by `lineToSVG`), so this 15-math-unit segment
+ * approximates the visible portion of the line on a typical canvas
+ * (default viewport spans ~20×15 math units at 800×600px / PPU=40).
+ *
+ * For configurations where |I1I2| is larger than this default (e.g. very
+ * wide |AB|), the segment is grown to `1.2 × |I1I2|` instead.
  */
-const SEGMENT_TRACE_EXTENSION = 15;
+const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 
 /**
  * Build the `arcs_egaux` choreography for a given radius factor.
@@ -131,19 +136,24 @@ function buildArcsEgaux(
 	const I2 = figure.createIntersectionCC(circleA, circleB, 1);
 	figure.hideElement(I2);
 
-	// Extended endpoints : the ruler traces a segment well past I1/I2 so it
-	// visually matches the infinite median line that gets revealed at the
-	// end of SS4. Without this extension, the segment trace would look
-	// much shorter than the final line (which extends to the viewport).
-	// Points are non-reactive (computed once at creation) ; acceptable
-	// because the segment-trace is hidden after SS4 in `@squelette` mode,
-	// replaced by the reactive principal line.
+	// Segment-trace endpoints : centered on the midpoint of I1/I2 (= the
+	// midpoint of the median line) with total length matching the ruler's
+	// default length (15 math units). The ruler is placed at Iext1 (one
+	// end) ; its body then spans the entire segment-trace, framing it
+	// visually. The 15-unit segment also matches the visible portion of
+	// the principal line on a default 800×600 canvas (viewport ~20×15
+	// math units), so the swap from segment to line at end of SS4 is
+	// imperceptible. The points are non-reactive (computed once) —
+	// acceptable since the segment-trace is hidden after SS4 in
+	// `@squelette` mode, replaced by the reactive principal line.
 	const dirX = segLen > 0 ? (I2x - I1x) / segLen : 0;
 	const dirY = segLen > 0 ? (I2y - I1y) / segLen : 0;
-	const Iext1x = I1x - dirX * SEGMENT_TRACE_EXTENSION;
-	const Iext1y = I1y - dirY * SEGMENT_TRACE_EXTENSION;
-	const Iext2x = I2x + dirX * SEGMENT_TRACE_EXTENSION;
-	const Iext2y = I2y + dirY * SEGMENT_TRACE_EXTENSION;
+	const traceLen = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT, segLen * 1.2);
+	const halfTrace = traceLen / 2;
+	const Iext1x = midX - dirX * halfTrace;
+	const Iext1y = midY - dirY * halfTrace;
+	const Iext2x = midX + dirX * halfTrace;
+	const Iext2y = midY + dirY * halfTrace;
 	const Iext1 = figure.createFreePoint(
 		{ x: numeric(Iext1x), y: numeric(Iext1y) },
 		{ draggable: false }
@@ -156,7 +166,6 @@ function buildArcsEgaux(
 	figure.hideElement(Iext2);
 	const segmentTrace = figure.createSegment(Iext1, Iext2);
 	figure.hideElement(segmentTrace);
-	const extendedSegLen = segLen + 2 * SEGMENT_TRACE_EXTENSION;
 
 	// ─── Sub-steps ───
 	const arcLength = r * sweepRad;
@@ -210,7 +219,7 @@ function buildArcsEgaux(
 			instrument: 'ruler',
 			secondaryInstrument: 'pencil',
 			instrumentTarget: { x: Iext1x, y: Iext1y, rotation: segRotationDeg },
-			geometricDistance: extendedSegLen,
+			geometricDistance: traceLen,
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
 			animateLineIds: [],
