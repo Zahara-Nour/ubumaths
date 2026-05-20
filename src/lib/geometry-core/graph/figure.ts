@@ -4488,10 +4488,21 @@ export class Figure {
 		this.elements.set(id, updated);
 	}
 
+	/**
+	 * Hide an element from rendering. Preserves the element's `label` and all
+	 * other fields — only `visible` is set to `false`. This is symmetric with
+	 * `showElement`: hide/show round-trips preserve identity.
+	 *
+	 * (Fix B3 from V1 code-review: previously cleared `label`, losing
+	 * semantic identity when hidden — caused issues for internal-only
+	 * angles created by `mesure(A, V, B)` that needed to be revealed later
+	 * for debugging or choreography.)
+	 */
 	hideElement(id: string): void {
 		const el = this.elements.get(id);
 		if (!el) return;
-		const updated = { ...el, visible: false, label: undefined } as GeoElement;
+		if (el.visible === false) return;
+		const updated = { ...el, visible: false } as GeoElement;
 		this.elements.set(id, updated);
 	}
 
