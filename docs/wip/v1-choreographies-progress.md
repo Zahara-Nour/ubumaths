@@ -16,9 +16,10 @@
 | Phase 2 — Registre + résolveur                     | ✓ livrée      | `e4daaca76`                                                                  | 23            |
 | Phase 3 — Wiring ConstructionExecutor              | ✓ livrée      | `2ae801cac`                                                                  | 8             |
 | Améliorations animation (lines/rays)               | ✓ livrées     | `259a09154`, `4b5f57913`, `00adc9f68`, `76a162b7d`, `97b5b52f0`, `20400837c` | 0 (UX only)   |
-| Phase 4 sub-steps + MVP mediatrice — Phase A       | ✓ livrée      | session 2026-05-19 (reprise)                                                 | +0 (refactor) |
-| Phase 4 sub-steps + MVP mediatrice — Phase B       | ✓ livrée      | session 2026-05-19 (reprise)                                                 | +5            |
-| Phase 5 — Gestion visibilité finale                | ✓ livrée      | session 2026-05-19 (reprise)                                                 | +6            |
+| Phase 4 sub-steps + MVP mediatrice — Phase A       | ✓ livrée      | `3c7aa285f` (2026-05-19)                                                     | +0 (refactor) |
+| Phase 4 sub-steps + MVP mediatrice — Phase B       | ✓ livrée      | `3c7aa285f` (2026-05-19)                                                     | +5            |
+| Phase 5 — Gestion visibilité finale                | ✓ livrée      | `3c7aa285f` (2026-05-19)                                                     | +6            |
+| Phase E — Polish visuel (validation utilisateur)   | ✓ livrée      | `07aac16f4`, `a95daa2be`, `da452898f`, `fd739521a` (2026-05-19/20)           | 0 (fixes UX)  |
 | Phase 4 — Autres voies (bissectrice, parallele, …) | ⏸ à démarrer | —                                                                            | —             |
 | Phase 4.5 — `ctx.sub` + `cercle_circonscrit`       | ⏸ à démarrer | —                                                                            | —             |
 | Phase 6 — Documentation auto-générée               | ⏸ à démarrer | —                                                                            | —             |
