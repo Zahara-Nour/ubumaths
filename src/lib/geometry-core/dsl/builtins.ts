@@ -67,8 +67,11 @@ import {
 	isConicPolar,
 	isQuadraticCurve,
 	isAngle,
-	isVector
+	isVector,
+	isLine
 } from '../types/elements';
+import type { GeoVector, GeoSegment, GeoLine } from '../types/elements';
+import { intersectLL } from '../geometry/intersections';
 import { applyAngleMode } from './apply-angle-mode';
 import { interpretAreaBuiltin } from './area-builtin-helper';
 
@@ -2902,6 +2905,18 @@ const ANGLE_FORMS = [
 		description: 'angle géométrique au sommet `V` formé par les côtés `[VA)` et `[VB)`'
 	},
 	{
+		syntax: 'angle(u, v)',
+		description: 'angle non orienté entre 2 vecteurs `u` et `v` (dans `[0, π]`)'
+	},
+	{
+		syntax: 'angle(seg1, seg2)',
+		description: 'angle entre 2 segments sécants (vertex = intersection ou extrémité commune)'
+	},
+	{
+		syntax: 'angle(d1, d2)',
+		description: 'angle aigu entre 2 droites sécantes (dans `[0, π/2]`)'
+	},
+	{
 		syntax: 'angle_polaire(O, P)',
 		description: 'angle polaire du vecteur `OP` par rapport à l’axe `Ox`'
 	}
@@ -2935,31 +2950,18 @@ function requireEnumNamed<T extends string>(
 	return val.value as T;
 }
 
-function handleAngle(ctx: BuiltinCtx): BuiltinResult {
-	const { pos, named, figure, line, label } = ctx;
-	if (pos.length === 2) {
-		throw new DslRuntimeError(
-			{
-				summary: '`angle()` à 2 arguments est obsolète.',
-				hint: "Utilise `angle_polaire(O, P)` pour l'angle polaire d'un vecteur, ou ajoute le 3ᵉ point pour un angle géométrique.",
-				forms: ANGLE_FORMS
-			},
-			line
-		);
-	}
-	if (pos.length !== 3) {
-		throw new DslRuntimeError(
-			{
-				summary: `\`angle()\` attend 3 points (A, V, B), ${pos.length} reçu(s).`,
-				hint: 'Le 2ᵉ argument est le sommet de l’angle.',
-				forms: ANGLE_FORMS
-			},
-			line
-		);
-	}
-	const aP1Id = requireElement(pos[0], 'A', line);
-	const aVId = requireElement(pos[1], 'V', line);
-	const aP2Id = requireElement(pos[2], 'B', line);
+/** Read all V1 named angle options (marque, orientation, kind, showLabel, unite, arcRadiusPx). */
+function readAngleNamedOptions(
+	named: Map<string, ResolvedValue>,
+	line: number
+): {
+	marque?: 'arc' | 'arcs2' | 'arcs3' | 'carre' | 'aucune';
+	orientation?: 'direct' | 'indirect' | 'auto';
+	kind?: 'saillant' | 'rentrant';
+	showLabel?: 'aucun' | 'nom' | 'mesure' | 'mesure+nom';
+	unite?: 'rad' | 'deg';
+	arcRadiusPx?: number;
+} {
 	const marque = requireEnumNamed<'arc' | 'arcs2' | 'arcs3' | 'carre' | 'aucune'>(
 		named,
 		'marque',
@@ -2992,16 +2994,422 @@ function handleAngle(ctx: BuiltinCtx): BuiltinResult {
 	const arcRadiusPx = named.has('arcRadiusPx')
 		? requireNumber(named.get('arcRadiusPx')!, 'arcRadiusPx', line)
 		: undefined;
-	const id = figure.createAngle(aP1Id, aVId, aP2Id, {
+	return { marque, orientation, kind, showLabel, unite, arcRadiusPx };
+}
+
+/** Resolve a vector element's (dx, dy) from the live positions; throws on degenerate. */
+function resolveVectorNumericComponents(
+	v: GeoVector,
+	figure: Figure,
+	argName: string,
+	line: number
+): { dx: number; dy: number } {
+	const comp = figure.getVectorComponents(v.id);
+	if (!comp) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`angle(u, v)\` : composantes du vecteur \`${argName}\` non calculables.`,
+				hint: 'Vérifie que le vecteur est bien défini (points ancrés existants).'
+			},
+			line
+		);
+	}
+	const dx = geoToNumber(comp.dx);
+	const dy = geoToNumber(comp.dy);
+	if (!Number.isFinite(dx) || !Number.isFinite(dy) || Math.hypot(dx, dy) < 1e-15) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`angle(u, v)\` : vecteur \`${argName}\` de norme nulle, angle indéterminé.`,
+				hint: 'Les 2 vecteurs doivent être non nuls.'
+			},
+			line
+		);
+	}
+	return { dx, dy };
+}
+
+/** Build a GeoAngle from 3 (resolved) point ids and the named-options block. */
+function buildAngleFromPoints(
+	p1Id: string,
+	vertexId: string,
+	p2Id: string,
+	named: Map<string, ResolvedValue>,
+	figure: Figure,
+	line: number,
+	label: string | undefined
+): BuiltinResult {
+	const opts = readAngleNamedOptions(named, line);
+	const id = figure.createAngle(p1Id, vertexId, p2Id, {
 		label,
-		marque,
-		orientation,
-		kind,
-		showLabel,
-		unite,
-		arcRadiusPx
+		marque: opts.marque,
+		orientation: opts.orientation,
+		kind: opts.kind,
+		showLabel: opts.showLabel,
+		unite: opts.unite,
+		arcRadiusPx: opts.arcRadiusPx
 	});
 	return { figureId: id, symbolType: 'angle' };
+}
+
+/** V1 — angle(A, V, B) overload (3 points). */
+function handleAngle3Points(
+	pos: ResolvedValue[],
+	named: Map<string, ResolvedValue>,
+	figure: Figure,
+	line: number,
+	label: string | undefined
+): BuiltinResult {
+	const aP1Id = requireElement(pos[0], 'A', line);
+	const aVId = requireElement(pos[1], 'V', line);
+	const aP2Id = requireElement(pos[2], 'B', line);
+	return buildAngleFromPoints(aP1Id, aVId, aP2Id, named, figure, line, label);
+}
+
+/** V2 — angle(u, v) overload (2 vectors). Builds 3 freePoints invisible. */
+function handleAngleVectors(
+	u: GeoVector,
+	v: GeoVector,
+	named: Map<string, ResolvedValue>,
+	figure: Figure,
+	line: number,
+	label: string | undefined
+): BuiltinResult {
+	// Validate non-zero norms early (throws structured DslRuntimeError).
+	const compU = resolveVectorNumericComponents(u, figure, 'u', line);
+	const compV = resolveVectorNumericComponents(v, figure, 'v', line);
+
+	// Degenerate: u === v (same id) → mesure = 0. Build a synthetic triplet
+	// (vertex, p1, p2=duplicate-shifted) so the graph has no duplicate parents.
+	if (u.id === v.id) {
+		const anchorPos = u.type === 'vectorByPoints' ? figure.getPosition(u.startId) : null;
+		const vx = anchorPos ? geoToNumber(anchorPos.x) : 0;
+		const vy = anchorPos ? geoToNumber(anchorPos.y) : 0;
+		const vertexId = figure.createFreePoint(
+			{ x: numeric(vx), y: numeric(vy) },
+			{ visible: false, draggable: false }
+		);
+		const p1Id = figure.createFreePoint(
+			{ x: numeric(vx + compU.dx), y: numeric(vy + compU.dy) },
+			{ visible: false, draggable: false }
+		);
+		const p2Id = figure.createFreePoint(
+			{ x: numeric(vx + compU.dx), y: numeric(vy + compU.dy) },
+			{ visible: false, draggable: false }
+		);
+		return buildAngleFromPoints(p1Id, vertexId, p2Id, named, figure, line, label);
+	}
+
+	// Case (a) — both vectorByPoints sharing a common start point: reuse points.
+	if (u.type === 'vectorByPoints' && v.type === 'vectorByPoints' && u.startId === v.startId) {
+		// Also handle the rare case where the two end points coincide (different
+		// vectorByPoints but same endId), which would also duplicate parents.
+		if (u.endId !== v.endId) {
+			return buildAngleFromPoints(u.endId, u.startId, v.endId, named, figure, line, label);
+		}
+	}
+
+	// General case (b/c/d) — build synthetic invisible freePoints from numeric
+	// components at the time of construction. Reactivity to drag of the source
+	// vector points is NOT propagated to these synthetic points (V2 limitation,
+	// see progress doc).
+
+	// Choose vertex anchor : start of u if bound (vectorByPoints), else (0,0).
+	let vertexX = 0;
+	let vertexY = 0;
+	let vertexId: string | undefined;
+	if (u.type === 'vectorByPoints') {
+		const start = figure.getPosition(u.startId);
+		if (start) {
+			vertexX = geoToNumber(start.x);
+			vertexY = geoToNumber(start.y);
+			vertexId = u.startId;
+		}
+	} else if (v.type === 'vectorByPoints') {
+		const start = figure.getPosition(v.startId);
+		if (start) {
+			vertexX = geoToNumber(start.x);
+			vertexY = geoToNumber(start.y);
+			vertexId = v.startId;
+		}
+	}
+
+	if (vertexId === undefined) {
+		vertexId = figure.createFreePoint(
+			{ x: numeric(vertexX), y: numeric(vertexY) },
+			{ visible: false, draggable: false }
+		);
+	}
+
+	// p1 = vertex + u : reuse endId if u is bound and anchored on this vertex,
+	// else synthetic.
+	let p1Id: string;
+	if (u.type === 'vectorByPoints' && u.startId === vertexId) {
+		p1Id = u.endId;
+	} else {
+		p1Id = figure.createFreePoint(
+			{ x: numeric(vertexX + compU.dx), y: numeric(vertexY + compU.dy) },
+			{ visible: false, draggable: false }
+		);
+	}
+
+	// p2 = vertex + v : reuse endId if v is bound and anchored on this vertex,
+	// else synthetic.
+	let p2Id: string;
+	if (v.type === 'vectorByPoints' && v.startId === vertexId) {
+		p2Id = v.endId;
+	} else {
+		p2Id = figure.createFreePoint(
+			{ x: numeric(vertexX + compV.dx), y: numeric(vertexY + compV.dy) },
+			{ visible: false, draggable: false }
+		);
+	}
+
+	return buildAngleFromPoints(p1Id, vertexId, p2Id, named, figure, line, label);
+}
+
+/** V2 — angle(seg1, seg2) overload (2 segments). */
+function handleAngleSegments(
+	s1: GeoSegment,
+	s2: GeoSegment,
+	named: Map<string, ResolvedValue>,
+	figure: Figure,
+	line: number,
+	label: string | undefined
+): BuiltinResult {
+	// Case (a) — shared endpoint.
+	const shared = findSharedEndpoint(s1, s2);
+	if (shared) {
+		return buildAngleFromPoints(
+			shared.other1,
+			shared.commonId,
+			shared.other2,
+			named,
+			figure,
+			line,
+			label
+		);
+	}
+
+	// Case (b) — disjoint, compute intersection of support lines via intersectLL.
+	const p1 = figure.getPosition(s1.startId);
+	const p2 = figure.getPosition(s1.endId);
+	const p3 = figure.getPosition(s2.startId);
+	const p4 = figure.getPosition(s2.endId);
+	if (!p1 || !p2 || !p3 || !p4) {
+		throw new DslRuntimeError(
+			{
+				summary: '`angle(seg1, seg2)` : positions des extrémités non calculables.'
+			},
+			line
+		);
+	}
+	const inter = intersectLL(p1, p2, p3, p4);
+	if (!inter) {
+		throw new DslRuntimeError(
+			{
+				summary: '`angle(seg1, seg2)` : les 2 segments sont parallèles, l’angle n’est pas défini.',
+				hint: 'Utilise `angle(d1, d2)` si tu veux la mesure entre 2 droites parallèles (qui vaut 0 par convention) ou réordonne les segments.',
+				forms: ANGLE_FORMS
+			},
+			line
+		);
+	}
+
+	const ix = geoToNumber(inter.x);
+	const iy = geoToNumber(inter.y);
+
+	// p1/p2 = farthest endpoint of each segment from the intersection.
+	const far1Id = farthestEndpoint(s1.startId, s1.endId, p1, p2, ix, iy);
+	const far2Id = farthestEndpoint(s2.startId, s2.endId, p3, p4, ix, iy);
+
+	const vertexId = figure.createFreePoint(
+		{ x: inter.x, y: inter.y },
+		{ visible: false, draggable: false }
+	);
+	return buildAngleFromPoints(far1Id, vertexId, far2Id, named, figure, line, label);
+}
+
+function findSharedEndpoint(
+	s1: GeoSegment,
+	s2: GeoSegment
+): { commonId: string; other1: string; other2: string } | null {
+	if (s1.startId === s2.startId)
+		return { commonId: s1.startId, other1: s1.endId, other2: s2.endId };
+	if (s1.startId === s2.endId)
+		return { commonId: s1.startId, other1: s1.endId, other2: s2.startId };
+	if (s1.endId === s2.startId) return { commonId: s1.endId, other1: s1.startId, other2: s2.endId };
+	if (s1.endId === s2.endId) return { commonId: s1.endId, other1: s1.startId, other2: s2.startId };
+	return null;
+}
+
+function farthestEndpoint(
+	startId: string,
+	endId: string,
+	startPos: GeoPoint,
+	endPos: GeoPoint,
+	ix: number,
+	iy: number
+): string {
+	const sx = geoToNumber(startPos.x);
+	const sy = geoToNumber(startPos.y);
+	const ex = geoToNumber(endPos.x);
+	const ey = geoToNumber(endPos.y);
+	const dStart = Math.hypot(sx - ix, sy - iy);
+	const dEnd = Math.hypot(ex - ix, ey - iy);
+	return dEnd >= dStart ? endId : startId;
+}
+
+/** V2 — angle(d1, d2) overload (2 lines). Acute-angle convention. */
+function handleAngleLines(
+	d1: GeoLine,
+	d2: GeoLine,
+	named: Map<string, ResolvedValue>,
+	figure: Figure,
+	line: number,
+	label: string | undefined
+): BuiltinResult {
+	const p1 = figure.getPosition(d1.point1Id);
+	const p2 = figure.getPosition(d1.point2Id);
+	const p3 = figure.getPosition(d2.point1Id);
+	const p4 = figure.getPosition(d2.point2Id);
+	if (!p1 || !p2 || !p3 || !p4) {
+		throw new DslRuntimeError(
+			{
+				summary: '`angle(d1, d2)` : positions des points support non calculables.'
+			},
+			line
+		);
+	}
+	const inter = intersectLL(p1, p2, p3, p4);
+	if (!inter) {
+		throw new DslRuntimeError(
+			{
+				summary: '`angle(d1, d2)` : les 2 droites sont parallèles, l’angle n’est pas défini.',
+				hint: '2 droites parallèles ont un angle de 0 (convention). Utilise `mesure(0)` ou réordonne les droites.',
+				forms: ANGLE_FORMS
+			},
+			line
+		);
+	}
+
+	const ix = geoToNumber(inter.x);
+	const iy = geoToNumber(inter.y);
+
+	// Unit direction vectors for d1 and d2.
+	const d1x = geoToNumber(p2.x) - geoToNumber(p1.x);
+	const d1y = geoToNumber(p2.y) - geoToNumber(p1.y);
+	const d2x = geoToNumber(p4.x) - geoToNumber(p3.x);
+	const d2y = geoToNumber(p4.y) - geoToNumber(p3.y);
+	const len1 = Math.hypot(d1x, d1y);
+	const len2 = Math.hypot(d2x, d2y);
+	if (len1 < 1e-15 || len2 < 1e-15) {
+		throw new DslRuntimeError(
+			{
+				summary: '`angle(d1, d2)` : une droite a une direction dégénérée.'
+			},
+			line
+		);
+	}
+	const u1x = d1x / len1;
+	const u1y = d1y / len1;
+	let u2x = d2x / len2;
+	let u2y = d2y / len2;
+
+	// Acute-angle convention: if the angle between u1 and u2 is > π/2, swap u2.
+	if (u1x * u2x + u1y * u2y < 0) {
+		u2x = -u2x;
+		u2y = -u2y;
+	}
+
+	const vertexId = figure.createFreePoint(
+		{ x: inter.x, y: inter.y },
+		{ visible: false, draggable: false }
+	);
+	const p1Id = figure.createFreePoint(
+		{ x: numeric(ix + u1x), y: numeric(iy + u1y) },
+		{ visible: false, draggable: false }
+	);
+	const p2Id = figure.createFreePoint(
+		{ x: numeric(ix + u2x), y: numeric(iy + u2y) },
+		{ visible: false, draggable: false }
+	);
+	return buildAngleFromPoints(p1Id, vertexId, p2Id, named, figure, line, label);
+}
+
+function handleAngle(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label } = ctx;
+
+	// 3 points — V1 path, unchanged.
+	if (pos.length === 3) {
+		return handleAngle3Points(pos, named, figure, line, label);
+	}
+
+	// 2 args — V2 dispatch on element types.
+	if (pos.length === 2) {
+		const arg0 = pos[0];
+		const arg1 = pos[1];
+		if (arg0.type !== 'element' || arg1.type !== 'element') {
+			throw new DslRuntimeError(
+				{
+					summary:
+						'`angle()` à 2 arguments doit recevoir 2 éléments géométriques (vecteurs, segments ou droites).',
+					hint: "Pour l'angle polaire d'un vecteur, utilise `angle_polaire(O, P)`.",
+					forms: ANGLE_FORMS
+				},
+				line
+			);
+		}
+		const el0 = figure.getElementById(arg0.figureId);
+		const el1 = figure.getElementById(arg1.figureId);
+		if (!el0 || !el1) {
+			throw new DslRuntimeError(
+				{
+					summary: '`angle()` : élément introuvable.',
+					forms: ANGLE_FORMS
+				},
+				line
+			);
+		}
+		if (isVector(el0) && isVector(el1)) {
+			return handleAngleVectors(el0, el1, named, figure, line, label);
+		}
+		if (isSegment(el0) && isSegment(el1)) {
+			return handleAngleSegments(el0, el1, named, figure, line, label);
+		}
+		if (isLine(el0) && isLine(el1)) {
+			return handleAngleLines(el0, el1, named, figure, line, label);
+		}
+		// Falls through if types are mixed or unsupported (e.g. 2 points).
+		// Special-case 2 points → hint at angle_polaire (V1 message preserved).
+		if (isPointElement(el0) || isPointElement(el1)) {
+			throw new DslRuntimeError(
+				{
+					summary:
+						'`angle()` à 2 arguments doit recevoir 2 éléments du même type (vecteurs, segments ou droites).',
+					hint: "Pour l'angle polaire d'un vecteur `OP`, utilise `angle_polaire(O, P)`. Pour un angle géométrique à 3 points, ajoute le 3ᵉ point : `angle(A, V, B)`.",
+					forms: ANGLE_FORMS
+				},
+				line
+			);
+		}
+		throw new DslRuntimeError(
+			{
+				summary: '`angle()` à 2 arguments : types incompatibles.',
+				hint: 'Les 2 arguments doivent être du même type : 2 vecteurs, 2 segments, ou 2 droites. Pour un point polaire, utilise `angle_polaire(O, P)`.',
+				forms: ANGLE_FORMS
+			},
+			line
+		);
+	}
+
+	throw new DslRuntimeError(
+		{
+			summary: `\`angle()\` attend 2 ou 3 arguments, ${pos.length} reçu(s).`,
+			hint: 'Utilise `angle(A, V, B)` pour un angle géométrique, ou `angle(u, v)` / `angle(seg1, seg2)` / `angle(d1, d2)`.',
+			forms: ANGLE_FORMS
+		},
+		line
+	);
 }
 HANDLERS.set('angle', handleAngle);
 

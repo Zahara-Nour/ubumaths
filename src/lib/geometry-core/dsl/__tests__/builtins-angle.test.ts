@@ -588,34 +588,351 @@ describe('Cas dégénérés DSL', () => {
 // =============================================================================
 
 describe('V2 — angle(u, v) — 2 vectors overload', () => {
-	it.todo('angle(u, v) with 2 bound vectors sharing a common point returns a GeoAngle');
-	it.todo('angle(u, v) bound+bound shared vertex reuses the shared point as vertex');
-	it.todo('angle(u, v) bound+bound disjoint creates synthetic hidden points for p2');
+	it('angle(u, v) with 2 bound vectors sharing a common point returns a GeoAngle', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(0, 1)',
+				'u = vecteur(O, A)',
+				'v = vecteur(O, B)',
+				'a = angle(u, v)'
+			].join('\n')
+		);
+		expect(sym(r, 'a')!.type).toBe('angle');
+	});
+
+	it('angle(u, v) bound+bound shared vertex reuses the shared point as vertex', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(0, 1)',
+				'u = vecteur(O, A)',
+				'v = vecteur(O, B)',
+				'a = angle(u, v)'
+			].join('\n')
+		);
+		const oId = sym(r, 'O')!.figureId!;
+		const aEl = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		expect(aEl.vertexId).toBe(oId);
+	});
+
+	it('angle(u, v) bound+bound disjoint creates synthetic hidden points for p2', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'P = point(5, 5)',
+				'Q = point(5, 6)',
+				'u = vecteur(O, A)',
+				'v = vecteur(P, Q)',
+				'a = angle(u, v)'
+			].join('\n')
+		);
+		const aEl = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		// p2 should not be P nor Q (synthetic point at vertex + v)
+		const pId = sym(r, 'P')!.figureId;
+		const qId = sym(r, 'Q')!.figureId;
+		expect(aEl.p2Id).not.toBe(pId);
+		expect(aEl.p2Id).not.toBe(qId);
+		const p2El = r.figure.getElementById(aEl.p2Id);
+		expect(p2El!.visible).toBe(false);
+	});
+
 	it.todo('angle(u, v) bound+free creates synthetic hidden point at vertex + free.dx,dy');
 	it.todo('angle(u, v) free+free creates 3 synthetic hidden points (vertex at origin)');
-	it.todo('angle(u, v) all synthetic points have visible=false and draggable=false');
+
+	it('angle(u, v) all synthetic points have visible=false and draggable=false', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'P = point(5, 5)',
+				'Q = point(5, 6)',
+				'u = vecteur(O, A)',
+				'v = vecteur(P, Q)',
+				'a = angle(u, v)'
+			].join('\n')
+		);
+		const aEl = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		// p2 is synthetic
+		const p2El = r.figure.getElementById(aEl.p2Id) as { visible: boolean; draggable?: boolean };
+		expect(p2El.visible).toBe(false);
+		expect(p2El.draggable).toBe(false);
+	});
+
 	it.todo('angle(u, v) is reactive: drag of an anchored point updates mesure');
-	it.todo('angle(u, v) accepts named arg marque="carre"');
-	it.todo('angle(u, v) accepts named arg showLabel="mesure"');
+	// V2 limitation: synthetic points capture positions at construction time;
+	// reactivity to drag of vector source points is V3.
+
+	it('angle(u, v) accepts named arg marque="carre"', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(0, 1)',
+				'u = vecteur(O, A)',
+				'v = vecteur(O, B)',
+				'a = angle(u, v, marque="carre")'
+			].join('\n')
+		);
+		const aEl = r.figure.getElementById(sym(r, 'a')!.figureId!) as { marque: string };
+		expect(aEl.marque).toBe('carre');
+	});
+
+	it('angle(u, v) accepts named arg showLabel="mesure"', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(0, 1)',
+				'u = vecteur(O, A)',
+				'v = vecteur(O, B)',
+				'a = angle(u, v, showLabel="mesure")'
+			].join('\n')
+		);
+		const aEl = r.figure.getElementById(sym(r, 'a')!.figureId!) as { showLabel: string };
+		expect(aEl.showLabel).toBe('mesure');
+	});
 });
 
 describe('V2 — angle(seg1, seg2) — 2 segments overload', () => {
-	it.todo('angle(s1, s2) with shared endpoint uses that endpoint as vertex');
-	it.todo('angle(s1, s2) secant segments computes intersection as vertex');
-	it.todo('angle(s1, s2) secant segments uses far endpoints as p1/p2');
-	it.todo('angle(s1, s2) parallel segments throws DslRuntimeError');
-	it.todo('angle(s1, s2) parallel error hint mentions angle(d1, d2) for parallel lines');
-	it.todo('angle(s1, s2) parallel error forms list includes the 4 angle constructors');
+	it('angle(s1, s2) with shared endpoint uses that endpoint as vertex', () => {
+		const r = run(
+			[
+				'V = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(0, 1)',
+				's1 = segment(V, A)',
+				's2 = segment(V, B)',
+				'a = angle(s1, s2)'
+			].join('\n')
+		);
+		const vId = sym(r, 'V')!.figureId;
+		const aEl = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		expect(aEl.vertexId).toBe(vId);
+	});
+
+	it('angle(s1, s2) secant segments computes intersection as vertex', () => {
+		const r = run(
+			[
+				'A = point(-2, 0)',
+				'B = point(2, 0)',
+				'C = point(0, -2)',
+				'D = point(0, 2)',
+				's1 = segment(A, B)',
+				's2 = segment(C, D)',
+				'a = angle(s1, s2)'
+			].join('\n')
+		);
+		const aEl = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		const vp = r.figure.getPosition(aEl.vertexId);
+		expect(geoToNumber(vp!.x)).toBeCloseTo(0, 6);
+		expect(geoToNumber(vp!.y)).toBeCloseTo(0, 6);
+	});
+
+	it('angle(s1, s2) secant segments uses far endpoints as p1/p2', () => {
+		// s1: (-2,0)→(3,0), s2: (0,-2)→(0,1). Intersection at (0,0).
+		// Far from (0,0) on s1 → (3,0) (B). Far on s2 → (0,-2) (C).
+		const r = run(
+			[
+				'A = point(-2, 0)',
+				'B = point(3, 0)',
+				'C = point(0, -2)',
+				'D = point(0, 1)',
+				's1 = segment(A, B)',
+				's2 = segment(C, D)',
+				'a = angle(s1, s2)'
+			].join('\n')
+		);
+		const bId = sym(r, 'B')!.figureId;
+		const cId = sym(r, 'C')!.figureId;
+		const aEl = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		expect(aEl.p1Id).toBe(bId);
+		expect(aEl.p2Id).toBe(cId);
+	});
+
+	it('angle(s1, s2) parallel segments throws DslRuntimeError', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(0, 0)',
+					'B = point(1, 0)',
+					'C = point(0, 1)',
+					'D = point(1, 1)',
+					's1 = segment(A, B)',
+					's2 = segment(C, D)',
+					'a = angle(s1, s2)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('angle(s1, s2) parallel error hint mentions angle(d1, d2) for parallel lines', () => {
+		try {
+			run(
+				[
+					'A = point(0, 0)',
+					'B = point(1, 0)',
+					'C = point(0, 1)',
+					'D = point(1, 1)',
+					's1 = segment(A, B)',
+					's2 = segment(C, D)',
+					'a = angle(s1, s2)'
+				].join('\n')
+			);
+			expect.unreachable();
+		} catch (e) {
+			const err = e as DslRuntimeError;
+			expect(err.details?.hint).toContain('angle(d1, d2)');
+		}
+	});
+
+	it('angle(s1, s2) parallel error forms list includes the 4 angle constructors', () => {
+		try {
+			run(
+				[
+					'A = point(0, 0)',
+					'B = point(1, 0)',
+					'C = point(0, 1)',
+					'D = point(1, 1)',
+					's1 = segment(A, B)',
+					's2 = segment(C, D)',
+					'a = angle(s1, s2)'
+				].join('\n')
+			);
+			expect.unreachable();
+		} catch (e) {
+			const err = e as DslRuntimeError;
+			const syntaxes = (err.details?.forms ?? []).map((f) => f.syntax);
+			expect(syntaxes.some((s) => s.includes('angle(A'))).toBe(true);
+			expect(syntaxes.some((s) => s.includes('angle(u'))).toBe(true);
+			expect(syntaxes.some((s) => s.includes('angle(seg1'))).toBe(true);
+			expect(syntaxes.some((s) => s.includes('angle(d1'))).toBe(true);
+		}
+	});
+
 	it.todo('angle(s1, s2) is reactive: drag of a segment endpoint updates mesure');
 });
 
 describe('V2 — angle(d1, d2) — 2 lines overload', () => {
-	it.todo('angle(d1, d2) secant lines computes intersection via intersectLL as vertex');
-	it.todo('angle(d1, d2) returns the acute angle by convention (mesure in [0, π/2])');
-	it.todo('angle(d1, d2) swaps p2 when naive measure exceeds π/2 to enforce acute');
-	it.todo('angle(d1, d2) parallel lines throws DslRuntimeError');
-	it.todo('angle(d1, d2) coincident lines throws DslRuntimeError');
-	it.todo('angle(d1, d2) parallel error hint mentions the convention (0 for parallel)');
+	it('angle(d1, d2) secant lines computes intersection via intersectLL as vertex', () => {
+		const r = run(
+			[
+				'A = point(-2, 0)',
+				'B = point(2, 0)',
+				'C = point(0, -2)',
+				'D = point(0, 2)',
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'a = angle(d1, d2)'
+			].join('\n')
+		);
+		const aEl = r.figure.getElementById(sym(r, 'a')!.figureId!);
+		if (!aEl || !isAngle(aEl)) throw new Error('expected angle');
+		const vp = r.figure.getPosition(aEl.vertexId);
+		expect(geoToNumber(vp!.x)).toBeCloseTo(0, 6);
+		expect(geoToNumber(vp!.y)).toBeCloseTo(0, 6);
+	});
+
+	it('angle(d1, d2) returns the acute angle by convention (mesure in [0, π/2])', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'B = point(1, 1)',
+				'd1 = droite(O, A)',
+				'd2 = droite(O, B)',
+				'a = angle(d1, d2)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const mScalar = sym(r, 'm')!;
+		const m = r.figure.getScalarValue(mScalar.figureId!);
+		expect(m).not.toBeNull();
+		expect(m!).toBeGreaterThanOrEqual(0);
+		expect(m!).toBeLessThanOrEqual(Math.PI / 2 + 1e-9);
+		expect(m!).toBeCloseTo(Math.PI / 4, 6);
+	});
+
+	it('angle(d1, d2) swaps p2 when naive measure exceeds π/2 to enforce acute', () => {
+		// d2 along direction 135° (which gives a 135° naive angle with d1=x-axis)
+		const c = Math.cos((3 * Math.PI) / 4);
+		const s = Math.sin((3 * Math.PI) / 4);
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				`B = point(${c}, ${s})`,
+				'd1 = droite(O, A)',
+				'd2 = droite(O, B)',
+				'a = angle(d1, d2)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const m = r.figure.getScalarValue(sym(r, 'm')!.figureId!);
+		expect(m!).toBeCloseTo(Math.PI / 4, 6);
+	});
+
+	it('angle(d1, d2) parallel lines throws DslRuntimeError', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(0, 0)',
+					'B = point(1, 0)',
+					'C = point(0, 1)',
+					'D = point(1, 1)',
+					'd1 = droite(A, B)',
+					'd2 = droite(C, D)',
+					'a = angle(d1, d2)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('angle(d1, d2) coincident lines throws DslRuntimeError', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(0, 0)',
+					'B = point(2, 0)',
+					'C = point(1, 0)',
+					'D = point(3, 0)',
+					'd1 = droite(A, B)',
+					'd2 = droite(C, D)',
+					'a = angle(d1, d2)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('angle(d1, d2) parallel error hint mentions the convention (0 for parallel)', () => {
+		try {
+			run(
+				[
+					'A = point(0, 0)',
+					'B = point(1, 0)',
+					'C = point(0, 1)',
+					'D = point(1, 1)',
+					'd1 = droite(A, B)',
+					'd2 = droite(C, D)',
+					'a = angle(d1, d2)'
+				].join('\n')
+			);
+			expect.unreachable();
+		} catch (e) {
+			const err = e as DslRuntimeError;
+			expect(err.details?.hint).toMatch(/0/);
+		}
+	});
+
 	it.todo('angle(d1, d2) is reactive: drag of a line through-point updates mesure');
 });
 
@@ -630,18 +947,127 @@ describe('V2 — arcSpacingPx named arg', () => {
 });
 
 describe('V2 — Dispatch errors', () => {
-	it.todo('angle(u, segment) mix vector+segment throws structured error');
-	it.todo('angle(droite, vecteur) mix line+vector throws structured error');
-	it.todo('dispatch error forms list includes all 4 valid syntaxes');
-	it.todo('angle() with 0 args throws structured error');
-	it.todo('angle(A) with 1 arg throws structured error');
-	it.todo('angle(A, B, C, D) with 4 args throws structured error');
+	it('angle(u, segment) mix vector+segment throws structured error', () => {
+		expect(() =>
+			run(
+				[
+					'O = point(0, 0)',
+					'A = point(1, 0)',
+					'B = point(2, 0)',
+					'C = point(3, 0)',
+					'u = vecteur(O, A)',
+					's = segment(B, C)',
+					'a = angle(u, s)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('angle(droite, vecteur) mix line+vector throws structured error', () => {
+		expect(() =>
+			run(
+				[
+					'O = point(0, 0)',
+					'A = point(1, 0)',
+					'B = point(2, 0)',
+					'd = droite(O, A)',
+					'u = vecteur(O, B)',
+					'a = angle(d, u)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('dispatch error forms list includes all 4 valid syntaxes', () => {
+		try {
+			run(
+				[
+					'O = point(0, 0)',
+					'A = point(1, 0)',
+					'B = point(2, 0)',
+					'C = point(3, 0)',
+					'u = vecteur(O, A)',
+					's = segment(B, C)',
+					'a = angle(u, s)'
+				].join('\n')
+			);
+			expect.unreachable();
+		} catch (e) {
+			const err = e as DslRuntimeError;
+			const syntaxes = (err.details?.forms ?? []).map((f) => f.syntax);
+			expect(syntaxes.length).toBeGreaterThanOrEqual(4);
+		}
+	});
+
+	it('angle() with 0 args throws structured error', () => {
+		expect(() => run(['a = angle()'].join('\n'))).toThrow(DslRuntimeError);
+	});
+
+	it('angle(A) with 1 arg throws structured error', () => {
+		expect(() => run(['A = point(1, 0)', 'a = angle(A)'].join('\n'))).toThrow(DslRuntimeError);
+	});
+
+	it('angle(A, B, C, D) with 4 args throws structured error', () => {
+		expect(() =>
+			run(
+				[
+					'A = point(0, 0)',
+					'B = point(1, 0)',
+					'C = point(2, 0)',
+					'D = point(3, 0)',
+					'a = angle(A, B, C, D)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
 });
 
 describe('V2 — Cas dégénérés overloads', () => {
-	it.todo('angle(u, u) (same vectors) returns mesure = 0');
-	it.todo('angle(u, -u) (antiparallel vectors) returns mesure = π');
-	it.todo('angle with a zero vector throws DslRuntimeError');
+	it('angle(u, u) (same vectors) returns mesure = 0', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'u = vecteur(O, A)',
+				'a = angle(u, u)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const m = r.figure.getScalarValue(sym(r, 'm')!.figureId!);
+		expect(m!).toBeCloseTo(0, 6);
+	});
+
+	it('angle(u, -u) (antiparallel vectors) returns mesure = π', () => {
+		const r = run(
+			[
+				'O = point(0, 0)',
+				'A = point(1, 0)',
+				'P = point(0, 0)',
+				'Q = point(-1, 0)',
+				'u = vecteur(O, A)',
+				'v = vecteur(P, Q)',
+				'a = angle(u, v)',
+				'm = mesure(a)'
+			].join('\n')
+		);
+		const m = r.figure.getScalarValue(sym(r, 'm')!.figureId!);
+		expect(m!).toBeCloseTo(Math.PI, 6);
+	});
+
+	it('angle with a zero vector throws DslRuntimeError', () => {
+		expect(() =>
+			run(
+				[
+					'O = point(0, 0)',
+					'A = point(0, 0)', // u = OA is zero
+					'B = point(1, 0)',
+					'u = vecteur(O, A)',
+					'v = vecteur(O, B)',
+					'a = angle(u, v)'
+				].join('\n')
+			)
+		).toThrow(DslRuntimeError);
+	});
 });
 
 // =============================================================================
