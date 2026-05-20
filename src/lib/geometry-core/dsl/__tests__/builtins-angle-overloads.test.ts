@@ -13,6 +13,7 @@ import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
 import { DslRuntimeError } from '../errors';
+import { numeric } from '../../types/geo-value';
 import { isAngle } from '../../types/elements';
 import { geoToNumber } from '../../compute/to-number';
 
@@ -562,9 +563,27 @@ describe('angle(d1, d2) — 2 lines overload (semantic)', () => {
 		expect(geoToNumber(vp!.y)).toBeCloseTo(0, 6);
 	});
 
-	it.todo('angle(d1, d2) is reactive: drag d1 through-point → mesure updates');
-	// Reactivity to dragging the source droite's points would require linking
-	// the synthetic intersection point to those — V3 work.
+	it('angle(d1, d2) is reactive: drag d1 through-point → mesure updates (A2)', () => {
+		const r = run(
+			[
+				'A = point(-2, 0)',
+				'B = point(2, 0)',
+				'C = point(0, -2)',
+				'D = point(0, 2)',
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'ang = angle(d1, d2)',
+				'm = mesure(ang)'
+			].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).toBeCloseTo(Math.PI / 2, 4);
+		const bId = sym(r, 'B')!.figureId!;
+		r.figure.beginTransaction();
+		r.figure.movePoint(bId, numeric(2), numeric(1));
+		r.figure.recompute();
+		r.figure.commit();
+		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).not.toBeCloseTo(Math.PI / 2, 2);
+	});
 });
 
 // =============================================================================
