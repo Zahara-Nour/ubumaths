@@ -225,3 +225,139 @@ describe('ConstructionExecutor — mediatrice @euclide @arcs_egaux (Phase 4 sub-
 		expect(exec.figure.size).toBeGreaterThan(5);
 	});
 });
+
+describe('ConstructionExecutor — bissectrice @euclide @arcs_egaux (6 sub-steps)', () => {
+	it('bissectrice @euclide expands into 6 sub-step entries', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'd = bissectrice(A, V, B) @euclide'
+			].join('\n')
+		);
+		// 3 point statements + 6 sub-steps for the decorated bissectrice = 9 entries.
+		expect(exec.totalSteps).toBe(9);
+	});
+
+	it('sub-step kinds follow the expected sequence (cercle, fade-in, 2 arcs, fade-in P, ruler)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'd = bissectrice(A, V, B) @euclide'
+			].join('\n')
+		);
+		exec.step(); // A
+		exec.step(); // V
+		exec.step(); // B
+		expect(exec.currentSubStep).toBeNull();
+		exec.step(); // SS1 : compass at V (trace cercle)
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		expect(exec.currentSubStep?.instrument).toBe('compass');
+		exec.step(); // SS2 : fade-in A', B'
+		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
+		expect(exec.currentSubStep?.animatePointIds.length).toBe(2);
+		exec.step(); // SS3 : compass at A'
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS4 : compass at B'
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS5 : fade-in P
+		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
+		expect(exec.currentSubStep?.animatePointIds.length).toBe(1);
+		exec.step(); // SS6 : ruler trace
+		expect(exec.currentSubStep?.kind).toBe('ruler-trace');
+		expect(exec.currentSubStep?.instrument).toBe('ruler');
+		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
+	});
+
+	it('currentVoie stays `arcs_egaux` across all sub-steps', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'd = bissectrice(A, V, B) @euclide'
+			].join('\n')
+		);
+		exec.step(); // A
+		exec.step(); // V
+		exec.step(); // B
+		for (let i = 0; i < 6; i++) {
+			exec.step();
+			expect(exec.currentVoie?.id).toBe('arcs_egaux');
+			expect(exec.currentDecoratorTriple?.contrainte).toBe('euclide');
+		}
+	});
+
+	it("@squelette hides A', B', arcs, cercleV ; only P + bisector remain visible", () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'd = bissectrice(A, V, B) @euclide'
+			].join('\n')
+		);
+		exec.executeAll();
+		exec.step(); // drain visibility
+		const result = exec.lastChoreographyResult;
+		expect(result).not.toBeNull();
+		// Principal (the bisector line) is visible.
+		expect(exec.figure.getElementById(result!.produced.principal)?.visible).toBe(true);
+		// Charnière (P) is visible.
+		for (const id of result!.produced.charnieres) {
+			expect(exec.figure.getElementById(id)?.visible).toBe(true);
+		}
+		// Traces (cercleV, arcs, A', B') are hidden in @squelette.
+		for (const id of result!.produced.traces) {
+			expect(exec.figure.getElementById(id)?.visible).toBe(false);
+		}
+	});
+});
+
+describe('ConstructionExecutor — bissectrice @euclide @arc_milieu (4 sub-steps)', () => {
+	it('arc_milieu voie produces 4 sub-step entries', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'd = bissectrice(A, V, B) @euclide @arc_milieu'
+			].join('\n')
+		);
+		// 3 points + 4 sub-steps = 7 entries.
+		expect(exec.totalSteps).toBe(7);
+	});
+
+	it("sub-step kinds : cercle, fade-in A'B', fade-in M, ruler trace", () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(3, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 3)',
+				'd = bissectrice(A, V, B) @euclide @arc_milieu'
+			].join('\n')
+		);
+		exec.step(); // A
+		exec.step(); // V
+		exec.step(); // B
+		exec.step(); // SS1
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS2
+		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
+		expect(exec.currentSubStep?.animatePointIds.length).toBe(2);
+		exec.step(); // SS3 : M fade-in
+		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
+		expect(exec.currentSubStep?.animatePointIds.length).toBe(1);
+		exec.step(); // SS4 : ruler
+		expect(exec.currentSubStep?.kind).toBe('ruler-trace');
+	});
+});
