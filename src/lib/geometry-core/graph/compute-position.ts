@@ -1167,6 +1167,45 @@ function computeScalarValue(
 			const rad = Math.atan2(dy, dx);
 			return (rad * 180) / Math.PI;
 		}
+		case 'angle_measure': {
+			// Unsigned angle in [0, π] at vertex V between rays V→A and V→B.
+			const [p1Id, vertexId, p2Id] = el.targetIds;
+			const a = positions.get(p1Id);
+			const v = positions.get(vertexId);
+			const b = positions.get(p2Id);
+			if (!a || !v || !b) return undefined;
+			const ux = geoToNumber(a.x) - geoToNumber(v.x);
+			const uy = geoToNumber(a.y) - geoToNumber(v.y);
+			const wx = geoToNumber(b.x) - geoToNumber(v.x);
+			const wy = geoToNumber(b.y) - geoToNumber(v.y);
+			const uLen = Math.hypot(ux, uy);
+			const wLen = Math.hypot(wx, wy);
+			if (uLen < 1e-15 || wLen < 1e-15) return undefined;
+			let cos = (ux * wx + uy * wy) / (uLen * wLen);
+			if (cos > 1) cos = 1;
+			else if (cos < -1) cos = -1;
+			const rad = Math.acos(cos);
+			return el.unite === 'deg' ? (rad * 180) / Math.PI : rad;
+		}
+		case 'vectors_angle_measure': {
+			// Unsigned angle in [0, π] between two vectors u and v.
+			const [vec1Id, vec2Id] = el.targetIds;
+			const c1 = resolveVectorComponents(vec1Id, elements, positions);
+			const c2 = resolveVectorComponents(vec2Id, elements, positions);
+			if (!c1 || !c2) return undefined;
+			const ux = geoToNumber(c1.dx);
+			const uy = geoToNumber(c1.dy);
+			const wx = geoToNumber(c2.dx);
+			const wy = geoToNumber(c2.dy);
+			const uLen = Math.hypot(ux, uy);
+			const wLen = Math.hypot(wx, wy);
+			if (uLen < 1e-15 || wLen < 1e-15) return undefined;
+			let cos = (ux * wx + uy * wy) / (uLen * wLen);
+			if (cos > 1) cos = 1;
+			else if (cos < -1) cos = -1;
+			const rad = Math.acos(cos);
+			return el.unite === 'deg' ? (rad * 180) / Math.PI : rad;
+		}
 		case 'area': {
 			const points = el.targetIds.map((tid) => positions.get(tid));
 			if (points.some((p) => !p)) return undefined;

@@ -709,6 +709,19 @@ function serializeElement(
 					return `${n} = distance(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])})`;
 				case 'polar_angle':
 					return `${n} = angle_polaire(${name(idToName, el.targetIds[0])}, ${name(idToName, el.targetIds[1])})`;
+				case 'angle_measure': {
+					const aN = name(idToName, el.targetIds[0]);
+					const vN = name(idToName, el.targetIds[1]);
+					const bN = name(idToName, el.targetIds[2]);
+					const suffix = el.unite === 'deg' ? ', unite="deg"' : '';
+					return `${n} = mesure(${aN}, ${vN}, ${bN}${suffix})`;
+				}
+				case 'vectors_angle_measure': {
+					const u1 = name(idToName, el.targetIds[0]);
+					const u2 = name(idToName, el.targetIds[1]);
+					const suffix = el.unite === 'deg' ? ', unite="deg"' : '';
+					return `${n} = mesure(${u1}, ${u2}${suffix})`;
+				}
 				case 'norme':
 					return `${n} = norme(${name(idToName, el.targetIds[0])})`;
 				case 'area': {

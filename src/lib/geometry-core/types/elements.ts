@@ -552,6 +552,8 @@ export interface GeoScalar extends GeoElementBase {
 		| 'distance'
 		| 'distance_point_line'
 		| 'polar_angle'
+		| 'angle_measure'
+		| 'vectors_angle_measure'
 		| 'area'
 		| 'norme'
 		| 'perimeter'
@@ -562,6 +564,8 @@ export interface GeoScalar extends GeoElementBase {
 		| 'coordinate'
 		| 'arcLength'
 		| 'curvature';
+	/** Display unit ('rad' | 'deg') for angle_measure / vectors_angle_measure kinds. Default: 'rad'. */
+	readonly unite?: 'rad' | 'deg';
 	/** Target element IDs for primitive kinds (points for distance/angle/area, vector for norme). */
 	readonly targetIds: readonly string[];
 	/** Computation closure for 'expression' kind: receives scalar values, returns number. */

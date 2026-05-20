@@ -108,7 +108,8 @@ import {
 	isPointOnParametricCurve,
 	isTransformation,
 	isVector,
-	isSlider
+	isSlider,
+	isAngle
 } from '../types/elements';
 import type { GeoValue, ScalarParam } from '../types/geo-value';
 import { geoValueToMathNode, numeric, isScalarRef } from '../types/geo-value';
@@ -3551,6 +3552,84 @@ export class Figure {
 		this.addElement(id, element, [centerId, pointId]);
 		this.computePosition(id);
 		return id;
+	}
+
+	/**
+	 * Create a reactive scalar measuring the angle (A, V, B) at vertex V.
+	 * Returns the measure in radians (or degrees if unite='deg').
+	 * Result in [0, π] for orientation='auto' / kind='saillant' (default).
+	 */
+	createScalarAngleMeasure(
+		p1Id: string,
+		vertexId: string,
+		p2Id: string,
+		options?: ElementOptions & { unite?: 'rad' | 'deg' }
+	): string {
+		this.requirePoints('createScalarAngleMeasure', p1Id, vertexId, p2Id);
+		const id = this.generateId('sca');
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'angle_measure',
+			id,
+			targetIds: [p1Id, vertexId, p2Id],
+			unite: options?.unite ?? 'rad',
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: [p1Id, vertexId, p2Id]
+		};
+		this.addElement(id, element, [p1Id, vertexId, p2Id]);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Create a reactive scalar measuring the unsigned angle between two vectors u and v.
+	 * Returns acos((u·v)/(|u||v|)) in [0, π], or in degrees if unite='deg'.
+	 */
+	createScalarVectorsAngleMeasure(
+		vector1Id: string,
+		vector2Id: string,
+		options?: ElementOptions & { unite?: 'rad' | 'deg' }
+	): string {
+		const v1 = this.elements.get(vector1Id);
+		const v2 = this.elements.get(vector2Id);
+		if (!v1 || !isVector(v1))
+			throw new Error(`createScalarVectorsAngleMeasure: "${vector1Id}" is not a vector element`);
+		if (!v2 || !isVector(v2))
+			throw new Error(`createScalarVectorsAngleMeasure: "${vector2Id}" is not a vector element`);
+		const id = this.generateId('sca');
+		const deps = [...new Set([vector1Id, vector2Id, ...v1.dependsOn, ...v2.dependsOn])];
+		const element: GeoScalar = {
+			type: 'scalar',
+			scalarKind: 'vectors_angle_measure',
+			id,
+			targetIds: [vector1Id, vector2Id],
+			unite: options?.unite ?? 'rad',
+			color: this.resolveColor(options),
+			visible: options?.visible ?? false,
+			label: options?.label,
+			style: this.resolveStyle(options),
+			dependsOn: deps
+		};
+		this.addElement(id, element, deps);
+		this.computePosition(id);
+		return id;
+	}
+
+	/**
+	 * Cache the back-reference from a GeoAngle to its derived measure scalar.
+	 * Used by `mesure(α)` to avoid re-creating the scalar on every call.
+	 */
+	setAngleMeasureScalarId(angleId: string, scalarId: string): void {
+		const el = this.elements.get(angleId);
+		if (!el || !isAngle(el)) {
+			throw new Error(`setAngleMeasureScalarId: "${angleId}" is not an angle element`);
+		}
+		if (el.measureScalarId === scalarId) return;
+		const updated: GeoAngle = { ...el, measureScalarId: scalarId };
+		this.elements.set(angleId, updated);
 	}
 
 	createScalarNorme(vectorId: string, options?: ElementOptions): string {
