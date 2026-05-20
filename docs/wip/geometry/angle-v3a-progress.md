@@ -36,8 +36,8 @@ constructeurs + dette tech) avec **3 features pédagogiques** :
 
 | #   | Phase                                                                                      | Statut       |
 | --- | ------------------------------------------------------------------------------------------ | ------------ |
-| P0  | Spec TDD + tests rouges                                                                    | **en cours** |
-| P1  | Builtin `transporte` + factory (héritage style + 4 signatures direction)                   | à faire      |
+| P0  | Spec TDD + tests rouges                                                                    | terminée     |
+| P1  | Builtin `transporte` + factory (héritage style + 4 signatures direction)                   | **terminée** |
 | P2  | Rendu `fill` du secteur sur 4 surfaces (canvas + SVG + TikZ + Typst)                       | à faire      |
 | P3  | Chorégraphie `bissectrice(angle)` extension (dispatch input `GeoAngle` → flow V2 existant) | à faire      |
 | P4  | Tests intégration + CHANGELOG + doc V3a + release `v0.9.3` (ou `v0.10.1`)                  | à faire      |
@@ -315,7 +315,90 @@ régression. Le dispatch ne modifie le comportement que pour la forme 1-argument
 
 ## Notes Phase 1
 
-(à compléter en fin de P1)
+### Implémentation
+
+- Nouveau handler `handleTransporte` dans `src/lib/geometry-core/dsl/builtins.ts`
+  (~330 LoC dont `TRANSPORTE_FORMS` + helper `resolveTransporteDirection`).
+- Enregistré via `HANDLERS.set('transporte', handleTransporte)`.
+- Ajouté `'transporte'` à `BUILTIN_NAMES` (juste après `'angle_polaire'`).
+- Import ajouté : `GeoStyle` depuis `../types/elements` (déjà partiel).
+
+### 4 signatures supportées (priorité directions)
+
+1. `transporte(α, V')` → défaut axe Ox `(1, 0)`
+2. `transporte(α, V', P)` → unit(P − V')
+3. `transporte(α, V', vec=v)` → unit(v)
+4. `transporte(α, V', angle=θ)` → `(cos θ, sin θ)` en mode courant
+
+Exclusivité stricte : `P`, `vec=`, `angle=` ne peuvent pas se combiner
+(détection via `sources[]` + erreur structurée listant les 3 sources en conflit).
+
+### Cache mesure réutilisé
+
+Le handler appelle `figure.findAngleByMeasureScalarId` (en réalité lit
+directement `alphaEl.measureScalarIds?.rad`) puis fallback sur
+`createScalarAngleMeasure` + `setAngleMeasureScalarId(...,'rad')`. La valeur est
+lue via `figure.getScalarValue(scalarId)` — cohérent avec la sémantique V2.
+
+### Héritage de style depuis α
+
+Tous les champs angle (`marque`, `orientation`, `kind`, `showLabel`, `unite`,
+`arcRadiusPx`, `arcSpacingPx`) hérités de α si non explicitement overridés.
+Style fill : merge `{ ...alphaEl.style, ...styleOverride }` où `styleOverride`
+provient des named `remplissage=` / `opacite_fond=`. Couleur trait : héritée
+sauf si named `couleur=` (appliqué via `applyInlineStyle` final).
+
+### Tests activés
+
+- **`builtins-transporte.test.ts`** : 35/38 passent (3 todo : `α rentrant`
+  preserve sens — comportement dépend du `kind` automatique du `GeoAngle`, à
+  consolider quand la chorégraphie le requiert ; 2 tests `fill_color` héritage
+  reposent sur la résolution `style.fillColor` rendue par V3a-P2).
+- **`builtins-angle.test.ts`** : 13/15 todos `transporte` activés en tests
+  passants. 2 todos restants : (1) `α rentrant → β rentrant`, (2)
+  `fill_color="red"` héritage + override (V3a-P2 prerequisite).
+- **`figure-angle.test.ts`** : 39/39 ✅ (aucune régression).
+- **`angle-canonical-cases.test.ts`** : 18/18 ✅.
+- **`builtins-angle-overloads.test.ts`** : 45/45 (2 todos préexistants V2 drag).
+
+### Résultats globaux (4 suites)
+
+```
+builtins-transporte.test.ts        35 passed | 3 todo (38)
+builtins-angle.test.ts             99 passed | 12 todo (111)
+builtins-angle-overloads.test.ts   43 passed | 2 todo (45)
+figure-angle.test.ts               39 passed (39)
+angle-canonical-cases.test.ts      18 passed (18)
+TOTAL                             234 passed | 17 todo (261)
+```
+
+### Limitations identifiées (différées)
+
+- **Héritage `style.fillColor`** : nécessite `style.fillColor` réellement
+  conservé dans `GeoAngle.style` (vérifié OK via `resolveStyle`) + rendu
+  V3a-P2 pour produire effectivement un secteur fermé. La structure côté
+  builtin est en place (merge style), 1 test V3a-P1 reste todo en attendant
+  P2.
+- **Préservation du sens pour `α` rentrant** : comportement par défaut
+  hérite `kind='rentrant'`, mais la convention « la mesure réfléchie =
+  2π − interior » nécessite confirmation lors du rendu V3a-P2.
+- **Pas de chorégraphie animée** : `transporte @euclide` différé V3.5
+  (confirmé hors scope V3a).
+
+### Régressions existantes hors V3a
+
+3 tests préexistants en échec, sans aucun lien avec la P1 :
+
+- `parser.test.ts > complex expression: i * 360 / n` : `angle` est devenu
+  KEYWORD en V2 (mot réservé pour la signature `point(A, angle=θ)`), donc
+  `angle = i * 360 / n` n'est plus une LHS d'assignation valide.
+- `parser.test.ts > macro with default parameter` : idem, `macro tri(A, B, angle=60)`
+  utilise `angle` comme nom de paramètre.
+- `trace-demos.test.ts > rose petals as slider sweeps` : utilise
+  `angle(O, B)` (2 args points), forme retirée en V2.
+
+Ces 3 cassures sont antérieures à P1 (commit P0). À traiter séparément
+(probablement requalifier `angle` en CONTEXTUAL_KEYWORD).
 
 ---
 

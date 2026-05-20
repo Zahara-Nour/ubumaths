@@ -1311,21 +1311,154 @@ describe('V3a — fill du secteur angulaire', () => {
 // Reference : docs/wip/geometry/angle-v3a-progress.md §1.
 
 describe("V3a — transporte(α, V', direction) basic shape", () => {
-	it.todo("transporte(α, V') sans direction retourne un GeoAngle au sommet V' avec d̂ = axe Ox");
-	it.todo("transporte(α, V', P) — 3e arg point : direction = rayon V' → P");
-	it.todo("transporte(α, V', vec=v) — option nommée vecteur : direction = unit(v)");
-	it.todo("transporte(α, V', angle=θ) — option nommée angle polaire : direction = (cos θ, sin θ)");
-	it.todo('transporte preserves mesure(α) : mesure(β) ≈ mesure(α) (radians)');
+	// Tests sémantiques détaillés dans `builtins-transporte.test.ts`. Ici on
+	// vérifie juste la bonne intégration du builtin (registration + dispatch).
+	function buildAlpha90(extra: string[] = []): string {
+		return [
+			'unite_angle("radians")',
+			'A = point(1, 0)',
+			'V = point(0, 0)',
+			'B = point(0, 1)',
+			'a = angle(A, V, B)',
+			...extra
+		].join('\n');
+	}
+
+	it("transporte(α, V') sans direction retourne un GeoAngle au sommet V' avec d̂ = axe Ox", () => {
+		const r = run(buildAlpha90(['Vp = point(5, 0)', 'b = transporte(a, Vp)']));
+		const s = sym(r, 'b');
+		expect(s!.type).toBe('angle');
+		const el = r.figure.getElementById(s!.figureId!)!;
+		expect(isAngle(el)).toBe(true);
+		if (isAngle(el)) expect(el.vertexId).toBe(sym(r, 'Vp')!.figureId);
+	});
+
+	it("transporte(α, V', P) — 3e arg point : direction = rayon V' → P", () => {
+		const r = run(
+			buildAlpha90(['Vp = point(5, 0)', 'P = point(5, 5)', 'b = transporte(a, Vp, P)'])
+		);
+		expect(sym(r, 'b')!.type).toBe('angle');
+	});
+
+	it("transporte(α, V', vec=v) — option nommée vecteur : direction = unit(v)", () => {
+		const r = run(
+			buildAlpha90([
+				'Vp = point(5, 0)',
+				'O = point(0, 0)',
+				'Q = point(3, 4)',
+				'v = vecteur(O, Q)',
+				'b = transporte(a, Vp, vec=v)'
+			])
+		);
+		expect(sym(r, 'b')!.type).toBe('angle');
+	});
+
+	it("transporte(α, V', angle=θ) — option nommée angle polaire : direction = (cos θ, sin θ)", () => {
+		const r = run(buildAlpha90(['Vp = point(5, 0)', 'b = transporte(a, Vp, angle=\\pi/4)']));
+		expect(sym(r, 'b')!.type).toBe('angle');
+	});
+
+	it('transporte preserves mesure(α) : mesure(β) ≈ mesure(α) (radians)', () => {
+		const r = run(buildAlpha90(['Vp = point(5, 0)', 'b = transporte(a, Vp)']));
+		const beta = r.figure.getElementById(sym(r, 'b')!.figureId!)!;
+		expect(isAngle(beta)).toBe(true);
+		if (isAngle(beta)) {
+			const sid = r.figure.createScalarAngleMeasure(beta.p1Id, beta.vertexId, beta.p2Id, {
+				unite: 'rad'
+			});
+			expect(r.figure.getScalarValue(sid)).toBeCloseTo(Math.PI / 2, 6);
+		}
+	});
+
 	it.todo('transporte preserves sens : α rentrant → β rentrant (kind hérité par défaut)');
-	it.todo(
-		"transporte(α, V') hérite marque, kind, showLabel, unite, arcRadiusPx, arcSpacingPx de α"
-	);
-	it.todo('transporte(α, V\', P, marque="carre") override possible (option locale > héritage)');
+
+	it("transporte(α, V') hérite marque, kind, showLabel, unite, arcRadiusPx, arcSpacingPx de α", () => {
+		const r = run(
+			[
+				'unite_angle("radians")',
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'a = angle(A, V, B, marque="arcs2", showLabel="mesure", unite="deg", arcRadiusPx=42, arcSpacingPx=8)',
+				'Vp = point(5, 0)',
+				'b = transporte(a, Vp)'
+			].join('\n')
+		);
+		const beta = r.figure.getElementById(sym(r, 'b')!.figureId!)!;
+		expect(isAngle(beta)).toBe(true);
+		if (isAngle(beta)) {
+			expect(beta.marque).toBe('arcs2');
+			expect(beta.showLabel).toBe('mesure');
+			expect(beta.unite).toBe('deg');
+			expect(beta.arcRadiusPx).toBe(42);
+			expect(beta.arcSpacingPx).toBe(8);
+		}
+	});
+
+	it('transporte(α, V\', P, marque="carre") override possible (option locale > héritage)', () => {
+		const r = run(
+			[
+				'unite_angle("radians")',
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(0, 1)',
+				'a = angle(A, V, B, marque="arcs2")',
+				'Vp = point(5, 0)',
+				'P = point(5, 5)',
+				'b = transporte(a, Vp, P, marque="carre")'
+			].join('\n')
+		);
+		const beta = r.figure.getElementById(sym(r, 'b')!.figureId!)!;
+		expect(isAngle(beta)).toBe(true);
+		if (isAngle(beta)) expect(beta.marque).toBe('carre');
+	});
+
+	// V3a-P2 (fill rendering) : style.fillColor inheritance/override.
 	it.todo('transporte(α, V\', P, fill_color="red") hérite + override style.fillColor');
-	it.todo("transporte(α, V', vec=v, angle=θ) → DslRuntimeError (options mutuellement exclusives)");
-	it.todo('transporte() sans argument → DslRuntimeError structurée (forms listées)');
-	it.todo('transporte(α) avec 1 seul argument → DslRuntimeError structurée');
-	it.todo("transporte(α, V') avec V' == vertex(α) → DslRuntimeError structurée");
-	it.todo("transporte(α, V', P) avec P == V' (direction nulle) → DslRuntimeError structurée");
-	it.todo("transporte(α, V', vec=v) avec ‖v‖ = 0 → DslRuntimeError structurée");
+
+	it("transporte(α, V', vec=v, angle=θ) → DslRuntimeError (options mutuellement exclusives)", () => {
+		expect(() =>
+			run(
+				buildAlpha90([
+					'Vp = point(5, 0)',
+					'O = point(0, 0)',
+					'Q = point(1, 0)',
+					'v = vecteur(O, Q)',
+					'b = transporte(a, Vp, vec=v, angle=\\pi/4)'
+				])
+			)
+		).toThrow(DslRuntimeError);
+	});
+
+	it('transporte() sans argument → DslRuntimeError structurée (forms listées)', () => {
+		expect(() => run('b = transporte()')).toThrow(DslRuntimeError);
+	});
+
+	it('transporte(α) avec 1 seul argument → DslRuntimeError structurée', () => {
+		expect(() => run(buildAlpha90(['b = transporte(a)']))).toThrow(DslRuntimeError);
+	});
+
+	it("transporte(α, V') avec V' == vertex(α) → DslRuntimeError structurée", () => {
+		expect(() => run(buildAlpha90(['b = transporte(a, V)']))).toThrow(DslRuntimeError);
+	});
+
+	it("transporte(α, V', P) avec P == V' (direction nulle) → DslRuntimeError structurée", () => {
+		expect(() =>
+			run(buildAlpha90(['Vp = point(5, 0)', 'P = point(5, 0)', 'b = transporte(a, Vp, P)']))
+		).toThrow(DslRuntimeError);
+	});
+
+	it("transporte(α, V', vec=v) avec ‖v‖ = 0 → DslRuntimeError structurée", () => {
+		expect(() =>
+			run(
+				buildAlpha90([
+					'Vp = point(5, 0)',
+					'O = point(0, 0)',
+					'Q = point(0, 0)',
+					'v = vecteur(O, Q)',
+					'b = transporte(a, Vp, vec=v)'
+				])
+			)
+		).toThrow(DslRuntimeError);
+	});
 });

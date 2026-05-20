@@ -70,7 +70,7 @@ import {
 	isVector,
 	isLine
 } from '../types/elements';
-import type { GeoVector, GeoSegment, GeoLine } from '../types/elements';
+import type { GeoVector, GeoSegment, GeoLine, GeoStyle } from '../types/elements';
 import { intersectLL } from '../geometry/intersections';
 import { applyAngleMode } from './apply-angle-mode';
 import { interpretAreaBuiltin } from './area-builtin-helper';
@@ -3466,6 +3466,349 @@ function handleAnglePolaire(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('angle_polaire', handleAnglePolaire);
 
+// =============================================================================
+// V3a — transporte(α, V', direction)
+// =============================================================================
+
+const TRANSPORTE_FORMS = [
+	{
+		syntax: "transporte(α, V')",
+		description: "report d'angle au sommet `V'` (direction par défaut : axe `Ox`)"
+	},
+	{
+		syntax: "transporte(α, V', P)",
+		description: "report avec direction = rayon `V' → P`"
+	},
+	{
+		syntax: "transporte(α, V', vec=v)",
+		description: 'report avec direction = vecteur `v` (normalisé)'
+	},
+	{
+		syntax: "transporte(α, V', angle=θ)",
+		description: 'report avec direction = angle polaire `θ` (en mode courant)'
+	}
+];
+
+/**
+ * V3a — Resolve the unit direction (dx, dy) at V' for the new angle β.
+ * Priority : 3e positionnel point > vec= > angle= > défaut axe Ox.
+ * Returns null on absence (only when no direction at all).
+ */
+function resolveTransporteDirection(
+	ctx: BuiltinCtx,
+	VprimePos: { x: GeoValue; y: GeoValue }
+): { dx: number; dy: number } {
+	const { pos, named, figure, line, angleMode } = ctx;
+
+	const hasPositionalP = pos.length >= 3;
+	const hasVec = named.has('vec');
+	const hasAngle = named.has('angle');
+
+	// Exclusivité : au plus une source de direction.
+	const sources: string[] = [];
+	if (hasPositionalP) sources.push('P');
+	if (hasVec) sources.push('vec=');
+	if (hasAngle) sources.push('angle=');
+	if (sources.length > 1) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`transporte()\` : direction ambigüe — ${sources.join(', ')} ne peuvent pas être combinés.`,
+				hint: 'Choisis **une seule** source de direction parmi : point positionnel `P`, `vec=v`, ou `angle=θ`.',
+				forms: TRANSPORTE_FORMS
+			},
+			line
+		);
+	}
+
+	// Mode 1 : 3e positionnel = point P → direction = unit(P − V').
+	if (hasPositionalP) {
+		const Pid = requireElement(pos[2], 'P', line);
+		const Ppos = figure.getPosition(Pid);
+		if (!Ppos) {
+			throw new DslRuntimeError(
+				{
+					summary: '`transporte()` : impossible de résoudre la position du point de direction `P`.',
+					forms: TRANSPORTE_FORMS
+				},
+				line
+			);
+		}
+		const ddx = geoToNumber(Ppos.x) - geoToNumber(VprimePos.x);
+		const ddy = geoToNumber(Ppos.y) - geoToNumber(VprimePos.y);
+		const norm = Math.hypot(ddx, ddy);
+		if (!Number.isFinite(norm) || norm < 1e-15) {
+			throw new DslRuntimeError(
+				{
+					summary: "`transporte()` : direction nulle (`P` confondu avec `V'`).",
+					hint: "Choisis un point `P` différent de `V'` pour fixer la direction du nouveau côté.",
+					forms: TRANSPORTE_FORMS
+				},
+				line
+			);
+		}
+		return { dx: ddx / norm, dy: ddy / norm };
+	}
+
+	// Mode 2 : vec=v → direction = unit(v).
+	if (hasVec) {
+		const vId = requireElement(named.get('vec')!, 'vec', line);
+		const comp = figure.getVectorComponents(vId);
+		if (!comp) {
+			throw new DslRuntimeError(
+				{
+					summary: '`transporte()` : composantes du vecteur `vec=` non résolues.',
+					forms: TRANSPORTE_FORMS
+				},
+				line
+			);
+		}
+		const vdx = geoToNumber(comp.dx);
+		const vdy = geoToNumber(comp.dy);
+		const norm = Math.hypot(vdx, vdy);
+		if (!Number.isFinite(norm) || norm < 1e-15) {
+			throw new DslRuntimeError(
+				{
+					summary: '`transporte()` : vecteur direction de norme nulle.',
+					hint: 'Le vecteur passé via `vec=` doit être non nul.',
+					forms: TRANSPORTE_FORMS
+				},
+				line
+			);
+		}
+		return { dx: vdx / norm, dy: vdy / norm };
+	}
+
+	// Mode 3 : angle=θ → direction = (cos θ, sin θ) en mode courant.
+	if (hasAngle) {
+		const thetaRaw = requireNumber(named.get('angle')!, 'angle', line);
+		const rad = toRadians(thetaRaw, angleMode);
+		return { dx: Math.cos(rad), dy: Math.sin(rad) };
+	}
+
+	// Défaut : axe Ox.
+	return { dx: 1, dy: 0 };
+}
+
+function handleTransporte(ctx: BuiltinCtx): BuiltinResult {
+	const { pos, named, figure, line, label } = ctx;
+
+	// Arity check.
+	if (pos.length < 2) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`transporte()\` attend au moins 2 arguments (α, V'), ${pos.length} reçu(s).`,
+				hint: "Forme minimale : `transporte(α, V')` (direction par défaut = axe `Ox`).",
+				forms: TRANSPORTE_FORMS
+			},
+			line
+		);
+	}
+
+	// Arg 1 : α (GeoAngle).
+	const alphaId = requireElement(pos[0], 'α', line);
+	const alphaEl = figure.getElementById(alphaId);
+	if (!alphaEl || !isAngle(alphaEl)) {
+		throw new DslRuntimeError(
+			{
+				summary: '`transporte()` : le 1er argument doit être un angle (`GeoAngle`).',
+				hint: 'Crée un angle avec `angle(A, V, B)` ou une de ses surcharges `angle(u, v)` / `angle(seg1, seg2)` / `angle(d1, d2)`.',
+				forms: TRANSPORTE_FORMS
+			},
+			line
+		);
+	}
+
+	// Arg 2 : V' (point).
+	const VprimeId = requireElement(pos[1], "V'", line);
+	const Vprime = figure.getElementById(VprimeId);
+	if (!Vprime || !isPointElement(Vprime)) {
+		throw new DslRuntimeError(
+			{
+				summary: "`transporte()` : le 2ᵉ argument doit être un point (le nouveau sommet `V'`).",
+				forms: TRANSPORTE_FORMS
+			},
+			line
+		);
+	}
+
+	// Refus si V' confondu avec sommet de α (les positions doivent être lisibles).
+	if (VprimeId === alphaEl.vertexId) {
+		throw new DslRuntimeError(
+			{
+				summary: "`transporte()` : le nouveau sommet `V'` est confondu avec celui de `α`.",
+				hint: "Choisis un sommet `V'` différent du sommet de `α` (sinon il n'y a pas de report).",
+				forms: TRANSPORTE_FORMS
+			},
+			line
+		);
+	}
+	const VprimePos = figure.getPosition(VprimeId);
+	const alphaVertexPos = figure.getPosition(alphaEl.vertexId);
+	if (!VprimePos || !alphaVertexPos) {
+		throw new DslRuntimeError(
+			{
+				summary: '`transporte()` : positions des sommets non calculables.',
+				forms: TRANSPORTE_FORMS
+			},
+			line
+		);
+	}
+	const vpx = geoToNumber(VprimePos.x);
+	const vpy = geoToNumber(VprimePos.y);
+	const avx = geoToNumber(alphaVertexPos.x);
+	const avy = geoToNumber(alphaVertexPos.y);
+	if (Math.hypot(vpx - avx, vpy - avy) < 1e-15) {
+		throw new DslRuntimeError(
+			{
+				summary: "`transporte()` : `V'` est positionnellement confondu avec le sommet de `α`.",
+				hint: "Choisis un sommet `V'` distinct du sommet de `α`.",
+				forms: TRANSPORTE_FORMS
+			},
+			line
+		);
+	}
+
+	// Direction unitaire au nouveau sommet.
+	const dir = resolveTransporteDirection(ctx, VprimePos);
+
+	// Mesure scalaire de α (en radians). Réutilise le cache si disponible.
+	let scalarId = alphaEl.measureScalarIds?.rad;
+	if (!scalarId) {
+		scalarId = figure.createScalarAngleMeasure(alphaEl.p1Id, alphaEl.vertexId, alphaEl.p2Id, {
+			unite: 'rad'
+		});
+		figure.setAngleMeasureScalarId(alphaEl.id, scalarId, 'rad');
+	}
+	const measureRad = figure.getScalarValue(scalarId);
+	if (measureRad == null || !Number.isFinite(measureRad)) {
+		throw new DslRuntimeError(
+			{
+				summary: '`transporte()` : mesure de `α` non calculable.',
+				forms: TRANSPORTE_FORMS
+			},
+			line
+		);
+	}
+
+	// Construire les 2 points témoins : p1' = V' + d̂, p2' = rotation(p1', V', θ).
+	const p1x = vpx + dir.dx;
+	const p1y = vpy + dir.dy;
+	const cosT = Math.cos(measureRad);
+	const sinT = Math.sin(measureRad);
+	// Rotation autour de V' d'angle measureRad appliquée à (p1x − vpx, p1y − vpy) = (dx, dy).
+	const dx2 = cosT * dir.dx - sinT * dir.dy;
+	const dy2 = sinT * dir.dx + cosT * dir.dy;
+	const p2x = vpx + dx2;
+	const p2y = vpy + dy2;
+
+	const p1Id = figure.createFreePoint(
+		{ x: numeric(p1x), y: numeric(p1y) },
+		{ visible: false, draggable: false }
+	);
+	const p2Id = figure.createFreePoint(
+		{ x: numeric(p2x), y: numeric(p2y) },
+		{ visible: false, draggable: false }
+	);
+
+	// Héritage de style depuis α (sauf override en named arg).
+	// Options enum héritées via `named.has(...)` détection.
+	const overrideMarque = requireEnumNamed<'arc' | 'arcs2' | 'arcs3' | 'carre' | 'aucune'>(
+		named,
+		'marque',
+		ANGLE_MARQUE_VALUES,
+		line,
+		'transporte'
+	);
+	const overrideOrientation = requireEnumNamed<'direct' | 'indirect' | 'auto'>(
+		named,
+		'orientation',
+		ANGLE_ORIENTATION_VALUES,
+		line,
+		'transporte'
+	);
+	const overrideKind = requireEnumNamed<'saillant' | 'rentrant'>(
+		named,
+		'kind',
+		ANGLE_KIND_VALUES,
+		line,
+		'transporte'
+	);
+	const overrideShowLabel = requireEnumNamed<'aucun' | 'nom' | 'mesure' | 'mesure+nom'>(
+		named,
+		'showLabel',
+		ANGLE_SHOWLABEL_VALUES,
+		line,
+		'transporte'
+	);
+	const overrideUnite = requireEnumNamed<'rad' | 'deg'>(
+		named,
+		'unite',
+		ANGLE_UNITE_VALUES,
+		line,
+		'transporte'
+	);
+	const overrideArcRadius = named.has('arcRadiusPx')
+		? requireNumber(named.get('arcRadiusPx')!, 'arcRadiusPx', line)
+		: undefined;
+	let overrideArcSpacing: number | undefined;
+	if (named.has('arcSpacingPx')) {
+		const raw = requireNumber(named.get('arcSpacingPx')!, 'arcSpacingPx', line);
+		if (!Number.isFinite(raw) || raw <= 0) {
+			throw new DslRuntimeError(
+				{
+					summary: `\`transporte()\` : \`arcSpacingPx\` doit être un nombre strictement positif, \`${raw}\` reçu.`,
+					hint: 'Choisis une valeur > 0 (défaut hérité de α ou 6 px).'
+				},
+				line
+			);
+		}
+		overrideArcSpacing = raw;
+	}
+
+	// Style fill : héritage depuis α.style + override via `remplissage=` / `opacite_fond=`.
+	const inheritedStyle = alphaEl.style;
+	const styleOverride: Record<string, unknown> = {};
+	if (named.has('remplissage')) {
+		const fv = named.get('remplissage')!;
+		const fillStr = fv.type === 'string' ? fv.value : fv.type === 'nombre' ? String(fv.value) : '';
+		styleOverride.fillColor = resolveColorName(fillStr);
+	}
+	if (named.has('opacite_fond')) {
+		styleOverride.fillOpacity = requireNumber(named.get('opacite_fond')!, 'opacite_fond', line);
+	}
+	// Style trait : héritage de couleur trait, opacity, strokeWidth, dash via copy.
+	// Si l'utilisateur passe `couleur=`, on délègue à applyInlineStyle plus loin.
+	const finalStyle: Record<string, unknown> = {
+		...(inheritedStyle ?? {}),
+		...styleOverride
+	};
+	const hasStyle = Object.keys(finalStyle).length > 0;
+
+	// Couleur trait : héritée du α si pas d'override `couleur=`.
+	const inheritedColor = alphaEl.color;
+
+	const angleOptions = {
+		label,
+		color: inheritedColor,
+		marque: overrideMarque ?? alphaEl.marque,
+		orientation: overrideOrientation ?? alphaEl.orientation,
+		kind: overrideKind ?? alphaEl.kind,
+		showLabel: overrideShowLabel ?? alphaEl.showLabel,
+		unite: overrideUnite ?? alphaEl.unite,
+		arcRadiusPx: overrideArcRadius ?? alphaEl.arcRadiusPx,
+		arcSpacingPx: overrideArcSpacing ?? alphaEl.arcSpacingPx,
+		...(hasStyle ? { style: finalStyle as GeoStyle } : {})
+	};
+
+	const newAngleId = figure.createAngle(p1Id, VprimeId, p2Id, angleOptions);
+
+	// Style commun couleur trait via inline named (`couleur=`, `epaisseur=`, ...).
+	applyInlineStyle(figure, newAngleId, named, line);
+
+	return { figureId: newAngleId, symbolType: 'angle' };
+}
+HANDLERS.set('transporte', handleTransporte);
+
 function handlePerimetre(ctx: BuiltinCtx): BuiltinResult {
 	const { pos, figure, line, label } = ctx;
 	if (pos.length < 3)
@@ -5848,6 +6191,7 @@ export const BUILTIN_NAMES = new Set([
 	'distance',
 	'angle',
 	'angle_polaire',
+	'transporte',
 	'perimetre',
 	'pente',
 	'rayon',
