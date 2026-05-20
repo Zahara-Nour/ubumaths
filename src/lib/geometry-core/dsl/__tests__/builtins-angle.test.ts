@@ -677,9 +677,36 @@ describe('V2 — angle(u, v) — 2 vectors overload', () => {
 		}
 	});
 
-	it.todo('angle(u, v) is reactive: drag of an anchored point updates mesure');
-	// V2 limitation: synthetic points capture positions at construction time;
-	// reactivity to drag of vector source points is V3.
+	it('angle(u, v) bound+bound disjoint — drag of v.endId updates mesure (A2)', () => {
+		// A=(1,0), B=(0,0), C=(0,1), D=(2,2) — u=AB, v=CD, disjoint.
+		// Initial angle between u and v: u points (-1,0), v points (2,1)
+		// cos = (-1*2 + 0*1)/(1*sqrt(5)) = -2/sqrt(5) → ≈ 2.677 rad ≈ 153.4°
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'B = point(0, 0)',
+				'C = point(0, 1)',
+				'D = point(2, 2)',
+				'u = vecteur(A, B)',
+				'v = vecteur(C, D)',
+				'ang = angle(u, v)',
+				'm = mesure(ang)'
+			].join('\n')
+		);
+		const initial = r.figure.getScalarValue(sym(r, 'm')!.figureId!);
+		expect(initial).toBeCloseTo(Math.acos(-2 / Math.sqrt(5)), 4);
+		// Drag D to (2, 0) → v points (2, -1)
+		// cos = (-1*2 + 0*-1)/(1*sqrt(5)) = -2/sqrt(5) → unchanged direction
+		// → drag D to make v aligned with u: D=(−1, 1) → v points (-1, 0) → parallel to u
+		// cos = ((-1)*(-1) + 0*0)/(1*1) = 1 → angle = 0
+		const dId = sym(r, 'D')!.figureId!;
+		r.figure.beginTransaction();
+		r.figure.movePoint(dId, numeric(-1), numeric(1));
+		r.figure.recompute();
+		r.figure.commit();
+		const after = r.figure.getScalarValue(sym(r, 'm')!.figureId!);
+		expect(after).toBeCloseTo(0, 4);
+	});
 
 	it('angle(u, v) accepts named arg marque="carre"', () => {
 		const r = run(
@@ -831,7 +858,31 @@ describe('V2 — angle(seg1, seg2) — 2 segments overload', () => {
 		}
 	});
 
-	it.todo('angle(s1, s2) is reactive: drag of a segment endpoint updates mesure');
+	it('angle(s1, s2) secants — drag of a segment endpoint updates mesure (A2)', () => {
+		// s1 from (-1, 0) to (1, 0), s2 from (0, -1) to (0, 1) → perpendicular at (0,0)
+		const r = run(
+			[
+				'A = point(-1, 0)',
+				'B = point(1, 0)',
+				'C = point(0, -1)',
+				'D = point(0, 1)',
+				's1 = segment(A, B)',
+				's2 = segment(C, D)',
+				'ang = angle(s1, s2)',
+				'm = mesure(ang)'
+			].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).toBeCloseTo(Math.PI / 2, 4);
+		// Drag D to (1, 1) → s2 now from (0,-1) to (1,1), angle ≈ atan2(2,1)
+		const dId = sym(r, 'D')!.figureId!;
+		r.figure.beginTransaction();
+		r.figure.movePoint(dId, numeric(1), numeric(1));
+		r.figure.recompute();
+		r.figure.commit();
+		const after = r.figure.getScalarValue(sym(r, 'm')!.figureId!);
+		// Mesure should have changed (no longer π/2)
+		expect(after).not.toBeCloseTo(Math.PI / 2, 2);
+	});
 });
 
 describe('V2 — angle(d1, d2) — 2 lines overload', () => {
@@ -945,7 +996,32 @@ describe('V2 — angle(d1, d2) — 2 lines overload', () => {
 		}
 	});
 
-	it.todo('angle(d1, d2) is reactive: drag of a line through-point updates mesure');
+	it('angle(d1, d2) — drag of a line through-point updates vertex AND mesure (A2)', () => {
+		// d1 horizontal, d2 vertical → perpendicular at (0,0)
+		const r = run(
+			[
+				'A = point(-2, 0)',
+				'B = point(2, 0)',
+				'C = point(0, -2)',
+				'D = point(0, 2)',
+				'd1 = droite(A, B)',
+				'd2 = droite(C, D)',
+				'ang = angle(d1, d2)',
+				'm = mesure(ang)'
+			].join('\n')
+		);
+		expect(r.figure.getScalarValue(sym(r, 'm')!.figureId!)).toBeCloseTo(Math.PI / 2, 4);
+		// Drag D to (1, 2) → d2 now passes through C=(0,-2) and D=(1,2)
+		// slope = (2-(-2))/(1-0) = 4, angle with d1 (horizontal) = atan(4) ≈ 1.326 rad
+		// Acute convention may flip — accept any value !== π/2
+		const dId = sym(r, 'D')!.figureId!;
+		r.figure.beginTransaction();
+		r.figure.movePoint(dId, numeric(1), numeric(2));
+		r.figure.recompute();
+		r.figure.commit();
+		const after = r.figure.getScalarValue(sym(r, 'm')!.figureId!);
+		expect(after).not.toBeCloseTo(Math.PI / 2, 2);
+	});
 });
 
 describe('V2 — arcSpacingPx named arg', () => {
