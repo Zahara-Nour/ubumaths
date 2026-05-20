@@ -20,7 +20,7 @@ Promouvoir l'angle au rang d'**objet de premier ordre** (`GeoAngle`) dans le mod
 | P2  | Factory `figure.createAngle()` + `compute-position.ts`                                 | **terminée** |
 | P3  | DSL : suppressions + refonte `angle()` + `angle_polaire()`                             | **terminée** |
 | P4  | DSL : accesseurs (`cote`, `sommet`) + surcharges (`mesure`, `bissectrice`, `rotation`) | **terminée** |
-| P5  | Rendu sur 4 surfaces (canvas, SVG, TikZ, Typst) + rough                                | à faire      |
+| P5  | Rendu sur 4 surfaces (canvas, SVG, TikZ, Typst) + rough                                | **terminée** |
 | P6  | Migration 5 sites internes + 38 occurrences tests                                      | à faire      |
 | P7  | Démos + converters + outillage migration + doc + code-review final                     | à faire      |
 
@@ -478,3 +478,110 @@ Au lieu de construire un `GeoAngle` intermédiaire (qui exigerait de fabriquer d
 ### Prêt pour P5 ?
 
 Oui. Les surcharges DSL sont en place et fonctionnelles. Les nouveaux `scalarKind` se calculent correctement via le graphe de dépendances. La cache `measureScalarId` est mutable via `setAngleMeasureScalarId`. P5 peut maintenant brancher le rendu de `GeoAngle` sur les 4 surfaces (le rendu du scalaire `'angle_measure'` lui-même est pris en charge par `texte()` / `mesure()` sucre existant, hors scope P5).
+
+---
+
+## Notes Phase 5
+
+### Helper partagé `formatAngleLabel`
+
+**Nouveau fichier** `src/lib/geometry-core/rendering/angle-label.ts` (~80 LoC) :
+
+- `formatAngleLabel(angle: GeoAngle, measureRadians: number | null): string | null`
+  - Retourne `null` si `showLabel === 'aucun'` ou si la mesure requise est `null`.
+  - `'nom'` → `angle.label`.
+  - `'mesure'` → `"60°"` (deg, 1 décimale arrondie) ou `"1.05 rad"` (rad, 2 décimales).
+  - `'mesure+nom'` → `"α = 60°"`, ou juste l'un des deux si l'autre est absent.
+- `unsignedAngleBetween(d1x, d1y, d2x, d2y): number | null` : helper géométrique pour les exporters TikZ/Typst qui calculent leurs propres mesures.
+
+Exporté depuis `rendering/index.ts`. Mutualise la sémantique entre les 4 surfaces (évite divergence multi-cible).
+
+### `rendering/svg-primitives.ts`
+
+- **Rename** `angleMarkToSVG` → `angleToSVG`, `AngleMarkSVG` → `AngleSVG`.
+- Type guard : `isAngleMark` → `isAngle`, type `GeoAngleMark` → `GeoAngle`.
+- Constante `ARC_RADIUS_PX` → `ARC_RADIUS_PX_DEFAULT = 25` (override via `angle.arcRadiusPx`).
+- `AngleSVG` étendu : `label: string | null`, `labelX`, `labelY` (centre arc, bisector × `arcRadiusPx + 12`).
+- `marque` (5 valeurs) :
+  - `'aucune'` → `paths: []` mais conserve `labelX/Y` (label-only).
+  - `'arc'` / `'arcs2'` / `'arcs3'` → 1/2/3 arcs concentriques (spacing 6px).
+  - `'carre'` → carré au sommet (équivalent ancien `rightAngle`).
+- `kind === 'rentrant'` : `buildArcPath` reçoit le `kind` et passe par l'arc complémentaire (`sweep = sweep > 0 ? sweep - 2π : sweep + 2π`), ce qui inverse le sweep flag SVG via `sweep > 0 ? 1 : 0`. Bissectrice de label négativée pour rester dans le secteur extérieur.
+- Cas dégénéré (sides anti-parallèles, bissectrice nulle) : fallback sur la perpendiculaire à `u1` pour stabilité du label sur angle plat (180°).
+- LoC : ~+120 / -80.
+
+### `rendering/export-svg.ts`
+
+- Imports : `angleMarkToSVG` → `angleToSVG`, `roughAngleMark` → `roughAngle`.
+- Pass 3 : dispatch `el.type === 'angleMark'` → `'angle'`. Garde `svg.paths.length > 0` avant rough (cas `marque='aucune'`). Ajout émission `<text>` du label si `showLabels && svg.label`. ~+10 LoC.
+
+### `rendering/export-tikz.ts`
+
+- Import du helper `formatAngleLabel` + `unsignedAngleBetween`.
+- Dispatch `'angleMark'` → `'angle'`. Branche par `marque` :
+  - `'aucune'` → skip.
+  - `'carre'` → `\draw` du carré comme avant.
+  - `'arc' / 'arcs2' / 'arcs3'` → 1/2/3 `\draw arc`.
+- `kind='rentrant'` : sweep négativé (`sweep > 0 ? sweep - 360 : sweep + 360`) → l'arc traverse le secteur extérieur.
+- `arcRadiusPx` : conversion proportionnelle `(arcRadiusPx / 25) * MARK_RADIUS`.
+- Label : `\node[color] at (lx, ly) {$label$}` avec remplacement `°` → `^{\circ}` pour rester en mode math. LoC : ~+45.
+
+### `rendering/export-typst.ts`
+
+- Imports + dispatch analogues à TikZ.
+- `kind='rentrant'` : même logique (sweep négativé sur `[start, stop]`).
+- Label : `content(c(lx, ly), text(size: 9pt, fill: color)[label])` avec échappement `°` via `#h(0pt)°` pour éviter les soucis d'inline. LoC : ~+45.
+
+### `rendering/rough-geometry.ts`
+
+- Type `AngleMarkSVG` → `AngleSVG` (import + signatures).
+- `roughAngleMark` → `roughAngle`, `roughAngleMarkHTML` → `roughAngleHTML`. Pas de changement sémantique : trace les `svg.paths` (vide si `marque='aucune'`).
+
+### `rendering/index.ts`
+
+- Exports type : `AngleMarkSVG` → `AngleSVG`.
+- Exports value : `angleMarkToSVG` → `angleToSVG`, `roughAngleMark*` → `roughAngle*`.
+- Nouveaux exports : `formatAngleLabel`, `unsignedAngleBetween` depuis `./angle-label`.
+
+### `src/lib/components/geometry/GeometryCanvas.svelte`
+
+- Import `angleMarkToSVG` → `angleToSVG`, `roughAngleMarkHTML` → `roughAngleHTML`.
+- Dispatch `el.type === 'angleMark'` → `'angle'`. Garde `svg.paths.length > 0` avant rough / paths normaux (`marque='aucune'` skip le tracé mais conserve le label).
+- Ajout d'un `<text class="angle-label">` rendu quand `svg.label` existe, avec style identique aux labels SVG (stroke blanc paint-order, KaTeX font).
+- **`mcp__svelte__svelte-autofixer` appelé** sur le fichier : 0 nouvel issue introduit (13 warnings XSS `{@html}` pré-existants intacts + 3 suggestions stylistiques pré-existantes).
+
+### `src/lib/components/geometry/ElementPopover.svelte`
+
+- Trouvé `element.type === 'angleMark'` (ligne 70) → migré vers `'angle'`. `mcp__svelte__svelte-autofixer` : 0 issue.
+
+### Cas canoniques (vérifiés mentalement)
+
+| Cas                                      | Marque    | Kind         | Sweep SVG              | Label position                         |
+| ---------------------------------------- | --------- | ------------ | ---------------------- | -------------------------------------- |
+| 60°                                      | `'arc'`   | `'saillant'` | flag 0 (court chemin)  | bissectrice intérieure, r+12           |
+| 90°                                      | `'carre'` | `'saillant'` | n/a (carré)            | bissectrice intérieure                 |
+| 270° (sommet du même angle saillant 90°) | `'arc'`   | `'rentrant'` | flag inversé, arc long | bissectrice **extérieure** (négativée) |
+| 180° (angle plat)                        | `'arc'`   | `'saillant'` | demi-cercle            | fallback perp(u1) (bissectrice nulle)  |
+
+### LoC totales P5
+
+- Nouveau fichier `angle-label.ts` : 80.
+- `svg-primitives.ts` : +120 / -80.
+- `export-svg.ts` : +10.
+- `export-tikz.ts` : +45.
+- `export-typst.ts` : +45.
+- `rough-geometry.ts` : 3 renames (signature et nom de fonction).
+- `index.ts` : 8 renames + 2 nouveaux exports.
+- `GeometryCanvas.svelte` : +18 / -15.
+- `ElementPopover.svelte` : 1 char.
+
+**Total** : ~+260 LoC ajoutées, ~-95 LoC supprimées.
+
+### Casses restantes (résolution P6)
+
+- `figure-angle-mark.test.ts` (9 occurrences `angleMarkToSVG` + appel `createAngleMark`) — sera refondu en `figure-angle.test.ts` en P6.
+- Aucune autre source ne référence les anciens noms (`grep -rn "angleMarkToSVG\|roughAngleMark\|AngleMarkSVG\|isAngleMark\|GeoAngleMark"` retourne 0 résultat hors `__tests__`).
+
+### Prêt pour P6 ?
+
+Oui. Les 4 surfaces (canvas + svg + tikz + typst) + rough sont alignées via le helper partagé `formatAngleLabel`. Le piège `extendLineToViewport` triplé / `GeoOsculatingCircle` oublié est évité (logique label centralisée). Les 5 valeurs `marque` et `kind='rentrant'` sont supportées sur les 4 surfaces. La phase P6 peut maintenant migrer les 5 sites internes restants (déjà fait en P3 — `triangle_rectangle`, `rectangle`, `carre` — à reverifier) et les 38 occurrences de tests, puis renommer `figure-angle-mark.test.ts` → `figure-angle.test.ts`.

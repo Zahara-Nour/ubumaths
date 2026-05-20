@@ -67,7 +67,7 @@
 	let isPoint = $derived(isPointElement(element));
 	let isLine = $derived(isLineLike(element));
 	let isCircleEl = $derived(isCircle(element));
-	let isAngle = $derived(element.type === 'angleMark');
+	let isAngle = $derived(element.type === 'angle');
 	let isSegMark = $derived(element.type === 'segmentMark');
 	let showDash = $derived(isLine || isCircleEl);
 	let showStrokeWidth = $derived(isLine || isCircleEl || isAngle || isSegMark);

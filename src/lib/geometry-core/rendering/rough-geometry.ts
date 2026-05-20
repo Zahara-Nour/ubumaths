@@ -14,7 +14,7 @@ import type {
 	GeoStyleResolved,
 	LineSVG,
 	CircleSVG,
-	AngleMarkSVG,
+	AngleSVG,
 	SegmentMarkSVG,
 	VectorSVG
 } from './svg-primitives';
@@ -157,7 +157,7 @@ export function roughPolygon(
 	return rc.polygon(points, opts);
 }
 
-export function roughAngleMark(rc: RoughSVG, svg: AngleMarkSVG, opts: RoughOptions): SVGGElement {
+export function roughAngle(rc: RoughSVG, svg: AngleSVG, opts: RoughOptions): SVGGElement {
 	const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 	for (const path of svg.paths) {
 		const el = rc.path(path, { ...opts, fill: 'none' });
@@ -203,8 +203,8 @@ export function roughPolygonHTML(
 	return roughPolygon(rc, points, opts).outerHTML;
 }
 
-export function roughAngleMarkHTML(rc: RoughSVG, svg: AngleMarkSVG, opts: RoughOptions): string {
-	return roughAngleMark(rc, svg, opts).outerHTML;
+export function roughAngleHTML(rc: RoughSVG, svg: AngleSVG, opts: RoughOptions): string {
+	return roughAngle(rc, svg, opts).outerHTML;
 }
 
 export function roughSegmentMarkHTML(

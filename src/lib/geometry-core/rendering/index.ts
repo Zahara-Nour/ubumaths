@@ -25,7 +25,7 @@ export type {
 	LineSVG,
 	CircleSVG,
 	ArcSVG,
-	AngleMarkSVG,
+	AngleSVG,
 	SegmentMarkSVG,
 	TextSVG
 } from './svg-primitives';
@@ -36,10 +36,13 @@ export {
 	lineToSVG,
 	rayToSVG,
 	circleToSVG,
-	angleMarkToSVG,
+	angleToSVG,
 	segmentMarkToSVG,
 	textToSVG
 } from './svg-primitives';
+
+// Angle label helper (shared across canvas / SVG / TikZ / Typst).
+export { formatAngleLabel, unsignedAngleBetween } from './angle-label';
 
 // Rough.js rendering
 export {
@@ -50,13 +53,13 @@ export {
 	roughCircle,
 	roughArc,
 	roughPolygon,
-	roughAngleMark,
+	roughAngle,
 	roughSegmentMark,
 	roughLineHTML,
 	roughCircleHTML,
 	roughArcHTML,
 	roughPolygonHTML,
-	roughAngleMarkHTML,
+	roughAngleHTML,
 	roughSegmentMarkHTML
 } from './rough-geometry';
 

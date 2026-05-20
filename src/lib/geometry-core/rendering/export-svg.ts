@@ -22,7 +22,7 @@ import {
 	arcToSVG,
 	sectorToSVG,
 	annulusToSVG,
-	angleMarkToSVG,
+	angleToSVG,
 	segmentMarkToSVG,
 	textToSVG,
 	imageToSVG,
@@ -39,7 +39,7 @@ import {
 	roughCircle,
 	roughArc,
 	roughPolygon,
-	roughAngleMark,
+	roughAngle,
 	roughSegmentMark,
 	roughVectorHTML
 } from './rough-geometry';
@@ -327,20 +327,27 @@ export function exportToSVG(
 		);
 	}
 
-	// Pass 3: angle marks
+	// Pass 3: angles (first-class GeoAngle)
 	for (const el of elements) {
-		if (!el.visible || el.type !== 'angleMark') continue;
+		if (!el.visible || el.type !== 'angle') continue;
 		const sty = resolveStyle(el, figure.defaults);
-		const svg = angleMarkToSVG(el.id, figure, transformer);
+		const svg = angleToSVG(el.id, figure, transformer);
 		if (!svg) continue;
 		if (useRough(sty, el.type)) {
-			lines.push(roughHTML(roughAngleMark(rc!, svg, roughOpts(el.id, sty)), sty.opacity));
+			if (svg.paths.length > 0) {
+				lines.push(roughHTML(roughAngle(rc!, svg, roughOpts(el.id, sty)), sty.opacity));
+			}
 		} else {
 			for (const path of svg.paths) {
 				lines.push(
 					`  <path d="${path}" stroke="${sty.color}" stroke-width="${sty.strokeWidth}" fill="none" />`
 				);
 			}
+		}
+		if (showLabels && svg.label) {
+			lines.push(
+				`  <text x="${r(svg.labelX)}" y="${r(svg.labelY)}" fill="${sty.color}" stroke="white" stroke-width="3" paint-order="stroke" font-size="14" font-family="KaTeX_Main, serif" text-anchor="middle" dominant-baseline="middle">${escapeXml(svg.label)}</text>`
+			);
 		}
 	}
 

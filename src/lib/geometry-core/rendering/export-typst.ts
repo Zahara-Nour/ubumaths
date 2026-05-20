@@ -12,6 +12,7 @@ import { isPointElement, isVector, type GeoImage } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { circumcircle } from '../geometry/circumcircle';
 import { resolveStyle } from './svg-primitives';
+import { formatAngleLabel, unsignedAngleBetween } from './angle-label';
 
 export interface TypstExportOptions {
 	scale?: number;
@@ -378,9 +379,9 @@ export function exportToTypst(
 		);
 	}
 
-	// Pass 3: angle marks
+	// Pass 3: angles (first-class GeoAngle)
 	for (const el of elements) {
-		if (!el.visible || el.type !== 'angleMark') continue;
+		if (!el.visible || el.type !== 'angle') continue;
 		const p1 = figure.getPosition(el.p1Id);
 		const v = figure.getPosition(el.vertexId);
 		const p2 = figure.getPosition(el.p2Id);
@@ -392,15 +393,18 @@ export function exportToTypst(
 		const d1y = geoToNumber(p1.y) - vy;
 		const d2x = geoToNumber(p2.x) - vx;
 		const d2y = geoToNumber(p2.y) - vy;
+		const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
+		const len2 = Math.sqrt(d2x * d2x + d2y * d2y);
+		if (len1 < 1e-10 || len2 < 1e-10) continue;
 
-		const angle1 = (Math.atan2(d1y, d1x) * 180) / Math.PI;
-		const angle2 = (Math.atan2(d2y, d2x) * 180) / Math.PI;
+		const marque = el.marque ?? 'arc';
+		const kind = el.kind ?? 'saillant';
+		const baseR = el.arcRadiusPx ? (el.arcRadiusPx / 25) * MARK_RADIUS : MARK_RADIUS;
 		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
 
-		if (el.rightAngle) {
-			const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
-			const len2 = Math.sqrt(d2x * d2x + d2y * d2y);
-			if (len1 < 1e-10 || len2 < 1e-10) continue;
+		if (marque === 'aucune') {
+			// Label-only.
+		} else if (marque === 'carre') {
 			const s = RIGHT_ANGLE_SIZE;
 			const u1x = (d1x / len1) * s;
 			const u1y = (d1y / len1) * s;
@@ -410,17 +414,54 @@ export function exportToTypst(
 				`  line(${c(vx + u1x, vy + u1y)}, ${c(vx + u1x + u2x, vy + u1y + u2y)}, ${c(vx + u2x, vy + u2y)}, stroke: ${color} + 1pt)`
 			);
 		} else {
-			let sweep = angle2 - angle1;
+			const arcCount = marque === 'arcs3' ? 3 : marque === 'arcs2' ? 2 : 1;
+			const angle1Deg = (Math.atan2(d1y, d1x) * 180) / Math.PI;
+			const angle2Deg = (Math.atan2(d2y, d2x) * 180) / Math.PI;
+			let sweep = angle2Deg - angle1Deg;
 			while (sweep > 180) sweep -= 360;
 			while (sweep < -180) sweep += 360;
-			const start = Math.round(angle1 * 100) / 100;
-			const stop = Math.round((angle1 + sweep) * 100) / 100;
+			if (kind === 'rentrant') {
+				sweep = sweep > 0 ? sweep - 360 : sweep + 360;
+			}
+			const start = Math.round(angle1Deg * 100) / 100;
+			const stop = Math.round((angle1Deg + sweep) * 100) / 100;
 
-			for (let i = 0; i < el.arcCount; i++) {
-				const r = MARK_RADIUS + i * MARK_SPACING;
+			for (let i = 0; i < arcCount; i++) {
+				const r = baseR + i * MARK_SPACING;
 				lines.push(
 					`  arc(${c(vx, vy)}, start: ${start}deg, stop: ${stop}deg, radius: ${Math.round(r * 1000) / 1000}, anchor: "origin", stroke: ${color} + 1pt)`
 				);
+			}
+		}
+
+		if (showLabels) {
+			const interior = unsignedAngleBetween(d1x, d1y, d2x, d2y);
+			const measureRad =
+				interior === null ? null : kind === 'rentrant' ? 2 * Math.PI - interior : interior;
+			const label = formatAngleLabel(el, measureRad);
+			if (label) {
+				const u1x = d1x / len1;
+				const u1y = d1y / len1;
+				const u2x = d2x / len2;
+				const u2y = d2y / len2;
+				let bx = u1x + u2x;
+				let by = u1y + u2y;
+				const blen = Math.hypot(bx, by);
+				if (blen < 1e-6) {
+					bx = -u1y;
+					by = u1x;
+				} else {
+					bx /= blen;
+					by /= blen;
+				}
+				if (kind === 'rentrant') {
+					bx = -bx;
+					by = -by;
+				}
+				const lx = vx + bx * (baseR + 0.2);
+				const ly = vy + by * (baseR + 0.2);
+				const safe = label.replace(/°/g, '#h(0pt)°');
+				lines.push(`  content(${c(lx, ly)}, text(size: 9pt, fill: ${color})[${safe}])`);
 			}
 		}
 	}
