@@ -10,7 +10,7 @@
  */
 
 import type { MathNode } from '$lib/mathAST/types';
-import { number as mathNumber } from '$lib/mathAST/factory';
+import { numericNode } from '$lib/mathAST/common/numeric';
 
 export interface GeoExact {
 	readonly kind: 'exact';
@@ -47,9 +47,13 @@ export function isNumeric(v: GeoValue): v is GeoNumeric {
 	return v.kind === 'numeric';
 }
 
-/** Convert a GeoValue to a MathNode. Exact values return their node; numeric values are wrapped. */
+/**
+ * Convert a GeoValue to a MathNode. Exact values return their node; numeric
+ * values are wrapped via `numericNode()` which handles negative values
+ * correctly (negatives become `opposite(number(...))`, never signed literals).
+ */
 export function geoValueToMathNode(v: GeoValue): MathNode {
-	return v.kind === 'exact' ? v.node : mathNumber(v.value.toString());
+	return v.kind === 'exact' ? v.node : numericNode(v.value);
 }
 
 // =============================================================================
