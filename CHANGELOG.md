@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.4...v0.9.5) (2026-05-20)
+
+### 📚 Documentation
+
+- **geometry-core:** update CLAUDE.md gotcha viewport-clipping ([5ef27be](https://github.com/Zahara-Nour/ubumaths/commit/5ef27be42ba7d7b394fbe4844aae853bfef30f3e))
+
+### ✨ Features
+
+- **geometry-core:** drag reactif angle overloads V2 (A2 P1) ([62f3f4d](https://github.com/Zahara-Nour/ubumaths/commit/62f3f4dbed575f40f8ef7ee651b55b974df1be5c))
+
 ### [0.9.4](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.3...v0.9.4) (2026-05-20)
 
 ### 📚 Documentation
