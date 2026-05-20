@@ -21,8 +21,7 @@ import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types'
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const CERCLE_V_RADIUS_FACTOR = 0.6; // r1 = 0.6 × min(|VA|, |VB|)
 const ARC_RADIUS_FACTOR = 0.7; // r2 = 0.7 × |A'B'|
-const ARC_SWEEP_RAD = (2 * Math.PI) / 3; // 120° for arcs at A', B'
-const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° default for the 2 arcs at V
+const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° default for the small arcs (at V, A', B')
 
 /**
  * Half-sweep of the small arcs at V (clamped to a fraction of the angle
@@ -482,50 +481,6 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		[dApBpScalar]
 	);
 
-	// Direction A'→B' (reactive angle, radians).
-	const angleApBpScalar = figure.createScalarExpression(
-		(vals) =>
-			Math.atan2(
-				(vals.get(BpyScalar) ?? 0) - (vals.get(ApyScalar) ?? 0),
-				(vals.get(BpxScalar) ?? 0) - (vals.get(ApxScalar) ?? 0)
-			),
-		[ApxScalar, ApyScalar, BpxScalar, BpyScalar]
-	);
-
-	// Arc start/end angles : ±60° around the A'→B' direction (at A')
-	// and around the B'→A' direction (at B').
-	const arcApStartScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleApBpScalar) ?? 0) - ARC_SWEEP_RAD / 2,
-		[angleApBpScalar]
-	);
-	const arcApEndScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleApBpScalar) ?? 0) + ARC_SWEEP_RAD / 2,
-		[angleApBpScalar]
-	);
-	const arcBpStartScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleApBpScalar) ?? 0) + Math.PI - ARC_SWEEP_RAD / 2,
-		[angleApBpScalar]
-	);
-	const arcBpEndScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleApBpScalar) ?? 0) + Math.PI + ARC_SWEEP_RAD / 2,
-		[angleApBpScalar]
-	);
-
-	const arcAtAprime = figure.createArcByAngles(
-		Aprime,
-		{ scalarRef: r2Scalar },
-		{ scalarRef: arcApStartScalar },
-		{ scalarRef: arcApEndScalar }
-	);
-	figure.hideElement(arcAtAprime);
-	const arcAtBprime = figure.createArcByAngles(
-		Bprime,
-		{ scalarRef: r2Scalar },
-		{ scalarRef: arcBpStartScalar },
-		{ scalarRef: arcBpEndScalar }
-	);
-	figure.hideElement(arcAtBprime);
-
 	// |VP| = √(r1² − (|A'B'|/2)²) + √(r2² − (|A'B'|/2)²)
 	// (P far from V on the bisector axis).
 	const VPScalar = figure.createScalarExpression(
@@ -552,18 +507,74 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	const P = figure.createComputedPoint({ scalarRef: PxScalar }, { scalarRef: PyScalar });
 	figure.hideElement(P);
 
-	// Initial values for SS3/SS4 instrument positioning.
+	// Small arcs at A' and B' centered on the direction toward P. Two
+	// such arcs cross exactly at P (the intersection that defines the
+	// bisector). Much more economical than tracing the two full
+	// intersection circles ; matches the classical compass gesture
+	// where the user just makes a small mark crossing the other arc.
+	const angleAptoPScalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(PyScalar) ?? 0) - (vals.get(ApyScalar) ?? 0),
+				(vals.get(PxScalar) ?? 0) - (vals.get(ApxScalar) ?? 0)
+			),
+		[ApxScalar, ApyScalar, PxScalar, PyScalar]
+	);
+	const angleBptoPScalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(PyScalar) ?? 0) - (vals.get(BpyScalar) ?? 0),
+				(vals.get(PxScalar) ?? 0) - (vals.get(BpxScalar) ?? 0)
+			),
+		[BpxScalar, BpyScalar, PxScalar, PyScalar]
+	);
+	const halfSweepAtP = SMALL_ARC_SWEEP_RAD / 2; // 15° each side (30° total)
+	const arcAtApStartScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleAptoPScalar) ?? 0) - halfSweepAtP,
+		[angleAptoPScalar]
+	);
+	const arcAtApEndScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleAptoPScalar) ?? 0) + halfSweepAtP,
+		[angleAptoPScalar]
+	);
+	const arcAtBpStartScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleBptoPScalar) ?? 0) - halfSweepAtP,
+		[angleBptoPScalar]
+	);
+	const arcAtBpEndScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleBptoPScalar) ?? 0) + halfSweepAtP,
+		[angleBptoPScalar]
+	);
+
+	const arcAtAprime = figure.createArcByAngles(
+		Aprime,
+		{ scalarRef: r2Scalar },
+		{ scalarRef: arcAtApStartScalar },
+		{ scalarRef: arcAtApEndScalar }
+	);
+	figure.hideElement(arcAtAprime);
+	const arcAtBprime = figure.createArcByAngles(
+		Bprime,
+		{ scalarRef: r2Scalar },
+		{ scalarRef: arcAtBpStartScalar },
+		{ scalarRef: arcAtBpEndScalar }
+	);
+	figure.hideElement(arcAtBprime);
+
+	// Initial values for SS4/SS5 instrument positioning.
 	const dApBp0 = Math.hypot(BpX0 - ApX0, BpY0 - ApY0);
 	const r2_0 = ARC_RADIUS_FACTOR * dApBp0;
-	const angleApBp0 = Math.atan2(BpY0 - ApY0, BpX0 - ApX0);
-	const arcApStart0 = angleApBp0 - ARC_SWEEP_RAD / 2;
-	const arcBpStart0 = angleApBp0 + Math.PI - ARC_SWEEP_RAD / 2;
-	const arcLength = r2_0 * ARC_SWEEP_RAD;
-	// |VP| initial
 	const halfApBp0 = dApBp0 / 2;
 	const VM0 = Math.sqrt(Math.max(0, r1_0 * r1_0 - halfApBp0 * halfApBp0));
 	const halfChordP0 = Math.sqrt(Math.max(0, r2_0 * r2_0 - halfApBp0 * halfApBp0));
 	const VP0 = VM0 + halfChordP0;
+	const PX0 = V.x + bisDirX0 * VP0;
+	const PY0 = V.y + bisDirY0 * VP0;
+	const angleAptoP0 = Math.atan2(PY0 - ApY0, PX0 - ApX0);
+	const angleBptoP0 = Math.atan2(PY0 - BpY0, PX0 - BpX0);
+	const arcAtApStart0 = angleAptoP0 - halfSweepAtP;
+	const arcAtBpStart0 = angleBptoP0 - halfSweepAtP;
+	const smallArcLengthAtP_0 = r2_0 * SMALL_ARC_SWEEP_RAD;
 
 	const rulerStep = buildRulerTraceSubStep(
 		ctx,
@@ -610,29 +621,29 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateLineIds: [],
 			instruction: "Les arcs coupent les côtés en A' et B'"
 		},
-		// SS4 : compass at A' traces an arc.
+		// SS4 : compass at A', petit arc orienté vers P.
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
-			instrumentTarget: { x: ApX0, y: ApY0, rotation: (arcApStart0 * 180) / Math.PI },
+			instrumentTarget: { x: ApX0, y: ApY0, rotation: (arcAtApStart0 * 180) / Math.PI },
 			compassRadius: r2_0,
-			geometricDistance: arcLength,
+			geometricDistance: smallArcLengthAtP_0,
 			animateDrawableIds: [arcAtAprime],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en A', on trace l'arc"
+			instruction: "Compas en A', petit arc en direction du croisement"
 		},
-		// SS5 : compass at B' traces an arc.
+		// SS5 : compass at B', petit arc orienté vers P.
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
-			instrumentTarget: { x: BpX0, y: BpY0, rotation: (arcBpStart0 * 180) / Math.PI },
+			instrumentTarget: { x: BpX0, y: BpY0, rotation: (arcAtBpStart0 * 180) / Math.PI },
 			compassRadius: r2_0,
-			geometricDistance: arcLength,
+			geometricDistance: smallArcLengthAtP_0,
 			animateDrawableIds: [arcAtBprime],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en B', on trace l'arc"
+			instruction: "Compas en B' (même ouverture), petit arc qui croise le précédent"
 		},
 		// SS6 : P fade-in (intersection of arcs, on the bisector).
 		{
@@ -652,7 +663,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		produced: {
 			principal: principalId,
 			charnieres: [P],
-			// The 4 arcs (2 small at V, 2 large at A'/B') are pedagogically
+			// The 4 small arcs (2 at V, 2 at A'/B') are pedagogically
 			// valuable (compass gestures). A' and B' are construction points
 			// — per the spec they are traces (visible in `@complet`).
 			traces: [arcNearA, arcNearB, arcAtAprime, arcAtBprime, Aprime, Bprime],
@@ -660,14 +671,15 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 				...rulerStep.supportIds,
 				dApBpScalar,
 				r2Scalar,
-				angleApBpScalar,
-				arcApStartScalar,
-				arcApEndScalar,
-				arcBpStartScalar,
-				arcBpEndScalar,
 				VPScalar,
 				PxScalar,
 				PyScalar,
+				angleAptoPScalar,
+				angleBptoPScalar,
+				arcAtApStartScalar,
+				arcAtApEndScalar,
+				arcAtBpStartScalar,
+				arcAtBpEndScalar,
 				...supportScalars
 			]
 		}
