@@ -13,8 +13,7 @@ import { isPointElement, isVector, type GeoImage } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { circumcircle } from '../geometry/circumcircle';
 import { resolveStyle } from './svg-primitives';
-import { formatAngleLabel, unsignedAngleBetween } from './angle-label';
-import { computeBisectorDirection } from './bisector-direction';
+import { computeAngleGeometry, projectAngleEndpoints } from './angle-geometry-shared';
 import { extendLineToViewport, extendRayToViewport } from './viewport-clipping';
 
 export interface TikZExportOptions {
@@ -383,64 +382,47 @@ export function exportToTikZ(
 	// Pass 3: angles (first-class GeoAngle)
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'angle') continue;
-		const p1 = figure.getPosition(el.p1Id);
-		const v = figure.getPosition(el.vertexId);
-		const p2 = figure.getPosition(el.p2Id);
-		if (!p1 || !v || !p2) continue;
 
-		const vx = geoToNumber(v.x);
-		const vy = geoToNumber(v.y);
-		const d1x = geoToNumber(p1.x) - vx;
-		const d1y = geoToNumber(p1.y) - vy;
-		const d2x = geoToNumber(p2.x) - vx;
-		const d2y = geoToNumber(p2.y) - vy;
+		// Project endpoints to math coords (identity for TikZ).
+		const projected = projectAngleEndpoints(el, figure, (mx, my) => ({ x: mx, y: my }));
+		if (!projected) continue;
 
-		const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
-		const len2 = Math.sqrt(d2x * d2x + d2y * d2y);
-		if (len1 < 1e-10 || len2 < 1e-10) continue;
-
-		const marque = el.marque ?? 'arc';
-		const kind = el.kind ?? 'saillant';
-		// Convert px radius to math units: ~50px / unit is a reasonable approximation
-		// for TikZ default; we keep the original `MARK_RADIUS` default but allow
-		// `arcRadiusPx` to scale proportionally.
+		// Convert px radius/spacing to math units (same ratios as before).
 		const baseR = el.arcRadiusPx ? (el.arcRadiusPx / 25) * MARK_RADIUS : MARK_RADIUS;
-		// Convert px spacing to math units in the same proportion as MARK_RADIUS:
-		// default 6px maps to MARK_SPACING (0.12) — overrides scale linearly.
 		const arcSpacing = el.arcSpacingPx ? (el.arcSpacingPx / 6) * MARK_SPACING : MARK_SPACING;
 
+		const geom = computeAngleGeometry(el, projected, {
+			arcRadius: baseR,
+			arcSpacing,
+			rightAngleSize: RIGHT_ANGLE_SIZE,
+			// Label sits 0.2 math units beyond the inner arc (legacy offset).
+			labelOffset: 0.2
+		});
+		if (!geom) continue;
+
+		const { vertexX: vx, vertexY: vy, marque } = geom;
 		const { name } = hexToTikZColor(resolveStyle(el, figure.defaults).color);
 
 		if (marque === 'aucune') {
 			// Label-only — handled below.
-		} else if (marque === 'carre') {
-			const u1x = (d1x / len1) * RIGHT_ANGLE_SIZE;
-			const u1y = (d1y / len1) * RIGHT_ANGLE_SIZE;
-			const u2x = (d2x / len2) * RIGHT_ANGLE_SIZE;
-			const u2y = (d2y / len2) * RIGHT_ANGLE_SIZE;
+		} else if (marque === 'carre' && geom.rightAngle) {
+			const r = geom.rightAngle;
 			lines.push(`  % Right angle at ${coord(vx, vy)}`);
 			lines.push(
-				`  \\draw[${name}] ${coord(vx + u1x, vy + u1y)} -- ${coord(vx + u1x + u2x, vy + u1y + u2y)} -- ${coord(vx + u2x, vy + u2y)};`
+				`  \\draw[${name}] ${coord(r.startX, r.startY)} -- ${coord(r.cornerX, r.cornerY)} -- ${coord(r.endX, r.endY)};`
 			);
 		} else {
-			const arcCount = marque === 'arcs3' ? 3 : marque === 'arcs2' ? 2 : 1;
-			const angle1Deg = (Math.atan2(d1y, d1x) * 180) / Math.PI;
-			const angle2Deg = (Math.atan2(d2y, d2x) * 180) / Math.PI;
-			let sweep = angle2Deg - angle1Deg;
-			while (sweep > 180) sweep -= 360;
-			while (sweep < -180) sweep += 360;
-			if (kind === 'rentrant') {
-				sweep = sweep > 0 ? sweep - 360 : sweep + 360;
-			}
+			const angle1Deg = (geom.angle1 * 180) / Math.PI;
+			const sweepDeg = (geom.sweepRad * 180) / Math.PI;
 			const startAngle = Math.round(angle1Deg * 100) / 100;
-			const endAngle = Math.round((angle1Deg + sweep) * 100) / 100;
+			const endAngle = Math.round((angle1Deg + sweepDeg) * 100) / 100;
 
 			// Optional sector fill (rendered before strokes). Uses OUTER radius
 			// so the fill covers the full visible arc extent.
 			const sty = resolveStyle(el, figure.defaults);
 			if (sty.fillColor) {
 				const { name: fillName } = hexToTikZColor(sty.fillColor);
-				const outerR = baseR + (arcCount - 1) * arcSpacing;
+				const outerR = geom.outerRadius;
 				const startX = vx + outerR * Math.cos((startAngle * Math.PI) / 180);
 				const startY = vy + outerR * Math.sin((startAngle * Math.PI) / 180);
 				lines.push(
@@ -448,35 +430,17 @@ export function exportToTikZ(
 				);
 			}
 
-			for (let i = 0; i < arcCount; i++) {
-				const r = baseR + i * arcSpacing;
-				const startX = vx + r * Math.cos((startAngle * Math.PI) / 180);
-				const startY = vy + r * Math.sin((startAngle * Math.PI) / 180);
+			for (const arc of geom.arcs) {
 				lines.push(
-					`  \\draw[${name}] ${coord(startX, startY)} arc (${startAngle}:${endAngle}:${Math.round(r * 1000) / 1000});`
+					`  \\draw[${name}] ${coord(arc.startX, arc.startY)} arc (${startAngle}:${endAngle}:${Math.round(arc.radius * 1000) / 1000});`
 				);
 			}
 		}
 
-		if (showLabels) {
-			const interior = unsignedAngleBetween(d1x, d1y, d2x, d2y);
-			const measureRad =
-				interior === null ? null : kind === 'rentrant' ? 2 * Math.PI - interior : interior;
-			const label = formatAngleLabel(el, measureRad);
-			if (label) {
-				const u1x = d1x / len1;
-				const u1y = d1y / len1;
-				const u2x = d2x / len2;
-				const u2y = d2y / len2;
-				const bisDir = computeBisectorDirection(u1x, u1y, u2x, u2y, kind);
-				const bx = bisDir ? bisDir.bisX : -u1y;
-				const by = bisDir ? bisDir.bisY : u1x;
-				const lx = vx + bx * (baseR + 0.2);
-				const ly = vy + by * (baseR + 0.2);
-				// Use \text{} to render label as-is (handles ° and = uniformly).
-				const safe = label.replace(/°/g, '^{\\circ}');
-				lines.push(`  \\node[${name}] at ${coord(lx, ly)} {$${safe}$};`);
-			}
+		if (showLabels && geom.label) {
+			// Use \text{} to render label as-is (handles ° and = uniformly).
+			const safe = geom.label.replace(/°/g, '^{\\circ}');
+			lines.push(`  \\node[${name}] at ${coord(geom.labelX, geom.labelY)} {$${safe}$};`);
 		}
 	}
 

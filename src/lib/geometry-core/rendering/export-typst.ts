@@ -12,8 +12,7 @@ import { isPointElement, isVector, type GeoImage } from '../types/elements';
 import { geoToNumber } from '../compute/to-number';
 import { circumcircle } from '../geometry/circumcircle';
 import { resolveStyle } from './svg-primitives';
-import { formatAngleLabel, unsignedAngleBetween } from './angle-label';
-import { computeBisectorDirection } from './bisector-direction';
+import { computeAngleGeometry, projectAngleEndpoints } from './angle-geometry-shared';
 import { extendLineToViewport, extendRayToViewport } from './viewport-clipping';
 
 export interface TypstExportOptions {
@@ -384,90 +383,61 @@ export function exportToTypst(
 	// Pass 3: angles (first-class GeoAngle)
 	for (const el of elements) {
 		if (!el.visible || el.type !== 'angle') continue;
-		const p1 = figure.getPosition(el.p1Id);
-		const v = figure.getPosition(el.vertexId);
-		const p2 = figure.getPosition(el.p2Id);
-		if (!p1 || !v || !p2) continue;
 
-		const vx = geoToNumber(v.x);
-		const vy = geoToNumber(v.y);
-		const d1x = geoToNumber(p1.x) - vx;
-		const d1y = geoToNumber(p1.y) - vy;
-		const d2x = geoToNumber(p2.x) - vx;
-		const d2y = geoToNumber(p2.y) - vy;
-		const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
-		const len2 = Math.sqrt(d2x * d2x + d2y * d2y);
-		if (len1 < 1e-10 || len2 < 1e-10) continue;
+		// Project endpoints to math coords (identity for Typst).
+		const projected = projectAngleEndpoints(el, figure, (mx, my) => ({ x: mx, y: my }));
+		if (!projected) continue;
 
-		const marque = el.marque ?? 'arc';
-		const kind = el.kind ?? 'saillant';
 		const baseR = el.arcRadiusPx ? (el.arcRadiusPx / 25) * MARK_RADIUS : MARK_RADIUS;
-		// Convert px spacing to math units in the same proportion as MARK_RADIUS:
-		// default 6px maps to MARK_SPACING (0.12) — overrides scale linearly.
 		const arcSpacing = el.arcSpacingPx ? (el.arcSpacingPx / 6) * MARK_SPACING : MARK_SPACING;
+
+		const geom = computeAngleGeometry(el, projected, {
+			arcRadius: baseR,
+			arcSpacing,
+			rightAngleSize: RIGHT_ANGLE_SIZE,
+			labelOffset: 0.2
+		});
+		if (!geom) continue;
+
+		const { vertexX: vx, vertexY: vy, marque } = geom;
 		const color = hexToTypstColor(resolveStyle(el, figure.defaults).color);
 
 		if (marque === 'aucune') {
 			// Label-only.
-		} else if (marque === 'carre') {
-			const s = RIGHT_ANGLE_SIZE;
-			const u1x = (d1x / len1) * s;
-			const u1y = (d1y / len1) * s;
-			const u2x = (d2x / len2) * s;
-			const u2y = (d2y / len2) * s;
+		} else if (marque === 'carre' && geom.rightAngle) {
+			const r = geom.rightAngle;
 			lines.push(
-				`  line(${c(vx + u1x, vy + u1y)}, ${c(vx + u1x + u2x, vy + u1y + u2y)}, ${c(vx + u2x, vy + u2y)}, stroke: ${color} + 1pt)`
+				`  line(${c(r.startX, r.startY)}, ${c(r.cornerX, r.cornerY)}, ${c(r.endX, r.endY)}, stroke: ${color} + 1pt)`
 			);
 		} else {
-			const arcCount = marque === 'arcs3' ? 3 : marque === 'arcs2' ? 2 : 1;
-			const angle1Deg = (Math.atan2(d1y, d1x) * 180) / Math.PI;
-			const angle2Deg = (Math.atan2(d2y, d2x) * 180) / Math.PI;
-			let sweep = angle2Deg - angle1Deg;
-			while (sweep > 180) sweep -= 360;
-			while (sweep < -180) sweep += 360;
-			if (kind === 'rentrant') {
-				sweep = sweep > 0 ? sweep - 360 : sweep + 360;
-			}
+			const angle1Deg = (geom.angle1 * 180) / Math.PI;
+			const sweepDeg = (geom.sweepRad * 180) / Math.PI;
 			const start = Math.round(angle1Deg * 100) / 100;
-			const stop = Math.round((angle1Deg + sweep) * 100) / 100;
+			const stop = Math.round((angle1Deg + sweepDeg) * 100) / 100;
 
 			// Optional sector fill (rendered before arc strokes). Uses OUTER
 			// radius so the fill covers the full visible arc extent.
 			const sty = resolveStyle(el, figure.defaults);
 			if (sty.fillColor) {
 				const fillCol = hexToTypstColor(sty.fillColor);
-				const outerR = baseR + (arcCount - 1) * arcSpacing;
+				const outerR = geom.outerRadius;
 				lines.push(
 					`  arc(${c(vx, vy)}, start: ${start}deg, stop: ${stop}deg, radius: ${Math.round(outerR * 1000) / 1000}, anchor: "origin", mode: "PIE", fill: ${fillCol}.transparentize(${Math.round((1 - sty.fillOpacity) * 100)}%), stroke: none)`
 				);
 			}
 
-			for (let i = 0; i < arcCount; i++) {
-				const r = baseR + i * arcSpacing;
+			for (const arc of geom.arcs) {
 				lines.push(
-					`  arc(${c(vx, vy)}, start: ${start}deg, stop: ${stop}deg, radius: ${Math.round(r * 1000) / 1000}, anchor: "origin", stroke: ${color} + 1pt)`
+					`  arc(${c(vx, vy)}, start: ${start}deg, stop: ${stop}deg, radius: ${Math.round(arc.radius * 1000) / 1000}, anchor: "origin", stroke: ${color} + 1pt)`
 				);
 			}
 		}
 
-		if (showLabels) {
-			const interior = unsignedAngleBetween(d1x, d1y, d2x, d2y);
-			const measureRad =
-				interior === null ? null : kind === 'rentrant' ? 2 * Math.PI - interior : interior;
-			const label = formatAngleLabel(el, measureRad);
-			if (label) {
-				const u1x = d1x / len1;
-				const u1y = d1y / len1;
-				const u2x = d2x / len2;
-				const u2y = d2y / len2;
-				const bisDir = computeBisectorDirection(u1x, u1y, u2x, u2y, kind);
-				const bx = bisDir ? bisDir.bisX : -u1y;
-				const by = bisDir ? bisDir.bisY : u1x;
-				const lx = vx + bx * (baseR + 0.2);
-				const ly = vy + by * (baseR + 0.2);
-				const safe = label.replace(/°/g, '#h(0pt)°');
-				lines.push(`  content(${c(lx, ly)}, text(size: 9pt, fill: ${color})[${safe}])`);
-			}
+		if (showLabels && geom.label) {
+			const safe = geom.label.replace(/°/g, '#h(0pt)°');
+			lines.push(
+				`  content(${c(geom.labelX, geom.labelY)}, text(size: 9pt, fill: ${color})[${safe}])`
+			);
 		}
 	}
 
