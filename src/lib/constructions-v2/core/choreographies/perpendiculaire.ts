@@ -1103,6 +1103,11 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 				"On fait glisser l'équerre le long de (AB) jusqu'à ce que le bord vertical passe par P"
 		},
 		// SS3 : crayon trace le long du bord vertical de l'équerre.
+		// `principalId` n'est PAS dans `animateLineIds` : un fade-in à
+		// stepProgress=0 ferait bump la ligne en parallèle du tracé.
+		// `applyFinalVisibility` révèle la ligne en fin de SS3 ; le
+		// segment-trace couvre la portion visible de la perpendiculaire
+		// pour que le swap soit imperceptible (même pattern que mediatrice).
 		{
 			kind: 'ruler-trace',
 			instrument: 'setSquare',
@@ -1111,7 +1116,7 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 			geometricDistance: traceLen0,
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
-			animateLineIds: [principalId],
+			animateLineIds: [],
 			instruction: "Le long du bord vertical de l'équerre, on trace la perpendiculaire"
 		}
 	];
