@@ -529,6 +529,25 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 		{ scalarRef: CfinalYScalar }
 	);
 	figure.hideElement(Cfinal);
+	// equerreInitial as a point (used as endpoint for the slide segment
+	// and as vertex/arm of the right-angle markers in @complet mode).
+	const EquerreCorner = figure.createComputedPoint(
+		{ scalarRef: equerreInitialXScalar },
+		{ scalarRef: equerreInitialYScalar }
+	);
+	figure.hideElement(EquerreCorner);
+
+	// ─── Slide-guide segment (equerreInitial → Cfinal) ─────────────────────
+	// Visible only in @complet as a trace, showing the perpendicular axis
+	// along which the équerre slid. Length = |dPerp|.
+	const slideSegment = figure.createSegment(EquerreCorner, Cfinal);
+	figure.hideElement(slideSegment);
+
+	// ─── Right-angle markers (@complet only) ───────────────────────────────
+	// Right angle at equerreInitial : between (AB) and the slide segment.
+	// Vertex = equerreInitial, arms = B (along u_AB) and Cfinal (along n_toP).
+	const rightAngleAtBase = figure.createAngle(Bid, EquerreCorner, Cfinal, { marque: 'carre' });
+	figure.hideElement(rightAngleAtBase);
 
 	// ─── Segment-trace 1 : portion inside the équerre (along horizontal edge) ───
 	const trace1EndxScalar = figure.createScalarExpression(
@@ -550,6 +569,14 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	figure.hideElement(trace1End);
 	const segmentTrace1 = figure.createSegment(Cfinal, trace1End);
 	figure.hideElement(segmentTrace1);
+
+	// Right angle at Cfinal : between the slide segment and the parallel.
+	// Vertex = Cfinal, arms = trace1End (along hEdgeDir = parallel direction)
+	// and EquerreCorner (along -n_toP = back along slide).
+	const rightAngleAtTop = figure.createAngle(trace1End, Cfinal, EquerreCorner, {
+		marque: 'carre'
+	});
+	figure.hideElement(rightAngleAtTop);
 
 	// ─── Segment-trace 2 : backward extension along parallel (C_final → -hEdgeDir) ───
 	const halfTraceScalar = figure.createScalarExpression(
@@ -699,8 +726,13 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 			principal: principalId,
 			// C_final = coin de l'équerre après glissement (sur la parallèle).
 			charnieres: [Cfinal],
-			traces: [segmentTrace1, segmentTrace2],
+			// Traces (visibles en @complet) : les deux portions tracées + le
+			// segment-glissière (axe perpendiculaire le long duquel l'équerre
+			// a glissé) + les deux marqueurs d'angle droit (montrent que la
+			// parallèle est obtenue par double perpendicularité).
+			traces: [segmentTrace1, segmentTrace2, slideSegment, rightAngleAtBase, rightAngleAtTop],
 			hiddenSupport: [
+				EquerreCorner,
 				trace1End,
 				trace2End,
 				Px,
