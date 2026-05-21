@@ -16,7 +16,14 @@
  * bisector by symmetry of |VA'| = |VB'|).
  */
 
-import type { Voie, ChoreographyFn, ChoreographyCtx, ChoreographyResult, SubStep } from './types';
+import type {
+	Voie,
+	ChoreographyFn,
+	ChoreographyCtx,
+	ChoreographyResult,
+	SubStep,
+	TraceTag
+} from './types';
 import { isAngle } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 
@@ -707,6 +714,14 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			// valuable (compass gestures). A' and B' are construction points
 			// — per the spec they are traces (visible in `@complet`).
 			traces: [arcNearA, arcNearB, arcAtAprime, arcAtBprime, Aprime, Bprime],
+			traceTags: new Map<string, TraceTag>([
+				[arcNearA, 'arc'],
+				[arcNearB, 'arc'],
+				[arcAtAprime, 'arc'],
+				[arcAtBprime, 'arc'],
+				[Aprime, 'auxiliary-point'],
+				[Bprime, 'auxiliary-point']
+			]),
 			hiddenSupport: [
 				...rulerStep.supportIds,
 				dApBpScalar,
@@ -843,6 +858,12 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			charnieres: [M],
 			// 2 small arcs at V : pedagogically valuable. A' B' : construction traces.
 			traces: [arcNearA, arcNearB, Aprime, Bprime],
+			traceTags: new Map<string, TraceTag>([
+				[arcNearA, 'arc'],
+				[arcNearB, 'arc'],
+				[Aprime, 'auxiliary-point'],
+				[Bprime, 'auxiliary-point']
+			]),
 			hiddenSupport: [...rulerStep.supportIds, MxScalar, MyScalar, VMScalar, ...supportScalars]
 		}
 	};

@@ -58,7 +58,14 @@
  *   SS7 — ruler-trace P→Q (line-fade-in m).
  */
 
-import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, ChoreographyCtx } from './types';
+import type {
+	Voie,
+	ChoreographyFn,
+	ChoreographyResult,
+	SubStep,
+	ChoreographyCtx,
+	TraceTag
+} from './types';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total
@@ -427,6 +434,12 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			// B' est un point de construction, les 3 petits arcs sont les
 			// gestes au compas. Visibles en @complet.
 			traces: [arcAtP, arcAtA, arcAtBp, Bprime],
+			traceTags: new Map<string, TraceTag>([
+				[arcAtP, 'arc'],
+				[arcAtA, 'arc'],
+				[arcAtBp, 'arc'],
+				[Bprime, 'auxiliary-point']
+			]),
 			hiddenSupport: [
 				// Animation-only.
 				segmentTrace,
@@ -872,6 +885,14 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			charnieres: [Q],
 			// Les 4 petits arcs + A* + B* sont les gestes au compas, visibles en @complet.
 			traces: [arcAtPtoAstar, arcAtPtoBstar, arcAtAstar, arcAtBstar, Astar, Bstar],
+			traceTags: new Map<string, TraceTag>([
+				[arcAtPtoAstar, 'arc'],
+				[arcAtPtoBstar, 'arc'],
+				[arcAtAstar, 'arc'],
+				[arcAtBstar, 'arc'],
+				[Astar, 'auxiliary-point'],
+				[Bstar, 'auxiliary-point']
+			]),
 			hiddenSupport: [
 				// Animation-only.
 				segmentTrace,
@@ -1189,6 +1210,10 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 			charnieres: [F],
 			// Les deux portions tracées (visibles en @complet).
 			traces: [segmentTrace1, segmentTrace2],
+			traceTags: new Map<string, TraceTag>([
+				[segmentTrace1, 'segment-trace'],
+				[segmentTrace2, 'segment-trace']
+			]),
 			hiddenSupport: [
 				trace1End,
 				Iext1,

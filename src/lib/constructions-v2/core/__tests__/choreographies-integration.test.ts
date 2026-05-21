@@ -533,6 +533,46 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		}
 	});
 
+	it('cercle_circonscrit @euclide propagates sub-mediatrice traceTags', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'C = point(2, 3)',
+				'cc = cercle_circonscrit(A, B, C) @euclide'
+			].join('\n')
+		);
+		exec.executeAll();
+		exec.step();
+		const result = exec.lastChoreographyResult;
+		expect(result?.produced.traceTags).toBeDefined();
+		// 2 sub-mediatrices × 4 small arcs each = 8 tagged arcs.
+		const tags = [...(result?.produced.traceTags?.values() ?? [])];
+		expect(tags.length).toBe(8);
+		expect(tags.every((t) => t === 'arc')).toBe(true);
+	});
+
+	it('parallele @equerre tags traces by category (segment-trace + marker)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = parallele(P, A, B) @equerre'
+			].join('\n')
+		);
+		exec.executeAll();
+		exec.step();
+		const result = exec.lastChoreographyResult;
+		expect(result?.produced.traceTags).toBeDefined();
+		const tags = [...(result?.produced.traceTags?.values() ?? [])];
+		// 3 segment-traces (2 pencil traces + 1 slide guide segment) + 2 markers.
+		expect(tags.filter((t) => t === 'segment-trace').length).toBe(3);
+		expect(tags.filter((t) => t === 'marker').length).toBe(2);
+	});
+
 	it('perpendiculaire @euclide expands into 7 sub-step entries (defaut = rayon_libre)', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(

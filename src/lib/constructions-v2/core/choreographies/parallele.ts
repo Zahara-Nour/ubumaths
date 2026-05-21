@@ -14,7 +14,7 @@
  *   composition (`ctx.sub`) — left as stub for V1.
  */
 
-import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types';
+import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total (small arcs near Q)
@@ -330,6 +330,10 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			charnieres: [Q],
 			// 2 small arcs are pedagogically valuable (compass gestures).
 			traces: [arcAtP, arcAtB],
+			traceTags: new Map<string, TraceTag>([
+				[arcAtP, 'arc'],
+				[arcAtB, 'arc']
+			]),
 			hiddenSupport: [
 				// Animation-only / structural plumbing.
 				segmentTrace,
@@ -731,6 +735,13 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 			// a glissé) + les deux marqueurs d'angle droit (montrent que la
 			// parallèle est obtenue par double perpendicularité).
 			traces: [segmentTrace1, segmentTrace2, slideSegment, rightAngleAtBase, rightAngleAtTop],
+			traceTags: new Map<string, TraceTag>([
+				[segmentTrace1, 'segment-trace'],
+				[segmentTrace2, 'segment-trace'],
+				[slideSegment, 'segment-trace'],
+				[rightAngleAtBase, 'marker'],
+				[rightAngleAtTop, 'marker']
+			]),
 			hiddenSupport: [
 				EquerreCorner,
 				trace1End,
