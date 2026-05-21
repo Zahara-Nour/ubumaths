@@ -524,7 +524,7 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		}
 	});
 
-	it('perpendiculaire @euclide expands into 7 sub-step entries (via ctx.sub)', () => {
+	it('perpendiculaire @euclide expands into 7 sub-step entries', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -535,7 +535,8 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 			].join('\n')
 		);
 		// 3 point statements + 7 sub-steps for the decorated perpendiculaire = 10 entries.
-		// 7 sub-steps : 1 (compass at P) + 1 (A',B' fade-in) + 4 (sub-mediatrice) + 1 (m fade-in).
+		// 7 sub-steps : compass-measure |PA|, arc at P → B', B' fade-in,
+		// arcs at A and B' (same opening) → Q, Q fade-in, ruler P→Q.
 		expect(exec.totalSteps).toBe(10);
 		expect(exec.loadError).toBeNull();
 	});
@@ -558,15 +559,13 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 			kinds.push(exec.currentSubStep?.kind ?? 'null');
 		}
 		expect(kinds).toEqual([
-			'compass-draw', // SS1 : arc at P
-			'point-fade-in', // SS2 : A', B' fade-in
-			// sub-mediatrice(A', B') : 4 sub-steps
-			'compass-draw', // SS3 : sub's compass at A'
-			'compass-draw', // SS4 : sub's compass at B'
-			'point-fade-in', // SS5 : sub's I1, I2 fade-in
-			'ruler-trace', // SS6 : sub's ruler trace
-			// Parent's reveal
-			'line-fade-in' // SS7 : the perpendicular line m
+			'compass-measure', // SS1 : measure |PA| (compass at P, opening to A)
+			'compass-draw', // SS2 : small arc at P (same opening) crossing (AB) at B'
+			'point-fade-in', // SS3 : B' fade-in
+			'compass-draw', // SS4 : small arc at A (same opening) toward Q
+			'compass-draw', // SS5 : small arc at B' (same opening) toward Q
+			'point-fade-in', // SS6 : Q fade-in (= reflection of P across (AB))
+			'ruler-trace' // SS7 : ruler P→Q traces the perpendicular
 		]);
 	});
 
