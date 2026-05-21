@@ -641,7 +641,14 @@
 						transform="translate({ppos?.x ?? 0}, {ppos?.y ?? 0}) rotate({ppos?.rotation ?? 0})"
 						opacity={state.opacity}
 					>
-						<Protractor x={0} y={0} rotation={0} scale={state.scale} visible={true} />
+						<Protractor
+							x={0}
+							y={0}
+							rotation={0}
+							scale={state.scale}
+							{pixelsPerUnit}
+							visible={true}
+						/>
 					</g>
 				{:else if state.type === 'setSquare'}
 					{@const spos = instrumentPositions['setSquare']}

@@ -10,14 +10,21 @@
 	 * a center sight, and Sesamath branding.
 	 */
 
-	// Constants from original Rapporteur.js
-	const HEIGHT_FONT = 10; // External graduation font height
-	const HEIGHT_FONT_INT = 9; // Internal graduation font height
-	const BAR_WIDTH = 13; // Bottom bar width
-	const RAY = 156; // External radius
-	const RAY_INT = 89; // Internal radius
-	const RAY_TRAIT_INT = 116; // Internal separation line radius
-	const RAY_MIRE = 7; // Sight radius
+	// Reference dimensions (math units = pixel value at default PPU = 40).
+	const HEIGHT_FONT = 10; // External graduation font height (px, kept fixed)
+	const HEIGHT_FONT_INT = 9; // Internal graduation font height (px, kept fixed)
+	const BAR_WIDTH_MATH = 13 / 40; // Bottom bar width
+	const RAY_MATH = 156 / 40; // External radius (≈ 3.9 math units)
+	const RAY_INT_MATH = 89 / 40; // Internal radius
+	const RAY_TRAIT_INT_MATH = 116 / 40; // Internal separation line radius
+	const RAY_MIRE_MATH = 7 / 40; // Sight radius
+	const MAJOR_TICK_MATH = 20 / 40; // Major external tick length
+	const HALF_TICK_MATH = 10 / 40; // Half external tick length
+	const MINOR_TICK_MATH = 5 / 40; // Minor external tick length
+	const INT_TICK_MATH = 10 / 40; // Internal tick length
+	const EXT_LABEL_OFFSET_MATH = 22 / 40; // External label radial offset
+	const INT_LABEL_OFFSET_MATH = 14 / 40; // Internal label radial offset
+	const SEP_DEP_OFFSET_MATH = 26 / 40; // Separation-arc dep offset
 
 	// Types
 	interface Props {
@@ -28,6 +35,12 @@
 		showExternalGraduations?: boolean;
 		showInternalGraduations?: boolean;
 		visible?: boolean;
+		/**
+		 * Screen pixels per math unit (matches the host canvas). Radii and
+		 * graduation lengths scale by this factor so the protractor always
+		 * covers `RAY_MATH` math units of radius regardless of canvas zoom.
+		 */
+		pixelsPerUnit?: number;
 	}
 
 	// Props with defaults
@@ -38,8 +51,23 @@
 		scale = 1,
 		showExternalGraduations = true,
 		showInternalGraduations = true,
-		visible = true
+		visible = true,
+		pixelsPerUnit = 40
 	}: Props = $props();
+
+	// Dimensions in screen pixels (rescaled when zoom changes).
+	let BAR_WIDTH = $derived(BAR_WIDTH_MATH * pixelsPerUnit);
+	let RAY = $derived(RAY_MATH * pixelsPerUnit);
+	let RAY_INT = $derived(RAY_INT_MATH * pixelsPerUnit);
+	let RAY_TRAIT_INT = $derived(RAY_TRAIT_INT_MATH * pixelsPerUnit);
+	let RAY_MIRE = $derived(RAY_MIRE_MATH * pixelsPerUnit);
+	let majorTickPx = $derived(MAJOR_TICK_MATH * pixelsPerUnit);
+	let halfTickPx = $derived(HALF_TICK_MATH * pixelsPerUnit);
+	let minorTickPx = $derived(MINOR_TICK_MATH * pixelsPerUnit);
+	let intTickPx = $derived(INT_TICK_MATH * pixelsPerUnit);
+	let extLabelOffsetPx = $derived(EXT_LABEL_OFFSET_MATH * pixelsPerUnit);
+	let intLabelOffsetPx = $derived(INT_LABEL_OFFSET_MATH * pixelsPerUnit);
+	let sepDepOffsetPx = $derived(SEP_DEP_OFFSET_MATH * pixelsPerUnit);
 
 	// Main group transform
 	let mainTransform = $derived(
@@ -64,7 +92,7 @@
 
 	// Internal separation arc path
 	let separationPath = $derived.by(() => {
-		const dep = RAY - 26 - HEIGHT_FONT;
+		const dep = RAY - sepDepOffsetPx - HEIGHT_FONT;
 		return (
 			`M ${dep} 0 L ${RAY_TRAIT_INT} 0 ` +
 			`A ${RAY_TRAIT_INT} ${RAY_TRAIT_INT} 0 0 0 ${-RAY_TRAIT_INT} 0 ` +
@@ -84,7 +112,7 @@
 		for (let i = 0; i <= 180; i++) {
 			const isMajor = i % 10 === 0;
 			const isHalf = i % 5 === 0;
-			const length = isMajor ? 20 : isHalf ? 10 : 5;
+			const length = isMajor ? majorTickPx : isHalf ? halfTickPx : minorTickPx;
 
 			marks.push({
 				angle: i,
@@ -142,7 +170,9 @@
 						x="0"
 						y="0"
 						style="font-family: arial; font-size: {HEIGHT_FONT}px; text-anchor: middle; fill: black;"
-						transform="scale(-1) rotate({-mark.angle - 90}) translate(0, {-RAY + 22 + HEIGHT_FONT})"
+						transform="scale(-1) rotate({-mark.angle - 90}) translate(0, {-RAY +
+							extLabelOffsetPx +
+							HEIGHT_FONT})"
 					>
 						{mark.label}
 					</text>
@@ -158,7 +188,7 @@
 			<line
 				x1={RAY_INT}
 				y1="0"
-				x2={RAY_INT + 10}
+				x2={RAY_INT + intTickPx}
 				y2="0"
 				transform="rotate({-mark.angle})"
 				stroke="#333333"
@@ -175,7 +205,8 @@
 						x="0"
 						y="0"
 						style="font-family: arial; font-size: {HEIGHT_FONT_INT}px; text-anchor: middle; fill: black;"
-						transform="scale(-1) rotate({-mark.angle - 90}) translate(0, {-RAY_INT - 14})"
+						transform="scale(-1) rotate({-mark.angle - 90}) translate(0, {-RAY_INT -
+							intLabelOffsetPx})"
 					>
 						{mark.label}
 					</text>
