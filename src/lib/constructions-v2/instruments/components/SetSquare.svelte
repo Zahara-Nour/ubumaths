@@ -7,21 +7,21 @@
 	 * License: AGPL-3.0-or-later
 	 *
 	 * Renders a semi-transparent triangular set square with a cutout,
-	 * lighter border bands, and Sesamath branding.
+	 * lighter border bands, and UbuMaths branding.
+	 *
+	 * Dimensions scale with `pixelsPerUnit` (math units → screen pixels)
+	 * so the équerre's horizontal/vertical legs always span the same
+	 * number of grid units regardless of canvas zoom — mirrors the
+	 * `Ruler` component, whose length is also math-unit-based.
 	 */
 
-	// Constants from original Equerre.js
-	const LARGEUR = 131; // Width
-	const HAUTEUR = 223; // Height
-	const LARGEUR_BAS = 31; // Bottom bar height
-	const LARGEUR_GAUCHE = 24; // Left bar width
-	const LARGEUR_INT = 61; // Interior cutout width
-	const LARGEUR_BANDE = 16; // Lighter band width
-
-	// Derived constants
-	const HAUTEUR_INT = (LARGEUR_INT * HAUTEUR) / LARGEUR; // Interior cutout height
-	const H = (HAUTEUR / LARGEUR) * (LARGEUR - LARGEUR_BANDE); // Height of lighter part
-	const L = (LARGEUR / HAUTEUR) * (HAUTEUR - LARGEUR_BANDE); // Width of lighter part
+	// Reference dimensions (math units = pixel value at default PPU = 40).
+	const LARGEUR_MATH = 131 / 40; // horizontal leg ≈ 3.275 math units
+	const HAUTEUR_MATH = 223 / 40; // vertical leg ≈ 5.575 math units
+	const LARGEUR_BAS_MATH = 31 / 40; // bottom bar height
+	const LARGEUR_GAUCHE_MATH = 24 / 40; // left bar width
+	const LARGEUR_INT_MATH = 61 / 40; // interior cutout width
+	const LARGEUR_BANDE_MATH = 16 / 40; // lighter band width
 
 	// Types
 	interface Props {
@@ -30,10 +30,37 @@
 		rotation?: number;
 		scale?: number;
 		visible?: boolean;
+		/**
+		 * Screen pixels per math unit (matches the host canvas). The leg
+		 * lengths and cutouts scale by this factor so the equerre always
+		 * covers `LARGEUR_MATH` × `HAUTEUR_MATH` math units regardless of
+		 * zoom.
+		 */
+		pixelsPerUnit?: number;
 	}
 
 	// Props with defaults
-	let { x = 200, y = 400, rotation = 0, scale = 1, visible = true }: Props = $props();
+	let {
+		x = 200,
+		y = 400,
+		rotation = 0,
+		scale = 1,
+		visible = true,
+		pixelsPerUnit = 40
+	}: Props = $props();
+
+	// Dimensions in screen pixels (rescaled when zoom changes).
+	let LARGEUR = $derived(LARGEUR_MATH * pixelsPerUnit);
+	let HAUTEUR = $derived(HAUTEUR_MATH * pixelsPerUnit);
+	let LARGEUR_BAS = $derived(LARGEUR_BAS_MATH * pixelsPerUnit);
+	let LARGEUR_GAUCHE = $derived(LARGEUR_GAUCHE_MATH * pixelsPerUnit);
+	let LARGEUR_INT = $derived(LARGEUR_INT_MATH * pixelsPerUnit);
+	let LARGEUR_BANDE = $derived(LARGEUR_BANDE_MATH * pixelsPerUnit);
+
+	// Derived constants
+	let HAUTEUR_INT = $derived((LARGEUR_INT * HAUTEUR) / LARGEUR);
+	let H = $derived((HAUTEUR / LARGEUR) * (LARGEUR - LARGEUR_BANDE));
+	let L = $derived((LARGEUR / HAUTEUR) * (HAUTEUR - LARGEUR_BANDE));
 
 	// Main group transform
 	let mainTransform = $derived(
