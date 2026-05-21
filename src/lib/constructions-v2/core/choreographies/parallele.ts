@@ -363,26 +363,33 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 /**
  * `parallele @equerre` choreography.
  *
- * Construction directe à l'équerre + règle :
+ * Construction classique à l'équerre + règle (la règle sert de glissière
+ * pour le déplacement perpendiculaire de l'équerre) :
  *
- *   SS1 — pose : l'équerre arrive avec son bord horizontal sur (AB),
- *         coin sur A, bord vertical orienté vers P.
- *   SS2 — glissement : l'équerre glisse perpendiculairement à (AB) (le
- *         long du bord vertical) jusqu'à `C_final = A + n_toP × |d_perp|`,
- *         de sorte que le bord horizontal passe désormais par P.
- *   SS3 — tracé inside : le crayon trace la portion de la parallèle qui
- *         rentre dans le bord horizontal de l'équerre (longueur =
- *         `EQUERRE_HORIZONTAL_MATH_UNITS`).
- *   SS4 — swap : on retire l'équerre, on pose la règle alignée sur la
+ *   SS1 — pose équerre : bord horizontal sur (AB), coin sur A, bord
+ *         vertical orienté vers P.
+ *   SS2 — pose règle : contre le bord vertical de l'équerre. La règle
+ *         joue le rôle de glissière. L'équerre reste visible
+ *         (`secondaryInstrument: 'setSquare'`).
+ *   SS3 — glissement : l'équerre glisse le long de la règle jusqu'à
+ *         `C_final = A + n_toP × |d_perp|`. La règle reste fixe
+ *         (`secondaryInstrument: 'ruler'`).
+ *   SS4 — tracé inside : crayon trace la portion de la parallèle
+ *         couverte par le bord horizontal (longueur =
+ *         `EQUERRE_HORIZONTAL_MATH_UNITS`). La règle se masque.
+ *   SS5 — swap : on retire l'équerre, on pose la règle alignée sur la
  *         portion tracée (origine décalée de `RULER_OVERLAP_MATH_UNITS`
  *         vers le tracé pour le chevauchement).
- *   SS5 — prolongement : le crayon prolonge la parallèle le long de la
+ *   SS6 — prolongement : crayon prolonge la parallèle le long de la
  *         règle. `applyFinalVisibility` révèle ensuite la ligne complète.
  *
  * Positionnement de l'équerre :
- * - Coin (origine locale) = A (SS1), `C_final` (SS2, SS3).
+ * - Coin (origine locale) = A (SS1, SS2), `C_final` (SS3, SS4).
  * - Rotation = angle de u_AB si P est du côté `n_ccw` de (AB), sinon
  *   `angle(u_AB) + 180°` pour orienter le bord vertical vers P.
+ *
+ * La règle-glissière en SS2/SS3 est alignée avec le bord vertical de
+ * l'équerre (rotation = `setSquareRotation + 90°`).
  */
 function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	const { figure, args, principalId } = ctx;
@@ -525,9 +532,14 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	// Initial geometric distances.
 	const trace1Len0 = EQUERRE_HORIZONTAL_MATH_UNITS;
 	const trace2Len0 = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, Math.abs(dPerp0) * 1.2);
-	// Ruler position : origin offset from C_final toward trace1 by
-	// RULER_OVERLAP, rotation opposite to hEdgeDir (so the ruler extends
-	// backward, into the extension territory).
+	// Slide-guide ruler position : laid against the équerre's vertical
+	// edge at A. Origin = A, rotation = équerre's vertical-edge direction
+	// (= setSquareRotation + 90°). This ruler stays in place during the
+	// equerre slide (SS3) and serves as the visual slide track.
+	const guideRulerRotationDeg = setSquareRotation + 90;
+	// Parallel-aligned ruler position (for SS5/SS6 extension) : origin
+	// offset from C_final toward trace1 by RULER_OVERLAP, rotation
+	// opposite to hEdgeDir (so the ruler extends backward).
 	const rulerOriginX0 = Cfinal_x0 + hEdgeDirX0 * RULER_OVERLAP_MATH_UNITS;
 	const rulerOriginY0 = Cfinal_y0 + hEdgeDirY0 * RULER_OVERLAP_MATH_UNITS;
 	const rulerRotationDeg = (Math.atan2(-hEdgeDirY0, -hEdgeDirX0) * 180) / Math.PI;
@@ -547,10 +559,27 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 			animateLineIds: [],
 			instruction: "On pose l'équerre avec son bord horizontal sur (AB), le coin sur A"
 		},
-		// SS2 : glissement perpendiculaire jusqu'à C_final.
+		// SS2 : on pose la règle contre le bord vertical de l'équerre :
+		// elle servira de glissière pour le déplacement perpendiculaire.
+		// `secondaryInstrument: 'setSquare'` garde l'équerre visible.
+		{
+			kind: 'compass-measure',
+			instrument: 'ruler',
+			secondaryInstrument: 'setSquare',
+			instrumentTarget: { x: A.x, y: A.y, rotation: guideRulerRotationDeg },
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "On pose la règle contre le bord vertical de l'équerre"
+		},
+		// SS3 : glissement de l'équerre le long de la règle (la règle
+		// reste fixe ; `secondaryInstrument: 'ruler'` la maintient visible).
 		{
 			kind: 'compass-measure',
 			instrument: 'setSquare',
+			secondaryInstrument: 'ruler',
 			instrumentTarget: { x: Cfinal_x0, y: Cfinal_y0, rotation: setSquareRotation },
 			compassRadius: 0,
 			geometricDistance: 0,
@@ -558,9 +587,11 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 			animatePointIds: [],
 			animateLineIds: [],
 			instruction:
-				"On fait glisser l'équerre perpendiculairement à (AB) jusqu'à ce que le bord horizontal passe par P"
+				"On fait glisser l'équerre le long de la règle jusqu'à ce que le bord horizontal passe par P"
 		},
-		// SS3 : tracé le long du bord horizontal de l'équerre.
+		// SS4 : tracé le long du bord horizontal de l'équerre.
+		// La règle se masque ici (`hideAutoInstruments`), le crayon
+		// devient le secondaire pour suivre la pointe du tracé.
 		{
 			kind: 'ruler-trace',
 			instrument: 'setSquare',
@@ -572,7 +603,7 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 			animateLineIds: [],
 			instruction: "Le long du bord horizontal de l'équerre, on trace une portion de la parallèle"
 		},
-		// SS4 : swap équerre → règle, alignée sur la portion tracée.
+		// SS5 : swap équerre → règle, alignée sur la portion tracée.
 		{
 			kind: 'compass-measure',
 			instrument: 'ruler',
@@ -584,7 +615,7 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 			animateLineIds: [],
 			instruction: "On retire l'équerre et on pose la règle le long de la portion tracée"
 		},
-		// SS5 : prolongement de la parallèle le long de la règle.
+		// SS6 : prolongement de la parallèle le long de la règle.
 		{
 			kind: 'ruler-trace',
 			instrument: 'ruler',
