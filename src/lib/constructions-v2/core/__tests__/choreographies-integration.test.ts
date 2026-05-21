@@ -534,8 +534,8 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 				'd = perpendiculaire(P, A, B) @euclide'
 			].join('\n')
 		);
-		// 3 point statements + 7 sub-steps (rayon_libre = arc at P + A*,B* fade
-		// + 4 sub-mediatrice + line-fade-in) = 10 entries.
+		// 3 point statements + 7 sub-steps (rayon_libre = 2 small arcs at P
+		// + A*,B* fade + 2 small arcs at A*,B* + Q fade + ruler) = 10 entries.
 		expect(exec.totalSteps).toBe(10);
 		expect(exec.loadError).toBeNull();
 	});
@@ -558,14 +558,13 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 			kinds.push(exec.currentSubStep?.kind ?? 'null');
 		}
 		expect(kinds).toEqual([
-			'compass-draw', // SS1 : arc at P covering (AB) → A*, B*
-			'point-fade-in', // SS2 : A*, B* fade-in
-			// sub-mediatrice(A*, B*) : 4 sub-steps
-			'compass-draw', // SS3 : sub's compass at A*
-			'compass-draw', // SS4 : sub's compass at B*
-			'point-fade-in', // SS5 : sub's I1, I2 fade-in
-			'ruler-trace', // SS6 : sub's ruler trace
-			'line-fade-in' // SS7 : the perpendicular line m
+			'compass-draw', // SS1 : small arc at P → A*
+			'compass-draw', // SS2 : small arc at P → B*
+			'point-fade-in', // SS3 : A*, B* fade-in
+			'compass-draw', // SS4 : small arc at A* (same opening) → Q
+			'compass-draw', // SS5 : small arc at B* (same opening) → Q
+			'point-fade-in', // SS6 : Q fade-in (= reflection of P across (AB))
+			'ruler-trace' // SS7 : ruler P→Q traces the perpendicular
 		]);
 	});
 
