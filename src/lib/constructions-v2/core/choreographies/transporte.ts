@@ -19,7 +19,7 @@
  * trace for the ruler step.
  */
 
-import type { Voie, ChoreographyCtx, ChoreographyResult, SubStep } from './types';
+import type { Voie, ChoreographyCtx, ChoreographyResult, SubStep, TraceTag } from './types';
 import { isAngle, isPointElement } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { numeric } from '$lib/geometry-core/types/geo-value';
@@ -553,6 +553,11 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			charnieres: [Aprime, Bprime, Adoubleprime, Bdoubleprime],
 			// Traces = gestes au compas, valables en @complet.
 			traces: [arcV, arcVp, arcApp],
+			traceTags: new Map<string, TraceTag>([
+				[arcV, 'arc'],
+				[arcVp, 'arc'],
+				[arcApp, 'arc']
+			]),
 			// Hidden support : the segment-trace duplicates the 2nd side of β
 			// (already in the figure as a side of the angle) — keep hidden
 			// after the animation to avoid visual doubling.

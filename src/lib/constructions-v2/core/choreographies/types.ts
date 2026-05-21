@@ -101,6 +101,25 @@ export interface SubStep {
 }
 
 /**
+ * Pedagogical category of a trace element. Used by the visibility module
+ * (via `traceTags` in `ChoreographyProduced`) to support fine-grained
+ * selection of which traces to show in `@complet` and related profiles.
+ *
+ * - `arc` : a circle/arc drawn by the compass instrument (shows the
+ *   « compass gesture »).
+ * - `segment-trace` : a segment drawn by the pencil along a ruler/equerre
+ *   edge (shows the « trace gesture »).
+ * - `marker` : a `GeoAngle` rendered with `marque: 'carre'` (or similar)
+ *   highlighting a geometric property like perpendicularity.
+ * - `auxiliary-point` : a construction helper point that's not a
+ *   pedagogical charnière (e.g. `A*`, `B*`, `B'`, intermediate `F`).
+ *
+ * Tags are optional ; untagged traces are treated as generic by the
+ * visibility module (always shown in `@complet`).
+ */
+export type TraceTag = 'arc' | 'segment-trace' | 'marker' | 'auxiliary-point';
+
+/**
  * Categorisation of figure elements produced by a choreography. Drives the
  * final visibility pass (Phase C / applyFinalVisibility).
  */
@@ -111,6 +130,13 @@ export interface ChoreographyProduced {
 	readonly charnieres: readonly string[];
 	/** ids of ephemeral construction traces (compass arcs, ghost lines) — hidden in @squelette, dashed-faded in @complet. */
 	readonly traces: readonly string[];
+	/**
+	 * Optional per-trace pedagogical category. When present, lets the
+	 * visibility module filter `traces` by tag (e.g. show arcs but hide
+	 * segment-traces). Traces not present in this map are treated as
+	 * untagged (always shown in `@complet`).
+	 */
+	readonly traceTags?: ReadonlyMap<string, TraceTag>;
 	/**
 	 * Ids of auxiliary elements that should NEVER be visible after the
 	 * animation, regardless of visibility mode. Two common subcategories :

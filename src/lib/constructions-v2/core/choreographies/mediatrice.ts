@@ -20,7 +20,7 @@
  *         while the final median line fades in.
  */
 
-import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types';
+import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
 
 /**
  * Length of the segment-trace (math units). Matches the default `Ruler`
@@ -434,6 +434,12 @@ function buildArcsEgaux(
 			// be redundant with the principal line in `@complet` (geometrically
 			// overlapping), so we keep it hidden after the animation.
 			traces: [arcAtoI1, arcAtoI2, arcBtoI1, arcBtoI2],
+			traceTags: new Map<string, TraceTag>([
+				[arcAtoI1, 'arc'],
+				[arcAtoI2, 'arc'],
+				[arcBtoI1, 'arc'],
+				[arcBtoI2, 'arc']
+			]),
 			hiddenSupport: [
 				// Hidden auxiliaries needed only during the animation.
 				segmentTrace,

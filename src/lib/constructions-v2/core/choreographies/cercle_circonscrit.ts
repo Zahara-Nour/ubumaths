@@ -29,7 +29,7 @@
 
 import { exact } from '$lib/geometry-core/types/geo-value';
 import { numericNode } from '$lib/mathAST/common/numeric';
-import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types';
+import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
 
 const PI_OVER_2 = Math.PI / 2;
 
@@ -172,6 +172,16 @@ function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): Chore
 		M_BC,
 		H_BC
 	];
+	// Propagate the per-sub traceTags into our own. Each sub-mediatrice
+	// tags its arcs ; we forward them unchanged so a future @complet_arcs
+	// profile filters the sub's compass gestures correctly.
+	const mergedTraceTags = new Map<string, TraceTag>();
+	if (sub1.produced.traceTags) {
+		for (const [id, tag] of sub1.produced.traceTags) mergedTraceTags.set(id, tag);
+	}
+	if (sub2.produced.traceTags) {
+		for (const [id, tag] of sub2.produced.traceTags) mergedTraceTags.set(id, tag);
+	}
 
 	return {
 		subSteps: allSubSteps,
@@ -179,6 +189,7 @@ function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): Chore
 			principal: principalId,
 			charnieres: [m1, m2, O],
 			traces: subTraces,
+			traceTags: mergedTraceTags.size > 0 ? mergedTraceTags : undefined,
 			hiddenSupport: subHidden
 		}
 	};
