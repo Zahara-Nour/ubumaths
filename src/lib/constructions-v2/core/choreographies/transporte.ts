@@ -441,6 +441,9 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 	const arcVLength = Math.max(MIN_ARC_LENGTH, R_TRANSPORT * initial.sweepAtV);
 	const arcVpLength = Math.max(MIN_ARC_LENGTH, R_TRANSPORT * 2 * SMALL_ARC_HALF_SWEEP);
 	const arcAppLength = Math.max(MIN_ARC_LENGTH, initial.chord0 * 2 * SMALL_ARC_HALF_SWEEP);
+	// Direction A' → B' (radians, initial value) for the compass-measure
+	// sub-step where the compass opens from A' to B' to capture |A'B'|.
+	const angleApBp_0 = Math.atan2(initial.Bpy - initial.Apy, initial.Bpx - initial.Apx);
 
 	const subSteps: SubStep[] = [
 		// SS1 : compass at V, arc that crosses (VA) at A' and (VB) at B'.
@@ -481,8 +484,24 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateLineIds: [],
 			instruction: "On marque A', B' (sur les côtés de α) et A'' (sur la direction)"
 		},
-		// SS4 : compass re-opens to |A'B'|, placed at A''. Arc oriented
-		// toward B''.
+		// SS4 : compass at A', opens to B' (measures |A'B'|).
+		{
+			kind: 'compass-measure',
+			instrument: 'compass',
+			instrumentTarget: {
+				x: initial.Apx,
+				y: initial.Apy,
+				rotation: (angleApBp_0 * 180) / Math.PI
+			},
+			compassRadius: initial.chord0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "Compas en A', on prend la mesure |A'B'|"
+		},
+		// SS5 : compass moves to A'' keeping opening |A'B'|, traces arc
+		// oriented toward B''.
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
@@ -496,7 +515,7 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcApp],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en A'' avec l'écartement |A'B'|, petit arc"
+			instruction: "On reporte cette ouverture en A'' et on trace un arc"
 		},
 		// SS5 : B'' fade in (intersection of arc(V', r) with arc(A'', |A'B'|)).
 		{

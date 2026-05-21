@@ -591,22 +591,22 @@ describe('A1 — transporte @euclide chorégraphie', () => {
 		'be = transporte(al, Vp, P) @euclide'
 	].join('\n');
 
-	it('transporte(al, Vp, P) @euclide expands into 6 sub-step entries', () => {
+	it('transporte(al, Vp, P) @euclide expands into 7 sub-step entries', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(standardScript);
-		// 6 plain statements (A, V, B, al, Vp, P) + 6 sub-steps for transporte = 12 entries.
-		expect(exec.totalSteps).toBe(12);
-		expect(exec.stepDurations.length).toBe(12);
+		// 6 plain statements (A, V, B, al, Vp, P) + 7 sub-steps for transporte = 13 entries.
+		expect(exec.totalSteps).toBe(13);
+		expect(exec.stepDurations.length).toBe(13);
 	});
 
-	it('sub-step kinds: compass-draw × 3, point-fade-in × 2, ruler-trace × 1 (in expected order)', () => {
+	it('sub-step kinds: 2 compass-draw + fade-in + compass-measure + compass-draw + fade-in + ruler-trace', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(standardScript);
 		// Skip the 6 plain statements
 		for (let i = 0; i < 6; i++) exec.step();
-		// 6 sub-steps follow
+		// 7 sub-steps follow
 		const kinds: string[] = [];
-		for (let i = 0; i < 6; i++) {
+		for (let i = 0; i < 7; i++) {
 			exec.step();
 			kinds.push(exec.currentSubStep?.kind ?? 'null');
 		}
@@ -614,6 +614,7 @@ describe('A1 — transporte @euclide chorégraphie', () => {
 			'compass-draw',
 			'compass-draw',
 			'point-fade-in',
+			'compass-measure',
 			'compass-draw',
 			'point-fade-in',
 			'ruler-trace'
@@ -635,11 +636,12 @@ describe('A1 — transporte @euclide chorégraphie', () => {
 		expect(exec.currentSubStep?.animatePointIds.length).toBe(3);
 	});
 
-	it("SS5 fade-in apparait B'' (1 point)", () => {
+	it("SS6 fade-in apparait B'' (1 point)", () => {
 		const exec = new ConstructionExecutor();
 		exec.load(standardScript);
-		for (let i = 0; i < 6 + 4; i++) exec.step(); // 6 statements + SS1..SS4
-		exec.step(); // SS5
+		// 6 statements + SS1..SS5 (5 sub-steps : 2 compass-draw + fade-in + measure + compass-draw)
+		for (let i = 0; i < 6 + 5; i++) exec.step();
+		exec.step(); // SS6 : B'' fade-in
 		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
 		expect(exec.currentSubStep?.animatePointIds.length).toBe(1);
 	});
