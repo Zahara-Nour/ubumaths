@@ -219,6 +219,7 @@ Variantes confirmées :
 3. **Composition (`ctx.sub`) non implémentée** : `cercle_circonscrit @euclide` reste à `NOT_YET_IMPLEMENTED` (le stub renvoie `subSteps: []` → fallback legacy). La composition en chaîne (cercle_circonscrit → 2 mediatrices) est différée.
 4. ~~**Autres voies (bissectrice, parallele)** : stubs~~ — **bissectrice livrée** (2026-05-20) avec `arcs_egaux` (7 sub-steps) et `arc_milieu` (5 sub-steps), entièrement réactives. `parallele` reste `NOT_YET_IMPLEMENTED`.
 5. **Nouveau : `transporte @euclide`** (chorégraphie A1, 2026-05-20) livrée — 6 sub-steps (3 compass-draw + 2 point-fade-in + 1 ruler-trace). Cf. `docs/wip/geometry/transporte-euclide-progress.md`.
+6. **Nouveau : `perpendiculaire @euclide`** (2026-05-21) livrée — 7 sub-steps « arcs égaux d'Euclide » optimisée : `compass-measure |PA|` → petit arc en P (même ouverture) coupe `(AB)` en `B'` → petits arcs en `A` et `B'` (toujours `|PA|`) se croisent en `Q` = symétrique de `P` par rapport à `(AB)` → règle `P→Q` trace la perpendiculaire. Réutilise l'ouverture du compas partout (pas de second réglage). `Q` = charnière (donné en plus de `P`), arcs + `B'` = traces. Cas dégénéré `P ∈ (AB)` (`d = 0`) : `Q = P` — la construction reste cohérente mais visuellement déficiente.
 
 ## Pour la session suivante (Phase 4 reste)
 
