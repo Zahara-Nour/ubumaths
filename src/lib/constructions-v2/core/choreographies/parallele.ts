@@ -32,11 +32,16 @@ const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total (small arcs near Q)
  * Both circles' two intersections are Q and its reflection across line
  * (PB). Q is computed analytically here (P + B − A), so no ambiguity.
  *
- * Sub-steps :
- *   SS1 — compass at P, small arc near direction P→Q, radius |AB|.
- *   SS2 — compass at B, small arc near direction B→Q, radius |PA|.
- *   SS3 — Q fade-in.
- *   SS4 — ruler + pencil trace the parallel through P (and Q, by
+ * Sub-steps (pedagogically explicit : each compass measure is shown
+ * BEFORE the compass moves to draw the corresponding arc, so the user
+ * sees the gesture "I take this distance, then I report it elsewhere") :
+ *
+ *   SS1 — compass at A, opens to B (measures |AB|).
+ *   SS2 — compass moves to P keeping opening, draws small arc near Q.
+ *   SS3 — compass at P, opens to A (measures |PA|).
+ *   SS4 — compass moves to B keeping opening, draws small arc near Q.
+ *   SS5 — Q fade-in.
+ *   SS6 — ruler + pencil trace the parallel through P (and Q, by
  *         construction).
  */
 function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
@@ -75,6 +80,10 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 	const arcBStart_0 = angleBQ_0 - halfSweep;
 	const arcPLength_0 = dAB_0 * SMALL_ARC_SWEEP_RAD;
 	const arcBLength_0 = dPA_0 * SMALL_ARC_SWEEP_RAD;
+	// Initial measure angles : direction from compass source toward the
+	// "measured" point (spike at source, opening reaching the target).
+	const angleAB_0 = Math.atan2(B.y - A.y, B.x - A.x); // A → B
+	const anglePA_0 = Math.atan2(A.y - P.y, A.x - P.x); // P → A
 	// Ruler trace : through P along (AB) direction (= (PQ) direction).
 	const traceLen0 = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT, Math.hypot(Qx0 - P.x, Qy0 - P.y) * 1.2);
 	const halfTrace0 = traceLen0 / 2;
@@ -227,7 +236,19 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 	figure.hideElement(segmentTrace);
 
 	const subSteps: SubStep[] = [
-		// SS1 : compass at P, small arc near Q direction (radius |AB|).
+		// SS1 : compass at A, opens to B (measures |AB|).
+		{
+			kind: 'compass-measure',
+			instrument: 'compass',
+			instrumentTarget: { x: A.x, y: A.y, rotation: (angleAB_0 * 180) / Math.PI },
+			compassRadius: dAB_0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'Compas en A, on prend la mesure |AB|'
+		},
+		// SS2 : compass at P, small arc near Q direction (radius |AB|, kept from SS1).
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
@@ -237,9 +258,21 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			animateDrawableIds: [arcAtP],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en P, ouverture |AB|, on trace un arc vers Q'
+			instruction: 'On reporte cette ouverture en P et on trace un arc vers Q'
 		},
-		// SS2 : compass at B, small arc near Q direction (radius |PA|).
+		// SS3 : compass at P, opens to A (measures |PA|).
+		{
+			kind: 'compass-measure',
+			instrument: 'compass',
+			instrumentTarget: { x: P.x, y: P.y, rotation: (anglePA_0 * 180) / Math.PI },
+			compassRadius: dPA_0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'Compas en P, on prend la mesure |PA|'
+		},
+		// SS4 : compass at B, small arc near Q direction (radius |PA|, kept from SS3).
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
@@ -249,9 +282,9 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			animateDrawableIds: [arcAtB],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en B, ouverture |PA|, on trace un arc qui croise le précédent'
+			instruction: 'On reporte en B et on trace un arc qui croise le précédent'
 		},
-		// SS3 : Q fade-in (intersection of the 2 arcs).
+		// SS5 : Q fade-in (intersection of the 2 arcs).
 		{
 			kind: 'point-fade-in',
 			geometricDistance: 0,
@@ -260,7 +293,7 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			animateLineIds: [],
 			instruction: 'Les arcs se croisent en Q'
 		},
-		// SS4 : ruler + pencil trace the parallel.
+		// SS6 : ruler + pencil trace the parallel.
 		// Ruler at Iext1 (one extension end) rotated toward Iext2 — same
 		// convention as `rulerPosition`. The pencil traverses through P
 		// and Q during the trace ; the line `d` is revealed at the end by

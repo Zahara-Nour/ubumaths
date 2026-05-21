@@ -1235,12 +1235,14 @@ export class ConstructionExecutor {
 			};
 		}
 
-		// Draw duration from explicit geometric distance.
-		const rawDraw = Math.round(subStep.geometricDistance * PPU * MS_PER_PIXEL);
-		const drawDuration = Math.max(
-			MIN_STEP_DURATION,
-			Math.min(MAX_STEP_DURATION, Math.round(rawDraw / speedFactor))
-		);
+		// Draw duration from explicit geometric distance. For `compass-measure`,
+		// no arc is drawn — the step is purely a move + pause to visualize
+		// the compass taking a measure between two points.
+		const isMeasure = subStep.kind === 'compass-measure';
+		const rawDraw = isMeasure ? 0 : Math.round(subStep.geometricDistance * PPU * MS_PER_PIXEL);
+		const drawDuration = isMeasure
+			? 0
+			: Math.max(MIN_STEP_DURATION, Math.min(MAX_STEP_DURATION, Math.round(rawDraw / speedFactor)));
 
 		// Move duration from instrument position delta.
 		let moveDuration = 0;
@@ -1271,7 +1273,8 @@ export class ConstructionExecutor {
 			);
 
 			// Where the instrument ends up rotation-wise after drawing.
-			// For compass : the angle advances by (geometricDistance / radius) in radians.
+			// For compass-draw : the angle advances by (geometricDistance / radius)
+			// in radians. For compass-measure : no draw, rotation stays at target.
 			let endRotation = subStep.instrumentTarget.rotation;
 			if (
 				subStep.kind === 'compass-draw' &&
@@ -1289,9 +1292,9 @@ export class ConstructionExecutor {
 			};
 		}
 
-		const isCompass = subStep.kind === 'compass-draw';
-		const raiseDuration = isCompass ? COMPASS_RAISE_MS : 0;
-		const lowerDuration = isCompass ? COMPASS_LOWER_MS : 0;
+		const isCompassDraw = subStep.kind === 'compass-draw';
+		const raiseDuration = isCompassDraw ? COMPASS_RAISE_MS : 0;
+		const lowerDuration = isCompassDraw ? COMPASS_LOWER_MS : 0;
 
 		const totalDuration =
 			moveDuration + raiseDuration + drawDuration + lowerDuration + AUTO_PAUSE_BETWEEN_STEPS;

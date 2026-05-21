@@ -366,8 +366,8 @@ describe('ConstructionExecutor — bissectrice @euclide @arc_milieu (5 sub-steps
 	});
 });
 
-describe('ConstructionExecutor — parallele @euclide @parallelogramme (4 sub-steps)', () => {
-	it('parallele @euclide expands into 4 sub-step entries', () => {
+describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-steps)', () => {
+	it('parallele @euclide expands into 6 sub-step entries', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -377,11 +377,11 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (4 sub-st
 				'd = parallele(P, A, B) @euclide'
 			].join('\n')
 		);
-		// 3 point statements + 4 sub-steps for the decorated parallele = 7 entries.
-		expect(exec.totalSteps).toBe(7);
+		// 3 point statements + 6 sub-steps for the decorated parallele = 9 entries.
+		expect(exec.totalSteps).toBe(9);
 	});
 
-	it('sub-step kinds : arc at P, arc at A, fade-in Q, ruler trace', () => {
+	it('sub-step kinds : measure |AB|, draw at P, measure |PA|, draw at B, fade-in Q, ruler', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -394,15 +394,19 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (4 sub-st
 		exec.step(); // P
 		exec.step(); // A
 		exec.step(); // B
-		exec.step(); // SS1 : compass at P
-		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS1 : measure |AB|
+		expect(exec.currentSubStep?.kind).toBe('compass-measure');
 		expect(exec.currentSubStep?.instrument).toBe('compass');
-		exec.step(); // SS2 : compass at A
+		exec.step(); // SS2 : draw arc at P
 		expect(exec.currentSubStep?.kind).toBe('compass-draw');
-		exec.step(); // SS3 : Q fade-in
+		exec.step(); // SS3 : measure |PA|
+		expect(exec.currentSubStep?.kind).toBe('compass-measure');
+		exec.step(); // SS4 : draw arc at B
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS5 : Q fade-in
 		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
 		expect(exec.currentSubStep?.animatePointIds.length).toBe(1);
-		exec.step(); // SS4 : ruler
+		exec.step(); // SS6 : ruler
 		expect(exec.currentSubStep?.kind).toBe('ruler-trace');
 		expect(exec.currentSubStep?.instrument).toBe('ruler');
 		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
