@@ -524,7 +524,7 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		}
 	});
 
-	it('perpendiculaire @euclide expands into 7 sub-step entries', () => {
+	it('perpendiculaire @euclide expands into 7 sub-step entries (defaut = rayon_libre)', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -534,14 +534,13 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 				'd = perpendiculaire(P, A, B) @euclide'
 			].join('\n')
 		);
-		// 3 point statements + 7 sub-steps for the decorated perpendiculaire = 10 entries.
-		// 7 sub-steps : compass-measure |PA|, arc at P → B', B' fade-in,
-		// arcs at A and B' (same opening) → Q, Q fade-in, ruler P→Q.
+		// 3 point statements + 7 sub-steps (rayon_libre = arc at P + A*,B* fade
+		// + 4 sub-mediatrice + line-fade-in) = 10 entries.
 		expect(exec.totalSteps).toBe(10);
 		expect(exec.loadError).toBeNull();
 	});
 
-	it('perpendiculaire @euclide sub-step kinds follow expected composition', () => {
+	it('perpendiculaire @euclide (defaut = rayon_libre) sub-step kinds follow expected composition', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -559,19 +558,50 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 			kinds.push(exec.currentSubStep?.kind ?? 'null');
 		}
 		expect(kinds).toEqual([
-			'compass-measure', // SS1 : measure |PA| (compass at P, opening to A)
-			'compass-draw', // SS2 : small arc at P (same opening) crossing (AB) at B'
+			'compass-draw', // SS1 : arc at P covering (AB) → A*, B*
+			'point-fade-in', // SS2 : A*, B* fade-in
+			// sub-mediatrice(A*, B*) : 4 sub-steps
+			'compass-draw', // SS3 : sub's compass at A*
+			'compass-draw', // SS4 : sub's compass at B*
+			'point-fade-in', // SS5 : sub's I1, I2 fade-in
+			'ruler-trace', // SS6 : sub's ruler trace
+			'line-fade-in' // SS7 : the perpendicular line m
+		]);
+	});
+
+	it('perpendiculaire @euclide @arcs_egaux sub-step kinds (compact via |PA|)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = perpendiculaire(P, A, B) @euclide @arcs_egaux'
+			].join('\n')
+		);
+		// Skip the 3 plain statements.
+		for (let i = 0; i < 3; i++) exec.step();
+		const kinds: string[] = [];
+		for (let i = 0; i < 7; i++) {
+			exec.step();
+			kinds.push(exec.currentSubStep?.kind ?? 'null');
+		}
+		expect(kinds).toEqual([
+			'compass-measure', // SS1 : measure |PA|
+			'compass-draw', // SS2 : small arc at P → B'
 			'point-fade-in', // SS3 : B' fade-in
-			'compass-draw', // SS4 : small arc at A (same opening) toward Q
-			'compass-draw', // SS5 : small arc at B' (same opening) toward Q
-			'point-fade-in', // SS6 : Q fade-in (= reflection of P across (AB))
-			'ruler-trace' // SS7 : ruler P→Q traces the perpendicular
+			'compass-draw', // SS4 : small arc at A → Q
+			'compass-draw', // SS5 : small arc at B' → Q
+			'point-fade-in', // SS6 : Q fade-in
+			'ruler-trace' // SS7 : ruler P→Q
 		]);
 	});
 
 	it('perpendiculaire @euclide handles P on (AB) (degenerate distance = 0)', () => {
 		const exec = new ConstructionExecutor();
 		// P at midpoint of AB → P ∈ (AB), distance = 0.
+		// rayon_libre uses r = RAYON_LIBRE_MIN when d = 0, so arc still
+		// crosses (AB) at 2 distinct points.
 		exec.load(
 			[
 				'A = point(0, 0)',
