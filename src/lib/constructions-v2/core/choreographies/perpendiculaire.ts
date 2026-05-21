@@ -917,15 +917,22 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 /**
  * Voie sous `@equerre` : tracé direct à l'équerre.
  *
- * Sub-step layout (2 sub-steps) :
- *   SS1 — instrument-position : l'équerre apparaît positionnée avec son
- *         bord droit sur (AB), le coin (angle droit) au pied F de la
- *         perpendiculaire issue de P, le bord vertical pointant vers P.
- *   SS2 — ruler-trace : le crayon trace la perpendiculaire le long du
- *         bord vertical de l'équerre.
+ * Pédagogiquement décomposé en deux temps (pose + glissement) avant le
+ * tracé, pour bien marquer le geste manuel du "glissement le long de
+ * la droite jusqu'à atteindre le point P".
+ *
+ * Sub-step layout (3 sub-steps) :
+ *   SS1 — pose : l'équerre arrive avec son bord horizontal sur (AB),
+ *         coin sur A, bord vertical déjà orienté vers le côté de P
+ *         (mais ne passe pas encore par P).
+ *   SS2 — glissement : l'équerre glisse le long de (AB) (rotation
+ *         inchangée) jusqu'à F = projection de P sur (AB), pour que
+ *         le bord vertical passe par P.
+ *   SS3 — tracé : le crayon trace la perpendiculaire le long du bord
+ *         vertical de l'équerre.
  *
  * Positionnement de l'équerre :
- * - Coin (origine locale) = F = projection de P sur (AB).
+ * - Coin (origine locale) = A (SS1) puis F (SS2 et SS3).
  * - Rotation = angle de u_AB si P est du côté `n_ccw` de (AB), sinon
  *   `angle(u_AB) + 180°` pour que le bord vertical de l'équerre pointe
  *   vers P (l'équerre n'a pas de flip horizontal).
@@ -1063,10 +1070,26 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 	figure.hideElement(segmentTrace);
 
 	// ─── Sub-steps ───
+	// Kind `compass-measure` = move + pause sans tracé (sémantique
+	// générique « instrument se positionne »). Utilisé pour SS1 et SS2
+	// (pose + glissement).
 	const subSteps: SubStep[] = [
-		// SS1 : équerre se positionne (slide depuis off-screen jusqu'à F).
-		// Kind `compass-measure` = move + pause sans tracé (semantique
-		// générique « instrument se positionne »).
+		// SS1 : pose de l'équerre — coin sur A, bord aligné avec (AB),
+		// bord vertical déjà orienté vers le côté de P. À ce stade le
+		// bord vertical ne passe pas (encore) par P.
+		{
+			kind: 'compass-measure',
+			instrument: 'setSquare',
+			instrumentTarget: { x: A.x, y: A.y, rotation: setSquareRotation },
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "On pose l'équerre avec son bord sur (AB), le coin sur A"
+		},
+		// SS2 : glissement de l'équerre le long de (AB) jusqu'à F, pour
+		// que le bord vertical passe par P. La rotation reste inchangée.
 		{
 			kind: 'compass-measure',
 			instrument: 'setSquare',
@@ -1077,9 +1100,9 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 			animatePointIds: [],
 			animateLineIds: [],
 			instruction:
-				"On pose l'équerre avec son bord sur (AB), le sommet au pied de la perpendiculaire issue de P"
+				"On fait glisser l'équerre le long de (AB) jusqu'à ce que le bord vertical passe par P"
 		},
-		// SS2 : crayon trace le long du bord vertical de l'équerre.
+		// SS3 : crayon trace le long du bord vertical de l'équerre.
 		{
 			kind: 'ruler-trace',
 			instrument: 'setSquare',
