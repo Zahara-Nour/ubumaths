@@ -76,14 +76,14 @@
 		<!-- Inner lighter area (double layer for transparency effect) -->
 		<path d={innerPath} stroke-width="0" fill="#c6cbe8" fill-opacity="0.5" />
 
-		<!-- Sesamath branding in bottom bar -->
+		<!-- UbuMaths branding in bottom bar -->
 		<text
 			pointer-events="none"
 			x={LARGEUR_GAUCHE}
 			y={-LARGEUR_BANDE / 2 - 5}
 			style="font-family: Arial; font-size: 8pt; font-weight: bold; fill: maroon;"
 		>
-			Sesamath
+			UbuMaths
 		</text>
 	</g>
 {/if}

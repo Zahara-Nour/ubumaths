@@ -69,6 +69,11 @@ const RAYON_LIBRE_FACTOR = 1.5;
 // PPU = 40, that's ≈ 5.6 math units. We use a slightly smaller value
 // (5) so the segment-trace stays comfortably inside the équerre.
 const EQUERRE_EDGE_MATH_UNITS = 5;
+// Overlap (in math units) of the ruler over the already-traced portion
+// of the perpendicular, so the swap looks like "lay the ruler over the
+// existing trace, then continue". Positions the ruler's origin on the
+// P side of F by this amount.
+const RULER_OVERLAP_MATH_UNITS = 2;
 
 function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 	const { figure, args, principalId } = ctx;
@@ -1086,11 +1091,13 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 	// Initial geometric distances (used by executor for animation timing).
 	const trace1Len0 = EQUERRE_EDGE_MATH_UNITS;
 	const trace2Len0 = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, Math.abs(dPerp0) * 1.2);
-	// Ruler position for SS4/SS5 : aligned with the backward extension
-	// (ruler at F, rotated to point toward Iext1).
-	const Iext1x0 = Fx0 - dirFPx0 * trace2Len0;
-	const Iext1y0 = Fy0 - dirFPy0 * trace2Len0;
-	const rulerRotationDeg = (Math.atan2(Iext1y0 - Fy0, Iext1x0 - Fx0) * 180) / Math.PI;
+	// Ruler position for SS4/SS5 : origin offset from F toward P by
+	// RULER_OVERLAP so the ruler covers (slightly) the portion already
+	// traced by the équerre. The ruler extends from this origin toward
+	// Iext1 (opposite side from P).
+	const rulerOriginX0 = Fx0 + dirFPx0 * RULER_OVERLAP_MATH_UNITS;
+	const rulerOriginY0 = Fy0 + dirFPy0 * RULER_OVERLAP_MATH_UNITS;
+	const rulerRotationDeg = (Math.atan2(-dirFPy0, -dirFPx0) * 180) / Math.PI;
 
 	// ─── Sub-steps ───
 	// Kind `compass-measure` = move + pause sans tracé (sémantique
@@ -1140,14 +1147,16 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 				"Le long du bord vertical de l'équerre, on trace une portion de la perpendiculaire"
 		},
 		// SS4 : on enlève l'équerre, on la remplace par la règle alignée
-		// sur la perpendiculaire (au pied F, orientée vers Iext1).
+		// sur la perpendiculaire (origine décalée de RULER_OVERLAP unités
+		// vers P pour que la règle chevauche un peu la portion déjà
+		// tracée, comme un vrai geste de remplacement d'instrument).
 		// `hideAutoInstruments()` au début du sub-step cache setSquare
 		// (qui était dans `_autoInstruments` de SS3). La règle prend sa
 		// place.
 		{
 			kind: 'compass-measure',
 			instrument: 'ruler',
-			instrumentTarget: { x: Fx0, y: Fy0, rotation: rulerRotationDeg },
+			instrumentTarget: { x: rulerOriginX0, y: rulerOriginY0, rotation: rulerRotationDeg },
 			compassRadius: 0,
 			geometricDistance: 0,
 			animateDrawableIds: [],
@@ -1162,7 +1171,7 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 			kind: 'ruler-trace',
 			instrument: 'ruler',
 			secondaryInstrument: 'pencil',
-			instrumentTarget: { x: Fx0, y: Fy0, rotation: rulerRotationDeg },
+			instrumentTarget: { x: rulerOriginX0, y: rulerOriginY0, rotation: rulerRotationDeg },
 			geometricDistance: trace2Len0,
 			animateDrawableIds: [segmentTrace2],
 			animatePointIds: [],
