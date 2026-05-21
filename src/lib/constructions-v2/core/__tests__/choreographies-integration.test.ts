@@ -613,7 +613,7 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		expect(exec.totalSteps).toBe(10);
 	});
 
-	it('perpendiculaire @equerre expands into 3 sub-step entries (pose + glissement + tracé)', () => {
+	it('perpendiculaire @equerre expands into 5 sub-step entries (pose + slide + trace + swap + extend)', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -623,8 +623,8 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 				'd = perpendiculaire(P, A, B) @equerre'
 			].join('\n')
 		);
-		// 3 point statements + 3 sub-steps (pose on A, slide to F, trace) = 6 entries.
-		expect(exec.totalSteps).toBe(6);
+		// 3 point statements + 5 sub-steps = 8 entries.
+		expect(exec.totalSteps).toBe(8);
 		expect(exec.loadError).toBeNull();
 	});
 
@@ -641,18 +641,20 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		// Skip the 3 plain statements.
 		for (let i = 0; i < 3; i++) exec.step();
 		const kinds: string[] = [];
-		for (let i = 0; i < 3; i++) {
+		for (let i = 0; i < 5; i++) {
 			exec.step();
 			kinds.push(exec.currentSubStep?.kind ?? 'null');
 		}
 		expect(kinds).toEqual([
-			'compass-measure', // SS1 : setSquare positions on (AB) at A (no draw)
-			'compass-measure', // SS2 : setSquare slides from A to F along (AB) (no draw)
-			'ruler-trace' // SS3 : pencil traces along setSquare's vertical edge
+			'compass-measure', // SS1 : setSquare positions on (AB) at A
+			'compass-measure', // SS2 : setSquare slides from A to F
+			'ruler-trace', // SS3 : pencil traces portion inside setSquare
+			'compass-measure', // SS4 : swap setSquare → ruler (positioned along perpendicular)
+			'ruler-trace' // SS5 : pencil extends along ruler to complete perpendicular
 		]);
 	});
 
-	it('perpendiculaire @equerre uses setSquare as primary instrument', () => {
+	it('perpendiculaire @equerre swaps setSquare → ruler at SS4', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -671,10 +673,17 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		// SS2 : setSquare slides to F.
 		exec.step();
 		expect(exec.currentSubStep?.instrument).toBe('setSquare');
-		expect(exec.currentSubStep?.instrumentTarget?.x).toBe(2); // F.x = P.x projected on (AB) = 2
-		// SS3 : setSquare + pencil for trace.
+		expect(exec.currentSubStep?.instrumentTarget?.x).toBe(2); // F.x = 2
+		// SS3 : setSquare + pencil for partial trace inside equerre.
 		exec.step();
 		expect(exec.currentSubStep?.instrument).toBe('setSquare');
+		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
+		// SS4 : swap to ruler (no draw).
+		exec.step();
+		expect(exec.currentSubStep?.instrument).toBe('ruler');
+		// SS5 : ruler + pencil for extension.
+		exec.step();
+		expect(exec.currentSubStep?.instrument).toBe('ruler');
 		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
 	});
 
