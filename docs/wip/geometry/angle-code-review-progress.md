@@ -7,15 +7,15 @@ Tous ont été traités en commits ciblés sur `main`, sans nouvelle release jus
 
 ## Récapitulatif
 
-| #   | ID       | Sévérité | Sujet                                                            | Commit      |
-| --- | -------- | -------- | ---------------------------------------------------------------- | ----------- | ----- | ----------- |
-| 1   | B-V2-1   | P0       | `angle(u, v)` quand u et v partagent endpoints → dégénéré        | `85e8ec34d` |
-| 2   | B-A1-1   | P0       | A1 transporte : intersection cercle-cercle index k incorrect cas | α           | > π/2 | `85e8ec34d` |
-| 3   | D-A2.x-1 | P1       | `GeoFreeVectorPoint` exposé sans `@internal`                     | `3271b4a7b` |
-| 4   | D-V3a-2  | P1       | `handleTransporte` double-passe `applyInlineStyle`               | `3271b4a7b` |
-| 5   | D-V2-1   | P1       | `mesure(u, v)` ne cache pas le scalaire dérivé                   | `d9a57089c` |
-| 6   | D-V3a-1  | P1       | Calcul géométrique d'angle dupliqué dans 4 renderers             | `3d2320d1f` |
-| 7   | B-V2-2   | P1       | `angle(d1, d2)` peut devenir obtus au drag (acute figé)          | `a7740f448` |
+| #   | ID       | Sévérité | Sujet                                                                    | Commit      |
+| --- | -------- | -------- | ------------------------------------------------------------------------ | ----------- |
+| 1   | B-V2-1   | P0       | `angle(u, v)` quand u et v partagent endpoints → dégénéré                | `85e8ec34d` |
+| 2   | B-A1-1   | P0       | A1 transporte : intersection cercle-cercle index k incorrect cas α obtus | `85e8ec34d` |
+| 3   | D-A2.x-1 | P1       | `GeoFreeVectorPoint` exposé sans `@internal`                             | `3271b4a7b` |
+| 4   | D-V3a-2  | P1       | `handleTransporte` double-passe `applyInlineStyle`                       | `3271b4a7b` |
+| 5   | D-V2-1   | P1       | `mesure(u, v)` ne cache pas le scalaire dérivé                           | `d9a57089c` |
+| 6   | D-V3a-1  | P1       | Calcul géométrique d'angle dupliqué dans 4 renderers                     | `3d2320d1f` |
+| 7   | B-V2-2   | P1       | `angle(d1, d2)` peut devenir obtus au drag (acute figé)                  | `a7740f448` |
 
 ## Détails par finding
 
