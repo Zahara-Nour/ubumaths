@@ -214,17 +214,18 @@ Variantes confirmées :
 
 ## Limitations connues V1 MVP
 
-1. **Angles des arcs non réactifs** : `startAngle`/`endAngle` sont fixes (capturés à la création). Si l'utilisateur drag A ou B et change l'angle AB, les arcs gardent leur orientation initiale. Le rayon, en revanche, est réactif via `createScalarExpression(0.7 × distAB)`.
+1. ~~**Angles des arcs non réactifs**~~ — **résolu (2026-05-20, session bissectrice + A2)** : tous les angles d'arc des chorégraphies `mediatrice` et `bissectrice` sont maintenant entièrement réactifs via `createScalarExpression` sur les coordonnées de A, V, B. Cf. commits série `*-arcs-reactive*` + `c6614af89` (free vector).
 2. **Visibilité appliquée au step suivant** : la transition de visibilité ne se déclenche pas automatiquement à la fin de l'animation du dernier sub-step. L'utilisateur doit step une fois de plus (ou `executeAll` qui appelle `step()` jusqu'à `false` — qui draine la visibilité). Acceptable car pédagogiquement on veut souvent voir le résultat complet avant le nettoyage.
 3. **Composition (`ctx.sub`) non implémentée** : `cercle_circonscrit @euclide` reste à `NOT_YET_IMPLEMENTED` (le stub renvoie `subSteps: []` → fallback legacy). La composition en chaîne (cercle_circonscrit → 2 mediatrices) est différée.
-4. **Autres voies (bissectrice, parallele)** : stubs `NOT_YET_IMPLEMENTED`. Sessions ultérieures.
+4. ~~**Autres voies (bissectrice, parallele)** : stubs~~ — **bissectrice livrée** (2026-05-20) avec `arcs_egaux` (7 sub-steps) et `arc_milieu` (5 sub-steps), entièrement réactives. `parallele` reste `NOT_YET_IMPLEMENTED`.
+5. **Nouveau : `transporte @euclide`** (chorégraphie A1, 2026-05-20) livrée — 6 sub-steps (3 compass-draw + 2 point-fade-in + 1 ruler-trace). Cf. `docs/wip/geometry/transporte-euclide-progress.md`.
 
 ## Pour la session suivante (Phase 4 reste)
 
-- Implémenter `bissectrice @euclide @arcs_egaux` + `@arc_milieu` (4-7 sub-steps).
+- ~~Implémenter `bissectrice @euclide @arcs_egaux` + `@arc_milieu`~~ — **livré**.
 - Implémenter `parallele @euclide @parallelogramme` (5 sub-steps environ).
 - Implémenter `ctx.sub` pour la composition + `cercle_circonscrit @euclide` (compose 2 médiatrices + intersection + cercle).
-- (V1.1) Rendre les angles des arcs réactifs via `createScalarExpression` sur des direction-scalars.
+- ~~(V1.1) Rendre les angles des arcs réactifs~~ — **livré** (mediatrice + bissectrice).
 - Phase 6 plan original : documentation auto-générée à partir du registre.
 
 ## Acceptance criteria (final)
