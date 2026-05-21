@@ -4,8 +4,8 @@
  * V1 voies under `@euclide` :
  *
  * - `parallelogramme` (default, Euclid I.31) : compass at P with radius
- *   |AB| traces a small arc near Q ; compass at A with radius |BP| traces
- *   another small arc near Q ; the two arcs cross at Q (which makes PAQB
+ *   |AB| traces a small arc near Q ; compass at B with radius |PA| traces
+ *   another small arc near Q ; the two arcs cross at Q (which makes PABQ
  *   a parallelogram, so (PQ) ∥ (AB)) ; ruler traces the parallel through
  *   P and Q.
  *
@@ -22,20 +22,19 @@ const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total (small arcs near Q)
 /**
  * `parallele @euclide @parallelogramme` choreography (Euclid I.31).
  *
- * Construction : Q = P + (B − A). Then PAQB is a parallelogram, so the
- * sides PA and QB are parallel and equal, and the sides PQ and AB are
- * parallel and equal. The compass construction uses :
+ * Construction : Q = P + (B − A). Then PABQ is a parallelogram (vertex
+ * order P → A → B → Q), so the opposite sides PA ∥ QB and AB ∥ PQ are
+ * equal in length. The compass construction uses :
  *
  * - Circle at P, radius |AB| : passes through Q (since |PQ| = |AB|).
- * - Circle at A, radius |BP| : passes through Q (since |AQ| = |BP|, as
- *   the diagonal of the parallelogram).
+ * - Circle at B, radius |PA| : passes through Q (since |BQ| = |PA|).
  *
  * Both circles' two intersections are Q and its reflection across line
- * (PA). Q is computed analytically here (P + B − A), so no ambiguity.
+ * (PB). Q is computed analytically here (P + B − A), so no ambiguity.
  *
  * Sub-steps :
  *   SS1 — compass at P, small arc near direction P→Q, radius |AB|.
- *   SS2 — compass at A, small arc near direction A→Q, radius |BP|.
+ *   SS2 — compass at B, small arc near direction B→Q, radius |PA|.
  *   SS3 — Q fade-in.
  *   SS4 — ruler + pencil trace the parallel through P (and Q, by
  *         construction).
@@ -52,29 +51,30 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 	const dx = B.x - A.x;
 	const dy = B.y - A.y;
 	const dAB_0 = Math.hypot(dx, dy);
-	const PBx = B.x - P.x;
-	const PBy = B.y - P.y;
-	const dBP_0 = Math.hypot(PBx, PBy);
+	const PAx = A.x - P.x;
+	const PAy = A.y - P.y;
+	const dPA_0 = Math.hypot(PAx, PAy);
 	// Q = P + (B − A)
 	const Qx0 = P.x + dx;
 	const Qy0 = P.y + dy;
 	// Direction P→Q (unit) = direction (B−A) / |AB| = (AB) direction.
 	const dirPQx0 = dAB_0 > 0 ? dx / dAB_0 : 0;
 	const dirPQy0 = dAB_0 > 0 ? dy / dAB_0 : 0;
-	// Direction A→Q (unit). Q − A = (P + B − A) − A = P + B − 2A.
-	const AQx0 = Qx0 - A.x;
-	const AQy0 = Qy0 - A.y;
-	const dAQ_0 = Math.hypot(AQx0, AQy0);
-	const dirAQx0 = dAQ_0 > 0 ? AQx0 / dAQ_0 : 0;
-	const dirAQy0 = dAQ_0 > 0 ? AQy0 / dAQ_0 : 0;
+	// Direction B→Q (unit). Q − B = (P + B − A) − B = P − A = −PA.
+	// So B→Q = −(A→P) = P→A direction... wait no, B→Q = (Q−B) = (P−A).
+	const BQx0 = Qx0 - B.x;
+	const BQy0 = Qy0 - B.y;
+	const dBQ_0 = Math.hypot(BQx0, BQy0);
+	const dirBQx0 = dBQ_0 > 0 ? BQx0 / dBQ_0 : 0;
+	const dirBQy0 = dBQ_0 > 0 ? BQy0 / dBQ_0 : 0;
 	// Initial arc angles (centered on direction toward Q).
 	const halfSweep = SMALL_ARC_SWEEP_RAD / 2;
 	const anglePQ_0 = Math.atan2(dirPQy0, dirPQx0);
-	const angleAQ_0 = Math.atan2(dirAQy0, dirAQx0);
+	const angleBQ_0 = Math.atan2(dirBQy0, dirBQx0);
 	const arcPStart_0 = anglePQ_0 - halfSweep;
-	const arcAStart_0 = angleAQ_0 - halfSweep;
+	const arcBStart_0 = angleBQ_0 - halfSweep;
 	const arcPLength_0 = dAB_0 * SMALL_ARC_SWEEP_RAD;
-	const arcALength_0 = dBP_0 * SMALL_ARC_SWEEP_RAD;
+	const arcBLength_0 = dPA_0 * SMALL_ARC_SWEEP_RAD;
 	// Ruler trace : through P along (AB) direction (= (PQ) direction).
 	const traceLen0 = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT, Math.hypot(Qx0 - P.x, Qy0 - P.y) * 1.2);
 	const halfTrace0 = traceLen0 / 2;
@@ -90,10 +90,11 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 	const Bx = figure.createScalarCoordinate(Bid, 'x');
 	const By = figure.createScalarCoordinate(Bid, 'y');
 
-	// |AB| (radius of circle at P).
+	// |AB| (radius of circle at P, equal to |PQ|).
 	const dABScalar = figure.createScalarDistance(Aid, Bid);
-	// |BP| (radius of circle at A).
-	const dBPScalar = figure.createScalarDistance(Bid, Pid);
+	// |PA| (radius of circle at B, equal to |BQ| — sides PA and BQ of the
+	// parallelogram PABQ are opposite and equal).
+	const dPAScalar = figure.createScalarDistance(Pid, Aid);
 
 	// Q = P + (B − A). Reactive coordinates via computed point.
 	const QxScalar = figure.createScalarExpression(
@@ -116,17 +117,18 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			),
 		[Px, Py, QxScalar, QyScalar]
 	);
-	// Direction A→Q angle.
-	const angleAQScalar = figure.createScalarExpression(
+	// Direction B→Q angle (= direction A→P angle, since BQ ∥ AP in
+	// parallelogram PABQ).
+	const angleBQScalar = figure.createScalarExpression(
 		(vals) =>
 			Math.atan2(
-				(vals.get(QyScalar) ?? 0) - (vals.get(Ay) ?? 0),
-				(vals.get(QxScalar) ?? 0) - (vals.get(Ax) ?? 0)
+				(vals.get(QyScalar) ?? 0) - (vals.get(By) ?? 0),
+				(vals.get(QxScalar) ?? 0) - (vals.get(Bx) ?? 0)
 			),
-		[Ax, Ay, QxScalar, QyScalar]
+		[Bx, By, QxScalar, QyScalar]
 	);
 
-	// Arc start/end angles : ±15° around direction P→Q (resp. A→Q).
+	// Arc start/end angles : ±15° around direction P→Q (resp. B→Q).
 	const arcPStartScalar = figure.createScalarExpression(
 		(vals) => (vals.get(anglePQScalar) ?? 0) - halfSweep,
 		[anglePQScalar]
@@ -135,13 +137,13 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 		(vals) => (vals.get(anglePQScalar) ?? 0) + halfSweep,
 		[anglePQScalar]
 	);
-	const arcAStartScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleAQScalar) ?? 0) - halfSweep,
-		[angleAQScalar]
+	const arcBStartScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleBQScalar) ?? 0) - halfSweep,
+		[angleBQScalar]
 	);
-	const arcAEndScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleAQScalar) ?? 0) + halfSweep,
-		[angleAQScalar]
+	const arcBEndScalar = figure.createScalarExpression(
+		(vals) => (vals.get(angleBQScalar) ?? 0) + halfSweep,
+		[angleBQScalar]
 	);
 
 	// Small arc centered at P with radius |AB|, sweep 30° around P→Q.
@@ -152,14 +154,14 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 		{ scalarRef: arcPEndScalar }
 	);
 	figure.hideElement(arcAtP);
-	// Small arc centered at A with radius |BP|, sweep 30° around A→Q.
-	const arcAtA = figure.createArcByAngles(
-		Aid,
-		{ scalarRef: dBPScalar },
-		{ scalarRef: arcAStartScalar },
-		{ scalarRef: arcAEndScalar }
+	// Small arc centered at B with radius |PA|, sweep 30° around B→Q.
+	const arcAtB = figure.createArcByAngles(
+		Bid,
+		{ scalarRef: dPAScalar },
+		{ scalarRef: arcBStartScalar },
+		{ scalarRef: arcBEndScalar }
 	);
-	figure.hideElement(arcAtA);
+	figure.hideElement(arcAtB);
 
 	// ─── Segment-trace : centered on P along (PQ) direction ───
 	// Length max(15, 1.2 × |PQ|). Reactive.
@@ -237,17 +239,17 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			animateLineIds: [],
 			instruction: 'Compas en P, ouverture |AB|, on trace un arc vers Q'
 		},
-		// SS2 : compass at A, small arc near Q direction (radius |BP|).
+		// SS2 : compass at B, small arc near Q direction (radius |PA|).
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
-			instrumentTarget: { x: A.x, y: A.y, rotation: (arcAStart_0 * 180) / Math.PI },
-			compassRadius: dBP_0,
-			geometricDistance: arcALength_0,
-			animateDrawableIds: [arcAtA],
+			instrumentTarget: { x: B.x, y: B.y, rotation: (arcBStart_0 * 180) / Math.PI },
+			compassRadius: dPA_0,
+			geometricDistance: arcBLength_0,
+			animateDrawableIds: [arcAtB],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en A, ouverture |BP|, on trace un arc qui croise le précédent'
+			instruction: 'Compas en B, ouverture |PA|, on trace un arc qui croise le précédent'
 		},
 		// SS3 : Q fade-in (intersection of the 2 arcs).
 		{
@@ -282,7 +284,7 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			principal: principalId,
 			charnieres: [Q],
 			// 2 small arcs are pedagogically valuable (compass gestures).
-			traces: [arcAtP, arcAtA],
+			traces: [arcAtP, arcAtB],
 			hiddenSupport: [
 				// Animation-only / structural plumbing.
 				segmentTrace,
@@ -296,15 +298,15 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 				Bx,
 				By,
 				dABScalar,
-				dBPScalar,
+				dPAScalar,
 				QxScalar,
 				QyScalar,
 				anglePQScalar,
-				angleAQScalar,
+				angleBQScalar,
 				arcPStartScalar,
 				arcPEndScalar,
-				arcAStartScalar,
-				arcAEndScalar,
+				arcBStartScalar,
+				arcBEndScalar,
 				halfTraceScalar,
 				dirPQxScalar,
 				dirPQyScalar,
