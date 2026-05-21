@@ -366,6 +366,90 @@ describe('ConstructionExecutor — bissectrice @euclide @arc_milieu (5 sub-steps
 	});
 });
 
+describe('ConstructionExecutor — parallele @euclide @parallelogramme (4 sub-steps)', () => {
+	it('parallele @euclide expands into 4 sub-step entries', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'P = point(0, 3)',
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'd = parallele(P, A, B) @euclide'
+			].join('\n')
+		);
+		// 3 point statements + 4 sub-steps for the decorated parallele = 7 entries.
+		expect(exec.totalSteps).toBe(7);
+	});
+
+	it('sub-step kinds : arc at P, arc at A, fade-in Q, ruler trace', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'P = point(0, 3)',
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'd = parallele(P, A, B) @euclide'
+			].join('\n')
+		);
+		exec.step(); // P
+		exec.step(); // A
+		exec.step(); // B
+		exec.step(); // SS1 : compass at P
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		expect(exec.currentSubStep?.instrument).toBe('compass');
+		exec.step(); // SS2 : compass at A
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS3 : Q fade-in
+		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
+		expect(exec.currentSubStep?.animatePointIds.length).toBe(1);
+		exec.step(); // SS4 : ruler
+		expect(exec.currentSubStep?.kind).toBe('ruler-trace');
+		expect(exec.currentSubStep?.instrument).toBe('ruler');
+		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
+	});
+
+	it('@squelette hides 2 arcs ; only Q + parallel line remain visible', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'P = point(0, 3)',
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'd = parallele(P, A, B) @euclide'
+			].join('\n')
+		);
+		exec.executeAll();
+		exec.step(); // drain visibility
+		const result = exec.lastChoreographyResult;
+		expect(result).not.toBeNull();
+		// Principal (parallel line) is visible.
+		expect(exec.figure.getElementById(result!.produced.principal)?.visible).toBe(true);
+		// Charnière Q is visible.
+		for (const id of result!.produced.charnieres) {
+			expect(exec.figure.getElementById(id)?.visible).toBe(true);
+		}
+		// Traces (2 arcs) are hidden in @squelette.
+		for (const id of result!.produced.traces) {
+			expect(exec.figure.getElementById(id)?.visible).toBe(false);
+		}
+	});
+
+	it('double_perpendiculaire voie remains NOT_YET_IMPLEMENTED (fallback legacy)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'P = point(0, 3)',
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'd = parallele(P, A, B) @euclide @double_perpendiculaire'
+			].join('\n')
+		);
+		// Stub returns subSteps:[] → falls through to legacy timing (1 entry).
+		// 3 points + 1 legacy entry = 4 total.
+		expect(exec.totalSteps).toBe(4);
+	});
+});
+
 // =============================================================================
 // V3a — Chorégraphie `bissectrice(angle) @euclide` (extension d'input)
 // =============================================================================
