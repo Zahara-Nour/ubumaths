@@ -64,6 +64,11 @@ const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total
 const RAYON_LIBRE_MIN = 1.5;
 const RAYON_LIBRE_FACTOR = 1.5;
+// Équerre vertical edge length in math units. The SetSquare component
+// renders at HAUTEUR = 223 SVG pixels at scale 1 ; with the executor's
+// PPU = 40, that's ≈ 5.6 math units. We use a slightly smaller value
+// (5) so the segment-trace stays comfortably inside the équerre.
+const EQUERRE_EDGE_MATH_UNITS = 5;
 
 function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 	const { figure, args, principalId } = ctx;
@@ -915,21 +920,22 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 }
 
 /**
- * Voie sous `@equerre` : tracé direct à l'équerre.
+ * Voie sous `@equerre` : tracé direct à l'équerre puis prolongement
+ * à la règle.
  *
- * Pédagogiquement décomposé en deux temps (pose + glissement) avant le
- * tracé, pour bien marquer le geste manuel du "glissement le long de
- * la droite jusqu'à atteindre le point P".
- *
- * Sub-step layout (3 sub-steps) :
+ * Décomposée en cinq temps :
  *   SS1 — pose : l'équerre arrive avec son bord horizontal sur (AB),
- *         coin sur A, bord vertical déjà orienté vers le côté de P
- *         (mais ne passe pas encore par P).
- *   SS2 — glissement : l'équerre glisse le long de (AB) (rotation
- *         inchangée) jusqu'à F = projection de P sur (AB), pour que
- *         le bord vertical passe par P.
- *   SS3 — tracé : le crayon trace la perpendiculaire le long du bord
- *         vertical de l'équerre.
+ *         coin sur A.
+ *   SS2 — glissement : l'équerre glisse le long de (AB) jusqu'à F
+ *         (projection de P sur (AB)), bord vertical passant par P.
+ *   SS3 — tracé inside : le crayon trace la portion de la perpendiculaire
+ *         qui rentre dans la hauteur du bord vertical de l'équerre
+ *         (longueur = `EQUERRE_EDGE_MATH_UNITS`).
+ *   SS4 — swap : on retire l'équerre, on pose la règle alignée sur
+ *         la portion tracée (rotation = direction F→Iext1 = − F→P).
+ *   SS5 — prolongement : le crayon prolonge la perpendiculaire le long
+ *         de la règle, du côté opposé à P (F → Iext1). La ligne
+ *         complète est ensuite révélée par `applyFinalVisibility`.
  *
  * Positionnement de l'équerre :
  * - Coin (origine locale) = A (SS1) puis F (SS2 et SS3).
@@ -958,10 +964,12 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 	// Si dPerp > 0, P est du côté CW de u_AB ; flip 180° pour orienter le
 	// bord vertical de l'équerre vers P.
 	const setSquareRotation = dPerp0 > 0 ? uAngleDeg + 180 : uAngleDeg;
-	// Trace length : étendre la perpendiculaire suffisamment de chaque
-	// côté du pied F pour couvrir P et au-delà. Le crayon est positionné
-	// automatiquement par l'executor au début du segment-trace.
-	const traceLen0 = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT, Math.abs(dPerp0) * 2.4);
+	// Direction F→P (utilisée pour positionner la règle et les segment-traces).
+	const PFx = P.x - Fx0;
+	const PFy = P.y - Fy0;
+	const PFlen0 = Math.hypot(PFx, PFy);
+	const dirFPx0 = PFlen0 > 1e-12 ? PFx / PFlen0 : -uy0;
+	const dirFPy0 = PFlen0 > 1e-12 ? PFy / PFlen0 : ux0;
 
 	// ─── Reactive scalars ───
 	const Px = figure.createScalarCoordinate(Pid, 'x');
@@ -1036,6 +1044,27 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 			Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, Math.abs(vals.get(dPerpScalar) ?? 0) * 1.2),
 		[dPerpScalar]
 	);
+	// ─── Segment-trace 1 : portion inside the équerre (F → top of vertical edge) ───
+	// Length matches the équerre's vertical edge in math coords. The
+	// constant `EQUERRE_EDGE_MATH_UNITS` is calibrated for the executor's
+	// PPU = 40 (équerre vertical edge = 223 SVG px ≈ 5.6 math units).
+	const trace1EndxScalar = figure.createScalarExpression(
+		(vals) => (vals.get(FxScalar) ?? 0) + (vals.get(dirFPxScalar) ?? 0) * EQUERRE_EDGE_MATH_UNITS,
+		[FxScalar, dirFPxScalar]
+	);
+	const trace1EndyScalar = figure.createScalarExpression(
+		(vals) => (vals.get(FyScalar) ?? 0) + (vals.get(dirFPyScalar) ?? 0) * EQUERRE_EDGE_MATH_UNITS,
+		[FyScalar, dirFPyScalar]
+	);
+	const trace1End = figure.createComputedPoint(
+		{ scalarRef: trace1EndxScalar },
+		{ scalarRef: trace1EndyScalar }
+	);
+	figure.hideElement(trace1End);
+	const segmentTrace1 = figure.createSegment(F, trace1End);
+	figure.hideElement(segmentTrace1);
+
+	// ─── Segment-trace 2 : backward extension F → Iext1 (drawn by ruler in SS5) ───
 	const Iext1xScalar = figure.createScalarExpression(
 		(vals) =>
 			(vals.get(FxScalar) ?? 0) - (vals.get(dirFPxScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
@@ -1046,33 +1075,27 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 			(vals.get(FyScalar) ?? 0) - (vals.get(dirFPyScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
 		[FyScalar, dirFPyScalar, halfTraceScalar]
 	);
-	const Iext2xScalar = figure.createScalarExpression(
-		(vals) =>
-			(vals.get(FxScalar) ?? 0) + (vals.get(dirFPxScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
-		[FxScalar, dirFPxScalar, halfTraceScalar]
-	);
-	const Iext2yScalar = figure.createScalarExpression(
-		(vals) =>
-			(vals.get(FyScalar) ?? 0) + (vals.get(dirFPyScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
-		[FyScalar, dirFPyScalar, halfTraceScalar]
-	);
 	const Iext1 = figure.createComputedPoint(
 		{ scalarRef: Iext1xScalar },
 		{ scalarRef: Iext1yScalar }
 	);
 	figure.hideElement(Iext1);
-	const Iext2 = figure.createComputedPoint(
-		{ scalarRef: Iext2xScalar },
-		{ scalarRef: Iext2yScalar }
-	);
-	figure.hideElement(Iext2);
-	const segmentTrace = figure.createSegment(Iext1, Iext2);
-	figure.hideElement(segmentTrace);
+	const segmentTrace2 = figure.createSegment(F, Iext1);
+	figure.hideElement(segmentTrace2);
+
+	// Initial geometric distances (used by executor for animation timing).
+	const trace1Len0 = EQUERRE_EDGE_MATH_UNITS;
+	const trace2Len0 = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, Math.abs(dPerp0) * 1.2);
+	// Ruler position for SS4/SS5 : aligned with the backward extension
+	// (ruler at F, rotated to point toward Iext1).
+	const Iext1x0 = Fx0 - dirFPx0 * trace2Len0;
+	const Iext1y0 = Fy0 - dirFPy0 * trace2Len0;
+	const rulerRotationDeg = (Math.atan2(Iext1y0 - Fy0, Iext1x0 - Fx0) * 180) / Math.PI;
 
 	// ─── Sub-steps ───
 	// Kind `compass-measure` = move + pause sans tracé (sémantique
-	// générique « instrument se positionne »). Utilisé pour SS1 et SS2
-	// (pose + glissement).
+	// générique « instrument se positionne »). Utilisé pour SS1, SS2, SS4
+	// (pose + glissement + swap équerre → règle).
 	const subSteps: SubStep[] = [
 		// SS1 : pose de l'équerre — coin sur A, bord aligné avec (AB),
 		// bord vertical déjà orienté vers le côté de P. À ce stade le
@@ -1102,22 +1125,49 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 			instruction:
 				"On fait glisser l'équerre le long de (AB) jusqu'à ce que le bord vertical passe par P"
 		},
-		// SS3 : crayon trace le long du bord vertical de l'équerre.
-		// `principalId` n'est PAS dans `animateLineIds` : un fade-in à
-		// stepProgress=0 ferait bump la ligne en parallèle du tracé.
-		// `applyFinalVisibility` révèle la ligne en fin de SS3 ; le
-		// segment-trace couvre la portion visible de la perpendiculaire
-		// pour que le swap soit imperceptible (même pattern que mediatrice).
+		// SS3 : crayon trace la portion DANS l'équerre (longueur = bord
+		// vertical, ne déborde pas).
 		{
 			kind: 'ruler-trace',
 			instrument: 'setSquare',
 			secondaryInstrument: 'pencil',
 			instrumentTarget: { x: Fx0, y: Fy0, rotation: setSquareRotation },
-			geometricDistance: traceLen0,
-			animateDrawableIds: [segmentTrace],
+			geometricDistance: trace1Len0,
+			animateDrawableIds: [segmentTrace1],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Le long du bord vertical de l'équerre, on trace la perpendiculaire"
+			instruction:
+				"Le long du bord vertical de l'équerre, on trace une portion de la perpendiculaire"
+		},
+		// SS4 : on enlève l'équerre, on la remplace par la règle alignée
+		// sur la perpendiculaire (au pied F, orientée vers Iext1).
+		// `hideAutoInstruments()` au début du sub-step cache setSquare
+		// (qui était dans `_autoInstruments` de SS3). La règle prend sa
+		// place.
+		{
+			kind: 'compass-measure',
+			instrument: 'ruler',
+			instrumentTarget: { x: Fx0, y: Fy0, rotation: rulerRotationDeg },
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "On retire l'équerre et on pose la règle le long de la portion tracée"
+		},
+		// SS5 : crayon prolonge la perpendiculaire (côté opposé à P) le
+		// long de la règle. `applyFinalVisibility` révèle ensuite la
+		// ligne complète qui couvre l'éventuelle extension manquante.
+		{
+			kind: 'ruler-trace',
+			instrument: 'ruler',
+			secondaryInstrument: 'pencil',
+			instrumentTarget: { x: Fx0, y: Fy0, rotation: rulerRotationDeg },
+			geometricDistance: trace2Len0,
+			animateDrawableIds: [segmentTrace2],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'On prolonge le tracé le long de la règle pour compléter la perpendiculaire'
 		}
 	];
 
@@ -1127,11 +1177,11 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 			principal: principalId,
 			// F = pied de la perpendiculaire (visible en @squelette).
 			charnieres: [F],
-			// Segment-trace (visible en @complet).
-			traces: [segmentTrace],
+			// Les deux portions tracées (visibles en @complet).
+			traces: [segmentTrace1, segmentTrace2],
 			hiddenSupport: [
+				trace1End,
 				Iext1,
-				Iext2,
 				Px,
 				Py,
 				Ax,
@@ -1150,10 +1200,10 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 				dirFPxScalar,
 				dirFPyScalar,
 				halfTraceScalar,
+				trace1EndxScalar,
+				trace1EndyScalar,
 				Iext1xScalar,
-				Iext1yScalar,
-				Iext2xScalar,
-				Iext2yScalar
+				Iext1yScalar
 			]
 		}
 	};
