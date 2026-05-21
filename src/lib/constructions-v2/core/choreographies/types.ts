@@ -147,7 +147,17 @@ export interface ChoreographyResult {
  * - `visibilite` : the resolved visibility (used by composed choreographies
  *   to propagate intent to sub-choreographies).
  * - `sub` : helper to dispatch to a sub-choreography (e.g. cercle_circonscrit
- *   composes two mediatrice choreographies).
+ *   composes two mediatrice choreographies). The caller must :
+ *     1. Create the sub-principal element manually (via figure factory
+ *        calls) — `sub` does NOT invoke the builtin handler.
+ *     2. Pass that element's id as `subPrincipalId`.
+ *     3. Provide the args (typically the same point ids as the parent
+ *        scenario, e.g. `{ids: [A, B], coords: [...]}` for a mediatrice
+ *        sub of cercle_circonscrit).
+ *     4. Provide the decorator triple to select the sub-voie + visibility.
+ *   Returns the sub-choreography's `ChoreographyResult` (subSteps + produced),
+ *   which the parent can splice into its own subSteps and re-classify into
+ *   its own `produced` (charnières / traces / hiddenSupport).
  */
 export interface ChoreographyCtx {
 	readonly figure: Figure;
@@ -161,6 +171,7 @@ export interface ChoreographyCtx {
 	readonly sub: (
 		builtin: string,
 		args: ChoreographyCtx['args'],
+		subPrincipalId: string,
 		decorators: DecoratorTriple
 	) => ChoreographyResult;
 }

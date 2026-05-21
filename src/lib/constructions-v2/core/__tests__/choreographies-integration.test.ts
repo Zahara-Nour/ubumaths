@@ -438,6 +438,92 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		}
 	});
 
+	it('cercle_circonscrit @euclide expands into 13 sub-step entries (via ctx.sub)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'C = point(2, 3)',
+				'cc = cercle_circonscrit(A, B, C) @euclide'
+			].join('\n')
+		);
+		// 3 point statements + 13 sub-steps for the decorated cercle_circonscrit
+		// = 16 entries. The 13 sub-steps come from :
+		//   4 (sub-mediatrice AB) + 1 (m1 fade-in) + 4 (sub-mediatrice BC)
+		//   + 1 (m2 fade-in) + 1 (O fade-in) + 1 (measure |OA|) + 1 (draw circle).
+		expect(exec.totalSteps).toBe(16);
+		expect(exec.loadError).toBeNull();
+	});
+
+	it('cercle_circonscrit @euclide sub-step kinds follow the expected composition', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'C = point(2, 3)',
+				'cc = cercle_circonscrit(A, B, C) @euclide'
+			].join('\n')
+		);
+		// Skip the 3 plain statements.
+		for (let i = 0; i < 3; i++) exec.step();
+		const kinds: string[] = [];
+		for (let i = 0; i < 13; i++) {
+			exec.step();
+			kinds.push(exec.currentSubStep?.kind ?? 'null');
+		}
+		expect(kinds).toEqual([
+			// sub-mediatrice(AB) : 4 sub-steps
+			'compass-draw', // SS1 of sub : arc at A
+			'compass-draw', // SS2 of sub : arc at B
+			'point-fade-in', // SS3 of sub : I1, I2 of sub-mediatrice AB
+			'ruler-trace', // SS4 of sub : ruler trace
+			// Parent's m1 reveal
+			'line-fade-in',
+			// sub-mediatrice(BC) : 4 sub-steps
+			'compass-draw',
+			'compass-draw',
+			'point-fade-in',
+			'ruler-trace',
+			// Parent's m2 reveal
+			'line-fade-in',
+			// O fade-in
+			'point-fade-in',
+			// Measure |OA|
+			'compass-measure',
+			// Draw the circumscribed circle
+			'compass-draw'
+		]);
+	});
+
+	it('cercle_circonscrit @euclide @squelette : O + m1 + m2 + circle visible at end', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'C = point(2, 3)',
+				'cc = cercle_circonscrit(A, B, C) @euclide'
+			].join('\n')
+		);
+		exec.executeAll();
+		exec.step(); // drain visibility
+		const result = exec.lastChoreographyResult;
+		expect(result).not.toBeNull();
+		// Principal (the circle) is visible.
+		expect(exec.figure.getElementById(result!.produced.principal)?.visible).toBe(true);
+		// All 3 charnières (m1, m2, O) are visible in @squelette.
+		expect(result!.produced.charnieres.length).toBe(3);
+		for (const id of result!.produced.charnieres) {
+			expect(exec.figure.getElementById(id)?.visible).toBe(true);
+		}
+		// Sub-mediatrices' traces (arcs) are hidden in @squelette.
+		for (const id of result!.produced.traces) {
+			expect(exec.figure.getElementById(id)?.visible).toBe(false);
+		}
+	});
+
 	it('double_perpendiculaire voie remains NOT_YET_IMPLEMENTED (fallback legacy)', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
