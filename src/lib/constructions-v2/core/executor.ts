@@ -447,14 +447,48 @@ export class ConstructionExecutor {
 			args,
 			principalId: principalEntry.figureId,
 			visibilite: triple.visibilite,
-			// V1 sub-choreography helper is a no-op stub ; composition
-			// (cercle_circonscrit → 2 mediatrices) is deferred.
-			sub: () => ({
-				subSteps: [],
-				produced: { principal: '', charnieres: [], traces: [] }
-			})
+			sub: this.buildSubChoreographyFn(stepper.figure)
 		};
 		return voie.choreography(ctx);
+	}
+
+	/**
+	 * Build the `ctx.sub` helper that composed choreographies use to invoke
+	 * another voie programmatically (e.g. `cercle_circonscrit @euclide`
+	 * composes two `mediatrice @euclide @squelette`).
+	 *
+	 * Contract : the caller must have already created the sub-principal
+	 * element in the figure (via factory calls) and pass its id as
+	 * `subPrincipalId`. The sub voie's choreography then creates its
+	 * auxiliary elements (arcs, intersections, segment-traces, ...) and
+	 * returns its `ChoreographyResult`. The parent splices the sub's
+	 * `subSteps` into its own list and decides how to re-classify the sub's
+	 * `produced` into its own `produced` (charnières / traces / hiddenSupport).
+	 *
+	 * Returns a stub result (empty subSteps + only the principalId in
+	 * produced) when the requested voie is not declared. Errors are
+	 * surfaced silently (the parent's chorégraphie can choose to handle or
+	 * ignore them).
+	 */
+	private buildSubChoreographyFn(figure: Figure): ChoreographyCtx['sub'] {
+		const sub: ChoreographyCtx['sub'] = (subBuiltin, subArgs, subPrincipalId, subDecorators) => {
+			const subVoie = lookupVoie(subDecorators, subBuiltin);
+			if (!subVoie) {
+				return {
+					subSteps: [],
+					produced: { principal: subPrincipalId, charnieres: [], traces: [] }
+				};
+			}
+			const subCtx: ChoreographyCtx = {
+				figure,
+				args: subArgs,
+				principalId: subPrincipalId,
+				visibilite: subDecorators.visibilite,
+				sub
+			};
+			return subVoie.choreography(subCtx);
+		};
+		return sub;
 	}
 
 	/**
