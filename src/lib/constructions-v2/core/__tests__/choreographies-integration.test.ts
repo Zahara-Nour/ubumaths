@@ -613,7 +613,7 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		expect(exec.totalSteps).toBe(10);
 	});
 
-	it('perpendiculaire @equerre expands into 2 sub-step entries', () => {
+	it('perpendiculaire @equerre expands into 3 sub-step entries (pose + glissement + tracé)', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -623,8 +623,8 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 				'd = perpendiculaire(P, A, B) @equerre'
 			].join('\n')
 		);
-		// 3 point statements + 2 sub-steps (setSquare positions, then trace) = 5 entries.
-		expect(exec.totalSteps).toBe(5);
+		// 3 point statements + 3 sub-steps (pose on A, slide to F, trace) = 6 entries.
+		expect(exec.totalSteps).toBe(6);
 		expect(exec.loadError).toBeNull();
 	});
 
@@ -641,13 +641,14 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		// Skip the 3 plain statements.
 		for (let i = 0; i < 3; i++) exec.step();
 		const kinds: string[] = [];
-		for (let i = 0; i < 2; i++) {
+		for (let i = 0; i < 3; i++) {
 			exec.step();
 			kinds.push(exec.currentSubStep?.kind ?? 'null');
 		}
 		expect(kinds).toEqual([
-			'compass-measure', // SS1 : setSquare positions on (AB) at foot F (no draw)
-			'ruler-trace' // SS2 : pencil traces along setSquare's vertical edge
+			'compass-measure', // SS1 : setSquare positions on (AB) at A (no draw)
+			'compass-measure', // SS2 : setSquare slides from A to F along (AB) (no draw)
+			'ruler-trace' // SS3 : pencil traces along setSquare's vertical edge
 		]);
 	});
 
@@ -663,10 +664,15 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		);
 		// Skip the 3 plain statements.
 		for (let i = 0; i < 3; i++) exec.step();
-		// SS1 : setSquare positions.
+		// SS1 : setSquare positions on A.
 		exec.step();
 		expect(exec.currentSubStep?.instrument).toBe('setSquare');
-		// SS2 : setSquare + pencil for trace.
+		expect(exec.currentSubStep?.instrumentTarget?.x).toBe(0); // A.x
+		// SS2 : setSquare slides to F.
+		exec.step();
+		expect(exec.currentSubStep?.instrument).toBe('setSquare');
+		expect(exec.currentSubStep?.instrumentTarget?.x).toBe(2); // F.x = P.x projected on (AB) = 2
+		// SS3 : setSquare + pencil for trace.
 		exec.step();
 		expect(exec.currentSubStep?.instrument).toBe('setSquare');
 		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
