@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.5...v0.9.6) (2026-05-21)
+
+### ✨ Features
+
+- **constructions-v2:** choregraphie transporte [@euclide](https://github.com/euclide) (A1 P1) ([55ab0f0](https://github.com/Zahara-Nour/ubumaths/commit/55ab0f0e40302f395a6548203ba42430e69a3e32))
+- **constructions-v2:** registry + tests transporte [@euclide](https://github.com/euclide) (A1 P2) ([c2078b2](https://github.com/Zahara-Nour/ubumaths/commit/c2078b2132c36aeb6b27ffc1c7cddaf990fbe6c8))
+- **geometry-core:** angle(u,v) free vector reactif (A2x P2) ([c6614af](https://github.com/Zahara-Nour/ubumaths/commit/c6614af89faf9ecc703581fbcd8aae9d50577e41))
+- **geometry-core:** spec tdd transporte [@euclide](https://github.com/euclide) (A1 P0) ([fe3ae81](https://github.com/Zahara-Nour/ubumaths/commit/fe3ae810c272d6ad1862f1359b0f5b13e275e6b4))
+- **geometry-core:** type GeoFreeVectorPoint reactif (A2x P1) ([08f6f8c](https://github.com/Zahara-Nour/ubumaths/commit/08f6f8c8045548625e80ffb56941cb6a32dbd4ec))
+
+### ⚡ Performance Improvements
+
+- **geometry-core:** cache mesure(u, v) scalar by (u, v, unite) ([d9a5708](https://github.com/Zahara-Nour/ubumaths/commit/d9a57089cc13f29aec0948f04bf82cfe0c8692a4))
+
+### 🐛 Bug Fixes
+
+- **geometry-core:** code-review consolidee — B-V2-1 + B-A1-1 (P0) ([85e8ec3](https://github.com/Zahara-Nour/ubumaths/commit/85e8ec34d8a766c41e9bfad8cdd7a20221ff5795))
+- **geometry-core:** dynamic acute swap for angle(d1, d2) ([a7740f4](https://github.com/Zahara-Nour/ubumaths/commit/a7740f44819a0a6dcbe70fb0a4d26497e1bce436))
+- **geometry-core:** hideElement preserve label (B3 code-review V1) ([82b2bde](https://github.com/Zahara-Nour/ubumaths/commit/82b2bdedb5097a492e8a7f4f7ac0994eaee48104))
+
+### 📚 Documentation
+
+- **geometry-core:** notes reactivite A2 angle overloads ([b669294](https://github.com/Zahara-Nour/ubumaths/commit/b6692940286670337fc669a7103c5ec9a5f4f3be))
+- **geometry:** architecture mise a jour GeoAngle V1-V3a ([08a04f4](https://github.com/Zahara-Nour/ubumaths/commit/08a04f4e90de41406ee50fc34dee91622dd87197))
+- **geometry:** chore transporte [@euclide](https://github.com/euclide) section + progress final (A1 P3) ([81965ae](https://github.com/Zahara-Nour/ubumaths/commit/81965ae0e290f57958b231e8f55d70af3c03d61e))
+- **geometry:** code-review consolidee p0+p1 progress doc ([7937c49](https://github.com/Zahara-Nour/ubumaths/commit/7937c4902966d320bef619abae0de3dfdd5d07dd))
+- **geometry:** fix table cell with |alpha| symbol in code-review doc ([5e4b9f6](https://github.com/Zahara-Nour/ubumaths/commit/5e4b9f63e5fef3a37d4d216c518e1be599858af6))
+- **geometry:** marque A1 transporte choregraphie comme livre ([461c15b](https://github.com/Zahara-Nour/ubumaths/commit/461c15bbb3ed1b92a640b1b752d079399dc82fbe))
+
 ### [0.9.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.4...v0.9.5) (2026-05-20)
 
 ### 📚 Documentation
