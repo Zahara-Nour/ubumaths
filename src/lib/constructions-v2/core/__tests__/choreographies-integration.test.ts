@@ -654,6 +654,86 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		]);
 	});
 
+	it('parallele @equerre expands into 5 sub-step entries (pose + slide + trace + swap + extend)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = parallele(P, A, B) @equerre'
+			].join('\n')
+		);
+		// 3 point statements + 5 sub-steps = 8 entries.
+		expect(exec.totalSteps).toBe(8);
+		expect(exec.loadError).toBeNull();
+	});
+
+	it('parallele @equerre sub-step kinds follow expected composition', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = parallele(P, A, B) @equerre'
+			].join('\n')
+		);
+		// Skip the 3 plain statements.
+		for (let i = 0; i < 3; i++) exec.step();
+		const kinds: string[] = [];
+		for (let i = 0; i < 5; i++) {
+			exec.step();
+			kinds.push(exec.currentSubStep?.kind ?? 'null');
+		}
+		expect(kinds).toEqual([
+			'compass-measure', // SS1 : setSquare positions on (AB) at A
+			'compass-measure', // SS2 : setSquare slides perpendicular until horizontal edge passes through P
+			'ruler-trace', // SS3 : pencil traces along setSquare's horizontal edge
+			'compass-measure', // SS4 : swap setSquare → ruler (aligned with parallel)
+			'ruler-trace' // SS5 : pencil extends parallel along ruler
+		]);
+	});
+
+	it('parallele @equerre swaps setSquare → ruler at SS4', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = parallele(P, A, B) @equerre'
+			].join('\n')
+		);
+		// Skip the 3 plain statements.
+		for (let i = 0; i < 3; i++) exec.step();
+		// SS1 : setSquare positions at A.
+		exec.step();
+		expect(exec.currentSubStep?.instrument).toBe('setSquare');
+		expect(exec.currentSubStep?.instrumentTarget?.x).toBe(0); // A.x
+		expect(exec.currentSubStep?.instrumentTarget?.y).toBe(0); // A.y
+		// SS2 : setSquare slides to C_final.
+		// dPerp = -3 (P CCW), slide = (dPerp·uy, -dPerp·ux) = (0, 0) wait...
+		// u=(1,0), dPerp = -(A.x-P.x)*uy + (A.y-P.y)*ux = -(0-2)*0 + (0-3)*1 = -3.
+		// slide_vec = (dPerp*uy, -dPerp*ux) = (-3*0, -(-3)*1) = (0, 3).
+		// C_final = A + (0, 3) = (0, 3).
+		exec.step();
+		expect(exec.currentSubStep?.instrument).toBe('setSquare');
+		expect(exec.currentSubStep?.instrumentTarget?.x).toBe(0);
+		expect(exec.currentSubStep?.instrumentTarget?.y).toBe(3);
+		// SS3 : setSquare + pencil for partial trace.
+		exec.step();
+		expect(exec.currentSubStep?.instrument).toBe('setSquare');
+		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
+		// SS4 : swap to ruler.
+		exec.step();
+		expect(exec.currentSubStep?.instrument).toBe('ruler');
+		// SS5 : ruler + pencil for extension.
+		exec.step();
+		expect(exec.currentSubStep?.instrument).toBe('ruler');
+		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
+	});
+
 	it('perpendiculaire @equerre swaps setSquare → ruler at SS4', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(

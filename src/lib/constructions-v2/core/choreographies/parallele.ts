@@ -18,6 +18,14 @@ import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types'
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total (small arcs near Q)
+// Équerre horizontal edge length in math units. SetSquare renders at
+// LARGEUR = 131 SVG pixels at scale 1 ; with the executor's PPU = 40,
+// that's ≈ 3.3 math units. We use a slightly smaller value (3) so the
+// segment-trace stays comfortably inside the équerre's horizontal edge.
+const EQUERRE_HORIZONTAL_MATH_UNITS = 3;
+// Overlap of the ruler over the already-traced portion (same as
+// perpendiculaire @equerre).
+const RULER_OVERLAP_MATH_UNITS = 2;
 
 /**
  * `parallele @euclide @parallelogramme` choreography (Euclid I.31).
@@ -352,12 +360,297 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 	};
 }
 
+/**
+ * `parallele @equerre` choreography.
+ *
+ * Construction directe à l'équerre + règle :
+ *
+ *   SS1 — pose : l'équerre arrive avec son bord horizontal sur (AB),
+ *         coin sur A, bord vertical orienté vers P.
+ *   SS2 — glissement : l'équerre glisse perpendiculairement à (AB) (le
+ *         long du bord vertical) jusqu'à `C_final = A + n_toP × |d_perp|`,
+ *         de sorte que le bord horizontal passe désormais par P.
+ *   SS3 — tracé inside : le crayon trace la portion de la parallèle qui
+ *         rentre dans le bord horizontal de l'équerre (longueur =
+ *         `EQUERRE_HORIZONTAL_MATH_UNITS`).
+ *   SS4 — swap : on retire l'équerre, on pose la règle alignée sur la
+ *         portion tracée (origine décalée de `RULER_OVERLAP_MATH_UNITS`
+ *         vers le tracé pour le chevauchement).
+ *   SS5 — prolongement : le crayon prolonge la parallèle le long de la
+ *         règle. `applyFinalVisibility` révèle ensuite la ligne complète.
+ *
+ * Positionnement de l'équerre :
+ * - Coin (origine locale) = A (SS1), `C_final` (SS2, SS3).
+ * - Rotation = angle de u_AB si P est du côté `n_ccw` de (AB), sinon
+ *   `angle(u_AB) + 180°` pour orienter le bord vertical vers P.
+ */
+function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
+	const { figure, args, principalId } = ctx;
+	const [Pid, Aid, Bid] = args.ids;
+	const [P, A, B] = args.coords;
+
+	figure.hideElement(principalId);
+
+	// ─── Initial values ───
+	const ABx = B.x - A.x;
+	const ABy = B.y - A.y;
+	const ABlen0 = Math.hypot(ABx, ABy);
+	const ux0 = ABx / ABlen0;
+	const uy0 = ABy / ABlen0;
+	// n_ccw = (-uy, ux). dPerp = (A − P) · n_ccw. Sign indicates which
+	// side of (AB) P is on (>0 = CW side, <0 = CCW side).
+	const dPerp0 = -(A.x - P.x) * uy0 + (A.y - P.y) * ux0;
+	const uAngleDeg = (Math.atan2(uy0, ux0) * 180) / Math.PI;
+	const setSquareRotation = dPerp0 > 0 ? uAngleDeg + 180 : uAngleDeg;
+	// Slide vector (perpendicular to (AB), toward P).
+	// slide = -dPerp × n_ccw = -dPerp × (-uy, ux) = (dPerp·uy, -dPerp·ux).
+	const slideVecX0 = dPerp0 * uy0;
+	const slideVecY0 = -dPerp0 * ux0;
+	const Cfinal_x0 = A.x + slideVecX0;
+	const Cfinal_y0 = A.y + slideVecY0;
+	// Horizontal-edge direction after rotation : -sign(dPerp) × u_AB
+	// (= +u_AB if dPerp < 0, -u_AB if dPerp > 0).
+	const hEdgeSign0 = dPerp0 > 0 ? -1 : 1;
+	const hEdgeDirX0 = hEdgeSign0 * ux0;
+	const hEdgeDirY0 = hEdgeSign0 * uy0;
+
+	// ─── Reactive scalars ───
+	const Px = figure.createScalarCoordinate(Pid, 'x');
+	const Py = figure.createScalarCoordinate(Pid, 'y');
+	const Ax = figure.createScalarCoordinate(Aid, 'x');
+	const Ay = figure.createScalarCoordinate(Aid, 'y');
+	const Bx = figure.createScalarCoordinate(Bid, 'x');
+	const By = figure.createScalarCoordinate(Bid, 'y');
+
+	const dABScalar = figure.createScalarDistance(Aid, Bid);
+	const uxScalar = figure.createScalarExpression(
+		(vals) => {
+			const len = Math.max(vals.get(dABScalar) ?? 1, 1e-12);
+			return ((vals.get(Bx) ?? 0) - (vals.get(Ax) ?? 0)) / len;
+		},
+		[Ax, Bx, dABScalar]
+	);
+	const uyScalar = figure.createScalarExpression(
+		(vals) => {
+			const len = Math.max(vals.get(dABScalar) ?? 1, 1e-12);
+			return ((vals.get(By) ?? 0) - (vals.get(Ay) ?? 0)) / len;
+		},
+		[Ay, By, dABScalar]
+	);
+	const dPerpScalar = figure.createScalarExpression(
+		(vals) =>
+			-((vals.get(Ax) ?? 0) - (vals.get(Px) ?? 0)) * (vals.get(uyScalar) ?? 0) +
+			((vals.get(Ay) ?? 0) - (vals.get(Py) ?? 0)) * (vals.get(uxScalar) ?? 0),
+		[Ax, Ay, Px, Py, uxScalar, uyScalar]
+	);
+	// C_final = A + (dPerp·uy, -dPerp·ux).
+	const CfinalXScalar = figure.createScalarExpression(
+		(vals) => (vals.get(Ax) ?? 0) + (vals.get(dPerpScalar) ?? 0) * (vals.get(uyScalar) ?? 0),
+		[Ax, dPerpScalar, uyScalar]
+	);
+	const CfinalYScalar = figure.createScalarExpression(
+		(vals) => (vals.get(Ay) ?? 0) - (vals.get(dPerpScalar) ?? 0) * (vals.get(uxScalar) ?? 0),
+		[Ay, dPerpScalar, uxScalar]
+	);
+	const Cfinal = figure.createComputedPoint(
+		{ scalarRef: CfinalXScalar },
+		{ scalarRef: CfinalYScalar }
+	);
+	figure.hideElement(Cfinal);
+	// Horizontal-edge direction (sign flips if équerre is flipped).
+	const hEdgeDirXScalar = figure.createScalarExpression(
+		(vals) => {
+			const d = vals.get(dPerpScalar) ?? 0;
+			const sign = d > 0 ? -1 : 1;
+			return sign * (vals.get(uxScalar) ?? 0);
+		},
+		[dPerpScalar, uxScalar]
+	);
+	const hEdgeDirYScalar = figure.createScalarExpression(
+		(vals) => {
+			const d = vals.get(dPerpScalar) ?? 0;
+			const sign = d > 0 ? -1 : 1;
+			return sign * (vals.get(uyScalar) ?? 0);
+		},
+		[dPerpScalar, uyScalar]
+	);
+
+	// ─── Segment-trace 1 : portion inside the équerre (along horizontal edge) ───
+	const trace1EndxScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(CfinalXScalar) ?? 0) +
+			(vals.get(hEdgeDirXScalar) ?? 0) * EQUERRE_HORIZONTAL_MATH_UNITS,
+		[CfinalXScalar, hEdgeDirXScalar]
+	);
+	const trace1EndyScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(CfinalYScalar) ?? 0) +
+			(vals.get(hEdgeDirYScalar) ?? 0) * EQUERRE_HORIZONTAL_MATH_UNITS,
+		[CfinalYScalar, hEdgeDirYScalar]
+	);
+	const trace1End = figure.createComputedPoint(
+		{ scalarRef: trace1EndxScalar },
+		{ scalarRef: trace1EndyScalar }
+	);
+	figure.hideElement(trace1End);
+	const segmentTrace1 = figure.createSegment(Cfinal, trace1End);
+	figure.hideElement(segmentTrace1);
+
+	// ─── Segment-trace 2 : backward extension along parallel (C_final → -hEdgeDir) ───
+	const halfTraceScalar = figure.createScalarExpression(
+		(vals) =>
+			Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, Math.abs(vals.get(dPerpScalar) ?? 0) * 1.2),
+		[dPerpScalar]
+	);
+	const trace2EndxScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(CfinalXScalar) ?? 0) -
+			(vals.get(hEdgeDirXScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
+		[CfinalXScalar, hEdgeDirXScalar, halfTraceScalar]
+	);
+	const trace2EndyScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(CfinalYScalar) ?? 0) -
+			(vals.get(hEdgeDirYScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
+		[CfinalYScalar, hEdgeDirYScalar, halfTraceScalar]
+	);
+	const trace2End = figure.createComputedPoint(
+		{ scalarRef: trace2EndxScalar },
+		{ scalarRef: trace2EndyScalar }
+	);
+	figure.hideElement(trace2End);
+	const segmentTrace2 = figure.createSegment(Cfinal, trace2End);
+	figure.hideElement(segmentTrace2);
+
+	// Initial geometric distances.
+	const trace1Len0 = EQUERRE_HORIZONTAL_MATH_UNITS;
+	const trace2Len0 = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, Math.abs(dPerp0) * 1.2);
+	// Ruler position : origin offset from C_final toward trace1 by
+	// RULER_OVERLAP, rotation opposite to hEdgeDir (so the ruler extends
+	// backward, into the extension territory).
+	const rulerOriginX0 = Cfinal_x0 + hEdgeDirX0 * RULER_OVERLAP_MATH_UNITS;
+	const rulerOriginY0 = Cfinal_y0 + hEdgeDirY0 * RULER_OVERLAP_MATH_UNITS;
+	const rulerRotationDeg = (Math.atan2(-hEdgeDirY0, -hEdgeDirX0) * 180) / Math.PI;
+
+	// ─── Sub-steps ───
+	const subSteps: SubStep[] = [
+		// SS1 : pose de l'équerre — coin sur A, bord horizontal aligné
+		// avec (AB), bord vertical pointant vers P.
+		{
+			kind: 'compass-measure',
+			instrument: 'setSquare',
+			instrumentTarget: { x: A.x, y: A.y, rotation: setSquareRotation },
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "On pose l'équerre avec son bord horizontal sur (AB), le coin sur A"
+		},
+		// SS2 : glissement perpendiculaire jusqu'à C_final.
+		{
+			kind: 'compass-measure',
+			instrument: 'setSquare',
+			instrumentTarget: { x: Cfinal_x0, y: Cfinal_y0, rotation: setSquareRotation },
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction:
+				"On fait glisser l'équerre perpendiculairement à (AB) jusqu'à ce que le bord horizontal passe par P"
+		},
+		// SS3 : tracé le long du bord horizontal de l'équerre.
+		{
+			kind: 'ruler-trace',
+			instrument: 'setSquare',
+			secondaryInstrument: 'pencil',
+			instrumentTarget: { x: Cfinal_x0, y: Cfinal_y0, rotation: setSquareRotation },
+			geometricDistance: trace1Len0,
+			animateDrawableIds: [segmentTrace1],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "Le long du bord horizontal de l'équerre, on trace une portion de la parallèle"
+		},
+		// SS4 : swap équerre → règle, alignée sur la portion tracée.
+		{
+			kind: 'compass-measure',
+			instrument: 'ruler',
+			instrumentTarget: { x: rulerOriginX0, y: rulerOriginY0, rotation: rulerRotationDeg },
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "On retire l'équerre et on pose la règle le long de la portion tracée"
+		},
+		// SS5 : prolongement de la parallèle le long de la règle.
+		{
+			kind: 'ruler-trace',
+			instrument: 'ruler',
+			secondaryInstrument: 'pencil',
+			instrumentTarget: { x: rulerOriginX0, y: rulerOriginY0, rotation: rulerRotationDeg },
+			geometricDistance: trace2Len0,
+			animateDrawableIds: [segmentTrace2],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'On prolonge le tracé le long de la règle pour compléter la parallèle'
+		}
+	];
+
+	return {
+		subSteps,
+		produced: {
+			principal: principalId,
+			// C_final = coin de l'équerre après glissement (sur la parallèle).
+			charnieres: [Cfinal],
+			traces: [segmentTrace1, segmentTrace2],
+			hiddenSupport: [
+				trace1End,
+				trace2End,
+				Px,
+				Py,
+				Ax,
+				Ay,
+				Bx,
+				By,
+				dABScalar,
+				uxScalar,
+				uyScalar,
+				dPerpScalar,
+				CfinalXScalar,
+				CfinalYScalar,
+				hEdgeDirXScalar,
+				hEdgeDirYScalar,
+				trace1EndxScalar,
+				trace1EndyScalar,
+				trace2EndxScalar,
+				trace2EndyScalar,
+				halfTraceScalar
+			]
+		}
+	};
+}
+
 const parallelogrammeChoreography: ChoreographyFn = (ctx) => buildParallelogramme(ctx);
+const equerreChoreography: ChoreographyFn = (ctx) => buildEquerre(ctx);
 
 const NOT_YET_IMPLEMENTED: ChoreographyFn = (ctx) => ({
 	subSteps: [],
 	produced: { principal: ctx.principalId, charnieres: [], traces: [] }
 });
+
+export const VOIES_PARALLELE_EQUERRE: readonly Voie[] = [
+	{
+		id: 'pose_equerre',
+		nom_humain: "Tracé à l'équerre",
+		source: 'Construction directe',
+		description:
+			"On pose l'équerre avec son bord horizontal sur `(AB)`, le coin sur `A`. On la fait glisser perpendiculairement à `(AB)` jusqu'à ce que le bord horizontal passe par `P`. Le crayon trace une portion de la parallèle ; on remplace ensuite l'équerre par la règle pour prolonger.",
+		defaut: true,
+		choreography: equerreChoreography
+	}
+];
 
 export const VOIES_PARALLELE_EUCLIDE: readonly Voie[] = [
 	{
