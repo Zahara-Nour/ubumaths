@@ -131,12 +131,12 @@ describe('ConstructionExecutor — mediatrice @euclide @arcs_egaux (Phase 4 sub-
 	// points, 1 segment-trace, 2 scalars). The principal line is still
 	// created by the builtin (Strategy B).
 
-	it('mediatrice @euclide expands into 4 sub-step entries', () => {
+	it('mediatrice @euclide expands into 6 sub-step entries (4 small arcs + fade-in + ruler)', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide'].join('\n'));
-		// 2 point statements + 4 sub-steps for the decorated mediatrice = 6 entries.
-		expect(exec.totalSteps).toBe(6);
-		expect(exec.stepDurations.length).toBe(6);
+		// 2 point statements + 6 sub-steps for the decorated mediatrice = 8 entries.
+		expect(exec.totalSteps).toBe(8);
+		expect(exec.stepDurations.length).toBe(8);
 	});
 
 	it('mediatrice @euclide creates auxiliary elements (arcs, intersections, segment-trace)', () => {
@@ -152,8 +152,9 @@ describe('ConstructionExecutor — mediatrice @euclide @arcs_egaux (Phase 4 sub-
 		execEuclide.executeAll();
 		const sizeEuclide = execEuclide.figure.size;
 
-		// Choreography adds : 2 arcs + 2 hidden circles + 2 intersection points
-		// + 1 segment-trace + 2 scalars (distAB, radiusScalar) = 9 elements.
+		// Choreography adds : 4 small arcs + 2 hidden circles + 2 intersection
+		// points + 1 segment-trace + many scalars. Many more elements than
+		// the legacy path.
 		expect(sizeEuclide).toBeGreaterThan(sizeDirect);
 	});
 
@@ -164,15 +165,19 @@ describe('ConstructionExecutor — mediatrice @euclide @arcs_egaux (Phase 4 sub-
 		expect(exec.currentSubStep).toBeNull();
 		exec.step(); // B
 		expect(exec.currentSubStep).toBeNull();
-		exec.step(); // SS1 : compass at A
+		exec.step(); // SS1 : compass at A toward I1
 		expect(exec.currentSubStep?.kind).toBe('compass-draw');
 		expect(exec.currentSubStep?.instrument).toBe('compass');
-		exec.step(); // SS2 : compass at B
+		exec.step(); // SS2 : compass at A toward I2
 		expect(exec.currentSubStep?.kind).toBe('compass-draw');
-		exec.step(); // SS3 : intersections fade-in
+		exec.step(); // SS3 : compass at B toward I1
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS4 : compass at B toward I2
+		expect(exec.currentSubStep?.kind).toBe('compass-draw');
+		exec.step(); // SS5 : intersections fade-in
 		expect(exec.currentSubStep?.kind).toBe('point-fade-in');
 		expect(exec.currentSubStep?.animatePointIds.length).toBe(2);
-		exec.step(); // SS4 : ruler trace
+		exec.step(); // SS6 : ruler trace
 		expect(exec.currentSubStep?.kind).toBe('ruler-trace');
 		expect(exec.currentSubStep?.instrument).toBe('ruler');
 		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
@@ -183,8 +188,8 @@ describe('ConstructionExecutor — mediatrice @euclide @arcs_egaux (Phase 4 sub-
 		exec.load(['A = point(0, 0)', 'B = point(4, 0)', 'd = mediatrice(A, B) @euclide'].join('\n'));
 		exec.step(); // A
 		exec.step(); // B
-		// Now 4 sub-steps for the decorated statement.
-		for (let i = 0; i < 4; i++) {
+		// Now 6 sub-steps for the decorated statement.
+		for (let i = 0; i < 6; i++) {
 			exec.step();
 			expect(exec.currentDecoratorTriple?.contrainte).toBe('euclide');
 			expect(exec.currentVoie?.id).toBe('arcs_egaux');
@@ -210,7 +215,7 @@ describe('ConstructionExecutor — mediatrice @euclide @arcs_egaux (Phase 4 sub-
 		}
 	});
 
-	it('cercles_rayon_ab voie also produces 4 sub-steps', () => {
+	it('cercles_rayon_ab voie also produces 6 sub-steps', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -219,7 +224,7 @@ describe('ConstructionExecutor — mediatrice @euclide @arcs_egaux (Phase 4 sub-
 				'd = mediatrice(A, B) @euclide @cercles_rayon_ab'
 			].join('\n')
 		);
-		expect(exec.totalSteps).toBe(6); // 2 + 4
+		expect(exec.totalSteps).toBe(8); // 2 + 6
 		expect(exec.currentVoie).toBeNull(); // before any step
 		exec.executeAll();
 		expect(exec.figure.size).toBeGreaterThan(5);
@@ -438,7 +443,7 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		}
 	});
 
-	it('cercle_circonscrit @euclide expands into 13 sub-step entries (via ctx.sub)', () => {
+	it('cercle_circonscrit @euclide expands into 17 sub-step entries (via ctx.sub)', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
@@ -448,11 +453,11 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 				'cc = cercle_circonscrit(A, B, C) @euclide'
 			].join('\n')
 		);
-		// 3 point statements + 13 sub-steps for the decorated cercle_circonscrit
-		// = 16 entries. The 13 sub-steps come from :
-		//   4 (sub-mediatrice AB) + 1 (m1 fade-in) + 4 (sub-mediatrice BC)
+		// 3 point statements + 17 sub-steps for the decorated cercle_circonscrit
+		// = 20 entries. The 17 sub-steps come from :
+		//   6 (sub-mediatrice AB) + 1 (m1 fade-in) + 6 (sub-mediatrice BC)
 		//   + 1 (m2 fade-in) + 1 (O fade-in) + 1 (measure |OA|) + 1 (draw circle).
-		expect(exec.totalSteps).toBe(16);
+		expect(exec.totalSteps).toBe(20);
 		expect(exec.loadError).toBeNull();
 	});
 
@@ -469,19 +474,23 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		// Skip the 3 plain statements.
 		for (let i = 0; i < 3; i++) exec.step();
 		const kinds: string[] = [];
-		for (let i = 0; i < 13; i++) {
+		for (let i = 0; i < 17; i++) {
 			exec.step();
 			kinds.push(exec.currentSubStep?.kind ?? 'null');
 		}
 		expect(kinds).toEqual([
-			// sub-mediatrice(AB) : 4 sub-steps
-			'compass-draw', // SS1 of sub : arc at A
-			'compass-draw', // SS2 of sub : arc at B
-			'point-fade-in', // SS3 of sub : I1, I2 of sub-mediatrice AB
-			'ruler-trace', // SS4 of sub : ruler trace
+			// sub-mediatrice(AB) : 6 sub-steps (4 small arcs + fade-in + ruler)
+			'compass-draw', // arc at A toward I1
+			'compass-draw', // arc at A toward I2
+			'compass-draw', // arc at B toward I1
+			'compass-draw', // arc at B toward I2
+			'point-fade-in', // I1, I2 of sub-mediatrice AB
+			'ruler-trace', // ruler trace m1
 			// Parent's m1 reveal
 			'line-fade-in',
-			// sub-mediatrice(BC) : 4 sub-steps
+			// sub-mediatrice(BC) : 6 sub-steps
+			'compass-draw',
+			'compass-draw',
 			'compass-draw',
 			'compass-draw',
 			'point-fade-in',

@@ -65,16 +65,13 @@ function buildArcsEgaux(
 	const ab = Math.hypot(dx, dy);
 	const r = radiusFactor * ab;
 
-	// Arc angles (radians) : 120° sweep centered on the AB direction at A,
-	// and on the BA direction at B. The angle values are static (not reactive
-	// initial directions used only for the FIRST positioning of the compass
-	// during animation ; arc angles themselves are fully reactive via
-	// `arc1StartScalar`/`arc1EndScalar`/... below.
-	const angleAB = Math.atan2(dy, dx);
-	const angleBA = angleAB + Math.PI;
-	const sweepRad = (2 * Math.PI) / 3; // 120°
-	const arc1Start = angleAB - sweepRad / 2;
-	const arc2Start = angleBA - sweepRad / 2;
+	// Small-arc sweep (30° total = ±15° around the direction to the
+	// targeted intersection). Same convention as bissectrice and
+	// perpendiculaire @euclide : two small arcs per compass center so the
+	// figure stays uncluttered, instead of one 120° arc that covers both
+	// intersections at once.
+	const sweepRad = Math.PI / 6; // 30°
+	const halfSweep = sweepRad / 2;
 
 	// Position of the two intersection points (above and below the AB line).
 	// Lies on the perpendicular bisector of AB, at distance √(r² − (|AB|/2)²)
@@ -91,6 +88,14 @@ function buildArcsEgaux(
 	const I2x = midX - perpX * halfChord;
 	const I2y = midY - perpY * halfChord;
 	const segLen = 2 * halfChord;
+
+	// Initial directions from A and B toward the two intersections (used
+	// only for first-frame instrument positioning ; reactive scalars below
+	// take over for drag-driven updates).
+	const angleAtoI1_0 = Math.atan2(I1y - A.y, I1x - A.x);
+	const angleAtoI2_0 = Math.atan2(I2y - A.y, I2x - A.x);
+	const angleBtoI1_0 = Math.atan2(I1y - B.y, I1x - B.x);
+	const angleBtoI2_0 = Math.atan2(I2y - B.y, I2x - B.x);
 	// Ruler convention (`rulerPosition`) : positioned AT the start point,
 	// rotated toward the end. Matches the existing pipeline so the pencil
 	// drawing-tip starts at the segment's start.
@@ -120,43 +125,7 @@ function buildArcsEgaux(
 		[Ax, Ay, Bx, By]
 	);
 
-	// Reactive arc start/end angles : ±60° around the AB direction (arc 1,
-	// centered at A) and around the BA direction (arc 2, centered at B).
-	const arc1StartScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleABScalar) ?? 0) - sweepRad / 2,
-		[angleABScalar]
-	);
-	const arc1EndScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleABScalar) ?? 0) + sweepRad / 2,
-		[angleABScalar]
-	);
-	const arc2StartScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleABScalar) ?? 0) + Math.PI - sweepRad / 2,
-		[angleABScalar]
-	);
-	const arc2EndScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleABScalar) ?? 0) + Math.PI + sweepRad / 2,
-		[angleABScalar]
-	);
-
 	// ─── Auxiliary elements (created hidden) ───
-	// Note : createX defaults `visible: true` even when options pass false ;
-	// we explicitly hide after creation.
-	const arc1 = figure.createArcByAngles(
-		Aid,
-		{ scalarRef: radiusScalar },
-		{ scalarRef: arc1StartScalar },
-		{ scalarRef: arc1EndScalar }
-	);
-	figure.hideElement(arc1);
-	const arc2 = figure.createArcByAngles(
-		Bid,
-		{ scalarRef: radiusScalar },
-		{ scalarRef: arc2StartScalar },
-		{ scalarRef: arc2EndScalar }
-	);
-	figure.hideElement(arc2);
-
 	// createIntersectionCC requires circles (not arcs) ; create 2 hidden
 	// circles purely to drive the intersection. They are never made visible.
 	const circleA = figure.createCircleByRadius(Aid, { scalarRef: radiusScalar });
@@ -168,6 +137,114 @@ function buildArcsEgaux(
 	figure.hideElement(I1);
 	const I2 = figure.createIntersectionCC(circleA, circleB, 1);
 	figure.hideElement(I2);
+
+	// Reactive coordinates of the two intersections (drive the small-arc
+	// directions so each arc stays anchored on its target intersection).
+	const I1xScalar = figure.createScalarCoordinate(I1, 'x');
+	const I1yScalar = figure.createScalarCoordinate(I1, 'y');
+	const I2xScalar = figure.createScalarCoordinate(I2, 'x');
+	const I2yScalar = figure.createScalarCoordinate(I2, 'y');
+
+	// Reactive directions from each compass center to each intersection.
+	const angleAtoI1Scalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(I1yScalar) ?? 0) - (vals.get(Ay) ?? 0),
+				(vals.get(I1xScalar) ?? 0) - (vals.get(Ax) ?? 0)
+			),
+		[Ax, Ay, I1xScalar, I1yScalar]
+	);
+	const angleAtoI2Scalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(I2yScalar) ?? 0) - (vals.get(Ay) ?? 0),
+				(vals.get(I2xScalar) ?? 0) - (vals.get(Ax) ?? 0)
+			),
+		[Ax, Ay, I2xScalar, I2yScalar]
+	);
+	const angleBtoI1Scalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(I1yScalar) ?? 0) - (vals.get(By) ?? 0),
+				(vals.get(I1xScalar) ?? 0) - (vals.get(Bx) ?? 0)
+			),
+		[Bx, By, I1xScalar, I1yScalar]
+	);
+	const angleBtoI2Scalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(I2yScalar) ?? 0) - (vals.get(By) ?? 0),
+				(vals.get(I2xScalar) ?? 0) - (vals.get(Bx) ?? 0)
+			),
+		[Bx, By, I2xScalar, I2yScalar]
+	);
+
+	// Small-arc start/end angles (±15° around each direction).
+	const arcAtoI1Start = figure.createScalarExpression(
+		(vals) => (vals.get(angleAtoI1Scalar) ?? 0) - halfSweep,
+		[angleAtoI1Scalar]
+	);
+	const arcAtoI1End = figure.createScalarExpression(
+		(vals) => (vals.get(angleAtoI1Scalar) ?? 0) + halfSweep,
+		[angleAtoI1Scalar]
+	);
+	const arcAtoI2Start = figure.createScalarExpression(
+		(vals) => (vals.get(angleAtoI2Scalar) ?? 0) - halfSweep,
+		[angleAtoI2Scalar]
+	);
+	const arcAtoI2End = figure.createScalarExpression(
+		(vals) => (vals.get(angleAtoI2Scalar) ?? 0) + halfSweep,
+		[angleAtoI2Scalar]
+	);
+	const arcBtoI1Start = figure.createScalarExpression(
+		(vals) => (vals.get(angleBtoI1Scalar) ?? 0) - halfSweep,
+		[angleBtoI1Scalar]
+	);
+	const arcBtoI1End = figure.createScalarExpression(
+		(vals) => (vals.get(angleBtoI1Scalar) ?? 0) + halfSweep,
+		[angleBtoI1Scalar]
+	);
+	const arcBtoI2Start = figure.createScalarExpression(
+		(vals) => (vals.get(angleBtoI2Scalar) ?? 0) - halfSweep,
+		[angleBtoI2Scalar]
+	);
+	const arcBtoI2End = figure.createScalarExpression(
+		(vals) => (vals.get(angleBtoI2Scalar) ?? 0) + halfSweep,
+		[angleBtoI2Scalar]
+	);
+
+	// Note : createX defaults `visible: true` ; we explicitly hide after
+	// creation. Each small arc passes through its target intersection
+	// (the centers A/B and the radius `radiusScalar` are shared with the
+	// hidden circles, so the math is exact).
+	const arcAtoI1 = figure.createArcByAngles(
+		Aid,
+		{ scalarRef: radiusScalar },
+		{ scalarRef: arcAtoI1Start },
+		{ scalarRef: arcAtoI1End }
+	);
+	figure.hideElement(arcAtoI1);
+	const arcAtoI2 = figure.createArcByAngles(
+		Aid,
+		{ scalarRef: radiusScalar },
+		{ scalarRef: arcAtoI2Start },
+		{ scalarRef: arcAtoI2End }
+	);
+	figure.hideElement(arcAtoI2);
+	const arcBtoI1 = figure.createArcByAngles(
+		Bid,
+		{ scalarRef: radiusScalar },
+		{ scalarRef: arcBtoI1Start },
+		{ scalarRef: arcBtoI1End }
+	);
+	figure.hideElement(arcBtoI1);
+	const arcBtoI2 = figure.createArcByAngles(
+		Bid,
+		{ scalarRef: radiusScalar },
+		{ scalarRef: arcBtoI2Start },
+		{ scalarRef: arcBtoI2End }
+	);
+	figure.hideElement(arcBtoI2);
 
 	// Segment-trace endpoints : centered on the midpoint of A,B (= the
 	// midpoint of the median line) with total length matching the ruler's
@@ -247,33 +324,74 @@ function buildArcsEgaux(
 	const Iext1y = midY - dirY * halfTrace;
 
 	// ─── Sub-steps ───
+	// Each small arc has length r × sweepRad (with sweepRad = 30°).
 	const arcLength = r * sweepRad;
 	const subSteps: SubStep[] = [
-		// SS1 : compass at A, traces arc 1.
+		// SS1 : compass at A, small arc toward I1.
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
-			instrumentTarget: { x: A.x, y: A.y, rotation: (arc1Start * 180) / Math.PI },
+			instrumentTarget: {
+				x: A.x,
+				y: A.y,
+				rotation: ((angleAtoI1_0 - halfSweep) * 180) / Math.PI
+			},
 			compassRadius: r,
 			geometricDistance: arcLength,
-			animateDrawableIds: [arc1],
+			animateDrawableIds: [arcAtoI1],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en A, on trace l'arc"
+			instruction: "Compas en A, petit arc d'un côté"
 		},
-		// SS2 : compass moves to B, traces arc 2.
+		// SS2 : compass stays at A (same opening), small arc toward I2.
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
-			instrumentTarget: { x: B.x, y: B.y, rotation: (arc2Start * 180) / Math.PI },
+			instrumentTarget: {
+				x: A.x,
+				y: A.y,
+				rotation: ((angleAtoI2_0 - halfSweep) * 180) / Math.PI
+			},
 			compassRadius: r,
 			geometricDistance: arcLength,
-			animateDrawableIds: [arc2],
+			animateDrawableIds: [arcAtoI2],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en B, on trace l'arc"
+			instruction: "Petit arc de l'autre côté, même ouverture"
 		},
-		// SS3 : 2 intersection points fade in.
+		// SS3 : compass moves to B (same opening), small arc toward I1.
+		{
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: {
+				x: B.x,
+				y: B.y,
+				rotation: ((angleBtoI1_0 - halfSweep) * 180) / Math.PI
+			},
+			compassRadius: r,
+			geometricDistance: arcLength,
+			animateDrawableIds: [arcBtoI1],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "Compas en B, petit arc d'un côté"
+		},
+		// SS4 : compass stays at B, small arc toward I2.
+		{
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: {
+				x: B.x,
+				y: B.y,
+				rotation: ((angleBtoI2_0 - halfSweep) * 180) / Math.PI
+			},
+			compassRadius: r,
+			geometricDistance: arcLength,
+			animateDrawableIds: [arcBtoI2],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "Petit arc de l'autre côté, même ouverture"
+		},
+		// SS5 : the four small arcs cross in two points → I1, I2 fade in.
 		{
 			kind: 'point-fade-in',
 			geometricDistance: 0,
@@ -282,7 +400,7 @@ function buildArcsEgaux(
 			animateLineIds: [],
 			instruction: 'Les arcs se coupent en deux points'
 		},
-		// SS4 : ruler + pencil trace the extended segment-trace (spans the
+		// SS6 : ruler + pencil trace the extended segment-trace (spans the
 		// visible portion of the median line). Ruler positioned at Iext1
 		// (start of extended segment) rotated toward Iext2 — same convention
 		// as `rulerPosition` in `instruments/positioning.ts`.
@@ -290,7 +408,7 @@ function buildArcsEgaux(
 		// The principal line is NOT in `animateLineIds` : a fade-in starting
 		// at stepProgress=0 would make it bump in while the ruler is still
 		// moving into place. Instead, `applyFinalVisibility` reveals the line
-		// at the end of SS4 (drained at the next `step()` or by the player
+		// at the end of SS6 (drained at the next `step()` or by the player
 		// when the timeline reaches the end). The segment-trace fully covers
 		// the visible viewport so the swap is imperceptible in `@squelette`.
 		{
@@ -311,11 +429,11 @@ function buildArcsEgaux(
 		produced: {
 			principal: principalId,
 			charnieres: [I1, I2],
-			// Arcs only — pedagogically valuable (show the compass gesture).
-			// `segmentTrace` is intentionally NOT here : it would be
-			// redundant with the principal line in `@complet` (geometrically
+			// 4 small arcs only — pedagogically valuable (show the compass
+			// gesture). `segmentTrace` is intentionally NOT here : it would
+			// be redundant with the principal line in `@complet` (geometrically
 			// overlapping), so we keep it hidden after the animation.
-			traces: [arc1, arc2],
+			traces: [arcAtoI1, arcAtoI2, arcBtoI1, arcBtoI2],
 			hiddenSupport: [
 				// Hidden auxiliaries needed only during the animation.
 				segmentTrace,
@@ -331,10 +449,22 @@ function buildArcsEgaux(
 				Bx,
 				By,
 				angleABScalar,
-				arc1StartScalar,
-				arc1EndScalar,
-				arc2StartScalar,
-				arc2EndScalar,
+				I1xScalar,
+				I1yScalar,
+				I2xScalar,
+				I2yScalar,
+				angleAtoI1Scalar,
+				angleAtoI2Scalar,
+				angleBtoI1Scalar,
+				angleBtoI2Scalar,
+				arcAtoI1Start,
+				arcAtoI1End,
+				arcAtoI2Start,
+				arcAtoI2End,
+				arcBtoI1Start,
+				arcBtoI1End,
+				arcBtoI2Start,
+				arcBtoI2End,
 				midABxScalar,
 				midAByScalar,
 				halfTraceScalar,
