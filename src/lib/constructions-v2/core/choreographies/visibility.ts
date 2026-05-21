@@ -2,14 +2,24 @@
  * Final visibility pass for choreographies.
  *
  * After the last sub-step of a decorated statement runs, the executor calls
- * `applyFinalVisibility(figure, produced, visibilite)` to enforce the
- * end-state of the construction according to the `@squelette` / `@epure` /
- * `@complet` decorator :
+ * `applyFinalVisibility(figure, produced, triple)` to enforce the end-state
+ * of the construction according to the resolved `DecoratorTriple`.
  *
+ * Base visibility (`triple.visibilite`) :
  *   - `@squelette` (default) : principal + charnières visible ; traces hidden.
  *   - `@epure`            : only the principal visible.
- *   - `@complet`          : everything visible ; traces shown with a faded
+ *   - `@complet`            : everything visible ; traces shown with a faded
  *                            dashed style so they read as construction marks.
+ *
+ * Tag modifiers (Design C ; `triple.tagModifiers`) refine this on a
+ * per-category basis :
+ *   - `@avec_arcs`, `@avec_traces`, `@avec_marqueurs`, `@avec_points_aux`
+ *     → force the corresponding trace category visible.
+ *   - `@sans_arcs`, `@sans_traces`, …
+ *     → force it hidden.
+ *
+ * Composes with any base, so e.g. `@squelette @avec_marqueurs` shows
+ * principal + charnières + only the markers.
  *
  * The `hiddenSupport` ids (e.g. circles created only to drive the
  * intersection helper) are NEVER made visible by any mode — they are
@@ -17,44 +27,72 @@
  */
 
 import type { Figure } from '$lib/geometry-core/graph/figure';
-import type { ChoreographyProduced, Visibilite } from './types';
+import type { ChoreographyProduced, DecoratorTriple, TraceTag, Visibilite } from './types';
 
-/** Final-state style applied to `traces` under `@complet`. */
-const TRACE_STYLE_COMPLET = { dash: 'dashed', opacity: 0.4 } as const;
+/** Final-state style applied to `traces` whenever they are visible. */
+const TRACE_STYLE = { dash: 'dashed', opacity: 0.4 } as const;
+
+/**
+ * Default per-mode visible-tag set. Tags absent here are hidden by the
+ * base mode unless explicitly included via `@avec_X`.
+ */
+const DEFAULT_VISIBLE_TAGS: Record<Visibilite, ReadonlySet<TraceTag>> = {
+	epure: new Set(),
+	squelette: new Set(),
+	complet: new Set<TraceTag>(['arc', 'segment-trace', 'marker', 'auxiliary-point'])
+};
 
 /**
  * Mutate `figure` so the elements produced by a choreography end the
- * animation in the configuration matching `visibilite`.
+ * animation in the configuration matching the decorator triple. Accepts
+ * either a full `DecoratorTriple` (preferred) or a bare `Visibilite`
+ * string (backward-compat for legacy callers).
  */
 export function applyFinalVisibility(
 	figure: Figure,
 	produced: ChoreographyProduced,
-	visibilite: Visibilite
+	tripleOrVisibility: DecoratorTriple | Visibilite
 ): void {
+	const triple: DecoratorTriple =
+		typeof tripleOrVisibility === 'string'
+			? { contrainte: 'direct', methode: null, visibilite: tripleOrVisibility }
+			: tripleOrVisibility;
+
 	// Hidden support is always hidden (structural, never displayed).
 	if (produced.hiddenSupport) {
 		for (const id of produced.hiddenSupport) figure.hideElement(id);
 	}
 
-	switch (visibilite) {
-		case 'epure':
-			for (const id of produced.traces) figure.hideElement(id);
-			for (const id of produced.charnieres) figure.hideElement(id);
-			figure.showElement(produced.principal);
-			break;
-		case 'squelette':
-			for (const id of produced.traces) figure.hideElement(id);
-			for (const id of produced.charnieres) figure.showElement(id);
-			figure.showElement(produced.principal);
-			break;
-		case 'complet':
-			for (const id of produced.traces) {
-				figure.showElement(id);
-				applyTraceStyle(figure, id);
-			}
-			for (const id of produced.charnieres) figure.showElement(id);
-			figure.showElement(produced.principal);
-			break;
+	// Compute the effective per-tag visibility from base + modifiers.
+	const visibleTags = new Set<TraceTag>(DEFAULT_VISIBLE_TAGS[triple.visibilite]);
+	if (triple.tagModifiers) {
+		for (const [tag, include] of triple.tagModifiers) {
+			if (include) visibleTags.add(tag);
+			else visibleTags.delete(tag);
+		}
+	}
+
+	// Principal always visible at end of animation.
+	figure.showElement(produced.principal);
+
+	// Charnières visible only in @squelette and @complet.
+	const showCharnieres = triple.visibilite === 'squelette' || triple.visibilite === 'complet';
+	for (const id of produced.charnieres) {
+		if (showCharnieres) figure.showElement(id);
+		else figure.hideElement(id);
+	}
+
+	// Each trace : visible iff its tag is in `visibleTags`. Untagged
+	// traces fall back to the legacy rule (visible only in @complet).
+	for (const id of produced.traces) {
+		const tag = produced.traceTags?.get(id);
+		const shouldShow = tag ? visibleTags.has(tag) : triple.visibilite === 'complet';
+		if (shouldShow) {
+			figure.showElement(id);
+			applyTraceStyle(figure, id);
+		} else {
+			figure.hideElement(id);
+		}
 	}
 }
 
@@ -71,8 +109,8 @@ function applyTraceStyle(figure: Figure, id: string): void {
 		...el,
 		style: {
 			...(el.style ?? {}),
-			dash: TRACE_STYLE_COMPLET.dash,
-			opacity: TRACE_STYLE_COMPLET.opacity
+			dash: TRACE_STYLE.dash,
+			opacity: TRACE_STYLE.opacity
 		}
 	};
 	// Figure stores elements in a private Map ; the `hideElement` / `showElement`

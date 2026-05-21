@@ -17,9 +17,31 @@ import {
 	VISIBILITES,
 	type Contrainte,
 	type DecoratorTriple,
+	type TraceTag,
 	type Visibilite
 } from './types';
 import { REGISTRY, CHOREOGRAPHED_BUILTINS } from './registry';
+
+/**
+ * Tag-modifier decorators (Design C : orthogonal `@avec_X` / `@sans_X`
+ * directives that fine-tune which trace categories appear in the final
+ * visibility). Each modifier maps to a `(tag, polarity)` couple :
+ *   - `avec_X` → include tag X (boolean true)
+ *   - `sans_X` → exclude tag X (boolean false)
+ *
+ * Composable with any base visibility. Multiple modifiers can be applied
+ * in any order ; the last one wins for a given tag.
+ */
+const TAG_MODIFIERS: Readonly<Record<string, { tag: TraceTag; include: boolean }>> = {
+	avec_arcs: { tag: 'arc', include: true },
+	sans_arcs: { tag: 'arc', include: false },
+	avec_traces: { tag: 'segment-trace', include: true },
+	sans_traces: { tag: 'segment-trace', include: false },
+	avec_marqueurs: { tag: 'marker', include: true },
+	sans_marqueurs: { tag: 'marker', include: false },
+	avec_points_aux: { tag: 'auxiliary-point', include: true },
+	sans_points_aux: { tag: 'auxiliary-point', include: false }
+};
 
 /** Default visibility when none is explicitly specified. */
 export const DEFAULT_VISIBILITE: Visibilite = 'squelette';
@@ -52,6 +74,7 @@ export function resolveDecorators(
 	let contrainte: Contrainte | null = null;
 	let visibilite: Visibilite | null = null;
 	let methode: string | null = null;
+	const tagModifiers = new Map<TraceTag, boolean>();
 
 	const knownMethodsForBuiltinAndContrainte = (c: Contrainte): string[] => {
 		const builtinEntry = REGISTRY[builtinName];
@@ -82,6 +105,15 @@ export function resolveDecorators(
 				);
 			}
 			visibilite = dec as Visibilite;
+			continue;
+		}
+
+		// Tag modifier (Design C) ?
+		const modifier = TAG_MODIFIERS[dec];
+		if (modifier !== undefined) {
+			// Later occurrences override earlier ones for the same tag (allows
+			// `@complet @sans_arcs @avec_arcs` to net-include arcs).
+			tagModifiers.set(modifier.tag, modifier.include);
 			continue;
 		}
 
@@ -142,7 +174,12 @@ export function resolveDecorators(
 		// Already handled above ; just for clarity.
 	}
 
-	return { contrainte: finalContrainte, methode, visibilite: finalVisibilite };
+	return {
+		contrainte: finalContrainte,
+		methode,
+		visibilite: finalVisibilite,
+		tagModifiers: tagModifiers.size > 0 ? tagModifiers : undefined
+	};
 }
 
 function availableContrainteList(builtinName: string): string {
