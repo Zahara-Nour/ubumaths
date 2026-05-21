@@ -13,12 +13,12 @@
  *
  * Tag modifiers (Design C ; `triple.tagModifiers`) refine this on a
  * per-category basis :
- *   - `@avec_arcs`, `@avec_traces`, `@avec_marqueurs`, `@avec_points_aux`
+ *   - `+arcs`, `+traces`, `+marqueurs`, `+points_aux`
  *     → force the corresponding trace category visible.
- *   - `@sans_arcs`, `@sans_traces`, …
+ *   - `-arcs`, `-traces`, `-marqueurs`, `-points_aux`
  *     → force it hidden.
  *
- * Composes with any base, so e.g. `@squelette @avec_marqueurs` shows
+ * Composes with any base, so e.g. `@squelette +marqueurs` shows
  * principal + charnières + only the markers.
  *
  * The `hiddenSupport` ids (e.g. circles created only to drive the

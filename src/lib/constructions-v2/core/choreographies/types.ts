@@ -37,10 +37,11 @@ export interface DecoratorTriple {
 	/**
 	 * Per-tag include/exclude overrides applied on top of the base
 	 * `visibilite` (Design C : orthogonal modifiers). Captured by the DSL
-	 * resolver from `@avec_X` / `@sans_X` decorators. When `true`, the
-	 * matching trace category is shown ; when `false`, hidden. Tags not
-	 * present in the map fall back to the default for the base mode
-	 * (`@complet` = all visible, `@epure`/`@squelette` = all hidden).
+	 * resolver from `+name` / `-name` post-directive tokens (e.g.
+	 * `@complet -arcs +marqueurs`). When `true`, the matching trace category
+	 * is shown ; when `false`, hidden. Tags not present in the map fall back
+	 * to the default for the base mode (`@complet` = all visible,
+	 * `@epure`/`@squelette` = all hidden).
 	 */
 	readonly tagModifiers?: ReadonlyMap<TraceTag, boolean>;
 }

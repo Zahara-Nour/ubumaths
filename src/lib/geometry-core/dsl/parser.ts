@@ -371,8 +371,16 @@ class Parser {
 	 * arguments in V1 — a `(` after an `@identifier` raises an error to keep
 	 * the syntax simple and ambiguity-free.
 	 *
-	 * Stops at the first non-AT_DIRECTIVE token (typically NEWLINE/EOF/DEDENT).
+	 * Stops at the first non-decorator token (typically NEWLINE/EOF/DEDENT).
 	 * The caller must subsequently call `expectNewline()`.
+	 *
+	 * Accepts two flavors :
+	 *   - `@name`           — regular decorator (contrainte, methode,
+	 *                          visibilite). Pushed as the bare name `"name"`.
+	 *   - `+name` / `-name` — orthogonal tag modifiers (Design C : include /
+	 *                          exclude a trace category from the visibility
+	 *                          filter). Pushed as `"+name"` / `"-name"` so the
+	 *                          resolver can dispatch on the leading char.
 	 *
 	 * Used only for assignment-suffix decorators. Statement-level directives
 	 * (whole-line `@pause(...)`, `@instrument(...)`) keep their dedicated
@@ -380,16 +388,36 @@ class Parser {
 	 */
 	private parseTrailingDecorators(): string[] {
 		const decorators: string[] = [];
-		while (this.peek().type === 'AT_DIRECTIVE') {
-			const t = this.advance();
-			if (this.peek().type === 'LPAREN') {
-				throw new DslParseError(
-					`Decorateur \`@${t.value}\` avec arguments non supporte en suffixe. Decorateurs autorises : @contrainte, @methode, @visibilite (sans arguments).`,
-					t.line,
-					t.col
-				);
+		while (true) {
+			const peek = this.peek();
+			if (peek.type === 'AT_DIRECTIVE') {
+				const t = this.advance();
+				if (this.peek().type === 'LPAREN') {
+					throw new DslParseError(
+						`Decorateur \`@${t.value}\` avec arguments non supporte en suffixe. Decorateurs autorises : @contrainte, @methode, @visibilite (sans arguments).`,
+						t.line,
+						t.col
+					);
+				}
+				decorators.push(t.value);
+				continue;
 			}
-			decorators.push(t.value);
+			if (peek.type === 'PLUS' || peek.type === 'MINUS') {
+				const sign = peek.type === 'PLUS' ? '+' : '-';
+				const signToken = this.advance();
+				const ident = this.peek();
+				if (ident.type !== 'IDENTIFIER') {
+					throw new DslParseError(
+						`Identifiant attendu apres \`${sign}\` dans les decorateurs (par ex. \`${sign}arcs\`).`,
+						signToken.line,
+						signToken.col
+					);
+				}
+				this.advance();
+				decorators.push(sign + ident.value);
+				continue;
+			}
+			break;
 		}
 		return decorators;
 	}
