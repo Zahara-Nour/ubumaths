@@ -22,7 +22,7 @@ import type { ChoreographyRegistry } from './types';
 import { VOIES_MEDIATRICE_EUCLIDE } from './mediatrice';
 import { VOIES_BISSECTRICE_EUCLIDE } from './bissectrice';
 import { VOIES_PARALLELE_EUCLIDE } from './parallele';
-import { VOIES_PERPENDICULAIRE_EUCLIDE } from './perpendiculaire';
+import { VOIES_PERPENDICULAIRE_EUCLIDE, VOIES_PERPENDICULAIRE_EQUERRE } from './perpendiculaire';
 import { VOIES_CERCLE_CIRCONSCRIT_EUCLIDE } from './cercle_circonscrit';
 import { VOIES_TRANSPORTE_EUCLIDE } from './transporte';
 
@@ -48,7 +48,7 @@ export const REGISTRY: ChoreographyRegistry = {
 	perpendiculaire: {
 		direct: undefined,
 		euclide: VOIES_PERPENDICULAIRE_EUCLIDE,
-		equerre: undefined,
+		equerre: VOIES_PERPENDICULAIRE_EQUERRE,
 		mesure: undefined
 	},
 	cercle_circonscrit: {

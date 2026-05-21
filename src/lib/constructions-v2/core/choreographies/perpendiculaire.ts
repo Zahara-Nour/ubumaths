@@ -914,8 +914,238 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 	};
 }
 
+/**
+ * Voie sous `@equerre` : tracé direct à l'équerre.
+ *
+ * Sub-step layout (2 sub-steps) :
+ *   SS1 — instrument-position : l'équerre apparaît positionnée avec son
+ *         bord droit sur (AB), le coin (angle droit) au pied F de la
+ *         perpendiculaire issue de P, le bord vertical pointant vers P.
+ *   SS2 — ruler-trace : le crayon trace la perpendiculaire le long du
+ *         bord vertical de l'équerre.
+ *
+ * Positionnement de l'équerre :
+ * - Coin (origine locale) = F = projection de P sur (AB).
+ * - Rotation = angle de u_AB si P est du côté `n_ccw` de (AB), sinon
+ *   `angle(u_AB) + 180°` pour que le bord vertical de l'équerre pointe
+ *   vers P (l'équerre n'a pas de flip horizontal).
+ */
+function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
+	const { figure, args, principalId } = ctx;
+	const [Pid, Aid, Bid] = args.ids;
+	const [P, A, B] = args.coords;
+
+	figure.hideElement(principalId);
+
+	// ─── Initial values ───
+	const ABx = B.x - A.x;
+	const ABy = B.y - A.y;
+	const ABlen0 = Math.hypot(ABx, ABy);
+	const ux0 = ABx / ABlen0;
+	const uy0 = ABy / ABlen0;
+	// n_ccw = (-uy, ux). dPerp = (A − P) · n_ccw.
+	const dPerp0 = -(A.x - P.x) * uy0 + (A.y - P.y) * ux0;
+	const Fx0 = P.x - dPerp0 * uy0;
+	const Fy0 = P.y + dPerp0 * ux0;
+	const uAngleDeg = (Math.atan2(uy0, ux0) * 180) / Math.PI;
+	// Si dPerp > 0, P est du côté CW de u_AB ; flip 180° pour orienter le
+	// bord vertical de l'équerre vers P.
+	const setSquareRotation = dPerp0 > 0 ? uAngleDeg + 180 : uAngleDeg;
+	// Trace length : étendre la perpendiculaire suffisamment de chaque
+	// côté du pied F pour couvrir P et au-delà. Le crayon est positionné
+	// automatiquement par l'executor au début du segment-trace.
+	const traceLen0 = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT, Math.abs(dPerp0) * 2.4);
+
+	// ─── Reactive scalars ───
+	const Px = figure.createScalarCoordinate(Pid, 'x');
+	const Py = figure.createScalarCoordinate(Pid, 'y');
+	const Ax = figure.createScalarCoordinate(Aid, 'x');
+	const Ay = figure.createScalarCoordinate(Aid, 'y');
+	const Bx = figure.createScalarCoordinate(Bid, 'x');
+	const By = figure.createScalarCoordinate(Bid, 'y');
+
+	const dABScalar = figure.createScalarDistance(Aid, Bid);
+	const uxScalar = figure.createScalarExpression(
+		(vals) => {
+			const len = Math.max(vals.get(dABScalar) ?? 1, 1e-12);
+			return ((vals.get(Bx) ?? 0) - (vals.get(Ax) ?? 0)) / len;
+		},
+		[Ax, Bx, dABScalar]
+	);
+	const uyScalar = figure.createScalarExpression(
+		(vals) => {
+			const len = Math.max(vals.get(dABScalar) ?? 1, 1e-12);
+			return ((vals.get(By) ?? 0) - (vals.get(Ay) ?? 0)) / len;
+		},
+		[Ay, By, dABScalar]
+	);
+	const dPerpScalar = figure.createScalarExpression(
+		(vals) =>
+			-((vals.get(Ax) ?? 0) - (vals.get(Px) ?? 0)) * (vals.get(uyScalar) ?? 0) +
+			((vals.get(Ay) ?? 0) - (vals.get(Py) ?? 0)) * (vals.get(uxScalar) ?? 0),
+		[Ax, Ay, Px, Py, uxScalar, uyScalar]
+	);
+	const FxScalar = figure.createScalarExpression(
+		(vals) => (vals.get(Px) ?? 0) - (vals.get(dPerpScalar) ?? 0) * (vals.get(uyScalar) ?? 0),
+		[Px, dPerpScalar, uyScalar]
+	);
+	const FyScalar = figure.createScalarExpression(
+		(vals) => (vals.get(Py) ?? 0) + (vals.get(dPerpScalar) ?? 0) * (vals.get(uxScalar) ?? 0),
+		[Py, dPerpScalar, uxScalar]
+	);
+	// F as a computed point — exposed as charnière (pied de la perpendiculaire).
+	const F = figure.createComputedPoint({ scalarRef: FxScalar }, { scalarRef: FyScalar });
+	figure.hideElement(F);
+
+	// Direction F→P pour le segment-trace.
+	const PFxScalar = figure.createScalarExpression(
+		(vals) => (vals.get(Px) ?? 0) - (vals.get(FxScalar) ?? 0),
+		[Px, FxScalar]
+	);
+	const PFyScalar = figure.createScalarExpression(
+		(vals) => (vals.get(Py) ?? 0) - (vals.get(FyScalar) ?? 0),
+		[Py, FyScalar]
+	);
+	const PFlenScalar = figure.createScalarExpression(
+		(vals) => Math.hypot(vals.get(PFxScalar) ?? 0, vals.get(PFyScalar) ?? 0),
+		[PFxScalar, PFyScalar]
+	);
+	const dirFPxScalar = figure.createScalarExpression(
+		(vals) => {
+			const len = vals.get(PFlenScalar) ?? 0;
+			return len > 1e-12 ? (vals.get(PFxScalar) ?? 0) / len : -(vals.get(uyScalar) ?? 0);
+		},
+		[PFxScalar, PFlenScalar, uyScalar]
+	);
+	const dirFPyScalar = figure.createScalarExpression(
+		(vals) => {
+			const len = vals.get(PFlenScalar) ?? 0;
+			return len > 1e-12 ? (vals.get(PFyScalar) ?? 0) / len : (vals.get(uxScalar) ?? 0);
+		},
+		[PFyScalar, PFlenScalar, uxScalar]
+	);
+	const halfTraceScalar = figure.createScalarExpression(
+		(vals) =>
+			Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, Math.abs(vals.get(dPerpScalar) ?? 0) * 1.2),
+		[dPerpScalar]
+	);
+	const Iext1xScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(FxScalar) ?? 0) - (vals.get(dirFPxScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
+		[FxScalar, dirFPxScalar, halfTraceScalar]
+	);
+	const Iext1yScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(FyScalar) ?? 0) - (vals.get(dirFPyScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
+		[FyScalar, dirFPyScalar, halfTraceScalar]
+	);
+	const Iext2xScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(FxScalar) ?? 0) + (vals.get(dirFPxScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
+		[FxScalar, dirFPxScalar, halfTraceScalar]
+	);
+	const Iext2yScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(FyScalar) ?? 0) + (vals.get(dirFPyScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
+		[FyScalar, dirFPyScalar, halfTraceScalar]
+	);
+	const Iext1 = figure.createComputedPoint(
+		{ scalarRef: Iext1xScalar },
+		{ scalarRef: Iext1yScalar }
+	);
+	figure.hideElement(Iext1);
+	const Iext2 = figure.createComputedPoint(
+		{ scalarRef: Iext2xScalar },
+		{ scalarRef: Iext2yScalar }
+	);
+	figure.hideElement(Iext2);
+	const segmentTrace = figure.createSegment(Iext1, Iext2);
+	figure.hideElement(segmentTrace);
+
+	// ─── Sub-steps ───
+	const subSteps: SubStep[] = [
+		// SS1 : équerre se positionne (slide depuis off-screen jusqu'à F).
+		// Kind `compass-measure` = move + pause sans tracé (semantique
+		// générique « instrument se positionne »).
+		{
+			kind: 'compass-measure',
+			instrument: 'setSquare',
+			instrumentTarget: { x: Fx0, y: Fy0, rotation: setSquareRotation },
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction:
+				"On pose l'équerre avec son bord sur (AB), le sommet au pied de la perpendiculaire issue de P"
+		},
+		// SS2 : crayon trace le long du bord vertical de l'équerre.
+		{
+			kind: 'ruler-trace',
+			instrument: 'setSquare',
+			secondaryInstrument: 'pencil',
+			instrumentTarget: { x: Fx0, y: Fy0, rotation: setSquareRotation },
+			geometricDistance: traceLen0,
+			animateDrawableIds: [segmentTrace],
+			animatePointIds: [],
+			animateLineIds: [principalId],
+			instruction: "Le long du bord vertical de l'équerre, on trace la perpendiculaire"
+		}
+	];
+
+	return {
+		subSteps,
+		produced: {
+			principal: principalId,
+			// F = pied de la perpendiculaire (visible en @squelette).
+			charnieres: [F],
+			// Segment-trace (visible en @complet).
+			traces: [segmentTrace],
+			hiddenSupport: [
+				Iext1,
+				Iext2,
+				Px,
+				Py,
+				Ax,
+				Ay,
+				Bx,
+				By,
+				dABScalar,
+				uxScalar,
+				uyScalar,
+				dPerpScalar,
+				FxScalar,
+				FyScalar,
+				PFxScalar,
+				PFyScalar,
+				PFlenScalar,
+				dirFPxScalar,
+				dirFPyScalar,
+				halfTraceScalar,
+				Iext1xScalar,
+				Iext1yScalar,
+				Iext2xScalar,
+				Iext2yScalar
+			]
+		}
+	};
+}
+
 const arcsEgauxChoreography: ChoreographyFn = (ctx) => buildArcsEgaux(ctx);
 const rayonLibreChoreography: ChoreographyFn = (ctx) => buildRayonLibre(ctx);
+const equerreChoreography: ChoreographyFn = (ctx) => buildEquerre(ctx);
+
+export const VOIES_PERPENDICULAIRE_EQUERRE: readonly Voie[] = [
+	{
+		id: 'pose_equerre',
+		nom_humain: "Tracé à l'équerre",
+		source: 'Construction directe',
+		description:
+			"On pose l'équerre avec son bord sur `(AB)`, le sommet de l'angle droit positionné au pied de la perpendiculaire issue de `P`. Le crayon trace ensuite la perpendiculaire le long du bord vertical de l'équerre.",
+		defaut: true,
+		choreography: equerreChoreography
+	}
+];
 
 export const VOIES_PERPENDICULAIRE_EUCLIDE: readonly Voie[] = [
 	{
