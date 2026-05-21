@@ -524,6 +524,67 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		}
 	});
 
+	it('perpendiculaire @euclide expands into 7 sub-step entries (via ctx.sub)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = perpendiculaire(P, A, B) @euclide'
+			].join('\n')
+		);
+		// 3 point statements + 7 sub-steps for the decorated perpendiculaire = 10 entries.
+		// 7 sub-steps : 1 (compass at P) + 1 (A',B' fade-in) + 4 (sub-mediatrice) + 1 (m fade-in).
+		expect(exec.totalSteps).toBe(10);
+		expect(exec.loadError).toBeNull();
+	});
+
+	it('perpendiculaire @euclide sub-step kinds follow expected composition', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = perpendiculaire(P, A, B) @euclide'
+			].join('\n')
+		);
+		// Skip the 3 plain statements.
+		for (let i = 0; i < 3; i++) exec.step();
+		const kinds: string[] = [];
+		for (let i = 0; i < 7; i++) {
+			exec.step();
+			kinds.push(exec.currentSubStep?.kind ?? 'null');
+		}
+		expect(kinds).toEqual([
+			'compass-draw', // SS1 : arc at P
+			'point-fade-in', // SS2 : A', B' fade-in
+			// sub-mediatrice(A', B') : 4 sub-steps
+			'compass-draw', // SS3 : sub's compass at A'
+			'compass-draw', // SS4 : sub's compass at B'
+			'point-fade-in', // SS5 : sub's I1, I2 fade-in
+			'ruler-trace', // SS6 : sub's ruler trace
+			// Parent's reveal
+			'line-fade-in' // SS7 : the perpendicular line m
+		]);
+	});
+
+	it('perpendiculaire @euclide handles P on (AB) (degenerate distance = 0)', () => {
+		const exec = new ConstructionExecutor();
+		// P at midpoint of AB → P ∈ (AB), distance = 0.
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 0)',
+				'd = perpendiculaire(P, A, B) @euclide'
+			].join('\n')
+		);
+		expect(exec.loadError).toBeNull();
+		expect(exec.totalSteps).toBe(10);
+	});
+
 	it('double_perpendiculaire voie remains NOT_YET_IMPLEMENTED (fallback legacy)', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
