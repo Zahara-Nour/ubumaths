@@ -159,3 +159,92 @@ describe('ConstructionExecutor — visibility wiring', () => {
 		}
 	});
 });
+
+describe('applyFinalVisibility — tag modifiers (Design C)', () => {
+	it('@complet @sans_arcs hides traces tagged arc, keeps others', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = parallele(P, A, B) @equerre @complet @sans_arcs'
+			].join('\n')
+		);
+		exec.executeAll();
+		exec.step();
+		const result = exec.lastChoreographyResult;
+		expect(result).not.toBeNull();
+		// parallele @equerre has segment-traces and markers but no arcs ;
+		// `@sans_arcs` is a no-op here. Everything still visible.
+		for (const id of result!.produced.traces) {
+			expect(exec.figure.getElementById(id)?.visible).toBe(true);
+		}
+	});
+
+	it('@complet @sans_marqueurs hides only the marker traces', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = parallele(P, A, B) @equerre @complet @sans_marqueurs'
+			].join('\n')
+		);
+		exec.executeAll();
+		exec.step();
+		const result = exec.lastChoreographyResult;
+		const tags = result!.produced.traceTags!;
+		for (const id of result!.produced.traces) {
+			const tag = tags.get(id);
+			const visible = exec.figure.getElementById(id)?.visible;
+			if (tag === 'marker') expect(visible).toBe(false);
+			else expect(visible).toBe(true);
+		}
+	});
+
+	it('@squelette @avec_marqueurs shows ONLY markers among traces', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = parallele(P, A, B) @equerre @squelette @avec_marqueurs'
+			].join('\n')
+		);
+		exec.executeAll();
+		exec.step();
+		const result = exec.lastChoreographyResult;
+		const tags = result!.produced.traceTags!;
+		for (const id of result!.produced.traces) {
+			const tag = tags.get(id);
+			const visible = exec.figure.getElementById(id)?.visible;
+			if (tag === 'marker') expect(visible).toBe(true);
+			else expect(visible).toBe(false);
+		}
+		// Charnières still visible (squelette behavior preserved).
+		for (const id of result!.produced.charnieres) {
+			expect(exec.figure.getElementById(id)?.visible).toBe(true);
+		}
+	});
+
+	it('@complet @sans_arcs @avec_arcs cancels out (last wins for same tag)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'd = mediatrice(A, B) @euclide @complet @sans_arcs @avec_arcs'
+			].join('\n')
+		);
+		exec.executeAll();
+		exec.step();
+		const result = exec.lastChoreographyResult;
+		// All 4 arcs visible (avec_arcs is the last modifier for tag 'arc').
+		for (const id of result!.produced.traces) {
+			expect(exec.figure.getElementById(id)?.visible).toBe(true);
+		}
+	});
+});

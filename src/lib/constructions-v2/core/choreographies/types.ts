@@ -34,6 +34,15 @@ export interface DecoratorTriple {
 	/** null = use the `defaut: true` voie of the registry for this (builtin, contrainte). */
 	readonly methode: string | null;
 	readonly visibilite: Visibilite;
+	/**
+	 * Per-tag include/exclude overrides applied on top of the base
+	 * `visibilite` (Design C : orthogonal modifiers). Captured by the DSL
+	 * resolver from `@avec_X` / `@sans_X` decorators. When `true`, the
+	 * matching trace category is shown ; when `false`, hidden. Tags not
+	 * present in the map fall back to the default for the base mode
+	 * (`@complet` = all visible, `@epure`/`@squelette` = all hidden).
+	 */
+	readonly tagModifiers?: ReadonlyMap<TraceTag, boolean>;
 }
 
 /**

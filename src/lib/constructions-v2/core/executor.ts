@@ -29,7 +29,6 @@ import { resolveDecorators, lookupVoie, DecoratorResolveError } from './choreogr
 import type {
 	DecoratorTriple,
 	Voie,
-	Visibilite,
 	ChoreographyCtx,
 	ChoreographyResult,
 	ChoreographyProduced,
@@ -184,8 +183,10 @@ export class ConstructionExecutor {
 	 * (or when `step()` returns false) so the user sees the final
 	 * construction state after the last sub-step's animation completes.
 	 */
-	private _pendingVisibility: { produced: ChoreographyProduced; visibilite: Visibilite } | null =
-		null;
+	private _pendingVisibility: {
+		produced: ChoreographyProduced;
+		triple: DecoratorTriple;
+	} | null = null;
 
 	/** Load a DSL script and prepare for stepping. */
 	load(script: string): void {
@@ -311,7 +312,7 @@ export class ConstructionExecutor {
 		) {
 			this._pendingVisibility = {
 				produced: this._lastChoreographyResult.produced,
-				visibilite: entry.decoratorTriple.visibilite
+				triple: entry.decoratorTriple
 			};
 		}
 		return true;
@@ -323,7 +324,7 @@ export class ConstructionExecutor {
 		applyFinalVisibility(
 			this.stepper.figure,
 			this._pendingVisibility.produced,
-			this._pendingVisibility.visibilite
+			this._pendingVisibility.triple
 		);
 		this._pendingVisibility = null;
 	}
