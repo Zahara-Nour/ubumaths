@@ -26,6 +26,10 @@ const EQUERRE_HORIZONTAL_MATH_UNITS = 3;
 // Overlap of the ruler over the already-traced portion (same as
 // perpendiculaire @equerre).
 const RULER_OVERLAP_MATH_UNITS = 2;
+// Ruler body thickness in math units. Ruler component renders at
+// WIDTH = 57 SVG pixels ; at PPU 40 that's ≈ 1.425. We use 1.5 to
+// guarantee a tiny gap between the guide-ruler and the équerre body.
+const RULER_WIDTH_MATH_UNITS = 1.5;
 
 /**
  * `parallele @euclide @parallelogramme` choreography (Euclid I.31).
@@ -409,17 +413,26 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	const dPerp0 = -(A.x - P.x) * uy0 + (A.y - P.y) * ux0;
 	const uAngleDeg = (Math.atan2(uy0, ux0) * 180) / Math.PI;
 	const setSquareRotation = dPerp0 > 0 ? uAngleDeg + 180 : uAngleDeg;
-	// Slide vector (perpendicular to (AB), toward P).
-	// slide = -dPerp × n_ccw = -dPerp × (-uy, ux) = (dPerp·uy, -dPerp·ux).
-	const slideVecX0 = dPerp0 * uy0;
-	const slideVecY0 = -dPerp0 * ux0;
-	const Cfinal_x0 = A.x + slideVecX0;
-	const Cfinal_y0 = A.y + slideVecY0;
 	// Horizontal-edge direction after rotation : -sign(dPerp) × u_AB
 	// (= +u_AB if dPerp < 0, -u_AB if dPerp > 0).
 	const hEdgeSign0 = dPerp0 > 0 ? -1 : 1;
 	const hEdgeDirX0 = hEdgeSign0 * ux0;
 	const hEdgeDirY0 = hEdgeSign0 * uy0;
+	// Projection F of P on (AB).
+	const proj0 = (P.x - A.x) * ux0 + (P.y - A.y) * uy0;
+	const Fx0 = A.x + proj0 * ux0;
+	const Fy0 = A.y + proj0 * uy0;
+	// Équerre's initial corner : near F (projection of P on (AB)), shifted
+	// half a horizontal-edge length so that P ends up roughly centered on
+	// the trace after the perpendicular slide.
+	const equerreInitialX0 = Fx0 - (EQUERRE_HORIZONTAL_MATH_UNITS / 2) * hEdgeDirX0;
+	const equerreInitialY0 = Fy0 - (EQUERRE_HORIZONTAL_MATH_UNITS / 2) * hEdgeDirY0;
+	// Slide vector (perpendicular to (AB), toward P).
+	// slide = -dPerp × n_ccw = -dPerp × (-uy, ux) = (dPerp·uy, -dPerp·ux).
+	const slideVecX0 = dPerp0 * uy0;
+	const slideVecY0 = -dPerp0 * ux0;
+	const Cfinal_x0 = equerreInitialX0 + slideVecX0;
+	const Cfinal_y0 = equerreInitialY0 + slideVecY0;
 
 	// ─── Reactive scalars ───
 	const Px = figure.createScalarCoordinate(Pid, 'x');
@@ -450,20 +463,6 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 			((vals.get(Ay) ?? 0) - (vals.get(Py) ?? 0)) * (vals.get(uxScalar) ?? 0),
 		[Ax, Ay, Px, Py, uxScalar, uyScalar]
 	);
-	// C_final = A + (dPerp·uy, -dPerp·ux).
-	const CfinalXScalar = figure.createScalarExpression(
-		(vals) => (vals.get(Ax) ?? 0) + (vals.get(dPerpScalar) ?? 0) * (vals.get(uyScalar) ?? 0),
-		[Ax, dPerpScalar, uyScalar]
-	);
-	const CfinalYScalar = figure.createScalarExpression(
-		(vals) => (vals.get(Ay) ?? 0) - (vals.get(dPerpScalar) ?? 0) * (vals.get(uxScalar) ?? 0),
-		[Ay, dPerpScalar, uxScalar]
-	);
-	const Cfinal = figure.createComputedPoint(
-		{ scalarRef: CfinalXScalar },
-		{ scalarRef: CfinalYScalar }
-	);
-	figure.hideElement(Cfinal);
 	// Horizontal-edge direction (sign flips if équerre is flipped).
 	const hEdgeDirXScalar = figure.createScalarExpression(
 		(vals) => {
@@ -481,6 +480,55 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 		},
 		[dPerpScalar, uyScalar]
 	);
+	// Projection F = A + ((P − A) · u_AB) × u_AB.
+	const projScalar = figure.createScalarExpression(
+		(vals) => {
+			const apx = (vals.get(Px) ?? 0) - (vals.get(Ax) ?? 0);
+			const apy = (vals.get(Py) ?? 0) - (vals.get(Ay) ?? 0);
+			return apx * (vals.get(uxScalar) ?? 0) + apy * (vals.get(uyScalar) ?? 0);
+		},
+		[Px, Py, Ax, Ay, uxScalar, uyScalar]
+	);
+	const FxScalar = figure.createScalarExpression(
+		(vals) => (vals.get(Ax) ?? 0) + (vals.get(projScalar) ?? 0) * (vals.get(uxScalar) ?? 0),
+		[Ax, projScalar, uxScalar]
+	);
+	const FyScalar = figure.createScalarExpression(
+		(vals) => (vals.get(Ay) ?? 0) + (vals.get(projScalar) ?? 0) * (vals.get(uyScalar) ?? 0),
+		[Ay, projScalar, uyScalar]
+	);
+	// equerreInitial = F − (LARGEUR/2) × hEdgeDir.
+	const equerreInitialXScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(FxScalar) ?? 0) -
+			(EQUERRE_HORIZONTAL_MATH_UNITS / 2) * (vals.get(hEdgeDirXScalar) ?? 0),
+		[FxScalar, hEdgeDirXScalar]
+	);
+	const equerreInitialYScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(FyScalar) ?? 0) -
+			(EQUERRE_HORIZONTAL_MATH_UNITS / 2) * (vals.get(hEdgeDirYScalar) ?? 0),
+		[FyScalar, hEdgeDirYScalar]
+	);
+	// C_final = equerreInitial + slide_vec.
+	// slide = -dPerp × n_ccw = (dPerp·uy, -dPerp·ux).
+	const CfinalXScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(equerreInitialXScalar) ?? 0) +
+			(vals.get(dPerpScalar) ?? 0) * (vals.get(uyScalar) ?? 0),
+		[equerreInitialXScalar, dPerpScalar, uyScalar]
+	);
+	const CfinalYScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(equerreInitialYScalar) ?? 0) -
+			(vals.get(dPerpScalar) ?? 0) * (vals.get(uxScalar) ?? 0),
+		[equerreInitialYScalar, dPerpScalar, uxScalar]
+	);
+	const Cfinal = figure.createComputedPoint(
+		{ scalarRef: CfinalXScalar },
+		{ scalarRef: CfinalYScalar }
+	);
+	figure.hideElement(Cfinal);
 
 	// ─── Segment-trace 1 : portion inside the équerre (along horizontal edge) ───
 	const trace1EndxScalar = figure.createScalarExpression(
@@ -533,9 +581,13 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	const trace1Len0 = EQUERRE_HORIZONTAL_MATH_UNITS;
 	const trace2Len0 = Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, Math.abs(dPerp0) * 1.2);
 	// Slide-guide ruler position : laid against the équerre's vertical
-	// edge at A. Origin = A, rotation = équerre's vertical-edge direction
-	// (= setSquareRotation + 90°). This ruler stays in place during the
-	// equerre slide (SS3) and serves as the visual slide track.
+	// edge at equerreInitial, but SHIFTED away from the équerre's body
+	// (in -hEdgeDir direction by RULER_WIDTH_MATH_UNITS) so the ruler's
+	// body sits next to the équerre rather than overlapping with it.
+	// Rotation = équerre's vertical-edge direction (= setSquareRotation
+	// + 90°). The ruler stays in place during the equerre slide (SS3).
+	const guideRulerOriginX0 = equerreInitialX0 - hEdgeDirX0 * RULER_WIDTH_MATH_UNITS;
+	const guideRulerOriginY0 = equerreInitialY0 - hEdgeDirY0 * RULER_WIDTH_MATH_UNITS;
 	const guideRulerRotationDeg = setSquareRotation + 90;
 	// Parallel-aligned ruler position (for SS5/SS6 extension) : origin
 	// offset from C_final toward trace1 by RULER_OVERLAP, rotation
@@ -546,27 +598,39 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 
 	// ─── Sub-steps ───
 	const subSteps: SubStep[] = [
-		// SS1 : pose de l'équerre — coin sur A, bord horizontal aligné
-		// avec (AB), bord vertical pointant vers P.
+		// SS1 : pose de l'équerre — coin près du projeté F de P sur (AB)
+		// (décalé d'une demi-LARGEUR pour centrer P sur le tracé après
+		// glissement). Bord horizontal aligné avec (AB), bord vertical
+		// pointant vers P.
 		{
 			kind: 'compass-measure',
 			instrument: 'setSquare',
-			instrumentTarget: { x: A.x, y: A.y, rotation: setSquareRotation },
+			instrumentTarget: {
+				x: equerreInitialX0,
+				y: equerreInitialY0,
+				rotation: setSquareRotation
+			},
 			compassRadius: 0,
 			geometricDistance: 0,
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "On pose l'équerre avec son bord horizontal sur (AB), le coin sur A"
+			instruction:
+				"On pose l'équerre avec son bord horizontal sur (AB), près du projeté de P sur (AB)"
 		},
-		// SS2 : on pose la règle contre le bord vertical de l'équerre :
-		// elle servira de glissière pour le déplacement perpendiculaire.
+		// SS2 : on pose la règle contre le bord vertical de l'équerre
+		// (décalée de RULER_WIDTH pour ne pas la chevaucher) — elle
+		// servira de glissière pour le déplacement perpendiculaire.
 		// `secondaryInstrument: 'setSquare'` garde l'équerre visible.
 		{
 			kind: 'compass-measure',
 			instrument: 'ruler',
 			secondaryInstrument: 'setSquare',
-			instrumentTarget: { x: A.x, y: A.y, rotation: guideRulerRotationDeg },
+			instrumentTarget: {
+				x: guideRulerOriginX0,
+				y: guideRulerOriginY0,
+				rotation: guideRulerRotationDeg
+			},
 			compassRadius: 0,
 			geometricDistance: 0,
 			animateDrawableIds: [],
@@ -649,6 +713,11 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 				uxScalar,
 				uyScalar,
 				dPerpScalar,
+				projScalar,
+				FxScalar,
+				FyScalar,
+				equerreInitialXScalar,
+				equerreInitialYScalar,
 				CfinalXScalar,
 				CfinalYScalar,
 				hEdgeDirXScalar,

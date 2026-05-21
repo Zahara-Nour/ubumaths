@@ -708,21 +708,27 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		);
 		// Skip the 3 plain statements.
 		for (let i = 0; i < 3; i++) exec.step();
-		// SS1 : setSquare positions at A.
+		// Geometry: u_AB=(1,0), dPerp=-3 (P CCW), F=(2,0) (projection of P).
+		// equerreInitial = F - (LARGEUR/2)·hEdgeDir = (2 - 1.5, 0) = (0.5, 0).
+		// C_final = equerreInitial + slide_vec = (0.5, 0) + (0, 3) = (0.5, 3).
+		// SS1 : setSquare positions at equerreInitial.
 		exec.step();
 		expect(exec.currentSubStep?.instrument).toBe('setSquare');
-		expect(exec.currentSubStep?.instrumentTarget?.x).toBe(0); // A.x
+		expect(exec.currentSubStep?.instrumentTarget?.x).toBeCloseTo(0.5);
+		expect(exec.currentSubStep?.instrumentTarget?.y).toBeCloseTo(0);
 		// SS2 : ruler positions against setSquare, secondary keeps setSquare visible.
+		// Guide ruler origin shifted by -hEdgeDir × RULER_WIDTH = -1.5 in u_AB.
+		// = (0.5 - 1.5, 0) = (-1, 0).
 		exec.step();
 		expect(exec.currentSubStep?.instrument).toBe('ruler');
 		expect(exec.currentSubStep?.secondaryInstrument).toBe('setSquare');
+		expect(exec.currentSubStep?.instrumentTarget?.x).toBeCloseTo(-1);
 		// SS3 : setSquare slides, secondary keeps ruler visible as a guide.
-		// dPerp = -3, slide_vec = (0, 3), C_final = (0, 3).
 		exec.step();
 		expect(exec.currentSubStep?.instrument).toBe('setSquare');
 		expect(exec.currentSubStep?.secondaryInstrument).toBe('ruler');
-		expect(exec.currentSubStep?.instrumentTarget?.x).toBe(0);
-		expect(exec.currentSubStep?.instrumentTarget?.y).toBe(3);
+		expect(exec.currentSubStep?.instrumentTarget?.x).toBeCloseTo(0.5);
+		expect(exec.currentSubStep?.instrumentTarget?.y).toBeCloseTo(3);
 		// SS4 : setSquare + pencil for partial trace.
 		exec.step();
 		expect(exec.currentSubStep?.instrument).toBe('setSquare');
