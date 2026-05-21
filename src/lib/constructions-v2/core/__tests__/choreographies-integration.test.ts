@@ -613,6 +613,65 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		expect(exec.totalSteps).toBe(10);
 	});
 
+	it('perpendiculaire @equerre expands into 2 sub-step entries', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = perpendiculaire(P, A, B) @equerre'
+			].join('\n')
+		);
+		// 3 point statements + 2 sub-steps (setSquare positions, then trace) = 5 entries.
+		expect(exec.totalSteps).toBe(5);
+		expect(exec.loadError).toBeNull();
+	});
+
+	it('perpendiculaire @equerre sub-step kinds follow expected composition', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = perpendiculaire(P, A, B) @equerre'
+			].join('\n')
+		);
+		// Skip the 3 plain statements.
+		for (let i = 0; i < 3; i++) exec.step();
+		const kinds: string[] = [];
+		for (let i = 0; i < 2; i++) {
+			exec.step();
+			kinds.push(exec.currentSubStep?.kind ?? 'null');
+		}
+		expect(kinds).toEqual([
+			'compass-measure', // SS1 : setSquare positions on (AB) at foot F (no draw)
+			'ruler-trace' // SS2 : pencil traces along setSquare's vertical edge
+		]);
+	});
+
+	it('perpendiculaire @equerre uses setSquare as primary instrument', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(
+			[
+				'A = point(0, 0)',
+				'B = point(4, 0)',
+				'P = point(2, 3)',
+				'd = perpendiculaire(P, A, B) @equerre'
+			].join('\n')
+		);
+		// Skip the 3 plain statements.
+		for (let i = 0; i < 3; i++) exec.step();
+		// SS1 : setSquare positions.
+		exec.step();
+		expect(exec.currentSubStep?.instrument).toBe('setSquare');
+		// SS2 : setSquare + pencil for trace.
+		exec.step();
+		expect(exec.currentSubStep?.instrument).toBe('setSquare');
+		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
+	});
+
 	it('double_perpendiculaire voie remains NOT_YET_IMPLEMENTED (fallback legacy)', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
