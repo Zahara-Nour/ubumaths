@@ -17,7 +17,7 @@ function run(script: string): ConstructionExecutor {
 }
 
 describe('transporte @euclide — 4 modes de direction', () => {
-	it('default direction (axe Ox) produit 6 sub-steps', () => {
+	it('default direction (axe Ox) produit 7 sub-steps', () => {
 		const exec = run(
 			[
 				'A = point(3, 0)',
@@ -28,11 +28,11 @@ describe('transporte @euclide — 4 modes de direction', () => {
 				'be = transporte(al, Vp) @euclide'
 			].join('\n')
 		);
-		// 5 statements + 6 sub-steps = 11 entries.
-		expect(exec.totalSteps).toBe(11);
+		// 5 statements + 7 sub-steps = 12 entries.
+		expect(exec.totalSteps).toBe(12);
 	});
 
-	it('direction par point P (3e arg positionnel) produit 6 sub-steps', () => {
+	it('direction par point P (3e arg positionnel) produit 7 sub-steps', () => {
 		const exec = run(
 			[
 				'A = point(3, 0)',
@@ -44,10 +44,10 @@ describe('transporte @euclide — 4 modes de direction', () => {
 				'be = transporte(al, Vp, P) @euclide'
 			].join('\n')
 		);
-		expect(exec.totalSteps).toBe(12); // 6 stmts + 6 sub-steps
+		expect(exec.totalSteps).toBe(13); // 6 stmts + 7 sub-steps
 	});
 
-	it('direction par vecteur (vec=u) produit 6 sub-steps', () => {
+	it('direction par vecteur (vec=u) produit 7 sub-steps', () => {
 		const exec = run(
 			[
 				'A = point(3, 0)',
@@ -61,10 +61,10 @@ describe('transporte @euclide — 4 modes de direction', () => {
 				'be = transporte(al, Vp, vec=u) @euclide'
 			].join('\n')
 		);
-		expect(exec.totalSteps).toBe(14); // 8 stmts + 6 sub-steps
+		expect(exec.totalSteps).toBe(15); // 8 stmts + 7 sub-steps
 	});
 
-	it('direction par angle scalaire (angle=θ) produit 6 sub-steps', () => {
+	it('direction par angle scalaire (angle=θ) produit 7 sub-steps', () => {
 		const exec = run(
 			[
 				'A = point(3, 0)',
@@ -75,7 +75,7 @@ describe('transporte @euclide — 4 modes de direction', () => {
 				'be = transporte(al, Vp, angle=0.5) @euclide'
 			].join('\n')
 		);
-		expect(exec.totalSteps).toBe(11);
+		expect(exec.totalSteps).toBe(12);
 	});
 });
 
@@ -94,11 +94,11 @@ describe('transporte @euclide — cas dégénérés', () => {
 			].join('\n')
 		);
 		// La chorégraphie ne doit pas lever. totalSteps déterministe.
-		expect(exec.totalSteps).toBe(12);
+		expect(exec.totalSteps).toBe(13);
 		expect(exec.loadError).toBeNull();
 	});
 
-	it('α aigu (mesure ≈ 30°) : 6 sub-steps tous présents', () => {
+	it('α aigu (mesure ≈ 30°) : 7 sub-steps tous présents', () => {
 		const exec = run(
 			[
 				'A = point(2, 0)',
@@ -110,11 +110,11 @@ describe('transporte @euclide — cas dégénérés', () => {
 				'be = transporte(al, Vp) @euclide'
 			].join('\n')
 		);
-		expect(exec.totalSteps).toBe(11);
-		// Avancer jusqu'aux 6 sub-steps et vérifier la séquence.
+		expect(exec.totalSteps).toBe(12);
+		// Avancer jusqu'aux 7 sub-steps et vérifier la séquence.
 		for (let i = 0; i < 5; i++) exec.step();
 		const kinds: string[] = [];
-		for (let i = 0; i < 6; i++) {
+		for (let i = 0; i < 7; i++) {
 			exec.step();
 			kinds.push(exec.currentSubStep?.kind ?? 'null');
 		}
@@ -122,6 +122,7 @@ describe('transporte @euclide — cas dégénérés', () => {
 			'compass-draw',
 			'compass-draw',
 			'point-fade-in',
+			'compass-measure',
 			'compass-draw',
 			'point-fade-in',
 			'ruler-trace'
