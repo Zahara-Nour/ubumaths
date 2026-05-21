@@ -13,7 +13,7 @@ import { describe, it, expect } from 'vitest';
 import { parse } from '../parser';
 import { interpret } from '../interpreter';
 import { DslRuntimeError } from '../errors';
-import { isAngle, isFreePoint } from '../../types/elements';
+import { isAngle, isPointElement } from '../../types/elements';
 
 function run(script: string) {
 	const program = parse(script);
@@ -398,9 +398,12 @@ describe('transporte — sommet du nouveau GeoAngle', () => {
 		);
 		const cot1 = sym(r, 'c1')!;
 		const el = r.figure.getElementById(cot1.figureId!)!;
-		expect(isFreePoint(el)).toBe(true);
+		// Since 2026-05-21 : witnesses are computed points (reactive to α
+		// + V' + direction) instead of free points. Computed points are
+		// inherently non-draggable.
+		expect(isPointElement(el)).toBe(true);
+		expect(el.type).toBe('computedPoint');
 		expect(el.visible).toBe(false);
-		if (isFreePoint(el)) expect(el.draggable).toBe(false);
 	});
 
 	it("cote(transporte(α, V'), 2) renvoie un point synthétique invisible non-draggable", () => {
@@ -418,9 +421,10 @@ describe('transporte — sommet du nouveau GeoAngle', () => {
 		);
 		const cot2 = sym(r, 'c2')!;
 		const el = r.figure.getElementById(cot2.figureId!)!;
-		expect(isFreePoint(el)).toBe(true);
+		// See c1 test : computed points since 2026-05-21.
+		expect(isPointElement(el)).toBe(true);
+		expect(el.type).toBe('computedPoint');
 		expect(el.visible).toBe(false);
-		if (isFreePoint(el)) expect(el.draggable).toBe(false);
 	});
 });
 

@@ -3517,10 +3517,23 @@ const TRANSPORTE_FORMS = [
  * Priority : 3e positionnel point > vec= > angle= > défaut axe Ox.
  * Returns null on absence (only when no direction at all).
  */
+/**
+ * Resolve the unit direction vector at V' for `transporte()`.
+ *
+ * Returns reactive scalar ids for `dxScalarId` and `dyScalarId`, so the
+ * resulting transported angle β updates when V', the direction source
+ * (P / vec / angle), or α's underlying points move. Throws on degenerate
+ * inputs (P ≡ V', null vector, etc.) BEFORE creating scalars, so we never
+ * leave broken refs in the figure.
+ *
+ * Also returns the initial numeric `(dx0, dy0)` for the choreography's
+ * first-frame positioning helpers.
+ */
 function resolveTransporteDirection(
 	ctx: BuiltinCtx,
+	VprimeId: string,
 	VprimePos: { x: GeoValue; y: GeoValue }
-): { dx: number; dy: number } {
+): { dx0: number; dy0: number; dxScalarId: string; dyScalarId: string } {
 	const { pos, named, figure, line, angleMode } = ctx;
 
 	const hasPositionalP = pos.length >= 3;
@@ -3556,10 +3569,10 @@ function resolveTransporteDirection(
 				line
 			);
 		}
-		const ddx = geoToNumber(Ppos.x) - geoToNumber(VprimePos.x);
-		const ddy = geoToNumber(Ppos.y) - geoToNumber(VprimePos.y);
-		const norm = Math.hypot(ddx, ddy);
-		if (!Number.isFinite(norm) || norm < 1e-15) {
+		const ddx0 = geoToNumber(Ppos.x) - geoToNumber(VprimePos.x);
+		const ddy0 = geoToNumber(Ppos.y) - geoToNumber(VprimePos.y);
+		const norm0 = Math.hypot(ddx0, ddy0);
+		if (!Number.isFinite(norm0) || norm0 < 1e-15) {
 			throw new DslRuntimeError(
 				{
 					summary: "`transporte()` : direction nulle (`P` confondu avec `V'`).",
@@ -3569,7 +3582,27 @@ function resolveTransporteDirection(
 				line
 			);
 		}
-		return { dx: ddx / norm, dy: ddy / norm };
+		// Reactive direction : depends on V' and P coordinates.
+		const Vpxs = figure.createScalarCoordinate(VprimeId, 'x');
+		const Vpys = figure.createScalarCoordinate(VprimeId, 'y');
+		const Pxs = figure.createScalarCoordinate(Pid, 'x');
+		const Pys = figure.createScalarCoordinate(Pid, 'y');
+		const dPV = figure.createScalarDistance(VprimeId, Pid);
+		const dxScalarId = figure.createScalarExpression(
+			(vals) => {
+				const n = Math.max(vals.get(dPV) ?? 1, 1e-12);
+				return ((vals.get(Pxs) ?? 0) - (vals.get(Vpxs) ?? 0)) / n;
+			},
+			[Vpxs, Pxs, dPV]
+		);
+		const dyScalarId = figure.createScalarExpression(
+			(vals) => {
+				const n = Math.max(vals.get(dPV) ?? 1, 1e-12);
+				return ((vals.get(Pys) ?? 0) - (vals.get(Vpys) ?? 0)) / n;
+			},
+			[Vpys, Pys, dPV]
+		);
+		return { dx0: ddx0 / norm0, dy0: ddy0 / norm0, dxScalarId, dyScalarId };
 	}
 
 	// Mode 2 : vec=v → direction = unit(v).
@@ -3585,10 +3618,10 @@ function resolveTransporteDirection(
 				line
 			);
 		}
-		const vdx = geoToNumber(comp.dx);
-		const vdy = geoToNumber(comp.dy);
-		const norm = Math.hypot(vdx, vdy);
-		if (!Number.isFinite(norm) || norm < 1e-15) {
+		const vdx0 = geoToNumber(comp.dx);
+		const vdy0 = geoToNumber(comp.dy);
+		const norm0 = Math.hypot(vdx0, vdy0);
+		if (!Number.isFinite(norm0) || norm0 < 1e-15) {
 			throw new DslRuntimeError(
 				{
 					summary: '`transporte()` : vecteur direction de norme nulle.',
@@ -3598,18 +3631,44 @@ function resolveTransporteDirection(
 				line
 			);
 		}
-		return { dx: vdx / norm, dy: vdy / norm };
+		// Reactive direction via vector's reactive components.
+		// We use a closure over `figure.getVectorComponents` so the scalar
+		// re-reads at each compute pass.
+		const vxComp = figure.createScalarExpression(() => {
+			const c = figure.getVectorComponents(vId);
+			if (!c) return 0;
+			const dx = geoToNumber(c.dx);
+			const dy = geoToNumber(c.dy);
+			const n = Math.hypot(dx, dy);
+			return n > 1e-12 ? dx / n : 0;
+		}, [vId]);
+		const vyComp = figure.createScalarExpression(() => {
+			const c = figure.getVectorComponents(vId);
+			if (!c) return 0;
+			const dx = geoToNumber(c.dx);
+			const dy = geoToNumber(c.dy);
+			const n = Math.hypot(dx, dy);
+			return n > 1e-12 ? dy / n : 0;
+		}, [vId]);
+		return { dx0: vdx0 / norm0, dy0: vdy0 / norm0, dxScalarId: vxComp, dyScalarId: vyComp };
 	}
 
 	// Mode 3 : angle=θ → direction = (cos θ, sin θ) en mode courant.
 	if (hasAngle) {
 		const thetaRaw = requireNumber(named.get('angle')!, 'angle', line);
 		const rad = toRadians(thetaRaw, angleMode);
-		return { dx: Math.cos(rad), dy: Math.sin(rad) };
+		// Static direction : constant scalar (no deps).
+		const cosVal = Math.cos(rad);
+		const sinVal = Math.sin(rad);
+		const dxScalarId = figure.createScalarExpression(() => cosVal, []);
+		const dyScalarId = figure.createScalarExpression(() => sinVal, []);
+		return { dx0: cosVal, dy0: sinVal, dxScalarId, dyScalarId };
 	}
 
-	// Défaut : axe Ox.
-	return { dx: 1, dy: 0 };
+	// Défaut : axe Ox. Static.
+	const dxScalarId = figure.createScalarExpression(() => 1, []);
+	const dyScalarId = figure.createScalarExpression(() => 0, []);
+	return { dx0: 1, dy0: 0, dxScalarId, dyScalarId };
 }
 
 function handleTransporte(ctx: BuiltinCtx): BuiltinResult {
@@ -3691,8 +3750,8 @@ function handleTransporte(ctx: BuiltinCtx): BuiltinResult {
 		);
 	}
 
-	// Direction unitaire au nouveau sommet.
-	const dir = resolveTransporteDirection(ctx, VprimePos);
+	// Direction unitaire au nouveau sommet (réactive, via scalar refs).
+	const dir = resolveTransporteDirection(ctx, VprimeId, VprimePos);
 
 	// Mesure scalaire de α (en radians). Réutilise le cache si disponible.
 	let scalarId = alphaEl.measureScalarIds?.rad;
@@ -3713,24 +3772,53 @@ function handleTransporte(ctx: BuiltinCtx): BuiltinResult {
 		);
 	}
 
-	// Construire les 2 points témoins : p1' = V' + d̂, p2' = rotation(p1', V', θ).
-	const p1x = vpx + dir.dx;
-	const p1y = vpy + dir.dy;
-	const cosT = Math.cos(measureRad);
-	const sinT = Math.sin(measureRad);
-	// Rotation autour de V' d'angle measureRad appliquée à (p1x − vpx, p1y − vpy) = (dx, dy).
-	const dx2 = cosT * dir.dx - sinT * dir.dy;
-	const dy2 = sinT * dir.dx + cosT * dir.dy;
-	const p2x = vpx + dx2;
-	const p2y = vpy + dy2;
+	// Construire les 2 points témoins p1' et p2' de façon RÉACTIVE :
+	//   p1' = V' + dir
+	//   p2' = V' + (cos θ · dx − sin θ · dy, sin θ · dx + cos θ · dy)
+	// où θ = mesure(α) (radians) et dir = unit vector dans la direction
+	// demandée. Les scalaires de V', direction et θ sont tous réactifs, donc
+	// β se met à jour automatiquement quand A, V, B (qui définissent α) ou
+	// V' / P / vec / angle (la direction) bougent.
+	const Vpxs = figure.createScalarCoordinate(VprimeId, 'x');
+	const Vpys = figure.createScalarCoordinate(VprimeId, 'y');
+	const { dxScalarId, dyScalarId } = dir;
 
-	const p1Id = figure.createFreePoint(
-		{ x: numeric(p1x), y: numeric(p1y) },
-		{ visible: false, draggable: false }
+	const p1xS = figure.createScalarExpression(
+		(vals) => (vals.get(Vpxs) ?? 0) + (vals.get(dxScalarId) ?? 0),
+		[Vpxs, dxScalarId]
 	);
-	const p2Id = figure.createFreePoint(
-		{ x: numeric(p2x), y: numeric(p2y) },
-		{ visible: false, draggable: false }
+	const p1yS = figure.createScalarExpression(
+		(vals) => (vals.get(Vpys) ?? 0) + (vals.get(dyScalarId) ?? 0),
+		[Vpys, dyScalarId]
+	);
+	const p2xS = figure.createScalarExpression(
+		(vals) => {
+			const theta = vals.get(scalarId) ?? 0;
+			const dxx = vals.get(dxScalarId) ?? 0;
+			const dyy = vals.get(dyScalarId) ?? 0;
+			return (vals.get(Vpxs) ?? 0) + Math.cos(theta) * dxx - Math.sin(theta) * dyy;
+		},
+		[Vpxs, scalarId, dxScalarId, dyScalarId]
+	);
+	const p2yS = figure.createScalarExpression(
+		(vals) => {
+			const theta = vals.get(scalarId) ?? 0;
+			const dxx = vals.get(dxScalarId) ?? 0;
+			const dyy = vals.get(dyScalarId) ?? 0;
+			return (vals.get(Vpys) ?? 0) + Math.sin(theta) * dxx + Math.cos(theta) * dyy;
+		},
+		[Vpys, scalarId, dxScalarId, dyScalarId]
+	);
+
+	const p1Id = figure.createComputedPoint(
+		{ scalarRef: p1xS },
+		{ scalarRef: p1yS },
+		{ visible: false }
+	);
+	const p2Id = figure.createComputedPoint(
+		{ scalarRef: p2xS },
+		{ scalarRef: p2yS },
+		{ visible: false }
 	);
 
 	// Héritage de style depuis α (sauf override en named arg).
