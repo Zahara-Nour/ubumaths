@@ -23,24 +23,19 @@ import {
 import { REGISTRY, CHOREOGRAPHED_BUILTINS } from './registry';
 
 /**
- * Tag-modifier decorators (Design C : orthogonal `@avec_X` / `@sans_X`
- * directives that fine-tune which trace categories appear in the final
- * visibility). Each modifier maps to a `(tag, polarity)` couple :
- *   - `avec_X` → include tag X (boolean true)
- *   - `sans_X` → exclude tag X (boolean false)
+ * Map a tag-modifier identifier name (without `+`/`-` prefix) to its
+ * `TraceTag`. The polarity is decided by the leading symbol :
+ *   - `+arcs` → include tag `'arc'`
+ *   - `-arcs` → exclude tag `'arc'`
  *
  * Composable with any base visibility. Multiple modifiers can be applied
  * in any order ; the last one wins for a given tag.
  */
-const TAG_MODIFIERS: Readonly<Record<string, { tag: TraceTag; include: boolean }>> = {
-	avec_arcs: { tag: 'arc', include: true },
-	sans_arcs: { tag: 'arc', include: false },
-	avec_traces: { tag: 'segment-trace', include: true },
-	sans_traces: { tag: 'segment-trace', include: false },
-	avec_marqueurs: { tag: 'marker', include: true },
-	sans_marqueurs: { tag: 'marker', include: false },
-	avec_points_aux: { tag: 'auxiliary-point', include: true },
-	sans_points_aux: { tag: 'auxiliary-point', include: false }
+const TAG_BY_NAME: Readonly<Record<string, TraceTag>> = {
+	arcs: 'arc',
+	traces: 'segment-trace',
+	marqueurs: 'marker',
+	points_aux: 'auxiliary-point'
 };
 
 /** Default visibility when none is explicitly specified. */
@@ -108,12 +103,22 @@ export function resolveDecorators(
 			continue;
 		}
 
-		// Tag modifier (Design C) ?
-		const modifier = TAG_MODIFIERS[dec];
-		if (modifier !== undefined) {
+		// Tag modifier (Design C) ? `+name` / `-name` strings.
+		if (dec.startsWith('+') || dec.startsWith('-')) {
+			const include = dec[0] === '+';
+			const name = dec.slice(1);
+			const tag = TAG_BY_NAME[name];
+			if (tag === undefined) {
+				throw new DecoratorResolveError(
+					`Modificateur \`${dec[0]}${name}\` non reconnu.`,
+					`Modificateurs disponibles : ${Object.keys(TAG_BY_NAME)
+						.map((n) => `\`+${n}\`/\`-${n}\``)
+						.join(', ')}.`
+				);
+			}
 			// Later occurrences override earlier ones for the same tag (allows
-			// `@complet @sans_arcs @avec_arcs` to net-include arcs).
-			tagModifiers.set(modifier.tag, modifier.include);
+			// `@complet -arcs +arcs` to net-include arcs).
+			tagModifiers.set(tag, include);
 			continue;
 		}
 

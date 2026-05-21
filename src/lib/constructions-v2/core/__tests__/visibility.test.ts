@@ -161,14 +161,14 @@ describe('ConstructionExecutor — visibility wiring', () => {
 });
 
 describe('applyFinalVisibility — tag modifiers (Design C)', () => {
-	it('@complet @sans_arcs hides traces tagged arc, keeps others', () => {
+	it('@complet -arcs hides traces tagged arc, keeps others', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
 				'A = point(0, 0)',
 				'B = point(4, 0)',
 				'P = point(2, 3)',
-				'd = parallele(P, A, B) @equerre @complet @sans_arcs'
+				'd = parallele(P, A, B) @equerre @complet -arcs'
 			].join('\n')
 		);
 		exec.executeAll();
@@ -176,20 +176,20 @@ describe('applyFinalVisibility — tag modifiers (Design C)', () => {
 		const result = exec.lastChoreographyResult;
 		expect(result).not.toBeNull();
 		// parallele @equerre has segment-traces and markers but no arcs ;
-		// `@sans_arcs` is a no-op here. Everything still visible.
+		// `-arcs` is a no-op here. Everything still visible.
 		for (const id of result!.produced.traces) {
 			expect(exec.figure.getElementById(id)?.visible).toBe(true);
 		}
 	});
 
-	it('@complet @sans_marqueurs hides only the marker traces', () => {
+	it('@complet -marqueurs hides only the marker traces', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
 				'A = point(0, 0)',
 				'B = point(4, 0)',
 				'P = point(2, 3)',
-				'd = parallele(P, A, B) @equerre @complet @sans_marqueurs'
+				'd = parallele(P, A, B) @equerre @complet -marqueurs'
 			].join('\n')
 		);
 		exec.executeAll();
@@ -204,14 +204,14 @@ describe('applyFinalVisibility — tag modifiers (Design C)', () => {
 		}
 	});
 
-	it('@squelette @avec_marqueurs shows ONLY markers among traces', () => {
+	it('@squelette +marqueurs shows ONLY markers among traces', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
 				'A = point(0, 0)',
 				'B = point(4, 0)',
 				'P = point(2, 3)',
-				'd = parallele(P, A, B) @equerre @squelette @avec_marqueurs'
+				'd = parallele(P, A, B) @equerre @squelette +marqueurs'
 			].join('\n')
 		);
 		exec.executeAll();
@@ -230,19 +230,19 @@ describe('applyFinalVisibility — tag modifiers (Design C)', () => {
 		}
 	});
 
-	it('@complet @sans_arcs @avec_arcs cancels out (last wins for same tag)', () => {
+	it('@complet -arcs +arcs cancels out (last wins for same tag)', () => {
 		const exec = new ConstructionExecutor();
 		exec.load(
 			[
 				'A = point(0, 0)',
 				'B = point(4, 0)',
-				'd = mediatrice(A, B) @euclide @complet @sans_arcs @avec_arcs'
+				'd = mediatrice(A, B) @euclide @complet -arcs +arcs'
 			].join('\n')
 		);
 		exec.executeAll();
 		exec.step();
 		const result = exec.lastChoreographyResult;
-		// All 4 arcs visible (avec_arcs is the last modifier for tag 'arc').
+		// All 4 arcs visible (+arcs is the last modifier for tag 'arc').
 		for (const id of result!.produced.traces) {
 			expect(exec.figure.getElementById(id)?.visible).toBe(true);
 		}
