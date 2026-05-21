@@ -32,22 +32,30 @@
  *
  * ─── Voie 2 : `rayon_libre` (défaut) ────────────────────────────────────
  *
- * Voie viewport-safe qui ne dépend pas de la position de `A` sur (AB) :
+ * Même séquence pédagogique que `arcs_egaux` (4 petits arcs + règle), mais
+ * sans dépendance à `|PA|` :
  *
- *   1. Compas en P avec un rayon `r = max(1.5 × d(P, (AB)), 1.5)`. Cet
- *      arc coupe (AB) en deux nouveaux points A* et B', équidistants de P.
- *   2. Composition avec `sub-mediatrice(A*, B*)` : médiatrice de [A*B'] =
- *      perpendiculaire à (AB) passant par P (puisque |PA*| = |PB'|).
+ *   1. Choix d'un rayon `r = max(1.5 × d(P, (AB)), 1.5)` indépendant de la
+ *      position de A sur la droite (donc viewport-safe).
+ *   2. Deux petits arcs en P (un de chaque côté du pied F) qui coupent
+ *      (AB) en A* et B*.
+ *   3. Deux petits arcs en A* puis B*, **même ouverture `r`**, qui se
+ *      croisent en Q = symétrique de P par rapport à (AB).
+ *   4. Règle (P, Q) trace la perpendiculaire (on a déjà P, Q est le 2e point).
  *
- * Le rayon est calé sur la distance perpendiculaire de P à (AB), donc
- * borné par la fenêtre tant que P et la droite y sont visibles —
- * indépendant de la position de A sur la droite.
+ * Justification : `|PA*| = |PB*| = r` (par construction) et
+ * `|QA*| = |QB*| = r` (puisque Q = 2F − P, symétrique de P), donc tous
+ * les arcs partagent la même ouverture. Q est l'autre intersection des
+ * cercles de centre A* et B* (l'autre étant P lui-même).
  *
  * Sub-step layout (7 sub-steps) :
- *   SS1 — compass-draw arc en P couvrant (AB) → A*, B'.
- *   SS2 — point-fade-in A*, B'.
- *   SS3..SS6 — sub-mediatrice(A*, B') (4 sub-steps).
- *   SS7 — line-fade-in m (la perpendiculaire principale).
+ *   SS1 — compass-draw petit arc en P côté A*.
+ *   SS2 — compass-draw petit arc en P côté B*.
+ *   SS3 — point-fade-in A*, B*.
+ *   SS4 — compass-draw petit arc en A* → Q.
+ *   SS5 — compass-draw petit arc en B* → Q.
+ *   SS6 — point-fade-in Q.
+ *   SS7 — ruler-trace P→Q (line-fade-in m).
  */
 
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, ChoreographyCtx } from './types';
@@ -456,31 +464,52 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 }
 
 function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
-	const { figure, args, principalId, visibilite, sub } = ctx;
+	const { figure, args, principalId } = ctx;
 	const [Pid, Aid, Bid] = args.ids;
 	const [P, A, B] = args.coords;
 
-	// Hide the perpendicular line — revealed by the trailing line-fade-in.
+	// Hide the perpendicular line — revealed by SS7 ruler-trace.
 	figure.hideElement(principalId);
 
-	// ─── Initial values (used for SS1 instrument positioning) ───
+	// ─── Initial values (used for first-frame instrument positioning) ───
 	const ABx = B.x - A.x;
 	const ABy = B.y - A.y;
 	const ABlen0 = Math.hypot(ABx, ABy);
 	const ux0 = ABx / ABlen0;
 	const uy0 = ABy / ABlen0;
-	// n = (-uy, ux). dPerp = (A - P) · n.
+	// n = (−uy, ux). dPerp = (A − P) · n.
 	const dPerp0 = -(A.x - P.x) * uy0 + (A.y - P.y) * ux0;
 	const r0 = Math.max(Math.abs(dPerp0) * RAYON_LIBRE_FACTOR, RAYON_LIBRE_MIN);
 	const Fx0 = P.x - dPerp0 * uy0;
 	const Fy0 = P.y + dPerp0 * ux0;
 	const halfChord0 = Math.sqrt(Math.max(r0 * r0 - dPerp0 * dPerp0, 1e-12));
-	const Astar0 = { x: Fx0 + halfChord0 * ux0, y: Fy0 + halfChord0 * uy0 };
-	const Bstar0 = { x: Fx0 - halfChord0 * ux0, y: Fy0 - halfChord0 * uy0 };
-	const angleToF_0 = Math.atan2(Fy0 - P.y, Fx0 - P.x);
-	const halfSweep0 = Math.atan2(halfChord0, Math.max(Math.abs(dPerp0), 1e-12));
-	const arcStart0 = angleToF_0 - halfSweep0;
-	const arcLength0 = r0 * 2 * halfSweep0;
+	// A* = F + halfChord × u ; B* = F − halfChord × u.
+	const Astar0x = Fx0 + halfChord0 * ux0;
+	const Astar0y = Fy0 + halfChord0 * uy0;
+	const Bstar0x = Fx0 - halfChord0 * ux0;
+	const Bstar0y = Fy0 - halfChord0 * uy0;
+	// Q = 2F − P (symétrique de P par rapport à (AB)).
+	const Qx0 = 2 * Fx0 - P.x;
+	const Qy0 = 2 * Fy0 - P.y;
+
+	// Directions initiales pour les 4 petits arcs.
+	const halfSweep = SMALL_ARC_SWEEP_RAD / 2;
+	const angleToAstar_0 = Math.atan2(Astar0y - P.y, Astar0x - P.x);
+	const angleToBstar_0 = Math.atan2(Bstar0y - P.y, Bstar0x - P.x);
+	const angleAstarToQ_0 = Math.atan2(Qy0 - Astar0y, Qx0 - Astar0x);
+	const angleBstarToQ_0 = Math.atan2(Qy0 - Bstar0y, Qx0 - Bstar0x);
+	const arcAtPtoAstarStart_0 = angleToAstar_0 - halfSweep;
+	const arcAtPtoBstarStart_0 = angleToBstar_0 - halfSweep;
+	const arcAtAstarStart_0 = angleAstarToQ_0 - halfSweep;
+	const arcAtBstarStart_0 = angleBstarToQ_0 - halfSweep;
+	const arcLengthSmall = r0 * SMALL_ARC_SWEEP_RAD;
+
+	// Direction P→Q (pour la règle).
+	const PQx0 = Qx0 - P.x;
+	const PQy0 = Qy0 - P.y;
+	const PQlen0 = Math.hypot(PQx0, PQy0);
+	const dirPQx0 = PQlen0 > 0 ? PQx0 / PQlen0 : 0;
+	const dirPQy0 = PQlen0 > 0 ? PQy0 / PQlen0 : 1;
 
 	// ─── Reactive scalars ───
 	const Px = figure.createScalarCoordinate(Pid, 'x');
@@ -513,7 +542,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			((vals.get(Ay) ?? 0) - (vals.get(Py) ?? 0)) * (vals.get(uxScalar) ?? 0),
 		[Ax, Ay, Px, Py, uxScalar, uyScalar]
 	);
-	// Viewport-safe radius : r = max(|dPerp| × factor, min). Indépendant
+	// Viewport-safe radius : r = max(|dPerp| × factor, min). Independent
 	// de la position de A sur la droite (AB).
 	const rScalar = figure.createScalarExpression(
 		(vals) => Math.max(Math.abs(vals.get(dPerpScalar) ?? 0) * RAYON_LIBRE_FACTOR, RAYON_LIBRE_MIN),
@@ -559,74 +588,216 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			(vals.get(FyScalar) ?? 0) - (vals.get(halfChordScalar) ?? 0) * (vals.get(uyScalar) ?? 0),
 		[FyScalar, halfChordScalar, uyScalar]
 	);
+	// Q = 2F − P.
+	const QxScalar = figure.createScalarExpression(
+		(vals) => 2 * (vals.get(FxScalar) ?? 0) - (vals.get(Px) ?? 0),
+		[FxScalar, Px]
+	);
+	const QyScalar = figure.createScalarExpression(
+		(vals) => 2 * (vals.get(FyScalar) ?? 0) - (vals.get(Py) ?? 0),
+		[FyScalar, Py]
+	);
 
 	const Astar = figure.createComputedPoint({ scalarRef: AstarX }, { scalarRef: AstarY });
 	figure.hideElement(Astar);
 	const Bstar = figure.createComputedPoint({ scalarRef: BstarX }, { scalarRef: BstarY });
 	figure.hideElement(Bstar);
+	const Q = figure.createComputedPoint({ scalarRef: QxScalar }, { scalarRef: QyScalar });
+	figure.hideElement(Q);
 
-	// Arc at P : centered on direction P→F with sweep ±halfSweep
-	// (covering both A* and B*).
-	const angleToFScalar = figure.createScalarExpression(
+	// Reactive angles for the 4 small arcs.
+	const angleToAstarScalar = figure.createScalarExpression(
 		(vals) =>
 			Math.atan2(
-				(vals.get(FyScalar) ?? 0) - (vals.get(Py) ?? 0),
-				(vals.get(FxScalar) ?? 0) - (vals.get(Px) ?? 0)
+				(vals.get(AstarY) ?? 0) - (vals.get(Py) ?? 0),
+				(vals.get(AstarX) ?? 0) - (vals.get(Px) ?? 0)
 			),
-		[FyScalar, Py, FxScalar, Px]
+		[AstarY, Py, AstarX, Px]
 	);
-	const halfSweepScalar = figure.createScalarExpression(
-		(vals) => {
-			const dAbs = Math.max(Math.abs(vals.get(dPerpScalar) ?? 0), 1e-12);
-			const h = vals.get(halfChordScalar) ?? 1;
-			return Math.atan2(h, dAbs);
-		},
-		[dPerpScalar, halfChordScalar]
+	const angleToBstarScalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(BstarY) ?? 0) - (vals.get(Py) ?? 0),
+				(vals.get(BstarX) ?? 0) - (vals.get(Px) ?? 0)
+			),
+		[BstarY, Py, BstarX, Px]
 	);
-	const arcStartScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleToFScalar) ?? 0) - (vals.get(halfSweepScalar) ?? 0),
-		[angleToFScalar, halfSweepScalar]
+	const angleAstarToQScalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(QyScalar) ?? 0) - (vals.get(AstarY) ?? 0),
+				(vals.get(QxScalar) ?? 0) - (vals.get(AstarX) ?? 0)
+			),
+		[QyScalar, AstarY, QxScalar, AstarX]
 	);
-	const arcEndScalar = figure.createScalarExpression(
-		(vals) => (vals.get(angleToFScalar) ?? 0) + (vals.get(halfSweepScalar) ?? 0),
-		[angleToFScalar, halfSweepScalar]
+	const angleBstarToQScalar = figure.createScalarExpression(
+		(vals) =>
+			Math.atan2(
+				(vals.get(QyScalar) ?? 0) - (vals.get(BstarY) ?? 0),
+				(vals.get(QxScalar) ?? 0) - (vals.get(BstarX) ?? 0)
+			),
+		[QyScalar, BstarY, QxScalar, BstarX]
+	);
+	const arcAtPtoAstarStart = figure.createScalarExpression(
+		(vals) => (vals.get(angleToAstarScalar) ?? 0) - halfSweep,
+		[angleToAstarScalar]
+	);
+	const arcAtPtoAstarEnd = figure.createScalarExpression(
+		(vals) => (vals.get(angleToAstarScalar) ?? 0) + halfSweep,
+		[angleToAstarScalar]
+	);
+	const arcAtPtoBstarStart = figure.createScalarExpression(
+		(vals) => (vals.get(angleToBstarScalar) ?? 0) - halfSweep,
+		[angleToBstarScalar]
+	);
+	const arcAtPtoBstarEnd = figure.createScalarExpression(
+		(vals) => (vals.get(angleToBstarScalar) ?? 0) + halfSweep,
+		[angleToBstarScalar]
+	);
+	const arcAtAstarStart = figure.createScalarExpression(
+		(vals) => (vals.get(angleAstarToQScalar) ?? 0) - halfSweep,
+		[angleAstarToQScalar]
+	);
+	const arcAtAstarEnd = figure.createScalarExpression(
+		(vals) => (vals.get(angleAstarToQScalar) ?? 0) + halfSweep,
+		[angleAstarToQScalar]
+	);
+	const arcAtBstarStart = figure.createScalarExpression(
+		(vals) => (vals.get(angleBstarToQScalar) ?? 0) - halfSweep,
+		[angleBstarToQScalar]
+	);
+	const arcAtBstarEnd = figure.createScalarExpression(
+		(vals) => (vals.get(angleBstarToQScalar) ?? 0) + halfSweep,
+		[angleBstarToQScalar]
 	);
 
-	const arcAtP = figure.createArcByAngles(
+	// Création des 4 arcs (radius commun = r, viewport-safe).
+	const arcAtPtoAstar = figure.createArcByAngles(
 		Pid,
 		{ scalarRef: rScalar },
-		{ scalarRef: arcStartScalar },
-		{ scalarRef: arcEndScalar }
+		{ scalarRef: arcAtPtoAstarStart },
+		{ scalarRef: arcAtPtoAstarEnd }
 	);
-	figure.hideElement(arcAtP);
-
-	// ─── Sub-chorégraphie : mediatrice(A*, B*) ───
-	// Le sub-principal est la perpendiculaire elle-même (puisque la
-	// médiatrice de [A*B*] est cette droite). Sub-mediatrice utilise sa
-	// voie par défaut sous @euclide.
-	const subTriple = { contrainte: 'euclide' as const, methode: null, visibilite } as const;
-	const subResult = sub(
-		'mediatrice',
-		{ ids: [Astar, Bstar], coords: [Astar0, Bstar0] },
-		principalId,
-		subTriple
+	figure.hideElement(arcAtPtoAstar);
+	const arcAtPtoBstar = figure.createArcByAngles(
+		Pid,
+		{ scalarRef: rScalar },
+		{ scalarRef: arcAtPtoBstarStart },
+		{ scalarRef: arcAtPtoBstarEnd }
 	);
+	figure.hideElement(arcAtPtoBstar);
+	const arcAtAstar = figure.createArcByAngles(
+		Astar,
+		{ scalarRef: rScalar },
+		{ scalarRef: arcAtAstarStart },
+		{ scalarRef: arcAtAstarEnd }
+	);
+	figure.hideElement(arcAtAstar);
+	const arcAtBstar = figure.createArcByAngles(
+		Bstar,
+		{ scalarRef: rScalar },
+		{ scalarRef: arcAtBstarStart },
+		{ scalarRef: arcAtBstarEnd }
+	);
+	figure.hideElement(arcAtBstar);
 
-	// ─── Own sub-steps ───
-	const preSubSteps: SubStep[] = [
-		// SS1 : grand arc en P qui coupe (AB) en A* et B*.
+	// ─── Segment-trace P→Q (centré sur F, orienté PQ) ───
+	const PQxScalar = figure.createScalarExpression(
+		(vals) => (vals.get(QxScalar) ?? 0) - (vals.get(Px) ?? 0),
+		[Px, QxScalar]
+	);
+	const PQyScalar = figure.createScalarExpression(
+		(vals) => (vals.get(QyScalar) ?? 0) - (vals.get(Py) ?? 0),
+		[Py, QyScalar]
+	);
+	const PQlenScalar = figure.createScalarExpression(
+		(vals) => Math.hypot(vals.get(PQxScalar) ?? 0, vals.get(PQyScalar) ?? 0),
+		[PQxScalar, PQyScalar]
+	);
+	const dirPQxScalar = figure.createScalarExpression(
+		(vals) => {
+			const len = Math.max(vals.get(PQlenScalar) ?? 1, 1e-12);
+			return (vals.get(PQxScalar) ?? 0) / len;
+		},
+		[PQxScalar, PQlenScalar]
+	);
+	const dirPQyScalar = figure.createScalarExpression(
+		(vals) => {
+			const len = Math.max(vals.get(PQlenScalar) ?? 1, 1e-12);
+			return (vals.get(PQyScalar) ?? 0) / len;
+		},
+		[PQyScalar, PQlenScalar]
+	);
+	const halfTraceScalar = figure.createScalarExpression(
+		(vals) => Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, (vals.get(PQlenScalar) ?? 0) * 1.2),
+		[PQlenScalar]
+	);
+	const Iext1xScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(FxScalar) ?? 0) - (vals.get(dirPQxScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
+		[FxScalar, dirPQxScalar, halfTraceScalar]
+	);
+	const Iext1yScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(FyScalar) ?? 0) - (vals.get(dirPQyScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
+		[FyScalar, dirPQyScalar, halfTraceScalar]
+	);
+	const Iext2xScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(FxScalar) ?? 0) + (vals.get(dirPQxScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
+		[FxScalar, dirPQxScalar, halfTraceScalar]
+	);
+	const Iext2yScalar = figure.createScalarExpression(
+		(vals) =>
+			(vals.get(FyScalar) ?? 0) + (vals.get(dirPQyScalar) ?? 0) * (vals.get(halfTraceScalar) ?? 0),
+		[FyScalar, dirPQyScalar, halfTraceScalar]
+	);
+	const Iext1 = figure.createComputedPoint(
+		{ scalarRef: Iext1xScalar },
+		{ scalarRef: Iext1yScalar }
+	);
+	figure.hideElement(Iext1);
+	const Iext2 = figure.createComputedPoint(
+		{ scalarRef: Iext2xScalar },
+		{ scalarRef: Iext2yScalar }
+	);
+	figure.hideElement(Iext2);
+	const segmentTrace = figure.createSegment(Iext1, Iext2);
+	figure.hideElement(segmentTrace);
+
+	const traceLen0 = 2 * Math.max(SEGMENT_TRACE_LENGTH_DEFAULT / 2, PQlen0 * 1.2);
+	const halfTrace0 = traceLen0 / 2;
+	const Iext1X0 = Fx0 - dirPQx0 * halfTrace0;
+	const Iext1Y0 = Fy0 - dirPQy0 * halfTrace0;
+	const segRotationDeg0 = (Math.atan2(dirPQy0, dirPQx0) * 180) / Math.PI;
+
+	// ─── Sub-steps ───
+	const subSteps: SubStep[] = [
+		// SS1 : petit arc en P côté A*.
 		{
 			kind: 'compass-draw',
 			instrument: 'compass',
-			instrumentTarget: { x: P.x, y: P.y, rotation: (arcStart0 * 180) / Math.PI },
+			instrumentTarget: { x: P.x, y: P.y, rotation: (arcAtPtoAstarStart_0 * 180) / Math.PI },
 			compassRadius: r0,
-			geometricDistance: arcLength0,
-			animateDrawableIds: [arcAtP],
+			geometricDistance: arcLengthSmall,
+			animateDrawableIds: [arcAtPtoAstar],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en P, on trace un arc qui coupe (AB) en deux points A* et B*'
+			instruction: 'Compas en P, on trace un petit arc qui coupe (AB) en A*'
 		},
-		// SS2 : A* et B* apparaissent.
+		// SS2 : petit arc en P côté B*.
+		{
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: { x: P.x, y: P.y, rotation: (arcAtPtoBstarStart_0 * 180) / Math.PI },
+			compassRadius: r0,
+			geometricDistance: arcLengthSmall,
+			animateDrawableIds: [arcAtPtoBstar],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'Même ouverture, second petit arc qui coupe (AB) en B*'
+		},
+		// SS3 : A* et B* apparaissent.
 		{
 			kind: 'point-fade-in',
 			geometricDistance: 0,
@@ -634,33 +805,68 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animatePointIds: [Astar, Bstar],
 			animateLineIds: [],
 			instruction: 'A* et B* apparaissent (équidistants de P)'
-		}
-	];
-	const postSubSteps: SubStep[] = [
-		// SS7 : la perpendiculaire apparaît (= médiatrice de [A*B*]).
+		},
+		// SS4 : petit arc en A* (même ouverture) vers Q.
 		{
-			kind: 'line-fade-in',
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: { x: Astar0x, y: Astar0y, rotation: (arcAtAstarStart_0 * 180) / Math.PI },
+			compassRadius: r0,
+			geometricDistance: arcLengthSmall,
+			animateDrawableIds: [arcAtAstar],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'On reporte la même ouverture en A* et on trace un petit arc'
+		},
+		// SS5 : petit arc en B* vers Q.
+		{
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: { x: Bstar0x, y: Bstar0y, rotation: (arcAtBstarStart_0 * 180) / Math.PI },
+			compassRadius: r0,
+			geometricDistance: arcLengthSmall,
+			animateDrawableIds: [arcAtBstar],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'On reporte en B* : les deux petits arcs se croisent'
+		},
+		// SS6 : Q fade-in.
+		{
+			kind: 'point-fade-in',
 			geometricDistance: 0,
 			animateDrawableIds: [],
+			animatePointIds: [Q],
+			animateLineIds: [],
+			instruction: 'Les arcs se croisent en Q (symétrique de P par rapport à (AB))'
+		},
+		// SS7 : règle P→Q.
+		{
+			kind: 'ruler-trace',
+			instrument: 'ruler',
+			secondaryInstrument: 'pencil',
+			instrumentTarget: { x: Iext1X0, y: Iext1Y0, rotation: segRotationDeg0 },
+			geometricDistance: traceLen0,
+			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
-			animateLineIds: [principalId],
-			instruction: 'La médiatrice de [A*B*] est la perpendiculaire cherchée'
+			animateLineIds: [],
+			instruction: 'Règle par P et Q : on trace la perpendiculaire'
 		}
 	];
 
 	return {
-		subSteps: [...preSubSteps, ...subResult.subSteps, ...postSubSteps],
+		subSteps,
 		produced: {
 			principal: principalId,
-			// Charnières de la sous-médiatrice (I1, I2) restent visibles en
-			// @squelette : elles définissent la perpendiculaire avec le pied
-			// virtuel sur (AB).
-			charnieres: [...subResult.produced.charnieres],
-			// Arc en P, A*, B*, et les traces de la sous-médiatrice (arcs
-			// aux extrémités, segment-trace).
-			traces: [arcAtP, Astar, Bstar, ...subResult.produced.traces],
+			// Q est utile en @squelette (charnière qui définit la perpendiculaire avec P).
+			charnieres: [Q],
+			// Les 4 petits arcs + A* + B* sont les gestes au compas, visibles en @complet.
+			traces: [arcAtPtoAstar, arcAtPtoBstar, arcAtAstar, arcAtBstar, Astar, Bstar],
 			hiddenSupport: [
-				// Reactive scalars internes.
+				// Animation-only.
+				segmentTrace,
+				Iext1,
+				Iext2,
+				// Reactive scalars.
 				Px,
 				Py,
 				Ax,
@@ -679,12 +885,30 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 				AstarY,
 				BstarX,
 				BstarY,
-				angleToFScalar,
-				halfSweepScalar,
-				arcStartScalar,
-				arcEndScalar,
-				// Sub's hidden support (scalars, helper points, etc.).
-				...(subResult.produced.hiddenSupport ?? [])
+				QxScalar,
+				QyScalar,
+				angleToAstarScalar,
+				angleToBstarScalar,
+				angleAstarToQScalar,
+				angleBstarToQScalar,
+				arcAtPtoAstarStart,
+				arcAtPtoAstarEnd,
+				arcAtPtoBstarStart,
+				arcAtPtoBstarEnd,
+				arcAtAstarStart,
+				arcAtAstarEnd,
+				arcAtBstarStart,
+				arcAtBstarEnd,
+				PQxScalar,
+				PQyScalar,
+				PQlenScalar,
+				dirPQxScalar,
+				dirPQyScalar,
+				halfTraceScalar,
+				Iext1xScalar,
+				Iext1yScalar,
+				Iext2xScalar,
+				Iext2yScalar
 			]
 		}
 	};
@@ -696,10 +920,10 @@ const rayonLibreChoreography: ChoreographyFn = (ctx) => buildRayonLibre(ctx);
 export const VOIES_PERPENDICULAIRE_EUCLIDE: readonly Voie[] = [
 	{
 		id: 'rayon_libre',
-		nom_humain: 'Rayon libre + médiatrice',
-		source: 'Construction canonique (variante viewport-safe)',
+		nom_humain: 'Rayon libre (viewport-safe)',
+		source: 'Construction canonique',
 		description:
-			"Le compas en `P` choisit un rayon `r` calé sur la distance de `P` à `(AB)` (indépendant de la position de `A` sur la droite). L'arc coupe `(AB)` en deux points équidistants `A*` et `B*`, puis la médiatrice de `[A*B*]` est tracée — c'est la perpendiculaire à `(AB)` passant par `P`. Cette voie reste lisible quand `A` est loin du pied de la perpendiculaire.",
+			'Le compas en `P` choisit un rayon `r` calé sur la distance de `P` à `(AB)` (indépendant de la position de `A` sur la droite). Deux petits arcs en `P` coupent `(AB)` en `A*` et `B*`. La même ouverture reportée en `A*` puis en `B*` produit deux arcs qui se croisent en `Q`, symétrique de `P` par rapport à `(AB)`. La droite `(PQ)` est la perpendiculaire à `(AB)` passant par `P`. Cette voie reste lisible quand `A` est loin du pied de la perpendiculaire.',
 		defaut: true,
 		choreography: rayonLibreChoreography
 	},
