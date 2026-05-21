@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.6...v0.9.7) (2026-05-21)
+
+### 🐛 Bug Fixes
+
+- **constructions-v2:** [@equerre](https://github.com/equerre) — remove principalId from animateLineIds in trace step ([733e21d](https://github.com/Zahara-Nour/ubumaths/commit/733e21d5c1872deb078567bdfa44c967a9175bc8))
+- **constructions-v2:** [@equerre](https://github.com/equerre) — ruler overlaps existing trace + rebrand set-square ([662c897](https://github.com/Zahara-Nour/ubumaths/commit/662c897592dd55026dc492e9b3b2f1deb923552c))
+- **constructions-v2:** parallele [@equerre](https://github.com/equerre) — add ruler as visible slide guide ([a05a0b2](https://github.com/Zahara-Nour/ubumaths/commit/a05a0b20f10ea940522677fa12301b041600a532))
+- **constructions-v2:** parallele [@equerre](https://github.com/equerre) — place near P projection + ruler offset ([839b567](https://github.com/Zahara-Nour/ubumaths/commit/839b5677e1879ce1bec2b24e746a8a852c58e3ad))
+- **constructions-v2:** parallele arc geometry — compass at B with radius |PA| ([0d1e4f1](https://github.com/Zahara-Nour/ubumaths/commit/0d1e4f13a1db3d7b8563c46df1c45cc07bf57f55))
+- **geometry-core:** transporte(α, V', dir) reactif au drag (B-V3a-2) ([7c8b9e9](https://github.com/Zahara-Nour/ubumaths/commit/7c8b9e9d16aa6cbfec2684cc1e286c2202c1217b))
+
+### ✨ Features
+
+- **constructions-v2:** add [@equerre](https://github.com/equerre) voie for parallele (5 sub-steps) ([5b3b7f9](https://github.com/Zahara-Nour/ubumaths/commit/5b3b7f95a326092a67d2a6a114a1627f403da333))
+- **constructions-v2:** add [@equerre](https://github.com/equerre) voie for perpendiculaire (2 sub-steps) ([6384da1](https://github.com/Zahara-Nour/ubumaths/commit/6384da1a5c136321e16919006a2281d62514b3e7))
+- **constructions-v2:** add rayon_libre voie for perpendiculaire (viewport-safe default) ([70832d1](https://github.com/Zahara-Nour/ubumaths/commit/70832d11d647f75e4dc79134efb0c137022a4799))
+- **constructions-v2:** apply compass-measure to transporte [@euclide](https://github.com/euclide) ([b368556](https://github.com/Zahara-Nour/ubumaths/commit/b368556d5a3ed7eb1a133a80ec855a149ae44389))
+- **constructions-v2:** compass-measure sub-step + apply to parallele ([c61e7d7](https://github.com/Zahara-Nour/ubumaths/commit/c61e7d7be4032d26e4836085aa9c2a739a0b5286))
+- **constructions-v2:** ctx.sub composition + cercle_circonscrit [@euclide](https://github.com/euclide) ([9fd77fa](https://github.com/Zahara-Nour/ubumaths/commit/9fd77fa6eb18c22ffaa2d4dc549d2a50a8651f3a))
+- **constructions-v2:** implement parallele [@euclide](https://github.com/euclide) [@parallelogramme](https://github.com/parallelogramme) choreography ([f1c052c](https://github.com/Zahara-Nour/ubumaths/commit/f1c052ceaf1fbe9591ff46de4f21c54e2122dbb7))
+- **constructions-v2:** parallele [@equerre](https://github.com/equerre) — slide segment + right angles in [@complet](https://github.com/complet) ([ecd3d54](https://github.com/Zahara-Nour/ubumaths/commit/ecd3d54765f8faf6b11bb7d0c48240b7c55e6a4e))
+- **constructions-v2:** perpendiculaire [@euclide](https://github.com/euclide) choreography (via ctx.sub) ([ee1db84](https://github.com/Zahara-Nour/ubumaths/commit/ee1db8411731198ae5a0f22449c05cab2bce1b48))
+- **constructions-v2:** scale Protractor with pixelsPerUnit ([93e7703](https://github.com/Zahara-Nour/ubumaths/commit/93e770391f9dcd288a3850cd914303652ac0a4f0))
+- **constructions-v2:** scale SetSquare and Ruler with pixelsPerUnit ([2611a81](https://github.com/Zahara-Nour/ubumaths/commit/2611a81a2157485aa76af51791a772d7c7e207af))
+
+### 📚 Documentation
+
+- **constructions-v2:** met a jour status bissectrice + transporte dans les progress docs v1 ([6f4379f](https://github.com/Zahara-Nour/ubumaths/commit/6f4379f14453587aefa9ab27ea5c3abf1d8d6775))
+- **constructions-v2:** update progress doc with [@equerre](https://github.com/equerre) voies and scaling ([eaa531b](https://github.com/Zahara-Nour/ubumaths/commit/eaa531bf4b709b3fc15ac830ad69c59328703ffd))
+
 ### [0.9.6](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.5...v0.9.6) (2026-05-21)
 
 ### ✨ Features
