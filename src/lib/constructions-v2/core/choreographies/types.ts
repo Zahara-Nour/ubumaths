@@ -40,8 +40,19 @@ export interface DecoratorTriple {
  * Discriminator for a sub-step animation. Selects which set of element ids is
  * animated by the canvas overlay (drawables, points, lines) and which
  * instrument set is shown.
+ *
+ * - `compass-measure` : pedagogical step where the compass takes a measure
+ *   between two points (spike at the source, pencil reaching the target).
+ *   No arc is drawn ; only the compass moves and opens. Typically inserted
+ *   BEFORE a `compass-draw` sub-step to show "I measure |AB|, then I draw
+ *   an arc of this radius at a different center".
  */
-export type SubStepKind = 'compass-draw' | 'ruler-trace' | 'point-fade-in' | 'line-fade-in';
+export type SubStepKind =
+	| 'compass-measure'
+	| 'compass-draw'
+	| 'ruler-trace'
+	| 'point-fade-in'
+	| 'line-fade-in';
 
 /**
  * A single sub-step of a decorated statement's choreography.
