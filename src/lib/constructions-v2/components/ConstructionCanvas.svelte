@@ -649,7 +649,14 @@
 						transform="translate({spos?.x ?? 0}, {spos?.y ?? 0}) rotate({spos?.rotation ?? 0})"
 						opacity={state.opacity}
 					>
-						<SetSquare x={0} y={0} rotation={0} scale={state.scale} visible={true} />
+						<SetSquare
+							x={0}
+							y={0}
+							rotation={0}
+							scale={state.scale}
+							{pixelsPerUnit}
+							visible={true}
+						/>
 					</g>
 				{/if}
 			{/each}

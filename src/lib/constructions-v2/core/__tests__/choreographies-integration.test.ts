@@ -717,12 +717,12 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		expect(exec.currentSubStep?.instrumentTarget?.x).toBeCloseTo(0.5);
 		expect(exec.currentSubStep?.instrumentTarget?.y).toBeCloseTo(0);
 		// SS2 : ruler positions against setSquare, secondary keeps setSquare visible.
-		// Guide ruler origin shifted by -hEdgeDir × RULER_WIDTH = -1.5 in u_AB.
-		// = (0.5 - 1.5, 0) = (-1, 0).
+		// Guide ruler origin shifted by -hEdgeDir × RULER_WIDTH (= 57/40) in u_AB.
+		// = (0.5 - 57/40, 0) = (-0.925, 0).
 		exec.step();
 		expect(exec.currentSubStep?.instrument).toBe('ruler');
 		expect(exec.currentSubStep?.secondaryInstrument).toBe('setSquare');
-		expect(exec.currentSubStep?.instrumentTarget?.x).toBeCloseTo(-1);
+		expect(exec.currentSubStep?.instrumentTarget?.x).toBeCloseTo(0.5 - 57 / 40);
 		// SS3 : setSquare slides, secondary keeps ruler visible as a guide.
 		exec.step();
 		expect(exec.currentSubStep?.instrument).toBe('setSquare');

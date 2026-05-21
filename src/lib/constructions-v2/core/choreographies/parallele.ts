@@ -18,18 +18,18 @@ import type { Voie, ChoreographyFn, ChoreographyResult, SubStep } from './types'
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total (small arcs near Q)
-// Équerre horizontal edge length in math units. SetSquare renders at
-// LARGEUR = 131 SVG pixels at scale 1 ; with the executor's PPU = 40,
-// that's ≈ 3.3 math units. We use a slightly smaller value (3) so the
-// segment-trace stays comfortably inside the équerre's horizontal edge.
+// Équerre horizontal edge length in math units. Since 2026-05-21 the
+// SetSquare component scales with `pixelsPerUnit` so its math-unit size
+// is constant regardless of canvas zoom : LARGEUR = 131/40 ≈ 3.275 math
+// units. We use a slightly smaller value (3) so the segment-trace stays
+// comfortably inside the équerre's horizontal edge.
 const EQUERRE_HORIZONTAL_MATH_UNITS = 3;
 // Overlap of the ruler over the already-traced portion (same as
 // perpendiculaire @equerre).
 const RULER_OVERLAP_MATH_UNITS = 2;
-// Ruler body thickness in math units. Ruler component renders at
-// WIDTH = 57 SVG pixels ; at PPU 40 that's ≈ 1.425. We use 1.5 to
-// guarantee a tiny gap between the guide-ruler and the équerre body.
-const RULER_WIDTH_MATH_UNITS = 1.5;
+// Ruler body thickness in math units. The Ruler component scales with
+// `pixelsPerUnit` so its math width = 57/40 ≈ 1.425 at any zoom.
+const RULER_WIDTH_MATH_UNITS = 57 / 40;
 
 /**
  * `parallele @euclide @parallelogramme` choreography (Euclid I.31).

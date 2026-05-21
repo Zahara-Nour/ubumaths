@@ -10,10 +10,13 @@
 	 * with millimeter and half-centimeter marks.
 	 */
 
-	// Constants from original Regle.js
+	// Reference dimensions (pixel value at default PPU = 40 ↔ math units).
 	const HEIGHT_FONT = 9; // Font height for graduations
-	const WIDTH = 57; // Ruler width
-	const RAY = 6; // Corner radius
+	const WIDTH_MATH = 57 / 40; // Ruler width in math units (≈ 1.425)
+	const RAY_MATH = 6 / 40; // Corner radius in math units (≈ 0.15)
+	const MAJOR_TICK_MATH = 12 / 40; // Major tick height in math units
+	const HALF_TICK_MATH = 9 / 40; // Half tick height
+	const MINOR_TICK_MATH = 6 / 40; // Minor tick height
 
 	// Types
 	interface Props {
@@ -44,6 +47,16 @@
 		pixelsPerUnit = 40
 	}: Props = $props();
 
+	// Dimensions in screen pixels (all rescaled when zoom changes so the
+	// ruler stays the same math-unit size).
+	let WIDTH = $derived(WIDTH_MATH * pixelsPerUnit);
+	let RAY = $derived(RAY_MATH * pixelsPerUnit);
+	let majorTickPx = $derived(MAJOR_TICK_MATH * pixelsPerUnit);
+	let halfTickPx = $derived(HALF_TICK_MATH * pixelsPerUnit);
+	let minorTickPx = $derived(MINOR_TICK_MATH * pixelsPerUnit);
+	let innerEdgePx = $derived((27 / 40) * pixelsPerUnit); // inner edge y-position
+	let labelYPx = $derived(((12 + 9) / 40) * pixelsPerUnit); // label y (12 + HEIGHT_FONT)
+
 	// Calculate internal length in pixels
 	let internalLength = $derived(length * pixelsPerUnit + 15);
 
@@ -64,7 +77,7 @@
 			const xPos = stepPx * i;
 			const isMajor = i % 10 === 0;
 			const isHalf = i % 5 === 0;
-			const height = isMajor ? 12 : isHalf ? 9 : 6;
+			const height = isMajor ? majorTickPx : isHalf ? halfTickPx : minorTickPx;
 
 			marks.push({
 				x: xPos,
@@ -95,7 +108,14 @@
 		/>
 
 		<!-- Inner edge line -->
-		<line x1={-RAY} y1="27" x2={internalLength} y2="27" stroke="#999999" stroke-width="2" />
+		<line
+			x1={-RAY}
+			y1={innerEdgePx}
+			x2={internalLength}
+			y2={innerEdgePx}
+			stroke="#999999"
+			stroke-width="2"
+		/>
 
 		<!-- Graduations -->
 		{#if showGraduations}
@@ -109,7 +129,7 @@
 						<text
 							pointer-events="none"
 							x={mark.x}
-							y={12 + HEIGHT_FONT}
+							y={labelYPx}
 							style="font-family: monospace; font-size: {HEIGHT_FONT}pt; text-anchor: middle;"
 							fill="black"
 						>

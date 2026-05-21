@@ -64,10 +64,11 @@ const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total
 const RAYON_LIBRE_MIN = 1.5;
 const RAYON_LIBRE_FACTOR = 1.5;
-// Équerre vertical edge length in math units. The SetSquare component
-// renders at HAUTEUR = 223 SVG pixels at scale 1 ; with the executor's
-// PPU = 40, that's ≈ 5.6 math units. We use a slightly smaller value
-// (5) so the segment-trace stays comfortably inside the équerre.
+// Équerre vertical edge length in math units. Since 2026-05-21 the
+// SetSquare component scales with `pixelsPerUnit` so its math-unit size
+// is constant regardless of canvas zoom : HAUTEUR = 223/40 ≈ 5.575
+// math units. We use a slightly smaller value (5) so the segment-trace
+// stays comfortably inside the équerre.
 const EQUERRE_EDGE_MATH_UNITS = 5;
 // Overlap (in math units) of the ruler over the already-traced portion
 // of the perpendicular, so the swap looks like "lay the ruler over the
