@@ -88,6 +88,9 @@ export type StudentBuddy = Tables<'student_buddies'>;
 /** Buddy skin table row type alias */
 export type BuddySkin = Tables<'buddy_skins'>;
 
+/** Parody evaluation table row type alias */
+export type ParodyEvaluation = Tables<'parody_evaluations'>;
+
 // ============================================================================
 // VIP Card Types
 // ============================================================================
