@@ -43,8 +43,8 @@ Routes:
 | --- | ----------------------------------- | ------- |
 | 1   | Migration DB (table + RLS + bucket) | ✅ Done |
 | 2   | Push migration + bucket Storage     | ✅ Done |
-| 3   | Form actions teacher                | ⏳ Next |
-| 4   | Page teacher UI                     | pending |
+| 3   | Form actions teacher                | ✅ Done |
+| 4   | Page teacher UI                     | ⏳ Next |
 | 5   | Page publique                       | pending |
 | 6   | Code review                         | pending |
 | 7   | Quality checks                      | pending |
@@ -62,3 +62,9 @@ Routes:
 - Migration pushed via `pnpm db:migrate` to remote DB
 - `src/lib/types/database.ts` regenerated via `pnpm db:types`
 - `src/lib/types/database-helpers.ts` — added `ParodyEvaluation` type alias
+
+### Phase 3
+
+- `src/lib/server/validation/parody-evaluations.ts` (new) — Zod schemas
+- `src/routes/(protected)/dashboard/teacher/presques-evaluations/+page.server.ts` (new) — load + upload/update/delete actions
+- Code-reviewer pass applied: added warning logs on tag upsert failures
