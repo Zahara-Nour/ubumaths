@@ -7504,6 +7504,80 @@ export type Database = {
 					}
 				];
 			};
+			parody_evaluations: {
+				Row: {
+					created_at: string;
+					created_by: string | null;
+					description: string | null;
+					file_name: string;
+					file_size: number;
+					grade_levels: string[];
+					id: string;
+					mime_type: string;
+					storage_path: string;
+					tags: string[];
+					title: string;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					created_by?: string | null;
+					description?: string | null;
+					file_name: string;
+					file_size: number;
+					grade_levels?: string[];
+					id?: string;
+					mime_type: string;
+					storage_path: string;
+					tags?: string[];
+					title: string;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					created_by?: string | null;
+					description?: string | null;
+					file_name?: string;
+					file_size?: number;
+					grade_levels?: string[];
+					id?: string;
+					mime_type?: string;
+					storage_path?: string;
+					tags?: string[];
+					title?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'parody_evaluations_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'parody_evaluations_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'parody_evaluations_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'parody_evaluations_created_by_fkey';
+						columns: ['created_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			pending_students: {
 				Row: {
 					activated_at: string | null;
