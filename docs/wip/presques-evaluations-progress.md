@@ -44,8 +44,8 @@ Routes:
 | 1   | Migration DB (table + RLS + bucket) | ✅ Done |
 | 2   | Push migration + bucket Storage     | ✅ Done |
 | 3   | Form actions teacher                | ✅ Done |
-| 4   | Page teacher UI                     | ⏳ Next |
-| 5   | Page publique                       | pending |
+| 4   | Page teacher UI                     | ✅ Done |
+| 5   | Page publique                       | ⏳ Next |
 | 6   | Code review                         | pending |
 | 7   | Quality checks                      | pending |
 | 8   | Commit final                        | pending |
@@ -68,3 +68,9 @@ Routes:
 - `src/lib/server/validation/parody-evaluations.ts` (new) — Zod schemas
 - `src/routes/(protected)/dashboard/teacher/presques-evaluations/+page.server.ts` (new) — load + upload/update/delete actions
 - Code-reviewer pass applied: added warning logs on tag upsert failures
+
+### Phase 4
+
+- `src/routes/(protected)/dashboard/teacher/presques-evaluations/+page.svelte` (new) — grid of cards, Upload/Edit/Delete dialogs, GradeBadgeSelector + TagBadgeSelector
+- svelte-autofixer: clean (no issues)
+- code-reviewer: no blocking issues; one project-wide a11y note (label `aria-labelledby` on shared selectors) left out of scope.
