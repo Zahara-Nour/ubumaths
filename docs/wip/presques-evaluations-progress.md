@@ -46,9 +46,9 @@ Routes:
 | 3   | Form actions teacher                | ✅ Done |
 | 4   | Page teacher UI                     | ✅ Done |
 | 5   | Page publique                       | ✅ Done |
-| 6   | Code review global                  | ⏳ Next |
-| 7   | Quality checks                      | pending |
-| 8   | Commit final                        | pending |
+| 6   | Code review global                  | ✅ Done |
+| 7   | Quality checks                      | ✅ Done |
+| 8   | Commit final                        | ⏳ Next |
 
 ## Files created/modified
 
@@ -81,3 +81,29 @@ Routes:
 - `src/routes/(public)/presques-evaluations/+page.svelte` (new) — public listing with grade/tag filters (AND), preview Dialog with iframe + download
 - svelte-autofixer: clean
 - code-reviewer fixes applied: removed conflicting `target="_blank"` on `download` links; pluralization "0 presque évaluation" (singular)
+
+### Phase 6 — Global code review
+
+- Cross-file integration review: integration coherent, no SQL injection paths, no PII leak, RLS + Zod + action checks form defense-in-depth.
+- Fix applied: log DB load error on public page for production observability.
+
+### Phase 7 — Quality checks
+
+- `npx eslint` on all new files: clean (no output)
+- `pnpm check:incremental`: 9 errors / 46 warnings — matches pre-existing baseline (no new errors introduced)
+- All Svelte files passed `mcp__svelte__svelte-autofixer` (no issues)
+
+## Summary
+
+Feature delivered end-to-end across 5 commits:
+
+1. `feat(db)`: cleanup retention (preparation, side cleanup)
+2. `feat(db): add parody_evaluations table and storage bucket`
+3. `feat(presques-evaluations): teacher upload/update/delete actions`
+4. `feat(presques-evaluations): teacher admin UI`
+5. `feat(presques-evaluations): public listing page with filters and preview`
+
+Routes available:
+
+- Public: `/presques-evaluations` (anyone can browse, preview, download)
+- Teacher admin: `/dashboard/teacher/presques-evaluations` (any teacher can upload; only owner edits/deletes)
