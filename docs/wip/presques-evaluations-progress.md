@@ -45,8 +45,8 @@ Routes:
 | 2   | Push migration + bucket Storage     | ✅ Done |
 | 3   | Form actions teacher                | ✅ Done |
 | 4   | Page teacher UI                     | ✅ Done |
-| 5   | Page publique                       | ⏳ Next |
-| 6   | Code review                         | pending |
+| 5   | Page publique                       | ✅ Done |
+| 6   | Code review global                  | ⏳ Next |
 | 7   | Quality checks                      | pending |
 | 8   | Commit final                        | pending |
 
@@ -74,3 +74,10 @@ Routes:
 - `src/routes/(protected)/dashboard/teacher/presques-evaluations/+page.svelte` (new) — grid of cards, Upload/Edit/Delete dialogs, GradeBadgeSelector + TagBadgeSelector
 - svelte-autofixer: clean (no issues)
 - code-reviewer: no blocking issues; one project-wide a11y note (label `aria-labelledby` on shared selectors) left out of scope.
+
+### Phase 5
+
+- `src/routes/(public)/presques-evaluations/+page.server.ts` (new) — public load, resolves Storage public URLs
+- `src/routes/(public)/presques-evaluations/+page.svelte` (new) — public listing with grade/tag filters (AND), preview Dialog with iframe + download
+- svelte-autofixer: clean
+- code-reviewer fixes applied: removed conflicting `target="_blank"` on `download` links; pluralization "0 presque évaluation" (singular)
