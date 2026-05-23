@@ -13,7 +13,7 @@ import type { PageServerLoad } from './$types';
 const STORAGE_BUCKET = 'parody-evaluations';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { data: evaluations } = await locals.supabase
+	const { data: evaluations, error: loadError } = await locals.supabase
 		.from('parody_evaluations')
 		.select(
 			`
@@ -30,6 +30,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 		`
 		)
 		.order('created_at', { ascending: false });
+
+	if (loadError) {
+		console.error('[presques-evaluations:public] Load error:', loadError);
+	}
 
 	type RawEvaluation = NonNullable<typeof evaluations>[number];
 
