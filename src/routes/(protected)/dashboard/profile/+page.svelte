@@ -22,6 +22,7 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { submitLogoutForm } from '$lib/utils/auth';
 	import { LogOut, Download, Loader2, Trash2, Sun, Moon, Minus, Plus } from 'lucide-svelte';
 
 	let { data }: { data: LayoutData } = $props();
@@ -33,14 +34,6 @@
 
 	let isExporting = $state(false);
 	let accountDeletionDialogOpen = $state(false);
-
-	async function handleLogout() {
-		const form = document.createElement('form');
-		form.method = 'POST';
-		form.action = '/auth/logout';
-		document.body.appendChild(form);
-		form.submit();
-	}
 
 	// GDPR Art. 20 — data portability
 	async function handleExport() {
@@ -176,7 +169,7 @@
 				{/if}
 			</Button>
 
-			<Button variant="outline" onclick={handleLogout}>
+			<Button variant="outline" onclick={submitLogoutForm}>
 				<LogOut class="mr-2 h-4 w-4" aria-hidden="true" />
 				Se déconnecter
 			</Button>
