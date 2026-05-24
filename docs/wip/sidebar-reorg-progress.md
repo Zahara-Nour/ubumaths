@@ -108,12 +108,25 @@ Le Header.svelte avait sa propre `sidebarItems` (drawer mobile public) DIFFÉREN
 
 **Tests** : 18/18 dashboard-nav + 16/16 Sidebar tous verts.
 
-### Phase 3 — Avatar + contrôles mobile ⏳ À VENIR
+### Phase 3 — Avatar + contrôles mobile ✅ TERMINÉE
 
-**Fichiers** :
+**Fichiers modifiés** :
 
-- `src/lib/components/Header.svelte` — avatar = lien direct, déplacer mobile controls vers Sheet menu existant, retirer GDPR.
-- `src/routes/(protected)/dashboard/+layout.svelte` — avatar = lien `/dashboard/profile`, déplacer mobile controls vers MobileNavDrawer, retirer GDPR.
+- `src/lib/components/Header.svelte` — Avatar = `<a href={resolve('/dashboard')}>` (plus de dropdown). Section "Compte" ajoutée au bas du Sheet mobile drawer (raccourci Mon espace + Déconnexion). Imports `DropdownMenu`, `Users`, `MessageCircle`, `Mail` retirés.
+- `src/routes/(protected)/dashboard/+layout.svelte` — Avatar = `<a href="/dashboard/profile">`. Supprimé : DropdownMenu entier, `handleExport`, `isExporting`, `accountDeletionDialogOpen`, `<AccountDeletionDialog>` + import. `MobileNavDrawer` reçoit maintenant `showSettings=true`. Imports `DropdownMenu`, `Trash2`, `Download`, `Loader2` retirés. Aria-labels traduits en français (Réduire/Augmenter la taille du texte, Basculer le mode sombre/plein écran, Retour à l'accueil). Rail nav reçoit `aria-label="Navigation principale"`.
+- `src/lib/components/navigation/MobileNavDrawer.svelte` — Nouveau prop optionnel `showSettings?: boolean` (default false → rétrocompat avec `/messages/+layout.svelte`). Quand true, render section "Préférences" en bas (dark mode + taille texte) avec aria-labels français.
+- `src/routes/(protected)/dashboard/profile/+page.svelte` — Étoffé : sections Informations utilisateur / Préférences d'affichage / Compte. Inclut bouton Export, Déconnexion, Supprimer mon compte + AccountDeletionDialog. Icônes Lucide marquées `aria-hidden="true"` (décoratives, le texte du bouton porte le sens).
+
+**Audits effectués** :
+
+- Code review (Opus) : OK avec 1 fix appliqué (bordure visuelle restaurée sur l'avatar).
+- Accessibilité (Sonnet) : 6 findings, 5 corrigés (titre redondant retiré, aria-labels traduits, nav aria-label ajouté, icônes décoratives marquées). 1 hors scope (UserAvatar `<img alt>` double-annonce — dette tech à traiter dans le composant lui-même).
+
+**Dette tech notée** (pour plus tard) :
+
+- `handleLogout` dupliqué 3× (Header.svelte, +layout.svelte, profile/+page.svelte) → extraire dans `$lib/utils/auth.ts`.
+- `UserAvatar.svelte` `<img alt>` non muet quand le wrapper porte déjà `aria-label` → ajouter un prop `imageAlt` ou marquer interne `aria-hidden`.
+- 4 warnings "href without resolve()" pré-existants dans `+layout.svelte` (gidouille + rail nav links + footer nav links) — pattern existant, non corrigé dans cette phase.
 
 ### Phase 4 — Quality checks ⏳ À VENIR
 

@@ -2,6 +2,9 @@
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import * as Sheet from '$lib/components/ui/sheet';
+	import { theme } from '$lib/stores/theme.svelte';
+	import { fontSize } from '$lib/stores/fontSize.svelte';
+	import { Sun, Moon, Minus, Plus } from 'lucide-svelte';
 	import type { Component } from 'svelte';
 
 	/**
@@ -25,7 +28,8 @@
 		items = [],
 		onNavigate,
 		onLogout,
-		isActive: customIsActive
+		isActive: customIsActive,
+		showSettings = false
 	}: {
 		open?: boolean;
 		items: NavItem[];
@@ -33,6 +37,8 @@
 		onLogout?: () => void;
 		/** Custom function to check if a link is active (for complex route matching) */
 		isActive?: (href: string) => boolean;
+		/** When true, render a "Préférences" section (dark mode, font size) at the bottom. */
+		showSettings?: boolean;
 	} = $props();
 
 	let mainItems = $derived(items.filter((i) => !i.footer));
@@ -87,12 +93,12 @@
 {/snippet}
 
 <Sheet.Root bind:open>
-	<Sheet.Content side="left" class="w-72 p-0">
+	<Sheet.Content side="left" class="flex w-72 flex-col p-0">
 		<Sheet.Header class="border-b border-border px-4 py-3">
 			<Sheet.Title class="text-lg font-semibold">Navigation</Sheet.Title>
 		</Sheet.Header>
 
-		<nav class="flex flex-col py-2" aria-label="Navigation principale">
+		<nav class="flex flex-1 flex-col py-2" aria-label="Navigation principale">
 			{#each mainItems as item (item.href)}
 				{@render itemLink(item)}
 			{/each}
@@ -115,5 +121,49 @@
 				{/each}
 			{/if}
 		</nav>
+
+		{#if showSettings}
+			<div class="border-t border-border px-4 py-3">
+				<p class="mb-2 text-xs font-medium text-muted-foreground uppercase">Préférences</p>
+				<div class="flex items-center justify-between gap-4">
+					<button
+						type="button"
+						onclick={() => theme.toggle()}
+						class="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+						aria-label="Basculer le mode sombre"
+					>
+						{#if theme.dark}
+							<Sun class="h-5 w-5" />
+							<span>Clair</span>
+						{:else}
+							<Moon class="h-5 w-5" />
+							<span>Sombre</span>
+						{/if}
+					</button>
+
+					<div class="flex items-center gap-1">
+						<button
+							type="button"
+							onclick={() => fontSize.decrease()}
+							disabled={!fontSize.canDecrease}
+							class="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-muted disabled:opacity-50"
+							aria-label="Réduire la taille du texte"
+						>
+							<Minus class="h-4 w-4" />
+						</button>
+						<span class="text-sm font-medium">A</span>
+						<button
+							type="button"
+							onclick={() => fontSize.increase()}
+							disabled={!fontSize.canIncrease}
+							class="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-muted disabled:opacity-50"
+							aria-label="Augmenter la taille du texte"
+						>
+							<Plus class="h-4 w-4" />
+						</button>
+					</div>
+				</div>
+			</div>
+		{/if}
 	</Sheet.Content>
 </Sheet.Root>

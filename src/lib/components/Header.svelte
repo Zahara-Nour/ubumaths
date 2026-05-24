@@ -36,7 +36,6 @@
 -->
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { theme } from '$lib/stores/theme.svelte';
@@ -55,9 +54,6 @@
 		Plus,
 		Maximize,
 		Minimize,
-		Users,
-		MessageCircle,
-		Mail,
 		Home,
 		Gamepad2,
 		Terminal,
@@ -215,96 +211,24 @@
 
 		<!-- Navigation -->
 		<nav class="flex items-center gap-2">
-			<!-- Auth section -->
+			<!-- Auth section: avatar links directly to /dashboard (Mon espace).
+				 Dropdown menu was removed in Phase 3 of the sidebar reorganization;
+				 logout + GDPR features moved to /dashboard/profile. -->
 			{#if user}
 				<div class="border-l pl-2">
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger
-							class="relative h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-						>
-							<UserAvatar
-								avatar_url={profile?.avatar_url}
-								role={profile?.role}
-								firstname={profile?.firstname}
-								lastname={profile?.lastname}
-								class="h-10 w-10"
-							/>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content align="end" class="w-56">
-							<DropdownMenu.Label>{user?.email}</DropdownMenu.Label>
-							<DropdownMenu.Separator />
-
-							<!-- Mobile-only controls -->
-							<div class="md:hidden">
-								<!-- Dark mode toggle -->
-								<DropdownMenu.Item onclick={() => theme.toggle()}>
-									{#if theme.dark}
-										<Sun class="mr-2 h-4 w-4" />
-										Mode clair
-									{:else}
-										<Moon class="mr-2 h-4 w-4" />
-										Mode sombre
-									{/if}
-								</DropdownMenu.Item>
-
-								<!-- Font size controls -->
-								<DropdownMenu.Sub>
-									<DropdownMenu.SubTrigger>
-										<span class="mr-2 text-sm font-medium">A</span>
-										Taille du texte
-									</DropdownMenu.SubTrigger>
-									<DropdownMenu.SubContent>
-										<DropdownMenu.Item
-											onclick={() => fontSize.decrease()}
-											disabled={!fontSize.canDecrease}
-										>
-											<Minus class="mr-2 h-4 w-4" />
-											Réduire
-										</DropdownMenu.Item>
-										<DropdownMenu.Item
-											onclick={() => fontSize.increase()}
-											disabled={!fontSize.canIncrease}
-										>
-											<Plus class="mr-2 h-4 w-4" />
-											Agrandir
-										</DropdownMenu.Item>
-									</DropdownMenu.SubContent>
-								</DropdownMenu.Sub>
-
-								<DropdownMenu.Separator />
-							</div>
-
-							<DropdownMenu.Item>
-								<a href={resolve('/dashboard')} class="flex w-full items-center">
-									<LayoutDashboard class="mr-2 h-4 w-4" />
-									Tableau de bord
-								</a>
-							</DropdownMenu.Item>
-							<DropdownMenu.Item>
-								<a href={resolve('/dashboard/friends')} class="flex w-full items-center">
-									<Users class="mr-2 h-4 w-4" />
-									Amis
-								</a>
-							</DropdownMenu.Item>
-							<DropdownMenu.Item>
-								<a href={resolve('/dashboard/chat')} class="flex w-full items-center">
-									<MessageCircle class="mr-2 h-4 w-4" />
-									Chat
-								</a>
-							</DropdownMenu.Item>
-							<DropdownMenu.Item>
-								<a href={resolve('/messages/inbox')} class="flex w-full items-center">
-									<Mail class="mr-2 h-4 w-4" />
-									Messages
-								</a>
-							</DropdownMenu.Item>
-							<DropdownMenu.Separator />
-							<DropdownMenu.Item onclick={handleLogout}>
-								<LogOut class="mr-2 h-4 w-4" />
-								Déconnexion
-							</DropdownMenu.Item>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
+					<a
+						href={resolve('/dashboard')}
+						class="relative block h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+						aria-label="Aller à mon espace"
+					>
+						<UserAvatar
+							avatar_url={profile?.avatar_url}
+							role={profile?.role}
+							firstname={profile?.firstname}
+							lastname={profile?.lastname}
+							class="h-10 w-10"
+						/>
+					</a>
 				</div>
 			{:else}
 				<Button href="/auth/login" size="sm" variant="destructive" aria-label="Se connecter">
@@ -447,5 +371,33 @@
 				</div>
 			</div>
 		</div>
+
+		{#if user}
+			<!-- Account section: shortcut to personal space + logout -->
+			<div class="border-t border-border px-4 py-3">
+				<p class="mb-2 text-xs font-medium text-muted-foreground uppercase">Compte</p>
+				<div class="flex flex-col gap-1">
+					<a
+						href={resolve('/dashboard')}
+						onclick={handleNavClick}
+						class="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted"
+					>
+						<LayoutDashboard class="h-5 w-5 shrink-0" />
+						<span>Mon espace</span>
+					</a>
+					<button
+						type="button"
+						onclick={() => {
+							mobileMenuOpen = false;
+							handleLogout();
+						}}
+						class="flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-muted"
+					>
+						<LogOut class="h-5 w-5 shrink-0" />
+						<span>Déconnexion</span>
+					</button>
+				</div>
+			</div>
+		{/if}
 	</Sheet.Content>
 </Sheet.Root>

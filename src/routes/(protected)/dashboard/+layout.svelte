@@ -36,22 +36,9 @@
 	import type { LayoutData } from './$types';
 	import { page } from '$app/state';
 	import { navigating } from '$app/stores';
-	import {
-		LogOut,
-		Sun,
-		Moon,
-		Minus,
-		Plus,
-		Maximize,
-		Minimize,
-		Menu,
-		Trash2,
-		Download,
-		Loader2
-	} from 'lucide-svelte';
+	import { Sun, Moon, Minus, Plus, Maximize, Minimize, Menu } from 'lucide-svelte';
 	import { getNavLinks, getZoneTitle } from '$lib/config/dashboard-nav';
 	import { Button } from '$lib/components/ui/button';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
@@ -71,7 +58,6 @@
 	import BugReportFAB from '$lib/components/bug-reports/BugReportFAB.svelte';
 	import BugReportDialog from '$lib/components/bug-reports/BugReportDialog.svelte';
 	import FreezeReportPrompt from '$lib/components/bug-reports/FreezeReportPrompt.svelte';
-	import AccountDeletionDialog from '$lib/components/account/AccountDeletionDialog.svelte';
 	import {
 		setFreezePromptCallback,
 		setAutoReportCallback,
@@ -98,12 +84,6 @@
 
 	// Bug report dialog state
 	let bugReportDialogOpen = $state(false);
-
-	// Account deletion dialog state
-	let accountDeletionDialogOpen = $state(false);
-
-	// Data export state (GDPR Art. 20)
-	let isExporting = $state(false);
 
 	// Freeze prompt state
 	let freezePromptOpen = $state(false);
@@ -201,51 +181,6 @@
 		form.action = '/auth/logout';
 		document.body.appendChild(form);
 		form.submit();
-	}
-
-	// Handle data export (GDPR Art. 20 - Data Portability)
-	async function handleExport() {
-		if (isExporting) return;
-
-		isExporting = true;
-		try {
-			const response = await fetch('/api/account/export');
-
-			if (!response.ok) {
-				if (response.status === 429) {
-					toaster.error('Export limité à 1 fois par heure. Réessayez plus tard.');
-				} else {
-					toaster.error("Erreur lors de l'export des données");
-				}
-				return;
-			}
-
-			// Get the filename from Content-Disposition header or generate one
-			const contentDisposition = response.headers.get('Content-Disposition');
-			let filename = 'ubumaths-export.json';
-			if (contentDisposition) {
-				const match = contentDisposition.match(/filename="(.+)"/);
-				if (match) filename = match[1];
-			}
-
-			// Download the file
-			const blob = await response.blob();
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = filename;
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-			URL.revokeObjectURL(url);
-
-			toaster.success('Données exportées avec succès');
-		} catch (err) {
-			console.error('Export failed:', err);
-			toaster.error("Erreur lors de l'export des données");
-		} finally {
-			isExporting = false;
-		}
 	}
 
 	// Fetch initial activity data when dashboard loads
@@ -394,7 +329,7 @@
 					href="/"
 					data-sveltekit-preload-data="hover"
 					class="transition-opacity hover:opacity-80"
-					aria-label="Back to home"
+					aria-label="Retour à l'accueil"
 				>
 					<img src={gidouille} alt="Gidouille" class="h-8 w-8" />
 				</a>
@@ -417,90 +352,23 @@
 				</div>
 			{/if}
 
-			<!-- Right side: Avatar with dropdown -->
+			<!-- Right side: Avatar links directly to /dashboard/profile (Mon profil).
+				 Dropdown was removed in Phase 3; logout / GDPR / preferences now live
+				 on the profile page and in the mobile hamburger drawer. -->
 			<div class="border-l pl-2">
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger
-						class="relative h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-					>
-						<UserAvatar
-							avatar_url={data.profile.avatar_url}
-							role={data.profile.role}
-							firstname={data.profile.firstname}
-							lastname={data.profile.lastname}
-							class="h-10 w-10"
-						/>
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content align="end" class="w-56">
-						<DropdownMenu.Label>{data.profile.email}</DropdownMenu.Label>
-						<DropdownMenu.Separator />
-
-						<!-- Mobile-only controls -->
-						<div class="md:hidden">
-							<!-- Dark mode toggle -->
-							<DropdownMenu.Item onclick={() => theme.toggle()}>
-								{#if theme.dark}
-									<Sun class="mr-2 h-4 w-4" />
-									Mode clair
-								{:else}
-									<Moon class="mr-2 h-4 w-4" />
-									Mode sombre
-								{/if}
-							</DropdownMenu.Item>
-
-							<!-- Font size controls -->
-							<DropdownMenu.Sub>
-								<DropdownMenu.SubTrigger>
-									<span class="mr-2 text-sm font-medium">A</span>
-									Taille du texte
-								</DropdownMenu.SubTrigger>
-								<DropdownMenu.SubContent>
-									<DropdownMenu.Item
-										onclick={() => fontSize.decrease()}
-										disabled={!fontSize.canDecrease}
-									>
-										<Minus class="mr-2 h-4 w-4" />
-										Réduire
-									</DropdownMenu.Item>
-									<DropdownMenu.Item
-										onclick={() => fontSize.increase()}
-										disabled={!fontSize.canIncrease}
-									>
-										<Plus class="mr-2 h-4 w-4" />
-										Agrandir
-									</DropdownMenu.Item>
-								</DropdownMenu.SubContent>
-							</DropdownMenu.Sub>
-
-							<DropdownMenu.Separator />
-						</div>
-
-						<DropdownMenu.Item onclick={handleExport} disabled={isExporting}>
-							{#if isExporting}
-								<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-								Export en cours...
-							{:else}
-								<Download class="mr-2 h-4 w-4" />
-								Exporter mes données
-							{/if}
-						</DropdownMenu.Item>
-
-						<DropdownMenu.Item
-							onclick={() => (accountDeletionDialogOpen = true)}
-							class="text-destructive focus:text-destructive"
-						>
-							<Trash2 class="mr-2 h-4 w-4" />
-							Supprimer mon compte
-						</DropdownMenu.Item>
-
-						<DropdownMenu.Separator />
-
-						<DropdownMenu.Item onclick={handleLogout}>
-							<LogOut class="mr-2 h-4 w-4" />
-							Déconnexion
-						</DropdownMenu.Item>
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
+				<a
+					href="/dashboard/profile"
+					class="relative block h-10 w-10 cursor-pointer rounded-full transition-all hover:ring-2 hover:ring-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+					aria-label="Mon profil"
+				>
+					<UserAvatar
+						avatar_url={data.profile.avatar_url}
+						role={data.profile.role}
+						firstname={data.profile.firstname}
+						lastname={data.profile.lastname}
+						class="h-10 w-10"
+					/>
+				</a>
 			</div>
 
 			<!-- Desktop controls - hidden on mobile -->
@@ -512,8 +380,8 @@
 						disabled={!fontSize.canDecrease}
 						variant="ghost"
 						size="icon-sm"
-						aria-label="Decrease font size"
-						title="Decrease font size"
+						aria-label="Réduire la taille du texte"
+						title="Réduire la taille du texte"
 					>
 						<Minus class="h-5 w-5" />
 					</Button>
@@ -523,8 +391,8 @@
 						disabled={!fontSize.canIncrease}
 						variant="ghost"
 						size="icon-sm"
-						aria-label="Increase font size"
-						title="Increase font size"
+						aria-label="Augmenter la taille du texte"
+						title="Augmenter la taille du texte"
 					>
 						<Plus class="h-5 w-5" />
 					</Button>
@@ -535,7 +403,7 @@
 					onclick={() => theme.toggle()}
 					variant="ghost"
 					size="icon-sm"
-					aria-label="Toggle dark mode"
+					aria-label="Basculer le mode sombre"
 				>
 					{#if theme.dark}
 						<Sun class="h-6 w-6" />
@@ -549,8 +417,8 @@
 					onclick={toggleFullscreen}
 					variant="ghost"
 					size="icon-sm"
-					aria-label="Toggle fullscreen"
-					title="Toggle fullscreen"
+					aria-label="Basculer le plein écran"
+					title="Basculer le plein écran"
 				>
 					{#if isFullscreen}
 						<Minimize class="h-6 w-6" />
@@ -581,7 +449,7 @@
 				{/if}
 			{/snippet}
 
-			<nav class="flex flex-col items-center gap-1 py-4">
+			<nav class="flex flex-col items-center gap-1 py-4" aria-label="Navigation principale">
 				{#each mainLinks as link (link.href)}
 					<a
 						href={link.href}
@@ -675,6 +543,7 @@
 		items={allLinks as NavItem[]}
 		{isActive}
 		onLogout={handleLogout}
+		showSettings
 	/>
 </div>
 
@@ -694,10 +563,4 @@
 	bind:open={freezePromptOpen}
 	freezeDuration={freezePromptDuration}
 	onOpenChange={(open) => (freezePromptOpen = open)}
-/>
-
-<!-- Account Deletion Dialog (GDPR Art. 17) -->
-<AccountDeletionDialog
-	bind:open={accountDeletionDialogOpen}
-	onOpenChange={(open) => (accountDeletionDialogOpen = open)}
 />
