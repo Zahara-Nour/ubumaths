@@ -24,6 +24,7 @@ import {
 import { requireConsent } from '$lib/server/middleware/consent';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { calculateMathemoTheoreticalReward } from '$lib/server/games/reward-mathemo';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
 // ============================================================================
 // GET - Fetch user's current stats
@@ -259,6 +260,9 @@ async function checkAndAwardMathemoMilestones(
 	const eligibleSlugs = checks.filter((c) => c.condition).map((c) => c.slug);
 	if (eligibleSlugs.length === 0) return;
 
+	// SELECTs below use the caller's authenticated client (RLS-checked).
+	// Writes (INSERT + RPC) switch to the service-role client further down —
+	// see the `createServiceRoleClient()` call after the `existingIds` set.
 	const { data: achievements } = await supabase
 		.from('achievements')
 		.select('id, name, metadata')
@@ -275,6 +279,11 @@ async function checkAndAwardMathemoMilestones(
 
 	const existingIds = new Set((existing || []).map((e) => e.achievement_id));
 
+	// Writes to student_achievements + crediting gidouilles must go through
+	// the service-role client (RLS only allows service_role inserts —
+	// see migration 20260524100843_unblock_student_achievements_inserts.sql).
+	const admin = createServiceRoleClient();
+
 	for (const achievement of achievements) {
 		if (existingIds.has(achievement.id)) continue;
 
@@ -282,7 +291,7 @@ async function checkAndAwardMathemoMilestones(
 			(achievement.metadata as { gidouilles_reward?: number })?.gidouilles_reward ?? 0;
 		if (gidouillesReward <= 0) continue;
 
-		const { data: insertResult, error: insertError } = await supabase
+		const { data: insertResult, error: insertError } = await admin
 			.from('student_achievements')
 			.insert({
 				student_id: userId,
@@ -300,7 +309,7 @@ async function checkAndAwardMathemoMilestones(
 
 		if (!insertResult || insertResult.length === 0) continue;
 
-		const { error: gidouillesError } = await supabase.rpc('update_student_gidouilles', {
+		const { error: gidouillesError } = await admin.rpc('update_student_gidouilles', {
 			p_student_id: userId,
 			p_delta: gidouillesReward
 		});

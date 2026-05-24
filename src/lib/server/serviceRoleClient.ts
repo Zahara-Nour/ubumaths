@@ -42,7 +42,10 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/api/cleanup/',
 	'/api/errors/cleanup',
 	// GDPR account deletion (requires auth.admin.deleteUser)
-	'/api/account/delete'
+	'/api/account/delete',
+	// Game milestone awards (student_achievements RLS only allows service_role inserts)
+	'/api/games/2048/scores',
+	'/api/games/mathemo/scores'
 ] as const;
 
 /**
