@@ -60,8 +60,10 @@
 		Mail,
 		Home,
 		Gamepad2,
-		FileSpreadsheet,
-		ListTodo
+		Terminal,
+		Calculator,
+		PenTool,
+		Laugh
 	} from 'lucide-svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import { resolve } from '$app/paths';
@@ -108,16 +110,22 @@
 			{ label: 'Accueil', href: '/', icon: Home },
 			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
 			{
-				label: 'Worksheets',
-				href: '/dashboard/teacher/contenu/worksheets',
-				icon: FileSpreadsheet,
+				label: 'Python',
+				href: '/python',
+				icon: Terminal,
+				roles: ['student', 'teacher']
+			},
+			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
+			{
+				label: 'Whiteboard',
+				href: '/whiteboard',
+				icon: PenTool,
 				roles: ['teacher']
 			},
 			{
-				label: 'Mon travail',
-				href: '/dashboard/student/work',
-				icon: ListTodo,
-				roles: ['student']
+				label: 'Zygomatics',
+				href: '/presques-evaluations',
+				icon: Laugh
 			}
 		]
 	}: {
@@ -192,7 +200,14 @@
 			class="flex flex-1 items-center justify-center gap-2 transition-opacity hover:opacity-80 md:flex-none md:justify-start"
 		>
 			<img src={gidouille} alt="Gidouille" class="h-6 w-6" />
-			<h1 class="text-xl font-bold tracking-tight text-foreground md:text-2xl">{title}</h1>
+			<div class="flex flex-col leading-none">
+				<h1 class="text-xl font-bold tracking-tight text-foreground md:text-2xl">{title}</h1>
+				<span
+					class="text-[10px] font-medium tracking-wider text-muted-foreground uppercase md:text-xs"
+				>
+					Outils libres
+				</span>
+			</div>
 		</a>
 
 		<!-- Spacer - only on desktop -->
