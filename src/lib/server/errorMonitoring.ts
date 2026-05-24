@@ -11,27 +11,12 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createClient } from '@supabase/supabase-js';
 import type { Database, Json } from '$lib/types/database';
 import { createSystemNotification } from './notifications';
 import { dev } from '$app/environment';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
+import { createServiceRoleClient } from './serviceRoleClient';
 
 type SupabaseClientType = SupabaseClient<Database>;
-
-/**
- * Create a service role client for error logging (bypasses RLS)
- * This is necessary because error logging should always work regardless of user permissions
- */
-function getServiceRoleClient(): SupabaseClient<Database> {
-	return createClient<Database>(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-		auth: {
-			autoRefreshToken: false,
-			persistSession: false
-		}
-	});
-}
 
 // =====================================================
 // TYPES
@@ -269,7 +254,7 @@ export async function logError(
 		};
 
 		// Use service role client to bypass RLS
-		const serviceClient = getServiceRoleClient();
+		const serviceClient = createServiceRoleClient();
 
 		// Prepare insert data
 		const insertData: Database['public']['Tables']['error_logs']['Insert'] = {
@@ -340,7 +325,7 @@ async function notifyCriticalError(
 ): Promise<void> {
 	try {
 		// Use service role client for system notifications
-		const serviceClient = getServiceRoleClient();
+		const serviceClient = createServiceRoleClient();
 
 		// Create system notification for admins
 		await createSystemNotification(serviceClient, {
