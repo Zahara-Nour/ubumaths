@@ -2013,6 +2013,14 @@ class MinesweeperStore {
 		// Update game status
 		game.status = won ? 'won' : 'lost';
 
+		// On victory, reveal remaining unflagged mines so the player can
+		// verify where they were. Correctly-flagged mines keep their 🚩.
+		// (On loss, revealAllMines() is called further below to show every
+		// bomb — including those the player had flagged — as 💣.)
+		if (won) {
+			this.revealUnflaggedMines();
+		}
+
 		try {
 			// Wait for DB game creation if it's still pending (race condition:
 			// game won on first click cascade before createGameInDatabase resolves)
@@ -2349,6 +2357,34 @@ class MinesweeperStore {
 			for (let col = 0; col < game.cols; col++) {
 				const cell = game.grid[row][col];
 				if (cell.isMine && !cell.isRevealed) {
+					cell.isRevealed = true;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Reveal all UNFLAGGED mines (on game victory).
+	 *
+	 * On a win, the player can finish without having flagged every mine
+	 * (it is enough to reveal every safe cell). We still want them to see
+	 * where the remaining bombs were, for verification — but we keep the
+	 * flag visible on mines they correctly identified, so the post-mortem
+	 * shows how good their flagging was.
+	 *
+	 * Cell rendering:
+	 *   - flagged + unrevealed → 🚩 (preserved here by the !isFlagged guard)
+	 *   - mine + revealed       → 💣 (what we set on unflagged mines)
+	 */
+	private revealUnflaggedMines(): void {
+		if (!this.currentGame) return;
+
+		const game = this.currentGame;
+
+		for (let row = 0; row < game.rows; row++) {
+			for (let col = 0; col < game.cols; col++) {
+				const cell = game.grid[row][col];
+				if (cell.isMine && !cell.isRevealed && !cell.isFlagged) {
 					cell.isRevealed = true;
 				}
 			}
@@ -2862,6 +2898,12 @@ class MinesweeperStore {
 
 		// Update game status
 		game.status = won ? 'won' : 'lost';
+
+		// On victory, reveal remaining unflagged mines so the player can
+		// verify where they were. Correctly-flagged mines keep their 🚩.
+		if (won) {
+			this.revealUnflaggedMines();
+		}
 
 		// Mark as completing (keeps board visible during API call)
 		this.isCompletingGame = true;
