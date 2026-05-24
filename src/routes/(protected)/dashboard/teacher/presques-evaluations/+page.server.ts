@@ -49,14 +49,22 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	type RawEvaluation = NonNullable<typeof evaluations>[number];
 
-	// Resolve public URLs once on the server so the preview iframe can use them.
+	// Resolve URLs once on the server. publicUrl is for the iframe preview;
+	// downloadUrl uses the ?download= query so a cross-origin click triggers
+	// an actual download instead of opening the PDF inline.
 	const withUrls = (evaluations ?? []).map((evaluation: RawEvaluation) => {
 		const { data: urlData } = locals.supabase.storage
 			.from(STORAGE_BUCKET)
 			.getPublicUrl(evaluation.storage_path);
+		const { data: downloadData } = locals.supabase.storage
+			.from(STORAGE_BUCKET)
+			.getPublicUrl(evaluation.storage_path, {
+				download: evaluation.file_name
+			});
 		return {
 			...evaluation,
-			publicUrl: urlData?.publicUrl ?? null
+			publicUrl: urlData?.publicUrl ?? null,
+			downloadUrl: downloadData?.publicUrl ?? null
 		};
 	});
 

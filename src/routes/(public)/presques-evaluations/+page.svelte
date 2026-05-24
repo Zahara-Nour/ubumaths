@@ -211,11 +211,11 @@
 							<Eye class="mr-1 h-3.5 w-3.5" />
 							Aperçu
 						</Button>
-						{#if evaluation.publicUrl}
+						{#if evaluation.downloadUrl}
 							<Button
 								variant="default"
 								size="sm"
-								href={evaluation.publicUrl}
+								href={evaluation.downloadUrl}
 								download={evaluation.file_name}
 							>
 								<Download class="mr-1 h-3.5 w-3.5" />
@@ -267,7 +267,9 @@
 							<ExternalLink class="mr-1 h-3.5 w-3.5" />
 							Nouvel onglet
 						</Button>
-						<Button href={previewTarget.publicUrl} download={previewTarget.file_name}>
+					{/if}
+					{#if previewTarget.downloadUrl}
+						<Button href={previewTarget.downloadUrl} download={previewTarget.file_name}>
 							<Download class="mr-1 h-3.5 w-3.5" />
 							Télécharger
 						</Button>
