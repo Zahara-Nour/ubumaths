@@ -3,9 +3,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import { FileText, Eye, Download, Calendar, User, ExternalLink } from 'lucide-svelte';
+	import { FileText, Eye, Download, Calendar, User, ExternalLink, X } from 'lucide-svelte';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
 	import type { PageData } from './$types';
@@ -65,6 +63,35 @@
 		data.evaluations.filter((e) => matchesGradeFilter(e) && matchesTagFilter(e))
 	);
 
+	// Distinct grade codes and tags actually present in the loaded collection,
+	// sorted by GRADE_CODES order (curriculum) and alphabetically respectively.
+	const availableGrades = $derived(
+		GRADE_CODES.filter((grade) =>
+			data.evaluations.some((e) => (e.grade_levels ?? []).includes(grade))
+		)
+	);
+
+	const availableTags = $derived(
+		data.evaluations
+			.flatMap((e) => e.tags ?? [])
+			.filter((tag, idx, arr) => arr.indexOf(tag) === idx)
+			.sort((a, b) => a.localeCompare(b, 'fr'))
+	);
+
+	function toggleGrade(grade: GradeCode) {
+		selectedGrades = selectedGrades.includes(grade)
+			? selectedGrades.filter((g) => g !== grade)
+			: [...selectedGrades, grade];
+	}
+
+	function toggleTag(tag: string) {
+		selectedTags = selectedTags.includes(tag)
+			? selectedTags.filter((t) => t !== tag)
+			: [...selectedTags, tag];
+	}
+
+	const hasActiveFilters = $derived(selectedGrades.length > 0 || selectedTags.length > 0);
+
 	function openPreview(evaluation: Evaluation) {
 		previewTarget = evaluation;
 	}
@@ -90,46 +117,65 @@
 		</p>
 	</header>
 
-	<!-- Filters -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title class="text-base">Filtres</Card.Title>
-			<Card.Description class="text-xs">
-				Sélectionnez un ou plusieurs niveaux et/ou thèmes. Les filtres se combinent (ET).
-			</Card.Description>
-		</Card.Header>
-		<Card.Content class="space-y-3">
-			<div class="space-y-1">
-				<p class="text-xs font-medium text-muted-foreground">Niveau</p>
-				<GradeBadgeSelector bind:value={selectedGrades} placeholder="Tous les niveaux" />
-			</div>
-			<div class="space-y-1">
-				<p class="text-xs font-medium text-muted-foreground">Thème</p>
-				<TagBadgeSelector bind:value={selectedTags} placeholder="Tous les thèmes" />
-			</div>
-		</Card.Content>
-	</Card.Root>
+	<!-- Compact filters -->
+	{#if availableGrades.length > 0 || availableTags.length > 0}
+		<div class="space-y-2 rounded-lg border bg-card/30 p-3 text-sm">
+			{#if availableGrades.length > 0}
+				<div class="flex flex-wrap items-center gap-1.5">
+					<span class="mr-1 text-xs font-medium text-muted-foreground">Niveau</span>
+					{#each availableGrades as grade (grade)}
+						{@const active = selectedGrades.includes(grade)}
+						<button
+							type="button"
+							onclick={() => toggleGrade(grade)}
+							class="rounded-full border px-2 py-0.5 text-xs transition-colors {active
+								? 'border-primary bg-primary text-primary-foreground'
+								: 'border-border bg-background hover:bg-muted'}"
+						>
+							{formatGradeShort(grade)}
+						</button>
+					{/each}
+				</div>
+			{/if}
 
-	<div class="flex items-center justify-between text-sm text-muted-foreground">
-		<span>
-			{filteredEvaluations.length} presque{filteredEvaluations.length >= 2 ? 's' : ''} évaluation{filteredEvaluations.length >=
-			2
-				? 's'
-				: ''}
-		</span>
-		{#if selectedGrades.length > 0 || selectedTags.length > 0}
-			<Button
-				variant="ghost"
-				size="sm"
-				onclick={() => {
-					selectedGrades = [];
-					selectedTags = [];
-				}}
-			>
-				Effacer les filtres
-			</Button>
-		{/if}
-	</div>
+			{#if availableTags.length > 0}
+				<div class="flex flex-wrap items-center gap-1.5">
+					<span class="mr-1 text-xs font-medium text-muted-foreground">Thème</span>
+					{#each availableTags as tag (tag)}
+						{@const active = selectedTags.includes(tag)}
+						<button
+							type="button"
+							onclick={() => toggleTag(tag)}
+							class="rounded-full border px-2 py-0.5 text-xs transition-colors {active
+								? 'border-primary bg-primary text-primary-foreground'
+								: 'border-border bg-background hover:bg-muted'}"
+						>
+							{tag}
+						</button>
+					{/each}
+				</div>
+			{/if}
+
+			<div class="flex items-center justify-between pt-1 text-xs text-muted-foreground">
+				<span>
+					{filteredEvaluations.length} résultat{filteredEvaluations.length >= 2 ? 's' : ''}
+				</span>
+				{#if hasActiveFilters}
+					<button
+						type="button"
+						class="flex items-center gap-1 hover:text-foreground"
+						onclick={() => {
+							selectedGrades = [];
+							selectedTags = [];
+						}}
+					>
+						<X class="h-3 w-3" />
+						Effacer
+					</button>
+				{/if}
+			</div>
+		</div>
+	{/if}
 
 	{#if data.evaluations.length === 0}
 		<Card.Root>
