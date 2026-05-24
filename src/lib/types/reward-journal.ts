@@ -38,6 +38,10 @@ export type RewardEventType =
 
 /**
  * Represents a single reward event from the database
+ *
+ * `balance_after` is computed server-side for gidouilles events only and
+ * reflects the student's gidouilles balance just after this event was applied.
+ * It is not stored in the DB; null for non-gidouilles events.
  */
 export interface RewardEvent {
 	id: string;
@@ -53,6 +57,7 @@ export interface RewardEvent {
 	class_id: string | null;
 	created_by: string | null;
 	created_at: string;
+	balance_after?: number | null;
 }
 
 // ============================================================================

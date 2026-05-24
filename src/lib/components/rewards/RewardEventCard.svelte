@@ -143,10 +143,15 @@
 
 		<!-- Right side: amount and date -->
 		<div class="shrink-0 text-right">
-			<div class={cn('font-bold', amountClass)}>
+			<div class={cn('flex items-baseline justify-end gap-1.5 font-bold', amountClass)}>
 				<span class="text-base">
 					{amountPrefix}{displayAmount}
 				</span>
+				{#if event.reward_type === 'gidouilles' && event.balance_after != null}
+					<span class="text-xs font-medium text-muted-foreground tabular-nums">
+						&rarr; {event.balance_after}
+					</span>
+				{/if}
 			</div>
 			<span class="text-xs text-muted-foreground">{formattedDate}</span>
 		</div>

@@ -25,6 +25,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { rewardJournalQuerySchema } from '$lib/server/validation/reward-journal';
+import { attachGidouillesBalances } from '$lib/server/reward-journal-balance';
 import type { RewardEvent, RewardJournalResponse } from '$lib/types/reward-journal';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
@@ -92,8 +93,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const totalPages = Math.ceil(total / limit);
 		const hasMore = page < totalPages;
 
+		const eventsList = (events as RewardEvent[]) ?? [];
+		await attachGidouillesBalances(eventsList, user.id, supabase);
+
 		const response: RewardJournalResponse = {
-			events: (events as RewardEvent[]) ?? [],
+			events: eventsList,
 			pagination: {
 				page,
 				limit,
