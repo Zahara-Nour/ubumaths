@@ -33,6 +33,7 @@ import {
 	rewardJournalQuerySchema,
 	studentIdParamSchema
 } from '$lib/server/validation/reward-journal';
+import { attachGidouillesBalances } from '$lib/server/reward-journal-balance';
 import type { RewardEvent, RewardJournalResponse } from '$lib/types/reward-journal';
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
@@ -119,8 +120,11 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		const totalPages = Math.ceil(total / limit);
 		const hasMore = page < totalPages;
 
+		const eventsList = (events as RewardEvent[]) ?? [];
+		await attachGidouillesBalances(eventsList, studentId, supabase);
+
 		const response: RewardJournalResponse = {
-			events: (events as RewardEvent[]) ?? [],
+			events: eventsList,
 			pagination: {
 				page,
 				limit,
