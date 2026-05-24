@@ -83,12 +83,30 @@ Le Header.svelte avait sa propre `sidebarItems` (drawer mobile public) DIFFÉREN
 - Deux sources de vérité pour les items publics (Sidebar.svelte + Header.svelte). Refacto possible mais hors scope.
 - Cast `resolve(item.href as '/')` dans Sidebar.svelte et Header.svelte — workaround pour typage strict de `resolve`.
 
-### Phase 2 — Sidebars dashboard ⏳ À VENIR
+### Phase 2 — Sidebars dashboard ✅ TERMINÉE
 
-**Fichiers** :
+**Fichiers modifiés / créés** :
 
-- `src/routes/(protected)/dashboard/+layout.svelte` — renommer titre header, renommer items nav, ajouter Cahier de textes, ajouter footer Mon profil + Déconnexion.
-- `src/routes/(protected)/dashboard/profile/+page.svelte` — **nouveau** — placeholder profil avec GDPR + déconnexion.
+- `src/lib/config/dashboard-nav.ts` (NEW) — config nav extraite du layout. Fonction pure `getNavLinks(role, pendingVip, marketplaceEnabled)` + helper `getZoneTitle(role)`. Types `DashboardNavLink` avec `footer?: boolean` et `logout?: boolean`.
+- `src/lib/config/dashboard-nav.test.ts` (NEW) — 18 tests (renommages, ajouts, conditional marketplace, badge, footer items, fallback).
+- `src/routes/(protected)/dashboard/+layout.svelte` — utilise la config extraite, titre rôle-specific via `getZoneTitle`, rendu rail en 2 sections (main + footer séparés par `<hr>`), Déconnexion = `<button>` avec `handleLogout`. Snippet `linkBody` pour réutiliser icon+label+badge.
+- `src/lib/components/navigation/MobileNavDrawer.svelte` — type `NavItem` étendu avec `footer`/`logout`. Prop `onLogout?: () => void`. Rendu en 2 sections + snippet `itemLink`. `resolve()` ajouté.
+- `src/routes/(protected)/dashboard/profile/+page.svelte` (NEW) — placeholder Mon profil : avatar + info utilisateur + bouton déconnexion. GDPR à migrer ici en Phase 3.
+
+**Renommages appliqués** :
+
+- Dashboard → Tableau de bord
+- Cours (élève + prof) → Mes cours
+- Contenu (prof) → Mes contenus
+- Python (prof) → Mes exercices Python
+- Gamification (prof) → Récompenses
+
+**Ajouts** :
+
+- Cahier de textes (élève + prof)
+- Mon profil + Déconnexion (footer, séparés par `<hr>`)
+
+**Tests** : 18/18 dashboard-nav + 16/16 Sidebar tous verts.
 
 ### Phase 3 — Avatar + contrôles mobile ⏳ À VENIR
 
