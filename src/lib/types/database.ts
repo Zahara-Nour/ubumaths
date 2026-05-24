@@ -14535,6 +14535,10 @@ export type Database = {
 				Returns: Json;
 			};
 			is_admin: { Args: never; Returns: boolean };
+			is_assessment_owner: {
+				Args: { p_assessment_id: string };
+				Returns: boolean;
+			};
 			is_assignment_creator: {
 				Args: { p_assignment_id: string };
 				Returns: boolean;
@@ -14903,6 +14907,10 @@ export type Database = {
 					game_number: number;
 					seed: string;
 				}[];
+			};
+			student_has_assignment_for_assessment: {
+				Args: { p_assessment_id: string };
+				Returns: boolean;
 			};
 			student_has_exercise_access:
 				| { Args: { p_exercise_id: string }; Returns: boolean }
