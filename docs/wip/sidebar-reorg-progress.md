@@ -128,14 +128,31 @@ Le Header.svelte avait sa propre `sidebarItems` (drawer mobile public) DIFFÉREN
 - `UserAvatar.svelte` `<img alt>` non muet quand le wrapper porte déjà `aria-label` → ajouter un prop `imageAlt` ou marquer interne `aria-hidden`.
 - 4 warnings "href without resolve()" pré-existants dans `+layout.svelte` (gidouille + rail nav links + footer nav links) — pattern existant, non corrigé dans cette phase.
 
-### Phase 4 — Quality checks ⏳ À VENIR
+### Phase 4 — Quality checks ✅ TERMINÉE
 
-- `npx eslint <fichiers modifiés>`
-- `pnpm check:incremental` (baseline ≈ 9 errors / 46 warnings, ne pas augmenter)
-- Test UI manuel par l'utilisateur
+- ✅ ESLint : lancé automatiquement via lintstaged à chaque commit (Phases 1-3). Aucune erreur après la correction du dernier `LogOut` orphelin en Phase 3.
+- ✅ `pnpm check:incremental` : **9 errors / 46 warnings** — identique à la baseline documentée dans MEMORY.md, **aucune régression**.
+- ⏳ Test UI manuel : à la charge de l'utilisateur.
+
+**Statistiques finales** :
+
+- 3 commits propres : `806a24d1b` (Phase 1), `eee78b076` (Phase 2), `49a6abfdd` (Phase 3).
+- 18 tests serveur (`dashboard-nav.test.ts`) + 16 tests browser (`Sidebar.svelte.test.ts`) — tous verts.
+- 6 fichiers `.svelte` modifiés, 2 fichiers `.ts` créés (config + tests), 1 fichier `.svelte` créé (page profil).
 
 ---
 
-## Documents produits (à compléter au fil du temps)
+## Documents produits
 
 - `docs/wip/sidebar-reorg-progress.md` (ce fichier)
+
+## Test manuel recommandé pour l'utilisateur
+
+1. **Outils libres (déconnecté)** : aller sur `/`, vérifier sous-titre "Outils libres" + sidebar avec Accueil/Jeux/Python/Upsilon/Zygomatics.
+2. **Outils libres (connecté élève)** : même chose + Python visible.
+3. **Mon espace (élève)** : cliquer l'avatar → arrive sur `/dashboard`. Vérifier titre header "Mon espace" + items Tableau de bord / Mes cours / Mon travail / Cahier de textes / Amis / Chat / Inventaire / Mes Signalements + footer Mon profil / Déconnexion.
+4. **Cliquer Mon profil** → arrive sur `/dashboard/profile`. Vérifier sections Informations / Préférences / Compte, et boutons Export / Déconnexion / Supprimer mon compte.
+5. **Cliquer Déconnexion** → redirection vers `/`.
+6. **Espace enseignant (prof)** : cliquer l'avatar → arrive sur `/dashboard`. Vérifier titre "Espace enseignant" + items renommés (Mes cours / Mes contenus / Mes exercices Python / Récompenses).
+7. **Mobile (élève ou prof)** : ouvrir hamburger → vérifier nav + section Préférences (dark mode + taille texte) + footer Mon profil / Déconnexion.
+8. **Avatar mobile** : tap → va à `/dashboard` ou `/dashboard/profile` selon le contexte.
