@@ -2,10 +2,9 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import * as Dialog from '$lib/components/ui/dialog';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import { FileText, Eye, Download, Calendar, User, ExternalLink, X } from 'lucide-svelte';
+	import { FileText, Eye, Download, Calendar, User, X } from 'lucide-svelte';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
 	import type { PageData } from './$types';
@@ -16,8 +15,6 @@
 
 	let selectedGrades = $state<GradeCode[]>([]);
 	let selectedTags = $state<string[]>([]);
-
-	let previewTarget = $state<Evaluation | null>(null);
 
 	function isGradeCode(value: string): value is GradeCode {
 		return (GRADE_CODES as readonly string[]).includes(value);
@@ -81,14 +78,6 @@
 			.filter((tag, idx, arr) => arr.indexOf(tag) === idx)
 			.sort((a, b) => a.localeCompare(b, 'fr'))
 	);
-
-	function openPreview(evaluation: Evaluation) {
-		previewTarget = evaluation;
-	}
-
-	function closePreview() {
-		previewTarget = null;
-	}
 </script>
 
 <svelte:head>
@@ -201,16 +190,19 @@
 					</Card.Content>
 
 					<Card.Footer class="gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							class="flex-1"
-							onclick={() => openPreview(evaluation)}
-							disabled={!evaluation.publicUrl}
-						>
-							<Eye class="mr-1 h-3.5 w-3.5" />
-							Aperçu
-						</Button>
+						{#if evaluation.publicUrl}
+							<Button
+								variant="outline"
+								size="sm"
+								class="flex-1"
+								href={evaluation.publicUrl}
+								target="_blank"
+								rel="noopener"
+							>
+								<Eye class="mr-1 h-3.5 w-3.5" />
+								Aperçu
+							</Button>
+						{/if}
 						{#if evaluation.downloadUrl}
 							<Button
 								variant="default"
@@ -228,54 +220,3 @@
 		</div>
 	{/if}
 </div>
-
-<!-- Preview Dialog -->
-<Dialog.Root
-	open={previewTarget !== null}
-	onOpenChange={(open) => {
-		if (!open) closePreview();
-	}}
->
-	<Dialog.Content class="flex h-[90vh] max-w-5xl flex-col gap-3">
-		{#if previewTarget}
-			<Dialog.Header>
-				<Dialog.Title>{previewTarget.title}</Dialog.Title>
-				{#if previewTarget.description}
-					<Dialog.Description>{previewTarget.description}</Dialog.Description>
-				{/if}
-			</Dialog.Header>
-
-			<div class="min-h-0 flex-1">
-				{#if previewTarget.publicUrl}
-					<iframe
-						src={previewTarget.publicUrl}
-						title={previewTarget.title}
-						class="h-full w-full rounded-md border"
-					></iframe>
-				{:else}
-					<div class="flex h-full items-center justify-center text-muted-foreground">
-						Aperçu indisponible
-					</div>
-				{/if}
-			</div>
-
-			<Dialog.Footer class="flex flex-wrap gap-2 sm:justify-between">
-				<Button variant="outline" onclick={closePreview}>Fermer</Button>
-				<div class="flex gap-2">
-					{#if previewTarget.publicUrl}
-						<Button variant="outline" href={previewTarget.publicUrl} target="_blank" rel="noopener">
-							<ExternalLink class="mr-1 h-3.5 w-3.5" />
-							Nouvel onglet
-						</Button>
-					{/if}
-					{#if previewTarget.downloadUrl}
-						<Button href={previewTarget.downloadUrl} download={previewTarget.file_name}>
-							<Download class="mr-1 h-3.5 w-3.5" />
-							Télécharger
-						</Button>
-					{/if}
-				</div>
-			</Dialog.Footer>
-		{/if}
-	</Dialog.Content>
-</Dialog.Root>
