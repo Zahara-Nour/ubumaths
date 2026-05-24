@@ -33,6 +33,15 @@ function signedGidouilleDelta(event: Pick<RewardEvent, 'event_type' | 'amount'>)
 }
 
 /**
+ * Round to 2 decimals to clean up floating-point error accumulation when
+ * subtracting deltas iteratively. Gidouilles balances may be fractional due
+ * to multipliers, but never need more than cent precision for display.
+ */
+function round2(n: number): number {
+	return Math.round(n * 100) / 100;
+}
+
+/**
  * Mutates the events array in place, attaching `balance_after` to each
  * gidouilles event. Non-gidouilles events are left untouched.
  *
@@ -74,9 +83,9 @@ export async function attachGidouillesBalances(
 		0
 	);
 
-	let runningBalance = currentBalance - sumNewer;
+	let runningBalance = round2(currentBalance - sumNewer);
 	for (const event of gidouillesEvents) {
 		event.balance_after = runningBalance;
-		runningBalance -= signedGidouilleDelta(event);
+		runningBalance = round2(runningBalance - signedGidouilleDelta(event));
 	}
 }
