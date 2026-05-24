@@ -47,9 +47,22 @@ export const load: PageServerLoad = async ({ locals }) => {
 		locals.supabase.from('tags').select('name').order('name', { ascending: true })
 	]);
 
+	type RawEvaluation = NonNullable<typeof evaluations>[number];
+
+	// Resolve public URLs once on the server so the preview iframe can use them.
+	const withUrls = (evaluations ?? []).map((evaluation: RawEvaluation) => {
+		const { data: urlData } = locals.supabase.storage
+			.from(STORAGE_BUCKET)
+			.getPublicUrl(evaluation.storage_path);
+		return {
+			...evaluation,
+			publicUrl: urlData?.publicUrl ?? null
+		};
+	});
+
 	return {
 		currentUserId: user.id,
-		evaluations: evaluations ?? [],
+		evaluations: withUrls,
 		allTagNames: (allTags ?? []).map((t) => t.name)
 	};
 };

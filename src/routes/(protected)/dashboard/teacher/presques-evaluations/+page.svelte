@@ -9,7 +9,18 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import { FileText, Upload, Pencil, Trash2, Calendar, User, Loader2 } from 'lucide-svelte';
+	import {
+		FileText,
+		Upload,
+		Pencil,
+		Trash2,
+		Calendar,
+		User,
+		Loader2,
+		Eye,
+		Download,
+		ExternalLink
+	} from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
@@ -43,6 +54,9 @@
 	let showDeleteDialog = $state(false);
 	let deleteTarget = $state<Evaluation | null>(null);
 	let isDeleting = $state(false);
+
+	// Preview dialog state
+	let previewTarget = $state<Evaluation | null>(null);
 
 	const MAX_SIZE_MB = 10;
 	const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
@@ -128,6 +142,14 @@
 		deleteTarget = evaluation;
 		showDeleteDialog = true;
 	}
+
+	function openPreview(evaluation: Evaluation) {
+		previewTarget = evaluation;
+	}
+
+	function closePreview() {
+		previewTarget = null;
+	}
 </script>
 
 <svelte:head>
@@ -206,14 +228,19 @@
 						</div>
 					</Card.Content>
 
-					<Card.Footer class="gap-2">
+					<Card.Footer class="flex-wrap gap-2">
+						<Button
+							variant="outline"
+							size="sm"
+							class="flex-1"
+							onclick={() => openPreview(evaluation)}
+							disabled={!evaluation.publicUrl}
+						>
+							<Eye class="mr-1 h-3.5 w-3.5" />
+							Aperçu
+						</Button>
 						{#if isOwner(evaluation)}
-							<Button
-								variant="outline"
-								size="sm"
-								class="flex-1"
-								onclick={() => openEditDialog(evaluation)}
-							>
+							<Button variant="outline" size="sm" onclick={() => openEditDialog(evaluation)}>
 								<Pencil class="mr-1 h-3.5 w-3.5" />
 								Modifier
 							</Button>
@@ -227,7 +254,9 @@
 								<span class="sr-only">Supprimer</span>
 							</Button>
 						{:else}
-							<p class="text-xs text-muted-foreground italic">Uploadé par un autre enseignant</p>
+							<span class="w-full text-xs text-muted-foreground italic">
+								Uploadé par un autre enseignant
+							</span>
 						{/if}
 					</Card.Footer>
 				</Card.Root>
@@ -502,6 +531,55 @@
 					</Button>
 				</Dialog.Footer>
 			</form>
+		{/if}
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Preview Dialog -->
+<Dialog.Root
+	open={previewTarget !== null}
+	onOpenChange={(open) => {
+		if (!open) closePreview();
+	}}
+>
+	<Dialog.Content class="flex h-[90vh] max-w-5xl flex-col gap-3">
+		{#if previewTarget}
+			<Dialog.Header>
+				<Dialog.Title>{previewTarget.title}</Dialog.Title>
+				{#if previewTarget.description}
+					<Dialog.Description>{previewTarget.description}</Dialog.Description>
+				{/if}
+			</Dialog.Header>
+
+			<div class="min-h-0 flex-1">
+				{#if previewTarget.publicUrl}
+					<iframe
+						src={previewTarget.publicUrl}
+						title={previewTarget.title}
+						class="h-full w-full rounded-md border"
+					></iframe>
+				{:else}
+					<div class="flex h-full items-center justify-center text-muted-foreground">
+						Aperçu indisponible
+					</div>
+				{/if}
+			</div>
+
+			<Dialog.Footer class="flex flex-wrap gap-2 sm:justify-between">
+				<Button variant="outline" onclick={closePreview}>Fermer</Button>
+				<div class="flex gap-2">
+					{#if previewTarget.publicUrl}
+						<Button variant="outline" href={previewTarget.publicUrl} target="_blank" rel="noopener">
+							<ExternalLink class="mr-1 h-3.5 w-3.5" />
+							Nouvel onglet
+						</Button>
+						<Button href={previewTarget.publicUrl} download={previewTarget.file_name}>
+							<Download class="mr-1 h-3.5 w-3.5" />
+							Télécharger
+						</Button>
+					{/if}
+				</div>
+			</Dialog.Footer>
 		{/if}
 	</Dialog.Content>
 </Dialog.Root>
