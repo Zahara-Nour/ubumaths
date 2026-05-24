@@ -67,6 +67,21 @@
 
 	const hasActiveFilters = $derived(selectedGrades.length > 0 || selectedTags.length > 0);
 
+	// Restrict the filter modals to the grades and tags actually used in the
+	// loaded collection — picking a value that yields zero results is wasteful.
+	const usedGrades = $derived(
+		GRADE_CODES.filter((grade) =>
+			data.evaluations.some((e) => (e.grade_levels ?? []).includes(grade))
+		)
+	);
+
+	const usedTags = $derived(
+		data.evaluations
+			.flatMap((e) => e.tags ?? [])
+			.filter((tag, idx, arr) => arr.indexOf(tag) === idx)
+			.sort((a, b) => a.localeCompare(b, 'fr'))
+	);
+
 	function openPreview(evaluation: Evaluation) {
 		previewTarget = evaluation;
 	}
@@ -98,11 +113,11 @@
 	>
 		<div class="flex items-center gap-2">
 			<span class="text-xs font-medium text-muted-foreground">Niveau</span>
-			<GradeBadgeSelector bind:value={selectedGrades} placeholder="Tous" />
+			<GradeBadgeSelector bind:value={selectedGrades} restrictTo={usedGrades} placeholder="Tous" />
 		</div>
 		<div class="flex items-center gap-2">
 			<span class="text-xs font-medium text-muted-foreground">Thème</span>
-			<TagBadgeSelector bind:value={selectedTags} placeholder="Tous" />
+			<TagBadgeSelector bind:value={selectedTags} restrictTo={usedTags} placeholder="Tous" />
 		</div>
 
 		<div class="ml-auto flex items-center gap-3 text-xs text-muted-foreground">
