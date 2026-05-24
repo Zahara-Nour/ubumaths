@@ -1,19 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import {
-		Home,
-		Gamepad2,
-		FileSpreadsheet,
-		BookOpen,
-		PenTool,
-		Terminal,
-		Calculator,
-		ListTodo,
-		Laugh
-		// CalculatorIcon,
-		// LineChart
-	} from 'lucide-svelte';
+	import { Home, Gamepad2, PenTool, Terminal, Calculator, Laugh } from 'lucide-svelte';
 	import type { ComponentType } from 'svelte';
 	import type { Tables } from '$lib/types/database';
 
@@ -40,30 +28,6 @@
 			},
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
 			{
-				label: 'Worksheets',
-				href: '/dashboard/teacher/contenu/worksheets',
-				icon: FileSpreadsheet,
-				roles: ['teacher']
-			},
-			{
-				label: 'Mon travail',
-				href: '/dashboard/student/work',
-				icon: ListTodo,
-				roles: ['student']
-			},
-			{
-				label: 'Cahier',
-				href: '/dashboard/teacher/cahier-texte',
-				icon: BookOpen,
-				roles: ['teacher']
-			},
-			{
-				label: 'Cahier',
-				href: '/dashboard/student/cahier-texte',
-				icon: BookOpen,
-				roles: ['student']
-			},
-			{
 				label: 'Whiteboard',
 				href: '/whiteboard',
 				icon: PenTool,
@@ -75,20 +39,6 @@
 				icon: Laugh,
 				section: 'fun'
 			}
-			// { label: 'Automaths', href: '/automaths', icon: Calculator },
-			// { label: 'CAS', href: '/cas', icon: Terminal },
-			// {
-			// 	label: 'Calculatrice',
-			// 	href: '/calculatrice',
-			// 	icon: CalculatorIcon,
-			// 	roles: ['student', 'teacher']
-			// },
-			// {
-			// 	label: 'Grapheur',
-			// 	href: '/grapheur',
-			// 	icon: LineChart,
-			// 	roles: ['student', 'teacher']
-			// }
 		]
 	}: {
 		profile?: Tables<'profiles'> | null;
