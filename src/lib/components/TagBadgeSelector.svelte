@@ -52,6 +52,14 @@
 		 * payloads as the default one.
 		 */
 		apiPath?: string;
+		/**
+		 * Optional whitelist of tag names. When provided, the modal only
+		 * exposes tags whose name is in this list — useful when the caller
+		 * wants to restrict the choice to tags actually in use in a given
+		 * collection (e.g. a public listing page) instead of every tag in
+		 * the database.
+		 */
+		restrictTo?: string[];
 	}
 
 	let {
@@ -60,7 +68,8 @@
 		disabled = false,
 		maxSelections,
 		onchange,
-		apiPath: tagsApiPath = '/api/tags'
+		apiPath: tagsApiPath = '/api/tags',
+		restrictTo
 	}: Props = $props();
 
 	// Helper to update value - calls onchange if provided, otherwise mutates bindable
@@ -84,11 +93,17 @@
 	// Derived: Can add more selections
 	let canAddMore = $derived(maxSelections === undefined || value.length < maxSelections);
 
+	// Derived: tags exposed by the modal (filtered by restrictTo if provided)
+	let restrictedTags = $derived.by(() => {
+		if (!restrictTo) return availableTags;
+		return availableTags.filter((tag) => restrictTo.includes(tag.name));
+	});
+
 	// Derived: Filtered tags based on search
 	let filteredTags = $derived.by(() => {
 		const search = newTagName.toLowerCase().trim();
-		if (!search) return availableTags;
-		return availableTags.filter((tag) => tag.name.toLowerCase().includes(search));
+		if (!search) return restrictedTags;
+		return restrictedTags.filter((tag) => tag.name.toLowerCase().includes(search));
 	});
 
 	// Derived: Check if entered tag already exists
@@ -98,8 +113,11 @@
 		return availableTags.some((tag) => tag.name.toLowerCase() === search);
 	});
 
-	// Derived: Can create new tag
+	// Derived: Can create new tag. Disabled when caller restricts the tag set,
+	// because creating a tag outside the restriction would never appear in the
+	// filtered list anyway.
 	let canCreateTag = $derived.by(() => {
+		if (restrictTo) return false;
 		const trimmed = newTagName.trim();
 		return trimmed.length > 0 && trimmed.length <= 50 && !tagAlreadyExists && !isCreating;
 	});

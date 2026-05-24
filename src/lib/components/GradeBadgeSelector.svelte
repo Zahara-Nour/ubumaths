@@ -39,6 +39,12 @@
 		disabled?: boolean;
 		maxSelections?: number;
 		onchange?: (value: GradeCode[]) => void;
+		/**
+		 * Optional whitelist of grade codes. When provided, the modal only
+		 * exposes those grades — useful when the caller wants to restrict the
+		 * choice to grades actually in use in a given collection.
+		 */
+		restrictTo?: GradeCode[];
 	}
 
 	let {
@@ -46,7 +52,8 @@
 		placeholder = 'Ajouter des niveaux',
 		disabled = false,
 		maxSelections,
-		onchange
+		onchange,
+		restrictTo
 	}: Props = $props();
 
 	// Helper to update value - calls onchange if provided, otherwise mutates bindable
@@ -69,12 +76,23 @@
 		high: 'Lycée'
 	};
 
-	// Grouped grades for display in modal
-	const gradesByLevel = [
-		{ level: 'primary' as SchoolLevel, grades: PRIMARY_GRADES },
-		{ level: 'middle' as SchoolLevel, grades: MIDDLE_GRADES },
-		{ level: 'high' as SchoolLevel, grades: HIGH_GRADES }
-	];
+	// Grouped grades for display in modal. When restrictTo is provided, each
+	// level's grade list is intersected with the whitelist; empty groups are
+	// dropped so the modal stays compact.
+	const gradesByLevel = $derived.by(() => {
+		const groups = [
+			{ level: 'primary' as SchoolLevel, grades: PRIMARY_GRADES },
+			{ level: 'middle' as SchoolLevel, grades: MIDDLE_GRADES },
+			{ level: 'high' as SchoolLevel, grades: HIGH_GRADES }
+		];
+		if (!restrictTo) return groups;
+		return groups
+			.map((group) => ({
+				level: group.level,
+				grades: group.grades.filter((g) => restrictTo.includes(g))
+			}))
+			.filter((group) => group.grades.length > 0);
+	});
 
 	// Check if we can add more selections
 	let canAddMore = $derived(maxSelections === undefined || value.length < maxSelections);
