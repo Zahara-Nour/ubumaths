@@ -2184,6 +2184,42 @@ class MinesweeperStore {
 			logger.error('Failed to complete game:', err);
 			this.error = message;
 
+			// ─── Diagnostic logging ───────────────────────────────────────────
+			// `logger.error` is a no-op in production. Use console.error (always
+			// visible in DevTools) + remote /api/errors/log (persisted in
+			// error_logs table) so we can correlate user reports with actual
+			// failures. The catch wraps both the win and the loss code paths,
+			// so this single instrumentation covers everything.
+			const diagnostics = {
+				game_id: game.id ?? null,
+				difficulty: game.difficulty,
+				cells_revealed: game.cellsRevealed,
+				flags_used: game.flagsUsed,
+				hints_used: game.hintsUsed ?? 0,
+				time_elapsed: game.timeElapsed,
+				is_won: won,
+				is_tournament: this.isInTournamentMode(),
+				error_name: err instanceof Error ? err.name : 'unknown',
+				error_message: message
+			};
+			console.error('[Minesweeper completeGame] failed', diagnostics, err);
+			if (browser) {
+				// Fire-and-forget. Never let logging interfere with gameplay.
+				fetch('/api/errors/log', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						error_type: 'client_js',
+						severity: 'error',
+						message: `[Minesweeper completeGame] ${won ? 'win' : 'loss'} failed: ${message}`,
+						url: typeof window !== 'undefined' ? window.location.href : 'unknown',
+						tags: ['minesweeper', won ? 'win-failed' : 'loss-failed'],
+						context: diagnostics
+					})
+				}).catch(() => {});
+			}
+			// ─────────────────────────────────────────────────────────────────
+
 			// Show error toast for students (database save failed)
 			// Keep toasts only for errors as per user request
 			if (this.shouldUseDatabase() && game.id) {
