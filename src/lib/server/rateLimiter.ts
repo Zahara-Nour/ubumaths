@@ -137,180 +137,80 @@ type UserRole = Database['public']['Enums']['user_role'];
 // ============================================================================
 
 /**
- * Check rate limit using database (ATOMIC implementation)
+ * Shape of the row returned by the `check_and_increment_rate_limit` RPC.
+ * Mirrors the SQL function signature in
+ * `supabase/migrations/20260524133645_atomic_check_and_increment_rate_limit.sql`.
  *
- * This function implements atomic check-and-increment using PostgreSQL's
- * UPDATE ... WHERE pattern to prevent race conditions.
+ * Manually typed because `database.ts` is regenerated from the live DB and may
+ * lag behind the migration locally.
  *
- * **Race Condition Fix (2025-01-10)**:
- * - Previous implementation: Read count, check limit, then increment (NON-ATOMIC)
- * - New implementation: Atomic UPDATE with WHERE clause ensures no concurrent bypass
+ * `current_count` and `expires_at` can be null on the blocked branch only:
+ * the SQL function re-fetches them without a lock after the upsert is filtered
+ * out, so a concurrent cleanup of the row (rare) would yield NULLs there.
+ */
+interface CheckAndIncrementRow {
+	allowed: boolean;
+	current_count: number | null;
+	expires_at: string | null;
+}
+
+/**
+ * Check rate limit using database (ATOMIC implementation via RPC).
  *
- * **How Atomicity Works**:
- * ```sql
- * UPDATE rate_limits
- * SET count = count + 1
- * WHERE key = 'ratelimit:login:ip:192.168.1.1'
- *   AND count < 5              -- 🔒 ATOMIC: Uses current value, not stale
- *   AND expires_at > NOW()     -- 🔒 ATOMIC: Ensure entry still valid
- * RETURNING count, expires_at;
- * ```
+ * Delegates the whole decision (no entry / expired / under max / at max) to a
+ * single PL/pgSQL function that uses `INSERT ... ON CONFLICT DO UPDATE WHERE`.
+ * One round-trip, no application-level retry, no spurious unique-constraint
+ * violations in Postgres logs.
  *
- * If WHERE clause evaluates to false (limit exceeded or expired), UPDATE affects
- * 0 rows and returns NULL. This is PostgreSQL's native atomic compare-and-swap.
- *
- * **Fail-Open Strategy**: Database errors return `false` (allows request) to prevent
- * DoS attacks where an attacker crashes the database to block legitimate users.
- *
- * @param config - Rate limit configuration object
- * @param config.key - Unique identifier for rate limit bucket (e.g., "ratelimit:login:ip:192.168.1.1")
- * @param config.maxAttempts - Maximum allowed attempts within window
- * @param config.windowSeconds - Time window in seconds before entry expires
- * @param retryCount - Internal parameter tracking retry attempts (default: 0)
- * @returns Object with `limited` (boolean) and `expiresAt` (Date | null)
- *
- * @example Basic usage (internal function)
- * ```typescript
- * const result = await checkRateLimit({
- *   key: 'ratelimit:login:ip:192.168.1.1',
- *   maxAttempts: 5,
- *   windowSeconds: 900 // 15 minutes
- * });
- * if (result.limited) {
- *   return json({ error: 'Too many attempts' }, { status: 429 });
- * }
- * ```
+ * **Fail-Open Strategy**: Database errors return `limited: false` (allows
+ * request) to prevent DoS attacks where an attacker crashes the database to
+ * block legitimate users.
  */
 async function checkRateLimit(
-	config: RateLimitConfig,
-	retryCount = 0
+	config: RateLimitConfig
 ): Promise<{ limited: boolean; expiresAt: Date | null }> {
 	const { key, maxAttempts, windowSeconds } = config;
-	const expiresAt = new Date(Date.now() + windowSeconds * 1000);
 	const supabase = getServiceRoleClient();
 
 	try {
-		// Try to find existing rate limit entry that hasn't expired
-		const { data: existing, error: fetchError } = await supabase
-			.from('rate_limits')
-			.select('count, expires_at')
-			.eq('key', key)
-			.gte('expires_at', new Date().toISOString())
-			.maybeSingle();
+		// Cast needed until database.ts is regenerated post-migration (same
+		// pattern as tutor-rate-limiter.ts uses for `increment_rate_limit`).
+		const { data, error } = (await (supabase.rpc as CallableFunction)(
+			'check_and_increment_rate_limit',
+			{
+				p_key: key,
+				p_max_count: maxAttempts,
+				p_window_seconds: windowSeconds
+			}
+		)) as { data: CheckAndIncrementRow[] | null; error: unknown };
 
-		if (fetchError) {
-			logger.error('Rate limit check error:', fetchError);
+		if (error) {
+			logger.error('Rate limit RPC error:', error);
 			return { limited: false, expiresAt: null }; // Fail open
 		}
 
-		if (existing) {
-			// ====================================================================
-			// ATOMIC INCREMENT (Race Condition Fix)
-			// ====================================================================
-			// Use UPDATE with WHERE clause to atomically check and increment.
-			// PostgreSQL guarantees that the WHERE clause is evaluated using
-			// the CURRENT row value (locked during UPDATE), preventing races.
+		const row = data?.[0];
+		if (!row) {
+			logger.error('Rate limit RPC returned no data', { key: maskKey(key) });
+			return { limited: false, expiresAt: null }; // Fail open
+		}
 
-			const { data: updateResult, error: updateError } = await supabase
-				.from('rate_limits')
-				.update({ count: existing.count + 1 })
-				.eq('key', key)
-				.lt('count', maxAttempts) // 🔒 ATOMIC: Only if below limit
-				.gte('expires_at', new Date().toISOString()) // 🔒 ATOMIC: Only if not expired
-				.select('count, expires_at')
-				.maybeSingle();
-
-			if (updateError) {
-				logger.error('Rate limit update error:', updateError);
-				return { limited: false, expiresAt: null }; // Fail open
-			}
-
-			if (!updateResult) {
-				// UPDATE affected 0 rows - either limit exceeded OR entry expired during race
-				// We need to distinguish between these two cases for correct behavior
-
-				// Re-check: Did the entry expire or was limit exceeded?
-				const { data: recheck } = await supabase
-					.from('rate_limits')
-					.select('count, expires_at')
-					.eq('key', key)
-					.gte('expires_at', new Date().toISOString())
-					.maybeSingle();
-
-				if (!recheck) {
-					// Entry expired during race → allow request (fail-open)
-					logger.trace('Rate limit entry expired during race, allowing', {
-						key: maskKey(key)
-					});
-
-					// Create new entry for next request
-					await supabase.from('rate_limits').insert({
-						key,
-						count: 1,
-						expires_at: expiresAt.toISOString()
-					});
-
-					return { limited: false, expiresAt: null };
-				}
-
-				// Limit exceeded
-				logger.trace('Rate limit exceeded', {
-					key: maskKey(key),
-					count: recheck.count
-				});
-				return { limited: true, expiresAt: new Date(recheck.expires_at) };
-			}
-
-			// Update succeeded → request allowed
+		if (row.allowed) {
 			logger.trace('Rate limit incremented', {
 				key: maskKey(key),
-				count: updateResult.count
+				count: row.current_count
 			});
 			return { limited: false, expiresAt: null };
-		} else {
-			// ====================================================================
-			// NEW ENTRY CREATION
-			// ====================================================================
-			// No existing entry or expired - create new entry
-
-			const { error: insertError } = await supabase.from('rate_limits').insert({
-				key,
-				count: 1,
-				expires_at: expiresAt.toISOString()
-			});
-
-			if (insertError) {
-				// Handle unique constraint violation (race condition during insert)
-				if ('code' in insertError && insertError.code === '23505') {
-					// Another concurrent request just created the entry
-					// Retry up to 3 times
-					if (retryCount < 3) {
-						logger.trace('Unique constraint violation, retrying', {
-							key: maskKey(key),
-							retryCount: retryCount + 1
-						});
-						return checkRateLimit(config, retryCount + 1);
-					} else {
-						// Max retries exceeded - likely an expired entry blocking inserts
-						logger.warn('Max retries on unique constraint, cleaning up', {
-							key: maskKey(key)
-						});
-
-						// Delete the blocking entry
-						await supabase.from('rate_limits').delete().eq('key', key);
-
-						// Allow request (fail-open)
-						return { limited: false, expiresAt: null };
-					}
-				}
-
-				logger.error('Rate limit insert error:', insertError);
-				return { limited: false, expiresAt: null }; // Fail open
-			}
-
-			logger.trace('Rate limit entry created', { key: maskKey(key) });
-			return { limited: false, expiresAt: null }; // First attempt, allowed
 		}
+
+		logger.trace('Rate limit exceeded', {
+			key: maskKey(key),
+			count: row.current_count
+		});
+		return {
+			limited: true,
+			expiresAt: row.expires_at ? new Date(row.expires_at) : null
+		};
 	} catch (error) {
 		logger.error('Rate limit error:', error);
 		return { limited: false, expiresAt: null }; // Fail open on exceptions

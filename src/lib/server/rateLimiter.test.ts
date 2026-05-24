@@ -65,131 +65,75 @@ const rateLimits = new Map<
 	}
 >();
 
+/**
+ * Build a mock Supabase client whose `rpc('check_and_increment_rate_limit')`
+ * call mirrors the SQL function defined in
+ * `supabase/migrations/20260524133645_atomic_check_and_increment_rate_limit.sql`.
+ *
+ * The handler is fully synchronous so concurrent `Promise.all([...])` calls in
+ * tests still serialize on the shared `rateLimits` Map — simulating
+ * PostgreSQL's per-row exclusive lock under ON CONFLICT DO UPDATE.
+ */
 function createMockSupabase() {
+	type Args = { p_key: string; p_max_count: number; p_window_seconds: number };
+
+	const handleCheckAndIncrement = (args: Args) => {
+		const { p_key, p_max_count, p_window_seconds } = args;
+		const now = Date.now();
+		const newExpiresAtIso = new Date(now + p_window_seconds * 1000).toISOString();
+		const existing = rateLimits.get(p_key);
+
+		// Case 1: no entry → insert
+		if (!existing) {
+			const row = { key: p_key, count: 1, expires_at: newExpiresAtIso };
+			rateLimits.set(p_key, row);
+			return Promise.resolve({
+				data: [{ allowed: true, current_count: 1, expires_at: newExpiresAtIso }],
+				error: null
+			});
+		}
+
+		const isExpired = new Date(existing.expires_at).getTime() < now;
+
+		// Case 2: expired → reset
+		if (isExpired) {
+			existing.count = 1;
+			existing.expires_at = newExpiresAtIso;
+			return Promise.resolve({
+				data: [{ allowed: true, current_count: 1, expires_at: newExpiresAtIso }],
+				error: null
+			});
+		}
+
+		// Case 3: valid + under max → increment
+		if (existing.count < p_max_count) {
+			existing.count += 1;
+			return Promise.resolve({
+				data: [{ allowed: true, current_count: existing.count, expires_at: existing.expires_at }],
+				error: null
+			});
+		}
+
+		// Case 4: valid + at/above max → block (no state change)
+		return Promise.resolve({
+			data: [{ allowed: false, current_count: existing.count, expires_at: existing.expires_at }],
+			error: null
+		});
+	};
+
 	const mockSupabase = {
-		from: (table: string) => {
-			if (table !== 'rate_limits') {
-				throw new Error(`Unexpected table: ${table}`);
+		rpc: (fn: string, args: Args) => {
+			if (fn !== 'check_and_increment_rate_limit') {
+				throw new Error(`Unexpected RPC: ${fn}`);
 			}
-
-			return {
-				select: (_columns: string) => ({
-					eq: (column: string, value: string) => ({
-						gte: (column2: string, value2: string) => ({
-							maybeSingle: () => {
-								// Make synchronous to simulate atomic snapshot read
-								const entry = rateLimits.get(value);
-								if (!entry || new Date(entry.expires_at).getTime() < new Date(value2).getTime()) {
-									return Promise.resolve({ data: null, error: null });
-								}
-								// Return a copy to avoid reference issues
-								return Promise.resolve({ data: { ...entry }, error: null });
-							}
-						})
-					})
-				}),
-				update: (data: { count: number }) => {
-					// Track WHERE conditions for atomic evaluation
-					const conditions: Array<() => boolean> = [];
-					let targetKey: string | null = null;
-
-					return {
-						eq: (column: string, value: string) => {
-							// Store the key (first WHERE condition)
-							targetKey = value;
-							conditions.push(() => rateLimits.has(value));
-							return {
-								lt: (column2: string, value2: number) => {
-									// Add count < maxAttempts condition
-									conditions.push(() => {
-										const entry = rateLimits.get(targetKey!);
-										return entry ? entry.count < value2 : false;
-									});
-									return {
-										gte: (column3: string, value3: string) => {
-											// Add expires_at >= now condition
-											conditions.push(() => {
-												const entry = rateLimits.get(targetKey!);
-												if (!entry) return false;
-												return new Date(entry.expires_at).getTime() >= new Date(value3).getTime();
-											});
-											return {
-												select: (_columns: string) => ({
-													maybeSingle: () => {
-														// CRITICAL: Make this synchronous to simulate PostgreSQL's row-level locking
-														// In PostgreSQL, UPDATE with WHERE clause acquires an exclusive lock on matching rows
-														// and evaluates conditions atomically. We simulate this by making the entire
-														// check-and-update operation synchronous (no await).
-
-														// ATOMICALLY evaluate all conditions and update
-														const allConditionsMet = conditions.every((condition) => condition());
-
-														if (!allConditionsMet) {
-															// One or more conditions failed → UPDATE affects 0 rows → return null
-															return Promise.resolve({ data: null, error: null });
-														}
-
-														// All conditions passed → perform UPDATE
-														const entry = rateLimits.get(targetKey!);
-														if (entry) {
-															entry.count = data.count;
-															// Return updated row (simulates RETURNING clause)
-															return Promise.resolve({ data: { ...entry }, error: null });
-														}
-
-														// Shouldn't happen (conditions passed but no entry)
-														return Promise.resolve({ data: null, error: null });
-													}
-												})
-											};
-										}
-									};
-								}
-							};
-						}
-					};
-				},
-				insert: (
-					data:
-						| {
-								key: string;
-								count: number;
-								expires_at: string;
-						  }
-						| {
-								key: string;
-								count: number;
-								expires_at: string;
-						  }[]
-				) => {
-					// Synchronously check for unique constraint violation
-					const records = Array.isArray(data) ? data : [data];
-					for (const record of records) {
-						// Simulate PostgreSQL UNIQUE constraint on 'key' column
-						if (rateLimits.has(record.key)) {
-							// Return unique constraint violation error (PostgreSQL error code 23505)
-							return Promise.resolve({
-								error: {
-									code: '23505',
-									message: 'duplicate key value violates unique constraint "rate_limits_key_key"'
-								}
-							});
-						}
-						rateLimits.set(record.key, record);
-					}
-					return Promise.resolve({ error: null });
-				}
-			};
+			return handleCheckAndIncrement(args);
 		}
 	} as unknown as SupabaseClient<Database>;
 
-	// Helper to clear all rate limits (simulates database cleanup)
 	const clearAll = () => rateLimits.clear();
-
-	// Helper to get entry count
 	const getEntryCount = () => rateLimits.size;
 
-	// Helper to manually expire an entry (for testing)
+	// Manually expire an entry to simulate time passing without sleeping in tests.
 	const expireEntry = (key: string) => {
 		const entry = rateLimits.get(key);
 		if (entry) {
@@ -402,16 +346,17 @@ describe('Rate Limiter (Database-backed)', () => {
 			expect(result.allowed).toBe(true);
 		});
 
-		it('should allow more attempts than login (10 vs 5)', async () => {
+		it('should allow more attempts than login (100 vs 5)', async () => {
 			const testIP = '192.168.1.301';
 
-			// Attempts 1-10 should be allowed
-			for (let i = 1; i <= 10; i++) {
+			// OAuth limit is intentionally high (100) for shared school networks
+			// where many students authenticate through the same public IP.
+			for (let i = 1; i <= 100; i++) {
 				const result = await checkOAuthRateLimitByIP(testIP);
 				expect(result.allowed).toBe(true);
 			}
 
-			// 11th attempt should be blocked
+			// 101st attempt should be blocked
 			const blocked = await checkOAuthRateLimitByIP(testIP);
 			expect(blocked.allowed).toBe(false);
 			expect(blocked.message).toContain('OAuth');
@@ -1120,25 +1065,67 @@ describe('Rate Limiter (Database-backed)', () => {
 		});
 	});
 
+	describe('Expired entry handling (regression: 23505 log spam)', () => {
+		// Before the RPC refactor, an expired entry blocked re-inserts via the
+		// unique key constraint, producing duplicate-key errors in Postgres logs
+		// until the application's retry loop deleted it. The RPC's
+		// ON CONFLICT DO UPDATE replaces expired entries in place, so no error
+		// is ever raised.
+
+		it('reuses an expired entry without colliding on its unique key', async () => {
+			const userId = 'expired-reuse-1';
+			const key = `notification_mark:${userId}`;
+
+			// Fill up the bucket, then expire it (e.g., 15 min later).
+			for (let i = 0; i < 30; i++) {
+				await checkNotificationMarkRateLimit(userId);
+			}
+			expireEntry(key);
+
+			// Next call must succeed and reset the counter, NOT collide.
+			const result = await checkNotificationMarkRateLimit(userId);
+			expect(result.allowed).toBe(true);
+
+			const entry = rateLimits.get(key);
+			expect(entry?.count).toBe(1);
+			// And the unique key still holds exactly one row.
+			expect([...rateLimits.keys()].filter((k) => k === key).length).toBe(1);
+		});
+
+		it('handles repeated expire/use cycles without orphan rows', async () => {
+			const userId = 'expired-reuse-2';
+			const key = `notification_mark:${userId}`;
+
+			for (let cycle = 0; cycle < 3; cycle++) {
+				const result = await checkNotificationMarkRateLimit(userId);
+				expect(result.allowed).toBe(true);
+				expireEntry(key);
+			}
+
+			// Still exactly one row for this key.
+			expect([...rateLimits.keys()].filter((k) => k === key).length).toBe(1);
+		});
+	});
+
 	describe('Race Condition Protection (Atomicity)', () => {
 		/**
 		 * NOTE ON TESTING ATOMICITY:
 		 *
-		 * These tests verify the atomic UPDATE implementation in the actual code,
-		 * but they CANNOT perfectly simulate PostgreSQL's row-level locking in an
-		 * in-memory JavaScript mock.
+		 * These tests verify the atomic RPC implementation in the actual code,
+		 * but they CANNOT perfectly simulate PostgreSQL's row-level locking in
+		 * an in-memory JavaScript mock.
 		 *
 		 * What we CAN verify:
-		 * 1. The code uses atomic UPDATE with WHERE clauses (.lt(), .gte())
-		 * 2. The mock correctly simulates UPDATE returning null when conditions fail
+		 * 1. The code uses a single atomic RPC (no SELECT-then-INSERT races)
+		 * 2. The mock correctly simulates ON CONFLICT DO UPDATE WHERE semantics
 		 * 3. The final count doesn't exceed maxAttempts (atomicity prevents overflow)
 		 * 4. Most requests are correctly blocked after limit is reached
 		 *
 		 * What we CANNOT verify in a mock:
 		 * - Exact concurrency behavior (requires real database with row locking)
-		 * - True serialization of concurrent UPDATEs (JavaScript is single-threaded)
+		 * - True serialization of concurrent calls (JavaScript is single-threaded)
 		 *
-		 * The REAL protection comes from PostgreSQL's atomic UPDATE in production.
+		 * The REAL protection comes from PostgreSQL's atomic upsert in production.
 		 * These tests validate the code pattern, not the database's atomicity guarantees.
 		 */
 
