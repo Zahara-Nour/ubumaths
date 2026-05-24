@@ -37,40 +37,19 @@
 	import { page } from '$app/state';
 	import { navigating } from '$app/stores';
 	import {
-		LayoutDashboard,
-		GraduationCap,
-		Users,
-		// ClipboardList,
-		ShoppingBag,
-		// TrendingUp, // Unused - for future features
-		School,
-		Settings,
-		Gift,
 		LogOut,
 		Sun,
-		Clock,
 		Moon,
 		Minus,
 		Plus,
 		Maximize,
 		Minimize,
 		Menu,
-		// Upload, // Unused - for future features
-		Sparkles,
-		Bug,
-		MessageCircle,
-		BookOpen,
-		FileText,
-		Book,
-		Layers,
-		ListTodo,
-		Code,
-		ShieldAlert,
-		Package,
 		Trash2,
 		Download,
 		Loader2
 	} from 'lucide-svelte';
+	import { getNavLinks, getZoneTitle } from '$lib/config/dashboard-nav';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -101,7 +80,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { bugReportsConfigStore } from '$lib/stores/bugReportsConfig.svelte';
 
-	import type { Component, Snippet } from 'svelte';
+	import type { Snippet } from 'svelte';
 
 	// PROPS RECEIVED FROM PARENT LAYOUT SERVER LOAD:
 	// - data: Contains profile from +layout.server.ts
@@ -130,87 +109,12 @@
 	let freezePromptOpen = $state(false);
 	let freezePromptDuration = $state(0);
 
-	// Navigation links based on role
-	const getNavLinks = (
-		role: string,
-		pendingVipRequestsCount: number = 0,
-		marketplaceEnabled: boolean = false
-	): Array<{
-		href: string;
-		label: string;
-		icon: Component;
-		badge?: number;
-	}> => {
-		const commonLinks: Array<{
-			href: string;
-			label: string;
-			icon: Component;
-			badge?: number;
-		}> = [{ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }];
-
-		if (role === 'student') {
-			const studentLinks = [
-				...commonLinks,
-				{ href: '/dashboard/student/cours', label: 'Cours', icon: Book },
-				{ href: '/dashboard/student/work', label: 'Mon travail', icon: ListTodo },
-				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
-				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle }
-				// { href: '/dashboard/classes', label: 'My Classes', icon: GraduationCap },
-				// { href: '/dashboard/student/assessments', label: 'Évaluations', icon: ClipboardList },
-				// { href: '/dashboard/student/devoirs', label: 'Devoirs', icon: BookOpen },
-				// { href: '/dashboard/student/materials', label: 'Matériel', icon: FileText },
-			];
-
-			// Only show marketplace if enabled for the student's class
-			if (marketplaceEnabled) {
-				studentLinks.push({
-					href: '/dashboard/student/marketplace',
-					label: 'Boutique',
-					icon: ShoppingBag
-				});
-			}
-
-			// Inventory is always visible (student can see their items)
-			studentLinks.push(
-				{ href: '/dashboard/student/inventory', label: 'Inventaire', icon: Package },
-				{ href: '/dashboard/bug-reports', label: 'Mes Signalements', icon: Bug }
-			);
-
-			return studentLinks;
-		} else if (role === 'teacher') {
-			return [
-				...commonLinks,
-				{ href: '/dashboard/friends', label: 'Amis', icon: Users },
-				{ href: '/dashboard/chat', label: 'Chat', icon: MessageCircle },
-				{ href: '/dashboard/teacher/classes', label: 'Classes', icon: GraduationCap },
-				{ href: '/dashboard/teacher/cours', label: 'Cours', icon: Book },
-				{ href: '/dashboard/teacher/contenu', label: 'Contenu', icon: Layers },
-				{ href: '/python-exercises/mine', label: 'Python', icon: Code },
-				{
-					href: '/dashboard/teacher/gamification',
-					label: 'Gamification',
-					icon: Gift,
-					badge: pendingVipRequestsCount > 0 ? pendingVipRequestsCount : undefined
-				},
-				{ href: '/dashboard/teacher/moderation', label: 'Modération', icon: ShieldAlert }
-			];
-		} else if (role === 'admin') {
-			return [
-				...commonLinks,
-				{ href: '/dashboard/admin/schools', label: 'Schools', icon: School },
-				{ href: '/dashboard/admin/users', label: 'Users', icon: Users },
-				{ href: '/dashboard/admin/classes', label: 'Classes', icon: GraduationCap },
-				{ href: '/dashboard/admin/questions', label: 'Questions', icon: BookOpen },
-				{ href: '/dashboard/admin/vip-cards', label: 'VIP Cards', icon: Sparkles },
-				{ href: '/dashboard/admin/bug-reports', label: 'Bug Reports', icon: Bug },
-				{ href: '/dashboard/admin/cron', label: 'CRON Jobs', icon: Clock },
-				{ href: '/dashboard/admin/docs', label: 'Documentation', icon: FileText },
-				{ href: '/dashboard/admin/debug/database', label: 'Debug', icon: Settings },
-				{ href: '/dashboard/admin/settings', label: 'Settings', icon: Settings }
-			];
-		}
-		return commonLinks;
-	};
+	// Navigation links — extracted to $lib/config/dashboard-nav.ts for testability
+	let allLinks = $derived(
+		getNavLinks(data.profile.role, data.pendingVipRequestsCount, data.marketplaceEnabled)
+	);
+	let mainLinks = $derived(allLinks.filter((l) => !l.footer));
+	let footerLinks = $derived(allLinks.filter((l) => l.footer));
 
 	// Check if a link is active
 	function isActive(href: string) {
@@ -495,9 +399,11 @@
 					<img src={gidouille} alt="Gidouille" class="h-8 w-8" />
 				</a>
 
-				<!-- Welcome message - hidden on very small screens -->
+				<!-- Zone title - hidden on very small screens -->
 				<div class="hidden sm:block">
-					<h1 class="text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
+					<h1 class="text-2xl font-bold tracking-tight text-foreground">
+						{getZoneTitle(data.profile.role)}
+					</h1>
 				</div>
 			</div>
 
@@ -662,8 +568,21 @@
 		<div
 			class="hidden w-20 overflow-y-auto border-r border-border bg-card/50 shadow-sm md:block dark:bg-card"
 		>
+			{#snippet linkBody(link: (typeof allLinks)[number])}
+				<link.icon class="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
+				<span class="text-center text-xs leading-tight font-medium">{link.label}</span>
+				{#if link.badge && link.badge > 0}
+					<span
+						class="absolute top-1 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white ring-2 ring-background dark:bg-amber-600"
+						aria-label="{link.badge} demandes en attente"
+					>
+						{link.badge}
+					</span>
+				{/if}
+			{/snippet}
+
 			<nav class="flex flex-col items-center gap-1 py-4">
-				{#each getNavLinks(data.profile.role, data.pendingVipRequestsCount, data.marketplaceEnabled) as link (link.href)}
+				{#each mainLinks as link (link.href)}
 					<a
 						href={link.href}
 						class="group relative flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
@@ -673,24 +592,40 @@
 							: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
 						title={link.label}
 					>
-						<!-- Svelte 5: Components are dynamic by default -->
-						<link.icon class="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
-						<span class="text-center text-xs leading-tight font-medium">{link.label}</span>
-
-						<!-- Badge notification -->
-						{#if link.badge && link.badge > 0}
-							<span
-								class="absolute top-1 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white ring-2 ring-background dark:bg-amber-600"
-								aria-label="{link.badge} demandes en attente"
-							>
-								{link.badge}
-							</span>
-						{/if}
+						{@render linkBody(link)}
 					</a>
 				{/each}
 
 				<!-- Notification Dropdown -->
 				<NotificationDropdown />
+
+				{#if footerLinks.length > 0}
+					<hr class="my-2 w-10 border-t border-border" />
+					{#each footerLinks as link (link.href)}
+						{#if link.logout}
+							<button
+								type="button"
+								onclick={handleLogout}
+								class="group relative flex w-16 cursor-pointer flex-col items-center gap-1 rounded-lg px-2 py-3 text-muted-foreground transition-all duration-300 hover:bg-muted/60 hover:text-foreground"
+								title={link.label}
+							>
+								{@render linkBody(link)}
+							</button>
+						{:else}
+							<a
+								href={link.href}
+								class="group relative flex w-16 flex-col items-center gap-1 rounded-lg px-2 py-3 transition-all duration-300 {isActive(
+									link.href
+								)
+									? 'bg-primary/10 text-primary'
+									: 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}"
+								title={link.label}
+							>
+								{@render linkBody(link)}
+							</a>
+						{/if}
+					{/each}
+				{/if}
 			</nav>
 		</div>
 
@@ -737,12 +672,9 @@
 	<!-- Mobile Navigation Drawer -->
 	<MobileNavDrawer
 		bind:open={mobileMenuOpen}
-		items={getNavLinks(
-			data.profile.role,
-			data.pendingVipRequestsCount,
-			data.marketplaceEnabled
-		) as NavItem[]}
+		items={allLinks as NavItem[]}
 		{isActive}
+		onLogout={handleLogout}
 	/>
 </div>
 

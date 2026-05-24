@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import type { Component } from 'svelte';
 
@@ -12,6 +13,10 @@
 		icon: Component;
 		roles?: string[];
 		badge?: number;
+		/** Footer items render after a separator at the bottom of the drawer. */
+		footer?: boolean;
+		/** When true, the item triggers onLogout instead of navigating. */
+		logout?: boolean;
 	};
 
 	// Props
@@ -19,14 +24,19 @@
 		open = $bindable(false),
 		items = [],
 		onNavigate,
+		onLogout,
 		isActive: customIsActive
 	}: {
 		open?: boolean;
 		items: NavItem[];
 		onNavigate?: () => void;
+		onLogout?: () => void;
 		/** Custom function to check if a link is active (for complex route matching) */
 		isActive?: (href: string) => boolean;
 	} = $props();
+
+	let mainItems = $derived(items.filter((i) => !i.footer));
+	let footerItems = $derived(items.filter((i) => i.footer));
 
 	// Default active check: exact match or starts with (for nested routes)
 	function defaultIsActive(href: string): boolean {
@@ -47,7 +57,34 @@
 		open = false;
 		onNavigate?.();
 	}
+
+	function handleLogoutClick(): void {
+		open = false;
+		onLogout?.();
+	}
 </script>
+
+{#snippet itemLink(item: NavItem)}
+	<a
+		href={resolve(item.href as '/')}
+		data-sveltekit-preload-data="tap"
+		onclick={handleNavClick}
+		class="flex items-center gap-3 px-4 py-3 text-base transition-colors
+			{checkActive(item.href)
+			? 'bg-primary/10 font-medium text-primary'
+			: 'text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted/80'}"
+	>
+		<item.icon class="h-5 w-5 shrink-0" />
+		<span class="flex-1">{item.label}</span>
+		{#if item.badge && item.badge > 0}
+			<span
+				class="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground"
+			>
+				{item.badge > 99 ? '99+' : item.badge}
+			</span>
+		{/if}
+	</a>
+{/snippet}
 
 <Sheet.Root bind:open>
 	<Sheet.Content side="left" class="w-72 p-0">
@@ -56,27 +93,27 @@
 		</Sheet.Header>
 
 		<nav class="flex flex-col py-2" aria-label="Navigation principale">
-			{#each items as item (item.href)}
-				<a
-					href={item.href}
-					data-sveltekit-preload-data="tap"
-					onclick={handleNavClick}
-					class="flex items-center gap-3 px-4 py-3 text-base transition-colors
-						{checkActive(item.href)
-						? 'bg-primary/10 font-medium text-primary'
-						: 'text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted/80'}"
-				>
-					<item.icon class="h-5 w-5 shrink-0" />
-					<span class="flex-1">{item.label}</span>
-					{#if item.badge && item.badge > 0}
-						<span
-							class="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground"
-						>
-							{item.badge > 99 ? '99+' : item.badge}
-						</span>
-					{/if}
-				</a>
+			{#each mainItems as item (item.href)}
+				{@render itemLink(item)}
 			{/each}
+
+			{#if footerItems.length > 0}
+				<hr class="mx-4 my-2 border-t border-border" />
+				{#each footerItems as item (item.href)}
+					{#if item.logout}
+						<button
+							type="button"
+							onclick={handleLogoutClick}
+							class="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left text-base text-muted-foreground transition-colors hover:bg-muted hover:text-foreground active:bg-muted/80"
+						>
+							<item.icon class="h-5 w-5 shrink-0" />
+							<span class="flex-1">{item.label}</span>
+						</button>
+					{:else}
+						{@render itemLink(item)}
+					{/if}
+				{/each}
+			{/if}
 		</nav>
 	</Sheet.Content>
 </Sheet.Root>
