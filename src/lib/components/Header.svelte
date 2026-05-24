@@ -64,6 +64,7 @@
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import { submitLogoutForm } from '$lib/utils/auth';
 
 	// Fullscreen state
 	let isFullscreen = $state(false);
@@ -158,25 +159,7 @@
 		mobileMenuOpen = false;
 	}
 
-	/**
-	 * Handle user logout
-	 *
-	 * FLOW:
-	 * 1. POST to server logout endpoint (clears cookies on server)
-	 * 2. Server redirects to home page
-	 * 3. The onAuthStateChange listener detects SIGNED_OUT
-	 * 4. Calls invalidate() to refresh with null session
-	 * 5. UI updates to show login button
-	 */
-	async function handleLogout() {
-		// Use a form submission to POST to the server logout endpoint
-		// This ensures cookies are cleared on the server side
-		const form = document.createElement('form');
-		form.method = 'POST';
-		form.action = '/auth/logout';
-		document.body.appendChild(form);
-		form.submit();
-	}
+	const handleLogout = submitLogoutForm;
 </script>
 
 <header class="border-b border-border bg-background shadow-sm">
@@ -227,6 +210,7 @@
 							firstname={profile?.firstname}
 							lastname={profile?.lastname}
 							class="h-10 w-10"
+							decorative
 						/>
 					</a>
 				</div>

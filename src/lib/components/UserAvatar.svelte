@@ -26,6 +26,12 @@
 		firstname?: string | null;
 		lastname?: string | null;
 		class?: string;
+		/**
+		 * Mark the avatar as purely decorative. Set to true when the surrounding
+		 * element (e.g. a link or button) already provides an accessible name —
+		 * this hides the image from screen readers to avoid double-announcement.
+		 */
+		decorative?: boolean;
 	}
 
 	let {
@@ -33,7 +39,8 @@
 		role = 'student',
 		firstname = null,
 		lastname = null,
-		class: className = 'h-10 w-10'
+		class: className = 'h-10 w-10',
+		decorative = false
 	}: Props = $props();
 
 	const fallbackSrc = $derived(getAvatarFallback((role as UserRole) || 'student'));
@@ -50,13 +57,16 @@
 </script>
 
 <!-- Initials sit behind the image as ultimate fallback (z-0 < z-10) -->
-<div class={cn('relative flex size-8 shrink-0 overflow-hidden rounded-full', className)}>
+<div
+	class={cn('relative flex size-8 shrink-0 overflow-hidden rounded-full', className)}
+	aria-hidden={decorative ? 'true' : undefined}
+>
 	<span class="absolute inset-0 flex items-center justify-center bg-muted text-xs">
 		{initials}
 	</span>
 	<img
 		{src}
-		alt={firstname ? `${firstname} ${lastname ?? ''}`.trim() : 'User'}
+		alt={decorative ? '' : firstname ? `${firstname} ${lastname ?? ''}`.trim() : 'User'}
 		class="relative z-10 aspect-square size-full object-cover"
 		onerror={handleImgError}
 	/>
