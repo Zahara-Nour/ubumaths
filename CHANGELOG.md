@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.8](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.7...v0.9.8) (2026-05-24)
+
+### 📚 Documentation
+
+- **chiphres:** add Pataphysique compendium and lexicon ([c3eb708](https://github.com/Zahara-Nour/ubumaths/commit/c3eb708401557ca42a01c1a3bedd943985eea50b))
+
+### ✨ Features
+
+- **constructions-v2:** add tag modifier decorators (Design C) ([d48d513](https://github.com/Zahara-Nour/ubumaths/commit/d48d513d8626d9cd9562d4152667c400c85914ac))
+- **constructions-v2:** tag traces by pedagogical category ([76975ea](https://github.com/Zahara-Nour/ubumaths/commit/76975ea30dba66d80e77c36701ba4b4db85e7f70))
+- **db:** add parody_evaluations table and storage bucket ([5a614b6](https://github.com/Zahara-Nour/ubumaths/commit/5a614b6090c0b1ac6e402524d6e36ab09f8d02ea))
+- **presques-evaluations:** public listing page with filters and preview ([afa3d87](https://github.com/Zahara-Nour/ubumaths/commit/afa3d877876cd66198a376ca430aefbec53f13a1))
+- **presques-evaluations:** teacher admin UI ([cdbbeca](https://github.com/Zahara-Nour/ubumaths/commit/cdbbeca352175cf343f414911c8297dfa746efa8))
+- **presques-evaluations:** teacher upload/update/delete actions ([476b40b](https://github.com/Zahara-Nour/ubumaths/commit/476b40b5775262142cbadd060ac836eff93c4a1d))
+
+### 🐛 Bug Fixes
+
+- **constructions-v2:** tag modifiers use +X / -X syntax as originally proposed ([1bc5e0d](https://github.com/Zahara-Nour/ubumaths/commit/1bc5e0da20b67b867a44b65a30a9e67187124bf1))
+- **db:** broaden hardened function search_path to include extensions ([77cd760](https://github.com/Zahara-Nour/ubumaths/commit/77cd7609838565a573a034c051114ef39e07fe35))
+- **db:** cover all log tables in RGPD retention cleanup ([e04a961](https://github.com/Zahara-Nour/ubumaths/commit/e04a9619ef5e3ce7ebd688275a040d1be4878871))
+- **db:** harden function search_path and hide achievement matview from API ([bf3a9d6](https://github.com/Zahara-Nour/ubumaths/commit/bf3a9d623bcd554b4997200b21738bdfdc5fa4a8))
+- **db:** restore extensions search_path on error logging helpers ([05bed7d](https://github.com/Zahara-Nour/ubumaths/commit/05bed7d13bb14a556ed1d7a2499cc6733ab428f9))
+- **db:** restore security_invoker on flagged views ([b86ba82](https://github.com/Zahara-Nour/ubumaths/commit/b86ba8292090932a9dca2a5bc2a14a44b6ba63f4))
+- **db:** restrict permissive RLS policies to service_role ([fd82d14](https://github.com/Zahara-Nour/ubumaths/commit/fd82d1402af199ca3f0b41c1594afdd9f62d2ded))
+- **presques-evaluations:** log DB load error on public page ([ef91e8d](https://github.com/Zahara-Nour/ubumaths/commit/ef91e8df3e146024936434da518563ada8ee8d66))
+
 ### [0.9.7](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.6...v0.9.7) (2026-05-21)
 
 ### 🐛 Bug Fixes
