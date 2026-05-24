@@ -13562,6 +13562,14 @@ export type Database = {
 				Args: { p_achievement_id: string; p_student_id: string };
 				Returns: boolean;
 			};
+			check_and_increment_rate_limit: {
+				Args: { p_key: string; p_max_count: number; p_window_seconds: number };
+				Returns: {
+					allowed: boolean;
+					current_count: number;
+					expires_at: string;
+				}[];
+			};
 			check_and_unlock_achievements: {
 				Args: { p_game_id: string };
 				Returns: Json;

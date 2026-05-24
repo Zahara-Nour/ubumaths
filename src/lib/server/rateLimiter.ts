@@ -137,24 +137,6 @@ type UserRole = Database['public']['Enums']['user_role'];
 // ============================================================================
 
 /**
- * Shape of the row returned by the `check_and_increment_rate_limit` RPC.
- * Mirrors the SQL function signature in
- * `supabase/migrations/20260524133645_atomic_check_and_increment_rate_limit.sql`.
- *
- * Manually typed because `database.ts` is regenerated from the live DB and may
- * lag behind the migration locally.
- *
- * `current_count` and `expires_at` can be null on the blocked branch only:
- * the SQL function re-fetches them without a lock after the upsert is filtered
- * out, so a concurrent cleanup of the row (rare) would yield NULLs there.
- */
-interface CheckAndIncrementRow {
-	allowed: boolean;
-	current_count: number | null;
-	expires_at: string | null;
-}
-
-/**
  * Check rate limit using database (ATOMIC implementation via RPC).
  *
  * Delegates the whole decision (no entry / expired / under max / at max) to a
@@ -165,6 +147,11 @@ interface CheckAndIncrementRow {
  * **Fail-Open Strategy**: Database errors return `limited: false` (allows
  * request) to prevent DoS attacks where an attacker crashes the database to
  * block legitimate users.
+ *
+ * **Nullability note**: the generated Database type marks `current_count` and
+ * `expires_at` as non-null, but the SQL function's blocked branch re-fetches
+ * them without a lock and would yield NULL if a concurrent cleanup removed the
+ * row. The code below treats `expires_at` defensively (`row.expires_at ? ...`).
  */
 async function checkRateLimit(
 	config: RateLimitConfig
@@ -173,16 +160,11 @@ async function checkRateLimit(
 	const supabase = getServiceRoleClient();
 
 	try {
-		// Cast needed until database.ts is regenerated post-migration (same
-		// pattern as tutor-rate-limiter.ts uses for `increment_rate_limit`).
-		const { data, error } = (await (supabase.rpc as CallableFunction)(
-			'check_and_increment_rate_limit',
-			{
-				p_key: key,
-				p_max_count: maxAttempts,
-				p_window_seconds: windowSeconds
-			}
-		)) as { data: CheckAndIncrementRow[] | null; error: unknown };
+		const { data, error } = await supabase.rpc('check_and_increment_rate_limit', {
+			p_key: key,
+			p_max_count: maxAttempts,
+			p_window_seconds: windowSeconds
+		});
 
 		if (error) {
 			logger.error('Rate limit RPC error:', error);
