@@ -16,12 +16,13 @@ import { requireAuth } from '$lib/server/middleware/auth';
 
 /**
  * GET /api/tags
- * Get all tags sorted alphabetically
- * Any authenticated user can view tags
+ * Get all tags sorted alphabetically.
+ * Read-only access is open to anonymous visitors so public pages (e.g.
+ * /presques-evaluations) can offer tag-based filtering without auth.
+ * Tag names are generic math themes (algèbre, géométrie, etc.) and carry
+ * no PII, so exposing them publicly is safe.
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	await requireAuth(locals);
-
 	const { data, error: fetchError } = await locals.supabase
 		.from('tags')
 		.select('id, name, created_by, created_at')

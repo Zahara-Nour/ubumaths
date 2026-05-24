@@ -3,6 +3,8 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
+	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
+	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import { FileText, Eye, Download, Calendar, User, ExternalLink, X } from 'lucide-svelte';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
@@ -63,33 +65,6 @@
 		data.evaluations.filter((e) => matchesGradeFilter(e) && matchesTagFilter(e))
 	);
 
-	// Distinct grade codes and tags actually present in the loaded collection,
-	// sorted by GRADE_CODES order (curriculum) and alphabetically respectively.
-	const availableGrades = $derived(
-		GRADE_CODES.filter((grade) =>
-			data.evaluations.some((e) => (e.grade_levels ?? []).includes(grade))
-		)
-	);
-
-	const availableTags = $derived(
-		data.evaluations
-			.flatMap((e) => e.tags ?? [])
-			.filter((tag, idx, arr) => arr.indexOf(tag) === idx)
-			.sort((a, b) => a.localeCompare(b, 'fr'))
-	);
-
-	function toggleGrade(grade: GradeCode) {
-		selectedGrades = selectedGrades.includes(grade)
-			? selectedGrades.filter((g) => g !== grade)
-			: [...selectedGrades, grade];
-	}
-
-	function toggleTag(tag: string) {
-		selectedTags = selectedTags.includes(tag)
-			? selectedTags.filter((t) => t !== tag)
-			: [...selectedTags, tag];
-	}
-
 	const hasActiveFilters = $derived(selectedGrades.length > 0 || selectedTags.length > 0);
 
 	function openPreview(evaluation: Evaluation) {
@@ -117,65 +92,38 @@
 		</p>
 	</header>
 
-	<!-- Compact filters -->
-	{#if availableGrades.length > 0 || availableTags.length > 0}
-		<div class="space-y-2 rounded-lg border bg-card/30 p-3 text-sm">
-			{#if availableGrades.length > 0}
-				<div class="flex flex-wrap items-center gap-1.5">
-					<span class="mr-1 text-xs font-medium text-muted-foreground">Niveau</span>
-					{#each availableGrades as grade (grade)}
-						{@const active = selectedGrades.includes(grade)}
-						<button
-							type="button"
-							onclick={() => toggleGrade(grade)}
-							class="rounded-full border px-2 py-0.5 text-xs transition-colors {active
-								? 'border-primary bg-primary text-primary-foreground'
-								: 'border-border bg-background hover:bg-muted'}"
-						>
-							{formatGradeShort(grade)}
-						</button>
-					{/each}
-				</div>
-			{/if}
-
-			{#if availableTags.length > 0}
-				<div class="flex flex-wrap items-center gap-1.5">
-					<span class="mr-1 text-xs font-medium text-muted-foreground">Thème</span>
-					{#each availableTags as tag (tag)}
-						{@const active = selectedTags.includes(tag)}
-						<button
-							type="button"
-							onclick={() => toggleTag(tag)}
-							class="rounded-full border px-2 py-0.5 text-xs transition-colors {active
-								? 'border-primary bg-primary text-primary-foreground'
-								: 'border-border bg-background hover:bg-muted'}"
-						>
-							{tag}
-						</button>
-					{/each}
-				</div>
-			{/if}
-
-			<div class="flex items-center justify-between pt-1 text-xs text-muted-foreground">
-				<span>
-					{filteredEvaluations.length} résultat{filteredEvaluations.length >= 2 ? 's' : ''}
-				</span>
-				{#if hasActiveFilters}
-					<button
-						type="button"
-						class="flex items-center gap-1 hover:text-foreground"
-						onclick={() => {
-							selectedGrades = [];
-							selectedTags = [];
-						}}
-					>
-						<X class="h-3 w-3" />
-						Effacer
-					</button>
-				{/if}
-			</div>
+	<!-- Compact filter bar -->
+	<div
+		class="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border bg-card/30 px-3 py-2 text-sm"
+	>
+		<div class="flex items-center gap-2">
+			<span class="text-xs font-medium text-muted-foreground">Niveau</span>
+			<GradeBadgeSelector bind:value={selectedGrades} placeholder="Tous" />
 		</div>
-	{/if}
+		<div class="flex items-center gap-2">
+			<span class="text-xs font-medium text-muted-foreground">Thème</span>
+			<TagBadgeSelector bind:value={selectedTags} placeholder="Tous" />
+		</div>
+
+		<div class="ml-auto flex items-center gap-3 text-xs text-muted-foreground">
+			<span>
+				{filteredEvaluations.length} résultat{filteredEvaluations.length >= 2 ? 's' : ''}
+			</span>
+			{#if hasActiveFilters}
+				<button
+					type="button"
+					class="flex items-center gap-1 hover:text-foreground"
+					onclick={() => {
+						selectedGrades = [];
+						selectedTags = [];
+					}}
+				>
+					<X class="h-3 w-3" />
+					Effacer
+				</button>
+			{/if}
+		</div>
+	</div>
 
 	{#if data.evaluations.length === 0}
 		<Card.Root>
