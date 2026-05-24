@@ -59,6 +59,13 @@
 		onGrantVipCard
 	}: Props = $props();
 
+	let amountInput = $state<number | string>(1);
+	const amount = $derived.by(() => {
+		const n = Math.floor(Number(amountInput));
+		if (!Number.isFinite(n) || n < 1) return 1;
+		return n;
+	});
+
 	/**
 	 * Get full name or identifier for student
 	 */
@@ -112,16 +119,24 @@
 			size="sm"
 			variant="default"
 			class="h-7 w-7 p-0 text-xs"
-			disabled={gidouilles < 1}
-			onclick={() => onUpdateGidouilles(student.id, -1, getStudentDisplayName())}
+			disabled={gidouilles < amount}
+			onclick={() => onUpdateGidouilles(student.id, -amount, getStudentDisplayName())}
 		>
 			-
 		</Button>
+		<input
+			type="number"
+			min="1"
+			step="1"
+			bind:value={amountInput}
+			aria-label="Quantite de gidouilles a ajouter ou retirer"
+			class="h-7 w-12 rounded-md border border-border bg-background px-1 text-center text-xs tabular-nums shadow-sm transition-all duration-200 outline-none [-moz-appearance:textfield] hover:border-ring/50 focus:border-ring focus:ring-2 focus:ring-ring/30 dark:bg-card [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+		/>
 		<Button
 			size="sm"
 			variant="default"
 			class="h-7 w-7 p-0 text-xs"
-			onclick={() => onUpdateGidouilles(student.id, 1, getStudentDisplayName())}
+			onclick={() => onUpdateGidouilles(student.id, amount, getStudentDisplayName())}
 		>
 			+
 		</Button>
