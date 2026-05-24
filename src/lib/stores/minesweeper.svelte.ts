@@ -804,6 +804,7 @@ class MinesweeperStore {
 
 		// Trigger reactivity
 		this.currentGame = { ...game };
+		this._assertGridInvariants('revealCell');
 	}
 
 	/**
@@ -936,6 +937,7 @@ class MinesweeperStore {
 
 		// Trigger reactivity
 		this.currentGame = { ...game };
+		this._assertGridInvariants('toggleFlag');
 	}
 
 	/**
@@ -1025,6 +1027,7 @@ class MinesweeperStore {
 				this.currentGame = { ...game };
 			}
 		}
+		this._assertGridInvariants('chordClick');
 	}
 
 	/**
@@ -1128,6 +1131,7 @@ class MinesweeperStore {
 				// Trigger reactivity
 				this.currentGame = { ...game };
 			}
+			this._assertGridInvariants('useHint');
 
 			// Show appropriate toast based on hint source
 			if (result.source === 'vip_card') {
@@ -1261,6 +1265,7 @@ class MinesweeperStore {
 			} else {
 				this.currentGame = { ...game };
 			}
+			this._assertGridInvariants('useDetector');
 
 			if (result.source === 'vip_card') {
 				toaster.success(
@@ -1498,6 +1503,7 @@ class MinesweeperStore {
 
 			// Trigger reactivity
 			this.currentGame = { ...game };
+			this._assertGridInvariants('useUndo');
 
 			toaster.success('Seconde Chance utilisée ! Continuez à jouer.');
 			logger.info('Undo used successfully', { row, col, gameId: game.id });
@@ -1834,6 +1840,10 @@ class MinesweeperStore {
 		}
 
 		const game = this.currentGame;
+
+		// Sanity check before persisting: catches counters that drifted
+		// from the actual grid contents (logged but not corrected).
+		this._assertGridInvariants('saveGame');
 
 		// Guard: Skip auto-save for completed games
 		// Only save games that are still in progress to avoid RLS policy violations
@@ -2517,6 +2527,64 @@ class MinesweeperStore {
 			}
 		}
 		return count;
+	}
+
+	/**
+	 * Runtime invariant check: the in-memory counters (`flagsUsed` /
+	 * `cellsRevealed`) MUST stay in sync with the actual grid contents.
+	 * If they drift apart, the player can end up in pathological states
+	 * (e.g. all mines flagged on the board but the auto-win never fires
+	 * because the counter says fewer flags than reality — bug observed
+	 * 2026-05-24 on a beginner game).
+	 *
+	 * This helper is observability-only: it does NOT correct the
+	 * counters. The goal is to capture the scene of the crime
+	 * (operation that triggered the drift, current state) so we can
+	 * identify the broken code path. Once the root cause is found,
+	 * remove the helper or convert it to dev-only.
+	 *
+	 * @param operation - Short label naming the calling site
+	 */
+	private _assertGridInvariants(operation: string): void {
+		if (!this.currentGame) return;
+		const game = this.currentGame;
+		const actualFlags = this.countFlags(game.grid);
+		const actualRevealed = this.countRevealed(game.grid);
+		if (actualFlags === game.flagsUsed && actualRevealed === game.cellsRevealed) {
+			return;
+		}
+		const diagnostics = {
+			operation,
+			game_id: game.id ?? null,
+			difficulty: game.difficulty,
+			status: game.status,
+			counter_flags_used: game.flagsUsed,
+			actual_flagged_cells: actualFlags,
+			flags_drift: actualFlags - game.flagsUsed,
+			counter_cells_revealed: game.cellsRevealed,
+			actual_revealed_cells: actualRevealed,
+			revealed_drift: actualRevealed - game.cellsRevealed,
+			mines_count: game.minesCount,
+			time_elapsed: game.timeElapsed,
+			hints_used: game.hintsUsed ?? 0,
+			is_tournament: this.isInTournamentMode()
+		};
+		// Always visible in DevTools (logger.error is no-op in prod)
+		console.error('[Minesweeper invariant] grid counters drifted', diagnostics);
+		if (browser) {
+			fetch('/api/errors/log', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					error_type: 'client_js',
+					severity: 'error',
+					message: `[Minesweeper invariant] ${operation}: flags drift=${diagnostics.flags_drift}, revealed drift=${diagnostics.revealed_drift}`,
+					url: typeof window !== 'undefined' ? window.location.href : 'unknown',
+					tags: ['minesweeper', 'invariant-violated'],
+					context: diagnostics
+				})
+			}).catch(() => {});
+		}
 	}
 
 	/**
