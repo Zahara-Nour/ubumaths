@@ -247,13 +247,26 @@
 		{/if}
 	</div>
 
-	<!-- Cards drop zone -->
+	<!--
+		Cards drop zone.
+
+		- `min-h-24` (≈ 96px) gives a comfortable drop target even when the
+		  column is empty. Without it the zone is only the size of the gap
+		  between header and footer and is nearly impossible to hit.
+		- `centreDraggedOnCursor` + `useCursorForDetection` make zone detection
+		  follow the cursor instead of the geometric centre of the dragged
+		  card. The default behaviour requires the *centre* of the card to
+		  enter the destination — counter-intuitive when the card is large
+		  relative to the gap between columns.
+	-->
 	<div
-		class="flex min-h-2 flex-col gap-2"
+		class="flex min-h-24 flex-col gap-2"
 		use:dndzone={{
 			items: cards,
 			type: 'kanban-card',
 			flipDurationMs: FLIP_MS,
+			centreDraggedOnCursor: true,
+			useCursorForDetection: true,
 			dropTargetStyle: { outline: '2px dashed var(--color-ring)', outlineOffset: '4px' }
 		}}
 		onconsider={handleCardsConsider}
