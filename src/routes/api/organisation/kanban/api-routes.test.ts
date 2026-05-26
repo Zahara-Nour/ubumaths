@@ -993,6 +993,57 @@ describe('POST /api/organisation/kanban/columns/[columnId]/cards', () => {
 		expect(response.status).toBe(201);
 		expect(data.card.description).toBe('Détails de la tâche');
 	});
+
+	it('should return 201 with a valid ISO due_date', async () => {
+		const { POST } = await import('./columns/[columnId]/cards/+server');
+		const supabase = createMockSupabase();
+		mockAuthProfile(supabase);
+		const locals = createMockLocals(TEST_IDS.user, supabase);
+		const due = '2026-06-12T00:00:00.000Z';
+		const request = createMockRequest({
+			title: 'Carte avec échéance',
+			position: 1,
+			due_date: due
+		});
+
+		supabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { board_id: TEST_IDS.board },
+			error: null
+		});
+		supabase._mockChain.maybeSingle.mockResolvedValueOnce({ data: mockBoard, error: null });
+		supabase._mockChain.single.mockResolvedValueOnce({
+			data: { ...mockCard, due_date: due },
+			error: null
+		});
+
+		const response = await POST({
+			locals,
+			params: { columnId: TEST_IDS.column },
+			request
+		} as any);
+		const data = await response.json();
+		expect(response.status).toBe(201);
+		expect(data.card.due_date).toBe(due);
+	});
+
+	it('should reject an invalid due_date format', async () => {
+		const { POST } = await import('./columns/[columnId]/cards/+server');
+		const supabase = createMockSupabase();
+		mockAuthProfile(supabase);
+		const locals = createMockLocals(TEST_IDS.user, supabase);
+		const request = createMockRequest({
+			title: 'Carte',
+			position: 1,
+			due_date: 'not-a-date'
+		});
+
+		try {
+			await POST({ locals, params: { columnId: TEST_IDS.column }, request } as any);
+			expect.fail('Should have thrown');
+		} catch (err: any) {
+			expect(err.status).toBe(400);
+		}
+	});
 });
 
 // ============================================================================
@@ -1155,6 +1206,68 @@ describe('PATCH /api/organisation/kanban/cards/[cardId]', () => {
 		const data = await response.json();
 		expect(response.status).toBe(200);
 		expect(data.card.column_id).toBe(TEST_IDS.column2);
+	});
+
+	it('should return 200 when setting due_date to a valid ISO datetime', async () => {
+		const { PATCH } = await import('./cards/[cardId]/+server');
+		const supabase = createMockSupabase();
+		mockAuthProfile(supabase);
+		const locals = createMockLocals(TEST_IDS.user, supabase);
+		const due = '2026-12-31T00:00:00.000Z';
+		const request = createMockRequest({ due_date: due }, 'PATCH');
+
+		// getCardColumnId
+		supabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { column_id: TEST_IDS.column },
+			error: null
+		});
+		// update
+		supabase._mockChain.single.mockResolvedValueOnce({
+			data: { ...mockCard, due_date: due },
+			error: null
+		});
+
+		const response = await PATCH({ locals, params: { cardId: TEST_IDS.card }, request } as any);
+		const data = await response.json();
+		expect(response.status).toBe(200);
+		expect(data.card.due_date).toBe(due);
+	});
+
+	it('should return 200 when clearing due_date with explicit null', async () => {
+		const { PATCH } = await import('./cards/[cardId]/+server');
+		const supabase = createMockSupabase();
+		mockAuthProfile(supabase);
+		const locals = createMockLocals(TEST_IDS.user, supabase);
+		const request = createMockRequest({ due_date: null }, 'PATCH');
+
+		supabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { column_id: TEST_IDS.column },
+			error: null
+		});
+		supabase._mockChain.single.mockResolvedValueOnce({
+			data: { ...mockCard, due_date: null },
+			error: null
+		});
+
+		const response = await PATCH({ locals, params: { cardId: TEST_IDS.card }, request } as any);
+		const data = await response.json();
+		expect(response.status).toBe(200);
+		expect(data.card.due_date).toBeNull();
+	});
+
+	it('should reject an invalid due_date format', async () => {
+		const { PATCH } = await import('./cards/[cardId]/+server');
+		const supabase = createMockSupabase();
+		mockAuthProfile(supabase);
+		const locals = createMockLocals(TEST_IDS.user, supabase);
+		const request = createMockRequest({ due_date: '12-06-2026' }, 'PATCH');
+
+		try {
+			await PATCH({ locals, params: { cardId: TEST_IDS.card }, request } as any);
+			expect.fail('Should have thrown');
+		} catch (err: any) {
+			expect(err.status).toBe(400);
+		}
 	});
 });
 

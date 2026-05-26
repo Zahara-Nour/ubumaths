@@ -23,7 +23,7 @@ import type { KanbanCard } from '$lib/types/database-helpers';
  * Update type to discourage accidental column changes elsewhere.
  */
 type CardMutationPayload = Partial<
-	Pick<KanbanCard, 'title' | 'description' | 'column_id' | 'position'>
+	Pick<KanbanCard, 'title' | 'description' | 'column_id' | 'position' | 'due_date'>
 >;
 
 export const PATCH: RequestHandler = async ({ locals, params, request }) => {
@@ -77,6 +77,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	}
 	if (parsed.data.column_id !== undefined) updatePayload.column_id = parsed.data.column_id;
 	if (parsed.data.position !== undefined) updatePayload.position = parsed.data.position;
+	if (parsed.data.due_date !== undefined) updatePayload.due_date = parsed.data.due_date;
 
 	const { data, error: dbError } = await locals.supabase
 		.from('kanban_cards')

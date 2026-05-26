@@ -288,7 +288,7 @@
 
 	async function handleSaveCard(
 		cardId: string,
-		patch: { title?: string; description?: string | null }
+		patch: { title?: string; description?: string | null; due_date?: string | null }
 	) {
 		const located = findCard(cardId);
 		if (!located) return;
@@ -297,7 +297,8 @@
 		const optimistic: KanbanCard = {
 			...previous,
 			...(patch.title !== undefined ? { title: patch.title } : {}),
-			...(patch.description !== undefined ? { description: patch.description } : {})
+			...(patch.description !== undefined ? { description: patch.description } : {}),
+			...(patch.due_date !== undefined ? { due_date: patch.due_date } : {})
 		};
 		column.cards[index] = optimistic;
 		const updated = await updateCard(cardId, patch);

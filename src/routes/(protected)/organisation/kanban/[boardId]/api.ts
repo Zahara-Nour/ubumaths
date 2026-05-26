@@ -30,6 +30,8 @@ export interface CardPatch {
 	description?: string | null;
 	column_id?: string;
 	position?: number;
+	/** ISO 8601 datetime, null to clear, omitted to leave unchanged. */
+	due_date?: string | null;
 }
 
 export interface BoardPatch {
