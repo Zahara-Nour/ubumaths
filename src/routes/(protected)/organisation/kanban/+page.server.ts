@@ -25,16 +25,19 @@ export interface TeacherClassOption {
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile } = await requireAuth(locals);
 
-	// 1. Boards. We only catch errors from `getAccessibleBoards` itself (typically
-	// missing migration in dev) so the page renders empty rather than 500-ing.
-	// Upstream auth errors from `requireAuth` are intentionally NOT caught — they
-	// must propagate so the framework can redirect to login.
+	// 1. Boards (first page). We only catch errors from `getAccessibleBoards`
+	// itself (typically missing migration in dev) so the page renders empty
+	// rather than 500-ing. Upstream auth errors from `requireAuth` are
+	// intentionally NOT caught — they must propagate so the framework can
+	// redirect to login.
 	let boards: KanbanBoardWithCounts[] = [];
+	let nextCursor: string | null = null;
 	try {
-		boards = await getAccessibleBoards(locals.supabase);
+		const page = await getAccessibleBoards(locals.supabase);
+		boards = page.boards;
+		nextCursor = page.nextCursor;
 	} catch (err) {
 		console.error('[organisation/kanban] failed to load boards:', err);
-		boards = [];
 	}
 
 	// 2. Classes for the create dialog (teachers only - students never create
@@ -56,6 +59,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		boards,
+		nextCursor,
 		classes: teacherClasses,
 		role: profile.role,
 		userId: user.id

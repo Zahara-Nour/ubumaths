@@ -34,10 +34,50 @@
 	let createOpen = $state(false);
 	let deletingId = $state<string | null>(null);
 
+	// Pagination: append client-side as the user clicks "Voir plus". The first
+	// page comes from the server load; subsequent pages are fetched via the
+	// API with a cursor (the updated_at of the last board on the previous page).
+	// Helper functions sidestep the `state_referenced_locally` warning that
+	// would fire if we read `data.boards` directly at the top level.
+	function seedBoards(): KanbanBoardWithCounts[] {
+		return [...data.boards];
+	}
+	function seedCursor(): string | null {
+		return data.nextCursor;
+	}
+	let boards = $state<KanbanBoardWithCounts[]>(seedBoards());
+	let cursor = $state<string | null>(seedCursor());
+	let loadingMore = $state(false);
+
 	// Confirm-delete state. We stage the candidate board, then open the dialog;
 	// the dialog's onConfirm closes itself and invokes the async deletion.
 	let deleteConfirmOpen = $state(false);
 	let pendingDelete = $state<KanbanBoardWithCounts | null>(null);
+
+	async function loadMore() {
+		if (!cursor || loadingMore) return;
+		loadingMore = true;
+		try {
+			const res = await fetch(
+				`/api/organisation/kanban/boards?cursor=${encodeURIComponent(cursor)}`
+			);
+			if (!res.ok) {
+				toaster.error('Erreur lors du chargement de la page suivante');
+				return;
+			}
+			const json = (await res.json()) as {
+				boards: KanbanBoardWithCounts[];
+				nextCursor: string | null;
+			};
+			boards = [...boards, ...json.boards];
+			cursor = json.nextCursor;
+		} catch (err) {
+			console.error('[organisation/kanban] loadMore failed:', err);
+			toaster.error('Erreur réseau');
+		} finally {
+			loadingMore = false;
+		}
+	}
 
 	// Build a class_id -> class_name lookup for the badge text. Only teachers
 	// have classes in `data.classes`; for students the badge will fall back to
@@ -92,7 +132,9 @@
 			}
 
 			toaster.success('Tableau supprimé');
-			await invalidateAll();
+			// Local filter is enough: we don't need to re-fetch the first page
+			// just to remove one entry.
+			boards = boards.filter((b) => b.id !== board.id);
 		} catch (err) {
 			console.error('[organisation/kanban] delete failed:', err);
 			toaster.error('Erreur réseau lors de la suppression');
@@ -102,7 +144,24 @@
 	}
 
 	async function handleCreated() {
-		await invalidateAll();
+		// Refetch the first page so the new board (which sorts to the top via
+		// updated_at DESC) appears. We also reset the cursor — the page may
+		// contain fewer entries than before but that's fine.
+		try {
+			const res = await fetch('/api/organisation/kanban/boards');
+			if (!res.ok) {
+				await invalidateAll();
+				return;
+			}
+			const json = (await res.json()) as {
+				boards: KanbanBoardWithCounts[];
+				nextCursor: string | null;
+			};
+			boards = json.boards;
+			cursor = json.nextCursor;
+		} catch {
+			await invalidateAll();
+		}
 	}
 </script>
 
@@ -120,7 +179,7 @@
 		</Button>
 	</div>
 
-	{#if data.boards.length === 0}
+	{#if boards.length === 0}
 		<div
 			class="flex flex-col items-center gap-3 rounded-lg border border-dashed bg-muted/30 p-10 text-center"
 		>
@@ -136,7 +195,7 @@
 		</div>
 	{:else}
 		<ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-			{#each data.boards as board (board.id)}
+			{#each boards as board (board.id)}
 				{@const isOwner = board.owner_id === data.userId}
 				{@const isClass = board.class_id !== null}
 				<li>
@@ -206,6 +265,14 @@
 				</li>
 			{/each}
 		</ul>
+
+		{#if cursor !== null}
+			<div class="flex justify-center pt-2">
+				<Button variant="outline" onclick={loadMore} disabled={loadingMore} class="gap-2">
+					{loadingMore ? 'Chargement…' : 'Voir plus de tableaux'}
+				</Button>
+			</div>
+		{/if}
 	{/if}
 </div>
 
