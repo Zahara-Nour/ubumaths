@@ -503,6 +503,8 @@
 					type: 'kanban-column',
 					flipDurationMs: FLIP_MS,
 					dragDisabled: !isOwner,
+					centreDraggedOnCursor: true,
+					useCursorForDetection: true,
 					dropTargetStyle: { outline: '2px dashed var(--color-ring)' }
 				}}
 				onconsider={handleColumnsConsider}
