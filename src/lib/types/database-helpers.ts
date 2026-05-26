@@ -161,3 +161,94 @@ export interface MigrationEditInput {
 	editedTransformed: Partial<QuestionTemplate>;
 	notes?: string;
 }
+
+// ============================================================================
+// Kanban Types (STOPGAP)
+// ============================================================================
+//
+// These interfaces mirror the kanban_boards / kanban_columns / kanban_cards
+// tables introduced by migration `20260526190624_create_kanban_tables.sql`.
+//
+// They are temporary: once the migration is pushed and `pnpm db:types` is
+// regenerated, replace each `KanbanBoard` interface below with an alias like
+//   `export type KanbanBoard = Tables<'kanban_boards'>;`
+// (and keep the *Insert / *Update helpers + the composite KanbanBoardWithCounts
+// here, since composites belong in this file per CLAUDE.md rule 6).
+// ============================================================================
+
+/** Kanban board row. class_id NULL = personal board; NOT NULL = class board. */
+export interface KanbanBoard {
+	id: string;
+	owner_id: string;
+	class_id: string | null;
+	title: string;
+	created_at: string;
+	updated_at: string;
+}
+
+/** Kanban column row (lives inside a board). */
+export interface KanbanColumn {
+	id: string;
+	board_id: string;
+	title: string;
+	/** Fractional index used for ordering columns inside a board. */
+	position: number;
+	created_at: string;
+}
+
+/** Kanban card row (lives inside a column). */
+export interface KanbanCard {
+	id: string;
+	column_id: string;
+	title: string;
+	/** ubumark/markdown content. NULL when empty. Capped at 50000 chars by API. */
+	description: string | null;
+	/** Fractional index used for ordering cards inside a column. */
+	position: number;
+	created_at: string;
+	updated_at: string;
+}
+
+/** Insert payload for kanban_boards (id + timestamps optional, defaulted by DB). */
+export type KanbanBoardInsert = Omit<KanbanBoard, 'id' | 'created_at' | 'updated_at'> & {
+	id?: string;
+	created_at?: string;
+	updated_at?: string;
+};
+
+/**
+ * Update payload for kanban_boards. `class_id` is intentionally immutable
+ * post-creation: changing it would silently grant/revoke board access to class
+ * members, which is a confusing UX. Convert via a dedicated endpoint if needed.
+ */
+export type KanbanBoardUpdate = Partial<
+	Omit<KanbanBoard, 'id' | 'owner_id' | 'class_id' | 'created_at'>
+>;
+
+/** Insert payload for kanban_columns. */
+export type KanbanColumnInsert = Omit<KanbanColumn, 'id' | 'created_at'> & {
+	id?: string;
+	created_at?: string;
+};
+
+/** Update payload for kanban_columns. */
+export type KanbanColumnUpdate = Partial<Omit<KanbanColumn, 'id' | 'board_id' | 'created_at'>>;
+
+/** Insert payload for kanban_cards. */
+export type KanbanCardInsert = Omit<KanbanCard, 'id' | 'created_at' | 'updated_at'> & {
+	id?: string;
+	created_at?: string;
+	updated_at?: string;
+};
+
+/** Update payload for kanban_cards. */
+export type KanbanCardUpdate = Partial<Omit<KanbanCard, 'id' | 'column_id' | 'created_at'>>;
+
+/**
+ * Composite type used by the board list endpoint: a board enriched with the
+ * number of columns and cards it contains (counted server-side). NOT a DB row.
+ */
+export interface KanbanBoardWithCounts extends KanbanBoard {
+	column_count: number;
+	card_count: number;
+}
