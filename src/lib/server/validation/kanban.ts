@@ -25,7 +25,7 @@ export const kanbanUuidSchema = z.string().uuid('Identifiant invalide');
  */
 export function parseKanbanId(
 	raw: string | undefined,
-	kind: 'tableau' | 'colonne' | 'carte'
+	kind: 'tableau' | 'colonne' | 'carte' | 'tag'
 ): string {
 	const parsed = kanbanUuidSchema.safeParse(raw);
 	if (!parsed.success) {
@@ -33,6 +33,51 @@ export function parseKanbanId(
 	}
 	return parsed.data;
 }
+
+/**
+ * Allowed colour palette for kanban tags. Mirrored from the kanban_tag_color
+ * enum at the DB layer. Keep this in sync if the enum is extended.
+ */
+export const tagColorSchema = z.enum([
+	'green',
+	'yellow',
+	'orange',
+	'red',
+	'purple',
+	'blue',
+	'sky',
+	'gray'
+]);
+export type TagColor = z.infer<typeof tagColorSchema>;
+
+/**
+ * Shared name/colour body shape for tag mutations.
+ */
+const tagNameSchema = z
+	.string()
+	.trim()
+	.min(1, 'Nom requis')
+	.max(30, 'Nom trop long (max 30 caractères)');
+
+/**
+ * POST /api/organisation/kanban/boards/[boardId]/tags
+ */
+export const createTagSchema = z.object({
+	name: tagNameSchema,
+	color: tagColorSchema.default('gray')
+});
+
+/**
+ * PATCH /api/organisation/kanban/tags/[tagId] — partial update.
+ */
+export const updateTagSchema = z
+	.object({
+		name: tagNameSchema.optional(),
+		color: tagColorSchema.optional()
+	})
+	.refine((d) => d.name !== undefined || d.color !== undefined, {
+		message: 'Au moins un champ doit être fourni (name ou color)'
+	});
 
 /**
  * Query parameters for `GET /api/organisation/kanban/boards`.
@@ -157,6 +202,16 @@ export const createCardSchema = z.object({
  * (Moving cross-board is forbidden at the API layer — checked in the handler
  * by looking up board_id of source vs destination column.)
  */
+/**
+ * Schema for the `tag_ids` field on PATCH card — full replacement of the
+ * card's tag set. Capped at 20 (same as the per-board tag cap, so a card
+ * can never reference more tags than the board has).
+ */
+const cardTagIdsSchema = z
+	.array(kanbanUuidSchema)
+	.max(20, 'Trop de tags (max 20 par carte)')
+	.optional();
+
 export const updateCardSchema = z
 	.object({
 		title: z
@@ -172,7 +227,8 @@ export const updateCardSchema = z
 			.optional(),
 		column_id: kanbanUuidSchema.optional(),
 		position: z.number().finite('Position invalide').optional(),
-		due_date: dueDateSchema
+		due_date: dueDateSchema,
+		tag_ids: cardTagIdsSchema
 	})
 	.refine(
 		(d) =>
@@ -180,7 +236,8 @@ export const updateCardSchema = z
 			d.description !== undefined ||
 			d.column_id !== undefined ||
 			d.position !== undefined ||
-			d.due_date !== undefined,
+			d.due_date !== undefined ||
+			d.tag_ids !== undefined,
 		{ message: 'Au moins un champ doit être fourni' }
 	)
 	.refine((d) => !(d.column_id !== undefined && d.position === undefined), {
