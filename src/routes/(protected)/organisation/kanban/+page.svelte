@@ -25,6 +25,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { KanbanBoardWithCounts } from '$lib/types/database-helpers';
 
+	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import CreateBoardDialog from './CreateBoardDialog.svelte';
 	import type { PageData } from './$types';
 
@@ -32,6 +33,11 @@
 
 	let createOpen = $state(false);
 	let deletingId = $state<string | null>(null);
+
+	// Confirm-delete state. We stage the candidate board, then open the dialog;
+	// the dialog's onConfirm closes itself and invokes the async deletion.
+	let deleteConfirmOpen = $state(false);
+	let pendingDelete = $state<KanbanBoardWithCounts | null>(null);
 
 	// Build a class_id -> class_name lookup for the badge text. Only teachers
 	// have classes in `data.classes`; for students the badge will fall back to
@@ -57,11 +63,15 @@
 		}
 	}
 
-	async function handleDelete(board: KanbanBoardWithCounts) {
-		// Native confirm is sufficient for v1.
-		const ok = confirm('Supprimer ce tableau ? Action irréversible.');
-		if (!ok) return;
+	function requestDelete(board: KanbanBoardWithCounts) {
+		pendingDelete = board;
+		deleteConfirmOpen = true;
+	}
 
+	async function performDelete() {
+		const board = pendingDelete;
+		if (!board) return;
+		pendingDelete = null;
 		deletingId = board.id;
 		try {
 			const res = await fetch(`/api/organisation/kanban/boards/${board.id}`, {
@@ -172,7 +182,7 @@
 										<DropdownMenu.Item
 											class="text-destructive focus:text-destructive"
 											disabled={deletingId === board.id}
-											onclick={() => handleDelete(board)}
+											onclick={() => requestDelete(board)}
 										>
 											<Trash2 class="mr-2 h-4 w-4" aria-hidden="true" />
 											{deletingId === board.id ? 'Suppression…' : 'Supprimer'}
@@ -204,4 +214,17 @@
 	role={data.role}
 	classes={data.classes}
 	onCreated={handleCreated}
+/>
+
+<ConfirmDialog
+	bind:open={deleteConfirmOpen}
+	title="Supprimer le tableau"
+	description={pendingDelete
+		? `« ${pendingDelete.title} » sera supprimé définitivement avec toutes ses colonnes et ses cartes.`
+		: ''}
+	confirmLabel="Supprimer"
+	cancelLabel="Annuler"
+	variant="destructive"
+	onConfirm={performDelete}
+	onCancel={() => (pendingDelete = null)}
 />

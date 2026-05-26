@@ -30,6 +30,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import type { KanbanColumn, KanbanCard } from '$lib/types/database-helpers';
 
 	import KanbanCardComp from './KanbanCard.svelte';
@@ -174,16 +175,25 @@
 		}
 	}
 
-	// Delete column with confirmation that mentions the card count when non-empty.
-	function handleDelete() {
+	// Delete confirmation state. We stage the request, then open the shadcn
+	// ConfirmDialog whose `onConfirm` triggers the actual deletion.
+	let deleteConfirmOpen = $state(false);
+
+	const deleteDescription = $derived.by(() => {
 		const n = cards.length;
-		const message =
-			n === 0
-				? `Supprimer la colonne "${column.title}" ?`
-				: `Supprimer la colonne "${column.title}" ? Elle contient ${n} carte${n > 1 ? 's' : ''} qui ${n > 1 ? 'seront supprimées' : 'sera supprimée'}.`;
-		if (confirm(message)) {
-			onDeleteColumn(column.id);
-		}
+		if (n === 0) return `« ${column.title} » sera supprimée définitivement.`;
+		const plural = n > 1;
+		return `« ${column.title} » sera supprimée définitivement avec ${n} carte${
+			plural ? 's' : ''
+		} qu'elle contient.`;
+	});
+
+	function requestDelete() {
+		deleteConfirmOpen = true;
+	}
+
+	function performDelete() {
+		onDeleteColumn(column.id);
 	}
 
 	// DnD handlers (cards inside this column).
@@ -236,7 +246,7 @@
 					<DropdownMenu.Content align="end">
 						<DropdownMenu.Item
 							class="text-destructive focus:text-destructive"
-							onclick={handleDelete}
+							onclick={requestDelete}
 						>
 							<Trash2 class="mr-2 h-4 w-4" aria-hidden="true" />
 							Supprimer la colonne
@@ -314,3 +324,13 @@
 		</Button>
 	{/if}
 </div>
+
+<ConfirmDialog
+	bind:open={deleteConfirmOpen}
+	title="Supprimer la colonne"
+	description={deleteDescription}
+	confirmLabel="Supprimer"
+	cancelLabel="Annuler"
+	variant="destructive"
+	onConfirm={performDelete}
+/>
