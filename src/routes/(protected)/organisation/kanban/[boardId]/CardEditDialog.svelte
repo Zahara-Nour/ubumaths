@@ -28,15 +28,24 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import type { KanbanCard, KanbanTag } from '$lib/types/database-helpers';
+	import type { KanbanCard, KanbanTag, KanbanBoardMember } from '$lib/types/database-helpers';
 	import type { CardPatch } from './api';
 	import CardEditForm from './CardEditForm.svelte';
 
-	type CardWithTags = KanbanCard & { tag_ids?: string[] };
+	type CardWithExtras = KanbanCard & { tag_ids?: string[]; assignee_ids?: string[] };
 
 	type Props = {
 		/** Full per-board tag palette (passed through to CardEditForm). */
 		availableTags: KanbanTag[];
+		/** All assignable users for the board. */
+		availableMembers: KanbanBoardMember[];
+		/** Whether the assignee section is shown (false on personal boards). */
+		showAssignees: boolean;
+		/** Whether the actor can manage assignments for everyone (board owner)
+		 * or only for themselves (mixte rule). */
+		canManageAllAssignees: boolean;
+		/** Current user id for the mixte-rule toggle in the picker. */
+		currentUserId: string;
 		/** When set, the form shows a "Gérer les tags" button (owner only). */
 		onManageTags?: () => void;
 		/** Called with only the fields that changed. Parent handles persistence. */
@@ -45,11 +54,20 @@
 		onDelete: (cardId: string) => Promise<void> | void;
 	};
 
-	let { availableTags, onManageTags, onSave, onDelete }: Props = $props();
+	let {
+		availableTags,
+		availableMembers,
+		showAssignees,
+		canManageAllAssignees,
+		currentUserId,
+		onManageTags,
+		onSave,
+		onDelete
+	}: Props = $props();
 
 	// Card currently being edited. `null` ↔ dialog closed. The parent calls
 	// `openCard(card)` via a bound reference to set both at once.
-	let card = $state<CardWithTags | null>(null);
+	let card = $state<CardWithExtras | null>(null);
 	let open = $state(false);
 
 	// Working copies — seeded by `openCard` (explicit user-action trigger).
@@ -57,10 +75,12 @@
 	let description = $state('');
 	let dueDate = $state<string | null>(null);
 	let tagIds = $state<string[]>([]);
+	let assigneeIds = $state<string[]>([]);
 	let initialTitle = '';
 	let initialDescription = '';
 	let initialDueDate: string | null = null;
 	let initialTagIds: string[] = [];
+	let initialAssigneeIds: string[] = [];
 
 	let saving = $state(false);
 	let deleting = $state(false);
@@ -76,7 +96,7 @@
 	 * Public entry point: open the dialog seeded with `c`. Imported by the
 	 * parent via `bind:this` (see KanbanBoard page).
 	 */
-	export function openCard(c: CardWithTags) {
+	export function openCard(c: CardWithExtras) {
 		card = c;
 		title = c.title;
 		description = c.description ?? '';
@@ -85,10 +105,12 @@
 		// undefined.
 		dueDate = c.due_date ?? null;
 		tagIds = [...(c.tag_ids ?? [])];
+		assigneeIds = [...(c.assignee_ids ?? [])];
 		initialTitle = title;
 		initialDescription = description;
 		initialDueDate = dueDate;
 		initialTagIds = [...tagIds];
+		initialAssigneeIds = [...assigneeIds];
 		open = true;
 	}
 
@@ -99,7 +121,8 @@
 			title !== initialTitle ||
 			description !== initialDescription ||
 			dueDate !== initialDueDate ||
-			!sameStringSet(tagIds, initialTagIds)
+			!sameStringSet(tagIds, initialTagIds) ||
+			!sameStringSet(assigneeIds, initialAssigneeIds)
 		);
 	});
 
@@ -125,6 +148,7 @@
 			}
 			if (dueDate !== initialDueDate) patch.due_date = dueDate;
 			if (!sameStringSet(tagIds, initialTagIds)) patch.tag_ids = [...tagIds];
+			if (!sameStringSet(assigneeIds, initialAssigneeIds)) patch.assignee_ids = [...assigneeIds];
 			await onSave(card.id, patch);
 			open = false;
 			card = null;
@@ -167,7 +191,12 @@
 					bind:description
 					bind:dueDate
 					bind:tagIds
+					bind:assigneeIds
 					{availableTags}
+					{availableMembers}
+					{showAssignees}
+					{canManageAllAssignees}
+					{currentUserId}
 					{onManageTags}
 				/>
 			</div>

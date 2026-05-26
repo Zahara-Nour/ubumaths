@@ -23,24 +23,40 @@
 	import { CalendarDays, ChevronDown } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import type { KanbanCard as KanbanCardType, KanbanTag } from '$lib/types/database-helpers';
+	import type {
+		KanbanCard as KanbanCardType,
+		KanbanTag,
+		KanbanBoardMember
+	} from '$lib/types/database-helpers';
 	import { TAG_COLOR_TOKENS } from './tag-colors';
+	import AssigneeAvatars from './AssigneeAvatars.svelte';
 
-	type CardWithTags = KanbanCardType & { tag_ids?: string[] };
+	type CardWithExtras = KanbanCardType & { tag_ids?: string[]; assignee_ids?: string[] };
 
 	type Props = {
-		card: CardWithTags;
+		card: CardWithExtras;
 		/** Map of all tags on the parent board, keyed by id. Used to resolve the
 		 * card's `tag_ids` into chip name + colour. */
 		tagsById: Record<string, KanbanTag>;
+		/** Map of all board members keyed by id. Used to resolve the card's
+		 * `assignee_ids` into avatar entries. */
+		membersById: Record<string, KanbanBoardMember>;
 		/** When true, the card has been picked up by the dnd library and we render
 		 * a ghost placeholder. Detected by the caller via the shadow marker prop. */
 		isShadow?: boolean;
 		/** Open the edit dialog for this card. */
-		onEdit: (card: CardWithTags) => void;
+		onEdit: (card: CardWithExtras) => void;
 	};
 
-	let { card, tagsById, isShadow = false, onEdit }: Props = $props();
+	let { card, tagsById, membersById, isShadow = false, onEdit }: Props = $props();
+
+	// Resolve assignee ids to member objects; drop any unknown id (e.g. a
+	// student who just left the class — the DB trigger will catch up shortly
+	// but we want the UI to stay coherent in the meantime).
+	const assigneeMembers = $derived.by(() => {
+		const ids = card.assignee_ids ?? [];
+		return ids.map((id) => membersById[id]).filter((m): m is KanbanBoardMember => m !== undefined);
+	});
 
 	// Resolve the card's tag ids to actual KanbanTag objects, dropping any
 	// dangling ids (a tag deleted in the manager while a stale optimistic
@@ -170,7 +186,14 @@
 		</div>
 	{/if}
 
-	<p class="line-clamp-2 text-sm font-medium break-words">{card.title}</p>
+	<!-- Title and assignee avatars share a row so avatars float right of the
+	     title without forcing a vertical stack. -->
+	<div class="flex items-start gap-2">
+		<p class="line-clamp-2 flex-1 text-sm font-medium break-words">{card.title}</p>
+		{#if assigneeMembers.length > 0}
+			<AssigneeAvatars assignees={assigneeMembers} />
+		{/if}
+	</div>
 
 	{#if dueBadge}
 		<!--
