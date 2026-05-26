@@ -330,3 +330,42 @@ Items restants (features uniquement) :
 - ✅ 58 tests serveurs verts (aucune régression).
 - ✅ `pnpm check:incremental` : baseline 9 / 46 préservé (1621 fichiers maintenant, +3 du module tags).
 - ✅ Migration pushée + types régénérés.
+
+---
+
+## v1.4 — Assignation cartes (multi-assigné) ✅
+
+### Phase 1 — DB (`20260527010619_kanban_card_assignees.sql`)
+
+- **Table `kanban_card_assignees`** : jonction many-to-many (card_id, user_id) avec `assigned_at` + `assigned_by`. PK composite. Index reverse sur `user_id` pour la requête « mes cartes ».
+- **Helper `is_kanban_board_member(board_id, user_id)`** : true si owner OU (board classe AND user dans class_members).
+- **Helper `can_assign_kanban_card(card_id, assignee)`** : règle **mixte** — owner = full control, autres = self-only.
+- **RLS** : SELECT permissif (toute personne avec accès au board), INSERT/DELETE gated via `can_assign_kanban_card`.
+- **Trigger `cleanup_kanban_assignees_on_class_leave`** : AFTER DELETE sur `class_members` → supprime les assignations de cet élève sur tous les boards de la classe.
+
+### Phase 2 — Backend
+
+- **`updateCardSchema`** étendu avec `assignee_ids?: string[]` (replace full, capé à 30). Refine accepte un PATCH assignees-only.
+- **PATCH card** : stratégie **diff-aware** (toAdd / toRemove) au lieu d'un DELETE-all + INSERT-all naïf — sinon la règle mixte ferait échouer le DELETE des assignations qui ne nous appartiennent pas. Après diff, sanity-check : si la DB contient encore des rows non demandés, retour 403.
+- **`getBoardWithContent`** : ramène désormais `members: KanbanBoardMember[]` (owner + class_members, profil light) et chaque carte porte `assignee_ids`.
+- Helper `fetchBoardMembers` séparé qui gère le cas RLS profiles restrictives (fallback id-only).
+- Type composite renommé `KanbanCardWithExtras` (tag_ids + assignee_ids).
+
+### Phase 3 — Frontend
+
+- **`AssigneeAvatars.svelte`** : pile de cercles, image-ou-initiales, couleur déterministe par hash du UUID, overflow « +N ».
+- **`KanbanCard`** : avatars à droite du titre (flex row), résolution `card.assignee_ids → membersById` avec drop silencieux des ids inconnus.
+- **`CardEditForm`** : nouvelle section « Assigné·e·s » avec picker scrollable des membres, **règle mixte** appliquée côté UI (lignes des autres désactivées pour non-owner). Section cachée sur boards perso.
+- **`CardEditDialog`** : tracks `assigneeIds` à côté du reste, propage les nouveaux props (`availableMembers`, `showAssignees`, `canManageAllAssignees`, `currentUserId`).
+- **Board page** : state `members` séparé + `membersById` derived. Toggle **« Mes cartes »** (boards classe uniquement) qui filtre via un `visibleColumns` derived. **DnD cartes désactivé** quand filtre on (sinon perte des cartes cachées au drop).
+- **`api.ts`** : `CardPatch.assignee_ids` ajouté.
+
+### Quality checks
+
+- ✅ 58 tests serveurs verts.
+- ✅ `pnpm check:incremental` : baseline 9 / 46 préservé (1622 fichiers).
+- ✅ Migration pushée + types régénérés.
+
+### Reste du backlog
+
+Seulement **#4 (a11y clavier DnD)**. Realtime + assignation faits.
