@@ -160,7 +160,7 @@
 				<span
 					class={[
 						'inline-flex max-w-full items-center rounded px-1.5 py-0.5 text-[0.6875rem] font-medium',
-						TAG_COLOR_TOKENS[tag.color].chip
+						TAG_COLOR_TOKENS[tag.color].swatch
 					]}
 					title={tag.name}
 				>
