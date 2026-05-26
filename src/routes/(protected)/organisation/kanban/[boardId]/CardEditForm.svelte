@@ -13,7 +13,7 @@
 -->
 
 <script lang="ts">
-	import { CalendarDays, Settings2, X } from 'lucide-svelte';
+	import { CalendarDays, Check, Settings2, X } from 'lucide-svelte';
 	import { CalendarDate, type DateValue } from '@internationalized/date';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -195,6 +195,12 @@
 			activatable. Selected chips get a darker swatch background; unselected
 			ones use a subtler tinted background plus an outline.
 		-->
+		<!--
+			Each tag keeps its native chip colour wherever it appears (here, on
+			cards, on the manage dialog). Selection is conveyed by a leading
+			check icon plus full opacity; unselected tags are dimmed to 60% so
+			the user can spot the active ones at a glance.
+		-->
 		<div class="flex flex-wrap gap-1.5" role="group" aria-label="Sélectionner des tags">
 			{#each availableTags as tag (tag.id)}
 				{@const selected = selectedSet.has(tag.id)}
@@ -202,13 +208,15 @@
 					type="button"
 					aria-pressed={selected}
 					class={[
-						'inline-flex items-center rounded px-2 py-1 text-xs font-medium transition-colors',
-						selected
-							? TAG_COLOR_TOKENS[tag.color].swatch
-							: `border border-transparent ${TAG_COLOR_TOKENS[tag.color].chip} opacity-70 hover:opacity-100`
+						'inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-opacity',
+						TAG_COLOR_TOKENS[tag.color].chip,
+						selected ? 'opacity-100' : 'opacity-60 hover:opacity-100'
 					]}
 					onclick={() => toggleTag(tag.id)}
 				>
+					{#if selected}
+						<Check class="h-3 w-3" aria-hidden="true" />
+					{/if}
 					{tag.name}
 				</button>
 			{/each}
