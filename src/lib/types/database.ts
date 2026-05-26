@@ -14861,6 +14861,7 @@ export type Database = {
 			is_class_member: { Args: { p_class_id: string }; Returns: boolean };
 			is_class_student: { Args: { p_class_id: string }; Returns: boolean };
 			is_class_teacher: { Args: { p_class_id: string }; Returns: boolean };
+			is_class_teacher_of: { Args: { p_teacher_id: string }; Returns: boolean };
 			is_classmate: { Args: { p_class_id: string }; Returns: boolean };
 			is_conversation_participant: {
 				Args: { p_conversation_id: string; p_user_id: string };
