@@ -4678,6 +4678,39 @@ export type Database = {
 					}
 				];
 			};
+			kanban_card_tags: {
+				Row: {
+					card_id: string;
+					created_at: string;
+					tag_id: string;
+				};
+				Insert: {
+					card_id: string;
+					created_at?: string;
+					tag_id: string;
+				};
+				Update: {
+					card_id?: string;
+					created_at?: string;
+					tag_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'kanban_card_tags_card_id_fkey';
+						columns: ['card_id'];
+						isOneToOne: false;
+						referencedRelation: 'kanban_cards';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'kanban_card_tags_tag_id_fkey';
+						columns: ['tag_id'];
+						isOneToOne: false;
+						referencedRelation: 'kanban_tags';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			kanban_cards: {
 				Row: {
 					column_id: string;
@@ -4744,6 +4777,38 @@ export type Database = {
 				Relationships: [
 					{
 						foreignKeyName: 'kanban_columns_board_id_fkey';
+						columns: ['board_id'];
+						isOneToOne: false;
+						referencedRelation: 'kanban_boards';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			kanban_tags: {
+				Row: {
+					board_id: string;
+					color: Database['public']['Enums']['kanban_tag_color'];
+					created_at: string;
+					id: string;
+					name: string;
+				};
+				Insert: {
+					board_id: string;
+					color?: Database['public']['Enums']['kanban_tag_color'];
+					created_at?: string;
+					id?: string;
+					name: string;
+				};
+				Update: {
+					board_id?: string;
+					color?: Database['public']['Enums']['kanban_tag_color'];
+					created_at?: string;
+					id?: string;
+					name?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'kanban_tags_board_id_fkey';
 						columns: ['board_id'];
 						isOneToOne: false;
 						referencedRelation: 'kanban_boards';
@@ -13690,6 +13755,10 @@ export type Database = {
 				Args: { p_column_id: string };
 				Returns: boolean;
 			};
+			can_manage_kanban_card_tag: {
+				Args: { p_card_id: string; p_tag_id: string };
+				Returns: boolean;
+			};
 			can_moderate_message: {
 				Args: { message_uuid: string; moderator_uuid: string };
 				Returns: boolean;
@@ -15280,6 +15349,7 @@ export type Database = {
 			consent_status: 'pending' | 'granted' | 'expired';
 			difficulty_level: 'easy' | 'medium' | 'hard';
 			exercise_type: 'multiple_choice' | 'free_response' | 'true_false' | 'fill_blank';
+			kanban_tag_color: 'green' | 'yellow' | 'orange' | 'red' | 'purple' | 'blue' | 'sky' | 'gray';
 			reward_event_type:
 				| 'earned'
 				| 'spent'
@@ -15422,6 +15492,7 @@ export const Constants = {
 			consent_status: ['pending', 'granted', 'expired'],
 			difficulty_level: ['easy', 'medium', 'hard'],
 			exercise_type: ['multiple_choice', 'free_response', 'true_false', 'fill_blank'],
+			kanban_tag_color: ['green', 'yellow', 'orange', 'red', 'purple', 'blue', 'sky', 'gray'],
 			reward_event_type: [
 				'earned',
 				'spent',
