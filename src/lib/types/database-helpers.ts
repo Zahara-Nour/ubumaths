@@ -188,12 +188,19 @@ export type KanbanTagColor = KanbanTag['color'];
 /**
  * Lightweight profile slice exposed alongside a board so the assignee picker
  * and avatar chips can render a name/avatar without re-fetching profiles
- * client-side. Sourced from `profiles` (id + display name + avatar).
+ * client-side. Sourced from `profiles`.
+ *
+ * `firstname` / `lastname` / `role` are carried so we can reuse the project's
+ * canonical UserAvatar component, which needs them for the role-based
+ * fallback image and initials.
  */
 export interface KanbanBoardMember {
 	id: string;
 	full_name: string | null;
+	firstname: string | null;
+	lastname: string | null;
 	avatar_url: string | null;
+	role: 'student' | 'teacher' | 'admin' | null;
 }
 
 /** Insert payload for kanban_boards (id + timestamps optional, defaulted by DB). */

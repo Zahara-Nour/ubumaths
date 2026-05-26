@@ -309,12 +309,19 @@ async function fetchBoardMembers(
 	const idList = [...ids];
 	const { data: profiles, error: profErr } = await supabase
 		.from('profiles')
-		.select('id, firstname, lastname, full_name, avatar_url')
+		.select('id, firstname, lastname, full_name, avatar_url, role')
 		.in('id', idList);
 
 	if (profErr) {
 		console.error('[kanban] fetchBoardMembers / profiles failed:', profErr);
-		return idList.map((id) => ({ id, full_name: null, avatar_url: null }));
+		return idList.map((id) => ({
+			id,
+			full_name: null,
+			firstname: null,
+			lastname: null,
+			avatar_url: null,
+			role: null
+		}));
 	}
 
 	// Build a display name with graceful fallbacks: prefer the explicit
@@ -330,6 +337,11 @@ async function fetchBoardMembers(
 		return parts.length > 0 ? parts.join(' ') : null;
 	}
 
+	function normalizeRole(role: string | null): KanbanBoardMember['role'] {
+		if (role === 'student' || role === 'teacher' || role === 'admin') return role;
+		return null;
+	}
+
 	// If RLS hid some profile rows (e.g. a student can't see another
 	// student's profile depending on the school's policy), fill the gap
 	// with id-only entries so the picker doesn't lose the option.
@@ -337,11 +349,21 @@ async function fetchBoardMembers(
 	const result: KanbanBoardMember[] = (profiles ?? []).map((p) => ({
 		id: p.id,
 		full_name: displayName(p),
-		avatar_url: p.avatar_url
+		firstname: p.firstname,
+		lastname: p.lastname,
+		avatar_url: p.avatar_url,
+		role: normalizeRole(p.role)
 	}));
 	for (const id of idList) {
 		if (!seen.has(id)) {
-			result.push({ id, full_name: null, avatar_url: null });
+			result.push({
+				id,
+				full_name: null,
+				firstname: null,
+				lastname: null,
+				avatar_url: null,
+				role: null
+			});
 		}
 	}
 	return result;
