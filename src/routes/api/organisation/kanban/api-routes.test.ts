@@ -19,8 +19,24 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { describe, it, expect } from 'vitest';
-import { createMockSupabase, createMockLocals, createMockRequest } from '$tests/helpers';
+import { describe, it, expect, vi } from 'vitest';
+import {
+	createMockSupabase,
+	createMockLocals,
+	createMockRequest,
+	mockRpcSuccess,
+	mockRpcError
+} from '$tests/helpers';
+
+// Rate-limit checks live in a different module and hit a service-role client
+// (not the per-request supabase we mock here). In unit tests we don't want
+// them to make real network calls or share state across tests, so we stub all
+// three kanban helpers to always allow the request.
+vi.mock('$lib/server/rateLimiter', () => ({
+	checkKanbanBoardCreateRateLimit: vi.fn(async () => ({ allowed: true })),
+	checkKanbanColumnMutationRateLimit: vi.fn(async () => ({ allowed: true })),
+	checkKanbanCardMutationRateLimit: vi.fn(async () => ({ allowed: true }))
+}));
 
 // ============================================================================
 // TEST DATA
@@ -245,29 +261,39 @@ describe('GET /api/organisation/kanban/boards', () => {
 		mockAuthProfile(supabase);
 		const locals = createMockLocals(TEST_IDS.user, supabase);
 
-		// getAccessibleBoards uses .order() then implicit await (thenable)
-		supabase._mockChain.then.mockImplementationOnce((onFulfilled: any) =>
-			Promise.resolve(
-				onFulfilled({
-					data: [
-						{ ...mockBoard, kanban_columns: [], kanban_cards: [] },
-						{
-							...mockBoard,
-							id: TEST_IDS.board2,
-							title: 'Second',
-							kanban_columns: [],
-							kanban_cards: []
-						}
-					],
-					error: null
-				})
-			)
-		);
+		// getAccessibleBoards now calls the get_accessible_kanban_boards RPC.
+		mockRpcSuccess(supabase, 'get_accessible_kanban_boards', [
+			{
+				id: TEST_IDS.board,
+				owner_id: TEST_IDS.user,
+				class_id: null,
+				title: 'Mon tableau',
+				created_at: '2026-05-26T00:00:00.000Z',
+				updated_at: '2026-05-26T00:00:00.000Z',
+				column_count: 0,
+				card_count: 0
+			},
+			{
+				id: TEST_IDS.board2,
+				owner_id: TEST_IDS.user,
+				class_id: null,
+				title: 'Second',
+				created_at: '2026-05-25T00:00:00.000Z',
+				updated_at: '2026-05-25T00:00:00.000Z',
+				column_count: 0,
+				card_count: 0
+			}
+		]);
 
-		const response = await GET({ locals } as any);
+		const response = await GET({
+			locals,
+			url: new URL('http://localhost/api/organisation/kanban/boards')
+		} as any);
 		const data = await response.json();
 		expect(response.status).toBe(200);
 		expect(data.boards).toHaveLength(2);
+		// Page wasn't full (default 100) → nextCursor null.
+		expect(data.nextCursor).toBeNull();
 	});
 
 	it('should return 500 on DB error', async () => {
@@ -276,17 +302,13 @@ describe('GET /api/organisation/kanban/boards', () => {
 		mockAuthProfile(supabase);
 		const locals = createMockLocals(TEST_IDS.user, supabase);
 
-		supabase._mockChain.then.mockImplementationOnce((onFulfilled: any) =>
-			Promise.resolve(
-				onFulfilled({
-					data: null,
-					error: { message: 'DB crash' }
-				})
-			)
-		);
+		mockRpcError(supabase, 'get_accessible_kanban_boards', 'DB crash');
 
 		try {
-			await GET({ locals } as any);
+			await GET({
+				locals,
+				url: new URL('http://localhost/api/organisation/kanban/boards')
+			} as any);
 			expect.fail('Should have thrown');
 		} catch (err: any) {
 			expect(err.status).toBe(500);
@@ -345,26 +367,28 @@ describe('GET /api/organisation/kanban/boards/[boardId]', () => {
 		}
 	});
 
-	it('should return 200 with board content (columns and cards sorted)', async () => {
+	it('should return 200 with board content (columns pre-sorted by PostgREST)', async () => {
 		const { GET } = await import('./boards/[boardId]/+server');
 		const supabase = createMockSupabase();
 		mockAuthProfile(supabase);
 		const locals = createMockLocals(TEST_IDS.user, supabase);
 
+		// PostgREST now orders by position natively; the handler trusts the
+		// response order. We mock columns already in ascending position order.
 		supabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: {
 				...mockBoard,
 				columns: [
 					{
 						...mockColumn,
-						position: 2,
-						cards: [{ ...mockCard, position: 1 }]
-					},
-					{
-						...mockColumn,
 						id: TEST_IDS.column2,
 						position: 1,
 						cards: []
+					},
+					{
+						...mockColumn,
+						position: 2,
+						cards: [{ ...mockCard, position: 1 }]
 					}
 				]
 			},
@@ -375,7 +399,6 @@ describe('GET /api/organisation/kanban/boards/[boardId]', () => {
 		const data = await response.json();
 		expect(response.status).toBe(200);
 		expect(data.board).toBeDefined();
-		// Columns should be sorted by position ascending
 		expect(data.board.columns[0].id).toBe(TEST_IDS.column2);
 		expect(data.board.columns[1].id).toBe(TEST_IDS.column);
 	});

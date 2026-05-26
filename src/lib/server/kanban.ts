@@ -13,9 +13,10 @@
  * role client when needed.
  */
 
-import { error } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import type { RateLimitResult } from '$lib/server/rateLimiter';
 import type {
 	KanbanBoard,
 	KanbanBoardWithCounts,
@@ -40,65 +41,105 @@ export interface KanbanColumnWithCards extends KanbanColumn {
 }
 
 // ============================================================================
+// Rate-limit helper
+// ============================================================================
+
+/**
+ * If the rate-limit check failed, build a 429 Response and return it. Caller
+ * is expected to `return` the result immediately so the endpoint short-
+ * circuits. We return a Response rather than `throw error()` because
+ * SvelteKit's error envelope doesn't carry a `Retry-After` header, which is
+ * the whole point of a 429.
+ */
+export function rateLimitResponse(result: RateLimitResult): Response | null {
+	if (result.allowed) return null;
+	return json(
+		{ message: result.message ?? 'Trop de requêtes' },
+		{
+			status: 429,
+			headers: { 'Retry-After': result.retryAfter?.toString() ?? '3600' }
+		}
+	);
+}
+
+// ============================================================================
 // Queries
 // ============================================================================
 
 /**
- * Fetch every board the calling user can see (RLS does the heavy lifting:
- * owned boards + class boards for classes where the user is teacher or
- * member). Returns each board enriched with column / card counts.
- *
- * Sorted by `updated_at DESC` so the most recently touched boards come first.
+ * Pagination shape for the boards list. The cursor is the `updated_at`
+ * ISO string of the last item on the previous page (we sort DESC, so the next
+ * page starts at boards strictly older than the cursor).
  */
-export async function getAccessibleBoards(supabase: AnySupabase): Promise<KanbanBoardWithCounts[]> {
-	const { data, error: dbError } = await supabase
-		.from('kanban_boards')
-		.select(
-			`
-			id,
-			owner_id,
-			class_id,
-			title,
-			created_at,
-			updated_at,
-			kanban_columns(count),
-			kanban_cards:kanban_columns(kanban_cards(count))
-		`
-		)
-		.order('updated_at', { ascending: false });
+export interface BoardsPage {
+	boards: KanbanBoardWithCounts[];
+	nextCursor: string | null;
+}
+
+/**
+ * Default page size for `getAccessibleBoards`. The RPC clamps to [1, 200];
+ * 100 strikes a balance between one-shot UX (most users have well under that)
+ * and avoiding huge payloads if a user accumulates many boards over years.
+ */
+export const DEFAULT_BOARDS_PAGE_SIZE = 100;
+
+/**
+ * Fetch a page of boards the calling user can see, with column / card counts.
+ * Visibility is enforced by RLS inside the underlying RPC (perso = owner
+ * only, class = teacher + class members), sorted by `updated_at DESC` with a
+ * stable `id DESC` tie-break for deterministic pagination.
+ *
+ * `cursor` is the `updated_at` of the last board from the previous page; pass
+ * `null` for the first page. `nextCursor` is null when the page wasn't full
+ * (i.e. no more boards to fetch).
+ */
+export async function getAccessibleBoards(
+	supabase: AnySupabase,
+	options: { limit?: number; cursor?: string | null } = {}
+): Promise<BoardsPage> {
+	const limit = options.limit ?? DEFAULT_BOARDS_PAGE_SIZE;
+	const cursor = options.cursor ?? null;
+
+	const { data, error: dbError } = await supabase.rpc('get_accessible_kanban_boards', {
+		p_limit: limit,
+		p_cursor: cursor
+	});
 
 	if (dbError) {
 		console.error('[kanban] getAccessibleBoards failed:', dbError);
 		throw error(500, 'Erreur lors du chargement des tableaux');
 	}
 
-	type RawBoard = KanbanBoard & {
-		kanban_columns: { count: number }[];
-		kanban_cards: { kanban_cards: { count: number }[] }[];
+	type Row = {
+		id: string;
+		owner_id: string;
+		class_id: string | null;
+		title: string;
+		created_at: string;
+		updated_at: string;
+		column_count: number | string;
+		card_count: number | string;
 	};
 
-	const rows = (data ?? []) as unknown as RawBoard[];
+	const rows = (data ?? []) as Row[];
 
-	return rows.map((row) => {
-		const columnCount = row.kanban_columns?.[0]?.count ?? 0;
-		// Sum the per-column card counts. Each entry of `row.kanban_cards`
-		// represents one column, and inside `.kanban_cards[0].count` is the
-		// number of cards in that column.
-		const cardCount = (row.kanban_cards ?? []).reduce((sum, col) => {
-			return sum + (col.kanban_cards?.[0]?.count ?? 0);
-		}, 0);
+	const boards: KanbanBoardWithCounts[] = rows.map((row) => ({
+		id: row.id,
+		owner_id: row.owner_id,
+		class_id: row.class_id,
+		title: row.title,
+		created_at: row.created_at,
+		updated_at: row.updated_at,
+		// Counts come back as bigint → number|string depending on driver.
+		column_count: Number(row.column_count) || 0,
+		card_count: Number(row.card_count) || 0
+	}));
 
-		return {
-			id: row.id,
-			owner_id: row.owner_id,
-			class_id: row.class_id,
-			title: row.title,
-			created_at: row.created_at,
-			updated_at: row.updated_at,
-			column_count: columnCount,
-			card_count: cardCount
-		};
-	});
+	// A full page means there might be more; an under-full page is the last.
+	const nextCursor =
+		boards.length === limit && boards.length > 0 ? boards[boards.length - 1].updated_at : null;
+
+	return { boards, nextCursor };
 }
 
 /**
@@ -140,6 +181,11 @@ export async function getBoardWithContent(
 		`
 		)
 		.eq('id', boardId)
+		// PostgREST nested ordering: sort columns by position, and cards within
+		// each column also by position. Indexes (column_id, position) and
+		// (board_id, position) added in 20260527000101 keep this O(log n).
+		.order('position', { referencedTable: 'kanban_columns' })
+		.order('position', { referencedTable: 'kanban_columns.kanban_cards' })
 		.maybeSingle();
 
 	if (dbError) {
@@ -149,26 +195,7 @@ export async function getBoardWithContent(
 
 	if (!data) return null;
 
-	const board = data as unknown as KanbanBoardWithContent;
-
-	// Sort columns and cards by position client-side: PostgREST does not
-	// always preserve order through nested selects.
-	const columns = [...(board.columns ?? [])]
-		.sort((a, b) => a.position - b.position)
-		.map((col) => ({
-			...col,
-			cards: [...(col.cards ?? [])].sort((a, b) => a.position - b.position)
-		}));
-
-	return {
-		id: board.id,
-		owner_id: board.owner_id,
-		class_id: board.class_id,
-		title: board.title,
-		created_at: board.created_at,
-		updated_at: board.updated_at,
-		columns
-	};
+	return data as unknown as KanbanBoardWithContent;
 }
 
 /**

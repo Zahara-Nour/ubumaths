@@ -10,11 +10,16 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { parseKanbanId, createCardSchema } from '$lib/server/validation/kanban';
-import { getColumnBoardId } from '$lib/server/kanban';
+import { getColumnBoardId, rateLimitResponse } from '$lib/server/kanban';
+import { checkKanbanCardMutationRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanCard, KanbanCardInsert } from '$lib/types/database-helpers';
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
-	await requireAuth(locals);
+	const { user } = await requireAuth(locals);
+
+	const rl = rateLimitResponse(await checkKanbanCardMutationRateLimit(user.id));
+	if (rl) return rl;
+
 	const columnId = parseKanbanId(params.columnId, 'colonne');
 
 	let body: unknown;

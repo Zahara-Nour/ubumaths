@@ -9,11 +9,16 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { parseKanbanId, updateColumnSchema } from '$lib/server/validation/kanban';
-import { assertBoardOwner, getColumnBoardId } from '$lib/server/kanban';
+import { assertBoardOwner, getColumnBoardId, rateLimitResponse } from '$lib/server/kanban';
+import { checkKanbanColumnMutationRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanColumn, KanbanColumnUpdate } from '$lib/types/database-helpers';
 
 export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	const { user } = await requireAuth(locals);
+
+	const rl = rateLimitResponse(await checkKanbanColumnMutationRateLimit(user.id));
+	if (rl) return rl;
+
 	const columnId = parseKanbanId(params.columnId, 'colonne');
 
 	let body: unknown;
@@ -56,6 +61,10 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { user } = await requireAuth(locals);
+
+	const rl = rateLimitResponse(await checkKanbanColumnMutationRateLimit(user.id));
+	if (rl) return rl;
+
 	const columnId = parseKanbanId(params.columnId, 'colonne');
 
 	const boardId = await getColumnBoardId(locals.supabase, columnId);
