@@ -69,9 +69,25 @@ Feature : outil Kanban (style Trello minimal) pour élèves et profs (`/organisa
 - Audit log `console.info('[kanban] board deleted', {...})` ajouté car action destructive (cascade colonnes + cartes).
 - Cross-board move guard explicite dans `cards/[cardId]/PATCH` pour bloquer même un user ayant accès aux 2 boards.
 
-## Phase 3 — Frontend liste ⏳
+## Phase 3 — Frontend liste ✅
 
-À venir.
+**Fichiers créés :**
+
+- `src/routes/(protected)/organisation/+layout.svelte` — header avec titre "Organisation" + breadcrumb auto-généré.
+- `src/routes/(protected)/organisation/kanban/+page.server.ts` — load function : `getAccessibleBoards` (try/catch défensif si migration absente) + classes du prof (filtrées par rôle).
+- `src/routes/(protected)/organisation/kanban/+page.svelte` — liste responsive (1/2/3/4 cols), badges Personnel/Classe, compteurs, date relative FR, suppression owner-only.
+- `src/routes/(protected)/organisation/kanban/CreateBoardDialog.svelte` — modal shadcn Dialog, MySelect type + classe.
+- `src/routes/(protected)/organisation/kanban/[boardId]/+page.svelte` — stub Phase 4 (placeholder pour permettre `resolve()`).
+
+**Dépendance ajoutée :** `svelte-dnd-action@^0.9.69` (utilisée en Phase 4).
+
+**Code review (Opus)** : 1 bloquant identifié (cartes non cliquables sur la majeure partie de leur surface à cause d'un mauvais empilage z-index). Corrigé via le pattern **stretched link** : `<a>` avec `before:absolute before:inset-0` sur le titre, dropdown en `relative z-10`. Bonus appliqués : type `role` strict (suppression du `| string`), suppression du check mort `title.length > 200` (déjà bloqué par `maxlength`), commentaire `+page.server.ts` clarifié.
+
+**Décisions :**
+
+- Pas de `+layout.server.ts` propre à `organisation/` — héritage de `(protected)`.
+- `<a href={resolve(...)}>` plutôt que `goto()` — meilleure a11y, supporte ctrl+click.
+- `confirm()` natif pour la suppression (acceptable v1, à passer à shadcn `AlertDialog` si besoin).
 
 ## Phase 4 — Frontend vue tableau (DnD) ⏳
 

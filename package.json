@@ -195,6 +195,7 @@
 		"perfect-freehand": "^1.2.3",
 		"proper-lockfile": "^4.1.2",
 		"roughjs": "^4.6.6",
+		"svelte-dnd-action": "^0.9.69",
 		"svelte-sonner": "^1.1.0",
 		"svelte-tiptap": "^3.0.1",
 		"tippy.js": "^6.3.7",
