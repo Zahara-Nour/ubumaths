@@ -63,7 +63,10 @@
 		card = c;
 		title = c.title;
 		description = c.description ?? '';
-		dueDate = c.due_date;
+		// `?? null` guards against legacy cards where due_date was never
+		// selected; the bindable below has a `null` fallback that crashes on
+		// undefined.
+		dueDate = c.due_date ?? null;
 		initialTitle = title;
 		initialDescription = description;
 		initialDueDate = dueDate;
