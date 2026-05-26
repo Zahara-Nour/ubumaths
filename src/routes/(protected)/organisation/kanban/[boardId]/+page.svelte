@@ -37,7 +37,7 @@
 	import { flip } from 'svelte/animate';
 	import { resolve } from '$app/paths';
 	import { ArrowLeft, Plus, Users, User } from 'lucide-svelte';
-	import { Tag } from 'lucide-svelte';
+	import { Filter, Tag } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
@@ -47,7 +47,8 @@
 		KanbanCard,
 		KanbanColumn,
 		KanbanTag,
-		KanbanTagColor
+		KanbanTagColor,
+		KanbanBoardMember
 	} from '$lib/types/database-helpers';
 
 	import KanbanColumnComp from './KanbanColumn.svelte';
@@ -105,10 +106,10 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Local composite type: a card with its tag_ids flattened, and a column
-	// holding such cards (mirrors the server shape from getBoardWithContent).
-	type CardWithTags = KanbanCard & { tag_ids: string[] };
-	type ColumnWithCards = KanbanColumn & { cards: CardWithTags[] };
+	// Local composite type: a card with tag_ids + assignee_ids flattened, and
+	// a column holding such cards (mirrors getBoardWithContent's shape).
+	type CardWithExtras = KanbanCard & { tag_ids: string[]; assignee_ids: string[] };
+	type ColumnWithCards = KanbanColumn & { cards: CardWithExtras[] };
 
 	// Local mutable mirror of the server data, seeded once at mount via a
 	// helper that copies out of the reactive `data` prop. We deliberately do
@@ -122,7 +123,18 @@
 			title: c.title,
 			position: c.position,
 			created_at: c.created_at,
-			cards: c.cards.map((card) => ({ ...card, tag_ids: [...(card.tag_ids ?? [])] }))
+			cards: c.cards.map((card) => ({
+				id: card.id,
+				column_id: card.column_id,
+				title: card.title,
+				description: card.description,
+				position: card.position,
+				due_date: card.due_date,
+				created_at: card.created_at,
+				updated_at: card.updated_at,
+				tag_ids: [...(card.tag_ids ?? [])],
+				assignee_ids: [...(card.assignee_ids ?? [])]
+			}))
 		}));
 	}
 
@@ -135,9 +147,26 @@
 		return [...(data.board.tags ?? [])].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
 	}
 
+	function snapshotMembers(): KanbanBoardMember[] {
+		// Sorted by name so the picker is stable; nameless members fall to the
+		// end with their id as fallback ordering key.
+		return [...(data.board.members ?? [])].sort((a, b) => {
+			const an = a.full_name ?? a.id;
+			const bn = b.full_name ?? b.id;
+			return an.localeCompare(bn, 'fr');
+		});
+	}
+
 	let boardTitle = $state(snapshotBoardTitle());
 	let columns = $state<ColumnWithCards[]>(snapshotColumns());
 	let tags = $state<KanbanTag[]>(snapshotTags());
+	let members = $state<KanbanBoardMember[]>(snapshotMembers());
+
+	const membersById = $derived.by(() => {
+		const lookup: Record<string, KanbanBoardMember> = {};
+		for (const m of members) lookup[m.id] = m;
+		return lookup;
+	});
 
 	const tagsById = $derived.by(() => {
 		const lookup: Record<string, KanbanTag> = {};
@@ -163,12 +192,30 @@
 	// Manage-tags dialog state (owner only).
 	let manageTagsOpen = $state(false);
 
+	// "Mes cartes" filter: when on, columns hide every card the current user
+	// isn't assigned to. Visible only on class boards (where assignment is
+	// meaningful — on personal boards the owner is the only candidate).
+	let myCardsOnly = $state(false);
+
 	// Read-through derived values for read-only data props. These DO react to
 	// `data` updates (should the framework ever re-run the load), unlike the
 	// local mirror above which is intentionally one-way.
 	const boardId = $derived(data.board.id);
 	const isOwner = $derived(data.isOwner);
 	const isClassBoard = $derived(data.board.class_id !== null);
+
+	// Columns to actually render: identical to `columns` unless the "Mes
+	// cartes" filter is on, in which case we shadow-copy each column with a
+	// filtered card list. The original `columns` state stays untouched so
+	// toggling the filter is instant and lossless.
+	const visibleColumns = $derived.by<ColumnWithCards[]>(() => {
+		if (!myCardsOnly) return columns;
+		const me = data.userId;
+		return columns.map((col) => ({
+			...col,
+			cards: col.cards.filter((c) => c.assignee_ids.includes(me))
+		}));
+	});
 
 	// Inline rename of the board title (owner only).
 	let isRenamingBoard = $state(false);
@@ -324,7 +371,7 @@
 		const position = getPositionBetween(last?.position ?? null, null);
 		const created = await createCard(columnId, title, position);
 		if (created) {
-			col.cards = [...col.cards, { ...created, tag_ids: [] }];
+			col.cards = [...col.cards, { ...created, tag_ids: [], assignee_ids: [] }];
 		}
 	}
 
@@ -335,18 +382,20 @@
 			description?: string | null;
 			due_date?: string | null;
 			tag_ids?: string[];
+			assignee_ids?: string[];
 		}
 	) {
 		const located = findCard(cardId);
 		if (!located) return;
 		const { column, index } = located;
 		const previous = column.cards[index];
-		const optimistic: CardWithTags = {
+		const optimistic: CardWithExtras = {
 			...previous,
 			...(patch.title !== undefined ? { title: patch.title } : {}),
 			...(patch.description !== undefined ? { description: patch.description } : {}),
 			...(patch.due_date !== undefined ? { due_date: patch.due_date } : {}),
-			...(patch.tag_ids !== undefined ? { tag_ids: [...patch.tag_ids] } : {})
+			...(patch.tag_ids !== undefined ? { tag_ids: [...patch.tag_ids] } : {}),
+			...(patch.assignee_ids !== undefined ? { assignee_ids: [...patch.assignee_ids] } : {})
 		};
 		column.cards[index] = optimistic;
 
@@ -358,13 +407,14 @@
 		// Indexes are unstable across these mutations; ids are not.
 		const after = findCard(cardId);
 		if (updated) {
-			// The API returns the row but NOT the new tag_ids — we keep the
-			// optimistic tag set on success (it's the source of truth for tags
-			// since we just replaced them server-side too).
+			// The API returns the row but NOT the new tag_ids / assignee_ids —
+			// keep the optimistic sets on success (they're the source of truth
+			// for the junctions since we just replaced them server-side).
 			if (after) {
 				after.column.cards[after.index] = {
 					...updated,
-					tag_ids: optimistic.tag_ids
+					tag_ids: optimistic.tag_ids,
+					assignee_ids: optimistic.assignee_ids
 				};
 			}
 			toaster.success('Carte enregistrée');
@@ -443,7 +493,7 @@
 
 	// ===== DnD: cards =====
 
-	function handleCardsConsider(columnId: string, items: CardWithTags[]) {
+	function handleCardsConsider(columnId: string, items: CardWithExtras[]) {
 		const col = columns.find((c) => c.id === columnId);
 		if (!col) return;
 		col.cards = dedupeById(items);
@@ -451,8 +501,8 @@
 
 	async function handleCardsFinalize(
 		columnId: string,
-		items: CardWithTags[],
-		info: DndEvent<CardWithTags>['info']
+		items: CardWithExtras[],
+		info: DndEvent<CardWithExtras>['info']
 	) {
 		const destCol = columns.find((c) => c.id === columnId);
 		if (!destCol) return;
@@ -597,18 +647,39 @@
 			</div>
 		</div>
 
-		{#if isOwner}
-			<Button
-				variant="outline"
-				size="sm"
-				class="shrink-0 gap-2"
-				onclick={openManageTags}
-				aria-label="Gérer les tags du tableau"
-			>
-				<Tag class="h-4 w-4" aria-hidden="true" />
-				Tags{tags.length > 0 ? ` (${tags.length})` : ''}
-			</Button>
-		{/if}
+		<div class="flex shrink-0 items-center gap-2">
+			{#if isClassBoard}
+				<!--
+					"Mes cartes" filter (class boards only — on personal boards
+					every card is implicitly yours). Toggling on disables card DnD
+					so a drag can't accidentally drop hidden cards.
+				-->
+				<Button
+					variant={myCardsOnly ? 'default' : 'outline'}
+					size="sm"
+					class="gap-2"
+					onclick={() => (myCardsOnly = !myCardsOnly)}
+					aria-pressed={myCardsOnly}
+					aria-label="Filtrer mes cartes"
+				>
+					<Filter class="h-4 w-4" aria-hidden="true" />
+					Mes cartes
+				</Button>
+			{/if}
+
+			{#if isOwner}
+				<Button
+					variant="outline"
+					size="sm"
+					class="gap-2"
+					onclick={openManageTags}
+					aria-label="Gérer les tags du tableau"
+				>
+					<Tag class="h-4 w-4" aria-hidden="true" />
+					Tags{tags.length > 0 ? ` (${tags.length})` : ''}
+				</Button>
+			{/if}
+		</div>
 	</div>
 
 	<!-- Empty state -->
@@ -633,10 +704,12 @@
 			<div
 				class="flex h-full items-start gap-3"
 				use:dndzone={{
-					items: columns,
+					items: visibleColumns,
 					type: 'kanban-column',
 					flipDurationMs: FLIP_MS,
-					dragDisabled: !isOwner,
+					// Column DnD is disabled when the "Mes cartes" filter is on
+					// because reordering operates on the filtered subset.
+					dragDisabled: !isOwner || myCardsOnly,
 					centreDraggedOnCursor: true,
 					useCursorForDetection: true,
 					dropTargetStyle: { outline: '2px dashed var(--color-ring)' }
@@ -644,7 +717,7 @@
 				onconsider={handleColumnsConsider}
 				onfinalize={handleColumnsFinalize}
 			>
-				{#each columns as column (columnDndKey(column))}
+				{#each visibleColumns as column (columnDndKey(column))}
 					{@const dndShadow = isDndShadow(column)}
 					{@const isShadow = column.id === SHADOW_PLACEHOLDER_ITEM_ID || dndShadow}
 					<div
@@ -657,6 +730,8 @@
 							cards={column.cards}
 							{isOwner}
 							{tagsById}
+							{membersById}
+							cardsDragDisabled={myCardsOnly}
 							onCardsConsider={handleCardsConsider}
 							onCardsFinalize={handleCardsFinalize}
 							onEditCard={handleEditCard}
@@ -707,6 +782,10 @@
 <CardEditDialog
 	bind:this={cardDialogRef}
 	availableTags={tags}
+	availableMembers={members}
+	showAssignees={isClassBoard}
+	canManageAllAssignees={isOwner}
+	currentUserId={data.userId}
 	onManageTags={isOwner ? openManageTags : undefined}
 	onSave={handleSaveCard}
 	onDelete={handleDeleteCard}

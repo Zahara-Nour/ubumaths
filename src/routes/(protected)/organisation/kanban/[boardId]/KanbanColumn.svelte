@@ -31,9 +31,14 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import type { KanbanColumn, KanbanCard, KanbanTag } from '$lib/types/database-helpers';
+	import type {
+		KanbanColumn,
+		KanbanCard,
+		KanbanTag,
+		KanbanBoardMember
+	} from '$lib/types/database-helpers';
 
-	type CardWithTags = KanbanCard & { tag_ids?: string[] };
+	type CardWithExtras = KanbanCard & { tag_ids?: string[]; assignee_ids?: string[] };
 
 	import KanbanCardComp from './KanbanCard.svelte';
 
@@ -51,26 +56,36 @@
 		return Boolean((item as Record<string, unknown>)[SHADOW_ITEM_MARKER_PROPERTY_NAME]);
 	}
 
-	function cardDndKey(card: CardWithTags): string {
+	function cardDndKey(card: CardWithExtras): string {
 		return isDndShadow(card) ? `${card.id}_dnd-shadow` : card.id;
 	}
 
 	type Props = {
 		column: KanbanColumn;
-		cards: CardWithTags[];
+		cards: CardWithExtras[];
 		isOwner: boolean;
 		/** Map of the board's tags by id — needed by KanbanCard to render chips. */
 		tagsById: Record<string, KanbanTag>;
+		/** Map of the board's members by id — needed by KanbanCard to render
+		 * assignee avatars. */
+		membersById: Record<string, KanbanBoardMember>;
+		/**
+		 * When true, disable DnD on the cards inside this column. Used by the
+		 * board page when a filter (e.g. "Mes cartes") hides some cards: a drag
+		 * would otherwise operate on the filtered subset and silently drop the
+		 * hidden cards on commit.
+		 */
+		cardsDragDisabled?: boolean;
 		/** Called while a card is being dragged over this column (visual update). */
-		onCardsConsider: (columnId: string, items: CardWithTags[]) => void;
+		onCardsConsider: (columnId: string, items: CardWithExtras[]) => void;
 		/** Called when a card drop is finalized in / from this column. */
 		onCardsFinalize: (
 			columnId: string,
-			items: CardWithTags[],
-			info: DndEvent<CardWithTags>['info']
+			items: CardWithExtras[],
+			info: DndEvent<CardWithExtras>['info']
 		) => void;
 		/** Open the edit dialog for a card. */
-		onEditCard: (card: CardWithTags) => void;
+		onEditCard: (card: CardWithExtras) => void;
 		/** Persist a rename of this column. */
 		onRenameColumn: (columnId: string, title: string) => void;
 		/** Delete this column (after confirmation). */
@@ -84,6 +99,8 @@
 		cards,
 		isOwner,
 		tagsById,
+		membersById,
+		cardsDragDisabled = false,
 		onCardsConsider,
 		onCardsFinalize,
 		onEditCard,
@@ -280,6 +297,7 @@
 			items: cards,
 			type: 'kanban-card',
 			flipDurationMs: FLIP_MS,
+			dragDisabled: cardsDragDisabled,
 			centreDraggedOnCursor: true,
 			useCursorForDetection: true,
 			dropTargetStyle: { outline: '2px dashed var(--color-ring)', outlineOffset: '4px' }
@@ -293,6 +311,7 @@
 				<KanbanCardComp
 					{card}
 					{tagsById}
+					{membersById}
 					isShadow={card.id === SHADOW_PLACEHOLDER_ITEM_ID || dndShadow}
 					onEdit={onEditCard}
 				/>

@@ -40,6 +40,8 @@ export interface CardPatch {
 	due_date?: string | null;
 	/** Full replacement of the card's tag set. Omit to leave unchanged. */
 	tag_ids?: string[];
+	/** Full replacement of the card's assignee set. Omit to leave unchanged. */
+	assignee_ids?: string[];
 }
 
 export interface BoardPatch {

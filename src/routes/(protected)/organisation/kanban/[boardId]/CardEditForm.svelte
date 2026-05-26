@@ -21,8 +21,9 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import { Calendar } from '$lib/components/ui/calendar';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
-	import type { KanbanTag } from '$lib/types/database-helpers';
+	import type { KanbanTag, KanbanBoardMember } from '$lib/types/database-helpers';
 	import { TAG_COLOR_TOKENS } from './tag-colors';
+	import AssigneeAvatars from './AssigneeAvatars.svelte';
 
 	type Props = {
 		/** Current title (bindable so the parent can read it). */
@@ -33,8 +34,26 @@
 		dueDate: string | null;
 		/** Selected tag ids (bindable; the parent diffs against the initial set). */
 		tagIds: string[];
+		/** Selected assignee user_ids (bindable; parent diffs against initial set). */
+		assigneeIds: string[];
 		/** Full per-board tag palette, sorted alphabetically by the parent. */
 		availableTags: KanbanTag[];
+		/**
+		 * People who can be assigned (board members). On personal boards this is
+		 * just the owner. On class boards this is teacher + every class member.
+		 */
+		availableMembers: KanbanBoardMember[];
+		/** Whether the section "Assignées" should be visible at all. Hidden on
+		 * personal boards where the owner is the only candidate. */
+		showAssignees: boolean;
+		/**
+		 * Whether the actor can freely assign / unassign anyone (board owner) or
+		 * only act on themselves (mixte rule for class members). When false, the
+		 * picker disables checkboxes for other people.
+		 */
+		canManageAllAssignees: boolean;
+		/** Current user id, used to know which row is "self" under the mixte rule. */
+		currentUserId: string;
 		/** Open the manage-tags dialog (owner only). Hidden when undefined. */
 		onManageTags?: () => void;
 	};
@@ -44,11 +63,17 @@
 		description = $bindable(''),
 		dueDate = $bindable<string | null>(null),
 		tagIds = $bindable<string[]>([]),
+		assigneeIds = $bindable<string[]>([]),
 		availableTags,
+		availableMembers,
+		showAssignees,
+		canManageAllAssignees,
+		currentUserId,
 		onManageTags
 	}: Props = $props();
 
 	const selectedSet = $derived(new Set(tagIds));
+	const selectedAssigneeSet = $derived(new Set(assigneeIds));
 
 	function toggleTag(tagId: string) {
 		if (selectedSet.has(tagId)) {
@@ -56,6 +81,20 @@
 		} else {
 			tagIds = [...tagIds, tagId];
 		}
+	}
+
+	function toggleAssignee(memberId: string) {
+		// Mixte rule enforcement: a non-owner can only toggle themselves.
+		if (!canManageAllAssignees && memberId !== currentUserId) return;
+		if (selectedAssigneeSet.has(memberId)) {
+			assigneeIds = assigneeIds.filter((id) => id !== memberId);
+		} else {
+			assigneeIds = [...assigneeIds, memberId];
+		}
+	}
+
+	function memberLabel(m: KanbanBoardMember): string {
+		return m.full_name ?? 'Utilisateur';
 	}
 
 	// --- Due-date plumbing ---
@@ -221,6 +260,50 @@
 		</div>
 	{/if}
 </div>
+
+{#if showAssignees}
+	<div class="flex flex-col gap-2">
+		<Label>Assigné·e·s</Label>
+		{#if availableMembers.length === 0}
+			<p class="text-sm text-muted-foreground">Aucun membre disponible.</p>
+		{:else}
+			<!--
+				Each row is a toggle. Under the mixte rule a non-owner can only
+				toggle themselves; we disable the others so the UI matches the API.
+			-->
+			<ul class="flex max-h-48 flex-col gap-1 overflow-y-auto rounded-md border p-1">
+				{#each availableMembers as member (member.id)}
+					{@const selected = selectedAssigneeSet.has(member.id)}
+					{@const canToggle = canManageAllAssignees || member.id === currentUserId}
+					<li>
+						<button
+							type="button"
+							aria-pressed={selected}
+							disabled={!canToggle}
+							onclick={() => toggleAssignee(member.id)}
+							class={[
+								'flex w-full items-center gap-2 rounded px-2 py-1 text-left text-sm transition-colors',
+								selected ? 'bg-muted font-medium' : 'hover:bg-muted/50',
+								!canToggle && 'cursor-not-allowed opacity-60'
+							]}
+						>
+							<AssigneeAvatars assignees={[member]} max={1} />
+							<span class="flex-1 truncate">{memberLabel(member)}</span>
+							{#if selected}
+								<span aria-hidden="true" class="text-xs text-muted-foreground">✓</span>
+							{/if}
+						</button>
+					</li>
+				{/each}
+			</ul>
+			{#if !canManageAllAssignees}
+				<p class="text-xs text-muted-foreground">
+					Vous pouvez vous (dé)assigner ; seul l'enseignant peut modifier les autres.
+				</p>
+			{/if}
+		{/if}
+	</div>
+{/if}
 
 <div class="flex flex-col gap-2">
 	<Label for="card-description">Description</Label>
