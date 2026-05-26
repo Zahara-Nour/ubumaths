@@ -14,7 +14,8 @@
 	   bidirectionally bound between this component and `CardEditForm`.
 	3. On "Enregistrer", `onSave(cardId, patch)` is invoked with only the
 	   changed fields. The parent handles persistence + optimistic updates.
-	4. On "Supprimer", a native confirm() is followed by `onDelete(cardId)`.
+	4. On "Supprimer", a stacked ConfirmDialog appears; confirming invokes
+	   `onDelete(cardId)` and closes both dialogs.
 -->
 
 <script lang="ts" module>
@@ -26,6 +27,7 @@
 	import { Trash2 } from 'lucide-svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
+	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import type { KanbanCard } from '$lib/types/database-helpers';
 	import type { CardPatch } from './api';
 	import CardEditForm from './CardEditForm.svelte';
@@ -54,6 +56,7 @@
 
 	let saving = $state(false);
 	let deleting = $state(false);
+	let deleteConfirmOpen = $state(false);
 
 	/**
 	 * Public entry point: open the dialog seeded with `c`. Imported by the
@@ -110,10 +113,13 @@
 		}
 	}
 
-	async function handleDelete() {
+	function requestDelete() {
 		if (!card || deleting) return;
-		const ok = confirm(`Supprimer la carte "${card.title}" ? Action irréversible.`);
-		if (!ok) return;
+		deleteConfirmOpen = true;
+	}
+
+	async function performDelete() {
+		if (!card || deleting) return;
 		deleting = true;
 		try {
 			await onDelete(card.id);
@@ -144,7 +150,7 @@
 					type="button"
 					variant="ghost"
 					class="text-destructive hover:bg-destructive/10 hover:text-destructive"
-					onclick={handleDelete}
+					onclick={requestDelete}
 					disabled={saving || deleting}
 				>
 					<Trash2 class="mr-2 h-4 w-4" aria-hidden="true" />
@@ -167,3 +173,18 @@
 		{/if}
 	</Dialog.Content>
 </Dialog.Root>
+
+<!--
+	Stacked confirm dialog. bits-ui supports nested dialogs; this one appears
+	on top of the edit dialog. Confirming triggers the async delete which
+	closes both dialogs (the edit one is closed inside performDelete).
+-->
+<ConfirmDialog
+	bind:open={deleteConfirmOpen}
+	title="Supprimer la carte"
+	description={card ? `« ${card.title} » sera supprimée définitivement.` : ''}
+	confirmLabel="Supprimer"
+	cancelLabel="Annuler"
+	variant="destructive"
+	onConfirm={performDelete}
+/>
