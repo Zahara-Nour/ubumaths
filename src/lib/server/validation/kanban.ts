@@ -212,6 +212,16 @@ const cardTagIdsSchema = z
 	.max(20, 'Trop de tags (max 20 par carte)')
 	.optional();
 
+/**
+ * Schema for the `assignee_ids` field on PATCH card — full replacement of
+ * the card's assignee set. Hard cap of 30 covers even very large class
+ * groups (the realistic count is 1–5).
+ */
+const cardAssigneeIdsSchema = z
+	.array(kanbanUuidSchema)
+	.max(30, 'Trop de personnes assignées (max 30 par carte)')
+	.optional();
+
 export const updateCardSchema = z
 	.object({
 		title: z
@@ -228,7 +238,8 @@ export const updateCardSchema = z
 		column_id: kanbanUuidSchema.optional(),
 		position: z.number().finite('Position invalide').optional(),
 		due_date: dueDateSchema,
-		tag_ids: cardTagIdsSchema
+		tag_ids: cardTagIdsSchema,
+		assignee_ids: cardAssigneeIdsSchema
 	})
 	.refine(
 		(d) =>
@@ -237,7 +248,8 @@ export const updateCardSchema = z
 			d.column_id !== undefined ||
 			d.position !== undefined ||
 			d.due_date !== undefined ||
-			d.tag_ids !== undefined,
+			d.tag_ids !== undefined ||
+			d.assignee_ids !== undefined,
 		{ message: 'Au moins un champ doit être fourni' }
 	)
 	.refine((d) => !(d.column_id !== undefined && d.position === undefined), {

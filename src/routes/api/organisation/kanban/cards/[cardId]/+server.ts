@@ -128,8 +128,80 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		}
 	}
 
-	// If only tags were updated we still need to return the row so the
-	// client can refresh its local copy with the latest updated_at etc.
+	// Assignees: diff-aware replacement. Unlike tags (where anyone with
+	// board access can fully manage the set), assignees follow a *mixte*
+	// rule — non-owners can only add/remove themselves. A naive
+	// DELETE-then-INSERT-all would fail the RLS on rows belonging to other
+	// users. We compute the diff (toAdd / toRemove) and apply each side
+	// individually; rows the actor isn't allowed to touch are skipped
+	// silently by RLS (or surface as 403 if explicitly forbidden).
+	if (parsed.data.assignee_ids !== undefined) {
+		const requested = new Set(parsed.data.assignee_ids);
+
+		const { data: current, error: readErr } = await locals.supabase
+			.from('kanban_card_assignees')
+			.select('user_id')
+			.eq('card_id', cardId);
+		if (readErr) {
+			console.error('[kanban] read current assignees failed:', readErr);
+			throw error(500, 'Erreur lors de la lecture des personnes assignées');
+		}
+		const existing = new Set((current ?? []).map((r) => r.user_id));
+
+		const toAdd = [...requested].filter((id) => !existing.has(id));
+		const toRemove = [...existing].filter((id) => !requested.has(id));
+
+		if (toRemove.length > 0) {
+			const { error: delError } = await locals.supabase
+				.from('kanban_card_assignees')
+				.delete()
+				.eq('card_id', cardId)
+				.in('user_id', toRemove);
+			if (delError) {
+				console.error('[kanban] remove assignees failed:', delError);
+				throw error(500, 'Erreur lors du retrait des personnes assignées');
+			}
+		}
+
+		if (toAdd.length > 0) {
+			const rows = toAdd.map((user_id) => ({
+				card_id: cardId,
+				user_id,
+				assigned_by: user.id
+			}));
+			const { error: insError } = await locals.supabase.from('kanban_card_assignees').insert(rows);
+			if (insError) {
+				console.error('[kanban] add assignees failed:', insError);
+				// RLS denies attempts to assign people the actor isn't allowed
+				// to act on. Surface as 403 so the client can roll back.
+				if (insError.code === '42501') {
+					throw error(403, "Vous n'êtes pas autorisé·e à modifier les assignations de cette carte");
+				}
+				throw error(500, "Erreur lors de l'ajout des personnes assignées");
+			}
+		}
+
+		// Sanity check: after the diff, verify our DB state matches the
+		// requested set. If RLS silently dropped a delete (non-owner trying to
+		// remove another user's assignment), the DB will still hold that row.
+		// Detecting it now lets us surface a clean 403 instead of an opaque
+		// success-but-not-really.
+		const { data: afterRows } = await locals.supabase
+			.from('kanban_card_assignees')
+			.select('user_id')
+			.eq('card_id', cardId);
+		const afterSet = new Set((afterRows ?? []).map((r) => r.user_id));
+		const stillExtra = [...afterSet].filter((id) => !requested.has(id));
+		if (stillExtra.length > 0) {
+			throw error(
+				403,
+				"Vous n'êtes pas autorisé·e à retirer toutes les personnes assignées sélectionnées"
+			);
+		}
+	}
+
+	// If only tags / assignees were updated we still need to return the row so
+	// the client can refresh its local copy with the latest updated_at etc.
 	if (!cardRow) {
 		const { data, error: dbError } = await locals.supabase
 			.from('kanban_cards')
