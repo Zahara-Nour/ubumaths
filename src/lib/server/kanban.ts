@@ -22,7 +22,8 @@ import type {
 	KanbanBoardWithCounts,
 	KanbanColumn,
 	KanbanCard,
-	KanbanTag
+	KanbanTag,
+	KanbanBoardMember
 } from '$lib/types/database-helpers';
 
 type AnySupabase = SupabaseClient<Database>;
@@ -32,26 +33,29 @@ type AnySupabase = SupabaseClient<Database>;
 // ============================================================================
 
 /**
- * Board with nested columns (each with its cards), all sorted by position,
- * plus the per-board tag palette and, on each card, the list of tag ids it
- * carries (flattened from the kanban_card_tags junction).
+ * Board with nested columns + cards, the per-board tag palette, and the list
+ * of users who can be assigned (owner + class members, for class boards). On
+ * each card we flatten the kanban_card_tags and kanban_card_assignees rows
+ * to string[] for client-friendly consumption.
  */
 export interface KanbanBoardWithContent extends KanbanBoard {
 	columns: KanbanColumnWithCards[];
 	tags: KanbanTag[];
+	members: KanbanBoardMember[];
 }
 
 /** Column with its cards sorted by position. */
 export interface KanbanColumnWithCards extends KanbanColumn {
-	cards: KanbanCardWithTags[];
+	cards: KanbanCardWithExtras[];
 }
 
 /**
- * Card enriched with the ids of tags it carries (kanban_card_tags rows
- * flattened to a string[] in the client-friendly shape).
+ * Card enriched with the ids of tags and assignees it carries (flattened
+ * from the kanban_card_tags + kanban_card_assignees junctions).
  */
-export interface KanbanCardWithTags extends KanbanCard {
+export interface KanbanCardWithExtras extends KanbanCard {
 	tag_ids: string[];
+	assignee_ids: string[];
 }
 
 // ============================================================================
@@ -197,7 +201,8 @@ export async function getBoardWithContent(
 					due_date,
 					created_at,
 					updated_at,
-					kanban_card_tags(tag_id)
+					kanban_card_tags(tag_id),
+					kanban_card_assignees(user_id)
 				)
 			)
 		`
@@ -219,13 +224,22 @@ export async function getBoardWithContent(
 
 	if (!data) return null;
 
-	// Flatten kanban_card_tags rows (each card has a `kanban_card_tags: [{tag_id}, ...]`
-	// nested array) into the client-friendly `tag_ids: string[]` shape.
-	type RawCard = KanbanCard & { kanban_card_tags: { tag_id: string }[] };
+	// Flatten kanban_card_tags / kanban_card_assignees rows into the
+	// client-friendly tag_ids / assignee_ids: string[] shape.
+	type RawCard = KanbanCard & {
+		kanban_card_tags: { tag_id: string }[];
+		kanban_card_assignees: { user_id: string }[];
+	};
 	type RawColumn = KanbanColumn & { cards: RawCard[] };
 	type RawBoard = KanbanBoard & { tags: KanbanTag[]; columns: RawColumn[] };
 
 	const raw = data as unknown as RawBoard;
+
+	// Fetch the list of people who can be assigned to this board: the owner,
+	// plus (for class boards) every enrolled student. Done in a second query
+	// because PostgREST nested embeds can't easily union "owner" and
+	// "class_members → profile" into a flat list with the right RLS path.
+	const members = await fetchBoardMembers(supabase, raw.owner_id, raw.class_id);
 
 	return {
 		id: raw.id,
@@ -235,6 +249,7 @@ export async function getBoardWithContent(
 		created_at: raw.created_at,
 		updated_at: raw.updated_at,
 		tags: raw.tags ?? [],
+		members,
 		columns: (raw.columns ?? []).map((col) => ({
 			id: col.id,
 			board_id: col.board_id,
@@ -250,10 +265,73 @@ export async function getBoardWithContent(
 				due_date: card.due_date,
 				created_at: card.created_at,
 				updated_at: card.updated_at,
-				tag_ids: (card.kanban_card_tags ?? []).map((j) => j.tag_id)
+				tag_ids: (card.kanban_card_tags ?? []).map((j) => j.tag_id),
+				assignee_ids: (card.kanban_card_assignees ?? []).map((j) => j.user_id)
 			}))
 		}))
 	};
+}
+
+/**
+ * Resolve the people who can be assigned to a kanban board: always the
+ * owner; for class boards, also every enrolled student. Returns a slim
+ * profile slice (id + name + avatar) suitable for picker UIs.
+ *
+ * RLS on `profiles` is more restrictive than what we need here — a student
+ * can normally only see their own profile, not their classmates'. We work
+ * around that by SELECT-ing the ids first (via class_members, which is
+ * visible to the user) and then querying the profile rows; this still
+ * leaks no data beyond "your classmates' names and avatars", which the
+ * existing student dashboard already exposes.
+ */
+async function fetchBoardMembers(
+	supabase: AnySupabase,
+	ownerId: string,
+	classId: string | null
+): Promise<KanbanBoardMember[]> {
+	const ids = new Set<string>([ownerId]);
+
+	if (classId) {
+		const { data: memberRows, error: memberErr } = await supabase
+			.from('class_members')
+			.select('student_id')
+			.eq('class_id', classId);
+		if (memberErr) {
+			console.error('[kanban] fetchBoardMembers / class_members failed:', memberErr);
+			// Don't 500 the whole page: degrade gracefully with the owner only.
+			return [{ id: ownerId, full_name: null, avatar_url: null }];
+		}
+		for (const row of memberRows ?? []) {
+			ids.add(row.student_id);
+		}
+	}
+
+	const idList = [...ids];
+	const { data: profiles, error: profErr } = await supabase
+		.from('profiles')
+		.select('id, full_name, avatar_url')
+		.in('id', idList);
+
+	if (profErr) {
+		console.error('[kanban] fetchBoardMembers / profiles failed:', profErr);
+		return idList.map((id) => ({ id, full_name: null, avatar_url: null }));
+	}
+
+	// If RLS hid some profile rows (e.g. a student can't see another
+	// student's profile depending on the school's policy), fill the gap
+	// with id-only entries so the picker doesn't lose the option.
+	const seen = new Set((profiles ?? []).map((p) => p.id));
+	const result: KanbanBoardMember[] = (profiles ?? []).map((p) => ({
+		id: p.id,
+		full_name: p.full_name,
+		avatar_url: p.avatar_url
+	}));
+	for (const id of idList) {
+		if (!seen.has(id)) {
+			result.push({ id, full_name: null, avatar_url: null });
+		}
+	}
+	return result;
 }
 
 /**

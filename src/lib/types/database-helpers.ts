@@ -185,6 +185,17 @@ export type KanbanTag = Tables<'kanban_tags'>;
 /** Allowed tag colors (must match the kanban_tag_color enum). */
 export type KanbanTagColor = KanbanTag['color'];
 
+/**
+ * Lightweight profile slice exposed alongside a board so the assignee picker
+ * and avatar chips can render a name/avatar without re-fetching profiles
+ * client-side. Sourced from `profiles` (id + display name + avatar).
+ */
+export interface KanbanBoardMember {
+	id: string;
+	full_name: string | null;
+	avatar_url: string | null;
+}
+
 /** Insert payload for kanban_boards (id + timestamps optional, defaulted by DB). */
 export type KanbanBoardInsert = Omit<KanbanBoard, 'id' | 'created_at' | 'updated_at'> & {
 	id?: string;
