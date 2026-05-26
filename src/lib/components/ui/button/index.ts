@@ -1,12 +1,15 @@
-import Root from './button.svelte';
+import Root, { buttonVariants } from './button.svelte';
 
 // Re-export types from dedicated types file for better TypeScript compatibility
 export type { ButtonProps, ButtonSize, ButtonVariant } from './types.js';
 export type { ButtonProps as Props } from './types.js';
-// Note: buttonVariants is exported from button.svelte and can be imported directly if needed
 
+// `buttonVariants` is consumed by shadcn-svelte's Calendar (prev/next button
+// components) — re-export it here so external imports don't have to reach
+// into the .svelte module file directly.
 export {
 	Root,
+	buttonVariants,
 	//
 	Root as Button
 };
