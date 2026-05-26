@@ -1,18 +1,54 @@
 <!--
-	UserAvatar: displays a user avatar with a 3-level fallback cascade:
-	1. Google OAuth avatar (avatar_url) — may be the user's photo or Google's default initial
-	2. Static role-based image (student/teacher/admin) via getAvatarFallback()
-	3. Two-letter initials (always visible behind the <img> as a last resort)
+	UserAvatar
+	==========
 
-	The module-level SvelteSet persists failed URLs across component destroy/recreate cycles.
-	This prevents infinite retry loops when the parent re-renders and recreates this component
-	(e.g. Google returning 429 in dev — the URL is remembered as failed even after remount).
+	Displays a user avatar with a 3-level fallback cascade:
+	1. Real avatar (`avatar_url`) — usually a Google OAuth photo
+	   (`https://lh3.googleusercontent.com/...`), occasionally a Supabase
+	   Storage URL for users who uploaded a custom image.
+	2. Static role-based image via `getAvatarFallback(role)` (bundled asset,
+	   always available offline).
+	3. Two-letter initials in a muted disc, sitting BEHIND the <img> so they
+	   show through during loading and remain the ultimate fallback.
+
+	┌─────────────────────────────────────────────────────────────────────────┐
+	│ KNOWN TRAP — do not remove these attrs without reading docs/ref/        │
+	│ google-avatar-cdn.md                                                    │
+	│                                                                         │
+	│ The avatar <img> below carries two attributes that look optional but    │
+	│ are load-bearing:                                                       │
+	│                                                                         │
+	│ - `referrerpolicy="no-referrer"` — Google's avatar CDN returns 429 /    │
+	│   403 on cross-origin loads that send a Referer pointing at our         │
+	│   origin. Strip the header and Google serves the image normally.        │
+	│                                                                         │
+	│ - `loading="lazy"` (the default of the `loading` prop) — a page that    │
+	│   mounts many UserAvatars at once (class roster, kanban assignee        │
+	│   picker, friends list) would otherwise fire N parallel requests to     │
+	│   Google's CDN and trip rate-limiting, marking the URLs as failed in    │
+	│   the module-level SvelteSet for the rest of the session.               │
+	│                                                                         │
+	│ Symptom if you remove either: "most avatars show the role default,      │
+	│ only one or two real photos load". Especially visible in dev where      │
+	│ HMR can pile up requests across reloads.                                │
+	└─────────────────────────────────────────────────────────────────────────┘
 -->
 <script lang="ts" module>
 	import { SvelteSet } from 'svelte/reactivity';
 
-	// Module-level: shared across all instances, survives component destruction.
-	// SvelteSet (not plain Set) so that $derived reactively tracks .has() calls.
+	/**
+	 * Module-level cache of URLs that returned an error on a previous load.
+	 *
+	 * - Shared across every UserAvatar instance, so a 429 / 403 from Google
+	 *   on one instance instantly skips the same URL on the others.
+	 * - `SvelteSet` (not a plain `Set`) so that `$derived(... !failedUrls.has(url))`
+	 *   reactively re-runs when the set changes; a plain Set wouldn't trigger
+	 *   a re-render.
+	 * - Lives until the module is re-evaluated, i.e. until a full page reload.
+	 *   A short network hiccup permanently downgrades the avatar to the
+	 *   fallback for the current session — accepted trade-off vs. infinite
+	 *   retry storms.
+	 */
 	const failedUrls = new SvelteSet<string>();
 </script>
 
@@ -33,15 +69,24 @@
 		 */
 		decorative?: boolean;
 		/**
-		 * `<img loading>` attribute. Defaults to `'lazy'` so a page that mounts
-		 * many UserAvatars at once (e.g. a class roster, a kanban assignee
-		 * picker) doesn't trigger N parallel requests to Google's avatar CDN —
-		 * Google rate-limits the URL with 429, which then permanently flags it
-		 * as failed via `handleImgError`. With `lazy`, only avatars near the
-		 * viewport fetch, spreading the request load.
+		 * `<img loading>` attribute. Defaults to `'lazy'`.
+		 *
+		 * Why lazy by default: a page that mounts many UserAvatars at once
+		 * (class roster, kanban assignee picker, friends list) would otherwise
+		 * fire N parallel requests to Google's avatar CDN. Google's rate
+		 * limiter returns 429 / 403 for the batch, the URLs get cached in
+		 * the module-level `failedUrls` set, and from then on the user sees
+		 * the role-based default for everyone except the lucky few whose
+		 * requests made it through.
+		 *
+		 * With `lazy`, browsers only fetch avatars near the viewport, which
+		 * spreads the requests over time as the user scrolls and keeps each
+		 * batch under Google's per-second threshold.
 		 *
 		 * Set to `'eager'` for above-the-fold avatars that must be visible
-		 * instantly (e.g. the user's own avatar in the header).
+		 * instantly (e.g. the user's own avatar in the header) — the eager
+		 * path is fine for a single avatar that the browser would prioritise
+		 * anyway.
 		 */
 		loading?: 'lazy' | 'eager';
 	}
@@ -78,11 +123,10 @@
 		{initials}
 	</span>
 	<!--
-		`referrerpolicy="no-referrer"` is critical for Google's avatar CDN
-		(lh3.googleusercontent.com): with a Referer header, Google often
-		returns 429 or even 403 on cross-origin loads, especially in batches
-		(class roster, kanban picker). Stripping the referrer makes the
-		request look anonymous and Google serves the image normally.
+		DO NOT remove `referrerpolicy="no-referrer"` or `{loading}`. See the
+		top-of-file "KNOWN TRAP" block and docs/ref/google-avatar-cdn.md.
+		Without either, most Google OAuth avatars 429 / 403 silently and the
+		page degrades to the role-based default for nearly every user.
 	-->
 	<img
 		{src}
