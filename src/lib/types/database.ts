@@ -4678,6 +4678,91 @@ export type Database = {
 					}
 				];
 			};
+			kanban_card_assignees: {
+				Row: {
+					assigned_at: string;
+					assigned_by: string | null;
+					card_id: string;
+					user_id: string;
+				};
+				Insert: {
+					assigned_at?: string;
+					assigned_by?: string | null;
+					card_id: string;
+					user_id: string;
+				};
+				Update: {
+					assigned_at?: string;
+					assigned_by?: string | null;
+					card_id?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'kanban_card_assignees_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'kanban_card_assignees_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'kanban_card_assignees_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'kanban_card_assignees_assigned_by_fkey';
+						columns: ['assigned_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'kanban_card_assignees_card_id_fkey';
+						columns: ['card_id'];
+						isOneToOne: false;
+						referencedRelation: 'kanban_cards';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'kanban_card_assignees_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'kanban_card_assignees_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'kanban_card_assignees_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'kanban_card_assignees_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			kanban_card_tags: {
 				Row: {
 					card_id: string;
@@ -13755,6 +13840,10 @@ export type Database = {
 				Args: { p_column_id: string };
 				Returns: boolean;
 			};
+			can_assign_kanban_card: {
+				Args: { p_assignee: string; p_card_id: string };
+				Returns: boolean;
+			};
 			can_manage_kanban_card_tag: {
 				Args: { p_card_id: string; p_tag_id: string };
 				Returns: boolean;
@@ -14787,6 +14876,10 @@ export type Database = {
 			};
 			is_in_assigned_class: {
 				Args: { p_assignment_id: string };
+				Returns: boolean;
+			};
+			is_kanban_board_member: {
+				Args: { p_board_id: string; p_user_id: string };
 				Returns: boolean;
 			};
 			is_notebook_assigned_to_student: {
