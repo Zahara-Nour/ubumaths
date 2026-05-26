@@ -233,3 +233,62 @@ Sous-feature ajoutée après la v1 : un champ `due_date` optionnel sur les carte
 - ✅ `pnpm check:incremental` → baseline 9 / 46 préservé (1618 fichiers maintenant, +18 du Calendar shadcn).
 - ✅ 58 tests serveurs verts (5 nouveaux pour due_date).
 - ✅ Migration pushée + types régénérés.
+
+---
+
+## v1.2 — Robustesse + Perf ✅
+
+Lot couvrant tout le bloc "Robustesse" + "Perf" du backlog (items 5-13 de la dette consolidée).
+
+### Phase 1 — DB (`20260527000101_kanban_robustness_perf.sql`)
+
+- **CHECK constraint** `kanban_cards_description_max_length` : `description IS NULL OR char_length(description) <= 50000` — miroir de Zod max(50000) au niveau DB.
+- **RPC `get_accessible_kanban_boards(p_limit, p_cursor)`** : retourne board + column_count + card_count en une requête, sorted by `updated_at DESC, id DESC`. Cursor-paginated. `p_limit` clamped to [1, 200].
+- **Index composites** : `(column_id, position)` sur `kanban_cards` et `(board_id, position)` sur `kanban_columns` — accélèrent les `ORDER BY position` PostgREST.
+
+### Phase 2 — Backend
+
+- **Rate limit** : 3 helpers dans `rateLimiter.ts` :
+  - `checkKanbanBoardCreateRateLimit` (20/h)
+  - `checkKanbanColumnMutationRateLimit` (60/h)
+  - `checkKanbanCardMutationRateLimit` (240/h, ~4/min)
+- Helper `rateLimitResponse()` dans `kanban.ts` qui transforme un `RateLimitResult` en `Response` 429 avec `Retry-After`. Une seule ligne au site d'appel.
+- Appliqué sur **6 endpoints mutants** : board POST, column POST/PATCH/DELETE, card POST/PATCH/DELETE.
+- **Pagination `GET /boards`** : query params `limit` + `cursor` validés par `listBoardsQuerySchema`. Retourne `{ boards, nextCursor }`.
+- `getAccessibleBoards` réécrit pour appeler la RPC (plus de PostgREST nested embed cryptique).
+- **Sort PostgREST natif** dans `getBoardWithContent` : `.order('position', { referencedTable: 'kanban_columns' })` + `referencedTable: 'kanban_columns.kanban_cards'`. Plus de sort client-side.
+
+### Phase 3 — Frontend
+
+- **`handleSaveCard`** : rollback par id (findCard avant le rollback) au lieu d'index stale. Corrige la race où une suppression / drag concurrent invalide l'index.
+- **Pagination UI** : `boards` + `cursor` en state local seedés depuis `data` via helpers (évite le warning `state_referenced_locally`). Bouton « Voir plus de tableaux » qui appelle `GET /boards?cursor=...`.
+- Création/suppression : update local de l'état (filter pour delete, refetch first-page pour create) au lieu de `invalidateAll()`.
+
+### Phase 4 — Tests intégration RLS
+
+- **`tests/integration/kanban-rls.test.ts`** : 8 tests couvrant
+  - Personal board : seul l'owner voit / update.
+  - Class board : prof + membres voient ; élèves peuvent CRUD cartes mais pas colonnes.
+  - Cross-class : autre prof ne voit rien.
+  - Cascade DELETE : board → colonnes → cartes.
+  - CHECK constraint : 50001 chars rejeté (code 23514), 50000 chars OK.
+  - RPC pagination : limit + cursor + pas de chevauchement entre pages.
+- `cleanupAllTestData` étendu pour inclure les 3 tables kanban (children-first order).
+- **À lancer localement** avec `pnpm db:start` puis `pnpm test:integration kanban-rls`.
+
+### Quality checks
+
+- ✅ 58 tests serveurs verts (rate-limit helpers vi.mock'd pour ne pas hit le service-role client).
+- ✅ `pnpm check:incremental` baseline 9 / 46 préservé.
+- ✅ Migration pushée + types régénérés.
+
+### Reste de la dette (à traiter plus tard)
+
+Items du backlog couverts par v1.2 : **5, 6, 7, 8, 9, 10, 11, 12, 13** ✅
+
+Items restants (features uniquement) :
+
+1. Tags / labels colorés
+2. Realtime
+3. Assignation cartes
+4. A11y clavier DnD

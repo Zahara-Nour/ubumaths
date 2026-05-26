@@ -124,6 +124,11 @@ export async function cleanupAllTestData(): Promise<void> {
 		'conversation_participants',
 		'chat_conversations',
 
+		// Kanban (children before parents)
+		'kanban_cards',
+		'kanban_columns',
+		'kanban_boards',
+
 		// Classes
 		'class_members',
 		'assignments',
