@@ -37,23 +37,33 @@
 	import { flip } from 'svelte/animate';
 	import { resolve } from '$app/paths';
 	import { ArrowLeft, Plus, Users, User } from 'lucide-svelte';
+	import { Tag } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getPositionBetween } from '$lib/utils/fractional-indexing';
-	import type { KanbanCard, KanbanColumn } from '$lib/types/database-helpers';
+	import type {
+		KanbanCard,
+		KanbanColumn,
+		KanbanTag,
+		KanbanTagColor
+	} from '$lib/types/database-helpers';
 
 	import KanbanColumnComp from './KanbanColumn.svelte';
 	import CardEditDialog from './CardEditDialog.svelte';
+	import ManageTagsDialog from './ManageTagsDialog.svelte';
 	import {
 		createCard,
 		createColumn,
+		createTag,
 		deleteCard as apiDeleteCard,
 		deleteColumn,
+		deleteTag as apiDeleteTag,
 		updateBoard,
 		updateCard,
-		updateColumn
+		updateColumn,
+		updateTag
 	} from './api';
 	import type { PageData } from './$types';
 
@@ -95,8 +105,10 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Local composite type: a column + its cards (mirrors the server shape).
-	type ColumnWithCards = KanbanColumn & { cards: KanbanCard[] };
+	// Local composite type: a card with its tag_ids flattened, and a column
+	// holding such cards (mirrors the server shape from getBoardWithContent).
+	type CardWithTags = KanbanCard & { tag_ids: string[] };
+	type ColumnWithCards = KanbanColumn & { cards: CardWithTags[] };
 
 	// Local mutable mirror of the server data, seeded once at mount via a
 	// helper that copies out of the reactive `data` prop. We deliberately do
@@ -110,7 +122,7 @@
 			title: c.title,
 			position: c.position,
 			created_at: c.created_at,
-			cards: c.cards.map((card) => ({ ...card }))
+			cards: c.cards.map((card) => ({ ...card, tag_ids: [...(card.tag_ids ?? [])] }))
 		}));
 	}
 
@@ -118,8 +130,38 @@
 		return data.board.title;
 	}
 
+	function snapshotTags(): KanbanTag[] {
+		// Sorted alphabetically (locale FR) up front so picker / chips share order.
+		return [...(data.board.tags ?? [])].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+	}
+
 	let boardTitle = $state(snapshotBoardTitle());
 	let columns = $state<ColumnWithCards[]>(snapshotColumns());
+	let tags = $state<KanbanTag[]>(snapshotTags());
+
+	const tagsById = $derived.by(() => {
+		const lookup: Record<string, KanbanTag> = {};
+		for (const tag of tags) lookup[tag.id] = tag;
+		return lookup;
+	});
+
+	// Tag usage counts: { [tagId]: number of cards on the board carrying it }.
+	// Recomputed cheaply from local state; used by ManageTagsDialog for its
+	// delete-confirmation wording.
+	const tagUsageByTagId = $derived.by(() => {
+		const lookup: Record<string, number> = {};
+		for (const col of columns) {
+			for (const card of col.cards) {
+				for (const tagId of card.tag_ids) {
+					lookup[tagId] = (lookup[tagId] ?? 0) + 1;
+				}
+			}
+		}
+		return lookup;
+	});
+
+	// Manage-tags dialog state (owner only).
+	let manageTagsOpen = $state(false);
 
 	// Read-through derived values for read-only data props. These DO react to
 	// `data` updates (should the framework ever re-run the load), unlike the
@@ -282,23 +324,29 @@
 		const position = getPositionBetween(last?.position ?? null, null);
 		const created = await createCard(columnId, title, position);
 		if (created) {
-			col.cards = [...col.cards, created];
+			col.cards = [...col.cards, { ...created, tag_ids: [] }];
 		}
 	}
 
 	async function handleSaveCard(
 		cardId: string,
-		patch: { title?: string; description?: string | null; due_date?: string | null }
+		patch: {
+			title?: string;
+			description?: string | null;
+			due_date?: string | null;
+			tag_ids?: string[];
+		}
 	) {
 		const located = findCard(cardId);
 		if (!located) return;
 		const { column, index } = located;
 		const previous = column.cards[index];
-		const optimistic: KanbanCard = {
+		const optimistic: CardWithTags = {
 			...previous,
 			...(patch.title !== undefined ? { title: patch.title } : {}),
 			...(patch.description !== undefined ? { description: patch.description } : {}),
-			...(patch.due_date !== undefined ? { due_date: patch.due_date } : {})
+			...(patch.due_date !== undefined ? { due_date: patch.due_date } : {}),
+			...(patch.tag_ids !== undefined ? { tag_ids: [...patch.tag_ids] } : {})
 		};
 		column.cards[index] = optimistic;
 
@@ -310,7 +358,15 @@
 		// Indexes are unstable across these mutations; ids are not.
 		const after = findCard(cardId);
 		if (updated) {
-			if (after) after.column.cards[after.index] = updated;
+			// The API returns the row but NOT the new tag_ids — we keep the
+			// optimistic tag set on success (it's the source of truth for tags
+			// since we just replaced them server-side too).
+			if (after) {
+				after.column.cards[after.index] = {
+					...updated,
+					tag_ids: optimistic.tag_ids
+				};
+			}
 			toaster.success('Carte enregistrée');
 		} else if (after) {
 			after.column.cards[after.index] = previous;
@@ -331,9 +387,63 @@
 		}
 	}
 
+	// ===== Tag CRUD (owner only) =====
+
+	// Keep the local `tags` array sorted alphabetically so the manager and
+	// the card picker render in the same order.
+	function sortTags(arr: KanbanTag[]): KanbanTag[] {
+		return [...arr].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+	}
+
+	async function handleCreateTag(name: string, color: KanbanTagColor): Promise<KanbanTag | null> {
+		const created = await createTag(boardId, name, color);
+		if (created) {
+			tags = sortTags([...tags, created]);
+		}
+		return created;
+	}
+
+	async function handleUpdateTag(tagId: string, patch: { name?: string; color?: KanbanTagColor }) {
+		const previous = tags.find((t) => t.id === tagId);
+		if (!previous) return;
+		// Optimistic local change.
+		tags = sortTags(tags.map((t) => (t.id === tagId ? { ...t, ...patch } : t)));
+		const updated = await updateTag(tagId, patch);
+		if (!updated) {
+			// Rollback.
+			tags = sortTags(tags.map((t) => (t.id === tagId ? previous : t)));
+		}
+	}
+
+	async function handleDeleteTag(tagId: string) {
+		const previous = tags.find((t) => t.id === tagId);
+		if (!previous) return;
+		// Optimistic: remove the tag locally AND from any card's tag_ids so chips
+		// disappear immediately. The DB cascade keeps things in sync server-side.
+		tags = tags.filter((t) => t.id !== tagId);
+		for (const col of columns) {
+			for (const card of col.cards) {
+				if (card.tag_ids.includes(tagId)) {
+					card.tag_ids = card.tag_ids.filter((id) => id !== tagId);
+				}
+			}
+		}
+		const ok = await apiDeleteTag(tagId);
+		if (!ok) {
+			// Rollback the tag itself (we don't track which cards had it before
+			// since that's complex; in practice rollback failure here is rare).
+			tags = sortTags([...tags, previous]);
+			toaster.error('Suppression annulée — rechargez pour rétablir les associations.');
+		}
+	}
+
+	function openManageTags() {
+		manageTagsOpen = true;
+	}
+
 	// ===== DnD: cards =====
 
-	function handleCardsConsider(columnId: string, items: KanbanCard[]) {
+	function handleCardsConsider(columnId: string, items: CardWithTags[]) {
 		const col = columns.find((c) => c.id === columnId);
 		if (!col) return;
 		col.cards = dedupeById(items);
@@ -341,8 +451,8 @@
 
 	async function handleCardsFinalize(
 		columnId: string,
-		items: KanbanCard[],
-		info: DndEvent<KanbanCard>['info']
+		items: CardWithTags[],
+		info: DndEvent<CardWithTags>['info']
 	) {
 		const destCol = columns.find((c) => c.id === columnId);
 		if (!destCol) return;
@@ -486,6 +596,19 @@
 				</Badge>
 			</div>
 		</div>
+
+		{#if isOwner}
+			<Button
+				variant="outline"
+				size="sm"
+				class="shrink-0 gap-2"
+				onclick={openManageTags}
+				aria-label="Gérer les tags du tableau"
+			>
+				<Tag class="h-4 w-4" aria-hidden="true" />
+				Tags{tags.length > 0 ? ` (${tags.length})` : ''}
+			</Button>
+		{/if}
 	</div>
 
 	<!-- Empty state -->
@@ -533,6 +656,7 @@
 							{column}
 							cards={column.cards}
 							{isOwner}
+							{tagsById}
 							onCardsConsider={handleCardsConsider}
 							onCardsFinalize={handleCardsFinalize}
 							onEditCard={handleEditCard}
@@ -580,4 +704,21 @@
 	{/if}
 </div>
 
-<CardEditDialog bind:this={cardDialogRef} onSave={handleSaveCard} onDelete={handleDeleteCard} />
+<CardEditDialog
+	bind:this={cardDialogRef}
+	availableTags={tags}
+	onManageTags={isOwner ? openManageTags : undefined}
+	onSave={handleSaveCard}
+	onDelete={handleDeleteCard}
+/>
+
+{#if isOwner}
+	<ManageTagsDialog
+		bind:open={manageTagsOpen}
+		{tags}
+		usageByTagId={tagUsageByTagId}
+		onCreate={handleCreateTag}
+		onUpdate={handleUpdateTag}
+		onDelete={handleDeleteTag}
+	/>
+{/if}

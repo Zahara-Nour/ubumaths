@@ -14,7 +14,13 @@
  */
 
 import { toaster } from '$lib/stores/toaster.svelte';
-import type { KanbanBoard, KanbanColumn, KanbanCard } from '$lib/types/database-helpers';
+import type {
+	KanbanBoard,
+	KanbanColumn,
+	KanbanCard,
+	KanbanTag,
+	KanbanTagColor
+} from '$lib/types/database-helpers';
 
 // ----------------------------------------------------------------------------
 // Patch payload types (mirror Zod schemas)
@@ -32,10 +38,17 @@ export interface CardPatch {
 	position?: number;
 	/** ISO 8601 datetime, null to clear, omitted to leave unchanged. */
 	due_date?: string | null;
+	/** Full replacement of the card's tag set. Omit to leave unchanged. */
+	tag_ids?: string[];
 }
 
 export interface BoardPatch {
 	title: string;
+}
+
+export interface TagPatch {
+	name?: string;
+	color?: KanbanTagColor;
 }
 
 // ----------------------------------------------------------------------------
@@ -211,6 +224,71 @@ export async function deleteCard(cardId: string): Promise<boolean> {
 	} catch (err) {
 		console.error('[kanban/api] deleteCard failed:', err);
 		toaster.error('Erreur réseau lors de la suppression de la carte');
+		return false;
+	}
+}
+
+// ----------------------------------------------------------------------------
+// Tags (board palette mgmt)
+// ----------------------------------------------------------------------------
+
+export async function createTag(
+	boardId: string,
+	name: string,
+	color: KanbanTagColor
+): Promise<KanbanTag | null> {
+	try {
+		const res = await fetch(`/api/organisation/kanban/boards/${boardId}/tags`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ name, color })
+		});
+		if (!res.ok) {
+			toaster.error(await extractError(res, 'Erreur lors de la création du tag'));
+			return null;
+		}
+		const data = (await res.json()) as { tag: KanbanTag };
+		return data.tag;
+	} catch (err) {
+		console.error('[kanban/api] createTag failed:', err);
+		toaster.error('Erreur réseau lors de la création du tag');
+		return null;
+	}
+}
+
+export async function updateTag(tagId: string, patch: TagPatch): Promise<KanbanTag | null> {
+	try {
+		const res = await fetch(`/api/organisation/kanban/tags/${tagId}`, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(patch)
+		});
+		if (!res.ok) {
+			toaster.error(await extractError(res, 'Erreur lors de la mise à jour du tag'));
+			return null;
+		}
+		const data = (await res.json()) as { tag: KanbanTag };
+		return data.tag;
+	} catch (err) {
+		console.error('[kanban/api] updateTag failed:', err);
+		toaster.error('Erreur réseau lors de la mise à jour du tag');
+		return null;
+	}
+}
+
+export async function deleteTag(tagId: string): Promise<boolean> {
+	try {
+		const res = await fetch(`/api/organisation/kanban/tags/${tagId}`, {
+			method: 'DELETE'
+		});
+		if (!res.ok) {
+			toaster.error(await extractError(res, 'Erreur lors de la suppression du tag'));
+			return false;
+		}
+		return true;
+	} catch (err) {
+		console.error('[kanban/api] deleteTag failed:', err);
+		toaster.error('Erreur réseau lors de la suppression du tag');
 		return false;
 	}
 }

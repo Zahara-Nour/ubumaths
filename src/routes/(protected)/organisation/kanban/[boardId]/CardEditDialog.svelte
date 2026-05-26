@@ -28,41 +28,55 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import type { KanbanCard } from '$lib/types/database-helpers';
+	import type { KanbanCard, KanbanTag } from '$lib/types/database-helpers';
 	import type { CardPatch } from './api';
 	import CardEditForm from './CardEditForm.svelte';
 
+	type CardWithTags = KanbanCard & { tag_ids?: string[] };
+
 	type Props = {
+		/** Full per-board tag palette (passed through to CardEditForm). */
+		availableTags: KanbanTag[];
+		/** When set, the form shows a "Gérer les tags" button (owner only). */
+		onManageTags?: () => void;
 		/** Called with only the fields that changed. Parent handles persistence. */
 		onSave: (cardId: string, patch: CardPatch) => Promise<void> | void;
 		/** Called after user confirms deletion. */
 		onDelete: (cardId: string) => Promise<void> | void;
 	};
 
-	let { onSave, onDelete }: Props = $props();
+	let { availableTags, onManageTags, onSave, onDelete }: Props = $props();
 
 	// Card currently being edited. `null` ↔ dialog closed. The parent calls
 	// `openCard(card)` via a bound reference to set both at once.
-	let card = $state<KanbanCard | null>(null);
+	let card = $state<CardWithTags | null>(null);
 	let open = $state(false);
 
 	// Working copies — seeded by `openCard` (explicit user-action trigger).
 	let title = $state('');
 	let description = $state('');
 	let dueDate = $state<string | null>(null);
+	let tagIds = $state<string[]>([]);
 	let initialTitle = '';
 	let initialDescription = '';
 	let initialDueDate: string | null = null;
+	let initialTagIds: string[] = [];
 
 	let saving = $state(false);
 	let deleting = $state(false);
 	let deleteConfirmOpen = $state(false);
 
+	function sameStringSet(a: string[], b: string[]): boolean {
+		if (a.length !== b.length) return false;
+		const set = new Set(a);
+		return b.every((id) => set.has(id));
+	}
+
 	/**
 	 * Public entry point: open the dialog seeded with `c`. Imported by the
 	 * parent via `bind:this` (see KanbanBoard page).
 	 */
-	export function openCard(c: KanbanCard) {
+	export function openCard(c: CardWithTags) {
 		card = c;
 		title = c.title;
 		description = c.description ?? '';
@@ -70,9 +84,11 @@
 		// selected; the bindable below has a `null` fallback that crashes on
 		// undefined.
 		dueDate = c.due_date ?? null;
+		tagIds = [...(c.tag_ids ?? [])];
 		initialTitle = title;
 		initialDescription = description;
 		initialDueDate = dueDate;
+		initialTagIds = [...tagIds];
 		open = true;
 	}
 
@@ -80,7 +96,10 @@
 		if (!card || saving || deleting) return false;
 		if (!title.trim()) return false;
 		return (
-			title !== initialTitle || description !== initialDescription || dueDate !== initialDueDate
+			title !== initialTitle ||
+			description !== initialDescription ||
+			dueDate !== initialDueDate ||
+			!sameStringSet(tagIds, initialTagIds)
 		);
 	});
 
@@ -105,6 +124,7 @@
 				patch.description = description.trim().length === 0 ? null : description;
 			}
 			if (dueDate !== initialDueDate) patch.due_date = dueDate;
+			if (!sameStringSet(tagIds, initialTagIds)) patch.tag_ids = [...tagIds];
 			await onSave(card.id, patch);
 			open = false;
 			card = null;
@@ -142,7 +162,14 @@
 
 		{#if card}
 			<div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
-				<CardEditForm bind:title bind:description bind:dueDate />
+				<CardEditForm
+					bind:title
+					bind:description
+					bind:dueDate
+					bind:tagIds
+					{availableTags}
+					{onManageTags}
+				/>
 			</div>
 
 			<Dialog.Footer class="flex-row justify-between gap-2 sm:gap-2">

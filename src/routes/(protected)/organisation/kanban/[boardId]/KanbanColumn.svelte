@@ -31,7 +31,9 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import type { KanbanColumn, KanbanCard } from '$lib/types/database-helpers';
+	import type { KanbanColumn, KanbanCard, KanbanTag } from '$lib/types/database-helpers';
+
+	type CardWithTags = KanbanCard & { tag_ids?: string[] };
 
 	import KanbanCardComp from './KanbanCard.svelte';
 
@@ -49,24 +51,26 @@
 		return Boolean((item as Record<string, unknown>)[SHADOW_ITEM_MARKER_PROPERTY_NAME]);
 	}
 
-	function cardDndKey(card: KanbanCard): string {
+	function cardDndKey(card: CardWithTags): string {
 		return isDndShadow(card) ? `${card.id}_dnd-shadow` : card.id;
 	}
 
 	type Props = {
 		column: KanbanColumn;
-		cards: KanbanCard[];
+		cards: CardWithTags[];
 		isOwner: boolean;
+		/** Map of the board's tags by id — needed by KanbanCard to render chips. */
+		tagsById: Record<string, KanbanTag>;
 		/** Called while a card is being dragged over this column (visual update). */
-		onCardsConsider: (columnId: string, items: KanbanCard[]) => void;
+		onCardsConsider: (columnId: string, items: CardWithTags[]) => void;
 		/** Called when a card drop is finalized in / from this column. */
 		onCardsFinalize: (
 			columnId: string,
-			items: KanbanCard[],
-			info: DndEvent<KanbanCard>['info']
+			items: CardWithTags[],
+			info: DndEvent<CardWithTags>['info']
 		) => void;
 		/** Open the edit dialog for a card. */
-		onEditCard: (card: KanbanCard) => void;
+		onEditCard: (card: CardWithTags) => void;
 		/** Persist a rename of this column. */
 		onRenameColumn: (columnId: string, title: string) => void;
 		/** Delete this column (after confirmation). */
@@ -79,6 +83,7 @@
 		column,
 		cards,
 		isOwner,
+		tagsById,
 		onCardsConsider,
 		onCardsFinalize,
 		onEditCard,
@@ -287,6 +292,7 @@
 			<div animate:flip={{ duration: FLIP_MS }} data-is-dnd-shadow-item-hint={dndShadow}>
 				<KanbanCardComp
 					{card}
+					{tagsById}
 					isShadow={card.id === SHADOW_PLACEHOLDER_ITEM_ID || dndShadow}
 					onEdit={onEditCard}
 				/>

@@ -23,18 +23,35 @@
 	import { CalendarDays, ChevronDown } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
-	import type { KanbanCard as KanbanCardType } from '$lib/types/database-helpers';
+	import type { KanbanCard as KanbanCardType, KanbanTag } from '$lib/types/database-helpers';
+	import { TAG_COLOR_TOKENS } from './tag-colors';
+
+	type CardWithTags = KanbanCardType & { tag_ids?: string[] };
 
 	type Props = {
-		card: KanbanCardType;
+		card: CardWithTags;
+		/** Map of all tags on the parent board, keyed by id. Used to resolve the
+		 * card's `tag_ids` into chip name + colour. */
+		tagsById: Record<string, KanbanTag>;
 		/** When true, the card has been picked up by the dnd library and we render
 		 * a ghost placeholder. Detected by the caller via the shadow marker prop. */
 		isShadow?: boolean;
 		/** Open the edit dialog for this card. */
-		onEdit: (card: KanbanCardType) => void;
+		onEdit: (card: CardWithTags) => void;
 	};
 
-	let { card, isShadow = false, onEdit }: Props = $props();
+	let { card, tagsById, isShadow = false, onEdit }: Props = $props();
+
+	// Resolve the card's tag ids to actual KanbanTag objects, dropping any
+	// dangling ids (a tag deleted in the manager while a stale optimistic
+	// state still references it). Sort alphabetically for stable chip order.
+	const tags = $derived.by(() => {
+		const ids = card.tag_ids ?? [];
+		return ids
+			.map((id) => tagsById[id])
+			.filter((t): t is KanbanTag => t !== undefined)
+			.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+	});
 
 	const hasDescription = $derived(!!card.description && card.description.trim().length > 0);
 
@@ -132,6 +149,27 @@
 	onclick={handleClick}
 	onkeydown={handleKeydown}
 >
+	{#if tags.length > 0}
+		<!--
+			Tag chips, alphabetical, with the board's colour tokens. Compact: the
+			chip shows the tag name on a tinted background. No icon — saves
+			horizontal space when several tags are stacked.
+		-->
+		<div class="mb-1 flex flex-wrap gap-1">
+			{#each tags as tag (tag.id)}
+				<span
+					class={[
+						'inline-flex max-w-full items-center rounded px-1.5 py-0.5 text-[0.6875rem] font-medium',
+						TAG_COLOR_TOKENS[tag.color].chip
+					]}
+					title={tag.name}
+				>
+					<span class="truncate">{tag.name}</span>
+				</span>
+			{/each}
+		</div>
+	{/if}
+
 	<p class="line-clamp-2 text-sm font-medium break-words">{card.title}</p>
 
 	{#if dueBadge}
