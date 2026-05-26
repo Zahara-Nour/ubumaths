@@ -13924,6 +13924,19 @@ export type Database = {
 				};
 				Returns: number;
 			};
+			get_accessible_kanban_boards: {
+				Args: { p_cursor?: string; p_limit?: number };
+				Returns: {
+					card_count: number;
+					class_id: string;
+					column_count: number;
+					created_at: string;
+					id: string;
+					owner_id: string;
+					title: string;
+					updated_at: string;
+				}[];
+			};
 			get_achievement_leaderboard: {
 				Args: { p_context?: string; p_limit?: number };
 				Returns: {
