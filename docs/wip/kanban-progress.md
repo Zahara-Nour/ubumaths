@@ -292,3 +292,41 @@ Items restants (features uniquement) :
 2. Realtime
 3. Assignation cartes
 4. A11y clavier DnD
+
+---
+
+## v1.3 — Tags / labels colorés ✅
+
+### Phase 1 — DB (`20260527003724_kanban_tags.sql`)
+
+- **Table `kanban_tags`** : id, board_id (FK CASCADE), name TEXT 1..30, color (enum `kanban_tag_color`), created_at. UNIQUE(board_id, name).
+- **Enum `kanban_tag_color`** : `green | yellow | orange | red | purple | blue | sky | gray` — palette fixe alignée aux tokens Tailwind.
+- **Table `kanban_card_tags`** : jonction many-to-many (card_id, tag_id) avec PK composite.
+- **Trigger BEFORE INSERT** `enforce_kanban_tags_per_board_cap` qui plafonne à 20 tags / board (CHECK ne supporte pas les sous-requêtes).
+- **RLS** : `kanban_tags` SELECT pour tout user avec accès au board ; INSERT/UPDATE/DELETE owner-only. `kanban_card_tags` géré par helper SECURITY DEFINER `can_manage_kanban_card_tag(card_id, tag_id)` qui vérifie en plus que tag et carte appartiennent au **même** board (anti-pollution cross-board).
+
+### Phase 2 — Backend
+
+- 3 endpoints owner-only (rate-limit colonne) :
+  - `POST /api/organisation/kanban/boards/[boardId]/tags`
+  - `PATCH /api/organisation/kanban/tags/[tagId]`
+  - `DELETE /api/organisation/kanban/tags/[tagId]`
+    Mappent les erreurs SQL : 23505 → 409 (nom déjà pris), 23514 → 400 (limite 20).
+- **`PATCH /cards/[cardId]`** étendu avec `tag_ids?: string[]` — remplacement complet : DELETE puis bulk INSERT dans `kanban_card_tags`. RLS sur la jonction bloque les ids cross-board.
+- `getBoardWithContent` ramène désormais `tags: KanbanTag[]` + `tag_ids: string[]` par carte (flatten de la jonction PostgREST).
+- `updateCardSchema.refine` étendu pour accepter un PATCH tags-only.
+
+### Phase 3 — Frontend
+
+- **`tag-colors.ts`** : table de tokens (chip light/dark + swatch + label FR) pour les 8 couleurs.
+- **`ManageTagsDialog`** (owner-only) : radiogroup couleur par tag + rename inline + delete (avec confirm si tag en usage, count basé sur derived `tagUsageByTagId`). Formulaire de création avec sélecteur de couleur + désactive le bouton à 20 tags.
+- **`KanbanCard`** : chips colorées triées alpha sous le titre.
+- **`CardEditForm`** : multi-picker (boutons toggle), lien « Gérer les tags » owner-only.
+- **`CardEditDialog`** : tracks `tagIds` à côté du reste, diff via `sameStringSet`, inclut `tag_ids` dans le patch si modifié.
+- **Board page (`+page.svelte`)** : state `tags` séparé, `tagsById` derived, `tagUsageByTagId` derived. Bouton header « Tags (N) » owner-only qui ouvre le manager. Sur delete tag : suppression locale + retrait du tag de chaque carte (cascade DB en miroir côté serveur).
+
+### Quality checks
+
+- ✅ 58 tests serveurs verts (aucune régression).
+- ✅ `pnpm check:incremental` : baseline 9 / 46 préservé (1621 fichiers maintenant, +3 du module tags).
+- ✅ Migration pushée + types régénérés.
