@@ -301,12 +301,19 @@
 			...(patch.due_date !== undefined ? { due_date: patch.due_date } : {})
 		};
 		column.cards[index] = optimistic;
+
 		const updated = await updateCard(cardId, patch);
+
+		// Look the card up again by id rather than reusing `index`: between the
+		// optimistic update and the API response, other handlers (drag, delete,
+		// concurrent save when realtime ships) may have reordered or removed it.
+		// Indexes are unstable across these mutations; ids are not.
+		const after = findCard(cardId);
 		if (updated) {
-			column.cards[index] = updated;
+			if (after) after.column.cards[after.index] = updated;
 			toaster.success('Carte enregistrée');
-		} else {
-			column.cards[index] = previous;
+		} else if (after) {
+			after.column.cards[after.index] = previous;
 		}
 	}
 
