@@ -34,6 +34,19 @@ export function parseKanbanId(
 	return parsed.data;
 }
 
+/**
+ * Query parameters for `GET /api/organisation/kanban/boards`.
+ *
+ * `limit` is clamped to [1, 200] by the underlying RPC; the schema also
+ * enforces the range so we 400 explicitly on invalid client input.
+ * `cursor` is the `updated_at` ISO string of the last board from the previous
+ * page (sort is DESC, so the next page contains boards strictly older).
+ */
+export const listBoardsQuerySchema = z.object({
+	limit: z.coerce.number().int().min(1).max(200).optional(),
+	cursor: z.string().datetime({ message: 'Curseur invalide' }).optional()
+});
+
 // ----------------------------------------------------------------------------
 // Boards
 // ----------------------------------------------------------------------------

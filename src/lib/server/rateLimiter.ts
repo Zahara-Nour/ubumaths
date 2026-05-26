@@ -920,3 +920,102 @@ export async function checkNotificationMarkRateLimit(userId: string): Promise<Ra
 
 	return result;
 }
+
+// ============================================================================
+// KANBAN RATE LIMITS
+// ============================================================================
+// Three tiers reflecting how often each entity is mutated in normal use:
+//
+// - **Boards** are scaffolding. A teacher creates a handful per class per year;
+//   a student maybe a few personal ones. 20 / hour is generous.
+// - **Columns** are also scaffolding. A typical board has 3–6 columns and
+//   they're rarely restructured. 60 / hour covers heavy reorgs.
+// - **Cards / drag-drops** are the high-frequency operation. Each move (drag,
+//   rename inline, edit) hits PATCH; create-card is also fast. 240 / hour
+//   (~4 / minute on average) protects free-tier Supabase + Realtime from
+//   accidental spam without ever being noticeable to a real user.
+//
+// All three fail open on missing userId — the kanban endpoints all run
+// `requireAuth` so userId is in practice always present.
+
+/**
+ * Rate limit for creating a Kanban board.
+ *
+ * Boards are top-level containers and rarely created in bulk — a low limit
+ * is fine. Helps prevent accidental spam during dev or automated abuse.
+ */
+export async function checkKanbanBoardCreateRateLimit(userId: string): Promise<RateLimitResult> {
+	if (!userId) {
+		logger.warn('Missing user ID for kanban board create rate limit check');
+		return { allowed: true };
+	}
+
+	const key = `kanban_board_create:${userId}`;
+	const result = await checkRateLimitWithMessage(
+		key,
+		20,
+		3600, // 1 hour
+		'Trop de tableaux créés récemment. Veuillez patienter quelques minutes.'
+	);
+
+	if (!result.allowed) {
+		logger.warn('Kanban board create rate limit exceeded', { userId: maskKey(key) });
+	}
+
+	return result;
+}
+
+/**
+ * Rate limit for mutating Kanban columns (create / patch / delete combined).
+ *
+ * Columns are reorganized infrequently — 60 / hour is well above realistic
+ * usage and only catches scripted abuse.
+ */
+export async function checkKanbanColumnMutationRateLimit(userId: string): Promise<RateLimitResult> {
+	if (!userId) {
+		logger.warn('Missing user ID for kanban column mutation rate limit check');
+		return { allowed: true };
+	}
+
+	const key = `kanban_column_mutation:${userId}`;
+	const result = await checkRateLimitWithMessage(
+		key,
+		60,
+		3600, // 1 hour
+		'Trop de modifications de colonnes. Veuillez patienter quelques minutes.'
+	);
+
+	if (!result.allowed) {
+		logger.warn('Kanban column mutation rate limit exceeded', { userId: maskKey(key) });
+	}
+
+	return result;
+}
+
+/**
+ * Rate limit for mutating Kanban cards (create / patch / delete combined).
+ *
+ * Cards are the hot path — drags, renames, description edits all hit PATCH.
+ * 240 / hour (~4 / minute) leaves comfortable headroom for the most active
+ * power user while catching scripted spam.
+ */
+export async function checkKanbanCardMutationRateLimit(userId: string): Promise<RateLimitResult> {
+	if (!userId) {
+		logger.warn('Missing user ID for kanban card mutation rate limit check');
+		return { allowed: true };
+	}
+
+	const key = `kanban_card_mutation:${userId}`;
+	const result = await checkRateLimitWithMessage(
+		key,
+		240,
+		3600, // 1 hour
+		'Trop de modifications de cartes. Veuillez patienter quelques minutes.'
+	);
+
+	if (!result.allowed) {
+		logger.warn('Kanban card mutation rate limit exceeded', { userId: maskKey(key) });
+	}
+
+	return result;
+}

@@ -10,19 +10,36 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
-import { createBoardSchema } from '$lib/server/validation/kanban';
-import { getAccessibleBoards, isClassTeacher } from '$lib/server/kanban';
+import { createBoardSchema, listBoardsQuerySchema } from '$lib/server/validation/kanban';
+import { getAccessibleBoards, isClassTeacher, rateLimitResponse } from '$lib/server/kanban';
+import { checkKanbanBoardCreateRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanBoard, KanbanBoardInsert } from '$lib/types/database-helpers';
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const GET: RequestHandler = async ({ locals, url }) => {
 	await requireAuth(locals);
 
-	const boards = await getAccessibleBoards(locals.supabase);
-	return json({ boards });
+	const queryParsed = listBoardsQuerySchema.safeParse({
+		limit: url.searchParams.get('limit') ?? undefined,
+		cursor: url.searchParams.get('cursor') ?? undefined
+	});
+	if (!queryParsed.success) {
+		throw error(400, queryParsed.error.issues[0].message);
+	}
+
+	const page = await getAccessibleBoards(locals.supabase, {
+		limit: queryParsed.data.limit,
+		cursor: queryParsed.data.cursor ?? null
+	});
+	return json({ boards: page.boards, nextCursor: page.nextCursor });
 };
 
 export const POST: RequestHandler = async ({ locals, request }) => {
 	const { user } = await requireAuth(locals);
+
+	// Rate limit board creation per user — boards are top-level so this only
+	// triggers on pathological / scripted abuse.
+	const rl = rateLimitResponse(await checkKanbanBoardCreateRateLimit(user.id));
+	if (rl) return rl;
 
 	// Parse + validate body
 	let body: unknown;

@@ -13,7 +13,8 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { parseKanbanId, updateCardSchema } from '$lib/server/validation/kanban';
-import { getCardColumnId, getColumnBoardId } from '$lib/server/kanban';
+import { getCardColumnId, getColumnBoardId, rateLimitResponse } from '$lib/server/kanban';
+import { checkKanbanCardMutationRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanCard } from '$lib/types/database-helpers';
 
 /**
@@ -27,7 +28,11 @@ type CardMutationPayload = Partial<
 >;
 
 export const PATCH: RequestHandler = async ({ locals, params, request }) => {
-	await requireAuth(locals);
+	const { user } = await requireAuth(locals);
+
+	const rl = rateLimitResponse(await checkKanbanCardMutationRateLimit(user.id));
+	if (rl) return rl;
+
 	const cardId = parseKanbanId(params.cardId, 'carte');
 
 	let body: unknown;
@@ -95,7 +100,11 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	await requireAuth(locals);
+	const { user } = await requireAuth(locals);
+
+	const rl = rateLimitResponse(await checkKanbanCardMutationRateLimit(user.id));
+	if (rl) return rl;
+
 	const cardId = parseKanbanId(params.cardId, 'carte');
 
 	// Verify existence (and access via RLS) before delete so we return 404
