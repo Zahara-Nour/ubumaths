@@ -127,6 +127,77 @@ Feature : outil Kanban (style Trello minimal) pour élèves et profs (`/organisa
 - **Confirmations natives** : `confirm()` pour suppression colonne/carte (cohérent avec liste boards). Migrer vers shadcn `AlertDialog` plus tard.
 - **`cn()` non utilisé** dans `KanbanCard.svelte` : tableau de classes inline marche mais le projet préfère `cn()`.
 
-## Phase 5 — Quality checks finaux ⏳
+## Phase 5 — Quality checks finaux ✅
 
-À venir.
+**Vérifications :**
+
+- ✅ `pnpm test:server src/routes/api/organisation/kanban/api-routes.test.ts` → **53 tests verts**.
+- ✅ `npx eslint` sur tous les fichiers kanban → **0 erreur, 0 warning**.
+- ✅ `pnpm check:incremental` → **9 errors / 46 warnings / 25 files** : identique au baseline projet (cf `project_preexisting-svelte-check-errors.md`). **0 nouvelle erreur introduite par Kanban.**
+- ✅ `mcp__svelte__svelte-autofixer` exécuté en Phase 3 et Phase 4 (par les agents `frontend-developer`).
+- ✅ Lint-staged auto-formate à chaque commit (prettier + eslint --fix).
+
+## Bilan final
+
+**Commits :**
+
+| SHA         | Phase | Description                      |
+| ----------- | ----- | -------------------------------- |
+| `5f71de51c` | 1     | DB schema + RLS + stopgap types  |
+| `02fdf108b` | 2     | API endpoints + 53 tests         |
+| `b7d38f8cc` | 3     | Boards list page + create dialog |
+| `052020415` | 4     | Board detail view + drag & drop  |
+
+**Fichiers créés (synthèse) :**
+
+- Migration : `supabase/migrations/20260526190624_create_kanban_tables.sql`
+- Backend : `src/lib/server/kanban.ts`, `src/lib/server/validation/kanban.ts`
+- API : 6 endpoints `src/routes/api/organisation/kanban/**` + 1 fichier de tests
+- Frontend liste : `src/routes/(protected)/organisation/+layout.svelte`, `kanban/+page.{server.ts,svelte}`, `CreateBoardDialog.svelte`
+- Frontend détail : `kanban/[boardId]/+page.{server.ts,svelte}`, `KanbanColumn.svelte`, `KanbanCard.svelte`, `CardEditDialog.svelte`, `CardEditForm.svelte`, `api.ts`
+- Utils : `src/lib/utils/fractional-indexing.ts`
+- Types : section Kanban ajoutée à `src/lib/types/database-helpers.ts`
+- Doc : `docs/architecture/database-schema.md` (section Kanban), `docs/wip/kanban-progress.md`
+
+**Dépendance ajoutée :** `svelte-dnd-action@^0.9.69`.
+
+## Actions utilisateur requises (post-merge)
+
+1. **`pnpm db:migrate`** — push la migration sur Supabase
+2. **`pnpm db:types`** — régénère `src/lib/types/database.ts`
+3. **Nettoyage stopgap** dans `src/lib/types/database-helpers.ts` : remplacer les 3 interfaces `KanbanBoard` / `KanbanColumn` / `KanbanCard` par des alias `Tables<'kanban_*'>`. Garder les `*Insert` / `*Update` / `KanbanBoardWithCounts`.
+4. **Nettoyage casts** : `grep "kanban_.* as any" src/` — les 11 occurrences `'kanban_*' as any` peuvent être supprimées une fois `database.ts` régénéré. Retirer aussi les `eslint-disable-next-line @typescript-eslint/no-explicit-any` associés.
+5. **Test navigateur** sur `/organisation/kanban` (port 5175 si Claude, 5173 si user) :
+   - Créer un tableau perso → OK
+   - Créer un tableau classe (en tant que prof) → OK
+   - Naviguer vers le détail → OK
+   - Créer des colonnes + cartes → OK
+   - Drag & drop cartes intra-colonne + inter-colonnes → OK
+   - Drag & drop colonnes (owner uniquement) → OK
+   - Rename inline board / colonne → OK
+   - Édition carte avec description ubumark (RichTextEditor) → OK
+   - Suppression colonne non vide (confirmation FR mentionnant le nombre de cartes) → OK
+   - Supprimer un tableau (depuis la liste) → OK
+
+## Dette technique consolidée
+
+À traiter en v2+ (par ordre de priorité) :
+
+1. **Rate limiting** sur les endpoints (60 POST/min sur cards, 10 POST/min sur columns/boards)
+2. **Keyboard fallback DnD** (`zoneTabIndex` de svelte-dnd-action) — a11y
+3. **Tests d'intégration** RLS bout-en-bout (les 53 tests actuels sont unitaires mockés)
+4. **Pagination** `GET /boards` (`.limit(100)` + curseur) si > 200 boards/user
+5. **Realtime** Supabase pour collaboration live sur boards classe
+6. **Assignation cartes** à un utilisateur spécifique (champ `assigned_to`)
+7. **Tags / labels colorés** sur les cartes
+8. **Dates d'échéance** sur les cartes
+9. **AlertDialog** shadcn à la place de `confirm()` natif
+10. **DB-level CHECK** `description ≤ 50000` (Zod-only actuellement)
+11. **Race condition** `handleSaveCard` (rollback par id, pas par index) — important si realtime arrive
+12. **RPC dédiée** pour `getAccessibleBoards` (PostgREST nested embeds complexes)
+13. **Sort PostgREST** : `.order('position', { referencedTable: ... })` au lieu du sort client-side
+
+## Documents produits
+
+- `docs/wip/kanban-progress.md` (ce fichier)
+- `docs/architecture/database-schema.md` (section Kanban ajoutée)
