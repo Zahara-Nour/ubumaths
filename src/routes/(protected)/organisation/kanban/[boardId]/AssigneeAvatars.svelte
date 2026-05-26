@@ -8,12 +8,18 @@
 	limit is shown as "+M" badge.
 
 	Avatar resolution falls back gracefully:
-	- avatar_url present → <img>
-	- otherwise → initials of full_name on a deterministic colour
-	- full_name missing → "?" on muted background
+	- avatar_url present AND image loads → <img>
+	- avatar_url present BUT image fails to load (broken URL, 404, RLS) →
+	  initials over the deterministic colour
+	- avatar_url missing → initials directly
+	- full_name missing → "?" on the colour
+
+	The colour is always set on the wrapping div, so the initials are visible
+	underneath while an image is still loading (avoids a flash of empty disc).
 -->
 
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { KanbanBoardMember } from '$lib/types/database-helpers';
 
 	type Props = {
@@ -28,6 +34,11 @@
 
 	const visible = $derived(assignees.slice(0, max));
 	const overflow = $derived(Math.max(0, assignees.length - max));
+
+	// Ids whose avatar_url failed to load. Marked via the <img onerror>
+	// handler; once an id is in here we render initials instead of the
+	// broken-image icon the browser would otherwise display.
+	const failedAvatars = new SvelteSet<string>();
 
 	/**
 	 * Build the displayed initials from a full name: first letter of the
@@ -70,20 +81,22 @@
 
 <div class="flex -space-x-1.5">
 	{#each visible as member (member.id)}
+		{@const showImage = !!member.avatar_url && !failedAvatars.has(member.id)}
 		<div
 			class={[
 				sizeClass,
 				'inline-flex items-center justify-center overflow-hidden rounded-full font-medium text-white ring-2 ring-card'
 			]}
-			style={member.avatar_url ? undefined : `background-color: ${colorFor(member.id)}`}
+			style={`background-color: ${colorFor(member.id)}`}
 			title={member.full_name ?? 'Utilisateur'}
 			aria-label={`Assigné·e : ${member.full_name ?? 'utilisateur'}`}
 		>
-			{#if member.avatar_url}
+			{#if showImage}
 				<img
 					src={member.avatar_url}
 					alt={member.full_name ?? 'avatar'}
 					class="h-full w-full object-cover"
+					onerror={() => failedAvatars.add(member.id)}
 				/>
 			{:else}
 				{initials(member.full_name)}
