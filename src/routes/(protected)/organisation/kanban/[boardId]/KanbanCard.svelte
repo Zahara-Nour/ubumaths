@@ -3,8 +3,9 @@
 	==========
 
 	A draggable, clickable card. Clicking the card opens the edit dialog (handled
-	by the parent — we just call `onEdit(card)`). The `📝` icon hints at a
-	non-empty description.
+	by the parent — we just call `onEdit(card)`). When a description is present,
+	a truncated preview is rendered below the title via MarkdownRenderer; the
+	preview is `pointer-events: none` so clicks always reach the card itself.
 
 	Drag & drop integration: this component is rendered *inside* a column's
 	`dndzone`. The library injects shadow / placeholder DOM children with a
@@ -13,8 +14,8 @@
 -->
 
 <script lang="ts">
-	import { FileText } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
+	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { KanbanCard as KanbanCardType } from '$lib/types/database-helpers';
 
 	type Props = {
@@ -56,13 +57,44 @@
 	onclick={handleClick}
 	onkeydown={handleKeydown}
 >
-	<div class="flex items-start gap-2">
-		<p class="line-clamp-2 flex-1 text-sm font-medium break-words">{card.title}</p>
-		{#if hasDescription}
-			<FileText
-				class="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground"
-				aria-label="Carte avec description"
-			/>
-		{/if}
-	</div>
+	<p class="line-clamp-2 text-sm font-medium break-words">{card.title}</p>
+
+	{#if hasDescription}
+		<!--
+			Description preview: rendered ubumark with a hard height cap and a
+			subtle fade-out at the bottom to hint that there's more on click.
+			`pointer-events-none` ensures the whole card stays clickable and
+			draggable through the preview.
+		-->
+		<div class="kanban-card-preview pointer-events-none relative mt-2 max-h-24 overflow-hidden">
+			<MarkdownRenderer content={card.description ?? ''} class="text-xs text-muted-foreground" />
+			<div
+				class="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-card to-transparent"
+			></div>
+		</div>
+	{/if}
 </Card.Root>
+
+<style>
+	/* Compact spacing for the preview so we get more content per card height. */
+	.kanban-card-preview :global(p),
+	.kanban-card-preview :global(ul),
+	.kanban-card-preview :global(ol),
+	.kanban-card-preview :global(blockquote),
+	.kanban-card-preview :global(pre) {
+		margin: 0;
+	}
+	.kanban-card-preview :global(p + p),
+	.kanban-card-preview :global(p + ul),
+	.kanban-card-preview :global(p + ol) {
+		margin-top: 0.25rem;
+	}
+	.kanban-card-preview :global(h1),
+	.kanban-card-preview :global(h2),
+	.kanban-card-preview :global(h3),
+	.kanban-card-preview :global(h4) {
+		margin: 0 0 0.125rem;
+		font-size: 0.8125rem;
+		font-weight: 600;
+	}
+</style>
