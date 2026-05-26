@@ -309,12 +309,25 @@ async function fetchBoardMembers(
 	const idList = [...ids];
 	const { data: profiles, error: profErr } = await supabase
 		.from('profiles')
-		.select('id, full_name, avatar_url')
+		.select('id, firstname, lastname, full_name, avatar_url')
 		.in('id', idList);
 
 	if (profErr) {
 		console.error('[kanban] fetchBoardMembers / profiles failed:', profErr);
 		return idList.map((id) => ({ id, full_name: null, avatar_url: null }));
+	}
+
+	// Build a display name with graceful fallbacks: prefer the explicit
+	// full_name, otherwise concatenate firstname + lastname (most
+	// student-imported accounts have those but no full_name).
+	function displayName(p: {
+		firstname: string | null;
+		lastname: string | null;
+		full_name: string | null;
+	}): string | null {
+		if (p.full_name && p.full_name.trim().length > 0) return p.full_name;
+		const parts = [p.firstname, p.lastname].filter((s): s is string => !!s && s.trim().length > 0);
+		return parts.length > 0 ? parts.join(' ') : null;
 	}
 
 	// If RLS hid some profile rows (e.g. a student can't see another
@@ -323,7 +336,7 @@ async function fetchBoardMembers(
 	const seen = new Set((profiles ?? []).map((p) => p.id));
 	const result: KanbanBoardMember[] = (profiles ?? []).map((p) => ({
 		id: p.id,
-		full_name: p.full_name,
+		full_name: displayName(p),
 		avatar_url: p.avatar_url
 	}));
 	for (const id of idList) {
