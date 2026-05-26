@@ -371,9 +371,12 @@
 			destIndex < destCol.cards.length - 1 ? destCol.cards[destIndex + 1].position : null;
 
 		// Short-circuit no-op drops: same column AND same index → nothing to persist.
-		if (!crossColumn) {
-			const sourceSnap = sourceSnapshot!;
-			const oldIndex = sourceSnap.cards.findIndex((c) => c.id === movedId);
+		// If the snapshot didn't contain the card anywhere (rare race when the
+		// library emits a finalize before the source column's consider has fully
+		// committed), skip the no-op check and just persist the move — the API
+		// will treat it as a position update.
+		if (!crossColumn && sourceSnapshot) {
+			const oldIndex = sourceSnapshot.cards.findIndex((c) => c.id === movedId);
 			if (oldIndex === destIndex) return;
 		}
 

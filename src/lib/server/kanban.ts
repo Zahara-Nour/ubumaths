@@ -132,6 +132,7 @@ export async function getBoardWithContent(
 					title,
 					description,
 					position,
+					due_date,
 					created_at,
 					updated_at
 				)
