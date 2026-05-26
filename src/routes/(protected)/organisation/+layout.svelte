@@ -4,16 +4,14 @@
 
 	Shared layout for /organisation/* routes.
 	Authentication is already enforced by the parent (protected) layout, so we
-	only handle the visual chrome here: a discreet header with a breadcrumb and
-	a max-width container for child content.
-
-	v1 ships with a single tool (Kanban) so there is no sub-navigation. Add a
-	tab bar or sidebar here when more tools are introduced.
+	only handle the visual chrome here: a discreet header with a breadcrumb,
+	a sub-navigation bar (Kanban / Pomodoro), and a max-width container.
 -->
 
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import { LayoutDashboard } from 'lucide-svelte';
 
 	let { children }: { children: Snippet } = $props();
@@ -31,10 +29,31 @@
 		const after = segments.slice(orgIndex + 1).filter((s) => !UUID_RE.test(s));
 		return ['Organisation', ...after.map((s) => s.charAt(0).toUpperCase() + s.slice(1))];
 	});
+
+	// Sub-navigation tools. Extend this array when new tools are added.
+	// Paths are stored unresolved so `resolve()` can be applied inline at
+	// render time (consistent with the rest of the codebase, and so the
+	// active-state comparison uses the resolved value too).
+	const tools = [
+		{ path: '/organisation/kanban', label: 'Kanban' },
+		{ path: '/organisation/pomodoro', label: 'Pomodoro' }
+	] as const;
+
+	// A tool is "active" when the current pathname IS its resolved href or
+	// starts with that href followed by '/' — covers sub-routes like
+	// /organisation/kanban/[boardId] without falsely matching a hypothetical
+	// future tool like /organisation/kanbanboard.
+	let activeTool = $derived(
+		tools.find((t) => {
+			const href = resolve(t.path);
+			return page.url.pathname === href || page.url.pathname.startsWith(`${href}/`);
+		}) ?? null
+	);
 </script>
 
 <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 sm:p-6 lg:p-8">
-	<header class="flex flex-col gap-2 border-b pb-4">
+	<header class="flex flex-col gap-3 border-b pb-4">
+		<!-- Breadcrumb -->
 		<nav aria-label="Fil d'Ariane" class="flex items-center gap-2 text-sm text-muted-foreground">
 			<LayoutDashboard class="h-4 w-4" aria-hidden="true" />
 			{#each breadcrumb as crumb, i (i)}
@@ -47,6 +66,23 @@
 				>
 					{crumb}
 				</span>
+			{/each}
+		</nav>
+
+		<!-- Sub-navigation: one link per tool -->
+		<nav aria-label="Outils d'organisation" class="flex items-center gap-1">
+			{#each tools as tool (tool.path)}
+				{@const isActive = activeTool?.path === tool.path}
+				<a
+					href={resolve(tool.path)}
+					aria-current={isActive ? 'page' : undefined}
+					class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors
+						{isActive
+						? 'bg-primary text-primary-foreground'
+						: 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
+				>
+					{tool.label}
+				</a>
 			{/each}
 		</nav>
 	</header>
