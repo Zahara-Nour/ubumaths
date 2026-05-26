@@ -77,9 +77,17 @@
 	<span class="absolute inset-0 flex items-center justify-center bg-muted text-xs">
 		{initials}
 	</span>
+	<!--
+		`referrerpolicy="no-referrer"` is critical for Google's avatar CDN
+		(lh3.googleusercontent.com): with a Referer header, Google often
+		returns 429 or even 403 on cross-origin loads, especially in batches
+		(class roster, kanban picker). Stripping the referrer makes the
+		request look anonymous and Google serves the image normally.
+	-->
 	<img
 		{src}
 		{loading}
+		referrerpolicy="no-referrer"
 		alt={decorative ? '' : firstname ? `${firstname} ${lastname ?? ''}`.trim() : 'User'}
 		class="relative z-10 aspect-square size-full object-cover"
 		onerror={handleImgError}
