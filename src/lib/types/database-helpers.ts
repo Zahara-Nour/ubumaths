@@ -179,6 +179,12 @@ export type KanbanColumn = Tables<'kanban_columns'>;
 /** Kanban card row (lives inside a column). */
 export type KanbanCard = Tables<'kanban_cards'>;
 
+/** Kanban tag row (board-scoped colored label). */
+export type KanbanTag = Tables<'kanban_tags'>;
+
+/** Allowed tag colors (must match the kanban_tag_color enum). */
+export type KanbanTagColor = KanbanTag['color'];
+
 /** Insert payload for kanban_boards (id + timestamps optional, defaulted by DB). */
 export type KanbanBoardInsert = Omit<KanbanBoard, 'id' | 'created_at' | 'updated_at'> & {
 	id?: string;
@@ -222,3 +228,12 @@ export interface KanbanBoardWithCounts extends KanbanBoard {
 	column_count: number;
 	card_count: number;
 }
+
+/** Insert payload for kanban_tags (id + created_at optional, defaulted by DB). */
+export type KanbanTagInsert = Omit<KanbanTag, 'id' | 'created_at'> & {
+	id?: string;
+	created_at?: string;
+};
+
+/** Update payload for kanban_tags (board_id immutable; only name/color mutate). */
+export type KanbanTagUpdate = Partial<Pick<KanbanTag, 'name' | 'color'>>;

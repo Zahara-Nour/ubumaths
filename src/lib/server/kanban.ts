@@ -21,7 +21,8 @@ import type {
 	KanbanBoard,
 	KanbanBoardWithCounts,
 	KanbanColumn,
-	KanbanCard
+	KanbanCard,
+	KanbanTag
 } from '$lib/types/database-helpers';
 
 type AnySupabase = SupabaseClient<Database>;
@@ -30,14 +31,27 @@ type AnySupabase = SupabaseClient<Database>;
 // Composite return shapes
 // ============================================================================
 
-/** Board with nested columns (each with its cards), all sorted by position. */
+/**
+ * Board with nested columns (each with its cards), all sorted by position,
+ * plus the per-board tag palette and, on each card, the list of tag ids it
+ * carries (flattened from the kanban_card_tags junction).
+ */
 export interface KanbanBoardWithContent extends KanbanBoard {
 	columns: KanbanColumnWithCards[];
+	tags: KanbanTag[];
 }
 
 /** Column with its cards sorted by position. */
 export interface KanbanColumnWithCards extends KanbanColumn {
-	cards: KanbanCard[];
+	cards: KanbanCardWithTags[];
+}
+
+/**
+ * Card enriched with the ids of tags it carries (kanban_card_tags rows
+ * flattened to a string[] in the client-friendly shape).
+ */
+export interface KanbanCardWithTags extends KanbanCard {
+	tag_ids: string[];
 }
 
 // ============================================================================
@@ -161,6 +175,13 @@ export async function getBoardWithContent(
 			title,
 			created_at,
 			updated_at,
+			tags:kanban_tags(
+				id,
+				board_id,
+				name,
+				color,
+				created_at
+			),
 			columns:kanban_columns(
 				id,
 				board_id,
@@ -175,7 +196,8 @@ export async function getBoardWithContent(
 					position,
 					due_date,
 					created_at,
-					updated_at
+					updated_at,
+					kanban_card_tags(tag_id)
 				)
 			)
 		`
@@ -186,6 +208,8 @@ export async function getBoardWithContent(
 		// (board_id, position) added in 20260527000101 keep this O(log n).
 		.order('position', { referencedTable: 'kanban_columns' })
 		.order('position', { referencedTable: 'kanban_columns.kanban_cards' })
+		// Stable alphabetical order for the tag palette.
+		.order('name', { referencedTable: 'kanban_tags' })
 		.maybeSingle();
 
 	if (dbError) {
@@ -195,7 +219,41 @@ export async function getBoardWithContent(
 
 	if (!data) return null;
 
-	return data as unknown as KanbanBoardWithContent;
+	// Flatten kanban_card_tags rows (each card has a `kanban_card_tags: [{tag_id}, ...]`
+	// nested array) into the client-friendly `tag_ids: string[]` shape.
+	type RawCard = KanbanCard & { kanban_card_tags: { tag_id: string }[] };
+	type RawColumn = KanbanColumn & { cards: RawCard[] };
+	type RawBoard = KanbanBoard & { tags: KanbanTag[]; columns: RawColumn[] };
+
+	const raw = data as unknown as RawBoard;
+
+	return {
+		id: raw.id,
+		owner_id: raw.owner_id,
+		class_id: raw.class_id,
+		title: raw.title,
+		created_at: raw.created_at,
+		updated_at: raw.updated_at,
+		tags: raw.tags ?? [],
+		columns: (raw.columns ?? []).map((col) => ({
+			id: col.id,
+			board_id: col.board_id,
+			title: col.title,
+			position: col.position,
+			created_at: col.created_at,
+			cards: (col.cards ?? []).map((card) => ({
+				id: card.id,
+				column_id: card.column_id,
+				title: card.title,
+				description: card.description,
+				position: card.position,
+				due_date: card.due_date,
+				created_at: card.created_at,
+				updated_at: card.updated_at,
+				tag_ids: (card.kanban_card_tags ?? []).map((j) => j.tag_id)
+			}))
+		}))
+	};
 }
 
 /**

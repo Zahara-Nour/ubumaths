@@ -84,19 +84,66 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	if (parsed.data.position !== undefined) updatePayload.position = parsed.data.position;
 	if (parsed.data.due_date !== undefined) updatePayload.due_date = parsed.data.due_date;
 
-	const { data, error: dbError } = await locals.supabase
-		.from('kanban_cards')
-		.update(updatePayload)
-		.eq('id', cardId)
-		.select()
-		.single();
-
-	if (dbError || !data) {
-		console.error('[kanban] update card failed:', dbError);
-		throw error(500, 'Erreur lors de la mise à jour de la carte');
+	// Card row update — only when there's something to update on the card
+	// itself. When the patch is tags-only we skip this round-trip entirely.
+	const hasRowUpdate = Object.keys(updatePayload).length > 0;
+	let cardRow: KanbanCard | null = null;
+	if (hasRowUpdate) {
+		const { data, error: dbError } = await locals.supabase
+			.from('kanban_cards')
+			.update(updatePayload)
+			.eq('id', cardId)
+			.select()
+			.single();
+		if (dbError || !data) {
+			console.error('[kanban] update card failed:', dbError);
+			throw error(500, 'Erreur lors de la mise à jour de la carte');
+		}
+		cardRow = data as KanbanCard;
 	}
 
-	return json({ card: data as KanbanCard });
+	// Tags: full replacement of the card's tag set. We delete the existing
+	// associations then bulk-insert the new ones. RLS on kanban_card_tags
+	// blocks any tag from a different board, so we don't need to revalidate
+	// here. We DO it inside the same request so a single PATCH is atomic
+	// from the client's POV — the DB doesn't expose a true transaction
+	// through the JS client, so a partial failure here is reported via 500
+	// and the client rollbacks.
+	if (parsed.data.tag_ids !== undefined) {
+		const { error: delError } = await locals.supabase
+			.from('kanban_card_tags')
+			.delete()
+			.eq('card_id', cardId);
+		if (delError) {
+			console.error('[kanban] clear card tags failed:', delError);
+			throw error(500, 'Erreur lors de la mise à jour des tags');
+		}
+		if (parsed.data.tag_ids.length > 0) {
+			const rows = parsed.data.tag_ids.map((tag_id) => ({ card_id: cardId, tag_id }));
+			const { error: insError } = await locals.supabase.from('kanban_card_tags').insert(rows);
+			if (insError) {
+				console.error('[kanban] set card tags failed:', insError);
+				throw error(500, 'Erreur lors de la mise à jour des tags');
+			}
+		}
+	}
+
+	// If only tags were updated we still need to return the row so the
+	// client can refresh its local copy with the latest updated_at etc.
+	if (!cardRow) {
+		const { data, error: dbError } = await locals.supabase
+			.from('kanban_cards')
+			.select()
+			.eq('id', cardId)
+			.single();
+		if (dbError || !data) {
+			console.error('[kanban] read-back card failed:', dbError);
+			throw error(500, 'Erreur lors de la mise à jour de la carte');
+		}
+		cardRow = data as KanbanCard;
+	}
+
+	return json({ card: cardRow });
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
