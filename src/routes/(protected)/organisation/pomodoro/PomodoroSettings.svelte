@@ -15,6 +15,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';
+	import { requestNotificationPermission } from '$lib/stores/pomodoro/effects';
+	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// ---------------------------------------------------------------------------
 	// Collapse state
@@ -60,8 +62,17 @@
 		pomodoroStore.updateSettings({ soundEnabled: checked });
 	}
 
-	function handleNotificationsChange(checked: boolean) {
+	async function handleNotificationsChange(checked: boolean) {
+		// Optimistically update so the checkbox visual matches the click.
+		// If permission is refused, we roll back below and the bound prop
+		// snaps the checkbox back to unchecked.
 		pomodoroStore.updateSettings({ notificationsEnabled: checked });
+		if (!checked) return;
+		const granted = await requestNotificationPermission();
+		if (!granted) {
+			pomodoroStore.updateSettings({ notificationsEnabled: false });
+			toaster.error('Notifications refusées par le navigateur');
+		}
 	}
 </script>
 
