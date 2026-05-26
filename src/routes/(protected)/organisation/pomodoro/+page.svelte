@@ -2,15 +2,19 @@
 	Pomodoro Page
 	=============
 
-	Orchestrates the store, the page title, and the aria-live region.
+	Orchestrates the store, the page title, the aria-live region, and the
+	per-transition side effects (sound + browser notification).
 
-	Sound playback and browser notification permission flow are Phase 4 —
-	we only drain pendingTransitions here for the aria-live announcement.
+	Limitation v1: sound + notifications only fire while this page is
+	mounted. If the user navigates to /organisation/kanban while a phase
+	completes, the state is still updated correctly but the bell + notif
+	are silent. Moving them to a global mount is on the v2 backlog.
 -->
 
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';
+	import { playBell, showPhaseNotification } from '$lib/stores/pomodoro/effects';
 	import type { PomodoroPhase } from '$lib/stores/pomodoro/logic';
 
 	import PomodoroDisplay from './PomodoroDisplay.svelte';
@@ -64,13 +68,15 @@
 
 		// Announce the most-recently-entered phase to screen readers.
 		const latest = transitions[transitions.length - 1];
-		// Reassigning $state inside $effect is intentional: this IS a side effect
-		// (updating the aria-live region) triggered by a store event, not a
-		// derived value.
+		// Reassigning $state inside $effect is intentional: this IS a side
+		// effect (updating the aria-live region + audio + browser notif)
+		// triggered by a store event, not a derived value.
 		announcement = PHASE_ANNOUNCEMENTS[latest];
 
-		// TODO Phase 4: play completion sound here
-		// TODO Phase 4: send browser notification here
+		// Side effects honour the user's preferences. Both are no-ops when
+		// disabled / permission absent.
+		if (pomodoroStore.settings.soundEnabled) playBell();
+		if (pomodoroStore.settings.notificationsEnabled) showPhaseNotification(latest);
 
 		pomodoroStore.clearPendingTransitions();
 	});

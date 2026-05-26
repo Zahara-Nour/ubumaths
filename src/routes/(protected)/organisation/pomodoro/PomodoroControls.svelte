@@ -11,6 +11,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';
+	import { unlockAudio } from '$lib/stores/pomodoro/effects';
 
 	// ---------------------------------------------------------------------------
 	// Reset confirmation dialog state
@@ -35,6 +36,11 @@
 	let toggleLabel = $derived(isRunning ? 'Pause' : status === 'paused' ? 'Reprendre' : 'Démarrer');
 
 	function handleToggle() {
+		// Unlock the AudioContext from this user-gesture handler so the
+		// later auto-transition bell (from a setInterval, not a gesture)
+		// is allowed to play on browsers that enforce autoplay policies
+		// (Safari especially). Idempotent after the first call.
+		unlockAudio();
 		if (isRunning) pomodoroStore.pause();
 		else pomodoroStore.play();
 	}
