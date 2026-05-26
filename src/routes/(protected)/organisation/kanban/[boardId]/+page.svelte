@@ -74,6 +74,25 @@
 		return isDndShadow(column) ? `${column.id}_dnd-shadow` : column.id;
 	}
 
+	/**
+	 * Defensive: svelte-dnd-action sometimes emits an items array containing
+	 * two entries with the same id (a real one + a freshly-inserted shadow, or
+	 * two shadows). Keep only the first occurrence per id so Svelte's keyed
+	 * each block stays happy. The order is preserved, so the dnd intent is
+	 * still respected (we drop the redundant duplicate, not the meaningful
+	 * shadow).
+	 */
+	function dedupeById<T extends { id: string }>(items: T[]): T[] {
+		const seen = new Set<string>();
+		const out: T[] = [];
+		for (const item of items) {
+			if (seen.has(item.id)) continue;
+			seen.add(item.id);
+			out.push(item);
+		}
+		return out;
+	}
+
 	let { data }: { data: PageData } = $props();
 
 	// Local composite type: a column + its cards (mirrors the server shape).
@@ -309,7 +328,7 @@
 	function handleCardsConsider(columnId: string, items: KanbanCard[]) {
 		const col = columns.find((c) => c.id === columnId);
 		if (!col) return;
-		col.cards = items;
+		col.cards = dedupeById(items);
 	}
 
 	async function handleCardsFinalize(
@@ -324,7 +343,7 @@
 		const snapshot = columns.map((c) => ({ colId: c.id, cards: [...c.cards] }));
 
 		// Apply the dnd library's final items array to the destination column.
-		destCol.cards = items;
+		destCol.cards = dedupeById(items);
 
 		// The dropped item's id is in `info.id`. It might or might not have come
 		// from another column — to know, we look for it in the snapshot.
@@ -379,19 +398,20 @@
 	// ===== DnD: columns =====
 
 	function handleColumnsConsider(event: CustomEvent<DndEvent<ColumnWithCards>>) {
-		columns = event.detail.items;
+		columns = dedupeById(event.detail.items);
 	}
 
 	async function handleColumnsFinalize(event: CustomEvent<DndEvent<ColumnWithCards>>) {
 		const movedId = event.detail.info.id;
 		const snapshot = [...columns];
+		const deduped = dedupeById(event.detail.items);
 
 		// Short-circuit no-op drops: same index → nothing to persist.
 		const oldIndex = snapshot.findIndex((c) => c.id === movedId);
-		const newIndex = event.detail.items.findIndex((c) => c.id === movedId);
+		const newIndex = deduped.findIndex((c) => c.id === movedId);
 		if (oldIndex === newIndex) return;
 
-		columns = event.detail.items;
+		columns = deduped;
 
 		if (newIndex === -1) return;
 
