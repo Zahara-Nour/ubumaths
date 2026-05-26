@@ -56,8 +56,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	};
 
 	const { data, error: dbError } = await locals.supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_boards' as any)
+		.from('kanban_boards')
 		.insert(insertPayload)
 		.select()
 		.single();

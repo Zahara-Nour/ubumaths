@@ -23,11 +23,6 @@ import type {
 	KanbanCard
 } from '$lib/types/database-helpers';
 
-// `kanban_*` tables are not yet in the auto-generated database.ts (the user
-// will run `pnpm db:types` later — see the STOPGAP block in
-// database-helpers.ts). Until then, every `.from('kanban_*')` call is typed
-// against an untyped client. We keep types correct at the boundary by casting
-// query results to the stopgap row types.
 type AnySupabase = SupabaseClient<Database>;
 
 // ============================================================================
@@ -57,8 +52,7 @@ export interface KanbanColumnWithCards extends KanbanColumn {
  */
 export async function getAccessibleBoards(supabase: AnySupabase): Promise<KanbanBoardWithCounts[]> {
 	const { data, error: dbError } = await supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_boards' as any)
+		.from('kanban_boards')
 		.select(
 			`
 			id,
@@ -117,8 +111,7 @@ export async function getBoardWithContent(
 	boardId: string
 ): Promise<KanbanBoardWithContent | null> {
 	const { data, error: dbError } = await supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_boards' as any)
+		.from('kanban_boards')
 		.select(
 			`
 			id,
@@ -186,8 +179,7 @@ export async function getColumnBoardId(
 	columnId: string
 ): Promise<string | null> {
 	const { data, error: dbError } = await supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_columns' as any)
+		.from('kanban_columns')
 		.select('board_id')
 		.eq('id', columnId)
 		.maybeSingle();
@@ -209,8 +201,7 @@ export async function getCardColumnId(
 	cardId: string
 ): Promise<string | null> {
 	const { data, error: dbError } = await supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_cards' as any)
+		.from('kanban_cards')
 		.select('column_id')
 		.eq('id', cardId)
 		.maybeSingle();
@@ -239,8 +230,7 @@ export async function assertBoardOwner(
 	userId: string
 ): Promise<KanbanBoard> {
 	const { data, error: dbError } = await supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_boards' as any)
+		.from('kanban_boards')
 		.select('id, owner_id, class_id, title, created_at, updated_at')
 		.eq('id', boardId)
 		.maybeSingle();
@@ -272,8 +262,7 @@ export async function assertBoardAccess(
 	boardId: string
 ): Promise<KanbanBoard> {
 	const { data, error: dbError } = await supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_boards' as any)
+		.from('kanban_boards')
 		.select('id, owner_id, class_id, title, created_at, updated_at')
 		.eq('id', boardId)
 		.maybeSingle();

@@ -40,8 +40,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	};
 
 	const { data, error: dbError } = await locals.supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_columns' as any)
+		.from('kanban_columns')
 		.insert(insertPayload)
 		.select()
 		.single();

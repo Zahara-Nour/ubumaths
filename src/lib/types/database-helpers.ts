@@ -163,51 +163,21 @@ export interface MigrationEditInput {
 }
 
 // ============================================================================
-// Kanban Types (STOPGAP)
+// Kanban Types
 // ============================================================================
 //
-// These interfaces mirror the kanban_boards / kanban_columns / kanban_cards
-// tables introduced by migration `20260526190624_create_kanban_tables.sql`.
-//
-// They are temporary: once the migration is pushed and `pnpm db:types` is
-// regenerated, replace each `KanbanBoard` interface below with an alias like
-//   `export type KanbanBoard = Tables<'kanban_boards'>;`
-// (and keep the *Insert / *Update helpers + the composite KanbanBoardWithCounts
-// here, since composites belong in this file per CLAUDE.md rule 6).
+// Row aliases come from the auto-generated database.ts; the Insert/Update
+// helpers + composite types live here per CLAUDE.md rule 6.
 // ============================================================================
 
 /** Kanban board row. class_id NULL = personal board; NOT NULL = class board. */
-export interface KanbanBoard {
-	id: string;
-	owner_id: string;
-	class_id: string | null;
-	title: string;
-	created_at: string;
-	updated_at: string;
-}
+export type KanbanBoard = Tables<'kanban_boards'>;
 
 /** Kanban column row (lives inside a board). */
-export interface KanbanColumn {
-	id: string;
-	board_id: string;
-	title: string;
-	/** Fractional index used for ordering columns inside a board. */
-	position: number;
-	created_at: string;
-}
+export type KanbanColumn = Tables<'kanban_columns'>;
 
 /** Kanban card row (lives inside a column). */
-export interface KanbanCard {
-	id: string;
-	column_id: string;
-	title: string;
-	/** ubumark/markdown content. NULL when empty. Capped at 50000 chars by API. */
-	description: string | null;
-	/** Fractional index used for ordering cards inside a column. */
-	position: number;
-	created_at: string;
-	updated_at: string;
-}
+export type KanbanCard = Tables<'kanban_cards'>;
 
 /** Insert payload for kanban_boards (id + timestamps optional, defaulted by DB). */
 export type KanbanBoardInsert = Omit<KanbanBoard, 'id' | 'created_at' | 'updated_at'> & {
