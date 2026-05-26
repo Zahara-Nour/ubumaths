@@ -4615,6 +4615,139 @@ export type Database = {
 					}
 				];
 			};
+			kanban_boards: {
+				Row: {
+					class_id: string | null;
+					created_at: string;
+					id: string;
+					owner_id: string;
+					title: string;
+					updated_at: string;
+				};
+				Insert: {
+					class_id?: string | null;
+					created_at?: string;
+					id?: string;
+					owner_id: string;
+					title: string;
+					updated_at?: string;
+				};
+				Update: {
+					class_id?: string | null;
+					created_at?: string;
+					id?: string;
+					owner_id?: string;
+					title?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'kanban_boards_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'kanban_boards_owner_id_fkey';
+						columns: ['owner_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'kanban_boards_owner_id_fkey';
+						columns: ['owner_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'kanban_boards_owner_id_fkey';
+						columns: ['owner_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'kanban_boards_owner_id_fkey';
+						columns: ['owner_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			kanban_cards: {
+				Row: {
+					column_id: string;
+					created_at: string;
+					description: string | null;
+					id: string;
+					position: number;
+					title: string;
+					updated_at: string;
+				};
+				Insert: {
+					column_id: string;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					position: number;
+					title: string;
+					updated_at?: string;
+				};
+				Update: {
+					column_id?: string;
+					created_at?: string;
+					description?: string | null;
+					id?: string;
+					position?: number;
+					title?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'kanban_cards_column_id_fkey';
+						columns: ['column_id'];
+						isOneToOne: false;
+						referencedRelation: 'kanban_columns';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			kanban_columns: {
+				Row: {
+					board_id: string;
+					created_at: string;
+					id: string;
+					position: number;
+					title: string;
+				};
+				Insert: {
+					board_id: string;
+					created_at?: string;
+					id?: string;
+					position: number;
+					title: string;
+				};
+				Update: {
+					board_id?: string;
+					created_at?: string;
+					id?: string;
+					position?: number;
+					title?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'kanban_columns_board_id_fkey';
+						columns: ['board_id'];
+						isOneToOne: false;
+						referencedRelation: 'kanban_boards';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			marketplace_chat_messages: {
 				Row: {
 					created_at: string;
@@ -13546,6 +13679,14 @@ export type Database = {
 				Args: { p_assignment_id: string };
 				Returns: boolean;
 			};
+			can_access_kanban_board: {
+				Args: { p_board_id: string };
+				Returns: boolean;
+			};
+			can_access_kanban_column: {
+				Args: { p_column_id: string };
+				Returns: boolean;
+			};
 			can_moderate_message: {
 				Args: { message_uuid: string; moderator_uuid: string };
 				Returns: boolean;
@@ -14543,6 +14684,7 @@ export type Database = {
 				Args: { p_assignment_id: string };
 				Returns: boolean;
 			};
+			is_class_member: { Args: { p_class_id: string }; Returns: boolean };
 			is_class_student: { Args: { p_class_id: string }; Returns: boolean };
 			is_class_teacher: { Args: { p_class_id: string }; Returns: boolean };
 			is_classmate: { Args: { p_class_id: string }; Returns: boolean };

@@ -40,8 +40,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	if (parsed.data.position !== undefined) updatePayload.position = parsed.data.position;
 
 	const { data, error: dbError } = await locals.supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_columns' as any)
+		.from('kanban_columns')
 		.update(updatePayload)
 		.eq('id', columnId)
 		.select()
@@ -66,8 +65,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	await assertBoardOwner(locals.supabase, boardId, user.id);
 
 	const { error: dbError } = await locals.supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_columns' as any)
+		.from('kanban_columns')
 		.delete()
 		.eq('id', columnId);
 

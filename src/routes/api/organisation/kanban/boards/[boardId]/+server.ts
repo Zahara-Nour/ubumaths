@@ -45,8 +45,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	await assertBoardOwner(locals.supabase, boardId, user.id);
 
 	const { data, error: dbError } = await locals.supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_boards' as any)
+		.from('kanban_boards')
 		.update({ title: parsed.data.title })
 		.eq('id', boardId)
 		.select()
@@ -73,11 +72,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		title: board.title
 	});
 
-	const { error: dbError } = await locals.supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_boards' as any)
-		.delete()
-		.eq('id', boardId);
+	const { error: dbError } = await locals.supabase.from('kanban_boards').delete().eq('id', boardId);
 
 	if (dbError) {
 		console.error('[kanban] delete board failed:', dbError);

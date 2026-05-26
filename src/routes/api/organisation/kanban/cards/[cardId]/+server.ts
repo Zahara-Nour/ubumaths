@@ -79,8 +79,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	if (parsed.data.position !== undefined) updatePayload.position = parsed.data.position;
 
 	const { data, error: dbError } = await locals.supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_cards' as any)
+		.from('kanban_cards')
 		.update(updatePayload)
 		.eq('id', cardId)
 		.select()
@@ -105,11 +104,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Carte introuvable');
 	}
 
-	const { error: dbError } = await locals.supabase
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.from('kanban_cards' as any)
-		.delete()
-		.eq('id', cardId);
+	const { error: dbError } = await locals.supabase.from('kanban_cards').delete().eq('id', cardId);
 
 	if (dbError) {
 		console.error('[kanban] delete card failed:', dbError);
