@@ -406,12 +406,17 @@
 		const snapshot = [...columns];
 		const deduped = dedupeById(event.detail.items);
 
+		// ALWAYS commit the dedup. The finalize event payload is the lib's
+		// authoritative "post-drop" state: shadow markers have been replaced by
+		// the original draggedElData. Skipping this assignment on no-op drops
+		// (early-return below) would leave the previous consider event's shadow
+		// marker in our state, making the column appear faded and undraggable.
+		columns = deduped;
+
 		// Short-circuit no-op drops: same index → nothing to persist.
 		const oldIndex = snapshot.findIndex((c) => c.id === movedId);
 		const newIndex = deduped.findIndex((c) => c.id === movedId);
 		if (oldIndex === newIndex) return;
-
-		columns = deduped;
 
 		if (newIndex === -1) return;
 
