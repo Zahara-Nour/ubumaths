@@ -28,7 +28,12 @@
 -->
 
 <script lang="ts">
-	import { dndzone, SHADOW_PLACEHOLDER_ITEM_ID, type DndEvent } from 'svelte-dnd-action';
+	import {
+		dndzone,
+		SHADOW_PLACEHOLDER_ITEM_ID,
+		SHADOW_ITEM_MARKER_PROPERTY_NAME,
+		type DndEvent
+	} from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import { resolve } from '$app/paths';
 	import { ArrowLeft, Plus, Users, User } from 'lucide-svelte';
@@ -53,6 +58,21 @@
 	import type { PageData } from './$types';
 
 	const FLIP_MS = 200;
+
+	/**
+	 * Helpers for svelte-dnd-action shadow items. When a drag is in progress
+	 * the library injects a shadow copy of the dragged element into the items
+	 * array (same id, marked via `isDndShadowItem`). To keep Svelte's keyed
+	 * each blocks happy we encode the marker in the key (composite key) — see
+	 * "Nested Zones Optional Optimization" in the library README.
+	 */
+	function isDndShadow(item: { id: string }): boolean {
+		return Boolean((item as Record<string, unknown>)[SHADOW_ITEM_MARKER_PROPERTY_NAME]);
+	}
+
+	function columnDndKey(column: { id: string }): string {
+		return isDndShadow(column) ? `${column.id}_dnd-shadow` : column.id;
+	}
 
 	let { data }: { data: PageData } = $props();
 
@@ -463,9 +483,14 @@
 				onconsider={handleColumnsConsider}
 				onfinalize={handleColumnsFinalize}
 			>
-				{#each columns as column (column.id)}
-					{@const isShadow = column.id === SHADOW_PLACEHOLDER_ITEM_ID}
-					<div animate:flip={{ duration: FLIP_MS }} class={isShadow ? 'opacity-40' : ''}>
+				{#each columns as column (columnDndKey(column))}
+					{@const dndShadow = isDndShadow(column)}
+					{@const isShadow = column.id === SHADOW_PLACEHOLDER_ITEM_ID || dndShadow}
+					<div
+						animate:flip={{ duration: FLIP_MS }}
+						class={isShadow ? 'opacity-40' : ''}
+						data-is-dnd-shadow-item-hint={dndShadow}
+					>
 						<KanbanColumnComp
 							{column}
 							cards={column.cards}

@@ -19,7 +19,12 @@
 -->
 
 <script lang="ts">
-	import { dndzone, SHADOW_PLACEHOLDER_ITEM_ID, type DndEvent } from 'svelte-dnd-action';
+	import {
+		dndzone,
+		SHADOW_PLACEHOLDER_ITEM_ID,
+		SHADOW_ITEM_MARKER_PROPERTY_NAME,
+		type DndEvent
+	} from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import { MoreVertical, Plus, Trash2 } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -30,6 +35,22 @@
 	import KanbanCardComp from './KanbanCard.svelte';
 
 	const FLIP_MS = 200;
+
+	/**
+	 * svelte-dnd-action injects a transient "shadow" copy of the dragged item
+	 * into the items array (with the same id) while a drag is in progress, and
+	 * marks it via `isDndShadowItem = true`. To prevent Svelte's keyed each
+	 * block from seeing two items with the same id, we suffix the marker into
+	 * the key — exactly as recommended in the library README under the
+	 * "Nested Zones Optional Optimization" section.
+	 */
+	function isDndShadow(item: { id: string }): boolean {
+		return Boolean((item as Record<string, unknown>)[SHADOW_ITEM_MARKER_PROPERTY_NAME]);
+	}
+
+	function cardDndKey(card: KanbanCard): string {
+		return isDndShadow(card) ? `${card.id}_dnd-shadow` : card.id;
+	}
 
 	type Props = {
 		column: KanbanColumn;
@@ -238,11 +259,12 @@
 		onconsider={handleCardsConsider}
 		onfinalize={handleCardsFinalize}
 	>
-		{#each cards as card (card.id)}
-			<div animate:flip={{ duration: FLIP_MS }}>
+		{#each cards as card (cardDndKey(card))}
+			{@const dndShadow = isDndShadow(card)}
+			<div animate:flip={{ duration: FLIP_MS }} data-is-dnd-shadow-item-hint={dndShadow}>
 				<KanbanCardComp
 					{card}
-					isShadow={card.id === SHADOW_PLACEHOLDER_ITEM_ID}
+					isShadow={card.id === SHADOW_PLACEHOLDER_ITEM_ID || dndShadow}
 					onEdit={onEditCard}
 				/>
 			</div>
