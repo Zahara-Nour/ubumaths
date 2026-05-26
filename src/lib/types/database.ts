@@ -4683,6 +4683,7 @@ export type Database = {
 					column_id: string;
 					created_at: string;
 					description: string | null;
+					due_date: string | null;
 					id: string;
 					position: number;
 					title: string;
@@ -4692,6 +4693,7 @@ export type Database = {
 					column_id: string;
 					created_at?: string;
 					description?: string | null;
+					due_date?: string | null;
 					id?: string;
 					position: number;
 					title: string;
@@ -4701,6 +4703,7 @@ export type Database = {
 					column_id?: string;
 					created_at?: string;
 					description?: string | null;
+					due_date?: string | null;
 					id?: string;
 					position?: number;
 					title?: string;

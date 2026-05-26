@@ -101,11 +101,24 @@ export const updateColumnSchema = z
 // ----------------------------------------------------------------------------
 
 /**
+ * Optional due date for a card. Accepts an ISO-8601 datetime string or null.
+ * Stored as TIMESTAMPTZ in Postgres; the UI treats it as a calendar date and
+ * sets the time component to 00:00:00 UTC, but we don't enforce that here.
+ */
+const dueDateSchema = z
+	.string()
+	.datetime({ message: 'Date invalide (format ISO 8601 attendu)' })
+	.nullable()
+	.optional();
+
+/**
  * POST /api/organisation/kanban/columns/[columnId]/cards
  *
  * `description` may be omitted, null, or a string up to 50000 chars (ubumark
  * payload). No HTML sanitisation here — rendering is done client-side via the
  * ubumark renderer which is XSS-safe by design.
+ *
+ * `due_date` is optional and nullable. See dueDateSchema above.
  */
 export const createCardSchema = z.object({
 	title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long (max 200 caractères)'),
@@ -114,7 +127,8 @@ export const createCardSchema = z.object({
 		.max(50000, 'Description trop longue (max 50000 caractères)')
 		.nullable()
 		.optional(),
-	position: z.number().finite('Position invalide')
+	position: z.number().finite('Position invalide'),
+	due_date: dueDateSchema
 });
 
 /**
@@ -144,14 +158,16 @@ export const updateCardSchema = z
 			.nullable()
 			.optional(),
 		column_id: kanbanUuidSchema.optional(),
-		position: z.number().finite('Position invalide').optional()
+		position: z.number().finite('Position invalide').optional(),
+		due_date: dueDateSchema
 	})
 	.refine(
 		(d) =>
 			d.title !== undefined ||
 			d.description !== undefined ||
 			d.column_id !== undefined ||
-			d.position !== undefined,
+			d.position !== undefined ||
+			d.due_date !== undefined,
 		{ message: 'Au moins un champ doit être fourni' }
 	)
 	.refine((d) => !(d.column_id !== undefined && d.position === undefined), {

@@ -201,3 +201,35 @@ Feature : outil Kanban (style Trello minimal) pour élèves et profs (`/organisa
 
 - `docs/wip/kanban-progress.md` (ce fichier)
 - `docs/architecture/database-schema.md` (section Kanban ajoutée)
+
+---
+
+## v1.1 — Dates d'échéance ✅
+
+Sous-feature ajoutée après la v1 : un champ `due_date` optionnel sur les cartes, avec date picker dans l'éditeur et badge coloré sur la carte.
+
+**Migration :** `supabase/migrations/20260526230517_add_kanban_card_due_date.sql` (colonne `kanban_cards.due_date TIMESTAMPTZ NULL` + index partiel sur les dates non-null).
+
+**Décisions :**
+
+- **Date seule, sans heure** (UI). On stocke en TIMESTAMPTZ pour rester flexible côté DB ; le client envoie un ISO 8601 à minuit UTC.
+- **3 paliers couleur** : rouge (passée), orange (aujourd'hui/demain), gris (futur > 1 jour).
+- **shadcn Calendar** scaffoldé via `pnpm dlx shadcn-svelte@latest add calendar` (ajoute aussi 17 fichiers `calendar/*.svelte` + dépendances internes). Pas de tri par date dans la v1.1 ; pas d'indicateur au niveau colonne ; pas de filtre.
+
+**Fichiers modifiés :**
+
+- `src/lib/server/validation/kanban.ts` — schémas Zod : `dueDateSchema` (ISO 8601 nullable) ajouté à `createCardSchema` et `updateCardSchema`, refine étendu pour le `due_date`.
+- `src/routes/api/organisation/kanban/columns/[columnId]/cards/+server.ts` — propage `due_date` dans l'insert.
+- `src/routes/api/organisation/kanban/cards/[cardId]/+server.ts` — `CardMutationPayload` étendu, le PATCH transmet `due_date`.
+- `src/routes/api/organisation/kanban/api-routes.test.ts` — 5 tests supplémentaires (création avec/sans date, format invalide, PATCH set/clear/invalid) ; total 58 tests verts.
+- `src/routes/(protected)/organisation/kanban/[boardId]/api.ts` — `CardPatch.due_date` ajouté.
+- `src/routes/(protected)/organisation/kanban/[boardId]/CardEditForm.svelte` — Popover + Calendar `fr-FR`, conversion ISO ↔ DateValue via `@internationalized/date`, bouton « Retirer l'échéance » quand une date est définie.
+- `src/routes/(protected)/organisation/kanban/[boardId]/CardEditDialog.svelte` — état `dueDate` ajouté à `openCard`, propagé via `bind:dueDate`, inclus dans le diff de `canSave` et dans le patch envoyé au PATCH.
+- `src/routes/(protected)/organisation/kanban/[boardId]/+page.svelte` — `handleSaveCard` propage `due_date` dans l'optimistic update.
+- `src/routes/(protected)/organisation/kanban/[boardId]/KanbanCard.svelte` — `dueBadge` derived (label FR court + tier overdue/soon/future), rendu sous le titre avec couleurs Tailwind (rouge/orange/muted) et icône `CalendarDays`.
+
+**Quality checks :**
+
+- ✅ `pnpm check:incremental` → baseline 9 / 46 préservé (1618 fichiers maintenant, +18 du Calendar shadcn).
+- ✅ 58 tests serveurs verts (5 nouveaux pour due_date).
+- ✅ Migration pushée + types régénérés.

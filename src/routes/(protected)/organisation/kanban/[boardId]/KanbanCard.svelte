@@ -20,7 +20,7 @@
 -->
 
 <script lang="ts">
-	import { ChevronDown } from 'lucide-svelte';
+	import { CalendarDays, ChevronDown } from 'lucide-svelte';
 	import * as Card from '$lib/components/ui/card';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { KanbanCard as KanbanCardType } from '$lib/types/database-helpers';
@@ -37,6 +37,50 @@
 	let { card, isShadow = false, onEdit }: Props = $props();
 
 	const hasDescription = $derived(!!card.description && card.description.trim().length > 0);
+
+	/**
+	 * Compute the due-date badge state: label + color tier (overdue / today /
+	 * future / none). The "today/tomorrow" tier triggers an orange highlight,
+	 * past dates go red, everything further out stays muted gray.
+	 *
+	 * Dates are compared at calendar-day granularity so that a card due "today"
+	 * stays orange until midnight regardless of the time component.
+	 */
+	type DueDateBadge = {
+		label: string;
+		tier: 'overdue' | 'soon' | 'future';
+	};
+
+	function startOfDayUTC(date: Date): number {
+		return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+	}
+
+	const dueBadge = $derived.by<DueDateBadge | null>(() => {
+		if (!card.due_date) return null;
+		const due = new Date(card.due_date);
+		if (Number.isNaN(due.getTime())) return null;
+
+		const today = new Date();
+		const dueDay = startOfDayUTC(due);
+		const todayDay = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+		const oneDayMs = 24 * 60 * 60 * 1000;
+		const diffDays = Math.round((dueDay - todayDay) / oneDayMs);
+
+		const sameYear = due.getUTCFullYear() === today.getFullYear();
+		const label = new Intl.DateTimeFormat('fr-FR', {
+			day: 'numeric',
+			month: 'short',
+			year: sameYear ? undefined : 'numeric',
+			timeZone: 'UTC'
+		}).format(due);
+
+		let tier: DueDateBadge['tier'];
+		if (diffDays < 0) tier = 'overdue';
+		else if (diffDays <= 1) tier = 'soon';
+		else tier = 'future';
+
+		return { label, tier };
+	});
 
 	// Local UI-only state: whether the description is expanded inline. Not
 	// persisted — collapses again on remount / page reload, like Trello.
@@ -89,6 +133,29 @@
 	onkeydown={handleKeydown}
 >
 	<p class="line-clamp-2 text-sm font-medium break-words">{card.title}</p>
+
+	{#if dueBadge}
+		<!--
+			Due-date badge. Color tier reflects urgency:
+			- overdue (past): red background
+			- soon (today or tomorrow): orange background
+			- future (>1 day away): muted gray
+		-->
+		<span
+			class={[
+				'mt-2 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs',
+				dueBadge.tier === 'overdue' &&
+					'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-200',
+				dueBadge.tier === 'soon' &&
+					'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-200',
+				dueBadge.tier === 'future' && 'bg-muted text-muted-foreground'
+			]}
+			aria-label={`Échéance ${dueBadge.label}${dueBadge.tier === 'overdue' ? ' (passée)' : ''}`}
+		>
+			<CalendarDays class="h-3 w-3" aria-hidden="true" />
+			{dueBadge.label}
+		</span>
+	{/if}
 
 	{#if hasDescription}
 		<!--

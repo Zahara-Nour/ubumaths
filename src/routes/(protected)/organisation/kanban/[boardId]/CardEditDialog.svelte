@@ -47,8 +47,10 @@
 	// Working copies — seeded by `openCard` (explicit user-action trigger).
 	let title = $state('');
 	let description = $state('');
+	let dueDate = $state<string | null>(null);
 	let initialTitle = '';
 	let initialDescription = '';
+	let initialDueDate: string | null = null;
 
 	let saving = $state(false);
 	let deleting = $state(false);
@@ -61,15 +63,19 @@
 		card = c;
 		title = c.title;
 		description = c.description ?? '';
+		dueDate = c.due_date;
 		initialTitle = title;
 		initialDescription = description;
+		initialDueDate = dueDate;
 		open = true;
 	}
 
 	const canSave = $derived.by(() => {
 		if (!card || saving || deleting) return false;
 		if (!title.trim()) return false;
-		return title !== initialTitle || description !== initialDescription;
+		return (
+			title !== initialTitle || description !== initialDescription || dueDate !== initialDueDate
+		);
 	});
 
 	function handleOpenChange(next: boolean) {
@@ -92,6 +98,7 @@
 				// Normalize "" → null so the DB stores NULL rather than empty string.
 				patch.description = description.trim().length === 0 ? null : description;
 			}
+			if (dueDate !== initialDueDate) patch.due_date = dueDate;
 			await onSave(card.id, patch);
 			open = false;
 			card = null;
@@ -126,7 +133,7 @@
 
 		{#if card}
 			<div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
-				<CardEditForm bind:title bind:description />
+				<CardEditForm bind:title bind:description bind:dueDate />
 			</div>
 
 			<Dialog.Footer class="flex-row justify-between gap-2 sm:gap-2">

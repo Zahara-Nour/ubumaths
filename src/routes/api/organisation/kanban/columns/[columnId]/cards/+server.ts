@@ -42,7 +42,8 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		column_id: columnId,
 		title: parsed.data.title,
 		description: parsed.data.description ?? null,
-		position: parsed.data.position
+		position: parsed.data.position,
+		due_date: parsed.data.due_date ?? null
 	};
 
 	const { data, error: dbError } = await locals.supabase
