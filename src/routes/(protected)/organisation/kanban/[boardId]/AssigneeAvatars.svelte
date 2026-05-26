@@ -44,18 +44,19 @@
 
 	/**
 	 * Deterministic background colour based on the user id, so the same user
-	 * always gets the same shade across cards and dialogs. Hash the uuid and
-	 * pick from a small Tailwind palette.
+	 * always gets the same shade across cards and dialogs. We use literal hex
+	 * codes rather than Tailwind utilities so the JIT can't strip the dynamic
+	 * class names (it can't statically infer which one we'll pick).
 	 */
 	const COLORS = [
-		'bg-blue-500',
-		'bg-purple-500',
-		'bg-pink-500',
-		'bg-orange-500',
-		'bg-yellow-500',
-		'bg-green-500',
-		'bg-teal-500',
-		'bg-sky-500'
+		'#3b82f6', // blue
+		'#a855f7', // purple
+		'#ec4899', // pink
+		'#f97316', // orange
+		'#f59e0b', // amber
+		'#22c55e', // green
+		'#14b8a6', // teal
+		'#0ea5e9' // sky
 	] as const;
 
 	function colorFor(id: string): string {
@@ -72,9 +73,9 @@
 		<div
 			class={[
 				sizeClass,
-				'inline-flex items-center justify-center overflow-hidden rounded-full ring-2 ring-card',
-				member.avatar_url ? '' : `${colorFor(member.id)} font-medium text-white`
+				'inline-flex items-center justify-center overflow-hidden rounded-full font-medium text-white ring-2 ring-card'
 			]}
+			style={member.avatar_url ? undefined : `background-color: ${colorFor(member.id)}`}
 			title={member.full_name ?? 'Utilisateur'}
 			aria-label={`Assigné·e : ${member.full_name ?? 'utilisateur'}`}
 		>
