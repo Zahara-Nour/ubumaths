@@ -32,6 +32,18 @@
 		 * this hides the image from screen readers to avoid double-announcement.
 		 */
 		decorative?: boolean;
+		/**
+		 * `<img loading>` attribute. Defaults to `'lazy'` so a page that mounts
+		 * many UserAvatars at once (e.g. a class roster, a kanban assignee
+		 * picker) doesn't trigger N parallel requests to Google's avatar CDN —
+		 * Google rate-limits the URL with 429, which then permanently flags it
+		 * as failed via `handleImgError`. With `lazy`, only avatars near the
+		 * viewport fetch, spreading the request load.
+		 *
+		 * Set to `'eager'` for above-the-fold avatars that must be visible
+		 * instantly (e.g. the user's own avatar in the header).
+		 */
+		loading?: 'lazy' | 'eager';
 	}
 
 	let {
@@ -40,7 +52,8 @@
 		firstname = null,
 		lastname = null,
 		class: className = 'h-10 w-10',
-		decorative = false
+		decorative = false,
+		loading = 'lazy'
 	}: Props = $props();
 
 	const fallbackSrc = $derived(getAvatarFallback((role as UserRole) || 'student'));
@@ -66,6 +79,7 @@
 	</span>
 	<img
 		{src}
+		{loading}
 		alt={decorative ? '' : firstname ? `${firstname} ${lastname ?? ''}`.trim() : 'User'}
 		class="relative z-10 aspect-square size-full object-cover"
 		onerror={handleImgError}
