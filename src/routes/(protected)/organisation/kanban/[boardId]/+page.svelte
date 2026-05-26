@@ -1,30 +1,520 @@
 <!--
-	Kanban Board Detail - Phase 4 Placeholder
-	==========================================
+	Kanban Board Detail
+	===================
 
-	This route is a stub. The full board view (columns + drag&drop cards) is
-	delivered by Phase 4. We ship the stub now so that `resolve('/organisation/
-	kanban/[boardId]')` typechecks from the boards list page.
+	Phase 4 — interactive board view. Renders the columns + cards horizontally,
+	supports drag&drop of cards within and across columns, drag&drop of columns
+	(owner only), inline rename of the board / columns, quick-create cards via
+	inline input, and a modal editor for a card's description.
+
+	State model:
+	- The server load gives us the initial board content. We mirror it in a
+	  *local* mutable `columns` state — this is the source of truth for the UI
+	  (drag operations mutate it directly for snappy optimistic feedback).
+	- Every mutation has a rollback: we snapshot the previous state, attempt the
+	  API call, and restore on failure (the api.ts helpers already toast).
+
+	DnD wiring (svelte-dnd-action):
+	- `onconsider`: updates the visible item array while the user drags.
+	- `onfinalize`: the drop is committed → we compute a new fractional position
+	  for the moved item and persist via the API.
+	- The library mutates the items array itself via the events, so both phases
+	  produce a fresh array we can swap in.
+
+	Defensive note: `kanban_*` tables may not yet exist in the DB (migration not
+	pushed). The server load will 500 in that case — that error propagates and
+	the framework renders an error page. We don't try to fallback here because
+	there is no usable empty state for a "missing board".
 -->
 
 <script lang="ts">
-	import { page } from '$app/state';
-	import { Construction } from 'lucide-svelte';
+	import { dndzone, SHADOW_PLACEHOLDER_ITEM_ID, type DndEvent } from 'svelte-dnd-action';
+	import { flip } from 'svelte/animate';
+	import { resolve } from '$app/paths';
+	import { ArrowLeft, Plus, Users, User } from 'lucide-svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
+	import { Input } from '$lib/components/ui/input';
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import { getPositionBetween } from '$lib/utils/fractional-indexing';
+	import type { KanbanCard, KanbanColumn } from '$lib/types/database-helpers';
 
-	const boardId = $derived(page.params.boardId ?? '');
+	import KanbanColumnComp from './KanbanColumn.svelte';
+	import CardEditDialog from './CardEditDialog.svelte';
+	import {
+		createCard,
+		createColumn,
+		deleteCard as apiDeleteCard,
+		deleteColumn,
+		updateBoard,
+		updateCard,
+		updateColumn
+	} from './api';
+	import type { PageData } from './$types';
+
+	const FLIP_MS = 200;
+
+	let { data }: { data: PageData } = $props();
+
+	// Local composite type: a column + its cards (mirrors the server shape).
+	type ColumnWithCards = KanbanColumn & { cards: KanbanCard[] };
+
+	// Local mutable mirror of the server data, seeded once at mount via a
+	// helper that copies out of the reactive `data` prop. We deliberately do
+	// NOT re-seed if `data` changes (no `invalidateAll()` happens on this page
+	// — all mutations go through optimistic local state). Using a helper
+	// function keeps the autofixer happy about state_referenced_locally.
+	function snapshotColumns(): ColumnWithCards[] {
+		return data.board.columns.map((c) => ({
+			id: c.id,
+			board_id: c.board_id,
+			title: c.title,
+			position: c.position,
+			created_at: c.created_at,
+			cards: c.cards.map((card) => ({ ...card }))
+		}));
+	}
+
+	function snapshotBoardTitle(): string {
+		return data.board.title;
+	}
+
+	let boardTitle = $state(snapshotBoardTitle());
+	let columns = $state<ColumnWithCards[]>(snapshotColumns());
+
+	// Read-through derived values for read-only data props. These DO react to
+	// `data` updates (should the framework ever re-run the load), unlike the
+	// local mirror above which is intentionally one-way.
+	const boardId = $derived(data.board.id);
+	const isOwner = $derived(data.isOwner);
+	const isClassBoard = $derived(data.board.class_id !== null);
+
+	// Inline rename of the board title (owner only).
+	let isRenamingBoard = $state(false);
+	let boardRenameValue = $state('');
+	let boardRenameInputRef = $state<HTMLInputElement | null>(null);
+
+	function startRenameBoard() {
+		if (!isOwner) return;
+		boardRenameValue = boardTitle;
+		isRenamingBoard = true;
+	}
+
+	$effect(() => {
+		// Focus the input when entering rename mode (DOM side-effect).
+		if (isRenamingBoard && boardRenameInputRef) {
+			boardRenameInputRef.focus();
+			boardRenameInputRef.select();
+		}
+	});
+
+	async function commitRenameBoard() {
+		const next = boardRenameValue.trim();
+		isRenamingBoard = false;
+		if (!next || next === boardTitle) return;
+		const previous = boardTitle;
+		boardTitle = next; // optimistic
+		const updated = await updateBoard(boardId, { title: next });
+		if (!updated) boardTitle = previous; // rollback
+	}
+
+	function cancelRenameBoard() {
+		isRenamingBoard = false;
+	}
+
+	function handleBoardRenameKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			commitRenameBoard();
+		} else if (event.key === 'Escape') {
+			event.preventDefault();
+			cancelRenameBoard();
+		}
+	}
+
+	// ===== Card edit dialog wiring =====
+	// We control the dialog imperatively via a child-exposed `openCard()` method
+	// to avoid the $state-in-$effect antipattern (see CardEditDialog.svelte).
+	let cardDialogRef = $state<{ openCard: (c: KanbanCard) => void } | null>(null);
+
+	function handleEditCard(card: KanbanCard) {
+		cardDialogRef?.openCard(card);
+	}
+
+	// ===== Helpers to navigate the local state =====
+
+	/** Locate a card and its column. Returns null when not found. */
+	function findCard(cardId: string): { column: ColumnWithCards; index: number } | null {
+		for (const col of columns) {
+			const idx = col.cards.findIndex((c) => c.id === cardId);
+			if (idx !== -1) return { column: col, index: idx };
+		}
+		return null;
+	}
+
+	// ===== Column CRUD =====
+
+	let isCreatingColumn = $state(false);
+	let newColumnTitle = $state('');
+	let newColumnInputRef = $state<HTMLInputElement | null>(null);
+
+	function startCreateColumn() {
+		newColumnTitle = '';
+		isCreatingColumn = true;
+	}
+
+	$effect(() => {
+		if (isCreatingColumn && newColumnInputRef) {
+			newColumnInputRef.focus();
+		}
+	});
+
+	function cancelCreateColumn() {
+		isCreatingColumn = false;
+		newColumnTitle = '';
+	}
+
+	async function commitCreateColumn() {
+		const title = newColumnTitle.trim();
+		if (!title) {
+			isCreatingColumn = false;
+			return;
+		}
+		// Position = end of the list.
+		const last = columns[columns.length - 1];
+		const position = getPositionBetween(last?.position ?? null, null);
+		const created = await createColumn(boardId, title, position);
+		if (created) {
+			columns = [
+				...columns,
+				{
+					id: created.id,
+					board_id: created.board_id,
+					title: created.title,
+					position: created.position,
+					created_at: created.created_at,
+					cards: []
+				}
+			];
+			newColumnTitle = '';
+			// Stay in create mode for rapid input.
+		}
+	}
+
+	function handleNewColumnKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			commitCreateColumn();
+		} else if (event.key === 'Escape') {
+			event.preventDefault();
+			cancelCreateColumn();
+		}
+	}
+
+	async function handleRenameColumn(columnId: string, title: string) {
+		const col = columns.find((c) => c.id === columnId);
+		if (!col) return;
+		const previous = col.title;
+		col.title = title; // optimistic
+		const res = await updateColumn(columnId, { title });
+		if (!res) col.title = previous;
+	}
+
+	async function handleDeleteColumn(columnId: string) {
+		const idx = columns.findIndex((c) => c.id === columnId);
+		if (idx === -1) return;
+		const removed = columns[idx];
+		columns = columns.filter((_, i) => i !== idx); // optimistic
+		const ok = await deleteColumn(columnId);
+		if (!ok) {
+			// Rollback at original index.
+			columns = [...columns.slice(0, idx), removed, ...columns.slice(idx)];
+		} else {
+			toaster.success('Colonne supprimée');
+		}
+	}
+
+	// ===== Card CRUD =====
+
+	async function handleCreateCard(columnId: string, title: string) {
+		const col = columns.find((c) => c.id === columnId);
+		if (!col) return;
+		const last = col.cards[col.cards.length - 1];
+		const position = getPositionBetween(last?.position ?? null, null);
+		const created = await createCard(columnId, title, position);
+		if (created) {
+			col.cards = [...col.cards, created];
+		}
+	}
+
+	async function handleSaveCard(
+		cardId: string,
+		patch: { title?: string; description?: string | null }
+	) {
+		const located = findCard(cardId);
+		if (!located) return;
+		const { column, index } = located;
+		const previous = column.cards[index];
+		const optimistic: KanbanCard = {
+			...previous,
+			...(patch.title !== undefined ? { title: patch.title } : {}),
+			...(patch.description !== undefined ? { description: patch.description } : {})
+		};
+		column.cards[index] = optimistic;
+		const updated = await updateCard(cardId, patch);
+		if (updated) {
+			column.cards[index] = updated;
+			toaster.success('Carte enregistrée');
+		} else {
+			column.cards[index] = previous;
+		}
+	}
+
+	async function handleDeleteCard(cardId: string) {
+		const located = findCard(cardId);
+		if (!located) return;
+		const { column, index } = located;
+		const removed = column.cards[index];
+		column.cards = column.cards.filter((_, i) => i !== index);
+		const ok = await apiDeleteCard(cardId);
+		if (!ok) {
+			column.cards = [...column.cards.slice(0, index), removed, ...column.cards.slice(index)];
+		} else {
+			toaster.success('Carte supprimée');
+		}
+	}
+
+	// ===== DnD: cards =====
+
+	function handleCardsConsider(columnId: string, items: KanbanCard[]) {
+		const col = columns.find((c) => c.id === columnId);
+		if (!col) return;
+		col.cards = items;
+	}
+
+	async function handleCardsFinalize(
+		columnId: string,
+		items: KanbanCard[],
+		info: DndEvent<KanbanCard>['info']
+	) {
+		const destCol = columns.find((c) => c.id === columnId);
+		if (!destCol) return;
+
+		// Snapshot all columns' cards (for rollback) BEFORE mutating local state.
+		const snapshot = columns.map((c) => ({ colId: c.id, cards: [...c.cards] }));
+
+		// Apply the dnd library's final items array to the destination column.
+		destCol.cards = items;
+
+		// The dropped item's id is in `info.id`. It might or might not have come
+		// from another column — to know, we look for it in the snapshot.
+		const movedId = info.id;
+		const movedCard = items.find((c) => c.id === movedId);
+		if (!movedCard) return; // dropped outside or never landed
+
+		// If it came from another column, remove it from that column's array.
+		const sourceSnapshot = snapshot.find((s) => s.cards.some((c) => c.id === movedId));
+		const crossColumn = sourceSnapshot && sourceSnapshot.colId !== columnId;
+		if (crossColumn) {
+			const sourceCol = columns.find((c) => c.id === sourceSnapshot!.colId);
+			if (sourceCol) {
+				sourceCol.cards = sourceCol.cards.filter((c) => c.id !== movedId);
+			}
+			// Also update the local column_id on the moved card.
+			movedCard.column_id = columnId;
+		}
+
+		// Compute new fractional position based on neighbours in the destination.
+		const destIndex = destCol.cards.findIndex((c) => c.id === movedId);
+		const before = destIndex > 0 ? destCol.cards[destIndex - 1].position : null;
+		const after =
+			destIndex < destCol.cards.length - 1 ? destCol.cards[destIndex + 1].position : null;
+
+		// Short-circuit no-op drops: same column AND same index → nothing to persist.
+		if (!crossColumn) {
+			const sourceSnap = sourceSnapshot!;
+			const oldIndex = sourceSnap.cards.findIndex((c) => c.id === movedId);
+			if (oldIndex === destIndex) return;
+		}
+
+		const newPosition = getPositionBetween(before, after);
+		movedCard.position = newPosition;
+
+		// Persist. For cross-column moves, the API requires both column_id AND
+		// position; for same-column it accepts position alone (we send both for
+		// uniformity — the schema permits it).
+		const patch: { position: number; column_id?: string } = { position: newPosition };
+		if (crossColumn) patch.column_id = columnId;
+
+		const updated = await updateCard(movedId, patch);
+		if (!updated) {
+			// Rollback to the snapshot.
+			columns = columns.map((c) => {
+				const snap = snapshot.find((s) => s.colId === c.id);
+				return snap ? { ...c, cards: snap.cards } : c;
+			});
+		}
+	}
+
+	// ===== DnD: columns =====
+
+	function handleColumnsConsider(event: CustomEvent<DndEvent<ColumnWithCards>>) {
+		columns = event.detail.items;
+	}
+
+	async function handleColumnsFinalize(event: CustomEvent<DndEvent<ColumnWithCards>>) {
+		const movedId = event.detail.info.id;
+		const snapshot = [...columns];
+
+		// Short-circuit no-op drops: same index → nothing to persist.
+		const oldIndex = snapshot.findIndex((c) => c.id === movedId);
+		const newIndex = event.detail.items.findIndex((c) => c.id === movedId);
+		if (oldIndex === newIndex) return;
+
+		columns = event.detail.items;
+
+		if (newIndex === -1) return;
+
+		const before = newIndex > 0 ? columns[newIndex - 1].position : null;
+		const after = newIndex < columns.length - 1 ? columns[newIndex + 1].position : null;
+		const newPosition = getPositionBetween(before, after);
+		columns[newIndex].position = newPosition;
+
+		const updated = await updateColumn(movedId, { position: newPosition });
+		if (!updated) {
+			columns = snapshot;
+		}
+	}
 </script>
 
-<div
-	class="mx-auto flex max-w-2xl flex-col items-center gap-4 rounded-lg border border-dashed bg-muted/30 p-10 text-center"
->
-	<Construction class="h-10 w-10 text-muted-foreground" aria-hidden="true" />
-	<h2 class="text-xl font-semibold">Vue tableau en construction</h2>
-	<p class="text-sm text-muted-foreground">
-		L'affichage détaillé du tableau (colonnes et cartes) arrivera dans la prochaine version.
-	</p>
-	<p class="text-xs text-muted-foreground">
-		Identifiant du tableau : <code class="rounded bg-muted px-1.5 py-0.5">{boardId}</code>
-	</p>
-	<Button href="/organisation/kanban" variant="outline" class="mt-2">Retour aux tableaux</Button>
+<div class="flex h-full flex-col gap-4">
+	<!-- Header -->
+	<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+		<div class="flex min-w-0 flex-1 items-center gap-3">
+			<Button variant="ghost" size="sm" href={resolve('/organisation/kanban')} class="gap-2">
+				<ArrowLeft class="h-4 w-4" aria-hidden="true" />
+				Tableaux
+			</Button>
+
+			<div class="flex min-w-0 flex-1 items-center gap-2">
+				{#if isRenamingBoard}
+					<Input
+						bind:ref={boardRenameInputRef}
+						bind:value={boardRenameValue}
+						maxlength={200}
+						onblur={commitRenameBoard}
+						onkeydown={handleBoardRenameKeydown}
+						class="max-w-md text-xl font-semibold"
+						aria-label="Renommer le tableau"
+					/>
+				{:else}
+					<button
+						type="button"
+						class="truncate rounded px-2 py-1 text-left text-xl font-semibold tracking-tight hover:bg-muted disabled:cursor-default disabled:hover:bg-transparent sm:text-2xl"
+						disabled={!isOwner}
+						onclick={startRenameBoard}
+						aria-label={isOwner ? `Renommer le tableau ${boardTitle}` : boardTitle}
+					>
+						{boardTitle}
+					</button>
+				{/if}
+
+				<Badge variant={isClassBoard ? 'default' : 'secondary'} class="shrink-0 gap-1">
+					{#if isClassBoard}
+						<Users class="h-3 w-3" aria-hidden="true" />
+						Classe
+					{:else}
+						<User class="h-3 w-3" aria-hidden="true" />
+						Personnel
+					{/if}
+				</Badge>
+			</div>
+		</div>
+	</div>
+
+	<!-- Empty state -->
+	{#if columns.length === 0 && !isCreatingColumn}
+		<div
+			class="mx-auto mt-8 flex max-w-md flex-col items-center gap-3 rounded-lg border border-dashed bg-muted/30 p-8 text-center"
+		>
+			<p class="text-base font-medium">Aucune colonne pour le moment.</p>
+			<p class="text-sm text-muted-foreground">
+				Créez votre première colonne pour commencer à organiser vos tâches.
+			</p>
+			{#if isOwner}
+				<Button onclick={startCreateColumn} class="mt-2 gap-2">
+					<Plus class="h-4 w-4" aria-hidden="true" />
+					Créer une colonne
+				</Button>
+			{/if}
+		</div>
+	{:else}
+		<!-- Columns + add-column zone, horizontally scrollable -->
+		<div class="flex-1 overflow-x-auto pb-4">
+			<div
+				class="flex h-full items-start gap-3"
+				use:dndzone={{
+					items: columns,
+					type: 'kanban-column',
+					flipDurationMs: FLIP_MS,
+					dragDisabled: !isOwner,
+					dropTargetStyle: { outline: '2px dashed var(--color-ring)' }
+				}}
+				onconsider={handleColumnsConsider}
+				onfinalize={handleColumnsFinalize}
+			>
+				{#each columns as column (column.id)}
+					{@const isShadow = column.id === SHADOW_PLACEHOLDER_ITEM_ID}
+					<div animate:flip={{ duration: FLIP_MS }} class={isShadow ? 'opacity-40' : ''}>
+						<KanbanColumnComp
+							{column}
+							cards={column.cards}
+							{isOwner}
+							onCardsConsider={handleCardsConsider}
+							onCardsFinalize={handleCardsFinalize}
+							onEditCard={handleEditCard}
+							onRenameColumn={handleRenameColumn}
+							onDeleteColumn={handleDeleteColumn}
+							onCreateCard={handleCreateCard}
+						/>
+					</div>
+				{/each}
+
+				{#if isOwner}
+					<div class="w-72 shrink-0 sm:w-80">
+						{#if isCreatingColumn}
+							<div class="flex flex-col gap-2 rounded-lg border border-dashed p-2">
+								<Input
+									bind:ref={newColumnInputRef}
+									bind:value={newColumnTitle}
+									placeholder="Titre de la colonne"
+									maxlength={100}
+									class="h-8 text-sm"
+									onkeydown={handleNewColumnKeydown}
+									aria-label="Titre de la nouvelle colonne"
+								/>
+								<div class="flex justify-end gap-2">
+									<Button variant="ghost" size="sm" onclick={cancelCreateColumn}>Annuler</Button>
+									<Button size="sm" onclick={commitCreateColumn} disabled={!newColumnTitle.trim()}
+										>Ajouter</Button
+									>
+								</div>
+							</div>
+						{:else}
+							<Button
+								variant="outline"
+								class="w-full justify-start gap-2 border-dashed"
+								onclick={startCreateColumn}
+							>
+								<Plus class="h-4 w-4" aria-hidden="true" />
+								Ajouter une colonne
+							</Button>
+						{/if}
+					</div>
+				{/if}
+			</div>
+		</div>
+	{/if}
 </div>
+
+<CardEditDialog bind:this={cardDialogRef} onSave={handleSaveCard} onDelete={handleDeleteCard} />

@@ -89,9 +89,43 @@ Feature : outil Kanban (style Trello minimal) pour élèves et profs (`/organisa
 - `<a href={resolve(...)}>` plutôt que `goto()` — meilleure a11y, supporte ctrl+click.
 - `confirm()` natif pour la suppression (acceptable v1, à passer à shadcn `AlertDialog` si besoin).
 
-## Phase 4 — Frontend vue tableau (DnD) ⏳
+## Phase 4 — Frontend vue tableau (DnD) ✅
 
-À venir.
+**Fichiers créés :**
+
+- `src/routes/(protected)/organisation/kanban/[boardId]/+page.server.ts` — load function : `getBoardWithContent` + `{ board, userId, isOwner }`.
+- `src/routes/(protected)/organisation/kanban/[boardId]/+page.svelte` — page principale (509 lignes) : header avec rename inline du board, conteneur horizontal scrollable, dndzone des colonnes, bouton ajout colonne, gestion centralisée des mutations + optimistic updates avec rollback.
+- `src/routes/(protected)/organisation/kanban/[boardId]/KanbanColumn.svelte` — colonne (rename inline, menu suppression, dndzone des cartes, création inline carte).
+- `src/routes/(protected)/organisation/kanban/[boardId]/KanbanCard.svelte` — carte cliquable avec indicateur description.
+- `src/routes/(protected)/organisation/kanban/[boardId]/CardEditDialog.svelte` — modal édition avec `RichTextEditor` (ubumark via Tiptap) + suppression. API impérative `openCard(card)` via `bind:this`.
+- `src/routes/(protected)/organisation/kanban/[boardId]/CardEditForm.svelte` — sous-composant interne pour éviter `$state` dans `$effect`.
+- `src/routes/(protected)/organisation/kanban/[boardId]/api.ts` — helpers REST client (createColumn, updateColumn, deleteColumn, createCard, updateCard, deleteCard, updateBoard). Pattern `T | null` + toast intégré.
+- `src/lib/utils/fractional-indexing.ts` — `getPositionBetween(before, after)` avec **fix collision** : `after - 1` au lieu de `after / 2` quand `before == null` (sinon collision avec position=0).
+
+**Code review (Opus)** : 3 vrais bloquants corrigés (1 jugé incorrect : voir notes).
+
+**Corrections appliquées :**
+
+- **B1** — `dropTargetStyle` : `hsl(var(--ring))` → `var(--color-ring)` (Tailwind 4 expose `--color-ring` direct, pas en composants HSL).
+- **B3** — Détection no-op drop : court-circuite la PATCH quand l'ordre n'a pas changé (intra-colonne ET intra-position).
+- **B4** — `getPositionBetween(null, 0)` retournait 0 (collision) → maintenant `after - 1` (toujours sous le min).
+
+**Critique écartée :** B2 (cartes draggables pour non-owners) — la spec dit explicitement que les élèves peuvent gérer toutes les cartes sur un board classe. Seul le drag des colonnes est owner-only.
+
+**Architecture clé :**
+
+- **Source de vérité unique** côté client : `+page.svelte` détient `columns: $state<ColumnWithCards[]>`. Les enfants sont passifs (callbacks pour mutations).
+- **Optimistic + rollback** : chaque mutation snapshot pré-mutation, applique localement, appelle API. Si API retourne `null` (déjà toasté), restaure snapshot.
+- **2 niveaux de dndzone** : un sur les colonnes (`type: 'kanban-column'`, `dragDisabled: !isOwner`), un par colonne pour les cartes (`type: 'kanban-card'`).
+- **Pas de re-seed automatique** de l'état local sur `data` : commenté, évite d'écraser modifications locales en cours.
+
+**Dette technique notée pour plus tard :**
+
+- **Keyboard fallback DnD** : `svelte-dnd-action` propose un mode clavier (`zoneTabIndex`) non activé. À ajouter pour a11y complète. Documenter dans `docs/ref/warning-svelte.md`.
+- **Race condition handleSaveCard** : si suppression concurrente pendant edition, rollback peut viser le mauvais index. Atténuation : retrouver l'index par id juste avant rollback (mono-user OK, à corriger si realtime arrive).
+- **CardEditForm `{#key card.id}`** : le commentaire mentionne un `{#key}` non implémenté. Soit ajouter, soit corriger le commentaire.
+- **Confirmations natives** : `confirm()` pour suppression colonne/carte (cohérent avec liste boards). Migrer vers shadcn `AlertDialog` plus tard.
+- **`cn()` non utilisé** dans `KanbanCard.svelte` : tableau de classes inline marche mais le projet préfère `cn()`.
 
 ## Phase 5 — Quality checks finaux ⏳
 
