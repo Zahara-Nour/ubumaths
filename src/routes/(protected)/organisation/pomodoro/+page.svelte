@@ -2,19 +2,15 @@
 	Pomodoro Page
 	=============
 
-	Orchestrates the store, the page title, the aria-live region, and the
-	per-transition side effects (sound + browser notification).
-
-	Limitation v1: sound + notifications only fire while this page is
-	mounted. If the user navigates to /organisation/kanban while a phase
-	completes, the state is still updated correctly but the bell + notif
-	are silent. Moving them to a global mount is on the v2 backlog.
+	Orchestrates the store-driven UI and the page <title>. Sound, browser
+	notification, and aria-live announcement now live in the global
+	<PomodoroEffects /> mounted in (protected)/+layout.svelte — they fire
+	whether or not this page is on screen.
 -->
 
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';
-	import { playBell, showPhaseNotification } from '$lib/stores/pomodoro/effects';
 	import type { PomodoroPhase } from '$lib/stores/pomodoro/logic';
 
 	import PomodoroDisplay from './PomodoroDisplay.svelte';
@@ -22,7 +18,7 @@
 	import PomodoroSettings from './PomodoroSettings.svelte';
 
 	// ---------------------------------------------------------------------------
-	// Page title (svelte:head)
+	// Page title (<svelte:head>)
 	// ---------------------------------------------------------------------------
 
 	const PHASE_TITLE_LABELS: Record<PomodoroPhase, string> = {
@@ -46,50 +42,11 @@
 		const phase = PHASE_TITLE_LABELS[pomodoroStore.state.phase];
 		return `${time} — ${phase} | UbuMaths`;
 	});
-
-	// ---------------------------------------------------------------------------
-	// aria-live announcements
-	// ---------------------------------------------------------------------------
-
-	const PHASE_ANNOUNCEMENTS: Record<PomodoroPhase, string> = {
-		work: 'Pomodoro de travail commencé',
-		short_break: 'Pause courte commencée',
-		long_break: 'Pause longue commencée'
-	};
-
-	// aria-live announcement text. Updated as a side effect when transitions
-	// arrive — $derived cannot drain the queue, so $effect + $state is correct
-	// here (it's a genuine side effect, not a derived computation).
-	let announcement = $state('');
-
-	$effect(() => {
-		const transitions = pomodoroStore.pendingTransitions;
-		if (transitions.length === 0) return;
-
-		// Announce the most-recently-entered phase to screen readers.
-		const latest = transitions[transitions.length - 1];
-		// Reassigning $state inside $effect is intentional: this IS a side
-		// effect (updating the aria-live region + audio + browser notif)
-		// triggered by a store event, not a derived value.
-		announcement = PHASE_ANNOUNCEMENTS[latest];
-
-		// Side effects honour the user's preferences. Both are no-ops when
-		// disabled / permission absent.
-		if (pomodoroStore.settings.soundEnabled) playBell();
-		if (pomodoroStore.settings.notificationsEnabled) showPhaseNotification(latest);
-
-		pomodoroStore.clearPendingTransitions();
-	});
 </script>
 
 <svelte:head>
 	<title>{pageTitle}</title>
 </svelte:head>
-
-<!-- Visually hidden aria-live region for screen-reader phase announcements -->
-<div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
-	{announcement}
-</div>
 
 <div class="flex flex-col gap-6">
 	<!-- Page heading -->
