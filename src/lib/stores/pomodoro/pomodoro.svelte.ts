@@ -5,13 +5,21 @@
  * reference to state + settings, persists every change to localStorage,
  * and ticks the clock while the timer is running.
  *
- * Pure side effects (sound, browser notifications, `<title>` updates,
- * aria-live announcements) live in the page, not here — the store only
- * queues transition events and lets consumers drain them.
+ * Side effects (sound, browser notifications, `<title>` updates,
+ * aria-live announcements) live in the global `<PomodoroEffects />`
+ * component, not here — the store only queues transition events and
+ * lets consumers drain them.
  *
  * The store auto-starts its tick loop in the constructor (client-only,
  * gated on `$effect.root` + `state.status === 'running'`), so the timer
  * survives client-side navigation across the SPA.
+ *
+ * BroadcastChannel: every mutation is also published to other tabs of
+ * the same origin so the UI stays in sync. Each queued transition is
+ * tagged with `isRemote: true` if it came from a peer tab, so the
+ * global effects component fires the bell + notif only on the tab
+ * that actually originated the transition — preventing N concurrent
+ * dings when several tabs are open.
  */
 
 import { browser } from '$app/environment';
@@ -35,8 +43,19 @@ import {
 	type PomodoroState,
 	type PomodoroPhase
 } from './logic';
+import { publish, subscribe, type PomodoroBroadcastMessage } from './broadcast';
 
 const TICK_INTERVAL_MS = 250;
+
+/**
+ * Queue entry. `isRemote` lets the side-effects component announce the
+ * phase change everywhere (aria-live) while suppressing duplicate audio
+ * / browser notifications on receiver tabs.
+ */
+export interface QueuedTransition {
+	readonly phase: PomodoroPhase;
+	readonly isRemote: boolean;
+}
 
 class PomodoroStore {
 	// ===========================================================================
@@ -47,10 +66,10 @@ class PomodoroStore {
 	settings = $state<PomodoroSettings>(defaultSettings());
 
 	/**
-	 * Phase transitions queued by the tick loop or by `skip()`. Consumers
-	 * (the page) drain this with `clearPendingTransitions()` after handling.
+	 * Phase transitions queued by the tick loop, `skip()`, or an inbound
+	 * remote broadcast. Consumers drain via `clearPendingTransitions()`.
 	 */
-	pendingTransitions = $state<PomodoroPhase[]>([]);
+	pendingTransitions = $state<QueuedTransition[]>([]);
 
 	/** True once `hydrate()` has run. UI can gate first paint on this. */
 	hydrated = $state(false);
@@ -75,15 +94,23 @@ class PomodoroStore {
 	});
 
 	// ===========================================================================
-	// Construction — hydrate + auto-tick (client only)
+	// Construction — hydrate + auto-tick + cross-tab sync (client only)
 	// ===========================================================================
 
 	private tickInterval: ReturnType<typeof setInterval> | null = null;
+
+	/** Guard that suppresses outbound broadcasts while we're applying an inbound one. */
+	private applyingRemote = false;
 
 	constructor() {
 		if (!browser) return;
 
 		this.hydrate();
+
+		// Listen for inbound broadcasts from other tabs. The unsubscribe
+		// handle is intentionally discarded — the listener lives for the
+		// singleton's lifetime.
+		subscribe((msg) => this.handleRemote(msg));
 
 		// $effect.root keeps the inner effect alive for the singleton's
 		// lifetime, without needing a parent component scope. The inner
@@ -119,7 +146,7 @@ class PomodoroStore {
 			return;
 		}
 		this.nowMs = now;
-		this.persist();
+		this.persistAndBroadcast(null);
 	}
 
 	pause(): void {
@@ -127,7 +154,7 @@ class PomodoroStore {
 		const now = Date.now();
 		this.state = pause(this.state, now);
 		this.nowMs = now;
-		this.persist();
+		this.persistAndBroadcast(null);
 	}
 
 	skip(): void {
@@ -137,26 +164,29 @@ class PomodoroStore {
 		const now = Date.now();
 		const result = skip(this.state, this.settings, now);
 		this.state = result.state;
-		this.pendingTransitions = [...this.pendingTransitions, result.transition];
+		this.pendingTransitions = [
+			...this.pendingTransitions,
+			{ phase: result.transition, isRemote: false }
+		];
 		this.nowMs = now;
-		this.persist();
+		this.persistAndBroadcast(result.transition);
 	}
 
 	reset(): void {
 		const now = Date.now();
 		this.state = reset(this.state, now);
 		this.nowMs = now;
-		this.persist();
+		this.persistAndBroadcast(null);
 	}
 
 	updateSettings(patch: Partial<PomodoroSettings>): void {
 		this.settings = clampSettings({ ...this.settings, ...patch });
-		this.persist();
+		this.persistAndBroadcast(null);
 	}
 
 	resetSettings(): void {
 		this.settings = defaultSettings();
-		this.persist();
+		this.persistAndBroadcast(null);
 	}
 
 	clearPendingTransitions(): void {
@@ -204,14 +234,54 @@ class PomodoroStore {
 		this.nowMs = now;
 		if (this.state.status !== 'running') return;
 		const result = tick(this.state, this.settings, now);
-		if (result.transitions.length > 0) {
-			this.state = result.state;
-			this.pendingTransitions = [...this.pendingTransitions, ...result.transitions];
-			this.persist();
+		if (result.transitions.length === 0) return;
+
+		this.state = result.state;
+		this.pendingTransitions = [
+			...this.pendingTransitions,
+			...result.transitions.map((phase) => ({ phase, isRemote: false }))
+		];
+		// Broadcast with the latest transition so peers can show the
+		// announcement without re-firing sound + notif.
+		const last = result.transitions[result.transitions.length - 1];
+		this.persistAndBroadcast(last);
+	}
+
+	/**
+	 * Apply a sync message from a peer tab. We replace state + settings
+	 * wholesale, and — if the peer reported a fresh transition — push
+	 * a remote-tagged entry into our own queue so this tab's aria-live
+	 * announcement still fires (without duplicating sound / notif).
+	 */
+	private handleRemote(msg: PomodoroBroadcastMessage): void {
+		this.applyingRemote = true;
+		try {
+			this.state = msg.state;
+			this.settings = msg.settings;
+			this.nowMs = Date.now();
+			if (msg.transition !== null) {
+				this.pendingTransitions = [
+					...this.pendingTransitions,
+					{ phase: msg.transition, isRemote: true }
+				];
+			}
+			// Mirror the peer's write to our own localStorage so a later
+			// hydrate (this tab reloaded) sees the same authoritative state.
+			this.writeStorage();
+		} finally {
+			this.applyingRemote = false;
 		}
 	}
 
-	private persist(): void {
+	private persistAndBroadcast(transition: PomodoroPhase | null): void {
+		this.writeStorage();
+		if (this.applyingRemote) return;
+		// $state.snapshot deep-clones the reactive proxies into plain
+		// objects suitable for structured-clone over BroadcastChannel.
+		publish($state.snapshot(this.state), $state.snapshot(this.settings), transition);
+	}
+
+	private writeStorage(): void {
 		try {
 			localStorage.setItem(STORAGE_KEY, serialize(this.state, this.settings));
 		} catch {
