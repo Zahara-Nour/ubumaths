@@ -93,6 +93,28 @@ Pas de test e2e en v1 (décision). À vérifier manuellement dans un navigateur
 | 4     | `c6da65808` | Bell sound + browser notifications |
 | 5     | (this)      | Progress doc finalisé              |
 
+## v1.5 — Tier 1 (livré)
+
+Items hors-scope v1 promus en v1.5 pour faire sentir l'expérience plus complète :
+
+| #   | Item                           | SHA         | Description                                                                                                                                                       |
+| --- | ------------------------------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Side-effects globaux           | `87697bd9d` | `<PomodoroEffects />` mounté dans `(protected)/+layout.svelte` — son + notif + aria-live fire depuis n'importe quelle page protégée                               |
+| 2   | BroadcastChannel multi-onglets | `562fb455d` | `broadcast.ts` wrappe BC + tabId stable. Store sync state/settings entre onglets, `isRemote` flag évite N dings concurrents. Fallback localStorage si BC indispo. |
+| 3   | Quality checks finaux          | (this)      | ESLint clean, `check:incremental` 9E/46W baseline inchangée, 51 tests passent                                                                                     |
+
+### Limitation v1.5 connue
+
+Si 2 onglets ticks dans une fenêtre <5ms simultanée, chacun joue son propre bell avant de recevoir le broadcast du peer. Cas rare en pratique (intervalles `setInterval` offset par onglet). Documenté dans `broadcast.ts` et le code-review.
+
+### Tests automatisés sur BroadcastChannel
+
+Non — jsdom ne polyfille pas l'API. Vérification manuelle :
+
+1. Ouvrir 2 onglets sur `/organisation/pomodoro`, hit Play sur l'un, l'autre reflète l'état.
+2. Laisser une transition se faire → **un seul** ding.
+3. Modifier un réglage sur un onglet → propagation immédiate à l'autre.
+
 ## Hors scope v1 (backlog v2)
 
 - Table DB / migration / API / RLS
