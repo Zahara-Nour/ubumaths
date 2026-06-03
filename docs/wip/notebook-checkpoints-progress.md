@@ -14,8 +14,8 @@ Feature : cellules de validation (`checkpoint`) dans les notebooks Python, avec 
 | 2     | Worker : nouveau mode `assert` + `contextId`       | ✅ Livrée  | `c40fb96bd` |
 | 3     | Endpoints POST + GET checkpoint-runs               | ✅ Livrée  | `cf009a7b7` |
 | 4     | Composant `CheckpointCell.svelte` (vue élève)      | ✅ Livrée  | `a53d2459a` |
-| 5     | UI teacher : éditeur de checkpoint dans notebook   | ✅ Livrée  | _pending_   |
-| 6     | Dashboard prof `/python-notebook/[id]/results`     | ⏳ À faire | —           |
+| 5     | UI teacher : éditeur de checkpoint dans notebook   | ✅ Livrée  | `a4e3a0b4c` |
+| 6     | Dashboard prof `/python-notebook/[id]/results`     | ✅ Livrée  | _pending_   |
 | 7     | Doc + autofixer + check:incremental + commit final | ⏳ À faire | —           |
 
 ---
@@ -280,3 +280,31 @@ Bloquant #3 (`isTeacher` spoof via DevTools → autosave 403) reporté à Phase 
 - Confirm dialog avant reset de mode si la config courante est non-vide
 - Tests dédiés `CheckpointEditor`
 - a11y pass complet (Labels `for=` manquants sur quelques inputs)
+
+---
+
+## Phase 6 — Livré ✅
+
+**Fichiers créés**
+
+- `src/routes/(protected)/python-notebook/[id]/results/+page.server.ts` — load auth-gated (teacher + auteur OU ayant assigné), compose : notebook content (extraction des checkpoint cells du JSONB) + class_members des classes du prof + python_notebook_checkpoint_runs
+- `src/routes/(protected)/python-notebook/[id]/results/+page.svelte` — dashboard : header avec back, 4 stat cards (élèves concernés / ont commencé / ont tout réussi / taux global), filtre par classe (si > 1), table élèves × checkpoints avec icônes ✅/❌/—, tri alphabétique par nom
+- `src/routes/(protected)/python-notebook/[id]/results/page.server.test.ts` — 9 tests : authz (anon 303, non-teacher 303, non-auteur-non-assigner 403, notebook absent 404, UUID invalide 400) + composition (vide quand pas d'élèves, mapping correct des statuses, teacher non-auteur avec assignment OK, checkpoints vide si notebook sans cellule checkpoint)
+
+**Bouton "Résultats" ajouté** dans `src/routes/(protected)/python-notebook/[id]/+page.svelte` (à côté du bouton "Partager", visible uniquement à `data.isOwner && data.userRole === 'teacher'`).
+
+**Tests** : 9/9 verts.
+
+**Décisions UX**
+
+- Stat "ont tout réussi" = élève qui a `passed` sur **tous** les checkpoints (pas pondéré, pas partiel V1)
+- Stat "taux de réussite global" = % de cellules `(élève, checkpoint)` en statut `passed`
+- Table compacte : icônes sans texte (avec `sr-only` pour screen readers) — pour scaler avec beaucoup de checkpoints
+- Tri par nom uniquement V1 (pas de tri par checkpoint dans cette première version)
+
+**Hors-scope V1 (notés)**
+
+- Export CSV
+- Sort multi-colonnes par checkpoint
+- Drill-down par élève (cliquer sur une cellule → voir l'erreur exacte)
+- Realtime sur les checkpoint runs

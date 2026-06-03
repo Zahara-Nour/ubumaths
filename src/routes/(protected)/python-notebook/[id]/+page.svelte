@@ -3,7 +3,7 @@
 	import NotebookView from '$lib/components/notebook/NotebookView.svelte';
 	import ShareNotebookDialog from '$lib/components/notebook/ShareNotebookDialog.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, Share2 } from 'lucide-svelte';
+	import { ArrowLeft, Share2, BarChart3 } from 'lucide-svelte';
 
 	let { data } = $props();
 
@@ -15,6 +15,10 @@
 
 	function handleShare() {
 		shareDialogOpen = true;
+	}
+
+	function handleResults() {
+		goto(`/python-notebook/${data.notebook.id}/results`);
 	}
 </script>
 
@@ -33,10 +37,16 @@
 			</div>
 		</div>
 		{#if data.isOwner && data.userRole === 'teacher'}
-			<Button variant="outline" onclick={handleShare}>
-				<Share2 class="mr-2 h-4 w-4" />
-				Partager
-			</Button>
+			<div class="flex items-center gap-2">
+				<Button variant="outline" onclick={handleResults}>
+					<BarChart3 class="mr-2 h-4 w-4" />
+					Résultats
+				</Button>
+				<Button variant="outline" onclick={handleShare}>
+					<Share2 class="mr-2 h-4 w-4" />
+					Partager
+				</Button>
+			</div>
 		{/if}
 	</div>
 
