@@ -8693,6 +8693,69 @@ export type Database = {
 					}
 				];
 			};
+			python_notebook_checkpoint_runs: {
+				Row: {
+					cell_id: string;
+					error_message: string | null;
+					notebook_id: string;
+					ran_at: string;
+					status: string;
+					user_id: string;
+				};
+				Insert: {
+					cell_id: string;
+					error_message?: string | null;
+					notebook_id: string;
+					ran_at?: string;
+					status: string;
+					user_id: string;
+				};
+				Update: {
+					cell_id?: string;
+					error_message?: string | null;
+					notebook_id?: string;
+					ran_at?: string;
+					status?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'python_notebook_checkpoint_runs_notebook_id_fkey';
+						columns: ['notebook_id'];
+						isOneToOne: false;
+						referencedRelation: 'python_notebooks';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_notebook_checkpoint_runs_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'python_notebook_checkpoint_runs_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'python_notebook_checkpoint_runs_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'python_notebook_checkpoint_runs_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			python_notebooks: {
 				Row: {
 					author_id: string;

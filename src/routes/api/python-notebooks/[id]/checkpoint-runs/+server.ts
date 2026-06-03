@@ -18,18 +18,16 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { upsertCheckpointRunSchema } from '$lib/server/validation/notebook-checkpoints';
 import { validateUuidParam } from '$lib/server/validation/params';
+import type { CheckpointRun, CheckpointRunStatus } from '$lib/types/database-helpers';
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
-/** Row shape returned by the API (mirrors the DB columns 1:1). */
-interface CheckpointRunRow {
-	notebook_id: string;
-	user_id: string;
-	cell_id: string;
-	status: 'passed' | 'failed';
-	error_message: string | null;
-	ran_at: string;
-}
+/**
+ * Narrowed API response shape: `status` is a DB CHECK-constrained TEXT
+ * column that `Tables<>` types as `string` — at this layer we know it's
+ * always 'passed' | 'failed' (the upsert payload is built from Zod).
+ */
+type CheckpointRunResponse = Omit<CheckpointRun, 'status'> & { status: CheckpointRunStatus };
 
 /**
  * POST /api/python-notebooks/[id]/checkpoint-runs
@@ -99,7 +97,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Erreur inattendue lors de la sauvegarde');
 	}
 
-	return json({ run: run as CheckpointRunRow });
+	return json({ run: run as CheckpointRunResponse });
 };
 
 /**
@@ -131,5 +129,5 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Erreur lors de la récupération des checkpoints');
 	}
 
-	return json({ runs: (runs ?? []) as CheckpointRunRow[] });
+	return json({ runs: (runs ?? []) as CheckpointRunResponse[] });
 };

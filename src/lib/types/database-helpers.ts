@@ -91,6 +91,20 @@ export type BuddySkin = Tables<'buddy_skins'>;
 /** Parody evaluation table row type alias */
 export type ParodyEvaluation = Tables<'parody_evaluations'>;
 
+/**
+ * Notebook checkpoint run table row type alias.
+ *
+ * One row per (notebook_id, user_id, cell_id) — the API upserts the latest
+ * run so only the most recent verdict per checkpoint cell × student is kept.
+ * `status` is a TEXT column constrained server-side by Zod
+ * (`checkpointStatusSchema = z.enum(['passed', 'failed'])`) and DB-side by a
+ * CHECK; use the `CheckpointRunStatus` union below to narrow it on read.
+ */
+export type CheckpointRun = Tables<'python_notebook_checkpoint_runs'>;
+
+/** Narrowed status union for `CheckpointRun.status` (DB CHECK-constrained). */
+export type CheckpointRunStatus = 'passed' | 'failed';
+
 // ============================================================================
 // VIP Card Types
 // ============================================================================
