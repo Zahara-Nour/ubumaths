@@ -7,7 +7,11 @@
 	 */
 
 	import { browser } from '$app/environment';
+	import { SvelteSet } from 'svelte/reactivity';
 	import type { CellOutput } from '$lib/types/notebook';
+	import { Button } from '$lib/components/ui/button';
+	import { ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { foldOutput } from '$lib/utils/output-fold';
 	import 'mathlive';
 
 	// Props
@@ -16,6 +20,16 @@
 	}: {
 		outputs?: CellOutput[];
 	} = $props();
+
+	// Set of output indices the user has explicitly expanded. We track
+	// per-index to allow expanding one long block without expanding all of
+	// them, while keeping the default collapsed state stable.
+	const expanded = new SvelteSet<number>();
+
+	function toggleExpanded(idx: number): void {
+		if (expanded.has(idx)) expanded.delete(idx);
+		else expanded.add(idx);
+	}
 
 	// Plotly state
 	let plotlyContainers = $state<Map<number, HTMLDivElement>>(new Map());
@@ -109,6 +123,8 @@
 	<div class="flex flex-col gap-3 border-l-2 border-border pl-3">
 		{#each outputs as output, index (index)}
 			{#if output.output_type === 'stream'}
+				{@const folded = foldOutput(output.text)}
+				{@const isExpanded = expanded.has(index)}
 				<div>
 					<div class="mb-1 text-xs font-medium text-muted-foreground">
 						{output.name}
@@ -117,17 +133,54 @@
 						class="rounded bg-muted p-3 font-mono text-sm whitespace-pre-wrap {output.name ===
 						'stderr'
 							? 'text-destructive'
-							: 'text-foreground'}">{output.text}</pre>
+							: 'text-foreground'}">{isExpanded ? output.text : folded.preview}</pre>
+					{#if folded.isLong}
+						<Button
+							variant="ghost"
+							size="sm"
+							class="mt-1 h-7 gap-1.5 text-xs text-muted-foreground"
+							onclick={() => toggleExpanded(index)}
+							aria-expanded={isExpanded}
+						>
+							{#if isExpanded}
+								<ChevronUp class="size-3.5" />
+								Replier
+							{:else}
+								<ChevronDown class="size-3.5" />
+								Afficher les {folded.hidden} lignes masquées
+							{/if}
+						</Button>
+					{/if}
 				</div>
 			{:else if output.output_type === 'error'}
+				{@const tracebackText = output.traceback.join('\n')}
+				{@const folded = foldOutput(tracebackText)}
+				{@const isExpanded = expanded.has(index)}
 				<div>
 					<div class="mb-1 text-xs font-medium text-destructive">
 						{output.ename}: {output.evalue}
 					</div>
 					<pre
-						class="rounded bg-destructive/10 p-3 font-mono text-xs whitespace-pre-wrap text-destructive">{output.traceback.join(
-							'\n'
-						)}</pre>
+						class="rounded bg-destructive/10 p-3 font-mono text-xs whitespace-pre-wrap text-destructive">{isExpanded
+							? tracebackText
+							: folded.preview}</pre>
+					{#if folded.isLong}
+						<Button
+							variant="ghost"
+							size="sm"
+							class="mt-1 h-7 gap-1.5 text-xs text-destructive"
+							onclick={() => toggleExpanded(index)}
+							aria-expanded={isExpanded}
+						>
+							{#if isExpanded}
+								<ChevronUp class="size-3.5" />
+								Replier
+							{:else}
+								<ChevronDown class="size-3.5" />
+								Afficher les {folded.hidden} lignes masquées
+							{/if}
+						</Button>
+					{/if}
 				</div>
 			{:else if output.output_type === 'display_data' || output.output_type === 'execute_result'}
 				{#if output.data['image/png']}

@@ -23,7 +23,8 @@
 		PlayCircle,
 		Code,
 		FileText,
-		Sparkles
+		Sparkles,
+		ListTree
 	} from 'lucide-svelte';
 	import KeyboardShortcutsHelp from './KeyboardShortcutsHelp.svelte';
 
@@ -39,7 +40,9 @@
 		onRunCurrent = () => {},
 		onRunAll = () => {},
 		onStop = () => {},
-		onResetKernel = () => {}
+		onResetKernel = () => {},
+		onToggleOutline = () => {},
+		outlineOpen = false
 	}: {
 		notebook?: NotebookStore | null;
 		isReadonly?: boolean;
@@ -52,6 +55,8 @@
 		onRunAll?: () => void;
 		onStop?: () => void;
 		onResetKernel?: () => void;
+		onToggleOutline?: () => void;
+		outlineOpen?: boolean;
 	} = $props();
 
 	// Derived state
@@ -65,6 +70,19 @@
 <div class="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
 	<!-- Left side: Execution controls -->
 	<div class="flex items-center gap-2">
+		<!-- Outline toggle (Colab-style sommaire) -->
+		<Button
+			variant={outlineOpen ? 'secondary' : 'ghost'}
+			size="sm"
+			onclick={onToggleOutline}
+			class="gap-1.5"
+			aria-pressed={outlineOpen}
+			aria-label="Afficher le sommaire"
+			title="Sommaire (titres markdown)"
+		>
+			<ListTree class="size-4" />
+		</Button>
+
 		{#if isExecuting}
 			<!-- Stop button -->
 			<Button
