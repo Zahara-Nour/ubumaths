@@ -291,6 +291,18 @@ export class NotebookStore {
 	/** Global execution counter for the notebook */
 	private executionCounter = $state(0);
 
+	/**
+	 * Teacher preview mode — when true, the notebook renders in student view
+	 * (CheckpointCell instead of CheckpointEditor) and `runCheckpoint` skips
+	 * the POST that persists runs. Lets the teacher dry-run their own
+	 * checkpoints without polluting the results dashboard and without
+	 * having to switch to a student account.
+	 *
+	 * Owned by the page component; the store just exposes the flag so
+	 * `runCheckpoint` can branch on it.
+	 */
+	previewMode = $state(false);
+
 	// ===========================================================================
 	// Cloud State
 	// ===========================================================================
@@ -993,7 +1005,13 @@ export class NotebookStore {
 
 			// Persist (best-effort — UI state updates regardless so the student
 			// sees the verdict even if the network blip prevents persistence).
-			if (browser && this.notebook) {
+			//
+			// In `previewMode` (teacher dry-run) we deliberately skip the POST:
+			// the teacher is just sanity-checking their own assertions and
+			// shouldn't pollute the results dashboard with self-runs, and the
+			// RLS policy would reject the upsert anyway (the teacher is not
+			// a class member of their own notebook).
+			if (browser && this.notebook && !this.previewMode) {
 				try {
 					await fetch(`/api/python-notebooks/${this.notebook.id}/checkpoint-runs`, {
 						method: 'POST',

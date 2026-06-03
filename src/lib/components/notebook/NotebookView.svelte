@@ -23,7 +23,8 @@
 	let {
 		notebookId = null as string | null,
 		isReadonly = false,
-		isTeacher = false
+		isTeacher = false,
+		previewMode = false
 	}: {
 		notebookId?: string | null;
 		isReadonly?: boolean;
@@ -35,10 +36,27 @@
 		 * deriving this from `profile.role` after authorization checks.
 		 */
 		isTeacher?: boolean;
+		/**
+		 * Teacher preview mode — flips the rendering to the student view
+		 * (CheckpointCell, working "Vérifier" button) and instructs the
+		 * store to skip the checkpoint-run POST so the dashboard isn't
+		 * polluted by the teacher's dry-runs. No-op when `!isTeacher`.
+		 */
+		previewMode?: boolean;
 	} = $props();
+
+	// Effective teacher-view flag — preview demotes the rendering to the
+	// student path so the inline "Vérifier" buttons appear and run locally.
+	let effectiveIsTeacher = $derived(isTeacher && !previewMode);
 
 	// Create notebook store instance
 	const notebook = new NotebookStore();
+
+	// Mirror the prop onto the store so runCheckpoint sees it without an
+	// extra wiring step (the store also exposes previewMode for tests).
+	$effect(() => {
+		notebook.previewMode = previewMode;
+	});
 
 	// State
 	let isInitialized = $state(false);
@@ -333,7 +351,7 @@
 		<NotebookToolbar
 			{notebook}
 			{isReadonly}
-			{isTeacher}
+			isTeacher={effectiveIsTeacher}
 			onSave={handleSave}
 			onAddCodeCell={handleAddCodeCell}
 			onAddMarkdownCell={handleAddMarkdownCell}
@@ -343,6 +361,19 @@
 			onStop={handleStop}
 			onResetKernel={handleResetKernel}
 		/>
+
+		<!-- Preview mode banner — visible only when the teacher has clicked
+		     "Vue élève". Makes the dry-run state unmissable so they don't
+		     wonder why their checkpoints don't appear in the dashboard. -->
+		{#if previewMode}
+			<div class="border-b border-amber-500/40 bg-amber-50/50 px-4 py-2 dark:bg-amber-950/20">
+				<p class="text-center text-xs text-amber-800 dark:text-amber-200">
+					<strong>Vue élève (dry-run)</strong>
+					— les vérifications de checkpoint sont exécutées localement et ne sont pas enregistrées dans
+					le tableau des résultats.
+				</p>
+			</div>
+		{/if}
 
 		<!-- Readonly mode banner -->
 		{#if isReadonly}
@@ -377,7 +408,7 @@
 							bind:cell={notebook.cells[index]}
 							isActive={notebook.activeCell === notebook.cells[index].id}
 							{isReadonly}
-							{isTeacher}
+							isTeacher={effectiveIsTeacher}
 							isFirst={index === 0}
 							isLast={index === notebook.cells.length - 1}
 							{notebook}
