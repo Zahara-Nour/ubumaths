@@ -50,8 +50,17 @@ export const LOADING_STAGES: readonly LoadingStage[] = [
 export const CONTEXT_CONFIG = {
 	/** Maximum number of concurrent contexts */
 	MAX_CONTEXTS: 10,
-	/** Context idle timeout in milliseconds (5 minutes) */
-	IDLE_TIMEOUT_MS: 5 * 60 * 1000,
+	/**
+	 * Context idle timeout in milliseconds.
+	 *
+	 * Bumped from 5 to 30 minutes after teacher-side feedback: at 5 min a
+	 * notebook author who paused to edit a checkpoint or read documentation
+	 * would come back to "Contexte d'exécution introuvable" because the
+	 * persistent namespace had been swept. 30 min covers typical "stepping
+	 * away" patterns (coffee, meeting, reading) without leaking namespaces
+	 * across full work sessions.
+	 */
+	IDLE_TIMEOUT_MS: 30 * 60 * 1000,
 	/** Default context ID for playground mode */
 	DEFAULT_PLAYGROUND_CONTEXT: '__playground__',
 	/** Prefix for notebook context IDs */

@@ -998,6 +998,26 @@ export class NotebookStore {
 				this._executor.getContextId()
 			);
 
+			// Recover from the "context not found" path: the worker's idle
+			// sweeper can destroy the persistent namespace after
+			// `CONTEXT_CONFIG.IDLE_TIMEOUT_MS` of inactivity, leaving the
+			// next checkpoint validation orphaned. We re-issue create-context
+			// (idempotent) so the next interaction works, and surface a
+			// friendly message instead of the raw worker error.
+			const isContextLost =
+				!result.valid && (result.error ?? '').includes("Contexte d'exécution introuvable");
+			if (isContextLost) {
+				this._executor.ensureContext();
+				const recoveryMsg =
+					'Le noyau Python a été réinitialisé après une période d’inactivité. ' +
+					'Ré-exécute tes cellules de code pour restaurer tes variables, puis revérifie.';
+				this.checkpointStatus = { ...this.checkpointStatus, [cellId]: 'failed' };
+				this.checkpointError = { ...this.checkpointError, [cellId]: recoveryMsg };
+				// Don't POST a failed run that was caused by infrastructure,
+				// not by the student's code — would skew the dashboard.
+				return;
+			}
+
 			const status: CheckpointStatus = result.valid ? 'passed' : 'failed';
 			const errorMessage = result.valid
 				? null
