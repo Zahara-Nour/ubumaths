@@ -8,15 +8,15 @@ Feature : cellules de validation (`checkpoint`) dans les notebooks Python, avec 
 
 ## Statut global
 
-| Phase | Description                                        | Statut     | Commit      |
-| ----- | -------------------------------------------------- | ---------- | ----------- |
-| 1     | Migration DB + types TS + Zod schemas              | ✅ Livrée  | `4c15d7c02` |
-| 2     | Worker : nouveau mode `assert` + `contextId`       | ✅ Livrée  | `c40fb96bd` |
-| 3     | Endpoints POST + GET checkpoint-runs               | ✅ Livrée  | `cf009a7b7` |
-| 4     | Composant `CheckpointCell.svelte` (vue élève)      | ✅ Livrée  | `a53d2459a` |
-| 5     | UI teacher : éditeur de checkpoint dans notebook   | ✅ Livrée  | `a4e3a0b4c` |
-| 6     | Dashboard prof `/python-notebook/[id]/results`     | ✅ Livrée  | _pending_   |
-| 7     | Doc + autofixer + check:incremental + commit final | ⏳ À faire | —           |
+| Phase | Description                                        | Statut    | Commit      |
+| ----- | -------------------------------------------------- | --------- | ----------- |
+| 1     | Migration DB + types TS + Zod schemas              | ✅ Livrée | `4c15d7c02` |
+| 2     | Worker : nouveau mode `assert` + `contextId`       | ✅ Livrée | `c40fb96bd` |
+| 3     | Endpoints POST + GET checkpoint-runs               | ✅ Livrée | `cf009a7b7` |
+| 4     | Composant `CheckpointCell.svelte` (vue élève)      | ✅ Livrée | `a53d2459a` |
+| 5     | UI teacher : éditeur de checkpoint dans notebook   | ✅ Livrée | `a4e3a0b4c` |
+| 6     | Dashboard prof `/python-notebook/[id]/results`     | ✅ Livrée | `ebb70c78a` |
+| 7     | Doc + autofixer + check:incremental + commit final | ✅ Livrée | _pending_   |
 
 ---
 
@@ -308,3 +308,81 @@ Bloquant #3 (`isTeacher` spoof via DevTools → autosave 403) reporté à Phase 
 - Sort multi-colonnes par checkpoint
 - Drill-down par élève (cliquer sur une cellule → voir l'erreur exacte)
 - Realtime sur les checkpoint runs
+
+---
+
+## Phase 7 — Quality checks finaux ✅
+
+**Vérifications**
+
+- `npx eslint <17 fichiers modifiés>` → **0 errors**, 7 warnings (préexistants, sur l'utilisation de `Map`/`Set`/`Date`/`URL` natifs — suggestions Svelte qui touchent des lignes que je n'ai pas modifiées)
+- `pnpm check:incremental` → **9 errors / 46 warnings** = baseline préexistant inchangé (cf. mémoire `project_preexisting-svelte-check-errors.md`). Aucune nouvelle erreur introduite par la feature.
+- `mcp__svelte__svelte-autofixer` exécuté sur les 5 fichiers `.svelte` créés ou modifiés (CheckpointCell, CheckpointEditor, NotebookCell, NotebookToolbar, NotebookView, results/+page.svelte) → 0 issues, suggestions cosmétiques uniquement (patterns $effect d'init pragmatiques)
+
+**Tests de régression** (3 lancements ciblés) :
+
+- **Server tests** : 55/55 verts (Zod schemas notebook-checkpoints 15 + worker schemas 14 + endpoints POST/GET 17 + page server 9)
+- **Client tests checkpoints** : 31/31 verts (CheckpointCell 15 + checkpoint-validation Pyodide réel 16)
+- **Client tests régression** : 57/57 verts (exercise-validation-real existants — 0 régression sur les 5 stratégies d'exercice originales)
+
+**Total : 143 tests verts, 0 régression.**
+
+---
+
+## 📋 Récap final — Notebook Checkpoints V1 livré
+
+**7 commits :**
+
+| Phase | Commit      | Description                                                  |
+| ----- | ----------- | ------------------------------------------------------------ |
+| 1     | `4c15d7c02` | DB migration + types + Zod schemas                           |
+| 2     | `c40fb96bd` | Worker assert mode + persistent contextId                    |
+| 3     | `cf009a7b7` | Endpoints POST + GET checkpoint-runs                         |
+| 4     | `a53d2459a` | CheckpointCell + NotebookExecutor lifecycle (create-context) |
+| 5     | `a4e3a0b4c` | CheckpointEditor (teacher)                                   |
+| 6     | `ebb70c78a` | Dashboard prof `/python-notebook/[id]/results`               |
+| 7     | _pending_   | Doc finale + clean-up                                        |
+
+**Steps utilisateur (manuel, après merge) :**
+
+1. `pnpm db:migrate` — applique la migration `20260603103958_create_notebook_checkpoint_runs.sql`
+2. `pnpm db:types` — régénère `src/lib/types/database.ts` avec la nouvelle table
+3. Ajouter dans `src/lib/types/database-helpers.ts` :
+   ```ts
+   export type CheckpointRun = Tables<'python_notebook_checkpoint_runs'>;
+   ```
+4. Remplacer le `CheckpointRunRow` inline dans `src/routes/api/python-notebooks/[id]/checkpoint-runs/+server.ts` par le nouveau alias
+
+**Comment tester en bout-en-bout :**
+
+1. Connecté en tant que prof :
+   - Aller sur un notebook existant ou en créer un
+   - Cliquer `+ Ajouter` → `Checkpoint (vérification)`
+   - Éditer le checkpoint (titre, mode, config) — preview live en bas
+   - Sauvegarder le notebook (autosave 2s)
+   - Cliquer `Résultats` dans le header pour voir le dashboard
+2. Connecté en tant qu'élève sur un notebook assigné :
+   - Remplir une cellule code (ex. `x = 6`)
+   - Cliquer `Vérifier` sur la cellule checkpoint suivante
+   - Badge ✅/❌ apparaît + message d'erreur en cas d'échec
+3. Re-bascule prof → `Résultats` : voir le statut élève dans la table
+
+**Hors-scope V1 (planifié pour V1.1+ si feedback prof) :**
+
+- `output` / `reference_solution` / `ast_requirements` en mode checkpoint
+- Locked zones dans les notebooks
+- Mastery sticky (V1 = juste le dernier run)
+- Export CSV
+- Drill-down par élève (vue détaillée des erreurs)
+- Realtime sur les checkpoint runs
+- Confirm dialog avant reset de mode (anti-clic accidentel)
+- a11y pass complet (Labels `for=`)
+- Tests unitaires dédiés `CheckpointEditor` (3 modes × JSON drafts)
+- Test unitaire `runCheckpoint` côté store (mock fetch)
+- Test unitaire `checkpointConfigToValidationConfig` (helper privé du store)
+- Tooltip "Chargement Python..." sur bouton Vérifier disabled
+
+**Documents produits dans cette session :**
+
+- `docs/wip/notebook-checkpoints-progress.md` (ce document)
+- Migration : `supabase/migrations/20260603103958_create_notebook_checkpoint_runs.sql`
