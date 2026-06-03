@@ -1,565 +1,295 @@
-# Python Playground - Store
+# Python Playground — Store
 
-Complete documentation for `pythonPlayground.svelte.ts`, the reactive state management store.
+Documentation de `src/lib/stores/pythonPlayground.svelte.ts` (≈ 1 000 lignes), le store réactif du playground Python.
 
-## Overview
+> Pour le notebook, voir `src/lib/stores/notebookStore.svelte.ts` (mêmes patterns, contexte persistant). Pour le debugger, voir `src/lib/stores/pythonDebug.svelte.ts`. Ces 3 stores partagent la même brique d'exécution : voir [`worker.md § Executor pattern`](./worker.md#executor-pattern-côté-main-thread).
 
-The store is implemented as a **Svelte 5 class** using runes (`$state`, `$derived`) and exported as a **singleton**. It manages:
+---
 
-- Pyodide Web Worker lifecycle
-- Code execution state
-- Output capture (stdout, stderr, plots, LaTeX)
-- localStorage persistence
-- URL sharing
-- Autocompletion requests
+## Vue d'ensemble
 
-## Location
-
-```
-src/lib/stores/pythonPlayground.svelte.ts
-```
-
-## Import
+`PythonPlaygroundStore` est une **classe Svelte 5** exposée en singleton :
 
 ```typescript
 import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 ```
 
-## Type Definitions
+Le store **délègue toute l'exécution** à un `PlaygroundExecutor` privé (`this._executor`) et ajoute la couche **playground-specific** :
 
-### PlaygroundState
+- Persistance localStorage (code + paramètres éditeur)
+- Sync paramètres en DB (`profiles.python_settings`) pour les utilisateurs connectés
+- Cloud files (`python_files`) : load, save, update, delete, prompt migration localStorage → cloud
+- URL sharing (LZ-String)
+- Thèmes éditeur (12 thèmes)
+- Font size (10-24)
+
+L'état réactif (`state`, `stdout`, `plotData`, …) est **forwardé** depuis l'executor via des `get …()`. Aucun `$state` redéclaré dans le store pour les champs d'exécution.
+
+---
+
+## Hiérarchie
+
+```
+pythonStore (PythonPlaygroundStore, singleton)
+   │
+   ├─ this._executor: PlaygroundExecutor    ← gère le Web Worker
+   │     ├─ state, stdout, stderr, plotData, …  (réactif Svelte 5)
+   │     └─ execute(), cancel(), requestCompletion(), …
+   │
+   └─ Couche playground (ce store)
+         ├─ code (= éditeur)
+         ├─ fontSize, editorTheme, showPedagogicErrors
+         ├─ currentFile, isSaving, cloudError                  (cloud)
+         ├─ localStorage : load/save debouncé 500 ms
+         ├─ DB sync : PUT /api/profile/python-settings (1 s debounce)
+         └─ generateShareUrl() / loadFromUrl() (LZ-String)
+```
+
+---
+
+## État réactif
+
+### Forwardé depuis l'executor (getters)
+
+| Propriété           | Type                | Source                       |
+| ------------------- | ------------------- | ---------------------------- |
+| `state`             | `ExecutorState`     | `_executor.state`            |
+| `stdout`            | `string`            | `_executor.stdout`           |
+| `stderr`            | `string`            | `_executor.stderr`           |
+| `plotData`          | `string \| null`    | base64 PNG matplotlib        |
+| `plotlyData`        | `string \| null`    | JSON spec Plotly             |
+| `latexOutput`       | `string \| null`    | LaTeX SymPy                  |
+| `loadingProgress`   | `number` (0-100)    |                              |
+| `loadingStage`      | `string`            |                              |
+| `executionTime`     | `number` (ms)       |                              |
+| `errorLine`         | `number \| null`    |                              |
+| `packagesLoading`   | `string[]`          | Lazy-load en cours           |
+| `loadedPackages`    | `string[]`          | Packages chargés (cumulatif) |
+| `isReady`           | `boolean` (derived) |                              |
+| `isExecuting`       | `boolean` (derived) |                              |
+| `isLoading`         | `boolean` (derived) | Pyodide ou packages          |
+| `hasError`          | `boolean` (derived) |                              |
+| `hasOutput`         | `boolean` (derived) |                              |
+| `isLoadingPackages` | `boolean` (derived) |                              |
+
+### Local au store (Svelte 5 runes)
+
+| Propriété             | Type                 | Défaut         | Description                               |
+| --------------------- | -------------------- | -------------- | ----------------------------------------- |
+| `code`                | `string`             | `DEFAULT_CODE` | Code Python (exemple sin/Matplotlib)      |
+| `showPedagogicErrors` | `boolean`            | `true`         | Affiche les messages d'erreur en français |
+| `fontSize`            | `number`             | `14`           | Borné `[10, 24]`                          |
+| `editorTheme`         | `EditorTheme`        | `'default'`    | Voir `EDITOR_THEMES` (12 entrées)         |
+| `currentFile`         | `PythonFile \| null` | `null`         | Fichier cloud actuellement chargé         |
+| `isSaving`            | `boolean`            | `false`        | Sauvegarde cloud en cours                 |
+| `isLoadingFiles`      | `boolean`            | `false`        | Chargement liste cloud                    |
+| `cloudError`          | `string \| null`     | `null`         | Erreur cloud à afficher                   |
+
+### Derived locaux
 
 ```typescript
-type PlaygroundState =
-	| 'initial' // Before Pyodide initialization
-	| 'loading-pyodide' // Downloading Pyodide WASM
-	| 'loading-packages' // Loading NumPy, Matplotlib, SymPy
-	| 'ready' // Ready for execution
-	| 'executing' // Code is running
-	| 'error'; // Fatal error (worker crash)
+isModified = code !== _lastSavedCode;
+hasCloudFile = currentFile !== null;
+currentFileName = currentFile?.title ?? 'Sans titre';
+isModifiedFromCloud = currentFile !== null && code !== currentFile.code;
 ```
 
-### SerializedPlaygroundState
+---
+
+## API publique
+
+### Cycle de vie
 
 ```typescript
-interface SerializedPlaygroundState {
-	code: string;
-	showPedagogicErrors: boolean;
-	fontSize?: number;
-}
+onMount(() => {
+	pythonStore.initPyodide(); // Crée le worker + envoie 'init'
+	pythonStore.initWithProfile(profile); // Charge les settings DB si connecté
+});
+
+onDestroy(() => {
+	pythonStore.destroy(); // Termine worker + clear timeouts
+});
 ```
 
-## State Properties
+### Exécution
 
-### Reactive State (`$state`)
+| Méthode                                | Action                                                         |
+| -------------------------------------- | -------------------------------------------------------------- |
+| `execute()`                            | Exécute `this.code` via l'executor                             |
+| `cancel()`                             | Annule l'exécution courante                                    |
+| `clearOutput()`                        | Vide stdout/stderr/plot/latex/plotly                           |
+| `requestCompletion(code, cursor)`      | Auto-complétion (`Promise<CompletionItem[]>`, debounce 150 ms) |
+| `startDebugSession(code, breakpoints)` | Démarre session debug                                          |
+| `debugStep(action)`                    | Step Into / Over / Out / Continue                              |
+| `stopDebugSession()`                   | Stoppe session debug                                           |
 
-| Property              | Type              | Default         | Description                        |
-| --------------------- | ----------------- | --------------- | ---------------------------------- |
-| `state`               | `PlaygroundState` | `'initial'`     | Current execution state            |
-| `code`                | `string`          | Default example | Python code in editor              |
-| `stdout`              | `string`          | `''`            | Standard output                    |
-| `stderr`              | `string`          | `''`            | Standard error                     |
-| `plotData`            | `string \| null`  | `null`          | Matplotlib base64 PNG data URL     |
-| `plotlyData`          | `string \| null`  | `null`          | Plotly JSON specification          |
-| `latexOutput`         | `string \| null`  | `null`          | SymPy LaTeX output                 |
-| `loadingProgress`     | `number`          | `0`             | Pyodide loading progress (0-100)   |
-| `loadingStage`        | `string`          | `''`            | Current Pyodide loading stage text |
-| `packagesLoading`     | `string[]`        | `[]`            | Packages currently being loaded    |
-| `loadedPackages`      | `string[]`        | `[]`            | Packages loaded in this session    |
-| `showPedagogicErrors` | `boolean`         | `true`          | Show French error explanations     |
-| `executionTime`       | `number`          | `0`             | Last execution duration (ms)       |
-| `errorLine`           | `number \| null`  | `null`          | Error line for highlighting        |
-| `fontSize`            | `number`          | `14`            | Editor font size (10-24)           |
+### Édition
 
-### Derived State (`$derived`)
+| Méthode                  | Action                                                           |
+| ------------------------ | ---------------------------------------------------------------- |
+| `setCode(code)`          | Met à jour le code + déclenche `saveToStorage` (debounce 500 ms) |
+| `resetCode()`            | Réinitialise au `DEFAULT_CODE`                                   |
+| `saveCode()` → `boolean` | Sauvegarde **immédiate** en localStorage (bypass debounce)       |
 
-| Property            | Type      | Expression                                                                                                           |
-| ------------------- | --------- | -------------------------------------------------------------------------------------------------------------------- |
-| `isReady`           | `boolean` | `this.state === 'ready'`                                                                                             |
-| `isExecuting`       | `boolean` | `this.state === 'executing'`                                                                                         |
-| `isLoading`         | `boolean` | `this.state === 'loading-pyodide' \|\| this.state === 'loading-packages'`                                            |
-| `isLoadingPackages` | `boolean` | `this.packagesLoading.length > 0`                                                                                    |
-| `hasError`          | `boolean` | `this.state === 'error'`                                                                                             |
-| `hasOutput`         | `boolean` | `stdout.length > 0 \|\| stderr.length > 0 \|\| plotData !== null \|\| plotlyData !== null \|\| latexOutput !== null` |
-| `isModified`        | `boolean` | `this.code !== this._lastSavedCode`                                                                                  |
+### Paramètres éditeur
 
-## Public Methods
+| Méthode                   | Action                                      |
+| ------------------------- | ------------------------------------------- |
+| `increaseFontSize()`      | +2 px (max 24)                              |
+| `decreaseFontSize()`      | −2 px (min 10)                              |
+| `setTheme(theme)`         | Change le thème + persist localStorage + DB |
+| `togglePedagogicErrors()` | Toggle messages français                    |
 
-### `initPyodide(): void`
+Tous ces setters déclenchent `saveToStorage()` qui debounce de 500 ms puis :
 
-Initialize the Web Worker and load Pyodide.
+1. Sérialise `{ code, showPedagogicErrors, fontSize, editorTheme }` en localStorage (clé `ubumaths-python-playground`).
+2. Si `userId` connu (utilisateur connecté), debounce 1 s puis `PUT /api/profile/python-settings` avec `{ editorTheme, fontSize, showPedagogicErrors }`.
+
+### Cloud files
+
+| Méthode                                         | Action                                                                    |
+| ----------------------------------------------- | ------------------------------------------------------------------------- |
+| `loadCloudFile(file: PythonFile)`               | Charge dans l'éditeur, `_lastSavedCode = file.code`                       |
+| `loadExample(code: string)`                     | Charge un exemple statique (lib), comme un brouillon (currentFile = null) |
+| `saveToCloud(title, description?, isPublic?)`   | `POST /api/python-files` si `currentFile === null`, sinon `PUT`           |
+| `updateCloudFile(updates)`                      | `PUT /api/python-files/[id]` sur le fichier courant                       |
+| `deleteCloudFile(id)`                           | `DELETE /api/python-files/[id]` + reset `currentFile` si match            |
+| `newFile()`                                     | `currentFile = null`, code → DEFAULT_CODE                                 |
+| `hasLocalCodeToMigrate()` → `boolean`           | Détecte du code localStorage ≠ `DEFAULT_CODE` (déclencheur du prompt)     |
+| `getLocalCodeForMigration()` → `string \| null` | Renvoie le code localStorage à migrer                                     |
+| `clearLocalStorageAfterMigration()`             | Reset localStorage au `DEFAULT_CODE` (anti-replay du prompt)              |
+
+### URL sharing
+
+| Méthode                             | Action                                                                      |
+| ----------------------------------- | --------------------------------------------------------------------------- |
+| `generateShareUrl()` → `string`     | LZ-String + `?code=…`. **Throw** si compressé > 2000 chars                  |
+| `loadFromUrl(url: URL)` → `boolean` | Décompresse et remplit `code` ; `false` si param absent ou decompression KO |
+
+### Initialisation profil
 
 ```typescript
-pythonStore.initPyodide();
+initWithProfile(profile: Profile | null): void
 ```
 
-**Behavior**:
+- `profile === null` → mode anonyme, garde les settings localStorage chargés au constructor.
+- `profile` présent → `userId = profile.id`, lit `profile.python_settings` (`{ editorTheme?, fontSize?, showPedagogicErrors? }`), valide (theme existant + fontSize ∈ `[10, 24]`) et applique.
 
-1. Check Web Worker support
-2. Create worker from `../workers/pyodide.worker.ts`
-3. Set up message handler with Zod validation
-4. Send `{ type: 'init' }` to worker
+Appelé par `PythonPlayground.svelte` en réception des props `user` / `profile` chargés par `+page.server.ts`.
 
-**Called from**: `PythonPlayground.svelte` on mount
+---
 
-### `execute(): void`
+## Persistance
 
-Execute the current Python code.
+### localStorage
+
+```
+Clé : 'ubumaths-python-playground'
+Valeur : { code, showPedagogicErrors, fontSize?, editorTheme? }
+```
+
+Loadé au constructor (synchrone, fallback silencieux si JSON invalide). Sauvegardé via `saveToStorage()` (debounce 500 ms).
+
+### DB sync (profil)
+
+```
+Endpoint : PUT /api/profile/python-settings
+Body : { editorTheme, fontSize, showPedagogicErrors }
+Trigger : tout setter de paramètre, si userId connu
+Debounce : 1 000 ms (plus long que localStorage pour réduire les calls)
+```
+
+Cible la colonne `profiles.python_settings` (JSONB, migration `20251205160000_add_python_settings_to_profiles.sql`).
+
+---
+
+## Constantes exportées
 
 ```typescript
-pythonStore.execute();
+export const EDITOR_THEMES: { value: EditorTheme; label: string; dark: boolean }[]
+//  12 entrées : default, oneDark, dracula, github, githubDark, nord,
+//  solarizedLight, solarizedDark, material, materialDark, vscode, vscodeDark
+
+export type EditorTheme  = 'default' | 'oneDark' | … | 'vscodeDark';
+export type PlaygroundState = ExecutorState;  // alias rétro-compat
+export type PythonFile = Database['public']['Tables']['python_files']['Row'];
 ```
 
-**Behavior**:
-
-1. Generate unique execution ID
-2. Set state to `'executing'`
-3. Clear previous output
-4. Set 35-second timeout (30s + 5s buffer)
-5. Send `{ type: 'execute', code, id }` to worker
-
-**Prerequisites**: `isReady === true`
-
-### `cancel(): void`
-
-Cancel the current execution.
-
-```typescript
-pythonStore.cancel();
-```
-
-**Behavior**:
-
-1. Send `{ type: 'cancel', id }` to worker
-2. Set state to `'ready'`
-3. Clear timeout
-
-### `clearOutput(): void`
-
-Clear all output (stdout, stderr, plot, LaTeX).
-
-```typescript
-pythonStore.clearOutput();
-```
-
-### `resetCode(): void`
-
-Reset code to the default example.
-
-```typescript
-pythonStore.resetCode();
-```
-
-**Default code**:
-
-```python
-# Python Playground - UbuMaths
-# Exécute avec Ctrl+Entrée
-
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Exemple : tracer une fonction
-x = np.linspace(-2 * np.pi, 2 * np.pi, 200)
-y = np.sin(x)
-
-plt.figure(figsize=(8, 4))
-plt.plot(x, y, 'b-', linewidth=2)
-plt.title('Fonction sinus')
-plt.xlabel('x')
-plt.ylabel('sin(x)')
-plt.grid(True)
-plt.show()
-
-print("Valeur de sin(π/2) :", np.sin(np.pi/2))
-```
-
-### `setCode(code: string): void`
-
-Set the Python code and trigger auto-save.
-
-```typescript
-pythonStore.setCode('print("Hello")');
-```
-
-### `saveCode(): boolean`
-
-Immediately save code to localStorage (bypasses debounce).
-
-```typescript
-const success = pythonStore.saveCode();
-```
-
-**Returns**: `true` if saved successfully
-
-### `togglePedagogicErrors(): void`
-
-Toggle French error message display.
-
-```typescript
-pythonStore.togglePedagogicErrors();
-```
-
-### `increaseFontSize(): void`
-
-Increase editor font size by 2px (max 24px).
-
-```typescript
-pythonStore.increaseFontSize();
-```
-
-### `decreaseFontSize(): void`
-
-Decrease editor font size by 2px (min 10px).
-
-```typescript
-pythonStore.decreaseFontSize();
-```
-
-### `generateShareUrl(): string`
-
-Generate a shareable URL with compressed code.
-
-```typescript
-const url = pythonStore.generateShareUrl();
-// https://ubumaths.fr/python?code=NobwRAxg9gJg...
-```
-
-**Throws**: Error if compressed code > 2000 characters
-
-### `loadFromUrl(url: URL): boolean`
-
-Load code from URL query parameter.
-
-```typescript
-const loaded = pythonStore.loadFromUrl(new URL(window.location.href));
-```
-
-**Returns**: `true` if code was loaded successfully
-
-### `requestCompletion(code: string, cursor: number): Promise<CompletionItem[]>`
-
-Request Python autocompletion from Pyodide.
-
-```typescript
-const completions = await pythonStore.requestCompletion(code, 42);
-// [{ label: 'print', type: 'function' }, ...]
-```
-
-**Features**:
-
-- 150ms debounce
-- 500ms timeout
-- Cancels previous pending requests
-
-### `destroy(): void`
-
-Clean up resources (called on component unmount).
-
-```typescript
-pythonStore.destroy();
-```
-
-**Behavior**:
-
-1. Terminate Web Worker
-2. Clear all timeouts
-3. Reject pending autocomplete requests
-4. Reset state to `'initial'`
-
-## Private Implementation
-
-### Worker Management
-
-```typescript
-private worker: Worker | null = null;
-private currentExecutionId: string | null = null;
-private executionTimeout: ReturnType<typeof setTimeout> | null = null;
-```
-
-### Message Handling
-
-```typescript
-private handleWorkerMessage(message: FromWorkerMessage): void {
-  switch (message.type) {
-    case 'loading-progress':
-      this.loadingProgress = message.percent;
-      this.loadingStage = message.stage;
-      break;
-
-    case 'packages-loading':
-      this.packagesLoading = message.packages;
-      break;
-
-    case 'packages-loaded':
-      this.loadedPackages = [...new Set([...this.loadedPackages, ...message.packages])];
-      this.packagesLoading = [];
-      break;
-
-    case 'pyodide-ready':
-      this.state = 'ready';
-      break;
-
-    case 'stdout':
-      if (message.id === this.currentExecutionId) {
-        this.stdout += message.data;
-      }
-      break;
-
-    case 'stderr':
-      if (message.id === this.currentExecutionId) {
-        this.stderr += message.data;
-      }
-      break;
-
-    case 'plot':
-      if (message.id === this.currentExecutionId) {
-        this.plotData = `data:image/png;base64,${message.imageData}`;
-      }
-      break;
-
-    case 'plotly':
-      if (message.id === this.currentExecutionId) {
-        this.plotlyData = message.jsonSpec;
-      }
-      break;
-
-    case 'latex':
-      if (message.id === this.currentExecutionId) {
-        this.latexOutput = message.latex;
-      }
-      break;
-
-    case 'error':
-      if (message.id === this.currentExecutionId || message.id === '') {
-        this.stderr = message.message;
-        this.errorLine = message.line ?? null;
-        this.state = message.id === '' ? 'error' : 'ready';
-      }
-      break;
-
-    case 'complete':
-      if (message.id === this.currentExecutionId) {
-        this.executionTime = message.duration;
-        this.state = 'ready';
-      }
-      break;
-
-    case 'timeout':
-      if (message.id === this.currentExecutionId) {
-        this.stderr = "Délai d'exécution dépassé (30 secondes)";
-        this.state = 'ready';
-      }
-      break;
-
-    case 'autocomplete-result':
-      this.handleAutocompleteResult(message.id, message.completions);
-      break;
-  }
-}
-```
-
-### localStorage Persistence
+Constantes internes :
 
 ```typescript
 const STORAGE_KEY = 'ubumaths-python-playground';
-const STORAGE_SAVE_DEBOUNCE_MS = 500;
-
-private loadFromStorage(): void {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  const parsed = JSON.parse(stored);
-  this.code = parsed.code;
-  this.showPedagogicErrors = parsed.showPedagogicErrors;
-  this.fontSize = parsed.fontSize;
-}
-
-private saveToStorage(): void {
-  // Debounced by 500ms
-  const serialized = {
-    code: this.code,
-    showPedagogicErrors: this.showPedagogicErrors,
-    fontSize: this.fontSize
-  };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
-}
-```
-
-### Autocompletion Management
-
-```typescript
-private pendingCompletions = new Map<string, {
-  resolve: (completions: CompletionItem[]) => void;
-  reject: (error: Error) => void;
-  timeout: ReturnType<typeof setTimeout>;
-}>();
-
-private autocompleteDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
-private lastAutocompleteRequestId: string | null = null;
-
-const AUTOCOMPLETE_TIMEOUT_MS = 500;
-const AUTOCOMPLETE_DEBOUNCE_MS = 150;
-```
-
-## Zod Validation
-
-All worker messages are validated with Zod:
-
-```typescript
-const fromWorkerMessageSchema = z.discriminatedUnion('type', [
-	z.object({
-		type: z.literal('loading-progress'),
-		percent: z.number().min(0).max(100),
-		stage: z.string()
-	}),
-	z.object({ type: z.literal('packages-loading'), packages: z.array(z.string()) }),
-	z.object({ type: z.literal('packages-loaded'), packages: z.array(z.string()) }),
-	z.object({ type: z.literal('pyodide-ready') }),
-	z.object({ type: z.literal('stdout'), data: z.string(), id: z.string() }),
-	z.object({ type: z.literal('stderr'), data: z.string(), id: z.string() }),
-	z.object({ type: z.literal('plot'), imageData: z.string(), id: z.string() }),
-	z.object({ type: z.literal('plotly'), jsonSpec: z.string(), id: z.string() }),
-	z.object({
-		type: z.literal('error'),
-		message: z.string(),
-		line: z.number().int().positive().optional(),
-		id: z.string()
-	}),
-	z.object({
-		type: z.literal('complete'),
-		id: z.string(),
-		duration: z.number().int().nonnegative()
-	}),
-	z.object({ type: z.literal('timeout'), id: z.string() }),
-	z.object({ type: z.literal('latex'), latex: z.string(), id: z.string() }),
-	z.object({
-		type: z.literal('autocomplete-result'),
-		completions: z.array(completionItemSchema),
-		id: z.string()
-	})
-]);
-```
-
-## Constants
-
-```typescript
-const STORAGE_KEY = 'ubumaths-python-playground';
-const STORAGE_SAVE_DEBOUNCE_MS = 500;
-const TIMEOUT_BUFFER_MS = 5000;
-const AUTOCOMPLETE_TIMEOUT_MS = 500;
-const AUTOCOMPLETE_DEBOUNCE_MS = 150;
+const STORAGE_SAVE_DEBOUNCE_MS = 500; // localStorage
+// (DB sync debounce inline : 1000)
 const MIN_FONT_SIZE = 10;
 const MAX_FONT_SIZE = 24;
 const DEFAULT_FONT_SIZE = 14;
+const DEFAULT_THEME: EditorTheme = 'default';
 ```
 
-## Usage Examples
+---
 
-### Basic Execution
+## Exemple d'intégration minimale
 
 ```svelte
-<script>
+<script lang="ts">
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 	import { onMount, onDestroy } from 'svelte';
 
-	onMount(() => pythonStore.initPyodide());
-	onDestroy(() => pythonStore.destroy());
+	let { user, profile } = $props();
 
-	function run() {
-		pythonStore.execute();
-	}
+	onMount(() => {
+		pythonStore.initPyodide();
+		pythonStore.initWithProfile(profile);
+	});
+
+	onDestroy(() => pythonStore.destroy());
 </script>
 
-<textarea bind:value={pythonStore.code}></textarea>
-<button onclick={run} disabled={!pythonStore.isReady}>Run</button>
+<textarea bind:value={pythonStore.code} disabled={!pythonStore.isReady} />
+
+<button onclick={() => pythonStore.execute()} disabled={!pythonStore.isReady}> Exécuter </button>
+
+{#if pythonStore.isLoading}
+	<p>{pythonStore.loadingStage} ({pythonStore.loadingProgress}%)</p>
+{/if}
 
 {#if pythonStore.stdout}
 	<pre>{pythonStore.stdout}</pre>
 {/if}
 
 {#if pythonStore.plotData}
-	<img src={pythonStore.plotData} alt="Plot" />
+	<img src={pythonStore.plotData} alt="Graphique" />
 {/if}
 
-{#if pythonStore.plotlyData}
-	<div id="plotly-container"></div>
-{/if}
-```
-
-### Matplotlib Example
-
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-
-x = np.linspace(0, 10, 100)
-y = np.sin(x)
-
-plt.figure(figsize=(8, 4))
-plt.plot(x, y, 'b-', linewidth=2)
-plt.title('Sine wave')
-plt.xlabel('x')
-plt.ylabel('sin(x)')
-plt.grid(True)
-plt.show()
-```
-
-### Plotly Example
-
-```python
-import plotly.graph_objects as go
-import numpy as np
-
-x = np.linspace(0, 10, 100)
-y = np.sin(x)
-
-fig = go.Figure(data=go.Scatter(x=x, y=y, mode='lines'))
-fig.update_layout(title='Sine Wave', xaxis_title='x', yaxis_title='sin(x)')
-
-# Assign to global variable for extraction
-_ubumaths_plotly_fig = fig
-```
-
-### Loading State
-
-```svelte
-{#if pythonStore.isLoading}
-	<div class="loading">
-		<p>{pythonStore.loadingStage}</p>
-		<progress value={pythonStore.loadingProgress} max="100" />
-	</div>
+{#if pythonStore.latexOutput}
+	<math-span>{pythonStore.latexOutput}</math-span>
 {/if}
 ```
 
-### URL Sharing
+L'intégration complète (toolbar, splitter, dialogs cloud, debug panel, …) est dans `PythonPlayground.svelte` — voir [`components.md`](./components.md).
 
-```svelte
-<script>
-	async function share() {
-		try {
-			const url = pythonStore.generateShareUrl();
-			await navigator.clipboard.writeText(url);
-			alert('URL copied!');
-		} catch (e) {
-			alert(e.message);
-		}
-	}
-</script>
+---
 
-<button onclick={share}>Share Code</button>
-```
-
-## Testing
+## Tests
 
 ```bash
 pnpm test:client src/lib/stores/pythonPlayground.svelte.test.ts
+# 61 tests : state transitions, localStorage, URL sharing, cloud lifecycle,
+# autocomplete forwarding, font size bounds, theme validation
 ```
 
-45 tests covering:
+Le store debug a sa propre suite :
 
-- State transitions
-- Code execution flow
-- localStorage persistence
-- URL compression/decompression
-- Autocompletion requests
-- Error handling
-- Timeout behavior
+```bash
+pnpm test:server src/lib/stores/pythonDebug.svelte.test.ts
+```
+
+---
+
+## Pointeurs
+
+- Worker / executor pattern → [`worker.md`](./worker.md)
+- Composants Svelte → [`components.md`](./components.md)
+- Vue fonctionnelle → [`README.md`](./README.md)
+- Progress : [`progress/python-executor-pattern.md`](./progress/python-executor-pattern.md), [`progress/python-files-progress.md`](./progress/python-files-progress.md), [`progress/python-phase3-url-sharing.md`](./progress/python-phase3-url-sharing.md)
