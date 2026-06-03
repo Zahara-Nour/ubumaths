@@ -110,6 +110,45 @@ export class NotebookExecutor extends BasePythonExecutor {
 		// through its own execution tracking
 	}
 
+	/**
+	 * Create the persistent worker context as soon as Pyodide is ready.
+	 *
+	 * Without this, the worker holds no entry in its `contexts` Map for
+	 * `this.notebookContextId`, so `getContextNamespace` returns null and:
+	 *  - `execute()` silently falls back to isolated mode (variables don't
+	 *    persist between cells, breaking the notebook's semantics);
+	 *  - `validateExercise(.., contextId)` returns "Contexte d'exécution
+	 *    introuvable", breaking checkpoint cells.
+	 *
+	 * The worker's `create-context` handler is idempotent (it acknowledges
+	 * the existing context if called twice), so re-init is safe.
+	 */
+	protected onPyodideReady(): void {
+		this.postToWorker({
+			type: 'create-context',
+			contextId: this.notebookContextId,
+			persistent: true
+		});
+	}
+
+	/**
+	 * Destroy the persistent worker context before terminating the worker.
+	 *
+	 * `super.destroy()` calls `worker.terminate()` which would already free
+	 * everything on the worker side, but sending `destroy-context` first
+	 * frees the PyProxy more cleanly when the worker is shared with other
+	 * NotebookExecutors (one Pyodide, N notebooks).
+	 */
+	override destroy(): void {
+		if (this.hasWorker()) {
+			this.postToWorker({
+				type: 'destroy-context',
+				contextId: this.notebookContextId
+			});
+		}
+		super.destroy();
+	}
+
 	// ===========================================================================
 	// Notebook-Specific Methods
 	// ===========================================================================

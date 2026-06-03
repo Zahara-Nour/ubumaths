@@ -397,6 +397,9 @@ export abstract class BasePythonExecutor {
 				this.state = 'ready';
 				this.loadingProgress = 100;
 				this.loadingStage = 'Pret !';
+				// Hook for subclasses (e.g. NotebookExecutor sends `create-context`
+				// here so its persistent namespace exists before the first cell runs).
+				this.onPyodideReady();
 				break;
 
 			case 'stdout':
@@ -884,6 +887,21 @@ export abstract class BasePythonExecutor {
 	 */
 	getDebugExecutionId(): string | null {
 		return this.debugExecutionId;
+	}
+
+	// ===========================================================================
+	// Lifecycle Hooks (for subclasses to override)
+	// ===========================================================================
+
+	/**
+	 * Hook called once Pyodide is fully loaded and the executor's state has
+	 * transitioned to `'ready'`. Override in subclasses that need to perform
+	 * one-shot setup against the worker — typically `NotebookExecutor`
+	 * sending `create-context` so its persistent namespace exists before
+	 * the first `execute()` call.
+	 */
+	protected onPyodideReady(): void {
+		// Default: no-op, subclasses override
 	}
 
 	// ===========================================================================

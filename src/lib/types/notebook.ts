@@ -153,6 +153,10 @@ export interface AddCellOptions {
 	type: CellType;
 	index?: number;
 	source?: string;
+	/** Required for `type: 'checkpoint'` — initial validation config. */
+	checkpoint?: CheckpointConfig;
+	/** Optional human-readable title shown in the teacher dashboard. */
+	title?: string;
 }
 
 // Execution result types

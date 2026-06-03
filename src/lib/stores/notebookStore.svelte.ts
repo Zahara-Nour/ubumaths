@@ -15,10 +15,17 @@
 
 import { browser } from '$app/environment';
 import { NotebookExecutor } from '$lib/shared/python';
-import type { CompletionItem } from '$lib/shared/python';
+import type {
+	CompletionItem,
+	ExerciseValidationConfig,
+	ExerciseValidationResult
+} from '$lib/shared/python';
 import type {
 	PythonNotebook,
 	NotebookCell,
+	CheckpointCell,
+	CheckpointConfig,
+	CheckpointStatus,
 	CellOutput,
 	CellDirection,
 	AddCellOptions
@@ -70,6 +77,82 @@ function createMarkdownCell(source = ''): NotebookCell {
 		execution_count: null,
 		outputs: [],
 		state: 'idle'
+	};
+}
+
+/**
+ * Translate a CheckpointConfig into an ExerciseValidationConfig the worker understands.
+ *
+ * Direct mapping (the worker's `BehaviorCheck` union already supports the 3 V1
+ * modes); checkpoint cells never carry `ast_requirements` or non-default timeouts.
+ */
+function checkpointConfigToValidationConfig(cp: CheckpointConfig): ExerciseValidationConfig {
+	if (cp.mode === 'assert') {
+		return { behavior: { kind: 'assert', code: cp.code } };
+	}
+	if (cp.mode === 'unit_test') {
+		return {
+			behavior: {
+				kind: 'unit_test',
+				function_name: cp.function_name,
+				test_cases: cp.test_cases,
+				...(cp.tolerance ? { tolerance: cp.tolerance } : {})
+			}
+		};
+	}
+	// variable_check
+	return {
+		behavior: {
+			kind: 'variable_check',
+			expected_vars: cp.expected_vars,
+			...(cp.tolerance ? { tolerance: cp.tolerance } : {})
+		}
+	};
+}
+
+/**
+ * Best-effort extraction of a single user-facing error message from a failed
+ * validation result. The 3 V1 modes each surface their error in a slightly
+ * different shape:
+ *   - `assert`        → single test_result with `error` (AssertionError msg)
+ *   - `unit_test`     → first failing test_result has `diff` or `error`
+ *   - `variable_check`→ first failing test_result has `diff` (missing/value)
+ * We prefer `error`, fall back to `diff`, then to `result.error`.
+ */
+function extractCheckpointError(result: ExerciseValidationResult): string | null {
+	const firstFail = result.test_results.find((tr) => !tr.passed);
+	if (firstFail) {
+		if (firstFail.error) return firstFail.error;
+		if (firstFail.diff) return firstFail.diff;
+	}
+	return result.error ?? null;
+}
+
+/**
+ * Create a default empty checkpoint cell.
+ *
+ * V1 default = `assert` mode with an empty body so the teacher can fill
+ * the assertions right after creating the cell. The student-facing cell
+ * is read-only on `source` (the test code) and only exposes the
+ * "Vérifier" button.
+ */
+function createCheckpointCell(config?: CheckpointConfig, title?: string): CheckpointCell {
+	const defaultConfig: CheckpointConfig = config ?? { mode: 'assert', code: '' };
+	// `source` mirrors the test code for `assert` mode so existing
+	// rendering machinery (CellOutputs / gutter) can read it like a normal
+	// cell. For unit_test / variable_check we serialize a compact summary
+	// so the cell stays inspectable in the cell list.
+	const source =
+		defaultConfig.mode === 'assert' ? defaultConfig.code : JSON.stringify(defaultConfig, null, 2);
+	return {
+		id: generateCellId(),
+		type: 'checkpoint',
+		source,
+		execution_count: null,
+		outputs: [],
+		state: 'idle',
+		checkpoint: defaultConfig,
+		title
 	};
 }
 
@@ -507,10 +590,14 @@ export class NotebookStore {
 		}
 
 		// Create the new cell
-		const newCell =
-			options.type === 'markdown'
-				? createMarkdownCell(options.source)
-				: createCodeCell(options.source);
+		let newCell: NotebookCell;
+		if (options.type === 'markdown') {
+			newCell = createMarkdownCell(options.source);
+		} else if (options.type === 'checkpoint') {
+			newCell = createCheckpointCell(options.checkpoint, options.title);
+		} else {
+			newCell = createCodeCell(options.source);
+		}
 
 		// Determine insertion index
 		const index = options.index ?? cells.length;
@@ -773,6 +860,155 @@ export class NotebookStore {
 			return Promise.resolve([]);
 		}
 		return this._executor.requestCompletion(code, cursor);
+	}
+
+	// ===========================================================================
+	// Checkpoint Cells
+	// ===========================================================================
+
+	/**
+	 * Per-cell status of the last checkpoint run.
+	 * `undefined` = never run (status equivalent to 'not_run' in the UI).
+	 * Populated by `loadCheckpointRuns()` after loading a notebook and
+	 * updated locally after every `runCheckpoint()` call.
+	 */
+	checkpointStatus = $state<Record<string, CheckpointStatus>>({});
+
+	/**
+	 * Per-cell error message of the last failed run. Cleared on a passed run.
+	 */
+	checkpointError = $state<Record<string, string | null>>({});
+
+	/**
+	 * Per-cell "is verifying" flag — used by the UI to disable the button
+	 * and show a spinner while the worker is running the assertion.
+	 */
+	checkpointRunning = $state<Record<string, boolean>>({});
+
+	/**
+	 * Get the latest checkpoint status for a cell (or undefined if never run).
+	 */
+	getCheckpointStatus(cellId: string): CheckpointStatus | undefined {
+		return this.checkpointStatus[cellId];
+	}
+
+	/**
+	 * Load all checkpoint runs for the current notebook from the server.
+	 * Called once at notebook load time so the UI can show the last status
+	 * for every checkpoint cell (✅ Réussi / ❌ Échec / Non vérifié).
+	 */
+	async loadCheckpointRuns(): Promise<void> {
+		if (!browser || !this.notebook) return;
+
+		try {
+			const res = await fetch(`/api/python-notebooks/${this.notebook.id}/checkpoint-runs`);
+			if (!res.ok) {
+				console.warn('[NotebookStore] Failed to load checkpoint runs:', res.status);
+				return;
+			}
+			const data = (await res.json()) as {
+				runs: Array<{
+					cell_id: string;
+					status: CheckpointStatus;
+					error_message: string | null;
+				}>;
+			};
+
+			const statusMap: Record<string, CheckpointStatus> = {};
+			const errorMap: Record<string, string | null> = {};
+			for (const run of data.runs) {
+				// `GET` orders by `ran_at` desc, so the first row per cell_id is the latest.
+				if (!(run.cell_id in statusMap)) {
+					statusMap[run.cell_id] = run.status;
+					errorMap[run.cell_id] = run.error_message;
+				}
+			}
+			this.checkpointStatus = statusMap;
+			this.checkpointError = errorMap;
+		} catch (err) {
+			console.error('[NotebookStore] Error loading checkpoint runs:', err);
+		}
+	}
+
+	/**
+	 * Run a checkpoint cell against the persistent notebook namespace.
+	 *
+	 * Pipeline:
+	 *   1. Build an `ExerciseValidationConfig` from the cell's `checkpoint`
+	 *   2. Call `executor.validateExercise('', config, contextId)`
+	 *   3. POST the result to `/api/python-notebooks/[id]/checkpoint-runs`
+	 *   4. Update local reactive state
+	 *
+	 * Does NOT alter the cell's `outputs` / `state` / `execution_count` —
+	 * the checkpoint is a meta-cell, not an execution cell. Status and
+	 * error live in `checkpointStatus` / `checkpointError`.
+	 */
+	async runCheckpoint(cellId: string): Promise<void> {
+		if (!this._executor || !this.notebook) return;
+
+		// Re-entrant guard. The `disabled` attribute on the UI button is a
+		// hint, not a lock: Svelte 5 effect batching can let a second click
+		// land before `checkpointRunning` propagates back to `canRun`. Two
+		// concurrent runs would race on the POST and leave the status
+		// non-deterministic.
+		if (this.checkpointRunning[cellId]) return;
+
+		// Pyodide must be ready for the validation to mean anything.
+		// We refuse silently rather than recording a "failed" run with a
+		// technical message — the button is already disabled in the UI
+		// while Pyodide loads, so this only catches edge cases.
+		if (!this._executor.isReady) return;
+
+		const cell = this.notebook.content.cells.find((c) => c.id === cellId);
+		if (!cell || cell.type !== 'checkpoint') {
+			console.warn('[NotebookStore] runCheckpoint called on non-checkpoint cell:', cellId);
+			return;
+		}
+
+		const checkpointCell = cell as CheckpointCell;
+		const config = checkpointConfigToValidationConfig(checkpointCell.checkpoint);
+
+		this.checkpointRunning = { ...this.checkpointRunning, [cellId]: true };
+
+		try {
+			const result: ExerciseValidationResult = await this._executor.validateExercise(
+				'',
+				config,
+				this._executor.getContextId()
+			);
+
+			const status: CheckpointStatus = result.valid ? 'passed' : 'failed';
+			const errorMessage = result.valid
+				? null
+				: (extractCheckpointError(result) ?? 'Échec du checkpoint');
+
+			// Persist (best-effort — UI state updates regardless so the student
+			// sees the verdict even if the network blip prevents persistence).
+			if (browser && this.notebook) {
+				try {
+					await fetch(`/api/python-notebooks/${this.notebook.id}/checkpoint-runs`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							cell_id: cellId,
+							status,
+							...(errorMessage !== null ? { error_message: errorMessage } : {})
+						})
+					});
+				} catch (err) {
+					console.warn('[NotebookStore] Failed to persist checkpoint run:', err);
+				}
+			}
+
+			this.checkpointStatus = { ...this.checkpointStatus, [cellId]: status };
+			this.checkpointError = { ...this.checkpointError, [cellId]: errorMessage };
+		} catch (err) {
+			const msg = err instanceof Error ? err.message : String(err);
+			this.checkpointStatus = { ...this.checkpointStatus, [cellId]: 'failed' };
+			this.checkpointError = { ...this.checkpointError, [cellId]: msg };
+		} finally {
+			this.checkpointRunning = { ...this.checkpointRunning, [cellId]: false };
+		}
 	}
 
 	// ===========================================================================
