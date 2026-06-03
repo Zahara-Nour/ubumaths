@@ -10,7 +10,7 @@
  * (page + home widget) consume `StudentWorkInbox` directly.
  */
 
-export type WorkSource = 'assessment' | 'exercise' | 'worksheet' | 'python';
+export type WorkSource = 'assessment' | 'exercise' | 'worksheet' | 'python' | 'python_notebook';
 
 export type WorkStatus = 'todo' | 'done';
 
@@ -21,7 +21,7 @@ export type WorkStatus = 'todo' | 'done';
  */
 export interface WorkItem {
 	source: WorkSource;
-	/** Source item id (assessment.id, exercise.id, worksheet.id, python_exercise.id). */
+	/** Source item id (assessment.id, exercise.id, worksheet.id, python_exercise.id, python_notebook.id). */
 	itemId: string;
 	/** Row id in the corresponding *_assignments table. */
 	assignmentId: string;

@@ -42,14 +42,22 @@ export async function getStudentWorkInbox(
 ): Promise<StudentWorkInbox> {
 	const classIds = await fetchActiveClassIds(supabase, userId);
 
-	const [assessmentItems, exerciseItems, worksheetItems, pythonItems] = await Promise.all([
-		fetchAssessmentItems(supabase, userId, classIds),
-		fetchExerciseItems(supabase, userId, classIds),
-		fetchWorksheetItems(supabase, userId, classIds),
-		fetchPythonItems(supabase, userId, classIds)
-	]);
+	const [assessmentItems, exerciseItems, worksheetItems, pythonItems, pythonNotebookItems] =
+		await Promise.all([
+			fetchAssessmentItems(supabase, userId, classIds),
+			fetchExerciseItems(supabase, userId, classIds),
+			fetchWorksheetItems(supabase, userId, classIds),
+			fetchPythonItems(supabase, userId, classIds),
+			fetchPythonNotebookItems(supabase, userId, classIds)
+		]);
 
-	const all = [...assessmentItems, ...exerciseItems, ...worksheetItems, ...pythonItems];
+	const all = [
+		...assessmentItems,
+		...exerciseItems,
+		...worksheetItems,
+		...pythonItems,
+		...pythonNotebookItems
+	];
 	const deduped = dedupItems(all);
 	const now = new Date();
 	return bucketize(deduped, now);
@@ -500,6 +508,76 @@ async function fetchPythonItems(
 			viewed: false,
 			doneAt,
 			href: `/python-exercises/${assignment.exercise_id}`,
+			assignedAt: assignment.created_at
+		};
+	});
+}
+
+// ============================================================================
+// PYTHON NOTEBOOKS
+// ============================================================================
+
+type PythonNotebookAssignmentRow = Tables<'python_notebook_assignments'>;
+
+/**
+ * Python notebooks have no per-student assignment (`python_notebook_assignments`
+ * is class-only) and no `due_date` column. They are open-ended working tools
+ * rather than gated submissions, so V1 surfaces them as:
+ *   - `status: 'todo'` always (no binary "done" state on a notebook)
+ *   - `dueAt: null` (will land in the "Sans échéance" bucket)
+ *
+ * If we later compute "done" from `python_notebook_checkpoint_runs` (e.g.
+ * all checkpoints passed = done), this is the place to wire it.
+ */
+async function fetchPythonNotebookItems(
+	supabase: TypedSupabaseClient,
+	userId: string,
+	classIds: string[]
+): Promise<WorkItem[]> {
+	void userId; // Reserved for future per-student assignments / completion logic.
+	if (classIds.length === 0) return [];
+
+	const { data: assignmentsRaw, error: assignmentsErr } = await supabase
+		.from('python_notebook_assignments')
+		.select('*')
+		.in('class_id', classIds);
+	logError('python_notebook.assignments', assignmentsErr);
+
+	const assignments = (assignmentsRaw ?? []) as PythonNotebookAssignmentRow[];
+	if (assignments.length === 0) return [];
+
+	const notebookIds = Array.from(new Set(assignments.map((a) => a.notebook_id)));
+	const referencedClassIds = Array.from(
+		new Set(assignments.map((a) => a.class_id).filter((id): id is string => id !== null))
+	);
+
+	const [notebooksRes, classNames] = await Promise.all([
+		supabase.from('python_notebooks').select('id, title').in('id', notebookIds),
+		fetchClassNames(supabase, referencedClassIds)
+	]);
+	logError('python_notebook.notebooks', notebooksRes.error);
+
+	const notebookById = new Map(
+		((notebooksRes.data ?? []) as Pick<Tables<'python_notebooks'>, 'id' | 'title'>[]).map((row) => [
+			row.id,
+			row
+		])
+	);
+
+	return assignments.map<WorkItem>((assignment) => {
+		const notebook = notebookById.get(assignment.notebook_id);
+		return {
+			source: 'python_notebook' satisfies WorkSource,
+			itemId: assignment.notebook_id,
+			assignmentId: assignment.id,
+			title: notebook?.title ?? '',
+			classId: assignment.class_id,
+			className: assignment.class_id ? (classNames.get(assignment.class_id) ?? null) : null,
+			dueAt: null,
+			status: 'todo',
+			viewed: false,
+			doneAt: null,
+			href: `/python-notebook/${assignment.notebook_id}`,
 			assignedAt: assignment.created_at
 		};
 	});
