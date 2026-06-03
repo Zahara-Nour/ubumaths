@@ -18,7 +18,7 @@
 	import CheckpointCell from './CheckpointCell.svelte';
 	import CheckpointEditor from './CheckpointEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Trash2, ChevronUp, ChevronDown } from 'lucide-svelte';
+	import { Trash2, GripVertical } from 'lucide-svelte';
 
 	// Props
 	let {
@@ -26,26 +26,18 @@
 		isActive = false,
 		isReadonly = false,
 		isTeacher = false,
-		isFirst = false,
-		isLast = false,
 		notebook = null as NotebookStore | null,
 		onSelect = () => {},
 		onDelete = () => {},
-		onMoveUp = () => {},
-		onMoveDown = () => {},
 		onExecute = () => {}
 	}: {
 		cell: NotebookCell;
 		isActive?: boolean;
 		isReadonly?: boolean;
 		isTeacher?: boolean;
-		isFirst?: boolean;
-		isLast?: boolean;
 		notebook?: NotebookStore | null;
 		onSelect?: () => void;
 		onDelete?: () => void;
-		onMoveUp?: () => void;
-		onMoveDown?: () => void;
 		onExecute?: () => void;
 	} = $props();
 
@@ -99,38 +91,25 @@
 		{/if}
 	</div>
 
-	<!-- Cell actions toolbar (visible on hover or when active) -->
+	<!-- Cell actions toolbar (visible on hover or when active).
+	     Up/down arrows were removed in favour of svelte-dnd-action drag
+	     (the wrapping parent has `use:dndzone`). The grip icon visually
+	     advertises the affordance — the actual drag is captured anywhere
+	     on the cell wrapper, but anchoring it here is the convention. -->
 	{#if !isReadonly}
 		<div
 			class="absolute top-2 right-2 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 {isActive
 				? 'opacity-100'
 				: ''}"
 		>
-			<!-- Move up -->
-			{#if !isFirst}
-				<Button
-					variant="ghost"
-					size="sm"
-					onclick={onMoveUp}
-					class="h-7 w-7 p-0"
-					aria-label="Déplacer vers le haut"
-				>
-					<ChevronUp class="size-4" />
-				</Button>
-			{/if}
-
-			<!-- Move down -->
-			{#if !isLast}
-				<Button
-					variant="ghost"
-					size="sm"
-					onclick={onMoveDown}
-					class="h-7 w-7 p-0"
-					aria-label="Déplacer vers le bas"
-				>
-					<ChevronDown class="size-4" />
-				</Button>
-			{/if}
+			<!-- Drag handle (visual only — dndzone listens on the parent) -->
+			<span
+				class="flex h-7 w-7 cursor-grab items-center justify-center rounded text-muted-foreground hover:bg-muted active:cursor-grabbing"
+				aria-label="Déplacer la cellule (glisser)"
+				title="Glisser pour réordonner"
+			>
+				<GripVertical class="size-4" />
+			</span>
 
 			<!-- Delete -->
 			<Button
