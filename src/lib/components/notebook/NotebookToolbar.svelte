@@ -15,7 +15,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import {
-		Play,
 		Square,
 		Save,
 		Plus,
@@ -37,7 +36,6 @@
 		onAddCodeCell = () => {},
 		onAddMarkdownCell = () => {},
 		onAddCheckpointCell = () => {},
-		onRunCurrent = () => {},
 		onRunAll = () => {},
 		onStop = () => {},
 		onResetKernel = () => {},
@@ -51,7 +49,6 @@
 		onAddCodeCell?: () => void;
 		onAddMarkdownCell?: () => void;
 		onAddCheckpointCell?: () => void;
-		onRunCurrent?: () => void;
 		onRunAll?: () => void;
 		onStop?: () => void;
 		onResetKernel?: () => void;
@@ -64,7 +61,6 @@
 	let isSaving = $derived(notebook?.isSaving ?? false);
 	let isModified = $derived(notebook?.isModified ?? false);
 	let isReady = $derived(notebook?.isReady ?? false);
-	let hasActiveCell = $derived(notebook?.activeCell !== null);
 </script>
 
 <div class="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
@@ -96,17 +92,9 @@
 				<span>Arrêter</span>
 			</Button>
 		{:else}
-			<!-- Run current cell -->
-			<Button
-				variant="default"
-				size="sm"
-				onclick={onRunCurrent}
-				disabled={!isReady || !hasActiveCell || isReadonly}
-				class="gap-1.5"
-			>
-				<Play class="size-4" />
-				<span>Exécuter</span>
-			</Button>
+			<!-- Run-current was removed from the toolbar in favour of the
+			     per-cell ▶ button (visible on hover) and Ctrl+Entrée: keeps
+			     the toolbar focused on batch actions, matches Colab UX. -->
 
 			<!-- Run all cells -->
 			<Button

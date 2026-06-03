@@ -182,11 +182,6 @@
 		}
 	}
 
-	async function handleRunCurrent(): Promise<void> {
-		if (!notebook.activeCell) return;
-		await notebook.executeCell(notebook.activeCell);
-	}
-
 	async function handleRunAll(): Promise<void> {
 		await notebook.executeAllCells();
 	}
@@ -427,7 +422,6 @@
 			onAddCodeCell={handleAddCodeCell}
 			onAddMarkdownCell={handleAddMarkdownCell}
 			onAddCheckpointCell={handleAddCheckpointCell}
-			onRunCurrent={handleRunCurrent}
 			onRunAll={handleRunAll}
 			onStop={handleStop}
 			onResetKernel={handleResetKernel}
