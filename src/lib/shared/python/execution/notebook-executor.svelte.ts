@@ -124,6 +124,20 @@ export class NotebookExecutor extends BasePythonExecutor {
 	 * the existing context if called twice), so re-init is safe.
 	 */
 	protected onPyodideReady(): void {
+		this.ensureContext();
+	}
+
+	/**
+	 * Re-issue a `create-context` for this notebook's persistent namespace.
+	 *
+	 * Exposed publicly so the store can rebuild the context after the
+	 * worker's idle sweeper destroys it (`CONTEXT_CONFIG.IDLE_TIMEOUT_MS`).
+	 * The handler is idempotent: if the context already exists, the worker
+	 * just refreshes `lastActivity` and acknowledges. If it does not, a
+	 * fresh empty namespace is created — the caller is then responsible
+	 * for re-executing the cells whose variables they need.
+	 */
+	ensureContext(): void {
 		this.postToWorker({
 			type: 'create-context',
 			contextId: this.notebookContextId,
