@@ -158,34 +158,64 @@ Un seul Pyodide est chargé en mémoire. Chaque "contexte" (playground, notebook
 
 ### Message Types
 
+> Définitions complètes dans `src/lib/shared/python/types.ts`. Tableau récapitulatif et détails dans [`worker.md § Protocole de messages`](./worker.md#protocole-de-messages).
+
 #### Main Thread → Worker
 
 ```typescript
 type ToWorkerMessage =
-	| { type: 'init' } // Initialize Pyodide
-	| { type: 'execute'; code: string; id: string } // Run Python code
-	| { type: 'cancel'; id: string } // Cancel execution
-	| { type: 'autocomplete'; code: string; cursor: number; id: string };
+	// Initialisation et exécution
+	| { type: 'init' }
+	| { type: 'execute'; code: string; id: string; contextId?: string }
+	| { type: 'cancel'; id: string }
+	| { type: 'autocomplete'; code: string; cursor: number; id: string; contextId?: string }
+	// Multi-context (notebook)
+	| { type: 'create-context'; contextId: string; persistent: boolean }
+	| { type: 'destroy-context'; contextId: string }
+	| { type: 'reset-context'; contextId: string }
+	// Validation
+	| { type: 'validate'; code: string; config: ValidationConfig; id: string }
+	| { type: 'validate-exercise'; code: string; config: ExerciseValidationConfig; id: string }
+	// Debugger
+	| { type: 'debug-start'; code: string; id: string; breakpoints: WorkerBreakpoint[] }
+	| { type: 'debug-step'; id: string; action: DebugStepAction }
+	| { type: 'debug-stop'; id: string };
 ```
 
 #### Worker → Main Thread
 
 ```typescript
 type FromWorkerMessage =
+	// Loading
 	| { type: 'loading-progress'; percent: number; stage: string }
-	| { type: 'packages-loading'; packages: string[] } // Packages being loaded
-	| { type: 'packages-loaded'; packages: string[] } // Packages loaded
 	| { type: 'pyodide-ready' }
+	| { type: 'packages-loading'; packages: string[]; id: string }
+	| { type: 'packages-loaded'; packages: string[]; id: string }
+	// Output
 	| { type: 'stdout'; data: string; id: string }
 	| { type: 'stderr'; data: string; id: string }
-	| { type: 'plot'; imageData: string; id: string } // Matplotlib PNG
-	| { type: 'plotly'; jsonSpec: string; id: string } // Plotly JSON
+	| { type: 'plot'; imageData: string; id: string } // Matplotlib PNG base64
+	| { type: 'plotly'; jsonSpec: string; id: string } // Plotly JSON spec
 	| { type: 'latex'; latex: string; id: string } // SymPy LaTeX
+	// Exécution
 	| { type: 'error'; message: string; line?: number; id: string }
 	| { type: 'complete'; id: string; duration: number }
 	| { type: 'timeout'; id: string }
-	| { type: 'autocomplete-result'; completions: CompletionItem[]; id: string };
+	| { type: 'autocomplete-result'; completions: CompletionItem[]; id: string }
+	// Multi-context acks
+	| { type: 'context-created'; contextId: string }
+	| { type: 'context-destroyed'; contextId: string }
+	| { type: 'context-reset'; contextId: string }
+	// Validation
+	| { type: 'validation-result'; result: ValidationResult; id: string }
+	| { type: 'validation-exercise-result'; result: ExerciseValidationResult; id: string }
+	// Debugger
+	| { type: 'debug-snapshot'; id: string; snapshot: DebugSnapshot }
+	| { type: 'debug-paused'; id: string; reason: DebugPauseReason }
+	| { type: 'debug-finished'; id: string; duration: number };
 ```
+
+Total : **13 types entrants**, **21 types sortants** — discriminés par `type`, validés Zod aux deux extrémités (`fromWorkerMessageSchema`, `toWorkerMessageSchema`).
 
 ### Execution ID System
 
@@ -522,3 +552,50 @@ if (!validation.success) {
 	return;
 }
 ```
+
+## Locked Zones (exercices "fill-in-the-blanks")
+
+Mode d'édition d'exercice où le teacher déclare des marqueurs `{{id | "default"}}` dans `starter_code`. L'éditeur élève rend ces zones surlignées + éditables, et **verrouille tout le reste**. Orthogonal aux 5 stratégies de validation (cumulable avec n'importe laquelle).
+
+### Pipeline
+
+```
+       teacher écrit                      élève voit
+   ┌────────────────────────┐        ┌─────────────────────────┐
+   │ # à compléter          │        │ # à compléter           │
+   │ x = {{val | "0"}}      │ ────► │ x = ▓0▓                 │   ← zone éditable surlignée
+   │ print(x)               │        │ print(x)  ░░░░░░░░░░░░░ │   ← reste read-only
+   └────────────────────────┘        └─────────────────────────┘
+       template stocké en DB              reconstructCode()
+                                          envoyé au worker
+```
+
+### Composants
+
+| Pièce                                       | Rôle                                                                                             |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `src/lib/utils/locked-zones.ts`             | `parseTemplate`, `reconstructCode`, `renderDefaults` — utilitaires purs (38 tests)               |
+| `LockedPythonEditor.svelte`                 | CodeMirror 6 + `EditorState.transactionFilter` qui rejette tout insert hors zones (et tout `\n`) |
+| `ExerciseForm.svelte` (preview)             | Rendu live côté teacher (debounce 500 ms) + banner rouge si marqueurs malformés                  |
+| `createExerciseSchema.superRefine` côté Zod | Server gate qui refuse les marqueurs malformés au save                                           |
+
+### Contraintes V1
+
+- **Single-line uniquement** : `\n` rejeté par le filter (couvre 100 % des `# à compléter` actuels du corpus Bac).
+- **Anti-bypass UI-only** : free-tier Vercel pas de validation serveur de la zone modifiée. Acceptable car aucun résultat n'a de poids académique.
+- **Stockage inline** : marqueurs dans `starter_code` (TEXT), aucun schéma DB additionnel.
+- **Compatibilité** : exo sans marqueurs = `PythonEditor` classique (rétro-compat).
+
+### Hooks dans le worker
+
+Le worker n'a **rien à savoir** des locked zones : il reçoit le code reconstruit (`reconstructCode(template, currentZones)`) exactement comme un code normal. Toute la logique est côté main thread.
+
+---
+
+## Pointeurs
+
+- Vue d'ensemble fonctionnelle → [`README.md`](./README.md)
+- Worker (protocole + multi-context + validation) → [`worker.md`](./worker.md)
+- Executor pattern → [`executor-pattern.md`](./executor-pattern.md)
+- Store playground → [`store.md`](./store.md)
+- Composants Svelte → [`components.md`](./components.md)

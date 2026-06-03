@@ -25,7 +25,7 @@ L'ensemble fonctionne **100% client-side** via Pyodide (CPython 3.12 compilé en
 | -------------- | -------- | ----------------------------------- |
 | Pyodide        | v0.26.2  | Python 3.12 en WebAssembly          |
 | CodeMirror     | v6.x     | Éditeur de code (12 thèmes)         |
-| MathLive       | v0.108.2 | Rendu LaTeX (SymPy)                 |
+| MathLive       | v0.109.1 | Rendu LaTeX (SymPy)                 |
 | Plotly.js      | v2.27.0  | Graphes interactifs (CDN, lazy)     |
 | LZ-String      | v1.5.0   | Compression URL pour partage        |
 | Web Worker     | natif    | Isolation thread d'exécution        |
@@ -189,7 +189,6 @@ Système complet de débogage step-by-step avec **visualisation mémoire style P
 
 - Breakpoint gutter dans CodeMirror (clic pour toggle)
 - Touche F9 pour toggle breakpoint au curseur
-- Pas encore de cache des dérivées secondes
 
 ---
 
@@ -447,32 +446,56 @@ Stockage Supabase des fichiers Python avec assignation enseignant→classe.
 
 ---
 
-## Schémas DB (8 migrations principales)
+## Schémas DB
 
-| Migration                                                                   | Tables / changes                                                                                                       |
-| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `20251205100000_create_python_files.sql`                                    | `python_files`, `python_file_assignments`                                                                              |
-| `20251205160000_add_python_settings_to_profiles.sql`                        | `profiles.python_settings` (JSONB)                                                                                     |
-| `20251206010000_create_python_exercises.sql`                                | `python_exercises`, `python_exercise_assignments`, `python_exercise_submissions` (avec triggers)                       |
-| `20251206020000_create_python_notebooks.sql`                                | `python_notebooks`, `python_notebook_assignments`                                                                      |
-| `20260508114655_python_exercise_assignments_unique.sql`                     | Unique constraints sur assignments (class XOR student)                                                                 |
-| `20260508125858_python_exercises_public_anon.sql`                           | RLS : anon peut lire les exos `is_public: true`                                                                        |
-| `20260508154124_drop_difficulty.sql` + `155447_add_level.sql`               | Refonte `difficulty` → `level` (college/lycee/nsi/etudiant)                                                            |
-| `20260508162152_create_python_tags.sql`                                     | `python_tags` (vocabulaire Python séparé des math `tags`)                                                              |
-| `20260508163407_seed_python_exercises_samples.sql`                          | 5 exos seed (1 par stratégie + ast+output_tests)                                                                       |
-| `20260508180000_update_seeds_for_output_v2.sql`                             | Adapte les seeds à la nouvelle API `comparison`                                                                        |
-| `20260509002840_allow_public_python_submissions.sql`                        | RLS : élève peut soumettre librement sur exos publics (sans assignment)                                                |
-| `20260509091440_create_python_exercise_mastery.sql`                         | `python_exercise_mastery` (sticky `mastered`/`needs_review`) + trigger UPSERT auto sur INSERT                          |
-| `20260509094828_normalize_exercise_tags.sql`                                | Jonctions `exercise_tags` + `python_exercise_tags` (drop `tags TEXT[]` des deux tables d'exos)                         |
-| `20260509104544_fix_exercise_functions_after_tag_normalization.sql`         | Reconstruction des 4 RPC `get\_\*\_exercise[s                                                                          | \_assignments]`(refs`e.tags`+`e.difficulty`) |
-| `20260510071340_seed_terminale_seuil_exercises.sql`                         | 3 exos seuil terminale spé (suite arithmético-géométrique, géométrique, somme partielle ζ(2))                          |
-| `20260510073029_seed_pyramide_bac_polynesie_2024.sql`                       | Exo Bac Polynésie 09/2024 (somme des carrés via boucle for)                                                            |
-| `20260510093300_add_source_to_python_exercises.sql`                         | Colonne `source TEXT` (max 200, nullable) — origine de l'exercice                                                      |
-| `20260510093301_backfill_source_seeded_exercises.sql`                       | Backfill `source` sur les 4 exos déjà seedés                                                                           |
-| `20260510094757_seed_croisement_populations_bac_centres_etrangers_2025.sql` | Bac Centres étrangers 06/2025 (script module-level avec `print(2025+n)`)                                               |
-| `20260510095758_seed_posidonie_bac_metropole_2025.sql`                      | Bac Métropole 06/2025 (algo de seuil sur la posidonie)                                                                 |
-| `20260510130000_refactor_python_validation_config.sql`                      | **Refactor V2** : convertit les `validation_config` JSONB legacy (`{type: 'ast'                                        | 'output'                                     | 'unit_test'}`) vers la forme orthogonale (`{ast_requirements, behavior}`) via CASE/WHEN. 12 rows migrées. |
-| `20260510130100_seed_briggs_bac_amerique_nord_2025.sql`                     | Bac Amérique du Nord 05/2025 (premier exo nativement V2 : AST `defines_function` + `uses_loop` + `behavior.unit_test`) |
+### Migrations structurelles (DDL + RLS + RPC)
+
+| Migration                                                           | Tables / changes                                                                                                                                                                         |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `20251205100000_create_python_files.sql`                            | `python_files`, `python_file_assignments`                                                                                                                                                |
+| `20251205160000_add_python_settings_to_profiles.sql`                | `profiles.python_settings` (JSONB)                                                                                                                                                       |
+| `20251206010000_create_python_exercises.sql`                        | `python_exercises`, `python_exercise_assignments`, `python_exercise_submissions` (avec triggers)                                                                                         |
+| `20251206020000_create_python_notebooks.sql`                        | `python_notebooks`, `python_notebook_assignments`                                                                                                                                        |
+| `20260508114655_add_python_exercise_assignment_unique.sql`          | Unique constraints sur assignments (class XOR student)                                                                                                                                   |
+| `20260508125858_python_exercises_public_anon.sql`                   | RLS : anon peut lire les exos `is_public: true`                                                                                                                                          |
+| `20260508154124_drop_python_exercises_difficulty.sql`               | Drop colonne `difficulty`                                                                                                                                                                |
+| `20260508155447_add_python_exercises_level.sql`                     | Ajout `level` (college/lycee/nsi/etudiant) — remplace `difficulty`                                                                                                                       |
+| `20260508162152_create_python_tags.sql`                             | `python_tags` (vocabulaire Python séparé des math `tags`)                                                                                                                                |
+| `20260509002840_allow_public_python_submissions.sql`                | RLS : élève peut soumettre librement sur exos publics (sans assignment)                                                                                                                  |
+| `20260509091440_create_python_exercise_mastery.sql`                 | `python_exercise_mastery` (sticky `mastered`/`needs_review`) + trigger UPSERT auto sur INSERT                                                                                            |
+| `20260509094828_normalize_exercise_tags.sql`                        | Jonctions `exercise_tags` + `python_exercise_tags` (drop `tags TEXT[]` des deux tables d'exos)                                                                                           |
+| `20260509104544_fix_exercise_functions_after_tag_normalization.sql` | Reconstruction des 4 RPC `get_*_exercise[s_assignments]` (refs `e.tags` + `e.difficulty`)                                                                                                |
+| `20260510093300_add_source_to_python_exercises.sql`                 | Colonne `source TEXT` (max 200, nullable) — origine de l'exercice                                                                                                                        |
+| `20260510130000_refactor_python_validation_config.sql`              | **Refactor V2** : convertit `validation_config` legacy (`{type: 'ast'\|'output'\|'unit_test'}`) vers la forme orthogonale `{ast_requirements, behavior}` via CASE/WHEN. 12 rows migrées. |
+| `20260510211427_demote_python_exercise_instruction_headings.sql`    | Nettoyage instructions seedées (headings markdown rétrogradés)                                                                                                                           |
+
+### Migrations de conversions de stratégies (post-refactor V2)
+
+| Migration                                                           | Action                                                                                                   |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `20260510210004_migrate_tuple_exos_to_unit_test.sql`                | Migre les exos retournant des tuples de `output` vers `unit_test`                                        |
+| `20260510214434_add_unit_test_tolerance_to_transcendental_exos.sql` | Ajoute `tolerance` aux exos utilisant `math.exp`/`math.log` (divergences ULP entre Pyodide et ref)       |
+| `20260512234300_convert_bac_output_to_variable_check.sql`           | Convertit les scripts module-level (`print(...)`) vers `variable_check` (anti-print boilerplate)         |
+| `20260512235348_restore_tuple_exos_to_unit_test.sql`                | Correctif : restaure `ln(2)` et `termes` en `unit_test` (overshoot de la migration précédente)           |
+| `20260513112515_convert_bac_strong_to_reference_solution.sql`       | Convertit 19 Bac avec fonction-à-paramètres de `unit_test` vers `reference_solution` (fixed + generator) |
+| `20260513215211_add_locked_zones_to_bac.sql`                        | Wrap les `# à compléter` de 27 Bac avec marqueurs `{{id \| "default"}}` (5 patterns regex)               |
+| `20260514010325_fix_locked_zones_while_default.sql`                 | Correctif default des marqueurs dans les `while ...:`                                                    |
+| `20260514011041_restore_locked_zones_while_ellipsis_default.sql`    | Restaure le default `...` pour les marqueurs `while`                                                     |
+
+### Seeds (data only)
+
+| Migration                                                                   | Contenu                                                                                                        |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `20260508163407_seed_python_exercises_samples.sql`                          | 5 exos seed (1 par stratégie + `ast+output_tests`)                                                             |
+| `20260510071340_seed_terminale_seuil_exercises.sql`                         | 3 exos seuil terminale spé (arithmético-géométrique, géométrique, ζ(2))                                        |
+| `20260510073029_seed_pyramide_bac_polynesie_2024_exercise.sql`              | Bac Polynésie 09/2024 (somme des carrés via boucle `for`)                                                      |
+| `20260510093301_backfill_source_seeded_exercises.sql`                       | Backfill `source` sur les 4 exos déjà seedés                                                                   |
+| `20260510094757_seed_croisement_populations_bac_centres_etrangers_2025.sql` | Bac Centres étrangers 06/2025                                                                                  |
+| `20260510095758_seed_posidonie_bac_metropole_2025.sql`                      | Bac Métropole 06/2025 (algo de seuil)                                                                          |
+| `20260510130100_seed_briggs_bac_amerique_nord_2025.sql`                     | Bac Amérique du Nord 05/2025 (premier exo nativement V2)                                                       |
+| `20260510134313` → `20260510162003` (22 migrations)                         | 22 Bac 2021-2024 (Métropole, Polynésie, Asie, Centres étrangers, Amérique N/S, Madagascar, Nouvelle Calédonie) |
+
+→ Total : **28 exos Bac** seedés en DB. Liste complète : `ls supabase/migrations/2026051*seed*.sql`.
 
 Helpers `SECURITY DEFINER` partagés : `is_teacher_of_student`, `is_student_in_class`, `is_teacher_of_class`, `is_admin`, `is_file_assigned_to_student`, `is_notebook_assigned_to_student`, `count_user_python_files`, `count_user_notebooks`.
 
@@ -487,22 +510,30 @@ Helpers `SECURITY DEFINER` partagés : `is_teacher_of_student`, `is_student_in_c
 ## Tests
 
 ```bash
-# Store playground (45 tests)
+# Store playground (61 tests)
 pnpm test:client src/lib/stores/pythonPlayground.svelte.test.ts
 
 # Output component (36 tests)
 pnpm test:client src/lib/components/python/PythonOutput.svelte.test.ts
 
-# Debugger (124+ tests)
-pnpm test:server src/lib/shared/python/debug/
+# Debugger (137 tests : 43 types + 70 protocole + 24 heap-utils)
+pnpm test:server src/lib/shared/python/debug/types.test.ts
 pnpm test:server src/lib/shared/python/worker/messages.debug.test.ts
+pnpm test:client src/lib/components/python/debug/heap-utils.test.ts
 
-# Examples library (25 tests)
+# Examples library (25 tests : 4 index + 21 utils)
 pnpm test:server src/lib/data/python-examples/
 
-# Notebook import/export (59 tests round-trip)
+# Notebook import/export (59 tests round-trip : 37 import + 22 export)
 pnpm test:server src/lib/utils/notebook-import.test.ts
 pnpm test:server src/lib/utils/notebook-export.test.ts
+
+# Executor + validation (138 tests : 14 base + 57 Pyodide réel + 50 output + 42 variable + 38 locked-zones)
+pnpm test:client src/lib/shared/python/execution/base-executor.svelte.test.ts
+pnpm test:client src/lib/shared/python/execution/exercise-validation-real.svelte.test.ts
+pnpm test:server src/lib/shared/python/validation/output-compare.test.ts
+pnpm test:server src/lib/shared/python/validation/variable-compare.test.ts
+pnpm test:server src/lib/utils/locked-zones.test.ts
 ```
 
 ---
