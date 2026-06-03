@@ -12,6 +12,7 @@
 	 */
 
 	import { NotebookStore } from '$lib/stores/notebookStore.svelte';
+	import type { NotebookCell as NotebookCellType } from '$lib/types/notebook';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import NotebookToolbar from './NotebookToolbar.svelte';
 	import NotebookStatusBar from './NotebookStatusBar.svelte';
@@ -192,10 +193,37 @@
 	}
 
 	function handleDeleteCell(cellId: string): void {
+		// Snapshot the cell + its index BEFORE deleting so we can re-insert
+		// on undo. `$state.snapshot` deep-clones the reactive proxy into a
+		// plain object, decoupling the undo payload from later mutations.
+		const cellLive = notebook.cells.find((c) => c.id === cellId);
+		const cellIndex = notebook.getCellIndex(cellId);
+		const cellSnapshot = cellLive ? ($state.snapshot(cellLive) as NotebookCellType) : null;
+
 		const success = notebook.deleteCell(cellId);
 		if (!success) {
 			toaster.warning('Impossible de supprimer la dernière cellule');
+			return;
 		}
+		if (!cellSnapshot || cellIndex < 0) {
+			// Belt-and-suspenders — deleteCell already succeeded, so undo
+			// just isn't available. Acknowledge the action without offering it.
+			toaster.info('Cellule supprimée');
+			return;
+		}
+
+		toaster.info('Cellule supprimée', {
+			duration: 8000,
+			action: {
+				label: 'Annuler',
+				onClick: () => {
+					notebook.insertCell(cellSnapshot, cellIndex);
+					// Reset the autosave timer so the restored content is the
+					// one that lands on the server (not the deletion).
+					notebook.scheduleAutoSave();
+				}
+			}
+		});
 	}
 
 	function handleMoveUp(cellId: string): void {

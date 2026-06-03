@@ -41,6 +41,16 @@ const MAX_CELLS = 200;
 /** Maximum outputs per cell */
 const MAX_OUTPUTS_PER_CELL = 100;
 
+/**
+ * Debounce delay before the autosave timer actually fires (ms).
+ *
+ * Bumped from 2s after a teacher report: after an accidental cell delete
+ * the autosave fired before they could click anything, persisting the
+ * deletion. 5 s gives the user time to react and the undo toast time to
+ * appear and be acted on.
+ */
+const AUTOSAVE_DELAY_MS = 5000;
+
 // =============================================================================
 // Helper Functions
 // =============================================================================
@@ -637,6 +647,33 @@ export class NotebookStore {
 	}
 
 	/**
+	 * Re-insert an existing cell at a specific index (undo for deleteCell).
+	 *
+	 * Unlike `addCell`, this preserves the cell's identity (id, source,
+	 * outputs, state, execution_count, checkpoint config). The caller is
+	 * expected to pass a snapshot of the cell taken **before** the delete.
+	 *
+	 * Returns the inserted cell id on success, or null when the notebook
+	 * isn't loaded or `MAX_CELLS` would be exceeded.
+	 */
+	insertCell(cell: NotebookCell, index: number): string | null {
+		if (!this.notebook) return null;
+
+		const cells = this.notebook.content.cells;
+		if (cells.length >= MAX_CELLS) {
+			console.warn('[NotebookStore] Cannot restore cell - max cells limit reached');
+			return null;
+		}
+
+		const insertIndex = Math.max(0, Math.min(index, cells.length));
+		cells.splice(insertIndex, 0, cell);
+
+		this.isModified = true;
+		this.activeCell = cell.id;
+		return cell.id;
+	}
+
+	/**
 	 * Delete a cell from the notebook.
 	 *
 	 * @param cellId - The cell ID to delete
@@ -1140,6 +1177,6 @@ export class NotebookStore {
 				}
 			}
 			this.autoSaveTimeout = null;
-		}, 2000);
+		}, AUTOSAVE_DELAY_MS);
 	}
 }
