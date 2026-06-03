@@ -422,6 +422,18 @@ const behaviorVariableCheckSchema = z.object({
 	tolerance: unitTestToleranceSchema.optional()
 });
 
+const ASSERT_CODE_MAX = 5000;
+
+/**
+ * Assert behavior — Python code (typically `assert` statements) that runs
+ * against the resolved namespace. Clean execution → `passed`; any raised
+ * exception → `failed`. Used primarily by notebook checkpoints.
+ */
+const behaviorAssertSchema = z.object({
+	kind: z.literal('assert'),
+	code: z.string().min(1).max(ASSERT_CODE_MAX)
+});
+
 const REFERENCE_CODE_MAX = 5000;
 const GENERATOR_CODE_MAX = 1000;
 const REFERENCE_FIXED_CASES_MAX = 50;
@@ -461,6 +473,7 @@ export const behaviorCheckSchema = z
 	.discriminatedUnion('kind', [
 		behaviorOutputSchema,
 		behaviorUnitTestSchema,
+		behaviorAssertSchema,
 		behaviorVariableCheckSchema,
 		behaviorReferenceSolutionSchema
 	])
@@ -485,12 +498,19 @@ export const exerciseValidationConfigSchema = z
 
 /**
  * Validate exercise message schema.
+ *
+ * `contextId` is optional. When present, the worker resolves the existing
+ * persistent namespace via `getContextNamespace(contextId)` (used by notebook
+ * checkpoints to test against the student's accumulated namespace). When
+ * omitted, the worker creates a fresh `dict()` and execs `code` into it
+ * (standard exercise mode).
  */
 export const validateExerciseMessageSchema = z.object({
 	type: z.literal('validate-exercise'),
 	code: codeSchema,
 	config: exerciseValidationConfigSchema,
-	id: executionIdSchema
+	id: executionIdSchema,
+	contextId: contextIdSchema.optional()
 });
 
 // =============================================================================
@@ -755,6 +775,7 @@ export const failedLayerSchema = z.union([z.literal('ast'), z.literal('behavior'
 export const behaviorKindSchema = z.enum([
 	'output',
 	'unit_test',
+	'assert',
 	'variable_check',
 	'reference_solution'
 ]);
