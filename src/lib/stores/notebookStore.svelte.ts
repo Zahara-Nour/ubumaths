@@ -816,6 +816,12 @@ export class NotebookStore {
 		cell.outputs = convertExecutorOutputs(this._executor);
 		cell.state = this._executor.stderr.length > 0 ? 'error' : 'success';
 
+		// Remember the source we just executed so the UI can flag the cell
+		// as "modified since last run" once the user edits it. Stored in
+		// cell metadata so it round-trips through autosave + load without
+		// needing a separate map. (Schema accepts arbitrary metadata keys.)
+		cell.metadata = { ...(cell.metadata ?? {}), last_executed_source: cell.source };
+
 		this.isModified = true;
 
 		// Process next cell in queue if any

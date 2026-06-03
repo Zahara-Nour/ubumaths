@@ -95,7 +95,12 @@ const notebookCellSchema = z.object({
 	metadata: z
 		.object({
 			collapsed: z.boolean().optional(),
-			tags: z.array(z.string().max(50)).max(20).optional()
+			tags: z.array(z.string().max(50)).max(20).optional(),
+			// Snapshot of the cell source at last execution. The UI compares
+			// it to `source` to draw the Colab-style "modified since last
+			// run" blue dot in the gutter. Capped at the same 50KB as
+			// source so it can't grow unbounded.
+			last_executed_source: z.string().max(50000).optional()
 		})
 		.optional(),
 	checkpoint: checkpointConfigSchema.optional(),
