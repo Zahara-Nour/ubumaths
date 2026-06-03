@@ -224,6 +224,17 @@ export type BehaviorCheck =
 			tolerance?: UnitTestTolerance;
 	  }
 	| {
+			kind: 'assert';
+			/**
+			 * Python code containing one or more `assert` statements (or any
+			 * code that raises on failure). Executed against the resolved
+			 * namespace (persistent context for notebook checkpoints, fresh
+			 * dict for exercise mode). A bare exception → `failed`; clean
+			 * execution → `passed`.
+			 */
+			code: string;
+	  }
+	| {
 			kind: 'variable_check';
 			/**
 			 * Map of variable name → expected value. After the student's code is
@@ -273,7 +284,7 @@ export interface ExerciseValidationConfig {
 export interface ExerciseValidationResult {
 	valid: boolean;
 	failed_layer: 'ast' | 'behavior' | null;
-	behavior_kind?: 'output' | 'unit_test' | 'variable_check' | 'reference_solution';
+	behavior_kind?: 'output' | 'unit_test' | 'assert' | 'variable_check' | 'reference_solution';
 	ast_issues?: string[];
 	test_results: TestCaseResult[];
 	error?: string;
@@ -359,13 +370,26 @@ export interface ValidateMessage {
 }
 
 /**
- * Message to validate Python exercise code with various strategies
+ * Message to validate Python exercise code with various strategies.
+ *
+ * `contextId` is **optional** and changes the validation semantics:
+ *
+ * - **omitted** (exercise mode): the worker creates a fresh `dict()`, execs
+ *   `code` into it, then runs the behavior against that fresh namespace.
+ * - **provided** (notebook checkpoint mode): the worker resolves the existing
+ *   persistent namespace via `getContextNamespace(contextId)`. `code` is the
+ *   *test* code (e.g. assertion body, or no-op for `unit_test`/`variable_check`
+ *   which don't need any pre-exec). The behavior runs against the
+ *   already-populated namespace — i.e. against the variables/functions the
+ *   student defined in the previous cells.
  */
 export interface ValidateExerciseMessage {
 	type: 'validate-exercise';
 	code: string;
 	config: ExerciseValidationConfig;
 	id: string;
+	/** Optional context ID for notebook checkpoints (persistent namespace lookup). */
+	contextId?: string;
 }
 
 // =============================================================================

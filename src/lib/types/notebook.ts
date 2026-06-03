@@ -4,8 +4,45 @@
  */
 
 // Cell types
-export type CellType = 'code' | 'markdown';
+export type CellType = 'code' | 'markdown' | 'checkpoint';
 export type CellExecutionState = 'idle' | 'running' | 'success' | 'error';
+
+// Checkpoint cell modes — V1 supports three validation strategies
+export type CheckpointMode = 'assert' | 'unit_test' | 'variable_check';
+
+// Checkpoint config — discriminated union on `mode`
+export type CheckpointConfig =
+	| {
+			mode: 'assert';
+			/** Python code containing one or more `assert` statements. */
+			code: string;
+	  }
+	| {
+			mode: 'unit_test';
+			function_name: string;
+			test_cases: Array<{
+				args: unknown[];
+				expected: unknown;
+			}>;
+			/** Optional numeric tolerance for float comparisons. */
+			tolerance?: {
+				eps_abs: number;
+				eps_rel: number;
+			};
+	  }
+	| {
+			mode: 'variable_check';
+			/** Map of variable name → expected value. Read from the notebook's persistent namespace. */
+			expected_vars: Record<string, unknown>;
+			/** Optional numeric tolerance for float comparisons. */
+			tolerance?: {
+				eps_abs: number;
+				eps_rel: number;
+			};
+	  };
+
+// Latest checkpoint run status (from python_notebook_checkpoint_runs)
+export type CheckpointStatus = 'passed' | 'failed';
 
 // Cell output types (Jupyter-compatible)
 export interface StreamOutput {
@@ -35,8 +72,10 @@ export interface DisplayOutput {
 
 export type CellOutput = StreamOutput | ErrorOutput | DisplayOutput;
 
-// Notebook cell
-export interface NotebookCell {
+// Notebook cell — discriminated by `type`
+// Code and markdown cells share the original shape (back-compat).
+// Checkpoint cells carry a CheckpointConfig + an optional title for the teacher dashboard.
+export interface BaseNotebookCell {
 	id: string;
 	type: CellType;
 	source: string;
@@ -49,6 +88,16 @@ export interface NotebookCell {
 		[key: string]: unknown; // Allow additional metadata fields (e.g., Colab-specific)
 	};
 }
+
+export interface CheckpointCell extends BaseNotebookCell {
+	type: 'checkpoint';
+	/** Discriminated config — what the checkpoint actually verifies. */
+	checkpoint: CheckpointConfig;
+	/** Short human-readable title shown in the teacher dashboard (e.g. "Étape 1 : moyenne"). */
+	title?: string;
+}
+
+export type NotebookCell = BaseNotebookCell | CheckpointCell;
 
 // Full notebook
 export interface NotebookMetadata {
