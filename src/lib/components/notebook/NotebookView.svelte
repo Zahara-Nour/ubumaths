@@ -17,6 +17,7 @@
 	import NotebookToolbar from './NotebookToolbar.svelte';
 	import NotebookStatusBar from './NotebookStatusBar.svelte';
 	import NotebookCell from './NotebookCell.svelte';
+	import NotebookOutline from './NotebookOutline.svelte';
 	import { Alert } from '$lib/components/ui/alert';
 	import { Eye } from 'lucide-svelte';
 
@@ -62,6 +63,14 @@
 	// State
 	let isInitialized = $state(false);
 	let containerRef: HTMLDivElement | null = $state(null);
+
+	// Outline (Colab-style sommaire) — collapsed by default to preserve
+	// horizontal real estate on smaller screens.
+	let outlineOpen = $state(false);
+
+	function handleJumpToCell(cellId: string): void {
+		notebook.setActiveCell(cellId);
+	}
 
 	// Load notebook
 	async function loadNotebook(): Promise<void> {
@@ -380,6 +389,8 @@
 			{notebook}
 			{isReadonly}
 			isTeacher={effectiveIsTeacher}
+			{outlineOpen}
+			onToggleOutline={() => (outlineOpen = !outlineOpen)}
 			onSave={handleSave}
 			onAddCodeCell={handleAddCodeCell}
 			onAddMarkdownCell={handleAddMarkdownCell}
@@ -418,37 +429,45 @@
 			</div>
 		{/if}
 
-		<!-- Cells container -->
-		<div class="flex-1 overflow-y-auto">
-			{#if notebook.cells.length === 0}
-				<!-- Empty state -->
-				<div class="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
-					<p class="text-lg font-medium text-muted-foreground">Notebook vide</p>
-					<p class="text-sm text-muted-foreground">
-						Commencez par ajouter une cellule de code ou markdown
-					</p>
-				</div>
-			{:else}
-				<!-- Render cells -->
-				<div class="mx-auto max-w-6xl py-4">
-					{#each notebook.cells as _, index (notebook.cells[index].id)}
-						<NotebookCell
-							bind:cell={notebook.cells[index]}
-							isActive={notebook.activeCell === notebook.cells[index].id}
-							{isReadonly}
-							isTeacher={effectiveIsTeacher}
-							isFirst={index === 0}
-							isLast={index === notebook.cells.length - 1}
-							{notebook}
-							onSelect={() => handleSelectCell(notebook.cells[index].id)}
-							onDelete={() => handleDeleteCell(notebook.cells[index].id)}
-							onMoveUp={() => handleMoveUp(notebook.cells[index].id)}
-							onMoveDown={() => handleMoveDown(notebook.cells[index].id)}
-							onExecute={() => handleExecuteCell(notebook.cells[index].id)}
-						/>
-					{/each}
-				</div>
-			{/if}
+		<!-- Outline sidebar + cells container -->
+		<div class="flex flex-1 overflow-hidden">
+			<NotebookOutline cells={notebook.cells} bind:open={outlineOpen} onJumpTo={handleJumpToCell} />
+
+			<!-- Cells container -->
+			<div class="flex-1 overflow-y-auto">
+				{#if notebook.cells.length === 0}
+					<!-- Empty state -->
+					<div class="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
+						<p class="text-lg font-medium text-muted-foreground">Notebook vide</p>
+						<p class="text-sm text-muted-foreground">
+							Commencez par ajouter une cellule de code ou markdown
+						</p>
+					</div>
+				{:else}
+					<!-- Render cells. The outer `<div id="notebook-cell-...">` is the
+					     scroll anchor used by the outline's `scrollIntoView`. -->
+					<div class="mx-auto max-w-6xl py-4">
+						{#each notebook.cells as _, index (notebook.cells[index].id)}
+							<div id="notebook-cell-{notebook.cells[index].id}">
+								<NotebookCell
+									bind:cell={notebook.cells[index]}
+									isActive={notebook.activeCell === notebook.cells[index].id}
+									{isReadonly}
+									isTeacher={effectiveIsTeacher}
+									isFirst={index === 0}
+									isLast={index === notebook.cells.length - 1}
+									{notebook}
+									onSelect={() => handleSelectCell(notebook.cells[index].id)}
+									onDelete={() => handleDeleteCell(notebook.cells[index].id)}
+									onMoveUp={() => handleMoveUp(notebook.cells[index].id)}
+									onMoveDown={() => handleMoveDown(notebook.cells[index].id)}
+									onExecute={() => handleExecuteCell(notebook.cells[index].id)}
+								/>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</div>
 		</div>
 
 		<!-- Status bar -->
