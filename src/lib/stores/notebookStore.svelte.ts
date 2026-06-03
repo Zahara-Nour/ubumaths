@@ -519,9 +519,18 @@ export class NotebookStore {
 			}
 
 			const data = await response.json();
-			this.notebook = data.notebook as PythonNotebook;
+			const saved = data.notebook as PythonNotebook;
+			// DO NOT replace `this.notebook` with the response. The request body
+			// captured a JSON snapshot at the moment of the fetch; if a cell
+			// finished executing during the round-trip, its fresh outputs and
+			// state live only on `this.notebook` here and would be overwritten
+			// by the stale snapshot the server echoes back. Trust local state;
+			// only adopt the server-stamped `updated_at`.
+			if (this.notebook) {
+				this.notebook.updated_at = saved.updated_at;
+			}
 			this.isModified = false;
-			this.lastSavedTime = new Date(this.notebook.updated_at);
+			this.lastSavedTime = new Date(saved.updated_at);
 			this.cancelAutoSave();
 			return true;
 		} catch (err) {
@@ -1072,6 +1081,16 @@ export class NotebookStore {
 
 		// Schedule a new autosave 2 seconds after the last change
 		this.autoSaveTimeout = setTimeout(async () => {
+			// Defer if a cell is mid-execution: serialising `content` now would
+			// snapshot a `running` cell with empty outputs, race against the
+			// completion update, and then (independently of the response-merge
+			// fix in saveNotebook) leave the inbox UI showing transient state.
+			// Re-arm the timer once the queue drains by treating it as a new
+			// change — the next markModified will re-call this method.
+			if (this.isExecutingAny || this.hasQueuedCells) {
+				this.scheduleAutoSave();
+				return;
+			}
 			if (this.isModified && !this.isAutoSaving && !this.isSaving) {
 				this.isAutoSaving = true;
 				try {
