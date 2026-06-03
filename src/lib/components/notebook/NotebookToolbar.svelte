@@ -14,16 +14,28 @@
 	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Play, Square, Save, Plus, RotateCcw, PlayCircle, Code, FileText } from 'lucide-svelte';
+	import {
+		Play,
+		Square,
+		Save,
+		Plus,
+		RotateCcw,
+		PlayCircle,
+		Code,
+		FileText,
+		Sparkles
+	} from 'lucide-svelte';
 	import KeyboardShortcutsHelp from './KeyboardShortcutsHelp.svelte';
 
 	// Props
 	let {
 		notebook = null as NotebookStore | null,
 		isReadonly = false,
+		isTeacher = false,
 		onSave = () => {},
 		onAddCodeCell = () => {},
 		onAddMarkdownCell = () => {},
+		onAddCheckpointCell = () => {},
 		onRunCurrent = () => {},
 		onRunAll = () => {},
 		onStop = () => {},
@@ -31,9 +43,11 @@
 	}: {
 		notebook?: NotebookStore | null;
 		isReadonly?: boolean;
+		isTeacher?: boolean;
 		onSave?: () => void;
 		onAddCodeCell?: () => void;
 		onAddMarkdownCell?: () => void;
+		onAddCheckpointCell?: () => void;
 		onRunCurrent?: () => void;
 		onRunAll?: () => void;
 		onStop?: () => void;
@@ -112,6 +126,12 @@
 						<FileText class="mr-2 size-4" />
 						Cellule markdown
 					</DropdownMenu.Item>
+					{#if isTeacher}
+						<DropdownMenu.Item onclick={onAddCheckpointCell}>
+							<Sparkles class="mr-2 size-4" />
+							Checkpoint (vérification)
+						</DropdownMenu.Item>
+					{/if}
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		{/if}
