@@ -12,11 +12,19 @@
 	let {
 		executionCount = null as number | null,
 		state = 'idle' as CellExecutionState,
-		type = 'code' as CellType
+		type = 'code' as CellType,
+		isDirty = false
 	}: {
 		executionCount?: number | null;
 		state?: CellExecutionState;
 		type?: CellType;
+		/**
+		 * True when a code cell's source has changed since the last
+		 * execution. Renders a small blue dot next to the [In N] label,
+		 * mirroring Colab's "modified since last run" indicator. Only
+		 * meaningful for code cells with executionCount !== null.
+		 */
+		isDirty?: boolean;
 	} = $props();
 
 	// Derived state
@@ -37,9 +45,16 @@
 
 {#if type === 'code'}
 	<div
-		class="flex h-full min-w-[80px] items-start justify-end pt-3 pr-3 font-mono text-sm {colorClass}"
+		class="flex h-full min-w-[80px] items-start justify-end gap-1.5 pt-3 pr-3 font-mono text-sm {colorClass}"
 	>
 		{displayText}
+		{#if isDirty && state !== 'running'}
+			<span
+				class="mt-1 inline-block size-2 shrink-0 rounded-full bg-blue-500"
+				aria-label="Cellule modifiée depuis la dernière exécution"
+				title="Cellule modifiée depuis la dernière exécution"
+			></span>
+		{/if}
 	</div>
 {:else}
 	<div class="min-w-[80px]"></div>

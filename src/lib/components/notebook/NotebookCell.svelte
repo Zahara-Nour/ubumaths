@@ -49,6 +49,17 @@
 		onExecute?: () => void;
 	} = $props();
 
+	// Derived — "modified since last execution" for code cells. The store
+	// stamps cell.metadata.last_executed_source at completion; if the live
+	// source diverges, the gutter renders the Colab-style blue dot.
+	let isDirty = $derived.by(() => {
+		if (cell.type !== 'code') return false;
+		if (cell.execution_count === null) return false;
+		const lastExecuted = cell.metadata?.last_executed_source;
+		if (typeof lastExecuted !== 'string') return false;
+		return cell.source !== lastExecuted;
+	});
+
 	// Functions
 	function handleClick(): void {
 		if (!isActive) {
@@ -71,7 +82,7 @@
 	}}
 >
 	<!-- Gutter -->
-	<CellGutter executionCount={cell.execution_count} state={cell.state} type={cell.type} />
+	<CellGutter executionCount={cell.execution_count} state={cell.state} type={cell.type} {isDirty} />
 
 	<!-- Cell content -->
 	<div class="flex-1">

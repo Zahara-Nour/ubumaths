@@ -37,6 +37,33 @@
 	let isRunning = $derived(cell.state === 'running');
 	let hasError = $derived(cell.state === 'error');
 
+	// Elapsed-time counter while the cell is executing. Only surfaced when
+	// the execution lasts longer than `TIMER_VISIBLE_THRESHOLD_S` seconds,
+	// so short cells stay quiet. Pattern stolen from Colab's "Running…
+	// (3s)" badge.
+	const TIMER_VISIBLE_THRESHOLD_S = 2;
+	let elapsedSeconds = $state(0);
+	let timerInterval: ReturnType<typeof setInterval> | null = null;
+
+	$effect(() => {
+		if (isRunning) {
+			const startMs = Date.now();
+			elapsedSeconds = 0;
+			timerInterval = setInterval(() => {
+				elapsedSeconds = Math.floor((Date.now() - startMs) / 1000);
+			}, 250);
+			return () => {
+				if (timerInterval) {
+					clearInterval(timerInterval);
+					timerInterval = null;
+				}
+				elapsedSeconds = 0;
+			};
+		}
+	});
+
+	let showElapsed = $derived(isRunning && elapsedSeconds >= TIMER_VISIBLE_THRESHOLD_S);
+
 	// Functions
 	function handleExecute(): void {
 		onExecute();
@@ -101,7 +128,9 @@
 				<div
 					class="size-3 animate-spin rounded-full border-2 border-primary border-t-transparent"
 				></div>
-				<span class="text-xs font-medium text-primary">Exécution...</span>
+				<span class="text-xs font-medium text-primary">
+					Exécution{showElapsed ? `… ${elapsedSeconds}s` : '…'}
+				</span>
 			</div>
 		{/if}
 	</div>
