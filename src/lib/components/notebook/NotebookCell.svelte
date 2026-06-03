@@ -16,6 +16,7 @@
 	import CodeCell from './CodeCell.svelte';
 	import MarkdownCell from './MarkdownCell.svelte';
 	import CheckpointCell from './CheckpointCell.svelte';
+	import CheckpointEditor from './CheckpointEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Trash2, ChevronUp, ChevronDown } from 'lucide-svelte';
 
@@ -24,6 +25,7 @@
 		cell = $bindable() as NotebookCell,
 		isActive = false,
 		isReadonly = false,
+		isTeacher = false,
 		isFirst = false,
 		isLast = false,
 		notebook = null as NotebookStore | null,
@@ -36,6 +38,7 @@
 		cell: NotebookCell;
 		isActive?: boolean;
 		isReadonly?: boolean;
+		isTeacher?: boolean;
 		isFirst?: boolean;
 		isLast?: boolean;
 		notebook?: NotebookStore | null;
@@ -75,7 +78,11 @@
 		{#if cell.type === 'code'}
 			<CodeCell bind:cell {isActive} {isReadonly} {notebook} {onExecute} />
 		{:else if cell.type === 'checkpoint'}
-			<CheckpointCell cell={cell as CheckpointCellType} {notebook} {isReadonly} />
+			{#if isTeacher && !isReadonly}
+				<CheckpointEditor bind:cell={cell as CheckpointCellType} {notebook} />
+			{:else}
+				<CheckpointCell cell={cell as CheckpointCellType} {notebook} {isReadonly} />
+			{/if}
 		{:else}
 			<MarkdownCell bind:cell {isActive} {isReadonly} />
 		{/if}

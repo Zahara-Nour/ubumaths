@@ -22,10 +22,19 @@
 	// Props
 	let {
 		notebookId = null as string | null,
-		isReadonly = false
+		isReadonly = false,
+		isTeacher = false
 	}: {
 		notebookId?: string | null;
 		isReadonly?: boolean;
+		/**
+		 * Whether the current user has teacher privileges. Enables the
+		 * "+ Checkpoint" toolbar entry and routes checkpoint cells to the
+		 * editor (`CheckpointEditor`) instead of the read-only student
+		 * view (`CheckpointCell`). The parent page is responsible for
+		 * deriving this from `profile.role` after authorization checks.
+		 */
+		isTeacher?: boolean;
 	} = $props();
 
 	// Create notebook store instance
@@ -116,6 +125,24 @@
 		const newCellId = notebook.addCell({
 			type: 'markdown',
 			index: activeIndex + 1
+		});
+
+		if (newCellId) {
+			notebook.setActiveCell(newCellId);
+		}
+	}
+
+	function handleAddCheckpointCell(): void {
+		const activeIndex = notebook.activeCell
+			? notebook.getCellIndex(notebook.activeCell)
+			: notebook.cells.length - 1;
+
+		// Default V1 = assert mode with empty body — the teacher fills it
+		// in immediately via the inline CheckpointEditor.
+		const newCellId = notebook.addCell({
+			type: 'checkpoint',
+			index: activeIndex + 1,
+			checkpoint: { mode: 'assert', code: '' }
 		});
 
 		if (newCellId) {
@@ -306,9 +333,11 @@
 		<NotebookToolbar
 			{notebook}
 			{isReadonly}
+			{isTeacher}
 			onSave={handleSave}
 			onAddCodeCell={handleAddCodeCell}
 			onAddMarkdownCell={handleAddMarkdownCell}
+			onAddCheckpointCell={handleAddCheckpointCell}
 			onRunCurrent={handleRunCurrent}
 			onRunAll={handleRunAll}
 			onStop={handleStop}
@@ -348,6 +377,7 @@
 							bind:cell={notebook.cells[index]}
 							isActive={notebook.activeCell === notebook.cells[index].id}
 							{isReadonly}
+							{isTeacher}
 							isFirst={index === 0}
 							isLast={index === notebook.cells.length - 1}
 							{notebook}

@@ -41,7 +41,11 @@
 	</div>
 
 	<!-- Notebook -->
-	<NotebookView notebookId={data.notebook.id} isReadonly={data.readonly} />
+	<NotebookView
+		notebookId={data.notebook.id}
+		isReadonly={data.readonly}
+		isTeacher={data.isOwner && data.userRole === 'teacher'}
+	/>
 </div>
 
 <!-- Share Dialog -->

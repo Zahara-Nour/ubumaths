@@ -13,8 +13,8 @@ Feature : cellules de validation (`checkpoint`) dans les notebooks Python, avec 
 | 1     | Migration DB + types TS + Zod schemas              | ✅ Livrée  | `4c15d7c02` |
 | 2     | Worker : nouveau mode `assert` + `contextId`       | ✅ Livrée  | `c40fb96bd` |
 | 3     | Endpoints POST + GET checkpoint-runs               | ✅ Livrée  | `cf009a7b7` |
-| 4     | Composant `CheckpointCell.svelte` (vue élève)      | ✅ Livrée  | _pending_   |
-| 5     | UI teacher : éditeur de checkpoint dans notebook   | ⏳ À faire | —           |
+| 4     | Composant `CheckpointCell.svelte` (vue élève)      | ✅ Livrée  | `a53d2459a` |
+| 5     | UI teacher : éditeur de checkpoint dans notebook   | ✅ Livrée  | _pending_   |
 | 6     | Dashboard prof `/python-notebook/[id]/results`     | ⏳ À faire | —           |
 | 7     | Doc + autofixer + check:incremental + commit final | ⏳ À faire | —           |
 
@@ -241,3 +241,42 @@ Feature : cellules de validation (`checkpoint`) dans les notebooks Python, avec 
 - Exporter + tester `checkpointConfigToValidationConfig`
 - `loadCheckpointRuns` peut écraser un verdict local plus récent : merger plutôt que remplacer si race observée
 - Edge case live editing teacher pendant que l'élève a la cellule ouverte → realtime channel ou polling (hors V1)
+
+---
+
+## Phase 5 — Livré ✅
+
+**Fichiers créés/modifiés**
+
+- `src/lib/components/notebook/CheckpointEditor.svelte` (nouveau) — éditeur teacher : titre + sélecteur de mode + form spécifique par mode + preview live (réutilise `CheckpointCell` en readonly)
+- `src/lib/components/notebook/NotebookToolbar.svelte` — prop `isTeacher`, prop `onAddCheckpointCell`, entrée DropdownMenu "Checkpoint" si teacher
+- `src/lib/components/notebook/NotebookCell.svelte` — prop `isTeacher`, route vers `CheckpointEditor` si `isTeacher && !isReadonly`, sinon `CheckpointCell`
+- `src/lib/components/notebook/NotebookView.svelte` — prop `isTeacher`, handler `handleAddCheckpointCell`, propagation `isTeacher` vers toolbar et cells
+- `src/routes/(protected)/python-notebook/[id]/+page.svelte` — `isTeacher={data.isOwner && data.userRole === 'teacher'}` passé à `NotebookView`
+
+**Architecture**
+
+- `CheckpointEditor` réutilise `CheckpointCell` en mode readonly pour la preview live → 0 duplication
+- 3 modes éditables :
+  - **assert** : textarea Python pour les assertions
+  - **unit_test** : input function_name + liste de cas (args/expected en JSON drafts, commit on blur)
+  - **variable_check** : tableau (name, value JSON) modélisé via `varRows` local pour stable iteration
+- Switch de mode reset la config + l'état UI local (`varRows`, `parseErrors`)
+- Inputs JSON taggués `border-destructive` + message "JSON invalide" quand parse échoue (au lieu d'écraser silencieusement)
+
+**Sécurité** : `isTeacher` dérivé côté serveur (`+page.server.ts → data.isOwner && data.userRole === 'teacher'`). Defense en profondeur côté UI uniquement ; la RLS DB (Phase 1) bloque toute écriture d'un non-teacher.
+
+**Tests** : 15/15 CheckpointCell tests toujours verts. Pas de tests dédiés `CheckpointEditor` en V1 (couvre 3 modes × JSON drafts × $effect = grosse surface) — à ajouter Phase 6 si bug remonté.
+
+**Code review** : APPROUVÉ AVEC RÉSERVES — 2 bloquants corrigés :
+
+1. **`varRows` fuite entre modes** : reset explicite dans `handleModeChange` (sinon switch variable_check → assert → variable_check réinjecte les vieilles vars)
+2. **Silent JSON errors** : ajout d'un état `parseErrors: Record<string, true>` + classe `border-destructive` + message "JSON invalide" sur les 3 inputs JSON (args, expected, var-value)
+
+Bloquant #3 (`isTeacher` spoof via DevTools → autosave 403) reporté à Phase 6 — RLS bloque côté serveur, c'est juste un message d'erreur à durcir.
+
+**Hors-scope V1 (notés)** :
+
+- Confirm dialog avant reset de mode si la config courante est non-vide
+- Tests dédiés `CheckpointEditor`
+- a11y pass complet (Labels `for=` manquants sur quelques inputs)
