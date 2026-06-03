@@ -11,6 +11,8 @@
 	 * - Toolbar and status bar
 	 */
 
+	import { dndzone, SHADOW_PLACEHOLDER_ITEM_ID, type DndEvent } from 'svelte-dnd-action';
+	import { flip } from 'svelte/animate';
 	import { NotebookStore } from '$lib/stores/notebookStore.svelte';
 	import type { NotebookCell as NotebookCellType } from '$lib/types/notebook';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -20,6 +22,8 @@
 	import NotebookOutline from './NotebookOutline.svelte';
 	import { Alert } from '$lib/components/ui/alert';
 	import { Eye } from 'lucide-svelte';
+
+	const FLIP_MS = 200;
 
 	// Props
 	let {
@@ -235,16 +239,44 @@
 		});
 	}
 
-	function handleMoveUp(cellId: string): void {
-		notebook.moveCell(cellId, 'up');
-	}
-
-	function handleMoveDown(cellId: string): void {
-		notebook.moveCell(cellId, 'down');
-	}
-
 	async function handleExecuteCell(cellId: string): Promise<void> {
 		await notebook.executeCell(cellId);
+	}
+
+	// ===== Drag-and-drop cell reordering =====
+	//
+	// svelte-dnd-action operates by mutating a local items array on every
+	// pointer move (`onconsider`) and once at drop (`onfinalize`). We
+	// forward both writes straight to `notebook.notebook.content.cells`
+	// so the existing reactive renderers and the autosave effect both see
+	// the new order. The lib injects shadow placeholders during the drag;
+	// they're harmless to render (they look like a faded cell), but we
+	// keep the existing notebook.cells API as the read source so the rest
+	// of the component stays uncoupled.
+
+	function applyDndItems(items: NotebookCellType[]): void {
+		if (!notebook.notebook) return;
+		notebook.notebook.content.cells = items;
+	}
+
+	function handleCellsConsider(event: CustomEvent<DndEvent<NotebookCellType>>): void {
+		applyDndItems(event.detail.items);
+	}
+
+	function handleCellsFinalize(event: CustomEvent<DndEvent<NotebookCellType>>): void {
+		applyDndItems(event.detail.items);
+		// Reorder doesn't change source/id hash for our autosave canary, so
+		// also explicitly schedule a save — the new ordering is content
+		// and the user expects "Enregistré" to follow.
+		notebook.markModified();
+		notebook.scheduleAutoSave();
+	}
+
+	// True while a cell is mid-drag. svelte-dnd-action injects a sentinel
+	// item with this id; we use it to fade the placeholder so the user
+	// sees where the drop will land.
+	function isShadow(cellId: string): boolean {
+		return cellId === SHADOW_PLACEHOLDER_ITEM_ID;
 	}
 
 	// Keyboard shortcuts
@@ -444,24 +476,38 @@
 						</p>
 					</div>
 				{:else}
-					<!-- Render cells. The outer `<div id="notebook-cell-...">` is the
-					     scroll anchor used by the outline's `scrollIntoView`. -->
-					<div class="mx-auto max-w-6xl py-4">
+					<!-- Render cells inside an svelte-dnd-action zone so the user
+					     can reorder them by drag. The outer `<div id="notebook-cell-...">`
+					     is also the scroll anchor used by the outline's
+					     `scrollIntoView`. Drag is disabled in readonly mode. -->
+					<div
+						class="mx-auto max-w-6xl py-4"
+						use:dndzone={{
+							items: notebook.cells,
+							type: 'notebook-cells',
+							flipDurationMs: FLIP_MS,
+							dragDisabled: isReadonly,
+							dropTargetStyle: { outline: '2px dashed var(--color-ring)' }
+						}}
+						onconsider={handleCellsConsider}
+						onfinalize={handleCellsFinalize}
+					>
 						{#each notebook.cells as _, index (notebook.cells[index].id)}
-							<div id="notebook-cell-{notebook.cells[index].id}">
+							{@const cellId = notebook.cells[index].id}
+							<div
+								id="notebook-cell-{cellId}"
+								animate:flip={{ duration: FLIP_MS }}
+								class={isShadow(cellId) ? 'opacity-40' : ''}
+							>
 								<NotebookCell
 									bind:cell={notebook.cells[index]}
-									isActive={notebook.activeCell === notebook.cells[index].id}
+									isActive={notebook.activeCell === cellId}
 									{isReadonly}
 									isTeacher={effectiveIsTeacher}
-									isFirst={index === 0}
-									isLast={index === notebook.cells.length - 1}
 									{notebook}
-									onSelect={() => handleSelectCell(notebook.cells[index].id)}
-									onDelete={() => handleDeleteCell(notebook.cells[index].id)}
-									onMoveUp={() => handleMoveUp(notebook.cells[index].id)}
-									onMoveDown={() => handleMoveDown(notebook.cells[index].id)}
-									onExecute={() => handleExecuteCell(notebook.cells[index].id)}
+									onSelect={() => handleSelectCell(cellId)}
+									onDelete={() => handleDeleteCell(cellId)}
+									onExecute={() => handleExecuteCell(cellId)}
 								/>
 							</div>
 						{/each}
