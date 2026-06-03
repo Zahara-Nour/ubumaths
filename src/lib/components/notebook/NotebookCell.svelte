@@ -74,7 +74,15 @@
 	}}
 >
 	<!-- Gutter -->
-	<CellGutter executionCount={cell.execution_count} state={cell.state} type={cell.type} {isDirty} />
+	<CellGutter
+		executionCount={cell.execution_count}
+		state={cell.state}
+		type={cell.type}
+		{isDirty}
+		canExecute={cell.type === 'code' && !isReadonly}
+		{onExecute}
+		onStop={() => notebook?.stopExecution()}
+	/>
 
 	<!-- Cell content -->
 	<div class="flex-1">
