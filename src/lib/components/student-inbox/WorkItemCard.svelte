@@ -22,7 +22,15 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { buttonVariants } from '$lib/components/ui/button/button.svelte';
-	import { ClipboardList, BookOpen, FileText, Code, GraduationCap, Clock } from 'lucide-svelte';
+	import {
+		ClipboardList,
+		BookOpen,
+		FileText,
+		Code,
+		GraduationCap,
+		Clock,
+		NotebookPen
+	} from 'lucide-svelte';
 	import { resolve } from '$app/paths';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
@@ -71,6 +79,12 @@
 			badgeVariant: 'outline',
 			cta: 'Coder',
 			icon: Code
+		},
+		python_notebook: {
+			label: 'Notebook',
+			badgeVariant: 'outline',
+			cta: 'Ouvrir',
+			icon: NotebookPen
 		}
 	};
 

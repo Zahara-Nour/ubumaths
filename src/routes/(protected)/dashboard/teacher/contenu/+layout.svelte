@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GroupedRouteLayout from '$lib/components/navigation/GroupedRouteLayout.svelte';
-	import { Layers, BookOpen, Lightbulb, FileSpreadsheet } from 'lucide-svelte';
+	import { Layers, BookOpen, Lightbulb, FileSpreadsheet, NotebookPen } from 'lucide-svelte';
 
 	let { children } = $props();
 
@@ -24,6 +24,11 @@
 			href: '/dashboard/teacher/contenu/worksheets',
 			label: 'Worksheets',
 			icon: FileSpreadsheet
+		},
+		{
+			href: '/dashboard/teacher/contenu/notebooks',
+			label: 'Notebooks',
+			icon: NotebookPen
 		}
 	];
 </script>

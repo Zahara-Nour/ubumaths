@@ -807,3 +807,76 @@ describe('getStudentWorkInbox — dedup precedence (direct over class)', () => {
 		expect(inbox.thisWeek[0].classId).toBeNull();
 	});
 });
+
+describe('getStudentWorkInbox — python notebooks', () => {
+	it('surfaces a class-assigned notebook in the noDeadline bucket', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', []);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+		mock.enqueue('python_notebook_assignments', [
+			{
+				id: 'pna-1',
+				notebook_id: 'nb-1',
+				class_id: CLASS_A,
+				shared_by: 'teacher-1',
+				readonly: false,
+				created_at: ISO.twoDaysAgo
+			}
+		]);
+		mock.enqueue('python_notebooks', [{ id: 'nb-1', title: 'Découverte des listes' }]);
+		mock.enqueue('classes', [{ id: CLASS_A, name: '3eme A' }]);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+
+		// No due_date on notebook assignments → always lands in "Sans échéance".
+		expect(inbox.noDeadline).toHaveLength(1);
+		const item = inbox.noDeadline[0];
+		expect(item.source).toBe('python_notebook');
+		expect(item.itemId).toBe('nb-1');
+		expect(item.title).toBe('Découverte des listes');
+		expect(item.href).toBe('/python-notebook/nb-1');
+		expect(item.classId).toBe(CLASS_A);
+		expect(item.className).toBe('3eme A');
+		expect(item.status).toBe('todo');
+		expect(item.dueAt).toBeNull();
+		expect(item.doneAt).toBeNull();
+	});
+
+	it('does not query python_notebook_assignments when the student has no classes', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', []); // no classes
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', []);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+
+		// Notebook system is class-only → without any class, the table is never read.
+		expect(mock.calls('python_notebook_assignments')).toBe(0);
+		expect(inbox.noDeadline).toEqual([]);
+	});
+
+	it('returns empty when the class has no notebook assignments', async () => {
+		const mock = createMockSupabase();
+		mock.enqueue('class_members', [{ class_id: CLASS_A }]);
+		mock.enqueue('assessment_assignments', []);
+		mock.enqueue('exercise_assignments', []);
+		mock.enqueue('worksheet_assignments', []);
+		mock.enqueue('worksheet_assignment_students', []);
+		mock.enqueue('python_exercise_assignments', []);
+		mock.enqueue('python_notebook_assignments', []);
+
+		const inbox = await getStudentWorkInbox(mock.client, STUDENT);
+
+		// The query fires but returns no rows → no follow-up notebooks/classes reads.
+		expect(mock.calls('python_notebook_assignments')).toBe(1);
+		expect(mock.calls('python_notebooks')).toBe(0);
+		expect(inbox.noDeadline).toEqual([]);
+	});
+});
