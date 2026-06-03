@@ -457,7 +457,7 @@ export class NotebookStore {
 		this.cloudError = null;
 
 		try {
-			const response = await fetch(`/api/notebooks/${id}`);
+			const response = await fetch(`/api/python-notebooks/${id}`);
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
@@ -504,7 +504,7 @@ export class NotebookStore {
 		this.cloudError = null;
 
 		try {
-			const response = await fetch(`/api/notebooks/${this.notebook.id}`, {
+			const response = await fetch(`/api/python-notebooks/${this.notebook.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -545,7 +545,7 @@ export class NotebookStore {
 		this.cloudError = null;
 
 		try {
-			const response = await fetch(`/api/notebooks/${this.notebook.id}`, {
+			const response = await fetch(`/api/python-notebooks/${this.notebook.id}`, {
 				method: 'DELETE'
 			});
 
