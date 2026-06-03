@@ -15,8 +15,6 @@
 	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
 	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
 	import CellOutputs from './CellOutputs.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { Play, Square } from 'lucide-svelte';
 
 	// Props
 	let {
@@ -68,12 +66,6 @@
 	function handleExecute(): void {
 		onExecute();
 	}
-
-	function handleStop(): void {
-		if (notebook) {
-			notebook.stopExecution();
-		}
-	}
 </script>
 
 <div class="group relative w-full">
@@ -83,34 +75,9 @@
 			? 'border-primary ring-2 ring-primary/20'
 			: 'border-border'} {hasError ? 'border-destructive' : ''}"
 	>
-		<!-- Execute button overlay -->
-		{#if !isReadonly}
-			<div class="absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover:opacity-100">
-				{#if isRunning}
-					<Button
-						variant="ghost"
-						size="sm"
-						onclick={handleStop}
-						class="h-8 gap-1.5 bg-background/80 backdrop-blur-sm hover:bg-background"
-						aria-label="Arrêter l'exécution"
-					>
-						<Square class="size-3.5" />
-						<span class="text-xs">Arrêter</span>
-					</Button>
-				{:else}
-					<Button
-						variant="ghost"
-						size="sm"
-						onclick={handleExecute}
-						class="h-8 gap-1.5 bg-background/80 backdrop-blur-sm hover:bg-background"
-						aria-label="Exécuter la cellule"
-					>
-						<Play class="size-3.5" />
-						<span class="text-xs">Exécuter</span>
-					</Button>
-				{/if}
-			</div>
-		{/if}
+		<!-- Execute / stop buttons live in the gutter now (see CellGutter
+		     under the [In N] label). The overlay was removed to consolidate
+		     the run affordance with the cell's identity column. -->
 
 		<!-- Python editor -->
 		<div class="min-h-[100px]">
