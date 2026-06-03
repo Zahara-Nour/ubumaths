@@ -52,7 +52,7 @@ BasePythonExecutor (abstrait)
 └── NotebookExecutor     → context: notebook_${id} (variables persistantes)
 ```
 
-→ Voir [progress/python-executor-pattern.md](./progress/python-executor-pattern.md)
+→ Voir [executor-pattern.md](./executor-pattern.md) (API, hooks, décisions de design) · refactor d'origine : [progress/python-executor-pattern.md](./progress/python-executor-pattern.md)
 
 ### Multi-context Pyodide worker
 
@@ -97,9 +97,10 @@ REPL Python complet en navigateur avec éditeur CodeMirror, sortie multi-format,
 ### Documentation détaillée
 
 - [architecture.md](./architecture.md) — design système, data flow, message types
-- [components.md](./components.md) — composants Svelte 5 documentés
+- [executor-pattern.md](./executor-pattern.md) — `BasePythonExecutor` + `PlaygroundExecutor` + `NotebookExecutor`
+- [worker.md](./worker.md) — Web Worker Pyodide, multi-context, validation V2, debugger
 - [store.md](./store.md) — store réactif (`pythonPlayground.svelte.ts`)
-- [worker.md](./worker.md) — Web Worker Pyodide, autocomplétion, erreurs
+- [components.md](./components.md) — composants Svelte 5 documentés
 
 ### Progression
 

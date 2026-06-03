@@ -302,7 +302,8 @@ Composants sans tests (essentiellement des wrappers UI) : `PythonPlayground`, `P
 ## Pointeurs
 
 - Store → [`store.md`](./store.md)
-- Worker / executor → [`worker.md`](./worker.md)
+- Executor pattern → [`executor-pattern.md`](./executor-pattern.md)
+- Worker → [`worker.md`](./worker.md)
 - Architecture transversale → [`architecture.md`](./architecture.md)
 - Vue fonctionnelle → [`README.md`](./README.md)
 - Locked zones (utilitaire) → `src/lib/utils/locked-zones.ts` + [`progress/python-locked-zones-progress.md`](../../wip/python-locked-zones-progress.md)

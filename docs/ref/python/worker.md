@@ -234,65 +234,16 @@ Documenté plus en détail dans [`README.md § 3. Debugger`](./README.md#3-debug
 
 ## Executor pattern (côté main thread)
 
-Le main thread ne parle pas directement au worker. Un `BasePythonExecutor` abstrait gère la lifecycle + l'état réactif Svelte 5 + le routage des messages. Deux concrétisations :
+Le main thread ne parle **pas** directement au worker. Une classe abstraite `BasePythonExecutor` (≈ 900 LoC, `src/lib/shared/python/execution/base-executor.svelte.ts`) gère la lifecycle du worker, l'état réactif Svelte 5, le routage des messages, l'auto-complétion (debounce 150 ms), la validation d'exercice et le protocole debug.
 
-| Classe               | `getContextId()`           | `isPersistentContext()` | Usage                                         |
-| -------------------- | -------------------------- | ----------------------- | --------------------------------------------- |
-| `PlaygroundExecutor` | `undefined`                | `false`                 | Playground + page exercice + form de création |
-| `NotebookExecutor`   | `'notebook_' + notebookId` | `true`                  | Une instance par notebook ouvert              |
+Deux concrétisations :
 
-Chaque store (`pythonStore`, `notebookStore`) instancie son executor. Voir [`store.md`](./store.md) pour l'API publique côté store.
+| Classe               | `getContextId()`           | `isPersistentContext()` | Consommateur                                 |
+| -------------------- | -------------------------- | ----------------------- | -------------------------------------------- |
+| `PlaygroundExecutor` | `undefined`                | `false`                 | `pythonStore`, `ExerciseForm`, page exercice |
+| `NotebookExecutor`   | `'notebook_' + notebookId` | `true`                  | Une instance par notebook ouvert             |
 
-### État réactif exposé par `BasePythonExecutor`
-
-```typescript
-state: ExecutorState           // 'initial'|'loading-pyodide'|'loading-packages'|'ready'|'executing'|'error'
-loadingProgress: number        // 0-100
-loadingStage: string
-stdout, stderr: string
-plotData, latexOutput, plotlyData: string | null
-errorLine: number | null
-executionTime: number
-packagesLoading, loadedPackages: string[]
-
-// Derived
-isReady, isExecuting, isLoading, hasError, hasOutput, isLoadingPackages: boolean
-```
-
-### API publique de `BasePythonExecutor`
-
-| Méthode                                                                | Rôle                                                  |
-| ---------------------------------------------------------------------- | ----------------------------------------------------- |
-| `initPyodide()`                                                        | Crée le worker (URL Vite), envoie `init`              |
-| `execute(code)`                                                        | Exécute (génère un `id` unique)                       |
-| `cancel()`                                                             | Annule l'exécution courante                           |
-| `clearOutput()`                                                        | Vide stdout/stderr/plot/latex/plotly                  |
-| `requestCompletion(code, cursor)` → `Promise<CompletionItem[]>`        | Auto-complétion (debounce 150 ms, timeout 500 ms)     |
-| `validateExercise(code, config)` → `Promise<ExerciseValidationResult>` | Validation parallèle à `execute()` (worker sérialise) |
-| `startDebugSession(code, breakpoints)`                                 | Démarre la session debug                              |
-| `debugStep(action)`                                                    | Step Into/Over/Out/Continue/Stop                      |
-| `stopDebugSession()`                                                   | Termine la session debug                              |
-| `isDebugSessionActive()`, `getDebugExecutionId()`                      | Introspection                                         |
-| `destroy()`                                                            | Termine le worker, reject les promesses pending       |
-
-### Hooks à overrider (sous-classe)
-
-| Hook                                          | Quand                           |
-| --------------------------------------------- | ------------------------------- |
-| `onExecutionComplete(duration)` (abstract)    | Fin exécution OK                |
-| `onExecutionError(message, line?)` (abstract) | Erreur d'exécution              |
-| `onDebugSnapshot(snapshot)`                   | Snapshot debug (default: no-op) |
-| `onDebugPaused(reason)`                       | Pause debug (default: no-op)    |
-| `onDebugFinished(duration)`                   | Fin debug (default: no-op)      |
-
-### Constantes internes (executor)
-
-```typescript
-TIMEOUT_BUFFER_MS = 5000; // Watchdog main = TIMEOUT_MS + buffer
-DEFAULT_EXERCISE_TIMEOUT_MS = 5000; // Si config.timeout_ms omis
-AUTOCOMPLETE_TIMEOUT_MS = 500;
-AUTOCOMPLETE_DEBOUNCE_MS = 150;
-```
+→ **Détails complets (API, hooks, état réactif, décisions de design)** : [`executor-pattern.md`](./executor-pattern.md).
 
 ---
 
@@ -332,6 +283,7 @@ Les tests Pyodide réels (`exercise-validation-real`) sont **lents** (~30 s/run)
 
 ## Pointeurs
 
+- Executor pattern (côté main thread) → [`executor-pattern.md`](./executor-pattern.md)
 - Architecture transversale → [`architecture.md`](./architecture.md)
 - Store playground → [`store.md`](./store.md)
 - Composants UI → [`components.md`](./components.md)
