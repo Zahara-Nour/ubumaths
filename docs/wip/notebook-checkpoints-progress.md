@@ -8,15 +8,15 @@ Feature : cellules de validation (`checkpoint`) dans les notebooks Python, avec 
 
 ## Statut global
 
-| Phase | Description                                        | Statut     | Commit    |
-| ----- | -------------------------------------------------- | ---------- | --------- |
-| 1     | Migration DB + types TS + Zod schemas              | ✅ Livrée  | _pending_ |
-| 2     | Worker : nouveau mode `assert` + `contextId`       | ⏳ À faire | —         |
-| 3     | Endpoints POST + GET checkpoint-runs               | ⏳ À faire | —         |
-| 4     | Composant `CheckpointCell.svelte` (vue élève)      | ⏳ À faire | —         |
-| 5     | UI teacher : éditeur de checkpoint dans notebook   | ⏳ À faire | —         |
-| 6     | Dashboard prof `/python-notebook/[id]/results`     | ⏳ À faire | —         |
-| 7     | Doc + autofixer + check:incremental + commit final | ⏳ À faire | —         |
+| Phase | Description                                        | Statut     | Commit      |
+| ----- | -------------------------------------------------- | ---------- | ----------- |
+| 1     | Migration DB + types TS + Zod schemas              | ✅ Livrée  | `4c15d7c02` |
+| 2     | Worker : nouveau mode `assert` + `contextId`       | ✅ Livrée  | _pending_   |
+| 3     | Endpoints POST + GET checkpoint-runs               | ⏳ À faire | —           |
+| 4     | Composant `CheckpointCell.svelte` (vue élève)      | ⏳ À faire | —           |
+| 5     | UI teacher : éditeur de checkpoint dans notebook   | ⏳ À faire | —           |
+| 6     | Dashboard prof `/python-notebook/[id]/results`     | ⏳ À faire | —           |
+| 7     | Doc + autofixer + check:incremental + commit final | ⏳ À faire | —           |
 
 ---
 
@@ -129,3 +129,36 @@ Feature : cellules de validation (`checkpoint`) dans les notebooks Python, avec 
 - `src/lib/components/notebook/CodeCell.svelte` + `MarkdownCell.svelte` (props typés plus précisément si possible)
 
 **Note dette technique HORS-SCOPE** : un autre type `NotebookCell` shadow existe dans `src/lib/shared/python/execution/types.ts` et `src/lib/shared/python/validation/schemas.ts`. Ne pas le toucher pour V1 mais s'assurer que les imports Phase 4+ ciblent bien `$lib/types/notebook`.
+
+---
+
+## Phase 2 — Livré ✅
+
+**Fichiers modifiés**
+
+- `src/lib/workers/pyodide.worker.ts` :
+  - `validateExercise(code, config, id, contextId?)` — nouvelle signature
+  - Namespace resolution : borrowed si `contextId`, owned (fresh dict) sinon
+  - `isOwnedNamespace` flag → `finally` ne détruit que le namespace owned
+  - **Rejets explicites en checkpoint mode** : `output`, `reference_solution`, `ast_requirements` retournent une `validation-exercise-result` avec `error` (V1 sécurise contre la pollution du namespace persistant)
+  - Nouveau `runAssertBehavior(code, behavior, namespace, skipCodeExec)` — exec `behavior.code`, capture `AssertionError`, pass/fail
+  - `runBehavior(code, behavior, namespace, skipCodeExec)` — propagation flag
+  - `runUnitTestBehavior` / `runVariableCheckBehavior` — paramètre `skipCodeExec` pour skipper l'exec student code en checkpoint mode
+- `src/lib/shared/python/execution/base-executor.svelte.ts` :
+  - `validateExercise(code, config, contextId?)` — nouvelle signature, propage `contextId` au worker
+- `src/lib/shared/python/execution/checkpoint-validation-real.svelte.test.ts` (nouveau) :
+  - 16 tests Pyodide réel (chromium) : 5 assert (passe, fail, NameError, accumulation cellules, contextId inexistant), 3 variable_check (lecture namespace, var manquante, no-rexec canari), 3 unit_test (call function, function manquante, no-rexec canari), 2 lifecycle namespace (persistance entre validations + execute post-validation), 3 rejets explicites (output, reference_solution, ast_requirements)
+
+**Tests** : 16/16 verts (≈ 4 s sous chromium). 57 tests `exercise-validation-real` existants restent verts → 0 régression.
+
+**Code review** : 2 bloquants corrigés
+
+1. `output` / `reference_solution` corrompaient le namespace persistant (ignorent `skipCodeExec` + injectent stdin/stdout) → rejet explicite avec message en français
+2. `ast_requirements` aurait été appliqué au `code` top-level vide → rejet explicite
+
+**Décision documentée** : en mode checkpoint, **seuls** `assert`, `unit_test`, `variable_check` sont supportés (V1 scope confirmé). Toute autre config retourne une `validation-exercise-result` avec `error` clair.
+
+**Dette technique notée pour Phase 4** :
+
+- `NotebookExecutor` n'envoie PAS `create-context` au boot — la persistance du namespace ne marche pas aujourd'hui pour les notebooks. À fixer en Phase 4 : `initPyodide()` → envoyer `create-context` après `pyodide-ready`, `destroy()` → envoyer `destroy-context`.
+- Sans cette correction Phase 4, les checkpoints ne pourraient pas fonctionner end-to-end.

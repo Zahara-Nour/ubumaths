@@ -630,8 +630,14 @@ export abstract class BasePythonExecutor {
 	 * the executor's `state` stays `'executing'` and the validation runs in
 	 * parallel from the main-thread point of view (the worker serializes them).
 	 *
-	 * @param code - Python code to validate
+	 * @param code - Python code to validate (top-level student code in exercise
+	 *   mode; ignored when `contextId` is set since the namespace is already
+	 *   populated by the notebook's prior cell executions).
 	 * @param config - Validation config (ast_requirements + behavior)
+	 * @param contextId - Optional context ID. When provided, the validation runs
+	 *   against the persistent namespace of that context (notebook checkpoint
+	 *   mode) instead of a fresh isolated dict. Pass `this.getContextId()` from
+	 *   a `NotebookExecutor` to test against the notebook's state.
 	 * @returns Promise resolving to the validation result. Failed validations
 	 *   resolve normally (with `valid: false`) — the promise only rejects when
 	 *   Pyodide is not ready, the worker is destroyed, or the safety-net timeout
@@ -639,7 +645,8 @@ export abstract class BasePythonExecutor {
 	 */
 	validateExercise(
 		code: string,
-		config: ExerciseValidationConfig
+		config: ExerciseValidationConfig,
+		contextId?: string
 	): Promise<ExerciseValidationResult> {
 		return new Promise((resolve, reject) => {
 			// Pyodide must be loaded; ready OR executing both qualify since the
@@ -667,7 +674,8 @@ export abstract class BasePythonExecutor {
 				type: 'validate-exercise',
 				code,
 				config,
-				id
+				id,
+				...(contextId !== undefined ? { contextId } : {})
 			});
 		});
 	}
