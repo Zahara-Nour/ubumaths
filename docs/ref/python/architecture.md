@@ -57,7 +57,7 @@ Pour mutualiser la logique entre Playground et Notebook (et pouvoir greffer le D
 - Le notebook a sa propre logique de cellules tout en réutilisant l'init Pyodide / autocomplete
 - Les stores (`pythonPlayground.svelte`, `notebookStore.svelte`) wrappent leur executor
 
-→ Voir [progress/python-executor-pattern.md](./progress/python-executor-pattern.md)
+→ Voir [executor-pattern.md](./executor-pattern.md) (référence à jour) · [progress/python-executor-pattern.md](./progress/python-executor-pattern.md) (refactor d'origine)
 
 ## Multi-Context Worker
 

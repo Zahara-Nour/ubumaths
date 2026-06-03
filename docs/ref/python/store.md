@@ -2,7 +2,7 @@
 
 Documentation de `src/lib/stores/pythonPlayground.svelte.ts` (≈ 1 000 lignes), le store réactif du playground Python.
 
-> Pour le notebook, voir `src/lib/stores/notebookStore.svelte.ts` (mêmes patterns, contexte persistant). Pour le debugger, voir `src/lib/stores/pythonDebug.svelte.ts`. Ces 3 stores partagent la même brique d'exécution : voir [`worker.md § Executor pattern`](./worker.md#executor-pattern-côté-main-thread).
+> Pour le notebook, voir `src/lib/stores/notebookStore.svelte.ts` (mêmes patterns, contexte persistant). Pour le debugger, voir `src/lib/stores/pythonDebug.svelte.ts`. Ces 3 stores partagent la même brique d'exécution : voir [`executor-pattern.md`](./executor-pattern.md).
 
 ---
 
@@ -289,7 +289,8 @@ pnpm test:server src/lib/stores/pythonDebug.svelte.test.ts
 
 ## Pointeurs
 
-- Worker / executor pattern → [`worker.md`](./worker.md)
+- Executor pattern → [`executor-pattern.md`](./executor-pattern.md)
+- Worker → [`worker.md`](./worker.md)
 - Composants Svelte → [`components.md`](./components.md)
 - Vue fonctionnelle → [`README.md`](./README.md)
 - Progress : [`progress/python-executor-pattern.md`](./progress/python-executor-pattern.md), [`progress/python-files-progress.md`](./progress/python-files-progress.md), [`progress/python-phase3-url-sharing.md`](./progress/python-phase3-url-sharing.md)
