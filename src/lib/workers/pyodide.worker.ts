@@ -2056,7 +2056,8 @@ async function validateCode(code: string, config: ValidationConfig, id: string):
 async function validateExercise(
 	code: string,
 	config: ExerciseValidationConfig,
-	id: string
+	id: string,
+	contextId?: string
 ): Promise<void> {
 	if (!pyodide) {
 		postMessage({
@@ -2070,14 +2071,69 @@ async function validateExercise(
 	const startTime = performance.now();
 	const timeout = config.timeout_ms || 5000;
 
-	// Fresh isolated namespace per validation. Student code, test scaffolding
-	// (stdin/stdout redirects, function lookups, AST checks) all execute here
-	// — this prevents leakage to/from the playground's main namespace and
-	// between consecutive validations.
-	const namespace = pyodide.runPython('dict()') as PyProxy;
+	// Namespace resolution:
+	// - If `contextId` is provided (notebook checkpoint mode), borrow the
+	//   persistent context's namespace. The student's variables/functions are
+	//   already populated by the notebook cell execution, so behavior runners
+	//   skip the "exec student code" step (see `skipCodeExec` below).
+	// - Otherwise (standard exercise mode), create a fresh isolated dict so
+	//   the student code can be exec'd without leaking state between
+	//   consecutive validations or into the playground namespace.
+	let namespace: PyProxy;
+	let isOwnedNamespace = false;
+	const skipCodeExec = Boolean(contextId);
+
+	if (contextId) {
+		const borrowed = getContextNamespace(contextId);
+		if (!borrowed) {
+			postMessage({
+				type: 'validation-exercise-result',
+				result: {
+					valid: false,
+					failed_layer: null,
+					behavior_kind: config.behavior?.kind,
+					test_results: [],
+					error: `Contexte d'exécution introuvable : ${contextId}`,
+					execution_time_ms: Math.round(performance.now() - startTime)
+				},
+				id
+			});
+			return;
+		}
+		namespace = borrowed;
+	} else {
+		namespace = pyodide.runPython('dict()') as PyProxy;
+		isOwnedNamespace = true;
+	}
 
 	const behaviorKind = config.behavior?.kind;
 	const hasAST = (config.ast_requirements?.length ?? 0) > 0;
+
+	// Reject combinations that would corrupt or surprise in checkpoint mode.
+	// `output` and `reference_solution` runners ignore `skipCodeExec` and re-exec
+	// the top-level code (+ inject stdin/stdout scaffolding), which would pollute
+	// the persistent notebook namespace. `ast_requirements` would apply to the
+	// (typically empty) top-level `code` parameter rather than to the preceding
+	// cells of the notebook — semantically meaningless in V1.
+	if (contextId && (behaviorKind === 'output' || behaviorKind === 'reference_solution' || hasAST)) {
+		const reason =
+			behaviorKind === 'output' || behaviorKind === 'reference_solution'
+				? `Mode "${behaviorKind}" non supporté en checkpoint (V1) — utilisez assert, unit_test ou variable_check.`
+				: `Les "ast_requirements" ne sont pas supportés en checkpoint (V1) — utilisez un mode behavior seul.`;
+		postMessage({
+			type: 'validation-exercise-result',
+			result: {
+				valid: false,
+				failed_layer: null,
+				behavior_kind: behaviorKind,
+				test_results: [],
+				error: reason,
+				execution_time_ms: Math.round(performance.now() - startTime)
+			},
+			id
+		});
+		return;
+	}
 
 	try {
 		const timeoutPromise = new Promise<never>((_, reject) => {
@@ -2116,7 +2172,12 @@ async function validateExercise(
 			}
 
 			if (config.behavior) {
-				const { valid, test_results } = await runBehavior(code, config.behavior, namespace);
+				const { valid, test_results } = await runBehavior(
+					code,
+					config.behavior,
+					namespace,
+					skipCodeExec
+				);
 				return {
 					valid,
 					failed_layer: valid ? null : 'behavior',
@@ -2167,8 +2228,13 @@ async function validateExercise(
 			id
 		});
 	} finally {
-		if (typeof (namespace as { destroy?: () => void }).destroy === 'function') {
-			(namespace as { destroy: () => void }).destroy();
+		// Only destroy the namespace if we own it. Borrowed contexts (notebook
+		// checkpoints) must outlive this validation — they hold the student's
+		// notebook state across cells.
+		if (isOwnedNamespace) {
+			if (typeof (namespace as { destroy?: () => void }).destroy === 'function') {
+				(namespace as { destroy: () => void }).destroy();
+			}
 		}
 	}
 }
@@ -2177,22 +2243,90 @@ async function validateExercise(
  * Run the behavior layer of the new pipeline. Dispatches by `kind` and
  * returns `{ valid, test_results }` — the surrounding pipeline owns the
  * `failed_layer` / `behavior_kind` fields.
+ *
+ * `skipCodeExec` is set in notebook checkpoint mode: the namespace is already
+ * populated by the notebook's prior cell executions, so `code` (top-level
+ * parameter) should NOT be re-exec'd.
  */
 async function runBehavior(
 	code: string,
 	behavior: BehaviorCheck,
-	namespace: PyProxy
+	namespace: PyProxy,
+	skipCodeExec: boolean
 ): Promise<{ valid: boolean; test_results: TestCaseResult[] }> {
 	if (behavior.kind === 'output') {
 		return runOutputBehavior(code, behavior, namespace);
 	}
 	if (behavior.kind === 'unit_test') {
-		return runUnitTestBehavior(code, behavior, namespace);
+		return runUnitTestBehavior(code, behavior, namespace, skipCodeExec);
+	}
+	if (behavior.kind === 'assert') {
+		return runAssertBehavior(code, behavior, namespace, skipCodeExec);
 	}
 	if (behavior.kind === 'variable_check') {
-		return runVariableCheckBehavior(code, behavior, namespace);
+		return runVariableCheckBehavior(code, behavior, namespace, skipCodeExec);
 	}
 	return runReferenceSolutionBehavior(code, behavior, namespace);
+}
+
+/**
+ * Run an `assert` behavior. Execs the assertion code (`behavior.code`) against
+ * the resolved namespace; a clean run is `passed`, any raised exception is
+ * `failed`.
+ *
+ * In exercise mode (`skipCodeExec = false`), the top-level `code` is exec'd
+ * first to populate the namespace, then the assertions are exec'd.
+ * In checkpoint mode (`skipCodeExec = true`), the namespace is already
+ * populated by the notebook's prior cell executions, so we only exec the
+ * assertions.
+ */
+async function runAssertBehavior(
+	code: string,
+	behavior: Extract<BehaviorCheck, { kind: 'assert' }>,
+	namespace: PyProxy,
+	skipCodeExec: boolean
+): Promise<{ valid: boolean; test_results: TestCaseResult[] }> {
+	if (!pyodide) {
+		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
+	}
+
+	// Exercise mode: exec student code first. A runtime error here aborts
+	// before we even reach the assertion code (same semantics as
+	// runVariableCheckBehavior — keeps the diff between the two minimal).
+	if (!skipCodeExec) {
+		try {
+			await pyodide.runPythonAsync(code, { globals: namespace });
+		} catch (error) {
+			return {
+				valid: false,
+				test_results: [
+					{
+						passed: false,
+						error: error instanceof Error ? error.message : String(error)
+					}
+				]
+			};
+		}
+	}
+
+	try {
+		await pyodide.runPythonAsync(behavior.code, { globals: namespace });
+		return {
+			valid: true,
+			test_results: [{ passed: true }]
+		};
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		return {
+			valid: false,
+			test_results: [
+				{
+					passed: false,
+					error: message
+				}
+			]
+		};
+	}
 }
 
 /**
@@ -2486,7 +2620,8 @@ sys.stdout = _ubumaths_old_stdout
 async function runUnitTestBehavior(
 	code: string,
 	behavior: Extract<BehaviorCheck, { kind: 'unit_test' }>,
-	namespace: PyProxy
+	namespace: PyProxy,
+	skipCodeExec: boolean
 ): Promise<{ valid: boolean; test_results: TestCaseResult[] }> {
 	if (!pyodide) {
 		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
@@ -2496,8 +2631,12 @@ async function runUnitTestBehavior(
 	let allPassed = true;
 
 	try {
-		// Execute student code to define the function in the isolated namespace
-		await pyodide.runPythonAsync(code, { globals: namespace });
+		// Exercise mode: exec student code to define the function in the namespace.
+		// Checkpoint mode: the function is already defined by the notebook's
+		// prior cell executions, so we skip the exec step entirely.
+		if (!skipCodeExec) {
+			await pyodide.runPythonAsync(code, { globals: namespace });
+		}
 
 		// Verify the function exists *in the isolated namespace*. dir() with no
 		// args in our globals returns the namespace's keys.
@@ -2672,26 +2811,32 @@ _passed = _ubumaths_compare(_actual, _expected, _ubumaths_eps_abs, _ubumaths_eps
 async function runVariableCheckBehavior(
 	code: string,
 	behavior: Extract<BehaviorCheck, { kind: 'variable_check' }>,
-	namespace: PyProxy
+	namespace: PyProxy,
+	skipCodeExec: boolean
 ): Promise<{ valid: boolean; test_results: TestCaseResult[] }> {
 	if (!pyodide) {
 		throw new Error(ERROR_MESSAGES.PYODIDE_NOT_READY);
 	}
 
-	// 1. Execute student code once. A runtime error here is a single global
-	//    failure (no point checking variables — they may not be assigned).
-	try {
-		await pyodide.runPythonAsync(code, { globals: namespace });
-	} catch (error) {
-		return {
-			valid: false,
-			test_results: [
-				{
-					passed: false,
-					error: error instanceof Error ? error.message : String(error)
-				}
-			]
-		};
+	// 1. Exercise mode: exec student code to populate the namespace. A runtime
+	//    error here is a single global failure (no point checking variables —
+	//    they may not be assigned).
+	// Checkpoint mode: the variables are already assigned by the notebook's
+	//    prior cell executions, so we skip the exec step.
+	if (!skipCodeExec) {
+		try {
+			await pyodide.runPythonAsync(code, { globals: namespace });
+		} catch (error) {
+			return {
+				valid: false,
+				test_results: [
+					{
+						passed: false,
+						error: error instanceof Error ? error.message : String(error)
+					}
+				]
+			};
+		}
 	}
 
 	const testResults: TestCaseResult[] = [];
@@ -3958,7 +4103,7 @@ self.onmessage = async (event: MessageEvent<unknown>) => {
 			break;
 
 		case 'validate-exercise':
-			await validateExercise(message.code, message.config, message.id);
+			await validateExercise(message.code, message.config, message.id, message.contextId);
 			break;
 
 		case 'debug-start':
