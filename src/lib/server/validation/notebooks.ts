@@ -36,10 +36,58 @@ const cellOutputSchema = z.discriminatedUnion('output_type', [
 	displayOutputSchema
 ]);
 
-// Cell schema
+// Checkpoint validation config — discriminated on `mode`. Mirrors the
+// `CheckpointConfig` type in $lib/types/notebook.ts and the worker-side
+// `BehaviorCheck` (assert / unit_test / variable_check) shapes in
+// $lib/shared/python/types.ts. Kept loose on `args` / `expected` /
+// `expected_vars` so the teacher can drop in any JSON; the worker's
+// own Zod schema in shared/python/worker/messages.ts is the strict
+// gate before execution.
+const checkpointToleranceSchema = z.object({
+	eps_abs: z.number(),
+	eps_rel: z.number()
+});
+
+const checkpointConfigSchema = z.discriminatedUnion('mode', [
+	z.object({
+		mode: z.literal('assert'),
+		code: z.string().max(5000)
+	}),
+	z.object({
+		mode: z.literal('unit_test'),
+		function_name: z.string().min(1).max(100),
+		test_cases: z
+			.array(
+				z.object({
+					args: z.array(z.unknown()).max(20),
+					expected: z.unknown()
+				})
+			)
+			.max(50),
+		tolerance: checkpointToleranceSchema.optional()
+	}),
+	z.object({
+		mode: z.literal('variable_check'),
+		expected_vars: z.record(z.string(), z.unknown()),
+		tolerance: checkpointToleranceSchema.optional()
+	})
+]);
+
+// Cell schema.
+//
+// `id` is a client-generated string (see `generateCellId` in the notebook
+// store: `cell-${Date.now()}-${rand}`), NOT a UUID — the original `.uuid()`
+// constraint silently 400'd every PUT with cells until the autosave race
+// got fixed and surfaced the failures. Treat it as an opaque token.
+//
+// `type` accepts the V1 checkpoint cell type added in
+// supabase/migrations/20260603103958_create_notebook_checkpoint_runs.sql.
+// The optional `checkpoint` and `title` fields are populated by the editor
+// only when `type === 'checkpoint'`; they're silently ignored on code /
+// markdown cells.
 const notebookCellSchema = z.object({
-	id: z.string().uuid(),
-	type: z.enum(['code', 'markdown']),
+	id: z.string().min(1).max(100),
+	type: z.enum(['code', 'markdown', 'checkpoint']),
 	source: z.string().max(50000), // 50KB limit per cell
 	execution_count: z.number().int().nonnegative().nullable(),
 	outputs: z.array(cellOutputSchema).max(100), // Max 100 outputs per cell
@@ -49,7 +97,9 @@ const notebookCellSchema = z.object({
 			collapsed: z.boolean().optional(),
 			tags: z.array(z.string().max(50)).max(20).optional()
 		})
-		.optional()
+		.optional(),
+	checkpoint: checkpointConfigSchema.optional(),
+	title: z.string().max(200).optional()
 });
 
 // Notebook metadata schema
