@@ -11,8 +11,8 @@ Feature : cellules de validation (`checkpoint`) dans les notebooks Python, avec 
 | Phase | Description                                        | Statut     | Commit      |
 | ----- | -------------------------------------------------- | ---------- | ----------- |
 | 1     | Migration DB + types TS + Zod schemas              | ✅ Livrée  | `4c15d7c02` |
-| 2     | Worker : nouveau mode `assert` + `contextId`       | ✅ Livrée  | _pending_   |
-| 3     | Endpoints POST + GET checkpoint-runs               | ⏳ À faire | —           |
+| 2     | Worker : nouveau mode `assert` + `contextId`       | ✅ Livrée  | `c40fb96bd` |
+| 3     | Endpoints POST + GET checkpoint-runs               | ✅ Livrée  | _pending_   |
 | 4     | Composant `CheckpointCell.svelte` (vue élève)      | ⏳ À faire | —           |
 | 5     | UI teacher : éditeur de checkpoint dans notebook   | ⏳ À faire | —           |
 | 6     | Dashboard prof `/python-notebook/[id]/results`     | ⏳ À faire | —           |
@@ -162,3 +162,36 @@ Feature : cellules de validation (`checkpoint`) dans les notebooks Python, avec 
 
 - `NotebookExecutor` n'envoie PAS `create-context` au boot — la persistance du namespace ne marche pas aujourd'hui pour les notebooks. À fixer en Phase 4 : `initPyodide()` → envoyer `create-context` après `pyodide-ready`, `destroy()` → envoyer `destroy-context`.
 - Sans cette correction Phase 4, les checkpoints ne pourraient pas fonctionner end-to-end.
+
+---
+
+## Phase 3 — Livré ✅
+
+**Fichiers créés**
+
+- `src/routes/api/python-notebooks/[id]/checkpoint-runs/+server.ts` — POST (upsert) + GET (list, ordonné `ran_at DESC`)
+- `src/routes/api/python-notebooks/[id]/checkpoint-runs/server.test.ts` — 17 tests (12 POST + 5 GET)
+
+**Design**
+
+- Auth gate (`user`) + `validateUuidParam` (avant auth pour défense en profondeur)
+- POST : Zod (`upsertCheckpointRunSchema`) → UPSERT avec `onConflict: 'notebook_id,user_id,cell_id'`
+- GET : SELECT filtré par RLS, ordonné `ran_at` desc
+- Mapping erreurs : 401 (anon) / 400 (Zod ou UUID invalide ou JSON invalide) / 403 (`SQLSTATE 42501` RLS) / 500 (autres)
+- Type `CheckpointRunRow` inline (V1 — à remplacer par `Tables<'python_notebook_checkpoint_runs'>` dès que `pnpm db:types` aura été exécuté)
+
+**Tests** : 17/17 verts (~ 100 ms). Couvre :
+
+- POST : passed/failed run, anon → 401, UUID invalide, body vide, refines Zod (passed+msg, failed-msg), error_message > 5000 chars, cell_id > 100 chars, JSON invalide, RLS reject → 403, DB error → 500
+- GET : runs visibles, liste vide, anon → 401, UUID invalide, DB error → 500
+
+**Code review** : APPROUVÉ avec 3 raffinements appliqués
+
+1. Drop du matching string `'row-level security'` → on garde seulement `code === '42501'` (SQLSTATE stable)
+2. GET ajoute `.order('ran_at', { ascending: false })` (évite tri client redondant)
+3. 2 tests ajoutés pour les bornes Zod (`cell_id` 101 chars, `error_message` 5001 chars)
+
+**Dette technique notée** :
+
+- `CheckpointRunRow` inline → migrer vers le type généré dès que `database.ts` est régénéré
+- Pas d'endpoint DELETE en V1 (pas besoin pour le scope ; à ajouter si le prof doit pouvoir reset un checkpoint élève)
