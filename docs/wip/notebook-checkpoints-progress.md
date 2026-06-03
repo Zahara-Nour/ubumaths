@@ -12,8 +12,8 @@ Feature : cellules de validation (`checkpoint`) dans les notebooks Python, avec 
 | ----- | -------------------------------------------------- | ---------- | ----------- |
 | 1     | Migration DB + types TS + Zod schemas              | ✅ Livrée  | `4c15d7c02` |
 | 2     | Worker : nouveau mode `assert` + `contextId`       | ✅ Livrée  | `c40fb96bd` |
-| 3     | Endpoints POST + GET checkpoint-runs               | ✅ Livrée  | _pending_   |
-| 4     | Composant `CheckpointCell.svelte` (vue élève)      | ⏳ À faire | —           |
+| 3     | Endpoints POST + GET checkpoint-runs               | ✅ Livrée  | `cf009a7b7` |
+| 4     | Composant `CheckpointCell.svelte` (vue élève)      | ✅ Livrée  | _pending_   |
 | 5     | UI teacher : éditeur de checkpoint dans notebook   | ⏳ À faire | —           |
 | 6     | Dashboard prof `/python-notebook/[id]/results`     | ⏳ À faire | —           |
 | 7     | Doc + autofixer + check:incremental + commit final | ⏳ À faire | —           |
@@ -195,3 +195,49 @@ Feature : cellules de validation (`checkpoint`) dans les notebooks Python, avec 
 
 - `CheckpointRunRow` inline → migrer vers le type généré dès que `database.ts` est régénéré
 - Pas d'endpoint DELETE en V1 (pas besoin pour le scope ; à ajouter si le prof doit pouvoir reset un checkpoint élève)
+
+---
+
+## Phase 4 — Livré ✅
+
+**Fix dette technique Phase 2** : `NotebookExecutor` envoie maintenant `create-context` au boot via nouveau hook `BasePythonExecutor.onPyodideReady()`. `destroy()` override envoie `destroy-context` avant `super.destroy()`. Le multi-context worker fonctionne enfin pour les notebooks (état partagé entre cellules effectif).
+
+**Fichiers créés/modifiés**
+
+- `src/lib/shared/python/execution/base-executor.svelte.ts` — hook `onPyodideReady()` (no-op default), appelé après `state = 'ready'`
+- `src/lib/shared/python/execution/notebook-executor.svelte.ts` — override `onPyodideReady` (send `create-context`), override `destroy()` (send `destroy-context` puis super)
+- `src/lib/stores/notebookStore.svelte.ts` :
+  - Helpers : `createCheckpointCell()`, `checkpointConfigToValidationConfig()`, `extractCheckpointError()`
+  - État réactif : `checkpointStatus`/`checkpointError`/`checkpointRunning` (records par cell_id)
+  - Méthodes : `getCheckpointStatus()`, `loadCheckpointRuns()` (GET au mount), `runCheckpoint()` (executor → POST → update state)
+  - `addCell()` étendu pour `type: 'checkpoint'`
+  - **Garde re-entrant** dans `runCheckpoint` (anti double-clic) + refus silencieux si Pyodide pas prêt (suite code review)
+- `src/lib/types/notebook.ts` — `AddCellOptions` étendu (`checkpoint?`, `title?`)
+- `src/lib/components/notebook/CheckpointCell.svelte` (nouveau) — vue élève : header (titre + badge Réussi/Échec/Non vérifié), body 3 modes (assert/unit_test/variable_check), bloc erreur si failed, footer "Vérifier"
+- `src/lib/components/notebook/NotebookCell.svelte` — route vers `CheckpointCell` quand `type === 'checkpoint'`
+- `src/lib/components/notebook/NotebookView.svelte` — appel `loadCheckpointRuns()` après load notebook
+- `src/lib/components/notebook/CheckpointCell.svelte.test.ts` (nouveau) — 15 tests : rendering (5) + status badge (4) + verify button (6)
+
+**Tests** : 15/15 verts (4.99 s sous chromium). Régression vérifiée :
+
+- Tests Phase 1-3 toujours verts (46 tests serveur)
+- Tests Pyodide réel toujours verts (73 tests : 57 exercise + 16 checkpoint)
+
+**Code review** : APPROUVÉ AVEC RÉSERVES — 3 corrections appliquées :
+
+1. Re-entrant guard `runCheckpoint` (double-clic Svelte 5 → race POST)
+2. Refus silencieux si executor pas ready (au lieu de marquer comme failed avec message technique)
+3. `canRun` du composant inclut `!notebook.isExecutingAny` (évite interleaving cellule code + checkpoint)
+
+**UX décisions**
+
+- Le bouton "Vérifier" est read-only intentionnellement : pas de `bind:cell` vers le composant — l'élève ne mute pas la config (la consigne du teacher reste intacte)
+- Persistance best-effort : si POST échoue, l'élève voit le verdict, le serveur ne reçoit pas. Acceptable V1.
+- Pas de tooltip "Chargement Python..." sur bouton disabled — UX nice-to-have, V1.1 si feedback
+
+**Pour Phase 5/6**
+
+- Test unitaire de store pour `runCheckpoint` (mock fetch) — couvrir double-clic, échec réseau, executor not ready
+- Exporter + tester `checkpointConfigToValidationConfig`
+- `loadCheckpointRuns` peut écraser un verdict local plus récent : merger plutôt que remplacer si race observée
+- Edge case live editing teacher pendant que l'élève a la cellule ouverte → realtime channel ou polling (hors V1)

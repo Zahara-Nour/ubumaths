@@ -10,11 +10,12 @@
 	 * - Click to select
 	 */
 
-	import type { NotebookCell } from '$lib/types/notebook';
+	import type { NotebookCell, CheckpointCell as CheckpointCellType } from '$lib/types/notebook';
 	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
 	import CellGutter from './CellGutter.svelte';
 	import CodeCell from './CodeCell.svelte';
 	import MarkdownCell from './MarkdownCell.svelte';
+	import CheckpointCell from './CheckpointCell.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Trash2, ChevronUp, ChevronDown } from 'lucide-svelte';
 
@@ -73,6 +74,8 @@
 	<div class="flex-1">
 		{#if cell.type === 'code'}
 			<CodeCell bind:cell {isActive} {isReadonly} {notebook} {onExecute} />
+		{:else if cell.type === 'checkpoint'}
+			<CheckpointCell cell={cell as CheckpointCellType} {notebook} {isReadonly} />
 		{:else}
 			<MarkdownCell bind:cell {isActive} {isReadonly} />
 		{/if}

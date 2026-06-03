@@ -52,6 +52,12 @@
 			if (!notebook.activeCell && notebook.cells.length > 0) {
 				notebook.setActiveCell(notebook.cells[0].id);
 			}
+
+			// Load the latest checkpoint run statuses so the student sees the
+			// last verdict per checkpoint cell on initial render. Best-effort:
+			// failure here doesn't block the notebook (the UI just shows
+			// "Non vérifié" until the next run).
+			void notebook.loadCheckpointRuns();
 		} else {
 			toaster.error(notebook.cloudError ?? 'Erreur lors du chargement du notebook');
 		}
