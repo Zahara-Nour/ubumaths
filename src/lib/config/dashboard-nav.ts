@@ -27,6 +27,7 @@ import {
 	ShieldAlert,
 	Package,
 	GraduationCap,
+	Kanban,
 	User as UserIcon,
 	LogOut
 } from 'lucide-svelte';
@@ -134,6 +135,11 @@ export function getNavLinks(
 			{ href: '/dashboard/admin/questions', label: 'Questions', icon: BookOpen },
 			{ href: '/dashboard/admin/vip-cards', label: 'VIP Cards', icon: Sparkles },
 			{ href: '/dashboard/admin/bug-reports', label: 'Bug Reports', icon: Bug },
+			// Personal kanban board(s) for tracking site-wide work (features,
+			// bugs, roadmap). RLS already lets admins own + manage their own
+			// boards out of the box; this link is the only thing they were
+			// missing to reach it without typing the URL.
+			{ href: '/organisation/kanban', label: 'Suivi du site', icon: Kanban },
 			{ href: '/dashboard/admin/cron', label: 'CRON Jobs', icon: Clock },
 			{ href: '/dashboard/admin/docs', label: 'Documentation', icon: FileText },
 			{ href: '/dashboard/admin/debug/database', label: 'Debug', icon: Settings },
