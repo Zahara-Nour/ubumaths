@@ -15029,8 +15029,25 @@ export type Database = {
 				Returns: string;
 			};
 			mark_checkpoint_hint_revealed: {
-				Args: { p_notebook_id: string; p_cell_id: string };
-				Returns: Database['public']['Tables']['python_notebook_checkpoint_runs']['Row'];
+				Args: { p_cell_id: string; p_notebook_id: string };
+				Returns: {
+					attempt_count: number;
+					cell_id: string;
+					error_message: string | null;
+					first_attempted_at: string | null;
+					hint_revealed: boolean;
+					notebook_id: string;
+					ran_at: string;
+					status: string;
+					succeeded_at: string | null;
+					user_id: string;
+				};
+				SetofOptions: {
+					from: '*';
+					to: 'python_notebook_checkpoint_runs';
+					isOneToOne: true;
+					isSetofReturn: false;
+				};
 			};
 			mark_conversation_read: {
 				Args: {
@@ -15419,15 +15436,6 @@ export type Database = {
 				};
 				Returns: Json;
 			};
-			upsert_checkpoint_run: {
-				Args: {
-					p_notebook_id: string;
-					p_cell_id: string;
-					p_status: string;
-					p_error_message: string | null;
-				};
-				Returns: Database['public']['Tables']['python_notebook_checkpoint_runs']['Row'];
-			};
 			upsert_2048_score: {
 				Args: {
 					p_mode: string;
@@ -15441,6 +15449,32 @@ export type Database = {
 					games_played: number;
 					is_new_best: boolean;
 				}[];
+			};
+			upsert_checkpoint_run: {
+				Args: {
+					p_cell_id: string;
+					p_error_message: string;
+					p_notebook_id: string;
+					p_status: string;
+				};
+				Returns: {
+					attempt_count: number;
+					cell_id: string;
+					error_message: string | null;
+					first_attempted_at: string | null;
+					hint_revealed: boolean;
+					notebook_id: string;
+					ran_at: string;
+					status: string;
+					succeeded_at: string | null;
+					user_id: string;
+				};
+				SetofOptions: {
+					from: '*';
+					to: 'python_notebook_checkpoint_runs';
+					isOneToOne: true;
+					isSetofReturn: false;
+				};
 			};
 			upsert_error_occurrence: {
 				Args: {
