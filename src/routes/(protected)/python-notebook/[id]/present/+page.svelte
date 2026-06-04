@@ -46,6 +46,12 @@
 			return;
 		}
 		notebook.initPyodide();
+		// IMPORTANT: set `notebookLoaded` AFTER `initPyodide()` so the
+		// template's `$derived` reads of `notebook.isReady` and friends
+		// happen for the first time once `_executor` already exists.
+		// The store keeps `_executor` as a plain class field (not `$state`),
+		// so a derived that first evaluates with `_executor === null` would
+		// subscribe to nothing and never re-fire when the executor is set.
 		notebookLoaded = true;
 	});
 
@@ -79,11 +85,21 @@
 			<span>Quitter (Échap)</span>
 		</Button>
 		<h1 class="truncate text-sm font-medium">{data.notebook.title}</h1>
-		<div class="w-32 text-right text-xs text-muted-foreground">
-			{#if !notebook.isReady}
+		<div class="min-w-48 text-right text-xs text-muted-foreground">
+			{#if !notebookLoaded}
 				<span class="inline-flex items-center gap-1">
 					<Loader2 class="size-3 animate-spin" />
-					Chargement Pyodide…
+					Chargement notebook…
+				</span>
+			{:else if notebook.hasError}
+				<span class="text-destructive">Erreur Pyodide</span>
+			{:else if !notebook.isReady}
+				<span class="inline-flex items-center gap-1">
+					<Loader2 class="size-3 animate-spin" />
+					{notebook.loadingStage || 'Chargement Pyodide…'}
+					{#if notebook.loadingProgress > 0 && notebook.loadingProgress < 100}
+						({notebook.loadingProgress}%)
+					{/if}
 				</span>
 			{:else}
 				Pyodide prêt
