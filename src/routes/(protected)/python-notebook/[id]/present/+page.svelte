@@ -33,6 +33,13 @@
 	let { data } = $props();
 
 	const notebook = new NotebookStore();
+	// Presentation mode is a viewing surface — never persist checkpoint runs
+	// from here. A teacher running cells live in class shouldn't pollute the
+	// dashboard with their own attempts (and the RLS policy would refuse the
+	// POST anyway since they're not a student of their own notebook). A
+	// student reviewing the notebook in presentation also follows the same
+	// rule for consistency. Recording is the editor route's job.
+	notebook.previewMode = true;
 	let notebookLoaded = $state(false);
 
 	// Cells the Deck iterates over. Derived from the store so re-runs that
