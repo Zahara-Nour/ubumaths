@@ -4,6 +4,8 @@
  * Synchronizes slide position with URL hash in format #/h/v/f
  */
 
+import { replaceState } from '$app/navigation';
+import { page } from '$app/state';
 import type { DeckStore } from '../stores/deckStore.svelte.js';
 import type { NavigationState } from '../core/types.js';
 
@@ -119,7 +121,8 @@ export function createHashNavigation(
  * Reactive hash synchronization effect
  *
  * Call this inside a Svelte 5 $effect to sync hash with store state.
- * Uses replaceState from $app/navigation to avoid SvelteKit router conflicts.
+ * Uses SvelteKit's `replaceState` to keep the router happy (pathname is
+ * unchanged so no navigation is triggered).
  *
  * @param store - DeckStore instance
  * @param options - Hash options
@@ -135,19 +138,18 @@ export function syncHashEffect(store: DeckStore, options: HashNavigationOptions 
 	const hash = formatHash({ h, v, f }, { fragmentInURL, oneBasedIndex });
 
 	if (typeof window !== 'undefined' && window.location.hash !== hash) {
-		// Update URL hash without triggering SvelteKit navigation
-		// We use the native API here because:
-		// 1. We only want to update the hash, not navigate
-		// 2. SvelteKit's replaceState is for full URL navigation
-		// 3. The hashchange listener handles external changes
-		// Suppress the SvelteKit warning by checking if we're on a slides route
 		const url = new URL(window.location.href);
 		url.hash = hash;
-		// Use silent history update (SvelteKit warns but it's intentional for hash-only updates)
+		// Use SvelteKit's `replaceState` so the router doesn't warn about
+		// calls to the native `history.replaceState` (it patches the global
+		// to enforce its routing invariants). Since we're only changing the
+		// hash, the pathname stays the same → SvelteKit treats this as a
+		// same-page state update, no navigation triggered.
 		try {
-			window.history.replaceState(window.history.state, '', url);
+			replaceState(url, page.state);
 		} catch {
-			// Fallback if history state is not accessible
+			// Fallback if SvelteKit context isn't available (e.g. used in a
+			// non-SvelteKit context).
 			window.location.hash = hash;
 		}
 	}
