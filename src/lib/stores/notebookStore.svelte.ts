@@ -950,6 +950,15 @@ export class NotebookStore {
 	checkpointRunning = $state<Record<string, boolean>>({});
 
 	/**
+	 * Per-cell counter of failed Vérifier attempts in the current session.
+	 * Resets to 0 on a successful run. Drives the "Voir l'indice" reveal
+	 * threshold in CheckpointCell (≥ HINT_THRESHOLD). Not persisted: a
+	 * page reload starts the count over. The threshold is intentionally
+	 * low (2 attempts) so the student has tried but not given up.
+	 */
+	checkpointFailedAttempts = $state<Record<string, number>>({});
+
+	/**
 	 * Get the latest checkpoint status for a cell (or undefined if never run).
 	 */
 	getCheckpointStatus(cellId: string): CheckpointStatus | undefined {
@@ -1092,10 +1101,26 @@ export class NotebookStore {
 
 			this.checkpointStatus = { ...this.checkpointStatus, [cellId]: status };
 			this.checkpointError = { ...this.checkpointError, [cellId]: errorMessage };
+			// Update the failed-attempts counter so the UI can decide
+			// whether to surface the teacher's hint. Reset on success.
+			const prevAttempts = this.checkpointFailedAttempts[cellId] ?? 0;
+			this.checkpointFailedAttempts = {
+				...this.checkpointFailedAttempts,
+				[cellId]: status === 'passed' ? 0 : prevAttempts + 1
+			};
 		} catch (err) {
 			const msg = err instanceof Error ? err.message : String(err);
 			this.checkpointStatus = { ...this.checkpointStatus, [cellId]: 'failed' };
 			this.checkpointError = { ...this.checkpointError, [cellId]: msg };
+			// Catch-path failures count too: the worker may have crashed
+			// for a reason unrelated to the student's code, but from the
+			// user's standpoint the verdict was "ça n'a pas marché" and
+			// the hint should keep climbing.
+			const prevAttempts = this.checkpointFailedAttempts[cellId] ?? 0;
+			this.checkpointFailedAttempts = {
+				...this.checkpointFailedAttempts,
+				[cellId]: prevAttempts + 1
+			};
 		} finally {
 			this.checkpointRunning = { ...this.checkpointRunning, [cellId]: false };
 		}

@@ -16,7 +16,14 @@
 	import type { CheckpointCell } from '$lib/types/notebook';
 	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Loader2, CheckCircle2, XCircle, CircleDashed, Sparkles } from 'lucide-svelte';
+	import { Loader2, CheckCircle2, XCircle, CircleDashed, Sparkles, Lightbulb } from 'lucide-svelte';
+
+	/**
+	 * Number of failed Vérifier clicks before the teacher's hint is
+	 * surfaced. 2 is low enough that the student has tried but not given
+	 * up, high enough that no one peeks at the hint on the first run.
+	 */
+	const HINT_THRESHOLD = 2;
 
 	// Props
 	let {
@@ -33,6 +40,26 @@
 	let status = $derived(notebook?.getCheckpointStatus(cell.id));
 	let errorMessage = $derived(notebook?.checkpointError?.[cell.id] ?? null);
 	let isRunning = $derived(notebook?.checkpointRunning?.[cell.id] ?? false);
+	let failedAttempts = $derived(notebook?.checkpointFailedAttempts?.[cell.id] ?? 0);
+	let hintAvailable = $derived(
+		typeof cell.hint === 'string' && cell.hint.trim().length > 0 && failedAttempts >= HINT_THRESHOLD
+	);
+	// Per-instance reveal state. Resets when the student passes (status
+	// goes back to 'passed' → failedAttempts goes to 0 → hintAvailable
+	// goes false → the button disappears, taking the panel with it).
+	let hintRevealed = $state(false);
+
+	function handleRevealHint(): void {
+		hintRevealed = true;
+	}
+
+	// Auto-collapse the revealed hint once the student succeeds, so on a
+	// retry next session they get the same "try first, hint later" UX.
+	$effect(() => {
+		if (status === 'passed' && hintRevealed) {
+			hintRevealed = false;
+		}
+	});
 	// Block "Vérifier" while any cell is executing — the worker serializes
 	// requests, so interleaving a checkpoint mid-execute would silently
 	// queue and surprise the student.
@@ -126,6 +153,35 @@
 				<p class="mb-1 font-medium">Le test a échoué :</p>
 				<pre class="font-mono whitespace-pre-wrap">{errorMessage}</pre>
 			</div>
+		{/if}
+
+		<!-- Hint reveal — appears after HINT_THRESHOLD failed attempts.
+		     Clicking the button surfaces the teacher's hint text. We use
+		     amber-50/amber-200 to stay in the checkpoint colour family
+		     while distinguishing the hint from a regular error. -->
+		{#if hintAvailable}
+			{#if !hintRevealed}
+				<Button
+					variant="ghost"
+					size="sm"
+					onclick={handleRevealHint}
+					class="mt-2 h-auto gap-1.5 px-2 py-1 text-xs text-amber-700 hover:bg-amber-100 dark:text-amber-300 dark:hover:bg-amber-900/40"
+					aria-label="Afficher l'indice du professeur"
+				>
+					<Lightbulb class="size-3.5" />
+					Voir l'indice
+				</Button>
+			{:else}
+				<div
+					class="mt-2 rounded-md border border-amber-400/50 bg-amber-100/60 px-3 py-2 text-xs text-amber-900 dark:bg-amber-900/30 dark:text-amber-100"
+				>
+					<div class="mb-1 flex items-center gap-1.5 font-medium">
+						<Lightbulb class="size-3.5" />
+						Indice
+					</div>
+					<p class="whitespace-pre-wrap">{cell.hint}</p>
+				</div>
+			{/if}
 		{/if}
 	</div>
 
