@@ -105,16 +105,20 @@ function checkpointConfigToValidationConfig(cp: CheckpointConfig): ExerciseValid
 			behavior: {
 				kind: 'unit_test',
 				function_name: cp.function_name,
-				test_cases: cp.test_cases,
+				// $state.snapshot strips the Svelte 5 reactive Proxy. Without
+				// it, postMessage to the Pyodide Worker fails with
+				// "[object Array] could not be cloned" because the structured
+				// clone algorithm refuses Proxies.
+				test_cases: $state.snapshot(cp.test_cases),
 				...(cp.tolerance ? { tolerance: cp.tolerance } : {})
 			}
 		};
 	}
-	// variable_check
+	// variable_check — same snapshot rationale as the unit_test branch above.
 	return {
 		behavior: {
 			kind: 'variable_check',
-			expected_vars: cp.expected_vars,
+			expected_vars: $state.snapshot(cp.expected_vars),
 			...(cp.tolerance ? { tolerance: cp.tolerance } : {})
 		}
 	};
