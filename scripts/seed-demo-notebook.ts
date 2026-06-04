@@ -7,6 +7,8 @@
  *   - long stdout output → 20-line fold + "Afficher les N lignes
  *     masquées" toggle
  *   - 3 checkpoint modes (assert / unit_test / variable_check)
+ *   - teacher-authored `hint` on 3 checkpoints → "Voir l'indice"
+ *     button appears after 2 failed Vérifier clicks
  *   - sleep loop → elapsed-time badge ("Exécution… 3s")
  *   - several short code cells → drag-and-drop reordering
  *   - any code edit after a run → blue "modified" dot
@@ -64,7 +66,7 @@ function code(source: string) {
 	};
 }
 
-function checkpointAssert(title: string, code: string) {
+function checkpointAssert(title: string, code: string, hint?: string) {
 	return {
 		id: cellId(),
 		type: 'checkpoint' as const,
@@ -73,14 +75,16 @@ function checkpointAssert(title: string, code: string) {
 		outputs: [],
 		state: 'idle' as const,
 		title,
-		checkpoint: { mode: 'assert' as const, code }
+		checkpoint: { mode: 'assert' as const, code },
+		...(hint ? { hint } : {})
 	};
 }
 
 function checkpointUnitTest(
 	title: string,
 	functionName: string,
-	testCases: Array<{ args: unknown[]; expected: unknown }>
+	testCases: Array<{ args: unknown[]; expected: unknown }>,
+	hint?: string
 ) {
 	return {
 		id: cellId(),
@@ -94,11 +98,16 @@ function checkpointUnitTest(
 			mode: 'unit_test' as const,
 			function_name: functionName,
 			test_cases: testCases
-		}
+		},
+		...(hint ? { hint } : {})
 	};
 }
 
-function checkpointVariableCheck(title: string, expectedVars: Record<string, unknown>) {
+function checkpointVariableCheck(
+	title: string,
+	expectedVars: Record<string, unknown>,
+	hint?: string
+) {
 	return {
 		id: cellId(),
 		type: 'checkpoint' as const,
@@ -107,7 +116,8 @@ function checkpointVariableCheck(title: string, expectedVars: Record<string, unk
 		outputs: [],
 		state: 'idle' as const,
 		title,
-		checkpoint: { mode: 'variable_check' as const, expected_vars: expectedVars }
+		checkpoint: { mode: 'variable_check' as const, expected_vars: expectedVars },
+		...(hint ? { hint } : {})
 	};
 }
 
@@ -138,7 +148,7 @@ async function main(): Promise<void> {
 
 	const cells = [
 		md(
-			`# Statistiques descriptives en Python\n\nCe notebook fait le **tour des features** mises en place sur les notebooks UbuMaths. Tu peux le suivre cellule par cellule pour voir chaque outil en action.\n\n> Astuce : clique sur l'icône d'arborescence en haut à gauche pour ouvrir le **sommaire**.`
+			`# Statistiques descriptives en Python\n\nCe notebook fait le **tour des features** mises en place sur les notebooks UbuMaths. Tu peux le suivre cellule par cellule pour voir chaque outil en action.\n\n> **Astuce sommaire** : clique sur l'icône d'arborescence en haut à gauche pour ouvrir le sommaire et naviguer entre les parties.\n\n> **Astuce indice** : sur certains checkpoints, si tu rates la vérification **deux fois**, un bouton **« Voir l'indice »** apparaît avec un coup de pouce du prof. Essaie de te tromper exprès sur la médiane ou la variance pour voir !`
 		),
 
 		md(`## Partie 1 — La moyenne arithmétique`),
@@ -167,11 +177,16 @@ async function main(): Promise<void> {
 			`def mediane(lst):\n    """Retourne la médiane d'une liste de nombres (triée puis prise au milieu)."""\n    triee = sorted(lst)\n    n = len(triee)\n    if n % 2 == 1:\n        return triee[n // 2]\n    return (triee[n // 2 - 1] + triee[n // 2]) / 2\n\nprint(mediane([3, 1, 2]))\nprint(mediane([4, 1, 3, 2]))\n`
 		),
 
-		checkpointUnitTest('Vérifier la fonction médiane', 'mediane', [
-			{ args: [[1, 2, 3]], expected: 2 },
-			{ args: [[1, 2, 3, 4]], expected: 2.5 },
-			{ args: [[7]], expected: 7 }
-		]),
+		checkpointUnitTest(
+			'Vérifier la fonction médiane',
+			'mediane',
+			[
+				{ args: [[1, 2, 3]], expected: 2 },
+				{ args: [[1, 2, 3, 4]], expected: 2.5 },
+				{ args: [[7]], expected: 7 }
+			],
+			"Deux pièges classiques :\n\n1. Pense à **trier la liste** avant de prendre la valeur du milieu (sinon mediane([3, 1, 2]) renvoie 1).\n2. Quand la liste a une longueur **paire**, la médiane est la **moyenne des deux valeurs centrales**, pas l'une des deux."
+		),
 
 		md(`## Partie 3 — L'écart-type\n\nOn procède en deux étapes : variance puis racine carrée.`),
 
@@ -183,7 +198,8 @@ async function main(): Promise<void> {
 
 		checkpointAssert(
 			'Vérifier la variance sur un exemple',
-			`assert abs(variance([1, 2, 3, 4, 5]) - 2.0) < 1e-9\nassert variance([5, 5, 5]) == 0\n`
+			`assert abs(variance([1, 2, 3, 4, 5]) - 2.0) < 1e-9\nassert variance([5, 5, 5]) == 0\n`,
+			"Rappel : la variance est la **moyenne des écarts au carré** par rapport à la moyenne.\n\n- Étape 1 : calcule la moyenne `m = moyenne(lst)`.\n- Étape 2 : somme des `(x - m) ** 2` pour chaque `x` dans `lst`.\n- Étape 3 : divise par `len(lst)` (variance d'un échantillon, pas n - 1)."
 		),
 
 		md(`### Étape 3.2 — La racine carrée`),
@@ -192,10 +208,15 @@ async function main(): Promise<void> {
 			`import math\n\ndef ecart_type(lst):\n    """Écart-type d'un échantillon = racine carrée de la variance."""\n    return math.sqrt(variance(lst))\n\nresultat = ecart_type([1, 2, 3, 4, 5])\nprint(f"Écart-type = {resultat:.4f}")\n`
 		),
 
-		checkpointUnitTest('Vérifier la fonction écart-type', 'ecart_type', [
-			{ args: [[1, 2, 3, 4, 5]], expected: 1.4142135623730951 },
-			{ args: [[5, 5, 5]], expected: 0 }
-		]),
+		checkpointUnitTest(
+			'Vérifier la fonction écart-type',
+			'ecart_type',
+			[
+				{ args: [[1, 2, 3, 4, 5]], expected: 1.4142135623730951 },
+				{ args: [[5, 5, 5]], expected: 0 }
+			],
+			"L'écart-type est la **racine carrée de la variance** (pas la variance elle-même).\n\nUtilise `math.sqrt(variance(lst))` — n'oublie pas `import math` en haut de la cellule."
+		),
 
 		md(
 			`## Partie 4 — Variables stockées\n\nCalculons quelques indicateurs sur un échantillon concret. Le checkpoint qui suit vérifie les **valeurs des variables** plutôt qu'une fonction.`
@@ -228,7 +249,7 @@ async function main(): Promise<void> {
 		),
 
 		md(
-			`## Partie 7 — À toi de jouer\n\n- **Réordonne** les cellules par glisser-déposer (icône grip à droite quand tu survoles).\n- **Édite** une cellule code après exécution → un **point bleu** apparaît dans la gouttière à côté du \`[In N]\`.\n- **Vue élève** (bouton en haut à droite) bascule le notebook en mode démonstration : les checkpoints fonctionnent mais ne sont pas enregistrés dans le tableau de résultats.`
+			`## Partie 7 — À toi de jouer\n\n- **Réordonne** les cellules par glisser-déposer (icône grip à droite quand tu survoles).\n- **Édite** une cellule code après exécution → un **point bleu** apparaît dans la gouttière à côté du \`[In N]\`.\n- **Vue élève** (bouton en haut à droite) bascule le notebook en mode démonstration : les checkpoints fonctionnent mais ne sont pas enregistrés dans le tableau de résultats.\n- **Indices** : en mode élève, casse exprès la fonction \`mediane\` (par exemple en oubliant le \`sorted\`) et clique deux fois sur **Vérifier** — le bouton **« Voir l'indice »** apparaît avec un coup de pouce. En mode édition, le champ **Indice (optionnel)** sous le titre de chaque checkpoint te permet de personnaliser ce message.`
 		)
 	];
 
