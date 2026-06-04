@@ -12,6 +12,8 @@
 	 */
 
 	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
+	import type { PythonNotebook } from '$lib/types/notebook';
+	import type { NotebookExportOptions } from '$lib/typst/generators/notebook-generator';
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import {
@@ -23,9 +25,13 @@
 		Code,
 		FileText,
 		Sparkles,
-		ListTree
+		ListTree,
+		FileDown
 	} from 'lucide-svelte';
 	import KeyboardShortcutsHelp from './KeyboardShortcutsHelp.svelte';
+	import NotebookPdfDialog from './NotebookPdfDialog.svelte';
+	import { generateAndDownloadNotebookPdf } from '$lib/typst/notebook-pdf';
+	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Props
 	let {
@@ -55,6 +61,25 @@
 		onToggleOutline?: () => void;
 		outlineOpen?: boolean;
 	} = $props();
+
+	// PDF export state
+	let pdfDialogOpen = $state(false);
+	// Teacher may reveal hints only in edit mode — not in "Vue élève".
+	let canRevealHints = $derived(isTeacher && !(notebook?.previewMode ?? false));
+
+	async function handlePdfExport(options: NotebookExportOptions): Promise<void> {
+		const nb: PythonNotebook | null = notebook?.notebook ?? null;
+		if (!nb) {
+			toaster.error('Notebook introuvable');
+			return;
+		}
+		const result = await generateAndDownloadNotebookPdf({ notebook: nb, options });
+		if (result.success) {
+			toaster.success('PDF téléchargé');
+		} else {
+			toaster.error(result.error ?? 'Erreur lors de la génération du PDF');
+		}
+	}
 
 	// Derived state
 	let isExecuting = $derived(notebook?.isExecutingAny ?? false);
@@ -158,9 +183,24 @@
 		{/if}
 	</div>
 
-	<!-- Right side: Help and Save button -->
+	<!-- Right side: Help, PDF export and Save button -->
 	<div class="flex items-center gap-2">
 		<KeyboardShortcutsHelp {isReadonly} />
+
+		<!-- PDF export — available to all roles; the dialog locks the hint
+		     toggle for non-teachers. -->
+		<Button
+			variant="ghost"
+			size="sm"
+			onclick={() => (pdfDialogOpen = true)}
+			class="gap-1.5"
+			title="Exporter le notebook en PDF"
+			aria-label="Exporter en PDF"
+		>
+			<FileDown class="size-4" />
+			<span class="hidden sm:inline">PDF</span>
+		</Button>
+
 		{#if !isReadonly}
 			<Button
 				variant="outline"
@@ -182,3 +222,5 @@
 		{/if}
 	</div>
 </div>
+
+<NotebookPdfDialog bind:open={pdfDialogOpen} {canRevealHints} onExport={handlePdfExport} />

@@ -19,3 +19,17 @@ export {
 
 // Types
 export type { WorksheetGeneratorInput, GenerateTypstParams } from './worksheet-generator';
+
+// Notebook generator
+export {
+	NotebookGenerator,
+	generateNotebookTypst,
+	extractInlineImages,
+	DEFAULT_NOTEBOOK_EXPORT_OPTIONS
+} from './notebook-generator';
+
+export type {
+	NotebookGeneratorInput,
+	NotebookExportOptions,
+	InlineImageMap
+} from './notebook-generator';
