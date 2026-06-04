@@ -190,6 +190,10 @@ async function main(): Promise<void> {
 
 		md(`## Partie 3 — L'écart-type\n\nOn procède en deux étapes : variance puis racine carrée.`),
 
+		md(
+			`### Rappel des formules\n\nPour un échantillon $(x_1, x_2, \\dots, x_n)$, on définit :\n\n- la **moyenne** par $$\\overline{x} = \\frac{1}{n} \\sum_{i=1}^{n} x_i$$\n- la **variance** par $$V = \\frac{1}{n} \\sum_{i=1}^{n} (x_i - \\overline{x})^2$$\n- l'**écart-type** par $$\\sigma = \\sqrt{V}$$\n\nEn syntaxe UbuMaths (plus rapide à taper au tableau), on peut aussi écrire la moyenne ~m = (x_1 + x_2 + ... + x_n) / n~ et la variance ~~V = ((x_1 - m)^2 + ... + (x_n - m)^2) / n~~.\n\n> Remarque : on divise par $n$ (variance d'un échantillon observé), pas par $n-1$ (estimateur sans biais).`
+		),
+
 		md(`### Étape 3.1 — La variance`),
 
 		code(
