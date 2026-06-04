@@ -115,41 +115,158 @@ REPL Python complet en navigateur avec éditeur CodeMirror, sortie multi-format,
 
 ## 2. Notebook
 
-**Route** : `/python-notebook` (protégée), `/python-notebook/[id]` (notebook unique)
+**Route** : `/python-notebook` (protégée), `/python-notebook/[id]` (notebook unique), `/python-notebook/[id]/present` (mode présentation), `/python-notebook/[id]/results` (dashboard prof)
 
-Interface Jupyter/Colab-like avec cellules code+markdown, exécution séquentielle, partage classe.
+Interface Jupyter/Colab-like avec cellules code+markdown+checkpoint, exécution séquentielle, partage classe, export PDF, templates clonables, mode présentation plein écran.
 
-| Fonctionnalité | Détails                                                       |
-| -------------- | ------------------------------------------------------------- |
-| Cellules       | Code (CodeMirror) + Markdown (édition double-clic)            |
-| Exécution      | File d'attente séquentielle, contexte persistant              |
-| Raccourcis     | Shift+Enter, Ctrl+Enter, Alt+Enter, Ctrl+S, Escape            |
-| Statuts        | `[In ]`, `[In *]`, `[In N]` style Jupyter                     |
-| Outputs        | stream / error+traceback / display_data / execute_result      |
-| Reset kernel   | Vide le namespace Python (avec confirmation)                  |
-| Autosave       | Debounce 2s, indicateurs visuels                              |
-| Partage        | `ShareNotebookDialog` enseignant→classes, toggle readonly     |
-| Mode readonly  | Étudiants : lecture seule (mais exécution OK)                 |
-| Import/Export  | Format `.ipynb` Jupyter natif, 59 tests round-trip            |
-| Limites        | 200 cellules/notebook, 100 outputs/cellule, 50 notebooks/user |
+| Fonctionnalité        | Détails                                                                          |
+| --------------------- | -------------------------------------------------------------------------------- |
+| Cellules              | Code (CodeMirror) + Markdown (`MarkdownEditor` split-view) + Checkpoint          |
+| Exécution             | File d'attente séquentielle, contexte persistant (`notebook_${id}`)              |
+| Raccourcis            | Shift+Enter, Ctrl+Enter, Alt+Enter, Ctrl+S, Escape                               |
+| Statuts               | `[In ]`, `[In *]`, `[In N]` style Jupyter                                        |
+| Outputs               | stream / error+traceback / display_data / execute_result + PNG matplotlib        |
+| Reset kernel          | Vide le namespace Python (avec confirmation)                                     |
+| Autosave              | Debounce 5s, defer pendant exécution, undo toast sur delete (5s)                 |
+| Multi-tab sync        | BroadcastChannel — édition d'un même notebook dans 2 onglets reste cohérente     |
+| Partage               | `ShareNotebookDialog` enseignant→classes, toggle readonly                        |
+| Mode readonly         | Étudiants : lecture seule (mais exécution OK)                                    |
+| Import/Export         | Format `.ipynb` Jupyter natif, 59 tests round-trip                               |
+| **PDF export**        | Pipeline Typst (LaTeX + custom math + outputs + checkpoints), 4 options          |
+| **Mode présentation** | Plein écran cellule-par-cellule via UbuSlides (`scaleContent:false`)             |
+| **Templates**         | Gallery + clone + save-as (notebooks marqués `is_template`)                      |
+| **Vue élève prof**    | Toggle `previewMode` — le prof teste sans polluer les résultats                  |
+| **Sommaire**          | Outline auto à partir des headings markdown, navigation rapide                   |
+| **Drag-and-drop**     | Réordonnance des cellules par glisser-déposer (`svelte-dnd-action`)              |
+| **Dirty indicator**   | Point bleu dans la gouttière à côté de `[In N]` après édition post-exécution     |
+| **Timer**             | Badge "Exécution… Ns" pour les cellules de plus de 2s                            |
+| **Output fold**       | Sorties >20 lignes pliées (head+tail), bouton "Afficher N lignes masquées"       |
+| Limites               | 200 cellules/notebook, 100 outputs/cellule, 50 notebooks/user (templates inclus) |
+
+### V2 — Checkpoint cells (2026-06)
+
+Cellules de vérification d'exercice intégrées au flux notebook. Le prof crée un checkpoint, l'élève clique « Vérifier » et obtient un verdict immédiat sans quitter la page.
+
+| Mode             | Vérification                                                                       |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| `assert`         | Exécute un bloc Python d'assertions contre le namespace de l'élève                 |
+| `unit_test`      | Appelle `function_name(*args)` sur N cas de test, compare avec `_ubumaths_compare` |
+| `variable_check` | Vérifie la valeur de variables du namespace (`expected_vars: { x: 6 }`)            |
+
+Le worker réutilise `validateExercise(code, config, contextId)` côté NotebookExecutor (la même brique que les exercices Python). Persistance des verdicts dans `python_notebook_checkpoint_runs` (PK `(notebook_id, user_id, cell_id)`, latest only, UPSERT via `ON CONFLICT DO UPDATE`).
+
+**Hint feature** : optional `hint?: string` sur la cellule, révélé après **2 échecs** de Vérifier (compteur `checkpointFailedAttempts` en mémoire, reset au reload). Le prof écrit l'indice dans un textarea dédié de `CheckpointEditor`. Côté élève, bouton Lightbulb + panneau ambré. Défense en profondeur : le PDF locked pour les étudiants (cf. PDF export).
+
+**Sécurité du verdict** : compteur in-memory volontairement (un reload = nouvelle chance — matche le framing « gagner l'indice »). Les essais persistés (passed/failed) n'incluent pas le compteur.
+
+### V2 — Export PDF via Typst (2026-06)
+
+Bouton **PDF** dans la toolbar → modal d'options → téléchargement.
+
+| Bloc rendu               | Stratégie                                                                                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cellule markdown         | Délégation à `parseMarkdown` + `generateTypst` de UbuMark — **rend les 4 syntaxes math : `$..$`, `$$..$$`, `~..~`, `~~..~~`** (LaTeX + custom UbuMaths) |
+| Cellule code             | `#raw(block: true, lang: "python", "...")` — Typst raw, pas de fence breakout                                                                           |
+| Output stream            | Bloc gris `Out:` (stdout) ou rouge clair `Stderr:` (stderr)                                                                                             |
+| Output error             | Bloc rouge avec `ename: evalue` + traceback (ANSI stripped)                                                                                             |
+| Output PNG inline        | `service.mapShadowBatch(map)` pré-mapping vers `/notebook/cell-X/output-Y.png` puis `#image(...)`                                                       |
+| Output text/html         | Fallback `text/plain` si présent, sinon mention « (sortie HTML non rendue) »                                                                            |
+| Cellule checkpoint       | Encadré ambré + titre + spec selon le mode + indice optionnel                                                                                           |
+| Troncature longs outputs | 50 lignes max (30 head + 15 tail), pattern matche `foldOutput` à l'écran                                                                                |
+
+**4 options dialog** : `includeOutputs`, `includeCheckpoints`, `includeHints`, `includeCoverPage`.
+
+**Sécurité hints** : la checkbox `includeHints` est **disabled pour les non-teachers** (UI), ET le générateur force `includeHints && canRevealHints` (defense in depth — un étudiant ne peut pas extraire l'indice via DevTools).
+
+**Sécurité injection Typst** : `escapeTypstBrackets` sur toute valeur interpolée dans un bloc `[...]` (titre, hint, error name/value, label code) → bloque le breakout via `]`.
+
+**Filename** : `{title_sanitized}_{YYYY-MM-DD}.pdf` avec NFD + strip diacritiques.
+
+### V2 — Mode présentation via UbuSlides (2026-06)
+
+Route `/python-notebook/[id]/present` → plein écran cellule-par-cellule via `Deck` du module `$lib/slides`. Bouton **Présentation** dans la toolbar.
+
+| Type cellule | Slide                                                                                   |
+| ------------ | --------------------------------------------------------------------------------------- |
+| markdown     | `UbuMarkSlide` (rend LaTeX + custom math + variation tables + tables + fragments `->` ) |
+| code         | `NotebookCodeSlide` (PythonEditor read-only + bouton ▶ pour exécution live)            |
+| checkpoint   | `NotebookCheckpointSlide` (wrapper léger autour de `CheckpointCell`)                    |
+
+**`scaleContent: false`** (Option A) — slide remplit le container avec scroll natif, pas de scaling CSS 1920×1080. Choix justifié par : live coding avec outputs imprévisibles + cellules code potentiellement longues + cohérence avec l'éditeur.
+
+**Pyodide isolé** : nouvelle `NotebookStore` au mount de la présentation → contexte Pyodide neuf (l'onglet éditeur, s'il est ouvert, n'est pas perturbé). `previewMode = true` → pas de POST des essais checkpoint (RLS refuserait de toute façon pour le prof sur son propre notebook).
+
+**Navigation** : ←/→ ou swipe pour cellules, Esc pour quitter (avec guard `e.defaultPrevented` pour ne pas conflicter avec le Deck overview), Space pour exécuter, `o` pour overview, `f` pour fullscreen, URL hash `#/N` deep-linkable (1-indexed via `hashOneBasedIndex: true`).
+
+### V2 — Templates (2026-06)
+
+Notebooks marqués `is_template = true` — réutilisables via clonage.
+
+| Action           | Endpoint                                                            |
+| ---------------- | ------------------------------------------------------------------- |
+| Liste templates  | `GET /api/python-notebook-templates` (own + public, teacher only)   |
+| Clone            | `POST /api/python-notebooks/from-template/[templateId]`             |
+| Save as template | `POST /api/python-notebooks/[id]/save-as-template` (création copie) |
+
+**Gallery** : `/dashboard/teacher/contenu/notebooks/templates` avec 3 sections (Mes templates / Templates partagés / Templates UbuMaths — vide en V1). `TemplateCard` avec bouton « Utiliser » → POST + redirect vers l'éditeur du clone.
+
+**Schema** : ajout `is_template boolean NOT NULL DEFAULT false` + `template_category text` + index partiel sur `is_template = true`. RLS existante (own + public+teacher) couvre les accès templates sans nouvelle policy.
+
+**Cell IDs régénérés** au clone via `cell-${Date.now()}-${rand}` ; outputs/execution_count/state wipés ; metadata `last_executed_source` strippé (évite faux « modified » dot).
+
+**Défense en profondeur** :
+
+- Étudiants → 403 sur tous les endpoints templates
+- Gallery query narrower than RLS (`.or(own | public)`)
+- Clone défaut `is_public = false` (sharing opt-in)
+- `/share` refuse d'assigner un template à une classe (cloner d'abord)
+- « Save as template » = COPIE, pas conversion (le notebook source reste utilisable)
+
+### V2 — MarkdownEditor upgrade (2026-06)
+
+Édition des cellules markdown via `$lib/components/markdown/MarkdownEditor` (le même composant que `ExerciseMarkdownEditor`).
+
+- **Toolbar markdown** (bold, italic, headings, lists, tables, math)
+- **Live preview** dans un split-view (raw à gauche, rendu à droite)
+- **MathLive** : rendu LaTeX `$..$` ET custom `~..~` en preview
+- View mode (non-édition) reste sur `MarkdownRenderer` léger
+- Double-clic pour entrer en édition, Escape pour sortir
+- V1 sans upload image bucket — les `![alt](url)` avec URL hébergées fonctionnent natively via le transpiler
 
 ### Composants (`src/lib/components/notebook/`)
 
-`NotebookView`, `NotebookToolbar`, `NotebookStatusBar`, `NotebookCell`, `CodeCell`, `MarkdownCell`, `CellGutter`, `CellOutputs`, `KeyboardShortcutsHelp`, `ShareNotebookDialog`.
+**Base** : `NotebookView`, `NotebookToolbar`, `NotebookStatusBar`, `NotebookCell`, `CodeCell`, `MarkdownCell`, `CellGutter`, `CellOutputs`, `KeyboardShortcutsHelp`, `NotebookOutline`, `ShareNotebookDialog`, `NotebookPdfDialog`.
+
+**Checkpoints** : `CheckpointCell` (vue élève + bouton Vérifier + reveal indice), `CheckpointEditor` (édition prof avec 3 modes + textarea indice).
+
+**Présentation** (`presentation/`) : `NotebookCodeSlide`, `NotebookCheckpointSlide`.
+
+**Templates** (`templates/`) : `TemplateGallery`, `TemplateCard`, `SaveAsTemplateDialog`.
 
 ### Progression
+
+**Base** :
 
 - [progress/python-notebook-complete.md](./progress/python-notebook-complete.md) — récap Sprint 2-4
 - [progress/notebook-implementation.md](./progress/notebook-implementation.md) — types, store, executor
 - [progress/notebook-ui-complete.md](./progress/notebook-ui-complete.md) — 8 composants
 - [progress/notebook-ui-progress.md](./progress/notebook-ui-progress.md)
-- [progress/python-notebooks-migration.md](./progress/python-notebooks-migration.md) — schéma DB
-- [progress/python-notebooks-routes-progress.md](./progress/python-notebooks-routes-progress.md) — API REST
+- [progress/python-notebooks-migration.md](./progress/python-notebooks-migration.md) — schéma DB initial
+- [progress/python-notebooks-routes-progress.md](./progress/python-notebooks-routes-progress.md) — API REST initiale
 - [progress/notebook-import-implementation.md](./progress/notebook-import-implementation.md) — import .ipynb
 - [progress/notebook-export-implementation.md](./progress/notebook-export-implementation.md) — export .ipynb
 - [progress/notebook-sharing-implementation.md](./progress/notebook-sharing-implementation.md) — partage classes
 - [progress/notebook-readonly-mode-progress.md](./progress/notebook-readonly-mode-progress.md) — mode étudiant
 - [progress/notebook-test-enhancement-summary.md](./progress/notebook-test-enhancement-summary.md)
+
+**V2 (2026-06)** :
+
+- [../../wip/notebook-checkpoints-progress.md](../../wip/notebook-checkpoints-progress.md) — checkpoints V1 (3 modes) + hint feature
+- [../../wip/notebook-pdf-export-progress.md](../../wip/notebook-pdf-export-progress.md) — pipeline Typst
+- [../../wip/notebook-presentation-progress.md](../../wip/notebook-presentation-progress.md) — mode présentation UbuSlides
+- [../../wip/notebook-templates-progress.md](../../wip/notebook-templates-progress.md) — templates V1
+- [../../wip/notebook-ui-references.md](../../wip/notebook-ui-references.md) — benchmark Colab/Deepnote/Marimo + backlog UX
+- [../../wip/checkform-unified-progress.md](../../wip/checkform-unified-progress.md) — cosmetic AST transformers (réutilisé par les checkpoints)
 
 ---
 
@@ -471,16 +588,18 @@ Stockage Supabase des fichiers Python avec assignation enseignant→classe.
 
 ### Migrations de conversions de stratégies (post-refactor V2)
 
-| Migration                                                           | Action                                                                                                   |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `20260510210004_migrate_tuple_exos_to_unit_test.sql`                | Migre les exos retournant des tuples de `output` vers `unit_test`                                        |
-| `20260510214434_add_unit_test_tolerance_to_transcendental_exos.sql` | Ajoute `tolerance` aux exos utilisant `math.exp`/`math.log` (divergences ULP entre Pyodide et ref)       |
-| `20260512234300_convert_bac_output_to_variable_check.sql`           | Convertit les scripts module-level (`print(...)`) vers `variable_check` (anti-print boilerplate)         |
-| `20260512235348_restore_tuple_exos_to_unit_test.sql`                | Correctif : restaure `ln(2)` et `termes` en `unit_test` (overshoot de la migration précédente)           |
-| `20260513112515_convert_bac_strong_to_reference_solution.sql`       | Convertit 19 Bac avec fonction-à-paramètres de `unit_test` vers `reference_solution` (fixed + generator) |
-| `20260513215211_add_locked_zones_to_bac.sql`                        | Wrap les `# à compléter` de 27 Bac avec marqueurs `{{id \| "default"}}` (5 patterns regex)               |
-| `20260514010325_fix_locked_zones_while_default.sql`                 | Correctif default des marqueurs dans les `while ...:`                                                    |
-| `20260514011041_restore_locked_zones_while_ellipsis_default.sql`    | Restaure le default `...` pour les marqueurs `while`                                                     |
+| Migration                                                           | Action                                                                                                                                                   |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `20260510210004_migrate_tuple_exos_to_unit_test.sql`                | Migre les exos retournant des tuples de `output` vers `unit_test`                                                                                        |
+| `20260510214434_add_unit_test_tolerance_to_transcendental_exos.sql` | Ajoute `tolerance` aux exos utilisant `math.exp`/`math.log` (divergences ULP entre Pyodide et ref)                                                       |
+| `20260512234300_convert_bac_output_to_variable_check.sql`           | Convertit les scripts module-level (`print(...)`) vers `variable_check` (anti-print boilerplate)                                                         |
+| `20260512235348_restore_tuple_exos_to_unit_test.sql`                | Correctif : restaure `ln(2)` et `termes` en `unit_test` (overshoot de la migration précédente)                                                           |
+| `20260513112515_convert_bac_strong_to_reference_solution.sql`       | Convertit 19 Bac avec fonction-à-paramètres de `unit_test` vers `reference_solution` (fixed + generator)                                                 |
+| `20260513215211_add_locked_zones_to_bac.sql`                        | Wrap les `# à compléter` de 27 Bac avec marqueurs `{{id \| "default"}}` (5 patterns regex)                                                               |
+| `20260514010325_fix_locked_zones_while_default.sql`                 | Correctif default des marqueurs dans les `while ...:`                                                                                                    |
+| `20260514011041_restore_locked_zones_while_ellipsis_default.sql`    | Restaure le default `...` pour les marqueurs `while`                                                                                                     |
+| `20260603103958_create_notebook_checkpoint_runs.sql`                | **Notebook V2** : `python_notebook_checkpoint_runs` (PK notebook+user+cell, status passed/failed, latest only via UPSERT) + 4 policies RLS               |
+| `20260604080553_python_notebook_templates.sql`                      | **Notebook V2** : `python_notebooks` += `is_template boolean NOT NULL DEFAULT false` + `template_category text` + index partiel sur `is_template = true` |
 
 ### Seeds (data only)
 
@@ -528,6 +647,18 @@ pnpm test:server src/lib/data/python-examples/
 pnpm test:server src/lib/utils/notebook-import.test.ts
 pnpm test:server src/lib/utils/notebook-export.test.ts
 
+# Notebook V2 (2026-06)
+# CheckpointCell rendering + status + button + hint reveal (20 tests)
+pnpm test:client src/lib/components/notebook/CheckpointCell.svelte.test.ts
+# Zod schemas notebook content + checkpoint config + hint (14 tests)
+pnpm test:server src/lib/server/validation/notebooks.test.ts
+# Typst NotebookGenerator (markdown/code/checkpoint/outputs/security) (38 tests)
+pnpm test:server src/lib/typst/generators/notebook-generator.test.ts
+# PDF filename sanitization + date suffix (7 tests)
+pnpm test:server src/lib/typst/notebook-pdf.test.ts
+# Cosmetic AST transformers reused by checkpoint validation (47 tests)
+pnpm test:server src/lib/mathAST/cosmetic-transforms.test.ts
+
 # Executor + validation (138 tests : 14 base + 57 Pyodide réel + 50 output + 42 variable + 38 locked-zones)
 pnpm test:client src/lib/shared/python/execution/base-executor.svelte.test.ts
 pnpm test:client src/lib/shared/python/execution/exercise-validation-real.svelte.test.ts
@@ -557,9 +688,37 @@ Service Worker active : 0 réseau au 2e chargement.
 
 - [ ] Breakpoints gutter CodeMirror (clic pour toggle, F9 raccourci)
 - [ ] Exercices : export CSV, realtime, custom comparator V2
-- [ ] Drag-and-drop cellules notebook (boutons up/down seulement actuellement)
 - [ ] a11y SVG canvas debug : 25 warnings supprimés via `svelte-ignore`, vraie accessibilité clavier/screen-reader pas implémentée — voir `docs/ref/warning-svelte.md`
-- [ ] Tests composants notebook (existent pour utils import/export, pas pour les `.svelte`)
-- [ ] Cell collapse/expand pour outputs longs
+- [ ] Tests composants notebook (CheckpointCell ✅ ; les autres `.svelte` non testés, manuels)
 - [ ] Variable inspector sidebar dans notebook
 - [ ] Notebook search (find in cells)
+
+### Backlog Notebook V2 (post-V1 features 2026-06)
+
+**Checkpoint cells / présentation** :
+
+- [ ] « Run all above » sur les slides checkpoint (équivalent Jupyter)
+- [ ] Reset kernel button dans le header présentation
+- [ ] Refactor type union discriminée propre sur `NotebookCell` (élimine le cast `as CheckpointCell`)
+- [ ] Affichage tentatives élève sur le dashboard Résultats (compteur essais avant succès, indice révélé) — décision archi avant : compteur DB-backed vs in-memory
+
+**Templates V2** :
+
+- [ ] Aperçu inline des 3-4 premières cellules dans `TemplateCard`
+- [ ] Catégories prédéfinies via `MySelect` (dropdown + fallback texte libre)
+- [ ] Templates système UbuMaths seedés par migration (TP intro Python, Stats descriptives, Tracé matplotlib)
+- [ ] Compteur d'usages (`clone_count`) + tri "Plus utilisés"
+- [ ] Édition d'un template depuis la gallery (sans rouvrir l'éditeur)
+- [ ] Filtres/recherche dans la gallery
+
+**PDF** :
+
+- [ ] Page de garde personnalisable via templates Typst
+- [ ] Export PDF par élève depuis dashboard résultats (avec statuts checkpoints)
+- [ ] Batch zip "PDFs de toute la classe"
+- [ ] Parser HTML pour les `text/html` DataFrames (au lieu du fallback text/plain)
+
+**MarkdownCell V2** :
+
+- [ ] Upload image vers bucket `notebook-images` (bucket dédié + RLS + service)
+- [ ] Système de variables (paramétrisation par élève, comme exos)
