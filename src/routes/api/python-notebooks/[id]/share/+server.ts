@@ -61,7 +61,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Check if notebook exists and user is the author
 	const { data: notebook, error: fetchError } = await locals.supabase
 		.from('python_notebooks')
-		.select('id, author_id, title')
+		.select('id, author_id, title, is_template')
 		.eq('id', notebookId)
 		.single();
 
@@ -75,6 +75,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	if (notebook.author_id !== user.id) {
 		throw error(403, "Seul l'auteur peut partager ce notebook");
+	}
+
+	// Refuse to assign a template to a class — templates are author-side
+	// artefacts meant to be cloned, not consumed directly by students. The
+	// teacher should clone the template first, then share the clone.
+	if (notebook.is_template) {
+		throw error(400, "Un template ne peut pas être partagé directement. Clonez-le d'abord.");
 	}
 
 	// Check if user is teacher of the class

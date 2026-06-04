@@ -108,7 +108,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	const { author_id, is_public, limit, offset } = queryResult.data;
 
-	// Build query
+	// Build query. Templates live in this table too but are exposed via
+	// /api/python-notebook-templates — filter them out of the regular list
+	// so the editor and dashboards don't show clone-only artefacts mixed in.
 	let query = locals.supabase
 		.from('python_notebooks')
 		.select(
@@ -128,6 +130,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		`,
 			{ count: 'exact' }
 		)
+		.eq('is_template', false)
 		.order('updated_at', { ascending: false })
 		.range(offset, offset + limit - 1);
 

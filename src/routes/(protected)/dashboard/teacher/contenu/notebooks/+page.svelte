@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { PlusCircle, Trash2, BookOpen, BarChart3 } from 'lucide-svelte';
+	import { PlusCircle, Trash2, BookOpen, BarChart3, Sparkles } from 'lucide-svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -90,10 +90,20 @@
 				Notebooks que vous avez créés. Partagez-les avec une classe depuis la page d'un notebook.
 			</p>
 		</div>
-		<Button onclick={handleCreate} disabled={isCreating}>
-			<PlusCircle class="mr-2 h-4 w-4" />
-			{isCreating ? 'Création...' : 'Nouveau notebook'}
-		</Button>
+		<div class="flex items-center gap-2">
+			<Button
+				variant="outline"
+				onclick={() => void goto('/dashboard/teacher/contenu/notebooks/templates')}
+				title="Galerie des templates (clone un notebook préparé)"
+			>
+				<Sparkles class="mr-2 h-4 w-4" />
+				Templates
+			</Button>
+			<Button onclick={handleCreate} disabled={isCreating}>
+				<PlusCircle class="mr-2 h-4 w-4" />
+				{isCreating ? 'Création...' : 'Nouveau notebook'}
+			</Button>
+		</div>
 	</div>
 
 	{#if data.notebooks.length === 0}

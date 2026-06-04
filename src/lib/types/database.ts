@@ -8764,6 +8764,8 @@ export type Database = {
 					description: string | null;
 					id: string;
 					is_public: boolean | null;
+					is_template: boolean;
+					template_category: string | null;
 					title: string;
 					updated_at: string;
 				};
@@ -8774,6 +8776,8 @@ export type Database = {
 					description?: string | null;
 					id?: string;
 					is_public?: boolean | null;
+					is_template?: boolean;
+					template_category?: string | null;
 					title: string;
 					updated_at?: string;
 				};
@@ -8784,6 +8788,8 @@ export type Database = {
 					description?: string | null;
 					id?: string;
 					is_public?: boolean | null;
+					is_template?: boolean;
+					template_category?: string | null;
 					title?: string;
 					updated_at?: string;
 				};
