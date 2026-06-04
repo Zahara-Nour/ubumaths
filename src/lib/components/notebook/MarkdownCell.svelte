@@ -2,15 +2,25 @@
 	/**
 	 * MarkdownCell Component
 	 *
-	 * Displays and edits markdown cells
-	 * Features:
-	 * - View mode: renders markdown with MarkdownRenderer
-	 * - Edit mode: shows textarea for editing
-	 * - Double-click to edit, Escape to preview
+	 * Displays and edits markdown cells of a Python notebook.
+	 *
+	 * Edit mode now uses the shared `MarkdownEditor` (same component the
+	 * exercise editor is built on), so teachers get:
+	 *   - markdown toolbar (bold/italic/headings/lists/tables/math)
+	 *   - live preview with MathLive rendering
+	 *   - both math syntaxes UbuMark supports — LaTeX `$...$`, `$$...$$`
+	 *     and the simpler custom `~...~`, `~~...~~`
+	 *
+	 * View mode keeps the lightweight `MarkdownRenderer` (no editor chrome).
+	 * Double-click to edit, Escape to return to view.
+	 *
+	 * V1 omits image upload (markdown `![alt](url)` with hosted images still
+	 * works via the renderer) and the parameterization Variable system.
 	 */
 
 	import type { NotebookCell } from '$lib/types/notebook';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import MarkdownEditor from '$lib/components/markdown/MarkdownEditor.svelte';
 
 	// Props
 	let {
@@ -25,6 +35,7 @@
 
 	// State
 	let isEditing = $state(false);
+	let containerEl = $state<HTMLDivElement | null>(null);
 
 	// Functions
 	function handleDoubleClick(): void {
@@ -33,47 +44,35 @@
 		}
 	}
 
-	function handleKeydown(e: KeyboardEvent): void {
+	function handleEditorKeydown(e: KeyboardEvent): void {
 		if (e.key === 'Escape') {
 			isEditing = false;
 		}
 	}
 
-	function handleBlur(): void {
-		// Don't auto-exit edit mode on blur - user must press Escape or click outside
-		// This allows clicking inside the textarea without losing focus
-	}
-
-	// Focus textarea when entering edit mode
+	// Focus the editor's internal textarea when entering edit mode.
 	$effect(() => {
-		if (isEditing) {
-			const textarea = document.getElementById(`markdown-${cell.id}`);
-			if (textarea) {
-				(textarea as HTMLTextAreaElement).focus();
-			}
+		if (isEditing && containerEl) {
+			// Defer to next tick so MarkdownEditor has mounted its textarea.
+			queueMicrotask(() => {
+				const ta = containerEl?.querySelector('textarea');
+				ta?.focus();
+			});
 		}
 	});
 </script>
 
 <div class="group relative w-full">
 	{#if isEditing}
-		<!-- Edit mode -->
-		<div class="rounded border-2 border-primary bg-background p-2">
-			<textarea
-				id="markdown-{cell.id}"
-				bind:value={cell.source}
-				onkeydown={handleKeydown}
-				onblur={handleBlur}
-				class="min-h-[100px] w-full resize-y bg-transparent font-mono text-sm text-foreground focus:outline-none"
-				placeholder="# Écrivez votre markdown ici...
-
-**Gras**, *italique*, [lien](url)
-
-- Liste
-- À puces"
-				spellcheck="false"
-				disabled={isReadonly}
-			></textarea>
+		<!-- Edit mode — split view with toolbar + live preview from the
+		     same MarkdownEditor used by the exercise editor. Escape exits. -->
+		<div
+			bind:this={containerEl}
+			class="rounded border-2 border-primary bg-background p-2"
+			onkeydown={handleEditorKeydown}
+			role="presentation"
+		>
+			<MarkdownEditor bind:value={cell.source} rows={6} showPreview={true} />
 			<div class="mt-2 text-xs text-muted-foreground">
 				Appuyez sur <kbd class="rounded bg-muted px-1">Échap</kbd> pour prévisualiser
 			</div>
@@ -93,7 +92,7 @@
 				}
 			}}
 		>
-			{#if cell.source.trim().length === 0}
+			{#if (cell.source ?? '').trim().length === 0}
 				<p class="text-sm text-muted-foreground italic">
 					Double-cliquez pour éditer le markdown...
 				</p>
