@@ -21,10 +21,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(303, '/dashboard');
 	}
 
+	// Filter out templates — they live in the parallel /templates gallery so
+	// the personal-library view stays focused on cloned/assigned content.
 	const { data: notebooks, error: notebooksError } = await locals.supabase
 		.from('python_notebooks')
 		.select('id, title, description, is_public, created_at, updated_at')
 		.eq('author_id', user.id)
+		.eq('is_template', false)
 		.order('updated_at', { ascending: false });
 
 	if (notebooksError) {

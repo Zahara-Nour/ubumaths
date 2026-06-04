@@ -27,11 +27,13 @@
 		Sparkles,
 		ListTree,
 		FileDown,
-		Presentation
+		Presentation,
+		BookmarkPlus
 	} from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import KeyboardShortcutsHelp from './KeyboardShortcutsHelp.svelte';
 	import NotebookPdfDialog from './NotebookPdfDialog.svelte';
+	import SaveAsTemplateDialog from './templates/SaveAsTemplateDialog.svelte';
 	import { generateAndDownloadNotebookPdf } from '$lib/typst/notebook-pdf';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
@@ -66,6 +68,10 @@
 
 	// PDF export state
 	let pdfDialogOpen = $state(false);
+	// Save-as-template state. Only the owner (canEdit) can save as template
+	// — gated on `isTeacher` since the editor route only sets that to true
+	// for the owning teacher. Students never reach this branch.
+	let saveAsTemplateDialogOpen = $state(false);
 	// Teacher may reveal hints only in edit mode — not in "Vue élève".
 	let canRevealHints = $derived(isTeacher && !(notebook?.previewMode ?? false));
 
@@ -213,6 +219,22 @@
 			<span class="hidden sm:inline">Présentation</span>
 		</Button>
 
+		<!-- Save as template — owner-teacher only, surfaces the dialog that
+		     creates a template copy (the current notebook is left intact). -->
+		{#if isTeacher && notebookIdForPresent}
+			<Button
+				variant="ghost"
+				size="sm"
+				onclick={() => (saveAsTemplateDialogOpen = true)}
+				class="gap-1.5"
+				title="Enregistrer une copie de ce notebook comme template"
+				aria-label="Enregistrer comme template"
+			>
+				<BookmarkPlus class="size-4" />
+				<span class="hidden sm:inline">Template</span>
+			</Button>
+		{/if}
+
 		<!-- PDF export — available to all roles; the dialog locks the hint
 		     toggle for non-teachers. -->
 		<Button
@@ -250,3 +272,12 @@
 </div>
 
 <NotebookPdfDialog bind:open={pdfDialogOpen} {canRevealHints} onExport={handlePdfExport} />
+
+{#if isTeacher && notebookIdForPresent}
+	<SaveAsTemplateDialog
+		bind:open={saveAsTemplateDialogOpen}
+		notebookId={notebookIdForPresent}
+		defaultTitle={notebook?.notebook?.title ?? ''}
+		defaultDescription={notebook?.notebook?.description ?? null}
+	/>
+{/if}
