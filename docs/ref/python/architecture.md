@@ -687,6 +687,47 @@ Persistance via `python_notebook_checkpoint_runs` (PK `(notebook_id, user_id, ce
 
 → Voir `docs/wip/notebook-checkpoints-progress.md`.
 
+### Pipeline tentatives élève dashboard
+
+Une fois les checkpoints utilisés en classe, le prof a besoin de distinguer « réussi du 1er coup » vs « 12 essais avec indice révélé ». Le pipeline ajoute 4 colonnes sticky à `python_notebook_checkpoint_runs` + 2 fonctions SQL.
+
+```
+runCheckpoint()                               handleRevealHint()
+       │                                              │
+       ▼                                              ▼
+POST /api/python-notebooks/[id]/                PATCH /api/python-notebooks/[id]/
+     checkpoint-runs                                 checkpoint-runs/[cell_id]/hint-revealed
+       │                                              │
+       ▼                                              ▼
+RPC upsert_checkpoint_run                       RPC mark_checkpoint_hint_revealed
+  (SECURITY INVOKER → RLS s'applique)             (SECURITY INVOKER, idempotent)
+       │
+       ▼
+INSERT INTO ... ON CONFLICT DO UPDATE SET
+  status        = EXCLUDED.status,
+  attempt_count = r.attempt_count + 1,
+  succeeded_at  = COALESCE(r.succeeded_at, CASE WHEN passed THEN now() END),
+  first_attempted_at = COALESCE(r.first_attempted_at, EXCLUDED.first_attempted_at)
+```
+
+**Pourquoi RPC plutôt que `.upsert()`** : PostgREST `.upsert()` ne peut pas exprimer `attempt_count = attempt_count + 1` dans la clause de résolution de conflit (l'arithmétique n'a de sens que côté SQL). Les fonctions sont `SECURITY INVOKER` → la session du caller reste utilisée, les policies RLS existantes (`Students can upsert own checkpoint runs`) couvrent l'INSERT atomique.
+
+**Compteur hybride** :
+
+- DB-backed `attempt_count` → vrai total cross-session, affiché au prof
+- In-memory `checkpointFailedAttempts` inchangé → seuil indice (reset au reload pour préserver « gagner l'indice »)
+
+**Edge case `attempt_count = 0`** : si l'élève clique « Voir l'indice » avant tout `Vérifier` (l'UI normalement le bloque — il faut 2 échecs), la fonction `mark_checkpoint_hint_revealed` insère un placeholder `status = 'failed', attempt_count = 0`. Le dashboard détecte via `isPlaceholder(detail) === (attemptCount === 0)` et rend « Indice révélé sans essai » plutôt qu'un faux échec.
+
+**Stats dashboard** :
+
+- Élèves concernés / Ont commencé / Ont tout réussi / Taux de réussite (existants)
+- **Essais moyens** sur checkpoints réussis (failing students never closed the loop, so they'd skew the average)
+- **% Indices révélés** sur l'ensemble des runs
+- Filtre **« Voir uniquement ceux qui ont galéré » > 5 essais**
+
+→ Voir `docs/wip/notebook-attempts-dashboard-progress.md`.
+
 ---
 
 ## Pointeurs

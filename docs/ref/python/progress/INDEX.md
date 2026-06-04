@@ -430,11 +430,14 @@ Sprint d'intensification du notebook : ajout de cellules de vérification (3 mod
 | `9acc8b8a6` | fix: treat presentation mode as previewMode (skip checkpoint POST → no RLS friction) |
 | `547c930ab` | chore(slides): use SvelteKit's replaceState for hash sync (no router warning)        |
 | `1ceddf17a` | feat: templates gallery + clone + save-as                                            |
+| `b636e4df0` | feat: teacher dashboard surfaces attempt count + hint reveal per checkpoint          |
+| `bacd14e22` | chore(types): regenerate database.ts after notebook checkpoint attempts migration    |
 
 → [../../wip/notebook-checkpoints-progress.md](../../wip/notebook-checkpoints-progress.md) — checkpoints V1 (3 modes + hint feature)
 → [../../wip/notebook-pdf-export-progress.md](../../wip/notebook-pdf-export-progress.md) — pipeline Typst + sécurité injection
 → [../../wip/notebook-presentation-progress.md](../../wip/notebook-presentation-progress.md) — mode présentation UbuSlides
 → [../../wip/notebook-templates-progress.md](../../wip/notebook-templates-progress.md) — templates V1 (gallery + clone + save-as)
+→ [../../wip/notebook-attempts-dashboard-progress.md](../../wip/notebook-attempts-dashboard-progress.md) — tentatives élève + hint flag sur dashboard
 → [../../wip/notebook-ui-references.md](../../wip/notebook-ui-references.md) — benchmark Colab/Deepnote/Marimo + backlog UX
 → [../../wip/checkform-unified-progress.md](../../wip/checkform-unified-progress.md) — cosmetic AST transformers (réutilisés par les checkpoints)
 
@@ -442,27 +445,28 @@ Sprint d'intensification du notebook : ajout de cellules de vérification (3 mod
 
 ## Récap par thème
 
-| Thème                         | Docs principaux                                                                                                                                                                                      |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Playground                    | playground-progress, playground-improvements, phase1-4                                                                                                                                               |
-| Sub-systems                   | autocomplete, lazy-loading, phase3-url-sharing, files                                                                                                                                                |
-| Refactor commun               | executor-pattern, worker-multicontext, shared-types, validation                                                                                                                                      |
-| Notebook (12 docs)            | notebook-complete, implementation, ui-\*, migration, routes, import, export, sharing, readonly, test-enhancement                                                                                     |
-| Notebook V2 (6 docs, 2026-06) | notebook-checkpoints (hint feature), notebook-pdf-export (Typst), notebook-presentation (UbuSlides), notebook-templates, notebook-ui-references (benchmark), checkform-unified (cosmetic transforms) |
-| Debugger                      | debugger-progress (Phases 1-6, heap viz incluse)                                                                                                                                                     |
-| Exercises                     | exercises-api-progress, validation-implementation, output-v2, hidden-tests, free-practice-submissions, custom-comparator, edit-page, mastery (Bloc B), tags-normalization, results-page (Bloc C)     |
-| Examples Library              | examples-library-progress                                                                                                                                                                            |
+| Thème                         | Docs principaux                                                                                                                                                                                                                   |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Playground                    | playground-progress, playground-improvements, phase1-4                                                                                                                                                                            |
+| Sub-systems                   | autocomplete, lazy-loading, phase3-url-sharing, files                                                                                                                                                                             |
+| Refactor commun               | executor-pattern, worker-multicontext, shared-types, validation                                                                                                                                                                   |
+| Notebook (12 docs)            | notebook-complete, implementation, ui-\*, migration, routes, import, export, sharing, readonly, test-enhancement                                                                                                                  |
+| Notebook V2 (7 docs, 2026-06) | notebook-checkpoints (hint feature), notebook-pdf-export (Typst), notebook-presentation (UbuSlides), notebook-templates, notebook-attempts-dashboard, notebook-ui-references (benchmark), checkform-unified (cosmetic transforms) |
+| Debugger                      | debugger-progress (Phases 1-6, heap viz incluse)                                                                                                                                                                                  |
+| Exercises                     | exercises-api-progress, validation-implementation, output-v2, hidden-tests, free-practice-submissions, custom-comparator, edit-page, mastery (Bloc B), tags-normalization, results-page (Bloc C)                                  |
+| Examples Library              | examples-library-progress                                                                                                                                                                                                         |
 
 ---
 
 ## Métriques
 
-- **Commits totaux** : ~150+ (depuis 2025-12-04)
-- **Migrations DB** : 16 (4 initiales + 10 sur exercises Python + **2 sur notebook V2** : checkpoint_runs table + is_template/template_category columns)
-- **Tests** : 580+ (45 store + 36 output + 124+ debug + 25 library + 59 import/export + 50 output-compare + 22 Pyodide-réel exercises + 63 server tests exercises + **20 CheckpointCell + 14 Zod notebooks + 38 NotebookGenerator + 7 PDF filename**)
+- **Commits totaux** : ~160+ (depuis 2025-12-04)
+- **Migrations DB** : 17 (4 initiales + 10 sur exercises Python + **3 sur notebook V2** : checkpoint_runs table + is_template/template_category columns + attempts dashboard)
+- **Fonctions SQL** : 2 nouvelles (`upsert_checkpoint_run`, `mark_checkpoint_hint_revealed`) SECURITY INVOKER pour l'UPSERT atomique tentatives
+- **Tests** : 580+ (45 store + 36 output + 124+ debug + 25 library + 59 import/export + 50 output-compare + 22 Pyodide-réel exercises + 63 server tests exercises + **20 CheckpointCell + 14 Zod notebooks + 38 NotebookGenerator + 7 PDF filename + 9 dashboard server**)
 - **Exemples curés** : 100 (10 catégories)
 - **Composants Svelte** : ~40 (playground + notebook + debug + exercises + **checkpoint + presentation + templates V2**)
-- **API endpoints** : ~25 (incluant `/checkpoint-runs`, `/python-notebook-templates`, `/from-template`, `/save-as-template`)
+- **API endpoints** : ~26 (incluant `/checkpoint-runs`, `/checkpoint-runs/[cell_id]/hint-revealed`, `/python-notebook-templates`, `/from-template`, `/save-as-template`)
 - **Exercices seedés** : 5 (1 par stratégie + ast+output_tests) + 28 Bac
 - **Stratégies de comparaison output** : 4 (`exact`, `text`, `numeric`, `custom`) avec 8 presets dans l'éditeur
 - **Modes checkpoint notebook** : 3 (`assert`, `unit_test`, `variable_check`) — surface mince qui réutilise la brique `validateExercise`
