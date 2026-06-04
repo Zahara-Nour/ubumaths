@@ -16,6 +16,7 @@ import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 import type { CheckpointStatus, NotebookCell, CheckpointCell } from '$lib/types/notebook';
+import type { CheckpointDetail } from '$lib/types/database-helpers';
 
 export interface CheckpointEntry {
 	cell_id: string;
@@ -40,8 +41,8 @@ export interface StudentRow {
 		lastname: string | null;
 		email: string | null;
 	};
-	/** Map cell_id → status. `undefined` means the student hasn't run that checkpoint. */
-	statuses: Record<string, CheckpointStatus>;
+	/** Map cell_id → detail. `undefined` means the student hasn't run that checkpoint. */
+	details: Record<string, CheckpointDetail>;
 }
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -158,11 +159,21 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// 8. Checkpoint runs for those students on this notebook.
 	const { data: runsRaw } = await supabase
 		.from('python_notebook_checkpoint_runs')
-		.select('user_id, cell_id, status')
+		.select(
+			'user_id, cell_id, status, attempt_count, first_attempted_at, succeeded_at, hint_revealed'
+		)
 		.eq('notebook_id', notebookId)
 		.in('user_id', studentIdsArr);
 
-	type Run = { user_id: string; cell_id: string; status: CheckpointStatus };
+	type Run = {
+		user_id: string;
+		cell_id: string;
+		status: CheckpointStatus;
+		attempt_count: number;
+		first_attempted_at: string | null;
+		succeeded_at: string | null;
+		hint_revealed: boolean;
+	};
 	const runsByStudent = new Map<string, Run[]>();
 	for (const r of (runsRaw ?? []) as Run[]) {
 		const arr = runsByStudent.get(r.user_id) ?? [];
@@ -175,11 +186,17 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		const prof = profilesById.get(sid);
 		if (!prof) return [];
 		const runs = runsByStudent.get(sid) ?? [];
-		const statuses: Record<string, CheckpointStatus> = {};
+		const details: Record<string, CheckpointDetail> = {};
 		for (const r of runs) {
-			statuses[r.cell_id] = r.status;
+			details[r.cell_id] = {
+				status: r.status,
+				attemptCount: r.attempt_count,
+				firstAttemptedAt: r.first_attempted_at,
+				succeededAt: r.succeeded_at,
+				hintRevealed: r.hint_revealed
+			};
 		}
-		return [{ student: prof, statuses }];
+		return [{ student: prof, details }];
 	});
 
 	return {

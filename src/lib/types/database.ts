@@ -8695,27 +8695,39 @@ export type Database = {
 			};
 			python_notebook_checkpoint_runs: {
 				Row: {
+					attempt_count: number;
 					cell_id: string;
 					error_message: string | null;
+					first_attempted_at: string | null;
+					hint_revealed: boolean;
 					notebook_id: string;
 					ran_at: string;
 					status: string;
+					succeeded_at: string | null;
 					user_id: string;
 				};
 				Insert: {
+					attempt_count?: number;
 					cell_id: string;
 					error_message?: string | null;
+					first_attempted_at?: string | null;
+					hint_revealed?: boolean;
 					notebook_id: string;
 					ran_at?: string;
 					status: string;
+					succeeded_at?: string | null;
 					user_id: string;
 				};
 				Update: {
+					attempt_count?: number;
 					cell_id?: string;
 					error_message?: string | null;
+					first_attempted_at?: string | null;
+					hint_revealed?: boolean;
 					notebook_id?: string;
 					ran_at?: string;
 					status?: string;
+					succeeded_at?: string | null;
 					user_id?: string;
 				};
 				Relationships: [
@@ -15016,6 +15028,10 @@ export type Database = {
 				};
 				Returns: string;
 			};
+			mark_checkpoint_hint_revealed: {
+				Args: { p_notebook_id: string; p_cell_id: string };
+				Returns: Database['public']['Tables']['python_notebook_checkpoint_runs']['Row'];
+			};
 			mark_conversation_read: {
 				Args: {
 					p_conversation_id: string;
@@ -15402,6 +15418,15 @@ export type Database = {
 					p_user_id: string;
 				};
 				Returns: Json;
+			};
+			upsert_checkpoint_run: {
+				Args: {
+					p_notebook_id: string;
+					p_cell_id: string;
+					p_status: string;
+					p_error_message: string | null;
+				};
+				Returns: Database['public']['Tables']['python_notebook_checkpoint_runs']['Row'];
 			};
 			upsert_2048_score: {
 				Args: {

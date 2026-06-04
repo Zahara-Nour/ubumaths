@@ -105,6 +105,29 @@ export type CheckpointRun = Tables<'python_notebook_checkpoint_runs'>;
 /** Narrowed status union for `CheckpointRun.status` (DB CHECK-constrained). */
 export type CheckpointRunStatus = 'passed' | 'failed';
 
+/**
+ * Presentation-shape of a checkpoint run for the teacher dashboard.
+ *
+ * Composite type (column subset + camelCase rename) used by
+ * `/python-notebook/[id]/results`. Lives here rather than next to the
+ * page so the type can be imported by client code without crossing the
+ * `.server.ts` boundary.
+ *
+ * - `attemptCount` mirrors the sticky DB counter (incremented every run).
+ * - `attemptCount === 0` is a special case: the student revealed the hint
+ *   before ever pressing Vérifier (rare; the UI normally requires 2 failed
+ *   attempts to surface the hint button). The dashboard renders this as
+ *   "not yet attempted" rather than "failed" even though `status='failed'`
+ *   on the placeholder row.
+ */
+export interface CheckpointDetail {
+	status: CheckpointRunStatus;
+	attemptCount: number;
+	firstAttemptedAt: string | null;
+	succeededAt: string | null;
+	hintRevealed: boolean;
+}
+
 // ============================================================================
 // VIP Card Types
 // ============================================================================

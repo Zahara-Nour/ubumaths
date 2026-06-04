@@ -188,11 +188,35 @@ describe('GET /python-notebook/[id]/results — composition', () => {
 		mockSuccess(
 			supabase,
 			[
-				// Alice passed cp-1, failed cp-2
-				{ user_id: STUDENT_A_ID, cell_id: 'cp-1', status: 'passed' },
-				{ user_id: STUDENT_A_ID, cell_id: 'cp-2', status: 'failed' },
+				// Alice passed cp-1 on first try, failed cp-2 after 5 attempts with hint
+				{
+					user_id: STUDENT_A_ID,
+					cell_id: 'cp-1',
+					status: 'passed',
+					attempt_count: 1,
+					first_attempted_at: '2026-06-04T10:00:00Z',
+					succeeded_at: '2026-06-04T10:00:00Z',
+					hint_revealed: false
+				},
+				{
+					user_id: STUDENT_A_ID,
+					cell_id: 'cp-2',
+					status: 'failed',
+					attempt_count: 5,
+					first_attempted_at: '2026-06-04T10:05:00Z',
+					succeeded_at: null,
+					hint_revealed: true
+				},
 				// Bob passed cp-1 only
-				{ user_id: STUDENT_B_ID, cell_id: 'cp-1', status: 'passed' }
+				{
+					user_id: STUDENT_B_ID,
+					cell_id: 'cp-1',
+					status: 'passed',
+					attempt_count: 3,
+					first_attempted_at: '2026-06-04T10:10:00Z',
+					succeeded_at: '2026-06-04T10:13:00Z',
+					hint_revealed: false
+				}
 			],
 			'then'
 		); // runs
@@ -201,15 +225,37 @@ describe('GET /python-notebook/[id]/results — composition', () => {
 		const result = (await load({ params: { id: NOTEBOOK_ID }, locals } as any)) as {
 			rows: Array<{
 				student: { id: string };
-				statuses: Record<string, 'passed' | 'failed'>;
+				details: Record<
+					string,
+					{
+						status: 'passed' | 'failed';
+						attemptCount: number;
+						firstAttemptedAt: string | null;
+						succeededAt: string | null;
+						hintRevealed: boolean;
+					}
+				>;
 			}>;
 		};
 
 		expect(result.rows).toHaveLength(2);
 		const alice = result.rows.find((r) => r.student.id === STUDENT_A_ID);
-		expect(alice?.statuses).toEqual({ 'cp-1': 'passed', 'cp-2': 'failed' });
+		expect(alice?.details['cp-1']).toMatchObject({
+			status: 'passed',
+			attemptCount: 1,
+			hintRevealed: false
+		});
+		expect(alice?.details['cp-2']).toMatchObject({
+			status: 'failed',
+			attemptCount: 5,
+			hintRevealed: true
+		});
 		const bob = result.rows.find((r) => r.student.id === STUDENT_B_ID);
-		expect(bob?.statuses).toEqual({ 'cp-1': 'passed' });
+		expect(bob?.details['cp-1']).toMatchObject({
+			status: 'passed',
+			attemptCount: 3,
+			hintRevealed: false
+		});
 	});
 
 	it('accepts a teacher that has assigned the notebook (non-author)', async () => {

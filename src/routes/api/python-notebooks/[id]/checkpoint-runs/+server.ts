@@ -62,29 +62,22 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	const { cell_id, status, error_message } = validation.data;
 
-	// UPSERT — the policy "Students can upsert own checkpoint runs" enforces:
-	//   user_id = auth.uid()  AND  (notebook is_public OR assigned to student)
-	// If RLS refuses, supabase returns null + a clear error.
+	// Delegate to the SQL function `upsert_checkpoint_run`. PostgREST's
+	// `.upsert()` can't express `attempt_count = attempt_count + 1` in
+	// the conflict resolution clause, and we need that increment plus the
+	// COALESCE timestamps to happen atomically. The function is SECURITY
+	// INVOKER so RLS still applies (same policy that gated the previous
+	// `.upsert()` call).
 	const { data: run, error: dbError } = await supabase
-		.from('python_notebook_checkpoint_runs')
-		.upsert(
-			{
-				notebook_id: notebookId,
-				user_id: user.id,
-				cell_id,
-				status,
-				error_message: error_message ?? null,
-				ran_at: new Date().toISOString()
-			},
-			{ onConflict: 'notebook_id,user_id,cell_id' }
-		)
-		.select()
+		.rpc('upsert_checkpoint_run', {
+			p_notebook_id: notebookId,
+			p_cell_id: cell_id,
+			p_status: status,
+			p_error_message: error_message ?? null
+		})
 		.single();
 
 	if (dbError) {
-		// RLS rejection or constraint failure — surface a 403 (RLS) or 500.
-		// SQLSTATE 42501 is the stable signal across Postgres versions; the
-		// English error message ("row-level security policy") can change.
 		if (dbError.code === '42501') {
 			throw error(403, 'Accès refusé à ce notebook');
 		}
@@ -93,7 +86,6 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	if (!run) {
-		// Belt-and-suspenders — upsert + single should always return a row on success.
 		throw error(500, 'Erreur inattendue lors de la sauvegarde');
 	}
 

@@ -51,6 +51,20 @@
 
 	function handleRevealHint(): void {
 		hintRevealed = true;
+		// Best-effort POST so the teacher dashboard can show "💡 indice
+		// révélé" next to this student's attempts. Skipped in previewMode
+		// (teacher dry-run / presentation) and in non-browser contexts.
+		// Failure is silent: the UI verdict is the source of truth, the
+		// dashboard signal is supplementary.
+		const notebookId = notebook?.notebook?.id;
+		if (notebookId && !notebook?.previewMode && typeof window !== 'undefined') {
+			void fetch(
+				`/api/python-notebooks/${notebookId}/checkpoint-runs/${encodeURIComponent(cell.id)}/hint-revealed`,
+				{ method: 'PATCH' }
+			).catch((err) => {
+				console.warn('[CheckpointCell] failed to record hint reveal:', err);
+			});
+		}
 	}
 
 	// Auto-collapse the revealed hint once the student succeeds, so on a
