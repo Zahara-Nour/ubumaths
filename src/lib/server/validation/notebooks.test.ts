@@ -152,6 +152,44 @@ describe('updateNotebookSchema — cell type', () => {
 	});
 });
 
+describe('updateNotebookSchema — hint field', () => {
+	it('accepts a checkpoint with a hint', () => {
+		const result = updateNotebookSchema.safeParse({
+			content: makeContent([
+				{
+					id: 'cell-1780500000000-cp',
+					type: 'checkpoint',
+					source: 'assert x == 6',
+					execution_count: null,
+					outputs: [],
+					state: 'idle',
+					checkpoint: { mode: 'assert', code: 'assert x == 6' },
+					hint: 'Pense à la formule moyenne = somme / nombre.'
+				}
+			])
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it('rejects a hint longer than 2000 chars', () => {
+		const result = updateNotebookSchema.safeParse({
+			content: makeContent([
+				{
+					id: 'cell-1780500000000-cp',
+					type: 'checkpoint',
+					source: '',
+					execution_count: null,
+					outputs: [],
+					state: 'idle',
+					checkpoint: { mode: 'assert', code: 'assert True' },
+					hint: 'x'.repeat(2001)
+				}
+			])
+		});
+		expect(result.success).toBe(false);
+	});
+});
+
 describe('updateNotebookSchema — partial updates still work', () => {
 	it('accepts a title-only update without content', () => {
 		const result = updateNotebookSchema.safeParse({ title: 'Nouveau titre' });

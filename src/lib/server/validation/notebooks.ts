@@ -104,7 +104,11 @@ const notebookCellSchema = z.object({
 		})
 		.optional(),
 	checkpoint: checkpointConfigSchema.optional(),
-	title: z.string().max(200).optional()
+	title: z.string().max(200).optional(),
+	// Plain-text hint surfaced to the student after a couple of failed
+	// Vérifier clicks. Capped at 2KB so a teacher can't inadvertently
+	// blow up the notebook content with a wall of text.
+	hint: z.string().max(2000).optional()
 });
 
 // Notebook metadata schema

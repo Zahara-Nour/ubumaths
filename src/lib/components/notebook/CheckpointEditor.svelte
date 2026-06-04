@@ -77,6 +77,11 @@
 		markModified();
 	}
 
+	function updateHint(value: string): void {
+		cell.hint = value.trim() === '' ? undefined : value;
+		markModified();
+	}
+
 	// ----- assert mode -----
 
 	function updateAssertCode(value: string): void {
@@ -234,6 +239,21 @@
 				value={cell.title ?? ''}
 				oninput={(e) => updateTitle((e.target as HTMLInputElement).value)}
 			/>
+		</div>
+
+		<!-- Hint — surfaced to the student after 2 failed Vérifier clicks. -->
+		<div class="space-y-1">
+			<Label for="checkpoint-hint-{cell.id}">Indice (optionnel)</Label>
+			<Textarea
+				id="checkpoint-hint-{cell.id}"
+				rows={2}
+				placeholder="ex : pense à la formule moyenne = somme / nombre. Affiché à l'élève après 2 échecs."
+				value={cell.hint ?? ''}
+				oninput={(e) => updateHint((e.target as HTMLTextAreaElement).value)}
+			/>
+			<p class="text-xs text-muted-foreground">
+				L'élève peut afficher cet indice après 2 tentatives infructueuses.
+			</p>
 		</div>
 
 		<!-- Mode selector -->

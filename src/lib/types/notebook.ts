@@ -95,6 +95,12 @@ export interface CheckpointCell extends BaseNotebookCell {
 	checkpoint: CheckpointConfig;
 	/** Short human-readable title shown in the teacher dashboard (e.g. "Étape 1 : moyenne"). */
 	title?: string;
+	/**
+	 * Plain-text hint shown to the student after a couple of failed attempts.
+	 * Stored on the cell (not in `checkpoint`) so it doesn't bloat the
+	 * validation payload that round-trips with every Vérifier click.
+	 */
+	hint?: string;
 }
 
 export type NotebookCell = BaseNotebookCell | CheckpointCell;

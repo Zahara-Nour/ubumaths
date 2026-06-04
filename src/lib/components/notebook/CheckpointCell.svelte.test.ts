@@ -63,6 +63,7 @@ function makeMockStore(opts: {
 	running?: boolean;
 	isReady?: boolean;
 	isExecutingAny?: boolean;
+	failedAttempts?: number;
 	onRun?: (id: string) => void;
 }) {
 	const cellId = 'cell-1';
@@ -72,6 +73,8 @@ function makeMockStore(opts: {
 		getCheckpointStatus: (id: string) => (id === cellId ? opts.status : undefined),
 		checkpointError: opts.error !== undefined ? { [cellId]: opts.error } : {},
 		checkpointRunning: opts.running !== undefined ? { [cellId]: opts.running } : {},
+		checkpointFailedAttempts:
+			opts.failedAttempts !== undefined ? { [cellId]: opts.failedAttempts } : {},
 		runCheckpoint: vi.fn((id: string) => {
 			opts.onRun?.(id);
 			return Promise.resolve();
@@ -198,5 +201,51 @@ describe('CheckpointCell — verify button', () => {
 		const store = makeMockStore({ isExecutingAny: true });
 		render(CheckpointCell, { cell, notebook: store as never });
 		await expect.element(page.getByLabelText('Vérifier ce checkpoint')).toBeDisabled();
+	});
+});
+
+describe('CheckpointCell — hint reveal', () => {
+	it('does not show the hint button when the cell has no hint', async () => {
+		const cell = makeAssertCell();
+		const store = makeMockStore({ status: 'failed', failedAttempts: 5 });
+		render(CheckpointCell, { cell, notebook: store as never });
+		const buttons = page.getByLabelText("Afficher l'indice du professeur");
+		expect(await buttons.elements()).toHaveLength(0);
+	});
+
+	it('does not show the hint button before the threshold is reached', async () => {
+		const cell = makeAssertCell({ hint: 'Pense à la formule moyenne = somme / nombre.' });
+		const store = makeMockStore({ status: 'failed', failedAttempts: 1 });
+		render(CheckpointCell, { cell, notebook: store as never });
+		const buttons = page.getByLabelText("Afficher l'indice du professeur");
+		expect(await buttons.elements()).toHaveLength(0);
+	});
+
+	it('shows the hint button once the threshold is reached', async () => {
+		const cell = makeAssertCell({ hint: 'Pense à la formule moyenne = somme / nombre.' });
+		const store = makeMockStore({ status: 'failed', failedAttempts: 2 });
+		render(CheckpointCell, { cell, notebook: store as never });
+		await expect.element(page.getByLabelText("Afficher l'indice du professeur")).toBeVisible();
+	});
+
+	it('reveals the hint text when the button is clicked', async () => {
+		const cell = makeAssertCell({ hint: 'Pense à la formule moyenne = somme / nombre.' });
+		const store = makeMockStore({ status: 'failed', failedAttempts: 2 });
+		render(CheckpointCell, { cell, notebook: store as never });
+
+		const button = page.getByLabelText("Afficher l'indice du professeur");
+		await button.click();
+
+		await expect
+			.element(page.getByText('Pense à la formule moyenne = somme / nombre.'))
+			.toBeVisible();
+	});
+
+	it('ignores a hint made only of whitespace', async () => {
+		const cell = makeAssertCell({ hint: '   \n  ' });
+		const store = makeMockStore({ status: 'failed', failedAttempts: 5 });
+		render(CheckpointCell, { cell, notebook: store as never });
+		const buttons = page.getByLabelText("Afficher l'indice du professeur");
+		expect(await buttons.elements()).toHaveLength(0);
 	});
 });
