@@ -26,8 +26,10 @@
 		FileText,
 		Sparkles,
 		ListTree,
-		FileDown
+		FileDown,
+		Presentation
 	} from 'lucide-svelte';
+	import { goto } from '$app/navigation';
 	import KeyboardShortcutsHelp from './KeyboardShortcutsHelp.svelte';
 	import NotebookPdfDialog from './NotebookPdfDialog.svelte';
 	import { generateAndDownloadNotebookPdf } from '$lib/typst/notebook-pdf';
@@ -66,6 +68,14 @@
 	let pdfDialogOpen = $state(false);
 	// Teacher may reveal hints only in edit mode — not in "Vue élève".
 	let canRevealHints = $derived(isTeacher && !(notebook?.previewMode ?? false));
+
+	// Notebook ID for the presentation route — derived from the loaded notebook.
+	let notebookIdForPresent = $derived(notebook?.notebook?.id ?? null);
+
+	function handleStartPresentation(): void {
+		if (!notebookIdForPresent) return;
+		void goto(`/python-notebook/${notebookIdForPresent}/present`);
+	}
 
 	async function handlePdfExport(options: NotebookExportOptions): Promise<void> {
 		const nb: PythonNotebook | null = notebook?.notebook ?? null;
@@ -186,6 +196,22 @@
 	<!-- Right side: Help, PDF export and Save button -->
 	<div class="flex items-center gap-2">
 		<KeyboardShortcutsHelp {isReadonly} />
+
+		<!-- Presentation mode — full-screen cell-by-cell slideshow. Available
+		     to all roles; relevant for both teachers (live class) and
+		     students (review with bigger fonts). -->
+		<Button
+			variant="ghost"
+			size="sm"
+			onclick={handleStartPresentation}
+			disabled={!notebookIdForPresent}
+			class="gap-1.5"
+			title="Mode présentation (plein écran cellule par cellule)"
+			aria-label="Mode présentation"
+		>
+			<Presentation class="size-4" />
+			<span class="hidden sm:inline">Présentation</span>
+		</Button>
 
 		<!-- PDF export — available to all roles; the dialog locks the hint
 		     toggle for non-teachers. -->
