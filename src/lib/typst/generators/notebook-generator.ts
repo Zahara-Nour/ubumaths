@@ -176,8 +176,14 @@ export class NotebookGenerator extends BaseTypstGenerator<NotebookGeneratorInput
 		if (source.trim().length === 0) return '';
 		// Delegate to UbuMark — gets us LaTeX + custom math, tables, images,
 		// variation tables, all the block types, for free.
+		//
+		// `includeSetup: false` is critical here: by default `generateTypst`
+		// emits a fresh `#set page(...)` block, and Typst treats a `set page`
+		// after content as a page break. Without this flag, every markdown
+		// cell would force a new page in the PDF. The notebook setup is
+		// emitted once at the top by `generateNotebookSetup()`.
 		const ast = parseMarkdown(source);
-		return generateTypst(ast);
+		return generateTypst(ast, { includeSetup: false });
 	}
 
 	// --------------------------------------------------------------------------

@@ -142,6 +142,27 @@ describe('NotebookGenerator — markdown cells', () => {
 		});
 		expect(out).toContain('$');
 	});
+
+	it('emits #set page only once across multiple markdown cells (no spurious page breaks)', () => {
+		// Regression: each markdown cell used to inherit the UbuMark
+		// transpiler's default `includeSetup: true`, which re-emits
+		// `#set page(...)` per cell — and Typst treats a `set page` after
+		// content as a page break, so every heading ended up on its own
+		// page in the PDF.
+		const out = render(
+			makeNotebook([
+				makeMd('# Partie 1'),
+				makeMd('## Sous-partie'),
+				makeMd('### Détail'),
+				makeMd('Texte de paragraphe')
+			]),
+			{ includeCoverPage: false }
+		);
+		const pageSetupCount = (out.match(/#set page\(/g) ?? []).length;
+		expect(pageSetupCount).toBe(1);
+		// And no explicit pagebreak in the body either.
+		expect(out).not.toContain('#pagebreak()');
+	});
 });
 
 // ============================================================================
