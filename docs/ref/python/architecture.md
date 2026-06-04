@@ -592,6 +592,103 @@ Le worker n'a **rien à savoir** des locked zones : il reçoit le code reconstru
 
 ---
 
+## Notebook V2 (2026-06)
+
+Trois pipelines additionnels ont été greffés sur le notebook ; aucun ne touche au worker Pyodide ni à l'executor pattern.
+
+### Pipeline export PDF (Typst)
+
+```
+notebook.content.cells[]
+       │
+       ▼
+NotebookGenerator (src/lib/typst/generators/notebook-generator.ts)
+       │   ├─ markdown cell → parseMarkdown(source) + generateTypst(ast)  (UbuMark)
+       │   ├─ code cell     → #raw(block:true, lang:"python", "<escaped>")
+       │   ├─ output stream → #raw block coloré (gray/red)
+       │   ├─ output PNG    → #image("/notebook/cell-X/output-Y.png")
+       │   └─ checkpoint    → #block ambré + spec mode + hint si includeHints
+       │
+       ▼
+extractInlineImages(notebook) → Map<virtualPath, Uint8Array>
+       │
+       ▼
+service.mapShadowBatch(map)
+       │
+       ▼
+generatePdfFromTypst(() => typstContent)
+       │   ├─ getTypstService().compile(typst, { format: 'pdf' })
+       │   ├─ Typst WASM compile (queue + cache)
+       │   └─ resetShadow() au cleanup
+       ▼
+Uint8Array PDF → Blob + download
+```
+
+**Sécurité d'injection** : `escapeTypstBrackets` sur tout contenu utilisateur interpolé dans un bloc `[...]` (titres, hints, error names). Code source dans `#raw(...)` plutôt qu'un fence markdown → pas de breakout via ` ``` `. `escapeRawTypst` escape `\` et `"` pour les string literals Typst.
+
+**Math** : `markdownToTypst` gère les 4 syntaxes UbuMark (`$..$`, `$$..$$`, `~..~`, `~~..~~`) via la branche `node.syntax === 'custom' ? expressionToLatex(...) : toFrenchDecimal(...)` puis `convertLatexToTypstMath` — partagé avec le pipeline worksheet, **0 duplication**.
+
+→ Voir `src/lib/typst/notebook-pdf.ts` (wrapper) + `src/lib/typst/generators/notebook-generator.ts` (générateur) + `docs/wip/notebook-pdf-export-progress.md`.
+
+### Mode présentation (UbuSlides)
+
+Route `/python-notebook/[id]/present` → mount d'une nouvelle `NotebookStore` (Pyodide isolé) + boucle sur cells qui mappe chaque type vers une slide.
+
+```
+<Deck config={{ scaleContent: false, ... }}>
+  {#each cells as cell (cell.id)}
+    {#if cell.type === 'markdown'} <UbuMarkSlide content={cell.source} />
+    {:else if cell.type === 'code'} <Slide><NotebookCodeSlide ... /></Slide>
+    {:else if cell.type === 'checkpoint'} <Slide><NotebookCheckpointSlide ... /></Slide>
+    {/if}
+  {/each}
+</Deck>
+```
+
+`scaleContent: false` désactive le scaling 1920×1080 par défaut d'UbuSlides — la slide remplit le container avec scroll natif. Choix justifié par : live coding outputs imprévisibles, cellules code potentiellement longues, cohérence avec l'éditeur.
+
+`notebook.previewMode = true` → skip du POST `/checkpoint-runs` (sinon RLS refuse pour le prof sur son propre notebook + on ne veut pas polluer le dashboard avec des essais de démo en classe).
+
+Navigation : `Deck` route ←/→ via `actions/keyboard.ts`, hash URL `#/N` via `navigation/hash.ts` (avec `replaceState` depuis `$app/navigation` pour ne pas faire warner SvelteKit), Esc remonté au `<svelte:window>` de la page (avec `e.defaultPrevented` guard pour ne pas conflicter avec le Deck overview).
+
+→ Voir `docs/wip/notebook-presentation-progress.md`.
+
+### Templates (clone + save-as)
+
+Schéma : `python_notebooks += is_template boolean NOT NULL DEFAULT false + template_category text` + index partiel `WHERE is_template = true`. Les policies RLS existantes (own + public+teacher + assigned) couvrent tout — aucune nouvelle policy.
+
+3 endpoints :
+
+| Endpoint                                                | Action                                             |
+| ------------------------------------------------------- | -------------------------------------------------- |
+| `GET /api/python-notebook-templates`                    | Liste own + public, 403 students                   |
+| `POST /api/python-notebooks/from-template/[templateId]` | Clone, régénère cell IDs, défaut `is_public=false` |
+| `POST /api/python-notebooks/[id]/save-as-template`      | CRÉE une copie marquée template (source intact)    |
+
+Régénération des cell IDs au clone via le même pattern `cell-${Date.now()}-${rand}` que le store. Outputs/execution_count/state wipés ; metadata `last_executed_source` strippé (sinon faux « modified » dot dans la gouttière).
+
+Défense en profondeur :
+
+- Gallery query `narrower than RLS` (`.or(own | public)`) — pas de path roundabout via assignments
+- `/api/python-notebooks/[id]/share` refuse `is_template = true` (cloner d'abord)
+- `GET /api/python-notebooks` filtre `is_template = false` (templates n'apparaissent pas dans la liste classique)
+
+→ Voir `docs/wip/notebook-templates-progress.md`.
+
+### Checkpoint cells
+
+Cellules de vérification d'exercice intégrées au flux notebook. Réutilisent `validateExercise(code, config, contextId)` côté NotebookExecutor (la même brique que les exercices Python). 3 modes : `assert`, `unit_test`, `variable_check` — `CheckpointConfig` est un discriminated union.
+
+Persistance via `python_notebook_checkpoint_runs` (PK `(notebook_id, user_id, cell_id)`, latest only, UPSERT `ON CONFLICT DO UPDATE`).
+
+**Hint feature** : champ optionnel `hint?: string` sur la cellule (pas dans `checkpoint`, pour ne pas alourdir le payload de validation). Le compteur d'échecs `notebook.checkpointFailedAttempts: Record<cellId, number>` est volontairement **in-memory** — un reload remet à 0, matche le framing « gagner l'indice ».
+
+**Bug postMessage important** : `cell.checkpoint.test_cases` / `expected_vars` sont des proxies `$state` Svelte 5. Le structured clone du Worker refuse les Proxy → `$state.snapshot(...)` est appliqué dans `checkpointConfigToValidationConfig` avant le post au worker. Toucher les deux endpoints (clone notebook + save-as-template) sans ce fix produit `[object Array] could not be cloned`.
+
+→ Voir `docs/wip/notebook-checkpoints-progress.md`.
+
+---
+
 ## Pointeurs
 
 - Vue d'ensemble fonctionnelle → [`README.md`](./README.md)

@@ -2,7 +2,7 @@
 
 Documentation des composants Svelte 5 de `src/lib/components/python/`. Tous utilisent **Svelte 5 runes** + Shadcn-svelte + Tailwind + MathLive.
 
-> Les composants du notebook sont dans `src/lib/components/notebook/` (`NotebookView`, `NotebookCell`, `CodeCell`, `MarkdownCell`, `NotebookToolbar`, `NotebookStatusBar`, `CellGutter`, `CellOutputs`, `KeyboardShortcutsHelp`, `ShareNotebookDialog`).
+> Les composants du notebook sont dans `src/lib/components/notebook/`. Une vue d'ensemble dédiée se trouve [plus bas](#composants-notebook).
 
 ---
 
@@ -296,6 +296,85 @@ pnpm test:client src/lib/components/python/exercises/ExerciseValidationResult.sv
 ```
 
 Composants sans tests (essentiellement des wrappers UI) : `PythonPlayground`, `PythonToolbar`, `PythonSplitter`, `PythonSettings`, `PythonFileManager`, `PythonSaveDialog`, `PythonMigrationPrompt`, `LockedPythonEditor`, la plupart des composants debug. Couverts indirectement par les tests E2E si applicable et par les tests des stores qu'ils consomment.
+
+---
+
+## Composants notebook
+
+`src/lib/components/notebook/` — composants spécifiques à l'écosystème notebook. Tous Svelte 5 runes.
+
+### Arborescence
+
+```
+src/lib/components/notebook/
+├── NotebookView.svelte                  # Container principal, mount du store, dndzone réordonnance
+├── NotebookToolbar.svelte               # Bouton Run all / Add / Save / PDF / Présentation / Template
+├── NotebookStatusBar.svelte             # Indicateurs save status + kernel state
+├── NotebookCell.svelte                  # Dispatcher cellule (code / markdown / checkpoint)
+├── CodeCell.svelte                      # PythonEditor + outputs + timer "Exécution… Ns"
+├── MarkdownCell.svelte                  # View: MarkdownRenderer ; Edit: MarkdownEditor split-view
+├── CellGutter.svelte                    # Colonne [In N] avec bouton ▶ au hover + dirty dot
+├── CellOutputs.svelte                   # Rendu stream/error/display + fold long outputs
+├── KeyboardShortcutsHelp.svelte         # Modal d'aide
+├── NotebookOutline.svelte               # Sommaire auto (headings markdown), navigation rapide
+├── ShareNotebookDialog.svelte           # Partage enseignant → classes
+├── NotebookPdfDialog.svelte             # 4 toggles (outputs, checkpoints, hints, cover)
+├── CheckpointCell.svelte                # Vue élève (badge statut + bouton Vérifier + reveal indice)
+├── CheckpointEditor.svelte              # Édition prof (3 modes + textarea indice)
+├── presentation/
+│   ├── NotebookCodeSlide.svelte         # Slide code read-only + bouton ▶
+│   └── NotebookCheckpointSlide.svelte   # Wrapper autour de CheckpointCell pour la slide
+└── templates/
+    ├── TemplateCard.svelte              # Card avec titre + catégorie + bouton Utiliser
+    ├── TemplateGallery.svelte           # 3 sections (own / shared / système V2)
+    └── SaveAsTemplateDialog.svelte      # Modal créer template depuis l'éditeur
+```
+
+### Composants V2 (2026-06)
+
+#### `CheckpointCell.svelte`
+
+Vue élève d'un checkpoint. Lit `notebook.getCheckpointStatus(cellId)`, `notebook.checkpointError`, `notebook.checkpointRunning`, `notebook.checkpointFailedAttempts` pour rendre badge statut + bouton Vérifier + (conditionnellement) bouton Lightbulb « Voir l'indice » après ≥2 échecs.
+
+```typescript
+{ cell: CheckpointCell, notebook: NotebookStore | null, isReadonly?: boolean }
+```
+
+Mode-spécifique : `assert` montre le code, `unit_test` liste `function_name(args) → expected`, `variable_check` liste `name == value`. `handleRevealHint()` flip un `$state` local `hintRevealed` (reset auto à `passed`). Auto-collapse de l'indice quand l'élève réussit.
+
+20 tests (`CheckpointCell.svelte.test.ts`) : rendering 3 modes + status badge + Vérifier button + hint reveal threshold.
+
+#### `CheckpointEditor.svelte`
+
+Vue prof. 3 helpers `updateTitle / updateHint / updateMode + body-specific`. Met à jour `cell.title`, `cell.hint`, `cell.checkpoint` (discriminated union) avec `notebook.markModified()`. Preview live via `<CheckpointCellPreview>` (le même `CheckpointCell` rendu pour WYSIWYG).
+
+#### `NotebookPdfDialog.svelte`
+
+Modal 4 checkboxes pour l'export PDF. `canRevealHints: boolean` prop → l'hint checkbox est disabled pour les étudiants (defense in depth). `$effect` resync `includeHints` sur l'ouverture du dialog (le prof peut avoir flip Vue élève entre deux exports).
+
+```typescript
+{ open: boolean, canRevealHints: boolean, onExport: (opts: NotebookExportOptions) => Promise<void> }
+```
+
+#### `presentation/NotebookCodeSlide.svelte`
+
+Slide code en mode présentation. `PythonEditor` en `disabled={true}` + bouton ▶ live exec via le NotebookStore de la session présentation (Pyodide isolé). Affiche les outputs sauvegardés au load.
+
+#### `presentation/NotebookCheckpointSlide.svelte`
+
+Wrapper très fin autour de `CheckpointCell` (la cell est déjà autonome). Centre + `max-w-4xl` pour rester lisible en grand écran.
+
+#### `templates/TemplateCard.svelte`
+
+Card individuelle dans la gallery. Bouton « Utiliser » → `POST /api/python-notebooks/from-template/[id]` + `goto(/python-notebook/[new_id])` + toaster. `isOwn` détecte si l'utilisateur courant est l'auteur (cache le byline auteur).
+
+#### `templates/TemplateGallery.svelte`
+
+3 sections (Mes / Partagés / Système). Sections vides cachées. Empty state global si aucun template → pointe vers « Enregistrer comme template » dans la toolbar.
+
+#### `templates/SaveAsTemplateDialog.svelte`
+
+Modal pour packager le notebook courant en template. Inputs (titre / description / catégorie texte libre / `is_public`). POST `/api/python-notebooks/[id]/save-as-template` (CRÉE une copie — le notebook source reste utilisable).
 
 ---
 
