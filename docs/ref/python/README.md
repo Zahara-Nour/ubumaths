@@ -198,6 +198,38 @@ Route `/python-notebook/[id]/present` → plein écran cellule-par-cellule via `
 
 **Navigation** : ←/→ ou swipe pour cellules, Esc pour quitter (avec guard `e.defaultPrevented` pour ne pas conflicter avec le Deck overview), Space pour exécuter, `o` pour overview, `f` pour fullscreen, URL hash `#/N` deep-linkable (1-indexed via `hashOneBasedIndex: true`).
 
+### V2 — Tentatives élève sur dashboard Résultats (2026-06)
+
+Le dashboard `/python-notebook/[id]/results` distingue maintenant « réussi du 1er coup » de « 12 essais avec indice révélé ».
+
+| Colonne ajoutée à `python_notebook_checkpoint_runs` | Sticky | Description                                         |
+| --------------------------------------------------- | ------ | --------------------------------------------------- |
+| `attempt_count INTEGER NOT NULL DEFAULT 1`          | ✓      | Compteur total cross-session, jamais décrémenté     |
+| `first_attempted_at TIMESTAMPTZ`                    | ✓      | Premier clic Vérifier, jamais modifié ensuite       |
+| `succeeded_at TIMESTAMPTZ`                          | ✓      | Premier passing run, jamais effacé (sticky-success) |
+| `hint_revealed BOOLEAN NOT NULL DEFAULT FALSE`      | ✓      | Transition unique false → true via PATCH dédié      |
+
+**Compteur hybride** : `attempt_count` DB pour stats prof (cross-session), `checkpointFailedAttempts` in-memory inchangé pour le seuil indice (préserve la sémantique « gagner l'indice après 2 échecs en session »).
+
+**2 fonctions SQL atomiques** (SECURITY INVOKER → RLS continue de s'appliquer) :
+
+- `upsert_checkpoint_run(notebook_id, cell_id, status, error_message)` — INSERT initial avec timestamps OU UPDATE avec `attempt_count + 1` et COALESCE pour préserver les timestamps stickys. PostgREST `.upsert()` ne peut pas exprimer `attempt_count = attempt_count + 1` dans la conflict clause — d'où la RPC.
+- `mark_checkpoint_hint_revealed(notebook_id, cell_id)` — idempotent false → true. Si la row n'existe pas encore (cas limite UI), insère un placeholder `attempt_count = 0, status = 'failed'` → le dashboard le détecte et affiche « Indice révélé sans essai » plutôt qu'un faux échec.
+
+**API** :
+
+- `POST /api/python-notebooks/[id]/checkpoint-runs` (modifié) — délègue à la RPC, incrémente atomiquement
+- `PATCH /api/python-notebooks/[id]/checkpoint-runs/[cell_id]/hint-revealed` (nouveau) — best-effort depuis `CheckpointCell.handleRevealHint`, skip en `previewMode`
+
+**Dashboard UI** :
+
+- 6 stat cards (+ « Essais moyens sur checkpoints réussis » + « % Indices révélés »)
+- Filtre **« Voir uniquement ceux qui ont galéré »** (> 5 essais)
+- Par cellule : `N essais` inline + 💡 Lightbulb si `hint_revealed` + tooltip timing
+- Placeholder `attempt_count === 0` → `CircleDashed` + « Indice révélé sans essai »
+
+→ Voir `docs/wip/notebook-attempts-dashboard-progress.md`.
+
 ### V2 — Templates (2026-06)
 
 Notebooks marqués `is_template = true` — réutilisables via clonage.
@@ -588,18 +620,19 @@ Stockage Supabase des fichiers Python avec assignation enseignant→classe.
 
 ### Migrations de conversions de stratégies (post-refactor V2)
 
-| Migration                                                           | Action                                                                                                                                                   |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `20260510210004_migrate_tuple_exos_to_unit_test.sql`                | Migre les exos retournant des tuples de `output` vers `unit_test`                                                                                        |
-| `20260510214434_add_unit_test_tolerance_to_transcendental_exos.sql` | Ajoute `tolerance` aux exos utilisant `math.exp`/`math.log` (divergences ULP entre Pyodide et ref)                                                       |
-| `20260512234300_convert_bac_output_to_variable_check.sql`           | Convertit les scripts module-level (`print(...)`) vers `variable_check` (anti-print boilerplate)                                                         |
-| `20260512235348_restore_tuple_exos_to_unit_test.sql`                | Correctif : restaure `ln(2)` et `termes` en `unit_test` (overshoot de la migration précédente)                                                           |
-| `20260513112515_convert_bac_strong_to_reference_solution.sql`       | Convertit 19 Bac avec fonction-à-paramètres de `unit_test` vers `reference_solution` (fixed + generator)                                                 |
-| `20260513215211_add_locked_zones_to_bac.sql`                        | Wrap les `# à compléter` de 27 Bac avec marqueurs `{{id \| "default"}}` (5 patterns regex)                                                               |
-| `20260514010325_fix_locked_zones_while_default.sql`                 | Correctif default des marqueurs dans les `while ...:`                                                                                                    |
-| `20260514011041_restore_locked_zones_while_ellipsis_default.sql`    | Restaure le default `...` pour les marqueurs `while`                                                                                                     |
-| `20260603103958_create_notebook_checkpoint_runs.sql`                | **Notebook V2** : `python_notebook_checkpoint_runs` (PK notebook+user+cell, status passed/failed, latest only via UPSERT) + 4 policies RLS               |
-| `20260604080553_python_notebook_templates.sql`                      | **Notebook V2** : `python_notebooks` += `is_template boolean NOT NULL DEFAULT false` + `template_category text` + index partiel sur `is_template = true` |
+| Migration                                                           | Action                                                                                                                                                                                                            |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `20260510210004_migrate_tuple_exos_to_unit_test.sql`                | Migre les exos retournant des tuples de `output` vers `unit_test`                                                                                                                                                 |
+| `20260510214434_add_unit_test_tolerance_to_transcendental_exos.sql` | Ajoute `tolerance` aux exos utilisant `math.exp`/`math.log` (divergences ULP entre Pyodide et ref)                                                                                                                |
+| `20260512234300_convert_bac_output_to_variable_check.sql`           | Convertit les scripts module-level (`print(...)`) vers `variable_check` (anti-print boilerplate)                                                                                                                  |
+| `20260512235348_restore_tuple_exos_to_unit_test.sql`                | Correctif : restaure `ln(2)` et `termes` en `unit_test` (overshoot de la migration précédente)                                                                                                                    |
+| `20260513112515_convert_bac_strong_to_reference_solution.sql`       | Convertit 19 Bac avec fonction-à-paramètres de `unit_test` vers `reference_solution` (fixed + generator)                                                                                                          |
+| `20260513215211_add_locked_zones_to_bac.sql`                        | Wrap les `# à compléter` de 27 Bac avec marqueurs `{{id \| "default"}}` (5 patterns regex)                                                                                                                        |
+| `20260514010325_fix_locked_zones_while_default.sql`                 | Correctif default des marqueurs dans les `while ...:`                                                                                                                                                             |
+| `20260514011041_restore_locked_zones_while_ellipsis_default.sql`    | Restaure le default `...` pour les marqueurs `while`                                                                                                                                                              |
+| `20260603103958_create_notebook_checkpoint_runs.sql`                | **Notebook V2** : `python_notebook_checkpoint_runs` (PK notebook+user+cell, status passed/failed, latest only via UPSERT) + 4 policies RLS                                                                        |
+| `20260604080553_python_notebook_templates.sql`                      | **Notebook V2** : `python_notebooks` += `is_template boolean NOT NULL DEFAULT false` + `template_category text` + index partiel sur `is_template = true`                                                          |
+| `20260604085002_notebook_checkpoint_runs_attempts.sql`              | **Notebook V2** : `python_notebook_checkpoint_runs` += `attempt_count`, `first_attempted_at`, `succeeded_at`, `hint_revealed` + 2 RPC SECURITY INVOKER (`upsert_checkpoint_run`, `mark_checkpoint_hint_revealed`) |
 
 ### Seeds (data only)
 
@@ -700,7 +733,7 @@ Service Worker active : 0 réseau au 2e chargement.
 - [ ] « Run all above » sur les slides checkpoint (équivalent Jupyter)
 - [ ] Reset kernel button dans le header présentation
 - [ ] Refactor type union discriminée propre sur `NotebookCell` (élimine le cast `as CheckpointCell`)
-- [ ] Affichage tentatives élève sur le dashboard Résultats (compteur essais avant succès, indice révélé) — décision archi avant : compteur DB-backed vs in-memory
+- [x] **Affichage tentatives élève sur le dashboard Résultats** (livré 2026-06-04 commit `b636e4df0` — compteur hybride DB + in-memory)
 
 **Templates V2** :
 
