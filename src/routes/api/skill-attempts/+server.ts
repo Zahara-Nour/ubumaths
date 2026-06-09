@@ -1,46 +1,45 @@
 /**
  * API Route: POST /api/skill-attempts
  *
- * Creates skill_attempts rows for every family-knowledge skill tagged on a
- * question_template, based on the outcome of a student's local answer
- * validation.
+ * Crée une row `skill_attempts` (régime per-template famille A) à chaque réponse
+ * d'un quiz interactif (Monde 1 — `FlashCard.svelte`).
  *
- * Only family 'knowledge' skills are processed here. Family 'competence'
- * attempts are handled by the teacher through evaluation_tasks (decision 72).
+ * Effets cumulés (Phase 2 refonte 2026-06-10) :
+ *   1. UPSERT `srs_card_stats` via FSRS-6 (le grade est dérivé de `success`).
+ *   2. INSERT 1 row dans `skill_attempts` (au lieu de N comme avant).
+ *   3. Si template tagué famille A : auto-ajout au deck Programme.
+ *   4. Le trigger PG recalcule `student_skill_state_a` pour chaque skill tagué.
  *
- * Response:
- *   200 { inserted: number, skill_ids: string[] }
+ * Famille B : non gérée ici (passe par evaluation_tasks côté prof).
  *
- * Error codes:
- *   400 – Zod validation failure
- *   401 – not authenticated (thrown by requireAuth)
- *   404 – template_id does not exist in question_templates
- *   500 – INSERT failed (RLS violation, constraint, network)
+ * Réponse :
+ *   200 { inserted: 1, skill_ids: [...skill_ids tagués...] }
  *
- * Security:
- *   - RLS policy `skill_attempts_insert_own_student` enforces
- *     `student_id = auth.uid()` — no manual check needed.
- *   - Inserting with `source='auto'` is allowed by the student insert policy.
- *   - Family competence rows would violate the `chk_attempt_family_regime`
- *     CHECK (success IS NOT NULL required) — filtered out at query level.
+ * Codes d'erreur :
+ *   400 — JSON ou Zod invalide
+ *   401 — non authentifié
+ *   404 — template_id inexistant
+ *   500 — INSERT ou UPSERT échoue
  *
- * Spec: docs/wip/competence-referentiel-phase2-progress.md §2.2
+ * Spec : docs/wip/srs-fsrs-spec-tdd.md §1
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { skillAttemptInputSchema } from '$lib/server/validation/skill-attempts';
+import { FSRS } from '$lib/srs/fsrs';
+import { Grade, type CardStats } from '$lib/srs/types';
+import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 
 // ============================================================================
 // POST /api/skill-attempts
 // ============================================================================
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// 1. Authenticate — throws 401 if no valid session
 	const { user } = await requireAuth(locals);
 
-	// 2. Parse and validate body
+	// Parse et validation Zod
 	let bodyRaw: unknown;
 	try {
 		bodyRaw = await request.json();
@@ -55,7 +54,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const { template_id, success, with_help, phase_blocage } = validation.data;
 
-	// 3. Verify the template exists
+	// Vérification existence du template
 	const { data: templateRow, error: templateError } = await locals.supabase
 		.from('question_templates')
 		.select('id')
@@ -71,9 +70,43 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(404, 'template_not_found');
 	}
 
-	// 4. Fetch all family-knowledge skill_ids tagged on this template.
-	//    Filter on skills.family = 'knowledge' (generated column, decision 67).
-	//    Family 'competence' skills are excluded by design (decision 72).
+	// Mapping success → grade (cf. spec §1.1)
+	const grade: Grade = success ? Grade.GOOD : Grade.AGAIN;
+
+	// ----- FSRS update synchrone côté TS (avant l'INSERT skill_attempts) -----
+	try {
+		await applyFsrsUpdate(locals.supabase, user.id, template_id, grade);
+	} catch (fsrsErr) {
+		console.error('[skill-attempts] FSRS update failed:', fsrsErr);
+		// On continue : la mise à jour FSRS n'est pas critique pour la cohérence
+		// du Référentiel (qui dépend uniquement de skill_attempts).
+	}
+
+	// ----- INSERT skill_attempts (per-template) -----
+	// 1 row par attempt. Le trigger boucle ensuite sur question_template_skills
+	// pour recalculer chaque student_skill_state_a impactée.
+	const attemptRow: Record<string, unknown> = {
+		student_id: user.id,
+		template_id,
+		success,
+		grade,
+		with_help,
+		source: 'auto'
+	};
+	if (phase_blocage !== undefined) {
+		attemptRow.phase_blocage = phase_blocage;
+	}
+
+	const { error: insertError } = await locals.supabase
+		.from('skill_attempts')
+		.insert(attemptRow as never);
+
+	if (insertError) {
+		console.error('[skill-attempts] INSERT failed:', insertError);
+		return json({ error: 'insert_failed', detail: insertError.message }, { status: 500 });
+	}
+
+	// ----- Récupération des skill_ids tagués (pour réponse + auto-Programme) -----
 	const { data: taggedSkills, error: skillsError } = await locals.supabase
 		.from('question_template_skills')
 		.select('skill_id, skills!inner(family)')
@@ -81,37 +114,98 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.eq('skills.family', 'knowledge');
 
 	if (skillsError) {
-		console.error('[skill-attempts] Failed to fetch tagged skills:', skillsError);
-		throw error(500, 'Failed to fetch tagged skills');
+		console.error('[skill-attempts] Tagged skills lookup failed:', skillsError);
+		// Pas bloquant — la trigger a déjà fait son travail.
 	}
 
-	// No skills tagged yet — normal for most templates pre-tagging (decision phase 2)
-	if (!taggedSkills || taggedSkills.length === 0) {
-		return json({ inserted: 0, skill_ids: [] });
+	const skillIds = (taggedSkills ?? []).map((row) => row.skill_id as string);
+
+	// ----- Auto-ajout au deck Programme si template tagué -----
+	if (skillIds.length > 0) {
+		try {
+			await ensureProgrammeDeckCard(locals.supabase, user.id, template_id);
+		} catch (progErr) {
+			console.error('[skill-attempts] Programme deck add failed:', progErr);
+			// Non bloquant : le skill_attempts est déjà enregistré.
+		}
 	}
 
-	const skillIds = taggedSkills.map((row) => row.skill_id);
-
-	// 5. Insert one attempt row per skill.
-	//    student_id is set explicitly so RLS can verify auth.uid() matches.
-	//    template_id is mandatory for the distinct_template_successes rule
-	//    on capacite_attendue (decision 60).
-	const attemptRows = skillIds.map((skill_id) => ({
-		student_id: user.id,
-		skill_id,
-		template_id,
-		success,
-		with_help,
-		source: 'auto' as const,
-		...(phase_blocage !== undefined ? { phase_blocage } : {})
-	}));
-
-	const { error: insertError } = await locals.supabase.from('skill_attempts').insert(attemptRows);
-
-	if (insertError) {
-		console.error('[skill-attempts] INSERT failed:', insertError);
-		return json({ error: 'insert_failed', detail: insertError.message }, { status: 500 });
-	}
-
-	return json({ inserted: skillIds.length, skill_ids: skillIds });
+	return json({ inserted: 1, skill_ids: skillIds });
 };
+
+// ============================================================================
+// Helpers internes
+// ============================================================================
+
+/**
+ * Met à jour `srs_card_stats` côté FSRS de manière synchrone pour
+ * (user, template). Initialise la row si absente.
+ *
+ * Cohabite avec `srs_card_stats` partagés entre tous les decks de l'élève
+ * contenant ce template (UNIQUE `(user_id, card_reference_type, card_reference_id)`).
+ */
+async function applyFsrsUpdate(
+	supabase: import('@supabase/supabase-js').SupabaseClient,
+	userId: string,
+	templateId: string,
+	grade: Grade
+): Promise<void> {
+	const fsrs = new FSRS();
+
+	// Lecture stats existants
+	const { data: existing } = await supabase
+		.from('srs_card_stats')
+		.select('*')
+		.eq('user_id', userId)
+		.eq('card_reference_type', 'template')
+		.eq('card_reference_id', templateId)
+		.maybeSingle();
+
+	let stats: CardStats;
+	if (existing) {
+		stats = {
+			id: existing.id,
+			userId: existing.user_id,
+			cardReferenceType: existing.card_reference_type,
+			cardReferenceId: existing.card_reference_id,
+			difficulty: existing.difficulty,
+			stability: existing.stability,
+			state: existing.state,
+			lastReview: existing.last_review,
+			nextReview: existing.next_review,
+			totalReviews: existing.total_reviews,
+			reviewHistory: existing.review_history || [],
+			createdAt: existing.created_at,
+			updatedAt: existing.updated_at
+		};
+	} else {
+		const init = fsrs.initCard(userId, 'template', templateId);
+		stats = {
+			id: crypto.randomUUID(),
+			...init,
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString()
+		};
+	}
+
+	const updated = fsrs.reviewCard(stats, grade);
+
+	const { error: upsertErr } = await supabase.from('srs_card_stats').upsert(
+		{
+			id: stats.id,
+			user_id: userId,
+			card_reference_type: 'template',
+			card_reference_id: templateId,
+			difficulty: updated.difficulty,
+			stability: updated.stability,
+			state: updated.state,
+			last_review: updated.lastReview,
+			next_review: updated.nextReview,
+			total_reviews: updated.totalReviews,
+			review_history: updated.reviewHistory
+		},
+		{ onConflict: 'user_id,card_reference_type,card_reference_id' }
+	);
+
+	if (upsertErr) throw upsertErr;
+}
