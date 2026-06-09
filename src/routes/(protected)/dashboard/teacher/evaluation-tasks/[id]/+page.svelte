@@ -12,7 +12,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { ChevronLeft, ClipboardList, Save, Trash2 } from 'lucide-svelte';
+	import { ChevronLeft, ClipboardList, Save, Trash2, PenLine } from 'lucide-svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData, ActionData } from './$types';
 
@@ -91,6 +91,12 @@
 				{selectedCount} observable{selectedCount > 1 ? 's' : ''} dans le périmètre
 			</p>
 		</div>
+		{#if data.class_id && selectedCount > 0}
+			<Button href="/dashboard/teacher/evaluation-tasks/{data.id}/saisie" class="gap-1">
+				<PenLine class="h-4 w-4" />
+				Saisir en séance
+			</Button>
+		{/if}
 	</div>
 
 	<!-- Métadonnées -->
