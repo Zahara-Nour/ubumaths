@@ -472,6 +472,121 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// Endpoint call helpers (for skill-attempts-endpoint tests)
+// ---------------------------------------------------------------------------
+
+/**
+ * Tag a question_template with a skill via the question_template_skills table.
+ * Uses service role to bypass RLS.
+ *
+ * @param service - Service-role Supabase client
+ * @param templateId - UUID of the question_template
+ * @param skillId - UUID of the skill to tag
+ */
+export async function tagTemplateWithSkill(
+	service: SupabaseClient<Database>,
+	templateId: string,
+	skillId: string
+): Promise<void> {
+	const { error } = await service
+		.from('question_template_skills' as never)
+		.insert({ template_id: templateId, skill_id: skillId } as never);
+
+	if (error) {
+		// ON CONFLICT DO NOTHING — duplicate tags are silently accepted
+		if (error.code !== '23505') {
+			throw new Error(`tagTemplateWithSkill failed: ${error.message}`);
+		}
+	}
+}
+
+/**
+ * Return type for callSkillAttemptsEndpoint.
+ */
+export type SkillAttemptsEndpointResult = {
+	status: number;
+	body: { inserted: number; skill_ids: string[] } | { error: string; detail?: string };
+};
+
+/**
+ * Convenience wrapper: calls the POST /api/skill-attempts endpoint directly
+ * (no HTTP server needed) using a pre-built locals object.
+ *
+ * @param supabase - Supabase client to use (service role or authenticated)
+ * @param user - User object to inject via safeGetSession mock
+ * @param body - Request body (template_id, success, etc.)
+ */
+export async function callSkillAttemptsEndpoint(
+	supabase: SupabaseClient<Database>,
+	user: import('@supabase/supabase-js').User,
+	body: { template_id: string; success: boolean; with_help?: boolean; phase_blocage?: string }
+): Promise<SkillAttemptsEndpointResult> {
+	const { vi } = await import('vitest');
+	const { POST } = await import('../../src/routes/api/skill-attempts/+server');
+
+	const locals: App.Locals = {
+		supabase: supabase as unknown as App.Locals['supabase'],
+		safeGetSession: vi.fn().mockResolvedValue({ user }),
+		user,
+		profile: null,
+		requestId: crypto.randomUUID()
+	};
+
+	const request = new Request('http://localhost/api/skill-attempts', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(body)
+	});
+
+	try {
+		const response = await POST({ request, locals } as never);
+		const responseBody = await response.json();
+		return { status: response.status, body: responseBody };
+	} catch (err: unknown) {
+		// SvelteKit error() throws an object with { status, body } shape
+		const httpError = err as { status?: number; body?: { message?: string } };
+		return {
+			status: httpError.status ?? 500,
+			body: { error: httpError.body?.message ?? 'unknown error' }
+		};
+	}
+}
+
+/**
+ * Find an existing (template, skill) pair from question_template_skills that
+ * was created by migration 20260609130000 — i.e., a real seeded 6e template
+ * tagged to a real knowledge skill.
+ *
+ * Filters by the template's domain/subdomain to target a specific seed.
+ * Returns null if the migration hasn't been applied yet.
+ *
+ * @param service - Service-role client
+ * @param domain - Template domain to match (e.g. 'Fractions')
+ * @param subdomain - Template subdomain to match (e.g. 'Addition')
+ */
+export async function getTaggedKnowledgeTemplate(
+	service: SupabaseClient<Database>,
+	domain: string,
+	subdomain: string
+): Promise<{ template_id: string; skill_id: string } | null> {
+	const { data, error } = await service
+		.from('question_template_skills' as never)
+		.select('template_id, skill_id, question_templates!inner(domain, subdomain)')
+		.eq('question_templates.domain', domain)
+		.eq('question_templates.subdomain', subdomain)
+		.limit(1)
+		.maybeSingle();
+
+	if (error) {
+		throw new Error(`getTaggedKnowledgeTemplate failed: ${error.message}`);
+	}
+
+	if (!data) return null;
+	const row = data as { template_id: string; skill_id: string };
+	return { template_id: row.template_id, skill_id: row.skill_id };
+}
+
+// ---------------------------------------------------------------------------
 // Re-export commonly used helpers from other files for convenience
 // ---------------------------------------------------------------------------
 
