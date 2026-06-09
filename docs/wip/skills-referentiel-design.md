@@ -180,10 +180,10 @@ Les 4 visuels (◯/🟠/🟢/✨) sont conservés des deux côtés du dashboard 
 
 Définitions cohérentes avec le modèle B binaire (cf. §6.2) :
 
-| Badge              | Sens                                                    | Condition (famille A — modèle B)                                                                                                                                                                                                     |
-| ------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 🆘 **À remédier**  | L'élève bute sur cette capacité (régression OU blocage) | `needs_remediation = true` : capacité **non acquise** AVEC **≥ 2 échecs** dans la fenêtre récente (3 dernières pour `capacite_attendue`, 5 dernières pour `automatisme`). Pas de seuil sur l'historique de succès (décisions 63, 64) |
-| 🔁 **À renforcer** | Capacité acquise qui faiblit par non-usage              | `to_review = true` : capacité **acquise** mais `last_success_at > 30 jours`. Visuellement **atténué** dans les listes ; capacité reste acquise tant qu'aucun échec ne casse                                                          |
+| Badge              | Sens                                                    | Condition (famille A — modèle B)                                                                                                                                                                                                                                   |
+| ------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 🆘 **À remédier**  | L'élève bute sur cette capacité (régression OU blocage) | `needs_remediation = true` : capacité **non acquise** AVEC **≥ 2 échecs** dans la fenêtre récente (3 dernières pour `capacite_attendue`, 5 dernières pour `automatisme`). Pas de seuil sur l'historique de succès (décisions 63, 64)                               |
+| 🔁 **À renforcer** | Capacité acquise qui faiblit par non-usage              | `to_review = true` dans la VIEW `student_skill_state_a_v` : capacité **acquise** mais `last_success_at < NOW() - 30 jours` (calculé à la lecture, cf. décision 70). Visuellement **atténué** dans les listes ; capacité reste acquise tant qu'aucun échec ne casse |
 
 **Famille B : pas de badges**. Le cadre d'évaluation des 6 compétences est volontairement **formatif** (il explique son verdict et désigne le geste à travailler) **sans alerte automatique de régression**. C'est le geste pédagogique du prof qui agit, pas un signal système.
 
@@ -589,7 +589,7 @@ Capacité acquise avec succès récent et règle satisfaite
   → état stable (pas de badge, pas d'atténuation)
 ```
 
-**Note schéma** : `to_review` est l'unique flag pour la décroissance (cf. §7). Le badge UI 🔁 « À renforcer » est dérivé directement de ce flag — pas de `needs_reinforcement` séparé (redondant). Le compteur agrégé du dashboard (« 🔁 À renforcer (N) ») se calcule à la volée comme `COUNT(*) WHERE is_acquired AND to_review`.
+**Note schéma** : `to_review` n'est pas une colonne stockée — il est **calculé à la lecture** via la VIEW `student_skill_state_a_v` (cf. §7 + décision 70). Le badge UI 🔁 « À renforcer » est dérivé de cette VIEW. Le compteur agrégé du dashboard (« 🔁 À renforcer (N) ») se calcule à la volée comme `SELECT COUNT(*) FROM student_skill_state_a_v WHERE student_id = $1 AND to_review`.
 
 Une capacité **jamais touchée** (aucun attempt) n'est ni acquise ni à remédier : elle est simplement « non commencée » (◯) et cachée du dashboard d'entrée — pas d'échec récent, donc `needs_remediation = false`.
 
@@ -801,12 +801,24 @@ evaluation_tasks (
   niveau_scolaire text not null,
   name            text not null,
   description     text,
-  -- Lien optionnel à une entité existante du contenu
-  source_type     text nullable check (source_type in ('assessment', 'exercise', 'worksheet', 'ad_hoc')),
-  source_ref      uuid nullable,
+  -- Lien optionnel à une entité existante (décision 71 — 3 FK distinctes nullables) :
+  -- au plus 1 non-null ; si toutes null → tâche ad-hoc
+  assessment_id   uuid fk → assessments(id) nullable ON DELETE SET NULL,
+  exercise_id     uuid fk → exercises(id) nullable ON DELETE SET NULL,
+  worksheet_id    uuid fk → worksheets(id) nullable ON DELETE SET NULL,
   task_date       date,
-  created_at      timestamptz default now()
+  created_at      timestamptz default now(),
+  CONSTRAINT chk_evaluation_task_source CHECK (
+    (CASE WHEN assessment_id IS NOT NULL THEN 1 ELSE 0 END)
+    + (CASE WHEN exercise_id IS NOT NULL THEN 1 ELSE 0 END)
+    + (CASE WHEN worksheet_id IS NOT NULL THEN 1 ELSE 0 END)
+    <= 1
+  )
 )
+-- Note (décision 71, 2026-06-09) : remplace l'ancien pattern source_type+source_ref
+-- (polymorphisme manuel) par 3 FK distinctes. FK enforcement Postgres natif
+-- (CASCADE/SET NULL), pas de référence cassée possible. Si la liste s'étend
+-- (chapter, kanban_card...), ALTER TABLE ADD COLUMN + mise à jour de la CHECK.
 
 -- Périmètre déclaré par le prof : quels observables cette tâche permet d'observer
 evaluation_task_perimeter (
@@ -884,13 +896,25 @@ student_skill_state_a (
   distinct_template_successes   int not null default 0,        -- pour la règle capacite_attendue
   last_success_at               timestamptz,
   last_attempt_at               timestamptz,
-  to_review                     boolean not null default false, -- (is_acquired AND now - last_success_at > 30 jours) → affichage estompé + badge 🔁 « À renforcer »
   needs_remediation             boolean not null default false, -- 🆘 ≥ 2 échecs dans la fenêtre récente (selon knowledge_type) bloquant la règle
   PRIMARY KEY (student_id, skill_id)
 )
 -- Recalculé par trigger PL/pgSQL sur INSERT skill_attempts famille A.
--- Le flag to_review est rafraîchi par un job quotidien (ou recalculé à la volée
--- en lecture si on veut éviter le cron — décision implémentation).
+-- Note (décision 70, 2026-06-09) : le flag `to_review` (décroissance 30j) est
+-- supprimé de la table. Il dépend de `now()` et changerait sans qu'aucun attempt
+-- n'arrive ; un cache stocké demanderait un cron quotidien. On le calcule
+-- maintenant à la lecture via la VIEW `student_skill_state_a_v` ci-dessous.
+
+-- VIEW dérivée qui ajoute `to_review` calculé à la lecture.
+-- Exact à tout instant, pas de cron, performance triviale (comparaison timestamp).
+CREATE VIEW student_skill_state_a_v AS
+SELECT
+  *,
+  (is_acquired AND last_success_at < NOW() - INTERVAL '30 days') AS to_review
+FROM student_skill_state_a;
+
+-- Conseil index : index sur (student_id, last_success_at) pour accélérer le
+-- WHERE to_review = true (filtre sur is_acquired déjà inclus dans la définition).
 
 -- Famille B : consolidation par observable
 student_observable_state (
@@ -916,12 +940,123 @@ student_competence_level (
 )
 ```
 
-**Hypothèses** :
+**Hypothèses et conventions d'implémentation** :
 
-- Trigger PL/pgSQL sur `INSERT INTO skill_attempts` recalcule la ligne de cache appropriée (`student_skill_state_a` pour famille A, `student_observable_state` puis `student_competence_level` pour famille B).
-- La règle de validation famille B (conjonctive par compétence) est codée en **fonction PL/pgSQL** ou en TypeScript côté serveur ; elle prend en entrée la liste des observable_codes acquis et retourne (niveau, missing_for_next).
-- RLS : élève voit ses propres données ; prof voit ses élèves selon `class_members`.
-- Les 6 `math_competences` sont seedées une fois ; les `math_competence_subdimensions` (≈ 22 lignes : 4 ou 3 par compétence) sont seedées une fois. Les `skills` (observables) sont seedés depuis `college-competences.md`.
+- Trigger PL/pgSQL sur `INSERT INTO skill_attempts` recalcule la ligne de cache appropriée :
+  - famille `knowledge` → `student_skill_state_a` (recalcul des compteurs + `needs_remediation`)
+  - famille `competence` → `student_observable_state` puis `student_competence_level`
+- `assessment_math_competences` / `exercise_math_competences` (remplacées par `evaluation_tasks` avec FK assessment_id/exercise_id/worksheet_id — décision 71)
+- Les 6 `math_competences` sont seedées une fois ; les `math_competence_subdimensions` (≈ 22 lignes : 4 ou 3 par compétence) sont seedées une fois. Les `skills` (capacités et observables) sont seedés depuis `referentiel/6e-savoirs.md` (72 capacités) et `referentiel/college-competences.md` (56 observables).
+
+### Fonctions PL/pgSQL pour la règle conjonctive famille B (décision 69)
+
+Une fonction par compétence math + une fonction de dispatch :
+
+```sql
+-- Dispatch : appelé par le trigger sur student_observable_state
+CREATE FUNCTION compute_competence_level(p_student_id uuid, p_math_competence_id uuid)
+RETURNS TABLE (niveau text, validated_observables jsonb, missing_for_next jsonb)
+LANGUAGE plpgsql AS $$
+DECLARE
+  v_code text;
+BEGIN
+  SELECT code INTO v_code FROM math_competences WHERE id = p_math_competence_id;
+  CASE v_code
+    WHEN 'chercher'    THEN RETURN QUERY SELECT * FROM compute_chercher_level(p_student_id, p_math_competence_id);
+    WHEN 'calculer'    THEN RETURN QUERY SELECT * FROM compute_calculer_level(p_student_id, p_math_competence_id);
+    WHEN 'raisonner'   THEN RETURN QUERY SELECT * FROM compute_raisonner_level(p_student_id, p_math_competence_id);
+    WHEN 'communiquer' THEN RETURN QUERY SELECT * FROM compute_communiquer_level(p_student_id, p_math_competence_id);
+    WHEN 'modeliser'   THEN RETURN QUERY SELECT * FROM compute_modeliser_level(p_student_id, p_math_competence_id);
+    WHEN 'representer' THEN RETURN QUERY SELECT * FROM compute_representer_level(p_student_id, p_math_competence_id);
+  END CASE;
+END $$;
+
+-- Chacune des 6 fonctions implémente sa règle propre selon college-competences.md.
+-- Exemple pour Chercher :
+CREATE FUNCTION compute_chercher_level(p_student_id uuid, p_math_competence_id uuid)
+RETURNS TABLE (niveau text, validated_observables jsonb, missing_for_next jsonb)
+LANGUAGE plpgsql AS $$
+DECLARE
+  v_acquired text[];  -- liste des observable_codes acquis
+BEGIN
+  SELECT array_agg(s.observable_code) INTO v_acquired
+  FROM student_observable_state sos
+  JOIN skills s ON s.id = sos.skill_id
+  WHERE sos.student_id = p_student_id
+    AND s.subdimension_id IN (SELECT id FROM math_competence_subdimensions WHERE math_competence_id = p_math_competence_id)
+    AND sos.is_acquis = true;
+
+  -- Règle Chercher (cf. college-competences.md) :
+  -- Très bonne ssi C2 acquis AND C1 acquis AND ≥ 1 obs de D acquis AND conditions Satisfaisante
+  -- Satisfaisante ssi B1 acquis AND ≥ 2 des 3 obs de A acquis AND ≥ 1 obs parmi B2..B5 acquis
+  -- Fragile ssi (Satisfaisante non atteint) AND ≥ 1 obs de A AND ≥ 1 obs de B
+  -- Insuffisante sinon
+  -- ...code de la règle (~25 lignes)...
+
+  RETURN QUERY SELECT 'tres_bonne'::text, to_jsonb(v_acquired), '[]'::jsonb;  -- exemple
+END $$;
+```
+
+Note : la fonction de dispatch est appelée par le trigger sur `student_observable_state` qui met à jour `student_competence_level` en cascade.
+
+### RLS policies (décision 72 — RLS complète dès phase 1)
+
+Stratégie globale :
+
+**Référentiel partagé global (décision Q3)** — lecture publique authentifiée :
+
+```sql
+-- skill_themes, skill_objectives, skills, math_competences, math_competence_subdimensions
+-- + question_template_skills (junction)
+ENABLE RLS;
+CREATE POLICY "ref_read_all_authenticated" ON skill_themes
+  FOR SELECT TO authenticated USING (true);
+-- (idem pour les autres tables référentiel)
+-- Écriture : service role uniquement (seeds, admin)
+```
+
+**Attempts famille A (auto/teacher/student_self)** :
+
+```sql
+ENABLE RLS ON skill_attempts;
+
+-- L'élève lit ses propres attempts
+CREATE POLICY "student_reads_own" ON skill_attempts FOR SELECT TO authenticated
+  USING (student_id = auth.uid());
+
+-- Le prof lit les attempts des élèves de ses classes
+CREATE POLICY "teacher_reads_classmates" ON skill_attempts FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM class_members cm_teacher
+      JOIN class_members cm_student ON cm_student.class_id = cm_teacher.class_id
+      WHERE cm_teacher.profile_id = auth.uid()
+        AND cm_teacher.role = 'teacher'
+        AND cm_student.profile_id = skill_attempts.student_id
+        AND cm_student.role = 'student'
+    )
+  );
+
+-- L'élève peut insérer pour lui-même (source auto/student_self)
+CREATE POLICY "student_inserts_own" ON skill_attempts FOR INSERT TO authenticated
+  WITH CHECK (student_id = auth.uid() AND source IN ('auto', 'student_self'));
+
+-- Le prof peut insérer pour ses élèves (source teacher)
+CREATE POLICY "teacher_inserts_for_classmate" ON skill_attempts FOR INSERT TO authenticated
+  WITH CHECK (
+    source = 'teacher'
+    AND EXISTS (...même JOIN que ci-dessus...)
+  );
+```
+
+**Caches (`student_skill_state_a`, `student_observable_state`, `student_competence_level`)** : lecture seule pour l'utilisateur (même scope que `skill_attempts`), écriture **trigger uniquement** (pas de policy d'écriture pour l'utilisateur).
+
+**`evaluation_tasks` + `evaluation_task_perimeter`** :
+
+- Lecture : prof créateur ; élèves de la classe ciblée via `class_members` + `class_id`
+- Écriture : prof créateur uniquement
+
+Le détail SQL complet sera dans la migration de phase 1.
 
 **Caduc** (supprimé du schéma) :
 
@@ -1181,6 +1316,10 @@ Affichage en **tableau 4 colonnes** correspondant aux 4 capacités ordonnées pa
 | 66                          | **`rubrique` renommé `type`** (libéré par 65)                                                         | Le champ `rubrique` (valeurs `'automatisme' \| 'capacite_attendue'`) est renommé `type`. Le mot « rubrique » restait fidèle au BO 2026 mais peu explicite côté schéma ; « type » est plus court et clair. Le nom était bloqué par `skill_type` ; sa suppression (décision 65) le libère. Valeurs inchangées. Mises à jour : §3, §6.1, §7, `referentiel/6e-savoirs.md`. Le mot « rubrique » reste utilisé dans le texte du doc quand il désigne la convention BO 2026 (« reprend la rubrique BO »). Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | 67                          | **`family` réintroduit en GENERATED column** (`'knowledge' \| 'competence'`)                          | Pour récupérer la lisibilité perdue par la décision 65 sans réintroduire de redondance maintenue à la main, le champ `family` est rajouté en **GENERATED column** Postgres : `family text generated always as (CASE WHEN objective_id IS NOT NULL THEN 'knowledge' ELSE 'competence' END) stored`. Valeurs en anglais alignées sur le codebase. « famille A » / « famille B » restent comme alias courts dans la doc et l'historique. Permet `WHERE family = 'knowledge'` au lieu de `WHERE objective_id IS NOT NULL`. Calculé par Postgres → impossible à désynchroniser. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 68                          | **`type` renommé `knowledge_type`** (préfixage par famille)                                           | Le champ `type` (introduit en décision 66) est renommé `knowledge_type` pour expliciter qu'il s'applique uniquement à la famille `'knowledge'` (NULL en famille `'competence'`). Le nom `type` seul laissait croire à un champ générique de tous les skills, alors qu'il est spécifique au régime d'acquisition des capacités knowledge. Valeurs inchangées (`'automatisme' \| 'capacite_attendue'`). Diagramme d'asymétrie hiérarchique knowledge/competence ajouté en §1 pour clarifier la structure. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| 69                          | **Règles conjonctives famille B en PL/pgSQL natif**                                                   | Les 6 règles d'évaluation du niveau d'une compétence math (`college-competences.md`) sont implémentées en **6 fonctions Postgres** (`compute_chercher_level`, `compute_calculer_level`, etc.) + une fonction de dispatch `compute_competence_level(student_id, math_competence_id)`. Atomique avec INSERT, perf max, cohérent avec les triggers déjà prévus. ~30 lignes par fonction. Tests via pgTAP ou intégration TS. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 70                          | **`to_review` calculé via VIEW, pas stocké**                                                          | Le flag `to_review` (décroissance 30 jours sans pratique) **n'est pas stocké** dans `student_skill_state_a`. Il dépend de `now()` et ne peut pas être maintenu sans cron. À la place, VIEW `student_skill_state_a_v` qui calcule `to_review = (is_acquired AND last_success_at < NOW() - INTERVAL '30 days')` à la lecture. Exact à tout instant, perf triviale (comparaison timestamp). Le client lit la VIEW au lieu de la table. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 71                          | **`evaluation_tasks` → 3 FK distinctes nullables** (remplace `source_type`+`source_ref`)              | Le polymorphisme manuel (`source_type` text + `source_ref` uuid) est remplacé par 3 FK distinctes nullables : `assessment_id`, `exercise_id`, `worksheet_id`. CHECK constraint « ≤ 1 non-null ». Ad-hoc = toutes null. FK enforcement Postgres natif (CASCADE/SET NULL), pas de référence cassée possible. Si un nouveau type devient nécessaire (chapter, kanban_card...), ALTER TABLE ADD COLUMN + maj CHECK. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 72                          | **RLS complète dès la phase 1**                                                                       | Toutes les policies RLS sont rédigées dès la migration de phase 1, plutôt qu'esquissées et durcies plus tard. Référentiel : lecture publique authentifiée (Q3 = partagé global). Attempts et caches : scope élève (auth.uid()) + scope prof via `class_members.role='teacher'` JOIN sur la même `class_id`. Caches : écriture trigger uniquement. evaluation_tasks et perimeter : prof créateur en écriture ; élèves de la classe ciblée en lecture. Patterns standard du codebase UbuMaths. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ---
 
@@ -1266,6 +1405,8 @@ Affichage en **tableau 4 colonnes** correspondant aux 4 capacités ordonnées pa
 - **2026-06-07 (suite 18 — PIVOT MODÈLE B pour famille A : 4 capacités ordonnées par item)** : après le travail de structuration BO 2026 (suite 17), David rouvre le fond du modèle famille A. Le modèle « 4 paliers d'indicateurs par capacité » s'avère lourd (rédaction de ~500 indicateurs estimés pour la 6ᵉ uniquement) et tend à s'effondrer en pratique vers 4 capacités distinctes empilées. **Décision : adopter le modèle du référentiel personnel 2016 de David** (« échelles descriptives connaissance 6 2016 ») — chaque objectif a **exactement 4 capacités ordonnées par difficulté**, binaires, distinctes. Niveau de l'objectif = rang max acquis. Niveau 3 = « attendu pour tous » (BO), Niveau 4 = expert/approfondissement. **Validation par variations dans les templates** (approche 3) : pas de table d'observables séparée — la diversité du pool de questions taguées sur une capacité incarne les variations. **Règle d'acquisition modulée par rubrique BO** : `capacite_attendue` → ≥ 1 succès sur ≥ 2 templates distincts + aucun échec dans les 3 dernières ; `automatisme` → ≥ 5 succès + ≥ 3 dans les 5 dernières. **Décroissance V1** : > 30 jours sans succès → « à revoir ». **Schéma DB** : drop `level_indicators`, `is_progressive`, `target_level` (table `skills` + junction `question_skills` + table `skill_attempts` + cache `student_skill_state_a`). Refonte `student_skill_state_a` en cache binaire avec `is_acquired`, `total_successes`, `distinct_template_successes`, `to_review`. Conserver `template_id` sur `skill_attempts` pour la règle de couverture. **Tagging questions** simplifié à `skill_id` seul — acte de classification objectif (« cette question teste cette capacité »), pas de calibration subjective de niveau. **Décisions caduques** : 5, 7, 13-15, 18, 19, 22. **Décision ajoutée** : 57. Famille B (cadre canonique 6 compétences) **intacte**. Cible 6ᵉ : ~20 objectifs × 4 capacités = ~80 capacités à rédiger. Prochaine étape : valider avec David la liste des ~20 items et leurs 4 capacités, puis réécrire `6e-savoirs.md`. Handoff de session : `docs/wip/referentiel-handoff.md`.
 
 - **2026-06-09 (suite 20 — micro-ajustement schéma cache famille A)** : David note la redondance entre `student_skill_state_a.to_review` et `student_skill_state_a.needs_reinforcement` — les deux décrivent la même condition (« capacité acquise mais > 30 j sans pratique »). **Décision 62** : suppression de `needs_reinforcement`. Un seul flag `to_review`. Visuellement : capacité atténuée dans les listes. Badge UI 🔁 « À renforcer » et compteur agrégé dérivés à la volée depuis `to_review`. §6.2 et §7 mis à jour.
+
+- **2026-06-09 (suite 27 — 4 bloquants techniques tranchés : décisions 69-72)** : avant de démarrer la phase 1, identification de 4 bloquants techniques restants dans le doc. Tranchés en bloc avec David. **Décision 69** : règles conjonctives famille B en **6 fonctions PL/pgSQL natives** (~30 lignes chacune) + dispatch `compute_competence_level()`. Atomique avec les triggers cache, perf max. **Décision 70** : flag `to_review` **calculé à la lecture via VIEW** `student_skill_state_a_v` (pas de cron, pas de désynchro possible, perf triviale). Drop de la colonne `to_review` du cache stocké. **Décision 71** : `evaluation_tasks` **passe à 3 FK distinctes** (`assessment_id`, `exercise_id`, `worksheet_id` nullables + CHECK ≤ 1 non-null), abandon du polymorphisme manuel `source_type`+`source_ref`. FK enforcement natif Postgres. **Décision 72** : **RLS complète dès la phase 1** (esquisse → policies SQL détaillées : référentiel lecture publique, attempts/caches scope élève+prof via `class_members`, evaluation_tasks scope classe). §6.2 (référence VIEW), §7 (schéma student_skill_state_a + VIEW + evaluation_tasks 3 FK + section PL/pgSQL + section RLS) mis à jour.
 
 - **2026-06-09 (suite 26 — clôture Q3 + Q4)** : David tranche les deux dernières questions bloquantes pour démarrer la phase 1. **Q3** : référentiel **partagé global** en V1 (lecture publique des seeds, pas de scope par prof). **Q4** : **6ᵉ seule** pour V1 (5ᵉ/4ᵉ/3ᵉ/lycée ajoutées plus tard par nouveaux seeds, pas de changement de schéma). §11 mis à jour (Q3, Q4 marquées résolues). §12 « Côté David » : ne reste que Q7 (versionnement intra-année, reportable) + Q8/Q9 (UX, phases 5-6).
 
