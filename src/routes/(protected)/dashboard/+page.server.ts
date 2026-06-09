@@ -121,20 +121,40 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}
 	}
 
+	// Default competences summary (overwritten for students below)
+	let competencesSummary: {
+		objectives: {
+			mastery: number;
+			atteint: number;
+			en_cours: number;
+			total: number;
+			remediation: number;
+		};
+		competences: {
+			tres_bonne: number;
+			satisfaisante: number;
+			fragile: number;
+			insuffisante: number;
+			with_data: number;
+			total: number;
+		};
+	} | null = null;
+
 	if (profile.role === 'student') {
 		// Execute queries in parallel for better performance
-		const [riddleCount, exercisesData, achievementsData, inbox] = await Promise.all([
-			// Get count of successfully solved riddles
-			supabase
-				.from('riddle_attempts')
-				.select('*', { count: 'exact', head: true })
-				.eq('student_id', profile.id)
-				.eq('is_correct', true),
-			// Get recent assigned exercises (up to 5, sorted by deadline)
-			supabase
-				.from('exercises')
-				.select(
-					`
+		const [riddleCount, exercisesData, achievementsData, inbox, objectivesState, competenceLevels] =
+			await Promise.all([
+				// Get count of successfully solved riddles
+				supabase
+					.from('riddle_attempts')
+					.select('*', { count: 'exact', head: true })
+					.eq('student_id', profile.id)
+					.eq('is_correct', true),
+				// Get recent assigned exercises (up to 5, sorted by deadline)
+				supabase
+					.from('exercises')
+					.select(
+						`
 				id,
 				title,
 				tags,
@@ -151,18 +171,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 					last_viewed_at
 				)
 			`
-				)
-				.or(
-					`exercise_assignments.student_id.eq.${profile.id},exercise_assignments.assigned_to_type.eq.public`
-				)
-				.eq('exercise_assignments.is_active', true)
-				.limit(5)
-				.order('exercise_assignments.optional_deadline', { ascending: true, nullsFirst: false }),
-			// Get student Minesweeper achievements
-			supabase
-				.from('student_achievements')
-				.select(
-					`
+					)
+					.or(
+						`exercise_assignments.student_id.eq.${profile.id},exercise_assignments.assigned_to_type.eq.public`
+					)
+					.eq('exercise_assignments.is_active', true)
+					.limit(5)
+					.order('exercise_assignments.optional_deadline', { ascending: true, nullsFirst: false }),
+				// Get student Minesweeper achievements
+				supabase
+					.from('student_achievements')
+					.select(
+						`
 					id,
 					achievement_id,
 					unlocked_at,
@@ -175,12 +195,24 @@ export const load: PageServerLoad = async ({ locals }) => {
 						game_id
 					)
 				`
-				)
-				.eq('student_id', profile.id)
-				.order('unlocked_at', { ascending: false }),
-			// Fetch unified work inbox (aggregates all 4 assignment sources)
-			getStudentWorkInbox(supabase, profile.id)
-		]);
+					)
+					.eq('student_id', profile.id)
+					.order('unlocked_at', { ascending: false }),
+				// Fetch unified work inbox (aggregates all 4 assignment sources)
+				getStudentWorkInbox(supabase, profile.id),
+				// Phase 6 widget — état des objectifs famille A (capacités knowledge)
+				supabase
+					.from('student_skill_state_a_v')
+					.select(
+						'skill_id, is_acquired, needs_remediation, skills!inner(objective_id, display_order)'
+					)
+					.eq('student_id', profile.id),
+				// Phase 6 widget — niveaux des 6 compétences math (famille B)
+				supabase
+					.from('student_competence_level')
+					.select('math_competence_id, niveau, task_count')
+					.eq('student_id', profile.id)
+			]);
 
 		riddlesSolved = riddleCount.count || 0;
 		recentExercises = (exercisesData.data || []) as typeof recentExercises;
@@ -222,6 +254,76 @@ export const load: PageServerLoad = async ({ locals }) => {
 			progress_percentage: totalPossible > 0 ? Math.round((totalUnlocked / totalPossible) * 100) : 0
 		};
 
+		// Phase 6 — Agréger les états en stats par objectif (niveau atteint = max rang acquis)
+		type StateRow = {
+			skill_id: string | null;
+			is_acquired: boolean | null;
+			needs_remediation: boolean | null;
+			skills:
+				| { objective_id: string | null; display_order: number }
+				| { objective_id: string | null; display_order: number }[]
+				| null;
+		};
+		const rangMaxByObjective = new Map<string, number>();
+		const remediationObjectives = new Set<string>();
+		for (const row of (objectivesState.data ?? []) as StateRow[]) {
+			const sk = Array.isArray(row.skills) ? row.skills[0] : row.skills;
+			const objId = sk?.objective_id;
+			if (!objId) continue;
+			if (row.is_acquired) {
+				const r = sk?.display_order ?? 0;
+				const cur = rangMaxByObjective.get(objId) ?? 0;
+				if (r > cur) rangMaxByObjective.set(objId, r);
+			}
+			if (row.needs_remediation) {
+				remediationObjectives.add(objId);
+			}
+		}
+
+		// Le total d'objectifs 6ᵉ pour la barre de progression
+		const TOTAL_OBJECTIVES_6E = 18;
+		let mastery = 0,
+			atteint = 0,
+			en_cours = 0;
+		for (const rang of rangMaxByObjective.values()) {
+			if (rang === 4) mastery += 1;
+			else if (rang === 3) atteint += 1;
+			else if (rang >= 1) en_cours += 1;
+		}
+
+		// Phase 6 — Agréger les niveaux par compétence math
+		let tres_bonne = 0,
+			satisfaisante = 0,
+			fragile = 0,
+			insuffisante = 0,
+			with_data = 0;
+		for (const row of competenceLevels.data ?? []) {
+			if (!row.niveau) continue;
+			with_data += 1;
+			if (row.niveau === 'tres_bonne') tres_bonne += 1;
+			else if (row.niveau === 'satisfaisante') satisfaisante += 1;
+			else if (row.niveau === 'fragile') fragile += 1;
+			else insuffisante += 1;
+		}
+
+		competencesSummary = {
+			objectives: {
+				mastery,
+				atteint,
+				en_cours,
+				total: TOTAL_OBJECTIVES_6E,
+				remediation: remediationObjectives.size
+			},
+			competences: {
+				tres_bonne,
+				satisfaisante,
+				fragile,
+				insuffisante,
+				with_data,
+				total: 6
+			}
+		};
+
 		// Return profile to the client component
 		// +page.svelte will use profile.role to render the correct dashboard
 		return {
@@ -231,7 +333,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			academicPeriods,
 			minesweeperAchievements,
 			achievementStats,
-			inbox
+			inbox,
+			competencesSummary
 		};
 	}
 
