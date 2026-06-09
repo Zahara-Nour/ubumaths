@@ -1,19 +1,18 @@
 /**
  * Student Objectifs Page Server
- * =============================
  *
- * UI élève Phase 3.1 — Liste des objectifs famille knowledge (capacités 6ᵉ).
+ * UI élève — Liste des objectifs famille knowledge (capacités 6ᵉ).
  *
- * Lit `student_skill_state_a_v` (VIEW avec `to_review` calculé), joint avec
- * `skills` + `skill_objectives` + `skill_themes` pour reconstruire l'arbre
- * par thème → objectif → capacités (rang 1-4).
- *
- * Spec : docs/wip/skills-referentiel-design.md §6.3, §8
+ * Refonte 2026-06-10 (Phase 3 chantier SRS/FSRS) :
+ * - `to_review` (basé sur seuil 30j arbitraire) supprimé de la VIEW et de la page.
+ * - Calcul d'un badge FSRS agrégé par objectif (priorité du pire badge sur ses
+ *   capacités) via `computeCapacityBadges`.
  */
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
+import { computeCapacityBadges, type CapacityBadge } from '$lib/server/srs/capacity-badge';
 
 export interface ObjectiveSummary {
 	id: string;
@@ -21,16 +20,12 @@ export interface ObjectiveSummary {
 	theme_id: string;
 	theme_name: string;
 	display_order: number;
-	/** Rang max des capacités acquises (0 si aucune). Cf. §6.3. */
 	rang_max_acquired: 0 | 1 | 2 | 3 | 4;
-	/** Nombre de capacités acquises (peut différer du rang max si non contigu). */
 	acquired_count: number;
-	/** Total = 4 (modèle B). */
 	total_count: number;
-	/** Au moins 1 capacité needs_remediation=true. */
 	has_remediation: boolean;
-	/** Au moins 1 capacité acquise mais to_review=true. */
-	has_to_review: boolean;
+	/** Pire badge FSRS parmi les capacités (priorité a_remedier > a_renforcer > ...). */
+	fsrs_badge: CapacityBadge;
 }
 
 export interface ThemeWithObjectives {
@@ -49,14 +44,27 @@ export interface ObjectifsPageData {
 		en_cours: number; // 🟠
 		non_commence: number; // ◯
 		remediation_count: number;
+		to_reinforce_count: number;
 	};
+}
+
+const BADGE_PRIORITY: Record<CapacityBadge, number> = {
+	a_remedier: 5,
+	a_renforcer: 4,
+	en_apprentissage: 3,
+	acquise_en_memoire: 2,
+	non_commencee: 1
+};
+
+function worstBadge(badges: CapacityBadge[]): CapacityBadge {
+	if (badges.length === 0) return 'non_commencee';
+	return badges.reduce((acc, b) => (BADGE_PRIORITY[b] > BADGE_PRIORITY[acc] ? b : acc));
 }
 
 export const load: PageServerLoad = async ({ locals }): Promise<ObjectifsPageData> => {
 	const { user } = await requireRole(locals, 'student');
 
 	// 1. Charger thèmes + objectifs + skills du niveau scolaire 6ᵉ
-	//    (le V1 ne supporte que la 6ᵉ — cf. décision Q4)
 	const { data: themesData, error: themesError } = await locals.supabase
 		.from('skill_themes')
 		.select(
@@ -83,50 +91,54 @@ export const load: PageServerLoad = async ({ locals }): Promise<ObjectifsPageDat
 		throw error(500, `Erreur de chargement du référentiel : ${themesError.message}`);
 	}
 
-	// 2. Charger l'état des capacités de l'élève via la VIEW (avec to_review)
+	// 2. État BO des capacités (is_acquired, needs_remediation)
 	const { data: stateData, error: stateError } = await locals.supabase
 		.from('student_skill_state_a_v')
-		.select('skill_id, is_acquired, needs_remediation, to_review')
+		.select('skill_id, is_acquired, needs_remediation')
 		.eq('student_id', user.id);
 
 	if (stateError) {
 		throw error(500, `Erreur de chargement de l'état : ${stateError.message}`);
 	}
 
-	// 3. Indexer l'état par skill_id pour lookup rapide
-	const stateBySkill = new Map<
-		string,
-		{ is_acquired: boolean; needs_remediation: boolean; to_review: boolean }
-	>();
+	const stateBySkill = new Map<string, { is_acquired: boolean; needs_remediation: boolean }>();
 	for (const row of stateData ?? []) {
 		if (!row.skill_id) continue;
 		stateBySkill.set(row.skill_id, {
 			is_acquired: row.is_acquired ?? false,
-			needs_remediation: row.needs_remediation ?? false,
-			to_review: row.to_review ?? false
+			needs_remediation: row.needs_remediation ?? false
 		});
 	}
 
-	// 4. Construire la structure thèmes → objectifs avec rang_max_acquired
+	// 3. Collecte de tous les skill_ids puis calcul des badges FSRS
+	const allSkillIds: string[] = [];
+	for (const t of themesData ?? []) {
+		for (const o of t.skill_objectives ?? []) {
+			for (const s of o.skills ?? []) allSkillIds.push(s.id);
+		}
+	}
+	const badges = await computeCapacityBadges(locals.supabase, user.id, allSkillIds);
+
+	// 4. Construire structure
 	const themes: ThemeWithObjectives[] = (themesData ?? []).map((theme) => {
 		const objectives: ObjectiveSummary[] = (theme.skill_objectives ?? []).map((obj) => {
 			const skills = obj.skills ?? [];
 			let rang_max: 0 | 1 | 2 | 3 | 4 = 0;
 			let acquired_count = 0;
 			let has_remediation = false;
-			let has_to_review = false;
+			const objBadges: CapacityBadge[] = [];
 			for (const skill of skills) {
 				const state = stateBySkill.get(skill.id);
-				if (!state) continue;
-				if (state.is_acquired) {
+				if (state?.is_acquired) {
 					acquired_count += 1;
 					const r = skill.display_order;
 					if (r >= 1 && r <= 4 && r > rang_max) {
 						rang_max = r as 1 | 2 | 3 | 4;
 					}
-					if (state.to_review) has_to_review = true;
 				}
-				if (state.needs_remediation) has_remediation = true;
+				if (state?.needs_remediation) has_remediation = true;
+				const b = badges.get(skill.id);
+				if (b) objBadges.push(b);
 			}
 			return {
 				id: obj.id,
@@ -138,7 +150,7 @@ export const load: PageServerLoad = async ({ locals }): Promise<ObjectifsPageDat
 				acquired_count,
 				total_count: 4,
 				has_remediation,
-				has_to_review
+				fsrs_badge: worstBadge(objBadges)
 			};
 		});
 		objectives.sort((a, b) => a.display_order - b.display_order);
@@ -150,12 +162,13 @@ export const load: PageServerLoad = async ({ locals }): Promise<ObjectifsPageDat
 		};
 	});
 
-	// 5. Agrégats pour le header
+	// 5. Agrégats
 	let mastery = 0,
 		atteint = 0,
 		en_cours = 0,
 		non_commence = 0,
-		remediation_count = 0;
+		remediation_count = 0,
+		to_reinforce_count = 0;
 	let total = 0;
 	for (const t of themes) {
 		for (const o of t.objectives) {
@@ -164,7 +177,8 @@ export const load: PageServerLoad = async ({ locals }): Promise<ObjectifsPageDat
 			else if (o.rang_max_acquired === 3) atteint += 1;
 			else if (o.rang_max_acquired >= 1) en_cours += 1;
 			else non_commence += 1;
-			if (o.has_remediation) remediation_count += 1;
+			if (o.has_remediation || o.fsrs_badge === 'a_remedier') remediation_count += 1;
+			else if (o.fsrs_badge === 'a_renforcer') to_reinforce_count += 1;
 		}
 	}
 
@@ -176,7 +190,8 @@ export const load: PageServerLoad = async ({ locals }): Promise<ObjectifsPageDat
 			atteint,
 			en_cours,
 			non_commence,
-			remediation_count
+			remediation_count,
+			to_reinforce_count
 		}
 	};
 };

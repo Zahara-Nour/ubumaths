@@ -18,6 +18,7 @@
 	import { ArrowLeft } from 'lucide-svelte';
 
 	const deckId = $derived(page.params.id);
+	const states = $derived(page.url.searchParams.get('states') ?? undefined);
 
 	/**
 	 * Handle session completion
@@ -55,7 +56,7 @@
 
 	<!-- Review Session -->
 	{#if deckId}
-		<ReviewSession {deckId} onComplete={handleComplete} onBack={goBack} />
+		<ReviewSession {deckId} {states} onComplete={handleComplete} onBack={goBack} />
 	{:else}
 		<p class="text-center text-muted-foreground">ID de deck invalide</p>
 	{/if}

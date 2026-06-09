@@ -31,6 +31,8 @@
 
 	interface Props {
 		deckId: string;
+		/** Optional FSRS state filter (e.g. "learning,relearning") used by deck Programme sections. */
+		states?: string;
 		onComplete?: (summary: SessionSummary) => void;
 		onBack?: () => void;
 	}
@@ -42,7 +44,7 @@
 		totalTime: number;
 	}
 
-	let { deckId, onComplete, onBack }: Props = $props();
+	let { deckId, states, onComplete, onBack }: Props = $props();
 
 	// State
 	let cards = $state<ReviewCard[]>([]);
@@ -81,7 +83,10 @@
 		isLoading = true;
 
 		try {
-			const response = await fetch(`/api/srs/review/due?deck_id=${deckId}`);
+			const url = new URL('/api/srs/review/due', window.location.origin);
+			url.searchParams.set('deck_id', deckId);
+			if (states) url.searchParams.set('states', states);
+			const response = await fetch(url.toString());
 
 			if (!response.ok) {
 				throw new Error('Failed to fetch due cards');

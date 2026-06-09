@@ -1,11 +1,11 @@
 /**
  * SRS Review API - Due Cards
- * ===========================
  *
- * Get cards due for review in a deck.
+ * GET /api/srs/review/due?deck_id=X[&states=learning,relearning]
  *
- * Endpoint:
- * - GET /api/srs/review/due?deck_id=X
+ * Refonte 2026-06-10 (Phase 3) : ajout du filtre `states` pour permettre
+ * aux sections du deck Programme de lancer une session ciblée
+ * (À remédier = states=learning,relearning ; À renforcer = states=review).
  */
 
 import { json } from '@sveltejs/kit';
@@ -76,6 +76,19 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	const { deck_id: deckId } = validation.data;
 
+	// Filtre optionnel sur l'état FSRS — utilisé par les sections du deck Programme
+	const statesParam = url.searchParams.get('states');
+	const allowedStates: Set<CardState> | null = statesParam
+		? new Set(
+				statesParam
+					.split(',')
+					.map((s) => s.trim())
+					.filter((s): s is CardState =>
+						(['new', 'learning', 'review', 'relearning'] as CardState[]).includes(s as CardState)
+					)
+			)
+		: null;
+
 	try {
 		// Verify user owns deck
 		const { data: deck, error: deckError } = await supabase
@@ -113,6 +126,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		console.log('[SRS] Processing due cards...');
 		for (const dueCard of dueCards) {
+			// Filtre states optionnel (Phase 3 — sections deck Programme)
+			if (allowedStates && !allowedStates.has(dueCard.state as CardState)) {
+				continue;
+			}
 			try {
 				console.log(`[SRS] Processing card ${dueCard.card_id}, type: ${dueCard.card_type}`);
 				if (dueCard.card_type === 'template') {
