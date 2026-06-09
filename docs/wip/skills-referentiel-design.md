@@ -52,6 +52,45 @@ La famille B suit le **cadre d'évaluation des 6 compétences mathématiques** (
 
 Les sous-dimensions de la famille B sont **stables sur tout le collège** (6ᵉ + cycle 4 — pour l'instant unique référentiel partagé).
 
+### Diagramme des deux hiérarchies — asymétrie volontaire
+
+```text
+FAMILLE 'knowledge' (alias famille A — connaissances et savoir-faire)
+─────────────────────────────────────────────────────────────────────────────────
+  skill_themes              (Nombres et calcul, Géométrie, ...)      ← 6 thèmes
+    └─ skill_objectives       (Nombres entiers, Fractions, ...)       ← 18 objectifs  ⬅ vu par l'élève (dashboard d'entrée)
+         └─ skills              (Comparer décimaux, Arrondir, ...)      ← 72 capacités  ⬅ vu par l'élève (vue détail tableau 4 colonnes)
+
+  Parent direct du skill : skill_objectives (via skills.objective_id)
+
+
+FAMILLE 'competence' (alias famille B — compétences mathématiques transversales)
+─────────────────────────────────────────────────────────────────────────────────
+  math_competences                        (Chercher, Calculer, ...)   ← 6 compétences ⬅ vu par l'élève (dashboard d'entrée)
+    └─ math_competence_subdimensions       (A, B, C, D)                ← 22 sous-dim.   (regroupement structurel, pas d'état propre)
+         └─ skills                          (A1, A2, B1, ...)            ← 56 observables ⬅ vu par l'élève (vue détail, groupés par sous-dim.)
+
+  Parent direct du skill : math_competence_subdimensions (via skills.subdimension_id)
+```
+
+**L'asymétrie est volontaire** et reflète une différence de design pédagogique :
+
+| Aspect                   | Famille `knowledge`                                                | Famille `competence`                                                                                                        |
+| ------------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| Niveau visible dashboard | **2ᵉ** niveau (`skill_objectives`)                                 | **1ᵉʳ** niveau (`math_competences`)                                                                                         |
+| Parent direct du skill   | `skill_objectives` via `objective_id`                              | `math_competence_subdimensions` via `subdimension_id`                                                                       |
+| Rôle de l'intermédiaire  | Le thème est un regroupement disciplinaire (Nombres, Géométrie...) | La sous-dimension est un regroupement structurel sans état (regroupe les observables par grande dimension de la compétence) |
+| Volume 6ᵉ                | 6 thèmes / 18 objectifs / 72 capacités                             | 6 compétences / 22 sous-dimensions / 56 observables                                                                         |
+
+→ Les deux FK `objective_id` et `subdimension_id` sont **miroirs au niveau du skill** (l'une ou l'autre est non-null, jamais les deux, jamais aucune). C'est ce qui détermine `family` (cf. décision 67) :
+
+```
+family = CASE
+  WHEN objective_id IS NOT NULL THEN 'knowledge'  -- famille A
+  ELSE 'competence'                                -- famille B
+END
+```
+
 ### Dictionnaire de noms fixé
 
 | Concept                    | Famille A — Connaissances                                              | Famille B — Compétences math                                    | Code (EN)                                               | Visible élève |
@@ -173,9 +212,9 @@ Un objectif a **exactement 4 capacités** ordonnées par difficulté (rang 1 →
 
 Plutôt qu'une table d'observables séparée, les **variations canoniques** d'une capacité sont incarnées dans la diversité du pool de templates de questions taguées avec cette capacité. La règle de validation s'appuie sur la **diversité des templates** réussis, pas sur la rédaction préalable d'observables.
 
-Deux régimes selon le **type** de la capacité (champ `skills.type` — reprend la rubrique BO 2026, cf. §7 + décision 66) :
+Deux régimes selon le **knowledge_type** de la capacité (champ `skills.knowledge_type` — reprend la rubrique BO 2026, cf. §7 + décisions 66 + 68) :
 
-| `type`              | Règle d'acquisition                                                                                                                                |
+| `knowledge_type`    | Règle d'acquisition                                                                                                                                |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `capacite_attendue` | ≥ 1 réussite (`success=true`) sur ≥ **2 `template_id` distincts** taggés avec cette `skill_id`, ET **aucun échec dans les 3 dernières tentatives** |
 | `automatisme`       | ≥ **5 réussites totales** sur la capacité, ET ≥ 3 sur les 5 dernières tentatives                                                                   |
@@ -189,7 +228,7 @@ Deux régimes selon le **type** de la capacité (champ `skills.type` — reprend
 
 Une capacité acquise depuis > **30 jours** sans réussite récente est marquée **« à revoir »** (affichage atténué). Elle n'est pas perdue, mais signalée pour ramener l'élève dessus.
 
-**Stockage** : pas de `level_indicators`, pas de `is_progressive`, pas de `target_level`. La capacité est définie par son **nom** + son **type** (`automatisme` | `capacite_attendue`) + son **rang** sous l'objectif. La couverture des variations est garantie côté création des templates de questions, pas côté référentiel.
+**Stockage** : pas de `level_indicators`, pas de `is_progressive`, pas de `target_level`. La capacité est définie par son **nom** + son **knowledge_type** (`automatisme` | `capacite_attendue`) + son **rang** sous l'objectif. La couverture des variations est garantie côté création des templates de questions, pas côté référentiel.
 
 ### Famille B — Cadre d'évaluation des 6 compétences mathématiques
 
@@ -290,7 +329,7 @@ Objectif : « Comparer et ranger des nombres décimaux »
   Capacité rang 4 — Ranger une liste de décimaux mêlés, justifier l'ordre.
 ```
 
-Chacune de ces 4 capacités est validée indépendamment via la règle d'acquisition de son type. Le niveau atteint sur l'objectif est le rang maximal acquis.
+Chacune de ces 4 capacités est validée indépendamment via la règle d'acquisition de son knowledge_type. Le niveau atteint sur l'objectif est le rang maximal acquis.
 
 **Exemple — Famille B (observable, codage par tâche)** :
 
@@ -319,9 +358,9 @@ Conséquence : `skills.is_progressive` est **supprimé** du schéma.
 
 ### Principe fondamental (famille A modèle B)
 
-Une `skill_attempts` est attachée à **une capacité précise** (`skill_id`). Plus de `target_level` : la capacité elle-même porte sa propre identité (rang sous l'objectif + type).
+Une `skill_attempts` est attachée à **une capacité précise** (`skill_id`). Plus de `target_level` : la capacité elle-même porte sa propre identité (rang sous l'objectif + knowledge_type).
 
-- `success = true` : l'élève a réussi un template de cette capacité → contribue à la règle d'acquisition de son type.
+- `success = true` : l'élève a réussi un template de cette capacité → contribue à la règle d'acquisition de son knowledge_type.
 - `success = false` : tentative ratée, stockée pour analytics et **fenêtre des 3/5 dernières tentatives** (utilisée par la règle d'acquisition).
 
 ### Tentative ratée : stockée et **utilisée pour le filtre récent**
@@ -402,14 +441,14 @@ Note : tagger un template avec un `skill_id` de famille B reste **documentaire**
 
 ### 6.1 État d'une capacité (Famille A `knowledge` — modèle B)
 
-L'état d'une capacité est **binaire** : `acquise` ou `non acquise`. La règle dépend du **type** (`automatisme` | `capacite_attendue`) porté par la capacité.
+L'état d'une capacité est **binaire** : `acquise` ou `non acquise`. La règle dépend du **knowledge_type** (`automatisme` | `capacite_attendue`) porté par la capacité.
 
 **Constantes globales** :
 
 - Fenêtre de décroissance : **30 jours** sans réussite → capacité acquise marquée « à revoir »
 - Fenêtre des dernières tentatives : **3** (pour `capacite_attendue`) ou **5** (pour `automatisme`)
 
-**Cas `type = 'capacite_attendue'`** :
+**Cas `knowledge_type = 'capacite_attendue'`** :
 
 ```
 distinct_template_successes = nombre de template_id distincts parmi
@@ -422,7 +461,7 @@ capacité_acquise ssi :
   - AND aucun success=false dans last_3
 ```
 
-**Cas `type = 'automatisme'`** :
+**Cas `knowledge_type = 'automatisme'`** :
 
 ```
 total_successes = nombre d'attempts (success=true) sur cette skill_id
@@ -442,7 +481,7 @@ last_success_at = date du dernier success=true sur la capacité
 
 Si capacité_acquise ET (now − last_success_at > 30 jours) :
   → marquée « à revoir » (statut visuel atténué, mais reste acquise tant
-    qu'aucun échec récent ne casse la règle d'acquisition du type)
+    qu'aucun échec récent ne casse la règle d'acquisition du knowledge_type)
 ```
 
 **Note implémentation** : le cache `student_skill_state_a` stocke `is_acquired`, `distinct_template_successes`, `total_successes`, `last_success_at`, `to_review` (boolean dérivé de la décroissance). Recalcul par trigger à chaque `INSERT skill_attempts` famille A.
@@ -539,7 +578,7 @@ Capacité non acquise AVEC ≥ 2 échecs dans la fenêtre récente (K dernières
   → needs_remediation = true → badge 🆘 « À remédier »
     (l'élève bute — peu importe qu'il ait déjà réussi par le passé ou non)
 
-Fenêtre K : 3 dernières pour type 'capacite_attendue', 5 dernières pour 'automatisme'.
+Fenêtre K : 3 dernières pour knowledge_type 'capacite_attendue', 5 dernières pour 'automatisme'.
 Seuil min 2 échecs : évite qu'un seul ratage isolé déclenche l'alerte.
 
 Capacité acquise (is_acquired = true) AND last_success_at > 30 jours
@@ -705,7 +744,7 @@ skills (
   observable_code     text nullable,        -- famille competence uniquement : 'A1', 'B3', 'C2', 'D2' (cadre canonique)
   name                text not null,        -- knowledge : nom court de la capacité ; competence : énoncé côté élève
   teacher_grid_text   text nullable,        -- famille competence : reformulation enseignant (grille de codage)
-  type                text nullable check (type in ('automatisme', 'capacite_attendue')),
+  knowledge_type      text nullable check (knowledge_type in ('automatisme', 'capacite_attendue')),
                                             -- famille knowledge uniquement : reprend la rubrique BO 2026 cycle 3
                                             -- 'automatisme'        : geste à automatiser (calcul mental, lexique de base...)
                                             -- 'capacite_attendue'  : compétence à mobiliser réfléchie
@@ -716,10 +755,10 @@ skills (
   CONSTRAINT chk_skill_family CHECK (
     (objective_id IS NOT NULL) <> (subdimension_id IS NOT NULL)
   ),
-  -- Famille knowledge : rang dans [1,4] et type renseigné :
+  -- Famille knowledge : rang dans [1,4] et knowledge_type renseigné :
   CONSTRAINT chk_skill_knowledge_rang CHECK (
-    family = 'competence'                                          -- famille competence : on s'abstient
-    OR (display_order BETWEEN 1 AND 4 AND type IS NOT NULL)        -- famille knowledge : rang ok + type ok
+    family = 'competence'                                                    -- famille competence : on s'abstient
+    OR (display_order BETWEEN 1 AND 4 AND knowledge_type IS NOT NULL)        -- famille knowledge : rang ok + knowledge_type ok
   ),
   -- Famille competence : observable_code renseigné :
   CONSTRAINT chk_skill_competence_code CHECK (
@@ -733,8 +772,10 @@ skills (
 -- Note (décision 65, 2026-06-09) : le champ `skill_type` ('progressive' | 'observable')
 -- a été supprimé. La famille est intrinsèquement portée par les FK.
 
--- Note (décision 66, 2026-06-09) : le champ `rubrique` a été renommé en `type`.
--- Valeurs ('automatisme' | 'capacite_attendue') inchangées.
+-- Note (décision 66 puis 68, 2026-06-09) : le champ `rubrique` est devenu `type`
+-- puis `knowledge_type` (nom plus explicite — le champ est spécifique à la famille
+-- 'knowledge', il est NULL pour 'competence'). Valeurs ('automatisme' |
+-- 'capacite_attendue') inchangées.
 
 -- Note (décision 67, 2026-06-09) : colonne `family` rajoutée en GENERATED column
 -- pour récupérer la lisibilité (WHERE family = 'knowledge'). Calculée par Postgres
@@ -844,7 +885,7 @@ student_skill_state_a (
   last_success_at               timestamptz,
   last_attempt_at               timestamptz,
   to_review                     boolean not null default false, -- (is_acquired AND now - last_success_at > 30 jours) → affichage estompé + badge 🔁 « À renforcer »
-  needs_remediation             boolean not null default false, -- 🆘 ≥ 2 échecs dans la fenêtre récente (selon type) bloquant la règle
+  needs_remediation             boolean not null default false, -- 🆘 ≥ 2 échecs dans la fenêtre récente (selon knowledge_type) bloquant la règle
   PRIMARY KEY (student_id, skill_id)
 )
 -- Recalculé par trigger PL/pgSQL sur INSERT skill_attempts famille A.
@@ -1135,10 +1176,11 @@ Affichage en **tableau 4 colonnes** correspondant aux 4 capacités ordonnées pa
 | 61                          | **Cohabitation `theme/domain/subdomain/level` libres + `skill_id` autoritaire**                       | Les champs descriptifs existants `question_templates.theme / domain / subdomain / level / grades` (migration 070) sont **conservés** comme étiquettes libres de classement (utiles pour filtre/recherche prof). Ils ne sont **pas autoritaires** pour le calcul de progression — la source de vérité devient la junction `question_template_skills`. Pas de FK ajoutée vers `skill_themes` / `skill_objectives`, pas de drop. Migration douce, aucun seed existant cassé. Tranchée le 2026-06-08 en phase 0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 62                          | **`needs_reinforcement` retiré du cache (redondant avec `to_review`)**                                | Dans `student_skill_state_a` cache famille A : un seul flag `to_review` pour la décroissance temporelle, défini comme `is_acquired AND (now − last_success_at > 30 jours)`. Visuellement : affichage **atténué** dans les listes. Badge UI 🔁 « À renforcer » dérivé directement de `to_review` (pas de boolean séparé). Compteur agrégé du dashboard calculé à la volée : `COUNT(*) WHERE is_acquired AND to_review`. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 63                          | **🆘 « À remédier » étendu — pas de seuil sur l'historique de succès**                                | Définition v1 : `needs_remediation = true SSI capacité non acquise AND échec(s) récent(s) bloquant la règle de rubrique`. Auparavant la définition exigeait « ≥ 1 succès historique » (signal de régression spécifique). Étendu pour couvrir aussi les capacités tentées sans succès mais bloquées — le signal vaut pour la régression **et** le blocage d'apprentissage. Distinction explicite ajoutée en §6.2 entre 🆘 (signal d'urgence) et la liste « à travailler pour passer au rang suivant » (vue de planification, sous-ensemble plus large). Tranchée le 2026-06-09. **Voir aussi décision 64** pour le seuil minimum d'échecs.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| 64                          | **Seuil minimum 2 échecs pour déclencher 🆘**                                                         | Définition consolidée : `needs_remediation = true SSI capacité non acquise AND ≥ 2 échecs dans la fenêtre récente`. Fenêtre récente : 3 dernières tentatives pour type `capacite_attendue`, 5 dernières pour `automatisme`. Justification : un seul ratage isolé (étourderie, distraction) ne doit pas déclencher une alerte ; deux échecs dans la fenêtre indiquent un véritable blocage. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 64                          | **Seuil minimum 2 échecs pour déclencher 🆘**                                                         | Définition consolidée : `needs_remediation = true SSI capacité non acquise AND ≥ 2 échecs dans la fenêtre récente`. Fenêtre récente : 3 dernières tentatives pour knowledge_type `capacite_attendue`, 5 dernières pour `automatisme`. Justification : un seul ratage isolé (étourderie, distraction) ne doit pas déclencher une alerte ; deux échecs dans la fenêtre indiquent un véritable blocage. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 65                          | **`skill_type` supprimé** (redondant avec les FK)                                                     | Le champ `skill_type` (autrefois `'progressive' \| 'observable'`) duplique l'information déjà portée par les FK (`objective_id` non-null = famille A, `subdimension_id` non-null = famille B). CHECK simplifiée en XOR : `(objective_id IS NOT NULL) <> (subdimension_id IS NOT NULL)`. Famille calculable au runtime depuis les FK. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 66                          | **`rubrique` renommé `type`** (libéré par 65)                                                         | Le champ `rubrique` (valeurs `'automatisme' \| 'capacite_attendue'`) est renommé `type`. Le mot « rubrique » restait fidèle au BO 2026 mais peu explicite côté schéma ; « type » est plus court et clair. Le nom était bloqué par `skill_type` ; sa suppression (décision 65) le libère. Valeurs inchangées. Mises à jour : §3, §6.1, §7, `referentiel/6e-savoirs.md`. Le mot « rubrique » reste utilisé dans le texte du doc quand il désigne la convention BO 2026 (« reprend la rubrique BO »). Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | 67                          | **`family` réintroduit en GENERATED column** (`'knowledge' \| 'competence'`)                          | Pour récupérer la lisibilité perdue par la décision 65 sans réintroduire de redondance maintenue à la main, le champ `family` est rajouté en **GENERATED column** Postgres : `family text generated always as (CASE WHEN objective_id IS NOT NULL THEN 'knowledge' ELSE 'competence' END) stored`. Valeurs en anglais alignées sur le codebase. « famille A » / « famille B » restent comme alias courts dans la doc et l'historique. Permet `WHERE family = 'knowledge'` au lieu de `WHERE objective_id IS NOT NULL`. Calculé par Postgres → impossible à désynchroniser. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 68                          | **`type` renommé `knowledge_type`** (préfixage par famille)                                           | Le champ `type` (introduit en décision 66) est renommé `knowledge_type` pour expliciter qu'il s'applique uniquement à la famille `'knowledge'` (NULL en famille `'competence'`). Le nom `type` seul laissait croire à un champ générique de tous les skills, alors qu'il est spécifique au régime d'acquisition des capacités knowledge. Valeurs inchangées (`'automatisme' \| 'capacite_attendue'`). Diagramme d'asymétrie hiérarchique knowledge/competence ajouté en §1 pour clarifier la structure. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 ---
 
@@ -1223,6 +1265,8 @@ Affichage en **tableau 4 colonnes** correspondant aux 4 capacités ordonnées pa
 - **2026-06-07 (suite 18 — PIVOT MODÈLE B pour famille A : 4 capacités ordonnées par item)** : après le travail de structuration BO 2026 (suite 17), David rouvre le fond du modèle famille A. Le modèle « 4 paliers d'indicateurs par capacité » s'avère lourd (rédaction de ~500 indicateurs estimés pour la 6ᵉ uniquement) et tend à s'effondrer en pratique vers 4 capacités distinctes empilées. **Décision : adopter le modèle du référentiel personnel 2016 de David** (« échelles descriptives connaissance 6 2016 ») — chaque objectif a **exactement 4 capacités ordonnées par difficulté**, binaires, distinctes. Niveau de l'objectif = rang max acquis. Niveau 3 = « attendu pour tous » (BO), Niveau 4 = expert/approfondissement. **Validation par variations dans les templates** (approche 3) : pas de table d'observables séparée — la diversité du pool de questions taguées sur une capacité incarne les variations. **Règle d'acquisition modulée par rubrique BO** : `capacite_attendue` → ≥ 1 succès sur ≥ 2 templates distincts + aucun échec dans les 3 dernières ; `automatisme` → ≥ 5 succès + ≥ 3 dans les 5 dernières. **Décroissance V1** : > 30 jours sans succès → « à revoir ». **Schéma DB** : drop `level_indicators`, `is_progressive`, `target_level` (table `skills` + junction `question_skills` + table `skill_attempts` + cache `student_skill_state_a`). Refonte `student_skill_state_a` en cache binaire avec `is_acquired`, `total_successes`, `distinct_template_successes`, `to_review`. Conserver `template_id` sur `skill_attempts` pour la règle de couverture. **Tagging questions** simplifié à `skill_id` seul — acte de classification objectif (« cette question teste cette capacité »), pas de calibration subjective de niveau. **Décisions caduques** : 5, 7, 13-15, 18, 19, 22. **Décision ajoutée** : 57. Famille B (cadre canonique 6 compétences) **intacte**. Cible 6ᵉ : ~20 objectifs × 4 capacités = ~80 capacités à rédiger. Prochaine étape : valider avec David la liste des ~20 items et leurs 4 capacités, puis réécrire `6e-savoirs.md`. Handoff de session : `docs/wip/referentiel-handoff.md`.
 
 - **2026-06-09 (suite 20 — micro-ajustement schéma cache famille A)** : David note la redondance entre `student_skill_state_a.to_review` et `student_skill_state_a.needs_reinforcement` — les deux décrivent la même condition (« capacité acquise mais > 30 j sans pratique »). **Décision 62** : suppression de `needs_reinforcement`. Un seul flag `to_review`. Visuellement : capacité atténuée dans les listes. Badge UI 🔁 « À renforcer » et compteur agrégé dérivés à la volée depuis `to_review`. §6.2 et §7 mis à jour.
+
+- **2026-06-09 (suite 24 — diagramme asymétrie + rename `type`→`knowledge_type`)** : David demande à illustrer l'asymétrie hiérarchique knowledge vs competence (l'élève voit l'objectif en knowledge mais la compétence math elle-même en competence ; le parent direct du skill n'est pas au même niveau de la hiérarchie). Diagramme ASCII ajouté en §1 avec les deux arbres (thèmes/objectifs/capacités vs compétences/sous-dimensions/observables) + tableau récapitulatif de l'asymétrie. Et : David note que `type` (renommé en décision 66) est peu explicite — c'est un champ spécifique à la famille knowledge, pas un type général du skill. **Décision 68** : `type` renommé `knowledge_type`. Valeurs inchangées. Préfixage par famille pour clarifier le scope. §3 (table régime), §6.1 (cas knowledge_type=...), §6.2 (commentaire cache), §7 (schéma + CHECK), §10 (décision 64 réécrite avec knowledge_type) mis à jour.
 
 - **2026-06-09 (suite 23 — `family` réintroduit en GENERATED column)** : après la suppression de `skill_type` (décision 65), David souligne qu'il faut quand même un moyen simple de distinguer les deux familles dans le SQL et le code, sans réintroduire la redondance manuelle. **Décision 67** : `family` ajouté en colonne calculée Postgres (`GENERATED ALWAYS AS ... STORED`), valeurs `'knowledge'` (ex-famille A) / `'competence'` (ex-famille B). Lisibilité retrouvée (`WHERE family = 'knowledge'`), zero risque de désynchronisation. « famille A » / « famille B » conservés comme alias courts dans la doc. §1 (table vocabulaire + note de convention), §6.1, §6.1bis, §6.1ter, §7 (schéma + 3 CHECK renommées `chk_skill_knowledge_rang` / `chk_skill_competence_code` / `uq_skill_knowledge_rang`) mis à jour.
 

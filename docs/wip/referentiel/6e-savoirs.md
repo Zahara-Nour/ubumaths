@@ -23,14 +23,14 @@ Thème (BO 2026) → Objectif (= item, ce que l'élève voit) → 4 capacités o
 
 **Niveau atteint sur un objectif** = rang maximal des capacités acquises (0 si aucune).
 
-### Type de capacité (reprend la rubrique BO 2026)
+### Knowledge_type (reprend la rubrique BO 2026)
 
-Chaque capacité porte un **type** (champ `skills.type`, valeurs reprises de la rubrique BO 2026) qui détermine sa règle d'acquisition :
+Chaque capacité porte un **knowledge_type** (champ `skills.knowledge_type`, valeurs reprises de la rubrique BO 2026) qui détermine sa règle d'acquisition :
 
 - **`automatisme`** : geste rapide, fluence. Acquise si ≥ 5 réussites et ≥ 3 sur les 5 dernières tentatives.
 - **`capacite_attendue`** : compétence réfléchie. Acquise si ≥ 1 réussite sur ≥ 2 templates distincts, sans échec dans les 3 dernières tentatives.
 
-> Note : le champ s'appelait `rubrique` jusqu'au 2026-06-09 (cf. design doc décision 66). Le mot « rubrique » reste utilisé dans ce doc quand il désigne la convention BO 2026 (« la rubrique BO du sous-domaine »), mais le champ DB est `type`.
+> Note : ce champ a évolué : `rubrique` (décision 56) → `type` (décision 66, 2026-06-09) → `knowledge_type` (décision 68, 2026-06-09). Le préfixe `knowledge_` rappelle que le champ est spécifique à la famille `knowledge` (NULL en famille `competence`). Le mot « rubrique » reste utilisé dans ce doc quand il désigne la convention BO 2026 (« la rubrique BO du sous-domaine »).
 
 ### Variations canoniques
 
@@ -38,7 +38,7 @@ Sous chaque capacité, une liste de **variations canoniques** précise les cas d
 
 ### Items « automatismes » ⚡
 
-Les items marqués ⚡ ont une dominante `automatisme` (calcul mental, lexique géométrique de base, etc.). Les capacités peuvent être de type mixte au sein d'un même item (type porté par la capacité, pas par l'item).
+Les items marqués ⚡ ont une dominante `automatisme` (calcul mental, lexique géométrique de base, etc.). Les capacités peuvent être de knowledge_type mixte au sein d'un même item (knowledge_type porté par la capacité, pas par l'item).
 
 ---
 
@@ -501,9 +501,9 @@ date_structure_validee: 2026-06-08
 
 ## Notes
 
-- Tous les libellés sont à affiner en relecture. La validation a porté sur la **structure** (4 capacités ordonnées par item, type, rang ⭐) et les **choix pédagogiques majeurs** (alignement BO 2026, écarts par rapport au PDF 2016).
+- Tous les libellés sont à affiner en relecture. La validation a porté sur la **structure** (4 capacités ordonnées par item, knowledge_type, rang ⭐) et les **choix pédagogiques majeurs** (alignement BO 2026, écarts par rapport au PDF 2016).
 - Les **variations canoniques** servent de **checklist pour la création des templates de questions**. Pas de stockage DB séparé : la diversité du pool de templates incarne ces variations. Cible : ≥ 2-3 variations distinctes par capacité dans le pool, pour permettre la règle d'acquisition `capacite_attendue` (≥ 2 templates distincts réussis).
-- Les **types mixtes** au sein d'un item (typiquement rangs 1-3 en `automatisme`, rang 4 en `capacite_attendue`) sont assumés et conformes au design doc (type porté par la capacité, pas par l'item).
+- Les **knowledge_type mixtes** au sein d'un item (typiquement rangs 1-3 en `automatisme`, rang 4 en `capacite_attendue`) sont assumés et conformes au design doc (knowledge_type porté par la capacité, pas par l'item).
 - **Calcul mental — décision 2026-06-08** : l'item 4 « Calcul mental » a été **supprimé du référentiel**. Justifications :
   1. Le BO 2026 6ᵉ ne fait pas du calcul mental un sous-domaine séparé — les automatismes calculatoires sont dispersés dans les sections « Automatismes » de chaque sous-domaine.
   2. La règle d'acquisition `automatisme` du système (≥ 5 réussites + ≥ 3 sur les 5 dernières) **mesure la réussite binaire, pas la fluence** (vitesse, automaticité, charge cognitive réduite) qui définit le calcul mental.
