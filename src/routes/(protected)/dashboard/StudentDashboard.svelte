@@ -36,6 +36,17 @@
 	import type { PageData } from './$types';
 	import RewardsBlock from '$lib/components/RewardsBlock.svelte';
 	import InboxWidget from '$lib/components/student-inbox/InboxWidget.svelte';
+	import * as Card from '$lib/components/ui/card';
+	import { Badge } from '$lib/components/ui/badge';
+	import {
+		Target,
+		Brain,
+		Sparkles,
+		CheckCircle2,
+		Circle,
+		LifeBuoy,
+		ChevronRight
+	} from 'lucide-svelte';
 	// import AchievementsWidget from '$lib/components/game/minesweeper/AchievementsWidget.svelte';
 	// import { Button } from '$lib/components/ui/button';
 	// import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '$lib/utils/dates';
@@ -72,6 +83,137 @@
 	<!-- WORK INBOX WIDGET: urgent assignments (late + this week) -->
 	{#if data.inbox}
 		<InboxWidget inbox={data.inbox} maxItems={5} />
+	{/if}
+
+	<!-- COMPÉTENCES PROGRESS WIDGET (Phase 6) -->
+	{#if data.competencesSummary}
+		{@const objs = data.competencesSummary.objectives}
+		{@const comps = data.competencesSummary.competences}
+		<div class="grid gap-3 md:grid-cols-2">
+			<!-- Mes objectifs (famille A — knowledge) -->
+			<a
+				href="/dashboard/student/objectifs"
+				class="block rounded-lg transition-colors hover:bg-accent/50 focus:bg-accent focus:outline-none"
+			>
+				<Card.Root>
+					<Card.Content class="p-4">
+						<div class="mb-2 flex items-center gap-2">
+							<Target class="h-5 w-5 text-primary" />
+							<h3 class="font-semibold">Mes objectifs</h3>
+							<ChevronRight class="ml-auto h-4 w-4 text-muted-foreground" />
+						</div>
+						<div class="mb-2 flex items-center gap-3 text-sm">
+							<span class="flex items-center gap-1">
+								<Sparkles class="h-4 w-4 text-amber-500" />
+								<strong>{objs.mastery}</strong>
+							</span>
+							<span class="flex items-center gap-1">
+								<CheckCircle2 class="h-4 w-4 text-green-500" />
+								<strong>{objs.atteint}</strong>
+							</span>
+							<span class="flex items-center gap-1">
+								<Circle class="h-4 w-4 fill-orange-500 text-orange-500" />
+								<strong>{objs.en_cours}</strong>
+							</span>
+							<span class="ml-auto text-xs text-muted-foreground">
+								{objs.mastery + objs.atteint}/{objs.total} atteints
+							</span>
+						</div>
+						<div class="h-2 w-full overflow-hidden rounded-full bg-muted">
+							<div class="flex h-full">
+								{#if objs.mastery > 0}
+									<div
+										class="bg-amber-500"
+										style="width: {(objs.mastery / objs.total) * 100}%"
+									></div>
+								{/if}
+								{#if objs.atteint > 0}
+									<div
+										class="bg-green-500"
+										style="width: {(objs.atteint / objs.total) * 100}%"
+									></div>
+								{/if}
+								{#if objs.en_cours > 0}
+									<div
+										class="bg-orange-500"
+										style="width: {(objs.en_cours / objs.total) * 100}%"
+									></div>
+								{/if}
+							</div>
+						</div>
+						{#if objs.remediation > 0}
+							<div class="mt-2">
+								<Badge variant="destructive" class="gap-1 text-xs">
+									<LifeBuoy class="h-3 w-3" />
+									{objs.remediation} à remédier
+								</Badge>
+							</div>
+						{/if}
+					</Card.Content>
+				</Card.Root>
+			</a>
+
+			<!-- Mes compétences math (famille B — competence) -->
+			<a
+				href="/dashboard/student/competences"
+				class="block rounded-lg transition-colors hover:bg-accent/50 focus:bg-accent focus:outline-none"
+			>
+				<Card.Root>
+					<Card.Content class="p-4">
+						<div class="mb-2 flex items-center gap-2">
+							<Brain class="h-5 w-5 text-primary" />
+							<h3 class="font-semibold">Mes compétences math</h3>
+							<ChevronRight class="ml-auto h-4 w-4 text-muted-foreground" />
+						</div>
+						{#if comps.with_data === 0}
+							<p class="text-sm text-muted-foreground">
+								Pas encore d'évaluation famille B. Ton prof commencera bientôt.
+							</p>
+						{:else}
+							<div class="mb-2 flex items-center gap-3 text-sm">
+								<span class="flex items-center gap-1">
+									<Sparkles class="h-4 w-4 text-amber-500" />
+									<strong>{comps.tres_bonne}</strong>
+								</span>
+								<span class="flex items-center gap-1">
+									<CheckCircle2 class="h-4 w-4 text-green-500" />
+									<strong>{comps.satisfaisante}</strong>
+								</span>
+								<span class="flex items-center gap-1">
+									<Circle class="h-4 w-4 fill-orange-500 text-orange-500" />
+									<strong>{comps.fragile}</strong>
+								</span>
+								<span class="ml-auto text-xs text-muted-foreground">
+									{comps.tres_bonne + comps.satisfaisante}/{comps.total} à niveau
+								</span>
+							</div>
+							<div class="h-2 w-full overflow-hidden rounded-full bg-muted">
+								<div class="flex h-full">
+									{#if comps.tres_bonne > 0}
+										<div
+											class="bg-amber-500"
+											style="width: {(comps.tres_bonne / comps.total) * 100}%"
+										></div>
+									{/if}
+									{#if comps.satisfaisante > 0}
+										<div
+											class="bg-green-500"
+											style="width: {(comps.satisfaisante / comps.total) * 100}%"
+										></div>
+									{/if}
+									{#if comps.fragile > 0}
+										<div
+											class="bg-orange-500"
+											style="width: {(comps.fragile / comps.total) * 100}%"
+										></div>
+									{/if}
+								</div>
+							</div>
+						{/if}
+					</Card.Content>
+				</Card.Root>
+			</a>
+		</div>
 	{/if}
 
 	<!-- REWARDS BLOCK -->
