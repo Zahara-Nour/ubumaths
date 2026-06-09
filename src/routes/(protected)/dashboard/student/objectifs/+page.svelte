@@ -132,6 +132,34 @@
 		</Card.Content>
 	</Card.Root>
 
+	<!-- Mini-cartes thèmes (résumé par thème) -->
+	{#if data.themes.length > 1}
+		<div class="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+			{#each data.themes as theme (theme.id)}
+				{@const themeAtteint = theme.objectives.filter((o) => o.rang_max_acquired >= 3).length}
+				{@const themeTotal = theme.objectives.length}
+				{@const themeRatio = themeTotal > 0 ? themeAtteint / themeTotal : 0}
+				<a
+					href="#theme-{theme.id}"
+					class="block rounded-md border bg-card p-2 text-xs hover:bg-accent/50 focus:bg-accent focus:outline-none"
+				>
+					<div class="mb-1 truncate font-medium" title={theme.name}>{theme.name}</div>
+					<div class="text-muted-foreground">{themeAtteint}/{themeTotal} atteints</div>
+					<div class="mt-1 h-1 w-full overflow-hidden rounded-full bg-muted">
+						<div
+							class="h-full {themeRatio === 1
+								? 'bg-amber-500'
+								: themeRatio > 0
+									? 'bg-green-500'
+									: 'bg-muted'}"
+							style="width: {themeRatio * 100}%"
+						></div>
+					</div>
+				</a>
+			{/each}
+		</div>
+	{/if}
+
 	<!-- Toggle non commencés -->
 	{#if data.stats.non_commence > 0}
 		<div class="mb-4">
@@ -148,7 +176,7 @@
 			(o) => o.rang_max_acquired > 0 || showNonCommence
 		)}
 		{#if visibleObjectives.length > 0}
-			<section class="mb-6">
+			<section id="theme-{theme.id}" class="mb-6 scroll-mt-4">
 				<h2 class="mb-3 text-lg font-semibold text-muted-foreground">{theme.name}</h2>
 				<div class="space-y-2">
 					{#each visibleObjectives as obj (obj.id)}
