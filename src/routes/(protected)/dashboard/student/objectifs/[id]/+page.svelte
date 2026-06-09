@@ -18,12 +18,12 @@
 		Check,
 		Circle,
 		LifeBuoy,
-		Clock3,
 		Sparkles,
 		BookOpen,
 		MessageCircleQuestion
 	} from 'lucide-svelte';
 	import { formatObjectiveLevel, getObjectiveLevelVisual } from '$lib/types/skills';
+	import CapacityFsrsBadge from '$lib/components/srs/CapacityFsrsBadge.svelte';
 	import type { PageData } from './$types';
 	import type { CapacityDetail } from './+page.server';
 
@@ -33,10 +33,10 @@
 
 	let { data }: Props = $props();
 
-	// Helpers visuels
+	// Helpers visuels — verdict BO formel uniquement (le badge FSRS dynamique
+	// est affiché séparément via <CapacityFsrsBadge>).
 	function capacityBadgeVariant(c: CapacityDetail): 'default' | 'outline' | 'destructive' {
 		if (c.needs_remediation) return 'destructive';
-		if (c.is_acquired && c.to_review) return 'outline';
 		if (c.is_acquired) return 'default';
 		return 'outline';
 	}
@@ -44,8 +44,6 @@
 	function capacityBgClass(c: CapacityDetail): string {
 		if (c.needs_remediation)
 			return 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-900';
-		if (c.is_acquired && c.to_review)
-			return 'bg-amber-50/50 border-amber-200 dark:bg-amber-950/10 dark:border-amber-900 opacity-70';
 		if (c.is_acquired)
 			return 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-900';
 		return 'bg-muted/30 border-muted';
@@ -53,7 +51,6 @@
 
 	function capacityStatusLabel(c: CapacityDetail): string {
 		if (c.needs_remediation) return 'À remédier';
-		if (c.is_acquired && c.to_review) return 'À revoir';
 		if (c.is_acquired) return 'Acquise';
 		return 'Non acquise';
 	}
@@ -111,12 +108,10 @@
 								<Sparkles class="h-4 w-4 text-amber-500" aria-label="Expert" />
 							{/if}
 						</div>
-						<!-- Icône d'état -->
+						<!-- Icône d'état BO formel -->
 						<div>
 							{#if cap.needs_remediation}
 								<LifeBuoy class="h-5 w-5 text-red-600" />
-							{:else if cap.is_acquired && cap.to_review}
-								<Clock3 class="h-5 w-5 text-amber-600" />
 							{:else if cap.is_acquired}
 								<Check class="h-5 w-5 text-green-600" />
 							{:else}
@@ -127,10 +122,11 @@
 				</Card.Header>
 				<Card.Content class="pt-0">
 					<p class="text-sm leading-relaxed">{cap.name}</p>
-					<div class="mt-3 flex items-center gap-2">
+					<div class="mt-3 flex flex-wrap items-center gap-2">
 						<Badge variant={capacityBadgeVariant(cap)} class="text-xs">
 							{capacityStatusLabel(cap)}
 						</Badge>
+						<CapacityFsrsBadge badge={cap.badge} showLabel />
 						{#if cap.knowledge_type === 'automatisme'}
 							<Badge variant="outline" class="text-xs">⚡ automatisme</Badge>
 						{/if}

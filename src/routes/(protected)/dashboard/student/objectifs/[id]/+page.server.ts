@@ -1,15 +1,20 @@
 /**
  * Student Objectif Detail Page Server
- * ===================================
  *
- * UI élève Phase 3.2 — Détail d'un objectif famille knowledge (4 capacités).
+ * UI élève — Détail d'un objectif famille knowledge (4 capacités).
  *
- * Spec : docs/wip/skills-referentiel-design.md §8 (vue détail style PDF 2016)
+ * Refonte 2026-06-10 (Phase 3 chantier SRS/FSRS) :
+ * - Suppression du flag `to_review` (issu de la VIEW, basé sur seuil 30j).
+ * - Ajout du badge FSRS agrégé calculé via `computeCapacityBadges` à partir
+ *   de l'état `srs_card_stats` des templates tagués sur chaque capacité.
+ *
+ * Spec : docs/wip/srs-fsrs-spec-tdd.md §5
  */
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
+import { computeCapacityBadges, type CapacityBadge } from '$lib/server/srs/capacity-badge';
 
 export interface CapacityDetail {
 	id: string;
@@ -17,8 +22,8 @@ export interface CapacityDetail {
 	display_order: 1 | 2 | 3 | 4;
 	knowledge_type: 'automatisme' | 'capacite_attendue' | null;
 	is_acquired: boolean;
-	to_review: boolean;
 	needs_remediation: boolean;
+	badge: CapacityBadge;
 }
 
 export interface ObjectiveDetailData {
@@ -73,10 +78,10 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 	const skills = objData.skills ?? [];
 	const skillIds = skills.map((s) => s.id);
 
-	// 2. Charger l'état des capacités via la VIEW (avec to_review)
+	// 2. Charger l'état BO des capacités (is_acquired, needs_remediation)
 	const { data: stateData, error: stateError } = await locals.supabase
 		.from('student_skill_state_a_v')
-		.select('skill_id, is_acquired, needs_remediation, to_review')
+		.select('skill_id, is_acquired, needs_remediation')
 		.eq('student_id', user.id)
 		.in('skill_id', skillIds);
 
@@ -84,20 +89,19 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 		throw error(500, `Erreur de chargement de l'état : ${stateError.message}`);
 	}
 
-	const stateBySkill = new Map<
-		string,
-		{ is_acquired: boolean; needs_remediation: boolean; to_review: boolean }
-	>();
+	const stateBySkill = new Map<string, { is_acquired: boolean; needs_remediation: boolean }>();
 	for (const row of stateData ?? []) {
 		if (!row.skill_id) continue;
 		stateBySkill.set(row.skill_id, {
 			is_acquired: row.is_acquired ?? false,
-			needs_remediation: row.needs_remediation ?? false,
-			to_review: row.to_review ?? false
+			needs_remediation: row.needs_remediation ?? false
 		});
 	}
 
-	// 3. Construire les 4 capacités ordonnées (rang 1-4)
+	// 3. Calcul des badges FSRS agrégés
+	const badges = await computeCapacityBadges(locals.supabase, user.id, skillIds);
+
+	// 4. Construire les 4 capacités ordonnées (rang 1-4)
 	const capacities: CapacityDetail[] = skills
 		.filter((s) => s.display_order >= 1 && s.display_order <= 4)
 		.sort((a, b) => a.display_order - b.display_order)
@@ -109,12 +113,12 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Objectiv
 				display_order: s.display_order as 1 | 2 | 3 | 4,
 				knowledge_type: (s.knowledge_type as 'automatisme' | 'capacite_attendue' | null) ?? null,
 				is_acquired: state?.is_acquired ?? false,
-				to_review: state?.to_review ?? false,
-				needs_remediation: state?.needs_remediation ?? false
+				needs_remediation: state?.needs_remediation ?? false,
+				badge: badges.get(s.id) ?? 'non_commencee'
 			};
 		});
 
-	// 4. Niveau atteint
+	// 5. Niveau atteint
 	let rang_max: 0 | 1 | 2 | 3 | 4 = 0;
 	let acquired_count = 0;
 	for (const c of capacities) {

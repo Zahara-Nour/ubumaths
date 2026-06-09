@@ -18,6 +18,7 @@
 		getObjectiveLevelVisual,
 		type ObjectiveLevel
 	} from '$lib/types/skills';
+	import CapacityFsrsBadge from '$lib/components/srs/CapacityFsrsBadge.svelte';
 	import type { PageData } from './$types';
 	import type { ObjectiveSummary } from './+page.server';
 
@@ -216,9 +217,7 @@
 													À remédier
 												</Badge>
 											{/if}
-											{#if obj.has_to_review}
-												<Badge variant="outline" class="text-xs">À revoir</Badge>
-											{/if}
+											<CapacityFsrsBadge badge={obj.fsrs_badge} showLabel />
 										</div>
 									</div>
 									<ChevronRight class="h-5 w-5 shrink-0 text-muted-foreground" />
