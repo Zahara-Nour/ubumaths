@@ -29,6 +29,7 @@ import {
 	GraduationCap,
 	Kanban,
 	Target,
+	ClipboardList,
 	User as UserIcon,
 	LogOut
 } from 'lucide-svelte';
@@ -114,6 +115,11 @@ export function getNavLinks(
 				icon: BookOpen
 			},
 			{ href: '/dashboard/teacher/contenu', label: 'Mes contenus', icon: Layers },
+			{
+				href: '/dashboard/teacher/evaluation-tasks',
+				label: "Tâches d'évaluation",
+				icon: ClipboardList
+			},
 			{ href: '/python-exercises/mine', label: 'Mes exercices Python', icon: Code },
 			{
 				href: '/dashboard/teacher/gamification',
