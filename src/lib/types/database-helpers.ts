@@ -292,3 +292,216 @@ export type KanbanTagInsert = Omit<KanbanTag, 'id' | 'created_at'> & {
 
 /** Update payload for kanban_tags (board_id immutable; only name/color mutate). */
 export type KanbanTagUpdate = Partial<Pick<KanbanTag, 'name' | 'color'>>;
+
+// ============================================================================
+// Skills System — Phase 1 référentiel de compétences (2026-06-09)
+// ============================================================================
+// Spec      : docs/wip/skills-referentiel-design.md (décisions 57-72)
+// Migrations: supabase/migrations/20260609120000..02_competence_referentiel_*.sql
+// Business types stables (Family, KnowledgeType, ...) : src/lib/types/skills.ts
+// ============================================================================
+
+import type {
+	Family,
+	KnowledgeType,
+	MathCompetenceCode,
+	MathCompetenceLevel,
+	SkillAttemptCode,
+	SkillSource,
+	SubdimensionLetter,
+	MissingForNext,
+	ValidatedObservables,
+	PhaseBlocage
+} from './skills';
+
+// --- Family A (knowledge) hierarchy ---------------------------------------
+
+/** Theme = top-level BO discipline grouping (Nombres et calcul, Géométrie, ...). */
+export type SkillTheme = Tables<'skill_themes'>;
+
+/** Objective = "item" visible to student (≈ attendu BO). Has exactly 4 capacities. */
+export type SkillObjective = Tables<'skill_objectives'>;
+
+// --- Family B (competence) hierarchy --------------------------------------
+
+/** One of the 6 transversal math competences (Chercher, Calculer, ...). */
+export type MathCompetence = Tables<'math_competences'>;
+
+/** Structural subdimension (A/B/C/D) under a math competence. No state of its own (décision 50). */
+export type MathCompetenceSubdimension = Tables<'math_competence_subdimensions'>;
+
+// --- Shared skill unit (polymorphic family) --------------------------------
+
+/**
+ * Raw skill row from DB. Either a capacity (objective_id set, family='knowledge')
+ * or an observable (subdimension_id set, family='competence'). Mutually exclusive
+ * via CHECK constraint chk_skill_family.
+ *
+ * Note: `family` is `string | null` in the generated type because Supabase doesn't
+ * mark GENERATED columns as NOT NULL, but it is always populated in practice.
+ * Prefer the discriminated alias `Skill` below for safer narrowing.
+ */
+type SkillRaw = Tables<'skills'>;
+
+/**
+ * Discriminated skill type. Use this everywhere you read a skill from DB.
+ * The `family` field is narrowed to `Family` (non-null) and the variants
+ * tighten the other nullable fields accordingly.
+ */
+export type Skill =
+	| (Omit<
+			SkillRaw,
+			| 'family'
+			| 'objective_id'
+			| 'subdimension_id'
+			| 'knowledge_type'
+			| 'observable_code'
+			| 'teacher_grid_text'
+	  > & {
+			family: 'knowledge';
+			objective_id: string;
+			subdimension_id: null;
+			knowledge_type: KnowledgeType;
+			observable_code: null;
+			teacher_grid_text: null;
+	  })
+	| (Omit<
+			SkillRaw,
+			'family' | 'objective_id' | 'subdimension_id' | 'knowledge_type' | 'observable_code'
+	  > & {
+			family: 'competence';
+			objective_id: null;
+			subdimension_id: string;
+			knowledge_type: null;
+			observable_code: string;
+			teacher_grid_text: string | null;
+	  });
+
+// --- Tagging junction (template ↔ skill) -----------------------------------
+
+/** Junction question_template → skill (décision 59 — tagging at template level). */
+export type QuestionTemplateSkill = Tables<'question_template_skills'>;
+
+// --- Family B evaluation tasks ---------------------------------------------
+
+/** A teacher-declared evaluation context for family-B observation. */
+export type EvaluationTask = Tables<'evaluation_tasks'>;
+
+/** Perimeter row: list of observables a task allows observing (décision 46). */
+export type EvaluationTaskPerimeter = Tables<'evaluation_task_perimeter'>;
+
+// --- Attempts (dual regime) ------------------------------------------------
+
+/**
+ * Raw skill_attempts row. The actual shape splits in two regimes via CHECK
+ * constraint chk_attempt_family_regime:
+ * - Family knowledge: `success` boolean + `template_id` non-null, `code`/`task_id` null
+ * - Family competence: `code` 'plus'|'minus' + `task_id` non-null, `success` null
+ * Use the discriminated `SkillAttempt` for safer narrowing.
+ */
+type SkillAttemptRaw = Tables<'skill_attempts'>;
+
+/**
+ * Discriminated skill attempt. Use this when reading attempts from DB —
+ * the dual regime is enforced at the type level.
+ */
+export type SkillAttempt =
+	| (Omit<
+			SkillAttemptRaw,
+			'success' | 'code' | 'task_id' | 'template_id' | 'source' | 'phase_blocage'
+	  > & {
+			success: boolean;
+			code: null;
+			task_id: null;
+			template_id: string;
+			source: SkillSource;
+			phase_blocage: PhaseBlocage | null;
+	  })
+	| (Omit<
+			SkillAttemptRaw,
+			'success' | 'code' | 'task_id' | 'template_id' | 'source' | 'phase_blocage'
+	  > & {
+			success: null;
+			code: SkillAttemptCode;
+			task_id: string;
+			template_id: string | null;
+			source: SkillSource;
+			phase_blocage: PhaseBlocage | null;
+	  });
+
+// --- Caches (recomputed by trigger) ----------------------------------------
+
+/**
+ * Cache row for family knowledge per (student, skill). Recomputed by trigger
+ * on INSERT skill_attempts (cf. décision 70 — `to_review` lives in the VIEW).
+ */
+export type StudentSkillStateA = Tables<'student_skill_state_a'>;
+
+/**
+ * VIEW exposing student_skill_state_a + computed `to_review` flag (décision 70).
+ * Use this from the client; never read directly from `student_skill_state_a`.
+ */
+export type StudentSkillStateAV = Tables<'student_skill_state_a_v'>;
+
+/** Cache row for family competence per (student, observable). */
+export type StudentObservableState = Tables<'student_observable_state'>;
+
+/**
+ * Cache row for family competence per (student, math_competence). The
+ * `niveau` is computed by `compute_competence_level()` PL/pgSQL function
+ * (décision 69). `validated_observables` and `missing_for_next` carry the
+ * transparency-of-verdict payload (décision 48 + §6.1ter).
+ *
+ * The `missing_for_next` JSONB is typed as `MissingForNext` (discriminated
+ * union from skills.ts) — cast it when consuming:
+ *   `const missing = row.missing_for_next as MissingForNext;`
+ */
+export type StudentCompetenceLevel = Omit<
+	Tables<'student_competence_level'>,
+	'niveau' | 'missing_for_next' | 'validated_observables'
+> & {
+	niveau: MathCompetenceLevel;
+	missing_for_next: MissingForNext;
+	validated_observables: ValidatedObservables;
+};
+
+// --- Composite/enriched types (joined) ------------------------------------
+
+/** Skill enriched with its parent objective (family knowledge) or subdimension+competence (family competence). */
+export interface SkillWithParent {
+	skill: Skill;
+	parent_name: string; // objective.name OR subdimension.name + competence code
+}
+
+/** Math competence with its full subdimensions (≈ 22 across the 6 competences). */
+export interface MathCompetenceWithSubdimensions extends MathCompetence {
+	subdimensions: MathCompetenceSubdimension[];
+}
+
+/** Observable (family competence skill) joined with its subdimension and competence. */
+export interface ObservableWithContext {
+	skill: Skill & { family: 'competence' };
+	subdimension: MathCompetenceSubdimension;
+	competence: MathCompetence;
+}
+
+/** Evaluation task joined with its declared perimeter (list of observable IDs). */
+export interface EvaluationTaskWithPerimeter extends EvaluationTask {
+	perimeter_skill_ids: string[];
+}
+
+// --- Re-export business types for convenience -------------------------------
+// (so consumers can import everything from database-helpers without two paths)
+
+export type {
+	Family,
+	KnowledgeType,
+	MathCompetenceCode,
+	MathCompetenceLevel,
+	SkillAttemptCode,
+	SkillSource,
+	SubdimensionLetter,
+	MissingForNext,
+	ValidatedObservables,
+	PhaseBlocage
+};
