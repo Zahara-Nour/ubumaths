@@ -30,6 +30,7 @@ import {
 	Kanban,
 	Target,
 	ClipboardList,
+	Brain,
 	User as UserIcon,
 	LogOut
 } from 'lucide-svelte';
@@ -78,6 +79,7 @@ export function getNavLinks(
 			...common,
 			{ href: '/dashboard/student/cours', label: 'Mes cours', icon: Book },
 			{ href: '/dashboard/student/objectifs', label: 'Mes objectifs', icon: Target },
+			{ href: '/dashboard/student/competences', label: 'Mes compétences math', icon: Brain },
 			{ href: '/dashboard/student/work', label: 'Mon travail', icon: ListTodo },
 			{
 				href: '/dashboard/student/cahier-texte',
