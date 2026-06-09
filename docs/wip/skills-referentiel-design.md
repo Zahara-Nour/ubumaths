@@ -56,7 +56,7 @@ Les sous-dimensions de la famille B sont **stables sur tout le collège** (6ᵉ 
 | -------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------- | ------------- |
 | Conteneur de + haut niveau | **Thème**                                                              | **Compétence mathématique**                                     | `theme` / `math_competence`                  | Oui           |
 | Conteneur intermédiaire    | **Objectif** (= attendu BO)                                            | **Sous-dimension** (codes A, B, C, D)                           | `objective` / `math_competence_subdimension` | Oui           |
-| **Unité de saisie**        | **Capacité** (rang 1 à 4 sous un objectif)                             | **Observable** (code Xn, ex. A1, B3, C2)                        | `skill` avec `skill_type`                    | Vue détail    |
+| **Unité de saisie**        | **Capacité** (rang 1 à 4 sous un objectif)                             | **Observable** (code Xn, ex. A1, B3, C2)                        | `skill` (famille déduite de la FK)           | Vue détail    |
 | Codage par tâche           | succès/échec sur la `skill_id` taguée par la question                  | **ternaire `+/–/∅`** (cf. section 3)                            | `skill_attempt`                              | Non           |
 | Méthode d'évaluation       | binaire avec validation par variations (N réussites + couverture pool) | consolidation par observable + règle conjonctive par compétence | (cf. section 6)                              | —             |
 
@@ -171,9 +171,9 @@ Un objectif a **exactement 4 capacités** ordonnées par difficulté (rang 1 →
 
 Plutôt qu'une table d'observables séparée, les **variations canoniques** d'une capacité sont incarnées dans la diversité du pool de templates de questions taguées avec cette capacité. La règle de validation s'appuie sur la **diversité des templates** réussis, pas sur la rédaction préalable d'observables.
 
-Deux régimes selon la **rubrique BO** portée par la capacité :
+Deux régimes selon le **type** de la capacité (champ `skills.type` — reprend la rubrique BO 2026, cf. §7 + décision 66) :
 
-| Rubrique            | Règle d'acquisition                                                                                                                                |
+| `type`              | Règle d'acquisition                                                                                                                                |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `capacite_attendue` | ≥ 1 réussite (`success=true`) sur ≥ **2 `template_id` distincts** taggés avec cette `skill_id`, ET **aucun échec dans les 3 dernières tentatives** |
 | `automatisme`       | ≥ **5 réussites totales** sur la capacité, ET ≥ 3 sur les 5 dernières tentatives                                                                   |
@@ -187,7 +187,7 @@ Deux régimes selon la **rubrique BO** portée par la capacité :
 
 Une capacité acquise depuis > **30 jours** sans réussite récente est marquée **« à revoir »** (affichage atténué). Elle n'est pas perdue, mais signalée pour ramener l'élève dessus.
 
-**Stockage** : pas de `level_indicators`, pas de `is_progressive`, pas de `target_level`. La capacité est définie par son **nom** + sa **rubrique** + son **rang** sous l'objectif. La couverture des variations est garantie côté création des templates de questions, pas côté référentiel.
+**Stockage** : pas de `level_indicators`, pas de `is_progressive`, pas de `target_level`. La capacité est définie par son **nom** + son **type** (`automatisme` | `capacite_attendue`) + son **rang** sous l'objectif. La couverture des variations est garantie côté création des templates de questions, pas côté référentiel.
 
 ### Famille B — Cadre d'évaluation des 6 compétences mathématiques
 
@@ -288,7 +288,7 @@ Objectif : « Comparer et ranger des nombres décimaux »
   Capacité rang 4 — Ranger une liste de décimaux mêlés, justifier l'ordre.
 ```
 
-Chacune de ces 4 capacités est validée indépendamment via la règle d'acquisition de sa rubrique. Le niveau atteint sur l'objectif est le rang maximal acquis.
+Chacune de ces 4 capacités est validée indépendamment via la règle d'acquisition de son type. Le niveau atteint sur l'objectif est le rang maximal acquis.
 
 **Exemple — Famille B (observable, codage par tâche)** :
 
@@ -317,9 +317,9 @@ Conséquence : `skills.is_progressive` est **supprimé** du schéma.
 
 ### Principe fondamental (famille A modèle B)
 
-Une `skill_attempts` est attachée à **une capacité précise** (`skill_id`). Plus de `target_level` : la capacité elle-même porte sa propre identité (rang sous l'objectif + rubrique).
+Une `skill_attempts` est attachée à **une capacité précise** (`skill_id`). Plus de `target_level` : la capacité elle-même porte sa propre identité (rang sous l'objectif + type).
 
-- `success = true` : l'élève a réussi un template de cette capacité → contribue à la règle d'acquisition de sa rubrique.
+- `success = true` : l'élève a réussi un template de cette capacité → contribue à la règle d'acquisition de son type.
 - `success = false` : tentative ratée, stockée pour analytics et **fenêtre des 3/5 dernières tentatives** (utilisée par la règle d'acquisition).
 
 ### Tentative ratée : stockée et **utilisée pour le filtre récent**
@@ -398,16 +398,16 @@ Note : tagger un template avec un `skill_id` de famille B reste **documentaire**
 
 ## 6. Algorithme de calcul
 
-### 6.1 État d'une capacité (Famille A — modèle B, `skill_type='progressive'`)
+### 6.1 État d'une capacité (Famille A — modèle B, `objective_id IS NOT NULL`)
 
-L'état d'une capacité est **binaire** : `acquise` ou `non acquise`. La règle dépend de la **rubrique** portée par la capacité.
+L'état d'une capacité est **binaire** : `acquise` ou `non acquise`. La règle dépend du **type** (`automatisme` | `capacite_attendue`) porté par la capacité.
 
 **Constantes globales** :
 
 - Fenêtre de décroissance : **30 jours** sans réussite → capacité acquise marquée « à revoir »
 - Fenêtre des dernières tentatives : **3** (pour `capacite_attendue`) ou **5** (pour `automatisme`)
 
-**Cas `rubrique = 'capacite_attendue'`** :
+**Cas `type = 'capacite_attendue'`** :
 
 ```
 distinct_template_successes = nombre de template_id distincts parmi
@@ -420,7 +420,7 @@ capacité_acquise ssi :
   - AND aucun success=false dans last_3
 ```
 
-**Cas `rubrique = 'automatisme'`** :
+**Cas `type = 'automatisme'`** :
 
 ```
 total_successes = nombre d'attempts (success=true) sur cette skill_id
@@ -440,12 +440,12 @@ last_success_at = date du dernier success=true sur la capacité
 
 Si capacité_acquise ET (now − last_success_at > 30 jours) :
   → marquée « à revoir » (statut visuel atténué, mais reste acquise tant
-    qu'aucun échec récent ne casse la règle d'acquisition de la rubrique)
+    qu'aucun échec récent ne casse la règle d'acquisition du type)
 ```
 
 **Note implémentation** : le cache `student_skill_state_a` stocke `is_acquired`, `distinct_template_successes`, `total_successes`, `last_success_at`, `to_review` (boolean dérivé de la décroissance). Recalcul par trigger à chaque `INSERT skill_attempts` famille A.
 
-### 6.1bis Consolidation d'un observable (Famille B, `skill_type='observable'`)
+### 6.1bis Consolidation d'un observable (Famille B, `subdimension_id IS NOT NULL`)
 
 Le cadre famille B abandonne la distinction `is_contextual` statique et le calcul par sous-thème (Options β / β-ter caducs). À la place :
 
@@ -537,7 +537,7 @@ Capacité non acquise AVEC ≥ 2 échecs dans la fenêtre récente (K dernières
   → needs_remediation = true → badge 🆘 « À remédier »
     (l'élève bute — peu importe qu'il ait déjà réussi par le passé ou non)
 
-Fenêtre K : 3 dernières pour rubrique 'capacite_attendue', 5 dernières pour 'automatisme'.
+Fenêtre K : 3 dernières pour type 'capacite_attendue', 5 dernières pour 'automatisme'.
 Seuil min 2 échecs : évite qu'un seul ratage isolé déclenche l'alerte.
 
 Capacité acquise (is_acquired = true) AND last_success_at > 30 jours
@@ -578,7 +578,7 @@ Exemple : un élève au niveau 2 sur un objectif (rangs 1 et 2 acquis), souhaita
 - Décision 63 : 🆘 ne requiert plus de succès historique — le badge couvre régression **et** blocage d'apprentissage.
 - Décision 64 : **seuil minimum de 2 échecs** dans la fenêtre récente pour déclencher 🆘. Évite qu'un seul ratage isolé (faute d'inattention, distraction) ne provoque une alerte intempestive. La fenêtre récente est de 3 dernières tentatives pour `capacite_attendue`, 5 dernières pour `automatisme`.
 
-**Famille B (`skill_type='observable'`)** : **pas de calcul de robustesse**, **pas de badges À remédier / À renforcer**.
+**Famille B (`subdimension_id IS NOT NULL`)** : **pas de calcul de robustesse**, **pas de badges À remédier / À renforcer**.
 
 Décision design : le cadre famille B est volontairement formatif (il explicite son verdict et désigne le geste à travailler), sans alerte automatique de régression. C'est le geste pédagogique du prof qui agit, pas un signal système. Les saisies `–` participent à la consolidation (contrepoids du `+`) mais ne déclenchent aucune alerte indépendante.
 
@@ -688,35 +688,47 @@ math_competence_subdimensions (
 
 skills (
   id                  uuid pk,
-  -- Exactement UNE des deux FK suivantes est non-null :
+  -- Exactement UNE des deux FK suivantes est non-null (la FK porte la famille) :
   objective_id        uuid fk → skill_objectives(id) nullable,                  -- famille A → capacité
   subdimension_id     uuid fk → math_competence_subdimensions(id) nullable,     -- famille B → observable
   niveau_scolaire     text nullable,        -- famille A : null (hérité du thème) ; famille B : 'college' pour V1
   observable_code     text nullable,        -- famille B uniquement : 'A1', 'B3', 'C2', 'D2' (cadre canonique)
   name                text not null,        -- A : nom court de la capacité ; B : énoncé côté élève (« Je teste plusieurs pistes »)
   teacher_grid_text   text nullable,        -- famille B : reformulation enseignant (grille de codage)
-  skill_type          text not null check (skill_type in ('progressive', 'observable')),
-  rubrique            text nullable check (rubrique in ('automatisme', 'capacite_attendue')),
-                                            -- famille A uniquement : traçabilité BO 2026 cycle 3
-                                            -- 'automatisme'        : rubrique « Automatismes » du BO
-                                            -- 'capacite_attendue'  : rubrique « Connaissances et capacités attendues » du BO
-                                            -- NULL pour famille B
+  type                text nullable check (type in ('automatisme', 'capacite_attendue')),
+                                            -- famille A uniquement : reprend la rubrique BO 2026 cycle 3
+                                            -- 'automatisme'        : geste à automatiser (calcul mental, lexique de base...)
+                                            -- 'capacite_attendue'  : compétence à mobiliser réfléchie
+                                            -- NULL pour famille B (le concept ne s'applique pas)
                                             -- détermine la règle d'acquisition (cf. §3 et §6.1)
   display_order       int not null,        -- famille A : rang 1..4 sous l'objectif ; famille B : ordre d'affichage
+  -- Exactement une famille (XOR sur les FK) :
   CONSTRAINT chk_skill_family CHECK (
-    (objective_id IS NOT NULL AND subdimension_id IS NULL AND skill_type = 'progressive')
-    OR (objective_id IS NULL AND subdimension_id IS NOT NULL AND skill_type = 'observable')
+    (objective_id IS NOT NULL) <> (subdimension_id IS NOT NULL)
   ),
+  -- Famille A : rang dans [1,4] et type renseigné :
   CONSTRAINT chk_skill_a_rang CHECK (
-    skill_type = 'observable'
-    OR (display_order BETWEEN 1 AND 4 AND rubrique IS NOT NULL)
+    subdimension_id IS NOT NULL                                   -- famille B : on s'abstient
+    OR (display_order BETWEEN 1 AND 4 AND type IS NOT NULL)       -- famille A : rang ok + type ok
   ),
+  -- Famille B : observable_code renseigné :
   CONSTRAINT chk_skill_b_code CHECK (
-    skill_type = 'progressive' OR observable_code IS NOT NULL
+    objective_id IS NOT NULL                                       -- famille A : on s'abstient
+    OR observable_code IS NOT NULL                                 -- famille B : code requis
   ),
   -- Unicité du rang sous un même objectif (famille A)
   CONSTRAINT uq_skill_a_rang UNIQUE NULLS NOT DISTINCT (objective_id, display_order)
 )
+
+-- Note (décision 65, 2026-06-09) : le champ `skill_type` (autrefois 'progressive' | 'observable')
+-- a été supprimé. La famille est intrinsèquement portée par les FK : objective_id non-null = famille A,
+-- subdimension_id non-null = famille B. La CHECK chk_skill_family vérifie l'exclusion mutuelle (XOR).
+-- Pour distinguer la famille au runtime : `family = CASE WHEN objective_id IS NOT NULL THEN 'A' ELSE 'B' END`
+-- (ou colonne calculée / vue selon convenance applicative).
+
+-- Note (décision 66, 2026-06-09) : le champ `rubrique` a été renommé en `type`
+-- (« la rubrique BO d'une capacité » → « le type d'une capacité »).
+-- Les valeurs ('automatisme' | 'capacite_attendue') sont inchangées.
 
 -- Le flag is_contextual a été retiré : la pertinence est désormais déclarée
 -- par tâche via evaluation_task_perimeter.
@@ -745,7 +757,7 @@ evaluation_tasks (
 -- Périmètre déclaré par le prof : quels observables cette tâche permet d'observer
 evaluation_task_perimeter (
   task_id  uuid fk → evaluation_tasks(id) ON DELETE CASCADE,
-  skill_id uuid fk → skills(id),  -- doit être skill_type='observable'
+  skill_id uuid fk → skills(id),  -- doit être famille B (subdimension_id IS NOT NULL) — vérifié applicatif
   PRIMARY KEY (task_id, skill_id)
 )
 
@@ -766,7 +778,7 @@ question_template_skills (
 )
 -- Un template peut tagger plusieurs skills (M2M). Un même skill peut être tagué
 -- sur N templates (typiquement N = nombre de variations canoniques, cf. décision 60).
--- En famille A : skill_id pointe vers une capacité (skill_type='progressive').
+-- En famille A : skill_id pointe vers une capacité (objective_id IS NOT NULL).
 -- En famille B : tagging documentaire uniquement (les attempts famille B passent par
 -- evaluation_tasks, pas par les réponses auto aux questions UbuMaths).
 
@@ -819,7 +831,7 @@ student_skill_state_a (
   last_success_at               timestamptz,
   last_attempt_at               timestamptz,
   to_review                     boolean not null default false, -- (is_acquired AND now - last_success_at > 30 jours) → affichage estompé + badge 🔁 « À renforcer »
-  needs_remediation             boolean not null default false, -- 🆘 succès historique + échecs récents bloquent la règle de rubrique
+  needs_remediation             boolean not null default false, -- 🆘 ≥ 2 échecs dans la fenêtre récente (selon type) bloquant la règle
   PRIMARY KEY (student_id, skill_id)
 )
 -- Recalculé par trigger PL/pgSQL sur INSERT skill_attempts famille A.
@@ -1044,7 +1056,7 @@ Affichage en **tableau 4 colonnes** correspondant aux 4 capacités ordonnées pa
 ## 10. Décisions actées (récapitulatif)
 
 | #                           | Sujet                                                                                                 | Choix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| --------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | --- |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1                           | Vocabulaire UI élève                                                                                  | « **Objectifs** »                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 2                           | États visibles                                                                                        | 4 : non commencé / 🟠 / 🟢 / ✨                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | 3                           | Visuel non commencé                                                                                   | ◯ contour gris, **caché du dashboard** principal                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -1076,7 +1088,7 @@ Affichage en **tableau 4 colonnes** correspondant aux 4 capacités ordonnées pa
 | 29                          | **Glose pédagogique** par compétence math                                                             | champ `gloss_for_student` sur `math_competences`. Visible élève à côté du nom officiel BO. Une ligne, actionnable.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 30                          | **4 phases de résolution** (Comprendre/Modéliser/Calculer/Répondre + Régulation)                      | introduites par le **BO 2026** ; utilisées comme **outil de diagnostic post-erreur**, pas comme grille principale. Stockées dans `skill_attempts.phase_blocage` (nullable). Alimentent le carnet d'erreurs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 31                          | **Famille B = observables binaires** (pas d'échelle 1-4)                                              | Pivot vers le cadre **IGÉSR mai 2023** (description / ressources / observables). Une compétence math = 6-10 observables binaires à la 1ʳᵉ personne (« Je teste plusieurs pistes »). Validation : ≥ 2 observations positives en 60j dont 1 sans aide. Famille A garde l'échelle 1-4 avec indicateurs (régime adapté aux savoirs gradables).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| 32                          | **Champ `skill_type`** sur `skills`                                                                   | `'progressive'` (famille A) vs `'observable'` (famille B). Détermine quel régime de calcul s'applique. `level_indicators` et `is_progressive` nullables (non utilisés en famille B).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ~~32~~                      | ~~Champ `skill_type` sur `skills`~~                                                                   | **Caduque** — supprimé en décision 65 (2026-06-09). La famille est intrinsèquement portée par les FK `objective_id` (A) vs `subdimension_id` (B). `level_indicators` et `is_progressive` déjà supprimés (décision 57).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 33                          | **Composantes BO 2020 archivées**                                                                     | Le tableau « Compétences travaillées » de 2020 sert de **référence pour rédiger les observables** mais n'est plus l'unité d'évaluation. Conservées en annexe des fichiers de référentiel (`<niveau>-competences.md`) pour traçabilité.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 34                          | **Hiérarchie famille B à 3 niveaux**                                                                  | Compétence math → **Sous-thème** → Observable. Nouvelle table `math_competence_subthemes`. Les sous-thèmes sont **stables tous niveaux** (Engagement, Émission, etc.) ; ce sont les observables qui se calibrent par niveau scolaire.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 35                          | **Validation observable (B) simplifiée**                                                              | `validé ssi ≥ 2 attempts success=true`. **Pas de fenêtre temporelle**, pas de critère de diversité de tâches, pas de garde-fou « sans aide ». Le prof gère ces dimensions hors système. `with_help` reste stocké pour analytics mais ne pèse pas dans la validation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -1110,7 +1122,9 @@ Affichage en **tableau 4 colonnes** correspondant aux 4 capacités ordonnées pa
 | 61                          | **Cohabitation `theme/domain/subdomain/level` libres + `skill_id` autoritaire**                       | Les champs descriptifs existants `question_templates.theme / domain / subdomain / level / grades` (migration 070) sont **conservés** comme étiquettes libres de classement (utiles pour filtre/recherche prof). Ils ne sont **pas autoritaires** pour le calcul de progression — la source de vérité devient la junction `question_template_skills`. Pas de FK ajoutée vers `skill_themes` / `skill_objectives`, pas de drop. Migration douce, aucun seed existant cassé. Tranchée le 2026-06-08 en phase 0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 62                          | **`needs_reinforcement` retiré du cache (redondant avec `to_review`)**                                | Dans `student_skill_state_a` cache famille A : un seul flag `to_review` pour la décroissance temporelle, défini comme `is_acquired AND (now − last_success_at > 30 jours)`. Visuellement : affichage **atténué** dans les listes. Badge UI 🔁 « À renforcer » dérivé directement de `to_review` (pas de boolean séparé). Compteur agrégé du dashboard calculé à la volée : `COUNT(*) WHERE is_acquired AND to_review`. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | 63                          | **🆘 « À remédier » étendu — pas de seuil sur l'historique de succès**                                | Définition v1 : `needs_remediation = true SSI capacité non acquise AND échec(s) récent(s) bloquant la règle de rubrique`. Auparavant la définition exigeait « ≥ 1 succès historique » (signal de régression spécifique). Étendu pour couvrir aussi les capacités tentées sans succès mais bloquées — le signal vaut pour la régression **et** le blocage d'apprentissage. Distinction explicite ajoutée en §6.2 entre 🆘 (signal d'urgence) et la liste « à travailler pour passer au rang suivant » (vue de planification, sous-ensemble plus large). Tranchée le 2026-06-09. **Voir aussi décision 64** pour le seuil minimum d'échecs.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| 64                          | **Seuil minimum 2 échecs pour déclencher 🆘**                                                         | Définition consolidée : `needs_remediation = true SSI capacité non acquise AND ≥ 2 échecs dans la fenêtre récente`. Fenêtre récente : 3 dernières tentatives pour rubrique `capacite_attendue`, 5 dernières pour `automatisme`. Justification : un seul ratage isolé (étourderie, distraction) ne doit pas déclencher une alerte ; deux échecs dans la fenêtre indiquent un véritable blocage. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |     |     |
+| 64                          | **Seuil minimum 2 échecs pour déclencher 🆘**                                                         | Définition consolidée : `needs_remediation = true SSI capacité non acquise AND ≥ 2 échecs dans la fenêtre récente`. Fenêtre récente : 3 dernières tentatives pour type `capacite_attendue`, 5 dernières pour `automatisme`. Justification : un seul ratage isolé (étourderie, distraction) ne doit pas déclencher une alerte ; deux échecs dans la fenêtre indiquent un véritable blocage. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 65                          | **`skill_type` supprimé** (redondant avec les FK)                                                     | Le champ `skill_type` (autrefois `'progressive' \| 'observable'`) duplique l'information déjà portée par les FK (`objective_id` non-null = famille A, `subdimension_id` non-null = famille B). CHECK simplifiée en XOR : `(objective_id IS NOT NULL) <> (subdimension_id IS NOT NULL)`. Famille calculable au runtime depuis les FK. Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 66                          | **`rubrique` renommé `type`** (libéré par 65)                                                         | Le champ `rubrique` (valeurs `'automatisme' \| 'capacite_attendue'`) est renommé `type`. Le mot « rubrique » restait fidèle au BO 2026 mais peu explicite côté schéma ; « type » est plus court et clair. Le nom était bloqué par `skill_type` ; sa suppression (décision 65) le libère. Valeurs inchangées. Mises à jour : §3, §6.1, §7, `referentiel/6e-savoirs.md`. Le mot « rubrique » reste utilisé dans le texte du doc quand il désigne la convention BO 2026 (« reprend la rubrique BO »). Tranchée le 2026-06-09.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ---
 
@@ -1195,6 +1209,8 @@ Affichage en **tableau 4 colonnes** correspondant aux 4 capacités ordonnées pa
 - **2026-06-07 (suite 18 — PIVOT MODÈLE B pour famille A : 4 capacités ordonnées par item)** : après le travail de structuration BO 2026 (suite 17), David rouvre le fond du modèle famille A. Le modèle « 4 paliers d'indicateurs par capacité » s'avère lourd (rédaction de ~500 indicateurs estimés pour la 6ᵉ uniquement) et tend à s'effondrer en pratique vers 4 capacités distinctes empilées. **Décision : adopter le modèle du référentiel personnel 2016 de David** (« échelles descriptives connaissance 6 2016 ») — chaque objectif a **exactement 4 capacités ordonnées par difficulté**, binaires, distinctes. Niveau de l'objectif = rang max acquis. Niveau 3 = « attendu pour tous » (BO), Niveau 4 = expert/approfondissement. **Validation par variations dans les templates** (approche 3) : pas de table d'observables séparée — la diversité du pool de questions taguées sur une capacité incarne les variations. **Règle d'acquisition modulée par rubrique BO** : `capacite_attendue` → ≥ 1 succès sur ≥ 2 templates distincts + aucun échec dans les 3 dernières ; `automatisme` → ≥ 5 succès + ≥ 3 dans les 5 dernières. **Décroissance V1** : > 30 jours sans succès → « à revoir ». **Schéma DB** : drop `level_indicators`, `is_progressive`, `target_level` (table `skills` + junction `question_skills` + table `skill_attempts` + cache `student_skill_state_a`). Refonte `student_skill_state_a` en cache binaire avec `is_acquired`, `total_successes`, `distinct_template_successes`, `to_review`. Conserver `template_id` sur `skill_attempts` pour la règle de couverture. **Tagging questions** simplifié à `skill_id` seul — acte de classification objectif (« cette question teste cette capacité »), pas de calibration subjective de niveau. **Décisions caduques** : 5, 7, 13-15, 18, 19, 22. **Décision ajoutée** : 57. Famille B (cadre canonique 6 compétences) **intacte**. Cible 6ᵉ : ~20 objectifs × 4 capacités = ~80 capacités à rédiger. Prochaine étape : valider avec David la liste des ~20 items et leurs 4 capacités, puis réécrire `6e-savoirs.md`. Handoff de session : `docs/wip/referentiel-handoff.md`.
 
 - **2026-06-09 (suite 20 — micro-ajustement schéma cache famille A)** : David note la redondance entre `student_skill_state_a.to_review` et `student_skill_state_a.needs_reinforcement` — les deux décrivent la même condition (« capacité acquise mais > 30 j sans pratique »). **Décision 62** : suppression de `needs_reinforcement`. Un seul flag `to_review`. Visuellement : capacité atténuée dans les listes. Badge UI 🔁 « À renforcer » et compteur agrégé dérivés à la volée depuis `to_review`. §6.2 et §7 mis à jour.
+
+- **2026-06-09 (suite 22 — nettoyage schéma `skills` : drop `skill_type`, rename `rubrique`→`type`)** : David questionne le nom « rubrique » (peu explicite, emprunté au BO mais polysémique côté DB) ; propose `type`. Détection d'un conflit avec `skill_type` (famille A/B) déjà présent. Analyse : `skill_type` est en fait redondant avec les FK `objective_id` (A) vs `subdimension_id` (B). **Décision 65** : suppression de `skill_type`. CHECK constraint simplifiée en XOR sur les FK. Famille calculable au runtime via les FK. **Décision 66** : renommage `rubrique`→`type` (libéré par 65). Valeurs inchangées (`'automatisme' \| 'capacite_attendue'`). §1 (table vocabulaire), §3 (régime modulé par type), §6.1 (cas type=...), §6.1bis/§6.1ter/§6.2 (filtres famille via FK), §7 (schéma `skills` simplifié) mis à jour. Décision 32 marquée caduque. Aussi `6e-savoirs.md` aligné.
 
 - **2026-06-09 (suite 21 — clarification 🆘 + extension du seuil + minimum 2 échecs)** : David demande à clarifier dans le doc que 🆘 « À remédier » est un sous-ensemble strict des capacités à travailler (signal d'urgence pédagogique vs vue de planification). Question subsidiaire : faut-il garder le seuil « ≥ 1 succès historique » pour déclencher 🆘 ? **Décision 63** : étendre 🆘 aux capacités tentées sans succès mais bloquées par échec(s) récent(s). Question complémentaire : un seul ratage suffit-il ? **Décision 64** : seuil minimum **2 échecs** dans la fenêtre récente — un ratage isolé (étourderie) ne doit pas alerter. Fenêtre : 3 dernières pour `capacite_attendue`, 5 dernières pour `automatisme`. §2 (tableau badges), §6.2 (drivers d'alerte avec sous-section dédiée + tableau d'exemple sur capacité rang 3) mis à jour. Capacité jamais touchée (0 attempt) reste ◯ Non commencée, pas 🆘 (0 échec < 2). Le signal couvre désormais régression **et** blocage d'apprentissage, sans bruit sur les ratages isolés.
 
