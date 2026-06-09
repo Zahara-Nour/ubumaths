@@ -78,11 +78,12 @@ export type SubdimensionLetter = 'A' | 'B' | 'C' | 'D';
 
 /**
  * Source d'une saisie d'attempt.
- * - `'auto'`          : générée par le système quand l'élève répond à une question UbuMaths (famille knowledge uniquement)
- * - `'teacher'`       : saisie manuelle prof après évaluation ou observation
+ * - `'auto'`          : générée par le système quand l'élève répond à une question UbuMaths en quiz interactif (Monde 1)
+ * - `'srs'`           : générée quand l'élève s'auto-évalue lors d'une review SRS (Monde 2 — décision 2026-06-10)
+ * - `'teacher'`       : saisie manuelle prof après évaluation ou observation (famille B)
  * - `'student_self'`  : auto-évaluation élève (décision 16 — non contributive au calcul officiel)
  */
-export type SkillSource = 'auto' | 'teacher' | 'student_self';
+export type SkillSource = 'auto' | 'srs' | 'teacher' | 'student_self';
 
 /**
  * Code ternaire d'une saisie famille competence (décision 45).
