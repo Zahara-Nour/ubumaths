@@ -2582,6 +2582,138 @@ export type Database = {
 					}
 				];
 			};
+			evaluation_task_perimeter: {
+				Row: {
+					skill_id: string;
+					task_id: string;
+				};
+				Insert: {
+					skill_id: string;
+					task_id: string;
+				};
+				Update: {
+					skill_id?: string;
+					task_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'evaluation_task_perimeter_skill_id_fkey';
+						columns: ['skill_id'];
+						isOneToOne: false;
+						referencedRelation: 'skills';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'evaluation_task_perimeter_task_id_fkey';
+						columns: ['task_id'];
+						isOneToOne: false;
+						referencedRelation: 'evaluation_tasks';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			evaluation_tasks: {
+				Row: {
+					assessment_id: string | null;
+					class_id: string | null;
+					created_at: string;
+					description: string | null;
+					exercise_id: string | null;
+					id: string;
+					name: string;
+					niveau_scolaire: string;
+					task_date: string | null;
+					teacher_id: string;
+					updated_at: string;
+					worksheet_id: string | null;
+				};
+				Insert: {
+					assessment_id?: string | null;
+					class_id?: string | null;
+					created_at?: string;
+					description?: string | null;
+					exercise_id?: string | null;
+					id?: string;
+					name: string;
+					niveau_scolaire: string;
+					task_date?: string | null;
+					teacher_id: string;
+					updated_at?: string;
+					worksheet_id?: string | null;
+				};
+				Update: {
+					assessment_id?: string | null;
+					class_id?: string | null;
+					created_at?: string;
+					description?: string | null;
+					exercise_id?: string | null;
+					id?: string;
+					name?: string;
+					niveau_scolaire?: string;
+					task_date?: string | null;
+					teacher_id?: string;
+					updated_at?: string;
+					worksheet_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'evaluation_tasks_assessment_id_fkey';
+						columns: ['assessment_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessments';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'evaluation_tasks_class_id_fkey';
+						columns: ['class_id'];
+						isOneToOne: false;
+						referencedRelation: 'classes';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'evaluation_tasks_exercise_id_fkey';
+						columns: ['exercise_id'];
+						isOneToOne: false;
+						referencedRelation: 'exercises';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'evaluation_tasks_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'evaluation_tasks_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'evaluation_tasks_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'evaluation_tasks_teacher_id_fkey';
+						columns: ['teacher_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'evaluation_tasks_worksheet_id_fkey';
+						columns: ['worksheet_id'];
+						isOneToOne: false;
+						referencedRelation: 'worksheets';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			exercise_assignments: {
 				Row: {
 					assigned_at: string;
@@ -5559,6 +5691,80 @@ export type Database = {
 						referencedColumns: ['id'];
 					}
 				];
+			};
+			math_competence_subdimensions: {
+				Row: {
+					created_at: string;
+					description: string | null;
+					display_order: number;
+					id: string;
+					letter: string;
+					math_competence_id: string;
+					name: string;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					description?: string | null;
+					display_order: number;
+					id?: string;
+					letter: string;
+					math_competence_id: string;
+					name: string;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					description?: string | null;
+					display_order?: number;
+					id?: string;
+					letter?: string;
+					math_competence_id?: string;
+					name?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'math_competence_subdimensions_math_competence_id_fkey';
+						columns: ['math_competence_id'];
+						isOneToOne: false;
+						referencedRelation: 'math_competences';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			math_competences: {
+				Row: {
+					code: string;
+					created_at: string;
+					description: string | null;
+					display_order: number;
+					gloss_for_student: string;
+					id: string;
+					name: string;
+					updated_at: string;
+				};
+				Insert: {
+					code: string;
+					created_at?: string;
+					description?: string | null;
+					display_order: number;
+					gloss_for_student: string;
+					id?: string;
+					name: string;
+					updated_at?: string;
+				};
+				Update: {
+					code?: string;
+					created_at?: string;
+					description?: string | null;
+					display_order?: number;
+					gloss_for_student?: string;
+					id?: string;
+					name?: string;
+					updated_at?: string;
+				};
+				Relationships: [];
 			};
 			mathemo_scores: {
 				Row: {
@@ -8857,6 +9063,36 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			question_template_skills: {
+				Row: {
+					skill_id: string;
+					template_id: string;
+				};
+				Insert: {
+					skill_id: string;
+					template_id: string;
+				};
+				Update: {
+					skill_id?: string;
+					template_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'question_template_skills_skill_id_fkey';
+						columns: ['skill_id'];
+						isOneToOne: false;
+						referencedRelation: 'skills';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'question_template_skills_template_id_fkey';
+						columns: ['template_id'];
+						isOneToOne: false;
+						referencedRelation: 'question_templates';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			question_templates: {
 				Row: {
 					created_at: string | null;
@@ -9997,6 +10233,232 @@ export type Database = {
 					}
 				];
 			};
+			skill_attempts: {
+				Row: {
+					code: string | null;
+					created_at: string;
+					id: string;
+					phase_blocage: string | null;
+					skill_id: string;
+					source: string;
+					source_ref: string | null;
+					student_id: string;
+					success: boolean | null;
+					task_id: string | null;
+					template_id: string | null;
+					with_help: boolean;
+				};
+				Insert: {
+					code?: string | null;
+					created_at?: string;
+					id?: string;
+					phase_blocage?: string | null;
+					skill_id: string;
+					source: string;
+					source_ref?: string | null;
+					student_id: string;
+					success?: boolean | null;
+					task_id?: string | null;
+					template_id?: string | null;
+					with_help?: boolean;
+				};
+				Update: {
+					code?: string | null;
+					created_at?: string;
+					id?: string;
+					phase_blocage?: string | null;
+					skill_id?: string;
+					source?: string;
+					source_ref?: string | null;
+					student_id?: string;
+					success?: boolean | null;
+					task_id?: string | null;
+					template_id?: string | null;
+					with_help?: boolean;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'skill_attempts_skill_id_fkey';
+						columns: ['skill_id'];
+						isOneToOne: false;
+						referencedRelation: 'skills';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'skill_attempts_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'skill_attempts_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'skill_attempts_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'skill_attempts_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'skill_attempts_task_id_fkey';
+						columns: ['task_id'];
+						isOneToOne: false;
+						referencedRelation: 'evaluation_tasks';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'skill_attempts_template_id_fkey';
+						columns: ['template_id'];
+						isOneToOne: false;
+						referencedRelation: 'question_templates';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			skill_objectives: {
+				Row: {
+					created_at: string;
+					description: string | null;
+					display_order: number;
+					id: string;
+					name: string;
+					theme_id: string;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					description?: string | null;
+					display_order: number;
+					id?: string;
+					name: string;
+					theme_id: string;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					description?: string | null;
+					display_order?: number;
+					id?: string;
+					name?: string;
+					theme_id?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'skill_objectives_theme_id_fkey';
+						columns: ['theme_id'];
+						isOneToOne: false;
+						referencedRelation: 'skill_themes';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			skill_themes: {
+				Row: {
+					bo_reference: string | null;
+					created_at: string;
+					description: string | null;
+					display_order: number;
+					id: string;
+					name: string;
+					niveau_scolaire: string;
+					updated_at: string;
+				};
+				Insert: {
+					bo_reference?: string | null;
+					created_at?: string;
+					description?: string | null;
+					display_order: number;
+					id?: string;
+					name: string;
+					niveau_scolaire: string;
+					updated_at?: string;
+				};
+				Update: {
+					bo_reference?: string | null;
+					created_at?: string;
+					description?: string | null;
+					display_order?: number;
+					id?: string;
+					name?: string;
+					niveau_scolaire?: string;
+					updated_at?: string;
+				};
+				Relationships: [];
+			};
+			skills: {
+				Row: {
+					created_at: string;
+					display_order: number;
+					family: string | null;
+					id: string;
+					knowledge_type: string | null;
+					name: string;
+					niveau_scolaire: string | null;
+					objective_id: string | null;
+					observable_code: string | null;
+					subdimension_id: string | null;
+					teacher_grid_text: string | null;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					display_order: number;
+					family?: string | null;
+					id?: string;
+					knowledge_type?: string | null;
+					name: string;
+					niveau_scolaire?: string | null;
+					objective_id?: string | null;
+					observable_code?: string | null;
+					subdimension_id?: string | null;
+					teacher_grid_text?: string | null;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					display_order?: number;
+					family?: string | null;
+					id?: string;
+					knowledge_type?: string | null;
+					name?: string;
+					niveau_scolaire?: string | null;
+					objective_id?: string | null;
+					observable_code?: string | null;
+					subdimension_id?: string | null;
+					teacher_grid_text?: string | null;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'skills_objective_id_fkey';
+						columns: ['objective_id'];
+						isOneToOne: false;
+						referencedRelation: 'skill_objectives';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'skills_subdimension_id_fkey';
+						columns: ['subdimension_id'];
+						isOneToOne: false;
+						referencedRelation: 'math_competence_subdimensions';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			spreadsheets: {
 				Row: {
 					created_at: string;
@@ -10655,6 +11117,72 @@ export type Database = {
 					}
 				];
 			};
+			student_competence_level: {
+				Row: {
+					last_recalc_at: string;
+					math_competence_id: string;
+					missing_for_next: Json | null;
+					niveau: string;
+					student_id: string;
+					task_count: number | null;
+					validated_observables: Json | null;
+				};
+				Insert: {
+					last_recalc_at?: string;
+					math_competence_id: string;
+					missing_for_next?: Json | null;
+					niveau: string;
+					student_id: string;
+					task_count?: number | null;
+					validated_observables?: Json | null;
+				};
+				Update: {
+					last_recalc_at?: string;
+					math_competence_id?: string;
+					missing_for_next?: Json | null;
+					niveau?: string;
+					student_id?: string;
+					task_count?: number | null;
+					validated_observables?: Json | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_competence_level_math_competence_id_fkey';
+						columns: ['math_competence_id'];
+						isOneToOne: false;
+						referencedRelation: 'math_competences';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_competence_level_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_competence_level_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'student_competence_level_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_competence_level_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			student_exercise_mastery: {
 				Row: {
 					exercise_id: string;
@@ -10708,6 +11236,144 @@ export type Database = {
 					},
 					{
 						foreignKeyName: 'student_exercise_mastery_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			student_observable_state: {
+				Row: {
+					count_minus: number;
+					count_plus: number;
+					is_acquis: boolean;
+					last_attempt_at: string | null;
+					skill_id: string;
+					student_id: string;
+					updated_at: string;
+				};
+				Insert: {
+					count_minus?: number;
+					count_plus?: number;
+					is_acquis?: boolean;
+					last_attempt_at?: string | null;
+					skill_id: string;
+					student_id: string;
+					updated_at?: string;
+				};
+				Update: {
+					count_minus?: number;
+					count_plus?: number;
+					is_acquis?: boolean;
+					last_attempt_at?: string | null;
+					skill_id?: string;
+					student_id?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_observable_state_skill_id_fkey';
+						columns: ['skill_id'];
+						isOneToOne: false;
+						referencedRelation: 'skills';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_observable_state_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_observable_state_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'student_observable_state_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_observable_state_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			student_skill_state_a: {
+				Row: {
+					distinct_template_successes: number;
+					is_acquired: boolean;
+					last_attempt_at: string | null;
+					last_success_at: string | null;
+					needs_remediation: boolean;
+					skill_id: string;
+					student_id: string;
+					total_successes: number;
+					updated_at: string;
+				};
+				Insert: {
+					distinct_template_successes?: number;
+					is_acquired?: boolean;
+					last_attempt_at?: string | null;
+					last_success_at?: string | null;
+					needs_remediation?: boolean;
+					skill_id: string;
+					student_id: string;
+					total_successes?: number;
+					updated_at?: string;
+				};
+				Update: {
+					distinct_template_successes?: number;
+					is_acquired?: boolean;
+					last_attempt_at?: string | null;
+					last_success_at?: string | null;
+					needs_remediation?: boolean;
+					skill_id?: string;
+					student_id?: string;
+					total_successes?: number;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_skill_state_a_skill_id_fkey';
+						columns: ['skill_id'];
+						isOneToOne: false;
+						referencedRelation: 'skills';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_skill_state_a_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_skill_state_a_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'student_skill_state_a_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_skill_state_a_student_id_fkey';
 						columns: ['student_id'];
 						isOneToOne: false;
 						referencedRelation: 'riddle_progress';
@@ -13662,6 +14328,81 @@ export type Database = {
 					}
 				];
 			};
+			student_skill_state_a_v: {
+				Row: {
+					distinct_template_successes: number | null;
+					is_acquired: boolean | null;
+					last_attempt_at: string | null;
+					last_success_at: string | null;
+					needs_remediation: boolean | null;
+					skill_id: string | null;
+					student_id: string | null;
+					to_review: boolean | null;
+					total_successes: number | null;
+					updated_at: string | null;
+				};
+				Insert: {
+					distinct_template_successes?: number | null;
+					is_acquired?: boolean | null;
+					last_attempt_at?: string | null;
+					last_success_at?: string | null;
+					needs_remediation?: boolean | null;
+					skill_id?: string | null;
+					student_id?: string | null;
+					to_review?: never;
+					total_successes?: number | null;
+					updated_at?: string | null;
+				};
+				Update: {
+					distinct_template_successes?: number | null;
+					is_acquired?: boolean | null;
+					last_attempt_at?: string | null;
+					last_success_at?: string | null;
+					needs_remediation?: boolean | null;
+					skill_id?: string | null;
+					student_id?: string | null;
+					to_review?: never;
+					total_successes?: number | null;
+					updated_at?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'student_skill_state_a_skill_id_fkey';
+						columns: ['skill_id'];
+						isOneToOne: false;
+						referencedRelation: 'skills';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_skill_state_a_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'student_skill_state_a_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'student_skill_state_a_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'student_skill_state_a_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
 			user_conversations_view: {
 				Row: {
 					class_id: string | null;
@@ -14030,6 +14771,38 @@ export type Database = {
 					success: boolean;
 				}[];
 			};
+			compute_calculer_level: {
+				Args: { p_math_competence_id: string; p_student_id: string };
+				Returns: {
+					missing_for_next: Json;
+					niveau: string;
+					validated_observables: Json;
+				}[];
+			};
+			compute_chercher_level: {
+				Args: { p_math_competence_id: string; p_student_id: string };
+				Returns: {
+					missing_for_next: Json;
+					niveau: string;
+					validated_observables: Json;
+				}[];
+			};
+			compute_communiquer_level: {
+				Args: { p_math_competence_id: string; p_student_id: string };
+				Returns: {
+					missing_for_next: Json;
+					niveau: string;
+					validated_observables: Json;
+				}[];
+			};
+			compute_competence_level: {
+				Args: { p_math_competence_id: string; p_student_id: string };
+				Returns: {
+					missing_for_next: Json;
+					niveau: string;
+					validated_observables: Json;
+				}[];
+			};
 			compute_daily_summary: {
 				Args: {
 					p_class_id: string;
@@ -14037,6 +14810,30 @@ export type Database = {
 					p_summary_date: string;
 				};
 				Returns: string;
+			};
+			compute_modeliser_level: {
+				Args: { p_math_competence_id: string; p_student_id: string };
+				Returns: {
+					missing_for_next: Json;
+					niveau: string;
+					validated_observables: Json;
+				}[];
+			};
+			compute_raisonner_level: {
+				Args: { p_math_competence_id: string; p_student_id: string };
+				Returns: {
+					missing_for_next: Json;
+					niveau: string;
+					validated_observables: Json;
+				}[];
+			};
+			compute_representer_level: {
+				Args: { p_math_competence_id: string; p_student_id: string };
+				Returns: {
+					missing_for_next: Json;
+					niveau: string;
+					validated_observables: Json;
+				}[];
 			};
 			count_student_active_cards: {
 				Args: { p_card_id: string; p_lock_row?: boolean; p_student_id: string };
@@ -15415,6 +16212,10 @@ export type Database = {
 				};
 				Returns: number;
 			};
+			update_student_competence_level: {
+				Args: { p_math_competence_id: string; p_student_id: string };
+				Returns: undefined;
+			};
 			update_student_gidouilles:
 				| {
 						Args: {
@@ -15427,6 +16228,14 @@ export type Database = {
 						Returns: number;
 				  }
 				| { Args: { p_delta: number; p_student_id: string }; Returns: number };
+			update_student_observable_state: {
+				Args: { p_skill_id: string; p_student_id: string };
+				Returns: undefined;
+			};
+			update_student_skill_state_a: {
+				Args: { p_skill_id: string; p_student_id: string };
+				Returns: undefined;
+			};
 			update_tutor_conversation_stats: {
 				Args: {
 					p_conversation_id: string;
