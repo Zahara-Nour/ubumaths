@@ -23,12 +23,14 @@ Thème (BO 2026) → Objectif (= item, ce que l'élève voit) → 4 capacités o
 
 **Niveau atteint sur un objectif** = rang maximal des capacités acquises (0 si aucune).
 
-### Rubriques BO 2026
+### Type de capacité (reprend la rubrique BO 2026)
 
-Chaque capacité porte une **rubrique** qui détermine sa règle d'acquisition :
+Chaque capacité porte un **type** (champ `skills.type`, valeurs reprises de la rubrique BO 2026) qui détermine sa règle d'acquisition :
 
 - **`automatisme`** : geste rapide, fluence. Acquise si ≥ 5 réussites et ≥ 3 sur les 5 dernières tentatives.
 - **`capacite_attendue`** : compétence réfléchie. Acquise si ≥ 1 réussite sur ≥ 2 templates distincts, sans échec dans les 3 dernières tentatives.
+
+> Note : le champ s'appelait `rubrique` jusqu'au 2026-06-09 (cf. design doc décision 66). Le mot « rubrique » reste utilisé dans ce doc quand il désigne la convention BO 2026 (« la rubrique BO du sous-domaine »), mais le champ DB est `type`.
 
 ### Variations canoniques
 
@@ -36,7 +38,7 @@ Sous chaque capacité, une liste de **variations canoniques** précise les cas d
 
 ### Items « automatismes » ⚡
 
-Les items marqués ⚡ ont une dominante `automatisme` (calcul mental, lexique géométrique de base, etc.). Les capacités peuvent être de rubrique mixte au sein d'un même item (rubrique portée par la capacité, pas par l'item).
+Les items marqués ⚡ ont une dominante `automatisme` (calcul mental, lexique géométrique de base, etc.). Les capacités peuvent être de type mixte au sein d'un même item (type porté par la capacité, pas par l'item).
 
 ---
 
@@ -73,7 +75,7 @@ Les items marqués ⚡ ont une dominante `automatisme` (calcul mental, lexique g
 
 ### Item 1 — Nombres entiers
 
-| Rang | Capacité                                                                                      | Rubrique            |
+| Rang | Capacité                                                                                      | Type                |
 | ---- | --------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Comprendre la valeur d'un chiffre selon sa position dans un nombre entier                     | `capacite_attendue` |
 | 2    | Lire et écrire un grand nombre entier (jusqu'au milliard) en chiffres et en lettres           | `capacite_attendue` |
@@ -94,7 +96,7 @@ _Rang 4_ — V4.a Convertir mots ↔ chiffres • V4.b Estimer un ordre de grand
 
 ### Item 2 — Nombres décimaux
 
-| Rang | Capacité                                                                                                                               | Rubrique            |
+| Rang | Capacité                                                                                                                               | Type                |
 | ---- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Reconnaître un nombre décimal et passer entre ses différentes écritures (virgule ↔ fraction décimale ↔ somme de fractions décimales) | `capacite_attendue` |
 | 2    | Placer un nombre décimal sur une demi-droite graduée et le repérer                                                                     | `capacite_attendue` |
@@ -115,7 +117,7 @@ _Rang 4_ — V4.a Arrondir à l'unité • V4.b Arrondir à un rang précisé �
 
 ### Item 3 — Fractions
 
-| Rang | Capacité                                                                                                                                                    | Rubrique            |
+| Rang | Capacité                                                                                                                                                    | Type                |
 | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Reconnaître et représenter une fraction (sens partage : 3/4 = 3 quarts d'une unité ; sens quotient : 3/4 = quart de 3) ; placer sur une demi-droite graduée | `capacite_attendue` |
 | 2    | Établir des égalités de fractions et comparer des fractions (y compris encadrer entre deux entiers)                                                         | `capacite_attendue` |
@@ -136,7 +138,7 @@ _Rang 4_ — V4.a Additionner même dénominateur • V4.b Soustraire même dén
 
 ### Item 5 — Calcul (sens des opérations + calcul posé)
 
-| Rang | Capacité                                                                                                                                    | Rubrique            |
+| Rang | Capacité                                                                                                                                    | Type                |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Comprendre le sens des 4 opérations et choisir l'opération pertinente dans un problème                                                      | `capacite_attendue` |
 | 2    | Additionner et soustraire des nombres entiers et des nombres décimaux (calcul posé)                                                         | `capacite_attendue` |
@@ -157,7 +159,7 @@ _Rang 4_ — V4.a Multiplication deux décimaux • V4.b Positionnement virgule 
 
 ### Item 6 — Algèbre
 
-| Rang | Capacité                                                                                            | Rubrique            |
+| Rang | Capacité                                                                                            | Type                |
 | ---- | --------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Compléter une égalité à trous (en utilisant l'opération inverse)                                    | `capacite_attendue` |
 | 2    | Résoudre un problème avec un nombre inconnu (schéma en barre ou représentation visuelle)            | `capacite_attendue` |
@@ -182,7 +184,7 @@ _Rang 4_ — V4.a Exécuter un programme de calcul sur plusieurs entrées • V4
 
 ### Item 7 — Organiser et lire des données
 
-| Rang | Capacité                                                                                              | Rubrique            |
+| Rang | Capacité                                                                                              | Type                |
 | ---- | ----------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Lire un tableau, un diagramme en barres, un diagramme circulaire ou une courbe (lecture immédiate)    | `automatisme`       |
 | 2    | Construire un tableau pour présenter des données et y filtrer une information selon un critère        | `capacite_attendue` |
@@ -205,7 +207,7 @@ _Rang 4_ — V4.a Formuler une question d'enquête • V4.b Planifier le recueil
 
 ### Item 8 — Probabilités
 
-| Rang | Capacité                                                                                                                                | Rubrique            |
+| Rang | Capacité                                                                                                                                | Type                |
 | ---- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Reconnaître si une situation est certaine, impossible, peu probable ou très probable ; situer une probabilité sur une échelle 0 → 1     | `capacite_attendue` |
 | 2    | Dénombrer les issues possibles d'une expérience aléatoire et celles qui correspondent à un événement (« a chances sur b »)              | `capacite_attendue` |
@@ -230,7 +232,7 @@ _Rang 4_ — V4.a Calculer la fréquence d'un événement répété • V4.b Com
 
 ### Item 9 — Proportionnalité et pourcentages
 
-| Rang | Capacité                                                                                                                                                       | Rubrique            |
+| Rang | Capacité                                                                                                                                                       | Type                |
 | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Identifier une situation de proportionnalité et la distinguer d'une situation non proportionnelle                                                              | `capacite_attendue` |
 | 2    | Résoudre un problème de proportionnalité par linéarité (multiplicative ou additive) ou par retour à l'unité ; représenter par un tableau (avec noms et unités) | `capacite_attendue` |
@@ -255,7 +257,7 @@ _Rang 4_ — V4.a Lire une échelle de plan/carte • V4.b Calculer distance ré
 
 ### Item 10 — Figures usuelles (lexique, reconnaissance) ⚡
 
-| Rang | Capacité                                                                                                                                                   | Rubrique            |
+| Rang | Capacité                                                                                                                                                   | Type                |
 | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Reconnaître et nommer les figures planes usuelles : carré, rectangle, triangle, cercle                                                                     | `automatisme`       |
 | 2    | Connaître et utiliser le lexique géométrique : sommet, côté, segment, droite, demi-droite, angle, perpendiculaire, parallèle, rayon, diamètre              | `automatisme`       |
@@ -276,7 +278,7 @@ _Rang 4_ — V4.a Losange à partir de 4 côtés égaux • V4.b Triangle isocè
 
 ### Item 11 — Constructions
 
-| Rang | Capacité                                                                                                                                          | Rubrique            |
+| Rang | Capacité                                                                                                                                          | Type                |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Tracer un schéma à main levée d'une figure (avec codages)                                                                                         | `capacite_attendue` |
 | 2    | Tracer aux instruments une figure usuelle de dimensions données : cercle, triangle, rectangle, carré, losange                                     | `capacite_attendue` |
@@ -297,7 +299,7 @@ _Rang 4_ — V4.a Décrire en langage naturel les étapes • V4.b Écrire un pr
 
 ### Item 12 — Symétrie axiale
 
-| Rang | Capacité                                                                                                                            | Rubrique            |
+| Rang | Capacité                                                                                                                            | Type                |
 | ---- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Reconnaître un axe de symétrie d'une figure et reconnaître si deux figures sont symétriques par rapport à un axe                    | `capacite_attendue` |
 | 2    | Compléter une figure par symétrie sur un quadrillage ou sur papier pointé                                                           | `capacite_attendue` |
@@ -318,7 +320,7 @@ _Rang 4_ — V4.a Conservation des longueurs pour déduire une mesure • V4.b C
 
 ### Item 13 — Espace (vision 3D, patrons)
 
-| Rang | Capacité                                                                                                          | Rubrique            |
+| Rang | Capacité                                                                                                          | Type                |
 | ---- | ----------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Identifier (nommer) les solides usuels : pavé, cube, cylindre, cône, boule, pyramide, prisme droit                | `automatisme`       |
 | 2    | Connaître le lexique des solides : faces, arêtes, sommets ; reconnaître les caractéristiques d'un solide          | `capacite_attendue` |
@@ -341,7 +343,7 @@ _Rang 4_ — V4.a Patron d'un cube • V4.b Patron d'un pavé droit de dimension
 
 ### Item 14 — Longueurs (périmètres)
 
-| Rang | Capacité                                                                                        | Rubrique            |
+| Rang | Capacité                                                                                        | Type                |
 | ---- | ----------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Connaître les unités de longueur (du kilomètre au millimètre) et leurs relations                | `automatisme`       |
 | 2    | Convertir entre unités de longueur (cas usuels)                                                 | `automatisme`       |
@@ -362,7 +364,7 @@ _Rang 4_ — V4.a Décomposer une figure composée • V4.b Périmètre d'une fi
 
 ### Item 15 — Aires
 
-| Rang | Capacité                                                                                                                 | Rubrique            |
+| Rang | Capacité                                                                                                                 | Type                |
 | ---- | ------------------------------------------------------------------------------------------------------------------------ | ------------------- |
 | 1    | Connaître les unités d'aire (cm², dm², m²) et leurs relations                                                            | `automatisme`       |
 | 2    | Comparer des aires sans recours à la mesure (superposition, découpage/recollement) ; déterminer une aire par quadrillage | `automatisme`       |
@@ -385,7 +387,7 @@ _Rang 4_ — V4.a Convertir entre cm² ↔ dm² ↔ m² • V4.b Figure composé
 
 ### Item 16 — Volumes
 
-| Rang | Capacité                                                                                                | Rubrique            |
+| Rang | Capacité                                                                                                | Type                |
 | ---- | ------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Connaître l'unité cm³ et reconnaître que 1 cm³ = volume d'un cube de 1 cm d'arête                       | `automatisme`       |
 | 2    | Comparer des volumes (par superposition mentale, transvasement, dénombrement) ; estimer un volume usuel | `capacite_attendue` |
@@ -408,7 +410,7 @@ _Rang 4_ — V4.a Volume d'un pavé (L × l × h) • V4.b Trouver une dimension
 
 ### Item 17 — Angles (mesure)
 
-| Rang | Capacité                                                                                                                                          | Rubrique            |
+| Rang | Capacité                                                                                                                                          | Type                |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Connaître le lexique des angles (droit, plat, plein, nul, aigu, obtus) ; reconnaître les angles opposés par le sommet, adjacents, supplémentaires | `automatisme`       |
 | 2    | Mesurer un angle avec un rapporteur ; tracer un angle de mesure donnée                                                                            | `capacite_attendue` |
@@ -431,7 +433,7 @@ _Rang 4_ — V4.a Angles opposés par le sommet pour déduire • V4.b Angles su
 
 ### Item 18 — Durées et repérage dans le temps
 
-| Rang | Capacité                                                                                                                      | Rubrique            |
+| Rang | Capacité                                                                                                                      | Type                |
 | ---- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | 1    | Lire l'heure (cadran à aiguilles, digital) et connaître les unités de durée (jour, heure, minute, seconde) et leurs relations | `automatisme`       |
 | 2    | Convertir entre unités de durée (système sexagésimal : heures, minutes, secondes)                                             | `capacite_attendue` |
@@ -454,7 +456,7 @@ _Rang 4_ — V4.a Problème d'emploi du temps (durées en chaîne) • V4.b Conv
 
 ### Item 19 — Programmer
 
-| Rang | Capacité                                                                                   | Rubrique            |
+| Rang | Capacité                                                                                   | Type                |
 | ---- | ------------------------------------------------------------------------------------------ | ------------------- |
 | 1    | Identifier une instruction, une séquence d'instructions, une répétition dans un programme  | `capacite_attendue` |
 | 2    | Exécuter une séquence d'instructions à la main ou à l'aide d'un outil (Scratch, robot)     | `capacite_attendue` |
@@ -499,9 +501,9 @@ date_structure_validee: 2026-06-08
 
 ## Notes
 
-- Tous les libellés sont à affiner en relecture. La validation a porté sur la **structure** (4 capacités ordonnées par item, rubrique, rang ⭐) et les **choix pédagogiques majeurs** (alignement BO 2026, écarts par rapport au PDF 2016).
+- Tous les libellés sont à affiner en relecture. La validation a porté sur la **structure** (4 capacités ordonnées par item, type, rang ⭐) et les **choix pédagogiques majeurs** (alignement BO 2026, écarts par rapport au PDF 2016).
 - Les **variations canoniques** servent de **checklist pour la création des templates de questions**. Pas de stockage DB séparé : la diversité du pool de templates incarne ces variations. Cible : ≥ 2-3 variations distinctes par capacité dans le pool, pour permettre la règle d'acquisition `capacite_attendue` (≥ 2 templates distincts réussis).
-- Les **rubriques mixtes** au sein d'un item (typiquement rangs 1-3 en `automatisme`, rang 4 en `capacite_attendue`) sont assumées et conformes au design doc (rubrique portée par la capacité, pas par l'item).
+- Les **types mixtes** au sein d'un item (typiquement rangs 1-3 en `automatisme`, rang 4 en `capacite_attendue`) sont assumés et conformes au design doc (type porté par la capacité, pas par l'item).
 - **Calcul mental — décision 2026-06-08** : l'item 4 « Calcul mental » a été **supprimé du référentiel**. Justifications :
   1. Le BO 2026 6ᵉ ne fait pas du calcul mental un sous-domaine séparé — les automatismes calculatoires sont dispersés dans les sections « Automatismes » de chaque sous-domaine.
   2. La règle d'acquisition `automatisme` du système (≥ 5 réussites + ≥ 3 sur les 5 dernières) **mesure la réussite binaire, pas la fluence** (vitesse, automaticité, charge cognitive réduite) qui définit le calcul mental.
