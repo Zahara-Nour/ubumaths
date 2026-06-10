@@ -19,6 +19,7 @@ Audit tests post-chantier 2026-06-10. L'algo FSRS lui-même est bien couvert (h�
 > - `skill-attempts-endpoint.test.ts` réécrit (28 → 34 tests, 0 assertion désynchronisée). ✅ Sprint critique J1.
 > - `capacity-badge.test.ts` créé (**44 tests passent en 18 ms**, ESLint propre). ✅ Sprint critique J2.
 > - `programme-deck.test.ts` créé (**21 tests passent en 25 ms**, mock Supabase fluent). ✅ Sprint critique J3.
+> - `sections-crud.test.ts` créé (**25 tests intégration** sur 4 endpoints CRUD + cascade SET NULL + RLS). ✅ Sprint critique J4.
 
 ### 1.1 Comptage par fichier de test (247 tests SRS-related)
 

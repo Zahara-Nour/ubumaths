@@ -65,6 +65,7 @@ L'API `POST /api/skill-attempts` a été refondue per-template (1 row INSERT au 
 
 - ✅ `src/lib/server/srs/capacity-badge.ts` (192 L, 4 fonctions exportées) — **44 tests** dans `capacity-badge.test.ts` (couvre les 4 fonctions exportées + constants).
 - ✅ `src/lib/server/srs/programme-deck.ts` (141 L, 3 fonctions exportées) — **21 tests** dans `programme-deck.test.ts` (mock Supabase fluent, race conditions, ownership).
+- ✅ `src/routes/api/srs/decks/[id]/sections/+server.ts` + `[sectionId]/+server.ts` (212 L, 4 endpoints) — **25 tests** dans `tests/integration/sections-crud.test.ts` (POST/GET/PATCH/DELETE + ownership + cascade SET NULL + RLS).
 - 🟠 `src/lib/components/srs/CapacityFsrsBadge.svelte` (71 L) — 0 test (reste à faire — composant Svelte simple)
 
 **Fix appliqué pour capacity-badge.ts** : 44 tests, 18 ms d'exécution, ESLint propre. Couvre :
