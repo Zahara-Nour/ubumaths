@@ -2,7 +2,7 @@
  * Unit tests for programme-deck.ts
  * =================================
  *
- * Tests les 3 fonctions exportées du helper Programme deck avec mock Supabase.
+ * Tests les 2 fonctions exportées du helper Programme deck avec mock Supabase.
  *
  * Pattern de mock : chaque méthode chaînable (`from`, `select`, `eq`, `limit`,
  * `insert`) retourne `this`. Les méthodes terminales (`maybeSingle`, `single`)
@@ -12,17 +12,16 @@
  * Couverture :
  *   - ensureProgrammeDeck : lookup hit / insert success / retry 23505 / non-23505 / error
  *   - ensureProgrammeDeckCard : INSERT success / 23505 silent no-op / propagation
- *   - isTemplateTaggedFamilyA : tagué knowledge / non tagué / erreur DB
+ *
+ * Note : `isTemplateTaggedFamilyA` a été supprimé en 2026-06-10 (refactor
+ * code-quality #2.3) — le tagging est désormais récupéré inline dans
+ * `/api/srs/review/submit` via la nested query du card SELECT.
  *
  * Source : src/lib/server/srs/programme-deck.ts (refonte chantier 2026-06-10)
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-	ensureProgrammeDeck,
-	ensureProgrammeDeckCard,
-	isTemplateTaggedFamilyA
-} from './programme-deck';
+import { ensureProgrammeDeck, ensureProgrammeDeckCard } from './programme-deck';
 
 // ============================================================================
 // Mock Supabase fluent builder
@@ -287,90 +286,6 @@ describe('ensureProgrammeDeckCard', () => {
 			card_type: 'template',
 			template_id: 'template-uuid'
 		});
-	});
-});
-
-// ============================================================================
-// isTemplateTaggedFamilyA
-// ============================================================================
-
-describe('isTemplateTaggedFamilyA', () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-	});
-
-	/** Le helper utilise `.from().select().eq().eq().limit()` qui se résout
-	 * directement (pas de `.maybeSingle()` ni `.single()`). On adapte le mock. */
-	function buildTaggedMock(data: unknown, error: unknown = null) {
-		const chain = {
-			select: vi.fn().mockReturnThis(),
-			eq: vi.fn().mockReturnThis(),
-			limit: vi.fn().mockResolvedValue({ data, error })
-		};
-		const supabase = {
-			from: vi.fn().mockReturnValue(chain)
-		};
-		return {
-			supabase: supabase as unknown as Parameters<typeof isTemplateTaggedFamilyA>[0],
-			chain
-		};
-	}
-
-	it('returns true when at least one knowledge skill is tagged', async () => {
-		const { supabase } = buildTaggedMock([
-			{ skill_id: 'skill-uuid', skills: { family: 'knowledge' } }
-		]);
-
-		await expect(isTemplateTaggedFamilyA(supabase, 'template-uuid')).resolves.toBe(true);
-	});
-
-	it('returns false when no skills are tagged (empty array)', async () => {
-		const { supabase } = buildTaggedMock([]);
-
-		await expect(isTemplateTaggedFamilyA(supabase, 'template-uuid')).resolves.toBe(false);
-	});
-
-	it('returns false when data is null', async () => {
-		const { supabase } = buildTaggedMock(null);
-
-		await expect(isTemplateTaggedFamilyA(supabase, 'template-uuid')).resolves.toBe(false);
-	});
-
-	it('returns false on DB error (degraded mode)', async () => {
-		const { supabase } = buildTaggedMock(null, { message: 'connection failure' });
-
-		await expect(isTemplateTaggedFamilyA(supabase, 'template-uuid')).resolves.toBe(false);
-	});
-
-	it('filters on family=knowledge via skills!inner', async () => {
-		const { supabase, chain } = buildTaggedMock([
-			{ skill_id: 'skill-uuid', skills: { family: 'knowledge' } }
-		]);
-
-		await isTemplateTaggedFamilyA(supabase, 'template-xyz');
-
-		// Le filtre est appliqué côté Supabase via .eq()
-		expect(chain.eq).toHaveBeenCalledWith('template_id', 'template-xyz');
-		expect(chain.eq).toHaveBeenCalledWith('skills.family', 'knowledge');
-	});
-
-	it('uses limit(1) for efficiency (presence check, not full enumeration)', async () => {
-		const { supabase, chain } = buildTaggedMock([
-			{ skill_id: 'skill-uuid', skills: { family: 'knowledge' } }
-		]);
-
-		await isTemplateTaggedFamilyA(supabase, 'template-uuid');
-
-		expect(chain.limit).toHaveBeenCalledWith(1);
-	});
-
-	it('returns true even when data has multiple rows', async () => {
-		const { supabase } = buildTaggedMock([
-			{ skill_id: 'skill-1', skills: { family: 'knowledge' } },
-			{ skill_id: 'skill-2', skills: { family: 'knowledge' } }
-		]);
-
-		await expect(isTemplateTaggedFamilyA(supabase, 'template-uuid')).resolves.toBe(true);
 	});
 });
 
