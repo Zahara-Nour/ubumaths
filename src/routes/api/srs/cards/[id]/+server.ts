@@ -124,6 +124,16 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			);
 		}
 
+		// Garde-fou général (P2 defense in depth) : le deck auto-géré (Programme)
+		// refuse TOUTE modification côté app, peu importe le payload. RLS bloque
+		// déjà côté DB, mais le check applicatif rend l'erreur explicite.
+		if (deck.is_auto_managed) {
+			return json(
+				{ error: 'Cannot modify cards in auto-managed deck (Programme).' },
+				{ status: 403 }
+			);
+		}
+
 		const bodyRaw = await request.json();
 		const validation = updateCardSchema.safeParse(bodyRaw);
 
@@ -146,14 +156,8 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			if (body.backContent !== undefined) updates.back_content = body.backContent;
 		}
 
-		// section_id : interdit sur deck auto-géré (Programme)
+		// section_id : vérification que la section appartient bien à ce deck
 		if (body.section_id !== undefined) {
-			if (deck.is_auto_managed) {
-				return json(
-					{ error: 'Cannot move cards in auto-managed deck (Programme).' },
-					{ status: 403 }
-				);
-			}
 			// Si section_id non-null, vérifier qu'elle appartient bien à ce deck
 			if (body.section_id !== null) {
 				const { data: section } = await supabase

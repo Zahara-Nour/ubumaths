@@ -19,9 +19,22 @@ import { createSectionSchema } from '$lib/server/validation/srs';
  * GET /api/srs/decks/[id]/sections
  *
  * Retourne les sections triées par display_order, name.
+ * Vérification ownership explicite (P2 defense in depth — RLS protégeait déjà
+ * mais retournait silencieusement [] pour un deck non-owné).
  */
 export const GET: RequestHandler = async ({ params, locals }) => {
-	await requireAuth(locals);
+	const { user } = await requireAuth(locals);
+
+	const { data: deck } = await locals.supabase
+		.from('srs_decks')
+		.select('id')
+		.eq('id', params.id)
+		.eq('owner_id', user.id)
+		.maybeSingle();
+
+	if (!deck) {
+		return json({ error: 'Deck not found or access denied' }, { status: 404 });
+	}
 
 	const { data, error: dbErr } = await locals.supabase
 		.from('srs_deck_sections')

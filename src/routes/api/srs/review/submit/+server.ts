@@ -17,7 +17,7 @@ import type { RequestHandler } from './$types';
 import type { CardStats } from '$lib/srs/types';
 import { FSRS } from '$lib/srs/fsrs';
 import { DEFAULT_FSRS_PARAMS } from '$lib/srs/config';
-import { submitReviewSchema } from '$lib/server/validation/srs';
+import { submitReviewSchema, fsrsConfigSchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { ensureProgrammeDeckCard, isTemplateTaggedFamilyA } from '$lib/server/srs/programme-deck';
@@ -79,11 +79,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.eq('card_reference_id', cardReferenceId)
 			.maybeSingle();
 
-		// FSRS construit avant l'init (utilisé pour initCard ET reviewCard).
+		// FSRS construit avant l'init. Validation Zod de deck.config (P2 defense
+		// in depth — évite qu'un futur PUT deck stocke des params malformés).
+		const configValidation = fsrsConfigSchema.safeParse(deck.config);
+		const safeConfig = configValidation.success ? configValidation.data : null;
 		const fsrs = new FSRS(
-			deck.config?.parameters || DEFAULT_FSRS_PARAMS,
-			deck.config?.desiredRetention || 0.9,
-			deck.config?.maximumInterval || 36500
+			safeConfig?.parameters || DEFAULT_FSRS_PARAMS,
+			safeConfig?.desiredRetention || 0.9,
+			safeConfig?.maximumInterval || 36500
 		);
 
 		let stats: CardStats;
