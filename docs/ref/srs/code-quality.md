@@ -60,12 +60,12 @@ L'API `POST /api/skill-attempts` a été refondue per-template (1 row INSERT au 
 
 ### 1.2 Zéro test unitaire sur le nouveau code — partiellement résolu
 
-**Sévérité** : Critical → Major (partiel)
+**Sévérité** : Critical → Minor (partiel)
 **État (MAJ 2026-06-10) :**
 
 - ✅ `src/lib/server/srs/capacity-badge.ts` (192 L, 4 fonctions exportées) — **44 tests** dans `capacity-badge.test.ts` (couvre les 4 fonctions exportées + constants).
-- 🟠 `src/lib/server/srs/programme-deck.ts` (141 L, 3 fonctions exportées) — 0 test (reste à faire)
-- 🟠 `src/lib/components/srs/CapacityFsrsBadge.svelte` (71 L) — 0 test (reste à faire)
+- ✅ `src/lib/server/srs/programme-deck.ts` (141 L, 3 fonctions exportées) — **21 tests** dans `programme-deck.test.ts` (mock Supabase fluent, race conditions, ownership).
+- 🟠 `src/lib/components/srs/CapacityFsrsBadge.svelte` (71 L) — 0 test (reste à faire — composant Svelte simple)
 
 **Fix appliqué pour capacity-badge.ts** : 44 tests, 18 ms d'exécution, ESLint propre. Couvre :
 
