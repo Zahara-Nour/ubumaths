@@ -79,6 +79,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.eq('card_reference_id', cardReferenceId)
 			.maybeSingle();
 
+		// FSRS construit avant l'init (utilisé pour initCard ET reviewCard).
+		const fsrs = new FSRS(
+			deck.config?.parameters || DEFAULT_FSRS_PARAMS,
+			deck.config?.desiredRetention || 0.9,
+			deck.config?.maximumInterval || 36500
+		);
+
 		let stats: CardStats;
 		if (existingStats) {
 			stats = {
@@ -97,30 +104,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				updatedAt: existingStats.updated_at
 			};
 		} else {
+			// Init via FSRS.initCard pour garantir stability=0 (mode "first review"
+			// dans reviewCard). Diverger ici (stability=0.1) ferait basculer la 1ère
+			// review dans la branche calculateNewStability au lieu de calculateInitialStability.
+			const init = fsrs.initCard(user.id, cardReferenceType, cardReferenceId);
 			const now = new Date().toISOString();
 			stats = {
 				id: crypto.randomUUID(),
-				userId: user.id,
-				cardReferenceType,
-				cardReferenceId,
-				difficulty: 5.0,
-				stability: 0.1,
-				state: 'new',
-				lastReview: null,
-				nextReview: now,
-				totalReviews: 0,
-				reviewHistory: [],
+				...init,
 				createdAt: now,
 				updatedAt: now
 			};
 		}
 
-		// Calcul FSRS
-		const fsrs = new FSRS(
-			deck.config?.parameters || DEFAULT_FSRS_PARAMS,
-			deck.config?.desiredRetention || 0.9,
-			deck.config?.maximumInterval || 36500
-		);
 		const updatedStats = fsrs.reviewCard(stats, body.grade, body.timeSpent);
 
 		// UPSERT srs_card_stats

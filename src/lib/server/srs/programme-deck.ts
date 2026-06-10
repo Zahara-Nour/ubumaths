@@ -24,13 +24,8 @@ const PROGRAMME_DECK_DESCRIPTION =
 /**
  * Retourne l'ID du deck Programme de l'élève. Crée le deck si nécessaire.
  *
- * Idempotent : 2 appels concurrents n'aboutissent pas à 2 decks distincts grâce
- * au retry sur erreur 23505 (unique violation).
- *
- * Note : il n'y a pas de contrainte UNIQUE explicite sur (owner_id, is_auto_managed=true)
- * en DB, mais en pratique la double-création est rare et bénigne — on accepte
- * potentiellement 2 decks dans ce cas exotique (le 1er sera pris à la prochaine
- * requête).
+ * Idempotent grâce à l'index UNIQUE `uq_srs_decks_one_programme_per_owner`
+ * (migration 20260610150000) + retry explicite sur code 23505.
  *
  * @returns UUID du deck Programme
  */
@@ -39,10 +34,8 @@ export async function ensureProgrammeDeck(supabase: SB, userId: string): Promise
 	const { data: existing, error: lookupErr } = await supabase
 		.from('srs_decks')
 		.select('id')
-		// Cast is_auto_managed: champ ajouté par migration 20260610100100, peut ne pas être
-		// dans database.ts si pnpm db:types n'a pas été lancé après migration.
 		.eq('owner_id', userId)
-		.eq('is_auto_managed' as never, true as never)
+		.eq('is_auto_managed', true)
 		.limit(1)
 		.maybeSingle();
 
@@ -55,7 +48,7 @@ export async function ensureProgrammeDeck(supabase: SB, userId: string): Promise
 		return existing.id as string;
 	}
 
-	// 2. INSERT
+	// 2. INSERT (l'index UNIQUE garantit unicité)
 	const { data: created, error: insertErr } = await supabase
 		.from('srs_decks')
 		.insert({
@@ -65,21 +58,31 @@ export async function ensureProgrammeDeck(supabase: SB, userId: string): Promise
 			deck_type: 'personal',
 			is_assigned: false,
 			is_auto_managed: true
-		} as never)
+		})
 		.select('id')
 		.single();
 
 	if (insertErr) {
-		// Race possible : re-lookup
-		const { data: refreshed } = await supabase
-			.from('srs_decks')
-			.select('id')
-			.eq('owner_id', userId)
-			.eq('is_auto_managed' as never, true as never)
-			.limit(1)
-			.maybeSingle();
-		if (refreshed) return refreshed.id as string;
-		console.error('[programme-deck] Insert failed and no row found after race:', insertErr);
+		// 23505 = unique violation : un autre thread a créé le deck entre notre
+		// lookup et notre insert. Re-lookup et renvoie le deck créé par l'autre.
+		if (insertErr.code === '23505') {
+			const { data: refreshed, error: refreshErr } = await supabase
+				.from('srs_decks')
+				.select('id')
+				.eq('owner_id', userId)
+				.eq('is_auto_managed', true)
+				.limit(1)
+				.maybeSingle();
+			if (refreshErr) {
+				console.error('[programme-deck] Refresh after race failed:', refreshErr);
+				throw refreshErr;
+			}
+			if (refreshed) return refreshed.id as string;
+			console.error(
+				'[programme-deck] 23505 raised but no row found after refresh — index inconsistant ?'
+			);
+		}
+		console.error('[programme-deck] Insert failed:', insertErr);
 		throw insertErr;
 	}
 

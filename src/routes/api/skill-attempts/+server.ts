@@ -73,13 +73,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Mapping success → grade (cf. spec §1.1)
 	const grade: Grade = success ? Grade.GOOD : Grade.AGAIN;
 
-	// ----- FSRS update synchrone côté TS (avant l'INSERT skill_attempts) -----
+	// ----- FSRS update synchrone côté TS (AVANT l'INSERT skill_attempts) -----
+	// Fail-loud : si FSRS UPSERT échoue, on n'insère PAS skill_attempts pour
+	// éviter une désynchro durable srs_card_stats ↔ student_skill_state_a.
+	// Le client peut retenter ; un échec persistant signale un vrai bug à fixer.
 	try {
 		await applyFsrsUpdate(locals.supabase, user.id, template_id, grade);
 	} catch (fsrsErr) {
-		console.error('[skill-attempts] FSRS update failed:', fsrsErr);
-		// On continue : la mise à jour FSRS n'est pas critique pour la cohérence
-		// du Référentiel (qui dépend uniquement de skill_attempts).
+		console.error('[skill-attempts] FSRS update failed (fail-loud):', {
+			userId: user.id,
+			templateId: template_id,
+			grade,
+			err: fsrsErr
+		});
+		return json({ error: 'fsrs_update_failed' }, { status: 500 });
 	}
 
 	// ----- INSERT skill_attempts (per-template) -----
