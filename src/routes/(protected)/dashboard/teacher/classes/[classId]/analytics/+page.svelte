@@ -23,12 +23,18 @@
 	import StudentGradeHistogram from '$lib/components/teacher/analytics/StudentGradeHistogram.svelte';
 	import ClassCompetenceGrid from '$lib/components/teacher/analytics/ClassCompetenceGrid.svelte';
 	import TopObservablesToConsolidate from '$lib/components/teacher/analytics/TopObservablesToConsolidate.svelte';
+	import AntiFraudFlagsList from '$lib/components/teacher/anti-fraud/AntiFraudFlagsList.svelte';
+	import AntiFraudFilters from '$lib/components/teacher/anti-fraud/AntiFraudFilters.svelte';
+	import { Badge } from '$lib/components/ui/badge';
 
 	let { data }: { data: PageData } = $props();
 
 	let anonymized = $state(false);
 	let refreshNonce = $state(0);
-	let activeTab = $state<'knowledge' | 'competence'>('knowledge');
+	let activeTab = $state<'knowledge' | 'competence' | 'surveillance'>('knowledge');
+	// svelte-ignore state_referenced_locally
+	let unresolvedCount = $state<number>(data.unresolvedFlagsCount ?? 0);
+	let showResolved = $state(false);
 	// svelte-ignore state_referenced_locally
 	let selectedStudentId = $state<string>(data.students[0]?.id ?? '');
 	// svelte-ignore state_referenced_locally
@@ -42,10 +48,22 @@
 
 	function refresh() {
 		refreshNonce += 1;
+		void refreshUnresolvedCount();
 	}
 
 	function toggleAnonymized() {
 		anonymized = !anonymized;
+	}
+
+	async function refreshUnresolvedCount() {
+		try {
+			const res = await fetch(`/api/teacher/classes/${data.classId}/anti-fraud/count`);
+			if (!res.ok) return;
+			const body = (await res.json()) as { count?: number };
+			unresolvedCount = body.count ?? 0;
+		} catch {
+			// silent ; gardé à la dernière valeur connue
+		}
 	}
 </script>
 
@@ -95,6 +113,12 @@
 		<Tabs.List>
 			<Tabs.Trigger value="knowledge">📘 Connaissances</Tabs.Trigger>
 			<Tabs.Trigger value="competence">🎯 Compétences</Tabs.Trigger>
+			<Tabs.Trigger value="surveillance">
+				🚨 Surveillance
+				{#if unresolvedCount > 0}
+					<Badge variant="destructive" class="ml-2 text-[0.65rem]">{unresolvedCount}</Badge>
+				{/if}
+			</Tabs.Trigger>
 		</Tabs.List>
 
 		<Tabs.Content value="knowledge" class="space-y-6">
@@ -161,6 +185,17 @@
 		<Tabs.Content value="competence" class="space-y-6">
 			<ClassCompetenceGrid classId={data.classId} {anonymized} {refreshNonce} />
 			<TopObservablesToConsolidate classId={data.classId} {refreshNonce} />
+		</Tabs.Content>
+
+		<Tabs.Content value="surveillance" class="space-y-6">
+			<AntiFraudFilters bind:showResolved />
+			<AntiFraudFlagsList
+				classId={data.classId}
+				{anonymized}
+				{refreshNonce}
+				{showResolved}
+				onResolved={refreshUnresolvedCount}
+			/>
 		</Tabs.Content>
 	</Tabs.Root>
 </main>

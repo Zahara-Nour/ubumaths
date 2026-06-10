@@ -157,7 +157,52 @@ Spec TDD : `docs/wip/srs-anti-fraud-spec-tdd.md`
 
 ---
 
-## Phase 4 — UI onglet Surveillance ⏳ À venir
+## Phase 4 — UI onglet Surveillance ✅ (2026-06-10)
+
+### Livré
+
+- **`src/lib/components/teacher/anti-fraud/AntiFraudFlagsList.svelte`** (NEW) :
+  - Props : `classId, anonymized?, refreshNonce?, showResolved?, onResolved?`.
+  - Fetch `/api/teacher/classes/[classId]/anti-fraud/flags?resolved=<showResolved>`.
+  - Empty state : "Aucun élève à surveiller en ce moment 🎉".
+  - Liste : élève (anonymizable) + capacité + badge severity (variant destructive/default/secondary) + label flag type traduit + score sur 100 + sample_size + "Voir détails" + "Marquer comme OK".
+  - Confirmation `window.confirm` avant resolve.
+  - `SvelteSet` pour tracking des resolutions en cours (anti double-clic).
+- **`src/lib/components/teacher/anti-fraud/FlagDetailsDialog.svelte`** (NEW) :
+  - Modal Bits UI Dialog avec breakdown JSONB `details`.
+  - 3 badges (sévérité, score, sample_size) + date formatée fr-FR + 3 lignes d'explication finale.
+- **`src/lib/components/teacher/anti-fraud/AntiFraudFilters.svelte`** (NEW) :
+  - V2.0 minimaliste : 1 toggle `MyCheckbox` "Inclure les flags résolus".
+  - Multi-select type + date "Depuis" reportés V2.1 (filtres dispo côté API mais UI minimaliste).
+- **Intégration page conteneur** `analytics/+page.svelte` :
+  - 3ᵉ `Tabs.Trigger value="surveillance"` avec badge `<Badge variant="destructive">{unresolvedCount}</Badge>` quand > 0.
+  - Tab `<Tabs.Content value="surveillance">` avec `AntiFraudFilters` + `AntiFraudFlagsList`.
+  - `refreshUnresolvedCount` appelé sur "Actualiser" + après chaque resolve.
+- **`+page.server.ts`** : précharge `unresolvedFlagsCount` (1 query légère head-only) pour le badge initial.
+
+### Tests
+
+- **`AntiFraudFlagsList.svelte.test.ts`** : 6 tests (rendu noms + capacité, empty state, anonymisation, labels, bouton "Marquer comme OK", erreur fetch).
+- **`FlagDetailsDialog.svelte.test.ts`** : 3 tests (titre + capacité, badges sévérité/score/sample, détails JSONB).
+- **`AntiFraudFilters.svelte.test.ts`** : 3 tests (toggle visible, texte d'aide, état checked).
+
+**⚠ Infrastructure browser tests** : `pnpm test:client` actuel échoue avec `Failed to connect to browser session within timeout` même sur les tests pré-existants (`AnalyticsModal.svelte.test.ts`). Issue d'environnement Chromium/Playwright, **non liée au code livré**. Les tests sont prêts à passer dès que l'infra browser sera fonctionnelle.
+
+### Décisions techniques Phase 4
+
+- **`SvelteSet`** (au lieu de `Set` standard) sur `resolvingIds` pour réactivité.
+- **`window.confirm`** pour la confirmation resolve (CLAUDE.md autorise — pas d'AlertDialog Shadcn nécessaire en V2.0).
+- **Badge sévérité-driven** : variant calculé en fonction de severity (5 → destructive, 2-4 → default, 1 → secondary).
+- **Pas de drill-down click cellule** (V2.1 reporté).
+- **Pas de Dialog imbriqué** : `FlagDetailsDialog` n'embarque pas la `StudentRetentionCurve` (reporté — la modal reste légère).
+- **`MyCheckbox` obligatoire** (CLAUDE.md règle #2) au lieu du native `<input type="checkbox">`.
+- **`refreshUnresolvedCount`** appelé après resolve : maintient le badge synchronisé avec l'état réel.
+
+### Commit Phase 4
+
+`feat(anti-fraud): ui onglet surveillance (Phase 4)` (à venir).
+
+---
 
 ---
 
