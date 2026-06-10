@@ -10237,9 +10237,10 @@ export type Database = {
 				Row: {
 					code: string | null;
 					created_at: string;
+					grade: number | null;
 					id: string;
 					phase_blocage: string | null;
-					skill_id: string;
+					skill_id: string | null;
 					source: string;
 					source_ref: string | null;
 					student_id: string;
@@ -10251,9 +10252,10 @@ export type Database = {
 				Insert: {
 					code?: string | null;
 					created_at?: string;
+					grade?: number | null;
 					id?: string;
 					phase_blocage?: string | null;
-					skill_id: string;
+					skill_id?: string | null;
 					source: string;
 					source_ref?: string | null;
 					student_id: string;
@@ -10265,9 +10267,10 @@ export type Database = {
 				Update: {
 					code?: string | null;
 					created_at?: string;
+					grade?: number | null;
 					id?: string;
 					phase_blocage?: string | null;
-					skill_id?: string;
+					skill_id?: string | null;
 					source?: string;
 					source_ref?: string | null;
 					student_id?: string;
@@ -10603,6 +10606,7 @@ export type Database = {
 					deck_id: string;
 					front_content: string | null;
 					id: string;
+					section_id: string | null;
 					template_id: string | null;
 					updated_at: string;
 				};
@@ -10613,6 +10617,7 @@ export type Database = {
 					deck_id: string;
 					front_content?: string | null;
 					id?: string;
+					section_id?: string | null;
 					template_id?: string | null;
 					updated_at?: string;
 				};
@@ -10623,6 +10628,7 @@ export type Database = {
 					deck_id?: string;
 					front_content?: string | null;
 					id?: string;
+					section_id?: string | null;
 					template_id?: string | null;
 					updated_at?: string;
 				};
@@ -10639,6 +10645,13 @@ export type Database = {
 						columns: ['deck_id'];
 						isOneToOne: false;
 						referencedRelation: 'srs_decks';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'srs_cards_section_id_fkey';
+						columns: ['section_id'];
+						isOneToOne: false;
+						referencedRelation: 'srs_deck_sections';
 						referencedColumns: ['id'];
 					},
 					{
@@ -10720,6 +10733,51 @@ export type Database = {
 					}
 				];
 			};
+			srs_deck_sections: {
+				Row: {
+					created_at: string;
+					deck_id: string;
+					description: string | null;
+					display_order: number;
+					id: string;
+					name: string;
+					updated_at: string;
+				};
+				Insert: {
+					created_at?: string;
+					deck_id: string;
+					description?: string | null;
+					display_order?: number;
+					id?: string;
+					name: string;
+					updated_at?: string;
+				};
+				Update: {
+					created_at?: string;
+					deck_id?: string;
+					description?: string | null;
+					display_order?: number;
+					id?: string;
+					name?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'srs_deck_sections_deck_id_fkey';
+						columns: ['deck_id'];
+						isOneToOne: false;
+						referencedRelation: 'deck_stats_view';
+						referencedColumns: ['deck_id'];
+					},
+					{
+						foreignKeyName: 'srs_deck_sections_deck_id_fkey';
+						columns: ['deck_id'];
+						isOneToOne: false;
+						referencedRelation: 'srs_decks';
+						referencedColumns: ['id'];
+					}
+				];
+			};
 			srs_decks: {
 				Row: {
 					config: Json;
@@ -10728,6 +10786,7 @@ export type Database = {
 					description: string | null;
 					id: string;
 					is_assigned: boolean;
+					is_auto_managed: boolean;
 					name: string;
 					owner_id: string;
 					updated_at: string;
@@ -10739,6 +10798,7 @@ export type Database = {
 					description?: string | null;
 					id?: string;
 					is_assigned?: boolean;
+					is_auto_managed?: boolean;
 					name: string;
 					owner_id: string;
 					updated_at?: string;
@@ -10750,6 +10810,7 @@ export type Database = {
 					description?: string | null;
 					id?: string;
 					is_assigned?: boolean;
+					is_auto_managed?: boolean;
 					name?: string;
 					owner_id?: string;
 					updated_at?: string;
@@ -14337,7 +14398,6 @@ export type Database = {
 					needs_remediation: boolean | null;
 					skill_id: string | null;
 					student_id: string | null;
-					to_review: boolean | null;
 					total_successes: number | null;
 					updated_at: string | null;
 				};
@@ -14349,7 +14409,6 @@ export type Database = {
 					needs_remediation?: boolean | null;
 					skill_id?: string | null;
 					student_id?: string | null;
-					to_review?: never;
 					total_successes?: number | null;
 					updated_at?: string | null;
 				};
@@ -14361,7 +14420,6 @@ export type Database = {
 					needs_remediation?: boolean | null;
 					skill_id?: string | null;
 					student_id?: string | null;
-					to_review?: never;
 					total_successes?: number | null;
 					updated_at?: string | null;
 				};
