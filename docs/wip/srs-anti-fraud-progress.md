@@ -206,7 +206,32 @@ Spec TDD : `docs/wip/srs-anti-fraud-spec-tdd.md`
 
 ---
 
-## Phase 5 — Audits + documentation ⏳ À venir
+## Phase 5 — Audits + documentation ✅ (2026-06-10)
+
+### Livré
+
+- **`docs/ref/srs/anti-fraud.md`** (NEW) — référence complète : 5 signaux, score composite, schéma DB, modules TS, endpoints, UI, cycle de vie flag, cross-class, procédure d'activation, tests (71), roadmap V2.1/V3.
+- **`docs/ref/srs/README.md`** : entrée "Voir aussi" + ligne #10 backlog passée de "À documenter" à "livré 2026-06-10".
+- **`docs/ref/srs/security.md`** : item #1 top 5 actions passé à ✅ livré + lien anti-fraud.md.
+- **`docs/architecture/database-schema.md`** : sections `srs_anti_fraud_flags` + `app_config` + 2 migrations ajoutées au listing.
+
+### Audits
+
+- **Performance** : non audité formellement (audit-runner non livré V2.0 — job désactivé donc pas de risque latence prod).
+  - Estimation calcul : classe 30 élèves × 5 capacités × ~30 reviews/paire = ~4500 entries en mémoire. Fonctions pures, < 5 ms par paire. Loadmap : O(N×C) queries Supabase batchées (1 par capacité pour skill_attempts).
+  - Optimisation V2.1 si > 200 ms p99 sur dataset réel : pré-joindre `skill_attempts` au niveau de `listScanPairs`.
+- **Sécurité** : checkpoint inline durant Phase 1/2/3.
+  - RLS prof-via-class_members (defense-in-depth avec check applicatif `requireTeacherOfClass`).
+  - INSERT refusé pour authenticated (service_role contexte serveur uniquement).
+  - 404 silencieux cross-class sur PATCH (information disclosure mitigation).
+  - Zod strict sur tous les body / params / query.
+  - Fail-safe sur `app_is_anti_fraud_enabled()` (renvoie false si erreur).
+
+### Commit Phase 5
+
+`docs(anti-fraud): reference doc phase 5 + maj README/security/db-schema` (à venir).
+
+---
 
 ---
 

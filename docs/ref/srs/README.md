@@ -169,7 +169,7 @@ Pour chaque cluster du module, les documents qui en parlent :
 
 8. **[PERF P0]** Refonte CTE `update_student_skill_state_a` — ~25 ms vs ~50 ms. **Pré-requis** : suite tests d'intégration PG pour fonction critique.
 9. **[SÉCURITÉ P1]** RPC `SECURITY DEFINER` pour `srs_card_stats` writes — fix le risque préexistant amplifié par badges FSRS.
-10. **[SÉCURITÉ P1]** Détection anti-fraud pattern — à activer dès tagging étendu. Spec complète dans `docs/wip/srs-fsrs-security-audit-findings.md`.
+10. **[SÉCURITÉ P1 — livré 2026-06-10]** Détection anti-fraud pattern. Voir [`anti-fraud.md`](./anti-fraud.md). Désactivée par défaut, à activer dès que tagging atteint ≥ 20 templates 6ᵉ.
 
 ---
 
@@ -296,6 +296,7 @@ Puis suite logique : **étendre le tagging des templates 6ᵉ** (chantier pédag
 
 ## Voir aussi
 
+- [`anti-fraud.md`](./anti-fraud.md) — système anti-cheat livré 2026-06-10, désactivé par défaut.
 - [`docs/wip/srs-fsrs-spec-tdd.md`](../../wip/srs-fsrs-spec-tdd.md) — spec TDD originale (comportements attendus).
 - [`docs/wip/srs-fsrs-progress.md`](../../wip/srs-fsrs-progress.md) — historique d'exécution du chantier.
 - [`docs/wip/srs-fsrs-security-audit-findings.md`](../../wip/srs-fsrs-security-audit-findings.md) — audit sécurité + spec V2 anti-fraud + backlog V2.
