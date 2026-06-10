@@ -39,12 +39,15 @@ Le check `is_auto_managed` n'était fait que dans la branche `section_id`. Un fu
 **Mitigations possibles V2** :
 
 1. Tracker `timeSpent` côté serveur et rejeter `grade=4` si `timeSpent < 3s`.
-2. **Anti-fraud pattern detection** — spec complète ci-dessous (priorité V2 confirmée 2026-06-10).
+2. **Anti-fraud pattern detection** — ✅ **LIVRÉE 2026-06-10**, voir [`docs/ref/srs/anti-fraud.md`](../ref/srs/anti-fraud.md). Désactivée par défaut tant que tagging < 20 templates.
 3. Durcir mapping : `success = grade >= 3` (Hard ne compte plus). **Mais** contredit la décision §1.1 actée (Hard compte comme succès car réponse correcte).
 
 ---
 
-### V2 — Spec anti-fraud pattern detection
+### V2 — Spec anti-fraud pattern detection (livrée — historique)
+
+> ✅ **Livrée 2026-06-10**. Référence vivante : [`docs/ref/srs/anti-fraud.md`](../ref/srs/anti-fraud.md).
+> La spec ci-dessous est conservée en archive (les détails d'implémentation ont pu évoluer — la doc de référence fait foi).
 
 **Quand** : à activer dès que **≥ 20 templates 6ᵉ taggés** ET **≥ 5 capacités avec ≥ 2 templates distincts**, car c'est à partir de là que le verdict BO `is_acquired` devient triable (la règle `distinct_template_successes >= 2` perd son effet protecteur).
 

@@ -12,7 +12,7 @@
 | Phase                              | Statut            | Date       | Notes                                                                                                                |
 | ---------------------------------- | ----------------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
 | 0 — Spec TDD + décisions           | ✅ Terminée       | 2026-06-10 | Spec TDD rédigée, décisions par défaut actées (cf. §0 du spec).                                                      |
-| 1 — Schéma DB                      | ✅ Code écrit     | 2026-06-10 | Migrations L1 + L3 écrites. SkillSource étendu. ⚠️ Attente push utilisateur (`pnpm db:migrate` + `pnpm db:types`).   |
+| 1 — Schéma DB                      | ✅ Pushée en prod | 2026-06-10 | Migrations L1 + L3 pushées. Types régénérés. SkillSource étendu.                                                     |
 | 2 — Backend (trigger + APIs)       | ✅ Code écrit     | 2026-06-10 | Helper programme-deck + refonte /api/skill-attempts + /api/srs/review/submit. Tests à valider après push migrations. |
 | 3 — UI Programme + badge objectifs | ✅ Code écrit     | 2026-06-10 | Page Programme + badge FSRS sur objectifs + filtre states sur /api/srs/review/due.                                   |
 | 4 — UI decks personnels + sections | ✅ Code écrit     | 2026-06-10 | CRUD sections API + page deck detail + extension PUT card pour section_id.                                           |
