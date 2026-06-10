@@ -1,6 +1,7 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { optionalUaiSchema } from '$lib/server/validation/schools';
+import { schoolUpsertSchema } from '$lib/server/validation/schools';
+import { uuidSchema } from '$lib/server/validation/common';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -40,24 +41,20 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
-		const name = formData.get('name') as string;
-		const city = formData.get('city') as string;
-		const country = formData.get('country') as string;
-		const address = formData.get('address') as string;
-		const logo_url = formData.get('logo_url') as string;
-
-		const uaiResult = optionalUaiSchema.safeParse((formData.get('uai') as string) ?? '');
-		if (!uaiResult.success) {
-			return fail(400, { message: uaiResult.error.issues[0].message });
+		const parsed = schoolUpsertSchema.safeParse({
+			name: formData.get('name'),
+			city: formData.get('city'),
+			country: formData.get('country'),
+			address: formData.get('address'),
+			logo_url: formData.get('logo_url'),
+			uai: formData.get('uai') ?? ''
+		});
+		if (!parsed.success) {
+			return fail(400, { message: parsed.error.issues[0].message });
 		}
 
 		const { error: insertError } = await supabase.from('schools').insert({
-			name,
-			city,
-			country,
-			address: address || null,
-			logo_url: logo_url || null,
-			uai: uaiResult.data,
+			...parsed.data,
 			is_active: true
 		});
 
@@ -76,31 +73,33 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
-		const id = formData.get('id') as string;
-		const name = formData.get('name') as string;
-		const city = formData.get('city') as string;
-		const country = formData.get('country') as string;
-		const address = formData.get('address') as string;
-		const logo_url = formData.get('logo_url') as string;
-		const is_active = formData.get('is_active') === 'true';
 
-		const uaiResult = optionalUaiSchema.safeParse((formData.get('uai') as string) ?? '');
-		if (!uaiResult.success) {
-			return fail(400, { message: uaiResult.error.issues[0].message });
+		const idResult = uuidSchema.safeParse(formData.get('id'));
+		if (!idResult.success) {
+			return fail(400, { message: 'Identifiant école invalide' });
 		}
+
+		const parsed = schoolUpsertSchema.safeParse({
+			name: formData.get('name'),
+			city: formData.get('city'),
+			country: formData.get('country'),
+			address: formData.get('address'),
+			logo_url: formData.get('logo_url'),
+			uai: formData.get('uai') ?? ''
+		});
+		if (!parsed.success) {
+			return fail(400, { message: parsed.error.issues[0].message });
+		}
+
+		const is_active = formData.get('is_active') === 'true';
 
 		const { error: updateError } = await supabase
 			.from('schools')
 			.update({
-				name,
-				city,
-				country,
-				address: address || null,
-				logo_url: logo_url || null,
-				uai: uaiResult.data,
+				...parsed.data,
 				is_active
 			})
-			.eq('id', id);
+			.eq('id', idResult.data);
 
 		if (updateError) {
 			return fail(400, { message: updateError.message });
@@ -159,31 +158,38 @@ export const actions: Actions = {
 			return fail(400, { message: 'No schools data provided' });
 		}
 
-		let schools: { name: string; address?: string; city?: string; country?: string }[];
+		let rawSchools: unknown;
 		try {
-			schools = JSON.parse(schoolsJson);
+			rawSchools = JSON.parse(schoolsJson);
 		} catch (_e) {
 			return fail(400, { message: 'Invalid schools data' });
 		}
 
-		// Validate all schools have required fields
-		for (const school of schools) {
-			if (!school.name || !school.city || !school.country) {
-				return fail(400, { message: 'All schools must have name, city, and country' });
-			}
+		if (!Array.isArray(rawSchools) || rawSchools.length === 0) {
+			return fail(400, { message: 'No schools data provided' });
 		}
 
-		// Prepare schools for insert.
+		// Validate each row with the shared schema.
 		// NOTE: bulk import (spreadsheet paste) has no UAI column → uai stays NULL.
 		// Admins set the UAI per school via the single-entry form / Annuaire lookup.
-		const schoolsToInsert = schools.map((school) => ({
-			name: school.name,
-			city: school.city,
-			country: school.country,
-			address: school.address || null,
-			logo_url: (school as { logo_url?: string }).logo_url || null,
-			is_active: true
-		}));
+		const schoolsToInsert = [];
+		for (const [i, row] of rawSchools.entries()) {
+			const r = row as Record<string, unknown>;
+			const parsed = schoolUpsertSchema.safeParse({
+				name: r.name,
+				city: r.city,
+				country: r.country,
+				address: r.address,
+				logo_url: r.logo_url,
+				uai: ''
+			});
+			if (!parsed.success) {
+				return fail(400, {
+					message: `Ligne ${i + 1} : ${parsed.error.issues[0].message}`
+				});
+			}
+			schoolsToInsert.push({ ...parsed.data, is_active: true });
+		}
 
 		const { error: insertError } = await supabase.from('schools').insert(schoolsToInsert);
 
@@ -191,6 +197,6 @@ export const actions: Actions = {
 			return fail(400, { message: insertError.message });
 		}
 
-		return { success: true, count: schools.length };
+		return { success: true, count: schoolsToInsert.length };
 	}
 };
