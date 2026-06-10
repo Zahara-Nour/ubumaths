@@ -6,6 +6,75 @@ import { z } from 'zod';
 import { uuidSchema } from './common';
 
 // ============================================================================
+// UAI / RNE (establishment identifier)
+// ============================================================================
+
+/**
+ * UAI (Unité Administrative Immatriculée), ex-RNE — official 8-char school code.
+ * Format: 7 digits + 1 uppercase letter (e.g. `0750001H`).
+ *
+ * Source of truth: "Annuaire de l'éducation nationale" (data.education.gouv.fr).
+ * Required for any LSU / SIECLE export. Reusable wherever a UAI is handled.
+ */
+export const UAI_REGEX = /^[0-9]{7}[A-Z]$/;
+const UAI_ERROR = 'UAI invalide : 7 chiffres suivis d’une lettre (ex. 0750001H)';
+
+/** Strict UAI: trims, uppercases, then enforces the format. Rejects empty input. */
+export const uaiSchema = z
+	.string()
+	.trim()
+	.transform((s) => s.toUpperCase())
+	.pipe(z.string().regex(UAI_REGEX, UAI_ERROR));
+
+/**
+ * Optional UAI for form input: trims + uppercases, accepts empty string
+ * (returned as `null`), otherwise enforces the format.
+ */
+export const optionalUaiSchema = z
+	.string()
+	.trim()
+	.transform((s) => s.toUpperCase())
+	.pipe(z.union([z.literal(''), z.string().regex(UAI_REGEX, UAI_ERROR)]))
+	.transform((s) => (s === '' ? null : s));
+
+// ============================================================================
+// ANNUAIRE DE L'ÉDUCATION (data.education.gouv.fr proxy)
+// ============================================================================
+
+/** Query for the Annuaire search proxy endpoint. */
+export const annuaireSearchQuerySchema = z.object({
+	q: z.string().trim().min(2).max(100)
+});
+
+/** Raw record shape returned by the Opendatasoft `fr-en-annuaire-education` dataset. */
+export const annuaireRecordSchema = z.object({
+	identifiant_de_l_etablissement: z.string().nullable(),
+	nom_etablissement: z.string().nullable(),
+	type_etablissement: z.string().nullable(),
+	nom_commune: z.string().nullable(),
+	code_postal: z.string().nullable(),
+	adresse_1: z.string().nullable(),
+	libelle_academie: z.string().nullable()
+});
+
+/** Raw envelope returned by the Opendatasoft v2.1 records API. */
+export const annuaireResponseSchema = z.object({
+	total_count: z.number(),
+	results: z.array(annuaireRecordSchema)
+});
+
+/** Normalized school suggestion served to the client. */
+export interface AnnuaireSchool {
+	uai: string;
+	name: string;
+	type: string;
+	city: string;
+	postalCode: string;
+	address: string;
+	academy: string;
+}
+
+// ============================================================================
 // URL PARAMETER SCHEMAS
 // ============================================================================
 

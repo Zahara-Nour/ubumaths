@@ -1,5 +1,6 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import { optionalUaiSchema } from '$lib/server/validation/schools';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -45,12 +46,18 @@ export const actions: Actions = {
 		const address = formData.get('address') as string;
 		const logo_url = formData.get('logo_url') as string;
 
+		const uaiResult = optionalUaiSchema.safeParse((formData.get('uai') as string) ?? '');
+		if (!uaiResult.success) {
+			return fail(400, { message: uaiResult.error.issues[0].message });
+		}
+
 		const { error: insertError } = await supabase.from('schools').insert({
 			name,
 			city,
 			country,
 			address: address || null,
 			logo_url: logo_url || null,
+			uai: uaiResult.data,
 			is_active: true
 		});
 
@@ -77,6 +84,11 @@ export const actions: Actions = {
 		const logo_url = formData.get('logo_url') as string;
 		const is_active = formData.get('is_active') === 'true';
 
+		const uaiResult = optionalUaiSchema.safeParse((formData.get('uai') as string) ?? '');
+		if (!uaiResult.success) {
+			return fail(400, { message: uaiResult.error.issues[0].message });
+		}
+
 		const { error: updateError } = await supabase
 			.from('schools')
 			.update({
@@ -85,6 +97,7 @@ export const actions: Actions = {
 				country,
 				address: address || null,
 				logo_url: logo_url || null,
+				uai: uaiResult.data,
 				is_active
 			})
 			.eq('id', id);
@@ -160,7 +173,9 @@ export const actions: Actions = {
 			}
 		}
 
-		// Prepare schools for insert
+		// Prepare schools for insert.
+		// NOTE: bulk import (spreadsheet paste) has no UAI column → uai stays NULL.
+		// Admins set the UAI per school via the single-entry form / Annuaire lookup.
 		const schoolsToInsert = schools.map((school) => ({
 			name: school.name,
 			city: school.city,
