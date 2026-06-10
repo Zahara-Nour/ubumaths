@@ -295,13 +295,13 @@
 							<td class="px-6 py-4 whitespace-nowrap">
 								{#if school.is_active}
 									<span
-										class="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs leading-5 font-semibold text-green-800"
+										class="inline-flex rounded-full bg-primary/10 px-2 py-1 text-xs leading-5 font-semibold text-primary"
 									>
 										Active
 									</span>
 								{:else}
 									<span
-										class="inline-flex rounded-full bg-red-100 px-2 py-1 text-xs leading-5 font-semibold text-red-800"
+										class="inline-flex rounded-full bg-muted px-2 py-1 text-xs leading-5 font-semibold text-muted-foreground"
 									>
 										Inactive
 									</span>
@@ -383,14 +383,10 @@
 							<button
 								type="button"
 								onclick={() => (activeTab = 'single')}
-								class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200"
-								style="background-color: {activeTab === 'single'
-									? '#2563eb'
-									: 'transparent'}; color: {activeTab === 'single'
-									? 'white'
-									: '#9ca3af'}; box-shadow: {activeTab === 'single'
-									? '0 2px 4px rgba(0,0,0,0.1)'
-									: 'none'};"
+								class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 {activeTab ===
+								'single'
+									? 'bg-primary text-primary-foreground shadow-sm'
+									: 'text-muted-foreground hover:text-foreground'}"
 							>
 								Single Entry
 							</button>
@@ -398,14 +394,10 @@
 							<button
 								type="button"
 								onclick={() => (activeTab = 'bulk')}
-								class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200"
-								style="background-color: {activeTab === 'bulk'
-									? '#2563eb'
-									: 'transparent'}; color: {activeTab === 'bulk'
-									? 'white'
-									: '#9ca3af'}; box-shadow: {activeTab === 'bulk'
-									? '0 2px 4px rgba(0,0,0,0.1)'
-									: 'none'};"
+								class="flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 {activeTab ===
+								'bulk'
+									? 'bg-primary text-primary-foreground shadow-sm'
+									: 'text-muted-foreground hover:text-foreground'}"
 							>
 								Bulk Import
 							</button>
@@ -623,14 +615,16 @@ Another School	London	UK		"
 								</div>
 
 								{#if parseError}
-									<div class="rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700">
+									<div
+										class="rounded border border-destructive/50 bg-destructive/10 px-4 py-3 text-destructive"
+									>
 										{parseError}
 									</div>
 								{/if}
 
 								{#if parsedSchools.length > 0}
 									<div
-										class="rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700"
+										class="rounded border border-primary/50 bg-primary/10 px-4 py-3 text-primary"
 									>
 										✓ Found {parsedSchools.length} school{parsedSchools.length !== 1 ? 's' : ''} to import
 									</div>
