@@ -39,8 +39,94 @@ Le check `is_auto_managed` n'était fait que dans la branche `section_id`. Un fu
 **Mitigations possibles V2** :
 
 1. Tracker `timeSpent` côté serveur et rejeter `grade=4` si `timeSpent < 3s`.
-2. Anti-fraud : pattern de grading suspect (toujours Easy, jamais Hard).
+2. **Anti-fraud pattern detection** — spec complète ci-dessous (priorité V2 confirmée 2026-06-10).
 3. Durcir mapping : `success = grade >= 3` (Hard ne compte plus). **Mais** contredit la décision §1.1 actée (Hard compte comme succès car réponse correcte).
+
+---
+
+### V2 — Spec anti-fraud pattern detection
+
+**Quand** : à activer dès que **≥ 20 templates 6ᵉ taggés** ET **≥ 5 capacités avec ≥ 2 templates distincts**, car c'est à partir de là que le verdict BO `is_acquired` devient triable (la règle `distinct_template_successes >= 2` perd son effet protecteur).
+
+**Principes** :
+
+- **Détection silencieuse** (pas de sanction directe). On flagge en BDD + on alerte le prof dans son dashboard.
+- **Multi-critères** combinés (jamais un seul signal).
+- **Seuils tolérants** + **fenêtre temporelle large** pour minimiser les faux positifs.
+
+**Signaux à combiner** :
+
+| Signal                                                                                      | Seuil indicatif                       | Pondération |
+| ------------------------------------------------------------------------------------------- | ------------------------------------- | ----------- |
+| Ratio Easy / Total                                                                          | > 90% sur 7j (min 20 reviews)         | Moyen       |
+| 0 Again sur 30+ reviews consécutives                                                        | Inviolable pour un vrai apprenant     | Fort        |
+| `timeSpent` médian < 2s sur ≥ 10 reviews                                                    | Lecture impossible                    | Fort        |
+| Burst > 15 reviews en < 60s                                                                 | Spam évident                          | Très fort   |
+| Δ taux réussite SRS vs Monde 1 sur même capacité                                            | > 50 points (ex: 95% SRS vs 30% Quiz) | Très fort   |
+| Distribution Easy/Good/Hard/Again très éloignée d'une dist. de référence (Kullback-Leibler) | Divergence > 1.5                      | Faible (V3) |
+
+**Score composite** (esquisse) : weighted sum normalized → 0 (clean) à 1 (très suspect). Seuil d'alerte à 0.7.
+
+**Schéma de stockage** :
+
+```sql
+CREATE TABLE srs_anti_fraud_flags (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    student_id      UUID NOT NULL REFERENCES profiles(id),
+    flag_type       TEXT NOT NULL,   -- 'high_easy_ratio' | 'no_again' | 'fast_burst' | 'srs_vs_quiz_gap'
+    severity        SMALLINT NOT NULL CHECK (severity BETWEEN 1 AND 5),
+    score           REAL NOT NULL,   -- composite score 0..1
+    window_start    TIMESTAMPTZ NOT NULL,
+    window_end      TIMESTAMPTZ NOT NULL,
+    sample_size     INTEGER NOT NULL,
+    details         JSONB,           -- breakdown des signaux qui ont contribué
+    resolved        BOOLEAN DEFAULT FALSE,
+    resolved_by     UUID REFERENCES profiles(id),  -- prof qui a marqué "ok"
+    resolved_at     TIMESTAMPTZ,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+**Job de calcul** : pg_cron quotidien (ou trigger sur seuil de reviews atteint). Évite le calcul on-demand qui surchargerait le hot path.
+
+**UI prof** :
+
+- Section "Élèves à surveiller" dans le dashboard prof
+- Pour chaque flag : élève + type + score + bouton "Voir détails" (graphique reviews) + bouton "Marquer comme OK"
+- Filtres par classe, période, type de flag
+
+**UX élève** (option soft à V2.5) :
+
+- Si score > 0.8 sur 3 fenêtres consécutives : afficher une fois un message non-bloquant : "On a remarqué que tu notes beaucoup de cartes en Easy. Réviser ne sert que si tu réponds honnêtement. Voici comment bien noter →" + lien doc.
+- Pas de sanction automatique. L'auto-réflexion suffit pour 80% des cas.
+
+**Faux positifs à anticiper** :
+
+- **Petit pool de cartes maîtrisées** (5 cartes connues) → exclure si `sample_size < 20`.
+- **Élève très rapide légitime** → croiser avec succès Monde 1 cohérent.
+- **Élève en révision de surconfiance** (entraînement) → tolérer ratio Easy élevé si Monde 1 confirme.
+
+**Effort estimé V2** : ~3-5 jours
+
+- 0.5j — Schema + migration + RLS
+- 1j — Job de calcul (PL/pgSQL ou Edge Function nocturne)
+- 1.5j — UI dashboard prof (page dédiée + intégration)
+- 0.5j — UX élève soft warning (V2.5)
+- 0.5j — Tests + doc
+
+**Pré-requis** :
+
+- ≥ 20 templates 6ᵉ taggés (sinon faux positifs garantis sur petit pool)
+- Métriques de base : `timeSpent` envoyé fiablement par le client (déjà côté `submitReviewSchema`)
+- Volume `skill_attempts` suffisant pour le calcul statistique (~50 reviews/élève/semaine en pic scolaire)
+
+**À surveiller en attendant** :
+
+Dashboard prof V1 peut afficher dès maintenant, sans détection automatique :
+
+- Ratio Easy par élève sur 7j (sans interprétation)
+- Δ SRS vs Monde 1 par élève par capacité
+- Le prof juge à l'œil, en attendant l'algo
 
 ### P1 #2 — `srs_card_stats` directement writable par l'élève (préexistant, amplifié par chantier)
 
