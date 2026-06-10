@@ -115,17 +115,33 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 
 	const templateIds = cards.map((c) => c.template_id).filter((t): t is string => Boolean(t));
 
-	// 3. Charger les srs_card_stats correspondants
-	const { data: stats, error: statsErr } = await locals.supabase
-		.from('srs_card_stats')
-		.select('card_reference_id, state, next_review, last_review')
-		.eq('user_id', user.id)
-		.eq('card_reference_type', 'template')
-		.in('card_reference_id', templateIds);
+	// 3+4+5 — Les 3 SELECT sont indépendants une fois templateIds connu.
+	// Parallélisation P1 (économise ≈ 90-180 ms latence Vercel→Supabase).
+	const [statsRes, templatesRes, linksRes] = await Promise.all([
+		locals.supabase
+			.from('srs_card_stats')
+			.select('card_reference_id, state, next_review, last_review')
+			.eq('user_id', user.id)
+			.eq('card_reference_type', 'template')
+			.in('card_reference_id', templateIds),
+		locals.supabase.from('question_templates').select('id, subdomain').in('id', templateIds),
+		locals.supabase
+			.from('question_template_skills')
+			.select(
+				'template_id, skills!inner(objective_id, skill_objectives!inner(id, name, display_order))'
+			)
+			.in('template_id', templateIds)
+			// Cast nécessaire : Supabase JS ne type pas la syntaxe d'ordre sur jointure nested.
+			.order('skill_objectives(display_order)' as never, { ascending: true })
+	]);
 
-	if (statsErr) {
-		throw error(500, `Erreur stats FSRS : ${statsErr.message}`);
-	}
+	if (statsRes.error) throw error(500, `Erreur stats FSRS : ${statsRes.error.message}`);
+	if (templatesRes.error) throw error(500, `Erreur templates : ${templatesRes.error.message}`);
+	if (linksRes.error) throw error(500, `Erreur tagging : ${linksRes.error.message}`);
+
+	const stats = statsRes.data;
+	const templates = templatesRes.data;
+	const links = linksRes.data;
 
 	const statsByTemplate = new Map<
 		string,
@@ -143,35 +159,9 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		});
 	}
 
-	// 4. Charger les métadonnées des templates (objectif via M2M skills)
-	const { data: templates, error: tmplErr } = await locals.supabase
-		.from('question_templates')
-		.select('id, subdomain')
-		.in('id', templateIds);
-
-	if (tmplErr) {
-		throw error(500, `Erreur templates : ${tmplErr.message}`);
-	}
-
 	const templateNameById = new Map<string, string>();
 	for (const t of templates ?? []) {
 		templateNameById.set(t.id, t.subdomain ?? '');
-	}
-
-	// 5. Charger les objectifs associés via question_template_skills → skills → skill_objectives
-	// Tri sur display_order de l'objectif pour rendre le choix du "1er objectif" déterministe
-	// quand un template tague plusieurs skills d'objectifs différents (V1 affiche 1 seul
-	// objectif par carte ; V2 pourrait afficher la liste complète).
-	const { data: links, error: linksErr } = await locals.supabase
-		.from('question_template_skills')
-		.select(
-			'template_id, skills!inner(objective_id, skill_objectives!inner(id, name, display_order))'
-		)
-		.in('template_id', templateIds)
-		.order('skill_objectives(display_order)' as never, { ascending: true });
-
-	if (linksErr) {
-		throw error(500, `Erreur tagging : ${linksErr.message}`);
 	}
 
 	type LinkRow = {
