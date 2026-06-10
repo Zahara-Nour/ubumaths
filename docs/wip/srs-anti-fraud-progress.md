@@ -52,11 +52,9 @@ Spec TDD : `docs/wip/srs-anti-fraud-spec-tdd.md`
 - **Pas de jointure inline avec `is_class_teacher()`** : le helper existant prend `class_id`, pas `student_id`. RLS utilise un EXISTS inline ; simple et lisible.
 - **Cross-class par design** : pas de colonne `class_id` sur le flag. Un élève multi-classes a un seul flag visible des deux profs, résoudre d'un côté masque l'autre.
 
-### À faire après push migrations (par l'utilisateur)
+### Push migrations + types ✅ (2026-06-10)
 
-1. `pnpm db:migrate` — push les 2 migrations.
-2. `pnpm db:types` — régénère `src/lib/types/database.ts`.
-3. Les types `Tables<'srs_anti_fraud_flags'>` et `Tables<'app_config'>` résolvent.
+Migrations pushées en prod, `pnpm db:types` exécuté. Les types `Tables<'srs_anti_fraud_flags'>` et `Tables<'app_config'>` sont résolus.
 
 ### Commit Phase 1
 
@@ -275,10 +273,10 @@ Spec TDD : `docs/wip/srs-anti-fraud-spec-tdd.md`
 
 ---
 
-## À faire par l'utilisateur
+## Reste à faire
 
-1. **Push migrations** : `pnpm db:migrate`
-2. **Régénérer les types** : `pnpm db:types`
+1. ✅ ~~Push migrations~~ — fait 2026-06-10.
+2. ✅ ~~Régénérer les types~~ — fait 2026-06-10.
 3. (optionnel) `pnpm release:minor` quand prêt à shipper.
 4. (V2.1) Réparer infra browser tests Chromium si nécessaire pour les futures itérations.
 
