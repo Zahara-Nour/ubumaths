@@ -103,26 +103,25 @@ Le doc `docs/wip/srs-fsrs-architecture-cible.md` a été renommé puis supprimé
 
 **Fix appliqué en session** : sed sur les 5 fichiers, remplacement par `docs/ref/srs/architecture.md`. Vérifié `grep -rn` retourne 0 occurrence après patch.
 
-### 2.2 Duplication code init FSRS entre 2 endpoints
+### 2.2 ~~Duplication code init FSRS entre 2 endpoints~~ ✅ RÉSOLU
 
-**Sévérité** : Major
-**Fichiers** :
+**Sévérité** : ~~Major~~ Resolved (refactor 2026-06-10)
+**Helper créé** : `src/lib/server/srs/fsrs-actions.ts` (~130 L) avec 3 fonctions exportées :
 
-- `src/routes/api/skill-attempts/+server.ts:147-203` (`applyFsrsUpdate`)
-- `src/routes/api/srs/review/submit/+server.ts:72-127` (logique inline)
+- `loadOrInitCardStats(supabase, fsrs, userId, type, id)` — SELECT + map ou `fsrs.initCard()` si absent.
+- `upsertCardStats(supabase, stats)` — UPSERT avec conflict resolution.
+- `applyFsrsReview(supabase, fsrs, userId, type, id, grade, timeSpent?)` — pipeline complet load → reviewCard → upsert.
 
-Les deux fonctions font :
+**Résultats refactor** :
 
-1. SELECT srs_card_stats existant
-2. Map row vers `CardStats` (15 champs)
-3. Init via `FSRS.initCard` si non existant
-4. UPSERT srs_card_stats
+- `/api/skill-attempts/+server.ts` : -82 L (suppression de `applyFsrsUpdate` inline)
+- `/api/srs/review/submit/+server.ts` : -79 L (init/UPSERT manuel remplacé par `applyFsrsReview`)
+- **Net : -123 L dans les endpoints** (142 deletions / 19 insertions).
+- Helper testé par 15 tests dans `fsrs-actions.test.ts` (mock Supabase fluent, FSRS réel) — 11 ms d'exécution.
 
-Variations mineures : le submit accepte un `timeSpent` que le skill-attempts n'a pas. Mais la majorité du code est identique. Si la table `srs_card_stats` ajoute une colonne, on doit modifier les deux.
+Comportement strictement équivalent à l'ancien code inline (chaque endpoint passe sa propre instance `FSRS` — Monde 1 par défaut, Monde 2 avec config du deck validée Zod).
 
-**Fix recommandé** : extraire `loadOrInitCardStats(supabase, userId, templateId, fsrs)` + `applyFsrsReview(supabase, stats, grade, timeSpent?)` dans `src/lib/server/srs/fsrs-actions.ts`. Les deux endpoints appellent les helpers, économie nette ~50 lignes.
-
-**Effort** : 2 heures.
+ESLint propre, `pnpm check:incremental` baseline 9/46 inchangée.
 
 ### 2.3 Duplication `ensureProgrammeDeckCard` appelée 2 fois avec garde différente
 
