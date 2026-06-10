@@ -1,8 +1,8 @@
 # SRS / FSRS / Référentiel famille A — Architecture
 
 > Document de référence canonique (post-chantier 2026-06-10).
-> Historique détaillé : `docs/ref/srs/architecture-cible-2026-06.md` (archive de la doc de design initial).
 > Audit sécurité + spec V2 : `docs/wip/srs-fsrs-security-audit-findings.md`.
+> Historique du raisonnement de design : `git log --follow` sur ce fichier ou les commits du chantier (`63f6192e4..a1767b882`).
 
 ---
 
