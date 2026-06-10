@@ -79,11 +79,14 @@ export const GET: RequestHandler = async ({ params, locals }) => {
  * Update deck.
  * Only non-assigned decks can be updated.
  *
+ * Décision PO 2026-06-10 : la config FSRS n'est PAS modifiable par l'élève.
+ * Le champ `config` est absent du schema → tout payload qui l'inclurait
+ * verrait sa valeur silencieusement ignorée.
+ *
  * Body:
  * {
  *   name?: string,
- *   description?: string,
- *   config?: { desiredRetention, parameters, maximumInterval }
+ *   description?: string
  * }
  *
  * @returns Updated deck
@@ -142,15 +145,8 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			updates.description = body.description?.trim() || null;
 		}
 
-		if (body.config !== undefined) {
-			// Merge with existing config
-			const newConfig = {
-				...existingDeck.config,
-				...body.config
-			};
-
-			updates.config = newConfig;
-		}
+		// Note (PO 2026-06-10) : la config FSRS n'est plus customisable par
+		// l'élève. Aucun traitement de `body.config` ici.
 
 		// Update deck
 		const { data: deck, error: updateError } = await supabase

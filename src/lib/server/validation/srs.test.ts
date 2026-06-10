@@ -94,43 +94,25 @@ describe('SRS validation schemas', () => {
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject desiredRetention below minimum', () => {
+		it('should silently strip config field (PO 2026-06-10 : config verrouillée serveur)', () => {
+			// Decision PO : la config FSRS n est plus customisable par l eleve.
+			// Le schema strict-mode strip silencieusement tout payload qui inclut
+			// config (Zod default behavior pour objet sans .strict()).
 			const data = {
 				name: 'Test',
 				deckType: 'personal',
 				config: {
-					desiredRetention: 0.6 // Below 0.7 minimum
+					desiredRetention: 0.6, // Aurait été rejeté avant
+					maximumInterval: 36501 // Aurait été rejeté avant
 				}
 			};
 
 			const result = createDeckSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject desiredRetention above maximum', () => {
-			const data = {
-				name: 'Test',
-				deckType: 'personal',
-				config: {
-					desiredRetention: 0.98 // Above 0.97 maximum
-				}
-			};
-
-			const result = createDeckSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject maximumInterval exceeding limit', () => {
-			const data = {
-				name: 'Test',
-				deckType: 'personal',
-				config: {
-					maximumInterval: 36501 // Over 36500 (100 years)
-				}
-			};
-
-			const result = createDeckSchema.safeParse(data);
-			expect(result.success).toBe(false);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				// Le champ config est absent du résultat validé
+				expect((result.data as Record<string, unknown>).config).toBeUndefined();
+			}
 		});
 	});
 
@@ -428,10 +410,12 @@ describe('SRS validation schemas', () => {
 
 	describe('updateDeckSchema', () => {
 		it('should accept partial updates', () => {
+			// PO 2026-06-10 : config retirée de createDeckSchema → aussi de
+			// updateDeckSchema (qui est .partial() de createDeckSchema).
 			const updates = [
 				{ name: 'Updated Name' },
 				{ description: 'New description' },
-				{ config: { desiredRetention: 0.85 } }
+				{ deckType: 'personal' as const }
 			];
 
 			updates.forEach((update) => {
