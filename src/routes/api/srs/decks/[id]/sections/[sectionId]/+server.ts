@@ -14,7 +14,18 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { updateSectionSchema } from '$lib/server/validation/srs';
 
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
-	await requireAuth(locals);
+	const { user } = await requireAuth(locals);
+
+	// P2 defense in depth : vérif ownership explicite avant tout traitement
+	const { data: deck } = await locals.supabase
+		.from('srs_decks')
+		.select('id')
+		.eq('id', params.id)
+		.eq('owner_id', user.id)
+		.maybeSingle();
+	if (!deck) {
+		return json({ error: 'Deck not found or access denied' }, { status: 404 });
+	}
 
 	let bodyRaw: unknown;
 	try {
@@ -65,7 +76,18 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 };
 
 export const DELETE: RequestHandler = async ({ params, locals }) => {
-	await requireAuth(locals);
+	const { user } = await requireAuth(locals);
+
+	// P2 defense in depth : vérif ownership explicite
+	const { data: deck } = await locals.supabase
+		.from('srs_decks')
+		.select('id')
+		.eq('id', params.id)
+		.eq('owner_id', user.id)
+		.maybeSingle();
+	if (!deck) {
+		return json({ error: 'Deck not found or access denied' }, { status: 404 });
+	}
 
 	const { error: deleteErr } = await locals.supabase
 		.from('srs_deck_sections')
