@@ -58,18 +58,24 @@ L'API `POST /api/skill-attempts` a été refondue per-template (1 row INSERT au 
 
 **Effort** : 1 jour.
 
-### 1.2 Zéro test unitaire sur le nouveau code
+### 1.2 Zéro test unitaire sur le nouveau code — partiellement résolu
 
-**Sévérité** : Critical
-**Fichiers** :
+**Sévérité** : Critical → Major (partiel)
+**État (MAJ 2026-06-10) :**
 
-- `src/lib/server/srs/capacity-badge.ts` (192 L, 4 fonctions exportées) — 0 test
-- `src/lib/server/srs/programme-deck.ts` (141 L, 3 fonctions exportées) — 0 test
-- `src/lib/components/srs/CapacityFsrsBadge.svelte` (71 L) — 0 test
+- ✅ `src/lib/server/srs/capacity-badge.ts` (192 L, 4 fonctions exportées) — **44 tests** dans `capacity-badge.test.ts` (couvre les 4 fonctions exportées + constants).
+- 🟠 `src/lib/server/srs/programme-deck.ts` (141 L, 3 fonctions exportées) — 0 test (reste à faire)
+- 🟠 `src/lib/components/srs/CapacityFsrsBadge.svelte` (71 L) — 0 test (reste à faire)
 
-Les fonctions `templateToBadge`, `worstBadge`, `aggregateBadge` (lignes 122-170 de `capacity-badge.ts`) sont **pures**, idéales pour des tests unitaires triviaux et rapides à écrire. Le fait qu'elles soient non testées laisse les règles d'agrégation (qui font partie du contrat pédagogique) sans filet de sécurité contre les régressions.
+**Fix appliqué pour capacity-badge.ts** : 44 tests, 18 ms d'exécution, ESLint propre. Couvre :
 
-**Fix recommandé** : voir `tests.md` §3.
+- `templateToBadge` × 17 (state=`new`/4 cas + nextReview=null/3 + learning/3 + relearning/2 + review/3 + transitions/1)
+- `worstBadge` × 9 (priorité descendante exhaustive)
+- `aggregateBadge` × 7 (composition + edge cases)
+- `computeCapacityBadges` × 7 avec mock Supabase fluent (incluant dedup template_ids, erreurs tag/fsrs lookup)
+- Constants BADGE_LABEL/VISUAL × 4 (sanity check distinctivité)
+
+**Reste à faire** : voir `tests.md` §2.2 et §2.3.
 
 ---
 
