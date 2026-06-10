@@ -64,7 +64,59 @@ Spec TDD : `docs/wip/srs-anti-fraud-spec-tdd.md`
 
 ---
 
-## Phase 2 — Détecteurs + runner + endpoint admin ⏳ À venir
+## Phase 2 — Détecteurs + runner + endpoint admin ✅ (2026-06-10)
+
+### Livré
+
+- **`src/lib/server/anti-fraud/types.ts`** (NEW) — `ReviewEntry`, `AttemptEntry`, `SignalResult`, `CompositeResult`, `JobReport`.
+- **`src/lib/server/anti-fraud/detectors.ts`** (NEW) — 5 fonctions pures :
+  - `detectHighEasyRatio` (B1)
+  - `detectNoAgain` (B2, séquence post-dernière-Again)
+  - `detectFastTimeSpent` (B3, médiane sans pad pair)
+  - `detectBurst` (B4, two-pointer fenêtre glissante 60 s)
+  - `detectSrsVsQuizGap` (B5)
+  - `composeSignals` (B6, score plafonné à 1, ≥ 2 signaux, > 0.7)
+- **`src/lib/server/anti-fraud/runner.ts`** (NEW) — `runAntiFraudJob` orchestrateur :
+  - Check `app_config.anti_fraud_enabled` (case-insensitive, fail-safe).
+  - Liste paires (élève × capacité) via batch `srs_card_stats` + `question_template_skills` (famille knowledge).
+  - Filtre reviews sur fenêtre 7 j glissante.
+  - Applique 5 détecteurs + composite. Skip dédoublonnage si flag identique non-résolu < 7 j.
+  - Support `dry_run` (compte sans INSERT).
+- **`src/lib/server/anti-fraud/index.ts`** (NEW) — barrel.
+- **`src/lib/server/validation/anti-fraud.ts`** (NEW) — Zod : `runJobOptionsSchema`, `flagsListQuerySchema`, `flagIdParamSchema`, `markResolvedBodySchema`.
+- **`src/routes/api/admin/anti-fraud/run/+server.ts`** (NEW) — POST admin only, body optionnel.
+
+### Tests
+
+- **`detectors.test.ts`** : **30 tests** (cible ≥ 25) ✅
+  - B1 high_easy_ratio : 5 tests (sample < 20, ratio > 90 %, seuil strict 0.90, aucune Easy, frontière 95 %)
+  - B2 no_again : 5 tests (sample < 30, streak 30, post-Again, streak court, Again réparties)
+  - B3 fast_timeSpent : 5 tests (sample timeSpent < 10, median < 2, strict 2.0, ignore null, parité)
+  - B4 burst : 5 tests (< 16, 20/30 s, strict 15/60 s, dispersé, max sur sliding window)
+  - B5 srs_vs_quiz_gap : 5 tests (< 10 SRS, < 10 quiz, gap > 50, strict 0.50, gap négatif)
+  - B6 composite : 5 tests (< 2 signaux, composite ≥ 0.7, signaux faibles, plafond, sample max)
+- **`runner.test.ts`** : **11 tests** (cible ≥ 10) ✅
+  - Désactivé : 3 (false, row absente fail-safe, "TRUE" case-insensitive)
+  - Vide : 3 (pas de stats, templates non-tagués, reviews hors fenêtre)
+  - Nominal : 3 (high_easy_ratio créé, composite ≥ 2 signaux, filtre student_id)
+  - Dédoublonnage : 1 (skip si flag existant non-résolu)
+  - dry_run : 1 (compte sans INSERT)
+
+**Total Phase 2 : 41 tests verts**.
+
+### Décisions techniques Phase 2
+
+- **Pas de PL/pgSQL** : détecteurs en TS pur, runner orchestrateur côté serveur. Plus testable, plus lisible, contournement de la limite « pas de FSRS en PG » du chantier précédent.
+- **`burst` seul à ne pas exiger `sample_size >= 20` global** : un pic de 16+ reviews en 60 s est suspect par lui-même.
+- **Composite plafonné à 1** + filtre `≥ 2 signaux ET score > 0.7` (cf. spec §B6).
+- **Dédoublonnage fenêtre 7 j roulante** : skip insert si flag identique non-résolu < 7 j (`hasRecentFlag`).
+- **`dry_run`** : utile pour audit + tests sans pollution.
+
+### Commit Phase 2
+
+`feat(anti-fraud): détecteurs + runner + endpoint admin (Phase 2)` (à venir).
+
+---
 
 ---
 
