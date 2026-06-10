@@ -52,6 +52,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 						ownerId: deck.owner_id,
 						deckType: deck.deck_type,
 						isAssigned: deck.is_assigned,
+						isAutoManaged: deck.is_auto_managed,
 						config: deck.config,
 						createdAt: deck.created_at,
 						updatedAt: deck.updated_at,

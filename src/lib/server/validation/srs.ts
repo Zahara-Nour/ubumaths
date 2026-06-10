@@ -80,12 +80,35 @@ export const listCardsQuerySchema = z.object({
 
 /**
  * Schema for updating a card (custom cards only)
- * Now validates markdown strings instead of ContentField arrays
+ * Now validates markdown strings instead of ContentField arrays.
+ *
+ * `section_id` (refonte 2026-06-10) : permet d'assigner la carte à une
+ * sous-section manuelle de son deck. NULL = carte non rangée.
  */
 export const updateCardSchema = z.object({
 	frontContent: z.string().min(1, 'Front content is required').max(10000).optional(),
-	backContent: z.string().min(1, 'Back content is required').max(10000).optional()
+	backContent: z.string().min(1, 'Back content is required').max(10000).optional(),
+	section_id: z.string().uuid().nullable().optional()
 });
+
+// ============================================================================
+// SECTIONS — Sous-sections manuelles dans un deck personnel (2026-06-10)
+// ============================================================================
+
+/**
+ * Schema création d'une section manuelle.
+ * RLS bloque si le deck est is_assigned=true ou is_auto_managed=true.
+ */
+export const createSectionSchema = z.object({
+	name: z.string().trim().min(1).max(50),
+	description: z.string().max(200).optional(),
+	display_order: z.number().int().nonnegative().default(0)
+});
+
+/**
+ * Schema mise à jour partielle d'une section.
+ */
+export const updateSectionSchema = createSectionSchema.partial();
 
 /**
  * Schema for assigning a deck to students/classes
