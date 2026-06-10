@@ -5,6 +5,15 @@
  * Tests the full stack of the skill-attempts endpoint against a local Supabase
  * instance (run `pnpm db:start` and `pnpm db:migrate` first).
  *
+ * Refonte 2026-06-10 (Phase 2 chantier SRS/FSRS) :
+ * - L'endpoint insère TOUJOURS 1 row (per-template), peu importe le tagging.
+ * - `skill_id` est NULL en régime famille A (la M2M `question_template_skills`
+ *   est la source de la liaison).
+ * - Le trigger PG boucle sur les skills tagués famille A pour mettre à jour
+ *   `student_skill_state_a` (N updates pour N skills tagués).
+ * - Le déclencheur FSRS UPSERT `srs_card_stats` est fail-loud (500 si erreur).
+ * - Auto-ajout au deck Programme (`is_auto_managed=true`) si template tagué famille A.
+ *
  * Strategy
  * --------
  * We call the SvelteKit RequestHandler function directly (imported from +server.ts)
@@ -21,15 +30,21 @@
  * --------
  *   1. Zod validation — 400 for malformed bodies
  *   2. Auth + RLS — 401 for anon; 200 with student_id=auth.uid() enforced by RLS
- *   3. Endpoint behaviour — 404 for missing template; 200 with inserted=0 / inserted=1
- *   4. End-to-end — answer → POST → trigger → student_skill_state_a cache updated
- *   5. Robustness — duplicate inserts create distinct rows; 500 path is documented
+ *   3. Endpoint behaviour — 404 for missing template; 200 with inserted=1 (always),
+ *      skill_ids reflects tagged knowledge skills
+ *   4. Post-chantier — skill_id NULL en régime A, FSRS auto-update, Programme deck
+ *      auto-create
+ *   5. End-to-end — answer → POST → trigger → student_skill_state_a cache updated
+ *   6. Robustness — duplicate inserts create distinct rows; 500 path documented
  *
  * Migrations required:
  *   20260609120000_competence_referentiel_schema.sql
  *   20260609120001_competence_referentiel_triggers.sql
  *   20260609120002_competence_referentiel_rls.sql
  *   20260609130000_seed_question_template_skills.sql
+ *   20260610100000_refonte_skill_attempts_per_template.sql      (refonte chantier)
+ *   20260610100100_srs_deck_sections.sql                         (Programme deck)
+ *   20260610150000_followup_p0_uniques_and_checks.sql           (UNIQUE Programme + CHECK grade B)
  *
  * @module tests/integration/skill-attempts-endpoint
  */
@@ -178,8 +193,8 @@ describe('POST /api/skill-attempts — validation Zod', () => {
 		await expect(POST({ request, locals } as never)).rejects.toMatchObject({ status: 400 });
 	});
 
-	it('returns 200 with { inserted: 0 } for a valid body pointing to an untagged template', async () => {
-		// Create a template that has no skill tagged (domain='test' → not in migration 2.1)
+	it('returns 200 with { inserted: 1, skill_ids: [] } for a valid body pointing to an untagged template', async () => {
+		// Refonte 2026-06-10 : 1 row INSERT toujours, skill_ids reflète seulement les skills tagués famille A.
 		const student = await TestData.profile().withRole('student').create();
 		const templateId = await createFakeTemplate(service, student.id);
 		const locals = buildLocals(service, { id: student.id } as User);
@@ -189,8 +204,20 @@ describe('POST /api/skill-attempts — validation Zod', () => {
 		const data = await response.json();
 
 		expect(response.status).toBe(200);
-		expect(data.inserted).toBe(0);
+		expect(data.inserted).toBe(1);
 		expect(data.skill_ids).toEqual([]);
+
+		// Verify the row exists with skill_id=NULL (régime A per-template)
+		const { data: rows } = await service
+			.from('skill_attempts' as never)
+			.select('skill_id, template_id, source')
+			.eq('template_id', templateId);
+		expect(rows).toHaveLength(1);
+		const row = (
+			rows as Array<{ skill_id: string | null; template_id: string; source: string }>
+		)[0];
+		expect(row.skill_id).toBeNull();
+		expect(row.source).toBe('auto');
 	});
 });
 
@@ -228,9 +255,10 @@ describe('POST /api/skill-attempts — auth + RLS', () => {
 		const response = await POST({ request, locals } as never);
 		const data = await response.json();
 
-		// Template is untagged → inserted=0, but 200 response
+		// Template untagged → inserted=1 (row persisted) avec skill_ids=[]
 		expect(response.status).toBe(200);
-		expect(data).toHaveProperty('inserted');
+		expect(data.inserted).toBe(1);
+		expect(data.skill_ids).toEqual([]);
 	});
 
 	it('student_id in INSERT is always auth.uid() — any extra student_id field in body is ignored', async () => {
@@ -287,7 +315,10 @@ describe('POST /api/skill-attempts — comportement', () => {
 		await expect(POST({ request, locals } as never)).rejects.toMatchObject({ status: 404 });
 	});
 
-	it('returns 200 with { inserted: 0, skill_ids: [] } for a template with no tagged skills', async () => {
+	it('returns 200 with { inserted: 1, skill_ids: [] } for a template with no tagged skills (row stored, skill_id NULL)', async () => {
+		// Refonte 2026-06-10 : 1 row INSERT toujours, même sans tagging.
+		// La row a skill_id=NULL en régime A — la M2M question_template_skills
+		// est la source de la liaison vers les skills (vide ici).
 		const student = await TestData.profile().withRole('student').create();
 		const templateId = await createFakeTemplate(service, student.id);
 		const locals = buildLocals(service, { id: student.id } as User);
@@ -297,7 +328,7 @@ describe('POST /api/skill-attempts — comportement', () => {
 		const data = await response.json();
 
 		expect(response.status).toBe(200);
-		expect(data.inserted).toBe(0);
+		expect(data.inserted).toBe(1);
 		expect(data.skill_ids).toEqual([]);
 	});
 
@@ -320,7 +351,9 @@ describe('POST /api/skill-attempts — comportement', () => {
 		expect(data.skill_ids[0]).toBe(skill.id);
 	});
 
-	it('creates the skill_attempts row with correct fields: source=auto, student_id=auth.uid(), template_id, success', async () => {
+	it('creates the skill_attempts row with correct fields: source=auto, student_id=auth.uid(), template_id, success, skill_id=NULL (régime A per-template)', async () => {
+		// Refonte 2026-06-10 : skill_id est NULL en régime A. La liaison vers les
+		// skills passe par question_template_skills à la lecture.
 		const student = await TestData.profile().withRole('student').create();
 		const templateId = await createFakeTemplate(service, student.id);
 		const skill = await getKnowledgeSkill(service, 'Nombres décimaux', 1);
@@ -334,27 +367,31 @@ describe('POST /api/skill-attempts — comportement', () => {
 		// Verify the row in DB via service role
 		const { data: rows } = await service
 			.from('skill_attempts' as never)
-			.select('student_id, skill_id, template_id, success, with_help, source')
+			.select('student_id, skill_id, template_id, success, with_help, source, grade')
 			.eq('template_id', templateId)
 			.eq('student_id', student.id);
 
+		// 1 row inserted (per-template) — pas N rows comme avant
 		expect(rows).toHaveLength(1);
 		const row = (
 			rows as Array<{
 				student_id: string;
-				skill_id: string;
+				skill_id: string | null;
 				template_id: string;
 				success: boolean;
 				with_help: boolean;
 				source: string;
+				grade: number | null;
 			}>
 		)[0];
 		expect(row.student_id).toBe(student.id);
-		expect(row.skill_id).toBe(skill.id);
+		expect(row.skill_id).toBeNull(); // ← refonte chantier : NULL en régime A
 		expect(row.template_id).toBe(templateId);
 		expect(row.success).toBe(false);
 		expect(row.with_help).toBe(true);
 		expect(row.source).toBe('auto');
+		// Mapping success → grade : false → 1 (Again)
+		expect(row.grade).toBe(1);
 	});
 
 	it('stores phase_blocage when provided', async () => {
@@ -589,12 +626,11 @@ describe('Fail-silent — robustesse', () => {
 		expect((rows as Array<{ id: string }>).length).toBe(2);
 	});
 
-	it('endpoint returns 200 { inserted: 0 } for template with only competence-family skills (filtered by family=knowledge)', async () => {
-		// If a template were tagged with a competence-family skill instead of a knowledge
-		// one, the query filters on skills.family='knowledge' and skips it.
-		// We simulate this by tagging a template with... nothing (easier than creating a
-		// competence-family skill in tests). The untagged case already covers inserted=0.
-		// This test documents the design intent.
+	it('endpoint returns 200 { inserted: 1, skill_ids: [] } for template without knowledge tagged skills (skill_ids filtered by family=knowledge)', async () => {
+		// Refonte 2026-06-10 : 1 row INSERT toujours. skill_ids filtre seulement
+		// les skills famille knowledge — un template tagué seulement avec famille
+		// competence (cas exotique) ou sans tag renvoie skill_ids=[] mais le row
+		// est créé.
 		const student = await TestData.profile().withRole('student').create();
 		const tpl = await createFakeTemplate(service, student.id);
 
@@ -606,7 +642,8 @@ describe('Fail-silent — robustesse', () => {
 		const data = await response.json();
 
 		expect(response.status).toBe(200);
-		expect(data.inserted).toBe(0);
+		expect(data.inserted).toBe(1);
+		expect(data.skill_ids).toEqual([]);
 	});
 
 	it('calling endpoint with phase_blocage=regulation creates the row correctly (boundary value)', async () => {
@@ -647,9 +684,256 @@ describe('Fail-silent — robustesse', () => {
 				request: buildRequest({ template_id: tpl, success: false, phase_blocage: phaseBlocage }),
 				locals: buildLocals(service, studentUser)
 			} as never);
-			// Template untagged → inserted=0 but 200, not 400
+			// Refonte 2026-06-10 : 200 OK avec inserted=1 toujours (row stored).
 			expect(response.status).toBe(200);
 		}
+	});
+});
+
+// ============================================================================
+// 7. Refonte chantier 2026-06-10 — Comportements per-template
+// ============================================================================
+
+describe('Refonte per-template — comportements ajoutés', () => {
+	it('1 attempt sur template tagué avec N skills → 1 row skill_attempts inséré, N rows student_skill_state_a updated', async () => {
+		// Refonte 2026-06-10 : la fonction trigger boucle sur question_template_skills
+		// et met à jour 1 row student_skill_state_a par skill tagué famille A.
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		const skill1 = await getKnowledgeSkill(service, 'Fractions', 1);
+		const skill2 = await getKnowledgeSkill(service, 'Fractions', 2);
+		await tagTemplateWithSkill(service, templateId, skill1.id);
+		await tagTemplateWithSkill(service, templateId, skill2.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const response = await POST({
+			request: buildRequest({ template_id: templateId, success: true }),
+			locals
+		} as never);
+		const data = await response.json();
+
+		expect(response.status).toBe(200);
+		// 1 row inserted regardless of N skills
+		expect(data.inserted).toBe(1);
+		// Both knowledge skills returned in skill_ids
+		expect(data.skill_ids).toHaveLength(2);
+		expect(data.skill_ids).toEqual(expect.arrayContaining([skill1.id, skill2.id]));
+
+		// 1 row skill_attempts dans la DB
+		const { data: attemptRows } = await service
+			.from('skill_attempts' as never)
+			.select('id')
+			.eq('template_id', templateId)
+			.eq('student_id', student.id);
+		expect((attemptRows as Array<{ id: string }>).length).toBe(1);
+
+		// 2 rows student_skill_state_a (1 par skill) après trigger
+		const state1 = await pollSkillStateA(student.id, skill1.id);
+		const state2 = await pollSkillStateA(student.id, skill2.id);
+		expect(state1.total_successes).toBeGreaterThanOrEqual(1);
+		expect(state2.total_successes).toBeGreaterThanOrEqual(1);
+	});
+
+	it('success=true → grade=3 (Good) ; success=false → grade=1 (Again)', async () => {
+		// Vérifie le mapping appliqué par l'endpoint pour FSRS.
+		const student = await TestData.profile().withRole('student').create();
+		const tplOk = await createFakeTemplate(service, student.id);
+		const tplKo = await createFakeTemplate(service, student.id);
+		const skill = await getKnowledgeSkill(service, 'Fractions', 1);
+		await tagTemplateWithSkill(service, tplOk, skill.id);
+		await tagTemplateWithSkill(service, tplKo, skill.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		await POST({
+			request: buildRequest({ template_id: tplOk, success: true }),
+			locals
+		} as never);
+		await POST({
+			request: buildRequest({ template_id: tplKo, success: false }),
+			locals
+		} as never);
+
+		const { data: rows } = await service
+			.from('skill_attempts' as never)
+			.select('template_id, success, grade')
+			.eq('student_id', student.id)
+			.in('template_id', [tplOk, tplKo]);
+
+		const rowOk = (rows as Array<{ template_id: string; grade: number }>).find(
+			(r) => r.template_id === tplOk
+		);
+		const rowKo = (rows as Array<{ template_id: string; grade: number }>).find(
+			(r) => r.template_id === tplKo
+		);
+		expect(rowOk?.grade).toBe(3); // Good
+		expect(rowKo?.grade).toBe(1); // Again
+	});
+
+	it('Auto-création du deck Programme à la 1ʳᵉ interaction famille A', async () => {
+		// Refonte 2026-06-10 : ensureProgrammeDeckCard auto-crée le deck Programme
+		// (is_auto_managed=true) si absent + y ajoute la carte template.
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		const skill = await getKnowledgeSkill(service, 'Fractions', 3);
+		await tagTemplateWithSkill(service, templateId, skill.id);
+
+		// Avant l'appel : pas de deck Programme
+		const { data: decksBefore } = await service
+			.from('srs_decks' as never)
+			.select('id, name, is_auto_managed')
+			.eq('owner_id', student.id);
+		expect(
+			(decksBefore as Array<{ is_auto_managed: boolean }>).filter((d) => d.is_auto_managed)
+		).toHaveLength(0);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		await POST({
+			request: buildRequest({ template_id: templateId, success: true }),
+			locals
+		} as never);
+
+		// Après l'appel : 1 deck Programme + 1 carte
+		const { data: decksAfter } = await service
+			.from('srs_decks' as never)
+			.select('id, name, is_auto_managed, deck_type')
+			.eq('owner_id', student.id);
+		const programmeDeck = (
+			decksAfter as Array<{
+				id: string;
+				name: string;
+				is_auto_managed: boolean;
+				deck_type: string;
+			}>
+		).find((d) => d.is_auto_managed);
+		expect(programmeDeck).toBeDefined();
+		expect(programmeDeck?.name).toBe('Programme');
+		expect(programmeDeck?.deck_type).toBe('personal');
+
+		const { data: cards } = await service
+			.from('srs_cards' as never)
+			.select('template_id, card_type')
+			.eq('deck_id', programmeDeck!.id);
+		expect(cards).toHaveLength(1);
+		const card = (cards as Array<{ template_id: string; card_type: string }>)[0];
+		expect(card.template_id).toBe(templateId);
+		expect(card.card_type).toBe('template');
+	});
+
+	it('Idempotence : 2 appels sur le même template → 1 seule carte dans le deck Programme', async () => {
+		// Vérifie l'UNIQUE INDEX uq_srs_cards_deck_template + ON CONFLICT DO NOTHING.
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		const skill = await getKnowledgeSkill(service, 'Fractions', 4);
+		await tagTemplateWithSkill(service, templateId, skill.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		await POST({
+			request: buildRequest({ template_id: templateId, success: true }),
+			locals
+		} as never);
+		await POST({
+			request: buildRequest({ template_id: templateId, success: true }),
+			locals
+		} as never);
+
+		// 2 rows skill_attempts mais 1 seule carte dans Programme
+		const { data: decks } = await service
+			.from('srs_decks' as never)
+			.select('id')
+			.eq('owner_id', student.id)
+			.eq('is_auto_managed', true);
+		const programmeDeckId = (decks as Array<{ id: string }>)[0]?.id;
+		expect(programmeDeckId).toBeDefined();
+
+		const { data: cards } = await service
+			.from('srs_cards' as never)
+			.select('id')
+			.eq('deck_id', programmeDeckId)
+			.eq('template_id', templateId);
+		expect(cards).toHaveLength(1);
+	});
+
+	it('Template non tagué famille A → pas d ajout au deck Programme (mais skill_attempts row OK)', async () => {
+		// Refonte 2026-06-10 : Programme ne contient que les templates tagués famille A.
+		// Un template sans tag laisse FSRS suivre le template (srs_card_stats créé)
+		// mais ne crée pas de carte dans Programme.
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		// Pas de tagTemplateWithSkill — template volontairement non tagué
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		const response = await POST({
+			request: buildRequest({ template_id: templateId, success: true }),
+			locals
+		} as never);
+		expect(response.status).toBe(200);
+		const data = await response.json();
+		expect(data.inserted).toBe(1);
+		expect(data.skill_ids).toEqual([]);
+
+		// skill_attempts row créée
+		const { data: attempts } = await service
+			.from('skill_attempts' as never)
+			.select('id')
+			.eq('template_id', templateId);
+		expect((attempts as Array<{ id: string }>).length).toBe(1);
+
+		// Pas de deck Programme créé (ou créé mais sans carte pour ce template)
+		const { data: decks } = await service
+			.from('srs_decks' as never)
+			.select('id')
+			.eq('owner_id', student.id)
+			.eq('is_auto_managed', true);
+		const programmeDeckId = (decks as Array<{ id: string }>)[0]?.id;
+
+		if (programmeDeckId) {
+			// Si un Programme existe (par exemple via un test précédent), il ne doit pas
+			// contenir cette carte.
+			const { data: cards } = await service
+				.from('srs_cards' as never)
+				.select('id')
+				.eq('deck_id', programmeDeckId)
+				.eq('template_id', templateId);
+			expect(cards).toHaveLength(0);
+		}
+	});
+
+	it('FSRS srs_card_stats créé automatiquement avec state=learning à la 1ʳᵉ interaction réussie', async () => {
+		// Refonte 2026-06-10 : applyFsrsUpdate crée srs_card_stats si absent.
+		// État après 1 succès : state=learning (transition new → learning).
+		const student = await TestData.profile().withRole('student').create();
+		const templateId = await createFakeTemplate(service, student.id);
+		const skill = await getKnowledgeSkill(service, 'Nombres décimaux', 2);
+		await tagTemplateWithSkill(service, templateId, skill.id);
+
+		const locals = buildLocals(service, { id: student.id } as User);
+		await POST({
+			request: buildRequest({ template_id: templateId, success: true }),
+			locals
+		} as never);
+
+		const { data: stats } = await service
+			.from('srs_card_stats' as never)
+			.select('state, total_reviews, difficulty, stability, next_review')
+			.eq('user_id', student.id)
+			.eq('card_reference_type', 'template')
+			.eq('card_reference_id', templateId);
+
+		expect(stats).toHaveLength(1);
+		const stat = (
+			stats as Array<{
+				state: string;
+				total_reviews: number;
+				difficulty: number;
+				stability: number;
+				next_review: string;
+			}>
+		)[0];
+		expect(stat.state).toBe('learning');
+		expect(stat.total_reviews).toBe(1);
+		expect(stat.difficulty).toBeGreaterThan(0);
+		expect(stat.stability).toBeGreaterThan(0);
+		expect(new Date(stat.next_review).getTime()).toBeGreaterThan(Date.now());
 	});
 });
 
