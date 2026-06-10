@@ -68,13 +68,18 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 /**
  * PUT /api/srs/cards/[id]
  *
- * Update card.
- * Only custom cards in non-assigned decks can be updated.
+ * Update card. Trois usages possibles dans le même body :
+ *   - frontContent / backContent : carte custom uniquement
+ *   - section_id : assignation à une sous-section (cartes template + custom)
  *
- * Body:
+ * Le deck doit être propriété de l'utilisateur, non assigné par un prof,
+ * et — pour `section_id` — non auto-géré (le deck Programme refuse les sections).
+ *
+ * Body :
  * {
- *   frontContent?: string (TemplateMarkdown),
- *   backContent?: string (TemplateMarkdown)
+ *   frontContent?: string,
+ *   backContent?: string,
+ *   section_id?: string | null  // UUID d'une section du même deck, ou null pour "Non rangées"
  * }
  *
  * @returns Updated card
@@ -83,7 +88,6 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
 
-	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
 	if (!paramValidation.success) {
 		return json({ error: 'Invalid card ID' }, { status: 400 });
@@ -92,7 +96,6 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 	const { id } = paramValidation.data;
 
 	try {
-		// Get card
 		const { data: card, error: cardError } = await supabase
 			.from('srs_cards')
 			.select('*')
@@ -103,7 +106,6 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			return json({ error: 'Card not found' }, { status: 404 });
 		}
 
-		// Verify user owns deck
 		const { data: deck, error: deckError } = await supabase
 			.from('srs_decks')
 			.select('*')
@@ -115,7 +117,6 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			return json({ error: 'Deck not found or access denied' }, { status: 404 });
 		}
 
-		// Check if deck is assigned (read-only)
 		if (deck.is_assigned) {
 			return json(
 				{ error: 'Cannot update cards in assigned deck. Assigned decks are read-only.' },
@@ -123,15 +124,6 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			);
 		}
 
-		// Only custom cards can be updated
-		if (card.card_type !== 'custom') {
-			return json(
-				{ error: 'Only custom cards can be updated. Template cards are read-only.' },
-				{ status: 403 }
-			);
-		}
-
-		// ✅ SECURITY: Validate input with Zod
 		const bodyRaw = await request.json();
 		const validation = updateCardSchema.safeParse(bodyRaw);
 
@@ -140,23 +132,47 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		const body = validation.data;
-
-		// Build update object
 		const updates: Record<string, unknown> = {};
 
-		if (body.frontContent !== undefined) {
-			updates.front_content = body.frontContent;
+		// Front/back content : carte custom uniquement
+		if (body.frontContent !== undefined || body.backContent !== undefined) {
+			if (card.card_type !== 'custom') {
+				return json(
+					{ error: 'Only custom cards can have their content updated.' },
+					{ status: 403 }
+				);
+			}
+			if (body.frontContent !== undefined) updates.front_content = body.frontContent;
+			if (body.backContent !== undefined) updates.back_content = body.backContent;
 		}
 
-		if (body.backContent !== undefined) {
-			updates.back_content = body.backContent;
+		// section_id : interdit sur deck auto-géré (Programme)
+		if (body.section_id !== undefined) {
+			if (deck.is_auto_managed) {
+				return json(
+					{ error: 'Cannot move cards in auto-managed deck (Programme).' },
+					{ status: 403 }
+				);
+			}
+			// Si section_id non-null, vérifier qu'elle appartient bien à ce deck
+			if (body.section_id !== null) {
+				const { data: section } = await supabase
+					.from('srs_deck_sections')
+					.select('id')
+					.eq('id', body.section_id)
+					.eq('deck_id', card.deck_id)
+					.maybeSingle();
+				if (!section) {
+					return json({ error: 'Section does not belong to this deck.' }, { status: 400 });
+				}
+			}
+			updates.section_id = body.section_id;
 		}
 
 		if (Object.keys(updates).length === 0) {
 			return json({ error: 'No updates provided' }, { status: 400 });
 		}
 
-		// Update card
 		const { data: updatedCard, error: updateError } = await supabase
 			.from('srs_cards')
 			.update(updates)

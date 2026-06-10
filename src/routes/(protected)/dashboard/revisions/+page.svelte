@@ -24,7 +24,10 @@
 
 	interface Props {
 		data: {
-			decks: (Deck & { stats: { total_cards: number; due_cards: number; new_cards: number } })[];
+			decks: (Deck & {
+				isAutoManaged?: boolean;
+				stats: { total_cards: number; due_cards: number; new_cards: number };
+			})[];
 		};
 	}
 
@@ -56,10 +59,13 @@
 	);
 
 	/**
-	 * Navigate to study session
+	 * Navigate to deck (detail page for personal/assigned, dedicated view for Programme).
 	 */
-	function startStudy(deckId: string) {
-		goto(`/dashboard/revisions/decks/${deckId}/study`).then(() => {});
+	function openDeck(deck: (typeof transformedDecks)[number]) {
+		const target = deck.isAutoManaged
+			? '/dashboard/revisions/decks/programme'
+			: `/dashboard/revisions/decks/${deck.id}`;
+		goto(target).then(() => {});
 	}
 
 	/**
@@ -164,7 +170,7 @@
 			{:else}
 				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 					{#each transformedDecks as deck (deck.id)}
-						<DeckCard {deck} onclick={() => startStudy(deck.id)} />
+						<DeckCard {deck} onclick={() => openDeck(deck)} />
 					{/each}
 				</div>
 			{/if}
@@ -181,7 +187,7 @@
 			{:else}
 				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 					{#each assignedDecks as deck (deck.id)}
-						<DeckCard {deck} onclick={() => startStudy(deck.id)} />
+						<DeckCard {deck} onclick={() => openDeck(deck)} />
 					{/each}
 				</div>
 			{/if}
@@ -202,7 +208,7 @@
 			{:else}
 				<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 					{#each personalDecks as deck (deck.id)}
-						<DeckCard {deck} onclick={() => startStudy(deck.id)} />
+						<DeckCard {deck} onclick={() => openDeck(deck)} />
 					{/each}
 				</div>
 			{/if}
