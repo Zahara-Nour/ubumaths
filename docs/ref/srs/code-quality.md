@@ -14,10 +14,27 @@ Audit qualité post-chantier 2026-06-10. Le module est livré (release v0.9.9) m
 
 ## 1. Findings critiques
 
-### 1.1 Tests intégration `skill-attempts-endpoint.test.ts` désynchronisés avec l'API refondue
+### 1.1 ~~Tests intégration `skill-attempts-endpoint.test.ts` désynchronisés avec l'API refondue~~ ✅ RÉSOLU
 
-**Sévérité** : Critical
-**Fichier** : `tests/integration/skill-attempts-endpoint.test.ts` (28 tests)
+**Sévérité** : ~~Critical~~ Resolved (réécrits en même session 2026-06-10)
+**Fichier** : `tests/integration/skill-attempts-endpoint.test.ts` (avant 28 tests → après 34 tests / 8 describe blocs)
+
+**Fix appliqué** :
+
+- Toutes les assertions `expect(data.inserted).toBe(0)` (4 occurrences) corrigées en `toBe(1)` — l'API renvoie maintenant 1 row toujours.
+- Header doc-comment mis à jour (refonte 2026-06-10 explicitement documentée).
+- Liste des migrations required étendue avec `20260610100000` + `20260610100100` + `20260610150000`.
+- 6 nouveaux tests ajoutés dans bloc « Refonte chantier 2026-06-10 — Comportements per-template » :
+  1. 1 attempt sur template tagué N skills → 1 row inséré + N rows `student_skill_state_a` mises à jour
+  2. Mapping success → grade (3 si true, 1 si false)
+  3. Auto-création deck Programme à la 1ʳᵉ interaction famille A
+  4. Idempotence : 2 appels même template → 1 seule carte Programme
+  5. Template non tagué famille A → pas ajout Programme mais row OK
+  6. FSRS `srs_card_stats` créé automatiquement avec state=`learning`
+
+ESLint propre, 34 `it()` / 8 `describe()`. **Détail historique préservé ci-dessous.**
+
+**Détail historique (résolu)** :
 
 L'API `POST /api/skill-attempts` a été refondue per-template (1 row INSERT au lieu de N). Le test contient encore des assertions vérifiant l'ancien comportement :
 

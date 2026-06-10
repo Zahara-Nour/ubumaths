@@ -14,18 +14,20 @@ Audit tests post-chantier 2026-06-10. L'algo FSRS lui-même est bien couvert (h�
 
 ## 1. Vue d'ensemble
 
-### 1.1 Comptage par fichier de test (241 tests SRS-related)
+> **MAJ 2026-06-10 (même session)** : le fichier `skill-attempts-endpoint.test.ts` a été réécrit (28 → 34 tests, **0 assertion désynchronisée restante**). Cf. §1.1 et §3.1 sprint critique J1 ✅.
 
-| Fichier                                             | Tests | Surface couverte                                                                                                                                                  |
-| --------------------------------------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/srs/fsrs.test.ts`                          | 60    | Algo FSRS-6 (calculateRetrievability, reviewCard, calculateInterval, edge cases)                                                                                  |
-| `src/lib/srs/config.test.ts`                        | 39    | DEFAULT_FSRS_PARAMS validation, instanciation FSRS avec configs                                                                                                   |
-| `src/lib/srs/generator.test.ts`                     | 25    | generateSRSInstance (seed aléatoire), generateSRSPreviewInstances                                                                                                 |
-| `src/lib/server/validation/srs.test.ts`             | 66    | Schémas Zod : createDeckSchema, submitReviewSchema, updateCardSchema, fsrsConfigSchema. **Ne couvre PAS** createSectionSchema, updateSectionSchema, states filter |
-| `src/routes/api/srs/api-routes.test.ts`             | 23    | Smoke des endpoints SRS (deck/card auth happy paths). **Ne couvre PAS** sections, ne propage pas les changements chantier                                         |
-| `tests/integration/skill-attempts-endpoint.test.ts` | 28    | Intégration POST /api/skill-attempts. **DÉSYNCHRONISÉS** avec l'API refondue (cf. §4.1)                                                                           |
+### 1.1 Comptage par fichier de test (247 tests SRS-related)
 
-**Total** : 241 tests, dont 213 utilisables tels quels (les 28 d'intégration sont à réécrire).
+| Fichier                                             | Tests     | Surface couverte                                                                                                                                                  |
+| --------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/srs/fsrs.test.ts`                          | 60        | Algo FSRS-6 (calculateRetrievability, reviewCard, calculateInterval, edge cases)                                                                                  |
+| `src/lib/srs/config.test.ts`                        | 39        | DEFAULT_FSRS_PARAMS validation, instanciation FSRS avec configs                                                                                                   |
+| `src/lib/srs/generator.test.ts`                     | 25        | generateSRSInstance (seed aléatoire), generateSRSPreviewInstances                                                                                                 |
+| `src/lib/server/validation/srs.test.ts`             | 66        | Schémas Zod : createDeckSchema, submitReviewSchema, updateCardSchema, fsrsConfigSchema. **Ne couvre PAS** createSectionSchema, updateSectionSchema, states filter |
+| `src/routes/api/srs/api-routes.test.ts`             | 23        | Smoke des endpoints SRS (deck/card auth happy paths). **Ne couvre PAS** sections, ne propage pas les changements chantier                                         |
+| `tests/integration/skill-attempts-endpoint.test.ts` | **34** ✅ | Intégration POST /api/skill-attempts post-chantier (réécrits 2026-06-10) : assertions per-template + 6 nouveaux tests pour deck Programme + FSRS + mapping grade  |
+
+**Total** : 247 tests utilisables (28 → 34 grâce à la réécriture du fichier d'intégration).
 
 ### 1.2 Estimation de couverture
 
