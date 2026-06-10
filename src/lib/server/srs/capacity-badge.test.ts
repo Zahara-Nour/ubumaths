@@ -23,6 +23,7 @@ import {
 	computeCapacityBadges,
 	BADGE_LABEL,
 	BADGE_VISUAL,
+	BADGE_PRIORITY,
 	type CapacityBadge
 } from './capacity-badge';
 
@@ -452,5 +453,52 @@ describe('BADGE_LABEL + BADGE_VISUAL', () => {
 	it('uses distinctive visuals for each badge', () => {
 		const visuals = new Set(Object.values(BADGE_VISUAL));
 		expect(visuals.size).toBe(5);
+	});
+});
+
+// ============================================================================
+// BADGE_PRIORITY — exporté (chantier 2026-06-10 minor #3.4)
+// ============================================================================
+
+describe('BADGE_PRIORITY (exporté)', () => {
+	it('contient les 5 badges avec des valeurs numériques distinctes', () => {
+		const keys: CapacityBadge[] = [
+			'a_remedier',
+			'a_renforcer',
+			'acquise_en_memoire',
+			'en_apprentissage',
+			'non_commencee'
+		];
+		for (const key of keys) {
+			expect(BADGE_PRIORITY[key]).toBeDefined();
+			expect(typeof BADGE_PRIORITY[key]).toBe('number');
+		}
+		const values = new Set(Object.values(BADGE_PRIORITY));
+		expect(values.size).toBe(5);
+	});
+
+	it('respecte l ordre descendant : a_remedier > a_renforcer > en_apprentissage > acquise_en_memoire > non_commencee', () => {
+		expect(BADGE_PRIORITY.a_remedier).toBeGreaterThan(BADGE_PRIORITY.a_renforcer);
+		expect(BADGE_PRIORITY.a_renforcer).toBeGreaterThan(BADGE_PRIORITY.en_apprentissage);
+		expect(BADGE_PRIORITY.en_apprentissage).toBeGreaterThan(BADGE_PRIORITY.acquise_en_memoire);
+		expect(BADGE_PRIORITY.acquise_en_memoire).toBeGreaterThan(BADGE_PRIORITY.non_commencee);
+	});
+
+	it('peut servir de comparateur Array.sort()', () => {
+		const arr: CapacityBadge[] = [
+			'acquise_en_memoire',
+			'a_remedier',
+			'non_commencee',
+			'en_apprentissage',
+			'a_renforcer'
+		];
+		arr.sort((a, b) => BADGE_PRIORITY[b] - BADGE_PRIORITY[a]);
+		expect(arr).toEqual([
+			'a_remedier',
+			'a_renforcer',
+			'en_apprentissage',
+			'acquise_en_memoire',
+			'non_commencee'
+		]);
 	});
 });

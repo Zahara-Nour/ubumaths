@@ -6,9 +6,14 @@
  *
  *   1. 🆘 a_remedier        — ≥ 1 template due ET state ∈ {learning, relearning}
  *   2. 🔁 a_renforcer       — ≥ 1 template due ET state = 'review'
- *   3. ✅ acquise_en_memoire — ≥ 1 template pas due ET state = 'review'
- *   4. ⏳ en_apprentissage  — ≥ 1 template pas due ET state ∈ {learning, relearning}
+ *   3. ⏳ en_apprentissage  — ≥ 1 template avec state = 'new' OU (pas due
+ *                              ET state ∈ {learning, relearning})
+ *   4. ✅ acquise_en_memoire — ≥ 1 template pas due ET state = 'review'
  *   5. ◯ non_commencee      — aucun template avec srs_card_stats
+ *
+ * Cas particulier `state='new'` : un template jamais reviewed est classé
+ * `en_apprentissage` quel que soit `nextReview` (le `state='new'` arrive
+ * avant la 1ère review, sa date next_review n'a pas de sens). Cf. `templateToBadge`.
  *
  * Cf. `docs/wip/srs-fsrs-spec-tdd.md` §5 + `docs/ref/srs/architecture.md` §5.1.
  */
@@ -140,9 +145,13 @@ export function templateToBadge(
 
 /**
  * Ordre de priorité descendant des badges. Source unique de vérité utilisée
- * par `worstBadge()` (page objectifs) et `aggregateBadge()` (capacity-badge).
+ * par `worstBadge()`, `aggregateBadge()` et les consumers UI qui veulent
+ * trier ou comparer 2 badges.
+ *
+ * Plus la valeur est élevée, plus le badge est prioritaire dans l'agrégation
+ * (un `a_remedier` parmi plusieurs templates l'emporte sur tout le reste).
  */
-const BADGE_PRIORITY: Record<CapacityBadge, number> = {
+export const BADGE_PRIORITY: Record<CapacityBadge, number> = {
 	a_remedier: 5,
 	a_renforcer: 4,
 	en_apprentissage: 3,

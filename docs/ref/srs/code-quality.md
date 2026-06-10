@@ -179,25 +179,14 @@ Note hors-scope : `srs.test.ts` contient 7 failures pré-existantes sur `createC
 
 ## 3. Findings mineurs
 
-### 3.1 `capacity-badge.ts` : top-comment dit "non_commencee — aucun template avec srs_card_stats" mais la fonction range aussi `state='new'` → `en_apprentissage`
+### 3.1 ~~`capacity-badge.ts` : top-comment désaligné avec le code (`state='new'`)~~ ✅ RÉSOLU
 
-**Sévérité** : Minor
-**Fichier** : `src/lib/server/srs/capacity-badge.ts:5-11` (commentaire) vs `:122-128` (code)
+**Sévérité** : ~~Minor~~ Resolved (commit 2026-06-10)
 
-Le commentaire en haut du fichier dit :
+Le top-comment de `capacity-badge.ts:5-19` a été réécrit pour documenter explicitement :
 
-```
-1. 🆘 a_remedier        — ≥ 1 template due ET state ∈ {learning, relearning}
-...
-5. ◯ non_commencee      — aucun template avec srs_card_stats
-```
-
-Mais `templateToBadge` classe `state='new'` → `en_apprentissage` au lieu de `non_commencee`. La règle réelle est plus subtile :
-
-- `non_commencee` = aucun template tagué OU aucune skill_attempt sur les templates tagués.
-- `state='new'` (cas exotique où une carte existe mais aucun skill_attempt) = `en_apprentissage`.
-
-**Fix recommandé** : aligner le commentaire avec le code (documenter le cas `state='new'` exotique).
+- L'ordre de priorité descendant complet (`a_remedier` > `a_renforcer` > `en_apprentissage` > `acquise_en_memoire` > `non_commencee`).
+- Le cas particulier `state='new'` → `en_apprentissage` quel que soit `nextReview` (avant la 1ʳᵉ review).
 
 ### 3.2 `programme-deck.ts:30` : commentaire désactualisé sur l'absence de UNIQUE
 
@@ -221,22 +210,19 @@ Le typage Supabase JS ne supporte pas la syntaxe d'ordre sur jointure nested. Le
 
 **Note** : c'est un trait du Supabase JS client, pas un bug de notre code. À surveiller lors d'une montée de version Supabase JS (potentiel fix upstream).
 
-### 3.4 `BADGE_PRIORITY` exposé indirectement via `worstBadge` mais pas typé exposable
+### 3.4 ~~`BADGE_PRIORITY` exposé indirectement via `worstBadge` mais pas typé exposable~~ ✅ RÉSOLU
 
-**Sévérité** : Minor
-**Fichier** : `src/lib/server/srs/capacity-badge.ts:145-151`
+**Sévérité** : ~~Minor~~ Resolved (commit 2026-06-10)
 
-```ts
-const BADGE_PRIORITY: Record<CapacityBadge, number> = {
-  a_remedier: 5,
-  a_renforcer: 4,
-  ...
-};
-```
+`BADGE_PRIORITY` est désormais exporté dans `src/lib/server/srs/capacity-badge.ts:148-156` avec un JSDoc explicite qui détaille son usage (agrégation interne + tri/comparaison externe).
 
-Non exporté. Si un consommateur externe veut implémenter sa propre logique d'ordre (par exemple pour trier la liste affichée), il doit dupliquer le mapping (cf. P2#10 du code review, traité).
+3 nouveaux tests ajoutés dans `capacity-badge.test.ts` :
 
-**Fix recommandé** : exporter `BADGE_PRIORITY` ou ajouter un helper `comparBadges(a, b): number`.
+- Présence des 5 clés + valeurs numériques distinctes.
+- Ordre descendant strict (`a_remedier > a_renforcer > en_apprentissage > acquise_en_memoire > non_commencee`).
+- Usage comme comparateur `Array.sort()`.
+
+Test total `capacity-badge.test.ts` : 44 → 47.
 
 ---
 
