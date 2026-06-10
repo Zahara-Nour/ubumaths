@@ -120,7 +120,40 @@ Spec TDD : `docs/wip/srs-anti-fraud-spec-tdd.md`
 
 ---
 
-## Phase 3 — Endpoints prof ⏳ À venir
+## Phase 3 — Endpoints prof ✅ (2026-06-10)
+
+### Livré
+
+- **`src/routes/api/teacher/classes/[classId]/anti-fraud/flags/+server.ts`** (NEW) :
+  - GET liste flags des élèves de la classe, jointure `profiles` + `skills`.
+  - Filtres : `?resolved=`, `?since=`, `?type=`, `?capacity=`.
+  - Tri `score DESC, created_at DESC`, limit 100.
+  - Retour : `{ flags, total, resolved_count }`.
+- **`src/routes/api/teacher/classes/[classId]/anti-fraud/flags/[flagId]/+server.ts`** (NEW) :
+  - PATCH idempotent (set `resolved=true, resolved_by, resolved_at`).
+  - Vérif ownership : flag.student_id ∈ classe du prof (via class_members).
+  - 404 (pas 403) si flag d'élève d'autre classe (ne révèle pas l'existence).
+- **`src/routes/api/teacher/classes/[classId]/anti-fraud/count/+server.ts`** (NEW) :
+  - GET `{ count }` non-résolus de la classe. SELECT COUNT(\*) head only.
+
+### Tests
+
+- **`src/lib/server/validation/anti-fraud.test.ts`** : **18 tests** sur les 4 schemas Zod (runJobOptions, flagsListQuery, flagIdParam, markResolvedBody).
+- Pas de tests d'intégration end-to-end : ils nécessitent une instance Supabase locale + migrations pushed. À écrire si besoin lors du QA manuel (cf. §B9-B12 spec TDD).
+
+### Décisions techniques Phase 3
+
+- **404 silencieux** sur cross-class plutôt que 403 : ne révèle pas l'existence d'un flag d'autre classe (information disclosure mitigation).
+- **Idempotence PATCH** : si flag déjà résolu → 200 avec `{ already_resolved: true }`. Pas d'erreur.
+- **Pas d'unresolve V1** : `markResolvedBodySchema = { resolved: z.literal(true) }` strict.
+- **Pattern endpoint reproduit** depuis `/api/teacher/classes/[classId]/analytics/*` (cascade Zod params + query + requireTeacherOfClass + handler).
+- **`limit(100)`** anti-DoS sur GET flags.
+
+### Commit Phase 3
+
+`feat(anti-fraud): endpoints prof (Phase 3)` (à venir).
+
+---
 
 ---
 
