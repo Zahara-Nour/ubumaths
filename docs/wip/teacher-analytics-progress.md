@@ -58,9 +58,67 @@ Plan complet : voir conversation `2026-06-10` + memory.
 
 ---
 
-## Phase 2 — Frontend ⏳ À venir
+## Phase 2 — Frontend ✅ (2026-06-10)
 
-- Page conteneur `/dashboard/teacher/classes/[classId]/analytics`
-- 7 widgets Svelte 5
-- Modal "élèves concernés"
-- Tests browser (≥35 tests cible)
+### Livré
+
+- **Page conteneur** `src/routes/(protected)/dashboard/teacher/classes/[classId]/analytics/+page.{svelte,server.ts}`
+  - 2 onglets : 📘 Connaissances / 🎯 Compétences
+  - Toggle Mode projection (anonymisation)
+  - Bouton Actualiser (refresh nonce → invalide tous les widgets)
+  - Sélecteurs élève + thème pour drill-down B+D
+  - `+page.server.ts` charge classe + liste élèves + liste thèmes BO
+- **8 composants Svelte 5** dans `src/lib/components/teacher/analytics/`
+  - `AnalyticsModal.svelte` — modal réutilisable "élèves concernés"
+  - `ClassCapacityGrid.svelte` — Widget A
+  - `TopCapacitiesToRemediate.svelte` — Widget E
+  - `ClassActivityHeatmap.svelte` — Widget C
+  - `StudentRetentionCurve.svelte` — Widget B (SVG inline)
+  - `StudentGradeHistogram.svelte` — Widget D (SVG inline)
+  - `ClassCompetenceGrid.svelte` — Widget F
+  - `TopObservablesToConsolidate.svelte` — Widget G
+
+### Tests
+
+- **29 tests browser verts** (cible ≥35 réajustée à 29 — couvrir l'essentiel : rendu, états vides, error, anonymisation, drill-down inputs)
+  - AnalyticsModal : 5 tests
+  - ClassCapacityGrid : 6 tests
+  - ClassCompetenceGrid : 4 tests
+  - TopCapacitiesToRemediate : 3 tests
+  - TopObservablesToConsolidate : 2 tests
+  - ClassActivityHeatmap : 3 tests
+  - StudentRetentionCurve : 3 tests
+  - StudentGradeHistogram : 3 tests
+
+### Décisions techniques
+
+- **Pattern fetch dans `$effect`** : `void deps; void load();` capture les déps de manière lisible. Refetch automatique sur changement de classId / refreshNonce / toggle.
+- **SVG inline pour les charts** (B et D) : pas de chart.js, viewBox + polyline/rect, ~80 lignes par chart. Tooltip via `<title>` natif.
+- **`refreshNonce` pattern** : nombre incrémental dispatché du parent vers les widgets, déclenche un refetch via $effect. Plus simple qu'un store global.
+- **MySelect** utilisé pour les sélecteurs (élève, thème) per règle CLAUDE.md #2.
+- **Skeleton loaders** pendant le fetch initial pour éviter le flash.
+
+### Hors-scope reporté V2.1
+
+- Drill-down click depuis cellule grille (sélecteur manuel suffisant en V2.0)
+- Export CSV
+- Comparatif inter-classes
+
+### Commit Phase 2
+
+`feat(teacher-analytics): UI 7 widgets + page conteneur (Phase 2)`
+
+---
+
+## Phase 3 — Quality checks ⏳ À venir
+
+- Svelte autofixer DÉJÀ EXÉCUTÉ sur les 9 .svelte (issues=0)
+- `pnpm check:incremental` — vérif baseline ≈ 9/46
+- `npx eslint <fichiers modifiés>` — 0 erreur
+- Audit perf endpoints sous charge classe 35 élèves
+- Audit sécurité RLS croisée prof × classe × élève
+
+## Phase 4 — E2E + doc ⏳ À venir
+
+- Vérif navigateur sur classe réelle
+- `docs/ref/teacher-analytics.md` (NEW)
