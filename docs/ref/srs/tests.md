@@ -14,7 +14,10 @@ Audit tests post-chantier 2026-06-10. L'algo FSRS lui-même est bien couvert (h�
 
 ## 1. Vue d'ensemble
 
-> **MAJ 2026-06-10 (même session)** : le fichier `skill-attempts-endpoint.test.ts` a été réécrit (28 → 34 tests, **0 assertion désynchronisée restante**). Cf. §1.1 et §3.1 sprint critique J1 ✅.
+> **MAJ 2026-06-10 (même session)** :
+>
+> - `skill-attempts-endpoint.test.ts` réécrit (28 → 34 tests, 0 assertion désynchronisée). ✅ Sprint critique J1.
+> - `capacity-badge.test.ts` créé (**44 tests passent en 18 ms**, ESLint propre). ✅ Sprint critique J2.
 
 ### 1.1 Comptage par fichier de test (247 tests SRS-related)
 
