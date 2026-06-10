@@ -29,8 +29,9 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { skillAttemptInputSchema } from '$lib/server/validation/skill-attempts';
 import { FSRS } from '$lib/srs/fsrs';
-import { Grade, type CardStats } from '$lib/srs/types';
+import { Grade } from '$lib/srs/types';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
+import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 
 // ============================================================================
 // POST /api/skill-attempts
@@ -84,7 +85,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// éviter une désynchro durable srs_card_stats ↔ student_skill_state_a.
 	// Le client peut retenter ; un échec persistant signale un vrai bug à fixer.
 	try {
-		await applyFsrsUpdate(locals.supabase, user.id, template_id, grade);
+		await applyFsrsReview(locals.supabase, new FSRS(), user.id, 'template', template_id, grade);
 	} catch (fsrsErr) {
 		console.error('[skill-attempts] FSRS update failed (fail-loud):', {
 			userId: user.id,
@@ -125,80 +126,3 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	return json({ inserted: 1, skill_ids: skillIds });
 };
-
-// ============================================================================
-// Helpers internes
-// ============================================================================
-
-/**
- * Met à jour `srs_card_stats` côté FSRS de manière synchrone pour
- * (user, template). Initialise la row si absente.
- *
- * Cohabite avec `srs_card_stats` partagés entre tous les decks de l'élève
- * contenant ce template (UNIQUE `(user_id, card_reference_type, card_reference_id)`).
- */
-async function applyFsrsUpdate(
-	supabase: import('@supabase/supabase-js').SupabaseClient,
-	userId: string,
-	templateId: string,
-	grade: Grade
-): Promise<void> {
-	const fsrs = new FSRS();
-
-	// Lecture stats existants
-	const { data: existing } = await supabase
-		.from('srs_card_stats')
-		.select('*')
-		.eq('user_id', userId)
-		.eq('card_reference_type', 'template')
-		.eq('card_reference_id', templateId)
-		.maybeSingle();
-
-	let stats: CardStats;
-	if (existing) {
-		stats = {
-			id: existing.id,
-			userId: existing.user_id,
-			cardReferenceType: existing.card_reference_type,
-			cardReferenceId: existing.card_reference_id,
-			difficulty: existing.difficulty,
-			stability: existing.stability,
-			state: existing.state,
-			lastReview: existing.last_review,
-			nextReview: existing.next_review,
-			totalReviews: existing.total_reviews,
-			reviewHistory: existing.review_history || [],
-			createdAt: existing.created_at,
-			updatedAt: existing.updated_at
-		};
-	} else {
-		const init = fsrs.initCard(userId, 'template', templateId);
-		stats = {
-			id: crypto.randomUUID(),
-			...init,
-			createdAt: new Date().toISOString(),
-			updatedAt: new Date().toISOString()
-		};
-	}
-
-	const updated = fsrs.reviewCard(stats, grade);
-
-	const { error: upsertErr } = await supabase.from('srs_card_stats').upsert(
-		{
-			id: stats.id,
-			user_id: userId,
-			card_reference_type: 'template',
-			card_reference_id: templateId,
-			difficulty: updated.difficulty,
-			stability: updated.stability,
-			state: updated.state,
-			last_review: updated.lastReview,
-			next_review: updated.nextReview,
-			total_reviews: updated.totalReviews,
-			review_history: updated.reviewHistory
-		},
-		{ onConflict: 'user_id,card_reference_type,card_reference_id' }
-	);
-
-	if (upsertErr) throw upsertErr;
-}

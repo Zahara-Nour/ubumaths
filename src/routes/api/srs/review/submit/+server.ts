@@ -21,6 +21,7 @@ import { submitReviewSchema, fsrsConfigSchema } from '$lib/server/validation/srs
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { ensureProgrammeDeckCard, isTemplateTaggedFamilyA } from '$lib/server/srs/programme-deck';
+import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user, profile } = await requireAuth(locals);
@@ -70,17 +71,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Invalid card reference' }, { status: 400 });
 		}
 
-		// Lecture / initialisation stats
-		const { data: existingStats } = await supabase
-			.from('srs_card_stats')
-			.select('*')
-			.eq('user_id', user.id)
-			.eq('card_reference_type', cardReferenceType)
-			.eq('card_reference_id', cardReferenceId)
-			.maybeSingle();
-
-		// FSRS construit avant l'init. Validation Zod de deck.config (P2 defense
-		// in depth — évite qu'un futur PUT deck stocke des params malformés).
+		// FSRS construit avec config validée Zod (P2 defense in depth — évite
+		// qu'un futur PUT deck stocke des params malformés).
 		const configValidation = fsrsConfigSchema.safeParse(deck.config);
 		const safeConfig = configValidation.success ? configValidation.data : null;
 		const fsrs = new FSRS(
@@ -89,58 +81,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			safeConfig?.maximumInterval || 36500
 		);
 
-		let stats: CardStats;
-		if (existingStats) {
-			stats = {
-				id: existingStats.id,
-				userId: existingStats.user_id,
-				cardReferenceType: existingStats.card_reference_type,
-				cardReferenceId: existingStats.card_reference_id,
-				difficulty: existingStats.difficulty,
-				stability: existingStats.stability,
-				state: existingStats.state,
-				lastReview: existingStats.last_review,
-				nextReview: existingStats.next_review,
-				totalReviews: existingStats.total_reviews,
-				reviewHistory: existingStats.review_history || [],
-				createdAt: existingStats.created_at,
-				updatedAt: existingStats.updated_at
-			};
-		} else {
-			// Init via FSRS.initCard pour garantir stability=0 (mode "first review"
-			// dans reviewCard). Diverger ici (stability=0.1) ferait basculer la 1ère
-			// review dans la branche calculateNewStability au lieu de calculateInitialStability.
-			const init = fsrs.initCard(user.id, cardReferenceType, cardReferenceId);
-			const now = new Date().toISOString();
-			stats = {
-				id: crypto.randomUUID(),
-				...init,
-				createdAt: now,
-				updatedAt: now
-			};
-		}
-
-		const updatedStats = fsrs.reviewCard(stats, body.grade, body.timeSpent);
-
-		// UPSERT srs_card_stats
-		const { error: upsertError } = await supabase.from('srs_card_stats').upsert(
-			{
-				id: stats.id,
-				user_id: updatedStats.userId,
-				card_reference_type: updatedStats.cardReferenceType,
-				card_reference_id: updatedStats.cardReferenceId,
-				difficulty: updatedStats.difficulty,
-				stability: updatedStats.stability,
-				state: updatedStats.state,
-				last_review: updatedStats.lastReview,
-				next_review: updatedStats.nextReview,
-				total_reviews: updatedStats.totalReviews,
-				review_history: updatedStats.reviewHistory
-			},
-			{ onConflict: 'user_id,card_reference_type,card_reference_id' }
-		);
-
-		if (upsertError) {
+		// Pipeline load → review → upsert via helper partagé (cf. fsrs-actions.ts).
+		let updatedStats: CardStats;
+		try {
+			updatedStats = await applyFsrsReview(
+				supabase,
+				fsrs,
+				user.id,
+				cardReferenceType,
+				cardReferenceId,
+				body.grade,
+				body.timeSpent
+			);
+		} catch (upsertError) {
 			console.error('[srs/review/submit] UPSERT stats failed:', upsertError);
 			return json({ error: 'Failed to update card statistics' }, { status: 500 });
 		}
