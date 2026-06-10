@@ -103,10 +103,30 @@ export const uuidParamSchema = z.object({
 });
 
 /**
- * Schema for review/due query parameters
+ * Schema for review/due query parameters.
+ *
+ * `states` est un filtre optionnel (CSV) sur les états FSRS, utilisé par les
+ * sections du deck Programme (À remédier = "learning,relearning" ; À renforcer
+ * = "review"). Validation : chaque élément doit être un CardState valide ; un
+ * filtre dont la liste résultante est vide est ignoré (pas de filtre).
  */
+const CARD_STATES = ['new', 'learning', 'review', 'relearning'] as const;
+
 export const dueCardsQuerySchema = z.object({
-	deck_id: z.string().uuid()
+	deck_id: z.string().uuid(),
+	states: z
+		.string()
+		.optional()
+		.transform((val) => {
+			if (!val) return undefined;
+			const parsed = val
+				.split(',')
+				.map((s) => s.trim())
+				.filter((s): s is (typeof CARD_STATES)[number] =>
+					(CARD_STATES as readonly string[]).includes(s)
+				);
+			return parsed.length > 0 ? parsed : undefined;
+		})
 });
 
 // ============================================================================

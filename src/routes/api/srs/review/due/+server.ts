@@ -64,9 +64,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { user } = await requireAuth(locals);
 	const supabase = locals.supabase;
 
-	// ✅ SECURITY: Validate query parameters with Zod
+	// ✅ SECURITY: Validate query parameters with Zod (states inclus)
 	const queryRaw = {
-		deck_id: url.searchParams.get('deck_id')
+		deck_id: url.searchParams.get('deck_id'),
+		states: url.searchParams.get('states') ?? undefined
 	};
 	const validation = dueCardsQuerySchema.safeParse(queryRaw);
 
@@ -74,20 +75,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return json({ error: validation.error.issues[0].message }, { status: 400 });
 	}
 
-	const { deck_id: deckId } = validation.data;
+	const { deck_id: deckId, states } = validation.data;
 
-	// Filtre optionnel sur l'état FSRS — utilisé par les sections du deck Programme
-	const statesParam = url.searchParams.get('states');
-	const allowedStates: Set<CardState> | null = statesParam
-		? new Set(
-				statesParam
-					.split(',')
-					.map((s) => s.trim())
-					.filter((s): s is CardState =>
-						(['new', 'learning', 'review', 'relearning'] as CardState[]).includes(s as CardState)
-					)
-			)
-		: null;
+	// `states` est déjà parsé+validé par Zod (undefined si pas de filtre valide)
+	const allowedStates: Set<CardState> | null = states ? new Set(states as CardState[]) : null;
 
 	try {
 		// Verify user owns deck
