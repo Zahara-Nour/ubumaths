@@ -16,7 +16,7 @@
 | 2 — Backend (trigger + APIs)       | ✅ Code écrit           | 2026-06-10 | Helper programme-deck + refonte /api/skill-attempts + /api/srs/review/submit. Tests à valider après push migrations. |
 | 3 — UI Programme + badge objectifs | ✅ Code écrit           | 2026-06-10 | Page Programme + badge FSRS sur objectifs + filtre states sur /api/srs/review/due.                                   |
 | 4 — UI decks personnels + sections | ✅ Code écrit           | 2026-06-10 | CRUD sections API + page deck detail + extension PUT card pour section_id.                                           |
-| 5 — Migration données rétro        | ⏳ Bloquée par P1       | —          | —                                                                                                                    |
+| 5 — Migration données rétro        | ✅ Pushée en prod       | 2026-06-10 | 101 decks Programme créés, 0 cartes (aucun skill_attempts éligible pré-existant — attendu).                          |
 | 6 — Quality checks                 | ⏳ Bloquée par P3+P4+P5 | —          | —                                                                                                                    |
 | 7 — Documentation + commit         | ⏳ Bloquée par P6       | —          | —                                                                                                                    |
 
