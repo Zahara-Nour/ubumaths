@@ -206,18 +206,19 @@ L'audit a explicitement vérifié et trouvé **sains** :
 
 ## 6. Top 5 actions prioritaires
 
-| #   | Item                                                                                                              | Sévérité | Effort  | Quand activer                                            |
-| --- | ----------------------------------------------------------------------------------------------------------------- | -------- | ------- | -------------------------------------------------------- |
-| 1   | Spec V2 anti-fraud pattern detection                                                                              | High     | 3-5 j   | ≥ 20 templates 6ᵉ tagués + ≥ 5 capacités multi-templates |
-| 2   | RPC SECURITY DEFINER pour `srs_card_stats` writes (P1 #2 fix)                                                     | High     | 2-3 j   | Avant croissance significative de la base élèves         |
-| 3   | Ajouter rate-limiting sur `/api/srs/review/submit` (anti-spam grade=4)                                            | Medium   | 4 h     | Quand on remarque des comportements suspects             |
-| 4   | Migration de durcissement `chk_skill_attempts_grade_only_with_srs_or_auto` (interdire grade NULL si source='srs') | Low      | 1 h     | Quand le tagging dépasse 30 templates                    |
-| 5   | Audit Zod des futurs schémas (createSectionSchema déjà OK, mais maintenir la rigueur)                             | Low      | continu | Continue                                                 |
+| #   | Item                                                                                                              | Sévérité | Effort   | Quand activer                                            |
+| --- | ----------------------------------------------------------------------------------------------------------------- | -------- | -------- | -------------------------------------------------------- |
+| 1   | ~~Spec V2 anti-fraud pattern detection~~ → **livré 2026-06-10**, voir [`anti-fraud.md`](./anti-fraud.md)          | High     | ✅ livré | ≥ 20 templates 6ᵉ tagués + ≥ 5 capacités multi-templates |
+| 2   | RPC SECURITY DEFINER pour `srs_card_stats` writes (P1 #2 fix)                                                     | High     | 2-3 j    | Avant croissance significative de la base élèves         |
+| 3   | Ajouter rate-limiting sur `/api/srs/review/submit` (anti-spam grade=4)                                            | Medium   | 4 h      | Quand on remarque des comportements suspects             |
+| 4   | Migration de durcissement `chk_skill_attempts_grade_only_with_srs_or_auto` (interdire grade NULL si source='srs') | Low      | 1 h      | Quand le tagging dépasse 30 templates                    |
+| 5   | Audit Zod des futurs schémas (createSectionSchema déjà OK, mais maintenir la rigueur)                             | Low      | continu  | Continue                                                 |
 
 ---
 
 ## 7. Voir aussi
 
+- [`anti-fraud.md`](./anti-fraud.md) — Système anti-cheat livré 2026-06-10 (5 signaux + composite + UI prof).
 - [`docs/wip/srs-fsrs-security-audit-findings.md`](../../wip/srs-fsrs-security-audit-findings.md) — Audit détaillé + spec V2 anti-fraud (6 signaux + table + UI prof).
 - [`code-quality.md`](./code-quality.md) — Refactor structure (ne pas confondre avec audit sécu).
 - [`README.md`](./README.md) — Action items cross-cutting prioritaires.

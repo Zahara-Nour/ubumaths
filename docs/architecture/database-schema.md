@@ -464,6 +464,39 @@ Le trigger `skill_attempts_after_insert` ne touche **pas** à `srs_card_stats` (
 - `20260610100100_srs_deck_sections.sql` — nouvelle table + colonnes is_auto_managed/section_id + RLS.
 - `20260610150000_followup_p0_uniques_and_checks.sql` — UNIQUE index Programme + CHECK grade en famille B (audit code-reviewer P0 #3 + #4).
 - `20260610200000_seed_programme_decks.sql` — seed rétroactif des Programme decks pour élèves existants (cold start FSRS — décision 8).
+- `20260610220000_app_config_table.sql` — table générique `app_config` (clé/valeur) + helper `app_is_anti_fraud_enabled()`. Premier usage : feature flag `anti_fraud_enabled='false'`.
+- `20260610220100_srs_anti_fraud_flags.sql` — table `srs_anti_fraud_flags` (élève × capacité × type signal), RLS prof-via-class_members, dédoublonnage côté app.
+
+### Anti-fraud SRS (livré 2026-06-10)
+
+Table `srs_anti_fraud_flags` — drapeaux de suspicion générés par le runner TS `runAntiFraudJob` :
+
+| Colonne                     | Type               | Notes                             |
+| --------------------------- | ------------------ | --------------------------------- |
+| `id`                        | UUID PK            | gen_random_uuid                   |
+| `student_id`                | UUID FK            | → profiles                        |
+| `capacity_skill_id`         | UUID FK NULL       | → skills (famille A)              |
+| `flag_type`                 | TEXT CHECK         | 6 valeurs (5 signaux + composite) |
+| `severity`                  | SMALLINT CHECK 1-5 | drive le badge UI                 |
+| `score`                     | REAL CHECK 0..1    | tri DESC dans liste prof          |
+| `window_start/end`          | TIMESTAMPTZ        | fenêtre 7 j glissante             |
+| `sample_size`               | INTEGER            | nombre de reviews analysées       |
+| `details`                   | JSONB              | breakdown du signal               |
+| `resolved`                  | BOOLEAN            | soft delete par prof              |
+| `resolved_by / resolved_at` | UUID + TIMESTAMPTZ | cohérence garantie par CHECK      |
+
+Voir [`docs/ref/srs/anti-fraud.md`](../ref/srs/anti-fraud.md) pour la liste des signaux, le score composite, et la procédure d'activation.
+
+Table `app_config` — feature flags globaux :
+
+| Colonne                   | Type               | Notes                        |
+| ------------------------- | ------------------ | ---------------------------- |
+| `key`                     | TEXT PK            | feature flag name            |
+| `value`                   | TEXT               | string brut, casté côté code |
+| `description`             | TEXT               | doc                          |
+| `updated_at / updated_by` | TIMESTAMPTZ + UUID | audit                        |
+
+RLS : SELECT tout authenticated, écriture admin uniquement.
 
 ### Audits
 
