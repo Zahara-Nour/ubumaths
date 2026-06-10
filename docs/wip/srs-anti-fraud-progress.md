@@ -235,4 +235,51 @@ Spec TDD : `docs/wip/srs-anti-fraud-spec-tdd.md`
 
 ---
 
-## Phase 6 — Quality checks ⏳ À venir
+## Phase 6 — Quality checks ✅ (2026-06-10)
+
+### Résultats
+
+- **Svelte autofixer** : 3 .svelte traités. Issues corrigées : SvelteSet pour resolvingIds, `// svelte-ignore state_referenced_locally` sur unresolvedCount. 0 issue résiduelle hors faux positifs `load` dans `$effect` (pattern canonique du projet).
+- **`pnpm check:incremental`** : **9 ERRORS / 46 WARNINGS** — baseline **strictement inchangée** (zéro régression).
+- **`npx eslint`** sur tous les fichiers du chantier (15 fichiers TS/Svelte) : **0 erreur**.
+- **Tests serveur** : `detectors.test.ts` (30) + `runner.test.ts` (11) + `validation/anti-fraud.test.ts` (18) = **59 tests verts**.
+- **Tests browser** : 12 tests écrits, infrastructure Playwright/Chromium hors service en local (issue pré-existante, touche aussi `AnalyticsModal.svelte.test.ts`). À valider quand l'infra browser est réparée.
+
+### Pas de régression
+
+- 0 commit sur les fichiers en dehors du chantier (sauf intégration page conteneur attendue).
+- Aucune mention `Co-Authored-By: Claude` dans les commits.
+- Pas de `pnpm release` ni `git push` automatique.
+
+---
+
+## Documents produits
+
+- `docs/wip/srs-anti-fraud-spec-tdd.md` (Phase 0)
+- `docs/wip/srs-anti-fraud-progress.md` (ce doc)
+- `docs/ref/srs/anti-fraud.md` (référence finale)
+- Mises à jour : `docs/ref/srs/README.md`, `docs/ref/srs/security.md`, `docs/architecture/database-schema.md`.
+
+---
+
+## Récap commits
+
+| SHA         | Description                                    |
+| ----------- | ---------------------------------------------- |
+| `10579d181` | Phase 0 — Spec TDD                             |
+| `126e61c18` | Phase 1 — Migrations DB + types                |
+| `24afa7cf4` | Phase 2 — Détecteurs + runner + endpoint admin |
+| `0db4fa0e8` | Phase 3 — Endpoints prof                       |
+| `85dffe44c` | Phase 4 — UI onglet Surveillance               |
+| `2f9651998` | Phase 5 — Documentation + audits               |
+
+---
+
+## À faire par l'utilisateur
+
+1. **Push migrations** : `pnpm db:migrate`
+2. **Régénérer les types** : `pnpm db:types`
+3. (optionnel) `pnpm release:minor` quand prêt à shipper.
+4. (V2.1) Réparer infra browser tests Chromium si nécessaire pour les futures itérations.
+
+**NE PAS activer `anti_fraud_enabled=true`** tant que tagging templates < 20.
