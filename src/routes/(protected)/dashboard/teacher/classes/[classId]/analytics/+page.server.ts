@@ -47,11 +47,24 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.filter((t) => t.bo_reference)
 		.map((t) => ({ name: t.name, bo_reference: t.bo_reference as string }));
 
+	// Compteur des flags anti-fraud non-résolus pour le badge de l'onglet Surveillance.
+	let unresolvedFlagsCount = 0;
+	const studentIds = students.map((s) => s.id);
+	if (studentIds.length > 0) {
+		const { count } = await locals.supabase
+			.from('srs_anti_fraud_flags')
+			.select('id', { count: 'exact', head: true })
+			.in('student_id', studentIds)
+			.eq('resolved', false);
+		unresolvedFlagsCount = count ?? 0;
+	}
+
 	return {
 		classId,
 		className: classRow.name,
 		grade: classRow.grade,
 		students,
-		themes
+		themes,
+		unresolvedFlagsCount
 	};
 };
