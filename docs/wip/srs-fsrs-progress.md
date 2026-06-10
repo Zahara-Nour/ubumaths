@@ -90,7 +90,7 @@ Code Phase 2 écrit en attendant — utilise des type-cast `as never` sur les no
 
 **Archive de la doc de design** :
 
-- `docs/ref/srs/architecture-cible-2026-06.md` — design initial complet (renommé depuis `docs/wip/`).
+- ~~`docs/ref/srs/architecture-cible-2026-06.md`~~ — supprimée (historique via `git log --follow`).
 
 **WIP (chantier — peuvent être nettoyés ultérieurement)** :
 
