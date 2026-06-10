@@ -9,7 +9,7 @@
  * `tags-resolution.ts` (`resolveTagsToIds`).
  *
  * Spec : `docs/wip/srs-fsrs-spec-tdd.md` §4.
- * Architecture : `docs/wip/srs-fsrs-architecture-cible.md` §3.4 + §4.1.
+ * Architecture : `docs/ref/srs/architecture.md` §3.4 + §4.1.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
