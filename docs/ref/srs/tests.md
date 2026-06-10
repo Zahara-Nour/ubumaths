@@ -20,6 +20,7 @@ Audit tests post-chantier 2026-06-10. L'algo FSRS lui-même est bien couvert (h�
 > - `capacity-badge.test.ts` créé (**44 tests passent en 18 ms**, ESLint propre). ✅ Sprint critique J2.
 > - `programme-deck.test.ts` créé (**21 tests passent en 25 ms**, mock Supabase fluent). ✅ Sprint critique J3.
 > - `sections-crud.test.ts` créé (**25 tests intégration** sur 4 endpoints CRUD + cascade SET NULL + RLS). ✅ Sprint critique J4.
+> - `CapacityFsrsBadge.svelte.test.ts` créé (**18 tests browser-svelte chromium en 145 ms**) + `srs-chantier.test.ts` créé (**34 tests Zod en 7 ms**, dueCardsQuerySchema/createSectionSchema/updateSectionSchema/updateCardSchema). ✅ Sprint critique J5 — **fin du plan critique**.
 
 ### 1.1 Comptage par fichier de test (247 tests SRS-related)
 

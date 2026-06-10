@@ -58,15 +58,19 @@ L'API `POST /api/skill-attempts` a été refondue per-template (1 row INSERT au 
 
 **Effort** : 1 jour.
 
-### 1.2 Zéro test unitaire sur le nouveau code — partiellement résolu
+### 1.2 ~~Zéro test unitaire sur le nouveau code~~ ✅ RÉSOLU
 
-**Sévérité** : Critical → Minor (partiel)
-**État (MAJ 2026-06-10) :**
+**Sévérité** : ~~Critical~~ Resolved (sprint J1-J5 livré 2026-06-10)
+**État final** :
 
-- ✅ `src/lib/server/srs/capacity-badge.ts` (192 L, 4 fonctions exportées) — **44 tests** dans `capacity-badge.test.ts` (couvre les 4 fonctions exportées + constants).
-- ✅ `src/lib/server/srs/programme-deck.ts` (141 L, 3 fonctions exportées) — **21 tests** dans `programme-deck.test.ts` (mock Supabase fluent, race conditions, ownership).
-- ✅ `src/routes/api/srs/decks/[id]/sections/+server.ts` + `[sectionId]/+server.ts` (212 L, 4 endpoints) — **25 tests** dans `tests/integration/sections-crud.test.ts` (POST/GET/PATCH/DELETE + ownership + cascade SET NULL + RLS).
-- 🟠 `src/lib/components/srs/CapacityFsrsBadge.svelte` (71 L) — 0 test (reste à faire — composant Svelte simple)
+- ✅ `src/lib/server/srs/capacity-badge.ts` (192 L, 4 fonctions exportées) — **44 tests** dans `capacity-badge.test.ts`.
+- ✅ `src/lib/server/srs/programme-deck.ts` (141 L, 3 fonctions exportées) — **21 tests** dans `programme-deck.test.ts`.
+- ✅ `src/routes/api/srs/decks/[id]/sections/+server.ts` + `[sectionId]/+server.ts` (212 L) — **25 tests** dans `tests/integration/sections-crud.test.ts`.
+- ✅ `src/lib/components/srs/CapacityFsrsBadge.svelte` (71 L) — **18 tests** dans `CapacityFsrsBadge.svelte.test.ts` (vitest-browser-svelte, chromium).
+- ✅ `src/lib/server/validation/srs.ts` chantier extensions (états states, createSectionSchema, updateSectionSchema, updateCardSchema.section_id) — **34 tests** dans `srs-chantier.test.ts`.
+- ✅ Filtre `?states=` de `/api/srs/review/due` — couvert via les 13 tests dueCardsQuerySchema du srs-chantier.test.ts.
+
+**Total** : 142 tests ajoutés en session pour le code chantier (44 + 21 + 25 + 18 + 34). Tous green.
 
 **Fix appliqué pour capacity-badge.ts** : 44 tests, 18 ms d'exécution, ESLint propre. Couvre :
 
