@@ -16,8 +16,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { CardStats } from '$lib/srs/types';
 import { FSRS } from '$lib/srs/fsrs';
-import { DEFAULT_FSRS_PARAMS } from '$lib/srs/config';
-import { submitReviewSchema, fsrsConfigSchema } from '$lib/server/validation/srs';
+import { submitReviewSchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
@@ -74,15 +73,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Invalid card reference' }, { status: 400 });
 		}
 
-		// FSRS construit avec config validée Zod (P2 defense in depth — évite
-		// qu'un futur PUT deck stocke des params malformés).
-		const configValidation = fsrsConfigSchema.safeParse(deck.config);
-		const safeConfig = configValidation.success ? configValidation.data : null;
-		const fsrs = new FSRS(
-			safeConfig?.parameters || DEFAULT_FSRS_PARAMS,
-			safeConfig?.desiredRetention || 0.9,
-			safeConfig?.maximumInterval || 36500
-		);
+		// FSRS toujours instancié avec la config par défaut (PO 2026-06-10 :
+		// la config FSRS n'est plus customisable, même via deck.config).
+		const fsrs = new FSRS();
 
 		// Pipeline load → review → upsert via helper partagé (cf. fsrs-actions.ts).
 		let updatedStats: CardStats;

@@ -5,19 +5,18 @@
 import { z } from 'zod';
 
 /**
- * Schema for creating a deck
+ * Schema for creating a deck.
+ *
+ * Décision PO 2026-06-10 : un élève ne peut PAS customiser la config FSRS
+ * d'un deck. La config est verrouillée à la valeur par défaut côté serveur
+ * (cf. `DEFAULT_FSRS_PARAMS`, `DEFAULT_DESIRED_RETENTION`, `DEFAULT_MAXIMUM_INTERVAL`).
+ * Le champ `config` est explicitement absent du schema → tout payload qui
+ * l'inclurait verrait sa valeur silencieusement ignorée (Zod strict-mode).
  */
 export const createDeckSchema = z.object({
 	name: z.string().trim().min(1).max(100),
 	description: z.string().max(500).optional(),
-	deckType: z.enum(['official', 'personal']),
-	config: z
-		.object({
-			desiredRetention: z.number().min(0.7).max(0.97).optional(),
-			maximumInterval: z.number().int().positive().max(36500).optional(),
-			parameters: z.array(z.number()).length(21).optional()
-		})
-		.optional()
+	deckType: z.enum(['official', 'personal'])
 });
 
 /**

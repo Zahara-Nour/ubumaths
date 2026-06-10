@@ -125,9 +125,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  * {
  *   name: string,
  *   description?: string,
- *   deckType: 'official' | 'personal',
- *   config?: { desiredRetention, parameters, maximumInterval }
+ *   deckType: 'official' | 'personal'
  * }
+ *
+ * Décision PO 2026-06-10 : la config FSRS d'un deck n'est PAS customisable
+ * par l'élève. Elle est toujours fixée aux valeurs par défaut FSRS-6.
  *
  * @returns Created deck
  */
@@ -145,11 +147,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const body = validation.data;
 
-		// Build config with defaults
+		// Config FSRS toujours fixée aux valeurs par défaut (verrouillée).
 		const config = {
-			desiredRetention: body.config?.desiredRetention ?? DEFAULT_DESIRED_RETENTION,
-			maximumInterval: body.config?.maximumInterval ?? DEFAULT_MAXIMUM_INTERVAL,
-			...(body.config?.parameters && { parameters: body.config.parameters })
+			desiredRetention: DEFAULT_DESIRED_RETENTION,
+			maximumInterval: DEFAULT_MAXIMUM_INTERVAL
 		};
 
 		// Create deck

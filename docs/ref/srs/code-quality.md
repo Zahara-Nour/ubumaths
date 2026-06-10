@@ -153,25 +153,27 @@ if (taggedKnowledgeSkillIds.length > 0) {
 
 ESLint propre, `pnpm check:incremental` baseline 9/46 inchangée.
 
-### 2.4 `applyFsrsUpdate` ne respecte pas la config FSRS du deck (skill-attempts)
+### 2.4 ~~`applyFsrsUpdate` ne respecte pas la config FSRS du deck (skill-attempts)~~ ✅ RÉSOLU
 
-**Sévérité** : Major
-**Fichier** : `src/routes/api/skill-attempts/+server.ts:147-153`
+**Sévérité** : ~~Major~~ Resolved (décision PO 2026-06-10 : verrouillage config)
 
-```ts
-async function applyFsrsUpdate(supabase, userId, templateId, grade) {
-	const fsrs = new FSRS(); // ← Pas de config !
-	// ...
-}
-```
+**Décision PO** : un élève ne peut PAS customiser la config FSRS d'un deck. La config est toujours fixée aux valeurs par défaut FSRS-6 côté serveur.
 
-Le constructeur sans args utilise `DEFAULT_FSRS_PARAMS`, `0.9`, `36500`. Mais `srs_card_stats` est partagé entre tous les decks via UNIQUE `(user_id, card_reference_type, card_reference_id)`. Si l'élève a un deck personnel avec `desiredRetention=0.95`, ses reviews Monde 1 vont silencieusement utiliser 0.9 et désaligner ses next_review attendus.
+**Fix appliqué** :
 
-**Comparaison** : `srs/review/submit/+server.ts:73-77` lit `deck.config.parameters/desiredRetention/maximumInterval`. Comportement différent entre les 2 endpoints pour la même carte.
+- `createDeckSchema` (Zod) : champ `config` retiré. Tout payload qui l'inclut voit sa valeur silencieusement strippée.
+- `updateDeckSchema` (= `createDeckSchema.partial()`) : également retiré par héritage.
+- `POST /api/srs/decks` : insère toujours `config = { desiredRetention: DEFAULT_DESIRED_RETENTION, maximumInterval: DEFAULT_MAXIMUM_INTERVAL }`.
+- `PUT /api/srs/decks/[id]` : ignore tout `body.config` (le block de merge a été supprimé).
+- `POST /api/srs/review/submit` : utilise désormais `new FSRS()` (config par défaut) au lieu de lire `deck.config` via `fsrsConfigSchema.safeParse(...)`. Import `fsrsConfigSchema` retiré.
 
-**Fix recommandé** : décider lequel des comportements est canonique. Option A : Monde 1 utilise toujours la config par défaut (rationale : ce n'est pas une review SRS, c'est un quiz). Option B : Monde 1 cherche le deck Programme (config par défaut) et l'utilise. Documenter le choix.
+Conséquence : **Monde 1 et Monde 2 utilisent la même config FSRS par défaut**. La divergence identifiée est éliminée par construction.
 
-**Effort** : Décision PO + 1 heure.
+Tests adaptés dans `srs.test.ts` : 3 tests qui validaient le rejet de configs invalides remplacés par 1 test "should silently strip config field (PO 2026-06-10 verrouillage)".
+
+ESLint propre. Tests SRS helper 73/73 green. Baseline `check:incremental` 9/46 inchangée.
+
+Note hors-scope : `srs.test.ts` contient 7 failures pré-existantes sur `createCustomCardSchema`/`updateCardSchema` (format `frontContent`/`backContent` désynchronisé entre tests et schema — migration `20251124194908_migrate_to_markdown_strings.sql`). Hors périmètre de ce finding.
 
 ---
 
