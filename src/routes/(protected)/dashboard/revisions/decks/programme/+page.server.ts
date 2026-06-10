@@ -80,7 +80,7 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		.from('srs_decks')
 		.select('id')
 		.eq('owner_id', user.id)
-		.eq('is_auto_managed' as never, true as never)
+		.eq('is_auto_managed', true)
 		.maybeSingle();
 
 	if (deckErr) {
