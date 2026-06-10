@@ -490,6 +490,41 @@ export interface EvaluationTaskWithPerimeter extends EvaluationTask {
 	perimeter_skill_ids: string[];
 }
 
+// ============================================================================
+// Anti-fraud SRS — chantier 2026-06-10 (B+C)
+// ============================================================================
+
+/** Raw row from srs_anti_fraud_flags. Available after `pnpm db:types` regen. */
+export type AntiFraudFlag = Tables<'srs_anti_fraud_flags'>;
+
+/** Type discriminé pour la colonne flag_type (cf. CHECK contrainte SQL). */
+export type AntiFraudFlagType =
+	| 'high_easy_ratio'
+	| 'no_again'
+	| 'fast_timeSpent'
+	| 'burst'
+	| 'srs_vs_quiz_gap'
+	| 'composite';
+
+/** Severity 1..5 (1=info ; 5=critical). */
+export type AntiFraudSeverity = 1 | 2 | 3 | 4 | 5;
+
+/** Flag enrichi avec données élève + capacité (endpoint GET prof). */
+export interface AntiFraudFlagWithStudent extends AntiFraudFlag {
+	student: {
+		id: string;
+		first_name: string | null;
+		last_name: string | null;
+	};
+	capacity: {
+		id: string;
+		name: string;
+	} | null;
+}
+
+/** Raw row from app_config. */
+export type AppConfig = Tables<'app_config'>;
+
 // --- Re-export business types for convenience -------------------------------
 // (so consumers can import everything from database-helpers without two paths)
 
