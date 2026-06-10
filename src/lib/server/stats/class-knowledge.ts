@@ -277,7 +277,10 @@ export async function getClassCapacityGrid(
 					if (!fsrs) return 'en_apprentissage';
 					return templateToBadge(fsrs.state, fsrs.next_review, now);
 				});
-				badge = subBadges.reduce((acc, b) => (BADGE_PRIORITY[b] > BADGE_PRIORITY[acc] ? b : acc));
+				badge = subBadges.reduce<CapacityBadge>(
+					(acc, b) => (BADGE_PRIORITY[b] > BADGE_PRIORITY[acc] ? b : acc),
+					'non_commencee'
+				);
 			}
 			cells[`${student.id}:${cap.id}`] = badge;
 		}
