@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.9...v0.10.0) (2026-06-10)
+
+### ✨ Features
+
+- **srs:** verrouille config FSRS a la valeur par defaut ([cda3cdf](https://github.com/Zahara-Nour/ubumaths/commit/cda3cdfc2ff137410c6129da542a3027fcfa7ba9))
+- **teacher-analytics:** backend helpers + endpoints (Phase 1) ([4432b20](https://github.com/Zahara-Nour/ubumaths/commit/4432b20a5f53483ad2e3527fa08f6b1d4b8fa94f))
+- **teacher-analytics:** ui phase 2 ([33a951b](https://github.com/Zahara-Nour/ubumaths/commit/33a951b82724e4417eb3f0b62499133e869114a4))
+
+### 📚 Documentation
+
+- **chiphres:** ajustement phrase-cle lore pataphysique ([629fe33](https://github.com/Zahara-Nour/ubumaths/commit/629fe332a416a49b906b19370d4bb5ecafa1b0e1))
+- **srs-fsrs:** supprime l archive design initial ([f766ab9](https://github.com/Zahara-Nour/ubumaths/commit/f766ab9c674bfe6490130655ab2f2f7439d33767))
+- **srs:** structure docs/ref/srs/ sur le modele geometry ([ef9f13f](https://github.com/Zahara-Nour/ubumaths/commit/ef9f13fd3fbebdd0ee381d34916a928bf491fe51))
+- **teacher-analytics:** reference doc phase 4 ([e22f41c](https://github.com/Zahara-Nour/ubumaths/commit/e22f41c607bfa6c18fe6fe10e2d410e23497bdf5))
+
 ### [0.9.9](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.8...v0.9.9) (2026-06-10)
 
 ### ✨ Features
