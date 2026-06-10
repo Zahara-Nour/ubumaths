@@ -11,7 +11,12 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { templateToBadge } from '$lib/server/srs/capacity-badge';
 
+/**
+ * Sous-ensemble des CapacityBadge utilisé côté Programme : un template seul
+ * n'est jamais `non_commencee` (sinon il ne serait pas dans le deck).
+ */
 export type ProgrammeBadge =
 	| 'a_remedier'
 	| 'a_renforcer'
@@ -57,21 +62,14 @@ const SECTION_TITLE: Record<ProgrammeBadge, string> = {
 	acquise_en_memoire: 'Acquise en mémoire'
 };
 
-function computeCardBadge(
-	state: 'new' | 'learning' | 'review' | 'relearning',
-	nextReview: string | null,
-	nowMs: number
-): ProgrammeBadge {
-	if (!nextReview) return 'en_apprentissage';
-	const nextMs = new Date(nextReview).getTime();
-	const isDue = nextMs <= nowMs;
-	const isLearning = state === 'learning' || state === 'relearning' || state === 'new';
-	const isReview = state === 'review';
-
-	if (isDue && isLearning) return 'a_remedier';
-	if (isDue && isReview) return 'a_renforcer';
-	if (!isDue && isReview) return 'acquise_en_memoire';
-	return 'en_apprentissage';
+/**
+ * Convertit un badge calculé par `templateToBadge` (peut être `non_commencee`)
+ * en un ProgrammeBadge. Garde-fou : `non_commencee` ne devrait jamais arriver
+ * ici (une carte du Programme a forcément un état FSRS), mais on retombe
+ * sur `en_apprentissage` par sécurité.
+ */
+function toProgrammeBadge(b: ReturnType<typeof templateToBadge>): ProgrammeBadge {
+	return b === 'non_commencee' ? 'en_apprentissage' : b;
 }
 
 export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> => {
@@ -161,10 +159,16 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 	}
 
 	// 5. Charger les objectifs associés via question_template_skills → skills → skill_objectives
+	// Tri sur display_order de l'objectif pour rendre le choix du "1er objectif" déterministe
+	// quand un template tague plusieurs skills d'objectifs différents (V1 affiche 1 seul
+	// objectif par carte ; V2 pourrait afficher la liste complète).
 	const { data: links, error: linksErr } = await locals.supabase
 		.from('question_template_skills')
-		.select('template_id, skills!inner(objective_id, skill_objectives(id, name))')
-		.in('template_id', templateIds);
+		.select(
+			'template_id, skills!inner(objective_id, skill_objectives!inner(id, name, display_order))'
+		)
+		.in('template_id', templateIds)
+		.order('skill_objectives(display_order)' as never, { ascending: true });
 
 	if (linksErr) {
 		throw error(500, `Erreur tagging : ${linksErr.message}`);
@@ -174,10 +178,11 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		template_id: string;
 		skills: {
 			objective_id: string | null;
-			skill_objectives: { id: string; name: string } | null;
+			skill_objectives: { id: string; name: string; display_order: number } | null;
 		} | null;
 	};
 	const objectiveByTemplate = new Map<string, { id: string; name: string }>();
+	// On garde le 1er objectif rencontré (le plus petit display_order grâce au tri ci-dessus)
 	for (const l of (links ?? []) as unknown as LinkRow[]) {
 		const obj = l.skills?.skill_objectives;
 		if (obj && !objectiveByTemplate.has(l.template_id)) {
@@ -197,7 +202,7 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		const state = stat?.state ?? 'new';
 		const nextReview = stat?.next_review ?? null;
 		const lastReview = stat?.last_review ?? null;
-		const badge = computeCardBadge(state, nextReview, nowMs);
+		const badge = toProgrammeBadge(templateToBadge(state, nextReview, nowMs));
 		const obj = objectiveByTemplate.get(tid) ?? null;
 
 		const card: ProgrammeCard = {

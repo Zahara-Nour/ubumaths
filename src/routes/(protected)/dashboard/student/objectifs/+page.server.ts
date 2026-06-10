@@ -12,7 +12,11 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
-import { computeCapacityBadges, type CapacityBadge } from '$lib/server/srs/capacity-badge';
+import {
+	computeCapacityBadges,
+	worstBadge,
+	type CapacityBadge
+} from '$lib/server/srs/capacity-badge';
 
 export interface ObjectiveSummary {
 	id: string;
@@ -46,19 +50,6 @@ export interface ObjectifsPageData {
 		remediation_count: number;
 		to_reinforce_count: number;
 	};
-}
-
-const BADGE_PRIORITY: Record<CapacityBadge, number> = {
-	a_remedier: 5,
-	a_renforcer: 4,
-	en_apprentissage: 3,
-	acquise_en_memoire: 2,
-	non_commencee: 1
-};
-
-function worstBadge(badges: CapacityBadge[]): CapacityBadge {
-	if (badges.length === 0) return 'non_commencee';
-	return badges.reduce((acc, b) => (BADGE_PRIORITY[b] > BADGE_PRIORITY[acc] ? b : acc));
 }
 
 export const load: PageServerLoad = async ({ locals }): Promise<ObjectifsPageData> => {

@@ -107,37 +107,66 @@ export async function computeCapacityBadges(
 }
 
 /**
+ * Calcule le badge d'un SEUL template depuis son état FSRS.
+ *
+ * Source de vérité unique de la règle de mapping (state, nextReview) → badge,
+ * utilisée à la fois par :
+ *   - le calcul de section dans la page deck Programme (per-template)
+ *   - l'agrégation montante par capacité dans la page objectifs
+ *
+ * Convention `state='new'` : la carte n'a jamais été reviewed (cas exotique
+ * où une carte a été créée mais aucun skill_attempt ne lui correspond encore).
+ * On la classe en `en_apprentissage` quel que soit `nextReview` — "à remédier"
+ * implique un échec, "non commencée" implique l'absence de carte.
+ */
+export function templateToBadge(
+	state: CardState,
+	nextReview: string | null,
+	nowMs: number
+): CapacityBadge {
+	if (state === 'new') return 'en_apprentissage';
+	if (!nextReview) return 'en_apprentissage';
+
+	const nextReviewMs = new Date(nextReview).getTime();
+	const isDue = nextReviewMs <= nowMs;
+	const isLearningState = state === 'learning' || state === 'relearning';
+	const isReviewState = state === 'review';
+
+	if (isDue && isLearningState) return 'a_remedier';
+	if (isDue && isReviewState) return 'a_renforcer';
+	if (!isDue && isReviewState) return 'acquise_en_memoire';
+	return 'en_apprentissage';
+}
+
+/**
+ * Ordre de priorité descendant des badges. Source unique de vérité utilisée
+ * par `worstBadge()` (page objectifs) et `aggregateBadge()` (capacity-badge).
+ */
+const BADGE_PRIORITY: Record<CapacityBadge, number> = {
+	a_remedier: 5,
+	a_renforcer: 4,
+	en_apprentissage: 3,
+	acquise_en_memoire: 2,
+	non_commencee: 1
+};
+
+/**
+ * Retourne le badge de priorité la plus élevée parmi une liste.
+ * Exporté pour usage côté UI (agrégation par objectif/groupe).
+ */
+export function worstBadge(badges: CapacityBadge[]): CapacityBadge {
+	if (badges.length === 0) return 'non_commencee';
+	return badges.reduce((acc, b) => (BADGE_PRIORITY[b] > BADGE_PRIORITY[acc] ? b : acc));
+}
+
+/**
  * Agrège une liste d'états FSRS en badge unique selon les règles de priorité.
  *
- * Exporté pour testabilité (pure function).
+ * Délègue à `templateToBadge` puis `worstBadge` — source unique de vérité.
  */
 export function aggregateBadge(states: FsrsStateRow[], nowMs: number): CapacityBadge {
-	if (states.length === 0) return 'non_commencee';
-
-	let hasRemediation = false;
-	let hasReinforcement = false;
-	let hasAcquired = false;
-	let hasLearning = false;
-
-	for (const s of states) {
-		const nextReviewMs = new Date(s.next_review).getTime();
-		const isDue = nextReviewMs <= nowMs;
-		const isLearningState = s.state === 'learning' || s.state === 'relearning';
-		const isReviewState = s.state === 'review';
-
-		if (isDue && isLearningState) hasRemediation = true;
-		else if (isDue && isReviewState) hasReinforcement = true;
-		else if (!isDue && isReviewState) hasAcquired = true;
-		else if (!isDue && isLearningState) hasLearning = true;
-		// state='new' : pas pris en compte (jamais reviewée → en apprentissage implicite)
-		else if (s.state === 'new') hasLearning = true;
-	}
-
-	if (hasRemediation) return 'a_remedier';
-	if (hasReinforcement) return 'a_renforcer';
-	if (hasAcquired) return 'acquise_en_memoire';
-	if (hasLearning) return 'en_apprentissage';
-	return 'non_commencee';
+	const badges = states.map((s) => templateToBadge(s.state, s.next_review, nowMs));
+	return worstBadge(badges);
 }
 
 /**
