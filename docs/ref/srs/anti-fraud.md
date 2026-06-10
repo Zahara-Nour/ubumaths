@@ -178,11 +178,36 @@ Sinon → faux positifs garantis (samples trop petits, attaques techniquement im
 
 - **pg_cron auto-scheduling** (V2.1) : exécuter le runner quotidien sans intervention admin.
 - **Activation auto** sur seuil tagging atteint (V2.1).
-- **UX élève soft warning** (V2.5) : si composite > 0.8 × 3 fenêtres, message non-bloquant.
 - **KL divergence** sur distribution Easy/Good/Hard/Again (V3, 6ᵉ signal).
 - **Email récap hebdo prof** (V3).
 - **Action "Confirmer triche"** : refusée par décision (boîte de Pandore).
 - **Drill-down depuis cellule grille** → focus flag prof.
+
+### 8bis. UX élève soft warning — analyse et reportée sine die
+
+La spec initiale prévoyait un message côté élève quand `composite_score > 0.8` sur 3 fenêtres consécutives ("On a remarqué que tu notes beaucoup de Easy. Réviser ne sert que si tu réponds honnêtement → guide"). **Reporté sine die** après analyse 2026-06-10. Raisons :
+
+**1. Asymétrie d'impact des faux positifs.**
+Un faux positif côté prof = clic "Marquer comme OK" en 2 secondes. Côté élève cycle 3 (10-12 ans) = accusation perçue de triche → perte de confiance, frustration, conflit potentiel avec le prof. Le mot "honnêteté" dans un message automatique est très lourd pour un préado.
+
+**2. Le pré-requis tagging tue le projet.**
+Le système anti-fraud n'est pas actif aujourd'hui (3 templates taggés vs 20+ requis). Même après activation, il faudra plusieurs semaines de data prof avant que les flags soient fiables. L'UX élève vient logiquement **après** validation prof terrain, pas en pré-développement.
+
+**3. Le vrai problème est pédagogique, pas UX.**
+Si un élève triche en SRS, le bon canal c'est le **dialogue prof/élève en classe** — pas une popup automatique. Le prof voit le flag → en parle à l'élève → comprend le contexte (vraie triche ? séance intensive ? carte trop facile ?) → ajuste. Une UX automatisée court-circuite ce dialogue humain, qui est la valeur ajoutée du modèle UbuMaths (prof connaît ses élèves).
+
+**Alternative recommandée — préventif plutôt que réactif** :
+
+- Composant `FirstReviewGuide.svelte` affiché 1× au premier review SRS de l'élève.
+- 4 cards visuelles "Comment bien noter" : Again / Hard / Good / Easy avec exemples.
+- Aucune mention du mot "triche" ni "honnêteté" — pédagogie positive uniquement.
+- ~1 j d'effort vs ~2.5 j pour D. Zéro risque de faux positif. Beaucoup plus efficace pédagogiquement (forme le comportement, ne le corrige pas).
+
+**Critère de réévaluation de D** :
+Quand le tagging dépassera 20 templates ET que le système sera actif depuis ≥ 6 mois, **observer la proportion de flags confirmés vs faux positifs côté prof** :
+
+- Si > 80 % confirmés → envisager D avec message très soft.
+- Si < 80 % → ne jamais activer D (bruit côté élève > gain).
 
 ---
 
