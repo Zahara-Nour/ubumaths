@@ -10,7 +10,7 @@
  *   4. ⏳ en_apprentissage  — ≥ 1 template pas due ET state ∈ {learning, relearning}
  *   5. ◯ non_commencee      — aucun template avec srs_card_stats
  *
- * Cf. `docs/wip/srs-fsrs-spec-tdd.md` §5 + `docs/wip/srs-fsrs-architecture-cible.md` §5.1.
+ * Cf. `docs/wip/srs-fsrs-spec-tdd.md` §5 + `docs/ref/srs/architecture.md` §5.1.
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';

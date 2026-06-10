@@ -5,7 +5,7 @@
 	tagués sur la capacité. Coexiste avec le verdict BO `is_acquired` formel
 	dans la même UI.
 
-	Cf. docs/wip/srs-fsrs-architecture-cible.md §5.1.
+	Cf. docs/ref/srs/architecture.md §5.1.
 -->
 <script lang="ts">
 	import { AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from 'lucide-svelte';
