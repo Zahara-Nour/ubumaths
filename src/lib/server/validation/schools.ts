@@ -38,6 +38,47 @@ export const optionalUaiSchema = z
 	.transform((s) => (s === '' ? null : s));
 
 // ============================================================================
+// SCHOOL UPSERT (create / update / bulk)
+// ============================================================================
+
+/** Required trimmed text field with a max length. Coerces non-strings to ''. */
+const requiredText = (label: string, max: number) =>
+	z.preprocess(
+		(v) => (typeof v === 'string' ? v.trim() : ''),
+		z.string().min(1, `${label} requis`).max(max, `${label} trop long (max ${max})`)
+	);
+
+/** Optional trimmed text: empty/absent → null. */
+const emptyableText = (max: number) =>
+	z
+		.preprocess((v) => (typeof v === 'string' ? v.trim() : ''), z.string().max(max))
+		.transform((s) => (s ? s : null));
+
+/** Optional URL: empty/absent → null, otherwise must be a valid URL. */
+const optionalUrl = z
+	.preprocess(
+		(v) => (typeof v === 'string' ? v.trim() : ''),
+		z.union([z.literal(''), z.string().url('URL invalide').max(2048)])
+	)
+	.transform((s) => (s ? s : null));
+
+/**
+ * Shared validation for creating/updating a school. Reused by the single-entry
+ * form, the bulk import, and any future school mutation. Normalizes empties to
+ * `null` and the UAI to uppercase.
+ */
+export const schoolUpsertSchema = z.object({
+	name: requiredText('Nom', 200),
+	city: requiredText('Ville', 100),
+	country: requiredText('Pays', 100),
+	address: emptyableText(500),
+	logo_url: optionalUrl,
+	uai: optionalUaiSchema
+});
+
+export type SchoolUpsert = z.infer<typeof schoolUpsertSchema>;
+
+// ============================================================================
 // ANNUAIRE DE L'ÉDUCATION (data.education.gouv.fr proxy)
 // ============================================================================
 

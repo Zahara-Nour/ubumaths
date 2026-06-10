@@ -42,14 +42,14 @@
 
 Verdict initial : CHANGES_REQUESTED. Feature jugée propre/sûre/bien testée. Sécurité proxy OK (admin-only, anti-injection ODSQL, pas de SSRF). Suites données :
 
-| #   | Point                                                           | Décision                                                                                      |
-| --- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| #5  | `closeModal()` ne nettoyait pas l'état Annuaire (fetch fantôme) | **corrigé** (`resetAnnuaire()` dans `closeModal`)                                             |
-| #6  | Guard manuel vs helper partagé                                  | **corrigé** (`requireRole(locals, 'admin')`)                                                  |
-| #7  | Race entre réponses fetch concurrentes                          | **corrigé** (token de séquence `annuaireSeq`)                                                 |
-| #4  | `bulk_create` n'insère pas l'UAI                                | **documenté** (commentaire : import tableur sans colonne UAI → NULL, saisie unitaire ensuite) |
-| #1  | `is_active` = `<input type="checkbox">` natif (règle #2)        | **corrigé** (PO a validé : `MyCheckbox` + input hidden pour la soumission du form action)     |
-| #3  | `name`/`city`/`country`/`logo_url` non validés Zod côté serveur | **dette pré-existante** → signalée, non élargie au scope UAI                                  |
+| #   | Point                                                           | Décision                                                                                         |
+| --- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| #5  | `closeModal()` ne nettoyait pas l'état Annuaire (fetch fantôme) | **corrigé** (`resetAnnuaire()` dans `closeModal`)                                                |
+| #6  | Guard manuel vs helper partagé                                  | **corrigé** (`requireRole(locals, 'admin')`)                                                     |
+| #7  | Race entre réponses fetch concurrentes                          | **corrigé** (token de séquence `annuaireSeq`)                                                    |
+| #4  | `bulk_create` n'insère pas l'UAI                                | **documenté** (commentaire : import tableur sans colonne UAI → NULL, saisie unitaire ensuite)    |
+| #1  | `is_active` = `<input type="checkbox">` natif (règle #2)        | **corrigé** (PO a validé : `MyCheckbox` + input hidden pour la soumission du form action)        |
+| #3  | `name`/`city`/`country`/`logo_url` non validés Zod côté serveur | **corrigé (suivi)** → `schoolUpsertSchema` partagé create/update/bulk, id validé UUID, +10 tests |
 
 Re-checks après corrections : eslint 0, autofixer 0 (mon code), `check:incremental` 9/46 inchangé.
 

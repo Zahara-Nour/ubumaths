@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	uaiSchema,
 	optionalUaiSchema,
+	schoolUpsertSchema,
 	annuaireSearchQuerySchema,
 	annuaireResponseSchema
 } from './schools';
@@ -63,6 +64,71 @@ describe('optionalUaiSchema', () => {
 
 	it('rejects a malformed non-empty value', () => {
 		expect(optionalUaiSchema.safeParse('not-a-uai').success).toBe(false);
+	});
+});
+
+describe('schoolUpsertSchema', () => {
+	const valid = {
+		name: 'Collège Jean Moulin',
+		city: 'Marseille',
+		country: 'France',
+		address: '26 rue Fortuné Chaillan',
+		logo_url: 'https://example.com/logo.png',
+		uai: '0132407W'
+	};
+
+	it('accepts a fully valid school and normalizes', () => {
+		const result = schoolUpsertSchema.safeParse({ ...valid, uai: '0132407w', name: '  Lycée  ' });
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.name).toBe('Lycée');
+			expect(result.data.uai).toBe('0132407W');
+		}
+	});
+
+	it.each([
+		['name', ''],
+		['name', '   '],
+		['city', ''],
+		['country', '']
+	])('rejects empty required field %s="%s"', (field, value) => {
+		expect(schoolUpsertSchema.safeParse({ ...valid, [field]: value }).success).toBe(false);
+	});
+
+	it('rejects a name over 200 chars', () => {
+		expect(schoolUpsertSchema.safeParse({ ...valid, name: 'x'.repeat(201) }).success).toBe(false);
+	});
+
+	it('maps empty address and logo to null', () => {
+		const result = schoolUpsertSchema.safeParse({ ...valid, address: '  ', logo_url: '' });
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.address).toBeNull();
+			expect(result.data.logo_url).toBeNull();
+		}
+	});
+
+	it('rejects an invalid logo URL', () => {
+		expect(schoolUpsertSchema.safeParse({ ...valid, logo_url: 'not-a-url' }).success).toBe(false);
+	});
+
+	it('rejects an invalid UAI inside the upsert', () => {
+		expect(schoolUpsertSchema.safeParse({ ...valid, uai: '123' }).success).toBe(false);
+	});
+
+	it('tolerates missing optional fields (bulk import without uai)', () => {
+		const result = schoolUpsertSchema.safeParse({
+			name: 'École X',
+			city: 'Lyon',
+			country: 'France',
+			uai: ''
+		});
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.address).toBeNull();
+			expect(result.data.logo_url).toBeNull();
+			expect(result.data.uai).toBeNull();
+		}
 	});
 });
 
