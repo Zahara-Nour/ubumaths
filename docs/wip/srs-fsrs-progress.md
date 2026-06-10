@@ -44,8 +44,8 @@
 
 - [x] L1 — Migration `supabase/migrations/20260610100000_refonte_skill_attempts_per_template.sql`
 - [x] L3 — Migration `supabase/migrations/20260610100100_srs_deck_sections.sql`
-- [x] L10a partiel — `src/lib/types/skills.ts` : `SkillSource` étendu avec `'srs'`.
-- [ ] L10a final — `src/lib/types/database.ts` régénéré : **bloqué sur action utilisateur** (`pnpm db:migrate` + `pnpm db:types`).
+- [x] L10a — `src/lib/types/skills.ts` : `SkillSource` étendu avec `'srs'`.
+- [x] L10a final — `src/lib/types/database.ts` régénéré (`pnpm db:migrate` + `pnpm db:types` exécutés).
 
 **Points clés de la migration L1** :
 
@@ -66,12 +66,7 @@
 - UNIQUE `(deck_id, template_id) WHERE template_id IS NOT NULL` ajouté pour ON CONFLICT.
 - Policies RLS de `srs_decks` et `srs_cards` étendues pour bloquer modif sur deck `is_auto_managed=true`.
 
-**Actions utilisateur requises avant Phase 2 finale** :
-
-1. `pnpm db:migrate` (push des 2 migrations)
-2. `pnpm db:types` (régénération database.ts)
-
-Code Phase 2 écrit en attendant — utilise des type-cast `as never` sur les nouveaux champs jusqu'à régénération de `database.ts`.
+**Actions utilisateur réalisées** : `pnpm db:migrate` + `pnpm db:types` exécutés post-livraison.
 
 ---
 
