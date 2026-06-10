@@ -6,8 +6,20 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import SchoolConfigModal from '$lib/components/admin/SchoolConfigModal.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 
 	let { data }: { data: PageData } = $props();
+
+	// Mirrors the normalized payload from GET /api/annuaire/search.
+	type AnnuaireSchool = {
+		uai: string;
+		name: string;
+		type: string;
+		city: string;
+		postalCode: string;
+		address: string;
+		academy: string;
+	};
 
 	let showModal = $state(false);
 	let editingSchool = $state<Database['public']['Tables']['schools']['Row'] | null>(null);
@@ -28,8 +40,26 @@
 		country: '',
 		address: '',
 		logo_url: '',
+		uai: '',
 		is_active: true
 	});
+
+	// Annuaire de l'éducation autocomplete (auto-fills UAI + coordinates).
+	let annuaireQuery = $state('');
+	let annuaireResults = $state<AnnuaireSchool[]>([]);
+	let annuaireLoading = $state(false);
+	let annuaireOpen = $state(false);
+	let annuaireTimer: ReturnType<typeof setTimeout> | undefined;
+	// Monotonic token: drops responses from superseded (slower) requests.
+	let annuaireSeq = 0;
+
+	function resetAnnuaire() {
+		clearTimeout(annuaireTimer);
+		annuaireQuery = '';
+		annuaireResults = [];
+		annuaireOpen = false;
+		annuaireLoading = false;
+	}
 
 	function openCreateModal() {
 		editingSchool = null;
@@ -37,12 +67,14 @@
 		bulkData = '';
 		parsedSchools = [];
 		parseError = '';
+		resetAnnuaire();
 		formData = {
 			name: '',
 			city: '',
 			country: '',
 			address: '',
 			logo_url: '',
+			uai: '',
 			is_active: true
 		};
 		showModal = true;
@@ -51,15 +83,59 @@
 	function openEditModal(school: (typeof data.schools)[number]) {
 		editingSchool = school;
 		activeTab = 'single';
+		resetAnnuaire();
 		formData = {
 			name: school.name,
 			city: school.city,
 			country: school.country,
 			address: school.address || '',
 			logo_url: school.logo_url || '',
+			uai: school.uai || '',
 			is_active: school.is_active
 		};
 		showModal = true;
+	}
+
+	function onAnnuaireInput() {
+		clearTimeout(annuaireTimer);
+		const q = annuaireQuery.trim();
+		if (q.length < 2) {
+			annuaireResults = [];
+			annuaireOpen = false;
+			return;
+		}
+		annuaireTimer = setTimeout(searchAnnuaire, 300);
+	}
+
+	async function searchAnnuaire() {
+		const q = annuaireQuery.trim();
+		if (q.length < 2) return;
+		const seq = ++annuaireSeq;
+		annuaireLoading = true;
+		annuaireOpen = true;
+		try {
+			const res = await fetch(`/api/annuaire/search?q=${encodeURIComponent(q)}`);
+			const results = res.ok ? ((await res.json()).schools ?? []) : [];
+			if (seq !== annuaireSeq) return; // superseded by a newer search
+			annuaireResults = results;
+		} catch {
+			if (seq === annuaireSeq) annuaireResults = [];
+		} finally {
+			if (seq === annuaireSeq) annuaireLoading = false;
+		}
+	}
+
+	function selectAnnuaireSchool(school: AnnuaireSchool) {
+		formData.uai = school.uai;
+		if (school.name) formData.name = school.name;
+		if (school.city) formData.city = school.city;
+		if (!formData.country) formData.country = 'France';
+		if (school.address) {
+			formData.address = [school.address, school.postalCode, school.city]
+				.filter(Boolean)
+				.join(', ');
+		}
+		resetAnnuaire();
 	}
 
 	function closeModal() {
@@ -68,6 +144,7 @@
 		bulkData = '';
 		parsedSchools = [];
 		parseError = '';
+		resetAnnuaire();
 	}
 
 	function parseBulkData() {
@@ -162,6 +239,11 @@
 						<th
 							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>
+							UAI / RNE
+						</th>
+						<th
+							class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
+						>
 							Périodes
 						</th>
 						<th
@@ -195,6 +277,11 @@
 							<td class="px-6 py-4">
 								<div class="text-sm text-muted-foreground">
 									{school.address || '—'}
+								</div>
+							</td>
+							<td class="px-6 py-4 whitespace-nowrap">
+								<div class="font-mono text-sm text-muted-foreground">
+									{school.uai || '—'}
 								</div>
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap">
@@ -253,7 +340,7 @@
 						</tr>
 					{:else}
 						<tr>
-							<td colspan="6" class="px-6 py-8 text-center text-muted-foreground">
+							<td colspan="7" class="px-6 py-8 text-center text-muted-foreground">
 								Aucune école trouvée. Cliquez sur "Add School" pour en créer une.
 							</td>
 						</tr>
@@ -346,6 +433,54 @@
 
 						<div class="bg-card px-6 py-4">
 							<div class="space-y-4">
+								<!-- Annuaire de l'éducation lookup -->
+								<div class="rounded-md border border-dashed border-border p-3">
+									<label for="annuaire" class="mb-1 block text-sm font-medium text-foreground">
+										Rechercher dans l'Annuaire de l'Éducation nationale
+									</label>
+									<p class="mb-2 text-xs text-muted-foreground">
+										Sélectionnez l'établissement pour remplir automatiquement l'UAI/RNE et les
+										coordonnées.
+									</p>
+									<div class="relative">
+										<Input
+											id="annuaire"
+											type="text"
+											autocomplete="off"
+											bind:value={annuaireQuery}
+											oninput={onAnnuaireInput}
+											placeholder="Nom de l'établissement (ex. Collège Jean Moulin)"
+										/>
+										{#if annuaireOpen}
+											<div
+												class="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-border bg-card shadow-lg"
+											>
+												{#if annuaireLoading}
+													<div class="px-3 py-2 text-sm text-muted-foreground">Recherche…</div>
+												{:else if annuaireResults.length === 0}
+													<div class="px-3 py-2 text-sm text-muted-foreground">
+														Aucun établissement trouvé.
+													</div>
+												{:else}
+													{#each annuaireResults as school (school.uai)}
+														<button
+															type="button"
+															onclick={() => selectAnnuaireSchool(school)}
+															class="block w-full border-b border-border px-3 py-2 text-left text-sm last:border-b-0 hover:bg-muted"
+														>
+															<span class="font-medium text-foreground">{school.name}</span>
+															<span class="text-muted-foreground"> — {school.city}</span>
+															<span class="ml-1 text-xs text-muted-foreground"
+																>({school.uai}{school.type ? ` · ${school.type}` : ''})</span
+															>
+														</button>
+													{/each}
+												{/if}
+											</div>
+										{/if}
+									</div>
+								</div>
+
 								<div>
 									<label for="name" class="mb-1 block text-sm font-medium text-foreground">
 										School Name *
@@ -416,19 +551,29 @@
 									/>
 								</div>
 
+								<div>
+									<label for="uai" class="mb-1 block text-sm font-medium text-foreground">
+										UAI / RNE
+									</label>
+									<Input
+										type="text"
+										name="uai"
+										id="uai"
+										maxlength={8}
+										bind:value={formData.uai}
+										placeholder="0750001H"
+									/>
+									<p class="mt-1 text-xs text-muted-foreground">
+										Code établissement (7 chiffres + 1 lettre). Rempli automatiquement via
+										l'Annuaire.
+									</p>
+								</div>
+
 								{#if editingSchool}
-									<div class="flex items-center gap-2">
-										<input
-											type="checkbox"
-											name="is_active"
-											id="is_active"
-											value="true"
-											bind:checked={formData.is_active}
-											class="h-4 w-4 rounded border-input"
-										/>
-										<label for="is_active" class="text-sm text-foreground">
-											School is active
-										</label>
+									<div>
+										<!-- Hidden field carries the value to the form action (MyCheckbox renders a button). -->
+										<input type="hidden" name="is_active" value={formData.is_active} />
+										<MyCheckbox bind:checked={formData.is_active} label="School is active" />
 									</div>
 								{/if}
 							</div>

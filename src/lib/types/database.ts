@@ -324,6 +324,30 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			app_config: {
+				Row: {
+					description: string | null;
+					key: string;
+					updated_at: string;
+					updated_by: string | null;
+					value: string;
+				};
+				Insert: {
+					description?: string | null;
+					key: string;
+					updated_at?: string;
+					updated_by?: string | null;
+					value: string;
+				};
+				Update: {
+					description?: string | null;
+					key?: string;
+					updated_at?: string;
+					updated_by?: string | null;
+					value?: string;
+				};
+				Relationships: [];
+			};
 			assessment_assignments: {
 				Row: {
 					assessment_id: string;
@@ -9904,6 +9928,7 @@ export type Database = {
 					name: string;
 					timetable: Json | null;
 					timezone: string;
+					uai: string | null;
 					updated_at: string | null;
 				};
 				Insert: {
@@ -9917,6 +9942,7 @@ export type Database = {
 					name: string;
 					timetable?: Json | null;
 					timezone?: string;
+					uai?: string | null;
 					updated_at?: string | null;
 				};
 				Update: {
@@ -9930,6 +9956,7 @@ export type Database = {
 					name?: string;
 					timetable?: Json | null;
 					timezone?: string;
+					uai?: string | null;
 					updated_at?: string | null;
 				};
 				Relationships: [];
@@ -10515,6 +10542,121 @@ export type Database = {
 					{
 						foreignKeyName: 'spreadsheets_user_id_fkey';
 						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					}
+				];
+			};
+			srs_anti_fraud_flags: {
+				Row: {
+					capacity_skill_id: string | null;
+					created_at: string;
+					details: Json;
+					flag_type: string;
+					id: string;
+					resolved: boolean;
+					resolved_at: string | null;
+					resolved_by: string | null;
+					sample_size: number;
+					score: number;
+					severity: number;
+					student_id: string;
+					window_end: string;
+					window_start: string;
+				};
+				Insert: {
+					capacity_skill_id?: string | null;
+					created_at?: string;
+					details?: Json;
+					flag_type: string;
+					id?: string;
+					resolved?: boolean;
+					resolved_at?: string | null;
+					resolved_by?: string | null;
+					sample_size: number;
+					score: number;
+					severity: number;
+					student_id: string;
+					window_end: string;
+					window_start: string;
+				};
+				Update: {
+					capacity_skill_id?: string | null;
+					created_at?: string;
+					details?: Json;
+					flag_type?: string;
+					id?: string;
+					resolved?: boolean;
+					resolved_at?: string | null;
+					resolved_by?: string | null;
+					sample_size?: number;
+					score?: number;
+					severity?: number;
+					student_id?: string;
+					window_end?: string;
+					window_start?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'srs_anti_fraud_flags_capacity_skill_id_fkey';
+						columns: ['capacity_skill_id'];
+						isOneToOne: false;
+						referencedRelation: 'skills';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'srs_anti_fraud_flags_resolved_by_fkey';
+						columns: ['resolved_by'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'srs_anti_fraud_flags_resolved_by_fkey';
+						columns: ['resolved_by'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'srs_anti_fraud_flags_resolved_by_fkey';
+						columns: ['resolved_by'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'srs_anti_fraud_flags_resolved_by_fkey';
+						columns: ['resolved_by'];
+						isOneToOne: false;
+						referencedRelation: 'riddle_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'srs_anti_fraud_flags_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'assessment_results';
+						referencedColumns: ['student_user_id'];
+					},
+					{
+						foreignKeyName: 'srs_anti_fraud_flags_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'minesweeper_student_achievement_progress';
+						referencedColumns: ['student_id'];
+					},
+					{
+						foreignKeyName: 'srs_anti_fraud_flags_student_id_fkey';
+						columns: ['student_id'];
+						isOneToOne: false;
+						referencedRelation: 'profiles';
+						referencedColumns: ['id'];
+					},
+					{
+						foreignKeyName: 'srs_anti_fraud_flags_student_id_fkey';
+						columns: ['student_id'];
 						isOneToOne: false;
 						referencedRelation: 'riddle_progress';
 						referencedColumns: ['student_id'];
@@ -14585,6 +14727,7 @@ export type Database = {
 				};
 				Returns: Json;
 			};
+			app_is_anti_fraud_enabled: { Args: never; Returns: boolean };
 			approve_vip_card: {
 				Args: { p_instance_id: string; p_student_id: string };
 				Returns: Json;
