@@ -54,10 +54,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const { template_id, success, with_help, phase_blocage } = validation.data;
 
-	// Vérification existence du template
+	// Vérification existence du template + récupération des skills tagués famille A
+	// en 1 seul round-trip (perf P0#2 — économise 1 SELECT vs 2 séparés).
 	const { data: templateRow, error: templateError } = await locals.supabase
 		.from('question_templates')
-		.select('id')
+		.select('id, question_template_skills(skill_id, skills(family))')
 		.eq('id', template_id)
 		.maybeSingle();
 
@@ -69,6 +70,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!templateRow) {
 		throw error(404, 'template_not_found');
 	}
+
+	// Extraction des skill_ids famille knowledge (les seuls qui comptent pour Programme + réponse API).
+	type LinkRow = { skill_id: string; skills: { family: string } | null };
+	const links = (templateRow.question_template_skills ?? []) as unknown as LinkRow[];
+	const skillIds = links.filter((l) => l.skills?.family === 'knowledge').map((l) => l.skill_id);
 
 	// Mapping success → grade (cf. spec §1.1)
 	const grade: Grade = success ? Grade.GOOD : Grade.AGAIN;
@@ -92,40 +98,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// ----- INSERT skill_attempts (per-template) -----
 	// 1 row par attempt. Le trigger boucle ensuite sur question_template_skills
 	// pour recalculer chaque student_skill_state_a impactée.
-	const attemptRow: Record<string, unknown> = {
+	const { error: insertError } = await locals.supabase.from('skill_attempts').insert({
 		student_id: user.id,
 		template_id,
 		success,
 		grade,
 		with_help,
-		source: 'auto'
-	};
-	if (phase_blocage !== undefined) {
-		attemptRow.phase_blocage = phase_blocage;
-	}
-
-	const { error: insertError } = await locals.supabase
-		.from('skill_attempts')
-		.insert(attemptRow as never);
+		source: 'auto',
+		...(phase_blocage !== undefined ? { phase_blocage } : {})
+	});
 
 	if (insertError) {
 		console.error('[skill-attempts] INSERT failed:', insertError);
 		return json({ error: 'insert_failed', detail: insertError.message }, { status: 500 });
 	}
-
-	// ----- Récupération des skill_ids tagués (pour réponse + auto-Programme) -----
-	const { data: taggedSkills, error: skillsError } = await locals.supabase
-		.from('question_template_skills')
-		.select('skill_id, skills!inner(family)')
-		.eq('template_id', template_id)
-		.eq('skills.family', 'knowledge');
-
-	if (skillsError) {
-		console.error('[skill-attempts] Tagged skills lookup failed:', skillsError);
-		// Pas bloquant — la trigger a déjà fait son travail.
-	}
-
-	const skillIds = (taggedSkills ?? []).map((row) => row.skill_id as string);
 
 	// ----- Auto-ajout au deck Programme si template tagué -----
 	if (skillIds.length > 0) {

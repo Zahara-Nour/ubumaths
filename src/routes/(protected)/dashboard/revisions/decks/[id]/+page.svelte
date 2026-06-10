@@ -44,6 +44,8 @@
 
 	const isReadOnly = $derived(data.deck.isAssigned);
 
+	const unassignedCards = $derived(data.cardsBySection[UNASSIGNED_KEY] ?? []);
+
 	function openCreate() {
 		editingSection = null;
 		newName = '';
@@ -255,7 +257,6 @@
 		{/each}
 
 		<!-- Cartes non rangées -->
-		{@const unassignedCards = data.cardsBySection[UNASSIGNED_KEY] ?? []}
 		<section>
 			<div class="mb-3 flex items-center justify-between">
 				<h2 class="text-lg font-semibold text-muted-foreground">Non rangées</h2>

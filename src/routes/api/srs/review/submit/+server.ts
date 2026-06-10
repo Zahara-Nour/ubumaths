@@ -153,7 +153,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				grade: body.grade,
 				source: 'srs',
 				with_help: false
-			} as never);
+			});
 
 			if (skillAttemptErr) {
 				console.error('[srs/review/submit] skill_attempts INSERT failed:', skillAttemptErr);
