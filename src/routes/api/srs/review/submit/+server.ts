@@ -20,7 +20,7 @@ import { DEFAULT_FSRS_PARAMS } from '$lib/srs/config';
 import { submitReviewSchema, fsrsConfigSchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
-import { ensureProgrammeDeckCard, isTemplateTaggedFamilyA } from '$lib/server/srs/programme-deck';
+import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -38,9 +38,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const body = validation.data;
 
 		// Récupération carte + deck (auth ownership)
+		// Refactor 2026-06-10 (code-quality #2.3) : nested select sur
+		// question_templates(question_template_skills(...)) pour récupérer en 1 RTT
+		// les skills tagués famille knowledge — économise 1 SELECT vs isTemplateTaggedFamilyA.
 		const { data: card, error: cardError } = await supabase
 			.from('srs_cards')
-			.select('*')
+			.select('*, question_templates(question_template_skills(skill_id, skills(family)))')
 			.eq('id', body.cardId)
 			.single();
 
@@ -115,15 +118,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				console.error('[srs/review/submit] skill_attempts INSERT failed:', skillAttemptErr);
 				// Non bloquant : la review FSRS reste enregistrée.
 			} else {
-				// Auto-ajout au deck Programme si template tagué et pas déjà dedans
-				// (cas où la carte est dans un deck personnel sans passer par le quiz Monde 1).
-				try {
-					const tagged = await isTemplateTaggedFamilyA(supabase, card.template_id);
-					if (tagged) {
+				// Auto-ajout au deck Programme si template tagué famille knowledge.
+				// Le tagging est déjà disponible via la nested query du card SELECT
+				// (cf. refactor #2.3), aucune query supplémentaire nécessaire.
+				type LinkRow = { skill_id: string; skills: { family: string } | null };
+				type TemplateNested = { question_template_skills?: LinkRow[] };
+				const taggedKnowledgeSkillIds = (
+					(card.question_templates as unknown as TemplateNested | null)?.question_template_skills ??
+					[]
+				)
+					.filter((l) => l.skills?.family === 'knowledge')
+					.map((l) => l.skill_id);
+
+				if (taggedKnowledgeSkillIds.length > 0) {
+					try {
 						await ensureProgrammeDeckCard(supabase, user.id, card.template_id);
+					} catch (progErr) {
+						console.error('[srs/review/submit] Programme add failed:', progErr);
 					}
-				} catch (progErr) {
-					console.error('[srs/review/submit] Programme add failed:', progErr);
 				}
 			}
 		}

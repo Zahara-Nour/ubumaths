@@ -119,23 +119,3 @@ export async function ensureProgrammeDeckCard(
 		throw insertErr;
 	}
 }
-
-/**
- * Vérifie si un template est tagué sur au moins une skill famille A.
- * Utilisé par les APIs pour décider d'appeler `ensureProgrammeDeckCard` ou non.
- */
-export async function isTemplateTaggedFamilyA(supabase: SB, templateId: string): Promise<boolean> {
-	const { data, error } = await supabase
-		.from('question_template_skills')
-		.select('skill_id, skills!inner(family)')
-		.eq('template_id', templateId)
-		.eq('skills.family', 'knowledge')
-		.limit(1);
-
-	if (error) {
-		console.error('[programme-deck] Tagging check failed:', error);
-		return false;
-	}
-
-	return (data?.length ?? 0) > 0;
-}

@@ -123,21 +123,35 @@ Comportement strictement équivalent à l'ancien code inline (chaque endpoint pa
 
 ESLint propre, `pnpm check:incremental` baseline 9/46 inchangée.
 
-### 2.3 Duplication `ensureProgrammeDeckCard` appelée 2 fois avec garde différente
+### 2.3 ~~Duplication `ensureProgrammeDeckCard` appelée 2 fois avec garde différente~~ ✅ RÉSOLU
 
-**Sévérité** : Major
-**Fichiers** :
+**Sévérité** : ~~Major~~ Resolved (refactor 2026-06-10)
 
-- `skill-attempts/+server.ts:116-124` — garde : `if (skillIds.length > 0)`
-- `srs/review/submit/+server.ts:164-172` — garde : `if (tagged = await isTemplateTaggedFamilyA(...))`
+**Fix appliqué** : nested select sur le card SELECT dans `/api/srs/review/submit/+server.ts` pour récupérer les skills tagués famille knowledge en 1 RTT au lieu de 2 :
 
-Les deux endpoints veulent ajouter la carte au Programme si le template est tagué famille A. Le premier a déjà les skill_ids en mémoire (via la query fusionnée). Le second fait une query supplémentaire `isTemplateTaggedFamilyA`.
+```ts
+.select('*, question_templates(question_template_skills(skill_id, skills(family)))')
+```
 
-Le second est sous-optimal : si l'INSERT skill_attempts précédent a fait fire le trigger qui lui-même lit `question_template_skills`, on a fait 3 lectures de la même table en 1 hot path.
+Puis extraction inline :
 
-**Fix recommandé** : extraire un helper `getTaggedSkillIds(supabase, templateId): Promise<string[]>` et le mémoriser en cache local pour la durée de la requête (Map dans `locals` ou simple variable).
+```ts
+const taggedKnowledgeSkillIds = (
+  (card.question_templates as ...)?.question_template_skills ?? []
+)
+  .filter((l) => l.skills?.family === 'knowledge')
+  .map((l) => l.skill_id);
 
-**Effort** : 30 minutes.
+if (taggedKnowledgeSkillIds.length > 0) {
+  await ensureProgrammeDeckCard(supabase, user.id, card.template_id);
+}
+```
+
+**Économie** : -1 RTT (~30-60 ms) sur le hot path de chaque review SRS.
+
+**Dead code supprimé** : la fonction `isTemplateTaggedFamilyA` dans `programme-deck.ts` n'avait que cet appel comme caller — supprimée + 7 tests supprimés de `programme-deck.test.ts` (21 → 14 tests).
+
+ESLint propre, `pnpm check:incremental` baseline 9/46 inchangée.
 
 ### 2.4 `applyFsrsUpdate` ne respecte pas la config FSRS du deck (skill-attempts)
 
