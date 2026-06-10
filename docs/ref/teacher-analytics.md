@@ -152,15 +152,19 @@ $effect(() => {
 
 ## 6. Roadmap V2.1
 
-Reporté du périmètre V2.0 :
+Analyse critique des items reportés (revue 2026-06-10) : sur 7 candidats, **1 seul vaut le coup**. Les autres sont gold-plating ou prématurés.
 
-- **Export CSV** de Widgets A et F (réunion parents / bulletin)
-- **Comparatif inter-classes** (split view CM2-A vs CM2-B)
-- **Vue matérialisée** si perf endpoint dégrade sous charge (classe > 50 élèves)
-- **Drill-down click** depuis cellule grille (au lieu du sélecteur manuel)
-- **Hook `useFetch`** pour factoriser les 7 widgets (P2 #11)
-- **`loadClassStudents` helper** mutualisé (P2 #9)
-- **Cache HTTP** sur endpoints analytics (P2 #15)
+| #   | Item                                                 | Verdict                          | Raison                                                                                                                                                                                        |
+| --- | ---------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Export CSV widgets A et F                            | ❌ Ne pas faire                  | Aucun prof réel ne l'a demandé. Copier-coller Excel depuis la grille HTML marche déjà. Inventé "au cas où".                                                                                   |
+| 2   | Comparatif inter-classes (split view CM2-A vs CM2-B) | ❌ Ne pas faire                  | Niche : minorité de profs ont 2 classes même niveau simultanément. Layout split-view casse le mobile (page déjà dense). 1 j d'effort pour ~5 % d'usage.                                       |
+| 3   | Drill-down click depuis cellule grille               | ✅ À faire si friction confirmée | Vraie friction probable : sélecteur "élève + thème" pour ouvrir B+D est à ~800 px de scroll de la cellule consultée. Lookup capacité → thème nécessaire. ~0.5 j.                              |
+| 4   | Hook `useFetch` factorisation 7 widgets              | ❌ Ne pas faire                  | Refactor cosmétique. Pattern actuel ($state/load/$effect, ~40 lignes/widget) est lisible. 62 tests verts, zéro bug. Aucun besoin métier.                                                      |
+| 5   | Helper `loadClassStudents` mutualisé                 | ❌ Ne pas faire                  | Extraction prématurée : non vérifié que les autres callsites ont les mêmes besoins (filtre `status='active'`, formatage `display_name`). À refactoriser **quand** vraie duplication observée. |
+| 6   | Cache HTTP `max-age=30` sur endpoints                | ❌ Ne pas faire                  | Gain quasi-nul : le pattern `$effect` ne re-fetch QUE sur changement `classId`/`refreshNonce`. Toggle onglet ≠ re-mount. Cache servirait uniquement au F5 navigateur (edge case).             |
+| 7   | Vue matérialisée `class_capacity_grid_mv`            | ❌ Ne pas faire                  | Premature optimization. Aucune mesure perf. Cible 30 élèves (max pratique classe FR) probablement OK avec l'approche batchée actuelle. Réévaluer si p99 > 200 ms mesuré.                      |
+
+**Recommandation** : ne rien faire de V2.1 tant que les vrais profs n'ont pas utilisé V2.0 en condition réelle (2-3 semaines). Adresser les frictions remontées, pas un backlog spéculatif.
 
 ---
 
