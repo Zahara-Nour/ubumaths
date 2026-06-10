@@ -88,10 +88,8 @@
 				<Card.Title>Grille compétences math × élèves</Card.Title>
 				<Card.Description>Niveaux famille B saisis par le prof (6 compétences).</Card.Description>
 			</div>
-			{#if data?.last_saisie_at !== undefined}
-				<Badge variant="secondary" class="text-xs"
-					>{freshnessLabel(data?.last_saisie_at ?? null)}</Badge
-				>
+			{#if data}
+				<Badge variant="secondary" class="text-xs">{freshnessLabel(data.last_saisie_at)}</Badge>
 			{/if}
 		</div>
 	</Card.Header>

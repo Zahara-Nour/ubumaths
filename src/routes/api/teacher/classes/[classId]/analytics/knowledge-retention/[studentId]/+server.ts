@@ -22,7 +22,8 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	}
 
 	const queryCheck = retentionQuerySchema.safeParse({
-		theme: url.searchParams.get('theme')
+		theme: url.searchParams.get('theme'),
+		weeks: url.searchParams.get('weeks') ?? undefined
 	});
 	if (!queryCheck.success) {
 		return json({ error: queryCheck.error.issues[0].message }, { status: 400 });
@@ -43,7 +44,12 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		return json({ error: 'Élève non rattaché à cette classe' }, { status: 404 });
 	}
 
-	const points = await getStudentRetentionCurve(locals.supabase, studentId, queryCheck.data.theme);
+	const points = await getStudentRetentionCurve(
+		locals.supabase,
+		studentId,
+		queryCheck.data.theme,
+		queryCheck.data.weeks
+	);
 
 	return json({ points });
 };

@@ -25,9 +25,10 @@ export const knowledgeGridQuerySchema = z.object({
 		.transform((v) => v === 'true')
 });
 
-/** Query : ?theme=NOM_BO pour Widget B. */
+/** Query : ?theme=NOM_BO&weeks=8 pour Widget B. */
 export const retentionQuerySchema = z.object({
-	theme: z.string().trim().min(1).max(200)
+	theme: z.string().trim().min(1).max(200),
+	weeks: z.coerce.number().int().min(1).max(26).default(8)
 });
 
 /** Query : ?days=30 (1..60) pour Widget C. */

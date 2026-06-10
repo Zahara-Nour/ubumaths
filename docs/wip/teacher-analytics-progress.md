@@ -110,13 +110,39 @@ Plan complet : voir conversation `2026-06-10` + memory.
 
 ---
 
-## Phase 3 — Quality checks ⏳ À venir
+## Phase 3 — Quality checks ✅ (2026-06-10)
 
-- Svelte autofixer DÉJÀ EXÉCUTÉ sur les 9 .svelte (issues=0)
-- `pnpm check:incremental` — vérif baseline ≈ 9/46
-- `npx eslint <fichiers modifiés>` — 0 erreur
-- Audit perf endpoints sous charge classe 35 élèves
-- Audit sécurité RLS croisée prof × classe × élève
+### Résultats
+
+- **Svelte autofixer** : 9 .svelte traités, 0 issue après corrections (keys ajoutées, `$derived` au lieu de capture initiale)
+- **`pnpm check:incremental`** : **9 ERRORS / 46 WARNINGS** — baseline **strictement inchangée** (zéro régression)
+- **`npx eslint`** sur tous les fichiers Phase 1+2 : **0 erreur**, 1 warning informatif (`prefer-svelte-reactivity` faux positif sur Map dérivée)
+- **Tests** : 33 serveur + 29 browser = **62 tests verts**
+
+### Code review (code-reviewer agent)
+
+**Verdict** : ⚠️ À corriger avant phase 4 — 3 P1 quick-fixes (15 min).
+
+**P1 corrigés** :
+
+- #1 `class-knowledge.ts:280` — `subBadges.reduce` reçoit un seed `'non_commencee'` pour sécuriser le cas vide
+- #6 `ClassCompetenceGrid.svelte:91` — `{#if data}` au lieu de `data?.last_saisie_at !== undefined` (clarté + correction logique)
+- #7 `teacher-analytics.ts:35` — `retentionQuerySchema` expose `weeks` (default 8, max 26) pour cohérence avec heatmap/grades
+
+**P1 reportés V2.1** (commentés mais pas bloquants) :
+
+- #2 garde div/0 explicite (couvert par garde `length === 0`)
+- #3 dédup défensive `skill_themes` (peu probable en pratique)
+- #4 complexité O(N×C×T) (acceptable < 30 élèves)
+- #5 `state_referenced_locally` ignoré (statique SSR OK)
+
+**P2** : 9 nice-to-have backlog (extract `formatName`, factorize `loadClassStudents`, useFetch hook, etc.). Tracking dans memo, hors-scope V2.0.
+
+**Points forts cités** : discipline Zod, garde mutualisée, ownership double-check student-scoped, Svelte 5 runes propres, MySelect partout, pas de `any`, typage Database précis.
+
+### Commit Phase 3
+
+`refactor(teacher-analytics): traite P1 code review (Phase 3)`
 
 ## Phase 4 — E2E + doc ⏳ À venir
 
