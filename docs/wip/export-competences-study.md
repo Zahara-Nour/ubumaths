@@ -52,18 +52,18 @@ Les codes `D1/D2/D3/D4` présents dans `20260609120001_competence_referentiel_fu
 
 Valeur résiduelle : afficher une colonne `socle_code` dans le CSV aide le prof qui, **côté admin Pronote**, doit créer/rattacher ses compétences au socle (CSV 5 colonnes dont `Socle-2016`). C'est un confort, pas une obligation.
 
-Mapping retenu (confiance moyenne, cf. recherche web ; à valider par David, source BO 2015 cycle 4) :
+Mapping retenu (**vérifié 2026-06-11**, table « Domaines du socle » du BO 2015 cycle 4 ; décision PO Option B = sous-composantes, domaine 1 → D1.3 pour les maths) :
 
-| Compétence UbuMaths | Socle principal | Socle secondaire                  |
-| ------------------- | --------------- | --------------------------------- |
-| Chercher            | D1.3            | D2 (méthodes/outils)              |
-| Calculer            | D1.3            | —                                 |
-| Raisonner           | D1.3            | D3 (formation personne/citoyen)   |
-| Communiquer         | D1.3            | D1.1 (langue française)           |
-| Modéliser           | D1.3            | D4 (systèmes naturels/techniques) |
-| Représenter         | D1.3            | —                                 |
+| Compétence UbuMaths | Domaines BO (1-5) | `socle_code` exporté |
+| ------------------- | ----------------- | -------------------- |
+| Chercher            | 2, 4              | `D2 D4`              |
+| Calculer            | 4                 | `D4`                 |
+| Raisonner           | 2, 3, 4           | `D2 D3 D4`           |
+| Communiquer         | 1, 3              | `D1.3 D3`            |
+| Modéliser           | 1, 2, 4           | `D1.3 D2 D4`         |
+| Représenter         | 1, 5              | `D1.3 D5`            |
 
-> ⚠️ **À flagger** : ce mapping vient du raisonnement sur les libellés officiels + docs académiques (ac-Poitiers, ac-Strasbourg), pas d'un tableau ministériel directement extrait (les PDF officiels ne sont pas fetchables). **D1.3 est certain** ; les rattachements secondaires (D2/D3/D4/D1.1) sont à confirmer par David. Sources : [BO maths cycle 4](https://pedagogie.ac-strasbourg.fr/fileadmin/pedagogie/mathematiques/College/Programmes_Documents_officiels/Maths_cycle4_BO_SPE_11_26-11-2015.pdf), [ac-Poitiers correspondance](https://ww2.ac-poitiers.fr/math/sites/math/IMG/pdf/cycle4_lien_entre_programme_et_competences.pdf).
+> ⚠️ **Correction d'une 1ʳᵉ version erronée** : l'étude attribuait initialement `D1.3` à toutes les compétences. C'est faux — le BO 2015 cycle 4 rattache chaque compétence à des **domaines numérotés (1-5)**, et **ne met le domaine 1 que sur modéliser / représenter / communiquer**. « Chercher », « calculer » et « raisonner » n'ont **aucun domaine 1** (donc pas de D1.3). En maths, le domaine 1 est rendu `D1.3` (langages mathématiques) pour le LSU. Sources concordantes : programme officiel + copies académiques [Besançon/Champagnole 2016](https://champagnole.circo39.ac-besancon.fr/wp-content/uploads/sites/9/2016/08/comparaison-comp%C3%A9tences-attendus-math-c234-complet1.pdf), [ac-Poitiers](https://ww2.ac-poitiers.fr/math/sites/math/IMG/pdf/cycle4_lien_entre_programme_et_competences.pdf), [BO Strasbourg](https://pedagogie.ac-strasbourg.fr/fileadmin/pedagogie/mathematiques/College/Programmes_Documents_officiels/Maths_cycle4_BO_SPE_11_26-11-2015.pdf). Le doc [IGESR 2023 « Les six compétences »](https://mathematiques.igesr.org/data/uploads/six_competences.pdf) décrit les compétences mais ne contient pas de mapping socle. Implémenté dans `src/lib/server/competences/socle-mapping.ts`.
 
 > Note cohérence : la Famille A UbuMaths cible la **6ᵉ (cycle 3)**, alors que les 6 compétences (Famille B) sont structurées par le programme **cycle 4 (BO 2015)**. Le socle 2015 couvre les deux cycles (mêmes 8 composantes). Pas de contradiction, mais à garder en tête si un export 6ᵉ doit citer le cycle 3.
 

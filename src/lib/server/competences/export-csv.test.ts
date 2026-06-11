@@ -64,22 +64,24 @@ describe('formatNiveau', () => {
 // ---------------------------------------------------------------------------
 
 describe('getSocleCodes', () => {
-	it('maps every competence to D1.3 plus the expected secondary components', () => {
-		expect(getSocleCodes('chercher')).toEqual({ primary: 'D1.3', secondary: ['D2'] });
-		expect(getSocleCodes('communiquer')).toEqual({ primary: 'D1.3', secondary: ['D1.1'] });
-		expect(getSocleCodes('raisonner')).toEqual({ primary: 'D1.3', secondary: ['D3'] });
-		expect(getSocleCodes('modeliser')).toEqual({ primary: 'D1.3', secondary: ['D4'] });
-		expect(getSocleCodes('calculer')).toEqual({ primary: 'D1.3', secondary: [] });
-		expect(getSocleCodes('representer')).toEqual({ primary: 'D1.3', secondary: [] });
+	it('maps each competence to its official BO 2015 cycle 4 socle domains', () => {
+		// Domain 1 → D1.3 for maths; chercher/calculer/raisonner have no domain 1.
+		expect(getSocleCodes('chercher')).toEqual(['D2', 'D4']);
+		expect(getSocleCodes('calculer')).toEqual(['D4']);
+		expect(getSocleCodes('raisonner')).toEqual(['D2', 'D3', 'D4']);
+		expect(getSocleCodes('communiquer')).toEqual(['D1.3', 'D3']);
+		expect(getSocleCodes('modeliser')).toEqual(['D1.3', 'D2', 'D4']);
+		expect(getSocleCodes('representer')).toEqual(['D1.3', 'D5']);
 	});
 
-	it('falls back safely for an unknown competence code', () => {
-		expect(getSocleCodes('inconnu')).toEqual({ primary: 'D1.3', secondary: [] });
+	it('returns an empty list for an unknown competence code', () => {
+		expect(getSocleCodes('inconnu')).toEqual([]);
 	});
 
-	it('formats a socle cell as primary then secondary, space-separated', () => {
-		expect(formatSocleCell('chercher')).toBe('D1.3 D2');
-		expect(formatSocleCell('calculer')).toBe('D1.3');
+	it('formats a socle cell as space-separated domains', () => {
+		expect(formatSocleCell('chercher')).toBe('D2 D4');
+		expect(formatSocleCell('modeliser')).toBe('D1.3 D2 D4');
+		expect(formatSocleCell('calculer')).toBe('D4');
 	});
 });
 
@@ -163,8 +165,8 @@ describe('buildCompetencesCsv — disposition longue', () => {
 		expect(rows[0]).toBe(
 			'nom;prenom;classe;competence_code;competence_nom;niveau;socle_code;task_count;derniere_observation'
 		);
-		expect(rows[1]).toBe('Dupont;Léa;6e B;chercher;Chercher;3;D1.3 D2;5;2026-06-10');
-		expect(rows[2]).toBe('Dupont;Léa;6e B;calculer;Calculer;;D1.3;0;');
+		expect(rows[1]).toBe('Dupont;Léa;6e B;chercher;Chercher;3;D2 D4;5;2026-06-10');
+		expect(rows[2]).toBe('Dupont;Léa;6e B;calculer;Calculer;;D4;0;');
 		expect(rows).toHaveLength(3);
 	});
 

@@ -13,8 +13,10 @@ collage / EcoleDirecte recopie / Sacoche saisie).
 
 - Disposition **« large » 1-4 par défaut** (élèves × 6 compétences) ; « longue » en option.
 - **Vue écran** = cœur du MVP ; le CSV exporte le même contenu.
-- Mapping socle en **fichier TypeScript lecture seule** (pas de table DB) ; D1.3 certain,
-  secondaires (D2/D3/D4/D1.1) **à valider** (commentés dans le code).
+- Mapping socle en **fichier TypeScript lecture seule** (pas de table DB). **Vérifié 2026-06-11**
+  sur la table « Domaines du socle » du BO 2015 cycle 4 (Option B = sous-composantes, domaine 1 →
+  D1.3) : chercher=`D2 D4`, calculer=`D4`, raisonner=`D2 D3 D4`, communiquer=`D1.3 D3`,
+  modeliser=`D1.3 D2 D4`, representer=`D1.3 D5`. ⚠️ Corrige une 1ʳᵉ version qui mettait D1.3 partout.
 - **Période = étiquette** (nom de fichier), ne filtre pas les données (`student_competence_level`
   est un cache d'état courant, pas d'historique par trimestre).
 - **Log d'audit applicatif** (createServerLogger, pas de table).
@@ -60,7 +62,6 @@ collage / EcoleDirecte recopie / Sacoche saisie).
 
 - PDF récap A4 (cible EcoleDirecte) — sur demande.
 - `profiles.identifiant_externe` — si blocage homonymes signalé.
-- Valider le mapping socle secondaire (D2/D3/D4/D1.1) sur source BO 2015 officielle.
 - Historisation des niveaux par période (snapshot) si filtrage réel par trimestre demandé.
 - (optionnel) Lien depuis la page vers le guide markdown — le guide est actuellement un doc dev,
   non servi en route ; l'encart in-page suffit pour le MVP.
