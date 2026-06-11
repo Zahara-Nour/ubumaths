@@ -111,10 +111,10 @@
 			<Card.Root>
 				<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
 					<Card.Title class="text-sm font-medium">Taux de Succes</Card.Title>
-					<CheckCircle2 class="h-4 w-4 text-green-500" />
+					<CheckCircle2 class="h-4 w-4 text-success" />
 				</Card.Header>
 				<Card.Content>
-					<div class="text-2xl font-bold text-green-600 dark:text-green-400">
+					<div class="text-2xl font-bold text-success">
 						{data.stats.totalQuestions > 0
 							? Math.round((data.stats.successCount / data.stats.totalQuestions) * 100)
 							: 0}%
@@ -152,47 +152,47 @@
 				<div class="flex flex-wrap gap-4">
 					<!-- Success -->
 					<div
-						class="flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-3 dark:border-green-800 dark:bg-green-950/30"
+						class="flex items-center gap-3 rounded-lg border border-success/30 bg-success/10 px-4 py-3"
 					>
-						<CheckCircle2 class="h-8 w-8 text-green-500" />
+						<CheckCircle2 class="h-8 w-8 text-success" />
 						<div>
-							<p class="text-2xl font-bold text-green-700 dark:text-green-400">
+							<p class="text-2xl font-bold text-success">
 								{data.stats.successCount}
 							</p>
-							<p class="text-sm text-green-600 dark:text-green-500">Succes</p>
+							<p class="text-sm text-success">Succes</p>
 						</div>
 					</div>
 
 					<!-- Warnings -->
 					<div
-						class="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-800 dark:bg-amber-950/30"
+						class="flex items-center gap-3 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3"
 					>
-						<AlertTriangle class="h-8 w-8 text-amber-500" />
+						<AlertTriangle class="h-8 w-8 text-warning" />
 						<div>
-							<p class="text-2xl font-bold text-amber-700 dark:text-amber-400">
+							<p class="text-2xl font-bold text-warning">
 								{data.stats.warningCount}
 							</p>
-							<p class="text-sm text-amber-600 dark:text-amber-500">Avertissements</p>
+							<p class="text-sm text-warning">Avertissements</p>
 						</div>
 					</div>
 
 					<!-- Errors -->
 					<div
-						class="flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800 dark:bg-red-950/30"
+						class="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3"
 					>
-						<XCircle class="h-8 w-8 text-red-500" />
+						<XCircle class="h-8 w-8 text-destructive" />
 						<div>
-							<p class="text-2xl font-bold text-red-700 dark:text-red-400">
+							<p class="text-2xl font-bold text-destructive">
 								{data.stats.errorCount}
 							</p>
-							<p class="text-sm text-red-600 dark:text-red-500">Erreurs</p>
+							<p class="text-sm text-destructive">Erreurs</p>
 						</div>
 					</div>
 				</div>
 
 				{#if data.stats.warningCount > 0}
-					<div class="mt-4 rounded-md bg-amber-50 p-3 dark:bg-amber-950/20">
-						<p class="text-sm text-amber-800 dark:text-amber-200">
+					<div class="mt-4 rounded-md bg-warning/10 p-3">
+						<p class="text-sm text-warning">
 							<strong>{data.stats.warningCount}</strong> questions ont des avertissements et necessitent
 							une verification manuelle.
 						</p>

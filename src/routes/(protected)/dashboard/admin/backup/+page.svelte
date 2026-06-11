@@ -354,7 +354,7 @@
 			>
 				{#if importFile}
 					<div class="space-y-2">
-						<FileJson class="mx-auto h-12 w-12 text-green-500" />
+						<FileJson class="mx-auto h-12 w-12 text-success" />
 						<p class="font-medium">{importFile.name}</p>
 						<p class="text-sm text-muted-foreground">
 							{(importFile.size / 1024).toFixed(1)} Ko
@@ -422,10 +422,10 @@
 			<Card.Header>
 				<Card.Title class="flex items-center gap-2">
 					{#if restoreResult.success}
-						<CheckCircle2 class="h-5 w-5 text-green-500" />
+						<CheckCircle2 class="h-5 w-5 text-success" />
 						Restauration reussie
 					{:else}
-						<AlertCircle class="h-5 w-5 text-yellow-500" />
+						<AlertCircle class="h-5 w-5 text-warning" />
 						Restauration terminee avec des erreurs
 					{/if}
 				</Card.Title>

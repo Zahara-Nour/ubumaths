@@ -434,9 +434,7 @@
 		     ======================================== -->
 		<Tabs.Content value="timetable" class="space-y-6">
 			<!-- Info Banner -->
-			<div
-				class="rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200"
-			>
+			<div class="rounded-lg border border-info/30 bg-info/10 p-4 text-info">
 				<p class="text-sm">
 					<strong>Information:</strong> Les périodes définies ici seront utilisées par tous les enseignants
 					lors de la création de leurs emplois du temps de classe. Les périodes doivent être identiques
@@ -600,7 +598,7 @@
 								>
 								{#if selectedYear.is_active}
 									<span
-										class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200"
+										class="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success"
 									>
 										<Check class="h-3 w-3" />
 										Active
@@ -1006,9 +1004,7 @@
 			<div class="space-y-4">
 				<!-- General error message -->
 				{#if form?.error}
-					<div
-						class="rounded-md bg-red-50 p-3 text-sm text-red-800 dark:bg-red-900/20 dark:text-red-400"
-					>
+					<div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
 						{form.error}
 					</div>
 				{/if}
@@ -1025,11 +1021,11 @@
 						required
 						placeholder="2024-2025"
 						class={form && 'errors' in form && (form.errors as Record<string, string[]>)?.name
-							? 'border-red-500'
+							? 'border-destructive'
 							: ''}
 					/>
 					{#if form && 'errors' in form && (form.errors as Record<string, string[]>)?.name}
-						<p class="mt-1 text-sm text-red-600 dark:text-red-400">
+						<p class="mt-1 text-sm text-destructive">
 							{(form.errors as Record<string, string[]>).name[0]}
 						</p>
 					{/if}
@@ -1052,11 +1048,11 @@
 							class={form &&
 							'errors' in form &&
 							(form.errors as Record<string, string[]>)?.start_date
-								? 'border-red-500'
+								? 'border-destructive'
 								: ''}
 						/>
 						{#if form && 'errors' in form && (form.errors as Record<string, string[]>)?.start_date}
-							<p class="mt-1 text-sm text-red-600 dark:text-red-400">
+							<p class="mt-1 text-sm text-destructive">
 								{(form.errors as Record<string, string[]>).start_date[0]}
 							</p>
 						{/if}
@@ -1073,11 +1069,11 @@
 							value={editingYear?.end_date ?? ''}
 							required
 							class={form && 'errors' in form && (form.errors as Record<string, string[]>)?.end_date
-								? 'border-red-500'
+								? 'border-destructive'
 								: ''}
 						/>
 						{#if form && 'errors' in form && (form.errors as Record<string, string[]>)?.end_date}
-							<p class="mt-1 text-sm text-red-600 dark:text-red-400">
+							<p class="mt-1 text-sm text-destructive">
 								{(form.errors as Record<string, string[]>).end_date[0]}
 							</p>
 						{/if}
@@ -1470,9 +1466,7 @@
 			{/if}
 
 			<div class="space-y-4">
-				<div
-					class="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200"
-				>
+				<div class="rounded-lg border border-info/30 bg-info/10 p-4 text-sm text-info">
 					<p>
 						<strong>Source:</strong>
 						{data.activeYear?.name}

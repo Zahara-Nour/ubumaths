@@ -64,17 +64,17 @@
 			case 'accepted':
 				return {
 					label: 'Acceptée',
-					class: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+					class: 'bg-success/10 text-success'
 				};
 			case 'pending':
 				return {
 					label: 'En attente',
-					class: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+					class: 'bg-warning/10 text-warning'
 				};
 			case 'rejected':
 				return {
 					label: 'Refusée',
-					class: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+					class: 'bg-destructive/10 text-destructive'
 				};
 		}
 	}
@@ -93,8 +93,8 @@
 	<div class="mb-6 grid gap-4 md:grid-cols-3">
 		<div class="rounded-lg border border-border bg-card p-4">
 			<div class="flex items-center gap-3">
-				<div class="rounded-full bg-green-100 p-3 dark:bg-green-900">
-					<Users class="size-6 text-green-600 dark:text-green-300" />
+				<div class="rounded-full bg-success/10 p-3">
+					<Users class="size-6 text-success" />
 				</div>
 				<div>
 					<p class="text-2xl font-bold">{data.stats.accepted}</p>
@@ -105,8 +105,8 @@
 
 		<div class="rounded-lg border border-border bg-card p-4">
 			<div class="flex items-center gap-3">
-				<div class="rounded-full bg-yellow-100 p-3 dark:bg-yellow-900">
-					<AlertTriangle class="size-6 text-yellow-600 dark:text-yellow-300" />
+				<div class="rounded-full bg-warning/10 p-3">
+					<AlertTriangle class="size-6 text-warning" />
 				</div>
 				<div>
 					<p class="text-2xl font-bold">{data.stats.pending}</p>
@@ -117,8 +117,8 @@
 
 		<div class="rounded-lg border border-border bg-card p-4">
 			<div class="flex items-center gap-3">
-				<div class="rounded-full bg-blue-100 p-3 dark:bg-blue-900">
-					<Users class="size-6 text-blue-600 dark:text-blue-300" />
+				<div class="rounded-full bg-info/10 p-3">
+					<Users class="size-6 text-info" />
 				</div>
 				<div>
 					<p class="text-2xl font-bold">{data.stats.total}</p>

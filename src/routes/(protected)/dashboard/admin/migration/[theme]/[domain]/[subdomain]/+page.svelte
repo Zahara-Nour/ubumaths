@@ -369,7 +369,7 @@
 		<Card.Root class="border-warning/50 bg-warning/5">
 			<Card.Header class="pb-3">
 				<Card.Title class="text-sm font-medium">
-					<AlertTriangle class="text-warning mr-2 inline-block h-4 w-4" />
+					<AlertTriangle class="mr-2 inline-block h-4 w-4 text-warning" />
 					Avertissements
 				</Card.Title>
 			</Card.Header>
@@ -392,28 +392,28 @@
 			</Card.Content>
 		</Card.Root>
 
-		<Card.Root class="border-green-500/50 bg-green-500/5">
+		<Card.Root class="border-success/50 bg-success/5">
 			<Card.Header class="pb-3">
 				<Card.Title class="text-sm font-medium">
-					<CheckCircle2 class="mr-2 inline-block h-4 w-4 text-green-600" />
+					<CheckCircle2 class="mr-2 inline-block h-4 w-4 text-success" />
 					Approuvees
 				</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<div class="text-2xl font-bold text-green-600">{reviewStats.approved}</div>
+				<div class="text-2xl font-bold text-success">{reviewStats.approved}</div>
 				<p class="text-xs text-muted-foreground">Validees en DB</p>
 			</Card.Content>
 		</Card.Root>
 
-		<Card.Root class="border-red-500/50 bg-red-500/5">
+		<Card.Root class="border-destructive/50 bg-destructive/5">
 			<Card.Header class="pb-3">
 				<Card.Title class="text-sm font-medium">
-					<XCircle class="mr-2 inline-block h-4 w-4 text-red-600" />
+					<XCircle class="mr-2 inline-block h-4 w-4 text-destructive" />
 					Rejetees
 				</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<div class="text-2xl font-bold text-red-600">{reviewStats.rejected}</div>
+				<div class="text-2xl font-bold text-destructive">{reviewStats.rejected}</div>
 				<p class="text-xs text-muted-foreground">Rejetees en DB</p>
 			</Card.Content>
 		</Card.Root>
@@ -466,7 +466,7 @@
 			variant={activeFilter === 'approved' ? 'default' : 'outline'}
 			size="sm"
 			onclick={() => (activeFilter = 'approved')}
-			class={activeFilter === 'approved' ? 'bg-green-600 hover:bg-green-700' : ''}
+			class={activeFilter === 'approved' ? 'bg-success hover:bg-success/90' : ''}
 		>
 			<CheckCircle2 class="mr-1 h-3 w-3" />
 			Approuvees ({reviewStats.approved})
@@ -475,7 +475,7 @@
 			variant={activeFilter === 'rejected' ? 'default' : 'outline'}
 			size="sm"
 			onclick={() => (activeFilter = 'rejected')}
-			class={activeFilter === 'rejected' ? 'bg-red-600 hover:bg-red-700' : ''}
+			class={activeFilter === 'rejected' ? 'bg-destructive hover:bg-destructive/90' : ''}
 		>
 			<XCircle class="mr-1 h-3 w-3" />
 			Rejetees ({reviewStats.rejected})
@@ -564,13 +564,13 @@
 
 				<!-- Status badges -->
 				{#if isEdited}
-					<Badge variant="outline" class="border-blue-500 text-blue-600">
+					<Badge variant="outline" class="border-info/50 text-info">
 						<Edit3 class="mr-1 h-3 w-3" />
 						Modifie
 					</Badge>
 				{/if}
 				{#if status === 'approved'}
-					<Badge variant="default" class="bg-green-600">
+					<Badge variant="default" class="bg-success">
 						<CheckCircle2 class="mr-1 h-3 w-3" />
 						Approuvee
 					</Badge>

@@ -137,11 +137,11 @@
 	function getRoleBadgeClass(role: string): string {
 		switch (role) {
 			case 'admin':
-				return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+				return 'bg-destructive/10 text-destructive';
 			case 'teacher':
-				return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+				return 'bg-info/10 text-info';
 			case 'student':
-				return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+				return 'bg-success/10 text-success';
 			default:
 				return 'bg-muted text-muted-foreground';
 		}
@@ -151,7 +151,7 @@
 	 * Get Tailwind classes for test user badge
 	 */
 	function getTestBadgeClass(): string {
-		return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+		return 'bg-warning/10 text-warning';
 	}
 
 	/**
@@ -160,11 +160,11 @@
 	function getStatusBadgeClass(status: string): string {
 		switch (status) {
 			case 'pending':
-				return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
+				return 'bg-warning/10 text-warning';
 			case 'approved':
-				return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+				return 'bg-success/10 text-success';
 			case 'rejected':
-				return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+				return 'bg-destructive/10 text-destructive';
 			default:
 				return 'bg-muted text-muted-foreground';
 		}
@@ -842,7 +842,7 @@
 							{/if}
 							En attente
 							{#if pendingCount > 0}
-								<Badge class="bg-amber-500 text-white">{pendingCount}</Badge>
+								<Badge class="bg-warning text-warning-foreground">{pendingCount}</Badge>
 							{/if}
 						</Button>
 					</div>
@@ -974,17 +974,13 @@
 
 							<!-- Approval Status Section (for pending users) -->
 							{#if selectedUser.status === 'pending'}
-								<div
-									class="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950"
-								>
+								<div class="rounded-lg border border-warning/30 bg-warning/10 p-4">
 									<div class="flex items-center justify-between">
 										<div class="flex items-center gap-3">
-											<Clock class="h-5 w-5 text-amber-600 dark:text-amber-400" />
+											<Clock class="h-5 w-5 text-warning" />
 											<div>
-												<p class="font-medium text-amber-800 dark:text-amber-200">
-													En attente d'approbation
-												</p>
-												<p class="text-sm text-amber-600 dark:text-amber-400">
+												<p class="font-medium text-warning">En attente d'approbation</p>
+												<p class="text-sm text-warning">
 													Cet utilisateur attend que son inscription soit validée.
 												</p>
 											</div>
@@ -995,7 +991,7 @@
 												size="sm"
 												onclick={openRejectionDialog}
 												disabled={isApproving || isRejecting}
-												class="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950"
+												class="border-destructive/30 text-destructive hover:bg-destructive/10"
 											>
 												{#if isRejecting}
 													<Loader2 class="mr-2 h-4 w-4 animate-spin" />
@@ -1015,7 +1011,7 @@
 																	{...props}
 																	size="sm"
 																	disabled={true}
-																	class="bg-green-600 hover:bg-green-700"
+																	class="bg-success hover:bg-success/90"
 																>
 																	<Check class="mr-2 h-4 w-4" />
 																	Approuver
@@ -1032,7 +1028,7 @@
 													size="sm"
 													onclick={approveUser}
 													disabled={isApproving || isRejecting}
-													class="bg-green-600 hover:bg-green-700"
+													class="bg-success hover:bg-success/90"
 												>
 													{#if isApproving}
 														<Loader2 class="mr-2 h-4 w-4 animate-spin" />
@@ -1046,15 +1042,13 @@
 									</div>
 								</div>
 							{:else if selectedUser.status === 'rejected'}
-								<div
-									class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950"
-								>
+								<div class="rounded-lg border border-destructive/30 bg-destructive/10 p-4">
 									<div class="flex items-center gap-3">
-										<X class="h-5 w-5 text-red-600 dark:text-red-400" />
+										<X class="h-5 w-5 text-destructive" />
 										<div>
-											<p class="font-medium text-red-800 dark:text-red-200">Inscription refusée</p>
+											<p class="font-medium text-destructive">Inscription refusée</p>
 											{#if selectedUser.rejection_reason}
-												<p class="text-sm text-red-600 dark:text-red-400">
+												<p class="text-sm text-destructive">
 													Raison : {selectedUser.rejection_reason}
 												</p>
 											{/if}
@@ -1218,7 +1212,7 @@
 												{#each selectedUser.class_ids as classId (classId)}
 													{@const className = data.classes.find((c) => c.id === classId)?.name}
 													<Badge
-														class="flex items-center gap-1 bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200"
+														class="flex items-center gap-1 bg-info/10 text-info hover:bg-info/20"
 													>
 														{className || 'Unknown'}
 
@@ -1301,7 +1295,7 @@
 				/>
 				<p
 					class="text-sm {rejectionReason.length > 500
-						? 'font-medium text-red-600 dark:text-red-400'
+						? 'font-medium text-destructive'
 						: 'text-muted-foreground'}"
 				>
 					{rejectionReason.length} / 500 caractères
@@ -1326,7 +1320,7 @@
 			<Button
 				onclick={rejectUser}
 				disabled={isRejecting || rejectionReason.length > 500}
-				class="bg-red-600 hover:bg-red-700"
+				class="bg-destructive hover:bg-destructive/90"
 			>
 				{#if isRejecting}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" />

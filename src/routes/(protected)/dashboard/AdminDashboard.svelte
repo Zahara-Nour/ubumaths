@@ -366,25 +366,25 @@
 				<Card.Root>
 					<Card.Content class="p-6">
 						<div class="mb-4 flex items-start justify-between">
-							<h3 class="text-sm font-medium text-gray-600">Contenu de la Plateforme</h3>
-							<FileText class="h-5 w-5 text-gray-400" />
+							<h3 class="text-sm font-medium text-muted-foreground">Contenu de la Plateforme</h3>
+							<FileText class="h-5 w-5 text-muted-foreground" />
 						</div>
 						<div class="grid grid-cols-2 gap-3">
 							<div>
-								<p class="text-2xl font-bold text-gray-900">{stats.content.exercises}</p>
-								<p class="text-xs text-gray-600">Exercices</p>
+								<p class="text-2xl font-bold text-foreground">{stats.content.exercises}</p>
+								<p class="text-xs text-muted-foreground">Exercices</p>
 							</div>
 							<div>
-								<p class="text-2xl font-bold text-gray-900">{stats.content.assessments}</p>
-								<p class="text-xs text-gray-600">Évaluations</p>
+								<p class="text-2xl font-bold text-foreground">{stats.content.assessments}</p>
+								<p class="text-xs text-muted-foreground">Évaluations</p>
 							</div>
 							<div>
-								<p class="text-2xl font-bold text-gray-900">{stats.content.riddles}</p>
-								<p class="text-xs text-gray-600">Énigmes</p>
+								<p class="text-2xl font-bold text-foreground">{stats.content.riddles}</p>
+								<p class="text-xs text-muted-foreground">Énigmes</p>
 							</div>
 							<div>
-								<p class="text-2xl font-bold text-gray-900">{stats.content.srsDecks}</p>
-								<p class="text-xs text-gray-600">Decks SRS</p>
+								<p class="text-2xl font-bold text-foreground">{stats.content.srsDecks}</p>
+								<p class="text-xs text-muted-foreground">Decks SRS</p>
 							</div>
 						</div>
 					</Card.Content>
@@ -394,27 +394,29 @@
 				<Card.Root>
 					<Card.Content class="p-6">
 						<div class="mb-4 flex items-start justify-between">
-							<h3 class="text-sm font-medium text-gray-600">Activité (24h)</h3>
-							<Activity class="h-5 w-5 text-gray-400" />
+							<h3 class="text-sm font-medium text-muted-foreground">Activité (24h)</h3>
+							<Activity class="h-5 w-5 text-muted-foreground" />
 						</div>
 						<div class="space-y-3">
 							<div class="flex items-center justify-between">
-								<span class="text-sm text-gray-600">Devoirs assignés</span>
-								<span class="text-xl font-bold text-gray-900">{stats.content.assignments24h}</span>
+								<span class="text-sm text-muted-foreground">Devoirs assignés</span>
+								<span class="text-xl font-bold text-foreground">{stats.content.assignments24h}</span
+								>
 							</div>
 							<div class="flex items-center justify-between">
-								<span class="text-sm text-gray-600">Complétés</span>
-								<span class="text-xl font-bold text-gray-900">{stats.content.completions24h}</span>
+								<span class="text-sm text-muted-foreground">Complétés</span>
+								<span class="text-xl font-bold text-foreground">{stats.content.completions24h}</span
+								>
 							</div>
-							<div class="border-t border-gray-200 pt-2">
+							<div class="border-t border-border pt-2">
 								<div class="flex items-center justify-between">
-									<span class="text-sm font-medium text-gray-700">Taux de complétion</span>
+									<span class="text-sm font-medium text-foreground">Taux de complétion</span>
 									<span
 										class={cn(
 											'text-xl font-bold',
-											completionRateStatus === 'ok' && 'text-green-600',
-											completionRateStatus === 'warning' && 'text-orange-600',
-											completionRateStatus === 'critical' && 'text-red-600'
+											completionRateStatus === 'ok' && 'text-success',
+											completionRateStatus === 'warning' && 'text-warning',
+											completionRateStatus === 'critical' && 'text-destructive'
 										)}
 									>
 										{completionRateValue}%
@@ -461,15 +463,15 @@
 						<!-- Recent jobs list -->
 						{#if stats.jobs.recentJobs.length > 0}
 							<div class="space-y-2">
-								<h3 class="text-sm font-medium text-gray-700">Tâches Récentes</h3>
+								<h3 class="text-sm font-medium text-foreground">Tâches Récentes</h3>
 								<div class="space-y-2">
 									{#each stats.jobs.recentJobs as job, i (`${job.name}-${i}`)}
 										<div
-											class="flex items-center justify-between rounded-lg border border-gray-200 p-3"
+											class="flex items-center justify-between rounded-lg border border-border p-3"
 										>
 											<div class="min-w-0 flex-1">
-												<p class="truncate text-sm font-medium text-gray-900">{job.name}</p>
-												<div class="mt-1 flex items-center gap-3 text-xs text-gray-500">
+												<p class="truncate text-sm font-medium text-foreground">{job.name}</p>
+												<div class="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
 													{#if job.lastRun}
 														<span>
 															Dernière exécution: {new Date(job.lastRun).toLocaleString('fr-FR')}
@@ -480,31 +482,31 @@
 													{/if}
 												</div>
 												{#if job.error}
-													<p class="mt-1 truncate text-xs text-red-600">{job.error}</p>
+													<p class="mt-1 truncate text-xs text-destructive">{job.error}</p>
 												{/if}
 											</div>
 											<div class="ml-3">
 												{#if job.status === 'success'}
 													<span
-														class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800"
+														class="inline-flex items-center rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-success"
 													>
 														Succès
 													</span>
 												{:else if job.status === 'failed'}
 													<span
-														class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800"
+														class="inline-flex items-center rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-medium text-destructive"
 													>
 														Échoué
 													</span>
 												{:else if job.status === 'running'}
 													<span
-														class="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-medium text-orange-800"
+														class="inline-flex items-center rounded-full bg-warning/10 px-2.5 py-0.5 text-xs font-medium text-warning"
 													>
 														En cours
 													</span>
 												{:else}
 													<span
-														class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800"
+														class="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
 													>
 														Timeout
 													</span>
@@ -515,7 +517,7 @@
 								</div>
 							</div>
 						{:else}
-							<p class="py-4 text-center text-sm text-gray-500">Aucune tâche récente</p>
+							<p class="py-4 text-center text-sm text-muted-foreground">Aucune tâche récente</p>
 						{/if}
 					</div>
 				</Card.Content>
@@ -525,19 +527,19 @@
 		<!-- Cache indicator -->
 		{#if stats.meta.cached}
 			<div class="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-				<div class="h-2 w-2 rounded-full bg-blue-400"></div>
+				<div class="h-2 w-2 rounded-full bg-info"></div>
 				<span>Données en cache (rafraîchissement automatique après 60 secondes)</span>
 			</div>
 		{/if}
 	{:else}
 		<!-- Error state -->
-		<Card.Root class="border-red-200 bg-red-50">
+		<Card.Root class="border-destructive/30 bg-destructive/10">
 			<Card.Content class="p-6">
 				<div class="flex items-center gap-3">
-					<AlertCircle class="h-6 w-6 text-red-600" />
+					<AlertCircle class="h-6 w-6 text-destructive" />
 					<div>
-						<h3 class="font-semibold text-red-900">Erreur de chargement</h3>
-						<p class="text-sm text-red-700">
+						<h3 class="font-semibold text-destructive">Erreur de chargement</h3>
+						<p class="text-sm text-destructive">
 							Impossible de charger les statistiques système. Veuillez réessayer.
 						</p>
 					</div>

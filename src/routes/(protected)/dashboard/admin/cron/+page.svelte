@@ -131,7 +131,7 @@
 			case 'success':
 				return {
 					variant: 'default' as const,
-					class: 'bg-green-500 hover:bg-green-600',
+					class: 'bg-success hover:bg-success/90',
 					icon: CheckCircle2,
 					text: 'Succes'
 				};
@@ -140,14 +140,14 @@
 			case 'running':
 				return {
 					variant: 'secondary' as const,
-					class: 'bg-orange-500 hover:bg-orange-600 text-white',
+					class: 'bg-warning hover:bg-warning/90 text-warning-foreground',
 					icon: Activity,
 					text: 'En cours'
 				};
 			case 'timeout':
 				return {
 					variant: 'destructive' as const,
-					class: 'bg-yellow-600 hover:bg-yellow-700',
+					class: 'bg-warning hover:bg-warning/90',
 					icon: AlertTriangle,
 					text: 'Timeout'
 				};
