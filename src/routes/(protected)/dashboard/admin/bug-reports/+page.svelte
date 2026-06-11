@@ -296,8 +296,8 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="flex items-center gap-2">
-					<Clock class="h-5 w-5 text-yellow-500" />
-					<span class="text-2xl font-bold text-yellow-600">{data.stats.pending}</span>
+					<Clock class="h-5 w-5 text-warning" />
+					<span class="text-2xl font-bold text-warning">{data.stats.pending}</span>
 				</div>
 				<p class="text-xs text-muted-foreground">à traiter</p>
 			</Card.Content>
@@ -309,8 +309,8 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="flex items-center gap-2">
-					<AlertTriangle class="h-5 w-5 text-red-500" />
-					<span class="text-2xl font-bold text-red-600">{data.stats.critical}</span>
+					<AlertTriangle class="h-5 w-5 text-destructive" />
+					<span class="text-2xl font-bold text-destructive">{data.stats.critical}</span>
 				</div>
 				<p class="text-xs text-muted-foreground">urgents</p>
 			</Card.Content>
@@ -322,7 +322,7 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="flex items-center gap-2">
-					<Calendar class="h-5 w-5 text-blue-500" />
+					<Calendar class="h-5 w-5 text-info" />
 					<span class="text-2xl font-bold">{data.stats.today}</span>
 				</div>
 				<p class="text-xs text-muted-foreground">nouveaux</p>
@@ -428,7 +428,7 @@
 						{BUG_REPORT_CATEGORY_LABELS[selectedReport.category]}
 					</span>
 					{#if selectedReport.auto_generated}
-						<span class="text-xs text-orange-600 dark:text-orange-400"> ⚡ Auto-généré </span>
+						<span class="text-xs text-warning"> ⚡ Auto-généré </span>
 					{/if}
 				</div>
 

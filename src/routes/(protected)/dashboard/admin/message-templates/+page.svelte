@@ -537,7 +537,7 @@
 								<h3 class="font-semibold">{template.title}</h3>
 								<button
 									onclick={() => toggleFavorite(template.id)}
-									class="text-yellow-500 transition-colors hover:text-yellow-600"
+									class="text-warning transition-colors hover:text-warning"
 								>
 									{#if isFavorite}
 										<Star class="h-4 w-4 fill-current" />
@@ -759,11 +759,9 @@
 						</div>
 					</div>
 					{#if previewHtml.missingVariables && previewHtml.missingVariables.length > 0}
-						<div class="mt-4 rounded bg-yellow-50 p-3 dark:bg-yellow-900/20">
-							<div class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-								Variables non renseignées:
-							</div>
-							<div class="text-sm text-yellow-700 dark:text-yellow-300">
+						<div class="mt-4 rounded bg-warning/10 p-3">
+							<div class="text-sm font-medium text-warning">Variables non renseignées:</div>
+							<div class="text-sm text-warning">
 								{previewHtml.missingVariables.join(', ')}
 							</div>
 						</div>

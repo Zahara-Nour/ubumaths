@@ -295,7 +295,7 @@
 							<td class="px-6 py-4 whitespace-nowrap">
 								{#if school.is_active}
 									<span
-										class="inline-flex rounded-full bg-primary/10 px-2 py-1 text-xs leading-5 font-semibold text-primary"
+										class="inline-flex rounded-full bg-success/10 px-2 py-1 text-xs leading-5 font-semibold text-success"
 									>
 										Active
 									</span>
@@ -624,7 +624,7 @@ Another School	London	UK		"
 
 								{#if parsedSchools.length > 0}
 									<div
-										class="rounded border border-primary/50 bg-primary/10 px-4 py-3 text-primary"
+										class="rounded border border-success/50 bg-success/10 px-4 py-3 text-success"
 									>
 										✓ Found {parsedSchools.length} school{parsedSchools.length !== 1 ? 's' : ''} to import
 									</div>

@@ -281,7 +281,7 @@
 										title="Copier le code"
 									>
 										{#if copiedCode === classItem.join_code}
-											<Check class="h-4 w-4 text-green-600" />
+											<Check class="h-4 w-4 text-success" />
 										{:else}
 											<Copy class="h-4 w-4" />
 										{/if}
@@ -298,13 +298,9 @@
 							</td>
 							<td class="px-6 py-4 whitespace-nowrap">
 								{#if classItem.is_active}
-									<Badge class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-										Active
-									</Badge>
+									<Badge class="bg-success/10 text-success">Active</Badge>
 								{:else}
-									<Badge class="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-										Inactive
-									</Badge>
+									<Badge class="bg-destructive/10 text-destructive">Inactive</Badge>
 								{/if}
 							</td>
 							<td class="space-x-1 px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
@@ -383,7 +379,7 @@
 											type="submit"
 											variant="ghost"
 											size="icon"
-											class="text-green-600 hover:text-green-600"
+											class="text-success hover:text-success"
 											disabled={activatingClassId === classItem.id}
 											title="Activer"
 										>

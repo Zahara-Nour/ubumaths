@@ -278,7 +278,7 @@
 					<Card.Title class="text-sm font-medium text-muted-foreground">Non Résolues</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<div class="text-2xl font-bold text-orange-500">{data.stats.unresolved_errors}</div>
+					<div class="text-2xl font-bold text-warning">{data.stats.unresolved_errors}</div>
 					<p class="text-xs text-muted-foreground">À traiter</p>
 				</Card.Content>
 			</Card.Root>
@@ -288,7 +288,7 @@
 					<Card.Title class="text-sm font-medium text-muted-foreground">Critiques</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<div class="text-2xl font-bold text-red-500">{data.stats.critical_errors}</div>
+					<div class="text-2xl font-bold text-destructive">{data.stats.critical_errors}</div>
 					<p class="text-xs text-muted-foreground">Urgentes</p>
 				</Card.Content>
 			</Card.Root>
@@ -427,7 +427,7 @@
 
 				<!-- Warning -->
 				<div
-					class="flex items-start gap-2 rounded-lg border border-orange-200 bg-orange-50 p-3 text-sm text-orange-800 dark:border-orange-900 dark:bg-orange-950 dark:text-orange-200"
+					class="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm text-warning"
 				>
 					<span class="text-base">⚠️</span>
 					<p>Cette action affectera toutes les erreurs correspondant aux filtres actifs.</p>
@@ -497,10 +497,8 @@
 				</div>
 
 				<!-- Final Confirmation -->
-				<div
-					class="rounded-lg border-2 border-orange-300 bg-orange-50 p-4 dark:border-orange-800 dark:bg-orange-950/30"
-				>
-					<p class="text-center text-sm font-semibold text-orange-900 dark:text-orange-200">
+				<div class="rounded-lg border-2 border-warning/50 bg-warning/10 p-4">
+					<p class="text-center text-sm font-semibold text-warning">
 						Êtes-vous absolument certain de vouloir continuer ?
 					</p>
 				</div>

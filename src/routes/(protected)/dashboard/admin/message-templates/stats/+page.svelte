@@ -389,7 +389,7 @@
 							<!-- Power Users -->
 							<div class="rounded-lg border border-border bg-muted/50 p-4">
 								<div class="text-center">
-									<div class="text-2xl font-bold text-green-600">
+									<div class="text-2xl font-bold text-success">
 										{stats.user_adoption.power_users || 0}
 									</div>
 									<div class="text-sm font-medium">Utilisateurs avancés</div>
@@ -400,7 +400,7 @@
 							<!-- Regular Users -->
 							<div class="rounded-lg border border-border bg-muted/50 p-4">
 								<div class="text-center">
-									<div class="text-2xl font-bold text-blue-600">
+									<div class="text-2xl font-bold text-info">
 										{stats.user_adoption.regular_users || 0}
 									</div>
 									<div class="text-sm font-medium">Utilisateurs réguliers</div>
@@ -411,7 +411,7 @@
 							<!-- Casual Users -->
 							<div class="rounded-lg border border-border bg-muted/50 p-4">
 								<div class="text-center">
-									<div class="text-2xl font-bold text-gray-600">
+									<div class="text-2xl font-bold text-muted-foreground">
 										{stats.user_adoption.casual_users || 0}
 									</div>
 									<div class="text-sm font-medium">Utilisateurs occasionnels</div>

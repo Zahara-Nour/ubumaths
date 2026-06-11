@@ -709,11 +709,7 @@
 														<Badge class={getTypeBadgeClass(getQuestionType(template))}>
 															{getTypeLabel(getQuestionType(template))}
 														</Badge>
-														<Badge
-															class="bg-amber-100 text-amber-900 dark:bg-amber-900 dark:text-amber-100"
-														>
-															Brouillon
-														</Badge>
+														<Badge class="bg-warning/10 text-warning">Brouillon</Badge>
 														<Badge variant="outline" class="text-xs">{template.theme}</Badge>
 														<Badge variant="outline" class="text-xs">{template.domain}</Badge>
 													</div>

@@ -59,6 +59,12 @@
 	--color-failure: light-dark(#ff5757, #ff5757);
 	--color-failure-foreground: light-dark(#ffffff, #ffffff);
 
+	/* Semantic status tokens (theme-aware via light-dark) */
+	--color-warning: light-dark(#d97706, #f59e0b);
+	--color-warning-foreground: light-dark(#ffffff, #1a1a1a);
+	--color-info: light-dark(#2563eb, #3b82f6);
+	--color-info-foreground: light-dark(#ffffff, #ffffff);
+
 	/* Font scaling - default 100% */
 	--font-scale: 1;
 
