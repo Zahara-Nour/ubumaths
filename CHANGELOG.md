@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.10.0...v0.10.1) (2026-06-11)
+
+### 📚 Documentation
+
+- **anti-fraud:** analyse + report UX élève soft warning + alternative préventive ([f1c240e](https://github.com/Zahara-Nour/ubumaths/commit/f1c240e6f1537eb08f0023c4b2393db46384595e))
+- **anti-fraud:** finalize progress doc phase 6 ([26cd606](https://github.com/Zahara-Nour/ubumaths/commit/26cd606dfe123ecae5226c6a7fe08fe89949bf00))
+- **anti-fraud:** reference doc phase 5 + maj README/security/db-schema ([2f96519](https://github.com/Zahara-Nour/ubumaths/commit/2f96519983f853b7ac5ba32913530ce388a5d752))
+- **anti-fraud:** spec TDD phase 0 — 12 comportements + critères validation ([10579d1](https://github.com/Zahara-Nour/ubumaths/commit/10579d18158b33206ad2164d86ab66c20be707f8))
+- **lsu:** étude de faisabilité mapping LSU (XSD Sacoche + socle commun) ([da3667d](https://github.com/Zahara-Nour/ubumaths/commit/da3667d1e06a16bd9389935dbbf466c471223757))
+- **srs-fsrs:** nettoyage traces obsolètes phase 1 (migrations pushées) ([272ddd3](https://github.com/Zahara-Nour/ubumaths/commit/272ddd373eae48a777674d716e0f0494d308b854))
+- **srs:** cleanup wip — supprime étude obsolète + maj statuts post-push migrations ([3641fa6](https://github.com/Zahara-Nour/ubumaths/commit/3641fa6d8cc0fea2613b1fd311d49cb363c9fb93))
+- **teacher-analytics:** revue critique roadmap v2.1 — 6 sur 7 abandonnés ([e257ca1](https://github.com/Zahara-Nour/ubumaths/commit/e257ca182dc30d060981b02112964a9660b441bd))
+
+### ✨ Features
+
+- **anti-fraud:** détecteurs + runner + endpoint admin (Phase 2) ([24afa7c](https://github.com/Zahara-Nour/ubumaths/commit/24afa7cf4ff110fa2cc3e0e53332ce4a44a29018))
+- **anti-fraud:** endpoints prof (Phase 3) ([0db4fa0](https://github.com/Zahara-Nour/ubumaths/commit/0db4fa0e8ca7542ccf3cf0b68530ec939b45fcdf))
+- **anti-fraud:** migration db + types helpers (Phase 1) ([126e61c](https://github.com/Zahara-Nour/ubumaths/commit/126e61c1866f502fcbb12052db2ceb53b9954242))
+- **anti-fraud:** ui onglet surveillance (Phase 4) ([85dffe4](https://github.com/Zahara-Nour/ubumaths/commit/85dffe44cc1c178af58176ceb00803d441166c6a))
+- **competences:** vue prof + export CSV des niveaux famille B ([1cdf590](https://github.com/Zahara-Nour/ubumaths/commit/1cdf5902003967d51a7eeac3143245923a270136))
+- **schools:** ajoute UAI/RNE établissement + sélecteur Annuaire éducation ([15d3b51](https://github.com/Zahara-Nour/ubumaths/commit/15d3b5173caf5331fbb286173bd9688ce08355ec))
+
+### 🐛 Bug Fixes
+
+- **competences:** corrige le mapping socle selon le BO 2015 cycle 4 ([af2c592](https://github.com/Zahara-Nour/ubumaths/commit/af2c592d3be9fee6871639e3e96808a46aca53ed))
+
 ## [0.10.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.9.9...v0.10.0) (2026-06-10)
 
 ### ✨ Features
