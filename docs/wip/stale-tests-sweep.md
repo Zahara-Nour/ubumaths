@@ -1,6 +1,6 @@
 # Passe « tests stale » — inventaire
 
-> **Date** : 2026-06-12 · **Statut** : ✅ **TERMINÉ** — les DEUX roots balayés (`src/**` ET `tests/unit/**`) + client, **12 régressions de prod corrigées** · **Auteur** : sweep + remédiation
+> **Date** : 2026-06-12 · **Statut** : ✅ **TERMINÉ** — les DEUX roots balayés (`src/**` ET `tests/unit/**`) + client, **12 régressions de prod corrigées** · gate léger appliqué (`773d6266c`) · **Auteur** : sweep + remédiation
 
 ## Contexte
 
@@ -22,11 +22,11 @@ rouge (`test:unit` manquant), tests stale rouges — c'est le présent chantier.
 
 Découvert au départ via le fix `generateCronSecret` (un test `verifyCronAuth` était stale depuis un changement de message).
 
-## ⚠️ Angle mort découvert le 2026-06-12 : `tests/unit/`
+## ✅ Angle mort `tests/unit/` — découvert ET résolu le 2026-06-12
 
 Le project vitest `server` inclut `src/**/*.test.ts` **ET `tests/unit/**`** (`vite.config.ts:146`). Tout le sweep + les vérifs ont utilisé `pnpm test:server src/<zone>` → **`tests/unit/` n'a jamais été balayé.** Découvert via le sanity-test du gate (`vitest --changed`a relancé toute la suite à cause de`package.json` modifié).
 
-**22 fichiers, 12 rouges / 181 tests** restants (surtout Google Classroom + marketplace — probables vraies régressions) :
+**22 fichiers, 12 rouges / 181 tests** — **tous corrigés** (surtout Google Classroom + marketplace ; dont la 12ᵉ régression `google-sync`) :
 
 | Fichier (`tests/unit/`)               | Fails |
 | ------------------------------------- | ----: |
