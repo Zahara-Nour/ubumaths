@@ -111,7 +111,14 @@ describe('Serialization', () => {
 			const result = deserialize(json);
 
 			expect(result.success).toBe(true);
-			expect(result.document).toEqual(original);
+
+			// Deserialization applies migrations (e.g. migrateAnnotations adds annotations: []
+			// to each page). Compare against the normalized form of the original by doing
+			// a second round-trip, which reaches a stable fixed point.
+			const json2 = serialize(result.document!);
+			const result2 = deserialize(json2);
+			expect(result2.success).toBe(true);
+			expect(result.document).toEqual(result2.document);
 		});
 	});
 });

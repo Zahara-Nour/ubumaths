@@ -329,30 +329,46 @@ describe('hitTestShape', () => {
 	});
 
 	it('handles elbow arrow type', () => {
+		// Since commit b1d3b04eb, elbow hit-testing always uses arrow.points[] (A* routing).
+		// Provide explicit points[] simulating a horizontal-first elbow:
+		// (0,0) → (100,0) → (100,100)
 		const shape: ArrowElement = {
 			...(createShape('arrow', { x: 0, y: 0 }, { x: 100, y: 100 }) as ArrowElement),
 			arrowType: 'elbow',
-			elbowDirection: 'horizontal-first'
+			elbowDirection: 'horizontal-first',
+			points: [
+				{ x: 0, y: 0 },
+				{ x: 100, y: 0 },
+				{ x: 100, y: 100 }
+			]
 		};
 
-		// Point on horizontal segment
+		// Point on horizontal segment (0,0)→(100,0)
 		expect(hitTestShape({ x: 50, y: 0 }, shape)).toBe(true);
-		// Point on vertical segment
+		// Point on vertical segment (100,0)→(100,100)
 		expect(hitTestShape({ x: 100, y: 50 }, shape)).toBe(true);
 		// Point far from both segments
 		expect(hitTestShape({ x: 50, y: 50 }, shape)).toBe(false);
 	});
 
 	it('handles legacy elbowed flag', () => {
+		// elbowed=true is normalised to arrowType='elbow'. Hit-testing still uses points[].
+		// Provide explicit points[] simulating a vertical-first elbow:
+		// (0,0) → (0,100) → (100,100)
 		const shape: ArrowElement = {
 			...(createShape('arrow', { x: 0, y: 0 }, { x: 100, y: 100 }) as ArrowElement),
 			elbowed: true,
-			elbowDirection: 'vertical-first'
+			elbowDirection: 'vertical-first',
+			points: [
+				{ x: 0, y: 0 },
+				{ x: 0, y: 100 },
+				{ x: 100, y: 100 }
+			]
 		};
 
-		// Point on vertical segment
+		// Point on vertical segment (0,0)→(0,100)
 		expect(hitTestShape({ x: 0, y: 50 }, shape)).toBe(true);
-		// Point on horizontal segment
+		// Point on horizontal segment (0,100)→(100,100)
 		expect(hitTestShape({ x: 50, y: 100 }, shape)).toBe(true);
 	});
 

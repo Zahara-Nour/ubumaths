@@ -500,15 +500,17 @@ describe('createBindingAnchor', () => {
 
 		it('handles arrow endpoint outside and opposite to other endpoint direction', () => {
 			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
-			// Arrow endpoint to the right of rectangle, but other endpoint is to the left
+			// Arrow endpoint to the right of rectangle; other endpoint is to the left.
+			// Since commit c4d434711, the binding snaps to the perimeter point closest to
+			// arrowEndpoint (right edge), NOT the edge facing otherEndpoint.
 			const arrowEndpoint: Point = { x: 250, y: 150 };
 			const otherEndpoint: Point = { x: 50, y: 150 };
 
 			const anchor = createBindingAnchor(rect, arrowEndpoint, otherEndpoint);
 
 			expect(anchor.elementId).toBe(rect.id);
-			// Perimeter point should be on the left edge (facing otherEndpoint)
-			expect(anchor.perimeterPoint.x).toBeCloseTo(0, 1); // Normalized: left edge = 0
+			// arrowEndpoint is on the right side → perimeter snaps to right edge (normalized x = 1)
+			expect(anchor.perimeterPoint.x).toBeCloseTo(1, 1); // Normalized: right edge = 1
 		});
 	});
 });
@@ -604,26 +606,30 @@ describe('calculateBoundEndpoint', () => {
 		expect(result.y).toBeCloseTo(150, 0);
 	});
 
-	it('recalculates perimeter point based on direction to other endpoint', () => {
+	it('uses fixed stored perimeter point regardless of other endpoint direction', () => {
+		// Since commit c4d434711, calculateBoundEndpoint uses the stored perimeterPoint
+		// (Excalidraw style) — it does NOT recalculate based on otherEndpoint direction.
 		const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
 		const binding: BindingAnchor = {
 			elementId: rect.id,
-			normalizedPosition: { x: 0.5, y: 0.5 }, // Center (will be adjusted)
-			perimeterPoint: { x: 1, y: 0.5 }, // Original perimeter point
+			normalizedPosition: { x: 0.5, y: 0.5 },
+			perimeterPoint: { x: 1, y: 0.5 }, // Fixed to right edge
 			gap: 4
 		};
 
-		// Other endpoint to the left - should recalculate to left edge
+		// Different otherEndpoint values should all produce the same result
 		const leftEndpoint: Point = { x: 50, y: 150 };
 		const resultLeft = calculateBoundEndpoint(binding, rect, leftEndpoint);
 
-		// Other endpoint above - should recalculate to top edge
 		const topEndpoint: Point = { x: 150, y: 50 };
 		const resultTop = calculateBoundEndpoint(binding, rect, topEndpoint);
 
-		// Results should be on different edges
-		expect(resultLeft.x).toBeLessThan(resultTop.x);
-		expect(resultTop.y).toBeLessThan(resultLeft.y);
+		// Both calls use the stored perimeterPoint (right edge, normalized x=1)
+		// → denormalised to (200, 150) → direction away from center (1, 0) → result (204, 150)
+		expect(resultLeft.x).toBeCloseTo(204, 0);
+		expect(resultLeft.y).toBeCloseTo(150, 0);
+		expect(resultTop.x).toBeCloseTo(204, 0);
+		expect(resultTop.y).toBeCloseTo(150, 0);
 	});
 
 	it('handles arrow endpoint exactly at shape center gracefully', () => {
@@ -761,29 +767,32 @@ describe('calculateBoundEndpoint', () => {
 		});
 
 		it('handles all edge directions', () => {
+			// calculateBoundEndpoint uses the stored perimeterPoint, not otherEndpoint.
+			// Each binding must carry a perimeterPoint on the intended edge.
 			const rect = createShape('rectangle', { x: 100, y: 100 }, { x: 200, y: 200 });
-			const binding: BindingAnchor = {
-				elementId: rect.id,
-				normalizedPosition: { x: 0.5, y: 0.5 },
-				perimeterPoint: { x: 0.5, y: 0.5 },
-				gap: 4
-			};
+			const center = { x: 150, y: 150 };
 
-			const directions = [
-				{ point: { x: 300, y: 150 }, expectedEdge: 'right' },
-				{ point: { x: 0, y: 150 }, expectedEdge: 'left' },
-				{ point: { x: 150, y: 0 }, expectedEdge: 'top' },
-				{ point: { x: 150, y: 300 }, expectedEdge: 'bottom' }
+			const cases = [
+				{ perimeterPoint: { x: 1, y: 0.5 }, expectedEdge: 'right' },
+				{ perimeterPoint: { x: 0, y: 0.5 }, expectedEdge: 'left' },
+				{ perimeterPoint: { x: 0.5, y: 0 }, expectedEdge: 'top' },
+				{ perimeterPoint: { x: 0.5, y: 1 }, expectedEdge: 'bottom' }
 			];
 
-			for (const { point, expectedEdge } of directions) {
-				const result = calculateBoundEndpoint(binding, rect, point);
+			for (const { perimeterPoint, expectedEdge } of cases) {
+				const binding: BindingAnchor = {
+					elementId: rect.id,
+					normalizedPosition: { x: 0.5, y: 0.5 },
+					perimeterPoint,
+					gap: 4
+				};
+
+				const result = calculateBoundEndpoint(binding, rect, { x: 0, y: 0 });
 
 				expect(Number.isFinite(result.x)).toBe(true);
 				expect(Number.isFinite(result.y)).toBe(true);
 
-				// Verify result is in expected direction from center
-				const center = { x: 150, y: 150 };
+				// Verify result is outside the shape in the expected direction
 				if (expectedEdge === 'right') expect(result.x).toBeGreaterThan(center.x);
 				if (expectedEdge === 'left') expect(result.x).toBeLessThan(center.x);
 				if (expectedEdge === 'top') expect(result.y).toBeLessThan(center.y);
@@ -949,8 +958,10 @@ describe('Binding Integration', () => {
 		expect(newPosition.x).toBeGreaterThan(250);
 		expect(newPosition.x).toBeLessThan(260);
 
-		// Y should be less than 200 because we're pointing toward (300, 150) which is above center
-		expect(newPosition.y).toBeLessThan(200);
+		// The binding was created on the right edge of the original rect at y=150 (normalised y=0.5).
+		// On the moved rect the right edge mid-point is exactly at y=200 (its centre height).
+		// The direction away from centre is (1, 0) so the gap offset is horizontal only → y stays 200.
+		expect(newPosition.y).toBeLessThanOrEqual(200);
 		expect(newPosition.y).toBeGreaterThan(140);
 	});
 });
