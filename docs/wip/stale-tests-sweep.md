@@ -175,11 +175,12 @@ La dette est **concentrée** sur les zones « drift-prone » prévues (server, r
 
 ## Journal de remédiation
 
-| Date       | Fichier(s)                                                | Verdict                                                         | Commit                           |
-| ---------- | --------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------- |
-| 2026-06-12 | `server/auth/cron.test.ts` (test `verifyCronAuth`)        | stale (message d'erreur changé) — réaligné                      | `b8080eb10` (dans le fix /login) |
-| 2026-06-12 | `server/validation/cron.test.ts`                          | stale (jobs cron migrés HTTP→RPC, 3→8) — **pas une régression** | `99ee0cc74`                      |
-| 2026-06-12 | **cluster `server/validation/*`** (9 fichiers, 41 rouges) | **tous stale, 0 régression** — voir tableau ci-dessous          | _(ce commit)_                    |
+| Date       | Fichier(s)                                                | Verdict                                                                               | Commit                           |
+| ---------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------- |
+| 2026-06-12 | `server/auth/cron.test.ts` (test `verifyCronAuth`)        | stale (message d'erreur changé) — réaligné                                            | `b8080eb10` (dans le fix /login) |
+| 2026-06-12 | `server/validation/cron.test.ts`                          | stale (jobs cron migrés HTTP→RPC, 3→8) — **pas une régression**                       | `99ee0cc74`                      |
+| 2026-06-12 | **cluster `server/validation/*`** (9 fichiers, 41 rouges) | **tous stale, 0 régression** — voir tableau ci-dessous                                | `0b4f65794`                      |
+| 2026-06-12 | **cluster modération** (3 fichiers, 56 rouges)            | **mock périmé + 1 VRAIE RÉGRESSION** (`deleteMessageSchema`) — voir détail ci-dessous | _(ce commit)_                    |
 
 ### Détail cluster `server/validation/*` (2026-06-12)
 
@@ -205,13 +206,24 @@ Verdict global : **aucune régression**. Chaque rouge mappé à un refactor dél
 
 Cluster entier : **27 fichiers / 1202 tests verts** après réalignement.
 
-**Reste : 52 fichiers** (voir inventaire ci-dessus).
+### Détail cluster modération (2026-06-12)
+
+**Ce n'était PAS une « décision de contrat auth-first 403 »** (hypothèse de l'inventaire) — diagnostic réel après lecture du code : **mock de rôle périmé** + **1 vraie régression**.
+
+- **Racine commune (mock)** : le rôle vit sur `locals.profile.role` (peuplé par `getUserProfile` dans `hooks.server.ts:163`, cf. `app.d.ts`), pas sur `locals.user`. Le helper `createLocalsWithRole` posait le rôle sur `locals.user` → `locals.profile` `undefined` → **403 systématique** dans les 3 fichiers (faux `expected 400/404/500 to be 403`). Fix : `locals.profile = { id, role }`. Débloque ~47 tests d'un coup (commits handler `fb15f303b` confirme le pattern `locals.profile.role`).
+- **`restrict-user`** (4 résiduels) : messages de refine `scopeType` fusionnés (un seul message), + 2 tests sur l'ancien check « conversation existence » **retiré délibérément** par `e56f6ae2d` (`fix(moderation): allow restriction from reports without conversation access`) → réécrits sur le nouveau contrat (participant OU élève dans une classe du prof).
+- **🔴 VRAIE RÉGRESSION — `messages-delete`** : `deleteMessageSchema` exigeait `messageId` **dans le body**, mais le frontend (`DeleteMessageDialog.svelte:63`) n'envoie que `{ reason }` et le handler prend l'id depuis l'URL. → **toute suppression de message en prod échouait en 400** (« expected string, received undefined »). Les tests rouges captaient un endpoint cassé. **Fix code** : retrait du champ `messageId` de `deleteMessageSchema` (`src/lib/server/validation/moderation.ts`). 13 tests débloqués + endpoint réparé. ⚠️ **À signaler à David : bug de prod, pas juste un test.**
+- Restants `messages-delete` (2) : mock de la requête count `class_members` (`{ count, head:true }`) faisait un `select.mockReturnValueOnce` consommé par le mauvais `.select()` → remplacé par le protocole thenable `.then`.
+
+Cluster modération : **3 fichiers / 62 tests verts**. `check:incremental` = baseline (9 err / 46 warn), inchangé.
+
+**Reste : 49 fichiers** (voir inventaire ci-dessus).
 
 ## Reprise — par où continuer (prochaine session)
 
 1. ~~cluster `server/validation/*`~~ — **FAIT 2026-06-12** (9 fichiers, 41 rouges, tous stale, 0 régression — voir journal). Cluster vert (27 fichiers / 1202 tests).
-2. **Prochain lot : cluster modération** (`restrict-user` 24 / `unrestrict-user` 14 / `messages-delete` 18) : 1 décision (auth-first 403 voulu ?) pour ~56 tests.
-3. Garder `api/srs` (mock isolé, tedious) et les exports geometry (mineur) **pour la fin**.
+2. ~~cluster modération~~ — **FAIT 2026-06-12** (3 fichiers, 56 rouges). Racine = mock `locals.profile.role` périmé + **1 vraie régression** (`deleteMessageSchema` exigeait `messageId` dans le body → suppression de message cassée en prod, **fix code** appliqué). Pas une décision de contrat. Cluster vert (62 tests).
+3. **Prochain lot** : cluster « contrats API » (`assessments` 34, `exercises` 21, `config` 11, `templates routes` 10, `minesweeper-auth` 9, `riddles`, `checkpoint`, `messages`) + `middleware/student-access` 19 + `achievements/migration` 72 (introspection cassée). Garder `api/srs` (mock isolé, tedious) et les exports geometry (mineur) **pour la fin**.
 4. **Hors remédiation, à décider avec David** : gate léger (pre-commit `vitest related` ou CI shardé par zone) + corriger/retirer le job `test` de `quality.yml` (il appelle `test:unit`, retiré → erreur à chaque push).
 
 **Règle d'or** : ne jamais réaligner un test sans confirmer que le comportement code actuel est voulu (sinon on masque une vraie régression).

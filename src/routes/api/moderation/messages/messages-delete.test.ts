@@ -72,7 +72,10 @@ function createLocalsWithRole(
 ) {
 	const locals = createMockLocals(userId, mockSupabase);
 
-	locals.user = { id: userId, role } as any;
+	// Role lives on locals.profile (populated from getUserProfile in hooks.server.ts),
+	// not on locals.user (Supabase auth user has no role)
+	locals.user = { id: userId } as any;
+	locals.profile = { id: userId, role } as any;
 	return locals;
 }
 
@@ -313,13 +316,11 @@ describe('DELETE /api/moderation/messages/[id] - 1-on-1 Chat Moderation', () => 
 			);
 		});
 
-		// Mock class_members check (both students are in teacher's class)
-		mockSupabase._mockChain.select.mockReturnValueOnce({
-			eq: vi.fn().mockReturnThis(),
-			in: vi.fn().mockResolvedValue({
-				count: 2,
-				error: null
-			})
+		// Mock class_members count check (both students in teacher's class).
+		// This query uses { count: 'exact', head: true } so it resolves via the
+		// thenable protocol (no .single()), hence the `then` mock — not `select`.
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(onFulfilled({ count: 2, error: null }));
 		});
 
 		// Mock message update (soft delete)
@@ -383,13 +384,10 @@ describe('DELETE /api/moderation/messages/[id] - 1-on-1 Chat Moderation', () => 
 			);
 		});
 
-		// Mock class_members check (only 1 student in teacher's class, not both)
-		mockSupabase._mockChain.select.mockReturnValueOnce({
-			eq: vi.fn().mockReturnThis(),
-			in: vi.fn().mockResolvedValue({
-				count: 1, // Only 1 out of 2 students
-				error: null
-			})
+		// Mock class_members count check (only 1 of 2 students in teacher's class).
+		// Resolves via the thenable protocol (count + head:true, no .single()).
+		mockSupabase._mockChain.then.mockImplementationOnce((onFulfilled) => {
+			return Promise.resolve(onFulfilled({ count: 1, error: null }));
 		});
 
 		const request = createMockRequest(
