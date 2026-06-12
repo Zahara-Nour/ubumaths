@@ -1468,6 +1468,102 @@ function containsBlockMath(content: string, placeholders: MathPlaceholder[]): bo
 }
 
 /**
+ * Check if content contains a blockquote (line starting with >)
+ */
+function containsBlockquote(content: string): boolean {
+	return /^>/m.test(content);
+}
+
+/**
+ * Parse content that may contain blockquotes into block nodes
+ *
+ * Handles cases where list item content contains > blockquotes.
+ * Returns an array of BlockNode (paragraphs and blockquotes).
+ *
+ * For roundtrip fidelity, consecutive blockquote lines (> Line1\n> Line2)
+ * are treated as separate paragraphs, NOT as a single paragraph with soft breaks.
+ * This preserves the multi-line structure when exporting.
+ *
+ * @param content - Text content that may contain blockquotes
+ * @param placeholders - Math placeholders from extraction
+ * @param options - Parse options
+ * @returns Array of block nodes
+ */
+function parseContentWithBlockquote(
+	content: string,
+	placeholders: MathPlaceholder[],
+	options: ParseOptions
+): BlockNode[] {
+	const blocks: BlockNode[] = [];
+	const lines = content.split('\n');
+
+	let i = 0;
+	while (i < lines.length) {
+		const line = lines[i];
+
+		// Check if this line starts a blockquote
+		if (isBlockquoteLine(line)) {
+			// Collect all consecutive blockquote lines
+			const quoteLines: string[] = [];
+			while (i < lines.length && isBlockquoteLine(lines[i])) {
+				quoteLines.push(lines[i]);
+				i++;
+			}
+
+			// Extract content without > markers (returns string[])
+			const quoteContentLines = extractBlockquoteContent(quoteLines);
+
+			// For roundtrip fidelity: treat each line as a separate paragraph
+			// within the blockquote (NOT CommonMark's default soft-break behavior)
+			const quoteChildren: BlockNode[] = [];
+			for (const contentLine of quoteContentLines) {
+				if (contentLine.trim()) {
+					// Check if this is a nested blockquote
+					if (isBlockquoteLine(contentLine)) {
+						// Recursively parse nested blockquote
+						const nestedBlocks = parseContentWithBlockquote(contentLine, placeholders, options);
+						quoteChildren.push(...nestedBlocks);
+					} else {
+						// Regular content line - parse as paragraph
+						const parsedInline = parseInlineContent(contentLine, placeholders, options);
+						quoteChildren.push({
+							type: 'paragraph',
+							children: parsedInline
+						});
+					}
+				}
+			}
+
+			blocks.push({
+				type: 'blockquote',
+				children: quoteChildren
+			});
+		} else if (line.trim()) {
+			// Non-empty, non-blockquote line - collect as paragraph
+			const paraLines: string[] = [];
+			while (i < lines.length && lines[i].trim() && !isBlockquoteLine(lines[i])) {
+				paraLines.push(lines[i]);
+				i++;
+			}
+
+			const paraContent = paraLines.join('\n').trim();
+			if (paraContent) {
+				const parsedInline = parseInlineContent(paraContent, placeholders, options);
+				blocks.push({
+					type: 'paragraph',
+					children: parsedInline
+				});
+			}
+		} else {
+			// Empty line - skip
+			i++;
+		}
+	}
+
+	return blocks;
+}
+
+/**
  * Check if content contains images or videos on their own line
  *
  * Matches:
@@ -1808,7 +1904,7 @@ function processListInlineContent(
 		...list,
 		items: list.items.map((item) => ({
 			...item,
-			children: item.children.flatMap((child) => {
+			children: item.children.flatMap((child, childIndex) => {
 				if (child.type === 'paragraph') {
 					// Extract text content from the simple text nodes
 					const textContent = child.children
@@ -1832,6 +1928,21 @@ function processListInlineContent(
 					if (containsBlockMath(textContent, placeholders)) {
 						// Parse as blocks (may return paragraphs and math-blocks)
 						return parseContentWithBlockMath(textContent, placeholders, options);
+					}
+
+					// Check if content contains blockquotes (> ...)
+					//
+					// Only treat the content as a real blockquote node when the
+					// paragraph is NOT the first child of the item. A blockquote that
+					// is the first child originates from the compact inline form
+					// `- > quote` (the `>` sits on the marker line); that form must be
+					// preserved as literal text so it round-trips back to `- > quote`.
+					// A blockquote appearing as a subsequent indented block
+					// (`- Item\n\n  > L1\n  > L2`) is a genuine blockquote and its lines
+					// must be kept separate.
+					if (childIndex > 0 && containsBlockquote(textContent)) {
+						// Parse as blocks (may return paragraphs and blockquotes)
+						return parseContentWithBlockquote(textContent, placeholders, options);
 					}
 
 					// Check if content contains images or videos
