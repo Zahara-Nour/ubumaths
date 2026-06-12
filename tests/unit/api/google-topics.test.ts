@@ -62,7 +62,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -84,7 +84,7 @@ describe('GET /api/google/topics', () => {
 
 		it('should return empty array if no topics exist', async () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: [],
 				error: null
 			});
@@ -103,7 +103,7 @@ describe('GET /api/google/topics', () => {
 
 		it('should return empty array if data is null', async () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: null,
 				error: null
 			});
@@ -128,7 +128,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -142,14 +142,16 @@ describe('GET /api/google/topics', () => {
 
 			// Verify order was called with ascending name
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			expect((mockLocals.supabase as any).order).toHaveBeenCalledWith('name', { ascending: true });
+			expect((mockLocals.supabase as any)._mockChain.order).toHaveBeenCalledWith('name', {
+				ascending: true
+			});
 		});
 
 		it('should rely on RLS policies for teacher filtering', async () => {
 			// Note: The endpoint does NOT explicitly filter by teacher_id
 			// RLS policies automatically restrict topics to only those from teacher's courses
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: [],
 				error: null
 			});
@@ -163,12 +165,14 @@ describe('GET /api/google/topics', () => {
 
 			// Verify no explicit teacher_id filter (RLS handles it)
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			expect((mockLocals.supabase as any).eq).not.toHaveBeenCalled();
+			expect((mockLocals.supabase as any)._mockChain.eq).not.toHaveBeenCalled();
 			// Instead, verify the query was made
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			expect((mockLocals.supabase as any).from).toHaveBeenCalledWith('google_classroom_topics');
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			expect((mockLocals.supabase as any).select).toHaveBeenCalledWith('id, name, google_topic_id');
+			expect((mockLocals.supabase as any)._mockChain.select).toHaveBeenCalledWith(
+				'id, name, google_topic_id'
+			);
 		});
 	});
 
@@ -183,7 +187,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -214,7 +218,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -242,7 +246,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -269,7 +273,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -306,7 +310,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -332,7 +336,7 @@ describe('GET /api/google/topics', () => {
 	describe('Database Errors (500)', () => {
 		it('should handle database fetch errors', async () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: null,
 				error: { code: '42P01', message: 'Relation does not exist' }
 			});
@@ -347,7 +351,7 @@ describe('GET /api/google/topics', () => {
 
 		it('should handle database connection errors', async () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: null,
 				error: { code: '08006', message: 'Connection failure' }
 			});
@@ -362,7 +366,7 @@ describe('GET /api/google/topics', () => {
 
 		it('should handle permission errors', async () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: null,
 				error: { code: '42501', message: 'Permission denied' }
 			});
@@ -377,7 +381,7 @@ describe('GET /api/google/topics', () => {
 
 		it('should handle unexpected errors gracefully', async () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(mockLocals.supabase as any).order.mockRejectedValueOnce(
+			(mockLocals.supabase as any)._mockChain.order.mockRejectedValueOnce(
 				new Error('Unexpected database error')
 			);
 
@@ -396,7 +400,7 @@ describe('GET /api/google/topics', () => {
 			const mockTopics = [{ id: topicId1, name: longTopicName, google_topic_id: 'google-topic-1' }];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -421,7 +425,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -449,7 +453,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -474,7 +478,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -500,7 +504,7 @@ describe('GET /api/google/topics', () => {
 			}));
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: manyTopics,
 				error: null
 			});
@@ -531,7 +535,7 @@ describe('GET /api/google/topics', () => {
 			}
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: topicsWithDuplicates,
 				error: null
 			});
@@ -556,7 +560,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -586,7 +590,7 @@ describe('GET /api/google/topics', () => {
 			];
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: mockTopics,
 				error: null
 			});
@@ -608,7 +612,7 @@ describe('GET /api/google/topics', () => {
 	describe('Authorization', () => {
 		it('should require teacher role', async () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockLocals.supabase as any).order as any).mockResolvedValueOnce({
+			((mockLocals.supabase as any)._mockChain.order as any).mockResolvedValueOnce({
 				data: [],
 				error: null
 			});

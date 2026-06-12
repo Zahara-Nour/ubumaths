@@ -34,10 +34,38 @@ describe('Google Shared Coursework API', () => {
 	const classId1 = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
 	const classId2 = '8d8f7788-8536-51ef-a168-f18ed2e01bf8';
 	const courseId = '9f9e8877-9647-62fe-b279-f29fe3e02cf9';
-	const categoryId = 'aaaa1111-aaaa-11aa-aaaa-111111111111';
-	const shareId = 'bbbbbb99-bb68-84ab-d49b-b4bbe5b34eb1';
+	const categoryId = 'aaaa1111-aaaa-41aa-8aaa-111111111111';
+	const shareId = 'bbbbbb99-bb68-44ab-849b-b4bbe5b34eb1';
 
 	let mockLocals: App.Locals;
+
+	/**
+	 * Assert that calling `fn` rejects with a SvelteKit `error(...)` whose
+	 * message matches `expected`.
+	 *
+	 * SvelteKit `HttpError` stores the human-readable message in `.body.message`
+	 * and leaves `.message` undefined, so vitest's `rejects.toThrow(string)`
+	 * (which inspects `.message`) cannot be used directly. This helper inspects
+	 * `.body.message` (and falls back to `.message` for plain `Error`s).
+	 */
+	async function expectRejectsWithMessage(
+		fn: () => Promise<unknown>,
+		expected: string | RegExp
+	): Promise<void> {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const err: any = await fn().then(
+			() => {
+				throw new Error('Expected function to reject, but it resolved');
+			},
+			(e) => e
+		);
+		const message: string = err?.body?.message ?? err?.message ?? '';
+		if (typeof expected === 'string') {
+			expect(message).toContain(expected);
+		} else {
+			expect(message).toMatch(expected);
+		}
+	}
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -97,8 +125,9 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(GET(event as any)).rejects.toThrow('Unauthorized: authentication required');
+				await expect(GET(event as unknown as RequestEvent)).rejects.toThrow(
+					'Unauthorized: authentication required'
+				);
 			});
 
 			it('returns 403 when not a teacher', async () => {
@@ -111,8 +140,9 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(GET(event as any)).rejects.toThrow('Unauthorized: teacher role required');
+				await expect(GET(event as unknown as RequestEvent)).rejects.toThrow(
+					'Unauthorized: teacher role required'
+				);
 			});
 
 			it('allows teacher to access endpoint', async () => {
@@ -128,8 +158,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await GET(event as any);
+				const response = await GET(event as unknown as RequestEvent);
 				expect(response.status).toBe(200);
 			});
 		});
@@ -150,8 +179,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await GET(event as any);
+				await GET(event as unknown as RequestEvent);
 
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('class_id', classId1);
@@ -172,8 +200,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await GET(event as any);
+				await GET(event as unknown as RequestEvent);
 
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith(
@@ -197,8 +224,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await GET(event as any);
+				await GET(event as unknown as RequestEvent);
 
 				// Verify courseworkId filter was applied
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -220,8 +246,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await GET(event as any);
+				await GET(event as unknown as RequestEvent);
 
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('visible', true);
@@ -242,8 +267,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await GET(event as any);
+				await GET(event as unknown as RequestEvent);
 
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('visible', false);
@@ -267,8 +291,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await GET(event as any);
+				await GET(event as unknown as RequestEvent);
 
 				// Verify all filters were applied
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -297,8 +320,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await GET(event as any);
+				await GET(event as unknown as RequestEvent);
 
 				// Verify no filters were applied except teacher ownership (handled by RLS)
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -333,8 +355,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await GET(event as any);
+				const response = await GET(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(data.page).toBe(1);
@@ -359,8 +380,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await GET(event as any);
+				const response = await GET(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(data.page).toBe(3);
@@ -386,8 +406,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await GET(event as any);
+				const response = await GET(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(data.page).toBe(1);
@@ -408,8 +427,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await GET(event as any);
+				const response = await GET(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(data.limit).toBe(50);
@@ -432,8 +450,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await GET(event as any);
+				const response = await GET(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(data.page).toBe(2);
@@ -525,8 +542,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await GET(event as any);
+				const response = await GET(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -552,8 +568,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await GET(event as any);
+				const response = await GET(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -575,8 +590,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(GET(event as any)).rejects.toThrow('Failed to fetch shared coursework');
+				await expectRejectsWithMessage(
+					() => GET(event as unknown as RequestEvent),
+					'Failed to fetch shared coursework'
+				);
 			});
 		});
 
@@ -589,8 +606,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(GET(event as any)).rejects.toThrow();
+				await expect(GET(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects invalid courseId UUID', async () => {
@@ -601,8 +617,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(GET(event as any)).rejects.toThrow();
+				await expect(GET(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects invalid courseworkId UUID', async () => {
@@ -613,12 +628,13 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(GET(event as any)).rejects.toThrow();
+				await expect(GET(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('accepts valid boolean strings for visible', async () => {
-				mockUrl.searchParams.set('visible', '1'); // Coerced to true
+				// The schema treats only the literal string 'true' as true; any other
+				// value (including '1') is coerced to false.
+				mockUrl.searchParams.set('visible', '1');
 
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(mockLocals.supabase as any).range = vi.fn().mockResolvedValueOnce({
@@ -632,11 +648,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await GET(event as any);
+				const response = await GET(event as unknown as RequestEvent);
 				expect(response.status).toBe(200);
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('visible', true);
+				expect((mockLocals.supabase as any).eq).toHaveBeenCalledWith('visible', false);
 			});
 		});
 	});
@@ -669,8 +684,9 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow('Unauthorized: authentication required');
+				await expect(POST(event as unknown as RequestEvent)).rejects.toThrow(
+					'Unauthorized: authentication required'
+				);
 			});
 
 			it('returns 403 when not a teacher', async () => {
@@ -687,8 +703,9 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow('Unauthorized: teacher role required');
+				await expect(POST(event as unknown as RequestEvent)).rejects.toThrow(
+					'Unauthorized: teacher role required'
+				);
 			});
 		});
 
@@ -706,8 +723,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow();
+				await expect(POST(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects empty classIds array', async () => {
@@ -723,8 +739,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow();
+				await expect(POST(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects classIds array exceeding 50 items', async () => {
@@ -740,8 +755,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow();
+				await expect(POST(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects invalid classId UUID in array', async () => {
@@ -757,8 +771,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow();
+				await expect(POST(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects descriptionOverride exceeding 2000 characters', async () => {
@@ -774,8 +787,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow();
+				await expect(POST(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('accepts descriptionOverride up to 2000 characters', async () => {
@@ -835,8 +847,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await POST(event as any);
+				const response = await POST(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -856,8 +867,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow();
+				await expect(POST(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects invalid categoryId UUID', async () => {
@@ -873,8 +883,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow();
+				await expect(POST(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 		});
 
@@ -899,8 +908,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow('You do not own this coursework');
+				await expectRejectsWithMessage(
+					() => POST(event as unknown as RequestEvent),
+					'You do not own this coursework'
+				);
 			});
 
 			it('returns 403 when class does not belong to teacher', async () => {
@@ -938,8 +949,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow('You do not own all selected classes');
+				await expectRejectsWithMessage(
+					() => POST(event as unknown as RequestEvent),
+					'You do not own all selected classes'
+				);
 			});
 
 			it('returns 400 when category does not belong to teacher class', async () => {
@@ -950,22 +963,23 @@ describe('Google Shared Coursework API', () => {
 					})
 				};
 
-				// Mock coursework belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: courseworkId,
-						google_classroom_courses: { teacher_id: teacherId }
-					},
-					error: null
-				});
+				// Coursework fetch: belongs to teacher
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: {
+							id: courseworkId,
+							google_classroom_courses: { teacher_id: teacherId }
+						},
+						error: null
+					})
+				};
 
-				// Mock classes belong to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
+				// Class fetch: both belong to teacher (terminal .eq('is_active'))
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
 					eq: vi.fn().mockResolvedValueOnce({
 						data: [
 							{ id: classId1, teacher_id: teacherId },
@@ -973,20 +987,37 @@ describe('Google Shared Coursework API', () => {
 						],
 						error: null
 					})
-				}));
+				};
 
-				// Mock category exists
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: { id: categoryId, class_id: 'other-class-id' },
-					error: null
-				});
+				// Category fetch: exists but belongs to another class
+				const categoryChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: { id: categoryId, class_id: classId1 },
+						error: null
+					})
+				};
 
-				// Mock category class check - doesn't belong to teacher
+				// Category class ownership check: not found (different teacher)
+				const categoryClassChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: null,
+						error: { code: 'PGRST116' }
+					})
+				};
+
+				let callCount = 0;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: null,
-					error: { code: 'PGRST116' }
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					if (callCount === 3) return categoryChain;
+					if (callCount === 4) return categoryClassChain;
+					return mockLocals.supabase;
 				});
 
 				const event = {
@@ -994,8 +1025,8 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow(
+				await expectRejectsWithMessage(
+					() => POST(event as unknown as RequestEvent),
 					'Category does not belong to one of your classes'
 				);
 			});
@@ -1005,22 +1036,23 @@ describe('Google Shared Coursework API', () => {
 					json: vi.fn().mockResolvedValue(validRequest)
 				};
 
-				// Mock coursework belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: courseworkId,
-						google_classroom_courses: { teacher_id: teacherId }
-					},
-					error: null
-				});
+				// Coursework fetch: belongs to teacher
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: {
+							id: courseworkId,
+							google_classroom_courses: { teacher_id: teacherId }
+						},
+						error: null
+					})
+				};
 
-				// Mock classes belong to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
+				// Class fetch: both belong to teacher (terminal .eq('is_active'))
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
 					eq: vi.fn().mockResolvedValueOnce({
 						data: [
 							{ id: classId1, teacher_id: teacherId },
@@ -1028,15 +1060,25 @@ describe('Google Shared Coursework API', () => {
 						],
 						error: null
 					})
-				}));
+				};
 
-				// Mock successful upsert
+				// Upsert chain
+				const upsertChain = {
+					upsert: vi.fn().mockReturnThis(),
+					select: vi.fn().mockResolvedValueOnce({
+						data: [{ id: 'share-1' }, { id: 'share-2' }],
+						error: null
+					})
+				};
+
+				let callCount = 0;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).upsert = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).select = vi.fn().mockResolvedValueOnce({
-					data: [{ id: 'share-1' }, { id: 'share-2' }],
-					error: null
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					if (callCount === 3) return upsertChain;
+					return mockLocals.supabase;
 				});
 
 				const event = {
@@ -1044,8 +1086,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await POST(event as any);
+				const response = await POST(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -1061,39 +1102,50 @@ describe('Google Shared Coursework API', () => {
 					})
 				};
 
-				// Mock coursework belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: courseworkId,
-						google_classroom_courses: { teacher_id: teacherId }
-					},
-					error: null
-				});
+				// Coursework fetch: belongs to teacher
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: {
+							id: courseworkId,
+							google_classroom_courses: { teacher_id: teacherId }
+						},
+						error: null
+					})
+				};
 
-				// Mock class belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
+				// Class fetch: belongs to teacher
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
 					eq: vi.fn().mockResolvedValueOnce({
 						data: [{ id: classId1, teacher_id: teacherId }],
 						error: null
 					})
-				}));
+				};
 
-				// Mock upsert (should update existing record)
+				// Upsert chain (verify upsert options)
+				const upsertChain = {
+					upsert: vi.fn().mockImplementation((_data, options) => {
+						expect(options.onConflict).toBe('coursework_id,class_id');
+						expect(options.ignoreDuplicates).toBe(false);
+						return upsertChain;
+					}),
+					select: vi.fn().mockResolvedValueOnce({
+						data: [{ id: shareId }],
+						error: null
+					})
+				};
+
+				let callCount = 0;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).upsert = vi.fn().mockImplementation((data, options) => {
-					expect(options.onConflict).toBe('coursework_id,class_id');
-					expect(options.ignoreDuplicates).toBe(false);
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					if (callCount === 3) return upsertChain;
 					return mockLocals.supabase;
-				});
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).select = vi.fn().mockResolvedValueOnce({
-					data: [{ id: shareId }],
-					error: null
 				});
 
 				const event = {
@@ -1101,8 +1153,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await POST(event as any);
+				const response = await POST(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -1127,8 +1178,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow('Coursework not found or access denied');
+				await expectRejectsWithMessage(
+					() => POST(event as unknown as RequestEvent),
+					'Coursework not found or access denied'
+				);
 			});
 
 			it('handles database errors gracefully', async () => {
@@ -1148,8 +1201,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow('Failed to fetch coursework');
+				await expectRejectsWithMessage(
+					() => POST(event as unknown as RequestEvent),
+					'Failed to fetch coursework'
+				);
 			});
 		});
 	});
@@ -1179,8 +1234,9 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(DELETE(event as any)).rejects.toThrow('Unauthorized: authentication required');
+				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow(
+					'Unauthorized: authentication required'
+				);
 			});
 
 			it('returns 403 when not a teacher', async () => {
@@ -1197,8 +1253,9 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(DELETE(event as any)).rejects.toThrow('Unauthorized: teacher role required');
+				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow(
+					'Unauthorized: teacher role required'
+				);
 			});
 		});
 
@@ -1216,8 +1273,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(DELETE(event as any)).rejects.toThrow();
+				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects empty classIds array', async () => {
@@ -1233,8 +1289,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(DELETE(event as any)).rejects.toThrow();
+				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects classIds array exceeding 50 items', async () => {
@@ -1250,8 +1305,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(DELETE(event as any)).rejects.toThrow();
+				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects invalid classId UUID in array', async () => {
@@ -1267,8 +1321,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(DELETE(event as any)).rejects.toThrow();
+				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 
 			it('rejects missing required fields', async () => {
@@ -1284,8 +1337,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(DELETE(event as any)).rejects.toThrow();
+				await expect(DELETE(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 		});
 
@@ -1307,8 +1359,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(DELETE(event as any)).rejects.toThrow('Coursework not found or access denied');
+				await expectRejectsWithMessage(
+					() => DELETE(event as unknown as RequestEvent),
+					'Coursework not found or access denied'
+				);
 			});
 
 			it('returns 400 when classes not found or access denied', async () => {
@@ -1340,8 +1394,8 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(DELETE(event as any)).rejects.toThrow(
+				await expectRejectsWithMessage(
+					() => DELETE(event as unknown as RequestEvent),
 					'One or more classes not found or access denied'
 				);
 			});
@@ -1351,36 +1405,45 @@ describe('Google Shared Coursework API', () => {
 					json: vi.fn().mockResolvedValue(validRequest)
 				};
 
-				// Mock coursework exists
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: { id: courseworkId },
-					error: null
-				});
+				// Coursework fetch: exists
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: { id: courseworkId },
+						error: null
+					})
+				};
 
-				// Mock classes exist and belong to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
+				// Class fetch: both exist and belong to teacher (terminal .eq('teacher_id'))
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
 					eq: vi.fn().mockResolvedValueOnce({
 						data: [{ id: classId1 }, { id: classId2 }],
 						error: null
 					})
-				}));
+				};
 
-				// Mock successful delete
+				// Delete chain: delete().eq().in().eq().select()
+				const deleteChain = {
+					delete: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
+					select: vi.fn().mockResolvedValueOnce({
+						data: [{ id: 'share-1' }, { id: 'share-2' }],
+						error: null
+					})
+				};
+
+				let callCount = 0;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).delete = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).select = vi.fn().mockResolvedValueOnce({
-					data: [{ id: 'share-1' }, { id: 'share-2' }],
-					error: null
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					if (callCount === 3) return deleteChain;
+					return mockLocals.supabase;
 				});
 
 				const event = {
@@ -1388,8 +1451,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await DELETE(event as any);
+				const response = await DELETE(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -1402,36 +1464,45 @@ describe('Google Shared Coursework API', () => {
 					json: vi.fn().mockResolvedValue(validRequest)
 				};
 
-				// Mock coursework exists
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: { id: courseworkId },
-					error: null
-				});
+				// Coursework fetch: exists
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: { id: courseworkId },
+						error: null
+					})
+				};
 
-				// Mock classes exist
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
+				// Class fetch: both exist (terminal .eq('teacher_id'))
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
 					eq: vi.fn().mockResolvedValueOnce({
 						data: [{ id: classId1 }, { id: classId2 }],
 						error: null
 					})
-				}));
+				};
 
-				// Mock no records deleted (they didn't exist)
+				// Delete chain: no records deleted (idempotent)
+				const deleteChain = {
+					delete: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
+					select: vi.fn().mockResolvedValueOnce({
+						data: [],
+						error: null
+					})
+				};
+
+				let callCount = 0;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).delete = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).select = vi.fn().mockResolvedValueOnce({
-					data: [],
-					error: null
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					if (callCount === 3) return deleteChain;
+					return mockLocals.supabase;
 				});
 
 				const event = {
@@ -1439,8 +1510,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await DELETE(event as any);
+				const response = await DELETE(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -1477,8 +1547,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(DELETE(event as any)).rejects.toThrow('Failed to verify class ownership');
+				await expectRejectsWithMessage(
+					() => DELETE(event as unknown as RequestEvent),
+					'Failed to verify class ownership'
+				);
 			});
 		});
 	});
@@ -1488,8 +1560,8 @@ describe('Google Shared Coursework API', () => {
 	// ============================================================================
 
 	describe('POST /api/google/shared-coursework - Topic Validation', () => {
-		const topicId = 'dddd4444-dddd-44dd-dddd-444444444444';
-		const otherTopicId = 'eeee5555-eeee-55ee-eeee-555555555555';
+		const topicId = 'dddd4444-dddd-44dd-8ddd-444444444444';
+		const otherTopicId = 'eeee5555-eeee-45ee-9eee-555555555555';
 
 		describe('Topic Acceptance', () => {
 			it('accepts valid topic from teacher course', async () => {
@@ -1504,50 +1576,69 @@ describe('Google Shared Coursework API', () => {
 					})
 				};
 
-				// Mock coursework belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: courseworkId,
-						google_classroom_courses: { teacher_id: teacherId }
-					},
-					error: null
-				});
+				// Coursework fetch: belongs to teacher
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: {
+							id: courseworkId,
+							google_classroom_courses: { teacher_id: teacherId }
+						},
+						error: null
+					})
+				};
 
-				// Mock class belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
+				// Class fetch: belongs to teacher
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
 					eq: vi.fn().mockResolvedValueOnce({
 						data: [{ id: classId1, teacher_id: teacherId }],
 						error: null
 					})
-				}));
+				};
 
-				// Mock topic belongs to teacher's course
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi
-					.fn()
-					// First call for topic verification
-					.mockResolvedValueOnce({
+				// Topic fetch: belongs to teacher's course
+				const topicChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
 						data: { id: topicId, google_course_id: courseId },
 						error: null
 					})
-					// Second call for topic course ownership
-					.mockResolvedValueOnce({
+				};
+
+				// Topic course ownership: found
+				const topicCourseChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
 						data: { id: courseId },
 						error: null
-					});
+					})
+				};
 
-				// Mock successful upsert
+				// Upsert chain
+				const upsertSpy = vi.fn().mockReturnThis();
+				const upsertChain = {
+					upsert: upsertSpy,
+					select: vi.fn().mockResolvedValueOnce({
+						data: [{ id: shareId, topic_id: topicId }],
+						error: null
+					})
+				};
+
+				let callCount = 0;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).upsert = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).select = vi.fn().mockResolvedValueOnce({
-					data: [{ id: shareId, topic_id: topicId }],
-					error: null
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					if (callCount === 3) return topicChain;
+					if (callCount === 4) return topicCourseChain;
+					if (callCount === 5) return upsertChain;
+					return mockLocals.supabase;
 				});
 
 				const event = {
@@ -1555,8 +1646,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await POST(event as any);
+				const response = await POST(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
@@ -1564,8 +1654,7 @@ describe('Google Shared Coursework API', () => {
 				expect(data.shared).toBe(1);
 
 				// Verify upsert was called with topicId
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				expect((mockLocals.supabase as any).upsert).toHaveBeenCalledWith(
+				expect(upsertSpy).toHaveBeenCalledWith(
 					expect.arrayContaining([
 						expect.objectContaining({
 							topic_id: topicId
@@ -1587,35 +1676,47 @@ describe('Google Shared Coursework API', () => {
 					})
 				};
 
-				// Mock coursework belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: courseworkId,
-						google_classroom_courses: { teacher_id: teacherId }
-					},
-					error: null
-				});
+				// Coursework fetch: belongs to teacher
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: {
+							id: courseworkId,
+							google_classroom_courses: { teacher_id: teacherId }
+						},
+						error: null
+					})
+				};
 
-				// Mock class belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
+				// Class fetch: belongs to teacher
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
 					eq: vi.fn().mockResolvedValueOnce({
 						data: [{ id: classId1, teacher_id: teacherId }],
 						error: null
 					})
-				}));
+				};
 
-				// Mock successful upsert
+				// Upsert chain (no topic lookup since topicId is null)
+				const upsertSpy = vi.fn().mockReturnThis();
+				const upsertChain = {
+					upsert: upsertSpy,
+					select: vi.fn().mockResolvedValueOnce({
+						data: [{ id: shareId, topic_id: null }],
+						error: null
+					})
+				};
+
+				let callCount = 0;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).upsert = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).select = vi.fn().mockResolvedValueOnce({
-					data: [{ id: shareId, topic_id: null }],
-					error: null
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					if (callCount === 3) return upsertChain;
+					return mockLocals.supabase;
 				});
 
 				const event = {
@@ -1623,16 +1724,14 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await POST(event as any);
+				const response = await POST(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
 				expect(data.success).toBe(true);
 
 				// Verify upsert was called with null topic_id
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				expect((mockLocals.supabase as any).upsert).toHaveBeenCalledWith(
+				expect(upsertSpy).toHaveBeenCalledWith(
 					expect.arrayContaining([
 						expect.objectContaining({
 							topic_id: null
@@ -1654,35 +1753,47 @@ describe('Google Shared Coursework API', () => {
 					})
 				};
 
-				// Mock coursework belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: courseworkId,
-						google_classroom_courses: { teacher_id: teacherId }
-					},
-					error: null
-				});
+				// Coursework fetch: belongs to teacher
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: {
+							id: courseworkId,
+							google_classroom_courses: { teacher_id: teacherId }
+						},
+						error: null
+					})
+				};
 
-				// Mock class belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
+				// Class fetch: belongs to teacher
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
 					eq: vi.fn().mockResolvedValueOnce({
 						data: [{ id: classId1, teacher_id: teacherId }],
 						error: null
 					})
-				}));
+				};
 
-				// Mock successful upsert
+				// Upsert chain (no topic lookup since topicId is undefined)
+				const upsertSpy = vi.fn().mockReturnThis();
+				const upsertChain = {
+					upsert: upsertSpy,
+					select: vi.fn().mockResolvedValueOnce({
+						data: [{ id: shareId, topic_id: null }],
+						error: null
+					})
+				};
+
+				let callCount = 0;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).upsert = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).select = vi.fn().mockResolvedValueOnce({
-					data: [{ id: shareId, topic_id: null }],
-					error: null
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					if (callCount === 3) return upsertChain;
+					return mockLocals.supabase;
 				});
 
 				const event = {
@@ -1690,16 +1801,14 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const response = await POST(event as any);
+				const response = await POST(event as unknown as RequestEvent);
 				const data = await response.json();
 
 				expect(response.status).toBe(200);
 				expect(data.success).toBe(true);
 
 				// Verify upsert was called with null topic_id
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				expect((mockLocals.supabase as any).upsert).toHaveBeenCalledWith(
+				expect(upsertSpy).toHaveBeenCalledWith(
 					expect.arrayContaining([
 						expect.objectContaining({
 							topic_id: null
@@ -1723,56 +1832,73 @@ describe('Google Shared Coursework API', () => {
 					})
 				};
 
-				// Mock coursework belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: courseworkId,
-						google_classroom_courses: { teacher_id: teacherId }
-					},
-					error: null
-				});
+				// Coursework fetch: belongs to teacher
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: {
+							id: courseworkId,
+							google_classroom_courses: { teacher_id: teacherId }
+						},
+						error: null
+					})
+				};
 
-				// Mock class belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
+				// Class fetch: belongs to teacher
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
 					eq: vi.fn().mockResolvedValueOnce({
 						data: [{ id: classId1, teacher_id: teacherId }],
 						error: null
 					})
-				}));
+				};
 
-				// Mock topic belongs to teacher's course
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi
-					.fn()
-					// First call for topic verification
-					.mockResolvedValueOnce({
+				// Topic fetch: exists
+				const topicChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
 						data: { id: otherTopicId, google_course_id: 'other-course-id' },
 						error: null
 					})
-					// Second call for topic course ownership - course not found (different teacher)
-					.mockResolvedValueOnce({
+				};
+
+				// Topic course ownership: not found (different teacher)
+				const topicCourseChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
 						data: null,
 						error: { code: 'PGRST116' }
-					});
+					})
+				};
+
+				let callCount = 0;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					if (callCount === 3) return topicChain;
+					if (callCount === 4) return topicCourseChain;
+					return mockLocals.supabase;
+				});
 
 				const event = {
 					request: mockRequest,
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow(
+				await expectRejectsWithMessage(
+					() => POST(event as unknown as RequestEvent),
 					'Topic does not belong to one of your courses'
 				);
 			});
 
 			it('rejects non-existent topic UUID', async () => {
-				const fakeTopicId = 'ffff6666-ffff-66ff-ffff-666666666666';
+				const fakeTopicId = 'ffff6666-ffff-46ff-8fff-666666666666';
 				const mockRequest = {
 					json: vi.fn().mockResolvedValue({
 						courseworkId,
@@ -1784,33 +1910,47 @@ describe('Google Shared Coursework API', () => {
 					})
 				};
 
-				// Mock coursework belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: {
-						id: courseworkId,
-						google_classroom_courses: { teacher_id: teacherId }
-					},
-					error: null
-				});
+				// Coursework fetch: belongs to teacher
+				const courseworkChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: {
+							id: courseworkId,
+							google_classroom_courses: { teacher_id: teacherId }
+						},
+						error: null
+					})
+				};
 
-				// Mock class belongs to teacher
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).eq = vi.fn().mockReturnThis();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).in = vi.fn().mockImplementation(() => ({
-					...mockLocals.supabase,
+				// Class fetch: belongs to teacher
+				const classChain = {
+					select: vi.fn().mockReturnThis(),
+					in: vi.fn().mockReturnThis(),
 					eq: vi.fn().mockResolvedValueOnce({
 						data: [{ id: classId1, teacher_id: teacherId }],
 						error: null
 					})
-				}));
+				};
 
-				// Mock topic not found
+				// Topic fetch: not found
+				const topicChain = {
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValueOnce({
+						data: null,
+						error: { code: 'PGRST116', message: 'Not found' }
+					})
+				};
+
+				let callCount = 0;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(mockLocals.supabase as any).single = vi.fn().mockResolvedValueOnce({
-					data: null,
-					error: { code: 'PGRST116', message: 'Not found' }
+				(mockLocals.supabase as any).from = vi.fn().mockImplementation(() => {
+					callCount++;
+					if (callCount === 1) return courseworkChain;
+					if (callCount === 2) return classChain;
+					if (callCount === 3) return topicChain;
+					return mockLocals.supabase;
 				});
 
 				const event = {
@@ -1818,8 +1958,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow('Topic not found');
+				await expectRejectsWithMessage(
+					() => POST(event as unknown as RequestEvent),
+					'Topic not found'
+				);
 			});
 
 			it('rejects invalid topic UUID format', async () => {
@@ -1840,8 +1982,8 @@ describe('Google Shared Coursework API', () => {
 				} as unknown as RequestEvent;
 
 				// Should fail Zod validation
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				await expect(POST(event as any)).rejects.toThrow();
+
+				await expect(POST(event as unknown as RequestEvent)).rejects.toThrow();
 			});
 		});
 	});
