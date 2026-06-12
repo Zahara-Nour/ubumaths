@@ -715,16 +715,27 @@ export async function syncCourseWorkMaterials(
 						try {
 							const attachmentData = extractMaterialData(attachment);
 
-							await supabase.from('google_classroom_material_attachments').insert({
-								google_material_id: materialData.id,
-								material_type: attachmentData.type,
-								google_file_id: attachmentData.fileId || null,
-								file_name: attachmentData.fileName,
-								mime_type: attachmentData.mimeType || null,
-								file_url: attachmentData.url,
-								thumbnail_url: attachmentData.thumbnailUrl || null,
-								title: attachmentData.title || null
-							});
+							const { error: attachmentInsertError } = await supabase
+								.from('google_classroom_material_attachments')
+								.insert({
+									google_material_id: materialData.id,
+									material_type: attachmentData.type,
+									google_file_id: attachmentData.fileId || null,
+									file_name: attachmentData.fileName,
+									mime_type: attachmentData.mimeType || null,
+									file_url: attachmentData.url,
+									thumbnail_url: attachmentData.thumbnailUrl || null,
+									title: attachmentData.title || null
+								});
+
+							// A Supabase insert error RESOLVES (does not throw), so it must be
+							// checked explicitly — mirroring the material upsert above.
+							// Without this, attachment-sync failures were silently swallowed.
+							if (attachmentInsertError) {
+								const errorMsg = `Failed to sync attachment for ${material.title}: ${attachmentInsertError.message}`;
+								result.errors.push(errorMsg);
+								console.error(`[Sync] ${errorMsg}`);
+							}
 						} catch (attachmentError) {
 							const message =
 								attachmentError instanceof Error ? attachmentError.message : 'Unknown error';

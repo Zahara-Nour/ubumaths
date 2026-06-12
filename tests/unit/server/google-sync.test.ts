@@ -1,15 +1,21 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { syncTopics, syncCourseWorkMaterials } from '$lib/server/google/sync';
 import { GoogleClassroomClient } from '$lib/server/google/classroom-api';
 
+// Shared holder for the mocked Google Classroom client instance.
+// The constructor mock returns this object so every `new GoogleClassroomClient()`
+// in the sync code resolves to the same instance the tests configure.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const classroomClientInstance: any = {
+	listTopics: vi.fn(),
+	listCourseWorkMaterials: vi.fn()
+};
+
 // Mock the Google Classroom client
 vi.mock('$lib/server/google/classroom-api', () => ({
-	GoogleClassroomClient: vi.fn().mockImplementation(() => ({
-		listTopics: vi.fn(),
-		listCourseWorkMaterials: vi.fn()
-	}))
+	GoogleClassroomClient: vi.fn(() => classroomClientInstance)
 }));
 
 // Mock encryption/decryption
@@ -57,14 +63,35 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 			single: vi.fn()
 		} as unknown as MockSupabaseClient;
 
-		// Mock Google Classroom client
+		// Recreate the Google Classroom client method mocks on the shared instance.
+		// vi.clearAllMocks() above clears their state but not their existence; we
+		// reassign fresh vi.fn()s so per-test mockResolvedValueOnce starts clean.
+		classroomClientInstance.listTopics = vi.fn();
+		classroomClientInstance.listCourseWorkMaterials = vi.fn();
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		mockClassroomClient = new (GoogleClassroomClient as any)();
 	});
 
-	afterEach(() => {
-		vi.restoreAllMocks();
-	});
+	/**
+	 * Configure the topic-fetch result for syncCourseWorkMaterials.
+	 *
+	 * The topic fetch (`from().select('id, google_topic_id').eq('google_course_id', …)`)
+	 * is awaited directly on the query builder (no `.single()`), unlike the
+	 * `getTeacherAccessToken` chain which terminates in `.single()`. Both share the
+	 * `eq` mock, so we keep `eq` chainable (returns `this`) and make the builder
+	 * itself thenable to resolve the topic fetch exactly once.
+	 *
+	 * eslint-disable-next-line @typescript-eslint/no-explicit-any
+	 */
+	function mockTopicFetch(result: { data: unknown; error: unknown }) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(mockSupabase as any).then = vi.fn((resolve: (value: unknown) => unknown) => {
+			// Consume on first await so later awaited builder chains (if any) don't reuse it.
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(mockSupabase as any).then = undefined;
+			return Promise.resolve(result).then(resolve);
+		});
+	}
 
 	// ========================================
 	// syncTopics Tests
@@ -85,7 +112,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				// Mock Google API response (topics)
 				mockClassroomClient.listTopics.mockResolvedValueOnce({
-					topics: [
+					topic: [
 						{
 							courseId: googleCourseId,
 							topicId: 'topic-1',
@@ -135,7 +162,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				// Mock Google API response (1 topic)
 				mockClassroomClient.listTopics.mockResolvedValueOnce({
-					topics: [
+					topic: [
 						{
 							courseId: googleCourseId,
 							topicId: 'topic-1',
@@ -177,7 +204,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				// Mock Google API response (no topics)
 				mockClassroomClient.listTopics.mockResolvedValueOnce({
-					topics: []
+					topic: []
 				});
 
 				const result = await syncTopics(validUuid, googleCourseId, teacherId, mockSupabase);
@@ -199,7 +226,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				// Mock Google API response (null topics)
 				mockClassroomClient.listTopics.mockResolvedValueOnce({
-					topics: null
+					topic: null
 				});
 
 				const result = await syncTopics(validUuid, googleCourseId, teacherId, mockSupabase);
@@ -237,7 +264,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				// Mock Google API response
 				mockClassroomClient.listTopics.mockResolvedValueOnce({
-					topics: [
+					topic: [
 						{
 							courseId: googleCourseId,
 							topicId: 'topic-1',
@@ -296,7 +323,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				// Mock Google API response
 				mockClassroomClient.listTopics.mockResolvedValueOnce({
-					topics: [
+					topic: [
 						{
 							courseId: googleCourseId,
 							topicId: 'topic-1',
@@ -340,7 +367,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 				// Mock Google API response with very long name
 				const longName = 'A'.repeat(500);
 				mockClassroomClient.listTopics.mockResolvedValueOnce({
-					topics: [
+					topic: [
 						{
 							courseId: googleCourseId,
 							topicId: 'topic-1',
@@ -379,7 +406,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 
 				// Mock Google API response with special characters
 				mockClassroomClient.listTopics.mockResolvedValueOnce({
-					topics: [
+					topic: [
 						{
 							courseId: googleCourseId,
 							topicId: 'topic-1',
@@ -426,8 +453,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					});
 
 				// Mock topic fetch
-				mockSupabase.select = vi.fn().mockReturnThis();
-				mockSupabase.eq = vi.fn().mockResolvedValueOnce({
+				mockTopicFetch({
 					data: [
 						{ id: 'internal-topic-1', google_topic_id: 'google-topic-1' },
 						{ id: 'internal-topic-2', google_topic_id: 'google-topic-2' }
@@ -454,11 +480,8 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					nextPageToken: undefined
 				});
 
-				// Mock upsert success
-				mockSupabase.upsert = vi.fn().mockResolvedValue({
-					data: { id: validUuid },
-					error: null
-				});
+				// Mock upsert success (chainable → 2nd single() above returns { id })
+				mockSupabase.upsert = vi.fn().mockReturnThis();
 
 				const result = await syncCourseWorkMaterials(
 					validUuid,
@@ -489,8 +512,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					});
 
 				// Mock topic fetch
-				mockSupabase.select = vi.fn().mockReturnThis();
-				mockSupabase.eq = vi.fn().mockResolvedValueOnce({
+				mockTopicFetch({
 					data: [],
 					error: null
 				});
@@ -526,12 +548,12 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					]
 				});
 
-				// Mock upsert for material
-				mockSupabase.upsert = vi.fn().mockResolvedValue({ data: { id: validUuid }, error: null });
+				// Mock upsert for material (chainable → 2nd single() above returns { id })
+				mockSupabase.upsert = vi.fn().mockReturnThis();
 
-				// Mock delete for old attachments
+				// Mock delete for old attachments (delete().eq() chain; result is ignored by code,
+				// so eq stays chainable to avoid breaking getTeacherAccessToken's eq().single())
 				mockSupabase.delete = vi.fn().mockReturnThis();
-				mockSupabase.eq = vi.fn().mockResolvedValue({ data: null, error: null });
 
 				// Mock insert for new attachments
 				mockSupabase.insert = vi.fn().mockResolvedValue({ data: null, error: null });
@@ -594,8 +616,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					});
 
 				// Mock topic fetch with mapping
-				mockSupabase.select = vi.fn().mockReturnThis();
-				mockSupabase.eq = vi.fn().mockResolvedValueOnce({
+				mockTopicFetch({
 					data: [{ id: 'internal-topic-id', google_topic_id: 'google-topic-id' }],
 					error: null
 				});
@@ -617,8 +638,8 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					]
 				});
 
-				// Mock upsert
-				mockSupabase.upsert = vi.fn().mockResolvedValue({ data: { id: validUuid }, error: null });
+				// Mock upsert (chainable → 2nd single() above returns { id })
+				mockSupabase.upsert = vi.fn().mockReturnThis();
 
 				const result = await syncCourseWorkMaterials(
 					validUuid,
@@ -651,8 +672,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 				});
 
 				// Mock topic fetch
-				mockSupabase.select = vi.fn().mockReturnThis();
-				mockSupabase.eq = vi.fn().mockResolvedValueOnce({
+				mockTopicFetch({
 					data: [],
 					error: null
 				});
@@ -673,8 +693,11 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					]
 				});
 
-				// Mock upsert failure
-				mockSupabase.upsert = vi.fn().mockResolvedValue({
+				// Mock upsert failure. The material upsert chain is
+				// `upsert(...).select('id').single()`, so the error surfaces on the
+				// terminal single() call, not on upsert() itself.
+				mockSupabase.upsert = vi.fn().mockReturnThis();
+				mockSupabase.single.mockResolvedValueOnce({
 					data: null,
 					error: { message: 'Database constraint violation', code: '23505' }
 				});
@@ -709,8 +732,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					});
 
 				// Mock topic fetch error
-				mockSupabase.select = vi.fn().mockReturnThis();
-				mockSupabase.eq = vi.fn().mockResolvedValueOnce({
+				mockTopicFetch({
 					data: null,
 					error: { message: 'Failed to fetch topics', code: '42P01' }
 				});
@@ -731,8 +753,8 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					]
 				});
 
-				// Mock upsert success
-				mockSupabase.upsert = vi.fn().mockResolvedValue({ data: { id: validUuid }, error: null });
+				// Mock upsert success (chainable: upsert().select('id').single() → 2nd single() above)
+				mockSupabase.upsert = vi.fn().mockReturnThis();
 
 				const result = await syncCourseWorkMaterials(
 					validUuid,
@@ -765,8 +787,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					});
 
 				// Mock topic fetch
-				mockSupabase.select = vi.fn().mockReturnThis();
-				mockSupabase.eq = vi.fn().mockResolvedValueOnce({
+				mockTopicFetch({
 					data: [],
 					error: null
 				});
@@ -795,14 +816,18 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					]
 				});
 
-				// Mock material upsert success
-				mockSupabase.upsert = vi.fn().mockResolvedValue({ data: { id: validUuid }, error: null });
+				// Mock material upsert success (chainable → 2nd single() above returns { id })
+				mockSupabase.upsert = vi.fn().mockReturnThis();
 
-				// Mock delete success
+				// Mock delete success (delete().eq() chain; result ignored by code)
 				mockSupabase.delete = vi.fn().mockReturnThis();
-				mockSupabase.eq = vi.fn().mockResolvedValue({ data: null, error: null });
 
-				// Mock attachment insert failure
+				// Mock attachment insert failure.
+				// NOTE: the source `await supabase.from(...).insert({...})` (sync.ts:718)
+				// does NOT inspect the resolved `{ error }` — unlike the topic-fetch and
+				// material-upsert paths in the same function, it only catches *thrown*
+				// errors. A resolved Supabase error is therefore silently swallowed, so
+				// this assertion exposes that latent bug rather than mock drift.
 				mockSupabase.insert = vi.fn().mockResolvedValue({
 					data: null,
 					error: { message: 'Insert failed', code: '23503' }
@@ -841,8 +866,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					});
 
 				// Mock topic fetch
-				mockSupabase.select = vi.fn().mockReturnThis();
-				mockSupabase.eq = vi.fn().mockResolvedValueOnce({
+				mockTopicFetch({
 					data: [],
 					error: null
 				});
@@ -864,8 +888,8 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					]
 				});
 
-				// Mock upsert success
-				mockSupabase.upsert = vi.fn().mockResolvedValue({ data: { id: validUuid }, error: null });
+				// Mock upsert success (chainable → 2nd single() above returns { id })
+				mockSupabase.upsert = vi.fn().mockReturnThis();
 
 				const result = await syncCourseWorkMaterials(
 					validUuid,
@@ -902,8 +926,7 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					});
 
 				// Mock topic fetch
-				mockSupabase.select = vi.fn().mockReturnThis();
-				mockSupabase.eq = vi.fn().mockResolvedValueOnce({
+				mockTopicFetch({
 					data: [],
 					error: null
 				});
@@ -926,8 +949,8 @@ describe('Google Classroom Sync - Topics and Materials', () => {
 					]
 				});
 
-				// Mock upsert success
-				mockSupabase.upsert = vi.fn().mockResolvedValue({ data: { id: validUuid }, error: null });
+				// Mock upsert success (chainable → 2nd single() above returns { id })
+				mockSupabase.upsert = vi.fn().mockReturnThis();
 
 				const result = await syncCourseWorkMaterials(
 					validUuid,

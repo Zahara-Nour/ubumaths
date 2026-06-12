@@ -18,12 +18,31 @@ vi.mock('$lib/server/middleware/auth', () => ({
 	requireRole: vi.fn()
 }));
 
+/**
+ * SvelteKit's `error()` throws an `HttpError` whose message lives in `.body.message`,
+ * NOT in a top-level `.message`. Vitest's `toThrow(string)` matches against `.message`,
+ * which is `undefined` here, so it cannot be used. This helper asserts the handler
+ * rejected with an HttpError carrying the expected message.
+ */
+async function expectHttpError(promise: Promise<unknown>, expectedMessage: string) {
+	let thrown: unknown;
+	try {
+		await promise;
+	} catch (err) {
+		thrown = err;
+	}
+	expect(thrown, 'expected the handler to throw').toBeDefined();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const httpError = thrown as any;
+	expect(httpError?.body?.message).toContain(expectedMessage);
+}
+
 describe('POST /api/google/materials/[id]/share', () => {
 	const validMaterialId = '550e8400-e29b-41d4-a716-446655440000';
 	const teacherId = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 	const classId1 = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
-	const classId2 = '8d8f7788-8536-51fg-a168-f18gd2g01bf8';
-	const categoryId = '9e9g8899-9647-62gh-b279-g29hf3h12cg9';
+	const classId2 = '8d8f7788-8536-41de-a168-f18ed2e01bf8';
+	const categoryId = '9e9e8899-9647-42eb-b279-e29ef3e12ce9';
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let mockLocals: any;
@@ -42,17 +61,52 @@ describe('POST /api/google/materials/[id]/share', () => {
 			profile: { id: teacherId, role: 'teacher' } as any
 		});
 
-		// Mock Supabase client
+		// Mock Supabase client.
+		//
+		// The POST handler runs two query chains:
+		//   1. material: from(...).select(...).eq('id', materialId).single()
+		//      -> `eq` must be chainable, `single` resolves the material.
+		//   2. classes:  from('classes').select(...).in('id', classIds).eq('is_active', true)
+		//      -> the class result is resolved by the *terminal* `.eq('is_active', ...)`,
+		//         NOT by `.in(...)`.
+		//
+		// To keep the existing per-test ergonomics (tests queue the class result via
+		// `mockLocals.supabase.in.mockResolvedValueOnce(...)`), `in` captures that queued
+		// value and `eq('is_active', ...)` replays it as the awaited terminal.
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		let pendingClassResult: any;
+
 		mockLocals = {
 			supabase: {
 				from: vi.fn().mockReturnThis(),
 				select: vi.fn().mockReturnThis(),
 				insert: vi.fn().mockReturnThis(),
 				upsert: vi.fn().mockReturnThis(),
-				eq: vi.fn().mockReturnThis(),
-				in: vi.fn().mockReturnThis(),
+
+				eq: vi.fn(function (this: unknown, column?: unknown) {
+					if (column === 'is_active') {
+						const result = pendingClassResult ?? { data: [], error: null };
+						pendingClassResult = undefined;
+						return Promise.resolve(result);
+					}
+					return mockLocals.supabase;
+				}),
+				// `in` is a chain link, NOT the awaited terminal of the class query.
+				// It must synchronously return the supabase mock so `.eq('is_active', ...)`
+				// can be called on it. The class result is resolved by that terminal `eq`.
+				in: vi.fn(() => mockLocals.supabase),
 				single: vi.fn()
 			}
+		};
+
+		// Bridge: tests still queue the class result via
+		// `mockLocals.supabase.in.mockResolvedValueOnce(...)`. We intercept that call to
+		// stash the value so the terminal `eq('is_active', ...)` can resolve it, while
+		// keeping `in` synchronously chainable.
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		mockLocals.supabase.in.mockResolvedValueOnce = (value: any) => {
+			pendingClassResult = value;
+			return mockLocals.supabase.in;
 		};
 
 		// Mock request
@@ -307,8 +361,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 			await expect(POST(event as any)).rejects.toThrow();
 		});
 
-		it('should reject description over 5000 characters', async () => {
-			const tooLongDescription = 'a'.repeat(5001);
+		it('should reject description over 2000 characters', async () => {
+			const tooLongDescription = 'a'.repeat(2001);
 			mockRequest.json.mockResolvedValueOnce({
 				classIds: [classId1],
 				descriptionOverride: tooLongDescription,
@@ -369,7 +423,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expect(POST(event as any)).rejects.toThrow('You do not own this material');
+			await expectHttpError(POST(event as any), 'You do not own this material');
 		});
 
 		it('should reject if teacher does not own all classes', async () => {
@@ -403,7 +457,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expect(POST(event as any)).rejects.toThrow('Access denied');
+			await expectHttpError(POST(event as any), 'Access denied');
 		});
 
 		it('should reject if trying to share with archived classes', async () => {
@@ -433,7 +487,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expect(POST(event as any)).rejects.toThrow('Invalid request');
+			await expectHttpError(POST(event as any), 'Invalid request');
 		});
 	});
 
@@ -457,7 +511,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expect(POST(event as any)).rejects.toThrow('Material not found');
+			await expectHttpError(POST(event as any), 'Material not found');
 		});
 	});
 
@@ -481,7 +535,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expect(POST(event as any)).rejects.toThrow('Failed to fetch material');
+			await expectHttpError(POST(event as any), 'Failed to fetch material');
 		});
 
 		it('should handle class fetch errors', async () => {
@@ -511,7 +565,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expect(POST(event as any)).rejects.toThrow('Failed to verify class ownership');
+			await expectHttpError(POST(event as any), 'Failed to verify class ownership');
 		});
 
 		it('should handle upsert errors', async () => {
@@ -546,7 +600,7 @@ describe('POST /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expect(POST(event as any)).rejects.toThrow('Failed to share material');
+			await expectHttpError(POST(event as any), 'Failed to share material');
 		});
 	});
 
@@ -631,8 +685,8 @@ describe('POST /api/google/materials/[id]/share', () => {
 			expect(data.classesShared).toBe(50);
 		});
 
-		it('should handle exactly 5000 character description (boundary)', async () => {
-			const maxDescription = 'a'.repeat(5000);
+		it('should handle exactly 2000 character description (boundary)', async () => {
+			const maxDescription = 'a'.repeat(2000);
 			mockRequest.json.mockResolvedValueOnce({
 				classIds: [classId1],
 				descriptionOverride: maxDescription,
@@ -674,7 +728,7 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 	const validMaterialId = '550e8400-e29b-41d4-a716-446655440000';
 	const teacherId = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 	const classId1 = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
-	const classId2 = '8d8f7788-8536-51fg-a168-f18gd2g01bf8';
+	const classId2 = '8d8f7788-8536-41de-a168-f18ed2e01bf8';
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let mockLocals: any;
@@ -846,7 +900,7 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expect(DELETE(event as any)).rejects.toThrow('Unauthorized');
+			await expectHttpError(DELETE(event as any), 'Unauthorized');
 		});
 	});
 
@@ -868,7 +922,7 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expect(DELETE(event as any)).rejects.toThrow('Material not found');
+			await expectHttpError(DELETE(event as any), 'Material not found');
 		});
 	});
 
@@ -899,7 +953,7 @@ describe('DELETE /api/google/materials/[id]/share', () => {
 			} as unknown as RequestEvent;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			await expect(DELETE(event as any)).rejects.toThrow('Failed to unshare material');
+			await expectHttpError(DELETE(event as any), 'Failed to unshare material');
 		});
 	});
 });
