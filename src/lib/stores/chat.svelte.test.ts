@@ -2072,11 +2072,13 @@ describe('Phase 3: Reactions & Reporting', () => {
 			]);
 		});
 
-		it('should add reaction if not present', () => {
+		it('should add reaction if not present', async () => {
 			const mockChannel = createMockChannel(`chat-${conversationId}`);
 			vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
 
-			chatStore.toggleReaction('msg-1', '👍');
+			// Reactions now persist via the `toggle_reaction` RPC first, then broadcast;
+			// the broadcast fires after that awaited RPC, so we must await.
+			await chatStore.toggleReaction('msg-1', '👍');
 
 			const messages = chatStore.getMessages(conversationId);
 			expect(messages[0].reactions).toHaveLength(1);
@@ -2097,8 +2099,9 @@ describe('Phase 3: Reactions & Reporting', () => {
 			});
 		});
 
-		it('should remove reaction if already present', () => {
-			// Add existing reaction
+		it('should remove reaction if already present', async () => {
+			// Add existing reaction. Reactions are now aggregated by emoji with
+			// `count` + `user_reacted`; removal keys off `user_reacted` being true.
 			const messages = chatStore.getMessages(conversationId);
 			messages[0].reactions = [
 				{
@@ -2106,14 +2109,16 @@ describe('Phase 3: Reactions & Reporting', () => {
 					message_id: 'msg-1',
 					user_id: userId,
 					emoji: '👍',
-					created_at: new Date().toISOString()
+					created_at: new Date().toISOString(),
+					count: 1,
+					user_reacted: true
 				}
 			];
 
 			const mockChannel = createMockChannel(`chat-${conversationId}`);
 			vi.spyOn(supabaseRealtimeManager, 'getChannel').mockReturnValue(mockChannel);
 
-			chatStore.toggleReaction('msg-1', '👍');
+			await chatStore.toggleReaction('msg-1', '👍');
 
 			const updatedMessages = chatStore.getMessages(conversationId);
 			expect(updatedMessages[0].reactions).toHaveLength(0);
