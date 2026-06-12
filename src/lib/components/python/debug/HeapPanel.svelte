@@ -106,7 +106,9 @@
 											{shortHeapId(entry.value.objectId)}
 										</span>
 									{:else}
-										<span class="text-foreground">{formatInline(asInlineOrTruncated(entry.value))}</span>
+										<span class="text-foreground"
+											>{formatInline(asInlineOrTruncated(entry.value))}</span
+										>
 									{/if}
 								</div>
 							{/each}

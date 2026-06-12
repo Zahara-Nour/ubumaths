@@ -51,10 +51,11 @@
 
 	// Debug-only extension: adds `solution` which is not part of QuestionInstance
 	// (solution is a legacy field kept only for debug/test fixtures in this page)
-	type DebugInstance = Partial<QuestionInstance> & Pick<QuestionInstance, 'templateId'> & {
-		solution?: string | string[];
-		precision?: { type: string; digits?: number };
-	};
+	type DebugInstance = Partial<QuestionInstance> &
+		Pick<QuestionInstance, 'templateId'> & {
+			solution?: string | string[];
+			precision?: { type: string; digits?: number };
+		};
 
 	const sampleQuestions: Record<string, DebugInstance> = {
 		numerical_exact: {

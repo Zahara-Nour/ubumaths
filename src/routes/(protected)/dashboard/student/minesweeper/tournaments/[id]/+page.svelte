@@ -30,7 +30,9 @@
 	let isStartingGame = $state(false);
 
 	// Derived state
-	let difficultyLabel = $derived(DIFFICULTY_LABELS[tournament.difficulty as Difficulty] || tournament.difficulty);
+	let difficultyLabel = $derived(
+		DIFFICULTY_LABELS[tournament.difficulty as Difficulty] || tournament.difficulty
+	);
 
 	let difficultyColor = $derived.by(() => {
 		switch (tournament.difficulty) {

@@ -887,23 +887,24 @@ class TradeRealtimeStore {
 
 			// Use explicit conditional update fields instead of a computed key to satisfy
 			// Supabase's RejectExcessProperties type constraint on .update().
-			const { error } = this.myRole === 'initiator'
-				? await this.supabase
-						.from('marketplace_trades')
-						.update({
-							validated_by_initiator: newValidation,
-							current_offer: currentOffer,
-							updated_at: new Date().toISOString()
-						})
-						.eq('id', this.tradeId)
-				: await this.supabase
-						.from('marketplace_trades')
-						.update({
-							validated_by_partner: newValidation,
-							current_offer: currentOffer,
-							updated_at: new Date().toISOString()
-						})
-						.eq('id', this.tradeId);
+			const { error } =
+				this.myRole === 'initiator'
+					? await this.supabase
+							.from('marketplace_trades')
+							.update({
+								validated_by_initiator: newValidation,
+								current_offer: currentOffer,
+								updated_at: new Date().toISOString()
+							})
+							.eq('id', this.tradeId)
+					: await this.supabase
+							.from('marketplace_trades')
+							.update({
+								validated_by_partner: newValidation,
+								current_offer: currentOffer,
+								updated_at: new Date().toISOString()
+							})
+							.eq('id', this.tradeId);
 
 			if (error) {
 				throw new Error(`Failed to update validation: ${error.message}`);

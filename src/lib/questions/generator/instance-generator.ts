@@ -219,8 +219,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		);
 
 		// 5c. Insert <<expr:NAME>> markers in template before variable resolution
-		let statementTemplate: TemplateMarkdown =
-			resolvedVariation.statement ?? templateMarkdown('');
+		let statementTemplate: TemplateMarkdown = resolvedVariation.statement ?? templateMarkdown('');
 		if (expressionNames.size > 0) {
 			const markedStatement = insertExpressionMarkers(String(statementTemplate), expressionNames);
 			statementTemplate = templateMarkdown(markedStatement);

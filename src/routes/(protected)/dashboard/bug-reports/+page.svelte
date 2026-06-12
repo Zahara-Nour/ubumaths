@@ -18,7 +18,11 @@
 		BUG_REPORT_CATEGORY_ICONS,
 		BUG_REPORT_SEVERITY_LABELS
 	} from '$lib/types/bug-reports';
-	import type { BugReportCategory, BugReportSeverity, BugReportStatus } from '$lib/types/bug-reports';
+	import type {
+		BugReportCategory,
+		BugReportSeverity,
+		BugReportStatus
+	} from '$lib/types/bug-reports';
 	import BugReportStatusBadge from '$lib/components/bug-reports/BugReportStatusBadge.svelte';
 	import { Plus, Bug, Clock, CheckCircle, ArrowLeft } from 'lucide-svelte';
 
@@ -142,7 +146,9 @@
 		{#if selectedReport}
 			<Dialog.Header>
 				<Dialog.Title class="flex items-center gap-2">
-					<span class="text-xl">{BUG_REPORT_CATEGORY_ICONS[selectedReport.category as BugReportCategory]}</span>
+					<span class="text-xl"
+						>{BUG_REPORT_CATEGORY_ICONS[selectedReport.category as BugReportCategory]}</span
+					>
 					{selectedReport.title}
 				</Dialog.Title>
 				<Dialog.Description>

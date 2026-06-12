@@ -28,8 +28,8 @@
 	>
 		<!-- Icon -->
 		<div class="mb-4 flex justify-center">
-			<div class="bg-warning/20 rounded-full p-3">
-				<Clock class="text-warning h-8 w-8" />
+			<div class="rounded-full bg-warning/20 p-3">
+				<Clock class="h-8 w-8 text-warning" />
 			</div>
 		</div>
 

@@ -1036,7 +1036,7 @@
 	{#if hasWarnings}
 		<Card.Root class="border-warning/50 bg-warning/5">
 			<Card.Header>
-				<Card.Title class="text-warning flex items-center gap-2">
+				<Card.Title class="flex items-center gap-2 text-warning">
 					<AlertTriangle class="h-5 w-5" />
 					Avertissements ({warnings.length})
 				</Card.Title>
@@ -1045,7 +1045,7 @@
 				<ul class="space-y-2">
 					{#each warnings as warning, i (i)}
 						<li class="flex items-start gap-2 text-sm">
-							<AlertTriangle class="text-warning mt-0.5 h-4 w-4 shrink-0" />
+							<AlertTriangle class="mt-0.5 h-4 w-4 shrink-0 text-warning" />
 							<span>{warning}</span>
 						</li>
 					{/each}

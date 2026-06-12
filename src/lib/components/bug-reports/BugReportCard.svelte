@@ -5,7 +5,12 @@
 	 * Displays a single bug report with status, category, and metadata.
 	 */
 	import { cn } from '$lib/utils';
-	import type { BugReportWithAuthor, BugReportCategory, BugReportSeverity, BugReportStatus } from '$lib/types/bug-reports';
+	import type {
+		BugReportWithAuthor,
+		BugReportCategory,
+		BugReportSeverity,
+		BugReportStatus
+	} from '$lib/types/bug-reports';
 	import {
 		BUG_REPORT_CATEGORY_ICONS,
 		BUG_REPORT_CATEGORY_LABELS,

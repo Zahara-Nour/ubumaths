@@ -120,7 +120,8 @@
 						<MyCheckbox
 							id="freeze-detection-toggle"
 							bind:checked={freezeDetectionEnabled}
-							onCheckedChange={(v) => v !== 'indeterminate' && handleToggle('freezeDetectionEnabled', v)}
+							onCheckedChange={(v) =>
+								v !== 'indeterminate' && handleToggle('freezeDetectionEnabled', v)}
 							disabled={updating !== null}
 						/>
 					</div>
@@ -147,7 +148,8 @@
 						<MyCheckbox
 							id="freeze-prompt-toggle"
 							bind:checked={freezePromptEnabled}
-							onCheckedChange={(v) => v !== 'indeterminate' && handleToggle('freezePromptEnabled', v)}
+							onCheckedChange={(v) =>
+								v !== 'indeterminate' && handleToggle('freezePromptEnabled', v)}
 							disabled={updating !== null || !freezeDetectionEnabled}
 						/>
 					</div>

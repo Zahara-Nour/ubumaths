@@ -325,7 +325,11 @@ function evaluateAtPoint(expr: MathNode, variable: string, value: number): numbe
 		const result = evaluate(substituted, { mode: 'decimal' });
 
 		// Extract numeric value
-		if (result.status === 'value' && typeof result.value === 'number' && Number.isFinite(result.value)) {
+		if (
+			result.status === 'value' &&
+			typeof result.value === 'number' &&
+			Number.isFinite(result.value)
+		) {
 			return result.value;
 		}
 
@@ -366,7 +370,11 @@ function getNumericBound(value: MathNode, _bound: 'lower' | 'upper'): number | n
 	// Try to evaluate symbolically
 	try {
 		const result = evaluate(value, { mode: 'decimal' });
-		if (result.status === 'value' && typeof result.value === 'number' && Number.isFinite(result.value)) {
+		if (
+			result.status === 'value' &&
+			typeof result.value === 'number' &&
+			Number.isFinite(result.value)
+		) {
 			return result.value;
 		}
 	} catch {

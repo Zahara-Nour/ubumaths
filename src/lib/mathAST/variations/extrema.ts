@@ -445,7 +445,11 @@ function isPointInDomain(point: CriticalPointInfo, domain: Domain): boolean {
 function evaluateToNumber(node: MathNode): number | null {
 	try {
 		const result = evaluate(node, { mode: 'decimal' });
-		if (result.status === 'value' && typeof result.value === 'number' && Number.isFinite(result.value)) {
+		if (
+			result.status === 'value' &&
+			typeof result.value === 'number' &&
+			Number.isFinite(result.value)
+		) {
 			return result.value;
 		}
 		return null;
@@ -534,7 +538,11 @@ function evaluateAtPoint(expr: MathNode, variable: string, x: MathNode): number 
 	try {
 		const substituted = substitute(expr, { [variable]: x });
 		const result = evaluate(substituted, { mode: 'decimal' });
-		if (result.status === 'value' && typeof result.value === 'number' && Number.isFinite(result.value)) {
+		if (
+			result.status === 'value' &&
+			typeof result.value === 'number' &&
+			Number.isFinite(result.value)
+		) {
 			return result.value;
 		}
 		return null;

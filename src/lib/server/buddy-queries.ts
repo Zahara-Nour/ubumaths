@@ -86,9 +86,12 @@ export async function changeStudentPalotin(
 	// Increment change_count separately (Supabase JS doesn't support column increment in update)
 	// NOTE: increment_buddy_change_count / add_buddy_xp RPCs exist in the DB but are
 	// not yet in the generated types (run `pnpm db:types`); `as never` bridges the gap.
-	const { error: incError } = await supabase.rpc('increment_buddy_change_count' as never, {
-		p_student_id: studentId
-	} as never);
+	const { error: incError } = await supabase.rpc(
+		'increment_buddy_change_count' as never,
+		{
+			p_student_id: studentId
+		} as never
+	);
 
 	// Fallback: if RPC doesn't exist, do a raw update
 	if (incError) {
@@ -111,11 +114,14 @@ export async function addBuddyXp(
 	xp: number,
 	isMilestone: boolean = false
 ): Promise<BuddyXpGainResult> {
-	const { data, error } = await supabase.rpc('add_buddy_xp' as never, {
-		p_student_id: studentId,
-		p_xp: xp,
-		p_is_milestone: isMilestone
-	} as never);
+	const { data, error } = await supabase.rpc(
+		'add_buddy_xp' as never,
+		{
+			p_student_id: studentId,
+			p_xp: xp,
+			p_is_milestone: isMilestone
+		} as never
+	);
 
 	if (error) {
 		console.error('❌ [buddy-queries] Error adding buddy XP:', error);

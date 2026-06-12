@@ -31,13 +31,21 @@
 
 	// Filter tournaments by actual state (dates + status)
 	let scheduled = $derived(
-		tournaments.filter((t: TournamentWithCount) => t.status !== 'cancelled' && !isStarted(t) && !isEnded(t))
+		tournaments.filter(
+			(t: TournamentWithCount) => t.status !== 'cancelled' && !isStarted(t) && !isEnded(t)
+		)
 	);
 	let active = $derived(
-		tournaments.filter((t: TournamentWithCount) => t.status !== 'cancelled' && isStarted(t) && !isEnded(t))
+		tournaments.filter(
+			(t: TournamentWithCount) => t.status !== 'cancelled' && isStarted(t) && !isEnded(t)
+		)
 	);
-	let completed = $derived(tournaments.filter((t: TournamentWithCount) => t.status !== 'cancelled' && isEnded(t)));
-	let cancelled = $derived(tournaments.filter((t: TournamentWithCount) => t.status === 'cancelled'));
+	let completed = $derived(
+		tournaments.filter((t: TournamentWithCount) => t.status !== 'cancelled' && isEnded(t))
+	);
+	let cancelled = $derived(
+		tournaments.filter((t: TournamentWithCount) => t.status === 'cancelled')
+	);
 
 	function handleCreateNew() {
 		goto('/dashboard/teacher/minesweeper/tournaments/new').then(() => {});

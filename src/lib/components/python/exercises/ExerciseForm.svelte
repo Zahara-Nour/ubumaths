@@ -30,7 +30,9 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import type { ExerciseFormState, Level } from './form-mapping';
+	// Aliased to avoid a name clash with the `<script module>` re-exports above
+	// (which expose these types to external consumers).
+	import type { ExerciseFormState as FormState, Level as FormLevel } from './form-mapping';
 	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
 	import LockedPythonEditor from '$lib/components/python/LockedPythonEditor.svelte';
 	import ExerciseRichTextEditor from '$lib/components/exercises/ExerciseRichTextEditor.svelte';
@@ -46,11 +48,11 @@
 	import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-svelte';
 
 	type Props = {
-		initialForm: ExerciseFormState;
+		initialForm: FormState;
 		mode: 'create' | 'edit';
 		/** Where the Cancel button leads. Defaults sensible by mode if omitted. */
 		cancelHref?: string;
-		onSubmit: (form: ExerciseFormState) => Promise<void>;
+		onSubmit: (form: FormState) => Promise<void>;
 		/**
 		 * Optional Supabase client + user id forwarded to the rich-text
 		 * editor for image uploads. When omitted the editor still works but
@@ -66,7 +68,7 @@
 	// parent's object. The form is consumed once at mount time; the parent
 	// is not expected to swap `initialForm` later.
 	// svelte-ignore state_referenced_locally
-	let form = $state<ExerciseFormState>(structuredClone(initialForm));
+	let form = $state<FormState>(structuredClone(initialForm));
 
 	let executor = $state<PlaygroundExecutor | null>(null);
 	let verifyResult = $state<Result | null>(null);
@@ -238,7 +240,7 @@
 				id="ex-level"
 				items={levelItems}
 				value={form.level}
-				onchange={(v: string) => (form.level = v as Level)}
+				onchange={(v: string) => (form.level = v as FormLevel)}
 			/>
 		</div>
 

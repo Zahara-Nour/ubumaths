@@ -196,8 +196,7 @@
 
 			const zonesDecorationsField = StateField.define({
 				create: (state) => buildZoneDecorations(state),
-				update: (deco, tr) =>
-					tr.docChanged ? buildZoneDecorations(tr.state) : deco,
+				update: (deco, tr) => (tr.docChanged ? buildZoneDecorations(tr.state) : deco),
 				provide: (f) => EditorView.decorations.from(f)
 			});
 

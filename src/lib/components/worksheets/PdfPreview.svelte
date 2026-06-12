@@ -752,9 +752,9 @@ INFORMATIONS
 				<!-- Batch Tab -->
 				<Tabs.Content value="batch" class="space-y-4">
 					{#if students.length === 0}
-						<div class="border-warning/50 bg-warning/5 rounded-lg border p-4">
+						<div class="rounded-lg border border-warning/50 bg-warning/5 p-4">
 							<div class="flex items-start gap-3">
-								<AlertCircle class="text-warning mt-0.5 h-5 w-5" />
+								<AlertCircle class="mt-0.5 h-5 w-5 text-warning" />
 								<div class="flex-1">
 									<p class="font-medium">Aucun eleve disponible</p>
 									<p class="mt-1 text-sm text-muted-foreground">
