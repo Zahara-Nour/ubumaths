@@ -65,7 +65,9 @@ describe('validateExerciseExport', () => {
 	it('should reject invalid category', () => {
 		const invalidExport = {
 			version: '1.0',
-			category: 'automatisme', // Must be 1, 2, or 3
+			// `category` is a string enum (automatisme, application, …); a value
+			// outside the enum must be rejected. (`'automatisme'` is now VALID.)
+			category: 'not_a_real_category',
 			tags: [],
 			statement_md: 'Test',
 			solution_md: 'Test'

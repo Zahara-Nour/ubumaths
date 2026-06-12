@@ -35,7 +35,8 @@ $x = \\pm 2$
 		expect(result.success).toBe(true);
 		expect(result.data).toBeDefined();
 		expect(result.data?.version).toBe('1.0');
-		expect(result.data?.category).toBe(2);
+		// `category` is now a string enum (replaces the old numeric 1-3 difficulty)
+		expect(result.data?.category).toBe('application');
 		expect(result.data?.tags).toEqual(['algèbre', 'équations']);
 		expect(result.data?.title).toBe('Test Exercise');
 		expect(result.data?.source).toBe('Test Book');
@@ -62,7 +63,7 @@ Simple answer
 		const result = parseMarkdownWithFrontmatter(markdown);
 
 		expect(result.success).toBe(true);
-		expect(result.data?.category).toBe(1);
+		expect(result.data?.category).toBe('automatisme');
 		expect(result.data?.tags).toEqual([]);
 		expect(result.data?.statement_md).toBe('Simple question');
 		expect(result.data?.solution_md).toBe('Simple answer');
@@ -107,7 +108,7 @@ title: "Advanced Algebra"
 source: "Algebra Book"
 grades:
   - "2"
-  - "1"
+  - "1_GEN"
 topic: "Algèbre avancée"
 ---
 
@@ -123,7 +124,7 @@ Detailed solution
 		const result = parseMarkdownWithFrontmatter(markdown);
 
 		expect(result.success).toBe(true);
-		expect(result.data?.grades).toEqual(['2', '1']);
+		expect(result.data?.grades).toEqual(['2', '1_GEN']);
 		expect(result.data?.topic).toBe('Algèbre avancée');
 	});
 
