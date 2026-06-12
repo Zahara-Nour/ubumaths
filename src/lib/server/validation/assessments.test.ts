@@ -90,12 +90,8 @@ describe('assessment validation schemas', () => {
 			const data = {
 				title: '   ',
 				grade: '6',
-				categories: [
-					{
-						category_id: '550e8400-e29b-41d4-a716-446655440000',
-						question_count: 10
-					}
-				]
+				categories: [validCartItem],
+				settings: validSettings
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
@@ -106,12 +102,8 @@ describe('assessment validation schemas', () => {
 			const data = {
 				title: 'a'.repeat(201),
 				grade: '6',
-				categories: [
-					{
-						category_id: '550e8400-e29b-41d4-a716-446655440000',
-						question_count: 10
-					}
-				]
+				categories: [validCartItem],
+				settings: validSettings
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
@@ -122,12 +114,8 @@ describe('assessment validation schemas', () => {
 			const data = {
 				title: 'Test',
 				grade: 'invalid-grade',
-				categories: [
-					{
-						category_id: '550e8400-e29b-41d4-a716-446655440000',
-						question_count: 10
-					}
-				]
+				categories: [validCartItem],
+				settings: validSettings
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
@@ -146,113 +134,84 @@ describe('assessment validation schemas', () => {
 		});
 
 		it('should reject too many categories', () => {
-			const categories = Array.from({ length: 21 }, (_, i) => ({
-				category_id: `550e8400-e29b-41d4-a716-44665544${String(i).padStart(4, '0')}`,
-				question_count: 1
-			}));
+			const categories = Array.from({ length: 51 }, () => validCartItem);
 
 			const data = {
 				title: 'Test',
 				grade: '6',
-				categories
+				categories,
+				settings: validSettings
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject invalid category UUID', () => {
+		it('should reject category item missing category descriptor', () => {
 			const data = {
 				title: 'Test',
 				grade: '6',
-				categories: [
-					{
-						category_id: 'not-a-uuid',
-						question_count: 10
-					}
-				]
+				categories: [{ quantity: 10, delay: 20 }],
+				settings: validSettings
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject non-integer question count', () => {
+		it('should reject non-integer quantity', () => {
 			const data = {
 				title: 'Test',
 				grade: '6',
-				categories: [
-					{
-						category_id: '550e8400-e29b-41d4-a716-446655440000',
-						question_count: 10.5
-					}
-				]
+				categories: [{ ...validCartItem, quantity: 10.5 }],
+				settings: validSettings
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject negative question count', () => {
+		it('should reject negative quantity', () => {
 			const data = {
 				title: 'Test',
 				grade: '6',
-				categories: [
-					{
-						category_id: '550e8400-e29b-41d4-a716-446655440000',
-						question_count: -5
-					}
-				]
+				categories: [{ ...validCartItem, quantity: -5 }],
+				settings: validSettings
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject question count exceeding max', () => {
+		it('should reject quantity exceeding max', () => {
 			const data = {
 				title: 'Test',
 				grade: '6',
-				categories: [
-					{
-						category_id: '550e8400-e29b-41d4-a716-446655440000',
-						question_count: 51
-					}
-				]
+				categories: [{ ...validCartItem, quantity: 51 }],
+				settings: validSettings
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject duration exceeding max', () => {
+		it('should reject missing settings', () => {
 			const data = {
 				title: 'Test',
 				grade: '6',
-				categories: [
-					{
-						category_id: '550e8400-e29b-41d4-a716-446655440000',
-						question_count: 10
-					}
-				],
-				duration: 181
+				categories: [validCartItem]
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject max_attempts exceeding limit', () => {
+		it('should reject settings max_attempts exceeding limit', () => {
 			const data = {
 				title: 'Test',
 				grade: '6',
-				categories: [
-					{
-						category_id: '550e8400-e29b-41d4-a716-446655440000',
-						question_count: 10
-					}
-				],
-				max_attempts: 11
+				categories: [validCartItem],
+				settings: { ...validSettings, max_attempts: 11 }
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
@@ -478,22 +437,25 @@ describe('assessment validation schemas', () => {
 	// ============================================================================
 
 	describe('assessmentResponseSchema', () => {
+		// Response mirrors DbAssessment: categories is CartItem[], plus a settings object
+		const validResponseCartItem = {
+			category: { theme: 'Géométrie', domain: 'Triangles', subdomain: null, level: 2 },
+			quantity: 10,
+			delay: 20
+		};
+
 		it('should accept valid assessment response', () => {
 			const data = {
 				id: '550e8400-e29b-41d4-a716-446655440000',
 				title: 'Math Test',
 				grade: '6',
-				categories: [
-					{
-						category_id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
-						question_count: 10
-					}
-				],
-				duration: 60,
-				max_attempts: 2,
+				description: 'A test',
+				created_by: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
+				academic_period_id: null,
+				categories: [validResponseCartItem],
+				settings: { max_attempts: 2, time_limit: 3600, deadline: null, shuffle_questions: true },
 				status: 'published',
 				created_at: '2025-01-01T00:00:00Z',
-				created_by: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
 				updated_at: '2025-01-02T00:00:00Z'
 			};
 
@@ -501,22 +463,22 @@ describe('assessment validation schemas', () => {
 			expect(result.success).toBe(true);
 		});
 
-		it('should accept null duration', () => {
+		it('should accept null settings fields and null description', () => {
 			const data = {
 				id: '550e8400-e29b-41d4-a716-446655440000',
 				title: 'Math Test',
 				grade: '6',
-				categories: [
-					{
-						category_id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
-						question_count: 10
-					}
-				],
-				duration: null,
-				max_attempts: 1,
+				description: null,
+				created_by: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
+				categories: [validResponseCartItem],
+				settings: {
+					max_attempts: null,
+					time_limit: null,
+					deadline: null,
+					shuffle_questions: false
+				},
 				status: 'draft',
 				created_at: '2025-01-01T00:00:00Z',
-				created_by: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
 				updated_at: '2025-01-02T00:00:00Z'
 			};
 
@@ -533,12 +495,17 @@ describe('assessment validation schemas', () => {
 						id: '550e8400-e29b-41d4-a716-446655440000',
 						title: 'Test 1',
 						grade: '6',
+						description: null,
+						created_by: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
 						categories: [],
-						duration: 60,
-						max_attempts: 1,
+						settings: {
+							max_attempts: 1,
+							time_limit: null,
+							deadline: null,
+							shuffle_questions: true
+						},
 						status: 'published',
 						created_at: '2025-01-01T00:00:00Z',
-						created_by: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
 						updated_at: '2025-01-02T00:00:00Z'
 					}
 				]
