@@ -1,6 +1,6 @@
 # Passe « tests stale » — inventaire
 
-> **Date** : 2026-06-12 · **Statut** : inventaire (aucun fix appliqué) · **Auteur** : sweep automatisé par zone
+> **Date** : 2026-06-12 · **Statut** : ✅ remédiation TERMINÉE le 2026-06-12 (63 fichiers / ~470 tests réalignés, **11 régressions de prod corrigées**, vérifié zone par zone) · **Auteur** : sweep + remédiation
 
 ## Contexte
 
@@ -167,7 +167,7 @@ La dette est **concentrée** sur les zones « drift-prone » prévues (server, r
 - **Restaurer un gate LÉGER** (le full `test:unit` a été retiré pour sa lourdeur) — pistes :
   - pre-commit : lancer uniquement les tests des fichiers touchés (`vitest related` / `check:changed`-style) ;
   - CI : `test:server` shardé par zone, ou seulement sur les dossiers modifiés du diff.
-- **Corriger `quality.yml`** : le job `test` appelle encore `test:unit` (retiré) → il erreur à chaque push. Le pointer vers le gate léger retenu, ou retirer le job.
+- **CI (`quality.yml`)** : ✅ install réparée (`f6353dd21` — la CI était 100% HS sur un mismatch pnpm 9·Node 20 / projet pnpm 10·Node 26, **pas** sur `test:unit`). Reste à brancher le job `test` sur le gate léger (il pointe encore vers `test:unit` retiré).
 
 ## Zones vertes confirmées (ne pas re-tester)
 
