@@ -260,7 +260,13 @@ Les 7 autres fichiers (après assessments) traités, **tous test-drift, 0 régre
 
 ⚠️ `achievements/migration` est un test **fragile** (regex sur DDL d'une migration figée) — candidat à suppression future (faible valeur : une migration s'applique ou pas, vérifier son texte est cassant).
 
-### ⚠️ Cluster answer-validator — 2 décisions PO en attente (2026-06-12)
+### ✅ Cluster answer-validator — RÉGRESSION CONFIRMÉE + corrigée (2026-06-12)
+
+**Résolu** : `answer-validator` 56/56 + `answer-validator-blanks` 49/49. Les 19 rouges (après les 2 stale de `7fe4a37a4`) ont été **revus un par un avec David** → **18 = vraie régression de prod** (la plus grosse du chantier : validation des réponses élèves), **1 = test obsolète réaligné**. Fix code commit `e48b63785` (+ doc `docs/wip/answer-validator-form-fix-progress.md`).
+
+**Cause** : `checkForm` compare la réponse normalisée à l'**attendu littéral** ; les commits `f2f9287a2`/`9ff3c2e0a`/`dece435e4` ont généralisé ce form-mismatch à TOUS les blancs → des réponses correctes étaient marquées `bad_form` (équivalence, précision, conversion d'unité, texte fuzzy, requiredForm). **Fix** : aiguillage par mode (chaque blanc a une forme exigée explicite/implicite ; on vérifie « conforme à la forme exigée », pas « == attendu ») ; violations cosmétiques conservées. Détail design + décisions PO dans le doc dédié.
+
+_(Section historique ci-dessous conservée pour trace du diagnostic.)_
 
 **`answer-validator` (49/56) + `answer-validator-blanks` (37/49)** : 2 tests stale réalignés (`7fe4a37a4`), mais **19 tests laissés ROUGES volontairement** car ils exposent ce qui ressemble fortement à une **régression du validateur** (agent pedagogy-expert a refusé de maquiller, à raison). À ARBITRER avec David.
 
@@ -283,7 +289,7 @@ Les 7 autres fichiers (après assessments) traités, **tous test-drift, 0 régre
 
 Système de génération de variables de challenge (navadra, « for future challenge generation » = WIP, pas d'appelant live). Mismatch de format : la fonction `generateChallengeVariables` lit `varDef.type === 'random'|'expression'` (+ JSDoc + producteurs `markdown-import`/`correction-placeholders` en `.type`), mais la fixture **partagée** `createTestChallenge` + les tests utilisent l'ancien format `{ value: 'randomInt(1,10)' }`. Le type `ChallengeVariable` autorise les DEUX. **Non touché** : choisir le format canonique d'un système WIP + modifier une fixture partagée = décision archi à valider avec David.
 
-**Reste : 37 fichiers.** Notables : `api/srs` 23 (mock isolé, fin), cluster **markdown-roundtrip** (`rich-text` 2 + `ubumark` 2), `api/migration/migration-review` 3, `exercise-import-export` 4, divers petits (geometry-core exports 7×1, whiteboard 3, evoland 2, questions 4, stores 1, shared/blockly 1) + **5 fichiers client** (`*.svelte.test.ts`).
+**Reste : 35 fichiers** (answer-validator ×2 résolus). Notables : `api/srs` 23 (mock isolé, fin), cluster **markdown-roundtrip** (`rich-text` 2 + `ubumark` 2), `challenge-variables` 25 (⚠️ **décision format WIP en attente**, cf. plus haut), `api/migration/migration-review` 3, `exercise-import-export` 4, divers petits (geometry-core exports 7×1, whiteboard 3, evoland 2, questions 4, stores 1, shared/blockly 1) + **5 fichiers client** (`*.svelte.test.ts`).
 
 ## Reprise — par où continuer (prochaine session)
 
