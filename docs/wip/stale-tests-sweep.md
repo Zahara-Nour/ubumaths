@@ -4,12 +4,23 @@
 
 ## Contexte
 
-Le job `test` de la CI (`quality.yml:120`) appelle `pnpm test:unit -- --run --coverage`,
-mais **`test:unit` a été retiré volontairement** (run complet trop lourd). Conséquence :
-le job CI échoue avant de lancer le moindre test → **plus aucun gate de test depuis le retrait**.
-La suite a donc « rouillé » : du code a évolué sans mettre à jour les tests, et personne n'a eu de signal.
+**Vrai diagnostic (confirmé via `gh run view` le 2026-06-12) :** la CI est **entièrement
+HS depuis des semaines** — pas seulement le gate de test. Les **4 jobs** (Lint, Type Check,
+Build, Unit Tests) échouent tous à l'étape `pnpm install --frozen-lockfile` avec
+`ERR_PNPM_UNSUPPORTED_ENGINE` : la CI pinait **pnpm 9 / Node 20** (`quality.yml`) alors que
+le projet tourne sur **pnpm 10 / Node 26**. Les runs meurent en ~16-18 s, avant d'exécuter
+quoi que ce soit. → **Aucun signal CI du tout** (ni lint, ni types, ni build, ni tests) → tout a rouillé.
 
-Découvert via le fix `generateCronSecret` (un test `verifyCronAuth` était stale depuis un changement de message).
+> **Correction d'un diagnostic antérieur** : on avait d'abord cru que la CI cassait parce que
+> `test:unit` avait été retiré (le job `test` l'appelle encore). C'est un **vrai bug mais latent** :
+> le job `test` n'atteint jamais `test:unit` (il meurt à l'install avant). À régler _après_ l'install.
+
+**Fix CI appliqué** (commit `f6353dd21`) : bump `quality.yml` → pnpm 10 / Node 22 LTS + champ
+`packageManager: "pnpm@10.23.0"` (anti-divergence). Au prochain push, l'install devrait passer
+et la CI deviendra **honnête** : Type Check rouge (~9 erreurs svelte-check baseline), Unit Tests
+rouge (`test:unit` manquant), tests stale rouges — c'est le présent chantier.
+
+Découvert au départ via le fix `generateCronSecret` (un test `verifyCronAuth` était stale depuis un changement de message).
 
 ## Méthode
 
