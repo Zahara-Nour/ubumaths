@@ -7,7 +7,7 @@
  */
 
 import type { ChapterColor, ChapterIcon } from './chapters';
-import { GRADE_CODES, type GradeCode } from './grades';
+import { GRADE_CODES, GRADES, type GradeCode } from './grades';
 
 // ===========================================================================
 // ENUMS & CONSTANTS
@@ -421,7 +421,10 @@ export function getContentCounts(snapshot: TemplateContentSnapshot): {
  */
 export function formatGrades(grades: GradeCode[]): string {
 	if (grades.length === 0) return 'Tous niveaux';
-	return grades.map((g) => `${g}e`).join(', ');
+	// Use the canonical short label. The previous `${g}e` only worked for collège
+	// codes ('6' → '6e') and produced garbage for lycée codes split by track
+	// ('1_GEN' → '1_GENe', 'T_GEN' → 'T_GENe').
+	return grades.map((g) => GRADES[g]?.shortName ?? `${g}e`).join(', ');
 }
 
 /**

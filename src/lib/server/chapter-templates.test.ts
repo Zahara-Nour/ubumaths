@@ -602,8 +602,9 @@ describe('Template CRUD Validation Schemas', () => {
 
 		it('should accept valid grade levels', () => {
 			const data = {
+				// Lycée codes are split by track ('1' → '1_GEN'/'1_SPE'/…, 'T' → 'T_GEN'/…)
 				title: 'Algebre',
-				grades: ['6', '5', '4', '3', '2', '1', 'T']
+				grades: ['6', '5', '4', '3', '2', '1_GEN', 'T_GEN']
 			};
 
 			const result = validation.createChapterTemplateSchema.safeParse(data);
@@ -620,10 +621,13 @@ describe('Template CRUD Validation Schemas', () => {
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject too many grades (>7)', () => {
+		it('should reject too many grades (>18)', () => {
+			// The array limit is `.max(18)`; 19 entries → rejected on count.
+			// (Previously this used the invalid codes '1'/'T', so it was rejected
+			// for the wrong reason and hid the real limit.)
 			const data = {
 				title: 'Algebre',
-				grades: ['6', '5', '4', '3', '2', '1', 'T', '6']
+				grades: Array.from({ length: 19 }, () => '6')
 			};
 
 			const result = validation.createChapterTemplateSchema.safeParse(data);
@@ -1040,8 +1044,9 @@ describe('Helper Functions', () => {
 		});
 
 		it('should format all grades', () => {
+			// Uses the canonical `shortName` from GRADES (not invented labels).
 			expect(formatGrades(['6', '5', '4', '3', '2', '1_GEN', 'T_GEN'])).toBe(
-				'6e, 5e, 4e, 3e, 2de, 1re Générale, Tle Générale'
+				'6e, 5e, 4e, 3e, 2nde, 1ère G, Term G'
 			);
 		});
 
