@@ -255,8 +255,8 @@ describe('Google Classroom Materials Validation Schemas', () => {
 		});
 
 		describe('Description Validation (Security)', () => {
-			it('accepts description with 5000 characters (boundary)', () => {
-				const maxDescription = 'a'.repeat(5000);
+			it('accepts description with 2000 characters (boundary)', () => {
+				const maxDescription = 'a'.repeat(2000);
 				const result = shareMaterialSchema.safeParse({
 					classIds: [validUuid],
 					descriptionOverride: maxDescription,
@@ -264,12 +264,12 @@ describe('Google Classroom Materials Validation Schemas', () => {
 				});
 				expect(result.success).toBe(true);
 				if (result.success) {
-					expect(result.data.descriptionOverride).toHaveLength(5000);
+					expect(result.data.descriptionOverride).toHaveLength(2000);
 				}
 			});
 
-			it('rejects description with 5001 characters (over limit)', () => {
-				const tooLongDescription = 'a'.repeat(5001);
+			it('rejects description with 2001 characters (over limit)', () => {
+				const tooLongDescription = 'a'.repeat(2001);
 				const result = shareMaterialSchema.safeParse({
 					classIds: [validUuid],
 					descriptionOverride: tooLongDescription,
@@ -277,7 +277,7 @@ describe('Google Classroom Materials Validation Schemas', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('cannot exceed 5000 characters');
+					expect(result.error.issues[0].message).toContain('cannot exceed 2000 characters');
 				}
 			});
 
@@ -597,36 +597,43 @@ describe('Google Classroom Materials Validation Schemas', () => {
 				}
 			});
 
-			it('rejects page 0 (boundary)', () => {
+			// The shared paginationSchema coerces out-of-range query strings to safe
+			// defaults (page<1/>1000 → 1, limit<1/>100 → 50) instead of rejecting —
+			// a deliberate "don't 400 on a bad query param" design (d4b5051e9).
+			it('coerces page 0 to default 1', () => {
 				const result = listStudentSharedMaterialsSchema.safeParse({
 					page: '0',
 					limit: '20'
 				});
-				expect(result.success).toBe(false);
+				expect(result.success).toBe(true);
+				if (result.success) expect(result.data.page).toBe(1);
 			});
 
-			it('rejects negative page', () => {
+			it('coerces negative page to default 1', () => {
 				const result = listStudentSharedMaterialsSchema.safeParse({
 					page: '-1',
 					limit: '20'
 				});
-				expect(result.success).toBe(false);
+				expect(result.success).toBe(true);
+				if (result.success) expect(result.data.page).toBe(1);
 			});
 
-			it('rejects limit 0 (boundary)', () => {
+			it('coerces limit 0 to default 50', () => {
 				const result = listStudentSharedMaterialsSchema.safeParse({
 					page: '1',
 					limit: '0'
 				});
-				expect(result.success).toBe(false);
+				expect(result.success).toBe(true);
+				if (result.success) expect(result.data.limit).toBe(50);
 			});
 
-			it('rejects limit over 100', () => {
+			it('coerces limit over 100 to default 50', () => {
 				const result = listStudentSharedMaterialsSchema.safeParse({
 					page: '1',
 					limit: '101'
 				});
-				expect(result.success).toBe(false);
+				expect(result.success).toBe(true);
+				if (result.success) expect(result.data.limit).toBe(50);
 			});
 
 			it('accepts limit exactly 100 (boundary)', () => {
@@ -645,20 +652,22 @@ describe('Google Classroom Materials Validation Schemas', () => {
 				expect(result.success).toBe(true);
 			});
 
-			it('rejects fractional page', () => {
+			it('truncates fractional page via parseInt (1.5 → 1)', () => {
 				const result = listStudentSharedMaterialsSchema.safeParse({
 					page: '1.5',
 					limit: '20'
 				});
-				expect(result.success).toBe(false);
+				expect(result.success).toBe(true);
+				if (result.success) expect(result.data.page).toBe(1);
 			});
 
-			it('rejects fractional limit', () => {
+			it('truncates fractional limit via parseInt (20.5 → 20)', () => {
 				const result = listStudentSharedMaterialsSchema.safeParse({
 					page: '1',
 					limit: '20.5'
 				});
-				expect(result.success).toBe(false);
+				expect(result.success).toBe(true);
+				if (result.success) expect(result.data.limit).toBe(20);
 			});
 		});
 
@@ -701,20 +710,22 @@ describe('Google Classroom Materials Validation Schemas', () => {
 		});
 
 		describe('Type Validation', () => {
-			it('rejects page as non-numeric string', () => {
+			it('coerces non-numeric page string to default 1', () => {
 				const result = listStudentSharedMaterialsSchema.safeParse({
 					page: 'abc',
 					limit: '20'
 				});
-				expect(result.success).toBe(false);
+				expect(result.success).toBe(true);
+				if (result.success) expect(result.data.page).toBe(1);
 			});
 
-			it('rejects limit as non-numeric string', () => {
+			it('coerces non-numeric limit string to default 50', () => {
 				const result = listStudentSharedMaterialsSchema.safeParse({
 					page: '1',
 					limit: 'xyz'
 				});
-				expect(result.success).toBe(false);
+				expect(result.success).toBe(true);
+				if (result.success) expect(result.data.limit).toBe(50);
 			});
 		});
 
@@ -748,12 +759,13 @@ describe('Google Classroom Materials Validation Schemas', () => {
 				// Note: Server should handle "no results" gracefully
 			});
 
-			it('rejects page number over 1000', () => {
+			it('coerces page number over 1000 to default 1', () => {
 				const result = listStudentSharedMaterialsSchema.safeParse({
 					page: '1001',
 					limit: '20'
 				});
-				expect(result.success).toBe(false);
+				expect(result.success).toBe(true);
+				if (result.success) expect(result.data.page).toBe(1);
 			});
 		});
 	});

@@ -322,10 +322,10 @@ describe('GET /api/account/export', () => {
 			const response = await GET(event as never);
 			const data = await response.json();
 
-			expect(data.rewards.inventory).toBeDefined();
-			expect(data.rewards.gidouilles_history).toBeDefined();
-			expect(data.rewards.bonus_history).toBeDefined();
-			expect(data.rewards.purchases).toBeDefined();
+			// Rewards data was unified into the `reward_events` table; the old
+			// inventory / gidouilles_history / bonus_history / purchases tables were
+			// dropped and the export now reads `reward_events` (f97abdb00).
+			expect(data.rewards.events).toBeDefined();
 		});
 	});
 

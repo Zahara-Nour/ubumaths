@@ -67,26 +67,29 @@ describe('ModalStack Store', () => {
 		expect(modalStack.current?.id).toBe(id1);
 	});
 
-	it('should call onReturn when popping to previous modal', () => {
+	// `onReturn` fires when the modal carrying it is popped/closed (it is used as
+	// an `onComplete` hook by all real callers, e.g. vip-card-modals.ts), NOT when
+	// a modal above it is popped. pop() invokes the popped modal's own onReturn.
+	it('should call onReturn when the modal carrying it is popped', () => {
 		const onReturn = vi.fn();
 
 		modalStack.push({
 			component: MockComponent,
-			props: { modal: 1 },
-			onReturn
+			props: { modal: 1 }
 		});
 
 		modalStack.push({
 			component: MockComponent,
-			props: { modal: 2 }
+			props: { modal: 2 },
+			onReturn
 		});
 
-		modalStack.pop();
+		modalStack.pop(); // pops modal 2 → its onReturn fires
 
 		expect(onReturn).toHaveBeenCalledTimes(1);
 	});
 
-	it('should not call onReturn when popping last modal', () => {
+	it('should call onReturn when popping the last (only) modal', () => {
 		const onReturn = vi.fn();
 
 		modalStack.push({
@@ -95,9 +98,9 @@ describe('ModalStack Store', () => {
 			onReturn
 		});
 
-		modalStack.pop();
+		modalStack.pop(); // pops modal 1 → its onReturn fires, stack becomes empty
 
-		expect(onReturn).not.toHaveBeenCalled();
+		expect(onReturn).toHaveBeenCalledTimes(1);
 		expect(modalStack.isEmpty).toBe(true);
 	});
 

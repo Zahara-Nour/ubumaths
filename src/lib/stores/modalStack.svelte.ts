@@ -24,7 +24,7 @@ import type { Component } from 'svelte';
  *   component: MyModal,
  *   props: { userId: '123' },
  *   canDismiss: true,
- *   onReturn: () => console.log('Returned to this modal')
+ *   onReturn: () => console.log('This modal was closed/completed')
  * });
  *
  * // Navigate back
@@ -43,7 +43,7 @@ export interface ModalEntry {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	component: Component<any, any, any>; // The Svelte component to render
 	props: Record<string, unknown>; // Props to pass to the component
-	onReturn?: () => void; // Callback when returning to this modal
+	onReturn?: () => void; // Callback fired when THIS modal is popped/closed (used as onComplete)
 	canDismiss?: boolean; // If false, block Escape/backdrop clicks
 }
 
