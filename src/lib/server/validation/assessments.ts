@@ -198,26 +198,21 @@ export const assessmentIdParamSchema = z.object({
 // ============================================================================
 
 /**
- * Assessment category response schema
- */
-export const assessmentCategoryResponseSchema = z.object({
-	category_id: z.string().uuid(),
-	question_count: z.number().int().positive()
-});
-
-/**
- * Single assessment response schema
+ * Single assessment response schema.
+ * Mirrors DbAssessment (categories: CartItem[], settings as JSONB) — NOT the
+ * { category_id, question_count } / top-level max_attempts shape.
  */
 export const assessmentResponseSchema = z.object({
 	id: z.string().uuid(),
 	title: z.string(),
 	grade: gradeSchema,
-	categories: z.array(assessmentCategoryResponseSchema),
-	duration: z.number().int().positive().nullable().optional(),
-	max_attempts: z.number().int().positive(),
+	description: z.string().nullable().optional(),
+	created_by: z.string().uuid(),
+	academic_period_id: z.string().uuid().nullable().optional(),
+	categories: z.array(cartItemSchema),
+	settings: assessmentSettingsSchema,
 	status: assessmentStatusSchema,
 	created_at: z.string().datetime(),
-	created_by: z.string().uuid(),
 	updated_at: z.string().datetime()
 });
 
