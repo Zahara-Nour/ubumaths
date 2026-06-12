@@ -518,6 +518,16 @@ interface TransformerStep {
 	constraintId: string | null;
 }
 
+/** Options influencing the cosmetic pipeline behaviour */
+export interface CheckFormOptions {
+	/**
+	 * When true, brackets around a leading negative term are preserved (not
+	 * flagged as a `brackets` violation). Example: `(-5)+3` keeps its brackets.
+	 * Maps to `ConstraintOptions.allowBracketsInFirstNegativeTerm`.
+	 */
+	allowFirstNegative?: boolean;
+}
+
 /**
  * Ordered AST transformer pipeline — single pass, acyclic dependency graph.
  *
@@ -564,26 +574,130 @@ interface TransformerStep {
  *   a+0*b          : nullProducts→a+0, nullTerms→a ✓
  *   2+(-5)         : brackets→keeps parens (negative), signs→2-5 ✓
  */
-const AST_PIPELINE: TransformerStep[] = [
-	{ transform: reduceFractionsAST, constraintId: 'reducedFractions' },
-	{ transform: simplifyNullProductsAST, constraintId: 'factorZero' },
-	{ transform: removeNullTermsAST, constraintId: 'nullTerms' },
-	{ transform: stripUnnecessaryBrackets, constraintId: 'brackets' },
-	{ transform: removeSignsAST, constraintId: 'signs' },
-	{ transform: removeFactorsOneAST, constraintId: 'factorOne' },
-	{ transform: removeMultOperatorAST, constraintId: 'products' },
-	{ transform: sortTermsAndFactorsAST, constraintId: null } // normalisation only
-];
+/**
+ * Build the ordered AST transformer pipeline, binding bracket-stripping to the
+ * supplied options (e.g. `allowFirstNegative`).
+ */
+function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
+	return [
+		{ transform: reduceFractionsAST, constraintId: 'reducedFractions' },
+		{ transform: simplifyNullProductsAST, constraintId: 'factorZero' },
+		{ transform: removeNullTermsAST, constraintId: 'nullTerms' },
+		{
+			transform: (ast) =>
+				stripUnnecessaryBrackets(ast, { allowFirstNegative: options.allowFirstNegative }),
+			constraintId: 'brackets'
+		},
+		{ transform: removeSignsAST, constraintId: 'signs' },
+		{ transform: removeFactorsOneAST, constraintId: 'factorOne' },
+		{ transform: removeMultOperatorAST, constraintId: 'products' },
+		{ transform: sortTermsAndFactorsAST, constraintId: null } // normalisation only
+	];
+}
 
 /**
  * Apply the full AST pipeline and return the final AST.
  */
-function applyFullASTPipeline(ast: MathNode): MathNode {
+function applyFullASTPipeline(ast: MathNode, options: CheckFormOptions = {}): MathNode {
 	let current = ast;
-	for (const step of AST_PIPELINE) {
+	for (const step of buildASTPipeline(options)) {
 		current = step.transform(current);
 	}
 	return current;
+}
+
+/**
+ * Check whether a LaTeX string represents a "simple number": a single numeric
+ * literal, optionally negated. After parsing, the AST root must be a `number`
+ * node (e.g. `5`, `3.14`) or an `opposite` wrapping a `number` (e.g. `-5`).
+ *
+ * A leading explicit `+` (positive node) wrapping a number is also accepted.
+ *
+ * Rejects fractions, sums, products, scientific notation, variables, etc.
+ * Those must go through `requiredForm` to be accepted in a non-simple shape.
+ *
+ * @param latex - The LaTeX to test
+ * @returns true if the answer is a simple (possibly negative) number
+ */
+export function isSimpleNumberLatex(latex: string): boolean {
+	const parsed = parseLatexSafe(latex.trim());
+	if (!parsed.ast || parsed.errors.length > 0) return false;
+
+	let node: MathNode = parsed.ast;
+	// Peel a single leading sign wrapper (-x / +x).
+	if (node.type === 'opposite' || node.type === 'positive') {
+		node = node.operand;
+	}
+	return node.type === 'number';
+}
+
+/**
+ * Detect cosmetic constraint violations on a single LaTeX answer using the AST
+ * pipeline (zeros / spaces / fractions / nullTerms / factorZero / brackets /
+ * signs / factorOne / products), WITHOUT comparing against any expected form.
+ *
+ * This is the "violations only" half of {@link checkForm}: it answers
+ * "is the answer written cleanly?" but NOT "is it the expected expression?".
+ *
+ * Use it for blanks whose form is already validated elsewhere (requiredForm,
+ * precision, unit) but which should still surface cosmetic issues such as
+ * unreduced fractions or superfluous brackets.
+ *
+ * @param answerLatex - Student's answer in LaTeX
+ * @param constraints - Constraint configuration (id → 'strict' | 'warn' | 'off')
+ * @param options - Pipeline options (e.g. allowFirstNegative)
+ * @returns List of detected violations. Empty array if the answer cannot be
+ *          parsed (we don't surface a "bad_form" here — parse failures are the
+ *          caller's concern via the value-correctness stage).
+ */
+export function cosmeticViolations(
+	answerLatex: string,
+	constraints: Record<string, ConstraintSeverity>,
+	options: CheckFormOptions = {}
+): Array<{ id: string; severity: 'strict' | 'warn' }> {
+	const violations: Array<{ id: string; severity: 'strict' | 'warn' }> = [];
+
+	// === Phase string (pre-AST) ===
+
+	const answerNoZeros = removeZeros(answerLatex);
+	if (answerNoZeros !== answerLatex && (constraints['zeros'] ?? 'warn') !== 'off') {
+		const severity = (constraints['zeros'] ?? 'warn') as 'strict' | 'warn';
+		violations.push({ id: 'zeros', severity });
+	}
+
+	if (checkSpacesViolation(answerLatex) && (constraints['spaces'] ?? 'warn') !== 'off') {
+		const severity = (constraints['spaces'] ?? 'warn') as 'strict' | 'warn';
+		violations.push({ id: 'spaces', severity });
+	}
+
+	const answerStr = removeSpaces(answerNoZeros);
+
+	// === Parse AST ===
+	const answerParse = parseLatexSafe(answerStr);
+	if (!answerParse.ast || answerParse.errors.length > 0) {
+		// Can't parse → no cosmetic verdict to give.
+		return violations;
+	}
+
+	let answerAST = answerParse.ast;
+
+	// === Phase AST: apply transformers sequentially, detecting violations ===
+	for (const step of buildASTPipeline(options)) {
+		const before = toLatex(answerAST);
+		answerAST = step.transform(answerAST);
+		const after = toLatex(answerAST);
+
+		if (
+			before !== after &&
+			step.constraintId &&
+			(constraints[step.constraintId] ?? 'warn') !== 'off'
+		) {
+			const severity = (constraints[step.constraintId] ?? 'warn') as 'strict' | 'warn';
+			violations.push({ id: step.constraintId, severity });
+		}
+	}
+
+	return violations;
 }
 
 /**
@@ -598,7 +712,8 @@ function applyFullASTPipeline(ast: MathNode): MathNode {
 export function checkForm(
 	answerLatex: string,
 	expectedLatex: string,
-	constraints: Record<string, ConstraintSeverity>
+	constraints: Record<string, ConstraintSeverity>,
+	options: CheckFormOptions = {}
 ): CheckFormResult {
 	const violations: Array<{ id: string; severity: 'strict' | 'warn' }> = [];
 	const messages: string[] = [];
@@ -636,7 +751,7 @@ export function checkForm(
 	let answerAST = answerParse.ast;
 
 	// === Phase AST: apply transformers sequentially, detecting violations ===
-	for (const step of AST_PIPELINE) {
+	for (const step of buildASTPipeline(options)) {
 		const before = toLatex(answerAST);
 		answerAST = step.transform(answerAST);
 		const after = toLatex(answerAST);
@@ -663,7 +778,7 @@ export function checkForm(
 		};
 	}
 
-	const expectedAST = applyFullASTPipeline(expectedParse.ast);
+	const expectedAST = applyFullASTPipeline(expectedParse.ast, options);
 
 	// === Final comparison ===
 	const answerFinal = toLatex(answerAST);
