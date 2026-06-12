@@ -910,7 +910,7 @@ describe('GET /api/messages/thread', () => {
 
 		expect(result.error).toBeNull();
 		expect(result.data).toHaveLength(3);
-		expect(result.data?.[0]?.message_id).toBe('thread-root');
+		expect(result.data?.[0]?.id).toBe('thread-root');
 	});
 
 	it('should reject thread access for unauthorized user', async () => {
@@ -1207,7 +1207,7 @@ describe('Message Templates', () => {
 				subject_template: 'Subject',
 				body_template: 'Body',
 				trigger_type: 'general' as never,
-				scope: 'system' as never,
+				scope: 'class' as never,
 				class_id: mockIds.class1 as never
 			};
 
