@@ -55,6 +55,76 @@ const TEST_IDS = {
 	template2: '550e8400-e29b-41d4-a716-446655440032'
 };
 
+/**
+ * Shared auth-aware `from()` dispatcher.
+ *
+ * Since 2026-06-10 all SRS handlers authenticate via `requireAuth(locals)`, which
+ * issues `locals.supabase.from('profiles').select('*').eq('id', user.id).single()`
+ * before any endpoint logic runs. Each test still wires its own endpoint-specific
+ * chains, so this helper transparently answers the `profiles` lookup and delegates
+ * every other table to the test-provided chain (either a single chain object or a
+ * per-table implementation function).
+ *
+ * The mocked profile is `role: 'student', consent_required: false` so that
+ * `requireAuth` succeeds AND `requireConsent(profile, ...)` (review/submit) passes
+ * without forcing every test to model consent fields.
+ *
+ * @param mockSupabase - the bare client from `mockSupabaseClient()`
+ * @param endpointFrom - chain object OR `(table) => chain` for non-profiles tables
+ * @param userId - the authenticated user id (defaults to user1)
+ */
+function setupAuthedSupabase(
+	mockSupabase: ReturnType<typeof mockSupabaseClient>,
+	endpointFrom: unknown | ((table: string) => unknown),
+	userId: string = TEST_IDS.user1
+) {
+	const profileChain = {
+		select: vi.fn().mockReturnValue({
+			eq: vi.fn().mockReturnValue({
+				single: vi.fn().mockResolvedValue({
+					data: {
+						id: userId,
+						role: 'student',
+						consent_required: false,
+						consent_granted_at: null,
+						consent_grace_period_ends: null
+					},
+					error: null
+				})
+			})
+		})
+	};
+
+	mockSupabase.from.mockImplementation((table: string) => {
+		if (table === 'profiles') return profileChain;
+		return typeof endpointFrom === 'function'
+			? (endpointFrom as (t: string) => unknown)(table)
+			: endpointFrom;
+	});
+}
+
+/** Authed locals (session has a user) — `requireAuth` succeeds. */
+function authedLocals(
+	mockSupabase: ReturnType<typeof mockSupabaseClient>,
+	userId = TEST_IDS.user1
+) {
+	return {
+		supabase: mockSupabase,
+		safeGetSession: vi.fn().mockResolvedValue({
+			session: { access_token: 'token' },
+			user: { id: userId }
+		})
+	};
+}
+
+/** Unauthenticated locals (no user) — `requireAuth` throws 401. */
+function anonLocals(mockSupabase: ReturnType<typeof mockSupabaseClient>) {
+	return {
+		supabase: mockSupabase,
+		safeGetSession: vi.fn().mockResolvedValue({ session: null, user: null })
+	};
+}
+
 describe('POST /api/srs/decks - Create Deck', () => {
 	it('should create a personal deck with valid data', async () => {
 		const { POST } = await import('./decks/+server');
@@ -75,7 +145,7 @@ describe('POST /api/srs/decks - Create Deck', () => {
 			error: null
 		});
 
-		mockSupabase.from.mockReturnValue({
+		setupAuthedSupabase(mockSupabase, {
 			insert: vi.fn().mockReturnValue({
 				select: vi.fn().mockReturnValue({
 					single: insertMock
@@ -91,13 +161,7 @@ describe('POST /api/srs/decks - Create Deck', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -123,42 +187,35 @@ describe('POST /api/srs/decks - Create Deck', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: null,
-				user: null
-			})
-		};
+		const mockLocals = anonLocals(mockSupabase);
 
-		// @ts-expect-error - Test mock has partial RequestEvent
-		const response = await POST({
-			request: mockRequest,
-			locals: mockLocals
-		} as unknown as RequestEvent);
-
-		expect(response.status).toBe(401);
-		const data = await response.json();
-		expect(data.error).toBe('Unauthorized');
+		// requireAuth throws an uncaught HttpError (it runs before the try/catch).
+		try {
+			// @ts-expect-error - Test mock has partial RequestEvent
+			await POST({
+				request: mockRequest,
+				locals: mockLocals
+			} as unknown as RequestEvent);
+			expect.fail('Should have thrown a 401 error');
+		} catch (err: unknown) {
+			const e = err as { status: number; body: { message: string } };
+			expect(e.status).toBe(401);
+			expect(e.body.message).toBe('Non autorisé - Authentification requise');
+		}
 	});
 
 	it('should reject request without deck name', async () => {
 		const { POST } = await import('./decks/+server');
 
 		const mockSupabase = mockSupabaseClient();
+		setupAuthedSupabase(mockSupabase, {});
 		const mockRequest = {
 			json: vi.fn().mockResolvedValue({
 				deckType: 'personal'
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -175,6 +232,7 @@ describe('POST /api/srs/decks - Create Deck', () => {
 		const { POST } = await import('./decks/+server');
 
 		const mockSupabase = mockSupabaseClient();
+		setupAuthedSupabase(mockSupabase, {});
 		const mockRequest = {
 			json: vi.fn().mockResolvedValue({
 				name: 'Test Deck',
@@ -182,13 +240,7 @@ describe('POST /api/srs/decks - Create Deck', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -201,25 +253,45 @@ describe('POST /api/srs/decks - Create Deck', () => {
 		expect(data.error).toBeDefined(); // Zod validation error
 	});
 
-	it('should reject invalid desired retention', async () => {
+	it('should ignore client-provided config and lock to defaults', async () => {
+		// PO 2026-06-10 : la config FSRS n'est plus customisable. Le champ `config`
+		// est absent de createDeckSchema → Zod le strippe silencieusement, et le
+		// handler force la config par défaut. On vérifie donc que le payload
+		// `config` est ignoré (deck créé, 201) et non rejeté (ancien comportement).
 		const { POST } = await import('./decks/+server');
 
 		const mockSupabase = mockSupabaseClient();
+		let capturedConfig: FSRSConfig | undefined;
+
+		const insertMock = vi.fn().mockImplementation((data) => {
+			capturedConfig = data.config;
+			return {
+				select: vi.fn().mockReturnValue({
+					single: vi.fn().mockResolvedValue({
+						// Return a complete row so createDeckResponseSchema validates (else 500).
+						data: {
+							...data,
+							id: TEST_IDS.deck1,
+							created_at: new Date().toISOString(),
+							updated_at: new Date().toISOString()
+						},
+						error: null
+					})
+				})
+			};
+		});
+
+		setupAuthedSupabase(mockSupabase, { insert: insertMock });
+
 		const mockRequest = {
 			json: vi.fn().mockResolvedValue({
 				name: 'Test Deck',
 				deckType: 'personal',
-				config: { desiredRetention: 0.5 } // Too low
+				config: { desiredRetention: 0.5 } // would be invalid — must be ignored
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -227,9 +299,9 @@ describe('POST /api/srs/decks - Create Deck', () => {
 			locals: mockLocals
 		} as unknown as RequestEvent);
 
-		expect(response.status).toBe(400);
-		const data = await response.json();
-		expect(data.error).toBeDefined(); // Zod validation error
+		expect(response.status).toBe(201);
+		// Client value ignored, server-locked default used instead.
+		expect(capturedConfig?.desiredRetention).toBe(0.9);
 	});
 
 	it('should apply default config if not provided', async () => {
@@ -250,9 +322,7 @@ describe('POST /api/srs/decks - Create Deck', () => {
 			};
 		});
 
-		mockSupabase.from.mockReturnValue({
-			insert: insertMock
-		});
+		setupAuthedSupabase(mockSupabase, { insert: insertMock });
 
 		const mockRequest = {
 			json: vi.fn().mockResolvedValue({
@@ -262,13 +332,7 @@ describe('POST /api/srs/decks - Create Deck', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		await POST({
@@ -286,13 +350,15 @@ describe('GET /api/srs/decks - List Decks', () => {
 
 		const mockSupabase = mockSupabaseClient();
 
-		mockSupabase.from.mockReturnValue({
+		// Handler reads the pre-aggregated `deck_stats_view`
+		// (.select(...).eq('owner_id', userId).order('created_at', ...)) — no RPC.
+		setupAuthedSupabase(mockSupabase, {
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
 					order: vi.fn().mockResolvedValue({
 						data: [
 							{
-								id: TEST_IDS.deck1,
+								deck_id: TEST_IDS.deck1,
 								name: 'Deck 1',
 								description: null,
 								owner_id: TEST_IDS.user1,
@@ -300,7 +366,12 @@ describe('GET /api/srs/decks - List Decks', () => {
 								is_assigned: false,
 								config: { desiredRetention: 0.9, maximumInterval: 36500 },
 								created_at: new Date().toISOString(),
-								updated_at: new Date().toISOString()
+								updated_at: new Date().toISOString(),
+								total_cards: 10,
+								due_count: 3,
+								new_count: 2,
+								learning_count: 5,
+								review_count: 3
 							}
 						],
 						error: null
@@ -309,26 +380,7 @@ describe('GET /api/srs/decks - List Decks', () => {
 			})
 		});
 
-		mockSupabase.rpc.mockResolvedValue({
-			data: [
-				{
-					total_cards: 10,
-					due_count: 3,
-					new_count: 2,
-					learning_count: 5,
-					review_count: 3
-				}
-			],
-			error: null
-		});
-
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		const mockUrl = new URL('http://localhost');
 
@@ -350,23 +402,23 @@ describe('GET /api/srs/decks - List Decks', () => {
 		const { GET } = await import('./decks/+server');
 
 		const mockSupabase = mockSupabaseClient();
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: null,
-				user: null
-			})
-		};
+		const mockLocals = anonLocals(mockSupabase);
 
 		const mockUrl = new URL('http://localhost');
 
-		// @ts-expect-error - Test mock has partial RequestEvent
-		const response = await GET({
-			url: mockUrl,
-			locals: mockLocals
-		} as unknown as RequestEvent);
-
-		expect(response.status).toBe(401);
+		// requireAuth throws an uncaught HttpError (runs before the try/catch).
+		try {
+			// @ts-expect-error - Test mock has partial RequestEvent
+			await GET({
+				url: mockUrl,
+				locals: mockLocals
+			} as unknown as RequestEvent);
+			expect.fail('Should have thrown a 401 error');
+		} catch (err: unknown) {
+			const e = err as { status: number; body: { message: string } };
+			expect(e.status).toBe(401);
+			expect(e.body.message).toBe('Non autorisé - Authentification requise');
+		}
 	});
 
 	it('should handle empty deck list', async () => {
@@ -374,7 +426,7 @@ describe('GET /api/srs/decks - List Decks', () => {
 
 		const mockSupabase = mockSupabaseClient();
 
-		mockSupabase.from.mockReturnValue({
+		setupAuthedSupabase(mockSupabase, {
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
 					order: vi.fn().mockResolvedValue({
@@ -385,13 +437,7 @@ describe('GET /api/srs/decks - List Decks', () => {
 			})
 		});
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		const mockUrl = new URL('http://localhost');
 
@@ -419,7 +465,7 @@ describe('POST /api/srs/cards - Add Card to Deck', () => {
 		const mockSupabase = mockSupabaseClient();
 
 		// Mock deck ownership check
-		mockSupabase.from.mockImplementation((table) => {
+		setupAuthedSupabase(mockSupabase, (table) => {
 			if (table === 'srs_decks') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -478,13 +524,7 @@ describe('POST /api/srs/cards - Add Card to Deck', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -504,7 +544,7 @@ describe('POST /api/srs/cards - Add Card to Deck', () => {
 
 		const mockSupabase = mockSupabaseClient();
 
-		mockSupabase.from.mockImplementation((table) => {
+		setupAuthedSupabase(mockSupabase, (table) => {
 			if (table === 'srs_decks') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -547,18 +587,13 @@ describe('POST /api/srs/cards - Add Card to Deck', () => {
 			json: vi.fn().mockResolvedValue({
 				deckId: TEST_IDS.deck1,
 				cardType: 'custom',
-				frontContent: [{ type: 'text', value: 'Front' }],
-				backContent: [{ type: 'text', value: 'Back' }]
+				// createCustomCardSchema now expects markdown strings (not ContentField arrays).
+				frontContent: 'Front',
+				backContent: 'Back'
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -577,7 +612,7 @@ describe('POST /api/srs/cards - Add Card to Deck', () => {
 
 		const mockSupabase = mockSupabaseClient();
 
-		mockSupabase.from.mockReturnValue({
+		setupAuthedSupabase(mockSupabase, {
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
 					eq: vi.fn().mockReturnValue({
@@ -598,13 +633,7 @@ describe('POST /api/srs/cards - Add Card to Deck', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -622,7 +651,7 @@ describe('POST /api/srs/cards - Add Card to Deck', () => {
 
 		const mockSupabase = mockSupabaseClient();
 
-		mockSupabase.from.mockImplementation((table) => {
+		setupAuthedSupabase(mockSupabase, (table) => {
 			if (table === 'srs_decks') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -660,13 +689,7 @@ describe('POST /api/srs/cards - Add Card to Deck', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -684,7 +707,7 @@ describe('POST /api/srs/cards - Add Card to Deck', () => {
 
 		const mockSupabase = mockSupabaseClient();
 
-		mockSupabase.from.mockReturnValue({
+		setupAuthedSupabase(mockSupabase, {
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
 					eq: vi.fn().mockReturnValue({
@@ -701,18 +724,13 @@ describe('POST /api/srs/cards - Add Card to Deck', () => {
 			json: vi.fn().mockResolvedValue({
 				deckId: TEST_IDS.deck1,
 				cardType: 'custom',
-				frontContent: [], // Empty!
-				backContent: [{ type: 'text', content: 'Back' }]
+				// createCustomCardSchema requires a non-empty markdown string — empty fails Zod.
+				frontContent: '', // Empty!
+				backContent: 'Back'
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -732,7 +750,7 @@ describe('GET /api/srs/cards - List Cards', () => {
 
 		const mockSupabase = mockSupabaseClient();
 
-		mockSupabase.from.mockImplementation((table) => {
+		setupAuthedSupabase(mockSupabase, (table) => {
 			if (table === 'srs_decks') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -785,13 +803,7 @@ describe('GET /api/srs/cards - List Cards', () => {
 
 		const mockUrl = new URL(`http://localhost?deck_id=${TEST_IDS.deck1}`);
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await GET({
@@ -809,15 +821,10 @@ describe('GET /api/srs/cards - List Cards', () => {
 		const { GET } = await import('./cards/+server');
 
 		const mockSupabase = mockSupabaseClient();
+		setupAuthedSupabase(mockSupabase, {});
 		const mockUrl = new URL('http://localhost'); // No deck_id
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await GET({
@@ -837,8 +844,10 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 
 		const mockSupabase = mockSupabaseClient();
 
-		mockSupabase.from.mockImplementation((table) => {
+		setupAuthedSupabase(mockSupabase, (table) => {
 			if (table === 'srs_cards') {
+				// Card select is now a nested join: .select('*, question_templates(...)')
+				//   .eq('id', cardId).single()  → single .eq before .single().
 				return {
 					select: vi.fn().mockReturnValue({
 						eq: vi.fn().mockReturnValue({
@@ -850,6 +859,8 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 									template_id: TEST_IDS.template1,
 									front_content: null,
 									back_content: null,
+									// no tagged skills → Programme auto-add skipped
+									question_templates: { question_template_skills: [] },
 									created_at: new Date().toISOString(),
 									updated_at: new Date().toISOString()
 								},
@@ -878,25 +889,31 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 				};
 			}
 			if (table === 'srs_card_stats') {
+				// loadOrInitCardStats: .select('*').eq().eq().eq().maybeSingle()
 				return {
 					select: vi.fn().mockReturnValue({
 						eq: vi.fn().mockReturnValue({
 							eq: vi.fn().mockReturnValue({
 								eq: vi.fn().mockReturnValue({
-									single: vi.fn().mockResolvedValue({
-										data: null, // No existing stats
-										error: { code: 'PGRST116' } // Not found
+									maybeSingle: vi.fn().mockResolvedValue({
+										data: null, // No existing stats → FSRS initCard
+										error: null
 									})
 								})
 							})
 						})
 					}),
-					upsert: vi.fn().mockResolvedValue({
-						error: null
-					})
+					upsert: vi.fn().mockResolvedValue({ error: null })
+				};
+			}
+			if (table === 'skill_attempts') {
+				// template card → 1 INSERT into skill_attempts (source='srs')
+				return {
+					insert: vi.fn().mockResolvedValue({ error: null })
 				};
 			}
 			if (table === 'srs_review_sessions') {
+				// existing-session lookup now ends in .maybeSingle()
 				return {
 					select: vi.fn().mockReturnValue({
 						eq: vi.fn().mockReturnValue({
@@ -904,7 +921,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 								gte: vi.fn().mockReturnValue({
 									order: vi.fn().mockReturnValue({
 										limit: vi.fn().mockReturnValue({
-											single: vi.fn().mockResolvedValue({
+											maybeSingle: vi.fn().mockResolvedValue({
 												data: null,
 												error: null
 											})
@@ -914,9 +931,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 							})
 						})
 					}),
-					insert: vi.fn().mockResolvedValue({
-						error: null
-					})
+					insert: vi.fn().mockResolvedValue({ error: null })
 				};
 			}
 			return {};
@@ -931,13 +946,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -956,6 +965,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 		const { POST } = await import('./review/submit/+server');
 
 		const mockSupabase = mockSupabaseClient();
+		setupAuthedSupabase(mockSupabase, {});
 		const mockRequest = {
 			json: vi.fn().mockResolvedValue({
 				cardId: TEST_IDS.card1,
@@ -965,13 +975,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -988,6 +992,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 		const { POST } = await import('./review/submit/+server');
 
 		const mockSupabase = mockSupabaseClient();
+		setupAuthedSupabase(mockSupabase, {});
 		const mockRequest = {
 			json: vi.fn().mockResolvedValue({
 				deckId: TEST_IDS.deck1,
@@ -995,13 +1000,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -1018,6 +1017,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 		const { POST } = await import('./review/submit/+server');
 
 		const mockSupabase = mockSupabaseClient();
+		setupAuthedSupabase(mockSupabase, {});
 		const mockRequest = {
 			json: vi.fn().mockResolvedValue({
 				cardId: TEST_IDS.card1,
@@ -1025,13 +1025,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 			})
 		} as unknown as Request;
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await POST({
@@ -1052,7 +1046,7 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 		const mockSupabase = mockSupabaseClient();
 
 		// Mock multiple table queries using mockImplementation
-		mockSupabase.from.mockImplementation((table) => {
+		setupAuthedSupabase(mockSupabase, (table) => {
 			if (table === 'srs_decks') {
 				return {
 					select: vi.fn().mockReturnValue({
@@ -1103,13 +1097,7 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 
 		const mockUrl = new URL(`http://localhost?deck_id=${TEST_IDS.deck1}`);
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await GET({
@@ -1127,15 +1115,10 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 		const { GET } = await import('./review/due/+server');
 
 		const mockSupabase = mockSupabaseClient();
+		setupAuthedSupabase(mockSupabase, {});
 		const mockUrl = new URL('http://localhost'); // No deck_id
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await GET({
@@ -1153,7 +1136,7 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 
 		const mockSupabase = mockSupabaseClient();
 
-		mockSupabase.from.mockReturnValue({
+		setupAuthedSupabase(mockSupabase, {
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
 					eq: vi.fn().mockReturnValue({
@@ -1173,13 +1156,7 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 
 		const mockUrl = new URL(`http://localhost?deck_id=${TEST_IDS.deck1}`);
 
-		const mockLocals = {
-			supabase: mockSupabase,
-			safeGetSession: vi.fn().mockResolvedValue({
-				session: { access_token: 'token' },
-				user: { id: TEST_IDS.user1 }
-			})
-		};
+		const mockLocals = authedLocals(mockSupabase);
 
 		// @ts-expect-error - Test mock has partial RequestEvent
 		const response = await GET({
