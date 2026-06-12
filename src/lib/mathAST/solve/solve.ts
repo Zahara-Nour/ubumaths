@@ -165,8 +165,9 @@ function selectSolver(classification: ClassificationResult): EquationSolver | nu
  */
 function handleConstantEquation(
 	expr: MathNode,
-	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
 		initialGuesses?: readonly number[];
+		domain?: Domain;
 	}
 ): SolveResult {
 	const recorder = createStepRecorder();
@@ -313,8 +314,9 @@ const MAX_PRODUCT_DECOMPOSITION_DEPTH = 5;
 function tryProductDecomposition(
 	expr: MathNode,
 	variable: string,
-	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
 		initialGuesses?: readonly number[];
+		domain?: Domain;
 	}
 ): SolveResult | null {
 	if (productDecompositionDepth >= MAX_PRODUCT_DECOMPOSITION_DEPTH) return null;
@@ -416,8 +418,9 @@ const MAX_TRIG_RECURSIVE_DEPTH = 3;
 function tryTrigRecursiveDecomposition(
 	expr: MathNode,
 	variable: string,
-	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
 		initialGuesses?: readonly number[];
+		domain?: Domain;
 	}
 ): SolveResult | null {
 	if (trigRecursiveDepth >= MAX_TRIG_RECURSIVE_DEPTH) return null;
@@ -544,8 +547,9 @@ const MAX_EXP_LOG_RECURSIVE_DEPTH = 3;
 function tryExpLogRecursiveDecomposition(
 	expr: MathNode,
 	variable: string,
-	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
 		initialGuesses?: readonly number[];
+		domain?: Domain;
 	}
 ): SolveResult | null {
 	if (expLogRecursiveDepth >= MAX_EXP_LOG_RECURSIVE_DEPTH) return null;
@@ -916,8 +920,9 @@ const MAX_RADICAL_DECOMPOSITION_DEPTH = 3;
 function tryRadicalDecomposition(
 	expr: MathNode,
 	variable: string,
-	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
 		initialGuesses?: readonly number[];
+		domain?: Domain;
 	}
 ): SolveResult | null {
 	if (radicalDecompositionDepth >= MAX_RADICAL_DECOMPOSITION_DEPTH) return null;

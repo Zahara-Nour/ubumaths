@@ -21,6 +21,7 @@
 	type DebugInstance = Omit<QuestionInstance, never> & {
 		type?: string;
 		solution?: string | string[];
+		precision?: { type: string; digits?: number };
 	};
 
 	const sampleInstance: DebugInstance = {

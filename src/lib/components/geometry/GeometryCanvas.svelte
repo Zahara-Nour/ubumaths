@@ -280,8 +280,8 @@
 			if (!centerPos) return 0.5;
 			cx = geoToNumber(centerPos.x);
 			cy = geoToNumber(centerPos.y);
-			startAngle = geoToNumber(arcEl.startAngle);
-			endAngle = geoToNumber(arcEl.endAngle);
+			startAngle = fig.resolveParam(arcEl.startAngle);
+			endAngle = fig.resolveParam(arcEl.endAngle);
 		} else {
 			const centerPos = fig.getPosition(arcEl.centerId);
 			const startPos = fig.getPosition(arcEl.startId);
@@ -574,8 +574,8 @@
 				const snapped = snapToGrid(math.x, math.y, gridStep.major);
 				const dragEl = figure.getElementById(draggingId);
 				if (dragEl?.type === 'freeVector') {
-					const snapAx = snapped.x + (dragOffset?.dx ?? 0);
-					const snapAy = snapped.y + (dragOffset?.dy ?? 0);
+					const snapAx = geoToNumber(snapped.x) + (dragOffset?.dx ?? 0);
+					const snapAy = geoToNumber(snapped.y) + (dragOffset?.dy ?? 0);
 					figure.moveFreeVector(draggingId, numeric(snapAx), numeric(snapAy));
 				} else if (dragEl?.type === 'pointOnCurve') {
 					figure.movePointOnCurve(draggingId, snapped.x);

@@ -125,7 +125,9 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		// Generate hash from original question to check for edits
 		// Cast needed: old-question-types.QuestionBase lacks the index signature that hash-utils expects
-		const questionHash = generateStableQuestionHash(originalQuestion as Record<string, unknown>);
+		const questionHash = generateStableQuestionHash(
+			originalQuestion as unknown as Record<string, unknown>
+		);
 
 		// Check if there's an edited version of this question
 		let editedJson: unknown = null;

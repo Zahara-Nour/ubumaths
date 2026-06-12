@@ -81,7 +81,9 @@
 				updated_at: classItem.updated_at,
 				// ClassInfo requires google_classroom_course_id (nullable string)
 				google_classroom_course_id:
-					(classItem as Record<string, unknown>).google_classroom_course_id as string | null ?? null,
+					((classItem as unknown as Record<string, unknown>).google_classroom_course_id as
+						| string
+						| null) ?? null,
 				student_count: classItem.student_count,
 				schedules: classItem.schedules as never
 			};

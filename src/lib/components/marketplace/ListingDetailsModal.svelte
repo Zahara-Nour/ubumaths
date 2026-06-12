@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { MarketplaceListing } from '$lib/types/marketplace';
+	import type { VipCardRarity } from '$lib/types/vip-card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -120,8 +121,8 @@
 					id: string;
 					name: string;
 					description: string;
-					imagePath: string | null;
-					rarity: string;
+					imagePath: string | undefined;
+					rarity: VipCardRarity;
 				};
 				count: number;
 			}
@@ -136,8 +137,8 @@
 						id: card.template_id,
 						name: card.template.name,
 						description: card.template.description,
-						imagePath: card.template.image_path,
-						rarity: card.template.rarity
+						imagePath: card.template.image_path ?? undefined,
+						rarity: card.template.rarity as VipCardRarity
 					},
 					count: 1
 				});

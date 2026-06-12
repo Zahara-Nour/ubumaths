@@ -139,6 +139,34 @@ et `variableSchema` (exercises vs template-schema) à consolider.
   `Figure.resolveParamToGeoValue`.
 - **mathAST / components / routes** : en cours (rapports à venir).
 
+### Round résiduels (596 → 50 → 24 → ~13)
+
+Après la passe agents (596→50), 2 rounds de nettoyage des résiduels (agent mathast-expert
+sur solve/algebra/pipeline + corrections manuelles : DslPlayer props, DebugInstance precision,
+kanban `?? []`, Slider `type="multiple"`, GeometryCanvas resolveParam/geoToNumber,
+LockedPythonEditor type-only import, ConsentButton/JsonEditor/ListingDetailsModal casts frontière,
+QuestionBase `as unknown as Record`, etc.).
+
+### ⚠️ DÉCISIONS HUMAINES REQUISES (erreurs laissées exprès — NE PAS caster à l'aveugle)
+
+1. **`AddFriend.svelte:100` — relation `'mentor'` invalide** : l'UI propose `'classmate' | 'mentor'`
+   mais l'enum DB `relation_type` ne connaît que `'friend' | 'classmate' | 'study_buddy'`. Choisir
+   « Mentor » échoue au niveau DB. Décider : ajouter `'mentor'` à l'enum DB (migration) OU retirer
+   l'option de l'UI.
+2. **Cluster `tags` (4) — `exercise-backup.ts:184,592`, `exercise-import-export.ts:317`,
+   `exercises.ts:302`** : colonne legacy `exercises.tags` vs table de jonction `exercise_tags`.
+   Décider de la source de vérité pour backup/restore.
+3. **`mathAST/parser/custom/pattern-parser.ts:299,301` (4)** : `parseWildcard` retourne
+   `SequencePattern`/`OptionalSequencePattern` depuis une méthode typée `Pattern` (le runtime marche,
+   le modèle de types non). Fix propre = élargir les signatures des builders binaires aux
+   `SumPatternElement` (décision de design du module pattern).
+4. **`mathAST/pedagogical-solve/rational-inequality.ts:227` (2)** : branche `throw` morte
+   (`status === 'error'|'unsupported'` jamais atteint). La « corriger » (via `result.error`)
+   réactiverait un throw qui ne s'exécute jamais aujourd'hui = changement de comportement.
+5. **`components/ui/calendar/calendar.svelte` (2)** : composant shadcn-généré, friction
+   discriminated-union bits-ui v2. Fix propre = régénérer via la CLI shadcn-svelte (le consommateur
+   `CardEditForm.svelte` passe bien `type="single"`).
+
 ## Hors de ce chantier (autres jobs rouges, séparés)
 
 - **Tests** (2 shards) : ENOENT sur fixtures `extern/instrumenpoche-main/...` absentes en CI →

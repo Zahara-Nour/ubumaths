@@ -187,6 +187,17 @@ function collectNumericMultiplications(node: MathNode): readonly MathNode[] {
 }
 
 /**
+ * A captured rule application: the rule that fired, the sub-tree before/after
+ * the transformation, and the bindings produced by the match.
+ */
+type CapturedApplication = {
+	rule: PedagogicalArithmeticRule;
+	subBefore: MathNode;
+	subAfter: MathNode;
+	bindings: MatchBindings;
+};
+
+/**
  * Like `findFirstApplication` but restricts the search to nodes located
  * INSIDE a `(...)` delimiter. Used by the pipeline to prioritise
  * "calculate the parentheses first" : any application inside a parens
@@ -205,12 +216,7 @@ function findFirstApplicationInAnyParens(
 	bindings: MatchBindings;
 	replacedTree: MathNode;
 } | null {
-	let captured: {
-		rule: PedagogicalArithmeticRule;
-		subBefore: MathNode;
-		subAfter: MathNode;
-		bindings: MatchBindings;
-	} | null = null;
+	let captured: CapturedApplication | null = null;
 
 	const replacedTree = mapNode(node, (n) => {
 		if (captured) return n;
@@ -226,9 +232,18 @@ function findFirstApplicationInAnyParens(
 		return { ...n, content: inner.replacedTree };
 	});
 
-	const capturedResult = captured;
+	// `captured` is only ever assigned inside the mapNode closure, which TS's
+	// control-flow analysis can't see — it narrows `captured` to `null`. Assert
+	// back to the declared union so the `!capturedResult` guard narrows correctly.
+	const capturedResult = captured as CapturedApplication | null;
 	if (!capturedResult) return null;
-	return { ...capturedResult, replacedTree };
+	return {
+		rule: capturedResult.rule,
+		subBefore: capturedResult.subBefore,
+		subAfter: capturedResult.subAfter,
+		bindings: capturedResult.bindings,
+		replacedTree
+	};
 }
 
 /**
@@ -254,12 +269,7 @@ function findFirstApplication(
 	bindings: MatchBindings;
 	replacedTree: MathNode;
 } | null {
-	let captured: {
-		rule: PedagogicalArithmeticRule;
-		subBefore: MathNode;
-		subAfter: MathNode;
-		bindings: MatchBindings;
-	} | null = null;
+	let captured: CapturedApplication | null = null;
 
 	const replacedTree = mapNode(node, (n) => {
 		if (captured) return n;
@@ -279,9 +289,18 @@ function findFirstApplication(
 		return n;
 	});
 
-	const capturedResult = captured;
+	// `captured` is only ever assigned inside the mapNode closure, which TS's
+	// control-flow analysis can't see — it narrows `captured` to `null`. Assert
+	// back to the declared union so the `!capturedResult` guard narrows correctly.
+	const capturedResult = captured as CapturedApplication | null;
 	if (!capturedResult) return null;
-	return { ...capturedResult, replacedTree };
+	return {
+		rule: capturedResult.rule,
+		subBefore: capturedResult.subBefore,
+		subAfter: capturedResult.subAfter,
+		bindings: capturedResult.bindings,
+		replacedTree
+	};
 }
 
 // =============================================================================
