@@ -187,7 +187,8 @@ describe('parser — expressions', () => {
 	});
 
 	it('parses complex expression: i * 360 / n', () => {
-		const prog = parse('angle = i * 360 / n');
+		// `angle` est un mot-clé réservé depuis 1e96edbd5 (refonte angle DSL) → `a`
+		const prog = parse('a = i * 360 / n');
 		const s = prog.statements[0] as DslAssignment;
 		// (i * 360) / n
 		const expr = s.value as DslBinaryExpr;
@@ -210,10 +211,11 @@ describe('parser — blocks', () => {
 	});
 
 	it('parses macro with default parameter', () => {
-		const script = ['macro tri(A, B, angle=60):', '    retourne A'].join('\n');
+		// `angle` est un mot-clé réservé (1e96edbd5) → paramètre `theta`
+		const script = ['macro tri(A, B, theta=60):', '    retourne A'].join('\n');
 		const prog = parse(script);
 		const m = prog.statements[0] as DslMacroDef;
-		expect(m.params[2].name).toBe('angle');
+		expect(m.params[2].name).toBe('theta');
 		expect(m.params[2].defaultValue?.kind).toBe('number');
 	});
 

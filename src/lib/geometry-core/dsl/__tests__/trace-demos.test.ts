@@ -120,7 +120,7 @@ c = cercle(O, rayon=4, couleur="gris")
 t = slider(min=0, max=360, valeur=0, pas=1)
 A = point(4, 0)
 B = rotation(A, centre=O, angle=t)
-theta = angle(O, B)
+theta = angle_polaire(O, B)
 k = cos(3 * theta)
 C = homothetie(B, centre=O, rapport=k, couleur="orange")
 T = trace(C, couleur="violet")`;

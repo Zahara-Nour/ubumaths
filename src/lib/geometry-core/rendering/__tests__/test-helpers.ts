@@ -16,7 +16,12 @@ export function createMesureText(
 		scalarId = figure.createScalarDistance(targetIds[0], targetIds[1]);
 		autoPosition = 'midpoint';
 	} else if (type === 'angle') {
-		scalarId = figure.createScalarAngleMeasure(targetIds[0], targetIds[1], targetIds[2]);
+		// unite:'deg' so the scalar value is in degrees (90), matching the ':deg'
+		// text format below. The figure default is now 'rad' (GeoAngle saga), so
+		// without this the value would be π/2 and render as "1.6°".
+		scalarId = figure.createScalarAngleMeasure(targetIds[0], targetIds[1], targetIds[2], {
+			unite: 'deg'
+		});
 		autoPosition = 'bisector';
 	} else {
 		scalarId = figure.createScalarArea(targetIds);
