@@ -60,7 +60,10 @@ function createLocalsWithRole(
 ) {
 	const locals = createMockLocals(userId, mockSupabase);
 
-	locals.user = { id: userId, role } as any;
+	// Role lives on locals.profile (populated from getUserProfile in hooks.server.ts),
+	// not on locals.user (Supabase auth user has no role)
+	locals.user = { id: userId } as any;
+	locals.profile = { id: userId, role } as any;
 	return locals;
 }
 
@@ -413,7 +416,7 @@ describe('POST /api/moderation/restrict-user - Input Validation', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(400);
-			expect(error.body.message).toContain('conversation scope must have scopeId');
+			expect(error.body.message).toContain('conversation restrictions must have one');
 		}
 	});
 
@@ -438,7 +441,7 @@ describe('POST /api/moderation/restrict-user - Input Validation', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(400);
-			expect(error.body.message).toContain('Global scope must have no scopeId');
+			expect(error.body.message).toContain('Global restrictions must not have a scopeId');
 		}
 	});
 });
@@ -654,62 +657,29 @@ describe('POST /api/moderation/restrict-user - Conversation Scope', () => {
 		expect(data.success).toBe(true);
 	});
 
-	it('should reject conversation restriction if conversation not found with 404', async () => {
+	// Note: since e56f6ae2d (fix(moderation): allow restriction from reports without
+	// conversation access) the handler no longer verifies conversation existence.
+	// Conversation-scoped authorization = teacher is a participant OR target student
+	// is in the teacher's classes; otherwise 403 'You can only restrict students in your classes'.
+	it('should reject conversation restriction if teacher not participant and student not in their classes with 403', async () => {
 		const { POST } = await import('./+server');
 
 		const mockSupabase = createMockSupabase();
 		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
 
-		// Mock target user fetch
+		// Mock target user fetch (student)
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: mockProfiles.student,
 			error: null
 		});
 
-		// Mock conversation not found
+		// Mock teacher is NOT a conversation participant
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: null,
 			error: null
 		});
 
-		const request = createMockRequest({
-			userId: TEST_IDS.student,
-			scopeType: 'conversation',
-			scopeId: TEST_IDS.conversation,
-			restrictionType: 'mute',
-			reason: 'Test reason',
-			expiresAt: null
-		});
-
-		try {
-			await POST({ request, locals } as any);
-			expect.fail('Should have thrown 404 error');
-		} catch (err: unknown) {
-			const error = err as { status: number; body: { message: string } };
-			expect(error.status).toBe(404);
-			expect(error.body.message).toBe('Conversation not found');
-		}
-	});
-
-	it('should reject conversation restriction if teacher is not participant with 403', async () => {
-		const { POST } = await import('./+server');
-
-		const mockSupabase = createMockSupabase();
-		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
-
-		// Mock target user fetch
-		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
-			data: mockProfiles.student,
-			error: null
-		});
-
-		// Mock conversation exists
-		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
-			data: { id: TEST_IDS.conversation },
-			error: null
-		});
-
-		// Mock teacher is NOT participant
+		// Mock target student is NOT in teacher's classes
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
 			data: null,
 			error: null
@@ -730,8 +700,51 @@ describe('POST /api/moderation/restrict-user - Conversation Scope', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('You do not have access to this conversation');
+			expect(error.body.message).toBe('You can only restrict students in your classes');
 		}
+	});
+
+	it('should allow conversation restriction if teacher is a participant', async () => {
+		const { POST } = await import('./+server');
+
+		const mockSupabase = createMockSupabase();
+		const locals = createLocalsWithRole(TEST_IDS.teacher, 'teacher', mockSupabase);
+
+		// Mock target user fetch (student)
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: mockProfiles.student,
+			error: null
+		});
+
+		// Mock teacher IS a conversation participant
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: { user_id: TEST_IDS.teacher },
+			error: null
+		});
+
+		// Mock restriction insert
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: mockRestriction,
+			error: null
+		});
+
+		// Mock moderation log RPC
+		mockSupabase.rpc = vi.fn().mockResolvedValue({ data: null, error: null });
+
+		const request = createMockRequest({
+			userId: TEST_IDS.student,
+			scopeType: 'conversation',
+			scopeId: TEST_IDS.conversation,
+			restrictionType: 'mute',
+			reason: 'Test reason',
+			expiresAt: null
+		});
+
+		const response = await POST({ request, locals } as any);
+		const data = await response.json();
+
+		expect(response.status).toBe(201);
+		expect(data.success).toBe(true);
 	});
 });
 

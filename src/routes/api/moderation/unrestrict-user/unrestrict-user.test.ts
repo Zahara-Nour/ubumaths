@@ -65,7 +65,10 @@ function createLocalsWithRole(
 ) {
 	const locals = createMockLocals(userId, mockSupabase);
 
-	locals.user = { id: userId, role } as any;
+	// Role lives on locals.profile (populated from getUserProfile in hooks.server.ts),
+	// not on locals.user (Supabase auth user has no role)
+	locals.user = { id: userId } as any;
+	locals.profile = { id: userId, role } as any;
 	return locals;
 }
 
