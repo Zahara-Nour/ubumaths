@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { convertXmlToDsl } from '../../converter';
 import { parseDsl } from '$lib/geometry-core/dsl';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 
 const wrap = (actions: string) => `<INSTRUMENPOCHE version="2">${actions}</INSTRUMENPOCHE>`;
@@ -10,6 +10,10 @@ const fixturesDir = resolve(
 	__dirname,
 	'../../../../../extern/instrumenpoche-main/devServer/fixtures'
 );
+
+// `extern/` is gitignored (local-only) and absent in CI. The fixture-backed
+// describes below are skipped when the fixtures aren't present.
+const hasFixtures = existsSync(fixturesDir);
 
 function readFixture(name: string): string {
 	return readFileSync(resolve(fixturesDir, name), 'utf-8');
@@ -224,7 +228,7 @@ describe('converter — error handling', () => {
 	});
 });
 
-describe('converter — fixture 1.xml (partage segment en 3)', () => {
+describe.skipIf(!hasFixtures)('converter — fixture 1.xml (partage segment en 3)', () => {
 	it('converts and produces parsable DSL', async () => {
 		const xml = readFixture('1.xml');
 		const result = await convertXmlToDsl(xml);
@@ -280,7 +284,7 @@ describe('converter — fixture 1.xml (partage segment en 3)', () => {
 	});
 });
 
-describe('converter — fixture 3.xml (construction carre)', () => {
+describe.skipIf(!hasFixtures)('converter — fixture 3.xml (construction carre)', () => {
 	it('converts and produces parsable DSL', async () => {
 		const xml = readFixture('3.xml');
 		const result = await convertXmlToDsl(xml);
@@ -319,7 +323,7 @@ describe('converter — fixture 3.xml (construction carre)', () => {
 	});
 });
 
-describe('converter — all fixtures produce parsable DSL', () => {
+describe.skipIf(!hasFixtures)('converter — all fixtures produce parsable DSL', () => {
 	for (let i = 0; i <= 8; i++) {
 		it(`fixture ${i}.xml produces parsable DSL`, async () => {
 			const xml = readFixture(`${i}.xml`);
