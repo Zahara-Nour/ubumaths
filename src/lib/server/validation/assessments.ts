@@ -19,37 +19,62 @@ export const assessmentStatusSchema = z.enum(['draft', 'published', 'archived'])
 // ============================================================================
 
 /**
- * Schema for creating an assessment
+ * Question category descriptor (matches QuestionCategory in questionCart.svelte.ts)
  */
-export const createAssessmentSchema = z.object({
-	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
-	grade: gradeSchema,
-	categories: z
-		.array(
-			z.object({
-				category_id: z.string().uuid('Invalid category ID format'),
-				question_count: z
-					.number()
-					.int('Question count must be an integer')
-					.positive('Question count must be positive')
-					.max(50, 'Too many questions per category')
-			})
-		)
-		.min(1, 'At least one category required')
-		.max(20, 'Too many categories'),
-	duration: z
+export const questionCategorySchema = z.object({
+	theme: z.string().min(1, 'Theme required').max(100, 'Theme too long'),
+	domain: z.string().min(1, 'Domain required').max(100, 'Domain too long'),
+	subdomain: z.string().max(100, 'Subdomain too long').nullable(),
+	level: z.number().int('Level must be an integer').nonnegative('Level must be >= 0').max(100)
+});
+
+/**
+ * Cart item: a selected question category with a quantity (matches CartItem)
+ */
+export const cartItemSchema = z.object({
+	category: questionCategorySchema,
+	quantity: z
 		.number()
-		.int('Duration must be an integer')
-		.positive('Duration must be positive')
-		.max(180, 'Duration too long (max 180 minutes)')
-		.optional(),
+		.int('Quantity must be an integer')
+		.positive('Quantity must be positive')
+		.max(50, 'Too many questions per category'),
+	delay: z.number().int('Delay must be an integer').nonnegative('Delay must be >= 0').max(3600)
+});
+
+/**
+ * Assessment settings (matches AssessmentSettings)
+ */
+export const assessmentSettingsSchema = z.object({
 	max_attempts: z
 		.number()
 		.int('Max attempts must be an integer')
 		.positive('Max attempts must be positive')
 		.max(10, 'Too many attempts allowed')
-		.default(1),
-	status: assessmentStatusSchema.default('draft')
+		.nullable(),
+	time_limit: z
+		.number()
+		.int('Time limit must be an integer')
+		.positive('Time limit must be positive')
+		.nullable(),
+	deadline: z.string().datetime('Invalid deadline').nullable(),
+	shuffle_questions: z.boolean()
+});
+
+/**
+ * Schema for creating an assessment.
+ * Mirrors CreateAssessmentData (the shape sent by the frontend and stored as JSONB):
+ * categories is a CartItem[], plus a settings object — NOT { category_id, question_count }.
+ */
+export const createAssessmentSchema = z.object({
+	title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
+	grade: gradeSchema,
+	description: z.string().trim().max(2000, 'Description too long').optional(),
+	categories: z
+		.array(cartItemSchema)
+		.min(1, 'At least one category required')
+		.max(50, 'Too many categories'),
+	settings: assessmentSettingsSchema,
+	status: z.enum(['draft', 'published']).default('draft')
 });
 
 /**
