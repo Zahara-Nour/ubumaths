@@ -157,8 +157,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 
 			// Re-create mock to get fresh instance
 			mockSupabase = createMockSupabase();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockSupabase as any).single as any).mockResolvedValue({
+			mockSupabase._mockChain.single.mockResolvedValue({
 				data: mockSchool,
 				error: null
 			});
@@ -202,8 +201,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 			};
 
 			mockSupabase = createMockSupabase();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockSupabase as any).single as any).mockResolvedValue({
+			mockSupabase._mockChain.single.mockResolvedValue({
 				data: mockSchool,
 				error: null
 			});
@@ -239,8 +237,7 @@ describe('GET /api/admin/schools/[schoolId]/config', () => {
 			const schoolId = '550e8400-e29b-41d4-a716-446655440000';
 
 			mockSupabase = createMockSupabase();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockSupabase as any).single as any).mockResolvedValue({
+			mockSupabase._mockChain.single.mockResolvedValue({
 				data: null,
 				error: { message: 'Not found', details: '', hint: '', code: '' }
 			});
@@ -617,8 +614,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 			};
 
 			mockSupabase = createMockSupabase();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockSupabase as any).single as any)
+			mockSupabase._mockChain.single
 				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
@@ -668,8 +664,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 			};
 
 			mockSupabase = createMockSupabase();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockSupabase as any).single as any)
+			mockSupabase._mockChain.single
 				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
@@ -723,8 +718,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 			};
 
 			mockSupabase = createMockSupabase();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockSupabase as any).single as any)
+			mockSupabase._mockChain.single
 				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
@@ -775,8 +769,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 			};
 
 			mockSupabase = createMockSupabase();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockSupabase as any).single as any)
+			mockSupabase._mockChain.single
 				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
@@ -809,8 +802,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 			});
 
 			mockSupabase = createMockSupabase();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockSupabase as any).single as any).mockResolvedValue({
+			mockSupabase._mockChain.single.mockResolvedValue({
 				data: null,
 				error: { message: 'Not found', details: '', hint: '', code: '' }
 			});
@@ -844,9 +836,8 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 				timetable: { periods: [] }
 			};
 
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			vi.mocked(mockSupabase as any)
-				.single.mockResolvedValueOnce({ data: existingSchool, error: null })
+			mockSupabase._mockChain.single
+				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({
 					data: null,
 					error: { message: 'Update failed', details: '', hint: '', code: '' }
@@ -903,8 +894,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 			};
 
 			mockSupabase = createMockSupabase();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockSupabase as any).single as any)
+			mockSupabase._mockChain.single
 				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 
@@ -950,8 +940,7 @@ describe('PUT /api/admin/schools/[schoolId]/config', () => {
 			};
 
 			mockSupabase = createMockSupabase();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			((mockSupabase as any).single as any)
+			mockSupabase._mockChain.single
 				.mockResolvedValueOnce({ data: existingSchool, error: null })
 				.mockResolvedValueOnce({ data: updatedSchool, error: null });
 

@@ -24,14 +24,40 @@ vi.mock('$lib/server/riddle-auto-select', () => ({
 	checkAndAutoSelectToday: vi.fn()
 }));
 
+vi.mock('$lib/server/buddy-xp-service', () => ({
+	addBuddyXpFromExercise: vi.fn().mockResolvedValue(null)
+}));
+
 import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
 import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
 import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
 
 describe('POST /api/riddles/[id]/submit', () => {
+	const RIDDLE_UUID = '12345678-1234-4234-8234-123456789012';
+
 	let mockSupabase: SupabaseClient;
 	let mockSession: { user: { id: string }; session: { access_token: string } };
 	let mockRequest: Request;
+
+	/** Returns a mock for `from('profiles').select('*').eq(id).single()` used by requireAuth */
+	function makeProfileMock() {
+		return {
+			select: vi.fn().mockReturnValue({
+				eq: vi.fn().mockReturnValue({
+					single: vi.fn().mockResolvedValue({
+						data: {
+							id: 'student-123',
+							role: 'teacher',
+							consent_required: false,
+							consent_granted_at: null,
+							consent_grace_period_ends: null
+						},
+						error: null
+					})
+				})
+			})
+		};
+	}
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -86,7 +112,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 	it('should handle automatic validation for correct answer', async () => {
 		const mockAnswer = 42;
 		const mockRiddle = {
-			id: 'riddle-123',
+			id: RIDDLE_UUID,
 			riddle_number: 10,
 			title: 'Test Riddle',
 			answer: {
@@ -95,13 +121,17 @@ describe('POST /api/riddles/[id]/submit', () => {
 			}
 		};
 
-		mockRequest = new Request('http://localhost/api/riddles/riddle-123/submit', {
+		mockRequest = new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
 			method: 'POST',
 			body: JSON.stringify({ answer: mockAnswer })
 		});
 
-		// Mock riddle fetch
-		(mockSupabase.from as Mock).mockReturnValue({
+		// Call order: requireAuth profiles fetch, then riddle fetch, then attempt fetch
+		// 1. requireAuth: from('profiles').select('*').eq(id).single()
+		(mockSupabase.from as Mock).mockReturnValueOnce(makeProfileMock());
+
+		// 2. riddle fetch
+		(mockSupabase.from as Mock).mockReturnValueOnce({
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
 					single: vi.fn().mockResolvedValue({
@@ -117,24 +147,21 @@ describe('POST /api/riddles/[id]/submit', () => {
 			isCorrect: true
 		});
 
-		// Mock RPC call
+		// Mock RPC call — rpcResult must have attempt_id field
 		(mockSupabase.rpc as Mock).mockResolvedValue({
-			data: 'attempt-456',
+			data: [
+				{
+					attempt_id: 'attempt-456',
+					theoretical_reward: 9,
+					actual_reward: 9,
+					is_first_win: true,
+					week_best_reward: 9
+				}
+			],
 			error: null
 		});
 
-		// Mock attempt fetch
-		(mockSupabase.from as Mock).mockReturnValueOnce({
-			select: vi.fn().mockReturnValue({
-				eq: vi.fn().mockReturnValue({
-					single: vi.fn().mockResolvedValue({
-						data: mockRiddle,
-						error: null
-					})
-				})
-			})
-		});
-
+		// 3. riddle_attempts fetch
 		(mockSupabase.from as Mock).mockReturnValueOnce({
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
@@ -151,7 +178,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 		});
 
 		const response = await submitHandler.POST({
-			params: { id: 'riddle-123' },
+			params: { id: RIDDLE_UUID },
 			request: mockRequest,
 			locals: {
 				supabase: mockSupabase,
@@ -170,7 +197,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 	it('should handle automatic validation for incorrect answer', async () => {
 		const mockAnswer = 100;
 		const mockRiddle = {
-			id: 'riddle-123',
+			id: RIDDLE_UUID,
 			riddle_number: 10,
 			title: 'Test Riddle',
 			answer: {
@@ -179,12 +206,16 @@ describe('POST /api/riddles/[id]/submit', () => {
 			}
 		};
 
-		mockRequest = new Request('http://localhost/api/riddles/riddle-123/submit', {
+		mockRequest = new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
 			method: 'POST',
 			body: JSON.stringify({ answer: mockAnswer })
 		});
 
-		(mockSupabase.from as Mock).mockReturnValue({
+		// 1. requireAuth profiles fetch
+		(mockSupabase.from as Mock).mockReturnValueOnce(makeProfileMock());
+
+		// 2. riddle fetch
+		(mockSupabase.from as Mock).mockReturnValueOnce({
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
 					single: vi.fn().mockResolvedValue({
@@ -199,22 +230,21 @@ describe('POST /api/riddles/[id]/submit', () => {
 			isCorrect: false
 		});
 
+		// RPC — incorrect answer: is_first_win irrelevant, rewards block skipped
 		(mockSupabase.rpc as Mock).mockResolvedValue({
-			data: 'attempt-456',
+			data: [
+				{
+					attempt_id: 'attempt-456',
+					theoretical_reward: 0,
+					actual_reward: 0,
+					is_first_win: false,
+					week_best_reward: 0
+				}
+			],
 			error: null
 		});
 
-		(mockSupabase.from as Mock).mockReturnValueOnce({
-			select: vi.fn().mockReturnValue({
-				eq: vi.fn().mockReturnValue({
-					single: vi.fn().mockResolvedValue({
-						data: mockRiddle,
-						error: null
-					})
-				})
-			})
-		});
-
+		// 3. riddle_attempts fetch
 		(mockSupabase.from as Mock).mockReturnValueOnce({
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
@@ -231,7 +261,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 		});
 
 		const response = await submitHandler.POST({
-			params: { id: 'riddle-123' },
+			params: { id: RIDDLE_UUID },
 			request: mockRequest,
 			locals: {
 				supabase: mockSupabase,
@@ -249,20 +279,21 @@ describe('POST /api/riddles/[id]/submit', () => {
 	it('should handle manual validation and create teacher message', async () => {
 		const mockAnswer = 'My detailed answer';
 		const mockRiddle = {
-			id: 'riddle-123',
+			id: RIDDLE_UUID,
 			riddle_number: 10,
 			title: 'Essay Riddle',
 			created_by: 'teacher-456',
 			answer: null // Manual validation required
 		};
 
-		mockRequest = new Request('http://localhost/api/riddles/riddle-123/submit', {
+		mockRequest = new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
 			method: 'POST',
 			body: JSON.stringify({ answer: mockAnswer })
 		});
 
-		// Mock riddle fetch
-		const fromMock = vi.fn();
+		// requireAuth fetches from('profiles') first (full profile with all fields),
+		// then later the manual-validation branch fetches from('profiles') again (firstname/lastname only).
+		// Use mockImplementation discriminated by table name.
 		(mockSupabase.from as Mock).mockImplementation((table: string) => {
 			if (table === 'riddles') {
 				return {
@@ -276,11 +307,17 @@ describe('POST /api/riddles/[id]/submit', () => {
 					})
 				};
 			} else if (table === 'profiles') {
+				// Handles both requireAuth (full profile) and student name fetch (firstname/lastname)
 				return {
 					select: vi.fn().mockReturnValue({
 						eq: vi.fn().mockReturnValue({
 							single: vi.fn().mockResolvedValue({
 								data: {
+									id: 'student-123',
+									role: 'teacher',
+									consent_required: false,
+									consent_granted_at: null,
+									consent_grace_period_ends: null,
 									firstname: 'Alice',
 									lastname: 'Student'
 								},
@@ -305,11 +342,26 @@ describe('POST /api/riddles/[id]/submit', () => {
 					})
 				};
 			}
-			return fromMock(table);
+			// fallback for any unexpected table (e.g. buddy tables)
+			return {
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({ data: null, error: null })
+					})
+				})
+			};
 		});
 
 		(mockSupabase.rpc as Mock).mockResolvedValue({
-			data: 'attempt-789',
+			data: [
+				{
+					attempt_id: 'attempt-789',
+					theoretical_reward: 0,
+					actual_reward: 0,
+					is_first_win: false,
+					week_best_reward: 0
+				}
+			],
 			error: null
 		});
 
@@ -320,7 +372,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 		});
 
 		const response = await submitHandler.POST({
-			params: { id: 'riddle-123' },
+			params: { id: RIDDLE_UUID },
 			request: mockRequest,
 			locals: {
 				supabase: mockSupabase,
@@ -336,7 +388,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 
 		expect(createRiddleValidationMessage).toHaveBeenCalledWith(mockSupabase, {
 			attemptId: 'attempt-789',
-			riddleId: 'riddle-123',
+			riddleId: RIDDLE_UUID,
 			riddleNumber: 10,
 			riddleTitle: 'Essay Riddle',
 			studentId: 'student-123',
@@ -418,16 +470,20 @@ describe('POST /api/riddles/[id]/submit', () => {
 	it('should call RPC with correct parameters', async () => {
 		const mockAnswer = 'test answer';
 		const mockRiddle = {
-			id: 'riddle-123',
+			id: RIDDLE_UUID,
 			answer: { type: 'text', value: 'test answer' }
 		};
 
-		mockRequest = new Request('http://localhost/api/riddles/riddle-123/submit', {
+		mockRequest = new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
 			method: 'POST',
 			body: JSON.stringify({ answer: mockAnswer })
 		});
 
-		(mockSupabase.from as Mock).mockReturnValue({
+		// 1. requireAuth profiles fetch
+		(mockSupabase.from as Mock).mockReturnValueOnce(makeProfileMock());
+
+		// 2. riddle fetch
+		(mockSupabase.from as Mock).mockReturnValueOnce({
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
 					single: vi.fn().mockResolvedValue({
@@ -441,21 +497,19 @@ describe('POST /api/riddles/[id]/submit', () => {
 		(validateRiddleAnswer as Mock).mockReturnValue({ isCorrect: true });
 
 		(mockSupabase.rpc as Mock).mockResolvedValue({
-			data: 'attempt-123',
+			data: [
+				{
+					attempt_id: 'attempt-123',
+					theoretical_reward: 0,
+					actual_reward: 0,
+					is_first_win: false,
+					week_best_reward: 0
+				}
+			],
 			error: null
 		});
 
-		(mockSupabase.from as Mock).mockReturnValueOnce({
-			select: vi.fn().mockReturnValue({
-				eq: vi.fn().mockReturnValue({
-					single: vi.fn().mockResolvedValue({
-						data: mockRiddle,
-						error: null
-					})
-				})
-			})
-		});
-
+		// 3. riddle_attempts fetch
 		(mockSupabase.from as Mock).mockReturnValueOnce({
 			select: vi.fn().mockReturnValue({
 				eq: vi.fn().mockReturnValue({
@@ -468,7 +522,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 		});
 
 		await submitHandler.POST({
-			params: { id: 'riddle-123' },
+			params: { id: RIDDLE_UUID },
 			request: mockRequest,
 			locals: {
 				supabase: mockSupabase,
@@ -477,7 +531,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 		} as never);
 
 		expect(mockSupabase.rpc).toHaveBeenCalledWith('submit_riddle_attempt', {
-			p_riddle_id: 'riddle-123',
+			p_riddle_id: RIDDLE_UUID,
 			p_student_id: 'student-123',
 			p_submitted_answer: { value: mockAnswer },
 			p_is_correct: true

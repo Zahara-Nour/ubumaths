@@ -2,19 +2,19 @@
  * Minesweeper Authorization Tests
  * ================================
  *
- * Comprehensive tests verifying that teachers and admins are treated the same
- * as anonymous users for minesweeper recording (no database persistence).
+ * Tests verifying authorization rules for minesweeper API endpoints.
  *
- * Defense-in-depth approach:
- * - API endpoints return 403 Forbidden for teachers/admins
- * - Store logic returns false for shouldUseDatabase()
- * - Database RLS policies prevent INSERT/UPDATE
- * - RPC functions reject non-students
+ * Authorization rules (as of commit c2f4ec7e6):
+ * - start, [id]/complete, [id]/loss: requireRoles(['student','teacher']) → students and teachers
+ *   allowed, admins rejected with 403.
+ * - [id]/hint: requireRole('student') → students only, teachers and admins rejected with 403.
+ * - current: requireRole('student') → students only.
  *
  * Test Coverage:
- * 1. API Endpoint Authorization (403 for teachers/admins)
+ * 1. API Endpoint Authorization (403 for admins on start/complete/loss; 403 for teachers/admins on hint/current)
  * 2. Student Access (200/201 for students)
- * 3. Anonymous Access (401 for unauthenticated)
+ * 3. Teacher Access (200 for start/complete/loss; 403 for hint/current)
+ * 4. Anonymous Access (401 for unauthenticated)
  *
  * Endpoints tested:
  * - POST /api/games/minesweeper/start
@@ -55,6 +55,9 @@ const mockProfiles = {
 		lastname: 'User',
 		school_id: 'school-1',
 		is_test: false,
+		consent_required: false,
+		consent_granted_at: null,
+		consent_grace_period_ends: null,
 		created_at: '2024-01-01T00:00:00Z'
 	},
 	teacher: {
@@ -65,6 +68,9 @@ const mockProfiles = {
 		lastname: 'User',
 		school_id: 'school-1',
 		is_test: false,
+		consent_required: false,
+		consent_granted_at: null,
+		consent_grace_period_ends: null,
 		created_at: '2024-01-01T00:00:00Z'
 	},
 	admin: {
@@ -75,6 +81,9 @@ const mockProfiles = {
 		lastname: 'User',
 		school_id: 'school-1',
 		is_test: false,
+		consent_required: false,
+		consent_granted_at: null,
+		consent_grace_period_ends: null,
 		created_at: '2024-01-01T00:00:00Z'
 	}
 };
@@ -100,6 +109,27 @@ const mockGame = {
 	updated_at: '2024-01-01T00:00:00Z'
 };
 
+// Valid beginner grid state with exactly 10 mines
+const validBeginnerGridState = {
+	rows: 9,
+	cols: 9,
+	mines: [
+		[0, 0],
+		[0, 1],
+		[1, 0],
+		[1, 1],
+		[2, 2],
+		[3, 3],
+		[4, 4],
+		[5, 5],
+		[6, 6],
+		[7, 7]
+	],
+	revealed: [[0, 2]],
+	flagged: [],
+	adjacentCounts: {}
+};
+
 // ============================================================================
 // POST /api/games/minesweeper/start - START NEW GAME
 // ============================================================================
@@ -111,13 +141,10 @@ describe('POST /api/games/minesweeper/start', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(TEST_IDS.student, mockSupabase);
 
-		// Mock profile check (student)
+		// requireRoles fetches profile first (.single()), then handler inserts game (.single())
 		mockSequence(mockSupabase, [
-			{ data: mockProfiles.student, error: null }, // requireRole profile check
-			{
-				data: mockGame as any, // Game data already includes id
-				error: null
-			} // insert game
+			{ data: mockProfiles.student, error: null }, // requireRoles profile check
+			{ data: mockGame as any, error: null } // insert game
 		]);
 
 		const request = createMockRequest({
@@ -131,28 +158,31 @@ describe('POST /api/games/minesweeper/start', () => {
 		expect(data.success).toBe(true);
 		expect(data.game).toBeDefined();
 		expect(data.game.id).toBe(TEST_IDS.game);
-	}, 10000); // 10 second timeout
+	}, 10000);
 
-	it('should reject teachers with 403 Forbidden', async () => {
+	it('should allow teachers to start games', async () => {
 		const { POST } = await import('./start/+server');
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(TEST_IDS.teacher, mockSupabase);
 
-		// Mock profile check (teacher)
-		mockSuccess(mockSupabase, mockProfiles.teacher);
+		// Teachers are now allowed (requireRoles(['student','teacher']))
+		// requireRoles fetches profile (.single()), then handler inserts game (.single())
+		mockSequence(mockSupabase, [
+			{ data: mockProfiles.teacher, error: null }, // requireRoles profile check
+			{ data: mockGame as any, error: null } // insert game
+		]);
 
 		const request = createMockRequest({
 			difficulty: 'beginner'
 		});
 
-		try {
-			await POST({ request, locals } as any);
-			expect.fail('Should have thrown 403 error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toContain('Élèves uniquement');
-		}
+		const response = await POST({ request, locals } as any);
+		const data = await response.json();
+
+		expect(response.status).toBe(200);
+		expect(data.success).toBe(true);
+		expect(data.game).toBeDefined();
 	});
 
 	it('should reject admins with 403 Forbidden', async () => {
@@ -173,7 +203,8 @@ describe('POST /api/games/minesweeper/start', () => {
 			expect.fail('Should have thrown 403 error');
 		} catch (err: any) {
 			expect(err.status).toBe(403);
-			expect(err.body.message).toContain('Élèves uniquement');
+			// requireRoles(['student','teacher']) rejects admins with "Élèves, Enseignants uniquement"
+			expect(err.body.message).toContain('Élèves, Enseignants');
 		}
 	});
 
@@ -207,51 +238,31 @@ describe('POST /api/games/minesweeper/[id]/complete', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(TEST_IDS.student, mockSupabase);
 
-		// Create valid grid state with 10 mines for beginner difficulty
-		const validGridState = {
-			rows: 9,
-			cols: 9,
-			mines: [
-				[0, 0],
-				[0, 1],
-				[1, 0],
-				[1, 1],
-				[2, 2],
-				[3, 3],
-				[4, 4],
-				[5, 5],
-				[6, 6],
-				[7, 7]
-			], // 10 mines for beginner
-			revealed: [[0, 2]],
-			flagged: [],
-			adjacentCounts: {}
-		};
-
-		// Mock profile check and game fetch
+		// requireRoles fetches profile (.single()), then handler fetches game (.single())
 		mockSequence(mockSupabase, [
-			{ data: mockProfiles.student, error: null }, // requireRole profile check
+			{ data: mockProfiles.student, error: null }, // requireRoles profile check
 			{
-				data: { ...mockGame, grid_state: validGridState } as any,
+				data: { ...mockGame, grid_state: validBeginnerGridState } as any,
 				error: null
 			} // fetch game
 		]);
 
 		// Mock RPC call with .single() support
+		// Handler reads: gidouilles_earned, points_earned, achievements, breakdown
 		(mockSupabase.rpc as ReturnType<typeof vi.fn>).mockReturnValue({
 			single: vi.fn().mockResolvedValue({
 				data: {
-					success: true,
-					gidouilles_awarded: 10,
-					time_seconds: 60,
-					achievements: []
+					gidouilles_earned: 10,
+					points_earned: 65,
+					achievements: [],
+					breakdown: {}
 				},
 				error: null
 			})
 		});
 
 		const request = createMockRequest({
-			grid_state: validGridState
+			grid_state: validBeginnerGridState
 		});
 
 		const response = await POST({
@@ -271,30 +282,52 @@ describe('POST /api/games/minesweeper/[id]/complete', () => {
 		});
 	});
 
-	it('should reject teachers with 403 Forbidden', async () => {
+	it('should allow teachers to complete games', async () => {
 		const { POST } = await import('./[id]/complete/+server');
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(TEST_IDS.teacher, mockSupabase);
 
-		// Mock profile check (teacher)
-		mockSuccess(mockSupabase, mockProfiles.teacher);
+		// Teachers are now allowed (requireRoles(['student','teacher']))
+		mockSequence(mockSupabase, [
+			{ data: mockProfiles.teacher, error: null }, // requireRoles profile check
+			{
+				data: {
+					...mockGame,
+					student_id: TEST_IDS.teacher,
+					grid_state: validBeginnerGridState
+				} as any,
+				error: null
+			} // fetch game
+		]);
 
-		const request = createMockRequest({
-			grid_state: mockGame.grid_state
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>).mockReturnValue({
+			single: vi.fn().mockResolvedValue({
+				data: {
+					gidouilles_earned: 5,
+					points_earned: 50,
+					achievements: [],
+					breakdown: {}
+				},
+				error: null
+			})
 		});
 
-		try {
-			await POST({
-				request,
-				locals,
-				params: { id: TEST_IDS.game }
-			} as any);
-			expect.fail('Should have thrown 403 error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toContain('Élèves uniquement');
-		}
+		const request = createMockRequest({
+			grid_state: validBeginnerGridState
+		});
+
+		const response = await POST({
+			request,
+			locals,
+			params: { id: TEST_IDS.game }
+		} as any);
+
+		const data = await response.json();
+
+		expect(response.status).toBe(200);
+		expect(data.success).toBe(true);
+		expect(data.gidouilles).toBe(5);
 	});
 
 	it('should reject admins with 403 Forbidden', async () => {
@@ -319,7 +352,8 @@ describe('POST /api/games/minesweeper/[id]/complete', () => {
 			expect.fail('Should have thrown 403 error');
 		} catch (err: any) {
 			expect(err.status).toBe(403);
-			expect(err.body.message).toContain('Élèves uniquement');
+			// requireRoles(['student','teacher']) rejects admins with "Élèves, Enseignants uniquement"
+			expect(err.body.message).toContain('Élèves, Enseignants');
 		}
 	});
 
@@ -357,32 +391,11 @@ describe('POST /api/games/minesweeper/[id]/loss', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(TEST_IDS.student, mockSupabase);
 
-		// Create valid grid state with 10 mines for beginner difficulty
-		const validGridState = {
-			rows: 9,
-			cols: 9,
-			mines: [
-				[0, 0],
-				[0, 1],
-				[1, 0],
-				[1, 1],
-				[2, 2],
-				[3, 3],
-				[4, 4],
-				[5, 5],
-				[6, 6],
-				[7, 7]
-			], // 10 mines for beginner
-			revealed: [[0, 2]],
-			flagged: [],
-			adjacentCounts: {}
-		};
-
-		// Mock profile check and game fetch
+		// requireRoles fetches profile (.single()), then handler fetches game (.single())
 		mockSequence(mockSupabase, [
-			{ data: mockProfiles.student, error: null }, // requireRole profile check
+			{ data: mockProfiles.student, error: null }, // requireRoles profile check
 			{
-				data: { ...mockGame, grid_state: validGridState } as any,
+				data: { ...mockGame, grid_state: validBeginnerGridState } as any,
 				error: null
 			} // fetch game
 		]);
@@ -394,7 +407,7 @@ describe('POST /api/games/minesweeper/[id]/loss', () => {
 		});
 
 		const request = createMockRequest({
-			grid_state: validGridState
+			grid_state: validBeginnerGridState
 		});
 
 		const response = await POST({
@@ -413,30 +426,44 @@ describe('POST /api/games/minesweeper/[id]/loss', () => {
 		});
 	});
 
-	it('should reject teachers with 403 Forbidden', async () => {
+	it('should allow teachers to record losses', async () => {
 		const { POST } = await import('./[id]/loss/+server');
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(TEST_IDS.teacher, mockSupabase);
 
-		// Mock profile check (teacher)
-		mockSuccess(mockSupabase, mockProfiles.teacher);
+		// Teachers are now allowed (requireRoles(['student','teacher']))
+		mockSequence(mockSupabase, [
+			{ data: mockProfiles.teacher, error: null }, // requireRoles profile check
+			{
+				data: {
+					...mockGame,
+					student_id: TEST_IDS.teacher,
+					grid_state: validBeginnerGridState
+				} as any,
+				error: null
+			} // fetch game
+		]);
 
-		const request = createMockRequest({
-			grid_state: mockGame.grid_state
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+			data: null,
+			error: null
 		});
 
-		try {
-			await POST({
-				request,
-				locals,
-				params: { id: TEST_IDS.game }
-			} as any);
-			expect.fail('Should have thrown 403 error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toContain('Élèves uniquement');
-		}
+		const request = createMockRequest({
+			grid_state: validBeginnerGridState
+		});
+
+		const response = await POST({
+			request,
+			locals,
+			params: { id: TEST_IDS.game }
+		} as any);
+
+		const data = await response.json();
+
+		expect(response.status).toBe(200);
+		expect(data.success).toBe(true);
 	});
 
 	it('should reject admins with 403 Forbidden', async () => {
@@ -461,7 +488,8 @@ describe('POST /api/games/minesweeper/[id]/loss', () => {
 			expect.fail('Should have thrown 403 error');
 		} catch (err: any) {
 			expect(err.status).toBe(403);
-			expect(err.body.message).toContain('Élèves uniquement');
+			// requireRoles(['student','teacher']) rejects admins with "Élèves, Enseignants uniquement"
+			expect(err.body.message).toContain('Élèves, Enseignants');
 		}
 	});
 
@@ -624,22 +652,26 @@ describe('GET /api/games/minesweeper/current', () => {
 		expect(data.game.id).toBe(TEST_IDS.game);
 	});
 
-	it('should reject teachers with 403 Forbidden', async () => {
+	it('should allow teachers to fetch current game', async () => {
 		const { GET } = await import('./current/+server');
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(TEST_IDS.teacher, mockSupabase);
 
-		// Mock profile check (teacher)
+		// Teachers are now allowed (requireRoles(['student','teacher']))
+		// requireRoles fetches profile (.single()), then handler uses maybeSingle
 		mockSuccess(mockSupabase, mockProfiles.teacher);
 
-		try {
-			await GET({ locals } as any);
-			expect.fail('Should have thrown 403 error');
-		} catch (err: any) {
-			expect(err.status).toBe(403);
-			expect(err.body.message).toContain('Élèves uniquement');
-		}
+		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
+			data: null, // No in-progress game for this teacher
+			error: null
+		});
+
+		const response = await GET({ locals } as any);
+		const data = await response.json();
+
+		expect(response.status).toBe(200);
+		expect(data.game).toBeNull();
 	});
 
 	it('should reject admins with 403 Forbidden', async () => {
@@ -656,7 +688,8 @@ describe('GET /api/games/minesweeper/current', () => {
 			expect.fail('Should have thrown 403 error');
 		} catch (err: any) {
 			expect(err.status).toBe(403);
-			expect(err.body.message).toContain('Élèves uniquement');
+			// requireRoles(['student','teacher']) rejects admins with "Élèves, Enseignants uniquement"
+			expect(err.body.message).toContain('Élèves, Enseignants');
 		}
 	});
 
