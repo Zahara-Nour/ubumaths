@@ -214,7 +214,9 @@ export const actions: Actions = {
 		const data = {
 			templateId,
 			classId: formData.get('classId') as string,
-			title: formData.get('title') as string | undefined,
+			// formData.get returns null when absent; instantiateTemplateSchema.title is
+			// .optional() (rejects null) -> coerce to undefined
+			title: formData.get('title') ?? undefined,
 			isVisible: formData.get('isVisible') === 'true'
 		};
 
