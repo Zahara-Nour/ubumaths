@@ -6,7 +6,7 @@
  * Covers authorization, validation, and the critical accept_proposal_atomic fix.
  */
 
-import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { POST } from '../../../../src/routes/api/marketplace/listings/[id]/proposals/+server';
 import { createMockSupabase } from '$tests/helpers';
 import {
@@ -16,6 +16,40 @@ import {
 	mockRPCFunctions,
 	simulateConcurrentOperations
 } from '$tests/helpers/fixtures';
+
+// ============================================================================
+// MODULE MOCKS (hoisted - must be at top level, NOT inside beforeEach)
+// ============================================================================
+//
+// The handler imports its business-logic guards from this module. We mock the
+// guard functions (so each test can drive them) while keeping the username
+// enrichment real. The `checkCardsUnused` guard is intentionally NOT wired into
+// the proposal handler anymore (removed in commit 8260972a3 because it queried
+// vip_cards_activity, which logs power activations rather than consumption).
+vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
+	const actual = await importActual<typeof import('$lib/server/marketplace/helpers')>();
+	return {
+		...actual,
+		validateCardOwnership: vi.fn().mockResolvedValue(true),
+		getStudentGidouilles: vi.fn().mockResolvedValue(1000),
+		lockCardsForEntity: vi.fn().mockResolvedValue({ success: true }),
+		isMarketplaceEnabled: vi.fn().mockResolvedValue(true)
+	};
+});
+
+vi.mock('$lib/server/marketplace/notifications', async (importActual) => {
+	const actual = await importActual<typeof import('$lib/server/marketplace/notifications')>();
+	return {
+		...actual,
+		notifyNewProposal: vi.fn().mockResolvedValue(undefined),
+		notifyProposalAccepted: vi.fn().mockResolvedValue(undefined),
+		notifyProposalRejected: vi.fn().mockResolvedValue(undefined)
+	};
+});
+
+// Valid UUIDs (the handler validates params.id and listing_id as UUIDs).
+const LISTING_UUID = '11111111-1111-4111-8111-111111111111';
+const CARD_UUID_1 = '22222222-2222-4222-8222-222222222222';
 
 // Type definitions for test request/response handling
 interface _ProposalsRequestLocals {
@@ -39,8 +73,17 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 	let buyer2: ReturnType<typeof createTestUser>;
 	let listing: ReturnType<typeof createTestListing>;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		vi.clearAllMocks();
+
+		// Re-arm default guard implementations (clearAllMocks wipes them).
+		const helpers = await import('$lib/server/marketplace/helpers');
+		(helpers.validateCardOwnership as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(true);
+		(helpers.getStudentGidouilles as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(1000);
+		(helpers.lockCardsForEntity as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+			success: true
+		});
+		(helpers.isMarketplaceEnabled as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(true);
 
 		// Create test data
 		mockSupabase = createMockSupabase();
@@ -48,6 +91,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 		buyer1 = createTestUser('student');
 		buyer2 = createTestUser('student');
 		listing = createTestListing(seller.id, 'school-1', {
+			id: LISTING_UUID,
 			listing_type: 'sell',
 			offered_card_ids: ['card-seller-1'],
 			wanted_gidouilles: 100
@@ -55,24 +99,61 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 
 		// Setup RPC mocks
 		mockRPCFunctions(mockSupabase);
-
-		// Mock helper functions
-		vi.mock('$lib/server/marketplace/helpers', () => ({
-			isMarketplaceEnabled: vi.fn().mockResolvedValue(true),
-			getStudentSchoolId: vi.fn().mockResolvedValue('school-1'),
-			validateCardOwnership: vi.fn().mockResolvedValue(true),
-			checkCardsUnused: vi.fn().mockResolvedValue(true),
-			getStudentGidouilles: vi.fn().mockResolvedValue(1000)
-		}));
-
-		vi.mock('$lib/server/marketplace/notifications', () => ({
-			notifyNewProposal: vi.fn().mockResolvedValue(undefined)
-		}));
 	});
 
-	afterEach(() => {
-		vi.resetModules();
-	});
+	// ============================================================================
+	// MOCK HELPERS
+	// ============================================================================
+
+	/**
+	 * Mocks the handler's two direct table reads:
+	 *  - marketplace_listings.select('*').eq('id').single()  → the listing
+	 *  - marketplace_proposals.select('id, status').eq().eq().single() → existing proposal
+	 *
+	 * `.single()` is the only terminal both reads share, so we drive it with a
+	 * per-table implementation keyed on which table `.from()` last received.
+	 */
+	function mockTableReads(opts: {
+		listingResult: { data: unknown; error: unknown };
+		existingProposal?: { data: unknown; error: unknown };
+		insertResult?: { data: unknown; error: unknown };
+	}) {
+		let currentTable = '';
+		mockSupabase.from.mockImplementation((table: string) => {
+			currentTable = table;
+			return mockSupabase._mockChain;
+		});
+
+		mockSupabase._mockChain.single.mockImplementation(() => {
+			if (currentTable === 'marketplace_listings') {
+				return Promise.resolve(opts.listingResult);
+			}
+			if (currentTable === 'marketplace_proposals') {
+				// Distinguish the existing-proposal read from the insert().select().single()
+				return Promise.resolve(
+					opts.existingProposal ?? { data: null, error: { code: 'PGRST116' } }
+				);
+			}
+			return Promise.resolve({ data: null, error: null });
+		});
+
+		// Insert returns the created proposal via .select().single()
+		mockSupabase._mockChain.insert.mockImplementation((rows: Record<string, unknown>[]) => {
+			const inserted = Array.isArray(rows) ? rows[0] : rows;
+			mockSupabase._mockChain.single.mockImplementation(() => {
+				if (currentTable === 'marketplace_listings') {
+					return Promise.resolve(opts.listingResult);
+				}
+				return Promise.resolve(
+					opts.insertResult ?? {
+						data: { id: 'proposal-1', ...inserted, proposer: buyer1.profile },
+						error: null
+					}
+				);
+			});
+			return mockSupabase._mockChain;
+		});
+	}
 
 	// ============================================================================
 	// BASIC FUNCTIONALITY
@@ -80,59 +161,34 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 
 	describe('POST - Create proposal', () => {
 		test('creates valid proposal with gidouilles', async () => {
-			// Mock listing fetch
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: listing,
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
-			});
-
-			// Mock proposal creation
-			mockSupabase._mockChain.insert.mockImplementation((data) => {
-				mockSupabase._mockChain.select.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: {
-								id: 'proposal-1',
-								...data[0],
-								proposer: buyer1.profile
-							},
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
+			mockTableReads({
+				listingResult: { data: listing, error: null },
+				insertResult: {
+					data: {
+						id: 'proposal-1',
+						listing_id: LISTING_UUID,
+						offered_gidouilles: 150,
+						message: 'I offer more gidouilles!',
+						proposer: buyer1.profile
+					},
+					error: null
+				}
 			});
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
+					listing_id: LISTING_UUID,
 					offered_gidouilles: 150,
 					offered_card_ids: [],
 					message: 'I offer more gidouilles!'
 				})
 			};
 
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
-			};
-
 			const response = await POST({
 				request: mockRequest,
-				params: mockParams,
-				locals: mockLocals
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			} as any);
+				params: { id: LISTING_UUID },
+				locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+			} as unknown as Parameters<typeof POST>[0]);
 
 			const data = await response.json();
 
@@ -144,58 +200,35 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 		test('creates valid proposal with cards', async () => {
 			const buyerCard = createTestCard(buyer1.id);
 
-			// Mock listing fetch
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: listing,
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
+			mockTableReads({
+				listingResult: { data: listing, error: null },
+				insertResult: {
+					data: {
+						id: 'proposal-2',
+						listing_id: LISTING_UUID,
+						offered_card_ids: [CARD_UUID_1],
+						offered_gidouilles: 50,
+						proposer: buyer1.profile
+					},
+					error: null
+				}
 			});
 
-			// Mock proposal creation
-			mockSupabase._mockChain.insert.mockImplementation((data) => {
-				mockSupabase._mockChain.select.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: {
-								id: 'proposal-2',
-								...data[0],
-								proposer: buyer1.profile
-							},
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
-			});
+			void buyerCard;
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
-					offered_card_ids: [buyerCard.id],
+					listing_id: LISTING_UUID,
+					offered_card_ids: [CARD_UUID_1],
 					offered_gidouilles: 50
 				})
 			};
 
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
-			};
-
 			const response = await POST({
 				request: mockRequest,
-				params: mockParams,
-				locals: mockLocals
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			} as any);
+				params: { id: LISTING_UUID },
+				locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+			} as unknown as Parameters<typeof POST>[0]);
 
 			expect(response.status).toBe(201);
 		});
@@ -205,69 +238,50 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				json: vi.fn().mockResolvedValue({})
 			};
 
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: null
-			};
-
 			await expect(
 				POST({
 					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow('Non authentifié');
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: null }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({ status: 401, body: { message: 'Non authentifié' } });
 		});
 
 		test('validates request body with Zod', async () => {
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: 'invalid-uuid',
 					offered_gidouilles: -100 // Negative amount
 				})
-			};
-
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
 			};
 
 			await expect(
 				POST({
 					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow();
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({ status: 400 });
 		});
 
 		test('rejects proposal with nothing offered', async () => {
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
+					listing_id: LISTING_UUID,
 					offered_card_ids: [],
 					offered_gidouilles: 0
 				})
 			};
 
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
-			};
-
 			await expect(
 				POST({
 					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow('Une proposition doit contenir au moins une carte ou des gidouilles');
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({
+				status: 400,
+				body: { message: 'Une proposition doit contenir au moins une carte ou des gidouilles' }
+			});
 		});
 	});
 
@@ -277,288 +291,195 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 
 	describe('Authorization and validation', () => {
 		test('prevents self-proposals on own listings', async () => {
-			// Mock listing fetch - owned by proposer
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: { ...listing, creator_id: buyer1.id },
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
+			mockTableReads({
+				listingResult: { data: { ...listing, creator_id: buyer1.id }, error: null }
 			});
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
+					listing_id: LISTING_UUID,
 					offered_gidouilles: 100
 				})
-			};
-
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
 			};
 
 			await expect(
 				POST({
 					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow('Vous ne pouvez pas faire une proposition sur votre propre annonce');
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({
+				status: 403,
+				body: { message: 'Vous ne pouvez pas faire une proposition sur votre propre annonce' }
+			});
 		});
 
 		test('rejects proposals on inactive listings', async () => {
-			// Mock inactive listing
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: { ...listing, status: 'sold' },
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
+			mockTableReads({
+				listingResult: { data: { ...listing, status: 'sold' }, error: null }
 			});
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
+					listing_id: LISTING_UUID,
 					offered_gidouilles: 100
 				})
-			};
-
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
 			};
 
 			await expect(
 				POST({
 					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow("Cette annonce n'est plus active");
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({
+				status: 403,
+				body: { message: "Cette annonce n'est plus active" }
+			});
 		});
 
 		test('validates card ownership for proposals', async () => {
 			const { validateCardOwnership } = await import('$lib/server/marketplace/helpers');
 			(validateCardOwnership as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(false);
 
-			// Mock listing fetch
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: listing,
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
-			});
+			mockTableReads({ listingResult: { data: listing, error: null } });
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
-					offered_card_ids: ['card-not-owned'],
+					listing_id: LISTING_UUID,
+					offered_card_ids: [CARD_UUID_1],
 					offered_gidouilles: 0
 				})
-			};
-
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
 			};
 
 			await expect(
 				POST({
 					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow('Vous ne possédez pas toutes les cartes offertes');
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({
+				status: 403,
+				body: { message: 'Vous ne possédez pas toutes les cartes spécifiées' }
+			});
 		});
 
 		test('validates gidouilles balance', async () => {
-			// TODO: checkGidouillesBalance doesn't exist - use getStudentGidouilles or skip test
 			const { getStudentGidouilles } = await import('$lib/server/marketplace/helpers');
 			(getStudentGidouilles as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(0);
 
-			// Mock listing fetch
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: listing,
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
-			});
+			mockTableReads({ listingResult: { data: listing, error: null } });
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
+					listing_id: LISTING_UUID,
 					offered_gidouilles: 1000
 				})
 			};
 
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
-			};
-
 			await expect(
 				POST({
 					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow('Vous ne possédez pas assez de gidouilles');
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({
+				status: 403,
+				body: { message: "Vous n'avez pas assez de gidouilles" }
+			});
 		});
 
-		test('checks cards are not already in use', async () => {
-			const { checkCardsUnused } = await import('$lib/server/marketplace/helpers');
-			(checkCardsUnused as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(false);
-
-			// Mock listing fetch
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: listing,
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
+		// NOTE: the proposal handler no longer enforces a "cards already in use"
+		// guard. The `checkCardsUnused` call was removed in commit 8260972a3
+		// because vip_cards_activity logs power activations, not consumption, so
+		// cards with activated powers were wrongly blocked from trading. Ownership
+		// (incl. usedAt + active locks) is enforced by validateCardOwnership.
+		// This test now documents that a validly-owned card is accepted without a
+		// separate cards-unused check.
+		test('does not block proposals on a separate cards-unused check', async () => {
+			mockTableReads({
+				listingResult: { data: listing, error: null },
+				insertResult: {
+					data: {
+						id: 'proposal-unused',
+						listing_id: LISTING_UUID,
+						offered_card_ids: [CARD_UUID_1],
+						proposer: buyer1.profile
+					},
+					error: null
+				}
 			});
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
-					offered_card_ids: ['card-in-use'],
+					listing_id: LISTING_UUID,
+					offered_card_ids: [CARD_UUID_1],
 					offered_gidouilles: 0
 				})
 			};
 
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
-			};
+			const response = await POST({
+				request: mockRequest,
+				params: { id: LISTING_UUID },
+				locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+			} as unknown as Parameters<typeof POST>[0]);
 
-			await expect(
-				POST({
-					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow('Certaines cartes offertes sont déjà utilisées');
+			expect(response.status).toBe(201);
 		});
 
 		test('prevents duplicate proposals from same user', async () => {
-			// Mock listing fetch
-			mockSupabase._mockChain.select.mockImplementation((columns) => {
-				if (columns?.includes('proposals')) {
-					// Listing with existing proposal from buyer1
-					mockSupabase._mockChain.eq.mockImplementation(() => {
-						mockSupabase._mockChain.single.mockImplementation(() => {
-							return Promise.resolve({
-								data: {
-									...listing,
-									proposals: [{ proposer_id: buyer1.id, status: 'pending' }]
-								},
-								error: null
-							});
-						});
-						return mockSupabase._mockChain;
-					});
-				} else {
-					// Just the listing
-					mockSupabase._mockChain.eq.mockImplementation(() => {
-						mockSupabase._mockChain.single.mockImplementation(() => {
-							return Promise.resolve({ data: listing, error: null });
-						});
-						return mockSupabase._mockChain;
-					});
+			mockTableReads({
+				listingResult: { data: listing, error: null },
+				existingProposal: {
+					data: { id: 'existing-prop', status: 'pending' },
+					error: null
 				}
-				return mockSupabase._mockChain;
 			});
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
+					listing_id: LISTING_UUID,
 					offered_gidouilles: 100
 				})
-			};
-
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
 			};
 
 			await expect(
 				POST({
 					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow('Vous avez déjà une proposition en cours pour cette annonce');
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({
+				status: 403,
+				body: { message: 'Vous avez déjà une proposition en cours pour cette annonce' }
+			});
 		});
 	});
 
 	// ============================================================================
 	// CRITICAL SECURITY FIX: RACE CONDITION IN ACCEPTANCE
 	// ============================================================================
+	//
+	// NOTE: the mock Supabase client's `rpc()` mirrors the real client contract:
+	// a failing RPC RESOLVES with `{ data: null, error }` rather than throwing.
+	// These tests therefore assert on the resolved `{ data, error }` shape.
 
 	describe('Critical fix: Race condition in proposal acceptance', () => {
 		test('accept_proposal_atomic prevents double acceptance', async () => {
-			// Setup: One listing with multiple proposals
 			const proposal1 = { id: 'prop-1', proposer_id: buyer1.id };
 			const proposal2 = { id: 'prop-2', proposer_id: buyer2.id };
 
 			let acceptedProposal: string | null = null;
 
-			// Mock the atomic acceptance RPC
 			mockSupabase._rpcMocks.set('accept_proposal_atomic', async (params: unknown) => {
 				const p = params as AcceptProposalAtomicParams;
-				// Simulate atomic check-and-set
 				if (acceptedProposal !== null) {
 					throw new Error('409: Conflict - Another proposal was already accepted');
 				}
-
 				acceptedProposal = p.p_proposal_id;
-				return {
-					success: true,
-					proposal_id: p.p_proposal_id
-				};
+				return { success: true, proposal_id: p.p_proposal_id };
 			});
 
-			// Simulate concurrent acceptance attempts
 			const operations = [
 				() =>
 					mockSupabase.rpc('accept_proposal_atomic', {
@@ -574,18 +495,22 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 
 			const results = await simulateConcurrentOperations(operations, 10);
 
-			// Only one should succeed
-			const successful = results.filter((r) => r.status === 'fulfilled');
-			const failed = results.filter((r) => r.status === 'rejected');
+			// Both calls resolve (RPC never throws); exactly one carries an error.
+			const settled = results.filter(
+				(r): r is PromiseFulfilledResult<{ data: unknown; error: unknown }> =>
+					r.status === 'fulfilled'
+			);
+			expect(settled).toHaveLength(2);
 
-			expect(successful).toHaveLength(1);
-			expect(failed).toHaveLength(1);
+			const succeeded = settled.filter((r) => r.value.error === null);
+			const conflicted = settled.filter((r) => r.value.error !== null);
 
-			// The failure should be a 409 conflict
-			if (failed[0].status === 'rejected') {
-				expect(failed[0].reason.message).toContain('409');
-				expect(failed[0].reason.message).toContain('already accepted');
-			}
+			expect(succeeded).toHaveLength(1);
+			expect(conflicted).toHaveLength(1);
+
+			const conflictError = conflicted[0].value.error as { message: string };
+			expect(conflictError.message).toContain('409');
+			expect(conflictError.message).toContain('already accepted');
 		});
 
 		test('atomic acceptance with card and gidouilles transfer', async () => {
@@ -600,7 +525,6 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				transactionSteps.push('UPDATE proposal SET status = accepted');
 				transactionSteps.push('UPDATE listing SET status = sold');
 
-				// Transfer items
 				if (p.transfer_cards) {
 					transactionSteps.push('TRANSFER cards to buyer');
 				}
@@ -622,7 +546,6 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				transfer_gidouilles: true
 			} as AcceptProposalAtomicParams);
 
-			// Verify all steps were executed in order
 			expect(transactionSteps[0]).toBe('BEGIN');
 			expect(transactionSteps[transactionSteps.length - 1]).toBe('COMMIT');
 			expect(transactionSteps).toContain('LOCK listing FOR UPDATE');
@@ -640,16 +563,16 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				return { success: true };
 			});
 
-			// Should rollback entire transaction on failure
-			await expect(
-				mockSupabase.rpc('accept_proposal_atomic', {
-					p_proposal_id: 'prop-1',
-					p_user_id: seller.id,
-					simulate_transfer_failure: true
-				} as AcceptProposalAtomicParams)
-			).rejects.toThrow('Transfer failed');
+			// The RPC surfaces the failure as a resolved { data: null, error } pair
+			// (matching the real supabase-js contract), not a thrown rejection.
+			const { data, error } = await mockSupabase.rpc('accept_proposal_atomic', {
+				p_proposal_id: 'prop-1',
+				p_user_id: seller.id,
+				simulate_transfer_failure: true
+			} as AcceptProposalAtomicParams);
 
-			// In a real scenario, verify nothing was changed in DB
+			expect(data).toBeNull();
+			expect((error as { message: string }).message).toContain('Transfer failed');
 		});
 	});
 
@@ -661,62 +584,36 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 		test('sends notification to listing owner on new proposal', async () => {
 			const { notifyNewProposal } = await import('$lib/server/marketplace/notifications');
 
-			// Mock listing fetch
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: listing,
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
+			mockTableReads({
+				listingResult: { data: listing, error: null },
+				insertResult: {
+					data: { id: 'proposal-1', listing_id: LISTING_UUID, proposer: buyer1.profile },
+					error: null
+				}
 			});
 
-			// Mock proposal creation
-			mockSupabase._mockChain.insert.mockImplementation((data) => {
-				mockSupabase._mockChain.select.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: { id: 'proposal-1', ...data[0] },
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
-			});
-
+			// Offer LESS than the listing wants (wanted_gidouilles=100) so the
+			// proposal is not an exact match → normal flow (not auto-accept).
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
-					offered_gidouilles: 100
+					listing_id: LISTING_UUID,
+					offered_gidouilles: 50
 				})
-			};
-
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
 			};
 
 			await POST({
 				request: mockRequest,
-				params: mockParams,
-				locals: mockLocals
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			} as any);
+				params: { id: LISTING_UUID },
+				locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+			} as unknown as Parameters<typeof POST>[0]);
 
-			// Verify notification was sent
+			// Handler signature: notifyNewProposal(supabase, listing.creator_id, userId, 'Annonce', proposal.id)
 			expect(notifyNewProposal).toHaveBeenCalledWith(
-				expect.anything(), // supabase client
-				expect.objectContaining({
-					id: 'proposal-1',
-					listing_id: listing.id
-				}),
-				listing.creator_id
+				expect.anything(),
+				listing.creator_id,
+				buyer1.id,
+				'Annonce',
+				'proposal-1'
 			);
 		});
 	});
@@ -727,157 +624,89 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 
 	describe('Edge cases', () => {
 		test('handles listing not found', async () => {
-			// Mock listing not found
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: null,
-							error: { message: 'Not found' }
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
+			mockTableReads({
+				listingResult: { data: null, error: { message: 'Not found' } }
 			});
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: 'non-existent',
+					listing_id: LISTING_UUID,
 					offered_gidouilles: 100
 				})
-			};
-
-			const mockParams = { id: 'non-existent' };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
 			};
 
 			await expect(
 				POST({
 					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow('Annonce non trouvée');
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({ status: 404, body: { message: 'Annonce non trouvée' } });
 		});
 
 		test('handles database insertion error', async () => {
-			// Mock listing fetch success
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: listing,
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
-			});
-
-			// Mock proposal creation failure
-			mockSupabase._mockChain.insert.mockImplementation(() => {
-				mockSupabase._mockChain.select.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: null,
-							error: { message: 'Database error' }
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
+			mockTableReads({
+				listingResult: { data: listing, error: null },
+				insertResult: { data: null, error: { message: 'Database error' } }
 			});
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
+					listing_id: LISTING_UUID,
 					offered_gidouilles: 100
 				})
-			};
-
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
 			};
 
 			await expect(
 				POST({
 					request: mockRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow('Erreur lors de la création de la proposition');
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({
+				status: 500,
+				body: { message: 'Erreur lors de la création de la proposition' }
+			});
 		});
 
 		test('handles extremely large offers correctly', async () => {
-			// Mock listing fetch
-			mockSupabase._mockChain.select.mockImplementation(() => {
-				mockSupabase._mockChain.eq.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: listing,
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
-			});
+			// Buyer must hold enough gidouilles for the 10000-gidouilles offer.
+			const { getStudentGidouilles } = await import('$lib/server/marketplace/helpers');
+			(getStudentGidouilles as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(10000);
 
-			// Test maximum allowed values
-			const maxCards = Array.from({ length: 10 }, (_, i) => `card-${i}`);
+			const maxCards = Array.from(
+				{ length: 10 },
+				(_, i) => `3333333${i}-3333-4333-8333-333333333333`
+			);
+
+			mockTableReads({
+				listingResult: { data: listing, error: null },
+				insertResult: {
+					data: { id: 'proposal-max', listing_id: LISTING_UUID, proposer: buyer1.profile },
+					error: null
+				}
+			});
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
+					listing_id: LISTING_UUID,
 					offered_card_ids: maxCards,
 					offered_gidouilles: 10000 // Max allowed
 				})
 			};
 
-			const mockParams = { id: listing.id };
-			const mockLocals = {
-				supabase: mockSupabase,
-				user: { id: buyer1.id }
-			};
-
-			// Should validate max values successfully
-			mockSupabase._mockChain.insert.mockImplementation((data) => {
-				mockSupabase._mockChain.select.mockImplementation(() => {
-					mockSupabase._mockChain.single.mockImplementation(() => {
-						return Promise.resolve({
-							data: { id: 'proposal-max', ...data[0] },
-							error: null
-						});
-					});
-					return mockSupabase._mockChain;
-				});
-				return mockSupabase._mockChain;
-			});
-
 			const response = await POST({
 				request: mockRequest,
-				params: mockParams,
-				locals: mockLocals
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			} as any);
+				params: { id: LISTING_UUID },
+				locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+			} as unknown as Parameters<typeof POST>[0]);
 
 			expect(response.status).toBe(201);
 
-			// Test values above maximum
-			const tooManyCards = Array.from({ length: 11 }, (_, i) => `card-${i}`);
-
+			// Values above maximum must be rejected by Zod (max 10000 gidouilles).
 			const invalidRequest = {
 				json: vi.fn().mockResolvedValue({
-					listing_id: listing.id,
-					offered_card_ids: tooManyCards,
+					listing_id: LISTING_UUID,
 					offered_gidouilles: 10001 // Above max
 				})
 			};
@@ -885,11 +714,10 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 			await expect(
 				POST({
 					request: invalidRequest,
-					params: mockParams,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow();
+					params: { id: LISTING_UUID },
+					locals: { supabase: mockSupabase, user: { id: buyer1.id } }
+				} as unknown as Parameters<typeof POST>[0])
+			).rejects.toMatchObject({ status: 400 });
 		});
 	});
 });
