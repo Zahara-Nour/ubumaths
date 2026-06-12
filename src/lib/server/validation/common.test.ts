@@ -93,11 +93,22 @@ describe('common validation schemas', () => {
 
 	describe('paginationSchema', () => {
 		it('should accept valid pagination parameters', () => {
-			const result = paginationSchema.safeParse({ page: 2, limit: 25 });
+			// page/limit are query-string params (string + clamp) since d4b5051e9
+			const result = paginationSchema.safeParse({ page: '2', limit: '25' });
 			expect(result.success).toBe(true);
 			if (result.success) {
 				expect(result.data.page).toBe(2);
 				expect(result.data.limit).toBe(25);
+			}
+		});
+
+		it('should clamp out-of-range values to safe defaults (no rejection)', () => {
+			// d4b5051e9 changed pagination from reject-on-out-of-range to clamp
+			const result = paginationSchema.safeParse({ page: '-1', limit: '200' });
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.page).toBe(1);
+				expect(result.data.limit).toBe(50);
 			}
 		});
 
@@ -387,10 +398,15 @@ describe('common validation schemas', () => {
 		});
 
 		it('should group errors by field path', () => {
-			const schema = paginationSchema;
+			// paginationSchema now clamps instead of rejecting, so use a schema that
+			// actually produces per-field errors from FormData input
+			const schema = z.object({
+				studentId: uuidSchema,
+				classId: uuidSchema
+			});
 			const formData = new FormData();
-			formData.append('page', '-1');
-			formData.append('limit', '200');
+			formData.append('studentId', 'not-a-uuid');
+			formData.append('classId', 'also-not-a-uuid');
 
 			const result = validateFormData(schema, formData);
 

@@ -12,7 +12,7 @@ describe('generic_functions field validation', () => {
 	const validBaseExercise = {
 		statement_md: 'Test statement',
 		solution_md: 'Test solution',
-		difficulty: 1 as const
+		category: 'automatisme' as const
 	};
 
 	describe('valid cases', () => {

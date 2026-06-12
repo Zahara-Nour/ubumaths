@@ -160,67 +160,32 @@ describe('SRS validation schemas', () => {
 			const data = {
 				deckId: '550e8400-e29b-41d4-a716-446655440000',
 				cardType: 'custom',
-				frontContent: [
-					{
-						type: 'text',
-						value: 'What is 2 + 2?'
-					}
-				],
-				backContent: [
-					{
-						type: 'text',
-						value: '4'
-					}
-				]
+				frontContent: 'What is 2 + 2?',
+				backContent: '4'
 			};
 
 			const result = createCustomCardSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
-		it('should accept all content field types', () => {
-			const types = ['text', 'latex', 'image', 'markdown'] as const;
-			types.forEach((type) => {
-				const data = {
-					deckId: '550e8400-e29b-41d4-a716-446655440000',
-					cardType: 'custom',
-					frontContent: [{ type, value: 'Test content' }],
-					backContent: [{ type, value: 'Answer' }]
-				};
-
-				const result = createCustomCardSchema.safeParse(data);
-				expect(result.success).toBe(true);
-			});
-		});
-
-		it('should accept multiple content fields', () => {
+		it('should accept markdown content (latex and images embedded)', () => {
 			const data = {
 				deckId: '550e8400-e29b-41d4-a716-446655440000',
 				cardType: 'custom',
-				frontContent: [
-					{ type: 'text', value: 'Question' },
-					{ type: 'latex', value: 'x^2 + 1' },
-					{ type: 'image', value: 'https://example.com/img.png' }
-				],
-				backContent: [{ type: 'text', value: 'Answer' }]
+				frontContent: 'Solve $x^2 + 1 = 0$\n\n![diagram](https://example.com/img.png)',
+				backContent: 'No real solution'
 			};
 
 			const result = createCustomCardSchema.safeParse(data);
 			expect(result.success).toBe(true);
 		});
 
-		it('should accept metadata in content fields', () => {
+		it('should accept multiline markdown content', () => {
 			const data = {
 				deckId: '550e8400-e29b-41d4-a716-446655440000',
 				cardType: 'custom',
-				frontContent: [
-					{
-						type: 'image',
-						value: 'img.png',
-						metadata: { alt: 'Diagram', width: 300 }
-					}
-				],
-				backContent: [{ type: 'text', value: 'Answer' }]
+				frontContent: 'Question\n\nWith multiple\n\nparagraphs',
+				backContent: 'Answer'
 			};
 
 			const result = createCustomCardSchema.safeParse(data);
@@ -231,23 +196,20 @@ describe('SRS validation schemas', () => {
 			const data = {
 				deckId: '550e8400-e29b-41d4-a716-446655440000',
 				cardType: 'custom',
-				frontContent: [],
-				backContent: [{ type: 'text', value: 'Answer' }]
+				frontContent: '',
+				backContent: 'Answer'
 			};
 
 			const result = createCustomCardSchema.safeParse(data);
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject too many content fields', () => {
+		it('should reject empty backContent', () => {
 			const data = {
 				deckId: '550e8400-e29b-41d4-a716-446655440000',
 				cardType: 'custom',
-				frontContent: Array.from({ length: 11 }, () => ({
-					type: 'text',
-					value: 'Content'
-				})),
-				backContent: [{ type: 'text', value: 'Answer' }]
+				frontContent: 'Question',
+				backContent: ''
 			};
 
 			const result = createCustomCardSchema.safeParse(data);
@@ -258,13 +220,8 @@ describe('SRS validation schemas', () => {
 			const data = {
 				deckId: '550e8400-e29b-41d4-a716-446655440000',
 				cardType: 'custom',
-				frontContent: [
-					{
-						type: 'text',
-						value: 'a'.repeat(5001)
-					}
-				],
-				backContent: [{ type: 'text', value: 'Answer' }]
+				frontContent: 'a'.repeat(10001),
+				backContent: 'Answer'
 			};
 
 			const result = createCustomCardSchema.safeParse(data);
@@ -288,8 +245,8 @@ describe('SRS validation schemas', () => {
 			const data = {
 				deckId: '550e8400-e29b-41d4-a716-446655440000',
 				cardType: 'custom',
-				frontContent: [{ type: 'text', value: 'Q' }],
-				backContent: [{ type: 'text', value: 'A' }]
+				frontContent: 'Q',
+				backContent: 'A'
 			};
 
 			const result = createCardSchema.safeParse(data);
@@ -479,8 +436,8 @@ describe('SRS validation schemas', () => {
 	describe('updateCardSchema', () => {
 		it('should accept content updates', () => {
 			const data = {
-				frontContent: [{ type: 'text', value: 'Updated question' }],
-				backContent: [{ type: 'text', value: 'Updated answer' }]
+				frontContent: 'Updated question',
+				backContent: 'Updated answer'
 			};
 
 			const result = updateCardSchema.safeParse(data);
@@ -488,10 +445,7 @@ describe('SRS validation schemas', () => {
 		});
 
 		it('should accept partial updates', () => {
-			const updates = [
-				{ frontContent: [{ type: 'text', value: 'New front' }] },
-				{ backContent: [{ type: 'text', value: 'New back' }] }
-			];
+			const updates = [{ frontContent: 'New front' }, { backContent: 'New back' }];
 
 			updates.forEach((update) => {
 				const result = updateCardSchema.safeParse(update);
