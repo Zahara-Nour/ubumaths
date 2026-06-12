@@ -251,7 +251,16 @@ Les 7 autres fichiers (après assessments) traités, **tous test-drift, 0 régre
 
 **Cluster contrats API : 8 fichiers, 100% verts.** 3 régressions de prod corrigées (assessments), reste = test-drift.
 
-**Reste : 41 fichiers** (hors cluster contrats API). Notables : `api/srs` 23 (mock isolé, gardé pour la fin), `achievements/migration` 72 (introspection cassée), `middleware/student-access` 19, clusters answer-validator / markdown-roundtrip / client svelte.
+### Serveur — student-access + achievements/migration (2026-06-12)
+
+| Fichier                     | Tests | Cause racine                                                                                                                                                                                                                                               | Commit      |
+| --------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `middleware/student-access` | 21/21 | `verifyTeacherStudent` fait `.eq('student_id').eq('status','active')` (2e `.eq` ajouté par `186352255`) awaité ; le mock local résolvait via `eq.mockResolvedValueOnce` → 1er `.eq` cassait le 2e. Mock rendu **thenable** (`_queueResult`).               | `b2bc8da60` |
+| `achievements/migration`    | 83/83 | introspection regex-sur-SQL. 68 « no assertions » : `assertContains` throwait sans `expect()` → 0 assertion. 4 patterns stale vs migration réelle (UNIQUE INDEX≠CONSTRAINT, index `incomplete` inexistant→`is_active`, 2 regex multi-lignes `.`→`[\s\S]`). | `5d356c38d` |
+
+⚠️ `achievements/migration` est un test **fragile** (regex sur DDL d'une migration figée) — candidat à suppression future (faible valeur : une migration s'applique ou pas, vérifier son texte est cassant).
+
+**Reste : 39 fichiers.** Notables : `api/srs` 23 (mock isolé, fin), clusters **answer-validator** (`challenge-variables` 25 + `answer-validator-blanks` 13 + `answer-validator` 8, logique math/pédago) et **markdown-roundtrip** (`rich-text` 2 fichiers + `ubumark` 2), `api/migration/migration-review` 3, `exercise-import-export` 4, divers petits (geometry-core exports 7×1, whiteboard 3, evoland 2, questions 4, stores 1, shared/blockly 1) + **5 fichiers client** (`*.svelte.test.ts`).
 
 ## Reprise — par où continuer (prochaine session)
 
