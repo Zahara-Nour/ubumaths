@@ -55,39 +55,20 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createLogger } from '$lib/utils/logger';
+import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
 
 const logger = createLogger('auth/confirm/+server.ts');
 
-/**
- * Validates redirect URLs to prevent open redirect attacks.
- * Only allows:
- * - Relative paths starting with / (but not //)
- * - Same-origin absolute URLs
- *
- * @param url - The URL to validate
- * @param origin - The origin of the current request
- * @returns Safe URL or '/' if invalid
- */
-function validateRedirectUrl(url: string, origin: string): string {
-	// Allow relative URLs (but not protocol-relative like //)
-	if (url.startsWith('/') && !url.startsWith('//')) {
-		return url;
-	}
-
-	// Check if it's a same-origin absolute URL
-	try {
-		const parsed = new URL(url);
-		const originUrl = new URL(origin);
-		if (parsed.origin === originUrl.origin) {
-			return url;
-		}
-	} catch {
-		// Invalid URL, fall through to default
-	}
-
-	// Default to home for any invalid/external URLs
-	return '/';
-}
+// Supabase OTP verification types accepted by this handler.
+const VALID_OTP_TYPES = [
+	'signup',
+	'email',
+	'recovery',
+	'invite',
+	'magiclink',
+	'email_change'
+] as const;
+type OtpType = (typeof VALID_OTP_TYPES)[number];
 
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	// Extract token parameters from the URL
@@ -99,9 +80,9 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
 	logger.info('Auth confirmation request:', { type, has_token: !!token_hash });
 
-	// Validate that we have the required parameters
-	if (!token_hash || !type) {
-		logger.error('Missing token_hash or type in confirmation URL');
+	// Validate that we have the required parameters and a known OTP type
+	if (!token_hash || !type || !VALID_OTP_TYPES.includes(type as OtpType)) {
+		logger.error('Missing or invalid token_hash/type in confirmation URL');
 		// Redirect to login with error message
 		throw redirect(303, '/auth/login?error=Invalid confirmation link');
 	}
@@ -109,7 +90,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	// Verify the OTP token and exchange it for a session
 	// This is the key step - it validates the token and creates a session
 	const { error } = await supabase.auth.verifyOtp({
-		type: type as 'signup' | 'email' | 'recovery' | 'invite' | 'magiclink' | 'email_change',
+		type: type as OtpType,
 		token_hash
 	});
 

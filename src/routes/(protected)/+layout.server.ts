@@ -101,15 +101,20 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		);
 	}
 
-	// Check user approval status
+	// Check user approval status — deny-by-default: only 'approved' may proceed.
 	if (profile.status === 'pending') {
 		logger.info('User pending approval, redirecting:', user!.email);
 		throw redirect(303, '/auth/pending-approval');
 	}
 
-	if (profile.status === 'rejected') {
-		logger.warn('Rejected user attempting to access protected route:', user!.email);
-		// Sign out the rejected user
+	if (profile.status !== 'approved') {
+		// 'rejected' or any unexpected/future status → deny access.
+		logger.warn(
+			'Non-approved user attempting to access protected route:',
+			user!.email,
+			profile.status
+		);
+		// Sign out the non-approved user
 		await locals.supabase.auth.signOut();
 		throw redirect(303, '/auth/login?error=' + encodeURIComponent('Accès refusé.'));
 	}
