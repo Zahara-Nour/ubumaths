@@ -67,9 +67,10 @@ describe('Color Template System - End to End', () => {
 		const conversionResult = convertTinyCASToNew(oldSyntax);
 
 		expect(conversionResult.success).toBe(true);
-		// Now produces pure Markdown syntax {{...}}
+		// convertEvaluations now emits bare variable names inside eval (simplified syntax)
+		// i.e. &a → a (not {{a}}). See syntax-converter.ts convertVarsInExpr().
 		expect(conversionResult.converted).toBe(
-			'Color {{color:primary.0}}, value {{a}}, result {{eval:{{a}}+5}}'
+			'Color {{color:primary.0}}, value {{a}}, result {{eval:a+5}}'
 		);
 
 		// Provide a resolved variable 'a' to test the integration
@@ -146,11 +147,17 @@ describe('Color Template System - End to End', () => {
 		const result = convertTinyCASToNew(oldSyntax);
 
 		expect(result.success).toBe(true);
+		// decimals, relativeIntegers, ternaryOperators, minMaxFunctions were added to ConversionStats
+		// when those conversion cases were implemented — they are always present, defaulting to 0.
 		expect(result.stats).toEqual({
 			colorReferences: 3,
 			randomIntegers: 1,
+			relativeIntegers: 0,
+			decimals: 0,
 			variableRefs: 2, // &variable and &a
 			evaluations: 1,
+			ternaryOperators: 0,
+			minMaxFunctions: 0,
 			exclusions: 0,
 			nDigitNumbers: 0,
 			listSelections: 0,
