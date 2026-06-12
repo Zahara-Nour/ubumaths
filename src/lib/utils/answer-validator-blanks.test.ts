@@ -414,7 +414,10 @@ describe('Per-blank validation — validateAnswer signature', () => {
 			templateId: 'test-mc',
 			statement: 'Choose' as ResolvedMarkdown,
 			choices: [{ content: 'A' as ResolvedMarkdown }, { content: 'B' as ResolvedMarkdown }],
-			solution: '0',
+			// NOTE (tests stale 2026-06-12): `solution` was renamed to
+			// `correctChoiceIndex` (commits 89726bf2e / 6114e256e removed the legacy
+			// `solution` fallback). Updated field name only — behaviour unchanged.
+			correctChoiceIndex: '0',
 			grades: ['6'],
 			theme: 'Test',
 			domain: 'Test',
