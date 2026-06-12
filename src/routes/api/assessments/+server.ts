@@ -23,12 +23,13 @@ import { requireRole } from '$lib/server/middleware/auth';
 export const GET: RequestHandler = async ({ locals, url }) => {
 	const { user } = await requireRole(locals, 'teacher');
 
-	// Validate query parameters
+	// Validate query parameters. searchParams.get() returns null for absent params,
+	// but the schema fields are .optional() (undefined), so coerce null -> undefined.
 	const queryValidation = listAssessmentsQuerySchema.safeParse({
-		status: url.searchParams.get('status'),
-		grade: url.searchParams.get('grade'),
-		page: url.searchParams.get('page'),
-		limit: url.searchParams.get('limit')
+		status: url.searchParams.get('status') ?? undefined,
+		grade: url.searchParams.get('grade') ?? undefined,
+		page: url.searchParams.get('page') ?? undefined,
+		limit: url.searchParams.get('limit') ?? undefined
 	});
 
 	if (!queryValidation.success) {
