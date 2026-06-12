@@ -24,11 +24,26 @@ import type { Database } from '$lib/types/database';
 function createMockSupabaseClient() {
 	const mockRpc = vi.fn();
 
+	// After drawing, executeDrawCards resolves the card's display name via
+	// getTemplateById() → .from('vip_card_templates').select('*').eq('id', cardId)
+	// .single(). Echo the queried id with a capitalized name (e.g. 'bonus' → 'Bonus').
+	const mockFrom = vi.fn(() => ({
+		select: vi.fn(() => ({
+			eq: vi.fn((_col: string, val: string) => ({
+				single: vi.fn(async () => ({
+					data: { id: val, name: val.charAt(0).toUpperCase() + val.slice(1) },
+					error: null
+				}))
+			}))
+		}))
+	}));
+
 	const mockClient = {
-		rpc: mockRpc
+		rpc: mockRpc,
+		from: mockFrom
 	} as unknown as SupabaseClient<Database>;
 
-	return { mockClient, mockRpc };
+	return { mockClient, mockRpc, mockFrom };
 }
 
 describe('VIP Card Filters - Unit Tests', () => {
