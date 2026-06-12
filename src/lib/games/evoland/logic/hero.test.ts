@@ -54,6 +54,8 @@ describe('Hero', () => {
 	describe('input handling', () => {
 		it('should process input and update direction', () => {
 			hero.setGridPosition(5, 5);
+			// Up/down require canMoveAll since 4c4fbf4d3 (movement progression)
+			hero.unlockAllDirections();
 			hero.setInput(true, false, false, false, false); // Up pressed
 			hero.update(1, world);
 			expect(hero.direction).toBe(Direction.Up);
@@ -86,8 +88,10 @@ describe('Hero', () => {
 			expect(hero.isMoving()).toBe(true);
 		});
 
-		it('should move up without special flag', () => {
+		it('should move up with all-directions flag', () => {
+			// Since 4c4fbf4d3, up/down require canMoveAll (movement progression)
 			hero.setGridPosition(5, 5);
+			hero.unlockAllDirections();
 			hero.setInput(true, false, false, false, false);
 			hero.update(1, world);
 
@@ -95,8 +99,9 @@ describe('Hero', () => {
 			expect(hero.isMoving()).toBe(true);
 		});
 
-		it('should move down without special flag', () => {
+		it('should move down with all-directions flag', () => {
 			hero.setGridPosition(5, 5);
+			hero.unlockAllDirections();
 			hero.setInput(false, true, false, false, false);
 			hero.update(1, world);
 
@@ -166,6 +171,8 @@ describe('Hero', () => {
 		});
 
 		it('should allow diagonal movement', () => {
+			// Down requires canMoveAll (4c4fbf4d3); right is always allowed
+			hero.unlockAllDirections();
 			const startX = hero.x;
 			const startY = hero.y;
 
