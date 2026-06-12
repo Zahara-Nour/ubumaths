@@ -20,6 +20,8 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { createLogger } from '$lib/utils/logger';
+import { updatePasswordSchema } from '$lib/server/validation/auth';
+import { validateFormData } from '$lib/server/validation/common';
 
 const logger = createLogger('auth/update-password/+page.server.ts');
 
@@ -54,27 +56,21 @@ export const actions = {
 			});
 		}
 
-		// Extract form data
+		// Validate inputs against the shared schema (password: min 8 characters)
 		const formData = await request.formData();
-		const password = formData.get('password') as string;
-		const confirmPassword = formData.get('confirmPassword') as string;
+		const validation = validateFormData(updatePasswordSchema, formData);
 
-		// Validate inputs
-		if (!password || !confirmPassword) {
+		if (!validation.success) {
 			return fail(400, {
-				error: 'All fields are required'
+				error: Object.values(validation.errors).flat()[0] ?? 'Données invalides'
 			});
 		}
+
+		const { password, confirmPassword } = validation.data;
 
 		if (password !== confirmPassword) {
 			return fail(400, {
 				error: 'Passwords do not match'
-			});
-		}
-
-		if (password.length < 6) {
-			return fail(400, {
-				error: 'Password must be at least 6 characters'
 			});
 		}
 

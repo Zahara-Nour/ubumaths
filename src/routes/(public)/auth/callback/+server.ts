@@ -36,6 +36,7 @@ import { redirect, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createLogger } from '$lib/utils/logger';
 import { notifyAdminsOfPendingUser } from '$lib/server/notifications';
+import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
 
 const logger = createLogger('auth/callback');
 
@@ -45,7 +46,8 @@ const ALLOWED_DOMAIN = '@voltairedoha.com';
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	// Extract OAuth code and next URL from query parameters
 	const code = url.searchParams.get('code');
-	const next = url.searchParams.get('next') ?? '/dashboard';
+	// Validate `next` to prevent open redirect (e.g. ?next=//evil.com).
+	const next = validateRedirectUrl(url.searchParams.get('next') ?? '/dashboard', url.origin);
 
 	if (!code) {
 		logger.error('No code provided in OAuth callback');
@@ -61,7 +63,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 			// Redirect to login with error message
 			throw redirect(
 				303,
-				`/login?error=${encodeURIComponent('Authentication failed. Please try again.')}`
+				`/auth/login?error=${encodeURIComponent('Authentication failed. Please try again.')}`
 			);
 		}
 
@@ -71,7 +73,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 			logger.error('No session or user after code exchange');
 			throw redirect(
 				303,
-				`/login?error=${encodeURIComponent('Authentication failed. Please try again.')}`
+				`/auth/login?error=${encodeURIComponent('Authentication failed. Please try again.')}`
 			);
 		}
 
@@ -86,7 +88,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 			// Redirect to login with domain error
 			throw redirect(
 				303,
-				`/login?error=${encodeURIComponent('Only @voltairedoha.com email accounts are allowed to sign in.')}`
+				`/auth/login?error=${encodeURIComponent('Only @voltairedoha.com email accounts are allowed to sign in.')}`
 			);
 		}
 
@@ -153,14 +155,14 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 			const errorMessage = existingProfile.rejection_reason
 				? `Votre accès a été refusé: ${existingProfile.rejection_reason}`
 				: "Votre accès a été refusé. Contactez un administrateur pour plus d'informations.";
-			throw redirect(303, `/login?error=${encodeURIComponent(errorMessage)}`);
+			throw redirect(303, `/auth/login?error=${encodeURIComponent(errorMessage)}`);
 		}
 
-		// User is approved - sync avatar and proceed
-		// Always sync avatar from Google on each login
+		// User is approved - sync avatar from Google only if the profile has none
+		// yet, to avoid overwriting a user-customized avatar on every login.
 		// Google OAuth stores avatar in 'picture' field (standard), check 'avatar_url' as fallback
 		const googleAvatar = user.user_metadata?.picture || user.user_metadata?.avatar_url;
-		if (googleAvatar) {
+		if (googleAvatar && !existingProfile.avatar_url) {
 			const { error: updateError } = await supabase
 				.from('profiles')
 				.update({ avatar_url: googleAvatar })
@@ -185,7 +187,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 		logger.error('Unexpected error in OAuth callback:', err);
 		throw redirect(
 			303,
-			`/login?error=${encodeURIComponent('An unexpected error occurred. Please try again.')}`
+			`/auth/login?error=${encodeURIComponent('An unexpected error occurred. Please try again.')}`
 		);
 	}
 };

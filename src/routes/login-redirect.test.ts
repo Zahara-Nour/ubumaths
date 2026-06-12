@@ -17,9 +17,12 @@ import { join } from 'node:path';
 
 const SRC = join(process.cwd(), 'src');
 
-// Navigation targets only (redirect / href / goto) — NOT path comparisons like
-// `pathname === '/login'`, which are legitimate in the redirect handler.
-const BARE_LOGIN = /(?:redirect\([^,]*,\s*|href\s*=\s*\{?\s*|goto\(\s*)['"]\/login(?=['"?#])/;
+// Any quoted `/login` path (single/double/backtick), EXCEPT path comparisons
+// like `pathname === '/login'` (legitimate in the redirect handler). Matching
+// the quoted literal — not the redirect()/href= prefix — also catches multi-line
+// redirects and backtick template literals (the blind spots of the first version).
+const LOGIN_TARGET = /['"`]\/login(?=['"`?#])/;
+const LOGIN_COMPARISON = /[!=]==\s*['"`]\/login/;
 
 function walk(dir: string): string[] {
 	const files: string[] = [];
@@ -39,8 +42,8 @@ describe('login route redirects', () => {
 			readFileSync(file, 'utf8')
 				.split('\n')
 				.forEach((line, i) => {
-					if (line.includes('/auth/login')) return;
-					if (BARE_LOGIN.test(line)) offenders.push(`${file.replace(SRC, 'src')}:${i + 1}`);
+					if (line.includes('/auth/login') || LOGIN_COMPARISON.test(line)) return;
+					if (LOGIN_TARGET.test(line)) offenders.push(`${file.replace(SRC, 'src')}:${i + 1}`);
 				});
 		}
 		expect(
