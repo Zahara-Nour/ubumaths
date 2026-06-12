@@ -76,7 +76,7 @@ describe('exportExerciseToJSON', () => {
 		const parsed = JSON.parse(json);
 
 		expect(parsed.version).toBe('2.0');
-		expect(parsed.category).toBe(2);
+		expect(parsed.category).toBe('automatisme');
 		expect(parsed.tags).toEqual(['algèbre', 'équations']);
 		expect(parsed.statement_md).toBe('Résoudre $x^2 = 4$');
 		expect(parsed.solution_md).toBe('$x = \\pm 2$');
@@ -123,7 +123,7 @@ describe('exportExerciseToJSON', () => {
 		const parsed = JSON.parse(json);
 
 		expect(parsed.version).toBe('2.0');
-		expect(parsed.category).toBe(1);
+		expect(parsed.category).toBe('automatisme');
 		expect(parsed.tags).toEqual([]);
 		// Optional fields that are undefined in source are not included in export
 		expect(parsed.title).toBeUndefined();
@@ -141,7 +141,7 @@ describe('exportExerciseToMarkdown', () => {
 		expect(markdown).toContain('---');
 		expect(markdown).toContain('version:');
 		expect(markdown).toContain('2.0');
-		expect(markdown).toContain("category: 'automatisme'");
+		expect(markdown).toContain('category: automatisme');
 		expect(markdown).toContain('title:');
 		expect(markdown).toContain('Test Exercise');
 		expect(markdown).toContain('- algèbre');
@@ -166,7 +166,7 @@ describe('exportExerciseToMarkdown', () => {
 
 		const markdown = exportExerciseToMarkdown(minimalExercise);
 
-		expect(markdown).toContain("category: 'automatisme'");
+		expect(markdown).toContain('category: automatisme');
 		expect(markdown).toContain('tags: []');
 		expect(markdown).toContain('# Énoncé');
 		expect(markdown).toContain('Q');

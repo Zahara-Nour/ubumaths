@@ -200,9 +200,9 @@ describe('Blockly Config', () => {
 			expect(DEFAULT_WORKSPACE_OPTIONS.zoom.startScale).toBe(1.0);
 		});
 
-		it('should enable trashcan and sounds', () => {
+		it('should enable trashcan and disable sounds (CSP: Blockly loads from CDN)', () => {
 			expect(DEFAULT_WORKSPACE_OPTIONS.trashcan).toBe(true);
-			expect(DEFAULT_WORKSPACE_OPTIONS.sounds).toBe(true);
+			expect(DEFAULT_WORKSPACE_OPTIONS.sounds).toBe(false);
 		});
 	});
 });

@@ -280,7 +280,7 @@ describe('Backup Validation', () => {
 			expect(result.success).toBe(true);
 		});
 
-		it('should reject exercise with invalid category', () => {
+		it('should accept any category string (lenient backup restoration)', () => {
 			const invalidBackup = {
 				version: '1.0' as const,
 				format: 'ubumaths-backup' as const,
@@ -326,9 +326,11 @@ describe('Backup Validation', () => {
 				}
 			};
 
+			// Backup validation is intentionally lenient on `category` (z.string(),
+			// since fd5359395 difficulty->category) so old backups with any category
+			// value can still be restored.
 			const result = validateBackup(invalidBackup);
-			expect(result.success).toBe(false);
-			expect(result.error).toContain('category');
+			expect(result.success).toBe(true);
 		});
 
 		it('should reject exercise with invalid UUID', () => {

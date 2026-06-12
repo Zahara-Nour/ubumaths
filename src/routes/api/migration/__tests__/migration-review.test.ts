@@ -18,6 +18,9 @@ import * as questionLoader from '$lib/migration/question-data-loader';
 
 // Mock dependencies
 vi.mock('$lib/migration/question-data-loader');
+// approve/reject now persist via MigrationStateManager — auto-mock so its DB
+// methods (init/recordQuestionProcessed) are no-ops in these unit tests.
+vi.mock('$lib/server/migration/state-manager');
 
 describe('Migration Review API', () => {
 	let mockLocals: {
@@ -30,9 +33,24 @@ describe('Migration Review API', () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
+		// approve/reject load the original question (for hash + persistence) via
+		// loadQuestionByIndex; default to a found question. Not-found/error tests
+		// short-circuit on loadQuestionWithTransform before reaching this.
+		vi.mocked(questionLoader.loadQuestionByIndex).mockResolvedValue({
+			description: 'Test question',
+			type: 'simple'
+		} as never);
 		mockLocals = {
 			profile: { id: adminId, role: 'admin' },
-			supabase: {}
+			// approve/reject query migration_edits for an edited version; default to
+			// "no edit" (data: null). Chainable so .select().eq().single() resolves.
+			supabase: {
+				from: vi.fn(() => ({
+					select: vi.fn().mockReturnThis(),
+					eq: vi.fn().mockReturnThis(),
+					single: vi.fn().mockResolvedValue({ data: null })
+				}))
+			}
 		};
 	});
 
