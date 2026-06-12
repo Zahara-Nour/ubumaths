@@ -157,7 +157,6 @@ import { collectDenominators } from '../solve/rational';
 import type {
 	LinearInequalityStepsOptions,
 	QuadraticInequalityStepsOptions,
-	QuadraticSchoolLevel,
 	RationalInequalityStepsOptions
 } from './types';
 

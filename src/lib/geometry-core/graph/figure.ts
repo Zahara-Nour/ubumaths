@@ -72,26 +72,26 @@ import type {
 	GeoVectorScaled,
 	GeoVectorNegate,
 	GeoVectorOrientedAlongLine,
-	type GeoRotation,
-	type GeoReflection,
-	type GeoReflectionOverLine,
-	type GeoTranslation,
-	type GeoHomothety,
-	type GeoComposition,
-	type GeoProjection,
-	type GeoProjectedPoint,
-	type GeoAffinity,
-	type GeoAffinityPoint,
-	type GeoInversion,
-	type GeoInvertedPoint,
-	type GeoLocus,
-	type GeoTrace,
-	type GeoComputedPoint,
-	type GeoScalar,
-	type GeoSlider,
-	type GeoIntegralArea,
-	type LineEquation,
-	type ConicParams
+	GeoRotation,
+	GeoReflection,
+	GeoReflectionOverLine,
+	GeoTranslation,
+	GeoHomothety,
+	GeoComposition,
+	GeoProjection,
+	GeoProjectedPoint,
+	GeoAffinity,
+	GeoAffinityPoint,
+	GeoInversion,
+	GeoInvertedPoint,
+	GeoLocus,
+	GeoTrace,
+	GeoComputedPoint,
+	GeoScalar,
+	GeoSlider,
+	GeoIntegralArea,
+	LineEquation,
+	ConicParams
 } from '../types/elements';
 import {
 	isFreePoint,
@@ -115,7 +115,7 @@ import {
 	isAngle
 } from '../types/elements';
 import type { GeoValue, ScalarParam } from '../types/geo-value';
-import { geoValueToMathNode, numeric, isScalarRef } from '../types/geo-value';
+import { geoValueToMathNode, numeric, isScalarRef, isInfinityParam } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
 import type { GeoPoint } from '../types/primitives';
 import { resolveVectorComponents } from './vector-components';
@@ -2332,7 +2332,7 @@ export class Figure {
 		const element: GeoQuadraticCurve = {
 			type: 'quadraticCurve',
 			id,
-			expression: { type: 'number', value: 0 } as MathNode,
+			expression: mathNumber('0'),
 			equation: `transformed`,
 			coefficients: newCoeffs,
 			conic,
@@ -3570,6 +3570,22 @@ export class Figure {
 	 */
 	resolveParam(param: ScalarParam): number {
 		return resolveScalarParam(param, this.scalarValues);
+	}
+
+	/**
+	 * Resolve a ScalarParam to a GeoValue, preserving exactness for GeoValue inputs.
+	 * ScalarRef looks up the current scalar value and wraps it as numeric.
+	 * InfinityParam is degenerate for the (finite) transform/arc fields that use
+	 * this resolver, so it collapses to `numeric(0)`; callers that need ±∞ use the
+	 * number-returning `resolveParam` instead.
+	 */
+	resolveParamToGeoValue(param: ScalarParam): GeoValue {
+		if (isScalarRef(param)) {
+			const v = this.getScalarValue(param.scalarRef);
+			return numeric(typeof v === 'number' && Number.isFinite(v) ? v : 0);
+		}
+		if (isInfinityParam(param)) return numeric(0);
+		return param;
 	}
 
 	// ─── Scalar factories ───────────────────────────────────────

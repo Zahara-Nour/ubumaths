@@ -658,6 +658,18 @@ export function hasUnitDescendant(node: MathNode): boolean {
 		case 'logical-not':
 			return hasUnitDescendant(node.operand);
 
+		case 'signed-zero':
+			// Signed zero is a leaf node, no children to check
+			return false;
+
+		case 'piecewise':
+			return (
+				node.pieces.some(
+					(piece) =>
+						hasUnitDescendant(piece.condition) || hasUnitDescendant(piece.value)
+				) || (node.otherwise ? hasUnitDescendant(node.otherwise) : false)
+			);
+
 		default: {
 			const _exhaustive: never = node;
 			return _exhaustive;

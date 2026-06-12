@@ -15,7 +15,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database, TablesUpdate } from '$lib/types/database';
 import type {
 	ClassChapter,
 	ChapterDocument,
@@ -299,7 +299,7 @@ export async function updateChapter(
 	data: UpdateChapterInput,
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<ClassChapter>> {
-	const updateData: Record<string, unknown> = {};
+	const updateData: TablesUpdate<'class_chapters'> = {};
 
 	if (data.title !== undefined) updateData.title = data.title;
 	if (data.description !== undefined) updateData.description = data.description;
@@ -465,7 +465,7 @@ export async function updateChapterDocument(
 	data: UpdateDocumentInput,
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<ChapterDocument>> {
-	const updateData: Record<string, unknown> = {};
+	const updateData: TablesUpdate<'chapter_documents'> = {};
 
 	if (data.title !== undefined) updateData.title = data.title;
 	if (data.description !== undefined) updateData.description = data.description;
@@ -701,7 +701,7 @@ export async function updateChecklistItem(
 	data: UpdateChecklistItemInput,
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<ChapterChecklistItem>> {
-	const updateData: Record<string, unknown> = {};
+	const updateData: TablesUpdate<'chapter_checklist_items'> = {};
 
 	if (data.content !== undefined) updateData.content = data.content;
 	if (data.description !== undefined) updateData.description = data.description;

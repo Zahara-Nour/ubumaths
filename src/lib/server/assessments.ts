@@ -4,7 +4,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database, TablesUpdate } from '$lib/types/database';
 import type {
 	CreateAssessmentData,
 	UpdateAssessmentData,
@@ -137,7 +137,7 @@ export async function updateAssessment(
 		return { data: null, error: new Error('Unauthorized') };
 	}
 
-	const updateData: Record<string, unknown> = {};
+	const updateData: TablesUpdate<'assessments'> = {};
 	if (data.title !== undefined) updateData.title = data.title;
 	if (data.grade !== undefined) updateData.grade = data.grade;
 	if (data.description !== undefined) updateData.description = data.description;

@@ -115,6 +115,28 @@ export function detectVariable(expr: MathNode): string | null {
 				collect(node.approach);
 				break;
 
+			case 'signed-zero':
+			case 'boolean':
+				// Leaf nodes, don't contain variables
+				break;
+
+			case 'logical':
+				collect(node.left);
+				collect(node.right);
+				break;
+
+			case 'logical-not':
+				collect(node.operand);
+				break;
+
+			case 'piecewise':
+				node.pieces.forEach((piece) => {
+					collect(piece.condition);
+					collect(piece.value);
+				});
+				if (node.otherwise !== undefined) collect(node.otherwise);
+				break;
+
 			default: {
 				const _exhaustive: never = node;
 				return _exhaustive;

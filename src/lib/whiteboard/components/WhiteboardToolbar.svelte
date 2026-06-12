@@ -378,10 +378,11 @@
 	function handleArrowTypeChange(arrowType: ArrowType) {
 		whiteboardStore.setArrowType(arrowType);
 		// Apply to selected arrows if any
+		// Note: arrowType is persisted via setArrowType above; updateSelectedStyles only
+		// accepts the subset of style props it knows how to apply (arrowType is not one of them).
 		if (whiteboardStore.hasSelection) {
-			// Also sync elbowed for backwards compatibility
 			const elbowed = arrowType === 'elbow';
-			whiteboardStore.updateSelectedStyles({ arrowType, elbowed });
+			whiteboardStore.updateSelectedStyles({ elbowed });
 		}
 	}
 
@@ -420,7 +421,7 @@
 		});
 		// Only close popover for plain style, keep open for grids to allow adjustments
 		if (style === 'plain') {
-			backgroundPopoverOpen = false;
+			pagePopoverOpen = false;
 		}
 	}
 
@@ -452,7 +453,7 @@
 
 	function handlePageFormatChange(format: PageFormatKey) {
 		whiteboardStore.setPageFormat(format);
-		pageFormatPopoverOpen = false;
+		pagePopoverOpen = false;
 	}
 
 	function handleInstrumentToggle(type: InstrumentType) {

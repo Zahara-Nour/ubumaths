@@ -21,8 +21,6 @@
 	const numericalQuestion: QuestionInstance = {
 		templateId: 'demo-numerical',
 		statement: resolvedMarkdown('Calculate $$\\frac{3}{4} + \\frac{1}{2}$$'),
-		solution: '5/4',
-		precision: { type: 'none' },
 		grades: ['6', '5'],
 		theme: 'Algèbre',
 		domain: 'Fractions',
@@ -40,7 +38,6 @@
 	const algebraicQuestion: QuestionInstance = {
 		templateId: 'demo-algebraic',
 		statement: resolvedMarkdown('Factor the expression: $$x^2 - 9$$'),
-		solution: '(x-3)(x+3)',
 		grades: ['3', '2'],
 		theme: 'Algèbre',
 		domain: 'Factorisation',
@@ -58,7 +55,7 @@
 	const qcmQuestion: QuestionInstance = {
 		templateId: 'demo-qcm',
 		statement: resolvedMarkdown('What is the value of $$\\pi$$ (approximated to 2 decimals)?'),
-		solution: '1', // Index of correct choice
+		correctChoiceIndex: '1', // Index of correct choice
 		choices: [
 			{ content: resolvedMarkdown('$$3.00$$'), isCorrect: false },
 			{ content: resolvedMarkdown('$$3.14$$'), isCorrect: true },
@@ -87,7 +84,6 @@
 		statement: resolvedMarkdown(
 			'The Pythagorean theorem states that for a right triangle: $$a^2 + b^2 = ____^2$$ where ____ is the hypotenuse.'
 		),
-		solution: ['c', 'c'],
 		blanks: [
 			{ expectedAnswer: 'c', type: 'math' },
 			{ expectedAnswer: 'c', type: 'text' }

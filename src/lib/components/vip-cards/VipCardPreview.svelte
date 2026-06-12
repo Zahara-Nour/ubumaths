@@ -57,6 +57,7 @@
 			case 'choose_card':
 				return '🎯';
 		}
+		return '❓';
 	}
 
 	function getActionType(action: VipCardTemplate['action']): ActionType | null {
@@ -78,6 +79,7 @@
 			case 'choose_card':
 				return `Choisir ${action.count || 1} carte${(action.count || 1) > 1 ? 's' : ''}`;
 		}
+		return 'Action inconnue';
 	}
 
 	let {

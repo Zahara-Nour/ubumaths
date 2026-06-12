@@ -105,7 +105,8 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Generate hash from original question
-		const questionHash = generateStableQuestionHash(originalQuestion);
+		// Cast needed: old-question-types.QuestionBase lacks the index signature that hash-utils expects
+		const questionHash = generateStableQuestionHash(originalQuestion as Record<string, unknown>);
 
 		// Find or create migration_tracking record for this question
 		const { data: trackingRecord, error: trackingQueryError } = await locals.supabase

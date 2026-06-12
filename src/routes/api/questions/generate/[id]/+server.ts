@@ -29,7 +29,6 @@ function dbRowToQuestionTemplate(row: DbQuestionTemplate): QuestionTemplate {
 		variations: row.variations as unknown as QuestionTemplate['variations'],
 		exerciseInstruction: row.exercise_instruction ?? undefined,
 		options: (row.options as unknown as QuestionTemplate['options']) ?? undefined,
-		precision: (row.precision as unknown as QuestionTemplate['precision']) ?? { type: 'none' },
 		grades: row.grades as unknown as QuestionTemplate['grades'],
 		theme: row.theme,
 		domain: row.domain,

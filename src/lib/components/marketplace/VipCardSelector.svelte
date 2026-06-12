@@ -149,8 +149,8 @@
 			name: template.name,
 			description: template.description,
 			imagePath: template.image_path ?? undefined,
-			rarity: template.rarity as VipCard['rarity'],
-			category: template.category as VipCard['category']
+			rarity: template.rarity as VipCardType['rarity'],
+			category: template.category as VipCardType['category']
 		};
 	}
 </script>

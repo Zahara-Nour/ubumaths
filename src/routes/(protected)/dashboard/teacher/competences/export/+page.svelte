@@ -19,10 +19,11 @@
 		getMathCompetenceLevelVisual,
 		type MathCompetenceLevel
 	} from '$lib/types/skills';
-	import type { CompetencesExportPageData } from './$types';
+	import type { PageData } from './$types';
+	import type { CompetencesExportPageData } from './+page.server';
 
 	interface Props {
-		data: CompetencesExportPageData;
+		data: PageData & CompetencesExportPageData;
 	}
 
 	let { data }: Props = $props();

@@ -47,11 +47,9 @@
 				</p>
 
 				<div class="pt-4">
-					<Button variant="outline" asChild>
-						<a href="/" class="inline-flex items-center gap-2">
-							Découvrir UbuMaths
-							<ExternalLink class="h-4 w-4" />
-						</a>
+					<Button variant="outline" href="/" class="inline-flex items-center gap-2">
+						Découvrir UbuMaths
+						<ExternalLink class="h-4 w-4" />
 					</Button>
 				</div>
 			</CardContent>

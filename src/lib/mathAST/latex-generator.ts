@@ -28,6 +28,7 @@ import type {
 	MatrixNode,
 	ComplexNode,
 	InfinityNode,
+	SignedZeroNode,
 	LimitNode,
 	MathSymbol,
 	RelationType,
@@ -414,6 +415,10 @@ export class LatexGenerator {
 
 			case 'infinity':
 				this.visitInfinitySpans(node);
+				break;
+
+			case 'signed-zero':
+				this.visitSignedZeroSpans(node);
 				break;
 
 			case 'limit':
@@ -848,6 +853,11 @@ export class LatexGenerator {
 		this.emit(`${sign}\\infty`, node.metadata);
 	}
 
+	private visitSignedZeroSpans(node: SignedZeroNode): void {
+		const sign = node.sign === 'positive' ? '+' : '-';
+		this.emit(`0^{${sign}}`, node.metadata);
+	}
+
 	/**
 	 * Emits spans for a limit node.
 	 * Renders as: \lim_{x \to a} f(x)
@@ -986,6 +996,9 @@ export class LatexGenerator {
 				break;
 			case 'infinity':
 				content = this.generateInfinity(node);
+				break;
+			case 'signed-zero':
+				content = this.generateSignedZero(node);
 				break;
 			case 'limit':
 				content = this.generateLimit(node);
@@ -1302,6 +1315,10 @@ export class LatexGenerator {
 	 */
 	private generateInfinity(node: InfinityNode): string {
 		return node.sign === 'positive' ? '+\\infty' : '-\\infty';
+	}
+
+	private generateSignedZero(node: SignedZeroNode): string {
+		return node.sign === 'positive' ? '0^{+}' : '0^{-}';
 	}
 
 	/**

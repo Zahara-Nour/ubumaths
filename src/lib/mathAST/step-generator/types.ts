@@ -12,7 +12,8 @@ import type { MathNode } from '../types';
  * Re-exported from the canonical home in `common/step-renderer-base` so existing
  * imports from `step-generator/types` keep working.
  */
-export type { SchoolLevel } from '../common/step-renderer-base';
+import type { SchoolLevel } from '../common/step-renderer-base';
+export type { SchoolLevel };
 
 /**
  * A single calculation step

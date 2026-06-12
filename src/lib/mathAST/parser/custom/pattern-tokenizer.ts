@@ -1117,6 +1117,8 @@ export function tokenTypeToString(type: PatternTokenType): string {
 			return "';'";
 		case 'EOF':
 			return 'end of input';
+		default:
+			return String(type);
 	}
 }
 

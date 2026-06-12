@@ -108,7 +108,8 @@
 
 	// Local composite type: a card with tag_ids + assignee_ids flattened, and
 	// a column holding such cards (mirrors getBoardWithContent's shape).
-	type CardWithExtras = KanbanCard & { tag_ids: string[]; assignee_ids: string[] };
+	// tag_ids/assignee_ids are optional to match KanbanColumn's onCardsConsider/Finalize signature
+	type CardWithExtras = KanbanCard & { tag_ids?: string[]; assignee_ids?: string[] };
 	type ColumnWithCards = KanbanColumn & { cards: CardWithExtras[] };
 
 	// Local mutable mirror of the server data, seeded once at mount via a

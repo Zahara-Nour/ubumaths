@@ -14,7 +14,7 @@
 -->
 
 <script lang="ts">
-	import type { QuestionInstance } from '$lib/questions/types';
+	import type { QuestionInstance, ValidationStatus } from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
 	import type { AnswerData, QuestionStats } from '$lib/types/question-display';
 	import { validateAnswer } from '$lib/utils/answer-validator';
@@ -70,7 +70,7 @@
 	let isSubmitted = $state(false);
 	let isSubmitting = $state(false);
 	let isCorrect = $state(false);
-	let validationStatus = $state<'correct' | 'unoptimal_form' | 'bad_form' | undefined>();
+	let validationStatus = $state<ValidationStatus | undefined>();
 	let validationMessage = $state('');
 	let validationFeedback = $state('');
 

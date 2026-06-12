@@ -30,7 +30,7 @@
 
 	interface Props {
 		questionType: QuestionType;
-		answer: string | string[];
+		answer?: string | string[];
 		blanks?: TemplateBlank[];
 		choices?: { content: TemplateMarkdown; isCorrect?: boolean }[];
 		multipleAnswers?: boolean;

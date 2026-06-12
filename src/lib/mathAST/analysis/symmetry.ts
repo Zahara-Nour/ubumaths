@@ -42,7 +42,7 @@ function isDomainSymmetric(domain: Domain): boolean | undefined {
 		case 'interval_set':
 			return isIntervalSetSymmetric(domain);
 
-		case 'condition':
+		case 'condition_domain':
 			// Cannot easily determine symmetry for condition domains
 			return undefined;
 

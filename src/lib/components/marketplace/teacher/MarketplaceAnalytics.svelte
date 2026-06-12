@@ -28,6 +28,7 @@
 				id: string;
 				title: string;
 				gidouilles: number;
+				listing_type?: 'sell' | 'buy';
 			}>;
 		};
 		cards: {

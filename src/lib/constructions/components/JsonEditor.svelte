@@ -32,7 +32,8 @@
 		schema?: {
 			safeParse: (data: unknown) => {
 				success: boolean;
-				error?: { issues: { path: (string | number)[]; message: string }[] };
+				// PropertyKey (string | number | symbol) matches Zod v4 $ZodIssue.path
+				error?: { issues: { path: PropertyKey[]; message: string }[] };
 			};
 		};
 		onValidate?: (isValid: boolean, errors: string[]) => void;

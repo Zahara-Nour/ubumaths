@@ -291,6 +291,9 @@ export function taylorExpand(
 			// Evaluate the nth derivative at the center
 			const substituted = substitute(currentExpr, { [varName]: center });
 			const evalResult = evaluate(substituted, { mode: 'decimal', functions });
+			if (evalResult.status !== 'value') {
+				throw new Error('Unknown value type');
+			}
 			const derivativeValue = valueToNumber(evalResult.value);
 
 			// Compute coefficient: f^(n)(a) / n!

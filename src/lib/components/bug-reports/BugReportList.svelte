@@ -108,7 +108,7 @@
 	<!-- Selection header -->
 	{#if selectable && !loading && !isEmpty}
 		<div class="flex items-center gap-3 rounded-lg border bg-muted/30 p-3">
-			<MyCheckbox checked={selectAllState} onCheckedChange={handleSelectAll} />
+			<MyCheckbox checked={selectAllState === true} onCheckedChange={handleSelectAll} />
 			<span class="text-sm font-medium">
 				{#if selectedCount > 0}
 					{selectedCount} sélectionné{selectedCount > 1 ? 's' : ''}

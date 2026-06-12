@@ -155,7 +155,7 @@
 					readonly ? 'cursor-default' : 'cursor-pointer hover:border-primary/50'
 				)}
 			>
-				<VipCard card={group.card} size="sm" clickable={false} />
+				<VipCard card={group.card!} size="sm" clickable={false} />
 
 				<!-- Selection badge -->
 				{#if group.totalCount > 1}

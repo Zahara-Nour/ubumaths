@@ -787,7 +787,7 @@ export function intersectLF(
 	}
 
 	// h(x) = f(x) - (m*x + p)
-	const lineExpr = add(multiply(numericNode(m), variable('x')), numericNode(p));
+	const lineExpr = add(multiply(numericNode(m), variable('x'), 'implicit'), numericNode(p));
 	const h = subtract(fnExpression, lineExpr);
 	const compiledH = compile(h);
 
@@ -800,7 +800,7 @@ export function intersectLF(
 			if (!Number.isFinite(yVal)) return null;
 			return { x: numeric(root.x), y: numeric(yVal) };
 		})
-		.filter((p): p is GeoPoint => p !== null);
+		.filter((p): p is NonNullable<typeof p> => p !== null);
 
 	return points.length === 0 ? null : points;
 }
@@ -832,7 +832,7 @@ export function intersectFF(
 			if (!Number.isFinite(yVal)) return null;
 			return { x: numeric(root.x), y: numeric(yVal) };
 		})
-		.filter((p): p is GeoPoint => p !== null);
+		.filter((p): p is NonNullable<typeof p> => p !== null);
 
 	return points.length === 0 ? null : points;
 }

@@ -25,6 +25,8 @@ import type { InstrumentType, InstrumentState, InstrumentMove } from '../types';
 import { createDefaultInstrumentState, DRAWABLE_TYPES } from '../types';
 import { rulerPosition, compassPosition } from '../instruments/positioning';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import type { ScalarParam } from '$lib/geometry-core/types/geo-value';
+import { isScalarRef, isInfinityParam } from '$lib/geometry-core/types/geo-value';
 import { resolveDecorators, lookupVoie, DecoratorResolveError } from './choreographies/resolve';
 import type {
 	DecoratorTriple,
@@ -997,17 +999,14 @@ export class ConstructionExecutor {
 	 * `endAngle` because choreographies route these through reactive scalars
 	 * (`createScalarExpression`) which are stored as `scalarRef`.
 	 */
-	private scalarParamToNumber(
-		param:
-			| { scalarRef: string }
-			| { kind: 'numeric'; value: number }
-			| { kind: 'exact'; node: unknown },
-		fig: Figure
-	): number {
-		if (typeof param === 'object' && param !== null && 'scalarRef' in param) {
+	private scalarParamToNumber(param: ScalarParam, fig: Figure): number {
+		if (isScalarRef(param)) {
 			return fig.getScalarValue(param.scalarRef) ?? 0;
 		}
-		return geoToNumber(param as Parameters<typeof geoToNumber>[0]);
+		if (isInfinityParam(param)) {
+			return param.infinity === '+' ? Infinity : -Infinity;
+		}
+		return geoToNumber(param);
 	}
 
 	private resolveRadius(el: GeoElement, fig: Figure): number {

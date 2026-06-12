@@ -48,7 +48,7 @@ function negate(node: MathNode): MathNode {
 function evalSimplify(node: MathNode): MathNode {
 	try {
 		const result = evaluate(node);
-		if (result.exact && result.node) {
+		if (result.status === 'value' && result.exact && result.node) {
 			return result.node;
 		}
 	} catch {
@@ -1054,7 +1054,7 @@ export class SolveCommand extends BaseCommand {
 
 				// Helper to check if exact value has a terminating decimal
 				const isTerminatingDecimal = (evalResult: ReturnType<typeof evaluate>): boolean => {
-					if (!evalResult.exact) return false;
+					if (evalResult.status !== 'value' || !evalResult.exact) return false;
 					const val = evalResult.value;
 					if (typeof val === 'number') return Number.isInteger(val);
 					// Handle BigInt fraction { n: bigint, d: bigint }

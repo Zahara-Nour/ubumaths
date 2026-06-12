@@ -95,9 +95,10 @@
 	// Format JSON for display
 	let formattedJson = $derived(JSON.stringify(data.exercise, null, 2));
 
-	// Get content from variations (single source of truth)
+	// Get content from variations (single source of truth).
+	// data.exercise has Json columns (variables, variations) from Supabase; cast through unknown.
 	let exerciseContent = $derived(
-		getExerciseContentSafe(data.exercise as import('$lib/exercises/types').Exercise)
+		getExerciseContentSafe(data.exercise as unknown as import('$lib/exercises/types').Exercise)
 	);
 
 	// Generic functions config for markdown rendering
@@ -312,7 +313,8 @@
 	 * Get variation index from label
 	 */
 	function getVariationIndex(label: string): number {
-		const variations = data.exercise.variations;
+		// data.exercise.variations is Json from Supabase; cast to array for iteration
+		const variations = data.exercise.variations as unknown as Array<{ label?: string }> | null;
 		if (!variations || variations.length === 0) return 0;
 		const index = variations.findIndex((v) => v.label === label);
 		return index >= 0 ? index : 0;
@@ -336,7 +338,7 @@
 
 			// Generate Typst content (this will track external image URLs)
 			const typstResult = await generateExerciseTypst({
-				exercise: data.exercise as import('$lib/exercises/types').Exercise,
+				exercise: data.exercise as unknown as import('$lib/exercises/types').Exercise,
 				variationIndex,
 				seed,
 				includeSolution,

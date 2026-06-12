@@ -74,6 +74,25 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 		case 'limit':
 			return containsVariable(node.expression, varName) || containsVariable(node.approach, varName);
 
+		case 'signed-zero':
+		case 'boolean':
+			return false;
+
+		case 'logical':
+			return containsVariable(node.left, varName) || containsVariable(node.right, varName);
+
+		case 'logical-not':
+			return containsVariable(node.operand, varName);
+
+		case 'piecewise':
+			return (
+				node.pieces.some(
+					(piece) =>
+						containsVariable(piece.condition, varName) ||
+						containsVariable(piece.value, varName)
+				) || (node.otherwise !== undefined && containsVariable(node.otherwise, varName))
+			);
+
 		default: {
 			const _exhaustive: never = node;
 			return _exhaustive;

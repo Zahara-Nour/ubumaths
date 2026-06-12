@@ -14,6 +14,8 @@ import {
 } from '$lib/mathAST/domain/range-helpers';
 import type { MathNode } from '../../types';
 import type { IntervalDomain } from '$lib/math/intervals/types';
+import type { Domain } from '$lib/mathAST/domain/types';
+import { intervalSet as domainIntervalSet } from '$lib/mathAST/domain/factory';
 import { isPositiveInfinityEndpoint, isNegativeInfinityEndpoint } from '$lib/math/intervals';
 
 /**
@@ -36,15 +38,23 @@ export function computePreciseBounds(
 	// Closed interval method requires finite bounds
 	if (!hasFiniteEndpoints(variableBounds)) return undefined;
 
+	// hasFiniteEndpoints guarantees an interval_set; re-tag it as a domain-level
+	// Domain (adding an empty excludedPoints array) so it matches the Domain
+	// parameter of the range helpers. This represents the SAME set.
+	const domainBounds: Domain =
+		variableBounds.kind === 'interval_set'
+			? domainIntervalSet(variableBounds.intervals)
+			: variableBounds;
+
 	try {
 		// Try exact method first (symbolic critical point analysis)
-		const exactResult = computeRangeWithCriticalPointsExact(expr, variable, variableBounds);
+		const exactResult = computeRangeWithCriticalPointsExact(expr, variable, domainBounds);
 		if (exactResult && isUsableResult(exactResult.domain)) {
 			return exactResult.domain as IntervalDomain;
 		}
 
 		// Fallback: exact + sampling combo
-		const rangeDomain = computeRangeWithCriticalPoints(expr, variable, variableBounds);
+		const rangeDomain = computeRangeWithCriticalPoints(expr, variable, domainBounds);
 		if (rangeDomain && isUsableResult(rangeDomain)) {
 			return rangeDomain as IntervalDomain;
 		}

@@ -229,7 +229,8 @@
 										size="sm"
 										class="shrink-0 self-end sm:self-center"
 										onclick={async () => {
-											await marketplaceStore.cancelProposal?.(proposal.id);
+											// cancelProposal not yet implemented in store — no-op via optional chain
+											await (marketplaceStore as typeof marketplaceStore & { cancelProposal?: (id: string) => Promise<void> }).cancelProposal?.(proposal.id);
 										}}
 									>
 										Retirer

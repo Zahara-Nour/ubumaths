@@ -19,7 +19,8 @@
 
 	let { data, form }: Props = $props();
 
-	let classId = $state<string | null>(null);
+	// Use string | undefined (not null) so MySelect bind:value works correctly
+	let classId = $state<string | undefined>(undefined);
 
 	const classItems = $derived([
 		{ value: '', label: 'Aucune (tâche ad-hoc)' },

@@ -42,7 +42,9 @@ export function isZeroResult(result: ExtendedNormalizeResult): boolean {
 /**
  * Checks if an ExtendedNormalizeResult represents infinity (positive or negative).
  */
-export function isInfinityResult(result: ExtendedNormalizeResult): boolean {
+export function isInfinityResult(
+	result: ExtendedNormalizeResult
+): result is Extract<ExtendedNormalizeResult, { type: 'infinity' }> {
 	return result.type === 'infinity';
 }
 

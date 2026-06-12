@@ -31,13 +31,14 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 		: Promise.resolve({ submissions: [] });
 
 	const profileFetch = locals.user
-		? locals.supabase
-				.from('profiles')
-				.select('role')
-				.eq('id', locals.user.id)
-				.single()
-				.then((r) => r.data?.role ?? null)
-				.catch(() => null)
+		? Promise.resolve(
+				locals.supabase
+					.from('profiles')
+					.select('role')
+					.eq('id', locals.user.id)
+					.single()
+					.then((r) => r.data?.role ?? null)
+			).catch(() => null)
 		: Promise.resolve(null);
 
 	const masteryFetch: Promise<{ status: PythonMasteryStatus | null }> = locals.user

@@ -66,10 +66,10 @@ export function endpointToNumber(value: MathNode): number {
 
 	try {
 		const result = evaluate(value, { mode: 'decimal' });
-		if (typeof result.value === 'number') {
+		if (result.status === 'value' && typeof result.value === 'number') {
 			return result.value;
 		}
-		// Complex number or other non-numeric result
+		// Complex number, indeterminate, unevaluable, or other non-numeric result
 		return NaN;
 	} catch {
 		// Evaluation failed (contains variables, etc.)

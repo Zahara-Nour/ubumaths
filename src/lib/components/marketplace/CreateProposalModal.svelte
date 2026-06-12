@@ -47,14 +47,16 @@
 	// Convert wanted templates to VipCard format for display
 	let wantedCardsForDisplay = $derived.by(() => {
 		if (!listing.wanted_templates?.length) return [];
-		return listing.wanted_templates.map((template) => ({
-			id: template.id,
-			name: template.name,
-			description: template.description,
-			imagePath: template.image_path ?? undefined,
-			rarity: template.rarity as VipCardType['rarity'],
-			category: template.category as VipCardType['category']
-		}));
+		return listing.wanted_templates.map(
+			(template: NonNullable<typeof listing.wanted_templates>[0]) => ({
+				id: template.id,
+				name: template.name,
+				description: template.description,
+				imagePath: template.image_path ?? undefined,
+				rarity: template.rarity as VipCardType['rarity'],
+				category: template.category as VipCardType['category']
+			})
+		);
 	});
 
 	// Convert VipCardWithLockStatus to TradeCard format
@@ -64,7 +66,8 @@
 			.map((c) => ({
 				instanceId: c.id,
 				cardId: c.template_id,
-				earnedAt: c.earned_at
+				earnedAt: c.earned_at,
+				usedAt: null // Unlocked cards are not yet used
 			}))
 	);
 

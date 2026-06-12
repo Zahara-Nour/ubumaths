@@ -15,7 +15,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Json } from '$lib/types/database';
+import type { Database, Json, TablesUpdate } from '$lib/types/database';
 import type {
 	ChapterTemplate,
 	ChapterTemplateVersion,
@@ -243,7 +243,7 @@ export async function updateChapterTemplate(
 			};
 		}
 
-		const updateData: Record<string, unknown> = {};
+		const updateData: TablesUpdate<'chapter_templates'> = {};
 
 		if (input.title !== undefined) updateData.title = input.title;
 		if (input.description !== undefined) updateData.description = input.description;

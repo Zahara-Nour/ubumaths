@@ -26,7 +26,7 @@ import { generateRandomNumber } from './random-generator';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { parseLatex } from '$lib/mathAST/parser';
 import { substitute, evaluateAstWithModifiers } from '$lib/mathAST/eval';
-import type { EvalBindings } from '$lib/mathAST/eval';
+import type { BindingValue } from '$lib/mathAST/eval';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 
 // ============================================================================
@@ -384,7 +384,7 @@ export function resolveExpression(
 			const ast = hasLatex ? parseLatex(exprToParse) : parseCustom(exprToParse);
 
 			// Build bindings from single-letter variables for AST substitution
-			const bindings: EvalBindings = {};
+			const bindings: Record<string, BindingValue> = {};
 			for (const rv of alreadyResolved) {
 				if (rv.name.length === 1) {
 					const num = Number(rv.value);
@@ -746,7 +746,7 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 	const hasLatex = exprToParse.includes('\\');
 	const ast = hasLatex ? parseLatex(exprToParse) : parseCustom(exprToParse);
 
-	const bindings: EvalBindings = {};
+	const bindings: Record<string, BindingValue> = {};
 	for (const rv of alreadyResolved) {
 		if (rv.name.length === 1) {
 			const num = Number(rv.value);

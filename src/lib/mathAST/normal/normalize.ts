@@ -181,7 +181,7 @@ function recordNormalizationStep(
 function applyFunctionParity(
 	argForm: NormalForm,
 	name: string,
-	canonicalNode: MathNode,
+	canonicalNode: MathNode & { type: 'function' },
 	originalNode: MathNode,
 	ctx: NormalizeContext | undefined
 ): NormalForm | null {

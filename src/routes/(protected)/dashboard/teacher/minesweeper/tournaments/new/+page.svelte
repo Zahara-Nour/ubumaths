@@ -314,7 +314,7 @@
 						<Label>Meilleures parties comptabilisees</Label>
 						<span class="font-semibold">{topXGames[0]}</span>
 					</div>
-					<Slider bind:value={topXGames} min={1} max={20} step={1} class="w-full" />
+					<Slider type="multiple" bind:value={topXGames} min={1} max={20} step={1} class="w-full" />
 					<p class="text-sm text-muted-foreground">
 						Le classement sera base sur la moyenne des {topXGames[0]} meilleures parties de chaque joueur
 					</p>
@@ -343,7 +343,7 @@
 							<div class="rounded-lg border p-4 transition-colors hover:bg-muted/50">
 								<MyCheckbox
 									checked={selectedClasses[classItem.id] ?? false}
-									onchange={(value) => (selectedClasses[classItem.id] = value)}
+									onchange={(value: boolean) => (selectedClasses[classItem.id] = value)}
 									label={`${classItem.name} (${classItem.student_count} eleves)`}
 								/>
 							</div>

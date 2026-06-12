@@ -428,6 +428,7 @@
 								<div class="w-full sm:w-72">
 									<div class="relative">
 										<Slider
+											type="multiple"
 											bind:value={sliderValue}
 											min={0}
 											max={sortedVariations.length - 1}

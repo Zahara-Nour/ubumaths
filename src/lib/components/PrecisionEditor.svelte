@@ -23,7 +23,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 
 	interface Props {
-		precision: PrecisionType;
+		precision?: PrecisionType;
 	}
 
 	let { precision = $bindable({ type: 'none' }) }: Props = $props();

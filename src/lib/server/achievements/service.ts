@@ -399,9 +399,9 @@ export async function awardAchievement(
 			p_teacher_id: teacherId,
 			p_student_id: studentId,
 			p_achievement_id: achievementId,
-			// Coerce undefined -> null so the RPC receives an explicit NULL (not a
-			// missing param) when no reason is provided.
-			p_reason: reason ?? null
+			// The RPC types p_reason as optional (string | undefined); omitting it lets
+			// the SQL default (NULL) apply when no reason is provided.
+			p_reason: reason ?? undefined
 		});
 
 		if (error) {

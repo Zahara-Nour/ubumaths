@@ -28,7 +28,8 @@
 
 	const astEnabled = $derived(Boolean(config.ast_requirements?.length));
 
-	function toggleAst(checked: boolean) {
+	function toggleAst(checked: boolean | 'indeterminate') {
+		if (checked === 'indeterminate') return;
 		if (checked) {
 			config = {
 				...config,
@@ -580,7 +581,8 @@
 		isReferenceSolutionBehavior(config.behavior) && config.behavior.fixed !== undefined
 	);
 
-	function toggleRefFixed(checked: boolean) {
+	function toggleRefFixed(checked: boolean | 'indeterminate') {
+		if (checked === 'indeterminate') return;
 		if (!isReferenceSolutionBehavior(config.behavior)) return;
 		if (checked) {
 			updateReferenceSolutionBehavior((b) => ({
@@ -603,7 +605,8 @@
 		isReferenceSolutionBehavior(config.behavior) && config.behavior.generator !== undefined
 	);
 
-	function toggleRefGenerator(checked: boolean) {
+	function toggleRefGenerator(checked: boolean | 'indeterminate') {
+		if (checked === 'indeterminate') return;
 		if (!isReferenceSolutionBehavior(config.behavior)) return;
 		if (checked) {
 			updateReferenceSolutionBehavior((b) => ({
@@ -653,7 +656,7 @@
 		<legend class="px-2 text-base font-semibold">Forme du code</legend>
 		<MyCheckbox
 			checked={astEnabled}
-			onchange={toggleAst}
+			onCheckedChange={toggleAst}
 			label="Activer les vérifications de forme (AST)"
 		/>
 		{#if astEnabled && config.ast_requirements}
@@ -748,7 +751,7 @@
 								id="cmp-kind"
 								items={kindItems}
 								value={outputBehavior.comparison.kind}
-								onchange={(v) => setKind(v as 'exact' | 'text' | 'numeric')}
+								onchange={(v: string) => setKind(v as 'exact' | 'text' | 'numeric')}
 							/>
 						</div>
 
@@ -761,7 +764,7 @@
 									id="cmp-whitespace"
 									items={whitespaceItems}
 									value={textCmp.whitespace}
-									onchange={(v) =>
+									onchange={(v: string) =>
 										updateOutputBehavior((b) =>
 											b.comparison.kind === 'text'
 												? {
@@ -777,7 +780,8 @@
 							</div>
 							<MyCheckbox
 								checked={textCmp.case_insensitive ?? false}
-								onchange={(v) =>
+								onCheckedChange={(v) =>
+									v !== 'indeterminate' &&
 									updateOutputBehavior((b) =>
 										b.comparison.kind === 'text'
 											? { ...b, comparison: { ...b.comparison, case_insensitive: v } }
@@ -787,7 +791,8 @@
 							/>
 							<MyCheckbox
 								checked={textCmp.trim_trailing_newline ?? false}
-								onchange={(v) =>
+								onCheckedChange={(v) =>
+									v !== 'indeterminate' &&
 									updateOutputBehavior((b) =>
 										b.comparison.kind === 'text'
 											? { ...b, comparison: { ...b.comparison, trim_trailing_newline: v } }
@@ -805,7 +810,7 @@
 									id="cmp-shape"
 									items={shapeItems}
 									value={numCmp.shape}
-									onchange={(v) =>
+									onchange={(v: string) =>
 										updateOutputBehavior((b) =>
 											b.comparison.kind === 'numeric'
 												? {
@@ -869,7 +874,7 @@
 									id="cmp-non-numeric"
 									items={nonNumericItems}
 									value={numCmp.non_numeric ?? 'match'}
-									onchange={(v) =>
+									onchange={(v: string) =>
 										updateOutputBehavior((b) =>
 											b.comparison.kind === 'numeric'
 												? {
@@ -885,7 +890,8 @@
 							</div>
 							<MyCheckbox
 								checked={numCmp.accept_comma_decimal ?? false}
-								onchange={(v) =>
+								onCheckedChange={(v) =>
+									v !== 'indeterminate' &&
 									updateOutputBehavior((b) =>
 										b.comparison.kind === 'numeric'
 											? { ...b, comparison: { ...b.comparison, accept_comma_decimal: v } }
@@ -909,7 +915,8 @@
 								<div class="flex items-center gap-3">
 									<MyCheckbox
 										checked={testCase.hidden ?? false}
-										onchange={(v) =>
+										onCheckedChange={(v) =>
+											v !== 'indeterminate' &&
 											updateOutputBehavior((b) => {
 												const updated = [...b.test_cases];
 												updated[i] = { ...updated[i], hidden: v };
@@ -1008,7 +1015,8 @@
 								<div class="flex items-center gap-3">
 									<MyCheckbox
 										checked={testCase.hidden ?? false}
-										onchange={(v) =>
+										onCheckedChange={(v) =>
+											v !== 'indeterminate' &&
 											updateUnitTestBehavior((b) => {
 												const updated = [...b.test_cases];
 												updated[i] = { ...updated[i], hidden: v };
@@ -1192,7 +1200,7 @@
 				<div class="rounded-md border border-border p-3">
 					<MyCheckbox
 						checked={refFixedEnabled}
-						onchange={toggleRefFixed}
+						onCheckedChange={toggleRefFixed}
 						label="Cas fixes (sentinelles que tu écris à la main)"
 					/>
 					{#if refFixedEnabled && refBehavior.fixed}
@@ -1205,7 +1213,8 @@
 										<div class="flex items-center gap-3">
 											<MyCheckbox
 												checked={testCase.hidden ?? false}
-												onchange={(v) =>
+												onCheckedChange={(v) =>
+													v !== 'indeterminate' &&
 													updateReferenceSolutionBehavior((b) => {
 														const cases = [...(b.fixed?.cases ?? [])];
 														cases[i] = { ...cases[i], hidden: v };
@@ -1277,7 +1286,7 @@
 				<div class="rounded-md border border-border p-3">
 					<MyCheckbox
 						checked={refGeneratorEnabled}
-						onchange={toggleRefGenerator}
+						onCheckedChange={toggleRefGenerator}
 						label="Générateur (cas aléatoires reproductibles)"
 					/>
 					{#if refGeneratorEnabled && refBehavior.generator}

@@ -75,7 +75,7 @@
 	// Group wanted templates for display (already unique by template)
 	let wantedCardsGrouped = $derived.by(() => {
 		if (!listing.wanted_templates?.length) return [];
-		return listing.wanted_templates.map((template) => ({
+		return listing.wanted_templates.map((template: NonNullable<typeof listing.wanted_templates>[0]) => ({
 			card: {
 				id: template.id,
 				name: template.name,

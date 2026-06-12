@@ -138,7 +138,7 @@ function buildProduct(factors: readonly MathNode[]): MathNode {
 			type: 'multiplication',
 			left: result,
 			right: factors[i],
-			variant: 'implicit'
+			displayStyle: 'implicit'
 		} as MathNode;
 	}
 	return result;
@@ -241,7 +241,7 @@ function extractQuadraticMonomial(
 				type: 'division',
 				numerator: numResult.coefficient,
 				denominator: term.denominator,
-				variant: 'fraction'
+				displayStyle: 'fraction'
 			} as MathNode
 		};
 	}

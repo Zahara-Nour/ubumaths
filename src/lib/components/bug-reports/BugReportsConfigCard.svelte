@@ -97,7 +97,7 @@
 						<MyCheckbox
 							id="fab-toggle"
 							bind:checked={fabEnabled}
-							onCheckedChange={(v) => handleToggle('fabEnabled', v)}
+							onCheckedChange={(v) => v !== 'indeterminate' && handleToggle('fabEnabled', v)}
 							disabled={updating !== null}
 						/>
 					</div>
@@ -120,7 +120,7 @@
 						<MyCheckbox
 							id="freeze-detection-toggle"
 							bind:checked={freezeDetectionEnabled}
-							onCheckedChange={(v) => handleToggle('freezeDetectionEnabled', v)}
+							onCheckedChange={(v) => v !== 'indeterminate' && handleToggle('freezeDetectionEnabled', v)}
 							disabled={updating !== null}
 						/>
 					</div>
@@ -147,7 +147,7 @@
 						<MyCheckbox
 							id="freeze-prompt-toggle"
 							bind:checked={freezePromptEnabled}
-							onCheckedChange={(v) => handleToggle('freezePromptEnabled', v)}
+							onCheckedChange={(v) => v !== 'indeterminate' && handleToggle('freezePromptEnabled', v)}
 							disabled={updating !== null || !freezeDetectionEnabled}
 						/>
 					</div>
@@ -174,7 +174,7 @@
 						<MyCheckbox
 							id="auto-report-toggle"
 							bind:checked={autoReportEnabled}
-							onCheckedChange={(v) => handleToggle('autoReportEnabled', v)}
+							onCheckedChange={(v) => v !== 'indeterminate' && handleToggle('autoReportEnabled', v)}
 							disabled={updating !== null || !freezeDetectionEnabled}
 						/>
 					</div>

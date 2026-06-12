@@ -9,7 +9,7 @@
 	import { FileText, AlertTriangle, Star } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
-	import type { StudentErrorReportView, StudentExerciseView } from '$lib/types/worksheets';
+	import type { StudentErrorReportView, StudentExerciseView, StudentSectionView } from '$lib/types/worksheets';
 
 	interface Props {
 		data: PageData;
@@ -17,10 +17,10 @@
 
 	let { data }: Props = $props();
 
-	// Derived values
+	// Derived values — worksheet comes from response.json() so it's untyped; cast here
 	let worksheet = $derived(data.worksheet);
-	let exercises = $derived(worksheet.exercises ?? []);
-	let sections = $derived(worksheet.sections ?? []);
+	let exercises = $derived<StudentExerciseView[]>(worksheet.exercises ?? []);
+	let sections = $derived<StudentSectionView[]>(worksheet.sections ?? []);
 	let exerciseCount = $derived(exercises.length);
 	let assignmentId = $derived(worksheet.assignment_id);
 
@@ -47,7 +47,7 @@
 
 	// Sorted section IDs (sections first, then unsectioned)
 	let sortedSectionIds = $derived.by(() => {
-		const ids: (string | null)[] = sections.map((s) => s.id);
+		const ids: (string | null)[] = sections.map((s: StudentSectionView) => s.id);
 		// Only add null if there are unsectioned exercises
 		const unsectioned = groupedExercises.get(null);
 		if (unsectioned && unsectioned.length > 0) {
@@ -72,7 +72,7 @@
 	});
 
 	// Check if there are essential exercises (for legend display)
-	let hasEssentialExercises = $derived(exercises.some((e) => e.is_essential));
+	let hasEssentialExercises = $derived(exercises.some((e: StudentExerciseView) => e.is_essential));
 
 	// Modal state
 	let modalOpen = $state(false);

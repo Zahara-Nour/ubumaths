@@ -51,6 +51,7 @@
 	import type { ClassForDrawer, DriveFolder } from '../types/drive';
 	import type { AutosaveInfo } from '../services/drive-sync';
 	import { findCurrentSchedule } from '$lib/utils/timeMatching';
+	import type { Class, ClassSchedule as DBClassSchedule } from '$lib/types/database-helpers';
 
 	// ==========================================================================
 	// State
@@ -192,9 +193,13 @@
 			const data = await response.json();
 			classes = data.classes || [];
 
-			// Auto-detect current class based on schedule
+			// Auto-detect current class based on schedule.
+			// ClassForDrawer has the fields findCurrentSchedule uses (id, name, schedules);
+			// cast to the full DB type the function signature requires.
 			if (classes.length > 0) {
-				const detected = findCurrentSchedule(classes);
+				const detected = findCurrentSchedule(
+					classes as (Class & { schedules?: DBClassSchedule[] })[]
+				);
 				if (detected) {
 					selectedClassId = detected.class.id;
 					wasAutoDetected = true;
@@ -213,7 +218,9 @@
 		}
 	}
 
-	async function loadClassFolder(cls: ClassForDrawer) {
+	// Accept any object with the two fields this function actually uses, so it can be called
+	// with ClassForDrawer or with the broader Class type returned by findCurrentSchedule.
+	async function loadClassFolder(cls: { name: string; join_code: string }) {
 		isLoadingFiles = true;
 		try {
 			const folderId = await driveSyncService.getOrCreateClassFolder(cls.join_code, cls.name);
@@ -493,7 +500,8 @@
 			// Check if we're updating existing file or creating new
 			const currentTitle = doc.title || 'Sans titre';
 			const isUpdating = fileName === currentTitle && syncState.driveFileId;
-			const fileIdToUse = isUpdating ? syncState.driveFileId : undefined;
+			// driveFileId may be null; coerce to undefined so fileId stays string | undefined
+			const fileIdToUse = isUpdating ? (syncState.driveFileId ?? undefined) : undefined;
 
 			const result = await driveSyncService.saveToDrive({
 				document: doc,
@@ -846,7 +854,8 @@
 </script>
 
 <!-- File Drawer Sheet (preventScroll=false to avoid layout shift) -->
-<Sheet.Root open={fileDrawerVisible} onOpenChange={handleOpenChange} preventScroll={false}>
+<!-- preventScroll is not part of Sheet.Root (Dialog) API in bits-ui -->
+<Sheet.Root open={fileDrawerVisible} onOpenChange={handleOpenChange}>
 	<Sheet.Content side="left" class="w-[450px] sm:max-w-[450px]">
 		<Sheet.Header class="border-b pb-4">
 			<div class="flex items-center justify-between pr-8">

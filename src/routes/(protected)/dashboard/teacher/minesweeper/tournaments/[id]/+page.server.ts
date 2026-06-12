@@ -49,7 +49,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 		throw error(500, 'Erreur lors du chargement du tournoi');
 	}
 
-	const { tournament } = await tournamentResponse.json();
+	const { tournament } = await tournamentResponse.json() as { tournament: TournamentWithDetails };
 
 	// Verify teacher is the creator
 	if (tournament.creator_id !== user.id) {

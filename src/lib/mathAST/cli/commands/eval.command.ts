@@ -77,6 +77,15 @@ export class EvalCommand extends BaseCommand {
 				};
 			}
 
+			// Non-value result (indeterminate / unevaluable): surface via the catch
+			if (result.status !== 'value') {
+				throw new Error(
+					result.status === 'indeterminate'
+						? `Indeterminate form: ${result.form}`
+						: result.reason
+				);
+			}
+
 			// Numeric result: standard formatting
 			const resultStr = toCustom(result.node);
 			const modeStr = ctx.evalState.mode;

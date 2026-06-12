@@ -230,7 +230,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 			if (editsData) {
 				for (const edit of editsData) {
-					const tracking = edit.migration_tracking as { old_question_index: number } | null;
+					// Supabase inner join returns the joined table as an array (even for 1-to-1)
+					const trackingRows = edit.migration_tracking as { old_question_index: number }[] | null;
+					const tracking = Array.isArray(trackingRows) ? trackingRows[0] : null;
 					if (tracking) {
 						questionEditsMap[tracking.old_question_index] = {
 							editId: edit.id,

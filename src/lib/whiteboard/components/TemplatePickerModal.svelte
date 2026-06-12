@@ -78,14 +78,15 @@
 		label: TEMPLATE_FONT_LABELS[font]
 	}));
 
+	// MySelect requires string values; spacing is parsed back to number when used
 	const GRID_SPACING_OPTIONS = [
-		{ value: 10, label: '10px (fin)' },
-		{ value: 15, label: '15px' },
-		{ value: 20, label: '20px (defaut)' },
-		{ value: 25, label: '25px' },
-		{ value: 30, label: '30px (large)' },
-		{ value: 40, label: '40px' },
-		{ value: 50, label: '50px (tres large)' }
+		{ value: '10', label: '10px (fin)' },
+		{ value: '15', label: '15px' },
+		{ value: '20', label: '20px (defaut)' },
+		{ value: '25', label: '25px' },
+		{ value: '30', label: '30px (large)' },
+		{ value: '40', label: '40px' },
+		{ value: '50', label: '50px (tres large)' }
 	];
 
 	const BACKGROUND_COLORS = [
@@ -119,8 +120,9 @@
 	let createFormat = $state<PageFormatKey>('A4');
 	let createBackgroundColor = $state('#ffffff');
 	let createBackgroundStyle = $state<BackgroundStyle>('grid');
-	let createGridSpacing = $state(20);
-	let createFont = $state<TemplateFont | undefined>(undefined);
+	let createGridSpacing = $state('20');
+	// Empty string used as sentinel for "no font preference" (MySelect requires string values)
+	let createFont = $state('');
 	let isCreating = $state(false);
 
 	// ==========================================================================
@@ -131,8 +133,9 @@
 	let selectedTemplate = $state<WhiteboardTemplateWithFavorite | null>(null);
 	let customBackgroundColor = $state('#ffffff');
 	let customBackgroundStyle = $state<BackgroundStyle>('plain');
-	let customGridSpacing = $state(20);
-	let customFont = $state<TemplateFont | undefined>(undefined);
+	let customGridSpacing = $state('20');
+	// Empty string used as sentinel for "no font preference" (MySelect requires string values)
+	let customFont = $state('');
 
 	// ==========================================================================
 	// Derived
@@ -217,8 +220,8 @@
 		const bg = template.pageData.background;
 		customBackgroundColor = bg.color;
 		customBackgroundStyle = bg.style;
-		customGridSpacing = bg.gridSpacing ?? 20;
-		customFont = template.pageData.font;
+		customGridSpacing = String(bg.gridSpacing ?? 20);
+		customFont = template.pageData.font ?? '';
 
 		showCustomizeDialog = true;
 	}
@@ -233,9 +236,9 @@
 				type: 'plain',
 				style: customBackgroundStyle,
 				color: customBackgroundColor,
-				...(showCustomGridSpacing ? { gridSpacing: customGridSpacing } : {})
+				...(showCustomGridSpacing ? { gridSpacing: parseInt(customGridSpacing, 10) } : {})
 			},
-			...(customFont ? { font: customFont } : {})
+			...(customFont ? { font: customFont as TemplateFont } : {})
 		};
 
 		onSelect(pageData);
@@ -263,8 +266,8 @@
 			format: createFormat,
 			backgroundColor: createBackgroundColor,
 			backgroundStyle: createBackgroundStyle,
-			...(showGridSpacing ? { gridSpacing: createGridSpacing } : {}),
-			...(createFont ? { font: createFont } : {})
+			...(showGridSpacing ? { gridSpacing: parseInt(createGridSpacing, 10) } : {}),
+			...(createFont ? { font: createFont as TemplateFont } : {})
 		};
 
 		const result = await templateService.createFromModal(input);
@@ -290,8 +293,8 @@
 		createFormat = 'A4';
 		createBackgroundColor = '#ffffff';
 		createBackgroundStyle = 'grid';
-		createGridSpacing = 20;
-		createFont = undefined;
+		createGridSpacing = '20';
+		createFont = '';
 	}
 
 	// ==========================================================================
@@ -602,7 +605,7 @@
 						<MySelect
 							type="single"
 							bind:value={createFont}
-							items={[{ value: undefined, label: 'Aucune preference' }, ...FONT_ITEMS]}
+							items={[{ value: '', label: 'Aucune preference' }, ...FONT_ITEMS]}
 						/>
 					</div>
 
@@ -689,7 +692,7 @@
 				<MySelect
 					type="single"
 					bind:value={customFont}
-					items={[{ value: undefined, label: 'Aucune preference' }, ...FONT_ITEMS]}
+					items={[{ value: '', label: 'Aucune preference' }, ...FONT_ITEMS]}
 				/>
 			</div>
 

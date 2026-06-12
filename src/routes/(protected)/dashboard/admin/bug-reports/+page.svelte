@@ -20,7 +20,12 @@
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { fly } from 'svelte/transition';
-	import type { BugReportWithAuthor, BugReportStatus } from '$lib/types/bug-reports';
+	import type {
+		BugReportWithAuthor,
+		BugReportStatus,
+		BugReportCategory,
+		BugReportSeverity
+	} from '$lib/types/bug-reports';
 	import {
 		BUG_REPORT_CATEGORY_LABELS,
 		BUG_REPORT_CATEGORY_ICONS,
@@ -28,6 +33,20 @@
 		BUG_REPORT_SEVERITY_LABELS,
 		BUG_REPORT_SEVERITY_COLORS
 	} from '$lib/types/bug-reports';
+
+	// Typed accessors: DB rows return string for enum columns; cast safely at one place
+	function getCategoryIcon(category: string): string {
+		return BUG_REPORT_CATEGORY_ICONS[category as BugReportCategory] ?? '';
+	}
+	function getCategoryLabel(category: string): string {
+		return BUG_REPORT_CATEGORY_LABELS[category as BugReportCategory] ?? category;
+	}
+	function getSeverityLabel(severity: string): string {
+		return BUG_REPORT_SEVERITY_LABELS[severity as BugReportSeverity] ?? severity;
+	}
+	function getSeverityColor(severity: string): string {
+		return BUG_REPORT_SEVERITY_COLORS[severity as BugReportSeverity] ?? '';
+	}
 	import {
 		Bug,
 		AlertTriangle,
@@ -82,7 +101,8 @@
 	// Handle report click
 	function handleReportClick(report: BugReportWithAuthor) {
 		selectedReport = report;
-		newStatus = report.status;
+		// DB returns string; cast to the known union (value is always a valid BugReportStatus)
+		newStatus = report.status as BugReportStatus;
 		resolutionNotes = report.resolution_notes || '';
 		detailDialogOpen = true;
 	}
@@ -409,7 +429,7 @@
 		{#if selectedReport}
 			<Dialog.Header>
 				<Dialog.Title class="flex items-center gap-2">
-					<span class="text-xl">{BUG_REPORT_CATEGORY_ICONS[selectedReport.category]}</span>
+					<span class="text-xl">{getCategoryIcon(selectedReport.category)}</span>
 					{selectedReport.title}
 				</Dialog.Title>
 				<Dialog.Description>
@@ -420,12 +440,12 @@
 			<div class="space-y-4 py-4">
 				<!-- Current status and severity -->
 				<div class="flex flex-wrap items-center gap-3">
-					<BugReportStatusBadge status={selectedReport.status} />
-					<span class={BUG_REPORT_SEVERITY_COLORS[selectedReport.severity]}>
-						{BUG_REPORT_SEVERITY_LABELS[selectedReport.severity]}
+					<BugReportStatusBadge status={selectedReport.status as BugReportStatus} />
+					<span class={getSeverityColor(selectedReport.severity)}>
+						{getSeverityLabel(selectedReport.severity)}
 					</span>
 					<span class="text-sm text-muted-foreground">
-						{BUG_REPORT_CATEGORY_LABELS[selectedReport.category]}
+						{getCategoryLabel(selectedReport.category)}
 					</span>
 					{#if selectedReport.auto_generated}
 						<span class="text-xs text-warning"> ⚡ Auto-généré </span>
@@ -528,7 +548,7 @@
 
 			<Dialog.Footer class="flex-wrap gap-2">
 				<div class="flex flex-1 gap-2">
-					<ExportClaudeCodeButton reportId={selectedReport.id} reportTitle={selectedReport.title} />
+					<ExportClaudeCodeButton reportId={selectedReport.id} _reportTitle={selectedReport.title} />
 					<Button variant="destructive" size="sm" onclick={() => (deleteDialogOpen = true)}>
 						<Trash2 class="mr-2 h-4 w-4" />
 						Supprimer

@@ -26,6 +26,7 @@ import type { Domain, IntervalSet } from '../domain/types';
 import type { Verbosity } from '../common/verbosity';
 import type {
 	NonDifferentiablePoint,
+	NonDifferentiabilityType,
 	NonDifferentiabilitySource,
 	NonDifferentiabilityCandidate,
 	BoundaryBehavior,

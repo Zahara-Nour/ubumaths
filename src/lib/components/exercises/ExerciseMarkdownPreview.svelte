@@ -28,15 +28,20 @@
 	// This is a temporary object used only for rendering the preview
 	const previewExercise = $derived<Exercise>({
 		id: 'preview-temp',
-		statement_md: markdown,
-		solution_md: '',
+		category: 'application' as Exercise['category'],
 		distribution_mode: 'on_demand' as const,
-		difficulty: 1 as const,
 		tags: [],
 		generic_functions: genericFunctions,
 		created_by: 'preview',
 		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
+		updated_at: new Date().toISOString(),
+		variations: [
+			{
+				label: 'preview',
+				statement_md: markdown,
+				solution_md: ''
+			}
+		]
 	});
 </script>
 

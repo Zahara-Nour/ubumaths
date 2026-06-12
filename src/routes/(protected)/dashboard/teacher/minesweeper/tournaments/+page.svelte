@@ -13,27 +13,31 @@
 	import { Plus, Calendar, Users, Trophy, Clock } from 'lucide-svelte';
 	import { DIFFICULTY_LABELS, type TournamentStatus } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
+	import type { TournamentWithCount } from './+page.server';
 
 	let { data }: { data: PageData } = $props();
 
+	// Explicitly type the tournaments array so filter callbacks are inferred correctly
+	const tournaments = $derived(data.tournaments as TournamentWithCount[]);
+
 	// Helper to check tournament state based on dates (more accurate than status field)
-	function isEnded(t: { end_date: string; status: string }): boolean {
+	function isEnded(t: TournamentWithCount): boolean {
 		return new Date(t.end_date) < new Date() || t.status === 'completed';
 	}
 
-	function isStarted(t: { start_date: string }): boolean {
+	function isStarted(t: TournamentWithCount): boolean {
 		return new Date(t.start_date) <= new Date();
 	}
 
 	// Filter tournaments by actual state (dates + status)
 	let scheduled = $derived(
-		data.tournaments.filter((t) => t.status !== 'cancelled' && !isStarted(t) && !isEnded(t))
+		tournaments.filter((t: TournamentWithCount) => t.status !== 'cancelled' && !isStarted(t) && !isEnded(t))
 	);
 	let active = $derived(
-		data.tournaments.filter((t) => t.status !== 'cancelled' && isStarted(t) && !isEnded(t))
+		tournaments.filter((t: TournamentWithCount) => t.status !== 'cancelled' && isStarted(t) && !isEnded(t))
 	);
-	let completed = $derived(data.tournaments.filter((t) => t.status !== 'cancelled' && isEnded(t)));
-	let cancelled = $derived(data.tournaments.filter((t) => t.status === 'cancelled'));
+	let completed = $derived(tournaments.filter((t: TournamentWithCount) => t.status !== 'cancelled' && isEnded(t)));
+	let cancelled = $derived(tournaments.filter((t: TournamentWithCount) => t.status === 'cancelled'));
 
 	function handleCreateNew() {
 		goto('/dashboard/teacher/minesweeper/tournaments/new').then(() => {});

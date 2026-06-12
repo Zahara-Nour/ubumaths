@@ -121,7 +121,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 				successCount: 0,
 				warningCount: 0,
 				errorCount: 0,
-				exportDate: null
+				exportDate: null,
+				totalApproved: 0,
+				totalRejected: 0
 			},
 			manifest: null,
 			error:

@@ -3,6 +3,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import TournamentCard from '$lib/components/game/minesweeper/TournamentCard.svelte';
 	import type { PageData } from './$types';
+	import type { Tournament } from '$lib/types/minesweeper';
 
 	// Props
 	let { data }: { data: PageData } = $props();
@@ -13,9 +14,9 @@
 	let tournaments = $state(initialData.tournaments);
 
 	// Derived state
-	let activeTournaments = $derived(tournaments.filter((t) => t.status === 'active'));
-	let upcomingTournaments = $derived(tournaments.filter((t) => t.status === 'scheduled'));
-	let completedTournaments = $derived(tournaments.filter((t) => t.status === 'completed'));
+	let activeTournaments = $derived(tournaments.filter((t: Tournament) => t.status === 'active'));
+	let upcomingTournaments = $derived(tournaments.filter((t: Tournament) => t.status === 'scheduled'));
+	let completedTournaments = $derived(tournaments.filter((t: Tournament) => t.status === 'completed'));
 </script>
 
 <svelte:head>

@@ -34,6 +34,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const { instanceId, studentId } = validation.data;
 
+	if (!studentId) {
+		throw error(400, 'studentId is required for teachers');
+	}
+
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 	if (!hasAccess) {
 		throw error(403, 'You can only approve cards for students in your classes');

@@ -17,9 +17,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database, Json } from '$lib/types/database';
 import { FSRS } from '$lib/srs/fsrs';
-import type { CardStats, Grade } from '$lib/srs/types';
+import type { CardState, CardStats, Grade, ReviewHistoryEntry } from '$lib/srs/types';
 
 type SB = SupabaseClient<Database>;
 
@@ -51,15 +51,16 @@ export async function loadOrInitCardStats(
 		return {
 			id: existing.id,
 			userId: existing.user_id,
-			cardReferenceType: existing.card_reference_type,
+			// DB columns are free-form text/JSONB; narrow to the domain unions/shapes
+			cardReferenceType: existing.card_reference_type as 'template' | 'custom',
 			cardReferenceId: existing.card_reference_id,
 			difficulty: existing.difficulty,
 			stability: existing.stability,
-			state: existing.state,
+			state: existing.state as CardState,
 			lastReview: existing.last_review,
 			nextReview: existing.next_review,
 			totalReviews: existing.total_reviews,
-			reviewHistory: existing.review_history || [],
+			reviewHistory: (existing.review_history as unknown as ReviewHistoryEntry[]) ?? [],
 			createdAt: existing.created_at,
 			updatedAt: existing.updated_at
 		};
@@ -94,7 +95,8 @@ export async function upsertCardStats(supabase: SB, stats: CardStats): Promise<v
 			last_review: stats.lastReview,
 			next_review: stats.nextReview,
 			total_reviews: stats.totalReviews,
-			review_history: stats.reviewHistory
+			// ReviewHistoryEntry[] (interface) → JSONB column: bridge to Json
+			review_history: stats.reviewHistory as unknown as Json
 		},
 		{ onConflict: UPSERT_CONFLICT_KEY }
 	);

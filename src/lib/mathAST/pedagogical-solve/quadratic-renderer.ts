@@ -51,8 +51,8 @@ function isInequalityStep(step: EquationStep): boolean {
  */
 function variableOf(step: EquationStep): string {
 	const find = (n: { type: string } & object): string | null => {
-		if ((n as { type: string }).type === 'variable') return (n as { name: string }).name;
 		const rec = n as Record<string, unknown>;
+		if (rec.type === 'variable' && typeof rec.name === 'string') return rec.name;
 		for (const key of Object.keys(rec)) {
 			const v = rec[key];
 			if (Array.isArray(v)) {

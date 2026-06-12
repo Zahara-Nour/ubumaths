@@ -402,6 +402,28 @@ export function findUCandidates(expr: MathNode, variable: string): MathNode[] {
 				traverse(node.approach);
 				break;
 
+			// Leaf nodes - nothing to traverse
+			case 'signed-zero':
+			case 'boolean':
+				break;
+
+			case 'logical':
+				traverse(node.left);
+				traverse(node.right);
+				break;
+
+			case 'logical-not':
+				traverse(node.operand);
+				break;
+
+			case 'piecewise':
+				for (const piece of node.pieces) {
+					traverse(piece.condition);
+					traverse(piece.value);
+				}
+				if (node.otherwise !== undefined) traverse(node.otherwise);
+				break;
+
 			default: {
 				const _exhaustive: never = node;
 				return _exhaustive;
@@ -778,11 +800,26 @@ function containsSubexpression(expr: MathNode, target: MathNode): boolean {
 			case 'hole':
 			case 'infinity':
 			case 'constant':
+			case 'signed-zero':
+			case 'boolean':
 				return false;
 
 			// Limit nodes
 			case 'limit':
 				return search(node.expression) || search(node.approach);
+
+			case 'logical':
+				return search(node.left) || search(node.right);
+
+			case 'logical-not':
+				return search(node.operand);
+
+			case 'piecewise':
+				return (
+					node.pieces.some(
+						(piece) => search(piece.condition) || search(piece.value)
+					) || (node.otherwise !== undefined && search(node.otherwise))
+				);
 
 			default: {
 				const _exhaustive: never = node;

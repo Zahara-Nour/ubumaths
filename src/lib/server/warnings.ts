@@ -255,7 +255,11 @@ export async function addWarning(options: {
 	}
 
 	// RPC returns JSON; Supabase types it as `unknown` so we cast to our known shape
-	const result = data as { success: boolean; error?: string; counts?: StudentWarningCounts };
+	const result = data as unknown as {
+		success: boolean;
+		error?: string;
+		counts?: StudentWarningCounts;
+	};
 
 	if (!result.success) {
 		const msg = result.error || 'Unknown error';
@@ -298,7 +302,7 @@ export async function addWarningsBulk(options: {
 	}
 
 	// RPC returns JSON; Supabase types it as `unknown` so we cast to our known shape
-	const result = data as {
+	const result = data as unknown as {
 		success: boolean;
 		error?: string;
 		counts?: StudentWarningCounts;
@@ -350,7 +354,7 @@ export async function removeWarningsBulk(options: {
 		throw error(500, `Failed to remove warnings: ${rpcError.message}`);
 	}
 
-	const result = data as {
+	const result = data as unknown as {
 		success: boolean;
 		error?: string;
 		counts?: StudentWarningCounts;

@@ -106,7 +106,9 @@
 
 			// API returns camelCase, convert to snake_case for local state
 			const apiResponse: TemplateResponse = await response.json();
-			const updated: VipCardTemplate = responseToTemplate(apiResponse);
+			// responseToTemplate returns the admin VipCardTemplate (no sell_price); cast to store
+			// type (which extends DB row) — sell_price is preserved from the existing record
+			const updated = responseToTemplate(apiResponse) as unknown as VipCardTemplate;
 			templates = templates.map((t) => (t.id === cardId ? updated : t));
 			delete optimisticToggles[cardId];
 			toaster.success('Carte mise à jour');
@@ -267,7 +269,8 @@
 
 			// API returns camelCase, convert to snake_case for local state
 			const apiResponse: TemplateResponse = await response.json();
-			const updated: VipCardTemplate = responseToTemplate(apiResponse);
+			// responseToTemplate returns the admin VipCardTemplate (no sell_price); cast to store type
+			const updated = responseToTemplate(apiResponse) as unknown as VipCardTemplate;
 			templates = templates.map((t) => (t.id === updated.id ? updated : t));
 			toaster.success('Carte mise à jour');
 		} catch (error) {

@@ -30,6 +30,7 @@
 	} from '$lib/types/database-helpers';
 	import { TAG_COLOR_TOKENS } from './tag-colors';
 	import AssigneeAvatars from './AssigneeAvatars.svelte';
+	import { cn } from '$lib/utils';
 
 	type CardWithExtras = KanbanCardType & { tag_ids?: string[]; assignee_ids?: string[] };
 
@@ -160,7 +161,7 @@
 		isShadow && 'opacity-40'
 	]}
 	role="button"
-	tabindex="0"
+	tabindex={0}
 	aria-label={`Carte ${card.title}`}
 	onclick={handleClick}
 	onkeydown={handleKeydown}
@@ -253,7 +254,7 @@
 			aria-label={expanded ? 'Réduire la description' : 'Voir toute la description'}
 		>
 			<ChevronDown
-				class={['h-3.5 w-3.5 transition-transform', expanded && 'rotate-180']}
+				class={cn('h-3.5 w-3.5 transition-transform', expanded && 'rotate-180')}
 				aria-hidden="true"
 			/>
 			{expanded ? 'Réduire' : 'Voir plus'}

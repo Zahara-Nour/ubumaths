@@ -116,7 +116,8 @@ export async function getAccessibleBoards(
 	options: { limit?: number; cursor?: string | null } = {}
 ): Promise<BoardsPage> {
 	const limit = options.limit ?? DEFAULT_BOARDS_PAGE_SIZE;
-	const cursor = options.cursor ?? null;
+	// RPC types p_cursor as optional string; omit (undefined) rather than null when absent.
+	const cursor = options.cursor ?? undefined;
 
 	const { data, error: dbError } = await supabase.rpc('get_accessible_kanban_boards', {
 		p_limit: limit,
@@ -299,7 +300,16 @@ async function fetchBoardMembers(
 		if (memberErr) {
 			console.error('[kanban] fetchBoardMembers / class_members failed:', memberErr);
 			// Don't 500 the whole page: degrade gracefully with the owner only.
-			return [{ id: ownerId, full_name: null, avatar_url: null }];
+			return [
+				{
+					id: ownerId,
+					full_name: null,
+					firstname: null,
+					lastname: null,
+					avatar_url: null,
+					role: null
+				}
+			];
 		}
 		for (const row of memberRows ?? []) {
 			ids.add(row.student_id);

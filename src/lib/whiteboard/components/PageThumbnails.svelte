@@ -233,7 +233,8 @@
 </script>
 
 <!-- Sheet overlay (preventScroll=false to avoid layout shift) -->
-<Sheet.Root open={sidebarVisible} onOpenChange={handleOpenChange} preventScroll={false}>
+<!-- preventScroll is not part of Sheet.Root (Dialog) API in bits-ui -->
+<Sheet.Root open={sidebarVisible} onOpenChange={handleOpenChange}>
 	<Sheet.Content side="right" class="w-[200px] {className}">
 		<Sheet.Header class="border-b pb-3">
 			<div class="flex items-center justify-between pr-8">

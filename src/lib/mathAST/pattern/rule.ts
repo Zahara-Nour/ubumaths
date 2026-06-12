@@ -118,7 +118,13 @@ export function instantiate(pattern: Pattern, bindings: MatchBindings): MathNode
 				return result;
 			}
 			if (isProductSequenceBinding(boundValue)) {
-				const result = unflattenProduct(boundValue.factors);
+				// ProductSequenceBinding stores bare MathNode factors (style is
+				// stripped when the sequence is collected during matching), but
+				// unflattenProduct expects StyledFactors. Re-wrap each factor with
+				// the default implicit multiplication style.
+				const result = unflattenProduct(
+					boundValue.factors.map((factor) => ({ style: 'implicit' as const, factor }))
+				);
 				if (!result) {
 					throw new Error(`Cannot instantiate empty product sequence '${pattern.name}'`);
 				}

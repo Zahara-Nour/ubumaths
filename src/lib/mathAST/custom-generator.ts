@@ -43,6 +43,7 @@ import type {
 	MatrixNode,
 	ComplexNode,
 	InfinityNode,
+	SignedZeroNode,
 	LimitNode,
 	RelationType,
 	NodeMetadata
@@ -308,9 +309,11 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'limit':
 		case 'logical':
 		case 'logical-not':
+		case 'piecewise':
 			return true;
 
 		case 'boolean':
+		case 'signed-zero':
 			return false;
 
 		default: {
@@ -570,6 +573,10 @@ export class CustomGenerator {
 				this.visitInfinitySpans(node);
 				break;
 
+			case 'signed-zero':
+				this.visitSignedZeroSpans(node);
+				break;
+
 			case 'limit':
 				this.visitLimitSpans(node);
 				break;
@@ -623,6 +630,11 @@ export class CustomGenerator {
 	private visitInfinitySpans(node: InfinityNode): void {
 		const sign = node.sign === 'positive' ? '+' : '-';
 		this.emit(`${sign}∞`, node.metadata);
+	}
+
+	private visitSignedZeroSpans(node: SignedZeroNode): void {
+		const sign = node.sign === 'positive' ? '⁺' : '⁻';
+		this.emit(`0${sign}`, node.metadata);
 	}
 
 	/**
@@ -1062,6 +1074,9 @@ export class CustomGenerator {
 			case 'infinity':
 				content = this.generateInfinity(node);
 				break;
+			case 'signed-zero':
+				content = this.generateSignedZero(node);
+				break;
 			case 'limit':
 				content = this.generateLimit(node);
 				break;
@@ -1101,6 +1116,11 @@ export class CustomGenerator {
 	private generateInfinity(node: InfinityNode): string {
 		const sign = node.sign === 'positive' ? '+' : '-';
 		return `${sign}∞`;
+	}
+
+	private generateSignedZero(node: SignedZeroNode): string {
+		const sign = node.sign === 'positive' ? '⁺' : '⁻';
+		return `0${sign}`;
 	}
 
 	private generateLimit(node: LimitNode): string {

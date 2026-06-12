@@ -118,7 +118,7 @@
 						id="ast-type-{i}"
 						items={astTypeItems}
 						value={req.type}
-						onchange={(v) => setRequirementType(i, v as ASTRequirementType)}
+						onchange={(v: string) => setRequirementType(i, v as ASTRequirementType)}
 					/>
 				</div>
 				{#if astSupportsName(req.type)}

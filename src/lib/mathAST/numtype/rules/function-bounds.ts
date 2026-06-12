@@ -17,7 +17,7 @@
  */
 
 import type { MathNode } from '../../types';
-import type { IntervalDomain, EndpointType } from '$lib/math/intervals/types';
+import type { IntervalDomain, EndpointType, Endpoint } from '$lib/math/intervals/types';
 import {
 	isPositiveInfinityEndpoint,
 	isNegativeInfinityEndpoint,

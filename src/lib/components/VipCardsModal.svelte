@@ -637,7 +637,7 @@
 					<VipCard
 						card={card as VipCardType}
 						count={card.count}
-						totalUses={card.totalUses}
+						totalUses={(card as typeof card & { totalUses: number }).totalUses}
 						size="sm"
 						clickable={false}
 						showRemoveButton={teacherView}

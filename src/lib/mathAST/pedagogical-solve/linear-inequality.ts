@@ -33,6 +33,7 @@ import {
 } from './types';
 import { add, divide, opposite, variable as varNode } from '../factory';
 import { flattenSumShallow, unflattenSum } from '../flatten';
+import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { getNumericValue } from '../common/numeric';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
@@ -98,8 +99,8 @@ function splitSide(
 	variable: string
 ): { xPart: MathNode | null; constPart: MathNode | null } {
 	const flat = flattenSumShallow(side);
-	const xTerms: typeof flat = [];
-	const constTerms: typeof flat = [];
+	const xTerms: SignedTerm[] = [];
+	const constTerms: SignedTerm[] = [];
 	for (const item of flat) {
 		if (containsVariable(item.term, variable)) xTerms.push(item);
 		else constTerms.push(item);

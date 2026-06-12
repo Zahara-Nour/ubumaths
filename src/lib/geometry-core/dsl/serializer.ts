@@ -8,7 +8,7 @@
 import type { Figure } from '../graph/figure';
 import type { GeoElement } from '../types/elements';
 import type { GeoValue, ScalarParam } from '../types/geo-value';
-import { isScalarRef } from '../types/geo-value';
+import { isScalarRef, isInfinityParam } from '../types/geo-value';
 import { geoToNumber } from '../compute/to-number';
 import type { SymbolTable } from './symbol-table';
 import type { DslProgram, DslStatement, DslExpr, DslDirective } from './types';
@@ -245,12 +245,14 @@ function fmtGeoValue(v: GeoValue): string {
 /** Format a ScalarParam: scalar refs become names, GeoValues become numbers. */
 function fmtScalarParam(param: ScalarParam, idToName: Map<string, string>): string {
 	if (isScalarRef(param)) return name(idToName, param.scalarRef);
+	if (isInfinityParam(param)) return param.infinity === '+' ? '+infini' : '-infini';
 	return fmtGeoValue(param);
 }
 
 /** Format a ScalarParam that stores radians, converting back to degrees for DSL. */
 function fmtScalarParamDeg(param: ScalarParam, idToName: Map<string, string>): string {
 	if (isScalarRef(param)) return name(idToName, param.scalarRef);
+	if (isInfinityParam(param)) return param.infinity === '+' ? '+infini' : '-infini';
 	return fmtNum((geoToNumber(param) * 180) / Math.PI);
 }
 
@@ -270,6 +272,7 @@ function fmtPointScalarParam(
 		}
 		return name(idToName, param.scalarRef);
 	}
+	if (isInfinityParam(param)) return param.infinity === '+' ? '+infini' : '-infini';
 	return fmtGeoValue(param);
 }
 

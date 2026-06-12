@@ -118,8 +118,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 					{
 						code: 'MANUAL_REJECTION',
 						message: reason,
-						field: 'review',
-						severity: 'error'
+						field: 'review'
 					}
 				],
 				notes: `Rejected by admin: ${reason}`

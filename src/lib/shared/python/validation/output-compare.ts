@@ -34,6 +34,10 @@ export function compareOutputs(
 			return compareText(expected, actual, cmp);
 		case 'numeric':
 			return compareNumeric(expected, actual, cmp);
+		case 'custom':
+			// Custom comparators run inside the Pyodide worker; this path is
+			// never reached from the main thread. Return a neutral failure.
+			return { passed: false, diff: 'Custom comparison not supported outside worker.' };
 	}
 }
 

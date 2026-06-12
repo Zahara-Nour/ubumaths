@@ -105,12 +105,12 @@ function walkDeg(node: MathNode): MathNode {
 
 /** Build `arg * \pi / 180`. */
 function degToRad(arg: MathNode): MathNode {
-	return divide(multiply(arg, piConstant()), mathNumber('180'));
+	return divide(multiply(arg, piConstant(), 'implicit'), mathNumber('180'), 'fraction');
 }
 
 /** Build `node * 180 / \pi`. */
 function radToDeg(node: MathNode): MathNode {
-	return divide(multiply(node, mathNumber('180')), piConstant());
+	return divide(multiply(node, mathNumber('180'), 'implicit'), piConstant(), 'fraction');
 }
 
 /** Reconstruct a FunctionNode with new args, preserving its other fields. */

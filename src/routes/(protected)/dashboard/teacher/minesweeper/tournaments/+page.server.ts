@@ -14,7 +14,7 @@ import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { Tournament, TournamentStatus } from '$lib/types/minesweeper';
 
-interface TournamentWithCount extends Tournament {
+export interface TournamentWithCount extends Tournament {
 	participant_count: number;
 	is_creator: boolean;
 }

@@ -148,7 +148,10 @@ export function evaluateAt(ast: MathNode, x: number, variables?: VariableBinding
 		// Evaluate the expression in decimal mode (for performance)
 		const result = evaluate(substituted, { mode: 'decimal' });
 
-		// Get the numeric value
+		// Get the numeric value (only when evaluation succeeded)
+		if (result.status !== 'value') {
+			return null;
+		}
 		const value = typeof result.value === 'number' ? result.value : Number(result.value);
 
 		// Return null for non-finite results (NaN, Infinity, -Infinity)

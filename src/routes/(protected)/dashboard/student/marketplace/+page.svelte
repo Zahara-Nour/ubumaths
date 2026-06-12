@@ -97,7 +97,7 @@
 
 		<!-- Tab 1: Boutique -->
 		<Tabs.Content value="shop" class="mt-6">
-			<VipCardShopSection supabase={data.supabase} userId={data.user.id} />
+			<VipCardShopSection supabase={data.supabase} userId={data.user!.id} />
 		</Tabs.Content>
 
 		<!-- Tab 2: Annonces -->
@@ -158,7 +158,7 @@
 
 		<!-- Tab 3: Activité -->
 		<Tabs.Content value="activity" class="mt-6">
-			<StudentActivityFeed userId={data.user.id} />
+			<StudentActivityFeed userId={data.user!.id} />
 		</Tabs.Content>
 	</Tabs.Root>
 </div>

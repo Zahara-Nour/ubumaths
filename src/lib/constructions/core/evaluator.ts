@@ -366,7 +366,12 @@ export function evaluateAST(ast: MathNode): EvaluationResult {
 		// All variables should already be substituted, so evaluate directly
 		const result = evaluate(ast, { mode: 'decimal' });
 
-		const value = typeof result.value === 'number' ? result.value : Number(result.value);
+		const value =
+			result.status === 'value' && typeof result.value === 'number'
+				? result.value
+				: result.status === 'value'
+					? Number(result.value)
+					: NaN;
 
 		if (!Number.isFinite(value)) {
 			return {

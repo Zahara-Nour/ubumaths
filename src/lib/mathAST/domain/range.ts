@@ -206,33 +206,14 @@ function computeConstantRange(
  * Compute range for a Greek letter constant (π, e).
  */
 function computeGreekConstantRange(
-	node: MathNode & { type: 'greek' },
-	steps: RangeStep[],
-	options: ComputeRangeOptions
+	_node: MathNode & { type: 'greek' },
+	_steps: RangeStep[],
+	_options: ComputeRangeOptions
 ): Domain {
-	let value: number;
-	let name: string;
-	switch (node.letter) {
-		case 'pi':
-			value = Math.PI;
-			name = 'π';
-			break;
-		default:
-			// Unknown Greek letter: can't determine range
-			return singlePoint(0); // Fallback — shouldn't normally happen
-	}
-
-	const range = singlePoint(value);
-
-	if (options.showSteps) {
-		steps.push({
-			expression: name,
-			rangeDescription: `{${name}}`,
-			explanation: `La constante ${name} a pour image le singleton {${name}}.`
-		});
-	}
-
-	return range;
+	// Note: π is represented as a MathConstantNode (constant: 'pi'), not a
+	// GreekLetterNode. Greek letters carry no intrinsic numeric value here, so
+	// we cannot determine a range and fall back to a single-point domain.
+	return singlePoint(0); // Fallback — shouldn't normally happen
 }
 
 /**

@@ -94,7 +94,7 @@
 									<MySelect
 										type="single"
 										bind:value={constraintModes[id]}
-										items={CONSTRAINT_MODE_OPTIONS}
+										items={[...CONSTRAINT_MODE_OPTIONS]}
 									/>
 								</div>
 							{/each}

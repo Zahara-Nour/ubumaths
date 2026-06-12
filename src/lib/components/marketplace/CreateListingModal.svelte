@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';
-	import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
+	import { vipCardTemplates, type VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 	import type { CreateListingData } from '$lib/types/marketplace';
 	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -60,7 +60,8 @@
 			.map((c) => ({
 				instanceId: c.id,
 				cardId: c.template_id,
-				earnedAt: c.earned_at
+				earnedAt: c.earned_at,
+				usedAt: null // Unlocked cards are not yet used
 			}))
 	);
 
@@ -125,14 +126,14 @@
 	// Templates are loaded in root layout, no need to fetch here
 
 	// Convert template to VipCard format
-	function templateToVipCard(template: (typeof $vipCardTemplates)[0]): VipCardType {
+	function templateToVipCard(template: VipCardTemplate): VipCardType {
 		return {
 			id: template.id,
 			name: template.name,
 			description: template.description,
 			imagePath: template.image_path ?? undefined,
-			rarity: template.rarity as VipCard['rarity'],
-			category: template.category as VipCard['category']
+			rarity: template.rarity as VipCardType['rarity'],
+			category: template.category as VipCardType['category']
 		};
 	}
 

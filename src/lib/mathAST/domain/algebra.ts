@@ -142,7 +142,7 @@ function wrapWithExcludedPoints(
  *
  * Returns null if conversion is not possible.
  */
-export function tryConvertConditionToInterval(cd: ConditionDomain): IntervalDomain | null {
+export function tryConvertConditionToInterval(cd: ConditionDomain): Domain | null {
 	const conditions = cd.conditions;
 
 	if (conditions.length === 0) {
@@ -172,7 +172,7 @@ export function tryConvertConditionToInterval(cd: ConditionDomain): IntervalDoma
  */
 function convertSingleCondition(
 	condition: ConditionDomain['conditions'][number]
-): IntervalDomain | null {
+): Domain | null {
 	if (condition.kind !== 'comparison') {
 		return null;
 	}
@@ -205,30 +205,22 @@ function convertSingleCondition(
  */
 function convertAndConditions(
 	conditions: readonly ConditionDomain['conditions'][number][]
-): IntervalDomain | null {
-	// Convert each condition and intersect
-	let result: Domain = UNIVERSAL_SET;
+): Domain | null {
+	// Convert each condition and intersect. The intervals-module algebra works on
+	// the pure (excludedPoints-free) IntervalDomain; convertSingleCondition only
+	// produces interval-shaped values, so narrowing to IntervalDomain is sound.
+	let result: IntervalDomain = UNIVERSAL_SET;
 
 	for (const cond of conditions) {
 		const interval = convertSingleCondition(cond);
-		if (!interval) {
+		if (!interval || interval.kind === 'condition_domain' || interval.kind === 'periodic_exclusion') {
 			return null; // Cannot convert this condition
 		}
 		result = intervalsIntersect(result, interval);
 	}
 
-	// Check if result is an IntervalSet
-	if (result.kind === 'interval_set') {
-		return result;
-	}
-	if (result.kind === 'empty') {
-		return EMPTY_SET;
-	}
-	if (result.kind === 'universal') {
-		return UNIVERSAL_SET;
-	}
-
-	return null;
+	// Re-tag the pure interval result as a domain-level Domain (empty excludedPoints).
+	return wrapWithExcludedPoints(result, []);
 }
 
 /**
@@ -237,30 +229,22 @@ function convertAndConditions(
  */
 function convertOrConditions(
 	conditions: readonly ConditionDomain['conditions'][number][]
-): IntervalDomain | null {
-	// Convert each condition and union
-	let result: Domain = EMPTY_SET;
+): Domain | null {
+	// Convert each condition and union. The intervals-module algebra works on the
+	// pure (excludedPoints-free) IntervalDomain; convertSingleCondition only
+	// produces interval-shaped values, so narrowing to IntervalDomain is sound.
+	let result: IntervalDomain = EMPTY_SET;
 
 	for (const cond of conditions) {
 		const interval = convertSingleCondition(cond);
-		if (!interval) {
+		if (!interval || interval.kind === 'condition_domain' || interval.kind === 'periodic_exclusion') {
 			return null; // Cannot convert this condition
 		}
 		result = intervalsUnion(result, interval);
 	}
 
-	// Check if result is an IntervalSet
-	if (result.kind === 'interval_set') {
-		return result;
-	}
-	if (result.kind === 'empty') {
-		return EMPTY_SET;
-	}
-	if (result.kind === 'universal') {
-		return UNIVERSAL_SET;
-	}
-
-	return null;
+	// Re-tag the pure interval result as a domain-level Domain (empty excludedPoints).
+	return wrapWithExcludedPoints(result, []);
 }
 
 // =============================================================================
@@ -459,7 +443,9 @@ function isExcludedByPeriodicNode(pe: PeriodicExclusion, value: MathNode): boole
 
 	// Fallback: symbolic approach (handles cases where nodes share structure)
 	const diff = subtract(value, pe.basePoint);
-	const ratio = divide(diff, pe.period);
+	// displayStyle is irrelevant here: `ratio` is only evaluated numerically
+	// (never rendered), so 'inline' is a no-op for the computed value.
+	const ratio = divide(diff, pe.period, 'inline');
 	const ratioVal = evaluateNodeToApproximatedNumber(ratio);
 	if (!isFinite(ratioVal)) return false;
 	return Math.abs(ratioVal - Math.round(ratioVal)) < ZERO_TOLERANCE;

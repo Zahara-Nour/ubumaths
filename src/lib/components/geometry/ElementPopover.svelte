@@ -125,7 +125,7 @@
 					<button
 						class="shape-btn"
 						class:selected={currentPointShape === shape}
-						onclick={() => updatePointShape(shape)}
+						onclick={() => updatePointShape(shape as 'dot' | 'circle' | 'cross' | 'square')}
 					>
 						{shape === 'dot' ? '●' : shape === 'circle' ? '○' : shape === 'cross' ? '✕' : '■'}
 					</button>

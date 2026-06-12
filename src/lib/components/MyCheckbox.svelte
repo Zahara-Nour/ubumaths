@@ -11,6 +11,7 @@
 	 * <MyCheckbox bind:checked={agree} required onCheckedChange={(v) => console.log(v)} />
 	 */
 
+	import type { Snippet } from 'svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
 	import { useId, type WithoutChildrenOrChild } from 'bits-ui';
@@ -28,8 +29,9 @@
 		onCheckedChange,
 		onchange,
 		class: className = '',
+		children,
 		...restProps
-	}: WithoutChildrenOrChild<CheckboxPrimitive.RootProps> & {
+	}: Omit<WithoutChildrenOrChild<CheckboxPrimitive.RootProps>, 'onchange'> & {
 		label?: string;
 		labelClass?: string;
 		checkboxRef?: HTMLButtonElement | null;
@@ -37,6 +39,8 @@
 		onCheckedChange?: (checked: boolean | 'indeterminate') => void;
 		/** Alias for onCheckedChange - simpler signature with just boolean */
 		onchange?: (checked: boolean) => void;
+		/** Optional snippet content for custom label rendering */
+		children?: Snippet;
 	} = $props();
 
 	function handleChange(value: boolean | 'indeterminate') {
@@ -65,7 +69,15 @@
 		class={className}
 		{...restProps}
 	/>
-	{#if label}
+	{#if children}
+		<Label
+			for={id}
+			bind:ref={labelRef}
+			class="cursor-pointer text-sm leading-none font-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70 {labelClass}"
+		>
+			{@render children()}
+		</Label>
+	{:else if label}
 		<Label
 			for={id}
 			bind:ref={labelRef}

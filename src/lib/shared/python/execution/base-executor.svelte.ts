@@ -302,7 +302,9 @@ export abstract class BasePythonExecutor {
 					);
 					return;
 				}
-				this.handleWorkerMessage(validation.data);
+				// heapObjectSchema.type is validated by regex at runtime to match HeapObjectType,
+				// but Zod infers it as `string`. Cast is safe at this validated worker boundary.
+				this.handleWorkerMessage(validation.data as FromWorkerMessage);
 			};
 
 			// Set up error handler

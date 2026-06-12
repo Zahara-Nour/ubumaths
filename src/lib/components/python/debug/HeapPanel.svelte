@@ -10,6 +10,7 @@
 
 	import type { HeapObject, HeapEntry } from '$lib/shared/python/debug/types';
 	import { cn } from '$lib/utils';
+	import type { InlineValue, TruncatedValue } from '$lib/shared/python/debug/types';
 	import {
 		shortHeapId,
 		colorForHeapId,
@@ -17,6 +18,12 @@
 		heapTypeLabel,
 		isEntryRef
 	} from './heap-utils';
+
+	// Template narrowing helper: in the {:else} branch after {#if isEntryRef(entry)},
+	// entry.value is guaranteed to be InlineValue | TruncatedValue (not HeapRef).
+	function asInlineOrTruncated(v: unknown): InlineValue | TruncatedValue {
+		return v as InlineValue | TruncatedValue;
+	}
 
 	interface Props {
 		heap: HeapObject[];
@@ -99,7 +106,7 @@
 											{shortHeapId(entry.value.objectId)}
 										</span>
 									{:else}
-										<span class="text-foreground">{formatInline(entry.value)}</span>
+										<span class="text-foreground">{formatInline(asInlineOrTruncated(entry.value))}</span>
 									{/if}
 								</div>
 							{/each}

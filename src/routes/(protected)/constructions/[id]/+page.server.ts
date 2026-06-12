@@ -26,6 +26,7 @@ export interface ConstructionDetail {
 
 export const load: PageServerLoad = async ({ params, parent, locals: { supabase } }) => {
 	const { user } = await parent();
+	if (!user) throw error(401, 'Non autorisé');
 	const id = validateUuidParam(params.id);
 
 	const { data: construction, error: constructionError } = await supabase

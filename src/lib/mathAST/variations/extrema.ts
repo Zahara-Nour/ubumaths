@@ -445,7 +445,7 @@ function isPointInDomain(point: CriticalPointInfo, domain: Domain): boolean {
 function evaluateToNumber(node: MathNode): number | null {
 	try {
 		const result = evaluate(node, { mode: 'decimal' });
-		if (typeof result.value === 'number' && Number.isFinite(result.value)) {
+		if (result.status === 'value' && typeof result.value === 'number' && Number.isFinite(result.value)) {
 			return result.value;
 		}
 		return null;
@@ -461,6 +461,10 @@ function computeYValue(expr: MathNode, variable: string, x: MathNode): MathNode 
 	try {
 		const substituted = substitute(expr, { [variable]: x });
 		const result = evaluate(substituted, { mode: 'exact' });
+		if (result.status !== 'value') {
+			// Evaluation did not produce a value: fall back to the substituted expression
+			return substituted;
+		}
 		return result.node;
 	} catch {
 		// Return the substituted expression if evaluation fails
@@ -530,7 +534,7 @@ function evaluateAtPoint(expr: MathNode, variable: string, x: MathNode): number 
 	try {
 		const substituted = substitute(expr, { [variable]: x });
 		const result = evaluate(substituted, { mode: 'decimal' });
-		if (typeof result.value === 'number' && Number.isFinite(result.value)) {
+		if (result.status === 'value' && typeof result.value === 'number' && Number.isFinite(result.value)) {
 			return result.value;
 		}
 		return null;

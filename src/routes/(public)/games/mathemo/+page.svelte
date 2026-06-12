@@ -117,7 +117,7 @@
 			if (
 				cardIds.includes(instance.cardId) &&
 				!instance.usedAt &&
-				(instance.usesRemaining === null || instance.usesRemaining > 0)
+				(instance.usesRemaining == null || instance.usesRemaining > 0)
 			) {
 				return instanceId;
 			}
