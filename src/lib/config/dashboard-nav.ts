@@ -34,12 +34,12 @@ import {
 	User as UserIcon,
 	LogOut
 } from 'lucide-svelte';
-import type { Component } from 'svelte';
+import type { ComponentType } from 'svelte';
 
 export type DashboardNavLink = {
 	href: string;
 	label: string;
-	icon: Component;
+	icon: ComponentType;
 	badge?: number;
 	/** Marks footer items (Mon profil, Déconnexion) rendered after a separator. */
 	footer?: boolean;
