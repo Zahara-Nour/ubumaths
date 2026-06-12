@@ -665,7 +665,7 @@ function convertAnswerFieldToStatement(answerField: string, warnings: string[]):
  * @returns true if the solution contains a unit annotation
  */
 function solutionHasUnit(solution: string): boolean {
-	// Match patterns like [_expr_unit_] or [._expr_unit_.]
+	// Match patterns like [_expr_unit_] or [._expr_unit_]
 	// The unit is between the last two underscores
 	// Simplified check: look for _text_ pattern where text looks like a unit
 	const unitPattern = /_([a-zA-Z][a-zA-Z0-9.^{}-]*)_\]$/;
