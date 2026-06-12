@@ -356,8 +356,11 @@ describe('preprocessing', () => {
 			const ctx = createTestContext();
 			const result = convertMathToCustomSyntax('S = \\np{12345}', ctx);
 
+			// \np produces 12\,345 which the tokenizer parses as the number 12345
+			// (the \, separators are purely visual and stripped), so conversion
+			// now succeeds and the custom output is the bare number.
 			expect(result.converted).toBe(true);
-			expect(result.output).toBe('S=12\u202F345');
+			expect(result.output).toBe('S=12345');
 		});
 
 		it('converts \\np with decimal comma (preprocessing works even if parse fails)', () => {
@@ -365,8 +368,8 @@ describe('preprocessing', () => {
 			const result = convertMathToCustomSyntax('x = \\np{9,0001}', ctx);
 
 			// Decimal comma is not valid math syntax, so conversion fails
-			// But preprocessing should still replace \np (with decimal formatting)
-			expect(result.output).toBe('x = 9,000\u202F1');
+			// But preprocessing should still replace \np (with \, separators)
+			expect(result.output).toBe('x = 9,000\\,1');
 			expect(result.output).not.toContain('\\np');
 		});
 
@@ -374,8 +377,8 @@ describe('preprocessing', () => {
 			const ctx = createTestContext();
 			const result = convertMathToCustomSyntax('S_{40} = \\np{9,0001}', ctx);
 
-			// Decimal comma causes parse failure but \np should be replaced (with decimal formatting)
-			expect(result.output).toBe('S_{40} = 9,000\u202F1');
+			// Decimal comma causes parse failure but \np should be replaced (with \, separators)
+			expect(result.output).toBe('S_{40} = 9,000\\,1');
 			expect(result.output).not.toContain('\\np');
 		});
 
@@ -384,7 +387,7 @@ describe('preprocessing', () => {
 			const result = convertMathToCustomSyntax('\\np{1000} + \\np{2000}', ctx);
 
 			expect(result.converted).toBe(true);
-			expect(result.output).toBe('1\u202F000+2\u202F000');
+			expect(result.output).toBe('1000+2000');
 		});
 
 		it('handles \\np with spaces before brace', () => {
@@ -392,7 +395,7 @@ describe('preprocessing', () => {
 			const result = convertMathToCustomSyntax('x = \\np {12345}', ctx);
 
 			expect(result.converted).toBe(true);
-			expect(result.output).toBe('x=12\u202F345');
+			expect(result.output).toBe('x=12345');
 		});
 	});
 });

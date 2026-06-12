@@ -238,6 +238,23 @@ export class Tokenizer {
 				value += '.';
 				hasDecimal = true;
 				this.position += 3; // skip {,}
+			} else if (
+				// LaTeX thin space \, used as a thousands separator inside a
+				// number (e.g. \np{12345} -> 12\,345 via the numprint
+				// converter). Purely visual: nothing is appended to `value`,
+				// so 12\,345 yields the numeric value "12345".
+				// Guarded so it ONLY triggers between two digits:
+				// - `value.length > 0` (a digit precedes us),
+				// - next two chars are `\` then `,`,
+				// - the char after `\,` is a digit.
+				// Elsewhere (`a \, b`) `\,` stays a normal spacing command.
+				char === '\\' &&
+				value.length > 0 &&
+				this.position + 2 < this.length &&
+				this.input[this.position + 1] === ',' &&
+				this.isDigit(this.input[this.position + 2])
+			) {
+				this.position += 2; // skip \, — append nothing (visual separator)
 			} else {
 				break;
 			}
