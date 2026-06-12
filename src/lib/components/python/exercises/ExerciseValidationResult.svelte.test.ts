@@ -129,9 +129,12 @@ describe('ExerciseValidationResult', () => {
 
 	it('renders hidden test cases as opaque rows with no details panel', async () => {
 		render(ExerciseValidationResult, { props: { result: resultWithHidden } });
-		// Visible test case 1 still has full label
-		await expect.element(page.getByText(/Test 1/, { exact: false })).toBeVisible();
-		// Hidden test case 2 shows the (caché) marker
+		// The visible test case is a collapsible <details> (role "group"); its
+		// summary label is split across template lines, so we assert the group
+		// itself rather than matching the whitespace-split "Test 1" text.
+		await expect.element(page.getByRole('group')).toBeVisible();
+		// Hidden test case 2 shows the (caché) marker as a plain, opaque row
+		// (no <details> panel).
 		await expect.element(page.getByText('Test 2 (caché)')).toBeVisible();
 		// The expected/actual strings from the visible case are present, but no
 		// 'Attendu' / 'Obtenu' label appears for the hidden one. We just confirm

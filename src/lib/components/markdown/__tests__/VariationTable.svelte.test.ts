@@ -204,9 +204,11 @@ describe('VariationTable Component', () => {
 
 			renderTable({ node });
 
-			const doubleBars = document.querySelectorAll('.vt-double-bar');
-			expect(doubleBars.length).toBe(1);
-			expect(doubleBars[0]?.textContent).toBe('||');
+			// The asymptote double bar is now drawn with CSS borders on an empty
+			// `.vt-asymptote-bar` span (sign variant `.vt-asymptote-bar-sign`),
+			// not a `.vt-double-bar` span containing the literal text "||".
+			const asymptoteBars = document.querySelectorAll('.vt-asymptote-bar-sign');
+			expect(asymptoteBars.length).toBe(1);
 		});
 
 		it('should render hatch for forbidden marker', async () => {
@@ -404,7 +406,7 @@ describe('VariationTable Component', () => {
 			expect(asymptoteBar.length).toBe(1);
 		});
 
-		it('should not render arrow through asymptote', async () => {
+		it('should render arrows to the limits at an asymptote (not through it)', async () => {
 			const node: VariationTableNode = {
 				type: 'variation-table',
 				variable: 'x',
@@ -428,10 +430,13 @@ describe('VariationTable Component', () => {
 
 			renderTable({ node });
 
-			// Arrows should be replaced with hatches near asymptotes
+			// An asymptote WITH two limits is not a forbidden zone: arrows are drawn
+			// toward each limit (none crosses the asymptote). Here f goes 0 → -∞ on
+			// the left (down) and +∞ → 0 on the right (down) → two down arrows.
 			const upArrows = document.querySelectorAll('.vt-arrow-up');
 			const downArrows = document.querySelectorAll('.vt-arrow-down');
-			expect(upArrows.length + downArrows.length).toBe(0);
+			expect(upArrows.length).toBe(0);
+			expect(downArrows.length).toBe(2);
 		});
 	});
 
