@@ -92,10 +92,11 @@ Le test de regression doit maintenant PASSER.
 ### Etape 2 : Tests existants passent
 
 ```bash
-pnpm test:unit -- --run
+# Cibler UNIQUEMENT les tests du perimetre touche (jamais toute la suite)
+pnpm test:server [chemin-ou-repertoire] --run
 ```
 
-Aucun test existant ne doit casser.
+Aucun test existant du perimetre ne doit casser.
 
 ### Etape 3 : Verification manuelle (si applicable)
 
@@ -128,10 +129,10 @@ Probleme: [description du bug]
 Solution: [description du fix]
 
 Closes #[issue-number] (si applicable)
-
-🤖 Generated with Claude Code
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
+
+> **Auteur unique** : ne JAMAIS ajouter `Co-Authored-By: Claude` ni aucune
+> mention de Claude / Anthropic / « Generated with Claude Code » (regle globale).
 
 ---
 
