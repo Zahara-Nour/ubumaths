@@ -349,7 +349,18 @@ e2e fill-blanks 145/145 vert ; migration 487 vert ; cosmetic-transforms + answer
 3. ~~cluster contrats API~~ + ~~e2e-fill-blanks~~ — **FAIT 2026-06-12** (#9 converter éval décimale, #10 checkForm virgule — voir section dédiée).
 4. ~~2 fichiers questions~~ — **FAIT 2026-06-12** (`ed6602acd`) : `variable-resolver` 2 stale réalignés (`random:N.M` déprécié → `digits:N.M` ; `({{b}})^2` parenthésé car moins unaire < `^`) ; `test-exact-repro.test.ts` supprimé (repro mort, doublon de `instance-generator.test.ts`, jamais migré au modèle `blanks[]`). src/lib/questions/ : 31 fichiers / 2206 verts.
 5. ~~5 fichiers client~~ — **FAIT 2026-06-12** (`13e45b5f3` + composants) : tous stale, 0 régression. Suite client entière verte (**41 fichiers / 1011 tests**). Détail ci-dessous.
-6. ~~`api/srs` 23~~ — **FAIT 2026-06-12** (`8cf3dbdec`) : tous stale, 0 régression. Cause racine commune = `requireAuth` fait `safeGetSession()` PUIS `from('profiles').…single()`, non mocké → `.select is not a function`. Helper `from` dispatché par table + chaînes réalignées par endpoint. 2 prémisses stale documentées (config FSRS verrouillée serveur ; cartes custom = strings markdown). **→ Chantier de remédiation terminé : plus aucun fichier de test rouge connu.**
+6. ~~`api/srs` 23~~ — **FAIT 2026-06-12** (`8cf3dbdec`) : tous stale, 0 régression. Cause racine commune = `requireAuth` fait `safeGetSession()` PUIS `from('profiles').…single()`, non mocké → `.select is not a function`. Helper `from` dispatché par table + chaînes réalignées par endpoint. 2 prémisses stale documentées (config FSRS verrouillée serveur ; cartes custom = strings markdown).
+
+### Dernier lot — 7 fichiers oubliés / mal étiquetés — FAIT 2026-06-12
+
+⚠️ Le chantier avait été marqué « terminé » **prématurément** : une revérification zone par zone a trouvé **7 fichiers / ~17 tests** encore rouges (zone `src/lib/exercises` jamais touchée + 2 fichiers serveur mal étiquetés « collection error » + 2 timeouts api). Tous stale, **1 régression de prod** (`b01f4388c`, `faff689c6`).
+
+- **exercises** (3, `faff689c6`) — taxonomie `difficulty`(1-3)→`category` string + codes niveaux éclatés par filière (`'1'`→`'1_GEN'`). Assertions `.toBe(2/1)`→string ; « reject invalid category » utilisait `'automatisme'` (devenu VALIDE) → repurposé.
+- **🔴 chapter-templates** (`b01f4388c`) — **11e régression de prod** : `formatGrades` faisait `${g}e` → garbage lycée (`1_GENe`, `T_GENe`) ; fix = `shortName` canonique. + 2 tests stale (codes `'1'`/`'T'` ; vraie limite `.max(18)` pas 7 — faux vert).
+- **marketplace/security** (6, `faff689c6`) — le mock `.rpc()` renvoie `{ data, error }` comme le vrai Supabase (ne throw plus, helper consolidé `2bad9d1df`) ; la prod lit déjà `{ data, error }` → 0 bug. Tests réécrits du contrat throw → `{ data, error }`.
+- **api/exercises + api/srs** (1 chacun, `faff689c6`) — pas des échecs logiques : **timeouts 5s sous charge pleine zone** (import froid du graphe lourd assign ; `generateSRSInstance` CPU ~3s) → timeout porté à 20s.
+
+**→ Chantier RÉELLEMENT terminé 2026-06-12.** Zones complètes revérifiées vertes : `src/lib/exercises` 317, `src/lib/server` 2361, `src/routes` 685, client 1011. **Total : 11 régressions de prod** trouvées et corrigées (non poussées).
 
 ### Cluster client (`*.svelte.test.ts`) — FAIT 2026-06-12
 
