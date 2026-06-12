@@ -237,38 +237,34 @@ describe('convertMathToCustomSyntax', () => {
 // =============================================================================
 
 describe('unsupported features fallback', () => {
-	describe('unsupported Greek letters', () => {
-		// Note: Unsupported Greek letters are rejected by the parser as unknown commands,
-		// so they result in parse errors rather than being detected as Greek nodes.
-		it('falls back for delta (parser rejects unknown Greek)', () => {
+	describe('formerly unsupported Greek letters (now all 23 are supported)', () => {
+		// SUPPORTED_GREEK was expanded from 5 to 23 letters (all standard lowercase Greek).
+		// delta, sigma, and all other letters are now fully converted.
+
+		it('converts delta (now supported, all 23 Greek letters are in SUPPORTED_GREEK)', () => {
 			const ctx = createTestContext();
 			const result = convertMathToCustomSyntax('\\delta', ctx);
 
-			expect(result.converted).toBe(false);
+			expect(result.converted).toBe(true);
 			expect(result.output).toBe('\\delta');
-			expect(result.unsupportedFeatures).toHaveLength(1);
-			// Parser treats unknown Greek as unknown command, so it's a parse error
-			expect(result.unsupportedFeatures?.[0].category).toBe('parse-error');
-			expect(ctx.warnings).toHaveLength(1);
-			expect(ctx.warnings[0].type).toBe('unsupported-math-feature');
+			expect(ctx.warnings).toHaveLength(0);
 		});
 
-		it('falls back for sigma (parser rejects unknown Greek)', () => {
+		it('converts sigma (now supported)', () => {
 			const ctx = createTestContext();
 			const result = convertMathToCustomSyntax('\\sigma', ctx);
 
-			expect(result.converted).toBe(false);
+			expect(result.converted).toBe(true);
 			expect(result.output).toBe('\\sigma');
-			// Parser treats unknown Greek as unknown command
-			expect(result.unsupportedFeatures?.[0].category).toBe('parse-error');
 		});
 
-		it('falls back for expression with unsupported Greek', () => {
+		it('converts expression with formerly unsupported Greek', () => {
 			const ctx = createTestContext();
 			const result = convertMathToCustomSyntax('\\delta x + y', ctx);
 
-			expect(result.converted).toBe(false);
-			expect(result.output).toBe('\\delta x + y');
+			// Implicit multiplication: \delta*x becomes \deltax (no space/operator)
+			expect(result.converted).toBe(true);
+			expect(result.output).toBe('\\deltax+y');
 		});
 	});
 
@@ -406,8 +402,9 @@ describe('preprocessing', () => {
 // =============================================================================
 
 describe('SUPPORTED_GREEK', () => {
-	it('contains exactly 5 letters', () => {
-		expect(SUPPORTED_GREEK.size).toBe(5);
+	it('contains all 23 standard lowercase Greek letters', () => {
+		// Expanded from 5 to 23 letters to support geometry-core and all mathAST consumers
+		expect(SUPPORTED_GREEK.size).toBe(23);
 	});
 
 	it('contains pi, alpha, beta, gamma, theta', () => {
@@ -418,9 +415,10 @@ describe('SUPPORTED_GREEK', () => {
 		expect(SUPPORTED_GREEK.has('theta')).toBe(true);
 	});
 
-	it('does not contain delta', () => {
-		// Cast to test unsupported letter - TypeScript only allows GreekLetter type
-		expect(SUPPORTED_GREEK.has('delta' as 'pi')).toBe(false);
+	it('also contains delta, sigma, and other letters added in the expansion', () => {
+		expect(SUPPORTED_GREEK.has('delta' as 'pi')).toBe(true);
+		expect(SUPPORTED_GREEK.has('sigma' as 'pi')).toBe(true);
+		expect(SUPPORTED_GREEK.has('omega' as 'pi')).toBe(true);
 	});
 });
 
