@@ -331,13 +331,23 @@ Tous **stale** (refonte angle DSL `1e96edbd5`, 0 régression) : 5 exports (helpe
 - **teacherDashboardCache** (9) : `credentials:'include'` ajouté ; champ `bonus` (`19e9c8514`) ; **logging gated browser+flag** (`ae6c1e3cd`) no-op en Node → 2 tests "Log Stats" → `not.toThrow`, **4 tests "Console Logging" SUPPRIMÉS** (intestables en Node sans mocker `browser` — ⚠️ scope cut à valider).
 - **color-integration** (2) : noms de variables nus (parser accepte) ; `ConversionStats` a 4 nouveaux champs.
 
-**Reste : ~10 fichiers.** Notables : `api/srs` 23 (mock isolé tedious, gardé pour la fin), `questions/generator/e2e-fill-blanks-pipeline` 6 + 2 collection-errors questions, + **5 fichiers client** (`*.svelte.test.ts`).
+**Reste : ~8 fichiers.** Notables : `api/srs` 23 (mock isolé tedious, gardé pour la fin), 2 collection-errors questions, + **5 fichiers client** (`*.svelte.test.ts`).
+
+### e2e-fill-blanks-pipeline — FAIT 2026-06-12
+
+Fichier `questions/generator/__tests__/e2e-fill-blanks-pipeline.test.ts` : structural drift réaligné (commit antérieur `0adb60358`) + **2 vraies régressions de prod** corrigées, toutes deux dues à la **virgule décimale française** dans la chaîne de génération/validation :
+
+- **#9 (9e régression) — converter éval décimale** (`eb8de68b4`, révélée par globalIndex 426 `[._&1*1000_]`) : le `pattern2` de `convertEvaluations` attendait une fermeture `_.]` **fictive** (0 occurrence dans les données ; les 610 évals décimales utilisent `[._..._]`, fermeture `_]`) → aucune éval décimale convertie. Fix : délimiteur réel + normalisation des virgules **littérales** (`0,1`→`0.1`) ; décimales **composées de variables** (`&1,&3`, globalIndex 411 — `a.c` n'a pas de forme d'éval valide) laissées intactes (warning). Réaligne 5 tests stale (syntax-converter) + 3 (integration) au délimiteur fictif `_.]` + 3 tests de régression.
+- **#10 (10e régression) — checkForm virgule décimale** (`bdb92da47`, révélée par globalIndex 411 round-trip `?*10^?`) : `checkForm`/`cosmeticViolations` parsaient la réponse/attendu sans normaliser la virgule ; le parser accepte `8.249` et `8{,}249` mais **pas** `8,249` brut → faux « Parse error on expected » → `bad_form` sur réponse correcte. Fix : `normalizeDecimalComma` (scopée `<chiffre>,<chiffre>`) avant parse, côté réponse et attendu.
+
+e2e fill-blanks 145/145 vert ; migration 487 vert ; cosmetic-transforms + answer-validator 155 verts.
 
 ## Reprise — par où continuer (prochaine session)
 
 1. ~~cluster `server/validation/*`~~ — **FAIT 2026-06-12** (9 fichiers, 41 rouges, tous stale, 0 régression — voir journal). Cluster vert (27 fichiers / 1202 tests).
 2. ~~cluster modération~~ — **FAIT 2026-06-12** (3 fichiers, 56 rouges). Racine = mock `locals.profile.role` périmé + **1 vraie régression** (`deleteMessageSchema` exigeait `messageId` dans le body → suppression de message cassée en prod, **fix code** appliqué). Pas une décision de contrat. Cluster vert (62 tests).
-3. **Prochain lot** : cluster « contrats API » (`assessments` 34, `exercises` 21, `config` 11, `templates routes` 10, `minesweeper-auth` 9, `riddles`, `checkpoint`, `messages`) + `middleware/student-access` 19 + `achievements/migration` 72 (introspection cassée). Garder `api/srs` (mock isolé, tedious) et les exports geometry (mineur) **pour la fin**.
-4. **Hors remédiation, à décider avec David** : gate léger (pre-commit `vitest related` ou CI shardé par zone) + corriger/retirer le job `test` de `quality.yml` (il appelle `test:unit`, retiré → erreur à chaque push).
+3. ~~cluster contrats API~~ + ~~e2e-fill-blanks~~ — **FAIT 2026-06-12** (#9 converter éval décimale, #10 checkForm virgule — voir section dédiée).
+4. **Reste (~8 fichiers)** : `api/srs` 23 (mock isolé tedious), 2 collection-errors questions, **5 fichiers client** `*.svelte.test.ts`.
+5. **Hors remédiation, à décider avec David** : gate léger (pre-commit `vitest related` ou CI shardé par zone) + corriger/retirer le job `test` de `quality.yml` (il appelle `test:unit`, retiré → erreur à chaque push).
 
 **Règle d'or** : ne jamais réaligner un test sans confirmer que le comportement code actuel est voulu (sinon on masque une vraie régression).
