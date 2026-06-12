@@ -44,18 +44,26 @@ describe('assessment validation schemas', () => {
 	// ============================================================================
 
 	describe('createAssessmentSchema', () => {
+		// categories is a CartItem[] (see createAssessmentSchema / CreateAssessmentData),
+		// not { category_id, question_count }
+		const validCartItem = {
+			category: { theme: 'Arithmétique', domain: 'Addition', subdomain: null, level: 1 },
+			quantity: 10,
+			delay: 20
+		};
+		const validSettings = {
+			max_attempts: 2,
+			time_limit: null,
+			deadline: null,
+			shuffle_questions: true
+		};
+
 		it('should accept valid assessment data', () => {
 			const data = {
 				title: 'Math Test - Chapter 1',
 				grade: '6',
-				categories: [
-					{
-						category_id: '550e8400-e29b-41d4-a716-446655440000',
-						question_count: 10
-					}
-				],
-				duration: 60,
-				max_attempts: 2,
+				categories: [validCartItem],
+				settings: validSettings,
 				status: 'draft'
 			};
 
@@ -63,22 +71,17 @@ describe('assessment validation schemas', () => {
 			expect(result.success).toBe(true);
 		});
 
-		it('should use default values', () => {
+		it('should default status to draft', () => {
 			const data = {
 				title: 'Test',
 				grade: '5',
-				categories: [
-					{
-						category_id: '550e8400-e29b-41d4-a716-446655440000',
-						question_count: 5
-					}
-				]
+				categories: [validCartItem],
+				settings: { max_attempts: null, time_limit: null, deadline: null, shuffle_questions: true }
 			};
 
 			const result = createAssessmentSchema.safeParse(data);
 			expect(result.success).toBe(true);
 			if (result.success) {
-				expect(result.data.max_attempts).toBe(1);
 				expect(result.data.status).toBe('draft');
 			}
 		});
