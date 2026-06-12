@@ -347,7 +347,8 @@ e2e fill-blanks 145/145 vert ; migration 487 vert ; cosmetic-transforms + answer
 1. ~~cluster `server/validation/*`~~ — **FAIT 2026-06-12** (9 fichiers, 41 rouges, tous stale, 0 régression — voir journal). Cluster vert (27 fichiers / 1202 tests).
 2. ~~cluster modération~~ — **FAIT 2026-06-12** (3 fichiers, 56 rouges). Racine = mock `locals.profile.role` périmé + **1 vraie régression** (`deleteMessageSchema` exigeait `messageId` dans le body → suppression de message cassée en prod, **fix code** appliqué). Pas une décision de contrat. Cluster vert (62 tests).
 3. ~~cluster contrats API~~ + ~~e2e-fill-blanks~~ — **FAIT 2026-06-12** (#9 converter éval décimale, #10 checkForm virgule — voir section dédiée).
-4. **Reste (~8 fichiers)** : `api/srs` 23 (mock isolé tedious), 2 collection-errors questions, **5 fichiers client** `*.svelte.test.ts`.
-5. **Hors remédiation, à décider avec David** : gate léger (pre-commit `vitest related` ou CI shardé par zone) + corriger/retirer le job `test` de `quality.yml` (il appelle `test:unit`, retiré → erreur à chaque push).
+4. ~~2 fichiers questions~~ — **FAIT 2026-06-12** (`ed6602acd`) : `variable-resolver` 2 stale réalignés (`random:N.M` déprécié → `digits:N.M` ; `({{b}})^2` parenthésé car moins unaire < `^`) ; `test-exact-repro.test.ts` supprimé (repro mort, doublon de `instance-generator.test.ts`, jamais migré au modèle `blanks[]`). src/lib/questions/ : 31 fichiers / 2206 verts.
+5. **Reste (~6 fichiers)** : `api/srs` 23 (mock isolé tedious), **5 fichiers client** `*.svelte.test.ts`.
+6. **Hors remédiation, à décider avec David** : gate léger (pre-commit `vitest related` ou CI shardé par zone) + corriger/retirer le job `test` de `quality.yml` (il appelle `test:unit`, retiré → erreur à chaque push).
 
 **Règle d'or** : ne jamais réaligner un test sans confirmer que le comportement code actuel est voulu (sinon on masque une vraie régression).
