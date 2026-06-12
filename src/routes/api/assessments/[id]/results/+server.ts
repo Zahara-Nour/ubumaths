@@ -40,12 +40,13 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		throw error(403, 'Forbidden - Not your assessment');
 	}
 
-	// Validate query parameters
+	// Validate query parameters. searchParams.get() returns null for absent params,
+	// but the schema fields are .optional() (undefined), so coerce null -> undefined.
 	const queryValidation = getResultsQuerySchema.safeParse({
-		stats: url.searchParams.get('stats'),
-		class_stats: url.searchParams.get('class_stats'),
-		student_id: url.searchParams.get('student_id'),
-		class_id: url.searchParams.get('class_id')
+		stats: url.searchParams.get('stats') ?? undefined,
+		class_stats: url.searchParams.get('class_stats') ?? undefined,
+		student_id: url.searchParams.get('student_id') ?? undefined,
+		class_id: url.searchParams.get('class_id') ?? undefined
 	});
 
 	if (!queryValidation.success) {
