@@ -364,25 +364,29 @@ describe('E2E Fill-in-blanks Pipeline', () => {
 	describe('C. Structural coherence', () => {
 		it.each(ALL_FIB)('globalIndex %d — blank count matches placeholders', (globalIndex) => {
 			const { instance } = getTestData(globalIndex);
-			const stmt = String(instance.statement);
 
-			// Count \placeholder in statement (answer_field mode)
-			const stmtPlaceholders = (stmt.match(/\\placeholder/g) || []).length;
+			// Count placeholders on the *augmented* AST — i.e. exactly what the
+			// FillBlanksInput component renders to the student. This is the source
+			// of truth for "how many input slots exist".
+			//
+			// NOTE: counting `\placeholder` in `instance.statement` AND in
+			// `expressions[].answerFormat` separately double-counts. Since the
+			// `<<expr:NAME>>` feature (commit 4629911e1, May 2026), the resolved
+			// statement already contains the inline `\placeholder` for expressions
+			// that carry their own prompt (`?`). For those, `augmentASTForExpressions`
+			// does NOT also append the answerFormat (`hasPrompts` guard in
+			// fill-blanks-utils.ts). Only expressions WITHOUT an inline prompt get
+			// the answerFormat appended. The augmented AST collapses both cases into
+			// the single, real placeholder count.
+			const ast = parseMarkdown(String(instance.statement));
+			const augmented = augmentASTForExpressions(ast, instance.expressions);
+			const augmentedJson = JSON.stringify(augmented);
 
-			// Count \placeholder in answerFormats (expression-based modes)
-			let afPlaceholders = 0;
-			if (instance.expressions) {
-				for (const expr of instance.expressions) {
-					if (expr.answerFormat) {
-						afPlaceholders += (expr.answerFormat.match(/\\placeholder/g) || []).length;
-					}
-				}
-			}
+			// Count \placeholder markers (math blanks) + {{blank:N}} (text blanks).
+			const mathPlaceholders = (augmentedJson.match(/placeholder/g) || []).length;
+			const textBlanks = (augmentedJson.match(/\{\{blank:\d+\}\}/g) || []).length;
 
-			// Count {{blank:N}} in statement (text blanks)
-			const textBlanks = (stmt.match(/\{\{blank:\d+\}\}/g) || []).length;
-
-			const totalPlaceholders = stmtPlaceholders + afPlaceholders + textBlanks;
+			const totalPlaceholders = mathPlaceholders + textBlanks;
 			expect(instance.blanks!.length).toBe(totalPlaceholders);
 		});
 
