@@ -129,6 +129,14 @@ const redirectHandle: Handle = async ({ event, resolve }) => {
 		throw redirect(308, '/dashboard/teacher/classes');
 	}
 
+	// Legacy login path → canonical auth route. The only login route lives at
+	// /auth/login ((public)/auth/login); a bare /login matches no route (404).
+	// Safety net for external / bookmarked /login URLs (internal code uses
+	// /auth/login directly — see src/routes/login-redirect.test.ts).
+	if (pathname === '/login') {
+		throw redirect(308, '/auth/login' + event.url.search);
+	}
+
 	return resolve(event);
 };
 

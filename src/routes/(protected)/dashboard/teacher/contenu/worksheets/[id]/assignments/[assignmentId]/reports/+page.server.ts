@@ -14,7 +14,7 @@ const uuidSchema = z.string().uuid();
 export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/auth/login');
 	}
 
 	// Validate UUIDs

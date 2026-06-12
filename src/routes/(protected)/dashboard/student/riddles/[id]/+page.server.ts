@@ -9,7 +9,7 @@ import { validateUuidParam } from '$lib/server/validation/params';
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/auth/login');
 	}
 
 	const id = validateUuidParam(params.id);

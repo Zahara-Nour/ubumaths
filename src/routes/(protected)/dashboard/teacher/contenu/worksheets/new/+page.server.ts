@@ -7,7 +7,7 @@ import { redirect } from '@sveltejs/kit';
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/auth/login');
 	}
 
 	// Fetch available templates (public + user's own)

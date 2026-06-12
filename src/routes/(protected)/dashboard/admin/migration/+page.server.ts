@@ -41,7 +41,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Authentication check
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/auth/login');
 	}
 
 	// Authorization check - admin only

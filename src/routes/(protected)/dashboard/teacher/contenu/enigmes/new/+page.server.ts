@@ -9,7 +9,7 @@ import { validateFormData, riddleFormSchema } from '$lib/server/validation';
 export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 	const { user } = await safeGetSession();
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/auth/login');
 	}
 
 	return {};

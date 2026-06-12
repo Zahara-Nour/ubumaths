@@ -111,7 +111,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		logger.warn('Rejected user attempting to access protected route:', user!.email);
 		// Sign out the rejected user
 		await locals.supabase.auth.signOut();
-		throw redirect(303, '/login?error=' + encodeURIComponent('Accès refusé.'));
+		throw redirect(303, '/auth/login?error=' + encodeURIComponent('Accès refusé.'));
 	}
 
 	// Get consent status for students (RGPD Article 8)

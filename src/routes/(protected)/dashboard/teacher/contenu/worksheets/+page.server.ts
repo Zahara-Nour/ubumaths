@@ -17,7 +17,7 @@ const querySchema = z.object({
 export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/auth/login');
 	}
 
 	// Parse and validate query parameters

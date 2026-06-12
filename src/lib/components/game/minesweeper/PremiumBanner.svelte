@@ -43,7 +43,7 @@
 			</ul>
 
 			<div class="flex flex-col gap-2 sm:flex-row">
-				<Button href="/login" size="default" class="flex-1">
+				<Button href="/auth/login" size="default" class="flex-1">
 					<span class="mr-2" aria-hidden="true">🚀</span>
 					Se connecter
 				</Button>
