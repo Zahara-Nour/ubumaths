@@ -444,27 +444,27 @@ describe('simple converters', () => {
 	describe('convertNumprint', () => {
 		it('should format integer with thin spaces', () => {
 			const token = createCommandToken('np', ['12345']);
-			expect(convertNumprint(token, ctx)).toBe('12\u202F345');
+			expect(convertNumprint(token, ctx)).toBe('12\\,345');
 		});
 
 		it('should format large number with multiple separators', () => {
 			const token = createCommandToken('np', ['1234567']);
-			expect(convertNumprint(token, ctx)).toBe('1\u202F234\u202F567');
+			expect(convertNumprint(token, ctx)).toBe('1\\,234\\,567');
 		});
 
 		it('should format decimal part with comma (left to right)', () => {
 			const token = createCommandToken('np', ['12345,6789']);
-			expect(convertNumprint(token, ctx)).toBe('12\u202F345,678\u202F9');
+			expect(convertNumprint(token, ctx)).toBe('12\\,345,678\\,9');
 		});
 
 		it('should format decimal part with period (left to right)', () => {
 			const token = createCommandToken('np', ['12345.6789']);
-			expect(convertNumprint(token, ctx)).toBe('12\u202F345.678\u202F9');
+			expect(convertNumprint(token, ctx)).toBe('12\\,345.678\\,9');
 		});
 
 		it('should format large number with long decimal part', () => {
 			const token = createCommandToken('np', ['1234567,89012345']);
-			expect(convertNumprint(token, ctx)).toBe('1\u202F234\u202F567,890\u202F123\u202F45');
+			expect(convertNumprint(token, ctx)).toBe('1\\,234\\,567,890\\,123\\,45');
 		});
 
 		it('should handle small numbers without formatting', () => {
