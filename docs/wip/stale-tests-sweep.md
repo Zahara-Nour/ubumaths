@@ -258,7 +258,7 @@ Les 7 autres fichiers (après assessments) traités, **tous test-drift, 0 régre
 | `middleware/student-access` | 21/21 | `verifyTeacherStudent` fait `.eq('student_id').eq('status','active')` (2e `.eq` ajouté par `186352255`) awaité ; le mock local résolvait via `eq.mockResolvedValueOnce` → 1er `.eq` cassait le 2e. Mock rendu **thenable** (`_queueResult`).               | `b2bc8da60` |
 | `achievements/migration`    | 83/83 | introspection regex-sur-SQL. 68 « no assertions » : `assertContains` throwait sans `expect()` → 0 assertion. 4 patterns stale vs migration réelle (UNIQUE INDEX≠CONSTRAINT, index `incomplete` inexistant→`is_active`, 2 regex multi-lignes `.`→`[\s\S]`). | `5d356c38d` |
 
-⚠️ `achievements/migration` est un test **fragile** (regex sur DDL d'une migration figée) — candidat à suppression future (faible valeur : une migration s'applique ou pas, vérifier son texte est cassant).
+⚠️ `achievements/migration` était un test **fragile** (regex sur DDL d'une migration figée). **SUPPRIMÉ 2026-06-12** (décision David) : valeur quasi nulle (une migration s'applique ou pas — c'est `db:migrate` qui le vérifie, pas l'orthographe de son SQL), coût de maintenance à chaque reformulation. Le fichier entier n'était que `readFileSync` + `assertContains` regex sur le texte SQL.
 
 ### ✅ Cluster answer-validator — RÉGRESSION CONFIRMÉE + corrigée (2026-06-12)
 
