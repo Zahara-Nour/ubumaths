@@ -1,0 +1,28 @@
+{
+	// CI type-check scope: source files only, test files excluded.
+	// Test files (*.test.ts, __tests__/**, tests/**) are validated by running
+	// them via vitest (esbuild, no type-check); svelte-check is the type GATE
+	// for product source. Excluding them keeps the gate honest (real bugs) and
+	// keeps the program small enough to type-check without OOM.
+	// `exclude` REPLACES the parent's exclude when extending, so the
+	// service-worker / node_modules excludes from .svelte-kit/tsconfig.json
+	// are replicated here.
+	"extends": "./tsconfig.json",
+	"exclude": [
+		"node_modules/**",
+		"src/service-worker.js",
+		"src/service-worker/**/*.js",
+		"src/service-worker.ts",
+		"src/service-worker/**/*.ts",
+		"src/service-worker.d.ts",
+		"src/service-worker/**/*.d.ts",
+		"src/**/*.test.ts",
+		"src/**/*.spec.ts",
+		"src/**/*.svelte.test.ts",
+		"src/**/*.svelte.spec.ts",
+		"src/**/__tests__/**",
+		"test/**",
+		"tests/**",
+		"extern/**"
+	]
+}
