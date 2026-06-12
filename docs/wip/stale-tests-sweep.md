@@ -317,7 +317,15 @@ _(Historique du diagnostic ci-dessous.)_
 
 Tous **stale** (refonte angle DSL `1e96edbd5`, 0 régression) : 5 exports (helper `createMesureText` sans `unite` → défaut `rad` → `1.6°` au lieu de `90°` → fix `unite:'deg'`) ; parser ×2 (`angle`/`angle_polaire` mots-clés réservés → renommer l'identifiant) ; trace-demos (`angle(2 points)` → `angle_polaire`).
 
-**Reste : ~24 fichiers.** Notables : `api/srs` 23 (mock isolé, fin), `api/migration/migration-review` 3, `exercise-import-export` 4, whiteboard 3, evoland 2, questions 4, stores 1, shared/blockly 1 + **5 fichiers client** (`*.svelte.test.ts`). _(challenge-variables retiré ; geometry-core + markdown faits.)_
+### Petits fichiers serveur/whiteboard — FAIT 2026-06-12
+
+- **whiteboard** (3, `1249d4053`) : binding/hit-testing/serialization stale (Excalidraw : stored fixedPoint `c4d434711`, elbow via points[] `b1d3b04eb`, migrateAnnotations idempotente). 0 régression.
+- **exercise-import-export** (4) + **exercise-backup** (1) : taxonomie difficulty→category (`2738a8df4`/`fd5359395`) ; backup lenient sur `category`.
+- **blockly** (1) : `sounds:false` délibéré (CSP).
+- **migration-review** (3) : handler approve/reject utilise désormais `loadQuestionByIndex` + `MigrationStateManager` + lookup `migration_edits` → mocks ajoutés.
+- **🔴 achievements/service** (1) : **régression** — `p_reason` avait perdu son `|| null` → `undefined` passé à la RPC au lieu de NULL. Fix code `reason ?? null`. (8e régression de prod du chantier.)
+
+**Reste : ~15 fichiers.** Notables : `api/srs` 23 (mock isolé, gardé pour la fin), evoland 2, questions 4 (e2e-fill-blanks 6 + color-integration 2 + 2 collection-errors), stores 1 (teacherDashboardCache 9) + **5 fichiers client** (`*.svelte.test.ts`).
 
 ## Reprise — par où continuer (prochaine session)
 
