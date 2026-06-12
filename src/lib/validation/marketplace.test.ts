@@ -34,7 +34,6 @@ describe('createListingSchema', () => {
 			offered_gidouilles: 100,
 			wanted_card_template_ids: [],
 			wanted_gidouilles: 200,
-			title: 'Selling rare cards',
 			description: 'Great deal!'
 		};
 
@@ -143,52 +142,14 @@ describe('createListingSchema', () => {
 	});
 
 	test('validates card ID arrays', () => {
-		// Too many cards
-		const tooManyCards = Array.from({ length: 11 }, () => '550e8400-e29b-41d4-a716-446655440000');
-		let result = createListingSchema.safeParse({
-			listing_type: 'sell',
-			offered_card_ids: tooManyCards,
-			title: 'Test'
-		});
-		expect(result.success).toBe(false);
-		if (!result.success) {
-			expect(result.error.issues[0].message).toBe('Maximum 10 cartes peuvent être offertes');
-		}
-
 		// Invalid UUID
-		result = createListingSchema.safeParse({
+		const result = createListingSchema.safeParse({
 			listing_type: 'sell',
-			offered_card_ids: ['not-a-uuid'],
-			title: 'Test'
+			offered_card_ids: ['not-a-uuid']
 		});
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			expect(result.error.issues[0].message).toBe('ID de carte invalide');
-		}
-	});
-
-	test('validates title constraints', () => {
-		// Too short
-		let result = createListingSchema.safeParse({
-			listing_type: 'sell',
-			offered_card_ids: ['550e8400-e29b-41d4-a716-446655440000'],
-			title: 'AB'
-		});
-		expect(result.success).toBe(false);
-		if (!result.success) {
-			expect(result.error.issues[0].message).toBe('Le titre doit contenir au moins 3 caractères');
-		}
-
-		// Too long
-		const longTitle = 'A'.repeat(101);
-		result = createListingSchema.safeParse({
-			listing_type: 'sell',
-			offered_card_ids: ['550e8400-e29b-41d4-a716-446655440000'],
-			title: longTitle
-		});
-		expect(result.success).toBe(false);
-		if (!result.success) {
-			expect(result.error.issues[0].message).toBe('Le titre ne peut pas dépasser 100 caractères');
 		}
 	});
 
@@ -237,7 +198,7 @@ describe('createListingSchema', () => {
 describe('updateListingSchema', () => {
 	test('validates partial updates', () => {
 		const data = {
-			title: 'Updated title'
+			wanted_gidouilles: 300
 		};
 
 		const result = updateListingSchema.safeParse(data);
@@ -265,12 +226,8 @@ describe('updateListingSchema', () => {
 	});
 
 	test('applies same constraints as create schema', () => {
-		// Title too short
-		let result = updateListingSchema.safeParse({ title: 'AB' });
-		expect(result.success).toBe(false);
-
 		// Gidouilles negative
-		result = updateListingSchema.safeParse({ wanted_gidouilles: -1 });
+		let result = updateListingSchema.safeParse({ wanted_gidouilles: -1 });
 		expect(result.success).toBe(false);
 
 		// Too many card templates
@@ -506,18 +463,17 @@ describe('createTradeSchema', () => {
 		expect(result.success).toBe(true);
 	});
 
-	test('validates card limits in initial offer', () => {
-		const tooManyCards = Array.from({ length: 11 }, () => '550e8400-e29b-41d4-a716-446655440000');
+	test('validates card UUIDs in initial offer', () => {
 		const result = createTradeSchema.safeParse({
 			partner_id: '550e8400-e29b-41d4-a716-446655440000',
 			initial_offer: {
-				cards: tooManyCards,
+				cards: ['not-a-uuid'],
 				gidouilles: 0
 			}
 		});
 		expect(result.success).toBe(false);
 		if (!result.success) {
-			expect(result.error.issues[0].message).toBe('Maximum 10 cartes peuvent être offertes');
+			expect(result.error.issues[0].message).toBe('ID de carte invalide');
 		}
 	});
 
@@ -573,22 +529,20 @@ describe('createOfferSchema', () => {
 		expect(result.success).toBe(true);
 	});
 
-	test('validates card limits for both sides', () => {
-		const tooManyCards = Array.from({ length: 11 }, () => '550e8400-e29b-41d4-a716-446655440000');
-
-		// Too many initiator cards
+	test('validates card UUIDs for both sides', () => {
+		// Invalid initiator card UUID
 		let result = createOfferSchema.safeParse({
 			trade_id: '550e8400-e29b-41d4-a716-446655440000',
-			initiator_cards: tooManyCards,
+			initiator_cards: ['not-a-uuid'],
 			partner_cards: []
 		});
 		expect(result.success).toBe(false);
 
-		// Too many partner cards
+		// Invalid partner card UUID
 		result = createOfferSchema.safeParse({
 			trade_id: '550e8400-e29b-41d4-a716-446655440000',
 			initiator_cards: [],
-			partner_cards: tooManyCards
+			partner_cards: ['not-a-uuid']
 		});
 		expect(result.success).toBe(false);
 	});
@@ -861,10 +815,9 @@ describe('adminStatsQuerySchema', () => {
 
 describe('Edge cases and special scenarios', () => {
 	test('handles null vs undefined correctly', () => {
-		// Most fields should treat null as invalid
+		// Required fields should treat null as invalid
 		const dataWithNull = {
-			listing_type: 'sell',
-			title: null, // Should fail
+			listing_type: null, // Should fail (required enum)
 			offered_card_ids: ['550e8400-e29b-41d4-a716-446655440000']
 		};
 		let result = createListingSchema.safeParse(dataWithNull);
@@ -873,7 +826,6 @@ describe('Edge cases and special scenarios', () => {
 		// Undefined should use defaults or be optional
 		const dataWithUndefined = {
 			listing_type: 'sell',
-			title: 'Valid title',
 			description: undefined, // Should be fine (optional)
 			offered_card_ids: ['550e8400-e29b-41d4-a716-446655440000']
 		};
