@@ -82,15 +82,18 @@ describe('POST /api/exercises/[id]/assign', () => {
 			student_id: '550e8400-e29b-41d4-a716-446655440005'
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockExerciseId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await POST({
+				request,
+				params: { id: mockExerciseId },
+				locals
+			} as any);
+			expect.fail('Should have thrown');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
+		}
 	});
 
 	it('should reject non-teacher users', async () => {
@@ -98,7 +101,7 @@ describe('POST /api/exercises/[id]/assign', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
-		// Mock profile query returning student role
+		// Mock profile query returning student role (consumed by requireRole -> requireAuth)
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
@@ -109,15 +112,18 @@ describe('POST /api/exercises/[id]/assign', () => {
 			student_id: '550e8400-e29b-41d4-a716-446655440005'
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockExerciseId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toBe('Forbidden - Teachers only');
+		try {
+			await POST({
+				request,
+				params: { id: mockExerciseId },
+				locals
+			} as any);
+			expect.fail('Should have thrown');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Interdit - Enseignants uniquement');
+		}
 	});
 
 	it('should create single student assignment', async () => {
@@ -264,14 +270,17 @@ describe('GET /api/exercises/assigned', () => {
 		const locals = createMockLocals(); // No user
 		const url = createMockURL();
 
-		const response = await GET({
-			url,
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await GET({
+				url,
+				locals
+			} as any);
+			expect.fail('Should have thrown');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
+		}
 	});
 
 	it('should return student exercises with filters', async () => {
@@ -279,6 +288,12 @@ describe('GET /api/exercises/assigned', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
+
+		// Mock profile fetch (consumed by requireAuth)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student' },
+			error: null
+		});
 
 		// Mock RPC call for student exercises
 
@@ -338,6 +353,12 @@ describe('GET /api/exercises/assigned', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
+		// Mock profile fetch (consumed by requireAuth)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student' },
+			error: null
+		});
+
 		// Mock empty result
 
 		(locals.supabase.rpc as any).mockResolvedValueOnce({
@@ -374,15 +395,18 @@ describe('POST /api/exercises/[id]/view', () => {
 		const locals = createMockLocals(); // No user
 		const request = createMockRequest({});
 
-		const response = await POST({
-			request,
-			params: { id: mockExerciseId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await POST({
+				request,
+				params: { id: mockExerciseId },
+				locals
+			} as any);
+			expect.fail('Should have thrown');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
+		}
 	});
 
 	it('should track view for authenticated user', async () => {
@@ -390,6 +414,12 @@ describe('POST /api/exercises/[id]/view', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
+
+		// Mock profile fetch (consumed by requireAuth)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student' },
+			error: null
+		});
 
 		// Mock no existing completion
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -430,6 +460,12 @@ describe('POST /api/exercises/[id]/view', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
+
+		// Mock profile fetch (consumed by requireAuth)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student' },
+			error: null
+		});
 
 		// Mock existing completion update
 		const existingCompletion = {
@@ -480,15 +516,18 @@ describe('POST /api/exercises/[id]/complete', () => {
 		const locals = createMockLocals(); // No user
 		const request = createMockRequest({});
 
-		const response = await POST({
-			request,
-			params: { id: mockExerciseId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await POST({
+				request,
+				params: { id: mockExerciseId },
+				locals
+			} as any);
+			expect.fail('Should have thrown');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
+		}
 	});
 
 	it('should mark exercise as complete', async () => {
@@ -496,6 +535,12 @@ describe('POST /api/exercises/[id]/complete', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
+
+		// Mock profile fetch (consumed by requireAuth; consent_required=false so requireConsent passes)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student', consent_required: false },
+			error: null
+		});
 
 		// Mock existing completion (not yet completed)
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -541,6 +586,12 @@ describe('POST /api/exercises/[id]/complete', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
+
+		// Mock profile fetch (consumed by requireAuth; consent_required=false so requireConsent passes)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student', consent_required: false },
+			error: null
+		});
 
 		// Mock no existing completion
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -589,15 +640,18 @@ describe('DELETE /api/exercises/[id]/complete', () => {
 		const locals = createMockLocals(); // No user
 		const request = createMockRequest({}, 'DELETE');
 
-		const response = await DELETE({
-			request,
-			params: { id: mockExerciseId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await DELETE({
+				request,
+				params: { id: mockExerciseId },
+				locals
+			} as any);
+			expect.fail('Should have thrown');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
+		}
 	});
 
 	it('should unmark exercise as complete', async () => {
@@ -605,6 +659,12 @@ describe('DELETE /api/exercises/[id]/complete', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
+
+		// Mock profile fetch (consumed by requireAuth; consent_required=false so requireConsent passes)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student', consent_required: false },
+			error: null
+		});
 
 		// Mock update to clear completed_at
 		const now = new Date().toISOString();
@@ -641,7 +701,13 @@ describe('DELETE /api/exercises/[id]/complete', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
-		// Mock database error
+		// Mock profile fetch (consumed by requireAuth; consent_required=false so requireConsent passes)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student', consent_required: false },
+			error: null
+		});
+
+		// Mock database error for the actual update query
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: null,
 			error: { message: 'Database error' }
@@ -672,15 +738,18 @@ describe('GET /api/exercises/[id]/access', () => {
 		const locals = createMockLocals(); // No user
 		const request = createMockRequest({}, 'GET');
 
-		const response = await GET({
-			request,
-			params: { id: mockExerciseId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(401);
-		expect(data.error).toBe('Unauthorized');
+		try {
+			await GET({
+				request,
+				params: { id: mockExerciseId },
+				locals
+			} as any);
+			expect.fail('Should have thrown');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(401);
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
+		}
 	});
 
 	it('should return true when student has access', async () => {
@@ -688,6 +757,12 @@ describe('GET /api/exercises/[id]/access', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
+
+		// Mock profile fetch (consumed by requireAuth)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student' },
+			error: null
+		});
 
 		// Mock RPC call returning true
 
@@ -719,6 +794,12 @@ describe('GET /api/exercises/[id]/access', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
+		// Mock profile fetch (consumed by requireAuth)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student' },
+			error: null
+		});
+
 		// Mock RPC call returning false
 
 		(locals.supabase.rpc as any).mockResolvedValueOnce({
@@ -744,6 +825,12 @@ describe('GET /api/exercises/[id]/access', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
+
+		// Mock profile fetch (consumed by requireAuth)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student' },
+			error: null
+		});
 
 		// Mock RPC error
 
@@ -846,6 +933,12 @@ describe('Error handling', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
+		// Mock profile fetch (consumed by requireAuth)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student' },
+			error: null
+		});
+
 		// Mock RPC call for getting student assignments with error
 		// Note: getAssignmentsForStudent handles errors gracefully by returning empty data
 		locals.supabase.rpc = vi.fn().mockResolvedValueOnce({
@@ -873,6 +966,12 @@ describe('Error handling', () => {
 
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
+
+		// Mock profile fetch (consumed by requireAuth)
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { id: mockStudent.id, role: 'student' },
+			error: null
+		});
 
 		// Mock view tracking with missing assignment_id (should work)
 		mockSupabase._mockChain.maybeSingle.mockResolvedValueOnce({
@@ -914,7 +1013,7 @@ describe('Authorization edge cases', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockStudent.id, mockSupabase);
 
-		// Mock student profile check
+		// Mock student profile check (consumed by requireRole -> requireAuth)
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: { role: 'student' },
 			error: null
@@ -924,15 +1023,18 @@ describe('Authorization edge cases', () => {
 			assigned_to_type: 'public'
 		});
 
-		const response = await POST({
-			request,
-			params: { id: mockExerciseId },
-			locals
-		} as any);
-
-		const data = await response.json();
-		expect(response.status).toBe(403);
-		expect(data.error).toContain('Teachers only');
+		try {
+			await POST({
+				request,
+				params: { id: mockExerciseId },
+				locals
+			} as any);
+			expect.fail('Should have thrown');
+		} catch (err: unknown) {
+			const error = err as { status: number; body: { message: string } };
+			expect(error.status).toBe(403);
+			expect(error.body.message).toBe('Interdit - Enseignants uniquement');
+		}
 	});
 
 	it('should prevent teachers from assigning exercises they do not own', async () => {
