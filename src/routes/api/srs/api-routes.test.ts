@@ -1109,7 +1109,9 @@ describe('GET /api/srs/review/due - Get Due Cards', () => {
 
 		expect(response.status).toBe(200);
 		expect(data.cards).toBeDefined();
-	});
+		// Generous timeout: this test runs the real `generateSRSInstance` (CPU-heavy,
+		// ~3s) which can exceed the 5s default under full-zone load.
+	}, 20000);
 
 	it('should require deck_id parameter', async () => {
 		const { GET } = await import('./review/due/+server');

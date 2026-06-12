@@ -94,7 +94,11 @@ describe('POST /api/exercises/[id]/assign', () => {
 			expect(error.status).toBe(401);
 			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
-	});
+	}, // Generous timeout: this is the first test to `await import()` the assign
+	// handler's heavy module graph (exercise-assignments → validation →
+	// mathAST/ubumark); the cold transform/compile can exceed the 5s default
+	// under full-zone load even though the 401 itself is instant.
+	20000);
 
 	it('should reject non-teacher users', async () => {
 		const { POST } = await import('./[id]/assign/+server');

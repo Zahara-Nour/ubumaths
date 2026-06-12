@@ -186,19 +186,22 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 
 			const results = await simulateConcurrentOperations(operations, 5);
 
-			// Only one should succeed
-			const successful = results.filter((r) => r.status === 'fulfilled');
-			const failed = results.filter((r) => r.status === 'rejected');
+			// `.rpc()` resolves with `{ data, error }` like real Supabase (it does
+			// not throw on RPC errors), so a conflict surfaces as a non-null error
+			// on a fulfilled promise — not a rejection.
+			const rpcError = (r: (typeof results)[number]) =>
+				r.status === 'fulfilled' ? (r.value as { error: { message: string } | null }).error : null;
+			const successful = results.filter((r) => r.status === 'fulfilled' && rpcError(r) === null);
+			const failed = results.filter((r) => r.status === 'fulfilled' && rpcError(r) !== null);
 
 			expect(successful).toHaveLength(1);
 			expect(failed).toHaveLength(2);
 
 			// Verify the failures are due to conflict
 			failed.forEach((result) => {
-				if (result.status === 'rejected') {
-					expect(result.reason.message).toContain('409');
-					expect(result.reason.message).toContain('Conflict');
-				}
+				const error = rpcError(result);
+				expect(error?.message).toContain('409');
+				expect(error?.message).toContain('Conflict');
 			});
 		});
 
@@ -240,9 +243,16 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			// Should fail fast (< 200ms total) rather than waiting
 			expect(endTime - startTime).toBeLessThan(200);
 
-			// One success, one immediate failure
-			expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
-			expect(results.filter((r) => r.status === 'rejected')).toHaveLength(1);
+			// One success, one immediate failure — both resolve with `{ data, error }`;
+			// the busy one carries a non-null error.
+			const rpcError = (r: (typeof results)[number]) =>
+				r.status === 'fulfilled' ? (r.value as { error: { message: string } | null }).error : null;
+			expect(results.filter((r) => r.status === 'fulfilled' && rpcError(r) === null)).toHaveLength(
+				1
+			);
+			expect(results.filter((r) => r.status === 'fulfilled' && rpcError(r) !== null)).toHaveLength(
+				1
+			);
 		});
 
 		test('rollback on partial failure in accept_proposal_atomic', async () => {
@@ -281,14 +291,14 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			// Reset and test failed transaction
 			transactionSteps.length = 0;
 
-			await expect(
-				mockSupabase.rpc('accept_proposal_atomic', {
-					p_proposal_id: 'p2',
-					p_user_id: 'u2',
-					simulate_card_transfer_failure: true
-				} as AcceptProposalAtomicParams)
-			).rejects.toThrow('Failed to transfer cards');
+			// `.rpc()` surfaces the handler's failure as a non-null error (not a throw).
+			const failResult = await mockSupabase.rpc('accept_proposal_atomic', {
+				p_proposal_id: 'p2',
+				p_user_id: 'u2',
+				simulate_card_transfer_failure: true
+			} as AcceptProposalAtomicParams);
 
+			expect(failResult.error?.message).toContain('Failed to transfer cards');
 			expect(transactionSteps).toContain('rollback');
 			expect(transactionSteps).not.toContain('commit');
 		});
@@ -646,14 +656,14 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 			// Reset and test failure scenario
 			unlockLog.length = 0;
 
-			await expect(
-				mockSupabase.rpc('unlock_specific_cards', {
-					p_entity_id: 'trade-456',
-					p_card_ids: cardIds,
-					simulate_partial_failure: true
-				} as UnlockCardsParams)
-			).rejects.toThrow('Failed to unlock all cards');
+			// `.rpc()` surfaces the failure as a non-null error (not a throw).
+			const failResult = await mockSupabase.rpc('unlock_specific_cards', {
+				p_entity_id: 'trade-456',
+				p_card_ids: cardIds,
+				simulate_partial_failure: true
+			} as UnlockCardsParams);
 
+			expect(failResult.error?.message).toContain('Failed to unlock all cards');
 			// Verify error was logged
 			expect(unlockLog).toContain('Card card-2 not found or already unlocked');
 		});
@@ -748,23 +758,22 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 
 			expect((lock1.data as { success: boolean } | null)?.success).toBe(true);
 
-			// User 1 tries to lock same card for trade B (double-spending attempt)
-			await expect(
-				mockSupabase.rpc('lock_card_for_trade', {
-					p_card_id: 'card-1',
-					p_entity_id: 'trade-b',
-					p_user_id: user1.id
-				})
-			).rejects.toThrow('Card already locked');
+			// User 1 tries to lock same card for trade B (double-spending attempt).
+			// `.rpc()` surfaces the failure as a non-null error, not a throw.
+			const doubleSpend = await mockSupabase.rpc('lock_card_for_trade', {
+				p_card_id: 'card-1',
+				p_entity_id: 'trade-b',
+				p_user_id: user1.id
+			});
+			expect(doubleSpend.error?.message).toContain('Card already locked');
 
 			// User 2 tries to lock user 1's card (ownership check)
-			await expect(
-				mockSupabase.rpc('lock_card_for_trade', {
-					p_card_id: 'card-2',
-					p_entity_id: 'trade-c',
-					p_user_id: user2.id
-				})
-			).rejects.toThrow('Card not owned by user');
+			const wrongOwner = await mockSupabase.rpc('lock_card_for_trade', {
+				p_card_id: 'card-2',
+				p_entity_id: 'trade-c',
+				p_user_id: user2.id
+			});
+			expect(wrongOwner.error?.message).toContain('Card not owned by user');
 		});
 	});
 
@@ -815,13 +824,12 @@ describe('Marketplace Security - Phase 6 Critical Fixes', () => {
 				expect((result.data as { success: boolean } | null)?.success).toBe(true);
 			}
 
-			// Next trade should fail
-			await expect(
-				mockSupabase.rpc('create_trade', {
-					p_user_id: user1.id,
-					p_partner_id: user3.id
-				})
-			).rejects.toThrow('429: Daily trade limit exceeded');
+			// Next trade should fail — surfaced as a non-null error, not a throw.
+			const overLimit = await mockSupabase.rpc('create_trade', {
+				p_user_id: user1.id,
+				p_partner_id: user3.id
+			});
+			expect(overLimit.error?.message).toContain('429: Daily trade limit exceeded');
 
 			// Different user should still be able to create trades
 			const otherUserResult = await mockSupabase.rpc('create_trade', {

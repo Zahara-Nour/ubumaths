@@ -139,7 +139,7 @@ describe('Static Exercises', () => {
 		expect(result.success).toBe(true);
 		if (result.success && result.instance) {
 			expect(result.instance.title).toBe('Addition Practice');
-			expect(result.instance.category).toBe(2);
+			expect(result.instance.category).toBe('automatisme');
 			expect(result.instance.tags).toEqual(['addition', 'arithmetic']);
 			expect(result.instance.source).toBe('Test Book');
 			expect(result.instance.grades).toEqual(['6', '5']);
@@ -1141,7 +1141,7 @@ describe('Integration Tests', () => {
 
 			// Verify metadata
 			expect(result.instance.title).toBe('Quadratic Equation');
-			expect(result.instance.category).toBe(2);
+			expect(result.instance.category).toBe('automatisme');
 			expect(result.instance.distributionMode).toBe('per_student');
 		}
 	});
@@ -1217,7 +1217,7 @@ describe('Integration Tests', () => {
 
 			// Verify metadata
 			expect(result.instance.title).toBe('Théorème de Pythagore');
-			expect(result.instance.category).toBe(2);
+			expect(result.instance.category).toBe('automatisme');
 		}
 	});
 });
