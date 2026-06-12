@@ -36,9 +36,12 @@ describe('rewards, messages, notifications validation schemas', () => {
 	// ============================================================================
 
 	describe('awardGidouillesSchema', () => {
+		const validClassId = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+
 		it('should accept valid gidouilles award', () => {
 			const data = {
 				studentId: '550e8400-e29b-41d4-a716-446655440000',
+				classId: validClassId,
 				amount: 50
 			};
 
@@ -46,9 +49,32 @@ describe('rewards, messages, notifications validation schemas', () => {
 			expect(result.success).toBe(true);
 		});
 
+		it('should accept negative amount (removal of gidouilles)', () => {
+			// Schema supports both add (positive) and remove (negative) since 2478a8425
+			const data = {
+				studentId: '550e8400-e29b-41d4-a716-446655440000',
+				classId: validClassId,
+				amount: -10
+			};
+
+			const result = awardGidouillesSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject missing classId', () => {
+			const data = {
+				studentId: '550e8400-e29b-41d4-a716-446655440000',
+				amount: 50
+			};
+
+			const result = awardGidouillesSchema.safeParse(data);
+			expect(result.success).toBe(false);
+		});
+
 		it('should reject invalid student ID', () => {
 			const data = {
 				studentId: 'not-a-uuid',
+				classId: validClassId,
 				amount: 50
 			};
 
@@ -59,20 +85,11 @@ describe('rewards, messages, notifications validation schemas', () => {
 			}
 		});
 
-		it('should reject negative amount', () => {
+		it('should reject amount below -1000', () => {
 			const data = {
 				studentId: '550e8400-e29b-41d4-a716-446655440000',
-				amount: -10
-			};
-
-			const result = awardGidouillesSchema.safeParse(data);
-			expect(result.success).toBe(false);
-		});
-
-		it('should reject zero amount', () => {
-			const data = {
-				studentId: '550e8400-e29b-41d4-a716-446655440000',
-				amount: 0
+				classId: validClassId,
+				amount: -1001
 			};
 
 			const result = awardGidouillesSchema.safeParse(data);
@@ -82,6 +99,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 		it('should reject amount exceeding max', () => {
 			const data = {
 				studentId: '550e8400-e29b-41d4-a716-446655440000',
+				classId: validClassId,
 				amount: 1001
 			};
 
@@ -92,6 +110,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 		it('should reject decimal amount', () => {
 			const data = {
 				studentId: '550e8400-e29b-41d4-a716-446655440000',
+				classId: validClassId,
 				amount: 50.5
 			};
 
@@ -102,6 +121,7 @@ describe('rewards, messages, notifications validation schemas', () => {
 		it('should reject infinite amount', () => {
 			const data = {
 				studentId: '550e8400-e29b-41d4-a716-446655440000',
+				classId: validClassId,
 				amount: Infinity
 			};
 
@@ -1100,9 +1120,10 @@ describe('rewards, messages, notifications validation schemas', () => {
 
 	describe('listNotificationsQuerySchema', () => {
 		it('should accept valid query', () => {
+			// page/limit are query-string params (string + clamp) since d4b5051e9
 			const data = {
-				page: 2,
-				limit: 25,
+				page: '2',
+				limit: '25',
 				unreadOnly: true
 			};
 

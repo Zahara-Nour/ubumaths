@@ -762,7 +762,9 @@ describe('VIP Card Action Validation', () => {
 					}
 				});
 
-				it('should reject replace_random with missing count', () => {
+				it('should accept replace_random with missing count (flexible mode)', () => {
+					// 870d3fbdc made count optional: undefined count = flexible mode
+					// (student chooses how many cards to exchange, 1-10)
 					const result = createTemplateSchema.safeParse({
 						id: 'exchange-card',
 						name: 'Exchange Card',
@@ -779,7 +781,7 @@ describe('VIP Card Action Validation', () => {
 						},
 						sortOrder: 0
 					});
-					expect(result.success).toBe(false);
+					expect(result.success).toBe(true);
 				});
 
 				it('should reject replace_random with decimal count', () => {

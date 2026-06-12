@@ -47,7 +47,7 @@ describe('assessment validation schemas', () => {
 		it('should accept valid assessment data', () => {
 			const data = {
 				title: 'Math Test - Chapter 1',
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: '550e8400-e29b-41d4-a716-446655440000',
@@ -66,7 +66,7 @@ describe('assessment validation schemas', () => {
 		it('should use default values', () => {
 			const data = {
 				title: 'Test',
-				grade: '5eme',
+				grade: '5',
 				categories: [
 					{
 						category_id: '550e8400-e29b-41d4-a716-446655440000',
@@ -86,7 +86,7 @@ describe('assessment validation schemas', () => {
 		it('should reject empty title', () => {
 			const data = {
 				title: '   ',
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: '550e8400-e29b-41d4-a716-446655440000',
@@ -102,7 +102,7 @@ describe('assessment validation schemas', () => {
 		it('should reject title exceeding max length', () => {
 			const data = {
 				title: 'a'.repeat(201),
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: '550e8400-e29b-41d4-a716-446655440000',
@@ -134,7 +134,7 @@ describe('assessment validation schemas', () => {
 		it('should reject empty categories array', () => {
 			const data = {
 				title: 'Test',
-				grade: '6eme',
+				grade: '6',
 				categories: []
 			};
 
@@ -150,7 +150,7 @@ describe('assessment validation schemas', () => {
 
 			const data = {
 				title: 'Test',
-				grade: '6eme',
+				grade: '6',
 				categories
 			};
 
@@ -161,7 +161,7 @@ describe('assessment validation schemas', () => {
 		it('should reject invalid category UUID', () => {
 			const data = {
 				title: 'Test',
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: 'not-a-uuid',
@@ -177,7 +177,7 @@ describe('assessment validation schemas', () => {
 		it('should reject non-integer question count', () => {
 			const data = {
 				title: 'Test',
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: '550e8400-e29b-41d4-a716-446655440000',
@@ -193,7 +193,7 @@ describe('assessment validation schemas', () => {
 		it('should reject negative question count', () => {
 			const data = {
 				title: 'Test',
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: '550e8400-e29b-41d4-a716-446655440000',
@@ -209,7 +209,7 @@ describe('assessment validation schemas', () => {
 		it('should reject question count exceeding max', () => {
 			const data = {
 				title: 'Test',
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: '550e8400-e29b-41d4-a716-446655440000',
@@ -225,7 +225,7 @@ describe('assessment validation schemas', () => {
 		it('should reject duration exceeding max', () => {
 			const data = {
 				title: 'Test',
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: '550e8400-e29b-41d4-a716-446655440000',
@@ -242,7 +242,7 @@ describe('assessment validation schemas', () => {
 		it('should reject max_attempts exceeding limit', () => {
 			const data = {
 				title: 'Test',
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: '550e8400-e29b-41d4-a716-446655440000',
@@ -261,7 +261,7 @@ describe('assessment validation schemas', () => {
 		it('should accept partial updates', () => {
 			const updates = [
 				{ title: 'Updated Title' },
-				{ grade: '5eme' },
+				{ grade: '5' },
 				{ duration: 90 },
 				{ status: 'published' }
 			];
@@ -373,7 +373,7 @@ describe('assessment validation schemas', () => {
 		it('should accept valid query parameters', () => {
 			const data = {
 				status: 'published',
-				grade: '6eme',
+				grade: '6',
 				page: 2,
 				limit: 25
 			};
@@ -479,7 +479,7 @@ describe('assessment validation schemas', () => {
 			const data = {
 				id: '550e8400-e29b-41d4-a716-446655440000',
 				title: 'Math Test',
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
@@ -502,7 +502,7 @@ describe('assessment validation schemas', () => {
 			const data = {
 				id: '550e8400-e29b-41d4-a716-446655440000',
 				title: 'Math Test',
-				grade: '6eme',
+				grade: '6',
 				categories: [
 					{
 						category_id: '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
@@ -529,7 +529,7 @@ describe('assessment validation schemas', () => {
 					{
 						id: '550e8400-e29b-41d4-a716-446655440000',
 						title: 'Test 1',
-						grade: '6eme',
+						grade: '6',
 						categories: [],
 						duration: 60,
 						max_attempts: 1,

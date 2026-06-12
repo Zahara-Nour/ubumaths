@@ -181,12 +181,12 @@ describe('miscellaneous validation modules', () => {
 	describe('logErrorSchema', () => {
 		it('should accept valid error log', () => {
 			const data = {
-				error_type: 'frontend',
+				error_type: 'client_js',
 				message: 'TypeError: Cannot read property',
 				url: 'https://example.com/page',
 				stack_trace: 'Error\n  at Component.render',
 				user_agent: 'Mozilla/5.0...',
-				severity: 'high',
+				severity: 'error',
 				metadata: { userId: '123', route: '/dashboard' }
 			};
 
@@ -196,7 +196,7 @@ describe('miscellaneous validation modules', () => {
 
 		it('should accept minimal error log', () => {
 			const data = {
-				error_type: 'unknown',
+				error_type: 'client_js',
 				message: 'Error occurred',
 				url: 'https://example.com'
 			};
@@ -206,7 +206,15 @@ describe('miscellaneous validation modules', () => {
 		});
 
 		it('should accept all error types', () => {
-			const types = ['frontend', 'backend', 'api', 'database', 'unknown'] as const;
+			const types = [
+				'client_js',
+				'server_api',
+				'server_load',
+				'server_action',
+				'validation',
+				'performance',
+				'database'
+			] as const;
 			types.forEach((error_type) => {
 				const data = {
 					error_type,
@@ -220,10 +228,10 @@ describe('miscellaneous validation modules', () => {
 		});
 
 		it('should accept all severity levels', () => {
-			const levels = ['low', 'medium', 'high', 'critical'] as const;
+			const levels = ['info', 'warning', 'error', 'critical'] as const;
 			levels.forEach((severity) => {
 				const data = {
-					error_type: 'frontend',
+					error_type: 'client_js',
 					message: 'Error',
 					url: 'https://example.com',
 					severity
@@ -234,11 +242,22 @@ describe('miscellaneous validation modules', () => {
 			});
 		});
 
-		it('should reject invalid URL', () => {
+		it('should accept relative path URLs (.url() removed for relative paths)', () => {
 			const data = {
-				error_type: 'frontend',
+				error_type: 'client_js',
 				message: 'Error',
-				url: 'not-a-url'
+				url: '/dashboard/student'
+			};
+
+			const result = logErrorSchema.safeParse(data);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject empty URL', () => {
+			const data = {
+				error_type: 'client_js',
+				message: 'Error',
+				url: ''
 			};
 
 			const result = logErrorSchema.safeParse(data);
@@ -247,7 +266,7 @@ describe('miscellaneous validation modules', () => {
 
 		it('should reject message exceeding max length', () => {
 			const data = {
-				error_type: 'frontend',
+				error_type: 'client_js',
 				message: 'a'.repeat(1001),
 				url: 'https://example.com'
 			};
@@ -424,8 +443,8 @@ describe('miscellaneous validation modules', () => {
 	describe('listErrorsQuerySchema', () => {
 		it('should accept valid query with all parameters', () => {
 			const data = {
-				error_type: 'frontend',
-				severity: 'high',
+				error_type: 'client_js',
+				severity: 'error',
 				resolved: 'true',
 				user_id: '550e8400-e29b-41d4-a716-446655440000',
 				date_from: '2025-01-01T00:00:00Z',
@@ -438,8 +457,8 @@ describe('miscellaneous validation modules', () => {
 			const result = listErrorsQuerySchema.safeParse(data);
 			expect(result.success).toBe(true);
 			if (result.success) {
-				expect(result.data.error_type).toBe('frontend');
-				expect(result.data.severity).toBe('high');
+				expect(result.data.error_type).toBe('client_js');
+				expect(result.data.severity).toBe('error');
 				expect(result.data.resolved).toBe(true);
 				expect(result.data.limit).toBe(30);
 				expect(result.data.offset).toBe(10);
@@ -458,7 +477,15 @@ describe('miscellaneous validation modules', () => {
 		});
 
 		it('should accept all error_type values', () => {
-			const errorTypes = ['frontend', 'backend', 'api', 'database', 'unknown'] as const;
+			const errorTypes = [
+				'client_js',
+				'server_api',
+				'server_load',
+				'server_action',
+				'validation',
+				'performance',
+				'database'
+			] as const;
 			errorTypes.forEach((error_type) => {
 				const data = { error_type };
 				const result = listErrorsQuerySchema.safeParse(data);
@@ -476,7 +503,7 @@ describe('miscellaneous validation modules', () => {
 		});
 
 		it('should accept all severity values', () => {
-			const severities = ['low', 'medium', 'high', 'critical'] as const;
+			const severities = ['info', 'warning', 'error', 'critical'] as const;
 			severities.forEach((severity) => {
 				const data = { severity };
 				const result = listErrorsQuerySchema.safeParse(data);
@@ -1025,7 +1052,7 @@ describe('miscellaneous validation modules', () => {
 		it('should accept valid class data', () => {
 			const data = {
 				name: '6ème A',
-				grade: '6eme',
+				grade: '6',
 				school_year: '2024-2025',
 				description: 'Math class for advanced students'
 			};
@@ -1037,7 +1064,7 @@ describe('miscellaneous validation modules', () => {
 		it('should accept class without description', () => {
 			const data = {
 				name: '5ème B',
-				grade: '5eme',
+				grade: '5',
 				school_year: '2024-2025'
 			};
 
@@ -1048,7 +1075,7 @@ describe('miscellaneous validation modules', () => {
 		it('should reject empty name', () => {
 			const data = {
 				name: '   ',
-				grade: '6eme',
+				grade: '6',
 				school_year: '2024-2025'
 			};
 
@@ -1070,7 +1097,7 @@ describe('miscellaneous validation modules', () => {
 		it('should reject invalid school year', () => {
 			const data = {
 				name: 'Class A',
-				grade: '6eme',
+				grade: '6',
 				school_year: '2024-2026'
 			};
 
@@ -1083,7 +1110,7 @@ describe('miscellaneous validation modules', () => {
 		it('should accept partial updates', () => {
 			const updates = [
 				{ name: 'Updated Name' },
-				{ grade: '5eme' },
+				{ grade: '5' },
 				{ school_year: '2025-2026' },
 				{ description: 'New description' }
 			];

@@ -209,7 +209,7 @@ describe('exercise validation schemas', () => {
 			const data = {
 				page: '3',
 				limit: '10',
-				category: 123
+				category: 'automatisme'
 			};
 
 			const result = listExercisesQuerySchema.safeParse(data);
@@ -217,7 +217,7 @@ describe('exercise validation schemas', () => {
 			if (result.success) {
 				expect(typeof result.data.page).toBe('number');
 				expect(typeof result.data.limit).toBe('number');
-				expect(typeof result.data.category).toBe('number');
+				expect(result.data.category).toBe('automatisme');
 			}
 		});
 
@@ -760,7 +760,7 @@ describe('exercise validation schemas', () => {
 				solution_md: 'Solution',
 				category: 'automatisme',
 				tags: ['algebra'],
-				grades: ['6eme'],
+				grades: ['6'],
 				topic: 'Equations',
 				source: 'Textbook',
 				title: 'Linear Equation',

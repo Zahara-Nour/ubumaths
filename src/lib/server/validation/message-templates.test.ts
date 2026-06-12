@@ -287,8 +287,9 @@ describe('message templates validation schemas', () => {
 	describe('listTemplatesQuerySchema', () => {
 		it('should accept valid query parameters', () => {
 			const data = {
-				page: 2,
-				limit: 25,
+				// page/limit are query-string params (string + clamp) since d4b5051e9
+				page: '2',
+				limit: '25',
 				scope: 'system',
 				trigger_type: 'manual',
 				class_id: '550e8400-e29b-41d4-a716-446655440000',

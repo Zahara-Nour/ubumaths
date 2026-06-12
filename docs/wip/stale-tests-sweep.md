@@ -164,17 +164,42 @@ La dette est **concentrée** sur les zones « drift-prone » prévues (server, r
 
 ## Journal de remédiation
 
-| Date       | Fichier(s)                                         | Verdict                                                         | Commit                           |
-| ---------- | -------------------------------------------------- | --------------------------------------------------------------- | -------------------------------- |
-| 2026-06-12 | `server/auth/cron.test.ts` (test `verifyCronAuth`) | stale (message d'erreur changé) — réaligné                      | `b8080eb10` (dans le fix /login) |
-| 2026-06-12 | `server/validation/cron.test.ts`                   | stale (jobs cron migrés HTTP→RPC, 3→8) — **pas une régression** | `99ee0cc74`                      |
+| Date       | Fichier(s)                                                | Verdict                                                         | Commit                           |
+| ---------- | --------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------- |
+| 2026-06-12 | `server/auth/cron.test.ts` (test `verifyCronAuth`)        | stale (message d'erreur changé) — réaligné                      | `b8080eb10` (dans le fix /login) |
+| 2026-06-12 | `server/validation/cron.test.ts`                          | stale (jobs cron migrés HTTP→RPC, 3→8) — **pas une régression** | `99ee0cc74`                      |
+| 2026-06-12 | **cluster `server/validation/*`** (9 fichiers, 41 rouges) | **tous stale, 0 régression** — voir tableau ci-dessous          | _(ce commit)_                    |
 
-**Reste : 61 fichiers** (voir inventaire ci-dessus).
+### Détail cluster `server/validation/*` (2026-06-12)
+
+Verdict global : **aucune régression**. Chaque rouge mappé à un refactor délibéré tracé en commit.
+
+| Fichier                                 |           Rouges | Refactor source                                                                                                     | Commit                            |
+| --------------------------------------- | ---------------: | ------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `misc-modules`                          | 10 (+1 démasqué) | enums `error_type`/`severity` alignées sur `errorMonitoring.ts` ; grade `6eme→6` ; `.url()` retiré (paths relatifs) | types canoniques, `854b5ac81`     |
+| `__tests__/exercises-generic-functions` |                9 | fixture sans `category` (désormais requis)                                                                          | `2738a8df4` (difficulty→category) |
+| `srs`                                   |                7 | `frontContent`/`backContent` : `ContentField[]` → markdown string                                                   | `53de6998b` / `c4059b316`         |
+| `assessments`                           |                7 | grade `6eme→6`                                                                                                      | `854b5ac81`                       |
+| `exercises`                             |                2 | `category` enum string ; grades `6eme→6`                                                                            | `2738a8df4`                       |
+| `rewards-messages-notifications`        |                2 | `awardGidouilles` exige `classId` ; pagination string                                                               | `a86e1fd47`, `d4b5051e9`          |
+| `common`                                |                2 | pagination `coerce.number` → string+clamp                                                                           | `d4b5051e9`                       |
+| `vip-card-admin`                        |                1 | `count` optionnel = mode flexible                                                                                   | `870d3fbdc`                       |
+| `message-templates`                     |                1 | extends pagination (string)                                                                                         | `d4b5051e9`                       |
+
+**Loosenings sémantiques signalés (délibérés, pas régressions)** :
+
+- **pagination** (`d4b5051e9`) : `?page=-1` n'est plus rejeté (400) mais **clampé** silencieusement à 1. Tests réécrits pour documenter le clamp.
+- **`awardGidouilles`** (`2478a8425`) : montants **négatifs** (−1000..−1) autorisés (= retrait de gidouilles). Les anciens tests « reject negative/zero amount » passaient à tort (faux positif : ils omettaient le `classId` désormais requis). Réécrits : `accept negative`, `reject < -1000`, `reject missing classId`.
+- **`replace_random`** (`870d3fbdc`) : `count` manquant accepté (mode flexible).
+
+Cluster entier : **27 fichiers / 1202 tests verts** après réalignement.
+
+**Reste : 52 fichiers** (voir inventaire ci-dessus).
 
 ## Reprise — par où continuer (prochaine session)
 
-1. **Prochain lot** : cluster `server/validation/*` (`misc-modules` 10, `srs` 7, `assessments` 7, `__tests__/exercises-generic-functions` 9, …). Mode = `expected false to be true` → **un schéma Zod s'est durci**. Pour CHAQUE rouge : vérifier si le durcissement est voulu (→ maj de l'entrée de test) ou une **vraie régression** (→ fix du schéma + remonter à David).
-2. Puis **cluster modération** (`restrict-user` / `unrestrict-user` / `messages-delete`) : 1 décision (auth-first 403 voulu ?) pour ~56 tests.
+1. ~~cluster `server/validation/*`~~ — **FAIT 2026-06-12** (9 fichiers, 41 rouges, tous stale, 0 régression — voir journal). Cluster vert (27 fichiers / 1202 tests).
+2. **Prochain lot : cluster modération** (`restrict-user` 24 / `unrestrict-user` 14 / `messages-delete` 18) : 1 décision (auth-first 403 voulu ?) pour ~56 tests.
 3. Garder `api/srs` (mock isolé, tedious) et les exports geometry (mineur) **pour la fin**.
 4. **Hors remédiation, à décider avec David** : gate léger (pre-commit `vitest related` ou CI shardé par zone) + corriger/retirer le job `test` de `quality.yml` (il appelle `test:unit`, retiré → erreur à chaque push).
 
