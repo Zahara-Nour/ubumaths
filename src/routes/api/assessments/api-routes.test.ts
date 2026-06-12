@@ -80,7 +80,7 @@ const mockAssignmentId = TEST_IDS.assignment;
 const mockAssessment = {
 	id: mockAssessmentId,
 	title: 'Test Assessment',
-	grade: '3eme',
+	grade: '3',
 	description: 'Test description',
 	created_by: mockTeacher.id,
 	categories: [],
@@ -101,7 +101,7 @@ describe('POST /api/assessments', () => {
 		const locals = createMockLocals(); // No user
 		const request = createMockRequest({
 			title: 'Test Assessment',
-			grade: '3eme',
+			grade: '3',
 			categories: [],
 			settings: DEFAULT_ASSESSMENT_SETTINGS,
 			status: 'draft'
@@ -116,7 +116,7 @@ describe('POST /api/assessments', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Unauthorized');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -134,7 +134,7 @@ describe('POST /api/assessments', () => {
 
 		const request = createMockRequest({
 			title: 'Test Assessment',
-			grade: '3eme',
+			grade: '3',
 			categories: [],
 			settings: DEFAULT_ASSESSMENT_SETTINGS,
 			status: 'draft'
@@ -149,7 +149,7 @@ describe('POST /api/assessments', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Forbidden - Teachers only');
+			expect(error.body.message).toBe('Interdit - Enseignants uniquement');
 		}
 	});
 
@@ -173,7 +173,7 @@ describe('POST /api/assessments', () => {
 
 		const assessmentData: CreateAssessmentData = {
 			title: 'Test Assessment',
-			grade: '3eme',
+			grade: '3',
 			categories: [mockCartItem],
 			settings: {
 				...DEFAULT_ASSESSMENT_SETTINGS,
@@ -217,7 +217,7 @@ describe('POST /api/assessments', () => {
 
 		const assessmentData: CreateAssessmentData = {
 			title: 'Published Assessment',
-			grade: '4eme',
+			grade: '4',
 			categories: [mockCartItem],
 			settings: {
 				...DEFAULT_ASSESSMENT_SETTINGS,
@@ -253,7 +253,7 @@ describe('POST /api/assessments', () => {
 
 		// Missing title and categories
 		const request = createMockRequest({
-			grade: '3eme'
+			grade: '3'
 		});
 
 		try {
@@ -284,7 +284,7 @@ describe('POST /api/assessments', () => {
 
 		const request = createMockRequest({
 			title: 'Test',
-			grade: '3eme',
+			grade: '3',
 			categories: [] // Empty array
 		});
 
@@ -322,7 +322,7 @@ describe('POST /api/assessments', () => {
 
 		const assessmentData: CreateAssessmentData = {
 			title: 'Test',
-			grade: '3eme',
+			grade: '3',
 			categories: [mockCartItem],
 			settings: {
 				...DEFAULT_ASSESSMENT_SETTINGS,
@@ -368,7 +368,7 @@ describe('GET /api/assessments', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Unauthorized');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -395,7 +395,7 @@ describe('GET /api/assessments', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Forbidden - Teachers only');
+			expect(error.body.message).toBe('Interdit - Enseignants uniquement');
 		}
 	});
 
@@ -416,7 +416,7 @@ describe('GET /api/assessments', () => {
 			{ ...mockAssessment, creator: [{ firstname: 'John', lastname: 'Doe' }] },
 			{
 				...mockAssessment,
-				id: 'assessment-2',
+				id: '550e8400-e29b-41d4-a716-446655440013',
 				title: 'Assessment 2',
 				creator: [{ firstname: 'John', lastname: 'Doe' }]
 			}
@@ -537,7 +537,7 @@ describe('GET /api/assessments/[id]', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Unauthorized');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -547,15 +547,15 @@ describe('GET /api/assessments/[id]', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
-		// Mock assessment fetch
+		// requireAuth fetches the profile FIRST (.single), then getAssessment
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
-			data: mockAssessment,
+			data: { role: 'teacher', id: mockTeacher.id },
 			error: null
 		});
 
-		// Mock teacher profile check
+		// Mock assessment fetch (owned by this teacher)
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
-			data: { role: 'teacher' },
+			data: mockAssessment,
 			error: null
 		});
 
@@ -576,15 +576,15 @@ describe('GET /api/assessments/[id]', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
-		// Mock assessment owned by different teacher
+		// requireAuth profile fetch FIRST
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
-			data: { ...mockAssessment, created_by: 'other-teacher' },
+			data: { role: 'teacher', id: mockTeacher.id },
 			error: null
 		});
 
-		// Mock teacher profile check
+		// Mock assessment owned by a different teacher
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
-			data: { role: 'teacher' },
+			data: { ...mockAssessment, created_by: '550e8400-e29b-41d4-a716-446655440099' },
 			error: null
 		});
 
@@ -607,6 +607,12 @@ describe('GET /api/assessments/[id]', () => {
 		const mockSupabase = createMockSupabase();
 		const locals = createMockLocals(mockTeacher.id, mockSupabase);
 
+		// requireAuth profile fetch FIRST
+		mockSupabase._mockChain.single.mockResolvedValueOnce({
+			data: { role: 'teacher', id: mockTeacher.id },
+			error: null
+		});
+
 		// Mock assessment not found
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
 			data: null,
@@ -615,7 +621,7 @@ describe('GET /api/assessments/[id]', () => {
 
 		try {
 			await GET({
-				params: { id: 'non-existent' },
+				params: { id: mockAssessmentId },
 				locals
 			} as any);
 			expect.fail('Should have thrown an error');
@@ -648,7 +654,7 @@ describe('PUT /api/assessments/[id]', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Unauthorized');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -676,7 +682,7 @@ describe('PUT /api/assessments/[id]', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Forbidden - Teachers only');
+			expect(error.body.message).toBe('Interdit - Enseignants uniquement');
 		}
 	});
 
@@ -776,7 +782,7 @@ describe('DELETE /api/assessments/[id]', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Unauthorized');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -801,7 +807,7 @@ describe('DELETE /api/assessments/[id]', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Forbidden - Teachers only');
+			expect(error.body.message).toBe('Interdit - Enseignants uniquement');
 		}
 	});
 
@@ -882,7 +888,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 
 		const locals = createMockLocals(); // No user
 		const request = createMockRequest({
-			class_ids: ['class-1']
+			class_ids: ['550e8400-e29b-41d4-a716-446655440021']
 		});
 
 		try {
@@ -895,7 +901,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Unauthorized');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -912,7 +918,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 		});
 
 		const request = createMockRequest({
-			class_ids: ['class-1']
+			class_ids: ['550e8400-e29b-41d4-a716-446655440021']
 		});
 
 		try {
@@ -925,7 +931,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Forbidden - Teachers only');
+			expect(error.body.message).toBe('Interdit - Enseignants uniquement');
 		}
 	});
 
@@ -991,7 +997,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 		});
 
 		const request = createMockRequest({
-			class_ids: ['class-1', 'class-2']
+			class_ids: ['550e8400-e29b-41d4-a716-446655440021', '550e8400-e29b-41d4-a716-446655440022']
 		});
 
 		const response = await POST({
@@ -1058,7 +1064,11 @@ describe('POST /api/assessments/[id]/assign', () => {
 		});
 
 		const request = createMockRequest({
-			student_ids: ['student-1', 'student-2', 'student-3']
+			student_ids: [
+				'550e8400-e29b-41d4-a716-446655440031',
+				'550e8400-e29b-41d4-a716-446655440032',
+				'550e8400-e29b-41d4-a716-446655440033'
+			]
 		});
 
 		const response = await POST({
@@ -1121,7 +1131,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 		});
 
 		const request = createMockRequest({
-			class_ids: ['class-1']
+			class_ids: ['550e8400-e29b-41d4-a716-446655440021']
 		});
 
 		try {
@@ -1157,7 +1167,7 @@ describe('POST /api/assessments/[id]/assign', () => {
 		});
 
 		const request = createMockRequest({
-			class_ids: ['class-1']
+			class_ids: ['550e8400-e29b-41d4-a716-446655440021']
 		});
 
 		try {
@@ -1194,7 +1204,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Unauthorized');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -1219,7 +1229,7 @@ describe('POST /api/assessments/[id]/validate-attempt', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Forbidden - Students only');
+			expect(error.body.message).toBe('Interdit - Élèves uniquement');
 		}
 	});
 
@@ -1380,7 +1390,7 @@ describe('GET /api/assessments/assigned', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Unauthorized');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -1404,7 +1414,7 @@ describe('GET /api/assessments/assigned', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Forbidden - Students only');
+			expect(error.body.message).toBe('Interdit - Élèves uniquement');
 		}
 	});
 
@@ -1572,7 +1582,7 @@ describe('GET /api/assessments/[id]/results', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Unauthorized');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -1600,7 +1610,7 @@ describe('GET /api/assessments/[id]/results', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(403);
-			expect(error.body.message).toBe('Forbidden - Teachers only');
+			expect(error.body.message).toBe('Interdit - Enseignants uniquement');
 		}
 	});
 
