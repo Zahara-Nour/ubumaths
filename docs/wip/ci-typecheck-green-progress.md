@@ -168,10 +168,33 @@ QuestionBase `as unknown as Record`, etc.).
    discriminated-union bits-ui v2. Fix propre = régénérer via la CLI shadcn-svelte (le consommateur
    `CardEditForm.svelte` passe bien `type="single"`).
 
-## Hors de ce chantier (autres jobs rouges, séparés)
+## Autres jobs CI
 
-- **Tests** (2 shards) : ENOENT sur fixtures `extern/instrumenpoche-main/...` absentes en CI →
-  `describe.skipIf(!existsSync(...))`. En attente (« Wait » PO).
-- **Lint** (prettier --check + eslint) : `prettier --write .` + `eslint --fix`. En attente.
+- **Tests** (2 shards) ✅ — commit `b6d81250e` : `describe.skipIf(!existsSync(...))` sur les
+  3 describes fixtures de `constructions-v2/.../converter.test.ts`. Verts en local (40 tests),
+  skippés en CI où `extern/` est absent.
+- **Lint** (prettier --check + eslint) ✅ — commit `1b4435456` : `prettier --write` sur tout le
+  tracked + `eslint --fix` + 7 corrections manuelles. **0 erreur eslint** sur le tracked
+  (172 warnings `prefer-svelte-reactivity` non bloquants), `prettier --check .` propre sur le
+  tracked (3 fichiers untracked WIP hors CI).
+
+## BILAN FINAL (2026-06-13)
+
+| Job CI | Avant | Après |
+| --- | --- | --- |
+| **Type Check** | OOM crash (exit 134), 2233 erreurs cachées | **13 erreurs** = décisions humaines documentées (cf. § ci-dessus) |
+| **Tests** (4 shards) | 2 shards rouges (ENOENT extern) | ✅ vert |
+| **Lint** | rouge | ✅ vert |
+| **Build** | skip (needs typecheck) | débloqué quand typecheck = 0 |
+
+Commits : `87ee03d46` (config/OOM) → `ecd71a276` (lucide) → `b6d81250e` (tests) →
+`7594bdeab` (596→50) → `19a909abf` (50→13) → `1b4435456` (lint). **Non poussés.**
+
+Pour finir de verdir Type Check (→ 0), David doit trancher les **5 décisions** listées
+ci-dessus (AddFriend mentor, cluster tags, parser-pattern, rational-inequality, calendar).
+Plusieurs **vrais bugs runtime** ont été trouvés et corrigés au passage (notifications,
+résumés, geometry slider, cost.ts, known-limits) — à vérifier.
+
+À faire aussi (hors gate, signalé) : `pnpm db:types` (RPCs buddy manquants des types générés).
 
 ## Ne PAS pousser — David gère le déploiement.
