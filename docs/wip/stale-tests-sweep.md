@@ -217,7 +217,21 @@ Cluster entier : **27 fichiers / 1202 tests verts** après réalignement.
 
 Cluster modération : **3 fichiers / 62 tests verts**. `check:incremental` = baseline (9 err / 46 warn), inchangé.
 
-**Reste : 49 fichiers** (voir inventaire ci-dessus).
+### Détail cluster « contrats API » — `assessments` (2026-06-12)
+
+Fichier `api/assessments/api-routes.test.ts` (34 rouges) : **PAS mécanique** — a révélé **3 régressions de prod** + 2 bugs latents, toutes du commit `47d317cb5` (`feat(validation): add comprehensive Zod validation`, 2025-10-28) qui a inventé des formes de schéma ne correspondant pas au modèle de données réel.
+
+**🔴 Régressions de prod corrigées (code)** :
+
+1. `createAssessmentSchema` validait `categories: [{category_id, question_count}]` au lieu de `CartItem[]` + `settings` → **POST création rejeté en 400** (frontend, type `CreateAssessmentData`, fn serveur, JSONB utilisent tous `CartItem[]`). Commit `5e84d5606`.
+2. `assessmentResponseSchema` (idem + `max_attempts: number` top-level) → `validateResponse` **throw 500** sur toute réponse réelle (POST/GET liste/GET détail). Commit `7f2212d9e`.
+3. **Bug latent** : `GET /api/assessments` et `/[id]/results` passaient `searchParams.get()` (= `null` si absent) à des champs `.optional()` (acceptent `undefined`, pas `null`) → **400 sans filtre**. Pas d'appelant frontend actuel mais route cassée. Commit `c534401e9`.
+
+**Piège évité** : le test unitaire `validation/assessments.test.ts` était écrit contre le **même schéma cassé** (self-consistant) — d'où la non-détection dans le cluster validation (j'y avais aligné les codes grade sans voir que la forme `category` entière était fausse). La régression n'apparaît qu'au niveau API où le payload frontend réel rencontre le schéma.
+
+**Réalignement tests** (`46b6fba58`) : messages auth EN→FR, grade codes, payloads CartItem[], **ordre des mocks `.single`** (GET[id] : `requireAuth` lit le profil AVANT `getAssessment`), UUIDs valides. 47/47 + 42/42 verts.
+
+**Reste : 48 fichiers.** Cluster contrats API restant : `exercises` 21 (mock-drift `Cannot destructure data`), `config` 11, `templates routes` 10, `minesweeper` 9 (dont `500→403` suspect), `riddles` 4, `checkpoint` 4, `messages` 2 (logique `'system'→'class'` suspect).
 
 ## Reprise — par où continuer (prochaine session)
 
