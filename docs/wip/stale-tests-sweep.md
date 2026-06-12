@@ -260,7 +260,30 @@ Les 7 autres fichiers (après assessments) traités, **tous test-drift, 0 régre
 
 ⚠️ `achievements/migration` est un test **fragile** (regex sur DDL d'une migration figée) — candidat à suppression future (faible valeur : une migration s'applique ou pas, vérifier son texte est cassant).
 
-**Reste : 39 fichiers.** Notables : `api/srs` 23 (mock isolé, fin), clusters **answer-validator** (`challenge-variables` 25 + `answer-validator-blanks` 13 + `answer-validator` 8, logique math/pédago) et **markdown-roundtrip** (`rich-text` 2 fichiers + `ubumark` 2), `api/migration/migration-review` 3, `exercise-import-export` 4, divers petits (geometry-core exports 7×1, whiteboard 3, evoland 2, questions 4, stores 1, shared/blockly 1) + **5 fichiers client** (`*.svelte.test.ts`).
+### ⚠️ Cluster answer-validator — 2 décisions PO en attente (2026-06-12)
+
+**`answer-validator` (49/56) + `answer-validator-blanks` (37/49)** : 2 tests stale réalignés (`7fe4a37a4`), mais **19 tests laissés ROUGES volontairement** car ils exposent ce qui ressemble fortement à une **régression du validateur** (agent pedagogy-expert a refusé de maquiller, à raison). À ARBITRER avec David.
+
+**Symptôme** : le `checkForm` cosmétique écrase le verdict de valeur correct → `bad_form`. Source : `validateSingleBlank` étape 4 (`answer-validator.ts:644-653`) lance `applyConstraints`/`checkForm` sur **TOUS** les blancs (y compris `text`/`precision`/`unit`, depuis `f2f9287a2` « always run constraints ») + mismatch de forme **inconditionnel** (`answer-validator.ts:118`, ignore `form:'off'`, depuis `9ff3c2e0a`/`dece435e4`). Or `checkForm` n'évalue pas l'arithmétique, ne convertit pas les unités, et parse le texte comme du LaTeX math.
+
+**Cas cassés** (tous : valeur OK puis `bad_form`) :
+
+- équivalence algébrique : `2+3` (attendu `5`)
+- tolérance de précision : `3.1` (exp `3.14`), `10.3` (exp `10`) → **précision rendue inopérante**
+- conversion d'unité : `5000\unit{m}` (exp `5\unit{km}`) → **conversions cassées**
+- blancs **`text`** : `'éntier'`/`'paire'` fuzzy-match OK puis parsés en LaTeX math → `bad_form` (**le plus flagrant**)
+- **`requiredForm`** : `2×3` (forme produit, valeur 6), `2+3` (somme), `\frac12`, `2^3` → forme validée puis écrasée → **toute la feature requiredForm cassée**
+- `form:'off'` ignoré (mismatch inconditionnel)
+
+**Régression #2** : `allowBracketsInFirstNegativeTerm` (champ de `ConstraintOptions`, `types.ts:836`) n'est jamais lu par le pipeline unifié `cosmetic-transforms.ts` → option silencieusement inopérante (`(-5)+3` → `bad_form`).
+
+**Décision PO** : ces durcissements (form mismatch inconditionnel + checkForm sur tous les blancs) sont-ils **voulus** (→ réaligner les 19 tests) ou une **régression** (→ scoper checkForm aux blancs math, le rendre conditionnel à une vraie contrainte `form`/`requiredForm`, et porter `allowBracketsInFirstNegativeTerm`) ? La validation des réponses est cœur de l'app → fort impact si régression.
+
+### ⚠️ `challenge-variables` (25) — décision format WIP en attente
+
+Système de génération de variables de challenge (navadra, « for future challenge generation » = WIP, pas d'appelant live). Mismatch de format : la fonction `generateChallengeVariables` lit `varDef.type === 'random'|'expression'` (+ JSDoc + producteurs `markdown-import`/`correction-placeholders` en `.type`), mais la fixture **partagée** `createTestChallenge` + les tests utilisent l'ancien format `{ value: 'randomInt(1,10)' }`. Le type `ChallengeVariable` autorise les DEUX. **Non touché** : choisir le format canonique d'un système WIP + modifier une fixture partagée = décision archi à valider avec David.
+
+**Reste : 37 fichiers.** Notables : `api/srs` 23 (mock isolé, fin), cluster **markdown-roundtrip** (`rich-text` 2 + `ubumark` 2), `api/migration/migration-review` 3, `exercise-import-export` 4, divers petits (geometry-core exports 7×1, whiteboard 3, evoland 2, questions 4, stores 1, shared/blockly 1) + **5 fichiers client** (`*.svelte.test.ts`).
 
 ## Reprise — par où continuer (prochaine session)
 
