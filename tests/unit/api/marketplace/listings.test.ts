@@ -6,7 +6,7 @@
  * Tests authorization, validation, race conditions, and edge cases.
  */
 
-import { describe, test, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import type { RequestEvent as _RequestEvent } from '@sveltejs/kit';
 import { GET, POST } from '../../../../src/routes/api/marketplace/listings/+server.js';
 import { createMockSupabase } from '$tests/helpers';
@@ -16,6 +16,29 @@ import {
 	createTestListing,
 	mockRPCFunctions
 } from '$tests/helpers/fixtures';
+
+// ============================================================================
+// MODULE MOCKS (hoisted - must be at top level, NOT inside beforeEach)
+// ============================================================================
+//
+// The handler imports its business-logic guards from this module. We mock the
+// guard functions (so each test can drive them) while keeping the username
+// enrichment real and turning listing/card enrichment into a passthrough
+// (tests assert on raw listing fields, not on derived card-template data).
+vi.mock('$lib/server/marketplace/helpers', async (importActual) => {
+	const actual = await importActual<typeof import('$lib/server/marketplace/helpers')>();
+	return {
+		...actual,
+		validateCardOwnership: vi.fn().mockResolvedValue(true),
+		checkCardsUnused: vi.fn().mockResolvedValue(true),
+		lockCardsForEntity: vi.fn().mockResolvedValue({ success: true }),
+		checkActiveListingsLimit: vi.fn().mockResolvedValue(true),
+		isMarketplaceEnabled: vi.fn().mockResolvedValue(true),
+		getStudentSchoolId: vi.fn().mockResolvedValue('school-1'),
+		// Passthrough: leave listings untouched so tests can assert raw fields.
+		enrichListingsWithCardData: vi.fn(async (_supabase: unknown, listings: unknown[]) => listings)
+	};
+});
 
 // Type definitions for test request/response handling
 interface ListingsQueryLocals {
@@ -30,7 +53,7 @@ interface _ListingsRequestEvent {
 	params?: Record<string, string>;
 }
 
-interface RecordViewParams {
+interface _RecordViewParams {
 	p_listing_id: string;
 	p_user_id: string;
 }
@@ -44,7 +67,7 @@ describe('/api/marketplace/listings', () => {
 	let mockUser: ReturnType<typeof createTestUser>;
 	let _mockClass: ReturnType<typeof createTestClass>;
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		// Reset mocks
 		vi.clearAllMocks();
 
@@ -56,19 +79,32 @@ describe('/api/marketplace/listings', () => {
 		// Setup RPC mocks
 		mockRPCFunctions(mockSupabase);
 
-		// Mock helper functions by mocking the modules
-		vi.mock('$lib/server/marketplace/helpers', () => ({
-			validateCardOwnership: vi.fn().mockResolvedValue(true),
-			checkCardsUnused: vi.fn().mockResolvedValue(true),
-			lockCardsForEntity: vi.fn().mockResolvedValue({ success: true }),
-			checkActiveListingsLimit: vi.fn().mockResolvedValue(true),
-			isMarketplaceEnabled: vi.fn().mockResolvedValue(true),
-			getStudentSchoolId: vi.fn().mockResolvedValue('school-1')
-		}));
-	});
+		// Restore default behaviour on the (hoisted) helper module mock.
+		// vi.clearAllMocks() wipes the resolved values configured at mock
+		// definition time, so we re-assert the happy-path defaults here.
+		const helpers = await import('$lib/server/marketplace/helpers');
+		(helpers.validateCardOwnership as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(true);
+		(helpers.lockCardsForEntity as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+			success: true
+		});
+		(helpers.checkActiveListingsLimit as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
+			true
+		);
+		(helpers.isMarketplaceEnabled as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(true);
+		(helpers.getStudentSchoolId as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
+			'school-1'
+		);
+		(helpers.enrichListingsWithCardData as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+			async (_supabase: unknown, listings: unknown[]) => listings
+		);
 
-	afterEach(() => {
-		vi.resetModules();
+		// GET reads the caller's profile (role + school_id) before anything
+		// else: from('profiles').select('role, school_id').eq('id').single().
+		// Default to a student so the marketplace-enabled path is exercised.
+		mockSupabase._mockChain.single.mockResolvedValue({
+			data: { role: 'student', school_id: 'school-1' },
+			error: null
+		});
 	});
 
 	// ============================================================================
@@ -134,7 +170,7 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow('Non authentifié');
+			).rejects.toMatchObject({ status: 401, body: { message: 'Non authentifié' } });
 		});
 
 		test('validates query parameters', async () => {
@@ -143,7 +179,11 @@ describe('/api/marketplace/listings', () => {
 				user: { id: mockUser.id }
 			};
 
-			// Invalid page number
+			// Invalid page number: page must be >= 1. The query schema's min(1)
+			// constraint has no custom message, so the handler surfaces Zod's
+			// default "too small" message. We assert the 400 contract and that
+			// the error is the page constraint, without pinning the exact Zod
+			// wording (which is version-dependent).
 			const mockUrl = new URL('http://localhost/api/marketplace/listings?page=0');
 
 			await expect(
@@ -152,7 +192,10 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow('Le numéro de page doit être au moins 1');
+			).rejects.toMatchObject({
+				status: 400,
+				body: { message: expect.stringMatching(/>=\s*1|au moins 1/) }
+			});
 		});
 
 		test('filters by listing type', async () => {
@@ -269,17 +312,22 @@ describe('/api/marketplace/listings', () => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any);
 
-			// Verify RPC was called only for other user's listing
-			expect(mockSupabase.rpc).toHaveBeenCalledWith('record_listing_view', {
-				p_listing_id: otherUserListing.id,
+			// View recording is a fire-and-forget (void) async IIFE; let it flush.
+			await new Promise((resolve) => setTimeout(resolve, 0));
+
+			// Views are now recorded in a single batched RPC (record_listing_views_batch),
+			// passing ONLY the listing ids not created by the caller. This replaced the
+			// per-listing record_listing_view call to avoid an N+1 query (commit 5cff6b4af).
+			expect(mockSupabase.rpc).toHaveBeenCalledWith('record_listing_views_batch', {
+				p_listing_ids: [otherUserListing.id],
 				p_user_id: mockUser.id
 			});
 
-			// Should not record view for own listing
-			expect(mockSupabase.rpc).not.toHaveBeenCalledWith('record_listing_view', {
-				p_listing_id: ownListing.id,
-				p_user_id: mockUser.id
-			});
+			// The caller's own listing id must not be included in the batch.
+			const batchCall = (mockSupabase.rpc as unknown as ReturnType<typeof vi.fn>).mock.calls.find(
+				(call) => call[0] === 'record_listing_views_batch'
+			);
+			expect(batchCall?.[1].p_listing_ids).not.toContain(ownListing.id);
 		});
 
 		test('handles marketplace disabled gracefully', async () => {
@@ -299,7 +347,10 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow("Le marketplace n'est pas activé pour votre classe");
+			).rejects.toMatchObject({
+				status: 403,
+				body: { message: "Le marketplace n'est pas activé pour votre classe" }
+			});
 		});
 
 		test('handles school not found error', async () => {
@@ -319,7 +370,7 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow('École non trouvée');
+			).rejects.toMatchObject({ status: 404, body: { message: 'École non trouvée' } });
 		});
 	});
 
@@ -329,14 +380,14 @@ describe('/api/marketplace/listings', () => {
 
 	describe('POST /api/marketplace/listings', () => {
 		test('creates valid sell listing with cards', async () => {
-			const cardId = 'card-1';
+			// offered_card_ids are validated as UUIDs by the Zod schema.
+			const cardId = '550e8400-e29b-41d4-a716-446655440000';
 			const listingData = {
 				listing_type: 'sell',
 				offered_card_ids: [cardId],
 				offered_gidouilles: 0,
 				wanted_card_template_ids: [],
 				wanted_gidouilles: 100,
-				title: 'Selling rare card',
 				description: 'Great deal!'
 			};
 
@@ -344,7 +395,7 @@ describe('/api/marketplace/listings', () => {
 				mockSupabase._mockChain.select.mockImplementation(() => {
 					mockSupabase._mockChain.single.mockImplementation(() => {
 						return Promise.resolve({
-							data: { id: 'new-listing-id', ...data[0] },
+							data: { id: 'new-listing-id', ...data },
 							error: null
 						});
 					});
@@ -370,9 +421,12 @@ describe('/api/marketplace/listings', () => {
 
 			const data = await response.json();
 
+			// NB: title/description are no longer persisted on listings (the columns
+			// were dropped, commits 4824bfd8b / d9b78b40f), so we assert only on
+			// fields the handler actually inserts.
 			expect(response.status).toBe(201);
 			expect(data.listing_type).toBe('sell');
-			expect(data.title).toBe('Selling rare card');
+			expect(data.offered_card_ids).toEqual([cardId]);
 		});
 
 		test('creates valid buy listing', async () => {
@@ -389,7 +443,7 @@ describe('/api/marketplace/listings', () => {
 				mockSupabase._mockChain.select.mockImplementation(() => {
 					mockSupabase._mockChain.single.mockImplementation(() => {
 						return Promise.resolve({
-							data: { id: 'new-listing-id', ...data[0] },
+							data: { id: 'new-listing-id', ...data },
 							error: null
 						});
 					});
@@ -435,7 +489,7 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow('Non authentifié');
+			).rejects.toMatchObject({ status: 401, body: { message: 'Non authentifié' } });
 		});
 
 		test('validates request body with Zod schema', async () => {
@@ -470,7 +524,7 @@ describe('/api/marketplace/listings', () => {
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
 					listing_type: 'sell',
-					offered_card_ids: ['card-1'],
+					offered_card_ids: ['550e8400-e29b-41d4-a716-446655440000'],
 					title: 'Test'
 				})
 			};
@@ -486,7 +540,10 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow("Le marketplace n'est pas activé pour votre classe");
+			).rejects.toMatchObject({
+				status: 403,
+				body: { message: "Le marketplace n'est pas activé pour votre classe" }
+			});
 		});
 
 		test('enforces active listings limit', async () => {
@@ -496,7 +553,7 @@ describe('/api/marketplace/listings', () => {
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
 					listing_type: 'sell',
-					offered_card_ids: ['card-1'],
+					offered_card_ids: ['550e8400-e29b-41d4-a716-446655440000'],
 					title: 'Test'
 				})
 			};
@@ -512,7 +569,10 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow("Vous avez atteint le nombre maximum d'annonces actives");
+			).rejects.toMatchObject({
+				status: 403,
+				body: { message: "Vous avez atteint le nombre maximum d'annonces actives" }
+			});
 		});
 
 		test('validates card ownership for sell listings', async () => {
@@ -522,7 +582,7 @@ describe('/api/marketplace/listings', () => {
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
 					listing_type: 'sell',
-					offered_card_ids: ['card-1'],
+					offered_card_ids: ['550e8400-e29b-41d4-a716-446655440000'],
 					title: 'Test'
 				})
 			};
@@ -538,17 +598,37 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow('Vous ne possédez pas toutes les cartes spécifiées');
+			).rejects.toMatchObject({
+				status: 403,
+				body: { message: 'Vous ne possédez pas toutes les cartes spécifiées' }
+			});
 		});
 
-		test('checks cards are unused', async () => {
+		test('does not block listing creation on the cards-unused check', async () => {
+			// The handler deliberately NO LONGER calls checkCardsUnused: it was
+			// removed in commit 8260972a3 ("remove incorrect checkCardsUnused
+			// blocking listings") because it wrongly blocked legitimate listings.
+			// So forcing checkCardsUnused -> false must NOT prevent creation.
 			const { checkCardsUnused } = await import('$lib/server/marketplace/helpers');
 			(checkCardsUnused as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(false);
+
+			mockSupabase._mockChain.insert.mockImplementation((data) => {
+				mockSupabase._mockChain.select.mockImplementation(() => {
+					mockSupabase._mockChain.single.mockImplementation(() =>
+						Promise.resolve({
+							data: { id: 'new-listing-id', ...data },
+							error: null
+						})
+					);
+					return mockSupabase._mockChain;
+				});
+				return mockSupabase._mockChain;
+			});
 
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
 					listing_type: 'sell',
-					offered_card_ids: ['card-1'],
+					offered_card_ids: ['550e8400-e29b-41d4-a716-446655440000'],
 					title: 'Test'
 				})
 			};
@@ -558,13 +638,14 @@ describe('/api/marketplace/listings', () => {
 				user: { id: mockUser.id }
 			};
 
-			await expect(
-				POST({
-					request: mockRequest,
-					locals: mockLocals
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				} as any)
-			).rejects.toThrow('Certaines cartes ont déjà été utilisées');
+			const response = await POST({
+				request: mockRequest,
+				locals: mockLocals
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			} as any);
+
+			expect(response.status).toBe(201);
+			expect(checkCardsUnused).not.toHaveBeenCalled();
 		});
 
 		test('handles card locking failure with rollback', async () => {
@@ -602,7 +683,7 @@ describe('/api/marketplace/listings', () => {
 			const mockRequest = {
 				json: vi.fn().mockResolvedValue({
 					listing_type: 'sell',
-					offered_card_ids: ['card-1'],
+					offered_card_ids: ['550e8400-e29b-41d4-a716-446655440000'],
 					title: 'Test'
 				})
 			};
@@ -618,7 +699,7 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow('Failed to lock cards');
+			).rejects.toMatchObject({ status: 500, body: { message: 'Failed to lock cards' } });
 
 			// Verify rollback was performed
 			expect(deleteWasCalled).toBe(true);
@@ -628,11 +709,11 @@ describe('/api/marketplace/listings', () => {
 			let capturedData: unknown = null;
 
 			mockSupabase._mockChain.insert.mockImplementation((data) => {
-				capturedData = data[0];
+				capturedData = data;
 				mockSupabase._mockChain.select.mockImplementation(() => {
 					mockSupabase._mockChain.single.mockImplementation(() => {
 						return Promise.resolve({
-							data: { id: 'new-listing-id', ...data[0] },
+							data: { id: 'new-listing-id', ...data },
 							error: null
 						});
 					});
@@ -700,7 +781,10 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow("Erreur lors de la création de l'annonce");
+			).rejects.toMatchObject({
+				status: 500,
+				body: { message: "Erreur lors de la création de l'annonce" }
+			});
 		});
 
 		test('handles malformed JSON gracefully', async () => {
@@ -730,20 +814,24 @@ describe('/api/marketplace/listings', () => {
 	describe('Security and race condition tests', () => {
 		test('prevents view count inflation through rapid requests', async () => {
 			const listing = createTestListing('user-2', 'school-1');
-			const viewResults: boolean[] = [];
+			const newViewFlags: boolean[] = [];
 
-			// Mock the RPC to track unique views
+			// View recording is batched server-side (record_listing_views_batch),
+			// and uniqueness is enforced inside that RPC. We model that here: the
+			// first batch records a new view, subsequent ones do not.
 			const viewedSet = new Set<string>();
-			mockSupabase._rpcMocks.set('record_listing_view', (params: unknown) => {
-				const p = params as RecordViewParams;
-				const viewKey = `${p.p_listing_id}-${p.p_user_id}`;
-				if (viewedSet.has(viewKey)) {
-					viewResults.push(false);
-					return { is_new_view: false };
+			mockSupabase._rpcMocks.set('record_listing_views_batch', (params: unknown) => {
+				const p = params as { p_listing_ids: string[]; p_user_id: string };
+				let newViews = 0;
+				for (const id of p.p_listing_ids) {
+					const viewKey = `${id}-${p.p_user_id}`;
+					if (!viewedSet.has(viewKey)) {
+						viewedSet.add(viewKey);
+						newViews++;
+					}
 				}
-				viewedSet.add(viewKey);
-				viewResults.push(true);
-				return { is_new_view: true };
+				newViewFlags.push(newViews > 0);
+				return { new_views: newViews };
 			});
 
 			mockSupabase._mockChain.select.mockImplementation(() => {
@@ -776,9 +864,12 @@ describe('/api/marketplace/listings', () => {
 				} as any);
 			}
 
-			// Only first view should be recorded as new
-			expect(viewResults.filter((v) => v === true)).toHaveLength(1);
-			expect(viewResults.filter((v) => v === false)).toHaveLength(4);
+			// Fire-and-forget batch calls: flush pending microtasks/timers.
+			await new Promise((resolve) => setTimeout(resolve, 0));
+
+			// Only the first request records a new unique view; the rest are no-ops.
+			expect(newViewFlags.filter((v) => v === true)).toHaveLength(1);
+			expect(newViewFlags.filter((v) => v === false)).toHaveLength(4);
 		});
 
 		test('validates all UUIDs to prevent injection', async () => {
@@ -829,11 +920,11 @@ describe('/api/marketplace/listings', () => {
 				let _capturedData: unknown = null;
 
 				mockSupabase._mockChain.insert.mockImplementation((data) => {
-					_capturedData = data[0];
+					_capturedData = data;
 					mockSupabase._mockChain.select.mockImplementation(() => {
 						mockSupabase._mockChain.single.mockImplementation(() => {
 							return Promise.resolve({
-								data: { id: 'new-listing-id', ...data[0] },
+								data: { id: 'new-listing-id', ...data },
 								error: null
 							});
 						});
@@ -864,9 +955,12 @@ describe('/api/marketplace/listings', () => {
 
 				const data = await response.json();
 
-				// The data should be stored as-is (sanitization happens on display)
-				expect(data.title).toBe(payload.substring(0, 100));
-				expect(data.description).toBe(payload);
+				// XSS payloads must be accepted as inert plain-text input (no rejection,
+				// no server-side execution). title/description are no longer persisted
+				// columns, so we assert the listing is created rather than round-tripping
+				// those dropped fields.
+				expect(response.status).toBe(201);
+				expect(data.listing_type).toBe('buy');
 			}
 		});
 
@@ -898,7 +992,7 @@ describe('/api/marketplace/listings', () => {
 				mockSupabase._mockChain.select.mockImplementation(() => {
 					mockSupabase._mockChain.single.mockImplementation(() => {
 						return Promise.resolve({
-							data: { id: 'listing-1', ...data[0] },
+							data: { id: 'listing-1', ...data },
 							error: null
 						});
 					});
@@ -921,7 +1015,10 @@ describe('/api/marketplace/listings', () => {
 					locals: mockLocals
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				} as any)
-			).rejects.toThrow("Vous avez atteint le nombre maximum d'annonces actives");
+			).rejects.toMatchObject({
+				status: 403,
+				body: { message: "Vous avez atteint le nombre maximum d'annonces actives" }
+			});
 		});
 	});
 });
