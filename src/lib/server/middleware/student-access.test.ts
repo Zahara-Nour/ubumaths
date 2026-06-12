@@ -24,9 +24,24 @@ import { verifyTeacherStudent, verifyTeacherStudentWithRole } from './student-ac
  * Create a mock Supabase client with chainable query builder
  */
 function createMockSupabase() {
+	// The query (e.g. verifyTeacherStudent) ends in `.select().eq().eq()` awaited
+	// directly (no .single()), so the chain must be thenable. select/eq return the
+	// chain; awaiting it resolves to the next queued result. Use _queueResult(...)
+	// to set the response for the next awaited query.
+	const resultQueue: Array<{ data: unknown; error: unknown }> = [];
 	const mockChain = {
 		select: vi.fn().mockReturnThis(),
-		eq: vi.fn().mockReturnThis()
+		eq: vi.fn().mockReturnThis(),
+		then: (
+			onFulfilled: (v: { data: unknown; error: unknown }) => unknown,
+			onRejected?: (e: unknown) => unknown
+		) => {
+			const result = resultQueue.shift() ?? { data: null, error: null };
+			return Promise.resolve(result).then(onFulfilled, onRejected);
+		},
+		_queueResult: (result: { data: unknown; error: unknown }) => {
+			resultQueue.push(result);
+		}
 	};
 
 	return {
@@ -141,7 +156,7 @@ describe('verifyTeacherStudent', () => {
 
 	it('should return true when teacher teaches student', async () => {
 		// Mock successful class membership query
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: mockClassMembershipResponse,
 			error: null
 		});
@@ -156,7 +171,7 @@ describe('verifyTeacherStudent', () => {
 
 	it('should return true when teacher teaches student in multiple classes', async () => {
 		// Mock multiple class memberships
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: mockMultipleClassMembershipResponse,
 			error: null
 		});
@@ -172,7 +187,7 @@ describe('verifyTeacherStudent', () => {
 
 	it('should return false when teacher does NOT teach student', async () => {
 		// Mock class memberships where student is taught by different teacher
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: mockNoAccessClassMembershipResponse,
 			error: null
 		});
@@ -184,7 +199,7 @@ describe('verifyTeacherStudent', () => {
 
 	it('should return false when student not found (no class memberships)', async () => {
 		// Mock empty class memberships array
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: [],
 			error: null
 		});
@@ -196,7 +211,7 @@ describe('verifyTeacherStudent', () => {
 
 	it('should return false when student ID does not exist', async () => {
 		// Mock empty result for non-existent student
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: [],
 			error: null
 		});
@@ -217,7 +232,7 @@ describe('verifyTeacherStudent', () => {
 			code: 'PGRST301'
 		};
 
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: null,
 			error: mockError
 		});
@@ -238,7 +253,7 @@ describe('verifyTeacherStudent', () => {
 
 	it('should return false when query returns null data', async () => {
 		// Mock null data response
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: null,
 			error: null
 		});
@@ -265,7 +280,7 @@ describe('verifyTeacherStudent', () => {
 			}
 		];
 
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: arrayResponse,
 			error: null
 		});
@@ -284,7 +299,7 @@ describe('verifyTeacherStudent', () => {
 			}
 		];
 
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: malformedResponse,
 			error: null
 		});
@@ -303,7 +318,7 @@ describe('verifyTeacherStudent', () => {
 			}
 		];
 
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: nullClassesResponse,
 			error: null
 		});
@@ -325,7 +340,7 @@ describe('verifyTeacherStudent', () => {
 			}
 		];
 
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: noTeacherIdResponse,
 			error: null
 		});
@@ -344,7 +359,7 @@ describe('verifyTeacherStudent', () => {
 			}
 		];
 
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: emptyArrayResponse,
 			error: null
 		});
@@ -371,7 +386,7 @@ describe('verifyTeacherStudent', () => {
 			}
 		];
 
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: mixedResponse,
 			error: null
 		});
@@ -431,7 +446,7 @@ describe('verifyTeacherStudentWithRole', () => {
 
 	it('should return true for teacher with access to student', async () => {
 		// Mock successful class membership query
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: mockClassMembershipResponse,
 			error: null
 		});
@@ -453,7 +468,7 @@ describe('verifyTeacherStudentWithRole', () => {
 
 	it('should return false for teacher without access to student', async () => {
 		// Mock class memberships for different teacher
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: mockNoAccessClassMembershipResponse,
 			error: null
 		});
@@ -470,7 +485,7 @@ describe('verifyTeacherStudentWithRole', () => {
 
 	it('should return false for teacher when student not found', async () => {
 		// Mock empty class memberships
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: [],
 			error: null
 		});
@@ -491,7 +506,7 @@ describe('verifyTeacherStudentWithRole', () => {
 
 	it('should return false for student profile trying to verify access', async () => {
 		// Mock empty class memberships (students are not teachers)
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: [],
 			error: null
 		});
@@ -519,7 +534,7 @@ describe('verifyTeacherStudentWithRole', () => {
 			role: 'teacher' as const
 		};
 
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: mockClassMembershipResponse,
 			error: null
 		});
@@ -547,7 +562,7 @@ describe('verifyTeacherStudentWithRole', () => {
 			code: 'PGRST301'
 		};
 
-		supabase._mockChain.eq.mockResolvedValueOnce({
+		supabase._mockChain._queueResult({
 			data: null,
 			error: mockError
 		});
