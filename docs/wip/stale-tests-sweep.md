@@ -313,7 +313,11 @@ _(Historique du diagnostic ci-dessous.)_
 1. **Blockquote dans item de liste** (`markdown-semantic-roundtrip`) : le support a été **perdu au rename `custom-markdown`→`ubumark`** (`d8fbaffed`). `parseContentWithBlockquote`/`containsBlockquote` (ajoutées `3818094ae` dans l'ancien `src/lib/custom-markdown/parser/`) **non portées** dans `src/lib/ubumark/parser/markdown-parser.ts`. → un `> quote` multiligne dans un `- item` n'est plus parsé en nœud blockquote.
 2. **`\np{12345}` conversion cassée** (`math-to-custom`) : commit `cda20f960` (« prevent NUMBER from starting implicit multiplication ») casse la conversion LaTeX→custom des entiers formatés. `\np{12345}`→`12⁠345` (espace fine U+202F) ; le parser tokenise ` ` en LETTER et `NUMBER` ne peut plus démarrer une mult implicite après → parse error → `converted: false`. Affecte l'import de nombres formatés.
 
-**Reste : 31 fichiers** (markdown cluster traité ; 2 fichiers restent partiellement rouges sur les régressions ci-dessus, à corriger côté code avec décision David). Notables : `api/srs` 23 (mock isolé, fin), cluster **markdown-roundtrip** (`rich-text` 2 + `ubumark` 2), `challenge-variables` 25 (⚠️ **décision format WIP en attente**, cf. plus haut), `api/migration/migration-review` 3, `exercise-import-export` 4, divers petits (geometry-core exports 7×1, whiteboard 3, evoland 2, questions 4, stores 1, shared/blockly 1) + **5 fichiers client** (`*.svelte.test.ts`). _(challenge-variables retiré : test supprimé.)_
+### geometry-core (7 fichiers) — FAIT 2026-06-12 (`0198fc68d`)
+
+Tous **stale** (refonte angle DSL `1e96edbd5`, 0 régression) : 5 exports (helper `createMesureText` sans `unite` → défaut `rad` → `1.6°` au lieu de `90°` → fix `unite:'deg'`) ; parser ×2 (`angle`/`angle_polaire` mots-clés réservés → renommer l'identifiant) ; trace-demos (`angle(2 points)` → `angle_polaire`).
+
+**Reste : ~24 fichiers.** Notables : `api/srs` 23 (mock isolé, fin), `api/migration/migration-review` 3, `exercise-import-export` 4, whiteboard 3, evoland 2, questions 4, stores 1, shared/blockly 1 + **5 fichiers client** (`*.svelte.test.ts`). _(challenge-variables retiré ; geometry-core + markdown faits.)_
 
 ## Reprise — par où continuer (prochaine session)
 
