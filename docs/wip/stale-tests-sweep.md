@@ -285,9 +285,9 @@ _(Section historique ci-dessous conservée pour trace du diagnostic.)_
 
 **Décision PO** : ces durcissements (form mismatch inconditionnel + checkForm sur tous les blancs) sont-ils **voulus** (→ réaligner les 19 tests) ou une **régression** (→ scoper checkForm aux blancs math, le rendre conditionnel à une vraie contrainte `form`/`requiredForm`, et porter `allowBracketsInFirstNegativeTerm`) ? La validation des réponses est cœur de l'app → fort impact si régression.
 
-### ⚠️ `challenge-variables` (25) — décision format WIP en attente
+### ✅ `challenge-variables` (25) — test supprimé (système navadra condamné)
 
-Système de génération de variables de challenge (navadra, « for future challenge generation » = WIP, pas d'appelant live). Mismatch de format : la fonction `generateChallengeVariables` lit `varDef.type === 'random'|'expression'` (+ JSDoc + producteurs `markdown-import`/`correction-placeholders` en `.type`), mais la fixture **partagée** `createTestChallenge` + les tests utilisent l'ancien format `{ value: 'randomInt(1,10)' }`. Le type `ChallengeVariable` autorise les DEUX. **Non touché** : choisir le format canonique d'un système WIP + modifier une fixture partagée = décision archi à valider avec David.
+**Décision David (2026-06-12)** : navadra va être **réécrit pour utiliser le système de questions d'UbuMaths** pour les challenges. Le module `challenge-variables.ts` (encore utilisé par les composants navadra/combat) sera remplacé. Migrer la fixture/les 25 tests stale (ancien format `{ value: 'randomInt(1,10)' }` vs code `{ type: 'random', min, max }`) vers un format condamné = effort jeté. → **`challenge-variables.test.ts` supprimé** (`6f568615d`). Module conservé jusqu'à la réécriture.
 
 ### Cluster markdown/rich-text (2026-06-12, `ea8e15ec3`)
 
@@ -313,7 +313,7 @@ _(Historique du diagnostic ci-dessous.)_
 1. **Blockquote dans item de liste** (`markdown-semantic-roundtrip`) : le support a été **perdu au rename `custom-markdown`→`ubumark`** (`d8fbaffed`). `parseContentWithBlockquote`/`containsBlockquote` (ajoutées `3818094ae` dans l'ancien `src/lib/custom-markdown/parser/`) **non portées** dans `src/lib/ubumark/parser/markdown-parser.ts`. → un `> quote` multiligne dans un `- item` n'est plus parsé en nœud blockquote.
 2. **`\np{12345}` conversion cassée** (`math-to-custom`) : commit `cda20f960` (« prevent NUMBER from starting implicit multiplication ») casse la conversion LaTeX→custom des entiers formatés. `\np{12345}`→`12⁠345` (espace fine U+202F) ; le parser tokenise ` ` en LETTER et `NUMBER` ne peut plus démarrer une mult implicite après → parse error → `converted: false`. Affecte l'import de nombres formatés.
 
-**Reste : 31 fichiers** (markdown cluster traité ; 2 fichiers restent partiellement rouges sur les régressions ci-dessus, à corriger côté code avec décision David). Notables : `api/srs` 23 (mock isolé, fin), cluster **markdown-roundtrip** (`rich-text` 2 + `ubumark` 2), `challenge-variables` 25 (⚠️ **décision format WIP en attente**, cf. plus haut), `api/migration/migration-review` 3, `exercise-import-export` 4, divers petits (geometry-core exports 7×1, whiteboard 3, evoland 2, questions 4, stores 1, shared/blockly 1) + **5 fichiers client** (`*.svelte.test.ts`).
+**Reste : 31 fichiers** (markdown cluster traité ; 2 fichiers restent partiellement rouges sur les régressions ci-dessus, à corriger côté code avec décision David). Notables : `api/srs` 23 (mock isolé, fin), cluster **markdown-roundtrip** (`rich-text` 2 + `ubumark` 2), `challenge-variables` 25 (⚠️ **décision format WIP en attente**, cf. plus haut), `api/migration/migration-review` 3, `exercise-import-export` 4, divers petits (geometry-core exports 7×1, whiteboard 3, evoland 2, questions 4, stores 1, shared/blockly 1) + **5 fichiers client** (`*.svelte.test.ts`). _(challenge-variables retiré : test supprimé.)_
 
 ## Reprise — par où continuer (prochaine session)
 
