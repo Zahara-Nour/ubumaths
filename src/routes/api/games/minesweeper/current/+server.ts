@@ -7,12 +7,13 @@ import { sanitizePostgresError } from '$lib/server/utils/error-handler';
  * Load current in-progress Minesweeper game
  * GET /api/games/minesweeper/current
  *
- * Fetches the most recent in-progress game for the authenticated student.
+ * Fetches the most recent in-progress game for the authenticated user.
  * Returns null if no in-progress game exists.
  *
  * **Security**:
- * - Requires authentication (students only)
- * - RLS policies ensure students only see their own games
+ * - Requires authentication (students and teachers — teachers play for the
+ *   global leaderboard, see commit c2f4ec7e6)
+ * - RLS policies ensure users only see their own games
  *
  * **Response**:
  * ```json
@@ -34,7 +35,7 @@ import { sanitizePostgresError } from '$lib/server/utils/error-handler';
  * Or `{ "game": null }` if no in-progress game exists.
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	// ✅ SECURITY: Require student authentication
+	// ✅ SECURITY: Require student or teacher authentication
 	const { user } = await requireRoles(locals, ['student', 'teacher']);
 
 	try {
