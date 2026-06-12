@@ -12,6 +12,8 @@
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { verifyCronAuth, generateCronSecret } from './cron';
 import * as envModule from '$lib/server/env';
 
@@ -63,7 +65,7 @@ describe('verifyCronAuth', () => {
 		} catch (err: unknown) {
 			expect((err as { status: number }).status).toBe(401);
 			expect((err as { body?: { message?: string } }).body?.message).toContain(
-				'Missing Authorization header'
+				'Missing authentication'
 			);
 		}
 	});
@@ -230,5 +232,14 @@ describe('generateCronSecret', () => {
 		// With 32 hex chars, we should have at least 8 different characters
 		// (this is a heuristic - real entropy testing is more complex)
 		expect(uniqueChars).toBeGreaterThanOrEqual(8);
+	});
+
+	test("n'utilise pas Math.random() — CSPRNG obligatoire (garde anti-régression)", () => {
+		// Le secret protège les endpoints CRON : il DOIT être dérivé de
+		// crypto.randomBytes, jamais de Math.random() (PRNG V8 non cryptographique,
+		// donc prévisible). Garde au niveau source pour empêcher toute régression.
+		const src = readFileSync(join(process.cwd(), 'src/lib/server/auth/cron.ts'), 'utf8');
+		expect(src, 'cron.ts ne doit pas utiliser Math.random()').not.toMatch(/Math\.random/);
+		expect(src, 'cron.ts doit générer le secret via randomBytes').toMatch(/randomBytes/);
 	});
 });

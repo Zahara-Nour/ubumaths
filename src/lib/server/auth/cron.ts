@@ -9,7 +9,7 @@
 
 import { error } from '@sveltejs/kit';
 import { getEnv } from '$lib/server/env';
-import { createHash, timingSafeEqual } from 'crypto';
+import { randomBytes, timingSafeEqual } from 'crypto';
 
 /**
  * Verify CRON authentication from request headers
@@ -154,13 +154,7 @@ export function verifyCronAuth(request: Request): void {
  * - Hex encoding ensures safe transmission in HTTP headers
  */
 export function generateCronSecret(): string {
-	// Combine multiple entropy sources for extra randomness
-	const hash = createHash('sha256')
-		.update(Math.random().toString()) // JavaScript random
-		.update(Date.now().toString()) // Timestamp
-		.update(process.hrtime.bigint().toString()) // High-resolution time
-		.digest('hex');
-
-	// Return first 32 characters (128 bits)
-	return hash.substring(0, 32);
+	// 16 cryptographically secure random bytes = 32 hex chars = 128 bits of entropy.
+	// Derived from crypto.randomBytes (CSPRNG) — never a predictable, non-crypto PRNG.
+	return randomBytes(16).toString('hex');
 }
