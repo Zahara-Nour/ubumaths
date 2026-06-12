@@ -349,7 +349,7 @@ e2e fill-blanks 145/145 vert ; migration 487 vert ; cosmetic-transforms + answer
 3. ~~cluster contrats API~~ + ~~e2e-fill-blanks~~ — **FAIT 2026-06-12** (#9 converter éval décimale, #10 checkForm virgule — voir section dédiée).
 4. ~~2 fichiers questions~~ — **FAIT 2026-06-12** (`ed6602acd`) : `variable-resolver` 2 stale réalignés (`random:N.M` déprécié → `digits:N.M` ; `({{b}})^2` parenthésé car moins unaire < `^`) ; `test-exact-repro.test.ts` supprimé (repro mort, doublon de `instance-generator.test.ts`, jamais migré au modèle `blanks[]`). src/lib/questions/ : 31 fichiers / 2206 verts.
 5. ~~5 fichiers client~~ — **FAIT 2026-06-12** (`13e45b5f3` + composants) : tous stale, 0 régression. Suite client entière verte (**41 fichiers / 1011 tests**). Détail ci-dessous.
-6. **Reste (1 fichier)** : `api/srs` 23 (mock isolé tedious).
+6. ~~`api/srs` 23~~ — **FAIT 2026-06-12** (`8cf3dbdec`) : tous stale, 0 régression. Cause racine commune = `requireAuth` fait `safeGetSession()` PUIS `from('profiles').…single()`, non mocké → `.select is not a function`. Helper `from` dispatché par table + chaînes réalignées par endpoint. 2 prémisses stale documentées (config FSRS verrouillée serveur ; cartes custom = strings markdown). **→ Chantier de remédiation terminé : plus aucun fichier de test rouge connu.**
 
 ### Cluster client (`*.svelte.test.ts`) — FAIT 2026-06-12
 
