@@ -65,6 +65,22 @@ export function applyRemoveSpaces(latex: string): string {
 }
 
 /**
+ * Wrap a value being string-substituted into an `{{eval:...}}` expression in
+ * `{}` so it parses as a single grouped operand. This preserves the implied
+ * grouping of negative or compound values: `{{a}}^2` with a=-5 becomes
+ * `{-5}^2` = (-5)^2 = 25, not `-5^2` = -(5^2) = -25. Braces are grouping for
+ * both `parseCustom` and `parseLatex` and are transparent for plain operands.
+ *
+ * A value that is a bare operator is left untouched: a variable can resolve to
+ * `+`/`-` from a discrete list and be used as the operator itself, e.g.
+ * `{{eval:5{{op}}3}}` — wrapping it (`5{+}3`) would break parsing.
+ */
+function braceWrap(value: string): string {
+	if (/^\s*[+\-*/^]\s*$/.test(value)) return value;
+	return `{${value}}`;
+}
+
+/**
  * Resolve all variables using 3-stage pipeline
  *
  * Process:
@@ -338,9 +354,15 @@ export function resolveExpression(
 						throw new Error(`Variable "${varName}" not found in eval expression`);
 					}
 
+					// Wrap the substituted value in `{}` so it parses as a single
+					// grouped operand. Without this, a negative value loses its
+					// implied grouping: `{{a}}^2` with a=-5 would become `-5^2` =
+					// -(5^2) = -25 instead of (-5)^2 = 25 (unary minus binds looser
+					// than `^`). Braces are grouping for both parseCustom and
+					// parseLatex, and are transparent for non-negative operands.
 					exprToParse =
 						exprToParse.slice(0, varToken.start) +
-						resolvedVar.value +
+						braceWrap(resolvedVar.value) +
 						exprToParse.slice(varToken.end);
 				}
 			}
@@ -353,7 +375,7 @@ export function resolveExpression(
 				.sort((a, b) => b.name.length - a.name.length);
 			for (const rv of multiCharVars) {
 				const regex = new RegExp(`\\b${rv.name}\\b`, 'g');
-				exprToParse = exprToParse.replace(regex, rv.value);
+				exprToParse = exprToParse.replace(regex, () => braceWrap(rv.value));
 			}
 
 			// Parse expression: use LaTeX parser for backslash commands, custom parser otherwise
@@ -704,8 +726,11 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 		const resolvedVar = alreadyResolved.find((v) => v.name === varName);
 		if (!resolvedVar) return null; // Can't resolve yet — leave for Stage 3
 
+		// Wrap in `{}` to preserve grouping for negative values — see Stage 3.
 		exprToParse =
-			exprToParse.slice(0, varToken.start) + resolvedVar.value + exprToParse.slice(varToken.end);
+			exprToParse.slice(0, varToken.start) +
+			braceWrap(resolvedVar.value) +
+			exprToParse.slice(varToken.end);
 	}
 
 	// Replace multi-character variable names via regex before AST parsing
@@ -714,7 +739,7 @@ function evaluateSingleEval(evalToken: string, alreadyResolved: ResolvedVariable
 		.sort((a, b) => b.name.length - a.name.length);
 	for (const rv of multiCharVars) {
 		const regex = new RegExp(`\\b${rv.name}\\b`, 'g');
-		exprToParse = exprToParse.replace(regex, rv.value);
+		exprToParse = exprToParse.replace(regex, () => braceWrap(rv.value));
 	}
 
 	// Parse and evaluate

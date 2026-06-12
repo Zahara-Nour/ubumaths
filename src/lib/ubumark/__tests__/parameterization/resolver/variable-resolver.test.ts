@@ -334,6 +334,47 @@ describe('resolveVariables', () => {
 			expect(resolved[0].value).toBe('8');
 			expect(resolved[1].value).toBe('8');
 		});
+
+		// Substituting a negative value into an eval must preserve grouping: each
+		// substitution is wrapped in `{}` so `{{a}}^2` with a=-5 evaluates as
+		// (-5)^2 = 25, not -5^2 = -(5^2) = -25 (unary minus binds looser than ^).
+		it('should treat a negative variable as a grouped power base', () => {
+			const variables: Variable[] = [
+				{ name: 'a', expression: '-5' },
+				{ name: 'result', expression: '{{eval:{{a}}^2}}' }
+			];
+			const resolved = resolveVariables(variables);
+			expect(resolved[1].value).toBe('25');
+		});
+
+		it('should treat a negative single-letter var as a grouped exponent', () => {
+			// `10^-2` errors ("negative exponent requires braces"); the `{}` wrap
+			// turns it into `10^{-2}` = 0.01.
+			const variables: Variable[] = [
+				{ name: 'n', expression: '-2' },
+				{ name: 'result', expression: '{{eval:10^{{n}}}}' }
+			];
+			const resolved = resolveVariables(variables);
+			expect(Number(resolved[1].value)).toBeCloseTo(0.01, 10);
+		});
+
+		it('should treat a negative multi-char var as a grouped power base', () => {
+			const variables: Variable[] = [
+				{ name: 'coeff', expression: '-4' },
+				{ name: 'result', expression: '{{eval:{{coeff}}^2}}' }
+			];
+			const resolved = resolveVariables(variables);
+			expect(resolved[1].value).toBe('16');
+		});
+
+		it('should keep a positive grouped substitution correct (sanity)', () => {
+			const variables: Variable[] = [
+				{ name: 'a', expression: '5' },
+				{ name: 'result', expression: '{{eval:{{a}}^2}}' }
+			];
+			const resolved = resolveVariables(variables);
+			expect(resolved[1].value).toBe('25');
+		});
 	});
 
 	// ============================================================================

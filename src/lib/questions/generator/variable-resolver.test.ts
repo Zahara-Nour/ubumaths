@@ -404,10 +404,9 @@ describe('resolveVariables - Complex Mathematical Examples', () => {
 			{ name: 'a', expression: '{{random:1..5}}' },
 			{ name: 'b', expression: '{{random:-10..10}}' },
 			{ name: 'c', expression: '{{random:-10..10}}' },
-			// `b` may be negative, and unary minus binds looser than `^` (so a bare
-			// `{{b}}^2` with b=-5 evals to `-(5^2) = -25`, not `25`). A correct
-			// template must parenthesize a possibly-negative substituted value.
-			{ name: 'discriminant', expression: '{{eval:({{b}})^2 - 4*{{a}}*{{c}}}}' }
+			// `b` may be negative; the resolver wraps each substitution in `{}`, so a
+			// bare `{{b}}^2` with b=-5 correctly evals to (-5)^2 = 25 (not -(5^2)).
+			{ name: 'discriminant', expression: '{{eval:{{b}}^2 - 4*{{a}}*{{c}}}}' }
 		];
 
 		const resolved = resolveVariables(variables, 99999);
