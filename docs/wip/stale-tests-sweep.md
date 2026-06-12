@@ -300,7 +300,15 @@ Système de génération de variables de challenge (navadra, « for future chall
 | `ubumark/math-to-custom`                | 61/64              | 5 stale réalignés (`SUPPORTED_GREEK` 5→23) ; **3 rouges = 🔴 régression**                                                              |
 | `rich-text/markdown-semantic-roundtrip` | 47/49 (non touché) | **2 rouges = 🔴 régression**                                                                                                           |
 
-**🔴 2 nouvelles régressions de prod (flaggées, non maquillées)** :
+**✅ Ces 2 régressions ont été CORRIGÉES (2026-06-12)** :
+
+- **#6 blockquote dans item de liste** → fix `e4674ccb8` : `parseContentWithBlockquote`/`containsBlockquote` portées dans `src/lib/ubumark/parser/markdown-parser.ts`, garde `childIndex>0` (1er enfant = forme compacte `- > quote` littérale ; ulterieur = vrai blockquote). semantic-roundtrip 49/49.
+- **#7 `\np{12345}`** → fix `6ca99c297` (décision PO : gérer `\,`, pas U+202F). Tokenizer mathAST consomme `\,` entre chiffres (miroir de `{,}`) → `12\,345`=nombre `12345` ; convertisseur `\np` (chemin math) sort `\,`. `cda20f960` préservé (implicit-mult 26/26). math-to-custom 64/64.
+  - **2 nuances** : `simple.ts` (chemin `\np` **texte**, non re-parsé) garde U+202F (sinon `\,` littéral visible) ; la valeur convertie est le **nombre nu** (`S=12345`), le regroupement d'affichage est réappliqué par le resolver.
+
+_(Historique du diagnostic ci-dessous.)_
+
+**🔴 2 régressions de prod (flaggées, non maquillées)** :
 
 1. **Blockquote dans item de liste** (`markdown-semantic-roundtrip`) : le support a été **perdu au rename `custom-markdown`→`ubumark`** (`d8fbaffed`). `parseContentWithBlockquote`/`containsBlockquote` (ajoutées `3818094ae` dans l'ancien `src/lib/custom-markdown/parser/`) **non portées** dans `src/lib/ubumark/parser/markdown-parser.ts`. → un `> quote` multiligne dans un `- item` n'est plus parsé en nœud blockquote.
 2. **`\np{12345}` conversion cassée** (`math-to-custom`) : commit `cda20f960` (« prevent NUMBER from starting implicit multiplication ») casse la conversion LaTeX→custom des entiers formatés. `\np{12345}`→`12⁠345` (espace fine U+202F) ; le parser tokenise ` ` en LETTER et `NUMBER` ne peut plus démarrer une mult implicite après → parse error → `converted: false`. Affecte l'import de nombres formatés.
