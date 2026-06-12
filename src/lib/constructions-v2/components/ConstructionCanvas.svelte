@@ -486,7 +486,7 @@
 								fill={sty.color}
 							/>
 						{/if}
-						{#if el.label}
+						{#if el && el.label}
 							<text
 								x={el.labelOffset?.dx ?? sty.pointSize + 4}
 								y={el.labelOffset?.dy ?? -(sty.pointSize + 2)}

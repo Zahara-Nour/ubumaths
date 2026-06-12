@@ -404,6 +404,9 @@ function getNumericValue(value: EvalValue): number {
 		// For MathNode values (from exact mode), evaluate numerically
 		return evaluateNodeToApproximatedNumber(value);
 	}
+	if (typeof value === 'boolean') {
+		throw new Error('Cannot convert boolean result to numeric value');
+	}
 	return value;
 }
 

@@ -23,6 +23,7 @@ export interface ConstructionListItem {
 
 export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
 	const { user } = await parent();
+	if (!user) throw error(401, 'Non autorisé');
 
 	const { data: constructions, error: constructionsError } = await supabase
 		.from('constructions')

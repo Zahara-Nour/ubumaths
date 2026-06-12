@@ -12,7 +12,7 @@
 	let { data }: { data: PageData } = $props();
 
 	// Lazy load DSL player (uses $state, can't SSR)
-	let DslPlayer = $state<Component | null>(null);
+	let DslPlayer = $state<Component<{ script: string }> | null>(null);
 
 	onMount(async () => {
 		if (data.construction.dsl_script) {

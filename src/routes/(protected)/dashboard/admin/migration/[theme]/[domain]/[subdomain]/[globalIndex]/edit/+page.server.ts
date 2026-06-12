@@ -114,16 +114,19 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		// Map to QuestionTemplate format expected by QuestionTemplateForm
 		// Always use entry-level metadata for theme/domain/subdomain (correct categorization)
 		// The transformed data may have different/legacy categories
+		// Migration JSON files use plain strings where QuestionTemplate requires branded
+		// TemplateMarkdown. Cast through unknown — the runtime values are correct strings,
+		// the brand is only a compile-time guard that does not apply to legacy JSON files.
 		const template: QuestionTemplate = {
 			id: `migration-${globalIndex}`,
 			title: sourceData.title || '',
 			description: sourceData.description,
-			shared: sourceData.shared,
+			shared: sourceData.shared as unknown as QuestionTemplate['shared'],
 			defaultDisplayOptions: sourceData.defaultDisplayOptions,
 			multipleAnswers: sourceData.multipleAnswers,
-			variations: sourceData.variations || [],
+			variations: (sourceData.variations || []) as unknown as QuestionTemplate['variations'],
 			exerciseInstruction: sourceData.exerciseInstruction,
-			options: sourceData.options,
+			options: sourceData.options as unknown as QuestionTemplate['options'],
 			grades: sourceData.grades || [],
 			theme: targetQuestion.theme,
 			domain: targetQuestion.domain,
@@ -131,7 +134,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			level: targetQuestion.level,
 			status: (sourceData.status as 'draft' | 'published') || 'draft',
 			delay: sourceData.delay,
-			testSpecs: sourceData.testSpecs
+			testSpecs: sourceData.testSpecs as unknown as QuestionTemplate['testSpecs']
 		};
 
 		return {

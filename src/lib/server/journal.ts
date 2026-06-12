@@ -15,7 +15,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database';
+import type { Database, TablesUpdate } from '$lib/types/database';
 import type {
 	ClassJournalEntry,
 	JournalEntryWithClass,
@@ -149,7 +149,7 @@ export async function updateJournalEntry(
 	input: UpdateJournalEntryInput
 ): Promise<OperationResult<ClassJournalEntry>> {
 	// Build update object
-	const updateData: Record<string, unknown> = {};
+	const updateData: TablesUpdate<'class_journal_entries'> = {};
 
 	if (input.entryDate !== undefined) updateData.entry_date = input.entryDate;
 	if (input.lessonContent !== undefined) updateData.lesson_content = input.lessonContent;

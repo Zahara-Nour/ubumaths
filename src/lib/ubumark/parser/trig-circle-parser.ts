@@ -659,7 +659,7 @@ export function parseTrigCircleContent(content: string | string[]): TrigCirclePa
 				break;
 
 			case 'equation':
-				equation = parseEquation(value);
+				equation = parseEquation(value) ?? undefined;
 				if (!equation) {
 					errors.push({
 						message: `Invalid equation format "${value}", expected: cos(x) = 1/2, sin(x) > √2/2, etc.`,

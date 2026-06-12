@@ -199,7 +199,7 @@ function filterVariables(vars: Set<string>): Set<string> {
  * Map of function names to their base periods (as MathNode).
  * Period is for f(x), not f(kx).
  */
-const FUNCTION_PERIODS: Map<string, MathNode> = new Map([
+const FUNCTION_PERIODS: Map<string, MathNode> = new Map<string, MathNode>([
 	// Primary trig functions
 	['sin', TWO_PI],
 	['cos', TWO_PI],

@@ -80,7 +80,5 @@
 		transformed={transformedQuestion}
 		{warnings}
 		{errors}
-		onApprove={handleApprove}
-		onReject={handleReject}
 	/>
 </div>

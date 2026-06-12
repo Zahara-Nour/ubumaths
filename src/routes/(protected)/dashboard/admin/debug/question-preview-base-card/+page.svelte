@@ -17,7 +17,13 @@
 	// Note: These are properly typed instances for debug/testing purposes
 	// ============================================================================
 
-	const sampleInstance: QuestionInstance = {
+	// Debug-only extension: `type` and `solution` are legacy/debug fields not in QuestionInstance
+	type DebugInstance = Omit<QuestionInstance, never> & {
+		type?: string;
+		solution?: string | string[];
+	};
+
+	const sampleInstance: DebugInstance = {
 		templateId: 'abc-123-def-456-ghi-789',
 		type: 'numerical_exact',
 		title: 'Résoudre une équation du second degré',
@@ -53,7 +59,7 @@
 		selectedVariationIndex: 1
 	};
 
-	const sampleQCMInstance: QuestionInstance = {
+	const sampleQCMInstance: DebugInstance = {
 		templateId: 'qcm-001-abc-def',
 		type: 'multiple_choice',
 		title: 'Identifier les nombres premiers',
@@ -75,7 +81,7 @@
 		selectedVariationIndex: 0
 	};
 
-	const longStatementInstance: QuestionInstance = {
+	const longStatementInstance: DebugInstance = {
 		templateId: 'long-text-001',
 		type: 'algebraic_transform',
 		title: 'Développer et réduire',

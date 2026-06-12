@@ -8,7 +8,7 @@
 import type { GeoTransformation } from '../types/elements';
 import { isTransformation } from '../types/elements';
 import type { GeoValue, ScalarParam } from '../types/geo-value';
-import { isScalarRef } from '../types/geo-value';
+import { isScalarRef, isInfinityParam } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import { geoToNumber } from '../compute/to-number';
 
@@ -26,6 +26,9 @@ export interface TransformAccessors {
 function resolveParam(param: ScalarParam, access: TransformAccessors): number {
 	if (isScalarRef(param)) {
 		return access.getScalarValue?.(param.scalarRef) ?? 0;
+	}
+	if (isInfinityParam(param)) {
+		return param.infinity === '+' ? Infinity : -Infinity;
 	}
 	return geoToNumber(param);
 }

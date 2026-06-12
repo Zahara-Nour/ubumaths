@@ -1545,7 +1545,7 @@
 </script>
 
 <!-- Snippet to render group children recursively -->
-{#snippet renderGroupChildren(children: WhiteboardElement[])}
+{#snippet renderGroupChildren(children: readonly WhiteboardElement[])}
 	{#each children as child (child.id)}
 		{#if child.type === 'stroke'}
 			{@const strokeRotation = child.rotation ?? 0}
@@ -2069,11 +2069,12 @@
 							: ''}
 					<g transform={rotateTransform || undefined} class="binding-highlight">
 						{#if props.type === 'rect'}
+							<!-- props.x/y/width/height are always set when type === 'rect' -->
 							<rect
-								x={props.x - 4}
-								y={props.y - 4}
-								width={props.width + 8}
-								height={props.height + 8}
+								x={(props.x ?? 0) - 4}
+								y={(props.y ?? 0) - 4}
+								width={(props.width ?? 0) + 8}
+								height={(props.height ?? 0) + 8}
 								rx={(props.cornerRadius ?? 0) + 4}
 								ry={(props.cornerRadius ?? 0) + 4}
 								stroke="#3b82f6"
@@ -2083,11 +2084,12 @@
 								opacity="0.8"
 							/>
 						{:else if props.type === 'ellipse'}
+							<!-- props.rx/ry are always set when type === 'ellipse' -->
 							<ellipse
 								cx={props.cx}
 								cy={props.cy}
-								rx={props.rx + 4}
-								ry={props.ry + 4}
+								rx={(props.rx ?? 0) + 4}
+								ry={(props.ry ?? 0) + 4}
 								stroke="#3b82f6"
 								stroke-width="3"
 								stroke-dasharray="6 4"

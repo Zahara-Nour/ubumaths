@@ -237,7 +237,7 @@
 							<MySelect
 								type="single"
 								bind:value={sharedRequiredFormSelect}
-								items={REQUIRED_FORM_OPTIONS}
+								items={[...REQUIRED_FORM_OPTIONS]}
 							/>
 							{#if sharedRequiredFormSelect === 'custom'}
 								<Input
@@ -271,7 +271,7 @@
 								<MySelect
 									type="single"
 									bind:value={sharedBlankRequiredFormSelect}
-									items={REQUIRED_FORM_OPTIONS}
+									items={[...REQUIRED_FORM_OPTIONS]}
 								/>
 								{#if sharedBlankRequiredFormSelect === 'custom'}
 									<Input

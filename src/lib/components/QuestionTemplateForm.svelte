@@ -57,6 +57,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { tick, onMount } from 'svelte';
+	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Lazy-loaded heavy components to reduce initial bundle size
 	let RichTextEditor = $state<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -544,7 +545,7 @@
 		const sourceVariation = variations[duplicateSourceIndex];
 		const duplicatedVariation: QuestionVariation = {
 			// statement is now a branded string (TemplateMarkdown), so no deep copy needed
-			statement: templateMarkdown(sourceVariation.statement),
+			statement: templateMarkdown(sourceVariation.statement ?? ''),
 			variables: structuredClone(sourceVariation.variables || []),
 			correctChoiceIndex: sourceVariation.correctChoiceIndex,
 			// correction is set from variationExtras when building template
@@ -1052,7 +1053,7 @@
 	function getVariationErrors(v: QuestionVariation, index: number): string[] {
 		if (!hasAttemptedPublish) return [];
 		const errors: string[] = [];
-		if (!v.statement.trim() && !sharedStatement.trim())
+		if (!(v.statement ?? '').trim() && !sharedStatement.trim())
 			errors.push(`Variation ${index + 1} : énoncé manquant`);
 		const hasAnswer =
 			(v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
@@ -1070,7 +1071,7 @@
 			variations.length > 0 &&
 			variations.every(
 				(v) =>
-					(v.statement.trim().length > 0 || sharedStatement.trim().length > 0) &&
+					((v.statement ?? '').trim().length > 0 || sharedStatement.trim().length > 0) &&
 					((v.blanks && v.blanks.length > 0 && v.blanks.some((b) => b.expectedAnswer?.trim())) ||
 						(v.choices && v.choices.length > 0) ||
 						(typeof v.correctChoiceIndex === 'string' && v.correctChoiceIndex.trim().length > 0) ||
@@ -1722,7 +1723,7 @@
 													<MySelect
 														type="single"
 														bind:value={variationExtras[index].requiredFormSelect}
-														items={REQUIRED_FORM_OPTIONS}
+														items={[...REQUIRED_FORM_OPTIONS]}
 													/>
 													{#if variationExtras[index].requiredFormSelect === 'custom'}
 														<Input

@@ -133,6 +133,8 @@ export function evaluateAstWithModifiers(ast: MathNode, modifiers: EvalModifiers
 		throw new Error('Complex numbers are not supported in evaluateAstWithModifiers');
 	} else if (isMathNode(result.value)) {
 		numValue = evaluateNodeToApproximatedNumber(result.value);
+	} else if (typeof result.value === 'boolean') {
+		throw new Error('Boolean results are not supported in evaluateAstWithModifiers');
 	} else {
 		numValue = result.value;
 	}

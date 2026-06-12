@@ -611,10 +611,10 @@ function parseEndpointValue(input: string): MathNode | null {
 	if (piFractionMatch && trimmed.includes('π')) {
 		// Handle π/2, 2π, etc. - simplified for common cases
 		if (trimmed === 'π/2') {
-			return { kind: 'symbolic', expression: 'π/2' };
+			return bound('\\pi/2');
 		}
 		if (trimmed === '-π/2') {
-			return { kind: 'negative', value: { kind: 'symbolic', expression: 'π/2' } };
+			return bound('-\\pi/2');
 		}
 	}
 

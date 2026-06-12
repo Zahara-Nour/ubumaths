@@ -866,10 +866,6 @@ class TradeRealtimeStore {
 		const newValidation = !this.myValidation;
 
 		try {
-			// Update database
-			const updateField =
-				this.myRole === 'initiator' ? 'validated_by_initiator' : 'validated_by_partner';
-
 			// Build current_offer in the format expected by execute_trade RPC
 			// Structure: { from_initiator: {cards, gidouilles}, from_partner: {cards, gidouilles} }
 			const currentOffer =
@@ -889,15 +885,25 @@ class TradeRealtimeStore {
 							from_partner: { cards: this.myOffer.cards, gidouilles: this.myOffer.gidouilles }
 						};
 
-			const { error } = await this.supabase
-				.from('marketplace_trades')
-				.update({
-					[updateField]: newValidation,
-					// Save current offer state when validating
-					current_offer: currentOffer,
-					updated_at: new Date().toISOString()
-				})
-				.eq('id', this.tradeId);
+			// Use explicit conditional update fields instead of a computed key to satisfy
+			// Supabase's RejectExcessProperties type constraint on .update().
+			const { error } = this.myRole === 'initiator'
+				? await this.supabase
+						.from('marketplace_trades')
+						.update({
+							validated_by_initiator: newValidation,
+							current_offer: currentOffer,
+							updated_at: new Date().toISOString()
+						})
+						.eq('id', this.tradeId)
+				: await this.supabase
+						.from('marketplace_trades')
+						.update({
+							validated_by_partner: newValidation,
+							current_offer: currentOffer,
+							updated_at: new Date().toISOString()
+						})
+						.eq('id', this.tradeId);
 
 			if (error) {
 				throw new Error(`Failed to update validation: ${error.message}`);

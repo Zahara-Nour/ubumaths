@@ -85,6 +85,10 @@ export function evaluateExpression(latex: string): number | string {
 					return toLatex(result.value);
 				}
 			}
+			// boolean result (e.g. relation evaluation) - not expected in decimal mode, return as string
+			if (typeof result.value === 'boolean') {
+				return String(result.value);
+			}
 			// ComplexValueResult - not supported, return as string
 			return `${result.value.real} + ${result.value.imag}i`;
 		}

@@ -347,7 +347,7 @@
 	description="Cette action est irreversible. L'entree du {formatDateLong(
 		data.entryDate
 	)} sera definitivement supprimee."
-	confirmText="Supprimer"
-	confirmVariant="destructive"
+	confirmLabel="Supprimer"
+	variant="destructive"
 	onConfirm={handleDeleteConfirm}
 />

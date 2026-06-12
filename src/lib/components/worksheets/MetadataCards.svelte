@@ -561,7 +561,7 @@
 							<p class="mb-1 text-xs text-muted-foreground">Numerotation</p>
 							<MySelect
 								value={worksheet.config?.numbering_style ?? 'numeric'}
-								onchange={(v) => handleConfigChange('numbering_style', v)}
+								onchange={(v: string) => handleConfigChange('numbering_style', v)}
 								items={numberingOptions}
 								placeholder="Style"
 							/>
@@ -570,7 +570,7 @@
 							<p class="mb-1 text-xs text-muted-foreground">Format</p>
 							<MySelect
 								value={worksheet.config?.page_layout ?? 'A4'}
-								onchange={(v) => handleConfigChange('page_layout', v)}
+								onchange={(v: string) => handleConfigChange('page_layout', v)}
 								items={layoutOptions}
 								placeholder="Format"
 							/>

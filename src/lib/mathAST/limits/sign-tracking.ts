@@ -27,7 +27,6 @@ import {
 	lnExtended,
 	expExtended,
 	sqrtExtended,
-	isIndeterminateResult,
 	type ExtendedResult,
 	type IndeterminateForm
 } from '../eval/extended-arithmetic';
@@ -411,7 +410,7 @@ export function lnSign(value: SignedLimitValue): SignedLimitValue {
 	if (!node) return { type: 'unknown' };
 
 	const result = lnExtended(node);
-	if (isIndeterminateResult(result)) return { type: 'unknown' };
+	if (result.type === 'indeterminate') return { type: 'unknown' };
 	return mathNodeToSignedValue(result.value);
 }
 
@@ -426,7 +425,7 @@ export function expSign(value: SignedLimitValue): SignedLimitValue {
 	if (!node) return { type: 'unknown' };
 
 	const result = expExtended(node);
-	if (isIndeterminateResult(result)) return { type: 'unknown' };
+	if (result.type === 'indeterminate') return { type: 'unknown' };
 	return mathNodeToSignedValue(result.value);
 }
 
@@ -441,7 +440,7 @@ export function sqrtSign(value: SignedLimitValue): SignedLimitValue {
 	if (!node) return { type: 'unknown' };
 
 	const result = sqrtExtended(node);
-	if (isIndeterminateResult(result)) return { type: 'unknown' };
+	if (result.type === 'indeterminate') return { type: 'unknown' };
 	return mathNodeToSignedValue(result.value);
 }
 
@@ -461,7 +460,7 @@ export type BinaryOpResult =
  */
 export function isIndeterminate(
 	result: BinaryOpResult
-): result is { type: 'indeterminate'; form: string } {
+): result is { readonly type: 'indeterminate'; readonly form: '∞-∞' | '0·∞' | '∞/∞' | '0/0' } {
 	return result.type === 'indeterminate';
 }
 
@@ -577,7 +576,7 @@ export function mathNodeToSignedValue(node: MathNode): SignedLimitValue {
  * Convert ExtendedResult to BinaryOpResult.
  */
 function extendedResultToBinaryOp(result: ExtendedResult): BinaryOpResult {
-	if (isIndeterminateResult(result)) {
+	if (result.type === 'indeterminate') {
 		// Map indeterminate forms
 		const form = result.form as IndeterminateForm;
 		if (form === '0/0' || form === '∞/∞' || form === '0·∞' || form === '∞-∞') {

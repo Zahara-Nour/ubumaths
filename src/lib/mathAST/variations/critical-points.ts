@@ -135,7 +135,7 @@ export function classifyCriticalPoint(
 		const substituted = substitute(derivative, { [variable]: x });
 		const result = evaluate(substituted, { mode: 'decimal' });
 
-		if (typeof result.value === 'number') {
+		if (result.status === 'value' && typeof result.value === 'number') {
 			// If the result is close to zero, it's a zero of the derivative
 			if (Math.abs(result.value) < 1e-10) {
 				return 'derivative_zero';
@@ -173,13 +173,21 @@ export function evaluateAtCriticalPoint(
 
 		// Try exact evaluation first
 		const exactResult = evaluate(substituted, { mode: 'exact' });
+		if (exactResult.status !== 'value') {
+			// Evaluation did not produce a value (indeterminate/unevaluable)
+			return null;
+		}
 		const y = exactResult.node;
 
 		// Get numeric approximation
 		let yApproximate: number | undefined;
 		try {
 			const decimalResult = evaluate(substituted, { mode: 'decimal' });
-			if (typeof decimalResult.value === 'number' && Number.isFinite(decimalResult.value)) {
+			if (
+				decimalResult.status === 'value' &&
+				typeof decimalResult.value === 'number' &&
+				Number.isFinite(decimalResult.value)
+			) {
 				yApproximate = decimalResult.value;
 			}
 		} catch {

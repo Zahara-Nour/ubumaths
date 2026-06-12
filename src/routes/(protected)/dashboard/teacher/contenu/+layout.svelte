@@ -1,34 +1,37 @@
 <script lang="ts">
 	import GroupedRouteLayout from '$lib/components/navigation/GroupedRouteLayout.svelte';
 	import { Layers, BookOpen, Lightbulb, FileSpreadsheet, NotebookPen } from 'lucide-svelte';
+	import type { Component } from 'svelte';
 
 	let { children } = $props();
 
+	// Cast Lucide icons to Component to satisfy GroupedRouteLayout's Tab.icon type.
+	// Lucide icons have wider prop signatures than Component<{}>, so the cast is safe.
 	const tabs = [
 		{
 			href: '/dashboard/teacher/contenu/templates',
 			label: 'Templates',
-			icon: Layers
+			icon: Layers as unknown as Component
 		},
 		{
 			href: '/dashboard/teacher/contenu/exercices',
 			label: 'Exercices',
-			icon: BookOpen
+			icon: BookOpen as unknown as Component
 		},
 		{
 			href: '/dashboard/teacher/contenu/enigmes',
 			label: 'Enigmes',
-			icon: Lightbulb
+			icon: Lightbulb as unknown as Component
 		},
 		{
 			href: '/dashboard/teacher/contenu/worksheets',
 			label: 'Worksheets',
-			icon: FileSpreadsheet
+			icon: FileSpreadsheet as unknown as Component
 		},
 		{
 			href: '/dashboard/teacher/contenu/notebooks',
 			label: 'Notebooks',
-			icon: NotebookPen
+			icon: NotebookPen as unknown as Component
 		}
 	];
 </script>

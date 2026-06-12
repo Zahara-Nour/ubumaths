@@ -5,7 +5,7 @@
  */
 
 import type { Figure } from '../graph/figure';
-import type { GeoValue, ScalarParam } from '../types/geo-value';
+import type { GeoValue, ScalarParam, ScalarRef } from '../types/geo-value';
 import { exact, isScalarRef } from '../types/geo-value';
 import type { GeoPoint } from '../types/primitives';
 import type { SymbolType, SymbolTable } from './symbol-table';
@@ -420,7 +420,7 @@ function toScalarParam(
 	val: ResolvedValue,
 	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
 	line: number
-): ScalarParam {
+): GeoValue | ScalarRef {
 	// Scalar element → scalarRef
 	if (val.type === 'element' && val.elementType === 'scalar') {
 		return { scalarRef: val.figureId };
@@ -6524,12 +6524,12 @@ function createLineFromCoefficients(
 	let p2: GeoPoint;
 
 	if (!isZeroExpression(b)) {
-		const y1 = divide(opposite(c), b);
-		const y2 = divide(opposite(add(a, c)), b);
+		const y1 = divide(opposite(c), b, 'fraction');
+		const y2 = divide(opposite(add(a, c)), b, 'fraction');
 		p1 = { x: exact(ZERO_NODE), y: exact(y1) };
 		p2 = { x: exact(ONE_NODE), y: exact(y2) };
 	} else {
-		const xVal = divide(opposite(c), a);
+		const xVal = divide(opposite(c), a, 'fraction');
 		p1 = { x: exact(xVal), y: exact(ZERO_NODE) };
 		p2 = { x: exact(xVal), y: exact(ONE_NODE) };
 	}
@@ -6613,7 +6613,7 @@ function createFunctionFromCoefficients(
 	if (isZeroExpression(subtract(g, ONE_NODE))) {
 		f = opposite(h);
 	} else {
-		f = divide(opposite(h), g);
+		f = divide(opposite(h), g, 'fraction');
 	}
 
 	// Compute f'(x) symbolically
@@ -6761,7 +6761,7 @@ function resolveTBoundArg(
 	name: string,
 	toGeoValue: (v: ResolvedValue, line: number) => GeoValue,
 	line: number
-): ScalarParam {
+): GeoValue | ScalarRef {
 	if (val.type === 'element' && val.elementType === 'scalar') {
 		return { scalarRef: val.figureId };
 	}
@@ -7254,8 +7254,8 @@ function createPolarCurveFromEquation(
 	const thetaNode: MathNode = greek('theta');
 	const cosTheta = cos(thetaNode);
 	const sinTheta = sin(thetaNode);
-	const xRhs = multiply(rhs, cosTheta);
-	const yRhs = multiply(rhs, sinTheta);
+	const xRhs = multiply(rhs, cosTheta, 'implicit');
+	const yRhs = multiply(rhs, sinTheta, 'implicit');
 
 	// Synthesize equationX/Y strings so existing serializer code can still
 	// produce something coherent; the polar branch in the serializer will

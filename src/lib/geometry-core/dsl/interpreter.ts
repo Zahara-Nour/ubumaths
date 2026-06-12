@@ -62,7 +62,9 @@ import { compile } from '$lib/mathAST/eval/compile';
 import { applyAngleMode, type AngleMode } from './apply-angle-mode';
 
 /** Check if a resolved value is a vector element reference. */
-function isVectorValue(val: ResolvedValue): boolean {
+function isVectorValue(
+	val: ResolvedValue
+): val is ResolvedValue & { type: 'element'; figureId: string } {
 	return val.type === 'element' && val.elementType === 'vecteur';
 }
 
@@ -677,7 +679,9 @@ class Interpreter {
 				// Number arithmetic (existing behavior)
 				const left = coerceToNumber(leftVal, expr.line);
 				const right = coerceToNumber(rightVal, expr.line);
-				switch (expr.op) {
+				const binaryOp = expr.op;
+				const binaryLine = expr.line;
+				switch (binaryOp) {
 					case '+':
 						return { type: 'nombre', value: left + right };
 					case '-':
@@ -713,7 +717,7 @@ class Interpreter {
 					case 'ou':
 						return { type: 'nombre', value: left || right ? 1 : 0 };
 					default:
-						throw new DslRuntimeError(`Operateur inconnu : ${expr.op}`, expr.line);
+						throw new DslRuntimeError(`Operateur inconnu : ${binaryOp}`, binaryLine);
 				}
 			}
 
@@ -985,29 +989,29 @@ class Interpreter {
 		rightIsVec: boolean,
 		line: number
 	): ResolvedValue {
-		if (op === '+' && leftIsVec && rightIsVec) {
+		if (op === '+' && isVectorValue(leftVal) && isVectorValue(rightVal)) {
 			const id = this.figure.createVectorSum(leftVal.figureId, rightVal.figureId);
 			return { type: 'element', figureId: id, elementType: 'vecteur' };
 		}
-		if (op === '-' && leftIsVec && rightIsVec) {
+		if (op === '-' && isVectorValue(leftVal) && isVectorValue(rightVal)) {
 			const id = this.figure.createVectorSum(leftVal.figureId, rightVal.figureId, true);
 			return { type: 'element', figureId: id, elementType: 'vecteur' };
 		}
 		if (op === '*') {
-			if (leftIsVec && !rightIsVec) {
+			if (isVectorValue(leftVal) && !isVectorValue(rightVal)) {
 				// vector * scalar
 				const factor = numeric(coerceToNumber(rightVal, line));
 				const id = this.figure.createVectorScaled(leftVal.figureId, factor);
 				return { type: 'element', figureId: id, elementType: 'vecteur' };
 			}
-			if (!leftIsVec && rightIsVec) {
+			if (!isVectorValue(leftVal) && isVectorValue(rightVal)) {
 				// scalar * vector
 				const factor = numeric(coerceToNumber(leftVal, line));
 				const id = this.figure.createVectorScaled(rightVal.figureId, factor);
 				return { type: 'element', figureId: id, elementType: 'vecteur' };
 			}
 		}
-		if (op === '/' && leftIsVec && !rightIsVec) {
+		if (op === '/' && isVectorValue(leftVal) && !isVectorValue(rightVal)) {
 			// vector / scalar
 			const divisor = coerceToNumber(rightVal, line);
 			// V2 #2 (F simple): unified IEEE 754 division for numbers, but vectors

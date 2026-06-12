@@ -30,8 +30,10 @@
 	// Sort type including client-side grades sorting
 	type SortByField = 'title' | 'updated_at' | 'grades';
 
-	// Local state for exercises (allows fetch-based updates)
-	let exercises = $state(initialData.exercises);
+	// Local state for exercises (allows fetch-based updates).
+	// The server returns a reshaped object where tags are lifted to top-level string[];
+	// cast to Exercise[] so property accesses are typed correctly.
+	let exercises = $state<Exercise[]>(initialData.exercises as unknown as Exercise[]);
 	let pagination = $state(initialData.pagination);
 	let sortBy = $state<SortByField>((initialData.sortBy as SortByField) || 'updated_at');
 	let sortOrder = $state<'asc' | 'desc'>(initialData.sortOrder || 'desc');

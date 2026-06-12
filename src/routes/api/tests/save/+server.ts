@@ -74,9 +74,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		let buddyXp = null;
 		try {
 			const answers = result.answers.map(
-				(answer: { isCorrect: boolean; instance: { templateId?: string } }) => ({
+				(answer: { isCorrect: boolean; instance: { templateId?: string | null } }) => ({
 					isCorrect: answer.isCorrect,
-					theme: undefined // TODO: extract theme from categories if available
+					theme: undefined as string | undefined // TODO: extract theme from categories if available
 				})
 			);
 			buddyXp = await addBuddyXpFromTest(supabase, user.id, answers);

@@ -666,7 +666,12 @@ export class WebReplEngine {
 			});
 
 			// If both evaluate to numbers, compare them
-			if (exactResult1.node.type === 'number' && exactResult2.node.type === 'number') {
+			if (
+				exactResult1.status === 'value' &&
+				exactResult2.status === 'value' &&
+				exactResult1.node.type === 'number' &&
+				exactResult2.node.type === 'number'
+			) {
 				// Compare the values (handle both Rational and number)
 				const val1 = this.getNumericValue(exactResult1.value);
 				const val2 = this.getNumericValue(exactResult2.value);
@@ -871,6 +876,22 @@ export class WebReplEngine {
 				functions: this.evalState.functions
 			});
 			this.lastUnitResult = undefined; // Clear last unit result
+
+			// Non-value result (indeterminate / unevaluable): surface via the catch
+			if (exactResult.status !== 'value') {
+				throw new Error(
+					exactResult.status === 'indeterminate'
+						? `Indeterminate form: ${exactResult.form}`
+						: exactResult.reason
+				);
+			}
+			if (decimalResult.status !== 'value') {
+				throw new Error(
+					decimalResult.status === 'indeterminate'
+						? `Indeterminate form: ${decimalResult.form}`
+						: decimalResult.reason
+				);
+			}
 
 			// Format exact result
 			const exactStr = toCustom(exactResult.node);
@@ -1325,6 +1346,9 @@ export class WebReplEngine {
 	 */
 	private getNumericValue(value: EvalValue): number {
 		if (typeof value === 'number') return value;
+		if (typeof value === 'boolean') {
+			throw new Error('Cannot convert boolean to number');
+		}
 		if (this.isComplexValue(value)) {
 			if (value.imag !== 0) {
 				throw new Error('Cannot convert complex number to real number');
@@ -1342,7 +1366,7 @@ export class WebReplEngine {
 	 * @param preserveExact - If true, format MathNode as LaTeX instead of decimal
 	 */
 	private formatValueForDisplay(value: EvalValue, preserveExact: boolean): string {
-		if (typeof value === 'number') {
+		if (typeof value === 'number' || typeof value === 'boolean') {
 			return String(value);
 		}
 

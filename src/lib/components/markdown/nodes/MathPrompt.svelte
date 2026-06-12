@@ -134,7 +134,8 @@
 	 */
 	$effect(() => {
 		if (!mathField || !mathModeSpace) return;
-		(mathField as Record<string, unknown>).mathModeSpace = mathModeSpace;
+		// Set MathLive custom property on the DOM element (library boundary)
+		Object.assign(mathField, { mathModeSpace });
 	});
 
 	/**

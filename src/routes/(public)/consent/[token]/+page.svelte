@@ -145,7 +145,7 @@
 					<!-- Form error -->
 					{#if form?.error}
 						<div class="rounded-lg bg-red-50 p-3 text-sm text-red-600">
-							{form.message || form.error}
+							{('message' in form && form.message) || form.error}
 						</div>
 					{/if}
 

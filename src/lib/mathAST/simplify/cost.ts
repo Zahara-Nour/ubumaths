@@ -75,8 +75,20 @@ export function computeCost(node: MathNode): number {
 			return 1;
 
 		case 'infinity':
-		case 'signedZero':
+		case 'signed-zero':
 			return 1;
+
+		case 'boolean':
+			return 1;
+
+		case 'logical':
+			return 2 + childrenCost(node);
+
+		case 'logical-not':
+			return 1 + childrenCost(node);
+
+		case 'piecewise':
+			return 6 + childrenCost(node);
 
 		case 'opposite':
 		case 'positive':

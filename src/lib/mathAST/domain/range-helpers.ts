@@ -118,7 +118,7 @@ function evalAt(expr: MathNode, varName: string, value: number): number | null {
 	try {
 		const substituted = substitute(expr, { [varName]: value });
 		const result = evaluate(substituted, { mode: 'decimal' });
-		if (typeof result.value === 'number' && isFinite(result.value)) {
+		if (result.status === 'value' && typeof result.value === 'number' && isFinite(result.value)) {
 			return result.value;
 		}
 	} catch {
@@ -401,7 +401,7 @@ function extractPolyTerms(
 export function evaluateConstant(node: MathNode): number | null {
 	try {
 		const result = evaluate(node, { mode: 'decimal' });
-		if (typeof result.value === 'number' && isFinite(result.value)) {
+		if (result.status === 'value' && typeof result.value === 'number' && isFinite(result.value)) {
 			return result.value;
 		}
 	} catch {
@@ -1098,7 +1098,7 @@ export function computeRangeWithCriticalPointsExact(
 function evalNodeApproximate(node: MathNode): number | null {
 	try {
 		const result = evaluate(node, { mode: 'decimal' });
-		if (typeof result.value === 'number' && isFinite(result.value)) {
+		if (result.status === 'value' && typeof result.value === 'number' && isFinite(result.value)) {
 			return result.value;
 		}
 	} catch {

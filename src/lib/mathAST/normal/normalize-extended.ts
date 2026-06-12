@@ -9,7 +9,8 @@
  */
 
 import type { MathNode } from '../types';
-import type { NormalForm, ExtendedNormalizeResult, NormalizeContext, Rational } from './types';
+import type { NormalForm, ExtendedNormalizeResult, Rational } from './types';
+import type { NormalizeContext } from './normalize';
 import type { IndeterminateForm } from '../eval/types';
 import {
 	isInfinity,
@@ -269,8 +270,10 @@ function _getSignExtended(r: ExtendedNormalizeResult): 'positive' | 'negative' |
 function getExponentValue(r: ExtendedNormalizeResult): number | null {
 	if (r.type !== 'normal') return null;
 
-	const numValue = rationalToNumber(getNormalFormValue(r.form));
-	return numValue !== null && Number.isFinite(numValue) ? numValue : null;
+	const rational = getNormalFormValue(r.form);
+	if (rational === null) return null;
+	const numValue = rationalToNumber(rational);
+	return Number.isFinite(numValue) ? numValue : null;
 }
 
 /**

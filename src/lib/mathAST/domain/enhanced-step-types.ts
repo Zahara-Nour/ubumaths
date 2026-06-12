@@ -152,8 +152,8 @@ export function isConstraintRule(rule: DomainRule): boolean {
 		'csc_constraint',
 		'power_constraint',
 		'even_root_constraint',
-		'acosh_constraint',
-		'atanh_constraint'
+		'arccosh_constraint',
+		'arctanh_constraint'
 	];
 	return constraintRules.includes(rule);
 }

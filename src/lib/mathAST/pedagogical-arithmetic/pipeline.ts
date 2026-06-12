@@ -226,8 +226,9 @@ function findFirstApplicationInAnyParens(
 		return { ...n, content: inner.replacedTree };
 	});
 
-	if (!captured) return null;
-	return { ...captured, replacedTree };
+	const capturedResult = captured;
+	if (!capturedResult) return null;
+	return { ...capturedResult, replacedTree };
 }
 
 /**
@@ -278,8 +279,9 @@ function findFirstApplication(
 		return n;
 	});
 
-	if (!captured) return null;
-	return { ...captured, replacedTree };
+	const capturedResult = captured;
+	if (!capturedResult) return null;
+	return { ...capturedResult, replacedTree };
 }
 
 // =============================================================================

@@ -89,9 +89,9 @@ export async function generateWeeklyRewards(
 		// Get all active students in the class
 		const { data: members, error: membersError } = await supabase
 			.from('class_members')
-			.select('student_id')
+			.select('student_id, profiles!class_members_student_id_fkey(is_test)')
 			.eq('class_id', classData.id)
-			.eq('is_test', false) // Skip test students
+			.eq('profiles.is_test', false) // Skip test students (is_test lives on profiles)
 			.eq('status', 'active'); // Only active members
 
 		if (membersError) {

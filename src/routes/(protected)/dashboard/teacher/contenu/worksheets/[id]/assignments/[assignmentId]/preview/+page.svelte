@@ -52,7 +52,8 @@
 	let { data }: { data: PageData } = $props();
 
 	// State
-	let selectedStudentId = $state<string | null>(null);
+	// Use string | undefined (not null) so MySelect can bind directly
+	let selectedStudentId = $state<string | undefined>(undefined);
 	let worksheet = $state<StudentWorksheetView | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
@@ -144,11 +145,13 @@
 		showPdfDialog = false;
 		isPdfLoading = true;
 
+		// Capture worksheet in a local const so the closure doesn't see the reactive null state
+		const capturedWorksheet = worksheet;
 		const suffix = previewStudentName ? `_${previewStudentName.replace(/\s+/g, '_')}` : '';
-		const filename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}${suffix}.pdf`;
+		const filename = `${capturedWorksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}${suffix}.pdf`;
 
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(worksheet, includeSolution),
+			() => generateStudentWorksheetTypst(capturedWorksheet, includeSolution),
 			filename
 		);
 

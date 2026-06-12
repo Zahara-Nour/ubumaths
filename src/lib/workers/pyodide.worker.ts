@@ -2568,8 +2568,7 @@ _actual
 						input: testCase.input,
 						expected: testCase.expected_output,
 						actual: actualOutput,
-						...(compareResult.diff ? { diff: compareResult.diff } : {}),
-						...(compareResult.error ? { error: compareResult.error } : {})
+						...(compareResult.diff ? { diff: compareResult.diff } : {})
 					},
 					testCase.hidden === true
 				)

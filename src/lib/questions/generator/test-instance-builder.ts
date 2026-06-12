@@ -19,7 +19,7 @@ import type {
 	GenerationResult
 } from '../types';
 import { generateInstance } from './instance-generator';
-import { getVariableNames } from '$lib/ubumark';
+import { getVariableNames, templateMarkdown } from '$lib/ubumark';
 import {
 	normalizeExpression,
 	tokenize,
@@ -46,7 +46,7 @@ function resolveVariationWithShared(
 			: undefined;
 
 	return {
-		statement: variation.statement || shared.statement || '',
+		statement: variation.statement || shared.statement || templateMarkdown(''),
 		correctChoiceIndex: variation.correctChoiceIndex ?? shared.correctChoiceIndex,
 		correction: variation.correction ?? shared.correction,
 		choices: variation.choices ?? shared.choices,

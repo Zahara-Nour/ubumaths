@@ -205,9 +205,11 @@
 
 	function handleArrowTypeChange(arrowType: ArrowType) {
 		whiteboardStore.setArrowType(arrowType);
+		// Note: arrowType is persisted via setArrowType above; updateSelectedStyles only
+		// accepts the subset of style props it knows how to apply (arrowType is not one of them).
 		if (whiteboardStore.hasSelection) {
 			const elbowed = arrowType === 'elbow';
-			whiteboardStore.updateSelectedStyles({ arrowType, elbowed });
+			whiteboardStore.updateSelectedStyles({ elbowed });
 		}
 	}
 

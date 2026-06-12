@@ -79,6 +79,9 @@
 				is_active: classItem.is_active,
 				created_at: classItem.created_at,
 				updated_at: classItem.updated_at,
+				// ClassInfo requires google_classroom_course_id (nullable string)
+				google_classroom_course_id:
+					(classItem as Record<string, unknown>).google_classroom_course_id as string | null ?? null,
 				student_count: classItem.student_count,
 				schedules: classItem.schedules as never
 			};
@@ -290,7 +293,8 @@
 			day_of_week: day,
 			start_time: period.start_time,
 			end_time: period.end_time,
-			period_number: period.period_number,
+			// SchoolPeriod uses `number` field (not `period_number`)
+			period_number: period.number,
 			subject: 'Maths',
 			room: null,
 			notes: null,

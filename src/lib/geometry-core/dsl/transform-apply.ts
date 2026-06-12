@@ -6,6 +6,7 @@
 
 import type { Figure } from '../graph/figure';
 import type {
+	GeoElement,
 	GeoTransformation,
 	GeoSegment,
 	GeoLine,
@@ -21,7 +22,17 @@ import type {
 	GeoImplicitCurve,
 	GeoImage
 } from '../types/elements';
-import { isTransformation } from '../types/elements';
+import {
+	isTransformation,
+	isCircleByPoint,
+	isCircleByRadius,
+	isLine,
+	isSegment,
+	isRay,
+	isQuadraticCurve,
+	isImplicitCurve,
+	isFunction as isFunctionCurve
+} from '../types/elements';
 import type { SymbolType } from './symbol-table';
 import { geoMul, geoAdd } from '../compute/geo-arithmetic';
 import type { GeoValue } from '../types/geo-value';
@@ -141,7 +152,7 @@ function transformVectorLinear(
 ): { dx: GeoValue; dy: GeoValue } {
 	switch (transform.type) {
 		case 'rotation': {
-			const angle = geoToNumber(transform.angle);
+			const angle = figure.resolveParam(transform.angle);
 			const cos = Math.cos(angle);
 			const sin = Math.sin(angle);
 			const dxNum = geoToNumber(dx);
@@ -212,11 +223,13 @@ function transformVectorLinear(
 		}
 		case 'inversion':
 			throw new Error('Inversion is not a linear transformation — cannot transform vectors');
-		case 'homothety':
+		case 'homothety': {
+			const factorVal = figure.resolveParamToGeoValue(transform.factor);
 			return {
-				dx: geoMul(transform.factor, dx),
-				dy: geoMul(transform.factor, dy)
+				dx: geoMul(factorVal, dx),
+				dy: geoMul(factorVal, dy)
 			};
+		}
 		case 'composition': {
 			let curDx = dx;
 			let curDy = dy;
@@ -246,7 +259,7 @@ export function computeImageVisualTransform(
 ): { rotation: number; flipped: boolean } {
 	switch (transform.type) {
 		case 'rotation': {
-			const angle = geoToNumber(transform.angle);
+			const angle = figure.resolveParam(transform.angle);
 			return { rotation: currentRotation + angle, flipped: currentFlipped };
 		}
 		case 'reflection':
@@ -266,7 +279,7 @@ export function computeImageVisualTransform(
 			};
 		}
 		case 'homothety': {
-			const factor = geoToNumber(transform.factor);
+			const factor = figure.resolveParam(transform.factor);
 			if (factor < 0) {
 				return { rotation: currentRotation + Math.PI, flipped: currentFlipped };
 			}
@@ -401,10 +414,11 @@ export function applyTransformationToElement(
 				visible: false
 			});
 			// For homothety, scale the radius by |factor|
-			let newRadius = circ.radius;
+			const circRadius = figure.resolveParamToGeoValue(circ.radius);
+			let newRadius: GeoValue = circRadius;
 			if (transformEl.type === 'homothety') {
-				const absFactor = Math.abs(geoToNumber(transformEl.factor));
-				newRadius = geoMul(numeric(absFactor), circ.radius);
+				const absFactor = Math.abs(figure.resolveParam(transformEl.factor));
+				newRadius = geoMul(numeric(absFactor), circRadius);
 			}
 			const id = figure.createCircleByRadius(newCenter, newRadius, { label: options?.label });
 			return { figureId: id, symbolType: 'cercle' };
@@ -430,34 +444,41 @@ export function applyTransformationToElement(
 			const newCenter = applyTransformationToPoint(figure, transformEl, arc.centerId, {
 				visible: false
 			});
-			let newRadius = arc.radius;
-			let newStartAngle = arc.startAngle;
-			let newEndAngle = arc.endAngle;
+			// Resolve ScalarParam fields to GeoValue once (preserves exactness for
+			// GeoValue inputs, resolves slider refs to their current numeric value).
+			const arcRadius = figure.resolveParamToGeoValue(arc.radius);
+			const arcStartAngle = figure.resolveParamToGeoValue(arc.startAngle);
+			const arcEndAngle = figure.resolveParamToGeoValue(arc.endAngle);
+			let newRadius: GeoValue = arcRadius;
+			let newStartAngle: GeoValue = arcStartAngle;
+			let newEndAngle: GeoValue = arcEndAngle;
 
 			if (transformEl.type === 'rotation') {
 				// Offset angles by rotation angle
-				newStartAngle = geoAdd(arc.startAngle, transformEl.angle);
-				newEndAngle = geoAdd(arc.endAngle, transformEl.angle);
+				const transformAngle = figure.resolveParamToGeoValue(transformEl.angle);
+				newStartAngle = geoAdd(arcStartAngle, transformAngle);
+				newEndAngle = geoAdd(arcEndAngle, transformAngle);
 			} else if (transformEl.type === 'homothety') {
-				const absFactor = Math.abs(geoToNumber(transformEl.factor));
-				newRadius = geoMul(numeric(absFactor), arc.radius);
+				const factorNum = figure.resolveParam(transformEl.factor);
+				const absFactor = Math.abs(factorNum);
+				newRadius = geoMul(numeric(absFactor), arcRadius);
 				// Negative factor reverses direction (swap angles)
-				if (geoToNumber(transformEl.factor) < 0) {
+				if (factorNum < 0) {
 					const piVal = numeric(Math.PI);
-					newStartAngle = geoAdd(arc.startAngle, piVal);
-					newEndAngle = geoAdd(arc.endAngle, piVal);
+					newStartAngle = geoAdd(arcStartAngle, piVal);
+					newEndAngle = geoAdd(arcEndAngle, piVal);
 				}
 			} else if (transformEl.type === 'reflection' || transformEl.type === 'reflectionOverLine') {
 				// Reflection reverses sweep direction: swap start/end and negate angles
 				// For central symmetry: add pi to both angles
 				if (transformEl.type === 'reflection') {
 					const piVal = numeric(Math.PI);
-					newStartAngle = geoAdd(arc.endAngle, piVal);
-					newEndAngle = geoAdd(arc.startAngle, piVal);
+					newStartAngle = geoAdd(arcEndAngle, piVal);
+					newEndAngle = geoAdd(arcStartAngle, piVal);
 				} else {
 					// Axial symmetry: negate and swap
-					const negStart: GeoValue = numeric(-geoToNumber(arc.startAngle));
-					const negEnd: GeoValue = numeric(-geoToNumber(arc.endAngle));
+					const negStart: GeoValue = numeric(-geoToNumber(arcStartAngle));
+					const negEnd: GeoValue = numeric(-geoToNumber(arcEndAngle));
 					newStartAngle = negEnd;
 					newEndAngle = negStart;
 				}
@@ -519,7 +540,7 @@ export function applyTransformationToElement(
 			let newWidth = img.width;
 			let newHeight = img.height;
 			if (transformEl.type === 'homothety') {
-				const absFactor = Math.abs(geoToNumber(transformEl.factor));
+				const absFactor = Math.abs(figure.resolveParam(transformEl.factor));
 				newWidth = img.width * absFactor;
 				if (newHeight !== undefined) newHeight = newHeight * absFactor;
 			}
@@ -666,7 +687,7 @@ export function applyTransformationToElement(
 function invertCircleOrLine(
 	figure: Figure,
 	transform: GeoTransformation,
-	sourceEl: { type: string; id: string } & Record<string, unknown>,
+	sourceEl: GeoElement,
 	sourceType: SymbolType,
 	options?: { label?: string }
 ): TransformResult {
@@ -727,28 +748,30 @@ function findInversion(
  */
 function invertCircleCoeffs(
 	figure: Figure,
-	sourceEl: Record<string, unknown>,
+	sourceEl: GeoElement,
 	ox: number,
 	oy: number,
 	r2: number
 ): [number, number, number, number, number, number] {
 	// Get circle center and radius
 	let cx: number, cy: number, cr: number;
-	if (sourceEl.type === 'circleByPoint') {
-		const cPos = figure.getPosition(sourceEl.centerId as string);
-		const ePos = figure.getPosition(sourceEl.edgePointId as string);
+	if (isCircleByPoint(sourceEl)) {
+		const cPos = figure.getPosition(sourceEl.centerId);
+		const ePos = figure.getPosition(sourceEl.edgePointId);
 		if (!cPos || !ePos) return [0, 0, 0, 0, 0, 0];
 		cx = geoToNumber(cPos.x);
 		cy = geoToNumber(cPos.y);
 		const edx = geoToNumber(ePos.x) - cx,
 			edy = geoToNumber(ePos.y) - cy;
 		cr = Math.sqrt(edx * edx + edy * edy);
-	} else {
-		const cPos = figure.getPosition(sourceEl.centerId as string);
+	} else if (isCircleByRadius(sourceEl)) {
+		const cPos = figure.getPosition(sourceEl.centerId);
 		if (!cPos) return [0, 0, 0, 0, 0, 0];
 		cx = geoToNumber(cPos.x);
 		cy = geoToNumber(cPos.y);
 		cr = figure.resolveParam(sourceEl.radius);
+	} else {
+		return [0, 0, 0, 0, 0, 0];
 	}
 
 	// Distance from O to circle center
@@ -792,22 +815,22 @@ function invertCircleCoeffs(
  */
 function invertLineCoeffs(
 	figure: Figure,
-	sourceEl: Record<string, unknown>,
+	sourceEl: GeoElement,
 	ox: number,
 	oy: number,
 	r2: number
 ): [number, number, number, number, number, number] {
 	// Get line points
 	let p1Id: string, p2Id: string;
-	if (sourceEl.type === 'line') {
-		p1Id = sourceEl.point1Id as string;
-		p2Id = sourceEl.point2Id as string;
-	} else if (sourceEl.type === 'segment') {
-		p1Id = sourceEl.startId as string;
-		p2Id = sourceEl.endId as string;
-	} else if (sourceEl.type === 'ray') {
-		p1Id = sourceEl.originId as string;
-		p2Id = sourceEl.throughId as string;
+	if (isLine(sourceEl)) {
+		p1Id = sourceEl.point1Id;
+		p2Id = sourceEl.point2Id;
+	} else if (isSegment(sourceEl)) {
+		p1Id = sourceEl.startId;
+		p2Id = sourceEl.endId;
+	} else if (isRay(sourceEl)) {
+		p1Id = sourceEl.originId;
+		p2Id = sourceEl.throughId;
 	} else {
 		return [0, 0, 0, 0, 0, 0];
 	}
@@ -892,7 +915,7 @@ function buildInverseTransformCoords(
 	switch (transform.type) {
 		case 'rotation': {
 			const centerId = transform.centerId;
-			const negAngle = -geoToNumber(transform.angle);
+			const negAngle = -figure.resolveParam(transform.angle);
 			return (x, y) => {
 				const cPos = figure.getPosition(centerId);
 				if (!cPos) return { x, y };
@@ -1012,7 +1035,7 @@ function buildInverseTransformCoords(
 		}
 		case 'homothety': {
 			const centerId = transform.centerId;
-			const k = geoToNumber(transform.factor);
+			const k = figure.resolveParam(transform.factor);
 			const invK = Math.abs(k) < 1e-15 ? 1 : 1 / k;
 			return (x, y) => {
 				const cPos = figure.getPosition(centerId);
@@ -1046,13 +1069,12 @@ function buildInverseTransformCoords(
 function transformCurve(
 	figure: Figure,
 	transform: GeoTransformation,
-	sourceEl: { type: string; id: string } & Record<string, unknown>,
+	sourceEl: GeoElement,
 	options?: { label?: string }
 ): TransformResult {
-	if (sourceEl.type === 'quadraticCurve') {
+	if (isQuadraticCurve(sourceEl)) {
 		// Conic → Conic (preserves capabilities + reactive via transformRecipe)
-		const qc = sourceEl as unknown as GeoQuadraticCurve;
-		const id = figure.createTransformedQuadraticCurve(qc.coefficients, transform.id, {
+		const id = figure.createTransformedQuadraticCurve(sourceEl.coefficients, transform.id, {
 			label: options?.label
 		});
 		return { figureId: id, symbolType: 'courbe' };
@@ -1061,24 +1083,28 @@ function transformCurve(
 	// GeoFunction or GeoImplicitCurve → GeoImplicitCurve
 	const inverseFn = buildInverseTransformCoords(transform, figure);
 	let wrappedFn: CompiledFn;
+	let origEq = '';
 
-	if (sourceEl.type === 'function') {
-		const fn = sourceEl as unknown as GeoFunction;
+	if (isFunctionCurve(sourceEl)) {
+		const fn = sourceEl;
 		// y = f(x) becomes F(x,y) = y - f(x) = 0, then compose with T⁻¹
 		wrappedFn = (vars: Record<string, number>) => {
 			const inv = inverseFn(vars.x ?? 0, vars.y ?? 0);
 			return inv.y - fn.compiledFn({ x: inv.x });
 		};
-	} else {
+		origEq = fn.equation ?? '';
+	} else if (isImplicitCurve(sourceEl)) {
 		// implicitCurve: F(x,y) = 0, compose with T⁻¹
-		const ic = sourceEl as unknown as GeoImplicitCurve;
+		const ic = sourceEl;
 		wrappedFn = (vars: Record<string, number>) => {
 			const inv = inverseFn(vars.x ?? 0, vars.y ?? 0);
 			return ic.compiledFn({ x: inv.x, y: inv.y });
 		};
+		origEq = ic.equation ?? '';
+	} else {
+		throw new Error(`transformCurve: unsupported source element type "${sourceEl.type}"`);
 	}
 
-	const origEq = (sourceEl as { equation?: string }).equation ?? '';
 	const expr = mathNumber(0); // placeholder
 	const id = figure.createImplicitCurve(expr, wrappedFn, `transformed(${origEq})`, {
 		label: options?.label

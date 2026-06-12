@@ -260,7 +260,7 @@ export const KNOWN_LIMITS: readonly KnownLimitEntry[] = [
 		id: 'x-ln-x-at-zero-explicit',
 		name: 'Croissance comparée x×ln(x)',
 		descriptionFr: 'Croissance comparée : lim(x×ln(x)) = 0 quand x tend vers 0⁺',
-		pattern: multiply(variable('x'), func('ln', [variable('x')]), 'explicit'),
+		pattern: multiply(variable('x'), func('ln', [variable('x')]), 'dot'),
 		variable: 'x',
 		approach: number('0'),
 		direction: 'right',
@@ -415,7 +415,7 @@ export const KNOWN_LIMITS: readonly KnownLimitEntry[] = [
 		id: 'x-exp-x-at-neg-infinity-explicit',
 		name: 'Croissance comparée x×e^x',
 		descriptionFr: 'Croissance comparée : lim(x×e^x) = 0 quand x tend vers −∞',
-		pattern: multiply(variable('x'), func('exp', [variable('x')]), 'explicit'),
+		pattern: multiply(variable('x'), func('exp', [variable('x')]), 'dot'),
 		variable: 'x',
 		approach: negativeInfinity(),
 		value: number('0')
@@ -464,6 +464,8 @@ export function substituteVariable(
 		case 'greek':
 		case 'symbol':
 		case 'infinity':
+		case 'signed-zero':
+		case 'boolean':
 		case 'hole':
 		case 'constant':
 			return pattern;
@@ -530,6 +532,9 @@ export function substituteVariable(
 		case 'matrix':
 		case 'complex':
 		case 'limit':
+		case 'logical':
+		case 'logical-not':
+		case 'piecewise':
 			// Deep substitution for these types would need full implementation
 			return pattern;
 

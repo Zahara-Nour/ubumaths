@@ -58,7 +58,8 @@
 		error = null;
 
 		try {
-			files = await driveSyncService.listFiles();
+			// listFiles returns ListFilesResult; extract the files array
+			files = (await driveSyncService.listFiles()).files;
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Erreur de chargement';
 			toaster.error('Impossible de charger les fichiers');

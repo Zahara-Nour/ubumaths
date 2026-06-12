@@ -285,6 +285,10 @@ export function checkPointOnCircle(figure: Figure, pointId: string, circleId: st
 		return { valid: false, message: `L'élément n'est pas un cercle.` };
 	}
 
+	if (!isCircleByRadius(el) && !isCircleByPoint(el)) {
+		return { valid: false, message: `Type de cercle inconnu.` };
+	}
+
 	const centerPos = figure.getPosition(el.centerId);
 	if (!centerPos) {
 		return { valid: false, message: `Le centre du cercle n'a pas de position.` };
@@ -296,7 +300,8 @@ export function checkPointOnCircle(figure: Figure, pointId: string, circleId: st
 
 	let radius2;
 	if (isCircleByRadius(el)) {
-		radius2 = geoMul(el.radius, el.radius);
+		const radiusVal = figure.resolveParamToGeoValue(el.radius);
+		radius2 = geoMul(radiusVal, radiusVal);
 	} else if (isCircleByPoint(el)) {
 		const edgePos = figure.getPosition(el.edgePointId);
 		if (!edgePos) {

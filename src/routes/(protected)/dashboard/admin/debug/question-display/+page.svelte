@@ -49,10 +49,13 @@
 	// SAMPLE QUESTIONS
 	// ============================================================================
 
-	const sampleQuestions: Record<
-		string,
-		Partial<QuestionInstance> & Pick<QuestionInstance, 'templateId'>
-	> = {
+	// Debug-only extension: adds `solution` which is not part of QuestionInstance
+	// (solution is a legacy field kept only for debug/test fixtures in this page)
+	type DebugInstance = Partial<QuestionInstance> & Pick<QuestionInstance, 'templateId'> & {
+		solution?: string | string[];
+	};
+
+	const sampleQuestions: Record<string, DebugInstance> = {
 		numerical_exact: {
 			templateId: 'debug-numerical-1',
 			statement: 'Calculez: $$\\frac{15}{3}$$' as QuestionInstance['statement'],
@@ -374,9 +377,7 @@
 							<div>
 								<span class="text-sm font-medium">Solution Type:</span>
 								<Badge variant="outline" class="ml-2">
-									{Array.isArray((currentInstance as QuestionInstance).solution)
-										? 'Array'
-										: 'String'}
+									{Array.isArray(currentInstance.solution) ? 'Array' : 'String'}
 								</Badge>
 							</div>
 						</div>

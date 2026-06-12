@@ -221,7 +221,7 @@
 			<MySelect
 				type="single"
 				bind:value={selectedRarity}
-				items={RARITY_FILTER_OPTIONS}
+				items={[...RARITY_FILTER_OPTIONS]}
 				placeholder="Rarete"
 			/>
 		</div>

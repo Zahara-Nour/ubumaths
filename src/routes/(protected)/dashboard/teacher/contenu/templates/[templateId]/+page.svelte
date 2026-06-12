@@ -187,7 +187,7 @@
 					<div class="flex flex-wrap gap-2">
 						{#each data.template.grades as grade (grade)}
 							<Badge variant="outline">
-								{grade === 'T' ? 'Terminale' : `${grade}ème`}
+								{(grade as string) === 'T' ? 'Terminale' : `${grade}ème`}
 							</Badge>
 						{/each}
 					</div>

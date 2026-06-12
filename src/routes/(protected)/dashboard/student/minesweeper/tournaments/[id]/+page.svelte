@@ -12,6 +12,7 @@
 	import { minesweeperStore } from '$lib/stores/minesweeper.svelte';
 	import { cn } from '$lib/utils';
 	import { DIFFICULTY_LABELS } from '$lib/types/minesweeper';
+	import type { Difficulty } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
 
 	// Props
@@ -29,7 +30,7 @@
 	let isStartingGame = $state(false);
 
 	// Derived state
-	let difficultyLabel = $derived(DIFFICULTY_LABELS[tournament.difficulty] || tournament.difficulty);
+	let difficultyLabel = $derived(DIFFICULTY_LABELS[tournament.difficulty as Difficulty] || tournament.difficulty);
 
 	let difficultyColor = $derived.by(() => {
 		switch (tournament.difficulty) {

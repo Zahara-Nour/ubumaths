@@ -180,12 +180,8 @@
 				class: 'cm-lockedZone cm-lockedZone--unmodified'
 			});
 
-			interface ZoneDecoState {
-				doc: { sliceString(from: number, to: number): string };
-				field<T>(f: { create: (...args: unknown[]) => T }): T;
-			}
-			const buildZoneDecorations = (state: ZoneDecoState) => {
-				const zones = state.field(zonesField as never) as LiveZone[];
+			const buildZoneDecorations = (state: EditorState) => {
+				const zones = state.field(zonesField) as LiveZone[];
 				return Decoration.set(
 					zones
 						.filter((z) => z.renderedStart < z.renderedEnd)
@@ -199,9 +195,9 @@
 			};
 
 			const zonesDecorationsField = StateField.define({
-				create: (state) => buildZoneDecorations(state as ZoneDecoState),
+				create: (state) => buildZoneDecorations(state),
 				update: (deco, tr) =>
-					tr.docChanged ? buildZoneDecorations(tr.state as ZoneDecoState) : deco,
+					tr.docChanged ? buildZoneDecorations(tr.state) : deco,
 				provide: (f) => EditorView.decorations.from(f)
 			});
 

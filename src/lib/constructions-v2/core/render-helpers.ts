@@ -12,6 +12,7 @@ import type { Figure } from '$lib/geometry-core/graph/figure';
 import type { CoordinateTransformer } from '$lib/geometry-core/viewport/viewport';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import type { ScalarParam } from '$lib/geometry-core/types/geo-value';
+import { isScalarRef, isInfinityParam } from '$lib/geometry-core/types/geo-value';
 import {
 	isSegment,
 	isArcByAngles,
@@ -32,8 +33,11 @@ import { partialSegment, type Point2D } from './animator';
  * `geoToNumber` directly (which would fail on the scalarRef shape).
  */
 function scalarParamToNumber(param: ScalarParam, figure: Figure): number {
-	if (typeof param === 'object' && param !== null && 'scalarRef' in param) {
+	if (isScalarRef(param)) {
 		return figure.getScalarValue(param.scalarRef) ?? 0;
+	}
+	if (isInfinityParam(param)) {
+		return param.infinity === '+' ? Infinity : -Infinity;
 	}
 	return geoToNumber(param);
 }

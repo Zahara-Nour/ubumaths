@@ -682,9 +682,17 @@ export function integrateDefinite(
 		});
 		const lowerEval = evaluate(lowerSubstituted, { mode: 'exact' });
 
+		if (upperEval.status !== 'value' || lowerEval.status !== 'value') {
+			throw new Error("Impossible d'évaluer l'antidérivée aux bornes");
+		}
+
 		// Compute F(upper) - F(lower)
 		const difference = subtract(upperEval.node, lowerEval.node);
 		const valueEval = evaluate(difference, { mode: 'exact' });
+
+		if (valueEval.status !== 'value') {
+			throw new Error("Impossible d'évaluer la différence F(upper) - F(lower)");
+		}
 
 		recorder.recordStep(
 			'fundamental-theorem',

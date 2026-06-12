@@ -65,7 +65,7 @@
 	}: Props = $props();
 
 	// State
-	let selectedUserId = $state<string | null>(null);
+	let selectedUserId = $state<string | undefined>(undefined);
 	let restrictionType = $state<'mute' | 'timeout' | 'ban'>('mute');
 	let isGlobal = $state(false);
 	let expiresAt = $state('');
@@ -195,7 +195,7 @@
 	 */
 	function closeDialog(): void {
 		open = false;
-		selectedUserId = null;
+		selectedUserId = undefined;
 		restrictionType = 'mute';
 		isGlobal = false;
 		expiresAt = '';
@@ -221,7 +221,7 @@
 	 */
 	$effect(() => {
 		if (open) {
-			selectedUserId = null;
+			selectedUserId = undefined;
 			restrictionType = 'mute';
 			isGlobal = false;
 			expiresAt = '';

@@ -345,6 +345,12 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 			break;
 		}
 
+		case 'signed-zero': {
+			const sign = node.sign === 'positive' ? '0⁺' : '0⁻';
+			addLine(ctx, prefix, `SignedZero(${sign})`, node.metadata);
+			break;
+		}
+
 		// =========================================================================
 		// Limit
 		// =========================================================================

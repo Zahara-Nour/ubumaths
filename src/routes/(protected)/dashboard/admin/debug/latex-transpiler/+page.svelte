@@ -87,13 +87,15 @@ Soit $f(x) = x^2 - 4x + 3$ et $g(x) = \\frac{1}{x-1}$.
 			statement_md: statementMarkdown,
 			solution_md: solutionMarkdown,
 			difficulty: 1 as const,
+			// 'automatisme' matches ExerciseCategory union; required field added for debug fixture
+			category: 'automatisme' as const,
 			tags: ['debug'],
 			distribution_mode: 'on_demand',
 			is_public: false,
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString(),
 			created_by: 'debug'
-		};
+		} as unknown as Exercise;
 	});
 
 	let warningsCount = $derived(transpileResult?.warnings.length || 0);

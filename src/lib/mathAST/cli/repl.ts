@@ -393,6 +393,15 @@ function displayAutoEvaluation(ast: MathNode, state: ReplState): void {
 			return;
 		}
 
+		// Non-value result (indeterminate / unevaluable): surface via the catch
+		if (evalResult.status !== 'value') {
+			throw new Error(
+				evalResult.status === 'indeterminate'
+					? `Indeterminate form: ${evalResult.form}`
+					: evalResult.reason
+			);
+		}
+
 		// Numeric result: standard formatting
 		const resultStr = toCustom(evalResult.node);
 		const latexStr = toLatex(evalResult.node);

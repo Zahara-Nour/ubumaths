@@ -119,7 +119,7 @@
 							class="cursor-pointer"
 							onclick={() => toggleGrade(grade)}
 						>
-							{grade === 'T' ? 'Terminale' : `${grade}ème`}
+							{(grade as string) === 'T' ? 'Terminale' : `${grade}ème`}
 						</Badge>
 					{/each}
 				</div>
@@ -164,7 +164,7 @@
 							<div class="mb-3 flex flex-wrap gap-1">
 								{#each template.grades as grade (grade)}
 									<Badge variant="outline" class="text-xs">
-										{grade === 'T' ? 'Term' : `${grade}ème`}
+										{(grade as string) === 'T' ? 'Term' : `${grade}ème`}
 									</Badge>
 								{/each}
 							</div>

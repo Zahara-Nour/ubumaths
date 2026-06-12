@@ -284,7 +284,13 @@ export function numericIntegrate(
 		// Evaluate to get numeric result
 		const result = evaluate(substituted, { mode: 'decimal' });
 
-		return result.value as number;
+		if (result.status === 'value' && typeof result.value === 'number') {
+			return result.value;
+		}
+		// Non-numeric / non-value result: propagate NaN through the numeric
+		// quadrature (matches the previous behavior where a non-number value
+		// flowed into the arithmetic as NaN).
+		return NaN;
 	};
 
 	// Perform integration based on method

@@ -5,7 +5,7 @@
 	 * Displays a single bug report with status, category, and metadata.
 	 */
 	import { cn } from '$lib/utils';
-	import type { BugReportWithAuthor } from '$lib/types/bug-reports';
+	import type { BugReportWithAuthor, BugReportCategory, BugReportSeverity, BugReportStatus } from '$lib/types/bug-reports';
 	import {
 		BUG_REPORT_CATEGORY_ICONS,
 		BUG_REPORT_CATEGORY_LABELS,
@@ -34,9 +34,9 @@
 		onSelectionChange
 	}: Props = $props();
 
-	const categoryIcon = $derived(BUG_REPORT_CATEGORY_ICONS[report.category]);
-	const categoryLabel = $derived(BUG_REPORT_CATEGORY_LABELS[report.category]);
-	const severityColor = $derived(BUG_REPORT_SEVERITY_COLORS[report.severity]);
+	const categoryIcon = $derived(BUG_REPORT_CATEGORY_ICONS[report.category as BugReportCategory]);
+	const categoryLabel = $derived(BUG_REPORT_CATEGORY_LABELS[report.category as BugReportCategory]);
+	const severityColor = $derived(BUG_REPORT_SEVERITY_COLORS[report.severity as BugReportSeverity]);
 
 	const timeAgo = $derived(
 		formatDistanceToNow(new Date(report.created_at), { addSuffix: true, locale: fr })
@@ -49,9 +49,11 @@
 			: 'Utilisateur'
 	);
 
-	// Handle selection change
-	function handleSelectionChange(checked: boolean) {
-		onSelectionChange?.(checked);
+	// Handle selection change — 'indeterminate' treated as false (no partial selection at card level)
+	function handleSelectionChange(checked: boolean | 'indeterminate') {
+		if (checked !== 'indeterminate') {
+			onSelectionChange?.(checked);
+		}
 	}
 
 	// Handle card click - don't trigger if selection mode is active
@@ -122,7 +124,7 @@
 		</div>
 
 		<!-- Status badge -->
-		<BugReportStatusBadge status={report.status} />
+		<BugReportStatusBadge status={report.status as BugReportStatus} />
 	</div>
 
 	<!-- Screenshot indicator -->

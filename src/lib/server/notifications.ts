@@ -58,13 +58,14 @@ export async function createNotification(
 			}
 
 			if (data.target_type === 'class' && data.target_class_ids) {
-				// Verify teacher owns these classes
+				// Verify teacher owns these classes (ownership lives on `classes.teacher_id`,
+				// not on `class_members` which only links students to classes)
 				const { data: teacherClasses } = await supabase
-					.from('class_members')
-					.select('class_id')
+					.from('classes')
+					.select('id')
 					.eq('teacher_id', createdBy);
 
-				const teacherClassIds = teacherClasses?.map((cm) => cm.class_id) || [];
+				const teacherClassIds = teacherClasses?.map((c) => c.id) || [];
 				const invalidClasses = data.target_class_ids.filter((id) => !teacherClassIds.includes(id));
 
 				if (invalidClasses.length > 0) {
@@ -76,11 +77,12 @@ export async function createNotification(
 			}
 
 			if (data.target_type === 'users' && data.target_user_ids) {
-				// Verify teacher has access to these students
+				// Verify teacher has access to these students: students enrolled in a class
+				// owned by this teacher (join class_members → classes.teacher_id)
 				const { data: teacherStudents } = await supabase
 					.from('class_members')
-					.select('student_id')
-					.eq('teacher_id', createdBy);
+					.select('student_id, classes!inner(teacher_id)')
+					.eq('classes.teacher_id', createdBy);
 
 				const teacherStudentIds = teacherStudents?.map((cm) => cm.student_id) || [];
 				const invalidStudents = data.target_user_ids.filter(

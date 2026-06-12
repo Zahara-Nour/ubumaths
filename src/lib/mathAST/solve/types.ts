@@ -210,7 +210,9 @@ export interface SolveOptions {
 /**
  * Default solve options.
  */
-export const DEFAULT_SOLVE_OPTIONS: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> = {
+export const DEFAULT_SOLVE_OPTIONS: Required<
+	Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>
+> = {
 	verbosity: 'summarized',
 	maxIterations: 100,
 	tolerance: 1e-10,

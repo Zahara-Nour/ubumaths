@@ -38,8 +38,9 @@
 		})()
 	);
 
+	// Use string | undefined (not null) so MySelect bind:value works correctly
 	// svelte-ignore state_referenced_locally
-	let classId = $state<string | null>(data.class_id);
+	let classId = $state<string | undefined>(data.class_id ?? undefined);
 
 	const classItems = $derived([
 		{ value: '', label: 'Aucune (tâche ad-hoc)' },

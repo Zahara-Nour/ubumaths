@@ -149,8 +149,7 @@ export type {
 	// Configuration
 	NumberLineScale,
 	NumberLineConfig,
-	// AST node
-	NumberLineNode,
+	// AST node (already exported above via ast module — re-export removed to avoid duplicate)
 	// Parser types
 	NumberLineParseError,
 	NumberLineParseWarning,

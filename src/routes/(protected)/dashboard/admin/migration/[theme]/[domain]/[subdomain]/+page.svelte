@@ -71,16 +71,18 @@
 					id: `migration-${q.globalIndex}`,
 					title: q.transformed.title || `Question ${q.globalIndex}`,
 					status: 'draft',
-					shared: q.transformed.shared as QuestionTemplate['shared'],
-					variations: q.transformed.variations ?? [],
+					shared: q.transformed.shared as unknown as QuestionTemplate['shared'],
+					// Migration JSON uses plain strings; cast through unknown to satisfy TemplateMarkdown brand
+					variations: (q.transformed.variations ?? []) as unknown as QuestionTemplate['variations'],
 					options: q.transformed.options as QuestionTemplate['options'],
 					defaultDisplayOptions: q.transformed.defaultDisplayOptions,
 					exerciseInstruction: q.transformed.exerciseInstruction,
 					multipleAnswers: q.transformed.multipleAnswers,
 					grades: q.transformed.grades ?? ['6'],
-					theme: q.transformed.theme ?? data.stats.theme,
-					domain: q.transformed.domain ?? data.stats.domain,
-					subdomain: q.transformed.subdomain ?? data.stats.subdomain,
+					// theme/domain/subdomain live at data top-level, not inside stats
+					theme: q.transformed.theme ?? data.theme,
+					domain: q.transformed.domain ?? data.domain,
+					subdomain: q.transformed.subdomain ?? data.subdomain,
 					level: q.transformed.level ?? q.level,
 					delay: q.transformed.delay,
 					testSpecs: (q.transformed as Record<string, unknown>)

@@ -693,7 +693,7 @@
 				gidouilles = savedGidouilles;
 				cardUsage = { ...cardUsage, bomb: cardUsage.bomb - 1 };
 				if (savedBombCard && vipCards && vipCards[savedBombCard.instanceId]) {
-					delete vipCards[savedBombCard.instanceId].usedAt;
+					vipCards[savedBombCard.instanceId].usedAt = null;
 				}
 				toaster.error('Echec du pouvoir, action annulee');
 			}
@@ -705,7 +705,7 @@
 			gidouilles = savedGidouilles;
 			cardUsage = { ...cardUsage, bomb: cardUsage.bomb - 1 };
 			if (savedBombCard && vipCards && vipCards[savedBombCard.instanceId]) {
-				delete vipCards[savedBombCard.instanceId].usedAt;
+				vipCards[savedBombCard.instanceId].usedAt = null;
 			}
 			toaster.error('Erreur reseau, action annulee');
 		}
@@ -745,7 +745,7 @@
 				freezeCardsAvailable = savedFreezeCards;
 				gidouilles = savedGidouilles;
 				if (instanceId && vipCards && vipCards[instanceId]) {
-					delete vipCards[instanceId].usedAt;
+					vipCards[instanceId].usedAt = null;
 				}
 				toaster.error('Echec du pouvoir, action annulee');
 			}
@@ -755,7 +755,7 @@
 			freezeCardsAvailable = savedFreezeCards;
 			gidouilles = savedGidouilles;
 			if (instanceId && vipCards && vipCards[instanceId]) {
-				delete vipCards[instanceId].usedAt;
+				vipCards[instanceId].usedAt = null;
 			}
 			toaster.error('Erreur reseau, action annulee');
 		}
@@ -840,7 +840,7 @@
 				gidouilles = savedGidouilles;
 				cardUsage = { ...cardUsage, fusion: cardUsage.fusion - 1 };
 				if (instanceId && vipCards && vipCards[instanceId]) {
-					delete vipCards[instanceId].usedAt;
+					vipCards[instanceId].usedAt = null;
 				}
 				toaster.error('Echec du pouvoir, action annulee');
 			}
@@ -851,7 +851,7 @@
 			gidouilles = savedGidouilles;
 			cardUsage = { ...cardUsage, fusion: cardUsage.fusion - 1 };
 			if (instanceId && vipCards && vipCards[instanceId]) {
-				delete vipCards[instanceId].usedAt;
+				vipCards[instanceId].usedAt = null;
 			}
 			toaster.error('Erreur reseau, action annulee');
 		}
@@ -908,7 +908,7 @@
 				gidouilles = savedGidouilles;
 				cardUsage = { ...cardUsage, joker: cardUsage.joker - 1 };
 				if (instanceId && vipCards && vipCards[instanceId]) {
-					delete vipCards[instanceId].usedAt;
+					vipCards[instanceId].usedAt = null;
 				}
 				toaster.error('Echec du pouvoir, action annulee');
 			}
@@ -919,7 +919,7 @@
 			gidouilles = savedGidouilles;
 			cardUsage = { ...cardUsage, joker: cardUsage.joker - 1 };
 			if (instanceId && vipCards && vipCards[instanceId]) {
-				delete vipCards[instanceId].usedAt;
+				vipCards[instanceId].usedAt = null;
 			}
 			toaster.error('Erreur reseau, action annulee');
 		}
@@ -964,7 +964,7 @@
 				visionCardsAvailable = savedVisionCards;
 				gidouilles = savedGidouilles;
 				if (instanceId && vipCards && vipCards[instanceId]) {
-					delete vipCards[instanceId].usedAt;
+					vipCards[instanceId].usedAt = null;
 				}
 				toaster.error('Echec du pouvoir, action annulee');
 			}
@@ -974,7 +974,7 @@
 			visionCardsAvailable = savedVisionCards;
 			gidouilles = savedGidouilles;
 			if (instanceId && vipCards && vipCards[instanceId]) {
-				delete vipCards[instanceId].usedAt;
+				vipCards[instanceId].usedAt = null;
 			}
 			toaster.error('Erreur reseau, action annulee');
 		}
@@ -1032,7 +1032,7 @@
 				multiplierCardsByFactor = savedMultiplierCards;
 				gidouilles = savedGidouilles;
 				if (cardInstanceId && vipCards && vipCards[cardInstanceId]) {
-					delete vipCards[cardInstanceId].usedAt;
+					vipCards[cardInstanceId].usedAt = null;
 				}
 				toaster.error('Echec du pouvoir, action annulee');
 			}
@@ -1042,7 +1042,7 @@
 			multiplierCardsByFactor = savedMultiplierCards;
 			gidouilles = savedGidouilles;
 			if (cardInstanceId && vipCards && vipCards[cardInstanceId]) {
-				delete vipCards[cardInstanceId].usedAt;
+				vipCards[cardInstanceId].usedAt = null;
 			}
 			toaster.error('Erreur reseau, action annulee');
 		}

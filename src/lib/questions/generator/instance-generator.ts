@@ -23,7 +23,7 @@ import type {
 	ResolvedCorrection,
 	InstanceBlank
 } from '../types';
-import type { ResolvedMarkdown } from '$lib/ubumark';
+import type { ResolvedMarkdown, TemplateMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
 import { validateTemplate } from '../validators/template-validator';
 import { resolveVariables } from './variable-resolver';
@@ -219,7 +219,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		);
 
 		// 5c. Insert <<expr:NAME>> markers in template before variable resolution
-		let statementTemplate = resolvedVariation.statement;
+		let statementTemplate: TemplateMarkdown =
+			resolvedVariation.statement ?? templateMarkdown('');
 		if (expressionNames.size > 0) {
 			const markedStatement = insertExpressionMarkers(String(statementTemplate), expressionNames);
 			statementTemplate = templateMarkdown(markedStatement);

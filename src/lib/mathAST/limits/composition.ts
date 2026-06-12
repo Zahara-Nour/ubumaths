@@ -893,8 +893,18 @@ function tryNestedFractionSimplification(
 	const d = denominator.denominator;
 
 	// Create simplified expression: (a*d) / (b*c)
-	const newNumerator: MathNode = { type: 'multiplication', left: a, right: d };
-	const newDenominator: MathNode = { type: 'multiplication', left: b, right: c };
+	const newNumerator: MathNode = {
+		type: 'multiplication',
+		left: a,
+		right: d,
+		displayStyle: 'implicit'
+	};
+	const newDenominator: MathNode = {
+		type: 'multiplication',
+		left: b,
+		right: c,
+		displayStyle: 'implicit'
+	};
 
 	// Try to further simplify by algebraic cancellation
 	const simplifiedResult = tryAlgebraicCancellationInFraction(
@@ -973,7 +983,7 @@ function tryAlgebraicCancellationInFraction(
 					type: 'division',
 					numerator: { type: 'number', value: '1' },
 					denominator: denom,
-					style: 'fraction'
+					displayStyle: 'fraction'
 				}
 			};
 		}

@@ -402,6 +402,7 @@
 			generic_functions?: string[] | null;
 			variations?: ExerciseVariation[] | null;
 			shared?: SharedExerciseDefaults | null;
+			tags?: string[] | null;
 		} = {
 			title: title.trim() || null,
 			slug: slug.trim() || null,

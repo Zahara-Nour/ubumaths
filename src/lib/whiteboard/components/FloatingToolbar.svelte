@@ -488,9 +488,6 @@
 				aria-label={label}
 				onclick={() => handleQuickColorChange(color)}
 			>
-				{#if color === '#ffffff'}
-					<span class="h-4 w-4 rounded-sm border border-gray-300"></span>
-				{/if}
 			</button>
 		{/each}
 	</div>

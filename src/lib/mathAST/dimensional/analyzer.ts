@@ -1059,6 +1059,38 @@ function analyzeNode(
 			// The result of a limit has the same dimension as the expression
 			return analyzeNode(node.expression, context, errors, warnings);
 
+		case 'signed-zero':
+			// Signed zero is dimensionless
+			return createDimensionlessUnit();
+
+		case 'boolean':
+			// Boolean literals are dimensionless
+			return createDimensionlessUnit();
+
+		case 'logical':
+			// Analyze both operands for errors; logical ops produce a dimensionless
+			// (boolean) result, like relations
+			analyzeNode(node.left, context, errors, warnings);
+			analyzeNode(node.right, context, errors, warnings);
+			return createDimensionlessUnit();
+
+		case 'logical-not':
+			// Analyze operand for errors; negation produces a dimensionless result
+			analyzeNode(node.operand, context, errors, warnings);
+			return createDimensionlessUnit();
+
+		case 'piecewise':
+			// Analyze all conditions and values for errors. Branches may carry
+			// units; without further info the resulting unit is unknown.
+			for (const piece of node.pieces) {
+				analyzeNode(piece.condition, context, errors, warnings);
+				analyzeNode(piece.value, context, errors, warnings);
+			}
+			if (node.otherwise) {
+				analyzeNode(node.otherwise, context, errors, warnings);
+			}
+			return null;
+
 		default: {
 			// TypeScript exhaustiveness check
 			const _exhaustive: never = node;

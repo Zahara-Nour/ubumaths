@@ -26,7 +26,7 @@
 	let showConfirm = $state(false);
 
 	// Order: suggested first, then the other two
-	const palotinOrder = $derived<PalotinType[]>(() => {
+	const palotinOrder = $derived.by<PalotinType[]>(() => {
 		const others = (['giron', 'pile', 'cotice'] as PalotinType[]).filter((p) => p !== suggested);
 		return [suggested, ...others];
 	});
@@ -64,7 +64,7 @@
 		</p>
 
 		<div class="grid w-full max-w-lg gap-4 md:grid-cols-3">
-			{#each palotinOrder() as palotin (palotin)}
+			{#each palotinOrder as palotin (palotin)}
 				{@const info = PALOTIN_INFO[palotin]}
 				{@const isSuggested = palotin === suggested}
 				<Card.Root

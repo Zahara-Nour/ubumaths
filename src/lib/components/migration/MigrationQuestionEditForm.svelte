@@ -79,6 +79,8 @@
 		statement: string;
 		variables?: QuestionVariable[];
 		solution?: string | string[];
+		/** Index or expression for QCM correct choice — alias for solution in QCM context */
+		correctChoiceIndex?: string | string[];
 		correction?: Correction;
 		choices?: Choice[];
 		blanks?: Blank[];
@@ -197,6 +199,7 @@
 			return {
 				statement,
 				solution,
+				correctChoiceIndex: solution, // alias for QCM display in preview
 				choices,
 				variables: resolved,
 				error: null
@@ -205,6 +208,7 @@
 			return {
 				statement: '',
 				solution: '',
+				correctChoiceIndex: '' as string | string[],
 				choices: null,
 				variables: [],
 				error: e instanceof Error ? e.message : String(e)

@@ -178,7 +178,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 		// Compute rank among classified students (>= 10 games, excluding teachers)
 		let classifiedRank: number | null = null;
-		if (rankData?.top_games_count >= 10) {
+		if (rankData && (rankData.top_games_count ?? 0) >= 10) {
 			const { count } = await supabase
 				.from('minesweeper_leaderboard')
 				.select('*', { count: 'exact', head: true })

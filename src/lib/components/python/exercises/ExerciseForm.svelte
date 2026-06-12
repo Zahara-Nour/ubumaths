@@ -30,6 +30,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import type { ExerciseFormState, Level } from './form-mapping';
 	import PythonEditor from '$lib/components/python/PythonEditor.svelte';
 	import LockedPythonEditor from '$lib/components/python/LockedPythonEditor.svelte';
 	import ExerciseRichTextEditor from '$lib/components/exercises/ExerciseRichTextEditor.svelte';
@@ -237,7 +238,7 @@
 				id="ex-level"
 				items={levelItems}
 				value={form.level}
-				onchange={(v) => (form.level = v as Level)}
+				onchange={(v: string) => (form.level = v as Level)}
 			/>
 		</div>
 

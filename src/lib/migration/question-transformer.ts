@@ -1517,8 +1517,9 @@ function assignCategory(oldQuestion: QuestionBase): {
 	subdomain?: string;
 	level: number;
 } {
-	// _migration metadata is required (injected by export script)
-	const migration = (oldQuestion as Record<string, unknown>)._migration as
+	// _migration metadata is injected by the export script at runtime (not in QuestionBase type).
+	// Cast through unknown to access the dynamic property safely.
+	const migration = (oldQuestion as unknown as Record<string, unknown>)._migration as
 		| { theme: string; domain: string; subdomain?: string; level: number }
 		| undefined;
 
@@ -2132,13 +2133,11 @@ function extractBlanks(
 		if (answer !== undefined) {
 			const conversionResult = convertTinyCASToNew(String(answer));
 			blanks.push({
-				position: i,
 				expectedAnswer: conversionResult.converted || String(answer)
 			});
 		} else {
 			warnings.push(`Missing solution for blank at position ${i}`);
 			blanks.push({
-				position: i,
 				expectedAnswer: ''
 			});
 		}

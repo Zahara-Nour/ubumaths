@@ -55,7 +55,7 @@
 {#if isConsentDisabled}
 	<!-- Wrap in tooltip when disabled due to consent -->
 	<Tooltip.Root>
-		<Tooltip.Trigger asChild>
+		<Tooltip.Trigger>
 			{#snippet child({ props })}
 				<span {...props} class="inline-block">
 					<Button {variant} {size} disabled={isDisabled} {onclick} {...restProps}>

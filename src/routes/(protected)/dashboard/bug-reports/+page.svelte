@@ -18,6 +18,7 @@
 		BUG_REPORT_CATEGORY_ICONS,
 		BUG_REPORT_SEVERITY_LABELS
 	} from '$lib/types/bug-reports';
+	import type { BugReportCategory, BugReportSeverity, BugReportStatus } from '$lib/types/bug-reports';
 	import BugReportStatusBadge from '$lib/components/bug-reports/BugReportStatusBadge.svelte';
 	import { Plus, Bug, Clock, CheckCircle, ArrowLeft } from 'lucide-svelte';
 
@@ -86,7 +87,7 @@
 					<Clock class="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
 				</div>
 				<div>
-					<p class="text-2xl font-bold">{data.statusCounts.pending}</p>
+					<p class="text-2xl font-bold">{data.statusCounts?.pending ?? 0}</p>
 					<p class="text-sm text-muted-foreground">En attente</p>
 				</div>
 			</Card.Content>
@@ -98,7 +99,7 @@
 					<Bug class="h-5 w-5 text-blue-600 dark:text-blue-400" />
 				</div>
 				<div>
-					<p class="text-2xl font-bold">{data.statusCounts.in_progress}</p>
+					<p class="text-2xl font-bold">{data.statusCounts?.in_progress ?? 0}</p>
 					<p class="text-sm text-muted-foreground">En cours</p>
 				</div>
 			</Card.Content>
@@ -110,7 +111,7 @@
 					<CheckCircle class="h-5 w-5 text-green-600 dark:text-green-400" />
 				</div>
 				<div>
-					<p class="text-2xl font-bold">{data.statusCounts.resolved}</p>
+					<p class="text-2xl font-bold">{data.statusCounts?.resolved ?? 0}</p>
 					<p class="text-sm text-muted-foreground">Résolus</p>
 				</div>
 			</Card.Content>
@@ -141,11 +142,11 @@
 		{#if selectedReport}
 			<Dialog.Header>
 				<Dialog.Title class="flex items-center gap-2">
-					<span class="text-xl">{BUG_REPORT_CATEGORY_ICONS[selectedReport.category]}</span>
+					<span class="text-xl">{BUG_REPORT_CATEGORY_ICONS[selectedReport.category as BugReportCategory]}</span>
 					{selectedReport.title}
 				</Dialog.Title>
 				<Dialog.Description>
-					{BUG_REPORT_CATEGORY_LABELS[selectedReport.category]} •
+					{BUG_REPORT_CATEGORY_LABELS[selectedReport.category as BugReportCategory]} •
 					{formatDate(selectedReport.created_at)}
 				</Dialog.Description>
 			</Dialog.Header>
@@ -153,9 +154,9 @@
 			<div class="space-y-4 py-4">
 				<!-- Status and severity -->
 				<div class="flex items-center gap-3">
-					<BugReportStatusBadge status={selectedReport.status} />
+					<BugReportStatusBadge status={selectedReport.status as BugReportStatus} />
 					<span class="text-sm text-muted-foreground">
-						Priorité : {BUG_REPORT_SEVERITY_LABELS[selectedReport.severity]}
+						Priorité : {BUG_REPORT_SEVERITY_LABELS[selectedReport.severity as BugReportSeverity]}
 					</span>
 				</div>
 

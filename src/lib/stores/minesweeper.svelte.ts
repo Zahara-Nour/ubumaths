@@ -1331,7 +1331,8 @@ class MinesweeperStore {
 				return 0;
 			}
 
-			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
+			// Supabase returns vip_cards as Json; cast through unknown at the DB boundary.
+			const vipCards = (data?.vip_cards ?? {}) as unknown as StudentVipCards;
 			const totalCount = countAvailableConsumableUses(vipCards, HINT_VIP_CARD_IDS);
 
 			this.hintCardsAvailable = totalCount;
@@ -1372,7 +1373,8 @@ class MinesweeperStore {
 				return 0;
 			}
 
-			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
+			// Supabase returns vip_cards as Json; cast through unknown at the DB boundary.
+			const vipCards = (data?.vip_cards ?? {}) as unknown as StudentVipCards;
 			const totalCount = countAvailableConsumableUses(vipCards, DETECTOR_VIP_CARD_IDS);
 
 			this.detectorCardsAvailable = totalCount;
@@ -1409,7 +1411,8 @@ class MinesweeperStore {
 				return 0;
 			}
 
-			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
+			// Supabase returns vip_cards as Json; cast through unknown at the DB boundary.
+			const vipCards = (data?.vip_cards ?? {}) as unknown as StudentVipCards;
 			const totalCount = countAvailableConsumableUses(vipCards, UNDO_VIP_CARD_ID);
 
 			this.undoCardsAvailable = totalCount;
@@ -1685,7 +1688,8 @@ class MinesweeperStore {
 				return 0;
 			}
 
-			const vipCards = (data?.vip_cards ?? {}) as StudentVipCards;
+			// Supabase returns vip_cards as Json; cast through unknown at the DB boundary.
+			const vipCards = (data?.vip_cards ?? {}) as unknown as StudentVipCards;
 
 			// Count by type and cache instance IDs per type
 			let freezeCount = 0;

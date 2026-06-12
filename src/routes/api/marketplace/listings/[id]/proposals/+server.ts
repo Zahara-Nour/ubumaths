@@ -393,7 +393,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 			// Check that every wanted template is covered by offered cards
 			const offeredSet = new Set(offeredTemplateIds);
-			const allWantedCovered = wantedTemplateIds.every((tid) => offeredSet.has(tid));
+			const allWantedCovered = wantedTemplateIds.every((tid: string) => offeredSet.has(tid));
 
 			// Also check gidouilles match if any are wanted
 			const gidouillesOk = wantedGidouilles <= 0 || offeredGidouilles >= wantedGidouilles;

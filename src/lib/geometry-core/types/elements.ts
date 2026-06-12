@@ -1393,6 +1393,7 @@ export type GeoElement =
 	| GeoVectorSum
 	| GeoVectorScaled
 	| GeoVectorNegate
+	| GeoVectorOrientedAlongLine
 	| GeoRotation
 	| GeoReflection
 	| GeoReflectionOverLine

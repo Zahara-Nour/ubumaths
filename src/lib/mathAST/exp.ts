@@ -107,7 +107,7 @@ import { differentiate as differentiateFunc, differentiateN } from './differenti
 import type { DifferentiationOptions } from './differentiation';
 
 import { match, applyRules } from './pattern';
-import type { Pattern, Rule } from './pattern';
+import type { Pattern, Rule, BindingValue } from './pattern';
 
 import { solve as solveEquation, SolveError } from './solve';
 import type { SolveOptions, SolveResult } from './solve';
@@ -683,7 +683,7 @@ export class Exp {
 	 * const noMatch = expr.extract(P.mul(P._('a'), P._('b')));
 	 * // noMatch => null
 	 */
-	extract(pattern: Pattern): Map<string, MathNode> | null {
+	extract(pattern: Pattern): Map<string, BindingValue> | null {
 		const result = match(pattern, this.#node);
 		return result.success ? new Map(result.bindings) : null;
 	}

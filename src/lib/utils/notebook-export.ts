@@ -136,8 +136,9 @@ function convertOutput(output: CellOutput): JupyterOutput {
  * Convert internal notebook cell to Jupyter cell format
  */
 function convertCell(cell: NotebookCell): JupyterCell {
+	// Caller must filter out 'checkpoint' cells before passing here (see exportToIpynb).
 	const jupyterCell: JupyterCell = {
-		cell_type: cell.type,
+		cell_type: cell.type as 'code' | 'markdown',
 		source: textToLines(cell.source),
 		metadata: cell.metadata ?? {},
 		execution_count: cell.execution_count
@@ -180,7 +181,8 @@ export function exportToIpynb(notebook: NotebookContent): string {
 				version: notebook.metadata.kernel_info?.version ?? '3.11.0'
 			}
 		},
-		cells: notebook.cells.map(convertCell)
+		// 'checkpoint' cells are UbuMaths-internal and have no Jupyter equivalent — skip them.
+		cells: notebook.cells.filter((c) => c.type !== 'checkpoint').map(convertCell)
 	};
 
 	// Pretty print JSON with 2-space indentation (Jupyter standard)

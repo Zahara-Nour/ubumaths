@@ -52,13 +52,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 					.eq('student_id', user.id)
 					.single();
 
-				if (userData?.top_games_count >= 10 && userData.role === 'student') {
+				if ((userData?.top_games_count ?? 0) >= 10 && userData?.role === 'student') {
 					const { count } = await supabase
 						.from('minesweeper_leaderboard')
 						.select('*', { count: 'exact', head: true })
 						.gte('top_games_count', 10)
 						.eq('role', 'student')
-						.gt('avg_top_10', userData.avg_top_10);
+						.gt('avg_top_10', userData?.avg_top_10);
 					userRank = (count ?? 0) + 1;
 				}
 			}
