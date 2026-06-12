@@ -578,7 +578,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	// =========================================================================
 
 	it('exact: bullet - code only', () => {
-		const markdown = '-\n  ```js\n  code\n  ```';
+		const markdown = '-\n\n  ```js\n  code\n  ```';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -586,7 +586,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: bullet - blockquote only', () => {
-		const markdown = '-\n  > quote';
+		// Canonical form: blockquote collapses to same line as bullet marker
+		const markdown = '- > quote';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -594,7 +595,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: bullet - math only', () => {
-		const markdown = '-\n  $$math$$';
+		const markdown = '-\n\n  $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -650,7 +651,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	// =========================================================================
 
 	it('exact: bullet - code then paragraph', () => {
-		const markdown = '-\n  ```js\n  code\n  ```\n\n  text';
+		const markdown = '-\n\n  ```js\n  code\n  ```\n\n  text';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -658,7 +659,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: bullet - blockquote then paragraph', () => {
-		const markdown = '-\n  > quote\n\n  text';
+		// Canonical: blockquote on same line as marker, then continuation paragraph
+		const markdown = '- > quote\n\n  text';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -666,7 +668,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: bullet - math then paragraph', () => {
-		const markdown = '-\n  $$math$$\n\n  text';
+		const markdown = '-\n\n  $$math$$\n\n  text';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -678,7 +680,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	// =========================================================================
 
 	it('exact: bullet - code then math', () => {
-		const markdown = '-\n  ```js\n  code\n  ```\n\n  $$math$$';
+		const markdown = '-\n\n  ```js\n  code\n  ```\n\n  $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -686,7 +688,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: bullet - blockquote then code', () => {
-		const markdown = '-\n  > quote\n\n  ```js\n  code\n  ```';
+		// Canonical: blockquote on same line as marker
+		const markdown = '- > quote\n\n  ```js\n  code\n  ```';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -694,7 +697,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: bullet - math then blockquote', () => {
-		const markdown = '-\n  $$math$$\n\n  > quote';
+		const markdown = '-\n\n  $$math$$\n\n  > quote';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -734,7 +737,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	// =========================================================================
 
 	it('exact: bullet - code, text, math', () => {
-		const markdown = '-\n  ```js\n  code1\n  ```\n\n  text\n\n  $$math$$';
+		const markdown = '-\n\n  ```js\n  code1\n  ```\n\n  text\n\n  $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -742,7 +745,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: bullet - blockquote, text, code', () => {
-		const markdown = '-\n  > quote\n\n  text\n\n  ```js\n  code\n  ```';
+		// Canonical: blockquote on same line as marker
+		const markdown = '- > quote\n\n  text\n\n  ```js\n  code\n  ```';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -754,7 +758,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	// =========================================================================
 
 	it('exact: bullet - blockquote, code, math (no paragraph)', () => {
-		const markdown = '-\n  > quote\n\n  ```js\n  code\n  ```\n\n  $$math$$';
+		// Canonical: blockquote on same line as marker
+		const markdown = '- > quote\n\n  ```js\n  code\n  ```\n\n  $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -774,7 +779,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	// =========================================================================
 
 	it('exact: ordered - code only', () => {
-		const markdown = '1.\n   ```js\n   code\n   ```';
+		const markdown = '1.\n\n   ```js\n   code\n   ```';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -782,7 +787,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: ordered - blockquote only', () => {
-		const markdown = '1.\n   > quote';
+		// Canonical: blockquote collapses to same line as item marker
+		const markdown = '1. > quote';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -790,7 +796,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: ordered - math only', () => {
-		const markdown = '1.\n   $$math$$';
+		const markdown = '1.\n\n   $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -846,7 +852,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	// =========================================================================
 
 	it('exact: ordered - code then paragraph', () => {
-		const markdown = '1.\n   ```js\n   code\n   ```\n\n   text';
+		const markdown = '1.\n\n   ```js\n   code\n   ```\n\n   text';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -854,7 +860,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: ordered - blockquote then paragraph', () => {
-		const markdown = '1.\n   > quote\n\n   text';
+		// Canonical: blockquote on same line as item marker
+		const markdown = '1. > quote\n\n   text';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -862,7 +869,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: ordered - math then paragraph', () => {
-		const markdown = '1.\n   $$math$$\n\n   text';
+		const markdown = '1.\n\n   $$math$$\n\n   text';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -874,7 +881,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	// =========================================================================
 
 	it('exact: ordered - code then math', () => {
-		const markdown = '1.\n   ```js\n   code\n   ```\n\n   $$math$$';
+		const markdown = '1.\n\n   ```js\n   code\n   ```\n\n   $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -882,7 +889,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: ordered - blockquote then code', () => {
-		const markdown = '1.\n   > quote\n\n   ```js\n   code\n   ```';
+		// Canonical: blockquote on same line as item marker
+		const markdown = '1. > quote\n\n   ```js\n   code\n   ```';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -890,7 +898,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: ordered - math then blockquote', () => {
-		const markdown = '1.\n   $$math$$\n\n   > quote';
+		const markdown = '1.\n\n   $$math$$\n\n   > quote';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -930,7 +938,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	// =========================================================================
 
 	it('exact: ordered - code, text, math', () => {
-		const markdown = '1.\n   ```js\n   code1\n   ```\n\n   text\n\n   $$math$$';
+		const markdown = '1.\n\n   ```js\n   code1\n   ```\n\n   text\n\n   $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -938,7 +946,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: ordered - blockquote, text, code', () => {
-		const markdown = '1.\n   > quote\n\n   text\n\n   ```js\n   code\n   ```';
+		// Canonical: blockquote on same line as item marker
+		const markdown = '1. > quote\n\n   text\n\n   ```js\n   code\n   ```';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -950,7 +959,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	// =========================================================================
 
 	it('exact: ordered - blockquote, code, math (no paragraph)', () => {
-		const markdown = '1.\n   > quote\n\n   ```js\n   code\n   ```\n\n   $$math$$';
+		// Canonical: blockquote on same line as item marker
+		const markdown = '1. > quote\n\n   ```js\n   code\n   ```\n\n   $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -986,7 +996,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: bullet - block-first item, then simple item', () => {
-		const markdown = '-\n  ```js\n  code\n  ```\n- item2';
+		const markdown = '-\n\n  ```js\n  code\n  ```\n- item2';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -1018,7 +1028,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: ordered - block-first item, then simple item', () => {
-		const markdown = '1.\n   ```js\n   code\n   ```\n2. item2';
+		const markdown = '1.\n\n   ```js\n   code\n   ```\n2. item2';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -1038,7 +1048,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: bullet - code then nested list', () => {
-		const markdown = '-\n  ```js\n  code\n  ```\n\n  - nested';
+		const markdown = '-\n\n  ```js\n  code\n  ```\n\n  - nested';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -1082,7 +1092,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: bullet - nested item starting with code (block-first)', () => {
-		const markdown = '- parent\n  -\n    ```js\n    code\n    ```';
+		const markdown = '- parent\n  -\n\n    ```js\n    code\n    ```';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -1098,7 +1108,7 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: ordered - nested item starting with code (block-first)', () => {
-		const markdown = '1. parent\n   1.\n      ```js\n      code\n      ```';
+		const markdown = '1. parent\n   1.\n\n      ```js\n      code\n      ```';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -1147,7 +1157,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: multiple bullet items each with different blocks', () => {
-		const markdown = '-\n  ```js\n  code\n  ```\n-\n  > quote\n-\n  $$math$$';
+		// Canonical: code/math get blank line after marker; blockquote collapses to same line
+		const markdown = '-\n\n  ```js\n  code\n  ```\n- > quote\n-\n\n  $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 
@@ -1155,7 +1166,8 @@ describe('Strict round-trip: exact markdown preservation', () => {
 	});
 
 	it('exact: multiple ordered items each with different blocks', () => {
-		const markdown = '1.\n   ```js\n   code\n   ```\n2.\n   > quote\n3.\n   $$math$$';
+		// Canonical: code/math get blank line after marker; blockquote collapses to same line
+		const markdown = '1.\n\n   ```js\n   code\n   ```\n2. > quote\n3.\n\n   $$math$$';
 		const json = markdownToTipTap(markdown);
 		const result = tipTapToMarkdown(json);
 

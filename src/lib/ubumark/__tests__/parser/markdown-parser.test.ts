@@ -1992,8 +1992,9 @@ Text 3`;
 			expect(ast.children).toHaveLength(1);
 			expect(ast.children[0].type).toBe('table');
 
-			const table = ast.children[0] as { type: string; orientation?: string };
-			expect(table.orientation).toBe('horizontal');
+			// orientation was renamed to transpose: boolean (commit be99d241b)
+			const table = ast.children[0] as { type: string; transpose?: boolean };
+			expect(table.transpose).toBe(true);
 		});
 
 		it('should parse vertical table without directive', () => {
@@ -2004,8 +2005,9 @@ Text 3`;
 			const ast = parseMarkdown(markdown);
 
 			expect(ast.children).toHaveLength(1);
-			const table = ast.children[0] as { type: string; orientation?: string };
-			expect(table.orientation).toBe('vertical');
+			// No :table-h directive → transpose is false or absent
+			const table = ast.children[0] as { type: string; transpose?: boolean };
+			expect(table.transpose).toBeFalsy();
 		});
 
 		it('should handle mixed horizontal and vertical tables', () => {
@@ -2022,11 +2024,11 @@ Text 3`;
 
 			const tables = ast.children.filter((n) => n.type === 'table') as Array<{
 				type: string;
-				orientation?: string;
+				transpose?: boolean;
 			}>;
 			expect(tables).toHaveLength(2);
-			expect(tables[0].orientation).toBe('horizontal');
-			expect(tables[1].orientation).toBe('vertical');
+			expect(tables[0].transpose).toBe(true);
+			expect(tables[1].transpose).toBeFalsy();
 		});
 
 		it('should preserve math in horizontal table cells', () => {
@@ -2061,8 +2063,9 @@ Some text after`;
 			expect(ast.children[1].type).toBe('table');
 			expect(ast.children[2].type).toBe('paragraph');
 
-			const table = ast.children[1] as { type: string; orientation?: string };
-			expect(table.orientation).toBe('horizontal');
+			// orientation was renamed to transpose: boolean (commit be99d241b)
+			const table = ast.children[1] as { type: string; transpose?: boolean };
+			expect(table.transpose).toBe(true);
 		});
 	});
 });
