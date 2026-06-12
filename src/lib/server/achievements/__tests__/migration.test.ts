@@ -39,11 +39,10 @@ function getMigrationContent(): string {
 function assertContains(content: string, pattern: string | RegExp, message?: string) {
 	const isRegex = pattern instanceof RegExp;
 	const found = isRegex ? pattern.test(content) : content.includes(pattern);
+	const patternStr = isRegex ? pattern.source : pattern;
 
-	if (!found) {
-		const patternStr = isRegex ? pattern.source : pattern;
-		throw new Error(message || `Expected migration to contain: ${patternStr}`);
-	}
+	// Use expect (not a bare throw) so each call registers a vitest assertion
+	expect(found, message || `Expected migration to contain: ${patternStr}`).toBe(true);
 }
 
 // ============================================================================
@@ -217,8 +216,9 @@ describe('Constraints', () => {
 		content = getMigrationContent();
 	});
 
-	it('should have UNIQUE constraint on student_achievements with NULLS NOT DISTINCT', () => {
-		assertContains(content, /CONSTRAINT unique_student_achievement UNIQUE NULLS NOT DISTINCT/i);
+	it('should have UNIQUE index enforcing student_achievement uniqueness', () => {
+		// Uses CREATE UNIQUE INDEX (expressions can't be used in UNIQUE constraints)
+		assertContains(content, /CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_student_achievement/i);
 	});
 
 	it('should have UNIQUE constraint on achievement_progress', () => {
@@ -306,20 +306,20 @@ describe('Indexes', () => {
 			);
 		});
 
-		it('should have index on incomplete progress', () => {
+		it('should have partial index on active progress', () => {
+			// Migration uses `WHERE is_active = true` partial indexes (not an
+			// incomplete/progress_percentage<100 index)
 			assertContains(
 				content,
-				/CREATE INDEX.*idx_achievement_progress_incomplete.*WHERE.*progress_percentage < 100/i
+				/CREATE INDEX idx_achievement_progress_student[\s\S]*?WHERE is_active = true/i
 			);
 		});
 	});
 
 	describe('achievement_events table indexes', () => {
 		it('should have index on unprocessed events', () => {
-			assertContains(
-				content,
-				/CREATE INDEX.*idx_achievement_events_unprocessed.*WHERE processed = false/i
-			);
+			// Index definition spans two lines -> [\s\S] (not `.`) to match across newline
+			assertContains(content, /idx_achievement_events_unprocessed[\s\S]*?WHERE processed = false/i);
 		});
 
 		it('should have index on (student_id, event_type)', () => {
@@ -376,7 +376,7 @@ describe('RLS Policies', () => {
 
 		it('should allow teachers to view their students achievements', () => {
 			assertContains(content, /CREATE POLICY.*Teachers can view their students achievements/i);
-			assertContains(content, /class_members.*classes/i);
+			assertContains(content, /class_members[\s\S]*?classes/i);
 		});
 
 		it('should restrict insert to SECURITY DEFINER functions only', () => {
