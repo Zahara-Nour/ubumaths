@@ -1,6 +1,6 @@
 # Passe « tests stale » — inventaire
 
-> **Date** : 2026-06-12 · **Statut** : ⚠️ EN COURS — `src/**` fait (63 fichiers, **11 régressions corrigées**) mais **`tests/unit/` (12 fic. / 181 tests) jamais balayé** (angle mort de la méthode de sweep) · **Auteur** : sweep + remédiation
+> **Date** : 2026-06-12 · **Statut** : ✅ **TERMINÉ** — les DEUX roots balayés (`src/**` ET `tests/unit/**`) + client, **12 régressions de prod corrigées** · **Auteur** : sweep + remédiation
 
 ## Contexte
 
@@ -43,6 +43,21 @@ Le project vitest `server` inclut `src/**/*.test.ts` **ET `tests/unit/**`** (`vi
 | `account/export` · `vip-card-filters` | 1 · 1 |
 
 **Leçon** : un sweep de tests doit couvrir **tous les roots configurés** (`src/**` ET `tests/unit/**`), pas juste `src/`.
+
+### ✅ `tests/unit/` RÉSOLU 2026-06-12 (12 fichiers / 181 tests)
+
+Tous traités, **1 régression de prod** (la 12e), reste stale. Commits `0a6e8eca4` (5 petits fichiers : validation/google coercion pagination + description 5000→2000 ; modalStack `onReturn`=onComplete ; account/export → `reward_events` ; vip-card-filters mock `getTemplateById`), `f339c3765` (6 fichiers Google Classroom — délégués à des agents test-automator avec garde-fou golden-rule, vérifiés), `bc32346f2` (marketplace listings+proposals).
+
+- **🔴 12e régression — `google/sync.ts:718`** : l'insert des pièces jointes de matériel ne vérifiait pas le `{ error }` résolu (un insert Supabase en échec RÉSOUT, ne throw pas) → erreurs de sync **silencieusement avalées**, contrairement à l'upsert frère. Fix : check + push dans `result.errors`. (Trouvé par l'agent google-sync, laissé en échec sans maquiller, confirmé.)
+- Patterns dominants Google/marketplace : **HttpError → `.body.message`** (`.message` undefined → `indexOf` crash) ; **mock-chain drift** (chaînes `.from().select()…` désalignées des handlers) ; **fixtures UUID invalides** ; `vi.mock` à hoister au top-level ; coercion pagination ; suppressions intentionnelles vérifiées via `git log -S` (`checkCardsUnused` `8260972a3`, colonnes title/description `4824bfd8b`, limite 10 cartes `891fca85b`, vues batchées `5cff6b4af`).
+
+### ⚠️ 2e angle mort — `src/lib/validation/` (1 fichier)
+
+La revérif « zone par zone » du lot précédent avait couvert `src/lib/server`, `src/lib/exercises`, `src/routes`, client — **mais pas `src/lib` en entier** (ni `src/lib/validation/`). Le run `pnpm test:server src/lib` complet a exposé `validation/marketplace.test.ts` (8 stale, `title` + limite 10 cartes retirés — `d563b289f`). **Leçon (bis) : lancer le ROOT complet (`src/lib`), pas une liste de sous-zones.**
+
+### ✅ Vérification finale (2026-06-12) — les DEUX roots + client
+
+`src/lib` 751 fic./30354 · `tests/unit` 22 fic./703 · `src/routes` 39/685 · client 41/1011. **0 rouge.** Chantier RÉELLEMENT terminé.
 
 ## Méthode
 
