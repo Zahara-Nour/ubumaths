@@ -246,16 +246,11 @@ export function convertDashes(text: string): string {
 
 /**
  * Format a number string with French spacing (thin space every 3 digits).
- * Uses Unicode thin space (U+202F) for proper typographic spacing.
+ * Uses the LaTeX thin-space command `\,` as the thousands separator (unified
+ * with the math path, see math-to-custom.ts formatFrenchNumber).
  *
- * - Integer part: spaces from right to left (1234567 -> 1 234 567)
- * - Decimal part: spaces from left to right (89012345 -> 890 123 45)
- *
- * Examples:
- * - "12345" -> "12 345"
- * - "1234567" -> "1 234 567"
- * - "12345,6789" -> "12 345,678 9"
- * - "1234567,89012345" -> "1 234 567,890 123 45"
+ * - Integer part: spaces from right to left (1234567 -> 1\,234\,567)
+ * - Decimal part: spaces from left to right (89012345 -> 890\,123\,45)
  */
 function formatFrenchNumber(numStr: string): string {
 	// Split on decimal separator (comma or period)
@@ -264,15 +259,15 @@ function formatFrenchNumber(numStr: string): string {
 
 	const [, intPart, separator, decPart] = decimalMatch;
 
-	// Add thin spaces to integer part (from right to left)
-	const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F');
+	// Add thin-space separators to integer part (from right to left)
+	const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
 
 	if (!separator) {
 		return formattedInt;
 	}
 
-	// Add thin spaces to decimal part (from left to right, every 3 digits)
-	const formattedDec = decPart.replace(/(\d{3})(?=\d)/g, '$1\u202F');
+	// Add thin-space separators to decimal part (from left to right, every 3 digits)
+	const formattedDec = decPart.replace(/(\d{3})(?=\d)/g, '$1\\,');
 
 	return `${formattedInt}${separator}${formattedDec}`;
 }
