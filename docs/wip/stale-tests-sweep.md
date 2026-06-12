@@ -231,7 +231,27 @@ Fichier `api/assessments/api-routes.test.ts` (34 rouges) : **PAS mécanique** �
 
 **Réalignement tests** (`46b6fba58`) : messages auth EN→FR, grade codes, payloads CartItem[], **ordre des mocks `.single`** (GET[id] : `requireAuth` lit le profil AVANT `getAssessment`), UUIDs valides. 47/47 + 42/42 verts.
 
-**Reste : 48 fichiers.** Cluster contrats API restant : `exercises` 21 (mock-drift `Cannot destructure data`), `config` 11, `templates routes` 10, `minesweeper` 9 (dont `500→403` suspect), `riddles` 4, `checkpoint` 4, `messages` 2 (logique `'system'→'class'` suspect).
+### Reste du cluster contrats API — FAIT 2026-06-12
+
+Les 7 autres fichiers (après assessments) traités, **tous test-drift, 0 régression de prod** :
+
+| Fichier            | Tests | Cause racine                                                                                          | Commit              |
+| ------------------ | ----- | ----------------------------------------------------------------------------------------------------- | ------------------- |
+| `exercises`        | 27/27 | migration `requireAuth`/`requireRole` (throw FR au lieu de json ; profil `.single()` consommé en 1er) | `3673b0845`         |
+| `minesweeper`      | 20/20 | `c2f4ec7e6` autorise les profs (start/complete/loss) ; tests "reject teachers"→"allow" + message FR   | `b09439c73`         |
+| `config`           | 29/29 | mocks accédaient `(mockSupabase as any).single` au lieu de `._mockChain.single`                       | `b09439c73`         |
+| `templates routes` | 21/21 | `ActionFailure.data.error`, `content_snapshot` mock, action create = `redirect(303)`, messages FR     | `b09439c73`         |
+| `riddles`          | 16/16 | `params.id` non-UUID (`'riddle-123'`) rejeté par `validateUuidParam` ; mock profil ; shape RPC        | `b09439c73`         |
+| `checkpoint-runs`  | 17/17 | `rpc('...').single()` mocké comme rpc non-chaînable                                                   | `b09439c73`         |
+| `messages`         | 78/78 | 2 tests self-contained à fixtures incohérentes (scope `system`/`class`, `.message_id`/`.id`)          | _(commit messages)_ |
+
+**Verdicts des « suspects »** : `minesweeper 500→403` = autz délibérée (`c2f4ec7e6`, profs autorisés) ; `messages 'system'→'class'` = fixture de test incohérente (le test n'appelle aucun handler). Aucun n'était une régression.
+
+**Notes robustesse (non bloquant, signalées par les agents)** : `templates/instantiate` fait `formData.get('title') as string|undefined` (runtime `null`) → gagnerait `?? undefined` (même classe de bug latent que les GET assessments). Commentaire JSDoc obsolète sur minesweeper `current` (dit "students only", autorise profs).
+
+**Cluster contrats API : 8 fichiers, 100% verts.** 3 régressions de prod corrigées (assessments), reste = test-drift.
+
+**Reste : 41 fichiers** (hors cluster contrats API). Notables : `api/srs` 23 (mock isolé, gardé pour la fin), `achievements/migration` 72 (introspection cassée), `middleware/student-access` 19, clusters answer-validator / markdown-roundtrip / client svelte.
 
 ## Reprise — par où continuer (prochaine session)
 
