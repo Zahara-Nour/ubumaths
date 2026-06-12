@@ -43,7 +43,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Complete Questions', ()
 
 	it('should convert a probability question with lists and decimals', () => {
 		const input =
-			'La probabilité est $l{0.25:0.5:0.75} ou [._&1/2_.]  = &2. Choisis $l{rouge:bleu:vert}.';
+			'La probabilité est $l{0.25:0.5:0.75} ou [._&1/2_]  = &2. Choisis $l{rouge:bleu:vert}.';
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
@@ -421,7 +421,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Real World Examples', (
 	});
 
 	it('should convert a complete measurement conversion exercise', () => {
-		const input = 'Convertir $e[10;100] cm en mètres: [._&1/100_.] m. Puis en mm: [_&1*10_] mm.';
+		const input = 'Convertir $e[10;100] cm en mètres: [._&1/100_] m. Puis en mm: [_&1*10_] mm.';
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);
@@ -445,7 +445,7 @@ describe('TinyCAS Syntax Converter > Integration Tests - Error Handling', () => 
 	});
 
 	it('should accumulate warnings from all pattern types', () => {
-		const input = '$e{2;4} [._&x_.] [+_&y_] [(_&z_] $l{$e[1;5]:10}';
+		const input = '$e{2;4} [._&x_] [+_&y_] [(_&z_] $l{$e[1;5]:10}';
 		const result = convertTinyCASToNew(input);
 
 		expect(result.success).toBe(true);

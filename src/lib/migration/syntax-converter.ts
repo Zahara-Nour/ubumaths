@@ -542,12 +542,33 @@ export class TinyCASConverter {
 			return `{{eval:${convertedExpr}}}`;
 		});
 
-		// Pattern for decimal evaluation [._..._.]
-		const pattern2 = /\[\._([\s\S]*?)_\.\]/g;
+		// Pattern for decimal evaluation [._..._]
+		// The legacy close delimiter is `_]` (not `_.]`): the leading `[._`
+		// already marks the eval as "decimal"; the trailing dot does not exist
+		// in the data.
+		//
+		// Inside a decimal eval the comma is a French decimal separator. When it
+		// sits between digit literals (`0,01` → `0.01`) we can normalize it to a
+		// dot and produce a valid eval. But when it sits between *variables*
+		// (`&1,&3`, a decimal composed from two generated values) there is no
+		// valid eval form — `a.c` would parse `.` as a free variable. Such
+		// expressions need TinyCAS-specific knowledge (the decimal-part digit
+		// count) that the converter does not have, so we leave them untouched
+		// (their value is reconstructed elsewhere from `solutionss`).
+		const pattern2 = /\[\._([\s\S]*?)_\]/g;
 		result = result.replace(pattern2, (match, expr) => {
+			const decimalExpr = expr.replace(/(\d),(\d)/g, '$1.$2');
+			if (decimalExpr.includes(',')) {
+				// Variable-composed decimal (e.g. `&1,&3`): not expressible as an
+				// eval. Defer — leave the legacy expression for downstream handling.
+				this.warnings.push(
+					`Decimal evaluation [._${expr}_] left unconverted (variable-composed decimal, no eval form)`
+				);
+				return match;
+			}
 			this.stats.evaluations++;
-			this.warnings.push(`Decimal evaluation [._${expr}_.] converted - verify decimal handling`);
-			const convertedExpr = convertVarsInExpr(expr);
+			this.warnings.push(`Decimal evaluation [._${expr}_] converted - verify decimal handling`);
+			const convertedExpr = convertVarsInExpr(decimalExpr);
 			return `{{eval:${convertedExpr}}}`;
 		});
 
@@ -837,7 +858,8 @@ export function validateConversion(original: string, converted: string): boolean
 // "[_&1*10+&2_]" → "{{eval:a*10+b}}"
 // "[_2*&1_]" → "{{eval:2*a}}"
 // "[_10-&1_]" → "{{eval:10-a}}"
-// "[._expression_.]" → "{{eval:expression}}" (with warning)
+// "[._expression_]" → "{{eval:expression}}" (decimal eval, with warning; literal
+//   commas `0,1`→`0.1`; variable-composed decimals like `&1,&3` left unconverted)
 // "[+_expression_]" → "{{eval:+expression}}" (with warning)
 // "[(_expression_]" → "{{eval:(expression)}}" (with warning)
 

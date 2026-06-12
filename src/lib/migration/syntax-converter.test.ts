@@ -343,9 +343,30 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should convert decimal evaluations with warning', () => {
-			const result = convertTinyCASToNew('[._&1+0.5_.]');
+			const result = convertTinyCASToNew('[._&1+0.5_]');
 			expect(result.converted).toBe('{{eval:a+0.5}}');
-			expectWarning('[._&1+0.5_.]', 'Decimal evaluation');
+			expectWarning('[._&1+0.5_]', 'Decimal evaluation');
+		});
+
+		// Regression (globalIndex 426): decimal eval with a multiplier, no comma.
+		it('should convert a comma-free decimal eval (unit conversion shape)', () => {
+			expect(convertTinyCASToNew('[._&1*1000_]').converted).toBe('{{eval:a*1000}}');
+			expect(convertTinyCASToNew('[._&1*0.1_]').converted).toBe('{{eval:a*0.1}}');
+		});
+
+		// Regression: a French decimal *literal* comma (digit,digit) becomes a dot.
+		it('should normalize literal decimal commas inside a decimal eval', () => {
+			expect(convertTinyCASToNew('[._&1*0,1+&2*0,01_]').converted).toBe('{{eval:a*0.1+b*0.01}}');
+		});
+
+		// Regression (globalIndex 411): a decimal *composed from two variables*
+		// (`&1,&3`) has no valid eval form, so the decimal eval is left untouched
+		// (its value is reconstructed from solutionss downstream).
+		it('should leave a variable-composed decimal eval unconverted', () => {
+			const result = convertTinyCASToNew('[._&1,&3*10^{&4}_]');
+			expect(result.converted).toContain('[._');
+			expect(result.converted).not.toContain('{{eval:');
+			expect(result.warnings?.some((w) => w.includes('unconverted'))).toBe(true);
 		});
 
 		it('should convert evaluations with plus sign with warning', () => {
@@ -374,7 +395,7 @@ describe('TinyCAS Syntax Converter', () => {
 	describe('7. Special Modifiers Tests', () => {
 		it('should handle special evaluation modifiers', () => {
 			// Decimal evaluation
-			const decimal = convertTinyCASToNew('[._3.14*&1_.]');
+			const decimal = convertTinyCASToNew('[._3.14*&1_]');
 			expect(decimal.converted).toBe('{{eval:3.14*a}}');
 			expect(decimal.warnings?.some((w) => w.includes('Decimal'))).toBe(true);
 
@@ -390,7 +411,7 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should handle multiple special modifiers in one string', () => {
-			const input = '[._&1_.] and [+_&2_] and [(_&3_]';
+			const input = '[._&1_] and [+_&2_] and [(_&3_]';
 			const result = convertTinyCASToNew(input);
 			expect(result.converted).toBe('{{eval:a}} and {{eval:+b}} and {{eval:(c)}}');
 			expect(result.warnings?.length).toBe(3);
@@ -703,7 +724,7 @@ describe('TinyCAS Syntax Converter', () => {
 	describe('16. Warning System Tests', () => {
 		it('should generate appropriate warnings for complex patterns', () => {
 			const patterns = [
-				{ input: '[._&1_.]', warning: 'Decimal evaluation' },
+				{ input: '[._&1_]', warning: 'Decimal evaluation' },
 				{ input: '[+_&1_]', warning: '+ sign' },
 				{ input: '[(_&1_]', warning: 'parentheses' }
 			];
@@ -726,7 +747,7 @@ describe('TinyCAS Syntax Converter', () => {
 		});
 
 		it('should accumulate multiple warnings', () => {
-			const input = '[._&1_.] and [+_&2_]';
+			const input = '[._&1_] and [+_&2_]';
 			const result = convertTinyCASToNew(input);
 			expect(result.warnings?.length).toBeGreaterThanOrEqual(2);
 		});
