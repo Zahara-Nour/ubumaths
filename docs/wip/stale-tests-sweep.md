@@ -325,7 +325,13 @@ Tous **stale** (refonte angle DSL `1e96edbd5`, 0 régression) : 5 exports (helpe
 - **migration-review** (3) : handler approve/reject utilise désormais `loadQuestionByIndex` + `MigrationStateManager` + lookup `migration_edits` → mocks ajoutés.
 - **🔴 achievements/service** (1) : **régression** — `p_reason` avait perdu son `|| null` → `undefined` passé à la RPC au lieu de NULL. Fix code `reason ?? null`. (8e régression de prod du chantier.)
 
-**Reste : ~15 fichiers.** Notables : `api/srs` 23 (mock isolé, gardé pour la fin), evoland 2, questions 4 (e2e-fill-blanks 6 + color-integration 2 + 2 collection-errors), stores 1 (teacherDashboardCache 9) + **5 fichiers client** (`*.svelte.test.ts`).
+### evoland + cache + color — FAIT 2026-06-12
+
+- **evoland** (2) : hero — `4c4fbf4d3` (movement direction progression : up/down exigent `canMoveAll`) ; progression — `d264ccb90` (gold coin = 1, pas 10). Stale.
+- **teacherDashboardCache** (9) : `credentials:'include'` ajouté ; champ `bonus` (`19e9c8514`) ; **logging gated browser+flag** (`ae6c1e3cd`) no-op en Node → 2 tests "Log Stats" → `not.toThrow`, **4 tests "Console Logging" SUPPRIMÉS** (intestables en Node sans mocker `browser` — ⚠️ scope cut à valider).
+- **color-integration** (2) : noms de variables nus (parser accepte) ; `ConversionStats` a 4 nouveaux champs.
+
+**Reste : ~10 fichiers.** Notables : `api/srs` 23 (mock isolé tedious, gardé pour la fin), `questions/generator/e2e-fill-blanks-pipeline` 6 + 2 collection-errors questions, + **5 fichiers client** (`*.svelte.test.ts`).
 
 ## Reprise — par où continuer (prochaine session)
 
