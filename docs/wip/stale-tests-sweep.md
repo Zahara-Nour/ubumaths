@@ -348,7 +348,19 @@ e2e fill-blanks 145/145 vert ; migration 487 vert ; cosmetic-transforms + answer
 2. ~~cluster modération~~ — **FAIT 2026-06-12** (3 fichiers, 56 rouges). Racine = mock `locals.profile.role` périmé + **1 vraie régression** (`deleteMessageSchema` exigeait `messageId` dans le body → suppression de message cassée en prod, **fix code** appliqué). Pas une décision de contrat. Cluster vert (62 tests).
 3. ~~cluster contrats API~~ + ~~e2e-fill-blanks~~ — **FAIT 2026-06-12** (#9 converter éval décimale, #10 checkForm virgule — voir section dédiée).
 4. ~~2 fichiers questions~~ — **FAIT 2026-06-12** (`ed6602acd`) : `variable-resolver` 2 stale réalignés (`random:N.M` déprécié → `digits:N.M` ; `({{b}})^2` parenthésé car moins unaire < `^`) ; `test-exact-repro.test.ts` supprimé (repro mort, doublon de `instance-generator.test.ts`, jamais migré au modèle `blanks[]`). src/lib/questions/ : 31 fichiers / 2206 verts.
-5. **Reste (~6 fichiers)** : `api/srs` 23 (mock isolé tedious), **5 fichiers client** `*.svelte.test.ts`.
-6. **Hors remédiation, à décider avec David** : gate léger (pre-commit `vitest related` ou CI shardé par zone) + corriger/retirer le job `test` de `quality.yml` (il appelle `test:unit`, retiré → erreur à chaque push).
+5. ~~5 fichiers client~~ — **FAIT 2026-06-12** (`13e45b5f3` + composants) : tous stale, 0 régression. Suite client entière verte (**41 fichiers / 1011 tests**). Détail ci-dessous.
+6. **Reste (1 fichier)** : `api/srs` 23 (mock isolé tedious).
+
+### Cluster client (`*.svelte.test.ts`) — FAIT 2026-06-12
+
+5 fichiers / 15 tests, tous **stale**, comportements code confirmés délibérés :
+
+- **minesweeper** (4) : `shouldUseDatabase()` autorise profs + élèves (`8c3e29f7f`) ; création ligne DB **différée au 1er clic** (anti-orphelins). Tests réécrits (élèves ET profs → DB après reveal+await) ; mock supabase complété avec `.delete()`.
+- **chat** (2) `toggleReaction` : réactions agrégées par emoji (`count`/`user_reacted`), persistées via RPC `toggle_reaction` AVANT broadcast → `await` requis ; fixture suppression complétée `user_reacted:true`.
+- **presence** (6) Reconnection : mock matche les listeners par `JSON.stringify({type,config})` ; impl enregistre `on('system', {}, …)` et discrimine sur payload (`status!=='ok'`) → `simulateEvent` doit passer `{}` (pas `{event:'error'}`). 8 appels corrigés.
+- **VariationTable** (2) : barre d'asymptote dessinée en CSS (`.vt-asymptote-bar-sign` vide) au lieu de `.vt-double-bar` texte `||` ; asymptote AVEC limites n'est plus zone interdite → 2 flèches vers les limites (assertion `===0` → 2 `down`).
+- **ExerciseValidationResult** (1) : matcher fragile `getByText(/Test 1/)` sur un `<summary>` éclaté multi-lignes → `getByRole('group')`.
+
+7. **Hors remédiation, à décider avec David** : gate léger (pre-commit `vitest related` ou CI shardé par zone) + corriger/retirer le job `test` de `quality.yml` (il appelle `test:unit`, retiré → erreur à chaque push).
 
 **Règle d'or** : ne jamais réaligner un test sans confirmer que le comportement code actuel est voulu (sinon on masque une vraie régression).
