@@ -123,14 +123,16 @@ describe('cronTriggerBodySchema', () => {
 
 describe('ALLOWED_JOB_PATHS', () => {
 	it('should contain expected job paths', () => {
-		expect(ALLOWED_JOB_PATHS).toContain('/api/cron/daily-summaries-and-rewards');
-		expect(ALLOWED_JOB_PATHS).toContain('/api/cleanup/all');
+		// Cron jobs migrated from HTTP routes (/api/cron/*, /api/cleanup/all) to
+		// pg_cron RPC functions; only the riddle auto-select stays an HTTP endpoint.
 		expect(ALLOWED_JOB_PATHS).toContain('/api/riddles/auto-select-daily');
+		expect(ALLOWED_JOB_PATHS).toContain('rpc:run_daily_summaries');
+		expect(ALLOWED_JOB_PATHS).toContain('rpc:run_cleanup_all');
 	});
 
 	it('should be immutable (readonly)', () => {
 		// TypeScript should prevent mutation at compile time
 		// This test just verifies the array has the expected length
-		expect(ALLOWED_JOB_PATHS.length).toBe(3);
+		expect(ALLOWED_JOB_PATHS.length).toBe(8);
 	});
 });
