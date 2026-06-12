@@ -846,8 +846,11 @@ describe('Reconnection Logic', () => {
 
 		await presenceManager.startPresenceTracking(['friend-1']);
 
-		// Simulate system error using the mock's event simulation
-		mockChannel.simulateEvent('system', { event: 'error' }, { message: 'Connection error' });
+		// Simulate system error using the mock's event simulation. The impl
+		// registers `channel.on('system', {}, …)` and discriminates on the payload
+		// (`status !== 'ok'`), so the mock filter must be `{}` to match the listener
+		// key; any non-ok payload then triggers reconnection.
+		mockChannel.simulateEvent('system', {}, { message: 'Connection error' });
 
 		// Should have scheduled reconnection timer (in addition to heartbeat)
 		const timerCount = vi.getTimerCount();
@@ -870,7 +873,7 @@ describe('Reconnection Logic', () => {
 		await presenceManager.startPresenceTracking(['friend-1']);
 
 		// Trigger error to schedule reconnection
-		mockChannel.simulateEvent('system', { event: 'error' }, {});
+		mockChannel.simulateEvent('system', {}, {});
 
 		// Should have timers (heartbeat + reconnection)
 		expect(vi.getTimerCount()).toBeGreaterThan(1);
@@ -893,14 +896,14 @@ describe('Reconnection Logic', () => {
 		expect(presenceManager['isReconnecting']).toBe(false);
 
 		// Trigger first error
-		mockChannel.simulateEvent('system', { event: 'error' }, {});
+		mockChannel.simulateEvent('system', {}, {});
 
 		// isReconnecting should now be true
 		expect(presenceManager['isReconnecting']).toBe(true);
 
 		// Second error should be ignored because isReconnecting is true
 		const reconnectAttemptsBefore = presenceManager['reconnectAttempts'];
-		mockChannel.simulateEvent('system', { event: 'error' }, {});
+		mockChannel.simulateEvent('system', {}, {});
 
 		// Reconnect attempts should NOT have increased
 		expect(presenceManager['reconnectAttempts']).toBe(reconnectAttemptsBefore);
@@ -915,7 +918,7 @@ describe('Reconnection Logic', () => {
 		await presenceManager.startPresenceTracking(['friend-1']);
 
 		// Trigger error
-		mockChannel.simulateEvent('system', { event: 'error' }, {});
+		mockChannel.simulateEvent('system', {}, {});
 
 		// Should be reconnecting
 		expect(presenceManager['isReconnecting']).toBe(true);
@@ -941,7 +944,7 @@ describe('Reconnection Logic', () => {
 		// Simulate 5 reconnection attempts
 		for (let i = 0; i < 5; i++) {
 			// Trigger error (will be ignored if isReconnecting is true, so we need to wait)
-			mockChannel.simulateEvent('system', { event: 'error' }, {});
+			mockChannel.simulateEvent('system', {}, {});
 
 			// Wait for reconnection attempt to complete (and fail)
 			const delay = 5000 * Math.pow(2, i);
@@ -952,7 +955,7 @@ describe('Reconnection Logic', () => {
 		expect(presenceManager['reconnectAttempts']).toBe(5);
 
 		// Trigger another error - should be ignored due to max attempts
-		mockChannel.simulateEvent('system', { event: 'error' }, {});
+		mockChannel.simulateEvent('system', {}, {});
 
 		// Still at 5 attempts (not 6)
 		expect(presenceManager['reconnectAttempts']).toBe(5);
@@ -969,7 +972,7 @@ describe('Reconnection Logic', () => {
 		await presenceManager.startPresenceTracking(['friend-1']);
 
 		// Trigger error
-		mockChannel.simulateEvent('system', { event: 'error' }, {});
+		mockChannel.simulateEvent('system', {}, {});
 
 		// Before 5000ms - should NOT have called unsubscribe
 		await vi.advanceTimersByTimeAsync(4900);
