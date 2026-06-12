@@ -24,7 +24,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import type { EditorView } from '@codemirror/view';
-	import type { Extension } from '@codemirror/state';
+	import type { Extension, EditorState as EditorStateType } from '@codemirror/state';
 	import { renderDefaults, reconstructCode, type ParseError } from '$lib/utils/locked-zones';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { theme as appTheme } from '$lib/stores/theme.svelte';
@@ -180,7 +180,7 @@
 				class: 'cm-lockedZone cm-lockedZone--unmodified'
 			});
 
-			const buildZoneDecorations = (state: EditorState) => {
+			const buildZoneDecorations = (state: EditorStateType) => {
 				const zones = state.field(zonesField) as LiveZone[];
 				return Decoration.set(
 					zones

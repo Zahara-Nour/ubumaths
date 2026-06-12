@@ -182,7 +182,7 @@
 		const lookup: Record<string, number> = {};
 		for (const col of columns) {
 			for (const card of col.cards) {
-				for (const tagId of card.tag_ids) {
+				for (const tagId of card.tag_ids ?? []) {
 					lookup[tagId] = (lookup[tagId] ?? 0) + 1;
 				}
 			}
@@ -214,7 +214,7 @@
 		const me = data.userId;
 		return columns.map((col) => ({
 			...col,
-			cards: col.cards.filter((c) => c.assignee_ids.includes(me))
+			cards: col.cards.filter((c) => (c.assignee_ids ?? []).includes(me))
 		}));
 	});
 
@@ -474,8 +474,8 @@
 		tags = tags.filter((t) => t.id !== tagId);
 		for (const col of columns) {
 			for (const card of col.cards) {
-				if (card.tag_ids.includes(tagId)) {
-					card.tag_ids = card.tag_ids.filter((id) => id !== tagId);
+				if ((card.tag_ids ?? []).includes(tagId)) {
+					card.tag_ids = (card.tag_ids ?? []).filter((id) => id !== tagId);
 				}
 			}
 		}

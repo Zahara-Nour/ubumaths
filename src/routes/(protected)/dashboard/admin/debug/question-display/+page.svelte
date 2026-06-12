@@ -53,6 +53,7 @@
 	// (solution is a legacy field kept only for debug/test fixtures in this page)
 	type DebugInstance = Partial<QuestionInstance> & Pick<QuestionInstance, 'templateId'> & {
 		solution?: string | string[];
+		precision?: { type: string; digits?: number };
 	};
 
 	const sampleQuestions: Record<string, DebugInstance> = {

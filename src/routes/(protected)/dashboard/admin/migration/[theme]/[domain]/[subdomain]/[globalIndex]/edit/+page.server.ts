@@ -134,7 +134,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			level: targetQuestion.level,
 			status: (sourceData.status as 'draft' | 'published') || 'draft',
 			delay: sourceData.delay,
-			testSpecs: sourceData.testSpecs as unknown as QuestionTemplate['testSpecs']
+			testSpecs: (sourceData as Record<string, unknown>)
+				.testSpecs as unknown as QuestionTemplate['testSpecs']
 		};
 
 		return {

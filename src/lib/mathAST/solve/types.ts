@@ -278,8 +278,9 @@ export interface EquationSolver {
 	solve(
 		expr: MathNode,
 		variable: string,
-		options: Required<Omit<SolveOptions, 'variable' | 'initialGuesses'>> & {
+		options: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
 			initialGuesses?: readonly number[];
+			domain?: Domain;
 		},
 		recorder: SolveStepRecorder
 	): SolveResult;

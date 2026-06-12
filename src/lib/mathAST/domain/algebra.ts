@@ -513,16 +513,19 @@ export function intersect(a: Domain, b: Domain): Domain {
 		return a;
 	}
 	if (a.kind === 'periodic_exclusion') {
-		// PeriodicExclusion ∩ IntervalSet
+		// PeriodicExclusion ∩ IntervalSet (b is non-periodic: the both-periodic
+		// case returned above).
 		// If b is universal (ℝ), the result is the PeriodicExclusion
 		// Otherwise, return the interval set (more restrictive)
-		if (intervalsIsUniversal(b)) {
+		if (b.kind !== 'periodic_exclusion' && intervalsIsUniversal(b)) {
 			return a;
 		}
 		return b;
 	}
 	if (b.kind === 'periodic_exclusion') {
 		// Same logic: if a is universal, return the PeriodicExclusion
+		// (a is non-periodic: the both-periodic case returned above).
+		// `a` is already narrowed to non-periodic here (the a-periodic cases returned above).
 		if (intervalsIsUniversal(a)) {
 			return b;
 		}
@@ -615,7 +618,7 @@ export function complement(d: Domain): Domain {
 
 	// Note: excluded points in d become "included" in the complement
 	// (they are no longer excluded), so we don't carry them over
-	return intervalsComplement(d);
+	return wrapWithExcludedPoints(intervalsComplement(d), []);
 }
 
 // =============================================================================

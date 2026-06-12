@@ -57,8 +57,8 @@
 	<Tooltip.Root>
 		<Tooltip.Trigger>
 			{#snippet child({ props })}
-				<span {...props} class="inline-block">
-					<Button {variant} {size} disabled={isDisabled} {onclick} {...restProps}>
+				<span {...(props as Record<string, unknown>)} class="inline-block">
+					<Button {variant} {size} disabled={isDisabled} {onclick} {...(restProps as Record<string, unknown>)}>
 						{#if children}
 							{@render children()}
 						{/if}
@@ -72,7 +72,7 @@
 	</Tooltip.Root>
 {:else}
 	<!-- Standard button without tooltip wrapper -->
-	<Button {variant} {size} disabled={isDisabled} {onclick} {...restProps}>
+	<Button {variant} {size} disabled={isDisabled} {onclick} {...(restProps as Record<string, unknown>)}>
 		{#if children}
 			{@render children()}
 		{/if}

@@ -115,7 +115,8 @@
 					const lines: number[] = [];
 					for (const issue of issues) {
 						if (issue.path.length > 0) {
-							const line = findLineForPath(jsonString, issue.path);
+							// Zod v4 types `path` as PropertyKey[]; JSON paths are only string|number.
+							const line = findLineForPath(jsonString, issue.path as (string | number)[]);
 							if (line !== null && !lines.includes(line)) {
 								lines.push(line);
 							}
