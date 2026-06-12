@@ -27,10 +27,12 @@ export const unrestrictUserSchema = z.object({
 });
 
 /**
- * Validation schema for deleting a message
+ * Validation schema for deleting a message (request body).
+ * Note: the message id is taken from the URL param, not the body — the frontend
+ * (DeleteMessageDialog.svelte) only sends `{ reason }`. A previously required
+ * `messageId` body field made every real delete request fail with 400.
  */
 export const deleteMessageSchema = z.object({
-	messageId: z.string().uuid('Message ID must be a valid UUID'),
 	reason: z
 		.string()
 		.min(5, 'Reason must be at least 5 characters')
