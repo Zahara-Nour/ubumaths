@@ -152,7 +152,7 @@ La dette est **concentrée** sur les zones « drift-prone » prévues (server, r
 
 - **Triage par cluster, pas fichier par fichier.** Pour chaque cluster : 1 décision (le nouveau comportement code est-il voulu ?), puis mise à jour groupée des tests (ou fix code si vraie régression).
 - **Règle par rouge** : code correct → maj test · vraie régression → fix code · test obsolète/mort → suppression. **Ne pas « réaligner » un test sans confirmer le comportement** (risque de masquer un bug).
-- **Commencer par les setups cassés** (`api/srs` 23/23, les 4 erreurs de collection) : cause unique probable, fort effet de levier.
+- ~~Commencer par les setups cassés~~ — **réfuté au diagnostic** : pas de cluster « collection error » (artefact de grep), et `api/srs` (23/23) est une dérive **isolée** des chaînes de requêtes des handlers (23 mocks à réaligner) = faible levier. **Commencer plutôt par `validation/*`** (homogène), puis le **cluster modération** (1 décision de contrat pour 3 fichiers / ~56 tests).
 - **Restaurer un gate LÉGER** (le full `test:unit` a été retiré pour sa lourdeur) — pistes :
   - pre-commit : lancer uniquement les tests des fichiers touchés (`vitest related` / `check:changed`-style) ;
   - CI : `test:server` shardé par zone, ou seulement sur les dossiers modifiés du diff.
@@ -162,8 +162,20 @@ La dette est **concentrée** sur les zones « drift-prone » prévues (server, r
 
 `mathAST` (286 fichiers ✓), `math`, `constructions-v2`, `typst`, `spreadsheet`, `grapheur`, `transpilers`, `templates`, `srs` (lib), `data`, `migration`, + la grande majorité de `geometry-core` (148/155) et `whiteboard` (20/23).
 
-## Prochaines étapes (à valider)
+## Journal de remédiation
 
-1. Choisir un premier cluster à remédier (reco : **setups cassés** puis **validation Zod** — fort levier, faible risque).
-2. Décider la stratégie de gate léger.
-3. Itérer cluster par cluster, un commit par lot.
+| Date       | Fichier(s)                                         | Verdict                                                         | Commit                           |
+| ---------- | -------------------------------------------------- | --------------------------------------------------------------- | -------------------------------- |
+| 2026-06-12 | `server/auth/cron.test.ts` (test `verifyCronAuth`) | stale (message d'erreur changé) — réaligné                      | `b8080eb10` (dans le fix /login) |
+| 2026-06-12 | `server/validation/cron.test.ts`                   | stale (jobs cron migrés HTTP→RPC, 3→8) — **pas une régression** | `99ee0cc74`                      |
+
+**Reste : 61 fichiers** (voir inventaire ci-dessus).
+
+## Reprise — par où continuer (prochaine session)
+
+1. **Prochain lot** : cluster `server/validation/*` (`misc-modules` 10, `srs` 7, `assessments` 7, `__tests__/exercises-generic-functions` 9, …). Mode = `expected false to be true` → **un schéma Zod s'est durci**. Pour CHAQUE rouge : vérifier si le durcissement est voulu (→ maj de l'entrée de test) ou une **vraie régression** (→ fix du schéma + remonter à David).
+2. Puis **cluster modération** (`restrict-user` / `unrestrict-user` / `messages-delete`) : 1 décision (auth-first 403 voulu ?) pour ~56 tests.
+3. Garder `api/srs` (mock isolé, tedious) et les exports geometry (mineur) **pour la fin**.
+4. **Hors remédiation, à décider avec David** : gate léger (pre-commit `vitest related` ou CI shardé par zone) + corriger/retirer le job `test` de `quality.yml` (il appelle `test:unit`, retiré → erreur à chaque push).
+
+**Règle d'or** : ne jamais réaligner un test sans confirmer que le comportement code actuel est voulu (sinon on masque une vraie régression).
