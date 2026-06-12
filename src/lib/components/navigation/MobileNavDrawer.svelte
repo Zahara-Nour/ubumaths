@@ -5,7 +5,7 @@
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { Sun, Moon, Minus, Plus } from 'lucide-svelte';
-	import type { Component } from 'svelte';
+	import type { ComponentType } from 'svelte';
 
 	/**
 	 * Navigation item type for MobileNavDrawer
@@ -13,7 +13,7 @@
 	export type NavItem = {
 		label: string;
 		href: string;
-		icon: Component;
+		icon: ComponentType;
 		roles?: string[];
 		badge?: number;
 		/** Footer items render after a separator at the bottom of the drawer. */

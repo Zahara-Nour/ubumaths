@@ -42,7 +42,7 @@
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import type { User } from '@supabase/supabase-js';
 	import type { Profile } from '$lib/types/database-helpers';
-	import type { Component } from 'svelte';
+	import type { ComponentType } from 'svelte';
 	import {
 		Menu,
 		LogIn,
@@ -95,7 +95,7 @@
 	});
 
 	// Navigation item type
-	type NavItem = { label: string; href: string; icon: Component; roles?: string[] };
+	type NavItem = { label: string; href: string; icon: ComponentType; roles?: string[] };
 
 	// Props received from parent layout (+layout.svelte)
 	// These are automatically reactive in Svelte 5
