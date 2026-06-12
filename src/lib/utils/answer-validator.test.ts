@@ -492,7 +492,14 @@ describe('validateAnswer - Specific Constraints', () => {
 	});
 
 	describe('Form Constraint', () => {
-		it('should detect form violations when form is strict mode', () => {
+		it('should normalize commutative term order (1+x === x+1) as correct form', () => {
+			// NOTE (tests stale 2026-06-12): the unified checkForm pipeline
+			// (cosmetic-transforms.ts) now includes sortTermsAndFactorsAST, so a
+			// commutative reordering (1+x vs x+1) is normalized away and is no longer
+			// a form violation. This is a DELIBERATE relaxation (the sort step was
+			// added on purpose). A real form difference (e.g. 5 vs 2+3) is still
+			// detected. The previous contract (commutative reorder = bad_form) is
+			// obsolete.
 			const instance = createAlgebraicInstance('x+1', {
 				constraints: {
 					form: 'strict',
@@ -503,11 +510,11 @@ describe('validateAnswer - Specific Constraints', () => {
 				}
 			});
 
-			// Mathematically correct but different form
+			// Same expression, only the term order differs → normalized to identical form
 			const result = validateAnswer('1+x', instance, '1+x');
 
-			expect(result.status).toBe('bad_form');
-			expect(result.constraintViolations![0].constraint).toBe('form');
+			expect(result.isCorrect).toBe(true);
+			expect(result.status).toBe('correct');
 		});
 
 		it('should accept exact form match', () => {
