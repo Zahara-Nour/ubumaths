@@ -114,9 +114,10 @@ describe('ProgressionManager', () => {
 
 	describe('item pickups', () => {
 		it('should add gold from chest', () => {
+			// d264ccb90: a gold coin chest gives 1 gold (corrected from 10)
 			progression.openChest(ChestKind.CGoldCoin, hero);
-			expect(progression.getGold()).toBe(10);
-			expect(hero.inventory.gold).toBe(10);
+			expect(progression.getGold()).toBe(1);
+			expect(hero.inventory.gold).toBe(1);
 		});
 
 		it('should add key from chest', () => {
