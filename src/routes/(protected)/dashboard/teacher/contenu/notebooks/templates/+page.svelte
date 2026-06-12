@@ -10,9 +10,13 @@
 	// Supabase returns joined profiles as an array; TemplateGallery expects a single Author | null.
 	// Flatten by taking the first element of the array (or null if empty).
 	const templates = $derived(
-		(data.templates as unknown as Array<typeof data.templates[0] & {
-			profiles: { firstname: string | null; lastname: string | null }[] | null;
-		}>).map((t) => ({
+		(
+			data.templates as unknown as Array<
+				(typeof data.templates)[0] & {
+					profiles: { firstname: string | null; lastname: string | null }[] | null;
+				}
+			>
+		).map((t) => ({
 			...t,
 			profiles: Array.isArray(t.profiles) ? (t.profiles[0] ?? null) : t.profiles
 		}))

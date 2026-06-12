@@ -665,8 +665,7 @@ export function hasUnitDescendant(node: MathNode): boolean {
 		case 'piecewise':
 			return (
 				node.pieces.some(
-					(piece) =>
-						hasUnitDescendant(piece.condition) || hasUnitDescendant(piece.value)
+					(piece) => hasUnitDescendant(piece.condition) || hasUnitDescendant(piece.value)
 				) || (node.otherwise ? hasUnitDescendant(node.otherwise) : false)
 			);
 

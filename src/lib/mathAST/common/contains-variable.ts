@@ -88,9 +88,9 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 			return (
 				node.pieces.some(
 					(piece) =>
-						containsVariable(piece.condition, varName) ||
-						containsVariable(piece.value, varName)
-				) || (node.otherwise !== undefined && containsVariable(node.otherwise, varName))
+						containsVariable(piece.condition, varName) || containsVariable(piece.value, varName)
+				) ||
+				(node.otherwise !== undefined && containsVariable(node.otherwise, varName))
 			);
 
 		default: {

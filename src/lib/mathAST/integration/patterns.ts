@@ -816,9 +816,8 @@ function containsSubexpression(expr: MathNode, target: MathNode): boolean {
 
 			case 'piecewise':
 				return (
-					node.pieces.some(
-						(piece) => search(piece.condition) || search(piece.value)
-					) || (node.otherwise !== undefined && search(node.otherwise))
+					node.pieces.some((piece) => search(piece.condition) || search(piece.value)) ||
+					(node.otherwise !== undefined && search(node.otherwise))
 				);
 
 			default: {

@@ -477,7 +477,8 @@
 								</span>
 								<MyCheckbox
 									checked={exercise.show_correction}
-									onCheckedChange={(checked) => checked !== 'indeterminate' && handleToggleExercise(exercise.id, checked)}
+									onCheckedChange={(checked) =>
+										checked !== 'indeterminate' && handleToggleExercise(exercise.id, checked)}
 									disabled={isTogglingExercise === exercise.id}
 								/>
 							</div>

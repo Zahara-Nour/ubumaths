@@ -17,9 +17,6 @@ import type {
 	GeoArcByAngles,
 	GeoPolygon,
 	GeoVectorByPoints,
-	GeoFunction,
-	GeoQuadraticCurve,
-	GeoImplicitCurve,
 	GeoImage
 } from '../types/elements';
 import {

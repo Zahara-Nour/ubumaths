@@ -58,7 +58,8 @@
 	/**
 	 * Handle approve action
 	 */
-	function handleApprove() {
+	// Illustrative handlers (this is an example/demo component, not wired to UI).
+	function _handleApprove() {
 		toaster.success('Question approuvée avec succès');
 		console.log('Approved:', transformedQuestion);
 	}
@@ -66,7 +67,7 @@
 	/**
 	 * Handle reject action
 	 */
-	function handleReject(reason: string) {
+	function _handleReject(reason: string) {
 		toaster.error('Question rejetée');
 		console.log('Rejected with reason:', reason);
 	}

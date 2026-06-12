@@ -15,8 +15,12 @@
 
 	// Derived state
 	let activeTournaments = $derived(tournaments.filter((t: Tournament) => t.status === 'active'));
-	let upcomingTournaments = $derived(tournaments.filter((t: Tournament) => t.status === 'scheduled'));
-	let completedTournaments = $derived(tournaments.filter((t: Tournament) => t.status === 'completed'));
+	let upcomingTournaments = $derived(
+		tournaments.filter((t: Tournament) => t.status === 'scheduled')
+	);
+	let completedTournaments = $derived(
+		tournaments.filter((t: Tournament) => t.status === 'completed')
+	);
 </script>
 
 <svelte:head>

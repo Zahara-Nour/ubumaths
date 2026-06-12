@@ -9,7 +9,11 @@
 	import { FileText, AlertTriangle, Star } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
-	import type { StudentErrorReportView, StudentExerciseView, StudentSectionView } from '$lib/types/worksheets';
+	import type {
+		StudentErrorReportView,
+		StudentExerciseView,
+		StudentSectionView
+	} from '$lib/types/worksheets';
 
 	interface Props {
 		data: PageData;

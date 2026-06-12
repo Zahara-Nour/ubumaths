@@ -170,9 +170,7 @@ export function tryConvertConditionToInterval(cd: ConditionDomain): Domain | nul
 /**
  * Convert a single comparison condition to an IntervalSet.
  */
-function convertSingleCondition(
-	condition: ConditionDomain['conditions'][number]
-): Domain | null {
+function convertSingleCondition(condition: ConditionDomain['conditions'][number]): Domain | null {
 	if (condition.kind !== 'comparison') {
 		return null;
 	}
@@ -213,7 +211,11 @@ function convertAndConditions(
 
 	for (const cond of conditions) {
 		const interval = convertSingleCondition(cond);
-		if (!interval || interval.kind === 'condition_domain' || interval.kind === 'periodic_exclusion') {
+		if (
+			!interval ||
+			interval.kind === 'condition_domain' ||
+			interval.kind === 'periodic_exclusion'
+		) {
 			return null; // Cannot convert this condition
 		}
 		result = intervalsIntersect(result, interval);
@@ -237,7 +239,11 @@ function convertOrConditions(
 
 	for (const cond of conditions) {
 		const interval = convertSingleCondition(cond);
-		if (!interval || interval.kind === 'condition_domain' || interval.kind === 'periodic_exclusion') {
+		if (
+			!interval ||
+			interval.kind === 'condition_domain' ||
+			interval.kind === 'periodic_exclusion'
+		) {
 			return null; // Cannot convert this condition
 		}
 		result = intervalsUnion(result, interval);

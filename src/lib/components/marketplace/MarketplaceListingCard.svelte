@@ -75,16 +75,18 @@
 	// Group wanted templates for display (already unique by template)
 	let wantedCardsGrouped = $derived.by(() => {
 		if (!listing.wanted_templates?.length) return [];
-		return listing.wanted_templates.map((template: NonNullable<typeof listing.wanted_templates>[0]) => ({
-			card: {
-				id: template.id,
-				name: template.name,
-				description: template.description,
-				imagePath: template.image_path ?? undefined,
-				rarity: template.rarity as VipCardType['rarity']
-			} as VipCardType,
-			count: 1
-		}));
+		return listing.wanted_templates.map(
+			(template: NonNullable<typeof listing.wanted_templates>[0]) => ({
+				card: {
+					id: template.id,
+					name: template.name,
+					description: template.description,
+					imagePath: template.image_path ?? undefined,
+					rarity: template.rarity as VipCardType['rarity']
+				} as VipCardType,
+				count: 1
+			})
+		);
 	});
 
 	// Check if offer side has content

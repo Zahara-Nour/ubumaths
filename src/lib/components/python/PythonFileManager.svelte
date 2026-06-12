@@ -405,7 +405,7 @@
 												Assigne le {formatDate(assignedFile.assigned_at)}
 											</span>
 											{#if assignedFile.due_date}
-												<span class="text-warning flex items-center gap-1">
+												<span class="flex items-center gap-1 text-warning">
 													<Clock class="size-3" />
 													Echeance : {formatDate(assignedFile.due_date)}
 												</span>

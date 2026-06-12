@@ -548,7 +548,10 @@
 
 			<Dialog.Footer class="flex-wrap gap-2">
 				<div class="flex flex-1 gap-2">
-					<ExportClaudeCodeButton reportId={selectedReport.id} _reportTitle={selectedReport.title} />
+					<ExportClaudeCodeButton
+						reportId={selectedReport.id}
+						_reportTitle={selectedReport.title}
+					/>
 					<Button variant="destructive" size="sm" onclick={() => (deleteDialogOpen = true)}>
 						<Trash2 class="mr-2 h-4 w-4" />
 						Supprimer

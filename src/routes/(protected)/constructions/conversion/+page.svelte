@@ -523,22 +523,22 @@
 				{#if warnings.length > 0}
 					<Collapsible.Root bind:open={showWarnings}>
 						<Collapsible.Trigger
-							class="bg-warning/10 flex w-full items-center justify-between rounded-lg p-3 text-left"
+							class="flex w-full items-center justify-between rounded-lg bg-warning/10 p-3 text-left"
 						>
 							<div class="flex items-center gap-2">
-								<AlertTriangle class="text-warning h-4 w-4" />
-								<span class="text-warning font-medium">
+								<AlertTriangle class="h-4 w-4 text-warning" />
+								<span class="font-medium text-warning">
 									{warnings.length} avertissement{warnings.length > 1 ? 's' : ''}
 								</span>
 							</div>
 							<ChevronDown
-								class="text-warning h-4 w-4 transition-transform {showWarnings ? 'rotate-180' : ''}"
+								class="h-4 w-4 text-warning transition-transform {showWarnings ? 'rotate-180' : ''}"
 							/>
 						</Collapsible.Trigger>
 						<Collapsible.Content>
-							<ul class="bg-warning/5 mt-2 space-y-1 rounded-lg p-3">
+							<ul class="mt-2 space-y-1 rounded-lg bg-warning/5 p-3">
 								{#each warnings as warning, i (i)}
-									<li class="text-warning/90 text-sm">- {warning}</li>
+									<li class="text-sm text-warning/90">- {warning}</li>
 								{/each}
 							</ul>
 						</Collapsible.Content>

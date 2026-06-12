@@ -82,11 +82,12 @@ Pas de `any`, éviter `@ts-ignore`.
    - `buddy-queries.ts:86,111` : RPC `p_student_id` typé `undefined` → migration RPC non
      reflétée dans les types DB générés (manque `pnpm db:types` ?).
    - `exercise-backup.ts:184` : propriété `tags` absente du type retourné.
-   Ces cas ne doivent PAS être « castés pour faire taire » — ce sont des signaux.
+     Ces cas ne doivent PAS être « castés pour faire taire » — ce sont des signaux.
 
 ### Batch fait : src/lib/server (25/29 corrigées, par l'orchestrateur)
 
 Corrigées :
+
 - **TablesUpdate cluster** (6) : `const updateData: Record<string,unknown>` → `TablesUpdate<'table'>`
   (chapters ×3, journal, assessments, chapter-templates).
 - **warnings.ts** (3) : casts résultat RPC Json → `as unknown as Shape` (frontière RPC).
