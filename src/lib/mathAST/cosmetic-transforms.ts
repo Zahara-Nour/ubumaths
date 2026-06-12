@@ -142,6 +142,20 @@ export function removeSpaces(latex: string): string {
 	return result;
 }
 
+/**
+ * Normalize a French decimal comma (`,`) between two digits into the parser's
+ * decimal point. The LaTeX parser accepts `8.249` and `8{,}249` but NOT a raw
+ * `8,249`; question data and student input may carry the raw comma form, so we
+ * normalize it before parsing to avoid a spurious "Parse error".
+ *
+ * Scoped to `<digit>,<digit>` (no surrounding spaces) so it cannot touch
+ * function-argument commas (`f(a,b)`) or spaced lists (`(1, 2)`), where a comma
+ * is a separator rather than a decimal mark.
+ */
+export function normalizeDecimalComma(latex: string): string {
+	return latex.replace(/(\d),(\d)/g, '$1.$2');
+}
+
 // =============================================================================
 // AST Transformers (MathNode → MathNode)
 // =============================================================================
@@ -670,7 +684,7 @@ export function cosmeticViolations(
 		violations.push({ id: 'spaces', severity });
 	}
 
-	const answerStr = removeSpaces(answerNoZeros);
+	const answerStr = normalizeDecimalComma(removeSpaces(answerNoZeros));
 
 	// === Parse AST ===
 	const answerParse = parseLatexSafe(answerStr);
@@ -734,7 +748,7 @@ export function checkForm(
 	}
 
 	// removeSpaces (normalisation for comparison)
-	const answerStr = removeSpaces(answerNoZeros);
+	const answerStr = normalizeDecimalComma(removeSpaces(answerNoZeros));
 
 	// === Parse AST ===
 	const answerParse = parseLatexSafe(answerStr);
@@ -767,7 +781,7 @@ export function checkForm(
 	}
 
 	// === Same pipeline for expected ===
-	const expectedStr = removeSpaces(removeZeros(expectedLatex));
+	const expectedStr = normalizeDecimalComma(removeSpaces(removeZeros(expectedLatex)));
 	const expectedParse = parseLatexSafe(expectedStr);
 	if (!expectedParse.ast || expectedParse.errors.length > 0) {
 		return {
