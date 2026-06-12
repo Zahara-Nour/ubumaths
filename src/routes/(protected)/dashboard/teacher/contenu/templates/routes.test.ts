@@ -73,7 +73,7 @@ describe('GET /dashboard/teacher/contenu/templates (Gallery)', () => {
 		} catch (err) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(401);
-			expect(error.body.message).toBe('Unauthorized');
+			expect(error.body.message).toBe('Non autorisé - Authentification requise');
 		}
 	});
 
@@ -279,8 +279,8 @@ describe('POST /dashboard/teacher/contenu/templates/new (Create Template)', () =
 
 		const result = await actions.create({ request, locals } as never);
 
-		expect(result).toHaveProperty('error');
-		expect((result as { error: string }).error).toContain('requis');
+		expect(result).toHaveProperty('data.error');
+		expect((result as { data: { error: string } }).data.error).toContain('requis');
 	});
 
 	it('should reject invalid title (too long)', async () => {
@@ -305,8 +305,8 @@ describe('POST /dashboard/teacher/contenu/templates/new (Create Template)', () =
 
 		const result = await actions.create({ request, locals } as never);
 
-		expect(result).toHaveProperty('error');
-		expect((result as { error: string }).error).toContain('trop long');
+		expect(result).toHaveProperty('data.error');
+		expect((result as { data: { error: string } }).data.error).toContain('trop long');
 	});
 
 	it('should create template with valid data', async () => {
@@ -321,11 +321,31 @@ describe('POST /dashboard/teacher/contenu/templates/new (Create Template)', () =
 			error: null
 		});
 
-		// Mock template creation
+		// Mock template creation — must include content_snapshot for dbTemplateToApp
 		mockSupabase._mockChain.insert.mockReturnThis();
 		mockSupabase._mockChain.select.mockReturnThis();
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
-			data: { id: TEST_IDS.template, title: 'New Template' },
+			data: {
+				id: TEST_IDS.template,
+				title: 'New Template',
+				description: 'Test description',
+				grades: ['3', '4'],
+				color: null,
+				icon: null,
+				status: 'draft',
+				is_public: false,
+				instantiation_count: 0,
+				current_version: 1,
+				created_at: '2024-01-01T00:00:00Z',
+				updated_at: '2024-01-01T00:00:00Z',
+				created_by: TEST_IDS.teacher,
+				content_snapshot: {
+					documents: [],
+					quizQuestions: [],
+					checklistItems: [],
+					exercises: []
+				}
+			},
 			error: null
 		});
 
@@ -339,10 +359,15 @@ describe('POST /dashboard/teacher/contenu/templates/new (Create Template)', () =
 			body: formData
 		});
 
-		const result = await actions.create({ request, locals } as never);
-
-		expect(result).toHaveProperty('success', true);
-		expect(result).toHaveProperty('templateId', TEST_IDS.template);
+		// Successful create throws a redirect(303) — catch and verify the location
+		try {
+			await actions.create({ request, locals } as never);
+			expect.fail('Should have thrown a redirect');
+		} catch (err) {
+			const redirect = err as { status: number; location: string };
+			expect(redirect.status).toBe(303);
+			expect(redirect.location).toContain(TEST_IDS.template);
+		}
 	});
 });
 
@@ -450,20 +475,12 @@ describe('GET /dashboard/teacher/contenu/templates/[templateId] (Detail)', () =>
 				error: null
 			});
 
-		// Mock versions fetch
-		mockSupabase._mockChain.select.mockReturnThis();
-		mockSupabase._mockChain.eq.mockReturnThis();
-		mockSupabase._mockChain.order.mockResolvedValueOnce({
-			data: [],
-			error: null
-		});
-
-		// Mock teacher classes fetch
-		mockSupabase._mockChain.select.mockReturnThis();
-		mockSupabase._mockChain.eq.mockResolvedValueOnce({
-			data: [],
-			error: null
-		});
+		// Mock versions fetch: getTemplateVersions uses .select().eq().order() (thenable)
+		// Mock classes fetch: classes query uses .select().eq().eq().order() (thenable)
+		// Both terminate with .order() — provide two sequential mocks
+		mockSupabase._mockChain.order
+			.mockResolvedValueOnce({ data: [], error: null }) // versions
+			.mockResolvedValueOnce({ data: [], error: null }); // classes
 
 		const params = { templateId: TEST_IDS.template };
 		const url = new URL(
@@ -550,12 +567,27 @@ describe('Template Actions', () => {
 					error: null
 				});
 
-			// Mock update
+			// Mock update — must include content_snapshot for dbTemplateToApp
 			mockSupabase._mockChain.update.mockReturnThis();
 			mockSupabase._mockChain.eq.mockReturnThis();
 			mockSupabase._mockChain.select.mockReturnThis();
 			mockSupabase._mockChain.single.mockResolvedValueOnce({
-				data: { id: TEST_IDS.template },
+				data: {
+					id: TEST_IDS.template,
+					title: 'Updated Title',
+					description: 'Updated description',
+					grades: [],
+					color: null,
+					icon: null,
+					status: 'draft',
+					is_public: false,
+					instantiation_count: 0,
+					current_version: 1,
+					created_at: '2024-01-01T00:00:00Z',
+					updated_at: '2024-01-01T00:00:00Z',
+					created_by: TEST_IDS.teacher,
+					content_snapshot: { documents: [], quizQuestions: [], checklistItems: [], exercises: [] }
+				},
 				error: null
 			});
 
@@ -609,8 +641,8 @@ describe('Template Actions', () => {
 				params: { templateId: TEST_IDS.template }
 			} as never);
 
-			expect(result).toHaveProperty('error');
-			expect((result as { error: string }).error).toContain('refus');
+			expect(result).toHaveProperty('data.error');
+			expect((result as { data: { error: string } }).data.error).toContain('refus');
 		});
 	});
 
@@ -673,12 +705,41 @@ describe('Template Actions', () => {
 					error: null
 				});
 
-			// Mock publish update
+			// Mock publish update — must include content_snapshot for dbTemplateToApp
 			mockSupabase._mockChain.update.mockReturnThis();
 			mockSupabase._mockChain.eq.mockReturnThis();
 			mockSupabase._mockChain.select.mockReturnThis();
 			mockSupabase._mockChain.single.mockResolvedValueOnce({
-				data: { id: TEST_IDS.template, status: 'published' },
+				data: {
+					id: TEST_IDS.template,
+					title: 'Test Template',
+					description: null,
+					grades: ['3'],
+					color: '#3b82f6',
+					icon: 'book',
+					status: 'published',
+					is_public: true,
+					instantiation_count: 5,
+					current_version: 1,
+					created_at: '2024-01-01T00:00:00Z',
+					updated_at: '2024-01-01T00:00:00Z',
+					created_by: TEST_IDS.teacher,
+					content_snapshot: {
+						documents: [
+							{
+								title: 'Doc 1',
+								description: null,
+								documentUrl: 'http://example.com/doc',
+								sourceType: 'external_url',
+								mimeType: 'application/pdf',
+								displayOrder: 0
+							}
+						],
+						quizQuestions: [],
+						checklistItems: [],
+						exercises: []
+					}
+				},
 				error: null
 			});
 
@@ -741,8 +802,8 @@ describe('Template Actions', () => {
 				params: { templateId: TEST_IDS.template }
 			} as never);
 
-			expect(result).toHaveProperty('error');
-			expect((result as { error: string }).error).toContain('vide');
+			expect(result).toHaveProperty('data.error');
+			expect((result as { data: { error: string } }).data.error).toContain('au moins un élément');
 		});
 	});
 
@@ -825,6 +886,10 @@ describe('Template Actions', () => {
 
 			const formData = new FormData();
 			formData.append('classId', TEST_IDS.class);
+			// title must be a string or absent (formData.get returns null which Zod rejects on
+			// string().optional()); providing an explicit title ensures Zod validation passes
+			// and the 403 ownership check is reached.
+			formData.append('title', 'Chapter from template');
 
 			const request = new Request('http://localhost', {
 				method: 'POST',
@@ -837,19 +902,10 @@ describe('Template Actions', () => {
 				params: { templateId: TEST_IDS.template }
 			} as never);
 
-			// fail() returns an object with status and data properties
-			expect(result).toHaveProperty('status');
-			if (typeof result === 'object' && result !== null && 'status' in result) {
-				expect(result.status).toBe(403);
-				if (
-					'data' in result &&
-					result.data &&
-					typeof result.data === 'object' &&
-					'error' in result.data
-				) {
-					expect((result.data as { error: string }).error).toContain('refus');
-				}
-			}
+			// fail(403, { error, action }) → ActionFailure { status: 403, data: { error, action } }
+			expect(result).toHaveProperty('status', 403);
+			expect(result).toHaveProperty('data.error');
+			expect((result as { data: { error: string } }).data.error).toContain('refus');
 		});
 	});
 });

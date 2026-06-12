@@ -10,7 +10,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
 	createMockSupabase,
 	createMockLocals,
@@ -50,7 +50,11 @@ describe('POST /api/python-notebooks/[id]/checkpoint-runs', () => {
 		const { POST } = await import('./+server');
 
 		const supabase = createMockSupabase();
-		mockSuccess(supabase, passedRun, 'single');
+		// The handler calls supabase.rpc('upsert_checkpoint_run', {...}).single()
+		// so rpc must return an object with .single()
+		supabase.rpc.mockReturnValueOnce({
+			single: vi.fn().mockResolvedValueOnce({ data: passedRun, error: null })
+		});
 		const locals = createMockLocals(USER_ID, supabase);
 		const request = createMockRequest({ cell_id: CELL_ID, status: 'passed' });
 
@@ -64,23 +68,21 @@ describe('POST /api/python-notebooks/[id]/checkpoint-runs', () => {
 		const data = (await response.json()) as { run: typeof passedRun };
 		expect(data.run).toEqual(passedRun);
 
-		expect(supabase.from).toHaveBeenCalledWith('python_notebook_checkpoint_runs');
-		const upsertArgs = (supabase._mockChain.upsert as any).mock.calls[0];
-		expect(upsertArgs[0]).toMatchObject({
-			notebook_id: NOTEBOOK_ID,
-			user_id: USER_ID,
-			cell_id: CELL_ID,
-			status: 'passed',
-			error_message: null
+		expect(supabase.rpc).toHaveBeenCalledWith('upsert_checkpoint_run', {
+			p_notebook_id: NOTEBOOK_ID,
+			p_cell_id: CELL_ID,
+			p_status: 'passed',
+			p_error_message: null
 		});
-		expect(upsertArgs[1]).toEqual({ onConflict: 'notebook_id,user_id,cell_id' });
 	});
 
 	it('upserts a failed run with error_message', async () => {
 		const { POST } = await import('./+server');
 
 		const supabase = createMockSupabase();
-		mockSuccess(supabase, failedRun, 'single');
+		supabase.rpc.mockReturnValueOnce({
+			single: vi.fn().mockResolvedValueOnce({ data: failedRun, error: null })
+		});
 		const locals = createMockLocals(USER_ID, supabase);
 		const request = createMockRequest({
 			cell_id: CELL_ID,
@@ -248,9 +250,11 @@ describe('POST /api/python-notebooks/[id]/checkpoint-runs', () => {
 		const { POST } = await import('./+server');
 
 		const supabase = createMockSupabase();
-		(supabase._mockChain.single as any).mockResolvedValueOnce({
-			data: null,
-			error: { code: '42501', message: 'new row violates row-level security policy' }
+		supabase.rpc.mockReturnValueOnce({
+			single: vi.fn().mockResolvedValueOnce({
+				data: null,
+				error: { code: '42501', message: 'new row violates row-level security policy' }
+			})
 		});
 		const locals = createMockLocals(USER_ID, supabase);
 		const request = createMockRequest({ cell_id: CELL_ID, status: 'passed' });
@@ -268,7 +272,12 @@ describe('POST /api/python-notebooks/[id]/checkpoint-runs', () => {
 		const { POST } = await import('./+server');
 
 		const supabase = createMockSupabase();
-		mockError(supabase, 'some random db error', 'single');
+		supabase.rpc.mockReturnValueOnce({
+			single: vi.fn().mockResolvedValueOnce({
+				data: null,
+				error: { message: 'some random db error' }
+			})
+		});
 		const locals = createMockLocals(USER_ID, supabase);
 		const request = createMockRequest({ cell_id: CELL_ID, status: 'passed' });
 
