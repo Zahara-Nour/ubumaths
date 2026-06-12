@@ -73,10 +73,14 @@ describe('Per-blank validation — Inferred mode', () => {
 			expect(result.isCorrect).toBe(true);
 		});
 
-		it('should validate algebraic equivalence (e.g., 2+3 vs 5)', () => {
+		it('should reject unsimplified form for a bare math blank (2+3 vs 5 = bad_form)', () => {
+			// A bare math blank (no requiredForm/precision/unit) requires the
+			// computed/canonical form: an unsimplified equivalent like 2+3 for an
+			// expected 5 is mathematically equivalent but in the wrong form.
 			const instance = createInstance([mathBlank('5')]);
 			const result = validateAnswer(['2+3'], instance);
-			expect(result.isCorrect).toBe(true);
+			expect(result.isCorrect).toBe(false);
+			expect(result.status).toBe('bad_form');
 		});
 
 		it('should reject non-equivalent answer', () => {

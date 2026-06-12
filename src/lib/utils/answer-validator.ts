@@ -24,8 +24,11 @@ import { evaluateExpression, areEquivalent } from '$lib/math';
 import { checkUnit } from '$lib/questions/constraint-validators';
 import {
 	checkForm as checkFormUnified,
+	cosmeticViolations,
+	isSimpleNumberLatex,
 	type ConstraintSeverity
 } from '$lib/mathAST/cosmetic-transforms';
+import { extractUnitFromLatex } from '$lib/questions/units/parser';
 import { CONSTRAINT_FEEDBACK } from '$lib/questions/feedback';
 import { evaluateRule, type EvaluationContext } from '$lib/questions/validation-rule-evaluator';
 import { checkRequiredForm, getRequiredFormFeedback } from '$lib/questions/required-form-validator';
@@ -64,6 +67,55 @@ function buildConstraintSeverities(
 }
 
 /**
+ * Map raw cosmetic violations (from `cosmeticViolations`) into the
+ * `ValidationResult.constraintViolations` shape, computing the worst status.
+ *
+ * Mirrors the violation-handling loop in `applyConstraints` but without any
+ * form-vs-expected comparison — used by blanks whose form is validated by
+ * another stage (requiredForm / precision / unit).
+ */
+function mapCosmeticViolations(
+	rawViolations: Array<{ id: string; severity: 'strict' | 'warn' }>,
+	isMultiple: boolean
+): { status: ValidationStatus; violations: NonNullable<ValidationResult['constraintViolations']> } {
+	const violations: NonNullable<ValidationResult['constraintViolations']> = [];
+	let worstStatus: ValidationStatus = 'correct';
+
+	for (const v of rawViolations) {
+		const constraintId = v.id as ConstraintId;
+		if (!CONSTRAINT_FEEDBACK[constraintId]) continue;
+		const feedback = CONSTRAINT_FEEDBACK[constraintId][isMultiple ? 'multiple' : 'single'];
+
+		if (v.severity === 'strict') {
+			violations.push({ constraint: constraintId, severity: 'error', feedback });
+			worstStatus = 'bad_form';
+		} else {
+			violations.push({ constraint: constraintId, severity: 'warning', feedback });
+			if (worstStatus === 'correct') {
+				worstStatus = 'unoptimal_form';
+			}
+		}
+	}
+
+	return { status: worstStatus, violations };
+}
+
+/**
+ * Extract the numeric (value) part of a quantity LaTeX string by stripping the
+ * `\unit{...}` wrapper. Returns the trimmed remainder, or the original trimmed
+ * string when no unit wrapper is present.
+ *
+ * Used so the cosmetic pipeline never has to parse `\unit{}` (the LaTeX parser
+ * chokes on it) — we feed it only the numeric part.
+ */
+function extractNumericLatexPart(latex: string): string {
+	const unit = extractUnitFromLatex(latex);
+	if (unit === null) return latex.trim();
+	// Remove the \unit{...} wrapper (only the unit we found) and trim.
+	return latex.replace(/\\unit\{[^}]*\}/, '').trim();
+}
+
+/**
  * Apply constraint checks to a mathematically correct answer
  *
  * Uses the unified checkForm pipeline for cosmetic constraints,
@@ -85,13 +137,16 @@ function applyConstraints(
 	let worstStatus: ValidationStatus = 'correct';
 	const isMultiple = answers.length > 1;
 	const severities = buildConstraintSeverities(constraints);
+	const formOptions = {
+		allowFirstNegative: constraints.allowBracketsInFirstNegativeTerm === true
+	};
 
 	// Apply unified checkForm for each answer/expected pair
 	for (let i = 0; i < answersLatex.length; i++) {
 		const expected = expectedAnswers[i];
 		if (!expected) continue;
 
-		const formResult = checkFormUnified(answersLatex[i], expected, severities);
+		const formResult = checkFormUnified(answersLatex[i], expected, severities, formOptions);
 
 		// Collect violations from checkForm
 		for (const v of formResult.violations) {
@@ -641,15 +696,98 @@ function validateSingleBlank(
 		}
 	}
 
-	// 4. Constraints (per-blank, using instance-level constraint config)
+	// 4. Form check (mode-aware) + cosmetic violations.
+	//
+	// The form a blank must satisfy depends on its mode:
+	//   - text       → no form constraint at all (value already validated step 2)
+	//   - requiredForm → form already checked at step 3; here we only surface
+	//                    cosmetic violations (e.g. (2)×3 with brackets:'strict')
+	//   - unit       → numeric part must be a simple number; the unit (conversion
+	//                  + required symbol) is already handled at step 2 by
+	//                  validateQuantityAnswer. We never feed \unit{} to checkForm.
+	//   - precision  → the answer must be a simple (possibly negative) number
+	//   - exact      → compare normalised form against the expected answer
+	//
 	// Use userAnswer as fallback when userAnswerLatex is empty (e.g., prefilled
 	// blanks where MathLive never fired an input event).
+	const constraints = instance.options?.constraints ?? {};
 	const effectiveLatex = userAnswerLatex || userAnswer;
+
+	// text: no form check — value was already validated at step 2.
+	if (blank.type === 'text') {
+		return { isCorrect: true, status: 'correct' };
+	}
+
+	const severities = buildConstraintSeverities(constraints);
+	const formOptions = {
+		allowFirstNegative: constraints.allowBracketsInFirstNegativeTerm === true
+	};
+
+	// requiredForm: form handled at step 3 → only cosmetic violations here.
+	if (blank.requiredForm) {
+		const raw = cosmeticViolations(effectiveLatex, severities, formOptions);
+		const { status, violations } = mapCosmeticViolations(raw, false);
+		return {
+			isCorrect: status !== 'bad_form',
+			status,
+			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
+			constraintViolations: violations
+		};
+	}
+
+	// unit: numeric part must be a simple number; cosmetic checks on numeric part.
+	if (blank.unit?.expected) {
+		const numericLatex = extractNumericLatexPart(effectiveLatex);
+		const raw = cosmeticViolations(numericLatex, severities, formOptions);
+		const { status, violations } = mapCosmeticViolations(raw, false);
+
+		if (!isSimpleNumberLatex(numericLatex)) {
+			const feedback = CONSTRAINT_FEEDBACK['form'].single;
+			return {
+				isCorrect: false,
+				status: 'bad_form',
+				feedback,
+				constraintViolations: [{ constraint: 'form', severity: 'error', feedback }, ...violations]
+			};
+		}
+
+		return {
+			isCorrect: status !== 'bad_form',
+			status,
+			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
+			constraintViolations: violations
+		};
+	}
+
+	// precision: the answer must be a simple (possibly negative) number.
+	if (blank.precision) {
+		const raw = cosmeticViolations(effectiveLatex, severities, formOptions);
+		const { status, violations } = mapCosmeticViolations(raw, false);
+
+		if (!isSimpleNumberLatex(effectiveLatex)) {
+			const feedback = CONSTRAINT_FEEDBACK['form'].single;
+			return {
+				isCorrect: false,
+				status: 'bad_form',
+				feedback,
+				constraintViolations: [{ constraint: 'form', severity: 'error', feedback }, ...violations]
+			};
+		}
+
+		return {
+			isCorrect: status !== 'bad_form',
+			status,
+			feedback: status !== 'correct' ? violations[0]?.feedback : undefined,
+			constraintViolations: violations
+		};
+	}
+
+	// exact: compare normalised form against expected answer (unchanged).
 	const { status, violations } = applyConstraints(
 		[userAnswer],
 		[effectiveLatex],
 		[blank.expectedAnswer],
-		instance.options?.constraints ?? {}
+		constraints
 	);
 
 	return {
