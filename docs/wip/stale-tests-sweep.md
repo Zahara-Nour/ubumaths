@@ -1,6 +1,6 @@
 # Passe « tests stale » — inventaire
 
-> **Date** : 2026-06-12 · **Statut** : ✅ remédiation TERMINÉE le 2026-06-12 (63 fichiers / ~470 tests réalignés, **11 régressions de prod corrigées**, vérifié zone par zone) · **Auteur** : sweep + remédiation
+> **Date** : 2026-06-12 · **Statut** : ⚠️ EN COURS — `src/**` fait (63 fichiers, **11 régressions corrigées**) mais **`tests/unit/` (12 fic. / 181 tests) jamais balayé** (angle mort de la méthode de sweep) · **Auteur** : sweep + remédiation
 
 ## Contexte
 
@@ -21,6 +21,28 @@ et la CI deviendra **honnête** : Type Check rouge (~9 erreurs svelte-check base
 rouge (`test:unit` manquant), tests stale rouges — c'est le présent chantier.
 
 Découvert au départ via le fix `generateCronSecret` (un test `verifyCronAuth` était stale depuis un changement de message).
+
+## ⚠️ Angle mort découvert le 2026-06-12 : `tests/unit/`
+
+Le project vitest `server` inclut `src/**/*.test.ts` **ET `tests/unit/**`** (`vite.config.ts:146`). Tout le sweep + les vérifs ont utilisé `pnpm test:server src/<zone>` → **`tests/unit/` n'a jamais été balayé.** Découvert via le sanity-test du gate (`vitest --changed`a relancé toute la suite à cause de`package.json` modifié).
+
+**22 fichiers, 12 rouges / 181 tests** restants (surtout Google Classroom + marketplace — probables vraies régressions) :
+
+| Fichier (`tests/unit/`)               | Fails |
+| ------------------------------------- | ----: |
+| `api/student-shared-materials`        |    28 |
+| `api/google-shared-coursework-by-id`  |    23 |
+| `api/google-topics`                   |    23 |
+| `api/marketplace/listings`            |    21 |
+| `api/google-shared-coursework`        |    19 |
+| `api/google-materials-share`          |    18 |
+| `server/google-sync`                  |    18 |
+| `api/marketplace/proposals`           |    16 |
+| `validation/google`                   |    11 |
+| `modalStack`                          |     2 |
+| `account/export` · `vip-card-filters` | 1 · 1 |
+
+**Leçon** : un sweep de tests doit couvrir **tous les roots configurés** (`src/**` ET `tests/unit/**`), pas juste `src/`.
 
 ## Méthode
 
