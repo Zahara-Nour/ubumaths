@@ -8,7 +8,7 @@ import type { BadgeProgress } from '$lib/utils/riddle-badges';
 export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/auth/login');
 	}
 
 	// Get filters from query params

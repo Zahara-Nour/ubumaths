@@ -7,7 +7,7 @@ import { redirect, fail } from '@sveltejs/kit';
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/auth/login');
 	}
 
 	// Get current riddle of the day

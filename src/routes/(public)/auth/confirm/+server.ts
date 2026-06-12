@@ -103,7 +103,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	if (!token_hash || !type) {
 		logger.error('Missing token_hash or type in confirmation URL');
 		// Redirect to login with error message
-		throw redirect(303, '/login?error=Invalid confirmation link');
+		throw redirect(303, '/auth/login?error=Invalid confirmation link');
 	}
 
 	// Verify the OTP token and exchange it for a session
@@ -116,7 +116,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	if (error) {
 		logger.error('Auth confirmation failed:', error.message);
 		// Redirect to login with error
-		throw redirect(303, '/login?error=Confirmation failed. Please try again.');
+		throw redirect(303, '/auth/login?error=Confirmation failed. Please try again.');
 	}
 
 	logger.info('Auth confirmation successful, type:', type);

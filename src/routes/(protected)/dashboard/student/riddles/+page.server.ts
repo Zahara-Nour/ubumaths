@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
 
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/auth/login');
 	}
 
 	// Get riddle of the day using RPC function

@@ -10,7 +10,7 @@ import { getTeacherExercises, deleteExercise } from '$lib/server/exercises';
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/auth/login');
 	}
 
 	// Parse query parameters for filters
