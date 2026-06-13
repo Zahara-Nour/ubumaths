@@ -428,16 +428,18 @@ describe('awardAchievement', () => {
 		expect(result).toBe(true);
 	});
 
-	it('should handle null reason by passing null to RPC', async () => {
+	it('should omit reason (undefined) so the RPC applies its SQL NULL default', async () => {
 		(mockSupabase.rpc as Mock).mockResolvedValue({ data: true, error: null });
 
 		await awardAchievement(mockSupabase, teacherId, studentId, achievementId);
 
+		// service.ts passes `reason ?? undefined`: an undefined field is dropped
+		// from the JSON-RPC payload, letting the SQL default (NULL) apply.
 		expect(mockSupabase.rpc).toHaveBeenCalledWith('award_achievement_manual', {
 			p_teacher_id: teacherId,
 			p_student_id: studentId,
 			p_achievement_id: achievementId,
-			p_reason: null
+			p_reason: undefined
 		});
 	});
 
