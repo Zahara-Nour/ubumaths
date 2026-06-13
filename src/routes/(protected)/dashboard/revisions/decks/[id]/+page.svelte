@@ -20,7 +20,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 	import type { DeckSection, DeckCardLite } from './+page.server';
-	import { UNASSIGNED_KEY } from './+page.server';
+	import { UNASSIGNED_KEY } from './constants';
 
 	interface Props {
 		data: PageData;
