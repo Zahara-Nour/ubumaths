@@ -338,11 +338,27 @@ class FriendsManager {
 		}
 
 		try {
-			// Search users by name (case insensitive)
+			// RGPD scope: a student may only befriend a peer in the SAME school AND grade.
+			// Fetch the current user's school/grade; without both, no discovery is allowed.
+			const { data: me, error: meError } = await this.supabase
+				.from('profiles')
+				.select('school_id, grade')
+				.eq('id', this.currentUserId)
+				.single();
+
+			if (meError) throw meError;
+			if (!me?.school_id || !me?.grade) {
+				// No school/grade → cannot scope safely → return nothing.
+				return [];
+			}
+
+			// Search users by name (case insensitive), scoped to same school + grade.
 			const { data: usersData, error: usersError } = await this.supabase
 				.from('profiles')
 				.select('id, full_name, firstname, lastname, avatar_url, role')
 				.neq('id', this.currentUserId) // Exclude self
+				.eq('school_id', me.school_id) // Same school
+				.eq('grade', me.grade) // Same grade level
 				.or(`full_name.ilike.%${query}%,firstname.ilike.%${query}%,lastname.ilike.%${query}%`)
 				.limit(20);
 
