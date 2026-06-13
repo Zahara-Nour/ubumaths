@@ -134,11 +134,14 @@ les identités OAuth. Tester un login email **et** un login Google après bascul
 
 ### Phase 8 — Cutover (fenêtre de maintenance)
 
-- [ ] Geler les écritures (mode maintenance ou bannière).
+- [ ] **Activer le mode maintenance** : `MAINTENANCE_MODE=true` +
+      `MAINTENANCE_BYPASS_SECRET` sur Vercel (+ redeploy). Implémenté, 503 indépendant
+      de la DB, bypass opérateur `/?bypass=<secret>` → cf.
+      `docs/wip/maintenance-page-progress.md`.
 - [ ] **Dump différentiel final** (données créées depuis le dump initial) → cible.
 - [ ] Basculer les env Vercel sur le nouveau projet ; redéployer.
 - [ ] Smoke tests prod (voir Phase 9).
-- [ ] Lever le mode maintenance.
+- [ ] Lever le mode maintenance (`MAINTENANCE_MODE=false` + redeploy ; supprimer le secret).
 
 ### Phase 9 — Tests post-migration
 
