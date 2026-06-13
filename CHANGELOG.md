@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.10.1...v0.10.2) (2026-06-13)
+
+### ✨ Features
+
+- **friends:** relation unique 'friend' + recherche scopée école/niveau (RGPD) ([cc1e2da](https://github.com/Zahara-Nour/ubumaths/commit/cc1e2da5b6df464eeb4eb426647ff72e8cd9fb93))
+
+### 🐛 Bug Fixes
+
+- **achievements:** awardAchievement passe null (pas undefined) a la RPC sans raison ([ff1f92b](https://github.com/Zahara-Nour/ubumaths/commit/ff1f92bf7f0337cf039b484125898935548205ef))
+- **answer-validator:** checkForm n'ecrase plus les modes valeur (precision/unite/texte/requiredForm) ([e48b637](https://github.com/Zahara-Nour/ubumaths/commit/e48b63785b7f2225f36b751911a73085e832e6e9))
+- **api:** 2 nits robustesse/doc reperes pendant le sweep tests stale ([c6c4df1](https://github.com/Zahara-Nour/ubumaths/commit/c6c4df1f34d5589bf187322eecdf7e2c3fbd9519))
+- **assessments:** assessmentResponseSchema mirror DbAssessment (reponse 500 en prod) ([7f2212d](https://github.com/Zahara-Nour/ubumaths/commit/7f2212d9ec0aed057f95229be68201b9190323e4))
+- **assessments:** createAssessmentSchema valide CartItem[] (creation cassee en prod) ([5e84d56](https://github.com/Zahara-Nour/ubumaths/commit/5e84d5606e559fd9214a0c63018a6a7089b88c3d))
+- **assessments:** tolere les query params absents sur les routes de lecture ([c534401](https://github.com/Zahara-Nour/ubumaths/commit/c534401e9749f605768afef46aa024be6bf05093))
+- **auth:** durcit la validation d'authentification + complete le fix /login ([b8080eb](https://github.com/Zahara-Nour/ubumaths/commit/b8080eb10705fd76379100d42a3e963a0f4632c4))
+- **auth:** redirige /login vers /auth/login (route inexistante -> 404) ([6e50c3c](https://github.com/Zahara-Nour/ubumaths/commit/6e50c3c16c932490763782396c43207b8d93bd7a))
+- **chapter-templates:** formatGrades gère les codes lycée (régression d'affichage) ([b01f438](https://github.com/Zahara-Nour/ubumaths/commit/b01f4388c654adbfeb50594cf982ed54068ec14f))
+- **google-sync:** vérifie l'erreur d'insert des pièces jointes + realigne 6 tests stale ([f339c37](https://github.com/Zahara-Nour/ubumaths/commit/f339c37658e19f5e73bd9e51b8d36e99bc77357b))
+- **mathast:** gere \, comme separateur de milliers dans les nombres LaTeX ([6ca99c2](https://github.com/Zahara-Nour/ubumaths/commit/6ca99c2979b9a85248250d96c23d2d620e7b69ee))
+- **mathast:** normalise la virgule décimale française avant parse dans checkForm ([bdb92da](https://github.com/Zahara-Nour/ubumaths/commit/bdb92da4710e39baf87e0c4ec439201eb6ccca30)), closes [#10](https://github.com/Zahara-Nour/ubumaths/issues/10)
+- **migration:** convertit le délimiteur réel des évaluations décimales [._..._] ([eb8de68](https://github.com/Zahara-Nour/ubumaths/commit/eb8de68b46132205fa7a2f0da42ed37779e5b4c3)), closes [#9](https://github.com/Zahara-Nour/ubumaths/issues/9)
+- **moderation:** deleteMessageSchema n'exige plus messageId dans le body ([39b7c32](https://github.com/Zahara-Nour/ubumaths/commit/39b7c3253ec7ecab9e4f3b16ad5ff35713a022da))
+- **security:** generateCronSecret utilise un CSPRNG (crypto.randomBytes) ([367c264](https://github.com/Zahara-Nour/ubumaths/commit/367c2640b2b2734d541f886981248d633ca0e155))
+- **srs:** extrait UNASSIGNED_KEY dans un module constants partage ([239ab6b](https://github.com/Zahara-Nour/ubumaths/commit/239ab6b9379c71960072f626bb948ee27b02f492))
+- **types:** burn-down erreurs svelte-check source (596 → 50) ([7594bde](https://github.com/Zahara-Nour/ubumaths/commit/7594bdeab3a09ef49dde43ece080bcb032f0c668))
+- **types:** résiduels svelte-check (50 → 13 décisions humaines) ([19a909a](https://github.com/Zahara-Nour/ubumaths/commit/19a909abfd790f87e9a35c12bc93d389a897da36))
+- **types:** tranche les 5 décisions PO → Type Check 0 erreur ([e16b79f](https://github.com/Zahara-Nour/ubumaths/commit/e16b79f6d326b9c83bf02057bba65312ead6d8b4))
+- **types:** type icon nav fields en ComponentType (lucide legacy) ([ecd71a2](https://github.com/Zahara-Nour/ubumaths/commit/ecd71a2765f82d4e40c086372a9c7adb659cee20))
+- **ubumark:** enrobe chaque substitution {{var}} d'éval en {} (groupe l'opérande) ([6199e03](https://github.com/Zahara-Nour/ubumaths/commit/6199e030f4cefe87a93bcd66796ced0bba0b7d0e))
+- **ubumark:** restaure le blockquote multiligne dans les items de liste ([e4674cc](https://github.com/Zahara-Nour/ubumaths/commit/e4674ccb8903b0b471b9e1d4e9b742cd0cc4e4e7))
+- **whiteboard:** propage arrowType aux éléments sélectionnés (+ tidy-ups) ([3b8cdad](https://github.com/Zahara-Nour/ubumaths/commit/3b8cdad2026d1b5227045a66668493160622f32e))
+
+### 📚 Documentation
+
+- marque le chantier CI verte comme termine (run 27460802481) ([c1fd589](https://github.com/Zahara-Nour/ubumaths/commit/c1fd589af20bd685e4f5b0314cfe9e18f1e7bd53))
+- **ref:** documentation de référence du thème authentication ([1d110fd](https://github.com/Zahara-Nour/ubumaths/commit/1d110fdef1a32b194da4dd71071aa38134d2cb6e))
+- **wip:** angle mort tests/unit — chantier PAS fini ([dc95e87](https://github.com/Zahara-Nour/ubumaths/commit/dc95e875ebd0c7b2a565062b71bfb3ca46cd288b))
+- **wip:** answer-validator (19 regressions suspectes) + challenge-variables (WIP) ([8470674](https://github.com/Zahara-Nour/ubumaths/commit/8470674ef81bc00d2903ea09bdb3c1cdff8985b2))
+- **wip:** answer-validator regression corrigee (5e regression prod du chantier) ([4876d56](https://github.com/Zahara-Nour/ubumaths/commit/4876d563466a34b761d6265974aaa49a82d616f1))
+- **wip:** bilan final chantier verdir CI (typecheck 2233→13, tests + lint verts) ([ac8aea9](https://github.com/Zahara-Nour/ubumaths/commit/ac8aea945d50cfb08e8e42346994b505b6acc9d3))
+- **wip:** challenge-variables test supprime (navadra condamne) ([39ed8ce](https://github.com/Zahara-Nour/ubumaths/commit/39ed8ce99b53f0e342bd605403cadb125f9cf84a))
+- **wip:** cloture tests stale (TERMINÉ + gate applique) ([24c7f30](https://github.com/Zahara-Nour/ubumaths/commit/24c7f30b721677fab2f6cb0b2f185415d31008c5))
+- **wip:** cluster markdown traite + 2 nouvelles regressions flaggees ([d4313dd](https://github.com/Zahara-Nour/ubumaths/commit/d4313dd180168585def3440aa675274dfc6498de))
+- **wip:** corrige le diagnostic CI (mismatch de version, pas test:unit) ([6ebd4bb](https://github.com/Zahara-Nour/ubumaths/commit/6ebd4bb54cdc1b1850c47d931f3752040820f8c8))
+- **wip:** evoland + cache + color faits ([bc5f12d](https://github.com/Zahara-Nour/ubumaths/commit/bc5f12d9f7741899a9b188d4bb02504db3a62957))
+- **wip:** finalise le journal tests stale (TERMINÉ + diagnostic CI corrige) ([258e5a3](https://github.com/Zahara-Nour/ubumaths/commit/258e5a36e95e8c3b03b1105e08878cc5af8a8563))
+- **wip:** geometry-core 7 fichiers faits (refonte angle DSL) ([34c7efa](https://github.com/Zahara-Nour/ubumaths/commit/34c7efa8df265647ad2cdd279383aaf07e4e7153))
+- **wip:** inventaire des tests stale (sweep 2026-06-12) ([01e29c2](https://github.com/Zahara-Nour/ubumaths/commit/01e29c26947ae4e87efeca90abe6615d040359c1))
+- **wip:** journal - student-access + achievements/migration (91 tests) ([8606340](https://github.com/Zahara-Nour/ubumaths/commit/8606340f363030379ed1f69d7f1fc3766b86563f))
+- **wip:** journal — 7 derniers fichiers (clôture prématurée corrigée, 11e régression) ([c2a492e](https://github.com/Zahara-Nour/ubumaths/commit/c2a492e6734acadb72ac8b68f6711ea94107778e))
+- **wip:** journal — api/srs terminé, chantier remédiation tests stale clos ([e321f35](https://github.com/Zahara-Nour/ubumaths/commit/e321f35b5c08d5106a33926fde78a36c57e3edd0))
+- **wip:** journal — cluster client terminé (5 fichiers, 0 régression, suite client verte) ([fab4274](https://github.com/Zahara-Nour/ubumaths/commit/fab42745703b7e1e1e357dad9509da0b981f1b79))
+- **wip:** journal — cluster questions terminé (2 stale + 1 repro mort) ([d272958](https://github.com/Zahara-Nour/ubumaths/commit/d272958fb00d875b1c4709588595b607ef07bcdc))
+- **wip:** journal — régressions [#9](https://github.com/Zahara-Nour/ubumaths/issues/9) (converter éval décimale) + [#10](https://github.com/Zahara-Nour/ubumaths/issues/10) (checkForm virgule) ([99a123b](https://github.com/Zahara-Nour/ubumaths/commit/99a123ba2dd7ffaac9d17f27266c842455bcf3b5))
+- **wip:** journal — tests/unit + src/lib/validation terminés, chantier clos (12 régressions) ([672d30b](https://github.com/Zahara-Nour/ubumaths/commit/672d30be7c3a526140e6d5228cce9d329b6407e8))
+- **wip:** journal cluster contrats API - assessments (3 regressions prod) ([a91da64](https://github.com/Zahara-Nour/ubumaths/commit/a91da64e935eaae1f823f1152cc033aa44127d96))
+- **wip:** journal cluster contrats API complet (8 fichiers, 3 fixes prod) ([60334b0](https://github.com/Zahara-Nour/ubumaths/commit/60334b0fa11e4ea89a2d1cc02e59a037d176b7f9))
+- **wip:** journal de remediation tests stale + point de reprise ([94c3cca](https://github.com/Zahara-Nour/ubumaths/commit/94c3cca796f81c75d6a82f2717869ec19d5705c3))
+- **wip:** petits fichiers serveur/whiteboard faits (+ 8e regression: achievements) ([b6e558f](https://github.com/Zahara-Nour/ubumaths/commit/b6e558f30a6399541390448e0c552c2682da4c52))
+- **wip:** regressions 6-7 (blockquote + \np) corrigees ([d936a47](https://github.com/Zahara-Nour/ubumaths/commit/d936a47c13e17e09b27a4d7c599dda1387241ed9))
+
 ### [0.10.1](https://github.com/Zahara-Nour/ubumaths/compare/v0.10.0...v0.10.1) (2026-06-11)
 
 ### 📚 Documentation
