@@ -35,9 +35,11 @@ export function compareOutputs(
 		case 'numeric':
 			return compareNumeric(expected, actual, cmp);
 		case 'custom':
-			// Custom comparators run inside the Pyodide worker; this path is
-			// never reached from the main thread. Return a neutral failure.
-			return { passed: false, diff: 'Custom comparison not supported outside worker.' };
+			// Custom comparators run a teacher-defined Python `compare()`; the worker
+			// routes `kind: 'custom'` to compareWithCustomScript() BEFORE reaching here
+			// (see pyodide.worker.ts). This branch is unreachable in practice and exists
+			// only for switch exhaustiveness.
+			return { passed: false, diff: 'Custom comparison runs in the Pyodide worker.' };
 	}
 }
 

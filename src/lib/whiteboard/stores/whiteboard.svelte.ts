@@ -4361,6 +4361,7 @@ function createWhiteboardStore() {
 				fillMode?: FillMode;
 				fill?: string;
 				fillOpacity?: number;
+				arrowType?: ArrowType;
 				elbowed?: boolean;
 				elbowDirection?: ElbowDirection;
 				startArrowhead?: Arrowhead | null;
@@ -4398,6 +4399,7 @@ function createWhiteboardStore() {
 							// Roughjs properties
 							...(style.roughness !== undefined && { roughness: style.roughness }),
 							// Arrow properties (only for arrows)
+							...(isArrow && style.arrowType !== undefined && { arrowType: style.arrowType }),
 							...(isArrow && style.elbowed !== undefined && { elbowed: style.elbowed }),
 							...(isArrow &&
 								style.elbowDirection !== undefined && { elbowDirection: style.elbowDirection }),

@@ -84,8 +84,8 @@ export async function changeStudentPalotin(
 	}
 
 	// Increment change_count separately (Supabase JS doesn't support column increment in update)
-	// NOTE: increment_buddy_change_count / add_buddy_xp RPCs exist in the DB but are
-	// not yet in the generated types (run `pnpm db:types`); `as never` bridges the gap.
+	// NOTE: increment_buddy_change_count isn't in the generated types (the RPC may not exist —
+	// the raw-update fallback below handles its absence); `as never` bridges the gap.
 	const { error: incError } = await supabase.rpc(
 		'increment_buddy_change_count' as never,
 		{
@@ -114,24 +114,22 @@ export async function addBuddyXp(
 	xp: number,
 	isMilestone: boolean = false
 ): Promise<BuddyXpGainResult> {
-	const { data, error } = await supabase.rpc(
-		'add_buddy_xp' as never,
-		{
-			p_student_id: studentId,
-			p_xp: xp,
-			p_is_milestone: isMilestone
-		} as never
-	);
+	const { data, error } = await supabase.rpc('add_buddy_xp', {
+		p_student_id: studentId,
+		p_xp: xp,
+		p_is_milestone: isMilestone
+	});
 
 	if (error) {
 		console.error('❌ [buddy-queries] Error adding buddy XP:', error);
 		throw error;
 	}
 
-	const result = data as unknown as BuddyXpGainResult;
+	// The RPC returns a JSON object; narrow it (Json is opaque at the type level).
+	const result = data as unknown as BuddyXpGainResult & { error?: unknown };
 
-	if ('error' in (data as Record<string, unknown>)) {
-		console.error('❌ [buddy-queries] RPC error:', (data as Record<string, unknown>).error);
+	if (result?.error) {
+		console.error('❌ [buddy-queries] RPC error:', result.error);
 		return { xp_gained: 0, new_xp: 0, new_level: 1, leveled_up: false, daily_cap_reached: false };
 	}
 
