@@ -1,0 +1,44 @@
+name: Nightly Pyodide Tests
+
+# The real-Pyodide integration tests (*-real.svelte.test.ts) download and run
+# Python in headless Chromium — too slow/flaky for every push, so they're excluded
+# from the main CI (vite.config.ts gate). This job re-includes them once a day via
+# RUN_PYODIDE_REAL=1, restoring coverage without slowing the push loop.
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 03:00 UTC daily
+  workflow_dispatch: # manual trigger
+
+jobs:
+  pyodide-real:
+    name: Real-Pyodide integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create CI env (placeholders)
+        run: cp .github/ci.env .env
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Run real-Pyodide tests
+        env:
+          RUN_PYODIDE_REAL: '1'
+        run: pnpm exec vitest run --project client src/**/*-real.svelte.test.ts
