@@ -3250,7 +3250,7 @@ export type Database = {
         Insert: {
           addressee_id: string
           created_at?: string
-          friendship_type: string
+          friendship_type?: string
           id?: string
           requester_id: string
           status: string
