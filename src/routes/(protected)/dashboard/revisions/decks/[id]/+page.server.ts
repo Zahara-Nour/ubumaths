@@ -10,6 +10,7 @@
 
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
+import { UNASSIGNED_KEY } from './constants';
 import { requireAuth } from '$lib/server/middleware/auth';
 
 export interface DeckSection {
@@ -41,8 +42,6 @@ export interface DeckDetailData {
 	cardsBySection: Record<string, DeckCardLite[]>;
 	totalCards: number;
 }
-
-export const UNASSIGNED_KEY = '__unassigned' as const;
 
 export const load: PageServerLoad = async ({ params, locals }): Promise<DeckDetailData> => {
 	const { user } = await requireAuth(locals);
