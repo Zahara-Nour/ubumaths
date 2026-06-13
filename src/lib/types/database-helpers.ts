@@ -142,8 +142,12 @@ export type ActivationContext = 'any' | 'minesweeper';
 /** Friendship status: pending, accepted, or rejected */
 export type FriendshipStatus = 'pending' | 'accepted' | 'rejected';
 
-/** Friendship relation type: friend, classmate, etc. */
-export type FriendshipRelationType = 'friend' | 'classmate' | 'study_buddy';
+/**
+ * Friendship relation type — collapsed to a single value 'friend' (RGPD: 'mentor' and
+ * 'classmate' were removed). Enforced by the DB CHECK constraint (see migration
+ * 20260613_friendships_single_relation_type.sql).
+ */
+export type FriendshipRelationType = 'friend';
 
 /** Friend profile information for display */
 export interface FriendProfile {
