@@ -23,8 +23,9 @@
 		}
 	}
 
-	function getFriendshipTypeLabel(type: 'classmate' | 'mentor'): string {
-		return type === 'classmate' ? 'Camarade' : 'Mentor';
+	// Friendships are a single relation type now ('friend'); legacy values map to "Ami".
+	function getFriendshipTypeLabel(): string {
+		return 'Ami';
 	}
 </script>
 
@@ -70,7 +71,7 @@
 								/>
 							</div>
 							<p class="text-sm text-muted-foreground">
-								{getFriendshipTypeLabel(friend.friendship_type as 'classmate' | 'mentor')}
+								{getFriendshipTypeLabel()}
 								{#if friend.friend_profile?.role === 'teacher'}
 									• Enseignant
 								{/if}

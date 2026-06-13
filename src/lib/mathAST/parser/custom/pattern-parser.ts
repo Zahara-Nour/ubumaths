@@ -26,7 +26,7 @@
  * @module mathAST/parser/custom/pattern-parser
  */
 
-import type { Pattern } from '../../pattern/types';
+import type { Pattern, SumPatternElement } from '../../pattern/types';
 import { P } from '../../pattern/builder';
 import { PatternTokenizer, type PatternToken, type PatternTokenType } from './pattern-tokenizer';
 import { parseConstraintExpr } from './constraint-parser';
@@ -95,7 +95,7 @@ export class PatternPrattParser {
 	 * Parse the input and return the Pattern.
 	 * @throws PatternParseError if parsing fails
 	 */
-	parse(): Pattern {
+	parse(): SumPatternElement {
 		if (this.currentToken.type === 'EOF') {
 			throw new PatternParseError('Empty input', 0, 0);
 		}
@@ -163,7 +163,7 @@ export class PatternPrattParser {
 	/**
 	 * Parse an expression with the given minimum binding power.
 	 */
-	private parseExpression(minBp: number): Pattern {
+	private parseExpression(minBp: number): SumPatternElement {
 		// Parse prefix/primary (NUD)
 		let left = this.nud();
 
@@ -183,7 +183,7 @@ export class PatternPrattParser {
 	/**
 	 * NUD (Null Denotation) - Parse prefix/primary expressions.
 	 */
-	private nud(): Pattern {
+	private nud(): SumPatternElement {
 		const token = this.currentToken;
 
 		switch (token.type) {
@@ -213,7 +213,7 @@ export class PatternPrattParser {
 	/**
 	 * LED (Left Denotation) - Parse infix/postfix expressions.
 	 */
-	private led(left: Pattern): Pattern {
+	private led(left: SumPatternElement): SumPatternElement {
 		const token = this.currentToken;
 
 		switch (token.type) {
@@ -282,7 +282,7 @@ export class PatternPrattParser {
 	 * - Sequence wildcards: `__rest` (1+ elements)
 	 * - Optional sequence wildcards: `___opt` (0+ elements)
 	 */
-	private parseWildcard(): Pattern {
+	private parseWildcard(): SumPatternElement {
 		const token = this.advance();
 
 		// token.wildcardName is guaranteed to exist for WILDCARD tokens
@@ -357,7 +357,7 @@ export class PatternPrattParser {
 		this.advance(); // consume (
 
 		// Parse arguments
-		const args: Pattern[] = [];
+		const args: SumPatternElement[] = [];
 		if (!this.check('RPAREN')) {
 			args.push(this.parseExpression(BP.NONE));
 			while (this.check('COMMA')) {
@@ -378,7 +378,7 @@ export class PatternPrattParser {
 	/**
 	 * Parse prefix minus: -expr
 	 */
-	private parsePrefixMinus(): Pattern {
+	private parsePrefixMinus(): SumPatternElement {
 		this.advance(); // consume -
 		const operand = this.parseExpression(BP.UNARY);
 		return P.neg(operand);
@@ -391,7 +391,7 @@ export class PatternPrattParser {
 	/**
 	 * Parse addition: left + right
 	 */
-	private parseAddition(left: Pattern): Pattern {
+	private parseAddition(left: SumPatternElement): SumPatternElement {
 		this.advance(); // consume +
 		const right = this.parseExpression(BP.ADDITION);
 		return P.add(left, right);
@@ -400,7 +400,7 @@ export class PatternPrattParser {
 	/**
 	 * Parse subtraction: left - right
 	 */
-	private parseSubtraction(left: Pattern): Pattern {
+	private parseSubtraction(left: SumPatternElement): SumPatternElement {
 		this.advance(); // consume -
 		const right = this.parseExpression(BP.ADDITION);
 		return P.sub(left, right);
@@ -409,7 +409,7 @@ export class PatternPrattParser {
 	/**
 	 * Parse multiplication: left * right
 	 */
-	private parseMultiplication(left: Pattern): Pattern {
+	private parseMultiplication(left: SumPatternElement): SumPatternElement {
 		this.advance(); // consume *
 		const right = this.parseExpression(BP.MULTIPLY);
 		return P.mul(left, right);
@@ -418,7 +418,7 @@ export class PatternPrattParser {
 	/**
 	 * Parse division: left / right
 	 */
-	private parseDivision(left: Pattern): Pattern {
+	private parseDivision(left: SumPatternElement): SumPatternElement {
 		this.advance(); // consume /
 		const right = this.parseExpression(BP.FRACTION);
 		return P.div(left, right);
@@ -427,7 +427,7 @@ export class PatternPrattParser {
 	/**
 	 * Parse power: left ^ right (right-associative)
 	 */
-	private parsePower(left: Pattern): Pattern {
+	private parsePower(left: SumPatternElement): SumPatternElement {
 		this.advance(); // consume ^
 		// Right-associative: use BP.POWER - 1 so 2^3^4 parses as 2^(3^4)
 		const right = this.parseExpression(BP.POWER - 1);
@@ -472,7 +472,7 @@ export class PatternPrattParser {
  * parsePattern('sin(x)')             // => P.func('sin', [P._('x')])
  * parsePattern('(x + y)')            // => P.paren(P.add(P._('x'), P._('y')))
  */
-export function parsePattern(input: string): Pattern {
+export function parsePattern(input: string): SumPatternElement {
 	const parser = new PatternPrattParser(input);
 	return parser.parse();
 }

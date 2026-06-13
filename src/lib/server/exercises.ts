@@ -298,9 +298,8 @@ export async function createExercise(
 
 	// Tags are stored in the junction table (exercise_tags), not on the row.
 	// Strip them from the row insert; we'll attach them via the junction below.
-	const tagNames: string[] = Array.isArray((exercise as { tags?: unknown }).tags)
-		? ((exercise as { tags: string[] }).tags ?? [])
-		: [];
+	const exerciseTags = (exercise as { tags?: unknown }).tags;
+	const tagNames: string[] = Array.isArray(exerciseTags) ? (exerciseTags as string[]) : [];
 	const { tags: _droppedTags, ...exerciseWithoutTags } = exercise as Omit<
 		ExerciseInsert,
 		'created_by'

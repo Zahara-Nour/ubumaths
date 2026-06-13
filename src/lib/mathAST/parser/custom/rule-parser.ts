@@ -29,7 +29,7 @@ import { PatternTokenizer, type WildcardConstraintName } from './pattern-tokeniz
 import type {
 	Rule,
 	RuleOptions,
-	Pattern,
+	SumPatternElement,
 	MatchBindings,
 	PatternConstraint
 } from '../../pattern/types';
@@ -218,8 +218,8 @@ export function parseRule(input: string, options?: Partial<RuleOptions>): Rule {
 	}
 
 	// Step 3: Parse pattern and replacement using pattern-parser
-	let pattern: Pattern;
-	let replacement: Pattern;
+	let pattern: SumPatternElement;
+	let replacement: SumPatternElement;
 
 	try {
 		pattern = parsePattern(patternStr);

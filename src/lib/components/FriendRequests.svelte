@@ -5,8 +5,9 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Check, X, Clock, UserPlus } from 'lucide-svelte';
 
-	function getFriendshipTypeLabel(type: 'classmate' | 'mentor'): string {
-		return type === 'classmate' ? 'Camarade' : 'Mentor';
+	// Friendships are a single relation type now ('friend'); legacy values map to "Ami".
+	function getFriendshipTypeLabel(): string {
+		return 'Ami';
 	}
 
 	async function handleAcceptRequest(friendshipId: string, friendName: string) {
@@ -69,7 +70,7 @@
 							<div>
 								<p class="font-medium">{friendsManager.getDisplayName(request)}</p>
 								<p class="text-sm text-muted-foreground">
-									{getFriendshipTypeLabel(request.friendship_type as 'classmate' | 'mentor')}
+									{getFriendshipTypeLabel()}
 									{#if request.friend_profile?.role === 'teacher'}
 										• Enseignant
 									{/if}
@@ -133,7 +134,7 @@
 							<div>
 								<p class="font-medium">{friendsManager.getDisplayName(request)}</p>
 								<p class="text-sm text-muted-foreground">
-									{getFriendshipTypeLabel(request.friendship_type as 'classmate' | 'mentor')}
+									{getFriendshipTypeLabel()}
 									{#if request.friend_profile?.role === 'teacher'}
 										• Enseignant
 									{/if}

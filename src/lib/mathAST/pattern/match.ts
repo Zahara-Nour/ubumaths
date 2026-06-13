@@ -17,7 +17,11 @@ import type {
 	OptionalSequencePattern,
 	SumSequenceBinding,
 	ProductSequenceBinding,
-	BindingValue
+	BindingValue,
+	AdditionPattern,
+	SubtractionPattern,
+	MultiplicationPattern,
+	DivisionPattern
 } from './types';
 import {
 	successMatch,
@@ -142,7 +146,7 @@ function singleBinding(name: string, value: BindingValue): MatchBindings {
  * match(addPattern, additionNode);
  */
 export function match(
-	pattern: Pattern,
+	pattern: SumPatternElement,
 	node: MathNode,
 	bindings: MatchBindings = EMPTY_BINDINGS,
 	ctx?: TypeContext
@@ -192,6 +196,16 @@ export function match(
 
 		case 'product-pattern':
 			return matchProductPattern(pattern, node, bindings, ctx);
+
+		case 'sequence':
+		case 'optional-sequence':
+			// A bare sequence wildcard reaching match() directly (not via an
+			// enclosing sum/product/binary pattern) has no surrounding context to
+			// decide whether it captures sum terms or product factors. We treat it
+			// as a single-element capture: bind it as a one-term sum sequence so the
+			// binding round-trips through instantiate(). Required terms (`sequence`)
+			// must capture at least the one node; optional sequences also accept it.
+			return matchBareSequence(pattern, node, bindings, ctx);
 
 		default: {
 			// Exhaustive check
@@ -264,23 +278,34 @@ function matchLiteral(
  * Addition is commutative - tries both orders.
  */
 function matchAddition(
-	pattern: Extract<Pattern, { type: 'addition-pattern' }>,
+	pattern: AdditionPattern,
 	node: MathNode,
 	bindings: MatchBindings,
 	ctx?: TypeContext
 ): MatchResult {
+	const left = pattern.left;
+	const right = pattern.right;
+
+	// If either operand is a sequence wildcard (e.g. `a + __rest`), the binary
+	// pattern is semantically an n-ary sum. Delegate to matchSumPattern so the
+	// sequence captures the remaining terms exactly like P.sum(...) would.
+	if (isAnySequencePattern(left) || isAnySequencePattern(right)) {
+		return matchSumPattern(toSumPattern(left, right), node, bindings, ctx);
+	}
+
 	if (!isAddition(node)) {
 		return failMatch();
 	}
 
+	// Both operands are plain patterns from here on.
 	// Try original order: left + right
-	const result1 = matchPair(pattern.left, pattern.right, node.left, node.right, bindings, ctx);
+	const result1 = matchPair(left, right, node.left, node.right, bindings, ctx);
 	if (result1.success) {
 		return result1;
 	}
 
 	// Try swapped order: right + left (commutative)
-	return matchPair(pattern.left, pattern.right, node.right, node.left, bindings, ctx);
+	return matchPair(left, right, node.right, node.left, bindings, ctx);
 }
 
 /**
@@ -288,16 +313,26 @@ function matchAddition(
  * Subtraction is NOT commutative.
  */
 function matchSubtraction(
-	pattern: Extract<Pattern, { type: 'subtraction-pattern' }>,
+	pattern: SubtractionPattern,
 	node: MathNode,
 	bindings: MatchBindings,
 	ctx?: TypeContext
 ): MatchResult {
+	const left = pattern.left;
+	const right = pattern.right;
+
+	// A sequence operand (e.g. `a - __rest`) makes this an n-ary sum over signed
+	// terms. matchSumPattern flattens subtraction into signed terms, so delegate
+	// to it for coherent sequence capture.
+	if (isAnySequencePattern(left) || isAnySequencePattern(right)) {
+		return matchSumPattern(toSumPattern(left, right), node, bindings, ctx);
+	}
+
 	if (!isSubtraction(node)) {
 		return failMatch();
 	}
 
-	return matchPair(pattern.left, pattern.right, node.left, node.right, bindings, ctx);
+	return matchPair(left, right, node.left, node.right, bindings, ctx);
 }
 
 /**
@@ -305,23 +340,33 @@ function matchSubtraction(
  * Multiplication is commutative - tries both orders.
  */
 function matchMultiplication(
-	pattern: Extract<Pattern, { type: 'multiplication-pattern' }>,
+	pattern: MultiplicationPattern,
 	node: MathNode,
 	bindings: MatchBindings,
 	ctx?: TypeContext
 ): MatchResult {
+	const left = pattern.left;
+	const right = pattern.right;
+
+	// A sequence operand (e.g. `a * __rest`) makes this an n-ary product.
+	// Delegate to matchProductPattern so the sequence captures the remaining
+	// factors exactly like P.prod(...) would.
+	if (isAnySequencePattern(left) || isAnySequencePattern(right)) {
+		return matchProductPattern(toProductPattern(left, right), node, bindings, ctx);
+	}
+
 	if (!isMultiplication(node)) {
 		return failMatch();
 	}
 
 	// Try original order
-	const result1 = matchPair(pattern.left, pattern.right, node.left, node.right, bindings, ctx);
+	const result1 = matchPair(left, right, node.left, node.right, bindings, ctx);
 	if (result1.success) {
 		return result1;
 	}
 
 	// Try swapped order (commutative)
-	return matchPair(pattern.left, pattern.right, node.right, node.left, bindings, ctx);
+	return matchPair(left, right, node.right, node.left, bindings, ctx);
 }
 
 /**
@@ -329,23 +374,27 @@ function matchMultiplication(
  * Division is NOT commutative.
  */
 function matchDivision(
-	pattern: Extract<Pattern, { type: 'division-pattern' }>,
+	pattern: DivisionPattern,
 	node: MathNode,
 	bindings: MatchBindings,
 	ctx?: TypeContext
 ): MatchResult {
+	const numerator = pattern.numerator;
+	const denominator = pattern.denominator;
+
+	// There is no n-ary quotient pattern, so a sequence wildcard in numerator or
+	// denominator position has no coherent capture semantics. Fail rather than
+	// silently misbehave. (The pattern parser can construct such a shape, but it
+	// is not a meaningful match target.)
+	if (isAnySequencePattern(numerator) || isAnySequencePattern(denominator)) {
+		return failMatch();
+	}
+
 	if (!isDivision(node)) {
 		return failMatch();
 	}
 
-	return matchPair(
-		pattern.numerator,
-		pattern.denominator,
-		node.numerator,
-		node.denominator,
-		bindings,
-		ctx
-	);
+	return matchPair(numerator, denominator, node.numerator, node.denominator, bindings, ctx);
 }
 
 /**
@@ -357,11 +406,20 @@ function matchSuperscript(
 	bindings: MatchBindings,
 	ctx?: TypeContext
 ): MatchResult {
+	const base = pattern.base;
+	const exponent = pattern.exponent;
+
+	// A sequence wildcard in base or exponent position has no coherent capture
+	// semantics for a power node. Fail rather than misbehave.
+	if (isAnySequencePattern(base) || isAnySequencePattern(exponent)) {
+		return failMatch();
+	}
+
 	if (!isSuperscript(node)) {
 		return failMatch();
 	}
 
-	return matchPair(pattern.base, pattern.exponent, node.base, node.superscript, bindings, ctx);
+	return matchPair(base, exponent, node.base, node.superscript, bindings, ctx);
 }
 
 /**
@@ -531,6 +589,67 @@ function matchPair(
 
 	// Match right with updated bindings
 	return match(patternRight, nodeRight, leftResult.bindings, ctx);
+}
+
+// =============================================================================
+// Binary <-> N-ary Bridging
+// =============================================================================
+
+/**
+ * Builds the n-ary SumPattern equivalent of a binary add/subtract pattern whose
+ * operands may include a sequence wildcard.
+ *
+ * `a + __rest` is structurally an AdditionPattern, but its sequence operand only
+ * has a coherent meaning as `P.sum(_('a'), __('rest'))`. This adapter lets the
+ * binary matchers reuse matchSumPattern unchanged.
+ */
+function toSumPattern(left: SumPatternElement, right: SumPatternElement): SumPattern {
+	return { type: 'sum-pattern', elements: [left, right] };
+}
+
+/**
+ * Builds the n-ary ProductPattern equivalent of a binary multiply pattern whose
+ * operands may include a sequence wildcard (e.g. `a * __rest`).
+ */
+function toProductPattern(
+	left: ProductPatternElement,
+	right: ProductPatternElement
+): ProductPattern {
+	return { type: 'product-pattern', elements: [left, right] };
+}
+
+/**
+ * Matches a bare sequence wildcard that reached match() without an enclosing
+ * sum/product context (e.g. top-level `__rest`, or a sequence handed directly to
+ * match()).
+ *
+ * Semantics: capture the single node as a one-element sum sequence. This mirrors
+ * the way matchSumPattern binds a lone term to a sequence, and round-trips
+ * through instantiate() (which unflattens the captured terms). A required
+ * sequence (`sequence`) and an optional one (`optional-sequence`) both accept a
+ * single node here; the distinction (0 vs 1+ elements) only matters when there is
+ * a surrounding chain to draw remaining terms from.
+ */
+function matchBareSequence(
+	pattern: SequencePattern | OptionalSequencePattern,
+	node: MathNode,
+	bindings: MatchBindings,
+	ctx?: TypeContext
+): MatchResult {
+	// Honour an element constraint if present.
+	if (pattern.constraint && !checkConstraint(pattern.constraint, node, ctx)) {
+		return failMatch();
+	}
+
+	const seqBinding: SumSequenceBinding = {
+		kind: 'sum-sequence',
+		terms: [{ sign: '+', term: node }]
+	};
+	const newBindings = mergeBindings(bindings, singleBinding(pattern.name, seqBinding));
+	if (newBindings === undefined) {
+		return failMatch();
+	}
+	return successMatch(newBindings);
 }
 
 // =============================================================================
@@ -879,7 +998,7 @@ function tryProductAssignment(
  * @returns The bindings map if successful, undefined otherwise
  */
 export function tryMatch(
-	pattern: Pattern,
+	pattern: SumPatternElement,
 	node: MathNode,
 	ctx?: TypeContext
 ): MatchBindings | undefined {
@@ -895,6 +1014,6 @@ export function tryMatch(
  * @param ctx - Optional type context for assumption-aware matching
  * @returns true if the pattern matches
  */
-export function matches(pattern: Pattern, node: MathNode, ctx?: TypeContext): boolean {
+export function matches(pattern: SumPatternElement, node: MathNode, ctx?: TypeContext): boolean {
 	return match(pattern, node, EMPTY_BINDINGS, ctx).success;
 }

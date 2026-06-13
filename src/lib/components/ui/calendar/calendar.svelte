@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Calendar as CalendarPrimitive } from 'bits-ui';
+	import type { CalendarSingleRootProps } from 'bits-ui';
 	import * as Calendar from './index.js';
-	import { cn, type WithoutChildrenOrChild } from '$lib/utils.js';
+	import { cn, type WithElementRef, type WithoutChildrenOrChild } from '$lib/utils.js';
 	import type { ButtonVariant } from '../button/button.svelte';
 	import { isEqualMonth, type DateValue } from '@internationalized/date';
 	import type { Snippet } from 'svelte';
@@ -22,7 +23,12 @@
 		day,
 		disableDaysOutsideMonth = false,
 		...restProps
-	}: WithoutChildrenOrChild<CalendarPrimitive.RootProps> & {
+		// App-scoped to single-date mode (the only mode used, e.g. CardEditForm passes
+		// type="single"). Typing against the single variant avoids the bits-ui v2
+		// discriminated-union "too complex to represent" error and supplies the `type`
+		// discriminant on <Calendar.Root>. Switch back to the full RootProps union (and
+		// regenerate via the shadcn CLI) if multiple/range modes are ever needed.
+	}: WithElementRef<WithoutChildrenOrChild<CalendarSingleRootProps>> & {
 		buttonVariant?: ButtonVariant;
 		captionLayout?: 'dropdown' | 'dropdown-months' | 'dropdown-years' | 'label';
 		months?: CalendarPrimitive.MonthSelectProps['months'];
