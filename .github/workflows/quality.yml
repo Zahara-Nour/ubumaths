@@ -155,8 +155,11 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
-      - name: Run client tests (real-Pyodide integration excluded)
-        run: pnpm exec vitest run --project client --exclude '**/*-real.svelte.test.ts'
+      # The real-Pyodide integration tests are excluded via vite.config.ts
+      # (gated on CI=true), since the CLI --exclude flag does not propagate to
+      # project configs in vitest's projects mode.
+      - name: Run client tests
+        run: pnpm exec vitest run --project client
 
   summary:
     name: CI Summary

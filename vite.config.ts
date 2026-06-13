@@ -134,7 +134,13 @@ export default defineConfig(({ mode }) => {
 							instances: [{ browser: 'chromium' }]
 						},
 						include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-						exclude: ['src/lib/server/**'],
+						exclude: [
+							'src/lib/server/**',
+							// Real-Pyodide integration tests download and run Python in
+							// headless Chromium: slow and flaky in CI. Excluded there
+							// (CI=true on GitHub Actions), still run locally.
+							...(process.env.CI ? ['src/**/*-real.svelte.test.ts'] : [])
+						],
 						setupFiles: ['./vitest-setup-client.ts']
 					}
 				},
