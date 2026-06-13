@@ -175,5 +175,4 @@ les identités OAuth. Tester un login email **et** un login Google après bascul
 1. **Région cible** : `eu-west-3` (Paris, recommandé) ou `eu-central-1` (Francfort) ?
 2. **Fenêtre de bascule** : quand (heure creuse, peu d'élèves connectés) ?
 3. Faut-il un **mode maintenance** in-app pour le cutover, ou bascule à chaud acceptée ?
-4. Confirmer la région actuelle exacte (tu as dit « eu-east-2 » → probablement
-   `us-east-2` ; à vérifier dans Dashboard → Settings → General).
+4. ~~Confirmer la région actuelle~~ → **CONFIRMÉ : `us-east-2` (Ohio, US)**.

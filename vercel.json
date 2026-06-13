@@ -1,5 +1,6 @@
 {
 	"crons": [],
+	"ignoreCommand": "git diff --quiet HEAD^ HEAD -- ':(exclude)docs/**' ':(exclude)**/*.md'",
 	"headers": [
 		{
 			"source": "/upsilon-simulator/(.*)",
