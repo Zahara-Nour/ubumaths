@@ -1,6 +1,17 @@
 # CI — finir le « tout vert »
 
-> Date : 2026-06-13 · Statut : **fix appliqué, en attente de validation par un push.**
+> Date : 2026-06-13 · Statut : **✅ TERMINÉ — CI 100% verte (run `27460802481`).**
+> Lint, Type Check, Server Tests ×4, Client Tests, Build, Summary : tous verts.
+> 5 commits poussés (`55a45b536` → `dd1ec4cda`).
+>
+> Au-delà du `.env`/split, le job **Build** (qui ne tournait jamais avant) a
+> révélé 2 vrais bugs build-time tolérés en dev :
+>
+> 1. `+page.server.ts` exportait `UNASSIGNED_KEY` (export non réservé interdit
+>    au build) → extrait dans `constants.ts` (`239ab6b93`). **Cassait aussi le
+>    build Vercel.**
+> 2. La validation Zod de `src/lib/server/env.ts` (build = mode prod) exige
+>    `SESSION_SECRET`/`CSRF_SECRET` ≥ 32 car. → placeholders allongés (`dd1ec4cda`).
 
 ## ⚠️ Correction de diagnostic : ce n'était PAS un problème de Node 22
 
