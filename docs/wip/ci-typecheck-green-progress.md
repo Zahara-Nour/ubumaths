@@ -182,19 +182,40 @@ QuestionBase `as unknown as Record`, etc.).
 
 | Job CI | Avant | Après |
 | --- | --- | --- |
-| **Type Check** | OOM crash (exit 134), 2233 erreurs cachées | **13 erreurs** = décisions humaines documentées (cf. § ci-dessus) |
+| **Type Check** | OOM crash (exit 134), 2233 erreurs cachées | ✅ **0 erreur** (les 5 décisions PO tranchées) |
 | **Tests** (4 shards) | 2 shards rouges (ENOENT extern) | ✅ vert |
 | **Lint** | rouge | ✅ vert |
-| **Build** | skip (needs typecheck) | débloqué quand typecheck = 0 |
+| **Build** | skip (needs typecheck) | ✅ débloqué (typecheck = 0) |
+
+### Les 5 décisions PO — TRANCHÉES (2026-06-13)
+
+1. **AddFriend `'mentor'` (RGPD)** : relation collapsée à `'friend'` seul. Sélecteur de type
+   retiré, les 2 chemins d'envoi utilisent `'friend'`, labels → « Ami ». `friendship_type`
+   confirmé cosmétique (le chat n'en dépend pas). ⚠️ **Suite RGPD non faite** : `searchUsers`
+   cherche TOUS les profils (pas de scope école/niveau) ; + migration DB pour nettoyer les
+   lignes legacy `classmate/mentor/study_buddy` → `friend` et contraindre l'enum.
+2. **Cluster `tags`** (option A) : backup/import alignés sur la jonction `exercise_tags`
+   (export JSON via embed, export SQL émet des INSERT jonction, restore ré-attache via les
+   helpers `resolveTagsToIds`/`syncExerciseTagJunction`, compat vieux backups). 65 tests verts.
+3. **parser-pattern** (option 3b) : modèle de types rendu honnête (cascade parser→builder→
+   types→match→rule) — les séquences `__rest`/`___opt` en opérande binaire sont désormais
+   typées ET matchées correctement (bug de matching silencieux préexistant corrigé au passage).
+   2112 tests pattern/cosmetic/simplify verts.
+4. **rational-inequality** (option A) : garde morte `status === 'error'|'unsupported'` →
+   `if (result.error)` ; les inéquations non-supportées lèvent « Hors scope V1 ».
+5. **calendar.svelte** : `npx shadcn-svelte` tenté mais **écrasait le Button customisé
+   app-wide (a11y touch-target perdue) + style « nova »** → REVERTÉ. Hand-patch propre :
+   typage contre la variante single de bits-ui v2 (`WithElementRef<WithoutChildrenOrChild<
+   CalendarSingleRootProps>>`) — l'app n'utilise que `type="single"`.
 
 Commits : `87ee03d46` (config/OOM) → `ecd71a276` (lucide) → `b6d81250e` (tests) →
-`7594bdeab` (596→50) → `19a909abf` (50→13) → `1b4435456` (lint). **Non poussés.**
+`7594bdeab` (596→50) → `19a909abf` (50→13) → `1b4435456` (lint) → … → **0 erreur**. **Non poussés.**
 
-Pour finir de verdir Type Check (→ 0), David doit trancher les **5 décisions** listées
-ci-dessus (AddFriend mentor, cluster tags, parser-pattern, rational-inequality, calendar).
-Plusieurs **vrais bugs runtime** ont été trouvés et corrigés au passage (notifications,
-résumés, geometry slider, cost.ts, known-limits) — à vérifier.
+Plusieurs **vrais bugs runtime** trouvés et corrigés en chemin (notifications teacher_id,
+résumés is_test, geometry slider→NaN, cost.ts case 'signedZero', known-limits displayStyle,
++ le matching silencieux `a + __rest`) — à vérifier côté produit.
 
-À faire aussi (hors gate, signalé) : `pnpm db:types` (RPCs buddy manquants des types générés).
+À faire aussi (hors gate, signalé) : `pnpm db:types` (RPCs buddy manquants des types générés),
++ la suite RGPD du point 1.
 
 ## Ne PAS pousser — David gère le déploiement.

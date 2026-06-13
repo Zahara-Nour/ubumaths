@@ -28,6 +28,7 @@ import {
 	parseMarkdownWithFrontmatter
 } from '$lib/exercises/markdown-frontmatter';
 import { createExercise } from './exercises';
+import { resolveTagsToIds, syncExerciseTagJunction } from './tags-resolution';
 import { createHash } from 'crypto';
 
 // ============================================================================
@@ -312,10 +313,21 @@ export async function importExerciseFromJSON(
 				return { success: false, error: 'Cannot replace exercise owned by another user' };
 			}
 
+			// Tags live in the exercise_tags junction, not on the row. Strip them from
+			// the row update and re-sync the junction afterwards (same model as
+			// createExercise / updateExercise in server/exercises.ts).
+			// statement_md/solution_md live in `variations`, not on the exercise row — drop them too.
+			const {
+				tags: replaceTags,
+				statement_md: _statementMd,
+				solution_md: _solutionMd,
+				...rowUpdate
+			} = cleanData;
+
 			const { data, error } = await supabase
 				.from('exercises')
 				.update({
-					...cleanData,
+					...rowUpdate,
 					updated_at: new Date().toISOString()
 				})
 				.eq('id', duplicateId)
@@ -325,6 +337,19 @@ export async function importExerciseFromJSON(
 
 			if (error) {
 				return { success: false, error: error.message };
+			}
+
+			// Re-sync tags through the junction. On failure, surface the error so the
+			// caller knows the tags weren't applied (the row update itself succeeded).
+			try {
+				const tagIds = await resolveTagsToIds(supabase, replaceTags ?? [], 'tags');
+				await syncExerciseTagJunction(supabase, data!.id, tagIds, 'exercise_tags');
+			} catch (e) {
+				console.error('Failed to sync tags while replacing imported exercise:', e);
+				return {
+					success: false,
+					error: e instanceof Error ? e.message : 'Failed to sync tags for exercise'
+				};
 			}
 
 			return { success: true, exerciseId: data!.id };

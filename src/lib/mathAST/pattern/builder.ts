@@ -277,7 +277,7 @@ function lit(node: MathNode): LiteralPattern {
  * // Match n + 0 (for identity rule)
  * P.add(P._('n'), P.num(0))
  */
-function add(left: Pattern, right: Pattern): AdditionPattern {
+function add(left: SumPatternElement, right: SumPatternElement): AdditionPattern {
 	return {
 		type: 'addition-pattern',
 		left,
@@ -299,7 +299,7 @@ function add(left: Pattern, right: Pattern): AdditionPattern {
  * // Match x - 0
  * P.sub(P._('x'), P.num(0))
  */
-function sub(left: Pattern, right: Pattern): SubtractionPattern {
+function sub(left: SumPatternElement, right: SumPatternElement): SubtractionPattern {
 	return {
 		type: 'subtraction-pattern',
 		left,
@@ -324,7 +324,7 @@ function sub(left: Pattern, right: Pattern): SubtractionPattern {
  * // Match n * 0 (for zero rule)
  * P.mul(P._('n'), P.num(0))
  */
-function mul(left: Pattern, right: Pattern): MultiplicationPattern {
+function mul(left: ProductPatternElement, right: ProductPatternElement): MultiplicationPattern {
 	return {
 		type: 'multiplication-pattern',
 		left,
@@ -349,7 +349,10 @@ function mul(left: Pattern, right: Pattern): MultiplicationPattern {
  * // Match 0 / x (where x is nonzero)
  * P.div(P.num(0), P._('x', P.isNonzero()))
  */
-function div(numerator: Pattern, denominator: Pattern): DivisionPattern {
+function div(
+	numerator: ProductPatternElement,
+	denominator: ProductPatternElement
+): DivisionPattern {
 	return {
 		type: 'division-pattern',
 		numerator,
@@ -374,7 +377,7 @@ function div(numerator: Pattern, denominator: Pattern): DivisionPattern {
  * // Match x^1 (result is x)
  * P.pow(P._('x'), P.num(1))
  */
-function pow(base: Pattern, exponent: Pattern): SuperscriptPattern {
+function pow(base: SumPatternElement, exponent: SumPatternElement): SuperscriptPattern {
 	return {
 		type: 'superscript-pattern',
 		base,
@@ -406,7 +409,11 @@ function pow(base: Pattern, exponent: Pattern): SuperscriptPattern {
  * // Match max(a, b)
  * P.func('max', [P._('a'), P._('b')])
  */
-function func(name: string, args: Pattern[], options?: { power?: Pattern }): FunctionPattern {
+function func(
+	name: string,
+	args: SumPatternElement[],
+	options?: { power?: SumPatternElement }
+): FunctionPattern {
 	return {
 		type: 'function-pattern',
 		name,
@@ -428,7 +435,7 @@ function func(name: string, args: Pattern[], options?: { power?: Pattern }): Fun
  * // Match -(-x) (double negation)
  * P.neg(P.neg(P._('x')))
  */
-function neg(operand: Pattern): OppositePattern {
+function neg(operand: SumPatternElement): OppositePattern {
 	return {
 		type: 'opposite-pattern',
 		operand
@@ -445,7 +452,7 @@ function neg(operand: Pattern): OppositePattern {
  * // Match +x
  * P.pos(P._('x'))
  */
-function pos(operand: Pattern): PositivePattern {
+function pos(operand: SumPatternElement): PositivePattern {
 	return {
 		type: 'positive-pattern',
 		operand
@@ -465,7 +472,7 @@ function pos(operand: Pattern): PositivePattern {
  * // Match (a + b)
  * P.paren(P.add(P._('a'), P._('b')))
  */
-function paren(content: Pattern): DelimiterPattern {
+function paren(content: SumPatternElement): DelimiterPattern {
 	return {
 		type: 'delimiter-pattern',
 		content
@@ -1193,8 +1200,8 @@ function isNumType(numericType: NumericType, strict?: boolean): NumericTypeConst
  * )
  */
 function rule(
-	pattern: Pattern,
-	replacement: Pattern | ((bindings: MatchBindings) => MathNode),
+	pattern: SumPatternElement,
+	replacement: SumPatternElement | ((bindings: MatchBindings) => MathNode),
 	options?: RuleOptions
 ): Rule {
 	return {

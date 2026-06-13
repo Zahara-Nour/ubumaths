@@ -26,12 +26,78 @@ import {
 	validateBackup,
 	validateRestoreOptions
 } from '$lib/server/validation/backup';
+import { resolveTagsToIds, syncExerciseTagJunction } from '$lib/server/tags-resolution';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 type SupabaseClientType = SupabaseClient<Database>;
+
+// ============================================================================
+// TAG HELPERS (junction <-> portable string[])
+// ============================================================================
+
+/**
+ * Flatten the embedded `exercise_tags(tags(name))` relation returned by Supabase
+ * into a sorted, deduplicated, never-null `string[]`.
+ *
+ * Supabase returns the embed as an array of `{ tags: { name } | null }` rows.
+ * We stay defensive about the exact shape since the generated types describe the
+ * relation loosely.
+ */
+function flattenEmbeddedTagNames(embedded: unknown): string[] {
+	if (!Array.isArray(embedded)) return [];
+	const names = new Set<string>();
+	for (const row of embedded) {
+		if (!row || typeof row !== 'object') continue;
+		const tag = (row as Record<string, unknown>).tags;
+		if (tag && typeof tag === 'object' && 'name' in tag) {
+			const name = (tag as { name: unknown }).name;
+			if (typeof name === 'string' && name.length > 0) names.add(name);
+		}
+	}
+	return [...names].sort();
+}
+
+/**
+ * Read the tag names of a backup record, tolerating legacy backups that may have
+ * carried them under a differently-typed `tags` field. Always returns string[].
+ */
+function readBackupRecordTags(record: ExerciseBackupRecord): string[] {
+	const raw = (record as { tags?: unknown }).tags;
+	if (!Array.isArray(raw)) return [];
+	return raw.filter((t): t is string => typeof t === 'string' && t.length > 0);
+}
+
+/**
+ * Attach a backup record's tags to the exercise_tags junction (resolving names to
+ * catalog ids, auto-creating missing tags). Mirrors the create-path in
+ * `server/exercises.ts`.
+ *
+ * On failure we do NOT roll back the already-restored exercise row (restore is
+ * best-effort, per-record). Instead we record a non-fatal error so the operator
+ * sees the junction inconsistency in the result, matching how the row write path
+ * surfaces partial failures.
+ */
+async function attachBackupTags(
+	supabase: SupabaseClientType,
+	exerciseId: string,
+	tagNames: string[],
+	result: RestoreResult,
+	recordId: string
+): Promise<void> {
+	try {
+		const tagIds = await resolveTagsToIds(supabase, tagNames, 'tags');
+		await syncExerciseTagJunction(supabase, exerciseId, tagIds, 'exercise_tags');
+	} catch (err) {
+		result.errors.push({
+			table: 'exercise_tags',
+			record_id: recordId,
+			error: `Failed to attach tags: ${err instanceof Error ? err.message : String(err)}`
+		});
+	}
+}
 
 // ============================================================================
 // EXPORT FUNCTIONS
@@ -105,13 +171,17 @@ export async function exportBackupJSON(
 	supabase: SupabaseClientType,
 	adminEmail: string
 ): Promise<ExerciseBackup> {
-	// Fetch all exercises with creator emails
+	// Fetch all exercises with creator emails and their tags from the junction.
+	// Tags live in exercise_tags(tags) since the tag-normalization migration; the
+	// backup format still emits `tags: string[]` for portability, so we embed the
+	// junction and flatten the nested name rows below.
 	const { data: exercises, error: exercisesError } = await supabase
 		.from('exercises')
 		.select(
 			`
 			*,
-			profiles:created_by (email)
+			profiles:created_by (email),
+			exercise_tags (tags (name))
 		`
 		)
 		.order('created_at', { ascending: true });
@@ -181,7 +251,10 @@ export async function exportBackupJSON(
 			title: ex.title,
 			source: ex.source,
 			category: ex.category,
-			tags: ex.tags,
+			// Flatten exercise_tags(tags(name)) into a portable string[] (never null).
+			// Access via Record cast to stay robust to Supabase's embed typing (the
+			// helper validates the shape defensively).
+			tags: flattenEmbeddedTagNames((ex as Record<string, unknown>).exercise_tags),
 			statement_md: firstVariation?.statement_md || '',
 			solution_md: firstVariation?.solution_md || '',
 			grades: ex.grades,
@@ -313,9 +386,11 @@ export async function exportBackupSQL(
 		lines.push('');
 
 		for (const ex of backup.data.exercises) {
-			// Note: statement_md and solution_md are deprecated in DB schema but preserved in backup for compatibility
+			// Note: statement_md and solution_md are deprecated in DB schema but preserved in backup for compatibility.
+			// Tags are NOT written on the exercises row anymore (legacy `tags` column dropped by the
+			// tag-normalization migration); they are emitted as exercise_tags junction rows below.
 			lines.push(`INSERT INTO exercises (
-  id, slug, title, source, category, tags,
+  id, slug, title, source, category,
   grades, topic, is_public, distribution_mode, variables, variations,
   shared, resources, generic_functions, created_at, updated_at, created_by
 ) VALUES (
@@ -324,7 +399,6 @@ export async function exportBackupSQL(
   ${escapeSQL(ex.title)},
   ${escapeSQL(ex.source)},
   ${escapeSQL(ex.category)},
-  ${escapeSQL(ex.tags)},
   ${escapeSQL(ex.grades)},
   ${escapeSQL(ex.topic)},
   ${ex.is_public},
@@ -342,7 +416,6 @@ export async function exportBackupSQL(
   title = EXCLUDED.title,
   source = EXCLUDED.source,
   category = EXCLUDED.category,
-  tags = EXCLUDED.tags,
   grades = EXCLUDED.grades,
   topic = EXCLUDED.topic,
   is_public = EXCLUDED.is_public,
@@ -354,6 +427,26 @@ export async function exportBackupSQL(
   generic_functions = EXCLUDED.generic_functions,
   updated_at = EXCLUDED.updated_at;`);
 			lines.push('');
+
+			// Tags via the exercise_tags junction (source of truth since the
+			// tag-normalization migration). For each tag name we: (1) ensure the
+			// catalog row exists, (2) link it to the exercise via a name sub-select.
+			// The catalog `tags` table auto-creates missing names, mirroring the
+			// resolveTagsToIds() behaviour used on the create path.
+			const exerciseTags = readBackupRecordTags(ex);
+			if (exerciseTags.length > 0) {
+				for (const tagName of exerciseTags) {
+					lines.push(
+						`INSERT INTO tags (name) VALUES (${escapeSQL(tagName)}) ON CONFLICT (name) DO NOTHING;`
+					);
+					lines.push(
+						`INSERT INTO exercise_tags (exercise_id, tag_id)\n` +
+							`SELECT ${escapeSQL(ex.id)}, id FROM tags WHERE name = ${escapeSQL(tagName)}\n` +
+							`ON CONFLICT (exercise_id, tag_id) DO NOTHING;`
+					);
+				}
+				lines.push('');
+			}
 		}
 	}
 
@@ -575,13 +668,19 @@ async function restoreExercises(
 				.eq('id', record.id)
 				.single();
 
+			// Tags live in the exercise_tags junction, never on the row. Read them
+			// from the backup record (tolerating legacy backups that carried them
+			// at row level) and attach via the junction after the row write.
+			const recordTags = readBackupRecordTags(record);
+
 			if (existing) {
 				if (options.conflict_strategy === 'skip') {
 					result.stats.exercises.skipped++;
 					continue;
 				}
 
-				// Replace - Note: statement_md and solution_md are no longer in DB schema
+				// Replace - Note: statement_md and solution_md are no longer in DB schema.
+				// Tags are NOT written here; they go through the junction below.
 				const { error } = await supabase
 					.from('exercises')
 					.update({
@@ -589,7 +688,6 @@ async function restoreExercises(
 						title: record.title,
 						source: record.source,
 						category: record.category,
-						tags: record.tags,
 						grades: record.grades,
 						topic: record.topic,
 						is_public: record.is_public,
@@ -607,18 +705,19 @@ async function restoreExercises(
 					result.stats.exercises.failed++;
 					result.errors.push({ table: 'exercises', record_id: record.id, error: error.message });
 				} else {
+					await attachBackupTags(supabase, record.id, recordTags, result, record.id);
 					result.stats.exercises.replaced++;
 				}
 			} else {
-				// Insert new - use type assertion for id since backup restore needs explicit id
-				// Note: statement_md and solution_md are no longer in DB schema
+				// Insert new - use type assertion for id since backup restore needs explicit id.
+				// Note: statement_md and solution_md are no longer in DB schema; tags go
+				// through the junction below, not the row.
 				const insertData = {
 					id: record.id,
 					slug: record.slug,
 					title: record.title,
 					source: record.source,
 					category: record.category,
-					tags: record.tags,
 					grades: record.grades,
 					topic: record.topic,
 					is_public: record.is_public,
@@ -638,6 +737,7 @@ async function restoreExercises(
 					result.stats.exercises.failed++;
 					result.errors.push({ table: 'exercises', record_id: record.id, error: error.message });
 				} else {
+					await attachBackupTags(supabase, record.id, recordTags, result, record.id);
 					result.stats.exercises.imported++;
 				}
 			}

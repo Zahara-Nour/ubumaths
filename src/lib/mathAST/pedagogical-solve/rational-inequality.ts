@@ -224,7 +224,7 @@ function findPolynomialZeros(
 	// uniformly and returns Solution[] with .value as MathNode.
 	const eq = relation('=', poly, number('0'));
 	const result = solve(eq, { variable });
-	if (result.status === 'error' || result.status === 'unsupported') {
+	if (result.error) {
 		throw new InequalityNotSolvable(
 			`Impossible de trouver les racines : ${result.error ?? 'erreur solver'}`,
 			'Hors scope V1.'

@@ -7,7 +7,9 @@
 
 import type {
 	Rule,
-	Pattern,
+	SumPatternElement,
+	SequencePattern,
+	OptionalSequencePattern,
 	MatchBindings,
 	RuleOptions,
 	SumPattern,
@@ -70,8 +72,8 @@ import { nodesEqual } from './match';
  * )
  */
 export function createRule(
-	pattern: Pattern,
-	replacement: Pattern | ((bindings: MatchBindings) => MathNode),
+	pattern: SumPatternElement,
+	replacement: SumPatternElement | ((bindings: MatchBindings) => MathNode),
 	options?: RuleOptions
 ): Rule {
 	return {
@@ -101,7 +103,7 @@ export function createRule(
  * // Given pattern P._('x') and bindings { x: number('5') }
  * // Returns number('5')
  */
-export function instantiate(pattern: Pattern, bindings: MatchBindings): MathNode {
+export function instantiate(pattern: SumPatternElement, bindings: MatchBindings): MathNode {
 	switch (pattern.type) {
 		case 'wildcard': {
 			const boundValue = bindings.get(pattern.name);
@@ -201,12 +203,61 @@ export function instantiate(pattern: Pattern, bindings: MatchBindings): MathNode
 			return instantiateProductPattern(pattern, bindings);
 		}
 
+		case 'sequence':
+		case 'optional-sequence':
+			// A bare sequence wildcard (e.g. the `__rest` in `a + __rest`, which the
+			// parser stores as the operand of an AdditionPattern). Look up its
+			// captured binding and unflatten it back into a node, mirroring the
+			// sequence handling inside the wildcard case above.
+			return instantiateBareSequence(pattern, bindings);
+
 		default: {
 			// Exhaustive check
 			const _exhaustive: never = pattern;
 			return _exhaustive;
 		}
 	}
+}
+
+/**
+ * Instantiates a bare sequence wildcard (one that appears as a binary operand,
+ * not inside a SumPattern/ProductPattern element list).
+ *
+ * Looks up the captured SequenceBinding and unflattens it. The binding may be a
+ * sum sequence (terms) or a product sequence (factors), depending on the context
+ * in which it was matched (matchAddition delegates to a sum, matchMultiplication
+ * to a product).
+ */
+function instantiateBareSequence(
+	pattern: SequencePattern | OptionalSequencePattern,
+	bindings: MatchBindings
+): MathNode {
+	const boundValue = bindings.get(pattern.name);
+	if (boundValue === undefined) {
+		throw new Error(`Sequence '${pattern.name}' not found in bindings`);
+	}
+
+	if (isSumSequenceBinding(boundValue)) {
+		const result = unflattenSum(boundValue.terms);
+		if (!result) {
+			throw new Error(`Cannot instantiate empty sum sequence '${pattern.name}'`);
+		}
+		return result;
+	}
+
+	if (isProductSequenceBinding(boundValue)) {
+		const result = unflattenProduct(
+			boundValue.factors.map((factor) => ({ style: 'implicit' as const, factor }))
+		);
+		if (!result) {
+			throw new Error(`Cannot instantiate empty product sequence '${pattern.name}'`);
+		}
+		return result;
+	}
+
+	// A plain MathNode binding shouldn't occur for a sequence name, but if it
+	// does (defensive), return it as-is.
+	return boundValue;
 }
 
 // =============================================================================

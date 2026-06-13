@@ -8,9 +8,6 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Search, UserPlus, Check, Clock, UserX, Users, Loader2 } from 'lucide-svelte';
 
-	// Friendship relationship type (different from status which is 'pending' | 'accepted' | 'blocked')
-	type FriendshipRelationType = 'classmate' | 'mentor';
-
 	let searchQuery = $state('');
 	let searchResults = $state<
 		Array<{
@@ -24,7 +21,6 @@
 		}>
 	>([]);
 	let isSearching = $state(false);
-	let selectedFriendshipType = $state<FriendshipRelationType>('classmate');
 
 	// Classes and students state
 	let allClasses = $state<Array<{ id: string; name: string }>>([]);
@@ -73,12 +69,6 @@
 		}
 	}
 
-	// Items for MySelect
-	const friendshipTypeItems = [
-		{ value: 'classmate', label: 'Camarade' },
-		{ value: 'mentor', label: 'Mentor' }
-	];
-
 	async function handleSearch() {
 		if (!searchQuery || searchQuery.length < 2) {
 			toaster.warning('Entrez au moins 2 caractères pour rechercher');
@@ -97,7 +87,7 @@
 	async function handleSendRequest(userId: string, userName: string) {
 		sendingRequestTo = new Set([...sendingRequestTo, userId]);
 		try {
-			const success = await friendsManager.sendFriendRequest(userId, selectedFriendshipType);
+			const success = await friendsManager.sendFriendRequest(userId, 'friend');
 			if (success) {
 				toaster.success(`Demande d'ami envoyée à ${userName}`);
 				// Refresh search results and students to update status
@@ -114,8 +104,8 @@
 	async function handleSendRequestToClassmate(userId: string, userName: string) {
 		sendingRequestTo = new Set([...sendingRequestTo, userId]);
 		try {
-			// For classmates, always use 'classmate' as the friendship type
-			const success = await friendsManager.sendFriendRequest(userId, 'classmate');
+			// Friendships are a single relation type now ('friend'); see RGPD decision.
+			const success = await friendsManager.sendFriendRequest(userId, 'friend');
 			if (success) {
 				toaster.success(`Demande d'ami envoyée à ${userName}`);
 				await refreshStudents();
@@ -286,18 +276,6 @@
 			<Button onclick={handleSearch} disabled={isSearching}>
 				{isSearching ? 'Recherche...' : 'Rechercher'}
 			</Button>
-		</div>
-
-		<!-- Friendship Type Selector -->
-		<div class="flex items-center gap-3">
-			<label for="friendship-type" class="text-sm font-medium">Type de relation :</label>
-			<MySelect
-				type="single"
-				bind:value={selectedFriendshipType}
-				items={friendshipTypeItems}
-				placeholder="Sélectionner..."
-				triggerClass="h-9 w-48 rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
-			/>
 		</div>
 	</div>
 

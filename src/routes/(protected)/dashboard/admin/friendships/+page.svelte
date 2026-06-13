@@ -52,8 +52,9 @@
 		deletingFriendshipId = friendshipId;
 	}
 
-	function getFriendshipTypeLabel(type: 'classmate' | 'mentor'): string {
-		return type === 'classmate' ? 'Camarade' : 'Mentor';
+	// Friendships are a single relation type now ('friend'); legacy values map to "Ami".
+	function getFriendshipTypeLabel(): string {
+		return 'Ami';
 	}
 
 	function getStatusBadge(status: 'pending' | 'accepted' | 'rejected'): {
@@ -184,7 +185,7 @@
 						<!-- Arrow and Type -->
 						<div class="flex items-center gap-2 text-muted-foreground">
 							<span>→</span>
-							<span class="text-xs">{getFriendshipTypeLabel(friendship.friendship_type)}</span>
+							<span class="text-xs">{getFriendshipTypeLabel()}</span>
 							<span>→</span>
 						</div>
 

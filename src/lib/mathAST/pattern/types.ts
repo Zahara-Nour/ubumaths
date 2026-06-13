@@ -271,81 +271,109 @@ export interface LiteralPattern {
 
 /**
  * Addition pattern - matches addition nodes
+ *
+ * Operands are `SumPatternElement` (not just `Pattern`) because the pattern
+ * parser legitimately produces sequence wildcards in operand position, e.g.
+ * `a + __rest` parses to `add(_('a'), __('rest'))`. The binary-operand
+ * matching for a sequence is handled by `match()` (see its sequence cases).
  */
 export interface AdditionPattern {
 	readonly type: 'addition-pattern';
-	readonly left: Pattern;
-	readonly right: Pattern;
+	readonly left: SumPatternElement;
+	readonly right: SumPatternElement;
 }
 
 /**
  * Subtraction pattern - matches subtraction nodes
+ *
+ * Operands are `SumPatternElement`: the parser admits sequence wildcards in
+ * operand position (e.g. `a - __rest`). See `AdditionPattern`.
  */
 export interface SubtractionPattern {
 	readonly type: 'subtraction-pattern';
-	readonly left: Pattern;
-	readonly right: Pattern;
+	readonly left: SumPatternElement;
+	readonly right: SumPatternElement;
 }
 
 /**
  * Multiplication pattern - matches multiplication nodes
+ *
+ * Operands are `ProductPatternElement`: the parser admits sequence wildcards
+ * in operand position (e.g. `a * __rest`). See `AdditionPattern`.
  */
 export interface MultiplicationPattern {
 	readonly type: 'multiplication-pattern';
-	readonly left: Pattern;
-	readonly right: Pattern;
+	readonly left: ProductPatternElement;
+	readonly right: ProductPatternElement;
 }
 
 /**
  * Division pattern - matches division nodes
+ *
+ * Operands are `ProductPatternElement`: the parser admits sequence wildcards
+ * in operand position (e.g. `a / __rest`). See `AdditionPattern`.
  */
 export interface DivisionPattern {
 	readonly type: 'division-pattern';
-	readonly numerator: Pattern;
-	readonly denominator: Pattern;
+	readonly numerator: ProductPatternElement;
+	readonly denominator: ProductPatternElement;
 }
 
 /**
  * Superscript/power pattern - matches superscript nodes
+ *
+ * Operands are `SumPatternElement`: the parser admits sequence wildcards in
+ * operand position (e.g. `a ^ __rest`). See `AdditionPattern`.
  */
 export interface SuperscriptPattern {
 	readonly type: 'superscript-pattern';
-	readonly base: Pattern;
-	readonly exponent: Pattern;
+	readonly base: SumPatternElement;
+	readonly exponent: SumPatternElement;
 }
 
 /**
  * Function pattern - matches function nodes by name and argument patterns
+ *
+ * Arguments are `SumPatternElement`: the parser admits sequence wildcards in
+ * argument position (e.g. `f(a, __rest)`). See `AdditionPattern`.
  */
 export interface FunctionPattern {
 	readonly type: 'function-pattern';
 	readonly name: string;
-	readonly args: readonly Pattern[];
-	readonly power?: Pattern;
+	readonly args: readonly SumPatternElement[];
+	readonly power?: SumPatternElement;
 }
 
 /**
  * Opposite/negation pattern - matches opposite nodes
+ *
+ * Operand is `SumPatternElement`: the parser admits sequence wildcards in
+ * operand position (e.g. `-__rest`). See `AdditionPattern`.
  */
 export interface OppositePattern {
 	readonly type: 'opposite-pattern';
-	readonly operand: Pattern;
+	readonly operand: SumPatternElement;
 }
 
 /**
  * Positive pattern - matches positive sign nodes
+ *
+ * Operand is `SumPatternElement`: see `AdditionPattern`.
  */
 export interface PositivePattern {
 	readonly type: 'positive-pattern';
-	readonly operand: Pattern;
+	readonly operand: SumPatternElement;
 }
 
 /**
  * Delimiter pattern - matches delimiter nodes (parentheses, etc.)
+ *
+ * Content is `SumPatternElement`: the parser admits sequence wildcards inside
+ * delimiters (e.g. `(__rest)`). See `AdditionPattern`.
  */
 export interface DelimiterPattern {
 	readonly type: 'delimiter-pattern';
-	readonly content: Pattern;
+	readonly content: SumPatternElement;
 }
 
 /**
@@ -576,8 +604,8 @@ export interface RuleOptions {
  */
 export interface Rule {
 	readonly name: string;
-	readonly pattern: Pattern;
-	readonly replacement: Pattern | ((bindings: MatchBindings) => MathNode);
+	readonly pattern: SumPatternElement;
+	readonly replacement: SumPatternElement | ((bindings: MatchBindings) => MathNode);
 	readonly condition?: (bindings: MatchBindings) => boolean;
 	readonly priority?: number;
 	readonly group?: string;
