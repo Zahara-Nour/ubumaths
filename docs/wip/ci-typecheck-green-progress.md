@@ -180,12 +180,12 @@ QuestionBase `as unknown as Record`, etc.).
 
 ## BILAN FINAL (2026-06-13)
 
-| Job CI | Avant | Après |
-| --- | --- | --- |
-| **Type Check** | OOM crash (exit 134), 2233 erreurs cachées | ✅ **0 erreur** (les 5 décisions PO tranchées) |
-| **Tests** (4 shards) | 2 shards rouges (ENOENT extern) | ✅ vert |
-| **Lint** | rouge | ✅ vert |
-| **Build** | skip (needs typecheck) | ✅ débloqué (typecheck = 0) |
+| Job CI               | Avant                                      | Après                                          |
+| -------------------- | ------------------------------------------ | ---------------------------------------------- |
+| **Type Check**       | OOM crash (exit 134), 2233 erreurs cachées | ✅ **0 erreur** (les 5 décisions PO tranchées) |
+| **Tests** (4 shards) | 2 shards rouges (ENOENT extern)            | ✅ vert                                        |
+| **Lint**             | rouge                                      | ✅ vert                                        |
+| **Build**            | skip (needs typecheck)                     | ✅ débloqué (typecheck = 0)                    |
 
 ### Les 5 décisions PO — TRANCHÉES (2026-06-13)
 
@@ -206,16 +206,18 @@ QuestionBase `as unknown as Record`, etc.).
 5. **calendar.svelte** : `npx shadcn-svelte` tenté mais **écrasait le Button customisé
    app-wide (a11y touch-target perdue) + style « nova »** → REVERTÉ. Hand-patch propre :
    typage contre la variante single de bits-ui v2 (`WithElementRef<WithoutChildrenOrChild<
-   CalendarSingleRootProps>>`) — l'app n'utilise que `type="single"`.
+CalendarSingleRootProps>>`) — l'app n'utilise que `type="single"`.
 
 Commits : `87ee03d46` (config/OOM) → `ecd71a276` (lucide) → `b6d81250e` (tests) →
 `7594bdeab` (596→50) → `19a909abf` (50→13) → `1b4435456` (lint) → … → **0 erreur**. **Non poussés.**
 
 Plusieurs **vrais bugs runtime** trouvés et corrigés en chemin (notifications teacher_id,
 résumés is_test, geometry slider→NaN, cost.ts case 'signedZero', known-limits displayStyle,
-+ le matching silencieux `a + __rest`) — à vérifier côté produit.
+
+- le matching silencieux `a + __rest`) — à vérifier côté produit.
 
 À faire aussi (hors gate, signalé) : `pnpm db:types` (RPCs buddy manquants des types générés),
-+ la suite RGPD du point 1.
+
+- la suite RGPD du point 1.
 
 ## Ne PAS pousser — David gère le déploiement.
