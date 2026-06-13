@@ -137,9 +137,12 @@ export default defineConfig(({ mode }) => {
 						exclude: [
 							'src/lib/server/**',
 							// Real-Pyodide integration tests download and run Python in
-							// headless Chromium: slow and flaky in CI. Excluded there
-							// (CI=true on GitHub Actions), still run locally.
-							...(process.env.CI ? ['src/**/*-real.svelte.test.ts'] : [])
+							// headless Chromium: slow and flaky in CI. Excluded on regular
+							// CI runs (CI=true on GitHub Actions), still run locally — and
+							// re-included by the nightly job which sets RUN_PYODIDE_REAL=1.
+							...(process.env.CI && !process.env.RUN_PYODIDE_REAL
+								? ['src/**/*-real.svelte.test.ts']
+								: [])
 						],
 						setupFiles: ['./vitest-setup-client.ts']
 					}

@@ -3,9 +3,23 @@ name: Code Quality
 on:
   push:
     branches: [main, dev, feature/**]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.github/dependabot.yml'
   pull_request:
     branches: [main, dev]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.github/dependabot.yml'
   workflow_dispatch: # Allow manual trigger
+
+# Cancel an in-progress run when a newer commit is pushed to the same ref —
+# saves Actions minutes (free tier) instead of running stale + fresh in parallel.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint:
@@ -90,6 +104,25 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      # Guardrail for the Safari/iPad WebKit TDZ bug (docs/ref/safari-webkit-tdz.md):
+      # the root layout node chunk must stay < 100 KB, otherwise iPad/Safari throws
+      # "Cannot access 'universal' before initialization". Fails the build if exceeded.
+      - name: Guard root layout chunk size (< 100 KB — Safari TDZ)
+        run: |
+          files=$(ls .svelte-kit/output/client/_app/immutable/nodes/0.*.js 2>/dev/null || true)
+          if [ -z "$files" ]; then
+            echo "::error::Root layout chunk (nodes/0.*.js) not found — build output changed?"
+            exit 1
+          fi
+          size=$(cat $files | wc -c | tr -d ' ')
+          limit=102400
+          echo "Root layout chunk: $size bytes (limit $limit)"
+          if [ "$size" -gt "$limit" ]; then
+            echo "::error::Root layout chunk $size B > 100 KB — Safari/iPad TDZ risk (see docs/ref/safari-webkit-tdz.md). Move heavy static imports out of src/routes/+layout.ts."
+            exit 1
+          fi
+          echo "::notice::Root layout chunk OK ($size B < 100 KB)"
 
   # Server tests (node env): the real regression gate — fast, deterministic,
   # no browser. Sharded for parallelism.

@@ -1,6 +1,9 @@
 # UbuMaths
 
 [![CI](https://github.com/Zahara-Nour/ubumaths/actions/workflows/quality.yml/badge.svg)](https://github.com/Zahara-Nour/ubumaths/actions/workflows/quality.yml)
+[![CodeQL](https://github.com/Zahara-Nour/ubumaths/actions/workflows/codeql.yml/badge.svg)](https://github.com/Zahara-Nour/ubumaths/actions/workflows/codeql.yml)
+[![Release](https://img.shields.io/github/v/release/Zahara-Nour/ubumaths?sort=semver)](https://github.com/Zahara-Nour/ubumaths/releases)
+[![Node](https://img.shields.io/badge/node-22.x-339933?logo=node.js&logoColor=white)](.nvmrc)
 
 An educational math application built by a math teacher for students, featuring interactive mathematical input and rendering.
 
