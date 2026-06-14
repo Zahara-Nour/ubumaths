@@ -495,15 +495,24 @@ suivantes quasi gratuites :
 | **(c) Dérive prod ↔ migrations**       | `question-images` & `pg_cron` créés via Dashboard         | Mettre la **création des buckets + activation des extensions dans des migrations**. Un `db push` redevient fidèle → le replay redevient une option sûre.                                                                                                                                                                           |
 | **(d) Config Dashboard non versionnée** | Phase 6bis : Auth hooks/SMTP/settings re-saisis à la main | Versionner la config Auth/API/Storage dans `supabase/config.toml` (déjà présent dans le repo) et l'appliquer au nouveau projet via `supabase config push`, au lieu du Dashboard. Pré-requis : mettre d'abord `config.toml` en cohérence avec la prod. Les **secrets** (client secrets OAuth, SMTP) restent gérés à part (Phase 5). |
 
-> **(a) — décidé 2026-06-14 : REPORTÉ après la migration** (Phase 4 reste host→nouveau-host ;
-> (a) n'est pas requis pour la bascule). Investigation des lecteurs (à réutiliser en TDD) :
-> `exercises.variations` (21) et `tutor_conversations.*` (97+24) passent par `ImageDisplay`
-> qui **compose déjà le relatif** (`src.includes('://') ? src : getQuestionImageUrl(...)`)
-> → coût ~0 (data + garde) ; **`vip_card_templates.image_path`** (45) est lu dans **~10
-> endroits hors `ImageDisplay`** (marketplace/stores/helpers/jeux) → coût élevé ;
-> `bug_reports.screenshot_url` (2) = bucket **privé** + URL signée, cas à part. À traiter
-> par sous-système, hors fenêtre de cutover. ⚠️ Vérifier d'abord **quel bucket** ciblent les
-> 21 URLs de `variations` (si ≠ `question-images`, `getQuestionImageUrl` composerait le mauvais bucket).
+> **(a) — REPORTÉ / backlog (confirmé 2026-06-15, après cutover).** Pas urgent (Phase 4 = 5
+> `UPDATE` rapides de quelques secondes). **⚠️ Finding clé MESURÉ (2026-06-15)** : les URLs de
+> `exercises.variations`, `tutor_conversations.exercise_statement`/`exercise_correction` pointent
+> **TOUTES vers le bucket `exercise-images`** (et non `question-images`). Or `ImageDisplay` compose
+> le relatif via `getQuestionImageUrl` qui **hardcode `question-images`** → dénuder ces URLs en
+> relatif les casserait (mauvais bucket reconstruit). **Donc le « sous-ensemble gratuit » n'existe
+> PAS** — il faut rendre le rendu **bucket-aware**. (Mon estimation « coût ~0 » du 2026-06-14 était
+> fausse, basée sur l'hypothèse `question-images`.)
+>
+> **Design retenu pour la future tâche TDD :**
+> 1. Stocker des chemins relatifs **incluant le bucket** (`exercise-images/x.png`) + un helper
+>    unique `storageUrl(path)` (adapter `src/lib/utils/storage.ts`) ; `ImageDisplay` →
+>    `src.includes('://') ? src : storageUrl(src)`.
+> 2. **Confirmer que le tuteur passe bien par `ImageDisplay`** (non vérifié).
+> 3. `vip_card_templates.image_path` (45, lu dans **~10 endroits hors `ImageDisplay`**) +
+>    `bug_reports.screenshot_url` (2, bucket **privé**/URL signée) = sous-systèmes à part, plus coûteux.
+> 4. **Ordre critique** : déployer le code (qui gère absolu **ET** relatif) AVANT de migrer la
+>    donnée (prod LIVE) ; ajouter une garde anti-URL-absolue ; vérifier le rendu des images après.
 
 **Bonus** : transformer le cutover en **script testé** (dump → restore-réplica → réécriture
 URLs → copie Storage → vérifs §9) — rejouable prod→staging de temps en temps. Une opération
