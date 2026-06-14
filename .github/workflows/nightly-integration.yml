@@ -44,6 +44,10 @@ jobs:
           version: latest
 
       - name: Start Supabase (applies migrations)
+        # setup-cli défaut SUPABASE_INTERNAL_IMAGE_REGISTRY=ghcr.io, où certains
+        # tags (storage-api) renvoient "manifest unknown" ; on force docker.io.
+        env:
+          SUPABASE_INTERNAL_IMAGE_REGISTRY: docker.io
         run: supabase start
 
       - name: Export local Supabase credentials
