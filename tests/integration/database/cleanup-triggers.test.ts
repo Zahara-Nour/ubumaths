@@ -17,8 +17,8 @@ import {
 	generateTestId,
 	cleanupAllTestData,
 	closeConnections
-} from '../helpers/trigger-test-helpers';
-import { TestData } from '../helpers/test-data-factory';
+} from '../../helpers/database/trigger-test-helpers';
+import { TestData } from '../../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 

@@ -14,9 +14,9 @@
 import {
 	createServiceRoleClient,
 	generateTestEmail
-} from '../database/helpers/trigger-test-helpers';
-import { TestData } from '../database/helpers/test-data-factory';
-import { createAuthenticatedClient } from '../database/helpers/supabase-client';
+} from './database/trigger-test-helpers';
+import { TestData } from './database/test-data-factory';
+import { createAuthenticatedClient } from './database/supabase-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 

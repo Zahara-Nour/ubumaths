@@ -154,9 +154,9 @@ export default defineConfig(({ mode }) => {
 						environment: 'node',
 						include: ['src/**/*.{test,spec}.{js,ts}', 'scripts/**/*.{test,spec}.{js,ts}'],
 						exclude: [
-							'src/**/*.svelte.{test,spec}.{js,ts}',
-							'tests/database/**/*.{test,spec}.{js,ts}', // Exclude database trigger tests (require Supabase)
-							'tests/integration/**/*.{test,spec}.{js,ts}' // Exclude integration tests (require Supabase)
+							'src/**/*.svelte.{test,spec}.{js,ts}'
+							// tests/integration/** (incl. database/) is never matched by the include
+							// globs above; it runs via vitest.integration.config.ts (Supabase local).
 						],
 						setupFiles: ['./vitest-setup-server.ts']
 					}

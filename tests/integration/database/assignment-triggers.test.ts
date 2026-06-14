@@ -20,7 +20,7 @@ import {
 	createServiceRoleClient,
 	cleanupAllTestData,
 	closeConnections
-} from '../helpers/trigger-test-helpers';
+} from '../../helpers/database/trigger-test-helpers';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
