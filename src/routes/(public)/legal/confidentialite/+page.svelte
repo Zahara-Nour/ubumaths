@@ -14,7 +14,7 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Politique de Confidentialite</h1>
 
-		<p class="lead text-muted-foreground">Derniere mise a jour : 15 janvier 2026 | Version 1.0</p>
+		<p class="lead text-muted-foreground">Derniere mise a jour : 15 juin 2026 | Version 1.1</p>
 
 		<hr />
 
@@ -208,7 +208,7 @@
 						<tr>
 							<td>Supabase</td>
 							<td>Hebergement base de donnees</td>
-							<td>Union Europeenne</td>
+							<td>Union Europeenne (France &ndash; Paris, eu-west-3)</td>
 						</tr>
 						<tr>
 							<td>Vercel</td>
