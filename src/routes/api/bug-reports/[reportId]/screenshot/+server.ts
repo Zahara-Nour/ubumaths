@@ -15,6 +15,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { MAX_IMAGE_SIZE_BYTES, validateFileSignature } from '$lib/server/validation/image-upload';
+import { DISPLAY_SIGNED_URL_TTL } from '$lib/server/bug-report-screenshots';
 import { z } from 'zod';
 
 const reportIdSchema = z.string().uuid('ID de rapport invalide');
@@ -110,16 +111,12 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(500, "Erreur lors de l'upload de la capture d'écran");
 		}
 
-		// Get public URL
-		const {
-			data: { publicUrl }
-		} = locals.supabase.storage.from(BUCKET_NAME).getPublicUrl(storagePath);
-
-		// Update bug report with screenshot info
+		// Bucket is private: there is no durable public URL. We store only the
+		// storage path; signed URLs are generated on read (see bug-report-screenshots.ts).
 		const { error: updateError } = await locals.supabase
 			.from('bug_reports')
 			.update({
-				screenshot_url: publicUrl,
+				screenshot_url: null,
 				screenshot_path: storagePath
 			})
 			.eq('id', params.reportId);
@@ -131,10 +128,15 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			throw error(500, 'Erreur lors de la mise à jour du rapport');
 		}
 
+		// Return a short-lived signed URL so the client can preview immediately.
+		const { data: signed } = await locals.supabase.storage
+			.from(BUCKET_NAME)
+			.createSignedUrl(storagePath, DISPLAY_SIGNED_URL_TTL);
+
 		return json({
 			success: true,
 			data: {
-				url: publicUrl,
+				url: signed?.signedUrl ?? null,
 				path: storagePath,
 				size: file.size,
 				mimeType: file.type
