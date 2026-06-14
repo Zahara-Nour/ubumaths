@@ -495,10 +495,20 @@ suivantes quasi gratuites :
 | **(c) Dérive prod ↔ migrations**       | `question-images` & `pg_cron` créés via Dashboard         | Mettre la **création des buckets + activation des extensions dans des migrations**. Un `db push` redevient fidèle → le replay redevient une option sûre.                                                                                                                                                                           |
 | **(d) Config Dashboard non versionnée** | Phase 6bis : Auth hooks/SMTP/settings re-saisis à la main | Versionner la config Auth/API/Storage dans `supabase/config.toml` (déjà présent dans le repo) et l'appliquer au nouveau projet via `supabase config push`, au lieu du Dashboard. Pré-requis : mettre d'abord `config.toml` en cohérence avec la prod. Les **secrets** (client secrets OAuth, SMTP) restent gérés à part (Phase 5). |
 
+> **(a) — décidé 2026-06-14 : REPORTÉ après la migration** (Phase 4 reste host→nouveau-host ;
+> (a) n'est pas requis pour la bascule). Investigation des lecteurs (à réutiliser en TDD) :
+> `exercises.variations` (21) et `tutor_conversations.*` (97+24) passent par `ImageDisplay`
+> qui **compose déjà le relatif** (`src.includes('://') ? src : getQuestionImageUrl(...)`)
+> → coût ~0 (data + garde) ; **`vip_card_templates.image_path`** (45) est lu dans **~10
+> endroits hors `ImageDisplay`** (marketplace/stores/helpers/jeux) → coût élevé ;
+> `bug_reports.screenshot_url` (2) = bucket **privé** + URL signée, cas à part. À traiter
+> par sous-système, hors fenêtre de cutover. ⚠️ Vérifier d'abord **quel bucket** ciblent les
+> 21 URLs de `variations` (si ≠ `question-images`, `getQuestionImageUrl` composerait le mauvais bucket).
+
 **Bonus** : transformer le cutover en **script testé** (dump → restore-réplica → réécriture
 URLs → copie Storage → vérifs §9) — rejouable prod→staging de temps en temps. Une opération
 de ~2 jours artisanale devient un bouton.
 
 > Les correctifs **(a)/(b)/(c)/(d)** sont indépendants de la migration et peuvent être faits
 > **dès maintenant, à froid**. **(b) ✅ fait** (commit `22e771f9b`, helper `storageUrl()`) ;
-> (a) est le plus rentable (supprime toute la Phase 4) ; (d) supprime l'essentiel de la Phase 6bis.
+> **(a) reporté** (cf. note ci-dessus) ; (d) supprime l'essentiel de la Phase 6bis.
