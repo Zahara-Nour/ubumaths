@@ -50,23 +50,32 @@ prouvée correcte de bout en bout.
 
 **Bugs pré-existants détectés (HORS migration, à traiter séparément) :**
 
-- `svelte-sonner` (Toaster) : `target.exclude.has is not a function` (mismatch version Svelte
-  5.56 / cache Vite) — pré-existant, présent aussi sur `main`.
+- `svelte-sonner`/`bits-ui` : `target.exclude.has is not a function` en **dev** — **RÉSOLU**
+  par `rm -rf node_modules/.vite` (cache optimize-deps Vite corrompu). Dev-only, prod non
+  affectée, sans rapport avec la migration.
 - 4 cartes VIP « mathemo » : `image_path` = chemin **statique local** `/images/vip-cards/mathemo-*.webp`
   mais le dossier `static/images/vip-cards/` n'existe pas → **404 pré-existant** (pas du Storage).
 
-## RESTE À FAIRE
+## ✅ CUTOVER TERMINÉ — SITE LIVE SUR L'EU (2026-06-15)
 
-- **Phase 3 — 2 fichiers privés** `bug-report-screenshots` (optionnel ; ajouter `OLD_SERVICE_ROLE`
-  au fichier secrets puis adapter `copy-storage.sh`). Le reste du Storage est fait.
-- **Phase 5 — code FAIT** (commit `f2e31ae99`) : `package.json`/`.mcp.json` refs + `vip-card-admin.ts`
-  docstring → `cnevnzsvixxpnurautls` (+ `(b)` storageUrl `22e771f9b`). **Reste : env Vercel**
-  (URL/anon/service_role CHANGENT ; le reste RECOPIÉ verbatim — ⚠️ `GOOGLE_TOKEN_ENCRYPTION_KEY`).
-- **Phase 6 / 6bis** — Google OAuth (callback `https://cnevnzsvixxpnurautls.supabase.co/auth/v1/callback`
-  - Site URL + Redirect URLs sur le nouveau) ; vérifs Dashboard (Auth Hooks, SMTP/templates).
-- **Phase 7 — FAIT** (commit `f2e31ae99`) : `svelte.config.js` → `regions: ['cdg1']`.
-- **Phase 8** — cutover (bascule env Vercel → nouveau projet ; lever la maintenance).
-- **Phase 9** — tests post-migration (login email + Google, images, RPC, RLS, realtime, cron).
+- **Phases 5/6/7/8 faites** : env Vercel (3 vars Supabase → EU via CLI **54.14.0** +
+  `--value … --no-sensitive --force` ; ⚠️ le stdin/`--value` du CLI 54.13.0 stockait du vide,
+  et Production/Preview sont `sensitive` par défaut = illisibles via `pull`) ; Google OAuth fait ;
+  merge `main` + déploiement git **débloqué par un bump v0.10.4** (l'« Ignored Build Step »
+  `git diff HEAD^ HEAD -- ':(exclude)docs/**'` saute les commits docs-only — le merge FF avait mis
+  un commit docs en HEAD) ; **maintenance levée** via `pnpm maintenance:off`.
+- **Vérifié en prod** : `www.chiph.re` → HTTP 200, `x-vercel-id: …::cdg1::…` (fonctions **cdg1/Paris**).
+- ⚠️ **Vercel Preview** : 3 vars Supabase NON posées (bug CLI « all preview branches » non-interactif)
+  → à faire au **dashboard** (non bloquant, sert seulement aux previews de branches).
+
+### Reste à faire (post-cutover)
+
+- 🔴 **SÉCURITÉ (prioritaire)** : régénérer **2 mots de passe DB** (ancien + nouveau projet) + **2
+  service_role** (exposés pendant l'opération). Puis MAJ `SUPABASE_SERVICE_ROLE_KEY` (Vercel + `.env`).
+- **Ne PAS supprimer l'ancien projet** `aqtijumsgfufoztohdua` avant ~1-2 semaines (rollback =
+  repointer les 3 env Vercel + redéployer).
+- **RGPD** (§7 du plan) : registre des traitements → hébergement EU.
+- Optionnel : 2 fichiers privés bug-report ; bug pré-existant 4 images statiques `mathemo`.
 
 ## Notes de méthode (réutilisables)
 
