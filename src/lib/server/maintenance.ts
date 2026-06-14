@@ -1,7 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { dev } from '$app/environment';
+import { building, dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
 
 /**
@@ -146,6 +146,11 @@ export function createMaintenanceHandle(
 	const isDev = options.isDev ?? false;
 
 	return async ({ event, resolve }) => {
+		// During build/prerendering, never gate: prerendered pages forbid accessing
+		// event.url.searchParams (which the bypass check reads). Maintenance only
+		// needs to apply at runtime.
+		if (building) return resolve(event);
+
 		const cfg = readEnv();
 
 		// Off by default — pass straight through.
