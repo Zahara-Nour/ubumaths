@@ -513,10 +513,11 @@ de ~2 jours artisanale devient un bouton.
 > **dès maintenant, à froid**. **(b) ✅ fait** (commit `22e771f9b`, helper `storageUrl()`) ;
 > **(a) reporté** (cf. note ci-dessus) ; (d) supprime l'essentiel de la Phase 6bis.
 
-> **(c) — partiellement fait (2026-06-14)** : migration `20260614191246_create_question_images_bucket.sql`
+> **(c) — fait (2026-06-14)** : migration `20260614191246_create_question_images_bucket.sql`
 > rapatrie le bucket `question-images` (seul bucket absent des migrations), idempotente
-> (`on conflict do nothing` → no-op sur la prod, créatrice sur EU). **À pousser par David**
-> (`pnpm db:migrate`). `pg_cron` reste activé à la main (Phase 1) — volontairement pas en migration.
+> (`on conflict do nothing` → no-op sur la prod, créatrice sur EU). **Appliquée sur la prod**
+> le 2026-06-14 (`pnpm db:migrate` ; no-op vérifié : 254 objets intacts ; enregistrée dans
+> `schema_migrations`). `pg_cron` reste activé à la main (Phase 1) — volontairement pas en migration.
 >
 > **(d) — bloqué sur David (réconciliation Dashboard).** `supabase/config.toml` existe mais
 > reflète des **défauts local-dev**, pas la prod : `site_url = http://127.0.0.1:3000`,
