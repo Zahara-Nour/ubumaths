@@ -36,14 +36,21 @@ jobs:
         # Needed so svelte-kit sync can generate $env/static members.
         run: cp .github/ci.env .env
 
+      - name: Setup Supabase CLI
+        # The CLI is not a project dependency (installed via brew locally), so the
+        # runner needs it explicitly before `supabase start`.
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
       - name: Start Supabase (applies migrations)
-        run: pnpm supabase start
+        run: supabase start
 
       - name: Export local Supabase credentials
         # The test helpers read SUPABASE_TEST_* (with localhost defaults); export the
         # actual local stack keys so they match the CLI version that just started.
         run: |
-          pnpm supabase status -o env \
+          supabase status -o env \
             --override-name api.url=SUPABASE_TEST_URL \
             --override-name auth.anon_key=SUPABASE_TEST_ANON_KEY \
             --override-name auth.service_role_key=SUPABASE_TEST_SERVICE_ROLE_KEY \
@@ -54,4 +61,4 @@ jobs:
 
       - name: Stop Supabase
         if: always()
-        run: pnpm supabase stop
+        run: supabase stop
