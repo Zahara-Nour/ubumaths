@@ -39,7 +39,8 @@
 
 Scan complet : 0 `.only`. ~115 skips au total, classés par **motif réel** (réactivés + exécutés pour vérifier, pas supposés) :
 
-- **Bucket 1 — légitimes (garder)** : feature non implémentée (`web-repl` stats, `complex-functions` Re/Im exact, `abs-sign` power bounds), RPC inexistante (`marketplace/security` ×5), gardes « if not in browser » (stores realtime/presence/chat), perf/mémoire, déférés documentés (`chapter-templates`, `student-inbox` closes_at). ~40.
+- **Bucket 1 — légitimes (garder)** : feature non implémentée (`web-repl` stats, `abs-sign` power bounds), RPC inexistante (`marketplace/security` ×5), gardes « if not in browser » (stores realtime/presence/chat), perf/mémoire, déférés documentés (`chapter-templates`, `student-inbox` closes_at). ~32.
+  - ⚠️ **`complex-functions` Re/Im exact : CORRIGÉ** (2026-06-14, commit `269b8e263`). N'était PAS une feature manquante mais un **bug de parsing** : `\Re`/`\Im` mappés comme symboles ℜ/ℑ au lieu de fonctions. Retirés de `SYMBOL_COMMAND_MAP` (pratt+rd) ; les 8 tests Re/Im sont réactivés et verts.
 - **Bucket 2 — stale (rallumer)** : `evaluate-with-units` « near-zero 1e-12 » ✅ **réactivé** (TODO résolu). `variable-resolver` / `complete-integration` passent mais commentaire « not implemented / KNOWN LIMITATION » → **laissés** (passent peut-être pour la mauvaise raison, intention auteur respectée).
 - **Bucket 3 — cassés non documentés** :
   - **Type B (mocks unit d'API cassés) → SUPPRIMÉS** (décision PO) : `cleanup-all.test.ts` (8 tests, 100% skippé → fichier supprimé) + 17 `it.skip` de `google-coursework-bulk-share` (gardé les 2 tests actifs). Mocks Supabase faits main désynchronisés de l'implémentation, valeur < maintenance.
