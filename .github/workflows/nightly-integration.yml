@@ -1,14 +1,17 @@
 name: Nightly Integration Tests
 
 # Integration tests (tests/integration/**, including tests/integration/database/
-# trigger & RLS tests) need a real local Supabase stack — too slow/heavy for the
-# push gate, so they run once a day here. This spins up Supabase via the CLI,
-# applies migrations, runs `pnpm test:integration`, then tears the stack down.
+# trigger & RLS tests) need a real local Supabase stack. This spins up Supabase
+# via the CLI, applies migrations, runs `pnpm test:integration`, tears it down.
+#
+# CRON DÉSACTIVÉ : `supabase start` échoue actuellement car l'image amont
+# storage-api:fix-object-level (défaut CLI 2.105) n'est publiée sur aucun registre
+# ("manifest unknown"). Tant que ce n'est pas résolu (cf. docs/wip/
+# test-architecture-progress.md), on garde uniquement le déclenchement manuel
+# pour éviter un job rouge toutes les nuits. Réactiver le cron une fois corrigé.
 
 on:
-  schedule:
-    - cron: '0 4 * * *' # 04:00 UTC daily (after nightly-pyodide at 03:00)
-  workflow_dispatch: # manual trigger
+  workflow_dispatch: # manual trigger only (cron disabled — see comment above)
 
 jobs:
   integration:
