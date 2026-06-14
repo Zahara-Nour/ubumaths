@@ -43,11 +43,29 @@ const logger = createLogger('auth/callback');
 // Allowed email domain for Google OAuth
 const ALLOWED_DOMAIN = '@voltairedoha.com';
 
-export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
+export const GET: RequestHandler = async ({ url, locals: { supabase }, request }) => {
 	// Extract OAuth code and next URL from query parameters
 	const code = url.searchParams.get('code');
 	// Validate `next` to prevent open redirect (e.g. ?next=//evil.com).
 	const next = validateRedirectUrl(url.searchParams.get('next') ?? '/dashboard', url.origin);
+
+	// [OAUTH-DEBUG] TEMPORARY — confirms the callback was reached on the right host
+	// and whether the PKCE code_verifier cookie arrived (names only, no values).
+	console.log('[OAUTH-DEBUG] callback.hit', {
+		urlOrigin: url.origin,
+		urlHref: url.href,
+		h_host: request.headers.get('host'),
+		h_xfwd_host: request.headers.get('x-forwarded-host'),
+		hasCode: !!code,
+		next,
+		cookieNames:
+			request.headers
+				.get('cookie')
+				?.split(';')
+				.map((c) => c.trim().split('=')[0])
+				.filter(Boolean)
+				.join(',') ?? '(none)'
+	});
 
 	if (!code) {
 		logger.error('No code provided in OAuth callback');

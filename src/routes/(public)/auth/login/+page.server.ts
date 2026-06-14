@@ -68,7 +68,7 @@ export const actions = {
 	 *
 	 * SECURITY: Rate limited to prevent OAuth abuse
 	 */
-	googleSignIn: async ({ locals: { supabase }, url, getClientAddress }) => {
+	googleSignIn: async ({ locals: { supabase }, url, getClientAddress, request }) => {
 		// Check OAuth rate limit (with HMR-safe globalThis singleton)
 		const ip = getClientAddress();
 		const oauthLimit = await checkOAuthRateLimitByIP(ip);
@@ -84,13 +84,37 @@ export const actions = {
 		// Use the current origin to build the callback URL
 		// This automatically works in dev (localhost:5173) and production (vercel domain)
 		const callbackUrl = `${url.origin}/auth/callback`;
+		const fullRedirectTo = `${callbackUrl}?next=${encodeURIComponent(redirectTo)}`;
+
+		// [OAUTH-DEBUG] TEMPORARY — remove after fixing the custom-domain redirect.
+		// Shows what origin SvelteKit computed and what redirect_to we hand to Supabase.
+		console.log('[OAUTH-DEBUG] login.origin', {
+			urlOrigin: url.origin,
+			urlHref: url.href,
+			urlHost: url.host,
+			urlProtocol: url.protocol,
+			h_host: request.headers.get('host'),
+			h_xfwd_host: request.headers.get('x-forwarded-host'),
+			h_xfwd_proto: request.headers.get('x-forwarded-proto'),
+			h_origin: request.headers.get('origin'),
+			h_referer: request.headers.get('referer'),
+			callbackUrl,
+			fullRedirectTo
+		});
 
 		// Initiate OAuth flow with Google
 		const { data, error } = await supabase.auth.signInWithOAuth({
 			provider: 'google',
 			options: {
-				redirectTo: `${callbackUrl}?next=${encodeURIComponent(redirectTo)}`
+				redirectTo: fullRedirectTo
 			}
+		});
+
+		// [OAUTH-DEBUG] TEMPORARY — `data.url` is the Supabase authorize URL; its
+		// `redirect_to=` query param is exactly what Supabase will redirect to.
+		console.log('[OAUTH-DEBUG] login.signInWithOAuth', {
+			error: error?.message ?? null,
+			dataUrl: data?.url ?? null
 		});
 
 		if (error) {

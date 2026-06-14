@@ -17,6 +17,8 @@ import type { RequestEvent } from '@sveltejs/kit';
  */
 const ALLOWED_ORIGINS = [
 	// Production
+	'https://chiph.re',
+	'https://www.chiph.re',
 	'https://ubumaths.com',
 	'https://www.ubumaths.com',
 
