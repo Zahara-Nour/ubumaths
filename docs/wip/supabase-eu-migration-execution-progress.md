@@ -42,6 +42,19 @@ materialized view student_achievement_stats` faits. `postgres` PEUT bien faire l
 - **pg_cron — 8 jobs re-planifiés** (`cron.schedule`, absents du dump `public` — piège §4.3) :
   `cron.job` = **8** sur le nouveau projet (mêmes noms/schedules/commands que l'ancien).
 
+## ✅ VALIDATION LOCALE (dev pointé sur l'EU via `.env`) — 2026-06-15
+
+Tous les tests passent : login **email** + **Google**, **images** Storage, **RPC/gidouilles/
+cartes VIP** (§4.7 confirmé OK), **questions/écritures**, **RLS**, **realtime**. → migration
+prouvée correcte de bout en bout.
+
+**Bugs pré-existants détectés (HORS migration, à traiter séparément) :**
+
+- `svelte-sonner` (Toaster) : `target.exclude.has is not a function` (mismatch version Svelte
+  5.56 / cache Vite) — pré-existant, présent aussi sur `main`.
+- 4 cartes VIP « mathemo » : `image_path` = chemin **statique local** `/images/vip-cards/mathemo-*.webp`
+  mais le dossier `static/images/vip-cards/` n'existe pas → **404 pré-existant** (pas du Storage).
+
 ## RESTE À FAIRE
 
 - **Phase 3 — 2 fichiers privés** `bug-report-screenshots` (optionnel ; ajouter `OLD_SERVICE_ROLE`
