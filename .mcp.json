@@ -6,7 +6,7 @@
 				"-y",
 				"@supabase/mcp-server-supabase@latest",
 				"--read-only",
-				"--project-ref=aqtijumsgfufoztohdua"
+				"--project-ref=cnevnzsvixxpnurautls"
 			],
 			"env": {
 				"SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"

@@ -192,7 +192,7 @@ const actionSchema = z.discriminatedUnion('type', [
  *   rarity: "epic",
  *   category: "bonus",
  *   isEnabled: true,
- *   imagePath: "https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images/super-bonus@0.5x.webp",
+ *   imagePath: "https://cnevnzsvixxpnurautls.supabase.co/storage/v1/object/public/vip-card-images/super-bonus@0.5x.webp",
  *   action: { type: "add_gidouilles", amount: 50 },
  *   sortOrder: 10
  * }
