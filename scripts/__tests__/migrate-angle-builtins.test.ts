@@ -8,11 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-	migrateScript,
-	parseArgs,
-	replaceCalls
-} from '../../../scripts/migrate-angle-builtins-supabase';
+import { migrateScript, parseArgs, replaceCalls } from '../migrate-angle-builtins-supabase';
 
 describe('parseArgs — depth-counting argument parser', () => {
 	it('splits simple comma-separated args', () => {

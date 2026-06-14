@@ -23,7 +23,7 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { actions } from '../../../../src/routes/(public)/auth/login/+page.server';
+import { actions } from '../+page.server';
 
 // Mock dependencies
 vi.mock('$lib/utils/logger', () => ({

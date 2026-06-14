@@ -14,7 +14,7 @@
  */
 
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { DELETE } from '../../../../src/routes/api/account/delete/+server';
+import { DELETE } from '../+server';
 import { ACCOUNT_DELETION_CONFIRMATION_PHRASE } from '$lib/server/validation/account';
 
 // ============================================================================

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { GET } from '../../../src/routes/api/student/shared-materials/+server';
+import { GET } from '../+server';
 import * as authModule from '$lib/server/middleware/auth';
 
 /**

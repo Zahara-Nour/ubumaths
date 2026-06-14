@@ -8,7 +8,7 @@
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import type { RequestEvent as _RequestEvent } from '@sveltejs/kit';
-import { GET, POST } from '../../../../src/routes/api/marketplace/listings/+server.js';
+import { GET, POST } from '../+server.js';
 import { createMockSupabase } from '$tests/helpers';
 import {
 	createTestUser,

@@ -7,7 +7,7 @@
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { POST } from '../../../../src/routes/api/marketplace/listings/[id]/proposals/+server';
+import { POST } from '../+server';
 import { createMockSupabase } from '$tests/helpers';
 import {
 	createTestUser,
