@@ -11,7 +11,7 @@ import {
 	TEST_CHALLENGES,
 	TEST_SPELLS,
 	createTestPlayer
-} from './fixtures/game-fixtures';
+} from './helpers/fixtures/game';
 
 const SUPABASE_URL = process.env.PUBLIC_SUPABASE_URL || 'http://localhost:54321';
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'your-local-service-key';
