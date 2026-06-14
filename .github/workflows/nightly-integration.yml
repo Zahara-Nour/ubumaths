@@ -1,0 +1,57 @@
+name: Nightly Integration Tests
+
+# Integration tests (tests/integration/**, including tests/integration/database/
+# trigger & RLS tests) need a real local Supabase stack — too slow/heavy for the
+# push gate, so they run once a day here. This spins up Supabase via the CLI,
+# applies migrations, runs `pnpm test:integration`, then tears the stack down.
+
+on:
+  schedule:
+    - cron: '0 4 * * *' # 04:00 UTC daily (after nightly-pyodide at 03:00)
+  workflow_dispatch: # manual trigger
+
+jobs:
+  integration:
+    name: Integration tests (Supabase local)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create CI env (placeholders)
+        # Needed so svelte-kit sync can generate $env/static members.
+        run: cp .github/ci.env .env
+
+      - name: Start Supabase (applies migrations)
+        run: pnpm supabase start
+
+      - name: Export local Supabase credentials
+        # The test helpers read SUPABASE_TEST_* (with localhost defaults); export the
+        # actual local stack keys so they match the CLI version that just started.
+        run: |
+          pnpm supabase status -o env \
+            --override-name api.url=SUPABASE_TEST_URL \
+            --override-name auth.anon_key=SUPABASE_TEST_ANON_KEY \
+            --override-name auth.service_role_key=SUPABASE_TEST_SERVICE_ROLE_KEY \
+            >> "$GITHUB_ENV"
+
+      - name: Run integration tests
+        run: pnpm test:integration
+
+      - name: Stop Supabase
+        if: always()
+        run: pnpm supabase stop
