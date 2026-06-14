@@ -512,3 +512,20 @@ de ~2 jours artisanale devient un bouton.
 > Les correctifs **(a)/(b)/(c)/(d)** sont indépendants de la migration et peuvent être faits
 > **dès maintenant, à froid**. **(b) ✅ fait** (commit `22e771f9b`, helper `storageUrl()`) ;
 > **(a) reporté** (cf. note ci-dessus) ; (d) supprime l'essentiel de la Phase 6bis.
+
+> **(c) — partiellement fait (2026-06-14)** : migration `20260614191246_create_question_images_bucket.sql`
+> rapatrie le bucket `question-images` (seul bucket absent des migrations), idempotente
+> (`on conflict do nothing` → no-op sur la prod, créatrice sur EU). **À pousser par David**
+> (`pnpm db:migrate`). `pg_cron` reste activé à la main (Phase 1) — volontairement pas en migration.
+>
+> **(d) — bloqué sur David (réconciliation Dashboard).** `supabase/config.toml` existe mais
+> reflète des **défauts local-dev**, pas la prod : `site_url = http://127.0.0.1:3000`,
+> `[auth.email] enable_confirmations = false`, **pas de section `[auth.external.google]`**
+> alors que l'app utilise Google OAuth (configuré côté Dashboard). `[api] schemas =
+[public, graphql_public]` = défaut (cohérent avec « seul `public` exposé »). Pour adopter
+> `supabase config push` et fermer la Phase 6bis, réconcilier d'abord `config.toml` vers la
+> prod (lecture Dashboard) : `site_url` + `additional_redirect_urls` (domaine Vercel),
+> `[auth.email]` (confirmations/double opt-in + SMTP), `minimum_password_length` /
+> `password_requirements`, `[auth.rate_limit]`, **ajouter `[auth.external.google]`** (id/secret
+> en env), `[api] max_rows`. Secrets via env, jamais dans le toml. → Pour CE cutover : suivre
+> la Phase 6bis (manuel) ; `config push` = hygiène future.
