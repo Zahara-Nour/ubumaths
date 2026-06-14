@@ -41,7 +41,20 @@ if [ -n "$errors" ]; then
 	echo " clear the stale cache: rm -rf .svelte-kit/.svelte-check && pnpm check:incremental)"
 	exit 1
 else
-	# Show summary line
-	echo "$output" | grep "COMPLETED" | sed 's/^[0-9]* //' | sed 's/COMPLETED /✓ /'
+	# svelte-check's COMPLETED line counts extern/ .svelte errors that CI never
+	# sees (the tsconfig `exclude` only filters .ts; svelte-check checks every
+	# .svelte regardless, and `--ignore` only works with `--no-tsconfig`). So we
+	# report the REAL, CI-equivalent count (0 here — we are in the no-real-errors
+	# branch) and disclose how many extern errors were ignored, instead of echoing
+	# svelte-check's misleading raw count.
+	completed=$(echo "$output" | grep "COMPLETED" | tail -1)
+	files=$(echo "$completed" | sed -E 's/.*COMPLETED ([0-9]+) FILES .*/\1/')
+	warnings=$(echo "$completed" | sed -E 's/.* ([0-9]+) WARNINGS.*/\1/')
+	extern_errors=$(echo "$output" | grep " ERROR " | grep -c "extern/")
+
+	echo "✓ ${files:-?} FILES 0 ERRORS ${warnings:-?} WARNINGS"
+	if [ "$extern_errors" -gt 0 ]; then
+		echo "  ($extern_errors extern/ .svelte error(s) ignored — absent in CI, see scripts/check-incremental.sh header)"
+	fi
 	exit 0
 fi
