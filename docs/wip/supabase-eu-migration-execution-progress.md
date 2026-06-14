@@ -70,8 +70,10 @@ prouvée correcte de bout en bout.
 
 ### Reste à faire (post-cutover)
 
-- 🔴 **SÉCURITÉ (prioritaire)** : régénérer **2 mots de passe DB** (ancien + nouveau projet) + **2
-  service_role** (exposés pendant l'opération). Puis MAJ `SUPABASE_SERVICE_ROLE_KEY` (Vercel + `.env`).
+- ✅ **SÉCURITÉ — FAIT (2026-06-15)** : 2 mots de passe DB régénérés ; service*role → \*\*Secret key
+  `sb_secret*`** + anon → **Publishable key `sb*publishable*`** (nouveau système Supabase),
+propagées Vercel Prod/Dev + `.env`+ redéployées ; **clés legacy révoquées** ; prod re-vérifiée
+**200 sur`cdg1`** après révocation. \*(Reste : poser les 2 vars Supabase sur Vercel **Preview\*_ au dashboard.)_
 - **Ne PAS supprimer l'ancien projet** `aqtijumsgfufoztohdua` avant ~1-2 semaines (rollback =
   repointer les 3 env Vercel + redéployer).
 - **RGPD** (§7 du plan) : registre des traitements → hébergement EU.
