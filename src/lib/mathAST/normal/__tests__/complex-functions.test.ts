@@ -85,7 +85,7 @@ describe('cabs() in exact mode', () => {
 // The normalization code for Re/Im is correct (verified with simple args like \Re(0)).
 // =============================================================================
 
-describe.skip('Re() in exact mode', () => {
+describe('Re() in exact mode', () => {
 	it('Re(3 + 4i) = 3', () => {
 		expectExact('\\Re(3 + 4\\imaginaryI)', '3');
 	});
@@ -107,7 +107,7 @@ describe.skip('Re() in exact mode', () => {
 // Tests: Im() - imaginary part extraction
 // =============================================================================
 
-describe.skip('Im() in exact mode', () => {
+describe('Im() in exact mode', () => {
 	it('Im(3 + 4i) = 4', () => {
 		expectExact('\\Im(3 + 4\\imaginaryI)', '4');
 	});
