@@ -13,6 +13,7 @@ import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { generateClaudeCodeExport } from '$lib/server/bug-report-export';
+import { signBugReportScreenshot, EXPORT_SIGNED_URL_TTL } from '$lib/server/bug-report-screenshots';
 import { z } from 'zod';
 
 const reportIdSchema = z.string().uuid('ID de rapport invalide');
@@ -55,6 +56,10 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			console.error('[API] Error fetching bug report for export:', fetchError);
 			throw error(500, 'Erreur lors de la récupération du rapport');
 		}
+
+		// Sign the screenshot URL with a longer TTL so the exported markdown link
+		// stays openable after download (private bucket).
+		await signBugReportScreenshot(locals.supabase, report, EXPORT_SIGNED_URL_TTL);
 
 		// Generate the export
 		const exportData = generateClaudeCodeExport(report);

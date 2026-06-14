@@ -8,6 +8,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { BugReportWithAuthor } from '$lib/types/bug-reports';
+import { signBugReportScreenshots } from '$lib/server/bug-report-screenshots';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Check authentication
@@ -69,6 +70,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const { data: allReports } = await locals.supabase
 		.from('bug_reports')
 		.select('status, severity, created_at');
+
+	// Replace stored screenshot_url with fresh signed URLs (private bucket)
+	await signBugReportScreenshots(locals.supabase, (reports ?? []) as BugReportWithAuthor[]);
 
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);
