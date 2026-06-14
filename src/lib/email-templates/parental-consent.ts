@@ -9,15 +9,11 @@ export const CONSENT_EMAIL_SUBJECT = 'Consentement parental requis - UbuMaths';
 
 /**
  * Get the base URL for consent links.
- * Uses VERCEL_URL in production, falls back to default for dev.
+ * Returns the canonical production domain. (Deliberately NOT VERCEL_URL, which is
+ * the per-deployment hostname — consent emails must use the stable brand domain.)
  */
 export function getSiteUrl(): string {
-	// In Vercel environment
-	if (typeof process !== 'undefined' && process.env?.VERCEL_URL) {
-		return `https://${process.env.VERCEL_URL}`;
-	}
-	// Fallback to production URL
-	return 'https://ubumaths-6op8.vercel.app';
+	return 'https://www.chiph.re';
 }
 
 /**
