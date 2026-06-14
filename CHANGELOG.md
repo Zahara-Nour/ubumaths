@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.10.2...v0.10.3) (2026-06-14)
+
+### ✨ Features
+
+- **maintenance:** page de maintenance 503 independante de la DB ([e36edfe](https://github.com/Zahara-Nour/ubumaths/commit/e36edfe28a8620997a9c620cc45980dfb832f87b))
+
+### 📚 Documentation
+
+- **ref:** reference des scripts pnpm de package.json ([27f62d6](https://github.com/Zahara-Nour/ubumaths/commit/27f62d668023f8ad03f2f6c85fedd1a5c64bb691))
+- **wip:** plan de migration Supabase us-east-2 vers EU (eu-west-3) ([d008eef](https://github.com/Zahara-Nour/ubumaths/commit/d008eef092625b241ad74fc13cf8008906cca39d))
+
+### 🐛 Bug Fixes
+
+- **bug-reports:** bucket screenshots privé + URLs signées (sécurité RGPD) ([f73a830](https://github.com/Zahara-Nour/ubumaths/commit/f73a8302ef21863d0a51633c3c1d8539bbb42195))
+- **check:** aligne check:incremental sur le scope CI (tsconfig.check.json) ([33c3be0](https://github.com/Zahara-Nour/ubumaths/commit/33c3be05a914ebae73771c47e98bdcb08fe421ff))
+- **maintenance:** court-circuite le handle pendant le build (prerender) ([4cfb48d](https://github.com/Zahara-Nour/ubumaths/commit/4cfb48dd6513c27b14c51cba768646c8c5bc8fe8))
+
 ### [0.10.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.10.1...v0.10.2) (2026-06-13)
 
 ### ✨ Features
