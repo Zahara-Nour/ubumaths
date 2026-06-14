@@ -273,7 +273,7 @@ psql "$NEW_DB_URL" -f schema.sql
 - [ ] **Vérifier les settings per-rôle après `roles.sql`** : `anon`/`authenticated`/
       `authenticator`/`postgres` portent des `ALTER ROLE … SET` (statement_timeout,
       search_path, settings `pgrst.*`) hors dump schéma/data. `select rolname, rolconfig
-    from pg_roles where rolconfig is not null` doit matcher la prod ; sinon réappliquer.
+  from pg_roles where rolconfig is not null` doit matcher la prod ; sinon réappliquer.
 - [ ] **Recréer les éléments hors schéma `public`** (ni un dump `public`, ni un `db push`
       ne les reproduisent fidèlement) : les **7 buckets** Storage + politiques (Phase 3) et
       les **8 jobs pg_cron** (rejouer les migrations `*pg_cron*`, ou `cron.schedule(...)`
@@ -384,6 +384,28 @@ update exercises           set variations          = replace(variations::text,'a
 
 - [ ] Google Cloud Console : ajouter le callback du nouveau projet.
 - [ ] Supabase Auth (nouveau) : `Site URL`, `Redirect URLs`, secrets Google.
+
+### Phase 6bis — Vérifications Dashboard (hors dump SQL) ⚠️
+
+> Config qui **n'est dans aucun dump** : elle vit dans le Dashboard Supabase / la plateforme.
+> À **comparer Dashboard ↔ Dashboard** (ancien → EU) et re-saisir à la main. Non vérifiable
+> en SQL read-only → checklist. Les **2 premiers** points peuvent **casser login/emails** ;
+> les autres = confirmer que les défauts correspondent.
+
+- [ ] **Auth Hooks** (Authentication → Hooks) : vérifier s'il existe un _custom access token
+      hook_ / _before-user-created hook_. Si oui, le recréer sur EU — sinon des claims JWT
+      manqueraient **en silence** (autorisations cassées). 🔴
+- [ ] **SMTP + templates email** (Authentication → Emails) : si Supabase envoie les emails
+      d'auth (confirm/reset/invite/magic-link), reconfigurer le SMTP + recopier les templates
+      FR. _(À confirmer : si l'app passe par Brevo directement, sans objet.)_ 🔴
+- [ ] **Auth settings** (Authentication → Providers + Policies) : confirmations email on/off,
+      double opt-in, password policy, rate limits, durées de session → aligner sur l'ancien.
+- [ ] **API → Exposed schemas / Max rows** (Settings → API) : si un schéma autre que `public`
+      est exposé (PostgREST), le reproduire ; sinon ses endpoints disparaissent.
+- [ ] **JWT secret** : un nouveau projet = nouveau secret. Au-delà du re-login global (§4.5),
+      s'assurer qu'**aucun service externe** ne détient un `anon`/`service_role` en dur non mis à jour.
+- [ ] (Rappel) **Vercel `cdg1`** : confirmer la dispo sur le plan Free au déploiement (cf.
+      Phase 7) — sinon fallback `iad1`.
 
 ### Phase 7 — Vercel région
 
