@@ -6,7 +6,7 @@
  */
 
 export const WELCOME_EMAIL_SUBJECT = 'Bienvenue sur UbuMaths !';
-export const SITE_URL = 'https://ubumaths-6op8.vercel.app/';
+export const SITE_URL = 'https://www.chiph.re/';
 
 /**
  * Get the greeting for the email
