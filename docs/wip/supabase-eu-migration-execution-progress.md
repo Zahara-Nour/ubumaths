@@ -39,6 +39,8 @@ materialized view student_achievement_stats` faits. `postgres` PEUT bien faire l
   — non migrés, peu critiques).
 - **Phase 4 — URLs** : 5 colonnes réécrites (host `aqtij…`→`cnevn…`) — 97+24+45+2+21 = **189
   lignes** ; scan exhaustif = **0 occurrence restante**.
+- **pg_cron — 8 jobs re-planifiés** (`cron.schedule`, absents du dump `public` — piège §4.3) :
+  `cron.job` = **8** sur le nouveau projet (mêmes noms/schedules/commands que l'ancien).
 
 ## RESTE À FAIRE
 
