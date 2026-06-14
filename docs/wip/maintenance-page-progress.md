@@ -39,11 +39,24 @@ Helpers/pures (`isAllowedDuringMaintenance`, `secretsMatch`, `computeRetryAfter`
 
 ## Activation le jour J (runbook)
 
-1. Sur Vercel : `MAINTENANCE_MODE=true`, `MAINTENANCE_BYPASS_SECRET=<secret fort>`,
-   (optionnel) `MAINTENANCE_UNTIL=<ISO>`. Redeploy.
-2. Vérifier : visiteur lambda → 503 ; toi via `/?bypass=<secret>` → accès.
-3. Faire la migration / tests.
-4. Remettre `MAINTENANCE_MODE=false` + redeploy ; supprimer le secret.
+**Via les scripts pnpm** (CLI Vercel authentifié + projet lié requis) :
+
+```bash
+pnpm maintenance:status   # état actuel
+pnpm maintenance:on       # pose les 2 vars (génère le secret) + redeploy prod
+# → affiche le secret + l'URL de bypass /?bypass=<secret>
+# ... migration + tests (toi via le bypass) ...
+pnpm maintenance:off      # retire les vars + redeploy prod
+```
+
+`maintenance:on/off` redéploient le **dernier déploiement prod** (`vercel redeploy`),
+donc rejouent le build avec les nouvelles variables **sans** déployer l'arbre local.
+Pour réutiliser un secret précis : `MAINTENANCE_BYPASS_SECRET=xxx pnpm maintenance:on`.
+
+**Manuel (dashboard)** : `MAINTENANCE_MODE=true`, `MAINTENANCE_BYPASS_SECRET=<secret>`,
+(optionnel `MAINTENANCE_UNTIL=<ISO>`) sur Production → Redeploy.
+
+Vérifier : visiteur lambda → 503 ; toi via `/?bypass=<secret>` → accès.
 
 ## Qualité
 
