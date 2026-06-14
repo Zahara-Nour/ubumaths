@@ -38,14 +38,14 @@ These tests verify that PostgreSQL's `SELECT FOR UPDATE` correctly prevents:
 
 **Files Created/Updated**:
 
-1. **`tests/database/helpers/supabase-client.ts`** (NEW)
+1. **`tests/helpers/database/supabase-client.ts`** (NEW)
 
    - Exports `createAuthenticatedClient(email, password?)` helper
    - Signs in test users with Supabase auth
    - Returns authenticated client with valid session token
    - Default test password: `'password123'`
 
-2. **`tests/database/helpers/postgres-client.ts`** (UPDATED)
+2. **`tests/helpers/database/postgres-client.ts`** (UPDATED)
    - Updated `insertAuthUser()` with `password` parameter support
    - Uses PostgreSQL `crypt()` function for proper bcrypt hashing
    - Enables sign-in to work correctly in tests
@@ -83,7 +83,7 @@ await profiles.insert(profileData); // ❌ Profile already exists!
 
 The `handle_new_user()` database trigger automatically creates a profile when inserting into `auth.users`, so the manual `INSERT` into profiles caused a duplicate key error.
 
-**Fix Applied** (in `tests/database/helpers/test-data-factory.ts`):
+**Fix Applied** (in `tests/helpers/database/test-data-factory.ts`):
 
 ```typescript
 // NEW (FIXED):
@@ -92,7 +92,7 @@ await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for trigger
 await profiles.update(profileData).eq('id', id); // ✅ Update instead!
 ```
 
-**Impact**: This fix also resolves failures in `pnpm test:triggers`.
+**Impact**: This fix also resolves failures in `pnpm test:integration`.
 
 ### ✅ 4. Test Scenarios
 
@@ -216,26 +216,26 @@ Test Files  1 passed (1)
 
 **`createAuthenticatedClient(email, password?)`**
 
-- Location: `tests/database/helpers/supabase-client.ts`
+- Location: `tests/helpers/database/supabase-client.ts`
 - Returns authenticated Supabase client with valid session
 - Default password: `'password123'`
 
 **`insertAuthUser(params)`**
 
-- Location: `tests/database/helpers/postgres-client.ts`
+- Location: `tests/helpers/database/postgres-client.ts`
 - Creates user in `auth.users` with hashed password
 - Uses PostgreSQL `crypt()` for bcrypt hashing
 - Parameters: `{ id, email, password?, encryptedPassword? }`
 
 **`TestData.profile()`**
 
-- Location: `tests/database/helpers/test-data-factory.ts`
+- Location: `tests/helpers/database/test-data-factory.ts`
 - Builder pattern for creating test profiles
 - Methods: `.withRole()`, `.withGidouilles()`, `.withVipCards()`, `.create()`
 
 **`cleanupAllTestData()`**
 
-- Location: `tests/database/helpers/trigger-test-helpers.ts`
+- Location: `tests/helpers/database/trigger-test-helpers.ts`
 - Removes all test users (email pattern: `%@test.com%`)
 - Cleans both `auth.users` and `profiles` tables
 
@@ -278,10 +278,10 @@ export default defineConfig({
 
 ### Test Infrastructure
 
-- `/tests/database/helpers/supabase-client.ts` - Authentication helpers (NEW)
-- `/tests/database/helpers/postgres-client.ts` - Direct database access (UPDATED)
-- `/tests/database/helpers/test-data-factory.ts` - Test data builders (FIXED)
-- `/tests/database/helpers/trigger-test-helpers.ts` - Supabase utilities
+- `/tests/helpers/database/supabase-client.ts` - Authentication helpers (NEW)
+- `/tests/helpers/database/postgres-client.ts` - Direct database access (UPDATED)
+- `/tests/helpers/database/test-data-factory.ts` - Test data builders (FIXED)
+- `/tests/helpers/database/trigger-test-helpers.ts` - Supabase utilities
 
 ### Configuration
 

@@ -13,6 +13,11 @@ Integration tests verify that multiple parts of the application work correctly t
 
 Unlike unit tests (isolated functions) and E2E tests (full browser flows), integration tests validate server-side logic and data flows without UI overhead.
 
+> **Architecture & règles** : [docs/ref/tests/architecture.md](../../docs/ref/tests/architecture.md).
+> Ces tests nécessitent **Supabase local** et tournent via `pnpm test:integration`
+> (+ job nightly CI). Le sous-dossier `database/` contient les tests de triggers / RLS,
+> les helpers partagés sont dans `tests/helpers/database/`.
+
 ---
 
 ## Test Files
@@ -45,70 +50,23 @@ The RPC function has proper authorization that checks `auth.uid()`. Integration 
 
 **See** `/tests/integration/draw-vip-cards-race-conditions.README.md` for detailed documentation.
 
----
-
-### `teacher-layout-loading.test.ts`
-
-**Purpose**: Tests for Teacher Dashboard Cache (Phase 1)
-
-Validates that the teacher dashboard layout loads all necessary data in parallel and makes it available to child pages without additional queries.
-
-**Coverage**: 16 tests organized in 3 groups
-
-#### Group 1: Layout Loading (5 tests)
-
-- ✅ Loads all data in parallel (classes, school, warnings)
-- ✅ Classes include students with gidouilles and vip_cards
-- ✅ School info includes periods array and active year
-- ✅ Warnings are correctly grouped by class for current period
-- ✅ Handles gracefully when no active period exists
-
-#### Group 2: Child Pages Inherit Data (5 tests)
-
-- ✅ Rewards page inherits data without additional queries
-- ✅ Dashboard page inherits data without additional queries
-- ✅ Navigation reuses same data reference (not copies)
-- ✅ Inherited data matches layout data exactly
-- ✅ All TypeScript types are correct
-
-#### Group 3: Error Handling (5 tests)
-
-- ✅ Propagates error when school query fails
-- ✅ Shows error when classes query fails
-- ✅ Handles warnings query failure without crashing (warnings optional)
-- ✅ Handles teacher with 0 classes gracefully
-- ✅ Handles null fields (avatar_url, full_name) without crashes
-
-#### Integration Test (1 test)
-
-- ✅ Complete teacher dashboard load with realistic data
-
-**Key Features**:
-
-- Mock Supabase client for deterministic testing
-- Validates parallel query execution
-- Verifies zero redundant queries across navigation
-- Tests all error paths and edge cases
+Les autres fichiers couvrent les VIP cards (filtering, rarity, teacher overrides),
+le kanban RLS, les sections CRUD, le endpoint skill-attempts, le référentiel de
+compétences, et les triggers/RLS sous `database/`.
 
 ---
 
 ## Running Tests
 
 ```bash
-# Run all integration tests
-pnpm vitest run tests/integration/
+# Démarrer Supabase local d'abord
+pnpm db:start
 
-# Run with verbose output
-pnpm vitest run tests/integration/ --reporter=verbose
+# Lancer tous les tests d'intégration (config dédiée)
+pnpm test:integration
 
-# Run specific test file
-pnpm vitest run tests/integration/teacher-layout-loading.test.ts
-
-# Watch mode (auto-rerun on changes)
-pnpm vitest tests/integration/ --watch
-
-# With coverage
-pnpm vitest run tests/integration/ --coverage
+# Watch mode
+pnpm test:integration:watch
 ```
 
 ---

@@ -2,6 +2,12 @@
 
 Comprehensive integration tests for PostgreSQL database triggers in UbuMaths.
 
+> **Emplacement** : ces tests vivent dans `tests/integration/database/` et tournent
+> via le runner d'intégration (`pnpm test:integration`, Supabase local) — il n'y a
+> plus de config Docker dédiée `test:triggers`. Voir
+> [docs/ref/tests/architecture.md](../../../docs/ref/tests/architecture.md).
+> Les helpers partagés sont dans `tests/helpers/database/`.
+
 ## Overview
 
 This directory contains integration tests for all 72 database triggers across 26 migration files. The tests verify that triggers correctly execute their intended side effects (auto-creating related records, updating aggregates, enforcing constraints, etc.).
@@ -19,21 +25,21 @@ Unlike unit tests, these tests use a **real PostgreSQL database** running via Su
 ### Test Infrastructure
 
 ```
-tests/database/
-├── triggers/              # Trigger test files
-│   ├── profile-triggers.test.ts        # ✅ Profile creation & updates
-│   ├── updated-at-triggers.test.ts     # ✅ Parameterized suite (42 triggers)
-│   ├── game-triggers.test.ts           # ✅ Game system triggers
-│   ├── chat-triggers.test.ts           # ⏳ To implement
-│   ├── messaging-triggers.test.ts      # ⏳ To implement
-│   ├── error-monitoring-triggers.test.ts  # ⏳ To implement
-│   ├── sync-triggers.test.ts           # ⏳ To implement
-│   ├── template-triggers.test.ts       # ⏳ To implement
-│   ├── cleanup-triggers.test.ts        # ⏳ To implement
-│   └── assignment-triggers.test.ts     # ⏳ To implement
-└── helpers/              # Test utilities
-    ├── trigger-test-helpers.ts         # Supabase clients, cleanup, etc.
-    └── test-data-factory.ts            # Builder pattern for test data
+tests/integration/database/          # Trigger / RLS test files
+├── profile-triggers.test.ts
+├── updated-at-triggers.test.ts      # Parameterized suite (42 triggers)
+├── game-triggers.test.ts
+├── chat-triggers.test.ts
+├── messaging-triggers.test.ts
+├── error-monitoring-triggers.test.ts
+├── sync-triggers.test.ts
+├── template-triggers.test.ts
+├── cleanup-triggers.test.ts
+└── assignment-triggers.test.ts
+
+tests/helpers/database/              # Shared test utilities
+├── trigger-test-helpers.ts          # Supabase clients, cleanup, etc.
+└── test-data-factory.ts             # Builder pattern for test data
 ```
 
 ## Quick Start
@@ -50,10 +56,10 @@ tests/database/
 pnpm db:start
 
 # 2. Run all trigger tests
-pnpm test:triggers
+pnpm test:integration
 
 # 3. Watch mode for development
-pnpm test:triggers:watch
+pnpm test:integration:watch
 
 # 4. Stop Supabase when done
 pnpm db:stop
@@ -428,7 +434,7 @@ jobs:
         run: npx supabase start
 
       - name: Run trigger tests
-        run: pnpm test:triggers
+        run: pnpm test:integration
 
       - name: Stop Supabase
         if: always()
