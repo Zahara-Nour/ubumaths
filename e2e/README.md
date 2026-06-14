@@ -1,21 +1,9 @@
 # E2E Tests
 
-Comprehensive end-to-end tests for UbuMaths.
+End-to-end tests for UbuMaths (Playwright), organisés par rôle.
 
-**Total**: 283 tests across 12 files
-**Status**: ✅ Ready to run
-
----
-
-## 📚 Documentation
-
-For complete documentation, see:
-
-- **[E2E Testing Guide](/docs/development/testing/e2e-testing-guide.md)** - Master guide with full test coverage
-- **[Auth Tests](/docs/development/testing/e2e-auth-tests.md)** - Authentication & RBAC (95 tests)
-- **[Teacher Tests](/docs/development/testing/e2e-teacher-tests.md)** - Assessment management (50 tests)
-- **[Student Tests](/docs/development/testing/e2e-student-tests.md)** - Assessment taking (56 tests)
-- **[Testing Overview](/docs/development/testing/README.md)** - Complete testing documentation
+> **Architecture des tests & règles** : [docs/ref/tests/architecture.md](/docs/ref/tests/architecture.md)
+> Les e2e (`*.spec.ts`) tournent en local / à la demande (build + preview), pas dans la boucle de push.
 
 ---
 
@@ -29,7 +17,7 @@ For complete documentation, see:
    npx playwright install
    ```
 
-2. **Create test users** in Supabase (see [E2E Testing Guide](/docs/development/testing/e2e-testing-guide.md#prerequisites))
+2. **Create test users** in Supabase (voir docs/ref/tests/architecture.md)
 
 3. **Set environment variables** (`.env.test`):
    ```bash
@@ -73,61 +61,23 @@ npx playwright show-report
 
 ```
 e2e/
-├── helpers/
-│   └── auth-helpers.ts              # Authentication utilities
-│
-├── auth/                             # 95 tests
-│   ├── login.spec.ts                # Login flows (32 tests)
-│   ├── logout.spec.ts               # Logout flows (23 tests)
-│   ├── protected-routes.spec.ts     # RBAC (40 tests)
-│   └── README.md                    # Brief guide
-│
-├── teacher/assessments/              # 50 tests
-│   ├── create-assessment.spec.ts    # Creation flow (10 tests)
-│   ├── view-assessments.spec.ts     # List view (20 tests)
-│   ├── edit-assessment.spec.ts      # Edit flow (20 tests)
-│   └── README.md                    # Brief guide
-│
-├── student/assessments/              # 56 tests
-│   ├── view-assessments.spec.ts     # List view (16 tests)
-│   ├── take-assessment.spec.ts      # Taking test (16 tests)
-│   ├── view-results.spec.ts         # Results view (24 tests)
-│   └── README.md                    # Brief guide
-│
-└── public/                           # 82 tests
-    ├── landing-page.spec.ts         # Landing page (24 tests)
-    └── games/
-        ├── mathemo.spec.ts          # Mathemo game (26 tests)
-        └── trio.spec.ts             # Trio game (32 tests)
+├── helpers/                          # auth-helpers, image-helpers
+├── auth/                             # login, logout, protected-routes (RBAC)
+├── teacher/assessments/              # create / view / edit assessments
+├── student/assessments/              # view / take / results
+├── public/                           # landing-page + games/ (mathemo, trio)
+├── exercises/                        # image-attributes, image-upload
+│   └── exercises-parameterization.spec.ts (à la racine)
+└── navadra/                          # challenge-types, error-scenarios, combat-flow
 ```
 
----
-
-## 🎯 Test Coverage Summary
-
-| Category                       | Tests   | Coverage                              |
-| ------------------------------ | ------- | ------------------------------------- |
-| Authentication & Authorization | 95      | Login, logout, RBAC, protected routes |
-| Teacher Features               | 50      | Create, view, edit assessments        |
-| Student Features               | 56      | View, take, results for assessments   |
-| Public Features                | 82      | Landing page, games (Mathemo, Trio)   |
-| **Total**                      | **283** | **Complete user workflows**           |
+Chaque sous-dossier par rôle a un `README.md` court. Les fichiers se terminent par `*.spec.ts`.
 
 ---
 
 ## 📖 Documentation Links
 
-### Detailed Guides
-
-- [E2E Testing Guide](/docs/development/testing/e2e-testing-guide.md) - Complete guide with all test details
-- [Authentication Tests](/docs/development/testing/e2e-auth-tests.md) - Login, logout, RBAC tests
-- [Teacher Tests](/docs/development/testing/e2e-teacher-tests.md) - Teacher assessment workflow
-- [Student Tests](/docs/development/testing/e2e-student-tests.md) - Student assessment workflow
-
-### Related Documentation
-
-- [Testing Overview](/docs/development/testing/README.md) - All testing types
-- [Project Documentation](/docs/README.md) - Main documentation index
+- [Architecture des tests](/docs/ref/tests/architecture.md) - Types, conventions, runners, CI
 - [CLAUDE.md](/CLAUDE.md) - Development guide
 
 ---
@@ -154,8 +104,6 @@ e2e/
 - Add explicit waits (`waitForSelector`)
 - Increase timeout in configuration
 
-For more troubleshooting, see [E2E Testing Guide](/docs/development/testing/e2e-testing-guide.md#-troubleshooting).
-
 ---
 
-**See [E2E Testing Guide](/docs/development/testing/e2e-testing-guide.md) for complete documentation**
+**Voir [docs/ref/tests/architecture.md](/docs/ref/tests/architecture.md) pour l'architecture des tests.**

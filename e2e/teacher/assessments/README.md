@@ -8,7 +8,7 @@
 
 ## 📚 Full Documentation
 
-**[Teacher Assessment E2E Tests →](/docs/development/testing/e2e-teacher-tests.md)**
+**[Teacher Assessment E2E Tests →](/docs/ref/tests/architecture.md)**
 
 Complete documentation with test details, helper functions, and troubleshooting.
 
@@ -64,8 +64,8 @@ pnpm test:e2e e2e/teacher/assessments --grep "should create a basic assessment"
 - Questions available in Automaths
 - At least one draft assessment (for edit tests)
 
-See [full documentation](/docs/development/testing/e2e-teacher-tests.md#prerequisites) for details.
+See [full documentation](/docs/ref/tests/architecture.md) for details.
 
 ---
 
-**For complete documentation, see [Teacher E2E Tests →](/docs/development/testing/e2e-teacher-tests.md)**
+**For complete documentation, see [Teacher E2E Tests →](/docs/ref/tests/architecture.md)**

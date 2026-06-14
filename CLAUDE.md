@@ -364,6 +364,7 @@ npx eslint <fichiers modifies>
 | [quality-standards.md](docs/claude/quality-standards.md) | Tests, linting, Zod                                            |
 | [warning-svelte.md](docs/ref/warning-svelte.md)          | svelte-ignore : ce qui est légitime vs dette a11y à rembourser |
 | [realtime.md](docs/claude/realtime.md)                   | Supabase Realtime, chat, presence                              |
+| [docs/ref/tests/architecture.md](docs/ref/tests/architecture.md) | Architecture des tests : où ranger, nommage, runners, CI |
 | [docs/ref/tests/tdd.md](docs/ref/tests/tdd.md)           | TDD collaboratif (OBLIGATOIRE)                                 |
 
 ### For Users
