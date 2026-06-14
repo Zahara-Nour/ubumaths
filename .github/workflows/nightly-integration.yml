@@ -46,9 +46,11 @@ jobs:
           version: 2.105.0
 
       - name: Start Supabase (applies migrations)
-        # Registry ghcr.io par défaut (via setup-cli) : rapide et sans rate-limit,
-        # contrairement à docker.io. Avec la CLI pinnée, les tags d'images existent.
-        run: supabase start
+        # Stack allégée : l'image storage-api renvoie "manifest unknown" (indispo sur
+        # ghcr ET docker.io). Les tests d'intégration n'utilisent pas l'API HTTP
+        # Storage (ils manipulent la table storage.objects en SQL), donc on exclut
+        # storage + les services non requis (studio, edge, analytics, mail, imgproxy).
+        run: supabase start -x storage-api,imgproxy,studio,edge-runtime,logflare,vector,mailpit,postgres-meta
 
       - name: Export local Supabase credentials
         # The test helpers read SUPABASE_TEST_* (with localhost defaults); export the
