@@ -33,8 +33,7 @@ export const baseTestConfig: Partial<InlineConfig> = {
  * Database test configuration for tests requiring Supabase
  *
  * Used by:
- * - vitest.integration.config.ts
- * - vitest.triggers.config.ts
+ * - vitest.integration.config.ts (inclut tests/integration/database/)
  *
  * Features:
  * - Node environment for database access

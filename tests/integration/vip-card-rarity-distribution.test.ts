@@ -20,9 +20,9 @@ import {
 	createServiceRoleClient,
 	cleanupAllTestData,
 	closeConnections
-} from '../database/helpers/trigger-test-helpers';
-import { createAuthenticatedClient } from '../database/helpers/supabase-client';
-import { TestData } from '../database/helpers/test-data-factory';
+} from '../helpers/database/trigger-test-helpers';
+import { createAuthenticatedClient } from '../helpers/database/supabase-client';
+import { TestData } from '../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { VipCardRarity } from '$lib/types/vip-card';

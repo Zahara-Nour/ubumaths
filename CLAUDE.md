@@ -28,7 +28,7 @@ pnpm check:incremental              # TypeScript + Svelte check (incremental, ~3
 # Tests
 pnpm test:server <path>    # Server tests only (for specific files)
 pnpm test:client <path>    # Client tests only (*.svelte.test.ts)
-pnpm test:triggers         # Database triggers (Docker required)
+pnpm test:integration      # Integration + DB tests (Supabase local, tests/integration/)
 
 # Database
 pnpm db:start              # Start Supabase local

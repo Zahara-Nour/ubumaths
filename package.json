@@ -28,8 +28,6 @@
 		"test:changed": "vitest run --changed --passWithNoTests",
 		"test:integration": "vitest run --config vitest.integration.config.ts",
 		"test:integration:watch": "vitest --config vitest.integration.config.ts",
-		"test:triggers": "vitest run --config vitest.triggers.config.ts",
-		"test:triggers:watch": "vitest --config vitest.triggers.config.ts",
 		"test:lint-rules": "node eslint-rules/require-zod-validation.test.js",
 		"test": "npm run test:changed",
 		"test:e2e": "playwright test",
