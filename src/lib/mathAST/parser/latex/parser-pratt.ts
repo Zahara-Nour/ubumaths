@@ -99,8 +99,9 @@ const SYMBOL_COMMAND_MAP: Record<string, MathSymbol> = {
 	beth: 'beth',
 	ell: 'ell',
 	wp: 'wp',
-	Re: 'Re',
-	Im: 'Im',
+	// Re / Im are NOT symbols: they are complex-part functions (\Re(z), \Im(z)),
+	// recognized via FUNCTION_COMMANDS and evaluated in normalize.ts. Mapping them
+	// here as symbols (ℜ/ℑ) made `\Re(3+4i)` parse as `ℜ·(3+4i)` instead of Re(3+4i).
 	hbar: 'hbar',
 	perp: 'perp',
 	parallel: 'parallel',
