@@ -297,8 +297,7 @@ describe('evaluateWithUnits - edge cases', () => {
 			expect(result.unit.coefficient).toBe(1);
 		});
 
-		// TODO: Fix normalize.ts to handle scientific notation
-		it.skip('best mode handles near-zero value: 1e-12 m stays in base unit', () => {
+		it('best mode handles near-zero value: 1e-12 m stays in base unit', () => {
 			const expr = quantity('1e-12', 'm');
 			const result = evaluateWithUnits(expr, { conversionMode: 'best' });
 
