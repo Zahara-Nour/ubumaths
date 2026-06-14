@@ -29,6 +29,22 @@
 2. **Liens morts pré-existants** (dette antérieure, non créée par la migration) : `docs/ref/tests/tdd.md` et `docs/README.md` référencés dans CLAUDE.md mais inexistants — à créer ou délier.
 3. **Suite d'intégration** : `draw-vip-cards-race-conditions` (BLOCKED, besoin d'auth) + tests de triggers à trier quand le nightly tournera.
 
+## Suivi post-migration (2026-06-14)
+
+### Nightly intégration — BLOQUÉ amont
+
+`supabase start` échoue : l'image `storage-api:fix-object-level` (défaut CLI 2.105) n'est publiée sur aucun registre (« manifest unknown », ghcr **et** docker.io). 6 runs CI ont écarté toutes les causes locales (CLI installée, registry, version pinnée, stack allégée `-x`). C'est un **problème de release d'image Supabase**, hors config. Cron **désactivé** (workflow_dispatch only) pour ne pas spammer des échecs nocturnes. Probable même cause que « triggers cassés en local » (cf. mémoire). **Préalable** : faire marcher `supabase start` (local + CI) avant toute exploitation de la suite d'intégration. Réactiver le cron une fois corrigé.
+
+### Triage des tests skippés (« hidden skips ») — vérifié test par test
+
+Scan complet : 0 `.only`. ~115 skips au total, classés par **motif réel** (réactivés + exécutés pour vérifier, pas supposés) :
+
+- **Bucket 1 — légitimes (garder)** : feature non implémentée (`web-repl` stats, `complex-functions` Re/Im exact, `abs-sign` power bounds), RPC inexistante (`marketplace/security` ×5), gardes « if not in browser » (stores realtime/presence/chat), perf/mémoire, déférés documentés (`chapter-templates`, `student-inbox` closes_at). ~40.
+- **Bucket 2 — stale (rallumer)** : `evaluate-with-units` « near-zero 1e-12 » ✅ **réactivé** (TODO résolu). `variable-resolver` / `complete-integration` passent mais commentaire « not implemented / KNOWN LIMITATION » → **laissés** (passent peut-être pour la mauvaise raison, intention auteur respectée).
+- **Bucket 3 — cassés non documentés** :
+  - **Type B (mocks unit d'API cassés) → SUPPRIMÉS** (décision PO) : `cleanup-all.test.ts` (8 tests, 100% skippé → fichier supprimé) + 17 `it.skip` de `google-coursework-bulk-share` (gardé les 2 tests actifs). Mocks Supabase faits main désynchronisés de l'implémentation, valeur < maintenance.
+  - **Type A (en réalité des tests d'intégration, ~17 : `summaries/integration` 7, `chapters` 6, `journal` 4) → LAISSÉS skippés + documentés ici** (décision PO). Bloqués sur le **même** problème Supabase que le nightly ; à reconvertir en vrais tests `tests/integration/` une fois Supabase débloqué (leurs commentaires disent déjà « should be tested with integration tests »).
+
 ## Faits notables / pièges
 
 - `src/routes/api/tests/save/+server.ts` = **vraie route API** `/api/tests/save`, PAS un dossier de tests. Ne pas toucher.
