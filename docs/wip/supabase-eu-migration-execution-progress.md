@@ -44,12 +44,12 @@ materialized view student_achievement_stats` faits. `postgres` PEUT bien faire l
 
 - **Phase 3 — 2 fichiers privés** `bug-report-screenshots` (optionnel ; ajouter `OLD_SERVICE_ROLE`
   au fichier secrets puis adapter `copy-storage.sh`). Le reste du Storage est fait.
-- **Phase 5 — env/code** : `(b)` storageUrl déjà fait (commit `22e771f9b`). Reste : ref dans
-  `package.json:53` + `.mcp.json:9` → `cnevnzsvixxpnurautls` ; env Vercel (URL/anon/service_role
-  CHANGENT ; le reste RECOPIÉ verbatim — cf. plan Phase 5, ⚠️ `GOOGLE_TOKEN_ENCRYPTION_KEY`).
-- **Phase 6 / 6bis** — Google OAuth (callback + Site URL + Redirect URLs sur le nouveau) ;
-  vérifs Dashboard (Auth Hooks, SMTP/templates, exposed schemas).
-- **Phase 7** — Vercel `regions: ['cdg1']` dans `svelte.config.js`.
+- **Phase 5 — code FAIT** (commit `f2e31ae99`) : `package.json`/`.mcp.json` refs + `vip-card-admin.ts`
+  docstring → `cnevnzsvixxpnurautls` (+ `(b)` storageUrl `22e771f9b`). **Reste : env Vercel**
+  (URL/anon/service_role CHANGENT ; le reste RECOPIÉ verbatim — ⚠️ `GOOGLE_TOKEN_ENCRYPTION_KEY`).
+- **Phase 6 / 6bis** — Google OAuth (callback `https://cnevnzsvixxpnurautls.supabase.co/auth/v1/callback`
+  - Site URL + Redirect URLs sur le nouveau) ; vérifs Dashboard (Auth Hooks, SMTP/templates).
+- **Phase 7 — FAIT** (commit `f2e31ae99`) : `svelte.config.js` → `regions: ['cdg1']`.
 - **Phase 8** — cutover (bascule env Vercel → nouveau projet ; lever la maintenance).
 - **Phase 9** — tests post-migration (login email + Google, images, RPC, RLS, realtime, cron).
 
