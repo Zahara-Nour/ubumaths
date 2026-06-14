@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { POST, DELETE } from '../../../src/routes/api/google/materials/[id]/share/+server.js';
+import { POST, DELETE } from '../+server.js';
 import * as authModule from '$lib/server/middleware/auth';
 
 /**

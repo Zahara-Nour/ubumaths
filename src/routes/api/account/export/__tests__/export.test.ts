@@ -13,7 +13,7 @@
  */
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { GET } from '../../../../src/routes/api/account/export/+server';
+import { GET } from '../+server';
 
 // ============================================================================
 // MOCKS

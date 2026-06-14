@@ -13,7 +13,7 @@
 
 - [x] **Phase 0** — Doc de référence `docs/ref/tests/architecture.md` ✅ (créé, relu PO)
 - [x] **Phase 1** — Co-location `src` : 237 tests à plat + 2 dossiers `/tests/` → `__tests__/` ✅ - 237 fichiers à plat déplacés + imports réécrits (codemod) ; `whiteboard/tests`→`__tests__` ; `server/tests/*`→`server/__tests__/` - Vérif : `vitest --project server` = **31765 tests ✓** ; `--project client` = 1009 ✓ (2 échecs `exercise-validation-real.svelte.test.ts` **pré-existants**, byte-identiques au pré-move, real-Pyodide flaky exclu CI)
-- [ ] **Phase 2** — Vider `tests/unit/` → `src/**/__tests__/` + retirer `tests/unit/**` du glob `server`
+- [x] **Phase 2** — Vider `tests/unit/` → `src/**/__tests__/` + retirer `tests/unit/**` du glob `server` ✅ - 22 tests rapatriés : 12 tests de routes API → `src/routes/.../__tests__/` (import SUT réécrit en `../+server`), 9 vers `src/lib/server|utils|stores/__tests__/`, 1 script-test → `scripts/__tests__/` - `vite.config.ts` projet `server` : `tests/unit/**` → `scripts/**` - Vérif : `vitest --project server` = **814 fichiers / 31765 tests ✓** (compte identique à Phase 1) - **Reste** : `tests/unit/GOOGLE_MATERIALS_TEST_SUMMARY.md` (fichier **non tracké** git → ne pas déplacer/supprimer sans accord ; à trancher en Phase 6)
 - [ ] **Phase 3** — Fusion `tests/database/` → `tests/integration/database/`, suppr. config triggers
 - [ ] **Phase 4** — Consolider helpers/fixtures sous `tests/helpers/`
 - [ ] **Phase 5** — Job CI nightly intégration

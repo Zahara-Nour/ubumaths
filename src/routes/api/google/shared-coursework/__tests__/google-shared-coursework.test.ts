@@ -20,7 +20,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { GET, POST, DELETE } from '../../../src/routes/api/google/shared-coursework/+server.js';
+import { GET, POST, DELETE } from '../+server.js';
 import * as authModule from '$lib/server/middleware/auth';
 
 // Mock middleware

@@ -17,7 +17,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { POST } from '../../../src/routes/api/google/coursework/bulk-share/+server.js';
+import { POST } from '../+server.js';
 import * as authModule from '$lib/server/middleware/auth';
 
 // Mock auth middleware

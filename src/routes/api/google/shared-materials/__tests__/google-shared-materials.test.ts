@@ -1,10 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { GET, POST, DELETE } from '../../../src/routes/api/google/shared-materials/+server.js';
-import {
-	DELETE as DELETE_BY_ID,
-	PATCH as PATCH_BY_ID
-} from '../../../src/routes/api/google/shared-materials/[id]/+server.js';
+import { GET, POST, DELETE } from '../+server.js';
+import { DELETE as DELETE_BY_ID, PATCH as PATCH_BY_ID } from '../[id]/+server.js';
 import * as authModule from '$lib/server/middleware/auth';
 
 /**
