@@ -1,0 +1,30 @@
+# Migration architecture des tests — progression
+
+> Cible : [docs/ref/tests/architecture.md](../ref/tests/architecture.md). Démarré 2026-06-14.
+
+## Décisions actées (validées PO)
+
+1. **Co-location** : `__tests__/` partout dans `src` (convention déjà majoritaire à 65 %).
+2. **`tests/unit/`** : rapatrié dans `src/**/__tests__/` ; `tests/` ne contient plus QUE intégration/e2e/infra.
+3. **DB/triggers** : fusionnés dans `tests/integration/database/`, config Docker `vitest.triggers.config.ts` supprimée.
+4. **CI** : job nightly Supabase pour `tests/integration/**`.
+
+## Plan (6 phases, 1 commit/phase)
+
+- [x] **Phase 0** — Doc de référence `docs/ref/tests/architecture.md` ✅ (créé, relu PO)
+- [x] **Phase 1** — Co-location `src` : 237 tests à plat + 2 dossiers `/tests/` → `__tests__/` ✅ - 237 fichiers à plat déplacés + imports réécrits (codemod) ; `whiteboard/tests`→`__tests__` ; `server/tests/*`→`server/__tests__/` - Vérif : `vitest --project server` = **31765 tests ✓** ; `--project client` = 1009 ✓ (2 échecs `exercise-validation-real.svelte.test.ts` **pré-existants**, byte-identiques au pré-move, real-Pyodide flaky exclu CI)
+- [ ] **Phase 2** — Vider `tests/unit/` → `src/**/__tests__/` + retirer `tests/unit/**` du glob `server`
+- [ ] **Phase 3** — Fusion `tests/database/` → `tests/integration/database/`, suppr. config triggers
+- [ ] **Phase 4** — Consolider helpers/fixtures sous `tests/helpers/`
+- [ ] **Phase 5** — Job CI nightly intégration
+- [ ] **Phase 6** — Validation finale (test:server, test:client, check:incremental) + docs/READMEs
+
+## Faits notables / pièges
+
+- `src/routes/api/tests/save/+server.ts` = **vraie route API** `/api/tests/save`, PAS un dossier de tests. Ne pas toucher.
+- Liens morts découverts (à corriger en Phase 6) : `docs/ref/tests/tdd.md`, `docs/README.md`, `docs/development/testing/*` (référencés dans CLAUDE.md et e2e/README.md mais inexistants).
+- Règle de réécriture d'import (déplacement +1 niveau vers `__tests__/`) : préfixer un `../` à tout spécificateur relatif. Couvre `from`, `import()` dynamique (~30 fichiers), `vi.mock` (1 fichier : typst-service). Quotes simples uniquement, aucun littéral fs relatif, aucun import test→test.
+
+## Fichiers modifiés
+
+(à compléter par phase)
