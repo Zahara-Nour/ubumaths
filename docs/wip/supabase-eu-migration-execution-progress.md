@@ -33,16 +33,17 @@
   **total exact `old = new = 53 748` lignes** (203 tables). auth.users **107**, auth.identities
   **79**, storage.buckets **7**, profiles **107**, **0 orphelin**. `analyze` + `refresh
 materialized view student_achievement_stats` faits. `postgres` PEUT bien faire le SET replica.
-- **Phase 3 (partiel)** — storage.buckets **7** + **27 policies RLS** `storage.objects` (extraites
-  via awk multi-lignes du dump `-n storage`, appliquées).
+- **Phase 3 — Storage** — storage.buckets **7** + **27 policies RLS** + **objets 338/340**
+  (script `copy-storage.sh` : download public URL → upload service_role ; vérifié 338, tailles
+  identiques). **Reste 2 fichiers privés** `bug-report-screenshots` (nécessitent OLD service_role
+  — non migrés, peu critiques).
 - **Phase 4 — URLs** : 5 colonnes réécrites (host `aqtij…`→`cnevn…`) — 97+24+45+2+21 = **189
   lignes** ; scan exhaustif = **0 occurrence restante**.
 
 ## RESTE À FAIRE
 
-- **Phase 3 — objets Storage** : **340 fichiers** (~13 MB) à recopier (download ancien → upload
-  nouveau via l'API). **Besoin des `service_role` keys** (au moins celle du nouveau pour upload ;
-  bucket privé `bug-report-screenshots` nécessite service_role côté ancien aussi).
+- **Phase 3 — 2 fichiers privés** `bug-report-screenshots` (optionnel ; ajouter `OLD_SERVICE_ROLE`
+  au fichier secrets puis adapter `copy-storage.sh`). Le reste du Storage est fait.
 - **Phase 5 — env/code** : `(b)` storageUrl déjà fait (commit `22e771f9b`). Reste : ref dans
   `package.json:53` + `.mcp.json:9` → `cnevnzsvixxpnurautls` ; env Vercel (URL/anon/service_role
   CHANGENT ; le reste RECOPIÉ verbatim — cf. plan Phase 5, ⚠️ `GOOGLE_TOKEN_ENCRYPTION_KEY`).
