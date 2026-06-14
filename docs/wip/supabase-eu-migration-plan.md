@@ -10,7 +10,7 @@
 > DB **152 MB** · Storage **~13 MB / 340 objets** · **107 comptes** auth / 79 identités ·
 > **203 tables** publiques · realtime = `messages` · **8 jobs pg_cron** actifs ·
 > **609 migrations**. → tout tient largement dans le free tier ; le risque n'est pas le
-> volume mais la **fidélité** (auth/triggers/refs). Voir §4 pour les 2 pièges bloquants.
+> volume mais la **fidélité** (auth/triggers/refs). Voir §4 pour les pièges bloquants (§4.3/4.6/4.7).
 
 ## 1. Pourquoi
 
@@ -33,15 +33,15 @@ avec les fonctions Vercel `cdg1`. (Alternative : `eu-central-1` Francfort.)
 
 ## 3. Inventaire à migrer
 
-| Élément              | Source de vérité                                                      | Méthode                                                                            |
-| -------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Schéma + RLS + funcs | **prod** (`supabase db dump`, fidèle) — 609 migrations = fallback     | dump schéma → restore (cf. Phase 1) ; `db push` en secours                         |
-| Données (tables)     | base prod (**152 MB, 203 tables**)                                    | `supabase db dump --data-only` → restore **en mode réplica** (§4.6)                |
-| Storage (buckets)    | **prod, pas les migrations** — 7 buckets (cf. Phase 3)                | recopie objet par objet (~340, script `supabase-js`)                               |
-| Auth users           | `auth.users` + `auth.identities` (**107 / 79**)                       | dump SQL `auth` en préservant les `id` (§4.5)                                      |
-| pg_cron jobs         | **8 jobs actifs** (cf. §4.3)                                          | activer `pg_cron`, puis re-scheduler les 8 jobs (Phase 1)                          |
-| Extensions           | installées : `pg_cron`, `pgcrypto`, `vector`, `unaccent`, `uuid-ossp` | `pg_cron` activé à la main ; les autres arrivent avec le dump du schéma (cf. §4.3) |
-| Secrets / env        | Vercel + `.env` local                                                 | mise à jour manuelle (voir Phase 5)                                                |
+| Élément              | Source de vérité                                                      | Méthode                                                                                                                        |
+| -------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Schéma + RLS + funcs | **prod** (`supabase db dump`, fidèle) — 609 migrations = fallback     | dump schéma → restore (cf. Phase 1) ; `db push` en secours                                                                     |
+| Données (tables)     | base prod (**152 MB, 203 tables**)                                    | `supabase db dump --data-only` → restore **en mode réplica** (§4.6)                                                            |
+| Storage (buckets)    | **prod, pas les migrations** — 7 buckets (cf. Phase 3)                | recopie objet par objet (~340, script `supabase-js`)                                                                           |
+| Auth users           | `auth.users` + `auth.identities` (**107 / 79**)                       | dump SQL `auth` en préservant les `id` (§4.5)                                                                                  |
+| pg_cron jobs         | **8 jobs actifs** (cf. §4.3)                                          | activer `pg_cron`, puis re-scheduler les 8 jobs (Phase 1)                                                                      |
+| Extensions           | installées : `pg_cron`, `pgcrypto`, `vector`, `unaccent`, `uuid-ossp` | **`pg_cron` + `vector` + `unaccent` activés à la main AVANT le restore** (public en dépend) ; le reste suit le dump (cf. §4.3) |
+| Secrets / env        | Vercel + `.env` local                                                 | mise à jour manuelle (voir Phase 5)                                                                                            |
 
 > ⚠️ **`pg_net` n'est PAS installé en prod** (zéro appel HTTP en base) — ne pas
 > l'activer sur le projet EU. À l'inverse, **`vector` (pgvector) EST utilisé** (embeddings).
@@ -170,6 +170,13 @@ email) → bien dumper `auth.users` **ET** `auth.identities`. Vérifier aussi qu
 colonnes de `auth.users` du **nouveau** projet (version GoTrue) matchent celles du dump
 (ne copier que les colonnes communes ; `instance_id`, `aud`/`role='authenticated'`).
 
+> **Périmètre auth = `users` + `identities` UNIQUEMENT.** Le reste du schéma `auth`
+> (sessions, refresh_tokens, `audit_log_entries` = 28 508 lignes — la plus grosse table de
+> toute la base, flow_state…) **repart à zéro** sur le projet EU : c'est **normal** (état
+> GoTrue d'un projet neuf, aucune dépendance applicative — vérifié). Conséquence concrète :
+> **tous les utilisateurs devront se reconnecter** après la bascule → **l'annoncer sur la
+> page de maintenance**. Journal d'audit Auth vide côté EU = attendu, ne pas s'en alarmer.
+
 ### 4.6 Trigger `handle_new_user` — restaurer en mode réplica ⚠️ (bloquant)
 
 Le trigger `on_auth_user_created` (`AFTER INSERT ON auth.users` →
@@ -210,6 +217,23 @@ dont **290 `SECURITY DEFINER`**, et **les 506 ont `EXECUTE` accordé à `anon` E
   SECURITY DEFINER s'exécutent sous leur owner ; les GRANTs visent `anon`/`authenticated`).
 - Après restore, si une RPC renvoie 404 : **recharger le cache PostgREST** →
   `notify pgrst, 'reload schema';`.
+- **Ownership (vérifié)** : 384 fonctions owned `postgres`, 122 owned `supabase_admin` (rôle
+  managé). Bonne nouvelle : **les 290 SECURITY DEFINER sont TOUTES owned `postgres`** → le
+  restore-as-`postgres` est sain. Les `ALTER FUNCTION … OWNER TO supabase_admin` émis par le
+  dump peuvent **warner** si `postgres` n'est pas membre de `supabase_admin` : **non bloquant**
+  (fonctions non-SECDEF), ne pas confondre avec une vraie erreur. Vérifier après restore que
+  les 290 SECURITY DEFINER ont bien `owner = postgres`.
+
+### 4.8 Vérifié absent en prod (rien à migrer — pour éviter une chasse aux fantômes)
+
+Sondé en SQL read-only (2026-06-14) et **confirmé vide/inoffensif** — à ne PAS chercher
+pendant le cutover :
+
+- **0 edge function** (pas de `supabase/functions/`).
+- **0 secret Vault** (`vault.secrets`), **0 large object**, **0 `pg_graphql`** installé.
+- **0 FK NOT VALID**, **0 colonne `GENERATED … IDENTITY`** (les `setval` du `--data-only` suffisent).
+- **24/24 vues `public` en `security_invoker`** → owner `postgres` n'introduit **aucun** bypass RLS.
+- Tous les **SECURITY DEFINER owned `postgres`** (cf. §4.7).
 
 ## 5. Étapes détaillées
 
@@ -233,18 +257,27 @@ dont **290 `SECURITY DEFINER`**, et **les 506 ont `EXECUTE` accordé à `anon` E
 > diff** (les migrations restent la source de vérité du schéma pour la suite).
 
 - [ ] Créer le projet Supabase en **`eu-west-3`**.
-- [ ] **Activer `pg_cron` (Dashboard/API)** — requis pour planifier les jobs (cf. §4.3).
-      **Ne pas activer `pg_net`.** (`pgcrypto`/`vector`/`unaccent` arrivent avec le schéma.)
+- [ ] **Activer les extensions à la main AVANT le restore** : `pg_cron` (pour planifier les
+      jobs, cf. §4.3) **+ `vector` + `unaccent`** (toutes deux `WITH SCHEMA public`, du
+      `public` en dépend : colonne vector + index, 5 fonctions unaccent — ne PAS supposer
+      qu'elles « arrivent avec le dump »). **Ne pas activer `pg_net`.**
 - [ ] Dump rôles + schéma depuis la prod, puis restore sur le projet EU :
-      `bash
-    supabase db dump --db-url "$OLD_DB_URL" -f roles.sql --role-only
-    supabase db dump --db-url "$OLD_DB_URL" -f schema.sql
-    psql "$NEW_DB_URL" -f roles.sql
-    psql "$NEW_DB_URL" -f schema.sql
-    `
+
+```bash
+supabase db dump --db-url "$OLD_DB_URL" -f roles.sql --role-only
+supabase db dump --db-url "$OLD_DB_URL" -f schema.sql
+psql "$NEW_DB_URL" -f roles.sql
+psql "$NEW_DB_URL" -f schema.sql
+```
+
+- [ ] **Vérifier les settings per-rôle après `roles.sql`** : `anon`/`authenticated`/
+      `authenticator`/`postgres` portent des `ALTER ROLE … SET` (statement_timeout,
+      search_path, settings `pgrst.*`) hors dump schéma/data. `select rolname, rolconfig
+    from pg_roles where rolconfig is not null` doit matcher la prod ; sinon réappliquer.
 - [ ] **Recréer les éléments hors schéma `public`** (ni un dump `public`, ni un `db push`
-      ne les reproduisent fidèlement) : - les **7 buckets** Storage + politiques (Phase 3) ; - les **8 jobs pg_cron** (rejouer les migrations `*pg_cron*` concernées, ou
-      `cron.schedule(...)` manuel — liste exacte en §4.3).
+      ne les reproduisent fidèlement) : les **7 buckets** Storage + politiques (Phase 3) et
+      les **8 jobs pg_cron** (rejouer les migrations `*pg_cron*`, ou `cron.schedule(...)`
+      manuel — liste exacte en §4.3).
 - [ ] **Ré-amorcer l'historique de migration** du nouveau projet pour que les futurs
       `supabase db push` marchent : `supabase migration repair --status applied <versions>`
       (ou insérer les versions dans `supabase_migrations.schema_migrations`).
@@ -255,21 +288,33 @@ dont **290 `SECURITY DEFINER`**, et **les 506 ont `EXECUTE` accordé à `anon` E
 ### Phase 2 — Données + Auth (**en mode réplica — cf. §4.6**)
 
 - [ ] Dump des données depuis la prod :
-      `bash
-    supabase db dump --db-url "$OLD_DB_URL" -f data.sql --use-copy --data-only
-    `
-- [ ] Restaurer **en mode réplica** (désactive triggers + FK — **indispensable** à cause
-      de `handle_new_user`, sinon collision PK sur `profiles` / rôles écrasés) :
-      `sql
-    set session_replication_role = replica;
-    \i data.sql
-    --   + restore auth.users / auth.identities (étape ci-dessous)
-    set session_replication_role = origin;
-    `
+
+```bash
+supabase db dump --db-url "$OLD_DB_URL" -f data.sql --use-copy --data-only
+```
+
+- [ ] Restaurer **en mode réplica** (désactive triggers + FK — **indispensable** à cause de
+      `handle_new_user`, sinon collision PK sur `profiles` / rôles écrasés) :
+
+```sql
+set session_replication_role = replica;
+\i data.sql
+--   + restore auth.users / auth.identities (étape ci-dessous)
+set session_replication_role = origin;
+```
+
 - [ ] Migrer `auth.users` + `auth.identities` en **préservant les `id`** (107 / 79 ;
       schéma `auth` managé → ne copier que les colonnes communes, cf. §4.5).
+- [ ] **Contrôle d'orphelins (FK auth)** : **24 FK** `public.*` → `auth.users`. En mode
+      réplica les FK sont off et Postgres ne les re-valide PAS au passage `origin` → si un
+      user saute, orphelins silencieux. Vérifier `auth.users` cible = **107** ET 0 orphelin
+      (au moins `select count(*) from profiles p where not exists (select 1 from auth.users u where u.id = p.id)` = 0).
 - [ ] Recompter les lignes table par table (parité source/cible).
 - [ ] Vérifier les séquences (`--data-only` émet les `setval`).
+- [ ] **`refresh materialized view public.student_achievement_stats;`** (1 matview, vide
+      après un restore `--data-only`).
+- [ ] **`analyze;`** (ou `vacuum analyze;`) — un restore recrée les index mais PAS les
+      statistiques → sinon premiers plans de requête mauvais = lenteurs après cutover.
 
 ### Phase 3 — Storage (inventaire **mesuré en prod**, pas dans les migrations)
 
@@ -313,7 +358,12 @@ update exercises           set variations          = replace(variations::text,'a
 ### Phase 5 — Secrets / env / code
 
 - [ ] Récupérer URL + `anon` + `service_role` du nouveau projet.
-- [ ] Mettre à jour les env **Vercel** (production + preview + development).
+- [ ] Mettre à jour les env **Vercel** (prod + preview + dev), en distinguant **ce qui
+      CHANGE** — `PUBLIC_SUPABASE_URL`, `*_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (nouveau
+      projet) — de **ce qui se RECOPIE VERBATIM** (sinon ça casse) : ⚠️
+      **`GOOGLE_TOKEN_ENCRYPTION_KEY`** (sinon la ligne `google_integrations` devient
+      **indéchiffrable**), `GOOGLE_CLASSROOM_CLIENT_ID`/`SECRET`/`REDIRECT_URI`,
+      `CRON_SECRET`, `BREVO_API_KEY` (+ `SENDER_*`), `GROQ_API_KEY`, `HF_API_KEY`, `PUBLIC_APP_URL`.
 - [ ] **Code de prod (host Storage)** — préférer la variante env (cf. 4.2) :
       réécrire `GameControls.svelte:8` et `Game2048Controls.svelte:13` pour dériver
       `STORAGE_BASE` de `PUBLIC_SUPABASE_URL`. (À faire à froid, idéalement avant la
@@ -346,6 +396,10 @@ update exercises           set variations          = replace(variations::text,'a
       `MAINTENANCE_BYPASS_SECRET` sur Vercel (+ redeploy). Implémenté, 503 indépendant
       de la DB, bypass opérateur `/?bypass=<secret>` → cf.
       `docs/wip/maintenance-page-progress.md`.
+- [ ] **Couper le cron sur l'ANCIEN projet** (après maintenance ON, AVANT le dump) :
+      `select cron.unschedule(jobid) from cron.job;` puis vérifier `count(*) from cron.job = 0`.
+      Sinon `cleanup-stale-trades` (toutes les 10 min) et surtout **`rgpd-retention-cleanup`**
+      continuent de muter/supprimer des données **après** ton dump (les réactiver au rollback).
 - [ ] **Dump complet final** (`pg_dump` n'est pas incrémental — et inutile de l'être :
       152 MB / 107 users se dumpent+restaurent en minutes). Maintenance ON → un seul
       `pg_dump` à froid → restore **en mode réplica** (§4.6) → Phase 4 (URLs). Pas de
@@ -364,7 +418,9 @@ update exercises           set variations          = replace(variations::text,'a
 - [ ] **Parité sécurité/logique** (compté en prod le 2026-06-14, doit matcher après
       restore) : `public` **780 policies RLS** sur **203/203 tables RLS-enabled**,
       **storage 27 policies**, **cron 2** ; **506 fonctions** + **159 triggers** (public).
-      Requête : `select schemaname,count(*) from pg_policies group by 1;`.
+      Requête : `select schemaname,count(*) from pg_policies group by 1;`. Aussi : **1 matview**,
+      **9 enums**, **2 publications** (tester un _broadcast_, pas que `postgres_changes`),
+      event triggers `pgrst_ddl_watch`/`pgrst_drop_watch` présents.
 - [ ] RLS fonctionnel : un élève ne voit que ses données ; un prof voit sa classe.
 - [ ] **RPC** (cf. §4.7) : une RPC `SECURITY DEFINER` sensible marche bout-en-bout (ex.
       `use_vip_card` / `deduct_gidouilles_atomic`) ; **aucune** RPC ne renvoie 401/403/404
