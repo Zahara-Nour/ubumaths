@@ -15,8 +15,13 @@ set -euo pipefail
 
 cmd="${1:-status}"
 
+# Scope (team) lu depuis .vercel/project.json, requis par 'vercel redeploy <url>'.
+SCOPE="$(node -e "try{process.stdout.write(require('./.vercel/project.json').orgId)}catch(e){}" 2>/dev/null)"
+SCOPE_ARG=()
+[ -n "$SCOPE" ] && SCOPE_ARG=(--scope "$SCOPE")
+
 latest_prod_url() {
-	vercel ls --prod 2>/dev/null | grep -Eo 'https://[a-z0-9.-]+\.vercel\.app' | head -1
+	vercel ls --prod "${SCOPE_ARG[@]}" 2>/dev/null | grep -Eo 'https://[a-z0-9.-]+\.vercel\.app' | head -1
 }
 
 redeploy_prod() {
@@ -27,7 +32,7 @@ redeploy_prod() {
 		return 1
 	fi
 	echo "♻️  Redeploy du dernier déploiement prod : $url"
-	vercel redeploy "$url" --target production
+	vercel redeploy "$url" --target production "${SCOPE_ARG[@]}"
 }
 
 case "$cmd" in
