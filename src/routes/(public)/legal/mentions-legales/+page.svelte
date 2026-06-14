@@ -14,7 +14,7 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Mentions Legales</h1>
 
-		<p class="lead text-muted-foreground">Derniere mise a jour : 15 janvier 2026</p>
+		<p class="lead text-muted-foreground">Derniere mise a jour : 15 juin 2026</p>
 
 		<hr />
 
@@ -51,7 +51,7 @@
 					970 Toa Payoh North #07-04, Singapore 318992<br />
 					<a href="https://supabase.com" target="_blank" rel="noopener noreferrer">supabase.com</a
 					><br />
-					Localisation des serveurs : <strong>Union Europeenne</strong>
+					Localisation des serveurs : <strong>Union Europeenne (France &ndash; Paris, eu-west-3)</strong>
 				</p>
 			</div>
 		</section>
