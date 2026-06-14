@@ -3,10 +3,9 @@
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { cn } from '$lib/utils';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
+	import { storageUrl } from '$lib/utils/storage';
 
-	const STORAGE_BASE =
-		'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images';
-	const powerImg = (id: string) => `${STORAGE_BASE}/${id}@0.5x.webp`;
+	const powerImg = (id: string) => storageUrl('vip-card-images', `${id}@0.5x.webp`);
 
 	interface Props {
 		timeElapsed: number;
