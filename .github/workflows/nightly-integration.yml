@@ -46,10 +46,8 @@ jobs:
           version: 2.105.0
 
       - name: Start Supabase (applies migrations)
-        # setup-cli défaut SUPABASE_INTERNAL_IMAGE_REGISTRY=ghcr.io, où certains
-        # tags (storage-api) renvoient "manifest unknown" ; on force docker.io.
-        env:
-          SUPABASE_INTERNAL_IMAGE_REGISTRY: docker.io
+        # Registry ghcr.io par défaut (via setup-cli) : rapide et sans rate-limit,
+        # contrairement à docker.io. Avec la CLI pinnée, les tags d'images existent.
         run: supabase start
 
       - name: Export local Supabase credentials
