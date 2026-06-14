@@ -90,15 +90,13 @@ select table_name, column_name, hits from (
 
 Liste exhaustive vérifiée (grep `aqtijumsgfufoztohdua`, hors `node_modules`, 2026-06-14) :
 
-**Code de prod (host Storage absolu codé en dur — casse à l'écran si oublié) ⚠️**
+**Code de prod (host Storage absolu codé en dur) — ✅ RÉSOLU (commit `22e771f9b`)**
 
-- `src/lib/components/game/minesweeper/GameControls.svelte:8` →
-  `const STORAGE_BASE = 'https://aqtijumsgfufoztohdua.supabase.co/storage/v1/object/public/vip-card-images'`
-- `src/routes/(public)/games/2048/Game2048Controls.svelte:13` → idem.
-  → Ces constantes ne sont **PAS** en base : un `UPDATE` (Phase 4) ne les touche pas.
-  Elles doivent être réécrites **dans le code** (Phase 5). **Variante recommandée** :
-  les dériver de `PUBLIC_SUPABASE_URL` au lieu de coder le host en dur (cf. encadré
-  ci-dessous) → plus aucun host à corriger à la prochaine migration.
+- ~~`GameControls.svelte` (minesweeper) + `Game2048Controls.svelte` (2048)~~ → **migrés**
+  vers le helper `storageUrl(bucket, path)` (`$lib/utils/storage`, dérivé de
+  `PUBLIC_SUPABASE_URL`). Plus aucun host codé en dur dans ces composants → **rien à faire
+  en Phase 5** pour eux. _(Ces constantes n'étaient pas en base ; un `UPDATE` Phase 4 ne les
+  touchait pas — d'où le refactor code, fait à froid.)_
 
 **Config & tooling**
 
@@ -364,10 +362,9 @@ update exercises           set variations          = replace(variations::text,'a
       **`GOOGLE_TOKEN_ENCRYPTION_KEY`** (sinon la ligne `google_integrations` devient
       **indéchiffrable**), `GOOGLE_CLASSROOM_CLIENT_ID`/`SECRET`/`REDIRECT_URI`,
       `CRON_SECRET`, `BREVO_API_KEY` (+ `SENDER_*`), `GROQ_API_KEY`, `HF_API_KEY`, `PUBLIC_APP_URL`.
-- [ ] **Code de prod (host Storage)** — préférer la variante env (cf. 4.2) :
-      réécrire `GameControls.svelte:8` et `Game2048Controls.svelte:13` pour dériver
-      `STORAGE_BASE` de `PUBLIC_SUPABASE_URL`. (À faire à froid, idéalement avant la
-      bascule.) À défaut : remplacer le host par le nouveau ref.
+- [x] ~~**Code de prod (host Storage)** : réécrire `GameControls`/`Game2048Controls`~~ →
+      **fait à froid** (commit `22e771f9b`) : helper `storageUrl()` dérivé de
+      `PUBLIC_SUPABASE_URL`, plus de host littéral.
 - [ ] `.mcp.json:9` : nouveau `--project-ref`.
 - [ ] `package.json:53` : nouveau `--project-id` ; relancer `pnpm db:types`.
 - [ ] `scripts/image-url-mapping.json` : régénérer/remplacer le ref.
@@ -503,5 +500,5 @@ URLs → copie Storage → vérifs §9) — rejouable prod→staging de temps en
 de ~2 jours artisanale devient un bouton.
 
 > Les correctifs **(a)/(b)/(c)/(d)** sont indépendants de la migration et peuvent être faits
-> **dès maintenant, à froid**. (b) est le plus rapide (~15 lignes) ; (a) est le plus
-> rentable (supprime toute la Phase 4) ; (d) supprime l'essentiel de la Phase 6bis à l'avenir.
+> **dès maintenant, à froid**. **(b) ✅ fait** (commit `22e771f9b`, helper `storageUrl()`) ;
+> (a) est le plus rentable (supprime toute la Phase 4) ; (d) supprime l'essentiel de la Phase 6bis.
