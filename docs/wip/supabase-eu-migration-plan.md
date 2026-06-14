@@ -273,7 +273,7 @@ psql "$NEW_DB_URL" -f schema.sql
 - [ ] **Vérifier les settings per-rôle après `roles.sql`** : `anon`/`authenticated`/
       `authenticator`/`postgres` portent des `ALTER ROLE … SET` (statement_timeout,
       search_path, settings `pgrst.*`) hors dump schéma/data. `select rolname, rolconfig
-  from pg_roles where rolconfig is not null` doit matcher la prod ; sinon réappliquer.
+from pg_roles where rolconfig is not null` doit matcher la prod ; sinon réappliquer.
 - [ ] **Recréer les éléments hors schéma `public`** (ni un dump `public`, ni un `db push`
       ne les reproduisent fidèlement) : les **7 buckets** Storage + politiques (Phase 3) et
       les **8 jobs pg_cron** (rejouer les migrations `*pg_cron*`, ou `cron.schedule(...)`
@@ -487,20 +487,21 @@ update exercises           set variations          = replace(variations::text,'a
 
 ## 10. Pérennité — rendre la PROCHAINE migration triviale
 
-La difficulté de **cette** migration vient de **3 causes racines**. Les corriger une fois
+La difficulté de **cette** migration vient de **4 causes racines**. Les corriger une fois
 (indépendamment de la migration — et ça réduit aussi le risque de celle-ci) rend les
 suivantes quasi gratuites :
 
-| Cause racine                           | Symptôme actuel                                   | Correctif durable                                                                                                                                                                                                                                                         |
-| -------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **(a) URLs absolues stockées en base** | Phase 4 : 5 colonnes à réécrire (189 lignes)      | Stocker des **chemins relatifs** (`vip-card-images/x.webp`) et composer l'URL au rendu via `PUBLIC_SUPABASE_URL`. Migration de normalisation des données + garde (validation/CHECK) interdisant de re-stocker une URL absolue. → **Phase 4 disparaît** la prochaine fois. |
-| **(b) Host codé en dur dans le code**  | 2 composants jeux + `package.json` + `.mcp.json`  | Un seul helper `storageUrl(bucket, path)` dérivé de l'env, **zéro host littéral** (le pattern existe déjà dans `src/lib/questions/constants.ts → getQuestionImageUrl`).                                                                                                   |
-| **(c) Dérive prod ↔ migrations**      | `question-images` & `pg_cron` créés via Dashboard | Mettre la **création des buckets + activation des extensions dans des migrations**. Un `db push` redevient fidèle → le replay redevient une option sûre.                                                                                                                  |
+| Cause racine                            | Symptôme actuel                                           | Correctif durable                                                                                                                                                                                                                                                                                                                  |
+| --------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **(a) URLs absolues stockées en base**  | Phase 4 : 5 colonnes à réécrire (189 lignes)              | Stocker des **chemins relatifs** (`vip-card-images/x.webp`) et composer l'URL au rendu via `PUBLIC_SUPABASE_URL`. Migration de normalisation des données + garde (validation/CHECK) interdisant de re-stocker une URL absolue. → **Phase 4 disparaît** la prochaine fois.                                                          |
+| **(b) Host codé en dur dans le code**   | 2 composants jeux + `package.json` + `.mcp.json`          | Un seul helper `storageUrl(bucket, path)` dérivé de l'env, **zéro host littéral** (le pattern existe déjà dans `src/lib/questions/constants.ts → getQuestionImageUrl`).                                                                                                                                                            |
+| **(c) Dérive prod ↔ migrations**       | `question-images` & `pg_cron` créés via Dashboard         | Mettre la **création des buckets + activation des extensions dans des migrations**. Un `db push` redevient fidèle → le replay redevient une option sûre.                                                                                                                                                                           |
+| **(d) Config Dashboard non versionnée** | Phase 6bis : Auth hooks/SMTP/settings re-saisis à la main | Versionner la config Auth/API/Storage dans `supabase/config.toml` (déjà présent dans le repo) et l'appliquer au nouveau projet via `supabase config push`, au lieu du Dashboard. Pré-requis : mettre d'abord `config.toml` en cohérence avec la prod. Les **secrets** (client secrets OAuth, SMTP) restent gérés à part (Phase 5). |
 
 **Bonus** : transformer le cutover en **script testé** (dump → restore-réplica → réécriture
 URLs → copie Storage → vérifs §9) — rejouable prod→staging de temps en temps. Une opération
 de ~2 jours artisanale devient un bouton.
 
-> Les correctifs **(a)/(b)/(c)** sont indépendants de la migration et peuvent être faits
+> Les correctifs **(a)/(b)/(c)/(d)** sont indépendants de la migration et peuvent être faits
 > **dès maintenant, à froid**. (b) est le plus rapide (~15 lignes) ; (a) est le plus
-> rentable (supprime toute la Phase 4 à l'avenir).
+> rentable (supprime toute la Phase 4) ; (d) supprime l'essentiel de la Phase 6bis à l'avenir.
