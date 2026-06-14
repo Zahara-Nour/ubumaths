@@ -11,10 +11,7 @@
  * (createAuthenticatedClient) to validate RLS policies.
  */
 
-import {
-	createServiceRoleClient,
-	generateTestEmail
-} from './database/trigger-test-helpers';
+import { createServiceRoleClient, generateTestEmail } from './database/trigger-test-helpers';
 import { TestData } from './database/test-data-factory';
 import { createAuthenticatedClient } from './database/supabase-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
