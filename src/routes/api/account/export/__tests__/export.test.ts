@@ -266,7 +266,7 @@ describe('GET /api/account/export', () => {
 			expect(data._metadata).toBeDefined();
 			expect(data._metadata.exported_at).toBeDefined();
 			expect(data._metadata.user_id).toBe(TEST_USER.id);
-			expect(data._metadata.format_version).toBe('1.1');
+			expect(data._metadata.format_version).toBe('1.2');
 			expect(data._metadata.gdpr_article).toContain('Article 20');
 		});
 
@@ -278,7 +278,8 @@ describe('GET /api/account/export', () => {
 
 			// Check all categories exist
 			expect(data.profile).toBeDefined();
-			expect(data.learning).toBeDefined();
+			expect(data.evaluation).toBeDefined();
+			expect(data.activite).toBeDefined();
 			expect(data.communications).toBeDefined();
 			expect(data.social).toBeDefined();
 			expect(data.gaming).toBeDefined();
@@ -303,15 +304,21 @@ describe('GET /api/account/export', () => {
 			expect(data.profile.firstname).toBeDefined();
 		});
 
-		test('learning section has correct structure', async () => {
+		test('evaluation and activite sections have correct structure', async () => {
 			const event = createMockEvent();
 
 			const response = await GET(event as never);
 			const data = await response.json();
 
-			expect(data.learning.completions).toBeDefined();
-			expect(data.learning.mastery).toBeDefined();
-			expect(data.learning.flashcard_decks).toBeDefined();
+			// Évaluation référentielle (connaissances famille A + compétences famille B)
+			expect(data.evaluation.connaissances).toBeDefined();
+			expect(data.evaluation.competences).toBeDefined();
+			expect(data.evaluation.tentatives).toBeDefined();
+			expect(data.evaluation.observables).toBeDefined();
+			// Activité exercices (section distincte de l'évaluation)
+			expect(data.activite.completions).toBeDefined();
+			expect(data.activite.mastery).toBeDefined();
+			expect(data.activite.flashcard_decks).toBeDefined();
 		});
 
 		test('communications section has correct structure', async () => {
@@ -383,6 +390,12 @@ describe('GET /api/account/export', () => {
 			const fromCalls = mockSupabase.from.mock.calls.map((call) => call[0]);
 
 			expect(fromCalls).toContain('profiles');
+			// Évaluation référentielle (connaissances famille A + compétences famille B)
+			expect(fromCalls).toContain('student_skill_state_a');
+			expect(fromCalls).toContain('student_competence_level');
+			expect(fromCalls).toContain('skill_attempts');
+			expect(fromCalls).toContain('student_observable_state');
+			// Activité exercices
 			expect(fromCalls).toContain('exercise_completions');
 			expect(fromCalls).toContain('student_exercise_mastery');
 			expect(fromCalls).toContain('srs_decks');
