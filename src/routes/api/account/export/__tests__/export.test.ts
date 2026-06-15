@@ -73,13 +73,15 @@ const mockProfile = {
 	updated_at: '2024-06-01T00:00:00Z'
 };
 
-const mockAttempts = [
+// Pedagogical data now lives in `exercise_completions` (renamed from the old
+// `student_attempts`, which no longer exists in the schema).
+const mockCompletions = [
 	{
-		question_id: 'q1',
-		submitted_answer: '42',
-		is_correct: true,
-		time_spent_seconds: 30,
-		hints_used: 0,
+		exercise_id: 'ex1',
+		assignment_id: null,
+		completed_at: '2024-06-01T10:00:00Z',
+		last_viewed_at: '2024-06-01T10:00:00Z',
+		view_count: 1,
 		created_at: '2024-06-01T10:00:00Z'
 	}
 ];
@@ -120,8 +122,8 @@ function setupMockSupabase() {
 				switch (table) {
 					case 'profiles':
 						return mockProfile;
-					case 'student_attempts':
-						return mockAttempts;
+					case 'exercise_completions':
+						return mockCompletions;
 					case 'game_players':
 						return null; // maybeSingle returns null if no data
 					default:
@@ -146,6 +148,13 @@ function setupMockSupabase() {
 				...terminalResult
 			});
 
+			// contains() (array filter, e.g. notifications.target_user_ids) → order/limit
+			const containsFn = vi.fn().mockReturnValue({
+				order: orderFn,
+				limit: limitFn,
+				...terminalResult
+			});
+
 			// eq() can be terminal or chained with order/single/maybeSingle
 			const eqFn = vi.fn().mockReturnValue({
 				order: orderFn,
@@ -155,10 +164,11 @@ function setupMockSupabase() {
 				...terminalResult
 			});
 
-			// select() returns something with eq/or
+			// select() returns something with eq/or/contains
 			const selectFn = vi.fn().mockReturnValue({
 				eq: eqFn,
 				or: orFn,
+				contains: containsFn,
 				...terminalResult
 			});
 
@@ -256,7 +266,7 @@ describe('GET /api/account/export', () => {
 			expect(data._metadata).toBeDefined();
 			expect(data._metadata.exported_at).toBeDefined();
 			expect(data._metadata.user_id).toBe(TEST_USER.id);
-			expect(data._metadata.format_version).toBe('1.0');
+			expect(data._metadata.format_version).toBe('1.1');
 			expect(data._metadata.gdpr_article).toContain('Article 20');
 		});
 
@@ -299,10 +309,9 @@ describe('GET /api/account/export', () => {
 			const response = await GET(event as never);
 			const data = await response.json();
 
-			expect(data.learning.attempts).toBeDefined();
-			expect(data.learning.progress).toBeDefined();
-			expect(data.learning.submissions).toBeDefined();
-			expect(data.learning.flashcards).toBeDefined();
+			expect(data.learning.completions).toBeDefined();
+			expect(data.learning.mastery).toBeDefined();
+			expect(data.learning.flashcard_decks).toBeDefined();
 		});
 
 		test('communications section has correct structure', async () => {
@@ -374,11 +383,30 @@ describe('GET /api/account/export', () => {
 			const fromCalls = mockSupabase.from.mock.calls.map((call) => call[0]);
 
 			expect(fromCalls).toContain('profiles');
-			expect(fromCalls).toContain('student_attempts');
-			expect(fromCalls).toContain('student_progress');
+			expect(fromCalls).toContain('exercise_completions');
+			expect(fromCalls).toContain('student_exercise_mastery');
+			expect(fromCalls).toContain('srs_decks');
 			expect(fromCalls).toContain('messages');
 			expect(fromCalls).toContain('friendships');
 			expect(fromCalls).toContain('notifications');
+		});
+
+		test('never queries tables removed/renamed by schema drift', async () => {
+			const event = createMockEvent();
+
+			await GET(event as never);
+
+			const fromCalls = mockSupabase.from.mock.calls.map((call) => call[0]);
+			// These tables no longer exist in the current schema — querying them
+			// silently returned empty data (the bug this fix closes).
+			for (const dead of [
+				'student_attempts',
+				'student_progress',
+				'assignment_submissions',
+				'srs_cards'
+			]) {
+				expect(fromCalls).not.toContain(dead);
+			}
 		});
 	});
 });
