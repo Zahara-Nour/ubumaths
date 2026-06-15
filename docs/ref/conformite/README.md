@@ -91,6 +91,13 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > cassés** (colonnes/filtres obsolètes) → corrigés également. `format_version` → `1.1`. Garde de
 > non-régression dans `src/routes/api/account/export/__tests__/export.test.ts` (assert les tables
 > réelles, **interdit** les tables mortes).
+>
+> 🔎 **Complété (2ᵉ passe).** L'export restait à côté de l'essentiel : **aucune évaluation
+> référentielle**. Ajout d'une section **`evaluation`** — référentiel de **connaissances** (famille A,
+> `student_skill_state_a`), référentiel de **compétences** (famille B, `student_competence_level`),
+> tentatives (`skill_attempts`) et indicateurs observables (`student_observable_state`). L'activité
+> exercices (`exercise_completions`/`student_exercise_mastery`/`srs_decks`) passe dans une section
+> **`activite`** distincte. `format_version` → `1.2`.
 
 ### 4. Consentement parental (Art. 8)
 

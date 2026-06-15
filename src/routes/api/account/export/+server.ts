@@ -44,21 +44,57 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Step 3: Fetch all user data in parallel
 		const [
 			profileResult,
+			skillStateResult,
+			competenceLevelResult,
+			skillAttemptsResult,
+			observableStateResult,
 			completionsResult,
 			masteryResult,
+			flashcardDecksResult,
 			messagesResult,
 			privateMessagesResult,
 			friendshipsResult,
 			notificationsResult,
 			gamePlayerResult,
 			rewardEventsResult,
-			classMembershipsResult,
-			flashcardDecksResult
+			classMembershipsResult
 		] = await Promise.all([
 			// Profile data
 			supabase.from('profiles').select('*').eq('id', userId).single(),
 
-			// Learning - exercise completions (renamed from the removed student_attempts)
+			// Évaluation — référentiel de CONNAISSANCES (famille A) : état acquis par capacité
+			supabase
+				.from('student_skill_state_a')
+				.select(
+					'skill_id, is_acquired, total_successes, distinct_template_successes, needs_remediation, last_success_at, last_attempt_at'
+				)
+				.eq('student_id', userId),
+
+			// Évaluation — référentiel de COMPÉTENCES (famille B) : niveau par compétence transversale
+			supabase
+				.from('student_competence_level')
+				.select(
+					'math_competence_id, niveau, validated_observables, missing_for_next, task_count, last_recalc_at'
+				)
+				.eq('student_id', userId),
+
+			// Évaluation — tentatives évaluées (couche brute commune aux deux référentiels)
+			supabase
+				.from('skill_attempts')
+				.select(
+					'skill_id, success, with_help, phase_blocage, grade, template_id, task_id, source, created_at'
+				)
+				.eq('student_id', userId)
+				.order('created_at', { ascending: false })
+				.limit(5000),
+
+			// Évaluation — indicateurs observables par capacité
+			supabase
+				.from('student_observable_state')
+				.select('skill_id, count_plus, count_minus, is_acquis, last_attempt_at')
+				.eq('student_id', userId),
+
+			// Activité — exercices complétés (≠ évaluation référentielle)
 			supabase
 				.from('exercise_completions')
 				.select('exercise_id, assignment_id, completed_at, last_viewed_at, view_count, created_at')
@@ -66,11 +102,17 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.order('created_at', { ascending: false })
 				.limit(2000),
 
-			// Learning - per-exercise mastery (renamed from the removed student_progress)
+			// Activité — statut de maîtrise par exercice
 			supabase
 				.from('student_exercise_mastery')
 				.select('exercise_id, status, updated_at')
 				.eq('student_id', userId),
+
+			// Activité — decks de révision possédés par l'élève (srs_cards n'a pas de propriétaire)
+			supabase
+				.from('srs_decks')
+				.select('id, name, description, deck_type, created_at, updated_at')
+				.eq('owner_id', userId),
 
 			// Messages sent
 			supabase
@@ -121,13 +163,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			supabase
 				.from('class_members')
 				.select('class_id, status, joined_at')
-				.eq('student_id', userId),
-
-			// SRS flashcard decks owned by the user (srs_cards has no per-user owner)
-			supabase
-				.from('srs_decks')
-				.select('id, name, description, deck_type, created_at, updated_at')
-				.eq('owner_id', userId)
+				.eq('student_id', userId)
 		]);
 
 		// Step 4: Build export object
@@ -157,11 +193,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 			_metadata: {
 				exported_at: new Date().toISOString(),
 				user_id: userId,
-				format_version: '1.1',
+				format_version: '1.2',
 				gdpr_article: 'Article 20 - Droit a la portabilite',
 				categories: [
 					'profile',
-					'learning',
+					'evaluation',
+					'activite',
 					'communications',
 					'social',
 					'gaming',
@@ -173,8 +210,16 @@ export const GET: RequestHandler = async ({ locals }) => {
 			// Profile
 			profile: sanitizedProfile,
 
-			// Learning data
-			learning: {
+			// Évaluation référentielle : connaissances (famille A) + compétences (famille B)
+			evaluation: {
+				connaissances: skillStateResult.data || [],
+				competences: competenceLevelResult.data || [],
+				tentatives: skillAttemptsResult.data || [],
+				observables: observableStateResult.data || []
+			},
+
+			// Activité sur les exercices (distincte de l'évaluation référentielle)
+			activite: {
 				completions: completionsResult.data || [],
 				mastery: masteryResult.data || [],
 				flashcard_decks: flashcardDecksResult.data || []
@@ -212,7 +257,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		logger.info('Data export completed', {
 			userId,
 			categories: exportData._metadata.categories.length,
-			completions_count: exportData.learning.completions.length,
+			completions_count: exportData.activite.completions.length,
 			messages_count: exportData.communications.messages_sent.length
 		});
 
