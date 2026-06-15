@@ -123,24 +123,28 @@
 					<tbody>
 						<tr>
 							<td><code>sb-*</code></td>
-							<td>Session d'authentification</td>
+							<td>Session d'authentification (Supabase)</td>
 							<td>Session</td>
 						</tr>
 						<tr>
-							<td><code>csrf_token</code></td>
-							<td>Protection securite</td>
+							<td><code>google_oauth_state</code>, <code>google_code_verifier</code></td>
+							<td>Securite du flux de connexion Google (OAuth)</td>
 							<td>10 minutes</td>
 						</tr>
 						<tr>
-							<td><code>oauth_*</code></td>
-							<td>Flux d'authentification Google</td>
-							<td>10 minutes</td>
+							<td><code>maintenance_bypass</code></td>
+							<td>Acces pendant une maintenance (administration)</td>
+							<td>8 heures</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 			<p class="rounded-lg bg-muted p-4">
-				Le site n'utilise <strong>aucun cookie</strong> de mesure d'audience, de publicite ou de suivi.
+				Le site n'utilise <strong>aucun cookie</strong> de mesure d'audience, de publicite ou de
+					suivi. La mesure de performance (Vercel) fonctionne <strong>sans cookie</strong>. UbuMaths
+					utilise par ailleurs le <strong>stockage local</strong> du navigateur a des fins strictement
+					fonctionnelles (sauvegarde de vos documents tableur / tableau blanc et preferences
+					d'affichage) ; ces donnees restent sur votre appareil.
 			</p>
 		</section>
 

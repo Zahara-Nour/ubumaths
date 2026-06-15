@@ -64,7 +64,7 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 | **Source** | Saisie directe par l'utilisateur ou import par l'enseignant ; Google (OAuth). |
 | **Destinataires / sous-traitants** | Supabase (BDD + Auth) ; Google (OAuth). |
 | **Transferts hors UE** | Auth Google : USA → CCT + Data Privacy Framework. BDD : **néant** (UE/France). |
-| **Durée de conservation** | [À COMPLÉTER] — ex. compte actif ; suppression après [X] mois/années d'inactivité ou sur demande. |
+| **Durée de conservation** | Durée de la scolarité + 5 ans (cf. § Durées de conservation). |
 | **Mesures de sécurité** | Hachage des mots de passe, RLS PostgreSQL, chiffrement au repos et en transit, cookies de session `sb-*`, jetons CSRF. |
 
 ### T2 — Suivi pédagogique et progression
@@ -78,7 +78,7 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 | **Source** | Activité de l'élève sur l'application. |
 | **Destinataires / sous-traitants** | Supabase (BDD). |
 | **Transferts hors UE** | Néant (UE/France). |
-| **Durée de conservation** | [À COMPLÉTER] — ex. durée de la scolarité / de l'usage, puis anonymisation ou suppression. |
+| **Durée de conservation** | 5 ans après la dernière activité, puis anonymisation/suppression. |
 | **Mesures de sécurité** | RLS (un élève ne voit que ses données, un enseignant que ses classes), chiffrement, journalisation des accès. |
 
 ### T3 — Gamification et récompenses
@@ -117,7 +117,7 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 | **Catégories de données** | Messages, métadonnées (auteur, horodatage, statut de présence). |
 | **Destinataires / sous-traitants** | Supabase (BDD + Realtime). |
 | **Transferts hors UE** | Néant (UE/France). |
-| **Durée de conservation** | [À COMPLÉTER]. |
+| **Durée de conservation** | 3 ans. |
 | **Mesures de sécurité** | RLS, modération (filtre de langage `bad-words`), assainissement HTML (DOMPurify). |
 | **Remarque** | ⚠️ Vérifier si la messagerie est effectivement active en production ; sinon retirer cette fiche. |
 
@@ -207,15 +207,18 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 
 ---
 
-## Durées de conservation (récapitulatif) — [À COMPLÉTER]
+## Durées de conservation (récapitulatif)
 
-| Donnée | Durée active | Archivage / suppression |
-| --- | --- | --- |
-| Compte utilisateur | Tant que le compte est actif | Suppression après [X] d'inactivité ou sur demande |
-| Données pédagogiques | Durée d'usage | Anonymisation/suppression après [X] |
-| Logs d'authentification | [X] | Suppression automatique |
-| Messages | [X] | Suppression |
-| Signalements de bugs | Jusqu'à résolution | Suppression |
+> Durées reprises de la **politique de confidentialité §7** — à valider et à tenir **cohérentes
+> entre les deux documents** (toute modification ici doit être répercutée sur la page publique).
+
+| Donnée | Durée de conservation |
+| --- | --- |
+| Profil utilisateur | Durée de la scolarité + 5 ans, puis suppression/anonymisation ou sur demande |
+| Données pédagogiques | 5 ans après la dernière activité, puis suppression/anonymisation |
+| Messages | 3 ans |
+| Logs techniques | 90 jours (suppression automatique) |
+| Signalements de bugs | Jusqu'à résolution, puis suppression |
 
 ---
 
