@@ -101,7 +101,12 @@ traitées au Lot 6 ou laissées class-scopées.
 - [x] Lot 1 — **exécuté & vérifié (2026-06-15)** : 1 prof (David), 1 admin, 77 élèves réels,
       0 compte démo restant, 6 classes David, 77 élèves actifs (−clara), 0 orphelin.
       Script : `scripts/cleanup-demo-accounts.sql`.
-- [ ] Lot 2 — verrou mono-prof
+- [~] Lot 2 — **implémenté + revu** (code-reviewer). Verrou mono-prof en 3 couches : trigger DB
+  `enforce_single_teacher` (0-ou-1, message lisible) ; garde serveur sur le **vrai** chemin
+  `PATCH /api/admin/users/[id]` + mapping erreur DB→400 ; UI (rôle `teacher` non assignable +
+  sélecteur prof retiré, classes auto-assignées via `maybeSingle`). **En attente David** :
+  push migration (`pnpm db:migrate`) + `scripts/verify-single-teacher-trigger.sql`.
+  ⏳ svelte-autofixer + eslint + check:incremental → gate qualité final du plan.
 - [ ] Lot 3 — RLS Axe 1
 - [ ] Lot 4 — miroir serveur
 - [ ] Lot 5 — UI hors-classe
@@ -110,6 +115,10 @@ traitées au Lot 6 ou laissées class-scopées.
 
 ## Notes / points ouverts
 
+- **Lot 2 — revue** : BLOQUANT corrigé (garde déplacée sur `PATCH /api/admin/users/[id]`,
+  l'action de form `update_profile` étant morte) ; `.single()`→`.maybeSingle()` ; état
+  `formData.teacher_id` orphelin nettoyé. Race théorique du trigger jugée négligeable (1 admin) ;
+  index unique partiel documenté en option dans la migration.
 - **Mécanisme Lot 1 (décidé)** : script one-off gardé `scripts/cleanup-demo-accounts.sql`
   (transaction unique, garde-fous PRE/POST, `RAISE EXCEPTION`→ROLLBACK si déviation).
   Sélection par critères (emails démo + démo-only + clara), pas d'UUID en dur sauf David.

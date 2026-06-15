@@ -93,6 +93,21 @@ export const actions: Actions = {
 			return fail(400, { errors: validation.errors });
 		}
 
+		// Single-teacher invariant: never promote another account to teacher.
+		// (Defense-in-depth: the DB trigger trg_enforce_single_teacher is the ultimate guard.)
+		if (validation.data.role === 'teacher') {
+			const { data: currentTeacher } = await supabase
+				.from('profiles')
+				.select('id')
+				.eq('role', 'teacher')
+				.maybeSingle();
+			if (currentTeacher && currentTeacher.id !== validation.data.user_id) {
+				return fail(400, {
+					message: 'Un seul professeur est autorisé : impossible de promouvoir ce compte.'
+				});
+			}
+		}
+
 		// Build update object
 		const updateData = {
 			firstname: validation.data.firstname,
