@@ -77,7 +77,9 @@ propagées Vercel Prod/Dev + `.env`+ redéployées ; **clés legacy révoquées*
 - **Ne PAS supprimer l'ancien projet** `aqtijumsgfufoztohdua` avant ~1-2 semaines (rollback =
   repointer les 3 env Vercel + redéployer).
 - **RGPD** (§7 du plan) : registre des traitements → hébergement EU.
-- Optionnel : 2 fichiers privés bug-report ; bug pré-existant 4 images statiques `mathemo`.
+- ✅ **2 rapports de bug à screenshot privé** : SUPPRIMÉS de la DB EU (2026-06-15, SQL editor)
+  plutôt que de migrer les 2 fichiers privés → plus de référence cassée.
+- Optionnel : bug pré-existant 4 images statiques `mathemo` (hors migration).
 
 ## Notes de méthode (réutilisables)
 
