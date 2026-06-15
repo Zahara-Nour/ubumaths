@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.5](https://github.com/Zahara-Nour/ubumaths/compare/v0.10.3...v0.10.5) (2026-06-15)
+
+### 🐛 Bug Fixes
+
+- **mathAST:** parse \Re/\Im comme fonctions (partie réelle/imaginaire) ([269b8e2](https://github.com/Zahara-Nour/ubumaths/commit/269b8e2639d2cac0ca47f720523b1e2666a43002))
+
+### ✨ Features
+
+- **db:** migration idempotente pour le bucket question-images (drift fix) ([989451d](https://github.com/Zahara-Nour/ubumaths/commit/989451d4e7a1edb616da909e615f99421c819774))
+
+### 📚 Documentation
+
+- **legal:** précise l'hébergement EU (France-Paris/eu-west-3) + date màj (migration Supabase EU) ([6b0aff2](https://github.com/Zahara-Nour/ubumaths/commit/6b0aff2e23af6d670da6ef687594881597b72b9f))
+- **migration:** (c) bucket question-images appliquée sur la prod ([80267e3](https://github.com/Zahara-Nour/ubumaths/commit/80267e3d9b3d36966d58b4dc19a4ec6a4e4cdd3d))
+- **migration:** §10 — ajoute cause (d) config Dashboard non versionnée ([66723d0](https://github.com/Zahara-Nour/ubumaths/commit/66723d0258a847dd5f60147c3cec9a51507ab4ba))
+- **migration:** §10 — statut (c) fait partiel + (d) bloqué sur réconciliation ([74a9c8e](https://github.com/Zahara-Nour/ubumaths/commit/74a9c8ee9557b53d22f776ca3485d840de0bd5da))
+- **migration:** §10(a) backlog — finding bucket exercise-images + design TDD ([8c23b78](https://github.com/Zahara-Nour/ubumaths/commit/8c23b786d84a6acad4ad8f9c0181c2d74e903148))
+- **migration:** §10(a) reporté après la migration + investigation consignée ([f8d98e4](https://github.com/Zahara-Nour/ubumaths/commit/f8d98e459351ff302897ae45985a559824a6ce88))
+- **migration:** 2 rapports de bug à screenshot privé supprimés ([5ea01fc](https://github.com/Zahara-Nour/ubumaths/commit/5ea01fc8dbbed8a75e9fff179ce3a421cc7bf2cd))
+- **migration:** 8 jobs pg_cron re-planifiés sur le projet EU ([deacc1b](https://github.com/Zahara-Nour/ubumaths/commit/deacc1b9c2bc9e2d25b52170ef5f565d4496d59c))
+- **migration:** ajoute Phase 6bis — vérifications Dashboard (hors dump) ([89feef6](https://github.com/Zahara-Nour/ubumaths/commit/89feef65bacb9f0ef178bd6a4ce896e31bd40c4c))
+- **migration:** cutover terminé — site live sur l'EU (cdg1) ([3a94047](https://github.com/Zahara-Nour/ubumaths/commit/3a9404702c7e6fd4ab250d6eaf88187cf074a79f))
+- **migration:** intègre l'audit multi-agent (10 gaps vérifiés en prod) ([c9e62f2](https://github.com/Zahara-Nour/ubumaths/commit/c9e62f2a83055b0689ab36fb112d1c8c8f94f5cc))
+- **migration:** journal d'exécution — DB migrée (phases 1,2,3-partiel,4) ([0c291aa](https://github.com/Zahara-Nour/ubumaths/commit/0c291aa804986389a3493b43c966393b605b61af))
+- **migration:** marque la cause (b) résolue (host Storage dérivé de l'env) ([211fbe0](https://github.com/Zahara-Nour/ubumaths/commit/211fbe0b0a5efc898b07eef7562900b31cb1efaa))
+- **migration:** Phase 5 (code) + Phase 7 faites — reste env Vercel/OAuth/cutover ([3bbd7dc](https://github.com/Zahara-Nour/ubumaths/commit/3bbd7dcecf2c32265dcefbb82ae50df7b2091f9f))
+- **migration:** plan EU mesuré contre la prod + méthode dump/restore ([86169ec](https://github.com/Zahara-Nour/ubumaths/commit/86169ec823c27a8b9e916c978923bd071517e02a))
+- **migration:** sécurité faite — clés rotées (sb_secret/sb_publishable) + legacy révoquées ([3a668d0](https://github.com/Zahara-Nour/ubumaths/commit/3a668d00c8551bcdbc93f6714db2a309b5486e20))
+- **migration:** Storage objets copiés (338/340) — DB+Storage migrés ([a7862c0](https://github.com/Zahara-Nour/ubumaths/commit/a7862c056d87eb62dc1dc5943bfba85940f24ee1))
+- **migration:** validation locale EU complète (auth/images/RPC/RLS/realtime) ([07584d7](https://github.com/Zahara-Nour/ubumaths/commit/07584d7e331ea1850d7f377e2239fb1ba0454d08))
+- **tests:** architecture de référence des tests + plan de migration ([a627a3b](https://github.com/Zahara-Nour/ubumaths/commit/a627a3ba89634c9125eb09f3066280fb84d0e37e))
+- **tests:** nettoie les READMEs de tests + valide la migration (phase 6) ([8d53d92](https://github.com/Zahara-Nour/ubumaths/commit/8d53d92373c6efea5b607fe5ceea79f505addc71))
+- **tests:** note la correction Re/Im (bug parsing, pas feature manquante) ([9571295](https://github.com/Zahara-Nour/ubumaths/commit/9571295fb66bc759ea361b219ec77ea92bb48511))
+- **tests:** supprime le résumé orphelin VIP_CARD_FILTERS_TESTS.md ([3865180](https://github.com/Zahara-Nour/ubumaths/commit/3865180b2f1e3a83633ea5501fce4a003b2f983d))
+
 ### [0.10.3](https://github.com/Zahara-Nour/ubumaths/compare/v0.10.2...v0.10.3) (2026-06-14)
 
 ### ✨ Features
