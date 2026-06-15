@@ -75,12 +75,22 @@ sous-traitants **incomplet** (IA tierce non listée) + des **docts datés** à r
 
 ### 3. Portabilité (Art. 20)
 
-Endpoint `GET /api/account/export` présent (7 catégories, ~14 entités). **MAIS** il lit encore
-`student_attempts` (l. 64) et `student_progress` (l. 74) — les **tables « mortes »** du §1.
+Endpoint `GET /api/account/export` présent. **Bug CONFIRMÉ** (vérifié dans `src/lib/types/database.ts`) :
+il requête `student_attempts` (l. 64), `student_progress` (l. 74) et `assignment_submissions` (l. 82)
+— **3 tables qui n'existent plus** dans le schéma actuel. Comme le code fait `result.data || []`,
+l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 
-> 🔴 **Trou n°2 — export pédagogique cassé/vide.** L'export de portabilité requête des tables qui
-> n'existent plus → les **données pédagogiques de l'élève sont probablement absentes de l'export**
-> (échec silencieux). À vérifier en priorité et repointer sur les tables actuelles.
+> 🔴 **Trou n°2 — export pédagogique vide (confirmé).** Les catégories `learning.attempts`,
+> `learning.progress` et `learning.submissions` sont **toujours `[]`** → l'**historique d'exercices,
+> la maîtrise et les devoirs de l'élève sont absents** de l'export de portabilité (seul
+> `learning.flashcards` était censé marcher, mais `srs_cards` était **aussi cassé**).
+>
+> ✅ **CORRIGÉ (2026-06-15).** L'export requête désormais `exercise_completions`,
+> `student_exercise_mastery` et `srs_decks` (decks possédés par l'élève), colonnes réalignées. La
+> correction a révélé que **`private_messages`, `notifications` et `game_players` étaient AUSSI
+> cassés** (colonnes/filtres obsolètes) → corrigés également. `format_version` → `1.1`. Garde de
+> non-régression dans `src/routes/api/account/export/__tests__/export.test.ts` (assert les tables
+> réelles, **interdit** les tables mortes).
 
 ### 4. Consentement parental (Art. 8)
 
@@ -135,7 +145,7 @@ anonymise les emails avant insertion.
 | # | Écart | Priorité | Article | Piste |
 | --- | --- | --- | --- | --- |
 | 1 | Rétention pédagogique non appliquée (cron ne couvre plus exercise_completions/mastery) | 🔴 Haute | 5.1.e | Réintégrer au cron OU ajuster la politique |
-| 2 | Export Art. 20 lit des tables mortes → données pédagogiques absentes | 🔴 Haute | 20 | Repointer l'export sur les tables actuelles |
+| 2 | ~~Export Art. 20 : tables inexistantes → données pédagogiques vides~~ ✅ **CORRIGÉ (2026-06-15)** | ✔️ Fait | 20 | Repointé sur `exercise_completions`/`student_exercise_mastery`/`srs_decks` (+ private_messages/notifications/game_players) + test |
 | 3 | Registre sous-traitants : HuggingFace absent, Groq « à vérifier », Vercel Analytics non détaillé | 🟠 Moyenne | 28 | Compléter le registre + CCT/zero-retention |
 | 4 | Période de grâce consentement expire 2026-06-30 | ⏰ Calendaire | 8 | Relancer ou repousser |
 | 5 | Docs datées (hébergement US, email Gmail, durées) | 🟡 Basse | — | Bandeaux ajoutés ; rafraîchir au besoin |

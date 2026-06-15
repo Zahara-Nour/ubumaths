@@ -99,7 +99,7 @@ Collecte (navigateur / import enseignant / Google OAuth)
 | Information | Politique de confidentialité accessible | ✅ |
 | **Consentement parental (< 15 ans)** | Système Art. 8 **implémenté** : table `parental_consents`, détection auto (grades 6→2), mode lecture seule, dashboard enseignant, email Brevo, audit IP/UA | ✅ — ⏰ grâce jusqu'au **2026-06-30** |
 | Accès, rectification, **effacement** | `/api/account/delete` (RPC `delete_user_account`, table d'audit, rate-limit 1/24h) **implémenté** | ✅ |
-| **Portabilité** | Endpoint `/api/account/export` (JSON) **implémenté** | ⚠️ lit des tables pédago mortes → export incomplet (README §3) |
+| **Portabilité** | Endpoint `/api/account/export` (JSON) **implémenté + corrigé** (2026-06-15, README §3) | ✅ |
 | Opposition / retrait | contact@ubumaths.fr | ✅ |
 | Sous-traitance (art. 28) | DPA Supabase / Vercel / Google / Brevo | 🟠 **copies signées à archiver** |
 | Transferts hors UE | Google & Vercel via **CCT** (+ DPF Google) | ✅ documenté |
@@ -184,7 +184,7 @@ au-delà de la sécurité technique :
 | # | Mesure | Priorité | Responsable | Échéance | Statut |
 | --- | --- | --- | --- | --- | --- |
 | 1 | 🔴 **Rétention pédagogique** : réintégrer `exercise_completions`/`student_exercise_mastery` au cron (ou ajuster la politique « 5 ans ») | 🔴 Haute | [À COMPLÉTER] | [À COMPLÉTER] | À faire (README §1) |
-| 2 | 🔴 **Export Art. 20 cassé** : repointer `/api/account/export` sur les tables pédago actuelles | 🔴 Haute | | | À faire (README §3) |
+| 2 | ~~Export Art. 20 cassé~~ ✅ **Corrigé** : `/api/account/export` repointé + test de non-régression | ✔️ Fait | — | 2026-06-15 | Fait (README §3) |
 | 3 | **Compléter le registre sous-traitants** : HuggingFace + Groq (CCT / zero-retention) | 🟠 Moyenne | | | À faire (README §7) |
 | 4 | Ajouter un **mécanisme de signalement** de contenu/message (DSA) | 🟠 Moyenne | | | À faire |
 | 5 | **Archiver les DPA signés** (Supabase/Vercel/Google/Brevo) | 🟠 Moyenne | | | À faire |

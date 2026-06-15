@@ -44,9 +44,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Step 3: Fetch all user data in parallel
 		const [
 			profileResult,
-			studentAttemptsResult,
-			studentProgressResult,
-			assignmentSubmissionsResult,
+			completionsResult,
+			masteryResult,
 			messagesResult,
 			privateMessagesResult,
 			friendshipsResult,
@@ -54,33 +53,23 @@ export const GET: RequestHandler = async ({ locals }) => {
 			gamePlayerResult,
 			rewardEventsResult,
 			classMembershipsResult,
-			srsCardsResult
+			flashcardDecksResult
 		] = await Promise.all([
 			// Profile data
 			supabase.from('profiles').select('*').eq('id', userId).single(),
 
-			// Learning data - student attempts (limit to recent 1000)
+			// Learning - exercise completions (renamed from the removed student_attempts)
 			supabase
-				.from('student_attempts')
-				.select(
-					'question_id, submitted_answer, is_correct, time_spent_seconds, hints_used, created_at'
-				)
+				.from('exercise_completions')
+				.select('exercise_id, assignment_id, completed_at, last_viewed_at, view_count, created_at')
 				.eq('student_id', userId)
 				.order('created_at', { ascending: false })
-				.limit(1000),
+				.limit(2000),
 
-			// Learning data - progress
+			// Learning - per-exercise mastery (renamed from the removed student_progress)
 			supabase
-				.from('student_progress')
-				.select(
-					'topic_id, mastery_level, exercises_completed, correct_answers, total_points, streak, last_practice_at'
-				)
-				.eq('student_id', userId),
-
-			// Assignment submissions
-			supabase
-				.from('assignment_submissions')
-				.select('assignment_id, completion_percentage, score, submitted_at, graded_at')
+				.from('student_exercise_mastery')
+				.select('exercise_id, status, updated_at')
 				.eq('student_id', userId),
 
 			// Messages sent
@@ -94,29 +83,29 @@ export const GET: RequestHandler = async ({ locals }) => {
 			// Private messages sent
 			supabase
 				.from('private_messages')
-				.select('id, recipient_id, content, created_at')
+				.select('id, subject, content, plain_text, sent_at')
 				.eq('sender_id', userId)
-				.order('created_at', { ascending: false })
+				.order('sent_at', { ascending: false })
 				.limit(500),
 
 			// Friendships (both directions)
 			supabase
 				.from('friendships')
-				.select('requester_id, addressee_id, status, created_at')
+				.select('requester_id, addressee_id, status, friendship_type, created_at')
 				.or(`requester_id.eq.${userId},addressee_id.eq.${userId}`),
 
-			// Notifications
+			// Notifications targeted at this user (model uses target_user_ids[], not user_id)
 			supabase
 				.from('notifications')
-				.select('id, type, title, message, read, created_at')
-				.eq('user_id', userId)
+				.select('id, type, title, message, priority, created_at')
+				.contains('target_user_ids', [userId])
 				.order('created_at', { ascending: false })
 				.limit(200),
 
 			// Game player data
 			supabase
 				.from('game_players')
-				.select('level, xp, coins, total_combats, wins, losses, last_played_at')
+				.select('level, xp, prestige, total_combats, combats_won, combats_lost, last_played_at')
 				.eq('user_id', userId)
 				.maybeSingle(),
 
@@ -129,13 +118,16 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.limit(1000),
 
 			// Class memberships
-			supabase.from('class_members').select('class_id, joined_at').eq('student_id', userId),
-
-			// SRS flashcard data
 			supabase
-				.from('srs_cards')
-				.select('deck_id, front, back, ease_factor, interval, repetitions, next_review, created_at')
-				.eq('user_id', userId)
+				.from('class_members')
+				.select('class_id, status, joined_at')
+				.eq('student_id', userId),
+
+			// SRS flashcard decks owned by the user (srs_cards has no per-user owner)
+			supabase
+				.from('srs_decks')
+				.select('id, name, description, deck_type, created_at, updated_at')
+				.eq('owner_id', userId)
 		]);
 
 		// Step 4: Build export object
@@ -165,7 +157,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			_metadata: {
 				exported_at: new Date().toISOString(),
 				user_id: userId,
-				format_version: '1.0',
+				format_version: '1.1',
 				gdpr_article: 'Article 20 - Droit a la portabilite',
 				categories: [
 					'profile',
@@ -183,10 +175,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 			// Learning data
 			learning: {
-				attempts: studentAttemptsResult.data || [],
-				progress: studentProgressResult.data || [],
-				submissions: assignmentSubmissionsResult.data || [],
-				flashcards: srsCardsResult.data || []
+				completions: completionsResult.data || [],
+				mastery: masteryResult.data || [],
+				flashcard_decks: flashcardDecksResult.data || []
 			},
 
 			// Communications
@@ -221,7 +212,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		logger.info('Data export completed', {
 			userId,
 			categories: exportData._metadata.categories.length,
-			attempts_count: exportData.learning.attempts.length,
+			completions_count: exportData.learning.completions.length,
 			messages_count: exportData.communications.messages_sent.length
 		});
 
