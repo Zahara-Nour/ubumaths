@@ -42,7 +42,7 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 | T3 | Gamification et récompenses | Intérêt légitime | Non |
 | T4 | Communications transactionnelles (emails) | Contrat / Intérêt légitime | Non |
 | T5 | Messagerie et collaboration temps réel | Contrat / Intérêt légitime | Non |
-| T6 | Assistance IA (si contenu élève transmis) | [Consentement — À CONFIRMER] | Non |
+| T6 | Assistance IA — tuteur/chat + RAG (Groq, HuggingFace) | [Intérêt légitime / Consentement — À CONFIRMER] | Non |
 | T7 | Support et signalement de bugs | Intérêt légitime | Non |
 | T8 | Mesure d'audience et performance technique | Intérêt légitime | Non |
 
@@ -121,19 +121,19 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 | **Mesures de sécurité** | RLS, modération (filtre de langage `bad-words`), assainissement HTML (DOMPurify). |
 | **Remarque** | ⚠️ Vérifier si la messagerie est effectivement active en production ; sinon retirer cette fiche. |
 
-### T6 — Assistance IA (si contenu élève transmis)
+### T6 — Assistance IA (tuteur/chat + RAG) — **active en production**
 
 | Champ | Contenu |
 | --- | --- |
-| **Finalité(s)** | Génération/correction assistée de contenu (le cas échéant). |
-| **Base légale** | [Consentement — À CONFIRMER]. |
+| **Finalité(s)** | Tuteur/chatbot pédagogique (`/api/chat`) et recherche augmentée (RAG). |
+| **Base légale** | [Intérêt légitime / Consentement — À CONFIRMER]. |
 | **Personnes concernées** | Élèves, enseignants. |
-| **Catégories de données** | Texte saisi transmis au prestataire d'IA (peut contenir des données personnelles). |
-| **Destinataires / sous-traitants** | [À COMPLÉTER — ex. Groq, HuggingFace, ou autre]. |
-| **Transferts hors UE** | USA → CCT [À CONFIRMER]. |
-| **Durée de conservation** | Dépend du prestataire — privilégier un prestataire **« zero data retention »**. |
-| **Mesures de sécurité** | Minimisation (ne transmettre que le nécessaire), clés API serveur. |
-| **Remarque** | ⚠️ Si aucun contenu personnel d'élève n'est envoyé à une IA tierce, **supprimer cette fiche**. |
+| **Catégories de données** | Messages élève + contexte d'exercice transmis au LLM ; texte indexé pour les embeddings. |
+| **Destinataires / sous-traitants** | **Groq** (LLM, llama-3.3-70b) ; **HuggingFace** (embeddings RAG, `multilingual-e5-large`). |
+| **Transferts hors UE** | **USA → CCT** (Groq + HuggingFace). [DPA / zero-retention à confirmer]. |
+| **Durée de conservation** | Dépend du prestataire — exiger une politique **« zero data retention »**. |
+| **Mesures de sécurité** | Minimisation (contenu dit anonymisé côté code), rate-limiting, clés API serveur. |
+| **Remarque** | ⚠️ Sous-traitants à **ajouter au registre dédié** (cf. [README](./README.md) §7) — actuellement non listés. |
 
 ### T7 — Support et signalement de bugs
 
@@ -170,9 +170,11 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 | --- | --- | --- | --- | --- |
 | **Supabase Inc.** | Hébergement BDD, Auth, Storage, Realtime | Singapour | **UE — France (AWS eu-west-3, Paris)** | DPA Supabase ; chiffrement ; UE → **pas de transfert hors UE** |
 | **Vercel Inc.** | Hébergement application + fonctions | USA | Fonctions **cdg1/Paris (UE)** | DPA Vercel ; **CCT** (société US) |
-| **Google LLC** | Authentification OAuth / Classroom | USA | USA | **CCT + Data Privacy Framework** |
-| **Brevo (Sendinblue)** | Emails transactionnels | France (UE) | UE | DPA ; UE — pas de transfert hors UE [À CONFIRMER] |
-| **[Prestataire IA]** | Assistance IA (si applicable) | [À COMPLÉTER] | [À COMPLÉTER] | [CCT — À COMPLÉTER ; supprimer si non utilisé] |
+| **Google LLC** | Authentification OAuth / Classroom (+ Gmail API emails élèves) | USA | USA | **CCT + Data Privacy Framework** |
+| **Brevo (Sendinblue)** | Emails transactionnels (consentement parental) | France (UE) | UE | DPA ; UE — pas de transfert hors UE [À CONFIRMER] |
+| **Groq Inc.** | LLM tuteur/chat (`/api/chat`) | USA | USA | **CCT** ; exiger zero-retention [À CONFIRMER] |
+| **Hugging Face Inc.** | Embeddings RAG (`multilingual-e5-large`) | USA | USA | **CCT** [DPA à confirmer] |
+| **Vercel (Analytics)** | Mesure d'audience/perf **sans cookie** | USA | USA (agrégé) | **CCT** ; cookieless |
 
 > Penser à conserver une **copie signée du DPA** de chaque sous-traitant.
 
@@ -182,9 +184,10 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 
 | Destinataire | Pays | Encadrement | Donnée concernée |
 | --- | --- | --- | --- |
-| Google LLC | USA | Clauses Contractuelles Types (CCT) + Data Privacy Framework | Identifiants d'authentification (OAuth) |
-| Vercel Inc. | USA (société) | CCT — traitement effectif en UE (cdg1) | Logs techniques, métriques |
-| [Prestataire IA] | [À COMPLÉTER] | CCT | [Contenu transmis — si applicable] |
+| Google LLC | USA | Clauses Contractuelles Types (CCT) + Data Privacy Framework | Identifiants d'authentification (OAuth), emails élèves (Gmail API) |
+| Vercel Inc. | USA (société) | CCT — traitement effectif en UE (cdg1) | Logs techniques, métriques (sans cookie) |
+| Groq Inc. | USA | CCT (exiger zero-retention) | Messages élève + contexte d'exercice (tuteur/chat) |
+| Hugging Face Inc. | USA | CCT | Texte indexé pour embeddings (RAG) |
 
 > **L'hébergement de la base de données ne donne plus lieu à aucun transfert hors UE** depuis la
 > migration du **15 juin 2026** (us-east-2/Ohio, USA → **eu-west-3/Paris, France**).

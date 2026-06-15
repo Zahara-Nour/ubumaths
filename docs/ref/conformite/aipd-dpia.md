@@ -97,9 +97,9 @@ Collecte (navigateur / import enseignant / Google OAuth)
 | Droit / mesure | Mise en œuvre | Statut |
 | --- | --- | --- |
 | Information | Politique de confidentialité accessible | ✅ |
-| **Consentement parental (< 15 ans)** | Annoncé dans la politique | 🔴 **mécanisme à implémenter / vérifier** |
-| Accès, rectification, effacement | Sur compte + contact@ubumaths.fr | ✅ / [à outiller] |
-| Portabilité | [À COMPLÉTER — export des données ?] | ⚠️ |
+| **Consentement parental (< 15 ans)** | Système Art. 8 **implémenté** : table `parental_consents`, détection auto (grades 6→2), mode lecture seule, dashboard enseignant, email Brevo, audit IP/UA | ✅ — ⏰ grâce jusqu'au **2026-06-30** |
+| Accès, rectification, **effacement** | `/api/account/delete` (RPC `delete_user_account`, table d'audit, rate-limit 1/24h) **implémenté** | ✅ |
+| **Portabilité** | Endpoint `/api/account/export` (JSON) **implémenté** | ⚠️ lit des tables pédago mortes → export incomplet (README §3) |
 | Opposition / retrait | contact@ubumaths.fr | ✅ |
 | Sous-traitance (art. 28) | DPA Supabase / Vercel / Google / Brevo | 🟠 **copies signées à archiver** |
 | Transferts hors UE | Google & Vercel via **CCT** (+ DPF Google) | ✅ documenté |
@@ -172,8 +172,8 @@ au-delà de la sécurité technique :
 | | |
 | --- | --- |
 | **Impacts** | Contact inapproprié, harcèlement, divulgation d'informations personnelles, exposition à un contenu illicite. |
-| **Mesures existantes** | Filtre de langage (`bad-words`), accès enseignant aux messages de ses élèves, pas de publicité ni de profilage commercial, minimisation. |
-| **Mesures à renforcer** | 🔴 **Mécanisme de signalement** (DSA) ; 🔴 **vérification du consentement/encadrement parental** ; cloisonnement des échanges (élève ↔ uniquement classe/amis validés ?) ; [À COMPLÉTER]. |
+| **Mesures existantes** | **Consentement parental Art. 8 implémenté** (mode lecture seule sans accord) ; filtre de langage (`bad-words`) ; accès enseignant aux messages de ses élèves ; pas de publicité ni de profilage commercial ; minimisation (champ `gender` supprimé). |
+| **Mesures à renforcer** | 🔴 **Mécanisme de signalement** (DSA) ; cloisonnement des échanges (élève ↔ classe/amis validés ?) ; décider la suite après expiration de la **grâce 2026-06-30**. |
 | **Gravité** | Importante [à valider] |
 | **Vraisemblance** | [À ÉVALUER selon l'ouverture réelle des échanges] |
 
@@ -183,13 +183,15 @@ au-delà de la sécurité technique :
 
 | # | Mesure | Priorité | Responsable | Échéance | Statut |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Implémenter / vérifier le **consentement parental < 15 ans** | 🔴 Haute | [À COMPLÉTER] | [À COMPLÉTER] | À faire |
-| 2 | Ajouter un **mécanisme de signalement** de contenu/message (DSA) | 🔴 Haute | | | À faire |
-| 3 | **Archiver les DPA signés** (Supabase/Vercel/Google/Brevo) | 🟠 Moyenne | | | À faire |
-| 4 | Rédiger la **procédure de violation de données** (notification 72 h) | 🟠 Moyenne | | | À faire |
-| 5 | Outiller **export / portabilité** des données utilisateur | 🟡 Basse | | | À évaluer |
-| 6 | Confirmer/valider les **bases légales** par traitement | 🟠 Moyenne | | | À faire |
-| 7 | Trancher **conservation logs** (90 j vs identification 1 an LCEN) | 🟡 Basse | | | À arbitrer |
+| 1 | 🔴 **Rétention pédagogique** : réintégrer `exercise_completions`/`student_exercise_mastery` au cron (ou ajuster la politique « 5 ans ») | 🔴 Haute | [À COMPLÉTER] | [À COMPLÉTER] | À faire (README §1) |
+| 2 | 🔴 **Export Art. 20 cassé** : repointer `/api/account/export` sur les tables pédago actuelles | 🔴 Haute | | | À faire (README §3) |
+| 3 | **Compléter le registre sous-traitants** : HuggingFace + Groq (CCT / zero-retention) | 🟠 Moyenne | | | À faire (README §7) |
+| 4 | Ajouter un **mécanisme de signalement** de contenu/message (DSA) | 🟠 Moyenne | | | À faire |
+| 5 | **Archiver les DPA signés** (Supabase/Vercel/Google/Brevo) | 🟠 Moyenne | | | À faire |
+| 6 | Rédiger la **procédure de violation de données** (notification 72 h) | 🟠 Moyenne | | | À faire |
+| 7 | Décider la suite de la **période de grâce consentement** (échéance 2026-06-30) | ⏰ Calendaire | | | À arbitrer |
+| 8 | Confirmer les **bases légales** par traitement + `[A COMPLÉTER]` mentions légales | 🟠 Moyenne | | | À faire |
+| 9 | Trancher **conservation logs** (30 j vs identification 1 an LCEN) | 🟡 Basse | | | À arbitrer |
 
 ---
 
@@ -211,4 +213,5 @@ au-delà de la sécurité technique :
 
 | Date | Version | Modification |
 | --- | --- | --- |
+| 15 juin 2026 | 0.2 | Confrontation au code : consentement parental confirmé **implémenté** (Art. 8) ; ajout des trous rétention pédago + export Art. 20 (cf. README §1/§3). |
 | 15 juin 2026 | 0.1 | Création du brouillon. Hébergement UE/France (eu-west-3) intégré. |
