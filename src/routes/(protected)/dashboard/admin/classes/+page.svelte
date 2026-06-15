@@ -29,7 +29,6 @@
 	let formData = $state({
 		name: '',
 		description: '',
-		teacher_id: '',
 		school_id: '',
 		grade: '',
 		join_code: '',
@@ -54,14 +53,6 @@
 		return teacher.email || '—';
 	}
 
-	// Filter teachers by selected school (for create/edit modal)
-	// Only show teachers from the selected school
-	let availableTeachers = $derived(
-		formData.school_id
-			? data.teachers.filter((t) => t.school_id === formData.school_id)
-			: data.teachers
-	);
-
 	// Items for MySelect components
 	let schoolFilterItems = $derived([
 		{ value: '', label: 'Toutes les écoles' },
@@ -71,14 +62,6 @@
 	let schoolItems = $derived([
 		{ value: '', label: 'Aucune école' },
 		...data.schools.map((s) => ({ value: s.id, label: s.name }))
-	]);
-
-	let teacherItems = $derived([
-		{ value: '', label: 'Sélectionner un enseignant' },
-		...availableTeachers.map((t) => ({
-			value: t.id,
-			label: t.firstname && t.lastname ? `${t.firstname} ${t.lastname}` : t.email || ''
-		}))
 	]);
 
 	// Grade items for the selector (static, never changes)
@@ -97,7 +80,6 @@
 		formData = {
 			name: '',
 			description: '',
-			teacher_id: '',
 			school_id: selectedSchool || '',
 			grade: '',
 			join_code: '',
@@ -113,7 +95,6 @@
 		formData = {
 			name: classItem.name,
 			description: classItem.description || '',
-			teacher_id: classItem.teacher_id,
 			school_id: classItem.school_id || '',
 			grade: classItem.grade || '',
 			join_code: classItem.join_code,
@@ -512,25 +493,10 @@
 
 							<!-- Teacher -->
 							<div>
-								<span class="mb-1 block text-sm font-medium text-foreground">Enseignant *</span>
-								<input type="hidden" name="teacher_id" value={formData.teacher_id} />
-								<MySelect
-									type="single"
-									bind:value={formData.teacher_id}
-									items={teacherItems}
-									placeholder="Sélectionner un enseignant"
-									triggerClass="h-9 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
-								/>
-								{#if formData.school_id && availableTeachers.length === 0}
-									<p class="mt-1 text-xs text-muted-foreground">
-										Aucun enseignant disponible pour cette école. Veuillez d'abord assigner des
-										enseignants à cette école.
-									</p>
-								{:else if !formData.school_id}
-									<p class="mt-1 text-xs text-muted-foreground">
-										Sélectionnez d'abord une école pour voir les enseignants disponibles.
-									</p>
-								{/if}
+								<span class="mb-1 block text-sm font-medium text-foreground">Enseignant</span>
+								<p class="text-sm text-muted-foreground">
+									{data.teachers[0] ? getTeacherName(data.teachers[0]) : '—'} — assigné automatiquement
+								</p>
 							</div>
 
 							<!-- Grade -->
