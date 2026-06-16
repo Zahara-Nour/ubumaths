@@ -129,9 +129,24 @@ traitées au Lot 6 ou laissées class-scopées.
   **Reste optionnel** : action « rattacher à une classe » depuis cette section (non faite, à valider
   avec David — pas nécessaire pour « le prof voit les hors-classe »).
 - [ ] Lot 6 — social école
-- [ ] Lot 7 — audit / doc / checks
+- [~] Lot 7 — closing **en cours** : (a) ✅ **AIPD mise à jour** (`docs/ref/conformite/aipd-dpia.md`
+  rév. 0.3 : accès lecture prof à toutes données élèves, sensibles incluses). (b) ⚠️ **Finding tests/seed**
+  (voir note ci-dessous) — décision David requise. (c) checks finaux : `check:incremental` 0 erreur,
+  pre-commit eslint+tests verts à chaque commit.
 
 ## Notes / points ouverts
+
+- **⚠️ Lot 7 — régression test/seed introduite par le trigger Lot 2 (décision requise)** : le trigger
+  `enforce_single_teacher` (≥2 profs interdit) casse ce qui crée plusieurs `teacher` :
+
+  - **`015_seed_voltaire_test_data.sql`** seede **4 profs démo** (Baguette…) → contradictoire avec le
+    mono-prof ; sur un `db start` frais le local repeuple ces profs (le trigger, créé plus tard, ne valide
+    pas l'existant, donc pas d'erreur de migration, mais l'état local redevient multi-prof).
+  - **Tests d'intégration** créant des profs : `competence-referentiel` (26), `kanban-rls` (4),
+    `vip-card-teacher-overrides` (1) + les `*-triggers` (déjà non fonctionnels en local, cf.
+    [[feedback_no-trigger-tests]]). Toute création d'un 2ᵉ prof lèvera l'exception.
+  - **Options** : (1) laisser → remédiation test/seed dédiée plus tard ; (2) rendre le trigger
+    bypassable hors-prod (flag) ; (3) réécrire seed + tests en mono-prof. **À trancher avec David.**
 
 - **Lot 3 — RGPD à acter (Lot 7)** : `parental_consents`, `audit_logs`, `welcome_emails_sent` sont
   désormais visibles au compte PROF (avant : class-scopé). Aucun privilège nouveau (David y accède
