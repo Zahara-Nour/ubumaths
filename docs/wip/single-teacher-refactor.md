@@ -119,7 +119,10 @@ traitées au Lot 6 ou laissées class-scopées.
       de périmètre relevé a été comblé par un **balayage principiel** (toute table `student_id`/`user_id`
       avec policy prof class-scopée). **3 leaves intentionnelles** : `class_members` (roster),
       `python_exercise_assignments` (devoirs prof), `template_usage_stats` (stats classe).
-- [ ] Lot 4 — miroir serveur
+- [x] Lot 4 — **livré (2026-06-16)** : `verifyTeacherStudent()` → Option B (prof/admin accède à
+      tout élève, plus de JOIN class_members ; RLS `is_my_student` reste le vrai garde) +
+      `getUnassignedStudents()` (bucket « Non assignés »). Test middleware réécrit (15 ✓).
+      Revue code-reviewer : fail-closed, pas d'élargissement non voulu. Pas de migration.
 - [ ] Lot 5 — UI hors-classe
 - [ ] Lot 6 — social école
 - [ ] Lot 7 — audit / doc / checks
