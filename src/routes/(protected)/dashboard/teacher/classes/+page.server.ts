@@ -20,7 +20,7 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { Database } from '$lib/types/database';
-import { getTeacherClassesWithCounts } from '$lib/server/students';
+import { getTeacherClassesWithCounts, getUnassignedStudents } from '$lib/server/students';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 
 type School = Database['public']['Tables']['schools']['Row'];
@@ -215,8 +215,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.eq('teacher_id', user.id)
 		.not('google_classroom_course_id', 'is', null);
 
+	// Single-teacher (Option B): students not enrolled in any active class.
+	const unassignedStudents = await getUnassignedStudents(user.id, supabase);
+
 	return {
 		classes: classesWithData,
+		unassignedStudents,
 		school,
 		classStudentsMap,
 		googleCourses: googleCourses || [],
