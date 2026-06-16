@@ -19,6 +19,7 @@ import {
 	closeConnections
 } from '../../helpers/database/trigger-test-helpers';
 import { TestData } from '../../helpers/database/test-data-factory';
+import { getPostgresClient } from '../../helpers/database/postgres-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -40,16 +41,23 @@ describe('Exercise Cleanup Triggers', () => {
 		await cleanupTestStorageObjects();
 	});
 
+	// NOTE: storage.objects lives in the `storage` schema, which PostgREST does not
+	// expose, so the Supabase JS client cannot reach it. These helpers use the direct
+	// PostgreSQL client instead. Deletion needs storage.allow_delete_query='true' to
+	// get past storage.protect_delete().
+
 	/**
 	 * Helper function to clean up test storage objects
 	 */
 	async function cleanupTestStorageObjects(): Promise<void> {
 		try {
-			// Delete all storage objects with 'test-' prefix in name
-			await serviceClient
-				.from('storage.objects' as never)
-				.delete()
-				.like('name', '%test-%' as never);
+			const client = await getPostgresClient();
+			await client.query(
+				`DO $$ BEGIN
+				   PERFORM set_config('storage.allow_delete_query', 'true', true);
+				   DELETE FROM storage.objects WHERE name LIKE '%test-%';
+				 END $$;`
+			);
 		} catch (error) {
 			// Ignore errors if storage.objects doesn't exist or is empty
 			console.debug('Storage cleanup:', error);
@@ -64,27 +72,35 @@ describe('Exercise Cleanup Triggers', () => {
 		name: string;
 		owner: string;
 	}): Promise<void> {
-		await serviceClient.from('storage.objects' as never).insert({
-			id: generateTestId('storage'),
-			bucket_id: params.bucket,
-			name: params.name,
-			owner: params.owner,
-			created_at: new Date().toISOString(),
-			updated_at: new Date().toISOString(),
-			last_accessed_at: new Date().toISOString(),
-			metadata: {}
-		} as never);
+		const client = await getPostgresClient();
+		await client.query(
+			`INSERT INTO storage.objects (id, bucket_id, name, owner, created_at, updated_at, last_accessed_at, metadata)
+			 VALUES (gen_random_uuid(), $1, $2, $3, now(), now(), now(), '{}'::jsonb)`,
+			[params.bucket, params.name, params.owner]
+		);
+	}
+
+	/**
+	 * Count storage objects matching a name pattern (and optionally an owner).
+	 */
+	async function countStorageObjects(namePattern: string, owner?: string): Promise<number> {
+		const client = await getPostgresClient();
+		const res = owner
+			? await client.query(
+					`SELECT count(*)::int AS n FROM storage.objects WHERE name LIKE $1 AND owner = $2`,
+					[namePattern, owner]
+				)
+			: await client.query(`SELECT count(*)::int AS n FROM storage.objects WHERE name LIKE $1`, [
+					namePattern
+				]);
+		return res.rows[0].n as number;
 	}
 
 	/**
 	 * Helper function to check if storage objects exist matching a pattern
 	 */
 	async function storageObjectsExist(namePattern: string): Promise<boolean> {
-		const { data } = await serviceClient
-			.from('storage.objects' as never)
-			.select()
-			.like('name', namePattern);
-		return data !== null && data.length > 0;
+		return (await countStorageObjects(namePattern)) > 0;
 	}
 
 	describe('trigger_delete_exercise_images → delete_exercise_images()', () => {
@@ -116,12 +132,7 @@ describe('Exercise Cleanup Triggers', () => {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			// Assert: Storage objects should be deleted
-			const { data: storageObjects } = await serviceClient
-				.from('storage.objects' as never)
-				.select()
-				.like('name', `%${exercise.id}%`);
-
-			expect(storageObjects).toHaveLength(0);
+			expect(await countStorageObjects(`%${exercise.id}%`)).toBe(0);
 		});
 
 		it('should delete images from storage.objects when exercise is deleted (new path pattern)', async () => {
@@ -153,12 +164,7 @@ describe('Exercise Cleanup Triggers', () => {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			// Assert: Storage objects should be deleted by the alternate pattern check
-			const { data: storageObjects } = await serviceClient
-				.from('storage.objects' as never)
-				.select()
-				.like('name', `%${exercise.id}%`);
-
-			expect(storageObjects).toHaveLength(0);
+			expect(await countStorageObjects(`%${exercise.id}%`)).toBe(0);
 		});
 
 		it('should only delete images for specific exercise, not other exercises', async () => {
@@ -189,30 +195,21 @@ describe('Exercise Cleanup Triggers', () => {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			// Assert: Only exercise1's images should be deleted
-			const { data: exercise1Images } = await serviceClient
-				.from('storage.objects' as never)
-				.select()
-				.like('name', `%${exercise1.id}%`);
-
-			const { data: exercise2Images } = await serviceClient
-				.from('storage.objects' as never)
-				.select()
-				.like('name', `%${exercise2.id}%`);
-
-			expect(exercise1Images).toHaveLength(0);
-			expect(exercise2Images).toHaveLength(1);
-			expect((exercise2Images as Array<{ name: string }>)![0].name).toContain(exercise2.id);
+			expect(await countStorageObjects(`%${exercise1.id}%`)).toBe(0);
+			expect(await countStorageObjects(`%${exercise2.id}%`)).toBe(1);
 		});
 
 		it('should not delete images from other users', async () => {
-			// Arrange: Create two teachers with their own exercises
+			// Arrange: two distinct owners with their own exercises. The trigger
+			// isolates by owner (created_by), so the roles are irrelevant — use one
+			// teacher + one student (the single-teacher invariant forbids two teachers).
 			const teacher1 = await TestData.profile()
 				.withRole('teacher')
 				.withFullName('Teacher 1')
 				.create();
 			const teacher2 = await TestData.profile()
-				.withRole('teacher')
-				.withFullName('Teacher 2')
+				.withRole('student')
+				.withFullName('Student 2')
 				.create();
 
 			const exercise1 = await TestData.exercise(teacher1.id).create();
@@ -236,19 +233,8 @@ describe('Exercise Cleanup Triggers', () => {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			// Assert: Only teacher1's images should be deleted, teacher2's should remain
-			const { data: teacher1Images } = await serviceClient
-				.from('storage.objects' as never)
-				.select()
-				.like('name', `%${exercise1.id}%`);
-
-			const { data: teacher2Images } = await serviceClient
-				.from('storage.objects' as never)
-				.select()
-				.like('name', `%${exercise2.id}%`);
-
-			expect(teacher1Images).toHaveLength(0);
-			expect(teacher2Images).toHaveLength(1);
-			expect((teacher2Images as Array<{ owner: string }>)![0].owner).toBe(teacher2.id);
+			expect(await countStorageObjects(`%${exercise1.id}%`)).toBe(0);
+			expect(await countStorageObjects(`%${exercise2.id}%`, teacher2.id)).toBe(1);
 		});
 
 		it('should handle deletion when no images exist (no error)', async () => {
@@ -299,12 +285,7 @@ describe('Exercise Cleanup Triggers', () => {
 			});
 
 			// Verify all 3 images exist
-			const { data: beforeImages } = await serviceClient
-				.from('storage.objects' as never)
-				.select()
-				.like('name', `%${exercise.id}%`);
-
-			expect(beforeImages).toHaveLength(3);
+			expect(await countStorageObjects(`%${exercise.id}%`)).toBe(3);
 
 			// Act: Delete exercise
 			await serviceClient.from('exercises').delete().eq('id', exercise.id);
@@ -312,12 +293,7 @@ describe('Exercise Cleanup Triggers', () => {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			// Assert: All images should be deleted regardless of path pattern
-			const { data: afterImages } = await serviceClient
-				.from('storage.objects' as never)
-				.select()
-				.like('name', `%${exercise.id}%`);
-
-			expect(afterImages).toHaveLength(0);
+			expect(await countStorageObjects(`%${exercise.id}%`)).toBe(0);
 		});
 
 		it('should verify SECURITY DEFINER function works without exposing permissions', async () => {
@@ -347,12 +323,7 @@ describe('Exercise Cleanup Triggers', () => {
 			expect(deleteError).toBeNull();
 
 			// Verify storage object was deleted (this proves SECURITY DEFINER worked)
-			const { data: storageObjects } = await serviceClient
-				.from('storage.objects' as never)
-				.select()
-				.like('name', `%${exercise.id}%`);
-
-			expect(storageObjects).toHaveLength(0);
+			expect(await countStorageObjects(`%${exercise.id}%`)).toBe(0);
 		});
 
 		it('should handle special characters in exercise ID gracefully', async () => {
@@ -375,12 +346,7 @@ describe('Exercise Cleanup Triggers', () => {
 			await new Promise((resolve) => setTimeout(resolve, 100));
 
 			// Assert: Storage object should still be deleted despite special chars in filename
-			const { data: storageObjects } = await serviceClient
-				.from('storage.objects' as never)
-				.select()
-				.like('name', `%${exercise.id}%`);
-
-			expect(storageObjects).toHaveLength(0);
+			expect(await countStorageObjects(`%${exercise.id}%`)).toBe(0);
 		});
 	});
 
