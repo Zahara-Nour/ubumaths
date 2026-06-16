@@ -51,7 +51,8 @@
 					970 Toa Payoh North #07-04, Singapore 318992<br />
 					<a href="https://supabase.com" target="_blank" rel="noopener noreferrer">supabase.com</a
 					><br />
-					Localisation des serveurs : <strong>Union Europeenne (France &ndash; Paris, eu-west-3)</strong>
+					Localisation des serveurs :
+					<strong>Union Europeenne (France &ndash; Paris, eu-west-3)</strong>
 				</p>
 			</div>
 		</section>
@@ -141,10 +142,10 @@
 			</div>
 			<p class="rounded-lg bg-muted p-4">
 				Le site n'utilise <strong>aucun cookie</strong> de mesure d'audience, de publicite ou de
-					suivi. La mesure de performance (Vercel) fonctionne <strong>sans cookie</strong>. UbuMaths
-					utilise par ailleurs le <strong>stockage local</strong> du navigateur a des fins strictement
-					fonctionnelles (sauvegarde de vos documents tableur / tableau blanc et preferences
-					d'affichage) ; ces donnees restent sur votre appareil.
+				suivi. La mesure de performance (Vercel) fonctionne <strong>sans cookie</strong>. UbuMaths
+				utilise par ailleurs le <strong>stockage local</strong> du navigateur a des fins strictement
+				fonctionnelles (sauvegarde de vos documents tableur / tableau blanc et preferences d'affichage)
+				; ces donnees restent sur votre appareil.
 			</p>
 		</section>
 

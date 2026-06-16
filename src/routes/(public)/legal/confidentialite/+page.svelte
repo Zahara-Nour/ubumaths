@@ -369,10 +369,9 @@
 			</div>
 			<p class="rounded-lg bg-muted p-4">
 				<strong>UbuMaths n'utilise aucun cookie d'analyse ou de publicite.</strong> La mesure de
-					performance (Vercel) fonctionne sans cookie. UbuMaths utilise par ailleurs le
-					<strong>stockage local</strong> du navigateur a des fins strictement fonctionnelles
-					(sauvegarde de vos documents tableur / tableau blanc et preferences d'affichage), conservees
-					sur votre appareil.
+				performance (Vercel) fonctionne sans cookie. UbuMaths utilise par ailleurs le
+				<strong>stockage local</strong> du navigateur a des fins strictement fonctionnelles (sauvegarde
+				de vos documents tableur / tableau blanc et preferences d'affichage), conservees sur votre appareil.
 			</p>
 		</section>
 

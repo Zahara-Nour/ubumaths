@@ -160,10 +160,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.limit(1000),
 
 			// Class memberships
-			supabase
-				.from('class_members')
-				.select('class_id, status, joined_at')
-				.eq('student_id', userId)
+			supabase.from('class_members').select('class_id, status, joined_at').eq('student_id', userId)
 		]);
 
 		// Step 4: Build export object
