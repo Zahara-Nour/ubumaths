@@ -206,7 +206,10 @@ describe('Kanban RLS - Integration Tests', () => {
 			expect(stillThere).toHaveLength(1);
 		});
 
-		it('a teacher of another class cannot see the board', async () => {
+		// Obsolete under the single-teacher model (refactor mono-professeur): there is
+		// no second teacher to test cross-teacher isolation against, and creating one is
+		// blocked by the enforce_single_teacher trigger.
+		it.skip('a teacher of another class cannot see the board', async () => {
 			const teacherA = await TestData.profile().withRole('teacher').create();
 			const teacherB = await TestData.profile().withRole('teacher').create();
 			const klass = await TestData.class(teacherA.id).create();

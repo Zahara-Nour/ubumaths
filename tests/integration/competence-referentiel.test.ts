@@ -605,14 +605,12 @@ describe('Règles conjonctives — Chercher', () => {
 	});
 
 	it('Chercher — Insuffisante: no observables acquired', async () => {
-		const { student, compId } = await setupChercher();
+		// Single-teacher: reuse setupChercher's teacher/class (the student is already
+		// enrolled there) instead of creating a 2nd teacher (forbidden by the trigger).
+		const { student, compId, teacher } = await setupChercher();
 
 		// No attempts at all → no competence level row yet; after one minus it becomes insuffisante
-		const teacher2 = await TestData.profile().withRole('teacher').create();
-		const klass2 = await TestData.class(teacher2.id).create();
-		await service.from('class_members').insert({ class_id: klass2.id, student_id: student.id });
-
-		const task = await createEvaluationTask(service, { teacherId: teacher2.id });
+		const task = await createEvaluationTask(service, { teacherId: teacher.id });
 		const obsA1 = await getObservableSkill(service, 'chercher', 'A1');
 		// Insert 1 minus only → A1 not acquired (count_plus=0 < 2)
 		await insertCompetenceAttempt(service, {
@@ -1152,7 +1150,9 @@ describe('RLS — scope prof', () => {
 		expect((data as Array<unknown>).length).toBeGreaterThanOrEqual(1);
 	});
 
-	it('teacher cannot SELECT attempts for students in another class (0 rows)', async () => {
+	// Obsolete under single-teacher + Option B: the sole teacher reads ALL students'
+	// attempts (is_my_student), and there is no second teacher to isolate against.
+	it.skip('teacher cannot SELECT attempts for students in another class (0 rows)', async () => {
 		// Arrange
 		const teacherA = await TestData.profile().withRole('teacher').create();
 		const teacherB = await TestData.profile().withRole('teacher').create();
@@ -1211,7 +1211,9 @@ describe('RLS — scope prof', () => {
 		expect(error).toBeNull();
 	});
 
-	it('teacher cannot INSERT a teacher-source attempt for a student outside their class', async () => {
+	// Obsolete under the single-teacher model: no second teacher exists to test
+	// cross-teacher write isolation against (enforce_single_teacher trigger).
+	it.skip('teacher cannot INSERT a teacher-source attempt for a student outside their class', async () => {
 		// Arrange
 		const teacherA = await TestData.profile().withRole('teacher').create();
 		const teacherB = await TestData.profile().withRole('teacher').create();
@@ -1468,7 +1470,9 @@ describe('RLS — scope élève (caches + VIEW)', () => {
 // ============================================================================
 
 describe('RLS — scope prof (caches)', () => {
-	it("teacher B cannot SELECT student_skill_state_a for a student in teacher A's class (0 rows)", async () => {
+	// Obsolete under single-teacher + Option B: the sole teacher reads ALL students'
+	// cache rows (is_my_student) ; no second teacher to isolate against.
+	it.skip("teacher B cannot SELECT student_skill_state_a for a student in teacher A's class (0 rows)", async () => {
 		// Arrange: student is only in teacherA's class
 		const teacherA = await TestData.profile().withRole('teacher').create();
 		const teacherB = await TestData.profile().withRole('teacher').create();
@@ -1499,7 +1503,8 @@ describe('RLS — scope prof (caches)', () => {
 		expect((data as Array<unknown>).length).toBe(0);
 	});
 
-	it("teacher B cannot SELECT student_observable_state for a student in teacher A's class (0 rows)", async () => {
+	// Obsolete under single-teacher + Option B (see note above): sole teacher reads all.
+	it.skip("teacher B cannot SELECT student_observable_state for a student in teacher A's class (0 rows)", async () => {
 		// Arrange
 		const teacherA = await TestData.profile().withRole('teacher').create();
 		const teacherB = await TestData.profile().withRole('teacher').create();
@@ -1538,7 +1543,8 @@ describe('RLS — scope prof (caches)', () => {
 		expect((data as Array<unknown>).length).toBe(0);
 	});
 
-	it("teacher B cannot SELECT student_competence_level for a student in teacher A's class (0 rows)", async () => {
+	// Obsolete under single-teacher + Option B (see note above): sole teacher reads all.
+	it.skip("teacher B cannot SELECT student_competence_level for a student in teacher A's class (0 rows)", async () => {
 		// Arrange
 		const teacherA = await TestData.profile().withRole('teacher').create();
 		const teacherB = await TestData.profile().withRole('teacher').create();
