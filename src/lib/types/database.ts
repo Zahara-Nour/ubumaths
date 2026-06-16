@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -3330,7 +3330,6 @@ export type Database = {
           created_at: string
           games_played: number
           id: string
-          mode: string
           tiles_2048_reached: number
           tiles_4096_reached: number
           updated_at: string
@@ -3341,7 +3340,6 @@ export type Database = {
           created_at?: string
           games_played?: number
           id?: string
-          mode?: string
           tiles_2048_reached?: number
           tiles_4096_reached?: number
           updated_at?: string
@@ -3352,7 +3350,6 @@ export type Database = {
           created_at?: string
           games_played?: number
           id?: string
-          mode?: string
           tiles_2048_reached?: number
           tiles_4096_reached?: number
           updated_at?: string
@@ -15167,6 +15164,14 @@ export type Database = {
         }
         Returns: number
       }
+      get_2048_user_rank: {
+        Args: { p_user_id: string }
+        Returns: {
+          total_players: number
+          user_rank: number
+          user_score: number
+        }[]
+      }
       get_accessible_kanban_boards: {
         Args: { p_cursor?: string; p_limit?: number }
         Returns: {
@@ -15865,14 +15870,6 @@ export type Database = {
           target_type: string
         }[]
       }
-      get_user_rank_in_mode: {
-        Args: { p_mode: string; p_user_id: string }
-        Returns: {
-          total_players: number
-          user_rank: number
-          user_score: number
-        }[]
-      }
       get_user_sent_messages: {
         Args: { p_limit?: number; p_offset?: number; p_user_id: string }
         Returns: {
@@ -15968,6 +15965,7 @@ export type Database = {
         Args: { p_board_id: string; p_user_id: string }
         Returns: boolean
       }
+      is_my_student: { Args: { p_student_id: string }; Returns: boolean }
       is_notebook_assigned_to_student: {
         Args: { p_notebook_id: string }
         Returns: boolean
@@ -16069,6 +16067,7 @@ export type Database = {
         Args: { p_folder_id: string; p_message_id: string; p_user_id: string }
         Returns: undefined
       }
+      my_school: { Args: never; Returns: string }
       normalize_grade_array: {
         Args: { input_grades: string[] }
         Returns: string[]
@@ -16255,6 +16254,7 @@ export type Database = {
       run_recalculate_minesweeper_ref_times: { Args: never; Returns: undefined }
       run_weekly_best_bonuses: { Args: never; Returns: undefined }
       run_weekly_rewards: { Args: never; Returns: undefined }
+      same_school: { Args: { p_other: string }; Returns: boolean }
       search_private_messages: {
         Args: {
           p_date_from?: string
@@ -16454,7 +16454,6 @@ export type Database = {
       }
       upsert_2048_score: {
         Args: {
-          p_mode: string
           p_reached_2048: boolean
           p_reached_4096: boolean
           p_score: number
