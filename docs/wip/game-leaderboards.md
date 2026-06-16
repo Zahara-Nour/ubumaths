@@ -28,11 +28,14 @@ cohérent avec le modèle « école = frontière sociale » du refactor mono-pro
 
 Chaque jeu a **sa propre table de score** (pas de stockage commun) :
 
-| Jeu         | Table                         | Métrique retenue (↑ = meilleur) | Variante                       |
-| ----------- | ----------------------------- | ------------------------------- | ------------------------------ |
-| 2048        | `game_2048_scores`            | `best_score` (int)              | — (mode retiré 2026-06-16)     |
-| mathémo     | `mathemo_scores`              | `total_score` (numeric)         | —                              |
-| minesweeper | vue `minesweeper_leaderboard` | `total_points` (bigint)         | difficulté/cycle (à confirmer) |
+| Jeu         | Table                         | Score retenu (↑ = meilleur, **un seul par élève**) |
+| ----------- | ----------------------------- | -------------------------------------------------- |
+| 2048        | `game_2048_scores`            | `best_score` (int)                                 |
+| mathémo     | `mathemo_scores`              | `total_score` (numeric)                            |
+| minesweeper | vue `minesweeper_leaderboard` | `total_points` (bigint — agrège déjà les parties)  |
+
+**Pas de variante** : un score unique par (jeu, élève). Le mode 2048 a été retiré (2026-06-16) ;
+le classement minesweeper agrège déjà toutes les parties/difficultés en un `total_points`.
 
 Existant à réutiliser/remplacer :
 
@@ -46,14 +49,14 @@ Existant à réutiliser/remplacer :
 ### 4.1 Vue normalisante `game_scores_unified`
 
 ```
-game_scores_unified(game text, variant text NULL, user_id uuid, score numeric, updated_at timestamptz)
+game_scores_unified(game text, user_id uuid, score numeric, updated_at timestamptz)
 ```
 
-UNION ALL des 3 sources, une ligne par (jeu, variante, élève) :
+UNION ALL des 3 sources, une ligne par (jeu, élève) :
 
-- `('2048',        NULL, user_id, best_score,  updated_at)` ← game_2048_scores
-- `('mathemo',     NULL, user_id, total_score, updated_at)` ← mathemo_scores
-- `('minesweeper', <variant?>, student_id, total_points, …)` ← source minesweeper (vue ou agrégat brut — à finaliser)
+- `('2048',        user_id,    best_score,   updated_at)` ← game_2048_scores
+- `('mathemo',     user_id,    total_score,  updated_at)` ← mathemo_scores
+- `('minesweeper', student_id, total_points, …)` ← source minesweeper (vue ou agrégat brut — à finaliser)
 
 Convention : **score plus élevé = meilleur** pour les 3 (best_score, total_score, total_points sont tous ↑).
 Si un futur jeu est « plus petit = mieux » (ex. temps), ajouter une colonne `direction` ou normaliser à l'insertion.
@@ -61,7 +64,7 @@ Si un futur jeu est « plus petit = mieux » (ex. temps), ajouter une colonne `d
 ### 4.2 Fonction de classement `game_leaderboard(...)`
 
 ```
-game_leaderboard(p_game text, p_variant text, p_scope text, p_limit int)
+game_leaderboard(p_game text, p_scope text, p_limit int)
   RETURNS TABLE(rank int, user_id uuid, firstname text, avatar_url text, score numeric, is_me boolean)
 ```
 
@@ -88,15 +91,13 @@ Minesweeper garde **en plus** sa vue détaillée actuelle (option i).
 
 ## 6. Questions ouvertes (à trancher avant implémentation)
 
-1. **Variantes** : seul minesweeper a une variante (difficulté/cycle) — 2048 et mathémo sont mono-classement
-   (mode 2048 retiré le 2026-06-16). Pour minesweeper : un classement **par difficulté** ou **agrégé** ?
-   (reco : par difficulté.)
-2. **Source minesweeper exacte** : `total_points` depuis la vue `minesweeper_leaderboard` (nested view, perf ?)
-   ou un agrégat brut dédié ? Variante = difficulté ou un score global ?
-3. **Sort du classement public actuel** : suppression pure, ou maintien d'un classement « école » public-anonymisé ?
-4. **Identité affichée** : prénom seul vs prénom+nom (mineurs).
-5. **Égalités / méthode de rang** : `rank()` vs `dense_rank()` ; gestion des ex æquo.
-6. **Le prof/admin** apparaît-il ? (reco : non — élèves uniquement.)
+1. **Source du score minesweeper** : `total_points` depuis la vue `minesweeper_leaderboard` (nested view, perf ?)
+   ou un agrégat brut dédié ? (reco : la vue d'abord, optimiser si lent.)
+2. **Sort du classement public actuel** : suppression pure, ou maintien d'un classement « école » public-anonymisé ?
+   (reco : suppression — safeguarding.)
+3. **Identité affichée** (mineurs) : prénom seul, prénom + initiale, ou prénom + nom ? (reco : prénom + avatar.)
+4. **Égalités / méthode de rang** : `rank()` (avec sauts) vs `dense_rank()` (sans saut) ? (reco : dense_rank.)
+5. **Le prof/admin** apparaît-il dans les classements ? (reco : non — élèves uniquement.)
 
 ## 7. Plan d'implémentation (esquisse — à détailler après validation §6)
 
