@@ -123,7 +123,11 @@ traitées au Lot 6 ou laissées class-scopées.
       tout élève, plus de JOIN class_members ; RLS `is_my_student` reste le vrai garde) +
       `getUnassignedStudents()` (bucket « Non assignés »). Test middleware réécrit (15 ✓).
       Revue code-reviewer : fail-closed, pas d'élargissement non voulu. Pas de migration.
-- [ ] Lot 5 — UI hors-classe
+- [~] Lot 5 — **UI hors-classe livrée (2026-06-16)** : section « Non assignés » dans le dashboard
+  prof (`teacher/classes`) listant les élèves sans classe active, avec lien vers leur fiche
+  (`/students/[id]/journal`). Loader branche `getUnassignedStudents`. `check:incremental` 0 erreur.
+  **Reste optionnel** : action « rattacher à une classe » depuis cette section (non faite, à valider
+  avec David — pas nécessaire pour « le prof voit les hors-classe »).
 - [ ] Lot 6 — social école
 - [ ] Lot 7 — audit / doc / checks
 
