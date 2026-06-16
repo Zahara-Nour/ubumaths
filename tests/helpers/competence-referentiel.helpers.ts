@@ -318,13 +318,19 @@ export async function createFakeTemplate(
 		.from('question_templates')
 		.insert({
 			domain: 'test',
-			theme: 'test',
+			// UNIQUE idx_question_templates_unique_category (theme, domain, subdomain, level)
+			// WHERE published: keep domain='test' (cleanup marker) but vary theme per call
+			// so repeated createFakeTemplate() calls don't collide.
+			theme: `test-${crypto.randomUUID()}`,
 			title: `test-template-${crypto.randomUUID()}`,
-			type: 'direct',
+			// CHECK question_templates_type_check: valid types only (not 'direct').
+			type: 'numerical_exact',
 			level: 1,
-			grades: ['6e'],
+			// CHECK question_templates_valid_grades: is_valid_grade_array accepts '6', not '6e'.
+			grades: ['6'],
 			status: 'published',
-			variations: [],
+			// CHECK variations_minimum_one: jsonb_array_length(variations) >= 1.
+			variations: [{}],
 			created_by: createdBy
 		})
 		.select('id')
