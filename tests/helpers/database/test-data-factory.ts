@@ -97,6 +97,15 @@ export class ProfileBuilder {
 		if (!data || data.length === 0) {
 			throw new Error(`No profile data returned after update for ID: ${this.data.id}`);
 		}
+
+		// handle_new_user() creates the profile as 'student', which fires
+		// create_game_profile_for_new_user → a game_players row. If the final role is
+		// not 'student', remove that artifact so the test profile matches a real
+		// non-student user (teachers/admins have no game_players).
+		if (this.data.role && this.data.role !== 'student') {
+			await client.from('game_players').delete().eq('user_id', this.data.id!);
+		}
+
 		return data[0];
 	}
 }
@@ -232,7 +241,9 @@ export class GameCombatBuilder {
 		this.data = {
 			id: generateTestId('combat'),
 			organizer_id: organizerId,
-			monster_id: monsterId || generateTestId('monster'),
+			// May be undefined → resolved to a seeded monster in create(). A fake id
+			// would violate game_combats.monster_id → game_monsters(id) FK.
+			monster_id: monsterId,
 			status: 'active',
 			xp_gained: 0,
 			ready_player_ids: [],
@@ -262,6 +273,22 @@ export class GameCombatBuilder {
 
 	async create(): Promise<Tables['game_combats']['Row']> {
 		const client = createServiceRoleClient();
+		// game_combats.monster_id → game_monsters(id) FK is enforced. If no monster
+		// was provided, use a seeded reference monster (supabase/seed.sql) instead of
+		// a fabricated id.
+		if (!this.data.monster_id) {
+			const { data: monster } = await client
+				.from('game_monsters')
+				.select('id')
+				.limit(1)
+				.single();
+			if (!monster) {
+				throw new Error(
+					'GameCombatBuilder: no game_monsters row available (is supabase/seed.sql loaded?)'
+				);
+			}
+			this.data.monster_id = monster.id;
+		}
 		const { data, error } = await client
 			.from('game_combats')
 			.insert(this.data as Tables['game_combats']['Insert'])
