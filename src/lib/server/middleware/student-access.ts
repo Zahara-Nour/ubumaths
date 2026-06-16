@@ -49,15 +49,13 @@ type TypedSupabaseClient = SupabaseClient<Database>;
 // ============================================================================
 
 /**
- * Verify that a teacher teaches a specific student
+ * Verify that a teacher may access a specific student
  *
- * Checks if the teacher has access to the student through the class_members
- * relationship. This is done by verifying that:
- * 1. The student is enrolled in at least one class (class_members table)
- * 2. At least one of those classes is taught by the specified teacher
- *
- * This function performs a single efficient query with JOIN to check the
- * relationship, avoiding N+1 query problems.
+ * Single-teacher model (Option B, refactor mono-professeur): the sole teacher
+ * (and admin) can access ANY student — in-class or not. The class is no longer
+ * an access boundary. Returns true when the caller is teacher/admin and the
+ * target is a student. The DB RLS `is_my_student()` is the real gate; this is
+ * the server-side pre-check for clean 403s.
  *
  * **When to Use**:
  * - Before allowing teachers to view student data (progress, results, profiles)
@@ -145,51 +143,32 @@ export async function verifyTeacherStudent(
 	studentId: string,
 	supabase: TypedSupabaseClient
 ): Promise<boolean> {
-	// Query class_members with JOIN to classes to check teacher relationship
-	// This is a single efficient query that checks:
-	// 1. Student is actively enrolled in classes (class_members.student_id = studentId, status = 'active')
-	// 2. At least one class is taught by this teacher (classes.teacher_id = teacherId)
-	const { data: classMemberships, error: membershipError } = await supabase
-		.from('class_members')
-		.select(
-			`
-			class_id,
-			classes!inner (
-				teacher_id
-			)
-		`
-		)
-		.eq('student_id', studentId)
-		.eq('status', 'active');
+	// Single-teacher model (Option B): the sole teacher (and admin) can access
+	// ANY student, in-class or not — the class is no longer an access boundary.
+	// We verify (a) the caller is teacher/admin and (b) the target is a student.
+	// The DB RLS (is_my_student) remains the real gate; this is the server pre-check.
+	if (teacherId === studentId) {
+		return false;
+	}
+
+	const { data, error: lookupError } = await supabase
+		.from('profiles')
+		.select('id, role')
+		.in('id', [teacherId, studentId]);
 
 	// Fail closed: if query errors, deny access
-	if (membershipError) {
-		console.error('[verifyTeacherStudent] Database error:', membershipError);
+	if (lookupError) {
+		console.error('[verifyTeacherStudent] Database error:', lookupError);
 		return false;
 	}
 
-	// No class memberships found = student not in any classes
-	if (!classMemberships || classMemberships.length === 0) {
-		return false;
-	}
+	const caller = data?.find((p) => p.id === teacherId);
+	const target = data?.find((p) => p.id === studentId);
 
-	// Check if any of the student's classes are taught by this teacher
-	// Handle both array and object responses from Supabase JOIN
-	const isTeacherOfStudent = classMemberships.some((membership) => {
-		// Supabase may return classes as array or object depending on relationship type
-		const classData = Array.isArray(membership.classes)
-			? membership.classes[0]
-			: membership.classes;
+	const callerIsStaff = caller?.role === 'teacher' || caller?.role === 'admin';
+	const targetIsStudent = target?.role === 'student';
 
-		// Type-safe access to teacher_id
-		if (classData && typeof classData === 'object' && 'teacher_id' in classData) {
-			return (classData as { teacher_id: string }).teacher_id === teacherId;
-		}
-
-		return false;
-	});
-
-	return isTeacherOfStudent;
+	return callerIsStaff && targetIsStudent;
 }
 
 /**
