@@ -210,3 +210,36 @@ export const getMathemoScoreResponseSchema = z.object({
 	best_word_length: z.number().int().nonnegative(),
 	first_try_count: z.number().int().nonnegative()
 });
+
+// ============================================================================
+// UNIFIED GAME LEADERBOARDS (3 scopes: class / grade / school)
+// ============================================================================
+
+/** Games exposed in the unified leaderboard (must match the RPC `p_game` whitelist). */
+export const GAME_LEADERBOARD_GAMES = ['2048', 'mathemo', 'minesweeper'] as const;
+/** Scopes exposed as tabs (must match the RPC `p_scope` whitelist). */
+export const GAME_LEADERBOARD_SCOPES = ['class', 'grade', 'school'] as const;
+
+export type GameLeaderboardGame = (typeof GAME_LEADERBOARD_GAMES)[number];
+export type GameLeaderboardScope = (typeof GAME_LEADERBOARD_SCOPES)[number];
+
+/**
+ * Schema for the unified leaderboard page query params.
+ * Load: /games/leaderboards?game=...&scope=...&limit=...
+ *
+ * Query params arrive as strings (or absent). Designed to NEVER throw on a page load:
+ * - `game`/`scope` absent OR unknown → fall back (first game / `class` scope) via `.catch()`;
+ * - `limit` is coerced, truncated and clamped to [1, 200] (absent/invalid → 50).
+ * The RPC re-guards game/scope and re-clamps limit anyway (defense-in-depth).
+ */
+export const gameLeaderboardQuerySchema = z.object({
+	game: z.enum(GAME_LEADERBOARD_GAMES).catch(GAME_LEADERBOARD_GAMES[0]),
+	scope: z.enum(GAME_LEADERBOARD_SCOPES).catch('class'),
+	limit: z.coerce
+		.number()
+		.catch(50)
+		.transform((n) => {
+			const t = Math.trunc(n);
+			return Math.min(Math.max(Number.isFinite(t) ? t : 50, 1), 200);
+		})
+});
