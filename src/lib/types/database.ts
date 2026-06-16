@@ -14176,18 +14176,6 @@ export type Database = {
           },
         ]
       }
-      minesweeper_leaderboard_public: {
-        Row: {
-          avg_top_10: number | null
-          firstname: string | null
-          games_won: number | null
-          player_id: string | null
-          rank: number | null
-          top_games_count: number | null
-          win_rate: number | null
-        }
-        Relationships: []
-      }
       minesweeper_multiplayer_leaderboard: {
         Row: {
           avatar_url: string | null
