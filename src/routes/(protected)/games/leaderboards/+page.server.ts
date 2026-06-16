@@ -14,7 +14,7 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { gameLeaderboardQuerySchema } from '$lib/server/validation/games';
-import type { GameLeaderboardRow } from '$lib/types/database-helpers';
+import type { GameLeaderboardRow, MinesweeperLeaderboardRow } from '$lib/types/database-helpers';
 
 export const load: PageServerLoad = async ({ url, locals }) => {
 	const { supabase, user } = locals;
@@ -26,6 +26,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		limit: url.searchParams.get('limit') ?? undefined
 	});
 
+	// Unified ranking (total_points for all games), school-bounded, ranked by auth.uid().
 	const { data, error: rpcError } = await supabase.rpc('game_leaderboard', {
 		p_game: game,
 		p_scope: scope,
@@ -39,10 +40,26 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
 	const rows: GameLeaderboardRow[] = data ?? [];
 
+	// Minesweeper also gets its richer detailed view (avg_top_10), same scope.
+	let minesweeperDetail: MinesweeperLeaderboardRow[] | null = null;
+	if (game === 'minesweeper') {
+		const { data: msData, error: msError } = await supabase.rpc('minesweeper_scoped_leaderboard', {
+			p_scope: scope,
+			p_limit: limit
+		});
+		if (msError) {
+			console.error('[Leaderboards] minesweeper_scoped_leaderboard RPC error:', msError);
+			// Non-blocking: the unified ranking above is already loaded.
+		} else {
+			minesweeperDetail = msData ?? [];
+		}
+	}
+
 	return {
 		game,
 		scope,
 		rows,
+		minesweeperDetail,
 		currentUserId: user?.id ?? null
 	};
 };

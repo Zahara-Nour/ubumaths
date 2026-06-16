@@ -5,6 +5,7 @@
  */
 
 import { z } from 'zod';
+import { GAME_LEADERBOARD_GAMES, GAME_LEADERBOARD_SCOPES } from '$lib/games/leaderboards';
 
 // ============================================================================
 // 2048 GAME SCHEMAS
@@ -214,14 +215,7 @@ export const getMathemoScoreResponseSchema = z.object({
 // ============================================================================
 // UNIFIED GAME LEADERBOARDS (3 scopes: class / grade / school)
 // ============================================================================
-
-/** Games exposed in the unified leaderboard (must match the RPC `p_game` whitelist). */
-export const GAME_LEADERBOARD_GAMES = ['2048', 'mathemo', 'minesweeper'] as const;
-/** Scopes exposed as tabs (must match the RPC `p_scope` whitelist). */
-export const GAME_LEADERBOARD_SCOPES = ['class', 'grade', 'school'] as const;
-
-export type GameLeaderboardGame = (typeof GAME_LEADERBOARD_GAMES)[number];
-export type GameLeaderboardScope = (typeof GAME_LEADERBOARD_SCOPES)[number];
+// Value tuples live in $lib/games/leaderboards (client-safe, shared with the UI).
 
 /**
  * Schema for the unified leaderboard page query params.

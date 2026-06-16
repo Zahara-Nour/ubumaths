@@ -541,6 +541,16 @@ export type GameLeaderboardRow = Omit<
 	'rank'
 > & { rank: number | null };
 
+/**
+ * One row of the school-scoped minesweeper detailed leaderboard
+ * (RPC `minesweeper_scoped_leaderboard`). `rank` is NULL for provisional players
+ * (< 10 qualifying games) and the teacher reference row.
+ */
+export type MinesweeperLeaderboardRow = Omit<
+	Database['public']['Functions']['minesweeper_scoped_leaderboard']['Returns'][number],
+	'rank'
+> & { rank: number | null };
+
 // --- Re-export business types for convenience -------------------------------
 // (so consumers can import everything from database-helpers without two paths)
 
