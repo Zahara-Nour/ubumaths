@@ -5,6 +5,7 @@
  */
 
 import { z } from 'zod';
+import { GAME_LEADERBOARD_GAMES, GAME_LEADERBOARD_SCOPES } from '$lib/games/leaderboards';
 
 // ============================================================================
 // 2048 GAME SCHEMAS
@@ -209,4 +210,30 @@ export const getMathemoScoreResponseSchema = z.object({
 	games_won: z.number().int().nonnegative(),
 	best_word_length: z.number().int().nonnegative(),
 	first_try_count: z.number().int().nonnegative()
+});
+
+// ============================================================================
+// UNIFIED GAME LEADERBOARDS (3 scopes: class / grade / school)
+// ============================================================================
+// Value tuples live in $lib/games/leaderboards (client-safe, shared with the UI).
+
+/**
+ * Schema for the unified leaderboard page query params.
+ * Load: /games/leaderboards?game=...&scope=...&limit=...
+ *
+ * Query params arrive as strings (or absent). Designed to NEVER throw on a page load:
+ * - `game`/`scope` absent OR unknown → fall back (first game / `class` scope) via `.catch()`;
+ * - `limit` is coerced, truncated and clamped to [1, 200] (absent/invalid → 50).
+ * The RPC re-guards game/scope and re-clamps limit anyway (defense-in-depth).
+ */
+export const gameLeaderboardQuerySchema = z.object({
+	game: z.enum(GAME_LEADERBOARD_GAMES).catch(GAME_LEADERBOARD_GAMES[0]),
+	scope: z.enum(GAME_LEADERBOARD_SCOPES).catch('class'),
+	limit: z.coerce
+		.number()
+		.catch(50)
+		.transform((n) => {
+			const t = Math.trunc(n);
+			return Math.min(Math.max(Number.isFinite(t) ? t : 50, 1), 200);
+		})
 });

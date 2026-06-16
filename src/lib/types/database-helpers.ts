@@ -63,7 +63,7 @@
  * - The type would otherwise be lost on `pnpm db:types` regeneration
  */
 
-import type { Tables } from './database';
+import type { Database, Tables } from './database';
 import type { QuestionTemplate } from '$lib/questions/types';
 
 // ============================================================================
@@ -528,6 +528,28 @@ export interface AntiFraudFlagWithStudent extends AntiFraudFlag {
 
 /** Raw row from app_config. */
 export type AppConfig = Tables<'app_config'>;
+
+// --- Game leaderboards ------------------------------------------------------
+
+/**
+ * One row of the unified game leaderboard (RPC `game_leaderboard`).
+ * The generated type declares `rank: number`, but the teacher reference row is
+ * returned with `rank = NULL` (hors-classement) — so we widen it to `number | null`.
+ */
+export type GameLeaderboardRow = Omit<
+	Database['public']['Functions']['game_leaderboard']['Returns'][number],
+	'rank'
+> & { rank: number | null };
+
+/**
+ * One row of the school-scoped minesweeper detailed leaderboard
+ * (RPC `minesweeper_scoped_leaderboard`). `rank` is NULL for provisional players
+ * (< 10 qualifying games) and the teacher reference row.
+ */
+export type MinesweeperLeaderboardRow = Omit<
+	Database['public']['Functions']['minesweeper_scoped_leaderboard']['Returns'][number],
+	'rank'
+> & { rank: number | null };
 
 // --- Re-export business types for convenience -------------------------------
 // (so consumers can import everything from database-helpers without two paths)

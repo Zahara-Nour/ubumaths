@@ -690,6 +690,49 @@
 			</p>
 		</div>
 	{/if}
+
+	<!-- Élèves non assignés (hors classe) — single-teacher Option B -->
+	{#if data.unassignedStudents.length > 0}
+		<Card.Root class="mt-6">
+			<Card.Header>
+				<Card.Title class="flex items-center gap-2">
+					Non assignés
+					<Badge variant="secondary">{data.unassignedStudents.length}</Badge>
+				</Card.Title>
+				<Card.Description>
+					Élèves que vous suivez sans qu'ils soient inscrits dans une classe.
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<div class="divide-y divide-border">
+					{#each data.unassignedStudents as student (student.id)}
+						<div class="flex items-center justify-between py-3">
+							<div class="flex items-center gap-3">
+								<UserAvatar
+									avatar_url={student.avatar_url}
+									role="student"
+									firstname={student.firstname}
+									lastname={student.lastname}
+									class="size-8"
+								/>
+								<p class="font-medium text-foreground">
+									{student.firstname}{student.lastname ? ` ${student.lastname}` : ''}
+								</p>
+							</div>
+							<Button
+								variant="ghost"
+								size="sm"
+								href="/dashboard/teacher/students/{student.id}/journal"
+								title="Voir la fiche de l'élève"
+							>
+								<ScrollText class="h-4 w-4" />
+							</Button>
+						</div>
+					{/each}
+				</div>
+			</Card.Content>
+		</Card.Root>
+	{/if}
 </div>
 
 <!-- Schedule Entry Modal -->

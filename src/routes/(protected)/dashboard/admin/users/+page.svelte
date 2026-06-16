@@ -84,6 +84,20 @@
 	// Track saving state
 	let isSavingAll = $state(false);
 
+	// Single-teacher mode: 'teacher' is only assignable to the existing teacher (never promote others).
+	const roleItems = $derived(
+		selectedUser?.role === 'teacher'
+			? [
+					{ value: 'student', label: 'Étudiant' },
+					{ value: 'teacher', label: 'Enseignant' },
+					{ value: 'admin', label: 'Administrateur' }
+				]
+			: [
+					{ value: 'student', label: 'Étudiant' },
+					{ value: 'admin', label: 'Administrateur' }
+				]
+	);
+
 	// Derived: detect if any changes made
 	// Note: tempSchoolId uses '' for null, so convert for comparison
 	const hasChanges = $derived(
@@ -1137,11 +1151,7 @@
 									<MySelect
 										type="single"
 										bind:value={tempRole}
-										items={[
-											{ value: 'student', label: 'Étudiant' },
-											{ value: 'teacher', label: 'Enseignant' },
-											{ value: 'admin', label: 'Administrateur' }
-										]}
+										items={roleItems}
 										placeholder="Rôle"
 										variant="invisible"
 									/>

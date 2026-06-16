@@ -91,15 +91,29 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const name = formData.get('name') as string;
 		const description = formData.get('description') as string;
-		const teacher_id = formData.get('teacher_id') as string;
 		const school_id = formData.get('school_id') as string;
 		const grade = formData.get('grade') as string | null;
 		const custom_join_code = formData.get('join_code') as string;
 
 		// Validate required fields
-		if (!name || !teacher_id) {
-			return fail(400, { message: 'Name and teacher are required' });
+		if (!name) {
+			return fail(400, { message: 'Name is required' });
 		}
+
+		// Single-teacher invariant: always assign the sole teacher (any client value ignored).
+		const { data: soleTeacher, error: teacherError } = await supabase
+			.from('profiles')
+			.select('id')
+			.eq('role', 'teacher')
+			.maybeSingle();
+
+		if (teacherError || !soleTeacher) {
+			console.error('Error resolving sole teacher:', teacherError);
+			return fail(400, {
+				message: 'Aucun professeur trouvé pour assigner la classe (configuration mono-professeur).'
+			});
+		}
+		const teacher_id = soleTeacher.id;
 
 		// Generate or use custom join code
 		let join_code = custom_join_code?.trim().toUpperCase();
@@ -163,16 +177,16 @@ export const actions: Actions = {
 		const id = formData.get('id') as string;
 		const name = formData.get('name') as string;
 		const description = formData.get('description') as string;
-		const teacher_id = formData.get('teacher_id') as string;
 		const school_id = formData.get('school_id') as string;
 		const grade = formData.get('grade') as string | null;
 		const join_code = formData.get('join_code') as string;
 		const is_active = formData.get('is_active') === 'true';
 
 		// Validate required fields
-		if (!id || !name || !teacher_id) {
-			return fail(400, { message: 'ID, name, and teacher are required' });
+		if (!id || !name) {
+			return fail(400, { message: 'ID and name are required' });
 		}
+		// Single-teacher invariant: teacher_id is never changed on update (stays the sole teacher).
 
 		// If join code changed, validate it's unique
 		const { data: currentClass, error: fetchError } = await supabase
@@ -210,7 +224,6 @@ export const actions: Actions = {
 			.update({
 				name,
 				description: description || null,
-				teacher_id,
 				school_id: school_id || null,
 				grade: grade || null,
 				join_code,

@@ -9,7 +9,8 @@ import {
 	submit2048ScoreResponseSchema,
 	get2048ScoreResponseSchema,
 	leaderboardEntrySchema,
-	leaderboard2048ResponseSchema
+	leaderboard2048ResponseSchema,
+	gameLeaderboardQuerySchema
 } from '../games';
 
 describe('submit2048ScoreSchema', () => {
@@ -481,5 +482,46 @@ describe('leaderboard2048ResponseSchema', () => {
 		};
 		const result = leaderboard2048ResponseSchema.safeParse(input);
 		expect(result.success).toBe(false);
+	});
+});
+
+describe('gameLeaderboardQuerySchema', () => {
+	it('accepts valid game + scope + string limit (coerced)', () => {
+		expect(
+			gameLeaderboardQuerySchema.parse({ game: 'mathemo', scope: 'school', limit: '25' })
+		).toEqual({ game: 'mathemo', scope: 'school', limit: 25 });
+	});
+
+	it('falls back to first game / class scope / limit 50 when params are absent', () => {
+		expect(gameLeaderboardQuerySchema.parse({})).toEqual({
+			game: '2048',
+			scope: 'class',
+			limit: 50
+		});
+	});
+
+	it('clamps the limit to [1, 200] (never throws)', () => {
+		expect(gameLeaderboardQuerySchema.parse({ limit: '500' }).limit).toBe(200);
+		expect(gameLeaderboardQuerySchema.parse({ limit: 201 }).limit).toBe(200);
+		expect(gameLeaderboardQuerySchema.parse({ limit: '0' }).limit).toBe(1);
+		expect(gameLeaderboardQuerySchema.parse({ limit: -5 }).limit).toBe(1);
+		expect(gameLeaderboardQuerySchema.parse({ limit: 'abc' }).limit).toBe(50);
+		expect(gameLeaderboardQuerySchema.parse({ limit: '25.9' }).limit).toBe(25);
+	});
+
+	it('falls back (does NOT throw) on an unknown game — navadra → 2048', () => {
+		expect(gameLeaderboardQuerySchema.parse({ game: 'navadra' }).game).toBe('2048');
+	});
+
+	it('falls back (does NOT throw) on an unknown scope — global → class', () => {
+		expect(gameLeaderboardQuerySchema.parse({ scope: 'global' }).scope).toBe('class');
+	});
+
+	it('keeps a valid scope even when the game is invalid (independent fields)', () => {
+		expect(gameLeaderboardQuerySchema.parse({ game: 'navadra', scope: 'school' })).toEqual({
+			game: '2048',
+			scope: 'school',
+			limit: 50
+		});
 	});
 });

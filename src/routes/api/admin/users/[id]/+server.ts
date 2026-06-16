@@ -99,6 +99,19 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			throw error(404, `User with ID "${userId}" not found`);
 		}
 
+		// Single-teacher invariant: never promote another account to teacher.
+		// (Belt-and-suspenders with the DB trigger trg_enforce_single_teacher.)
+		if (data.role === 'teacher') {
+			const { data: currentTeacher } = await supabase
+				.from('profiles')
+				.select('id')
+				.eq('role', 'teacher')
+				.maybeSingle();
+			if (currentTeacher && currentTeacher.id !== userId) {
+				throw error(400, 'Un seul professeur est autorisé : impossible de promouvoir ce compte.');
+			}
+		}
+
 		// 2. Build update object (only include provided fields)
 		const updateData: Record<string, unknown> = {};
 
@@ -125,6 +138,10 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (updateError) {
 			console.error('❌ [API] Error updating profile:', updateError);
+			// Single-teacher invariant enforced at DB level (trigger raises check_violation).
+			if (updateError.code === '23514' || /mono-professeur/i.test(updateError.message)) {
+				throw error(400, 'Un seul professeur est autorisé.');
+			}
 			throw error(500, 'Failed to update profile');
 		}
 

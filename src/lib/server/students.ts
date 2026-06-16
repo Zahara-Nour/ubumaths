@@ -310,6 +310,73 @@ export async function getTeacherClassesWithCounts(
 	return (data || []) as ClassWithData[];
 }
 
+/**
+ * Get students that belong to NO active class (the "Non assignés" bucket).
+ *
+ * Single-teacher model (Option B): the sole teacher follows every student,
+ * including those not enrolled in any class. This returns the students that
+ * would otherwise be invisible in a class-based roster, so the teacher
+ * dashboard can surface them in a dedicated "Non assignés" group.
+ *
+ * Test-mode filtering is applied (matches the teacher's current preference).
+ *
+ * @param userId - Teacher's user ID (for test mode lookup)
+ * @param supabase - Supabase client instance
+ * @returns Promise resolving to array of unassigned students (full data)
+ *
+ * @example
+ * const unassigned = await getUnassignedStudents(user.id, supabase);
+ * console.log(unassigned.length, 'students not in any class');
+ */
+export async function getUnassignedStudents(
+	userId: string,
+	supabase: SupabaseClient<Database>
+): Promise<StudentFull[]> {
+	const isTestMode = await getTeacherTestMode(userId, supabase);
+
+	// All students matching the current test-mode preference.
+	const { data: allStudents, error: studentsError } = await supabase
+		.from('profiles')
+		.select('id, firstname, lastname, full_name, avatar_url, gidouilles, vip_cards, role, is_test')
+		.eq('role', 'student')
+		.eq('is_test', isTestMode);
+
+	if (studentsError) {
+		console.error('[getUnassignedStudents] Error fetching students:', studentsError);
+		throw new Error(`Failed to fetch students: ${studentsError.message}`);
+	}
+
+	// Student ids with at least one ACTIVE class membership.
+	const { data: memberships, error: membersError } = await supabase
+		.from('class_members')
+		.select('student_id')
+		.eq('status', 'active');
+
+	if (membersError) {
+		console.error('[getUnassignedStudents] Error fetching memberships:', membersError);
+		throw new Error(`Failed to fetch memberships: ${membersError.message}`);
+	}
+
+	const enrolled = new Set((memberships || []).map((m) => m.student_id));
+
+	return (allStudents || [])
+		.filter((p) => !enrolled.has(p.id))
+		.map(
+			(p) =>
+				({
+					id: p.id,
+					firstname: p.firstname || '',
+					lastname: p.lastname || null,
+					full_name: p.full_name || null,
+					avatar_url: p.avatar_url || null,
+					gidouilles: p.gidouilles || 0,
+					vip_cards: p.vip_cards || {},
+					role: p.role || null,
+					is_test: p.is_test || false
+				}) as StudentFull
+		);
+}
+
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================

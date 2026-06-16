@@ -72,7 +72,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// ============================================================================
 
 		// Query: Get top players with user info
-		// Uses index: idx_game_2048_scores_mode_score (mode, best_score DESC)
+		// Uses index: idx_2048_scores_leaderboard (best_score DESC)
 		const { data: topPlayers, error: leaderboardError } = await supabase
 			.from('game_2048_scores')
 			.select(
@@ -88,7 +88,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				)
 			`
 			)
-			.eq('mode', 'classic')
 			.order('best_score', { ascending: false })
 			.limit(limit);
 
@@ -124,9 +123,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Performance: Single query with RANK() instead of 2 queries with COUNT()
 		// Impact: 50-90% faster for 10K+ users (30-150ms → 20-60ms)
 		const { data: rankData, error: rankError } = await supabase
-			.rpc('get_user_rank_in_mode', {
-				p_user_id: user.id,
-				p_mode: 'classic'
+			.rpc('get_2048_user_rank', {
+				p_user_id: user.id
 			})
 			.maybeSingle();
 
