@@ -78,3 +78,37 @@ vip-card-filters 18→2, competence-referentiel 41→17, vip-card-enabled 7→1,
 3. **FK monstres (~6)** : seed game_monsters présent mais le test utilise sans doute un `monster_id`
    codé en dur ≠ ids seedés → à vérifier (stale test data).
 4. **Cascades (~14 TypeError null)** + divers asserts (~10) : se résorbent en partie après B/C.
+
+---
+
+## MAJ — C + B1 LIVRÉS (2026-06-16) — bilan cumulé **77 → 184 passants**
+
+| Étape | Passants | Δ | Commit |
+|---|---|---|---|
+| baseline seul | 77 | — | — |
+| **A** seed référence | 133 | +56 | `cbb5f106b` |
+| **C** createFakeTemplate | 160 | +27 | `0e57765fa` |
+| **B1** private_messages FK | **184** | +24 | `12b695624` |
+
+- **C** : `createFakeTemplate` violait **4** contraintes en cascade (type 'direct', grades '6e'→'6',
+  variations []→[{}], theme fixe→unique). Corrigé. skill-attempts 27→2.
+- **B1** : `private_messages.sender_id` était NOT NULL + FK `ON DELETE SET NULL` → supprimer un
+  expéditeur échouait (23502) → **bug prod RGPD** + cassait le cleanup. **Seul** FK de ce type
+  (vérifié pg_constraint). Fix → `ON DELETE CASCADE` (migration `20260616240000`, **non poussée**).
+  messaging-triggers 14→0, sync 10→2.
+
+### Reste (~111 échecs) — investigation ouverte
+- **Contamination mono-prof résiduelle** (chat, assignment, updated-at, cleanup, game-leaderboards,
+  kanban…) : B1 a réglé messaging/sync, mais un prof fuite ENCORE alors que (a) tous les profs de
+  test sont `@test.com` (nettoyables), (b) plus aucune erreur de blocage FK. game-leaderboards passe
+  SEUL (5/5) mais échoue en suite → contamination par un fuiteur **non identifié**. Demande un
+  **rework de `cleanupAllTestData`** (collecter les ids profs de test → supprimer les enfants par
+  FK → puis profils, façon `cleanupCompetenceTestData`) + chasse au fuiteur. Effort ouvert.
+- **Problèmes propres par fichier** (à diagnostiquer un par un) : chat-triggers 5 (logique trigger
+  `last_message`), game-triggers ~12 (FK `game_combats_monster_id` — id monstre codé en dur ≠ seed),
+  competence-referentiel 16, vip-card-teacher-overrides 8 (démasqués par le seed).
+
+### Bugs prod réels trouvés (NON poussés — David `db:migrate` quand il veut)
+1. `game_leaderboard` ORDER BY `rank`→`rk` (0A000)
+2. `minesweeper_scoped_leaderboard` même bug
+3. `private_messages.sender_id` FK SET NULL→CASCADE (RGPD : suppression d'un expéditeur)
