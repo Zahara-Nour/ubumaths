@@ -117,4 +117,5 @@ Minesweeper garde **en plus** sa vue détaillée actuelle (option i).
 - **Perf** : `game_leaderboard` fait un rang sur un JOIN profiles/class_members ; index sur `(school_id, grade)`,
   `class_members(student_id, status)` ; éviter de ranker toute la base. Vue nested minesweeper à benchmarker.
 - **Couplage navadra** : exclu ici ; son classement 3-niveaux sera (re)fait dans la réécriture.
-- **Variantes** : si mal modélisées, multiplication des classements peu lisibles.
+- **Hétérogénéité des scores** : chaque jeu a sa propre échelle (best_score / total_score / total_points) ;
+  pas de comparaison inter-jeux — chaque classement est interne à un jeu.
