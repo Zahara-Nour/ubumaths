@@ -505,6 +505,7 @@ suivantes quasi gratuites :
 > fausse, basée sur l'hypothèse `question-images`.)
 >
 > **Design retenu pour la future tâche TDD :**
+>
 > 1. Stocker des chemins relatifs **incluant le bucket** (`exercise-images/x.png`) + un helper
 >    unique `storageUrl(path)` (adapter `src/lib/utils/storage.ts`) ; `ImageDisplay` →
 >    `src.includes('://') ? src : storageUrl(src)`.

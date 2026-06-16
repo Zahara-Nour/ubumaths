@@ -30,7 +30,6 @@ describe('POST /api/google/coursework/bulk-share', () => {
 	let mockRequest: Request;
 
 	const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440001';
-	const OTHER_TEACHER_ID = '550e8400-e29b-41d4-a716-446655440002';
 	const COURSE_ID = '550e8400-e29b-41d4-a716-446655440010';
 	const COURSEWORK_ID_1 = '550e8400-e29b-41d4-a716-446655440100';
 	const COURSEWORK_ID_2 = '550e8400-e29b-41d4-a716-446655440101';

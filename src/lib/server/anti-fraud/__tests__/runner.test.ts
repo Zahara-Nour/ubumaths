@@ -58,9 +58,14 @@ function buildMock(tableHandlers: MockSpec, state: MockState) {
 	return { from: fromMock } as any;
 }
 
+// Anchor review dates ~1 day ago (idx seconds apart) so they always fall inside
+// the runner's default 7-day scan window, whatever wall-clock date the test runs
+// on. Previously hardcoded to 2026-06-08, which silently rotted out of the window
+// (every "nominal data" assertion broke once real time passed 2026-06-15).
+const REVIEW_BASE_MS = Date.now() - 24 * 60 * 60 * 1000;
 function makeReview(idx: number, grade: 1 | 2 | 3 | 4, timeSpent?: number): ReviewEntry {
 	return {
-		date: new Date(Date.UTC(2026, 5, 8, 12, 0, idx)).toISOString(),
+		date: new Date(REVIEW_BASE_MS + idx * 1000).toISOString(),
 		grade,
 		elapsedDays: 1,
 		retrievability: 0.9,

@@ -741,7 +741,7 @@
 			{/if}
 
 			<!-- Classement link -->
-			<a href="/leaderboards/mathemo" class="block">
+			<a href="/games/leaderboards?game=mathemo" class="block">
 				<Button variant="outline" size="sm" class="w-full">
 					<Trophy class="mr-2 h-4 w-4" />
 					Classement

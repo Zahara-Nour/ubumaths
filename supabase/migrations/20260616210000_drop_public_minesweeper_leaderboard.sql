@@ -1,0 +1,26 @@
+-- =============================================================================
+-- Migration B — DESTRUCTIVE — drop the public (anonymised) minesweeper leaderboard
+-- =============================================================================
+-- ⚠️⚠️  PUSH AT RELEASE ONLY  ⚠️⚠️
+-- This DROPs `public.minesweeper_leaderboard_public`, which the old public route
+-- `(public)/leaderboards/minesweeper` used to query. That route (and the rest of
+-- `(public)/leaderboards/`) is removed in the SAME branch (refactor/single-teacher),
+-- but the PRODUCTION deployment still runs the old code until this branch is
+-- released. If you push this migration BEFORE the release, the live site breaks
+-- (it would query a view that no longer exists).
+--
+-- => Push this ONLY in lockstep with the Vercel release of this branch.
+--
+-- Safe at release: no app code references minesweeper_leaderboard_public anymore
+-- (verified 2026-06-16 — only the auto-generated database.ts mentioned it).
+-- The NON-public `public.minesweeper_leaderboard` view is KEPT: it still backs
+-- `minesweeper_scoped_leaderboard()` and the student minesweeper stats page.
+--
+-- Rationale: safeguarding / RGPD — no cross-école, anonymised-but-global ranking
+-- of minors. Leaderboards are now école-scoped (game_leaderboard /
+-- minesweeper_scoped_leaderboard). See docs/ref/conformite/aipd-dpia.md.
+--
+-- After push: `pnpm db:types` to regenerate src/lib/types/database.ts.
+-- =============================================================================
+
+DROP VIEW IF EXISTS public.minesweeper_leaderboard_public;

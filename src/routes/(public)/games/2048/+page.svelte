@@ -53,7 +53,7 @@
 	<!-- Actions -->
 	<div class="rules-section mx-auto max-w-md">
 		<div class="mb-4 flex justify-center gap-3">
-			<a href="/leaderboards/2048">
+			<a href="/games/leaderboards?game=2048">
 				<Button variant="outline" size="sm">
 					<Trophy class="mr-2 h-4 w-4" />
 					Classement

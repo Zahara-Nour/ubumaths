@@ -881,7 +881,9 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 			expect(data).toBeNull();
 		});
 
-		it('should reject unauthorized teacher (student not in their class)', async () => {
+		// Obsolete under the single-teacher model: no second teacher to test
+		// cross-teacher authorization against (enforce_single_teacher trigger).
+		it.skip('should reject unauthorized teacher (student not in their class)', async () => {
 			// Arrange
 			const student = await TestData.profile().withRole('student').create();
 			const teacher1 = await TestData.profile().withRole('teacher').create();
