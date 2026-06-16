@@ -16084,6 +16084,20 @@ export type Database = {
         Args: { p_message_id: string; p_user_id: string }
         Returns: undefined
       }
+      minesweeper_scoped_leaderboard: {
+        Args: { p_limit?: number; p_scope: string }
+        Returns: {
+          avatar_url: string
+          avg_top_10: number
+          firstname: string
+          is_me: boolean
+          is_teacher: boolean
+          rank: number
+          top_games_count: number
+          total_points: number
+          user_id: string
+        }[]
+      }
       move_message_to_folder: {
         Args: { p_folder_id: string; p_message_id: string; p_user_id: string }
         Returns: undefined
