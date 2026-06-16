@@ -147,13 +147,36 @@ baseline = le schéma EU réel** :
   `in_progress_must_not_be_completed`, `difficulty_check`/`reasonable_time_bounds`). **Corrigé** dans
   le test : `time_seconds: 60`, `completed_at`, `difficulty: 'beginner'` (au lieu de `'easy'`).
 
-## Reste à faire
+## Phase 5 — Réconciliation EU : FAITE ✅ (2026-06-16, validée par David)
 
-- **Phase 5 — réconciliation EU (Option B)** : `supabase migration repair --status applied 20260616220000`
-  pour que `pnpm db:migrate` reste sûr sur EU. Après ce repair, un `db push` ne pousserait QUE le fix RPC
-  `20260616230000` (souhaitable : il corrige la prod) — PAS le baseline. ⚠️ **Tant que le repair n'est
-  pas fait, NE PAS lancer `db:migrate` depuis cette branche** (il tenterait de pousser le baseline →
-  erreur + rollback, pas de perte de données). **David a validé que Claude lance ce repair.**
-- **Commit** : baseline + archive (619, git mv) + fix RPC + 2 fixes de test + ce journal.
-- **Nettoyage** du scratch `supabase/_baseline/` (redondant : intégré au baseline) avant commit.
-- **Push du fix RPC `20260616230000`** sur EU : à la main de David, quand il veut (corrige la prod).
+Option B menée à terme (bookkeeping `schema_migrations` SEUL, **aucun schéma/donnée EU touché**) :
+
+1. `supabase migration repair --status applied 20260616220000` → baseline marqué appliqué sur EU.
+2. **Découverte** : `db push` refusait en l'état (« remote migration versions not found in local » : EU
+   gardait les **619 anciennes versions** absentes localement → garde anti-désynchro). Le marquage du
+   baseline seul ne suffisait pas. Décision David : nettoyer.
+3. `supabase migration repair --status reverted <619 versions>` (par **lots de 40** via xargs — un appel
+   unique à 619 args échoue « invalid version number » ; 3-digit et multi-args OK en petits lots).
+4. **Vérifié** : `supabase migration list` → **0 remote-only**, baseline = Local+Remote, fix = Local-only.
+   `supabase db push --dry-run` → « Would push these migrations: 20260616230000_fix_leaderboard_union_order_by.sql »
+   (UNIQUEMENT le fix, PAS le baseline). `db:migrate` est de nouveau **sûr**.
+
+État final EU `schema_migrations` : `{20260616220000 (applied)}` + fix `20260616230000` en attente locale.
+Historique granulaire des 619 préservé dans `supabase/migrations_archive/` (git).
+
+## Reste (à la main de David)
+
+- **`pnpm db:migrate`** quand il veut → poussera le fix RPC `20260616230000` et **corrigera la prod**.
+  ⚠️ **La fonctionnalité « classements » est cassée en prod EU tant que ce push n'est pas fait** (les 2
+  RPC échouent pour tout élève authentifié — cf. bugs A/A2). Recommandé : pousser rapidement.
+- Optionnel : `pnpm db:types` après le push (régénère `database.ts` ; rien de neuf côté types ici).
+
+## Fichiers produits (récap)
+
+- `supabase/migrations/20260616220000_baseline_schema.sql` (baseline, 46 168 l.)
+- `supabase/migrations/20260616230000_fix_leaderboard_union_order_by.sql` (fix 2 RPC, **non poussé**)
+- `supabase/migrations_archive/` (619 migrations historiques, git mv)
+- `tests/helpers/database/trigger-test-helpers.ts` (cleanup schools)
+- `tests/integration/game-leaderboards.test.ts` (insert minesweeper conforme)
+- `docs/wip/local-supabase-migration-baseline.md` (ce journal)
+- Commit : `240dd91dd` (chantier) ; commit docs de finalisation à suivre. Branche `chore/local-supabase-baseline`, **non pushée**.
