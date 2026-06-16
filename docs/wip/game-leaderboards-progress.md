@@ -12,7 +12,7 @@
 | 2. Serveur / chargement                   | ✅ fait               | schema Zod + types + load (2 RPC) + 7 tests                      |
 | 3. UI (3 onglets, retrait public)         | ✅ fait               | page + 2 tables (prénom+avatar), 4 pages publiques retirées      |
 | 4. Tests d'intégration                    | ✅ écrits             | `game-leaderboards.test.ts` — **David lance `test:integration`** |
-| 5. Doc/AIPD + Migration B + checks finaux | ⏳ à faire            |                                                                  |
+| 5. Doc/AIPD + Migration B + checks finaux | ✅ fait               | AIPD rev 0.4 ; Migration B **écrite, à pousser au release**      |
 
 ### Décision PO (David, 2026-06-16) — vue détaillée démineur
 
