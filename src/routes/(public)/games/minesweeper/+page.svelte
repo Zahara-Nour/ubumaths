@@ -275,10 +275,10 @@
 										Tournois
 									</Button>
 								</a>
-								<a href="/leaderboards/minesweeper" class="block">
+								<a href="/games/leaderboards?game=minesweeper" class="block">
 									<Button variant="outline" class="w-full justify-start">
-										<span class="mr-2">🌍</span>
-										Classement global
+										<span class="mr-2">🏆</span>
+										Classements
 									</Button>
 								</a>
 							</div>
@@ -294,10 +294,10 @@
 										Gerer les tournois
 									</Button>
 								</a>
-								<a href="/leaderboards/minesweeper" class="block">
+								<a href="/games/leaderboards?game=minesweeper" class="block">
 									<Button variant="outline" class="w-full justify-start">
-										<span class="mr-2">🌍</span>
-										Classement global
+										<span class="mr-2">🏆</span>
+										Classements
 									</Button>
 								</a>
 							</div>

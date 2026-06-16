@@ -17,7 +17,7 @@ import { gameLeaderboardQuerySchema } from '$lib/server/validation/games';
 import type { GameLeaderboardRow, MinesweeperLeaderboardRow } from '$lib/types/database-helpers';
 
 export const load: PageServerLoad = async ({ url, locals }) => {
-	const { supabase, user } = locals;
+	const { supabase } = locals;
 
 	// The schema never throws: unknown game/scope fall back, limit is clamped.
 	const { game, scope, limit } = gameLeaderboardQuerySchema.parse({
@@ -59,7 +59,6 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		game,
 		scope,
 		rows,
-		minesweeperDetail,
-		currentUserId: user?.id ?? null
+		minesweeperDetail
 	};
 };
