@@ -39,6 +39,10 @@ import type { VipCardRarity } from '$lib/types/vip-card';
 
 describe('VIP Card Teacher Override System - Integration Tests', () => {
 	let serviceClient: SupabaseClient<Database>;
+	// Snapshot of the seeded vip_card_templates.is_enabled state. These tests mutate
+	// the GLOBAL card state (enable/disable), so we restore it in afterAll to avoid
+	// contaminating the other VIP-card test files that rely on the seeded defaults.
+	let originalCardStates: { id: string; is_enabled: boolean | null }[] = [];
 
 	beforeAll(async () => {
 		serviceClient = createServiceRoleClient();
@@ -52,9 +56,17 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 		console.log(`[Setup] Found ${templates?.length} VIP card templates`);
 		expect(templates).toBeDefined();
 		expect(templates!.length).toBeGreaterThan(0);
+		originalCardStates = (templates ?? []).map((t) => ({ id: t.id, is_enabled: t.is_enabled }));
 	});
 
 	afterAll(async () => {
+		// Restore the seeded enabled-state so sibling VIP-card suites see the defaults.
+		for (const c of originalCardStates) {
+			await serviceClient
+				.from('vip_card_templates')
+				.update({ is_enabled: c.is_enabled })
+				.eq('id', c.id);
+		}
 		await cleanupAllTestData();
 		await closeConnections();
 	});
