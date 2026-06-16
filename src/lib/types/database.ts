@@ -14079,6 +14079,15 @@ export type Database = {
           },
         ]
       }
+      game_scores_unified: {
+        Row: {
+          game: string | null
+          score: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       migration_review_tree: {
         Row: {
           approved: number | null
@@ -15128,6 +15137,18 @@ export type Database = {
           reference_updates: number
           rewards_distributed: number
           success: boolean
+        }[]
+      }
+      game_leaderboard: {
+        Args: { p_game: string; p_limit?: number; p_scope: string }
+        Returns: {
+          avatar_url: string
+          firstname: string
+          is_me: boolean
+          is_teacher: boolean
+          rank: number
+          score: number
+          user_id: string
         }[]
       }
       generate_error_signature: {
