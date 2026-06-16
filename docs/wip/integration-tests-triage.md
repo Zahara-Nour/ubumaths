@@ -112,3 +112,36 @@ vip-card-filters 18→2, competence-referentiel 41→17, vip-card-enabled 7→1,
 1. `game_leaderboard` ORDER BY `rank`→`rk` (0A000)
 2. `minesweeper_scoped_leaderboard` même bug
 3. `private_messages.sender_id` FK SET NULL→CASCADE (RGPD : suppression d'un expéditeur)
+
+---
+
+## MAJ — B2 (dichotomie + fix de la contamination) — bilan **77 → 204 passants**
+
+**Dichotomie** : après la suite complète, 1 prof (+81 élèves, 2 admins) **survivaient** en base.
+En tentant de supprimer le prof : `ERROR: Direct deletion from storage tables is not allowed`
+(`storage.protect_delete()`), atteint via `trigger_delete_exercise_images` (sur `exercises`
+ON DELETE) → `DELETE storage.objects`. **`storage.protect_delete` = artefact du stack Supabase
+LOCAL** (pas dans les migrations). `cleanupAllTestData`/`deleteTestAuthUsers` **avalaient l'erreur**
+(`try/catch` + `console.debug`) → le profil survivait → `enforce_single_teacher` bloquait les profs
+suivants → contamination de toute la suite.
+
+**Fix B2** (`b28c9b718` + `81c241816`) : supprimer les profils + auth.users de test en
+**`session_replication_role = replica`** (désactive triggers/FK/cascade ; rôle restauré en `finally`).
+Appliqué à `deleteTestAuthUsers` ET `cleanupCompetenceTestData` (2e chemin fuyant).
+
+**Résultat** : 184 → **205** passants (B2), profs survivants **1 → 0**. game-leaderboards, kanban,
+single-teacher-rls, sync, l'essentiel de chat → verts en suite. Contamination **résolue**.
+
+### Bilan global de la session : **77 → 204 passants** (×2,6), 0 régression
+| baseline | A seed | C template | B1 FK | B2 cleanup |
+|---|---|---|---|---|
+| 77 | 133 | 160 | 184 | **204** |
+
+### Reste (~91 échecs) = problèmes PROPRES par fichier (plus de contamination)
+- **vip-card-teacher-overrides (7)** : teste un modèle **multi-profs** (« Intersection Logic »,
+  « 3 teachers », « teacher isolation ») → **obsolète sous le refactor mono-prof** →
+  **décision produit** (skip/réécrire ? les overrides VIP multi-profs sont-ils morts ?).
+- **competence-referentiel (16), template-triggers (13), assignment-triggers (12),
+  cleanup-triggers (9), updated-at-triggers (8), game-triggers (8, FK monstre id codé en dur),
+  chat-triggers (5), profile-triggers (4)** : logique de triggers / données de test — chacun à
+  diagnostiquer **stale vs vrai bug** individuellement (pas de cause commune).
