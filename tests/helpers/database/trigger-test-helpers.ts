@@ -153,6 +153,17 @@ export async function cleanupAllTestData(): Promise<void> {
 		}
 	}
 
+	// Schools have no email marker: integration tests create them with the
+	// 'Testville' city sentinel (see game-leaderboards.test.ts). The
+	// unique_school (name, city, country) constraint makes leftover schools
+	// collide across tests, so purge them here. FK-safe: profiles.school_id is
+	// ON DELETE SET NULL and classes.school_id is ON DELETE CASCADE.
+	try {
+		await serviceClient.from('schools').delete().eq('city', 'Testville');
+	} catch (error) {
+		console.debug('Cleanup schools:', error);
+	}
+
 	// Clean up auth.users table using direct PostgreSQL client
 	// (Supabase client cannot access auth schema)
 	await deleteTestAuthUsers();
