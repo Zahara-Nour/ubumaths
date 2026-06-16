@@ -136,17 +136,19 @@ traitées au Lot 6 ou laissées class-scopées.
 
 ## Notes / points ouverts
 
-- **⚠️ Lot 7 — régression test/seed introduite par le trigger Lot 2 (décision requise)** : le trigger
-  `enforce_single_teacher` (≥2 profs interdit) casse ce qui crée plusieurs `teacher` :
+- **Lot 7 — remédiation tests/seed (FAITE 2026-06-16, sans bypass — respecte « pas d'échappatoire »)** :
 
-  - **`015_seed_voltaire_test_data.sql`** seede **4 profs démo** (Baguette…) → contradictoire avec le
-    mono-prof ; sur un `db start` frais le local repeuple ces profs (le trigger, créé plus tard, ne valide
-    pas l'existant, donc pas d'erreur de migration, mais l'état local redevient multi-prof).
-  - **Tests d'intégration** créant des profs : `competence-referentiel` (26), `kanban-rls` (4),
-    `vip-card-teacher-overrides` (1) + les `*-triggers` (déjà non fonctionnels en local, cf.
-    [[feedback_no-trigger-tests]]). Toute création d'un 2ᵉ prof lèvera l'exception.
-  - **Options** : (1) laisser → remédiation test/seed dédiée plus tard ; (2) rendre le trigger
-    bypassable hors-prod (flag) ; (3) réécrire seed + tests en mono-prof. **À trancher avec David.**
+  - **Seed** : nouveau `tests/integration/global-setup.ts` (globalSetup du config intégration) supprime
+    **tous les profs** de la base de test locale avant la suite (les 4 profs seed de `015` cascadent).
+    → chaque test démarre avec 0 prof. Base locale uniquement, jamais la prod.
+  - **Tests 2-profs** (impossibles + assertions d'isolation inter-prof contredites par Option B) :
+    skippés avec note → `kanban-rls` (1), `competence-referentiel` (5 : 1155/1216/1475/1506/1543),
+    `vip-card-filters` (1). Et `competence-referentiel:607` **réparé** (réutilise le prof de `setupChercher`,
+    pas de 2ᵉ prof). Scan awk complet : tous les blocs `it()` ≥2 profs des tests **fonctionnels** sont couverts.
+  - **Hors-scope** : `tests/integration/database/*-triggers.test.ts` (cleanup/messaging/chat/sync/updated-at)
+    ont aussi des tests 2-profs mais sont **déjà non fonctionnels en local** ([[feedback_no-trigger-tests]],
+    Docker) → à traiter seulement s'ils sont remis en service. **À vérifier par David** : `pnpm db:start`
+    puis `pnpm test:integration` (les `*-triggers` peuvent rester rouges pour d'autres raisons).
 
 - **Lot 3 — RGPD à acter (Lot 7)** : `parental_consents`, `audit_logs`, `welcome_emails_sent` sont
   désormais visibles au compte PROF (avant : class-scopé). Aucun privilège nouveau (David y accède

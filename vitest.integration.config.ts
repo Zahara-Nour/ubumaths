@@ -24,7 +24,10 @@ export default defineConfig(({ mode }) => {
 		test: {
 			...dbTestConfig,
 			name: 'integration',
-			include: ['tests/integration/**/*.{test,spec}.{js,ts}']
+			include: ['tests/integration/**/*.{test,spec}.{js,ts}'],
+			// Single-teacher refactor: remove seeded demo teachers before the suite
+			// so the enforce_single_teacher trigger doesn't block test teacher creation.
+			globalSetup: ['./tests/integration/global-setup.ts']
 		}
 	};
 });
