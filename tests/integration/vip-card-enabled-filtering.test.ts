@@ -476,8 +476,8 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 				.eq('is_enabled', false)
 				.eq('rarity', 'common');
 
-			// Should have 8 total: 6 we just disabled + 2 default disabled (candy, captain)
-			expect(disabledCommon).toHaveLength(8);
+			// All common cards are now disabled (count depends on the seeded set).
+			expect(disabledCommon).toHaveLength(commonIds.length);
 
 			// Try to draw cards (should fail because fallback target 'common' is empty)
 			const { error } = await studentClient.rpc('draw_multiple_vip_cards', {

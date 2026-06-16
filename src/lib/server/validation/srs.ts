@@ -107,7 +107,11 @@ export const createSectionSchema = z.object({
 /**
  * Schema mise à jour partielle d'une section.
  */
-export const updateSectionSchema = createSectionSchema.partial();
+// Override display_order so it has no `.default(0)`: on a partial update an empty
+// body must stay empty (→ 400 "No fields to update"), not silently set display_order.
+export const updateSectionSchema = createSectionSchema
+	.partial()
+	.extend({ display_order: z.number().int().nonnegative().optional() });
 
 /**
  * Schema for assigning a deck to students/classes
