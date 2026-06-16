@@ -135,7 +135,9 @@ traitées au Lot 6 ou laissées class-scopées.
   anti-récursion OK). 0 impact test. **HORS périmètre** : **jeu navadra** non scopé (module condamné,
   [[project_navadra-rewrite]]) ; **classement hebdo** par école = changement de _calcul_ (à traiter à
   part). À noter : 1 école → quasi no-op aujourd'hui ; élèves sans `school_id` (3) bloqués social →
-  à rattacher. Amitiés inter-écoles historiques : moot (1 école). **En attente** : `pnpm db:migrate`.
+  à rattacher. Amitiés inter-écoles historiques : moot (1 école). **Appliqué EU ✓ (2026-06-16, vérifié MCP).**
+  **DÉCISION David 2026-06-16** : classement hebdo par école + jeu navadra + autres ajustements
+  **DIFFÉRÉS** jusqu'au multi-école (registre UAI/RNE). David teste en local avant push/release.
 - [~] Lot 7 — closing **en cours** : (a) ✅ **AIPD mise à jour** (`docs/ref/conformite/aipd-dpia.md`
   rév. 0.3 : accès lecture prof à toutes données élèves, sensibles incluses). (b) ⚠️ **Finding tests/seed**
   (voir note ci-dessous) — décision David requise. (c) checks finaux : `check:incremental` 0 erreur,
