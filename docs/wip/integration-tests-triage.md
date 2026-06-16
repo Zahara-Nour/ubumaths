@@ -1,5 +1,10 @@
 # Triage des tests d'intégration — stale vs régression (2026-06-16)
 
+> **MAJ FINALE : suite complète VERTE — 285 passants | 14 skip | 0 échec** (départ 77).
+> Détail des fixs par fichier : `docs/wip/integration-tests-fix-progress.md`. **5 bugs prod**
+> trouvés au total (2 RPC `rank`→`rk`, FK private_messages, delete_exercise_images storage guard,
+> process_message_content plain_text) — **aucun poussé** ; `check:incremental` 0 erreur.
+
 > Contexte : le baseline local ([[local-supabase-migration-baseline]]) a débloqué la suite
 > `pnpm test:integration` (302 tests, avant 0). **77 passent, 209 échouent, 16 skip.**
 > Question : chaque échec est-il un **test stale** (le test a tort vs le schéma/comportement RÉEL
