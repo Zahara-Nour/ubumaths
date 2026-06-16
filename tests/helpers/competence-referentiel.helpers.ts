@@ -47,7 +47,7 @@ export type StudentSkillStateARow = {
 };
 
 export type StudentSkillStateAViewRow = StudentSkillStateARow & {
-	to_review: boolean;
+	needs_remediation: boolean;
 };
 
 export type StudentObservableStateRow = {
@@ -197,9 +197,21 @@ export async function insertKnowledgeAttempt(
 		source?: 'auto' | 'teacher' | 'student_self';
 	}
 ): Promise<void> {
+	// Family A: the attempt references a template; the after-insert trigger derives
+	// the skill from the template's tags. Tag the template with skillId first, then
+	// insert WITHOUT skill_id (chk_attempt_family_regime requires skill_id NULL when
+	// template_id is set).
+	const { error: tagErr } = await service
+		.from('question_template_skills' as never)
+		.upsert({ template_id: params.templateId, skill_id: params.skillId } as never, {
+			onConflict: 'template_id,skill_id'
+		});
+	if (tagErr) {
+		throw new Error(`insertKnowledgeAttempt tag failed: ${tagErr.message}`);
+	}
+
 	const { error } = await service.from('skill_attempts' as never).insert({
 		student_id: params.studentId,
-		skill_id: params.skillId,
 		template_id: params.templateId,
 		success: params.success,
 		source: params.source ?? 'auto'
