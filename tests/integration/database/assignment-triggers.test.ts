@@ -21,6 +21,7 @@ import {
 	cleanupAllTestData,
 	closeConnections
 } from '../../helpers/database/trigger-test-helpers';
+import { TestData } from '../../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -44,33 +45,10 @@ describe('Exercise Completion Tracking Triggers', () => {
 	beforeEach(async () => {
 		await cleanupAllTestData();
 
-		// Create test teacher
-		const { data: teacher } = await serviceClient
-			.from('profiles')
-			.insert({
-				id: '550e8400-e29b-41d4-a716-446655440001',
-				email: `teacher-${Date.now()}@test.com`,
-				role: 'teacher',
-				full_name: 'Test Teacher'
-			})
-			.select()
-			.single();
-
-		testTeacher = teacher!;
-
-		// Create test student
-		const { data: student } = await serviceClient
-			.from('profiles')
-			.insert({
-				id: '550e8400-e29b-41d4-a716-446655440002',
-				email: `student-${Date.now()}@test.com`,
-				role: 'student',
-				full_name: 'Test Student'
-			})
-			.select()
-			.single();
-
-		testStudent = student!;
+		// Create test teacher + student via the factory (profiles.id → auth.users FK
+		// requires a real auth user; direct profiles inserts with fixed ids fail).
+		testTeacher = await TestData.profile().withRole('teacher').create();
+		testStudent = await TestData.profile().withRole('student').create();
 
 		// Create test exercise
 		const { data: exercise } = await serviceClient
@@ -78,8 +56,7 @@ describe('Exercise Completion Tracking Triggers', () => {
 			.insert({
 				created_by: testTeacher.id,
 				category: 'automatisme',
-				statement_md: 'What is 2 + 2?',
-				solution_md: 'The answer is 4',
+				title: 'What is 2 + 2?',
 				is_public: true
 			})
 			.select()
@@ -316,8 +293,7 @@ describe('Exercise Completion Tracking Triggers', () => {
 					.insert({
 						created_by: testTeacher.id,
 						category: 'automatisme',
-						statement_md: 'Exercise 1?',
-						solution_md: 'Answer: 1',
+						title: 'Exercise 1',
 						is_public: true
 					})
 					.select()
@@ -327,8 +303,7 @@ describe('Exercise Completion Tracking Triggers', () => {
 					.insert({
 						created_by: testTeacher.id,
 						category: 'automatisme',
-						statement_md: 'Exercise 2?',
-						solution_md: 'Answer: 2',
+						title: 'Exercise 2',
 						is_public: true
 					})
 					.select()
@@ -338,8 +313,7 @@ describe('Exercise Completion Tracking Triggers', () => {
 					.insert({
 						created_by: testTeacher.id,
 						category: 'automatisme',
-						statement_md: 'Exercise 3?',
-						solution_md: 'Answer: 3',
+						title: 'Exercise 3',
 						is_public: true
 					})
 					.select()
@@ -443,7 +417,9 @@ describe('Exercise Completion Tracking Triggers', () => {
 	});
 
 	describe('Edge cases', () => {
-		it('should handle view_count = 0 to view_count = 1 transition', async () => {
+		// Skipped: exercise_completions_view_count_check enforces view_count >= 1, so a
+		// completion with view_count = 0 cannot exist. The 1→2 increment is covered above.
+		it.skip('should handle view_count = 0 to view_count = 1 transition', async () => {
 			// Arrange: Manually create completion with view_count = 0 (edge case)
 			const { data: completion } = await serviceClient
 				.from('exercise_completions')
@@ -490,8 +466,9 @@ describe('Exercise Completion Tracking Triggers', () => {
 				.select()
 				.single();
 
-			// Assert: completed_at should remain unchanged
-			expect(updated!.completed_at).toBe(completedAt);
+			// Assert: completed_at should remain unchanged (compare as instants; the DB
+			// returns '+00:00' while toISOString() returns 'Z' for the same time).
+			expect(new Date(updated!.completed_at).getTime()).toBe(new Date(completedAt).getTime());
 			expect(updated!.view_count).toBe(6);
 
 			// But last_viewed_at should update
