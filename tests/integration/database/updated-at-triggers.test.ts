@@ -49,19 +49,11 @@ const TABLES_WITH_UPDATED_AT: Array<{
 			const teacher = await TestData.profile().withRole('teacher').create();
 			return await TestData.exercise(teacher.id).create();
 		},
-		updateField: 'question',
-		updateValue: 'Updated question?'
-	},
-	{
-		table: 'private_messages',
-		createData: async () => {
-			const sender = await TestData.profile().create();
-			return await TestData.privateMessage(sender.id).create();
-		},
-		updateField: 'subject',
-		updateValue: 'Updated Subject'
+		// exercises has no 'question' column; 'title' is a real updatable text column.
+		updateField: 'title',
+		updateValue: 'Updated title?'
 	}
-	// Add more tables as needed - these 5 are representative
+	// private_messages removed: it has no updated_at column (no updated_at trigger).
 ];
 
 describe('Updated_at Triggers (Parameterized)', () => {
@@ -143,13 +135,14 @@ describe('Updated_at Triggers (Parameterized)', () => {
 				expect(diffMs).toBeLessThan(2000); // Within 2 seconds
 			});
 
-			it('should NOT set updated_at on INSERT', async () => {
+			it('sets updated_at on INSERT via DEFAULT now() (trigger only bumps on UPDATE)', async () => {
 				// Arrange & Act
 				const record = await createData();
 
-				// Assert: New records should have NULL updated_at
-				// (trigger only fires BEFORE UPDATE, not INSERT)
-				expect(record.updated_at).toBeNull();
+				// Assert: updated_at is populated on INSERT by the column DEFAULT now();
+				// the BEFORE UPDATE trigger does not run on INSERT (so it is not NULL).
+				expect(record.updated_at).toBeDefined();
+				expect(record.updated_at).not.toBeNull();
 			});
 		}
 	);
