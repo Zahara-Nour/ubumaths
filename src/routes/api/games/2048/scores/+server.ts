@@ -91,7 +91,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.from('game_2048_scores')
 			.select('best_score, games_played, tiles_2048_reached, tiles_4096_reached')
 			.eq('user_id', user.id)
-			.eq('mode', 'classic')
 			.maybeSingle();
 
 		if (fetchError) {
@@ -160,7 +159,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: upsertData, error: upsertError } = await supabase
 			.rpc('upsert_2048_score', {
 				p_user_id: user.id,
-				p_mode: 'classic',
 				p_score: score,
 				p_reached_2048: reached_2048,
 				p_reached_4096: reached_4096

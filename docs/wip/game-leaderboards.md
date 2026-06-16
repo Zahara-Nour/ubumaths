@@ -30,7 +30,7 @@ Chaque jeu a **sa propre table de score** (pas de stockage commun) :
 
 | Jeu         | Table                         | Métrique retenue (↑ = meilleur) | Variante                       |
 | ----------- | ----------------------------- | ------------------------------- | ------------------------------ |
-| 2048        | `game_2048_scores`            | `best_score` (int)              | `mode` (text)                  |
+| 2048        | `game_2048_scores`            | `best_score` (int)              | — (mode retiré 2026-06-16)     |
 | mathémo     | `mathemo_scores`              | `total_score` (numeric)         | —                              |
 | minesweeper | vue `minesweeper_leaderboard` | `total_points` (bigint)         | difficulté/cycle (à confirmer) |
 
@@ -51,7 +51,7 @@ game_scores_unified(game text, variant text NULL, user_id uuid, score numeric, u
 
 UNION ALL des 3 sources, une ligne par (jeu, variante, élève) :
 
-- `('2048',        mode, user_id, best_score,  updated_at)` ← game_2048_scores
+- `('2048',        NULL, user_id, best_score,  updated_at)` ← game_2048_scores
 - `('mathemo',     NULL, user_id, total_score, updated_at)` ← mathemo_scores
 - `('minesweeper', <variant?>, student_id, total_points, …)` ← source minesweeper (vue ou agrégat brut — à finaliser)
 
@@ -88,8 +88,9 @@ Minesweeper garde **en plus** sa vue détaillée actuelle (option i).
 
 ## 6. Questions ouvertes (à trancher avant implémentation)
 
-1. **Variantes** : 2048 a `mode`, minesweeper a difficulté/cycle. Un classement **par variante**
-   (ex. 2048 « classique » vs autres) ou **agrégé par jeu** ? (reco : par variante quand elle existe.)
+1. **Variantes** : seul minesweeper a une variante (difficulté/cycle) — 2048 et mathémo sont mono-classement
+   (mode 2048 retiré le 2026-06-16). Pour minesweeper : un classement **par difficulté** ou **agrégé** ?
+   (reco : par difficulté.)
 2. **Source minesweeper exacte** : `total_points` depuis la vue `minesweeper_leaderboard` (nested view, perf ?)
    ou un agrégat brut dédié ? Variante = difficulté ou un score global ?
 3. **Sort du classement public actuel** : suppression pure, ou maintien d'un classement « école » public-anonymisé ?
