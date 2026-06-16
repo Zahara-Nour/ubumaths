@@ -51,7 +51,8 @@
 					970 Toa Payoh North #07-04, Singapore 318992<br />
 					<a href="https://supabase.com" target="_blank" rel="noopener noreferrer">supabase.com</a
 					><br />
-					Localisation des serveurs : <strong>Union Europeenne (France &ndash; Paris, eu-west-3)</strong>
+					Localisation des serveurs :
+					<strong>Union Europeenne (France &ndash; Paris, eu-west-3)</strong>
 				</p>
 			</div>
 		</section>
