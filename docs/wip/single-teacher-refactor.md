@@ -128,7 +128,14 @@ traitées au Lot 6 ou laissées class-scopées.
   (`/students/[id]/journal`). Loader branche `getUnassignedStudents`. `check:incremental` 0 erreur.
   **Reste optionnel** : action « rattacher à une classe » depuis cette section (non faite, à valider
   avec David — pas nécessaire pour « le prof voit les hors-classe »).
-- [ ] Lot 6 — social école
+- [~] Lot 6 — social école-scopé (A+B retenu) — **partie RLS propre faite (2026-06-16)** :
+  migration `20260616160000_school_scoped_social.sql` : helpers `my_school()`/`same_school()` +
+  **marketplace** re-keyé sur `profiles.school_id` (hors-classe inclus) + **amitiés** restreintes à
+  la même école (safeguarding). Audit sécu : **aucun bloquant** (plus restrictif, fail-secure,
+  anti-récursion OK). 0 impact test. **HORS périmètre** : **jeu navadra** non scopé (module condamné,
+  [[project_navadra-rewrite]]) ; **classement hebdo** par école = changement de _calcul_ (à traiter à
+  part). À noter : 1 école → quasi no-op aujourd'hui ; élèves sans `school_id` (3) bloqués social →
+  à rattacher. Amitiés inter-écoles historiques : moot (1 école). **En attente** : `pnpm db:migrate`.
 - [~] Lot 7 — closing **en cours** : (a) ✅ **AIPD mise à jour** (`docs/ref/conformite/aipd-dpia.md`
   rév. 0.3 : accès lecture prof à toutes données élèves, sensibles incluses). (b) ⚠️ **Finding tests/seed**
   (voir note ci-dessous) — décision David requise. (c) checks finaux : `check:incremental` 0 erreur,
