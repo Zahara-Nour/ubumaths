@@ -2,11 +2,11 @@
 -- SEED — données de référence non-PII (pour les tests d'intégration locaux)
 -- ==============================================================================
 -- Provenance : `supabase db dump --linked --data-only` du projet PROD EU
---   cnevnzsvixxpnurautls, restreint à 7 tables de RÉFÉRENCE (aucune PII d'élève) :
+--   cnevnzsvixxpnurautls, restreint à 8 tables de RÉFÉRENCE (aucune PII d'élève) :
 --   skill_themes, skill_objectives, math_competences, math_competence_subdimensions,
---   skills, vip_card_templates, game_monsters.
+--   skills, vip_card_templates, vip_card_config, game_monsters.
 -- Pourquoi : le baseline est schéma-seul ; ces tables de contenu (référentiel de
---   compétences + cartes VIP + monstres) sont requises par les tests d'intégration.
+--   compétences + cartes VIP + config tirage + monstres) sont requises par les tests.
 -- Régénération : voir docs/wip/integration-tests-triage.md.
 -- Le dump active déjà session_replication_role=replica (FK/triggers neutralisés).
 -- ==============================================================================
@@ -17,7 +17,7 @@ SET session_replication_role = replica;
 -- PostgreSQL database dump
 --
 
--- \restrict CKwuitcFcQQBUY7ZFHJCGmyXG1YkZHXPJaN5gxmVngNl7axbAvMacgw9dLK8TdR
+-- \restrict BD7mpx14Ic1KgpUho81pVKTFa45yFTNbjjm17MaELIF35uA2gw1cQnwvegvxVpf
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -577,6 +577,14 @@ INSERT INTO "public"."skills" ("id", "objective_id", "subdimension_id", "niveau_
 
 
 --
+-- Data for Name: vip_card_config; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO "public"."vip_card_config" ("id", "config_name", "common_probability", "rare_probability", "epic_probability", "legendary_probability", "is_active", "description", "valid_from", "valid_until", "created_at", "updated_at") VALUES
+	('da4279a9-3ae7-49fd-9f58-ccb0ce4af9e5', 'default', 60, 25, 12, 3, true, 'Default rarity distribution for normal gameplay', NULL, NULL, '2025-11-04 09:23:30.113803+00', '2025-11-04 09:23:30.113803+00');
+
+
+--
 -- Data for Name: vip_card_templates; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1039,6 +1047,6 @@ SELECT pg_catalog.setval('"public"."riddles_riddle_number_seq"', 5, true);
 -- PostgreSQL database dump complete
 --
 
--- \unrestrict CKwuitcFcQQBUY7ZFHJCGmyXG1YkZHXPJaN5gxmVngNl7axbAvMacgw9dLK8TdR
+-- \unrestrict BD7mpx14Ic1KgpUho81pVKTFa45yFTNbjjm17MaELIF35uA2gw1cQnwvegvxVpf
 
 RESET ALL;
