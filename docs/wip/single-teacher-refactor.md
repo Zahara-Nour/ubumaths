@@ -101,13 +101,24 @@ traitées au Lot 6 ou laissées class-scopées.
 - [x] Lot 1 — **exécuté & vérifié (2026-06-15)** : 1 prof (David), 1 admin, 77 élèves réels,
       0 compte démo restant, 6 classes David, 77 élèves actifs (−clara), 0 orphelin.
       Script : `scripts/cleanup-demo-accounts.sql`.
-- [~] Lot 2 — **implémenté + revu** (code-reviewer). Verrou mono-prof en 3 couches : trigger DB
+- [x] Lot 2 — **livré & appliqué sur EU (2026-06-16)** ✓ trigger + fonction confirmés via MCP.
+      ⚠️ Détour infra : le 1ᵉʳ `db:migrate` ciblait l'**ancien projet US** (CLI pas relinké après la
+      migration EU). Corrigé : `supabase link --project-ref cnevnzsvixxpnurautls` + réconciliation de
+      l'historique (`scripts/repair-eu-migration-history.sh`, 610 migrations marquées applied) + re-push.
+      **Désormais le CLI cible EU ; l'ancien projet US est mort.** (cf. supabase-eu-migration-plan.md)
+- [~] Lot 2 (détail) — Verrou mono-prof en 3 couches : trigger DB
   `enforce_single_teacher` (0-ou-1, message lisible) ; garde serveur sur le **vrai** chemin
   `PATCH /api/admin/users/[id]` + mapping erreur DB→400 ; UI (rôle `teacher` non assignable +
   sélecteur prof retiré, classes auto-assignées via `maybeSingle`). **En attente David** :
   push migration (`pnpm db:migrate`) + `scripts/verify-single-teacher-trigger.sql`.
   ⏳ svelte-autofixer + eslint + check:incremental → gate qualité final du plan.
-- [ ] Lot 3 — RLS Axe 1
+- [x] Lot 3 — **livré & appliqué EU (2026-06-16)** : helper `is_my_student()` (= `is_teacher_or_admin()`) + **34 policies de lecture prof → Option B**, en 3 migrations :
+      `20260616120000` (3a, 13 cœur) · `20260616130000` (3b, 21 compléments) · `20260616140000`
+      (3c, 3 manquées via `class_chapters`/`class_id`). `audit_logs` → `is_teacher_or_admin()` (clé JSON).
+      Test : `tests/integration/single-teacher-rls.test.ts`. Audit sécu : **OK, pas de fuite** ; le trou
+      de périmètre relevé a été comblé par un **balayage principiel** (toute table `student_id`/`user_id`
+      avec policy prof class-scopée). **3 leaves intentionnelles** : `class_members` (roster),
+      `python_exercise_assignments` (devoirs prof), `template_usage_stats` (stats classe).
 - [ ] Lot 4 — miroir serveur
 - [ ] Lot 5 — UI hors-classe
 - [ ] Lot 6 — social école
@@ -115,6 +126,14 @@ traitées au Lot 6 ou laissées class-scopées.
 
 ## Notes / points ouverts
 
+- **Lot 3 — RGPD à acter (Lot 7)** : `parental_consents`, `audit_logs`, `welcome_emails_sent` sont
+  désormais visibles au compte PROF (avant : class-scopé). Aucun privilège nouveau (David y accède
+  déjà en admin) mais **à documenter dans l'AIPD**. Leçon : énumérer les policies par pattern est
+  piégeux (class_members vs class_chapters vs class_id) — le **balayage principiel** par colonne
+  `student_id`/`user_id` est la méthode fiable.
+- **Lot 3 — nits d'audit (acceptés)** : 3 policies en `TO public` (au lieu de `authenticated`) et
+  `is_my_student` en `SECURITY DEFINER` (inutile car délègue) — inoffensifs, non corrigés (migrations
+  déjà poussées, zéro gain).
 - **Lot 2 — revue** : BLOQUANT corrigé (garde déplacée sur `PATCH /api/admin/users/[id]`,
   l'action de form `update_profile` étant morte) ; `.single()`→`.maybeSingle()` ; état
   `formData.teacher_id` orphelin nettoyé. Race théorique du trigger jugée négligeable (1 admin) ;
