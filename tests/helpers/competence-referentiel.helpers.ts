@@ -12,6 +12,7 @@
  */
 
 import { createServiceRoleClient, generateTestEmail } from './database/trigger-test-helpers';
+import { deleteTestAuthUsers } from './database/postgres-client';
 import { TestData } from './database/test-data-factory';
 import { createAuthenticatedClient } from './database/supabase-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -463,15 +464,13 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 		await service.from('classes').delete().in('teacher_id', teacherIds);
 	}
 
-	// Step 7: profiles + auth users
-	await service.from('profiles').delete().in('id', allIds);
-	for (const id of allIds) {
-		try {
-			await service.auth.admin.deleteUser(id);
-		} catch {
-			// auth user may not exist for service-role-created profiles; ignore
-		}
-	}
+	// Step 7: profiles + auth users — replica-mode deletion. A client-side
+	// `from('profiles').delete()` (or auth.admin.deleteUser) is silently aborted by
+	// the local-only storage.protect_delete guard reached via
+	// trigger_delete_exercise_images on a cascade, leaking the profile →
+	// enforce_single_teacher contamination. deleteTestAuthUsers() removes all
+	// @test.com profiles + auth users under session_replication_role=replica.
+	await deleteTestAuthUsers();
 }
 
 // ---------------------------------------------------------------------------
