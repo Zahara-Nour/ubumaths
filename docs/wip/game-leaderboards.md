@@ -1,7 +1,7 @@
 # Spec Phase 0 — Classements de jeux à 3 niveaux (classe / niveau / école)
 
 > Design doc (PAS de code). Branche à créer : `feat/game-leaderboards`.
-> Rédigé : 2026-06-16. Statut : **Phase 0 — à valider**.
+> Rédigé : 2026-06-16. Statut : **Phase 0 — décisions §6 prises, prêt à détailler l'implémentation**.
 
 ## 1. Objectif
 
@@ -65,16 +65,20 @@ Si un futur jeu est « plus petit = mieux » (ex. temps), ajouter une colonne `d
 
 ```
 game_leaderboard(p_game text, p_scope text, p_limit int)
-  RETURNS TABLE(rank int, user_id uuid, firstname text, avatar_url text, score numeric, is_me boolean)
+  RETURNS TABLE(rank int NULL, user_id uuid, firstname text, avatar_url text,
+                score numeric, is_me boolean, is_teacher boolean)
 ```
 
 - `SECURITY DEFINER`, `search_path` pinné. Range par `auth.uid()` (l'appelant), jamais un id passé.
-- `p_scope ∈ {'class','grade','school'}` → ensemble d'élèves :
+- `p_scope ∈ {'class','grade','school'}` → ensemble d'**élèves** :
   - **class** : `student_id IN (SELECT cm2.student_id FROM class_members cm1 JOIN class_members cm2 USING(class_id) WHERE cm1.student_id=auth.uid() AND cm1.status='active' AND cm2.status='active')` (mes camarades) ;
   - **grade** : `profiles.grade = (mon grade) AND profiles.school_id = my_school()` ;
   - **school** : `profiles.school_id = my_school()`.
-- Filtre `role='student'` (exclut prof/admin) et `is_test=false`. Rang par `score DESC` (dense rank — à confirmer §6).
-- Ne renvoie **que** le périmètre autorisé → pas de fuite inter-école (safeguarding).
+- **Rang** : `dense_rank() OVER (ORDER BY score DESC)` calculé **entre élèves uniquement** (`role='student'`, `is_test=false`).
+- **Le prof** (l'unique `role='teacher'`, s'il a un score pour ce jeu) est **ajouté à chaque scope** comme ligne de
+  référence : `is_teacher=true`, **`rank=NULL`** (hors-classement), intercalé à sa position par `score`. Il **ne
+  consomme pas de rang** → les rangs élèves ne sont pas décalés. **Admin exclu.**
+- Tri final par `score DESC`. Ne renvoie **que** le périmètre autorisé → pas de fuite inter-école (safeguarding).
 
 ### 4.3 Affichage
 
@@ -86,20 +90,20 @@ Minesweeper garde **en plus** sa vue détaillée actuelle (option i).
 
 - **Plus de classement public inter-écoles** : on retire/segmente `(public)/leaderboards/` et
   `minesweeper_leaderboard_public`. Décision à acter dans l'AIPD (comme l'accès prof au Lot 7).
-- Afficher **prénom + avatar** seulement (pas nom complet) sur les classements de mineurs — à confirmer §6.
+- Afficher **prénom + avatar** seulement (pas nom complet) sur les classements de mineurs (décidé §6).
 - Réutiliser `my_school()` (frontière). Élèves sans `school_id`/`grade` (3) : absents des classements niveau/école.
 
-## 6. Questions ouvertes (à trancher avant implémentation)
+## 6. Décisions (résolues 2026-06-16, David)
 
-1. **Source du score minesweeper** : `total_points` depuis la vue `minesweeper_leaderboard` (nested view, perf ?)
-   ou un agrégat brut dédié ? (reco : la vue d'abord, optimiser si lent.)
-2. **Sort du classement public actuel** : suppression pure, ou maintien d'un classement « école » public-anonymisé ?
-   (reco : suppression — safeguarding.)
-3. **Identité affichée** (mineurs) : prénom seul, prénom + initiale, ou prénom + nom ? (reco : prénom + avatar.)
-4. **Égalités / méthode de rang** : `rank()` (avec sauts) vs `dense_rank()` (sans saut) ? (reco : dense_rank.)
-5. **Le prof/admin** apparaît-il dans les classements ? (reco : non — élèves uniquement.)
+1. **Source du score minesweeper** : `total_points` depuis la vue `minesweeper_leaderboard` ; basculer sur un
+   agrégat brut dédié seulement si la vue nested est trop lente (à benchmarker).
+2. **Classement public actuel** : **supprimé** → école-only (safeguarding). À acter dans l'AIPD.
+3. **Identité affichée** (mineurs) : **prénom + avatar** uniquement.
+4. **Ex æquo** : **`dense_rank()`** (sans saut de rang).
+5. **Prof / admin** : le **prof apparaît pour information**, positionné par son score, **sans rang**
+   (`rank=NULL`, hors-classement) ; les rangs `dense_rank` ne se calculent **qu'entre élèves**. **Admin exclu.**
 
-## 7. Plan d'implémentation (esquisse — à détailler après validation §6)
+## 7. Plan d'implémentation (esquisse — §6 résolu, prêt à détailler)
 
 1. **Phase 0 — Spec TDD** : comportements en français (ce doc + réponses §6), validés par David.
 2. **Migration** : vue `game_scores_unified` + fonction `game_leaderboard` (SECURITY DEFINER, RLS-safe).
