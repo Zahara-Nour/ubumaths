@@ -20,22 +20,40 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-const MIGRATIONS_DIR = join(process.cwd(), 'supabase', 'migrations');
+// Historical migrations were squashed into a baseline and moved to
+// supabase/migrations_archive/, so search both locations.
+const MIGRATIONS_DIRS = [
+	join(process.cwd(), 'supabase', 'migrations'),
+	join(process.cwd(), 'supabase', 'migrations_archive')
+];
+
+function resolveMigration(): { dir: string; file: string } | null {
+	for (const dir of MIGRATIONS_DIRS) {
+		let files: string[];
+		try {
+			files = readdirSync(dir);
+		} catch {
+			continue;
+		}
+		const match = files.find((f) => /unblock_student_achievements_inserts\.sql$/.test(f));
+		if (match) return { dir, file: match };
+	}
+	return null;
+}
 
 function findMigrationFile(): string | null {
-	const files = readdirSync(MIGRATIONS_DIR);
-	const match = files.find((f) => /unblock_student_achievements_inserts\.sql$/.test(f));
-	return match ?? null;
+	return resolveMigration()?.file ?? null;
 }
 
 function getMigrationContent(): string {
-	const file = findMigrationFile();
-	if (!file) {
+	const m = resolveMigration();
+	if (!m) {
 		throw new Error(
-			'Migration file unblock_student_achievements_inserts.sql not found in ' + MIGRATIONS_DIR
+			'Migration file unblock_student_achievements_inserts.sql not found in ' +
+				MIGRATIONS_DIRS.join(' or ')
 		);
 	}
-	return readFileSync(join(MIGRATIONS_DIR, file), 'utf-8');
+	return readFileSync(join(m.dir, m.file), 'utf-8');
 }
 
 describe('Migration: unblock_student_achievements_inserts', () => {

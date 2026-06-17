@@ -277,11 +277,7 @@ export class GameCombatBuilder {
 		// was provided, use a seeded reference monster (supabase/seed.sql) instead of
 		// a fabricated id.
 		if (!this.data.monster_id) {
-			const { data: monster } = await client
-				.from('game_monsters')
-				.select('id')
-				.limit(1)
-				.single();
+			const { data: monster } = await client.from('game_monsters').select('id').limit(1).single();
 			if (!monster) {
 				throw new Error(
 					'GameCombatBuilder: no game_monsters row available (is supabase/seed.sql loaded?)'
