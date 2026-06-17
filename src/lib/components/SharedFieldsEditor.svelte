@@ -28,7 +28,7 @@
 	import MySelect from './MySelect.svelte';
 	import MyCheckbox from './MyCheckbox.svelte';
 	import PrecisionEditor from './PrecisionEditor.svelte';
-	import { ChevronDown, CircleQuestionMark } from 'lucide-svelte';
+	import { ChevronDown, CircleQuestionMark } from '@lucide/svelte';
 	import { REQUIRED_FORM_OPTIONS } from '$lib/questions/form-options';
 
 	interface Props {

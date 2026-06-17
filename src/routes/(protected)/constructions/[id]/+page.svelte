@@ -7,7 +7,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
-	import { ArrowLeft, Edit, Trash2, Globe, Lock, User, Calendar } from 'lucide-svelte';
+	import { ArrowLeft, Edit, Trash2, Globe, Lock, User, Calendar } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 

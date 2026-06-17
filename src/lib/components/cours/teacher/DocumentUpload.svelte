@@ -18,7 +18,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { Upload, Link, FileText, Image, X, Loader2 } from 'lucide-svelte';
+	import { Upload, Link, FileText, Image, X, Loader2 } from '@lucide/svelte';
 
 	interface Props {
 		chapterId: string;

@@ -27,7 +27,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import StudentSelector from '$lib/components/worksheets/StudentSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, Users, UserMinus, RefreshCw } from 'lucide-svelte';
+	import { Loader2, Users, UserMinus, RefreshCw } from '@lucide/svelte';
 
 	// ============================================================================
 	// TYPES

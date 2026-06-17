@@ -11,7 +11,7 @@
 	import { cn } from '$lib/utils';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import { Star, Trophy, Package } from 'lucide-svelte';
+	import { Star, Trophy, Package } from '@lucide/svelte';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';

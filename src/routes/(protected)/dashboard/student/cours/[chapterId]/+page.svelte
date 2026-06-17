@@ -30,7 +30,7 @@
 		BookOpen,
 		BookMarked,
 		ClipboardList
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import WorksheetCard from '$lib/components/student/worksheets/WorksheetCard.svelte';
 	import type { PageData, ActionData } from './$types';
 

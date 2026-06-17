@@ -18,7 +18,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Sheet from '$lib/components/ui/sheet';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Plus, X, GripVertical, FileText, LayoutTemplate } from 'lucide-svelte';
+	import { Plus, X, GripVertical, FileText, LayoutTemplate } from '@lucide/svelte';
 	import TemplatePickerModal from './TemplatePickerModal.svelte';
 	import type { TemplatePageData } from '../types/templates';
 

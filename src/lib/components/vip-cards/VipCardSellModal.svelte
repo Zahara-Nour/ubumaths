@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
-	import { AlertCircle, Check, Sparkles } from 'lucide-svelte';
+	import { AlertCircle, Check, Sparkles } from '@lucide/svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { VipCard } from '$lib/types/vip-card';

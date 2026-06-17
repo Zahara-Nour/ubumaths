@@ -40,7 +40,7 @@
 
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { X } from 'lucide-svelte';
+	import { X } from '@lucide/svelte';
 	import VipCard from './VipCard.svelte';
 	import VipCardHoloModal from './VipCardHoloModal.svelte';
 	import {
@@ -49,7 +49,7 @@
 		getTotalUnusedCards
 	} from '$lib/utils/vip-cards';
 	import type { VipCard as VipCardType, StudentVipCards } from '$lib/types/vip-card';
-	import { Sparkles } from 'lucide-svelte';
+	import { Sparkles } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
@@ -62,7 +62,7 @@
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { syncVipCards } from '$lib/utils/cache-sync';
 	import StudentJournalModal from '$lib/components/rewards/StudentJournalModal.svelte';
-	import { ScrollText } from 'lucide-svelte';
+	import { ScrollText } from '@lucide/svelte';
 
 	interface Props {
 		studentId: string;

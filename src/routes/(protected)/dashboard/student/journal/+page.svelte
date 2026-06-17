@@ -14,7 +14,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Card from '$lib/components/ui/card';
-	import { BookOpen, RefreshCw, ChevronDown, AlertCircle, Inbox } from 'lucide-svelte';
+	import { BookOpen, RefreshCw, ChevronDown, AlertCircle, Inbox } from '@lucide/svelte';
 	import type { RewardType } from '$lib/types/reward-journal';
 
 	// Local state for filter

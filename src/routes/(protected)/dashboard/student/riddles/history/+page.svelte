@@ -14,7 +14,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Progress from '$lib/components/ui/progress';
-	import { BookOpen, ArrowLeft, Trophy, Target, Award } from 'lucide-svelte';
+	import { BookOpen, ArrowLeft, Trophy, Target, Award } from '@lucide/svelte';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { goto } from '$app/navigation';

@@ -23,7 +23,7 @@
 		getPos: () => number | undefined;
 		selected: boolean;
 	}
-	import { Pencil, Trash2, Check, X, AlertCircle } from 'lucide-svelte';
+	import { Pencil, Trash2, Check, X, AlertCircle } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';

@@ -2,7 +2,7 @@
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Progress } from '$lib/components/ui/progress';
-	import { TrendingUp, Package, Coins, CheckCircle, XCircle, Clock, Trophy } from 'lucide-svelte';
+	import { TrendingUp, Package, Coins, CheckCircle, XCircle, Clock, Trophy } from '@lucide/svelte';
 
 	interface Stats {
 		period: string;

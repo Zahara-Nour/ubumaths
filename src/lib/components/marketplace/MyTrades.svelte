@@ -16,7 +16,7 @@
 		RefreshCw,
 		AlertCircle,
 		Plus
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import TradeNegotiationModal from './TradeNegotiationModal.svelte';

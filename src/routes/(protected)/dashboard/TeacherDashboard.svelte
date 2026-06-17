@@ -72,7 +72,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Calendar, Clock, Target, BookOpen, Users } from 'lucide-svelte';
+	import { Calendar, Clock, Target, BookOpen, Users } from '@lucide/svelte';
 	import Wheel from '$lib/components/Wheel.svelte';
 	import StudentQuickActionsTable from '$lib/components/teacher/StudentQuickActionsTable.svelte';
 	import VipCardUseDialog from '$lib/components/teacher/VipCardUseDialog.svelte';

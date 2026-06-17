@@ -19,7 +19,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { AlertTriangle, Loader2, Trash2, X } from 'lucide-svelte';
+	import { AlertTriangle, Loader2, Trash2, X } from '@lucide/svelte';
 
 	interface Props {
 		open: boolean;

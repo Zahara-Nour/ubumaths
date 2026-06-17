@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Sparkles, Palette, FileText, Gamepad2, Presentation, Circle } from 'lucide-svelte';
+	import { Sparkles, Palette, FileText, Gamepad2, Presentation, Circle } from '@lucide/svelte';
 	import MathField from '$lib/components/MathField.svelte';
 	import DynamicMathField from '$lib/components/DynamicMathField.svelte';
 	import FlipCard from '$lib/components/FlipCard.svelte';

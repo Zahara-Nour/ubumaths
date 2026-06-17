@@ -25,7 +25,7 @@
 		AlignEndHorizontal,
 		AlignHorizontalSpaceAround,
 		AlignVerticalSpaceAround
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	// ==========================================================================
 	// State

@@ -17,7 +17,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import JournalWeekGrid from '$lib/components/journal/JournalWeekGrid.svelte';
 	import JournalDatePicker from '$lib/components/journal/JournalDatePicker.svelte';
-	import { BookOpen, GraduationCap, Calendar } from 'lucide-svelte';
+	import { BookOpen, GraduationCap, Calendar } from '@lucide/svelte';
 	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import type { PageData } from './$types';
 

@@ -19,7 +19,7 @@
 <script lang="ts">
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Paperclip, X } from 'lucide-svelte';
+	import { Paperclip, X } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Component Props

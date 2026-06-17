@@ -19,7 +19,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Info, Copy, Search } from 'lucide-svelte';
+	import { Info, Copy, Search } from '@lucide/svelte';
 
 	let progressValue = $state(60);
 	let sliderValue = $state([50]);

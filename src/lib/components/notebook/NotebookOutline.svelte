@@ -14,7 +14,7 @@
 	import type { NotebookCell } from '$lib/types/notebook';
 	import { extractOutline } from '$lib/utils/notebook-outline';
 	import { Button } from '$lib/components/ui/button';
-	import { ListTree, X } from 'lucide-svelte';
+	import { ListTree, X } from '@lucide/svelte';
 
 	let {
 		cells,

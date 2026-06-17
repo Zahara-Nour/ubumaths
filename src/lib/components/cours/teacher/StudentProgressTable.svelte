@@ -14,7 +14,7 @@
 	import * as Table from '$lib/components/ui/table';
 	import { Progress } from '$lib/components/ui/progress';
 	import { cn } from '$lib/utils';
-	import { Check, X, Users } from 'lucide-svelte';
+	import { Check, X, Users } from '@lucide/svelte';
 
 	// Props
 	interface Student {

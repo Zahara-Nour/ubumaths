@@ -32,7 +32,7 @@
 		Hash,
 		Trash2,
 		Eraser
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { TextAlignment, NumberFormat } from '$lib/spreadsheet/types';
 
 	// =============================================================================

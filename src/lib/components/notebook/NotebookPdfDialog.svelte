@@ -19,7 +19,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { FileDown, Loader2 } from 'lucide-svelte';
+	import { FileDown, Loader2 } from '@lucide/svelte';
 	import type { NotebookExportOptions } from '$lib/typst/generators/notebook-generator';
 
 	interface Props {

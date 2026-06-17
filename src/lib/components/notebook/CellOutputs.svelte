@@ -10,7 +10,7 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { CellOutput } from '$lib/types/notebook';
 	import { Button } from '$lib/components/ui/button';
-	import { ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { ChevronDown, ChevronUp } from '@lucide/svelte';
 	import { foldOutput } from '$lib/utils/output-fold';
 	import 'mathlive';
 

@@ -42,7 +42,7 @@
 		ClipboardList,
 		HelpCircle,
 		Dumbbell
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { ChapterIcon } from '$lib/types/chapters';
 
 	// Props

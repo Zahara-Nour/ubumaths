@@ -6,7 +6,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
-	import { Keyboard, Type, Copy, Check, RotateCcw, Settings2, Code, Braces } from 'lucide-svelte';
+	import { Keyboard, Type, Copy, Check, RotateCcw, Settings2, Code, Braces } from '@lucide/svelte';
 
 	// State
 	let latexOutput = $state('');

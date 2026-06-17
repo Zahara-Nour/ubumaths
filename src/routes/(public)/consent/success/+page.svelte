@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { CheckCircle2, ExternalLink } from 'lucide-svelte';
+	import { CheckCircle2, ExternalLink } from '@lucide/svelte';
 </script>
 
 <svelte:head>

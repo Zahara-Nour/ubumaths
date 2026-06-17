@@ -19,7 +19,7 @@
 <script lang="ts">
 	import { fly, scale } from 'svelte/transition';
 	import { backOut } from 'svelte/easing';
-	import { X, Trophy, Star, Sparkles, Crown, Gem } from 'lucide-svelte';
+	import { X, Trophy, Star, Sparkles, Crown, Gem } from '@lucide/svelte';
 	import type { Achievement, AchievementRarity } from '$lib/types/achievements';
 	import { cn } from '$lib/utils';
 

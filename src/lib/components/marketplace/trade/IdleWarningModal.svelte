@@ -6,7 +6,7 @@
 -->
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Clock, LogOut } from 'lucide-svelte';
+	import { Clock, LogOut } from '@lucide/svelte';
 
 	interface Props {
 		onContinue: () => void;

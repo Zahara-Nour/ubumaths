@@ -8,7 +8,7 @@
 	import type { PageData } from './$types';
 	import RiddleCard from '$lib/components/riddles/RiddleCard.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto as _goto } from '$app/navigation';
 	import { syncGidouilles } from '$lib/utils/cache-sync';

@@ -47,7 +47,7 @@
 		List,
 		Info,
 		FileText
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	// ============================================================================

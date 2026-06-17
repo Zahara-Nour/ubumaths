@@ -10,7 +10,7 @@
 		Rocket,
 		Share2,
 		ClipboardList
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import CartQuestionCard from '$lib/components/CartQuestionCard.svelte';

@@ -2,7 +2,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
-	import { CheckCircle2, XCircle, AlertCircle } from 'lucide-svelte';
+	import { CheckCircle2, XCircle, AlertCircle } from '@lucide/svelte';
 
 	let { data } = $props();
 

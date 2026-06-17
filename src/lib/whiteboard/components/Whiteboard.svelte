@@ -29,7 +29,7 @@
 		FolderOpen,
 		PanelRight,
 		PenTool
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageFormatKey } from '../types/document';
 	import type { TemplatePageData } from '../types/templates';
 	import { driveSyncService } from '../services/drive-sync';

@@ -20,7 +20,7 @@
 	import { getActionDescription } from '$lib/utils/vip-cards';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Loader2, Sparkles } from 'lucide-svelte';
+	import { Loader2, Sparkles } from '@lucide/svelte';
 	import { vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { syncVipCards } from '$lib/utils/cache-sync';

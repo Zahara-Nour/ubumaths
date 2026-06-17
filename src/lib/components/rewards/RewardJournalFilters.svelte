@@ -11,7 +11,7 @@
 	import type { RewardType } from '$lib/types/reward-journal';
 	import { cn } from '$lib/utils';
 	import { Button } from '$lib/components/ui/button';
-	import { Coins, Star, Crown, Trophy, Package, AlertTriangle, X } from 'lucide-svelte';
+	import { Coins, Star, Crown, Trophy, Package, AlertTriangle, X } from '@lucide/svelte';
 
 	// Props
 	let {

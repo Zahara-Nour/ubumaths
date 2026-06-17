@@ -12,7 +12,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { cn } from '$lib/utils';
-	import { Trophy, RotateCcw, X, Star } from 'lucide-svelte';
+	import { Trophy, RotateCcw, X, Star } from '@lucide/svelte';
 
 	// Props
 	interface Props {

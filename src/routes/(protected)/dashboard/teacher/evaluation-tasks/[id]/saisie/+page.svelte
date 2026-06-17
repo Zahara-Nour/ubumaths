@@ -11,7 +11,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { ChevronLeft, Save, Check } from 'lucide-svelte';
+	import { ChevronLeft, Save, Check } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData, ActionData } from './$types';
 

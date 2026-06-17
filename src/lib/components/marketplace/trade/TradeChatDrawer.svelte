@@ -20,7 +20,7 @@
 <script lang="ts">
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { Button } from '$lib/components/ui/button';
-	import { MessageCircle, Send } from 'lucide-svelte';
+	import { MessageCircle, Send } from '@lucide/svelte';
 	import type { TradeChatMessage } from '$lib/stores/tradeRealtime.svelte';
 
 	interface Props {

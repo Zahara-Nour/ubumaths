@@ -22,7 +22,7 @@
 		Lock,
 		Sparkles,
 		Loader2
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import type { DefaultTemplate } from '$lib/worksheets/default-templates';
 

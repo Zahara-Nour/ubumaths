@@ -45,7 +45,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import { PlaygroundExecutor, type ExerciseValidationResult as Result } from '$lib/shared/python';
-	import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-svelte';
+	import { CheckCircle2, AlertTriangle, Loader2 } from '@lucide/svelte';
 
 	type Props = {
 		initialForm: FormState;

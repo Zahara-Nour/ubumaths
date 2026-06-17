@@ -24,7 +24,7 @@
 		Calendar,
 		User,
 		Clock
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	interface Props {

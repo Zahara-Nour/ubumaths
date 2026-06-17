@@ -44,7 +44,7 @@
 		Edit3,
 		AlertCircle,
 		CheckCircle2
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	// ============================================================================

@@ -20,7 +20,7 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { CheckCircle2, XCircle, AlertTriangle, ArrowLeft } from 'lucide-svelte';
+	import { CheckCircle2, XCircle, AlertTriangle, ArrowLeft } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 

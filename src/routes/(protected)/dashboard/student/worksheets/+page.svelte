@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import WorksheetCard from '$lib/components/student/worksheets/WorksheetCard.svelte';
-	import { FileText, ChevronLeft, ChevronRight, Filter } from 'lucide-svelte';
+	import { FileText, ChevronLeft, ChevronRight, Filter } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	interface Props {

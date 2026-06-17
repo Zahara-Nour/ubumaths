@@ -2,7 +2,7 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Info } from 'lucide-svelte';
+	import { Info } from '@lucide/svelte';
 	import ReportStatusBadge from './ReportStatusBadge.svelte';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import type { StudentErrorReportView } from '$lib/types/worksheets';

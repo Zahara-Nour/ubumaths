@@ -14,7 +14,7 @@
 		AlertCircle,
 		X,
 		Loader2
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import ReportErrorButton from '$lib/components/worksheets/ReportErrorButton.svelte';
 	import TutorChat from '$lib/components/tutor/TutorChat.svelte';

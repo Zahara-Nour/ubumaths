@@ -7,7 +7,7 @@
 <script lang="ts">
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
-	import { Info } from 'lucide-svelte';
+	import { Info } from '@lucide/svelte';
 
 	interface Props {
 		value: string;

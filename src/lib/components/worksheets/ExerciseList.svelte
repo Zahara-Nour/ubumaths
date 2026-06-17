@@ -31,7 +31,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { GripVertical, Trash2, Loader2, Settings2, Star } from 'lucide-svelte';
+	import { GripVertical, Trash2, Loader2, Settings2, Star } from '@lucide/svelte';
 	import type {
 		WorksheetExerciseWithExercise,
 		WorksheetSectionRow,

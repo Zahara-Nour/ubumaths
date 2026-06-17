@@ -5,7 +5,7 @@
 	Modal "élèves concernés" au clic.
 -->
 <script lang="ts">
-	import { Users } from 'lucide-svelte';
+	import { Users } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Skeleton } from '$lib/components/ui/skeleton';

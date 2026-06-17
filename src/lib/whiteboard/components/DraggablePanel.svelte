@@ -9,7 +9,7 @@
 	 * - Close button
 	 */
 
-	import { GripVertical, X } from 'lucide-svelte';
+	import { GripVertical, X } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { Snippet } from 'svelte';
 

@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Plus, Check } from 'lucide-svelte';
+	import { Plus, Check } from '@lucide/svelte';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';

@@ -22,7 +22,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { RotateCw, Check, X, AlertCircle } from 'lucide-svelte';
+	import { RotateCw, Check, X, AlertCircle } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import FlipCard from '$lib/components/FlipCard.svelte';
 	import { createLogger } from '$lib/utils/logger';

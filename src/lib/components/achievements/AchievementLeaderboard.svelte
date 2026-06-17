@@ -13,7 +13,7 @@
 <script lang="ts">
 	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { Trophy, Medal, Award } from 'lucide-svelte';
+	import { Trophy, Medal, Award } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	// Type for leaderboard entry

@@ -20,7 +20,7 @@
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Users, UserCheck, Send, Loader2 } from 'lucide-svelte';
+	import { ArrowLeft, Users, UserCheck, Send, Loader2 } from '@lucide/svelte';
 	import type { AssignDeckRequest, FSRSConfig } from '$lib/srs/types';
 
 	interface Student {

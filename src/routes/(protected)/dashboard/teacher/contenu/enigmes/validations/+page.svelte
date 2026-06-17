@@ -16,7 +16,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Clock, FileCheck } from 'lucide-svelte';
+	import { Clock, FileCheck } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 

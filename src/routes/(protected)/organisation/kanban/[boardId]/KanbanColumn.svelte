@@ -26,7 +26,7 @@
 		type DndEvent
 	} from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
-	import { MoreVertical, Plus, Trash2 } from 'lucide-svelte';
+	import { MoreVertical, Plus, Trash2 } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';

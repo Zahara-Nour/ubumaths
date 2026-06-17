@@ -12,7 +12,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { formatUserError } from '$lib/utils/errors';
 	import { formatDeadlineFull } from '$lib/utils/dates';
-	import { ArrowLeft, Users, User, Globe, X, Calendar } from 'lucide-svelte';
+	import { ArrowLeft, Users, User, Globe, X, Calendar } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

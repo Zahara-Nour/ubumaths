@@ -7,7 +7,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 

@@ -15,7 +15,7 @@
 	import { goto } from '$app/navigation';
 	import ReviewSession from '$lib/components/srs/ReviewSession.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 
 	const deckId = $derived(page.params.id);
 	const states = $derived(page.url.searchParams.get('states') ?? undefined);

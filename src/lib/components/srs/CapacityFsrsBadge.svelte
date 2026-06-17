@@ -8,7 +8,7 @@
 	Cf. docs/ref/srs/architecture.md §5.1.
 -->
 <script lang="ts">
-	import { AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from 'lucide-svelte';
+	import { AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from '@lucide/svelte';
 	import type { CapacityBadge } from '$lib/server/srs/capacity-badge';
 
 	interface Props {

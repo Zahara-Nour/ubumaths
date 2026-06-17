@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import { FileText, Eye, Download, Calendar, User, X } from 'lucide-svelte';
+	import { FileText, Eye, Download, Calendar, User, X } from '@lucide/svelte';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
 	import type { PageData } from './$types';

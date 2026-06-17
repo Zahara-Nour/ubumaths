@@ -21,7 +21,7 @@
 	import CorrectionCard from '$lib/components/questions/CorrectionCard.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, RotateCw, Clock, TrendingUp } from 'lucide-svelte';
+	import { ArrowLeft, RotateCw, Clock, TrendingUp } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	interface Props {

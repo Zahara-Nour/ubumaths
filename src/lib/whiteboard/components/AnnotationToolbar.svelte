@@ -31,7 +31,7 @@
 		Redo2,
 		Paintbrush,
 		GripVertical
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { FillMode, StrokeStyle } from '../types/document';
 	import type { AnnotationToolType, StampType } from '../types/document';
 	import { STAMP_CATEGORIES, STAMP_CATEGORY_LABELS } from '../types/document';

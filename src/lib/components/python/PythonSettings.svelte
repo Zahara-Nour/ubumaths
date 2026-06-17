@@ -14,7 +14,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Switch } from '$lib/components/ui/switch';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { Settings, Minus, Plus, Palette, Type, GraduationCap } from 'lucide-svelte';
+	import { Settings, Minus, Plus, Palette, Type, GraduationCap } from '@lucide/svelte';
 	import {
 		pythonStore,
 		EDITOR_THEMES,

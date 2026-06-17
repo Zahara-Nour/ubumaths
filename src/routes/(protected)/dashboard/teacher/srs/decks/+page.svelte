@@ -31,7 +31,7 @@
 		Sparkles,
 		Lock,
 		Users
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { Deck } from '$lib/srs/types';
 
 	interface Props {

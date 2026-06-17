@@ -15,7 +15,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { cn } from '$lib/utils';
-	import { Search, Package, Users } from 'lucide-svelte';
+	import { Search, Package, Users } from '@lucide/svelte';
 
 	// Props
 	interface Props {

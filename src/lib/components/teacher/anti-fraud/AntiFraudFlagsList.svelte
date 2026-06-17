@@ -8,7 +8,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { CircleAlert, AlertTriangle, ShieldCheck, Eye } from 'lucide-svelte';
+	import { CircleAlert, AlertTriangle, ShieldCheck, Eye } from '@lucide/svelte';
 	import FlagDetailsDialog from './FlagDetailsDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { SvelteSet } from 'svelte/reactivity';

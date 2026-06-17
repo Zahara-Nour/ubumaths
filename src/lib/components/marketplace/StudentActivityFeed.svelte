@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Clock, CheckCircle, XCircle, Plus, Loader2, MessageSquare } from 'lucide-svelte';
+	import { Clock, CheckCircle, XCircle, Plus, Loader2, MessageSquare } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { goto } from '$app/navigation';

@@ -8,7 +8,7 @@
 	import type { CartItem } from '$lib/stores/questionCart.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import type { TestMode, TestSession } from '$lib/types/test';
-	import { AlertCircle } from 'lucide-svelte';
+	import { AlertCircle } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 

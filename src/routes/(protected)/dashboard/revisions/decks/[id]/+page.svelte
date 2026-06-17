@@ -16,7 +16,15 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { ChevronLeft, Plus, PlayCircle, Pencil, Trash2, BookOpen, FileText } from 'lucide-svelte';
+	import {
+		ChevronLeft,
+		Plus,
+		PlayCircle,
+		Pencil,
+		Trash2,
+		BookOpen,
+		FileText
+	} from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 	import type { DeckSection, DeckCardLite } from './+page.server';

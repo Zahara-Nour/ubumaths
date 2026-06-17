@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { User, Hash, Calendar, MessageSquare, CheckCircle2, XCircle } from 'lucide-svelte';
+	import { User, Hash, Calendar, MessageSquare, CheckCircle2, XCircle } from '@lucide/svelte';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import type { TeacherErrorReportView } from '$lib/types/worksheets';
 

@@ -21,7 +21,7 @@ Features:
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import FunctionInput from './FunctionInput.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Plus } from 'lucide-svelte';
+	import { Plus } from '@lucide/svelte';
 
 	/**
 	 * Add a new empty function

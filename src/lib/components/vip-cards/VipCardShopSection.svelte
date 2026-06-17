@@ -5,7 +5,7 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { consent } from '$lib/stores/consent.svelte';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
-	import { Search, ShoppingCart, Sparkles, Gem } from 'lucide-svelte';
+	import { Search, ShoppingCart, Sparkles, Gem } from '@lucide/svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import VipCardPurchaseModal from './VipCardPurchaseModal.svelte';

@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import SkeletonList from '$lib/components/skeleton/SkeletonList.svelte';
-	import { RefreshCw, ShoppingBag } from 'lucide-svelte';
+	import { RefreshCw, ShoppingBag } from '@lucide/svelte';
 	import MarketplaceListingCard from './MarketplaceListingCard.svelte';
 	import ListingDetailsModal from './ListingDetailsModal.svelte';
 	import type { MarketplaceListing } from '$lib/types/marketplace';

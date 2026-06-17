@@ -23,7 +23,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
-	import { Plus, Trash2, AlertCircle } from 'lucide-svelte';
+	import { Plus, Trash2, AlertCircle } from '@lucide/svelte';
 
 	// Props
 	let {

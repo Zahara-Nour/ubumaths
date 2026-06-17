@@ -23,7 +23,7 @@
 		PenLine,
 		FileQuestion,
 		ArrowRight
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { StudentWorksheetListItem, WorksheetType } from '$lib/types/worksheets';
 
 	interface Props {

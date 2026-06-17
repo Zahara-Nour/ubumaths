@@ -21,7 +21,7 @@
 	import NotebookCell from './NotebookCell.svelte';
 	import NotebookOutline from './NotebookOutline.svelte';
 	import { Alert } from '$lib/components/ui/alert';
-	import { Eye } from 'lucide-svelte';
+	import { Eye } from '@lucide/svelte';
 
 	const FLIP_MS = 200;
 

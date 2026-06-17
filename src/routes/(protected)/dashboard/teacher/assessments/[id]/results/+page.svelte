@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import { Badge } from '$lib/components/ui/badge';
-	import { ArrowLeft, TrendingUp, Users, CheckCircle2, Clock, AlertCircle } from 'lucide-svelte';
+	import { ArrowLeft, TrendingUp, Users, CheckCircle2, Clock, AlertCircle } from '@lucide/svelte';
 	import { getStatusColor, getStatusLabel } from '$lib/types/assessment';
 	import type { PageData } from './$types';
 

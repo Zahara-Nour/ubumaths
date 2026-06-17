@@ -17,7 +17,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import { cn } from '$lib/utils';
-	import { AlertCircle, AlertTriangle, CheckCircle2, ChevronRight, XCircle } from 'lucide-svelte';
+	import { AlertCircle, AlertTriangle, CheckCircle2, ChevronRight, XCircle } from '@lucide/svelte';
 
 	type ReviewStatus = 'pending' | 'approved' | 'rejected';
 

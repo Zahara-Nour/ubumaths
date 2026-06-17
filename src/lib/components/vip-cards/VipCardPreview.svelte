@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Switch } from '$lib/components/ui/switch';
-	import { Check, ImageIcon, Pencil, Trash2 } from 'lucide-svelte';
+	import { Check, ImageIcon, Pencil, Trash2 } from '@lucide/svelte';
 	import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 	import type { VipCardAction } from '$lib/types/vip-card';
 	import { categoryIcon } from './utils';

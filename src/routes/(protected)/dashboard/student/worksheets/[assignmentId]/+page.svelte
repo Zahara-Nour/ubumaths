@@ -6,7 +6,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { FileText, AlertTriangle, Star } from 'lucide-svelte';
+	import { FileText, AlertTriangle, Star } from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus, ExerciseMasteryListResponse } from '$lib/types/exercise-mastery';
 	import type {

@@ -15,7 +15,7 @@
 	import BugReportCard from './BugReportCard.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2 } from '@lucide/svelte';
 
 	interface Props {
 		reports: BugReportWithAuthor[];

@@ -16,7 +16,7 @@
 -->
 <script lang="ts">
 	import * as Alert from '$lib/components/ui/alert';
-	import { Clock, ShieldAlert } from 'lucide-svelte';
+	import { Clock, ShieldAlert } from '@lucide/svelte';
 	import type { ConsentStatus } from '$lib/utils/consent';
 
 	interface Props {

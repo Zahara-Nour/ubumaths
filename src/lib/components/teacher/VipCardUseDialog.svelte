@@ -7,7 +7,7 @@
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import Wheel from '$lib/components/Wheel.svelte';
-	import { Target, ArrowLeft } from 'lucide-svelte';
+	import { Target, ArrowLeft } from '@lucide/svelte';
 
 	let {
 		open = $bindable(false),

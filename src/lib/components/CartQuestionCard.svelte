@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
-	import { Plus, Minus } from 'lucide-svelte';
+	import { Plus, Minus } from '@lucide/svelte';
 	import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
 

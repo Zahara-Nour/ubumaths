@@ -18,7 +18,7 @@
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { canAffordVipCard } from '$lib/utils/vip-cards';
-	import { Sparkles, Eye, Loader2, Plus, Star } from 'lucide-svelte';
+	import { Sparkles, Eye, Loader2, Plus, Star } from '@lucide/svelte';
 	import { getTemplateById, vipCardTemplates } from '$lib/stores/vipCardTemplates.svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 

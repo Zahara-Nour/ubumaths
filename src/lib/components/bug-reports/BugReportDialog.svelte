@@ -24,7 +24,7 @@
 		BUG_REPORT_CATEGORY_ICONS,
 		BUG_REPORT_SEVERITY_LABELS
 	} from '$lib/types/bug-reports';
-	import { Loader2, Upload, X } from 'lucide-svelte';
+	import { Loader2, Upload, X } from '@lucide/svelte';
 
 	interface Props {
 		open: boolean;

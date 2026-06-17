@@ -18,7 +18,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
 	import { cn } from '$lib/utils';
-	import { ChevronRight, ChevronLeft } from 'lucide-svelte';
+	import { ChevronRight, ChevronLeft } from '@lucide/svelte';
 
 	import QuizQuestion from './QuizQuestion.svelte';
 	import QuizSummary from './QuizSummary.svelte';

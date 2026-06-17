@@ -26,7 +26,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, AlertTriangle } from 'lucide-svelte';
+	import { Loader2, AlertTriangle } from '@lucide/svelte';
 
 	// ============================================================================
 	// Types

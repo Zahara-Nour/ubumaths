@@ -34,7 +34,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MultiClassStudentSelector from '$lib/components/worksheets/MultiClassStudentSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, Users, Calendar, Monitor, Info } from 'lucide-svelte';
+	import { Loader2, Users, Calendar, Monitor, Info } from '@lucide/svelte';
 	import type {
 		WorksheetAssignmentInsert,
 		WorksheetAssignmentWithRelations
