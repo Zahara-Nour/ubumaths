@@ -23,18 +23,19 @@ référence (environnement), et cascades.
 
 ## Matrice fichier × cause (mesurée sur le run)
 
-| Cause | Échecs | Verdict | Preuve |
-|---|---|---|---|
-| **Invariant mono-prof** | **65** | **STALE** | `enforce_single_teacher` (refactor 15/06) refuse un 2ᵉ prof. Les tests créent un prof chacun mais le nettoyage des profs ne tient pas en suite complète (game-leaderboards passe SEUL, échoue dans la suite). Le trigger = comportement prod voulu. |
-| **Données réf. compétences** | **43** | **DONNÉES** | `getKnowledgeSkill / getMathCompetenceId / getObservableSkill: '...' not found`. Le référentiel (objectifs/compétences) n'est pas seedé (baseline schéma-seul). |
-| **Données réf. cartes VIP** | **~19** | **DONNÉES** | RPC `draw_vip_card` lève `P0001 "No cards available…"` / `"No enabled VIP cards…"` — correct : **0 carte** en base (templates non seedés). |
-| **Helper template stale** | **20** | **STALE** | `createFakeTemplate` passe `type: 'direct'`, **interdit** par `question_templates_type_check` (valeurs : numerical_*, algebraic_transform, fill_in_blanks, multiple_choice). |
-| **Données réf. monstres** | **6** | **DONNÉES** | `game_combats_monster_id_fkey` : `game_monsters` vide (non seedé). |
-| **Table inexistante** | **1** | **STALE** | requête sur `public.users` (`PGRST205`) — table qui n'existe pas (c'est `auth.users`/`profiles`). |
-| **Cascades** | **~55** | **SECONDAIRE** | `Cannot read properties of null`, `expected [] to have length N`, `coerce to single object` — échecs en aval d'une des causes ci-dessus (setup qui retourne null → accès propriété). |
-| **Divers asserts** | **~9** | à voir | quelques assertions isolées (NaN, undefined…) — à inspecter au cas par cas, probablement cascades. |
+| Cause                        | Échecs  | Verdict        | Preuve                                                                                                                                                                                                                                              |
+| ---------------------------- | ------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invariant mono-prof**      | **65**  | **STALE**      | `enforce_single_teacher` (refactor 15/06) refuse un 2ᵉ prof. Les tests créent un prof chacun mais le nettoyage des profs ne tient pas en suite complète (game-leaderboards passe SEUL, échoue dans la suite). Le trigger = comportement prod voulu. |
+| **Données réf. compétences** | **43**  | **DONNÉES**    | `getKnowledgeSkill / getMathCompetenceId / getObservableSkill: '...' not found`. Le référentiel (objectifs/compétences) n'est pas seedé (baseline schéma-seul).                                                                                     |
+| **Données réf. cartes VIP**  | **~19** | **DONNÉES**    | RPC `draw_vip_card` lève `P0001 "No cards available…"` / `"No enabled VIP cards…"` — correct : **0 carte** en base (templates non seedés).                                                                                                          |
+| **Helper template stale**    | **20**  | **STALE**      | `createFakeTemplate` passe `type: 'direct'`, **interdit** par `question_templates_type_check` (valeurs : numerical\_\*, algebraic_transform, fill_in_blanks, multiple_choice).                                                                      |
+| **Données réf. monstres**    | **6**   | **DONNÉES**    | `game_combats_monster_id_fkey` : `game_monsters` vide (non seedé).                                                                                                                                                                                  |
+| **Table inexistante**        | **1**   | **STALE**      | requête sur `public.users` (`PGRST205`) — table qui n'existe pas (c'est `auth.users`/`profiles`).                                                                                                                                                   |
+| **Cascades**                 | **~55** | **SECONDAIRE** | `Cannot read properties of null`, `expected [] to have length N`, `coerce to single object` — échecs en aval d'une des causes ci-dessus (setup qui retourne null → accès propriété).                                                                |
+| **Divers asserts**           | **~9**  | à voir         | quelques assertions isolées (NaN, undefined…) — à inspecter au cas par cas, probablement cascades.                                                                                                                                                  |
 
 ### Répartition par verdict
+
 - **STALE (test à corriger vs schéma prod réel)** : ~86 (mono-prof 65 + template-type 20 + public.users 1)
 - **DONNÉES (référence non seedée)** : ~68 (compétences 43 + cartes VIP 19 + monstres 6)
 - **CASCADES (secondaires)** : ~55
@@ -53,6 +54,7 @@ référence (environnement), et cascades.
 4. **Cascades** : se résorbent en grande partie une fois (1)+(2) réglés ; réinspecter ensuite le reste.
 
 ## Important
+
 - **Ne PAS réaligner un test sans confirmer le comportement code** (règle d'or stale-tests-sweep).
 - Le seed de référence doit rester **non-PII** (pas de données d'élèves), comme le baseline.
 - Les 2 RPC restent à pousser en prod (`pnpm db:migrate`) — voir le journal baseline.
@@ -76,10 +78,11 @@ vip-card-filters 18→2, competence-referentiel 41→17, vip-card-enabled 7→1,
 (65→73, en hausse car plus de tests démasqués). **B (mono-prof) est indépendant du seed.**
 
 ### Reste à traiter (162 échecs) — par priorité
+
 1. **B — mono-prof (~73)** : `enforce_single_teacher` (prod voulu) + lifecycle de tests. Un prof
    fuite et empoisonne la suite. **#1 en volume**, indépendant. → fiabiliser le cleanup des profs.
 2. **C — helper `createFakeTemplate` (~43)** : `type: 'direct'` viole `question_templates_type_check`.
-   Fix trivial : utiliser un type valide (numerical_*/algebraic_transform/fill_in_blanks/multiple_choice).
+   Fix trivial : utiliser un type valide (numerical\_\*/algebraic_transform/fill_in_blanks/multiple_choice).
 3. **FK monstres (~6)** : seed game_monsters présent mais le test utilise sans doute un `monster_id`
    codé en dur ≠ ids seedés → à vérifier (stale test data).
 4. **Cascades (~14 TypeError null)** + divers asserts (~10) : se résorbent en partie après B/C.
@@ -88,12 +91,12 @@ vip-card-filters 18→2, competence-referentiel 41→17, vip-card-enabled 7→1,
 
 ## MAJ — C + B1 LIVRÉS (2026-06-16) — bilan cumulé **77 → 184 passants**
 
-| Étape | Passants | Δ | Commit |
-|---|---|---|---|
-| baseline seul | 77 | — | — |
-| **A** seed référence | 133 | +56 | `cbb5f106b` |
-| **C** createFakeTemplate | 160 | +27 | `0e57765fa` |
-| **B1** private_messages FK | **184** | +24 | `12b695624` |
+| Étape                      | Passants | Δ   | Commit      |
+| -------------------------- | -------- | --- | ----------- |
+| baseline seul              | 77       | —   | —           |
+| **A** seed référence       | 133      | +56 | `cbb5f106b` |
+| **C** createFakeTemplate   | 160      | +27 | `0e57765fa` |
+| **B1** private_messages FK | **184**  | +24 | `12b695624` |
 
 - **C** : `createFakeTemplate` violait **4** contraintes en cascade (type 'direct', grades '6e'→'6',
   variations []→[{}], theme fixe→unique). Corrigé. skill-attempts 27→2.
@@ -103,6 +106,7 @@ vip-card-filters 18→2, competence-referentiel 41→17, vip-card-enabled 7→1,
   messaging-triggers 14→0, sync 10→2.
 
 ### Reste (~111 échecs) — investigation ouverte
+
 - **Contamination mono-prof résiduelle** (chat, assignment, updated-at, cleanup, game-leaderboards,
   kanban…) : B1 a réglé messaging/sync, mais un prof fuite ENCORE alors que (a) tous les profs de
   test sont `@test.com` (nettoyables), (b) plus aucune erreur de blocage FK. game-leaderboards passe
@@ -114,6 +118,7 @@ vip-card-filters 18→2, competence-referentiel 41→17, vip-card-enabled 7→1,
   competence-referentiel 16, vip-card-teacher-overrides 8 (démasqués par le seed).
 
 ### Bugs prod réels trouvés (NON poussés — David `db:migrate` quand il veut)
+
 1. `game_leaderboard` ORDER BY `rank`→`rk` (0A000)
 2. `minesweeper_scoped_leaderboard` même bug
 3. `private_messages.sender_id` FK SET NULL→CASCADE (RGPD : suppression d'un expéditeur)
@@ -138,11 +143,13 @@ Appliqué à `deleteTestAuthUsers` ET `cleanupCompetenceTestData` (2e chemin fuy
 single-teacher-rls, sync, l'essentiel de chat → verts en suite. Contamination **résolue**.
 
 ### Bilan global de la session : **77 → 204 passants** (×2,6), 0 régression
+
 | baseline | A seed | C template | B1 FK | B2 cleanup |
-|---|---|---|---|---|
-| 77 | 133 | 160 | 184 | **204** |
+| -------- | ------ | ---------- | ----- | ---------- |
+| 77       | 133    | 160        | 184   | **204**    |
 
 ### Reste (~91 échecs) = problèmes PROPRES par fichier (plus de contamination)
+
 - **vip-card-teacher-overrides (7)** : teste un modèle **multi-profs** (« Intersection Logic »,
   « 3 teachers », « teacher isolation ») → **obsolète sous le refactor mono-prof** →
   **décision produit** (skip/réécrire ? les overrides VIP multi-profs sont-ils morts ?).
