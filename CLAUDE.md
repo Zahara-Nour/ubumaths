@@ -1,147 +1,46 @@
-# CLAUDE.md
+# CLAUDE.md — UbuMaths
 
-Guide essentiel pour Claude Code - UbuMaths.
-
-> **Documentation detaillee** : [docs/claude/](docs/claude/)
+Guide essentiel pour Claude Code. Doc détaillée : [docs/claude/](docs/claude/).
 
 ---
 
-## Project Overview
+## Contexte (toujours en tête)
 
-Application educative de mathematiques pour eleves francophones.
-
-- **Langue** : UI en francais, code/comments en anglais
-- **Stack** : Svelte 5 (runes) | TypeScript (strict) | Tailwind CSS 4 | Shadcn-svelte | MathLive | Supabase (free tier) | Vercel (Free tier) | pnpm
+- Application éducative de mathématiques, élèves francophones. **UI en français, code & commentaires en anglais.**
+- ⚠️ **PRODUCTION LIVE** : `main` est déployé en prod (Vercel). Vraies données d'**élèves mineurs** → **RGPD, prudence maximale** sur tout ce qui touche données / auth / social.
+- **Modèle mono-professeur** : un seul prof (+ admin), des élèves dans ses classes ou hors-classe. L'**école = frontière sociale / safeguarding** ; la classe = sous-groupe d'organisation.
+- **Stack** : Svelte 5 (runes) · TypeScript (strict) · Tailwind 4 · Shadcn-svelte · MathLive · Supabase (Postgres + Auth + RLS, **EU / eu-west-3**) · Vercel · pnpm.
 
 ---
 
-## Quick Start
+## ⚠️ Contrainte mémoire (OOM) — LIRE
+
+Machine à faible RAM. **NE JAMAIS lancer sur tout le projet** (ça crashe) :
+`pnpm check` · `pnpm check:fast` · `svelte-check` (sans `--incremental`) · `pnpm build` · `pnpm lint` · `npx tsc --noEmit` (en plus, faux positifs `$lib`).
+
+- À la place : **`pnpm check:incremental`** (TS + Svelte, ~30 s, memory-safe, **0 erreur exigée**).
+- **eslint OOM en local → CI-only.** Ne pas le lancer en local (on accepte le round-trip CI).
+- Le **hook pre-commit OOM** aussi → `git commit --no-verify` + compenser : `prettier --write` sur les fichiers modifiés (+ `svelte-autofixer` sur les `.svelte`), puis `pnpm check:incremental` avant de pousser.
+- ⚠️ Un hook qui crashe **stashe** le travail non commité (→ perdu) → commit tôt ; après un crash, vérifier `git stash list`.
+
+---
+
+## Commandes
 
 ```bash
-# Development
-pnpm dev -- --port 5175    # TOUJOURS utiliser port 5175 (Claude)
+pnpm dev -- --port 5175             # dev (TOUJOURS port 5175 ; 5173 = user, NE PAS utiliser)
+pnpm check:incremental              # TS + Svelte (memory-safe, 0 erreur exigée)
+pnpm format "src/**/*.{ts,svelte}"  # prettier --write
 
-# Quality checks (FICHIERS MODIFIES UNIQUEMENT)
-pnpm format "src/**/*.{ts,svelte}"  # Prettier
-pnpm check:incremental              # TypeScript + Svelte check (incremental, ~30s)
+pnpm test:server <path>             # tests serveur (fichier ciblé)
+pnpm test:client <path>             # tests client (*.svelte.test.ts)
+pnpm test:integration               # intégration + DB (Supabase local)
 
-# Tests
-pnpm test:server <path>    # Server tests only (for specific files)
-pnpm test:client <path>    # Client tests only (*.svelte.test.ts)
-pnpm test:integration      # Integration + DB tests (Supabase local, tests/integration/)
-
-# Database
-pnpm db:start              # Start Supabase local
-pnpm db:migrate            # Push migrations
-
-# Release
-pnpm release               # Create release (main branch only)
+pnpm db:start / db:reset            # Supabase local (reset = recrée depuis le baseline)
+pnpm db:migrate / db:types          # push migrations → EU / régénère database.ts (avec accord explicite)
+pnpm maintenance:on / :off          # mode maintenance prod (releases à risque)
+pnpm release                        # tag de version + CHANGELOG (standard-version, sur main)
 ```
-
-**Ports** : 5175 (Claude) | 5173 (User - NE PAS UTILISER) | 54321 (Supabase local)
-
-### INTERDIT (problemes de memoire)
-
-- `pnpm check` / `pnpm check:fast` / `svelte-check` (sans --incremental) - JAMAIS utiliser
-- `pnpm build` pour verifier - JAMAIS utiliser
-- `pnpm lint` sur tout le projet - JAMAIS utiliser
-- `npx tsc --noEmit <fichier>` - Faux positifs ($lib non resolu, downlevelIteration)
-
----
-
-**Standard** : Maintenir 0 errors obligatoire.
-
----
-
-## Essential Rules (CRITICAL)
-
-### 0. NEVER Delete Untracked Files
-
-**NEVER** use `rm`, `rm -rf`, or `mv` on files/directories that are not tracked by git.
-
-Before any destructive operation:
-
-1. Run `git status` to check if files are tracked
-2. If untracked files exist in the target path, **STOP and ask the user**
-3. Only delete files that are either tracked by git OR explicitly created in the current session
-
-### 1. Always Validate Input with Zod
-
-```typescript
-import { z } from 'zod';
-const schema = z.object({
-	userId: z.string().uuid(),
-	amount: z.number().int().positive().max(1000)
-});
-const validation = schema.safeParse(await request.json());
-if (!validation.success) throw error(400, validation.error.issues[0].message);
-```
-
-**Details** : [quality-standards.md#input-validation-with-zod](docs/claude/quality-standards.md#input-validation-with-zod)
-
-### 2. Always Use MySelect & MyCheckbox Components
-
-```svelte
-<!-- MySelect -->
-<MySelect type="single" bind:value={selected} {items} />
-
-<!-- MyCheckbox -->
-<MyCheckbox bind:checked={isEnabled} label="Enable" />
-```
-
-**NEVER use** : Shadcn-svelte Select/Checkbox directly, native `<select>` or `<input type="checkbox">`
-**Details** : [ui-components.md](docs/claude/ui-components.md)
-
-### 3. Svelte 5 Runes Only
-
-```svelte
-let count = $state(0); // NOT: let count = 0 let doubled = $derived(count * 2); // NOT: $: doubled =
-count * 2 let {title} = $props(); // NOT: export let title
-```
-
-**Réactivité** La réactivité doit être gérée de cette manière : UI event -> handler -> update reactive state -> trigger update DOM. $effect ne doit être utilisé que dans des cas particuliers(side, effects,...)
-
-**Details** : [best-practices.md#svelte-5-runes](docs/claude/best-practices.md#svelte-5-runes)
-
-### 4. Never Use `any` Type
-
-Use proper types, `unknown` with type guards, or Database types from `$lib/types/database`.
-
-### 5. Svelte Autofixer (OBLIGATOIRE)
-
-Apres avoir modifie ou cree un fichier `.svelte`, **TOUJOURS** utiliser le MCP svelte-autofixer :
-
-```
-mcp__svelte__svelte-autofixer(code: <contenu du fichier>, desired_svelte_version: 5, filename: "Component.svelte")
-```
-
-Cela detecte et corrige automatiquement les problemes Svelte 5 (runes, syntaxe, patterns).
-
-### 6. Derived Types in database-helpers.ts
-
-`database.ts` is auto-generated by `pnpm db:types` - **NEVER add custom types there**.
-
-Use `$lib/types/database-helpers.ts` for:
-
-```typescript
-// Convenience aliases
-export type Profile = Tables<'profiles'>;
-export type Class = Tables<'classes'>;
-
-// Union types (constrained values)
-export type FriendshipStatus = 'pending' | 'accepted' | 'rejected';
-
-// Composite types (joined/enriched data)
-export interface FriendshipWithProfile {
-	id: string;
-	friend_profile: FriendProfile;
-}
-```
-
-**Import from the right file:**
-
-- `Database`, `Tables`, `Json` → `$lib/types/database`
-- `Profile`, `Class`, custom types → `$lib/types/database-helpers`
 
 ---
 
@@ -149,247 +48,147 @@ export interface FriendshipWithProfile {
 
 > **Process complet** : [docs/claude/git-workflow.md](docs/claude/git-workflow.md)
 
-`main` = **production** (Vercel y deploie). Tout changement de **code** :
-**branche → PR → CI 100% verte → `gh pr merge --merge` → suppression de branche**.
-Jamais de commit de code direct sur `main` (seule exception : pure doc/typo ≤ 2 fichiers `.md`).
-
-**Non-negociables** :
+`main` = **production**. Tout changement de **code** : **branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche**. **Jamais de code direct sur `main`** (seule exception : pure doc/typo ≤ 2 fichiers `.md`).
 
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
-- **DB/RLS** : tests d'integration locaux OBLIGATOIRES (`db:start` + `test:integration`) pour toute RLS / fonction `SECURITY DEFINER` / trigger / policy. **Jamais** de smoke-test `auth.uid()` NULL (le garde sort avant la requete).
-- **Migrations** : additive → push prod avant/avec le deploy ; destructive → apres. `db:migrate` seulement depuis la branche mergee.
-- **Releases a risque** (schema non retro-compatible) → `maintenance:on` → cutover → verif bypass → `maintenance:off`.
-- Hook OOM → `--no-verify` mais compenser : `prettier --write` + `pnpm check:incremental` avant push (eslint = CI-only).
+- **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
+- **Migrations** : additive → `db:migrate` avant/avec le deploy ; destructive → après. Uniquement depuis la branche mergée.
+- **Merge / déploiement prod et `db:migrate` : seulement avec mon accord explicite.**
 
 ---
 
-## Agent Reference
+## Règles de code (non négociables)
 
-### Quand NE PAS utiliser d'agent (PRIORITAIRE)
+**0. Ne JAMAIS supprimer un fichier non suivi par git** (`rm`/`mv`) sans demander. `git status` d'abord ; si untracked dans la cible → STOP et demander.
 
-**Travail direct OBLIGATOIRE pour** :
-
-- Bug cible dans 1-2 fichiers connus (regex, typo, logique simple)
-- Modification < 20 lignes de code
-- Investigation de code existant (Read + Grep suffisent)
-- Tout ce qui peut etre fait en < 5 minutes
-
-**INTERDIT aux agents** :
-
-- Lancer `pnpm test:unit` ou des tests en masse pour "comprendre" un bug
-- Lancer `pnpm check`, `pnpm check:fast`, `svelte-check` (sans --incremental), `pnpm build`, `pnpm lint` sur tout le projet
-- Tourner > 5 minutes sans produire de resultat concret
-
-### Quand utiliser un agent
-
-| Agent                   | Trigger                                | Cas d'usage                                |
-| ----------------------- | -------------------------------------- | ------------------------------------------ |
-| `Explore`               | "Comment marche X ?", "Ou est Y ?"     | Architecture, recherche code, patterns     |
-| `frontend-developer`    | Composants Svelte, UI/UX               | Creer/modifier UI, layouts, formulaires    |
-| `backend-developer`     | +server.ts, +page.server.ts            | API endpoints, form actions, auth logic    |
-| `supabase-expert`       | Migrations, RLS, schema                | Database design, policies, troubleshooting |
-| `code-reviewer`         | **PROACTIF** apres chaque code         | Review qualite, best practices             |
-| `test-automator`        | Tests, couverture                      | Creer/fixer tests, E2E                     |
-| `security-auditor`      | **PROACTIF** apres auth/API sensible   | Audit securite, vulnerabilites             |
-| `commit-manager`        | Commits complexes (features, refactor) | Analyser changes, message structure        |
-| `documentation-writer`  | **PROACTIF** apres features            | Documenter code, API, features             |
-| `performance-optimizer` | Lenteurs, avant deploy                 | Optimiser queries, bundle, load            |
-| `typescript-expert`     | Erreurs TS complexes                   | Types avances, generics                    |
-| `api-designer`          | Nouveaux endpoints REST                | Architecture API, pagination               |
-| `debugger`              | Erreurs, comportement inattendu        | Debug runtime, build, tests                |
-
-### Commits : Agent vs Direct
-
-| Situation                                       | Methode                             |
-| ----------------------------------------------- | ----------------------------------- |
-| Docs, typos, <5 fichiers evidents               | `git add -A && git commit -m "..."` |
-| Features, refactoring, multi-fichiers complexes | `commit-manager` agent              |
-
-### Regle d'Or
-
-**SI** : >3 etapes ET code important ET plusieurs fichiers ET expertise specialisee
-**ALORS** : Agent. **SINON** : Travail direct.
-
----
-
-## Planning & Execution Policy
-
-### TDD Collaboratif (OBLIGATOIRE)
-
-**Avant d'ecrire du code**, suivre le workflow TDD :
-
-| Etape | Action                                 | Qui         |
-| ----- | -------------------------------------- | ----------- |
-| 1     | Proposer les comportements en francais | Claude      |
-| 2     | Valider / corriger / completer         | Utilisateur |
-| 3     | Ecrire les tests (doivent echouer)     | Claude      |
-| 4     | Implementer le code                    | Claude      |
-| 5     | Verifier que les tests passent         | Claude      |
-
-**Format de proposition** :
-
-```markdown
-## Fonctionnalite : [Nom]
-
-### Comportements proposes :
-
-1. [Cas nominal]
-2. [Cas limite]
-3. [Cas erreur]
-
-### Questions :
-
-- [Clarification necessaire ?]
-```
-
-**Details** : [docs/ref/tests/tdd.md](docs/ref/tests/tdd.md)
-
-### Chaque plan doit inclure
-
-1. **Phase 0 : Specification TDD** - Proposer comportements, attendre validation utilisateur
-2. **Agents ET modèles specifiés** pour chaque tâche. ne pas hésiter à utiliser Opus
-3. **Code Review** (`code-reviewer`) a la fin de chaque phase
-4. **Commit** apres validation du code reviewer (direct ou agent selon complexite)
-5. **Security Audit** si auth/API sensible
-6. **Performance Audit** si requetes DB lourdes
-7. **Quality Checks** a la FIN du plan UNIQUEMENT :
-   - ESLint : `npx eslint <fichiers modifies>`
-   - TypeScript + Svelte : `pnpm check:incremental` (incremental, ~30s)
-   - Svelte : utiliser `mcp__svelte__svelte-autofixer` sur chaque fichier .svelte modifie
-8. **Documentation de progression** tout au long de l'implementation pour crash recovery
-
-**IMPORTANT** : Les agents ne doivent PAS executer de commandes build/lint/format/check. Ces verifications sont faites une seule fois a la fin du plan.
-
-### Documentation de reprise (obligatoire)
-
-Produire des documents de progression pour permettre la reprise en cas de crash :
-
-- **Quand** : Apres chaque phase significative ou commit
-- **Ou** : `docs/wip/` (work in progress)
-- **Contenu** : Etat actuel, decisions prises, prochaines etapes, fichiers modifies
-- **A la fin du plan** : Lister explicitement tous les documents produits
-
-Format suggere : `docs/wip/<feature>-progress.md`
-
-### Execution autonome
-
-- NE JAMAIS s'arreter au premier echec
-- Analyser et corriger automatiquement
-- Utiliser `debugger` agent avec Opus si erreur persistante (>2 tentatives)
-- Continuer jusqu'a completion totale
-
-### Checklist de validation (avant de passer à la phase suivante)
-
-- [ ] Code fonctionnel
-- [ ] Tests passent
-- [ ] Svelte autofixer execute sur tous les fichiers .svelte modifies
-- [ ] Code review effectue
-- [ ] Security/Performance audit si applicable
-- [ ] Documentation de progression ecrite
-- [ ] Commit cree
-
----
-
-## Database (Supabase)
-
-### Migration Workflow
-
-1. Créer `.sql` dans `supabase/migrations/` (format: `<timestamp>_<description>.sql`)
-2. User push via `pnpm db:migrate`
-3. Update `src/lib/types/database.ts` et `docs/architecture/database-schema.md`
-
-**Important** : NE PAS modifier le schema dans Supabase Dashboard.
-**Details** : [database.md](docs/claude/database.md)
-
----
-
-## Project Structure
-
-```
-src/
-├── lib/
-│   ├── components/     # Reusable components (Shadcn, MySelect)
-│   ├── server/         # Server-only (validation/ = Zod schemas)
-│   ├── stores/         # Shared state
-│   ├── utils/          # Shared utilities
-│   └── types/          # TypeScript types
-├── routes/
-│   ├── (public)/       # Public routes
-│   ├── (protected)/    # Auth required
-│   └── api/            # API endpoints (+server.ts)
-└── app.html
-```
-
-**File Order** : Imports → Types → Constants → Variables → Functions → Components
-
----
-
-## Common Patterns
+**1. Valider toute entrée avec Zod** (`request.json()`, query params) — bornes numériques `.min()`/`.max()`, limites de tableaux, UUID :
 
 ```typescript
-// Toast notifications
+import { z } from 'zod';
+const schema = z.object({
+	userId: z.string().uuid(),
+	amount: z.number().int().positive().max(1000)
+});
+const v = schema.safeParse(await request.json());
+if (!v.success) throw error(400, v.error.issues[0].message);
+```
+
+→ [quality-standards.md](docs/claude/quality-standards.md#input-validation-with-zod)
+
+**2. MySelect & MyCheckbox** — jamais Shadcn Select/Checkbox direct ni `<select>`/`<input type="checkbox">` natifs.
+
+```svelte
+<MySelect type="single" bind:value={selected} {items} />
+<MyCheckbox bind:checked={isEnabled} label="Enable" />
+```
+
+→ [ui-components.md](docs/claude/ui-components.md)
+
+**3. Svelte 5 runes uniquement** (jamais `export let` / `$:`) :
+
+```svelte
+let count = $state(0); // pas: let count = 0 let doubled = $derived(count * 2); // pas: $: doubled =
+count * 2 let {title} = $props(); // pas: export let title
+```
+
+Réactivité : **event → handler → maj du state → maj du DOM**. `$effect` réservé aux cas particuliers (side-effects). → [best-practices.md](docs/claude/best-practices.md#svelte-5-runes)
+
+**4. Jamais `any`** — types propres, `unknown` + type guards, ou types de `$lib/types/database`.
+
+**5. Après création/modif d'un `.svelte` → `svelte-autofixer` (MCP)** systématiquement.
+
+**6. Types dérivés dans `database-helpers.ts`** — `database.ts` est auto-généré (`pnpm db:types`), **ne JAMAIS y ajouter de type**.
+
+- `Database`, `Tables`, `Json` → `$lib/types/database`
+- alias / unions / composites → `$lib/types/database-helpers`
+
+---
+
+## Base de données
+
+> **Détails** : [database.md](docs/claude/database.md) · schéma : [database-schema.md](docs/architecture/database-schema.md) (à maj après changement de schéma)
+
+- Migration `.sql` dans `supabase/migrations/` (`<timestamp>_<description>.sql`). **Jamais** modifier le schéma via le Dashboard Supabase.
+- **Tests d'intégration locaux OBLIGATOIRES** pour toute RLS / fonction `SECURITY DEFINER` / trigger / policy (`db:start` + `test:integration`). **JAMAIS** valider par un smoke-test `auth.uid()` NULL (le garde sort avant la requête → faux positif).
+- Après push : `pnpm db:types` (+ commit). **Interroger la prod** : MCP Supabase **read-only** (EU).
+
+---
+
+## Quand utiliser un agent
+
+- **Travail direct** (pas d'agent) si : bug ciblé 1-2 fichiers connus · modif < 20 lignes · investigation (Read/Grep) · faisable en < 5 min.
+- **Agent** si : > 3 étapes ET code important ET plusieurs fichiers ET expertise spécialisée. Ne pas hésiter à utiliser **Opus**. Plafonner les briefs (max N lignes / M fichiers).
+- **Interdit aux agents** : lancer build/lint/check/format (cf. OOM) ; tourner > 5 min sans résultat concret.
+
+| Agent                                                                               | Cas d'usage                                                 |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `Explore`                                                                           | Architecture, recherche code, patterns                      |
+| `frontend-developer` / `backend-developer`                                          | UI Svelte / `+server.ts`, `+page.server.ts`, auth           |
+| `supabase-expert`                                                                   | Migrations, RLS, schéma                                     |
+| `security-auditor`                                                                  | **Obligatoire** après auth / RLS / API sensible / migration |
+| `code-reviewer` · `test-automator`                                                  | Revue qualité (proactif) · tests, couverture                |
+| `mathast-expert` · `geometry-expert` · `pedagogy-expert`                            | Modules métier (`mathAST` / `geometry-core` / `questions`)  |
+| `debugger` · `typescript-expert` · `performance-optimizer` · `documentation-writer` | Selon besoin                                                |
+
+(Liste complète : `.claude/agents/README.md`.)
+
+---
+
+## Planning (plans multi-phases)
+
+> **TDD collaboratif** : [docs/ref/tests/tdd.md](docs/ref/tests/tdd.md)
+
+1. **Phase 0 — Spécification TDD** : proposer les comportements en français (cas nominal / limite / erreur), **attendre validation** avant de coder.
+2. **Agents ET modèles spécifiés** par tâche (Opus sans hésiter).
+3. **Tests d'abord** (doivent échouer) → implémentation → tests passent.
+4. **`code-reviewer`** en fin de phase ; **`security-auditor`** si auth/RLS/API ; **performance** si requêtes DB lourdes.
+5. **Doc de progression** `docs/wip/<feature>-progress.md` (crash-recovery) entre phases ; lister les docs produits à la fin.
+6. **Exécution autonome** : ne pas s'arrêter au premier échec, corriger automatiquement (`debugger`/Opus si > 2 tentatives).
+
+**Definition of Done** (avant d'ouvrir/merger la PR) :
+
+- [ ] Code fonctionnel + tests passent (intégration locale si DB/RLS)
+- [ ] `svelte-autofixer` sur les `.svelte` modifiés · `pnpm check:incremental` = 0 erreur
+- [ ] `code-reviewer` (+ `security-auditor` si applicable)
+- [ ] Zod sur les entrées · pas de `any` · MySelect/MyCheckbox · runes only
+
+---
+
+## Structure & patterns
+
+```
+src/lib/{components,server,stores,utils,types}/   server/ = code serveur (validation/ = Zod)
+src/routes/{(public),(protected),api}/            (protected) = auth requise ; api = +server.ts
+```
+
+**Ordre dans un fichier** : Imports → Types → Constantes → Variables → Functions → Components.
+
+```typescript
 import { toaster } from '$lib/stores/toaster.svelte';
-toaster.success('Message'); // error, warning, info
-
-// Event handlers (lowercase in Svelte 5)
-<Button onclick={handleClick}>Click</Button>
+toaster.success('Message'); // .error / .warning / .info
+// handlers en minuscule (Svelte 5) : <Button onclick={handleClick}>
 ```
 
-**Optimistic UI, Debouncing, Realtime** : [architecture.md](docs/claude/architecture.md) | [realtime.md](docs/claude/realtime.md)
+Optimistic UI · Debouncing · Realtime → [architecture.md](docs/claude/architecture.md) · [realtime.md](docs/claude/realtime.md)
 
 ---
 
-## Pre-Commit Checklist
+## Documentation
 
-### Verification automatique (OBLIGATOIRE)
+| Doc                                                      | Contenu                                |
+| -------------------------------------------------------- | -------------------------------------- |
+| [git-workflow.md](docs/claude/git-workflow.md)           | **Workflow git OBLIGATOIRE**           |
+| [architecture.md](docs/claude/architecture.md)           | Structure, routing, perf               |
+| [best-practices.md](docs/claude/best-practices.md)       | Svelte 5, TypeScript                   |
+| [ui-components.md](docs/claude/ui-components.md)         | Shadcn, MySelect, Tailwind             |
+| [database.md](docs/claude/database.md)                   | Supabase, migrations                   |
+| [quality-standards.md](docs/claude/quality-standards.md) | Tests, linting, Zod                    |
+| [warning-svelte.md](docs/ref/warning-svelte.md)          | `svelte-ignore` légitime vs dette a11y |
+| [realtime.md](docs/claude/realtime.md)                   | Realtime, chat, présence               |
+| [docs/ref/tests/](docs/ref/tests/)                       | Architecture des tests + TDD           |
 
-Pour chaque fichier modifie dans la session :
-
-```bash
-# Fichiers .svelte : utiliser le MCP autofixer
-mcp__svelte__svelte-autofixer(code, desired_svelte_version: 5, filename)
-
-# TypeScript + Svelte check (incremental, ~30s, resout $lib et tous les alias)
-pnpm check:incremental
-
-# ESLint sur fichiers modifies
-npx eslint <fichiers modifies>
-```
-
-### Verification mentale
-
-- [ ] Zod validation on all `request.json()` and query params
-- [ ] Numeric bounds (`.min()`, `.max()`), array limits, UUID validation
-- [ ] No `any` types
-- [ ] MySelect/MyCheckbox (not Shadcn/native)
-- [ ] Svelte 5 runes only
-- [ ] Tests exist for new code
-
-**INTERDIT** : `pnpm check`, `pnpm check:fast`, `svelte-check` (sans --incremental), `pnpm build`, `npx tsc --noEmit` pour verifier.
+Index utilisateurs : [docs/README.md](docs/README.md).
 
 ---
 
-## Documentation Links
-
-### For Claude Code
-
-| Doc                                                              | Content                                                        |
-| ---------------------------------------------------------------- | -------------------------------------------------------------- |
-| [git-workflow.md](docs/claude/git-workflow.md)                   | **Git workflow OBLIGATOIRE** (branche/PR/CI/merge/deploy)      |
-| [architecture.md](docs/claude/architecture.md)                   | Structure, routing, performance                                |
-| [best-practices.md](docs/claude/best-practices.md)               | Svelte 5, TypeScript                                           |
-| [ui-components.md](docs/claude/ui-components.md)                 | Shadcn, MySelect, Tailwind                                     |
-| [database.md](docs/claude/database.md)                           | Supabase, migrations                                           |
-| [quality-standards.md](docs/claude/quality-standards.md)         | Tests, linting, Zod                                            |
-| [warning-svelte.md](docs/ref/warning-svelte.md)                  | svelte-ignore : ce qui est légitime vs dette a11y à rembourser |
-| [realtime.md](docs/claude/realtime.md)                           | Supabase Realtime, chat, presence                              |
-| [docs/ref/tests/architecture.md](docs/ref/tests/architecture.md) | Architecture des tests : où ranger, nommage, runners, CI       |
-| [docs/ref/tests/tdd.md](docs/ref/tests/tdd.md)                   | TDD collaboratif (OBLIGATOIRE)                                 |
-
-### For Users
-
-[docs/README.md](docs/README.md) - Index complet
-
----
-
-**Remember** : Code explicite et simple > astuces clever.
+**Rappel** : code explicite et simple > astuces clever.
