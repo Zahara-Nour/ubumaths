@@ -24,7 +24,7 @@
 		Code,
 		Copy,
 		FileCode
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 	import {
 		clearTrackedExternalImages,

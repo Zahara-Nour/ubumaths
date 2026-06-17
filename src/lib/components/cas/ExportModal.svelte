@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
-	import { Copy, Download, Check } from 'lucide-svelte';
+	import { Copy, Download, Check } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	interface Props {

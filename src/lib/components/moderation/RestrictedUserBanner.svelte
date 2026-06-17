@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
 	import * as Alert from '$lib/components/ui/alert';
-	import { Ban, Clock, AlertTriangle } from 'lucide-svelte';
+	import { Ban, Clock, AlertTriangle } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 

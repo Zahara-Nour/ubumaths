@@ -3,7 +3,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Check, X, Clock, UserPlus } from 'lucide-svelte';
+	import { Check, X, Clock, UserPlus } from '@lucide/svelte';
 
 	// Friendships are a single relation type now ('friend'); legacy values map to "Ami".
 	function getFriendshipTypeLabel(): string {

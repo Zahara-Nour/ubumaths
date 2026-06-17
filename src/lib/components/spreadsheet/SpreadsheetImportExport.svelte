@@ -26,7 +26,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Download, Upload, FileSpreadsheet } from 'lucide-svelte';
+	import { Download, Upload, FileSpreadsheet } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';

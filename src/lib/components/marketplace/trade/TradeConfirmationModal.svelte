@@ -28,7 +28,7 @@
 		getTemplateById,
 		templateToVipCard
 	} from '$lib/stores/vipCardTemplates.svelte';
-	import { Check, X, Clock, ArrowRightLeft, Loader2 } from 'lucide-svelte';
+	import { Check, X, Clock, ArrowRightLeft, Loader2 } from '@lucide/svelte';
 	import type { VipCardInstance, VipCard as VipCardType } from '$lib/types/vip-card';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 

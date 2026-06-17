@@ -13,7 +13,7 @@
 -->
 
 <script lang="ts">
-	import { CalendarDays, Settings2, X } from 'lucide-svelte';
+	import { CalendarDays, Settings2, X } from '@lucide/svelte';
 	import { CalendarDate, type DateValue } from '@internationalized/date';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';

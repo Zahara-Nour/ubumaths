@@ -8,7 +8,7 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Clock } from 'lucide-svelte';
+	import { Clock } from '@lucide/svelte';
 
 	let isLoggingOut = $state(false);
 	let dialogOpen = $state(true);

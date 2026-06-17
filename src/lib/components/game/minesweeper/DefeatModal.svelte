@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { RotateCcw } from 'lucide-svelte';
+	import { RotateCcw } from '@lucide/svelte';
 
 	interface Props {
 		onPlayAgain: () => void;

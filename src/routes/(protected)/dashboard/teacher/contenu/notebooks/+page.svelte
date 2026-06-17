@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { PlusCircle, Trash2, BookOpen, BarChart3, Sparkles } from 'lucide-svelte';
+	import { PlusCircle, Trash2, BookOpen, BarChart3, Sparkles } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

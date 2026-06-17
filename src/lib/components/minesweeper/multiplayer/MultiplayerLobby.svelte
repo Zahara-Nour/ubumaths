@@ -6,7 +6,7 @@
 	import { multiplayerStore } from '$lib/stores/multiplayer.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { cn } from '$lib/utils';
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2 } from '@lucide/svelte';
 
 	// Types
 	type Difficulty = 'beginner' | 'intermediate' | 'expert';

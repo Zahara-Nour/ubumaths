@@ -23,7 +23,7 @@
 <script lang="ts">
 	import type { InternalLinkReferenceType } from '$lib/ubumark';
 	import { cn } from '$lib/utils';
-	import { BookOpen, FileText, PencilRuler, ClipboardCheck } from 'lucide-svelte';
+	import { BookOpen, FileText, PencilRuler, ClipboardCheck } from '@lucide/svelte';
 
 	interface Props {
 		/** Type of the internal resource */

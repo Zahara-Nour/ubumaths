@@ -42,7 +42,7 @@
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import type { User } from '@supabase/supabase-js';
 	import type { Profile } from '$lib/types/database-helpers';
-	import type { ComponentType } from 'svelte';
+	import type { LucideIcon } from '@lucide/svelte';
 	import {
 		Menu,
 		LogIn,
@@ -60,7 +60,7 @@
 		Calculator,
 		PenTool,
 		Laugh
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import gidouille from '$lib/assets/images/gidouille.png';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
@@ -95,7 +95,7 @@
 	});
 
 	// Navigation item type
-	type NavItem = { label: string; href: string; icon: ComponentType; roles?: string[] };
+	type NavItem = { label: string; href: string; icon: LucideIcon; roles?: string[] };
 
 	// Props received from parent layout (+layout.svelte)
 	// These are automatically reactive in Svelte 5

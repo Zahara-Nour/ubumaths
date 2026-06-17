@@ -14,7 +14,7 @@
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import ErrorReportsPanel from '$lib/components/worksheets/teacher/ErrorReportsPanel.svelte';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 

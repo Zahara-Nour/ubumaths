@@ -28,7 +28,7 @@
 	import TestTimer from './TestTimer.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Pause, Play, ArrowLeft, Eye, BookOpen, Plus, Minus } from 'lucide-svelte';
+	import { Pause, Play, ArrowLeft, Eye, BookOpen, Plus, Minus } from '@lucide/svelte';
 	import { slideFromRight, slideToLeft } from '$lib/transitions/slide-transition';
 
 	interface Props {

@@ -34,7 +34,7 @@
 		Archive,
 		PlayCircle,
 		Clock
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { getContentCounts } from '$lib/types/chapter-templates';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();

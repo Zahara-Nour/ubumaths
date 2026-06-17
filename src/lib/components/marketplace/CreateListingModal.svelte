@@ -12,7 +12,7 @@
 	import TradeCardSelector from './trade/TradeCardSelector.svelte';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import { RARITY_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';
-	import { Info, Check } from 'lucide-svelte';
+	import { Info, Check } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	// Props

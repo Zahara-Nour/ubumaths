@@ -23,7 +23,7 @@
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitLogoutForm } from '$lib/utils/auth';
-	import { LogOut, Download, Loader2, Trash2, Sun, Moon, Minus, Plus } from 'lucide-svelte';
+	import { LogOut, Download, Loader2, Trash2, Sun, Moon, Minus, Plus } from '@lucide/svelte';
 
 	let { data }: { data: LayoutData } = $props();
 

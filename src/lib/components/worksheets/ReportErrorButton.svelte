@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Separator } from '$lib/components/ui/separator';
-	import { AlertTriangle } from 'lucide-svelte';
+	import { AlertTriangle } from '@lucide/svelte';
 	import ReportStatusBadge from './ReportStatusBadge.svelte';
 	import ReportErrorDialog from './ReportErrorDialog.svelte';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';

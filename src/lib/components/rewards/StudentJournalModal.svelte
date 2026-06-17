@@ -20,7 +20,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Card from '$lib/components/ui/card';
-	import { X, RefreshCw, ChevronDown, Inbox } from 'lucide-svelte';
+	import { X, RefreshCw, ChevronDown, Inbox } from '@lucide/svelte';
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import type { RewardType } from '$lib/types/reward-journal';
 	import type { Snippet } from 'svelte';

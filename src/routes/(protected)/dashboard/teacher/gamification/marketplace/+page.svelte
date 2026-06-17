@@ -50,7 +50,7 @@
 		Package,
 		BarChart3,
 		ArrowLeftRight
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 

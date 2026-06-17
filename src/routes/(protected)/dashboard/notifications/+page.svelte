@@ -15,7 +15,7 @@
 		formatDailySummaryFromMetadata,
 		isDailySummaryMetadata
 	} from '$lib/utils/notification-formatters';
-	import { Bell, Loader2 } from 'lucide-svelte';
+	import { Bell, Loader2 } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 

@@ -12,7 +12,7 @@
 -->
 <script lang="ts">
 	import TemplateCard from './TemplateCard.svelte';
-	import { Sparkles } from 'lucide-svelte';
+	import { Sparkles } from '@lucide/svelte';
 
 	interface Author {
 		firstname: string | null;

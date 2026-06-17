@@ -19,7 +19,7 @@
 
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { ChevronLeft, ChevronRight, Calendar } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRight, Calendar } from '@lucide/svelte';
 
 	interface Props {
 		/** Start of the week (Monday) */

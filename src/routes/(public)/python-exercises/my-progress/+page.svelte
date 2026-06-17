@@ -14,7 +14,7 @@
 		X,
 		ArrowUp,
 		ArrowDown
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus } from './+page.server';
 

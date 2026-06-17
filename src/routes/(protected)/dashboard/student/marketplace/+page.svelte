@@ -4,7 +4,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import ConsentButton from '$lib/components/ConsentButton.svelte';
-	import { Plus, ShoppingBag, Package, Store, Bell, RefreshCw } from 'lucide-svelte';
+	import { Plus, ShoppingBag, Package, Store, Bell, RefreshCw } from '@lucide/svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 

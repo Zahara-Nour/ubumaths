@@ -22,7 +22,7 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Search, Check, X } from 'lucide-svelte';
+	import { Search, Check, X } from '@lucide/svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 
 	interface Props {

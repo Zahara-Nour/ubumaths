@@ -10,7 +10,7 @@
 	 */
 
 	import * as Tooltip from '$lib/components/ui/tooltip';
-	import { HelpCircle } from 'lucide-svelte';
+	import { HelpCircle } from '@lucide/svelte';
 
 	// Props
 	let { isReadonly = false }: { isReadonly?: boolean } = $props();

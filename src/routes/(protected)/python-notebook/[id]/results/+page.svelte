@@ -13,7 +13,7 @@
 		CircleDashed,
 		Sparkles,
 		Lightbulb
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { CheckpointDetail } from '$lib/types/database-helpers';
 

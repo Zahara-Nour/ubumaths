@@ -30,7 +30,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { MoreVertical, Flag, Download, Trash2 } from 'lucide-svelte';
+	import { MoreVertical, Flag, Download, Trash2 } from '@lucide/svelte';
 	import DeleteMessageDialog from '$lib/components/moderation/DeleteMessageDialog.svelte';
 	import type { Message } from '$lib/stores/chat.svelte';
 	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';

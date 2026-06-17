@@ -16,7 +16,7 @@
 -->
 
 <script lang="ts">
-	import { Plus, Trash2, Check } from 'lucide-svelte';
+	import { Plus, Trash2, Check } from '@lucide/svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';

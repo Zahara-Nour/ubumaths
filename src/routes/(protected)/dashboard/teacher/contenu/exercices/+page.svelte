@@ -14,7 +14,7 @@
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
-	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown, Eye, Globe } from 'lucide-svelte';
+	import { Send, Pencil, Trash2, Loader2, ArrowUp, ArrowDown, Eye, Globe } from '@lucide/svelte';
 	import type { Exercise, ExerciseCategory } from '$lib/exercises/types';
 	import { EXERCISE_CATEGORIES } from '$lib/exercises/types';
 	import type { PageData } from './$types';

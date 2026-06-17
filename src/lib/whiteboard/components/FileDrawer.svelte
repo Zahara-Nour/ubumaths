@@ -40,7 +40,7 @@
 		Image,
 		Upload,
 		Trash2
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { importImageFile } from '../utils/image-loader';
 	import { importPdfFile, type PdfImportMode } from '../utils/pdf-loader';
 	import ExportDialog from './ExportDialog.svelte';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GroupedRouteLayout from '$lib/components/navigation/GroupedRouteLayout.svelte';
-	import { Gift, Sparkles, ShoppingBag, Users } from 'lucide-svelte';
+	import { Gift, Sparkles, ShoppingBag, Users } from '@lucide/svelte';
 	import type { LayoutData } from './$types';
 	import type { Component, Snippet } from 'svelte';
 

@@ -15,7 +15,7 @@
 	 */
 
 	import type { ExerciseValidationResult } from '$lib/shared/python';
-	import { CheckCircle2, XCircle, AlertTriangle, Loader2, Lock } from 'lucide-svelte';
+	import { CheckCircle2, XCircle, AlertTriangle, Loader2, Lock } from '@lucide/svelte';
 
 	type Props = {
 		/** Validation result, or null when no validation has run yet */

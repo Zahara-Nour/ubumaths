@@ -26,7 +26,7 @@
 	import TestTimer from './TestTimer.svelte';
 	import { Progress } from '$lib/components/ui/progress';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { slideFromRight, slideToLeft } from '$lib/transitions/slide-transition';
 

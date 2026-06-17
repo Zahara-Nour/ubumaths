@@ -15,7 +15,7 @@
 		Trash2,
 		CheckCircle,
 		AlertCircle
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import ProposalResponseModal from './ProposalResponseModal.svelte';

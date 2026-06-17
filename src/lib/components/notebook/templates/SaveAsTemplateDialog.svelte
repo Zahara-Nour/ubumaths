@@ -16,7 +16,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Sparkles, Loader2 } from 'lucide-svelte';
+	import { Sparkles, Loader2 } from '@lucide/svelte';
 
 	interface Props {
 		open: boolean;

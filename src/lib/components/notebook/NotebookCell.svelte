@@ -18,7 +18,7 @@
 	import CheckpointCell from './CheckpointCell.svelte';
 	import CheckpointEditor from './CheckpointEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Trash2, GripVertical } from 'lucide-svelte';
+	import { Trash2, GripVertical } from '@lucide/svelte';
 
 	// Props
 	let {

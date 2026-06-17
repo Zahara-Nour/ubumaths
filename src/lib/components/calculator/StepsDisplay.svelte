@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
-	import { ChevronRight } from 'lucide-svelte';
+	import { ChevronRight } from '@lucide/svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { CalculationStep, SchoolLevel } from '$lib/mathAST/step-generator';
 	import StepsDisplay from './StepsDisplay.svelte';

@@ -13,7 +13,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import { CheckCircle, ChevronDown, ChevronUp, Info } from 'lucide-svelte';
+	import { CheckCircle, ChevronDown, ChevronUp, Info } from '@lucide/svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type { StudentExerciseView } from '$lib/types/worksheets';
 

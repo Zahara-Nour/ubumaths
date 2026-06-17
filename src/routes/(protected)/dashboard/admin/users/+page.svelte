@@ -22,7 +22,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import type { Database } from '$lib/types/database';
-	import { Upload, Save, RotateCcw, Loader2, Clock, Check, X } from 'lucide-svelte';
+	import { Upload, Save, RotateCcw, Loader2, Clock, Check, X } from '@lucide/svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Switch } from '$lib/components/ui/switch';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';

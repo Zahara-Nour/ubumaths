@@ -7,7 +7,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Save, Loader2, Globe, Lock } from 'lucide-svelte';
+	import { ArrowLeft, Save, Loader2, Globe, Lock } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import TypstEditor from '$lib/components/worksheets/TypstEditor.svelte';
 	import { COMMON_PLACEHOLDERS, STANDARD_TEMPLATE } from '$lib/worksheets/default-templates';

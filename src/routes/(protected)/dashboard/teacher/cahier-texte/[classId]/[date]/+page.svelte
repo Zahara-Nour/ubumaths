@@ -32,7 +32,7 @@
 		Globe,
 		EyeOff,
 		Calendar
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 
 	interface Props {

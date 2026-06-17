@@ -42,7 +42,7 @@
 		BookMarked,
 		Eye,
 		EyeOff
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 
 	interface Props {

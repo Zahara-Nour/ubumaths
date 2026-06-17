@@ -6,7 +6,7 @@
 	import Game2048 from './Game2048.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Trophy } from 'lucide-svelte';
+	import { Trophy } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

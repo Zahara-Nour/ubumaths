@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { Home, Gamepad2, PenTool, Terminal, Calculator, Laugh } from 'lucide-svelte';
-	import type { ComponentType } from 'svelte';
+	import { Home, Gamepad2, PenTool, Terminal, Calculator, Laugh } from '@lucide/svelte';
+	import type { LucideIcon } from '@lucide/svelte';
 	import type { Tables } from '$lib/types/database';
 
 	type NavSection = 'serious' | 'fun';
 	type NavItem = {
 		label: string;
 		href: string;
-		icon: ComponentType;
+		icon: LucideIcon;
 		roles?: string[];
 		section?: NavSection;
 	};

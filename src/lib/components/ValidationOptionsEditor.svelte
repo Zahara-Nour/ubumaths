@@ -22,7 +22,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import MySelect from './MySelect.svelte';
 	import MyCheckbox from './MyCheckbox.svelte';
-	import { ChevronDown } from 'lucide-svelte';
+	import { ChevronDown } from '@lucide/svelte';
 
 	interface Props {
 		open: boolean;

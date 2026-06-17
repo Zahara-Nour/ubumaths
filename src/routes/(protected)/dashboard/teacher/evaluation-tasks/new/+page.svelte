@@ -9,7 +9,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { ChevronLeft, ClipboardList } from 'lucide-svelte';
+	import { ChevronLeft, ClipboardList } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 
 	interface Props {

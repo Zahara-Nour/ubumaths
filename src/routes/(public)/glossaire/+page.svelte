@@ -11,7 +11,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Search, BookOpen, RotateCcw } from 'lucide-svelte';
+	import { Search, BookOpen, RotateCcw } from '@lucide/svelte';
 
 	// ===== Constants =====
 

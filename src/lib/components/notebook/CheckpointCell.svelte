@@ -16,7 +16,14 @@
 	import type { CheckpointCell } from '$lib/types/notebook';
 	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Loader2, CheckCircle2, XCircle, CircleDashed, Sparkles, Lightbulb } from 'lucide-svelte';
+	import {
+		Loader2,
+		CheckCircle2,
+		XCircle,
+		CircleDashed,
+		Sparkles,
+		Lightbulb
+	} from '@lucide/svelte';
 
 	/**
 	 * Number of failed Vérifier clicks before the teacher's hint is

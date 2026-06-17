@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import AssessmentCard from '$lib/components/assessments/AssessmentCard.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import { FileQuestion } from 'lucide-svelte';
+	import { FileQuestion } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

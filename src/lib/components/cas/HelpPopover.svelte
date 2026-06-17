@@ -2,7 +2,7 @@
 	import { replStore } from '$lib/stores/repl.svelte';
 	import * as Popover from '$lib/components/ui/popover';
 	import { Button } from '$lib/components/ui/button';
-	import { HelpCircle, Keyboard, Info } from 'lucide-svelte';
+	import { HelpCircle, Keyboard, Info } from '@lucide/svelte';
 	import { Separator } from '$lib/components/ui/separator';
 
 	// Get available commands from the store

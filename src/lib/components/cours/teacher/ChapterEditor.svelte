@@ -41,7 +41,7 @@
 		Box,
 		Save,
 		X
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	// Types for create/update inputs
 	interface CreateChapterInput {

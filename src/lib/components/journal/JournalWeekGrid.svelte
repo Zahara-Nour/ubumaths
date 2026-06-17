@@ -22,7 +22,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { FileText, BookCheck, Globe, Plus, Calendar } from 'lucide-svelte';
+	import { FileText, BookCheck, Globe, Plus, Calendar } from '@lucide/svelte';
 	import type { JournalWeekDay } from '$lib/types/journal';
 	import { cn } from '$lib/utils';
 

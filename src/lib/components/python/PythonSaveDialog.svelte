@@ -13,7 +13,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import { Switch } from '$lib/components/ui/switch';
-	import { Loader2, Save } from 'lucide-svelte';
+	import { Loader2, Save } from '@lucide/svelte';
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 

@@ -18,7 +18,7 @@
 <script lang="ts">
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import WorkItemCard from './WorkItemCard.svelte';
-	import { ChevronDown, AlertTriangle } from 'lucide-svelte';
+	import { ChevronDown, AlertTriangle } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import type { WorkItem } from '$lib/types/student-inbox';
 

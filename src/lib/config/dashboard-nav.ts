@@ -33,13 +33,13 @@ import {
 	Brain,
 	User as UserIcon,
 	LogOut
-} from 'lucide-svelte';
-import type { ComponentType } from 'svelte';
+} from '@lucide/svelte';
+import type { LucideIcon } from '@lucide/svelte';
 
 export type DashboardNavLink = {
 	href: string;
 	label: string;
-	icon: ComponentType;
+	icon: LucideIcon;
 	badge?: number;
 	/** Marks footer items (Mon profil, Déconnexion) rendered after a separator. */
 	footer?: boolean;

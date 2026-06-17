@@ -16,7 +16,7 @@
 <script lang="ts">
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
-	import { GripVertical, Check, X } from 'lucide-svelte';
+	import { GripVertical, Check, X } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	interface OrderingItem {

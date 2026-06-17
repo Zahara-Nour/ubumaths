@@ -13,7 +13,7 @@
 	import AchievementCard from './AchievementCard.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import { Trophy, Target, Percent, Star } from 'lucide-svelte';
+	import { Trophy, Target, Percent, Star } from '@lucide/svelte';
 	import type { Achievement, AchievementRarity } from '$lib/types/achievements';
 	import { cn } from '$lib/utils';
 

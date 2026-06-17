@@ -16,7 +16,7 @@
 	import VipCard from '$lib/components/VipCard.svelte';
 	import VipCardSellModal from '$lib/components/vip-cards/VipCardSellModal.svelte';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
-	import { Lock, Trophy, Sparkles, Gem } from 'lucide-svelte';
+	import { Lock, Trophy, Sparkles, Gem } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import type { VipCard as VipCardType, VipCardRarity, StudentVipCards } from '$lib/types/vip-card';
 	import type { CardCollectionStatus } from './+page.server';

@@ -1,7 +1,7 @@
 import { page } from '@vitest/browser/context';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { Home } from 'lucide-svelte';
+import { Home } from '@lucide/svelte';
 import Sidebar from '../Sidebar.svelte';
 import type { Tables } from '$lib/types/database';
 

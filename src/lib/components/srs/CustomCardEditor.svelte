@@ -22,7 +22,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
-	import { Eye, Save, X } from 'lucide-svelte';
+	import { Eye, Save, X } from '@lucide/svelte';
 	import type { TemplateMarkdown } from '$lib/ubumark';
 	import { templateMarkdown } from '$lib/ubumark';
 

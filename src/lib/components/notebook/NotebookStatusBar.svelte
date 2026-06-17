@@ -13,7 +13,7 @@
 	 */
 
 	import type { NotebookStore } from '$lib/stores/notebookStore.svelte';
-	import { Circle, CheckCircle2, AlertCircle, Loader2 } from 'lucide-svelte';
+	import { Circle, CheckCircle2, AlertCircle, Loader2 } from '@lucide/svelte';
 
 	// Props
 	let {

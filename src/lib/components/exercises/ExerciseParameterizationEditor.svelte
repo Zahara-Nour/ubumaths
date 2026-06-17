@@ -25,7 +25,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import VariableEditor from '$lib/components/VariableEditor.svelte';
-	import { ChevronDown } from 'lucide-svelte';
+	import { ChevronDown } from '@lucide/svelte';
 	import type { Variable } from '$lib/ubumark';
 	import type { DistributionMode } from '$lib/exercises/types';
 

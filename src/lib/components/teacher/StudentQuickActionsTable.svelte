@@ -90,7 +90,7 @@
 	import { openVipCardsModal } from '$lib/utils/vip-card-modals';
 	import { openBonusReasonModal } from '$lib/utils/bonus-modals';
 	import { onDestroy } from 'svelte';
-	import { Star, Loader2, ScrollText } from 'lucide-svelte';
+	import { Star, Loader2, ScrollText } from '@lucide/svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { getTotalUnusedCards } from '$lib/utils/vip-cards';

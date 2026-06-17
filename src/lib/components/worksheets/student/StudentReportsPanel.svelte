@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { AlertCircle, Loader2 } from 'lucide-svelte';
+	import { AlertCircle, Loader2 } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import StudentReportCard from './StudentReportCard.svelte';
 	import CancelReportDialog from './CancelReportDialog.svelte';

@@ -13,7 +13,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Plus, Trash2 } from 'lucide-svelte';
+	import { Plus, Trash2 } from '@lucide/svelte';
 	import ASTRequirementsPanel from './ASTRequirementsPanel.svelte';
 
 	type Props = {

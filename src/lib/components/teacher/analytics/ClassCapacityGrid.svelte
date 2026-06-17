@@ -6,7 +6,7 @@
 	Mode projection (anonymisation) reçu via prop pour cohérence page.
 -->
 <script lang="ts">
-	import { ArrowUpDown, AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from 'lucide-svelte';
+	import { ArrowUpDown, AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { Badge } from '$lib/components/ui/badge';

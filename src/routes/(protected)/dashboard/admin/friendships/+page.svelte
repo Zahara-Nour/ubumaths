@@ -6,7 +6,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Trash2, Search, Users, AlertTriangle } from 'lucide-svelte';
+	import { Trash2, Search, Users, AlertTriangle } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

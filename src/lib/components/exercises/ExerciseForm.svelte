@@ -27,7 +27,7 @@
 	} from '$lib/exercises/types';
 	import { EXERCISE_CATEGORIES } from '$lib/exercises/types';
 	import type { Variable } from '$lib/ubumark';
-	import { Save, Loader2 } from 'lucide-svelte';
+	import { Save, Loader2 } from '@lucide/svelte';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 

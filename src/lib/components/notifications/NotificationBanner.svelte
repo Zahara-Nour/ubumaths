@@ -8,7 +8,7 @@
 		type NotificationWithDetails
 	} from '$lib/types/notification';
 	import { Button } from '$lib/components/ui/button';
-	import { X, ChevronLeft, ChevronRight } from 'lucide-svelte';
+	import { X, ChevronLeft, ChevronRight } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 
 	// Show max 5 notifications in carousel

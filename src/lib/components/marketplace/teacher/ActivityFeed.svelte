@@ -13,7 +13,7 @@
 		Clock,
 		TrendingUp,
 		RefreshCw
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	interface ActivityDetails {
 		title?: string;

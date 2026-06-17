@@ -81,7 +81,7 @@
 		CircleQuestionMark,
 		Braces,
 		FlaskConical
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import QuestionTemplateHelpDialogs from './QuestionTemplateHelpDialogs.svelte';
 	import DisplayOptionsEditor from './DisplayOptionsEditor.svelte';

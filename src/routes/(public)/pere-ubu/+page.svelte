@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ChatBot from '$lib/components/ChatBot.svelte';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import pereUbuImage from '$lib/assets/images/pereubu.png';
 

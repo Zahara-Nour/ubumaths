@@ -35,7 +35,7 @@
 	import type { VipCard } from '$lib/types/vip-card';
 	import { cn } from '$lib/utils';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
-	import { Trash2, Sparkles, Clock, Zap, Coins } from 'lucide-svelte';
+	import { Trash2, Sparkles, Clock, Zap, Coins } from '@lucide/svelte';
 
 	interface Props {
 		card: VipCard;

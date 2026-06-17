@@ -10,7 +10,7 @@
 
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Download, FileCode, Image } from 'lucide-svelte';
+	import { Download, FileCode, Image } from '@lucide/svelte';
 	import { exportSvg, exportPng } from '$lib/grapheur/export';
 	import { toaster } from '$lib/stores/toaster.svelte';
 

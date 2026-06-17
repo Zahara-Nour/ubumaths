@@ -22,7 +22,7 @@
 		Redo2,
 		Pencil,
 		PencilOff
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type {
 		SlideAnnotationToolType,
 		AnnotationStyle

@@ -46,7 +46,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { History, AlertCircle, Plus } from 'lucide-svelte';
+	import { History, AlertCircle, Plus } from '@lucide/svelte';
 	import type { StudentWarningCounts } from '$lib/server/warnings';
 	import { getWarningTypeLabel } from '$lib/types/warnings';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';

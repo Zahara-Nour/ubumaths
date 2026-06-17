@@ -18,7 +18,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Input } from '$lib/components/ui/input';
-	import { RefreshCw, Copy, Check } from 'lucide-svelte';
+	import { RefreshCw, Copy, Check } from '@lucide/svelte';
 	import { browser } from '$app/environment';
 
 	// ============================================================================

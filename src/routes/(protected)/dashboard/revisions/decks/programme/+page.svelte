@@ -19,7 +19,7 @@
 		ChevronLeft,
 		PlayCircle,
 		Target
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { ProgrammeBadge } from './+page.server';
 

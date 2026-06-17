@@ -28,7 +28,7 @@
 		Code2,
 		Copy,
 		Check
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { generateInstance } from '$lib/questions/generator/instance-generator';

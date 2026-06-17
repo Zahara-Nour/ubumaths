@@ -4,7 +4,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { FileDown, Eye, AlertCircle } from 'lucide-svelte';
+	import { FileDown, Eye, AlertCircle } from '@lucide/svelte';
 
 	// Type for typst library
 	type TypstLibrary = {

@@ -24,7 +24,7 @@
 		Download,
 		Eye,
 		Cloud
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	// Props
 	interface Props {

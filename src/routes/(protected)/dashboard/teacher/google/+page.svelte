@@ -55,7 +55,7 @@
 		FileVideo,
 		Link2,
 		File
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import ShareCourseworkDialog from '$lib/components/google/ShareCourseworkDialog.svelte';
 	import ManageSharedCourseworkDialog from '$lib/components/google/ManageSharedCourseworkDialog.svelte';

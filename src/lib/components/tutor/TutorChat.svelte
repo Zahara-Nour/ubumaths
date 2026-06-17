@@ -37,7 +37,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { User, Trash2, Loader2 } from 'lucide-svelte';
+	import { User, Trash2, Loader2 } from '@lucide/svelte';
 	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';

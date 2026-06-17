@@ -26,7 +26,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, Trash2 } from 'lucide-svelte';
+	import { Loader2, Trash2 } from '@lucide/svelte';
 
 	// ============================================================================
 	// Types

@@ -11,7 +11,7 @@
 -->
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { ChevronLeft, RefreshCw, EyeOff, Eye } from 'lucide-svelte';
+	import { ChevronLeft, RefreshCw, EyeOff, Eye } from '@lucide/svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
 	import MySelect from '$lib/components/MySelect.svelte';

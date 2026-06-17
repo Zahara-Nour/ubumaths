@@ -2,7 +2,7 @@
 	import { cn } from '$lib/utils';
 	import type { ReplHistoryEntry, TabStyle } from '$lib/mathAST/cli/web';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowRightLeft } from 'lucide-svelte';
+	import { ArrowRightLeft } from '@lucide/svelte';
 
 	interface Props {
 		entry: ReplHistoryEntry;

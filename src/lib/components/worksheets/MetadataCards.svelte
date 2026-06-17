@@ -26,7 +26,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import { Loader2, Check, X, Settings } from 'lucide-svelte';
+	import { Loader2, Check, X, Settings } from '@lucide/svelte';
 	import {
 		WORKSHEET_TYPE_LABELS,
 		WORKSHEET_TYPE_OPTIONS,

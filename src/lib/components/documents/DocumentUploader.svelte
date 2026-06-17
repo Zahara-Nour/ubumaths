@@ -3,7 +3,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { Upload, FileText, X, Loader2 } from 'lucide-svelte';
+	import { Upload, FileText, X, Loader2 } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { GRADE_OPTIONS, type GradeCode } from '$lib/types/grades';
 

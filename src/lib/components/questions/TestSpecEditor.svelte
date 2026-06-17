@@ -31,7 +31,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MathField from '$lib/components/MathField.svelte';
-	import { Plus, Trash2, Play, Check, X, Copy, Loader2 } from 'lucide-svelte';
+	import { Plus, Trash2, Play, Check, X, Copy, Loader2 } from '@lucide/svelte';
 
 	interface Props {
 		testSpecs: TestSpec[];

@@ -15,7 +15,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
-	import { ArrowLeft, Home, Loader2, RotateCcw } from 'lucide-svelte';
+	import { ArrowLeft, Home, Loader2, RotateCcw } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
 	let { data }: { data: PageData } = $props();

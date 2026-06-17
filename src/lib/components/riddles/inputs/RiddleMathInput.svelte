@@ -6,7 +6,7 @@
 <script lang="ts">
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { Info } from 'lucide-svelte';
+	import { Info } from '@lucide/svelte';
 
 	interface Props {
 		value: string;

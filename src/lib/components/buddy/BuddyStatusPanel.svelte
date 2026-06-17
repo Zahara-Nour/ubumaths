@@ -10,7 +10,7 @@
 	import { xpProgress, MAX_LEVEL } from '$lib/utils/buddy-xp';
 	import { Progress } from '$lib/components/ui/progress';
 	import { Button } from '$lib/components/ui/button';
-	import { Flame, Star, ArrowRightLeft, X } from 'lucide-svelte';
+	import { Flame, Star, ArrowRightLeft, X } from '@lucide/svelte';
 	import { fade } from 'svelte/transition';
 
 	interface Props {

@@ -27,7 +27,7 @@
 		RefreshCw,
 		Calendar,
 		Target
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	interface Student {

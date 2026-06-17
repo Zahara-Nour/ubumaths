@@ -12,7 +12,7 @@
 
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { CalendarClock, Users } from 'lucide-svelte';
+	import { CalendarClock, Users } from '@lucide/svelte';
 
 	interface Props {
 		studentCount: number;

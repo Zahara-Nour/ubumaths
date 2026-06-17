@@ -6,7 +6,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
-	import { ArrowDown } from 'lucide-svelte';
+	import { ArrowDown } from '@lucide/svelte';
 
 	// Props
 	let {

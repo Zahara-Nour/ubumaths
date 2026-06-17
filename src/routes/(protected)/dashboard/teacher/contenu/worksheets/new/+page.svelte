@@ -12,7 +12,7 @@
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import TemplateSelector from '$lib/components/worksheets/TemplateSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, ChevronDown, ChevronUp, Loader2, Save, FileText } from 'lucide-svelte';
+	import { ArrowLeft, ChevronDown, ChevronUp, Loader2, Save, FileText } from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type {
 		WorksheetType,

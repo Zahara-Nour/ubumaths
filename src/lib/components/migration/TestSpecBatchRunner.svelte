@@ -16,7 +16,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Check, X, Play, ChevronDown } from 'lucide-svelte';
+	import { Check, X, Play, ChevronDown } from '@lucide/svelte';
 
 	interface Props {
 		open: boolean;

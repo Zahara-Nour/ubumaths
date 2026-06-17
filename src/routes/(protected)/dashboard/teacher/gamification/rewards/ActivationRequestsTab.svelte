@@ -33,7 +33,7 @@
 		Loader2,
 		Check,
 		X
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import {
 		vipCardTemplates,
 		getTemplateById,

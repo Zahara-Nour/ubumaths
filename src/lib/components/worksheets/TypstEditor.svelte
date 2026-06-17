@@ -28,7 +28,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Code2, Eye, Plus, AlertCircle, FileText, RefreshCw, Loader2 } from 'lucide-svelte';
+	import { Code2, Eye, Plus, AlertCircle, FileText, RefreshCw, Loader2 } from '@lucide/svelte';
 	import type { TemplatePlaceholder } from '$lib/types/worksheets';
 	import {
 		COMMON_PLACEHOLDERS,

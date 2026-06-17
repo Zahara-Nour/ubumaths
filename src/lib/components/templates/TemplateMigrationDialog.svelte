@@ -21,7 +21,7 @@
 		HelpCircle,
 		ClipboardList,
 		Dumbbell
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	// Props
 	interface Props {

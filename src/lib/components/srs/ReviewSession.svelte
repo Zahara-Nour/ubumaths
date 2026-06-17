@@ -25,7 +25,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
-	import { CheckCircle2, Trophy, ArrowLeft } from 'lucide-svelte';
+	import { CheckCircle2, Trophy, ArrowLeft } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { ReviewCard } from '$lib/srs/types';
 
