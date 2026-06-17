@@ -39,6 +39,10 @@ import type { VipCardRarity } from '$lib/types/vip-card';
 
 describe('VIP Card Teacher Override System - Integration Tests', () => {
 	let serviceClient: SupabaseClient<Database>;
+	// Snapshot of the seeded vip_card_templates.is_enabled state. These tests mutate
+	// the GLOBAL card state (enable/disable), so we restore it in afterAll to avoid
+	// contaminating the other VIP-card test files that rely on the seeded defaults.
+	let originalCardStates: { id: string; is_enabled: boolean | null }[] = [];
 
 	beforeAll(async () => {
 		serviceClient = createServiceRoleClient();
@@ -52,14 +56,26 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 		console.log(`[Setup] Found ${templates?.length} VIP card templates`);
 		expect(templates).toBeDefined();
 		expect(templates!.length).toBeGreaterThan(0);
+		originalCardStates = (templates ?? []).map((t) => ({ id: t.id, is_enabled: t.is_enabled }));
 	});
 
 	afterAll(async () => {
+		// Restore the seeded enabled-state so sibling VIP-card suites see the defaults.
+		for (const c of originalCardStates) {
+			await serviceClient
+				.from('vip_card_templates')
+				.update({ is_enabled: c.is_enabled })
+				.eq('id', c.id);
+		}
 		await cleanupAllTestData();
 		await closeConnections();
 	});
 
 	beforeEach(async () => {
+		// Remove profiles/classes left by the previous test so teachers don't
+		// accumulate (the single-teacher invariant forbids ≥ 2 teacher accounts).
+		await cleanupAllTestData();
+
 		// Enable all cards before each test
 		console.log('[beforeEach] Enabling all VIP cards...');
 		await serviceClient.from('vip_card_templates').update({ is_enabled: true }).neq('id', 'dummy');
@@ -283,7 +299,9 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 		}, 150000);
 	});
 
-	describe('Multiple Teachers - Intersection Logic', () => {
+	// OBSOLETE — single-teacher refactor (enforce_single_teacher forbids ≥ 2 teachers).
+	// A student has at most one teacher, so multi-teacher intersection logic no longer applies.
+	describe.skip('Multiple Teachers - Intersection Logic', () => {
 		it('should block card if ANY teacher disabled it (intersection logic)', async () => {
 			// ========================================
 			// ARRANGE: Two teachers, one student in both classes
@@ -607,7 +625,9 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 		}, 30000);
 	});
 
-	describe('RLS Policy: Teacher Isolation', () => {
+	// OBSOLETE — single-teacher refactor : isolation entre deux profs n'a plus de sens
+	// (un seul compte teacher possible).
+	describe.skip('RLS Policy: Teacher Isolation', () => {
 		it("should prevent teacher from modifying another teacher's overrides", async () => {
 			// ========================================
 			// ARRANGE: Two teachers, Alice creates override
@@ -665,7 +685,8 @@ describe('VIP Card Teacher Override System - Integration Tests', () => {
 		}, 30000);
 	});
 
-	describe('Complex Scenarios', () => {
+	// OBSOLETE — single-teacher refactor : scénario à 3 profs non applicable.
+	describe.skip('Complex Scenarios', () => {
 		it('should handle complex scenario with 3 teachers and mixed overrides', async () => {
 			// ========================================
 			// ARRANGE: 3 teachers, 1 student, mixed overrides

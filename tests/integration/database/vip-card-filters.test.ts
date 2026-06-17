@@ -985,8 +985,9 @@ describe('VIP Card Draw Filters - RPC Function Tests', () => {
 
 				expect(card.earnedAt).toBeDefined();
 				expect(typeof card.earnedAt).toBe('string');
-				// Verify it's a valid ISO timestamp
-				expect(new Date(card.earnedAt).toISOString()).toBe(card.earnedAt);
+				// Verify it's a valid timestamp (don't string-compare formats: the DB
+				// returns '+00:00' while toISOString() returns 'Z' for the same instant).
+				expect(Number.isNaN(Date.parse(card.earnedAt))).toBe(false);
 			}
 		});
 

@@ -21,6 +21,7 @@ import {
 	cleanupAllTestData,
 	closeConnections
 } from '../../helpers/database/trigger-test-helpers';
+import { TestData } from '../../helpers/database/test-data-factory';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
@@ -43,19 +44,9 @@ describe('Template Version History Triggers', () => {
 	beforeEach(async () => {
 		await cleanupAllTestData();
 
-		// Create test teacher
-		const { data: teacher } = await serviceClient
-			.from('profiles')
-			.insert({
-				id: crypto.randomUUID(),
-				email: `teacher-${Date.now()}@test.com`,
-				role: 'teacher',
-				full_name: 'Test Teacher'
-			})
-			.select()
-			.single();
-
-		testTeacher = teacher!;
+		// Create test teacher via the factory (profiles.id → auth.users FK requires a
+		// real auth user; a direct profiles insert with a random id fails).
+		testTeacher = await TestData.profile().withRole('teacher').create();
 	});
 
 	/**
@@ -71,8 +62,11 @@ describe('Template Version History Triggers', () => {
 				title: 'Test Template',
 				subject_template: 'Test Subject',
 				body_template: 'Test Body',
-				trigger_type: 'manual',
-				scope: 'class',
+				// CHECK message_templates_trigger_type_check: valid types only (not 'manual').
+				trigger_type: 'general',
+				// CHECK message_templates_check: scope 'class' requires class_id; use
+				// 'system' (class_id null) since these tests only exercise versioning.
+				scope: 'system',
 				variables: [{ name: 'student_name', type: 'text' }],
 				...overrides
 			})
@@ -279,7 +273,7 @@ describe('Template Version History Triggers', () => {
 				description: 'Full description',
 				subject_template: 'Subject with {{variable}}',
 				body_template: 'Body with {{student_name}}',
-				trigger_type: 'assessment_completed',
+				trigger_type: 'assessment_question',
 				scope: 'system',
 				variables: [{ name: 'student_name', type: 'text' }],
 				tags: ['important', 'automated']
@@ -301,7 +295,7 @@ describe('Template Version History Triggers', () => {
 			expect(version.description).toBe('Full description');
 			expect(version.subject_template).toBe('Subject with {{variable}}');
 			expect(version.body_template).toBe('Body with {{student_name}}');
-			expect(version.trigger_type).toBe('assessment_completed');
+			expect(version.trigger_type).toBe('assessment_question');
 			expect(version.scope).toBe('system');
 			expect(version.variables).toEqual([{ name: 'student_name', type: 'text' }]);
 			expect(version.tags).toEqual(['important', 'automated']);
@@ -421,8 +415,8 @@ describe('Template Version History Triggers', () => {
 				title: 'Welcome Email',
 				subject_template: 'Welcome to {{class_name}}',
 				body_template: 'Dear {{student_name}}, welcome!',
-				trigger_type: 'manual',
-				scope: 'class'
+				trigger_type: 'general',
+				scope: 'system'
 			});
 
 			// Act: Teacher makes iterative improvements
