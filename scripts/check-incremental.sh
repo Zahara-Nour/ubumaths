@@ -12,14 +12,36 @@
 #   local would report extern errors that CI never can.
 #   (The old `grep -v slides/demo` was dropped: that dir was deleted.)
 #
-# --incremental is kept on purpose — speed is the goal (~20s cached). The cache
-# can go stale after DELETING/renaming files and emit a phantom error; if a
-# reported error looks like a ghost (deleted file, or `pnpm check` disagrees),
-# clear it once:  rm -rf .svelte-kit/.svelte-check && pnpm check:incremental
+# --incremental is load-bearing, not a nicety: without it svelte-check re-transpiles
+# every .svelte file each run — measured ~6x more CPU, and it thrashes swap and
+# CRASHES on this 8 GB machine (366s then SIGABRT vs ~37s with the cache). The
+# disk cache can go stale after DELETING/renaming files and emit a phantom "ghost"
+# error. That is the SAME trigger as the conditional-sync blind spot below, so one
+# switch cures both: `FRESH=1 pnpm check:incremental` clears the cache AND forces a
+# sync. Reach for it after deleting/renaming files, or if an error here disagrees
+# with `pnpm check`.
 set -uo pipefail
 
-# Match CI: regenerate $env/static + generated types before checking.
-npx svelte-kit sync >/dev/null 2>&1
+# FRESH=1 → drop svelte-check's transpile cache (cures ghosts) and force a sync.
+if [ "${FRESH:-0}" = "1" ]; then
+	rm -rf .svelte-kit/.svelte-check
+	need_sync=1
+fi
+
+# `svelte-kit sync` regenerates .svelte-kit/* with fresh mtimes, which busts
+# svelte-check's incremental cache → measured ~2x slower and ~2x memory (72s/1.6GB
+# vs 37s/0.8GB). So only sync when routes / svelte config / env actually changed
+# since the last sync, detected against a file the sync ALWAYS rewrites
+# (.svelte-kit/tsconfig.json). Editing lib/component code needs no sync → fast path.
+# Blind spot: route DELETIONS/renames leave no "newer" file → use FRESH=1 then.
+sentinel=.svelte-kit/tsconfig.json
+shopt -s nullglob
+watch=(src/routes svelte.config.* .env .env.*)
+shopt -u nullglob
+if [ "${need_sync:-0}" = "1" ] || [ ! -f "$sentinel" ] || \
+	[ -n "$(find "${watch[@]}" -type f -newer "$sentinel" 2>/dev/null | head -1)" ]; then
+	npx svelte-kit sync >/dev/null 2>&1
+fi
 
 # Heap cap = 4096 MiB, not 8192. Measured peak RSS for the full check is ~1.5 GB
 # (1697 source files; tests are excluded via tsconfig.check.json), so 4 GiB is
