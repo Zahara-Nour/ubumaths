@@ -145,6 +145,24 @@ export interface FriendshipWithProfile {
 
 ---
 
+## Git Workflow (OBLIGATOIRE)
+
+> **Process complet** : [docs/claude/git-workflow.md](docs/claude/git-workflow.md)
+
+`main` = **production** (Vercel y deploie). Tout changement de **code** :
+**branche → PR → CI 100% verte → `gh pr merge --merge` → suppression de branche**.
+Jamais de commit de code direct sur `main` (seule exception : pure doc/typo ≤ 2 fichiers `.md`).
+
+**Non-negociables** :
+
+- **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
+- **DB/RLS** : tests d'integration locaux OBLIGATOIRES (`db:start` + `test:integration`) pour toute RLS / fonction `SECURITY DEFINER` / trigger / policy. **Jamais** de smoke-test `auth.uid()` NULL (le garde sort avant la requete).
+- **Migrations** : additive → push prod avant/avec le deploy ; destructive → apres. `db:migrate` seulement depuis la branche mergee.
+- **Releases a risque** (schema non retro-compatible) → `maintenance:on` → cutover → verif bypass → `maintenance:off`.
+- Hook OOM → `--no-verify` mais compenser : `prettier --write` + `pnpm check:incremental` avant push (eslint = CI-only).
+
+---
+
 ## Agent Reference
 
 ### Quand NE PAS utiliser d'agent (PRIORITAIRE)
@@ -357,6 +375,7 @@ npx eslint <fichiers modifies>
 
 | Doc                                                              | Content                                                        |
 | ---------------------------------------------------------------- | -------------------------------------------------------------- |
+| [git-workflow.md](docs/claude/git-workflow.md)                   | **Git workflow OBLIGATOIRE** (branche/PR/CI/merge/deploy)      |
 | [architecture.md](docs/claude/architecture.md)                   | Structure, routing, performance                                |
 | [best-practices.md](docs/claude/best-practices.md)               | Svelte 5, TypeScript                                           |
 | [ui-components.md](docs/claude/ui-components.md)                 | Shadcn, MySelect, Tailwind                                     |
