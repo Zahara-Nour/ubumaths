@@ -1,10 +1,10 @@
 # Progression — fix de TOUS les tests d'intégration restants — ✅ TERMINÉ
 
-> Branche `chore/local-supabase-baseline` (non pushée). **Résultat : suite complète VERTE.**
-> **Avant ce chantier (début session test) : 77 passants. Après : 285 passants | 14 skip | 0 échec**
+> Branche `chore/local-supabase-baseline` (non pushée). **Résultat : suite complète VERTE.** > **Avant ce chantier (début session test) : 77 passants. Après : 285 passants | 14 skip | 0 échec**
 > (`Test Files 21 passed (21)`, exit 0). Décision produit : **un seul prof** → tests multi-profs skip/réécrits.
 
 ## Fichiers traités (tous verts)
+
 - [x] game-triggers — factory : monstre seedé (FK) + retrait artefact game_players non-students
 - [x] vip-card-teacher-overrides — cleanupAllTestData/beforeEach + 3 blocs multi-profs skip + snapshot/restore cartes
 - [x] chat-triggers — **bug prod #5** : process_message_content btrim plain_text (espace de fin)
@@ -22,6 +22,7 @@
 - [x] skill-attempts-endpoint — view needs_remediation + 'migration 2.1' skip (0 tagging en prod)
 
 ## Bugs prod réels trouvés cette session (tous NON poussés — David `db:migrate`)
+
 4. `delete_exercise_images()` — `DELETE storage.objects` sans `storage.allow_delete_query='true'`
    → bloqué par `storage.protect_delete` (présent en prod) → **suppression d'exercice impossible**
    (et cascade depuis profil → RGPD). Migration `20260616260000`.
@@ -31,9 +32,11 @@
 Total **5 bugs prod** sur l'ensemble du chantier (2 RPC `rank`→`rk` + FK private_messages + 2 ci-dessus), **aucun poussé**.
 
 ## Données de référence (seed)
+
 `supabase/seed.sql` = **8 tables non-PII** : skill_themes, skill_objectives, math_competences,
 math_competence_subdimensions, skills, vip_card_templates, vip_card_config, game_monsters.
 
 ## Reste (hors-périmètre)
+
 - Pousser les 5 fixes prod (`pnpm db:migrate`) + le baseline (réconciliation EU déjà faite).
 - 14 tests skip (scénarios multi-profs obsolètes, comportements/données absents en prod) — documentés inline.
