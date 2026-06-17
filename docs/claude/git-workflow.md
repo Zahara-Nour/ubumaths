@@ -33,11 +33,9 @@
 
 ## 4. Checks locaux (contrainte mémoire / OOM)
 
-- Le **hook pre-commit OOM** sur cette machine → `git commit --no-verify`, **MAIS compenser** :
-  - `pnpm exec prettier --write <fichiers modifiés>` (sinon le job **Lint** CI casse sur `prettier --check`).
-  - Fichiers `.svelte` → MCP `svelte-autofixer`.
+- Le **hook pre-commit est léger** (`.lintstagedrc.js` → `oxlint` + `prettier` sur les fichiers staged, ~2 s, **pas d'OOM**) → **`--no-verify` n'est plus nécessaire**. oxlint bloque sur _erreurs_ seulement (warnings non bloquants) ; prettier garde le job **Lint** CI (`prettier --check`) vert.
 - **Avant de pousser** : `pnpm check:incremental` (memory-safe, **0 erreur exigée**).
-- **eslint = CI-only** (il OOM en local). On accepte le round-trip CI ; `npx eslint <fichiers>` seulement si la machine tient.
+- **eslint = CI-only** (il OOM en local) — le hook utilise `oxlint` (Rust) à la place pour le feedback local. On accepte le round-trip CI ; `npx eslint <fichiers>` seulement si la machine tient.
 - **INTERDIT** (OOM) : `pnpm check` / `pnpm build` / `pnpm lint` / `svelte-check` sur tout le projet.
 
 ## 5. Base de données / migrations (chemin à haut risque)
@@ -83,7 +81,7 @@ Même flux, expédié : `fix/<slug>` depuis `main` → fix **+ test de non-régr
 ## 10. Interdits (leçons gravées — sessions 2026-06-16/17)
 
 - ❌ Smoke-test d'une fonction `SECURITY DEFINER` avec `auth.uid()` NULL.
-- ❌ Laisser du travail non commité : un hook pre-commit qui crashe le **stashe** (→ perdu). Commit tôt ; après un crash de hook, **vérifier `git stash list`**.
+- ❌ Laisser du travail non commité : un hook qui crashe peut le **stasher** (→ perdu). Commit tôt ; après un crash de hook, **vérifier `git stash list`**. (Le pre-commit est désormais léger — oxlint + prettier — donc ce risque a fortement baissé.)
 - ❌ Merger en CI rouge.
 - ❌ Pousser une migration que le code déployé ne supporte pas (ordre additive/destructive).
 - ❌ `pnpm db:migrate` depuis une branche non mergée.
