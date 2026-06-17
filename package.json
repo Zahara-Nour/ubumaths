@@ -10,6 +10,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "NODE_OPTIONS='--max-old-space-size=8192' vite build",
+		"analyze": "ANALYZE=1 pnpm build",
 		"preview": "vite preview",
 		"prepare": "husky",
 		"check": "svelte-kit sync && NODE_OPTIONS='--max-old-space-size=8192' svelte-check --tsconfig ./tsconfig.check.json",
@@ -120,6 +121,7 @@
 		"prettier": "3.4.2",
 		"prettier-plugin-svelte": "3.3.3",
 		"prettier-plugin-tailwindcss": "^0.6.14",
+		"rollup-plugin-visualizer": "^7.0.1",
 		"shadcn-svelte": "^1.2.7",
 		"sharp": "^0.34.5",
 		"standard-version": "^9.5.0",

@@ -10,11 +10,16 @@
  * - Lora: Elegant serif for headings (3 weights)
  * - Shantell Sans: Marker-style handwritten font for whiteboard (2 weights)
  *
- * PERFORMANCE BENEFITS:
- * - Reduces module graph complexity
- * - Allows Vite to better optimize font loading
- * - Fonts are still loaded synchronously but processed more efficiently
- * - Total font size: ~120KB (subset to Latin characters only)
+ * PERFORMANCE NOTES:
+ * - Consolidating imports here keeps the module graph simpler for Vite.
+ * - ⚠️ These `@fontsource/<weight>.css` imports pull in ALL subsets (latin,
+ *   latin-ext, cyrillic, greek, vietnamese) in BOTH woff2 and woff, so the build
+ *   emits ~100 font files. This is NOT "Latin only" (an earlier comment claimed it
+ *   was — it never was). It's fine for users though: the browser downloads only the
+ *   woff2 of the unicode-range subset it actually needs (≈ latin for French).
+ * - To shrink the BUILD output, switch to `@fontsource/inter/latin-<weight>.css`
+ *   (+ `latin-ext` for œ/Œ). Verify first that no Greek/other-script glyphs render
+ *   in body text — this is a maths app, so check before trimming.
  *
  * IMPORTANT: This file is imported in src/routes/+layout.svelte
  */

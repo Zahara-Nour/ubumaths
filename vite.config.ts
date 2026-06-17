@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config';
 import { loadEnv } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { readFileSync } from 'fs';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { baseTestConfig } from './vitest.base.config';
 
 // Read version from package.json at build time
@@ -27,7 +28,18 @@ export default defineConfig(({ mode }) => {
 	Object.assign(process.env, env);
 
 	return {
-		plugins: [tailwindcss(), sveltekit()],
+		plugins: [
+			tailwindcss(),
+			sveltekit(),
+			// Bundle treemap, only when ANALYZE=1 (never in normal/prod builds).
+			// emitFile → the report lands in each build's output dir, i.e.
+			// .svelte-kit/output/client/stats.html (the user-facing bundle) and the
+			// server one. Generated in CI via .github/workflows/bundle-analyze.yml
+			// because this 8 GB machine can't run a full build locally (OOM).
+			...(process.env.ANALYZE
+				? [visualizer({ emitFile: true, filename: 'stats.html', gzipSize: true, brotliSize: true })]
+				: [])
+		],
 
 		/**
 		 * Environment Variables

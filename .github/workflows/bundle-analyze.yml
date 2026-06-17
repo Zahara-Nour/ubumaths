@@ -1,0 +1,44 @@
+name: Bundle Analyze
+
+# Manual-only bundle treemap (rollup-plugin-visualizer): builds with ANALYZE=1 and
+# uploads the report as an artifact you download from the run's "Artifacts" section.
+# Kept out of push/PR on purpose — a full build is expensive and this is an on-demand
+# investigation tool. It lives in CI (not local) because the dev machine can't run a
+# full build without OOM (8 GB). Trigger it from the Actions tab → "Run workflow".
+on:
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    name: Build + bundle treemap
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create CI env (placeholders)
+        run: cp .github/ci.env .env
+
+      - name: Build with bundle analysis
+        run: pnpm analyze
+
+      - name: Upload bundle treemap
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-stats
+          path: .svelte-kit/output/**/stats.html
+          if-no-files-found: error
