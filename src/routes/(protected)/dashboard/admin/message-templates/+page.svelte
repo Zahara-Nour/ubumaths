@@ -23,7 +23,7 @@
 		ChevronUp,
 		BarChart3,
 		Search
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
 	import type { MessageTemplate, TriggerType } from '$lib/types/messageTemplates';

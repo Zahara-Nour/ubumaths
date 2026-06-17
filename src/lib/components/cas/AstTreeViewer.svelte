@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ChevronRight, ChevronDown } from 'lucide-svelte';
+	import { ChevronRight, ChevronDown } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import { replStore } from '$lib/stores/repl.svelte';
 	import type { MathNode } from '$lib/mathAST/types';

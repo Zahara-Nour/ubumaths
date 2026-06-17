@@ -30,7 +30,7 @@
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Check, X, Loader2, AlertTriangle } from 'lucide-svelte';
+	import { ArrowLeft, Check, X, Loader2, AlertTriangle } from '@lucide/svelte';
 	import type { ExerciseVariation } from '$lib/exercises/types';
 
 	// Types

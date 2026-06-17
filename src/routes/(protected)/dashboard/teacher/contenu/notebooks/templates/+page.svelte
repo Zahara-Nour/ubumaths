@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 	import TemplateGallery from '$lib/components/notebook/templates/TemplateGallery.svelte';
 	import type { PageData } from './$types';
 

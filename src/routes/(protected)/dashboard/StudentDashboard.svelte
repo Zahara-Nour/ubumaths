@@ -46,11 +46,11 @@
 		Circle,
 		LifeBuoy,
 		ChevronRight
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	// import AchievementsWidget from '$lib/components/game/minesweeper/AchievementsWidget.svelte';
 	// import { Button } from '$lib/components/ui/button';
 	// import { formatDeadline, isDeadlinePassed, isDeadlineSoon } from '$lib/utils/dates';
-	// import { BookOpen, FileText, Calendar, CheckCircle } from 'lucide-svelte';
+	// import { BookOpen, FileText, Calendar, CheckCircle } from '@lucide/svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { findCurrentPeriod } from '$lib/utils/academic-period';
 

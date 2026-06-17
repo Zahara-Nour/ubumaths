@@ -2,7 +2,7 @@
 	import type { MathfieldElement } from 'mathlive';
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
-	import { Play } from 'lucide-svelte';
+	import { Play } from '@lucide/svelte';
 
 	// Types
 	interface SubmitInput {

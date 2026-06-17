@@ -5,7 +5,7 @@
   Shows stdout, stderr, and info messages with color coding.
 -->
 <script lang="ts">
-	import { Trash2, Terminal } from 'lucide-svelte';
+	import { Trash2, Terminal } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { OutputLine } from '$lib/shared/blockly';
 	import { cn } from '$lib/utils';

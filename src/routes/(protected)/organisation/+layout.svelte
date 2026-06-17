@@ -12,7 +12,7 @@
 	import type { Snippet } from 'svelte';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import { LayoutDashboard } from 'lucide-svelte';
+	import { LayoutDashboard } from '@lucide/svelte';
 
 	let { children }: { children: Snippet } = $props();
 

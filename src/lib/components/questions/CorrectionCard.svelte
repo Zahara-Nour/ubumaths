@@ -27,7 +27,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { RotateCw, Check, X, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { RotateCw, Check, X, ChevronDown, ChevronUp } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import GeneratedStepsCorrection from './GeneratedStepsCorrection.svelte';
 

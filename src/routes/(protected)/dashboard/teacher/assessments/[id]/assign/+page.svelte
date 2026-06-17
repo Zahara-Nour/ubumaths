@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Badge } from '$lib/components/ui/badge';
-	import { ArrowLeft, Users, Check, X } from 'lucide-svelte';
+	import { ArrowLeft, Users, Check, X } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';
 

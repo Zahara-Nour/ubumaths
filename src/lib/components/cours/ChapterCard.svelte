@@ -44,7 +44,7 @@
 		Ruler,
 		Shapes,
 		Box
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	// Props
 	interface Props {

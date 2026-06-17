@@ -24,7 +24,7 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
-	import { Check } from 'lucide-svelte';
+	import { Check } from '@lucide/svelte';
 	import TradeCardSelector from './TradeCardSelector.svelte';
 	import type { VipCardInstance } from '$lib/types/vip-card';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';

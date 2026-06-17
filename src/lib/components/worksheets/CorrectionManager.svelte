@@ -8,7 +8,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Eye, Loader2, EyeOff, Settings2, FileText, AlertTriangle } from 'lucide-svelte';
+	import { Eye, Loader2, EyeOff, Settings2, FileText, AlertTriangle } from '@lucide/svelte';
 	import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '$lib/types/worksheets';
 
 	// Typst library type

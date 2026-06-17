@@ -23,7 +23,7 @@
 	import Wheel from '$lib/components/Wheel.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Copy, Plus, Trash2, RotateCcw } from 'lucide-svelte';
+	import { Copy, Plus, Trash2, RotateCcw } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Student interface matching Wheel component requirements

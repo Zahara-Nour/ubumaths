@@ -8,7 +8,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Download, Copy, Loader2, FileText, Check } from 'lucide-svelte';
+	import { Download, Copy, Loader2, FileText, Check } from '@lucide/svelte';
 
 	interface Props {
 		reportId: string;

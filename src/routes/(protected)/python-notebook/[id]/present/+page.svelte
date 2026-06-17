@@ -24,7 +24,7 @@
 	import { Deck, Slide, UbuMarkSlide } from '$lib/slides';
 	import { NotebookStore } from '$lib/stores/notebookStore.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, Loader2 } from 'lucide-svelte';
+	import { ArrowLeft, Loader2 } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import NotebookCodeSlide from '$lib/components/notebook/presentation/NotebookCodeSlide.svelte';
 	import NotebookCheckpointSlide from '$lib/components/notebook/presentation/NotebookCheckpointSlide.svelte';

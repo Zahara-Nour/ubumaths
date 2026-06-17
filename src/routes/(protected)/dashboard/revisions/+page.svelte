@@ -18,7 +18,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
-	import { Plus, BookOpen, Trophy, Target } from 'lucide-svelte';
+	import { Plus, BookOpen, Trophy, Target } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import type { Deck } from '$lib/srs/types';
 

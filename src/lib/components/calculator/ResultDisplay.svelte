@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
-	import { Copy, ChevronDown, AlertCircle, Lightbulb, TrendingUp, Loader2 } from 'lucide-svelte';
+	import { Copy, ChevronDown, AlertCircle, Lightbulb, TrendingUp, Loader2 } from '@lucide/svelte';
 	import type { CalculationResult } from '$lib/stores/calculator.svelte';
 	import StepsDisplay from './StepsDisplay.svelte';
 	import {

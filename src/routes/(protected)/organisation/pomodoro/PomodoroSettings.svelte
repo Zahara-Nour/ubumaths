@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { ChevronDown, ChevronUp } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';

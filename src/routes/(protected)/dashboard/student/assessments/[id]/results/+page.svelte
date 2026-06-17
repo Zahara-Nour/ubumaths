@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Table from '$lib/components/ui/table';
 	import { Badge } from '$lib/components/ui/badge';
-	import { ArrowLeft, TrendingUp, Target, Clock, Calendar } from 'lucide-svelte';
+	import { ArrowLeft, TrendingUp, Target, Clock, Calendar } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

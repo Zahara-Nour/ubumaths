@@ -20,7 +20,7 @@
 		FilePlus,
 		FileCode,
 		Settings
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Props

@@ -18,7 +18,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { cn } from '$lib/utils';
 	import CategoryProgress from './CategoryProgress.svelte';
-	import { ChevronRight, Folder, FolderOpen, BookOpen, FileText, Layers } from 'lucide-svelte';
+	import { ChevronRight, Folder, FolderOpen, BookOpen, FileText, Layers } from '@lucide/svelte';
 
 	// Import types from shared type definitions
 	import type { TreeNode } from '$lib/types/migration';

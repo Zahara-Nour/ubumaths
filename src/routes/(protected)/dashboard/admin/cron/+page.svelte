@@ -20,7 +20,7 @@
 		Play,
 		Timer,
 		Activity
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { CronJobRun } from '$lib/server/validation/cron';
 
 	let { data } = $props();

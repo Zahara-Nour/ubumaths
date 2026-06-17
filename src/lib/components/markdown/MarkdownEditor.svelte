@@ -43,7 +43,7 @@
 		LayoutGrid,
 		Upload,
 		Loader2
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import MarkdownRenderer from './MarkdownRenderer.svelte';
 	import type { ImageUploadConfig } from './types';
 	import type { Variable } from '$lib/ubumark';

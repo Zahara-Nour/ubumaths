@@ -17,7 +17,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Alert from '$lib/components/ui/alert';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Mail, AlertTriangle, CheckCircle2, ExternalLink, Send } from 'lucide-svelte';
+	import { Mail, AlertTriangle, CheckCircle2, ExternalLink, Send } from '@lucide/svelte';
 	import { WELCOME_EMAIL_SUBJECT, getWelcomeEmailText } from '$lib/email-templates/welcome';
 
 	let { data }: { data: PageData } = $props();

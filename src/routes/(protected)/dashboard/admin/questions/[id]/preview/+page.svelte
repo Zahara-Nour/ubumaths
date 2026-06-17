@@ -27,7 +27,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Switch } from '$lib/components/ui/switch';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, RefreshCw, Loader2 } from 'lucide-svelte';
+	import { ArrowLeft, RefreshCw, Loader2 } from '@lucide/svelte';
 
 	// ===========================
 	// PROPS & DERIVED STATE

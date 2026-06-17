@@ -16,7 +16,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Switch } from '$lib/components/ui/switch';
-	import { Plus, X, CheckCircle2 } from 'lucide-svelte';
+	import { Plus, X, CheckCircle2 } from '@lucide/svelte';
 
 	interface Props {
 		config: AnswerConfig | null;

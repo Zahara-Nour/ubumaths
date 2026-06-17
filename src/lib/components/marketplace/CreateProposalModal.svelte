@@ -10,7 +10,7 @@
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import TradeCardSelector from './trade/TradeCardSelector.svelte';
 	import VipCard from '$lib/components/VipCard.svelte';
-	import { Info, ArrowRight } from 'lucide-svelte';
+	import { Info, ArrowRight } from '@lucide/svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { VipCard as VipCardType } from '$lib/types/vip-card';

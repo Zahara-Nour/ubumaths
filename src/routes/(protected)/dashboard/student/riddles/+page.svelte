@@ -9,7 +9,7 @@
 	import RiddleOfTheDayCard from '$lib/components/riddles/RiddleOfTheDayCard.svelte';
 	import RiddleCard from '$lib/components/riddles/RiddleCard.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import { Sparkles, BookOpen } from 'lucide-svelte';
+	import { Sparkles, BookOpen } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 </script>

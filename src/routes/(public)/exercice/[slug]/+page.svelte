@@ -32,12 +32,12 @@
 	import TutorDrawer from '$lib/components/student/worksheets/TutorDrawer.svelte';
 
 	// Icons
-	import Check from 'lucide-svelte/icons/check';
-	import RefreshCw from 'lucide-svelte/icons/refresh-cw';
-	import ArrowLeft from 'lucide-svelte/icons/arrow-left';
-	import Link from 'lucide-svelte/icons/link';
-	import Download from 'lucide-svelte/icons/download';
-	import Loader2 from 'lucide-svelte/icons/loader-2';
+	import Check from '@lucide/svelte/icons/check';
+	import RefreshCw from '@lucide/svelte/icons/refresh-cw';
+	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
+	import Link from '@lucide/svelte/icons/link';
+	import Download from '@lucide/svelte/icons/download';
+	import Loader2 from '@lucide/svelte/icons/loader-2';
 
 	let { data }: { data: PageData } = $props();
 	// svelte-ignore state_referenced_locally

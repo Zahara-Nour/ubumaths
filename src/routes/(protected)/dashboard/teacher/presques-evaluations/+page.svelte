@@ -9,7 +9,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import { FileText, Upload, Pencil, Trash2, Calendar, User, Loader2, Eye } from 'lucide-svelte';
+	import { FileText, Upload, Pencil, Trash2, Calendar, User, Loader2, Eye } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import { GRADE_CODES, type GradeCode } from '$lib/types/grades';

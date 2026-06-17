@@ -5,7 +5,7 @@
 	 * Groups related style controls with a title and optional collapse behavior.
 	 */
 
-	import { ChevronDown } from 'lucide-svelte';
+	import { ChevronDown } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

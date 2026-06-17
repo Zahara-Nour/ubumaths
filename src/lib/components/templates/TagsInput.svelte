@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
-	import { X } from 'lucide-svelte';
+	import { X } from '@lucide/svelte';
 
 	// Props
 	interface Props {

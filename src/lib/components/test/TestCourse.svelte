@@ -25,7 +25,7 @@
 	import TestResults from './TestResults.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ArrowLeft, CheckCircle2, ArrowUp } from 'lucide-svelte';
+	import { ArrowLeft, CheckCircle2, ArrowUp } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	interface Props {

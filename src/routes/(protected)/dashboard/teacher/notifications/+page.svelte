@@ -8,7 +8,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Plus, Trash2, Send } from 'lucide-svelte';
+	import { Plus, Trash2, Send } from '@lucide/svelte';
 	import {
 		NOTIFICATION_TYPE_LABELS,
 		NOTIFICATION_PRIORITY_LABELS,

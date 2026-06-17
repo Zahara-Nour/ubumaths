@@ -18,7 +18,7 @@
 		Target,
 		HelpCircle,
 		RefreshCw
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 

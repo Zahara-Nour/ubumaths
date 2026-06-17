@@ -59,7 +59,7 @@
 	import { formatPeriodDisplay, type SchoolPeriod } from '$lib/utils/timetable';
 
 	type ClassSchedule = Tables<'class_schedules'>;
-	import { Trash2 } from 'lucide-svelte';
+	import { Trash2 } from '@lucide/svelte';
 
 	export interface ScheduleFormData {
 		id?: string;

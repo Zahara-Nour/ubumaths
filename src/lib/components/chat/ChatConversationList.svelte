@@ -25,7 +25,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import OnlineStatus from '$lib/components/OnlineStatus.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Search, MessageSquarePlus, Users } from 'lucide-svelte';
+	import { Search, MessageSquarePlus, Users } from '@lucide/svelte';
 	import type { Conversation } from '$lib/stores/chat.svelte';
 	import { presenceManager } from '$lib/stores/presence.svelte';
 

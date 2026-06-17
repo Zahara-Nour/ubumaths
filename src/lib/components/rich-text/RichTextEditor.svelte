@@ -68,7 +68,7 @@
 		TrendingUp,
 		Table2,
 		Grid3x3
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
 	import ImageGalleryModal from './ImageGalleryModal.svelte';

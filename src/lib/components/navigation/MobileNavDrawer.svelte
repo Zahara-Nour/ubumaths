@@ -4,8 +4,8 @@
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { theme } from '$lib/stores/theme.svelte';
 	import { fontSize } from '$lib/stores/fontSize.svelte';
-	import { Sun, Moon, Minus, Plus } from 'lucide-svelte';
-	import type { ComponentType } from 'svelte';
+	import { Sun, Moon, Minus, Plus } from '@lucide/svelte';
+	import type { LucideIcon } from '@lucide/svelte';
 
 	/**
 	 * Navigation item type for MobileNavDrawer
@@ -13,7 +13,7 @@
 	export type NavItem = {
 		label: string;
 		href: string;
-		icon: ComponentType;
+		icon: LucideIcon;
 		roles?: string[];
 		badge?: number;
 		/** Footer items render after a separator at the bottom of the drawer. */

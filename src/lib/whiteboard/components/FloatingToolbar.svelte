@@ -43,7 +43,7 @@
 		Redo2,
 		GripVertical,
 		Palette
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import {
 		INSTRUMENT_LABELS,
 		SLOPPINESS_PRESETS,

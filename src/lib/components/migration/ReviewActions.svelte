@@ -17,7 +17,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { CheckCircle2, XCircle } from 'lucide-svelte';
+	import { CheckCircle2, XCircle } from '@lucide/svelte';
 
 	interface Props {
 		onApprove?: () => void;

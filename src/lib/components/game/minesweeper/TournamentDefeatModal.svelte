@@ -28,7 +28,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { RotateCcw, ArrowLeft } from 'lucide-svelte';
+	import { RotateCcw, ArrowLeft } from '@lucide/svelte';
 	import type { Difficulty } from '$lib/types/minesweeper';
 	import { DIFFICULTY_LABELS } from '$lib/types/minesweeper';
 	import { formatDuration } from '$lib/utils/format';

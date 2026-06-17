@@ -30,7 +30,7 @@
 		GraduationCap,
 		Clock,
 		NotebookPen
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';

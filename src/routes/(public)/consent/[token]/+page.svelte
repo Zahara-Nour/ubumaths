@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { AlertCircle, CheckCircle2, Clock, GraduationCap, School, User } from 'lucide-svelte';
+	import { AlertCircle, CheckCircle2, Clock, GraduationCap, School, User } from '@lucide/svelte';
 
 	let { data, form } = $props();
 

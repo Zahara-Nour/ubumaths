@@ -35,7 +35,7 @@
 		Loader2,
 		X,
 		Code2
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	// Types for XML/JSON comparison
 	interface XmlJsonPair {

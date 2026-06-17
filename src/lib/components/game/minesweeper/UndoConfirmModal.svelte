@@ -20,7 +20,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Undo2, X, Clock } from 'lucide-svelte';
+	import { Undo2, X, Clock } from '@lucide/svelte';
 	import { onMount, onDestroy } from 'svelte';
 
 	interface Props {

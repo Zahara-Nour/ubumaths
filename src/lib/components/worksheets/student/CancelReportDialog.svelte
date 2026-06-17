@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Loader2, AlertTriangle } from 'lucide-svelte';
+	import { Loader2, AlertTriangle } from '@lucide/svelte';
 	import type { StudentErrorReportWithDisplay } from '$lib/types/worksheets';
 
 	// Props

@@ -26,7 +26,7 @@
 		Info,
 		Download,
 		Loader2
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
 	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
 	import { toaster } from '$lib/stores/toaster.svelte';

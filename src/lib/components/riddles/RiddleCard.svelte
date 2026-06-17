@@ -41,7 +41,7 @@
 	import RiddleManualInput from '$lib/components/riddles/inputs/RiddleManualInput.svelte';
 	import { cn } from '$lib/utils';
 	import { MarkdownRenderer } from '$lib/components/markdown';
-	import { Send, CheckCircle2, XCircle, Clock } from 'lucide-svelte';
+	import { Send, CheckCircle2, XCircle, Clock } from '@lucide/svelte';
 
 	// Props
 	interface Props {

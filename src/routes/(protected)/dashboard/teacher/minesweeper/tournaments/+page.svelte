@@ -10,7 +10,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { Plus, Calendar, Users, Trophy, Clock } from 'lucide-svelte';
+	import { Plus, Calendar, Users, Trophy, Clock } from '@lucide/svelte';
 	import { DIFFICULTY_LABELS, type TournamentStatus } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
 	import type { TournamentWithCount } from './+page.server';

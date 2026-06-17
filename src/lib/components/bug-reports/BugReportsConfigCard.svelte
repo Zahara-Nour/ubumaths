@@ -8,7 +8,7 @@
 	import { onMount } from 'svelte';
 	import * as Card from '$lib/components/ui/card';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { Loader2, Settings2 } from 'lucide-svelte';
+	import { Loader2, Settings2 } from '@lucide/svelte';
 	import { bugReportsConfigStore } from '$lib/stores/bugReportsConfig.svelte';
 	import {
 		BUG_REPORTS_CONFIG_LABELS,

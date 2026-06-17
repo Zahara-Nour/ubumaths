@@ -9,7 +9,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getFreezeDetectionContext } from '$lib/utils/freezeDetection';
-	import { Loader2, AlertTriangle } from 'lucide-svelte';
+	import { Loader2, AlertTriangle } from '@lucide/svelte';
 
 	interface Props {
 		open: boolean;

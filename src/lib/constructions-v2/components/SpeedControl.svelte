@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
-	import { Minus, Plus } from 'lucide-svelte';
+	import { Minus, Plus } from '@lucide/svelte';
 	import { formatPlaybackRate } from '../core/timeline.svelte';
 	import type { TimelineState } from '../core/timeline.svelte';
 

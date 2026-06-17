@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { X, Minimize2, Maximize2 } from 'lucide-svelte';
+	import { X, Minimize2, Maximize2 } from '@lucide/svelte';
 	import TutorChat from './TutorChat.svelte';
 	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
 

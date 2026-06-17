@@ -20,7 +20,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, MessageCircle, X, Check, Pencil } from 'lucide-svelte';
+	import { ArrowLeft, MessageCircle, X, Check, Pencil } from '@lucide/svelte';
 
 	// Components
 	import TradeOfferPanel from '$lib/components/marketplace/trade/TradeOfferPanel.svelte';

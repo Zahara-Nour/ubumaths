@@ -13,7 +13,7 @@
 	import ParameterControls from './ParameterControls.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { RefreshCw } from 'lucide-svelte';
+	import { RefreshCw } from '@lucide/svelte';
 	import { onDestroy } from 'svelte';
 	import 'mathlive'; // Required for math rendering in instructions
 

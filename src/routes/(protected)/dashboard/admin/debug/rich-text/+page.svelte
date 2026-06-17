@@ -18,7 +18,7 @@
 		Settings,
 		Beaker,
 		ArrowRightLeft
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { markdownToTipTap } from '$lib/components/rich-text/markdown-import';
 	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
 	import type { MathTemplateLevel, RichTextMode } from '$lib/components/rich-text/types';

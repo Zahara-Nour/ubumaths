@@ -52,7 +52,7 @@
 
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { X } from 'lucide-svelte';
+	import { X } from '@lucide/svelte';
 	import VipCard from './VipCard.svelte';
 	import VipCardHoloModal from './VipCardHoloModal.svelte';
 	import {
@@ -62,7 +62,7 @@
 		sortCardsByPriority
 	} from '$lib/utils/vip-cards';
 	import type { VipCard as VipCardType } from '$lib/types/vip-card';
-	import { Sparkles } from 'lucide-svelte';
+	import { Sparkles } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { modalStack } from '$lib/stores/modalStack.svelte';

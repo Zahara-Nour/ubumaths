@@ -14,7 +14,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { cn } from '$lib/utils';
-	import { Package, ArrowUpCircle, Unlink, AlertCircle } from 'lucide-svelte';
+	import { Package, ArrowUpCircle, Unlink, AlertCircle } from '@lucide/svelte';
 
 	// Props
 	interface Props {

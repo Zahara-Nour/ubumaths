@@ -3,7 +3,7 @@
  */
 
 import type { WorksheetType, WorksheetStatus } from '$lib/types/worksheets';
-import { FileText, ClipboardCheck, BookOpen, HelpCircle, Home } from 'lucide-svelte';
+import { FileText, ClipboardCheck, BookOpen, HelpCircle, Home } from '@lucide/svelte';
 
 // =============================================================================
 // TYPE AND STATUS OPTIONS (for form selects)

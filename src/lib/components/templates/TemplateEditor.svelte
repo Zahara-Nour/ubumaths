@@ -55,7 +55,7 @@
 		ClipboardList,
 		Dumbbell,
 		AlertCircle
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	// Props
 	interface Props {

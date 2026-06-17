@@ -58,7 +58,7 @@
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { personalities, type PersonalityKey } from '$lib/config/personalities';
-	import { Trash2, Send, User, Paperclip, X, Link as LinkIcon } from 'lucide-svelte';
+	import { Trash2, Send, User, Paperclip, X, Link as LinkIcon } from '@lucide/svelte';
 	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';

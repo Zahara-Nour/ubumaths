@@ -14,7 +14,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
-	import { Clock, ChevronDown, ChevronUp, GitCommit } from 'lucide-svelte';
+	import { Clock, ChevronDown, ChevronUp, GitCommit } from '@lucide/svelte';
 
 	// Props
 	interface Props {

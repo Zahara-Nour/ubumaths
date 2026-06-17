@@ -20,7 +20,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { BookOpen, Clock, Sparkles, Lock } from 'lucide-svelte';
+	import { BookOpen, Clock, Sparkles, Lock } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import type { Deck } from '$lib/srs/types';
 

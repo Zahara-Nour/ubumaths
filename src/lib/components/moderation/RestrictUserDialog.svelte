@@ -34,7 +34,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { Ban, Clock, AlertTriangle, Loader2, UserX } from 'lucide-svelte';
+	import { Ban, Clock, AlertTriangle, Loader2, UserX } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Student type for selection mode

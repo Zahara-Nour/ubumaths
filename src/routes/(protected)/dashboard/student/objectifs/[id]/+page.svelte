@@ -21,7 +21,7 @@
 		Sparkles,
 		BookOpen,
 		MessageCircleQuestion
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { formatObjectiveLevel, getObjectiveLevelVisual } from '$lib/types/skills';
 	import CapacityFsrsBadge from '$lib/components/srs/CapacityFsrsBadge.svelte';
 	import type { PageData } from './$types';

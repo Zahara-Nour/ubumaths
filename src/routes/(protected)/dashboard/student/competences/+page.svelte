@@ -4,7 +4,7 @@
 	 */
 
 	import * as Card from '$lib/components/ui/card';
-	import { Brain, ChevronRight } from 'lucide-svelte';
+	import { Brain, ChevronRight } from '@lucide/svelte';
 	import {
 		formatMathCompetenceLevel,
 		getMathCompetenceLevelVisual,

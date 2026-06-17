@@ -4,7 +4,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, CheckCircle2, XCircle, User, Hash } from 'lucide-svelte';
+	import { Loader2, CheckCircle2, XCircle, User, Hash } from '@lucide/svelte';
 	import type { TeacherErrorReportView } from '$lib/types/worksheets';
 
 	// Props

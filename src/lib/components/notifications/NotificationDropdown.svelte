@@ -9,7 +9,7 @@
 	} from '$lib/types/notification';
 	import { Button } from '$lib/components/ui/button';
 	import * as Popover from '$lib/components/ui/popover';
-	import { Bell } from 'lucide-svelte';
+	import { Bell } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 
 	// Get top 5 notifications for dropdown

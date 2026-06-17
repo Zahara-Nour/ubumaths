@@ -27,7 +27,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { X, Plus, Loader2 } from 'lucide-svelte';
+	import { X, Plus, Loader2 } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// Types

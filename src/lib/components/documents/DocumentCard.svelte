@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import { FileText, Trash2, ToggleLeft, ToggleRight, Edit } from 'lucide-svelte';
+	import { FileText, Trash2, ToggleLeft, ToggleRight, Edit } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { GradeCode } from '$lib/types/grades';
 

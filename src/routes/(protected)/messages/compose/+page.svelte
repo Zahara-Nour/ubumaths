@@ -5,7 +5,17 @@
 	import { Label } from '$lib/components/ui/label';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { Loader2, Send, X, Save, Check, Paperclip, FileIcon, Trash2, Reply } from 'lucide-svelte';
+	import {
+		Loader2,
+		Send,
+		X,
+		Save,
+		Check,
+		Paperclip,
+		FileIcon,
+		Trash2,
+		Reply
+	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';

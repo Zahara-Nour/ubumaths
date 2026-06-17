@@ -16,7 +16,7 @@
 	import { resolve } from '$app/paths';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
-	import { Plus, MoreVertical, Trash2, LayoutDashboard, Users, User } from 'lucide-svelte';
+	import { Plus, MoreVertical, Trash2, LayoutDashboard, Users, User } from '@lucide/svelte';
 
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';

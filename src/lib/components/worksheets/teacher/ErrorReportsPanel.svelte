@@ -3,7 +3,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { AlertCircle, Loader2 } from 'lucide-svelte';
+	import { AlertCircle, Loader2 } from '@lucide/svelte';
 	import ErrorReportCard from './ErrorReportCard.svelte';
 	import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
 

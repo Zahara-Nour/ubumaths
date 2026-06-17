@@ -57,7 +57,7 @@
 		Trash2,
 		X,
 		CheckSquare
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	let { data } = $props();
 

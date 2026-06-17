@@ -7,7 +7,7 @@
 -->
 
 <script lang="ts">
-	import { Play, Pause, SkipForward, RotateCcw } from 'lucide-svelte';
+	import { Play, Pause, SkipForward, RotateCcw } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import { pomodoroStore } from '$lib/stores/pomodoro/pomodoro.svelte';

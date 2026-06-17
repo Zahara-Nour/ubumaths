@@ -13,7 +13,7 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Users, Trophy, RefreshCw, XCircle, AlertTriangle } from 'lucide-svelte';
+	import { ArrowLeft, Users, Trophy, RefreshCw, XCircle, AlertTriangle } from '@lucide/svelte';
 	import { DIFFICULTY_LABELS, type TournamentStatus } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
 

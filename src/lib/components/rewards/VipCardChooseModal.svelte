@@ -26,7 +26,7 @@
 
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { X } from 'lucide-svelte';
+	import { X } from '@lucide/svelte';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';

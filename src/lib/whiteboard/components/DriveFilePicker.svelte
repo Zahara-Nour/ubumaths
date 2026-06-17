@@ -10,7 +10,7 @@
 
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
-	import { Loader2, FileText, AlertCircle } from 'lucide-svelte';
+	import { Loader2, FileText, AlertCircle } from '@lucide/svelte';
 	import { driveSyncService, type DriveFile } from '../services/drive-sync';
 	import { toaster } from '$lib/stores/toaster.svelte';
 

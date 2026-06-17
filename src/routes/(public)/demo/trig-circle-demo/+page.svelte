@@ -7,7 +7,7 @@
 <script lang="ts">
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import { Circle } from 'lucide-svelte';
+	import { Circle } from '@lucide/svelte';
 
 	// Demo examples with different configurations
 	const examples = [

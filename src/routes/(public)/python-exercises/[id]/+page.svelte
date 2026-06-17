@@ -25,7 +25,7 @@
 		FunctionSquare,
 		Link2,
 		Pencil
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	let { data } = $props();
 	const exercise = $derived(data.exercise);

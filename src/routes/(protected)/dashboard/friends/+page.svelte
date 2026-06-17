@@ -9,7 +9,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
-	import { Users, Bell, Plus } from 'lucide-svelte';
+	import { Users, Bell, Plus } from '@lucide/svelte';
 
 	let addFriendModalOpen = $state(false);
 

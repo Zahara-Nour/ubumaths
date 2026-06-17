@@ -3,7 +3,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { FileDown, Play, AlertCircle, Trash2, Settings2 } from 'lucide-svelte';
+	import { FileDown, Play, AlertCircle, Trash2, Settings2 } from '@lucide/svelte';
 
 	// LaTeX engine options
 	const engineOptions = [

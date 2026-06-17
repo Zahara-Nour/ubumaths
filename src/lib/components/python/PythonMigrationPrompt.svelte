@@ -8,7 +8,7 @@
 
 	// Imports
 	import { Button } from '$lib/components/ui/button';
-	import { Cloud, X } from 'lucide-svelte';
+	import { Cloud, X } from '@lucide/svelte';
 	import { pythonStore } from '$lib/stores/pythonPlayground.svelte';
 	import { browser } from '$app/environment';
 

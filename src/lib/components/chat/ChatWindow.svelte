@@ -28,7 +28,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { ArrowLeft, MoreVertical, Users, UserPlus } from 'lucide-svelte';
+	import { ArrowLeft, MoreVertical, Users, UserPlus } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { uploadMultipleAttachments } from '$lib/utils/file-upload';
 	import type { SupabaseClient } from '@supabase/supabase-js';

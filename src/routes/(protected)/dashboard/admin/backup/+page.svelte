@@ -18,7 +18,7 @@
 		AlertCircle,
 		CheckCircle2,
 		RefreshCw
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { BackupStats, RestoreResult } from '$lib/server/validation/backup';
 
 	let { data } = $props();

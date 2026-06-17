@@ -24,7 +24,7 @@
 		BugReportStatus
 	} from '$lib/types/bug-reports';
 	import BugReportStatusBadge from '$lib/components/bug-reports/BugReportStatusBadge.svelte';
-	import { Plus, Bug, Clock, CheckCircle, ArrowLeft } from 'lucide-svelte';
+	import { Plus, Bug, Clock, CheckCircle, ArrowLeft } from '@lucide/svelte';
 
 	let { data } = $props();
 

@@ -113,7 +113,6 @@
 		"globals": "^17.5.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.4.0",
-		"lucide-svelte": "^0.545.0",
 		"openapi3-ts": "^4.5.0",
 		"oxlint": "^1.70.0",
 		"pg": "^8.20.0",

@@ -10,7 +10,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import { Sparkles, Trophy, Calendar, ArrowRight, History } from 'lucide-svelte';
+	import { Sparkles, Trophy, Calendar, ArrowRight, History } from '@lucide/svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';

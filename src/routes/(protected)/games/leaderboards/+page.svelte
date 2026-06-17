@@ -2,7 +2,7 @@
 	import { resolve } from '$app/paths';
 	import { Card } from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Trophy } from 'lucide-svelte';
+	import { Trophy } from '@lucide/svelte';
 	import UnifiedLeaderboardTable from '$lib/components/game/leaderboard/UnifiedLeaderboardTable.svelte';
 	import MinesweeperDetailTable from '$lib/components/game/leaderboard/MinesweeperDetailTable.svelte';
 	import { LEADERBOARD_GAMES, LEADERBOARD_SCOPES, gameLabel } from '$lib/games/leaderboards';

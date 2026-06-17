@@ -10,7 +10,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Star, Flame, ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { Star, Flame, ChevronDown, ChevronUp } from '@lucide/svelte';
 	import { xpProgress, MAX_LEVEL } from '$lib/utils/buddy-xp';
 
 	let { data }: { data: PageData } = $props();

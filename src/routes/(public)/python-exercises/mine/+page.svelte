@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
-	import { ExternalLink, Trash2, Plus, Copy, Pencil } from 'lucide-svelte';
+	import { ExternalLink, Trash2, Plus, Copy, Pencil } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	let { data } = $props();
