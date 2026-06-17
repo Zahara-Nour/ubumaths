@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ArrowLeft, Check } from 'lucide-svelte';
+	import { ArrowLeft, Check } from '@lucide/svelte';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import AssessmentConfigForm from '$lib/components/assessments/AssessmentConfigForm.svelte';

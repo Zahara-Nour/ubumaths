@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Plus, BookOpen, FileCode2 } from 'lucide-svelte';
+	import { Plus, BookOpen, FileCode2 } from '@lucide/svelte';
 
 	let { data } = $props();
 </script>

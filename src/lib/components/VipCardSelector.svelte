@@ -25,7 +25,7 @@
 	import VipCard from '$lib/components/VipCard.svelte';
 	import VipCardSelectorModal from '$lib/components/VipCardSelectorModal.svelte';
 	import { cn } from '$lib/utils';
-	import { CreditCard, X } from 'lucide-svelte';
+	import { CreditCard, X } from '@lucide/svelte';
 	import {
 		templateToVipCard,
 		getTemplateById,

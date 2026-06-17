@@ -53,7 +53,7 @@
 		ChevronLeft,
 		ChevronRight,
 		X
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import type { GradeCode } from '$lib/types/grades';
 	import type { Exercise } from '$lib/exercises/types';

@@ -30,7 +30,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-svelte';
+	import { Plus, Trash2, ArrowUp, ArrowDown } from '@lucide/svelte';
 
 	interface Props {
 		variables?: QuestionVariable[];

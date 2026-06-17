@@ -19,7 +19,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Button } from '$lib/components/ui/button';
 	import { getVersion, getRawVersion } from '$lib/utils/version';
-	import { Settings, Info, ListOrdered, RotateCcw } from 'lucide-svelte';
+	import { Settings, Info, ListOrdered, RotateCcw } from '@lucide/svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { listNumberingStore } from '$lib/stores/listNumbering.svelte';
 	import { NUMBERING_SCHEMES, type SchemeId } from '$lib/types/list-numbering';

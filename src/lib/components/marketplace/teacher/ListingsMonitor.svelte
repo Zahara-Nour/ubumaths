@@ -5,7 +5,7 @@
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Package, Coins, User, TrendingUp, TrendingDown } from 'lucide-svelte';
+	import { Package, Coins, User, TrendingUp, TrendingDown } from '@lucide/svelte';
 
 	interface Listing {
 		id: string;

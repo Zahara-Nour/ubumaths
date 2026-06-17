@@ -29,7 +29,7 @@
 		FileDown,
 		Presentation,
 		BookmarkPlus
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import KeyboardShortcutsHelp from './KeyboardShortcutsHelp.svelte';
 	import NotebookPdfDialog from './NotebookPdfDialog.svelte';

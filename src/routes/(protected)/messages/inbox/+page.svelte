@@ -15,7 +15,7 @@
 		X,
 		Eye,
 		EyeOff
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { cn } from '$lib/utils';

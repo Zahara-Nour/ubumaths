@@ -19,7 +19,7 @@
 		FileAudio,
 		File,
 		Paperclip
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';

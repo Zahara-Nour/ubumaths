@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Badge } from '$lib/components/ui/badge';
-	import { CheckCircle, AlertCircle, BookOpen, Star } from 'lucide-svelte';
+	import { CheckCircle, AlertCircle, BookOpen, Star } from '@lucide/svelte';
 	import type { StudentExerciseView } from '$lib/types/worksheets';
 	import type { MasteryStatus } from '$lib/types/exercise-mastery';
 

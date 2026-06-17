@@ -24,7 +24,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Share2, Users, Lock, Unlock } from 'lucide-svelte';
+	import { Share2, Users, Lock, Unlock } from '@lucide/svelte';
 	import type { ClassWithData } from '$lib/server/students';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
 	import { SvelteSet } from 'svelte/reactivity';

@@ -44,7 +44,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { Loader2, TrendingUp, Users, CheckCircle, BarChart3, ArrowLeft } from 'lucide-svelte';
+	import { Loader2, TrendingUp, Users, CheckCircle, BarChart3, ArrowLeft } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
 

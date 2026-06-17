@@ -13,7 +13,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ChevronLeft, ChevronRight, Package, Coins, Calendar } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRight, Package, Coins, Calendar } from '@lucide/svelte';
 
 	interface Trade {
 		id: string;

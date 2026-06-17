@@ -19,7 +19,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { ClipboardList, Calendar, Clock, AlertCircle } from 'lucide-svelte';
+	import { ClipboardList, Calendar, Clock, AlertCircle } from '@lucide/svelte';
 	import type { UpcomingHomework } from '$lib/types/journal';
 	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import { cn } from '$lib/utils';

@@ -26,7 +26,7 @@
 		Axis3d,
 		Star,
 		Plus
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { templateService, type CreateFromModalInput } from '../services/template-service';
 	import {
 		TEMPLATE_CATEGORIES,

@@ -21,7 +21,7 @@
 		Clock,
 		BookOpen,
 		Library
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { pythonStore, type PythonFile } from '$lib/stores/pythonPlayground.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import LibraryBrowser from './library/LibraryBrowser.svelte';

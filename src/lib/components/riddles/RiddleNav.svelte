@@ -16,7 +16,7 @@
 		BarChart3,
 		Calendar,
 		Plus
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { page } from '$app/stores';
 
 	interface Props {

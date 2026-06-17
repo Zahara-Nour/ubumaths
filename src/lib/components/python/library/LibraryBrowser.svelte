@@ -2,7 +2,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import { BookOpen, Search, X, Tag } from 'lucide-svelte';
+	import { BookOpen, Search, X, Tag } from '@lucide/svelte';
 	import { PYTHON_EXAMPLES } from '$lib/data/python-examples';
 	import { filterExamples, getAllTagsFromExamples } from '$lib/data/python-examples/utils';
 	import type { ExampleTag, PythonExample } from '$lib/data/python-examples/types';

@@ -33,7 +33,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import AnswerConfigEditor from '$lib/components/riddles/AnswerConfigEditor.svelte';
-	import { Lightbulb, Image as ImageIcon, Save, X } from 'lucide-svelte';
+	import { Lightbulb, Image as ImageIcon, Save, X } from '@lucide/svelte';
 
 	// Props
 	interface Props {

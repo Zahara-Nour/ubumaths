@@ -23,7 +23,7 @@
 		Calendar,
 		Copy,
 		Check
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 	import MySelect from '$lib/components/MySelect.svelte';
 

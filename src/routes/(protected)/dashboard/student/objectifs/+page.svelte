@@ -12,7 +12,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { Target, Sparkles, CheckCircle2, Circle, LifeBuoy, ChevronRight } from 'lucide-svelte';
+	import { Target, Sparkles, CheckCircle2, Circle, LifeBuoy, ChevronRight } from '@lucide/svelte';
 	import {
 		formatObjectiveLevel,
 		getObjectiveLevelVisual,

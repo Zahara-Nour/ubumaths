@@ -16,7 +16,7 @@
 	import { spreadsheetStore } from '$lib/spreadsheet/store.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { ArrowLeft, Save, Loader2 } from 'lucide-svelte';
+	import { ArrowLeft, Save, Loader2 } from '@lucide/svelte';
 
 	let { data } = $props();
 

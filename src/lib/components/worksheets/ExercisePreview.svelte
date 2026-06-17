@@ -23,7 +23,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Variable, Eye, EyeOff, GraduationCap, Tag } from 'lucide-svelte';
+	import { Variable, Eye, EyeOff, GraduationCap, Tag } from '@lucide/svelte';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import type { GradeCode } from '$lib/types/grades';
 	import ExerciseDisplay from '$lib/components/exercises/ExerciseDisplay.svelte';

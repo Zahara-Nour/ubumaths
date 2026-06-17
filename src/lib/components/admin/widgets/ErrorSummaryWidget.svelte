@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AlertTriangle, TrendingUp } from 'lucide-svelte';
+	import { AlertTriangle, TrendingUp } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { cn } from '$lib/utils';

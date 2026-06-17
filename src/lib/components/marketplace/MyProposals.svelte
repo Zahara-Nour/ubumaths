@@ -3,7 +3,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Clock, CheckCircle, XCircle, Loader2 } from 'lucide-svelte';
+	import { Clock, CheckCircle, XCircle, Loader2 } from '@lucide/svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 

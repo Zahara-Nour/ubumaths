@@ -23,7 +23,7 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
-	import { Flag, AlertTriangle } from 'lucide-svelte';
+	import { Flag, AlertTriangle } from '@lucide/svelte';
 
 	// Component Props
 	interface Props {

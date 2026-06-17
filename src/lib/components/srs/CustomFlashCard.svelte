@@ -20,7 +20,7 @@
 <script lang="ts">
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import * as Card from '$lib/components/ui/card';
-	import { RotateCw } from 'lucide-svelte';
+	import { RotateCw } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import type { TemplateMarkdown } from '$lib/ubumark';
 

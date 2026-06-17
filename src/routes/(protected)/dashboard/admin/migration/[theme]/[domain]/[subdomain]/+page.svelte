@@ -36,11 +36,11 @@
 		XCircle,
 		X,
 		Edit3
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import ReviewActions from '$lib/components/migration/ReviewActions.svelte';
 	import TestSpecBatchRunner from '$lib/components/migration/TestSpecBatchRunner.svelte';
 	import { SvelteMap } from 'svelte/reactivity';
-	import { FlaskConical } from 'lucide-svelte';
+	import { FlaskConical } from '@lucide/svelte';
 	import type { QuestionTemplate } from '$lib/questions/types';
 	import type { PageData } from './$types';
 

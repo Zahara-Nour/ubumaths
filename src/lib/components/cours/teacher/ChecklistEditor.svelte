@@ -26,7 +26,7 @@
 		ChevronUp,
 		ChevronDown,
 		Target
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	// Props - callbacks are now optional (using form actions instead)
 	interface Props {

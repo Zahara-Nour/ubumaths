@@ -25,7 +25,7 @@
 	import * as Popover from '$lib/components/ui/popover';
 	import MarkdownRenderer from '../MarkdownRenderer.svelte';
 	import { cn } from '$lib/utils';
-	import { Lightbulb, AlertCircle, ExternalLink, FileText, Video } from 'lucide-svelte';
+	import { Lightbulb, AlertCircle, ExternalLink, FileText, Video } from '@lucide/svelte';
 
 	interface Props {
 		/** Hint ID to look up in hints array */

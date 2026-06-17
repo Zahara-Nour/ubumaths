@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Calculator, Maximize2, Minimize2, ExternalLink } from 'lucide-svelte';
+	import { Calculator, Maximize2, Minimize2, ExternalLink } from '@lucide/svelte';
 	import { theme } from '$lib/stores/theme.svelte';
 
 	let isLoaded = $state(false);

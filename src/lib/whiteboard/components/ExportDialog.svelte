@@ -23,7 +23,7 @@
 		type PngResolution,
 		type ExportOptions
 	} from '../core/pdf-export';
-	import { Download, FileImage, FileCode, FileText, Loader2 } from 'lucide-svelte';
+	import { Download, FileImage, FileCode, FileText, Loader2 } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	// ==========================================================================

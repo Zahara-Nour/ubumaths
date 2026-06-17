@@ -26,7 +26,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { cn } from '$lib/utils';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import { X } from 'lucide-svelte';
+	import { X } from '@lucide/svelte';
 	import { WARNING_TYPE_LABELS } from '$lib/types/warnings';
 
 	interface Props {

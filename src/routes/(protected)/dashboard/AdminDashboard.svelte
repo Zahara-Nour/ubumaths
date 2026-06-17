@@ -70,7 +70,7 @@
 		AlertTriangle,
 		RefreshCw,
 		Clock
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	import type { PageData } from './$types';

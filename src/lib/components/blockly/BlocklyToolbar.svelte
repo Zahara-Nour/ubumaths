@@ -5,7 +5,7 @@
   clearing output/workspace, and switching between JavaScript and Python.
 -->
 <script lang="ts">
-	import { Play, Trash2, RefreshCw, Loader2, Maximize2, Minimize2 } from 'lucide-svelte';
+	import { Play, Trash2, RefreshCw, Loader2, Maximize2, Minimize2 } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { ExecutionLanguage } from '$lib/shared/blockly';
 

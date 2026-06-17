@@ -5,7 +5,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Copy, Check, Loader2, Pencil, PowerOff, Power } from 'lucide-svelte';
+	import { Copy, Check, Loader2, Pencil, PowerOff, Power } from '@lucide/svelte';
 	import { Switch } from '$lib/components/ui/switch';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';

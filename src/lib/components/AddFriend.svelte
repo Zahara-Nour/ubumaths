@@ -6,7 +6,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Search, UserPlus, Check, Clock, UserX, Users, Loader2 } from 'lucide-svelte';
+	import { Search, UserPlus, Check, Clock, UserX, Users, Loader2 } from '@lucide/svelte';
 
 	let searchQuery = $state('');
 	let searchResults = $state<

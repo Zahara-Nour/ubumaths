@@ -24,7 +24,7 @@
 		Globe,
 		Download,
 		Loader2
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { generateExerciseTypst } from '$lib/exercises/typst/exercise-typst-generator';
 	import { getTypstService, PRIORITY } from '$lib/typst/service';
 	import {

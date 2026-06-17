@@ -13,7 +13,7 @@
 
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { X, Plus, ArrowRight, Trash2 } from 'lucide-svelte';
+	import { X, Plus, ArrowRight, Trash2 } from '@lucide/svelte';
 	import { modalStack } from '$lib/stores/modalStack.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { studentCache } from '$lib/stores/studentDashboardCache.svelte';

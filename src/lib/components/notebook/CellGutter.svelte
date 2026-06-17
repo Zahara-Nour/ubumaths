@@ -8,7 +8,7 @@
 
 	import type { CellExecutionState, CellType } from '$lib/types/notebook';
 	import { Button } from '$lib/components/ui/button';
-	import { Play, Square } from 'lucide-svelte';
+	import { Play, Square } from '@lucide/svelte';
 
 	// Props
 	let {

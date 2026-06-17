@@ -29,7 +29,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import ConfirmDialog from '$lib/components/ui/confirm-dialog/ConfirmDialog.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Plus, Pencil, Trash2, GripVertical, Loader2, Save, X } from 'lucide-svelte';
+	import { Plus, Pencil, Trash2, GripVertical, Loader2, Save, X } from '@lucide/svelte';
 	import type { WorksheetSectionRow } from '$lib/types/worksheets';
 
 	// Types

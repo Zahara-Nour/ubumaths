@@ -30,7 +30,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, Save, Star } from 'lucide-svelte';
+	import { Loader2, Save, Star } from '@lucide/svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import type {
 		WorksheetExerciseWithExercise,

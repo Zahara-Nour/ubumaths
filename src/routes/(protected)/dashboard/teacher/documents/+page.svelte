@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DocumentManager } from '$lib/components/documents';
-	import { FileText } from 'lucide-svelte';
+	import { FileText } from '@lucide/svelte';
 </script>
 
 <svelte:head>

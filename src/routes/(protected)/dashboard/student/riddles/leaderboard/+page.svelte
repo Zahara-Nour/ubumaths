@@ -10,7 +10,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Trophy, ArrowLeft, Crown } from 'lucide-svelte';
+	import { Trophy, ArrowLeft, Crown } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	let { data }: { data: PageData } = $props();

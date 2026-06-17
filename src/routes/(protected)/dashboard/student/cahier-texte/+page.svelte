@@ -17,7 +17,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { JournalDatePicker, HomeworkCard } from '$lib/components/journal';
-	import { BookOpen, Calendar, ClipboardList, ChevronRight } from 'lucide-svelte';
+	import { BookOpen, Calendar, ClipboardList, ChevronRight } from '@lucide/svelte';
 	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import type { PageData } from './$types';
 

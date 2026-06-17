@@ -11,7 +11,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { ChapterCard } from '$lib/components/cours';
-	import { Book, FolderOpen, GraduationCap } from 'lucide-svelte';
+	import { Book, FolderOpen, GraduationCap } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	interface Props {

@@ -16,7 +16,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, AlertTriangle, Trophy } from 'lucide-svelte';
+	import { ArrowLeft, AlertTriangle, Trophy } from '@lucide/svelte';
 	import { DIFFICULTY_LABELS, type Difficulty } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
 

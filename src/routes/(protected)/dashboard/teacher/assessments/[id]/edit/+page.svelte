@@ -3,7 +3,7 @@
 	import { enhance as _enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ArrowLeft } from 'lucide-svelte';
+	import { ArrowLeft } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import AssessmentConfigForm from '$lib/components/assessments/AssessmentConfigForm.svelte';
 	import type { PageData } from './$types';

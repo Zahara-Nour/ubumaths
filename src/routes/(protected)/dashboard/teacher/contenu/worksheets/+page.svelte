@@ -21,7 +21,7 @@
 		HelpCircle,
 		Home,
 		Loader2
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { WorksheetType, WorksheetStatus } from '$lib/types/worksheets';
 	import { formatGradeShort } from '$lib/utils/grades';

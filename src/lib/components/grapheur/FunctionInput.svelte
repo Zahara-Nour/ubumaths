@@ -27,7 +27,7 @@ Features:
 	import ColorPicker from './ColorPicker.svelte';
 	import LineWidthPicker from './LineWidthPicker.svelte';
 	import LineStylePicker from './LineStylePicker.svelte';
-	import { Eye, EyeOff, Trash2 } from 'lucide-svelte';
+	import { Eye, EyeOff, Trash2 } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 
 	let { func }: { func: ExplicitFunction } = $props();

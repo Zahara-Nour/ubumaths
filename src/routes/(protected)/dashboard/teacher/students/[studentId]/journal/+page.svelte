@@ -34,7 +34,7 @@
 		ChevronLeft,
 		ChevronRight,
 		Users
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { RewardType } from '$lib/types/reward-journal';
 	import type { PageData } from './$types';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ShoppingCart } from 'lucide-svelte';
+	import { ShoppingCart } from '@lucide/svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { questionCart } from '$lib/stores/questionCart.svelte';
 	import { goto } from '$app/navigation';

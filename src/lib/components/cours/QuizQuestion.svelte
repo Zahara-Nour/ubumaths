@@ -12,7 +12,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { cn } from '$lib/utils';
-	import { Check, X } from 'lucide-svelte';
+	import { Check, X } from '@lucide/svelte';
 
 	// Props
 	interface Props {

@@ -36,8 +36,8 @@
 	} from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import { resolve } from '$app/paths';
-	import { ArrowLeft, Plus, Users, User } from 'lucide-svelte';
-	import { Filter, Tag } from 'lucide-svelte';
+	import { ArrowLeft, Plus, Users, User } from '@lucide/svelte';
+	import { Filter, Tag } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';

@@ -19,7 +19,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import OnlineStatus from '$lib/components/OnlineStatus.svelte';
-	import { Search, ArrowLeftRight, UserPlus, Loader2 } from 'lucide-svelte';
+	import { Search, ArrowLeftRight, UserPlus, Loader2 } from '@lucide/svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { presenceManager } from '$lib/stores/presence.svelte';
 	import { marketplaceStore } from '$lib/stores/marketplace.svelte';

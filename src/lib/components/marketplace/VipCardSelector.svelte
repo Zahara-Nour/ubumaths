@@ -3,7 +3,7 @@
 	import type { Database } from '$lib/types/database';
 	import type { VipCard as VipCardType } from '$lib/types/vip-card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Lock, Check } from 'lucide-svelte';
+	import { Lock, Check } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import VipCard from '$lib/components/VipCard.svelte';
 	import { RARITY_COLORS, RARITY_LABELS } from '$lib/constants/vip-card-ui';

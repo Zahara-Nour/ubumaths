@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Trophy } from 'lucide-svelte';
+	import { Trophy } from '@lucide/svelte';
 	import AchievementBadge from './AchievementBadge.svelte';
 
 	interface Achievement {

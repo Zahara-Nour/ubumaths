@@ -14,7 +14,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
 	import { cn } from '$lib/utils';
-	import { CheckCircle2, Circle, Target } from 'lucide-svelte';
+	import { CheckCircle2, Circle, Target } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 
 	// Item with progress included

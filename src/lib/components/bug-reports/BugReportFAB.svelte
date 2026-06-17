@@ -6,7 +6,7 @@
 	 * Clicking it opens the bug report dialog.
 	 */
 	import { cn } from '$lib/utils';
-	import { Bug } from 'lucide-svelte';
+	import { Bug } from '@lucide/svelte';
 
 	interface Props {
 		onclick: () => void;

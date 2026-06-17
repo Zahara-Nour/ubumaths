@@ -21,7 +21,7 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { FileText, BookCheck, Globe, Calendar, ClipboardList } from 'lucide-svelte';
+	import { FileText, BookCheck, Globe, Calendar, ClipboardList } from '@lucide/svelte';
 	import type { ClassJournalEntry, JournalEntryWithClass } from '$lib/types/journal';
 	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import { cn } from '$lib/utils';

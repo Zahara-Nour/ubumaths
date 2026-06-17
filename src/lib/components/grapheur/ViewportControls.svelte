@@ -14,7 +14,7 @@
 
 	import { grapheurStore } from '$lib/stores/grapheur.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ZoomIn, ZoomOut, Maximize2, Grid3x3 } from 'lucide-svelte';
+	import { ZoomIn, ZoomOut, Maximize2, Grid3x3 } from '@lucide/svelte';
 	import ExportButton from './ExportButton.svelte';
 
 	// Props

@@ -20,7 +20,7 @@
 -->
 
 <script lang="ts">
-	import { Star } from 'lucide-svelte';
+	import { Star } from '@lucide/svelte';
 	import gidouilleImg from '$lib/assets/images/gidouille.png';
 	import type { StudentVipCards } from '$lib/types/vip-card';
 	import { getTotalUnusedCards } from '$lib/utils/vip-cards';

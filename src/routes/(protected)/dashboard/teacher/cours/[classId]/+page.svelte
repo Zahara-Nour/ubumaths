@@ -40,7 +40,7 @@
 		ClipboardList,
 		Dumbbell,
 		Copy
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import type { TemplateSummary } from '$lib/types/chapter-templates';
 

@@ -27,7 +27,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import RestrictUserDialog from './RestrictUserDialog.svelte';
-	import { CheckCircle, XCircle, AlertTriangle, Loader2, Trash2, UserX } from 'lucide-svelte';
+	import { CheckCircle, XCircle, AlertTriangle, Loader2, Trash2, UserX } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { formatDistanceToNow, format } from 'date-fns';
 	import { fr } from 'date-fns/locale';

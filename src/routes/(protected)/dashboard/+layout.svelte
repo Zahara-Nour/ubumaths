@@ -36,7 +36,7 @@
 	import type { LayoutData } from './$types';
 	import { page } from '$app/state';
 	import { navigating } from '$app/stores';
-	import { Sun, Moon, Minus, Plus, Maximize, Minimize, Menu } from 'lucide-svelte';
+	import { Sun, Moon, Minus, Plus, Maximize, Minimize, Menu } from '@lucide/svelte';
 	import { getNavLinks, getZoneTitle } from '$lib/config/dashboard-nav';
 	import { submitLogoutForm } from '$lib/utils/auth';
 	import { resolve } from '$app/paths';

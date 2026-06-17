@@ -55,7 +55,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { teacherCache } from '$lib/stores/teacherDashboardCache.svelte';
-	import { Mail, CheckCircle2, BookOpen, GraduationCap, Loader2, ScrollText } from 'lucide-svelte';
+	import { Mail, CheckCircle2, BookOpen, GraduationCap, Loader2, ScrollText } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 

@@ -21,7 +21,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { X, Plus } from 'lucide-svelte';
+	import { X, Plus } from '@lucide/svelte';
 	import {
 		GRADES,
 		PRIMARY_GRADES,

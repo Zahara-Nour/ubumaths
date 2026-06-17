@@ -6,7 +6,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Hash, Zap } from 'lucide-svelte';
+	import { Hash, Zap } from '@lucide/svelte';
 
 	// Props
 	interface Props {

@@ -23,7 +23,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
-	import { AlertCircle, RefreshCw, Check, X } from 'lucide-svelte';
+	import { AlertCircle, RefreshCw, Check, X } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';

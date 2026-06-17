@@ -24,7 +24,7 @@
 		ChevronDown,
 		ChevronUp,
 		Eye
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type {
 		MessageTemplate,

@@ -17,7 +17,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Copy, Check } from 'lucide-svelte';
+	import { Copy, Check } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 
 	interface Props {

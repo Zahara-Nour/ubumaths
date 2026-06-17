@@ -13,7 +13,7 @@
 	import DialogFooter from '$lib/components/ui/dialog/dialog-footer.svelte';
 	import DialogTitle from '$lib/components/ui/dialog/dialog-title.svelte';
 	import DialogDescription from '$lib/components/ui/dialog/dialog-description.svelte';
-	import { History, FileText, Loader2 } from 'lucide-svelte';
+	import { History, FileText, Loader2 } from '@lucide/svelte';
 
 	// ==========================================================================
 	// Props

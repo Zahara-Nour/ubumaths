@@ -12,7 +12,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { ChevronLeft, ClipboardList, Save, Trash2, PenLine } from 'lucide-svelte';
+	import { ChevronLeft, ClipboardList, Save, Trash2, PenLine } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData, ActionData } from './$types';
 

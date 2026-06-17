@@ -8,7 +8,7 @@
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Separator } from '$lib/components/ui/separator';
 	import VipCardSelector from './VipCardSelector.svelte';
-	import { ArrowLeftRight, CheckCircle, XCircle } from 'lucide-svelte';
+	import { ArrowLeftRight, CheckCircle, XCircle } from '@lucide/svelte';
 	import { page } from '$app/stores';
 	import { toaster } from '$lib/stores/toaster.svelte';
 

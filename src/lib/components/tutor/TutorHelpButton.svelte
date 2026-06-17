@@ -33,7 +33,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { HelpCircle } from 'lucide-svelte';
+	import { HelpCircle } from '@lucide/svelte';
 	import TutorChat from './TutorChat.svelte';
 
 	interface ExerciseContext {

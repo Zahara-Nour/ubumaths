@@ -12,7 +12,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { sanitizeHtml } from '$lib/utils/sanitize';
-	import { Eye, RefreshCw, Users, Copy } from 'lucide-svelte';
+	import { Eye, RefreshCw, Users, Copy } from '@lucide/svelte';
 	import type { InstanceData } from '$lib/types/worksheets';
 
 	interface Props {

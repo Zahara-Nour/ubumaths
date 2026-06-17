@@ -2,7 +2,7 @@
 	import type { MathfieldElement } from 'mathlive';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
-	import { Keyboard, Share2, Download, Trash2 } from 'lucide-svelte';
+	import { Keyboard, Share2, Download, Trash2 } from '@lucide/svelte';
 	import UnifiedInput from './UnifiedInput.svelte';
 	import ResultDisplay from './ResultDisplay.svelte';
 	import CalculatorKeyboard from './CalculatorKeyboard.svelte';

@@ -6,7 +6,7 @@
 	import HelpPopover from './HelpPopover.svelte';
 	import ExportModal from './ExportModal.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Trash2 } from 'lucide-svelte';
+	import { Trash2 } from '@lucide/svelte';
 	import type { TabStyle } from '$lib/mathAST/cli/web';
 
 	// Map tab IDs to TabStyle

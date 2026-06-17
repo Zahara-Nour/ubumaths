@@ -5,7 +5,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { MoreVertical, Search, User } from 'lucide-svelte';
+	import { MoreVertical, Search, User } from '@lucide/svelte';
 
 	let searchQuery = $state('');
 

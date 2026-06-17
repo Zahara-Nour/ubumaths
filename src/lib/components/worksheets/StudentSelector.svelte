@@ -28,7 +28,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Loader2, Users, UserPlus, Search } from 'lucide-svelte';
+	import { Loader2, Users, UserPlus, Search } from '@lucide/svelte';
 	import { Input } from '$lib/components/ui/input';
 
 	// ============================================================================

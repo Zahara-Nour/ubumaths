@@ -11,14 +11,14 @@
 		FileText,
 		ExternalLink,
 		FolderOpen,
-		Youtube,
+		Video,
 		Link as LinkIcon,
 		FileQuestion,
 		ChevronLeft,
 		ChevronRight,
 		GraduationCap,
 		Tag
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	interface Props {
@@ -169,7 +169,7 @@
 	function getAttachmentIcon(
 		attachment: GroupedMaterial['material']['attachments'][0]
 	): typeof FileText {
-		if (attachment.material_type === 'YOUTUBE_VIDEO') return Youtube;
+		if (attachment.material_type === 'YOUTUBE_VIDEO') return Video;
 		if (attachment.material_type === 'LINK') return LinkIcon;
 		if (attachment.material_type === 'FORM') return FileQuestion;
 		return FileText;

@@ -12,7 +12,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Settings, ShoppingBag, AlertCircle, Info, Check, X } from 'lucide-svelte';
+	import { Settings, ShoppingBag, AlertCircle, Info, Check, X } from '@lucide/svelte';
 	import { z } from 'zod';
 
 	interface MarketplaceConfig {

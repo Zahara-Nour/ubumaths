@@ -37,7 +37,7 @@
 		UserPlus,
 		CheckSquare,
 		Square
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { untrack } from 'svelte';
 
 	// ============================================================================

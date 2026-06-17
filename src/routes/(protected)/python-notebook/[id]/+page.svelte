@@ -3,7 +3,7 @@
 	import NotebookView from '$lib/components/notebook/NotebookView.svelte';
 	import ShareNotebookDialog from '$lib/components/notebook/ShareNotebookDialog.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, Share2, BarChart3, Eye, Pencil } from 'lucide-svelte';
+	import { ArrowLeft, Share2, BarChart3, Eye, Pencil } from '@lucide/svelte';
 
 	let { data } = $props();
 

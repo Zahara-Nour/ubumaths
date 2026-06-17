@@ -20,7 +20,7 @@
 -->
 
 <script lang="ts">
-	import { CalendarDays, ChevronDown } from 'lucide-svelte';
+	import { CalendarDays, ChevronDown } from '@lucide/svelte';
 	import * as Card from '$lib/components/ui/card';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import type {

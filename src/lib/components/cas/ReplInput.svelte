@@ -2,7 +2,7 @@
 	import { replStore } from '$lib/stores/repl.svelte';
 	import MathField from '$lib/components/MathField.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import { Play, Search } from 'lucide-svelte';
+	import { Play, Search } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import { CompletionProvider, type Completion } from '$lib/mathAST/cli/completion';
 

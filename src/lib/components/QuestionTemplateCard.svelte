@@ -26,7 +26,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
-	import { Eye, Pencil, Copy, Trash2 } from 'lucide-svelte';
+	import { Eye, Pencil, Copy, Trash2 } from '@lucide/svelte';
 
 	interface Props {
 		template: QuestionTemplate;

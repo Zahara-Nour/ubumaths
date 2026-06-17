@@ -12,7 +12,7 @@
 		ChevronRight,
 		Copy,
 		LayoutGrid
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { ExerciseValidationResult as ValidationResult } from '$lib/shared/python';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { PageData } from './$types';

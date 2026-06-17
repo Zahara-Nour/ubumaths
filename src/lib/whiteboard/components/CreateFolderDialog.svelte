@@ -9,7 +9,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { FolderPlus, Loader2 } from 'lucide-svelte';
+	import { FolderPlus, Loader2 } from '@lucide/svelte';
 
 	// ==========================================================================
 	// Props

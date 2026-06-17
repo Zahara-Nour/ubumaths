@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Clock, ArrowRight } from 'lucide-svelte';
+	import { Clock, ArrowRight } from '@lucide/svelte';
 	import gidouilleImage from '$lib/assets/images/gidouille.png';
 	import { formatDistanceToNow } from 'date-fns';
 	import { fr } from 'date-fns/locale';

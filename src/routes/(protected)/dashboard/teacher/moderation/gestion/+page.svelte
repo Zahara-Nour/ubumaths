@@ -22,7 +22,7 @@
 	import ModerationLogsTable from '$lib/components/moderation/ModerationLogsTable.svelte';
 	import MessageReportsTable from '$lib/components/moderation/MessageReportsTable.svelte';
 	import RestrictUserDialog from '$lib/components/moderation/RestrictUserDialog.svelte';
-	import { ShieldAlert, Flag, UserX } from 'lucide-svelte';
+	import { ShieldAlert, Flag, UserX } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	// Page Props

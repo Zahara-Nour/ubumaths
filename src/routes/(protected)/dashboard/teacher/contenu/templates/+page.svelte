@@ -18,7 +18,7 @@
 		CardHeader,
 		CardTitle
 	} from '$lib/components/ui/card';
-	import { Plus, Search, FileText, HelpCircle, CheckSquare, BookOpen } from 'lucide-svelte';
+	import { Plus, Search, FileText, HelpCircle, CheckSquare, BookOpen } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 
 	let { data }: { data: PageData } = $props();

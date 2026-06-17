@@ -9,11 +9,11 @@
 	import type { Timeline } from '../core/timeline.svelte';
 	import type { ConstructionEngine } from '../core/engine.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import Play from 'lucide-svelte/icons/play';
-	import Pause from 'lucide-svelte/icons/pause';
-	import RotateCcw from 'lucide-svelte/icons/rotate-ccw';
-	import SkipBack from 'lucide-svelte/icons/skip-back';
-	import SkipForward from 'lucide-svelte/icons/skip-forward';
+	import Play from '@lucide/svelte/icons/play';
+	import Pause from '@lucide/svelte/icons/pause';
+	import RotateCcw from '@lucide/svelte/icons/rotate-ccw';
+	import SkipBack from '@lucide/svelte/icons/skip-back';
+	import SkipForward from '@lucide/svelte/icons/skip-forward';
 
 	// Types
 	interface Props {

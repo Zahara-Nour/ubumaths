@@ -15,7 +15,7 @@
 		X,
 		ArrowUp,
 		ArrowDown
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type { MasteryStatus, StudentRow } from './+page.server';
 

@@ -23,7 +23,7 @@
 	import CustomCardEditor from '$lib/components/srs/CustomCardEditor.svelte';
 	import TemplateSelector from '$lib/components/srs/TemplateSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Save, Plus, Trash2, BookOpen, ArrowLeft } from 'lucide-svelte';
+	import { Save, Plus, Trash2, BookOpen, ArrowLeft } from '@lucide/svelte';
 	import { RETENTION_PROFILES } from '$lib/srs/config';
 	import type { CreateDeckRequest, CreateCardRequest } from '$lib/srs/types';
 	import type { TemplateMarkdown } from '$lib/ubumark';

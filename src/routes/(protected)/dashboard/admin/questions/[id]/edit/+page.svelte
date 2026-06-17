@@ -28,7 +28,7 @@
 	import type { QuestionTemplate } from '$lib/questions/types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { ArrowLeft, Loader2 } from 'lucide-svelte';
+	import { ArrowLeft, Loader2 } from '@lucide/svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import { onMount } from 'svelte';

@@ -15,7 +15,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Alert from '$lib/components/ui/alert';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Sparkles, Calendar, History, Trash2, Plus } from 'lucide-svelte';
+	import { Sparkles, Calendar, History, Trash2, Plus } from '@lucide/svelte';
 	import { format } from 'date-fns';
 	import { fr } from 'date-fns/locale';
 	import { enhance } from '$app/forms';

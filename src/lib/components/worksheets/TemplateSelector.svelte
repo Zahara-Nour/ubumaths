@@ -19,7 +19,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Card from '$lib/components/ui/card';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { FileText, Eye, Globe, Lock, Sparkles, X } from 'lucide-svelte';
+	import { FileText, Eye, Globe, Lock, Sparkles, X } from '@lucide/svelte';
 	import type { WorksheetTemplateRow } from '$lib/types/worksheets';
 	import {
 		DEFAULT_TEMPLATES,

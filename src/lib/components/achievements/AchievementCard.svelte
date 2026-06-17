@@ -15,7 +15,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Progress } from '$lib/components/ui/progress';
-	import { Lock, Trophy, Star, Sparkles, Crown, Gem } from 'lucide-svelte';
+	import { Lock, Trophy, Star, Sparkles, Crown, Gem } from '@lucide/svelte';
 	import type { Achievement, AchievementRarity } from '$lib/types/achievements';
 	import { cn } from '$lib/utils';
 

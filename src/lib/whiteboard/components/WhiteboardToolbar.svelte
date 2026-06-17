@@ -41,7 +41,7 @@
 		Grid3x3,
 		Palette,
 		Crosshair
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import {
 		INSTRUMENT_LABELS,
 		STROKE_STYLE_LABELS,

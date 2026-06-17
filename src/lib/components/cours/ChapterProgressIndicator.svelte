@@ -12,7 +12,7 @@
 	import type { ChapterProgress } from '$lib/types/chapters';
 	import { Progress } from '$lib/components/ui/progress';
 	import { cn } from '$lib/utils';
-	import { CheckCircle2, Circle, Target, HelpCircle } from 'lucide-svelte';
+	import { CheckCircle2, Circle, Target, HelpCircle } from '@lucide/svelte';
 
 	// Props
 	interface Props {

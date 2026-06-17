@@ -18,7 +18,7 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';
-	import { Upload, ImageIcon, Loader2 } from 'lucide-svelte';
+	import { Upload, ImageIcon, Loader2 } from '@lucide/svelte';
 	import type { GalleryImageInfo } from './types';
 
 	interface Props {

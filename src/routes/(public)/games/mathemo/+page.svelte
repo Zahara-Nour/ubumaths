@@ -26,7 +26,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tooltip from '$lib/components/ui/tooltip';
-	import { Trophy, Lightbulb, Undo2, Eye, Zap } from 'lucide-svelte';
+	import { Trophy, Lightbulb, Undo2, Eye, Zap } from '@lucide/svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import type { PageData } from './$types';
 

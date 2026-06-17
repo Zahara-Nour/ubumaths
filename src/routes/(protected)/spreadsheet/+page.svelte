@@ -15,7 +15,7 @@
 	import { goto } from '$app/navigation';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { Plus, FileSpreadsheet, Trash2, Calendar } from 'lucide-svelte';
+	import { Plus, FileSpreadsheet, Trash2, Calendar } from '@lucide/svelte';
 
 	let { data } = $props();
 
