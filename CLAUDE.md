@@ -86,9 +86,10 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 
 **3. Svelte 5 runes uniquement** (jamais `export let` / `$:`) :
 
-```svelte
-let count = $state(0); // pas: let count = 0 let doubled = $derived(count * 2); // pas: $: doubled =
-count * 2 let {title} = $props(); // pas: export let title
+```ts
+let count = $state(0); // pas: let count = 0
+let doubled = $derived(count * 2); // pas: $: doubled = count * 2
+let { title } = $props(); // pas: export let title
 ```
 
 Réactivité : **event → handler → maj du state → maj du DOM**. `$effect` réservé aux cas particuliers (side-effects). → [best-practices.md](docs/claude/best-practices.md#svelte-5-runes)
