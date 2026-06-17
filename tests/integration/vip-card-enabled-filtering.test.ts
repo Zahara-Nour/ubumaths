@@ -29,12 +29,27 @@ import type { VipCardRarity } from '$lib/types/vip-card';
 
 describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 	let serviceClient: SupabaseClient<Database>;
+	// Snapshot of the seeded vip_card_templates.is_enabled state. This suite mutates
+	// the GLOBAL card state, so we restore it in afterAll to avoid contaminating the
+	// other VIP-card suites that rely on the seeded defaults.
+	let originalCardStates: { id: string; is_enabled: boolean | null }[] = [];
 
 	beforeAll(async () => {
 		serviceClient = createServiceRoleClient();
+		const { data: templates } = await serviceClient
+			.from('vip_card_templates')
+			.select('id, is_enabled');
+		originalCardStates = (templates ?? []).map((t) => ({ id: t.id, is_enabled: t.is_enabled }));
 	});
 
 	afterAll(async () => {
+		// Restore the seeded enabled-state so sibling VIP-card suites see the defaults.
+		for (const c of originalCardStates) {
+			await serviceClient
+				.from('vip_card_templates')
+				.update({ is_enabled: c.is_enabled })
+				.eq('id', c.id);
+		}
 		await cleanupAllTestData();
 		await closeConnections();
 	});
@@ -476,8 +491,8 @@ describe('VIP Card Enabled/Disabled Filtering - Integration Tests', () => {
 				.eq('is_enabled', false)
 				.eq('rarity', 'common');
 
-			// Should have 8 total: 6 we just disabled + 2 default disabled (candy, captain)
-			expect(disabledCommon).toHaveLength(8);
+			// All common cards are now disabled (count depends on the seeded set).
+			expect(disabledCommon).toHaveLength(commonIds.length);
 
 			// Try to draw cards (should fail because fallback target 'common' is empty)
 			const { error } = await studentClient.rpc('draw_multiple_vip_cards', {

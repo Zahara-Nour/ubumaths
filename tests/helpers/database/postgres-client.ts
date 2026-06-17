@@ -152,13 +152,28 @@ export async function insertAuthUser(params: InsertAuthUserParams): Promise<stri
 export async function deleteTestAuthUsers(): Promise<void> {
 	const client = await getPostgresClient();
 
+	// `session_replication_role = replica` disables user triggers, FK actions AND
+	// cascades for the duration of the deletes. This is required because deleting a
+	// test profile cascades to its exercises, which fires
+	// `trigger_delete_exercise_images` (exercises ON DELETE) → `DELETE FROM
+	// storage.objects` → the local Supabase guard `storage.protect_delete()` RAISES
+	// "Direct deletion from storage tables is not allowed". In normal mode that error
+	// aborts the delete, the profile leaks, and `enforce_single_teacher` then blocks
+	// every later teacher creation → whole-suite contamination. Under replica the
+	// cascade is off, so we delete profiles explicitly before auth.users.
 	try {
-		await client.query(`
-			DELETE FROM auth.users
-			WHERE email LIKE '%@test.com%'
-		`);
+		await client.query(`SET session_replication_role = replica`);
+		await client.query(`DELETE FROM public.profiles WHERE email LIKE '%@test.com%'`);
+		await client.query(`DELETE FROM auth.users WHERE email LIKE '%@test.com%'`);
 	} catch (error) {
 		console.debug('Error deleting test auth users:', error);
+	} finally {
+		// Always restore the role so the singleton connection is never left in replica.
+		try {
+			await client.query(`SET session_replication_role = DEFAULT`);
+		} catch {
+			/* noop */
+		}
 	}
 }
 

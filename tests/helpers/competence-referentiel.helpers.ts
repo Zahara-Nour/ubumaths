@@ -12,6 +12,7 @@
  */
 
 import { createServiceRoleClient, generateTestEmail } from './database/trigger-test-helpers';
+import { deleteTestAuthUsers } from './database/postgres-client';
 import { TestData } from './database/test-data-factory';
 import { createAuthenticatedClient } from './database/supabase-client';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -46,7 +47,7 @@ export type StudentSkillStateARow = {
 };
 
 export type StudentSkillStateAViewRow = StudentSkillStateARow & {
-	to_review: boolean;
+	needs_remediation: boolean;
 };
 
 export type StudentObservableStateRow = {
@@ -196,9 +197,21 @@ export async function insertKnowledgeAttempt(
 		source?: 'auto' | 'teacher' | 'student_self';
 	}
 ): Promise<void> {
+	// Family A: the attempt references a template; the after-insert trigger derives
+	// the skill from the template's tags. Tag the template with skillId first, then
+	// insert WITHOUT skill_id (chk_attempt_family_regime requires skill_id NULL when
+	// template_id is set).
+	const { error: tagErr } = await service
+		.from('question_template_skills' as never)
+		.upsert({ template_id: params.templateId, skill_id: params.skillId } as never, {
+			onConflict: 'template_id,skill_id'
+		});
+	if (tagErr) {
+		throw new Error(`insertKnowledgeAttempt tag failed: ${tagErr.message}`);
+	}
+
 	const { error } = await service.from('skill_attempts' as never).insert({
 		student_id: params.studentId,
-		skill_id: params.skillId,
 		template_id: params.templateId,
 		success: params.success,
 		source: params.source ?? 'auto'
@@ -318,13 +331,19 @@ export async function createFakeTemplate(
 		.from('question_templates')
 		.insert({
 			domain: 'test',
-			theme: 'test',
+			// UNIQUE idx_question_templates_unique_category (theme, domain, subdomain, level)
+			// WHERE published: keep domain='test' (cleanup marker) but vary theme per call
+			// so repeated createFakeTemplate() calls don't collide.
+			theme: `test-${crypto.randomUUID()}`,
 			title: `test-template-${crypto.randomUUID()}`,
-			type: 'direct',
+			// CHECK question_templates_type_check: valid types only (not 'direct').
+			type: 'numerical_exact',
 			level: 1,
-			grades: ['6e'],
+			// CHECK question_templates_valid_grades: is_valid_grade_array accepts '6', not '6e'.
+			grades: ['6'],
 			status: 'published',
-			variations: [],
+			// CHECK variations_minimum_one: jsonb_array_length(variations) >= 1.
+			variations: [{}],
 			created_by: createdBy
 		})
 		.select('id')
@@ -457,15 +476,13 @@ export async function cleanupCompetenceTestData(): Promise<void> {
 		await service.from('classes').delete().in('teacher_id', teacherIds);
 	}
 
-	// Step 7: profiles + auth users
-	await service.from('profiles').delete().in('id', allIds);
-	for (const id of allIds) {
-		try {
-			await service.auth.admin.deleteUser(id);
-		} catch {
-			// auth user may not exist for service-role-created profiles; ignore
-		}
-	}
+	// Step 7: profiles + auth users — replica-mode deletion. A client-side
+	// `from('profiles').delete()` (or auth.admin.deleteUser) is silently aborted by
+	// the local-only storage.protect_delete guard reached via
+	// trigger_delete_exercise_images on a cascade, leaking the profile →
+	// enforce_single_teacher contamination. deleteTestAuthUsers() removes all
+	// @test.com profiles + auth users under session_replication_role=replica.
+	await deleteTestAuthUsers();
 }
 
 // ---------------------------------------------------------------------------

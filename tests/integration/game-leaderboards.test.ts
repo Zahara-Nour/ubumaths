@@ -96,7 +96,14 @@ async function addWonMinesweeperGame(studentId: string, points: number): Promise
 		student_id: studentId,
 		status: 'won',
 		points_earned: points,
-		difficulty: 'easy',
+		// CHECK constraints for a finished (won) game on minesweeper_games:
+		//  - completed_must_have_time          → time_seconds NOT NULL & > 0
+		//  - in_progress_must_not_be_completed → completed_at NOT NULL
+		//  - difficulty_check / reasonable_time_bounds → difficulty must be one of
+		//    beginner/intermediate/expert (NOT 'easy'); beginner allows 1..3600s.
+		time_seconds: 60,
+		completed_at: new Date().toISOString(),
+		difficulty: 'beginner',
 		mines_count: 10,
 		grid_state: {}
 	});

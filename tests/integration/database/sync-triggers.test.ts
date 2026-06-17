@@ -53,7 +53,8 @@ describe('Class Synchronization Triggers', () => {
 				.eq('id', student.id)
 				.single();
 
-			expect(initialProfile?.class_ids).toBeNull();
+			// class_ids defaults to an empty array (not null) for a student with no class.
+			expect(initialProfile?.class_ids ?? []).toHaveLength(0);
 
 			// Act: Insert class membership (student joins class)
 			await serviceClient.from('class_members').insert({
@@ -222,7 +223,7 @@ describe('Class Synchronization Triggers', () => {
 				.single();
 
 			expect(profile1?.class_ids).toContain(classRoom.id);
-			expect(profile2?.class_ids).toBeNull(); // student2 not affected
+			expect(profile2?.class_ids ?? []).toHaveLength(0); // student2 not affected
 		});
 	});
 
