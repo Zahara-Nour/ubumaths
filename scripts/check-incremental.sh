@@ -21,7 +21,14 @@ set -uo pipefail
 # Match CI: regenerate $env/static + generated types before checking.
 npx svelte-kit sync >/dev/null 2>&1
 
-output=$(NODE_OPTIONS='--max-old-space-size=8192' npx svelte-check \
+# Heap cap = 4096 MiB, not 8192. Measured peak RSS for the full check is ~1.5 GB
+# (1697 source files; tests are excluded via tsconfig.check.json), so 4 GiB is
+# ~2.7x headroom. On an 8 GB machine an 8192 cap is dangerous: it lets V8 grow
+# the heap toward 8 GB before GC kicks in hard, so it can grab all RAM and thrash
+# swap. 4096 guarantees ~4 GB stays free for the OS while keeping ample headroom
+# over the real working set. If a future, much larger codebase OOMs here, bump it
+# (and re-measure — don't cargo-cult the number back up).
+output=$(NODE_OPTIONS='--max-old-space-size=4096' npx svelte-check \
 	--tsconfig ./tsconfig.check.json --threshold error --incremental --output machine 2>&1)
 
 # Filter extern/ (present locally, absent in CI — see header).
