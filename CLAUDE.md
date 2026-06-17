@@ -20,8 +20,8 @@ Machine à faible RAM. **NE JAMAIS lancer sur tout le projet** (ça crashe) :
 
 - À la place : **`pnpm check:incremental`** (TS + Svelte, ~30 s, memory-safe, **0 erreur exigée**).
 - **eslint OOM en local → CI-only.** Ne pas le lancer en local (on accepte le round-trip CI).
-- Le **hook pre-commit OOM** aussi → `git commit --no-verify` + compenser : `prettier --write` sur les fichiers modifiés (+ `svelte-autofixer` sur les `.svelte`), puis `pnpm check:incremental` avant de pousser.
-- ⚠️ Un hook qui crashe **stashe** le travail non commité (→ perdu) → commit tôt ; après un crash, vérifier `git stash list`.
+- Le **hook pre-commit est léger** : `.lintstagedrc.js` lance `oxlint` (Rust, ~0 RAM) + `prettier` sur les fichiers staged (~2 s, **pas d'OOM**) → **`--no-verify` n'est plus nécessaire**. oxlint bloque sur _erreurs_ seulement (warnings non bloquants). eslint complet (`.svelte` + règle Zod) et les tests restent **en CI** ; le typecheck reste hors hook → `pnpm check:incremental` avant de pousser.
+- ⚠️ Si un hook crashe, il peut **stasher** le travail non commité (→ perdu) : commit tôt, et après un crash vérifie `git stash list`. (L'ancien hook OOMait via `eslint --fix` type-aware + `vitest related`, d'où le `--no-verify` historique.)
 
 ---
 
