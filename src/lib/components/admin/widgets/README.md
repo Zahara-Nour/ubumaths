@@ -43,7 +43,7 @@ Display a single metric with value, label, trend indicator, and optional alert b
 ```svelte
 <script>
 	import MetricCard from '$lib/components/admin/widgets/MetricCard.svelte';
-	import { Users } from 'lucide-svelte';
+	import { Users } from '@lucide/svelte';
 </script>
 
 <MetricCard
@@ -202,7 +202,7 @@ Loading skeleton placeholder for widgets.
 		TrendChart,
 		WidgetSkeleton
 	} from '$lib/components/admin/widgets';
-	import { Users, Activity, Database } from 'lucide-svelte';
+	import { Users, Activity, Database } from '@lucide/svelte';
 
 	let loading = $state(false);
 </script>

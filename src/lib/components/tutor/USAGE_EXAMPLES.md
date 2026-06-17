@@ -239,7 +239,7 @@ Custom styled tutor access:
 ```svelte
 <script lang="ts">
 	import { TutorWidget } from '$lib/components/tutor';
-	import { HelpCircle } from 'lucide-svelte';
+	import { HelpCircle } from '@lucide/svelte';
 
 	let { exerciseContext } = $props();
 </script>
