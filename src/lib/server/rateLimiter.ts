@@ -431,6 +431,87 @@ export async function checkLoginRateLimitByEmail(email: string): Promise<RateLim
 }
 
 /**
+ * Check admin-elevation rate limit by IP address
+ *
+ * Mirrors {@link checkLoginRateLimitByIP} (same 5 / 15 min threshold) but uses a
+ * DISTINCT bucket (`ratelimit:elevate:ip:*`) so that failed admin-elevation
+ * attempts never consume the `/auth/login` budget. Sharing the login bucket
+ * would let a fat-fingered admin password lock the admin out of the real login
+ * page, and would be a targeted-lockout vector against the login flow.
+ *
+ * **Rate Limit**: 5 attempts per 15 minutes per IP
+ *
+ * **Use Case**: Call this in `/api/admin/elevate/+server.ts` before verifying
+ * the admin credentials.
+ *
+ * @param ip - Client IP address from `event.getClientAddress()`
+ * @returns Rate limit result object
+ * @returns result.allowed - `true` if request should be allowed, `false` if rate limited
+ * @returns result.message - User-friendly French error message (only if `allowed: false`)
+ */
+export async function checkElevationRateLimitByIP(ip: string): Promise<RateLimitResult> {
+	if (!ip) {
+		logger.warn('Missing IP address for elevation rate limit check');
+		return { allowed: true }; // Fail open rather than blocking legitimate users
+	}
+
+	const key = `ratelimit:elevate:ip:${ip}`;
+	const result = await checkRateLimitWithMessage(
+		key,
+		5,
+		900, // 15 minutes
+		'Trop de tentatives. Réessayez dans 15 minutes.'
+	);
+
+	if (!result.allowed) {
+		logger.warn('Elevation rate limit exceeded by IP', { ip: maskKey(key) });
+	}
+
+	return result;
+}
+
+/**
+ * Check admin-elevation rate limit by email address
+ *
+ * Mirrors {@link checkLoginRateLimitByEmail} (same stricter 3 / 15 min threshold)
+ * but uses a DISTINCT bucket (`ratelimit:elevate:email:*`) so failed
+ * admin-elevation attempts never consume the `/auth/login` budget for that email
+ * (see {@link checkElevationRateLimitByIP} for the lockout rationale).
+ *
+ * **Rate Limit**: 3 attempts per 15 minutes per email (stricter than IP)
+ *
+ * **Email Normalization**: lowercased + trimmed to prevent case-variation bypass.
+ *
+ * @param email - Admin email from the elevation form (normalized to lowercase)
+ * @returns Rate limit result object
+ * @returns result.allowed - `true` if request should be allowed, `false` if rate limited
+ * @returns result.message - User-friendly French error message (only if `allowed: false`)
+ */
+export async function checkElevationRateLimitByEmail(email: string): Promise<RateLimitResult> {
+	if (!email) {
+		logger.warn('Missing email for elevation rate limit check');
+		return { allowed: true }; // Fail open
+	}
+
+	// Normalize email to lowercase for consistent tracking
+	const normalizedEmail = email.toLowerCase().trim();
+	const key = `ratelimit:elevate:email:${normalizedEmail}`;
+
+	const result = await checkRateLimitWithMessage(
+		key,
+		3,
+		900, // 15 minutes
+		'Trop de tentatives pour cet email. Réessayez dans 15 minutes.'
+	);
+
+	if (!result.allowed) {
+		logger.warn('Elevation rate limit exceeded by email', { email: maskKey(key) });
+	}
+
+	return result;
+}
+
+/**
  * Check signup rate limit by IP address
  *
  * Prevents spam account creation by limiting signups from a single IP address.
