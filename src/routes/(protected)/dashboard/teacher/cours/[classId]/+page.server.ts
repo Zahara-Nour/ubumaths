@@ -86,9 +86,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		})
 		.filter(Boolean);
 
-	// Get available templates (own + public published)
+	// Get available templates (own only)
 	const { data: templates } = await listChapterTemplates(
-		{ page: 1, limit: 100, grades: undefined, ownOnly: false, publicOnly: false },
+		{ page: 1, limit: 100, grades: undefined },
 		user.id,
 		locals.supabase
 	);

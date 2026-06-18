@@ -9,7 +9,6 @@
  * - Version management with diff tracking
  * - Template instantiation into chapters
  * - Migration support for applying template updates
- * - Public/private template sharing
  *
  * @module server/chapter-templates
  */
@@ -94,7 +93,6 @@ export async function createChapterTemplate(
 				icon: input.icon ?? null,
 				content_snapshot: contentSnapshot as unknown as Json,
 				status: 'draft',
-				is_public: false,
 				current_version: 1
 			})
 			.select()
@@ -157,7 +155,6 @@ export async function createTemplateFromChapter(
 				icon: chapter.icon,
 				content_snapshot: snapshotResult.data as unknown as Json,
 				status: 'draft',
-				is_public: false,
 				current_version: 1
 			})
 			.select()
@@ -345,15 +342,9 @@ export async function listChapterTemplates(
 			.from('chapter_templates')
 			.select('*, profiles!chapter_templates_created_by_fkey(full_name)', { count: 'exact' });
 
-		// Filter: own templates OR public published templates
-		if (query.ownOnly) {
-			dbQuery = dbQuery.eq('created_by', userId);
-		} else if (query.publicOnly) {
-			dbQuery = dbQuery.eq('is_public', true).eq('status', 'published');
-		} else {
-			// Default: own + public published
-			dbQuery = dbQuery.or(`created_by.eq.${userId},and(is_public.eq.true,status.eq.published)`);
-		}
+		// Only the user's own templates (no inter-teacher sharing).
+		// RLS already restricts rows to the owner; this keeps the query explicit.
+		dbQuery = dbQuery.eq('created_by', userId);
 
 		// Filter by status
 		if (query.status) {
@@ -413,7 +404,6 @@ export async function listChapterTemplates(
 				color: template.color,
 				icon: template.icon,
 				status: template.status,
-				isPublic: template.isPublic,
 				instantiationCount: template.instantiationCount,
 				currentVersion: template.currentVersion,
 				createdAt: template.createdAt,
@@ -442,13 +432,11 @@ export async function listChapterTemplates(
  * Publish a template (validates content exists)
  *
  * @param templateId - Template ID
- * @param isPublic - Whether to make template public
  * @param supabase - Supabase client
  * @returns Updated template
  */
 export async function publishTemplate(
 	templateId: string,
-	isPublic: boolean,
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<ChapterTemplate>> {
 	try {
@@ -479,8 +467,7 @@ export async function publishTemplate(
 		const { data: updated, error } = await supabase
 			.from('chapter_templates')
 			.update({
-				status: 'published',
-				is_public: isPublic
+				status: 'published'
 			})
 			.eq('id', templateId)
 			.select()

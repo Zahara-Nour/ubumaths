@@ -1,6 +1,6 @@
 /**
  * API Route: /api/teacher/chapter-templates
- * GET - List chapter templates (own + public published)
+ * GET - List chapter templates (own only)
  * POST - Create a new chapter template
  */
 
@@ -25,8 +25,6 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * - status: Filter by template status (draft/published/archived)
  * - grades: Filter by grade levels (comma-separated)
  * - search: Search by title
- * - ownOnly: Only show user's own templates
- * - publicOnly: Only show public published templates
  * - sortBy: Sort field (title/createdAt/updatedAt/instantiationCount)
  * - sortDir: Sort direction (asc/desc)
  * - page: Page number (default 1)

@@ -204,8 +204,7 @@ export type UpdateChapterTemplateInput = z.infer<typeof updateChapterTemplateSch
  * Schema for publishing a template
  */
 export const publishTemplateSchema = z.object({
-	templateId: uuidSchema.describe('ID du template'),
-	isPublic: z.boolean().default(false)
+	templateId: uuidSchema.describe('ID du template')
 });
 
 export type PublishTemplateInput = z.infer<typeof publishTemplateSchema>;
@@ -294,16 +293,6 @@ export const listTemplatesQuerySchema = paginationSchema.extend({
 		.transform((val) => (val ? val.split(',') : undefined)),
 	/** Search by title */
 	search: z.string().max(100, 'La recherche est trop longue').optional(),
-	/** Filter: only my templates */
-	ownOnly: z
-		.string()
-		.optional()
-		.transform((val) => val === 'true'),
-	/** Filter: only public templates */
-	publicOnly: z
-		.string()
-		.optional()
-		.transform((val) => val === 'true'),
 	/** Sort by field */
 	sortBy: z.enum(['title', 'createdAt', 'updatedAt', 'instantiationCount']).optional(),
 	/** Sort direction */
@@ -418,7 +407,6 @@ export const templateResponseSchema = z.object({
 	id: uuidSchema,
 	createdBy: uuidSchema,
 	status: templateStatusSchema,
-	isPublic: z.boolean(),
 	title: z.string(),
 	description: z.string().nullable(),
 	grades: z.array(gradeCodeSchema),

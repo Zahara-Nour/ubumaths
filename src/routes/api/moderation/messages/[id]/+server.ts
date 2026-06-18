@@ -82,11 +82,10 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		throw error(400, 'Message is already deleted');
 	}
 
-	// 6. Verify teacher has access to the conversation
-	// Teachers must either:
-	// - Be a participant (for class channels)
-	// - Have both students in their classes (for 1-on-1 student chats)
-	// - Be an admin (can moderate any message)
+	// 6. Verify teacher has access to the conversation.
+	// Option B (mono-teacher): the sole teacher may moderate any conversation
+	// they participate in, or any student-only conversation — class membership is
+	// no longer the access boundary. Admins may moderate anything.
 
 	if (locals.profile?.role === 'admin') {
 		// Admins can delete any message - skip authorization checks
@@ -116,7 +115,8 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 				throw error(403, 'You do not have access to this conversation');
 			}
 
-			// It's a 1-on-1 chat - verify both participants are teacher's students
+			// It's a 1-on-1 chat - verify both participants are students (Option B:
+			// the sole teacher oversees every student, in-class or not).
 			const { data: participants } = await locals.supabase
 				.from('conversation_participants')
 				.select('user_id')
@@ -126,20 +126,15 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 				throw error(403, 'You do not have access to this conversation');
 			}
 
-			// Check if both participants are this teacher's students
-			const studentIds = participants.map((p) => p.user_id);
+			const participantIds = participants.map((p) => p.user_id);
 			const { count } = await locals.supabase
-				.from('class_members')
-				.select('student_id, classes!inner(teacher_id)', { count: 'exact', head: true })
-				.eq('status', 'active')
-				.eq('classes.teacher_id', locals.user.id)
-				.in('student_id', studentIds);
+				.from('profiles')
+				.select('id', { count: 'exact', head: true })
+				.in('id', participantIds)
+				.eq('role', 'student');
 
 			if (count !== 2) {
-				throw error(
-					403,
-					'You can only moderate conversations where all participants are your students'
-				);
+				throw error(403, 'You can only moderate conversations where all participants are students');
 			}
 		}
 		// If membership exists OR authorization checks passed, proceed to deletion

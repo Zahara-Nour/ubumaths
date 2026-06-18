@@ -22,7 +22,7 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * - isVisible: Whether chapter is visible to students (default: false)
  *
  * Access:
- * - Template must be accessible (owned or public published)
+ * - Template must be owned by the user (no inter-teacher sharing)
  * - User must have access to the target class
  *
  * Returns:
@@ -46,10 +46,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(404, 'Template not found');
 	}
 
-	const isOwner = template.createdBy === user.id;
-	const isPublicPublished = template.isPublic && template.status === 'published';
-
-	if (!isOwner && !isPublicPublished) {
+	if (template.createdBy !== user.id) {
 		throw error(403, 'Access denied - template is private');
 	}
 

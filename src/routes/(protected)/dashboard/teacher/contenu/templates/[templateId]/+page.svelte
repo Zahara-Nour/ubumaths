@@ -119,9 +119,6 @@
 					<Badge class={getStatusBadgeColor(data.template.status)}>
 						{getStatusLabel(data.template.status)}
 					</Badge>
-					{#if data.template.isPublic}
-						<Badge variant="outline">Public</Badge>
-					{/if}
 				</div>
 				{#if data.template.description}
 					<p class="mt-1 text-muted-foreground">{data.template.description}</p>
@@ -143,7 +140,6 @@
 								};
 							}}
 						>
-							<input type="hidden" name="isPublic" value="false" />
 							<Button type="submit" disabled={isPublishing}>
 								<Upload class="mr-2 h-4 w-4" />
 								{isPublishing ? 'Publication...' : 'Publier'}

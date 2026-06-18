@@ -1,6 +1,6 @@
 /**
  * API Route: /api/worksheets/templates
- * GET - List templates (public + user's own)
+ * GET - List the user's own templates
  * POST - Create new template
  */
 
@@ -19,7 +19,7 @@ type ZodIssue = { path: (string | number)[]; message: string };
 
 /**
  * GET /api/worksheets/templates
- * List templates - returns public templates and user's own templates
+ * List the user's own templates
  * Teachers and admins only
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
@@ -34,20 +34,14 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(400, `Invalid query parameters: ${errorMsg}`);
 	}
 
-	const { page, limit, include_public, search } = queryValidation.data;
+	const { page, limit, search } = queryValidation.data;
 
-	// Build query - get public templates OR user's own templates
+	// Build query - only the user's own templates (no inter-teacher sharing)
 	let query = locals.supabase
 		.from('worksheet_templates')
 		.select('*', { count: 'exact' })
-		.order('created_at', { ascending: false });
-
-	// Filter: public templates OR created by current user
-	if (include_public) {
-		query = query.or(`is_public.eq.true,created_by.eq.${user.id}`);
-	} else {
-		query = query.eq('created_by', user.id);
-	}
+		.order('created_at', { ascending: false })
+		.eq('created_by', user.id);
 
 	// Apply search filter
 	if (search) {
@@ -121,7 +115,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			description: data.description ?? null,
 			template_content: data.template_content,
 			placeholders: data.placeholders ?? [],
-			is_public: data.is_public ?? false,
 			created_by: user.id
 		})
 		.select()
