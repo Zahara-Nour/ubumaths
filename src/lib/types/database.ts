@@ -1299,7 +1299,6 @@ export type Database = {
           icon: string | null
           id: string
           instantiation_count: number
-          is_public: boolean
           status: string
           title: string
           updated_at: string
@@ -1315,7 +1314,6 @@ export type Database = {
           icon?: string | null
           id?: string
           instantiation_count?: number
-          is_public?: boolean
           status?: string
           title: string
           updated_at?: string
@@ -1331,7 +1329,6 @@ export type Database = {
           icon?: string | null
           id?: string
           instantiation_count?: number
-          is_public?: boolean
           status?: string
           title?: string
           updated_at?: string
@@ -13596,7 +13593,6 @@ export type Database = {
           created_by: string | null
           description: string | null
           id: string
-          is_public: boolean | null
           name: string
           placeholders: Json | null
           template_content: string
@@ -13607,7 +13603,6 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           id?: string
-          is_public?: boolean | null
           name: string
           placeholders?: Json | null
           template_content: string
@@ -13618,7 +13613,6 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           id?: string
-          is_public?: boolean | null
           name?: string
           placeholders?: Json | null
           template_content?: string
