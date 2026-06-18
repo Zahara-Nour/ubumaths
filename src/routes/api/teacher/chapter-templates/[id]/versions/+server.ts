@@ -22,8 +22,7 @@ type ZodIssue = { path: (string | number)[]; message: string };
  * List all versions of a template
  *
  * Access:
- * - Owner can view all versions
- * - Any teacher can view versions of public published templates
+ * - Owner only (no inter-teacher sharing)
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const { user } = await requireRole(locals, 'teacher');
@@ -42,10 +41,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(404, 'Template not found');
 	}
 
-	const isOwner = template.createdBy === user.id;
-	const isPublicPublished = template.isPublic && template.status === 'published';
-
-	if (!isOwner && !isPublicPublished) {
+	if (template.createdBy !== user.id) {
 		throw error(403, 'Access denied - template is private');
 	}
 

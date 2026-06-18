@@ -21,7 +21,7 @@ type ZodIssue = { path: (string | number)[]; message: string };
 /**
  * GET /api/worksheets/templates/[id]
  * Get template details
- * Teachers and admins only (can view public templates or their own)
+ * Teachers and admins only (can view their own templates)
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);
@@ -47,8 +47,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Failed to fetch template');
 	}
 
-	// Check access: must be public or owned by user
-	if (!template.is_public && template.created_by !== user.id) {
+	// Check access: must be owned by user (no inter-teacher sharing)
+	if (template.created_by !== user.id) {
 		throw error(403, 'Access denied to this template');
 	}
 
@@ -120,7 +120,6 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (data.description !== undefined) updateData.description = data.description;
 	if (data.template_content !== undefined) updateData.template_content = data.template_content;
 	if (data.placeholders !== undefined) updateData.placeholders = data.placeholders;
-	if (data.is_public !== undefined) updateData.is_public = data.is_public;
 
 	// Update template
 	const { data: template, error: dbError } = await locals.supabase

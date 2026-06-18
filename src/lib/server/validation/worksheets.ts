@@ -712,8 +712,7 @@ export const createTemplateSchema = z.object({
 		.array(templatePlaceholderSchema)
 		.max(50, 'Maximum 50 placeholders')
 		.optional()
-		.default([]),
-	is_public: z.boolean().optional().default(false)
+		.default([])
 });
 
 /**
@@ -737,7 +736,6 @@ export const listWorksheetTemplatesQuerySchema = z.object({
 		.positive('Limit must be positive')
 		.max(100, 'Maximum 100 items per page')
 		.default(50),
-	include_public: z.coerce.boolean().optional().default(true),
 	search: z.string().trim().max(200, 'Search query too long').optional()
 });
 
@@ -750,7 +748,6 @@ export const templateResponseSchema = z.object({
 	description: z.string().nullable(),
 	template_content: z.string(),
 	placeholders: z.array(templatePlaceholderSchema),
-	is_public: z.boolean(),
 	created_by: z.string().uuid().nullable(),
 	created_at: timestampSchema,
 	updated_at: timestampSchema

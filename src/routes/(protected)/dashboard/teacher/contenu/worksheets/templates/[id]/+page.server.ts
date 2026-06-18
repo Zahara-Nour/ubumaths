@@ -17,8 +17,7 @@ const updateTemplateSchema = z.object({
 	template_content: z
 		.string()
 		.min(1, 'Le contenu du template est requis')
-		.max(50000, 'Template trop long'),
-	is_public: z.boolean().optional().default(false)
+		.max(50000, 'Template trop long')
 });
 
 export const load: PageServerLoad = async ({ locals, params }) => {
@@ -51,8 +50,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw error(500, 'Failed to fetch template');
 	}
 
-	// Check access: must be public or owned by user
-	if (!template.is_public && template.created_by !== user.id) {
+	// Check access: must be owned by user (no inter-teacher sharing)
+	if (template.created_by !== user.id) {
 		throw error(403, 'Access denied');
 	}
 
@@ -78,14 +77,12 @@ export const actions: Actions = {
 		const name = formData.get('name')?.toString() || '';
 		const description = formData.get('description')?.toString() || null;
 		const template_content = formData.get('template_content')?.toString() || '';
-		const is_public = formData.get('is_public') === 'true';
 
 		// Validate input
 		const validation = updateTemplateSchema.safeParse({
 			name,
 			description,
-			template_content,
-			is_public
+			template_content
 		});
 
 		if (!validation.success) {
@@ -101,7 +98,6 @@ export const actions: Actions = {
 				description: validation.data.description,
 				template_content: validation.data.template_content,
 				placeholders: [], // Will be extracted from content later
-				is_public: validation.data.is_public,
 				created_by: user.id
 			})
 			.select()
@@ -141,14 +137,12 @@ export const actions: Actions = {
 		const name = formData.get('name')?.toString() || '';
 		const description = formData.get('description')?.toString() || null;
 		const template_content = formData.get('template_content')?.toString() || '';
-		const is_public = formData.get('is_public') === 'true';
 
 		// Validate input
 		const validation = updateTemplateSchema.safeParse({
 			name,
 			description,
-			template_content,
-			is_public
+			template_content
 		});
 
 		if (!validation.success) {
@@ -175,8 +169,7 @@ export const actions: Actions = {
 				name: validation.data.name,
 				description: validation.data.description,
 				template_content: validation.data.template_content,
-				placeholders,
-				is_public: validation.data.is_public
+				placeholders
 			})
 			.eq('id', params.id);
 

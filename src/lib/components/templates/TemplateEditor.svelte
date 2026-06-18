@@ -21,7 +21,6 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -67,7 +66,6 @@
 			color: ChapterColor | null;
 			icon: ChapterIcon | null;
 			status: TemplateStatus;
-			isPublic: boolean;
 			contentSnapshot: TemplateContentSnapshot;
 		}) => void;
 		onCancel: () => void;
@@ -86,7 +84,6 @@
 	let color = $state<ChapterColor | null>(initialTemplate?.color ?? null);
 	let icon = $state<ChapterIcon | null>(initialTemplate?.icon ?? 'book');
 	let status = $state<TemplateStatus>(initialTemplate?.status ?? 'draft');
-	let isPublic = $state(initialTemplate?.isPublic ?? false);
 	let isSubmitting = $state(false);
 
 	// Content snapshot (simplified - full editor would manage these)
@@ -235,7 +232,6 @@
 			color,
 			icon,
 			status,
-			isPublic,
 			contentSnapshot
 		});
 
@@ -404,15 +400,6 @@
 							</p>
 						</div>
 					{/if}
-				</div>
-
-				<!-- Public -->
-				<div class="space-y-2">
-					<Label>Visibilité</Label>
-					<MyCheckbox bind:checked={isPublic} label="Template public" />
-					<p class="text-xs text-muted-foreground">
-						Les templates publics peuvent être utilisés par tous les enseignants.
-					</p>
 				</div>
 
 				<!-- Preview -->

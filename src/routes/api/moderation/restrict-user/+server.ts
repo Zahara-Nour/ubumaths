@@ -16,12 +16,15 @@ import { restrictUserSchema } from '$lib/server/validation/moderation';
  * - reason: String (5-500 characters)
  * - expiresAt: ISO 8601 datetime string or null (null = permanent)
  *
+ * Authorization (Option B, mono-teacher): the sole teacher may restrict any
+ * student at global or conversation scope; admins may restrict anyone.
+ *
  * Responses:
  * - 201: Restriction created successfully
  * - 400: Validation failed
  * - 401: Not authenticated
- * - 403: Not a teacher/admin OR not teacher's conversation
- * - 404: Conversation not found
+ * - 403: Not a teacher/admin, or a teacher targeting a non-student
+ * - 404: User not found
  * - 409: Duplicate active restriction
  * - 500: Database error
  */
@@ -72,63 +75,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(403, 'Teachers can only restrict students');
 	}
 
-	// 5. Additional authorization checks
-	if (scopeType === 'global') {
-		// CRITICAL FIX: For global restrictions, verify teacher has access to this student
-		if (locals.profile?.role !== 'admin') {
-			// Admins can globally restrict anyone
-			// Teachers can only globally restrict students in their classes
-			const { data: membership, error: membershipError } = await locals.supabase
-				.from('class_members')
-				.select('student_id, classes!inner(teacher_id)')
-				.eq('student_id', userId)
-				.eq('status', 'active')
-				.eq('classes.teacher_id', locals.user.id)
-				.maybeSingle();
-
-			if (membershipError) {
-				console.error('Failed to verify teacher-student relationship:', membershipError);
-				throw error(500, 'Failed to verify authorization');
-			}
-
-			if (!membership) {
-				throw error(403, 'You can only restrict students in your classes');
-			}
-		}
-	} else if (scopeType === 'conversation' && scopeId) {
-		// For conversation-scoped restrictions, verify teacher has moderation rights
-		// Either: teacher is participant OR student is in teacher's classes
-
-		if (locals.profile?.role !== 'admin') {
-			// First check if teacher is a participant
-			const { data: membership } = await locals.supabase
-				.from('conversation_participants')
-				.select('user_id')
-				.eq('conversation_id', scopeId)
-				.eq('user_id', locals.user.id)
-				.maybeSingle();
-
-			// If not a participant, verify the target student is in teacher's classes
-			if (!membership) {
-				const { data: studentMembership, error: studentMembershipError } = await locals.supabase
-					.from('class_members')
-					.select('student_id, classes!inner(teacher_id)')
-					.eq('student_id', userId)
-					.eq('status', 'active')
-					.eq('classes.teacher_id', locals.user.id)
-					.maybeSingle();
-
-				if (studentMembershipError) {
-					console.error('Failed to verify teacher-student relationship:', studentMembershipError);
-					throw error(500, 'Failed to verify authorization');
-				}
-
-				if (!studentMembership) {
-					throw error(403, 'You can only restrict students in your classes');
-				}
-			}
-		}
-	}
+	// 5. Authorization (Option B, mono-teacher): the sole teacher may restrict ANY
+	// student — at global or conversation scope — regardless of class membership.
+	// Step 4 already guarantees the target is a student when the caller is a
+	// teacher; admins may restrict anyone. No class-membership check is needed.
 
 	// 6. Insert restriction
 	const { data: restriction, error: insertError } = await locals.supabase
