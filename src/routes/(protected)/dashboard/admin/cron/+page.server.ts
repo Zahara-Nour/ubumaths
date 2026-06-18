@@ -3,9 +3,10 @@
  * Loads initial job data for the CRON monitoring page
  */
 
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { CronJobRun, CronJobsStats } from '$lib/server/validation/cron';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 // Type for background_job_runs table (not in generated types)
 interface BackgroundJobRunRow {
@@ -20,28 +21,14 @@ interface BackgroundJobRunRow {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	// Check authentication
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw redirect(302, '/auth');
-	}
-
-	// Check if user is admin
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Forbidden - Admin access required');
-	}
+	// Admin gate (admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	// Calculate 7-day period start
 	const periodStart = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
 	// Fetch recent jobs (last 7 days, most recent first)
-	const { data: jobsData, error: jobsError } = await locals.supabase
+	const { data: jobsData, error: jobsError } = await supabase
 		.from('background_job_runs')
 		.select(
 			'id, job_name, status, started_at, completed_at, execution_time_ms, error_message, metadata'

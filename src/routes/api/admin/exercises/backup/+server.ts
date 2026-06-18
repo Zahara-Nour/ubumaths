@@ -12,6 +12,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import {
 	exportBackupJSON,
 	exportBackupSQL,
@@ -52,17 +53,11 @@ const restoreBodySchema = z.object({
  *   - SQL format: Plain text SQL dump
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
-	// 1. Authentication check
-	if (!locals.profile) {
-		throw error(401, 'Non authentifie');
-	}
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged reads run via the
+	// returned admin-context client so RLS attributes them to the admin.
+	const { supabase } = await requireAdmin(locals);
 
-	// 2. Authorization check (admin only)
-	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Acces reserve aux administrateurs');
-	}
-
-	// 3. Parse query parameters
+	// Parse query parameters
 	const params = {
 		format: url.searchParams.get('format') ?? 'json'
 	};
@@ -75,10 +70,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { format } = queryValidation.data;
 
 	try {
-		const adminEmail = locals.profile.email ?? 'admin@unknown';
+		// Cosmetic label embedded in the dump (not a security/audit field). Under
+		// step-up elevation `locals.profile` is the elevating user, so this may not
+		// be the admin's address; falls back to a placeholder when absent.
+		const adminEmail = locals.profile?.email ?? 'admin@unknown';
 
 		if (format === 'sql') {
-			const sqlDump = await exportBackupSQL(locals.supabase, adminEmail);
+			const sqlDump = await exportBackupSQL(supabase, adminEmail);
 			const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 
 			return new Response(sqlDump, {
@@ -90,7 +88,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		// JSON format (default)
-		const backup = await exportBackupJSON(locals.supabase, adminEmail);
+		const backup = await exportBackupJSON(supabase, adminEmail);
 		const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 
 		return new Response(JSON.stringify(backup, null, 2), {
@@ -125,17 +123,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
  * Response: RestoreResult
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// 1. Authentication check
-	if (!locals.profile) {
-		throw error(401, 'Non authentifie');
-	}
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged writes run via the
+	// returned admin-context client so RLS + ownership attribute them to the admin.
+	const { supabase, adminUserId } = await requireAdmin(locals);
 
-	// 2. Authorization check (admin only)
-	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Acces reserve aux administrateurs');
-	}
-
-	// 3. Check content length (size limit)
+	// Check content length (size limit)
 	const contentLength = request.headers.get('content-length');
 	if (contentLength) {
 		const size = parseInt(contentLength, 10);
@@ -161,13 +153,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { backup, options } = bodyValidation.data;
 
 	try {
-		// Add admin_id to options for orphan reassignment
+		// Add admin_id to options for orphan reassignment.
+		// Acting-admin identity → use adminUserId (correct under step-up elevation).
 		const restoreOptions = {
 			...options,
-			admin_id: options.reassign_orphans_to_admin ? locals.profile.id : undefined
+			admin_id: options.reassign_orphans_to_admin ? adminUserId : undefined
 		};
 
-		const result = await restoreFromBackup(locals.supabase, backup, restoreOptions);
+		const result = await restoreFromBackup(supabase, backup, restoreOptions);
 
 		// Return result with appropriate status
 		if (!result.success) {

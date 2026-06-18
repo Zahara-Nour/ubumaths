@@ -14,6 +14,7 @@ import { join } from 'path';
 import type { PageServerLoad } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
 import type { QuestionEntry } from '../../+page.server';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 /**
  * Get the latest export folder from data/migration-output/
@@ -34,12 +35,8 @@ async function getLatestExportFolder(): Promise<string> {
 }
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const { profile, supabase } = locals;
-
-	// Check admin role
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Accès refusé');
-	}
+	// Check admin (real admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	const { theme, domain, subdomain, globalIndex: globalIndexParam } = params;
 

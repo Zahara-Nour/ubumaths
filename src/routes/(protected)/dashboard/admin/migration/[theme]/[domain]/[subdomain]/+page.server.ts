@@ -11,6 +11,7 @@ import { error } from '@sveltejs/kit';
 import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import type { PageServerLoad } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import type { GradeCode } from '$lib/types/grades';
 import type { MigrationStatus } from '$lib/types/migration';
 import type {
@@ -126,6 +127,9 @@ export interface QuestionEntry {
 }
 
 export const load: PageServerLoad = async ({ params, locals }) => {
+	// Authorization check - admin only (real admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
+
 	const { theme, domain, subdomain } = params;
 
 	// Decode URL-encoded params
@@ -193,9 +197,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		const reviewStatusMap: Record<number, { status: MigrationStatus; reason?: string }> = {};
 		const questionEditsMap: Record<number, { editId: string; editedJson: unknown }> = {};
 
-		if (locals.supabase && globalIndices.length > 0) {
+		if (supabase && globalIndices.length > 0) {
 			// Load tracking data for review status
-			const { data: trackingData } = await locals.supabase
+			const { data: trackingData } = await supabase
 				.from('migration_tracking')
 				.select('old_question_index, migration_status, conversion_errors, conversion_notes')
 				.in('old_question_index', globalIndices);
@@ -216,7 +220,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 			// Load edits from migration_edits table
 			// We need to join with migration_tracking to get the old_question_index
-			const { data: editsData } = await locals.supabase
+			const { data: editsData } = await supabase
 				.from('migration_edits')
 				.select(
 					`

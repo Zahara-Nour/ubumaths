@@ -1,17 +1,10 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Verify admin role
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
+	// Admin gate (admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	// Fetch all schools
 	const { data: schools, error: schoolsError } = await supabase
@@ -81,12 +74,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-	create: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+	create: async ({ request, locals }) => {
+		// Admin gate (admin login OR step-up elevation)
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const name = formData.get('name') as string;
@@ -166,12 +156,9 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	update: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+	update: async ({ request, locals }) => {
+		// Admin gate (admin login OR step-up elevation)
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const id = formData.get('id') as string;
@@ -239,12 +226,9 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	deactivate: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+	deactivate: async ({ request, locals }) => {
+		// Admin gate (admin login OR step-up elevation)
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const id = formData.get('id') as string;
@@ -266,12 +250,9 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	activate: async ({ request, locals: { safeGetSession, supabase } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+	activate: async ({ request, locals }) => {
+		// Admin gate (admin login OR step-up elevation)
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const id = formData.get('id') as string;

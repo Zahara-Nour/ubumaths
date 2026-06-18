@@ -12,7 +12,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import { getEnv } from '$lib/server/env';
 import { cronTriggerBodySchema, type CronTriggerResponse } from '$lib/server/validation/cron';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
@@ -26,8 +26,9 @@ const RATE_LIMIT_MINUTES = 1;
 const RATE_LIMIT_MS = RATE_LIMIT_MINUTES * 60 * 1000;
 
 export const POST: RequestHandler = async ({ request, locals, url }) => {
-	// Verify admin access
-	await requireRole(locals, 'admin');
+	// ✅ SECURITY: admin elevation OR real admin login. This handler triggers jobs
+	// via fetch/service-role (no admin-context DB ops), so we only gate access.
+	await requireAdmin(locals);
 
 	// Parse and validate request body
 	let body: unknown;

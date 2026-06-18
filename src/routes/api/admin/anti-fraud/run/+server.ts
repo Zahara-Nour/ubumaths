@@ -10,12 +10,14 @@
  */
 
 import { error, json, type RequestHandler } from '@sveltejs/kit';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import { runAntiFraudJob } from '$lib/server/anti-fraud';
 import { runJobOptionsSchema } from '$lib/server/validation/anti-fraud';
 
 export const POST: RequestHandler = async ({ locals, request }) => {
-	await requireRole(locals, 'admin');
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged ops run via the
+	// returned admin-context client so RLS attributes them to the admin.
+	const { supabase } = await requireAdmin(locals);
 
 	// Body optionnel : si absent ou vide, on accepte.
 	let bodyJson: unknown = {};
@@ -33,6 +35,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		throw error(400, parsed.error.issues[0].message);
 	}
 
-	const report = await runAntiFraudJob(locals.supabase, parsed.data);
+	const report = await runAntiFraudJob(supabase, parsed.data);
 	return json(report);
 };
