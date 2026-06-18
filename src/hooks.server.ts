@@ -1,5 +1,6 @@
 import { handle as supabaseHandle } from '$lib/server/supabase';
 import { maintenanceHandle } from '$lib/server/maintenance';
+import { adminElevationHandle } from '$lib/server/adminElevation';
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle } from '@sveltejs/kit';
 import { logError, getUserContext } from '$lib/server/errorMonitoring';
@@ -514,13 +515,16 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 
 // Combine hooks in sequence: Request ID first (for tracing), then maintenance gate
 // (BEFORE Supabase so it works with the DB frozen/unreachable), then Supabase, then others
-// Order matters: Request ID -> Maintenance -> Supabase auth -> Redirects -> User/Profile loading -> CSRF validation -> Security Headers -> Error monitoring
+// Order matters: Request ID -> Maintenance -> Supabase auth -> Redirects -> User/Profile loading
+// -> Admin elevation (reads the elevation cookie, builds locals.adminSupabase; AFTER profile
+// loading so DB role is available, BEFORE CSRF) -> CSRF validation -> Security Headers -> Error monitoring
 export const handle: Handle = sequence(
 	requestIdHandle,
 	maintenanceHandle,
 	supabaseHandle,
 	redirectHandle,
 	userProfileHandle,
+	adminElevationHandle,
 	csrfHandle,
 	securityHeadersHandle,
 	errorMonitoringHandle

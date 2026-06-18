@@ -60,6 +60,15 @@ Point clé (vérifié) : le `role` vient de la **DB** (`getUserProfile`, `src/li
   - **Forme** : ops **ciblées** (supprimer une école/un compte/un enregistrement précis) → taper le **nom exact** de la ressource ; ops **globales** (cron destructif, anti-fraude, purge) → taper un **mot-clé fixe** (nom de l'action, ex. `LANCER-CRON`).
   - **Application** : l'endpoint exige un champ `confirm` === valeur attendue (validé **serveur**, pas seulement UI → non contournable par appel API direct).
 
+## Sécurité — durcissement (audit, 2026-06-18)
+
+- **Buckets de rate-limit dédiés** (`ratelimit:elevate:ip:*` / `ratelimit:elevate:email:*`, 5/IP + 3/email par 15 min) — **distincts** des buckets `/auth/login`. Un mot de passe admin mal tapé ne consomme plus le budget de connexion → pas de lockout de l'admin sur la vraie page de login (ni vecteur de lockout ciblé).
+- **Cookie `SameSite=Strict`** (set + delete) : le cookie confère toute l'autorité admin et n'est lu que par des requêtes in-app same-site → aucun besoin cross-site, et atténuation CSRF supplémentaire.
+- **Handle scopé aux chemins admin** : `createAdminElevationHandle` court-circuite (aucun I/O : pas de `getUser()`, pas de requête `profiles`) si le chemin n'est pas `/dashboard/admin*` ni `/api/admin*` → un cookie périmé/forgé ne fait plus payer un round-trip à chaque requête (perf/DoS).
+- **Révocation best-effort côté serveur** : `revoke` tente un `signOut()` sur le client admin (Bearer → logout GoTrue) avant d'effacer le cookie, pour invalider la session côté serveur quand c'est possible (try/catch, échec ignoré).
+- **Fenêtre de fuite acceptée (≤ 1 h)** — **décision consciente** : si le `signOut()` server-side n'a pas lieu (handle n'a pas peuplé `adminSupabase`, ou l'appel échoue), l'**access token** admin reste valide chez GoTrue jusqu'à son expiration naturelle (≤ 1 h). Exposition minimale assumée : access-token **uniquement** (jamais de refresh token stocké), cookie httpOnly + secure + `SameSite=Strict`, **un seul** compte admin. On accepte cette fenêtre plutôt que d'ajouter une infra de révocation de token.
+- **Pas de log du token, ni de l'UUID admin en clair** : `elevate` ne logue qu'un préfixe masqué de l'UUID (`xxxxxxxx***`) ; le token n'est jamais logué.
+
 ## Phasing
 
 1. **Phase 1 — tests d'abord** : intégration (handle d'élévation + `requireAdmin` + RLS admin via `adminSupabase` sur une table admin) + unit (endpoints elevate/revoke, garde de layout). Fixtures : prof, admin.

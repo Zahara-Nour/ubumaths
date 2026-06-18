@@ -28,6 +28,7 @@
  */
 
 import { error } from '@sveltejs/kit';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 
 // ============================================================================
@@ -322,4 +323,72 @@ export async function requireRoles(locals: App.Locals, roles: UserRole[]): Promi
 	}
 
 	return { user, profile };
+}
+
+// ============================================================================
+// ADMIN ELEVATION (Pattern 2 — step-up)
+// ============================================================================
+
+/**
+ * Result of a successful admin authorization: an admin-scoped Supabase client
+ * (RLS runs as `auth.uid() = <admin>`) and the admin's user id.
+ */
+export interface AdminAuthResult {
+	supabase: SupabaseClient;
+	adminUserId: string;
+}
+
+/**
+ * Gate an admin-only route, supporting BOTH ways of holding admin power:
+ *
+ * 1. **Step-up elevation** — a teacher (or anyone) who elevated via
+ *    `/api/admin/elevate`. The `adminElevationHandle` has populated
+ *    `locals.adminSupabase` + `locals.adminElevation`. Privileged writes MUST
+ *    use the returned `supabase` (the admin-context client), so RLS and audit
+ *    attribute the action to the admin.
+ * 2. **Real admin login** — a genuine `profile.role === 'admin'` session. No
+ *    elevation needed; the returned `supabase` is `locals.supabase`.
+ *
+ * The role is read from `locals.profile` (sourced from the DB by
+ * `userProfileHandle`), never from the JWT.
+ *
+ * **Error responses**:
+ * - `401` — caller is not authenticated at all.
+ * - `403` — authenticated but neither elevated nor a real admin
+ *   (message: `Admin elevation required`).
+ *
+ * @param locals - SvelteKit request locals
+ * @returns `{ supabase, adminUserId }` — admin-scoped client + admin id
+ * @throws `401` if unauthenticated, `403` if not an admin / not elevated
+ *
+ * @example
+ * ```typescript
+ * export const DELETE: RequestHandler = async ({ locals, params }) => {
+ *   const { supabase, adminUserId } = await requireAdmin(locals);
+ *   await supabase.from('schools').delete().eq('id', params.id);
+ *   return json({ success: true, by: adminUserId });
+ * };
+ * ```
+ */
+export async function requireAdmin(locals: App.Locals): Promise<AdminAuthResult> {
+	// 1) Active step-up elevation wins — use the admin-context client.
+	if (locals.adminElevation?.active && locals.adminSupabase) {
+		return {
+			supabase: locals.adminSupabase,
+			adminUserId: locals.adminElevation.adminUserId
+		};
+	}
+
+	// 2) Not authenticated at all → 401.
+	if (!locals.user) {
+		throw error(401, 'Non autorisé - Authentification requise');
+	}
+
+	// 3) Genuine admin login → use the caller's own client.
+	if (locals.profile?.role === 'admin') {
+		return { supabase: locals.supabase, adminUserId: locals.user.id };
+	}
+
+	// 4) Authenticated, but neither elevated nor a real admin → 403.
+	throw error(403, 'Admin elevation required');
 }
