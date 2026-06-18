@@ -1,6 +1,6 @@
 /**
  * Server-side logic for the template management page
- * GET - Load templates (public + user's own)
+ * GET - Load the user's own templates
  * POST actions - Create, duplicate, delete templates
  */
 
@@ -16,20 +16,13 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
 	const limit = 20;
 	const search = url.searchParams.get('search') || '';
-	const includePublic = url.searchParams.get('include_public') !== 'false';
 
-	// Build query
+	// Build query - only the user's own templates (no inter-teacher sharing)
 	let query = locals.supabase
 		.from('worksheet_templates')
 		.select('*', { count: 'exact' })
-		.order('created_at', { ascending: false });
-
-	// Filter: public templates OR created by current user
-	if (includePublic) {
-		query = query.or(`is_public.eq.true,created_by.eq.${user.id}`);
-	} else {
-		query = query.eq('created_by', user.id);
-	}
+		.order('created_at', { ascending: false })
+		.eq('created_by', user.id);
 
 	// Apply search filter
 	if (search) {
@@ -49,7 +42,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			templates: [],
 			defaultTemplates: DEFAULT_TEMPLATES,
 			pagination: { page, limit, total: 0, totalPages: 0 },
-			filters: { search, includePublic },
+			filters: { search },
 			userId: user.id
 		};
 	}
@@ -61,7 +54,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		templates: templates ?? [],
 		defaultTemplates: DEFAULT_TEMPLATES,
 		pagination: { page, limit, total, totalPages },
-		filters: { search, includePublic },
+		filters: { search },
 		userId: user.id
 	};
 };
@@ -94,7 +87,6 @@ export const actions: Actions = {
 				description: defaultTemplate.description,
 				template_content: defaultTemplate.template_content,
 				placeholders: defaultTemplate.placeholders,
-				is_public: false,
 				created_by: user.id
 			})
 			.select()
@@ -132,8 +124,8 @@ export const actions: Actions = {
 			return fail(404, { message: 'Template not found' });
 		}
 
-		// Check access: must be public or owned by user
-		if (!original.is_public && original.created_by !== user.id) {
+		// Check access: must be owned by user (no inter-teacher sharing)
+		if (original.created_by !== user.id) {
 			return fail(403, { message: 'Access denied' });
 		}
 
@@ -145,7 +137,6 @@ export const actions: Actions = {
 				description: original.description,
 				template_content: original.template_content,
 				placeholders: original.placeholders,
-				is_public: false,
 				created_by: user.id
 			})
 			.select()

@@ -2,7 +2,7 @@
  * Teacher Templates Gallery - Server Load & Actions
  * ===================================================
  *
- * Lists all templates accessible to the teacher (own + public).
+ * Lists the teacher's own templates.
  * Supports filtering, search, and pagination.
  */
 
@@ -33,9 +33,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		// Use defaults if validation fails
 	}
 
-	const query = validation.success
-		? validation.data
-		: { page: 1, limit: 20, grades: undefined, ownOnly: false, publicOnly: false };
+	const query = validation.success ? validation.data : { page: 1, limit: 20, grades: undefined };
 
 	// Fetch templates
 	const {

@@ -5,9 +5,8 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Save, Loader2, Globe, Lock } from '@lucide/svelte';
+	import { ArrowLeft, Save, Loader2 } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import TypstEditor from '$lib/components/worksheets/TypstEditor.svelte';
 	import { COMMON_PLACEHOLDERS, STANDARD_TEMPLATE } from '$lib/worksheets/default-templates';
@@ -24,7 +23,6 @@
 	let templateContent = $state(
 		initialData.template?.template_content || STANDARD_TEMPLATE.template_content
 	);
-	let isPublic = $state(initialData.template?.is_public || false);
 
 	// Loading state
 	let submitting = $state(false);
@@ -136,27 +134,6 @@
 						disabled={!canEdit}
 						rows={2}
 					/>
-				</div>
-
-				<!-- Public toggle -->
-				<div class="flex items-center gap-4">
-					<MyCheckbox
-						bind:checked={isPublic}
-						label="Rendre ce template public"
-						disabled={!canEdit}
-					/>
-					<input type="hidden" name="is_public" value={isPublic ? 'true' : 'false'} />
-					{#if isPublic}
-						<span class="flex items-center gap-1 text-sm text-muted-foreground">
-							<Globe class="h-4 w-4" />
-							Visible par tous les enseignants
-						</span>
-					{:else}
-						<span class="flex items-center gap-1 text-sm text-muted-foreground">
-							<Lock class="h-4 w-4" />
-							Visible uniquement par vous
-						</span>
-					{/if}
 				</div>
 			</Card.Content>
 		</Card.Root>

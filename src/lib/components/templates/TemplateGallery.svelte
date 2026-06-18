@@ -13,9 +13,8 @@
 	import TemplateCard from './TemplateCard.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Input } from '$lib/components/ui/input';
-	import * as Tabs from '$lib/components/ui/tabs';
 	import { cn } from '$lib/utils';
-	import { Search, Package, Users } from '@lucide/svelte';
+	import { Search, Package } from '@lucide/svelte';
 
 	// Props
 	interface Props {
@@ -39,7 +38,6 @@
 	// Filter state
 	let searchQuery = $state('');
 	let selectedGrades = $state<string[]>([]);
-	let statusTab = $state<'my' | 'public'>('my');
 
 	// Grade items for MySelect
 	const gradeItems = $derived(
@@ -52,13 +50,6 @@
 	// Filter templates
 	const filteredTemplates = $derived(() => {
 		let result = templates;
-
-		// Filter by status tab
-		if (statusTab === 'my') {
-			result = result.filter((t) => t.isOwner);
-		} else {
-			result = result.filter((t) => t.isPublic && t.status === 'published');
-		}
 
 		// Filter by search query
 		if (searchQuery.trim()) {
@@ -78,41 +69,11 @@
 
 		return result;
 	});
-
-	// Count templates by tab
-	const myTemplatesCount = $derived(templates.filter((t) => t.isOwner).length);
-	const publicTemplatesCount = $derived(
-		templates.filter((t) => t.isPublic && t.status === 'published').length
-	);
 </script>
 
 <div class={cn('space-y-6', className)}>
 	<!-- Header with filters -->
 	<div class="space-y-4">
-		<!-- Tabs -->
-		<Tabs.Root bind:value={statusTab}>
-			<Tabs.List class="grid w-full grid-cols-2">
-				<Tabs.Trigger value="my" class="flex items-center gap-2">
-					<Package class="h-4 w-4" />
-					<span>Mes templates</span>
-					<span
-						class="ml-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
-					>
-						{myTemplatesCount}
-					</span>
-				</Tabs.Trigger>
-				<Tabs.Trigger value="public" class="flex items-center gap-2">
-					<Users class="h-4 w-4" />
-					<span>Templates publics</span>
-					<span
-						class="ml-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
-					>
-						{publicTemplatesCount}
-					</span>
-				</Tabs.Trigger>
-			</Tabs.List>
-		</Tabs.Root>
-
 		<!-- Filters -->
 		<div class="flex flex-col gap-3 sm:flex-row">
 			<!-- Search -->
@@ -146,10 +107,8 @@
 			<p class="text-sm text-muted-foreground">
 				{#if searchQuery.trim() || selectedGrades.length > 0}
 					Essayez de modifier vos filtres de recherche.
-				{:else if statusTab === 'my'}
-					Créez votre premier template pour commencer.
 				{:else}
-					Aucun template public n'est disponible pour le moment.
+					Créez votre premier template pour commencer.
 				{/if}
 			</p>
 		</div>

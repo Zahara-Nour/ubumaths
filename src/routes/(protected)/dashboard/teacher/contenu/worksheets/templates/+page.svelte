@@ -9,20 +9,8 @@
 	import * as Table from '$lib/components/ui/table';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Badge } from '$lib/components/ui/badge';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import {
-		ArrowLeft,
-		Plus,
-		Copy,
-		Trash2,
-		Eye,
-		FileText,
-		Globe,
-		Lock,
-		Sparkles,
-		Loader2
-	} from '@lucide/svelte';
+	import { ArrowLeft, Plus, Copy, Trash2, Eye, FileText, Sparkles, Loader2 } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import type { DefaultTemplate } from '$lib/worksheets/default-templates';
 
@@ -32,7 +20,6 @@
 
 	// Filter state
 	let searchQuery = $state(initialData.filters.search || '');
-	let includePublic = $state(initialData.filters.includePublic);
 
 	// Dialog state
 	let showDefaultsDialog = $state(false);
@@ -59,7 +46,6 @@
 		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- used only for URL building, not state
 		const params = new URLSearchParams();
 		if (searchQuery) params.set('search', searchQuery);
-		if (!includePublic) params.set('include_public', 'false');
 		params.set('page', '1');
 		goto(`?${params.toString()}`, { keepFocus: true });
 	}
@@ -69,7 +55,6 @@
 	 */
 	function clearFilters() {
 		searchQuery = '';
-		includePublic = true;
 		goto('/dashboard/teacher/contenu/worksheets/templates', { keepFocus: true });
 	}
 
@@ -164,11 +149,6 @@
 					/>
 				</div>
 
-				<!-- Include public -->
-				<div class="flex items-center gap-2 pb-2">
-					<MyCheckbox bind:checked={includePublic} label="Afficher les templates publics" />
-				</div>
-
 				<!-- Actions -->
 				<div class="flex gap-2">
 					<Button type="submit">Filtrer</Button>
@@ -194,7 +174,6 @@
 					<Table.Row>
 						<Table.Head>Nom</Table.Head>
 						<Table.Head>Description</Table.Head>
-						<Table.Head>Visibilite</Table.Head>
 						<Table.Head>Cree le</Table.Head>
 						<Table.Head class="w-16"></Table.Head>
 					</Table.Row>
@@ -202,7 +181,7 @@
 				<Table.Body>
 					{#if data.templates.length === 0}
 						<Table.Row>
-							<Table.Cell colspan={5} class="py-8 text-center text-muted-foreground">
+							<Table.Cell colspan={4} class="py-8 text-center text-muted-foreground">
 								Aucun template trouve. Creez votre premier template ou utilisez un template par
 								defaut !
 							</Table.Cell>
@@ -217,25 +196,9 @@
 									>
 										{template.name}
 									</a>
-									{#if !isOwnTemplate(template.created_by)}
-										<Badge variant="outline" class="ml-2 text-xs">Partage</Badge>
-									{/if}
 								</Table.Cell>
 								<Table.Cell class="max-w-[300px] truncate text-sm text-muted-foreground">
 									{template.description || '-'}
-								</Table.Cell>
-								<Table.Cell>
-									{#if template.is_public}
-										<Badge variant="secondary" class="gap-1">
-											<Globe class="h-3 w-3" />
-											Public
-										</Badge>
-									{:else}
-										<Badge variant="outline" class="gap-1">
-											<Lock class="h-3 w-3" />
-											Prive
-										</Badge>
-									{/if}
 								</Table.Cell>
 								<Table.Cell class="text-sm text-muted-foreground">
 									{formatDate(template.created_at)}
