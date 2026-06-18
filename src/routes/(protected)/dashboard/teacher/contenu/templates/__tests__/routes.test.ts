@@ -743,16 +743,7 @@ describe('Template Actions', () => {
 				error: null
 			});
 
-			const formData = new FormData();
-			formData.append('isPublic', 'true');
-
-			const request = new Request('http://localhost', {
-				method: 'POST',
-				body: formData
-			});
-
 			const result = await actions.publish({
-				request,
 				locals,
 				params: { templateId: TEST_IDS.template }
 			} as never);
@@ -788,16 +779,7 @@ describe('Template Actions', () => {
 					error: null
 				});
 
-			const formData = new FormData();
-			formData.append('isPublic', 'false');
-
-			const request = new Request('http://localhost', {
-				method: 'POST',
-				body: formData
-			});
-
 			const result = await actions.publish({
-				request,
 				locals,
 				params: { templateId: TEST_IDS.template }
 			} as never);

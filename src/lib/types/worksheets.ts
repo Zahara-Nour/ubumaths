@@ -229,7 +229,6 @@ export interface WorksheetTemplateRow {
 	description: string | null;
 	template_content: string;
 	placeholders: TemplatePlaceholder[];
-	is_public: boolean;
 	created_by: string | null;
 	created_at: string;
 	updated_at: string;
@@ -357,7 +356,6 @@ export interface WorksheetTemplateInsert {
 	description?: string | null;
 	template_content: string;
 	placeholders?: TemplatePlaceholder[];
-	is_public?: boolean;
 	created_by?: string | null;
 }
 
@@ -465,7 +463,6 @@ export interface WorksheetTemplateUpdate {
 	description?: string | null;
 	template_content?: string;
 	placeholders?: TemplatePlaceholder[];
-	is_public?: boolean;
 }
 
 export interface WorksheetUpdate {

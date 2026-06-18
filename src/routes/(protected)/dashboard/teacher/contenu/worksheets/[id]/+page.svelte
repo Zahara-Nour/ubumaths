@@ -319,7 +319,7 @@
 	 */
 	async function loadTemplates() {
 		try {
-			const response = await fetch('/api/worksheets/templates?include_public=true');
+			const response = await fetch('/api/worksheets/templates');
 			const data = await response.json();
 			if (response.ok && data.templates?.length > 0) {
 				// Use templates from database (includes seeded default templates)

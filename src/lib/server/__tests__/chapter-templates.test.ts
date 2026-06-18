@@ -147,7 +147,6 @@ const mockDbTemplate: DbChapterTemplate = {
 	id: mockTemplateId,
 	created_by: mockUserId,
 	status: 'draft',
-	is_public: false,
 	title: 'Algebre - Chapitre 1',
 	description: "Introduction a l'algebre",
 	grades: ['6', '5'],
@@ -829,7 +828,6 @@ describe('Type Conversion Functions', () => {
 			expect(app.id).toBe(mockTemplateId);
 			expect(app.createdBy).toBe(mockUserId);
 			expect(app.status).toBe('draft');
-			expect(app.isPublic).toBe(false);
 			expect(app.title).toBe('Algebre - Chapitre 1');
 			expect(app.instantiationCount).toBe(0);
 			expect(app.currentVersion).toBe(1);
@@ -1807,15 +1805,14 @@ describe('Publishing Operations', () => {
 
 			// Mock publish update
 			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { ...mockDbTemplate, status: 'published', is_public: true },
+				data: { ...mockDbTemplate, status: 'published' },
 				error: null
 			});
 
-			const result = await templates.publishTemplate(mockTemplateId, true, supabase);
+			const result = await templates.publishTemplate(mockTemplateId, supabase);
 
 			expect(result.error).toBeNull();
 			expect(result.data?.status).toBe('published');
-			expect(result.data?.isPublic).toBe(true);
 		});
 
 		it('should reject publishing empty template', async () => {
@@ -1825,31 +1822,11 @@ describe('Publishing Operations', () => {
 				error: null
 			});
 
-			const result = await templates.publishTemplate(mockTemplateId, false, supabase);
+			const result = await templates.publishTemplate(mockTemplateId, supabase);
 
 			expect(result.error).toBeDefined();
 			expect(result.error?.message).toContain('Cannot publish empty template');
 			expect(result.data).toBeNull();
-		});
-
-		it('should publish as private (isPublic=false)', async () => {
-			// Mock fetch template
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { content_snapshot: mockContentSnapshot },
-				error: null
-			});
-
-			// Mock publish update
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { ...mockDbTemplate, status: 'published', is_public: false },
-				error: null
-			});
-
-			const result = await templates.publishTemplate(mockTemplateId, false, supabase);
-
-			expect(result.error).toBeNull();
-			expect(result.data?.status).toBe('published');
-			expect(result.data?.isPublic).toBe(false);
 		});
 
 		it('should handle fetch error', async () => {
@@ -1858,7 +1835,7 @@ describe('Publishing Operations', () => {
 				error: { message: 'Template not found' }
 			});
 
-			const result = await templates.publishTemplate(mockTemplateId, true, supabase);
+			const result = await templates.publishTemplate(mockTemplateId, supabase);
 
 			expect(result.error).toBeDefined();
 			expect(result.data).toBeNull();

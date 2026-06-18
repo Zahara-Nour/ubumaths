@@ -210,7 +210,6 @@ describe('WorksheetGenerator', () => {
 {{class}}
 {{exercises}}`,
 			placeholders: [],
-			is_public: true,
 			created_by: 'teacher-id',
 			created_at: '2024-01-01',
 			updated_at: '2024-01-01'

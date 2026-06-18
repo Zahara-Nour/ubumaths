@@ -37,12 +37,10 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw error(404, 'Template non trouvé');
 	}
 
-	// Check access: owner can view any status, others only published public
+	// Check access: owner only (no inter-teacher sharing)
 	const isOwner = template.createdBy === user.id;
 	if (!isOwner) {
-		if (template.status !== 'published' || !template.isPublic) {
-			throw error(403, 'Accès refusé');
-		}
+		throw error(403, 'Accès refusé');
 	}
 
 	// Fetch versions
@@ -128,7 +126,7 @@ export const actions: Actions = {
 	/**
 	 * Publish template (validates content exists)
 	 */
-	publish: async ({ request, locals, params }) => {
+	publish: async ({ locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
 		const { templateId } = params;
 
@@ -159,11 +157,8 @@ export const actions: Actions = {
 			});
 		}
 
-		const formData = await request.formData();
-		const isPublic = formData.get('isPublic') === 'true';
-
 		// Publish template
-		const { error: publishError } = await publishTemplate(templateId, isPublic, locals.supabase);
+		const { error: publishError } = await publishTemplate(templateId, locals.supabase);
 
 		if (publishError) {
 			console.error('[Publish Template] Error:', publishError);

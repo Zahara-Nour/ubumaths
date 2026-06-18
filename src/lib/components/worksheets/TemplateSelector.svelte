@@ -19,7 +19,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Card from '$lib/components/ui/card';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import { FileText, Eye, Globe, Lock, Sparkles, X } from '@lucide/svelte';
+	import { FileText, Eye, Sparkles, X } from '@lucide/svelte';
 	import type { WorksheetTemplateRow } from '$lib/types/worksheets';
 	import {
 		DEFAULT_TEMPLATES,
@@ -81,8 +81,7 @@
 					id: value,
 					name: template.name,
 					description: template.description,
-					isDefault: true,
-					isPublic: true
+					isDefault: true
 				};
 			}
 		}
@@ -93,8 +92,7 @@
 				id: userTemplate.id,
 				name: userTemplate.name,
 				description: userTemplate.description,
-				isDefault: false,
-				isPublic: userTemplate.is_public
+				isDefault: false
 			};
 		}
 
@@ -164,16 +162,6 @@
 							<Badge variant="secondary" class="text-xs">
 								<Sparkles class="mr-1 h-3 w-3" />
 								Par defaut
-							</Badge>
-						{:else if selectedTemplate.isPublic}
-							<Badge variant="outline" class="text-xs">
-								<Globe class="mr-1 h-3 w-3" />
-								Public
-							</Badge>
-						{:else}
-							<Badge variant="outline" class="text-xs">
-								<Lock class="mr-1 h-3 w-3" />
-								Prive
 							</Badge>
 						{/if}
 					</div>

@@ -136,7 +136,6 @@ export interface ChapterTemplate {
 	id: string;
 	createdBy: string;
 	status: TemplateStatus;
-	isPublic: boolean;
 	title: string;
 	description: string | null;
 	grades: GradeCode[];
@@ -203,7 +202,6 @@ export interface TemplateSummary {
 	color: ChapterColor | null;
 	icon: ChapterIcon | null;
 	status: TemplateStatus;
-	isPublic: boolean;
 	instantiationCount: number;
 	currentVersion: number;
 	createdAt: string;
@@ -252,7 +250,6 @@ export interface DbChapterTemplate {
 	id: string;
 	created_by: string;
 	status: string;
-	is_public: boolean;
 	title: string;
 	description: string | null;
 	grades: string[];
@@ -329,7 +326,6 @@ export function dbTemplateToApp(db: DbChapterTemplate): ChapterTemplate {
 		id: db.id,
 		createdBy: db.created_by,
 		status: db.status as TemplateStatus,
-		isPublic: db.is_public,
 		title: db.title,
 		description: db.description,
 		grades: db.grades as GradeCode[],
