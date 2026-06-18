@@ -51,7 +51,7 @@ describe('Inter-teacher sharing removed - Integration Tests', () => {
 	// chapter_templates — public library removed
 	// ========================================================================
 
-	it('the teacher cannot see the admin public published chapter template', async () => {
+	it('the teacher cannot see the admin published chapter template', async () => {
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const admin = await TestData.profile().withRole('admin').create();
 
@@ -59,9 +59,8 @@ describe('Inter-teacher sharing removed - Integration Tests', () => {
 			.from('chapter_templates')
 			.insert({
 				created_by: admin.id,
-				title: 'Public lib template',
-				status: 'published',
-				is_public: true
+				title: 'Admin template',
+				status: 'published'
 			})
 			.select()
 			.single();
@@ -77,7 +76,7 @@ describe('Inter-teacher sharing removed - Integration Tests', () => {
 
 		const { data: tpl } = await service
 			.from('chapter_templates')
-			.insert({ created_by: teacher.id, title: 'Mine', status: 'draft', is_public: false })
+			.insert({ created_by: teacher.id, title: 'Mine', status: 'draft' })
 			.select()
 			.single();
 
@@ -142,7 +141,7 @@ describe('Inter-teacher sharing removed - Integration Tests', () => {
 	// worksheet_templates — public library removed
 	// ========================================================================
 
-	it('the teacher cannot see the admin public worksheet template', async () => {
+	it('the teacher cannot see the admin worksheet template', async () => {
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const admin = await TestData.profile().withRole('admin').create();
 
@@ -150,9 +149,8 @@ describe('Inter-teacher sharing removed - Integration Tests', () => {
 			.from('worksheet_templates')
 			.insert({
 				created_by: admin.id,
-				name: 'Public WS template',
-				template_content: 'content',
-				is_public: true
+				name: 'Admin WS template',
+				template_content: 'content'
 			})
 			.select()
 			.single();
