@@ -3,27 +3,13 @@
  * Load error logs and statistics for admin dashboard
  */
 
-import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getErrorStats, getErrorOccurrences } from '$lib/server/errorMonitoring';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-	// Check authentication
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw redirect(302, '/auth');
-	}
-
-	// Check if user is admin
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Forbidden - Admin access required');
-	}
+	// Admin gate (admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	// Parse filters from query params
 	const filters: Record<string, string | boolean | number> = {};
@@ -43,10 +29,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	filters.offset = 0;
 
 	// Load error statistics (last 24 hours)
-	const statsResult = await getErrorStats(locals.supabase, 24);
+	const statsResult = await getErrorStats(supabase, 24);
 
 	// Load error occurrences (deduplicated errors)
-	const occurrencesResult = await getErrorOccurrences(locals.supabase, filters);
+	const occurrencesResult = await getErrorOccurrences(supabase, filters);
 
 	return {
 		stats: statsResult.success ? statsResult.data : null,

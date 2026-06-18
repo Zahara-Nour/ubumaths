@@ -24,7 +24,7 @@ import {
 	getCachedHealthStats,
 	setCachedHealthStats
 } from '$lib/server/healthStats';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 // Cache configuration
 const CACHE_KEY = 'admin:health-stats';
@@ -45,12 +45,13 @@ const CACHE_TTL_SECONDS = 300; // 5 minutes
  * }
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	// ✅ SECURITY: Verify user is admin
-	await requireRole(locals, 'admin');
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged reads/writes run via
+	// the returned admin-context client so RLS attributes them to the admin.
+	const { supabase } = await requireAdmin(locals);
 
 	try {
 		// Step 1: Try to get from cache first
-		const cached = await getCachedHealthStats(locals.supabase, CACHE_KEY);
+		const cached = await getCachedHealthStats(supabase, CACHE_KEY);
 
 		if (cached) {
 			// Cache hit - return cached data with metadata
@@ -65,11 +66,11 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		// Step 2: Cache miss - fetch fresh stats from database
 		// This queries multiple views and aggregates data (expensive operation)
-		const stats = await fetchHealthStats(locals.supabase);
+		const stats = await fetchHealthStats(supabase);
 
 		// Step 3: Store in cache for next request
 		// This is a fire-and-forget operation - we don't wait for it
-		setCachedHealthStats(locals.supabase, CACHE_KEY, stats, CACHE_TTL_SECONDS).catch((err) => {
+		setCachedHealthStats(supabase, CACHE_KEY, stats, CACHE_TTL_SECONDS).catch((err) => {
 			// Log but don't fail the request if cache write fails
 			console.error('Failed to cache health stats:', err);
 		});

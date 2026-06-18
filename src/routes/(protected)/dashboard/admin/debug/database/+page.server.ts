@@ -20,8 +20,8 @@
  * PRIVACY:
  * - Email addresses are redacted (first 3 chars + ***@domain.com)
  */
-import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 /**
  * Redact email address for privacy
@@ -35,15 +35,8 @@ function redactEmail(email: string | null): string {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
+	// Admin gate (admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	// Fetch all counts in a single query using database function
 	const { data: stats } = await supabase.rpc('get_database_stats');

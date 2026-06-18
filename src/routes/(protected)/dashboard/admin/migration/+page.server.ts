@@ -13,11 +13,12 @@
  * - Admin-only access (role check)
  */
 
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { promises as fs } from 'fs';
 import path from 'path';
 import type { MigrationManifest, ManifestStructure, TreeNode } from '$lib/types/migration';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 /**
  * Get the latest export folder from data/migration-output/
@@ -38,17 +39,8 @@ async function getLatestExportFolder(): Promise<string> {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	// Authentication check
-	const { user } = await locals.safeGetSession();
-	if (!user) {
-		throw redirect(303, '/auth/login');
-	}
-
-	// Authorization check - admin only
-	const { profile } = locals;
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Acces reserve aux administrateurs');
-	}
+	// Authorization check - admin only (real admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	// Read manifest.json from the latest export directory
 	const latestExport = await getLatestExportFolder();
@@ -61,8 +53,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Query migration_tracking for review statuses
 		// Only count Phase 4 (manual validation via UI) — not Phase 1 (auto-import)
 		const statusMap = new Map<number, 'validated' | 'failed'>();
-		if (locals.supabase) {
-			const { data: trackingData } = await locals.supabase
+		if (supabase) {
+			const { data: trackingData } = await supabase
 				.from('migration_tracking')
 				.select('old_question_index, migration_status')
 				.eq('phase', 4)

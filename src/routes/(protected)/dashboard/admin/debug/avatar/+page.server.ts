@@ -18,16 +18,16 @@
  */
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user, profile } = locals;
+	// Admin gate (admin login OR step-up elevation)
+	await requireAdmin(locals);
 
+	// Diagnostic data describes the CURRENT session (real admin or elevated teacher).
+	const { user, profile } = locals;
 	if (!user) {
 		throw error(401, 'Unauthorized');
-	}
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
 	}
 
 	return {

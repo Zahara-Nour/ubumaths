@@ -13,6 +13,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import { updateUserFieldsSchema } from '$lib/server/validation/admin';
 import type { Database } from '$lib/types/database';
 
@@ -53,17 +54,9 @@ type ExtendedProfile = Profile & {
  *   - 500: Server error
  */
 export const PATCH: RequestHandler = async ({ request, locals, params }) => {
-	// ✅ SECURITY: Authentication check
-	if (!locals.profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	// ✅ SECURITY: Authorization check (admin only)
-	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
-
-	const supabase = locals.supabase;
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged ops run via the
+	// returned admin-context client so RLS + audit attribute them to the admin.
+	const { supabase } = await requireAdmin(locals);
 	const userId = params.id;
 
 	// Validate UUID format for userId

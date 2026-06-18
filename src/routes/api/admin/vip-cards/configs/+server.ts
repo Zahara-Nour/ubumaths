@@ -11,6 +11,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import { createConfigSchema } from '$lib/server/validation/vip-card-admin';
 import type { VipCardConfig } from '$lib/types/vip-card-admin';
 import { configToResponse } from '$lib/types/vip-card-admin';
@@ -42,17 +43,9 @@ import { configToResponse } from '$lib/types/vip-card-admin';
  *   - 500: Server error
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// 1. Authentication check
-	if (!locals.profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	// 2. Authorization check (admin only)
-	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
-
-	const supabase = locals.supabase;
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged ops run via the
+	// returned admin-context client so RLS + audit attribute them to the admin.
+	const { supabase } = await requireAdmin(locals);
 
 	try {
 		// 3. Input validation
@@ -115,17 +108,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
  *   - 500: Server error
  */
 export const GET: RequestHandler = async ({ locals }) => {
-	// 1. Authentication check
-	if (!locals.profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	// 2. Authorization check (admin only)
-	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
-
-	const supabase = locals.supabase;
+	// ✅ SECURITY: admin elevation OR real admin login.
+	const { supabase } = await requireAdmin(locals);
 
 	try {
 		// 3. Fetch all configs (active first, then by creation date)

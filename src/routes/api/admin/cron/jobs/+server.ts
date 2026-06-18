@@ -14,7 +14,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import { cronJobsQuerySchema, type CronJobsResponse } from '$lib/server/validation/cron';
 
 // Period to milliseconds mapping
@@ -25,8 +25,9 @@ const PERIOD_MS: Record<string, number> = {
 };
 
 export const GET: RequestHandler = async ({ url, locals }) => {
-	// Verify admin access
-	await requireRole(locals, 'admin');
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged reads run via the
+	// returned admin-context client so RLS attributes them to the admin.
+	const { supabase } = await requireAdmin(locals);
 
 	// Parse and validate query params (Zod handles defaults and transforms)
 	const queryParams = Object.fromEntries(url.searchParams.entries());
@@ -43,7 +44,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	try {
 		// Build query for job runs
-		let query = locals.supabase
+		let query = supabase
 			.from('background_job_runs')
 			.select(
 				'id, job_name, status, started_at, completed_at, execution_time_ms, error_message, metadata',
@@ -70,7 +71,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		// Fetch stats for the period (separate query for aggregates)
-		const statsQuery = locals.supabase
+		const statsQuery = supabase
 			.from('background_job_runs')
 			.select('status, execution_time_ms')
 			.gte('started_at', periodStart);
