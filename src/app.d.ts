@@ -13,6 +13,17 @@ declare global {
 			user: User | null;
 			profile: Profile | null;
 			requestId: string;
+			/**
+			 * Admin-scoped Supabase client, present only when the request carries a
+			 * valid admin elevation (Pattern 2). Queries through this client run with
+			 * RLS evaluated as `auth.uid() = <admin>`. Set by adminElevationHandle.
+			 */
+			adminSupabase?: SupabaseClient;
+			/**
+			 * Admin elevation state for this request. `null`/absent → not elevated.
+			 * `expiresAt` is a Unix epoch in milliseconds. Set by adminElevationHandle.
+			 */
+			adminElevation?: { active: boolean; adminUserId: string; expiresAt: number } | null;
 		}
 		interface PageData {
 			user: User | null;
