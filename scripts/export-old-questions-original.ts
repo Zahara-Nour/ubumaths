@@ -36,7 +36,6 @@ import type {
 } from '../src/lib/migration/old-question-types';
 import {
 	detectQuestionType,
-	getVariationCount,
 	hasChoices,
 	hasImages,
 	hasTestAnswers,
@@ -665,7 +664,7 @@ async function main(): Promise<void> {
 		// Write by theme
 		const byThemeDir = join(EXPORT_DIR, 'by-theme');
 		await ensureDir(byThemeDir);
-		for (const [theme, themeData] of stats.byTheme) {
+		for (const [theme] of stats.byTheme) {
 			const themeQuestions = questions.filter((q) => q._migration.theme === theme);
 			await writeJsonFile(
 				join(byThemeDir, `${theme.toLowerCase().replace(/\s+/g, '-')}.json`),
@@ -677,7 +676,7 @@ async function main(): Promise<void> {
 		// Write by type
 		const byTypeDir = join(EXPORT_DIR, 'by-type');
 		await ensureDir(byTypeDir);
-		for (const [type, typeData] of stats.byType) {
+		for (const [type] of stats.byType) {
 			const typeQuestions = questions.filter((q) => detectQuestionType(q) === type);
 			await writeJsonFile(join(byTypeDir, `${type}.json`), typeQuestions);
 		}

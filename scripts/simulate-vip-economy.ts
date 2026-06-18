@@ -310,7 +310,7 @@ const TOTAL_UNIQUE = UNIQUE_CARD_IDS.size;
 
 // ─── Draw probabilities ─────────────────────────────────────────────────────
 
-const DRAW_PROBS = { common: 60, rare: 25, epic: 12, legendary: 3 };
+const _DRAW_PROBS = { common: 60, rare: 25, epic: 12, legendary: 3 };
 
 function rollRarity(): 'common' | 'rare' | 'epic' | 'legendary' {
 	const roll = Math.floor(Math.random() * 100) + 1;
