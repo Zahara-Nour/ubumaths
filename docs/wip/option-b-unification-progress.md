@@ -142,6 +142,18 @@ Remplacer `is_teacher_of_student(...)` par `is_my_student(...)` :
 - Sort des helpers `get_student_teachers` / `get_teacher_students` une fois la messagerie réécrite (laisser morts vs DROP).
 - `python_notebook_checkpoint_runs` : confirmer l'ajout de la branche `is_my_student(user_id)`.
 
+## Revues (2026-06-18) — verdict : OK pour merge
+
+- **security-auditor** : « Safe to merge », 0 critical/high. Tous les chemins élève/parent préservés ; `is_my_student` utilisé uniquement en lecture prof/admin ; modération role-gated.
+- **code-reviewer** : « ready to merge », 0 blocker. RPC SQL correctes, retrait `is_public` complet, runes OK.
+
+### Follow-up (hors PR — à traiter plus tard)
+
+- **(PR de suivi, destructif)** `DROP COLUMN is_public` sur `chapter_templates` + `worksheet_templates`, **après** deploy vérifié → `pnpm db:types` + commit. Nettoyer alors les mocks `is_public` inertes dans `templates/__tests__/routes.test.ts`.
+- **(durcissement, optionnel)** Lier `sender`/`p_user_id` à `auth.uid()` dans `get_allowed_recipients`/`validate_message_recipients`/`send_private_message` (pattern préexistant ; seul appelant passe `user.id` → sûr aujourd'hui).
+- **(optionnel)** `restrict-user` scope `conversation` : valider que `scopeId` est une vraie conversation du destinataire (évite des restrictions orphelines ; inerte sous mono-prof).
+- **(cosmétique)** Corriger le COMMENT de `is_admin()` (« admin or teacher » → « admin only ») dans la migration de suivi.
+
 ## Definition of Done
 
 - [ ] Tests d'intégration locaux verts (fixture hors-classe) — messagerie, modération, RLS features, retrait partage.

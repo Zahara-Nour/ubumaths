@@ -16,12 +16,15 @@ import { restrictUserSchema } from '$lib/server/validation/moderation';
  * - reason: String (5-500 characters)
  * - expiresAt: ISO 8601 datetime string or null (null = permanent)
  *
+ * Authorization (Option B, mono-teacher): the sole teacher may restrict any
+ * student at global or conversation scope; admins may restrict anyone.
+ *
  * Responses:
  * - 201: Restriction created successfully
  * - 400: Validation failed
  * - 401: Not authenticated
- * - 403: Not a teacher/admin OR not teacher's conversation
- * - 404: Conversation not found
+ * - 403: Not a teacher/admin, or a teacher targeting a non-student
+ * - 404: User not found
  * - 409: Duplicate active restriction
  * - 500: Database error
  */
