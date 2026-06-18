@@ -10,6 +10,7 @@
 
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import type { VipCardConfig } from '$lib/types/vip-card-admin';
 import { configToResponse } from '$lib/types/vip-card-admin';
 
@@ -31,17 +32,9 @@ import { configToResponse } from '$lib/types/vip-card-admin';
  *   - 500: Server error
  */
 export const PATCH: RequestHandler = async ({ locals, params }) => {
-	// 1. Authentication check
-	if (!locals.profile) {
-		throw error(401, 'Authentication required');
-	}
-
-	// 2. Authorization check (admin only)
-	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
-
-	const supabase = locals.supabase;
+	// ✅ SECURITY: admin elevation OR real admin login. Privileged ops run via the
+	// returned admin-context client so RLS + audit attribute them to the admin.
+	const { supabase } = await requireAdmin(locals);
 	const configId = parseInt(params.id, 10);
 
 	if (isNaN(configId)) {

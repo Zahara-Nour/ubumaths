@@ -1,10 +1,11 @@
-import { redirect, fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import {
 	getCreatedNotifications,
 	createNotification,
 	deleteNotification
 } from '$lib/server/notifications';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import type { CreateNotificationData } from '$lib/types/notification';
 import {
 	createNotificationSchema,
@@ -15,23 +16,9 @@ import {
 	checkNotificationDeleteRateLimit
 } from '$lib/server/rateLimiter';
 
-export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw redirect(303, '/auth/login');
-	}
-
-	// Get user profile to check role
-	const { data: profile, error: profileError } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (profileError || !profile || profile.role !== 'admin') {
-		throw redirect(303, '/dashboard');
-	}
+export const load: PageServerLoad = async ({ locals }) => {
+	// Admin only (real admin login OR step-up elevation)
+	const { supabase, adminUserId } = await requireAdmin(locals);
 
 	// Get all classes
 	const { data: classes } = await supabase
@@ -48,7 +35,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.order('lastname');
 
 	// Get admin's created notifications with stats
-	const notificationStats = await getCreatedNotifications(supabase, user.id);
+	const notificationStats = await getCreatedNotifications(supabase, adminUserId);
 
 	return {
 		classes: classes || [],
@@ -58,28 +45,14 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 };
 
 export const actions: Actions = {
-	create: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non authentifié' });
-		}
-
-		// Check admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Permission refusée' });
-		}
+	create: async ({ request, locals }) => {
+		// Admin only (real admin login OR step-up elevation)
+		const { supabase, adminUserId } = await requireAdmin(locals);
 
 		// ====================================================================
 		// SECURITY: Rate Limiting
 		// ====================================================================
-		const rateLimitResult = await checkNotificationCreateRateLimit(user.id, 'admin');
+		const rateLimitResult = await checkNotificationCreateRateLimit(adminUserId, 'admin');
 		if (!rateLimitResult.allowed) {
 			return fail(429, { error: rateLimitResult.message });
 		}
@@ -157,7 +130,7 @@ export const actions: Actions = {
 		// 'all' doesn't need additional data
 
 		// Create notification
-		const result = await createNotification(supabase, notificationData, user.id);
+		const result = await createNotification(supabase, notificationData, adminUserId);
 
 		if (!result.success) {
 			return fail(500, { error: result.error || 'Erreur lors de la création' });
@@ -166,17 +139,14 @@ export const actions: Actions = {
 		return { success: true };
 	},
 
-	delete: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non authentifié' });
-		}
+	delete: async ({ request, locals }) => {
+		// Admin only (real admin login OR step-up elevation)
+		const { supabase, adminUserId } = await requireAdmin(locals);
 
 		// ====================================================================
 		// SECURITY: Rate Limiting
 		// ====================================================================
-		const rateLimitResult = await checkNotificationDeleteRateLimit(user.id, 'admin');
+		const rateLimitResult = await checkNotificationDeleteRateLimit(adminUserId, 'admin');
 		if (!rateLimitResult.allowed) {
 			return fail(429, { error: rateLimitResult.message });
 		}
@@ -194,7 +164,7 @@ export const actions: Actions = {
 
 		const { notificationId } = validation.data;
 
-		const result = await deleteNotification(supabase, notificationId, user.id);
+		const result = await deleteNotification(supabase, notificationId, adminUserId);
 
 		if (!result.success) {
 			return fail(500, { error: result.error || 'Erreur lors de la suppression' });

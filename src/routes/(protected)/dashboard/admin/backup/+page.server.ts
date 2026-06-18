@@ -7,23 +7,18 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getBackupStats } from '$lib/server/admin/exercise-backup';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	// Authorization check
-	if (!locals.profile) {
-		throw error(401, 'Non authentifie');
-	}
-
-	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Acces reserve aux administrateurs');
-	}
+	// Authorization check (admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	try {
-		const stats = await getBackupStats(locals.supabase);
+		const stats = await getBackupStats(supabase);
 
 		return {
 			stats,
-			adminEmail: locals.profile.email ?? 'admin'
+			adminEmail: locals.profile?.email ?? 'admin'
 		};
 	} catch (err) {
 		console.error('Error loading backup stats:', err);

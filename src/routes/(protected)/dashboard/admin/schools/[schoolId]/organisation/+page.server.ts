@@ -1,7 +1,8 @@
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { validateTimetable, type SchoolTimetable } from '$lib/utils/timetable';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { requireAdmin } from '$lib/server/middleware/auth';
 import {
 	createSchoolYearSchema,
 	updateSchoolYearSchema,
@@ -19,25 +20,11 @@ import {
 /**
  * Load school data with academic years, periods, holidays, and timetable
  */
-export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
-	const { user } = await safeGetSession();
-
-	if (!user) {
-		throw redirect(303, '/auth/login');
-	}
+export const load: PageServerLoad = async ({ params, locals }) => {
+	// Admin only (real admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	const schoolId = validateUuidParam(params.schoolId, 'schoolId');
-
-	// Get user profile to check if admin
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('role')
-		.eq('id', user.id)
-		.single();
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Only admins can manage school organisation');
-	}
 
 	// Fetch school data
 	const { data: school, error: schoolError } = await supabase
@@ -114,23 +101,8 @@ export const actions: Actions = {
 	/**
 	 * Create a new school year
 	 */
-	createYear: async ({ request, params, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Seuls les admins peuvent créer des années scolaires' });
-		}
+	createYear: async ({ request, params, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const validation = createSchoolYearSchema.safeParse({
@@ -161,23 +133,8 @@ export const actions: Actions = {
 	/**
 	 * Update an existing school year
 	 */
-	updateYear: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Seuls les admins peuvent modifier des années scolaires' });
-		}
+	updateYear: async ({ request, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const validation = updateSchoolYearSchema.safeParse({
@@ -216,23 +173,8 @@ export const actions: Actions = {
 	/**
 	 * Delete a school year
 	 */
-	deleteYear: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Seuls les admins peuvent supprimer des années scolaires' });
-		}
+	deleteYear: async ({ request, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const validation = deleteSchoolYearSchema.safeParse({
@@ -259,23 +201,8 @@ export const actions: Actions = {
 	/**
 	 * Set active school year (deactivates all others for this school)
 	 */
-	setActiveYear: async ({ request, params, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: "Seuls les admins peuvent définir l'année active" });
-		}
+	setActiveYear: async ({ request, params, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const validation = setActiveYearSchema.safeParse({
@@ -319,23 +246,8 @@ export const actions: Actions = {
 	/**
 	 * Create a new academic period
 	 */
-	createPeriod: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Seuls les admins peuvent créer des périodes académiques' });
-		}
+	createPeriod: async ({ request, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const validation = createAcademicPeriodSchema.safeParse({
@@ -368,23 +280,8 @@ export const actions: Actions = {
 	/**
 	 * Update an existing academic period
 	 */
-	updatePeriod: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Seuls les admins peuvent modifier des périodes académiques' });
-		}
+	updatePeriod: async ({ request, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const periodOrderRaw = formData.get('period_order');
@@ -431,23 +328,8 @@ export const actions: Actions = {
 	/**
 	 * Delete an academic period
 	 */
-	deletePeriod: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Seuls les admins peuvent supprimer des périodes académiques' });
-		}
+	deletePeriod: async ({ request, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const validation = deleteAcademicPeriodSchema.safeParse({
@@ -478,23 +360,8 @@ export const actions: Actions = {
 	/**
 	 * Create a new school holiday
 	 */
-	createHoliday: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Seuls les admins peuvent créer des vacances scolaires' });
-		}
+	createHoliday: async ({ request, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const validation = createSchoolHolidaySchema.safeParse({
@@ -524,23 +391,8 @@ export const actions: Actions = {
 	/**
 	 * Update an existing school holiday
 	 */
-	updateHoliday: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Seuls les admins peuvent modifier des vacances scolaires' });
-		}
+	updateHoliday: async ({ request, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const validation = updateSchoolHolidaySchema.safeParse({
@@ -580,23 +432,8 @@ export const actions: Actions = {
 	/**
 	 * Delete a school holiday
 	 */
-	deleteHoliday: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Seuls les admins peuvent supprimer des vacances scolaires' });
-		}
+	deleteHoliday: async ({ request, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const validation = deleteSchoolHolidaySchema.safeParse({
@@ -627,23 +464,8 @@ export const actions: Actions = {
 	/**
 	 * Duplicate a school year with its periods and holidays
 	 */
-	duplicateYear: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { error: 'Non autorisé' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { error: 'Seuls les admins peuvent dupliquer des années scolaires' });
-		}
+	duplicateYear: async ({ request, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const validation = duplicateSchoolYearSchema.safeParse({
@@ -775,23 +597,8 @@ export const actions: Actions = {
 	 * Update school timetable
 	 * Validates periods and saves to database
 	 */
-	updateTimetable: async ({ request, params, locals: { supabase, safeGetSession } }) => {
-		const { user } = await safeGetSession();
-
-		if (!user) {
-			return fail(401, { message: 'Not authenticated' });
-		}
-
-		// Verify admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (!profile || profile.role !== 'admin') {
-			return fail(403, { message: 'Only admins can update timetables' });
-		}
+	updateTimetable: async ({ request, params, locals }) => {
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const timetableJson = formData.get('timetable') as string;

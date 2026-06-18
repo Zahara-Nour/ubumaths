@@ -1,17 +1,11 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { validateFormData, importStudentsFormSchema } from '$lib/server/validation';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
+	// Admin only (real admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	// Fetch all schools for the school selector
 	const { data: schools, error: schoolsError } = await supabase
@@ -70,22 +64,8 @@ export const actions: Actions = {
 	 * Import students from CSV data
 	 */
 	import: async ({ request, locals }) => {
-		const { user, supabase } = locals;
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
-
-		// Check admin role
-		const { data: profile } = await supabase
-			.from('profiles')
-			.select('role')
-			.eq('id', user.id)
-			.single();
-
-		if (profile?.role !== 'admin') {
-			return fail(403, { message: 'Admin access required' });
-		}
+		// Admin only (real admin login OR step-up elevation)
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 

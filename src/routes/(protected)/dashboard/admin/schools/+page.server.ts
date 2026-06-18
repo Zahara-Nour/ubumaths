@@ -2,19 +2,11 @@ import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { schoolUpsertSchema } from '$lib/server/validation/schools';
 import { uuidSchema } from '$lib/server/validation/common';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const { user, profile, supabase } = locals;
-
-	// Get authenticated user from session
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	// Verify admin role
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
+	// Admin only (real admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	// Fetch all schools
 	const { data: schools, error: schoolsError } = await supabase
@@ -34,11 +26,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	create: async ({ request, locals }) => {
-		const { user, supabase } = locals;
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const parsed = schoolUpsertSchema.safeParse({
@@ -66,11 +54,7 @@ export const actions: Actions = {
 	},
 
 	update: async ({ request, locals }) => {
-		const { user, supabase } = locals;
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 
@@ -109,11 +93,7 @@ export const actions: Actions = {
 	},
 
 	delete: async ({ request, locals }) => {
-		const { user, supabase } = locals;
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const id = formData.get('id') as string;
@@ -145,11 +125,7 @@ export const actions: Actions = {
 	},
 
 	bulk_create: async ({ request, locals }) => {
-		const { user, supabase } = locals;
-
-		if (!user) {
-			return fail(401, { message: 'Unauthorized' });
-		}
+		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
 		const schoolsJson = formData.get('schools') as string;

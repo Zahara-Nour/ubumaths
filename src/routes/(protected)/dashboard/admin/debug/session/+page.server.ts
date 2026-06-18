@@ -19,6 +19,7 @@
  */
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 /**
  * Redact sensitive token data
@@ -42,14 +43,14 @@ function redactEmail(email: string | null): string {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
+	// Admin gate (admin login OR step-up elevation).
+	await requireAdmin(locals);
+
+	// This page debugs the ACTUAL current session, so it intentionally uses the
+	// caller's own client (locals.supabase) and session, not the admin-context one.
 	const { user, profile, supabase } = locals;
-
-	if (!user) {
+	if (!user || !profile) {
 		throw error(401, 'Unauthorized');
-	}
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
 	}
 
 	// For this debug page only, we need to inspect the session object

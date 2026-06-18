@@ -25,17 +25,11 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-	const { user, profile, supabase } = locals;
-
-	if (!user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
-	}
+	// Admin only (real admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	/**
 	 * Parse query parameters for filters

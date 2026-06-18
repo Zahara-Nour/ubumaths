@@ -16,14 +16,11 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { mapDbTemplateToForm } from '$lib/questions/types';
+import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const { profile, supabase } = locals;
-
-	// Check admin role
-	if (!profile || profile.role !== 'admin') {
-		throw error(403, 'Accès refusé');
-	}
+	// Check admin (real admin login OR step-up elevation)
+	const { supabase } = await requireAdmin(locals);
 
 	const id = validateUuidParam(params.id);
 
